@@ -6,6 +6,7 @@ pinned retail default.xbe and skip without it; the others need no game data.
 from __future__ import annotations
 
 from pathlib import Path
+import os
 import struct
 import sys
 import types
@@ -201,7 +202,7 @@ class WeatherCapacityRosterTests(unittest.TestCase):
     def test_the_grown_version_18_roster_reads_and_takes_the_climate_edits(self):
         from mod_editor.core import nfl2k5_weather as w
         from mod_editor.core import nfl2k5_roster_arena as arena
-        retail = Path(__import__("os").environ.get("NFL2K5_RETAIL_EXTRACTION", "/media/noah/Storage/for codex 1.0/extracted")) \
+        retail = Path(os.environ.get("NFL2K5_RETAIL_EXTRACTION", "")) \
             / "ESPN NFL 2K5 (USA)" / "vc_53450030"
         if not (retail / "0").is_file():
             self.skipTest("USA retail vc_53450030 is absent; set NFL2K5_RETAIL_EXTRACTION")
@@ -310,12 +311,16 @@ class HistoricSpareKeepTests(unittest.TestCase):
     """The build's last read-back refused the historic team styles after the team-coloured sleeves rewrote the
     Eagles' spare (the retail era-9 package holding the retail style-0 art); the build now keeps it."""
 
-    RELEASED = Path("/media/noah/Storage/2K5 Discs/SOFTDRINK 2K28 v0.6.1 (2026-10-20).xiso.iso")
-    RETAIL = Path("/media/noah/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso")
+    RELEASED_ENV = "B778_RELEASED_ISO"
+    RETAIL_ENV = "NFL2K5_RETAIL_XISO"
+    RELEASED = Path(os.environ[RELEASED_ENV]) if os.environ.get(RELEASED_ENV) else None
+    RETAIL = Path(os.environ[RETAIL_ENV]) if os.environ.get(RETAIL_ENV) else None
 
     def test_the_eagles_era_9_spare_is_named_for_the_sleeves_pass(self):
-        if not (self.RELEASED.is_file() and self.RETAIL.is_file()):
-            self.skipTest("private released and retail discs are absent")
+        if self.RELEASED is None or self.RETAIL is None \
+                or not (self.RELEASED.is_file() and self.RETAIL.is_file()):
+            self.skipTest("private released and retail discs are absent "
+                          "(B778_RELEASED_ISO, NFL2K5_RETAIL_XISO)")
         from mod_editor.core import nfl2k5_historic_styles as hs
         self.assertEqual(hs.image_status(self.RELEASED, self.RETAIL), "applied")
         kept = hs.retail_spare_selectors(self.RELEASED, self.RETAIL)
