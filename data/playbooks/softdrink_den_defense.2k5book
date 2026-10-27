@@ -9,10 +9,10 @@
   "notes": "DESIGN: Vance Joseph (Phillips / Joseph pressure); 2025 baseline DEN. Clean technique fronts (pb/v2/defense/design.py), retail 2K5 coverage scripts with native pre-snap alignment, situational formation ratings and CPU score bands fitted to the sourced 2025 coverage and blitz rates. Exact offense source required. Gameplay unwitnessed."
  },
  "base": {
-  "book_fingerprint": "1f6356fa1174042508d8b6a23f0e4fcbfab035b18f84726b3dceb06ba822f1be",
+  "book_fingerprint": "ea9189cf5e36bd5980907ec0bddeb5ae0241599731c768c4fcf8be93897be5cf",
   "donor_formation_count": 49,
   "donor_play_count": 263,
-  "donor_node_count": 2224
+  "donor_node_count": 2191
  },
  "budget": {
   "formations": 50,
@@ -1801,7 +1801,7 @@
    "replace_name": "Bear Double Sting 0",
    "link_formation": null,
    "link_group": null,
-   "assignments": [null, null, null, null, null, null, null, null, null, null, null],
+   "assignments": [null, null, null, null, null, null, null, null, [[27, [0, 0, 0, 0, 0, 1]], [11, [2, 5, 0]]], null, null],
    "defense_formation": "Bear",
    "front_index": 3,
    "component": "coverage",

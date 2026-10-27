@@ -88,11 +88,22 @@ half_ready:
     test dword ptr [eax+4], 0x4001c0 /* native specials and knee/spike */
     jnz play_only
     /* The <=120 guard also protects the last snap of a half. A Q1/Q3
-       runoff may reach zero; the native dispatcher owns period ending. */
+       runoff may reach zero; the native dispatcher owns period ending.
+       A Q2/Q4/OT runoff that would cross 2:00 stops the game clock at the
+       warning instead: without this floor a 2:12 huddle jumped to 1:52. */
     movss xmm1, [esi+16]
     subss xmm1, xmm0
     xorps xmm2, xmm2
     maxss xmm1, xmm2                 /* Q1/Q3 clamp; native period end owns 0 */
+    cmp edi, 2
+    je warning_floor
+    cmp edi, 3
+    jbe store_clock
+warning_floor:
+    mov eax, 120
+    cvtsi2ss xmm2, eax
+    maxss xmm1, xmm2                 /* never past the two-minute warning */
+store_clock:
     movss [esi+16], xmm1
 play_only:
     movss [ebx+16], xmm3             /* exact scorebug value, one store */

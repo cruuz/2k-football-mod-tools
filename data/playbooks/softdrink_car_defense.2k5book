@@ -9,10 +9,10 @@
   "notes": "DESIGN: Ejiro Evero (Fangio / Staley split coverage); 2025 baseline CAR. Clean technique fronts (pb/v2/defense/design.py), retail 2K5 coverage scripts with native pre-snap alignment, situational formation ratings and CPU score bands fitted to the sourced 2025 coverage and blitz rates. Exact offense source required. Gameplay unwitnessed."
  },
  "base": {
-  "book_fingerprint": "b7116e6859ba1090028e74799aaf4083ca95fc34937cac2c06fa38e27acdb10d",
+  "book_fingerprint": "79fe1043de461ba25999bfe14876b0a653572f56deb586628d03a312cc52b719",
   "donor_formation_count": 50,
   "donor_play_count": 269,
-  "donor_node_count": 2285
+  "donor_node_count": 2296
  },
  "budget": {
   "formations": 50,

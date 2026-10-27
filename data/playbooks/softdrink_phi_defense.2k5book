@@ -9,10 +9,10 @@
   "notes": "DESIGN: Vic Fangio (Fangio split coverage); 2025 baseline PHI. Clean technique fronts (pb/v2/defense/design.py), retail 2K5 coverage scripts with native pre-snap alignment, situational formation ratings and CPU score bands fitted to the sourced 2025 coverage and blitz rates. Exact offense source required. Gameplay unwitnessed."
  },
  "base": {
-  "book_fingerprint": "69c18dee388013a9ca758b8737d4496361260abea249067d35485ce3d4a09ba5",
+  "book_fingerprint": "290988860c552d19cec20f43b0b040d5f8ea06353768f0053c8a29102e9e12fe",
   "donor_formation_count": 50,
   "donor_play_count": 268,
-  "donor_node_count": 2305
+  "donor_node_count": 2328
  },
  "budget": {
   "formations": 50,
@@ -1887,7 +1887,7 @@
    "replace_name": "Bear Cover 4",
    "link_formation": null,
    "link_group": null,
-   "assignments": [null, null, null, null, null, null, null, null, null, null, null],
+   "assignments": [null, null, null, null, null, null, null, null, [[27, [0, 0, 0, 0, 0, 1]], [11, [2, 5, 0]]], null, null],
    "defense_formation": "Bear",
    "front_index": 3,
    "component": "coverage",
@@ -1961,7 +1961,7 @@
     [[27, [2, 0, 0, 365.76, 0, 0]], [14, [0, 274.32, 0, 7, 0, 0, 0, 0]]],
     [[27, [2, 0, -335.28000000000003, 426.72, 0, 0]], [14, [0, 91.44, 0, 10, 0, 0, 0, 0]]],
     [[27, [0, 0, 640.08, 91.44, 0, 0]], [13, [0, 1645.92, 7, 9, 11, 0, 0]]],
-    [[27, [0, 0, 0, -274.32, 16, 0]], [11, [1, 16, 0]]],
+    [[27, [0, 0, 0, -60.96, 16, 0]], [11, [1, 16, 0]]],
     [[27, [2, 0, 0, 182.88, 0, 0]], [14, [0, 182.88, 0, 6, 0, 0, 0, 0]]]
    ],
    "defense_formation": "Bear",

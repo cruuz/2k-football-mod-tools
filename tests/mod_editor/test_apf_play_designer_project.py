@@ -89,7 +89,9 @@ class DesignerProjectTests(unittest.TestCase):
             self.session.save_project(Path(self.temp.name) / "bad.apf2k8mod")
 
     def test_shared_resource_collision_refuses_atomic_staging(self):
-        self.session._modifications["route"] = Modification("route", "play_assignment_route", Path("unused"), "c" * 64, {})
+        # Assignment Routes, Who lines up and Fine-tune Plays now compile on top of a design;
+        # Formation Alignment still writes the retail MASTER and stays exclusive.
+        self.session._modifications["align"] = Modification("align", "formation_alignment", Path("unused"), "c" * 64, {})
         with self.assertRaisesRegex(ValueError, "owns MASTER"):
             self.session.apply_play_design(self.plan)
         self.assertEqual(self.session.modified_count, 1)

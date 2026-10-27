@@ -9,10 +9,10 @@
   "notes": "DESIGN: Patrick Graham (Belichick multiple disguise); 2025 baseline LV. Clean technique fronts (pb/v2/defense/design.py), retail 2K5 coverage scripts with native pre-snap alignment, situational formation ratings and CPU score bands fitted to the sourced 2025 coverage and blitz rates. Exact offense source required. Gameplay unwitnessed."
  },
  "base": {
-  "book_fingerprint": "4ade175f168853478c0eac5b3d6336fb1260118b1a82bfacfdca200004b5afc4",
+  "book_fingerprint": "a0efc207ba4f8fa4c01f878fdbac30b26ee16a86b44db85589a963fb5e85ec57",
   "donor_formation_count": 50,
   "donor_play_count": 270,
-  "donor_node_count": 2325
+  "donor_node_count": 2377
  },
  "budget": {
   "formations": 50,
@@ -2239,7 +2239,7 @@
     [[27, [2, 0, 0, 365.76, 0, 0]], [14, [0, 274.32, 0, 7, 0, 0, 0, 0]]],
     [[27, [2, 0, -335.28000000000003, 426.72, 0, 0]], [14, [0, 91.44, 0, 10, 0, 0, 0, 0]]],
     [[27, [0, 0, 640.08, 91.44, 0, 0]], [13, [0, 1645.92, 7, 9, 8, 0, 0]]],
-    [[27, [0, 0, 0, -274.32, 16, 0]], [11, [1, 16, 0]]],
+    [[27, [0, 0, 0, -60.96, 16, 0]], [11, [1, 16, 0]]],
     [[27, [2, 0, 0, 182.88, 0, 0]], [14, [0, 182.88, 0, 6, 0, 0, 0, 0]]]
    ],
    "defense_formation": "Bear",

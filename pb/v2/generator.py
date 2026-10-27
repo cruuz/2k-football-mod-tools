@@ -50,6 +50,7 @@ from mod_editor.core import nfl2k5_playbook_lint as lint  # noqa: E402
 from mod_editor.core import nfl2k5_playbook_pack as packs  # noqa: E402
 from mod_editor.core import nfl2k5_route_reversal as rr  # noqa: E402
 from pb.v2 import build as v2  # noqa: E402
+from pb.v2 import sanity_b778 as sanity  # noqa: E402
 
 TREE = ROOT / "pb" / "research" / "madden27_team_tree.json"
 VERSION = "4.0.0"
@@ -111,7 +112,23 @@ MENU_MIX = {
 # formations every book carries when its personnel exists (the must-have families)
 MUST_FORMATIONS = ("Goal Line Sneak", "Goal Line", "Gun Wildcat", "Empty Trey", "Singleback Doubles",
                    "Gun Doubles", "Gun Trips TE", "Gun Bunch X Nasty", "Pistol Doubles", "I-Form Pro",
-                   "I-Form Tight", "Full House", "Wing T", "Gun Empty Trey", "Singleback Ace", "Gun Spread")
+                   "I-Form Tight", "Full House", "Full House Sneak", "Wing T", "Gun Empty Trey", "Singleback Ace", "Gun Spread")
+
+# b778 ai7: the QB Sneak and the tush push live only in the full-house set. The native play scorer weights a
+# one-yard QB run by distance alone, not by down, so a sneak in the 23-personnel goal-line set is still a legal
+# 1st/2nd-down call (the category lottery's 1st/2nd target is 23/13 personnel; see pb/v2/selection_model.py).
+# The 22-personnel full house is the heavy group that target asks for least often: the target is 23/13, and while
+# the native category distance curve still reaches code 2 (one code from 13), the one-yard play weight is low and
+# the full CPU commit measured 0/2000 such calls. The 23 and 13 groups are the deliberate 1st/2nd targets and no
+# longer hold a sneak at all. Keeping both plays in the full house preserves the allowed 3rd/4th-and-1 call.
+SNEAK_FORMATION = "Full House Sneak"
+
+
+def _sneak_formation(name: str) -> bool:
+    """May this formation carry a QB sneak / tush push? Only the 22-personnel under-centre full house."""
+    spec = oc.FORMATIONS.get(name)
+    return name == SNEAK_FORMATION and spec is not None and spec.personnel == "22" and spec.align == "uc"
+
 
 LONG_SETS = ("Trips", "Empty", "Trey", "Y-Slot", "Tight Open", "Spread")
 GROUP_NAMES = {"Pistol": "Pistol", "Kings Long": "Kings Long", "13": "Jumbo", "P2": "Pony"}
@@ -581,7 +598,7 @@ def candidates(info, prof: Profile, fname: str, checker: Checker, rng: random.Ra
             d = fn(ctx, codes) if fn in (om.tush_push, om.qb_keep, om.qb_power) else fn(ctx)
         except oc.ConceptUnavailable:
             continue
-        if must == "tush" and fname != "Goal Line Sneak":
+        if must in ("tush", "sneak") and not _sneak_formation(fname):
             continue
         add(d, fam, w, must)
     # screens
@@ -917,11 +934,22 @@ def role_compatible(c: "Cand", spec: oc.FormationSpec) -> bool:
         # one non-featured route may change alignment class (the native route check then refuses collisions,
         # stacked landmarks and routes out of bounds in the new formation)
         return changed <= ROLE_CHANGES_MAX
+    return _backs_match(a, b)
+
+
+def _backs_match(a, b) -> bool:
+    """Same backs (by slot) within 2 yd of each other: the handoff, fake and lead paths are the same."""
     backs_a = {p.slot: (p.x, p.z) for p in a.players if p.z <= -2.5 and p.kind != oc.QB}
     backs_b = {p.slot: (p.x, p.z) for p in b.players if p.z <= -2.5 and p.kind != oc.QB}
     if set(backs_a) != set(backs_b):
         return False
     return all(abs(backs_a[s][0] - backs_b[s][0]) <= 2.0 and abs(backs_a[s][1] - backs_b[s][1]) <= 2.0 for s in backs_a)
+
+
+def is_pa_boot(design) -> bool:
+    """Play action whose QB leaves the fake on an authored Special Move (0x04 mode 1: boot / rollout point)."""
+    nodes = [n for ch in design.chains if ch for n in ch]
+    return any(n[0] == 0x14 for n in nodes) and any(n[0] == 0x04 and int(n[1][0]) == 1 for n in nodes)
 
 
 def distinct_enough(c: "Cand", spec: oc.FormationSpec, others: list) -> bool:
@@ -1023,13 +1051,13 @@ def build_book(retail: bytes, team: str, *, era: str = "2020s", xbe: Path | None
     def first(f, pred):
         return next((c for c in cands.get(f, []) if pred(c)), None)
     musts = []
+    # b778 ai7: the full house keeps both one-yard QB runs; the 23/13 goal-line and short-yardage sets the 1st/2nd
+    # category target deliberately picks keep none.
     for f in forms:
-        if f == "Goal Line Sneak":
+        if _sneak_formation(f):
             musts += [(f, first(f, lambda c: c.must == "tush")), (f, first(f, lambda c: c.must == "sneak"))]
-    for f in forms:
-        if oc.FORMATIONS[f].tag in ("goal", "short") and f != "Goal Line Sneak":
-            musts.append((f, first(f, lambda c: c.must == "sneak")))
-            break
+            if any(c is not None for _f, c in musts[-2:]):
+                break
     for f in ("Empty Trey", "Singleback Doubles", "Singleback Ace"):
         if f in forms:
             musts.append((f, first(f, lambda c: c.must == "keep")))
@@ -1073,6 +1101,8 @@ def build_book(retail: bytes, team: str, *, era: str = "2020s", xbe: Path | None
         if team_plays >= 8 or row["formation"] not in forms or row["concept"] not in oc.CONCEPTS:
             continue
         spec = oc.FORMATIONS[row["formation"]]
+        if row["concept"] == "QB Sneak" and not (spec.personnel == "22" and spec.align == "uc"):
+            continue                          # b778 ai7: never a sneak outside the 22-personnel under-centre sets
         try:
             d = oc.design(row["concept"], spec.context(), dict(row["overrides"], name=row["name"]))
         except (oc.ConceptUnavailable, KeyError, ValueError, TypeError):
@@ -1335,9 +1365,16 @@ ALIGNMENT_BOUND = ("direct_snap", "sneak", "keeper", "flea", "reverse")
 
 def same_alignment_ok(c: Cand, spec: oc.FormationSpec) -> bool:
     """QB runs, direct snaps, the flea flicker and reverses are shared only into sets with the same QB alignment
-    (a direct snap belongs in the gun, a sneak under centre)."""
+    (a direct snap belongs in the gun, a sneak under centre); so are play-action boots and plays named "Pistol ..."."""
+    src = oc.FORMATIONS[c.fname]
     if c.design.play_type in ALIGNMENT_BOUND or c.family == "qb" or "gadget" in c.design.tags:
-        return oc.FORMATIONS[c.fname].align == spec.align
+        return src.align == spec.align
+    # b778 pb5: a play named for its alignment ("Pistol Boot") stays in that alignment, and a play-action boot keeps
+    # its QB alignment and faking backfield (the boot point is authored for them; TEN "Pistol Boot" in the gun)
+    if c.design.name.split(" ", 1)[0] == "Pistol" and spec.align != "pistol":
+        return False
+    if c.design.play_type == "pa_pass" and is_pa_boot(c.design):
+        return src.align == spec.align and _backs_match(_ctx(src), _ctx(spec))
     return True
 
 
@@ -1441,6 +1478,10 @@ def assemble(result: dict, team: str):
     info: v2.BookInfo = result["info"]
     plan: GroupPlan = result["plan"]
     forms, menus, chosen = result["forms"], result["menus"], result["chosen"]
+    # b778 pb5: the play-call formation picker opens on book slot 0 (pages run in slot order), so normal-down sets
+    # take the first slots and the goal line / short yardage / wildcat sets move down (pb/v2/sanity_b778.py)
+    forms = sanity.page_one_slots(list(forms), sanity.page_one_order(
+        list(forms), {f: oc.FORMATIONS[f].situation for f in forms}, {f: len(menus[f]) for f in forms}))
     cap = result["cap"]
     body = info.body
     # indices: ordinary records first, then appended
@@ -1557,6 +1598,9 @@ def semantic_digest(pack) -> str:
              [(by_play[p].concept, by_play[p].play_flags, by_play[p].assignments) for p in menu])
             for f, menu in pack.menus]
     rows.append([(p.custom_name, p.assignments) for p in pack.plays if p.play_type == "special"])
+    if getattr(pack, "no_huddle", ()):
+        # b778 pb7: the five No Huddle plays (packs without them keep their old digest)
+        rows.append([list(e) for e in pack.no_huddle])
     return hashlib.sha256(json.dumps(rows, sort_keys=True, default=list).encode()).hexdigest()
 
 
@@ -1580,6 +1624,13 @@ def build_league(image: Path, teams, *, era: str = "2020s", xbe: Path | None = N
                 catalog["cpu_fit"] = fit
                 for row, f in zip(catalog["formations"], pack.formations):
                     row["cpu_situation"] = list(f.situation) if f.situation else None
+            # b778 pb7: quick game on every normal-down menu (more for weak lines) and the five No Huddle plays
+            # (pb/v2/hurry_b778.py, the same pass the shipped packs took)
+            from pb.v2 import hurry_b778 as hurry
+            doc = json.loads(pack.dumps())
+            catalog["hurry_b778"] = hurry.fix_doc(doc, catalog, checker=sanity.native_route_checker(xbe) if xbe else None)
+            doc.pop("_pool_credit", None)
+            pack = packs.loads_pack(json.dumps(doc))
             check = packs.check_pack(pack)
             if not check.ok:
                 raise SystemExit(f"{team}: {check.text()}")

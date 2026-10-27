@@ -95,6 +95,11 @@ def persistence_contract():
                            growth=arena.ARENA_SIZE - arena.RETAIL_SIZE,
                            block_offset=arena.BLOCK_OFFSET, block_bytes=arena.BLOCK_SIZE,
                            reusable_bytes=0, padding_is_allocation=False),
+        capacity_arena=dict(owner="nfl2k5_roster_arena_growth", version=arena.SAVE_VERSION,
+                            bytes=arena.CAPACITY_ARENA_SIZE,
+                            growth=arena.CAPACITY_ARENA_SIZE - arena.RETAIL_SIZE,
+                            block_offset=arena.CAPACITY_BLOCK_OFFSET, block_bytes=arena.BLOCK_SIZE,
+                            reusable_bytes=0, padding_is_allocation=False),
         player_flags=dict(offset=star.TAG_RECORD_OFFSET, occupied_mask=occupied,
                           unassigned_mask=0xff & ~occupied,
                           required_history_bits=4, owned_ledger_mask=0),
@@ -124,7 +129,7 @@ def save_ownership_assessment(payload):
     from . import nfl2k5_roster_arena as arena
     from .nfl2k5_save_rost import decode
     from .nfl2k5_franchise_save import FranchiseSave
-    _require(isinstance(payload, (bytes, bytearray)) and len(payload) in career.BASE_SIZES + career.SIZES,
+    _require(isinstance(payload, (bytes, bytearray)) and len(payload) in career.CONTAINER_SIZES,
              "unsupported franchise container length")
     native = career.native_size(payload)
     save = FranchiseSave(payload)
@@ -133,7 +138,7 @@ def save_ownership_assessment(payload):
         career.read(payload)  # Include identity, not only the footer checksum.
     document = decode(payload)
     auxiliary = struct.unpack_from("<I", payload, 0x2e8)[0]
-    limit = (arena.ARENA_SIZE - arena.BLOCK_OFFSET - arena.BLOCK_SIZE
+    limit = (document.layout.arena_size - arena.block_offset(document.layout.arena_size) - arena.BLOCK_SIZE
              if document.overflow is not None else document.layout.arena_size)
     _require(auxiliary <= limit, "native auxiliary tail overlaps owned reserve storage")
     contract = persistence_contract()

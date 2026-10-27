@@ -1,0 +1,9 @@
+{
+ "who": "Shane Steichen",
+ "notes": "fair skin; short dark-brown hair, high at the temples; a faint dark stubble; brown eyes; a smile with teeth in the official headshot (mouth closed here); c33 with c20's lean body (cm2)",
+ "eyes": [118, 96, 72],
+ "mouth": "close",
+ "hair_colour": [60, 46, 38],
+ "hair": {"front": 46.8, "recede": 1.2, "side": 43.5, "back": 34.5, "sideburn": 38.8, "edge": 0.3},
+ "facial": [{"kind": "stubble", "parts": ["moustache", "corners", "chin", "cheeks"], "density": 0.12, "colour": [90, 78, 70]}]
+}

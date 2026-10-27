@@ -8,6 +8,8 @@ from __future__ import annotations
 
 from collections import Counter, defaultdict
 import hashlib
+import json
+from pathlib import Path
 import re
 import struct
 import zlib
@@ -75,7 +77,7 @@ def upgrade_team_history(payload: bytes, disc_body: bytes, evidence: Mapping | N
     # absence of intervening moves. The native writer wraps at 600 entries,
     # clears kinds independently, and stores event arguments rather than a
     # season/date. A draft or signing plus today's membership is insufficient.
-    native_events = save.ledger()
+    native_events = save.ledger_in_write_order()
     events_by_player = defaultdict(list)
     for event in native_events:
         events_by_player[event["player_index"]].append(event["index"])
@@ -86,6 +88,9 @@ def upgrade_team_history(payload: bytes, disc_body: bytes, evidence: Mapping | N
         "ledger_capacity": fs.F_LEDGER_CAPACITY,
         "retained_events": len(native_events),
         "retained_event_kinds": dict(sorted(Counter(e["kind"] for e in native_events).items())),
+        "retained_slots_full": len(native_events) == fs.F_LEDGER_CAPACITY,
+        "ordered_events": native_events,
+        "event_dates_available": False,
         "news_log_entries": len(save.transactions()),
         "full_season_coverage_proved": False,
         "limitation": "Native event slots can wrap or be cleared and carry no season coverage marker. "
@@ -138,6 +143,16 @@ def upgrade_team_history(payload: bytes, disc_body: bytes, evidence: Mapping | N
             explicit[target] = value, {"kind": "supplied_evidence", "source": row["source"],
                                        "description": source["description"], "sha256": source["sha256"]}
 
+    # Opening membership is useful as a labelled candidate for a missing
+    # 2026 row, never as a played-season fact. Retained native events are
+    # undated and cannot assign a trade/signing to a season or a week.
+    opening_clubs = defaultdict(set)
+    disc_by_offset = {p.offset: p for p in disc.players}
+    for team in disc.teams[:32]:
+        for offset in team.player_offsets:
+            source_player = disc_by_offset.get(offset)
+            if source_player is not None:
+                opening_clubs[identity(source_player)].add(team.abbreviation)
     additions = defaultdict(list)
     changes, unresolved = [], []
     for player in roster.players:
@@ -176,7 +191,18 @@ def upgrade_team_history(payload: bytes, disc_body: bytes, evidence: Mapping | N
                 reason = ("pre_franchise_source_missing_or_mismatched" if year < BASE_YEAR else
                           "retained_events_without_season_coverage" if event_slots else
                           "no_retained_player_event_or_season_coverage")
-                unresolved.append({**common, "reason": reason, "native_event_slots": event_slots})
+                row = {**common, "reason": reason, "native_event_slots": event_slots}
+                if year >= BASE_YEAR:
+                    row["inferred"] = True
+                    row["week_by_week_coverage"] = False
+                    row["undated_event_clubs"] = sorted({e["team_name"] for e in native_events
+                        if player.pool == "primary" and e["player_index"] == player.index and e["team_name"]})
+                    key = identity(player)
+                    if (year == BASE_YEAR and key[2] and len(by_identity[key]) == 1
+                            and len(disc_identity[key]) == 1):
+                        row["inferred_opening_clubs"] = sorted(opening_clubs[key])
+                    row["note"] = "Candidates are not a dated season history; no TEAM word was written."
+                unresolved.append(row)
                 continue
             value, basis = found
             additions[player.key].append((slot << 23) | (87 << 16) | value)
@@ -611,3 +637,511 @@ def sync_coaches(payload: bytes, disc_body: bytes) -> tuple[bytes, dict]:
                     "after_sha256": sha(result), "disc_roster_sha256": sha(disc_body),
                     "matched": matched, "unmatched_preserved": unmatched,
                     "unnamed_preserved": unnamed, "changes": changes, **scope}
+
+
+#: b778-hr3: the hair style is the low nibble of player record +0x0D (nfl2k5_hair_styles; Studio field hair_style)
+HAIR_STYLE_OFFSET, HAIR_STYLE_MASK = 0x0D, 0x0F
+
+
+def sync_hair_styles(payload: bytes, disc_body: bytes) -> tuple[bytes, dict]:
+    """Copy the disc roster's hair style (record +0x0D bits 0-3) into the franchise's own players by identity.
+
+    b778-hr3: a franchise keeps its whole roster in the save, so a franchise started before a disc had hair styles
+    (every record +0x0D zero) shows stock hair on every later disc. Only players whose (first, last, birth date) is
+    unique in both rosters are touched, only when the save still has style 0 and the disc has one; a style the user
+    set in the franchise is kept. Bits 4-7 and every other byte stay as they are.
+    """
+    _save, roster = franchise(payload)
+    target = sr.decode(disc_body, preamble=0, reference_year=BASE_YEAR)
+    require(target.layout.version in (17, 18), "hair style source must be a disc ROST")
+
+    def by_identity(document):
+        rows: dict[tuple[str, str, str], list[sr.Player]] = defaultdict(list)
+        for player in document.players:
+            if player.first or player.last:
+                rows[identity(player)].append(player)
+        return rows
+
+    saved, current = by_identity(roster), by_identity(target)
+    out = bytearray(payload)
+    masks: dict[int, int] = {}
+    changes, kept, ambiguous = [], [], []
+    for key, sources in current.items():
+        styles = {disc_body[p.offset + HAIR_STYLE_OFFSET] & HAIR_STYLE_MASK for p in sources}
+        if styles == {0} or key not in saved:
+            continue
+        players = saved[key]
+        if len(sources) != 1 or len(players) != 1:
+            ambiguous.append(" ".join(key[:2]))
+            continue
+        style = styles.pop()
+        player = players[0]
+        at = player.offset + HAIR_STYLE_OFFSET
+        before = payload[at] & HAIR_STYLE_MASK
+        if before == style:
+            continue
+        if before:
+            kept.append({"player": f"{player.first} {player.last}", "kept": before, "disc": style})
+            continue
+        out[at] = (payload[at] & ~HAIR_STYLE_MASK & 0xFF) | style
+        masks[at] = HAIR_STYLE_MASK
+        changes.append({"player": f"{player.first} {player.last}", "pool": player.pool, "index": player.index,
+                        "field": "hair_style", "offset": at, "before": before, "after": style})
+    result = bytes(out)
+    scope = prove_scope(payload, result, masks)
+    sr.decode(result, base_year=BASE_YEAR)
+    return result, {"operation": "hair_styles", "before_sha256": sha(payload), "after_sha256": sha(result),
+                    "disc_roster_sha256": sha(disc_body), "disc_players_with_style": sum(
+                        1 for p in target.players if disc_body[p.offset + HAIR_STYLE_OFFSET] & HAIR_STYLE_MASK),
+                    "kept_user_styles": kept, "ambiguous_identities_skipped": sorted(set(ambiguous)),
+                    "changes": changes, **scope}
+
+
+# --- b778-pc2: award history for a franchise created before the honors page -------------------------------------
+#: fields the retail history fold (FUN_0014EFE0, rule table 0xAA26C0) merges by MAX; every other field sums. Past
+#: field 86 the retail lookup reads unrelated variables: TEAM (87) is a nonzero read (sums, and the folded row shows
+#: "--" anyway) and the honors owner pins fields 96..105 to sum.
+FOLD_MAX_FIELDS = frozenset((16, 17, 30, 36, 43, 44, 45, 46, 56, 73))
+HONOR_FIELD_FIRST, HONOR_FIELD_LAST = 96, 105
+DEAD_WORD = 0x30000000                     # deleted (bit 28) or postseason (bit 29): never live regular-season data
+FOLD_BIT, END_BIT = 0x40000000, 0x80000000
+TEAM_FIELD = 87
+HISTORY_RESERVE = 64                       # dwords kept free after the sync (the game folds again by itself when full)
+SYNC_FOLD_DEPTHS = range(15, 1, -1)        # the card shows 15 season rows, so fold the oldest seasons first
+
+
+def _signed16(raw: int) -> int:
+    return (raw & 0xFFFF) - (0x10000 if raw & 0x8000 else 0)
+
+
+def _with_end(words) -> list[int]:
+    words = [w & ~END_BIT & 0xFFFFFFFF for w in words]
+    if words:
+        words[-1] |= END_BIT
+    return words
+
+
+def fold_words(words, years_pro: int, depth: int) -> tuple[int, ...]:
+    """The game's own history fold for one stream: every live regular-season word at least ``depth`` seasons old is
+    merged into the season ``depth - 1`` old (sum, or max for FOLD_MAX_FIELDS, 16-bit signed as the game stores it)
+    and the receiving word is flagged folded (bit 30). Deleted and postseason words, and words newer than ``depth``,
+    stay as they are; the end bit stays on the last word. A stream whose merged sum would overflow a signed 16-bit
+    cell is returned unfolded (the game would wrap it into a negative career total). Differentially tested against the retail code under
+    Unicorn (tests/mod_editor/test_nfl2k5_franchise_honors.py)."""
+    require(depth >= 2, "fold depth must be at least 2")
+    words_in = list(words)
+    target_slot = years_pro - depth + 1
+    keep, merged = [], {}
+    for raw in words:
+        raw &= ~END_BIT & 0xFFFFFFFF
+        word = cs.Word(raw)
+        if not raw & DEAD_WORD and years_pro - word.slot >= depth and target_slot >= 0:
+            merged.setdefault(word.field, []).append(raw)
+        else:
+            keep.append(raw)
+    for field, olds in sorted(merged.items()):
+        index = next((i for i, raw in enumerate(keep)
+                      if not raw & DEAD_WORD and (raw >> 16) & 127 == field and (raw >> 23) & 31 == target_slot), None)
+        current = _signed16(keep[index]) if index is not None else None
+        values = [_signed16(raw) for raw in olds]
+        if field in FOLD_MAX_FIELDS:
+            result = max([0 if current is None else current] + values)
+        else:
+            result = sum(values) + (0 if current is None else current)
+        if not -0x8000 <= result <= 0x7FFF:        # a 16-bit signed cell cannot hold the sum: leave this stream alone
+            return tuple(_with_end(words_in))
+        if result & 0xFFFF == 0:                  # the game's writer treats 0 as "no entry"
+            if index is not None:
+                del keep[index]
+        elif index is None:
+            keep.append((result & 0xFFFF) | (field << 16) | (target_slot << 23) | FOLD_BIT)
+        else:
+            keep[index] = (keep[index] & ~0xFFFF & 0xFFFFFFFF) | (result & 0xFFFF) | FOLD_BIT
+    return tuple(_with_end(keep))
+
+
+def _live_regular(raw: int) -> bool:
+    return not raw & DEAD_WORD
+
+
+def _add_honors(words, years_pro: int, season_now: int, honors) -> tuple[tuple[int, ...], list, list]:
+    """-> (stream with the honors added, added [(honor, season, slot, clamped)], skipped [(honor, season, reason)]).
+
+    ``honors`` is [(honor, season)]. A season's slot is ``years_pro - (season_now - season)``. A word already
+    present for that field and slot is kept (idempotent). When the stream has a fold floor (a folded word: older
+    seasons are merged into that slot) an honor at or below it is counted in the floor slot's folded word instead
+    (raised to the disc's count, never summed again, so a second run changes nothing)."""
+    from . import nfl2k5_honors_history as hh
+    words = [w & ~END_BIT & 0xFFFFFFFF for w in words]
+    folded_slots = [(w >> 23) & 31 for w in words if _live_regular(w) and w & FOLD_BIT]
+    floor = max(folded_slots) if folded_slots else None
+    live = {((w >> 16) & 127, (w >> 23) & 31): i for i, w in enumerate(words) if _live_regular(w)}
+    new, added, skipped, below = [], [], [], {}
+    for honor, season in sorted(honors, key=lambda h: (h[1], h[0])):
+        field = hh.FIELDS[honor]
+        slot = years_pro - (season_now - season)
+        if not 1 <= slot < years_pro:
+            skipped.append((honor, season, f"no completed season slot (years pro {years_pro})"))
+            continue
+        if floor is not None and slot <= floor:
+            below[field] = below.get(field, 0) + 1
+            continue
+        if (field, slot) in live:
+            continue
+        live[(field, slot)] = None
+        new.append(hh.word(field, slot))
+        added.append((honor, season, slot, False))
+    for field, count in sorted(below.items()):
+        index = live.get((field, floor))
+        if index is None:
+            new.append(hh.word(field, floor, count) | FOLD_BIT)
+            added.append((hh.HONORS[field - hh.FIELD0], None, floor, True))
+        elif (words[index] & 0xFFFF) < count:
+            words[index] = (words[index] & ~0xFFFF & 0xFFFFFFFF) | count | FOLD_BIT
+            added.append((hh.HONORS[field - hh.FIELD0], None, floor, True))
+    new.sort(key=lambda w: ((w >> 23) & 31, (w >> 16) & 127))
+    return tuple(_with_end(new + words)), added, skipped
+
+
+def _history_streams(roster) -> tuple[list, set]:
+    """-> (streams [(start, stop, key)] in pool order, the keys whose words another player shares).
+
+    The game can leave one player's stream as the tail of another's. Those words belong to both players, so
+    neither is edited; every other stream is rebuilt around them."""
+    streams = sorted((start, start + len(roster.history_words[key]) * 4, key)
+                     for key, start in roster.history_offsets.items() if start is not None)
+    shared, cluster, cluster_end = set(), [], -1
+    for start, stop, key in streams:
+        if cluster and start < cluster_end:
+            cluster.append(key)
+            cluster_end = max(cluster_end, stop)
+        else:
+            if len(cluster) > 1:
+                shared.update(cluster)
+            cluster, cluster_end = [key], stop
+    if len(cluster) > 1:
+        shared.update(cluster)
+    return streams, shared
+
+
+def _rewrite_history(payload: bytes, roster, streams, shared, new_streams, used_after: int) -> tuple[bytes, dict]:
+    """Write ``new_streams`` ({player key: words}) into the saved pool, keeping unowned words and shared tails as
+    they are, fixing every +0x2C pointer and the used count, and proving that nothing else changed."""
+    used, pool = roster.pool_used, roster.pool
+    require(pool is not None, "history pool pointer is missing")
+    require(not any(payload[pool + used * 4:pool + max(used_after, used) * 4]), "nonzero history slack")
+    end = pool + max(used_after, used) * 4
+    require(end <= roster.layout.end, "history rewrite exceeds the roster arena")
+    for table in roster.tables.values():
+        if table.offset is not None and table.count and used_after > used:
+            require(end <= table.offset or pool >= table.offset + table.count * table.stride,
+                    "history rewrite would overlap a roster table")
+    out = bytearray(payload)
+    masks: dict[int, int] = {}
+    out[pool:end] = bytes(end - pool)
+    masks.update({offset: 255 for offset in range(pool, end)})
+    cursor, old_end, new_start, anchor = pool, pool, {}, None
+    for start, stop, key in streams:
+        require(start >= pool and stop <= pool + used * 4, "history stream outside the pool")
+        if start < old_end:                      # a shared tail: unedited, placed relative to its owner
+            require(key in shared and anchor is not None and stop <= old_end, "unexpected history overlap")
+            new_start[key] = anchor[1] + (start - anchor[0])
+            continue
+        if start > old_end:                      # words no player points at (left by the game): carried over as they are
+            out[cursor:cursor + start - old_end] = payload[old_end:start]
+            cursor += start - old_end
+        words = new_streams[key]
+        new_start[key] = cursor
+        anchor = (start, cursor)
+        for word in words:
+            struct.pack_into("<I", out, cursor, word)
+            cursor += 4
+        old_end = stop
+    if old_end < pool + used * 4:
+        out[cursor:cursor + pool + used * 4 - old_end] = payload[old_end:pool + used * 4]
+        cursor += pool + used * 4 - old_end
+    for player in sorted(roster.players, key=lambda p: p.key):     # players with no stream yet get one at the end
+        words = new_streams[player.key]
+        if roster.history_offsets[player.key] is None and words:
+            new_start[player.key] = cursor
+            for word in words:
+                struct.pack_into("<I", out, cursor, word)
+                cursor += 4
+    for player in roster.players:
+        pointer = player.offset + 0x2C
+        before = payload[pointer:pointer + 4]
+        if player.key in new_start:
+            struct.pack_into("<i", out, pointer, new_start[player.key] - pointer + 1)
+        if bytes(out[pointer:pointer + 4]) != before:
+            masks.update({pointer + i: 255 for i in range(4)})
+    require(cursor == pool + used_after * 4, f"history pool size mismatch {(cursor - pool) // 4} vs {used_after}")
+    struct.pack_into("<I", out, roster.layout.root + 0x40, used_after)
+    masks.update({roster.layout.root + 0x40 + i: 255 for i in range(4)})
+    result = bytes(out)
+    scope = prove_scope(payload, result, masks)
+    checked = sr.decode(result, base_year=BASE_YEAR)
+    for player in roster.players:
+        require(identity(checked.by_key[player.key]) == identity(player), "history rewrite changed a player identity")
+        require(checked.history_words[player.key] == new_streams[player.key], "history read-back differs")
+    require(checked.pool_used == used_after, "history used count differs")
+    return result, scope
+
+
+def sync_honors(payload: bytes, disc_body: bytes) -> tuple[bytes, dict]:
+    """Copy the disc roster's award history (Player Card honors page) into the franchise's own players by identity.
+
+    b778-pc2: a franchise keeps its whole roster, career-stat pool included, in the save, so a franchise started
+    before a disc carried the honors page shows "HONORS: NONE YET" for every player. The disc's honor words
+    (history fields 96..105, one per honor and season) are re-slotted for the franchise's current season and added
+    to the players whose (first, last, birth date) is unique in both rosters. A word the save already has is kept.
+    The saved pool is usually full (the game folds old seasons whenever it runs out), so when the honors do not
+    fit the oldest seasons are folded the way the game does it (``fold_words``), 15 seasons back first, only as
+    deep as needed; the card's career totals do not change, and the receipt lists every folded player.
+    """
+    from . import nfl2k5_honors_history as hh
+    save, roster = franchise(payload)
+    season_now = save.header.display_year
+    try:
+        target = sr.decode(disc_body, preamble=0, reference_year=BASE_YEAR)
+    except sr.SaveRostError as exc:
+        raise UpgradeRefused(f"honors source must be a disc ROST: {exc}") from exc
+    require(target.layout.version in (17, 18), "honors source must be a disc ROST")
+    honor_names = {field: name for name, field in hh.FIELDS.items()}
+    rows = []                      # the disc's live regular-season honor words, as (player, honor, season)
+    for source in target.players:
+        for raw in target.history_words[source.key]:
+            field = (raw >> 16) & 127
+            if field in honor_names and _live_regular(raw) and not raw & FOLD_BIT and raw & 0xFFFF:
+                season = BASE_YEAR - source.record.values["years_pro"] + ((raw >> 23) & 31)
+                rows.append({"first": source.first, "last": source.last,
+                             "birth_date": str(source.record.birth_date or ""),
+                             "honor": honor_names[field], "season": season, "value": raw & 0xFFFF, "folded": False})
+    streams, shared = _history_streams(roster)
+    disc_ids = Counter(identity(p) for p in target.players if p.first or p.last)
+    saved = defaultdict(list)
+    for player in roster.players:
+        if player.first or player.last:
+            saved[identity(player)].append(player)
+    wanted = defaultdict(list)                # save player key -> [(honor, season)]
+    ambiguous, unmatched, shared_skipped = set(), set(), set()
+    for row in rows:
+        if row["folded"] or not row["value"]:
+            continue
+        key = (row["first"], row["last"], row["birth_date"])
+        players = saved.get(key, [])
+        if disc_ids[key] != 1 or len(players) != 1:
+            (ambiguous if players or disc_ids[key] > 1 else unmatched).add(" ".join(key[:2]))
+            continue
+        if players[0].key in shared:
+            shared_skipped.add(f"{players[0].first} {players[0].last}")
+            continue
+        wanted[players[0].key].append((row["honor"], row["season"]))
+    by_key = roster.by_key
+
+    def years_pro(player):
+        return player.record.values["years_pro"]
+
+    def build(depth):
+        out, folded = {}, []
+        for key, words in roster.history_words.items():
+            player = by_key[key]
+            if depth and words and key not in shared:
+                after = fold_words(words, years_pro(player), depth)
+                if after != words:
+                    folded.append(key)
+                words = after
+            out[key] = tuple(words)
+        added, skipped = {}, []
+        for key, honors in wanted.items():
+            player = by_key[key]
+            out[key], got, skip = _add_honors(out[key], years_pro(player), season_now, honors)
+            added[key] = got
+            skipped += [(key, *item) for item in skip]
+        return out, folded, added, skipped, roster.pool_used + sum(
+            len(words) - len(roster.history_words[key]) for key, words in out.items())
+
+    capacity = roster.pool_capacity
+    chosen = None
+    for depth in (0, *SYNC_FOLD_DEPTHS):
+        built = build(depth)
+        if built[4] <= capacity - HISTORY_RESERVE:
+            chosen = (depth, built)
+            break
+    require(chosen is not None, "the award history does not fit the history pool even after folding old seasons")
+    depth, (new_streams, folded, added, skipped, used_after) = chosen
+    pool, used = roster.pool, roster.pool_used
+    if not any(added.values()) and not folded:
+        return payload, {"operation": "honors", "before_sha256": sha(payload), "after_sha256": sha(payload),
+                         "disc_roster_sha256": sha(disc_body), "disc_honor_rows": len(rows), "matched_players": len(wanted),
+                         "ambiguous_identities_skipped": sorted(ambiguous), "unmatched_identities": len(unmatched),
+                         "shared_history_skipped": sorted(shared_skipped),
+                         "skipped": [], "fold_depth": 0, "folded_players": [], "changes": [],
+                         "used_before": used, "used_after": used, "capacity": capacity,
+                         "outside_declared_fields_identical": True, "changed_bytes": 0}
+    result, scope = _rewrite_history(payload, roster, streams, shared, new_streams, used_after)
+    changes = []
+    for key, rows_added in sorted(added.items()):
+        player = by_key[key]
+        for honor, season, slot, clamped in rows_added:
+            changes.append({"pool": player.pool, "index": player.index, "player": f"{player.first} {player.last}",
+                            "field": f"honor.{honor}", "history_field": hh.FIELDS[honor], "season": season,
+                            "slot": slot, "folded_floor": clamped})
+    return result, {"operation": "honors", "before_sha256": sha(payload), "after_sha256": sha(result),
+                    "disc_roster_sha256": sha(disc_body), "disc_honor_rows": len(rows),
+                    "matched_players": len(wanted), "ambiguous_identities_skipped": sorted(ambiguous),
+                    "unmatched_identities": len(unmatched), "shared_history_skipped": sorted(shared_skipped),
+                    "skipped": [{"player": f"{by_key[k].first} {by_key[k].last}", "honor": h, "season": s, "reason": r}
+                                for k, h, s, r in skipped],
+                    "fold_depth": depth,
+                    "folded_players": [f"{by_key[k].first} {by_key[k].last}" for k in folded],
+                    "used_before": used, "used_after": used_after, "capacity": capacity, "changes": changes, **scope}
+
+
+def infer_played_clubs(payload: bytes, disc_body: bytes, evidence: Mapping | None = None) -> tuple[bytes, dict]:
+    """Compatibility command for the verified club step used by Upgrade.
+
+    Older releases guessed 2026 from opening membership and wrote that guess
+    as a fact into field 87. Native transactions cannot date those guesses:
+    their bounded ring can wrap or be cleared and contains no season/week.
+    Keep candidates in the receipt, restore only counter-pinned evidence,
+    and leave missing clubs blank. Existing TEAM words are preserved.
+    """
+    result, receipt = upgrade_team_history(payload, disc_body, evidence)
+    return result, {**receipt, "operation": "played_clubs", "season": BASE_YEAR,
+                    "before_sha256": sha(payload), "after_sha256": sha(result),
+                    "disc_roster_sha256": sha(disc_body), "fold_depth": 0,
+                    "folded_players": [], "shared_history_skipped": []}
+# b778-fa3: the 2026-10-22 free-agent depth (Kaepernick and the other verified unsigned, unretired veterans the dated
+# refresh adds to the disc's free agents). A franchise keeps its own roster, so an existing franchise only gains them
+# here. Nothing grows: each one fills a vacant create-player record of the save, inside the save's own arena.
+FREE_AGENT_DEPTH = Path(__file__).resolve().parents[1] / "data" / "nfl2k5_free_agent_depth_2026.v1.json"
+SAVE_KEEP_VACANCIES = 4          # vacant records left for Create Player / MyCareer in the franchise
+DRAFT_WINDOW_END = 2324          # the native class generator's records end at 2323; never fill one
+BLANK_NAME = "****************"
+
+
+def free_agent_cohort(path=FREE_AGENT_DEPTH) -> list[dict]:
+    data = json.loads(Path(path).read_text(encoding="utf-8"))
+    require(data.get("schema") == "nfl2k5.free_agent_depth.v1", "unknown free-agent depth data")
+    return [{"name": p["name"], "identity": (p["first"], p["last"], p["birth_date"])} for p in data["players"]]
+
+
+def _save_vacancies(document, payload) -> list:
+    """Vacant create records the native importer/creator would take (flags & 5 == 1, unowned, unlisted), outside the
+    draft generator's window, with their own two blank name buffers."""
+    listed = set(document.free_agents)
+    rows = []
+    for player in document.by_pool("primary"):
+        if (payload[player.offset + 8] & 5 != 1 or player.group != "pool" or player.teams
+                or player.offset in listed or (player.pool, player.index) in document.reserve_owner
+                or player.index < DRAFT_WINDOW_END or not player.first == player.last == BLANK_NAME):
+            continue
+        targets = [document._pointer_target(player.offset, key) for key in ("first_name_pointer", "last_name_pointer")]
+        if all(document.name_refs.get(t) == 1 for t in targets) and targets[0] != targets[1]:
+            rows.append(player)
+    return rows
+
+
+def sync_free_agents(payload: bytes, disc_body: bytes, *, keep: int = SAVE_KEEP_VACANCIES,
+                     cohort: list | None = None, strict: bool = False) -> tuple[bytes, dict]:
+    """Add the disc's free-agent depth players that this franchise lacks to its free agents.
+
+    Each player's record is the disc's own record for him (ratings, physicals, appearance, commentary), his
+    names and college placed through the save's pools, no history, an unsigned contract, and years pro advanced by
+    the franchise's completed seasons. Only players on the disc's free-agent list whose (first, last, birth date) is
+    nowhere in the save are added, in the data's priority order, and only while ``keep`` vacant records remain.
+    ``strict`` (the free-agents command) refuses when none can be added for lack of room.
+    """
+    from . import nfl2k5_college_check as college_check
+    from . import nfl2k5_roster_arena as arena
+    from . import nfl2k5_roster_records as rr
+    original_payload = payload
+    save, roster = franchise(payload)
+    require(type(keep) is int and keep >= 0, "keep must be a non-negative record count")
+    cohort = free_agent_cohort() if cohort is None else cohort
+    disc = rr.RosterDocument(disc_body, scheme="one_pool", reference_year=BASE_YEAR)
+    capacity_request = arena.capacity_descriptor(disc_body, sr.decode(
+        disc_body, preamble=0, reference_year=BASE_YEAR).layout)
+    growth = None
+    if capacity_request and roster.layout.arena_size < arena.CAPACITY_ARENA_SIZE:
+        require(roster.overflow is None, "capacity migration does not compose with a 16-reserve save")
+        migrated, migration = arena.migrate(payload, reserves_16=False, capacity_records=capacity_request[0])
+        growth = {"arena_size_before": roster.layout.arena_size, "arena_size_after": arena.CAPACITY_ARENA_SIZE,
+                  "records": capacity_request[0], "file_growth": len(migrated) - len(payload),
+                  "migration": migration}
+        payload = migrated
+        save, roster = franchise(payload)
+    document = rr.RosterDocument(payload, base=roster.layout.preamble, scheme="one_pool", base_year=BASE_YEAR)
+    require(document.free_agent_list is not None, "the franchise has no free-agent list")
+    base_payload = payload
+
+    def key(player):
+        return player.first, player.last, str(player.record.birth_date)
+    in_save = {key(p) for p in document.players if p.first != BLANK_NAME}
+    disc_free = defaultdict(list)
+    for offset in disc.free_agents:
+        disc_free[key(disc.by_offset[offset])].append(disc.by_offset[offset])
+    wanted, already, absent = [], [], []
+    for row in cohort:
+        identity = tuple(row["identity"])
+        if identity in in_save:
+            already.append(row["name"])
+        elif len(disc_free.get(identity, ())) != 1:
+            absent.append(row["name"])
+        else:
+            wanted.append((row["name"], disc_free[identity][0]))
+    vacant = _save_vacancies(document, payload)
+    room = max(0, len(vacant) - keep)
+    room = min(room, document.free_agent_capacity - len(document.free_agents))
+    chosen, left = wanted[:room], [name for name, _ in wanted[room:]]
+    require(not (strict and wanted and not chosen),
+            f"this franchise has {len(vacant)} vacant player records and keeps {keep} for Create Player; "
+            f"no room for the {len(wanted)} new free agents")
+    year = save.header.year_field
+    pointer_bytes = {rr.FIELD_BY_NAME[name].offset for name in rr.POINTER_FIELDS}
+    changes, spans = [], []
+    for (name, source), target in zip(chosen, sorted(vacant, key=lambda p: -p.index)):
+        raw = bytearray(disc_body[source.offset:source.offset + rr.PLAYER_SIZE])
+        for at in pointer_bytes:
+            raw[at:at + 4] = bytes(4)
+        record = rr.PlayerRecord.decode(bytes(raw), scheme="one_pool", reference_year=BASE_YEAR)
+        require(all(record.values[f] == 0 for f in ("contract_value", "contract_length", "contract_remaining")),
+                f"{name}: the disc record is not an unsigned free agent")
+        for field in ("first_name_pointer", "last_name_pointer"):
+            record.values[field] = target.record.values[field]
+        before_years = record.values["years_pro"]
+        record.set("years_pro", min(31, before_years + year))
+        target.record = record
+        document.set_name(target, "first", source.first)
+        document.set_name(target, "last", source.last)
+        document.set_college(target, college_check.resolve_index(document.colleges, source.college))
+        document.free_agents.append(target.offset)
+        spans.append((target.offset, target.offset + rr.PLAYER_SIZE))
+        changes.append({"player": name, "pool": target.pool, "index": target.index, "field": "new_free_agent",
+                        "disc_index": source.index, "years_pro": [before_years, record.values["years_pro"]],
+                        "college": document.colleges[target.college_index] if target.college_index is not None else ""})
+    document._reindex_membership()
+    result = document.to_body(normalise_commentary=False) if chosen else bytes(base_payload)
+    require(len(result) == len(base_payload), "save size changed after the arena migration")
+    # Scope: the filled records, the player-name pool, the free-agent pointers and their count; nothing else.
+    lo, hi = document.names.start, document.names.end
+    fa_start = document.free_agent_list
+    fa_end = fa_start + 4 * document.free_agent_capacity
+    count_at = document.obj_base + rr.FREE_AGENT_COUNT_FIELD
+    for offset, (a, b) in enumerate(zip(base_payload, result)):
+        if a != b:
+            require(lo <= offset < hi or fa_start <= offset < fa_end or count_at <= offset < count_at + 4
+                    or any(s <= offset < e for s, e in spans), f"free-agent write escaped its scope at {offset:#x}")
+    check = rr.RosterDocument(result, base=roster.layout.preamble, scheme="one_pool", base_year=BASE_YEAR)
+    listed = {key(check.by_offset[o]) for o in check.free_agents}
+    require(all(key(source) in listed for _name, source in chosen), "a new free agent is missing after read-back")
+    sr.decode(result, base_year=BASE_YEAR)
+    after_vacant = len(_save_vacancies(check, result)) if chosen else len(vacant)
+    return result, {"operation": "free_agents", "before_sha256": sha(original_payload), "after_sha256": sha(result),
+                    "disc_roster_sha256": sha(disc_body), "franchise_year_field": year,
+                    "vacant_records_before": len(vacant), "vacant_records_after": after_vacant, "kept_for_create": keep,
+                    "free_agents_before": len(document.original_free_agents), "free_agents_after": len(check.free_agents),
+                    "already_in_franchise": already, "not_on_disc": absent, "no_room": left,
+                    "changes": changes, "outside_declared_fields_identical": True,
+                    "save_arena_growth": growth,
+                    "changed_bytes": sum(a != b for a, b in zip(base_payload, result))}

@@ -1,0 +1,9 @@
+{
+ "who": "Kyle Shanahan",
+ "notes": "fair skin; dark hair swept back, greying at the temples; a light stubble; hazel eyes; a closed-mouth smile in the official headshot; c25 with c20's lean body (cm1)",
+ "eyes": [104, 94, 66],
+ "mouth": "close",
+ "hair_colour": [44, 36, 32],
+ "hair": {"front": 46.6, "recede": 1.2, "side": 43.5, "back": 34.5, "sideburn": 38.6, "edge": 0.3, "grey": 0.03, "grey_sides": 0.15},
+ "facial": [{"kind": "stubble", "parts": ["moustache", "corners", "chin", "cheeks"], "density": 0.16, "colour": [80, 70, 64]}]
+}

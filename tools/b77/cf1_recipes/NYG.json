@@ -1,0 +1,8 @@
+{
+ "who": "John Harbaugh",
+ "notes": "fair skin; short grey hair, darker on top (under the Giants cap of c22 it shows at the sides and back); clean-shaven; brown eyes; scanned from a frontal, evenly lit 2026 postgame press-conference frame (talking, mouth closed here): the official headshot's hard light and broad grin printed dark smile folds",
+ "eyes": [96, 68, 46],
+ "mouth": "close",
+ "hair_colour": [112, 106, 102],
+ "hair": {"front": 46.8, "recede": 1.0, "side": 43.5, "back": 34.5, "sideburn": 38.8, "edge": 0.3}
+}

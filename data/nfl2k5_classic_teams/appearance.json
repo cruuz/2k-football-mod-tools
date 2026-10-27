@@ -8632,6 +8632,434 @@
     "dreads": 0,
     "source": "headshot_review (official NFL headshot, nflverse players.csv headshot url, by eye against 18 reference players of known tone; ct1 2026-10-17)"
    }
+  ],
+  "seamen_2006": [
+   {
+    "name": "Bus Jibber",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51 View Rosters headshot; authored live face + portrait id 304)",
+    "retail": null,
+    "match": "authored from the video roster headshot (b778-ss1)",
+    "photo_id": 304,
+    "face": 0
+   },
+   {
+    "name": "Rohan Davey",
+    "tone": 1,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Torrance Styles",
+    "tone": 1,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Aveion Cason",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "G. Jones",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "W. Wells",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "J.D. Runnels",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Quinton Matthews",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Az-Zahir Hakim",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Ron Dixon",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Patrick Johnson",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Antonio Brown",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Roman Valentine",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "John Mike Peter",
+    "tone": 1,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Boo Williams",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "K. Monroe",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Xavier Gold",
+    "tone": 1,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Ryan Young",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "R. Sitrin",
+    "tone": 1,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Gary Miles",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Matt Stinchcomb",
+    "tone": 1,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Ron Stone",
+    "tone": 1,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Alvin Moore",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Brent Spires",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "S. Harris",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Tom Nutten",
+    "tone": 1,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Lamar Wall",
+    "tone": 1,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Marcus Addis",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Ty Nelson",
+    "tone": 1,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "E. Graham",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "A. Dorsey",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Jason Fisk",
+    "tone": 1,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Edward Jasper",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Maurice King",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Travaris Lewis",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Rocky Calmus",
+    "tone": 1,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "James Anderson",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Kurt Price",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Marquise Schultz",
+    "tone": 1,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Ronald McKinnon",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Eli Nixon",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "DeMario Minter",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Jason Bell",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Kevin House",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Garnell Wilds",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Rick Davis",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Pat Watkins",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Eric Smith",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Greg Blue",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Joseph Jefferson",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Charles Cottrell",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Stephen Gostkowski",
+    "tone": 1,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   },
+   {
+    "name": "Rodney Williams",
+    "tone": 4,
+    "dreads": 0,
+    "source": "headshot_review (Finale 0:59:51-1:02:00 View Rosters headshots; skin tone inferred)",
+    "retail": null,
+    "match": "inferred from the video player card"
+   }
   ]
  }
 }

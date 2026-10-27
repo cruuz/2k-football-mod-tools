@@ -1,0 +1,10 @@
+{
+ "who": "Dan Campbell",
+ "notes": "fair, ruddy skin; short brown hair greying a little, receding at the temples; a brown moustache and a goatee greying at the chin, grey stubble on the cheeks; blue eyes; a broad smile in the official headshot (mouth closed here); c04",
+ "eyes": [104, 128, 150],
+ "mouth": "close",
+ "hair_colour": [96, 82, 72],
+ "hair": {"front": 47.0, "recede": 1.4, "side": 41.5, "back": 34.5, "sideburn": 38.8, "edge": 0.3, "grey": 0.2, "grey_colour": [170, 166, 160]},
+ "facial": [{"parts": ["moustache", "corners", "chin"], "colour": [116, 96, 82], "density": 0.85, "light": 0.35, "light_colour": [200, 196, 188]},
+            {"kind": "stubble", "parts": ["cheeks", "neck"], "colour": [140, 132, 126], "density": 0.25}]
+}

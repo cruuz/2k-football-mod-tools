@@ -256,7 +256,10 @@ class DefenseBuildOrderingTests(unittest.TestCase):
                                                             apply_seattle=lambda target: {"state": "other_uniform"},
                                                             apply_overlaps=lambda target: {"state": "other_uniform"},
                                                             apply_chiefs=lambda target: {"state": "other_uniform"},
-                                                            apply_swooshes=lambda target: {"state": "other_uniform"})}
+                                                            apply_swooshes=lambda target: {"state": "other_uniform"},
+                                                            apply_nameplates=lambda target: {"state": "other_uniform"}),
+                   "nfl2k5_nameplate_fixes_2026": SimpleNamespace(
+                       apply_to_image=lambda target, retail=None: {"state": "other_uniform"})}
         tool_modules = {"nfl2k5_playbook_position_recode": recode, "nfl2k5_roster_reclassify": roster}
         with tempfile.TemporaryDirectory() as folder:
             source, target = Path(folder) / "source.iso", Path(folder) / "copy.iso"
@@ -279,7 +282,7 @@ class DefenseBuildOrderingTests(unittest.TestCase):
         self.assertEqual(events, [("defense.2k5book",), "recode", ("offense.2k5book",), "roles"])
         self.assertEqual([s["step"] for s in receipt["steps"]],
                          ["xbe", "defense_playbook_packs", "position_pools", "playbook_packs", "depth_roles",
-                          "position_pool_filters", "unc_bowl_uniforms", "menu_icon_orientation"])
+                          "position_pool_filters", "unc_bowl_uniforms", "nameplate_fixes_2026", "menu_icon_orientation"])
         self.assertFalse(receipt["steps"][1]["witnessed"])
 
 

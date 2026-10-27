@@ -20182,6 +20182,8 @@ class ApfStudioMainWindow(QMainWindow):
         self.fourth_down_action.triggered.connect(self._fourth_down_triggers)
         self.charge_abilities_action = tools_menu.addAction("Charged abilities (experimental)…")
         self.charge_abilities_action.triggered.connect(self._charge_abilities)
+        self.community_patches_action = tools_menu.addAction("Community play-calling patches (Basileus Maximus)…")
+        self.community_patches_action.triggered.connect(self._community_patches)
         self._install_help_menu()
 
     def _install_help_menu(self) -> None:
@@ -21953,6 +21955,10 @@ class ApfStudioMainWindow(QMainWindow):
     def _fourth_down_triggers(self) -> None:
         from .fourth_down_qt import FourthDownDialog
         FourthDownDialog(self.facade.launcher, self).exec_()
+
+    def _community_patches(self) -> None:
+        from .community_patches_qt import CommunityPatchesDialog
+        CommunityPatchesDialog(self.facade.launcher, self).exec_()
 
     def _charge_abilities(self) -> None:
         from .charge_abilities_qt import ChargeAbilitiesDialog

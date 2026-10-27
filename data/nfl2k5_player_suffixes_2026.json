@@ -1,0 +1,633 @@
+{
+ "schema": "nfl2k5.player_suffixes_2026/v1",
+ "as_of": "2026-10-22",
+ "purpose": "Real 2026 players whose generational suffix the roster source dropped: the game shows the suffix in menus and on the jersey nameplate (period skipped there).",
+ "source": "rh2 census of SOFTDRINK 2K28 v0.6.1 (real_suffix_players_on_v061.json); suffix spelling checked against the nflverse roster full_name and, where available, the Grok nameplate evidence (suffixes.json).",
+ "attribution": "Player names are facts; no retail game data.",
+ "players": [
+  {
+   "name": "Andre Jones Jr.",
+   "first": "Andre",
+   "last": "Jones",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Anthony Hill Jr.",
+   "first": "Anthony",
+   "last": "Hill",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Antoine Winfield Jr.",
+   "first": "Antoine",
+   "last": "Winfield",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Asante Samuel Jr.",
+   "first": "Asante",
+   "last": "Samuel",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Beanie Bishop Jr.",
+   "first": "Beanie",
+   "last": "Bishop",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Billy Bowman Jr.",
+   "first": "Billy",
+   "last": "Bowman",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Bobby Brown III",
+   "first": "Bobby",
+   "last": "Brown",
+   "suffix": "III"
+  },
+  {
+   "name": "Brenton Cox Jr.",
+   "first": "Brenton",
+   "last": "Cox",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Brian Thomas Jr.",
+   "first": "Brian",
+   "last": "Thomas",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Bryan Thomas Jr.",
+   "first": "Bryan",
+   "last": "Thomas",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Byron Murphy II",
+   "first": "Byron",
+   "last": "Murphy",
+   "suffix": "II"
+  },
+  {
+   "name": "Carlton Davis III",
+   "first": "Carlton",
+   "last": "Davis",
+   "suffix": "III"
+  },
+  {
+   "name": "Cedrick Wilson Jr.",
+   "first": "Cedrick",
+   "last": "Wilson",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Chris Godwin Jr.",
+   "first": "Chris",
+   "last": "Godwin",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Chris Hilton Jr.",
+   "first": "Chris",
+   "last": "Hilton",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Chris Rodriguez Jr.",
+   "first": "Chris",
+   "last": "Rodriguez",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Chris Rumph II",
+   "first": "Chris",
+   "last": "Rumph",
+   "suffix": "II"
+  },
+  {
+   "name": "Clark Phillips III",
+   "first": "Clark",
+   "last": "Phillips",
+   "suffix": "III"
+  },
+  {
+   "name": "Dan Moore Jr.",
+   "first": "Dan",
+   "last": "Moore",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Dante Fowler Jr.",
+   "first": "Dante",
+   "last": "Fowler",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Dante Trader Jr.",
+   "first": "Dante",
+   "last": "Trader",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Darrell Jackson Jr.",
+   "first": "Darrell",
+   "last": "Jackson",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Darrell Luter Jr.",
+   "first": "Darrell",
+   "last": "Luter",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Deebo Samuel Sr.",
+   "first": "Deebo",
+   "last": "Samuel",
+   "suffix": "Sr."
+  },
+  {
+   "name": "Demetrius Knight Jr.",
+   "first": "Demetrius",
+   "last": "Knight",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Derek Stingley Jr.",
+   "first": "Derek",
+   "last": "Stingley",
+   "suffix": "Jr."
+  },
+  {
+   "name": "DJ Turner II",
+   "first": "DJ",
+   "last": "Turner",
+   "suffix": "II"
+  },
+  {
+   "name": "E.J. Williams Jr.",
+   "first": "E.J.",
+   "last": "Williams",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Efton Chism III",
+   "first": "Efton",
+   "last": "Chism",
+   "suffix": "III"
+  },
+  {
+   "name": "Emery Jones Jr.",
+   "first": "Emery",
+   "last": "Jones",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Ennis Rakestraw Jr.",
+   "first": "Ennis",
+   "last": "Rakestraw",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Enrique Cruz Jr.",
+   "first": "Enrique",
+   "last": "Cruz",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Eric Scott Jr.",
+   "first": "Eric",
+   "last": "Scott",
+   "suffix": "Jr."
+  },
+  {
+   "name": "George Gumbs Jr.",
+   "first": "George",
+   "last": "Gumbs",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Gervon Dexter Sr.",
+   "first": "Gervon",
+   "last": "Dexter",
+   "suffix": "Sr."
+  },
+  {
+   "name": "Greg Newsome II",
+   "first": "Greg",
+   "last": "Newsome",
+   "suffix": "II"
+  },
+  {
+   "name": "Harold Fannin Jr.",
+   "first": "Harold",
+   "last": "Fannin",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Harold Perkins Jr.",
+   "first": "Harold",
+   "last": "Perkins",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Ivan Pace Jr.",
+   "first": "Ivan",
+   "last": "Pace",
+   "suffix": "Jr."
+  },
+  {
+   "name": "James Thompson Jr.",
+   "first": "James",
+   "last": "Thompson",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Jarvis Brownlee Jr.",
+   "first": "Jarvis",
+   "last": "Brownlee",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Jason Marshall Jr.",
+   "first": "Jason",
+   "last": "Marshall",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Jeremiah Trotter Jr.",
+   "first": "Jeremiah",
+   "last": "Trotter",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Jermaine Johnson II",
+   "first": "Jermaine",
+   "last": "Johnson",
+   "suffix": "II"
+  },
+  {
+   "name": "Joey Porter Jr.",
+   "first": "Joey",
+   "last": "Porter",
+   "suffix": "Jr."
+  },
+  {
+   "name": "John Metchie III",
+   "first": "John",
+   "last": "Metchie",
+   "suffix": "III"
+  },
+  {
+   "name": "Jon Gaines II",
+   "first": "Jon",
+   "last": "Gaines",
+   "suffix": "II"
+  },
+  {
+   "name": "Josh Conerly Jr.",
+   "first": "Josh",
+   "last": "Conerly",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Keith Abney II",
+   "first": "Keith",
+   "last": "Abney",
+   "suffix": "II"
+  },
+  {
+   "name": "Keith Cooper Jr.",
+   "first": "Keith",
+   "last": "Cooper",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Kelvin Banks Jr.",
+   "first": "Kelvin",
+   "last": "Banks",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Kenneth Walker III",
+   "first": "Kenneth",
+   "last": "Walker",
+   "suffix": "III"
+  },
+  {
+   "name": "Kenny Moore II",
+   "first": "Kenny",
+   "last": "Moore",
+   "suffix": "II"
+  },
+  {
+   "name": "Kevin Coleman Jr.",
+   "first": "Kevin",
+   "last": "Coleman",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Kevin Jobity Jr.",
+   "first": "Kevin",
+   "last": "Jobity",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Kevin Winston Jr.",
+   "first": "Kevin",
+   "last": "Winston",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Leonard Taylor III",
+   "first": "Leonard",
+   "last": "Taylor",
+   "suffix": "III"
+  },
+  {
+   "name": "LeQuint Allen Jr.",
+   "first": "LeQuint",
+   "last": "Allen",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Lloyd Cushenberry III",
+   "first": "Lloyd",
+   "last": "Cushenberry",
+   "suffix": "III"
+  },
+  {
+   "name": "Lorenzo Styles Jr.",
+   "first": "Lorenzo",
+   "last": "Styles",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Luther Burden III",
+   "first": "Luther",
+   "last": "Burden",
+   "suffix": "III"
+  },
+  {
+   "name": "Malcolm DeWalt IV",
+   "first": "Malcolm",
+   "last": "DeWalt",
+   "suffix": "IV"
+  },
+  {
+   "name": "Marcellas Dial Jr.",
+   "first": "Marcellas",
+   "last": "Dial",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Marvin Harrison Jr.",
+   "first": "Marvin",
+   "last": "Harrison",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Marvin Mims Jr.",
+   "first": "Marvin",
+   "last": "Mims",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Michael Carter II",
+   "first": "Michael",
+   "last": "Carter",
+   "suffix": "II"
+  },
+  {
+   "name": "Michael Penix Jr.",
+   "first": "Michael",
+   "last": "Penix",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Mike Hall Jr.",
+   "first": "Mike",
+   "last": "Hall",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Mike Washington Jr.",
+   "first": "Mike",
+   "last": "Washington",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Montorie Foster Jr.",
+   "first": "Montorie",
+   "last": "Foster",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Odell Beckham Jr.",
+   "first": "Odell",
+   "last": "Beckham",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Ollie Gordon II",
+   "first": "Ollie",
+   "last": "Gordon",
+   "suffix": "II"
+  },
+  {
+   "name": "Oronde Gadsden II",
+   "first": "Oronde",
+   "last": "Gadsden",
+   "suffix": "II"
+  },
+  {
+   "name": "Paris Johnson Jr.",
+   "first": "Paris",
+   "last": "Johnson",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Pat Surtain II",
+   "first": "Pat",
+   "last": "Surtain",
+   "suffix": "II"
+  },
+  {
+   "name": "Patrick Jones II",
+   "first": "Patrick",
+   "last": "Jones",
+   "suffix": "II"
+  },
+  {
+   "name": "Rayuan Lane III",
+   "first": "Rayuan",
+   "last": "Lane",
+   "suffix": "III"
+  },
+  {
+   "name": "Rob Beal Jr.",
+   "first": "Rob",
+   "last": "Beal",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Rob Carter Jr.",
+   "first": "Rob",
+   "last": "Carter",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Robert Henry Jr.",
+   "first": "Robert",
+   "last": "Henry",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Ronnie Hickman Jr.",
+   "first": "Ronnie",
+   "last": "Hickman",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Rueben Bain Jr.",
+   "first": "Rueben",
+   "last": "Bain",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Sam Franklin Jr.",
+   "first": "Sam",
+   "last": "Franklin",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Shavon Revel Jr.",
+   "first": "Shavon",
+   "last": "Revel",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Smael Mondon Jr.",
+   "first": "Smael",
+   "last": "Mondon",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Starling Thomas V",
+   "first": "Starling",
+   "last": "Thomas",
+   "suffix": "V"
+  },
+  {
+   "name": "Ted Hurst III",
+   "first": "Ted",
+   "last": "Hurst",
+   "suffix": "III"
+  },
+  {
+   "name": "Thayer Munford Jr.",
+   "first": "Thayer",
+   "last": "Munford",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Theo Wease Jr.",
+   "first": "Theo",
+   "last": "Wease",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Thomas Fidone II",
+   "first": "Thomas",
+   "last": "Fidone",
+   "suffix": "II"
+  },
+  {
+   "name": "Tommy Doman Jr.",
+   "first": "Tommy",
+   "last": "Doman",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Toriano Pride Jr.",
+   "first": "Toriano",
+   "last": "Pride",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Torricelli Simpkins III",
+   "first": "Torricelli",
+   "last": "Simpkins",
+   "suffix": "III"
+  },
+  {
+   "name": "Tre Hawkins III",
+   "first": "Tre",
+   "last": "Hawkins",
+   "suffix": "III"
+  },
+  {
+   "name": "Trey Dean III",
+   "first": "Trey",
+   "last": "Dean",
+   "suffix": "III"
+  },
+  {
+   "name": "Trey Zuhn III",
+   "first": "Trey",
+   "last": "Zuhn",
+   "suffix": "III"
+  },
+  {
+   "name": "Tyrone Tracy Jr.",
+   "first": "Tyrone",
+   "last": "Tracy",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Ulysses Bentley IV",
+   "first": "Ulysses",
+   "last": "Bentley",
+   "suffix": "IV"
+  },
+  {
+   "name": "Warren McClendon Jr.",
+   "first": "Warren",
+   "last": "McClendon",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Will Anderson Jr.",
+   "first": "Will",
+   "last": "Anderson",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Will Lee III",
+   "first": "Will",
+   "last": "Lee",
+   "suffix": "III"
+  },
+  {
+   "name": "Will McDonald IV",
+   "first": "Will",
+   "last": "McDonald",
+   "suffix": "IV"
+  },
+  {
+   "name": "Willie Gay Jr.",
+   "first": "Willie",
+   "last": "Gay",
+   "suffix": "Jr."
+  },
+  {
+   "name": "Wydett Williams Jr.",
+   "first": "Wydett",
+   "last": "Williams",
+   "suffix": "Jr."
+  }
+ ]
+}

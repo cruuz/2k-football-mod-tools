@@ -38,10 +38,13 @@ def tables_inc() -> str:
     return "\n".join(lines) + "\n"
 
 
-def _assemble(source: Path, *, vip_aware: bool = False) -> tuple[bytes, list, dict]:
+def _assemble(source: Path, *, vip_aware: bool = False, clock_aware: bool = False,
+              late_helper: bool = False) -> tuple[bytes, list, dict]:
     with tempfile.TemporaryDirectory(prefix="cpu_money_downs-") as directory:
         obj = Path(directory).resolve() / "cpu_money_downs.o"
         defines = ["--defsym", "VIP_AWARE=1"] if vip_aware else []
+        defines += ["--defsym", "CLOCK_AWARE=1"] if clock_aware else []
+        defines += ["--defsym", "LATE_HELPER=1"] if late_helper else []
         subprocess.run(["as", "--32", *defines, "-I", str(source.parent), "-o", str(obj), str(source)], check=True)
         data = obj.read_bytes()
     if data[:6] != b"\x7fELF\x01\x01":
@@ -104,7 +107,16 @@ def generate() -> str:
     # Preserve the v0.6.1 Modern 2 recognizer, so upgrades verify every old byte.
     lines += [""] + _emit("2_LEGACY", blob2, relocations2, labels2)
     blob2, relocations2, labels2 = _assemble(ROOT / "tools/nfl2k5_cpu_money_downs_m2.S", vip_aware=True)
+    # Preserve the v0.6.1 / beta-77.1 VIP-aware recognizer as well (b778 upgrades it in place).
+    lines += [""] + _emit("2_V061", blob2, relocations2, labels2)
+    blob2, relocations2, labels2 = _assemble(ROOT / "tools/nfl2k5_cpu_money_downs_m2.S", vip_aware=True, clock_aware=True)
     lines += [""] + _emit("2", blob2, relocations2, labels2)
+    # b778 ai6: the same template calls the late-game helper owner (nfl2k5_cpu_money_downs_late).
+    blob2, relocations2, labels2 = _assemble(ROOT / "tools/nfl2k5_cpu_money_downs_m2.S", vip_aware=True,
+                                             clock_aware=True, late_helper=True)
+    lines += [""] + _emit("2_LATE", blob2, relocations2, labels2)
+    blob3, relocations3, labels3 = _assemble(ROOT / "tools/nfl2k5_cpu_money_downs_late.S")
+    lines += [""] + _emit("_LATE", blob3, relocations3, labels3)
     lines += [""]
     return "\n".join(lines)
 

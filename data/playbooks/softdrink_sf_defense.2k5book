@@ -9,10 +9,10 @@
   "notes": "DESIGN: Raheem Morris (Tampa / Rams split coverage); 2025 baseline ATL. Clean technique fronts (pb/v2/defense/design.py), retail 2K5 coverage scripts with native pre-snap alignment, situational formation ratings and CPU score bands fitted to the sourced 2025 coverage and blitz rates. Exact offense source required. Gameplay unwitnessed."
  },
  "base": {
-  "book_fingerprint": "1f7e2b95aa73dee40ecf3d85848223da131684a637e1840cb51892fab98fe066",
+  "book_fingerprint": "425b884bbb4ad968a0cf194ae6b32d549e9342234e44704a2d1b7452d319d6fc",
   "donor_formation_count": 50,
   "donor_play_count": 268,
-  "donor_node_count": 2258
+  "donor_node_count": 2286
  },
  "budget": {
   "formations": 50,
@@ -1681,7 +1681,7 @@
    "replace_name": "Bear Force Fire 3",
    "link_formation": null,
    "link_group": null,
-   "assignments": [null, null, null, null, null, null, null, null, null, null, null],
+   "assignments": [null, null, null, null, null, null, null, null, [[27, [0, 0, 0, 0, 0, 1]], [11, [2, 5, 0]]], null, null],
    "defense_formation": "Bear",
    "front_index": 1,
    "component": "coverage",
@@ -1743,7 +1743,7 @@
     [[27, [2, 0, 0, 365.76, 0, 0]], [14, [0, 274.32, 0, 7, 0, 0, 0, 0]]],
     [[27, [2, 0, -335.28000000000003, 426.72, 0, 0]], [14, [0, 91.44, 0, 10, 0, 0, 0, 0]]],
     [[27, [0, 0, 640.08, 91.44, 0, 0]], [13, [0, 1645.92, 7, 9, 8, 0, 0]]],
-    [[27, [0, 0, 0, -274.32, 16, 0]], [11, [1, 16, 0]]],
+    [[27, [0, 0, 0, -60.96, 16, 0]], [11, [1, 16, 0]]],
     [[27, [2, 0, 0, 182.88, 0, 0]], [14, [0, 182.88, 0, 6, 0, 0, 0, 0]]]
    ],
    "defense_formation": "Bear",

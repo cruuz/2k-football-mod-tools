@@ -39,10 +39,11 @@ class DataTests(unittest.TestCase):
  def test_label_scaling_keeps_wordmark_size_and_position(self):
   s=json.loads((DATA/'layout.json').read_text());f=next(f for f in s['fields'] if f['name']=='down')
   g=s['glyph_sets']['label'];factor=f['size']/g['cap_height'];e=g['glyphs']['ESPN']
-  self.assertEqual((f['size'],f['anchor']), (24,[959,955]))
+  # b778-int2: the down anchor is 961 so the single ESPN wordmark centres on the sb4/sb5 plate (1.76 -> <1.5 HUD px).
+  self.assertEqual((f['size'],f['anchor']), (24,[961,955]))
   self.assertEqual([v*factor for v in e['size']],[100,24])
   self.assertEqual(f['anchor'][1]-e['raise']*factor,956)
-  self.assertEqual(sprite.probe_sizes(),(34,327904,327680))
+  self.assertEqual(sprite.probe_sizes(),(34,327264,327680))
 
 NATIVE=(ROOT/'extracted/ESPN NFL 2K5 (USA)/default.xbe').is_file() and importlib.util.find_spec('unicorn') is not None
 @unittest.skipUnless(NATIVE,'pinned retail game and Unicorn needed')
@@ -68,7 +69,9 @@ class NativeTests(unittest.TestCase):
     g,c,colours,tokens=self.inspect(wide,possession=side,down=1,distance=10,play_clock=6)
     try:
      self.assertEqual(colours['away_wing'],0xFF1FB0C4);self.assertEqual(colours['home_wing'],0xFFFB6930)
-     self.assertEqual(colours['plate'],int('FF'+EXPECTED[name][1][1:],16))
+     # b778 sb5: the tab is the midpoint of the possessing team's wing and plate accent.
+     w,p=int(EXPECTED[name][0][1:],16),int(EXPECTED[name][1][1:],16)
+     self.assertEqual(colours['plate'],0xFF000000|(((w&0xFEFEFE)>>1)+((p&0xFEFEFE)>>1)))
      from mod_editor.core import nfl2k5_scorebug_ingame as scene
      materials={m['name']:m for m in g['materials']}
      for material,expected in [('hscore_buga','sb05h0'),('zscore_buga','sb21h0')]:
@@ -80,7 +83,8 @@ class NativeTests(unittest.TestCase):
  def test_new_matchup_states_use_complete_tokens_in_both_aspects(self):
   cases=[(dict(down=2,previous_down=1),'2nddown'),(dict(down=4,distance=1),'4th&1'),
          (dict(down=3,distance=16),'3rd&16'),(dict(down=2,goal_to_go=True),'2nd&goal'),
-         (dict(phase=2),'espn'),(dict(event='hang time'),'espn'),(dict(event='ball on'),'espn'),
+         (dict(phase=2),'espn'),(dict(event='hang time'),'espn'),
+         (dict(event='ball on'),'3rd&10'),   # b778 sb2: the ball-on event (play calling) keeps the down and distance
          (dict(event='FLAG'),'')]
   for wide in (False,True):
    for state,text in cases:

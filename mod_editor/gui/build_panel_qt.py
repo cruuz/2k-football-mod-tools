@@ -45,7 +45,10 @@ from mod_editor.core import nfl2k5_player_star as player_star
 from mod_editor.core import nfl2k5_throw_tuning as tt
 from mod_editor.core.errors import ModEditorError
 from mod_editor.gui.playbook_pack_dialog_qt import BOOK_SET_EXPLAINER, BookSetTeamsDialog, book_set_status_text
-from mod_editor.gui.ux_text import NOT_TESTED, XEMU_LINE, Details, plain_failure, show_operation_error, source_captions, suggest_copy_name, tab_title
+from mod_editor.gui.ux_text import (
+    NOT_TESTED, STUDIO_THEMES, XEMU_LINE, Details, WrappedLabel, build_panel_stylesheet,
+    plain_failure, show_operation_error, source_captions, suggest_copy_name, tab_title,
+)
 
 
 def _resolved_build_file(path, what: str) -> Path:
@@ -225,6 +228,7 @@ ANNIVERSARY_OPTIONS = (
 # b776-ai2: the CPU AI options, each its own toggle, off in every preset.
 from mod_editor.core import nfl2k5_cpu_qb_reads as _cpu_qb_reads, nfl2k5_db_ball_play as _db_ball_play  # noqa: E402
 from mod_editor.core import nfl2k5_run_blocking as _run_blocking  # noqa: E402  b777-ol1
+from mod_editor.core import nfl2k5_pass_protection as _pass_protection  # noqa: E402  b778-pr1
 CPU_AI_OPTIONS = (
     ("cpu_qb_zone_windows", _cpu_qb_reads.BUILD_CAPTION_ZONE, _cpu_qb_reads.HELP_ZONE),
     ("cpu_qb_recheck", _cpu_qb_reads.BUILD_CAPTION_RECHECK, _cpu_qb_reads.HELP_RECHECK),
@@ -233,6 +237,31 @@ CPU_AI_OPTIONS = (
 # b777-qb3: QB accuracy on short and on-the-run throws (on in the experimental preset only).
 from mod_editor.core import nfl2k5_qb_accuracy as _qb_accuracy  # noqa: E402
 CPU_AI_OPTIONS += (("qb_accuracy", _qb_accuracy.BUILD_CAPTION, _qb_accuracy.HELP_TEXT),)
+# b778-fo1: modern sideline catches (no force-out from the 2008 season; on in the Advanced and Experimental presets).
+from mod_editor.core import nfl2k5_force_out as _force_out  # noqa: E402
+from mod_editor.core import nfl2k5_module_loader as _module_loader  # noqa: E402  b778-xs1
+from mod_editor.core import nfl2k5_crib_trophy_room as _crib_trophy_room  # noqa: E402  b778-xs1
+from mod_editor.core import nfl2k5_rookie_faces as _rookie_faces  # noqa: E402
+# b778-fa1: CPU clubs keep their stars (franchise veteran cap cut; on in the Advanced and Experimental presets).
+# b778-pi1: franchise practice keeps injuries (on with the Coach's Desk Practice row in Advanced and Experimental).
+from mod_editor.core import nfl2k5_practice_injuries as _practice_injuries  # noqa: E402
+from mod_editor.core import nfl2k5_ball_carrier_ai as _ball_carrier_ai  # noqa: E402
+# b778-kr1: return coverage takes pursuit angles on kick and punt returns (on in the Advanced and Experimental presets).
+from mod_editor.core import nfl2k5_return_coverage as _return_coverage  # noqa: E402
+from mod_editor.core import nfl2k5_star_retention as _star_retention  # noqa: E402
+from mod_editor.core import nfl2k5_alien_prospect as _alien_prospect  # noqa: E402
+from mod_editor.core import nfl2k5_star_career as _star_career  # noqa: E402  b778-st2
+from mod_editor.core import nfl2k5_sportscenter_lineup as _sportscenter_lineup  # noqa: E402
+from mod_editor.core import nfl2k5_inbox_standings as _inbox_standings  # noqa: E402  b778-pc3
+# b778-dr1: the broadcast-paced franchise draft (on in the Advanced and Experimental presets).
+from mod_editor.core import nfl2k5_draft_clock as _draft_clock  # noqa: E402
+# b778-pg1: franchise in-season weekly progression (off in every preset until the second scale-out).
+from mod_editor.core import nfl2k5_weekly_progression as _weekly_progression  # noqa: E402
+from mod_editor.core import nfl2k5_player_progress_screen as _player_progress  # noqa: E402
+from mod_editor.core import nfl2k5_contract_college_guard as _contract_guard  # noqa: E402
+from mod_editor.core import nfl2k5_sim_cb_tackles as _sim_cb_tackles  # noqa: E402
+from mod_editor.core import nfl2k5_sim_stats as _sim_stats  # noqa: E402
+from mod_editor.core import nfl2k5_clock_led as _clock_led  # noqa: E402
 BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                  ("team_ratings", "Modern team ratings",
                   "Displays current personnel ratings with slot receivers and nickel corners. Fullbacks are optional. "
@@ -242,7 +271,33 @@ BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                   "Draws each route's last segment at its real length in the play-call art, like Madden: go routes run up "
                   "the panel, drags cross the formation, flats and outs reach the sideline. Retail cuts that segment to "
                   "3 yards. Lines stay inside the panel. How plays run is unchanged. Not yet tested in-game."),
-                 ("run_blocking", _run_blocking.BUILD_CAPTION, _run_blocking.HELP_TEXT))
+                 ("run_blocking", _run_blocking.BUILD_CAPTION, _run_blocking.HELP_TEXT),
+                 ("pass_protection", _pass_protection.BUILD_CAPTION, _pass_protection.HELP_TEXT),
+                 ("modern_force_out", _force_out.BUILD_CAPTION, _force_out.HELP_TEXT),  # b778-fo1
+                 ("module_loader", _module_loader.BUILD_CAPTION, _module_loader.HELP_TEXT),  # b778-xs1
+                 ("crib_trophy_room", _crib_trophy_room.BUILD_CAPTION, _crib_trophy_room.HELP_TEXT),  # b778-xs1
+                 ("rookie_faces", _rookie_faces.BUILD_CAPTION, _rookie_faces.HELP_TEXT),  # b778-rh1
+                 ("alien_prospect", _alien_prospect.BUILD_CAPTION, _alien_prospect.HELP_TEXT),  # b778-ee1
+                 ("star_retention", _star_retention.BUILD_CAPTION, _star_retention.HELP_TEXT),  # b778-fa1
+                 ("practice_injuries", _practice_injuries.BUILD_CAPTION, _practice_injuries.HELP_TEXT),  # b778-pi1
+                 # b778 ci2: the tab caption stays short; the full wording is the module help.
+                 ("cpu_ball_carriers", "CPU carriers in bounds; QBs slide past sticks (experimental)",
+                  _ball_carrier_ai.HELP_TEXT),  # b778-ai5
+                 ("return_coverage", _return_coverage.BUILD_CAPTION, _return_coverage.HELP_TEXT),  # b778-kr1
+                 ("star_career", _star_career.BUILD_CAPTION, _star_career.HELP_TEXT),  # b778-st2
+                 ("sportscenter_lineup", _sportscenter_lineup.BUILD_CAPTION, _sportscenter_lineup.HELP_TEXT),  # b778-sc2
+                 ("inbox_standings", _inbox_standings.BUILD_CAPTION, _inbox_standings.HELP_TEXT),  # b778-pc3
+                 # b778 ci2: the tab caption stays short; the full wording is the module help.
+                 ("franchise_draft_clock", "Franchise draft: 60-second CPU picks (Y next, X next user)",
+                  _draft_clock.HELP_TEXT),  # b778-dr1
+                 ("weekly_progression", _weekly_progression.BUILD_CAPTION, _weekly_progression.HELP_TEXT),  # b778-pg1
+                 ("player_progress", _player_progress.BUILD_CAPTION, _player_progress.HELP_TEXT),  # b778-pg2
+                 ("player_progress_visible", _player_progress.VISIBLE_CAPTION,
+                  _player_progress.VISIBLE_HELP_TEXT),  # b778-pg3
+                 ("contract_college_guard", _contract_guard.BUILD_CAPTION, _contract_guard.HELP_TEXT),  # b778-cr1
+                 ("sim_cb_tackles", _sim_cb_tackles.BUILD_CAPTION, _sim_cb_tackles.HELP_TEXT),  # b778-cb1
+                 ("sim_stats", _sim_stats.BUILD_CAPTION, _sim_stats.HELP_TEXT),  # b778-sim1
+                 ("modern_clock_led", _clock_led.BUILD_CAPTION, _clock_led.HELP_TEXT))  # b778-sd4
 BUILD_KEYS = tuple(row[0] for row in BUILD_OPTIONS)
 VENUE_BUILD_KEYS = (
     "modern_sofi", "modern_highmark", "modern_att", "modern_levis", "modern_allegiant",
@@ -323,9 +378,11 @@ class BuildPanel(QWidget):
     built = pyqtSignal(dict)   # the receipt of the copy just written (Share pre-fills from it)
     book_set_changed = pyqtSignal()   # modern/classic books or pack list edited here; the shell saves it and syncs Playbooks
 
-    def __init__(self, facade: object | None = None, parent: QWidget | None = None, *, available=None) -> None:
+    def __init__(self, facade: object | None = None, parent: QWidget | None = None, *, available=None,
+                 theme: str = "dark") -> None:
         super().__init__(parent)
         self._facade = facade
+        self._theme = theme if theme in STUDIO_THEMES else "dark"
         self.operation_guard = None
         self._pool = QThreadPool(self)
         self._task: _Task | None = None
@@ -335,6 +392,7 @@ class BuildPanel(QWidget):
 
         self._state: dict[str, object] | None = None
         self._preset_applying = False         # fx1: apply_preset holds the child-ticks-parent cascade
+        self._keep_selection_on_state = False # recovering a vanished build copy keeps the user's ticks
         self._available = mod_build.availability() if available is None else available
         # Named previews use the same shipped moment resources and the venue
         # owner already imported by throw tuning. Keep this UI binding here so
@@ -382,7 +440,7 @@ class BuildPanel(QWidget):
         title = QLabel("Build")
         title.setObjectName("throwTitle")
         root.addWidget(title)
-        intro = QLabel("Choose a preset or select changes, then Make my disc. The source stays unchanged. "
+        intro = WrappedLabel("Choose a preset or select changes, then Make my disc. The source stays unchanged. "
                        "This build includes the selected Build options and every edit listed below from the open project, "
                        "including staged model, art, text and audio edits. Equipment keeps the game's existing compressed "
                        "allocation; larger equipment art is not available. Review each import's chosen size and colour-loss report. " + XEMU_LINE + " "
@@ -413,7 +471,7 @@ class BuildPanel(QWidget):
         self.project_includes_list.setMaximumHeight(200)
         self.project_includes_list.setPlaceholderText("No project edits. Selected Build options are listed below.")
         root.addWidget(self.project_includes_list)
-        self.project_includes_note = QLabel(
+        self.project_includes_note = WrappedLabel(
             "Newest changes in this session first. Older project files do not record original edit times. "
             "The project edit index identifies the edit if a build refuses it.")
         self.project_includes_note.setWordWrap(True)
@@ -430,31 +488,18 @@ class BuildPanel(QWidget):
         self.source_button.clicked.connect(self._choose_source)
         src.addWidget(self.source_button)
         root.addLayout(src)
-        self.source_status = QLabel("Open your game disc (top right), or choose a disc / default.xbe here, to read what it already carries.")
+        self.source_status = WrappedLabel("Open your game disc (top right), or choose a disc / default.xbe here, to read what it already carries.")
         self.source_status.setObjectName("throwMuted")
         self.source_status.setWordWrap(True)
         root.addWidget(self.source_status)
 
         # One click to start from a known-good set, then customise below.
         # The checklist IS the product: make every toggle read at a glance (big indicator, accent when ticked).
-        self.setStyleSheet(
-            "QGroupBox { font-weight: 600; margin-top: 14px; }"
-            "QGroupBox::title { subcontrol-origin: margin; left: 8px; padding: 0 4px; }"
-            "QCheckBox { padding: 4px 2px; spacing: 10px; }"
-            "QCheckBox::indicator { width: 20px; height: 20px; border: 2px solid #8a94a6; border-radius: 4px; background: #1b1f27; }"
-            "QCheckBox::indicator:unchecked:hover { border-color: #c9d1de; }"
-            "QCheckBox::indicator:checked { background: #2ecc71; border-color: #2ecc71; "
-            "image: url(:/qt-project.org/styles/commonstyle/images/standardbutton-apply-16.png); }"
-            "QCheckBox::indicator:disabled { border-color: #4a5060; background: #22262e; }"
-            "QCheckBox:checked { color: #d8ffe6; font-weight: 600; }"
-            "QCheckBox:disabled { color: #6b7385; }"
-            "QCheckBox::indicator:focus { border-color: #6ee7c7; }"
-            "QLabel#optionBadge { color: #f3d27a; background: #2a2a1c; border: 1px solid #6a5a2a; border-radius: 6px; padding: 1px 6px; }"
-            "QPushButton#presetButton { padding: 8px 14px; font-weight: 600; }")
+        self.setStyleSheet(build_panel_stylesheet(self._theme))
         presets = QGroupBox("Choose a SOFTDRINK preset")
         pr = QVBoxLayout(presets)
         preset_grid = QGridLayout()
-        preset_grid.setHorizontalSpacing(14)
+        preset_grid.setHorizontalSpacing(6)
         self.preset_basic_button = QPushButton(tab_title(PRESET_BUTTONS["softdrink_basic"]))
         self.preset_advanced_button = QPushButton(tab_title(PRESET_BUTTONS["softdrink_advanced"]))
         self.preset_experimental_button = QPushButton(tab_title(PRESET_BUTTONS["softdrink_experimental"]))
@@ -467,7 +512,7 @@ class BuildPanel(QWidget):
             button.setAccessibleName(f"{PRESET_LABELS[name]} preset")
             button.setAccessibleDescription(PRESET_CAPTIONS[name])
             button.clicked.connect(lambda _c=False, key=name: self.apply_preset(key))
-            caption = QLabel(PRESET_CAPTIONS[name])
+            caption = WrappedLabel(PRESET_CAPTIONS[name])
             caption.setObjectName("throwMuted")
             caption.setWordWrap(True)
             caption.setAlignment(Qt.AlignTop | Qt.AlignLeft)
@@ -476,11 +521,11 @@ class BuildPanel(QWidget):
             preset_grid.addWidget(caption, 1, column)
             preset_grid.setColumnStretch(column, 1)
         pr.addLayout(preset_grid)
-        self.preset_note = QLabel(PRESET_NOTE)
+        self.preset_note = WrappedLabel(PRESET_NOTE)
         self.preset_note.setObjectName("throwMuted")
         self.preset_note.setWordWrap(True)
         pr.addWidget(self.preset_note)
-        self.preset_scope_note = QLabel(PRESET_SCOPE_NOTE)
+        self.preset_scope_note = WrappedLabel(PRESET_SCOPE_NOTE)
         self.preset_scope_note.setObjectName("throwMuted")
         self.preset_scope_note.setWordWrap(True)
         self.preset_scope_note.setAccessibleName("What the presets do not include")
@@ -503,11 +548,11 @@ class BuildPanel(QWidget):
         self.target_field.textEdited.connect(lambda _t: self._user_target())
         self.target_field.textChanged.connect(lambda _t: self._refresh())
         mk.addLayout(out)
-        self.summary_label = QLabel("Selected: nothing yet.")
+        self.summary_label = WrappedLabel("Selected: nothing yet.")
         self.summary_label.setObjectName("throwMuted")
         self.summary_label.setWordWrap(True)
         mk.addWidget(self.summary_label)
-        self.synced_note = QLabel("")
+        self.synced_note = WrappedLabel("")
         self.synced_note.setObjectName("throwMuted")
         self.synced_note.setWordWrap(True)
         self.synced_note.setAccessibleName("Cloud-synced folder warning")
@@ -530,14 +575,14 @@ class BuildPanel(QWidget):
         self.copy_summary_button.setEnabled(False)
         self.copy_summary_button.clicked.connect(self._copy_build_summary)
         actions.addWidget(self.copy_summary_button)
-        self.blocker_label = QLabel("")
+        self.blocker_label = WrappedLabel("")
         self.blocker_label.setObjectName("throwMuted")
         self.blocker_label.setWordWrap(True)
         self.blocker_label.setAccessibleName("Why Make my disc is unavailable")
         actions.addWidget(self.blocker_label, 1)
         mk.addLayout(actions)
         prog = QHBoxLayout()
-        self.progress_label = QLabel("")
+        self.progress_label = WrappedLabel("")
         self.progress_label.setObjectName("throwMuted")
         self.progress_bar = QProgressBar()
         self.progress_bar.setRange(0, 0)
@@ -545,7 +590,7 @@ class BuildPanel(QWidget):
         prog.addWidget(self.progress_label, 1)
         prog.addWidget(self.progress_bar)
         mk.addLayout(prog)
-        self.status_label = QLabel("")
+        self.status_label = WrappedLabel("")
         self.status_label.setWordWrap(True)
         self.status_label.setTextInteractionFlags(Qt.TextSelectableByMouse)
         mk.addWidget(self.status_label)
@@ -564,7 +609,7 @@ class BuildPanel(QWidget):
         options = QGroupBox("Choose changes")
         ol = QVBoxLayout(options)
         ol.setSpacing(10)
-        self.options_hint = QLabel("A preset ticks a known-good set; untick anything here, or tick more. "
+        self.options_hint = WrappedLabel("A preset ticks a known-good set; untick anything here, or tick more. "
                                    "Badges say when a change needs the full disc, is already on the disc, or is not yet tested in-game.")
         self.options_hint.setObjectName("throwMuted")
         self.options_hint.setWordWrap(True)
@@ -638,7 +683,7 @@ class BuildPanel(QWidget):
         self.momentum_contact_check = self._option(g, "momentum_contact", "Running start in contact (experimental)",
             "Experimental / Unwitnessed. Requires player momentum.",
             badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
-        self.momentum_contact_note = QLabel("A sustained running start can give the ball carrier a small extra boost through contact.")
+        self.momentum_contact_note = WrappedLabel("A sustained running start can give the ball carrier a small extra boost through contact.")
         self.momentum_contact_note.setWordWrap(True)
         self.momentum_contact_note.hide()
         self.momentum_check.toggled.connect(self._momentum_toggled)
@@ -895,6 +940,12 @@ class BuildPanel(QWidget):
         finish_row.addWidget(self.helmet_finish_combo)
         finish_row.addStretch(1)
         g.addLayout(finish_row)
+        # b778-sl1 (Noah 10/22): the black undershirt sleeves take each uniform's own team colour.
+        self.team_sleeves_check = self._option(
+            g, "team_sleeves", "Team-coloured long sleeves",
+            "Black undershirt sleeves use each uniform's own team colour; white sleeves stay white. "
+            "Needs a disc image; cannot be combined with the Hi-res jerseys family.",
+            badge=NOT_TESTED, needs_image=True)
         ol.addWidget(gameplay)
 
         # ---- Franchise
@@ -910,9 +961,14 @@ class BuildPanel(QWidget):
                                                    "slot 0 (often a QB). Returners are now tracked by player, starters stay off the units unless nobody "
                                                    "else is eligible, and only WR, CB, S, RB and FB can return.")
         self.progression_check = self._option(f, "progression", "Change player growth & decline",
-                                              "Growth over years 1-5, harder decline after years 9-12; more stars and busts.",
-                                              details="The ten aging-curve tables grow by rating family and decline harder after year 9-12 (speed first); each "
-                                                      "position's archetype mix is widened. Draft-day ratings are unchanged.")
+                                              "NFL career arcs by position: backs fade early, quarterbacks last; young QBs rise or fall on their play.",
+                                              details="Growth over the first five years by rating family, with each position's archetype mix widened, then "
+                                                      "each position ages on its own NFL curve (running backs from about 25, corners and "
+                                                      "receivers from 27, linemen later, quarterbacks, kickers and punters into their late "
+                                                      "30s); a back with 1,200+ scrimmage yards ages a year slower. Quarterbacks in their "
+                                                      "first three seasons move up or down on their passing efficiency; a veteran QB never "
+                                                      "loses ratings for a down year. Retirement ages follow NFL career lengths. Draft-day "
+                                                      "ratings are unchanged.")
         self.franchise_economy_check = self._option(
             f, "franchise_economy", tt.franchise_economy_patch.BUILD_CAPTION,
             "New franchises with the matching contract roster. Money displays in real dollars; contracts are fitted.",
@@ -966,7 +1022,7 @@ class BuildPanel(QWidget):
                                          "2026 schedule, 17 games, 14-team playoffs; this does not update the player roster.",
                                          needs_image=True,
                                          details="Real 2026 schedule with the 3-game preseason, 17 games over 18 weeks with one bye, 2026 dates and rookie "
-                                                 "birth years.")
+                                                 "birth years. In-season trades stay open through the NFL Week 9 trade deadline.")
         self.team_names_2026_check = self._option(f, "team_names_2026", "2026 team names and colours (experimental)",
             "Use the 2026 team names on every screen of new disc rosters: Los Angeles Chargers (LAC), "
             "Las Vegas Raiders (LV), Los Angeles Rams (LAR), Arizona Cardinals (ARI) and Washington "
@@ -1013,6 +1069,10 @@ class BuildPanel(QWidget):
             f, "rb_rename", tt.rb_rename_patch.BUILD_CAPTION,
             "Halfback and HB read Running Back and RB on every screen (text only).",
             badge=NOT_TESTED, details=tt.rb_rename_patch.HELP_TEXT)
+        self.trophy_room_check = self._option(  # b778-pg2
+            f, "trophy_room", tt.trophy_room_patch.BUILD_CAPTION,
+            "The Crib and its menu entry points read Trophy Room (text only).",
+            badge=NOT_TESTED, details=tt.trophy_room_patch.HELP_TEXT)
         self.name_keyboard_check = self._option(  # b77-k1
             f, "name_keyboard", tt.name_keyboard_patch.UI_LABEL,
             "Create Player and Edit Player keyboards take space, period, apostrophe and hyphen.",
@@ -1083,7 +1143,7 @@ class BuildPanel(QWidget):
         edits_row.addWidget(self.roster_edits_button)
         self.edits_row.hide()
         r.addWidget(self.edits_row)
-        self.roster_edits_status = QLabel("")
+        self.roster_edits_status = WrappedLabel("")
         self.roster_edits_status.setObjectName("throwMuted")
         self.roster_edits_status.setWordWrap(True)
         self.roster_edits_status.hide()
@@ -1109,7 +1169,7 @@ class BuildPanel(QWidget):
         espn25_row.addWidget(self.espn25_plan_button)
         self.espn25_row.hide()
         r.addWidget(self.espn25_row)
-        self.espn25_plan_status = QLabel("")
+        self.espn25_plan_status = WrappedLabel("")
         self.espn25_plan_status.setObjectName("throwMuted")
         self.espn25_plan_status.setWordWrap(True)
         self.espn25_plan_status.hide()
@@ -1141,7 +1201,7 @@ class BuildPanel(QWidget):
         self.weather_editor_button = QPushButton("Weather editor…")
         self.weather_editor_button.clicked.connect(self._open_weather_editor)
         r.addWidget(self.weather_editor_button)
-        self.weather_status = QLabel("")
+        self.weather_status = WrappedLabel("")
         self.weather_status.setWordWrap(True)
         r.addWidget(self.weather_status)
         self.weather_plan_field.textChanged.connect(self._refresh)
@@ -1300,7 +1360,7 @@ class BuildPanel(QWidget):
         self.official_marks_import_button.clicked.connect(self._choose_official_marks_file)
         pack_row.addWidget(self.official_marks_import_button)
         r.addLayout(pack_row)
-        self.official_marks_status = QLabel()
+        self.official_marks_status = WrappedLabel()
         self.official_marks_status.setWordWrap(True)
         self.official_marks_status.setTextFormat(Qt.PlainText)
         r.addWidget(self.official_marks_status)
@@ -1324,7 +1384,7 @@ class BuildPanel(QWidget):
         self.super_bowl_user_art_create.clicked.connect(self._create_super_bowl_user_art)
         super_bowl_row.addWidget(self.super_bowl_user_art_create)
         r.addLayout(super_bowl_row)
-        self.super_bowl_user_art_status = QLabel()
+        self.super_bowl_user_art_status = WrappedLabel()
         self.super_bowl_user_art_status.setWordWrap(True)
         self.super_bowl_user_art_status.setTextFormat(Qt.PlainText)
         r.addWidget(self.super_bowl_user_art_status)
@@ -1381,7 +1441,7 @@ class BuildPanel(QWidget):
                     "following the existing HUD and camera visibility rules. Tags reach new franchises made from this copy; "
                     "existing saves need their own tagged roster. Recorded replay packets do not store these added stars.",
         )
-        self.star_players_label = QLabel("")
+        self.star_players_label = WrappedLabel("")
         self.star_players_label.setObjectName("throwMuted")
         self.star_players_label.setWordWrap(True)
         self.star_players_label.setTextInteractionFlags(Qt.TextSelectableByMouse)
@@ -1419,7 +1479,7 @@ class BuildPanel(QWidget):
         self.hires_target_combo.currentIndexChanged.connect(self._refresh)
         hires_row.addWidget(self.hires_target_combo)
         pl.addLayout(hires_row)
-        self.hires_receipt_label = QLabel("")
+        self.hires_receipt_label = WrappedLabel("")
         self.hires_receipt_label.setWordWrap(True)
         pl.addWidget(self.hires_receipt_label)
         self._hires_family_checks = {}
@@ -1433,7 +1493,7 @@ class BuildPanel(QWidget):
             check.setChecked(True)
             check.toggled.connect(self._refresh)
             self._hires_family_checks[family] = check
-        self.hires_budget_label = QLabel("Memory fit is unproved. Enable Hi-res and choose artwork to check its modeled budget.")
+        self.hires_budget_label = WrappedLabel("Memory fit is unproved. Enable Hi-res and choose artwork to check its modeled budget.")
         self.hires_budget_label.setWordWrap(True)
         pl.addWidget(self.hires_budget_label)
         self.guardian_cap_check = self._option(
@@ -1487,7 +1547,7 @@ class BuildPanel(QWidget):
         self.music_preview_button = QPushButton("Preview music library size")
         self.music_preview_button.clicked.connect(self._preview_music_library)
         pl.addWidget(self.music_preview_button)
-        self.music_preview_label = QLabel("Choose a recipe to preview output and temporary space.")
+        self.music_preview_label = WrappedLabel("Choose a recipe to preview output and temporary space.")
         self.music_preview_label.setWordWrap(True)
         pl.addWidget(self.music_preview_label)
         self.camera_check = self._option(pl, "camera", "Standard, Far and Broadcast cameras (experimental)",
@@ -1558,7 +1618,7 @@ class BuildPanel(QWidget):
         self.commentary_remove_button.clicked.connect(self._remove_commentary_line)
         crow.addWidget(self.commentary_remove_button)
         cb.addLayout(crow)
-        self.commentary_label = QLabel("Each line is cut to its slot's length (a shorter recording is padded with silence). "
+        self.commentary_label = WrappedLabel("Each line is cut to its slot's length (a shorter recording is padded with silence). "
                                        "Presentation ▸ Commentary previews the fit; this list is a direct input to the build.")
         self.commentary_label.setObjectName("throwMuted")
         self.commentary_label.setWordWrap(True)
@@ -1586,7 +1646,7 @@ class BuildPanel(QWidget):
         self.book_set_status.setAccessibleName("Modern and classic book count")
         book_row.addWidget(self.book_set_status, 1)
         pb.addLayout(book_row)
-        self.book_set_note = QLabel(BOOK_SET_EXPLAINER + " Change one team at a time on Playbooks & Plays.")
+        self.book_set_note = WrappedLabel(BOOK_SET_EXPLAINER + " Change one team at a time on Playbooks & Plays.")
         self.book_set_note.setObjectName("throwMuted")
         self.book_set_note.setWordWrap(True)
         pb.addWidget(self.book_set_note)
@@ -1620,7 +1680,7 @@ class BuildPanel(QWidget):
         prow.addWidget(self.option_pack_button)
         prow.addStretch(1)
         pb.addLayout(prow)
-        packs_note = QLabel("Installed in order into the copy's team books; full disc required. "
+        packs_note = WrappedLabel("Installed in order into the copy's team books; full disc required. "
                             "Playbooks & Plays ▸ Install Playbook Pack… previews what a pack replaces.")
         packs_note.setObjectName("throwMuted")
         packs_note.setWordWrap(True)
@@ -1707,7 +1767,7 @@ class BuildPanel(QWidget):
         head.addWidget(badge_label)
         head.addStretch(1)
         rl.addLayout(head)
-        helper_label = QLabel(helper)
+        helper_label = WrappedLabel(helper)
         helper_label.setObjectName("throwMuted")
         helper_label.setWordWrap(True)
         helper_label.setIndent(30)
@@ -1803,7 +1863,13 @@ class BuildPanel(QWidget):
         self._state_before_build = None
         if not self._still_there(origin) or not isinstance(state, dict):
             return
-        self.apply_state(state)
+        # Going back to the disc this chain started from is not a new choice by
+        # the user: keep the changes they had already ticked for the next build.
+        self._keep_selection_on_state = True
+        try:
+            self.apply_state(state)
+        finally:
+            self._keep_selection_on_state = False
         self._target_generated = True
         self.target_field.setText("")
         self.suggest_target()
@@ -1865,8 +1931,24 @@ class BuildPanel(QWidget):
                 "Open the disc you want to build from (top right), then build again.")
 
     def apply_state(self, state: dict[str, object]) -> None:
-        """Populate from mod_build.inspect output (also used by tests)."""
+        """Populate from mod_build.inspect output (also used by tests).
 
+        The header hands this page a disc before its inspection finishes. A user who
+        ticks changes while that read runs (a 6 GB surface image is not instant) must not
+        lose them when the result arrives: the same disc keeps a ticked selection, while
+        a newly opened disc starts clean. A change the finished read says is already
+        installed is left off and named, never silently dropped (b778-bd2).
+        """
+
+        boxes = self._boxes()
+        toggles = set(self._toggle_boxes())
+        checked_before = {key: box.isChecked() for key, box in boxes.items() if box in toggles}
+        previous_path = str((self._state or {}).get("path") or "")
+        incoming_path = str(state.get("path") or "")
+        same_disc = (bool(previous_path) and bool(incoming_path)
+                     and platform_compat.paths_alias(previous_path, incoming_path))
+        keep_selection = ((self._reading and (self._state is None or same_disc))
+                          or self._keep_selection_on_state)
         softdrink_choices = self._softdrink_build_settings() if self.softdrink_project_field.text().strip() else None
         combo = self.screen_timing_combo
         if combo is not None and state.get("container") == "xiso" and (
@@ -1876,6 +1958,14 @@ class BuildPanel(QWidget):
         self._state = state
         # Source inspection starts a new selection; installed choices are
         # projected from this disc, then saved project choices can be restored.
+        # Every feature toggle is cleared here explicitly: throw used not to be
+        # reset, so opening another disc silently carried the previous one's
+        # throw option (and its plan) into the new build (b778-bd2).
+        for box in self._toggle_boxes():
+            box.setChecked(False)
+        # The two throw sub-options are not feature toggles; a new disc starts at their defaults.
+        self.realistic_check.setChecked(True)
+        self.arc_by_distance_check.setChecked(False)
         self.cpu_scrambles_level.blockSignals(True)
         self.cpu_scrambles_level.setCurrentIndex(self.cpu_scrambles_level.findData(
             "modern" if state.get("cpu_scrambles") == "applied" else "retail"))
@@ -1892,7 +1982,7 @@ class BuildPanel(QWidget):
             bits.append(f"throw ceiling {settings.max_deep_yards:g} yd" + (", realistic flight" if settings.realistic_flight else "") + (", arc by distance" if getattr(settings, 'arc_by_distance', False) else ""))
         for key, label in (("catch_slider", "catch/INT sliders"), ("accel_ramp", "acceleration ramp"),
                            ("draft_ai", "draft AI"), ("returner_fix", "returner fix"), ("progression", "progression"), ("franchise_economy", "2026 franchise economy"), ("team_column", "TEAM column"), ("team_history", "team history"), ("career_stats", "career stats"), ("prospect_names", "prospect names"),
-                           ("kick_rules", "kick rules"), ("kick_power", "kick power"), ("kickoff_alignment", "kickoff line-up"), ("dynamic_kickoff", "dynamic kickoff"), ("overtime", "overtime"), ("season_2026", "2026 season"), ("season_cap", "128-season franchise"), ("music_shuffle", "music shuffle"), ("practice_squad_screen", "Practice Squad screen"), ("abilities", "player abilities"), ("qb_spy", "QB spy"), ("guardian_cap", "guardian caps"), ("screen_timing", "screen timing"), ("xbe_space", "extra patch space"), ("kickoff_relocated", "kickoff in extra space"), ("position_row", "Position row"), ("probowl_order", "Pro Bowl order"), ("elbow_options", "elbow pad options"), ("the1wam_lineman_rating", "lineman rating adjustment"), ("xemu_display_list_fix", "xemu display-list fix"), ("resource_load_guard", "presentation allocation guard"), ("loader_wakeup_fix", "disc loader wake-up fix"), ("rb_rename", "RB rename"), ("name_keyboard", "player-name keyboard"), ("penalties", "penalties"), ("uniform_choice", "jersey choice"), ("kick_laces", "kick laces"), ("punter_holder", "punter holds"), ("franchise_practice", "Franchise practice"), ("practice_squad", "practice squads"), ("practice_reserves", "practice reserves"), ("depth_locks", "depth locks"), ("seven_on_seven", "7-on-7 practice"),
+                           ("kick_rules", "kick rules"), ("kick_power", "kick power"), ("kickoff_alignment", "kickoff line-up"), ("dynamic_kickoff", "dynamic kickoff"), ("overtime", "overtime"), ("season_2026", "2026 season"), ("season_cap", "128-season franchise"), ("music_shuffle", "music shuffle"), ("practice_squad_screen", "Practice Squad screen"), ("abilities", "player abilities"), ("qb_spy", "QB spy"), ("guardian_cap", "guardian caps"), ("screen_timing", "screen timing"), ("xbe_space", "extra patch space"), ("kickoff_relocated", "kickoff in extra space"), ("position_row", "Position row"), ("probowl_order", "Pro Bowl order"), ("elbow_options", "elbow pad options"), ("the1wam_lineman_rating", "lineman rating adjustment"), ("xemu_display_list_fix", "xemu display-list fix"), ("resource_load_guard", "presentation allocation guard"), ("loader_wakeup_fix", "disc loader wake-up fix"), ("rb_rename", "RB rename"), ("name_keyboard", "player-name keyboard"), ("penalties", "penalties"), ("uniform_choice", "jersey choice"), ("team_sleeves", "team-coloured sleeves"), ("kick_laces", "kick laces"), ("punter_holder", "punter holds"), ("franchise_practice", "Franchise practice"), ("practice_squad", "practice squads"), ("practice_reserves", "practice reserves"), ("depth_locks", "depth locks"), ("seven_on_seven", "7-on-7 practice"),
                            ("player_star", "star decal"), ("player_tags", "star tags"), ("roster_edits", "roster edits"), ("espn25_plan", "Anniversary edits"), ("espn25_rosters", "historic rosters"),
                            ("edge_rename", "EDGE rename"), ("scheme_labels", "scheme labels"), ("position_pools", "one-pool positions"), ("depth_roles", "depth roles"), ("depth_chart_rows", "depth-chart rows"),
                            ("camera", "camera"), ("widescreen", "widescreen"),
@@ -1914,7 +2004,7 @@ class BuildPanel(QWidget):
             ("dynamic_kickoff", "dynamic kickoff"), ("overtime", "overtime"), ("season_2026", "2026 season"), ("season_cap", "128-season franchise"), ("music_shuffle", "music shuffle"), ("practice_squad_screen", "Practice Squad screen"), ("abilities", "player abilities"), ("qb_spy", "QB spy"), ("guardian_cap", "guardian caps"), ("screen_timing", "screen timing"), ("xbe_space", "extra patch space"), ("kickoff_relocated", "kickoff in extra space"),
             ("position_row", "Position row"), ("probowl_order", "Pro Bowl order"),
             ("elbow_options", "elbow pad options"), ("the1wam_lineman_rating", "lineman rating adjustment"), ("xemu_display_list_fix", "xemu display-list fix"), ("resource_load_guard", "presentation allocation guard"), ("loader_wakeup_fix", "disc loader wake-up fix"), ("rb_rename", "RB rename"), ("name_keyboard", "player-name keyboard"), ("penalties", "penalties"),
-            ("uniform_choice", "jersey choice"), ("kick_laces", "kick laces"), ("punter_holder", "punter holds"), ("franchise_practice", "Franchise practice"),
+            ("uniform_choice", "jersey choice"), ("team_sleeves", "team-coloured sleeves"), ("kick_laces", "kick laces"), ("punter_holder", "punter holds"), ("franchise_practice", "Franchise practice"),
             ("practice_squad", "practice squads"), ("practice_reserves", "practice reserves"), ("depth_locks", "depth locks"), ("seven_on_seven", "7-on-7 practice"), ("player_star", "star decal"),
             ("player_tags", "star tags"),
             ("roster_edits", "roster edits"), ("edge_rename", "EDGE rename"), ("scheme_labels", "scheme labels"),
@@ -2350,9 +2440,11 @@ class BuildPanel(QWidget):
         gate(self.resource_load_guard_check, "resource_load_guard")
         gate(self.loader_wakeup_fix_check, "loader_wakeup_fix")
         gate(self.rb_rename_check, "rb_rename")
+        gate(self.trophy_room_check, "trophy_room")
         gate(self.name_keyboard_check, "name_keyboard")
         gate(self.penalties_check, "penalties")
         gate(self.uniform_choice_check, "uniform_choice")
+        gate(self.team_sleeves_check, "team_sleeves", needs_image=True)
         if state.get("uniform_choice") == "applied":
             installed_form = state.get("uniform_choice_mode")
             self.uniform_choice_mode.setCurrentIndex(
@@ -2408,6 +2500,22 @@ class BuildPanel(QWidget):
         gate(self.camera_check, "camera")
         gate(self.widescreen_check, "widescreen")
         self.throw_check.setEnabled(True)
+        dropped = []
+        if keep_selection:
+            for key, was_checked in checked_before.items():
+                if not was_checked:
+                    continue
+                box = boxes.get(key)
+                if box is None:
+                    continue
+                if box.isEnabled():
+                    box.setChecked(True)
+                elif str((self._state or {}).get(key)) in ("applied", "applied (custom)", "on"):
+                    # The change is already on this disc; the page's own projection shows it.
+                    pass
+                else:
+                    box.setChecked(False)
+                    dropped.append(key)
         self.suggest_target()
         self._official_marks_pack_changed()
         self._refresh()
@@ -2416,6 +2524,15 @@ class BuildPanel(QWidget):
             self.apply_preset_if_fresh(pending)
         if softdrink_choices is not None:
             self.restore_project_build_settings(softdrink_choices)
+        if keep_selection and dropped:
+            names = ", ".join(f"{self._short_label(key)} ({self._skip_reason(key)})" for key in dropped[:6])
+            if len(dropped) > 6:
+                names += f" and {len(dropped) - 6} more"
+            note = (f"{len(dropped)} selected change{'s' if len(dropped) != 1 else ''} could not be kept on this "
+                    f"disc: {names}. {'They are' if len(dropped) != 1 else 'It is'} off, so review the selection "
+                    "before Make my disc.")
+            existing = self.preset_note.text().strip()
+            self.preset_note.setText((existing + " " if existing else "") + note)
 
     def apply_preset_if_fresh(self, name: str) -> bool:
         """Tick a preset only when nothing is ticked yet; customised choices stay (BS-15)."""
@@ -2592,8 +2709,9 @@ class BuildPanel(QWidget):
             "resource_load_guard": self.resource_load_guard_check,
             "loader_wakeup_fix": self.loader_wakeup_fix_check,
             "rb_rename": self.rb_rename_check,
+            "trophy_room": self.trophy_room_check,
             "name_keyboard": self.name_keyboard_check,
-            "penalties": self.penalties_check, "uniform_choice": self.uniform_choice_check, "helmet_finish": self.helmet_finish_check,
+            "penalties": self.penalties_check, "uniform_choice": self.uniform_choice_check, "team_sleeves": self.team_sleeves_check, "helmet_finish": self.helmet_finish_check,
             "kick_laces": self.kick_laces_check, "punter_holder": self.punter_holder_check,
             "franchise_practice": self.franchise_practice_check,
             "practice_squad": self.practice_squad_check, "depth_locks": self.depth_locks_check,
@@ -2731,9 +2849,11 @@ class BuildPanel(QWidget):
             resource_load_guard=self.resource_load_guard_check.isChecked(),
             loader_wakeup_fix=self.loader_wakeup_fix_check.isChecked(),
             rb_rename=self.rb_rename_check.isChecked(),
+            trophy_room=self.trophy_room_check.isChecked(),
             name_keyboard=self.name_keyboard_check.isChecked(),
             penalties=("nfl" if self.penalties_check.isChecked() else ""),
             uniform_choice=(str(self.uniform_choice_mode.currentData() or "choice") if self.uniform_choice_check.isChecked() else ""),
+            team_sleeves=self.team_sleeves_check.isChecked(),
             helmet_finish=("matte" if self.helmet_finish_check.isChecked() else "glossy"),
             kick_laces=self.kick_laces_check.isChecked(),
             punter_holder=self.punter_holder_check.isChecked(),
@@ -2839,7 +2959,7 @@ class BuildPanel(QWidget):
             return True
         return bool(self.softdrink_project_check.isChecked() or self._include_session_project() or p.throw or p.catch_slider or p.accel_ramp or p.draft_ai or p.returner_fix or p.progression or p.franchise_economy
                     or any(getattr(p, key) for key in BUILD_KEYS if key not in r62_ui.LEVELS) or p.cpu_money_downs != "retail" or p.scorebug_runtime or p.momentum > 0 or p.defensive_try or p.zone_drop_cap or p.all_stadiums or p.coverage_slider or p.scramble_tuning or p.flatter_deep_ball or p.chop_block_toggle or p.team_names_2026 or p.music_shuffle or p.practice_squad_screen or p.abilities or p.qb_spy or p.music_policy != "retail" or p.music_unlock or p.music_userlist or p.music_project or p.music_library or p.edge_rename or p.screen_timing is not None or p.hires_pack or p.guardian_cap or p.scorebug or p.scheme_labels or p.camera or p.kick_rules or p.kick_power or p.position_pools or p.depth_roles or p.depth_chart_rows
-                    or p.kickoff_alignment or p.dynamic_kickoff or p.xbe_space or p.kickoff_relocated or p.season_cap or p.season_2026 or p.widescreen or p.overtime or p.team_column or p.seven_on_seven or p.team_history or p.career_stats or p.position_row or p.probowl_order or p.elbow_options or p.the1wam_lineman_rating or p.xemu_display_list_fix or p.resource_load_guard or p.loader_wakeup_fix or p.rb_rename or p.name_keyboard or p.penalties or p.uniform_choice or p.kick_laces or p.punter_holder or p.franchise_practice or p.practice_squad or p.depth_locks or p.prospect_names or p.player_star or p.player_tags or p.roster_edits or p.espn25_plan
+                    or p.kickoff_alignment or p.dynamic_kickoff or p.xbe_space or p.kickoff_relocated or p.season_cap or p.season_2026 or p.widescreen or p.overtime or p.team_column or p.seven_on_seven or p.team_history or p.career_stats or p.position_row or p.probowl_order or p.elbow_options or p.the1wam_lineman_rating or p.xemu_display_list_fix or p.resource_load_guard or p.loader_wakeup_fix or p.rb_rename or p.name_keyboard or p.penalties or p.uniform_choice or p.team_sleeves or p.kick_laces or p.punter_holder or p.franchise_practice or p.practice_squad or p.depth_locks or p.prospect_names or p.player_star or p.player_tags or p.roster_edits or p.espn25_plan
                     or p.commentary or p.playbook_packs or self._helmet_finish_changed()
                     or p.weather_plan or self._weather_haze_changed() or self._number_kerning_changed() or self._modern_color_changed() or self._modern_arrowhead_changed() or self._modern_metlife_changed() or self._modern_metlife_model_changed() or self._modern_helmets_changed() or p.trim_intro_videos or p.cpu_scrambles == "modern")
 
@@ -3035,6 +3155,16 @@ class BuildPanel(QWidget):
             return "Choose where to save the disc."
         if platform_compat.paths_alias(target, source):
             return "Source and output are the same file. Fix: choose a different output file."
+        # b778-bd2: an empty selection used to finish "successfully" with a copy of the
+        # source, and Play latest then started that retail image. Refuse before any work.
+        if (self._state or {}).get("container") == "xiso" and not self.has_work():
+            return ("Nothing is selected, so this would only copy your disc unchanged. Choose a preset or tick at "
+                    "least one change, then Make my disc. The Basic, Modern and Experimental presets add gameplay, "
+                    "franchise and presentation changes; for the SOFTDRINK 2K28 rosters, uniforms and stadium art, "
+                    "use Share > Install SOFTDRINK 2K28.")
+        problem = mod_build.local_output_problem(target)
+        if problem:
+            return problem
         return ""
 
     def _flatter_flight_toggled(self, on):
@@ -3188,8 +3318,11 @@ class BuildPanel(QWidget):
         else:
             self.cpu_scrambles_level.setToolTip(tt.cpu_scrambles_patch.HELP_TEXT)
         for key, reason in r62_ui.UNAVAILABLE.items():
-            getattr(self, key + "_check").setEnabled(False)
-            getattr(self, key + "_check").setToolTip(reason)
+            box = getattr(self, key + "_check")
+            box.setEnabled(False)
+            box.setToolTip(reason)
+            box.setAccessibleDescription(reason)
+            self._set_badge(key, "Not available in this release")
         self.guardian_everyone_practice_check.setEnabled(self.guardian_overlay_check.isEnabled() and self.guardian_overlay_check.isChecked())
         if self.guardian_overlay_check.isChecked():
             self.guardian_cap_check.setChecked(False)
@@ -3338,7 +3471,7 @@ class BuildPanel(QWidget):
             if not ready:
                 box.setChecked(state.get(key) == "applied")
             self._set_badge(key, "EXPERIMENTAL / UNWITNESSED" if ready else
-                            marks.MISSING if not available else
+                            "Official marks pack missing" if not available else
                             "Already in this source" if state.get(key) == "applied" else "Full supported disc required")
         self._refresh()
 
@@ -4299,7 +4432,7 @@ class BuildPanel(QWidget):
             from mod_editor.core import modpack_sources
             receipt = modpack_sources.build_project(plan, softdrink_project, progress)
         elif not include_session:
-            receipt = mod_build.build(plan, progress)
+            receipt = mod_build.build(plan, progress, require_change=True)
         else:
             source = _resolved_build_file(plan.source, "The file to build from")
             facade = self._facade
@@ -4307,7 +4440,8 @@ class BuildPanel(QWidget):
                 cache, session = facade._cache, facade._session
                 if source != _resolved_build_file(facade.source_path, "The open project's game disc"):
                     raise ValueError("Choose the open project's source disc to include its staged edits")
-            receipt = mod_build.build_with_project(plan, facade.build_service, cache, session, progress)
+            receipt = mod_build.build_with_project(plan, facade.build_service, cache, session, progress,
+                                                       require_change=True)
         # Some resource passes follow the receipt's earlier inspection. Keep
         # the existing final source-state refresh, on this worker rather than
         # in the completion dialog's GUI callback. A courtesy refresh failure

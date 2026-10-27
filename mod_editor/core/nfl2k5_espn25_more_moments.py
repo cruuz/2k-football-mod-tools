@@ -746,6 +746,12 @@ def compile_team(template_raw, team, rows, colleges, identity, people=None, *, a
             else:
                 record.skin = (record.skin & ~7) | look["tone"]
                 v["dreads"] = look.get("dreads", 0)
+        # b778-ss1: a classic team's authored face/portrait id (the live f/h/n textures and the menu portrait keyed by
+        # the record's +0x06 photo id). The data only carries this for the Seamen's Bus Jibber.
+        if look.get("photo_id") is not None:
+            v["photo_id"] = int(look["photo_id"])
+        if look.get("face") is not None:
+            v["face"] = int(look["face"])
         v["star_tag"] = int(prospects.native_overall(record) >= STAR_MIN_OVERALL)
         college = row.get("college", "")
         if college and missing_colleges is not None and college not in colleges:

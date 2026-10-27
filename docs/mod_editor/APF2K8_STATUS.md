@@ -1,6 +1,10 @@
 # APF 2K8 Mod Studio — Status
 
-> **Product identity (source/UI): `0.1.0-alpha.108`.** Historical sealed packages below retain prior alpha numbers.
+> **Product identity (source/UI): `0.1.0-alpha.109`.** Historical sealed packages below retain prior alpha numbers.
+
+## 0.1.0-alpha.109: beta 78 (2026-10-26)
+
+Thanks to Basileus Maximus, whose created-play and playbook-window additions are included with his permission under the Studio's MIT licence. Created plays now appear in the in-game Playbook Manager and in Fine-tune Plays, the new Formation plays and Assign plays windows add or remove plays in a formation, the Mirror buttons flip assignments, and designs can compose with Assignment Routes, Who lines up and Fine-tune. His three Title Update 1.1 Xenia patches ship under Tools, off by default, with the charge-abilities overlap resolved. In-game results for these additions are not yet witnessed in a Studio build.
 
 ## 0.1.0-alpha.108: beta 77.1 (2026-10-20)
 

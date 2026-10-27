@@ -583,15 +583,33 @@ class ProgressionTests(unittest.TestCase):
         self.assertTrue(all(r["weight"] >= 1 for r in out))
         self.assertNotEqual([r["weight"] for r in rows], [r["weight"] for r in out])
 
+    def test_data_layer_alone_is_not_a_known_state(self) -> None:
+        # b778-pg1: the synthetic fixture carries only the .rdata tables, not the native career sites, so it is
+        # neither retail nor applied; the full round trip runs on the retail executable below.
+        self.assertEqual(progression.status(self.payload), "foreign")
+        self.assertEqual(progression.status(_build_synthetic_xbe()), "foreign")   # no .rdata windows
+        curves, weights = progression.patched_tables(progression._profiles(self.payload))
+        before = progression.decode_curves(progression.retail_curves())
+        after = progression.decode_curves(curves)
+        for family in before:               # year-0 bytes (draft-day ratings) are untouched in every curve
+            for a, b in zip(before[family], after[family]):
+                self.assertEqual(a[0], b[0])
+
+
+@unittest.skipUnless(RETAIL_XBE.exists(), "private retail XBE missing")
+class ProgressionRetailTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.payload = RETAIL_XBE.read_bytes()
+
     def test_status_and_apply_round_trip(self) -> None:
         self.assertEqual(progression.status(self.payload), "retail")
         patched, receipt = progression.apply(self.payload)
         self.assertEqual(progression.status(patched), "applied")
-        self.assertEqual(receipt["sections_repinned"], [4, 5])
-        self.assertEqual([e["label"] for e in receipt["edits"]], ["aging_curves", "archetype_weights"])
+        self.assertEqual([e["label"] for e in receipt["edits"]],
+                         ["retirement_base_years", "form_routine_and_aging_tables", "aging_curve_hook",
+                          "form_mini_curve_hook", "aging_curves", "archetype_weights"])
         with self.assertRaises(progression.ProgressionError):
             progression.apply(patched)
-        # year-0 bytes (draft-day ratings) are untouched in every curve
         before = progression.decode_curves(progression.retail_curves())
         off = progression._offset(patched, progression.CURVES_VA)
         after = progression.decode_curves(patched[off: off + progression.CURVES_SIZE])
@@ -599,18 +617,15 @@ class ProgressionTests(unittest.TestCase):
             for a, b in zip(before[family], after[family]):
                 self.assertEqual(a[0], b[0])
 
-    def test_foreign_and_missing_tables_are_refused(self) -> None:
-        self.assertEqual(progression.status(_build_synthetic_xbe()), "foreign")   # no .rdata windows
+    def test_foreign_tables_are_refused(self) -> None:
         payload = bytearray(self.payload)
         payload[progression._offset(bytes(payload), progression.CURVES_VA) + 30] ^= 0x7F
         self.assertEqual(progression.status(bytes(payload)), "foreign")
 
     def test_write_copy_applies_returner_and_progression(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
-            source = Path(tmp) / "default.xbe"
-            source.write_bytes(self.payload)
             target = Path(tmp) / "patched.xbe"
-            receipt = tt.write_xbe_copy(source, target, returner_fix=True, progression=True)
+            receipt = tt.write_xbe_copy(RETAIL_XBE, target, returner_fix=True, progression=True)
             self.assertEqual(receipt["returner_fix"], "applied")
             self.assertEqual(receipt["progression"], "applied")
             self.assertIn("returner_fix_patch", receipt)
@@ -661,7 +676,12 @@ class DraftAiTests(unittest.TestCase):
         self.assertEqual(len(draft.POSITIONS), 17)
         self.assertEqual(draft.POSITIONS[0], "QB")
         self.assertEqual(draft.POSITIONS[16], "DE")
-        self.assertLess(draft.VALUE["K"], draft.VALUE["RB"])
+        # b778 dr2: the draft pick values a needed late specialist like a starter; the K/P
+        # restriction lives in the pick policy (late slot plus a 0.30-edge early outlier), and
+        # the Rookie Report keeps its own 0.30 scale so kickers/punters do not climb that list.
+        self.assertEqual(draft.VALUE["K"], draft.VALUE["P"])
+        self.assertLess(draft.ROOKIE_KEY_SCALE["K"], draft.VALUE["K"])
+        self.assertGreaterEqual(draft.SPECIAL_EDGE, 0.30)
         self.assertGreater(draft.VALUE["T"], draft.VALUE["G"])
 
     def test_foreign_bytes_are_refused(self) -> None:

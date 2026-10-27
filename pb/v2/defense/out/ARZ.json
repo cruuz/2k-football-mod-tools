@@ -1923,13 +1923,13 @@
  "receipt": {
   "team": "ARZ",
   "offense_pack": "data/playbooks/softdrink_arz_modern.2k5book",
-  "offense_pack_sha256": "05ba4e52e8251931ae8822887c91c22a0ea292421f2b686bf97b1401021a3587",
-  "source_fingerprint": "a44a1179b13a9217aa6b985639cdcd8d28098ef51019c10cf2da932fddc60aa0",
-  "replacement_sha256": "5a061a03fcdb7422aab5657465d69c0a0bbe0d6258215503d923d0f8808f6608",
+  "offense_pack_sha256": "ac0207f0f127d3c2b872554e1b613ea801db7b7fcfd533bd8f9f7450af4947b0",
+  "source_fingerprint": "e35a40ccfcae63afefc29ede08355e61dd9003298dcecb12bc154c7cefe051df",
+  "replacement_sha256": "5d376a4794edb38099e52ad4aaba3d3cb6c0fc800508a0e6ca2d02930cb45ac5",
   "semantic_sha256": "cc3c41437bcd7df7c2677267b2e26458202bc8c1815b1fce9a81e9bee6102d8e",
   "plays": 64,
   "formations": 4,
-  "nodes": 2622,
+  "nodes": 2675,
   "node_capacity": 3500,
   "formation_count": 50,
   "play_count": 270,
@@ -1938,6 +1938,6 @@
   "spy_play": null,
   "native_scoring_faults": 0,
   "pack": "data/playbooks/softdrink_arz_defense.2k5book",
-  "pack_sha256": "78dfb55f7f8328a776d21675f2fd817474f984e64c05b255e71a94df12870904"
+  "pack_sha256": "ef1e79b5253a1fb982d6dd29ff6df694216db9e045dc1cc48a4b5d3739fb6c83"
  }
 }

@@ -11,6 +11,24 @@ versions (`v1.0-RC36`, `0.1.0-alpha.39`) and only change when their code does.
 
 ---
 
+## beta-78: 2026-10-26
+
+2K5 is **v1.0-RC113** and APF is **0.1.0-alpha.109**. The pack is
+**SOFTDRINK 2K28 v0.7**. The [complete 2K5 changelog](docs/mod_editor/2k5_mod_studio_changelog.md)
+records every change since beta-77.1, what was proved and how, and what is still open. The
+[APF changelog](docs/mod_editor/apf2k8_mod_studio_changelog.md) records the Basileus Maximus additions.
+
+- Grow the dated free agent pool from 26 hand-checked players to 533 real unsigned NFL players, keep veteran stars through the first rollover, and give CPU clubs contract restructures, a 50-player floor and prove-it deals.
+- Add NFL aging and retirement by position, weekly progression, rookie and career stars, and the Player Progress history screen.
+- Add 3,569 rookie faces, the rare gray alien prospect, the broadcast-paced draft clock and the late kicker and punter draft rule.
+- Fix CPU clock management, late fourth downs when trailing, third-down play calls, sneaks in short yardage, sideline behaviour and sprint bursts.
+- Add pass protection and kick and punt coverage options.
+- Add the Trophy Room, the 2006 Sarasota Seamen, scanned faces for all 32 head coaches, hair tops for dreads and locs, and the uniform, nameplate, suffix, college and announcer-name corrections.
+- Fix the franchise save DAMAGED report, the Contracts and Free Agents freeze, Week 9 trades, injured players in practice, the two-minute warning, simulated game pace and simulated cornerback tackles.
+- Studio: refuse an empty or unchanged build, keep ticks made during a disc read, apply all 54 Modern preset changes, compose Player Progress and Franchise Auto Save, check free space and OneDrive folders, and fix the moment-kit and allocator build stops.
+- Windows launchers from the source ZIP set up their own private runtime, and Build & Share wraps its descriptions at full height.
+- APF 2K8: created plays in the Playbook Manager, Formation plays and Assign plays, Mirror, design composition, and Basileus Maximus' three Title Update 1.1 Xenia patches.
+
 ## beta-77.1: 2026-10-20
 
 2K5 is **v1.0-RC112** and APF is **0.1.0-alpha.108**. The pack is

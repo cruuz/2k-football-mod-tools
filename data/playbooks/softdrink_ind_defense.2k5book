@@ -9,10 +9,10 @@
   "notes": "DESIGN: Lou Anarumo (Anarumo multiple disguise); 2025 baseline IND. Clean technique fronts (pb/v2/defense/design.py), retail 2K5 coverage scripts with native pre-snap alignment, situational formation ratings and CPU score bands fitted to the sourced 2025 coverage and blitz rates. Exact offense source required. Gameplay unwitnessed."
  },
  "base": {
-  "book_fingerprint": "4a03578603b2412172ed79eaebf6757cd27ccf902199e385f6d4d28897988fbd",
+  "book_fingerprint": "f16900981d5f2cd466c7909396710bb55d323b68983fb77e3cd07f14797929d3",
   "donor_formation_count": 50,
   "donor_play_count": 268,
-  "donor_node_count": 2321
+  "donor_node_count": 2382
  },
  "budget": {
   "formations": 50,
@@ -1927,7 +1927,7 @@
    "replace_name": "Bear 1 Hard",
    "link_formation": null,
    "link_group": null,
-   "assignments": [null, null, null, null, null, null, null, null, null, null, null],
+   "assignments": [null, null, null, null, null, null, null, null, [[27, [0, 0, 0, 0, 0, 1]], [11, [2, 5, 0]]], null, null],
    "defense_formation": "Bear",
    "front_index": 1,
    "component": "coverage",

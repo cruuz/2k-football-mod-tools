@@ -16,8 +16,16 @@ import zlib
 
 RETAIL_SIZE = 0x91000
 ARENA_SIZE = 0x92000
+# b778 fa4: a capacity-grown arena keeps the same version numbers (18 disc / 1 save) and the same
+# 0x54-byte primary records; only the declared arena length, the block position and the number of
+# records/names change. The original 0x92000 reserve schema is still read and written exactly.
+CAPACITY_ARENA_SIZE = 0xB0000
+ARENA_SIZES = (ARENA_SIZE, CAPACITY_ARENA_SIZE)
+CAPACITY_MAGIC = b'2K5CAP\0\0'
+CAPACITY_DESCRIPTOR_SIZE = 16
 BLOCK_SIZE = 352
 BLOCK_OFFSET = 0x91C00
+CAPACITY_BLOCK_OFFSET = CAPACITY_ARENA_SIZE - 0x400
 MAGIC = b"2K5RSV2\0"
 VERSION = 2
 SAVE_VERSION = 1
@@ -58,6 +66,38 @@ class ArenaError(ValueError):
 def require(ok, message):
     if not ok:
         raise ArenaError(message)
+
+
+def block_offset(arena_size):
+    """Offset of the 352-byte reserve block from the roster root for a supported arena size."""
+
+    if arena_size == ARENA_SIZE:
+        return BLOCK_OFFSET
+    require(arena_size == CAPACITY_ARENA_SIZE, 'unsupported arena size')
+    return CAPACITY_BLOCK_OFFSET
+
+
+def data_end(layout):
+    """First byte that belongs to the reserve/capacity metadata, not ordinary arena data."""
+
+    if layout.version in (SAVE_VERSION, DISC_VERSION):
+        return layout.root + block_offset(layout.arena_size)
+    return layout.end
+
+
+def capacity_descriptor(payload, layout):
+    """(records, old_end) from the capacity marker, or None for the reserve schema."""
+
+    if layout.arena_size != CAPACITY_ARENA_SIZE:
+        return None
+    at = layout.root + CAPACITY_BLOCK_OFFSET - CAPACITY_DESCRIPTOR_SIZE
+    raw = bytes(payload[at:at + CAPACITY_DESCRIPTOR_SIZE])
+    if raw[:8] != CAPACITY_MAGIC:
+        return None
+    records, old_end = struct.unpack_from('<II', raw, 8)
+    require(0 < records < 0x10000 and layout.root < old_end < layout.end,
+            'malformed capacity descriptor')
+    return records, old_end
 
 
 @dataclass(frozen=True)
@@ -102,10 +142,12 @@ class Overflow:
 
 def read(payload, root: int, end: int, version: int) -> Overflow | None:
     if version not in (SAVE_VERSION, DISC_VERSION):
-        require(end - root != ARENA_SIZE, 'grown arena has a legacy version')
+        require(end - root not in ARENA_SIZES, 'grown arena has a legacy version')
         return None
-    require(end - root == ARENA_SIZE, 'grown ROST version has the wrong arena length')
-    raw = bytes(payload[root + BLOCK_OFFSET:root + BLOCK_OFFSET + BLOCK_SIZE])
+    size = end - root
+    require(size in ARENA_SIZES, 'grown ROST version has the wrong arena length')
+    at = root + block_offset(size)
+    raw = bytes(payload[at:at + BLOCK_SIZE])
     require(len(raw) == BLOCK_SIZE, 'truncated reserve overflow')
     magic, ver, teams, slots, width, epoch, crc, mask, flags = struct.unpack_from('<8s4H4I', raw)
     require((magic, ver, teams, slots, width) == (MAGIC, VERSION, NFL_TEAMS, OVERFLOW_SLOTS, 2),
@@ -127,9 +169,10 @@ def read(payload, root: int, end: int, version: int) -> Overflow | None:
     return result
 
 
-def write_block(payload: bytearray, root: int, block: Overflow) -> None:
-    require(root + ARENA_SIZE <= len(payload), 'overflow write outside arena')
-    payload[root + BLOCK_OFFSET:root + BLOCK_OFFSET + BLOCK_SIZE] = block.encode()
+def write_block(payload: bytearray, root: int, block: Overflow, *, arena_size: int = ARENA_SIZE) -> None:
+    at = root + block_offset(arena_size)
+    require(at + BLOCK_SIZE <= len(payload), 'overflow write outside arena')
+    payload[at:at + BLOCK_SIZE] = block.encode()
 
 
 def pointer_fields(document) -> tuple[int, ...]:
@@ -146,7 +189,7 @@ def pointer_fields(document) -> tuple[int, ...]:
 
 
 def migrate(payload: bytes, *, reserves_16: bool = True, created_teams_extra: int = 0,
-            eligible_team_mask: int = 0) -> tuple[bytes, dict]:
+            eligible_team_mask: int = 0, capacity_records: int = 0) -> tuple[bytes, dict]:
     """Copy-only v0/v17 migration. Eligibility is an explicit per-team decision.
 
     Created IDs CREATED_IDS (250/251) are distinct from the retail special
@@ -157,6 +200,11 @@ def migrate(payload: bytes, *, reserves_16: bool = True, created_teams_extra: in
     from .nfl2k5_save_rost import decode
     from . import nfl2k5_practice_squad as ps
     require(type(reserves_16) is bool, 'reserves_16 must be a boolean')
+    require(type(capacity_records) is int and capacity_records >= 0, 'invalid capacity record request')
+    if capacity_records:
+        require(not reserves_16 and not created_teams_extra and not eligible_team_mask,
+                'capacity growth composes with neither the reserve overflow nor extra created teams')
+        return _migrate_capacity(payload, capacity_records)
     require(reserves_16 or created_teams_extra, 'select at least one arena growth option')
     block = Overflow(eligible_mask=eligible_team_mask, extra_teams=created_teams_extra,
                      reserves_enabled=reserves_16)
@@ -265,6 +313,185 @@ def migrate(payload: bytes, *, reserves_16: bool = True, created_teams_extra: in
                     'after_sha256': hashlib.sha256(result).hexdigest()}
 
 
+def _migrate_capacity(payload: bytes, records: int) -> tuple[bytes, dict]:
+    """Append blank primary records and private name buffers, growing the arena to CAPACITY_ARENA_SIZE.
+
+    Every existing table and object keeps its bytes; the primary insertion moves everything after
+    the primary table by records * 0x54 and rebases the exact pointer inventory used by C0730. The
+    new records copy the last vacant create record and point at two fresh 34-byte blank names in the
+    growth area, so the native Create Player and the dated refresh can both use them. The free-agent
+    list is not moved or extended here; the roster writers append entries into the native list's
+    existing 2,500-slot capacity. The reserve block moves to the end of the grown arena and stays
+    empty, which is what the capacity runtime validates.
+    """
+    from .nfl2k5_save_rost import decode
+    require(0 < records < 0x10000, 'invalid capacity record request')
+    payload = bytes(payload)
+    document = decode(payload)
+    layout = document.layout
+    prior = read(payload, layout.root, layout.end, layout.version)
+    if prior is not None:
+        descriptor = capacity_descriptor(payload, layout)
+        require(descriptor is not None and descriptor[0] == records,
+                'arena settings differ; rebuild from the original')
+        return payload, {'already_applied': True, 'changed_bytes': 0, 'file_growth': 0,
+                         'capacity_records': records, 'arena_size': layout.arena_size}
+    require(layout.version in (0, 17), 'capacity growth requires a retail or saved roster')
+    require(layout.arena_size in (RETAIL_SIZE, 0x90F20), 'capacity growth requires the retail arena')
+    primary = document.tables['primary']
+    require(primary.offset is not None, 'missing primary player table')
+    old_count, old_end, root = primary.count, layout.end, layout.root
+    point = primary.offset + old_count * 84
+    insert = records * 84
+    names_start = (old_end + insert + 1) & ~1
+    names_end = names_start + records * 68
+    block_at = root + CAPACITY_BLOCK_OFFSET
+    require(names_end <= block_at - CAPACITY_DESCRIPTOR_SIZE, 'capacity records and names do not fit the arena')
+    fields = pointer_fields(document)
+    targets = {field: document.rel(field, label='capacity relocation') for field in fields}
+
+    def moved(value):
+        if value is None:
+            return None
+        require(value < old_end, 'pointer outside the source arena')
+        return value + insert if value >= point else value
+
+    # The last blank create record is the template; every new record gets private name buffers.
+    template = None
+    for index in range(old_count - 1, 0, -1):
+        at = primary.offset + index * 84
+        if payload[at + 8] & 5 != 1:
+            continue
+        first = document.rel(at + 0x10)
+        last = document.rel(at + 0x14)
+        if first is None or last is None or last != first + 34:
+            continue
+        if document.original[first:first + 34] == '****************'.encode('utf-16le') + b'\0\0' \
+                and document.original[last:last + 34] == '****************'.encode('utf-16le') + b'\0\0':
+            template = at
+            break
+    require(template is not None, 'capacity growth needs a blank create record to copy')
+    template_raw = payload[template:template + 84]
+    template_targets = {field: document.rel(template + field) for field in TABLE_POINTERS['primary']}
+
+    new_end = root + CAPACITY_ARENA_SIZE
+    out = bytearray(payload[:point]) + bytearray(insert) + bytearray(payload[point:old_end])
+    out.extend(bytes(new_end - len(out)))
+    out.extend(payload[old_end:])
+    for field, target in targets.items():
+        field_at = moved(field)
+        target_at = moved(target)
+        struct.pack_into('<i', out, field_at, 0 if target_at is None else target_at - field_at + 1)
+    struct.pack_into('<I', out, root, old_count + records)
+    for i in range(records):
+        at = point + i * 84
+        out[at:at + 84] = template_raw
+        for field in TABLE_POINTERS['primary']:
+            target_at = moved(template_targets[field])
+            # A blank create record has no college/history identity; new vacancies start null.
+            if field in (0, 0x2C):
+                target_at = None
+            struct.pack_into('<i', out, at + field, 0 if target_at is None else target_at - at - field + 1)
+        name = names_start + i * 68
+        blank = '****************'.encode('utf-16le') + b'\0\0'
+        out[name:name + 34] = blank
+        out[name + 34:name + 68] = blank
+        for field, target_at in ((0x10, name), (0x14, name + 34)):
+            struct.pack_into('<i', out, at + field, target_at - at - field + 1)
+    struct.pack_into('<I', out, layout.preamble + 0x10,
+                     SAVE_VERSION if layout.version == 0 else DISC_VERSION)
+    descriptor_at = block_at - CAPACITY_DESCRIPTOR_SIZE
+    out[descriptor_at:descriptor_at + CAPACITY_DESCRIPTOR_SIZE] = struct.pack(
+        '<8sII', CAPACITY_MAGIC, records, old_end)
+    write_block(out, root, Overflow(reserves_enabled=False), arena_size=CAPACITY_ARENA_SIZE)
+    if layout.wrapper is not None:
+        struct.pack_into('<I', out, layout.wrapper + 4, root + CAPACITY_ARENA_SIZE - layout.preamble)
+        if layout.version == 0:
+            auxiliary = struct.unpack_from('<I', payload, layout.wrapper + 8)[0]
+            if not auxiliary and any(payload[old_end - 366:old_end]):
+                # Some real saves leave the native 366-byte auxiliary tail undeclared (wrapper +8 = 0)
+                # while the tail still holds state. Preserve it and declare it in the grown wrapper.
+                auxiliary = 366
+            require(auxiliary <= CAPACITY_ARENA_SIZE - CAPACITY_BLOCK_OFFSET - BLOCK_SIZE,
+                    'native auxiliary tail overlaps the capacity block')
+            if auxiliary:
+                out[new_end - auxiliary:new_end] = payload[old_end - auxiliary:old_end]
+                struct.pack_into('<I', out, layout.wrapper + 8, auxiliary)
+        else:
+            struct.pack_into('<I', out, layout.wrapper + 8, root + CAPACITY_ARENA_SIZE - layout.preamble)
+    result = bytes(out)
+    final = decode(result)
+    require(final.tables['primary'].count == old_count + records, 'capacity record count mismatch')
+    require(capacity_descriptor(result, final.layout) == (records, old_end), 'capacity descriptor mismatch')
+    return result, {'already_applied': False, 'experimental': True, 'runtime_witnessed': False,
+                    'arena_size': CAPACITY_ARENA_SIZE, 'capacity_records': records,
+                    'primary_before': old_count, 'primary_after': old_count + records,
+                    'record_insert_offset': point, 'record_insert_bytes': insert,
+                    'names_start': names_start, 'names_end': names_end,
+                    'block_offset': CAPACITY_BLOCK_OFFSET, 'pointer_fields_rebased': len(fields),
+                    'file_growth': len(result) - len(payload),
+                    'before_sha256': hashlib.sha256(payload).hexdigest(),
+                    'after_sha256': hashlib.sha256(result).hexdigest()}
+
+
+def _legacy_capacity(payload: bytes, layout) -> bytes:
+    """Inverse of _migrate_capacity for the retail-geometry inspectors."""
+
+    from .nfl2k5_save_rost import decode
+    document = decode(payload)
+    descriptor = capacity_descriptor(payload, layout)
+    require(descriptor is not None, 'not a capacity-grown roster')
+    records, old_end = descriptor
+    primary = document.tables['primary']
+    require(primary.offset is not None, 'missing primary player table')
+    if records == 0:
+        return payload
+    point = primary.offset + (primary.count - records) * 84
+    insert = records * 84
+    fields = pointer_fields(document)
+    targets = {field: document.rel(field, label='capacity reverse') for field in fields}
+
+    def unmoved(value):
+        if value is None:
+            return None
+        require(value < layout.end, 'pointer outside the grown arena')
+        if value >= names_start:
+            require(value >= point + insert, 'pointer selects a removed capacity name')
+        return value - insert if value >= point + insert else value
+
+    names_start = old_end + insert
+    fa = document.tables['free_agents']
+    kept = fa.count
+    if fa.offset is not None:
+        while kept and (lambda target: target is not None and point <= target < point + insert)(
+                document.rel(fa.offset + (kept - 1) * 4)):
+            kept -= 1
+        require(all(not (lambda target: target is not None and point <= target < point + insert)(
+                    document.rel(fa.offset + i * 4)) for i in range(kept)),
+                'a retained free agent selects a removed capacity record')
+    out = bytearray(payload[:point]) + bytearray(payload[point + insert:names_start])
+    out.extend(payload[layout.end:])
+    for field, target in targets.items():
+        if point <= field < point + insert or field >= layout.end:
+            continue
+        field_at = unmoved(field)
+        target_at = unmoved(target)
+        struct.pack_into('<i', out, field_at, 0 if target_at is None else target_at - field_at + 1)
+    struct.pack_into('<I', out, layout.root, primary.count - records)
+    if fa.offset is not None:
+        struct.pack_into('<I', out, layout.root + 0x38, kept)
+    struct.pack_into('<I', out, layout.preamble + 0x10, 17 if layout.version == DISC_VERSION else 0)
+    if layout.wrapper is not None:
+        struct.pack_into('<II', out, layout.wrapper + 4, old_end - layout.preamble,
+                         old_end - layout.preamble)
+    result = bytes(out)
+    from .nfl2k5_save_rost import decode as _decode
+    check = _decode(result)
+    require(check.tables['primary'].count == primary.count - records, 'capacity reverse mismatch')
+    require(check.tables['free_agents'].count == kept, 'capacity reverse free agents mismatch')
+    return result
+
+
 def legacy_disc_resource(payload: bytes) -> bytes:
     """Read-only inverse of migrate() for a grown disc main ROST (version 18).
 
@@ -278,6 +505,12 @@ def legacy_disc_resource(payload: bytes) -> bytes:
     from .nfl2k5_save_rost import decode
     from . import nfl2k5_practice_squad as ps
     payload = bytes(payload)
+    if len(payload) == CAPACITY_ARENA_SIZE + 0x60:
+        document = decode(payload)
+        require(document.layout.arena_size == CAPACITY_ARENA_SIZE, 'not a grown disc roster')
+        legacy = _legacy_capacity(payload, document.layout)
+        require(len(legacy) == LEGACY_DISC_RESOURCE_SIZE, 'capacity reverse is not retail geometry')
+        return legacy
     require(len(payload) == GROWN_DISC_RESOURCE_SIZE, 'not a grown disc roster resource')
     document = decode(payload)
     layout, block = document.layout, document.overflow
@@ -322,9 +555,10 @@ def legacy_disc_resource(payload: bytes) -> bytes:
 
 
 def grown_outer(archive, index: int) -> bool:
-    """True when outer ``index`` of an OuterImage-style archive has the grown disc roster size."""
+    """True when outer ``index`` of an OuterImage-style archive has a grown disc roster size."""
     entries = archive.entries
-    return len(entries) > index and entries[index].size == GROWN_DISC_RESOURCE_SIZE
+    return len(entries) > index and entries[index].size in (
+        GROWN_DISC_RESOURCE_SIZE, CAPACITY_ARENA_SIZE + 0x60)
 
 
 def inspection_resource(archive, index: int) -> bytes:
@@ -361,7 +595,8 @@ def repack(payload: bytearray, document, team_index: int, active, reserves, *, m
     payload[team.offset + ps.VERSION_OFFSET] = VERSION
     payload[team.offset + ps.COUNT] = len(reserves)
     payload[team.offset + ps.MARKER_OFFSET] = ps.MARKER
-    write_block(payload, layout.root, block.with_row(team_index, (active + reserves)[65:]))
+    write_block(payload, layout.root, block.with_row(team_index, (active + reserves)[65:]),
+                arena_size=layout.arena_size)
 
 
 def remap_reserves(original, candidate, identity_map):
@@ -392,17 +627,19 @@ def remap_reserves(original, candidate, identity_map):
         reserves = [identity_map[i] for i in squads[team.index] if identity_map[i] is not None]
         repack(out, new, team.index, active, reserves)
     block = read(out, new.layout.root, new.layout.end, new.layout.version)
-    write_block(out, new.layout.root, replace(block, epoch=block.epoch+1))
+    write_block(out, new.layout.root, replace(block, epoch=block.epoch+1), arena_size=new.layout.arena_size)
     ps.validate_roster(out)
     return bytes(out)
 
 
-def migrate_save(source, target, *, reserves_16=True, created_teams_extra=0, eligible_team_mask=0):
+def migrate_save(source, target, *, reserves_16=True, created_teams_extra=0, eligible_team_mask=0,
+                 capacity_records=0):
     """Verify the original signature and write/reopen a newly signed COPY."""
     from . import nfl2k5_save_rost as codec
     document, container = codec.load_save(source)
     payload, receipt = migrate(document.to_bytes(), reserves_16=reserves_16,
-                               created_teams_extra=created_teams_extra, eligible_team_mask=eligible_team_mask)
+                               created_teams_extra=created_teams_extra, eligible_team_mask=eligible_team_mask,
+                               capacity_records=capacity_records)
     written = container.write(target, payload)
     reopened, _ = codec.load_save(target)
     require(reopened.to_bytes() == payload, 'migrated signed copy differs')
@@ -419,6 +656,8 @@ def main(argv=None):
     parser.add_argument('--output', type=Path)
     parser.add_argument('--created-teams-extra', type=int, choices=(0, 2), default=0)
     parser.add_argument('--reserves-16', action=argparse.BooleanOptionalAction, default=True)
+    parser.add_argument('--capacity-records', type=int, default=0,
+                        help='b778 fa4: grow to the 0xB0000 capacity arena with this many blank records')
     parser.add_argument('--eligible-team-mask', type=lambda s: int(s, 0), default=0)
     args = parser.parse_args(argv)
     try:
@@ -434,7 +673,8 @@ def main(argv=None):
                 parser.error('migrate requires --output for the signed copy')
             result = migrate_save(args.source, args.output, reserves_16=args.reserves_16,
                                   created_teams_extra=args.created_teams_extra,
-                                  eligible_team_mask=args.eligible_team_mask)
+                                  eligible_team_mask=args.eligible_team_mask,
+                                  capacity_records=args.capacity_records)
         print(json.dumps(result, indent=2))
     except (ValueError, OSError) as exc:
         parser.exit(2, f'arena migration refused: {exc}\n')

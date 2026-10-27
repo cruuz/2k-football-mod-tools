@@ -11,6 +11,11 @@ that all 32 retail team books satisfy:
 * ``DEF_NO_EDGE``: each side of the ball needs a defender on the line (within 1.2 yd) outside the tackle; a front
   with nobody outside the tackle on one side is lopsided (the v0.5 "Tite Look").
 * ``DEF_ACROSS_LINE``: nobody lines up in the offensive backfield.
+* ``DEF_PRESNAP_ACROSS_LINE`` (b778 of1, plays): a defensive play's Defense Start node (0x1B) in mode 0 moves its
+  defender by (x, y) from his formation spot before the snap. Formation depth plus that y must stay on the defense's
+  side of the ball. Every retail team book holds to it (shallowest standing defender: 61 cm, the Bear crash corners);
+  the v0.6.1 Bear 46 corner blitzes broke it (a 4-3 crash corner's -3 yd step from a 1.7 yd press spot put the corner
+  1.3 yd offside, flagged by the engine on the snap).
 
 Positions are centimetres (+x = offense's right, z = depth off the ball toward the defense's goal). Pure Python, no
 game data is bundled; the caller supplies the resource or the formation.
@@ -34,7 +39,9 @@ DL_KINDS = frozenset({12, 13})
 PRESSURE_WORDS = ('mug', 'double a')
 SCHEMA = 'nfl2k5_defense_lint/v1'
 ERROR_CODES = frozenset({'DEF_SPACING', 'DEF_MIDDLE_STANDING', 'DEF_PRESSURE_AS_BASE', 'DEF_NO_EDGE',
-                         'DEF_ACROSS_LINE'})
+                         'DEF_ACROSS_LINE', 'DEF_PRESNAP_ACROSS_LINE'})
+ACROSS_LINE_TOLERANCE_CM = 15.0     # DEF_ACROSS_LINE and DEF_PRESNAP_ACROSS_LINE: a stance's worth of slack
+DEFENSE_START = 0x1B
 
 # Technique centres in cm (one third of the engine's 5 ft line split per shade): label, |x| centre.
 TECHNIQUES = (('0', 0), ('1', 50), ('2i', 100), ('2', 152), ('3', 205), ('4i', 255), ('4', 304), ('5', 360),
@@ -89,7 +96,7 @@ def formation_findings(f: DefenseFormation, *, sole_in_category: bool = False) -
     kinds = [c & 31 for c in f.codes]
     label = lambda s: codec.position_label(f.codes[s])
     for a in range(11):
-        if pts[a][1] < -15:
+        if pts[a][1] < -ACROSS_LINE_TOLERANCE_CM:
             out.append(LintFinding('DEF_ACROSS_LINE', f'{label(a)} (slot {a}) lines up {(-pts[a][1]) / YD:.1f} yd in '
                                    'the offensive backfield', f.index, f.name, (a,)))
         for b in range(a + 1, 11):
@@ -146,8 +153,54 @@ def lint_formations(formations: Iterable[DefenseFormation]) -> list[LintFinding]
     return out
 
 
+def presnap_offset(chain) -> tuple[float, float] | None:
+    """(x, y) cm a chain's leading Defense Start moves its defender from his formation spot before the snap, or None.
+
+    ``chain`` is an authored chain (``[(op, operands), ...]``). Only mode 0 (A = 0) is spot-relative; the other modes
+    anchor on the line of scrimmage or on a receiver and the engine places those itself."""
+    if not chain or chain[0][0] != DEFENSE_START:
+        return None
+    ops = chain[0][1]
+    if int(round(float(ops[0]))) != 0:
+        return None
+    return float(ops[2]), float(ops[3])
+
+
+def presnap_depth(formation_depth_cm: float, chain) -> float | None:
+    """Pre-snap depth (cm off the ball, + = defense side) of a defender whose formation spot is that deep."""
+    off = presnap_offset(chain)
+    return None if off is None else float(formation_depth_cm) + off[1]
+
+
+def play_findings(resource: bytes) -> list[LintFinding]:
+    """``DEF_PRESNAP_ACROSS_LINE`` for every defensive play listed on every defensive formation of a PLAY resource."""
+    from . import nfl2k5_play_library as lib
+    from . import nfl2k5_playbook_inspector as insp
+    book = insp.parse_playbook_resource(resource)
+    body = resource[insp.RESOURCE_HEADER_SIZE:]
+    out: list[LintFinding] = []
+    for formation in book.formations:
+        rec = lib.formation_record(body, formation.index)
+        if not 4 <= rec.type_code <= 7:
+            continue
+        codes = lib.category_positions(body, lib.formation_category(body, formation.index))
+        name = formation.name.strip()
+        for play in book.plays_for_formation(formation.index):
+            if play.family_id != 1:
+                continue
+            for slot, chain in enumerate(lib.decoded_chains(body, play.index)):
+                depth = presnap_depth(rec.slots[slot].z[0], chain)
+                if depth is not None and depth < -ACROSS_LINE_TOLERANCE_CM:
+                    out.append(LintFinding(
+                        'DEF_PRESNAP_ACROSS_LINE',
+                        f'play {play.index} "{play.name.strip()}": {codec.position_label(codes[slot])} (slot {slot}) '
+                        f'walks up {(-chain[0][1][3]) / YD:.1f} yd from his {rec.slots[slot].z[0] / YD:.1f} yd spot '
+                        f'before the snap and stands {(-depth) / YD:.1f} yd offside', formation.index, name, (slot,)))
+    return out
+
+
 def lint_resource(resource: bytes) -> list[LintFinding]:
-    return lint_formations(resource_formations(resource))
+    return lint_formations(resource_formations(resource)) + play_findings(resource)
 
 
 def front_diagram(f: DefenseFormation, width: int = 61) -> str:

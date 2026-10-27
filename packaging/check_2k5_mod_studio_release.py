@@ -318,7 +318,7 @@ REVIEWED_ICON_SHA256 = (
 # V10's new pixel art is distributable; retail PNGs remain forbidden. Each
 # exception is an exact reviewed path, byte count, hash and PNG dimension.
 SCOREBUG_TEMPLATE_PNG_CATALOG = "packaging/nfl2k5_scorebug_template_pngs.json"
-SCOREBUG_TEMPLATE_PNG_CATALOG_SHA256 = "4cfbf9f43f396fc4b78e9f719567b8b2b66699284f35afbf77f4d73a363e0931"
+SCOREBUG_TEMPLATE_PNG_CATALOG_SHA256 = "1cc0f20e9ee187f2e0eda6efaf87db61fa3eecd39e71a915c3edfac2b33ffd79"  # b778-sb5 merge: the merged catalog
 
 # Anniversary paint is authored or cropped from publicly sourced references.
 # Retail wordmarks/shields/scenes are read from the user's disc at compile time
@@ -329,10 +329,11 @@ ANNIVERSARY_FIELD_PNG_CATALOG_SHA256 = "c621d94c4f48f26ab6c44e912dd5d5ff7a36d070
 
 # b772: the 2026 coaches (co1/co2), the 2026 fans (fr1) and the 2025-26 officials (rf1) ship authored PNG art.
 # Like the two catalogs above this is an exact, immutable list (path, byte count, SHA-256, PNG dimensions) of files
-# reviewed as authored art: no photograph or photo crop and no retail-extracted pixels. It grants no general PNG
+# reviewed as authored art: no photograph or photo crop and no retail-extracted pixels, except the scanned coach heads
+# (b778 cf1-cf4: photo-derived likeness textures, Noah 2026-10-12; see the catalog's classification). It grants no general PNG
 # exception inside those folders; tools/b77/modern_art_png_catalog.py regenerates it and prints the digest below.
 MODERN_ART_PNG_CATALOG = "packaging/nfl2k5_modern_art_pngs.json"
-MODERN_ART_PNG_CATALOG_SHA256 = "971bab7b763dac390df447fac7333c5f9552fc8b7c06422743e9dc5f12a5ccb5"  # b776-int2: + fn2 four Titans 7 digits; b775-int1: sb1 marks + hs1 nine hair textures
+MODERN_ART_PNG_CATALOG_SHA256 = "bfa84f7a2d2ddfc63f3fb2812b39b65454814eba78b4f746c7930936a2a667a3"  # b778 cf5: seven scanned coach heads (ARI BUF DEN HOU LV NO SEA); b778 3d1: classification names the scanned heads as photo-derived; b778-pg2: + the TROPHY ROOM emblem; b778-ee1: + the 4 gray alien PNGs; b778-ss1: + the 15 Seamen card/field/face PNGs; b778-rh1/rh2: + the 18 rookie face bank atlases; b778 cf1: four scanned coach heads; b778 cf2: seven scanned coach heads and the PIT rescan; b778 cf3: seven scanned coach heads; b778 cf4: seven scanned coach heads, KC head.png in place of head_mask + head_overlay; b778 cm2: six coach heads and apparel; b776-int2: + fn2 four Titans 7 digits; b775-int1: sb1 marks + hs1 nine hair textures
 
 
 def _scorebug_template_pngs(root: Path) -> dict:
@@ -386,7 +387,9 @@ def _modern_art_pngs(root: Path) -> dict:
 
 def _validate_reviewed_png(path: Path, relative: str, info, contract: dict, label: str) -> None:
     import struct
-    if info.st_size != contract["size"] or info.st_size > 512 * 1024:
+    # b778-rh1/rh2: the rookie face banks are 2048x2048 atlases, much larger than a single authored texture.
+    limit = MAX_RELEASE_FILE_BYTES if relative.startswith("data/nfl2k5_rookie_faces/") else 512 * 1024
+    if info.st_size != contract["size"] or info.st_size > limit:
         raise ReleaseCheckError(f"reviewed {label} PNG size changed: {relative}")
     with path.open("rb") as stream:
         data = stream.read(info.st_size + 1)
@@ -719,6 +722,16 @@ def audit_release(root: Path, allowlist: Path) -> dict[str, object]:
         if relative in modern_art_pngs:
             _validate_reviewed_png(path, relative, info, modern_art_pngs[relative], "modern-art")
             reviewed_modern_art_png_count += 1
+            seen_files.add(relative)
+            total_bytes += info.st_size
+            continue
+        if suffix == ".span":
+            # b778-ss1: authored span patches are binary inputs; the explicit allowlist entry is the review.
+            if info.st_size > MAX_RELEASE_FILE_BYTES:
+                raise ReleaseCheckError(f"release file exceeds its reviewed size ceiling: {relative}")
+            payload = path.read_bytes()
+            if len(payload) != info.st_size:
+                raise ReleaseCheckError(f"release file changed while being read: {relative}")
             seen_files.add(relative)
             total_bytes += info.st_size
             continue

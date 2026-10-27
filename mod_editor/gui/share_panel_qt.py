@@ -35,7 +35,7 @@ from PyQt5.QtWidgets import (
 )
 
 from mod_editor.core import mod_build, modpack, platform_compat
-from mod_editor.gui.ux_text import XEMU_LINE, Details, disc_next_steps
+from mod_editor.gui.ux_text import XEMU_LINE, Details, WrappedLabel, disc_next_steps
 from mod_editor.gui.task_delivery import bound
 
 IMAGE_FILTER = "Disc images (*.iso *.xiso);;All files (*)"
@@ -130,7 +130,7 @@ class SharePanel(QWidget):
     # ------------------------------------------------------------------ build
     def _build(self) -> None:
         layout = QVBoxLayout(self)
-        intro = QLabel(
+        intro = WrappedLabel(
             "To play SOFTDRINK 2K28, click Install SOFTDRINK 2K28 below. "
             "Choose your unmodified game image, the downloaded .2k5patch file, then where to save the new image."
         )
@@ -147,10 +147,10 @@ class SharePanel(QWidget):
         # ---- the easy way: the copy the Build tab just wrote
         quick = QGroupBox("Export mod file")
         quick_layout = QVBoxLayout(quick)
-        self.quick_hint = QLabel("Make a disc on the Build tab, then export a .2k5patch to share yourself.")
+        self.quick_hint = WrappedLabel("Make a disc on the Build tab, then export a .2k5patch to share yourself.")
         self.quick_hint.setWordWrap(True)
         quick_layout.addWidget(self.quick_hint)
-        self.quick_target_label = QLabel("")
+        self.quick_target_label = WrappedLabel("")
         self.quick_target_label.setWordWrap(True)
         self.quick_target_label.setTextInteractionFlags(Qt.TextSelectableByMouse)
         self.quick_target_label.hide()
@@ -162,7 +162,7 @@ class SharePanel(QWidget):
         self.quick_export_button.setToolTip("Make a disc on the Build tab first.")
         self.quick_export_button.clicked.connect(self.start_export)
         quick_row.addWidget(self.quick_export_button)
-        self.quick_reason = QLabel("Make a disc on the Build tab first.")
+        self.quick_reason = WrappedLabel("Make a disc on the Build tab first.")
         self.quick_reason.setObjectName("throwMuted")
         quick_row.addWidget(self.quick_reason, 1)
         quick_layout.addLayout(quick_row)
@@ -207,7 +207,7 @@ class SharePanel(QWidget):
         assets_buttons.addStretch(1)
         assets_layout.addLayout(assets_buttons)
         self.project_field, self.project_button = self._path_row(assets_layout, "Project file (.2k5mod, optional)", self._choose_project)
-        assets_note = QLabel("Recognized changes are described automatically. Optional files help others edit your work.")
+        assets_note = WrappedLabel("Recognized changes are described automatically. Optional files help others edit your work.")
         assets_note.setWordWrap(True)
         assets_layout.addWidget(assets_note)
         create_layout.addWidget(assets_box)
@@ -220,14 +220,14 @@ class SharePanel(QWidget):
         create_actions.addWidget(self.export_button)
         create_actions.addStretch(1)
         create_layout.addLayout(create_actions)
-        self.export_status = QLabel("")
+        self.export_status = WrappedLabel("")
         self.export_status.setWordWrap(True)
         create_layout.addWidget(self.export_status)
         quick_layout.addWidget(self.export_details)
 
         apply_box = QGroupBox("Install SOFTDRINK 2K28")
         apply_layout = QVBoxLayout(apply_box)
-        self.install_hint = QLabel("Select the .2k5patch file itself. Keep it as downloaded; you do not need to extract it or choose a folder.")
+        self.install_hint = WrappedLabel("Select the .2k5patch file itself. Keep it as downloaded; you do not need to extract it or choose a folder.")
         self.install_hint.setWordWrap(True)
         apply_layout.addWidget(self.install_hint)
         self.install_softdrink_button = QPushButton("Install SOFTDRINK 2K28")
@@ -239,18 +239,18 @@ class SharePanel(QWidget):
         self.customize_softdrink_button.clicked.connect(self.customize_softdrink)
         apply_layout.addWidget(self.customize_softdrink_button)
         self.pack_field, self.pack_button = self._path_row(apply_layout, "Mod file (.2k5patch)", self._choose_pack)
-        self.pack_summary = QLabel("Choose a .2k5patch file to see what it does.")
+        self.pack_summary = WrappedLabel("Choose a .2k5patch file to see what it does.")
         self.pack_summary.setWordWrap(True)
         self.pack_summary.setTextInteractionFlags(Qt.TextSelectableByMouse)
         apply_layout.addWidget(self.pack_summary)
         self.source_field, self.source_button = self._path_row(apply_layout, "Your disc (.iso, never modified)", self._choose_source)
         # Which disc this is decides whether a byte-run patch can ever apply, so say it as soon
         # as the path is known rather than after a check has counted 2,802 mismatching runs.
-        self.source_identity = QLabel("")
+        self.source_identity = WrappedLabel("")
         self.source_identity.setWordWrap(True)
         self.source_identity.setTextInteractionFlags(Qt.TextSelectableByMouse)
         apply_layout.addWidget(self.source_identity)
-        self.check_status = QLabel("")
+        self.check_status = WrappedLabel("")
         self.check_status.setWordWrap(True)
         apply_layout.addWidget(self.check_status)
         self.target_field, self.target_button = self._path_row(apply_layout, "Save disc copy as", self._choose_target)
@@ -265,13 +265,13 @@ class SharePanel(QWidget):
         apply_actions.addWidget(self.apply_button)
         apply_actions.addStretch(1)
         apply_layout.addLayout(apply_actions)
-        self.apply_status = QLabel("")
+        self.apply_status = WrappedLabel("")
         self.apply_status.setWordWrap(True)
         apply_layout.addWidget(self.apply_status)
         layout.addWidget(apply_box)
         layout.addWidget(quick)
 
-        self.progress_label = QLabel("")
+        self.progress_label = WrappedLabel("")
         layout.addWidget(self.progress_label)
         self.progress_bar = QProgressBar()
         self.progress_bar.setRange(0, 100)

@@ -26,6 +26,7 @@ import struct
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(ROOT), str(ROOT / "tools"), str(ROOT / "tests")]
@@ -131,7 +132,7 @@ class CatalogueTests(unittest.TestCase):
             self.assertEqual(name, hs.texture_name(style.texture))
         self.assertEqual(hs.REQUESTS, (("nfl2k5_hair_styles", "code", 768, 16),))
         # b776-ai2, b776-pa2, b776-ns1, b777-ol1 and b777-qb3 code owners follow the hair styles (int7 order; none moves this allocation)
-        self.assertEqual(space.LATE_OWNERS[-8:], (hs.OWNER, "nfl2k5_cpu_qb_reads", "nfl2k5_db_ball_play", "nfl2k5_play_art_routes", "nfl2k5_team_number_scale", "nfl2k5_run_blocking", "nfl2k5_qb_accuracy", "nfl2k5_formation_art_spacing"))  # b777-tp1 last
+        self.assertEqual(space.LATE_OWNERS[-25:-4], (hs.OWNER, "nfl2k5_cpu_qb_reads", "nfl2k5_db_ball_play", "nfl2k5_play_art_routes", "nfl2k5_team_number_scale", "nfl2k5_run_blocking", "nfl2k5_qb_accuracy", "nfl2k5_formation_art_spacing", "nfl2k5_force_out", "nfl2k5_practice_injuries", "nfl2k5_ball_carrier_ai", "nfl2k5_star_retention", "nfl2k5_star_career", "nfl2k5_cpu_money_downs_late", "nfl2k5_cpu_money_downs_late_state", "nfl2k5_draft_clock", "nfl2k5_weekly_progression", "nfl2k5_player_progress_screen", "nfl2k5_contract_college_guard", "nfl2k5_sim_cb_tackles", "nfl2k5_clock_led"))  # b778-fo1 last
 
     def test_assignments_only_set_hair_style_and_carry_sources(self):
         document = json.loads(EDITS.read_text(encoding="utf-8"))
@@ -203,6 +204,8 @@ class SceneTests(unittest.TestCase):
                 self.assertEqual(len(folded), len(original))
                 lay = hs.layout(key, original)
                 allowed = set(fields[key]) | {lay.descriptor + 0x1C, lay.shape + 0x4C, lay.shape + 0x54}
+                if receipt["dreads_top_words"]:      # b778 hr4: the retail dreads' word count grows by their top
+                    allowed.add(hs._dreads_row(lay)["record"] + 0x7C)
                 changed = {o - o % 4 for o in range(len(original)) if folded[o] != original[o]}
                 self.assertTrue(changed <= allowed, sorted(changed - allowed)[:8])
                 # the retail dreads keep their material, submesh and vertices
@@ -236,7 +239,8 @@ class SceneTests(unittest.TestCase):
             inserts = [(r["at"], r["bytes"]) for r in receipt["inserts"]]
             shift = lambda o: o + sum(n for at, n in inserts if at <= o)  # noqa: E731
             lay = hs.layout(key, original)
-            counts = {lay.descriptor + 0x1C, lay.shape + 0x4C, lay.shape + 0x54, lay.shape + 0x58}
+            counts = {lay.descriptor + 0x1C, lay.shape + 0x4C, lay.shape + 0x54, lay.shape + 0x58,
+                      hs._dreads_row(lay)["record"] + 0x7C}     # b778 hr4: the dreads' word count (their top)
             straddle = {at - at % 4 for at, _n in inserts if at % 4}
             moved = mismatched = 0
             for o in range(0, len(original) - 3, 4):
@@ -527,6 +531,52 @@ class DiscTests(unittest.TestCase):
             self.assertEqual(hs.apply_to_image(path)["status"], "already_applied")
 
 
+    def test_final_gate_refuses_an_image_that_lost_half_of_the_hair(self):
+        """b778-hr3: the build's publication gate re-reads the finished image."""
+        with tempfile.TemporaryDirectory() as tmp:
+            path = (Path(tmp) / "fixture.iso").resolve()
+            self.fixture(path)
+            with self.assertRaisesRegex(hs.HairStylesError, "'retail'"):
+                hs.verify_final(path)
+            hs.apply_to_image(path)
+            with self.assertRaisesRegex(hs.HairStylesError, "'partial'"):
+                hs.verify_final(path)      # resources without the executable owner
+
+
+#: b778-hr3: the released v0.6.1 disc (read only; private, the test skips without it)
+V061_DISC = Path(os.environ.get("NFL2K5_V061_DISC",
+                                "/media/noah/Storage/2K5 Discs/SOFTDRINK 2K28 v0.6.1 (2026-10-20).xiso.iso"))
+
+
+class FinalGateTests(unittest.TestCase):
+    """b778-hr3: verify_final, the publication gate mod_build runs after every step."""
+
+    def test_roster_loss_after_the_hair_step_is_refused(self):
+        lost = {"league": True, "listed": 259, "carried": 258, "lost": ["Trevor Lawrence"]}
+        with mock.patch.object(hs, "image_status", return_value="applied"), \
+                mock.patch.object(hs, "roster_status", return_value=lost):
+            with self.assertRaisesRegex(hs.HairStylesError, "lost the 2026 hair assignments.*Trevor Lawrence"):
+                hs.verify_final("image.iso", {"status": "applied"})
+            # a user's own league roster (the step skipped the assignments) is not judged by the 2026 list
+            self.assertEqual(hs.verify_final("image.iso", {"status": "skipped"}), {"status": "applied"})
+            self.assertEqual(hs.verify_final("image.iso"), {"status": "applied"})
+
+    @unittest.skipUnless(V061_DISC.is_file(), "the released v0.6.1 disc is private")
+    def test_released_disc_carries_every_assignment_and_a_cleared_byte_is_seen(self):
+        from mod_editor.core import nfl2k5_roster_records as rr
+        resource = hs.main_roster(V061_DISC)
+        status = hs.roster_status(V061_DISC, resource)
+        self.assertEqual((status["league"], status["carried"], status["lost"]), (True, 259, []))
+        document = rr.RosterDocument(resource[rr.RESOURCE_HEADER_SIZE:], base=0, source="image",
+                                     resource_header=resource[:rr.RESOURCE_HEADER_SIZE])
+        lawrence = next(p for p in document.players if (p.pool, p.index) == ("primary", 669))
+        self.assertEqual(lawrence.last, "Lawrence")
+        cleared = bytearray(resource)
+        cleared[rr.RESOURCE_HEADER_SIZE + lawrence.offset + 0x0D] &= 0xF0
+        status = hs.roster_status(V061_DISC, bytes(cleared))
+        self.assertEqual((status["carried"], status["lost"]), (258, ["Trevor Lawrence"]))
+
+
 # ------------------------------------------------------------------------------------------------ b776 hr2: riding hair
 #: the five meshes hr2 leaves alone, byte for byte as b775 shipped them (records | strip, base64)
 B775_PARTS = {
@@ -576,6 +626,17 @@ class RidingCatalogueTests(unittest.TestCase):
                 item = document["scenes"][key]["parts"][mesh]
                 self.assertEqual(sha((item["records"] + "|" + item["strip"]).encode()), digest, (key, mesh))
                 self.assertNotIn("palette", item)
+
+    def test_the_geometry_passes_the_release_text_check(self):
+        """b778 3d1: the release check refuses any run of more than 4,096 characters without whitespace (a possible
+        embedded blob); hr4's hair-top records are split into lines and joined back by the module."""
+        text = hs.GEOMETRY_PATH.read_text(encoding="utf-8")
+        self.assertLessEqual(max(len(token) for token in text.split()), 4096)
+        tops = hs.load_geometry()["scenes"][hs.HI]["tops"]
+        self.assertTrue(any(isinstance(item["records"], list) for item in tops.values()))
+        for name in hs.TOP_KEYS:
+            records, strip = hs._top(hs.load_geometry(), hs.HI, name)
+            self.assertTrue(records and strip)
 
     def test_riding_palettes_are_well_formed(self):
         document = hs.load_geometry()
@@ -685,6 +746,187 @@ class RidingSceneTests(unittest.TestCase):
                     if inside.any():
                         worst = max(worst, float(-sd[inside].min()))
                 self.assertEqual(worst, 0.0, (key, part["mesh"]))
+
+
+# ------------------------------------------------------------------------------------------------ b778 hr4: hair tops
+#: every part as shipped before b778 hr4 (b775 meshes + b776 hr2's two riding meshes): the tops add, never replace
+B778_PARTS = {
+    "o3c113": {"short_twists": "093bc4a84e84ddb72d8775bdc8b412accef793fc3df4adea40099793b85caa01",
+               "long_flow": "c82ee03760d8d82da27a478c0ecf8337a8db10e983e7ec446bdc4b3d06b4dfc4"},
+    "o3c115": {"short_twists": "9161a84f3da248a184013a03fbea9b2c0782ff13d954eb34bcd026e260044cee",
+               "long_flow": "a691f2486112d810e81424d8fa7e320645894e3a0d937267c7793e987286cf9f"}}
+#: lo_body grown from the retail scene with the pre-hr4 geometry (no top there: distant players wear the helmet)
+LO_GROWN_SHA256 = "3dbe4ff4039a4ae58dd1baf8b5309719e7c834e18ecb5f936c854c41afd42c9a"
+TOP_TEXTURES = {"locs": ("locs_dark", "locs_light", "twists_dark"), "dreads": ("dread",)}
+
+
+def top_vertices(document, name):
+    records, strip = hs._top(document, hs.HI, name)
+    stride = sum(document["scenes"][hs.HI]["strides"])
+    return records, strip, stride
+
+
+class TopsCatalogueTests(unittest.TestCase):
+    """b778 hr4 (Noah 10/22: "guys who have dreads should never be bald"). Runs everywhere."""
+
+    def test_tops_only_in_the_close_up_head_and_only_for_the_dreads_styles(self):
+        document = hs.load_geometry()
+        self.assertEqual(set(document["scenes"][hs.HI]["tops"]), set(hs.TOP_KEYS))
+        self.assertNotIn("tops", document["scenes"][hs.LO])
+        self.assertEqual(set(hs.TOP_OF_MESH.values()) | {hs.DREADS_TOP}, set(hs.TOP_KEYS))
+        styles = {s.index for s in hs.STYLES if s.mesh in hs.TOP_OF_MESH}
+        self.assertEqual(styles, {2, 3, 11})       # + style 1 and style 0 with the Dreads bit (the retail dreads)
+        self.assertEqual({s.key for s in hs.STYLES if s.index in styles},
+                         {"long_locs", "short_twists", "long_locs_light"})
+
+    def test_every_part_keeps_its_bytes(self):
+        document = hs.load_geometry()
+        for key in hs.KEYS:
+            pins = {**B775_PARTS[key], **B778_PARTS[key]}
+            self.assertEqual(set(pins), set(hs.MESHES))
+            for mesh, digest in pins.items():
+                item = document["scenes"][key]["parts"][mesh]
+                self.assertEqual(sha((item["records"] + "|" + item["strip"]).encode()), digest, (key, mesh))
+                self.assertNotIn("top", item)
+
+    def test_tops_ride_the_head_within_budget(self):
+        document = hs.load_geometry()
+        strides = document["scenes"][hs.HI]["strides"]
+        head = 3 * hs.PALETTE[hs.HI]["head"][0]
+        for name in hs.TOP_KEYS:
+            records, strip, stride = top_vertices(document, name)
+            count = len(records) // stride
+            self.assertEqual(len(records) % stride, 0)
+            self.assertLessEqual(count, 260, name)
+            self.assertLess(max(strip), count)
+            selectors = {struct.unpack_from("<h", records, v * stride + strides[0] + 4)[0] for v in range(count)}
+            self.assertEqual(selectors, {head}, name)
+
+    def test_words_add_a_top_batch_to_the_locs_meshes_and_the_retail_dreads(self):
+        document = hs.load_geometry()
+        gltf = models._tools_module("nfl_scne_gltf")
+        from mod_editor.core.nfl2k5_modern_helmets import encode_strip
+        stride = sum(document["scenes"][hs.HI]["strides"])
+        first = hs.RETAIL[hs.HI]["vertices"]
+        added = hs._added(document, hs.HI, first, stride)
+        tops = added["tops"]
+        self.assertEqual(set(tops), set(hs.TOP_KEYS))
+        self.assertEqual(added["added"], sum(p["vertices"] for p in added["parts"]) + sum(t["vertices"] for t in tops.values()))
+
+        def batches(words):
+            raw = struct.pack(f"<{len(words)}I", *words)
+            return [list(b) for _mode, b in gltf.decode_batches(raw, 0, len(words))]
+        for part in added["parts"]:
+            own = encode_strip([part["first_vertex"] + i for i in part["strip"]])
+            name = hs.TOP_OF_MESH.get(part["mesh"])
+            if name is None:
+                self.assertEqual(part["mesh_words"], own, part["mesh"])
+                continue
+            top = tops[name]
+            self.assertEqual(part["mesh_words"][:len(own)], own)
+            self.assertEqual(batches(part["mesh_words"])[-1], [top["first_vertex"] + i for i in top["strip"]])
+        dreads = tops[hs.DREADS_TOP]
+        self.assertEqual(batches(added["dreads_words"]), [[dreads["first_vertex"] + i for i in dreads["strip"]]])
+        lo = hs._added(document, hs.LO, hs.RETAIL[hs.LO]["vertices"], sum(document["scenes"][hs.LO]["strides"]))
+        self.assertEqual((lo["tops"], lo["dreads_words"]), ({}, []))
+
+
+class TopsSceneTests(unittest.TestCase):
+    """b778 hr4 on the retail scenes (private USA data)."""
+
+    def test_retail_dreads_draw_their_own_words_then_their_top(self):
+        gltf = models._tools_module("nfl_scne_gltf")
+        original = scene(hs.HI)
+        grown, receipt = hs.grow_scene(hs.HI, original)
+        before, after = hs._dreads_row(hs.layout(hs.HI, original)), hs._dreads_row(hs.layout(hs.HI, grown))
+        self.assertEqual(after["words"], before["words"] + receipt["dreads_top_words"])
+        self.assertGreater(receipt["dreads_top_words"], 0)
+        self.assertEqual(grown[after["command"]:after["command"] + 4 * before["words"]],
+                         original[before["command"]:before["command"] + 4 * before["words"]])
+        old = [list(b) for _m, b in gltf.decode_batches(original, before["command"], before["words"])]
+        new = [list(b) for _m, b in gltf.decode_batches(grown, after["command"], after["words"])]
+        top = receipt["tops"][hs.DREADS_TOP]
+        self.assertEqual(new[:len(old)], old)
+        self.assertEqual(len(new), len(old) + 1)
+        self.assertTrue(all(top["first_vertex"] <= v < top["first_vertex"] + top["vertices"] for v in new[-1]))
+
+    def test_lo_body_growth_is_unchanged(self):
+        grown, receipt = hs.grow_scene(hs.LO, scene(hs.LO))
+        self.assertEqual(sha(grown), LO_GROWN_SHA256)
+        self.assertEqual(receipt["dreads_top_words"], 0)
+
+    def test_tops_cover_the_crown_and_the_back_inside_both_shells(self):
+        """Every ray from the head centre to the skull's crown (above 47 cm, behind the hairline) and back of the head
+        passes through each top; no top sample is under the skin or within 1 cm of either Riddell shell. Before b778 hr4
+        nothing covered the crown: a style's hair started under the helmet's back rim."""
+        import numpy as np
+        gen = __import__("nfl2k5_hair_styles_generate")
+        rig = gen.Rig(retail_outer3())
+        grown, _receipt = hs.grow_scene(hs.HI, scene(hs.HI))
+        g = gen.Scene(hs.HI, grown)
+        skull = rig.hi.tris(["SKIN_skull"])
+        samples = np.einsum("sk,tkd->tsd", gen._bary(3), rig.hi.pos[skull]).reshape(-1, 3)
+        crown = samples[(samples[:, 1] > 47) & (samples[:, 2] < 15)]
+        back = samples[(samples[:, 2] < 4) & (samples[:, 1] > 38)]
+        scalp = gen.Scalp(rig.hi, np.zeros((4, 4)))
+
+        def covered(points, tris):
+            rel = points - gen.TOP_CENTRE
+            dirs = rel / np.linalg.norm(rel, axis=1)[:, None]
+            hit = np.zeros(len(points), bool)
+            for a in range(0, len(points), 128):
+                t, _u, _v = gen._raycast(gen.TOP_CENTRE, dirs[a:a + 128], tris)
+                hit[a:a + 128] = np.isfinite(t).any(axis=1)
+            return hit.mean()
+        for material in ("HAIR_long_locs", "HAIR_short_twists", "HAIR_dreads"):
+            with self.subTest(material=material):
+                tris = g.pos[g.tris([material])]
+                self.assertEqual(covered(crown, tris), 1.0)
+                self.assertGreaterEqual(covered(back, tris), 0.99)
+        document = hs.load_geometry()
+        for name in hs.TOP_KEYS:
+            mesh = gen.Mesh()
+            _records, strip, _stride = top_vertices(document, name)
+            top = _receipt["tops"][name]
+            mesh.P = list(g.pos[top["first_vertex"]:top["first_vertex"] + top["vertices"]])
+            mesh.strip = strip
+            checks = gen.top_checks(scalp, mesh)
+            self.assertGreater(checks["min_above_skin_cm"], 0.0, name)
+            self.assertGreaterEqual(checks["min_inside_shell_cm"], 1.0, name)
+
+    def test_top_texels_are_opaque(self):
+        """Every sample of a top's triangles lands on an opaque texel of each texture it is drawn with (alpha test
+        would otherwise show the scalp through it)."""
+        import numpy as np
+        from PIL import Image
+        gen = __import__("nfl2k5_hair_styles_generate")
+        tx = models._tools_module("nfl_txtr")
+        outer3 = retail_outer3()
+        c = hs._chunks(outer3)[hs.DREAD_CHUNK]
+        span = hs._chunk_span(outer3, c)
+        cc = tx.parse_chunks(span)[0]
+        d, _ = tx.decode_chunk(span, cc)
+        info = tx.parse_texture(d, cc)
+        alpha = {"dread": np.frombuffer(tx.texture_to_rgba(d, cc, info), np.uint8).reshape(64, 64, 4)[..., 3]}
+        for key in hs.TEXTURES:
+            alpha[key] = np.asarray(Image.open(hs.ART_DIR / f"{key}.png").convert("RGBA"))[..., 3]
+        grown, receipt = hs.grow_scene(hs.HI, scene(hs.HI))
+        g = gen.Scene(hs.HI, grown)
+        for name, textures in TOP_TEXTURES.items():
+            top = receipt["tops"][name]
+            _records, strip, _stride = top_vertices(hs.load_geometry(), name)
+            tris = []
+            for k in range(len(strip) - 2):
+                t = strip[k:k + 3]
+                if len(set(t)) == 3:
+                    tris.append(t)
+            uv = g.uv[top["first_vertex"]:top["first_vertex"] + top["vertices"]]
+            samples = np.einsum("sk,tkd->tsd", gen._bary(4), uv[np.array(tris)]).reshape(-1, 2)
+            for texture in textures:
+                a = alpha[texture]
+                xi = np.clip((samples[:, 0] * 64).astype(int), 0, 63)
+                yi = np.clip((samples[:, 1] * 64).astype(int), 0, 63)
+                self.assertTrue((a[yi, xi] >= 128).all(), (name, texture))
 
 
 if __name__ == "__main__":

@@ -51,14 +51,30 @@ class PublicTests(unittest.TestCase):
         self.assertTrue(movers.issubset({key(row) for row in before}))
         added = [row for row in after if row['owner'] == growth.OWNER]
         self.assertEqual([(row['kind'], row['size']) for row in added], [('code', 8192)])
+        # b778 ai8/xs1: ai8's third-down owner is the last v3 code row; the 8 KiB growth fills the run and it
+        # becomes the pool's only owner (the pool's own directory page precedes it). It keeps its identity and
+        # every row still in v3 keeps its complete record.
+        spills = {('nfl2k5_cpu_third_down', 'code', 0)}
         expected = []
         for row in before:
+            if key(row) in spills:
+                continue
             result = dict(row)
             if key(row) in movers:
                 result['va'] += 8192
                 result['raw'] += 8192
             expected.append(result)
-        self.assertEqual(expected, [row for row in after if row['owner'] != growth.OWNER])
+        self.assertEqual(expected, [row for row in after
+                                    if row['owner'] != growth.OWNER and row['va'] < space.POOL_VA])
+        old_spill = next(row for row in before if key(row) in spills)
+        new_spill = next(row for row in after if key(row) in spills)
+        self.assertEqual((new_spill['va'], new_spill['raw']), (space.POOL_VA + space.PAGE, space.POOL_RAW + space.PAGE))
+        self.assertEqual({k: v for k, v in old_spill.items() if k not in ('va', 'raw')},
+                         {k: v for k, v in new_spill.items() if k not in ('va', 'raw')})
+        self.assertEqual(sorted((row['owner'], row['kind'], row['size'], row['va'])
+                                for row in after if row['va'] >= space.POOL_VA),
+                         sorted([('nfl2k5_cpu_third_down', 'code', 192, space.POOL_VA + space.PAGE),
+                                 (space.DIRECTORY_OWNER, 'read_only', 4096, space.POOL_VA)]))
         for kwargs in (dict(created_teams_extra=1), dict(created_teams_extra=True), dict(reserves_16=1),
                        dict(reserves_16=False, created_teams_extra=0)):
             with self.assertRaises(ValueError): growth.options(**kwargs)
@@ -119,6 +135,26 @@ class PairedArchiveTests(unittest.TestCase):
         self.assertEqual(archive.file_hash(destination), published)
         self.assertEqual(archive.file_hash(self.source), self.before)
         self.assertFalse(list(self.directory.glob('.archive-*')))
+
+    def test_capacity_growth_pairs_with_the_wider_arena(self):
+        destination = self.directory/'capacity.iso'
+        receipt = writer.build_image(self.source, destination, reserves_16=False,
+                                     created_teams_extra=0, capacity_records=612)
+        self.assertEqual(writer.image_status(destination), 'applied')
+        self.assertEqual(receipt['verification']['status'], 'verified')
+        self.assertEqual(receipt['rost']['capacity_records'], 612)
+        self.assertEqual(receipt['rost']['arena_size'], arena.CAPACITY_ARENA_SIZE)
+        self.assertEqual(receipt['xbe']['capacity'], True)
+        with archive.Disc(destination, descriptors=()) as disc:
+            entry = disc.archive_entries[5]
+            self.assertEqual(entry.size, arena.CAPACITY_ARENA_SIZE + 0x60)
+            from mod_editor.core.nfl2k5_save_rost import decode
+            resource = disc.read_entry_range(entry, 0, entry.size)
+            grown = decode(resource)
+            self.assertEqual(grown.layout.arena_size, arena.CAPACITY_ARENA_SIZE)
+            self.assertEqual(grown.tables['primary'].count, 2479 + 612)
+            self.assertIsNotNone(arena.capacity_descriptor(resource, grown.layout))
+        self.assertEqual(self.before, archive.file_hash(self.source))
 
     def test_retail_geometry_inspectors_read_the_grown_roster_as_migrated(self):
         # The roster writers that run before the growth (2026 team names, team history, prospect names,

@@ -54,6 +54,7 @@ mod_editor/core/nfl2k5_depth_roles.py
 mod_editor/core/nfl2k5_dynamic_kickoff.py
 mod_editor/core/nfl2k5_franchise_save.py
 mod_editor/core/nfl2k5_playoff_picture.py
+mod_editor/core/nfl2k5_trade_deadline.py
 mod_editor/core/nfl2k5_practice_squad.py
 mod_editor/core/nfl2k5_practice_squad_runtime.py
 mod_editor/core/nfl2k5_practice_reserves.py
@@ -168,6 +169,7 @@ mod_editor/core/equipment_reporting.py
 mod_editor/core/image_use.py
 mod_editor/core/metadata_cache.py
 docs/mod_editor/number_sheets.md
+docs/START_HERE.md
 docs/mod_editor/install_softdrink_2k28.md
 docs/mod_editor/recommended_xemu_settings.md
 docs/mod_editor/discord_bugs_2_faq.md
@@ -408,6 +410,7 @@ mod_editor/gui/crib_panel_qt.py
 mod_editor/gui/franchise_panel_qt.py
 mod_editor/gui/franchise_upgrade_dialog_qt.py
 mod_editor/core/nfl2k5_franchise_upgrade.py
+mod_editor/core/nfl2k5_inbox_standings.py
 mod_editor/core/nfl2k5_franchise_upgrade_io.py
 mod_editor/data/f12_cohort.json
 tools/nfl2k5_franchise_upgrade.py
@@ -541,6 +544,7 @@ tools/xbox_ima_encoder.py
 # Beta 54: Build & Share (SOFTDRINK patch presets), Share (.2k5patch), Sounds, Commentary and the
 # executable / text / presentation patch modules they drive.
 data/nfl2k5_retail_team_history.csv
+data/nfl2k5_retail_name_cues.json
 data/nfl2k5_modern_names.csv
 data/nfl_2026_schedule.json
 mod_editor/core/mod_build.py
@@ -556,6 +560,7 @@ mod_editor/core/nfl2k5_draft_ai.py
 mod_editor/core/nfl2k5_edge_rename.py
 mod_editor/core/nfl2k5_equipment_import.py
 mod_editor/core/nfl2k5_equipment_import_intent.py
+mod_editor/core/nfl2k5_equipment_fit.py
 mod_editor/core/nfl2k5_equipment_lz.py
 mod_editor/core/nfl2k5_hud_layout.py
 mod_editor/core/nfl2k5_kick_rules.py
@@ -566,9 +571,18 @@ mod_editor/core/nfl2k5_playoffs14.py
 mod_editor/core/nfl2k5_position_pools.py
 # Beta 76 sd2 (ig): the finite CPU lineup iterator and the final disc-extent gate load with the Build plan
 mod_editor/core/nfl2k5_lineup_iterator.py
+mod_editor/core/nfl2k5_sportscenter_lineup.py
+mod_editor/core/nfl2k5_draft_clock.py
+mod_editor/core/nfl2k5_weekly_progression.py
+mod_editor/core/nfl2k5_player_progress_screen.py
+mod_editor/core/nfl2k5_contract_college_guard.py
+mod_editor/core/nfl2k5_sim_cb_tackles.py
+mod_editor/core/nfl2k5_sim_stats.py
+mod_editor/core/nfl2k5_clock_led.py
 mod_editor/core/nfl2k5_disc_extents.py
 mod_editor/core/nfl2k5_preseason.py
 mod_editor/core/nfl2k5_progression.py
+mod_editor/core/nfl2k5_player_progression.py
 mod_editor/core/nfl2k5_returner_fix.py
 mod_editor/core/nfl2k5_season_length.py
 mod_editor/core/nfl2k5_team_column.py
@@ -581,9 +595,17 @@ mod_editor/core/nfl2k5_display_list_stability.py
 mod_editor/core/nfl2k5_resource_load_guard.py
 mod_editor/core/nfl2k5_loader_wakeup.py
 mod_editor/core/nfl2k5_rb_rename.py
+mod_editor/core/nfl2k5_trophy_room.py
+# b778 pg2: the authored TROPHY ROOM emblem and its one-edit Crib texture project
+data/trophy_room_logo/logo.png
+data/trophy_room_logo/project.json
 mod_editor/core/nfl2k5_name_keyboard.py
 mod_editor/core/nfl2k5_historic_teams_quick_game.py
 mod_editor/core/nfl2k5_classic_teams.py
+mod_editor/core/nfl2k5_classic_field.py
+mod_editor/core/nfl2k5_classic_face.py
+mod_editor/core/nfl2k5_classic_art.py
+mod_editor/core/nfl2k5_classic_kit_art.py
 mod_editor/core/nfl2k5_front_schemes.py
 mod_editor/core/nfl2k5_historic_teams_quick_game_code.py
 mod_editor/core/nfl2k5_espn25_more_moments.py
@@ -610,6 +632,7 @@ data/nfl2k5_unc_bowl_uniforms_pins.json
 mod_editor/core/nfl2k5_nyg_numbers.py
 data/nfl2k5_nyg_numbers_pins.json
 mod_editor/core/nfl2k5_kit_fixes_2026.py
+mod_editor/core/nfl2k5_team_sleeves.py
 data/nfl2k5_kit_fixes_2026.json
 data/nfl2k5_kit_fixes_2026_alts.json
 data/nfl2k5_kit_fixes_2026_uf3.json
@@ -617,6 +640,7 @@ data/nfl2k5_kit_fixes_2026_sea1.json
 data/nfl2k5_kit_fixes_2026_ov1.json
 data/nfl2k5_kit_fixes_2026_ku1.json
 data/nfl2k5_kit_fixes_2026_sw1.json
+data/nfl2k5_kit_fixes_2026_names.json
 mod_editor/core/nfl2k5_menu_icon_uf3.py
 mod_editor/core/nfl2k5_pants_hem_2026.py
 data/nfl2k5_pants_hem_2026.json
@@ -626,6 +650,8 @@ data/nfl2k5_glyph_fixes_2026/TEN_28A0_digit_arm_7.png
 data/nfl2k5_glyph_fixes_2026/TEN_28A0_digit_jersey_7.png
 data/nfl2k5_glyph_fixes_2026/TEN_28H0_digit_arm_7.png
 data/nfl2k5_glyph_fixes_2026/TEN_28H0_digit_jersey_7.png
+mod_editor/core/nfl2k5_nameplate_fixes_2026.py
+data/nfl2k5_nameplate_fixes_2026.json
 mod_editor/core/nfl2k5_menu_chiefs_2026.py
 data/nfl2k5_menu_chiefs_2026.json
 mod_editor/core/nfl2k5_menu_helmet_w2026.py
@@ -1324,9 +1350,11 @@ data/nfl2k5_modern_coaches/pins.json
 data/nfl2k5_modern_coaches/README.md
 data/nfl2k5_modern_coaches/ARI/headset.png
 data/nfl2k5_modern_coaches/ARI/head.png
+data/nfl2k5_modern_coaches/ARI/geometry.json
 data/nfl2k5_modern_coaches/ARI/jacket.png
 data/nfl2k5_modern_coaches/ARI/logo.png
 data/nfl2k5_modern_coaches/ARI/shirt.png
+data/nfl2k5_modern_coaches/ATL/geometry.json
 data/nfl2k5_modern_coaches/ATL/headset.png
 data/nfl2k5_modern_coaches/ATL/head.png
 data/nfl2k5_modern_coaches/ATL/jacket.png
@@ -1340,6 +1368,7 @@ data/nfl2k5_modern_coaches/BAL/logo.png
 data/nfl2k5_modern_coaches/BAL/shirt.png
 data/nfl2k5_modern_coaches/BUF/headset.png
 data/nfl2k5_modern_coaches/BUF/head.png
+data/nfl2k5_modern_coaches/BUF/geometry.json
 data/nfl2k5_modern_coaches/BUF/jacket.png
 data/nfl2k5_modern_coaches/BUF/logo.png
 data/nfl2k5_modern_coaches/BUF/shirt.png
@@ -1351,6 +1380,7 @@ data/nfl2k5_modern_coaches/CAR/logo.png
 data/nfl2k5_modern_coaches/CAR/shirt.png
 data/nfl2k5_modern_coaches/CHI/headset.png
 data/nfl2k5_modern_coaches/CHI/head.png
+data/nfl2k5_modern_coaches/CHI/geometry.json
 data/nfl2k5_modern_coaches/CHI/jacket.png
 data/nfl2k5_modern_coaches/CHI/logo.png
 data/nfl2k5_modern_coaches/CHI/shirt.png
@@ -1368,14 +1398,17 @@ data/nfl2k5_modern_coaches/CLE/logo.png
 data/nfl2k5_modern_coaches/CLE/shirt.png
 data/nfl2k5_modern_coaches/DAL/headset.png
 data/nfl2k5_modern_coaches/DAL/head.png
+data/nfl2k5_modern_coaches/DAL/geometry.json
 data/nfl2k5_modern_coaches/DAL/jacket.png
 data/nfl2k5_modern_coaches/DAL/logo.png
 data/nfl2k5_modern_coaches/DAL/shirt.png
 data/nfl2k5_modern_coaches/DEN/headset.png
 data/nfl2k5_modern_coaches/DEN/head.png
+data/nfl2k5_modern_coaches/DEN/geometry.json
 data/nfl2k5_modern_coaches/DEN/jacket.png
 data/nfl2k5_modern_coaches/DEN/logo.png
 data/nfl2k5_modern_coaches/DEN/shirt.png
+data/nfl2k5_modern_coaches/DET/geometry.json
 data/nfl2k5_modern_coaches/DET/headset.png
 data/nfl2k5_modern_coaches/DET/head.png
 data/nfl2k5_modern_coaches/DET/jacket.png
@@ -1389,11 +1422,13 @@ data/nfl2k5_modern_coaches/GB/logo.png
 data/nfl2k5_modern_coaches/GB/shirt.png
 data/nfl2k5_modern_coaches/HOU/headset.png
 data/nfl2k5_modern_coaches/HOU/head.png
+data/nfl2k5_modern_coaches/HOU/geometry.json
 data/nfl2k5_modern_coaches/HOU/jacket.png
 data/nfl2k5_modern_coaches/HOU/logo.png
 data/nfl2k5_modern_coaches/HOU/shirt.png
 data/nfl2k5_modern_coaches/IND/headset.png
 data/nfl2k5_modern_coaches/IND/head.png
+data/nfl2k5_modern_coaches/IND/geometry.json
 data/nfl2k5_modern_coaches/IND/jacket.png
 data/nfl2k5_modern_coaches/IND/logo.png
 data/nfl2k5_modern_coaches/IND/shirt.png
@@ -1404,13 +1439,14 @@ data/nfl2k5_modern_coaches/JAX/jacket.png
 data/nfl2k5_modern_coaches/JAX/logo.png
 data/nfl2k5_modern_coaches/JAX/shirt.png
 data/nfl2k5_modern_coaches/KC/headset.png
-data/nfl2k5_modern_coaches/KC/head_mask.png
-data/nfl2k5_modern_coaches/KC/head_overlay.png
+data/nfl2k5_modern_coaches/KC/head.png
+data/nfl2k5_modern_coaches/KC/geometry.json
 data/nfl2k5_modern_coaches/KC/jacket.png
 data/nfl2k5_modern_coaches/KC/logo.png
 data/nfl2k5_modern_coaches/KC/shirt.png
 data/nfl2k5_modern_coaches/LAC/headset.png
 data/nfl2k5_modern_coaches/LAC/head.png
+data/nfl2k5_modern_coaches/LAC/geometry.json
 data/nfl2k5_modern_coaches/LAC/jacket.png
 data/nfl2k5_modern_coaches/LAC/logo.png
 data/nfl2k5_modern_coaches/LAC/shirt.png
@@ -1422,11 +1458,13 @@ data/nfl2k5_modern_coaches/LAR/logo.png
 data/nfl2k5_modern_coaches/LAR/shirt.png
 data/nfl2k5_modern_coaches/LV/headset.png
 data/nfl2k5_modern_coaches/LV/head.png
+data/nfl2k5_modern_coaches/LV/geometry.json
 data/nfl2k5_modern_coaches/LV/jacket.png
 data/nfl2k5_modern_coaches/LV/logo.png
 data/nfl2k5_modern_coaches/LV/shirt.png
 data/nfl2k5_modern_coaches/MIA/headset.png
 data/nfl2k5_modern_coaches/MIA/head.png
+data/nfl2k5_modern_coaches/MIA/geometry.json
 data/nfl2k5_modern_coaches/MIA/jacket.png
 data/nfl2k5_modern_coaches/MIA/logo.png
 data/nfl2k5_modern_coaches/MIA/shirt.png
@@ -1436,6 +1474,7 @@ data/nfl2k5_modern_coaches/MIN/geometry.json
 data/nfl2k5_modern_coaches/MIN/jacket.png
 data/nfl2k5_modern_coaches/MIN/logo.png
 data/nfl2k5_modern_coaches/MIN/shirt.png
+data/nfl2k5_modern_coaches/NE/geometry.json
 data/nfl2k5_modern_coaches/NE/headset.png
 data/nfl2k5_modern_coaches/NE/head.png
 data/nfl2k5_modern_coaches/NE/jacket.png
@@ -1443,31 +1482,37 @@ data/nfl2k5_modern_coaches/NE/logo.png
 data/nfl2k5_modern_coaches/NE/shirt.png
 data/nfl2k5_modern_coaches/NO/headset.png
 data/nfl2k5_modern_coaches/NO/head.png
+data/nfl2k5_modern_coaches/NO/geometry.json
 data/nfl2k5_modern_coaches/NO/jacket.png
 data/nfl2k5_modern_coaches/NO/logo.png
 data/nfl2k5_modern_coaches/NO/shirt.png
 data/nfl2k5_modern_coaches/NYG/headset.png
 data/nfl2k5_modern_coaches/NYG/head.png
+data/nfl2k5_modern_coaches/NYG/geometry.json
 data/nfl2k5_modern_coaches/NYG/jacket.png
 data/nfl2k5_modern_coaches/NYG/logo.png
 data/nfl2k5_modern_coaches/NYG/shirt.png
 data/nfl2k5_modern_coaches/NYJ/headset.png
 data/nfl2k5_modern_coaches/NYJ/head.png
+data/nfl2k5_modern_coaches/NYJ/geometry.json
 data/nfl2k5_modern_coaches/NYJ/jacket.png
 data/nfl2k5_modern_coaches/NYJ/logo.png
 data/nfl2k5_modern_coaches/NYJ/shirt.png
 data/nfl2k5_modern_coaches/PHI/headset.png
 data/nfl2k5_modern_coaches/PHI/head.png
+data/nfl2k5_modern_coaches/PHI/geometry.json
 data/nfl2k5_modern_coaches/PHI/jacket.png
 data/nfl2k5_modern_coaches/PHI/logo.png
 data/nfl2k5_modern_coaches/PHI/shirt.png
 data/nfl2k5_modern_coaches/PIT/headset.png
 data/nfl2k5_modern_coaches/PIT/head.png
+data/nfl2k5_modern_coaches/PIT/geometry.json
 data/nfl2k5_modern_coaches/PIT/jacket.png
 data/nfl2k5_modern_coaches/PIT/logo.png
 data/nfl2k5_modern_coaches/PIT/shirt.png
 data/nfl2k5_modern_coaches/SEA/headset.png
 data/nfl2k5_modern_coaches/SEA/head.png
+data/nfl2k5_modern_coaches/SEA/geometry.json
 data/nfl2k5_modern_coaches/SEA/jacket.png
 data/nfl2k5_modern_coaches/SEA/logo.png
 data/nfl2k5_modern_coaches/SEA/shirt.png
@@ -1479,6 +1524,7 @@ data/nfl2k5_modern_coaches/SF/logo.png
 data/nfl2k5_modern_coaches/SF/shirt.png
 data/nfl2k5_modern_coaches/TB/headset.png
 data/nfl2k5_modern_coaches/TB/head.png
+data/nfl2k5_modern_coaches/TB/geometry.json
 data/nfl2k5_modern_coaches/TB/jacket.png
 data/nfl2k5_modern_coaches/TB/logo.png
 data/nfl2k5_modern_coaches/TB/shirt.png
@@ -1953,6 +1999,58 @@ mod_editor/core/nfl2k5_db_ball_play_code.py
 mod_editor/core/nfl2k5_qb_accuracy.py
 mod_editor/core/nfl2k5_qb_accuracy_code.py
 mod_editor/core/nfl2k5_formation_art_spacing.py
+mod_editor/core/nfl2k5_force_out.py
+mod_editor/core/nfl2k5_module_loader.py
+mod_editor/core/nfl2k5_crib_trophy_room.py
+docs/mod_editor/overlay_modules.md
+mod_editor/core/nfl2k5_star_career.py
+mod_editor/core/nfl2k5_star_career_code.py
+# b778-rh1: rookie faces (new draft headshots by skin tone, build and name; in-place generator rewrite)
+mod_editor/core/nfl2k5_rookie_faces.py
+data/nfl2k5_rookie_faces/name_odds.json
+data/nfl2k5_rookie_faces/bank.json
+# b778-ee1: the alien prospect (code, art pins, portrait and face art)
+mod_editor/core/nfl2k5_alien_prospect.py
+data/nfl2k5_alien_prospect/code.json
+data/nfl2k5_alien_prospect/art.json
+data/nfl2k5_alien_prospect/gray_palettes.json
+data/nfl2k5_alien_prospect/portrait.png
+data/nfl2k5_alien_prospect/face_f.png
+data/nfl2k5_alien_prospect/face_h.png
+data/nfl2k5_alien_prospect/face_n.png
+data/nfl2k5_rookie_faces/faces_00.png
+data/nfl2k5_rookie_faces/faces_00_pal.png
+data/nfl2k5_rookie_faces/faces_01.png
+data/nfl2k5_rookie_faces/faces_01_pal.png
+data/nfl2k5_rookie_faces/faces_02.png
+data/nfl2k5_rookie_faces/faces_02_pal.png
+data/nfl2k5_rookie_faces/faces_03.png
+data/nfl2k5_rookie_faces/faces_03_pal.png
+data/nfl2k5_rookie_faces/faces_04.png
+data/nfl2k5_rookie_faces/faces_04_pal.png
+data/nfl2k5_rookie_faces/faces_05.png
+data/nfl2k5_rookie_faces/faces_05_pal.png
+data/nfl2k5_rookie_faces/faces_06.png
+data/nfl2k5_rookie_faces/faces_06_pal.png
+data/nfl2k5_rookie_faces/faces_07.png
+data/nfl2k5_rookie_faces/faces_07_pal.png
+data/nfl2k5_rookie_faces/faces_08.png
+data/nfl2k5_rookie_faces/faces_08_pal.png
+mod_editor/core/nfl2k5_star_retention.py
+mod_editor/core/nfl2k5_practice_injuries.py
+mod_editor/core/nfl2k5_ball_carrier_ai.py
+data/nfl2k5_rookie_faces/faces_09.png
+data/nfl2k5_rookie_faces/faces_09_pal.png
+data/nfl2k5_rookie_faces/faces_10.png
+data/nfl2k5_rookie_faces/faces_10_pal.png
+data/nfl2k5_rookie_faces/faces_11.png
+data/nfl2k5_rookie_faces/faces_11_pal.png
+data/nfl2k5_rookie_faces/faces_12.png
+data/nfl2k5_rookie_faces/faces_12_pal.png
+data/nfl2k5_rookie_faces/faces_13.png
+data/nfl2k5_rookie_faces/faces_13_pal.png
+mod_editor/core/nfl2k5_return_coverage.py
+mod_editor/core/nfl2k5_cpu_third_down.py
 tools/nfl2k5_weather_editor.py
 tools/nfl2k5_weather_time_of_day.py
 tools/nfl2k5_weather_native_probe.py
@@ -1981,6 +2079,7 @@ tools/nfl_normshort3_positions.py
 mod_editor/core/runtime_dependencies.py
 packaging/runtime_dependencies.py
 packaging/requirements-studio.txt
+packaging/windows/studio_bootstrap.py
 packaging/requirements-stadium-audit.txt
 # Beta 72: MyCareer earned ratings, identity and advisory (m1)
 mod_editor/core/nfl2k5_my_career_advisory.py
@@ -2922,6 +3021,7 @@ tests/mod_editor/test_b765_s1_seams.py
 mod_editor/core/nfl2k5_free_agents.py
 mod_editor/core/nfl2k5_roster_appearance_transfer.py
 mod_editor/data/nfl2k5_free_agents_2026.v1.json
+mod_editor/data/nfl2k5_free_agent_depth_2026.v1.json
 
 mod_editor/core/nfl2k5_anniversary_pack.py
 mod_editor/core/nfl2k5_espn25_fields.py
@@ -3574,6 +3674,8 @@ mod_editor/core/nfl2k5_moment_context.py
 data/nfl2k5_moment_stats.json
 docs/mod_editor/nfl2k5_moment_coaches.md
 mod_editor/core/nfl2k5_roster_refresh.py
+mod_editor/core/nfl2k5_created_appearance.py
+mod_editor/data/nfl2k5_refresh_appearance_2026.v1.json
 
 tools/b77/ro1_repair.py
 docs/mod_editor/roster_refresh.md
@@ -3595,8 +3697,31 @@ mod_editor/core/nfl2k5_play_art_routes.py
 tests/mod_editor/test_nfl2k5_play_art_routes.py
 mod_editor/core/nfl2k5_run_blocking.py
 mod_editor/core/nfl2k5_run_blocking_code.py
+mod_editor/core/nfl2k5_pass_protection.py
+mod_editor/core/nfl2k5_pass_protection_code.py
+tests/mod_editor/test_nfl2k5_pass_protection.py
+tests/mod_editor/test_nfl2k5_pass_protection_unicorn.py
 tests/mod_editor/test_nfl2k5_run_blocking.py
+tests/mod_editor/test_nfl2k5_team_sleeves.py
 tests/mod_editor/test_nfl2k5_run_blocking_unicorn.py
+tests/mod_editor/test_nfl2k5_force_out.py
+tests/mod_editor/test_nfl2k5_module_loader.py
+tests/mod_editor/test_nfl2k5_crib_trophy_room.py
+tests/mod_editor/test_nfl2k5_allocator_pool.py
+tests/mod_editor/test_b778_ee1_alien_prospect.py
+tools/b77/ee1_build_code.py
+tools/nfl2k5_alien_palette.py
+tests/mod_editor/test_b778_rh1_rookie_faces.py
+tools/b77/rh1_names.py
+tools/b77/rh1_bank.py
+tools/b77/rh2_names.py
+tests/mod_editor/test_nfl2k5_star_retention.py
+tests/mod_editor/test_nfl2k5_practice_injuries.py
+tests/mod_editor/test_nfl2k5_ball_carrier_ai.py
+tests/mod_editor/test_nfl2k5_return_coverage.py
+tests/mod_editor/test_b778_ai8_third_down.py
+tests/mod_editor/test_nfl2k5_star_career.py
+tools/b77/st2_star_career_assemble.py
 tools/b77/pa2_play_art_draw.py
 tests/mod_editor/test_nfl2k5_team_ratings.py
 docs/mod_editor/team_ratings.md
@@ -3612,3 +3737,58 @@ tests/mod_editor/test_nfl2k5_broadcast_greens.py
 # i4: reserved-colour-aware helmet palette ladder
 tests/mod_editor/test_2k5_helmet_locked_palette.py
 tests/mod_editor/test_2k5_native_safe_palette_ladder.py
+# b778 sd1: stadium squares (model portals) and the Raymond James fascia clocks
+tests/mod_editor/test_b778_stadium_squares.py
+# b778 sd2: the crowd cutaway in free air, crowd billboards clear of other geometry, AT&T deck rails
+tests/mod_editor/test_b778_crowd_cutaway.py
+tests/mod_editor/b778_crowd_cutaway_envelope.json
+# b778 sd5: the crowd sprite strips keep their retail bytes (glitchy fans behind the bench)
+tools/b77/sd5_crowd_strips.py
+tests/mod_editor/test_b778_crowd_strips.py
+data/nfl2k5_classic_teams/kits.json
+data/nfl2k5_classic_teams/seamen_2006.csv
+data/nfl2k5_classic_teams/face/pins.json
+data/nfl2k5_classic_teams/face/fragment.json
+data/nfl2k5_classic_teams/face/f0304.png
+data/nfl2k5_classic_teams/face/f0304.span
+data/nfl2k5_classic_teams/face/h0304.png
+data/nfl2k5_classic_teams/face/h0304.span
+data/nfl2k5_classic_teams/face/n0304.png
+data/nfl2k5_classic_teams/face/n0304.span
+data/nfl2k5_classic_teams/face/patch.json
+data/nfl2k5_classic_teams/face/portrait_0304.png
+data/nfl2k5_classic_teams/face/portrait_0304.span
+data/nfl2k5_classic_teams/field/center_logo.png
+data/nfl2k5_classic_teams/field/endzone_N.png
+data/nfl2k5_classic_teams/field/endzone_S.png
+data/nfl2k5_classic_teams/cards/helm_a.png
+data/nfl2k5_classic_teams/cards/helm_h.png
+data/nfl2k5_classic_teams/cards/logo.png
+data/nfl2k5_classic_teams/cards/logo_s.png
+data/nfl2k5_classic_teams/cards/mini_a.png
+data/nfl2k5_classic_teams/cards/mini_h.png
+data/nfl2k5_classic_teams/cards/unif_a.png
+data/nfl2k5_classic_teams/cards/unif_h.png
+tests/mod_editor/test_b778_sd3_digits.py
+# b778 ai4: CPU clock management (end-of-half timeouts, automatic coach profiles defer 4th downs and clock windows)
+tests/mod_editor/test_b778_ai4_cpu_clock.py
+tests/mod_editor/test_b778_ai6_late_fourth.py
+tests/mod_editor/test_nfl2k5_sportscenter_lineup.py
+tests/mod_editor/test_nfl2k5_draft_clock.py
+tests/mod_editor/test_nfl2k5_weekly_progression.py
+tests/mod_editor/test_nfl2k5_player_progress_screen.py
+tests/mod_editor/test_nfl2k5_contract_college_guard.py
+tests/mod_editor/test_nfl2k5_sim_cb_tackles.py
+tests/mod_editor/test_nfl2k5_sim_stats.py
+tests/mod_editor/test_b778_clock_led.py
+tests/mod_editor/test_b778_tr1_trade_deadline.py
+tests/mod_editor/test_b778_tr2_trade_guard.py
+tests/mod_editor/test_trophy_room_logo.py
+tests/mod_editor/test_nfl2k5_progression_careers.py
+# b778 eq1: created players take their position's class-generator gear, not the zero (kicker) mask
+tests/mod_editor/test_b778_eq1_equipment_fit.py
+# b778 ap1: created 2026 players take a measured headshot appearance, not the lightest default
+tests/mod_editor/test_b778_ap1_appearance.py
+# b778 cs1: mid-game Choose Side leaves a fresh coach VIP context on the native CPU caller
+tests/mod_editor/test_b778_cs1_choose_side.py
+tests/mod_editor/test_b778_bd3_build_blockers.py

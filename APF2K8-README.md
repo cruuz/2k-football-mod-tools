@@ -15,7 +15,12 @@ remain research; no team assignment patch is included.
 
 ## Install
 
-APF 2K8 Mod Studio needs **Python 3, PyQt5, and Pillow**.
+APF 2K8 Mod Studio needs **Python 3, PyQt5, and Pillow** when you run it from a
+source ZIP or portable archive. The Windows Setup.exe includes them.
+
+Download the release asset from the [Releases](https://github.com/cruuz/2k-football-mod-tools/releases)
+page. Do **not** use the green **Code > Download ZIP** button: that is the
+source code, not the ready-to-run Studio.
 
 - **Linux** (Mint/Ubuntu) — install the operating-system packages:
   ```bash
@@ -44,10 +49,16 @@ application menu. You can also run `~/.local/bin/apf2k8-mod-studio`.
 
 ### Windows
 
-Extract the archive and double-click **`APF-2K8-Mod-Studio.bat`**. It runs from
-its own folder (paths containing spaces are fine), checks that Python 3, PyQt5,
-and Pillow are importable, and shows a message and pauses if anything is
-missing.
+Run **`APF-2K8-Mod-Studio-*-Setup.exe`**, or extract the portable archive and
+double-click **`APF-2K8-Mod-Studio.bat`**. The `.bat` launcher runs from its own
+folder (paths containing spaces and a source ZIP extracted into a second folder
+of the same name are fine). On the first run it creates a private `.venv`
+beside the launcher and installs `packaging/requirements-studio.txt`
+automatically (about 110 MB to download, about 400 MB on disk). It needs 64-bit
+Python 3.11 or 3.12 from https://www.python.org/downloads/windows/ and an
+internet connection. Later runs start immediately. Run
+`APF-2K8-Mod-Studio.bat --setup` to repair the private runtime. No
+administrator rights are needed.
 
 ### macOS
 
@@ -92,7 +103,7 @@ sudo apt install ffmpeg
 The Audio tab inventories all 2,261 standalone sounds, all 45,514 addressable
 substreams, both 15-track soundtrack encodings, and all 19 named physical XMA1
 banks. Original XMA1/WAV export and exact raw-bank export are available. The
-current release candidate, **`0.1.0-alpha.108`**, gives the 2,261 standalone
+current release candidate, **`0.1.0-alpha.109`**, gives the 2,261 standalone
 rows and all 45,514 individually addressed AUSB rows an advanced exact-slot
 replacement route, selected-sound PCM16 authoring through a separately
 installed encoder, and v1 XMA1 plus v2 exact-PCM16 folder/ZIP batch hand-off.

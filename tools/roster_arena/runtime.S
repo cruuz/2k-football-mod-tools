@@ -184,3 +184,45 @@ retail_save:
 created_adapter:
  mov ecx, eax
  jmp arena_created
+
+/* b778 fa6: capacity franchise save-list admission. The retail compare at 0x16ABCF only accepts
+ * the exact capacity total size, so a pre-capacity 720,044-byte save reads as DAMAGED. Four real
+ * sizes are admitted (720044/720172/724140/724268); 720044/724140 differ only in bit 8 from their
+ * 128-byte MyCareer-footer forms, so one masked compare covers each pair. The handler's expected
+ * size stays in EAX; the stack still carries 16AB70's pushed ESI. */
+.section .text.capacity_admission,"ax",@progbits
+.global capacity_admission
+capacity_admission:
+ cmp DWORD PTR [esi+0xbdc1cc], eax
+ je 1f
+ cmp DWORD PTR [esi+0xbdc1cc], 0xafcac
+ je 1f
+ cmp DWORD PTR [esi+0xbdc1cc], 0xafd2c
+ je 1f
+ mov eax, 1
+ jmp 2f
+1:
+ xor eax, eax
+2:
+ pop esi
+ ret
+/* b778 fa6: the franchise load path asks BFE50 for the wrapper size after C2040. On a capacity
+ * build BFE50 answers the capacity wrapper (0xB0040), but an old buffer still stores its season
+ * and front-office blocks at the old offsets. Return the source wrapper size (declared + 0x20)
+ * for an old ROST version 0/1 wrapper; a capacity wrapper falls through to BFE50 unchanged.
+ * ESI is the file buffer and the wrapper starts at +0x2E0. */
+.section .text.capacity_load_size,"ax",@progbits
+.global capacity_load_size
+capacity_load_size:
+ mov eax, DWORD PTR [esi+0x2e0+4]
+ cmp eax, 0x91020
+ je 1f
+ cmp eax, 0x92020
+ je 2f
+ jmp 0xbfe50
+1:
+ mov eax, 0x91040
+ ret
+2:
+ mov eax, 0x92040
+ ret

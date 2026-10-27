@@ -1,0 +1,8 @@
+{
+ "who": "Todd Monken",
+ "notes": "fair, ruddy, lined skin; full grey-blond hair swept back; blue eyes; clean-shaven; a smile with teeth in the official headshot (mouth closed here); c26 with its glasses hidden",
+ "eyes": [112, 138, 160],
+ "mouth": "close",
+ "hair_colour": [172, 162, 146],
+ "hair": {"front": 46.8, "recede": 1.0, "side": 43.4, "back": 34.5, "sideburn": 38.8, "edge": 0.35}
+}

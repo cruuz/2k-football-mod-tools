@@ -22,6 +22,9 @@
 .ifdef VIP_AWARE
 .extern native_vip, two_point_tail
 .endif
+.ifdef LATE_HELPER
+.extern late_decision
+.endif
 
 fourth:
     pushfd
@@ -49,6 +52,13 @@ fourth_kick:
  * Locals: [esp] yards to goal, +4 yards to go, +8 seconds (then game seconds), +12 yard index, +16 period,
  * +20 limit, +24 region (0 own side of the 40, 1 middle, 2 opponent 40 and in). */
 policy:
+.ifdef LATE_HELPER
+    call late_decision             /* b778 ai6: the late-trailing rule lives in its own late owner */
+    cmp eax, 4
+    jae p_late_continue
+    ret                             /* 0 retail / 1 go / 2 field goal / 3 punt */
+p_late_continue:
+.endif
 .ifdef VIP_AWARE
     call vip_active
     test eax, eax
@@ -82,8 +92,16 @@ policy:
     jz p_exit_no
     mov eax, [edx+4]
     and eax, 0x7fffffff
+.ifdef CLOCK_AWARE
+    jz p_exit_no
+    cmp eax, 0x7f800000
+    jae p_exit_no                   /* b778: only the sign is read (as native 209CA0 does); a live game stores the end
+                                       line z there (+/-5486.4 cm), so the beta-77.1 "+/-1 only" test sent every real
+                                       fourth down back to retail */
+.else
     cmp eax, 0x3f800000
     jne p_exit_no                   /* native direction must be +/-1 */
+.endif
     fld dword ptr [esi+0x18]
     fdiv dword ptr yard
     test dword ptr [edx+4], 0x80000000
@@ -620,6 +638,10 @@ vip_active:
     jz vip_no
     cmp dword ptr [ecx+0x30], 0
     jne vip_no
+.ifdef CLOCK_AWARE
+    cmp dword ptr [ecx+0x38], 0    /* b778: automatic coach profiles clear the virtual-controller flag; only a user VIP delegates */
+    je vip_no
+.endif
     call native_vip
     test eax, eax
     jz vip_no

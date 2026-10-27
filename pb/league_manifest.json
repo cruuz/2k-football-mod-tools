@@ -8,224 +8,224 @@
       "pack": "data/playbooks/softdrink_arz_modern.2k5book",
       "plays": 151,
       "formations": 33,
-      "semantic_sha256": "a48da4c44cb2bfc37ac948d67a90f2ac6c7ac905f5e366e449ac4e088b41137a"
+      "semantic_sha256": "aeb5e7c7cce11a841690a4c7893df80b3fc90086d5f535f318d6b8c0a074b9ae"
     },
     {
       "team": "ATL",
       "pack": "data/playbooks/softdrink_atl_modern.2k5book",
       "plays": 151,
       "formations": 33,
-      "semantic_sha256": "1f9cdb9bfa4e7516a20d28c7d93863434f866a5251c159c11a35918057635adc"
+      "semantic_sha256": "1920f5e3aba8273755a5a14b1d3e16b82d48f82042107fb37df138a701b81e62"
     },
     {
       "team": "BAL",
       "pack": "data/playbooks/softdrink_bal_modern.2k5book",
       "plays": 151,
       "formations": 33,
-      "semantic_sha256": "23060c0360d364b7adacb275e615160d66fcdd76d83856fb8472716c9dd922e8"
+      "semantic_sha256": "4d086807f1698a30196c09754bc0712509d0107f05a6202b13b85e76add279ec"
     },
     {
       "team": "BUF",
       "pack": "data/playbooks/softdrink_buf_modern.2k5book",
       "plays": 143,
       "formations": 31,
-      "semantic_sha256": "655082670634ecbba76c0cd6b11b5a92c34673782df247728e44b1069fa62199"
+      "semantic_sha256": "05f23ff0e49b56cd92ebb9f02c381c2e6dc7bbd65f816eb86a72a0af879dd048"
     },
     {
       "team": "CAR",
       "pack": "data/playbooks/softdrink_car_modern.2k5book",
       "plays": 151,
       "formations": 33,
-      "semantic_sha256": "c8d6e7094b169f8bfe6f3d70cf83c7d1d2472aeee273532aa25dbc64505e24ee"
+      "semantic_sha256": "24fbec63dca6d434c3e572d0e90e03c03734a5c21956428444be279791725d9f"
     },
     {
       "team": "CHI",
       "pack": "data/playbooks/softdrink_chi_modern.2k5book",
       "plays": 151,
       "formations": 33,
-      "semantic_sha256": "dafdaf6dec47865c3a287182c0c378c565f2a7371a24a9280f2ad338976e8406"
+      "semantic_sha256": "93fd97f136c60fe453c3212f63aeda81197bafacbdbc7ca88cf9e382bf5eb3d4"
     },
     {
       "team": "CIN",
       "pack": "data/playbooks/softdrink_cin_modern.2k5book",
       "plays": 156,
       "formations": 33,
-      "semantic_sha256": "3ae0bd0e98f053475d0b9eb3e9c371b339d4d20d38a12a00147f34ab7a33c7bb"
+      "semantic_sha256": "1ce4a6d93fc71a9e18bb55636c22504234a04101ddddd9b7d44a1ccad23c6bbd"
     },
     {
       "team": "CLE",
       "pack": "data/playbooks/softdrink_cle_modern.2k5book",
       "plays": 153,
       "formations": 33,
-      "semantic_sha256": "c657ecd009eecf070bb2cfac1d28ef0d969380c0e58605beccb7d83c9465511c"
+      "semantic_sha256": "c6b83e5c95ea8278c191a85b48cde441410ad1a9d620f6c036542d930d2e4a0a"
     },
     {
       "team": "DAL",
       "pack": "data/playbooks/softdrink_dal_modern.2k5book",
       "plays": 139,
       "formations": 32,
-      "semantic_sha256": "ce0b5c2ddbaf4750454f60829aa7c44ede3bdd03e6ed3e31e228fa6e55cfc1f1"
+      "semantic_sha256": "6ddb1160a060b5fe314f1a4335a3f5e7e1a0dc80e91a4dbfe9ef7b5b516c8705"
     },
     {
       "team": "DEN",
       "pack": "data/playbooks/softdrink_den_modern.2k5book",
       "plays": 150,
       "formations": 32,
-      "semantic_sha256": "316e368fa4cf7975d3ae9524e780f788ddd6d7f3131a4d81d44ad6341e054ffc"
+      "semantic_sha256": "6e820f9e47aa002a5c3678c3d738e70675f2fee93d238adfbd145e5b31c995f1"
     },
     {
       "team": "DET",
       "pack": "data/playbooks/softdrink_det_modern.2k5book",
       "plays": 151,
       "formations": 33,
-      "semantic_sha256": "f78ab6361320ec99e07e3210c55fc099febcb2d9d44ea7ba1e20f9950582e3d0"
+      "semantic_sha256": "432c936e4586d49b32085fa5288fafe79e6610eb7d02bd66b4e08cae9cceeabe"
     },
     {
       "team": "GB",
       "pack": "data/playbooks/softdrink_gb_modern.2k5book",
       "plays": 149,
       "formations": 33,
-      "semantic_sha256": "e38f01db3dabcb7c0d3652389284d7dfc11dfedd4921988cd2d7ac566446a9f6"
+      "semantic_sha256": "ef2e3f5df499aa23499c879813fed9bd1cbedaa576ecad61398ff285db3cc3fe"
     },
     {
       "team": "HOU",
       "pack": "data/playbooks/softdrink_hou_modern.2k5book",
       "plays": 154,
       "formations": 33,
-      "semantic_sha256": "7a8ccecfedcc8c2fcf065772881224d3572e8edd3137e87a12ee8d94f9f26706"
+      "semantic_sha256": "4226b29aacf6a1df707a8b06a84375f3d4b35164a3d6460abc8783a3657a2664"
     },
     {
       "team": "IND",
       "pack": "data/playbooks/softdrink_ind_modern.2k5book",
       "plays": 153,
       "formations": 33,
-      "semantic_sha256": "b58fbcd85f08711a164a61b27751a8671963089d97eb1fe95ff310b1106aff67"
+      "semantic_sha256": "4e6377c1b2cfdcceea7201b4cce6545a8a5c23f55db4156ddbc0fb6a96dd0169"
     },
     {
       "team": "JAX",
       "pack": "data/playbooks/softdrink_jax_modern.2k5book",
       "plays": 152,
       "formations": 33,
-      "semantic_sha256": "407d539b8e6ba9ed133ce4ede3823d03221715978f82a91a6d48bd48450d6634"
+      "semantic_sha256": "545e62ba450b38a99379b548f3b75478acd91ee8b165cc10ab6a6f9a6bd997de"
     },
     {
       "team": "KC",
       "pack": "data/playbooks/softdrink_kc_modern.2k5book",
       "plays": 151,
       "formations": 32,
-      "semantic_sha256": "a1a7f79dfd93b4545ef8fbe9425e5f72336ab324b39ccb847a5e4c99c437fd50"
+      "semantic_sha256": "01f1818dc8e69adcc829f813aa482c3ff886accaba4db1848ff0a564dfd9bbb5"
     },
     {
       "team": "MIA",
       "pack": "data/playbooks/softdrink_mia_modern.2k5book",
       "plays": 144,
       "formations": 33,
-      "semantic_sha256": "6f873b61c81cbb37c6274cd9d7b6eb78c77d2b5f20471e40181858f2bf152b1d"
+      "semantic_sha256": "096a97b9f79b50578b95dd525ff61198f50c427fd67be0de18874b23ca9dcf89"
     },
     {
       "team": "MIN",
       "pack": "data/playbooks/softdrink_min_modern.2k5book",
       "plays": 140,
       "formations": 31,
-      "semantic_sha256": "78f661a0fcf875fabeac02fe05e4604af927b1863e8ab2bdaa63e9448908f49d"
+      "semantic_sha256": "eed02d3b8673a6387b1365b2d057633d6f7d28beef26c6661f76f983a4205911"
     },
     {
       "team": "NE",
       "pack": "data/playbooks/softdrink_ne_modern.2k5book",
       "plays": 134,
       "formations": 33,
-      "semantic_sha256": "b69bc4c3d2006448422fb08f5918ba7c8de7ead46ee627a8565e83ea0857a2a2"
+      "semantic_sha256": "f4da3a605aa997b20309214da6c7d6399145bae0a7345d66e7bed85361454a67"
     },
     {
       "team": "NO",
       "pack": "data/playbooks/softdrink_no_modern.2k5book",
       "plays": 151,
       "formations": 33,
-      "semantic_sha256": "2eb013a84e8a5528a62cc3096886e9bc07355fbbbee399be9dd8023da6f24b1f"
+      "semantic_sha256": "7358b1b0dbcfe397305a32968bbcde08a11120e41a3bf6ccf0e47824c746e896"
     },
     {
       "team": "NYG",
       "pack": "data/playbooks/softdrink_giants_modern.2k5book",
       "plays": 148,
       "formations": 33,
-      "semantic_sha256": "984fe1871bc7024ecc7171a685307564fd85426f235e0ba1ed40b2c7ab0b996f"
+      "semantic_sha256": "489fd6789e992a91a9fa09865a4964e0c55e92834828ad87666f6453963a53a3"
     },
     {
       "team": "NYJ",
       "pack": "data/playbooks/softdrink_nyj_modern.2k5book",
       "plays": 141,
       "formations": 32,
-      "semantic_sha256": "20ccbdadb623d21713562980e40479eb84ef6081146215105c99ff62ce4d7b48"
+      "semantic_sha256": "e3db1c51f192762e185eb3b3f62bfbce9e9236b9f023cbae5a295a89913f123f"
     },
     {
       "team": "OAK",
       "pack": "data/playbooks/softdrink_oak_modern.2k5book",
       "plays": 135,
       "formations": 32,
-      "semantic_sha256": "0ea92a44e4b2a05be4616f8c1e5750d7998363a1d9153ffa817ff39ccaef1569"
+      "semantic_sha256": "de06fdbf7dbbb569cff7801f62f1393dfdcfd51b0b21e8424e5f1d7c86ab6d5b"
     },
     {
       "team": "PHI",
       "pack": "data/playbooks/softdrink_phi_modern.2k5book",
       "plays": 147,
       "formations": 33,
-      "semantic_sha256": "3bbfdab345d840f5e4e8f9ef3762e054528ad5e90028e32de575538b243c11f0"
+      "semantic_sha256": "a6eadc0e65288d0b91e37dbd0766cfcda9e8335d7a592a6f3a8a0f2eca97e745"
     },
     {
       "team": "PIT",
       "pack": "data/playbooks/softdrink_pit_modern.2k5book",
       "plays": 145,
       "formations": 33,
-      "semantic_sha256": "4048dadb2e1eeea47cf10bf3608aaed149e0cd0c7d15be3ee0ff67f2ac3ed926"
+      "semantic_sha256": "194d79fdf2a576433767238dd99fabab45ac54438084a1255eedd9ea99cf0219"
     },
     {
       "team": "SD",
       "pack": "data/playbooks/softdrink_sd_modern.2k5book",
       "plays": 143,
       "formations": 33,
-      "semantic_sha256": "1dae7b52418ab283ee97c23860e7eb55664deec9394190279268818898f5eb04"
+      "semantic_sha256": "1de7f6807d7adf42f6c335aff009d79cbcead63b88201d07c49cc072e6c75d6b"
     },
     {
       "team": "SEA",
       "pack": "data/playbooks/softdrink_sea_modern.2k5book",
       "plays": 150,
       "formations": 33,
-      "semantic_sha256": "8855fef1983d23909ac970c081167eb2d1cfb19d4ae22232b0c15fde24423f93"
+      "semantic_sha256": "84c1689cc08352437141c44e11bebb634afaa331c77d4d60fa643d18f23a947a"
     },
     {
       "team": "SF",
       "pack": "data/playbooks/softdrink_sf_modern.2k5book",
       "plays": 151,
       "formations": 33,
-      "semantic_sha256": "ca5d5b7a232464183fb91ea256496ec764442bfd22b14d248574c24846c5225b"
+      "semantic_sha256": "0cd675c1be4f65c69948c11631a8d665cf4056f31d8024b56f6d7fc7976258fb"
     },
     {
       "team": "STL",
       "pack": "data/playbooks/softdrink_stl_modern.2k5book",
       "plays": 152,
       "formations": 33,
-      "semantic_sha256": "c074b1db3b4b98c68e757b3cd2045bcf351ace38bd6bebbfe44e00e64d099fc4"
+      "semantic_sha256": "0017997a76424f8738cee7a701d24484426fde5538cae8c6d3923e405ab4b274"
     },
     {
       "team": "TB",
       "pack": "data/playbooks/softdrink_tb_modern.2k5book",
       "plays": 146,
       "formations": 32,
-      "semantic_sha256": "3c3cd5288babbed6b4ad908baccc46faf3beb676f614de9c88ec30cd02e8c618"
+      "semantic_sha256": "9558fa7193d95e18780ab1c73c91a0be482932b2902303c19fd36207bd5ddd1e"
     },
     {
       "team": "TEN",
       "pack": "data/playbooks/softdrink_ten_modern.2k5book",
       "plays": 143,
       "formations": 32,
-      "semantic_sha256": "354522990328018530defcda7a0dedffeff506104da4088c8f1234e13f826924"
+      "semantic_sha256": "9f40307242449ea04a98b21adf187f73de3ee6f51014d658ad523a343aa7693f"
     },
     {
       "team": "WAS",
       "pack": "data/playbooks/softdrink_was_modern.2k5book",
       "plays": 141,
       "formations": 32,
-      "semantic_sha256": "cef701c51f2953b593172067f626a3b562f41f51f1f2e3a4c6130c3db47ed4e8"
+      "semantic_sha256": "5383015f75fa5f66b2ce5fde47eda69a183b66435ffe091355044327e22fe7c2"
     }
   ]
 }

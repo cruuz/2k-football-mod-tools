@@ -65,14 +65,14 @@ def project(payload, owner):
             raise ValueError("incomplete practice-squad dependency")
         if tail == CHAIN:
             econ_view = replace(standalone, [(ENTRY, ECONOMY_ENTRY)])[0]
-            if economy._standalone_status(econ_view) != "applied":
+            if economy._standalone_status(econ_view) not in ("applied", "legacy"):
                 raise ValueError("incomplete economy dependency")
             return econ_view if owner == "economy" else standalone
         return replace(payload, [(ENTRY, RETAIL)])[0] if owner == "economy" else payload
     if tail == CHAIN:
         raise ValueError("orphaned CPU fill chain")
     if entry == ECONOMY_ENTRY and owner == "squad":
-        if economy._standalone_status(payload) != "applied":
+        if economy._standalone_status(payload) not in ("applied", "legacy"):
             raise ValueError("incomplete economy dependency")
         return replace(payload, [(ENTRY, RETAIL)])[0]
     return payload
@@ -82,7 +82,8 @@ def installation_edits(payload, owner):
     from . import nfl2k5_franchise_economy as economy
     from . import nfl2k5_practice_squad as squad
     other = squad if owner == "economy" else economy
-    if other.status(payload) == "applied":
+    # b778 fa1: a revision-1 economy ("legacy") already owns the shared chain.
+    if other.status(payload) in ("applied", "legacy"):
         return [(ENTRY, SQUAD_ENTRY), (CONTINUATION, CHAIN)]
     return []
 
@@ -105,7 +106,7 @@ def revert(payload, retail, owner):
     image = XbeImage(retail)
     edits = [(s.va, image.read(s.va, len(s.patched))) for s in module.sites()]
     other_state = other.status(payload)
-    if other_state == "applied":
+    if other_state in ("applied", "legacy"):
         edits.append((ENTRY, SQUAD_ENTRY if owner == "economy" else ECONOMY_ENTRY))
         if owner == "economy":
             edits.append((CONTINUATION, STANDALONE))

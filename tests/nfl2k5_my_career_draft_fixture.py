@@ -12,7 +12,8 @@ from tests.nfl2k5_supersim_draft_fixture import signed_save
 
 
 class Machine(PlayedMachine):
-    def prepare_draft(self, roster, *, position=0, seed=2, ratings=None, preseason=True, one_pool=False, complete=True):
+    def prepare_draft(self, roster, *, position=0, seed=2, ratings=None, preseason=True, one_pool=False, complete=True,
+                      name=None):
         self.frontend(roster)
         self.native_load(signed_save(), requested=False)
         # End the load-preview service seam before any native league work.
@@ -46,6 +47,8 @@ class Machine(PlayedMachine):
         self.call('mode_create', ecx=self.manager, budget=10000000)
         p = self.get(0xCB8B14)
         self.uc.mem_write(p + 53, bytes((position,)))
+        if name is not None:
+            self.type_name(*name)
         self.call(0x343460)
         self.cap_record = bytes(self.uc.mem_read(p, 84))
         self.cap_index = (p - self.get(self.root + 4)) // 84
@@ -76,6 +79,23 @@ class Machine(PlayedMachine):
         self.stubs.append(self.uc.hook_add(self.u.UC_HOOK_CODE, native_signing,
             begin=0x325B50, end=0x325B50))
         return p
+
+    def type_name(self, first, last):
+        """Create Player's own First Name 0x346430 and Last Name 0x346540 handlers, unchanged. Only the on-screen
+        keyboard loop 0x24A220 is a boundary: it returns Enter (1) with the typed text in the handler's buffer. The
+        Last Name handler then runs its native play-by-play cue rule (a real player's cue or 9000 + jersey)."""
+        def keyboard():
+            buffer = self.get(self.reg("ESP") + 4)
+            self.uc.mem_write(buffer, text.encode("utf-16le") + b"\0\0")
+            self.ret(1, pop=0x20)
+        for handler, text in ((0x346430, first), (0x346540, last)):
+            if text is None:
+                continue
+            self.replace_stub(0x24A220, keyboard)
+            try:
+                self.call(handler, ecx=self.manager, budget=5000000)
+            finally:
+                self.replace_stub(0x24A220, None)
 
     def draft(self):
         self.select(0, budget=200000000)

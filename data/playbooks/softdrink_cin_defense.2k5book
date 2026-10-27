@@ -9,10 +9,10 @@
   "notes": "DESIGN: Al Golden (Notre Dame / Anarumo multiple); 2025 baseline CIN. Clean technique fronts (pb/v2/defense/design.py), retail 2K5 coverage scripts with native pre-snap alignment, situational formation ratings and CPU score bands fitted to the sourced 2025 coverage and blitz rates. Exact offense source required. Gameplay unwitnessed."
  },
  "base": {
-  "book_fingerprint": "93bb795ca999b9b00833427fb465f1bc1a6c2d787d66118b19952bdc10a31eea",
+  "book_fingerprint": "3d380b92bd51356fce2f962ab4e68cf878eb2a694f0ce6eaa1489cb0bec58f43",
   "donor_formation_count": 50,
   "donor_play_count": 270,
-  "donor_node_count": 2364
+  "donor_node_count": 2362
  },
  "budget": {
   "formations": 50,
@@ -1679,7 +1679,7 @@
     [[27, [2, 0, 0, 365.76, 0, 0]], [14, [0, 274.32, 0, 7, 0, 0, 0, 0]]],
     [[27, [2, 0, -335.28000000000003, 426.72, 0, 0]], [14, [0, 91.44, 0, 10, 0, 0, 0, 0]]],
     [[27, [0, 0, 640.08, 91.44, 0, 0]], [13, [0, 1645.92, 7, 9, 8, 0, 0]]],
-    [[27, [0, 0, 0, -274.32, 16, 0]], [11, [1, 16, 0]]],
+    [[27, [0, 0, 0, -60.96, 16, 0]], [11, [1, 16, 0]]],
     [[27, [2, 0, 0, 182.88, 0, 0]], [14, [0, 182.88, 0, 6, 0, 0, 0, 0]]]
    ],
    "defense_formation": "Bear",

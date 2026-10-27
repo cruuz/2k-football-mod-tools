@@ -1,6 +1,120 @@
 {
-  "classification": "Reviewed authored 2026/2025-26 art for the modern coaches (co1/co2), the modern fans (fr1) and the modern officials (rf1), plus fa1 authored block yard numerals (fn1): painted textures, team marks and lettering at the native slot size. Coach faces are painted from the official headshots onto the 2004 head layout (Noah 2026-10-12: authored likeness textures ship, the reference photos never do). Coach Matchup pictures are supplied by the external SOFTDRINK league project; no portrait PNG ships in these folders. The accessories atlas ships only its authored headset half (headset.png); the shoe and clipboard come from the user's disc. The Super Bowl event walls (me1, redesigned by sb2) are drawn by tools/nfl2k5_super_bowl_walls_art.py from type, shapes and team colours with an original event plate (no Super Bowl or broadcaster logo is copied); each surface's .marks.png layer holds its authored slot marks, including the mod's own 2026 team logos (data/nfl2k5_scorebug_assets/logos, as the modern fans use them) at slot size. The NFL shield is added at build time (the mod's 2008 field shield, or the period shield from the user's disc), and areas a surface keeps from the venue are transparent in the PNG and filled from the user's disc. The modern game ball (me1) is drawn by tools/nfl2k5_era_ball_art.py: leather, laces, lettering and a generic shield; its plain leather is taken from the user's disc ball at build time. b77 cm1 repainted eighteen coach heads (WAS, DAL, CIN, CAR, GB, TEN, LAR, SF, MIN, NYJ, TB, MIA, DET, CLE, NE, ATL, JAX, NYG) in 3D on the head mesh: one painted skin tone, painted hair and facial hair, and only the fine feature detail of co2's authored faces. b775 hs1's nine 64 x 64 hair textures (locs, twists, braids, strands, curls, bun) are drawn procedurally by tools/nfl2k5_hair_styles_generate.py. No photograph or photo crop and no retail-extracted pixels are listed; retail details are taken from the user's own disc at build time. sb1's Super Bowl field flank marks (data/nfl2k5_super_bowl_fields/marks) are drawn by tools/nfl2k5_super_bowl_marks_art.py from geometry, gradients and system type in each game's design system (no logo is copied, traced or read); LXII to LXV are generic current-system marks for franchise seasons whose logo is not revealed; the club marks of the three team-flank games are the mod's own 2026 team logos at mark size or a plain club roundel. b776 fn2's four Titans 7 digit textures (data/nfl2k5_glyph_fixes_2026) are flat two-colour shapes drawn from measurements of 2026 club photos (constant-width stem, block foot), not traced from a font file or photo pixels.",
+  "classification": "b778 rh1/rh2's rookie face bank atlases are generated fictional draft headshots (Codex image_gen), reviewed face by face; no photograph or retail-extracted pixels. b778 ss1's Seamen card, field and face art is drawn from the video references and the authored kit. b778 ee1/ee2's gray alien portrait and face textures are authored from a generated headshot. b778 pg2's TROPHY ROOM emblem is authored (gold cup, navy banner, white type). Reviewed authored 2026/2025-26 art for the modern coaches (co1/co2), the modern fans (fr1) and the modern officials (rf1), plus fa1 authored block yard numerals (fn1): painted textures, team marks and lettering at the native slot size. Coach faces are painted from the official headshots onto the 2004 head layout (Noah 2026-10-12: authored likeness textures ship, the reference photos never do). Coach Matchup pictures are supplied by the external SOFTDRINK league project; no portrait PNG ships in these folders. The accessories atlas ships only its authored headset half (headset.png); the shoe and clipboard come from the user's disc. The Super Bowl event walls (me1, redesigned by sb2) are drawn by tools/nfl2k5_super_bowl_walls_art.py from type, shapes and team colours with an original event plate (no Super Bowl or broadcaster logo is copied); each surface's .marks.png layer holds its authored slot marks, including the mod's own 2026 team logos (data/nfl2k5_scorebug_assets/logos, as the modern fans use them) at slot size. The NFL shield is added at build time (the mod's 2008 field shield, or the period shield from the user's disc), and areas a surface keeps from the venue are transparent in the PNG and filled from the user's disc. The modern game ball (me1) is drawn by tools/nfl2k5_era_ball_art.py: leather, laces, lettering and a generic shield; its plain leather is taken from the user's disc ball at build time. b77 cm1 repainted eighteen coach heads (WAS, DAL, CIN, CAR, GB, TEN, LAR, SF, MIN, NYJ, TB, MIA, DET, CLE, NE, ATL, JAX, NYG) in 3D on the head mesh: one painted skin tone, painted hair and facial hair, and only the fine feature detail of co2's authored faces. b775 hs1's nine 64 x 64 hair textures (locs, twists, braids, strands, curls, bun) are drawn procedurally by tools/nfl2k5_hair_styles_generate.py. b778 cf1 and its follow-up jobs scanned the head.png of every club with a recipe in tools/b77/cf1_recipes (tools/b77/cf1_face_scan.py): each is the coach's reference photo projected onto the 2004 head mesh, relit, symmetrised and blended into a painted base, so these head.png files are photo-derived likeness textures shipped under Noah's 2026-10-12 rule (as co2's photo-warped faces were); the reference photos and their cleaned copies never ship. Apart from those coach likeness textures, no photograph or photo crop and no retail-extracted pixels are listed; retail details are taken from the user's own disc at build time. sb1's Super Bowl field flank marks (data/nfl2k5_super_bowl_fields/marks) are drawn by tools/nfl2k5_super_bowl_marks_art.py from geometry, gradients and system type in each game's design system (no logo is copied, traced or read); LXII to LXV are generic current-system marks for franchise seasons whose logo is not revealed; the club marks of the three team-flank games are the mod's own 2026 team logos at mark size or a plain club roundel. b776 fn2's four Titans 7 digit textures (data/nfl2k5_glyph_fixes_2026) are flat two-colour shapes drawn from measurements of 2026 club photos (constant-width stem, block foot), not traced from a font file or photo pixels.",
   "files": {
+    "data/nfl2k5_alien_prospect/face_f.png": {
+      "height": 256,
+      "sha256": "32de48f472a76ce9ebf5dbf67d018950cca7d4f98df97470edc3797dde31e808",
+      "size": 57296,
+      "width": 256
+    },
+    "data/nfl2k5_alien_prospect/face_h.png": {
+      "height": 256,
+      "sha256": "f577e3b26c0433aab17515f1bb51118d1164abf13118af7b079c6d416cd50905",
+      "size": 54725,
+      "width": 256
+    },
+    "data/nfl2k5_alien_prospect/face_n.png": {
+      "height": 256,
+      "sha256": "6b146c5fd7ab13cb9202e0eaae6e4b875fb0751199c532c8813eb0d930648995",
+      "size": 7866,
+      "width": 256
+    },
+    "data/nfl2k5_alien_prospect/portrait.png": {
+      "height": 128,
+      "sha256": "ddee73fd402666e77d07297abdd26bf08b19628e0f7457906c061148ece8c3bb",
+      "size": 20016,
+      "width": 128
+    },
+    "data/nfl2k5_classic_teams/cards/helm_a.png": {
+      "height": 256,
+      "sha256": "e80bb4fca3a704510c84c87c27cc244eb2e4f8e3accc19f4d80d34d68ae1d8d0",
+      "size": 39718,
+      "width": 256
+    },
+    "data/nfl2k5_classic_teams/cards/helm_h.png": {
+      "height": 256,
+      "sha256": "bbf14bb12da6826f1f8ba98e84270663d2d4c5d7617411a5401930521fe59430",
+      "size": 39861,
+      "width": 256
+    },
+    "data/nfl2k5_classic_teams/cards/logo.png": {
+      "height": 256,
+      "sha256": "b156f1a79e0fd989236a3b81049a68bd52f7c88b8538028d939ccbfd251aa5fb",
+      "size": 66420,
+      "width": 256
+    },
+    "data/nfl2k5_classic_teams/cards/logo_s.png": {
+      "height": 64,
+      "sha256": "5875194b52b4360b9392090e8d80cc3b87785f6919e6fed0e0ae0a1e977699e4",
+      "size": 8446,
+      "width": 64
+    },
+    "data/nfl2k5_classic_teams/cards/mini_a.png": {
+      "height": 64,
+      "sha256": "8669c0d9245f601f1e67711f9557968da099a21b56e25bdc1579dae4cafd67cc",
+      "size": 6556,
+      "width": 64
+    },
+    "data/nfl2k5_classic_teams/cards/mini_h.png": {
+      "height": 64,
+      "sha256": "a1b7ade91fbba031b9c3d0635831156ed34f024c24471037abdcf4a0e771b8c8",
+      "size": 6736,
+      "width": 64
+    },
+    "data/nfl2k5_classic_teams/cards/unif_a.png": {
+      "height": 256,
+      "sha256": "17c5ffcb04456aa27b1b584f349f8a86af28589a7677deb8cbf2af2589c686dd",
+      "size": 74537,
+      "width": 256
+    },
+    "data/nfl2k5_classic_teams/cards/unif_h.png": {
+      "height": 256,
+      "sha256": "df45d1da2fa2dd6fa54e917334f5269444420d7a362929ccf9ca12e96d934af6",
+      "size": 72731,
+      "width": 256
+    },
+    "data/nfl2k5_classic_teams/face/f0304.png": {
+      "height": 256,
+      "sha256": "fd5caf7ad340c270b290f5af3e53e00dde10087eee1ac68e4bf422e4f93a3344",
+      "size": 68134,
+      "width": 256
+    },
+    "data/nfl2k5_classic_teams/face/h0304.png": {
+      "height": 256,
+      "sha256": "53ad2d6cdaedeb009e62312e8d3b5c4dbc91192a4366e1929a1aace41f272697",
+      "size": 71553,
+      "width": 256
+    },
+    "data/nfl2k5_classic_teams/face/n0304.png": {
+      "height": 256,
+      "sha256": "bc81845c1880edc8b94e19949b86391f4a968076cf86da24f2ad54a7e6da34ad",
+      "size": 99520,
+      "width": 256
+    },
+    "data/nfl2k5_classic_teams/face/portrait_0304.png": {
+      "height": 128,
+      "sha256": "7cc29542d16fb0129818d1b91b2396720374ed4c4f991b2e690a84ffd080aca0",
+      "size": 18212,
+      "width": 128
+    },
+    "data/nfl2k5_classic_teams/field/center_logo.png": {
+      "height": 256,
+      "sha256": "ac25b4753089c37c207bbf168db0399be220608abe96afaaa144baa03560c230",
+      "size": 10694,
+      "width": 256
+    },
+    "data/nfl2k5_classic_teams/field/endzone_N.png": {
+      "height": 128,
+      "sha256": "0f77c6b77d4e4252deab244b145f478b278382ca4d006b761189798bae5700b1",
+      "size": 18567,
+      "width": 768
+    },
+    "data/nfl2k5_classic_teams/field/endzone_S.png": {
+      "height": 128,
+      "sha256": "0f77c6b77d4e4252deab244b145f478b278382ca4d006b761189798bae5700b1",
+      "size": 18567,
+      "width": 768
+    },
     "data/nfl2k5_era_ball/modern_ball.png": {
       "height": 256,
       "sha256": "1e9acff58f27c7fbfb1f6e72060618fa3735736c1a7ed8ee1e96355f3e176b98",
@@ -87,8 +201,8 @@
     },
     "data/nfl2k5_modern_coaches/ARI/head.png": {
       "height": 128,
-      "sha256": "c15244ea768bdda49c96c1c6b3da91fe45b0f0a3f0f54bb685d5f37bf0e20cc0",
-      "size": 51504,
+      "sha256": "93f67d3e735718f0e49cd6d583de1ce84677fc2f6ce69ee69b783aa77a99c570",
+      "size": 41552,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/ARI/headset.png": {
@@ -129,8 +243,8 @@
     },
     "data/nfl2k5_modern_coaches/ATL/head.png": {
       "height": 128,
-      "sha256": "889d90c7198c5700d9be6fdac02032f7e35f3957dfb4b82c3868ec6232c5c069",
-      "size": 54121,
+      "sha256": "beb0019cc492c18808657bb806c803b1cb7e329b5d700ea2f8c19ec8e4fbdc97",
+      "size": 53783,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/ATL/headset.png": {
@@ -171,8 +285,8 @@
     },
     "data/nfl2k5_modern_coaches/BAL/head.png": {
       "height": 128,
-      "sha256": "23cf1a0ea421b22eda68c3c08370261eaa5ccef48483c4bccd506855b74228fa",
-      "size": 54846,
+      "sha256": "be0cfd688c47b1e3f2c44075ce4434ac5b7f19d6bab37911347d7d3930c34c2f",
+      "size": 42292,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/BAL/headset.png": {
@@ -213,8 +327,8 @@
     },
     "data/nfl2k5_modern_coaches/BUF/head.png": {
       "height": 128,
-      "sha256": "ddc34814ee1111e015366c7b3d72b77bc79553db8ce71d95c54c14677ec157d1",
-      "size": 59257,
+      "sha256": "522d49beca04d1ba8dcdc9336b0254b15da093e1d52fe879eb0cb3c986928140",
+      "size": 45368,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/BUF/headset.png": {
@@ -255,8 +369,8 @@
     },
     "data/nfl2k5_modern_coaches/CAR/head.png": {
       "height": 128,
-      "sha256": "f659ec170365c4c0255e83a8cd2197373ab4c8a130d1efcbb252bfd0db2714ee",
-      "size": 37373,
+      "sha256": "428b4fc03059403a9235b10610b2fde260e85e9294e5039013d23c5fed415e9d",
+      "size": 40863,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/CAR/headset.png": {
@@ -297,8 +411,8 @@
     },
     "data/nfl2k5_modern_coaches/CHI/head.png": {
       "height": 128,
-      "sha256": "5f0c40cbca7ac876631b35d7955eb4867b35a9b4b7f46f168158b628e17d9922",
-      "size": 52632,
+      "sha256": "94d366a6d43a0cc99cb2c4037e5608ab849db6e174502a4b98991cf564788107",
+      "size": 42318,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/CHI/headset.png": {
@@ -339,8 +453,8 @@
     },
     "data/nfl2k5_modern_coaches/CIN/head.png": {
       "height": 128,
-      "sha256": "e60ec2506ecfc8dadb2ccc8484f1c2f7bc23839a17c86f6808f341c0c8917dfe",
-      "size": 46312,
+      "sha256": "ea4dd820ea2c7bde77c60ac48cca5ee532a641a5ebd8d9cecb7ca0cee7410a04",
+      "size": 47721,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/CIN/headset.png": {
@@ -351,8 +465,8 @@
     },
     "data/nfl2k5_modern_coaches/CIN/jacket.png": {
       "height": 128,
-      "sha256": "8ddb61ed51b6f35095e2be81e3cde0fbc1fcffa725985ccf66e731d20fa9629f",
-      "size": 8257,
+      "sha256": "ed9467cafae8eabe147a3637c854bb57962f6cda95e91e9f4c4e51e316f39580",
+      "size": 8680,
       "width": 128
     },
     "data/nfl2k5_modern_coaches/CIN/logo.png": {
@@ -363,8 +477,8 @@
     },
     "data/nfl2k5_modern_coaches/CIN/shirt.png": {
       "height": 128,
-      "sha256": "56cf119c909f5c37d41d5a885201fba523fb12c548e1e4b49b5f0f938c1d2259",
-      "size": 4853,
+      "sha256": "4aa7b0941e66cf2c0441f69136cd8528f80578de3143e88375f4c96ed8abac3a",
+      "size": 5629,
       "width": 128
     },
     "data/nfl2k5_modern_coaches/CIN/sideline_dry.png": {
@@ -381,8 +495,8 @@
     },
     "data/nfl2k5_modern_coaches/CLE/head.png": {
       "height": 128,
-      "sha256": "d9ff629528775fa1cbfaee38c96d31e28eaa731b399ceafe7391dfd90655fe07",
-      "size": 41981,
+      "sha256": "ccc3493f6a89c04cb4e170c80487d9fc664b49841806977c3c18fff75a724687",
+      "size": 43021,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/CLE/headset.png": {
@@ -393,8 +507,8 @@
     },
     "data/nfl2k5_modern_coaches/CLE/jacket.png": {
       "height": 128,
-      "sha256": "afe3c4bf50a794a6cf3c4f7d93d8f6b88aae70b4b6fb455cac7c74c08a2e050d",
-      "size": 17163,
+      "sha256": "c1272d11eb34dd35eb92b3f4b5b85de3661bd47971ca9fa252495cd5ac51649e",
+      "size": 17928,
       "width": 128
     },
     "data/nfl2k5_modern_coaches/CLE/logo.png": {
@@ -405,8 +519,8 @@
     },
     "data/nfl2k5_modern_coaches/CLE/shirt.png": {
       "height": 128,
-      "sha256": "e29ae3f3612b55689933eee1bab0686ec301db5b2db1e0b74c2b607b10932978",
-      "size": 10065,
+      "sha256": "fcafa3959048abfa8350ef0801654af9834990573bdfb612018f72d7d19f3107",
+      "size": 11926,
       "width": 128
     },
     "data/nfl2k5_modern_coaches/CLE/sideline_dry.png": {
@@ -423,8 +537,8 @@
     },
     "data/nfl2k5_modern_coaches/DAL/head.png": {
       "height": 128,
-      "sha256": "422546746f0d40c4ea0dad33e537215d75ffc0e86ad77e2fab23b5a2979777b6",
-      "size": 52741,
+      "sha256": "41980e551c81431a164cd002f021f6f169734833851b10a52e985a72951424d8",
+      "size": 46023,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/DAL/headset.png": {
@@ -465,8 +579,8 @@
     },
     "data/nfl2k5_modern_coaches/DEN/head.png": {
       "height": 128,
-      "sha256": "cb35c37b2a03c6ab04c5dceeac57c4c8f241a59d117cad2bb40cf4f9f902f91f",
-      "size": 55201,
+      "sha256": "54504d8c844fa50b343d7403b04f9ad6b576b1cc02f50348ae225d4cedd8de6c",
+      "size": 39327,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/DEN/headset.png": {
@@ -507,8 +621,8 @@
     },
     "data/nfl2k5_modern_coaches/DET/head.png": {
       "height": 128,
-      "sha256": "6b82196193722b96806d91dd41dbaac5ea1e95ee98b45f7fb2fe62963e222967",
-      "size": 51280,
+      "sha256": "6c08fdb8b2e2e2c9ae05c2eeacfad14ddabb2800bfffbff8ab7ad72b6a6beb20",
+      "size": 52287,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/DET/headset.png": {
@@ -549,8 +663,8 @@
     },
     "data/nfl2k5_modern_coaches/GB/head.png": {
       "height": 128,
-      "sha256": "48a0d006c4a7f7b31668ea0043e3ffabef1368839ddb8107414e68552b09fe2d",
-      "size": 40003,
+      "sha256": "3c1017a4d0c03d71aa5376f3c16b261ff8e1e1774647e1089e019cfce721d40c",
+      "size": 43936,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/GB/headset.png": {
@@ -591,8 +705,8 @@
     },
     "data/nfl2k5_modern_coaches/HOU/head.png": {
       "height": 128,
-      "sha256": "ebf25d4135c618fe1c07f1f2f83dc32d68f3ed4d985eaf360bbd3cddcd1e154e",
-      "size": 41716,
+      "sha256": "62eecfa1442aa768b78ed702114e8df1a4d739fc8ae133dd505b1fcd1e441a87",
+      "size": 32382,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/HOU/headset.png": {
@@ -633,8 +747,8 @@
     },
     "data/nfl2k5_modern_coaches/IND/head.png": {
       "height": 128,
-      "sha256": "0968ac1f6399ba751ae79a54eba754e41a7d67ba815c6f956f04e3f06fa507cf",
-      "size": 55229,
+      "sha256": "d1b42489be27abb269090bd152c0eb67b0e0052d425d7d8c72ed3283c4004624",
+      "size": 44411,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/IND/headset.png": {
@@ -645,8 +759,8 @@
     },
     "data/nfl2k5_modern_coaches/IND/jacket.png": {
       "height": 128,
-      "sha256": "58fa95aab3fbf33695fa544bb2a11b5f94f113754b48e52f5831a56a3bcef38a",
-      "size": 19611,
+      "sha256": "a58b4d35dd8ff5ac88646deb192f95dfcee7412beefb28a77de5ab0fbedf4241",
+      "size": 19910,
       "width": 128
     },
     "data/nfl2k5_modern_coaches/IND/logo.png": {
@@ -657,8 +771,8 @@
     },
     "data/nfl2k5_modern_coaches/IND/shirt.png": {
       "height": 128,
-      "sha256": "11b15f4e1e5a14a32243264f53495388f75a9ef6affb1c4b5fbaf5efba5d78f8",
-      "size": 12606,
+      "sha256": "376b17d2ad38ed7c42172f0e9e06313ad0d1449b2886674231d39c242906ce80",
+      "size": 13396,
       "width": 128
     },
     "data/nfl2k5_modern_coaches/IND/sideline_dry.png": {
@@ -675,8 +789,8 @@
     },
     "data/nfl2k5_modern_coaches/JAX/head.png": {
       "height": 128,
-      "sha256": "c51bdee87aaebb069ddd305b84374068732fa6efa19490701d595c2c71f96dc0",
-      "size": 41216,
+      "sha256": "b1f95dd44a4d777bbdb7b61d03d389f19f86b0724035ec5126ccd8c433df0228",
+      "size": 46118,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/JAX/headset.png": {
@@ -715,16 +829,10 @@
       "size": 22455,
       "width": 256
     },
-    "data/nfl2k5_modern_coaches/KC/head_mask.png": {
+    "data/nfl2k5_modern_coaches/KC/head.png": {
       "height": 128,
-      "sha256": "e12d4ebcda375d579e9226dab862fa11a866ddba6763630984c02320ce99c950",
-      "size": 4064,
-      "width": 256
-    },
-    "data/nfl2k5_modern_coaches/KC/head_overlay.png": {
-      "height": 128,
-      "sha256": "995ea2f2b43f7c6308664572f9de199f2a9ba12a975299bc7097f1b02dea0bb0",
-      "size": 1012,
+      "sha256": "9b49579305b819e79cb164878442410ddbbfecd4cbcd6282cd7cc062e49f08ee",
+      "size": 44558,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/KC/headset.png": {
@@ -765,8 +873,8 @@
     },
     "data/nfl2k5_modern_coaches/LAC/head.png": {
       "height": 128,
-      "sha256": "b6cc364c8cbb8f82d641e719aaad5c343142254701d6d06c5befc7345cf507dc",
-      "size": 51080,
+      "sha256": "93746b339ae2e31fc886f42a3fa62e0ec277a85315b83724dc182e6ae3396984",
+      "size": 41846,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/LAC/headset.png": {
@@ -807,8 +915,8 @@
     },
     "data/nfl2k5_modern_coaches/LAR/head.png": {
       "height": 128,
-      "sha256": "2c4f1d4fe1399ff329e36a8f32a9d5ea8c056d1a46e318763abd82cf0fc6d8c5",
-      "size": 42857,
+      "sha256": "60ac654401e1a3da246a4058d505b60daed6a7aebb4818750a9e156de15f459c",
+      "size": 48487,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/LAR/headset.png": {
@@ -849,8 +957,8 @@
     },
     "data/nfl2k5_modern_coaches/LV/head.png": {
       "height": 128,
-      "sha256": "c69feec872878b4098d97c9b9f7cc1f499800fa2b56340bbf385aef1c3f22e18",
-      "size": 55436,
+      "sha256": "0db80a43f70a4fcdca071a93e5f1d0d7d7cbd4d2dbd233d9d7c5eafa660a6e28",
+      "size": 43187,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/LV/headset.png": {
@@ -891,8 +999,8 @@
     },
     "data/nfl2k5_modern_coaches/MIA/head.png": {
       "height": 128,
-      "sha256": "754640e1cce5b911bb5933056d5f4a08930ea57823ec6699f9828bdf72f22464",
-      "size": 41861,
+      "sha256": "21d98ce134571e435093b414849021175e49fea5dfdc337067e6af4a0ab8c486",
+      "size": 42481,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/MIA/headset.png": {
@@ -933,8 +1041,8 @@
     },
     "data/nfl2k5_modern_coaches/MIN/head.png": {
       "height": 128,
-      "sha256": "f18d5b509c34f7a6f6d2d703f143db1334adf6856fb04db08819470c8faaa979",
-      "size": 39423,
+      "sha256": "d1662fd9e052ddee7b191a686c94b355395d3a3011b194d0ae7541ca9dc53176",
+      "size": 42751,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/MIN/headset.png": {
@@ -975,8 +1083,8 @@
     },
     "data/nfl2k5_modern_coaches/NE/head.png": {
       "height": 128,
-      "sha256": "f01d80595851f857841a5cdf4e5be45c32cc2616c321703ee29cca913f845dce",
-      "size": 55261,
+      "sha256": "016993dadd3dc5374bfa2a41eeddadc0e75e6624c7adf6ae65c6ccb0d0e8d5b7",
+      "size": 51507,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/NE/headset.png": {
@@ -1017,8 +1125,8 @@
     },
     "data/nfl2k5_modern_coaches/NO/head.png": {
       "height": 128,
-      "sha256": "9fc0592a48701740ea81b6097c28461e7875fed92a6d2f62da52cdbcf921b9f0",
-      "size": 57611,
+      "sha256": "6481efd73db907fbc038d5903749b71473eeaf4f95542c1d692444d01574b7b4",
+      "size": 39038,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/NO/headset.png": {
@@ -1059,8 +1167,8 @@
     },
     "data/nfl2k5_modern_coaches/NYG/head.png": {
       "height": 128,
-      "sha256": "61975d46c9193dc3c182061cdb3c1ffe566401e4c2fc81bcfc5aa1a8dd7bc10d",
-      "size": 47239,
+      "sha256": "c0e3e226afedecb1a1e3cc0b02f33e1ee83c06b5e15af05a00193b67449c8db3",
+      "size": 41928,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/NYG/headset.png": {
@@ -1101,8 +1209,8 @@
     },
     "data/nfl2k5_modern_coaches/NYJ/head.png": {
       "height": 128,
-      "sha256": "e4adc427ebbda01b56c0eed2facc4bd425af35a251b006c846877b6e23726add",
-      "size": 55389,
+      "sha256": "79c1336fa47758396785fa352d675279901d02e4a3d9552d8e5171ae987dc975",
+      "size": 43396,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/NYJ/headset.png": {
@@ -1143,8 +1251,8 @@
     },
     "data/nfl2k5_modern_coaches/PHI/head.png": {
       "height": 128,
-      "sha256": "6dc75057e290409cc2dd81297e82871d8c4992b6282442ed7eaa3690371dde33",
-      "size": 55945,
+      "sha256": "a1dc5ddbde6a49911541af1a67f94bd67c62c4109c6c2db5ed3b6e65793f3b61",
+      "size": 46342,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/PHI/headset.png": {
@@ -1185,8 +1293,8 @@
     },
     "data/nfl2k5_modern_coaches/PIT/head.png": {
       "height": 128,
-      "sha256": "f0fef3da8ed379f070bd981ea02b97dc7a6102d09a5bd7b90ceb87517e1344f1",
-      "size": 58249,
+      "sha256": "154fbefd2e707170f9a1e1d019a9ad3fc58d7b3da1cb3780df45d38e780ca847",
+      "size": 42306,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/PIT/headset.png": {
@@ -1197,8 +1305,8 @@
     },
     "data/nfl2k5_modern_coaches/PIT/jacket.png": {
       "height": 128,
-      "sha256": "d3d8a91f45774ed97d0cad8c53f28221ade25b7142be283f435422c381d9260f",
-      "size": 8847,
+      "sha256": "79f2f97a7c084d86b477a78e140eda7fa8246b8deca64500a76798f678d02c0d",
+      "size": 8126,
       "width": 128
     },
     "data/nfl2k5_modern_coaches/PIT/logo.png": {
@@ -1209,8 +1317,8 @@
     },
     "data/nfl2k5_modern_coaches/PIT/shirt.png": {
       "height": 128,
-      "sha256": "6a283db0ccd90f37cf1196ec59fda976b45ece09b5ae519a54196033110754da",
-      "size": 4847,
+      "sha256": "448654fc5ed6e5baacd134a8e5a31c87782d9f1781af642a718dd1186144b230",
+      "size": 4784,
       "width": 128
     },
     "data/nfl2k5_modern_coaches/PIT/sideline_dry.png": {
@@ -1227,8 +1335,8 @@
     },
     "data/nfl2k5_modern_coaches/SEA/head.png": {
       "height": 128,
-      "sha256": "c906ee0bc8ed2d2011d591f3e76102c063ed1b205bc8db33c32f82ea9a5facc8",
-      "size": 56059,
+      "sha256": "47af85f96eeb9fdfef769c8f60f3a63737c784d58d80440aae3b7e788bff8b24",
+      "size": 40992,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/SEA/headset.png": {
@@ -1269,8 +1377,8 @@
     },
     "data/nfl2k5_modern_coaches/SF/head.png": {
       "height": 128,
-      "sha256": "cb0e1689ec7e43dcd53c09031f410ff29a09faaa59445bddfaa3bb38579a5b2e",
-      "size": 46731,
+      "sha256": "d1ce09088c9a67dcfb2508c3759ddd84288a441ac9b57d75266cf17a9eafc135",
+      "size": 45093,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/SF/headset.png": {
@@ -1311,8 +1419,8 @@
     },
     "data/nfl2k5_modern_coaches/TB/head.png": {
       "height": 128,
-      "sha256": "f96ca8c7c645fa7b4c280591bd230308ea54fa2e0cf6b02fe158e92c62ae6889",
-      "size": 33774,
+      "sha256": "df363f24bc693f89f99086161c50251f5e93957cbbd4f9bc15b3da06cc824215",
+      "size": 34431,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/TB/headset.png": {
@@ -1323,8 +1431,8 @@
     },
     "data/nfl2k5_modern_coaches/TB/jacket.png": {
       "height": 128,
-      "sha256": "0a0873feecf6f2e42fd71fcaf74609617a61660f6235389f4e23c4efa5c781f4",
-      "size": 18863,
+      "sha256": "398da5557c0fdfbd8c93548732efecfaa0af79db5dbb33eda4cc70515758bad7",
+      "size": 19232,
       "width": 128
     },
     "data/nfl2k5_modern_coaches/TB/logo.png": {
@@ -1335,8 +1443,8 @@
     },
     "data/nfl2k5_modern_coaches/TB/shirt.png": {
       "height": 128,
-      "sha256": "41fc01a376c699398be700a779dc3d938a68e12e051b9e34e9e4c84c670b1a0c",
-      "size": 11727,
+      "sha256": "d2cd502fec67da02bf7573cea7837e4d0aa3928faa03fc773739f441f47766d0",
+      "size": 11538,
       "width": 128
     },
     "data/nfl2k5_modern_coaches/TB/sideline_dry.png": {
@@ -1353,8 +1461,8 @@
     },
     "data/nfl2k5_modern_coaches/TEN/head.png": {
       "height": 128,
-      "sha256": "cef4a840e0133abf4d616e56b0b674bfa74d30a41115ff883844047286d62293",
-      "size": 38199,
+      "sha256": "a13c86b651cdca8fe0afd8a9456a26fbf61b8e553bccdec85a05c4b140bd6500",
+      "size": 38164,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/TEN/headset.png": {
@@ -1395,8 +1503,8 @@
     },
     "data/nfl2k5_modern_coaches/WAS/head.png": {
       "height": 128,
-      "sha256": "29d444a3b34eaaa6b909e0ceb0e927a882791e272a2edb9cbe1e599626a157b7",
-      "size": 36260,
+      "sha256": "21d8c32ff87412c3c201b4cf5a2ba3664151836c613a70e539e8a27cec471e50",
+      "size": 39834,
       "width": 256
     },
     "data/nfl2k5_modern_coaches/WAS/headset.png": {
@@ -3661,6 +3769,174 @@
       "size": 2329,
       "width": 256
     },
+    "data/nfl2k5_rookie_faces/faces_00.png": {
+      "height": 2048,
+      "sha256": "aefd77cb6a060faed16b71e6a90fc26cb6cb6ebcf42b5dd641c41dc3470a19f6",
+      "size": 2358147,
+      "width": 2048
+    },
+    "data/nfl2k5_rookie_faces/faces_00_pal.png": {
+      "height": 256,
+      "sha256": "82802927ffc9c2d33eeabba850a642b6d87b8c8d5dc067d09a7e7694241eefbd",
+      "size": 147623,
+      "width": 256
+    },
+    "data/nfl2k5_rookie_faces/faces_01.png": {
+      "height": 2048,
+      "sha256": "c60fb0b6e6005078a596782c3e880527662252973856f1a52090276519bcadf4",
+      "size": 2413147,
+      "width": 2048
+    },
+    "data/nfl2k5_rookie_faces/faces_01_pal.png": {
+      "height": 256,
+      "sha256": "bbac6a6f865aa8774a59b67756cb5e5402ecf40384e820b649d164336573d381",
+      "size": 147609,
+      "width": 256
+    },
+    "data/nfl2k5_rookie_faces/faces_02.png": {
+      "height": 2048,
+      "sha256": "a910a8c1bd74af32e6756dbfe1b3b6a0008dd9e37344c4b7f40cffa9c53666f7",
+      "size": 2422715,
+      "width": 2048
+    },
+    "data/nfl2k5_rookie_faces/faces_02_pal.png": {
+      "height": 256,
+      "sha256": "658ebc4d3e09781a0cb567d4af91a0b38aa44334dff625d3a76b13751e3203b5",
+      "size": 146976,
+      "width": 256
+    },
+    "data/nfl2k5_rookie_faces/faces_03.png": {
+      "height": 2048,
+      "sha256": "0d5dd75a13dc315fc31de21ab6b54e6a1ed56963dc062ffa06cd51d5e5df8585",
+      "size": 2355697,
+      "width": 2048
+    },
+    "data/nfl2k5_rookie_faces/faces_03_pal.png": {
+      "height": 256,
+      "sha256": "7c05cfc2831fa5cac04dcaff9cb7492ae025204f2e71100d69e08494f56cd1dc",
+      "size": 150669,
+      "width": 256
+    },
+    "data/nfl2k5_rookie_faces/faces_04.png": {
+      "height": 2048,
+      "sha256": "bc6997927084cc12ed81a8c70b8d0128699305c2412b8aa8fda42506621629d1",
+      "size": 2397647,
+      "width": 2048
+    },
+    "data/nfl2k5_rookie_faces/faces_04_pal.png": {
+      "height": 256,
+      "sha256": "3dabe55c399e7f894fc18edb06037373cc52f3331dc194bef0f9bcb41acf8c7d",
+      "size": 152213,
+      "width": 256
+    },
+    "data/nfl2k5_rookie_faces/faces_05.png": {
+      "height": 2048,
+      "sha256": "4de00c88e95501124461ef29baaac3afaa9431ca7fdf49c5cee810c66bce21a0",
+      "size": 2456332,
+      "width": 2048
+    },
+    "data/nfl2k5_rookie_faces/faces_05_pal.png": {
+      "height": 256,
+      "sha256": "fa10c17bce2622cdbd726b980afe168067ebeeb8d6ddfec30f8cfb1b269ce659",
+      "size": 153077,
+      "width": 256
+    },
+    "data/nfl2k5_rookie_faces/faces_06.png": {
+      "height": 2048,
+      "sha256": "0ba50a207da9ccec2764170789191448c7721ed241476b663768be36613bf27c",
+      "size": 2460496,
+      "width": 2048
+    },
+    "data/nfl2k5_rookie_faces/faces_06_pal.png": {
+      "height": 256,
+      "sha256": "5afddfd35e6883e146b930a165606cacacfb075e79eb91526627660ff39676f6",
+      "size": 153510,
+      "width": 256
+    },
+    "data/nfl2k5_rookie_faces/faces_07.png": {
+      "height": 2048,
+      "sha256": "0db4b3b5a557574db534089d43dcea02b936b983e883959e53fc5bc0cb349b3b",
+      "size": 2475605,
+      "width": 2048
+    },
+    "data/nfl2k5_rookie_faces/faces_07_pal.png": {
+      "height": 256,
+      "sha256": "66a77417769bd41fe97bef17cc7ccc72aed67894beb509343123737720c460c2",
+      "size": 153724,
+      "width": 256
+    },
+    "data/nfl2k5_rookie_faces/faces_08.png": {
+      "height": 2048,
+      "sha256": "0ab33b3cdca8f0036ae29790d1ed24b2818bc65e3e270c9639b48374e6127ad3",
+      "size": 2436569,
+      "width": 2048
+    },
+    "data/nfl2k5_rookie_faces/faces_08_pal.png": {
+      "height": 256,
+      "sha256": "4126318404fcc348fb92894ee85048afa199285e09d2f7cfad6c6994e90d4d6d",
+      "size": 153422,
+      "width": 256
+    },
+    "data/nfl2k5_rookie_faces/faces_09.png": {
+      "height": 2048,
+      "sha256": "a4aef11ca58409eb1c103ec7b498d3443042818c5c083fbe2174f98e7e0ce2f7",
+      "size": 2511741,
+      "width": 2048
+    },
+    "data/nfl2k5_rookie_faces/faces_09_pal.png": {
+      "height": 256,
+      "sha256": "37513c6867baa9d66a3fde8c3fa595e92feb6b43da549faea665062226cd922e",
+      "size": 152821,
+      "width": 256
+    },
+    "data/nfl2k5_rookie_faces/faces_10.png": {
+      "height": 2048,
+      "sha256": "2b78090df7650ad2017e25eeb0bfa3e285b4e77e20b0e3934e6f42fc2114a1e4",
+      "size": 2406586,
+      "width": 2048
+    },
+    "data/nfl2k5_rookie_faces/faces_10_pal.png": {
+      "height": 256,
+      "sha256": "bcde3479668860c01d2a6a8c0b738d92a71c8f94d18c7b35938b120915f68b41",
+      "size": 153810,
+      "width": 256
+    },
+    "data/nfl2k5_rookie_faces/faces_11.png": {
+      "height": 2048,
+      "sha256": "2ed2e9fb096f1469989f8bab691b520193c4550700a8abf2da1962311f71c08d",
+      "size": 2510930,
+      "width": 2048
+    },
+    "data/nfl2k5_rookie_faces/faces_11_pal.png": {
+      "height": 256,
+      "sha256": "f475578e1023eebd670e102cba0f9d039bb462c318c451866d1e4e15caa441df",
+      "size": 153242,
+      "width": 256
+    },
+    "data/nfl2k5_rookie_faces/faces_12.png": {
+      "height": 2048,
+      "sha256": "d7c164167352464032000493c9f04c15b0b7c56cacde66bcda70e81b73828b38",
+      "size": 2411714,
+      "width": 2048
+    },
+    "data/nfl2k5_rookie_faces/faces_12_pal.png": {
+      "height": 256,
+      "sha256": "0deb01d7c74385d4c36bb9ee8ccb74c93c40404b561481077077e08aca12e927",
+      "size": 154294,
+      "width": 256
+    },
+    "data/nfl2k5_rookie_faces/faces_13.png": {
+      "height": 2048,
+      "sha256": "0ce6fe007479920b3e118a7b9d00ece0200a2150261aceeb18cc28656c7fd8e3",
+      "size": 2299322,
+      "width": 2048
+    },
+    "data/nfl2k5_rookie_faces/faces_13_pal.png": {
+      "height": 241,
+      "sha256": "d68926c3ab7064e815cad902934903568d76daff311df39d430e606230a1bf9a",
+      "size": 142999,
+      "width": 256
+    },
     "data/nfl2k5_super_bowl_fields/hosts/h41/banner_away_team.png": {
       "height": 128,
       "sha256": "460618bcbc119f33df223c42bb827b5dcd0293867e653710747f3aa4cd511e31",
@@ -5249,6 +5525,12 @@
       "height": 128,
       "sha256": "098748cf1df748fce9d2fa245389352653542cf0a1c859ff5c88553463b8c258",
       "size": 21416,
+      "width": 128
+    },
+    "data/trophy_room_logo/logo.png": {
+      "height": 128,
+      "sha256": "975c1ab03f800f336962f2360f508b57333c057910b89df37a3dabc194057293",
+      "size": 11937,
       "width": 128
     }
   },

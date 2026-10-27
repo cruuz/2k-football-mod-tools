@@ -147,7 +147,7 @@ class QuietProgressTests(unittest.TestCase):
             root = Path(td)
             events = []
             service = Nfl2k5BuildService(runner=SubprocessBuildCommandRunner())
-            result = service._run_build_command((sys.executable, "-c", "import time; time.sleep(2.2)"),
+            result = service._run_build_command((sys.executable, "-c", "import time; time.sleep(3.2)"),  # b778 ship: slow hosted macOS runners spend most of 2.2 s starting Python
                                                 root / "absent.iso", 100, events.append)
             self.assertEqual(result.returncode, 0)
             self.assertGreaterEqual(len(events), 2)

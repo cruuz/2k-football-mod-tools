@@ -1,0 +1,9 @@
+{
+ "who": "Matt LaFleur",
+ "notes": "tanned skin; short dark hair; heavy dark stubble greying at the chin; brown eyes; a broad smile with teeth in the official headshot (mouth closed here); c10 with its glasses hidden, c13's body (cm1)",
+ "eyes": [86, 62, 44],
+ "mouth": "close",
+ "hair_colour": [40, 32, 28],
+ "hair": {"front": 46.6, "recede": 0.9, "side": 43.5, "back": 34.5, "sideburn": 38.4, "edge": 0.3},
+ "facial": [{"kind": "stubble", "parts": ["moustache", "corners", "chin", "cheeks", "neck"], "density": 0.45, "colour": [62, 54, 50], "light": 0.2, "light_colour": [150, 144, 138]}]
+}

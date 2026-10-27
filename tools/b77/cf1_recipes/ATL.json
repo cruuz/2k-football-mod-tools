@@ -1,0 +1,10 @@
+{
+ "who": "Kevin Stefanski",
+ "notes": "fair skin; short salt-and-pepper hair, dark on top and grey at the sides; a short grey beard and moustache, heaviest on the chin; hazel eyes; a closed-mouth smile in the official headshot; c01",
+ "eyes": [86, 88, 64],
+ "mouth": "close",
+ "hair_colour": [74, 68, 64],
+ "hair": {"front": 46.8, "recede": 1.0, "side": 41.5, "back": 34.5, "sideburn": 38.6, "edge": 0.3, "grey": 0.3, "grey_sides": 0.55, "grey_colour": [170, 166, 162]},
+ "facial": [{"parts": ["moustache", "corners", "chin"], "colour": [124, 120, 116], "density": 0.8, "light": 0.5, "light_colour": [200, 196, 190]},
+            {"kind": "stubble", "parts": ["cheeks", "neck"], "colour": [128, 124, 120], "density": 0.6, "light": 0.5, "light_colour": [196, 192, 186]}]
+}

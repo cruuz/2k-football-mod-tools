@@ -81,7 +81,7 @@ class Scan:
 
 
 def _data_end(layout: codec.Layout) -> int:
-    return layout.root + arena.BLOCK_OFFSET if layout.version in (1, 18) else layout.end
+    return arena.data_end(layout) if layout.version in (1, 18) else layout.end
 
 
 def _span(layout: codec.Layout, offset: int, size: int, label: str) -> None:
@@ -139,8 +139,9 @@ def _frame(data: bytes) -> tuple[codec.Layout, dict[str, codec.Table]]:
                     end = base + declared
                     _require(end <= len(data), 'truncated declared ROST resource')
                 else:
-                    expected = {0: 0x91020, 1: 0x92020, 17: 0x90F60, 18: 0x92040}[version]
-                    _require(base == 0 and len(data) == expected, 'unframed ROST has unknown boundaries')
+                    expected = {0: (0x91020,), 1: (0x92020,), 17: (0x90F60,),
+                                18: (0x92040, 0xB0040)}[version]
+                    _require(base == 0 and len(data) in expected, 'unframed ROST has unknown boundaries')
                     end = len(data)
                 layout = codec.Layout(version, wrapper, base, root, end)
                 candidates.append((layout, _tables(data, layout)))
@@ -229,6 +230,61 @@ def scan(payload: bytes | bytearray, *, source: str = '') -> Scan:
                 tuple(c for c in colleges if c.issue))
 
 
+def fallback_index(names) -> int:
+    """The default college for a player without one: the first case-insensitive
+    None entry, else the first blank entry, else entry zero."""
+    names = list(names)
+    _require(bool(names), 'roster has no college table')
+    return next((i for i, n in enumerate(names) if n.strip().casefold() == 'none'),
+                next((i for i, n in enumerate(names) if not n.strip()), 0))
+
+
+def resolve_index(names, name) -> int:
+    """b778 fr1: the table index for a source college name, never "no college".
+
+    A player record must always point at a college record. Retail has no null
+    college word; the Franchise Player Contracts and Free Agents info panel
+    (0x6E0D8..0x6E147, case 3) reads ``[[player+0]]`` with no null check and the
+    game stops on the first highlighted player without one. Order: the exact
+    name, then each ``;``-separated school of a multi-school source cell in order
+    (nflverse lists the last school first: "Illinois; Globe Institute"), then
+    ``fallback_index`` ("None" in the disc table).
+    """
+    names = list(names)
+    text = (name or '').strip() if isinstance(name, str) else ''
+    for candidate in (text, *(part.strip() for part in text.split(';'))):
+        if candidate and candidate in names:
+            return names.index(candidate)
+    return fallback_index(names)
+
+
+def _point_at(data: bytes, report: Scan, findings, college: College) -> tuple[bytes, list[dict]]:
+    out = bytearray(data)
+    repairs = []
+    for finding in findings:
+        raw = college.offset - finding.offset + 1
+        _require(-(1 << 31) <= raw < (1 << 31) and raw != 0, 'college relative pointer is not encodable')
+        struct.pack_into('<i', out, finding.offset, raw)
+        repairs.append({**asdict(finding), 'new_raw': raw & 0xFFFFFFFF,
+                        'new_target': college.offset, 'new_college_index': college.index,
+                        'new_college': college.name})
+    fixed = bytes(out)
+    if repairs:
+        from . import nfl2k5_my_career_save as career
+        try:
+            codec.decode(fixed, preamble=report.layout.preamble)
+            # The inline footer repeats MyPlayer's college identity. It must
+            # remain valid without changing any footer/checksum byte.
+            # b778 ci2: only a save that carries the MyCareer footer has an
+            # identity to re-check; a plain or Player-Progress-only franchise
+            # must still repair.
+            if len(fixed) in career.SIZES + career.PPG_CAREER_SIZES and report.layout.preamble == 0x300:
+                career.read(fixed)
+        except (codec.SaveRostError, career.CareerSaveError) as exc:
+            raise CollegeCheckError(f'candidate fails unchanged roster/identity validation: {exc}') from exc
+    return fixed, repairs
+
+
 def repair(payload: bytes | bytearray, *, source: str = '', college_index: int | None = None,
            expected_sha256: str | None = None) -> tuple[bytes, dict]:
     """Repair all findings to one verified local college record, atomically in memory.
@@ -244,33 +300,39 @@ def repair(payload: bytes | bytearray, *, source: str = '', college_index: int |
     report = scan(data, source=source)
     _require(not report.table_issues, 'college table has unreadable names; player-only repair refused')
     if college_index is None:
-        college_index = next((c.index for c in report.colleges if c.name.strip().casefold() == 'none'),
-                             next((c.index for c in report.colleges if not c.name.strip()), 0))
+        college_index = fallback_index(c.name for c in report.colleges)
     _require(type(college_index) is int and 0 <= college_index < len(report.colleges),
              'college index is outside this roster table')
     college = report.colleges[college_index]
-    out = bytearray(data)
-    repairs = []
-    for finding in report.findings:
-        raw = college.offset - finding.offset + 1
-        _require(-(1 << 31) <= raw < (1 << 31) and raw != 0, 'college relative pointer is not encodable')
-        struct.pack_into('<i', out, finding.offset, raw)
-        repairs.append({**asdict(finding), 'new_raw': raw & 0xFFFFFFFF,
-                        'new_target': college.offset, 'new_college_index': college.index,
-                        'new_college': college.name})
-    fixed = bytes(out)
+    fixed, repairs = _point_at(data, report, report.findings, college)
     if repairs:
-        from . import nfl2k5_my_career_save as career
-        try:
-            codec.decode(fixed, preamble=report.layout.preamble)
-            # The inline footer repeats MyPlayer's college identity. It must
-            # remain valid without changing any footer/checksum byte.
-            if len(fixed) in career.SIZES and report.layout.preamble == 0x300:
-                career.read(fixed)
-        except (codec.SaveRostError, career.CareerSaveError) as exc:
-            raise CollegeCheckError(f'candidate fails unchanged roster/identity validation: {exc}') from exc
         _require(not scan(fixed).findings, 'college repair read-back differs')
     return fixed, {'source': source, 'before_sha256': digest,
                    'after_sha256': hashlib.sha256(fixed).hexdigest(), 'changed': len(repairs),
                    'college_index': college.index, 'college': college.name,
                    'repairs': repairs, 'saved': False}
+
+
+def heal_null_references(payload: bytes | bytearray, *, source: str = '') -> tuple[bytes, dict]:
+    """b778 fr1: point every player with a null college word at ``fallback_index``.
+
+    The main roster writer runs this on its final bytes, so no build can ship a
+    player that stops the Contracts or Free Agents screen. Only null words
+    change; other findings are reported, never guessed. Repetition is a no-op.
+    """
+    data = bytes(payload)
+    report = scan(data, source=source)
+    nulls = [f for f in report.findings if f.reason == 'null_reference']
+    others = [f for f in report.findings if f.reason != 'null_reference']
+    college = None
+    fixed, repairs = data, []
+    if nulls:
+        _require(not report.table_issues, 'college table has unreadable names; null college repair refused')
+        college = report.colleges[fallback_index(c.name for c in report.colleges)]
+        fixed, repairs = _point_at(data, report, nulls, college)
+        _require(not any(f.reason == 'null_reference' for f in scan(fixed).findings),
+                 'null college repair read-back differs')
+    return fixed, {'source': source, 'changed': len(repairs),
+                   'college': college.name if college else None,
+                   'players': [f"{r['pool']}:{r['index']} {r['player']}" for r in repairs],
+                   'other_findings': len(others)}

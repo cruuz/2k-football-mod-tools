@@ -1,0 +1,10 @@
+{
+ "who": "Sean McVay",
+ "notes": "fair skin; short light-brown hair, spiked up at the front; a full, short brown beard; blue-green eyes; a broad smile with teeth in the official headshot (mouth closed here); c23 with its glasses hidden, c29's body (cm1)",
+ "eyes": [110, 128, 120],
+ "mouth": "close",
+ "hair_colour": [100, 72, 52],
+ "hair": {"front": 46.8, "recede": 1.0, "side": 41.5, "back": 34.5, "sideburn": 38.2, "edge": 0.3},
+ "facial": [{"parts": ["moustache", "corners", "chin"], "colour": [104, 74, 52], "density": 0.8, "light": 0.15, "light_colour": [150, 112, 80]},
+            {"kind": "stubble", "parts": ["cheeks", "neck"], "colour": [92, 66, 46], "density": 0.7, "light": 0.15, "light_colour": [150, 112, 80]}]
+}

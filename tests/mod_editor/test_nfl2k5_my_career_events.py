@@ -234,8 +234,14 @@ class HostBudgetTests(unittest.TestCase):
             # nl1: the "You were drafted by the <city> <nickname>." notice.
             # mc4: the progress menu draws what the prior-season sim frames draw (handler in runtime.S), and
             # the progress note drawn on the native menu (runtime.c mode_draw) is gone.
+            # b778 mc6: inline_stage compares the portrait half of record +4 (not the play-by-play cue) and
+            # inline_decode lets resolve_team derive the saved stage (test_nfl2k5_my_career_mc6).
+            # b778 fa6: inline_stage admits the capacity 847,020/847,148-byte saves and stages the 128-byte
+            # footer at the capacity base, so a new capacity save reloads with MyCareer installed.
+            # b778 pg3: inline_stage derives the native size from the ROST wrapper and also admits the
+            # Player Progress footer (34,320 B) on top of the career footer.
             'tools/mycareer_mode/runtime.c':
-                '97af870c1bf4ea97a8317090b280ea19a14a05e1b3778c7acf529631269784fc',
+                '0454c82b381dbc75b63b760fad15fb72a36838a708aad57a50c0a6cf3f94fc4b',
             'tools/mycareer_mode/runtime.S':
                 '768241d4390839629906e81678ca46cb7f2d2578ac791a72dd71df5a3cde0484',
             'mod_editor/core/nfl2k5_my_career_mode.py':
@@ -245,7 +251,9 @@ class HostBudgetTests(unittest.TestCase):
                 # nl1: drafted-notice format in the M3 pool, Team Select side guard.
                 # ui1: Career Home Apartment descriptor words and the Upgrades back flag (Career Home variant only).
                 # mo2: guard view accepts the moment context hook over the pinned 0xCB240 span.
-                '7441d6bc1637dcac0f05716a1492b5e5415f93a596cb8c45e4b935933da2ba7d',
+                # b778 bd3: recognition views for the star-career class-loop hooks and the Player Progress
+                # screen chained over the inline footer hooks (runtime code unchanged).
+                '30767783d1aff7436d3b0502809c7bc53586900f3dd4eeb8a17c6a14b5d43990',
             'mod_editor/core/nfl2k5_my_career_code.py':
                 '0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b',
             'mod_editor/core/nfl2k5_my_career_progression.py':

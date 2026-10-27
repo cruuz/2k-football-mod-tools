@@ -1,0 +1,10 @@
+{
+ "schema": "nfl2k5_alien_prospect_art/v1",
+ "note": "Fictional gray alien made for this mod: the draft headshot was generated with ChatGPT image generation through the Codex CLI (Noah's subscription, built-in image_gen, no reference photo); the face, skull and neck textures are that headshot projected onto the retail head mesh's UV layout and de-lit, with a flat gray skull and neck; the helmet-on face (f) is darkened outside the face opening by a heavily blurred mask measured from retail f/h pairs (tools: .b77-scratch/b778/ee1/art). No retail picture is included.",
+ "sha256": {
+  "portrait": "ddee73fd402666e77d07297abdd26bf08b19628e0f7457906c061148ece8c3bb",
+  "f": "32de48f472a76ce9ebf5dbf67d018950cca7d4f98df97470edc3797dde31e808",
+  "h": "f577e3b26c0433aab17515f1bb51118d1164abf13118af7b079c6d416cd50905",
+  "n": "6b146c5fd7ab13cb9202e0eaae6e4b875fb0751199c532c8813eb0d930648995"
+ }
+}

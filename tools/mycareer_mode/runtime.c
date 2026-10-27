@@ -111,7 +111,11 @@ void inline_decode(void) {
     S(4)=0x31303030; S(8)=1280;
     move_bytes(state+40,b+16,16);
     for(i=0;i<14;i++) if(save_words[i]) S(4*save_words[i])=W(b,32+4*i);
-    S(24)=B(b,36); S(32)=B(b,37); S(36)=B(b,38); state[149]=B(b,39);
+    /* b778 mc6: the saved stage byte (2..6) is not trusted. resolve_team
+     * below derives 2..5 from the record's flags and club membership, so a
+     * career saved as lost (6) by the old play-by-play cue check is judged
+     * again on its record; a real identity loss still fails primary. */
+    S(24)=3; S(32)=B(b,37); S(36)=B(b,38); state[149]=B(b,39);
     S(96)=W(b,44); S(112)=W(b,48); S(116)=W(b,52);
     S(180)=B(b,80); S(184)=B(b,81);
     /* Enable only after the whole native deserialization has completed. */
@@ -128,13 +132,21 @@ static NI u32 relative(const u8 *root,u32 arena,u32 field,u32 n) {
  * +2660 is pending footer, +2664 records the SOURCE ROST extent for load.
  */
 u32 FC inline_stage(const u8 *file,u32 size) {
-    u32 base,growth,arena,pool,p,i,ref;
+    u32 base,growth,arena,pool,p,i,ref,declared,native;
     const u8 *b,*r;
     S(2660)=0; S(2664)=0;
-    if(size!=720044 && size!=724140 && size!=720172 && size!=724268) return 0;
-    base=(size==720172 || size==724268)?size-128:size;
+    /* b778 fa6: a capacity (0xB0000) arena writes 847,020-byte saves (847,148 with the MyCareer
+     * footer). b778-pg3: the Player Progress footer (34,320 B) follows the MyCareer footer when
+     * both are present. The native size follows the ROST wrapper the save itself declares, so the
+     * three geometries need no size list. */
+    declared=W(file,0x2e4);
+    if(declared!=0x91020 && declared!=0x92020 && declared!=0xb0020) return 0;
+    native=declared+0x1ec8c;
+    if(size==native+34320 || size==native+128+34320) size-=34320;
+    if(size!=native && size!=native+128) return 0;
+    base=(size==native+128)?native:size;
     growth=base-720044; arena=0x91000+growth;
-    if(W(file,0x2e0)!=0x54534f52 || W(file,0x2e4)!=0x91020+growth ||
+    if(W(file,0x2e4)!=0x91020+growth ||
        W(file,0x30c)!=0x54534f52 || W(file,0x310)!=(growth!=0) ||
        W(file,0x314)!=13 || B(file,0x91320+growth)!=2 || G(0xB72808)<arena) return 0;
     S(2664)=0x91040+growth;
@@ -143,7 +155,9 @@ u32 FC inline_stage(const u8 *file,u32 size) {
     if(!inline_valid(b,arena) || W(r,0)>4096 || W(b,32)>=W(r,0) ||
        !(pool=relative(r,arena,4,84*W(r,0)))) return 0;
     p=pool+84*W(b,32);
-    if(B(r,p+0x35)!=B(b,39) || W(r,p+4)!=W(b,56) ||
+    /* b778 mc6: +4 is the play-by-play cue the native jersey assigner
+     * rewrites (see primary); only the portrait half +6 is identity. */
+    if(B(r,p+0x35)!=B(b,39) || *(u16 *)(r+p+6)!=*(u16 *)(b+58) ||
        (W(r,p+0x18)&0x0ffff000)!=W(b,60)) return 0;
     for(i=0;i<3;i++) {
         ref=relative(r,arena,p+(i?12+i*4:0),i?2:8);
@@ -153,10 +167,16 @@ u32 FC inline_stage(const u8 *file,u32 size) {
 }
 /* Metadata admission is independent of the currently loaded career. */
 u32 FC inline_admit(u32 size) {
-    u32 max=G(0xB72808);
-    return size==720044 || size==720172 ||
-           (max>=0x92000 && (size==724140 || size==724268));
+    u32 max=G(0xB72808), base=720044;
+    if(max>=0xB0000) base=847020;
+    else if(max>=0x92000) base=724140;
+    return size==720044 || size==720172 || size==base || size==base+128;
 }
+
+
+
+
+
 
 /* Consumer-only play-call eligibility. The field unit and identity are
  * revalidated by the bounded binder, independently of menu/navigation club

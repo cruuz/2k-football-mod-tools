@@ -34,28 +34,20 @@
     45
    ]
   },
-  "housing": {
-   "box": [
-    527,
-    0,
-    611,
-    23
-   ]
-  },
   "capsule": {
    "box": [
-    613,
-    0,
-    673,
-    16
+    1200,
+    360,
+    1281,
+    376
    ]
   },
   "plate": {
    "box": [
-    675,
-    0,
-    766,
-    15
+    1200,
+    404,
+    1290,
+    423
    ]
   },
   "wing": {
@@ -76,10 +68,10 @@
   },
   "red": {
    "box": [
-    1004,
-    0,
-    1025,
-    16
+    1200,
+    430,
+    1219,
+    446
    ]
   },
   "espn_mnf": {
@@ -730,302 +722,6 @@
     309
    ]
   },
-  "record_d0": {
-   "box": [
-    1,
-    65,
-    6,
-    72
-   ]
-  },
-  "record_m0": {
-   "box": [
-    8,
-    65,
-    17,
-    72
-   ]
-  },
-  "record_d1": {
-   "box": [
-    19,
-    65,
-    24,
-    72
-   ]
-  },
-  "record_m1": {
-   "box": [
-    26,
-    65,
-    35,
-    72
-   ]
-  },
-  "record_d2": {
-   "box": [
-    37,
-    65,
-    42,
-    72
-   ]
-  },
-  "record_m2": {
-   "box": [
-    44,
-    65,
-    53,
-    72
-   ]
-  },
-  "record_d3": {
-   "box": [
-    55,
-    65,
-    60,
-    72
-   ]
-  },
-  "record_m3": {
-   "box": [
-    62,
-    65,
-    71,
-    72
-   ]
-  },
-  "record_d4": {
-   "box": [
-    73,
-    65,
-    78,
-    72
-   ]
-  },
-  "record_m4": {
-   "box": [
-    80,
-    65,
-    89,
-    72
-   ]
-  },
-  "record_d5": {
-   "box": [
-    91,
-    65,
-    96,
-    72
-   ]
-  },
-  "record_m5": {
-   "box": [
-    98,
-    65,
-    107,
-    72
-   ]
-  },
-  "record_d6": {
-   "box": [
-    109,
-    65,
-    114,
-    72
-   ]
-  },
-  "record_m6": {
-   "box": [
-    116,
-    65,
-    125,
-    72
-   ]
-  },
-  "record_d7": {
-   "box": [
-    127,
-    65,
-    132,
-    72
-   ]
-  },
-  "record_m7": {
-   "box": [
-    134,
-    65,
-    143,
-    72
-   ]
-  },
-  "record_d8": {
-   "box": [
-    145,
-    65,
-    150,
-    72
-   ]
-  },
-  "record_m8": {
-   "box": [
-    152,
-    65,
-    161,
-    72
-   ]
-  },
-  "record_d9": {
-   "box": [
-    163,
-    65,
-    168,
-    72
-   ]
-  },
-  "record_m9": {
-   "box": [
-    170,
-    65,
-    179,
-    72
-   ]
-  },
-  "record_d10": {
-   "box": [
-    181,
-    65,
-    192,
-    72
-   ]
-  },
-  "record_m10": {
-   "box": [
-    194,
-    65,
-    209,
-    72
-   ]
-  },
-  "record_d11": {
-   "box": [
-    211,
-    65,
-    222,
-    72
-   ]
-  },
-  "record_m11": {
-   "box": [
-    224,
-    65,
-    239,
-    72
-   ]
-  },
-  "record_d12": {
-   "box": [
-    241,
-    65,
-    252,
-    72
-   ]
-  },
-  "record_m12": {
-   "box": [
-    254,
-    65,
-    269,
-    72
-   ]
-  },
-  "record_d13": {
-   "box": [
-    271,
-    65,
-    282,
-    72
-   ]
-  },
-  "record_m13": {
-   "box": [
-    284,
-    65,
-    299,
-    72
-   ]
-  },
-  "record_d14": {
-   "box": [
-    301,
-    65,
-    312,
-    72
-   ]
-  },
-  "record_m14": {
-   "box": [
-    314,
-    65,
-    329,
-    72
-   ]
-  },
-  "record_d15": {
-   "box": [
-    331,
-    65,
-    342,
-    72
-   ]
-  },
-  "record_m15": {
-   "box": [
-    344,
-    65,
-    359,
-    72
-   ]
-  },
-  "record_d16": {
-   "box": [
-    361,
-    65,
-    372,
-    72
-   ]
-  },
-  "record_m16": {
-   "box": [
-    374,
-    65,
-    389,
-    72
-   ]
-  },
-  "record_d17": {
-   "box": [
-    391,
-    65,
-    402,
-    72
-   ]
-  },
-  "record_m17": {
-   "box": [
-    404,
-    65,
-    419,
-    72
-   ]
-  },
-  "record_tab": {
-   "box": [
-    421,
-    65,
-    439,
-    74
-   ]
-  },
   "chevron": {
    "box": [
     441,
@@ -1089,6 +785,318 @@
     114,
     337
    ]
+  },
+  "record_d0": {
+   "box": [
+    1,
+    80,
+    8,
+    89
+   ]
+  },
+  "record_d1": {
+   "box": [
+    10,
+    80,
+    15,
+    89
+   ]
+  },
+  "record_d2": {
+   "box": [
+    17,
+    80,
+    23,
+    89
+   ]
+  },
+  "record_d3": {
+   "box": [
+    25,
+    80,
+    31,
+    89
+   ]
+  },
+  "record_d4": {
+   "box": [
+    33,
+    80,
+    40,
+    89
+   ]
+  },
+  "record_d5": {
+   "box": [
+    42,
+    80,
+    48,
+    89
+   ]
+  },
+  "record_d6": {
+   "box": [
+    50,
+    80,
+    56,
+    89
+   ]
+  },
+  "record_d7": {
+   "box": [
+    58,
+    80,
+    64,
+    89
+   ]
+  },
+  "record_d8": {
+   "box": [
+    66,
+    80,
+    72,
+    89
+   ]
+  },
+  "record_d9": {
+   "box": [
+    74,
+    80,
+    80,
+    89
+   ]
+  },
+  "record_d10": {
+   "box": [
+    82,
+    80,
+    92,
+    89
+   ]
+  },
+  "record_d11": {
+   "box": [
+    94,
+    80,
+    102,
+    89
+   ]
+  },
+  "record_d12": {
+   "box": [
+    104,
+    80,
+    114,
+    89
+   ]
+  },
+  "record_d13": {
+   "box": [
+    116,
+    80,
+    126,
+    89
+   ]
+  },
+  "record_d14": {
+   "box": [
+    128,
+    80,
+    138,
+    89
+   ]
+  },
+  "record_d15": {
+   "box": [
+    140,
+    80,
+    150,
+    89
+   ]
+  },
+  "record_d16": {
+   "box": [
+    152,
+    80,
+    162,
+    89
+   ]
+  },
+  "record_d17": {
+   "box": [
+    164,
+    80,
+    173,
+    89
+   ]
+  },
+  "record_m0": {
+   "box": [
+    175,
+    80,
+    185,
+    89
+   ]
+  },
+  "record_m1": {
+   "box": [
+    187,
+    80,
+    195,
+    89
+   ]
+  },
+  "record_m2": {
+   "box": [
+    197,
+    80,
+    206,
+    89
+   ]
+  },
+  "record_m3": {
+   "box": [
+    208,
+    80,
+    217,
+    89
+   ]
+  },
+  "record_m4": {
+   "box": [
+    219,
+    80,
+    229,
+    89
+   ]
+  },
+  "record_m5": {
+   "box": [
+    231,
+    80,
+    240,
+    89
+   ]
+  },
+  "record_m6": {
+   "box": [
+    242,
+    80,
+    251,
+    89
+   ]
+  },
+  "record_m7": {
+   "box": [
+    253,
+    80,
+    262,
+    89
+   ]
+  },
+  "record_m8": {
+   "box": [
+    264,
+    80,
+    273,
+    89
+   ]
+  },
+  "record_m9": {
+   "box": [
+    275,
+    80,
+    284,
+    89
+   ]
+  },
+  "record_m10": {
+   "box": [
+    286,
+    80,
+    299,
+    89
+   ]
+  },
+  "record_m11": {
+   "box": [
+    301,
+    80,
+    312,
+    89
+   ]
+  },
+  "record_m12": {
+   "box": [
+    314,
+    80,
+    327,
+    89
+   ]
+  },
+  "record_m13": {
+   "box": [
+    329,
+    80,
+    342,
+    89
+   ]
+  },
+  "record_m14": {
+   "box": [
+    344,
+    80,
+    357,
+    89
+   ]
+  },
+  "record_m15": {
+   "box": [
+    359,
+    80,
+    372,
+    89
+   ]
+  },
+  "record_m16": {
+   "box": [
+    374,
+    80,
+    387,
+    89
+   ]
+  },
+  "record_m17": {
+   "box": [
+    389,
+    80,
+    401,
+    89
+   ]
+  },
+  "record_band_away": {
+   "box": [
+    1,
+    92,
+    61,
+    103
+   ]
+  },
+  "record_band_home": {
+   "box": [
+    63,
+    92,
+    123,
+    103
+   ]
+  },
+  "plate_gloss": {
+   "box": [
+    1200,
+    450,
+    1290,
+    469
+   ]
   }
  },
  "glyph_sets": {
@@ -1098,100 +1106,100 @@
     "0": {
      "cell": "score_0",
      "size": [
-      48.105,
+      50.9913,
       53
      ],
-     "advance": 52.105,
+     "advance": 55.2313,
      "raise": 0
     },
     "1": {
      "cell": "score_1",
      "size": [
-      24.543,
+      26.01558,
       53
      ],
-     "advance": 28.543,
+     "advance": 30.255580000000002,
      "raise": 0
     },
     "2": {
      "cell": "score_2",
      "size": [
-      45.16,
+      47.8696,
       53
      ],
-     "advance": 49.16,
+     "advance": 52.1096,
      "raise": 0
     },
     "3": {
      "cell": "score_3",
      "size": [
-      46.142,
+      48.910520000000005,
       53
      ],
-     "advance": 50.142,
+     "advance": 53.15052000000001,
      "raise": 0
     },
     "4": {
      "cell": "score_4",
      "size": [
-      50.069,
+      53.07314,
       53
      ],
-     "advance": 54.069,
+     "advance": 57.313140000000004,
      "raise": 0
     },
     "5": {
      "cell": "score_5",
      "size": [
-      48.105,
+      50.9913,
       53
      ],
-     "advance": 52.105,
+     "advance": 55.2313,
      "raise": 0
     },
     "6": {
      "cell": "score_6",
      "size": [
-      48.105,
+      50.9913,
       53
      ],
-     "advance": 52.105,
+     "advance": 55.2313,
      "raise": 0
     },
     "7": {
      "cell": "score_7",
      "size": [
-      38.288,
+      40.58528,
       53
      ],
-     "advance": 42.288,
+     "advance": 44.82528,
      "raise": 0
     },
     "8": {
      "cell": "score_8",
      "size": [
-      48.105,
+      50.9913,
       53
      ],
-     "advance": 52.105,
+     "advance": 55.2313,
      "raise": 0
     },
     "9": {
      "cell": "score_9",
      "size": [
-      48.105,
+      50.9913,
       53
      ],
-     "advance": 52.105,
+     "advance": 55.2313,
      "raise": 0
     },
     " ": {
      "cell": "tick",
      "size": [
-      0,
+      0.0,
       0
      ],
-     "advance": 6
+     "advance": 6.36
     }
    }
   },
@@ -1201,109 +1209,109 @@
     "0": {
      "cell": "clock_0",
      "size": [
-      21.808,
+      23.356368,
       27
      ],
-     "advance": 23.808,
+     "advance": 25.498368,
      "raise": 0
     },
     "1": {
      "cell": "clock_1",
      "size": [
-      12.96,
+      13.88016,
       27
      ],
-     "advance": 14.96,
+     "advance": 16.02216,
      "raise": 0
     },
     "2": {
      "cell": "clock_2",
      "size": [
-      21.808,
+      23.356368,
       27
      ],
-     "advance": 23.808,
+     "advance": 25.498368,
      "raise": 0
     },
     "3": {
      "cell": "clock_3",
      "size": [
-      21.808,
+      23.356368,
       27
      ],
-     "advance": 23.808,
+     "advance": 25.498368,
      "raise": 0
     },
     "4": {
      "cell": "clock_4",
      "size": [
-      21.808,
+      23.356368,
       27
      ],
-     "advance": 23.808,
+     "advance": 25.498368,
      "raise": 0
     },
     "5": {
      "cell": "clock_5",
      "size": [
-      21.808,
+      23.356368,
       27
      ],
-     "advance": 23.808,
+     "advance": 25.498368,
      "raise": 0
     },
     "6": {
      "cell": "clock_6",
      "size": [
-      21.808,
+      23.356368,
       27
      ],
-     "advance": 23.808,
+     "advance": 25.498368,
      "raise": 0
     },
     "7": {
      "cell": "clock_7",
      "size": [
-      20.52,
+      21.97692,
       27
      ],
-     "advance": 22.52,
+     "advance": 24.11892,
      "raise": 0
     },
     "8": {
      "cell": "clock_8",
      "size": [
-      21.808,
+      23.356368,
       27
      ],
-     "advance": 23.808,
+     "advance": 25.498368,
      "raise": 0
     },
     "9": {
      "cell": "clock_9",
      "size": [
-      21.808,
+      23.356368,
       27
      ],
-     "advance": 23.808,
+     "advance": 25.498368,
      "raise": 0
     },
     ":": {
      "cell": "colon",
      "size": [
-      7.0,
+      7.497,
       18
      ],
-     "advance": 9.0,
+     "advance": 9.639,
      "raise": -7
     },
     " ": {
      "cell": "tick",
      "size": [
-      0,
+      0.0,
       0
      ],
-     "advance": 6
+     "advance": 6.426
     }
    }
   },
@@ -1399,149 +1407,6 @@
      ],
      "advance": 21.158,
      "raise": 0
-    },
-    "st": {
-     "cell": "small_st",
-     "size": [
-      29.0,
-      18
-     ],
-     "advance": 31.0,
-     "raise": 0
-    },
-    "nd": {
-     "cell": "small_nd",
-     "size": [
-      33.5,
-      18
-     ],
-     "advance": 35.5,
-     "raise": 0
-    },
-    "rd": {
-     "cell": "small_rd",
-     "size": [
-      32.0,
-      18
-     ],
-     "advance": 34.0,
-     "raise": 0
-    },
-    "th": {
-     "cell": "small_th",
-     "size": [
-      29.0,
-      18
-     ],
-     "advance": 31.0,
-     "raise": 0
-    },
-    "&": {
-     "cell": "small_&",
-     "size": [
-      24.818,
-      26
-     ],
-     "advance": 26.818,
-     "raise": 0
-    },
-    "Goal": {
-     "cell": "small_Goal",
-     "size": [
-      93.826,
-      26
-     ],
-     "advance": 95.826,
-     "raise": 0
-    },
-    "GOAL": {
-     "cell": "small_GOAL",
-     "size": [
-      93.826,
-      26
-     ],
-     "advance": 95.826,
-     "raise": 0
-    },
-    "and": {
-     "cell": "small_and",
-     "size": [
-      58.783,
-      26
-     ],
-     "advance": 60.783,
-     "raise": 0
-    },
-    "OT": {
-     "cell": "small_OT",
-     "size": [
-      29.391,
-      26
-     ],
-     "advance": 31.391,
-     "raise": 0
-    },
-    "ST": {
-     "cell": "small_ST",
-     "size": [
-      29.0,
-      18
-     ],
-     "advance": 31.0,
-     "raise": 0
-    },
-    "ND": {
-     "cell": "small_ND",
-     "size": [
-      33.5,
-      18
-     ],
-     "advance": 35.5,
-     "raise": 0
-    },
-    "RD": {
-     "cell": "small_RD",
-     "size": [
-      32.0,
-      18
-     ],
-     "advance": 34.0,
-     "raise": 0
-    },
-    "TH": {
-     "cell": "small_TH",
-     "size": [
-      29.0,
-      18
-     ],
-     "advance": 31.0,
-     "raise": 0
-    },
-    "Inch": {
-     "cell": "small_Inch",
-     "size": [
-      67.826,
-      26
-     ],
-     "advance": 69.826,
-     "raise": 0
-    },
-    "es": {
-     "cell": "small_es",
-     "size": [
-      37.304,
-      26
-     ],
-     "advance": 39.304,
-     "raise": 0
-    },
-    " ": {
-     "cell": "tick",
-     "size": [
-      0,
-      0
-     ],
-     "advance": 6
     }
    }
   },
@@ -1852,66 +1717,66 @@
     "1ST": {
      "cell": "quarter_1ST",
      "size": [
-      31.5,
+      36.473684210526315,
       22
      ],
-     "advance": 33.5
+     "advance": 38.78947368421053
     },
     "1st": {
      "cell": "quarter_1ST",
      "size": [
-      31.5,
+      36.473684210526315,
       22
      ],
-     "advance": 33.5
+     "advance": 38.78947368421053
     },
     "2ND": {
      "cell": "quarter_2ND",
      "size": [
-      43.5,
+      50.36842105263158,
       22
      ],
-     "advance": 45.5
+     "advance": 52.684210526315795
     },
     "2nd": {
      "cell": "quarter_2ND",
      "size": [
-      43.5,
+      50.36842105263158,
       22
      ],
-     "advance": 45.5
+     "advance": 52.684210526315795
     },
     "3RD": {
      "cell": "quarter_3RD",
      "size": [
-      42.5,
+      49.21052631578947,
       22
      ],
-     "advance": 44.5
+     "advance": 51.526315789473685
     },
     "3rd": {
      "cell": "quarter_3RD",
      "size": [
-      42.5,
+      49.21052631578947,
       22
      ],
-     "advance": 44.5
+     "advance": 51.526315789473685
     },
     "4TH": {
      "cell": "quarter_4TH",
      "size": [
-      42.5,
+      49.21052631578947,
       22
      ],
-     "advance": 44.5
+     "advance": 51.526315789473685
     },
     "4th": {
      "cell": "quarter_4TH",
      "size": [
-      42.5,
+      49.21052631578947,
       22
      ],
-     "advance": 44.5
+     "advance": 51.526315789473685
     },
     "OT": {
      "cell": "quarter_OT",
@@ -2001,384 +1866,366 @@
     "0": {
      "cell": "record_d0",
      "size": [
-      15.0,
-      17
+      21.0,
+      21.69642857142857
      ],
-     "advance": 18.0,
-     "raise": 0
+     "advance": 17.0,
+     "raise": 2.4107142857142856
     },
     "1": {
      "cell": "record_d1",
      "size": [
       15.0,
-      17
+      21.69642857142857
      ],
-     "advance": 18.0,
-     "raise": 0
+     "advance": 11.0,
+     "raise": 2.4107142857142856
     },
     "2": {
      "cell": "record_d2",
      "size": [
-      15.0,
-      17
+      18.0,
+      21.69642857142857
      ],
-     "advance": 18.0,
-     "raise": 0
+     "advance": 14.0,
+     "raise": 2.4107142857142856
     },
     "3": {
      "cell": "record_d3",
      "size": [
-      15.0,
-      17
+      18.0,
+      21.69642857142857
      ],
-     "advance": 18.0,
-     "raise": 0
+     "advance": 14.0,
+     "raise": 2.4107142857142856
     },
     "4": {
      "cell": "record_d4",
      "size": [
-      15.0,
-      17
+      21.0,
+      21.69642857142857
      ],
-     "advance": 18.0,
-     "raise": 0
+     "advance": 17.0,
+     "raise": 2.4107142857142856
     },
     "5": {
      "cell": "record_d5",
      "size": [
-      15.0,
-      17
+      18.0,
+      21.69642857142857
      ],
-     "advance": 18.0,
-     "raise": 0
+     "advance": 14.0,
+     "raise": 2.4107142857142856
     },
     "6": {
      "cell": "record_d6",
      "size": [
-      15.0,
-      17
+      18.0,
+      21.69642857142857
      ],
-     "advance": 18.0,
-     "raise": 0
+     "advance": 14.0,
+     "raise": 2.4107142857142856
     },
     "7": {
      "cell": "record_d7",
      "size": [
-      15.0,
-      17
+      18.0,
+      21.69642857142857
      ],
-     "advance": 18.0,
-     "raise": 0
+     "advance": 14.0,
+     "raise": 2.4107142857142856
     },
     "8": {
      "cell": "record_d8",
      "size": [
-      15.0,
-      17
+      18.0,
+      21.69642857142857
      ],
-     "advance": 18.0,
-     "raise": 0
+     "advance": 14.0,
+     "raise": 2.4107142857142856
     },
     "9": {
      "cell": "record_d9",
      "size": [
-      15.0,
-      17
+      18.0,
+      21.69642857142857
      ],
-     "advance": 18.0,
-     "raise": 0
+     "advance": 14.0,
+     "raise": 2.4107142857142856
+    },
+    "10": {
+     "cell": "record_d10",
+     "size": [
+      30.0,
+      21.69642857142857
+     ],
+     "advance": 26.0,
+     "raise": 2.4107142857142856
+    },
+    "11": {
+     "cell": "record_d11",
+     "size": [
+      24.0,
+      21.69642857142857
+     ],
+     "advance": 20.0,
+     "raise": 2.4107142857142856
+    },
+    "12": {
+     "cell": "record_d12",
+     "size": [
+      30.0,
+      21.69642857142857
+     ],
+     "advance": 26.0,
+     "raise": 2.4107142857142856
+    },
+    "13": {
+     "cell": "record_d13",
+     "size": [
+      30.0,
+      21.69642857142857
+     ],
+     "advance": 26.0,
+     "raise": 2.4107142857142856
+    },
+    "14": {
+     "cell": "record_d14",
+     "size": [
+      30.0,
+      21.69642857142857
+     ],
+     "advance": 26.0,
+     "raise": 2.4107142857142856
+    },
+    "15": {
+     "cell": "record_d15",
+     "size": [
+      30.0,
+      21.69642857142857
+     ],
+     "advance": 26.0,
+     "raise": 2.4107142857142856
+    },
+    "16": {
+     "cell": "record_d16",
+     "size": [
+      30.0,
+      21.69642857142857
+     ],
+     "advance": 26.0,
+     "raise": 2.4107142857142856
+    },
+    "17": {
+     "cell": "record_d17",
+     "size": [
+      27.0,
+      21.69642857142857
+     ],
+     "advance": 23.0,
+     "raise": 2.4107142857142856
     },
     "-0": {
      "cell": "record_m0",
      "size": [
-      27.0,
-      17
+      30.0,
+      21.69642857142857
      ],
-     "advance": 30.0,
-     "raise": 0
+     "advance": 26.0,
+     "raise": 2.4107142857142856
     },
     "-1": {
      "cell": "record_m1",
      "size": [
-      27.0,
-      17
+      24.0,
+      21.69642857142857
      ],
-     "advance": 30.0,
-     "raise": 0
+     "advance": 20.0,
+     "raise": 2.4107142857142856
     },
     "-2": {
      "cell": "record_m2",
      "size": [
       27.0,
-      17
+      21.69642857142857
      ],
-     "advance": 30.0,
-     "raise": 0
+     "advance": 23.0,
+     "raise": 2.4107142857142856
     },
     "-3": {
      "cell": "record_m3",
      "size": [
       27.0,
-      17
+      21.69642857142857
      ],
-     "advance": 30.0,
-     "raise": 0
+     "advance": 23.0,
+     "raise": 2.4107142857142856
     },
     "-4": {
      "cell": "record_m4",
      "size": [
-      27.0,
-      17
+      30.0,
+      21.69642857142857
      ],
-     "advance": 30.0,
-     "raise": 0
+     "advance": 26.0,
+     "raise": 2.4107142857142856
     },
     "-5": {
      "cell": "record_m5",
      "size": [
       27.0,
-      17
+      21.69642857142857
      ],
-     "advance": 30.0,
-     "raise": 0
+     "advance": 23.0,
+     "raise": 2.4107142857142856
     },
     "-6": {
      "cell": "record_m6",
      "size": [
       27.0,
-      17
+      21.69642857142857
      ],
-     "advance": 30.0,
-     "raise": 0
+     "advance": 23.0,
+     "raise": 2.4107142857142856
     },
     "-7": {
      "cell": "record_m7",
      "size": [
       27.0,
-      17
+      21.69642857142857
      ],
-     "advance": 30.0,
-     "raise": 0
+     "advance": 23.0,
+     "raise": 2.4107142857142856
     },
     "-8": {
      "cell": "record_m8",
      "size": [
       27.0,
-      17
+      21.69642857142857
      ],
-     "advance": 30.0,
-     "raise": 0
+     "advance": 23.0,
+     "raise": 2.4107142857142856
     },
     "-9": {
      "cell": "record_m9",
      "size": [
       27.0,
-      17
+      21.69642857142857
      ],
-     "advance": 30.0,
-     "raise": 0
-    },
-    "10": {
-     "cell": "record_d10",
-     "size": [
-      33.0,
-      17
-     ],
-     "advance": 36.0,
-     "raise": 0
-    },
-    "11": {
-     "cell": "record_d11",
-     "size": [
-      33.0,
-      17
-     ],
-     "advance": 36.0,
-     "raise": 0
-    },
-    "12": {
-     "cell": "record_d12",
-     "size": [
-      33.0,
-      17
-     ],
-     "advance": 36.0,
-     "raise": 0
-    },
-    "13": {
-     "cell": "record_d13",
-     "size": [
-      33.0,
-      17
-     ],
-     "advance": 36.0,
-     "raise": 0
-    },
-    "14": {
-     "cell": "record_d14",
-     "size": [
-      33.0,
-      17
-     ],
-     "advance": 36.0,
-     "raise": 0
-    },
-    "15": {
-     "cell": "record_d15",
-     "size": [
-      33.0,
-      17
-     ],
-     "advance": 36.0,
-     "raise": 0
-    },
-    "16": {
-     "cell": "record_d16",
-     "size": [
-      33.0,
-      17
-     ],
-     "advance": 36.0,
-     "raise": 0
-    },
-    "17": {
-     "cell": "record_d17",
-     "size": [
-      33.0,
-      17
-     ],
-     "advance": 36.0,
-     "raise": 0
+     "advance": 23.0,
+     "raise": 2.4107142857142856
     },
     "-10": {
      "cell": "record_m10",
      "size": [
-      45.0,
-      17
+      39.0,
+      21.69642857142857
      ],
-     "advance": 48.0,
-     "raise": 0
+     "advance": 35.0,
+     "raise": 2.4107142857142856
     },
     "-11": {
      "cell": "record_m11",
      "size": [
-      45.0,
-      17
+      33.0,
+      21.69642857142857
      ],
-     "advance": 48.0,
-     "raise": 0
+     "advance": 29.0,
+     "raise": 2.4107142857142856
     },
     "-12": {
      "cell": "record_m12",
      "size": [
-      45.0,
-      17
+      39.0,
+      21.69642857142857
      ],
-     "advance": 48.0,
-     "raise": 0
+     "advance": 35.0,
+     "raise": 2.4107142857142856
     },
     "-13": {
      "cell": "record_m13",
      "size": [
-      45.0,
-      17
+      39.0,
+      21.69642857142857
      ],
-     "advance": 48.0,
-     "raise": 0
+     "advance": 35.0,
+     "raise": 2.4107142857142856
     },
     "-14": {
      "cell": "record_m14",
      "size": [
-      45.0,
-      17
+      39.0,
+      21.69642857142857
      ],
-     "advance": 48.0,
-     "raise": 0
+     "advance": 35.0,
+     "raise": 2.4107142857142856
     },
     "-15": {
      "cell": "record_m15",
      "size": [
-      45.0,
-      17
+      39.0,
+      21.69642857142857
      ],
-     "advance": 48.0,
-     "raise": 0
+     "advance": 35.0,
+     "raise": 2.4107142857142856
     },
     "-16": {
      "cell": "record_m16",
      "size": [
-      45.0,
-      17
+      39.0,
+      21.69642857142857
      ],
-     "advance": 48.0,
-     "raise": 0
+     "advance": 35.0,
+     "raise": 2.4107142857142856
     },
     "-17": {
      "cell": "record_m17",
      "size": [
-      45.0,
-      17
+      36.0,
+      21.69642857142857
      ],
-     "advance": 48.0,
-     "raise": 0
+     "advance": 32.0,
+     "raise": 2.4107142857142856
     }
    }
   },
   "record_tab": {
-   "cap_height": 23,
+   "cap_height": 28.0,
    "glyphs": {
     "3": {
-     "cell": "record_tab",
+     "cell": "record_band_away",
      "size": [
-      54.0,
-      23
+      180.0,
+      28.0
      ],
-     "advance": 54.0,
+     "advance": 180.0,
      "raise": 0
     },
     "4": {
-     "cell": "record_tab",
+     "cell": "record_band_away",
      "size": [
-      72.0,
-      23
+      180.0,
+      28.0
      ],
-     "advance": 72.0,
+     "advance": 180.0,
      "raise": 0
     },
     "5": {
-     "cell": "record_tab",
+     "cell": "record_band_away",
      "size": [
-      90.0,
-      23
+      180.0,
+      28.0
      ],
-     "advance": 90.0,
+     "advance": 180.0,
      "raise": 0
     },
     "6": {
-     "cell": "record_tab",
+     "cell": "record_band_away",
      "size": [
-      102.0,
-      23
+      180.0,
+      28.0
      ],
-     "advance": 102.0,
-     "raise": 0
-    },
-    "7": {
-     "cell": "record_tab",
-     "size": [
-      103.0,
-      23
-     ],
-     "advance": 103.0,
-     "raise": 0
-    },
-    "8": {
-     "cell": "record_tab",
-     "size": [
-      103.0,
-      23
-     ],
-     "advance": 103.0,
+     "advance": 180.0,
      "raise": 0
     }
    }
@@ -2407,6 +2254,47 @@
       21
      ],
      "advance": 172,
+     "raise": 0
+    }
+   }
+  },
+  "record_tab_home": {
+   "cap_height": 28.0,
+   "glyphs": {
+    "3": {
+     "cell": "record_band_home",
+     "size": [
+      180.0,
+      28.0
+     ],
+     "advance": 180.0,
+     "raise": 0
+    },
+    "4": {
+     "cell": "record_band_home",
+     "size": [
+      180.0,
+      28.0
+     ],
+     "advance": 180.0,
+     "raise": 0
+    },
+    "5": {
+     "cell": "record_band_home",
+     "size": [
+      180.0,
+      28.0
+     ],
+     "advance": 180.0,
+     "raise": 0
+    },
+    "6": {
+     "cell": "record_band_home",
+     "size": [
+      180.0,
+      28.0
+     ],
+     "advance": 180.0,
      "raise": 0
     }
    }
@@ -2453,24 +2341,11 @@
    "z": -18.5
   },
   {
-   "name": "housing",
-   "box": [
-    829,
-    990,
-    1090,
-    1046
-   ],
-   "cell": "housing",
-   "material": 3,
-   "tint": "none",
-   "z": -20
-  },
-  {
    "name": "capsule",
    "box": [
     839,
     999,
-    1022,
+    1082,
     1039
    ],
    "cell": "capsule",
@@ -2481,10 +2356,10 @@
   {
    "name": "plate",
    "box": [
-    822,
-    948,
-    1096,
-    986
+    828,
+    944,
+    1098,
+    990
    ],
    "cell": "plate",
    "material": 4,
@@ -2521,7 +2396,7 @@
   {
    "name": "red",
    "box": [
-    1019,
+    1023,
     999,
     1082,
     1039
@@ -2556,6 +2431,19 @@
    "material": 5,
    "tint": "none",
    "z": -18
+  },
+  {
+   "name": "plate_gloss",
+   "box": [
+    828,
+    944,
+    1098,
+    990
+   ],
+   "cell": "plate_gloss",
+   "material": 3,
+   "tint": "none",
+   "z": -16.8
   }
  ],
  "fields": [
@@ -2564,9 +2452,9 @@
    "source": "away score",
    "box": [
     696,
-    964,
+    965,
     816,
-    1020
+    1018
    ],
    "glyph_set": "score",
    "slots": 3,
@@ -2574,8 +2462,8 @@
    "colour": "#FDFDFD",
    "alignment": "center",
    "anchor": [
-    756.0,
-    964
+    756,
+    965
    ],
    "size": 56,
    "z": -15
@@ -2585,9 +2473,9 @@
    "source": "home score",
    "box": [
     1095,
-    964,
+    965,
     1215,
-    1020
+    1018
    ],
    "glyph_set": "score",
    "slots": 3,
@@ -2595,8 +2483,8 @@
    "colour": "#FDFDFD",
    "alignment": "center",
    "anchor": [
-    1155.0,
-    964
+    1155,
+    965
    ],
    "size": 56,
    "z": -15
@@ -2608,7 +2496,7 @@
     906,
     1006,
     1014,
-    1033
+    1034
    ],
    "glyph_set": "clock",
    "slots": 5,
@@ -2616,7 +2504,7 @@
    "colour": "#171717",
    "alignment": "center",
    "anchor": [
-    960.0,
+    960,
     1006
    ],
    "size": 27,
@@ -2628,9 +2516,9 @@
    "source": "play clock",
    "box": [
     1023,
-    1006,
+    1010,
     1076,
-    1032
+    1029
    ],
    "glyph_set": "small",
    "slots": 2,
@@ -2638,10 +2526,10 @@
    "colour": "#171717",
    "alignment": "center",
    "anchor": [
-    1049.5,
-    1006
+    1051,
+    1010
    ],
-   "size": 26,
+   "size": 19,
    "strip_zero": true,
    "z": -15
   },
@@ -2650,9 +2538,9 @@
    "source": "quarter",
    "box": [
     846,
-    1008,
+    1010,
     900,
-    1030
+    1028
    ],
    "glyph_set": "quarter",
    "slots": 1,
@@ -2660,10 +2548,10 @@
    "colour": "#171717",
    "alignment": "center",
    "anchor": [
-    873,
-    1008
+    871,
+    1010
    ],
-   "size": 22,
+   "size": 19,
    "z": -15
   },
   {
@@ -2725,7 +2613,7 @@
    "colour": "#FFFFFF",
    "alignment": "center",
    "anchor": [
-    959,
+    961,
     955
    ],
    "size": 24,
@@ -2735,10 +2623,10 @@
    "name": "away_record_tab",
    "source": "away record tab",
    "box": [
-    442,
-    1024,
-    545.0,
-    1047
+    439.0,
+    1022,
+    619.0,
+    1050.0
    ],
    "glyph_set": "record_tab",
    "slots": 1,
@@ -2746,40 +2634,40 @@
    "colour": "#FFFFFF",
    "alignment": "left",
    "anchor": [
-    442,
-    1024
+    439.0,
+    1022
    ],
-   "size": 23,
-   "z": -17.5
+   "size": 28.0,
+   "z": -18.25
   },
   {
    "name": "home_record_tab",
    "source": "home record tab",
    "box": [
-    1374.0,
-    1024,
-    1477,
-    1047
+    1296.0,
+    1022,
+    1476.0,
+    1050.0
    ],
-   "glyph_set": "record_tab",
+   "glyph_set": "record_tab_home",
    "slots": 1,
    "material": 9,
    "colour": "#FFFFFF",
    "alignment": "right",
    "anchor": [
-    1477,
-    1024
+    1476.0,
+    1022
    ],
-   "size": 23,
-   "z": -17.5
+   "size": 28.0,
+   "z": -18.25
   },
   {
    "name": "away_record",
    "source": "away record",
    "box": [
-    447.0,
+    444.0,
     1027,
-    541.0,
+    544.0,
     1044
    ],
    "glyph_set": "record",
@@ -2788,7 +2676,7 @@
    "colour": "#FFFFFF",
    "alignment": "left",
    "anchor": [
-    447.0,
+    444.0,
     1027
    ],
    "size": 17,
@@ -2798,9 +2686,9 @@
    "name": "home_record",
    "source": "home record",
    "box": [
-    1378.0,
+    1375.0,
     1027,
-    1472.0,
+    1475.0,
     1044
    ],
    "glyph_set": "record",
@@ -2809,7 +2697,7 @@
    "colour": "#FFFFFF",
    "alignment": "right",
    "anchor": [
-    1472.0,
+    1475.0,
     1027
    ],
    "size": 17,
@@ -2986,14 +2874,14 @@
    "ARI": {
     "fill_x": 0.92,
     "height": 1.0,
-    "zoom": 0.976,
+    "zoom": 1.15,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "ATL": {
     "fill_x": 0.92,
     "height": 1.0,
-    "zoom": 0.976,
+    "zoom": 1.15,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
@@ -3007,7 +2895,7 @@
    "BUF": {
     "fill_x": 1.02,
     "height": 1.0,
-    "zoom": 0.976,
+    "zoom": 1.1325,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
@@ -3021,77 +2909,77 @@
    "CHI": {
     "fill_x": 1.14,
     "height": 1.0,
-    "zoom": 0.976,
+    "zoom": 1.15,
     "shift_x": 0.046875,
     "shift_y": 0.0
    },
    "CIN": {
     "fill_x": 0.92,
     "height": 1.0,
-    "zoom": 0.976,
+    "zoom": 1.15,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "DAL": {
     "fill_x": 0.92,
     "height": 1.0,
-    "zoom": 0.976,
+    "zoom": 1.15,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "DEN": {
     "fill_x": 0.86,
     "height": 1.0,
-    "zoom": 0.976,
+    "zoom": 1.15,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "DET": {
     "fill_x": 0.92,
     "height": 1.0,
-    "zoom": 0.976,
+    "zoom": 1.15,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "GB": {
     "fill_x": 1.02,
     "height": 1.0,
-    "zoom": 0.976,
+    "zoom": 1.08,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "IND": {
     "fill_x": 0.92,
     "height": 1.0,
-    "zoom": 0.976,
+    "zoom": 1.15,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "JAX": {
     "fill_x": 0.92,
     "height": 1.0,
-    "zoom": 0.976,
+    "zoom": 1.15,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "KC": {
     "fill_x": 0.9,
     "height": 1.0,
-    "zoom": 0.976,
+    "zoom": 1.15,
     "shift_x": 0.03125,
     "shift_y": 0.0
    },
    "MIA": {
     "fill_x": 0.92,
     "height": 1.0,
-    "zoom": 0.976,
+    "zoom": 1.15,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "MIN": {
     "fill_x": 0.92,
     "height": 1.0,
-    "zoom": 0.976,
+    "zoom": 1.15,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
@@ -3105,14 +2993,14 @@
    "NO": {
     "fill_x": 0.92,
     "height": 1.0,
-    "zoom": 0.976,
+    "zoom": 1.15,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "NYG": {
     "fill_x": 1.14,
     "height": 1.0,
-    "zoom": 0.953,
+    "zoom": 1.12,
     "shift_x": -0.0156,
     "shift_y": 0.0
    },
@@ -3126,28 +3014,28 @@
    "LV": {
     "fill_x": 1.0,
     "height": 1.0,
-    "zoom": 0.976,
+    "zoom": 1.15,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "PHI": {
     "fill_x": 1.02,
     "height": 1.0,
-    "zoom": 0.976,
+    "zoom": 1.095,
     "shift_x": -0.015625,
     "shift_y": 0.0
    },
    "PIT": {
     "fill_x": 0.92,
     "height": 1.0,
-    "zoom": 0.976,
+    "zoom": 1.15,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "LAR": {
     "fill_x": 1.1,
     "height": 1.0,
-    "zoom": 0.953,
+    "zoom": 1.03,
     "shift_x": 0.0469,
     "shift_y": 0.0
    },
@@ -3175,14 +3063,14 @@
    "TB": {
     "fill_x": 0.92,
     "height": 1.0,
-    "zoom": 0.976,
+    "zoom": 1.15,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "TEN": {
     "fill_x": 0.92,
     "height": 1.0,
-    "zoom": 0.976,
+    "zoom": 1.15,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
@@ -3196,14 +3084,14 @@
    "CLE": {
     "fill_x": 0.92,
     "height": 1.0,
-    "zoom": 0.976,
+    "zoom": 1.15,
     "shift_x": 0.0,
     "shift_y": 0.0
    },
    "HOU": {
     "fill_x": 1.04,
     "height": 1.0,
-    "zoom": 0.976,
+    "zoom": 1.15,
     "shift_x": 0.0,
     "shift_y": 0.0
    }
@@ -3341,9 +3229,647 @@
     }
    },
    "template_before_sha256": "eba14b66c490fc08f57900fd615c278f851472552eb54e717218d300c1888f4b"
+  },
+  "b778_sb2_logo_zoom": {
+   "job": "b778 sb2 2026-10-22",
+   "request": "Noah 10/21 stream c2-15: logos zoomed in a bit more and slightly cut off",
+   "target": 1.15,
+   "width_margin_texels": 3,
+   "corner_alpha": 64,
+   "reference": "2026 ESPN NFL Raiders at Texans and Bills at Chiefs bars (measurement only, no broadcast pixels)",
+   "zoom": {
+    "ARI": [
+     0.976,
+     1.15
+    ],
+    "ATL": [
+     0.976,
+     1.15
+    ],
+    "BAL": [
+     0.976,
+     0.976
+    ],
+    "BUF": [
+     1.1075,
+     1.1325
+    ],
+    "CAR": [
+     0.976,
+     0.976
+    ],
+    "CHI": [
+     0.976,
+     1.15
+    ],
+    "CIN": [
+     0.976,
+     1.15
+    ],
+    "CLE": [
+     0.976,
+     1.15
+    ],
+    "DAL": [
+     0.976,
+     1.15
+    ],
+    "DEN": [
+     0.976,
+     1.15
+    ],
+    "DET": [
+     0.976,
+     1.15
+    ],
+    "GB": [
+     0.976,
+     1.08
+    ],
+    "HOU": [
+     0.976,
+     1.15
+    ],
+    "IND": [
+     0.976,
+     1.15
+    ],
+    "JAX": [
+     0.976,
+     1.15
+    ],
+    "KC": [
+     0.976,
+     1.15
+    ],
+    "LAC": [
+     0.976,
+     0.976
+    ],
+    "LAR": [
+     0.953,
+     1.03
+    ],
+    "LV": [
+     0.976,
+     1.15
+    ],
+    "MIA": [
+     0.976,
+     1.15
+    ],
+    "MIN": [
+     0.976,
+     1.15
+    ],
+    "NE": [
+     0.976,
+     0.976
+    ],
+    "NO": [
+     0.976,
+     1.15
+    ],
+    "NYG": [
+     0.953,
+     1.12
+    ],
+    "NYJ": [
+     0.976,
+     0.976
+    ],
+    "PHI": [
+     0.976,
+     1.095
+    ],
+    "PIT": [
+     0.976,
+     1.15
+    ],
+    "SEA": [
+     0.976,
+     0.976
+    ],
+    "SF": [
+     0.976,
+     0.976
+    ],
+    "TB": [
+     0.976,
+     1.15
+    ],
+    "TEN": [
+     0.976,
+     1.15
+    ],
+    "WAS": [
+     0.94,
+     0.94
+    ]
+   }
+  },
+  "b778_sb2_record_font": {
+   "job": "b778 sb2 2026-10-22",
+   "request": "Noah 10/21 stream c2-15: the font on the records",
+   "digits": "data/nfl2k5_scorebug_assets/espn_glyphs.png traced broadcast digit medians, levels 96..232, smoothstep, area-filtered to 7 rows at 3 layout px per texel",
+   "hyphen": "drawn: a bar of the digit stem weight (source px {\"width\": 8.0, \"height\": 4.6, \"centre\": 11.6, \"bearing\": 2.0})",
+   "band": "drawn: {\"width\": 180.0, \"height\": 28.0, \"top\": 1022, \"outer\": 439.0, \"solid\": 0.5, \"alpha\": 0.5, \"feather_rows\": 2, \"levels\": 32, \"colour\": [8, 10, 14], \"z\": -18.25}; one cell per side, behind the team mark",
+   "reference": "2026 ESPN NFL Bills at Chiefs bar with records (measurement only, no broadcast pixels)",
+   "template_before_sha256": "993edab40174e4a9e5d1c57df505f022e14d117ceb0256af856852196f80d398"
+  },
+  "b778_sb3_espn_fidelity": {
+   "job": "b778 sb3 2026-10-23",
+   "request": "Noah 10/23: border/glow, deeper team gradient over the logo, down-and-distance gradient",
+   "wing": {
+    "a1": 0.8761,
+    "d1": 41.19,
+    "v1": 0.2879,
+    "a2": 1.05,
+    "d2": 14.0,
+    "d3": 350.0,
+    "a3": 2.0,
+    "d4": 3.2,
+    "d5": 95.0,
+    "window_start": 250.0,
+    "window_end": 330.0
+   },
+   "plate_rows": [
+    0.34,
+    0.42,
+    0.62,
+    0.84,
+    0.82,
+    0.79,
+    0.77,
+    0.75,
+    0.74,
+    0.73,
+    0.72,
+    0.71,
+    0.71,
+    0.7,
+    0.7,
+    0.7,
+    0.7,
+    0.7,
+    0.69,
+    0.69,
+    0.69,
+    0.69,
+    0.68,
+    0.68,
+    0.68,
+    0.68,
+    0.67,
+    0.67,
+    0.67,
+    0.66,
+    0.66,
+    0.65,
+    0.63,
+    0.6,
+    0.55,
+    0.47,
+    0.36,
+    0.24
+   ],
+   "plate_source": [
+    274,
+    38
+   ],
+   "capsule_source": [
+    183,
+    40
+   ],
+   "rim": {
+    "cells": [
+     "away_rim",
+     "home_rim"
+    ],
+    "tint": "the runtime lightens the wing shade for the rail; the sourced accent rim stays in the table",
+    "method": "white coverage: outer rail glint, top corners and a centre-weighted lower lip; no new quad"
+   },
+   "buf_zoom": {
+    "before": 1.1075,
+    "after": 1.1325
+   },
+   "buf": "charging primary buffalo from data/nfl2k5_scorebug_assets/logos/buf.png",
+   "reference": "reports/b72_s9/broadcast_away_median.png, broadcast_home_median.png and .b77-scratch/b778/sb2/ref_bars.png (measurement only, no broadcast pixels)"
+  },
+  "b778_sb4_connected_clock": {
+   "job": "b778 sb4 2026-10-23",
+   "request": "Noah 10/23 02:00: one connected clock capsule and a smaller play clock",
+   "layout": [
+    839,
+    999,
+    1082,
+    1039
+   ],
+   "source": [
+    81,
+    16
+   ],
+   "design_source": [
+    240,
+    40
+   ],
+   "dividers_layout": [
+    902.5,
+    1021.5
+   ],
+   "dividers_source": [
+    63.2,
+    180.2
+   ],
+   "ink": {
+    "quarter": [
+     32,
+     18
+    ],
+    "clock": [
+     99,
+     26
+    ],
+    "play_clock": [
+     15,
+     19
+    ]
+   },
+   "fields": {
+    "quarter": 19,
+    "clock": 27,
+    "play_clock": 19,
+    "scores": 56
+   },
+   "red_cell": "the pill right cap, rim and outline included, drawn only at 5 seconds and under",
+   "reference": "read-only 2026 Broncos at Chiefs still, sb3/ds/work/ref_full.png (measurement only)"
+  },
+  "b778_sb4_plate_tab": {
+   "job": "b778 sb4 2026-10-23",
+   "request": "Noah 10/23 02:00: the down and distance tab grows out of the bar top with a strong gradient",
+   "layout": [
+    828,
+    944,
+    1098,
+    990
+   ],
+   "source": [
+    90,
+    19
+   ],
+   "design_source": [
+    240,
+    48
+   ],
+   "tab_rows": 42,
+   "rows": [
+    1.0,
+    1.0,
+    0.99,
+    0.96,
+    0.9,
+    0.81,
+    0.76,
+    0.8,
+    0.83,
+    0.85,
+    0.86,
+    0.86,
+    0.86,
+    0.87,
+    0.87,
+    0.87,
+    0.87,
+    0.87,
+    0.87,
+    0.87,
+    0.87,
+    0.87,
+    0.87,
+    0.87,
+    0.86,
+    0.86,
+    0.86,
+    0.86,
+    0.86,
+    0.85,
+    0.85,
+    0.85,
+    0.84,
+    0.83,
+    0.81,
+    0.78,
+    0.73,
+    0.66,
+    0.57,
+    0.46,
+    0.33,
+    0.2
+   ],
+   "shadow_rows": [
+    0.62,
+    0.48,
+    0.34,
+    0.21,
+    0.1,
+    0.03
+   ],
+   "top_inset": 0,
+   "bottom_inset": 15,
+   "reference": "read-only 2026 Broncos at Chiefs still, sb3/ds/work/ref_full.png (measurement only)"
+  },
+  "b778_sb5_tab_shape": {
+   "job": "b778 sb5 2026-10-23",
+   "request": "Noah 10/23 03:40: the down and distance tab is a weird shape, not ESPN's smooth curves, and it does not blend into the possessing team's gradient",
+   "layout": [
+    828,
+    944,
+    1098,
+    990
+   ],
+   "source": [
+    90,
+    19
+   ],
+   "design": [
+    270,
+    46
+   ],
+   "supersample": 8,
+   "shoulder_bezier": [
+    [
+     -1.5,
+     0.0
+    ],
+    [
+     0.5,
+     0.0
+    ],
+    [
+     11.8,
+     16.5
+    ],
+    [
+     11.8,
+     18.0
+    ]
+   ],
+   "side_inset": 11.8,
+   "corner_radius": 7.0,
+   "bottom": 39.5,
+   "peak": 0.8,
+   "across": [
+    [
+     0,
+     0.76
+    ],
+    [
+     1,
+     0.78
+    ],
+    [
+     4,
+     0.88
+    ],
+    [
+     7,
+     0.95
+    ],
+    [
+     10,
+     0.99
+    ],
+    [
+     13,
+     1.0
+    ],
+    [
+     16,
+     0.99
+    ],
+    [
+     19,
+     0.95
+    ],
+    [
+     22,
+     0.9
+    ],
+    [
+     25,
+     0.87
+    ],
+    [
+     28,
+     0.85
+    ],
+    [
+     31,
+     0.81
+    ],
+    [
+     34,
+     0.78
+    ],
+    [
+     37,
+     0.75
+    ],
+    [
+     40,
+     0.735
+    ],
+    [
+     43,
+     0.7
+    ],
+    [
+     46,
+     0.68
+    ],
+    [
+     49,
+     0.655
+    ],
+    [
+     52,
+     0.64
+    ],
+    [
+     55,
+     0.62
+    ],
+    [
+     58,
+     0.6
+    ],
+    [
+     61,
+     0.58
+    ],
+    [
+     64,
+     0.565
+    ],
+    [
+     70,
+     0.555
+    ]
+   ],
+   "down": [
+    [
+     0,
+     0.7
+    ],
+    [
+     1.5,
+     0.7
+    ],
+    [
+     2.5,
+     0.58
+    ],
+    [
+     3.5,
+     0.62
+    ],
+    [
+     4.5,
+     0.95
+    ],
+    [
+     5.5,
+     1.04
+    ],
+    [
+     6.5,
+     0.98
+    ],
+    [
+     8,
+     0.97
+    ],
+    [
+     10,
+     1.0
+    ],
+    [
+     28,
+     1.03
+    ],
+    [
+     31,
+     1.0
+    ],
+    [
+     33,
+     0.95
+    ],
+    [
+     35,
+     0.91
+    ],
+    [
+     37,
+     0.9
+    ],
+    [
+     38.5,
+     0.95
+    ],
+    [
+     39.5,
+     0.9
+    ]
+   ],
+   "band": [
+    [
+     0,
+     0.56
+    ],
+    [
+     1.5,
+     0.54
+    ],
+    [
+     2.5,
+     0.42
+    ],
+    [
+     3.5,
+     0.44
+    ],
+    [
+     4.5,
+     0.7
+    ],
+    [
+     5.5,
+     0.86
+    ],
+    [
+     6.5,
+     0.76
+    ],
+    [
+     7.5,
+     0.6
+    ],
+    [
+     8.5,
+     0.0
+    ],
+    [
+     36.5,
+     0.0
+    ],
+    [
+     38.0,
+     0.62
+    ],
+    [
+     39.5,
+     0.6
+    ]
+   ],
+   "glint": [
+    [
+     0,
+     0.4
+    ],
+    [
+     1.5,
+     0.42
+    ],
+    [
+     2.5,
+     0.06
+    ],
+    [
+     4.5,
+     0.0
+    ],
+    [
+     5.5,
+     0.12
+    ],
+    [
+     6.5,
+     0.08
+    ],
+    [
+     7.5,
+     0.0
+    ]
+   ],
+   "rim": 0.4,
+   "halo": 0.55,
+   "halo_white": 0.24,
+   "tint": "the possessing team: the midpoint of its wing display shade and its sourced plate accent (runtime)",
+   "reference": "read-only 2026 Broncos at Chiefs still, sb3/ds/work/ref_full.png, and reports/b72_s9/broadcast_away_median.png (measurement only, no broadcast pixels)"
   }
  },
  "layer_order": "increasing-z",
- "sampling": "Cells area-filtered to no larger than the smallest 16:9 HUD footprint; one mip, no minification. Watermark cells are area-filtered premultiplied with a coverage curve that keeps the measured ink band's edge rows at full alpha, and are packed with a one-pixel transparent gutter away from the sheet edge.",
+ "sampling": "Cells area-filtered to no larger than the smallest 16:9 HUD footprint; one mip, no minification. Watermark cells are area-filtered premultiplied with a coverage curve that keeps the measured ink band's edge rows at full alpha, and are packed with a one-pixel transparent gutter away from the sheet edge. The sb3 highlight cell is a white specular mask, not team colour; the wing and plate remain coverage cells the native tints multiply. The sb3 rim cells are white coverage; the runtime lifts the wing shade for the rail, and the wing and plate remain coverage cells the native tints multiply. The sb3 rim cells are white coverage; the runtime lifts the wing shade for the rail, and the wing and plate remain coverage cells the native tints multiply. The sb4 capsule is white body with two measured dividers; its red state is the same right cap, and the plate is a tapered neutral tab.",
  "team_accents": "team_accents.json"
 }

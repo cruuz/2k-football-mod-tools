@@ -199,8 +199,13 @@ def _recognize(payload):
     if pooled_cycles:
         require(pools.status(payload) in ("applied", "needs_fix"), "foreign position-pool editor companion")
         require(all(image.read(s.va, s.size) == s.after for s in cycles), "foreign position cycles")
+    from . import nfl2k5_trade_deadline as trade_deadline  # b778-tr1: its screen guard site sits in our 0x2B83F0 guard
+    deadline_state = trade_deadline.status(payload)
+    require(deadline_state in ("retail", "applied"), "foreign trade-deadline companion")
+    deadline_sites = trade_deadline.sites() if deadline_state == "applied" else ()
+    from . import nfl2k5_module_loader as module_loader  # b778-xs1: its screen-push gate at 0x6E39A
     for va, size, digest in GUARDS:
-        blob = bytearray(image.read(va, size))
+        blob = bytearray(module_loader.canonical_context(payload, va, image.read(va, size)))
         for _, at, before, after in [*edits, *companions]:
             if va <= at and at + len(before) <= va + size:
                 require(bytes(blob[at-va:at-va+len(before)]) in (before, after), "foreign editor prerequisite site")
@@ -210,6 +215,13 @@ def _recognize(payload):
                 lo, hi = max(va, site.va), min(va + size, site.va + site.size)
                 if lo < hi:
                     blob[lo-va:hi-va] = site.befores[0][lo-site.va:hi-site.va]
+        for site in deadline_sites:
+            lo, hi = max(va, site.va), min(va + size, site.va + site.size)
+            if lo < hi:
+                require(lo == site.va and hi == site.va + site.size,
+                        "trade-deadline site straddles a Contracts editor prerequisite guard")
+                require(bytes(blob[lo-va:hi-va]) == site.patched, "foreign trade-deadline companion site")
+                blob[lo-va:hi-va] = site.retail
         require(hashlib.sha256(blob).hexdigest() == digest, f"foreign Contracts editor prerequisite at {va:#x}")
     return state
 

@@ -1,0 +1,11 @@
+{
+ "schema": "nfl2k5_visual_mod_project/v1",
+ "purpose": "SOFTDRINK 2K28 b778 pg2: The Crib fist logo becomes a TROPHY ROOM trophy emblem.",
+ "edits": [
+  {
+   "kind": "crib_standalone_texture",
+   "selector": "crib_external_texture:7:logo",
+   "png": "logo.png"
+  }
+ ]
+}

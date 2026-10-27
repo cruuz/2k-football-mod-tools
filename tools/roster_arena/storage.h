@@ -1,6 +1,14 @@
 /* Persistent index storage. ROOT is the installed writable ROST allocation. */
+/* Default reserve schema; build_runtime.py compiles a second copy with -DARENA_CAPACITY=1. */
+#ifndef ARENA_SIZE
 #define ARENA_SIZE 0x92000U
+#endif
+#ifndef BLOCK_OFFSET
 #define BLOCK_OFFSET 0x91c00U
+#endif
+#ifndef ARENA_CAPACITY
+#define ARENA_CAPACITY 0
+#endif
 extern const u32 arena_options;
 static NOINLINE u32 available_count(void);
 static NOINLINE u32 crc(const u8 *b) {

@@ -118,9 +118,17 @@ def _recognize(payload):
         raw = image.read(owned["va"], CODE_SIZE)
         states.add("retail" if raw == b"\xcc" * CODE_SIZE else "applied" if raw == code_for(owned["va"]) else "foreign")
     require(states in ({"retail"}, {"applied"}), "Foreign or mixed run-blocking sites/code")
+    # b778-int3: pass protection hooks the pass-delay store inside this same shed
+    # decision. When its owner is present, treat its exact applied bytes as retail
+    # here too, so the two owners compose in either order.
+    masked = list(edits)
+    from . import nfl2k5_pass_protection as pass_protection
+    rows = [r for r in space.layout(payload)["allocations"] if r["owner"] == pass_protection.OWNER]
+    if rows:
+        masked.extend(pass_protection.sites(rows[0]["va"]))
     for va, size, digest in GUARDS:
         content = bytearray(image.read(va, size))
-        for _, at, before, _ in edits:
+        for _, at, before, _ in masked:
             if va <= at and at + len(before) <= va + size:
                 content[at - va:at - va + len(before)] = before
         require(hashlib.sha256(content).hexdigest() == digest, f"Foreign run-blocking prerequisite at {va:#x}")

@@ -9,10 +9,10 @@
   "notes": "DESIGN: Kelvin Sheppard (Glenn / Allen man multiple); 2025 baseline DET. Clean technique fronts (pb/v2/defense/design.py), retail 2K5 coverage scripts with native pre-snap alignment, situational formation ratings and CPU score bands fitted to the sourced 2025 coverage and blitz rates. Exact offense source required. Gameplay unwitnessed."
  },
  "base": {
-  "book_fingerprint": "62ff365dfcb7c9cef42e49767c7a6a062a83332896570f96645f38f41cbc9270",
+  "book_fingerprint": "e02dfbf560b73974a3a6f3ff2d011c651392191f496f310b8ba1b51fe54ad249",
   "donor_formation_count": 50,
   "donor_play_count": 268,
-  "donor_node_count": 2306
+  "donor_node_count": 2245
  },
  "budget": {
   "formations": 50,
@@ -1883,7 +1883,7 @@
     [[27, [2, 0, 0, 365.76, 0, 0]], [14, [0, 274.32, 0, 7, 0, 0, 0, 0]]],
     [[27, [2, 0, -335.28000000000003, 426.72, 0, 0]], [14, [0, 91.44, 0, 10, 0, 0, 0, 0]]],
     [[27, [0, 0, 640.08, 91.44, 0, 0]], [13, [0, 1645.92, 7, 9, 8, 0, 0]]],
-    [[27, [0, 0, 0, -274.32, 16, 0]], [11, [1, 16, 0]]],
+    [[27, [0, 0, 0, -60.96, 16, 0]], [11, [1, 16, 0]]],
     [[27, [2, 0, 0, 182.88, 0, 0]], [14, [0, 182.88, 0, 6, 0, 0, 0, 0]]]
    ],
    "defense_formation": "Bear",

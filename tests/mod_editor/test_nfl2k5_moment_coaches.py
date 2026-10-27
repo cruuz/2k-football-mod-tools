@@ -104,14 +104,20 @@ class Native(unittest.TestCase):
 
 class LateOrderWithoutMyCareer(unittest.TestCase):
     """fx1 (review pr67 #1): without MyCareer the coaches' code takes the ordinary late run, before hair styles and
-    play art routes, which the build installs first; appending the coaches afterwards moved them and was refused."""
+    play art routes, which the build installs first; appending the coaches afterwards moved them and was refused.
+
+    b778 bd3: a build with hair styles and play art routes on reserves both in its first space pass, like every
+    late owner it installs (nfl2k5_throw_tuning._selected_space_requests), so the fixture asks for them there. The
+    old fixture appended both afterwards; since ai8 (b759ae530) coach_ai also reserves nfl2k5_cpu_third_down, which
+    LATE_OWNERS places after them, so that append is refused by design (it would move the third-down owner)."""
 
     def test_a_fresh_advanced_build_with_more_moments_and_no_my_career_installs_the_coaches(self):
         from tests.mod_editor.test_nfl2k5_owner_pairwise_composition import retail_xbe
         from mod_editor.core import nfl2k5_xbe_space as space, nfl2k5_throw_tuning as tt
         from mod_editor.core import nfl2k5_play_art_routes as art, nfl2k5_hair_styles as hair
         retail = retail_xbe()
-        requests = tt._selected_space_requests(abilities=True, coach_ai=True, espn25_more_moments=True)
+        requests = tt._selected_space_requests(abilities=True, coach_ai=True, espn25_more_moments=True,
+                                               hair_styles=True, play_art_routes=True)
         self.assertIn(m.REQUESTS[0], requests)
         payload, _ = space.apply(retail, requests, scaleout=True)
         self.assertEqual(m.status(payload), 'retail')        # reserved, padding only, hook retail
@@ -125,6 +131,17 @@ class LateOrderWithoutMyCareer(unittest.TestCase):
         plain, _ = art.apply(plain)
         with self.assertRaisesRegex(ValueError, 'move an existing allocation'):
             m.apply(plain)
+
+    def test_an_owner_placed_before_an_installed_later_owner_is_never_appended(self):
+        from tests.mod_editor.test_nfl2k5_owner_pairwise_composition import retail_xbe
+        from mod_editor.core import nfl2k5_xbe_space as space, nfl2k5_throw_tuning as tt
+        from mod_editor.core import nfl2k5_hair_styles as hair, nfl2k5_cpu_third_down as third_down
+        requests = tt._selected_space_requests(abilities=True, coach_ai=True, espn25_more_moments=True)
+        self.assertIn(third_down.REQUESTS[0], requests)
+        self.assertLess(space.LATE_OWNERS.index(hair.OWNER), space.LATE_OWNERS.index(third_down.OWNER))
+        payload, _ = space.apply(retail_xbe(), requests, scaleout=True)
+        with self.assertRaisesRegex(ValueError, 'move an existing allocation'):
+            hair.apply(payload)
 
     def test_with_my_career_the_request_set_is_unchanged(self):
         from mod_editor.core import nfl2k5_throw_tuning as tt

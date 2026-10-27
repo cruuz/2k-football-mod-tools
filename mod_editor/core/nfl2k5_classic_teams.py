@@ -16,7 +16,7 @@ import vacancies an Anniversary moment needs (nfl2k5_spare_capacity.restore_impo
 This option:
 - writes one new file per classic team-season (data/nfl2k5_classic_teams: 53 players, depth chart, ratings and
   appearance; the m1 team compiler, so names, own faces or none, star tags and special teams follow the Anniversary
-  rules), with identity numbers 226.. (moments use 176..225, the extra created teams 250/251), its home venue row
+  rules), with identity numbers 226..249 and 252 (moments use 176..225; the extra created teams 250/251 are skipped), its home venue row
   (the stadium record's id byte, which the importer maps to the main roster's row) and its kit (team +0x192 with a
   non-zero year pair at +0x15A, the same rule the Anniversary kits use);
 - installs a small late allocator owner (read-only, executable page) holding four helpers and a 4-byte row per new
@@ -51,6 +51,7 @@ from pathlib import Path
 import struct
 
 from . import nfl2k5_front_schemes as front
+from . import nfl2k5_classic_face as classic_face
 from . import nfl2k5_xbe_space as space
 from .nfl2k5_cave_oracle import XbeImage
 
@@ -61,17 +62,20 @@ RETAIL_ENTRIES = 75                                # the roster's own historic l
 # sm1: the helper block, repacked (offsets into the owned read-only block). total, cmp_total and fmt keep their bytes
 # and move; ENTRY_KEY and ENTRY_SORTED are the chronological entry helper; ENTRY_BODY is the unchanged entry body.
 OFF_TOTAL, OFF_CMP_TOTAL, OFF_FMT, OFF_KEY, OFF_SORTED, OFF_BODY = 0x00, 0x06, 0x0C, 0x27, 0x3E, 0x74
-ROWS_OFFSET = 0xB4                                 # 24 four-byte rows follow the helpers
-MAX_ROWS = 24                                      # the identity ceiling below (226..249)
+ROWS_OFFSET = 0xB4                                 # 25 four-byte rows follow the helpers
+# b778-ss1: identities 250/251 belong to the two extra created teams. The classic list takes 226..249 and 252
+# (the next byte-wide identity), so 25 rows need 280 of the 288 bytes and the created teams keep their numbers.
+IDENTITIES = tuple([*range(226, 250), 252])
+MAX_ROWS = len(IDENTITIES)                         # 25
 RO_SIZE = 288                                      # the all-owner union holds 304 here and keeps 16 for a synthetic constant
 REQUESTS = ((OWNER, "read_only", RO_SIZE, 16),)
-FIRST_ID, LAST_ID = 226, 249                       # free team identities: the ceiling for new files (24)
+FIRST_ID, LAST_ID = IDENTITIES[0], IDENTITIES[-1]  # free team identities: the ceiling for new files
 FILE_NUMBER = 8                                    # the file-name digit (moments use 9)
 FILLER = "ct1_classic_teams_end.bin"
 UI_LABEL = "Classic teams in Quick Game"
 BUILD_CAPTION = "Anniversary and classic team-seasons in Quick Game Team Select"
 HELP_TEXT = ("EXPERIMENTAL / UNWITNESSED. With historic teams in Quick Game on, the list runs on past the 75 retail "
-             "historic teams into every 25th Anniversary team-season and 24 classic teams of 2005-2025 (season "
+             "historic teams into every 25th Anniversary team-season and 25 classic teams of 2005-2025 plus the 2006 Seamen (season "
              "rosters, depth charts, their kit and home stadium). Needs the historic teams in Quick Game option.")
 ROOT_PTR = 0xB72918
 FMT_FILE = 0xE9F984
@@ -118,11 +122,11 @@ class Data:
 
     def validate(self):
         keys = self.order()
-        require(0 < len(keys) <= min(MAX_ROWS, LAST_ID - FIRST_ID + 1), "classic team count outside the capacity")
+        require(0 < len(keys) <= MAX_ROWS, "classic team count outside the capacity")
         require(set(keys) == set(self.presentation) == set(self.appearance), "teams, classic.json and appearance differ")
         for key in keys:
             t, rows = self.teams[key], self.rosters[key]
-            require(key == f"{t['selector']}_{t['season']}", f"{key}: key")
+            require(key == f"{t['selector']}_{t['season']}" or t.get("key") == key, f"{key}: key")
             require(len(rows) == 53, f"{key}: 53 players")
             require(len({int(r["jersey"]) for r in rows}) == 53, f"{key}: jersey numbers must be unique")
             looks = self.appearance[key]
@@ -132,10 +136,46 @@ class Data:
             require(kit in ("modern", "retail") or (type(kit) is int and 0 <= kit <= 14)
                     or (isinstance(kit, dict) and set(kit) == {"prefer", "fallback"}), f"{key}: kit")
             require(self.presentation[key]["stadium"] == "franchise", f"{key}: stadium")
+            if "stadium_id" in self.presentation[key]:
+                require(type(self.presentation[key]["stadium_id"]) is int
+                        and 0 <= self.presentation[key]["stadium_id"] <= 255, f"{key}: stadium_id")
+            if "stadium_info" in self.presentation[key]:
+                require(isinstance(self.presentation[key]["stadium_info"], dict), f"{key}: stadium_info")
 
     def filename(self, key, prefix=""):
         t = self.teams[key]
         return f"{prefix}h-{t['asset_code']}-{t['season']}-{t['selector']}-{FILE_NUMBER}.iff"
+
+
+
+def label_holder(main):
+    """The main roster with the two empty created-team rows made into the Seamen's label holder. Quick Game's
+    historic import copies the label of the resident team with the entry's asset code; both user rows take code 14,
+    their own name as the label pair (nickname/abbreviation), so the last matching row names the imported team SEAMEN
+    (Sarasota's abbreviation is SEA, whose playbook exists) without renaming any real team. The rows stay category 2
+    with no players, so they remain hidden; only the label lookup sees them."""
+    from . import nfl2k5_roster_records as rr
+    body = bytearray(main[32:])
+    doc = rr.RosterDocument(bytes(body))
+    require(len(doc.teams) >= 34, "the main roster has no two created-team rows")
+    for index in (32, 33):
+        t = doc.teams[index].offset
+        for field, text, capacity in ((0x104, "SEAMEN", 34), (0x108, "SEA", 12), (0x10C, "14", 6)):
+            at = t + field + struct.unpack_from("<i", body, t + field)[0] - 1
+            require(0 < at < len(body) - capacity, f"created-team row {index}: text outside the roster")
+            raw = text.encode("utf-16le") + b"\0\0"
+            require(len(raw) <= capacity, "created-team label text does not fit")
+            body[at:at + capacity] = raw + bytes(capacity - len(raw))
+        struct.pack_into("<i", body, t + 0x110, -11)   # label pair = this row's nickname and abbreviation
+    result = main[:32] + bytes(body)
+    check = rr.RosterDocument(result[32:])
+    for index in (32, 33):
+        t = check.teams[index].offset
+        require(struct.unpack_from("<i", result, 32 + t + 0x110)[0] == -11, "label holder read-back")
+        for field, text in ((0x104, "SEAMEN"), (0x108, "SEA"), (0x10C, "14")):
+            at = 32 + t + field + struct.unpack_from("<i", result, 32 + t + field)[0] - 1
+            require(result[at:at + 2 * len(text)] == text.encode("utf-16le"), "label holder text read-back")
+    return result
 
 
 # ------------------------------------------------------------------------------------------------- the executable
@@ -269,6 +309,40 @@ def xbe_status(payload):
         return "foreign"
 
 
+def authored_kits():
+    """The classic teams' authored kit document (data/nfl2k5_classic_teams/kits.json), validated in the shared
+    moment-kit shape. It is kept out of the Anniversary data so the moment stage never expects these packages."""
+    from . import nfl2k5_moment_kits as kits
+    return kits.validate_document(json.loads((DATA_DIR / "kits.json").read_text(encoding="utf-8")))
+
+
+def authored_kits_status(path):
+    """'applied' when the classic teams' authored kit packages and cards are installed, 'retail' when none is,
+    'foreign' otherwise."""
+    from . import nfl2k5_moment_kits as kits
+    try:
+        doc = authored_kits()
+        if not doc["kits"]:
+            return "not_applicable"
+        return kits.image_status(path, doc)
+    except (ValueError, KeyError, IndexError, struct.error, OSError):
+        return "foreign"
+
+
+def install_authored_kits(path):
+    """Install the classic teams' authored kit packages and aggregate cards before the classic files are compiled.
+    Replay is a no-op; a partly installed or foreign kit refuses."""
+    from . import nfl2k5_moment_kits as kits
+    doc = authored_kits()
+    if not doc["kits"]:
+        return dict(status="none")
+    state = kits.image_status(path, doc)
+    if state == "applied":
+        return dict(status="already_applied")
+    require(state == "retail", f"classic teams: the authored kit is {state}")
+    return dict(kits.apply_to_image(path, doc), status="applied")
+
+
 def apply_xbe(payload, rows):
     """Install the helpers for these rows and switch Quick Game to the classic variant (after the season route)."""
     from . import nfl2k5_historic_teams_quick_game as h1
@@ -361,6 +435,31 @@ def finish_file(raw, team, *, identity, stadium_id, style):
     return bytes(out)
 
 
+
+def finish_stadium(raw, info):
+    """The one-team file's stadium record with the named venue's asset code and text. The importer resolves the
+    venue through this record, so both the id byte and the asset string must name the chosen venue."""
+    if not info:
+        return raw
+    require(set(info) <= {"asset", "name", "location", "display", "secondary"}, "stadium_info fields")
+    body = bytearray(raw[32:])
+    off = _stadium_offset(raw) - 32
+    fields = ((0x00, info.get("name", "")), (0x08, info.get("location", "")),
+              (0x0C, info.get("asset", "")), (0x10, info.get("display", info.get("name", ""))),
+              (0x14, info.get("secondary", "")))
+    for field, text in fields:
+        if not text:
+            continue
+        require(isinstance(text, str) and text.isascii() and "\0" not in text, "stadium text")
+        at = len(body)
+        body.extend(text.encode("utf-16le") + b"\0\0")
+        struct.pack_into("<i", body, off + field, at - (off + field) + 1)
+    body.extend(bytes(-len(body) % 16))
+    out = bytearray(raw[:32])
+    struct.pack_into("<II", out, 4, len(body), len(body))
+    out.extend(body)
+    return bytes(out)
+
 def compile_files(main, templates, data, *, spares, has_kit, prefix="", one_pool=False):
     """[(file name, bytes)] in list order, plus per-team receipts."""
     from . import nfl2k5_espn25_more_moments as more
@@ -373,7 +472,7 @@ def compile_files(main, templates, data, *, spares, has_kit, prefix="", one_pool
     files, receipts = [], {}
     for n, key in enumerate(data.order()):
         team = dict(data.teams[key], team_key=key)
-        identity = FIRST_ID + n
+        identity = IDENTITIES[n]
         missing = []
         raw = more.compile_team(templates[key], team, data.rosters[key], colleges, identity, people,
                                 appearance=data.appearance[key], main_photos=main_photos, missing_colleges=missing)
@@ -381,10 +480,12 @@ def compile_files(main, templates, data, *, spares, has_kit, prefix="", one_pool
             raw = more._one_pool(raw, front.mapping_scheme("classic", key, team["abbreviation"], team["season"]))
         code = team["asset_code"]
         style, how = resolve_kit(data.presentation[key]["kit"], code, spares, has_kit)
-        raw = finish_file(raw, team, identity=identity, stadium_id=homes[code], style=style)
+        stadium_id = data.presentation[key].get("stadium_id", homes[code])
+        raw = finish_file(raw, team, identity=identity, stadium_id=stadium_id, style=style)
+        raw = finish_stadium(raw, data.presentation[key].get("stadium_info"))
         files.append((data.filename(key, prefix), raw))
         receipts[key] = dict(file=data.filename(key, prefix), identity=identity, style=style, kit=how,
-                             stadium_id=homes[code], template=team["template"], sha256=sha(raw),
+                             stadium_id=stadium_id, template=team["template"], sha256=sha(raw),
                              template_colleges=missing)
     return files, receipts
 
@@ -435,23 +536,33 @@ def image_status(path, source, data=None):
     from . import nfl2k5_historic_teams_quick_game as h1
     from . import nfl2k5_music_archive as archive
     from . import nfl2k5_position_pools as pools
+    from . import nfl2k5_classic_field as field
     data = Data.load() if data is None else data
     try:
         payload = e.read_xbe(path)
         state = xbe_status(payload)
+        authored = authored_kits_status(path)
+        if authored == "foreign":
+            return "foreign"
+        field_state = field.status(path, source)
+        if field_state == "foreign":
+            return "foreign"
         main, templates, spares, has_kit, present = _inputs(path, source, data)
         if not present and state == "retail":
-            return "retail"
+            return "retail" if field_state == "retail" and authored in ("retail", "not_applicable") else "foreign"
+        holder = label_holder(main)
         prefix = "HTS-" if h1.season_routing_status(payload) else ""
-        files, _ = compile_files(main, templates, data, spares=spares, has_kit=has_kit, prefix=prefix,
+        files, _ = compile_files(holder, templates, data, spares=spares, has_kit=has_kit, prefix=prefix,
                                  one_pool=pools.status(payload) == "applied")
         with archive.Disc(Path(path), descriptors=()) as disc:
             target = hs.Target(disc)
             same = all(target.has(name) and target.get(name) == raw for name, raw in files)
+            same = same and target.get(identity=hs.ROSTER_OUTER_ID) == holder
         rows_ok = state == "applied" and XbeImage(payload).read(allocation(payload)["va"] + ROWS_OFFSET,
                                                                 4 * len(files)) == b"".join(
             struct.pack("<HBB", *r) for r in rows_for(main, data))
-        return "applied" if same and rows_ok and present == {n for n, _ in files} else "foreign"
+        return "applied" if (same and rows_ok and present == {n for n, _ in files}
+                              and authored == "applied" and field_state == "applied") else "foreign"
     except (ValueError, OSError, KeyError, IndexError, struct.error):
         return "foreign"
 
@@ -472,14 +583,29 @@ def apply_to_image(path, source, data=None):
     payload = e.read_xbe(path)
     require(h1.status(payload) == "applied", "classic teams need historic teams in Quick Game")
     require(xbe_status(payload) == "retail", "classic teams: the executable is not clean")
+    authored_receipt = install_authored_kits(path)
+    from . import nfl2k5_classic_field as field
+    field_edits, field_receipts = field.edits(path, source)
     prefix = "HTS-" if h1.season_routing_status(payload) else ""
     main, templates, spares, has_kit, _present = _inputs(path, source, data)
-    files, receipts = compile_files(main, templates, data, spares=spares, has_kit=has_kit, prefix=prefix,
+    holder = label_holder(main)
+    files, receipts = compile_files(holder, templates, data, spares=spares, has_kit=has_kit, prefix=prefix,
                                     one_pool=pools.status(payload) == "applied")
     rows = rows_for(main, data)
     patched, xbe_receipt = apply_xbe(payload, rows)      # computed before any disc write
-    receipt = hs.rewrite_archive(path, {}, files + [(FILLER, bytes(2048))])
+    # b778 bf1: rewrite_plan keys edits by outer index, not by name id.
+    from . import nfl2k5_music_archive as archive
+    with archive.Disc(Path(path), descriptors=()) as disc:
+        roster_outer = hs.Target(disc).outer(identity=hs.ROSTER_OUTER_ID)
+    edits = {roster_outer: holder, **field_edits}
+    receipt = hs.rewrite_archive(path, edits, files + [(FILLER, bytes(2048))])
     seasons_bank.write_xbe(path, patched)
+    try:
+        face_receipt = dict(classic_face.patch_image(path), status="applied")
+    except (ValueError, OSError) as exc:
+        # The authored spans target the retail pack layout. A build whose face/portrait packs were rebuilt by the
+        # face pipeline cannot take the raw spans; the PNGs and the fragment are delivered for that pipeline.
+        face_receipt = dict(status="not_applied", reason=str(exc))
     require(image_status(path, source, data) == "applied", "classic teams read-back failed")
     return dict(status="applied", experimental=True, runtime_witnessed=False, teams=receipts, xbe=xbe_receipt,
-                file_prefix=prefix, **receipt)
+                authored_kits=authored_receipt, field=field_receipts, face=face_receipt, file_prefix=prefix, **receipt)

@@ -164,12 +164,66 @@ class AcceleratedClockNativeTests(unittest.TestCase):
             self.assertEqual(m.readf(m.GAME+16), 0)
 
     def test_crossing_warning_reaches_native_warning_dispatch(self):
+        # holtbolt (10/24): with a running clock at 2:19 the old 20 s runoff
+        # jumped past the warning to 1:59. The run-off now stops at 2:00.
         m = self.machine(seconds=139)
-        self.assertEqual(m.complete(), (119, 20))
-        m.run(0x157D40, stop=0x1588B0)
+        self.assertEqual(m.complete(), (120, 20))
+        m.run(0x157D40, stop=0x1588C8)
         self.assertIn(0xA0190, m.hits)
         # Native warning entry is reached; scene presentation is not rendered.
-        self.assertEqual(m.readf(m.GAME+16), 119)
+        self.assertEqual(m.readf(m.GAME+16), 120)
+        self.assertTrue(m.get(m.GAME+24) & 2)
+
+    def test_huddle_runoff_never_crosses_the_two_minute_warning(self):
+        # The reported 1:52 came from a 2:12 clock losing the full 20 s runoff.
+        for period in (2, 4, 5):
+            for seconds in (140, 139, 132, 130, 121, 120.5):
+                with self.subTest(period=period, seconds=seconds):
+                    m = self.machine(period=period, seconds=seconds)
+                    self.assertEqual(m.complete(), (120, 20))
+                    m.run(0x157D40, stop=0x1588C8)
+                    self.assertIn(0xA0190, m.hits)
+                    self.assertEqual(m.readf(m.GAME+16), 120)
+                    self.assertEqual(m.readf(m.PLAY+16), 20)
+                    self.assertTrue(m.get(m.GAME+24) & 2)
+                    self.assertEqual(m.get(0xE602FC) & 0x60, 0x60)
+
+    def test_runoff_outside_the_warning_window_is_unchanged(self):
+        # Above the warning, and in the quarters without one, every old result stands.
+        for period in (2, 4, 5):
+            for seconds, expected in ((200, 180), (160, 140), (141, 121)):
+                with self.subTest(period=period, seconds=seconds):
+                    self.assertEqual(self.machine(period=period, seconds=seconds).complete(), (expected, 20))
+        for period in (1, 3):
+            for seconds, expected in ((200, 180), (160, 140), (141, 121), (140, 120), (132, 112), (120, 100)):
+                with self.subTest(period=period, seconds=seconds):
+                    self.assertEqual(self.machine(period=period, seconds=seconds).complete(), (expected, 20))
+
+    def test_stopped_clock_at_the_warning_line_keeps_its_native_time(self):
+        # A stoppage before 2:00 (incomplete, timeout) is not a crossing: the
+        # clock is already stopped and the next running play crosses natively.
+        for seconds in (132, 121, 120.5):
+            with self.subTest(seconds=seconds):
+                self.assertEqual(self.machine(seconds=seconds, running=False).complete(), (seconds, 20))
+
+    def test_every_minimum_clamps_a_crossing_at_the_same_two_minutes(self):
+        for minimum in clock.MINIMUM_SECONDS:
+            payload, _ = clock.apply(self.retail, enabled=True, minimum_seconds=minimum)
+            # 40 s native play clock - minimum is the runoff; end one second low.
+            m = Machine(payload)
+            m.configure(period=2, seconds=159-minimum)
+            self.assertEqual(m.complete(), (120, minimum), minimum)
+
+    def test_natural_tick_into_the_warning_still_stops_at_two_minutes(self):
+        # A finish above 2:00 is an ordinary clock: the tick reaches 2:00 and the
+        # warning (not the runoff) stops it there.
+        m = self.machine(seconds=140.5)
+        self.assertEqual(m.complete(), (120.5, 20))
+        self.assertEqual(m.timer_tick(m.GAME, .5), (120.0, 20))
+        m.run(0x157D40, stop=0x1588C8)
+        self.assertIn(0xA0190, m.hits)
+        self.assertEqual(m.readf(m.GAME+16), 120)
+        self.assertTrue(m.get(m.GAME+24) & 2)
 
     def test_25_second_reset_uses_actual_5_second_difference(self):
         m = self.machine()

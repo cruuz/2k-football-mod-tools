@@ -323,6 +323,36 @@ class Disc(unittest.TestCase):
         overlay.put(name="30h5.iff", data=bytes(bad))
         self.assertEqual(mk.state_of(self.doc, mk.read_inputs(overlay, self.doc), overlay), "foreign")
 
+    def test_a_later_donor_rewrite_keeps_the_pinned_kits_applied(self):
+        # b778 bd3: the team-coloured sleeves run after this stage and rewrite the DONOR kits' long-sleeve palettes,
+        # so composing again from the copy's donors differs from what this stage wrote; the build's last read-back
+        # refused the disc. The installed kits equal their pins byte for byte.
+        packages, members, files, situ = mk.expected(self.doc, self.inputs)
+        pinned = mk.pins()["packages"]
+        overlay = Overlay(self.src)
+        for selector, data in self.inputs["packages"].items():
+            overlay.put(name=mk.selector_name(selector), data=data)
+        for a in hs.AGGREGATES:
+            record, cdf = self.inputs["members"][a["name"]]
+            record, cdf = hs.grow_aggregate(record, cdf, members[a["name"]])
+            overlay.put(identity=a["record"], data=record)
+            overlay.put(identity=a["cdf"], data=cdf)
+        for name, data in {**files, **packages}.items():
+            overlay.put(name=name, data=data)
+        overlay.put(identity=hs.SITU_OUTER_ID, data=situ)
+        for selector, data in self.inputs["packages"].items():   # every donor changed after the stage
+            changed = bytearray(data)
+            changed[-1] ^= 1
+            overlay.put(name=mk.selector_name(selector), data=bytes(changed))
+        after = mk.read_inputs(overlay, self.doc)
+        self.assertEqual(mk.state_of(self.doc, after, overlay), "foreign")
+        self.assertEqual(mk.state_of(self.doc, after, overlay, pinned_packages=pinned), "applied")
+        bad = bytearray(packages["30h5.iff"])
+        bad[len(bad) // 2] ^= 1                                    # neither the pin nor a recomposition
+        overlay.put(name="30h5.iff", data=bytes(bad))
+        self.assertEqual(mk.state_of(self.doc, mk.read_inputs(overlay, self.doc), overlay, pinned_packages=pinned),
+                         "foreign")
+
     @unittest.skipUnless(RETAIL.is_file(), "retail disc absent")
     def test_historic_spares_still_read_applied(self):
         self.assertEqual(hs.image_status(DISC, RETAIL), "applied")

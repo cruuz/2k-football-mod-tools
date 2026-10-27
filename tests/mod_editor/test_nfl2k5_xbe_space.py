@@ -285,18 +285,22 @@ class RetailTests(unittest.TestCase):
         # The current manifest reserves the complete owner union, including
         # moment venues. The historical nine-request layout cannot prove that
         # ownership; the legacy kickoff/retired-cave checks below stay intact.
-        from tests.nfl2k5_allocator_stack import REQUESTS as all_requests
+        from tests.nfl2k5_allocator_stack import REQUESTS as all_requests, manifest_for_allocated_union
         combined, _ = space.apply(self.retail, all_requests)
+        # b778 int3: project the full release manifest onto this bounded union,
+        # as the cave-reference and camera tests already do; owners the union does
+        # not carry are dropped, a carried owner with changed size/alignment refuses.
+        manifest = manifest_for_allocated_union(manifest, self.retail, combined)
         evidence = space.allocation_evidence(self.retail, manifest, allocated=combined)
         # The full union uses v3 loader mappings. Keep the legacy zero-reference
         # gate and pin every raw candidate in the larger mappings; those
         # encodings are retained as unknown, never declared free retail code.
         self.assertEqual(evidence["legacy_encoded_references"], [])
-        self.assertEqual(len(evidence["encoded_references"]), 1081)
+        self.assertEqual(len(evidence["encoded_references"]), 1128)  # b778-ai8: + the third-down owner page
         import json
         self.assertEqual(hashlib.sha256(json.dumps(evidence["encoded_references"],
             separators=(',', ':')).encode()).hexdigest(),
-            "131306f5cc97d41e687f49322daf9ee36cf492e21ff7ee8dcf56872157e70cee")
+            "cab22ff3bf283ad487fafd116e98869f160197e405c86fdc9ac08fa730915b6e")
         self.assertEqual(evidence["reference_policy"],
             "v3 adds loader mappings, never overwrites a retail cave; all raw encoding candidates retained; legacy pages retain zero-encoding gate")
         old = kickoff._offset(self.grown, kickoff.CAVE_VA, kickoff.CAVE_SIZE)

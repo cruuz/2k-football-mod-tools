@@ -54,9 +54,11 @@ def sha(data):
     return hashlib.sha256(data).hexdigest()
 
 
-def document(path=None):
-    doc = json.loads(Path(path or DATA).read_text(encoding="utf-8"))
-    require(doc.get("schema") == SCHEMA, "unexpected data schema")
+def validate_document(doc):
+    """Validate a moment/classic-kit document in the shared shape and return it."""
+    require(isinstance(doc, dict) and doc.get("schema") == SCHEMA, "unexpected data schema")
+    doc.setdefault("selections", [])
+    doc.setdefault("classic_defaults", [])
     ids = [k["id"] for k in doc["kits"]]
     require(len(set(ids)) == len(ids), "duplicate kit ids")
     seen = set()
@@ -69,6 +71,9 @@ def document(path=None):
         require(set(kit["sides"]) == {"H", "A"}, kit["id"] + ": needs H and A")
         require(set(kit["cards"]) <= set(CARD_KEYS) | {"H", "A"} and {"H", "A", "logo"} <= set(kit["cards"]),
                 kit["id"] + ": cards")
+        if kit.get("card_art"):
+            from . import nfl2k5_classic_art as art
+            art.card_art(kit)
     by_id = {k["id"]: k for k in doc["kits"]}
     rows = set()
     for s in doc["selections"]:
@@ -86,6 +91,10 @@ def document(path=None):
     for c in doc.get("classic_defaults", []):
         require(type(c["style"]) is int and 1 <= c["style"] <= MAX_STYLE, c["file"] + ": classic default style")
     return doc
+
+
+def document(path=None):
+    return validate_document(json.loads(Path(path or DATA).read_text(encoding="utf-8")))
 
 
 def pins():
@@ -165,10 +174,16 @@ def compose_side(side, packages):
             other = packages[row["donor"]]
             overlays.append((decode_chunk(other, parse_chunks(other)[51])[0], row["boxes"]))
         mixed = era._native_atlas(decoded, c, overlays, atlas["format"])
+        if atlas.get("ops"):
+            from . import nfl2k5_classic_kit_art as classic_art      # b778-ss2: finish the far-player atlas
+            mixed = classic_art.atlas_edit(mixed, c, atlas["ops"])
         spans[51] = era._encoded_span(span, mixed, len(mixed) - c.system_bytes)
     out = bytearray(b"".join(spans))
     if side.get("unif"):
         out[UNIF_COLOURS:UNIF_COLOURS + 8] = packages[side["unif"]][UNIF_COLOURS:UNIF_COLOURS + 8]
+    if side.get("unif_colours"):
+        from . import nfl2k5_classic_kit_art as classic_art          # b778-ss2: authored facemask/turtleneck
+        out[UNIF_COLOURS:UNIF_COLOURS + 8] = classic_art.unif_words(side["unif_colours"])
     out = bytes(out)
     parsed = parse_chunks(out)
     require(len(parsed) == 53, "composed package chunk count")
@@ -384,22 +399,37 @@ def expected(doc, inputs):
     packages = compose(doc, inputs["packages"])
     members = {a["name"]: {} for a in hs.AGGREGATES}
     for kit in doc["kits"]:
+        authored = {}
+        if kit.get("card_art"):
+            from . import nfl2k5_classic_art as art
+            authored = art.card_art(kit)
         for new, (aggregate, old) in card_sources(kit).items():
             record, cdf = inputs["members"][aggregate]
-            members[aggregate][new] = hs.rename_slot(hs.member_slot(record, cdf, old), new)
+            donor = hs.member_slot(record, cdf, old)
+            if new in authored:
+                key, filename = authored[new]
+                members[aggregate][new], _receipt = art.authored_slot(donor, key, filename, new)
+            else:
+                members[aggregate][new] = hs.rename_slot(donor, new)
     labels = wanted_labels(doc, inputs["main"], inputs["files"])
     defaults = {c["file"]: c["style"] for c in doc.get("classic_defaults", [])}
     files = {name: file_edit(raw, labels.get(name, {}), defaults.get(name)) for name, raw in inputs["files"].items()}
     situ = bytearray(inputs["situ"])
     fields = _situ_fields(inputs["situ"])
-    require(len({r for r, _s in fields}) == MOMENT_ROWS, "the copy does not hold the 51 Anniversary moments")
+    if doc.get("selections"):
+        require(len({r for r, _s in fields}) == MOMENT_ROWS, "the copy does not hold the 51 Anniversary moments")
     for s in doc["selections"]:
         struct.pack_into("<I", situ, fields[(s["row"], s["side"])][1], s["style"])
     return packages, members, files, bytes(situ)
 
 
-def state_of(doc, inputs, target):
-    """'retail' (nothing installed, every selection as before), 'applied', else 'foreign'."""
+def state_of(doc, inputs, target, *, pinned_packages=None):
+    """'retail' (nothing installed, every selection as before), 'applied', else 'foreign'.
+
+    ``pinned_packages`` ({name: sha256}, the shipped document's pins): a new package also reads as installed when it
+    is byte for byte its pinned composition. b778 bd3: the team-coloured sleeves (sl1) run after this stage and
+    rewrite the long-sleeve palettes of the DONOR kits, so composing again from the copy's donors no longer gives
+    the bytes this stage wrote, while the installed kits are exactly the pinned ones."""
     from . import nfl2k5_historic_styles as hs
     fields = _situ_fields(inputs["situ"])
     kits_now = {(s["row"], s["side"]): fields[(s["row"], s["side"])][0] for s in doc["selections"]}
@@ -417,7 +447,8 @@ def state_of(doc, inputs, target):
     if situ != inputs["situ"] or any(files[n] != inputs["files"][n] for n in files):
         return "foreign"
     for name, data in packages.items():
-        if target.get(name) != data:
+        have = target.get(name)
+        if have != data and not (pinned_packages and name in pinned_packages and sha(have) == pinned_packages[name]):
             return "foreign"
     for aggregate, wanted in members.items():
         record, cdf = inputs["members"][aggregate]
@@ -430,13 +461,19 @@ def state_of(doc, inputs, target):
 def image_status(path, doc=None):
     from . import nfl2k5_historic_styles as hs
     from . import nfl2k5_music_archive as archive
-    doc = doc or document()
+    pinned = None
+    if doc is None:
+        doc = document()
+        try:
+            pinned = pins()["packages"]
+        except (OSError, ValueError, KeyError):
+            pinned = None
     try:
         with archive.Disc(Path(path), descriptors=()) as disc:
             target = hs.Target(disc)
-            if len(_situ_fields(target.get(identity=hs.SITU_OUTER_ID))) != 2 * MOMENT_ROWS:
+            if doc.get("selections") and len(_situ_fields(target.get(identity=hs.SITU_OUTER_ID))) != 2 * MOMENT_ROWS:
                 return "not_applicable"
-            return state_of(doc, read_inputs(target, doc), target)
+            return state_of(doc, read_inputs(target, doc), target, pinned_packages=pinned)
     except (ValueError, KeyError, IndexError, struct.error, OSError):
         return "foreign"
 
@@ -456,10 +493,23 @@ def compile_edits(target, doc, inputs):
     for name, data in files.items():
         if data != inputs["files"][name]:
             edits[target.outer(name)] = data
-    edits[target.outer(identity=hs.SITU_OUTER_ID)] = situ
+    if situ != inputs["situ"]:
+        edits[target.outer(identity=hs.SITU_OUTER_ID)] = situ
     appended = sorted(packages.items())
     if len(appended[-1][1]) % 2048:
-        appended.append((FILLER, bytes(2048)))
+        # b778 bf1: the Anniversary moments and the classic teams' authored
+        # kits are two installs of this same module, in that order. The first
+        # one's zero filler is already in the archive when the second appends,
+        # so the second needs a distinct filler name (the filler is packaging
+        # only, never a named package the document pins).
+        filler = FILLER
+        if target.has(filler):
+            stem, _, suffix = filler.rpartition(".")
+            number = 2
+            while target.has(f"{stem}_{number}.{suffix}"):
+                number += 1
+            filler = f"{stem}_{number}.{suffix}"
+        appended.append((filler, bytes(2048)))
     pinned = None
     try:
         pin = pins()

@@ -1,4 +1,10 @@
-"""The full mark must survive before its fixed-size cell clips any pixels."""
+"""The full mark must survive before its fixed-size cell clips any pixels, except where a zoomed mark is cut at the
+wing's rails.
+
+b778 sb2 (Noah, stream c2-15: the logos "should be zoomed in a bit more and like slightly cut off"): a mark zoomed past
+1.0 may lose ink above and below the wing, as ESPN cuts the Texans bull and the Bills buffalo at the bar's rails, but
+never at its sides (it would be cut beside a score) and never more than a quarter of it. Every cell keeps its
+one-texel transparent border."""
 from pathlib import Path
 import json
 import sys
@@ -37,10 +43,16 @@ class LogoRetentionTests(unittest.TestCase):
         self.assertEqual(set(spec['logo_fit']['by_team']), set(resources.TEAM_LOGOS))
         for team in resources.TEAM_LOGOS:
             with self.subTest(team=team):
-                (full, visible), image = paste_loss(team, resources.logo_fit_for(team, spec['logo_fit']))
+                fit = resources.logo_fit_for(team, spec['logo_fit'])
+                (full, visible), image = paste_loss(team, fit)
                 self.assertGreater(full, 0)
-                self.assertEqual(full, visible, 'The runtime cell discarded part of the primary mark')
                 alpha = image.getchannel('A')
+                if fit.get('zoom', 1.0) <= 1.0:
+                    self.assertEqual(full, visible, 'The runtime cell discarded part of the primary mark')
+                else:
+                    self.assertGreaterEqual(visible, full*.75, 'The rail cut took more than a quarter of the mark')
+                    for side in ((0, 0, 3, 64), (61, 0, 64, 64)):
+                        self.assertIsNone(alpha.crop(side).getbbox(), 'A zoomed mark may be cut at the rails only')
                 self.assertEqual(image.size, (64, 64))
                 # A complete transparent border protects the bilinear sample
                 # and the rounded wing corners in both native projections.

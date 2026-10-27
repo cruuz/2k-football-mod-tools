@@ -347,17 +347,28 @@ class FranchiseSave:
             raise FranchiseSaveError(str(exc)) from exc
         data = bytes(payload)
         from . import nfl2k5_my_career_save as career
+        from . import nfl2k5_player_progression as progress
         self.career_offset = None
-        native_size = len(data)
-        if len(data) in career.SIZES:
+        self.ppg_offset = progress.footer_start(data)
+        native_view = data[:self.ppg_offset] if self.ppg_offset is not None else data
+        native_size = len(native_view)
+        if len(native_view) in career.SIZES:
             try:
-                native_size = career.native_size(data)
+                native_size = career.native_size(native_view)
                 self.career_offset = native_size
             except ValueError as exc:
                 raise FranchiseSaveError(str(exc)) from exc
-        _require(native_size in (FRANCHISE_SAVE_SIZE, FRANCHISE_SAVE_SIZE + 0x1000),
-                 f"unsupported franchise container length: {len(data):,}; expected "
-                 "720,044 or 724,140 native bytes, optionally followed by a 128-byte career block")
+        elif len(native_view) in career.BASE_SIZES:
+            pass
+        elif self.ppg_offset is not None:
+            raise FranchiseSaveError("unsupported franchise container length before the Player Progress footer")
+        from . import nfl2k5_roster_arena as arena
+        capacity_growth = arena.CAPACITY_ARENA_SIZE - arena.RETAIL_SIZE
+        _require(native_size in (FRANCHISE_SAVE_SIZE, FRANCHISE_SAVE_SIZE + 0x1000,
+                                 FRANCHISE_SAVE_SIZE + capacity_growth),
+                 f"unsupported franchise container length: {len(data):,}; expected a 720,044-byte "
+                 "native save, the 724,140-byte 16-reserve save or the capacity-grown save, optionally "
+                 "followed by a 128-byte career block")
         growth = native_size - FRANCHISE_SAVE_SIZE
         self.arena_end = ARENA_END + growth
         self.season_block = SEASON_BLOCK + growth
@@ -940,6 +951,19 @@ class FranchiseSave:
             raw = self.buffer[offset:offset + F_TRADE_SIZE]
             out.append({"index": index, "offset": offset, "kind": raw[0], "raw": bytes(raw)})
         return out
+
+    def ledger_in_write_order(self) -> list[dict[str, Any]]:
+        """Retained events from oldest to newest, with unknown season/week.
+
+        The next-write cursor splits the native ring. Unused/cleared slots
+        are skipped by ledger(); they cannot be treated as evidence that no
+        move happened. The writer (0x2BFDF0) has no date arguments. In
+        particular, draft round/pick and contract status are not week/year.
+        """
+        cursor = self.u32(self.front_office_block + F_LEDGER_CURSOR)
+        _require(cursor < F_LEDGER_CAPACITY, "ledger write cursor outside native ring")
+        rows = sorted(self.ledger(), key=lambda row: (row["index"] - cursor) % F_LEDGER_CAPACITY)
+        return [{**row, "order": order, "season": None, "week": None} for order, row in enumerate(rows)]
 
     def fa_bids(self) -> list[dict[str, Any]]:
         """The 100 x 12-byte free-agent bid slots at F+0x17D2 (FUN_002d05b0; player index in the first word)."""

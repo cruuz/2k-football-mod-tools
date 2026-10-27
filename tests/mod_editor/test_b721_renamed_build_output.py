@@ -216,8 +216,38 @@ class BuildPageRenamedCopyTests(unittest.TestCase):
         self.panel._pool = _Immediate()
         self.panel.begin_reading(self.source)
         self.panel.apply_state(mod_build.inspect(self.source))
+        # b778-bd2: an empty selection is refused on a disc image, so give this
+        # path-recovery fixture one real executable change to write.
+        self.select_one_change()
+
+    def select_one_change(self) -> None:
+        """b778-bd2: an empty selection is refused, so keep one writable change ticked.
+
+        ``_done`` clears the page's selection for the built copy, exactly as it does for a
+        user; this fixture only cares about which paths a build reads and writes.
+        """
+        if self.panel.has_work():
+            return
+        for attribute in ("throw_check", "catch_check", "accel_check", "draft_check",
+                          "returner_check", "edge_check"):
+            box = getattr(self.panel, attribute)
+            if not box.isEnabled():
+                continue
+            box.setChecked(True)
+            if attribute == "throw_check":
+                # The built copy already carries the ceiling this page last wrote;
+                # choose a different one so the next build really changes bytes.
+                from mod_editor.core import nfl2k5_throw_tuning as tt
+                installed = (self.panel._state or {}).get("throw")
+                if isinstance(installed, tt.TuningSettings):
+                    current = self.panel.ceiling_spin.value()
+                    if float(current) == float(installed.max_deep_yards):
+                        self.panel.ceiling_spin.setValue(65 if current != 65 else 70)
+            return
+        self.fail("the path-recovery fixture has no writable change left")
 
     def run_build(self, target: Path) -> None:
+        self.select_one_change()
         self.panel.target_field.setText(str(target))
         self.panel._target_generated = False
         with mock.patch.object(QMessageBox, "exec_", return_value=QMessageBox.Ok), \
@@ -234,6 +264,9 @@ class BuildPageRenamedCopyTests(unittest.TestCase):
 
         first.rename(self.root / RENAMED)
 
+        # The first blocker call recovers the page; then choose the next build's change.
+        self.panel.blocker()
+        self.select_one_change()
         self.assertEqual("", self.panel.blocker(), self.panel.blocker())
         self.assertEqual(str(self.source), self.panel.source_field.text(),
                          "a vanished copy sends the page back to the disc it started from")
@@ -260,6 +293,7 @@ class BuildPageRenamedCopyTests(unittest.TestCase):
         first.rename(renamed)
         kept = digest(renamed)
 
+        self.select_one_change()
         with mock.patch.object(QMessageBox, "exec_", return_value=QMessageBox.Ok), \
              mock.patch.object(QMessageBox, "information"):
             self.panel._build()
@@ -274,6 +308,8 @@ class BuildPageRenamedCopyTests(unittest.TestCase):
         first = self.root / MODDED
         self.run_build(first)
         first.unlink()
+        self.panel.blocker()
+        self.select_one_change()
         self.assertEqual("", self.panel.blocker())
         self.assertEqual(str(self.source), self.panel.source_field.text())
         self.assertTrue(self.panel.build_button.isEnabled())

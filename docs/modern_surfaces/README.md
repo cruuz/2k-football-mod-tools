@@ -137,6 +137,17 @@ candidate A, with grass a touch warmer than tonight's turf.
     map), except rows 24 and 25, which keep their venue's own retail field.
   Limits: the end-zone factor and the turf end zones are measured on grass only; the blade response at afternoon and
   dome is inferred; unwitnessed in game.
+- **b778 gr2 (10/21, after the v0.6.1 release).** A player found the turf at Gillette "a little too light green"; Noah
+  asked for Gillette and every venue with the same surface a bit darker. The ten `synthetic_fieldturf` home venues
+  (ATL, CAR, CIN, DET, MIN, NE, NO, NYG, NYJ, SEA) take Broadcast greens' `fieldturf` family: `SYNTHETIC_GAIN` times
+  one shade on all three channels (`FIELDTURF_SHADE` 0.93), so the turf is about 7 percent darker in the colour map
+  with its hue and saturation kept (MetLife by day (74, 102, 60) becomes (69, 95, 56)); the field, the outside turf
+  and the end-zone turf all take it. On 10/22 Noah found the Hellas Helix turf at Nissan Stadium by night "too vibrant
+  ... too green": the six `synthetic_helix` home venues (DAL, IND, LAR, LAC, TEN, HOU) take the `helix` family, the
+  same shade and then their chroma times `HELIX_SATURATION` 0.88 around their own luma (hue kept; Helix by day
+  (72, 101, 55) becomes (69, 92, 55)). Natural grass, the Anniversary aliases, the other synthetic fields (neutral
+  venues, Anniversary rows 24 and 25) and every stadium scene keep the gr4 gains and their bytes. Revision
+  `b778-gr2-v1`.
 - Loan venues (`LOAN_NORMAL_VENUES`: DET s09 and CLE s30 end-zone loan, PIT s22 late midfield, WAS s29 field normal
   loan): the premipped full art no longer compresses into their loans (gr2: 174,029 to 191,864 bytes against 146,880
   to 174,192), so they take the TILED art, compressed with the fixed-distance repeat encoder into exactly the loan the

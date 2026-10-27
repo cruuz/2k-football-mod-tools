@@ -86,6 +86,16 @@ class PatchTests(unittest.TestCase):
             self.assertEqual(image.read(int(row['va'], 0), row['size']).hex(), row['after'])
         self.assertTrue(all(s.stored_digest == section_digest(self.result, s) for s in _sections(self.result)))
 
+    def test_week_nine_trade_deadline_companion_composes(self):
+        from mod_editor.core import nfl2k5_trade_deadline as deadline
+        patched, receipt = deadline.apply(self.retail)
+        self.assertEqual(receipt['changed_bytes'], 42)
+        self.assertEqual(deadline.status(patched), 'applied')
+        self.assertEqual(edit.status(patched), 'retail')
+        result, second = edit.apply(patched)
+        self.assertEqual(edit.status(result), 'applied')
+        self.assertEqual(deadline.status(result), 'applied')
+
     def test_original_actions_unchanged_and_appended_action_reuses_retail_arm(self):
         image, result = XbeImage(self.retail), XbeImage(self.result)
         content = edit.read_only_bytes()

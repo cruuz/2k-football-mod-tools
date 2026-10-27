@@ -102,7 +102,7 @@ class PlanTests(unittest.TestCase):
             stack.enter_context(patch.object(build, '_check_playbook_scoring', side_effect=scoring))
             receipt = build.build(build.BuildPlan(str(source), str(target), hires_pack=True, hires_folder='art'))
             self.assertEqual(events, ['inspect', 'hires', 'scoring'])
-            self.assertEqual([s['step'] for s in receipt['steps']], ['copy', 'hires_pack', 'unc_bowl_uniforms', 'menu_icon_orientation'])
+            self.assertEqual([s['step'] for s in receipt['steps']], ['copy', 'hires_pack', 'unc_bowl_uniforms', 'nameplate_fixes_2026', 'menu_icon_orientation'])
             self.assertEqual(receipt['pre_remap_inspection']['scorebug'], 'retail')
             self.assertNotIn('scorebug', receipt['result'])
             self.assertEqual(receipt['result']['hires_pack'], 'verified')
@@ -154,7 +154,7 @@ class PlanTests(unittest.TestCase):
             edits_path = root/'edits.json'
             edits_path.write_text(json.dumps({'schema': records.EDITS_SCHEMA, 'edits': []}), encoding='utf-8')
             receipt = build.build(build.BuildPlan(str(fixture.path),str(target),team_names_2026=True,roster_edits=str(edits_path)))
-            self.assertEqual([r['step'] for r in receipt['steps']], ['copy','roster_edits','team_names_2026','unc_bowl_uniforms','commentary_final','menu_icon_orientation'])
+            self.assertEqual([r['step'] for r in receipt['steps']], ['copy','roster_edits','team_names_2026','unc_bowl_uniforms','nameplate_fixes_2026','commentary_final','menu_icon_orientation'])
             self.assertEqual(names.image_status(target), 'applied')
             # u3: five teams' runs plus Washington's old label nickname; the XBE key paths installed once.
             name_step = next(row for row in receipt['steps'] if row['step'] == 'team_names_2026')
@@ -249,12 +249,12 @@ class ExecutableTests(unittest.TestCase):
                             build, '_check_playbook_scoring', return_value={'status':'applied','books':0,'faults':0}):  # Synthetic image has no PLAY archive; both real gates are covered with retail resources separately.
                         result=build.build(build.BuildPlan(str(source),str(target),scorebug_runtime=True,
                                                            kickoff_relocated=True,**GROWN))
-                    self.assertEqual([row['step'] for row in result['steps']], ['xbe','kickoff_alignment','kickoff_returns','scorebug_runtime','xbe_space','unc_bowl_uniforms','menu_icon_orientation'])  # the plan wants XBE work, so the ordinary XBE pass (grown owners deferred) runs first
+                    self.assertEqual([row['step'] for row in result['steps']], ['xbe','kickoff_alignment','kickoff_returns','scorebug_runtime','xbe_space','unc_bowl_uniforms','nameplate_fixes_2026','menu_icon_orientation'])  # the plan wants XBE work, so the ordinary XBE pass (grown owners deferred) runs first
                 final=build._xbe_bytes(target)
                 for key in ('all_stadiums','coverage_slider','scramble_tuning','music_shuffle','practice_squad_screen','abilities','qb_spy'):
                     self.assertEqual(tt._grown_status_fields(final)[key], 'applied')
                 self.assertEqual(runtime.status(final), 'applied')
-                self.assertEqual(len(final), space.SCALE_FILE_SIZE)
+                self.assertEqual(len(final), space.SCALE3_FILE_SIZE)  # b778-xs1: the v3 extent (SCALE_FILE_SIZE is now the v4 upper bound)
             self.assertEqual(events,['runtime','runtime'])
 
     def test_flatter_flight_preserves_ceiling_and_refuses_other_flight_before_overwrite(self):

@@ -313,10 +313,18 @@ docs/research/apf_b75_charge_abilities.md
 mod_editor/apf_studio/fourth_down_qt.py
 docs/mod_editor/apf2k8_fourth_down_and_xenia.md
 docs/research/apf_b71_fourth_down.md
+# Beta 78 contributions by Basileus Maximus: one ordered MASTER/CPU compile for
+# Design Play/Formation and the edits stacked on it, and his three TU 1.1 Xenia
+# play-calling patches relocated into Studio-reserved caves.
+mod_editor/core/apf2k8_common_compiler.py
+mod_editor/core/apf2k8_community_patches.py
+mod_editor/data/apf2k8_community_patches.v1.json
+mod_editor/apf_studio/community_patches_qt.py
 
 # Runtime dependency audit and portable Python requirements.
 mod_editor/core/runtime_dependencies.py
 packaging/runtime_dependencies.py
 packaging/requirements-studio.txt
+packaging/windows/studio_bootstrap.py
 
 packaging/check_packaged_runtime.py

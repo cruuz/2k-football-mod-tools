@@ -29,10 +29,30 @@ The directive travels in a ``2k5_mod_studio_roster_edits/v1`` document as
 
 and the Studio build applies it last of all, after the free agents, the Anniversary imports and every other roster
 writer, to the disposable copy of the disc.
+
+The curve form (b778 rt1)
+-------------------------
+Noah, 2026-10-22: "a lot of quarterbacks need higher throw power ratings. I updated Cam Ward's in my franchise, but I
+feel like it should be scaled across the league."  A flat ``add`` cannot do that: the best arms are already at the cap.
+The directive may instead carry a curve,
+
+    "qb_throw_power": {"curve": [[0, 20], [40, 60], ..., [99, 99]], "cap": 99, "scope": "all"}
+
+a piecewise-linear map of the old rating (knots at whole ratings, first x 0, last x 99, linear between, rounded half
+up), never below the old value, never above the cap, and with a slope from 0 to 1 between knots: it lifts weak arms
+most and strong arms least, so no two QBs swap places and no gap widens.  ``B778_CURVE`` is the shipped one.  Why those
+knots: Noah raised Cam Ward from 82 (his franchise was started before the +4 directive) to 93, so the curve sends 82 to
+93; the shipped deep-ball curve (``nfl2k5_throw_tuning``, the presets' 80-yard ceiling) turns arm into yards: 0.86
+reaches 53 yd, 0.90 59 yd, 0.93 63 yd, 0.96 69 yd, 0.98 74 yd, while real NFL starters' longest tracked throws travel
+55-68 yd in the air (nflverse NGS max air distance, 2021-2025) and a backup at 60 (37 yd) could not reach a deep post.
+So the weak arms rise most (60 -> 79, 48 yd) and the strong ones least (94 -> 98); the retail 2004 spread (Vick 99;
+Favre, Manning and Culpepper 94; McNair and McNabb 90; the middle starter 82) becomes 99 / 98 / 97 / 93, so 2K5's own
+order survives.  A value above 99 (large attribute values) is left alone.
 """
 from __future__ import annotations
 
 import hashlib
+import math
 import struct
 from typing import Any, Mapping
 
@@ -50,6 +70,10 @@ MAX_ADD = 30
 SCOPES = ("all", "main")
 MAIN_OUTER_INDEX = rr.ROST_OUTER_INDEX             # 5
 DEFAULT_DIRECTIVE = {"add": DEFAULT_ADD, "cap": DEFAULT_CAP, "scope": "all"}
+CURVE_X_RANGE = (0, rr.RATING_MAX)
+# b778 rt1: the shipped curve (old rating -> new rating); see the module doc
+B778_CURVE = ((0, 20), (40, 60), (50, 70), (60, 79), (70, 86), (82, 93), (88, 96), (92, 97), (96, 98), (99, 99))
+B778_DIRECTIVE = {"curve": [list(point) for point in B778_CURVE], "cap": DEFAULT_CAP, "scope": "all"}
 
 
 class QbThrowPowerError(ValueError):
@@ -66,15 +90,37 @@ def sha256(raw: bytes) -> str:
 
 
 # ------------------------------------------------------------------------------------------------ directive
+def normalise_curve(points) -> list[list[int]]:
+    """Validate a curve: whole-number knots, x strictly rising from 0 to 99, y rising by 0..1 per rating step, y >= x."""
+    _require(isinstance(points, (list, tuple)) and len(points) >= 2, "qb_throw_power curve needs at least two [x, y] points")
+    out = []
+    for point in points:
+        _require(isinstance(point, (list, tuple)) and len(point) == 2 and all(type(v) is int for v in point),
+                 "qb_throw_power curve points are [whole x, whole y] pairs")
+        out.append([int(point[0]), int(point[1])])
+    _require(out[0][0] == CURVE_X_RANGE[0] and out[-1][0] == CURVE_X_RANGE[1],
+             f"qb_throw_power curve must run from x {CURVE_X_RANGE[0]} to x {CURVE_X_RANGE[1]}")
+    for (xa, ya), (xb, yb) in zip(out, out[1:]):
+        _require(xb > xa, "qb_throw_power curve x must rise strictly")
+        _require(0 <= yb - ya <= xb - xa, "qb_throw_power curve slope must stay between 0 and 1 (order kept, no gap widened)")
+    for x, y in out:
+        _require(x <= y <= rr.RATING_MAX_LARGE, "qb_throw_power curve may never lower a rating (y >= x)")
+    return out
+
+
 def normalise_directive(value: Mapping[str, Any] | None) -> dict[str, Any]:
-    """Validate a ``qb_throw_power`` directive; missing keys take the defaults (+4, cap 99, every roster)."""
+    """Validate a ``qb_throw_power`` directive: ``add`` (missing keys take +4, cap 99, every roster) or ``curve``."""
     _require(isinstance(value, Mapping), "qb_throw_power must be an object like {'add': 4, 'cap': 99, 'scope': 'all'}")
-    unknown = set(value) - set(DEFAULT_DIRECTIVE)
+    unknown = set(value) - set(DEFAULT_DIRECTIVE) - {"curve"}
     _require(not unknown, f"unknown qb_throw_power keys {sorted(unknown)}")
-    out = {**DEFAULT_DIRECTIVE, **dict(value)}
-    for key in ("add", "cap"):
-        _require(type(out[key]) is int, f"qb_throw_power {key} must be a whole number")
-    _require(0 <= out["add"] <= MAX_ADD, f"qb_throw_power add must be 0..{MAX_ADD}")
+    if "curve" in value:
+        _require("add" not in value, "qb_throw_power takes either add or curve, not both")
+        out = {"curve": normalise_curve(value["curve"]), "cap": value.get("cap", DEFAULT_CAP), "scope": value.get("scope", "all")}
+    else:
+        out = {**DEFAULT_DIRECTIVE, **dict(value)}
+        _require(type(out["add"]) is int, "qb_throw_power add must be a whole number")
+        _require(0 <= out["add"] <= MAX_ADD, f"qb_throw_power add must be 0..{MAX_ADD}")
+    _require(type(out["cap"]) is int, "qb_throw_power cap must be a whole number")
     _require(1 <= out["cap"] <= rr.RATING_MAX_LARGE, f"qb_throw_power cap must be 1..{rr.RATING_MAX_LARGE}")
     _require(out["scope"] in SCOPES, f"qb_throw_power scope must be one of {SCOPES}")
     return out
@@ -83,6 +129,33 @@ def normalise_directive(value: Mapping[str, Any] | None) -> dict[str, Any]:
 def raised(value: int, add: int, cap: int) -> int:
     """The new rating: ``min(cap, value + add)``, never lower than ``value``."""
     return max(value, min(cap, value + add))
+
+
+def curved(value: int, curve, cap: int = DEFAULT_CAP) -> int:
+    """The curve's rating for ``value`` (linear between knots, rounded half up), capped, never lower than ``value``."""
+    points = [tuple(p) for p in curve]
+    if value > points[-1][0]:
+        return value
+    for (xa, ya), (xb, yb) in zip(points, points[1:]):
+        if xa <= value <= xb:
+            y = ya + (yb - ya) * (value - xa) / (xb - xa)
+            return max(value, min(cap, int(math.floor(y + 0.5))))
+    return value
+
+
+def map_value(value: int, directive: Mapping[str, Any]) -> int:
+    """What a normalised directive makes of one Throw Power byte."""
+    if "curve" in directive:
+        return curved(value, directive["curve"], directive["cap"])
+    return raised(value, directive["add"], directive["cap"])
+
+
+def source_for(target: int, directive: Mapping[str, Any]) -> int | None:
+    """The smallest rating the directive turns into ``target`` (None when no rating does)."""
+    for value in range(0, rr.RATING_MAX_LARGE + 1):
+        if map_value(value, directive) == target:
+            return value
+    return None
 
 
 # ------------------------------------------------------------------------------------------------ one resource
@@ -113,12 +186,14 @@ def quarterbacks(raw: bytes) -> list[dict[str, Any]]:
     return rows
 
 
-def apply_resource(raw: bytes, add: int, cap: int = DEFAULT_CAP) -> tuple[bytes, list[dict[str, Any]]]:
-    """A copy of ``raw`` with every QB's Throw Power raised; returns (new bytes, one row per changed byte)."""
+def apply_resource(raw: bytes, add: int | Mapping[str, Any], cap: int = DEFAULT_CAP) -> tuple[bytes, list[dict[str, Any]]]:
+    """A copy of ``raw`` with every QB's Throw Power raised; returns (new bytes, one row per changed byte).
+    ``add`` is the flat step, or a whole normalised directive (``add`` or ``curve`` form)."""
+    directive = normalise_directive(add) if isinstance(add, Mapping) else {"add": add, "cap": cap, "scope": "all"}
     out = bytearray(raw)
     changes = []
     for row in quarterbacks(raw):
-        new = raised(row["value"], add, cap)
+        new = map_value(row["value"], directive)
         if new != row["value"]:
             out[row["offset"]] = new
             changes.append({**row, "before": row["value"], "after": new})
@@ -141,7 +216,7 @@ def apply_image(path, directive: Mapping[str, Any] | None = None, *, progress=No
             if not is_rost(before):
                 continue
             try:
-                after, changes = apply_resource(before, plan["add"], plan["cap"])
+                after, changes = apply_resource(before, plan)
             except (rr.RosterRecordError, QbThrowPowerError, struct.error):
                 _require(entry.index != MAIN_OUTER_INDEX, "the main roster could not be read")
                 continue            # a ROST-tagged entry this codec does not parse is left exactly as it is
@@ -176,5 +251,6 @@ def merge_into_edits(existing: Mapping[str, Any], directive: Mapping[str, Any] |
     return merged
 
 
-__all__ = ["merge_into_edits", "DEFAULT_ADD", "DEFAULT_CAP", "DEFAULT_DIRECTIVE", "DIRECTIVE_KEY", "OWNER", "QbThrowPowerError", "SCOPES",
+__all__ = ["B778_CURVE", "B778_DIRECTIVE", "curved", "map_value", "normalise_curve", "source_for",
+           "merge_into_edits", "DEFAULT_ADD", "DEFAULT_CAP", "DEFAULT_DIRECTIVE", "DIRECTIVE_KEY", "OWNER", "QbThrowPowerError", "SCOPES",
            "apply_image", "apply_resource", "directive_of", "is_rost", "normalise_directive", "quarterbacks", "raised"]

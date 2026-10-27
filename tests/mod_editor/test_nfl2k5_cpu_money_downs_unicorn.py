@@ -34,7 +34,9 @@ class NativeTests(unittest.TestCase):
         EVIDENCE["owner_code_bytes"] = len(patch.assembly.CODE)
 
     def machine(self, level="modern"):
-        return Machine(self.payloads[level])
+        m = Machine(self.payloads[level])
+        m.supply_fg_range(38)
+        return m
 
     def test_all_policy_cells_native_in_both_directions(self):
         contexts = (
@@ -43,8 +45,8 @@ class NativeTests(unittest.TestCase):
             dict(quarter=4, seconds=301, score_margin=9),
             dict(quarter=4, seconds=300, score_margin=9),
             dict(quarter=4, seconds=300, score_margin=-9),
-            dict(quarter=4, seconds=120, score_margin=-4),
-            dict(quarter=4, seconds=120, score_margin=-3),
+            dict(quarter=4, seconds=120, score_margin=-4, timeouts=0),
+            dict(quarter=4, seconds=120, score_margin=-3, timeouts=0),
         )
         distances = (.5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 12, 20)
         evidence = []
@@ -55,8 +57,9 @@ class NativeTests(unittest.TestCase):
                 accepted = []
                 for distance in distances:
                     result = m.policy(**state, distance=distance, direction=direction)
-                    self.assertEqual(result, int(patch.decision(level=level, **state, distance=distance) == "go"),
-                                     (level, direction, state, distance))
+                    want = patch.decision(level=level, **state, distance=distance, kick_range=38)
+                    self.assertEqual(result, {"go": 1, "fg": 2, "punt": 3}.get(want, 0),
+                                     (level, direction, state, distance, want))
                     self.assertTrue(all(m.STACK-160 <= a < m.STACK for a, _ in m.writes), m.writes)
                     if result:
                         accepted.append(distance)

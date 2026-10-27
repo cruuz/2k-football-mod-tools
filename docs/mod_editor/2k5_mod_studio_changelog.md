@@ -1,5 +1,512 @@
 # 2K5 Mod Studio — Product Changelog
 
+## Beta 78 (RC113 / APF alpha.109, 2026-10-26)
+
+Prepared by Claude on Noah's behalf.
+
+This release pairs 2K5 Mod Studio **1.0.0rc113** and APF 2K8 Mod Studio **0.1.0-alpha.109** with **[SOFTDRINK 2K28 v0.7](https://github.com/cruuz/softdrink-2k28/releases/tag/v0.7)**. It covers the b778 wave (October 21 to 26): the fixes from Noah's five-hour stream on October 21, his asks on October 22 and 23, every bug reported on Discord since beta-77.1, and the APF 2K8 additions by **Basileus Maximus**.
+
+About 75 jobs went into it, each with its own tests, a pin recheck and a build preflight that writes nothing, followed by integration passes. Noah asked for this release without waiting for his own playtest. Nobody played a full season on it.
+
+The game changes are listed here in full, and again on the SOFTDRINK page for players who only use the pack. Each change has a Studio build option where noted, so you can turn it off in your own build.
+
+### Build options added or changed
+
+On means on in that preset. "Pack" is the SOFTDRINK 2K28 v0.7 disc.
+
+| Option (key) | Basic | Modern | Experimental | Pack |
+| --- | --- | --- | --- | --- |
+| CPU clubs keep their stars (`star_retention`) | off | on | on | on |
+| Franchise practice: injured players sit out (`practice_injuries`) | off | on | on | on |
+| Franchise: weekly player progression (`weekly_progression`) | off | off | off | on |
+| Player Progress row in season (`player_progress_visible`) | off | on | on | on |
+| Player Progress weekly history (`player_progress`) | off | off | off | on |
+| Rookie stars and career stars (`star_career`) | off | on | on | on |
+| Inbox standings table (`inbox_standings`) | on | on | on | on |
+| Player Contracts: no crash on a player without a college (`contract_college_guard`) | on | on | on | on |
+| Trophy Room (`trophy_room`, `crib_trophy_room`) | on | on | on | on |
+| Remove the Crib arcade files (`crib_reclaim`) | off | off | off | on |
+| Load Career Home on demand (`module_loader`) | off | off | off | on |
+| New rookie faces and names (`rookie_faces`) | off | off | on | on |
+| Gray alien prospect (`alien_prospect`) | off | off | on | on |
+| Franchise draft clock (`franchise_draft_clock`) | off | on | on | on |
+| CPU ball carriers stay in bounds (`cpu_ball_carriers`) | off | on | on | on |
+| Kick and punt coverage lead (`return_coverage`) | off | on | on | on |
+| Pass protection hold (`pass_protection`) | off | on | on | on |
+| Simulated game pace (`sim_stats`) | off | on | on | on |
+| Simulated cornerback tackles (`sim_cb_tackles`) | off | on | on | on |
+| No force-out catches after 2007 (`modern_force_out`) | off | on | on | on |
+| SportsCenter lineup by identity (`sportscenter_lineup`) | on | on | on | on |
+| LED play clock and score digits (`modern_clock_led`) | off | on | on | on |
+| Team-coloured long sleeves (`team_sleeves`) | on | on | on | on |
+| Live scorebug (`scorebug_runtime`) | off | off | on | on |
+
+Changed inside existing options: the franchise economy (stars kept, restructures, the 50 floor, prove-it deals, free agents no longer retire), Modern 2 fourth downs and the late-trailing rule, third-down calls, the accelerated clock at the two-minute warning, the CPU sprint burst and star charge, the QB accuracy owner (screens back to retail), and player growth and decline (aging and retirement). The free agent pool, Throw Power curve, colleges, suffixes, gear and looks ride in the roster edits. Playbook fixes are in the team packs.
+
+The Basic preset is the 2004 game and keeps original behaviour for nearly all of these.
+
+### Franchise and free agency
+
+#### A much bigger free agent pool
+
+The dated free agent pool grows from 26 hand-checked players to **533 real unsigned NFL players** who are not retired (879 free agent entries in all, counting the original game's generated ones). The list started from 561 candidates: anyone who played a regular-season NFL game since 2012, is not on a 2026 roster, was on a roster in 2024 or later and is 34 or younger (40 for quarterbacks, kickers and punters). It was then checked against 2026 transactions and retirement trackers, and 28 players who retired, signed elsewhere or went to the UFL were dropped. Colin Kaepernick is in the pool.
+
+To fit them, the roster block on the disc grows by 612 blank player records (3,231 player records in all, with room kept for historic team imports and Create Player). Franchise saves made on this disc are 847,020 bytes instead of 720,044. This needs the 128 MiB memory setting in xemu, which SOFTDRINK already asks for.
+
+Every free agent who was not hand-checked now has a skin tone, body and face type taken from his headshot, and every one of those headshots was then reviewed by eye. 173 of the 507 tones were corrected (139 darker, 34 lighter), because the 2026 headshot set is bright and the first measurement read many dark-skinned players as light. 63 of them have dreads where the photo shows hanging locs. 56 rows are marked low confidence in the data.
+
+Old franchise saves still load on this disc and are converted in memory. They only get the new free agents through Franchise > Upgrade (below).
+
+#### Stars are not cut at the first rollover
+
+At the first rollover (2026 to 2027) the game's own veteran cap cut released 10-year veterans whose salary looked high. One test cut 19 veterans, including Patrick Mahomes, Roquan Smith and Trent Williams, and a player's save lost 11 at once (George Kittle, Mahomes, Harrison Butker, Ronnie Stanley and others), who then sat unsigned all year. The cut now compares salary with the player's market value. In the same test, veteran cuts fell from 19 to 10, the best player cut was rated 82 instead of 92, and Mahomes, Kittle and Stanley stayed with their teams. A new option, on in the pack, also keeps any player rated above 85, and any quarterback above 75, from being the veteran-cut target.
+
+A player who could not be re-signed no longer wraps to 15 years left at the next rollover (one test save showed Chase Brown as "15 of 1").
+
+The salary cap now grows about 7.9% a year from the real 2026 cap of $301.2M (about $324.9M in 2027 and $350.5M in 2028), within about 0.5% of published projections.
+
+#### CPU clubs manage their rosters
+
+- CPU clubs restructure contracts before they cut anyone. The money still owed is spread over the remaining years with a 20% prorated bonus, which lowers this season's cap charge by 20 to 33%. A restructure needs two or more years left.
+- CPU clubs never go below 50 players at any point, including the re-signing stage (the game used 42). Your own club's preseason roster check and in-season trade check also use 50. The roster screen's release warning stays at 42.
+- Depth players sign at the 2026 CBA minimum for their years of service.
+- An unsigned free agent rated over 70 who goes two weeks without a deal lowers his ask to the best cap room available and signs a one-year "prove-it" deal with the club that has the most room and would start him. At most one such deal per club per week.
+- Free agents no longer all retire at the new league year. Before, every unsigned free agent retired (a v0.6.1 franchise lost 332 of 332).
+
+In a player's simulated save Mahomes signs a one-year deal with Miami for $28.4M. He is not moved back to Kansas City.
+
+#### Saves on the bigger roster
+
+A franchise saved on this disc shows normally in the Load list and loads. During development the bigger roster first marked every franchise save DAMAGED and "UNABLE TO LOAD"; that was fixed before release, and old saves load too. MyCareer, roster, settings and profile saves still load, and MyCareer knows the new save sizes.
+
+#### Contracts and Free Agents no longer freeze
+
+Scrolling the Contracts tab or the Free Agents list froze or crashed the game "no matter what team". 50 players on the v0.6.1 roster had no college (17 free agents and 33 dated 2026 signings whose schools were not in the 2004 college list), and highlighting one stopped the game. 24 now have their real school (for example Illinois for Jihad Ward) and 26 show "None". The Studio's roster writer can no longer write a player without a college.
+
+A franchise started on v0.6.1 keeps its own copy of those players. For those saves a new guard shows "N/A" for a missing college instead of freezing. This was the cause of the reported crash on Will Shipley's season stats and the freeze on Dameon Pierce's contract: Carson Steele, between them in the Eagles running back list, has no college, and moving the highlight past him stopped the game.
+
+#### Trades through Week 9
+
+The Trades and Trading Block rows in the Front Office now stay open through Week 9 of the 2026 season. After it the game shows its own message, "You cannot make a trade after the trade deadline." In the original game the rows disappeared at Week 7, so in-season trading was open for six weeks, which is what a player hit when trades seemed to stop once the season started. The in-game Trade Deadline option still turns the deadline off completely. The Trading Block row still disappears after the deadline, as in the original game.
+
+In-season 1-for-1 trades now reach the confirm dialog when the receiving club is at 53 active players. The old practice-squad guard compared the temporary 54th slot with the 53 limit, so the offer returned without opening the "Offer this trade to..." dialog. The guard now checks the final counts and the physical capacity. In the emulator, a Week 1 offer opened the dialog and was declined, and a Week 8 1-for-1 was accepted and the salary list updated.
+
+A club at 53 active players with a full 12-man practice squad still cannot make a 1-for-1 trade: the roster array is at its physical 65-player limit. Franchises with 4 to 11 practice-squad players are fixed.
+
+#### Injured players sit out practice
+
+In Free Practice from a franchise, injured players now sit out as they do on game day, and the next healthy player on the depth chart takes the spot (Carnell Tate, out three more weeks, was lining up at X receiver in practice; now the next receiver does). Questionable and doubtful players sit too, the same rule a franchise game uses. Practice still cannot cause injuries. An injured starter still shows in red on the depth chart, as in the original game.
+
+#### Inbox story
+
+The inbox story "Last Undefeated Team Falls" showed an empty five-row standings table, in the original game too. It now shows the club that lost.
+
+### Progression, stars and Player Progress
+
+#### Aging and retirement by position
+
+Players now age on an NFL shape for their position, built from nflverse career data. Running backs fade from their mid-20s unless they keep producing (a back with 1,200 scrimmage yards ages like one a year younger, 1,600 like one two years younger). Corners fall from about 27. Quarterbacks, kickers and punters last into their late 30s. Over a 10-season simulation of a real league, the average retirement age moved from 31.5 to 30.1 for running backs, 30.9 to 30.1 for corners, 35.6 to 36.5 for quarterbacks and 35.4 to 38.2 for kickers and punters.
+
+Young quarterbacks swing more with their passing results (skills move from minus 5 to plus 5). A veteran quarterback is not punished for one bad year: his non-physical ratings drop at most 1 a year until about 36, 2 at 37 and 3 from 38. Draft-day ratings are unchanged.
+
+#### Weekly progression
+
+During the franchise regular season, healthy young players (four or fewer years) gain 1 point on their position's key ratings after a good game, for example 100 scrimmage yards for a back, 80 receiving yards for a receiver, or a strong passer game on 15 or more attempts for a quarterback. Older players past their position's decline year (running back year 7, corner 9, receiver, safety and linebacker 10, defensive line and tight end 11, offensive line 12, quarterback 16) lose 1 speed and 1 agility or stamina after a poor or idle week, one week in four. It is on in the pack.
+
+#### Rookie stars, and stars earned and lost
+
+Rookies can now have stars, so they can also use the star-only right-stick moves. Each generated draft class has 3 to 5 star prospects at the top and 1 or 2 later-round "gems" (rounds 2 to 5, with a strong development curve). One class in eight makes its best prospect a Superstar.
+
+Every offseason, before aging, a player whose score reaches 90 gains a star (93 makes him a Superstar, 97 an X-Factor). The score is his overall plus a production bonus for his position. A player below 85 after at least 8 games loses his star, and 85 to 89 keeps it. Veteran quarterbacks keep the star until their score falls below 75. Stars set by hand on the 2026 roster keep their tier. In five simulated offseasons the league kept about 250 stars, with 26 to 34 lost and 28 to 29 gained each year. The right-stick moves stay star-only.
+
+#### Player Progress screen
+
+The Front Office **Player Progress** row now shows real week-by-week rating changes for your club through the preseason, regular season and playoffs, with Last Week, 2 Weeks and so on up to 8 weeks. The history is stored after the save (34,320 bytes more) and is kept through save, reboot and reload. It records your club's games only. After a bye week, Last Week still means your last game. An older save starts a fresh history the first time you load it.
+
+#### The Crib is now the Trophy Room
+
+The Crib keeps only its awards room, renamed **Trophy Room**, with a new gold trophy logo. Walking in no longer pops up the store catalog, START lists only User Card, Milestone Info and Exit, and bought items no longer open anything. Four arcade game files are replaced with small placeholders, which frees about 7.3 MB on the disc. Furniture already placed on an old profile stays as decoration.
+
+### Draft and rookie faces
+
+#### 3,569 new rookie faces
+
+Draft prospects now get faces from a bank of **3,569 new headshots**, and the face follows the player. Skin tone, build and hair are chosen from his position, name and weight, so a 210 lb corner and a 320 lb tackle no longer share a face, and no prospect gets the face of a current player. Before, skin and face shape were random for every position, a quarter of prospects got skin tones with no matching head, and the same weight always gave the same portrait. A player reported a rookie named Marquise Diggs who looked white; that was this bug.
+
+The bank is deliberately mixed: 1,213 ordinary, 797 good-looking, 497 plain, 474 rough, 405 homely, 94 striking, 79 novelty and 10 extreme faces, across six skin tones. A face already worn in the league is redrawn up to 24 times, which cut repeats among 2,000 active players from 718 to about 300 in testing. A class of 224 had 224 different faces in the emulator.
+
+Names follow the same rules. The modern first-name pool has 445 names. A few rookies get a nickname as a first name (Bam Bam, Tank, Big Cat, Biscuit and others, about 1 to 2%). Rarely a class has an East Asian or South Asian prospect (about one of each per class), with matching faces (58 East Asian and 38 South Asian in the bank). About 4% of rookies have a suffix (Jr., II, III, IV or Sr.).
+
+The faces are in a new portrait file next to the original ones, which is most of why the pack is bigger this time. Existing franchises get the new faces in their next draft class. A save keeps its own name list, so an older franchise gets the faces without the new name rules, nicknames or suffixes.
+
+#### A very rare gray alien prospect
+
+About once in 150 draft classes, and at most once per franchise, the class has a gray alien prospect: gray skin, black eyes, no hair, bare gray arms and hands, his own draft headshot and in-game face. Over 100 seasons that is about a 48% chance. He never appears in the first class, Quick Game or MyCareer creation. He is 7'11" with long arms (1.16 times normal) and a very thin build. The roster shows 150 lb, the lowest weight the game can store. His name, position, school and ratings are generated like any rookie. Existing franchises can get him too.
+
+#### A broadcast-paced draft
+
+In a franchise draft each CPU club now has a 60 second clock instead of every CPU pick happening at once. On a CPU turn, **Y** moves to the next pick and **X** skips to your next pick. On your turn, **Y** simulates your pick through the game's own timeout dialog. A help line on screen shows the buttons. Your own clock and the phone recommendations are unchanged.
+
+#### Kickers and punters go late
+
+A player reported four kickers taken in round 3. CPU clubs now take no kicker or punter in rounds 1 to 4 unless they have none and he is a historic outlier. In rounds 5 to 7 a club with none can take one. If every club has a kicker and a punter, none are drafted. In eight simulated drafts with normal rosters, no kicker or punter was taken.
+
+### CPU AI and play calling
+
+#### Clock management
+
+- A CPU team leading late now takes a knee instead of passing (in a test at 0:43 of the fourth quarter, up 9, it had called RB Dive, RB Stretch and a pass on 3rd and 8; now Take Knee twice).
+- A CPU offense near halftime now calls its timeout with seconds left instead of running the clock out.
+- In the two-minute drill the CPU uses the game's own clock-aware play caller.
+- The "Modern 2" fourth-down chart never actually ran in v0.6.1: it compared a direction value with exactly plus or minus 1, but real games store plus or minus 5486.4, so every real fourth down fell back to the original chart. It works now (a forced 4th and 2 near midfield: before 3 punts in 4 tries, now 3 goes in 3).
+- CPU coach profiles hand fourth downs, the last 5 minutes of the fourth quarter and the last 2 minutes of the second quarter to the game's clock-aware caller, so CPU teams kneel and throw Hail Marys again. A coach profile you pick yourself keeps its old behaviour.
+
+#### Late fourth downs when trailing
+
+In the last two minutes, a CPU team down 4 or more now goes for it at any distance, 4th and 27 included. Down 1 to 3, it kicks a field goal if it is in range and goes for it otherwise. A rare punt is left only with three timeouts, more than 1:30 left and an opponent held to 7 or fewer second-half points, one time in three. This is the 4th and 27, down 7, 1:32 punt from Noah's stream.
+
+#### Third downs
+
+A player reported the CPU calling screens and runs on third and long. On 3rd and 7 or more the CPU's run weight is now 5% of normal, and CPU coach profiles hand 3rd and 3 or more to the game's own caller. Over all 32 books, run calls on 3rd and 7 to 10 went from 19.9% to 0%, and on 3rd and 11 or more from 19.3% to 0%. Screens stay at about 2 to 3%. 3rd and 3 to 6 keeps 16% runs and 3rd and 1 to 2 is unchanged. A team leading late on 3rd and 20 or more still runs as in the original game.
+
+#### Sneaks and the Tush Push only in short yardage
+
+A player reported the CPU calling a QB sneak or Tush Push on the wrong downs. Both now live in one new set, **Full House Sneak**, in all 32 books, and nowhere else. With the game's own play selector, sneaks on 1st and 1 or 2nd and 1 went from about 3 in 500 calls to 0 in 2,000, and on 3rd and 2 or 3 to 0. The old Goal Line Sneak formation no longer carries a sneak. The CPU can still pick it about 0.6% of the time inside that set.
+
+#### Ball carriers stay in bounds, quarterbacks slide past the sticks
+
+A CPU runner or receiver pushed toward the sideline now keeps running upfield instead of drifting out of bounds (on the sideline the original game steered 32 degrees outward; now straight). When the clock matters the CPU still goes out on purpose. A CPU quarterback short of the first down line now slides only if a defender will reach him before he reaches the sticks. Human ball carriers are unchanged.
+
+#### CPU sprint bursts
+
+CPU players now get the same rating-scaled burst a human gets from tapping sprint (before, a Speed 93 CPU player got a 1.04 boost for 0.25 s; the same player under human control got 1.10 for 0.50 s). With the star-only charge option on, a movement superstar now needs Speed 90 and Agility 85 to charge up.
+
+### Gameplay, rules and simulation
+
+#### Pass protection
+
+A player reported the pass rush was too easy for both the user and the CPU. A beaten pass blocker now holds the rusher for a short time based on his Pass Blocking against the rusher's Pass Rush (0.10 to 0.80 seconds) instead of losing him at once. Run plays are unchanged. In CPU against CPU games the sack rate went from 22.7% (5 sacks in 22 dropbacks) to 11.1% (2 in 18). That is a small sample, and the NFL range of about 5 to 8% is not proven.
+
+#### Kickoff and punt coverage
+
+A player reported a 99 Speed returner scoring two or more return touchdowns a game by running around coverage to the sideline. CPU kickoff and punt coverage players now run to where the returner is going (up to one second ahead, and never aiming closer than 3 yards to the sideline) instead of where he is now. Scrimmage and field goal pursuit are unchanged, and so are human defenders. This change is not measured in a real game yet.
+
+#### Short throws and screens
+
+Screen passes are back to the original game's aim. The v0.6.1 change threw to the back's spot, up to 5.3 yards behind a back running through it. The other v0.6.1 accuracy fixes stay: a flat just past the line now arrives 0.14 yards from the back instead of 1.51, and a back leaking up the middle 0.33 instead of 1.53. Accuracy still depends on the rating: a 95 accuracy quarterback rolling out misses short routes by 0.22 yards, a 47 by 0.77. Swing passes behind the line are original game behaviour and were not changed.
+
+#### Quarterback Throw Power
+
+Throw Power is raised league-wide on a curve that never lowers a value or reorders quarterbacks (82 becomes 93, the same edit Noah made to Cam Ward; 70 becomes 86; 60 becomes 79). The starters' median goes from 90 to 95.5 and the backups' from 65.5 to 82. Longest throws: Ward 53.4 to 63.2 yards, Mahomes 59.0 to 71.6, Stroud 54.8 to 68.8, Tua 36.4 to 48.5. Mahomes goes from 90 to 97 arm (overall 92 to 96). A second layer uses 2021 to 2025 tracking data (longest air distance, air yards on deep completions, deep attempt rate and EPA) to set 51 veteran quarterbacks' arm, read and consistency ratings. Accuracy and composure are not touched. Historic and Anniversary quarterbacks get the curve too, and generated rookie quarterbacks roll from 73 to 98.
+
+QB overall ratings rise with it (starters' median plus 2, backups' plus 5). This reaches new franchises only: a franchise save keeps its own ratings, and Franchise > Upgrade has no step for them.
+
+#### No force-out catches in modern games
+
+A receiver pushed or carried out of bounds before both feet are down is now incomplete, as in the NFL since 2008. Anniversary moments before 2008 keep the old rule. This came from a reported catch ruled complete with no foot in bounds.
+
+#### The two-minute warning
+
+A player reported the clock sometimes jumping to 1:52 at the two-minute warning. With the accelerated clock, a running play from 2:12 subtracted the full runoff. The clock now stops at 2:00 in the second quarter, the fourth quarter and overtime.
+
+#### Simulated games at NFL pace
+
+A player reported huge points and yards in simulated franchise games. The Franchise Settings row **Sim. Quarter Length** (separate from the played Quarter Length) scaled simulated plays with its value. Simulated games now play at the same pace at any setting: at 15 minutes, points per team went from 41.1 to 22.8 and yards from 605.7 to 341.0 (NFL about 22 and 330), and games over 70 total points from 87 of 121 to 7. At 5 minutes, 23.0 to 21.9 points. In one simulated week of a real save, the old 15 minute setting gave 34.7 points per team and the new code 21.6.
+
+#### Simulated cornerback tackles
+
+A player reported simulated right cornerbacks with far too few tackles (5 in 5 games). The simulator names one tackler per play, almost always a front-seven player, and the right corner averaged 0.45 tackles a game. Starting corners now get a per-game tackle count drawn from an NFL distribution: about 3.4 a game for both starters, 2.5 for the nickel and 1.2 for the dime, with zero-tackle games still possible. Interceptions and forced fumbles are unchanged. The single-game box score keeps the engine's own line.
+
+#### CPU defense offside before the snap
+
+On Noah's stream the CPU Steelers corner jumped offside before the snap three or four times a game. 17 Bear 46 blitz plays in 13 defense books started a corner or safety across the line. The corners now walk up to 1 yard off the ball. In the regression on the first test disc, about 48 minutes of CPU defense drew no pre-snap offside.
+
+#### Choose Side in a game
+
+Switching sides in the middle of a game (Pause, Options, Choose Side) no longer crashes. The crash was a null pointer in the game's VIP playback selector: after the switch, the side that became CPU was given an automatic coach VIP context before its play-call cursor had been built. After the switch, the newly CPU side uses the game's normal play calling until the next game. A CPU side that already had a valid play-call cursor still rebinds normally. Four switches across three emulator runs completed without a hang or crash; five switches in a row in one game were not tested.
+
+### Playbooks
+
+- **The play-call screen opens on normal-down sets.** Goal Line Sneak was the first page in all 32 books. Each book now opens on its three most likely normal-down sets (Tennessee: Gun Trips TE, Gun Bunch X Nasty, Gun Trey Y-Flex), and Goal Line Sneak, Goal Line and Gun Wildcat are further back.
+- **Spot Out no longer loops.** The route crossed its own stem in 742 play links; now none.
+- **Play-action boots keep their backfield**, and "Pistol" plays stay in pistol sets (97 links fixed). This was the Pistol Boot filed under Tight Slots with a glitchy handoff.
+- **Direct snap decoy arrows point upfield** (33 plays).
+- **Two play-action backs no longer turn around** (Arizona PA Slot Cross Dig and Tennessee PA X Seam Shot from shotgun).
+- **No Huddle** now holds a real hurry-up set in every book: X an inside run or draw, A a quick pass, B a sideline out, L a screen and R one deep shot. Tennessee had Tush Push and a Wildcat Bubble Screen there. You can still change the buttons in Game Plan, No Huddle Manager.
+- **More quick passes**, most of all for the 13 teams with the weakest pass-blocking lines (CLE DET GB LAC LV MIA MIN NE NO NYG SEA TEN WAS). Quick-game plays go from 390 to 440, and normal-down menus with no quick play from 139 to 76.
+- The "pass play with only two routes" on stream is the Yankee max-protect shot, which works as designed.
+
+Existing franchises read playbooks from the disc, so they get all of this.
+
+### Broadcast, scorebug and stadiums
+
+#### Scorebug
+
+- On the play-select screen the bar shows the down and distance ("3rd & 2") instead of the ESPN wordmark.
+- Team logos are 15% larger.
+- Franchise records use bold broadcast digits on a dark band.
+- Deeper team-colour glow over the logos, a brighter team rail and Buffalo's charging-buffalo primary mark.
+- One connected pill holds the quarter, game clock and 45-second play clock. The play clock turns into a red cap at 5 seconds and under. The quarter and play clock are smaller.
+- The down-and-distance tab hangs from the top rail in ESPN's shape, tinted by the team with the ball, with readable text for all 32 teams.
+
+#### SportsCenter
+
+A sim-game SportsCenter highlight could put the wrong player at quarterback (on stream a Patriots tight end lined up under center). Highlights now match players by identity, not by roster slot.
+
+#### Stadiums and turf
+
+- Fourteen modern stadiums drew black squares in the seating (seen at EverBank). They are gone.
+- The 2004 suite clocks floating between the signs at Raymond James are gone. The end-zone boards keep their clocks.
+- The EverBank board panels are a dark LED screen with the JAGUARS and EVERBANK STADIUM lettering, replacing a teal panel with a fake down and distance that never changed.
+- Score digits on the modern stadium boards are solid fine-pitch LED cells.
+- The goal-post play clock, game clock and score digits are a solid LED matrix league-wide instead of round light bulbs.
+- FieldTurf at ten home stadiums (ATL CAR CIN DET MIN NE NO NYG NYJ SEA) is about 7% darker, after a report that Gillette looked too light green. The six Hellas Helix stadiums (DAL IND LAR LAC TEN HOU) are about 7% darker and 12% less saturated, after Noah said Nissan was "too green". Natural grass is unchanged.
+- The Houston midfield logo is white because the 2026 NRG field is painted that way. That one is not a bug.
+- Crowd close-ups no longer show fans standing inside the seats at Lucas Oil, AT&T and the other new stadiums. The cutaway point had been placed on an upper-deck seat row at every model stadium; on the released disc, fans stood in the seats at 12 model venues. Every model stadium that uses the cutaway now places it in free air over the front of the lower bowl. MetLife keeps the retail point.
+- AT&T's end-zone Party Pass decks no longer flicker through the glass. The deck glass rails now stand 0.1 m in front of each deck edge.
+- Crowd billboards under an overhang now stop 8 cm below it, and crowd strips that ran through boards, facades and corner seats are removed at Allegiant, Gillette, Highmark, Lucas Oil, U.S. Bank and MetLife.
+
+- The crowd behind the bench at AT&T Stadium, Highmark Stadium, SoFi Stadium and Levi's Stadium no longer looks pixelated. The SOFTDRINK v0.6 pack repainted the crowd sprite strips for the Cowboys, Bills, Rams, Chargers and 49ers, and the repaint scrambled those fans into a speckled checkerboard wherever they appeared, home or away. The pack now leaves those strips as the original game has them, so those five clubs' crowds wear the original 2004 mix of everyday clothes and team gear. No stadium uses more memory.
+
+### Uniforms, looks, names and coaches
+
+- **Dallas Alternate 1** back names read correctly (PRESCOTT was printing as QSFTDPUU).
+- **Jaguars nameplates** are readable again, and every hyphen on every nameplate is solid (Seattle's showed a hollow box in SMITH-NJIGBA).
+- **Team-coloured long sleeves.** Black long sleeves now take the uniform's sleeve colour (Packers green, Bears and Patriots navy, Bills blue). White sleeves stay white, and teams with black primaries keep black.
+- **Position gear for new players.** 230 players added by the roster refresh and the free agent pool came out with blank equipment, which draws as a kicker's two-bar facemask. They now have their position's gear. A player reported this on Colts returner Anthony Gould.
+- **Real looks for the 90 refresh players.** They were all lightest skin, face type 1 and skinny. They now have a skin tone, face shape and body from their photo, height and weight, each reviewed by eye.
+- **Suffixes are back on 104 real players**, in menus and on the jersey: Marvin Harrison Jr., Odell Beckham Jr., Chris Godwin Jr., Deebo Samuel Sr. and others. Every one fits the nameplate. The announcer still calls the surname.
+- **Announcer names.** 673 players were announced with a recorded name of a different player with the same surname (Jonathan and Alontae Taylor were called "Chester Taylor"). 561 now get the recorded surname, 103 the jersey number and 9 their own recorded name.
+- **Colleges.** 261 players had their first school instead of their last because the roster tool read the list backwards (Matthew Golden showed Houston instead of Texas, Joe Burrow Ohio State, Bo Nix Auburn). They are corrected.
+- **Dreads and locs.** Players with dreads or locs now have hair over the top of the head when the helmet is off, instead of a bald scalp. The tops cover retail dreads, long locs, short twists and light-ended locs, and classic, created and rookie-bank players with the Dreads bit. The hairline was measured from the game's own scalp textures. Existing franchises get the tops with no save change when the save carries the hair style or Dreads bit. Braids and the other styles are unchanged.
+- **Coaches.** All 32 head coaches now have faces scanned from their photos. The first four were Jacksonville (Liam Coen), Pittsburgh (Mike McCarthy), Tampa Bay (Todd Bowles) and Cleveland (Todd Monken). The other batches were CIN IND MIN MIA SF GB CAR (Pittsburgh was rescanned), ATL DET LAR NE TEN WAS BAL, DAL NYG NYJ PHI CHI LAC KC and ARI BUF DEN HOU LV NO SEA. Each face is projected onto the head of the model the coach already wears, reshaped toward his proportions and blended into painted skin. Only the finished textures ship, not the photos. Bowles is now on a Black coach's model instead of a white head painted dark. McCarthy has the capped model with the Steelers cap. Monken, Zac Taylor and Shane Steichen moved onto models that match their skin. Coen's hair is darker so he no longer reads as bald. Kansas City is a 2026 Andy Reid on his own model, with his white moustache and glasses. A build now refuses a coach whose model skin does not match his face.
+
+Existing franchises keep their own copy of player gear, looks, suffixes, colleges and announcer names. New franchises get them.
+
+### Classic team: the 2006 Sarasota Seamen
+
+The **2006 Sarasota Seamen** from Noah's SOFTDRINKTV Madden 07 series are a new classic team for Quick Game. The roster is the final 2006 version from the series, with every in-season pickup (Az-Zahir Hakim, Antonio Brown, Rocky Calmus, Ron Stone, Jason Fisk and others), 53 players. 2K5 holds 53 and the finale showed 55, so G. Wilson and J. Spielman are left out. QB Bus Jibber is 7'0", 405 lb (the heaviest the game allows), 80 overall with 97 Throw Power. Ratings the videos do not show are fitted to the shown overall.
+
+The art was redrawn from frames of the 2006 episodes: the mint honeycomb logo card with the teal anchor and italic SEAMEN wordmark, team teal, a teal home jersey with white side panels and a wide white pant stripe, a white away jersey with teal panels, and a white helmet with a teal stripe and anchor. They play in the generic ESPN Stadium with SARASOTA end zones and an anchor at midfield. The Quick Game row reads SEAMEN with its own logo, helmet and cards.
+
+### Bugs reported on Discord since beta-77.1
+
+Every report from the Discord bug channels since the October 21 release, and what happened to it. The details are in the sections above.
+
+**Fixed in this release**
+
+- The game froze or crashed when scrolling the franchise Free Agents list and then the Contracts tab, on any team. Cause: players with no college. Fixed in the roster data, with a screen guard for older franchises.
+- A crash viewing Will Shipley's season stats and a freeze on Dameon Pierce's contract. Same cause (Carson Steele has no college). Fixed by the same guard.
+- MyCareer only worked with the name left as "First Last". With any custom surname, the drafted career offered only save or quit, and the save would not load. Fixed: the game's jersey assigner rewrote the player's commentary name after MyCareer had stored his identity, so MyCareer thought the career was lost. A save made on the stuck draft screen now loads and the draft continues.
+- Dallas Alternate 1 back names printed as garbled letters. Fixed.
+- A build stopped with an s18 stadium pin error (Modern MetLife without Modern colour). Fixed.
+- Builds with the Unc Bowl moment failed about three hours in with "foreign or partially repaired Unc Bowl uniform spans". Fixed: kits are now classified and left alone when they are not SOFTDRINK kits, and a source disc that is neither retail nor SOFTDRINK is refused in seconds before anything is copied.
+- A catch was ruled complete with no foot in bounds. Fixed for modern seasons (force-outs end in 2008).
+- The Gillette field looked too light green. Darkened, with the other FieldTurf stadiums.
+- Make my disc on the Build tab produced the original game with no mods. Fixed: an empty selection is refused, ticks made while the disc was still being read are kept, and an unchanged result is never published as your latest build.
+- A Windows build ran over an hour and then failed. The Player Progress and Franchise Auto Save conflict that stopped full builds about 10 minutes in is fixed, and the build now checks free space and refuses OneDrive folders before it starts. The reporter's exact cause could not be confirmed.
+- The Windows editor would not open ("Studio runtime package is missing") from the source ZIP, even as administrator. Fixed: the launchers set up their own runtime on first run.
+- Trades could not be offered once the season started. The original deadline closed trading after Week 6. It is now Week 9.
+- The clock was sometimes set to 1:52 at the two-minute warning. Fixed.
+- A Colts kick returner wore a kicker's facemask. Fixed for all 230 created players.
+- Four kickers went in round 3 of the draft. Fixed.
+- The CPU called screens and runs on third and long. Fixed.
+- The CPU called QB sneaks and the Tush Push on the wrong downs. Fixed.
+- Rookies could never have stars. Fixed.
+- The CPU could not tap-sprint like a human. Fixed.
+- Franchise sim stats were unrealistic with longer sim quarters. Fixed.
+- Simulated right cornerbacks had too few tackles. Fixed.
+- The Build & Share page was almost unreadable, with descriptions only on mouse-over. Fixed in the Studio (see the beta-78 release notes).
+- The CPU defense jumped offside before the snap. Fixed for the 17 plays that caused it.
+- An in-season 1-for-1 trade at a full 53-man roster produced no confirm dialog. Fixed: the practice-squad guard compared the temporary 54th slot with the 53 limit. A club at 53 active with a full 12-man practice squad still cannot make one.
+- Pausing, choosing Options, Choose Side, switching sides and then calling a play could crash. Fixed: the newly CPU side was given an empty VIP playback context. That side now uses the game's normal play caller until the next game.
+- Crowd close-ups at the new stadiums showed fans standing inside the seats, and the AT&T end-zone deck crowd flickered through the glass. Fixed.
+
+**Partly fixed or not yet measured**
+
+- A 99 Speed returner scored two or more return touchdowns a game around coverage. Coverage now leads the returner, but this is not measured in a real game yet.
+- The pass rush was too easy. Blockers hold longer, and the sack rate fell from 22.7% to 11.1% in a small sample. Not proven over a large sample.
+
+**Not fixed**
+
+- The scorebug covering the ESPN ticker. It is hidden correctly on the Xbox disc in xemu; the report came from a PC recompiled build, which this project does not support.
+- A Vikings home game freezing during delay-of-game penalties. Not reproduced.
+- A receiver who ran his route to the bench once on an unset depth chart. Not reproduced.
+- A request to go back to the original game's low CPU completion rate. That is a preference, not a bug.
+
+### Studio: editor, build and Windows fixes
+
+#### Build tab
+
+- **Make my disc with nothing ticked** used to write a byte-identical copy of the original game and register it as your latest build, so Play latest started the retail game. An empty selection is now refused with a pointer to Share, Install SOFTDRINK 2K28. A build whose result equals its source is refused and never published.
+- **Ticks made while the disc was still being read** were wiped when the read finished. A read of the same disc now keeps them, a new disc starts clean, and any tick that cannot apply is dropped and named.
+- **The Modern preset** applied 51 of its 54 changes because three options (Trophy Room, rookie and career stars, honors history) were not reported to the page. It applies all 54 now.
+- **Full builds with Player Progress and Franchise Auto Save** failed about 10 minutes in with "foreign franchise save routine". They now compose.
+- **Before any copy**, the build checks free space (the source size plus 512 MiB at least) and, on Windows, refuses an output folder inside OneDrive. Each message names the folder and suggests a plain one such as `C:\2K5`.
+- **Modern MetLife without Modern colour** failed with "s18ds.iff: the refit bundle differs from the applied pin". The nine Giants field pins were re-recorded.
+- **Builds with the Unc Bowl moment** failed about three hours in. Each kit is now classified as retail, SOFTDRINK before, SOFTDRINK after, or foreign. Retail and foreign kits are left untouched and named in the build notes, and a source that is neither retail nor SOFTDRINK is refused in seconds with "Choose your clean, unmodified USA retail ISO".
+- **Full SOFTDRINK builds with every late option on** failed about an hour in with "allocation requests differ; rebuild from base", then with two follow-on errors in the space allocator. The cause was the defensive-try adapter, which was built without the late owners' space requests (76 requested against 103 allocated). It now receives them, and a late directory slot that moves the allocator from v3 to v4 is accounted for.
+- **A guard** refuses any build where a coach's model skin does not match his face, and another checks that the finished disc still carries every hair style.
+
+- **"Pack identity guard failed at 2345"** stopped full builds about an hour in. Two free agents now carry a "Jr." suffix (Cedrick Wilson Jr. and Thayer Munford Jr.), and the dated roster refresh still expected the old names. The refresh now ignores only a separate trailing Jr., Sr. or II to V; the first name, the rest of the surname and the birth date must still match.
+- **"The historic team styles did not survive the intro video pass"** was not about the intro. The team-coloured long sleeves pass rewrote the Eagles' era-9 spare kit. It now leaves that kit alone, and the Anniversary moment kits are checked by their pinned bytes, so all 26 installed kits match.
+- **Other build stops fixed:** the second moment-kit install gets its own filler name; the classic teams roster edit is keyed by the right index; the weather reader accepts the bigger version-18 roster; the colour grade skips the classic field only after it reads as applied; and the late features (Player Progress, MyCareer, star careers, franchise economy) recognise each other's hooks, which had blocked Career Home, Auto Save and the Career Home loader.
+- **Caught before release:** the new LED clock code wrote past its palette and crashed every game load on the first complete beta-78 disc. No released disc had it. Fixed, and the release disc was built after the fix.
+- Every fix above has a test that fails on the code before it. The full SOFTDRINK 2K28 build from retail took 2 h 27 min on Linux.
+
+A full Modern build from retail succeeded on Linux in 759.5 s, and Windows Python 3.12.10 under Wine built the same preset in 1,052.6 s with a byte-identical image.
+
+#### Windows launcher from the source ZIP
+
+A Windows user could not open the editor from GitHub's green **Code > Download ZIP** ("Studio runtime package is missing"), even as administrator. The ZIP is the source code, not the release, and it has neither the runtime nor some reviewed data files. `2K5-Mod-Studio.bat` and `APF-2K8-Mod-Studio.bat` now find Python 3.12 or 3.11 (or `MOD_STUDIO_PYTHON`), create a private `.venv` beside the launcher, install the pinned packages (about 110 MB, binary wheels only) and, for a source ZIP, download and hash-check the 19 reviewed data files from the matching release (about 65 MB). No administrator rights are needed, and `--setup` repairs it. If Python is missing the launcher prints the python.org link. The README and START_HERE now say to download the Setup from the release Assets instead. Installed copies keep their bundled Python.
+
+This was tested with Windows Python 3.12.10 under Wine (a path with spaces and the doubled folder name from the ZIP), not on a real Windows PC.
+
+#### Build & Share is readable
+
+Option descriptions, preset captions and the details paragraph were cut to one line, with the rest only in a tooltip. They now wrap at full height. Disabled options were 3.4:1 to 3.9:1 contrast and are now at least 4.7:1. The preset grid fits a 1280 by 720 window without sideways scrolling. Options that cannot be used in this release have a visible "Not available in this release" badge. A light theme is available with `NFL2K5_STUDIO_THEME=light` (dark stays the default; there is no menu switch yet).
+
+#### More space in the game executable
+
+Every new owner needs code space in `default.xbe`, and the allocator directory was full at 96 requests. The executable now gets a growable pool section that grows 4 KB at a time and moves nothing already placed. The limit is 320 requests and up to 4 MB, and this release uses about 28 KB. A module loader can also read Career Home from the disc when MyCareer opens (4 to 7 ms a read) instead of keeping it in memory from boot. It never unloads yet.
+
+#### Franchise Upgrade
+
+The Upgrade gained the hair styles, honors and free agents steps, plus the opt-in `played-clubs` command (see the Franchise > Upgrade section).
+
+#### Docs
+
+- New **[START_HERE](https://github.com/cruuz/2k-football-mod-tools/blob/main/docs/START_HERE.md)** guide for people who have never modded a game: what you need, the one-click install, xemu settings, the disc roster, Franchise > Upgrade, your own roster edits, the extra point and play clock settings, and where to ask for help. A text copy is in the pack repository.
+- README: download the release asset, not the source ZIP.
+
+### APF 2K8 Mod Studio 0.1.0-alpha.109
+
+The APF additions in this release were written by **Basileus Maximus** and included with his permission under the Studio's MIT licence. They were reviewed line by line before merging (1,298 added lines in 14 files). He is credited in the changelog, NOTICE, the patch dialog and each patch's author field.
+
+- **Created plays in the Playbook Manager.** Plays you create now appear in the in-game Playbook Manager, in the formations of the play they came from unless you choose others. They can be edited in Assignment Routes and are listed in Fine-tune Plays, so they can go into CPU playbooks.
+- **Formation plays** (one formation at a time) and **Assign plays** (many formations at once, by personnel or family) windows. A formation holds at most 84 plays.
+- **Mirror** buttons flip one player's assignment, or the quarterback and the player he hands off to. Handoffs get editable K, A and hole fields.
+- **Design plus other edits.** A Design Play or Formation design can be built together with Assignment Routes, Who lines up and Fine-tune. The build applies retail, then the design, then the other edits. Formation Alignment, Coverage Geometry and Scheme Presets still cannot be combined with a design.
+- **Three Title Update 1.1 Xenia patches** by Basileus Maximus (play calling by package, all packages in the substitution menu, hidden formations shown) are under Tools, "Community play-calling patches (Basileus Maximus)". They are off until you install them with a consent box, and they are for TU 1.1 only. His original files overlapped the Studio's charge abilities patch (70 and 139 words), so enabling them together overwrote it. The Studio copies are moved as whole blocks into reserved space, with only 19 branch words rewritten, so all four patches now apply together. The launcher refuses to start if his original play-calling or all-packages file sits next to the charge patch.
+- **Windows launcher** set-up from the source ZIP, as for 2K5.
+
+213 APF test files pass and a headless Xenia run on TU 1.1 applied all four patches and reached the title screen. The in-game effect of the new plays and patches has not been seen in a game yet. His own warning applies: removing a play from a formation that your saved in-game playbook has checked can crash the manager.
+
+### From Noah's October 21 stream
+
+Each item Noah hit on stream, and what this release does about it.
+
+- CPU Steelers corner offside before the snap, several times a game: fixed (17 defense plays).
+- Trevor Lawrence with a bowl cut and other custom hair missing: the save predated hair styles; Franchise > Upgrade now copies them.
+- Coach's Pick opening on Goal Line Sneak: fixed in all 32 books.
+- A looping Spot Out route, a Pistol Boot under Tight Slots, a backward direct-snap arrow: fixed.
+- Odd No Huddle plays: every book has a real hurry-up set.
+- A tight end at quarterback in a SportsCenter highlight: fixed (not yet seen rendered).
+- Down and distance missing at play select, small logos, the record font, the clock housing: the scorebug passes above. Noah: "the scorebug looks great".
+- Bowles on a white model, McCarthy and Coen not looking like themselves: all 32 head coaches now have scanned faces, and Pittsburgh was rescanned.
+- Jaguars nameplates as a white blob, hollow hyphens: fixed.
+- Fans standing inside the seats in the crowd cutaway: fixed (new cutaway point at every model stadium that uses it).
+- Colts black sleeves: team-coloured sleeves.
+- Check-downs and short throws to backs landing badly, Cam Ward missing short: screens back to retail, the Throw Power curve. A completion-rate change was not measured.
+- Carnell Tate practicing while injured: fixed.
+- Mahomes, Kittle and Stanley unsigned mid-season with 0 years left: the economy fixes and the free agent pool.
+- No timeout at the half, passing while leading late, punting on 4th and 27 down 7: fixed.
+- CPU backs stepping out, Lawrence sliding short: fixed.
+- Wrong names in commentary ("Chester Taylor"), Golden's college: fixed for 673 cues and 261 colleges. The "Smokey" nickname on Cade Stover and number-only highlight calls remain.
+- Honors page empty in his franchise, the empty inbox table: the honors step in Franchise > Upgrade and the inbox fix.
+- Lightbulb play clock digits, the EverBank board, black crowd squares, the floating Raymond James clock, Nissan too green: fixed.
+- Rookies all looking alike, no rookie stars: the face bank and rookie stars.
+- Houston's white midfield logo: matches the real 2026 field.
+- Lions helmet decal shown twice in SportsCenter, the Cap Manager order: not fixed.
+
+Noah's later asks are in too: suffixes, more and stranger rookie faces, the alien, the draft clock, the Trophy Room, Player Progress, NFL aging, every real free agent, the Sarasota Seamen, hair over the top for dreads and locs, and scanned faces for all 32 head coaches. Owner's Mode is planned for the next update.
+
+### Existing franchises: Franchise > Upgrade
+
+Old franchise saves load on the new disc. A franchise save keeps its own copy of the roster, coaches and history, so to bring an older SOFTDRINK 2026 franchise up to date:
+
+1. Copy your save somewhere safe.
+2. In the Studio open **Rosters**, then **Open Xbox save…**, and choose the save (an Action Replay `.zip`, an extracted save folder, or `SAVEGAME.DAT` with its `EXTRA` file).
+3. On the **Franchise** page choose **Upgrade franchise save to the current build**. If it asks you to write pending edits to a save copy and reload it first, do that.
+4. Click **Choose disc…** and pick your v0.7 disc.
+5. Click **Preview upgrade** and read the list.
+6. Click **Write signed copy**. The new save is written beside the original, which is not touched. Put the new copy where xemu keeps your saves.
+
+The upgrade runs these steps in order:
+
+- **Years pro** for players imported with the 2026 roster before v0.6.
+- **Playbooks**: each team's playbook reference is checked against the disc.
+- **Team history** for the clubs on the disc.
+- **Coaches**: bodies and pictures from the disc, matched by name.
+- **Hair styles** from the disc, matched by name and birth date. A style you set yourself is kept. This is the fix for franchises started before hair styles existed (a franchise from October 12 had style 0 for every player, so Trevor Lawrence had a bowl cut on Noah's stream). On a copy of that save it changed 234 players.
+- **Honors**: the disc's award history (Pro Bowls and other honors). Franchises made before the honors data showed "HONORS: NONE YET" for everyone. On a copy of a real save it added 954 honors for 353 players.
+- **Free agents**: the save is moved to the bigger roster (720,044 to 847,020 bytes) and the new free agents are added to its open records.
+
+Your season, contracts and stats are kept. Repeating the upgrade against the same disc changes nothing. A JSON receipt beside the new save lists every changed field. It works only on SOFTDRINK 2026 franchises and says why when it refuses.
+
+The same steps are on the command line: `tools/nfl2k5_franchise_upgrade.py upgrade`, or one step at a time with `coach-sync`, `team-history`, `hair-styles`, `honors` and `free-agents`. A separate opt-in step, `played-clubs`, fills the first season's TEAM column where it has evidence. A 2026 club it cannot prove stays blank instead of guessed, because the save's transaction log has no dates.
+
+The upgrade does not change QB ratings, colleges, announcer names, suffixes or player gear (see Known issues). The new game code (CPU AI, clock, sim pace, draft, progression, stars, Player Progress, practice injuries, trades) works on any save loaded on the new disc, and the playbooks are read from the disc.
+
+### Known issues and limits
+
+- **Nobody played this disc before release.** Noah asked for the release without waiting for his own playtest. It was checked by the test suites listed below, not by a person playing a season.
+- **Choose Side after the switch.** A mid-game Choose Side no longer crashes, but the side that was human and becomes CPU keeps the automatic coach profile off for the rest of the game and uses the game's normal play caller until the next game. A CPU side that already had a valid play-call cursor still rebinds normally. Four switches across three emulator runs completed without a hang; five switches in a row in one game were not tested.
+- **Trades at 53 plus a full practice squad.** A club at 53 active players with a full 12-man practice squad still cannot make a 1-for-1 trade; the roster array is at its physical 65-player limit. Clubs with 4 to 11 practice-squad players are fixed.
+- **Simulated playoff overtime.** A franchise playoff game that is simulated rather than played still uses sudden death and can end on the first score. Played overtime uses the both-possession rule.
+- **Braids.** Players with braids (26 players) still have no hair over the top with the helmet off. The new tops cover the dreads and locs styles only.
+- **Return coverage and pass protection** are new and measured on small samples only (see above). If returns or sacks feel wrong, report the game mode, teams and quarter length.
+- **Suffix spacing.** The big roster header font drops the space before a suffix, so Deebo Samuel Sr. reads SAMUELSR. there, and the practice field label reads GodwinJr. The nameplate on the jersey is correct.
+- **Raiders down-and-distance tab.** The Raiders' wing is white, so their tab is silver. It is readable but is the weakest of the 32.
+- **The alien's long limbs are subtle** at broadcast distance (the arms are 1.16 times longer). His weight shows as 150 lb because the game cannot store less.
+- **Formation names are cut off** in the play-call header on books with many pages (345 of 1,108 offense headers). Nothing was renamed this time.
+- **Simulate Week** in a new franchise can keep simulating week after week until you hold B for about a second and a half. It was not compared with v0.6.1 or the original game, so it may be original behaviour.
+- **Tush Push lag** was not measured. The play snaps and finishes without a hang.
+- **Scanned coach faces.** All 32 head coaches have scanned faces, and they will get further refinement in a later update (for example a cap for Sean Payton and cleaner hair for Mike LaFleur and Sean McVay). A few sit slightly paler than the retail arm textures, and brown eyes on Baltimore and New England render grey-blue. The bald and receding heads (Washington, Tennessee and the Los Angeles Rams) show a visible edge where the face meets the painted scalp in close-ups. The faces were seen in the sideline challenge cutscene, not at night, in rain or snow, in Franchise, at the far LOD, or in the Coach Matchup portraits, which are unchanged. The reference photos are not shipped.
+- **Existing franchises do not get roster-level changes**: the QB Throw Power curve, colleges, announcer names, suffixes, created-player gear and the refresh players' looks. A franchise save keeps its own roster. Start a new franchise for those, or use Franchise > Upgrade for what it covers (below).
+- **16-reserve saves.** Saves made with the 16 reserves option (724,140 bytes) cannot be loaded by a disc with the bigger roster, which SOFTDRINK has.
+- **64 MiB memory.** At 64 MiB, a Quick Game at the retail-model Acrisure stadium loops the pregame, as on v0.6.1. Use 128 MiB.
+- **Crib items.** Bought items on an old profile no longer open anything, and furniture already placed stays as decoration.
+- **Player Progress** records your club's games only, and its new-season reset is unit-tested, not played.
+- **Not built this time:** the Lions helmet decal shown twice in SportsCenter, the Cap Manager "highest paid" order, Owner's Mode (planned for the next update) and a user Restructure button.
+- **Not witnessed in a game:** a save written and reloaded after an accepted in-season trade (the Week 8 acceptance was seen in memory), a new MyCareer save on the bigger roster, the late fourth-down rule in a natural game, the third-down change after the fix, the CPU sprint bursts, the SportsCenter lineup fix rendered on screen, and five Choose Side switches in a row in one game (four completed across three runs). The tests behind each are listed in the Studio notes.
+
+### Downloads and installation
+
+Downloads (each with a `.sha256` file):
+
+- `2K5-Mod-Studio-1.0.0rc113-Setup.exe`: the Windows Setup for ESPN NFL 2K5. It includes Python.
+- `APF-2K8-Mod-Studio-0.1.0-alpha.109-Setup.exe`: the separate Setup for All-Pro Football 2K8.
+
+Use the files under **Assets**, not **Code > Download ZIP**. You need your own retail dump.
+
+If you have beta-77.1, the **Update now** button in the Studio offers this release.
+
+To install SOFTDRINK 2K28 v0.7:
+
+1. Download `SOFTDRINK-2K28-v0.7.2k5patch` from the [pack release](https://github.com/cruuz/softdrink-2k28/releases/tag/v0.7). Keep it as downloaded.
+2. In the Studio open **Build & Share**, then **Share**, then **Install SOFTDRINK 2K28**.
+3. Pick your unmodified USA Xbox retail dump, then the `.2k5patch` file, then a new output image. Start from the original dump every time, not from the v0.6.1 disc.
+4. Wait for **Disc ready**.
+5. Set xemu System Memory to **128 MiB**. The bigger roster needs it.
+6. Load the disc roster and start a fresh franchise, or upgrade an existing one as above.
+
+New players: see [START_HERE](https://github.com/cruuz/2k-football-mod-tools/blob/main/docs/START_HERE.md).
+
+### Release checks
+
+- **Release disc:** built by the Studio from the release branch with the SOFTDRINK recipe (preset Experimental plus 143 overrides).
+- **Earlier test disc:** the round-one test disc (the first 12 fixes) passed the same kind of automated regression on October 22 and 23, with no freeze or crash: a 14 minute attract demo, 24 of 24 Quick Game loads to the first play, MyCareer week loads on a copy of Noah's save, a MyCareer player with a custom name drafted, saved and reloaded, a new franchise through 12 simulated weeks with all 32 depth charts checked (no empty starters, no duplicates), Situation at MetLife, all 33 Contracts lists scrolled, about 48 minutes of CPU defense with no pre-snap offside, and 25 boots. The Choose Side crash was not reproduced in three tries on that disc.
+- **Per-job gates:** each of the jobs ran its own tests (new tests fail on the old code where that makes sense), a pin recheck with no updates, and a plan-only build preflight that writes nothing. Most native changes were also run in Unicorn against the game's own code. Emulator checks were done where the job could get a free emulator slot; several jobs could not, and say so above.
+- **Integration:** integration passes merged the branches one at a time, `--no-ff`, with conflicts resolved hunk by hunk and the merged job's tests rerun after each. Cave reservations were regenerated from an observed full-feature build (16,787 reservations from 242 executable writes in the first pass). Long gates on the first pass: owner pairwise composition 538 passed, memory writes 119, cave references 131, allocator scale-out 29, screen hooks 3, mod build 14. Release closures passed (2K5 3,684 files, runtime 328 modules; APF 306 files, 167 modules).
+
+### Proof limits
+
+- Seen in the emulator on test images built from each job's own bytes (often the v0.6.1 disc with the change written into memory, not a full Studio build): the Contracts and Free Agents scroll, the Shipley and Pierce report, MyCareer with a custom name, hair styles and honors after Franchise > Upgrade, saves on the bigger roster through save, cold reboot and reload, Player Progress history through save and reboot, the in-season trade screen through Week 9 (a Week 1 offer was declined; a Week 8 1-for-1 was accepted in memory, with no save written and reloaded), Choose Side switches in a game (four across three runs), practice injuries, the alien in the draft, in uniform, at practice and through a simulated season, the draft clock prototype, CPU clock and fourth downs in forced situations, force-outs in forced situations, offside, the two-minute warning, stadium squares, the EverBank board, turf, the crowd cutaways at Lucas Oil and AT&T, sleeves, Jaguars and Dallas names, the coach faces for all 32 head coaches, dreads and locs tops on the coin toss and in a helmeted bench close-up, created-player gear, the refresh players' looks and suffixes.
+- Measured offline only (Unicorn running the game's own code, or data checks): the star retention and economy tables over a season and rollover, aging and retirement over 10 seasons, rookie and career stars, the face bank, the kicker draft rule, third downs, sneaks, sim pace, cornerback tackles, the Throw Power curve, the CPU sprint burst, return coverage, the late fourth-down rule, the SportsCenter lineup, colleges, announcer names, the Seamen and their art, the crowd cutaway placement and crowd billboard audits, the hair top coverage and helmet clearance, and most scorebug passes.
+- Measured in a game on small samples: pass protection (22 and 18 dropbacks), QB short throws (75 releases), Choose Side (four switches across three runs), the Week 8 trade (one accepted 1-for-1), and the crowd cutaways (a few frames at Lucas Oil and AT&T).
+- Not tested on a real Windows PC or on Xbox hardware. The Windows checks ran Windows Python under Wine.
+
 ## v1.0 RC112, beta 77.1: SOFTDRINK 2K28 v0.6.1
 
 Prepared by Claude on Noah's behalf. This section is the Studio part of the beta-77.1 release notes: the b777 changes from Noah's October 19 playtest first, then the October 10 to 19 test waves. The game changes are on the SOFTDRINK 2K28 v0.6.1 release page (https://github.com/cruuz/softdrink-2k28/releases/tag/v0.6.1). APF 2K8 Mod Studio advances to 0.1.0-alpha.108 (see its changelog).

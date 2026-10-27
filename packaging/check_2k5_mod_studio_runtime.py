@@ -99,7 +99,7 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
     "mod_editor/gui/audio_panel_qt.py":
         "dd3529836c4ebdc5ddf344de19edca38191f918ca341248953cb289b56c5e42e",
     "mod_editor/gui/studio_qt.py":
-        "42c9af9e868e46696e6822847cfa0175a56cb08a38057c504de8eb182a008825",
+        "58f4fb71296b5909906b82baf0faa5501141cdd58d15d2d482f32c06c292c585",
     "mod_editor/studio/audio_annotations.py":
         "c45c94b011d703a24d063138f82477814495705c3b0055a9a867dbab453ba923",
     "mod_editor/studio/audio_replacement_pack.py":
@@ -113,16 +113,16 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
 }
 
 B69_GAME_RUNTIME_PINS = {
-    "mod_editor/core/nfl2k5_weather.py": "ced1c64174d1ecd531c34fb0c8320a9e6fdaa11a900a498ee4f33464b6a6ae10",
+    "mod_editor/core/nfl2k5_weather.py": "ec3d253e348ff0cf7fb1951b5dad2983d8aebc0802d5c6fca32c74dc80a6985b",
     "mod_editor/core/nfl2k5_weather_haze.py": "b8c58c592794312358eb1554b1d3be43a1ca41f7fdd8fd3cd498d4f345c641cc",
-    "mod_editor/gui/build_panel_qt.py": "458bf4cfdf7a1c4ddaae9d27d252cd93ab182fa3130775cb8d6e9968502a8bcc",
-    "mod_editor/gui/gameplay_patches_panel_qt.py": "61a70d43e9401c606dd110d1dcd0671c27281e5fe3051aaeaa9428b997dddd2f",
+    "mod_editor/gui/build_panel_qt.py": "179979882f53d16dbc2aeb9bd8c7d1626debd64369d2e1622e520ee9491d277a",
+    "mod_editor/gui/gameplay_patches_panel_qt.py": "47a41b66663c3365ba33ee12f6c1e77c7e7c64ff6dec0580ee038a2d5789b726",
     "mod_editor/gui/my_career_panel_qt.py": "cd39ce1685ed119288122e46b0f8c1c8ba586cea611f5d5feee096a71d7ea9ac",
     "mod_editor/gui/gameplay_project_ui.py": "4927318677c5dbd1183b139d5b4d2c460136e38a3f9bf5d5b979ba62e1ed016e",
     "mod_editor/gui/beta62_options.py": "4b4152b4830092afc360230bf869df68c56b5ce9c668769fb28cde9f61cd3d3f",
     "tools/nfl2k5_weather_editor.py": "39a2847b873bbdc567712ca87657d700fa95e226c3408983acce4d714b1031de",
-    "mod_editor/gui/build_panel_qt.py": "458bf4cfdf7a1c4ddaae9d27d252cd93ab182fa3130775cb8d6e9968502a8bcc",
-    "mod_editor/gui/gameplay_patches_panel_qt.py": "61a70d43e9401c606dd110d1dcd0671c27281e5fe3051aaeaa9428b997dddd2f",
+    "mod_editor/gui/build_panel_qt.py": "179979882f53d16dbc2aeb9bd8c7d1626debd64369d2e1622e520ee9491d277a",
+    "mod_editor/gui/gameplay_patches_panel_qt.py": "47a41b66663c3365ba33ee12f6c1e77c7e7c64ff6dec0580ee038a2d5789b726",
     "mod_editor/gui/my_career_panel_qt.py": "cd39ce1685ed119288122e46b0f8c1c8ba586cea611f5d5feee096a71d7ea9ac",
     "mod_editor/gui/gameplay_project_ui.py": "4927318677c5dbd1183b139d5b4d2c460136e38a3f9bf5d5b979ba62e1ed016e",
     "mod_editor/gui/beta62_options.py": "4b4152b4830092afc360230bf869df68c56b5ce9c668769fb28cde9f61cd3d3f",
@@ -2006,6 +2006,7 @@ def main() -> int:
         "mod_editor.core.nfl2k5_unc_bowl_uniforms",               # v0.6.1: the two Unc Bowl kits
         "mod_editor.core.nfl2k5_nyg_numbers",                    # b772: Giants plain white shoulders
         "mod_editor.core.nfl2k5_kit_fixes_2026",                 # b772-uf1: 2026 home/away kit art fixes
+        "mod_editor.core.nfl2k5_team_sleeves",                   # b778-sl1: team-coloured long sleeves
         "mod_editor.core.nfl2k5_menu_icon_uf3",                  # b773-uf3: the Pittsburgh road miniature
         "mod_editor.core.nfl2k5_pants_hem_2026",                 # b773-pa1: the modern above-the-knee pants hem
         "mod_editor.core.nfl2k5_glyph_fixes_2026",               # b776-fn2: Bears/Chiefs nameplate letters, Titans 7
@@ -2024,9 +2025,29 @@ def main() -> int:
         "mod_editor.core.nfl2k5_db_ball_play_code",               # b776-ai2
         "mod_editor.core.nfl2k5_run_blocking",                    # b777-ol1
         "mod_editor.core.nfl2k5_run_blocking_code",               # b777-ol1
+        "mod_editor.core.nfl2k5_pass_protection",                 # b778-pr1
+        "mod_editor.core.nfl2k5_pass_protection_code",            # b778-pr1
         "mod_editor.core.nfl2k5_qb_accuracy",                     # b777-qb3
         "mod_editor.core.nfl2k5_qb_accuracy_code",                # b777-qb3
         "mod_editor.core.nfl2k5_formation_art_spacing",           # b777-tp1
+        "mod_editor.core.nfl2k5_force_out",                       # b778-fo1
+        "mod_editor.core.nfl2k5_module_loader",                   # b778-xs1
+        "mod_editor.core.nfl2k5_crib_trophy_room",                # b778-xs1
+        "mod_editor.core.nfl2k5_inbox_standings",                 # b778-pc3
+        "mod_editor.core.nfl2k5_rookie_faces",                    # b778-rh1
+        "mod_editor.core.nfl2k5_practice_injuries",               # b778-pi1
+        "mod_editor.core.nfl2k5_ball_carrier_ai",                 # b778-ai5
+        "mod_editor.core.nfl2k5_return_coverage",                  # b778-kr1
+        "mod_editor.core.nfl2k5_cpu_third_down",                   # b778-ai8
+        "mod_editor.core.nfl2k5_alien_prospect",                  # b778-ee1
+        "mod_editor.core.nfl2k5_sportscenter_lineup",             # b778-sc2, in-place
+        "mod_editor.core.nfl2k5_draft_clock",                     # b778-dr1
+        "mod_editor.core.nfl2k5_weekly_progression",              # b778-pg1
+        "mod_editor.core.nfl2k5_player_progress_screen",          # b778-pg2
+        "mod_editor.core.nfl2k5_contract_college_guard",          # b778-cr1
+        "mod_editor.core.nfl2k5_sim_cb_tackles",                  # b778-cb1
+        "mod_editor.core.nfl2k5_sim_stats",                      # b778-sim1, in-place
+        "mod_editor.core.nfl2k5_clock_led",                       # b778-sd4
         "mod_editor.core.nfl2k5_kickoff_blocking",                # b76-vb3 E1
         "mod_editor.core.nfl2k5_widescreen_menus",                # b76-vb3 D2
         "mod_editor.core.nfl2k5_team_logo_swap",                  # b76-pf P1

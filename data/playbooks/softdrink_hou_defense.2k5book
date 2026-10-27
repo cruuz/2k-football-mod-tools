@@ -9,10 +9,10 @@
   "notes": "DESIGN: Matt Burke (Ryans / Schwartz four-down); 2025 baseline HOU. Clean technique fronts (pb/v2/defense/design.py), retail 2K5 coverage scripts with native pre-snap alignment, situational formation ratings and CPU score bands fitted to the sourced 2025 coverage and blitz rates. Exact offense source required. Gameplay unwitnessed."
  },
  "base": {
-  "book_fingerprint": "6c123a8a6a5d677133972cb3ddf93093a08a96308ae114b28e69ea6626973be1",
+  "book_fingerprint": "42062a9b96c3b40a0af4c14c74f56450a6eafc39ae9d749eff3741d6c552f8b8",
   "donor_formation_count": 50,
   "donor_play_count": 270,
-  "donor_node_count": 2305
+  "donor_node_count": 2294
  },
  "budget": {
   "formations": 50,

@@ -48,6 +48,8 @@ MASTER_XBOX_KEY = bytes.fromhex("5C0733AE0401F7E8BA7993FDCD2F1FE0")
 SETTINGS_SAVE_SIZE = 736
 SETTINGS_BLOCK_SIZE = 0x2E0
 FRANCHISE_SAVE_SIZE = 720044
+CAPACITY_SAVE_GROWTH = 0x1F000          # b778 fa4: 0x91000 -> 0xB0000 arena
+CAPACITY_SAVE_SIZE = FRANCHISE_SAVE_SIZE + CAPACITY_SAVE_GROWTH
 FRANCHISE_STATE_OFFSET = 0x91320
 FRANCHISE_STAGE_WEEKS_OFFSET = 0x91324
 FRANCHISE_WEEK_OFFSET = 0x91325
@@ -247,7 +249,8 @@ def save_kind(payload: bytes) -> str:
     if len(payload) == FRANCHISE_SAVE_SIZE:
         return "franchise"
     if len(payload) in (FRANCHISE_SAVE_SIZE + 0x1000, FRANCHISE_SAVE_SIZE + 128,
-                        FRANCHISE_SAVE_SIZE + 0x1000 + 128):
+                        FRANCHISE_SAVE_SIZE + 0x1000 + 128, CAPACITY_SAVE_SIZE,
+                        CAPACITY_SAVE_SIZE + 128):
         from .nfl2k5_franchise_save import is_franchise_save
         if is_franchise_save(payload):
             return "franchise"
@@ -258,7 +261,8 @@ def _franchise_shift(payload) -> int:
     if len(payload) == FRANCHISE_SAVE_SIZE:
         return 0
     _require(len(payload) in (FRANCHISE_SAVE_SIZE + 0x1000, FRANCHISE_SAVE_SIZE + 128,
-                             FRANCHISE_SAVE_SIZE + 0x1000 + 128), "unsupported franchise container length")
+                             FRANCHISE_SAVE_SIZE + 0x1000 + 128, CAPACITY_SAVE_SIZE,
+                             CAPACITY_SAVE_SIZE + 128), "unsupported franchise container length")
     from .nfl2k5_franchise_save import FranchiseSave
     try:
         save = FranchiseSave(payload)

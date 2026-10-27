@@ -1,0 +1,8 @@
+{
+ "who": "Zac Taylor",
+ "notes": "very fair, rosy skin; short brown hair, a little grey at the sides; clean-shaven; blue eyes; a broad smile with teeth in the official headshot (mouth closed here); c36 with c20's lean body (cm2)",
+ "eyes": [110, 134, 156],
+ "mouth": "close",
+ "hair_colour": [74, 60, 50],
+ "hair": {"front": 46.5, "recede": 0.6, "side": 43.5, "back": 34.5, "sideburn": 38.8, "edge": 0.3, "grey": 0.02, "grey_sides": 0.15}
+}

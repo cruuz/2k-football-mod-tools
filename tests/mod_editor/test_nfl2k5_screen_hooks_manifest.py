@@ -61,16 +61,39 @@ def bounded_projection(retail, document=None):
     inherited = []
     for row in parent["spans"]:
         start, end = int(row["start"], 0), int(row["end"], 0)
+        if row["owner"] == space.OWNER and row.get("basis") == "observed byte diff":
+            # b778 int2: the v4 growable pool is one coarse observed byte-diff
+            # row over the grown v3+pool span; it cannot be bounded per child.
+            # The bounded projection image is smaller than the grown production
+            # image, so clip the inherited row to it.
+            limit = XbeImage(final).image_size
+            if start >= limit:
+                continue
+            inherited.append(dict(row, end=hex(min(end, limit)), size=min(end, limit) - start))
+            continue
         regions = [r for r in layout["regions"] if start < r["va"]+r["size"] and r["va"] < end]
         if regions:
             covered = start
             for region in sorted(regions, key=lambda r: r["va"]):
                 if region["va"] <= covered:
                     covered = max(covered, region["va"]+region["size"])
-            if row["owner"] not in known or covered < end:
+            if row["owner"] not in known:
+                # b778 int3: owners the bounded screen-hook union does not carry
+                # (star_career and other late owners) are clipped to this smaller
+                # projection or dropped, like the allocator-stack test does; an owner
+                # that is present with a different span still refuses below.
+                limit = XbeImage(final).image_size
+                if start >= limit:
+                    continue
+                inherited.append(dict(row, end=hex(min(end, limit)), size=min(end, limit) - start))
+                continue
+            if covered < end:
                 raise OracleError(f"unrecognized inherited grown reservation: {row}")
         else:
-            inherited.append(row)
+            limit = XbeImage(final).image_size
+            if start >= limit:
+                continue
+            inherited.append(dict(row, end=hex(min(end, limit)), size=min(end, limit) - start))
     unique = {(r["start"], r["end"], r["owner"], r["basis"]): r for r in inherited+observed}
     result = copy.deepcopy(parent)
     result.update(model="BOUNDED XBE PROJECTION: unchanged parent reservations plus observed screen hooks and allocator union; no new disc build",

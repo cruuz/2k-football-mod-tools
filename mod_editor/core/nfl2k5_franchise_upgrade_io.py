@@ -16,6 +16,10 @@ from . import nfl2k5_franchise_upgrade as upgrade
 from . import nfl2k5_roster_records as rr
 from . import nfl2k5_save_rost as sr
 
+#: The migrations a franchise can take. Hair styles and honors come from the disc;
+#: played-clubs uses the same verified club repair as Upgrade; undated candidates stay in the receipt;
+#: b778-fa3: free-agents adds the disc's 2026-10-22 free-agent depth players the franchise lacks.
+COMMANDS = ("upgrade", "coach-sync", "team-history", "hair-styles", "honors", "played-clubs", "free-agents")
 DEFAULT_COHORT = Path(__file__).resolve().parents[2] / "mod_editor/data/f12_cohort.json"
 
 
@@ -123,9 +127,9 @@ class UpgradePlan:
 def plan_upgrade(source: Path, disc: Path, *, command: str = "upgrade",
                  cohort_path: Path = DEFAULT_COHORT, team_history_path: Path | None = None) -> UpgradePlan:
     """Read, validate and preview every change, without creating any files."""
-    upgrade.require(command in ("upgrade", "coach-sync", "team-history"), "unknown upgrade command")
-    upgrade.require(team_history_path is None or command != "coach-sync",
-                    "TEAM evidence requires upgrade or team-history")
+    upgrade.require(command in COMMANDS, "unknown upgrade command")
+    upgrade.require(team_history_path is None or command not in ("coach-sync", "hair-styles", "honors"),
+                    "TEAM evidence requires upgrade, team-history, played-clubs or free-agents")
     container = load_container(source)
     before_validation = upgrade.validate_save(container.savegame)
     body, resources = load_disc(disc, books=command == "upgrade")
@@ -141,8 +145,24 @@ def plan_upgrade(source: Path, disc: Path, *, command: str = "upgrade",
         evidence = json.loads(team_history_path.read_text(encoding="utf-8")) if team_history_path else None
         payload, step = upgrade.upgrade_team_history(payload, body, evidence)
         steps.append(step)
-    if command != "team-history":
+    if command in ("upgrade", "coach-sync"):
         payload, step = upgrade.sync_coaches(payload, body)
+        steps.append(step)
+    if command in ("upgrade", "hair-styles"):
+        # b778-hr3: a franchise started before the disc had hair styles keeps style 0 for everyone
+        payload, step = upgrade.sync_hair_styles(payload, body)
+        steps.append(step)
+    if command == "played-clubs":
+        evidence = json.loads(team_history_path.read_text(encoding="utf-8")) if team_history_path else None
+        payload, step = upgrade.infer_played_clubs(payload, body, evidence)
+        steps.append(step)
+    if command in ("upgrade", "honors"):
+        # b778-pc2: a franchise started before the disc had the honors page shows "HONORS: NONE YET" for everyone
+        payload, step = upgrade.sync_honors(payload, body)
+        steps.append(step)
+    if command in ("upgrade", "free-agents"):
+        # b778-fa3: the free-agent depth fills vacant records of the save itself; free-agents alone refuses without room
+        payload, step = upgrade.sync_free_agents(payload, body, strict=command == "free-agents")
         steps.append(step)
     after_validation = upgrade.validate_save(payload)
     receipt = {"schema": upgrade.SCHEMA, "command": command, "dry_run": True,

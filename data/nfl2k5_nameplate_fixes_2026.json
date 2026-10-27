@@ -1,0 +1,114 @@
+{
+ "schema": "nfl2k5_nameplate_fixes_2026/v1",
+ "source": "b778-uf2 (Noah 10/22: 'The last names on the Jaguars jerseys should be refined so they're more readable' and 'on jerseys, hyphens are like hollow ... It should be filled in the same fill color as the letters').",
+ "method": "Structure rows replace the four 2026 Jaguars nameplate atlases with the retail letter structure read from the user's own disc, recoloured: the retail fill becomes the kit's letters, the one-texel retail outline stays an outline (black), and the counters and plate become transparent. The NAME metrics, texture descriptors, wrapper and allocation are unchanged. The hyphen pass runs on every kit after the Anniversary moment kits and fills any enclosed hole in the hyphen cell with the palette entry the letters use.",
+ "structures": [
+  {
+   "selector": "12H0",
+   "chunk": 43,
+   "kind": "names_structure",
+   "texture": "names",
+   "retail_selector": "12H0",
+   "resource_size": 1543312,
+   "offset": 498144,
+   "length": 11392,
+   "before_sha256": "788a4af963228ad87c6d98f055fb124362a5efc697ab444b4dfe0caddd1fb89b",
+   "after_sha256": "7850ea82b5a382e518945d8f831050015c7a8f8864ad0e24261437938e641b97",
+   "retail_sha256": "7dfcee575902462bdd0554a2f833ee471b6bfce15e7d92d4c883aabee1c88424",
+   "name_sha256": "7da278b81854e1e828d865a5d1fb0552fcd529458698d56520c9c7972d67f4cc",
+   "retail_name_sha256": "7da278b81854e1e828d865a5d1fb0552fcd529458698d56520c9c7972d67f4cc",
+   "retail_outline": "#000000",
+   "retail_fill": "#CBA62B",
+   "fill": "#FFFFFF",
+   "outline": "#000000",
+   "fill_threshold": 0.5,
+   "outline_px": 1,
+   "defects": [
+    "b778-uf2-JAX-home-names"
+   ],
+   "note": "2026 teal home. Retail 12H0 carries a gold/white fill with a black outline and plate; the 2026 atlas kept only the alpha, so every counter is filled and the white has no outline. White fill, black outline, the real Jacksonville plate."
+  },
+  {
+   "selector": "12A0",
+   "chunk": 43,
+   "kind": "names_structure",
+   "texture": "names",
+   "retail_selector": "12A0",
+   "resource_size": 1547856,
+   "offset": 500768,
+   "length": 11344,
+   "before_sha256": "b270ccc060c9e58858c93cea177ad60d7b4a974b2c09d75c1baa7ae02826997e",
+   "after_sha256": "b969b04fdeec67479dace8ffbe702b3df038ea704c5860d66d8c3a66ee693f53",
+   "retail_sha256": "155bdb303baf06f171c2c780a6566afa0eaf9c9203e1a18b9eb02f8e1273e5ee",
+   "name_sha256": "e73b6605d52c45074a54b479b75fcb3f8ab83e98c11fa980693dcd477450732a",
+   "retail_name_sha256": "e73b6605d52c45074a54b479b75fcb3f8ab83e98c11fa980693dcd477450732a",
+   "retail_outline": "#000000",
+   "retail_fill": "#115E77",
+   "fill": "#101010",
+   "outline": "#101010",
+   "fill_threshold": 0.5,
+   "outline_px": 1,
+   "defects": [
+    "b778-uf2-JAX-road-names"
+   ],
+   "note": "2026 white road. Black fill and black outline (one black glyph at the retail letter weight) with transparent counters, the plain 2026 Jacksonville road nameplate."
+  },
+  {
+   "selector": "12H6",
+   "chunk": 43,
+   "kind": "names_structure",
+   "texture": "names",
+   "retail_selector": "12A0",
+   "resource_size": 1550288,
+   "offset": 504640,
+   "length": 11344,
+   "before_sha256": "34cae1d73eea7db0648df60a17390cea4494c0ed8204286dea3934cb6232c010",
+   "after_sha256": "247407e7eafffcc445c599c62f5ab3cff0f56e7143a90c808ec7d93643fa4be3",
+   "retail_sha256": "155bdb303baf06f171c2c780a6566afa0eaf9c9203e1a18b9eb02f8e1273e5ee",
+   "name_sha256": "e73b6605d52c45074a54b479b75fcb3f8ab83e98c11fa980693dcd477450732a",
+   "retail_name_sha256": "e73b6605d52c45074a54b479b75fcb3f8ab83e98c11fa980693dcd477450732a",
+   "retail_outline": "#000000",
+   "retail_fill": "#115E77",
+   "fill": "#101010",
+   "outline": "#101010",
+   "fill_threshold": 0.5,
+   "outline_px": 1,
+   "defects": [
+    "b778-uf2-JAX-bold-city-names"
+   ],
+   "note": "Bold City Rivalries (alabaster jersey). Black letters with transparent counters; the 12A0 structure recoloured black."
+  },
+  {
+   "selector": "12A6",
+   "chunk": 43,
+   "kind": "names_structure",
+   "texture": "names",
+   "retail_selector": "12A0",
+   "resource_size": 1550288,
+   "offset": 504640,
+   "length": 11344,
+   "before_sha256": "34cae1d73eea7db0648df60a17390cea4494c0ed8204286dea3934cb6232c010",
+   "after_sha256": "247407e7eafffcc445c599c62f5ab3cff0f56e7143a90c808ec7d93643fa4be3",
+   "retail_sha256": "155bdb303baf06f171c2c780a6566afa0eaf9c9203e1a18b9eb02f8e1273e5ee",
+   "name_sha256": "e73b6605d52c45074a54b479b75fcb3f8ab83e98c11fa980693dcd477450732a",
+   "retail_name_sha256": "e73b6605d52c45074a54b479b75fcb3f8ab83e98c11fa980693dcd477450732a",
+   "retail_outline": "#000000",
+   "retail_fill": "#115E77",
+   "fill": "#101010",
+   "outline": "#101010",
+   "fill_threshold": 0.5,
+   "outline_px": 1,
+   "defects": [
+    "b778-uf2-JAX-bold-city-names"
+   ],
+   "note": "Bold City Rivalries away (the same art as 12H6 on this build)."
+  }
+ ],
+ "hyphen": {
+  "kind": "hyphen_fill",
+  "mips": "all",
+  "fill_from": "letter_interiors",
+  "fill_alpha_min": 250,
+  "note": "All kits, all sides and styles, classic and Anniversary moment kits: an enclosed hole in the hyphen cell gets the opaque palette entry the letter interiors use. A kit whose atlas does not fit its NAME metrics (the Dallas Arctic Cowboy pair before uf1) is left alone."
+ }
+}

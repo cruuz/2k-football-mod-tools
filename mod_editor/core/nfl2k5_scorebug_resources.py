@@ -969,7 +969,7 @@ def runtime_pack_status(pack, *, probe="full", sprite_folder=None):
 
 # Reproducible subsets of the full collection. Pair includes both orientations
 # of TB and NE plus neutral fallbacks, so changing ends does not change assets.
-PROBE_APPEND_PINS = {'transport': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'hooks': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'neutral': 'e38a25fae3acb5fdd3ae5ddcb91798e047e1be27e862f319452ee176b6cb61fa', 'pair': '8c7da0308c4b96d66f124ec5c83939ac0376fac623ca76b777d67be0b1cfd515', 'mnf': 'e39cc99656f1c09840c579c0fabf7ece7c3c2712b2e5b6091c259487a3d08693'}
+PROBE_APPEND_PINS = {'transport': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'hooks': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'neutral': 'e38a25fae3acb5fdd3ae5ddcb91798e047e1be27e862f319452ee176b6cb61fa', 'pair': '8c7da0308c4b96d66f124ec5c83939ac0376fac623ca76b777d67be0b1cfd515', 'mnf': 'dce968c3999bdab1ee18c27ff81e841fab29fc660c93e72351d1c403bd20bb54'}
 
 # Native ABI bodies, normalized only for independently recognized scorebug fields/hooks.
 # SB3 guards cover whole shared formatter spans so normalization remains atomic.

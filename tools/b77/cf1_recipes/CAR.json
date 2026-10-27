@@ -1,0 +1,9 @@
+{
+ "who": "Dave Canales",
+ "notes": "olive, tanned skin; short black hair; a light shadow of stubble; brown eyes; a smile with teeth in the official headshot (mouth closed here); c09 with c03's lean body (cm1)",
+ "eyes": [116, 88, 62],
+ "mouth": "close",
+ "hair_colour": [34, 28, 25],
+ "hair": {"front": 46.8, "recede": 0.5, "side": 43.5, "back": 34.5, "sideburn": 38.4, "edge": 0.3},
+ "facial": [{"kind": "stubble", "parts": ["moustache", "corners", "chin", "cheeks"], "density": 0.16, "colour": [70, 58, 52]}]
+}

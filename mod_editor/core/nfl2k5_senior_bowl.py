@@ -277,13 +277,13 @@ def read_franchise(path, *, scheme="retail"):
     if source.is_dir():
         source = source / "SAVEGAME.DAT"
     size = source.stat().st_size
-    _require(size in career.BASE_SIZES + career.SIZES, "unsupported franchise save size")
+    _require(size in career.CONTAINER_SIZES, "unsupported franchise save size")
     payload = _read_exact(source, size)
     signature = _read_exact(source.with_name("EXTRA"), 20)
     _require(rr.verify_extra(payload, signature), "EXTRA does not match SAVEGAME.DAT")
-    block = career.read(payload) if size in career.SIZES else None
-    if block is not None:
-        payload = payload[:-career.SIZE]
+    from . import nfl2k5_player_progression as progress
+    block = career.read(payload) if size in career.SIZES + career.PPG_CAREER_SIZES else None
+    payload = payload[:career.native_size(payload)]
     document = rr.RosterDocument(payload, base=rr.SAVE_BLOCK_OFFSET, scheme=scheme, source=str(source))
     document.mycareer = block
     players = prospects_from_document(document)

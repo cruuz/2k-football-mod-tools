@@ -1535,7 +1535,15 @@
    },
    "rushers": 5,
    "spy_slots": [],
-   "authored_nodes": 0
+   "authored_nodes": 2,
+   "presnap_kept_onside": [
+    {
+     "slot": 8,
+     "walkup_yd": 5.0,
+     "now_yd": -0.0,
+     "presnap_depth_yd": 4.49
+    }
+   ]
   },
   {
    "play": 187,
@@ -1581,7 +1589,15 @@
    },
    "rushers": 5,
    "spy_slots": [],
-   "authored_nodes": 14
+   "authored_nodes": 14,
+   "presnap_kept_onside": [
+    {
+     "slot": 9,
+     "walkup_yd": 3.0,
+     "now_yd": 0.67,
+     "presnap_depth_yd": 1.0
+    }
+   ]
   },
   {
    "play": 189,
@@ -1924,13 +1940,13 @@
  "receipt": {
   "team": "SF",
   "offense_pack": "data/playbooks/softdrink_sf_modern.2k5book",
-  "offense_pack_sha256": "d7f80390bc3cefdb85c1701e32d6dadb85da540f522841392a8b03f8f0b961de",
-  "source_fingerprint": "1f7e2b95aa73dee40ecf3d85848223da131684a637e1840cb51892fab98fe066",
-  "replacement_sha256": "f851c75e2ac763b16ed14d934bb7d535a02f831db2584389ad9843b307c18ad1",
-  "semantic_sha256": "25ea79f3b91e9d89b19f418d6c2dfc1f577afa5c335d13f35ec2217ad3238cbe",
+  "offense_pack_sha256": "1c9161f254cc48207f70e1f1bcec14d2493d95663c3660013e16f1b8b0c3bec3",
+  "source_fingerprint": "425b884bbb4ad968a0cf194ae6b32d549e9342234e44704a2d1b7452d319d6fc",
+  "replacement_sha256": "58776cd7fd73e26656982b6d35b25481bcb51e46fb56daf91263061261642a9d",
+  "semantic_sha256": "c94e2101ec760063274aaea33f567f052b7cf095ef166c65268d9192997ca99a",
   "plays": 64,
   "formations": 4,
-  "nodes": 2692,
+  "nodes": 2722,
   "node_capacity": 3500,
   "formation_count": 50,
   "play_count": 270,
@@ -1939,6 +1955,6 @@
   "spy_play": null,
   "native_scoring_faults": 0,
   "pack": "data/playbooks/softdrink_sf_defense.2k5book",
-  "pack_sha256": "b6a3abef01b30387e294b5835c75282fe92d7366ca2340af9786b0852e2e0f99"
+  "pack_sha256": "77915044851db84fa394c8918a6d2ff11628d0fe127fdfd18d55129d5f045f5b"
  }
 }

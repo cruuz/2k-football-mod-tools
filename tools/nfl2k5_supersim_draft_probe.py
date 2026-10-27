@@ -185,6 +185,44 @@ def draft_proof(payload):
                             "contract_word": hex(m.get(player+0x24))}, "leaves": m.leaves}
 
 
+def _positions_by_round(rows):
+    out = {}
+    for (round_number, position), count in sorted(rows.items()):
+        out.setdefault(str(round_number), {})[rr.POSITIONS[position]] = count
+    return out
+
+
+def _full_draft(payload, body, seed, player_index=None):
+    """One native seven-round draft; returns the machine, MyPlayer landing and position counts."""
+    m = Machine(payload, trace_writes=False)
+    m.load_franchise(body)
+    m.seed(seed)
+    m.put(0xE576A4, 5)
+    m.put(0xE60134, 1)
+    m.leaf(0x177990, lambda: m.ret(pop=4), reason="progress text/render only")
+    m.call(0x325A30)
+    player = None if player_index is None else m.get(m.root+4)+84*player_index
+    landing = None
+    rows = Counter()
+    for pick in range(224):
+        round_number = m.get(0xE3C0A8)
+        team = m.call(0x3254D0)
+        count = m.uc.mem_read(team+0x11C, 1)[0]
+        m.call(draft.DRAFT_PICK, ecx=0, budget=10000000)
+        if m.uc.mem_read(team+0x11C, 1)[0] > count:
+            chosen = m.get(team+count*4)
+            rows[(round_number, m.uc.mem_read(chosen+0x35, 1)[0])] += 1
+            if player is not None and chosen == player:
+                if landing is not None:
+                    raise AssertionError("MyPlayer was drafted twice")
+                club = (team-m.team_base)//500
+                landing = {"club": club, "club_name": None, "overall_pick": pick+1}
+        m.call(0x325A50)
+    if m.call(0x325D00) != 1:
+        raise AssertionError("native seven-round completion check failed")
+    return m, landing, _positions_by_round(rows)
+
+
 def full_draft_proof(payload, seeds=(1, 2, 3, 4, 5, 6, 7, 8)):
     """Seven native rounds, native contracts and undrafted-FA cleanup per seed."""
     document = rr.RosterDocument(signed_save(), base=rr.SAVE_BLOCK_OFFSET)
@@ -196,39 +234,48 @@ def full_draft_proof(payload, seeds=(1, 2, 3, 4, 5, 6, 7, 8)):
     patched = ai.apply(payload)[0]
     results = []
     for seed in seeds:
-        m = Machine(patched, trace_writes=False)
-        m.load_franchise(document.to_body())
-        m.seed(seed)
-        m.put(0xE576A4, 5)
-        m.put(0xE60134, 1)
-        m.leaf(0x177990, lambda: m.ret(pop=4), reason="progress text/render only")
-        m.call(0x325A30)
-        player = m.get(m.root+4)+84*reservation.index
-        landing = None
-        for pick in range(224):
-            team = m.call(0x3254D0)
-            count = m.uc.mem_read(team+0x11C, 1)[0]
-            m.call(draft.DRAFT_PICK, ecx=0, budget=10000000)
-            if m.uc.mem_read(team+0x11C, 1)[0] > count and m.get(team+count*4) == player:
-                if landing is not None:
-                    raise AssertionError("MyPlayer was drafted twice")
-                club = (team-m.team_base)//500
-                landing = {"club": club, "club_name": document.teams[club].display, "overall_pick": pick+1}
-            m.call(0x325A50)
-        if m.call(0x325D00) != 1:
-            raise AssertionError("native seven-round completion check failed")
+        body = document.to_body()
+        m, landing, positions = _full_draft(patched, body, seed, reservation.index)
+        if landing is not None:
+            landing["club_name"] = document.teams[landing["club"]].display
         m.call(0x31E430, budget=10000000)
         free = m.get(m.root+0x3C)
         free_count = m.get(m.root+0x38)
+        player = m.get(m.root+4)+84*reservation.index
         occurrences = sum(m.get(free+i*4) == player for i in range(free_count))
         if occurrences != (1 if landing is None else 0):
             raise AssertionError("native draft cleanup lost or duplicated MyPlayer")
         if m.uc.mem_read(player+8, 1)[0] & 0x10:
             raise AssertionError("prospect flag survived native draft cleanup")
         results.append({"seed": seed, "ordinal": reservation.index, "landing": landing,
+                        "positions_by_round": positions,
                         "free_agent_occurrences": occurrences, "free_agent_count": free_count,
                         "rounds_completed": m.get(0xE3C0A8), "leaves": m.leaves})
     return results
+
+
+def specialist_policy_proof(payload, seed=1):
+    """Strip every club's K/P, then run one native draft and count positions by round.
+
+    A club with an empty specialist slot is the case the policy must fill, late and capped.
+    """
+    document = rr.RosterDocument(signed_save(), base=rr.SAVE_BLOCK_OFFSET)
+    stripped = 0
+    for index, team in enumerate(document.teams):
+        if not team.is_club:
+            continue
+        for player in document.team_players(index):
+            if player.record.values["position"] in (1, 2):
+                player.record.values["position"] = 0
+                stripped += 1
+    if stripped == 0:
+        raise AssertionError("the signed franchise has no specialist to strip")
+    patched = ai.apply(payload)[0]
+    m, _landing, positions = _full_draft(patched, document.to_body(), seed)
+    return {"seed": seed, "stripped_specialists": stripped,
+            "positions_by_round": positions, "rounds_completed": m.get(0xE3C0A8),
+            "leaves": m.leaves}
+
 
 
 def fresh_start_proof(payload):

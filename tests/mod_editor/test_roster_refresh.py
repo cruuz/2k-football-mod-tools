@@ -14,6 +14,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(ROOT), str(ROOT/'tests/mod_editor'), str(ROOT/'tools')]
 from mod_editor.core import nfl2k5_roster_records as rr, nfl2k5_roster_refresh as refresh
 import test_nfl2k5_roster_records as fixture
+from test_b778_eq1_equipment_fit import GEAR, with_templates
 
 
 def sample():
@@ -88,6 +89,23 @@ class RefreshTests(unittest.TestCase):
     def test_historic_namesake_guard(self):
         plan=copy.deepcopy(self.plan);plan['identity_guards'][100][3]='1970-01-01'
         with self.assertRaisesRegex(ValueError,'guard failed'):refresh.apply_body(self.body,plan)
+
+    def test_a_generational_suffix_is_the_same_guarded_player(self):
+        # b778 bd3: sx1 keeps "Jr." on real players' names (the free-agent data names Cedrick Wilson Jr.) while the
+        # dated refresh guard written before that says "Wilson"; the release build refused at that guard. The
+        # synthetic name pool has no room for a longer surname, so the suffix is on the guard side here; the
+        # comparison is symmetric.
+        for spelling in ('Last Jr.', 'Last Jr', 'Last III', 'Last Sr.', 'Last V'):
+            plan = copy.deepcopy(self.plan)
+            plan['identity_guards'][100][2] = spelling
+            plan['players'][100]['last'] = spelling
+            out, _receipt = refresh.apply_body(self.body, plan)
+            self.assertEqual(rr.RosterDocument(out, scheme='one_pool', reference_year=2026).players[100].last, 'Last')
+        for wrong in ('Lasts', 'last', 'Last Jr. Jr.', 'Las'):
+            plan = copy.deepcopy(self.plan)
+            plan['identity_guards'][100][2] = wrong
+            with self.assertRaisesRegex(ValueError, 'guard failed', msg=wrong):
+                refresh.apply_body(self.body, plan)
 
     def test_existing_appearance_and_history_edits_refused(self):
         for field in ['photo_id','speed','history_pointer','unknown_53_high']:
@@ -179,17 +197,31 @@ class RefreshTests(unittest.TestCase):
         plan=copy.deepcopy(self.plan)
         plan['identity_guards']=[g for g in plan['identity_guards'] if g[0]!=2464]
         row=plan['players'][2464]
-        row.update(first='New',last='Arrival',birth_date='2000-01-01',new=True)
+        row.update(first='Anthony',last='Gould',birth_date='2001-04-06',new=True,gsis_id='00-0039816')
         row['fields']={k:50 for k in rr.RATING_BYTE_ORDER}
-        row['fields'].update(position=3,jersey=18,height=72,weight=200,birth_year=2000,
-                             birth_month=1,birth_day=1,years_pro=1,photo_id=7100,
+        row['fields'].update(position=3,jersey=18,height=72,weight=200,birth_year=2001,
+                             birth_month=4,birth_day=6,years_pro=1,photo_id=7100,
                              contract_length=1,contract_remaining=1,contract_value=23,
                              depth_rank=7,depth_side=7)
         plan['teams'][0]['active'].append(2464)
+        raw=with_templates(bytes(raw), rr.POSITIONS.index('WR'))
         out,receipt=refresh.apply_body(bytes(raw),plan)
         p=rr.RosterDocument(out,reference_year=2026).by_pool('primary')[2464]
-        self.assertEqual(p.display,'New Arrival');self.assertEqual(p.record.get('history_pointer'),0)
+        self.assertEqual(p.display,'Anthony Gould');self.assertEqual(p.record.get('history_pointer'),0)
         self.assertEqual(p.record.get('unknown_53_high'),0);self.assertEqual(receipt['added'],1)
+        # b778-eq1: the created receiver takes the WR template's gear, not the zero (kicker) mask.
+        gear=GEAR[2464 % len(GEAR)]
+        for name,value in gear.items():
+            self.assertEqual(p.record.get(name),value,name)
+        # b778-ap1: the created player's skin/face/body/dreads come from the measured 2026 headshot
+        # table; the no-photo portrait stays the row's own.
+        self.assertEqual(p.record.get('skin'),3)
+        self.assertEqual(p.record.get('face'),3)
+        self.assertEqual(p.record.get('body'),1)
+        self.assertEqual(p.record.get('dreads'),0)
+        self.assertEqual(p.record.get('photo_id'),7100)
+        self.assertEqual(receipt['appearance']['filled'],1)
+        self.assertIn('Anthony Gould',receipt['appearance']['low_confidence'])
         self.assertEqual(refresh.apply_body(out,plan)[0],out)
         with self.assertRaisesRegex(ValueError,'identity mismatch'):
             refresh.apply_body(self.body,plan)

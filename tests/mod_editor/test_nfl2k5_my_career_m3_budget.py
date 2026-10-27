@@ -28,9 +28,20 @@ class PlanningTests(unittest.TestCase):
         own = [tuple(r) for r in budget if r[0] in (mode.OWNER, mode.EXTRA_OWNER)]
         self.assertEqual(own, list(mode.REQUESTS))
         owners = sorted({r[0] for r in REQUESTS} - {mode.OWNER, mode.EXTRA_OWNER})
-        unions = [mode.REQUESTS, REQUESTS, budget]
-        unions += [mode.REQUESTS + tuple(r for r in REQUESTS if r[0] == owner) for owner in owners]
-        for requests in unions:
+        unions = [('m3', mode.REQUESTS), ('full', REQUESTS), ('budget', budget)]
+        unions += [(owner, mode.REQUESTS + tuple(r for r in REQUESTS if r[0] == owner)) for owner in owners]
+        # b778 ai8/xs1: the full union is a v4 image (ai8's third-down owner is the 192-byte spill) and the beta62
+        # budget is already v4. M3's fixed 4 KiB state page shortens the v3 data run, so the late owners that sat in
+        # its last page now fall whole into the pool. These are the only rows that leave a v3 address; every other
+        # v3 row keeps its address, and the pool rows keep their owner, kind, size and alignment.
+        spills = {
+            'full': {('nfl2k5_cpu_third_down', 'code', 0)},
+            'budget': {('nfl2k5_star_career', 'code', 0), ('nfl2k5_star_career', 'data', 0),
+                       ('nfl2k5_cpu_money_downs_late', 'code', 0),
+                       ('nfl2k5_cpu_money_downs_late_state', 'data', 0),
+                       ('nfl2k5_cpu_third_down', 'code', 0)},
+        }
+        for label, requests in unions:
             with self.subTest(owners=sorted({r[0] for r in requests})):
                 before = space.plan(old_requests(requests))
                 after = space.plan(requests)
@@ -38,8 +49,22 @@ class PlanningTests(unittest.TestCase):
                 # fragment instead of overwriting the first with the last.
                 current = {(r['owner'], r['kind'], r.get('owner_offset', 0)): r
                            for r in after['allocations']}
+                spilled = set()
                 for row in before['allocations']:
+                    key = (row['owner'], row['kind'], row.get('owner_offset', 0))
                     if (row['owner'], row['kind']) == (mode.OWNER, 'code'):
+                        continue
+                    new = current[key]
+                    if new == row:
+                        continue
+                    if new['va'] >= space.POOL_VA:
+                        # A v4 pool row: new storage, so its address may move when the pool grows. It must stay the
+                        # same allocation, and only a late owner may spill out of v3.
+                        self.assertIn(row['owner'], space.LATE_OWNERS, f"{key} left v3 but is not a late owner")
+                        self.assertEqual((row['owner'], row['kind'], row['size'], row['align']),
+                                         (new['owner'], new['kind'], new['size'], new['align']),
+                                         f"{key} changed allocation")
+                        spilled.add(key)
                         continue
                     if (row['kind'] == 'code' and row['owner'] in (runtime.OWNER, *space.LATE_OWNERS)
                             and (row['owner'], row['kind']) not in space.TAIL_OWNERS):
@@ -49,13 +74,32 @@ class PlanningTests(unittest.TestCase):
                         # 8 KiB footprint M3 leaves behind. b77-i2 measured it: on every union exactly these five code
                         # rows move. Static tail owners (period goalposts code, honors data) and every data/RO row,
                         # late or not, must keep their addresses.
+                        self.assertEqual((row['owner'], row['kind'], row['size'], row['align']),
+                                         (new['owner'], new['kind'], new['size'], new['align']),
+                                         f"{key} changed allocation")
                         continue
-                    self.assertEqual(current[row['owner'], row['kind'], row.get('owner_offset', 0)], row)
+                    self.fail(f"{key} moved inside v3")
+                self.assertEqual(spilled, spills.get(label, set()), f"{label}: unexpected v4 spill")
                 self.assertEqual(current[mode.OWNER, 'code', 0]['size'], 20480)
                 extra = current[mode.EXTRA_OWNER, 'data', 0]
                 self.assertEqual((extra['va'], extra['size']), (mode.EXTRA_VA, 4096))
-                self.assertEqual(before['file_size'], after['file_size'])
-                self.assertEqual(before['regions'], after['regions'])
+                # The six fixed v3 regions never change; v4 only appends the pool, and the fixed state page is why
+                # the budget and full-union pools are 2 and 3 pages (b778 ai8/xs1).
+                self.assertEqual(before['regions'][:6], after['regions'][:6])
+                expected_size = {'full': space.SCALE3_FILE_SIZE + 2 * space.PAGE,
+                                 'budget': space.SCALE3_FILE_SIZE + 3 * space.PAGE}.get(label, space.SCALE3_FILE_SIZE)
+                self.assertEqual(after['file_size'], expected_size)
+                if label == 'budget':
+                    self.assertEqual(before['file_size'], space.SCALE3_FILE_SIZE + 2 * space.PAGE)
+                elif label == 'full':
+                    self.assertEqual(before['file_size'], space.SCALE3_FILE_SIZE)
+                else:
+                    self.assertEqual(before['file_size'], after['file_size'])
+                if after['version'] == 4:
+                    self.assertEqual((after['regions'][6]['kind'], after['regions'][6]['size']),
+                                     ('pool', expected_size - space.SCALE3_FILE_SIZE))
+                else:
+                    self.assertEqual(len(after['regions']), 6)
 
     def test_separate_rw_request_is_fixed_and_capacity_is_not_borrowed(self):
         for request in ((mode.EXTRA_OWNER, 'data', 8192, 16),
@@ -63,8 +107,12 @@ class PlanningTests(unittest.TestCase):
                         (mode.EXTRA_OWNER, 'data', 4096, 32)):
             with self.subTest(request=request), self.assertRaises(ValueError):
                 space.plan((request,))
-        with self.assertRaises(ValueError):
-            space.plan(mode.REQUESTS + (('other_large_state', 'data', 80*1024, 16),))
+        # b778-xs1: a large RW owner never borrows M3's fixed page: it lands whole in the v4 pool instead
+        report = space.plan(mode.REQUESTS + (('other_large_state', 'data', 80*1024, 16),))
+        other = next(a for a in report['allocations'] if a['owner'] == 'other_large_state')
+        m3 = next(a for a in report['allocations'] if a['owner'] == mode.EXTRA_OWNER)
+        self.assertGreaterEqual(other['va'], space.POOL_VA)
+        self.assertEqual((m3['va'], m3['size']), (mode.EXTRA_VA, 4096))
 
     def test_full_reservations_cannot_overlap_m3_runtime_state(self):
         rows = space.plan(REQUESTS)['allocations']

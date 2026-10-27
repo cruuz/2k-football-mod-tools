@@ -29,8 +29,17 @@ FOLDERS = ("data/nfl2k5_modern_coaches/", "data/nfl2k5_modern_fans/", "data/nfl2
            "data/nfl2k5_super_bowl_walls/", "data/nfl2k5_era_ball/", "data/nfl2k5_modern_venues_2026/numbers/",
            "data/nfl2k5_super_bowl_fields/",
            "data/nfl2k5_hair_styles/art/",  # b775-hs1
+           "data/nfl2k5_rookie_faces/",  # b778-rh1: the authored rookie face bank atlases
+           "data/nfl2k5_classic_teams/",  # b778-ss1: the Seamen card, field and face art
+           "data/nfl2k5_alien_prospect/",  # b778-ee1: the gray alien portrait and face textures
+           "data/trophy_room_logo/",  # b778-pg2: the authored TROPHY ROOM emblem
            "data/nfl2k5_glyph_fixes_2026/")  # b776-fn2 (int2)
-CLASSIFICATION = ("Reviewed authored 2026/2025-26 art for the modern coaches (co1/co2), the modern fans (fr1) and the "
+CLASSIFICATION = ("b778 rh1/rh2's rookie face bank atlases are generated fictional draft headshots (Codex image_gen), "
+                  "reviewed face by face; no photograph or retail-extracted pixels. "
+                  "b778 ss1's Seamen card, field and face art is drawn from the video references and the authored kit. "
+                  "b778 ee1/ee2's gray alien portrait and face textures are authored from a generated headshot. "
+                  "b778 pg2's TROPHY ROOM emblem is authored (gold cup, navy banner, white type). "
+                  "Reviewed authored 2026/2025-26 art for the modern coaches (co1/co2), the modern fans (fr1) and the "
                   "modern officials (rf1), plus fa1 authored block yard numerals (fn1): painted textures, team marks and lettering at the native slot size. Coach "
                   "faces are painted from the official headshots onto the 2004 head layout (Noah 2026-10-12: authored "
                   "likeness textures ship, the reference photos never do). Coach Matchup pictures are supplied by the "
@@ -50,7 +59,12 @@ CLASSIFICATION = ("Reviewed authored 2026/2025-26 art for the modern coaches (co
                   "the fine feature detail of co2's authored faces. "
                   "b775 hs1's nine 64 x 64 hair textures (locs, twists, braids, strands, curls, bun) are drawn "
                   "procedurally by tools/nfl2k5_hair_styles_generate.py. "
-                  "No photograph or photo crop and no "
+                  "b778 cf1 and its follow-up jobs scanned the head.png of every club with a recipe in "
+                  "tools/b77/cf1_recipes (tools/b77/cf1_face_scan.py): "
+                  "each is the coach's reference photo projected onto the 2004 head mesh, relit, symmetrised and blended into a "
+                  "painted base, so these head.png files are photo-derived likeness textures shipped under Noah's "
+                  "2026-10-12 rule (as co2's photo-warped faces were); the reference photos and their cleaned copies "
+                  "never ship. Apart from those coach likeness textures, no photograph or photo crop and no "
                   "retail-extracted pixels are listed; retail details are taken from the user's own disc at build time."
                   " sb1's Super Bowl field flank marks (data/nfl2k5_super_bowl_fields/marks) are drawn by "
                   "tools/nfl2k5_super_bowl_marks_art.py from geometry, gradients and system type in each game's design "

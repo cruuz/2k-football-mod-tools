@@ -1,0 +1,761 @@
+title_name = "All-Pro Football 2K8"
+title_id = "54540807"
+hash = "CEA825F7C2012F5A"
+
+[[patch]]
+    name = "All packages in substitution menu: Substitution screen lists every package (main menu and in game) in a custom order"
+    desc = "(1) 0x84A7041C: the playbook-independent second pass accepts every package, not just special teams. (2) 0x84A70468 -> stub 0x84D0D580: Trio (row 5) has no formation in MASTER, so it borrows formation 107 (Ace Trips Open). (3) 0x84A703EC: the second pass also runs in game (the stock code skips it in game, which is why Trio and a few others were missing there). (4) 0x84A70484 -> sort stub 0x84D0D5A0 reorders the finished list with a rank table at 0x84D0D680: Load, Jacks, Jokers, Pro Set, Queens, Ace, Kings, Flush, Trio, Straight, 5 Wide, Goalline, 5-2 Big, 4-3, 3-4, Nickel, Nickel 3-3, Dime, Dime 3-2, Prevent, Punt, Punt Return, Field Goal, Block FG, Kickoff, Kick Return, Onside Kickoff Team, Onside Kickoff Return Team (5) 0x84A707BC -> sort stub 0x84D0D6A0: after the By Formation list is built, each formation is moved right behind the last earlier formation of its family (family table at 0x84D0DB00, generated from the game's own same-row test), so newly added formations sit with their parents; Hail Mary is left alone. Also uses 0x84D0D6A0..0x84D0D7E7, 0x84D0DB00..0x84D0DBAF and 0x84D0D580..0x84D0D593, 0x84D0D5A0..0x84D0D64F and 0x84D0D680..0x84D0D69F."
+    author = "Basileus Maximus"
+    is_enabled = true
+
+    [[patch.be32]]
+        address = 0x84A703EC
+        value = 0x60000000
+
+    [[patch.be32]]
+        address = 0x84A7041C
+        value = 0x60000000
+
+    [[patch.be32]]
+        address = 0x84A70468
+        value = 0x4829D118
+
+    [[patch.be32]]
+        address = 0x84A70484
+        value = 0x4829D11C
+
+    [[patch.be32]]
+        address = 0x84D0D580
+        value = 0x2F080005
+
+    [[patch.be32]]
+        address = 0x84D0D584
+        value = 0x409A000C
+
+    [[patch.be32]]
+        address = 0x84D0D588
+        value = 0x38864F2C
+
+    [[patch.be32]]
+        address = 0x84D0D58C
+        value = 0x4BD62CBD
+
+    [[patch.be32]]
+        address = 0x84D0D590
+        value = 0x4BD62EE0
+
+    [[patch.be32]]
+        address = 0x84D0D5A0
+        value = 0x3FE08522
+
+    [[patch.be32]]
+        address = 0x84D0D5A4
+        value = 0x3BFFA530
+
+    [[patch.be32]]
+        address = 0x84D0D5A8
+        value = 0x83BF06A8
+
+    [[patch.be32]]
+        address = 0x84D0D5AC
+        value = 0x839F0004
+
+    [[patch.be32]]
+        address = 0x84D0D5B0
+        value = 0x839C7E0C
+
+    [[patch.be32]]
+        address = 0x84D0D5B4
+        value = 0x3B9C0044
+
+    [[patch.be32]]
+        address = 0x84D0D5B8
+        value = 0x3FC084D1
+
+    [[patch.be32]]
+        address = 0x84D0D5BC
+        value = 0x3BDED680
+
+    [[patch.be32]]
+        address = 0x84D0D5C0
+        value = 0x38800001
+
+    [[patch.be32]]
+        address = 0x84D0D5C4
+        value = 0x7F04E800
+
+    [[patch.be32]]
+        address = 0x84D0D5C8
+        value = 0x40980080
+
+    [[patch.be32]]
+        address = 0x84D0D5CC
+        value = 0x54851838
+
+    [[patch.be32]]
+        address = 0x84D0D5D0
+        value = 0x7CA5FA14
+
+    [[patch.be32]]
+        address = 0x84D0D5D4
+        value = 0x80C50388
+
+    [[patch.be32]]
+        address = 0x84D0D5D8
+        value = 0x80E5038C
+
+    [[patch.be32]]
+        address = 0x84D0D5DC
+        value = 0x7D1C3050
+
+    [[patch.be32]]
+        address = 0x84D0D5E0
+        value = 0x5508E13E
+
+    [[patch.be32]]
+        address = 0x84D0D5E4
+        value = 0x7D3E40AE
+
+    [[patch.be32]]
+        address = 0x84D0D5E8
+        value = 0x3944FFFF
+
+    [[patch.be32]]
+        address = 0x84D0D5EC
+        value = 0x2F0A0000
+
+    [[patch.be32]]
+        address = 0x84D0D5F0
+        value = 0x4198003C
+
+    [[patch.be32]]
+        address = 0x84D0D5F4
+        value = 0x554B1838
+
+    [[patch.be32]]
+        address = 0x84D0D5F8
+        value = 0x7D6BFA14
+
+    [[patch.be32]]
+        address = 0x84D0D5FC
+        value = 0x806B0388
+
+    [[patch.be32]]
+        address = 0x84D0D600
+        value = 0x7C7C1850
+
+    [[patch.be32]]
+        address = 0x84D0D604
+        value = 0x5463E13E
+
+    [[patch.be32]]
+        address = 0x84D0D608
+        value = 0x7C7E18AE
+
+    [[patch.be32]]
+        address = 0x84D0D60C
+        value = 0x7F034800
+
+    [[patch.be32]]
+        address = 0x84D0D610
+        value = 0x4099001C
+
+    [[patch.be32]]
+        address = 0x84D0D614
+        value = 0x806B0388
+
+    [[patch.be32]]
+        address = 0x84D0D618
+        value = 0x810B038C
+
+    [[patch.be32]]
+        address = 0x84D0D61C
+        value = 0x906B0390
+
+    [[patch.be32]]
+        address = 0x84D0D620
+        value = 0x910B0394
+
+    [[patch.be32]]
+        address = 0x84D0D624
+        value = 0x394AFFFF
+
+    [[patch.be32]]
+        address = 0x84D0D628
+        value = 0x4BFFFFC4
+
+    [[patch.be32]]
+        address = 0x84D0D62C
+        value = 0x394A0001
+
+    [[patch.be32]]
+        address = 0x84D0D630
+        value = 0x554B1838
+
+    [[patch.be32]]
+        address = 0x84D0D634
+        value = 0x7D6BFA14
+
+    [[patch.be32]]
+        address = 0x84D0D638
+        value = 0x90CB0388
+
+    [[patch.be32]]
+        address = 0x84D0D63C
+        value = 0x90EB038C
+
+    [[patch.be32]]
+        address = 0x84D0D640
+        value = 0x38840001
+
+    [[patch.be32]]
+        address = 0x84D0D644
+        value = 0x4BFFFF80
+
+    [[patch.be32]]
+        address = 0x84D0D648
+        value = 0x38210080
+
+    [[patch.be32]]
+        address = 0x84D0D64C
+        value = 0x4BD62E3C
+
+    [[patch.be32]]
+        address = 0x84D0D680
+        value = 0x01020503
+
+    [[patch.be32]]
+        address = 0x84D0D684
+        value = 0x08060409
+
+    [[patch.be32]]
+        address = 0x84D0D688
+        value = 0x070A0B0D
+
+    [[patch.be32]]
+        address = 0x84D0D68C
+        value = 0x0F111314
+
+    [[patch.be32]]
+        address = 0x84D0D690
+        value = 0x15161718
+
+    [[patch.be32]]
+        address = 0x84D0D694
+        value = 0x1A191B0E
+
+    [[patch.be32]]
+        address = 0x84D0D698
+        value = 0x1012000C
+
+    [[patch.be32]]
+        address = 0x84D0D69C
+        value = 0x00000000
+
+    [[patch.be32]]
+        address = 0x84A707BC
+        value = 0x4829CEE4
+
+    [[patch.be32]]
+        address = 0x84D0D6A0
+        value = 0x9421FFC0
+
+    [[patch.be32]]
+        address = 0x84D0D6A4
+        value = 0x92A10010
+
+    [[patch.be32]]
+        address = 0x84D0D6A8
+        value = 0x92C10014
+
+    [[patch.be32]]
+        address = 0x84D0D6AC
+        value = 0x92E10018
+
+    [[patch.be32]]
+        address = 0x84D0D6B0
+        value = 0x9301001C
+
+    [[patch.be32]]
+        address = 0x84D0D6B4
+        value = 0x93210020
+
+    [[patch.be32]]
+        address = 0x84D0D6B8
+        value = 0x93410024
+
+    [[patch.be32]]
+        address = 0x84D0D6BC
+        value = 0x93610028
+
+    [[patch.be32]]
+        address = 0x84D0D6C0
+        value = 0x3FE08522
+
+    [[patch.be32]]
+        address = 0x84D0D6C4
+        value = 0x3BFFA530
+
+    [[patch.be32]]
+        address = 0x84D0D6C8
+        value = 0x83DF09D0
+
+    [[patch.be32]]
+        address = 0x84D0D6CC
+        value = 0x82DF0004
+
+    [[patch.be32]]
+        address = 0x84D0D6D0
+        value = 0x2B160000
+
+    [[patch.be32]]
+        address = 0x84D0D6D4
+        value = 0x419A00EC
+
+    [[patch.be32]]
+        address = 0x84D0D6D8
+        value = 0x82D67E0C
+
+    [[patch.be32]]
+        address = 0x84D0D6DC
+        value = 0x2B160000
+
+    [[patch.be32]]
+        address = 0x84D0D6E0
+        value = 0x419A00E0
+
+    [[patch.be32]]
+        address = 0x84D0D6E4
+        value = 0x3AD60244
+
+    [[patch.be32]]
+        address = 0x84D0D6E8
+        value = 0x3EE084D1
+
+    [[patch.be32]]
+        address = 0x84D0D6EC
+        value = 0x3AF7DB00
+
+    [[patch.be32]]
+        address = 0x84D0D6F0
+        value = 0x3BA00001
+
+    [[patch.be32]]
+        address = 0x84D0D6F4
+        value = 0x7F1DF000
+
+    [[patch.be32]]
+        address = 0x84D0D6F8
+        value = 0x409800C8
+
+    [[patch.be32]]
+        address = 0x84D0D6FC
+        value = 0x57A31838
+
+    [[patch.be32]]
+        address = 0x84D0D700
+        value = 0x7C63FA14
+
+    [[patch.be32]]
+        address = 0x84D0D704
+        value = 0x836306B4
+
+    [[patch.be32]]
+        address = 0x84D0D708
+        value = 0x834306B0
+
+    [[patch.be32]]
+        address = 0x84D0D70C
+        value = 0x7C76D850
+
+    [[patch.be32]]
+        address = 0x84D0D710
+        value = 0x388000B8
+
+    [[patch.be32]]
+        address = 0x84D0D714
+        value = 0x7C632396
+
+    [[patch.be32]]
+        address = 0x84D0D718
+        value = 0x2B0300B0
+
+    [[patch.be32]]
+        address = 0x84D0D71C
+        value = 0x4098009C
+
+    [[patch.be32]]
+        address = 0x84D0D720
+        value = 0x7EB718AE
+
+    [[patch.be32]]
+        address = 0x84D0D724
+        value = 0x2B1500FE
+
+    [[patch.be32]]
+        address = 0x84D0D728
+        value = 0x40980090
+
+    [[patch.be32]]
+        address = 0x84D0D72C
+        value = 0x3B9DFFFF
+
+    [[patch.be32]]
+        address = 0x84D0D730
+        value = 0x2F1C0000
+
+    [[patch.be32]]
+        address = 0x84D0D734
+        value = 0x41980084
+
+    [[patch.be32]]
+        address = 0x84D0D738
+        value = 0x57841838
+
+    [[patch.be32]]
+        address = 0x84D0D73C
+        value = 0x7C84FA14
+
+    [[patch.be32]]
+        address = 0x84D0D740
+        value = 0x806406B4
+
+    [[patch.be32]]
+        address = 0x84D0D744
+        value = 0x7C761850
+
+    [[patch.be32]]
+        address = 0x84D0D748
+        value = 0x388000B8
+
+    [[patch.be32]]
+        address = 0x84D0D74C
+        value = 0x7C632396
+
+    [[patch.be32]]
+        address = 0x84D0D750
+        value = 0x2B0300B0
+
+    [[patch.be32]]
+        address = 0x84D0D754
+        value = 0x40980010
+
+    [[patch.be32]]
+        address = 0x84D0D758
+        value = 0x7C7718AE
+
+    [[patch.be32]]
+        address = 0x84D0D75C
+        value = 0x7F03A800
+
+    [[patch.be32]]
+        address = 0x84D0D760
+        value = 0x419A000C
+
+    [[patch.be32]]
+        address = 0x84D0D764
+        value = 0x3B9CFFFF
+
+    [[patch.be32]]
+        address = 0x84D0D768
+        value = 0x4BFFFFC8
+
+    [[patch.be32]]
+        address = 0x84D0D76C
+        value = 0x3B3C0001
+
+    [[patch.be32]]
+        address = 0x84D0D770
+        value = 0x7F19E800
+
+    [[patch.be32]]
+        address = 0x84D0D774
+        value = 0x419A0044
+
+    [[patch.be32]]
+        address = 0x84D0D778
+        value = 0x7FB8EB78
+
+    [[patch.be32]]
+        address = 0x84D0D77C
+        value = 0x7F18C800
+
+    [[patch.be32]]
+        address = 0x84D0D780
+        value = 0x40990028
+
+    [[patch.be32]]
+        address = 0x84D0D784
+        value = 0x3898FFFF
+
+    [[patch.be32]]
+        address = 0x84D0D788
+        value = 0x54841838
+
+    [[patch.be32]]
+        address = 0x84D0D78C
+        value = 0x7C84FA14
+
+    [[patch.be32]]
+        address = 0x84D0D790
+        value = 0x80A406B0
+
+    [[patch.be32]]
+        address = 0x84D0D794
+        value = 0x80C406B4
+
+    [[patch.be32]]
+        address = 0x84D0D798
+        value = 0x90A406B8
+
+    [[patch.be32]]
+        address = 0x84D0D79C
+        value = 0x90C406BC
+
+    [[patch.be32]]
+        address = 0x84D0D7A0
+        value = 0x3B18FFFF
+
+    [[patch.be32]]
+        address = 0x84D0D7A4
+        value = 0x4BFFFFD8
+
+    [[patch.be32]]
+        address = 0x84D0D7A8
+        value = 0x57241838
+
+    [[patch.be32]]
+        address = 0x84D0D7AC
+        value = 0x7C84FA14
+
+    [[patch.be32]]
+        address = 0x84D0D7B0
+        value = 0x934406B0
+
+    [[patch.be32]]
+        address = 0x84D0D7B4
+        value = 0x936406B4
+
+    [[patch.be32]]
+        address = 0x84D0D7B8
+        value = 0x3BBD0001
+
+    [[patch.be32]]
+        address = 0x84D0D7BC
+        value = 0x4BFFFF38
+
+    [[patch.be32]]
+        address = 0x84D0D7C0
+        value = 0x82A10010
+
+    [[patch.be32]]
+        address = 0x84D0D7C4
+        value = 0x82C10014
+
+    [[patch.be32]]
+        address = 0x84D0D7C8
+        value = 0x82E10018
+
+    [[patch.be32]]
+        address = 0x84D0D7CC
+        value = 0x8301001C
+
+    [[patch.be32]]
+        address = 0x84D0D7D0
+        value = 0x83210020
+
+    [[patch.be32]]
+        address = 0x84D0D7D4
+        value = 0x83410024
+
+    [[patch.be32]]
+        address = 0x84D0D7D8
+        value = 0x83610028
+
+    [[patch.be32]]
+        address = 0x84D0D7DC
+        value = 0x38210040
+
+    [[patch.be32]]
+        address = 0x84D0D7E0
+        value = 0x38210080
+
+    [[patch.be32]]
+        address = 0x84D0D7E4
+        value = 0x4BD62FDC
+
+    [[patch.be32]]
+        address = 0x84D0DB00
+        value = 0x00000000
+
+    [[patch.be32]]
+        address = 0x84D0DB04
+        value = 0x00000000
+
+    [[patch.be32]]
+        address = 0x84D0DB08
+        value = 0x00000000
+
+    [[patch.be32]]
+        address = 0x84D0DB0C
+        value = 0x01010101
+
+    [[patch.be32]]
+        address = 0x84D0DB10
+        value = 0x01010101
+
+    [[patch.be32]]
+        address = 0x84D0DB14
+        value = 0x01010202
+
+    [[patch.be32]]
+        address = 0x84D0DB18
+        value = 0x02020202
+
+    [[patch.be32]]
+        address = 0x84D0DB1C
+        value = 0x02020202
+
+    [[patch.be32]]
+        address = 0x84D0DB20
+        value = 0x03030303
+
+    [[patch.be32]]
+        address = 0x84D0DB24
+        value = 0x03030303
+
+    [[patch.be32]]
+        address = 0x84D0DB28
+        value = 0x03030404
+
+    [[patch.be32]]
+        address = 0x84D0DB2C
+        value = 0x04040404
+
+    [[patch.be32]]
+        address = 0x84D0DB30
+        value = 0x04040404
+
+    [[patch.be32]]
+        address = 0x84D0DB34
+        value = 0x05050505
+
+    [[patch.be32]]
+        address = 0x84D0DB38
+        value = 0x05050505
+
+    [[patch.be32]]
+        address = 0x84D0DB3C
+        value = 0x05050606
+
+    [[patch.be32]]
+        address = 0x84D0DB40
+        value = 0x06060606
+
+    [[patch.be32]]
+        address = 0x84D0DB44
+        value = 0x06060606
+
+    [[patch.be32]]
+        address = 0x84D0DB48
+        value = 0x06060606
+
+    [[patch.be32]]
+        address = 0x84D0DB4C
+        value = 0x06060606
+
+    [[patch.be32]]
+        address = 0x84D0DB50
+        value = 0x06060606
+
+    [[patch.be32]]
+        address = 0x84D0DB54
+        value = 0x06060707
+
+    [[patch.be32]]
+        address = 0x84D0DB58
+        value = 0x07070707
+
+    [[patch.be32]]
+        address = 0x84D0DB5C
+        value = 0x07070707
+
+    [[patch.be32]]
+        address = 0x84D0DB60
+        value = 0x08080808
+
+    [[patch.be32]]
+        address = 0x84D0DB64
+        value = 0x08080808
+
+    [[patch.be32]]
+        address = 0x84D0DB68
+        value = 0x08080909
+
+    [[patch.be32]]
+        address = 0x84D0DB6C
+        value = 0x09090909
+
+    [[patch.be32]]
+        address = 0x84D0DB70
+        value = 0x09090909
+
+    [[patch.be32]]
+        address = 0x84D0DB74
+        value = 0x09090A0A
+
+    [[patch.be32]]
+        address = 0x84D0DB78
+        value = 0x0A0A0A0A
+
+    [[patch.be32]]
+        address = 0x84D0DB7C
+        value = 0x0A0A0A0A
+
+    [[patch.be32]]
+        address = 0x84D0DB80
+        value = 0x0A0A0A0A
+
+    [[patch.be32]]
+        address = 0x84D0DB84
+        value = 0x0A0A0A0A
+
+    [[patch.be32]]
+        address = 0x84D0DB88
+        value = 0x0A0A0A00
+
+    [[patch.be32]]
+        address = 0x84D0DB8C
+        value = 0x000B0B0B
+
+    [[patch.be32]]
+        address = 0x84D0DB90
+        value = 0x0B0B0C0D
+
+    [[patch.be32]]
+        address = 0x84D0DB94
+        value = 0x0D0D0EFF
+
+    [[patch.be32]]
+        address = 0x84D0DB98
+        value = 0x0F101112
+
+    [[patch.be32]]
+        address = 0x84D0DB9C
+        value = 0x13140D15
+
+    [[patch.be32]]
+        address = 0x84D0DBA0
+        value = 0x161718FE
+
+    [[patch.be32]]
+        address = 0x84D0DBA4
+        value = 0xFEFEFEFE
+
+    [[patch.be32]]
+        address = 0x84D0DBA8
+        value = 0xFEFEFEFE
+
+    [[patch.be32]]
+        address = 0x84D0DBAC
+        value = 0xFEFEFEFE

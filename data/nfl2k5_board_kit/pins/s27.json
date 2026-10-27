@@ -2,7 +2,7 @@
   "bundles": [
     {
       "length": 894944,
-      "model_sha256": "f6e15d3a1caed5c26a03ba39cc4cf620dac8b2feaa89c8ad50dff3801eeee9d6",
+      "model_sha256": "640ba73931ec5d498d9a79ce31e6a427220115aeb4c9e4c7f9924da48fd48e79",
       "name": "s27dd.iff",
       "offset": 567760,
       "published": {
@@ -19,13 +19,13 @@
       "retail_video": 835712,
       "scratch": 80,
       "size": 1590688,
-      "system": 653312,
-      "vertices": 18463,
+      "system": 649472,
+      "vertices": 18383,
       "video": 835712
     },
     {
       "length": 912000,
-      "model_sha256": "0a718706d3641d472bdec6918738d9deb5a1c38651db3ff073046ac50100179c",
+      "model_sha256": "d36ed1347a8b1d3371045d1c984d52a98244b1916f3ba63269457b039df35669",
       "name": "s27dr.iff",
       "offset": 555312,
       "published": {
@@ -42,13 +42,13 @@
       "retail_video": 835712,
       "scratch": 80,
       "size": 1554976,
-      "system": 653312,
-      "vertices": 18463,
+      "system": 649472,
+      "vertices": 18383,
       "video": 835712
     },
     {
       "length": 929328,
-      "model_sha256": "d13f1a91c637ebf939fd6a646c083b096448266157070761f20306c3ef525983",
+      "model_sha256": "888a0e7e6d65d8f444409eb08a6190a0add117b6aaa7fd42e870c0b3dbb14cdc",
       "name": "s27ds.iff",
       "offset": 507648,
       "published": {
@@ -65,13 +65,13 @@
       "retail_video": 835712,
       "scratch": 656,
       "size": 1551888,
-      "system": 653312,
-      "vertices": 18463,
+      "system": 649472,
+      "vertices": 18383,
       "video": 835712
     },
     {
       "length": 899728,
-      "model_sha256": "e6bdbd0c3a1ad8c4dfbbfa1255f54c69b3622fd703827a0d5f2ddb28867a344f",
+      "model_sha256": "74de313ef7d3f5acba4e4f2e61aa31cf65cb467bf77c616d9992dfd77b04c1ad",
       "name": "s27ad.iff",
       "offset": 567776,
       "published": {
@@ -88,13 +88,13 @@
       "retail_video": 832896,
       "scratch": 80,
       "size": 1571600,
-      "system": 650368,
-      "vertices": 18566,
+      "system": 646400,
+      "vertices": 18486,
       "video": 832896
     },
     {
       "length": 916864,
-      "model_sha256": "62e7282f65382b00a7cd677756cf66b6b58a2c579c6932d365261dce95d5029b",
+      "model_sha256": "d376ef3dcb7bbdf1de9b568b9fc1f08827680490e2b7786ca34d23be0e2469fc",
       "name": "s27ar.iff",
       "offset": 555328,
       "published": {
@@ -111,13 +111,13 @@
       "retail_video": 832896,
       "scratch": 80,
       "size": 1547568,
-      "system": 650368,
-      "vertices": 18566,
+      "system": 646400,
+      "vertices": 18486,
       "video": 832896
     },
     {
       "length": 934352,
-      "model_sha256": "dce0c4f4fb29a4e8a7fdfb614eb432a7d5337b7a06db62c0a21785e5bbc9cdb1",
+      "model_sha256": "d4c8c44614fd274294393c24f8e144dcc1dfba9b90337749c7bfbc0e87fc5f1f",
       "name": "s27as.iff",
       "offset": 507600,
       "published": {
@@ -134,13 +134,13 @@
       "retail_video": 832896,
       "scratch": 656,
       "size": 1547056,
-      "system": 650368,
-      "vertices": 18566,
+      "system": 646400,
+      "vertices": 18486,
       "video": 832896
     },
     {
       "length": 910256,
-      "model_sha256": "1794ce80c526a4bff6013e94164da7c8c10488365c3a0a55ac37bdc4c70cf08a",
+      "model_sha256": "4161a523e8c12b79e60367f59d485b1577561ca6c6916a5ac93cb511189e5685",
       "name": "s27nd.iff",
       "offset": 572048,
       "published": {
@@ -157,13 +157,13 @@
       "retail_video": 849280,
       "scratch": 96,
       "size": 1567888,
-      "system": 652672,
-      "vertices": 18448,
+      "system": 648832,
+      "vertices": 18368,
       "video": 849280
     },
     {
       "length": 926224,
-      "model_sha256": "5229c3fd3cdd84ea47cb5dcef88500a30b6536abe21cef35fda08ccd5a36d6cf",
+      "model_sha256": "85565837e188419917242bb8b1e1c9b3ccfe42c51f253f548fd9115b98224e7b",
       "name": "s27nr.iff",
       "offset": 558944,
       "published": {
@@ -180,13 +180,13 @@
       "retail_video": 849280,
       "scratch": 96,
       "size": 1554192,
-      "system": 652672,
-      "vertices": 18448,
+      "system": 648832,
+      "vertices": 18368,
       "video": 849280
     },
     {
       "length": 938352,
-      "model_sha256": "f3ca9a0b3b7f73aff319df8ad2dc28036a27728b9a1c910a0125642c910330e2",
+      "model_sha256": "df9ff01ca2b3a5a5920a848f0c0e026e34eb033b7d30daddc1a402c0e74f3337",
       "name": "s27ns.iff",
       "offset": 515040,
       "published": {
@@ -203,8 +203,8 @@
       "retail_video": 849280,
       "scratch": 96,
       "size": 1556112,
-      "system": 652672,
-      "vertices": 18448,
+      "system": 648832,
+      "vertices": 18368,
       "video": 849280
     }
   ],

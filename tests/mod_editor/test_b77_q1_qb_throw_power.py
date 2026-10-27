@@ -236,7 +236,7 @@ class BuildStepTests(unittest.TestCase):
             target = root / "built.iso"
             receipt = build.build(build.BuildPlan(str(fixture.path), str(target), roster_edits=str(edits)))
             steps = [s["step"] for s in receipt["steps"]]
-            self.assertEqual(steps, ["copy", "roster_edits", "unc_bowl_uniforms", "qb_throw_power", "commentary_final", "menu_icon_orientation"])  # i1: c2's final commentary pass runs after the last roster writer
+            self.assertEqual(steps, ["copy", "roster_edits", "unc_bowl_uniforms", "nameplate_fixes_2026", "qb_throw_power", "commentary_final", "menu_icon_orientation"])  # i1: c2's final commentary pass runs after the last roster writer; b778-uf2: every image build fixes the nameplates after the uniform writers
             self.assertEqual(receipt["steps"][-3]["bytes_changed"], 12)
             self.assertEqual(ImageTests().arms(target)[5], [99, 79, 99, 99, 57, 54])
             self.assertEqual(ImageTests().arms(fixture.path)[5], [97, 75, 95, 96, 53, 50])     # the source copy is untouched
@@ -255,7 +255,7 @@ class BuildStepTests(unittest.TestCase):
             edits = root / "edits.json"
             edits.write_text(json.dumps({"schema": rr.EDITS_SCHEMA, "edits": []}), encoding="utf-8")
             receipt = build.build(build.BuildPlan(str(fixture.path), str(root / "built.iso"), roster_edits=str(edits)))
-            self.assertEqual([s["step"] for s in receipt["steps"]], ["copy", "roster_edits", "unc_bowl_uniforms", "commentary_final", "menu_icon_orientation"])  # i1: c2 final pass; ic1: Denver miniature check
+            self.assertEqual([s["step"] for s in receipt["steps"]], ["copy", "roster_edits", "unc_bowl_uniforms", "nameplate_fixes_2026", "commentary_final", "menu_icon_orientation"])  # i1: c2 final pass; ic1: Denver miniature check; b778-uf2 nameplates
             self.assertEqual(ImageTests().arms(root / "built.iso")[5], [97, 75, 95, 96, 53, 50])
 
     def test_a_bad_directive_stops_the_build_before_any_copy(self) -> None:

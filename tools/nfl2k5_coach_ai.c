@@ -28,6 +28,10 @@ extern void FAST offense_native(u32 *, u32 *, u32 *, u32 *, u32 *);
 extern void FAST defense_native(u32 *, u32 *, u32 *, u32 *, u32 *, u32 *, u32 *);
 extern u32 FAST category_native(u8 *, u32);
 extern u8 *FAST vip_native(u8 *);
+#ifdef B778
+extern u32 FAST late_native(void);
+extern u32 FAST half_bits_native(void);
+#endif
 static int career(void);
 
 /* Playback data is not a virtual controller. Keep automatic teams on the
@@ -41,6 +45,22 @@ static int automatic(u8 *team) {
         && PTR(team,0x20)==state.book[side];
 }
 void FAST coach_presentation(u8 *team) { U(team,0x38)=!automatic(team); }
+
+#ifdef B778
+/* b778 ai8: third and 3+ belongs to the native selector. The playback pools only know down, distance and tempo
+ * as coarse bins and put 3rd and 3+ in the same pool as 1st/2nd and long; the late-leading pool's observed pass
+ * target is 33 percent and the shipped rings call runs 40.6 percent of the time. The native selector carries the
+ * real down/distance and the third-down run preference owner lowers its run weight on 3rd and 7+. Third and 1-2
+ * stays here, where the short-yardage rings hold the QB sneaks. */
+static int third_native(void) {
+    u8 *s=PTR(0xe602ec,0);
+    float a, b, d;
+    if (!s || U(s,4)!=3) return 0;
+    a=*(float *)(s+0x28); b=*(float *)(s+0x18);
+    d=a>b?a-b:b-a;
+    return d>=274.32f;                 /* 3 * 91.44 cm */
+}
+#endif
 
 /* Called at the ordinary CPU selection boundary. The native publication
  * tail still commits the category/formation/play. No menu is driven and no
@@ -57,6 +77,14 @@ u32 FAST coach_choose(u8 *team, u32 *out) {
     if (!context || U(context,0x38)!=2) return 0;
     offense=PTR(0xe60280,0)==team;
     if (!offense && PTR(0xe60284,0)!=team) return 0;
+    /* b778: fourth downs and the clock windows (last two minutes of the first half, last five minutes of the game)
+     * stay with the game's own clock-aware CPU caller: Modern 2 fourth downs, kneel, spike, Hail Mary, timeouts and
+     * urgency. The playback pools know none of these. */
+#ifdef B778
+    if (offense && (U(PTR(0xe602ec,0),4)==4 || late_native()
+                    || (U(0xe602c4,0)==2 && half_bits_native()<=0x42f00000u)
+                    || third_native())) return 0;
+#endif
     state.selecting=1;
     flag=U(team,0x38);
     /* Preserve the existing VIP-aware fourth-down policy inside this draw.
@@ -169,7 +197,7 @@ static void expand(u8 *out, const u8 *tag, u8 *coach) {
 /* Return 1 only for an eligible CPU binding. Original F6E60 then performs
  * playback initialization and book matching; no selector or RNG is replaced.
  * Diagnostic reason: 1 human, 2 mode/special, 3 team/coach, 4 book/profile,
- * 5 heap failure, 6 explicit VIP, 7 automatic. */
+ * 5 heap failure, 6 explicit VIP, 7 automatic, 8 mid-game fresh context left native. */
 u32 FAST coach_prepare(u8 *team, u32 side, u8 *label) {
     u8 *book,*tag,*front,*coach,*root;
     u8 **slot=(u8 **)(0xba04b0+side*4);
@@ -225,6 +253,16 @@ u32 FAST coach_prepare(u8 *team, u32 side, u8 *label) {
  * Do not consume the old human flags. The commit hook runs after both native
  * ownership updates and only after a reset, not on every lineup refresh. */
 void coach_defer_rebind(void) { state.pending_rebind=1; }
+#ifdef B778
+/* A VIP context bound during a live game has no native playcall cursor yet:
+ * the pre-snap offense tick builds +0xE2C, and 17D330/17D5F0/17D670
+ * dereference it as soon as +0x38 says playback. Arming that state from a
+ * mid-game controller change bugchecks 0x1E (null reads at 0xc and 0x38). */
+static int live_game(void) {
+    u32 ps=U(0xe602b8,0);
+    return U(0xe53804,0)!=0 || (ps>=0xc && ps<=0xe);   /* 0xe53804: play count; 0xe53800 is the drive number */
+}
+#endif
 void coach_rebind(void) {
     u32 side;
     if (!state.pending_rebind) return;
@@ -236,6 +274,20 @@ void coach_rebind(void) {
         /* Never take a VIP now being learned by a human on the other side. */
         if (p && !(U(p,0x38)==1 && PTR(0xba04b0,(side^1)*4)==p)) U(0xba04b0,side*4)=(u32)p;
         setup_native(team,side,PTR(0xe5fe78,side*4));
+#ifdef B778
+        /* The fresh context has no playcall cursor; leave it on the ordinary
+         * CPU caller instead of exposing the null dereference above. */
+        {
+            u8 *q=PTR(0xba04b0,side*4);
+            if (q && U(q,0xE2C)==0 && live_game()) {
+                U(0xba04b0,side*4)=0;
+                U(q,0x38)=0;
+                U(team,0x38)=0;
+                state.active[side]=0;
+                state.reason[side]=8;
+            }
+        }
+#endif
     }
 }
 void coach_cleanup(void) {

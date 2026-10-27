@@ -126,8 +126,12 @@ def inspect_resource(data, *, strict=True):
     rows were renamed (the repair pins its own owned floats instead)."""
     require(isinstance(data, bytes) and 0x40 <= len(data) <= MAX_RESOURCE, "Expected a bounded ROST resource")
     require(data[:4] == data[0x2C:0x30] == b"ROST", "Not a main ROST resource")
+    # b778 bf1: the capacity-grown arena keeps the disc root at +0x40 and only
+    # changes the version to 18 (nfl2k5_roster_arena GROWN_DISC_RESOURCE_SIZE);
+    # the stadium rows this module reads are unchanged.
+    version = struct.unpack_from("<I", data, 0x30)[0]
     require(struct.unpack_from("<II", data, 4) == (len(data)-32, len(data)-32) and
-            data[12:32] == bytes(20) and struct.unpack_from("<I", data, 0x30)[0] == 17,
+            data[12:32] == bytes(20) and version in (17, 18),
             "Unsupported ROST wrapper or version")
     root = relative(data, 0x34)
     require(0x40 <= root <= len(data)-0x70, "ROST pool is outside the resource")

@@ -56,7 +56,7 @@ class PlannerTests(unittest.TestCase):
                          [109024, 86016, 17952])  # 2528 directory bytes hold code; 464 hold the read-only rating table.
         self.assertEqual([report['capacity'][k]['available_bytes'] for k in ('code', 'data', 'read_only')],
                          [0, 0, 16])  # b777-ci2: the synthetic owner is one code request now, so the union's 16 free read-only bytes stay free; b776-sm1: none after the classic teams' 288 and a 16-byte synthetic constant; b775-ct1: 16 after the classic teams' 240 and a 48-byte synthetic constant; the synthetic RX still fills the code pages; b76-pf P1: the team-logo table takes 64 RO bytes; b77-f4: 80 left after the grades owner and the 256-byte synthetic constant; b77-v1b: 48
-        self.assertEqual(len(report['pages']), 52)
+        self.assertEqual(len(report['pages']), 54)  # b778-ai8: + the third-down owner and its v4 pool page
         for a in report['allocations']:
             self.assertEqual(a['va'] % a['align'], 0)
         self.assertEqual(space.plan(reversed(REQUESTS + LARGE)), report)
@@ -76,12 +76,20 @@ class PlannerTests(unittest.TestCase):
         # Match the live union exactly so a stale name cannot mask capacity.
 
     def test_every_kind_exact_capacity_alignment_and_overflow(self):
+        # b778-xs1: what the v3 run cannot hold whole now lands whole in the v4 pool (it used to refuse).
         for kind, capacity in [('code', 98304), ('data', 81920), ('read_only', 16384)]:
-            space.plan([('owner', kind, capacity, 4096)])
+            self.assertEqual(space.plan([('owner', kind, capacity, 4096)])['version'], 3)
+            with self.subTest(kind=kind):
+                report = space.plan([('owner', kind, capacity + 1, 4096)])
+                self.assertEqual(report['version'], 4)
+                row = next(a for a in report['allocations'] if a['owner'] == 'owner')
+                self.assertEqual((row['va'], row['size']), (space.POOL_VA + space.PAGE, capacity + 1))
+            with self.subTest(kind=kind):
+                report = space.plan([('alpha', kind, 1, 1), ('beta', kind, capacity - 1, 4096)])
+                beta = next(a for a in report['allocations'] if a['owner'] == 'beta')
+                self.assertEqual(beta['va'], space.POOL_VA + space.PAGE)
             with self.subTest(kind=kind), self.assertRaisesRegex(ValueError, 'capacity'):
-                space.plan([('owner', kind, capacity + 1, 4096)])
-            with self.subTest(kind=kind), self.assertRaisesRegex(ValueError, 'capacity'):
-                space.plan([('alpha', kind, 1, 1), ('beta', kind, capacity - 1, 4096)])
+                space.plan([('owner', kind, space.MAX_REQUEST_BYTES + 1, 4096)])
         for request in [('a', 'code', True, 1), ('a', 'data', 1, 3), ('a', 'read_only', -1, 1),
                         ('a', 'rw', 1, 1), (space.DIRECTORY_OWNER, 'read_only', 1, 1)]:
             with self.assertRaises(ValueError):
@@ -89,7 +97,7 @@ class PlannerTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             space.plan([('owner', 'code', 1, 1)] * 2)
         with self.assertRaisesRegex(ValueError, 'count'):
-            space.plan([(f'owner_{i}', 'code', 1, 1) for i in range(97)])
+            space.plan([(f'owner_{i}', 'code', 1, 1) for i in range(space.MAX_REQUESTS)])
 
     def test_directory_capacity_does_not_depend_on_content_hash_entropy(self):
         requests = [("owner_" + hashlib.sha256(str(i).encode()).hexdigest()[:58], "code", 1, 1)
@@ -130,9 +138,14 @@ class PlannerTests(unittest.TestCase):
             self.assertEqual(len(block), space.PAGE)
             self.assertEqual(block[-512:], b'\xcc'*512)
         with patch.object(space.zlib, 'compress', return_value=b'x'*3509):
-            with self.assertRaisesRegex(ValueError, 'directory capacity'):
-                space._scale_directory([space.DIRECTORY_CODE_REQUEST], seals)
+            # b778-xs1: a list the v3 page cannot hold moves to the v4 pool's document page
+            block = space._scale_directory([space.DIRECTORY_CODE_REQUEST], seals)
+            self.assertEqual((len(block), block[:8]), (space.PAGE, space.POOL_BLOCK_MAGIC))
+            self.assertEqual(block[-512:], b'\xcc'*512)
             self.assertEqual(len(space._scale_directory([], seals)), space.PAGE)
+        with patch.object(space.zlib, 'compress', return_value=b'x'*(space.PAGE - 11)):
+            with self.assertRaisesRegex(ValueError, 'document capacity'):
+                space._scale_directory([space.DIRECTORY_CODE_REQUEST], seals)
 
     def test_cli_text_json_and_refusal_without_build_or_output(self):
         with tempfile.TemporaryDirectory() as temp:
@@ -145,8 +158,9 @@ class PlannerTests(unittest.TestCase):
             self.assertIn('0 available', run.stdout)
             run = subprocess.run(cmd + ['--json'], capture_output=True, text=True, timeout=30)
             self.assertEqual(run.returncode, 0, run.stderr)
-            self.assertEqual(len(json.loads(run.stdout)['pages']), 52)
-            path.write_text(json.dumps([['owner', 'data', 81921, 1]]), encoding='utf-8')
+            self.assertEqual(len(json.loads(run.stdout)['pages']), 54)
+            # b778-xs1: 81,921 RW bytes now land in the v4 pool; one request above MAX_REQUEST_BYTES still refuses.
+            path.write_text(json.dumps([['owner', 'data', space.MAX_REQUEST_BYTES + 1, 1]]), encoding='utf-8')
             run = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
             self.assertEqual(run.returncode, 2)
             self.assertIn('capacity', run.stderr)
@@ -208,7 +222,7 @@ class SyntheticTests(unittest.TestCase):
 
     def test_header_accounting_all_descriptors_and_runtime_permissions(self):
         image = XbeImage(self.grown)
-        self.assertEqual(len(image.sections), space.SCALE_COUNT)
+        self.assertEqual(len(image.sections), space.SCALE_COUNT + 1)  # b778-ai8: the current union crosses into the v4 pool section
         feature = struct.unpack_from('<I', self.grown, 0x178)[0]
         self.assertEqual(image.read(feature, 16), self.retail[0x994:0x9A4])
         self.assertEqual(feature, 0x10FF0)
@@ -228,7 +242,7 @@ class SyntheticTests(unittest.TestCase):
                 self.assertEqual(image.read(new_pointer, 2), XbeImage(self.retail).read(old_pointer, 2))
         for region in space.layout(self.grown)['regions']:
             section = image.section(region['va'], region['size'])
-            self.assertEqual(section.writable, region['kind'] == 'data')
+            self.assertEqual(section.writable, region['kind'] in ('data', 'pool'))  # b778-ai8: the v4 pool is writable+executable
             self.assertEqual(section.executable, bool(region['flags'] & 4))
             head, tail = struct.unpack_from('<II', self.grown, section.header + 28)
             self.assertEqual(tail-head, 2 if region['size'] > 4096 else 0)
@@ -290,7 +304,7 @@ class SyntheticTests(unittest.TestCase):
         offsets = [0x104, 0x108, 0x10C, 0x11C, 0x120, 0x14C, 0x150, 0x154,
                    0x178, 0x17C, space.META_COPY, space.SCALE_NAMES, space.DEBUG_COPY, space.LIB_COPY,
                    space.DIRECTORY + 12, space.SCALE_DIRECTORY, space.SCALE_DIRECTORY + 4095,
-                   space.SCALE_DIRECTORY + 4096, space.SCALE_FILE_SIZE - 1,
+                   space.SCALE_DIRECTORY + 4096, space.SCALE3_FILE_SIZE - 1,  # b778-xs1: the v3 extent
                    space.DATA_RAW, space.EXT_FILE_SIZE]
         offsets += [space.META_START + i * 56 + field for i in range(space.SCALE_COUNT - space.COUNT)
                     for field in (0, 4, 8, 12, 16, 20, 24, 28, 32, 36)]
@@ -318,7 +332,7 @@ class SyntheticTests(unittest.TestCase):
         spans = recorder.finish(self.grown)
         for reservation in space.reservations(self.grown):
             self.assertTrue(any(all(s[k] == reservation[k] for k in ('start', 'end', 'owner')) for s in spans), reservation)
-        self.assertEqual(len([r for r in space.reservations(self.grown) if r['owner'] == space.OWNER]), 52)
+        self.assertEqual(len([r for r in space.reservations(self.grown) if r['owner'] == space.OWNER]), 54)
 
     def test_music_both_orders_and_all_legacy_bytes_stay_identical(self):
         data = b'synthetic music metadata'
@@ -335,7 +349,7 @@ class SyntheticTests(unittest.TestCase):
         self.assertEqual(space.status(bad), 'foreign')
         for field in (0, 4, 8, 12, 16, 20, 24, 28, 32, 36):
             bad = bytearray(first)
-            bad[space.scale_music_slots()[0] + field] ^= 1
+            bad[space.scale_music_slots(first)[0] + field] ^= 1  # b778-ai8: v4 music slot (index 7)
             with self.subTest(field=field), self.assertRaises(ValueError):
                 music.install(bad, data)
             with self.subTest(field=field), self.assertRaises(ValueError):

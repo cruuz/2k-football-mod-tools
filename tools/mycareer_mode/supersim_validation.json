@@ -314,7 +314,7 @@
     "mod_editor/core/nfl2k5_my_career.py": "bc31fc9b632989485a1a059eaad03ae035dbf47ab1457f3f123ac71394e3cade",
     "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
     "mod_editor/core/nfl2k5_my_career_mode.py": "c434372dbc4437f965e2736203adbbd61e26cfdca8260e5683b5203b8e3a366e",
-    "mod_editor/core/nfl2k5_my_career_mode_code.py": "ba2ea6094e51eae5c73084c127a848385e2754c686ad6c195833fec0e59cc1a1",
+    "mod_editor/core/nfl2k5_my_career_mode_code.py": "797942f0bd78a2d27fc207cbfdda305a3624065a99a65c5de0a92095ffc6e2ee",
     "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
     "mod_editor/core/nfl2k5_my_career_save.py": "3e28ce0062f424f4e0dd73fb8f32cf87bdf7189a953fa690a899f3d73308f7b1",
     "mod_editor/core/nfl2k5_senior_bowl.py": "e415ac02f3170f74c23137ba4f487d4dc4b4f10c1db4565d753d0558b846647c",
@@ -323,7 +323,7 @@
     "tools/mycareer_mode/measure_mode4.py": "45d2940079afa58205868ccfce2e57f33d063e6e214269cebf4f30899e370da9",
     "tools/mycareer_mode/refresh_gate_manifest.py": "70dd3693673c9cd78d0d5d4a7e755d39a03c433c43caf1bbbe2137da1115ee2f",
     "tools/mycareer_mode/runtime.S": "2df110f11bf7d4e0d057f534bffa6c5c1cd27f8392a95e15f55f77eca556a905",
-    "tools/mycareer_mode/runtime.c": "34278e24fa8c82773964eaa4c15d30a82e3522a6ee0fc8011b7e70ab474b95f9",
+    "tools/mycareer_mode/runtime.c": "e4b477f6a5eec42e86c8b76125b6f4aaf2989fe8eb299186044301e1146c6eaf",
     "tools/nfl2k5_supersim_live_probe.py": "866d292c94932922af319a930d8c3301a05a8c1a5cfd892b17f36add583a1af1"
   },
   "space_proof": {

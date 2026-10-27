@@ -47,9 +47,39 @@ def preview_text(plan):
         elif step["operation"] == "coach_sync":
             lines.append(f"Coach appearances: {len(step['changes'])} fields changed")
             lines += [f"  {c['coach']}: {c['field']} {c['before']} → {c['after']}" for c in step["changes"]]
+        elif step["operation"] == "hair_styles":   # b778-hr3
+            lines.append(f"Hair styles from the disc: {len(step['changes'])} players"
+                         + (f"; {len(step['kept_user_styles'])} styles you set kept" if step["kept_user_styles"] else ""))
+            lines += [f"  {c['player']}: hair style {c['before']} → {c['after']}" for c in step["changes"][:12]]
+            if len(step["changes"]) > 12:
+                lines.append(f"  …and {len(step['changes']) - 12} more in the receipt.")
+        elif step["operation"] == "honors":   # b778-pc2
+            lines.append(f"Award history from the disc: {len(step['changes'])} honors for {step['matched_players']} players"
+                         + (f"; oldest seasons of {len(step['folded_players'])} veterans merged ({step['fold_depth']}+ seasons back)"
+                            if step["folded_players"] else ""))
+            lines += [f"  {c['player']}: {c['field'].split('.')[1]} {c['season'] or 'pre-fold'}" for c in step["changes"][:12]]
+            if len(step["changes"]) > 12:
+                lines.append(f"  …and {len(step['changes']) - 12} more in the receipt.")
+        elif step["operation"] == "played_clubs":   # b778-pc2
+            lines.append(f"Historical teams restored: {len(step['changes'])}; "
+                         f"rows without dated club evidence: {step['unresolved_rows']}")
+            lines += [f"  {c['player']}: {c['season']} {c['after']}" for c in step["changes"][:12]]
+            if len(step["changes"]) > 12:
+                lines.append(f"  …and {len(step['changes']) - 12} more in the receipt.")
+        elif step["operation"] == "free_agents":   # b778-fa3
+            lines.append(f"New free agents from the disc: {len(step['changes'])}"
+                         f" ({step['vacant_records_after']} empty player records left for Create Player)")
+            lines += [f"  {c['player']}" for c in step["changes"][:12]]
+            if len(step["changes"]) > 12:
+                lines.append(f"  …and {len(step['changes']) - 12} more in the receipt.")
+            if step["no_room"]:
+                lines.append(f"  No room for {len(step['no_room'])} more: the save has no empty player records left.")
         elif step["operation"] == "team_history":
             lines.append(f"Historical teams restored: {len(step['changes'])}; "
                          f"rows without historical evidence: {step['unresolved_rows']}")
+            if any(row.get("inferred") for row in step["unresolved"]):
+                lines.append("The transaction log has no season dates. Missing played-season clubs stay blank; "
+                             "inferred candidates are listed in the receipt.")
     warnings = len(receipt["validation"]["after"]["findings"])
     lines += [f"Structural checks passed; {warnings} existing notices retained in the receipt.",
               f"Total changed fields: {receipt['changed_fields']}", "",
@@ -68,7 +98,8 @@ class FranchiseUpgradeDialog(QDialog):
         self.resize(780, 580)
         layout = QVBoxLayout(self)
         hint = QLabel("For older SOFTDRINK franchises that began with the 2026 roster. "
-                      "Choose the current build's disc to update experience, playbooks and coach appearances. "
+                      "Choose the current build's disc to update experience, playbooks, coach appearances, hair styles, "
+                      "award history and the free-agent pool. "
                       "Preview first, then write a new signed save folder.")
         hint.setWordWrap(True)
         layout.addWidget(hint)

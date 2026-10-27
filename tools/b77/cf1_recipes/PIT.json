@@ -1,0 +1,8 @@
+{
+ "who": "Mike McCarthy",
+ "notes": "fair, ruddy skin; white-grey hair (under the Steelers cap of c27 it shows at the sides and back); light brows; blue eyes; clean-shaven. cf2 rescan: the texture photo is his frontal, evenly lit Cowboys official headshot (neutral, mouth closed) with the hair recoloured to his 2026 white-grey in the private reference; his 2026 Steelers headshot is turned and side-lit (pale face and dark creases in the cf1 scan) and stays a check photo",
+ "eyes": [118, 140, 160],
+ "mouth": "close",
+ "hair_colour": [196, 192, 186],
+ "hair": {"front": 46.4, "recede": 1.2, "side": 43.4, "back": 34.5, "sideburn": 38.8, "edge": 0.35}
+}

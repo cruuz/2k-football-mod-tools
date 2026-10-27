@@ -52,8 +52,11 @@ class FixedSlots(unittest.TestCase):
         for mask in range(1 << len(space.DIRECTORY_CODE_REQUESTS)):
             active = tuple(r for i,r in enumerate(space.DIRECTORY_CODE_REQUESTS) if mask & (1<<i))
             report = space.plan(self.requests+active)
-            rows = [r for r in report['allocations'] if r['owner'] == space.DIRECTORY_OWNER
-                    or r['owner'] in space.DIRECTORY_CODE_OWNERS]
+            # b778: the full union now spills into xs1's v4 pool, which has its own directory page at POOL_VA
+            # (raw SCALE_DIRECTORY+0x5000). This test is about the fixed v3 directory page, so count only rows inside it.
+            rows = [r for r in report['allocations'] if (r['owner'] == space.DIRECTORY_OWNER
+                    or r['owner'] in space.DIRECTORY_CODE_OWNERS)
+                    and space.SCALE_DIRECTORY <= r['raw'] < space.SCALE_DIRECTORY + space.PAGE]
             coverage = bytearray(space.PAGE)
             for row in rows:
                 at = row['raw']-space.SCALE_DIRECTORY
@@ -86,7 +89,10 @@ class FixedSlots(unittest.TestCase):
             with patch.object(space.zlib,'compress',return_value=b'x'*(budget-76)):
                 self.assertEqual(len(space._scale_directory([request],seals)),4096)
             with patch.object(space.zlib,'compress',return_value=b'x'*(budget-75)):
-                with self.assertRaisesRegex(ValueError, 'directory capacity'):
+                # b778-xs1: one byte over the v3 page moves the list to the v4 pool's document page
+                self.assertEqual(space._scale_directory([request],seals)[:8], space.POOL_BLOCK_MAGIC)
+            with patch.object(space.zlib,'compress',return_value=b'x'*(space.PAGE-11)):
+                with self.assertRaisesRegex(ValueError, 'document capacity'):
                     space._scale_directory([request],seals)
 
 

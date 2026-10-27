@@ -1,4 +1,4 @@
-"""2026 head coaches (beta 77 co1, co2, co3, cm1): the pins and the shipped art, the coach bodies, the authored coach
+"""2026 head coaches (beta 77 co1, co2, co3, cm1; b778 cm2): the pins and the shipped art, the coach bodies, the authored coach
 geometry (cm1: Quinn's bald head, seven lean bodies), the Build wiring, and, when a retail USA image is present, the real
 compile of coach scenes (Reid's derived head and the geometry included), the body ids and the two portrait slots
 against their pins.
@@ -26,15 +26,29 @@ from mod_editor.core import nfl2k5_modern_coaches as mc  # noqa: E402
 
 RETAIL = Path(os.environ.get("NFL2K5_RETAIL_XISO", str(ROOT / "ESPN NFL 2K5 (USA).xiso.iso")))
 HAVE_RETAIL = RETAIL.is_file()
+# b778 cm2: the SOFTDRINK 2K28 v0.6.1 disc (built with the cm1 coaches), read only, when present
+V061 = Path(os.environ.get("NFL2K5_V061_XISO", str(ROOT / "SOFTDRINK 2K28 v0.6.1.xiso.iso")))
+HAVE_V061 = V061.is_file()
 TEAMS = {"ARI", "ATL", "BAL", "BUF", "CAR", "CHI", "CIN", "CLE", "DAL", "DEN", "DET", "GB", "HOU", "IND", "JAX", "KC",
          "LAC", "LAR", "LV", "MIA", "MIN", "NE", "NO", "NYG", "NYJ", "PHI", "PIT", "SEA", "SF", "TB", "TEN", "WAS"}
 SIZES = {"shirt": (128, 128), "jacket": (128, 128), "logo": (64, 64), "headset": (64, 64), "head": (256, 128),
          "head_mask": (256, 128), "head_overlay": (256, 128), "sideline_dry": (256, 256), "sideline_rain": (256, 256)}
 # cm1: the clubs whose coach scene carries authored vertex edits (WAS: the bald head; the others: a lean body)
-GEOMETRY = {"WAS", "CIN", "CAR", "GB", "TEN", "LAR", "SF", "MIN", "JAX", "BAL", "CLE"}
+GEOMETRY = {"WAS", "CIN", "CAR", "GB", "TEN", "LAR", "SF", "MIN", "JAX", "BAL", "CLE", "IND", "PIT"}
+# b778 cf1: every scanned coach (tools/b77/cf1_recipes/<club>.json) ships a head shape in geometry.json
+GEOMETRY |= {p.stem for p in (ROOT / "tools" / "b77" / "cf1_recipes").glob("*.json")}
 # co2: the club whose coach wears another retail body, and the body (cNN) he wears
-MOVED = {"ARI": "12", "CAR": "09", "CHI": "37", "CLE": "00", "DET": "04", "HOU": "05", "JAX": "30", "KC": "21",
-         "MIN": "28", "NYG": "22", "PHI": "18", "PIT": "26", "SEA": "13", "TEN": "15"}
+MOVED = {"ARI": "12", "CAR": "09", "CHI": "37", "CLE": "26", "DET": "04", "HOU": "05", "JAX": "30", "KC": "21",
+         "MIN": "28", "NYG": "22", "PHI": "18", "PIT": "27", "SEA": "13", "TEN": "15", "TB": "00", "CIN": "36",
+         "IND": "33"}
+# b778 cm2: facts the pins must agree with. The 2026 head coaches who are Black men, and the retail coach models that
+# are Black men (2004: Dennis Green c00, Lovie Smith c05, Marvin Lewis c06, Tony Dungy c11, Herman Edwards c19; the
+# created-team coaches c50, c51). The capped retail models (hatShader1 on the body).
+BLACK_COACHES = {"TB", "HOU", "NYJ"}
+BLACK_MODELS = {"00", "05", "06", "11", "19", "50", "51"}
+CAPPED_MODELS = {"07", "11", "18", "19", "21", "22", "24", "27", "37", "50", "51"}
+# b778 cm2: the models no club wears any more (an earlier version of the option dressed them)
+RETIRED = {"c06.iff", "c11.iff"}
 
 
 class PinsAndArt(unittest.TestCase):
@@ -43,7 +57,7 @@ class PinsAndArt(unittest.TestCase):
         self.assertEqual({r["team"] for r in pins["teams"]}, TEAMS)
         self.assertEqual(len({r["archive"] for r in pins["teams"]}), 32)
         self.assertEqual({r["archive"] for r in pins["teams"]},
-                         {f"c{i:02d}.iff" for i in range(31)} | {"c37.iff"})
+                         ({f"c{i:02d}.iff" for i in range(31)} | {"c33.iff", "c36.iff", "c37.iff"}) - RETIRED)
         self.assertEqual([(p["team"], p["portrait_id"], p["retail_photo_id"]) for p in pins["portraits"]],
                          [("DAL", "7031", 7007), ("WAS", "7034", 7029)])
         for row in pins["teams"]:
@@ -55,14 +69,15 @@ class PinsAndArt(unittest.TestCase):
             self.assertLessEqual(row["fit"]["scratch_needed"], row["fit"]["scratch_retail"])
             self.assertEqual(row["fit"]["stored_size"] + 0x20, row["span_size"])
 
-    def test_kansas_city_wears_the_2004_reid_model_with_a_derived_head(self):
-        """Noah 2026-10-12: use the existing Andy Reid model for the Chiefs' Andy Reid."""
+    def test_kansas_city_wears_the_2004_reid_model_with_a_scanned_head(self):
+        """Noah 2026-10-12: use the existing Andy Reid model for the Chiefs' Andy Reid; 10/22: "All 32 coaches should
+        have their face scanned": b778 cf4 scans the 2026 Reid onto that model (head.png; the derived 2004 head retired)."""
         kc = {r["team"]: r for r in mc.pins()["teams"]}["KC"]
         self.assertEqual((kc["archive"], kc["team_code"]), ("c21.iff", "13"))
-        self.assertEqual(kc["head_recipe"]["kind"], "retail_recolour")
-        self.assertNotIn("head", kc["art"])
-        self.assertFalse(mc.art_path("KC", "head").exists())
-        self.assertEqual(set(mc.HEAD_RECIPE_FILES) & set(kc["art"]), set(mc.HEAD_RECIPE_FILES))
+        self.assertNotIn("head_recipe", kc)
+        self.assertIn("head", kc["art"])
+        self.assertTrue(mc.art_path("KC", "head").exists())
+        self.assertFalse(set(mc.HEAD_RECIPE_FILES) & set(kc["art"]))
 
     def test_derive_head_is_integer_and_exact(self):
         import numpy as np
@@ -130,7 +145,7 @@ class PinsAndArt(unittest.TestCase):
     def test_the_bodies_are_one_model_per_club(self):
         pins = mc.pins()
         self.assertEqual(sorted(r["body_code"] for r in pins["teams"]),
-                         sorted([f"{i:02d}" for i in range(31)] + ["37"]))
+                         sorted([f"{i:02d}" for i in range(31) if i not in (6, 11)] + ["33", "36", "37"]))
         self.assertEqual(set(pins["bodies"]), TEAMS)
         good = json.loads(mc.PINS_PATH.read_text(encoding="utf-8"))
         bad = json.loads(json.dumps(good))
@@ -138,6 +153,54 @@ class PinsAndArt(unittest.TestCase):
         bad["teams"][0]["archive"] = bad["teams"][1]["archive"]
         with self.assertRaises(mc.ModernCoachesError):
             mc._check_pins(bad)
+
+    def test_every_coach_is_dressed_on_a_model_of_his_own_skin(self):
+        """b778 cm2 (Noah 10/21, Todd Bowles on the 2004 Jon Gruden model with a darkened face: "we should use an
+        actual black model"): a Black coach stands on a Black coach's model (head, arms, hands) and a white coach on a
+        white coach's model, never a model darkened or lightened."""
+        pins = mc.pins()
+        wrong = sorted(f"{r['team']} c{r['body_code']}" for r in pins["teams"]
+                       if (r["team"] in BLACK_COACHES) != (r["body_code"] in BLACK_MODELS))
+        self.assertEqual(wrong, [])
+        self.assertEqual(set(mc.DARK_SKIN_MODELS), BLACK_MODELS)
+        self.assertEqual({t for t, b in pins["bodies"].items() if b["skin"] == "dark"}, BLACK_COACHES)
+        self.assertEqual(mc.skin_mismatches(pins), [])
+        tb = {r["team"]: r for r in pins["teams"]}["TB"]
+        self.assertEqual(tb["archive"], "c00.iff")           # Dennis Green's model: a Black coach, a broad build
+
+    def test_a_coach_on_a_model_of_another_skin_is_refused(self):
+        good = json.loads(mc.PINS_PATH.read_text(encoding="utf-8"))
+        bad = json.loads(json.dumps(good))
+        bad["bodies"]["TB"]["skin"] = "light"
+        with self.assertRaises(mc.ModernCoachesError):
+            mc._check_pins(bad)
+        bad = json.loads(json.dumps(good))
+        del bad["bodies"]["PIT"]["skin"]
+        with self.assertRaises(mc.ModernCoachesError):
+            mc._check_pins(bad)
+        bad = json.loads(json.dumps(good))
+        bad["retired"].append(dict(bad["retired"][0], archive="c27.iff"))      # a model a club wears
+        with self.assertRaises(mc.ModernCoachesError):
+            mc._check_pins(bad)
+
+    def test_mike_mccarthy_wears_a_cap(self):
+        """b778 cm2 (Noah 10/21: "you gotta put a hat on"): Pittsburgh's coach stands on a capped model, its cap patch
+        black, and keeps his heavy build (authored body geometry on c27)."""
+        import numpy as np
+        pit = {r["team"]: r for r in mc.pins()["teams"]}["PIT"]
+        self.assertIn(pit["body_code"], CAPPED_MODELS)
+        self.assertEqual(pit["superseded_body_codes"], ["26"])
+        shirt = mc._rgba(mc.art_path("PIT", "shirt"), 128, 128)
+        patch = shirt[2:16, 108:126, :3].reshape(-1, 3)        # the cap samples u 0.83-0.99, v 0.00-0.17
+        self.assertLess(float(np.median(patch.mean(axis=1))), 60.0)
+        self.assertIn("coachBodyGrp1", [s["name"] for s in mc.load_geometry(pit)["shapes"]])
+
+    def test_retired_models_are_pinned_back_to_retail(self):
+        pins = mc.pins()
+        self.assertEqual({r["archive"] for r in pins["retired"]}, RETIRED)
+        for row in pins["retired"]:
+            self.assertTrue(row["superseded_sha256"])
+            self.assertNotIn(row["retail_sha256"], row["superseded_sha256"])
 
     def test_the_shipped_art_matches_its_pins_and_sizes(self):
         self.assertTrue(mc.available())
@@ -328,8 +391,11 @@ class RetailCompile(unittest.TestCase):
         self.assertLess(top_before - top_after, 1.2)
         moved = [i for i, (a, b) in enumerate(zip(heads["before"], heads["after"]))
                  if max(abs(a[k] - b[k]) for k in range(3)) > 1e-3]
-        # the face (in front of the ears, below the brows) does not move: only the scalp and the back of the head
-        self.assertTrue(moved and all(heads["before"][i][1] > 42.0 or heads["before"][i][2] < 8.0 for i in moved))
+        # the bald edit stays off the face (in front of the ears, below the brows): only the scalp and the back of the
+        # head move by more than the face scan (b778 cf3 scans Quinn's face: cf1_face_scan, at most 0.8 cm)
+        self.assertTrue(moved and all(heads["before"][i][1] > 42.0 or heads["before"][i][2] < 8.0
+                                      or max(abs(heads["before"][i][k] - heads["after"][i][k]) for k in range(3)) <= 0.81
+                                      for i in moved))
         rec2, decoded2 = mc._mm()._scene(other, tx.parse_chunks(other)[0])
         with self.assertRaises(mc.ModernCoachesError):
             mc.apply_geometry(bytearray(decoded2), rec2, doc)
@@ -357,7 +423,7 @@ class RetailCompile(unittest.TestCase):
 
     def test_glasses_hidden_only_where_the_2026_coach_wears_none(self):
         pins = {r["team"]: r for r in mc.pins()["teams"]}
-        self.assertEqual(sorted(t for t, r in pins.items() if r["hide_glasses"]), ["GB", "LAR", "PIT", "SEA", "WAS"])
+        self.assertEqual(sorted(t for t, r in pins.items() if r["hide_glasses"]), ["CLE", "GB", "LAR", "SEA", "WAS"])
         import numpy as np
         row = pins["WAS"]
         with mc._outer_image()(RETAIL) as archive:
@@ -395,8 +461,87 @@ class RetailCompile(unittest.TestCase):
                     self.assertEqual(value, int(row["team_code"]), row["team"])
         parts = {k: v for k, v in mc.resource_states(RETAIL).items()}
         self.assertEqual({k for k in parts if k.startswith("body_id:")}, {f"body_id:{t}" for t in MOVED})
-        self.assertEqual(set(parts.values()), {"retail"})
-        self.assertTrue(all(row["superseded_sha256"] for row in pins["teams"]))
+        self.assertEqual({v for k, v in parts.items() if not k.startswith("retired:")}, {"retail"})
+        self.assertEqual({v for k, v in parts.items() if k.startswith("retired:")}, {"kept"})
+        # c33 and c36 were never dressed before cm2 (no earlier art); every other model was
+        # (a later face scan of CIN or IND gives those two rows cm2's digest as their superseded entry)
+        self.assertLessEqual({row["archive"] for row in pins["teams"] if not row["superseded_sha256"]}, {"c33.iff", "c36.iff"})
+
+    def test_the_dark_skin_models_are_the_retail_models_with_dark_arms(self):
+        """DARK_SKIN_MODELS against the user's own disc: the arms texture of every retail coach model."""
+        import numpy as np
+        mm = mc._mm()
+        tx, _fill = mc._tools()
+        codes = [f"{i:02d}" for i in range(31)] + ["33", "36", "37", "50", "51"]
+        luma = {}
+        with mc._outer_image()(RETAIL) as archive:
+            entries = {e.name_id: e for e in archive.entries}
+            for code in codes:
+                entry = entries[mc.name_id(f"c{code}.iff")]
+                raw = archive.read(entry.virtual_offset, entry.size)
+                rec, decoded = mm._scene(raw, tx.parse_chunks(raw)[0])
+                tex = [t for t in rec["embedded_textures"] if "armsShader1" in (t.get("mapped_material_names") or ())][0]
+                rgba, _ = mm.read_p8(decoded, int(rec["system_bytes"]), tex)
+                rgb = np.asarray(rgba, np.float64)[..., :3].reshape(-1, 3)
+                luma[code] = float((rgb @ np.array([0.299, 0.587, 0.114])).mean())
+        self.assertEqual({c for c, v in luma.items() if v < 128.0}, set(mc.DARK_SKIN_MODELS), luma)
+
+    def test_pittsburgh_compiles_with_the_cap_and_the_heavy_body(self):
+        from mod_editor.core import nfl2k5_models as models
+        row = {r["team"]: r for r in mc.pins()["teams"]}["PIT"]
+        tx, _fill = mc._tools()
+        with mc._outer_image()(RETAIL) as archive:
+            entries = {e.name_id: e for e in archive.entries}
+            def scene(name):
+                e = entries[mc.name_id(name)]
+                raw = archive.read(e.virtual_offset, e.size)
+                return raw, mc._mm()._scene(raw, tx.parse_chunks(raw)[0])
+            raw, _ = scene("c27.iff")
+            out, detail = mc.compile_archive(raw, row)
+            self.assertEqual(mc.sha(out[row["span_offset"]:row["span_offset"] + row["span_size"]]), row["applied_sha256"])
+            rec, decoded = mc._mm()._scene(out, tx.parse_chunks(out)[0])
+            _raw26, (rec26, dec26) = scene("c26.iff")
+            _raw27, (rec27, dec27) = scene("c27.iff")
+        names = {str(m) for t in rec["embedded_textures"] for m in (t.get("mapped_material_names") or ())}
+        self.assertIn("hatShader1", names)
+
+        def belly(rec_, dec_):
+            shape = [s for s in rec_["shapes"] if s["name"] == "coachBodyGrp1" and int(s["vertex_count"]) > 0][0]
+            pts = models.read_positions(bytes(dec_), shape, models._shape_lanes(rec_, shape, bytes(dec_)))
+            zs = [p[2] for p in pts if 0.0 < p[1] < 10.0 and abs(p[0]) < 25.0]
+            return max(zs) - min(zs)
+        # c27's average belly (about 43.9 cm deep) takes c26's heavy one (about 50 cm), within a centimetre
+        self.assertGreater(belly(rec, decoded), belly(rec27, dec27) + 4.0)
+        self.assertAlmostEqual(belly(rec, decoded), belly(rec26, dec26), delta=1.0)
+        self.assertIn("geometry", detail["textures"])
+
+
+@unittest.skipUnless(HAVE_RETAIL and HAVE_V061, "retail and v0.6.1 images not present (NFL2K5_V061_XISO)")
+class ReleasedDisc(unittest.TestCase):
+    def test_the_v061_coaches_read_previous_and_plan_back_to_the_new_models(self):
+        """b778 cm2 on the released v0.6.1 disc (read only): the moved clubs' earlier art and body ids read
+        ``previous``, c06 and c11 (no club's model now) read ``previous`` and plan back to retail, c33 and c36 are
+        still retail; the plan writes nothing but these parts."""
+        states = mc.resource_states(V061)
+        for team in ("TB", "PIT", "CLE", "JAX"):
+            self.assertEqual(states[f"coach:{team}"], "previous", team)
+        self.assertEqual((states["coach:CIN"], states["coach:IND"]), ("retail", "retail"))
+        self.assertEqual((states["body_id:PIT"], states["body_id:CLE"]), ("previous", "previous"))
+        self.assertEqual((states["body_id:TB"], states["body_id:CIN"], states["body_id:IND"]),
+                         ("retail", "retail", "retail"))
+        self.assertEqual((states["retired:c06.iff"], states["retired:c11.iff"]), ("previous", "previous"))
+        with self.assertRaises(mc.ModernCoachesError):
+            mc.plan_image(V061)                               # earlier art needs the user's retail image
+        plan, rows = mc.plan_image(V061, retail=RETAIL)
+        written = sorted(f"{r['kind']}:{r['team']}" for r in rows if r.get("written"))
+        scanned = {p.stem for p in (ROOT / "tools" / "b77" / "cf1_recipes").glob("*.json")}   # b778 cf1 and its follow-ups
+        coaches = {"TB", "PIT", "CLE", "CIN", "IND", "JAX"} | scanned
+        self.assertEqual(written, sorted([f"coach:{t}" for t in coaches]
+                                         + ["body_id:TB", "body_id:PIT", "body_id:CLE", "body_id:CIN", "body_id:IND",
+                                            "retired:c06.iff", "retired:c11.iff"]))
+        bodies = {r["team"]: (r["body_before"], r["body_after"]) for r in rows if r["kind"] == "body_id" and r.get("written")}
+        self.assertEqual(bodies, {"TB": (27, 0), "PIT": (26, 27), "CLE": (0, 26), "CIN": (6, 36), "IND": (11, 33)})
+        self.assertEqual(len(plan), len(written))
 
     def test_portraits_reproduce_their_pins_and_the_roster_names_retail_ids(self):
         with mc._outer_image()(RETAIL) as archive:

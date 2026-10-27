@@ -220,11 +220,13 @@ class Geometry(unittest.TestCase):
 
     def test_markers_positions(self):
         """The glow markers keep their records but no longer register glows; the flares ride the light ring; the
-        nosebleed seat is a 400-level seat on the west side."""
+        nosebleed marker (where the crowd-reaction cutaway stands) is b778 sd2's point in free air over the front of
+        the +x stands (it was a 400-level seat, and the cutaway's fans stood in the seats; test_b778_crowd_cutaway)."""
         self.assertTrue(self.model.light_points)
         x, y, z = self.model.nosebleed
-        self.assertGreater(x, 70.0)
-        self.assertGreater(y, 40.0)
+        self.assertEqual((x, y, z), sm.SoFi.CUTAWAY)
+        self.assertGreater(x, 30.0)
+        self.assertGreater(y, 4.0)
 
     def test_the_ribbons_read_left_to_right_from_the_field(self):
         """U grows with the loop, which runs to the right of a viewer at midfield facing any stand."""

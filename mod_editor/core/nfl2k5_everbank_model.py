@@ -459,7 +459,7 @@ class EverBank(sm.SoFi):
                facing=up_toward_field)
         lower = [sec["lower"] for sec in secs]
         self._rows_surface(m, "jx_seat", loop, lower, 2)
-        self._crowd(m, loop, lower)
+        self._crowd(m, loop, lower, ceiling=self.soffit_ceiling(secs))
         self._portals(m, loop, secs, "lower", p["portals"]["lower_row"])
         self._band(m, "LIGHT_jx_concourse", loop, secs, "lower_back", 0.0, 1.0, u_per_m=1 / 8.0)
         m2 = self.mesh("jx_bowl_b")
@@ -506,6 +506,10 @@ class EverBank(sm.SoFi):
 
     def _portals(self, m, loop, secs, key, row):
         q = self.p["portals"]
+        if not q.get("draw", False):
+            # b778 sd1: the flat dark opening read as a black square in the crowd (Noah's 2026-10-21 stream at
+            # EverBank, also Gillette, AT&T and MetLife), so no model draws it; "draw": True brings it back
+            return
         every = q["every_m"]
         for a, b, sa, sb_ in zip(loop[:-1], loop[1:], secs[:-1], secs[1:]):
             k0, k1 = math.floor(a.s / every), math.floor(b.s / every)
@@ -916,6 +920,13 @@ class EverBank(sm.SoFi):
         m.box("jx_steel", trolley - np.array([0.0, 14.0, 0.0]), ((1, 0, 0), (0, 1, 0), (0, 0, 1)), (0.08, 14.0, 0.08),
               uvscale=0.2)
 
+    #: b778 sd2: the crowd-reaction cutaway's point (the scene's ``nosebleed`` marker, written with its yaw by
+    #: ``mm.place_cutaway``): in free air over the front of the +x lower bowl, where every fan of the 180 retail crowd
+    #: cutscenes stands clear of the stands and every cutscene camera clear of the model (chosen by the sd2 search, 0.5 m
+    #: over the lowest clear point; held by test_b778_crowd_cutaway). It stood on an upper-deck row: the fans stood in
+    #: the seats (Noah's 2026-10-21 stream at Lucas Oil Stadium).
+    CUTAWAY = (52.0, 11.5, 0.00)
+
     def build(self):
         loop = self.loop
         self.stripped = []
@@ -934,15 +945,14 @@ class EverBank(sm.SoFi):
         self._end_board("north")
         self._lights()
         self._pools()
-        east = min(loop, key=lambda lp: math.pow(lp.nx - 1, 2) + math.pow(lp.z / 40.0, 2))
-        row = self.section(east)["upper"][4]
-        self.nosebleed = self.at(east, row[0] + 0.3, row[1] + 0.05)
+        self.nosebleed = self.CUTAWAY                 # b778 sd2: the crowd cutaway in free air (see CUTAWAY)
         self._facade()
         self._decks()
         self._daily_place()
         if self.construction:
             self._construction()
         self._exterior()
+        self._clear_crowd()               # b778 sd2: no crowd billboard through other geometry
         return self
 
 
@@ -1275,7 +1285,7 @@ def build_scene(retail_bundle, filename, model, dry_bundle=None):
         struct.pack_into("<3f", m.record, 0x10, *(v * 100 for v in p))
     for m in sc.markers:
         if m.name.startswith("nosebleed"):
-            struct.pack_into("<3f", m.record, 0x10, *(v * 100 for v in model.nosebleed))
+            mm.place_cutaway(m.record, model.nosebleed)         # b778 sd2: the crowd cutaway's point and yaw
     used = {sm_.material for s in sc.shapes for sm_ in s.submeshes}
     keep_m = [i for i, m in enumerate(sc.materials) if i in used or m.name in KEEP_MATERIALS_BY_CODE
               or m.name.startswith("digit_")]

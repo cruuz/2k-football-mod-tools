@@ -4,6 +4,8 @@ No record/table growth. The 380 native draft records and every team pointer
 stay intact. New identities consume the explicitly audited trailing create-
 player slots; unsupported rosters or occupied slots refuse transactionally.
 The supplied ratings are r1-ratings-v2.4 estimates, not official 2K ratings.
+b778-eq1: a new record's gear is the position's class-generator template gear
+(nfl2k5_equipment_fit); the measured skin/face in the plan is left alone.
 """
 from __future__ import annotations
 
@@ -38,18 +40,57 @@ def is_pack_input(edits):
             and len(edits.get("free_agent_pool", ())) == 239)
 
 
+def _create_new_player(document, player, row, college_check, appearance_data=None):
+    """Write one dated free agent from zero; the measured appearance arrives, the gear is positional."""
+
+    from . import nfl2k5_roster_records as rr
+    from . import nfl2k5_created_appearance as created_appearance
+    from . import nfl2k5_equipment_fit as equipment_fit
+    # Only the existing name pointers are kept until the pool allocator releases them. Never borrow a
+    # real player's face, history, abilities, injury, contract or unknown packed fields.
+    names = {k: player.record.values[k] for k in ("first_name_pointer", "last_name_pointer")}
+    player.record = rr.PlayerRecord.decode(bytes(rr.PLAYER_SIZE), scheme="one_pool", reference_year=2026)
+    player.record.values.update(names)
+    supplied = {**row["fields"], **row["ratings"], **row["appearance"]}
+    for field, value in supplied.items():
+        rr._require(field not in rr.POINTER_FIELDS, "Free-agent plan contains a raw pointer.")
+        player.record.set(field, value)
+    player.record.set("player_type", rr.FLAG_NFL_PLAYER)
+    # b778-ap1: an all-zero appearance takes the measured headshot table when the identity has one;
+    # a row that names nonzero skin/face/dreads is authored and wins.
+    if appearance_data is not None:
+        created_appearance.apply(player, supplied, row.get("gsis_id"), appearance_data)
+    # b778-eq1: the dated row carries identity, ratings and measured skin/face, not gear; take the
+    # position's own template gear so a new receiver does not read as a kicker.
+    equipment_fit.fill_created_player(document, player, supplied=supplied)
+    player.record.set("jersey", row["jersey"])
+    # c1 normalizes pbp_id after all additions; this correct native number
+    # fallback also makes the standalone writer safe without c1.
+    player.record.set("pbp_id", 9000 + row["commentary_number"])
+    document.set_name(player, "first", row["first"])
+    document.set_name(player, "last", row["last"])
+    # b778 fr1: never leave the record without a college (the Contracts and Free Agents panel
+    # reads it without a null check); unknown or blank names take the table's "None".
+    document.set_college(player, college_check.resolve_index(document.colleges, row.get("college")))
+    document.free_agents.append(player.offset)
+
+
 def apply_body(body, data=None):
     """Return new bytes and a scope receipt; never mutate the caller's data."""
     from . import nfl2k5_roster_records as rr
+    from . import nfl2k5_college_check as college_check
+    from . import nfl2k5_created_appearance as created_appearance
     data = load_data() if data is None else data
+    appearance_data = created_appearance.load_data()
     rr._require(data.get("schema") == SCHEMA and data.get("as_of") == "2026-10-05",
                 "Unsupported free-agent plan.")
     doc = rr.RosterDocument(bytes(body), scheme="one_pool", reference_year=2026)
     primary_count = len(doc.by_pool("primary"))
-    if primary_count == 2619:
-        from . import nfl2k5_spare_capacity
+    from . import nfl2k5_spare_capacity
+    if primary_count >= 2619:
         nfl2k5_spare_capacity.extended_layout(body)
-    rr._require(primary_count in (2479, 2619) and len(doc.by_pool("secondary")) == 68,
+    rr._require((primary_count in (2479, 2619) or (primary_count > 2619 and doc.version == 18))
+                and len(doc.by_pool("secondary")) == 68,
                 "Free-agent plan requires the audited 2479/68 tables or their exact 2619 spare-capacity extension.")
     by = {(p.pool, p.index): p for p in doc.players}
     old = data["existing"]
@@ -66,14 +107,16 @@ def apply_body(body, data=None):
         key = (row.get("pool", "primary"), row["index"])
         rr._require(key in by and key not in indices, "Duplicate or absent free-agent slot.")
         indices.add(key)
-        identity = (row["first"], row["last"])
+        # b778 sx1: a generational suffix is a display spelling, not a different person. The roster edits may now
+        # carry "Beckham Jr." where this dated plan says "Beckham"; compare the surname the commentary matches.
+        identity = (row["first"], rr.commentary_surname(row["last"]))
         rr._require(identity not in seen_names, "Duplicate free-agent identity.")
         seen_names.add(identity)
         p = by[key]
         rr._require(not p.teams and key not in doc.reserve_owner,
                     f"{p.display}: free-agent slot has a team/reserve owner.")
         if row in old:
-            rr._require((p.first, p.last) == identity and
+            rr._require((p.first, rr.commentary_surname(p.last)) == identity and
                         (p.offset in doc.free_agents or key in removed_keys),
                         f"Existing free-agent identity changed at {key}.")
             rr._require(set(row["appearance"]) == APPEARANCE_FIELDS,
@@ -81,10 +124,16 @@ def apply_body(body, data=None):
         else:
             rr._require(p.pool == "primary" and FIRST_TRAILING_SLOT <= p.index <= LAST_TRAILING_SLOT,
                         "New free agent would consume a draft or historic slot.")
-            same = (p.first, p.last) == identity and p.offset in doc.free_agents
+            same = (p.first, rr.commentary_surname(p.last)) == identity and p.offset in doc.free_agents
             vacant = (p.record.get("player_type") == 1 and p.group == "pool"
                       and p.first == "****************" and p.last == "****************")
-            rr._require(same or vacant, f"Trailing slot {p.index} is occupied; no player was replaced.")
+            # b778 sx1: the roster edits may already have written this new free agent's suffixed name into the
+            # trailing create slot, before this dated plan runs. It is still the same vacant slot.
+            named_slot = (p.pool == "primary" and FIRST_TRAILING_SLOT <= p.index <= LAST_TRAILING_SLOT
+                          and p.record.get("player_type") == 1 and p.group == "pool"
+                          and (p.first, rr.commentary_surname(p.last)) == identity)
+            rr._require(same or vacant or named_slot,
+                        f"Trailing slot {p.index} is occupied; no player was replaced.")
             rr._require(row["status"] == "unsigned_not_retired" and row.get("sources"),
                         "New free-agent identity needs unsigned/nonretirement evidence.")
             rr._require(0 <= row["jersey"] <= 99 and row["commentary_number"] == row["jersey"],
@@ -117,25 +166,7 @@ def apply_body(body, data=None):
             # written after creation; it does not reset a player's identity.
             for field, value in row["appearance"].items(): p.record.set(field, value)
             continue
-        # New record from zero, with only its existing name pointers kept until
-        # the pool allocator releases them. Never borrow a real player's face,
-        # history, abilities, injury, contract or unknown packed fields.
-        names = {k: p.record.values[k] for k in ("first_name_pointer", "last_name_pointer")}
-        p.record = rr.PlayerRecord.decode(bytes(rr.PLAYER_SIZE), scheme="one_pool", reference_year=2026)
-        p.record.values.update(names)
-        for field, value in {**row["fields"], **row["ratings"], **row["appearance"]}.items():
-            rr._require(field not in rr.POINTER_FIELDS, "Free-agent plan contains a raw pointer.")
-            p.record.set(field, value)
-        p.record.set("player_type", rr.FLAG_NFL_PLAYER)
-        p.record.set("jersey", row["jersey"])
-        # c1 normalizes pbp_id after all additions; this correct native number
-        # fallback also makes the standalone writer safe without c1.
-        p.record.set("pbp_id", 9000 + row["commentary_number"])
-        doc.set_name(p, "first", row["first"])
-        doc.set_name(p, "last", row["last"])
-        if row.get("college") in doc.colleges:
-            doc.set_college(p, doc.colleges.index(row["college"]))
-        doc.free_agents.append(p.offset)
+        _create_new_player(doc, p, row, college_check, appearance_data)
     doc._reindex_membership()
     # This writer owns appearance, new records and FA membership. Preserve
     # existing pbp words until the final commentary pass, including on replay.

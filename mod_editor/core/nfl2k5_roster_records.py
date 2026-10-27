@@ -934,6 +934,10 @@ def franchise_reference_year(payload: bytes | bytearray, preamble: int,
     """
     from . import nfl2k5_save_writer as writer
     writer.validate_franchise_base_year(base_year)
+    from . import nfl2k5_player_progression as progress
+    at = progress.footer_start(payload)
+    if at is not None:
+        payload = payload[:at]
     native_size = len(payload)
     from . import nfl2k5_my_career_save as career
     if native_size in career.SIZES:
@@ -2542,7 +2546,7 @@ def _entry(archive) -> Any:
     entries = archive.entries
     _require(len(entries) > ROST_OUTER_INDEX, f"the archive has no outer entry {ROST_OUTER_INDEX}")
     entry = entries[ROST_OUTER_INDEX]
-    _require(entry.size in (RESOURCE_SIZE, 0x92060),
+    _require(entry.size in (RESOURCE_SIZE, 0x92060, 0xB0060),
              f"outer entry {ROST_OUTER_INDEX} is 0x{entry.size:x} bytes, not the main roster")
     return entry
 
@@ -2580,7 +2584,8 @@ def load_image(path: Path | str, *, scheme: str = "retail", detect: bool = False
     with _outer_image()(path) as archive:
         entry = _entry(archive)
         resource = archive.read(entry.virtual_offset, entry.size)
-    _require(resource[:4] == b"ROST" and len(resource) in (RESOURCE_SIZE, 0x92060), "the roster resource is foreign")
+    _require(resource[:4] == b"ROST" and len(resource) in (RESOURCE_SIZE, 0x92060, 0xB0060),
+             "the roster resource is foreign")
     document = RosterDocument(resource[RESOURCE_HEADER_SIZE:], base=0, source=str(path),
                               resource_header=resource[:RESOURCE_HEADER_SIZE], scheme=scheme,
                               reference_year=reference_year)
@@ -2593,7 +2598,7 @@ def load_image(path: Path | str, *, scheme: str = "retail", detect: bool = False
 def resource_status(resource: bytes) -> str:
     """retail | edited | foreign for an outer-entry-5 payload."""
 
-    if len(resource) not in (RESOURCE_SIZE, 0x92060) or resource[:4] != b"ROST":
+    if len(resource) not in (RESOURCE_SIZE, 0x92060, 0xB0060) or resource[:4] != b"ROST":
         return "foreign"
     body = resource[RESOURCE_HEADER_SIZE:]
     if hashlib.sha256(body).hexdigest() == RETAIL_BODY_SHA256:
@@ -3516,6 +3521,10 @@ def apply(path: Path | str, source: Path | str | Mapping[str, Any], *,
         body, receipt = apply_body(before[RESOURCE_HEADER_SIZE:], edits, scheme=scheme, refresh_follows=refresh_follows)
         body, commentary_receipt = repair_commentary_body(body)
         receipt["commentary"] = {k: v for k, v in commentary_receipt.items() if k != "edits"}
+        # b778 fr1: the last word on the main roster: no player leaves without a college record (a null word
+        # stops the Franchise Contracts / Free Agents screens on that player). Only null words change.
+        from . import nfl2k5_college_check
+        body, receipt["college_null_repair"] = nfl2k5_college_check.heal_null_references(body, source="main roster")
         replacement = before[:RESOURCE_HEADER_SIZE] + body
         from . import nfl2k5_college_refs
         nfl2k5_college_refs.verify_table_edit(archive, before[RESOURCE_HEADER_SIZE:], body)
@@ -3913,9 +3922,9 @@ def number_commentary_id(jersey: int) -> int:
 
 
 def commentary_surname(last: str) -> str:
-    """Exact spelling, ignoring case and a separate generational suffix only."""
+    """Exact spelling, ignoring case and a separate generational suffix only (Jr., Sr., II, III, IV, V)."""
     import re
-    return re.sub(r"\s+(?:jr\.?|sr\.?|ii|iii|iv)$", "", last.strip(), flags=re.IGNORECASE).casefold()
+    return re.sub(r"\s+(?:jr|sr|ii|iii|iv|v)\.?$", "", last.strip(), flags=re.IGNORECASE).casefold()
 
 
 def recorded_surname_ids() -> dict[str, int]:
@@ -3938,8 +3947,51 @@ def recorded_surname_ids() -> dict[str, int]:
 PBP_REPLACED = frozenset({0, PBP_DOUBLE_ZERO, PBP_NUMBER_FALLBACK}) | PBP_UNRECORDED_NAMES
 
 
+# b778 rd1 (Noah's 10/21 stream: Berman called Jonathan Taylor "Chester Taylor"): a retail full-name cue is the recording of one
+# person's first AND last name. Roster generators that matched a new player to "a retail player with the same surname"
+# left 673 players on the wrong first name. data/nfl2k5_retail_name_cues.json is the retail table (cue -> the one retail
+# player who carries it, tools/b77/rd1_name_cues.py); a cue that names somebody with this surname but another first
+# name is replaced by the player's own recording, else the recorded surname, else his number.
+NAME_CUES_PATH = ROOT / "data" / "nfl2k5_retail_name_cues.json"
+
+
+def retail_name_cues() -> dict[int, tuple[str, str]]:
+    """cue -> (first, last) of the retail player it records; empty when the pinned table is absent."""
+    global _RETAIL_NAME_CUES
+    if _RETAIL_NAME_CUES is None:
+        table: dict[int, tuple[str, str]] = {}
+        try:
+            document = json.loads(NAME_CUES_PATH.read_text(encoding="utf-8"))
+            table = {int(cue): (str(row[0]), str(row[1])) for cue, row in document["cues"].items()}
+        except (OSError, ValueError, KeyError, IndexError, TypeError):
+            table = {}
+        _RETAIL_NAME_CUES = table
+    return _RETAIL_NAME_CUES
+
+
+_RETAIL_NAME_CUES: dict[int, tuple[str, str]] | None = None
+
+
+def _first_key(first: str) -> str:
+    return " ".join(str(first).split()).casefold()
+
+
+def is_wrong_name_cue(cue: int, first: str, last: str) -> bool:
+    """True when ``cue`` is a retail full-name call of somebody who shares this surname but not this first name."""
+    owner = retail_name_cues().get(cue)
+    return (owner is not None and commentary_surname(owner[1]) == commentary_surname(last)
+            and _first_key(owner[0]) != _first_key(first))
+
+
+def exact_name_cue(first: str, last: str) -> int | None:
+    """The one retail full-name cue that records exactly this first and last name, when there is one."""
+    wanted = (_first_key(first), commentary_surname(last))
+    hits = {cue for cue, (f, l) in retail_name_cues().items() if (_first_key(f), commentary_surname(l)) == wanted}
+    return next(iter(hits)) if len(hits) == 1 else None
+
+
 def commentary_id(last: str, jersey: int, current: int, *, surname_ids: Mapping[str, int] | None = None,
-                  sync_numbers: bool = True) -> int:
+                  sync_numbers: bool = True, first: str | None = None) -> int:
     """The play-by-play id a populated record should carry: c1's rules as one pure function.
 
     * ``current`` in PBP_REPLACED (0, 9100 "double zero", 9101, the unrecorded retail names) becomes the exact
@@ -3949,6 +4001,12 @@ def commentary_id(last: str, jersey: int, current: int, *, surname_ids: Mapping[
 
     The jersey must be 0..99: a real #0 player is called by the recorded "zero" clip 9000, never "double zero".
     """
+    if first is not None and is_wrong_name_cue(current, first, last):
+        # b778 rd1: the call names another player; his own recording if retail has one, else surname, else number
+        own = exact_name_cue(first, last)
+        if own is not None:
+            return own
+        current = PBP_NUMBER_FALLBACK
     if current in PBP_REPLACED:
         bank = recorded_surname_ids() if surname_ids is None else surname_ids
         found = bank.get(commentary_surname(last))
@@ -3970,9 +4028,10 @@ def normalise_player_commentary(player: Player, surname_ids: Mapping[str, int] |
     if not (player.first or player.last) or "*" in player.first + player.last:
         return False
     old = player.record.values["pbp_id"]
-    if old in PBP_REPLACED or (sync_numbers and PBP_NUMBER_BASE <= old < PBP_NUMBER_BASE + 100):
+    if (old in PBP_REPLACED or is_wrong_name_cue(old, player.first, player.last)
+            or (sync_numbers and PBP_NUMBER_BASE <= old < PBP_NUMBER_BASE + 100)):
         new = commentary_id(player.last, player.record.values["jersey"], old,
-                            surname_ids=surname_ids, sync_numbers=sync_numbers)
+                            surname_ids=surname_ids, sync_numbers=sync_numbers, first=player.first)
     else:
         return False
     player.record.set("pbp_id", new)

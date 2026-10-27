@@ -26,8 +26,11 @@ class ContractTests(unittest.TestCase):
   for digit in '0123456789':self.assertEqual(scores[digit]['size'][1],53)
   # The live face is proportional: a narrow 1 and broad rounded 0. The old
   # generic 40-column fit erased exactly this distinction.
-  self.assertAlmostEqual(scores['0']['size'][0]/53,49/54,delta=.01)
-  self.assertAlmostEqual(scores['1']['size'][0]/53,25/54,delta=.01)
+  # b778 sb4: the traced cells are widened 6% so the rendered ink matches the
+  # still's 49 x 54 score; the cell keeps its 2 px advance bearing.
+  self.assertAlmostEqual(scores['0']['size'][0],51.0,delta=.6)
+  self.assertAlmostEqual(scores['1']['size'][0],26.0,delta=.6)
+  self.assertAlmostEqual(scores['0']['size'][1],53.0,delta=.01)
   self.assertLess(scores['7']['size'][0],scores['0']['size'][0])
   self.assertGreater(len(set(c.atlas.getchannel('A').getdata())),64)
   self.assertFalse(list(sprite.DEFAULT_FOLDER.glob('*.ttf')))
@@ -93,8 +96,11 @@ class LogoFitTests(unittest.TestCase):
   display_aspect=(box[2]-box[0])/(box[3]-box[1])
   # Check the complete silhouette at its actual quad aspect. The authored
   # per-team fits preserve every stroke inside the larger s10 wells.
+  # b778 sb2: marks zoomed past the wing are cut at its rails, so the proportions are read from the same fit drawn
+  # whole (zoom held at 1); the zoom scales width and height alike.
   for team,expect in (('KC',1.59),('DEN',1.68),('BUF',None)):
-   im=exact.mnf_panel(team,'home',fit=art.logo_fit_for(team,fit));x0,y0,x1,y1=im.getchannel('A').getbbox()
+   whole=dict(art.logo_fit_for(team,fit));whole['zoom']=min(1.0,whole.get('zoom',1.0))
+   im=exact.mnf_panel(team,'home',fit=whole);x0,y0,x1,y1=im.getchannel('A').getbbox()
    aspect=(x1-x0)/(y1-y0)*display_aspect
    self.assertGreater(aspect,1.4,team)
    if expect is not None:self.assertAlmostEqual(aspect,expect,delta=0.12,msg=team)
@@ -105,7 +111,7 @@ class LogoFitTests(unittest.TestCase):
   zoomed=exact.mnf_panel('LV','home',fit={'height':1.0,'zoom':1.25,'shift_y':-.1})
   self.assertEqual(plain.size,zoomed.size)
   self.assertNotEqual(plain.tobytes(),zoomed.tobytes())
-  self.assertEqual(zoomed.getchannel('A').getbbox()[1],0)
+  self.assertEqual(zoomed.getchannel('A').getbbox()[1],1)   # b778 sb2: cut at the rail inside a clear one-texel border
   self.assertEqual(exact.mnf_panel('LV','home').tobytes(),
                    exact.mnf_panel('LV','home',fit={'zoom':1,'shift_x':0,'shift_y':0}).tobytes())
   for fit in ({'zoom':float('nan')},{'zoom':2.01},{'shift_x':.51},{'shift_y':float('inf')}):
@@ -127,7 +133,7 @@ class DisplayModelTests(unittest.TestCase):
   boxes={r['name']:r['box'] for r in spec['static']}
   boxes['bar']=spec['reference_boxes']['bar']
   for wide in (False,True):
-   for name in ('bar','capsule','plate','away_logo','home_logo','housing'):
+   for name in ('bar','capsule','plate','away_logo','home_logo','red'):
     src=boxes[name];shown=sprite.display_box(sprite.contracted(sprite.hud_box(src,wide),wide),wide)
     want=(src[2]-src[0])/(src[3]-src[1]);have=(shown[2]-shown[0])/(shown[3]-shown[1])
     self.assertAlmostEqual(have/want,1,delta=.005,msg=(name,wide))
@@ -254,7 +260,13 @@ class NativeTests(unittest.TestCase):
    word=struct.unpack_from('<I',c['live_decoded'],scene.layout.S1+row['vertex']*10)[0]
    team=home if possessing=='home' else away
    tint=self.preview.compiled.spec.get('plate_tints',{}).get(team)
-   self.assertEqual(word,0xff000000|int(tint[1:],16) if tint else exact.plate_argb(team))
+   wing=self.preview.compiled.spec.get('wing_tints',{}).get(team)
+   if tint and wing:
+    # b778 sb5: the tab takes the midpoint of the wing display shade and the plate accent.
+    w,p=int(wing[1:],16),int(tint[1:],16)
+    self.assertEqual(word,0xff000000|(((w&0xfefefe)>>1)+((p&0xfefefe)>>1)))
+   else:
+    self.assertEqual(word,0xff000000|int(tint[1:],16) if tint else exact.plate_argb(team))
    names={r['name']:r for r in g['materials']}
    for name,team in (('hscore_buga',home),('zscore_buga',away)):
     span=c['texture_spans'][names[name]['texture']];chunk,body,_=scene.decode(span)

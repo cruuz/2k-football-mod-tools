@@ -50,8 +50,10 @@ from mod_editor.core.apf2k8_splb_writer import (
     compile_book as compile_splb_book,
     decode_membership_payload as decode_splb_membership_payload,
     encode_membership_payload as encode_splb_membership_payload,
+    parse_book as parse_splb_book,
     read_book as read_splb_book,
 )
+from mod_editor.core import apf2k8_common_compiler as common_compiler
 from mod_editor.core.errors import ValidationError
 from . import play_design_service as play_design
 from . import coverage_service, scheme_service, field_material_service, playcalling_service
@@ -225,6 +227,8 @@ class ApfSession:
         self._master_play_cache = None
         self._master_inventory_cache = None
         self._splb_books = {}
+        self._design_cache = None
+        self._designed_books = {}
         self._splb_catalog_loaded = False
         self._splb_compiled = {}
         self._audo_source_fingerprints: (
@@ -2342,19 +2346,94 @@ class ApfSession:
             self._master_inventory_cache = (key, _parse(body))
         return self._master_inventory_cache[1]
 
-    def source_splb_book(self, outer_index):
-        # A session owns one immutable loaded source. Reload creates a new session.
+    # ---------------------------------------------- Design composition base
+    #
+    # Design Play/Formation is applied first.  Who lines up, Assignment Routes and Fine-tune
+    # Plays are compiled on top of its result, so every tab that lists plays, formations or
+    # book rows must read that result and not the untouched retail files.
+
+    def _design_modification(self, modifications=None):
+        selected = self._modifications if modifications is None else modifications
+        return selected.get(play_design.SELECTOR)
+
+    def _retail_splb_book(self, outer_index):
         if outer_index not in self._splb_books:
             self._splb_books[outer_index] = read_splb_book(self.source.index_0a, outer_index)
         return self._splb_books[outer_index]
 
-    def compiled_splb_book(self, outer_index, changes):
-        book = self.source_splb_book(outer_index)
+    def _design_state_for(self, plan, digest):
+        if self._design_cache is not None and self._design_cache[0] == digest:
+            return self._design_cache[1]
+        state = common_compiler.design_state(
+            self._master_play_source(), lambda outer: self._retail_splb_book(outer).body, plan)
+        self._design_cache = (digest, state)
+        self._designed_books = {}
+        return state
+
+    def _design_state(self, modifications=None):
+        """The staged design applied to the retail MASTER and its CPU books, or None."""
+
+        modification = self._design_modification(modifications)
+        if modification is None:
+            return None
+        if self._design_cache is not None and self._design_cache[0] == modification.replacement_sha256:
+            return self._design_cache[1]
+        return self._design_state_for(play_design.read_modification(modification), modification.replacement_sha256)
+
+    def _master_play_base(self, modifications=None) -> bytes:
+        """MASTER after Design (retail MASTER when no design is staged)."""
+
+        state = self._design_state(modifications)
+        return self._master_play_source() if state is None else state.master
+
+    def check_design_composition(self, others, plan, digest) -> None:
+        """Compile every staged edit that sits on top of a prospective design plan."""
+
+        maps = self._active_package_maps(others)
+        routes = self._active_route_requests(others)
+        changes = self._active_splb_changes(others)
+        if not (maps or routes or changes):
+            return  # nothing is stacked on the design; build_design already verified it
+        state = self._design_state_for(plan, digest)
+        try:
+            master = common_compiler.compose_master(state.master, maps, routes)
+            if changes:
+                common_compiler.check_fine_tune(
+                    state.books, lambda outer: self._retail_splb_book(outer).body,
+                    changes, common_compiler.play_count(master))
+        except ValidationError as exc:
+            raise ValidationError(
+                "This design does not fit the Assignment Routes, Who lines up or Fine-tune Plays edits "
+                f"already staged on top of it ({exc}). Revert those edits first, or change the design.") from exc
+
+    def source_splb_book(self, outer_index, modifications=None):
+        # A session owns one immutable loaded source. Reload creates a new session.
+        # With a design staged, the book is the one Fine-tune Plays will be compiled on top of.
+        state = self._design_state(modifications)
+        if state is not None and outer_index in state.books:
+            body = state.books[outer_index]
+            cached = self._designed_books.get(outer_index)
+            if cached is None or cached.body != body:
+                cached = parse_splb_book(body, outer_index)
+                self._designed_books[outer_index] = cached
+            return cached
+        return self._retail_splb_book(outer_index)
+
+    def master_play_count(self, modifications=None) -> int:
+        # Only Design Play/Formation appends plays; without one the shipped MASTER is retail
+        # (586 plays), so Fine-tune Plays keeps working without reading MASTER at all.
+        if self._design_modification(modifications) is None:
+            return 586
+        return common_compiler.play_count(self._compile_master_play(modifications))
+
+    def compiled_splb_book(self, outer_index, changes, modifications=None):
+        book = self.source_splb_book(outer_index, modifications)
         changes = tuple(sorted(changes, key=lambda change: change.selector))
-        key = (hashlib.sha256(book.body).digest(), changes)
+        plays = self.master_play_count(modifications)
+        key = (hashlib.sha256(book.body).digest(), changes, plays)
         cached = self._splb_compiled.get(outer_index)
         if cached is None or cached[0] != key:
-            compiled = compile_splb_book(book, changes)
+            compiled = compile_splb_book(book, changes, master_play_count=plays)
             self._splb_compiled[outer_index] = (key, compiled)
         return self._splb_compiled[outer_index][1]
 
@@ -2439,7 +2518,7 @@ class ApfSession:
         if len(profiles) > 1:
             raise ValidationError("Only one Coverage Geometry profile may be staged")
         geometry = tuple(coverage_service.read_profile(profiles[0])) if profiles else ()
-        source = self._master_play_source()
+        source = self._master_play_base(selected)
         key = (hashlib.sha256(source).digest(), maps, routes, geometry)
         if self._master_play_cache is not None and self._master_play_cache[0] == key:
             return self._master_play_cache[1]
@@ -2603,7 +2682,7 @@ class ApfSession:
         try:
             self._compile_master_play(updated)
         except ValidationError as exc:
-            raise SessionError(str(exc)) from exc
+            raise SessionError(f"{exc}{self._design_context_note(updated)}") from exc
         if updated == self._modifications:
             return 0
         changed = {
@@ -2614,6 +2693,17 @@ class ApfSession:
         self._record_undo()
         self._modifications = updated
         return len(changed)
+
+    def _design_context_note(self, modifications) -> str:
+        """One line saying which MASTER the failed check ran on (for bug reports)."""
+
+        try:
+            designed = self._design_modification(modifications) is not None
+            plays = common_compiler.play_count(self._master_play_base(modifications))
+            routes = len(self._active_route_requests(modifications))
+            return f" [design staged: {'yes' if designed else 'no'}; base MASTER plays: {plays}; staged routes: {routes}]"
+        except Exception as note_exc:  # diagnostics only
+            return f" [context unavailable: {note_exc}]"
 
     def replace_play_assignment_route(
         self,
@@ -2809,7 +2899,7 @@ class ApfSession:
         return tuple(out)
 
     def _compile_splb_groups(
-        self, active: Iterable[SplbMembershipChange | SplbTagMove]
+        self, active: Iterable[SplbMembershipChange | SplbTagMove], modifications=None
     ) -> None:
         """Compile each named book separately. The writer is still one book."""
 
@@ -2817,7 +2907,7 @@ class ApfSession:
         for change in active:
             groups.setdefault(change.outer_index, []).append(change)
         for outer_index, group in sorted(groups.items()):
-            self.compiled_splb_book(outer_index, group)
+            self.compiled_splb_book(outer_index, group, modifications)
 
     def apply_splb_membership_batch(
         self,
@@ -2903,7 +2993,7 @@ class ApfSession:
         active = self._active_splb_changes(updated)
         if active:
             try:
-                self._compile_splb_groups(active)
+                self._compile_splb_groups(active, updated)
             except ValidationError as exc:
                 raise SessionError(str(exc)) from exc
         if updated == self._modifications:
@@ -3260,13 +3350,33 @@ class ApfSession:
             active = self._active_splb_changes(updated)
             if active:
                 try:
-                    self._compile_splb_groups(active)
+                    self._compile_splb_groups(active, updated)
                 except ValidationError as exc:
                     raise SessionError(
                         "Reverting only this Fine-tune Plays edit would leave the "
                         f"rest outside the proved rule ({exc}). Use Revert changes "
                         "in Fine-tune Plays to drop them together."
                     ) from exc
+            self._record_undo()
+            self._modifications = updated
+            return True
+        if previous.kind == play_design.PROVIDER_KIND:
+            # Assignment Routes, Who lines up and Fine-tune Plays edits are compiled on top of the
+            # design; one that names a play, formation or book row the design added would be left
+            # pointing at nothing.  Prove the rest still compiles on the retail files first.
+            updated = dict(self._modifications)
+            updated.pop(asset_id)
+            try:
+                active = self._active_splb_changes(updated)
+                if self._active_package_maps(updated) or self._active_route_requests(updated):
+                    self._compile_master_play(updated)
+                if active:
+                    self._compile_splb_groups(active, updated)
+            except ValidationError as exc:
+                raise SessionError(
+                    "Reverting the design would leave Assignment Routes, Who lines up or Fine-tune Plays "
+                    f"edits that refer to something the design added ({exc}). Revert those edits first."
+                ) from exc
             self._record_undo()
             self._modifications = updated
             return True
@@ -3919,6 +4029,10 @@ class ApfSession:
                 if item.kind in {PLAY_ASSIGNMENT_ROUTE_KIND, PACKAGE_MAP_KIND, coverage.PROVIDER_KIND}
             }
             if master_play_modifications:
+                # Routes and Who-lines-up maps are checked on the designed MASTER when a design is
+                # staged; a design alone was already verified by its own validator.
+                master_play_modifications.update(
+                    {item.asset_id: item for item in validated if item.kind == play_design.PROVIDER_KIND})
                 try:
                     self._compile_master_play(master_play_modifications)
                 except ValidationError as exc:
@@ -3933,7 +4047,7 @@ class ApfSession:
             if splb_modifications:
                 active = self._active_splb_changes(splb_modifications)
                 try:
-                    self._compile_splb_groups(active)
+                    self._compile_splb_groups(active, {item.asset_id: item for item in validated})
                 except ValidationError as exc:
                     raise SessionError(
                         f"Project stock-playbook edit set is unsafe: {exc}"

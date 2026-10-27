@@ -1,0 +1,8 @@
+{
+ "who": "Ben Johnson",
+ "notes": "fair skin; short light-brown hair with a reddish cast, a little receded (under the Bears cap of c37 it shows at the sides and back); clean-shaven; blue eyes; a smile with teeth in the official headshot (mouth closed here)",
+ "eyes": [108, 138, 164],
+ "mouth": "close",
+ "hair_colour": [124, 92, 64],
+ "hair": {"front": 47.0, "recede": 1.4, "side": 43.5, "back": 34.5, "sideburn": 38.8, "edge": 0.3}
+}

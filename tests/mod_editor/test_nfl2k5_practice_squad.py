@@ -492,6 +492,39 @@ class ExecutionTests(PatchTests):
         self.assertEqual(self.call('ps_room',ecx=self.team),1)
         self.assertEqual(self.call('ps_trade_room',ecx=trade),1)
 
+    def test_in_season_full_roster_trade_with_one_free_physical_slot_is_allowed(self):
+        # b778-tr2 (PB68/PB90): a 2026 franchise club has 4-11 practice-squad
+        # players, so a 53-man active roster still has a free physical slot. The
+        # old guard compared the native apply's transient 54th active slot with
+        # the 53 active limit and refused every in-season offer before the
+        # Player Trade confirm dialog. Final counts, not the transient, must fit.
+        self.fill_twelve()
+        self.call(0xC3EB0,ecx=self.team,edx=self.word(self.team))
+        self.assertEqual(self.call('ps_promote',ecx=self.team,edx=self.word(self.team+52*4)),1)
+        self.assertEqual(self.byte(self.team+0x11c),53)
+        self.assertEqual(len(self.reserves()),11)
+        self.put(0xE576A4,8)
+        self.assertEqual(self.call('ps_limit',ecx=self.team),53)
+        trade=self.OUT+0x100
+        self.put(trade+8,self.team+500); self.put(trade+32,self.team)
+        self.put(trade+12,self.word(self.team+500)); self.put(trade+36,self.word(self.team))
+        self.assertEqual(self.call('ps_trade_room',ecx=trade),1)
+        incoming=self.take_fa()
+        self.assertEqual(self.call('trade_insert',ecx=self.team,edx=incoming),1)
+        self.assertEqual(self.byte(self.team+0x11c),54)
+        self.assertEqual(len(self.reserves()),11)
+        self.assertEqual(self.call(0xC3EB0,ecx=self.team,edx=self.word(self.team)),1)
+        self.assertEqual(self.byte(self.team+0x11c),53)
+        self.assertEqual(len(self.reserves()),11)
+        # A trade whose final active count would be 54 is still refused before any owner moves.
+        over=self.OUT+0x180
+        self.put(over+8,self.team+500); self.put(over+32,self.team)
+        self.put(over+12,self.word(self.team+500)); self.put(over+36,0)
+        arena=bytes(self.uc.mem_read(self.BASE,len(self.body)))
+        self.assertEqual(self.call('ps_trade_room',ecx=over),0)
+        self.assertEqual(self.call(0x2BC670,ecx=over,args=(0,)),0)
+        self.assertEqual(bytes(self.uc.mem_read(self.BASE,len(self.body))),arena)
+
     def test_draft_signing_with_capacity_preserves_hidden_tail(self):
         self.fill_twelve()
         before=self.reserves()

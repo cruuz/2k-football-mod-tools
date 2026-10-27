@@ -118,7 +118,15 @@ class TeamSelectCPU(LiveCPU):
         return {"index": self.index(team), "name": text(0x104), "abbr": text(0x108),
                 "category": self.r(team + 0x128), "players": self.read(team + 0x11C, 1)[0],
                 "identity": struct.unpack("<H", self.read(team + 0x118, 2))[0],
+                "label": self.label(team),
                 "pointers": sum(bool(self.r(team + 4 * i)) for i in range(65))}
+
+    def label(self, team):
+        """The Quick Game label pair (the playbook key's first element) after the import."""
+        pair = self.r(team + 0x110) if team else 0
+        if not pair:
+            return None
+        return [self.text(self.r(pair + 4 * i)) if self.r(pair + 4 * i) else None for i in range(2)]
 
     def pool(self):
         """Spare player records (flag bit 0). BFF50 hands out one with bit 2 clear; an import marks it."""

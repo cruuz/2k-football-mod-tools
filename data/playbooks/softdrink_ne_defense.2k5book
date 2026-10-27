@@ -9,10 +9,10 @@
   "notes": "DESIGN: Zak Kuhr (Vrabel / Bowen multiple); 2025 baseline NE. Clean technique fronts (pb/v2/defense/design.py), retail 2K5 coverage scripts with native pre-snap alignment, situational formation ratings and CPU score bands fitted to the sourced 2025 coverage and blitz rates. Exact offense source required. Gameplay unwitnessed."
  },
  "base": {
-  "book_fingerprint": "23846f0759e6fbd953fe8e2f490f56fec496e5e43d0cb74d2e215ba49a53c5bd",
+  "book_fingerprint": "ebbc4f5d291ba3dbc6054c70c6ede070dcfbd3ee9b7c88493625eae546d6c66a",
   "donor_formation_count": 50,
   "donor_play_count": 250,
-  "donor_node_count": 2239
+  "donor_node_count": 2203
  },
  "budget": {
   "formations": 50,
@@ -1569,7 +1569,7 @@
     [[27, [2, 0, 0, 365.76, 0, 0]], [14, [0, 274.32, 0, 7, 0, 0, 0, 0]]],
     [[27, [2, 0, -335.28000000000003, 426.72, 0, 0]], [14, [0, 91.44, 0, 10, 0, 0, 0, 0]]],
     [[27, [0, 0, 640.08, 91.44, 0, 0]], [13, [0, 1645.92, 7, 9, 8, 0, 0]]],
-    [[27, [0, 0, 0, -274.32, 16, 0]], [11, [1, 16, 0]]],
+    [[27, [0, 0, 0, -60.96, 16, 0]], [11, [1, 16, 0]]],
     [[27, [2, 0, 0, 182.88, 0, 0]], [14, [0, 182.88, 0, 6, 0, 0, 0, 0]]]
    ],
    "defense_formation": "Bear",

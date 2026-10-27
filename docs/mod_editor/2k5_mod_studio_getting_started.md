@@ -1,4 +1,4 @@
-# 2K5 Mod Studio v1.0 RC112: Getting Started (beta 77.1)
+# 2K5 Mod Studio v1.0 RC113: Getting Started (beta 78)
 
 2K5 Mod Studio lets you modify your own legally dumped USA Xbox copy of
 **ESPN NFL 2K5** without using a hex editor. Think of the source XISO as the
@@ -22,6 +22,16 @@ https://discord.gg/dpMJCnJZD (also under Help > Join the Discord… in both stud
 Windows Setup includes its own Python 3.12.10 and NumPy 1.26.4 with the other
 Studio packages. Update now installs the complete new Windows runtime too.
 If a bundled package is missing, reinstall the latest Setup.
+
+The Windows `.bat` launchers in a source ZIP or portable archive now set up a
+private `.venv` beside the application on the first run. They install
+`packaging/requirements-studio.txt` automatically (about 110 MB to download,
+about 400 MB on disk) and need 64-bit Python 3.11 or 3.12 from python.org plus
+an internet connection. A source ZIP also downloads the reviewed data files
+the Studio needs from the same release (about 65 MB); a portable archive
+already contains them. No administrator rights are used. To repair that
+runtime, run `2K5-Mod-Studio.bat --setup`; to use a different interpreter, set
+`MOD_STUDIO_PYTHON` to its full path before running the launcher.
 
 The Linux tarball contains application files and no Python runtime. Use Python
 3.11 or 3.12 with `packaging/requirements-studio.txt`, which pins NumPy 1.26.4 to

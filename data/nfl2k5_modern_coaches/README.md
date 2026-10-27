@@ -1,4 +1,4 @@
-# 2026 head coaches (beta 77 co1, co2, co3, cm1)
+# 2026 head coaches (beta 77 co1, co2, co3, cm1; b778 cm2, cf1)
 
 Authored textures for `mod_editor/core/nfl2k5_modern_coaches.py`, one folder per club (2026 abbreviations), each at
 the native size of the coach model's texture slot (the 4x masters stay with the art job; they go into the 2K5 Edition
@@ -24,6 +24,26 @@ The module reserves these ids in the coach records. A plain build fills the rese
 disc's `nophoto` pixels. Retail slots and the rejected co3 renders become that fallback; external league pictures
 are kept. Applying the league project replaces either old photo crops or rejected renders with its real headshots.
 The painted 3D coach faces and their pins are unchanged.
+
+Skin (b778 cm2): every coach stands on a retail model of his own skin (the module's `DARK_SKIN_MODELS`: the 2004
+Black head coaches' models c00, c05, c06, c11, c19 and the created-team coaches c50, c51; `pins.json` `bodies[club].skin`
+for the coach, checked when the pins load). Tampa Bay's Todd Bowles wears Dennis Green's c00 (Noah 10/21: "we should use
+an actual black model"); Todd Monken (CLE, c26), Zac Taylor (CIN, c36) and Shane Steichen (IND, c33) moved off c00, c06
+and c11. Pittsburgh's Mike McCarthy wears the capped c27, with his heavy build carried over in `PIT/geometry.json`.
+`superseded_body_codes` names a model an earlier version wrote into a club's record (rewritten on such a disc); `retired`
+lists the models no club wears any more (c06, c11), put back to retail on such a disc. Recipes and the 3D move of the
+face detail between head meshes: `tools/b77/cm2_coach_models.py`; pins: `tools/b77/cm2_record_pins.py --retail RETAIL.iso --write`.
+
+Scanned faces (b778 cf1: JAX Liam Coen, PIT Mike McCarthy, TB Todd Bowles, CLE Todd Monken; Noah 10/22 "Build every
+single coach a proper face"): `head.png` is his official headshot projected onto the head mesh of the model he wears, in
+3D (`tools/b77/cf1_face_scan.py`): 478 face-mesh points found on a front render of that model's head and on the photo,
+the photo's head pose solved from them, the face of the mesh reshaped toward his proportions (`geometry.json` gains a
+`coachHeadGrp1` entry: face vertices only, up to 0.8 cm, left-right symmetric; the low-detail head and the headset
+microphone follow; the scalp, ears, neck and any earlier body edit stay), the photo's side light evened out over the
+surface, an open or smiling mouth closed, the head around the face painted in his measured skin and hair (cm1's
+painter) and blended without a seam. The recipe per coach is `tools/b77/cf1_recipes/<club>.json`; the headshots stay
+private. Re-pin only the scanned clubs with `python3 tools/b77/cf1_record_pins.py --retail RETAIL.iso --teams JAX,...
+--write` (earlier digests carried forward as `superseded_sha256`).
 
 Bodies (co2): the coach record's `+0x18` names the model the game loads (`c%02d.iff`). Fourteen clubs' coaches wear
 another retail body that fits their build better (`pins.json` `bodies`: the model and why; `body_code` per club), and

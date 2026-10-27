@@ -65,7 +65,11 @@ class NativeTests(unittest.TestCase):
         cls.before = AccuracyMachine(retail)
         # b777 qb4's quick-throw placement (LEAD) moves some short targets on purpose; it has its own native test
         # (test_nfl2k5_qb_accuracy_quick_lead.py). These accuracy assertions run the owner with that tail retail.
-        cls.after = AccuracyMachine(without_quick_lead(accuracy.apply(retail)[0]))
+        applied = accuracy.apply(retail)[0]
+        cls.after = AccuracyMachine(without_quick_lead(applied))
+        cls.full = AccuracyMachine(applied)                        # b778 qa1: screens are checked on the whole owner
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage
+        cls.after_image = XbeImage(applied)
         cls.rows = {}
         for state in ("set", "roll_human", "roll_cpu"):
             for route in SHORT + ("seam20", "go30", "post25"):
@@ -135,17 +139,27 @@ class NativeTests(unittest.TestCase):
         ahead_after = statistics.mean(r["ahead_yd"] for r in run_rows(1))
         self.assertLess(ahead_after, ahead_before / 2 + 0.05)
 
-    def test_screen_pass_leads_the_back_instead_of_his_release_spot(self):
+    def test_screen_passes_are_retail_and_lead_a_moving_back(self):
+        """b778 qa1: the owner leaves screen routes (kind 9) to retail. Retail leads a MOVING screen receiver by his
+        velocity (the fallback 0x2F4350); b777's screen operand aimed at his route spot instead, which is behind a back
+        who runs on through it (the v0.6.1 bug). A receiver standing at his spot is aimed at his spot either way."""
         from nfl2k5_qb_accuracy_native import screen_target
-        for position, velocity in (((4., -4.5), (7., 2.)), ((6., -3.), (6., 2.)), ((9., -2.), (4., 1.))):
-            old = screen_target(self.before, position, velocity)
-            new = screen_target(self.after, position, velocity)
-            self.assertAlmostEqual(old["aim"][0], position[0], places=3)          # retail: where he WAS
-            self.assertGreater(new["aim"][0] - position[0], 1.5)                   # now: ahead along his path
-            self.assertLess(abs(new["aim"][0] - new["receiver"][0]), 0.75)       # on him at arrival
-            self.assertGreaterEqual(new["aim"][1], new["receiver"][1] - 0.01)      # never behind him
-        still = [screen_target(m, (2.5, -5.3), (0., 0.)) for m in (self.before, self.after)]
-        self.assertEqual(still[0], still[1])                                       # a set screen back: retail
+        cases = (((4., -4.5), (7., 2.), (11., -1.5), 1.0),       # running out to his spot
+                 ((11., -1.5), (7., .5), (11., -1.5), 0.),       # at his spot, still running
+                 ((13., -1.3), (7., .5), (11., -1.5), -.3),      # past his spot, still running
+                 ((11., -1.5), (0., 0.), (11., -1.5), 0.))       # standing at his spot
+        for position, velocity, spot, due in cases:
+            old = screen_target(self.before, position, velocity, spot=spot, due=due)
+            new = screen_target(self.full, position, velocity, spot=spot, due=due)
+            self.assertEqual(old, new)
+            if any(velocity):
+                self.assertGreater(new["velocity_fallback"], 0)
+                self.assertAlmostEqual(new["aim"][0], new["receiver"][0], delta=.6)    # on him at arrival
+                self.assertGreater(new["aim"][1], new["receiver"][1])                  # behind the line: +1 yd up
+                self.assertLess(new["aim"][1] - new["receiver"][1], 1.25)
+            else:
+                self.assertAlmostEqual(new["aim"][0], spot[0], places=3)
+        self.assertEqual(self.after_image.read(0x226832, 3), bytes.fromhex("83fa09"))   # cmp edx, 9: retail
 
     def test_cpu_on_the_run_throws_arrive_higher(self):
         low = [sum(pair[i]["ball_height_cm"] < 100 for (state, route, v, _s), pair in self.rows.items()

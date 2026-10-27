@@ -411,6 +411,8 @@ def _inspect(payload):
         collection_instructions = tuple(metadata.collections.instructions(table, len(fields)))
     for va, size, digest in GUARDS:
         content = bytearray(image.read(va, size))
+        from . import nfl2k5_module_loader as module_loader
+        content = bytearray(module_loader.canonical_context(payload, va, bytes(content)))
         for site, before, after in collection_instructions:
             first, end = max(va, site), min(va + size, site + len(before))
             if first < end:

@@ -247,8 +247,8 @@ def code_for(code_va, data_va, *, letter_grades=False, grade_bands=None, home=No
     out = bytearray(assembly.CODE)
     labels = {name: code_va + offset for name, offset in assembly.LABELS.items()}
 
-    def reserve(name, size):
-        out.extend(bytes((-len(out)) % 4))
+    def reserve(name, size, align=4):
+        out.extend(bytes((-len(out)) % align))
         at = len(out)
         labels[name] = code_va + at
         out.extend(bytes(size))
@@ -269,7 +269,7 @@ def code_for(code_va, data_va, *, letter_grades=False, grade_bands=None, home=No
             text_pool.extend((value + "\0").encode("ascii"))
             return
         content = (value + "\0").encode("utf-16le")
-        at = reserve(name, len(content))
+        at = reserve(name, len(content), align=2)
         out[at:at + len(content)] = content
 
     for name, value in (
@@ -349,11 +349,11 @@ def code_for(code_va, data_va, *, letter_grades=False, grade_bands=None, home=No
     at = reserve("m3_caps", 17 * len(progression.FIELDS))
     out[at:at + 17 * len(progression.FIELDS)] = bytes(v for row in progression.CAPS for v in row)
     legacy.require(2 * len(text_pool) <= 1152, "MyCareer text RW exceeds 1408..2559")
-    at = reserve("text_template", len(text_pool))
+    at = reserve("text_template", len(text_pool), align=2)
     out[at:at + len(text_pool)] = text_pool
     labels["text_bytes"] = len(text_pool)
     legacy.require(2160 + 2 * len(text_pool2) <= 2700, "MyCareer M3 text RW exceeds 2160..2699")
-    at = reserve("text2_template", len(text_pool2))
+    at = reserve("text2_template", len(text_pool2), align=2)
     out[at:at + len(text_pool2)] = text_pool2
     labels["text2_bytes"] = len(text_pool2)
     menu = bytearray()
@@ -371,7 +371,7 @@ def code_for(code_va, data_va, *, letter_grades=False, grade_bands=None, home=No
         extra_menu.extend(bytes(size))
         return at
 
-    menu_reserve("club_menu", 56)
+    menu_reserve("club_menu", 44)
     for name in ("entry_menu", "apartment", "team_menu", "practice_menu"):
         menu_reserve(name, 44)
     for name in ("m3_progress_menu", "m3_prep_menu", "m3_draft_menu", "m3_upgrade_menu", "m3_settings_menu"):
@@ -422,7 +422,7 @@ def code_for(code_va, data_va, *, letter_grades=False, grade_bands=None, home=No
                          else 3)
     legacy.require(len(extra_menu) <= 1900, "M3 menus exceed owned workspace")
     compressed = _encode_menu(extra_menu)
-    at = reserve("m3_menu_template", len(compressed))
+    at = reserve("m3_menu_template", len(compressed), align=2)
     out[at:at + len(compressed)] = compressed
     labels["m3_menu_bytes"] = len(extra_menu)
     # mc2: flag 0x10 lets B reach mode_event (native event 10) on these two.
@@ -452,7 +452,7 @@ def code_for(code_va, data_va, *, letter_grades=False, grade_bands=None, home=No
                      0x5016C8, 0, 0xE7D7E0, 0xAC9800, 0x02400044, 0x018D0052, 0x55)
     legacy.require(len(menu) <= 1080, "MyCareer menu RW exceeds 200..1279")
     encoded = _encode_menu(menu)
-    at = reserve("menu_template", len(encoded))
+    at = reserve("menu_template", len(encoded), align=2)
     out[at:at + len(encoded)] = encoded
     labels["menu_bytes"] = len(menu)
     symbols = {"code": code_va, "state": data_va, "m3": EXTRA_VA, "": 0,
@@ -555,7 +555,7 @@ def check_context(payload, edits, *, installed=False):
     cap_va = 0x13EF17
     cap_before = bytes.fromhex("c70578c2e300743a0100")
     if image.read(cap_va, len(cap_before)) != cap_before:
-        legacy.require(economy.status(payload) == "applied", "foreign initial-cap economy companion")
+        legacy.require(economy.status(payload) in ("applied", "legacy"), "foreign initial-cap economy companion")
         cap_after = next(s.patched for s in economy.sites() if s.va == cap_va)
         camera_edits.append(("economy_initial_cap", cap_va, cap_before, cap_after))
     # The optional dated pick owner shares this initializer. Normalize only
@@ -698,16 +698,79 @@ def check_context(payload, edits, *, installed=False):
         legacy.require(hashlib.sha256(raw).hexdigest() == digest, f"foreign native career context at {va:#x}")
 
 
+def _star_career_view(payload, image, va, before):
+    """b778 bd3: the star-career owner's class_start hook (0x2BE940, 11 bytes) also rewrites the class loop's jump at
+    0x2BE946, which is the legacy MyCareer "generation" site the generic build leaves retail. Accept those bytes only
+    as that owner's exact installed hook, after its complete status reads applied."""
+    from . import nfl2k5_star_career as star
+    return star.canonical_context(payload, va, image.read(va, len(before))) == before
+
+
+def _player_progress_view(payload, edits):
+    """b778 bd3: the Player Progress screen (full) installs after MyCareer and chains its franchise footer hooks over
+    MyCareer's inline ones: the size, save and load-end calls go to its code, which calls the displaced MyCareer
+    handlers recorded in its trailer, and its admission check (which accepts the MyCareer footer size) replaces
+    MyCareer's. Show MyCareer's own bytes at those sites only for that owner's exact complete install whose recorded
+    targets are this install's handlers; anything else is left for the checks below to refuse."""
+    from . import nfl2k5_player_progress_screen as progress
+    chained = progress.chained_footer_sites(payload)
+    if not chained:
+        return payload
+    image = XbeImage(payload)
+    view = bytearray(payload)
+    # Its other hooks sit in native routines MyCareer's guards hash (the new-season stage call at 0x13EF03 among
+    # them); none is a MyCareer site. They read as the retail bytes they replaced.
+    own = [(va, len(after)) for _n, va, _b, after in edits]
+    for _label, va, before, after in progress.installed_main_sites(payload):
+        if any(va < at + size and at < va + len(after) for at, size in own):
+            return payload
+        off = image.offset(va, len(before))
+        view[off:off + len(before)] = before
+    for _name, va, _before, after in edits:
+        if va not in chained or image.read(va, len(after)) == after:
+            continue
+        installed, target = chained[va]
+        if len(installed) != len(after):
+            return payload
+        if target is not None and not (after[:1] == b"\xe8" and va + 5 + struct.unpack_from("<i", after, 1)[0] == target):
+            return payload
+        off = image.offset(va, len(after))
+        view[off:off + len(after)] = after
+    if bytes(view) == payload:
+        return payload
+    from .nfl2k5_bump_strength import _sections, section_digest
+    for section in _sections(view):        # the private view keeps its own section digests consistent
+        view[section.header_offset + 36:section.header_offset + 56] = section_digest(view, section)
+    return bytes(view)
+
+
+def player_progress_view(payload):
+    """The payload as MyCareer sees it beside the Player Progress screen (_player_progress_view), for owners whose
+    guards hash MyCareer's footer hooks (franchise Auto Save). Unchanged without that exact composition."""
+    try:
+        found = any(a["owner"] == OWNER for a in space.layout(payload)["allocations"])
+        if not found:
+            return payload
+        code, data = legacy.allocations(payload)
+        edits = sites(code["va"], data["va"], season_birth_dates=bool(_season_birth_date_sites(payload)))
+        return _player_progress_view(payload, edits)
+    except (ValueError, KeyError, IndexError, TypeError, struct.error, OverflowError):
+        return payload
+
+
 def _recognize(payload):
     from . import nfl2k5_era_rules as era
     payload = era.underlying_view(payload)
     found = any(a["owner"] == OWNER for a in space.layout(payload)["allocations"])
     code, data = legacy.allocations(payload) if found else ({"va": 0}, {"va": 0})
     edits = sites(code["va"], data["va"], season_birth_dates=bool(_season_birth_date_sites(payload)))
+    installed = payload
+    payload = _player_progress_view(payload, edits)
     image = XbeImage(payload)
     own_sites = {va for _, va, _, _ in edits}
-    legacy.require(all(image.read(va, len(before)) == before for _, va, before, _ in legacy.sites(0, 0)
-                       if va not in own_sites), "legacy MyCareer hooks in generic build")
+    legacy.require(all(image.read(va, len(before)) == before or _star_career_view(installed, image, va, before)
+                       for _, va, before, _ in legacy.sites(0, 0) if va not in own_sites),
+                   "legacy MyCareer hooks in generic build")
     state = "retail"
     if found:
         extra = [a for a in space.layout(payload)["allocations"] if a["owner"] == EXTRA_OWNER]

@@ -1497,7 +1497,15 @@
    },
    "rushers": 5,
    "spy_slots": [],
-   "authored_nodes": 0
+   "authored_nodes": 2,
+   "presnap_kept_onside": [
+    {
+     "slot": 10,
+     "walkup_yd": 3.0,
+     "now_yd": 0.67,
+     "presnap_depth_yd": 1.0
+    }
+   ]
   },
   {
    "play": 194,
@@ -1566,7 +1574,15 @@
    },
    "rushers": 5,
    "spy_slots": [],
-   "authored_nodes": 14
+   "authored_nodes": 14,
+   "presnap_kept_onside": [
+    {
+     "slot": 9,
+     "walkup_yd": 3.0,
+     "now_yd": 0.67,
+     "presnap_depth_yd": 1.0
+    }
+   ]
   },
   {
    "play": 197,
@@ -1936,13 +1952,13 @@
  "receipt": {
   "team": "CHI",
   "offense_pack": "data/playbooks/softdrink_chi_modern.2k5book",
-  "offense_pack_sha256": "35cb22b9d1f954f50ba07cfa47708fed5080826f18687cfbfec888793b1764fe",
-  "source_fingerprint": "244091fe34ba4a8a3e42f1ff7e39cd702ae11cc5441dc33afc516ea0bd9ed46a",
-  "replacement_sha256": "1593765765ec3518c791a8e001aee0bb7bacbb519d15f5622c2f63701605b397",
-  "semantic_sha256": "ea9e672a13a8ea4c7508d95656b5ed806c7427680d5f133dc8d35f7c63007677",
+  "offense_pack_sha256": "c7e201f61c9a05739066079a7d1540ccfa5495566c1aa7bd7a1d7eee6dddb25c",
+  "source_fingerprint": "11e48b4c183c84a54f1bbf94a9fe311cb040a8a373a09ef76f595a190485f9dc",
+  "replacement_sha256": "ca9fa84ad7000d6866c8e567d2d680d1acd4e7464bd60600ab5174c2ac3fbf80",
+  "semantic_sha256": "37af008037be4d8a5b43fd4b35723bb0be17b8d9c6602811afcbca4658218ab2",
   "plays": 64,
   "formations": 4,
-  "nodes": 2797,
+  "nodes": 2812,
   "node_capacity": 3500,
   "formation_count": 50,
   "play_count": 270,
@@ -1951,6 +1967,6 @@
   "spy_play": null,
   "native_scoring_faults": 0,
   "pack": "data/playbooks/softdrink_chi_defense.2k5book",
-  "pack_sha256": "e708b0ea899fe61b15629a639d7fbb12dc25533bb973c90f02a8f1c0ec1f6206"
+  "pack_sha256": "13d3ff66f9e6d2e638fdf6c8134964346105bba7a7e7e15afc34e70a56200639"
  }
 }

@@ -3,6 +3,16 @@
 This is an opt-in roster-edits directive, never a replacement for arbitrary
 rosters or existing franchise saves. New players require unused create slots.
 The primary index remains the identity of every existing player.
+
+b778-eq1: a created player's gear comes from the same position's class-generator
+templates (nfl2k5_equipment_fit), so a dated receiver does not stay in the zero
+Face Mask 1 that retail kickers and punters wear.  Existing players' gear is
+never read or written.
+
+b778-ap1: a created player's skin, generic face, body and checked dreads bit
+come from the measured headshot table (nfl2k5_created_appearance), so the 2026
+players are not all the Lightest default.  A row that carries its own nonzero
+skin/face/dreads is authored and wins; hair style and photo id are never touched.
 """
 from __future__ import annotations
 
@@ -52,33 +62,58 @@ def _repair_create_buffers(doc):
     return repaired
 
 
+def _without_suffix(last):
+    """The surname without a separate generational suffix (Jr., Sr., II, III, IV, V); every other character exact.
+
+    b778 sx1 keeps the suffix on real players' names ("Cedrick Wilson Jr.") and treats it as a display spelling of
+    the same person (nfl2k5_free_agents compares surnames this way); a refresh dated before that change still names
+    the same player without it."""
+    import re
+    return re.sub(r"\s+(?:jr|sr|ii|iii|iv|v)\.?$", "", last.strip(), flags=re.IGNORECASE)
+
+
+def _same_person(player, first, last, birth):
+    return (player.first, _without_suffix(player.last), str(player.record.birth_date)) == (first, _without_suffix(last), birth)
+
+
 def apply_body(body, plan):
     from . import nfl2k5_roster_records as rr
+    from . import nfl2k5_college_check as college_check
+    from . import nfl2k5_created_appearance as created_appearance
+    from . import nfl2k5_equipment_fit as equipment_fit
     from . import nfl2k5_practice_squad as ps
+
+    appearance_data = created_appearance.load_data()
+    appearance_created = []
+    appearance_written = {}
 
     rr._require(plan.get("schema") == SCHEMA, "Unknown roster refresh schema")
     datetime.date.fromisoformat(plan["as_of"])
     doc = rr.RosterDocument(bytes(body), scheme="one_pool", reference_year=2026)
-    rr._require(doc.version == 17, "Roster refresh is for the disc, not a franchise save")
+    rr._require(doc.version in (17, 18), "Roster refresh is for the disc, not a franchise save")
     from . import nfl2k5_spare_capacity as spare
-    # 2619: the pack's spare capacity; more on a replay after the import floor (b775) added blank records.
-    rr._require(spare.PRIMARY_AFTER <= len(doc.by_pool("primary")) <= spare.PRIMARY_AFTER + spare.MAX_FLOOR_RECORDS,
-                "Refresh needs the pack's 2619-player capacity")
+    primary_count = len(doc.by_pool("primary"))
+    # 2619: the pack's spare capacity; more on a replay after the import floor (b775) added blank records,
+    # or after the b778 fa4 capacity growth (version 18), which validates its own moved tables.
+    if doc.version == 18:
+        spare.extended_layout(body)
+        rr._require(primary_count >= spare.PRIMARY_AFTER, "Refresh needs the pack's 2619-player capacity")
+    else:
+        rr._require(spare.PRIMARY_AFTER <= primary_count <= spare.PRIMARY_AFTER + spare.MAX_FLOOR_RECORDS,
+                    "Refresh needs the pack's 2619-player capacity")
     by = {p.index: p for p in doc.by_pool("primary")}
     guards = plan["identity_guards"]
     rr._require(len({g[0] for g in guards}) == len(guards), "Duplicate identity guard")
     for index, first, last, birth in guards:
         p = by.get(index)
-        rr._require(p is not None and (p.first, p.last, str(p.record.birth_date)) ==
-                    (first, last, birth), f"Pack identity guard failed at {index}")
+        rr._require(p is not None and _same_person(p, first, last, birth), f"Pack identity guard failed at {index}")
     rows = plan["players"]
     rr._require(len({r["index"] for r in rows}) == len(rows), "Duplicate refresh identity")
     rr._require(len({r["gsis_id"] for r in rows}) == len(rows), "Duplicate source identity")
     for row in rows:
         p = by.get(row["index"])
         rr._require(p is not None and p.group != "draft_class", "Refresh touches absent/draft record")
-        same = (p.first, p.last, str(p.record.birth_date)) == (
-            row["first"], row["last"], row["birth_date"])
+        same = _same_person(p, row["first"], row["last"], row["birth_date"])
         vacant = (p.index >= 2464 and p.group == "pool" and
                   p.first == p.last == "****************" and p.record.get("player_type") == 1)
         rr._require(same or (row.get("new") is True and vacant),
@@ -135,10 +170,20 @@ def apply_body(body, plan):
             for k, v in row["fields"].items():
                 p.record.set(k, v)
             p.record.set("player_type", rr.FLAG_NFL_PLAYER)
+            # b778-ap1: the row's identity/ratings arrive without an appearance; use the measured headshot
+            # table (skin/face/BMI body/checked dreads).  A row with its own nonzero skin/face/dreads wins.
+            written = created_appearance.apply(p, row["fields"], row["gsis_id"], appearance_data)
+            if written:
+                appearance_written[row["gsis_id"]] = written
+            appearance_created.append(row["gsis_id"])
+            # b778-eq1: a created record keeps the nflverse row's identity/ratings only; its gear comes
+            # from the position's own class-generator templates (a WR is not left in Face Mask 1).
+            equipment_fit.fill_created_player(doc, p, supplied=row["fields"])
             doc.set_name(p, "first", row["first"])
             doc.set_name(p, "last", row["last"])
-            if row.get("college") in doc.colleges:
-                doc.set_college(p, doc.colleges.index(row["college"]))
+            # b778 fr1: never leave the record without a college (the Contracts and Free Agents panel
+            # reads it without a null check); unknown or blank names take the table's "None".
+            doc.set_college(p, college_check.resolve_index(doc.colleges, row.get("college")))
             added += 1
         else:
             # A replay must preserve later ratings, appearance and history edits.
@@ -186,6 +231,8 @@ def apply_body(body, plan):
     return result, {"as_of": plan["as_of"], "added": added, "teams": 32,
                     "create_buffers_repaired": create_buffers_repaired,
                     "initialized_contracts": initialized_contracts,
+                    "appearance": created_appearance.receipt(appearance_created, appearance_written,
+                                                             appearance_data),
                     "active": sum(len(t["active"]) for t in teams),
                     "reserves": sum(len(t["reserves"]) for t in teams),
                     "changed_bytes": sum(a != b for a, b in zip(body, result)),

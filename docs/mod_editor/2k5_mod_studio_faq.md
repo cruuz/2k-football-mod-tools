@@ -1,4 +1,4 @@
-# 2K5 Mod Studio FAQ, beta 77
+# 2K5 Mod Studio FAQ, beta 78
 
 Start with the [Getting Started guide](2k5_mod_studio_getting_started.md).
 These answers combine the previous release FAQ and the community reports for beta 71.1.
@@ -18,6 +18,16 @@ from the [release page](https://github.com/cruuz/2k-football-mod-tools/releases)
 Keep your projects and original game dump. You do not need to install Python for Setup.exe.
 **Help > Check for Updates…** checks the release; **Get the update** opens the download page.
 Git checkouts use their source-code update workflow.
+
+If you used the green **Code > Download ZIP** button instead of the release asset, that is
+the source code, not the Studio. Double-click `2K5-Mod-Studio.bat` in the extracted folder.
+The first run creates a private `.venv` beside it and installs the Studio packages
+automatically (about 110 MB, internet needed). It also downloads the reviewed data
+files from the same release (about 65 MB). It needs 64-bit Python 3.11 or 3.12 from
+[python.org](https://www.python.org/downloads/windows/); the launcher prints that address
+when Python is missing. No administrator rights are needed. Run
+`2K5-Mod-Studio.bat --setup` to repair the private runtime, or download the latest
+**Setup.exe** for the supported install.
 
 ## My modded disc freezes at the Xbox logo. What should I post?
 

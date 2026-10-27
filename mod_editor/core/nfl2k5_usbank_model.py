@@ -343,6 +343,13 @@ class USBank(sm.SoFi):
         return cache[key]
 
     # -- build --------------------------------------------------------------------------------------------------
+    #: b778 sd2: the crowd-reaction cutaway's point (the scene's ``nosebleed`` marker, written with its yaw by
+    #: ``mm.place_cutaway``): in free air over the front of the +x lower bowl, where every fan of the 180 retail crowd
+    #: cutscenes stands clear of the stands and every cutscene camera clear of the model (chosen by the sd2 search, 0.5 m
+    #: over the lowest clear point; held by test_b778_crowd_cutaway). It stood on an upper-deck row: the fans stood in
+    #: the seats (Noah's 2026-10-21 stream at Lucas Oil Stadium).
+    CUTAWAY = (47.0, 7.5, 0.00)
+
     def build(self):
         loop = self.loop
         secs = [self.section(lp) for lp in loop]
@@ -362,9 +369,7 @@ class USBank(sm.SoFi):
         self._boards()
         self._east_wall()
         self._signs(loop, secs)
-        north = min(loop, key=lambda lp: math.pow(lp.nx - 1, 2) + math.pow(lp.z / 40.0, 2))
-        row = self.section(north)["upper"][4]
-        self.nosebleed = self.at(north, row[0] + 0.3, row[1] + 0.05)
+        self.nosebleed = self.CUTAWAY                 # b778 sd2: the crowd cutaway in free air (see CUTAWAY)
         self._facade()
         self._skyline()
         self._prow()
@@ -373,6 +378,7 @@ class USBank(sm.SoFi):
         self._flag()
         self._exterior()
         self._sky()
+        self._clear_crowd()               # b778 sd2: no crowd billboard through other geometry
         return self
 
     def mesh(self, name):
@@ -420,7 +426,7 @@ class USBank(sm.SoFi):
                facing=up_toward_field)
         lower = [sec["lower"] for sec in secs]
         self._rows_surface(m, "usb_seat", loop, lower, 2)
-        self._crowd(m, loop, lower)
+        self._crowd(m, loop, lower, ceiling=self.soffit_ceiling(secs))
         self._portals(m, loop, secs, "lower", p["portals"]["lower_row"])
         m2 = self.mesh("usb_bowl_b")
         # the fascia over the lower bowl, the concourse behind it and the 200 level (not at the west end)
@@ -478,6 +484,10 @@ class USBank(sm.SoFi):
 
     def _portals(self, m, loop, secs, key, row):
         q = self.p["portals"]
+        if not q.get("draw", False):
+            # b778 sd1: the flat dark opening read as a black square in the crowd (Noah's 2026-10-21 stream at
+            # EverBank, also Gillette, AT&T and MetLife), so no model draws it; "draw": True brings it back
+            return
         every = q["every_m"]
         for a, b, sa, sb_ in zip(loop[:-1], loop[1:], secs[:-1], secs[1:]):
             k0, k1 = math.floor(a.s / every), math.floor(b.s / every)
@@ -1696,7 +1706,7 @@ def build_scene(retail_bundle, filename, model, dry_bundle=None):
         struct.pack_into("<3f", m.record, 0x10, *(v * 100 for v in p))
     for m in sc.markers:
         if m.name.startswith("nosebleed"):
-            struct.pack_into("<3f", m.record, 0x10, *(v * 100 for v in model.nosebleed))
+            mm.place_cutaway(m.record, model.nosebleed)         # b778 sd2: the crowd cutaway's point and yaw
     used = {sm_.material for s in sc.shapes for sm_ in s.submeshes}
     keep_m = [i for i, m in enumerate(sc.materials) if i in used or m.name in KEEP_MATERIALS_BY_CODE
               or m.name.startswith("digit_")]

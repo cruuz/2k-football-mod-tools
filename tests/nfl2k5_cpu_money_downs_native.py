@@ -27,7 +27,13 @@ class Machine(BaseMachine):
                            if a["owner"] == patch.OWNER), None)
         settings = patch.read_settings(payload)
         self.level = settings["level"] if settings else "retail"
-        self.labels = patch.assembly.LABELS2 if self.level == "modern2" else patch.assembly.LABELS
+        variant = settings.get("variant") if settings else None
+        if variant == "b778_late":
+            self.labels = patch.assembly.LABELS2_LATE
+        elif self.level == "modern2":
+            self.labels = patch.assembly.LABELS2
+        else:
+            self.labels = patch.assembly.LABELS
         self.u32(self.OFF, self.DEF)
         self.u32(self.DEF, self.OFF)
         self.u32(self.DEF+8, self.DEF+0x200)
@@ -53,7 +59,7 @@ class Machine(BaseMachine):
 
     def configure(self, *, down=4, own_yard=50, distance=2, score_margin=0,
                   quarter=2, seconds=600, cpu=True, phase=4, direction=1,
-                  quarter_seconds=0, ot_bits=0, home=False):
+                  quarter_seconds=0, ot_bits=0, home=False, timeouts=3, events=0, drive=0):
         self.u32(self.GAME+4, down)
         self.u32(0xE602B4, phase)
         self.u32(0xE602C4, quarter)
@@ -63,8 +69,10 @@ class Machine(BaseMachine):
         self.f32(self.GAME+0x28, (own_yard-50+distance)*91.44*direction)
         self.u32(self.OFFMETA, 30+score_margin)
         self.u32(self.DEF+0x200, 30)
-        self.u32(self.OFFMETA+4, 3)
-        self.u32(self.DEF+0x204, 3)
+        self.u32(self.OFFMETA+4, timeouts)
+        self.u32(self.DEF+0x204, timeouts)
+        self.u32(0xE53804, events)
+        self.u32(0xE53800, drive)
         self.f32(self.GAME+0x510, seconds)
         self.f32(0xE602B0, quarter_seconds)
         self.u32(0xE602A8, ot_bits)
@@ -83,6 +91,10 @@ class Machine(BaseMachine):
 
     def policy(self, **settings):
         self.configure(**settings)
+        return self.run_policy()
+
+    def run_policy(self):
+        """The policy entry on the state already configured (b778: callers may set team flags in between)."""
         self.run(self.owner+self.labels["policy"])
         return self.uc.reg_read(x86.UC_X86_REG_EAX)
 

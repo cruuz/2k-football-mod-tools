@@ -141,8 +141,15 @@ class NativeTests(unittest.TestCase):
                                 from mod_editor.core import nfl2k5_scorebug_sprite as sprite
                                 red=sprite.STANDARD_STATE['play_clock']<=5
                                 self.assertEqual(word,0xffdd0038 if red else 0xffffffff,(name,wide,possession,q['name']));continue
-                            role='rim' if 'rim' in tint else 'plate' if tint=='possessing team' else 'wing'
-                            self.assertEqual(word,0xff000000|int(t[role][1:],16),(name,wide,possession,q['name']))
+                            if tint=='possessing team':
+                                # b778 sb5: the tab takes the midpoint of the wing display shade and the plate accent.
+                                w,pl=int(t['wing'][1:],16),int(t['plate'][1:],16)
+                                self.assertEqual(word,0xff000000|(((w&0xfefefe)>>1)+((pl&0xfefefe)>>1)),(name,wide,possession,q['name']));continue
+                            if 'rim' in tint:
+                                # b778 sb3: the rail is the wing's own lightened shade (runtime.c), not the accent rim.
+                                w=int(t['wing'][1:],16)
+                                self.assertEqual(word,0xff000000|(((w&0xfefefe)>>1)+0x7f7f7f),(name,wide,possession,q['name']));continue
+                            self.assertEqual(word,0xff000000|int(t['wing'][1:],16),(name,wide,possession,q['name']))
             finally:m.close()
 
     def test_native_state_equal_and_independent_xemu_texture_decode(self):

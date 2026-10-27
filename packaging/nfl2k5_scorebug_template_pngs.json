@@ -458,8 +458,8 @@
     },
     "data/nfl2k5_everbank_model/art/LIGHT_jx_board_panel.png": {
       "height": 128,
-      "sha256": "08e110524babe366dec8ab40ddc854a2d20521ad6892c507aeabf5799a59c768",
-      "size": 6150,
+      "sha256": "0c1a8f4fafd62af40ce2de9d91591e85ee0d328151c4f97f86b6e9f28eb96628",
+      "size": 8475,
       "width": 128
     },
     "data/nfl2k5_everbank_model/art/LIGHT_jx_concourse.png": {
@@ -2672,8 +2672,8 @@
     },
     "data/nfl2k5_scorebug_mnf/logos/buf.png": {
       "height": 64,
-      "sha256": "53a67a14dc2351e88c22745105ea742ca6ebc49d5e41ecd2f67d0c0db26299a1",
-      "size": 4319,
+      "sha256": "ec27c5eb6dfe9ec94cc9c1b30ec21993a65006468fdb7a12007bee6774580735",
+      "size": 4192,
       "width": 64
     },
     "data/nfl2k5_scorebug_mnf/logos/car.png": {
@@ -2852,8 +2852,8 @@
     },
     "data/nfl2k5_scorebug_sprite/template.png": {
       "height": 512,
-      "sha256": "993edab40174e4a9e5d1c57df505f022e14d117ceb0256af856852196f80d398",
-      "size": 27390,
+      "sha256": "ec8d1ab1129cd0942fdc74394a1e8cfb94e73aee438148d8742450ba4d600b73",
+      "size": 38827,
       "width": 1536
     },
     "data/nfl2k5_sofi_model/art/LIGHT_sf_concourse.png": {

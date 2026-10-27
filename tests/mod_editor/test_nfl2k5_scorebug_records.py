@@ -10,8 +10,12 @@ Nothing here is an in-game result. The owner's compiled code runs under Unicorn 
   kept across the dead-ball swap until the kick phase ends;
 * the retail proofs behind both: FUN_000e9460 stages possession, the retail bar highlights [0xE60280], and the retail
   update hides the whole bar at game over (so no post-game record could ever be drawn);
-* the native preview: records, tabs and the arrow drawn in both aspects inside their boxes, white digits on the navy tab,
-  one quad per timeout state, and the per-frame update never entering the retail counters.
+* the native preview: records, tabs and the arrow drawn in both aspects inside their boxes, white digits on the dark
+  band, one quad per timeout state, and the per-frame update never entering the retail counters.
+b778 sb2 (Noah, stream c2-15, "the font on the records"): the records are the bar's bold broadcast digits (a narrow 1,
+proportional widths) with a one-texel dark ring instead of the monospaced one-texel pixel font, and the opaque navy box
+is now ESPN's soft dark band along the wing's bottom, drawn behind the team mark (one cell per side, darkest at the
+outer edge). The band's token is the record's length, 3..6 characters (at most 17 games).
 """
 from __future__ import annotations
 
@@ -103,20 +107,43 @@ class LayoutTests(unittest.TestCase):
         self.assertEqual(tokens('10-6-1'), ['10', '-6', '-1'])
         self.assertEqual(tokens('1-10'), ['1', '-10'])
 
-    def test_tab_width_follows_text_length_and_holds_the_widest_record(self):
-        tab = self.compiled.spec['glyph_sets']['record_tab']['glyphs']
+    def test_band_covers_every_record_length_and_holds_the_widest_record(self):
         record = self.compiled.spec['glyph_sets']['record']['glyphs']
-        self.assertEqual(set(tab), {str(n) for n in range(3, 9)})
-        widths = [tab[str(n)]['size'][0] for n in range(3, 9)]
-        self.assertEqual(widths, sorted(widths))
         fields = {f['name']: f for f in self.compiled.spec['fields']}
+        lengths = {len(record_text(w, l, t)) for w in range(18) for l in range(18 - w) for t in range(18 - w - l)
+                   if w + l + t}
+        self.assertEqual(lengths, {3, 4, 5, 6})
+        for side, name in (('away', 'record_tab'), ('home', 'record_tab_home')):
+            self.assertEqual(fields[side + '_record_tab']['glyph_set'], name)
+            tab = self.compiled.spec['glyph_sets'][name]['glyphs']
+            self.assertEqual(set(tab), {str(n) for n in lengths}, side)
+            self.assertEqual({t['cell'] for t in tab.values()}, {'record_band_' + side}, side)
+            self.assertEqual(len({tuple(t['size']) for t in tab.values()}), 1, side)    # one band for every length
         box = fields['away_record']['box'][2] - fields['away_record']['box'][0]
+        tab = self.compiled.spec['glyph_sets']['record_tab']['glyphs']
         for w, l, t in ((1, 0, 0), (10, 6, 0), (10, 6, 1), (8, 8, 1), (17, 0, 0)):
             text = record_text(w, l, t)
             parts = [text.split('-')[0]] + ['-' + p for p in text.split('-')[1:]]
             width = sum(record[p]['advance'] for p in parts[:-1]) + record[parts[-1]]['size'][0]
             self.assertLessEqual(width, box, text)                  # never compressed
             self.assertAlmostEqual(tab[str(len(text))]['size'][0] >= width + 9 - 1e-6, True, msg=text)
+
+    def test_band_darkens_toward_the_outer_edge_behind_the_team_mark(self):
+        image = sprite.load_layout()[1]
+        cells = self.compiled.spec['cells']
+        away = image.crop(cells['record_band_away']['box'])
+        home = image.crop(cells['record_band_home']['box'])
+        self.assertEqual(away.transpose(0).tobytes(), home.tobytes())     # mirrored: darkest at each bar end
+        row = [away.getpixel((x, away.height - 1))[3] for x in range(away.width)]
+        self.assertEqual(row, sorted(row, reverse=True))
+        self.assertGreater(row[0], 100); self.assertEqual(row[-1], 0)
+        self.assertLess(max(max(p[:3]) for p in away.getdata()), 0x20)     # a dark wash, never a colour
+        fields = {f['name']: f for f in self.compiled.spec['fields']}
+        statics = {r['name']: r for r in self.compiled.spec['static']}
+        for side in ('away', 'home'):
+            self.assertLess(statics[side + '_wing']['z'], fields[side + '_record_tab']['z'])
+            self.assertLess(fields[side + '_record_tab']['z'], statics[side + '_logo']['z'])
+            self.assertLess(statics[side + '_logo']['z'], fields[side + '_record']['z'])
 
     def test_timeouts_are_four_states_dimming_from_the_right(self):
         ticks = self.compiled.spec['glyph_sets']['ticks']['glyphs']
@@ -132,15 +159,24 @@ class LayoutTests(unittest.TestCase):
         grey = image.crop(cells['timeouts_0']['box']).getpixel((3, 0))[0]
         self.assertTrue(70 <= grey <= 95, grey)                    # measured used/lit 0.33 of the lit pip
 
-    def test_digit_face_is_seven_rows_and_white(self):
+    def test_digit_face_is_seven_bold_rows_in_a_dark_ring(self):
         image = sprite.load_layout()[1]
-        cells = self.compiled.spec['cells']
-        for token in ('0', '17', '-5'):
+        spec = self.compiled.spec
+        cells, glyphs = spec['cells'], spec['glyph_sets']['record']['glyphs']
+        for token in ('0', '1', '17', '-5'):
             name = 'record_' + ('m' + token[1:] if token[0] == '-' else 'd' + token)
             cell = image.crop(cells[name]['box'])
-            self.assertEqual(cell.height, 7)
-            ink = [p for p in cell.getdata() if p[3]]
-            self.assertTrue(ink and all(p[:3] == (255, 255, 255) and p[3] == 255 for p in ink))
+            self.assertEqual(cell.height, 9, token)                         # 7 rows of face, one ring row each side
+            for x in range(cell.width):
+                for y in (0, cell.height - 1):
+                    r, g, b, a = cell.getpixel((x, y))
+                    self.assertTrue(max(r, g, b) < 0x20 and a <= 160, (token, x, y))   # ring: dark, part cover
+            core = [cell.getpixel((x, y)) for x in range(1, cell.width - 1) for y in range(1, 8)]
+            solid = [p for p in core if p[3] == 255 and min(p[:3]) >= 250]
+            self.assertGreaterEqual(len(solid), 6, token)                   # bold strokes reach full white cover
+        # Proportional broadcast digits: the 1 is narrow, as on air; the b76 font drew every digit 15 px wide.
+        self.assertLess(glyphs['1']['size'][0], glyphs['0']['size'][0] - 4)
+        self.assertLess(glyphs['10']['size'][0], 2 * glyphs['0']['size'][0])
 
     def test_quarter_prints_retail_overtime_as_ot(self):
         quarter = self.compiled.spec['glyph_sets']['quarter']['glyphs']
@@ -399,7 +435,8 @@ class NativePreviewTests(unittest.TestCase):
         home = sorted(self.visible(c, False, 'home_record'), key=lambda q: q['vertex'])
         self.assertEqual([self.uv(c, q) for q in away], [self.glyph_uv('record', t) for t in ('1', '-0')])
         self.assertEqual([self.uv(c, q) for q in home], [self.glyph_uv('record', t) for t in ('10', '-5', '-1')])
-        self.assertEqual(self.uv(c, self.visible(c, False, 'home_record_tab')[0]), self.glyph_uv('record_tab', '6'))
+        self.assertEqual(self.uv(c, self.visible(c, False, 'home_record_tab')[0]), self.glyph_uv('record_tab_home', '6'))
+        self.assertEqual(self.uv(c, self.visible(c, False, 'away_record_tab')[0]), self.glyph_uv('record_tab', '3'))
 
     def test_overtime_draws_ot(self):
         # The retail quarter formatter prints 'OT%d' (period - 4); the sprite set had no 'OT1', so overtime drew nothing.
@@ -409,7 +446,7 @@ class NativePreviewTests(unittest.TestCase):
             self.assertEqual(len(quads), 1, period)
             self.assertEqual(self.uv(c, quads[0]), self.glyph_uv('quarter', token))
 
-    def test_white_digits_stand_off_the_navy_tab(self):
+    def test_white_digits_stand_off_the_band(self):
         compiled = self.preview.modes[False]['compiled']
         from mod_editor.core import nfl2k5_scorebug_assets as assets
         import numpy as np
@@ -420,8 +457,8 @@ class NativePreviewTests(unittest.TestCase):
             c = [v / 255 for v in rgb]
             c = [v / 12.92 if v <= 0.03928 else ((v + 0.055) / 1.055) ** 2.4 for v in c]
             return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]
-        x0, y0, x1, y1 = compiled.cells['record_tab']
-        navy = atlas[(y0 + y1) // 2, (x0 + x1) // 2, :3]
+        x0, y0, x1, y1 = compiled.cells['record_band_away']
+        navy = atlas[y1 - 1, x0, :3]                                        # the band's outer, darkest texel
         x0, y0, x1, y1 = compiled.cells['record_d8']
         ink = atlas[y0:y1, x0:x1][atlas[y0:y1, x0:x1, 3] == 255][:, :3]
         white = ink.max(axis=0)

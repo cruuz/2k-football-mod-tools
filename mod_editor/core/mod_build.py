@@ -226,7 +226,7 @@ class BuildPlan:
     decided_clock_seconds: int = 60
     cpu_scrambles: str = "retail"
     historic_teams_quick_game: bool = False  # b76-h1: Quick Game Team Select steps on into the 75 historic teams; experimental
-    classic_teams: bool = False  # b775-ct1: with historic teams in Quick Game, the list runs on into every Anniversary team-season and 24 classic teams; experimental
+    classic_teams: bool = False  # b775-ct1: with historic teams in Quick Game, the list runs on into every Anniversary team-season and 25 classic teams; experimental
     kickoff_return_blocking: bool = False  # b76-vb3 E1: return blockers claim distinct men after the catch (Noah's feel test)
     espn25_era_rules: bool = False  # e2: season-specific live rules for each moment
     historic_stock_books: bool = False  # e2: isolated retail bank and per-side resolver
@@ -347,6 +347,8 @@ class BuildPlan:
     loader_wakeup_fix: bool = False
     # b777-rb2: Halfback/HB display text reads Running Back/RB (in-place UTF-16 strings, no codes or caves).
     rb_rename: bool = False
+    # b778-pg2: "The Crib" reads "Trophy Room" (in-place UTF-16 strings, no codes or caves).
+    trophy_room: bool = False
     # b77-k1: First/Last Name keyboards also accept space, period, apostrophe and hyphen (data only, no code).
     name_keyboard: bool = False
     # penalties at NFL rates + a working Chop Block toggle: "" = off, "nfl" = the ESTIMATED first-cut profile
@@ -357,6 +359,10 @@ class BuildPlan:
     # "choice" = the retail default plus a per-side colour flip on the same up/down that picks the era on
     # Controller Assign / Team Select (past the last era: flip and restart); "" = retail. Unwitnessed.
     uniform_choice: str = ""
+    # b778-sl1 (Noah 10/22: "Team colored sleeves would be sick"): the black undershirt sleeve
+    # style is rebound to each side's own uniform package and recoloured per kit. Data-only XBE
+    # table flip plus package palettes; needs a disc image; on in every SOFTDRINK preset.
+    team_sleeves: bool = False
     helmet_finish: str = "glossy"  # ADVANCED (beta 66, maumau78): "matte" zeroes both helmet LODs' shell reflection weight; off in every preset
     # laces to the posts on FG/PAT holds: one 6-byte hook on the held-ball join point + a 143-byte cave in a
     # dead routine that rolls the ball 180 degrees about its long axis on live Field Goal formation plays
@@ -494,6 +500,117 @@ class BuildPlan:
     # protection keeps every retail byte. The last late executable owner (nfl2k5_run_blocking). EXPERIMENTAL: on in
     # the Advanced and Experimental presets (Noah 10/20: "my offensive line just does not block very well").
     run_blocking: bool = False
+    # b778-pr1: pass protection: on pass plays a beaten blocker holds his rusher for a rating-based delay (Pass
+    # Blocking of the blocker against Pass Rush of the defender, 0.08-0.60 s instead of retail's zero, which ends
+    # the block on the first tick the heading test passes). Run blocking and every pass-roll byte are untouched.
+    # A late executable owner (nfl2k5_pass_protection). EXPERIMENTAL: on in the Advanced and Experimental presets
+    # (holtbolt 10/24: "pass rush incredibly easy ... even when you have great guards").
+    pass_protection: bool = False
+    # b778-fo1: modern sideline catches: no force-out credit. Retail rules a receiver carried out of bounds by a
+    # defender (contact state) a catch without his feet down, the pre-2008 force-out rule; from the 2008 season a
+    # receiver must get both feet down in bounds. A late executable owner (nfl2k5_force_out) hooks the credit read at
+    # 0x15799B; Anniversary moments of seasons before 2008 keep the credit. EXPERIMENTAL: on in the Advanced and
+    # Experimental presets (the SOFTDRINK 2K28 recipe builds from Experimental); Basic keeps the 2004 rule.
+    modern_force_out: bool = False
+    # b778-xs1: on-demand modules prototype: Career Home is not read at boot; the module loader (a late allocator
+    # owner, nfl2k5_module_loader) reads its section with the kernel's XeLoadSection when a MyCareer screen opens.
+    # EXPERIMENTAL and OFF in every preset until Noah's witnessed MyCareer session (docs/mod_editor/overlay_modules.md).
+    module_loader: bool = False
+    # b778-xs1: the Crib keeps only the Trophy Room side (Noah 10/22): the catalog popup and the Catalogs / Crib Items
+    # shops are cut (nfl2k5_crib_trophy_room, three in-place edits). On in the SOFTDRINK presets.
+    crib_trophy_room: bool = False
+    # b778-pc3: retail inbox story 23 omits its single-row standings setup.
+    inbox_standings: bool = False
+    # b778-fa1: CPU clubs keep their stars. The retail stage-6 veteran cap cut (0x2BFAF0) releases 10+ year
+    # veterans on cap savings alone (Noah's MyNFL3 lost Mahomes, Kittle and Stanley before the 2027 preseason). A late
+    # executable owner (nfl2k5_star_retention) hooks its value call at 0x2BFB67 so a player rated over 85, or a QB
+    # over 75, is never its target. EXPERIMENTAL: on in the Advanced and Experimental presets (the SOFTDRINK 2K28
+    # recipe builds from Experimental); Basic keeps the retail rule.
+    star_retention: bool = False
+    # b778-pi1: Franchise practice: injured players sit out. Retail heals every match copy for practice (0x61540: keeps
+    # injuries only in league games, modes 5..7), so a starter who is out for weeks lines up in the Coach's Desk
+    # Practice. A late executable owner (nfl2k5_practice_injuries) hooks 0x61550 so practice (modes 0..2) with a
+    # season or franchise loaded keeps the copies' injuries; the native lineup check then benches them, as on game day.
+    # On in the Advanced and Experimental presets (the ones with the Coach's Desk Practice row).
+    practice_injuries: bool = False
+    # b778-ai5: CPU ball carriers stay in bounds and CPU quarterbacks slide only past the sticks (or when a defender
+    # reaches them first). A late executable owner (nfl2k5_ball_carrier_ai) hooks the carrier's sideline filter at
+    # 0x2E29E6 and the slide decision at 0x2E340E; human carriers and late-half clock urgency keep retail. EXPERIMENTAL:
+    # on in the Advanced and Experimental presets (the SOFTDRINK 2K28 recipe builds from Experimental).
+    cpu_ball_carriers: bool = False
+    # b778-kr1: kick and punt return coverage takes pursuit angles. The far chase task 0x2E8F20 steers at the
+    # carrier's current position; a late executable owner (nfl2k5_return_coverage) replaces only that bearing call
+    # (0x2E9148) with a bounded intercept point, gated on the game's play kind [0xE602BC] in {1 safety kick, 2 kickoff,
+    # 6 punt} so scrimmage and field-goal pursuit is byte-for-byte retail. CPU defenders only; human defenders
+    # keep the retail aim. On in the Advanced and Experimental presets (the SOFTDRINK recipe builds from Experimental).
+    return_coverage: bool = False
+
+    # b778-st2: rookie stars and stars earned or lost over a career. The draft-class generator's 3..5 best prospects
+    # (the draft-AI key) and 1..2 later-round gems (a top development archetype) get the Star tier; every offseason,
+    # before the Preseason aging, players gain a star for a top-tier overall/production season or lose it after a down
+    # year (an 85..89 hysteresis band and pg1's veteran-QB rule keep the league total near today's). Right-stick moves
+    # stay star-only. A late executable owner (nfl2k5_star_career). EXPERIMENTAL: on in the Advanced and Experimental
+    # presets (the SOFTDRINK 2K28 recipe builds from Experimental); Basic keeps retail draft classes and tags.
+    star_career: bool = False
+    # b778-rh1: rookie faces: a bank of new fictional draft headshots for generated prospects, chosen by the prospect's
+    # skin tone (from his position and name odds), build (his weight) and never a face an active player wears; his
+    # skin, generic head and Dreads bit follow the face. New Portrai2.iff / portrai2.cdf outers (every existing portrait
+    # plus the bank) and the class generator's skin/portrait code rewritten in place (nfl2k5_rookie_faces). Images
+    # only. EXPERIMENTAL: on in the Experimental preset (the SOFTDRINK 2K28 recipe builds from it).
+    rookie_faces: bool = False
+    # b778-ee1/ee2: the once-in-a-century gray alien prospect: one draft class in 150 (never the first, never again in
+    # that franchise once he appeared) makes one prospect a 7'11", 150 lb gray alien: portrait 1947, a new live face
+    # (igface2.iff / .cdf, pf1947.iff), gray arms/hands/neck/far-face/sideline-skin textures in outer 3, the class
+    # generator's coin blocks compacted in place to hold the roll and five texture lookups (nfl2k5_alien_prospect).
+    # Needs rookie_faces. Images only. EXPERIMENTAL: on in the Experimental preset (the SOFTDRINK 2K28 recipe builds
+    # from it).
+    alien_prospect: bool = False
+    # b778-sc2: in-place SportsCenter featured-player lookup; no cave request.
+    sportscenter_lineup: bool = False
+    # b778-dr1: franchise draft on a broadcast clock. Retail makes every CPU pick before the user's in one frame ("it
+    # goes super fast straight to your pick", Noah 10/22). A late executable owner (nfl2k5_draft_clock) hooks the draft
+    # screen's step (call at 0x326DBC): each CPU club is on the game's own draft clock for 60 s; Y = Advance to Next
+    # Pick / Simulate My Pick (on the user's clock), X = Advance to Next User Pick. No state bytes. On in
+    # the Advanced and Experimental presets (the SOFTDRINK 2K28 recipe builds from Experimental).
+    franchise_draft_clock: bool = False
+    # b778-pg1: franchise in-season weekly progression: after each franchise regular-season game a young player with a
+    # good game gains a point on his key ratings every other good game, an older player who sat out or played poorly
+    # loses a point of speed one week in four. A late executable owner (nfl2k5_weekly_progression) wraps the
+    # per-player stat merge at 0x134E05 (after the game's weekly-prep cleanup). EXPERIMENTAL: off in every preset until
+    # the second scale-out (job xs1) gives the combined build its 608 code bytes.
+    weekly_progression: bool = False
+    # b778-pg2: the Front Office Player Progress screen stays available every week of the regular season and
+    # playoffs, compares each rating with the season-opening baseline, and a toggle shows last week's change.
+    # The snapshot record is a 5,232-byte PPG2 table in the roster arena tail (no save growth). A late executable
+    # owner (nfl2k5_player_progress_screen) that needs the growable pool from b778-xs1. EXPERIMENTAL: on in the
+    # Advanced and Experimental presets; Basic keeps the retail offseason-only screen.
+    player_progress: bool = False
+    # b778-pg3: the safe visibility-only half of the Player Progress screen. The Front Office row is
+    # available in every regular-season and playoff week (retail showed it only in the offseason); no
+    # snapshot, no save growth and no roster-arena tail. This can ship without nfl2k5_player_progress.
+    player_progress_visible: bool = False
+    # b778-cr1: the Player Contracts panel reads the player's college word without a null check (0x6E11F). One late
+    # executable owner (nfl2k5_contract_college_guard) hooks it and uses the panel's own N/A fallback, so an existing
+    # franchise with a null college opens without a roster repair. On in every SOFTDRINK preset (a crash fix).
+    contract_college_guard: bool = False
+    # b778-cb1: cornerback tackle credit in the post-game merge. A late executable owner draws a starting corner's
+    # tackle line from the NFL per-game distribution through the game's own RNG, with lower nickel and dime
+    # distributions, so simulated RCBs stop reading as low-tackle/high-INT outliers. Played games use the same
+    # record. EXPERIMENTAL: on in the Advanced and Experimental presets (the SOFTDRINK 2K28 recipe builds from
+    # Experimental).
+    sim_cb_tackles: bool = False
+    # b778-sim1: the simulated franchise game's clock pace. The simulator's per-event clock decrement came from
+    # sqrt(300 / (Sim. Quarter Length * 60)) * 0.03, so a 15-minute setting produced about 1.7x the plays, points and
+    # yards of a 5-minute setting. One in-place patch at 0x10B89C fixes the decrement (nfl2k5_sim_stats), so a
+    # simulated game lands on NFL totals at every Sim. Quarter Length. Played games, the overtime sim clock and the
+    # CB tackle / weekly progression owners are untouched. On in the Advanced and Experimental presets (the
+    # SOFTDRINK 2K28 recipe builds from Experimental); Basic keeps the retail pace.
+    sim_stats: bool = False
+    # b778-sd4: modern clock digits: the stadium loader's generated 6x7 bulb font for the play clock, game clock and
+    # scores is rewritten in place as a solid warm-white LED matrix. A late executable owner (nfl2k5_clock_led) hooks
+    # the end of the clock-font lookup loop at 0x9999A. Every stadium and weather variant uses the same atlas.
+    # EXPERIMENTAL: on in the Advanced and Experimental presets (the SOFTDRINK 2K28 recipe builds from Experimental).
+    modern_clock_led: bool = False
     # b776-ns1: per-kit jersey number size: {"13H0": 1.1, ...} (kit = team code, H or A, variant) -> the chest and back
     # numbers of that uniform package draw S times larger (a late executable owner hooked after the jersey-number
     # selector; every other kit, helmet and shoulder number binds as retail). {} = off, the executable keeps its bytes.
@@ -554,12 +671,19 @@ class BuildPlan:
         return (self.throw or self.catch_slider or self.accel_ramp or self.draft_ai or self.returner_fix
                 or self.progression or self.franchise_economy or self.scheme_labels or self.camera or self.kick_rules or self.kick_power or self.position_pools or self.xbe_space or self.kickoff_relocated or self.dynamic_kickoff or self.depth_chart_rows or self.practice_squad or self.depth_locks
                 or self.season_cap or self.season_2026 or self.widescreen or self.overtime or self.team_column or self.seven_on_seven
-                or self.position_row or self.probowl_order or self.elbow_options or self.the1wam_lineman_rating or self.xemu_display_list_fix or self.resource_load_guard or self.loader_wakeup_fix or self.rb_rename or self.name_keyboard or bool(self.penalties) or bool(self.uniform_choice) or self.helmet_finish == "matte"
+                or self.position_row or self.probowl_order or self.elbow_options or self.the1wam_lineman_rating or self.xemu_display_list_fix or self.resource_load_guard or self.loader_wakeup_fix or self.rb_rename or self.name_keyboard or bool(self.penalties) or bool(self.uniform_choice) or self.team_sleeves or self.helmet_finish == "matte"
+                or self.position_row or self.probowl_order or self.elbow_options or self.the1wam_lineman_rating or self.xemu_display_list_fix or self.resource_load_guard or self.loader_wakeup_fix or self.rb_rename or self.trophy_room or self.name_keyboard or bool(self.penalties) or bool(self.uniform_choice) or self.helmet_finish == "matte"
                 or self.kick_laces or self.punter_holder or self.franchise_practice or bool(self.prospect_names) or self.player_star
+                or self.position_row or self.probowl_order or self.elbow_options or self.the1wam_lineman_rating or self.xemu_display_list_fix or self.resource_load_guard or self.loader_wakeup_fix or self.rb_rename or self.name_keyboard or bool(self.penalties) or bool(self.uniform_choice) or self.helmet_finish == "matte"
+                or self.kick_laces or self.punter_holder or self.franchise_practice or bool(self.prospect_names) or self.player_star or self.star_career
                 or self.modern_naming or self.crib_reclaim or self.read_option_runtime or self.franchise_2026_rules or self.senior_bowl
                 or self.guardian_overlay or self.my_career or self.screen_hooks or self.coverage_trail or self.franchise_edit_player or self.cpu_money_downs != "retail" or self.accelerated_clock or self.coin_defer or self.decided_clock or self.cpu_scrambles == "modern" or self.weather_haze or self.number_kerning or self.modern_color or self.weekly_prep or self.weekly_prep_cpu or self.weekly_prep_remember or self.coach_ai or self.playbook_pair or self.deep_zone_facing or self.deep_zone_bail or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave or self.historic_teams_quick_game or self.espn25_more_moments or self.historic_stock_books or self.espn25_era_rules or self.k128_memory or self.team_ratings or self.play_art_routes or self.letter_grades or self.honors_page
+                or self.sportscenter_lineup or self.momentum_collisions or self.scorebug_runtime or self.indicator_names_style != "retail" or self.momentum > 0 or self.momentum_contact or self.defensive_try or self.zone_drop_cap or self.all_stadiums or self.music_shuffle or self.practice_squad_screen or self.abilities or self.qb_spy or self.calendar_engine or self.coverage_slider or self.scramble_tuning or self.flatter_deep_ball or self.chop_block_toggle or self.music_policy != "retail" or self.music_unlock or self.music_userlist
+                or self.guardian_overlay or self.my_career or self.screen_hooks or self.coverage_trail or self.franchise_edit_player or self.cpu_money_downs != "retail" or self.accelerated_clock or self.coin_defer or self.decided_clock or self.cpu_scrambles == "modern" or self.weather_haze or self.number_kerning or self.modern_color or self.weekly_prep or self.weekly_prep_cpu or self.weekly_prep_remember or self.coach_ai or self.playbook_pair or self.deep_zone_facing or self.deep_zone_bail or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave or self.historic_teams_quick_game or self.espn25_more_moments or self.historic_stock_books or self.espn25_era_rules or self.k128_memory or self.team_ratings or self.play_art_routes or self.letter_grades or self.honors_page or self.contract_college_guard
+                or self.guardian_overlay or self.my_career or self.screen_hooks or self.coverage_trail or self.franchise_edit_player or self.cpu_money_downs != "retail" or self.accelerated_clock or self.coin_defer or self.decided_clock or self.cpu_scrambles == "modern" or self.weather_haze or self.number_kerning or self.modern_color or self.weekly_prep or self.weekly_prep_cpu or self.weekly_prep_remember or self.coach_ai or self.playbook_pair or self.deep_zone_facing or self.deep_zone_bail or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave or self.historic_teams_quick_game or self.espn25_more_moments or self.historic_stock_books or self.espn25_era_rules or self.k128_memory or self.team_ratings or self.play_art_routes or self.letter_grades or self.honors_page or self.sim_cb_tackles or self.sim_stats
                 or self.momentum_collisions or self.scorebug_runtime or self.indicator_names_style != "retail" or self.momentum > 0 or self.momentum_contact or self.defensive_try or self.zone_drop_cap or self.all_stadiums or self.music_shuffle or self.practice_squad_screen or self.abilities or self.qb_spy or self.calendar_engine or self.coverage_slider or self.scramble_tuning or self.flatter_deep_ball or self.chop_block_toggle or self.music_policy != "retail" or self.music_unlock or self.music_userlist
-                or bool(self.music_library and _music_library_document(self.music_library)["bank"] == "cribmusic"))
+                or bool(self.music_library and _music_library_document(self.music_library)["bank"] == "cribmusic")
+                or self.pass_protection)  # b778-pr1
 
     def to_recipe(self) -> dict[str, Any]:
         d = asdict(self)
@@ -588,7 +712,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "catch_slider": True, "accel_ramp": False, "draft_ai": True, "returner_fix": True, "progression": False, "franchise_economy": False,
         "edge_rename": False, "scorebug": False, "guardian_cap": False, "scheme_labels": False, "camera": False,
         "kick_rules": False, "kick_power": True, "kickoff_alignment": False, "dynamic_kickoff": False, "xbe_space": False, "kickoff_relocated": False,
-        "position_pools": False, "position_pools_keep_olb": False, "season_cap": False, "season_2026": False, "widescreen": False, "overtime": False, "team_column": True, "seven_on_seven": False, "team_history": "", "career_stats": "", "screen_timing": None, "depth_roles": False, "depth_chart_rows": False, "position_row": True, "probowl_order": True, "penalties": "", "uniform_choice": "", "helmet_finish": "glossy", "kick_laces": False, "punter_holder": False, "franchise_practice": False, "practice_squad": False, "depth_locks": False, "prospect_names": "", "player_star": False,
+        "position_pools": False, "position_pools_keep_olb": False, "season_cap": False, "season_2026": False, "widescreen": False, "overtime": False, "team_column": True, "seven_on_seven": False, "team_history": "", "career_stats": "", "screen_timing": None, "depth_roles": False, "depth_chart_rows": False, "position_row": True, "probowl_order": True, "penalties": "", "uniform_choice": "", "team_sleeves": True, "helmet_finish": "glossy", "kick_laces": False, "punter_holder": False, "franchise_practice": False, "practice_squad": False, "depth_locks": False, "prospect_names": "", "player_star": False,
         "espn25_plan": "", "espn25_rosters": False,
         "weather_plan": "", "weather_haze": False, "modern_color": False, "modern_arrowhead": False, "modern_metlife": False, "modern_metlife_model": False, "modern_sofi": False, "modern_highmark": False, "modern_att": False, "modern_levis": False, "modern_allegiant": False, "modern_mercedes_benz": False, "modern_surfaces": False, "modern_helmets": False, "modern_usbank": False, "modern_lucas_oil": False, "modern_state_farm": False, "modern_hard_rock": False, "modern_gillette": False, "modern_lambeau": False, "modern_everbank": False, "modern_everbank_construction": True, "modern_board_kit": False, "modern_practice_field": False, "modern_practice_field_team_logo": False,
         "coin_defer": False, "decided_clock": False,
@@ -609,7 +733,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "catch_slider": True, "accel_ramp": True, "draft_ai": True, "returner_fix": True, "progression": True, "franchise_economy": False,
         "edge_rename": True, "scorebug": False, "guardian_cap": False, "scheme_labels": True, "camera": True,
         "kick_rules": True, "kick_power": False, "kickoff_alignment": False, "dynamic_kickoff": False, "xbe_space": False, "kickoff_relocated": False,
-        "position_pools": True, "position_pools_keep_olb": False, "season_cap": False, "season_2026": True, "widescreen": False, "overtime": True, "team_column": True, "seven_on_seven": False, "team_history": "retail", "career_stats": "", "screen_timing": None, "depth_roles": True, "depth_chart_rows": False, "position_row": True, "probowl_order": True, "penalties": "nfl", "uniform_choice": "", "helmet_finish": "glossy", "kick_laces": False, "punter_holder": True, "franchise_practice": True, "practice_squad": False, "depth_locks": False, "prospect_names": "modern", "player_star": True,
+        "position_pools": True, "position_pools_keep_olb": False, "season_cap": False, "season_2026": True, "widescreen": False, "overtime": True, "team_column": True, "seven_on_seven": False, "team_history": "retail", "career_stats": "", "screen_timing": None, "depth_roles": True, "depth_chart_rows": False, "position_row": True, "probowl_order": True, "penalties": "nfl", "uniform_choice": "", "team_sleeves": True, "helmet_finish": "glossy", "kick_laces": False, "punter_holder": True, "franchise_practice": True, "practice_squad": False, "depth_locks": False, "prospect_names": "modern", "player_star": True,
         "espn25_plan": "", "espn25_rosters": False,
         "weather_plan": "", "weather_haze": False, "modern_color": False, "modern_arrowhead": False, "modern_metlife": False, "modern_metlife_model": False, "modern_sofi": False, "modern_highmark": False, "modern_att": False, "modern_levis": False, "modern_allegiant": False, "modern_mercedes_benz": False, "modern_surfaces": False, "modern_helmets": False, "modern_usbank": False, "modern_lucas_oil": False, "modern_state_farm": False, "modern_hard_rock": False, "modern_gillette": False, "modern_lambeau": False, "modern_everbank": False, "modern_everbank_construction": True, "modern_board_kit": False, "modern_practice_field": False, "modern_practice_field_team_logo": False,
         "coin_defer": False, "decided_clock": False,
@@ -631,7 +755,7 @@ PRESETS: dict[str, dict[str, Any]] = {
         "catch_slider": True, "accel_ramp": True, "draft_ai": True, "returner_fix": True, "progression": True, "franchise_economy": False,
         "edge_rename": True, "scorebug": True, "scheme_labels": True, "camera": True,
         "kick_rules": True, "kick_power": False, "kickoff_alignment": True, "dynamic_kickoff": True, "xbe_space": False, "kickoff_relocated": False,
-        "position_pools": True, "position_pools_keep_olb": False, "season_cap": True, "season_2026": True, "widescreen": True, "overtime": True, "team_column": True, "seven_on_seven": False, "team_history": "retail", "career_stats": "", "screen_timing": "D", "depth_roles": True, "depth_chart_rows": True, "position_row": True, "probowl_order": True, "penalties": "nfl", "uniform_choice": "", "helmet_finish": "glossy", "kick_laces": True, "punter_holder": True, "franchise_practice": True, "practice_squad": True, "depth_locks": True, "prospect_names": "modern", "player_star": True,
+        "position_pools": True, "position_pools_keep_olb": False, "season_cap": True, "season_2026": True, "widescreen": True, "overtime": True, "team_column": True, "seven_on_seven": False, "team_history": "retail", "career_stats": "", "screen_timing": "D", "depth_roles": True, "depth_chart_rows": True, "position_row": True, "probowl_order": True, "penalties": "nfl", "uniform_choice": "", "team_sleeves": True, "helmet_finish": "glossy", "kick_laces": True, "punter_holder": True, "franchise_practice": True, "practice_squad": True, "depth_locks": True, "prospect_names": "modern", "player_star": True,
         "espn25_plan": "", "espn25_rosters": False,
         "weather_plan": "", "weather_haze": False, "modern_color": False, "modern_arrowhead": False, "modern_metlife": False, "modern_metlife_model": False, "modern_sofi": False, "modern_highmark": False, "modern_att": False, "modern_levis": False, "modern_allegiant": False, "modern_mercedes_benz": False, "modern_surfaces": False, "modern_helmets": False, "modern_usbank": False, "modern_lucas_oil": False, "modern_state_farm": False, "modern_hard_rock": False, "modern_gillette": False, "modern_lambeau": False, "modern_everbank": False, "modern_everbank_construction": True, "modern_board_kit": False, "modern_practice_field": False, "modern_practice_field_team_logo": False,
         "coin_defer": False, "decided_clock": False,
@@ -690,6 +814,116 @@ for _preset in PRESETS.values():
     _preset["run_blocking"] = False
 PRESETS["softdrink_advanced"]["run_blocking"] = True
 PRESETS["softdrink_experimental"]["run_blocking"] = True
+del _preset
+# b778-pr1: pass protection: on in the Advanced and Experimental presets (the SOFTDRINK 2K28 recipe builds from
+# Experimental; holtbolt 10/24 reported the pass rush); Basic keeps the retail zero-delay bytes.
+for _preset in PRESETS.values():
+    _preset["pass_protection"] = False
+PRESETS["softdrink_advanced"]["pass_protection"] = True
+PRESETS["softdrink_experimental"]["pass_protection"] = True
+del _preset
+# b778-fo1: modern sideline catches (no force-out from 2008): a modern rule like overtime and the kick rules, so on in
+# the Advanced and Experimental presets; Basic keeps the game in 2004 (the force-out catch of its time).
+for _preset in PRESETS.values():
+    _preset["modern_force_out"] = False
+PRESETS["softdrink_advanced"]["modern_force_out"] = True
+PRESETS["softdrink_experimental"]["modern_force_out"] = True
+for _preset in PRESETS.values():  # b778-pg1: weekly progression is off until the combined layout has room (xs1)
+    _preset["weekly_progression"] = False
+del _preset
+# b778-xs1: the Crib, Trophy Room only (Noah 10/22: "The only thing I want in the crib is the trophy room"): on in
+# every SOFTDRINK preset; retail-style builds keep the Crib whole.
+for _preset in PRESETS.values():
+    _preset["crib_trophy_room"] = False
+for _name in ("softdrink_basic", "softdrink_advanced", "softdrink_experimental"):
+    PRESETS[_name]["crib_trophy_room"] = True
+del _preset, _name
+# b778-pc3: the last-undefeated inbox story's standings setup.
+for _name, _preset in PRESETS.items():
+    _preset["inbox_standings"] = _name.startswith("softdrink_")
+del _name, _preset
+# b778-st2: rookie stars and career stars: a modern NFL feature like progression, so on in the Advanced and
+# Experimental presets (the SOFTDRINK 2K28 recipe builds from Experimental); Basic keeps retail draft classes.
+for _preset in PRESETS.values():
+    _preset["star_career"] = False
+PRESETS["softdrink_advanced"]["star_career"] = True
+PRESETS["softdrink_experimental"]["star_career"] = True
+del _preset
+# b778-rh1: rookie faces are experimental: on only in the Experimental preset (the SOFTDRINK 2K28 recipe builds from it).
+for _preset in PRESETS.values():
+    _preset["rookie_faces"] = False
+PRESETS["softdrink_experimental"]["rookie_faces"] = True
+del _preset
+# b778-fa1: CPU clubs keep their stars when clearing cap room (franchise AI), on in Advanced and Experimental.
+for _preset in PRESETS.values():
+    _preset["star_retention"] = False
+PRESETS["softdrink_advanced"]["star_retention"] = True
+PRESETS["softdrink_experimental"]["star_retention"] = True
+# b778-pi1: franchise practice keeps injuries: on wherever the Coach's Desk Practice row (franchise_practice) is on.
+for _preset in PRESETS.values():
+    _preset["practice_injuries"] = bool(_preset.get("franchise_practice"))
+del _preset
+# b778-ai5: CPU ball carriers stay in bounds / QBs slide past the sticks (gameplay AI, like run blocking).
+for _preset in PRESETS.values():
+    _preset["cpu_ball_carriers"] = False
+PRESETS["softdrink_advanced"]["cpu_ball_carriers"] = True
+PRESETS["softdrink_experimental"]["cpu_ball_carriers"] = True
+# b778-kr1: return coverage pursuit angles (gameplay AI, like ball carriers).
+for _preset in PRESETS.values():
+    _preset["return_coverage"] = False
+PRESETS["softdrink_advanced"]["return_coverage"] = True
+PRESETS["softdrink_experimental"]["return_coverage"] = True
+del _preset
+# b778-ee1: the alien prospect rides on rookie faces: the same preset.
+for _preset in PRESETS.values():
+    _preset["alien_prospect"] = False
+PRESETS["softdrink_experimental"]["alien_prospect"] = True
+# b778-sc2: repair featured-player identity lookup in every SOFTDRINK preset.
+for _preset in PRESETS.values():
+    _preset["sportscenter_lineup"] = True
+# b778-dr1: the broadcast-paced franchise draft, on with the other SOFTDRINK franchise features (Advanced, Experimental).
+for _preset in PRESETS.values():
+    _preset["franchise_draft_clock"] = False
+PRESETS["softdrink_advanced"]["franchise_draft_clock"] = True
+PRESETS["softdrink_experimental"]["franchise_draft_clock"] = True
+del _preset
+# b778-pg2: the Player Progress screen is OFF in every preset. The native screen and weekly capture work, but the
+# provisional save host (roster arena tail 0x8FCF4) is used by the running Front Office: the emulator froze the Front
+# Office after the record was written (the same save decodes correctly offline and stays 720,044 bytes). A versioned
+# franchise footer or an owned arena reserve is required before this can ship. The option stays available for tests.
+for _preset in PRESETS.values():
+    _preset["player_progress"] = False
+# b778-pg3: the visibility-only half is safe (it is the pg2 control run): on in Advanced and
+# Experimental, off in Basic. The snapshot half stays off until its footer has emulator proof.
+for _preset in PRESETS.values():
+    _preset["player_progress_visible"] = False
+PRESETS["softdrink_advanced"]["player_progress_visible"] = True
+PRESETS["softdrink_experimental"]["player_progress_visible"] = True
+del _preset
+# b778-cr1: the Player Contracts null-college crash guard is a safety fix, not a taste option: on in every preset.
+for _preset in PRESETS.values():
+    _preset["contract_college_guard"] = True
+del _preset
+# b778-cb1: cornerback tackle credit: on in the Advanced and Experimental presets (the SOFTDRINK 2K28 recipe builds
+# from Experimental); Basic keeps the retail merge byte for byte.
+for _preset in PRESETS.values():
+    _preset["sim_cb_tackles"] = False
+PRESETS["softdrink_advanced"]["sim_cb_tackles"] = True
+PRESETS["softdrink_experimental"]["sim_cb_tackles"] = True
+del _preset
+# b778-sim1: the simulated-game pace fix is a stat correction, not a taste option: on in the Advanced and Experimental
+# presets (the SOFTDRINK 2K28 recipe builds from Experimental). Basic keeps retail for purists.
+for _preset in PRESETS.values():
+    _preset["sim_stats"] = False
+PRESETS["softdrink_advanced"]["sim_stats"] = True
+PRESETS["softdrink_experimental"]["sim_stats"] = True
+del _preset
+# b778-sd4: modern LED clock digits are a presentation fix like the modern goalposts and the 2026 boards, so on in the
+# Advanced and Experimental presets; Basic keeps the retail bulbs.
+for _preset in PRESETS.values():
+    _preset["modern_clock_led"] = False
+PRESETS["softdrink_advanced"]["modern_clock_led"] = True
+PRESETS["softdrink_experimental"]["modern_clock_led"] = True
 del _preset
 # b77-fr1: the 2026 fans are experimental and unwitnessed: on only in the experimental preset, the one the SOFTDRINK
 # 2K28 recipe builds from (job's choice, recorded in the fr1 report; Noah asked for them on 2026-10-12).
@@ -801,6 +1035,8 @@ for _preset_values in PRESETS.values():
     _preset_values["loader_wakeup_fix"] = True
     # b777-rb2 (Noah 10/20: "rename halfback to running back (RB) everywhere"): display text only.
     _preset_values["rb_rename"] = True
+    # b778-pg2 (Noah 10/22: "the crib in my NFL should be renamed to Trophy Room"): display text only.
+    _preset_values["trophy_room"] = True
     # b77-k1: typing space, period, apostrophe and hyphen in player names changes no gameplay; it is a Create/Edit Player
     # fix that every build should carry (real rosters already hold all four).
     _preset_values["name_keyboard"] = True
@@ -934,6 +1170,64 @@ def _run_blocking_preflight(source: Path, progress) -> None:
                          "build from your unmodified retail dump.")
 
 
+def _pass_protection_preflight(source: Path, progress) -> None:
+    """b778-pr1: refuse a source whose pass-protection site is foreign, before any write."""
+    module = _core_module("nfl2k5_pass_protection")
+    if module is None or _core_module("nfl2k5_xbe_space") is None:
+        raise ValueError("Pass protection is not available in this installation.")
+    progress("Checking the blocking code for pass protection", 0, 0)
+    try:
+        payload = _xbe_bytes(source)
+    except (OSError, ValueError) as exc:
+        raise ValueError(f"Pass protection cannot read default.xbe: {exc}") from exc
+    if module.status(payload) == "foreign":
+        raise ValueError("The blocking code in this source is not retail or Pass protection. Turn it off or "
+                         "build from your unmodified retail dump.")
+
+
+def _force_out_preflight(source: Path, progress) -> None:
+    """b778-fo1: refuse a source whose sideline catch ruling is foreign, before any write (as qb3 does)."""
+    module = _core_module("nfl2k5_force_out")
+    if module is None or _core_module("nfl2k5_xbe_space") is None:
+        raise ValueError("Modern sideline catches is not available in this installation.")
+    progress("Checking the sideline catch ruling for modern sideline catches", 0, 0)
+    try:
+        payload = _xbe_bytes(source)
+    except (OSError, ValueError) as exc:
+        raise ValueError(f"Modern sideline catches cannot read default.xbe: {exc}") from exc
+    if module.status(payload) == "foreign":
+        raise ValueError("The sideline catch code in this source is not retail or Modern sideline catches. Turn it off "
+                         "or build from your unmodified retail dump.")
+
+
+def _practice_injuries_preflight(source: Path, progress) -> None:
+    """b778-pi1: refuse a source whose practice injury handling is foreign, before any write (as fo1 does)."""
+    module = _core_module("nfl2k5_practice_injuries")
+    if module is None or _core_module("nfl2k5_xbe_space") is None:
+        raise ValueError("Franchise practice injuries is not available in this installation.")
+    progress("Checking the practice injury handling", 0, 0)
+    try:
+        payload = _xbe_bytes(source)
+    except (OSError, ValueError) as exc:
+        raise ValueError(f"Franchise practice injuries cannot read default.xbe: {exc}") from exc
+    if module.status(payload) == "foreign":
+        raise ValueError("The practice injury code in this source is not retail or Franchise practice injuries. Turn "
+                         "it off or build from your unmodified retail dump.")
+def _draft_clock_preflight(source: Path, progress) -> None:
+    """b778-dr1: refuse a source whose franchise draft step is foreign, before any write (as fo1 does)."""
+    module = _core_module("nfl2k5_draft_clock")
+    if module is None or _core_module("nfl2k5_xbe_space") is None:
+        raise ValueError("The franchise draft clock is not available in this installation.")
+    progress("Checking the franchise draft screen for the draft clock", 0, 0)
+    try:
+        payload = _xbe_bytes(source)
+    except (OSError, ValueError) as exc:
+        raise ValueError(f"The franchise draft clock cannot read default.xbe: {exc}") from exc
+    if module.status(payload) == "foreign":
+        raise ValueError("The franchise draft code in this source is not retail or the draft clock. Turn it off or "
+                         "build from your unmodified retail dump.")
+
+
 # fx1: plan options that append a late allocator owner (nfl2k5_xbe_space.LATE_OWNERS) to an installed executable.
 _LATE_OWNER_OPTIONS = (
     ("nfl2k5_letter_grades", "Letter grades", lambda p: p.letter_grades),
@@ -950,10 +1244,128 @@ _LATE_OWNER_OPTIONS = (
     ("nfl2k5_play_art_routes", "Play art: full-length routes", lambda p: p.play_art_routes),
     ("nfl2k5_team_number_scale", "Jersey number sizes", lambda p: bool(p.team_number_scale)),
     ("nfl2k5_run_blocking", "Run blocking", lambda p: p.run_blocking),
+    ("nfl2k5_pass_protection", "Pass protection", lambda p: p.pass_protection),  # b778-pr1
     ("nfl2k5_qb_accuracy", "Accurate short throws", lambda p: p.qb_accuracy),
     ("nfl2k5_formation_art_spacing", "Play art: icon spacing", lambda p: p.play_art_routes),  # b777-tp1
+    ("nfl2k5_force_out", "Modern sideline catches", lambda p: p.modern_force_out),  # b778-fo1
+    ("nfl2k5_module_loader", "On-demand Career Home", lambda p: p.module_loader),  # b778-xs1
+    ("nfl2k5_practice_injuries", "Franchise practice injuries", lambda p: p.practice_injuries),  # b778-pi1
+    ("nfl2k5_ball_carrier_ai", "CPU ball carriers", lambda p: p.cpu_ball_carriers),  # b778-ai5
+    ("nfl2k5_star_retention", "CPU clubs keep their stars", lambda p: p.star_retention),  # b778-fa1
+    ("nfl2k5_star_career", "Rookie and career stars", lambda p: p.star_career),  # b778-st2
+    ("nfl2k5_draft_clock", "Franchise draft clock", lambda p: p.franchise_draft_clock),  # b778-dr1
+    ("nfl2k5_weekly_progression", "Weekly player progression", lambda p: p.weekly_progression),  # b778-pg1
+    ("nfl2k5_player_progress_screen", "Player Progress screen", lambda p: p.player_progress or p.player_progress_visible),  # b778-pg2/pg3
+    ("nfl2k5_sim_cb_tackles", "Cornerback tackle credit", lambda p: p.sim_cb_tackles),  # b778-cb1
+    ("nfl2k5_clock_led", "Modern clock digits", lambda p: p.modern_clock_led),  # b778-sd4
+    ("nfl2k5_return_coverage", "Return coverage pursuit angles", lambda p: p.return_coverage),  # b778-kr1
 )
 _REBUILD_HINT = " Build from your unmodified retail dump instead."
+
+
+
+def _star_career_preflight(source: Path, progress) -> None:
+    """b778-st2: refuse a source whose class generator, aging loop or overall/stat code is foreign, before any write."""
+    module = _core_module("nfl2k5_star_career")
+    if module is None or _core_module("nfl2k5_xbe_space") is None:
+        raise ValueError("Rookie and career stars is not available in this installation.")
+    progress("Checking the draft class generator and offseason code for stars", 0, 0)
+    try:
+        payload = _xbe_bytes(source)
+    except (OSError, ValueError) as exc:
+        raise ValueError(f"Rookie and career stars cannot read default.xbe: {exc}") from exc
+    if module.status(payload) == "foreign":
+        raise ValueError("The draft class generator, the Preseason aging loop or the overall/stat code in this source "
+                         "is not retail or Rookie and career stars. Turn it off or rebuild from a supported USA source.")
+
+
+def _ball_carrier_preflight(source: Path, progress) -> None:
+    """b778-ai5: refuse a source whose ball-carrier AI code is foreign, before any write."""
+    module = _core_module("nfl2k5_ball_carrier_ai")
+    if module is None or _core_module("nfl2k5_xbe_space") is None:
+        raise ValueError("CPU ball carriers is not available in this installation.")
+    progress("Checking the ball-carrier AI for CPU ball carriers", 0, 0)
+    try:
+        payload = _xbe_bytes(source)
+    except (OSError, ValueError) as exc:
+        raise ValueError(f"CPU ball carriers cannot read default.xbe: {exc}") from exc
+    if module.status(payload) == "foreign":
+        raise ValueError("The ball-carrier AI code in this source is not retail or CPU ball carriers. Turn it off "
+                         "or build from your unmodified retail dump.")
+
+
+def _return_coverage_preflight(source: Path, progress) -> None:
+    """b778-kr1: refuse a source whose return-coverage AI code is foreign, before any write."""
+    module = _core_module("nfl2k5_return_coverage")
+    if module is None or _core_module("nfl2k5_xbe_space") is None:
+        raise ValueError("Return coverage pursuit angles is not available in this installation.")
+    progress("Checking the pursuit AI for return coverage", 0, 0)
+    try:
+        payload = _xbe_bytes(source)
+    except (OSError, ValueError) as exc:
+        raise ValueError(f"Return coverage cannot read default.xbe: {exc}") from exc
+    if module.status(payload) == "foreign":
+        raise ValueError("The pursuit AI code in this source is not retail or return coverage. Turn it off "
+                         "or build from your unmodified retail dump.")
+
+
+
+def _star_retention_preflight(source: Path, progress) -> None:
+    """b778-fa1: refuse a source whose veteran cap cut is foreign, before any write (as fo1 does)."""
+    module = _core_module("nfl2k5_star_retention")
+    if module is None or _core_module("nfl2k5_xbe_space") is None:
+        raise ValueError("CPU clubs keep their stars is not available in this installation.")
+    progress("Checking the CPU veteran cap cut for CPU clubs keep their stars", 0, 0)
+    try:
+        payload = _xbe_bytes(source)
+    except (OSError, ValueError) as exc:
+        raise ValueError(f"CPU clubs keep their stars cannot read default.xbe: {exc}") from exc
+    if module.status(payload) == "foreign":
+        raise ValueError("The CPU veteran cap cut in this source is not retail or CPU clubs keep their stars. Turn it "
+                         "off or build from your unmodified retail dump.")
+
+
+
+
+
+def _alien_prospect_preflight(plan, source: Path, is_image: bool, progress) -> None:
+    """b778-ee1: the alien prospect needs rookie faces (his portrait joins its record), a disc image, the art and the
+    retail generator, builder and face-record bytes."""
+    if not plan.rookie_faces:
+        raise ValueError("The alien prospect needs Rookie faces (his draft headshot joins its portrait record). Turn on "
+                         "Rookie faces or turn off the alien prospect.")
+    if not is_image:
+        raise ValueError("The alien prospect adds face files to the disc archive: build from a disc image (.iso).")
+    if not _alien_prospect_available():
+        raise ValueError("The alien prospect is not available in this installation (its art is missing).")
+    module = _core_module("nfl2k5_alien_prospect")
+    progress("Checking the draft class generator for the alien prospect", 0, 0)
+    try:
+        payload = _xbe_bytes(source)
+    except (OSError, ValueError) as exc:
+        raise ValueError(f"The alien prospect cannot read default.xbe: {exc}") from exc
+    if module.xbe_status(payload) != "retail":
+        raise ValueError("The draft class generator or the player builder in this source is not retail (an earlier "
+                         "build added the alien prospect or something else changed it)." + _REBUILD_HINT)
+
+
+def _rookie_faces_preflight(source: Path, is_image: bool, progress) -> None:
+    """b778-rh1: rookie faces need a disc image, the bank data and the retail class-generator bytes."""
+    if not is_image:
+        raise ValueError("Rookie faces adds portrait files to the disc archive: build from a disc image (.iso).")
+    if not _rookie_faces_available():
+        raise ValueError("Rookie faces is not available in this installation (its face bank is missing).")
+    module = _core_module("nfl2k5_rookie_faces")
+    progress("Checking the draft class generator for rookie faces", 0, 0)
+    try:
+        payload = _xbe_bytes(source)
+    except (OSError, ValueError) as exc:
+        raise ValueError(f"Rookie faces cannot read default.xbe: {exc}") from exc
+    if module.xbe_status(payload) != "retail":
+        raise ValueError("The draft class generator in this source is not retail (an earlier build added rookie faces "
+                         "or something else changed it)." + _REBUILD_HINT)
+
+
 
 
 def _rebuild_refusals(plan: "BuildPlan", source: Path, is_image: bool, progress) -> None:
@@ -1043,9 +1455,363 @@ def _apply_formation_art_spacing(plan: "BuildPlan", target: Path, receipt: dict,
     receipt["result"]["formation_art_spacing"] = "applied"
 
 
+def _apply_inbox_standings(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    if not plan.inbox_standings:
+        return
+    module = _core_module("nfl2k5_inbox_standings")
+    if module is None:
+        raise RuntimeError("Inbox standings needs nfl2k5_inbox_standings.")
+    progress("Repairing the inbox standings table", 0, 0)
+    patched, detail = module.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, patched)
+    if module.status(_xbe_bytes(target)) != "applied":
+        raise RuntimeError("Inbox standings did not read back as applied")
+    receipt["steps"].append({"step": "inbox_standings", **detail})
+    receipt["result"]["inbox_standings"] = "applied"
+
+
+def _apply_force_out(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    """b778-fo1: the modern sideline catch owner (no force-out from 2008), a late allocator owner."""
+    if not plan.modern_force_out:
+        return
+    module = _core_module("nfl2k5_force_out")
+    if module is None:
+        raise RuntimeError("Modern sideline catches needs nfl2k5_force_out.")
+    progress("Rules: modern sideline catches (no force-out)", 0, 0)
+    payload, force_receipt = module.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, payload)
+    final = _xbe_bytes(target)
+    if final != payload or module.status(final) != "applied":
+        raise RuntimeError("Modern sideline catches: the output does not read back as applied")
+    receipt["steps"].append({"step": "modern_force_out", **{k: v for k, v in force_receipt.items() if k != "reservations"}})
+    receipt["result"]["modern_force_out"] = "applied"
+
+
+def _apply_practice_injuries(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    """b778-pi1: franchise practice keeps injuries, the last late allocator owner."""
+    if not plan.practice_injuries:
+        return
+    module = _core_module("nfl2k5_practice_injuries")
+    if module is None:
+        raise RuntimeError("Franchise practice injuries needs nfl2k5_practice_injuries.")
+    progress("Franchise: injured players sit out of practice", 0, 0)
+    payload, injury_receipt = module.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, payload)
+    final = _xbe_bytes(target)
+    if final != payload or module.status(final) != "applied":
+        raise RuntimeError("Franchise practice injuries: the output does not read back as applied")
+    receipt["steps"].append({"step": "practice_injuries", **{k: v for k, v in injury_receipt.items() if k != "reservations"}})
+    receipt["result"]["practice_injuries"] = "applied"
+
+
+def _apply_ball_carriers(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    """b778-ai5: CPU ball carriers stay in bounds / QBs slide past the sticks, the last late allocator owner."""
+    if not plan.cpu_ball_carriers:
+        return
+    module = _core_module("nfl2k5_ball_carrier_ai")
+    if module is None:
+        raise RuntimeError("CPU ball carriers needs nfl2k5_ball_carrier_ai.")
+    progress("CPU AI: ball carriers stay in bounds, QBs slide past the sticks", 0, 0)
+    payload, carrier_receipt = module.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, payload)
+    final = _xbe_bytes(target)
+    if final != payload or module.status(final) != "applied":
+        raise RuntimeError("CPU ball carriers: the output does not read back as applied")
+    receipt["steps"].append({"step": "cpu_ball_carriers", **{k: v for k, v in carrier_receipt.items() if k != "reservations"}})
+    receipt["result"]["cpu_ball_carriers"] = "applied"
+
+
+def _apply_return_coverage(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    """b778-kr1: return coverage pursuit angles, the last late allocator owner."""
+    if not plan.return_coverage:
+        return
+    module = _core_module("nfl2k5_return_coverage")
+    if module is None:
+        raise RuntimeError("Return coverage pursuit angles needs nfl2k5_return_coverage.")
+    progress("Return coverage: pursuit angles", 0, 0)
+    payload, coverage_receipt = module.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, payload)
+    final = _xbe_bytes(target)
+    if final != payload or module.status(final) != "applied":
+        raise RuntimeError("Return coverage: the output does not read back as applied")
+    receipt["steps"].append({"step": "return_coverage",
+                             **{k: v for k, v in coverage_receipt.items() if k != "reservations"}})
+    receipt["result"]["return_coverage"] = "applied"
+
+
+
+def _apply_star_retention(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    """b778-fa1: CPU clubs keep their stars (veteran cap cut), the last late allocator owner."""
+    if not plan.star_retention:
+        return
+    module = _core_module("nfl2k5_star_retention")
+    if module is None:
+        raise RuntimeError("CPU clubs keep their stars needs nfl2k5_star_retention.")
+    progress("Franchise: CPU clubs keep their stars", 0, 0)
+    payload, star_receipt = module.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, payload)
+    final = _xbe_bytes(target)
+    if final != payload or module.status(final) != "applied":
+        raise RuntimeError("CPU clubs keep their stars: the output does not read back as applied")
+    receipt["steps"].append({"step": "star_retention", **{k: v for k, v in star_receipt.items() if k != "reservations"}})
+    receipt["result"]["star_retention"] = "applied"
+
+
+def _apply_star_career(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    """b778-st2: the rookie/career star owner, after the last b778 late owner (nfl2k5_star_career)."""
+    if not plan.star_career:
+        return
+    module = _core_module("nfl2k5_star_career")
+    if module is None:
+        raise RuntimeError("Rookie and career stars needs nfl2k5_star_career.")
+    progress("Stars: rookie classes and career gains and losses", 0, 0)
+    payload, star_receipt = module.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, payload)
+    final = _xbe_bytes(target)
+    if final != payload or module.status(final) != "applied":
+        raise RuntimeError("Rookie and career stars: the output does not read back as applied")
+    receipt["steps"].append({"step": "star_career", **{k: v for k, v in star_receipt.items() if k != "reservations"}})
+    receipt["result"]["star_career"] = "applied"
+
+
+def _apply_crib_trophy_room(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    """b778-xs1: the Crib keeps the Trophy Room side; its shop is cut (in-place edits, no allocation)."""
+    if not plan.crib_trophy_room:
+        return
+    module = _core_module("nfl2k5_crib_trophy_room")
+    if module is None:
+        raise RuntimeError("The Crib Trophy Room cut needs nfl2k5_crib_trophy_room.")
+    progress("The Crib: Trophy Room only", 0, 0)
+    payload, crib_receipt = module.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, payload)
+    final = _xbe_bytes(target)
+    if final != payload or module.status(final) != "applied":
+        raise RuntimeError("The Crib Trophy Room cut: the output does not read back as applied")
+    receipt["steps"].append({"step": "crib_trophy_room", **crib_receipt})
+    receipt["result"]["crib_trophy_room"] = "applied"
+
+
+def _apply_module_loader(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    """b778-xs1: the on-demand Career Home prototype, after Career Home and every other late allocator owner."""
+    if not plan.module_loader:
+        return
+    module = _core_module("nfl2k5_module_loader")
+    if module is None:
+        raise RuntimeError("On-demand Career Home needs nfl2k5_module_loader.")
+    progress("MyCareer: Career Home loaded on demand (experimental)", 0, 0)
+    payload, loader_receipt = module.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, payload)
+    final = _xbe_bytes(target)
+    if final != payload or module.status(final) != "applied":
+        raise RuntimeError("On-demand Career Home: the output does not read back as applied")
+    receipt["steps"].append({"step": "module_loader", **loader_receipt})
+    receipt["result"]["module_loader"] = "applied"
+def _sportscenter_lineup_preflight(source: Path, progress) -> None:
+    module = _core_module("nfl2k5_sportscenter_lineup")
+    if module is None:
+        raise ValueError("SportsCenter highlight lineups is unavailable in this installation.")
+    progress("Checking SportsCenter highlight lineups", 0, 0)
+    if module.status(_xbe_bytes(source)) == "foreign":
+        raise ValueError("Foreign SportsCenter lineup code. Turn this option off or use an unmodified USA source.")
+
+
+def _apply_sportscenter_lineup(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    if not plan.sportscenter_lineup:
+        return
+    module = _core_module("nfl2k5_sportscenter_lineup")
+    if module is None:
+        raise RuntimeError("SportsCenter highlight lineups needs nfl2k5_sportscenter_lineup.")
+    progress("Repairing SportsCenter highlight lineups", 0, 0)
+    payload, step = module.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, payload)
+    if _xbe_bytes(target) != payload or module.status(payload) != "applied":
+        raise RuntimeError("SportsCenter highlight lineup output failed verification")
+    receipt["steps"].append({"step": "sportscenter_lineup", **step})
+    receipt["result"]["sportscenter_lineup"] = "applied"
+def _apply_draft_clock(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    """b778-dr1: the broadcast-paced franchise draft, the last late allocator owner."""
+    if not plan.franchise_draft_clock:
+        return
+    module = _core_module("nfl2k5_draft_clock")
+    if module is None:
+        raise RuntimeError("The franchise draft clock needs nfl2k5_draft_clock.")
+    progress("Franchise: draft on a broadcast clock", 0, 0)
+    payload, clock_receipt = module.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, payload)
+    final = _xbe_bytes(target)
+    if final != payload or module.status(final) != "applied":
+        raise RuntimeError("The franchise draft clock: the output does not read back as applied")
+    receipt["steps"].append({"step": "franchise_draft_clock", **{k: v for k, v in clock_receipt.items() if k != "reservations"}})
+    receipt["result"]["franchise_draft_clock"] = "applied"
+def _weekly_progression_preflight(source: Path, progress) -> None:
+    """b778-pg1: refuse a source whose post-game merge call is foreign, before any write (as fo1 does)."""
+    module = _core_module("nfl2k5_weekly_progression")
+    if module is None or _core_module("nfl2k5_xbe_space") is None:
+        raise ValueError("Weekly player progression is not available in this installation.")
+    progress("Checking the post-game stat merge for weekly progression", 0, 0)
+    try:
+        payload = _xbe_bytes(source)
+    except (OSError, ValueError) as exc:
+        raise ValueError(f"Weekly player progression cannot read default.xbe: {exc}") from exc
+    if module.status(payload) == "foreign":
+        raise ValueError("The post-game stat merge in this source is not retail or Weekly player progression. Turn it "
+                         "off or build from your unmodified retail dump.")
+
+
+def _apply_weekly_progression(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    """b778-pg1: franchise in-season weekly progression, the last late allocator owner."""
+    if not plan.weekly_progression:
+        return
+    module = _core_module("nfl2k5_weekly_progression")
+    if module is None:
+        raise RuntimeError("Weekly player progression needs nfl2k5_weekly_progression.")
+    progress("Franchise: weekly player progression", 0, 0)
+    payload, weekly_receipt = module.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, payload)
+    final = _xbe_bytes(target)
+    if final != payload or module.status(final) != "applied":
+        raise RuntimeError("Weekly player progression: the output does not read back as applied")
+    receipt["steps"].append({"step": "weekly_progression", **{k: v for k, v in weekly_receipt.items() if k != "reservations"}})
+    receipt["result"]["weekly_progression"] = "applied"
+def _player_progress_preflight(source: Path, progress) -> None:
+    """b778-pg2: refuse a source whose Player Progress bytes are foreign, before any write."""
+    module = _core_module("nfl2k5_player_progress_screen")
+    if module is None or _core_module("nfl2k5_xbe_space") is None:
+        raise ValueError("The Player Progress screen is not available in this installation.")
+    progress("Checking the Player Progress screen bytes", 0, 0)
+    try:
+        payload = _xbe_bytes(source)
+    except (OSError, ValueError) as exc:
+        raise ValueError(f"The Player Progress screen cannot read default.xbe: {exc}") from exc
+    if module.status(payload) == "foreign":
+        raise ValueError("The Player Progress screen bytes in this source are not retail or this owner. Turn it off "
+                         "or build from your unmodified retail dump.")
+
+
+def _apply_player_progress(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    """b778-pg2/pg3: install the Player Progress owner (full snapshot or visibility-only)."""
+    if not (plan.player_progress or plan.player_progress_visible):
+        return
+    module = _core_module("nfl2k5_player_progress_screen")
+    if module is None:
+        raise RuntimeError("The Player Progress screen needs nfl2k5_player_progress_screen.")
+    visible_only = not plan.player_progress
+    progress("Franchise: Player Progress row" if visible_only else "Franchise: Player Progress screen", 0, 0)
+    payload, progress_receipt = module.apply(_xbe_bytes(target), visible_only=visible_only)
+    _write_xbe_bytes(target, payload)
+    final = _xbe_bytes(target)
+    expected = "visible" if visible_only else "applied"
+    if final != payload or module.status(final) != expected:
+        raise RuntimeError(f"The Player Progress screen: the output does not read back as {expected}")
+    receipt["steps"].append({"step": "player_progress", **{k: v for k, v in progress_receipt.items()
+                                                            if k not in ("reservations", "edits")}})
+    receipt["result"]["player_progress"] = expected
+def _apply_contract_college_guard(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    """b778-cr1: the Player Contracts null-college screen guard, after every other late owner."""
+    if not plan.contract_college_guard:
+        return
+    module = _core_module("nfl2k5_contract_college_guard")
+    if module is None:
+        raise RuntimeError("The Player Contracts college guard needs nfl2k5_contract_college_guard.")
+    progress("Screens: Player Contracts null-college guard", 0, 0)
+    payload, guard_receipt = module.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, payload)
+    final = _xbe_bytes(target)
+    if final != payload or module.status(final) != "applied":
+        raise RuntimeError("The Player Contracts college guard: the output does not read back as applied")
+    receipt["steps"].append({"step": "contract_college_guard", **{k: v for k, v in guard_receipt.items() if k != "reservations"}})
+    receipt["result"]["contract_college_guard"] = "applied"
+def _apply_sim_cb_tackles(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    """b778-cb1: the cornerback tackle credit owner, the last late allocator owner."""
+    if not plan.sim_cb_tackles:
+        return
+    module = _core_module("nfl2k5_sim_cb_tackles")
+    if module is None:
+        raise RuntimeError("Cornerback tackle credit needs nfl2k5_sim_cb_tackles.")
+    progress("Stats: cornerback tackle credit", 0, 0)
+    payload, cb_receipt = module.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, payload)
+    final = _xbe_bytes(target)
+    if final != payload or module.status(final) != "applied":
+        raise RuntimeError("Cornerback tackle credit: the output does not read back as applied")
+    receipt["steps"].append({"step": "sim_cb_tackles", **{k: v for k, v in cb_receipt.items() if k != "reservations"}})
+    receipt["result"]["sim_cb_tackles"] = "applied"
+def _sim_stats_preflight(source: Path, progress) -> None:
+    """b778-sim1: refuse a source whose simulator initializer is foreign, before any write."""
+    module = _core_module("nfl2k5_sim_stats")
+    if module is None:
+        raise ValueError("The franchise sim pace fix is not available in this installation.")
+    progress("Checking the franchise simulator for the NFL pace fix", 0, 0)
+    try:
+        payload = _xbe_bytes(source)
+    except (OSError, ValueError) as exc:
+        raise ValueError(f"The franchise sim pace fix cannot read default.xbe: {exc}") from exc
+    if module.status(payload) == "foreign":
+        raise ValueError("The franchise simulator in this source is not retail or the NFL pace fix. Turn it off or "
+                         "rebuild from a supported USA source.")
+def _apply_sim_stats(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    """b778-sim1: normalise the simulated game's clock pace (in place, no allocator request)."""
+    if not plan.sim_stats:
+        return
+    module = _core_module("nfl2k5_sim_stats")
+    if module is None:
+        raise RuntimeError("The franchise sim pace fix needs nfl2k5_sim_stats.")
+    progress("Stats: franchise simulated-game pace", 0, 0)
+    payload, sim_receipt = module.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, payload)
+    final = _xbe_bytes(target)
+    if final != payload or module.status(final) != "applied":
+        raise RuntimeError("The franchise sim pace fix: the output does not read back as applied")
+    receipt["steps"].append({"step": "sim_stats", **{k: v for k, v in sim_receipt.items()
+                                                    if k not in ("reservations", "edits")},
+                             "edits": sim_receipt.get("edits", [])})
+    receipt["result"]["sim_stats"] = "applied"
+def _clock_led_preflight(source: Path, progress) -> None:
+    """b778-sd4: refuse a source whose stadium-loader clock-font loop is foreign, before any write."""
+    module = _core_module("nfl2k5_clock_led")
+    if module is None or _core_module("nfl2k5_xbe_space") is None:
+        raise ValueError("Modern clock digits are not available in this installation.")
+    progress("Checking the clock-font loader for modern clock digits", 0, 0)
+    try:
+        payload = _xbe_bytes(source)
+    except (OSError, ValueError) as exc:
+        raise ValueError(f"Modern clock digits cannot read default.xbe: {exc}") from exc
+    if module.status(payload) == "foreign":
+        raise ValueError("The clock-font loader in this source is not retail or Modern clock digits. Turn it off "
+                         "or build from your unmodified retail dump.")
+
+
+def _apply_clock_led(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    """b778-sd4: the modern LED clock digits owner, after modern sideline catches in the late-owner order."""
+    if not plan.modern_clock_led:
+        return
+    module = _core_module("nfl2k5_clock_led")
+    if module is None:
+        raise RuntimeError("Modern clock digits need nfl2k5_clock_led.")
+    progress("Presentation: modern LED clock digits", 0, 0)
+    payload, led_receipt = module.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, payload)
+    final = _xbe_bytes(target)
+    if final != payload or module.status(final) != "applied":
+        raise RuntimeError("Modern clock digits: the output does not read back as applied")
+    receipt["steps"].append({"step": "modern_clock_led", **{k: v for k, v in led_receipt.items() if k != "reservations"}})
+    receipt["result"]["modern_clock_led"] = "applied"
+
+
 def _hair_styles_available() -> bool:  # b775-hs1
     module = _core_module("nfl2k5_hair_styles")
     return module is not None and module.available()  # the geometry, art, pointer census and pins must agree
+
+
+def _rookie_faces_available() -> bool:  # b778-rh1
+    module = _core_module("nfl2k5_rookie_faces")
+    return (module is not None and module.BANK_JSON.is_file() and module.NAMES_JSON.is_file()
+            and _core_module("nfl2k5_historic_styles") is not None)
+
+
+def _alien_prospect_available() -> bool:  # b778-ee1
+    module = _core_module("nfl2k5_alien_prospect")
+    return module is not None and module.available() and _rookie_faces_available()
 
 
 def _modern_coaches_available() -> bool:  # b77-co1
@@ -1107,6 +1873,8 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
         "kick_meter_2026": _kick_meter_available(),  # b76-km
         "modern_goalposts": _modern_goalposts_available(),  # b77-v1
         "modern_coaches": _modern_coaches_available(),  # b77-co1
+        "rookie_faces": _rookie_faces_available(),  # b778-rh1
+        "alien_prospect": _alien_prospect_available(),  # b778-ee1
         "hair_styles": _hair_styles_available(),  # b775-hs1
         # b776-ai2: the CPU AI owners need only their modules and the allocator
         **{key: _core_module(module) is not None and _core_module("nfl2k5_xbe_space") is not None
@@ -1141,6 +1909,22 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
                                ("team_ratings", "nfl2k5_team_ratings"),
                                ("play_art_routes", "nfl2k5_play_art_routes"),  # b776-pa2
                                ("run_blocking", "nfl2k5_run_blocking"),  # b777-ol1
+                               ("pass_protection", "nfl2k5_pass_protection"),  # b778-pr1
+                               ("modern_force_out", "nfl2k5_force_out"),  # b778-fo1
+                               ("module_loader", "nfl2k5_module_loader"),  # b778-xs1
+                               ("crib_trophy_room", "nfl2k5_crib_trophy_room"),  # b778-xs1
+                               ("inbox_standings", "nfl2k5_inbox_standings"),  # b778-pc3; no allocation
+                               ("star_retention", "nfl2k5_star_retention"),  # b778-fa1
+                               ("practice_injuries", "nfl2k5_practice_injuries"),  # b778-pi1
+                               ("cpu_ball_carriers", "nfl2k5_ball_carrier_ai"),  # b778-ai5
+                               ("return_coverage", "nfl2k5_return_coverage"),  # b778-kr1
+                               ("sportscenter_lineup", "nfl2k5_sportscenter_lineup"),
+                               ("franchise_draft_clock", "nfl2k5_draft_clock"),  # b778-dr1
+                               ("weekly_progression", "nfl2k5_weekly_progression"),  # b778-pg1
+                               ("player_progress", "nfl2k5_player_progress_screen"),  # b778-pg2
+                               ("contract_college_guard", "nfl2k5_contract_college_guard"),  # b778-cr1
+                               ("sim_cb_tackles", "nfl2k5_sim_cb_tackles"),  # b778-cb1
+                               ("modern_clock_led", "nfl2k5_clock_led"),  # b778-sd4
                                ("letter_grades", "nfl2k5_letter_grades"),
                                ("honors_page", "nfl2k5_honors"), ("honors_history", "nfl2k5_honors_history"),
                                ("weekly_prep", "nfl2k5_weekly_prep"), ("weekly_prep_cpu", "nfl2k5_weekly_prep"), ("weekly_prep_remember", "nfl2k5_weekly_prep"),
@@ -1154,6 +1938,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
                                ("music_shuffle", "nfl2k5_music_playlist"), ("practice_squad_screen", "nfl2k5_practice_squad_screen"),
                                ("abilities", "nfl2k5_abilities_runtime"), ("qb_spy", "nfl2k5_qb_spy_runtime"),
                                ("calendar_engine", "nfl2k5_calendar_engine"))},
+        "sim_stats": _core_module("nfl2k5_sim_stats") is not None,  # b778-sim1; in place, no allocator
         "franchise_2026_rules": bool(tt.franchise_2026_patch.RUNTIME_READY),
         "senior_bowl": bool(tt.senior_bowl_patch.NATIVE_EVENT_AVAILABLE),
         "trim_intro_videos": _core_module("nfl2k5_intro_videos") is not None,
@@ -1205,9 +1990,11 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
         "resource_load_guard": _core_module("nfl2k5_resource_load_guard") is not None,
         "loader_wakeup_fix": _core_module("nfl2k5_loader_wakeup") is not None,
         "rb_rename": _core_module("nfl2k5_rb_rename") is not None,
+        "trophy_room": _core_module("nfl2k5_trophy_room") is not None,
         "name_keyboard": _core_module("nfl2k5_name_keyboard") is not None,
         "penalties": _core_module("nfl2k5_penalties") is not None,
         "uniform_choice": _core_module("nfl2k5_uniform_choice") is not None,
+        "team_sleeves": _core_module("nfl2k5_team_sleeves") is not None,
         "kick_laces": _core_module("nfl2k5_kick_laces") is not None,
         "punter_holder": _core_module("nfl2k5_punter_holder") is not None,
         "franchise_practice": _core_module("nfl2k5_franchise_practice") is not None,
@@ -1217,6 +2004,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
                            and (ROOT / "data" / "nfl2k5_modern_names.csv").exists()),
         "player_star": _core_module("nfl2k5_player_star") is not None,
         "player_tags": _core_module("nfl2k5_player_tags") is not None,
+        "star_career": _core_module("nfl2k5_star_career") is not None,  # b778-st2
         "roster_edits": _core_module("nfl2k5_roster_records") is not None,
         # the plan-dependent status function is never called without a selected plan; Build probes
         # the image with Catalog.load and reports available / foreign (a bare XBE: requires image)
@@ -1228,6 +2016,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
                            and _core_module("nfl2k5_seven_on_seven") is not None
                            and _core_module("nfl2k5_seven_on_seven_book") is not None),
         "season_2026": (_core_module("nfl2k5_season_length") is not None
+                        and _core_module("nfl2k5_trade_deadline") is not None
                         and _tools_module("nfl2k5_franchise_schedule") is not None
                         and (ROOT / "data" / "nfl_2026_schedule.json").exists()),
         "position_pools": (_core_module("nfl2k5_position_pools") is not None
@@ -1297,6 +2086,7 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
         "resource_load_guard": report.get("resource_load_guard", "unknown"),
         "loader_wakeup_fix": report.get("loader_wakeup_fix", "unknown"),
         "rb_rename": report.get("rb_rename", "unknown"),
+        "trophy_room": report.get("trophy_room", "unknown"),
         "name_keyboard": report.get("name_keyboard", "unknown"),
         "penalties": report.get("penalties", "unknown"),
         "uniform_choice": report.get("uniform_choice", "unknown"),
@@ -1328,7 +2118,8 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
         "weather_plan": "requires image",
         "espn25_plan": "requires image", "espn25_rosters": "requires image",
         "seven_on_seven": report.get("seven_on_seven", "unknown"), "seven_on_seven_book": "n/a", "team_history": "n/a",
-        "position_pools": "n/a", "position_pool_filters": "n/a", "season_2026": "n/a", "kickoff_alignment": "n/a",
+        "position_pools": "n/a", "position_pool_filters": "n/a", "season_2026": "n/a",
+        "trade_deadline": report.get("trade_deadline", "unknown"), "kickoff_alignment": "n/a",
         "guardian_cap": report.get("guardian_cap", "n/a"),
         "screen_timing": "n/a", "modern_naming": "requires image", "team_names_2026": "n/a", "hires_pack": "requires image",
         **{key: report.get(key, "foreign") for key in (
@@ -1349,6 +2140,57 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
     out["formation_art_spacing"] = spacing.status(_xbe_bytes(source)) if spacing is not None else "unavailable"
     run_blocking = _core_module("nfl2k5_run_blocking")  # b777-ol1
     out["run_blocking"] = run_blocking.status(_xbe_bytes(source)) if run_blocking is not None else "unavailable"
+    pass_protection = _core_module("nfl2k5_pass_protection")  # b778-pr1
+    out["pass_protection"] = pass_protection.status(_xbe_bytes(source)) if pass_protection is not None else "unavailable"
+    force_out = _core_module("nfl2k5_force_out")  # b778-fo1
+    out["modern_force_out"] = force_out.status(_xbe_bytes(source)) if force_out is not None else "unavailable"
+    inbox = _core_module("nfl2k5_inbox_standings")
+    out["inbox_standings"] = inbox.status(_xbe_bytes(source)) if inbox is not None else "unavailable"
+    rookie_faces = _core_module("nfl2k5_rookie_faces")  # b778-rh1
+    out["rookie_faces"] = rookie_faces.xbe_status(_xbe_bytes(source)) if rookie_faces is not None else "unavailable"
+    alien = _core_module("nfl2k5_alien_prospect")  # b778-ee1
+    out["alien_prospect"] = alien.xbe_status(_xbe_bytes(source)) if alien is not None else "unavailable"
+    team_sleeves = _core_module("nfl2k5_team_sleeves")  # b778-sl1
+    out["team_sleeves"] = team_sleeves.status(_xbe_bytes(source)) if team_sleeves is not None else "unavailable"
+    star_retention = _core_module("nfl2k5_star_retention")  # b778-fa1
+    out["star_retention"] = star_retention.status(_xbe_bytes(source)) if star_retention is not None else "unavailable"
+    practice_injuries = _core_module("nfl2k5_practice_injuries")  # b778-pi1
+    out["practice_injuries"] = (practice_injuries.status(_xbe_bytes(source)) if practice_injuries is not None
+                                else "unavailable")
+    ball_carriers = _core_module("nfl2k5_ball_carrier_ai")  # b778-ai5
+    out["cpu_ball_carriers"] = ball_carriers.status(_xbe_bytes(source)) if ball_carriers is not None else "unavailable"
+    return_coverage = _core_module("nfl2k5_return_coverage")  # b778-kr1
+    out["return_coverage"] = return_coverage.status(_xbe_bytes(source)) if return_coverage is not None else "unavailable"
+    sportscenter = _core_module("nfl2k5_sportscenter_lineup")
+    out["sportscenter_lineup"] = sportscenter.status(_xbe_bytes(source)) if sportscenter is not None else "unavailable"
+    draft_clock = _core_module("nfl2k5_draft_clock")  # b778-dr1
+    out["franchise_draft_clock"] = draft_clock.status(_xbe_bytes(source)) if draft_clock is not None else "unavailable"
+    weekly = _core_module("nfl2k5_weekly_progression")  # b778-pg1
+    out["weekly_progression"] = weekly.status(_xbe_bytes(source)) if weekly is not None else "unavailable"
+    player_progress = _core_module("nfl2k5_player_progress_screen")  # b778-pg2/pg3
+    out["player_progress"] = player_progress.status(_xbe_bytes(source)) if player_progress is not None else "unavailable"
+    out["player_progress_visible"] = out["player_progress"]
+    college_guard = _core_module("nfl2k5_contract_college_guard")  # b778-cr1
+    out["contract_college_guard"] = college_guard.status(_xbe_bytes(source)) if college_guard is not None else "unavailable"
+    cb_tackles = _core_module("nfl2k5_sim_cb_tackles")  # b778-cb1
+    out["sim_cb_tackles"] = cb_tackles.status(_xbe_bytes(source)) if cb_tackles is not None else "unavailable"
+    sim_stats = _core_module("nfl2k5_sim_stats")  # b778-sim1
+    out["sim_stats"] = sim_stats.status(_xbe_bytes(source)) if sim_stats is not None else "unavailable"
+    clock_led = _core_module("nfl2k5_clock_led")  # b778-sd4
+    out["modern_clock_led"] = clock_led.status(_xbe_bytes(source)) if clock_led is not None else "unavailable"
+    # b778-bd2: these three are in the Modern preset but were missing from this report, so the
+    # Build page disabled them and silently left them out of every UI build of that preset.
+    crib_trophy = _core_module("nfl2k5_crib_trophy_room")
+    out["crib_trophy_room"] = (crib_trophy.status(_xbe_bytes(source))
+                               if crib_trophy is not None else "unavailable")
+    star_career = _core_module("nfl2k5_star_career")
+    out["star_career"] = star_career.status(_xbe_bytes(source)) if star_career is not None else "unavailable"
+    module_loader = _core_module("nfl2k5_module_loader")
+    out["module_loader"] = (module_loader.status(_xbe_bytes(source))
+                            if module_loader is not None else "unavailable")
+    # The award history is a roster-pool write with no executable site to read back; its
+    # own writer skips honors already present, so a disc image can always take it.
+    out["honors_history"] = "retail" if report.get("container") == "xiso" else "n/a"
     if report.get("container") == "xiso":
         moments = _core_module("nfl2k5_espn25_more_moments")
         stock = _core_module("nfl2k5_stock_books")
@@ -1439,6 +2281,12 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
                 out["season_2026"] = season.simple_status(_xbe_bytes(source))
             except Exception:  # noqa: BLE001
                 out["season_2026"] = "foreign"
+        deadline = _core_module("nfl2k5_trade_deadline")
+        if deadline is not None:
+            try:
+                out["trade_deadline"] = deadline.status(_xbe_bytes(source))
+            except Exception:  # noqa: BLE001
+                out["trade_deadline"] = "foreign"
         sbl = _tools_module("nfl2k5_scorebug_layout")
         if sbl is not None:
             try:
@@ -2169,6 +3017,66 @@ def require_build_source(source: Path | str) -> Path:
 
 #: The prefix of the private folder ``build`` makes beside the chosen output.
 STAGE_PREFIX = ".studio-build-"
+#: Working room a disc-image build needs beyond the copy itself (b778-bd2).
+STAGE_SPACE_MARGIN = 512 * 1024 * 1024
+
+
+def output_space_problem(source: Path | str, target: Path | str) -> str:
+    """Why this disc copy cannot be written safely, in one actionable sentence, or "".
+
+    The build stages a complete copy in the output folder before publishing it. A full drive
+    therefore fails after the copy has already run for a long time, and Windows reports only
+    the platform's raw "not enough space" sentence. Checking the same figure the build needs
+    first turns that into an instruction before any work starts (b778-bd2, tinpanalley's
+    build that ran over an hour and failed). Only disc images are measured: an executable
+    copy is tiny.
+    """
+
+    if not tt.is_disc_image(source):
+        return ""
+    try:
+        source_size = Path(source).stat().st_size
+    except OSError:
+        return ""  # require_build_source names a vanished source in its own words
+    folder = platform_compat.io_path(target).parent
+    required = source_size + STAGE_SPACE_MARGIN
+    try:
+        free = platform_compat.available_bytes(folder)
+    except OSError as exc:
+        return (f"The output folder cannot be checked for free space: {folder} ({exc}). "
+                "Choose another folder, then make the disc again. Nothing was written.")
+    if free >= required:
+        return ""
+    shortfall = required - free
+    return (f"The output folder does not have enough free space for the build: {folder} has "
+            f"{free / 1024**3:.2f} GiB free; writing the disc copy needs at least "
+            f"{required / 1024**3:.2f} GiB (the {source_size / 1024**3:.2f} GiB source plus "
+            f"{STAGE_SPACE_MARGIN // 1024**2} MiB of working room). Free another "
+            f"{shortfall / 1024**3:.2f} GiB or choose another folder. Nothing was written.")
+
+
+def local_output_problem(target: Path | str) -> str:
+    """Why writing beside ``target`` is unsafe on this computer, or "".
+
+    OneDrive uploads and scans every byte written to a synced folder. A 6 GB disc copy
+    there can crawl for over an hour and then fail when the sync client holds one of the
+    build's files, so the Build tab and the core build both refuse it up front with the
+    folder and a plain replacement (b778-bd2; the texture-project builder has refused the
+    same folder since beta 74).
+    """
+
+    if not platform_compat.IS_WINDOWS:
+        return ""
+    from .nfl2k5_build_service import _cloud_synced_root
+    folder = platform_compat.io_path(target).parent
+    found = _cloud_synced_root(folder)
+    if found is None:
+        return ""
+    root, how = found
+    return (f"The disc copy would be written inside OneDrive ({how}, {root}): {folder}. "
+            "OneDrive uploads and scans the whole 6 GB disc while it is written, which can make a "
+            "build crawl or fail. Choose a plain folder such as C:\\2K5 (Choose…), then make the disc "
+            "again. Nothing was written.")
 
 
 def _private_stage_role(path: Path) -> str | None:
@@ -2240,8 +3148,16 @@ def _private_stage_refusal(exc: OSError, stage: Path | None, step: str) -> Value
     return None
 
 
-def build(plan: BuildPlan, progress: ProgressSink | None = None, *, _project_builder=None) -> dict[str, Any]:
-    """Apply the plan to a copy; archive rebuilds publish only a complete result."""
+def build(plan: BuildPlan, progress: ProgressSink | None = None, *, _project_builder=None,
+          require_change: bool = False) -> dict[str, Any]:
+    """Apply the plan to a copy; archive rebuilds publish only a complete result.
+
+    ``require_change`` is the Build & Share contract (b778-bd2): a disc whose selected
+    changes are all already installed, or were all skipped, must not be published as a
+    successful "retail copy". The page raises a clear refusal instead, so Play latest
+    can never start the unchanged source by accident. Other callers keep the historical
+    verified-copy behaviour.
+    """
     from .build_io import StageProgress
     progress = StageProgress(progress)
     stage: Path | None = None
@@ -2254,6 +3170,13 @@ def build(plan: BuildPlan, progress: ProgressSink | None = None, *, _project_bui
         source, target = (platform_compat.io_path(platform_compat.absolute_path(p)) for p in (plan.source, plan.target))
         if platform_compat.paths_alias(source, target):
             raise ValueError("target must not be the source")
+        # b778-bd2: refuse a folder the long build cannot finish in, before it starts.
+        problem = local_output_problem(target)
+        if problem:
+            raise ValueError(problem)
+        problem = output_space_problem(source, target)
+        if problem:
+            raise ValueError(problem)
         plan, coach_ai_skip = _coach_ai_decision(plan, progress)
         preflight_board_source(plan, progress)
         r62 = _validated_r62_plan_options(plan)
@@ -2323,6 +3246,15 @@ def build(plan: BuildPlan, progress: ProgressSink | None = None, *, _project_bui
                     _digest(directory / target.name))
             else:
                 receipt["outcome"] = measure(source, directory / target.name)
+            if require_change and receipt["outcome"].get("status") == "unchanged":
+                # b778-bd2: the step writers ran but every selected change was already on
+                # the source (or kept as it was). Publishing this would hand the user a
+                # disc indistinguishable from what they started with; say why instead.
+                raise ValueError(
+                    "Nothing was written: every selected change is already installed on this disc or was "
+                    "left as it is, so the finished copy would be identical to the source. Choose your "
+                    "unmodified retail disc as the source, or select different changes, then make the disc "
+                    "again. Nothing was written to your chosen output.")
             # The public digest describes the final compact image, including when
             # an earlier resource pass recorded its own intermediate digest.
             if "disc_compaction" in receipt:
@@ -2467,7 +3399,7 @@ def preflight_project_options(plan, document):
                          "stadium edits and build the boards from an unmodified retail image.")
 
 
-def build_with_project(plan, service, cache, session, progress=None):
+def build_with_project(plan, service, cache, session, progress=None, *, require_change=False):
     """One private project copy, then gameplay, then one final publication."""
     from .nfl2k5_model_project import plan_rows, validate_build_plan
     preflight = getattr(service, "preflight_project", None)
@@ -2476,7 +3408,7 @@ def build_with_project(plan, service, cache, session, progress=None):
         document = preflight(session)
         preflight_project_options(plan, document)
         if not document["edits"]:
-            return build(plan, progress)
+            return build(plan, progress, require_change=require_change)
     validate_build_plan(plan, session)
     models = plan_rows(session)
     report = progress or (lambda *_: None)
@@ -2484,7 +3416,7 @@ def build_with_project(plan, service, cache, session, progress=None):
         report(event.message, event.completed, event.total)
     project_progress.cancelled = getattr(progress, 'cancelled', None)
     receipt = build(plan, progress, _project_builder=lambda output: service.build(
-        cache, session, output, project_progress))
+        cache, session, output, project_progress), require_change=require_change)
     if models:
         receipt["project_models"] = models
     return receipt
@@ -2582,7 +3514,8 @@ def _r62_plan_options(plan, frozen_setup=None):
     # b76-vb3: the 25th Anniversary gate is decided per build (it rides with the dynamic kickoff on disc images).
     derived = {"read_option_intent_table", "anniversary_kickoff", "anniversary_kickoff_tables", "widescreen_menus",
                "team_logo_swap", "period_goalposts"}
-    options = {key: (None if key in derived else frozen_setup if key == "my_career_setup" else getattr(plan, key))
+    options = {key: (None if key in derived else frozen_setup if key == "my_career_setup"
+                     else False if key == "roster_capacity" else getattr(plan, key))
                for key in tt.R62_RUNTIME_KEYS}
     # ui1: Career Home and a jukebox music library (installed after this stack) need the same extra section slot;
     # the music library wins and MyCareer keeps its Classic Apartment.
@@ -2789,6 +3722,41 @@ def _apply_run_blocking(plan, target, receipt, progress):
     receipt["result"]["run_blocking"] = "applied"
 
 
+def _apply_pass_protection(plan, target, receipt, progress):
+    """b778-pr1: the pass-protection owner, after run blocking (its run path stays untouched)."""
+    if not plan.pass_protection:
+        return
+    module = _core_module("nfl2k5_pass_protection")
+    if module is None:
+        raise RuntimeError("The pass protection module is not available in this build")
+    progress("Pass protection: blocks hold longer on pass plays", 0, 0)
+    xbe, result = module.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, xbe)
+    if module.status(_xbe_bytes(target)) != "applied":
+        raise RuntimeError("Pass protection: the executable does not read back as applied")
+    receipt["steps"].append({"step": "pass_protection", **{k: v for k, v in result.items() if k not in ("edits", "reservations")},
+                             "edits": result.get("edits", [])})
+    receipt["result"]["pass_protection"] = "applied"
+
+
+def _roster_capacity_records(plan):
+    """b778 fa4: records the paired arena writer must reserve for the dated free-agent plan."""
+    if not plan.roster_edits:
+        return 0
+    records = _core_module("nfl2k5_roster_records")
+    if records is None:
+        return 0
+    try:
+        document = records.read_edits(Path(plan.roster_edits))
+    except (OSError, ValueError):
+        return 0
+    request = document.get("free_agent_capacity")
+    if not isinstance(request, dict):
+        return 0
+    value = request.get("records", 0)
+    return value if type(value) is int and value > 0 else 0
+
+
 def _apply_roster_refresh(plan, target, receipt, progress):
     if not plan.roster_edits:
         return
@@ -2829,7 +3797,14 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             or type(plan.music_userlist) is not bool or (plan.music_userlist and plan.music_policy != "jukebox_menus")):
         raise ValueError("Music policies require retail or jukebox_menus, boolean switches, and jukebox menus for UserList")
     r62 = _validated_r62_plan_options(plan) if r62_options is None else dict(r62_options)
-    if plan.reserves_16 or plan.created_teams_extra:
+    capacity_records = _roster_capacity_records(plan)
+    if capacity_records and (plan.reserves_16 or plan.created_teams_extra):
+        raise ValueError("Capacity growth composes with neither 16 reserves nor extra created teams")
+    if capacity_records and not plan.k128_memory:
+        raise ValueError("Capacity growth needs the 128 MB memory option (K128)")
+    if capacity_records:
+        r62["roster_capacity"] = True
+    if plan.reserves_16 or plan.created_teams_extra or capacity_records:
         plan = replace(plan, xbe_space=True, practice_squad=True, franchise_practice=True,
                        practice_squad_screen=plan.practice_squad_screen or plan.reserves_16)
     tt.momentum_patch._settings(plan.momentum, plan.momentum_contact, plan.momentum_collisions, plan.momentum_collision_level)
@@ -2967,6 +3942,48 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("Full-length play art routes must be Off or On.")
     if type(plan.run_blocking) is not bool:  # b777-ol1
         raise ValueError("Run blocking must be Off or On.")
+    if type(plan.pass_protection) is not bool:  # b778-pr1
+        raise ValueError("Pass protection must be Off or On.")
+    if type(plan.weekly_progression) is not bool:  # b778-pg1
+        raise ValueError("Weekly player progression must be Off or On.")
+    if type(plan.modern_force_out) is not bool:  # b778-fo1
+        raise ValueError("Modern sideline catches must be Off or On.")
+    if type(plan.crib_trophy_room) is not bool:  # b778-xs1
+        raise ValueError("The Crib Trophy Room cut must be Off or On.")
+    if type(plan.module_loader) is not bool:  # b778-xs1
+        raise ValueError("On-demand Career Home must be Off or On.")
+    if plan.module_loader and not (plan.my_career and plan.my_career_home and not plan.music_library):  # b778-xs1
+        raise ValueError("On-demand Career Home needs MyCareer with Career Home (and no jukebox music library).")
+    if type(plan.inbox_standings) is not bool:
+        raise ValueError("Inbox standings must be Off or On.")
+    if type(plan.rookie_faces) is not bool:  # b778-rh1
+        raise ValueError("Rookie faces must be Off or On.")
+    if type(plan.alien_prospect) is not bool:  # b778-ee1
+        raise ValueError("The alien prospect must be Off or On.")
+    if type(plan.star_retention) is not bool:  # b778-fa1
+        raise ValueError("CPU clubs keep their stars must be Off or On.")
+    if type(plan.practice_injuries) is not bool:  # b778-pi1
+        raise ValueError("Franchise practice injuries must be Off or On.")
+    if type(plan.cpu_ball_carriers) is not bool:  # b778-ai5
+        raise ValueError("CPU ball carriers must be Off or On.")
+    if type(plan.return_coverage) is not bool:  # b778-kr1
+        raise ValueError("Return coverage pursuit angles must be Off or On.")
+    if type(plan.sportscenter_lineup) is not bool:
+        raise ValueError("SportsCenter highlight lineups must be Off or On.")
+    if type(plan.franchise_draft_clock) is not bool:  # b778-dr1
+        raise ValueError("The franchise draft clock must be Off or On.")
+    if type(plan.player_progress) is not bool:  # b778-pg2
+        raise ValueError("The Player Progress screen must be Off or On.")
+    if type(plan.player_progress_visible) is not bool:  # b778-pg3
+        raise ValueError("The Player Progress row must be Off or On.")
+    if type(plan.contract_college_guard) is not bool:  # b778-cr1
+        raise ValueError("The Player Contracts college guard must be Off or On.")
+    if type(plan.sim_cb_tackles) is not bool:  # b778-cb1
+        raise ValueError("Cornerback tackle credit must be Off or On.")
+    if type(plan.sim_stats) is not bool:  # b778-sim1
+        raise ValueError("The franchise sim pace fix must be Off or On.")
+    if type(plan.modern_clock_led) is not bool:  # b778-sd4
+        raise ValueError("Modern clock digits must be Off or On.")
     if plan.hair_styles and plan.guardian_overlay:  # b775-hs1
         raise ValueError("Hair styles and the Guardian cap overlay cannot be combined yet: both grow the player models "
                          "and the overlay pins their retail positions. Turn one of them off.")
@@ -3042,6 +4059,12 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         tt.TuningSettings(plan.max_deep_yards, plan.arc,
                           plan.realistic_flight, plan.arc_by_distance).validated()
     uniform_choice_mode(plan.uniform_choice)
+    if type(plan.team_sleeves) is not bool:
+        raise ValueError("team_sleeves must be boolean")
+    if plan.team_sleeves and not tt.is_disc_image(plan.source):
+        raise ValueError("Team-coloured sleeves need a disc image (the sleeve textures live in the uniform packages)")
+    if plan.team_sleeves and _core_module("nfl2k5_team_sleeves") is None:
+        raise ValueError("The team-coloured sleeves writer is not available in this installation")
     if type(plan.hires_pack) is not bool:
         raise ValueError("hires_pack must be boolean")
     if type(plan.hires_scale) is not int or plan.hires_scale not in (1, 2):
@@ -3075,6 +4098,11 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("Unknown or duplicate Hi-res family selection")
     if plan.hires_pack and hires_module is None:
         raise ValueError("The Hi-res pack is not available in this installation")
+    if plan.team_sleeves and plan.hires_pack and "jerseys" in families:
+        # The Hi-res jerseys family pins the complete 768-byte player texture binding table; row 36's
+        # context-first word is exactly what the sleeve change edits, so the two cannot both be checked.
+        raise ValueError("Team-coloured sleeves change the player texture binding table that the Hi-res "
+                         "jerseys family pins; turn one of the two options off")
     if plan.hires_pack and not families:
         raise ValueError("Select at least one Hi-res family")
     plan = replace(plan, hires_families=families)
@@ -3683,7 +4711,49 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         _qb_accuracy_preflight(source, progress)
     if plan.run_blocking:  # fx1: like qb3, before any write
         _run_blocking_preflight(source, progress)
+    if plan.pass_protection:  # b778-pr1: like run blocking, before any write
+        _pass_protection_preflight(source, progress)
+    if plan.modern_force_out:  # b778-fo1: like qb3, before any write
+        _force_out_preflight(source, progress)
+    if plan.inbox_standings:
+        inbox = _core_module("nfl2k5_inbox_standings")
+        if inbox is None or inbox.status(_xbe_bytes(source)) == "foreign":
+            raise ValueError("Inbox standings needs a supported last-undefeated story and its retail callbacks.")
+    if plan.star_career:  # b778-st2: like qb3, before any write
+        _star_career_preflight(source, progress)
+    if plan.rookie_faces:  # b778-rh1: before any write
+        _rookie_faces_preflight(source, is_image, progress)
+    if plan.alien_prospect:  # b778-ee1: before any write
+        _alien_prospect_preflight(plan, source, is_image, progress)
+    if plan.star_retention:  # b778-fa1: like fo1, before any write
+        _star_retention_preflight(source, progress)
+    if plan.practice_injuries:  # b778-pi1: like fo1, before any write
+        _practice_injuries_preflight(source, progress)
+    if plan.cpu_ball_carriers:  # b778-ai5: before any write
+        _ball_carrier_preflight(source, progress)
+    if plan.return_coverage:  # b778-kr1: before any write
+        _return_coverage_preflight(source, progress)
+    if plan.sportscenter_lineup:
+        _sportscenter_lineup_preflight(source, progress)
+    if plan.franchise_draft_clock:  # b778-dr1: like fo1, before any write
+        _draft_clock_preflight(source, progress)
+    if plan.weekly_progression:  # b778-pg1: like fo1, before any write
+        _weekly_progression_preflight(source, progress)
+    if plan.player_progress or plan.player_progress_visible:  # b778-pg2/pg3: like qb3, before any write
+        _player_progress_preflight(source, progress)
+    if plan.sim_stats:  # b778-sim1: like qb3, before any write
+        _sim_stats_preflight(source, progress)
+    if plan.modern_clock_led:  # b778-sd4: like qb3, before any write
+        _clock_led_preflight(source, progress)
     _rebuild_refusals(plan, source, is_image, progress)  # fx1: late refusals of earlier-built discs, before any write
+    if is_image and plan.espn25_plan:  # b778-bd1: the Unc Bowl kits are pinned; a foreign source stops here, not hours in
+        unc = _core_module("nfl2k5_unc_bowl_uniforms")
+        if unc is not None:
+            progress("Checking the Unc Bowl kits on the source disc", 0, 0)
+            try:
+                unc.preflight_source(source if _retail_source is None else _retail_source)
+            except (OSError, KeyError, IndexError):
+                pass  # an image this check cannot read is judged by the owners' own checks, as before
     if plan.modern_coaches:  # b77-co1
         coaches = _core_module("nfl2k5_modern_coaches")
         if coaches is None or not is_image:
@@ -3819,7 +4889,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                music_shuffle=False, music_shuffle_selection=None, practice_squad_screen=False, abilities=False, abilities_off_week=None, qb_spy=False, calendar_engine=False,
                momentum_collisions=False, momentum_collision_level=0, read_option_runtime=False,
                franchise_2026_rules=False, senior_bowl=False, guardian_overlay=False, my_career=False,
-               my_career_setup=None, screen_hooks=False, coverage_trail=False, franchise_edit_player=False, cpu_money_downs="retail", accelerated_clock=False, coin_defer=False, decided_clock=False, cpu_scrambles="retail", weekly_prep=False, weekly_prep_cpu=False, weekly_prep_remember=False, coach_ai=False, playbook_pair=False, deep_zone_facing=False, deep_zone_bail=False, reserves_16=False, created_teams_extra=0, camera=False, franchise_autosave=False, historic_teams_quick_game=False, espn25_more_moments=False, historic_stock_books=False, espn25_era_rules=False, k128_memory=False, k128_roster_heap=False, k128_early=False, letter_grades=False, honors_page=False).wants_xbe_patch() or plan.edge_rename or complete_offense_packs:
+               my_career_setup=None, screen_hooks=False, coverage_trail=False, franchise_edit_player=False, cpu_money_downs="retail", accelerated_clock=False, coin_defer=False, decided_clock=False, cpu_scrambles="retail", weekly_prep=False, weekly_prep_cpu=False, weekly_prep_remember=False, coach_ai=False, playbook_pair=False, deep_zone_facing=False, deep_zone_bail=False, reserves_16=False, created_teams_extra=0, camera=False, franchise_autosave=False, historic_teams_quick_game=False, espn25_more_moments=False, historic_stock_books=False, espn25_era_rules=False, k128_memory=False, k128_roster_heap=False, k128_early=False, letter_grades=False, honors_page=False, sportscenter_lineup=False).wants_xbe_patch() or plan.edge_rename or complete_offense_packs or plan.contract_college_guard:
         progress("Copying and patching default.xbe", 0, 0)
         settings = tt.TuningSettings(plan.max_deep_yards, plan.arc, plan.realistic_flight, plan.arc_by_distance) if plan.throw else None
         kwargs: dict[str, Any] = {"overwrite": plan.overwrite, "progress": progress,
@@ -3835,6 +4905,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                                   "the1wam_lineman_rating": plan.the1wam_lineman_rating,
                                   "xemu_display_list_fix": plan.xemu_display_list_fix,
                                   "resource_load_guard": plan.resource_load_guard, "loader_wakeup_fix": plan.loader_wakeup_fix, "rb_rename": plan.rb_rename,
+                                  "trophy_room": plan.trophy_room,
                                   "name_keyboard": plan.name_keyboard,
                                   "flatter_deep_ball": plan.flatter_deep_ball, "chop_block_toggle": plan.chop_block_toggle,
                                   "penalties": plan.penalties, "uniform_choice": uniform_choice_mode(plan.uniform_choice),
@@ -3850,7 +4921,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             kwargs["_consume_source"] = True
         step = tt.write_copy(source, target, **kwargs)
         receipt["source_sha256"] = step.get("source_sha256")
-        receipt["steps"].append({"step": "xbe", **{k: step.get(k) for k in ("forward_pass_ruling_patch", "modern_naming_patch", "crib_reclaim_patch", "catch_slider", "accel_ramp", "draft_ai", "edge_rename", "edge_rename_disc", "returner_fix", "progression", "franchise_economy", "franchise_economy_patch", "scheme_labels", "camera", "kick_rules", "kick_power", "dynamic_kickoff", "dynamic_kickoff_settings", "dynamic_kickoff_patch", "depth_chart_rows", "practice_squad", "practice_reserves", "depth_locks", "season_cap", "season_cap_patch", "widescreen", "widescreen_patch", "overtime", "team_column", "seven_on_seven", "position_row", "probowl_order", "elbow_options", "the1wam_lineman_rating", "xemu_display_list_fix", "resource_load_guard", "resource_load_guard_patch", "loader_wakeup_fix", "loader_wakeup_fix_patch", "rb_rename", "rb_rename_patch", "name_keyboard_patch", "penalties", "flatter_deep_ball", "flatter_deep_ball_patch", "chop_block_toggle", "chop_block_toggle_patch", "chop_block_evidence", "uniform_choice", "kick_laces", "punter_holder", "franchise_practice", "prospect_names", "player_star", "music_policy", "music_unlock", "music_userlist", "music_state", "music_policy_patch", "scorebug_xbe", "changed_byte_count")}})
+        receipt["steps"].append({"step": "xbe", **{k: step.get(k) for k in ("forward_pass_ruling_patch", "modern_naming_patch", "crib_reclaim_patch", "catch_slider", "accel_ramp", "draft_ai", "edge_rename", "edge_rename_disc", "returner_fix", "progression", "franchise_economy", "franchise_economy_patch", "scheme_labels", "camera", "kick_rules", "kick_power", "dynamic_kickoff", "dynamic_kickoff_settings", "dynamic_kickoff_patch", "depth_chart_rows", "practice_squad", "practice_reserves", "depth_locks", "season_cap", "season_cap_patch", "widescreen", "widescreen_patch", "overtime", "team_column", "seven_on_seven", "position_row", "probowl_order", "elbow_options", "the1wam_lineman_rating", "xemu_display_list_fix", "resource_load_guard", "resource_load_guard_patch", "loader_wakeup_fix", "loader_wakeup_fix_patch", "rb_rename", "rb_rename_patch", "trophy_room", "trophy_room_patch", "name_keyboard_patch", "penalties", "flatter_deep_ball", "flatter_deep_ball_patch", "chop_block_toggle", "chop_block_toggle_patch", "chop_block_evidence", "uniform_choice", "kick_laces", "punter_holder", "franchise_practice", "prospect_names", "player_star", "music_policy", "music_unlock", "music_userlist", "music_state", "music_policy_patch", "scorebug_xbe", "changed_byte_count")}})
     else:
         progress("Copying the image", 0, 0)
         if target.exists():
@@ -4020,6 +5091,23 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                 _write_xbe_bytes(target, xbe)
         else:
             raise ValueError(f"season-length sites are {state}; refusing")
+        # b778-tr1: retail hides the Front Office trade rows from displayed Week 7 and the
+        # Player Trade screen blocks from Week 8. Keep the native gate, wording and menu; move
+        # the boundary to the modern NFL deadline, displayed Week 9.
+        deadline = _core_module("nfl2k5_trade_deadline")
+        if deadline is None:
+            raise RuntimeError("the trade-deadline module is not available in this build")
+        deadline_state = deadline.status(xbe)
+        if deadline_state == "retail":
+            progress("Keeping in-season trades open through NFL Week 9", 0, 0)
+            xbe, deadline_receipt = deadline.apply(xbe)
+            _write_xbe_bytes(target, xbe)
+        elif deadline_state == "applied":
+            deadline_receipt = {"already_applied": True}
+        else:
+            raise ValueError(f"trade-deadline sites are {deadline_state}; refusing")
+        season_receipt = {**season_receipt,
+                          "trade_deadline": {k: v for k, v in deadline_receipt.items() if k != "edits"}}
         # the seven-seed presentation (Playoff Picture, Playoff Tree, SportsCenter previews) rides with the bracket:
         # a disc with the fourteen-team playoffs must never show the old six-seed picture
         picture = _core_module("nfl2k5_playoff_picture")
@@ -4170,7 +5258,17 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         coverage_slider=plan.coverage_slider, scramble_tuning=plan.scramble_tuning,
         music_shuffle=plan.music_shuffle, practice_squad_screen=plan.practice_squad_screen,
         abilities=plan.abilities, qb_spy=plan.qb_spy, calendar_engine=plan.calendar_engine,
-        **tt._r62_space_options(r62), camera=plan.camera)
+        **tt._r62_space_options(r62), camera=plan.camera,
+        hair_styles=plan.hair_styles, cpu_qb_reads=bool(plan.cpu_qb_zone_windows or plan.cpu_qb_recheck),
+        db_ball_play=plan.db_ball_play, play_art_routes=plan.play_art_routes,
+        team_number_scale=bool(plan.team_number_scale), run_blocking=plan.run_blocking, pass_protection=plan.pass_protection, return_coverage=plan.return_coverage,
+        qb_accuracy=plan.qb_accuracy, modern_force_out=plan.modern_force_out,
+        practice_injuries=plan.practice_injuries, cpu_ball_carriers=plan.cpu_ball_carriers,
+        star_retention=plan.star_retention, star_career=plan.star_career,
+        franchise_draft_clock=plan.franchise_draft_clock, weekly_progression=plan.weekly_progression,
+        player_progress=bool(plan.player_progress or plan.player_progress_visible), contract_college_guard=plan.contract_college_guard,
+        sim_cb_tackles=plan.sim_cb_tackles, modern_clock_led=plan.modern_clock_led,
+        module_loader=plan.module_loader, classic_teams=plan.classic_teams)
     if plan.read_option_runtime or plan.qb_spy:
         resolver = _core_module("nfl2k5_play_intents")
         if resolver is None:
@@ -4210,7 +5308,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             or momentum_on or plan.read_option_runtime or plan.guardian_overlay or plan.my_career or plan.screen_hooks or plan.coverage_trail or plan.franchise_edit_player or plan.cpu_money_downs != "retail" or plan.accelerated_clock or plan.coin_defer or plan.decided_clock or plan.cpu_scrambles == "modern" or plan.weekly_prep or plan.weekly_prep_cpu or plan.weekly_prep_remember or plan.coach_ai or plan.playbook_pair or plan.deep_zone_facing or plan.deep_zone_bail
             or plan.reserves_16 or plan.created_teams_extra or plan.defensive_try or plan.zone_drop_cap or plan.all_stadiums or plan.coverage_slider or plan.scramble_tuning
             or plan.music_shuffle or plan.practice_squad_screen or plan.abilities or plan.qb_spy or plan.calendar_engine or plan.camera or plan.franchise_autosave
-            or plan.historic_teams_quick_game or plan.espn25_more_moments or plan.historic_stock_books or plan.espn25_era_rules or r62.get("anniversary_kickoff") or r62.get("widescreen_menus") or r62.get("team_logo_swap") or r62.get("period_goalposts") or plan.k128_memory or plan.letter_grades or plan.honors_page):
+            or plan.historic_teams_quick_game or plan.espn25_more_moments or plan.historic_stock_books or plan.espn25_era_rules or r62.get("anniversary_kickoff") or r62.get("widescreen_menus") or r62.get("team_logo_swap") or r62.get("period_goalposts") or plan.k128_memory or plan.letter_grades or plan.honors_page
+            or plan.return_coverage or plan.pass_protection):
         progress("Adding experimental extra patch space", 0, 0)
         playlist_selection, playlist_preflight = None, None
         if plan.music_shuffle:
@@ -4234,6 +5333,16 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             qb_spy=plan.qb_spy, qb_spy_intent_table=spy_table,
             calendar_engine=plan.calendar_engine, camera=plan.camera, season_cap=plan.season_cap, practice_squad=plan.practice_squad, franchise_practice=plan.franchise_practice,
             dynamic_kickoff_settings=plan.dynamic_kickoff_settings,
+            hair_styles=plan.hair_styles, cpu_qb_reads=bool(plan.cpu_qb_zone_windows or plan.cpu_qb_recheck),
+            db_ball_play=plan.db_ball_play, play_art_routes=plan.play_art_routes,
+            team_number_scale=bool(plan.team_number_scale), run_blocking=plan.run_blocking, pass_protection=plan.pass_protection, return_coverage=plan.return_coverage,
+            qb_accuracy=plan.qb_accuracy, modern_force_out=plan.modern_force_out,
+            practice_injuries=plan.practice_injuries, cpu_ball_carriers=plan.cpu_ball_carriers,
+            star_retention=plan.star_retention, star_career=plan.star_career,
+            franchise_draft_clock=plan.franchise_draft_clock, weekly_progression=plan.weekly_progression,
+            player_progress=bool(plan.player_progress or plan.player_progress_visible), contract_college_guard=plan.contract_college_guard,
+            sim_cb_tackles=plan.sim_cb_tackles, modern_clock_led=plan.modern_clock_led,
+            module_loader=plan.module_loader, classic_teams=plan.classic_teams,
             **{**r62, "read_option_intent_table": read_table, "modern_naming": False, "crib_reclaim": False})
         _write_xbe_bytes(target, patched)
         receipt["steps"].append({"step": "xbe_space", **space_receipt,
@@ -4341,9 +5450,13 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     if plan.modern_naming:
         rec = tt._finish_naming_image(target, naming_digest, progress)
         receipt["steps"].append({"step": "modern_naming", **rec})
-    if plan.reserves_16 or plan.created_teams_extra:
-        rec = tt._finish_roster_arena_image(target, plan.reserves_16, plan.created_teams_extra, progress)
+    if plan.reserves_16 or plan.created_teams_extra or capacity_records:
+        rec = tt._finish_roster_arena_image(target, plan.reserves_16, plan.created_teams_extra, progress,
+                                            capacity_records=capacity_records)
         receipt["steps"].append({"step": "roster_arena_growth", **rec})
+    # b778-xs1: the Crib Trophy Room cut goes in before the Crib rebuild, which then also drops the four arcade game
+    # files (nothing can open them any more); in place, no allocation.
+    _apply_crib_trophy_room(plan, target, receipt, progress)
     if plan.crib_reclaim:
         rec = tt._finish_crib_image(target, progress)
         receipt["steps"].append({"step": "crib_reclaim", **rec})
@@ -4479,6 +5592,9 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             raise RuntimeError("the Unc Bowl uniform repair module is not available in this build")
         uniforms_receipt = uniforms.apply_to_image(target)
         receipt["steps"].append({"step": "unc_bowl_uniforms", **uniforms_receipt})
+        for note in uniforms_receipt.get("user_notes", ()):  # b778-bd1: a kit left as it is is said, not a late failure
+            progress(note, 0, 0)
+            receipt.setdefault("user_notes", []).append(note)
         # b772-ny1: finish the known NYG home art after the project's uniform
         # layers. The native shoulder anNN textures use the plain jersey mips.
         numbers = _core_module("nfl2k5_nyg_numbers")
@@ -4582,6 +5698,14 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                                      **{k: v for k, v in swoosh_receipt.items() if k != "kits"},
                                      "kits": [{k: v for k, v in kit.items() if k != "parts"}
                                               for kit in swoosh_receipt["kits"]]})
+        # b778-uf1 (SWeaR 10/21: Dallas Alternate 1 last names glitched): a nameplate takes the glyph metrics of the
+        # letter atlas it carries (07H7/07A7 wear 07A0's letters), only when its measured atlas has that layout.
+        names_fix_receipt = kit_fixes.apply_nameplates(target)
+        if names_fix_receipt["state"] == "applied":
+            receipt["steps"].append({"step": "kit_fixes_2026_names",
+                                     **{k: v for k, v in names_fix_receipt.items() if k != "kits"},
+                                     "kits": [{k: v for k, v in kit.items() if k != "parts"}
+                                              for kit in names_fix_receipt["kits"]]})
         if plan.espn25_more_moments:
             # b775-ek1 (Noah 10/17): every Anniversary side wears the uniform of its game. Missing looks become NEW
             # style indexes composed from kits already on the copy (read after every uniform writer above), labelled
@@ -4595,6 +5719,40 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             receipt["result"]["moment_kits"] = moment_kits.image_status(target)
             if receipt["result"]["moment_kits"] != "applied":
                 raise ValueError("the Anniversary moment kits failed their read-back on the copy")
+        # b778-uf2 (Noah 10/22): the 2026 Jaguars nameplates on the retail letter structure (white letters with the
+        # black outline on the teal home kit, black letters with their counters on the road and Bold City kits), then
+        # every kit's nameplate hyphen solid; after the Anniversary moment kits, which copy kit packages.
+        nameplate_fixes = _core_module("nfl2k5_nameplate_fixes_2026")
+        if nameplate_fixes is None:
+            raise RuntimeError("the 2026 nameplate fixes module is not available in this build")
+        nameplate_receipt = nameplate_fixes.apply_to_image(
+            target, lambda: require_step_source(source if _retail_source is None else _retail_source,
+                                                "Jaguars nameplates"))
+        receipt["steps"].append({"step": "nameplate_fixes_2026", **nameplate_receipt})
+    if is_image and plan.team_sleeves:
+        # b778-sl1: after every uniform writer (the last is the Anniversary moment kits above), so the
+        # Team palette a package carries is the final art. Data only: one .rdata flag and package palettes.
+        sleeves = _core_module("nfl2k5_team_sleeves")
+        if sleeves is None:
+            raise RuntimeError("the team-coloured sleeves module is not available in this build")
+        progress("Making the long sleeves team-coloured", 0, 0)
+        xbe, xbe_receipt = sleeves.apply(_xbe_bytes(target))
+        _write_xbe_bytes(target, xbe)
+        sleeves.verify(_xbe_bytes(target))
+        keep = ()
+        if plan.espn25_more_moments:
+            # b778 bd3: the historic team styles pin their spares to the retail style-0 art; the Eagles' spare is the
+            # retail era-9 package, which this pass would otherwise rewrite (the build's last read-back refused it).
+            keep = _core_module("nfl2k5_historic_styles").retail_spare_selectors(
+                target, require_step_source(source if _retail_source is None else _retail_source, "Historic team styles"))
+        sleeve_receipt = sleeves.apply_to_image(target, keep=keep)
+        receipt["steps"].append({"step": "team_sleeves", "xbe": xbe_receipt, **sleeve_receipt})
+        receipt["result"]["team_sleeves"] = "applied"
+        if sleeve_receipt.get("skipped"):
+            note = (f"Team-coloured sleeves: left {len(sleeve_receipt['skipped'])} uniform package(s) "
+                    "with their own long-sleeve artwork.")
+            progress(note, 0, 0)
+            receipt.setdefault("user_notes", []).append(note)
     if plan.roster_edits:
         # b77 q1: a roster-edits document may carry a qb_throw_power directive (the amount is its "add"). It runs after
         # every other roster writer (free agents, Anniversary imports, ESPN25 plans) so no later step overwrites a QB.
@@ -4646,7 +5804,19 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     if plan.modern_color:
         modern = _core_module("nfl2k5_modern_color")
         progress("Modern colour and lighting: stadium bundles", 0, 0)
-        bundle_receipt = modern.apply_to_image(target, progress=progress, settings=plan.modern_color_settings, source_receipt=modern.read_image_receipt(source))
+        # b778 bd3 (from bf1): the classic teams paint the Seamen field on the unused s48 venue's nine bundles
+        # before this step (classic_field). The grade leaves exactly those bundles ungraded; its receipt pins them
+        # at their current, read-back classic bytes and records the narrower scope, so the 2026 venue art and every
+        # later colour-aware writer still recognize them.
+        excluded = ()
+        if plan.classic_teams and plan.historic_teams_quick_game and is_image:
+            from . import nfl2k5_classic_field as classic_field
+            classic_retail = require_step_source(source if _retail_source is None else _retail_source, "Classic teams")
+            if classic_field.status(target, classic_retail) != "applied":
+                raise ValueError("the classic teams' field is not in place before the colour grade")
+            excluded = classic_field.BUNDLES
+        bundle_receipt = modern.apply_to_image(target, progress=progress, settings=plan.modern_color_settings,
+                                               source_receipt=modern.read_image_receipt(source), exclude=excluded)
         receipt["steps"].append({"step": "modern_color_bundles", **{k: v for k, v in bundle_receipt.items() if k != "edits"}})
         receipt["result"]["modern_color"] = bundle_receipt["state"]
         receipt["result"]["modern_color_settings"] = bundle_receipt["settings"]
@@ -5042,6 +6212,26 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         icons = _core_module("nfl2k5_menu_icon_orientation")
         icon_receipt = icons.apply_to_image(target)
         receipt["steps"].append({"step": "menu_icon_orientation", **icon_receipt})
+    if plan.rookie_faces and is_image:
+        # b778-rh1: after every portrait and roster writer above (project art, coaches, moment scans, classic teams,
+        # the final commentary pass): the new aggregate copies every portrait as it now stands, and the bank ids are
+        # checked against every roster on the copy.
+        faces = _core_module("nfl2k5_rookie_faces")
+        progress("Rookie faces: new draft headshots", 0, 0)
+        alien = _core_module("nfl2k5_alien_prospect") if plan.alien_prospect else None  # b778-ee1
+        extras = {} if alien is None else dict(extra_faces=[alien.portrait_face()], extra_appended=alien.appended(target))
+        faces_receipt = faces.apply_to_image(target, _xbe_bytes, _write_xbe_bytes,
+                                             progress=lambda message: progress(message, 0, 0), **extras)
+        receipt["steps"].append({"step": "rookie_faces", **faces_receipt})
+        receipt["result"]["rookie_faces"] = faces_receipt["state"]
+        if alien is not None:
+            # b778-ee1: his portrait and face outers rode the rookie-faces rewrite above; now the gray skin textures
+            # (outer 3, before any hair-style textures) and the executable (in place, zero allocator bytes).
+            progress("Alien prospect", 0, 0)
+            alien_receipt = alien.apply_to_image(target, _xbe_bytes, _write_xbe_bytes,
+                                                 progress=lambda message: progress(message, 0, 0))
+            receipt["steps"].append({"step": "alien_prospect", **alien_receipt})
+            receipt["result"]["alien_prospect"] = alien_receipt["state"]
     # Last resource pass, still inside build()'s disposable output transaction.
     if plan.trim_intro_videos:
         intro = _core_module("nfl2k5_intro_videos")
@@ -5165,9 +6355,47 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     # b777 (int7 order, nfl2k5_xbe_space.LATE_OWNERS): after the per-kit jersey number size come ol1's run blocking,
     # then qb3's QB accuracy, the last late allocator owner, so nothing else moves.
     _apply_run_blocking(plan, target, receipt, progress)
+    _apply_pass_protection(plan, target, receipt, progress)  # b778-pr1: after run blocking
     _apply_qb_accuracy(plan, target, receipt, progress)
     # b777-tp1: the formation art icon spacing (with play_art_routes) is the last late allocator owner
     _apply_formation_art_spacing(plan, target, receipt, progress)
+    # b778-fo1: modern sideline catches (nfl2k5_xbe_space.LATE_OWNERS order)
+    _apply_force_out(plan, target, receipt, progress)
+    # b778-pi1: franchise practice injuries, after force-out (LATE_OWNERS order)
+    _apply_practice_injuries(plan, target, receipt, progress)
+    # No cave or allocator request. Integration must keep this after pi1's
+    # nfl2k5_practice_injuries writer, which is not on this job's base.
+    _apply_sportscenter_lineup(plan, target, receipt, progress)
+    # b778-ai5: CPU ball carriers, after the practice injuries owner (LATE_OWNERS order)
+    _apply_ball_carriers(plan, target, receipt, progress)
+    # b778-fa1: CPU clubs keep their stars, after the other late allocator owners (LATE_OWNERS order)
+    _apply_star_retention(plan, target, receipt, progress)
+    # b778-st2: rookie stars and career stars, after the last b778 late owner
+    _apply_star_career(plan, target, receipt, progress)
+    # b778-dr1: the franchise draft clock, the last late allocator owner (nfl2k5_xbe_space.LATE_OWNERS order)
+    _apply_draft_clock(plan, target, receipt, progress)
+    # b778-pg1: franchise weekly progression, the last late allocator owner (nfl2k5_xbe_space.LATE_OWNERS order)
+    _apply_weekly_progression(plan, target, receipt, progress)
+    # b778-pg2: the Player Progress screen, after weekly progression (LATE_OWNERS order)
+    _apply_player_progress(plan, target, receipt, progress)
+    # b778-cr1: the Contracts null-college guard, after the other non-allocating writers
+    _apply_contract_college_guard(plan, target, receipt, progress)  # b778-cr1: after the other late owners
+    # b778-cb1: cornerback tackle credit, after the Contracts guard (LATE_OWNERS order)
+    _apply_sim_cb_tackles(plan, target, receipt, progress)
+    # b778-sim1: the simulated-game pace fix is in place and touches no allocator owner
+    _apply_sim_stats(plan, target, receipt, progress)
+    # b778-sd4: the LED clock, after the cornerback tackle owner (LATE_OWNERS order)
+    _apply_clock_led(plan, target, receipt, progress)
+    # b778-pc3: pointer-only final executable edit; integration places this after
+    # pi1's nfl2k5_practice_injuries. No allocator owner or cave is required.
+    _apply_inbox_standings(plan, target, receipt, progress)
+    # b778-xs1: the on-demand Career Home gate, after every other late allocator owner (it is last in LATE_OWNERS)
+    _apply_module_loader(plan, target, receipt, progress)
+    # b778-kr1: return coverage, after the module loader (nfl2k5_xbe_space.LATE_OWNERS order)
+    _apply_return_coverage(plan, target, receipt, progress)
+    # b778-pg2: the Player Progress screen and weekly snapshot (a late allocator owner after force_out)
+    # b778-cb1: cornerback tackle credit, after force_out
+    # b778-sd4: modern clock digits, after modern sideline catches
     if plan.indicator_names_style != "retail":
         # Final HUD writer: compresses the existing sprite scene losslessly and
         # fits its private FONT in that same span, after all other HUD owners.
@@ -5200,12 +6428,56 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     if plan.team_number_scale and _core_module("nfl2k5_team_number_scale").read_settings(_xbe_bytes(target)) != {
             "status": "applied", "scales": plan.team_number_scale}:  # b776-ns1
         raise ValueError("the jersey number sizes did not survive the final passes")
+    if plan.pass_protection and _core_module("nfl2k5_pass_protection").status(_xbe_bytes(target)) != "applied":  # b778-pr1
+        raise RuntimeError("Pass protection: the output does not read back as applied")
     if plan.run_blocking and _core_module("nfl2k5_run_blocking").status(_xbe_bytes(target)) != "applied":  # b777-ol1
         raise ValueError("run blocking did not survive the final passes")
     if plan.qb_accuracy and _core_module("nfl2k5_qb_accuracy").status(_xbe_bytes(target)) != "applied":  # b777-qb3
         raise ValueError("accurate short throws did not survive the final passes")
     if plan.play_art_routes and _core_module("nfl2k5_formation_art_spacing").status(_xbe_bytes(target)) != "applied":
         raise ValueError("the play art icon spacing did not survive the final passes")  # b777-tp1
+    if plan.modern_force_out and _core_module("nfl2k5_force_out").status(_xbe_bytes(target)) != "applied":  # b778-fo1
+        raise ValueError("modern sideline catches did not survive the final passes")
+    if plan.crib_trophy_room and _core_module("nfl2k5_crib_trophy_room").status(_xbe_bytes(target)) != "applied":  # b778-xs1
+        raise ValueError("the Crib Trophy Room cut did not survive the final passes")
+    if plan.module_loader and _core_module("nfl2k5_module_loader").status(_xbe_bytes(target)) != "applied":  # b778-xs1
+        raise ValueError("the on-demand Career Home gate did not survive the final passes")
+    if plan.return_coverage and _core_module("nfl2k5_return_coverage").status(_xbe_bytes(target)) != "applied":  # b778-kr1
+        raise ValueError("return coverage pursuit angles did not survive the final passes")
+    if plan.inbox_standings and _core_module("nfl2k5_inbox_standings").status(_xbe_bytes(target)) != "applied":
+        raise ValueError("inbox standings did not survive the final passes")
+    if plan.star_retention and _core_module("nfl2k5_star_retention").status(_xbe_bytes(target)) != "applied":  # b778-fa1
+        raise ValueError("CPU clubs keep their stars did not survive the final passes")
+    if plan.practice_injuries and _core_module("nfl2k5_practice_injuries").status(_xbe_bytes(target)) != "applied":
+        raise ValueError("franchise practice injuries did not survive the final passes")  # b778-pi1
+    if plan.cpu_ball_carriers and _core_module("nfl2k5_ball_carrier_ai").status(_xbe_bytes(target)) != "applied":  # b778-ai5
+        raise ValueError("CPU ball carriers did not survive the final passes")
+    if plan.rookie_faces and is_image and _core_module("nfl2k5_rookie_faces").image_status(
+            target, _xbe_bytes) != "applied":  # b778-rh1
+        raise ValueError("rookie faces did not survive the final passes")
+    if plan.alien_prospect and is_image and _core_module("nfl2k5_alien_prospect").image_status(
+            target, _xbe_bytes) != "applied":  # b778-ee1
+        raise ValueError("the alien prospect did not survive the final passes")
+    if plan.sportscenter_lineup and _core_module("nfl2k5_sportscenter_lineup").status(_xbe_bytes(target)) != "applied":
+        raise ValueError("SportsCenter highlight lineups did not survive the final passes")
+    if plan.franchise_draft_clock and _core_module("nfl2k5_draft_clock").status(_xbe_bytes(target)) != "applied":
+        raise ValueError("the franchise draft clock did not survive the final passes")  # b778-dr1
+    if plan.weekly_progression and _core_module("nfl2k5_weekly_progression").status(_xbe_bytes(target)) != "applied":
+        raise ValueError("weekly player progression did not survive the final passes")  # b778-pg1
+    if plan.player_progress and _core_module("nfl2k5_player_progress_screen").status(_xbe_bytes(target)) != "applied":  # b778-pg2
+        raise ValueError("the Player Progress screen did not survive the final passes")
+    if plan.contract_college_guard and _core_module("nfl2k5_contract_college_guard").status(_xbe_bytes(target)) != "applied":
+        raise ValueError("the Player Contracts college guard did not survive the final passes")  # b778-cr1
+    if plan.sim_cb_tackles and _core_module("nfl2k5_sim_cb_tackles").status(_xbe_bytes(target)) != "applied":  # b778-cb1
+        raise ValueError("cornerback tackle credit did not survive the final passes")
+    if plan.sim_stats and _core_module("nfl2k5_sim_stats").status(_xbe_bytes(target)) != "applied":  # b778-sim1
+        raise ValueError("the franchise sim pace fix did not survive the final passes")
+    if plan.modern_clock_led and _core_module("nfl2k5_clock_led").status(_xbe_bytes(target)) != "applied":  # b778-sd4
+        raise ValueError("modern clock digits did not survive the final passes")
+    if plan.hair_styles and is_image:  # b778-hr3: scenes, textures, owner + hook and the 2026 roster bytes
+        hair_step = next((s for s in receipt["steps"] if s.get("step") == "hair_styles"), {})
+        receipt["result"]["hair_styles_final"] = _core_module("nfl2k5_hair_styles").verify_final(
+            target, hair_step.get("roster"))
     if plan.espn25_named_previews:
         receipt["result"]["espn25_fields"] = field_pack.verify_fields_on_image(target, field_receipt)["status"]
         receipt["result"]["espn25_named_previews"] = _core_module("nfl2k5_espn25_more_moments").named_image_status(target)

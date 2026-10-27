@@ -1,6 +1,6 @@
 # 2K Football Mod Tools
 
-Beta 77.1 is the current release (2K5 1.0.0rc112 and APF 0.1.0-alpha.108). The
+Beta 78 is the current release (2K5 1.0.0rc113 and APF 0.1.0-alpha.109). The
 project is open source under the MIT license, and forks are welcome. See
 [Making your own fork](CONTRIBUTING.md#making-your-own-fork).
 
@@ -168,14 +168,29 @@ Double-click launchers are bundled for all three platforms (see *Install*).
 
 ## Install
 
-### From a release archive (recommended)
-1. Download the release archive for your editor from the
+> **Download the release asset, not the source ZIP.** The green
+> **Code > Download ZIP** button downloads the repository source, not a
+> ready-to-run Studio. On Windows use **`2K5-Mod-Studio-*-Setup.exe`** from the
+> [Releases](../../releases) page. If you already downloaded the source ZIP, see
+> [If you downloaded the source ZIP](#if-you-downloaded-the-source-zip) below.
+> The launchers can set it up, but the Setup is the supported download.
+
+### From a release download (recommended)
+1. Download the release asset for your editor from the
    [Releases](../../releases) page and verify it (on Windows use
-   `certutil -hashfile <archive> SHA256` and compare against the `.sha256`):
+   `certutil -hashfile <file> SHA256` and compare against the `.sha256`):
    ```bash
    sha256sum -c 2K5-Mod-Studio-*.tar.gz.sha256      # must say OK
    ```
-2. Extract it, then launch for your platform:
+2. Install or extract it, then launch for your platform:
+   - **Windows**: download **`2K5-Mod-Studio-*-Setup.exe`** and run it. The
+     installer includes Python 3.12 and every Studio package, installs under
+     your own user folder, and never asks for administrator rights. Open 2K5
+     Mod Studio from the Start Menu afterwards. If you prefer the portable
+     archive, extract it and double-click **`2K5-Mod-Studio.bat`**; the first
+     run builds a private runtime automatically (it needs 64-bit Python 3.11 or
+     3.12 from [python.org](https://www.python.org/downloads/windows/) and an
+     internet connection).
    - **Linux, SteamOS and Steam Deck (Desktop Mode)**: the archive has the
      application but no Python, so run the one-time setup first. It builds a
      private runtime in the extracted folder (no `sudo`, no change to the
@@ -189,9 +204,7 @@ Double-click launchers are bundled for all three platforms (see *Install*).
      ```
      (On Debian, Ubuntu and Mint the setup needs `sudo apt install python3-venv`
      first. `install.sh` belongs to APF 2K8 Mod Studio only.)
-   - **Windows** — extract the archive, then double-click
-     **`2K5-Mod-Studio.bat`**.
-   - **macOS** — extract the archive, then double-click
+   - **macOS**: extract the archive, then double-click
      **`2K5-Mod-Studio.command`** (the first time, right-click it and choose
      **Open** to clear Gatekeeper).
 
@@ -207,17 +220,47 @@ Double-click launchers are bundled for all three platforms (see *Install*).
    Windows will not allow a link. That may take longer, but it does not require
    elevation.
 
+### If you downloaded the source ZIP
+`Code > Download ZIP` gives you the source code. It can still run, but the first
+run has to install the Studio packages:
+
+1. Extract the ZIP. A folder inside a folder with the same name is fine; the
+   launcher works from wherever `2K5-Mod-Studio.bat` sits.
+2. Install 64-bit Python 3.12 from
+   [python.org](https://www.python.org/downloads/windows/) and tick **Add
+   python.exe to PATH** during setup. Skip this if `py -3.12 --version` already
+   works.
+3. Double-click **`2K5-Mod-Studio.bat`**. The first run creates a private
+   `.venv` beside the launcher and installs the pinned packages (about 110 MB
+   to download, about 400 MB on disk). It also downloads the reviewed data
+   files the Studio needs from the same release (about 65 MB); a portable
+   archive already contains them. Later runs start immediately. To repair the
+   private runtime at any time, run `2K5-Mod-Studio.bat --setup`.
+   No administrator rights are needed.
+
+If the launcher says Python was not found, install it from the address it
+prints and run the same file again. If the package install fails, check the
+internet connection and run the same file again; it is safe to repeat. Deleting
+the `.venv` folder and running the launcher once more is also safe.
+
 ### From source
 ```bash
 git clone https://github.com/<you>/2k-football-mod-tools.git
 cd 2k-football-mod-tools
-python3 -m mod_editor --studio          # 2K5 Mod Studio
+python3 -m pip install -r packaging/requirements-studio.txt
+python3 packaging/hydrate_release_inputs.py   # once: the reviewed data files
+python3 -m mod_editor --studio                # 2K5 Mod Studio
 # APF 2K8 Mod Studio: see docs/mod_editor/apf2k8_mod_studio_getting_started.md
 ```
+On Windows, the equivalent one-step path is to run `2K5-Mod-Studio.bat` from
+the checkout: it installs the packages and the reviewed data files on first run.
 
 ---
 
 ## Usage (the short version)
+
+New to modding? Read [START HERE](docs/START_HERE.md) first: it goes step by step from
+nothing to a playing SOFTDRINK 2K28 disc, then roster edits and franchise upgrades.
 
 **Install SOFTDRINK 2K28:** go to **Build & Share → Share → Install SOFTDRINK
 2K28**, then choose your unmodified retail image, the downloaded `.2k5patch`
