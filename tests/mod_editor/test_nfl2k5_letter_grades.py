@@ -198,19 +198,26 @@ class AllocatorTests(unittest.TestCase):
         # which the native repairs append after F4 and so never exist without it
         later = space.LATE_OWNERS[space.LATE_OWNERS.index(lg.OWNER):]
         without = tuple(r for r in union if r[0] not in later)
-        self.assertEqual(len(union) - len(without), 18)  # Includes five fixed tap/draft/H-back/rating slot requests; b775 mo2: + the moment context state; b775-ct1: + the classic teams read-only helpers.
+        # Includes five fixed tap/draft/H-back/rating slot requests; b775 mo2: + the moment context state; b775-ct1: +
+        # the classic teams read-only helpers; b778 ai6: + the late-traffic code and its 8-byte state; b778 st2: +
+        # star career's code and data; b778 ai8: + third-down code (the five rows this test's pin predates).
+        self.assertEqual(len(union) - len(without), 23)
         plan_with, plan_without = space.plan(union), space.plan(without)
-        key = lambda a: (a["owner"], a["kind"])           # noqa: E731
+        # b778 xs1/bd3: a union that no longer fits the v3 runs is a v4 image, which adds a second
+        # allocator-directory row at POOL_VA; owner_offset keeps the two pages apart.
+        key = lambda a: (a["owner"], a["kind"], a.get("owner_offset", 0))  # noqa: E731
         old = {key(a): a for a in space._scale_allocations(without)}
         new = {key(a): a for a in space._scale_allocations(union)}
         for k, row in old.items():
-            if k[0] == space.DIRECTORY_OWNER:
-                self.assertEqual(row['size'], 4096)
-                self.assertEqual(new[k]['size'], 1104)
-                self.assertEqual((row['raw'], row['va']), (new[k]['raw'], new[k]['va']))
-            else:
+            if k[0] != space.DIRECTORY_OWNER:
                 self.assertEqual(new[k], row, f"{k} moved")
-        added = sorted(k for k in new if k not in old)
+        old_directory = [a for a in space._scale_allocations(without) if a["owner"] == space.DIRECTORY_OWNER]
+        new_directory = [a for a in space._scale_allocations(union) if a["owner"] == space.DIRECTORY_OWNER]
+        self.assertEqual([(a["size"], a["va"], a["raw"]) for a in old_directory],
+                         [(4096, space.SCALE_DIRECTORY_VA, space.SCALE_DIRECTORY)])
+        self.assertEqual([(a["size"], a["va"], a["raw"]) for a in new_directory],
+                         [(1104, space.SCALE_DIRECTORY_VA, space.SCALE_DIRECTORY), (4096, space.POOL_VA, space.POOL_RAW)])
+        added = sorted((k[0], k[1]) for k in new if k not in old and k[0] != space.DIRECTORY_OWNER)
         self.assertEqual(added, sorted([(lg.OWNER, "code"), (lg.OWNER, "read_only"), (lg.PROGRESS_OWNER, "code"),
                                         ("nfl2k5_period_goalposts", "code"), ("nfl2k5_period_goalposts", "read_only"),
                                         ("nfl2k5_honors", "code"), ("nfl2k5_honors", "data"),
@@ -220,9 +227,13 @@ class AllocatorTests(unittest.TestCase):
                                         ("nfl2k5_classic_teams", "read_only"),  # b775-ct1
                                         ("nfl2k5_human_tap_burst_spill", "code"),
                                         ("nfl2k5_draft_picks_spill", "code"), ("nfl2k5_hback_spill", "code"),
-                                        ("nfl2k5_team_ratings_spill", "code"), ("nfl2k5_team_ratings_spill", "read_only")]))
+                                        ("nfl2k5_team_ratings_spill", "code"), ("nfl2k5_team_ratings_spill", "read_only"),
+                                        ("nfl2k5_cpu_money_downs_late", "code"),  # b778 ai6
+                                        ("nfl2k5_cpu_money_downs_late_state", "data"),
+                                        ("nfl2k5_star_career", "code"), ("nfl2k5_star_career", "data"),  # b778 st2
+                                        ("nfl2k5_cpu_third_down", "code")]))  # b778 ai8
         # after K128 in its region, contiguous with it
-        k128, mine = new[("nfl2k5_k128", "code")], new[(lg.OWNER, "code")]
+        k128, mine = new[("nfl2k5_k128", "code", 0)], new[(lg.OWNER, "code", 0)]
         self.assertEqual(mine["va"], k128["va"] + k128["size"])
         self.assertGreaterEqual(plan_with["capacity"]["code"]["available_bytes"], 0)
         self.assertGreater(plan_without["capacity"]["code"]["available_bytes"],

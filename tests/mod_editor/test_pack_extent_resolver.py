@@ -159,6 +159,11 @@ class PackExtentResolverTests(unittest.TestCase):
             def repair_awards_timing(xbe: bytes) -> tuple[bytes, dict]:  # b771 v1i: already repaired, nothing written
                 return xbe, {"already_applied": True}
 
+        class Deadline:  # b778-tr1: reads the retail trade-deadline sites the stubbed bytes cannot carry
+            @staticmethod
+            def status(_xbe: bytes) -> str:
+                return "applied"
+
         class Schedule:
             @staticmethod
             def encode_schedule(_doc):
@@ -185,7 +190,11 @@ class PackExtentResolverTests(unittest.TestCase):
         real_core, real_tools = mod_build._core_module, mod_build._tools_module
 
         def core(name: str):
-            return Season() if name == "nfl2k5_season_length" else real_core(name)
+            if name == "nfl2k5_season_length":
+                return Season()
+            if name == "nfl2k5_trade_deadline":
+                return Deadline()
+            return real_core(name)
 
         def tools(name: str):
             return Schedule() if name == "nfl2k5_franchise_schedule" else real_tools(name)
