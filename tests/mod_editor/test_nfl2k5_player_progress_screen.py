@@ -332,6 +332,30 @@ class NativeTests(unittest.TestCase):
         m.mem_write(0x170510, b"\xb8\x01\x00\x00\x00\xc3")
         self.assertEqual(self.value(m, 0, 0), 0x1234)
 
+    def test_every_retail_fallback_passes_the_screen_manager_through(self):
+        """b778 pp1: Front Office > Player Progress on a new franchise (no record yet) froze the game: the fallback
+        jumped into the retail getter with ECX holding the list record instead of the screen manager, and the
+        retail 0xF31B0 then read the list through it (bugcheck at 0xF31B6, read of 0x658)."""
+        manager = 0x02040000
+        cases = []
+        m = self.machine()
+        m.mem_write(0x365B25, b"\x89\xc8\x5b\xc2\x0c\x00")        # mov eax,ecx ; pop ebx ; ret 0xc
+        cases.append(("no record", m))
+        m = self.machine()
+        m.mem_write(0x365B25, b"\x89\xc8\x5b\xc2\x0c\x00")
+        self.call(m, "capture_baseline")
+        m.mem_write(LIST + 0xA4, struct.pack("<I", 0))             # list index past the list's count
+        cases.append(("index past the list", m))
+        m = self.machine()
+        m.mem_write(0x365B25, b"\x89\xc8\x5b\xc2\x0c\x00")
+        ret = b"\x31\xc0\xc3"                                       # FN_LIST finds no list record
+        m.mem_write(0xF31B0, ret)
+        cases.append(("no list record", m))
+        for name, m in cases:
+            with self.subTest(case=name):
+                eax, _ = self.call(m, "value", ecx=manager, stack=(0, 0, 1))
+                self.assertEqual(eax, manager)
+
     def test_wrappers_capture_once(self):
         m = self.machine()
         self.call(m, "stage_wrapper", ecx=7)
