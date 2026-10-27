@@ -430,10 +430,25 @@ def _resource_name(data: bytes, chunk) -> str:
     return decoded[name_at:end].decode("utf-16-le")
 
 
+def _gray_palettes() -> dict[str, bytes]:
+    doc = json.loads((DATA_DIR / "gray_palettes.json").read_text(encoding="utf-8"))
+    require(doc.get("schema") == "nfl2k5_alien_prospect_gray_palettes/v1", "unknown alien gray palette document")
+    return {key: bytes.fromhex("".join(row["bgra"])) for key, row in doc["palettes"].items()}
+
+
 def gray_palette(palette_bgra: bytes, pixels: bytes) -> bytes:
-    """The Lightest skin palette mapped onto the alien gray (see tools/nfl2k5_alien_palette.py)."""
-    from tools.nfl2k5_alien_palette import gray_palette as _palette  # noqa: PLC0415
-    return _palette(palette_bgra, pixels, BASE_LAB)
+    """The Lightest skin palette mapped onto the alien gray (see tools/nfl2k5_alien_palette.py).
+
+    The retail sources' results ship in gray_palettes.json, so a Studio build needs no OpenCV; any other source
+    falls back to the OpenCV authoring helper."""
+    shipped = _gray_palettes().get(sha(bytes(palette_bgra) + bytes(pixels)))
+    if shipped is not None:
+        return shipped
+    try:
+        from tools.nfl2k5_alien_palette import gray_palette as _palette  # noqa: PLC0415
+        return _palette(palette_bgra, pixels, BASE_LAB)
+    except ImportError as exc:
+        raise AlienProspectError("this skin texture is not the retail one, and its gray palette needs OpenCV") from exc
 
 
 def _gray_ramp() -> bytes:

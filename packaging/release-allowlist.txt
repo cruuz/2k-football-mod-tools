@@ -2013,6 +2013,7 @@ data/nfl2k5_rookie_faces/bank.json
 mod_editor/core/nfl2k5_alien_prospect.py
 data/nfl2k5_alien_prospect/code.json
 data/nfl2k5_alien_prospect/art.json
+data/nfl2k5_alien_prospect/gray_palettes.json
 data/nfl2k5_alien_prospect/portrait.png
 data/nfl2k5_alien_prospect/face_f.png
 data/nfl2k5_alien_prospect/face_h.png

@@ -552,11 +552,28 @@ class Art(unittest.TestCase):
 
     def test_gray_palette_is_gray(self):
         import colorsys
+        try:
+            import cv2  # noqa: F401  # the authoring helper's dependency, not a Studio runtime package
+        except ImportError:
+            self.skipTest("OpenCV is an authoring dependency; a source outside the shipped palettes needs it")
         pal = bytes(sum(([b, g, r, 255] for r, g, b in [(230, 180, 150), (200, 150, 120), (160, 110, 90)] * 86), []))[:1024]
         out = ap.gray_palette(pal, bytes([0, 1, 2] * 100))
         for k in range(3):
             b, g, r = out[4 * k:4 * k + 3]
             self.assertLess(colorsys.rgb_to_hsv(r / 255, g / 255, b / 255)[1], 0.15, (r, g, b))
+
+    def test_shipped_gray_palettes_need_no_opencv(self):
+        # b778 ship: a Studio install has no OpenCV, so the retail sources' gray palettes ship as data. Hosted CI has
+        # no OpenCV either; before this the pack build stopped at the alien step there and on every user's machine.
+        shipped = ap._gray_palettes()
+        self.assertEqual(len(shipped), 3)
+        self.assertTrue(all(len(v) == 1024 for v in shipped.values()))
+        from unittest import mock
+        with mock.patch.dict(sys.modules, {"cv2": None}), \
+                mock.patch.object(ap, "_gray_palettes", return_value={ap.sha(b"p" * 1024 + b"x" * 16): b"\1" * 1024}):
+            self.assertEqual(ap.gray_palette(b"p" * 1024, b"x" * 16), b"\1" * 1024)
+            with self.assertRaises(ap.AlienProspectError):
+                ap.gray_palette(b"q" * 1024, b"x" * 16)
 
     def test_grow_record(self):
         names = [f"f{i:04d}" for i in (2, 7, 9001)]
