@@ -135,8 +135,16 @@ class DescriptionVisibilityTests(unittest.TestCase):
         host = _scroll_host(panel)
         self.addCleanup(host.deleteLater)
         self.addCleanup(panel.deleteLater)
-        for _ in range(6):
+        # b778 ship: settle until every wrapped label stops resizing. Six fixed passes were not
+        # enough on a slow hosted Windows runner (a description still had its pre-wrap height).
+        last, steady = None, 0
+        for _ in range(60):
             APP.processEvents()
+            heights = tuple(label.height() for label in panel._helpers.values())
+            steady = steady + 1 if heights == last else 0
+            last = heights
+            if steady >= 3:
+                break
         return panel, host
 
     def test_every_option_description_reserves_its_full_wrapped_height(self) -> None:
@@ -145,7 +153,9 @@ class DescriptionVisibilityTests(unittest.TestCase):
             for key in panel._helpers:
                 with self.subTest(theme=theme, option=key):
                     label = panel._helpers[key]
-                    if not label.text():
+                    # b778 ship: a hidden row (7-on-7 is held back) is never laid out, so its height is a stale
+                    # default; hosted Windows fonts wrap it to one more line. Only visible descriptions are read.
+                    if not label.text() or not label.isVisibleTo(panel):
                         continue
                     self.assertIsInstance(label, WrappedLabel)
                     self.assertTrue(label.wordWrap())
