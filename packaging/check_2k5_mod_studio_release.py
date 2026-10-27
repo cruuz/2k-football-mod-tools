@@ -318,7 +318,7 @@ REVIEWED_ICON_SHA256 = (
 # V10's new pixel art is distributable; retail PNGs remain forbidden. Each
 # exception is an exact reviewed path, byte count, hash and PNG dimension.
 SCOREBUG_TEMPLATE_PNG_CATALOG = "packaging/nfl2k5_scorebug_template_pngs.json"
-SCOREBUG_TEMPLATE_PNG_CATALOG_SHA256 = "eaaa87e5930cfbfe19e8fddade9833ddf8f7e9813d6ff4d57fc87516e0e0a0ae"  # b778-sb5 merge: the merged catalog
+SCOREBUG_TEMPLATE_PNG_CATALOG_SHA256 = "1cc0f20e9ee187f2e0eda6efaf87db61fa3eecd39e71a915c3edfac2b33ffd79"  # b778-sb5 merge: the merged catalog
 
 # Anniversary paint is authored or cropped from publicly sourced references.
 # Retail wordmarks/shields/scenes are read from the user's disc at compile time

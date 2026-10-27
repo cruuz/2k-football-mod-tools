@@ -2671,10 +2671,10 @@
       "width": 64
     },
     "data/nfl2k5_scorebug_mnf/logos/buf.png": {
-      "width": 64,
       "height": 64,
+      "sha256": "ec27c5eb6dfe9ec94cc9c1b30ec21993a65006468fdb7a12007bee6774580735",
       "size": 4192,
-      "sha256": "ec27c5eb6dfe9ec94cc9c1b30ec21993a65006468fdb7a12007bee6774580735"
+      "width": 64
     },
     "data/nfl2k5_scorebug_mnf/logos/car.png": {
       "height": 64,

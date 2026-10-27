@@ -25,7 +25,8 @@ CHECKER = ROOT / "packaging" / "check_2k5_mod_studio_release.py"
 ALLOWLIST = ROOT / "packaging" / "release-allowlist.txt"
 REGISTRY = ROOT / "mod_editor" / "capabilities" / "registry.v1.json"
 ART = "data/nfl2k5_allegiant_model/art/"
-PIN = re.compile(r'(?m)^SCOREBUG_TEMPLATE_PNG_CATALOG_SHA256 = "[0-9a-f]{64}"$')
+# The pin line may carry a trailing reason comment; only the digest is rewritten.
+PIN = re.compile(r'(?m)^(SCOREBUG_TEMPLATE_PNG_CATALOG_SHA256 = ")[0-9a-f]{64}(")')
 COUNT = re.compile(r"\d+ authored PNGs in " + re.escape(ART.rstrip("/")) + r" ")
 
 
@@ -52,7 +53,7 @@ def sealed_texts(wanted: dict):
     checker = CHECKER.read_text(encoding="utf-8")
     if len(PIN.findall(checker)) != 1:
         raise SystemExit("the checker pin line is not unique")
-    checker = PIN.sub(f'SCOREBUG_TEMPLATE_PNG_CATALOG_SHA256 = "{hashlib.sha256(payload).hexdigest()}"', checker)
+    checker = PIN.sub(lambda m: m.group(1) + hashlib.sha256(payload).hexdigest() + m.group(2), checker)
     lines = ALLOWLIST.read_text(encoding="utf-8").split("\n")
     present = [i for i, line in enumerate(lines) if line.startswith(ART) and line.endswith(".png")]
     if not present:

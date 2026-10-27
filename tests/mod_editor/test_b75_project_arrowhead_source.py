@@ -59,7 +59,7 @@ class ProjectArrowheadSourceTests(unittest.TestCase):
 
     # -- stand-ins ---------------------------------------------------------
     def _colour_module(self):
-        def apply_to_image(target, *, progress=None, workers=None, settings=None, source_receipt=None):
+        def apply_to_image(target, *, progress=None, workers=None, settings=None, source_receipt=None, exclude=()):
             receipt = _colour_receipt(settings)
             colour._save_image_receipt(target, receipt)
             return receipt
