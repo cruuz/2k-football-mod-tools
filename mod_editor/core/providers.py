@@ -679,7 +679,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_camera.py": "ad21c4d301ab26ed5786383f0b3aa76aace895c2c673b38289e41b225ee593be",
         "mod_editor/core/nfl2k5_catch_slider.py": "0ea12e1f558463538a154f50c38036389a8c0432c7ba55ac2862cd706b85498f",
         "mod_editor/core/nfl2k5_cave_oracle.py": "8be24dd71d7503dba209061747bb74c439833970978a045a96f740cedafb940e",
-        "mod_editor/core/nfl2k5_college_check.py": "58cce4f50e834c9c2c855d632c99e8adf2a08f76dcccdd3f4ec94eb7ccd24145",
+        "mod_editor/core/nfl2k5_college_check.py": "795985088f2fdaab812095c8e10c7f2192077e4214440c2f44ddfcf146f2f3d0",
         "mod_editor/core/nfl2k5_compile_cache.py": "d5ed30d4ad41964186518f2fa2b7c5c2a2ec84a48225b74299c504f5455b115b",
         "mod_editor/core/nfl2k5_late_steps.py": "da80a117d5b755d3e3e2c77bd3fe221b2737d995cb11740a409e4bd3af15a65a",
         "mod_editor/core/nfl2k5_coverage_slider.py": "e63025985e5e2a1f9e18fbc8f7375b16689f2b81bdb61766d86f8d8ee515fc0b",

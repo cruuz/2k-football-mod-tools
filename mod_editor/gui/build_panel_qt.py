@@ -280,12 +280,16 @@ BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                  ("alien_prospect", _alien_prospect.BUILD_CAPTION, _alien_prospect.HELP_TEXT),  # b778-ee1
                  ("star_retention", _star_retention.BUILD_CAPTION, _star_retention.HELP_TEXT),  # b778-fa1
                  ("practice_injuries", _practice_injuries.BUILD_CAPTION, _practice_injuries.HELP_TEXT),  # b778-pi1
-                 ("cpu_ball_carriers", _ball_carrier_ai.BUILD_CAPTION, _ball_carrier_ai.HELP_TEXT),  # b778-ai5
+                 # b778 ci2: the tab caption stays short; the full wording is the module help.
+                 ("cpu_ball_carriers", "CPU carriers in bounds; QBs slide past sticks (experimental)",
+                  _ball_carrier_ai.HELP_TEXT),  # b778-ai5
                  ("return_coverage", _return_coverage.BUILD_CAPTION, _return_coverage.HELP_TEXT),  # b778-kr1
                  ("star_career", _star_career.BUILD_CAPTION, _star_career.HELP_TEXT),  # b778-st2
                  ("sportscenter_lineup", _sportscenter_lineup.BUILD_CAPTION, _sportscenter_lineup.HELP_TEXT),  # b778-sc2
                  ("inbox_standings", _inbox_standings.BUILD_CAPTION, _inbox_standings.HELP_TEXT),  # b778-pc3
-                 ("franchise_draft_clock", _draft_clock.BUILD_CAPTION, _draft_clock.HELP_TEXT),  # b778-dr1
+                 # b778 ci2: the tab caption stays short; the full wording is the module help.
+                 ("franchise_draft_clock", "Franchise draft: 60-second CPU picks (Y next, X next user)",
+                  _draft_clock.HELP_TEXT),  # b778-dr1
                  ("weekly_progression", _weekly_progression.BUILD_CAPTION, _weekly_progression.HELP_TEXT),  # b778-pg1
                  ("player_progress", _player_progress.BUILD_CAPTION, _player_progress.HELP_TEXT),  # b778-pg2
                  ("player_progress_visible", _player_progress.VISIBLE_CAPTION,
@@ -3467,7 +3471,7 @@ class BuildPanel(QWidget):
             if not ready:
                 box.setChecked(state.get(key) == "applied")
             self._set_badge(key, "EXPERIMENTAL / UNWITNESSED" if ready else
-                            marks.MISSING if not available else
+                            "Official marks pack missing" if not available else
                             "Already in this source" if state.get(key) == "applied" else "Full supported disc required")
         self._refresh()
 

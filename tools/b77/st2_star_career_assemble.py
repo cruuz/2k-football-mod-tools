@@ -78,7 +78,7 @@ def main():
         if TARGET.read_text() != result:
             raise SystemExit("star-career byte template is stale")
     else:
-        TARGET.write_text(result)
+        TARGET.write_text(result, encoding="utf-8", newline="\n")
     print("star-career template verified" if args.check else "star-career template generated")
 
 

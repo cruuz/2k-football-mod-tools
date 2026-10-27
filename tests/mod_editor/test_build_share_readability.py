@@ -23,6 +23,7 @@ for entry in (ROOT, ROOT / "tests"):
 from PyQt5.QtGui import QPalette  # noqa: E402
 from PyQt5.QtWidgets import QApplication, QPushButton, QScrollArea  # noqa: E402
 
+from mod_editor.core import mod_build  # noqa: E402
 from mod_editor.gui.build_panel_qt import BuildPanel  # noqa: E402
 from mod_editor.gui.studio_qt import StudioMainWindow  # noqa: E402
 from mod_editor.gui.ux_text import (  # noqa: E402
@@ -221,6 +222,30 @@ class WindowFitTests(unittest.TestCase):
                     APP.processEvents()
                 with self.subTest(size=(width, height), theme=theme, tab="share"):
                     self.assertEqual(scroll.horizontalScrollBar().maximum(), 0)
+
+    def test_a_missing_official_marks_pack_does_not_widen_the_page(self) -> None:
+        # b778 ci2: a lean checkout has no saved logo pack. The old full "missing"
+        # paragraph was used as an unwrapped badge and made the Build tab scroll.
+        from unittest import mock
+
+        from mod_editor.core import nfl2k5_marks_store as store
+        from mod_editor.core import nfl2k5_official_marks as marks
+
+        with mock.patch.object(store, "registered_source", return_value=None), \
+                mock.patch.object(marks, "selected_root", return_value=""), \
+                mock.patch.dict(os.environ, {marks.ENVIRONMENT: ""}), \
+                mock.patch.object(mod_build, "_espn_marks_available", return_value=False), \
+                mock.patch.object(mod_build, "_espn_wipes_boards_available", return_value=False):
+            window = self._window("dark", 1280, 720)
+            scroll = window._build_panel.parent()
+            while scroll is not None and not isinstance(scroll, QScrollArea):
+                scroll = scroll.parent()
+            self.assertIsInstance(scroll, QScrollArea)
+            self.assertIn("Official marks pack missing", window._build_panel._badges["espn_marks_2026"].text())
+            self.assertEqual(scroll.horizontalScrollBar().maximum(), 0)
+            self.assertLessEqual(
+                window._build_panel.minimumSizeHint().width(), scroll.viewport().width()
+            )
 
 
 class FooterReadabilityTests(unittest.TestCase):
