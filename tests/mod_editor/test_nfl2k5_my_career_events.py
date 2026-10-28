@@ -240,8 +240,10 @@ class HostBudgetTests(unittest.TestCase):
             # footer at the capacity base, so a new capacity save reloads with MyCareer installed.
             # b778 pg3: inline_stage derives the native size from the ROST wrapper and also admits the
             # Player Progress footer (34,320 B) on top of the career footer.
+            # b779 rc1: mode_grown_member reads the capacity (0xB0000) arena's overflow row too, so MyCareer
+            # creation no longer refuses "Roster is full." on v0.7 (test_b779_rc1_roster_capacity).
             'tools/mycareer_mode/runtime.c':
-                '0454c82b381dbc75b63b760fad15fb72a36838a708aad57a50c0a6cf3f94fc4b',
+                '7d5ff233df81bce6905e2e3387c13a797be52619aa5c43390518e88b463d88f4',
             'tools/mycareer_mode/runtime.S':
                 '768241d4390839629906e81678ca46cb7f2d2578ac791a72dd71df5a3cde0484',
             'mod_editor/core/nfl2k5_my_career_mode.py':

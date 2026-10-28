@@ -430,13 +430,21 @@ static NI u32 player_bounds(u8 *p) {
 /* Version 2 is owned only by the installed arena bridge. The ordinary
  * Practice Squad ps_limit rejects it; the grown bridge validates ordinal,
  * metadata, overflow indices and the block CRC before returning capacity.
- * Return 0 absent, 1 active, 2 reserve, or -1 invalid/duplicate ownership. */
+ * Return 0 absent, 1 active, 2 reserve, or -1 invalid/duplicate ownership.
+ * b779 rc1: the 0xB0000 capacity arena (v0.7) writes the same version 2 with
+ * its block 0x400 before the arena end (0xAFC00), like the 0x92000 schema
+ * (0x91C00). Only 0x92000 was accepted, so every free record read as
+ * league-wide invalid and MyCareer refused "Roster is full." on any boot.
+ * The installed bridge's ps_limit answers 0 unless [0xB72808] is its own
+ * arena size and its block at size-0x400 is sealed, so the overflow row is
+ * read at that block for either schema. The four nops keep this function at
+ * its released 150 bytes, so no later MyCareer label moves. */
 u32 FC mode_grown_member(u8 *t,u32 player) {
     u32 i,p,id,found=0;
     const u16 *overflow;
-    if(G(0xB72808)!=0x92000 || B((u8 *)0xc3ee0,0)!=0xe9 ||
-       !CALL1(0x3ee10c,(u32)t)) return -1;
-    overflow=(const u16 *)(ROOT+0x91c20+10*(((u32)t-W(ROOT,0x1c))/500));
+    __asm__ volatile("nop\n\tnop\n\tnop\n\tnop");
+    if(B((u8 *)0xc3ee0,0)!=0xe9 || !CALL1(0x3ee10c,(u32)t)) return -1;
+    overflow=(const u16 *)(ROOT+G(0xB72808)-0x3e0+10*(((u32)t-W(ROOT,0x1c))/500));
     for(i=0;i<70;i++) {
         if(i<65) p=W(t,4*i);
         else { id=overflow[i-65]; p=id==0xffff?0:W(ROOT,4)+84*id; }

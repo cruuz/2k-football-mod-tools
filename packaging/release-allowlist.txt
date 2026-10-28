@@ -3792,3 +3792,5 @@ tests/mod_editor/test_b778_ap1_appearance.py
 # b778 cs1: mid-game Choose Side leaves a fresh coach VIP context on the native CPU caller
 tests/mod_editor/test_b778_cs1_choose_side.py
 tests/mod_editor/test_b778_bd3_build_blockers.py
+# b779 rc1: v0.7 roster capacity family (MyCareer on the capacity arena, draft-class records, CPU signings)
+tests/mod_editor/test_b779_rc1_roster_capacity.py
