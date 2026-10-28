@@ -1186,3 +1186,47 @@ def sync_free_agents(payload: bytes, disc_body: bytes, *, keep: int = SAVE_KEEP_
                     "changes": changes, "outside_declared_fields_identical": True,
                     "save_arena_growth": growth,
                     "changed_bytes": sum(a != b for a, b in zip(base_payload, result))}
+
+
+# --- b779-rf3: the class generator's templates (the save's own copy of the 68 secondary records) ---------------
+#: Noah 10/28: "if you can upgrade existing franchises, that's awesome". A franchise save carries its whole roster,
+#: the 68 templates the draft-class generator rolls every rookie between included, so a franchise started before the
+#: rf3 templates keeps the old ones. Only the template records' rating bytes are copied from the disc roster; no
+#: player or generated prospect is touched, and the style channels (kicking style, power-run style, scramble) stay.
+TEMPLATE_RATINGS_AT = 0x36
+TEMPLATE_STYLE = ("kicking_style", "power_run_style", "scramble")
+
+
+def sync_rookie_templates(payload: bytes, disc_body: bytes) -> tuple[bytes, dict]:
+    """Copy the disc roster's 68 class-generator templates (rating bytes only) into the franchise's own templates."""
+    from . import nfl2k5_roster_records as rr  # noqa: PLC0415
+    _save, roster = franchise(payload)
+    target = sr.decode(disc_body, preamble=0, reference_year=BASE_YEAR)
+    require(target.layout.version in (17, 18), "template source must be a disc ROST")
+    saved = [p for p in roster.players if p.pool == "secondary"]
+    disc = [p for p in target.players if p.pool == "secondary"]
+    require(len(saved) == len(disc) == 68, f"expected 68 templates, save {len(saved)} disc {len(disc)}")
+    order = list(rr.RATING_BYTE_ORDER)
+    rated = [i for i, name in enumerate(order) if name not in TEMPLATE_STYLE]
+    out = bytearray(payload)
+    masks: dict[int, int] = {}
+    changes = []
+    for index, (mine, theirs) in enumerate(zip(saved, disc)):
+        position = payload[mine.offset + 0x35]
+        require(position == disc_body[theirs.offset + 0x35] == index // 4,
+                f"template {index}: position {position} does not match the generator's table")
+        for i in rated:
+            at, src = mine.offset + TEMPLATE_RATINGS_AT + i, theirs.offset + TEMPLATE_RATINGS_AT + i
+            if payload[at] != disc_body[src]:
+                changes.append({"template": index, "field": order[i], "offset": at, "before": payload[at],
+                                "after": disc_body[src]})
+                out[at] = disc_body[src]
+                masks[at] = 0xFF
+    result = bytes(out)
+    scope = prove_scope(payload, result, masks)
+    after = sr.decode(result, base_year=BASE_YEAR)
+    require([(p.pool, p.index, p.offset) for p in after.players] == [(p.pool, p.index, p.offset) for p in roster.players],
+            "the roster layout moved")
+    return result, {"operation": "rookie_templates", "before_sha256": sha(payload), "after_sha256": sha(result),
+                    "disc_roster_sha256": sha(disc_body), "templates": 68,
+                    "templates_changed": len({c["template"] for c in changes}), "changes": changes, **scope}

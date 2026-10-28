@@ -571,5 +571,45 @@ class ContainerTests(unittest.TestCase):
                 service.load_container(source)
 
 
+
+class RookieTemplates(unittest.TestCase):
+    """b779-rf3: Franchise > Upgrade copies the disc's 68 class-generator templates (rating bytes) into the save."""
+
+    def test_is_a_command_and_part_of_upgrade(self):
+        self.assertIn("rookie-templates", service.COMMANDS)
+
+    def test_refuses_a_save_without_the_68_templates(self):
+        payload = fixture()[0]
+        with self.assertRaises(up.UpgradeRefused):
+            up.sync_rookie_templates(payload, disc_roster(payload))
+
+    def test_real_franchise_gets_the_fitted_templates_and_nothing_else(self):
+        from tests.nfl2k5_senior_bowl_fixture import SAVE_PATHS
+        from mod_editor.core import nfl2k5_rookie_faces as rf
+        if not SAVE_PATHS[0].is_file():
+            raise unittest.SkipTest("private signed franchise evidence is absent")
+        payload = SAVE_PATHS[0].read_bytes()
+        disc = bytearray(disc_roster(payload))
+        target = sr.decode(bytes(disc), preamble=0, reference_year=up.BASE_YEAR)
+        templates = [p for p in target.players if p.pool == "secondary"]
+        order = list(rr.RATING_BYTE_ORDER)
+        for row in rf.load_templates()["templates"]:
+            for name, value in row["ratings"].items():
+                disc[templates[row["index"]].offset + 0x36 + order.index(name)] = value
+        result, receipt = up.sync_rookie_templates(payload, bytes(disc))
+        self.assertTrue(receipt["outside_declared_fields_identical"])
+        self.assertGreater(len(receipt["changes"]), 500)
+        roster = sr.decode(payload, base_year=up.BASE_YEAR)
+        allowed = set()
+        for player in roster.players:
+            if player.pool == "secondary":
+                allowed |= {player.offset + 0x36 + i for i, n in enumerate(order) if n not in up.TEMPLATE_STYLE}
+        changed = {i for i, (a, b) in enumerate(zip(payload, result)) if a != b}
+        self.assertTrue(changed and changed <= allowed, "only template rating bytes change; no player is touched")
+        for player in roster.players:
+            if player.pool != "secondary":
+                self.assertEqual(result[player.offset:player.offset + 0x54], payload[player.offset:player.offset + 0x54])
+        self.assertEqual(up.sync_rookie_templates(result, bytes(disc))[1]["changes"], [])   # idempotent
+
 if __name__ == "__main__":
     unittest.main()
