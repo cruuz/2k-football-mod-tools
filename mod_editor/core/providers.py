@@ -573,7 +573,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_menu_helmet_w2026.py": "0c6575ddaa3e5044b1233ac26d2f72ec19321992c51e918973ec19de24074b7e",
         "mod_editor/core/nfl2k5_era_rules_code.py": "a493d389359ac7f360b92a03b6713a2ffa8f41a31b1032e3f9824bf8f332499b",
         "mod_editor/core/nfl2k5_era_rules.py": "860d58839a73b389dd508f6f7ab0fcf5b1fc631d14ed3b04934c6bad09414467",
-        "mod_editor/core/nfl2k5_stock_books.py": "a6def5824b2031a10cf095fec321eb03bec960c2e14592507796e05bc3e11c01",
+        "mod_editor/core/nfl2k5_stock_books.py": "e3d59b80d17d93981c4d0c91aadfe505073d16184393823fb4908b28f353cda1",
         "mod_editor/core/nfl2k5_moment_gun_weight.py": "bb02838d3081320a8735fe68ba83321ef444772ffe8124fc08bf50244462bcc1",
         "mod_editor/core/nfl2k5_project_fit.py": "ca9551a8f1d89e6435acba870daa3902ede49a84a2a9e5d1adf5b5eb53eeeb7a",
         "mod_editor/core/nfl2k5_my_career_prospects.py": "7c326fbfdaf090c6bf3394af99d266c8f069be8e8a49919f7503e14db9b09c45",

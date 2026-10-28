@@ -80,7 +80,24 @@ MOMENT_COUNT = 51
 # (nfl2k5_classic_teams: identity FIRST_ID + list position, list sorted by season) takes the franchise's current book instead
 # of the preserved bank. Retail historic teams (<= 170), the Anniversary team-seasons (176..225) and the classic teams of
 # 2005-2009 (226..230) keep E2R. tests/mod_editor/test_nfl2k5_stock_books_moments.py checks the range against the data.
-CLASSIC_MODERN_IDS = (231, 249)
+#: b779 au1: the classic teams of 2010 on are identities 232..249 and 252. nfl2k5_classic_teams gives list position n the
+#: identity IDENTITIES[n] = 226..249, 252 (b778-ss1 skipped 250/251, the two extra created teams), and its data order
+#: puts Lions 2008 at 231 and Packers 2010 at 232, so the v0.7 range 231..249 gave Lions 2008 the club book and left
+#: Seahawks 2025 (252) on the retail bank. The created teams 250/251 stay outside, exactly as before.
+CLASSIC_MODERN_IDS = ((232, 249), (252, 252))
+V07_CLASSIC_IDS = (231, 249)                       # the b776 .. v0.7 body's single range
+
+
+def classic_ranges(classic_ids):
+    """A classic id spec as a tuple of inclusive (first, last) ranges: (a, b) or ((a, b), ...)."""
+    if classic_ids is None:
+        return ()
+    return (tuple(classic_ids),) if isinstance(classic_ids[0], int) else tuple(tuple(r) for r in classic_ids)
+
+
+def classic_modern(identity, classic_ids=CLASSIC_MODERN_IDS):
+    """Whether a category-4 side with this team identity (low byte, as the resolver reads it) takes its club book."""
+    return any(first <= (identity & 0xFF) <= last for first, last in classic_ranges(classic_ids))
 #: The Situation flag: 1 in the plain Situation mode, 0 in an Anniversary moment (both are game mode 8).
 SITUATION_FLAG = 0xE6014C
 
@@ -124,9 +141,14 @@ def code_for(va, *, modern_moments=True, moment_limit=MOMENT_COUNT, legacy=False
     a.b("83bb2801000004")               # this side's category, never the opponent's
     a.j32("0f85", "retail")
     if modern_moments:
-        if classic_ids is not None:
-            first, last = classic_ids
-            require(0 < first <= last <= 0xFF, "classic identity range")
+        ranges = classic_ranges(classic_ids)
+        require(all(0 < f <= l <= 0xFF for f, l in ranges) and list(ranges) == sorted(ranges)
+                and all(a[1] < b[0] for a, b in zip(ranges, ranges[1:])), "classic identity ranges")
+        for n, (first, last) in enumerate(ranges):
+            if n and first == last:
+                a.b("80bb18010000" + bytes([first]).hex())   # cmp byte [ebx+0x118], id
+                a.j32("0f84", "default")                     # one more classic team of 2010 on
+                continue
             a.b("80bb18010000" + bytes([first]).hex())   # cmp byte [ebx+0x118], first (flags only)
             a.j8("72", "stock")
             a.b("80bb18010000" + bytes([last]).hex())    # cmp byte [ebx+0x118], last
@@ -279,7 +301,7 @@ def _installed_kind(image, va):
         bins = gun.decode_bin_table(installed[BIN_TABLE_OFFSET:BIN_TABLE_OFFSET + gun.BIN_TABLE_SIZE])
         if installed == code_for(va, weights=weights, team_weights=bins):
             return "current", (weights, bins)
-        if installed == code_for(va, weights=weights, team_weights=bins, situation_flag=False):
+        if installed == code_for(va, weights=weights, team_weights=bins, situation_flag=False, classic_ids=V07_CLASSIC_IDS):
             return "b778_bins", (weights, bins)   # b776 .. v0.7: plain Situation took the retail bank (b779 au1)
         old = dict(first_season=LEGACY_FIRST_SEASON, classic_ids=None)
         if installed == code_for(va, weights=weights, team_weights=bins, **old):

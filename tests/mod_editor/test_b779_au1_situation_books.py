@@ -30,7 +30,8 @@ except ImportError:
 class BodyShape(unittest.TestCase):
     def test_current_body_tests_the_situation_flag_and_fits_its_budget(self):
         va = 0x14E3BD0
-        current, v07 = books.code_for(va), books.code_for(va, situation_flag=False)
+        current = books.code_for(va)
+        v07 = books.code_for(va, situation_flag=False, classic_ids=books.V07_CLASSIC_IDS)
         self.assertNotEqual(current, v07)
         self.assertEqual(len(current), books.CODE_SIZE)
         self.assertIn(b"\x83\x3d" + struct.pack("<I", books.SITUATION_FLAG) + b"\x00", current[:books.TABLE])
@@ -54,7 +55,8 @@ class SituationModeBooks(unittest.TestCase):
         cls.current = books.apply(cls.retail)[0]
         owned = books.allocation(cls.current)
         # The b776 .. v0.7 body, as the released v0.7 disc holds it.
-        cls.v07 = books._write_body(cls.current, owned, books.code_for(owned['va'], situation_flag=False))
+        cls.v07 = books._write_body(cls.current, owned, books.code_for(owned['va'], situation_flag=False,
+                                                                       classic_ids=books.V07_CLASSIC_IDS))
 
     def machine(self, payload):
         m = self.Machine(payload, trace_writes=False)
@@ -117,8 +119,7 @@ class SituationModeBooks(unittest.TestCase):
         m = self.machine(self.current)
         self.assertFalse(self.resolve(m, situation=1, category=4, identity=100))     # a retail historic team
         self.assertFalse(self.resolve(m, mode=4, situation=0, category=4, identity=100))
-        lo, hi = books.CLASSIC_MODERN_IDS
-        for identity in (lo, hi):                                                    # classic teams of 2010 on
+        for identity in (232, 249, 252):                                             # classic teams of 2010 on
             self.assertTrue(self.resolve(m, situation=1, category=4, identity=identity))
             self.assertTrue(self.resolve(m, mode=4, situation=0, category=4, identity=identity))
 
@@ -132,6 +133,30 @@ class SituationModeBooks(unittest.TestCase):
         # An unloaded moment table still keeps the retail bank in a moment.
         cur.put(0xC8F0D8, 0)
         self.assertFalse(self.resolve(cur, situation=0, season=2022))
+
+    def test_every_classic_team_gets_its_own_era_book(self):
+        """b779 au1: each classic team-season, by the identity nfl2k5_classic_teams writes into its file
+        (IDENTITIES[list position]), takes its club book from 2010 on and the retail bank before, in Quick Game and in
+        Situation. The v0.7 range (231..249) failed two of them: Lions 2008 (231) and Seahawks 2025 (252)."""
+        from mod_editor.core import nfl2k5_classic_teams as ct
+        data = ct.Data.load()
+        cur, old = self.machine(self.current), self.machine(self.v07)
+        wrong_v07 = []
+        for n, key in enumerate(data.order()):
+            identity, season = ct.IDENTITIES[n], data.teams[key]['season']
+            want = season >= books.MODERN_FIRST_SEASON
+            with self.subTest(team=key, identity=identity):
+                self.assertEqual(books.classic_modern(identity), want)
+                self.assertEqual(self.resolve(cur, mode=4, situation=0, category=4, identity=identity), want)
+                self.assertEqual(self.resolve(cur, situation=1, category=4, identity=identity), want)
+            if self.resolve(old, mode=4, situation=0, category=4, identity=identity) != want:
+                wrong_v07.append(key)
+        self.assertEqual(wrong_v07, ['lions_2008', 'seahawks_2025'])
+        # Not classic teams: the created teams 250/251, retail historic teams and the Anniversary team-seasons
+        # keep the retail bank, as on v0.7.
+        for identity in (250, 251, 120, 170, 176, 225, 0, 253):
+            self.assertFalse(self.resolve(cur, mode=4, situation=0, category=4, identity=identity))
+            self.assertFalse(self.resolve(old, mode=4, situation=0, category=4, identity=identity))
 
     def test_v07_body_upgrades_in_place(self):
         self.assertEqual(books.status(self.v07), 'needs_fix')
