@@ -223,6 +223,24 @@ class Pinned(unittest.TestCase):
             self.assertFalse(mk._donors_pinned({"18A0": b"x"}))
 
 
+class ClassicHelperPage(unittest.TestCase):
+    """Coach Edwards' next refusal after the kits: "the classic helper page is not executable". The classic teams' helpers
+    are x86 bytes in the read-only run, which was executable only when some other owner already made it so."""
+
+    def test_the_read_only_run_is_executable_when_the_classic_teams_are_requested(self):
+        from mod_editor.core import nfl2k5_classic_teams as classic
+        from mod_editor.core import nfl2k5_xbe_space as space
+        plain = [("nfl2k5_test_owner", "read_only", 16, 16)]
+        self.assertEqual(space._scale_regions(plain)[5]["flags"], 0x32)
+        self.assertEqual(space._scale_regions(plain + list(classic.REQUESTS))[5]["flags"], 0x36)
+
+    def test_a_run_that_was_already_executable_keeps_its_flags(self):
+        from mod_editor.core import nfl2k5_xbe_space as space
+        directory_code = [r for r in space.DIRECTORY_CODE_REQUESTS][:1]
+        self.assertEqual(space._scale_regions(directory_code)[5]["flags"], 0x36)
+        self.assertEqual(space.EXECUTABLE_READ_ONLY_OWNERS, ("nfl2k5_classic_teams",))
+
+
 class Installed(Harness):
     """A disc where one kit was left out earlier reads as installed, not foreign."""
 

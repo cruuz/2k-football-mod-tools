@@ -724,6 +724,11 @@ LATE_OWNER = "nfl2k5_k128"
 # b77-v1b: the period goalposts owner is placed after them the same way (i1: after F4 and F4b, the order the native
 # repairs append them to the v0.5 directory), so adding it moves no other owner's address.
 # b77-f5: the Player Card honors page last (its native repair runs after F4, F4b and V1b).
+# b779-ce1: owners whose "read_only" bytes are x86 helpers the game calls. The read-only run must then be executable even
+# when no directory-code owner makes it so (Coach Edwards' old settings: Classic teams without On-demand Career Home:
+# "the classic helper page is not executable", hours into a build). Plans that already had an executable run keep
+# the same section flags, so no shipped layout changes.
+EXECUTABLE_READ_ONLY_OWNERS = ("nfl2k5_classic_teams",)
 LATE_OWNERS = (LATE_OWNER, "nfl2k5_letter_grades", "nfl2k5_letter_grades_progress",  # b77-f4b: progression after F4
                "nfl2k5_period_goalposts", "nfl2k5_honors", "nfl2k5_coach_ai",
                "nfl2k5_draft_picks", "nfl2k5_hback",
@@ -953,7 +958,7 @@ def _scale_regions(requests=()):
         result.append(dict(kind=kind, va=va, raw=raw, size=pages * PAGE,
                            flags={"code": 0x36, "data": 3, "read_only": 0x32}[kind]))
         raw += pages * PAGE
-    if _directory_code_size(requests):
+    if _directory_code_size(requests) or any(row[0] in EXECUTABLE_READ_ONLY_OWNERS for row in requests):
         result[5]["flags"] = 0x36  # read-only executable, never writable
     if requests:
         size = _pool_size(requests)
