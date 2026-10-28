@@ -200,7 +200,8 @@ def donors_with_edits(documents, chunks: dict, asset_paths: dict, index, retail,
     donors = {}
     for _feature, doc in documents:
         for selector in kits.donors(doc):
-            donors[selector] = bytes(retail_packages[selector])
+            # a historic spare style does not exist on the retail disc: Build makes it from the retail style-0 kit
+            donors[selector] = bytes(retail_packages[selector if selector in retail_packages else selector[:3] + "0"])
     targets, _physical = load_targets()
     todo = sorted((key, ids) for key, ids in chunks.items() if key[0] in donors)
     for number, ((selector, chunk_index), ids) in enumerate(todo, 1):
@@ -221,19 +222,35 @@ def donors_with_edits(documents, chunks: dict, asset_paths: dict, index, retail,
 
 def kit_dry_run(plan, chunks: dict, asset_paths: dict, index, retail, progress=None) -> list:
     """Compose the new Anniversary / classic kits from the user's edited donors exactly as Build will (retail chunks
-    where an edited one cannot be used), and report each swap and each left-out kit by name."""
+    where an edited one cannot be used), and report each swap and each left-out kit by name.
+
+    The donors here are the retail kits plus the user's equipment, not the disc as Build will have it after the
+    2026 kit repairs. A new kit whose art rows already fail on the plain retail donors depends on those repairs,
+    so it is not judged here (it is checked when Build composes it) and is said to be unchecked, never blamed."""
     from . import nfl2k5_moment_kits as kits
     documents = _feature_documents(plan)
     if not documents or not chunks:
         return []
     donors = donors_with_edits(documents, chunks, asset_paths, index, retail, progress)
+    plain = donors_with_edits(documents, {}, {}, index, retail)
     retail_packages = kits.RetailPackages(retail)
-    findings = []
+    findings, unchecked = [], []
     for feature, doc in documents:
-        report, skipped = [], {}
+        report, skipped, baseline = [], {}, {}
         kits.compose(doc, donors, retail_packages, report, skipped)
+        kits.compose(doc, plain, retail_packages, [], baseline)
+        for kit_id in sorted(baseline):
+            unchecked.append(kit_id)
+            skipped.pop(kit_id, None)
+        report = [row for row in report if row["side"].split(" ", 1)[0] not in baseline]
         for note in kits.user_notes(dict(substitutions=report, skipped_kits=skipped), feature):
             findings.append(Finding(NOTE, feature, note.removeprefix(feature + ": ")))
+    if unchecked:
+        findings.append(Finding(NOTE, "Kit check",
+                                f"{len(unchecked)} new kit{'s' if len(unchecked) != 1 else ''} cannot be tried before "
+                                "Build: " + _named(unchecked) + ".",
+                                "They are built from kits that the 2026 repairs change first, so Build checks them "
+                                "when it composes them and names any swap in its log."))
     return findings
 
 

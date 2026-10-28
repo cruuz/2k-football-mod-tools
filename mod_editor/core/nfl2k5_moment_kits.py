@@ -486,7 +486,7 @@ class RetailPackages(dict):
     def __contains__(self, selector):
         try:
             self[selector]
-        except (ValueError, OSError):
+        except (ValueError, OSError, KeyError):
             return False
         return True
 
@@ -704,12 +704,11 @@ def compile_edits(target, doc, inputs):
                                  skipped_kits=skipped, substitutions=list(inputs.get("report") or []))
 
 
-CHUNK_NAMES = {4: "socks", 5: "elbow pads", 6: "gloves", 7: "long sleeves", 8: "shoes (styles 1, 2, 3)",
-               9: "shoes (styles 4, 5, 6)", 10: "wristbands"}
+CHUNK_NAMES = {4: "socks", 5: "elbow pads", 6: "gloves", 7: "long sleeves", 8: "shoes", 9: "shoes", 10: "wristbands"}
 
 
 def _chunk_words(indexes):
-    words = [CHUNK_NAMES.get(i, f"piece {i}") for i in indexes]
+    words = list(dict.fromkeys(CHUNK_NAMES.get(i, f"piece {i}") for i in indexes))
     return ", ".join(words[:-1]) + " and " + words[-1] if len(words) > 1 else words[0]
 
 
