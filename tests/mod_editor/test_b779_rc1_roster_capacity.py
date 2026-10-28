@@ -126,7 +126,7 @@ class MyCareerCapacityCreateTests(unittest.TestCase):
 # ------------------------------------------------------------------------------------------- draft classes
 # Revision 4's class mix per 450 (Noah 10/28: deep classes, undrafted players at every position):
 #             QB   K   P  WR  CB  FS  SS  HB  FB  TE OLB ILB   C   G   T  DT  DE
-CLASS_MIX = (26, 10, 10, 33, 45, 13, 17, 31, 11, 27, 22, 22, 29, 30, 47, 35, 42)
+CLASS_MIX = (26, 9, 9, 33, 44, 18, 17, 29, 11, 28, 19, 19, 36, 28, 36, 41, 47)
 ONE_POOL_MIX = CLASS_MIX[:10] + (0, CLASS_MIX[10] + CLASS_MIX[11]) + CLASS_MIX[12:]   # no rostered OLB: OLB is LB
 
 
@@ -344,6 +344,74 @@ class ReleasedRosterClassTests(unittest.TestCase):
         self.assertEqual((before, after), (144, 0))
         self.assertEqual(positions.count(8), 144)          # every vacancy is a fullback record
         self.assertEqual((positions.count(0), positions.count(1), positions.count(2)), (4, 0, 0))
+
+
+def _drafts(payload, body, drafts=2):
+    """Native franchise seasons with the regular-season games skipped (stage 8 week counter set to its end; the
+    playoffs, rollover, offseason stages, draft and class generator all run natively, CPU clubs throughout).
+    Returns one {position code: undrafted prospects} per draft, read when the native undrafted pass 0x31E430
+    starts, and the class sizes generated."""
+    from tests.nfl2k5_supersim_draft_fixture import Machine
+    m = Machine(payload, trace_writes=False)
+    size = len(body) - 0x40
+    m.uc.mem_write(m.ARENA + 0x300, body)
+    m.put(0xB72804, m.ARENA + 0x300)
+    m.put(0xB72808, size if size > 0x91000 else 0x91000)
+    m.put(0xB7280C, size)
+    m.fixup_roster(m.ARENA + 0x340)
+    m.seed(12345)
+    for a, v in ((0xE5FF80, 4), (0xE60120, 0), (0xE6000C, 5), (0xE60010, 5)):
+        m.put(a, v)
+    m.leaf(0x177990, lambda: m.ret(pop=4), reason="progress renderer only")
+    m.leaf(0x14E520, lambda: m.ret(), reason="informational dialog acknowledgement only")
+    leftovers, classes = [], []
+
+    def census():
+        n, base = m.get(m.root), m.get(m.root + 4)
+        raw = bytes(m.uc.mem_read(base, 84 * n))
+        owned = {m.get(m.team_base + 500 * t + 4 * i) for t in range(32) for i in range(65)}
+        counts = [0] * 17
+        for i in range(n):
+            if raw[84 * i + 8] & 0x10 and base + 84 * i not in owned and raw[84 * i + 0x35] < 17:
+                counts[raw[84 * i + 0x35]] += 1
+        leftovers.append(counts)
+
+    m.uc.hook_add(m.u.UC_HOOK_CODE, lambda *_: census(), begin=0x31E430, end=0x31E430)
+    m.uc.hook_add(m.u.UC_HOOK_CODE, lambda *_: classes.append(m.reg("ECX")), begin=0x2BE940, end=0x2BE940)
+    m.call(0x13EE10, budget=2_000_000_000)
+    menu = m.ARENA + 0x1A0000
+    for _ in range(200):
+        if len(leftovers) >= drafts:
+            break
+        stage, week, end, year = (m.get(a) for a in (0xE576A4, 0xE576B4, 0xE576B0, 0xE576B8))
+        if stage == 8 and week < end:
+            m.put(0xE576B4, end)
+        elif stage == 9 and week >= end:
+            m.call(0xC4D30, ecx=m.team_base, edx=1)       # the native exit needs one user club
+        m.call(0x247D40 if stage in (7, 9) and week < end else 0x2480B0, ecx=menu, budget=int(2e10))
+        if m.get(0xE576B8) != year:
+            for t in range(32):
+                if m.call(0x13EC30, ecx=m.team_base + 500 * t):
+                    m.call(0xC4D30, ecx=m.team_base + 500 * t, edx=0)
+    return leftovers, classes
+
+
+@unittest.skipUnless(HAVE_UC and RELEASED_BODY.is_file() and RELEASED_XBE.is_file(),
+                     "the released v0.7 default.xbe and main ROST body (private) are absent")
+class ReleasedRosterDraftTests(unittest.TestCase):
+    """Noah 10/28: "Every draft, every position pool should have undrafted players that nobody wants." Two native
+    drafts on the v0.7 executable upgraded to revision 4: the disc's own first class, then the first generated one."""
+
+    def test_no_position_runs_out_in_the_first_two_drafts(self):
+        from mod_editor.core import nfl2k5_franchise_economy as economy
+        fixed = economy.apply(RELEASED_XBE.read_bytes())[0]
+        leftovers, classes = _drafts(fixed, RELEASED_BODY.read_bytes())
+        self.assertEqual(len(leftovers), 2)
+        self.assertIn(economy.CLASS_SIZE, classes)
+        for draft in leftovers:
+            for code, left in enumerate(draft):
+                if code != 10:                              # one pool: no OLB at all (they are LB)
+                    self.assertGreater(left, 0, f"position {code} ran out: {draft}")
 
 
 if __name__ == "__main__":
