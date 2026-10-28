@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""Job f12 (beta 77): move generated roster data from nflverse years_exp (rookie 0) to the game's years pro (rookie 1).
+"""SUPERSEDED by b779_years_in_league.py (years pro = seasons since entering the NFL); its output is refused by the
+roster reader. Kept for the history of the beta 77 conversion.
+
+Job f12 (beta 77): move generated roster data from nflverse years_exp (rookie 0) to the game's years pro (rookie 1).
 
 The game stores years pro with a rookie as 1 and prints R for that value (nfl2k5_roster_records.years_pro_from_years_exp
 has the rule and the proof).  The 2026 league, free-agent and Anniversary builders wrote nflverse ``years_exp`` as it
@@ -118,7 +121,8 @@ def convert_edits(document: dict, base_body: bytes) -> tuple[dict, dict]:
             appended += 1
     out[CONVENTION_KEY] = CONVENTION
     out[CONVENTION_KEY + "_note"] = NOTE
-    new_body, new_receipt = rr.apply_body(base_body, {k: v for k, v in out.items() if k not in generated})
+    # b779 fh1: the roster reader now refuses this tool's (older) stamp, so the proof applies the document without it
+    new_body, new_receipt = rr.apply_body(base_body, {k: v for k, v in out.items() if k not in generated and k != CONVENTION_KEY})
     if new_receipt["log"] != old_receipt["log"]:
         raise ConversionRefused(f"the converted document logs differently ({new_receipt['log'][:1]})")
     before = {(p.pool, p.index): p for p in rr.RosterDocument(old_body, scheme="one_pool", reference_year=2026).players}

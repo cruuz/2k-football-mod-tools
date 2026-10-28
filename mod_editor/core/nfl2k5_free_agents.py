@@ -24,11 +24,13 @@ def load_data(path=DEFAULT_DATA):
     data = json.loads(Path(path).read_text(encoding="utf-8"))
     if data.get("schema") != SCHEMA or data.get("as_of") != "2026-10-05":
         raise ValueError("Unsupported dated free-agent data.")
-    # beta 77 (f12): fields.years_pro must count the season in progress (rookie = 1, the card prints R); the
-    # original file carried nflverse years_exp (rookie = 0). tools/b77/f12_convert_data.py converts and stamps it.
-    if data.get("years_pro_convention") != "game_rookie_1":
-        raise ValueError("Free-agent data predates the years pro convention fix (rookie = 1); "
-                         "convert it with tools/b77/f12_convert_data.py.")
+    # beta 77 (f12) made years_pro count the season in progress (rookie = 1); b779 (fh1, Noah 10/28) made it the
+    # number of seasons since the player entered the NFL, so Kaepernick (2011) is 16. Data stamped with the older
+    # accrued-season count (game_rookie_1), or not stamped, is refused: tools/b77/b779_years_in_league.py converts it.
+    from . import nfl2k5_roster_records as rr
+    if data.get("years_pro_convention") != rr.YEARS_PRO_CONVENTION:
+        raise ValueError("Free-agent data counts years pro as accrued seasons, not seasons since entering the NFL; "
+                         "convert it with tools/b77/b779_years_in_league.py.")
     return data
 
 

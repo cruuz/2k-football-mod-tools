@@ -703,6 +703,15 @@ NUMERIC_LIMITS: dict[str, tuple[int, int]] = {
 # straight into the record made every 2026 draftee read 0, every 2025 draftee read R, and every veteran one year low.
 ROOKIE_YEARS_PRO = 1
 YEARS_PRO_MAX = 31                        # the field is five bits
+# b779 fh1 (Noah 10/28: "just do years in the league, so 16 for Kaepernick, for everybody"): the stored years pro is the
+# number of NFL seasons since the player entered the league, counting the season in progress (rookie = 1), whether or not
+# he played in every one.  That is what the game's own rollover (0x247B40) adds one to each year, what the Player Card
+# labels its season rows from (year = base - (years pro - slot)), and what age, progression and retirement are tuned to.
+# The first year is nflverse's ``entry_year`` (data/nfl2k5_entry_years_2026.v1.json).  The earlier ``game_rookie_1``
+# convention (nflverse accrued seasons + 1) is refused wherever a data file or edits document is stamped with it.
+YEARS_PRO_CONVENTION = "game_years_in_league"
+YEARS_PRO_CONVENTION_NOTE = ("years pro = NFL seasons since the player entered the league, counting the season in progress "
+                             "(rookie = 1, the card prints R): base season - nflverse entry_year + 1")
 
 
 def years_pro_from_years_exp(years_exp: Any) -> int:
@@ -2990,6 +2999,11 @@ def read_edits(source: Path | str | Mapping[str, Any]) -> dict[str, Any]:
     if "qb_throw_power" in document:
         from . import nfl2k5_qb_throw_power
         nfl2k5_qb_throw_power.normalise_directive(document["qb_throw_power"])
+    if "years_pro_convention" in document:
+        # b779 fh1: a document stamped with another years pro meaning is refused, never mixed with this one
+        _require(document["years_pro_convention"] == YEARS_PRO_CONVENTION,
+                 f"the roster-edits document counts years pro as {document['years_pro_convention']!r}; this Studio writes "
+                 f"{YEARS_PRO_CONVENTION!r} (seasons since entering the NFL). Convert it with tools/b77/b779_years_in_league.py")
     return dict(document)
 
 
@@ -3212,7 +3226,15 @@ def apply_body(body: bytes, source: Path | str | Mapping[str, Any], *,
             from . import nfl2k5_spare_capacity
             out, floor_receipt = nfl2k5_spare_capacity.restore_import_floor(out)
             refresh_receipt = dict(refresh_receipt, import_floor=floor_receipt)
-    return out, {"roster_refresh": refresh_receipt, "modern_free_agents": fa_receipt, "franchise_history": history_receipt, "edits": len(doc["edits"]), "players_changed": applied,
+    created_receipt = None
+    if doc.get("created_history"):
+        # b779 fh1: season history for the real players created from zero (free agents, refresh signings); after every
+        # pass that creates an identity, before the honors owner appends its award words.
+        from . import nfl2k5_created_history
+        _require(doc["created_history"] == nfl2k5_created_history.DATA_VERSION, "Unknown created-history version")
+        out, created_receipt = nfl2k5_created_history.apply_body(out, nfl2k5_created_history.load_data())
+    return out, {"roster_refresh": refresh_receipt, "modern_free_agents": fa_receipt, "franchise_history": history_receipt,
+                 "created_history": created_receipt, "edits": len(doc["edits"]), "players_changed": applied,
                  "fields_written": fields_written, "moves": len(doc.get("moves") or []),
                  "players_moved": moved, "coach_names_written": coaches,
                  "team_uniform_years_written": uniform_years,

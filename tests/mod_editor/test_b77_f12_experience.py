@@ -175,18 +175,19 @@ class DataConversionTests(unittest.TestCase):
         self.assertEqual(doc["edits"][0]["fields"]["years_pro"], 0)
 
     def test_shipped_free_agent_data_is_stamped_and_exactly_plus_one(self) -> None:
+        # b779 fh1: the shipped data now counts years since entering the NFL (the f12 +1 conversion is superseded)
         data = fa.load_data()
-        self.assertEqual(data["years_pro_convention"], "game_rookie_1")
+        self.assertEqual(data["years_pro_convention"], rr.YEARS_PRO_CONVENTION)
         old = copy.deepcopy(data)
         for key in ("years_pro_convention", "years_pro_convention_note"):
             old.pop(key)
         for row in old["added"]:
             row["fields"]["years_pro"] -= 1
         again, report = convert.convert_free_agents(old)
-        self.assertEqual(again, data)
         self.assertEqual(report["added_rows_converted"], 140)
+        self.assertEqual(again["added"], data["added"])                           # the f12 rule still yields the same values
         with self.assertRaises(convert.ConversionRefused):
-            convert.convert_free_agents(data)
+            convert.convert_free_agents(again)
 
     def test_unstamped_free_agent_data_is_refused_by_the_loader(self) -> None:
         data = json.loads(fa.DEFAULT_DATA.read_text(encoding="utf-8"))
@@ -196,7 +197,7 @@ class DataConversionTests(unittest.TestCase):
             path.write_text(json.dumps(data), encoding="utf-8")
             with self.assertRaises(ValueError) as raised:
                 fa.load_data(path)
-        self.assertIn("rookie = 1", str(raised.exception))
+        self.assertIn("years pro", str(raised.exception))
 
     def test_edits_document_converts_once_and_reaches_players_a_sparse_document_leaves_at_the_base_value(self) -> None:
         base = roster_body()
@@ -215,7 +216,7 @@ class DataConversionTests(unittest.TestCase):
         self.assertEqual((old.players[0].record.values["years_pro"], old.players[2].record.values["years_pro"]), (0, years[2]))
         out, report = convert.convert_edits(doc, base)
         self.assertEqual(report, {"authored_players": 2, "entries_updated": 1, "entries_appended": 1})
-        new_body, _ = rr.apply_body(base, out)
+        new_body, _ = rr.apply_body(base, {k: v for k, v in out.items() if k != "years_pro_convention"})   # b779 fh1: the f12 stamp is refused now
         new = rr.RosterDocument(new_body, reference_year=2004)
         self.assertEqual((new.players[0].record.values["years_pro"], new.players[2].record.values["years_pro"]), (1, years[2] + 1))
         for index in (1, 3, 4, 5, 6, 7):
@@ -225,7 +226,8 @@ class DataConversionTests(unittest.TestCase):
         self.assertEqual(doc["edits"][0]["fields"]["years_pro"], 0, "the source document is not mutated")
         with self.assertRaises(convert.ConversionRefused):
             convert.convert_edits(out, base)
-        rr.read_edits(out)                                   # the stamp does not break the reader
+        with self.assertRaises(rr.RosterRecordError):        # b779 fh1: the f12 stamp is the old meaning; the reader refuses it
+            rr.read_edits(out)
 
     def test_anniversary_team_data_is_stamped_and_pinned(self) -> None:
         teams = ROOT / "data/nfl2k5_espn25_more_teams"

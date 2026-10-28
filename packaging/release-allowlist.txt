@@ -83,6 +83,7 @@ mod_editor/core/nfl2k5_bump_texture_writer.py
 mod_editor/core/nfl2k5_throw_tuning.py
 mod_editor/core/nfl2k5_franchise_economy.py
 mod_editor/core/nfl2k5_franchise_economy_code.py
+mod_editor/core/nfl2k5_created_history.py
 mod_editor/core/nfl2k5_franchise_history.py
 mod_editor/core/nfl2k5_roster_fill_composition.py
 mod_editor/core/nfl2k5_crib.py
@@ -3022,6 +3023,8 @@ mod_editor/core/nfl2k5_free_agents.py
 mod_editor/core/nfl2k5_roster_appearance_transfer.py
 mod_editor/data/nfl2k5_free_agents_2026.v1.json
 mod_editor/data/nfl2k5_free_agent_depth_2026.v1.json
+mod_editor/data/nfl2k5_created_history_2026.v1.json
+mod_editor/data/nfl2k5_entry_years_2026.v1.json
 
 mod_editor/core/nfl2k5_anniversary_pack.py
 mod_editor/core/nfl2k5_espn25_fields.py
