@@ -240,6 +240,67 @@ class DryRun(unittest.TestCase):
         self.assertTrue(any("K1" in t for t in titles))            # the static map still names the kit
 
 
+class BuildPageButton(unittest.TestCase):
+    """The Build tab's Check my project button runs the check off the GUI thread and shows its list."""
+
+    @classmethod
+    def setUpClass(cls):
+        import os
+        os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+        from PyQt5.QtWidgets import QApplication
+        cls.app = QApplication.instance() or QApplication([])
+
+    def setUp(self):
+        for entry in (ROOT / "tests", ROOT / "tests" / "mod_editor"):
+            if str(entry) not in sys.path:
+                sys.path.insert(0, str(entry))
+        from test_mod_build_performance import synthetic_disc
+        from mod_editor.gui.build_panel_qt import BuildPanel
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.source = Path(self.temp.name) / "ESPN NFL 2K5 (USA).xiso.iso"
+        synthetic_disc(self.source)
+        self.panel = BuildPanel()
+        self.addCleanup(self.panel.deleteLater)
+
+        class Immediate:
+            def start(self, task):
+                task.run()
+        self.panel._pool = Immediate()
+        self.panel.begin_reading(self.source)
+        self.panel.apply_state(mod_build.inspect(self.source))
+        for attribute in ("catch_check", "accel_check", "draft_check", "returner_check", "edge_check", "throw_check"):
+            box = getattr(self.panel, attribute)
+            if box.isEnabled():
+                box.setChecked(True)          # an empty selection is a Make my disc blocker
+                break
+
+    def test_the_button_exists_and_follows_the_make_disc_blocker(self):
+        self.assertEqual(self.panel.check_button.text(), "Check my project")
+        self.panel._refresh()
+        self.assertEqual(self.panel.check_button.isEnabled(), self.panel.build_button.isEnabled())
+        self.assertTrue(self.panel.check_button.isEnabled(), self.panel.blocker())
+        self.panel.source_field.setText("")
+        self.panel._refresh()
+        self.assertFalse(self.panel.check_button.isEnabled())
+
+    def test_pressing_it_shows_the_report_and_writes_nothing(self):
+        from PyQt5.QtWidgets import QMessageBox
+        report = pc.Report(findings=[pc.Finding(pc.STOP, "Stadium boards", "Boards conflict with your stadium edits.", "",
+                                                "Turn off Modern stadium boards.")], steps=["x"], seconds=2)
+        before = sorted(p.name for p in Path(self.temp.name).iterdir())
+        self.panel.target_field.setText(str(Path(self.temp.name) / "never.iso"))
+        shown = []
+        with mock.patch.object(pc, "check", return_value=report) as check, \
+                mock.patch.object(QMessageBox, "information", side_effect=lambda *a: shown.append(a[2])):
+            self.panel._check_project()
+        check.assert_called_once()
+        self.assertIn("What to do: Turn off Modern stadium boards.", self.panel.status_label.text())
+        self.assertEqual(len(shown), 1)
+        self.assertIsNone(self.panel._task)
+        self.assertEqual(sorted(p.name for p in Path(self.temp.name).iterdir()), before)
+
+
 class BuildGate(unittest.TestCase):
     """The long build runs the same quick check first and stops with its list."""
 
