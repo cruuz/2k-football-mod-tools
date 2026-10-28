@@ -81,25 +81,43 @@ MOMENT_COUNT = 51
 # of the preserved bank. Retail historic teams (<= 170), the Anniversary team-seasons (176..225) and the classic teams of
 # 2005-2009 (226..230) keep E2R. tests/mod_editor/test_nfl2k5_stock_books_moments.py checks the range against the data.
 CLASSIC_MODERN_IDS = (231, 249)
+#: The Situation flag: 1 in the plain Situation mode, 0 in an Anniversary moment (both are game mode 8).
+SITUATION_FLAG = 0xE6014C
 
 
 def code_for(va, *, modern_moments=True, moment_limit=MOMENT_COUNT, legacy=False, single_weight=False,
              legacy_team_pointer=False, legacy_unguarded_live_team=False, weights=None, team_weights=None,
-             first_season=MODERN_FIRST_SEASON, classic_ids=CLASSIC_MODERN_IDS):
+             first_season=MODERN_FIRST_SEASON, classic_ids=CLASSIC_MODERN_IDS, situation_flag=None):
     """The 1,536 owned bytes at ``va``. ``legacy`` is the body of v0.5 and earlier (40 byte alias rows, no shotgun weights);
     ``single_weight`` is the a4 body (one franchise float per franchise, ``team_weights`` = 32 floats); the default is the current
     body, whose weights are ``weights`` (51 moment floats) and ``team_weights`` (32 rows of 7 bin weights in key-row order) or the
     era data file's. ``first_season`` / ``classic_ids`` are the b776 era cut and classic-team range; every earlier body is
-    ``first_season=LEGACY_FIRST_SEASON, classic_ids=None``."""
+    ``first_season=LEGACY_FIRST_SEASON, classic_ids=None``. ``situation_flag`` (b779 au1; default: on for the b776-era current
+    body, off for every earlier generation) routes only an
+    Anniversary moment (mode 8 with the Situation flag 0xE6014C clear) to the moment decision; the plain Situation mode
+    (mode 8, flag 1) takes the same book decision as every other mode. ``situation_flag=False`` is the b776 .. v0.7 body,
+    which sent every mode-8 side, plain Situation included, to the preserved retail bank."""
     require(type(moment_limit) is int and moment_limit in (50, MOMENT_COUNT), "unsupported Anniversary moment limit")
+    if situation_flag is None:
+        situation_flag = not legacy and not single_weight and classic_ids is not None
     table, stride = (LEGACY_TABLE, LEGACY_STRIDE) if legacy else (TABLE, STRIDE)
     a = _Asm(va)
     a.b("8bd8")                         # EBX = match team (displaced)
     if modern_moments:
         a.b("85db")
         a.j32("0f84", "retail")
-    a.b("833d80ffe50008")               # mode == Anniversary
-    a.j32("0f84", "moment" if modern_moments else "stock")
+    a.b("833d80ffe50008")               # mode 8: an Anniversary moment or the plain Situation mode
+    if modern_moments and situation_flag:
+        # b779 au1 (Ju3tin 10/27: "In situation mode, teams playbooks go back to vanilla"): mode 8 is shared; only a moment
+        # (Situation flag 0xE6014C == 0; the Situation mode stores 1) takes the moment decision, the same test
+        # nfl2k5_moment_context / force_out / moment_venues use. The plain Situation mode falls through to the decision
+        # Quick Game and Franchise take.
+        a.j8("75", "side")
+        a.b("833d" + struct.pack("<I", SITUATION_FLAG).hex() + "00")   # cmp dword [situation flag], 0
+        a.j32("0f84", "moment")
+        a.label("side")
+    else:
+        a.j32("0f84", "moment" if modern_moments else "stock")
     if not modern_moments:
         a.b("85db")
         a.j32("0f84", "retail")
@@ -141,18 +159,20 @@ def code_for(va, *, modern_moments=True, moment_limit=MOMENT_COUNT, legacy=False
     a.b("8b520485d2")
     a.j32("0f84", "retail")
     a.b("b9" + struct.pack("<I", va + table).hex())
+    short = modern_moments and situation_flag and not legacy
+    jcc = (lambda op8, op32, label: a.j8(op8, label)) if short else (lambda op8, op32, label: a.j32(op32, label))
     a.label("scan")
     a.b("8b023b01")                    # first two UTF-16 letters
-    a.j32("0f85", "next")
+    jcc("75", "0f85", "next")
     a.b("668b4204663b4104")             # third letter or NUL
-    a.j32("0f85", "next")
+    jcc("75", "0f85", "next")
     a.b("6685c0")
-    a.j32("0f84", "found")
+    jcc("74", "0f84", "found")
     a.b("66837a0600")                  # a three-letter key must terminate
-    a.j32("0f84", "found")
+    jcc("74", "0f84", "found")
     a.label("next")
     a.b("83c1" + bytes([stride]).hex() + "81f9" + struct.pack("<I", va + table + 32 * stride).hex())
-    a.j32("0f82", "scan")
+    jcc("72", "0f82", "scan")
     a.label("retail")
     a.b("85ff")
     a.j32("0f84", "default")
@@ -259,6 +279,8 @@ def _installed_kind(image, va):
         bins = gun.decode_bin_table(installed[BIN_TABLE_OFFSET:BIN_TABLE_OFFSET + gun.BIN_TABLE_SIZE])
         if installed == code_for(va, weights=weights, team_weights=bins):
             return "current", (weights, bins)
+        if installed == code_for(va, weights=weights, team_weights=bins, situation_flag=False):
+            return "b778_bins", (weights, bins)   # b776 .. v0.7: plain Situation took the retail bank (b779 au1)
         old = dict(first_season=LEGACY_FIRST_SEASON, classic_ids=None)
         if installed == code_for(va, weights=weights, team_weights=bins, **old):
             return "b775_bins", (weights, bins)
@@ -281,7 +303,7 @@ def _recognize(payload):
     state = "retail" if actual == RETAIL else "applied" if owned and actual == hook(owned["va"]) else "foreign"
     if owned:
         kind, _weights = _installed_kind(image, owned["va"])
-        gun_state = gun.site_state(image, owned["va"] + STUB_OFFSET if kind in ("single", "unfixed_bins", "unguarded_bins", "b775_bins", "current") else None)
+        gun_state = gun.site_state(image, owned["va"] + STUB_OFFSET if kind in ("single", "unfixed_bins", "unguarded_bins", "b775_bins", "b778_bins", "current") else None)
         if state == "retail":
             require(gun_state == "retail", "shotgun weight site installed without the stock book resolver")
         else:
@@ -289,7 +311,7 @@ def _recognize(payload):
             if kind == "previous":
                 require(gun_state == "retail", "shotgun weight site installed on an earlier resolver body")
                 state = "needs_fix"
-            elif kind in ("single", "unfixed_bins", "unguarded_bins", "b775_bins"):
+            elif kind in ("single", "unfixed_bins", "unguarded_bins", "b775_bins", "b778_bins"):
                 require(gun_state == "applied", "shotgun weight site missing on the earlier a4 resolver body")
                 state = "needs_fix"
             elif gun_state == "retail":
@@ -368,7 +390,7 @@ def apply(payload, *, enabled=True, weights=None, team_weights=None):
         gun.check_rule(image)                     # the shotgun rule must be the retail bytes this owner replaces the constant of
         kind, installed_weights = _installed_kind(image, owned["va"])
         wanted = code_for(owned["va"], weights=values, team_weights=team_values)
-        if kind in ("previous", "single", "unfixed_bins", "unguarded_bins", "b775_bins") or (kind == "current" and image.read(owned["va"], CODE_SIZE) != wanted):
+        if kind in ("previous", "single", "unfixed_bins", "unguarded_bins", "b775_bins", "b778_bins") or (kind == "current" and image.read(owned["va"], CODE_SIZE) != wanted):
             # Only this owner admits these exact checked version transitions (an earlier body, or other weights).
             # The generic allocator still refuses arbitrary filled-code edits.
             payload = _write_body(payload, owned, wanted)
