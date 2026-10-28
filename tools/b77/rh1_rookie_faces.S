@@ -34,7 +34,7 @@
 .set TRIES, 24
 .set OUTK, 4            # heavy outlier: 4 in 256 prospects (1.6 %)
 .set OUTADD, 384
-.set BLUEK, 4            # blue-chip prospects: 4 in 256 (1.6 %)
+.set BLUEK, 10           # blue-chip prospects: 10 in 256 (3.9 %)
 .set FRAND, 0x48B90       # float rand [0, 1) (ecx = generator)
 .set FTOI, 0xE3F10        # float (stack) -> int, ret 4
 .set GETTAB, 0x4F4CB4     # rating getter/setter table (stride 0x14, setter at -4)

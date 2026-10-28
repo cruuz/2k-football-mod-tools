@@ -74,26 +74,28 @@ TABLES = (
 # family -> (growth by year 5, extra decline per year after DECLINE_AFTER, decline starts after this year[, share of the
 # retail curve's own change kept])
 # b779-rf3 (Noah 10/28: "tune progression to be more realistic. We need busts at a similar rate to real life. Maybe a
-# little less because it's a video game"): the b778 ramps (1 / 3 / 1 / 0 / 6 / 6 / 5 / 6 / 5 / 6) made nearly every
-# rookie a starter: first-rounders gained about 13 OVR in four offseasons and only 12 % stayed below the starter line,
+# little less because it's a video game"): with b778's ramps (1 / 3 / 1 / 0 / 6 / 6 / 5 / 6 / 5 / 6) nearly every rookie
+# became a starter: first-rounders gained about 13 OVR in four offseasons and only 12 % stayed below the starter line,
 # against 23 % of real first-rounders who never started 3 seasons (nflverse draft_picks.csv, drafts 2010-2018,
-# seasons_started < 3; round 2..7: 44 / 59 / 75 / 77 / 89 / 92 %).  The ramps are now 0.6 of that, so the game's
-# own archetype spread decides who develops: rounds 1..7 end at 21 / 33 / 50 / 61 / 67 / 88 / 93 % below the line in
-# a 3 x 450 class simulation (about 10 % fewer busts than real over rounds 1-7), late-round starters stay possible.
-# Consistency: the retail curves add +20 to +40 by year 4 to most archetypes (10 % of players at 90+ after four
-# seasons, a wall the community saw inflate sim stats); half of the retail change is kept, plus a 2-point ramp, so a
-# fourth-year player sits near the real roster's 2-4-year players (mean 54.5, 0.5 % at 90+) and stars still climb.
+# seasons_started < 3; rounds 2..7: 44 / 59 / 75 / 77 / 89 / 92 %).  With rf3's realistic rookie templates (lower
+# draft-day ratings, like the real rookies on the 2026 roster) the ramps are 0.9 of b778's, so the game's own
+# archetype spread decides who develops: in a 3 x 450 class simulation (four offseasons), rounds 1..7 end 21 / 53 /
+# 43 / 48 / 66 / 80 / 82 % below the starter line (b778: 16 / 21 / 33 / 43 / 43 / 47 / 48), about 15 % fewer busts
+# than real over rounds 1-7, and late-round starters remain (18-20 % of rounds 6-7).
+# Consistency: the retail curves add +20 to +40 by year 4 to most archetypes (10.7 % of players at 90+ after four
+# seasons, a wall the community saw inflate sim stats); half of the retail change is kept, plus a 2-point ramp
+# (2.2 % at 90+ after four seasons; the 2026 roster: 0.5 % of 2-4-year players, 3.6 % of 5-8-year players).
 SHAPE = {
-    "speed_agility": (0.6, 2.0, 9),
-    "strength_jumping_arm_kickpower": (1.8, 1.0, 10),
-    "stamina_durability": (0.6, 1.5, 9),
+    "speed_agility": (0.9, 2.0, 9),
+    "strength_jumping_arm_kickpower": (2.7, 1.0, 10),
+    "stamina_durability": (0.9, 1.5, 9),
     "hidden_4f": (0.0, 0.0, 20),
     "consistency": (2.0, 0.5, 12, 0.5),
-    "read_coverage_aggression": (3.6, 0.5, 12),
-    "leadership_composure": (3.0, 0.0, 20),
-    "pass_accuracy_catch_kick_accuracy": (3.6, 0.5, 11),
-    "secure_breaktackle_blocking_tackle": (3.0, 1.0, 10),
-    "routes_passrush_coverage": (3.6, 1.0, 10),
+    "read_coverage_aggression": (5.4, 0.5, 12),
+    "leadership_composure": (4.5, 0.0, 20),
+    "pass_accuracy_catch_kick_accuracy": (5.4, 0.5, 11),
+    "secure_breaktackle_blocking_tackle": (4.5, 1.0, 10),
+    "routes_passrush_coverage": (5.4, 1.0, 10),
 }
 GROWTH_YEARS = 5
 SPREAD = 0.35

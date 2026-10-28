@@ -697,7 +697,7 @@ class NativeRf3Ratings(unittest.TestCase):
         blue = [r for r, flag in res if flag == -1]
         plain = [r for r, flag in res if flag == 0]
         self.assertEqual(len(blue) + len(plain), len(res))
-        self.assertTrue(0.007 < len(blue) / len(res) < 0.03, len(blue))
+        self.assertTrue(0.025 < len(blue) / len(res) < 0.06, len(blue))   # BLUEK 10 in 256
         for r, flag in res:
             for i in range(29):
                 if 0x36 + i in (0x4E, 0x50, 0x51):              # the capped rolls write these after the loop
@@ -713,6 +713,49 @@ class NativeRf3Ratings(unittest.TestCase):
         self.assertLess(abs(mean - 60), 1.5, "an ordinary prospect is uniform between the templates")
         cons = [r[0x50] for r, _f in res]
         self.assertLess(abs(sum(cons) / len(cons) - 62.5), 2.5)
+
+
+class Templates(unittest.TestCase):
+    """b779-rf3: the fitted class-generator templates and their in-place write into the main roster."""
+
+    def test_document(self):
+        doc = rf.load_templates()
+        self.assertEqual(len(doc["templates"]), 68)
+        by = {r["index"]: r["ratings"] for r in doc["templates"]}
+        hb, ilb, ss, te = (by[4 * rf.POSITIONS.index(p)] for p in ("HB", "ILB", "SS", "TE"))
+        self.assertGreaterEqual(hb["speed"], 90, "a high HB template runs like the 2026 rookie backs")
+        self.assertGreaterEqual(ilb["speed"], 85)
+        self.assertGreaterEqual(ss["speed"], 90)
+        self.assertGreaterEqual(te["speed"], 80)
+        k, p = by[4 * rf.POSITIONS.index("K")], by[4 * rf.POSITIONS.index("P")]
+        self.assertGreaterEqual(min(k["kick_power"], k["kick_accuracy"], p["kick_power"]), 90)
+        for row in doc["templates"]:
+            self.assertFalse(set(row["ratings"]) & set(rf.TEMPLATE_STYLE))
+
+    def test_writes_only_template_rating_bytes(self):
+        try:
+            from tests.nfl2k5_supersim_draft_fixture import retail_roster
+            body = retail_roster()
+        except unittest.SkipTest:
+            raise
+        except Exception as exc:  # pragma: no cover - private evidence
+            raise unittest.SkipTest(f"no retail roster: {exc}")
+        from mod_editor.core import nfl2k5_roster_records as rr
+        raw = b"ROST" + struct.pack("<I", len(body)) + bytes(24) + body
+        writes = rf.template_writes(raw)
+        self.assertGreater(len(writes), 500)
+        doc = rr.RosterDocument(body)
+        sec = doc.by_pool("secondary")
+        allowed = set()
+        for player in sec:
+            for i, name in enumerate(rr.RATING_BYTE_ORDER):
+                if name not in rf.TEMPLATE_STYLE:
+                    allowed.add(rf.ROST_WRAPPER + player.offset + 0x36 + i)
+        self.assertTrue(all(at in allowed for at, _o, _n in writes))
+        patched = bytearray(raw)
+        for at, _o, new in writes:
+            patched[at] = new
+        self.assertEqual(rf.template_writes(bytes(patched)), [], "a second write changes nothing")
 
 if __name__ == "__main__":
     unittest.main()

@@ -74,19 +74,24 @@ they should be ... the occasional large edge"; SWeaR 10/27: "Some rookie headsho
      generic head-shape draw moved from region D to region A to make room.
    * ratings (Noah 10/28 13:00, "make sure rookie ratings are well done"): region C (0xE6D51..0xE6F56) keeps the
      retail rating loop (each of 29 ratings b + r * (a - b) between the position's two templates, so every position
-     keeps its own profile) but draws r through qrand: 1 prospect in 64 (BLUEK) is a blue-chip whose every rating
+     keeps its own profile) but draws r through qrand: 10 prospects in 256 (BLUEK) are blue-chips whose every rating
      lands in the upper half of his range, the rare 80+ first-rounder.  The three capped rolls after the loop
      (consistency, aggressiveness, composure: templates capped at 100) are the same arithmetic in a small loop, which
-     makes the room.  Measured with the game's own class loop and OVR routine (3 classes of 450): round 1 74.4 OVR,
-     round 2 69.0, rounds 4-7 63.4..59.6, UDFA 55.1, about 2 to 3 prospects of 80+ a class; the real 2026 draft as
-     the SOFTDRINK roster rates it: 74.9, 66.9, 60.7..57.6.  Rookie consistency stays 30..67.
+     makes the room.  With the rf3 templates (below) and progression, measured with the game's own class loop and OVR
+     routine (3 classes of 450): round 1 72.6 OVR (8 at 80+ in 3 classes), round 2 67.7, rounds 4-7 61.9..57.2, UDFA
+     53.7; the real 2026 draft as the SOFTDRINK roster rates it: 74.9, 66.9, 60.7..57.6.
+   * templates (Noah 10/28: "fix the templates ... similar to what makes the game play the best"): templates.json
+     holds the 68 template rating bytes fitted to the real 2026 rookies on the SOFTDRINK roster, written into the main
+     roster by the build (apply_templates).
    * the rows were laid out again from 13569 so they can grow; every beta-78 id stays a portrait of the same face
      (legacy_id), so prospects drafted on that disc keep their headshot, skin and hair.  Faces whose crop cut the top of
      the head were re-framed by the eyes (both ids show the fixed crop); the few with no source image left the rows.
 
 Saves: the code reads the pool, the roster and the position from the live roster, so an old franchise save gets the
 new faces for every class it generates after the update (its own name pool may lack the nicknames; nothing else
-differs).  Players already in a save keep their portrait ids.
+differs).  Players already in a save keep their portrait ids.  The bodies, the blue-chip draw and the zone are
+code, so old saves get them; the templates are roster data, and a franchise save carries its own roster copy, so the
+fitted templates reach franchises started on the new disc.
 """
 from __future__ import annotations
 
@@ -116,6 +121,8 @@ EVIDENCE = "EXPERIMENTAL"
 DATA_DIR = ROOT / "data" / "nfl2k5_rookie_faces"
 BANK_JSON = DATA_DIR / "bank.json"
 NAMES_JSON = DATA_DIR / "name_odds.json"
+TEMPLATES_JSON = DATA_DIR / "templates.json"   # b779-rf3: the class generator's 68 templates (rating bytes)
+SCHEMA_TEMPLATES = "nfl2k5_rookie_faces_templates/v1"
 SCHEMA_BANK = "nfl2k5_rookie_faces_bank/v3"
 SCHEMA_NAMES = "nfl2k5_rookie_faces_names/v1"
 
@@ -150,7 +157,7 @@ CODE_C = bytes.fromhex(
     "e89e00000089d9ff178944241cdb44241cd95c241089e9ff178944241cdb44241cd95c241cb9a0fce500e887000000d9"
     "442410d864241c51dec9d8442420d91c24e879d1ffff88c289f1ff57fc83c71481fff84e4f007cad6a025f0fb6971e6e"
     "0e00520fbe041383f8647c036a64580fbe4c150083f9647c036a645929c85150e825faffff0fb7c05a0fafc2c1f81059"
-    "01c85a8804164f79c2b9a0fce500e962010000e802faffff3c0419c089442418bfb44c4f00c3e8841df6fff644241801"
+    "01c85a8804164f79c2b9a0fce500e962010000e802faffff3c0a19c089442418bfb44c4f00c3e8841df6fff644241801"
     "740ad9e8dec1d80d84414e00c34e5150")
 CODE_B = bytes.fromhex(
     "89068b2d1829b7008b5d548b4d5083c3048b4614e8d3f7ffff897c241431d239cf732289f8c1e8020fb68008504f0089"
@@ -644,6 +651,68 @@ def build_portraits(record: bytes, cdf: bytes, faces: Iterable[tuple[int, bytes]
     return bytes(new_record), b"".join(slots[h] for h in order), added
 
 
+# ------------------------------------------------------------------------------------------------ templates (b779-rf3)
+# Noah 10/28: "fix the templates, of course. All prospects should have ratings similar to what makes the game play the
+# best."  The generator rolls every rating between two of the position's four secondary records (FUN_000E6780, region
+# C), so the 68 templates are each position's rookie profile.  templates.json holds rating bytes fitted so the drafted
+# prospects match the real 2026 rookies as the SOFTDRINK roster rates them; the build writes them into the main roster
+# (outer 5, the secondary pool) in place, same size, after every other roster writer.  Style channels are not touched.
+TEMPLATE_STYLE = ("kicking_style", "power_run_style", "scramble")
+ROST_WRAPPER = 0x20
+MAIN_ROST_OUTER = 5
+
+
+def load_templates(path: Path | None = None) -> dict[str, Any]:
+    doc = json.loads(Path(path or TEMPLATES_JSON).read_text(encoding="utf-8"))
+    require(doc.get("schema") == SCHEMA_TEMPLATES, "unknown rookie template document")
+    rows = doc["templates"]
+    require([r["index"] for r in rows] == list(range(4 * len(POSITIONS))), "the templates need 68 rows in order")
+    for r in rows:
+        require(r["position"] == POSITIONS[r["index"] // 4], f"template {r['index']} is not a {POSITIONS[r['index'] // 4]}")
+        require(all(0 <= v <= 99 for v in r["ratings"].values()), f"template {r['index']} has a rating outside 0..99")
+        require(not set(r["ratings"]) & set(TEMPLATE_STYLE), "style channels are not template ratings")
+    return doc
+
+
+def template_writes(raw: bytes, templates: Mapping[str, Any] | None = None) -> list[tuple[int, int, int]]:
+    """(offset in the ROST resource, old byte, new byte) for every template rating that differs."""
+    from . import nfl2k5_roster_records as rr  # noqa: PLC0415
+    templates = templates or load_templates()
+    require(raw[:4] == b"ROST", "not a ROST resource")
+    body_length = struct.unpack_from("<I", raw, 4)[0]
+    document = rr.RosterDocument(raw[ROST_WRAPPER:ROST_WRAPPER + body_length])
+    sec = document.by_pool("secondary")
+    require(len(sec) == 4 * len(POSITIONS), f"the main roster has {len(sec)} templates, not 68")
+    order = list(rr.RATING_BYTE_ORDER)
+    out = []
+    for row in templates["templates"]:
+        player = sec[row["index"]]
+        require(player.record.values["position"] == row["index"] // 4, f"template {row['index']} holds another position")
+        for name, value in row["ratings"].items():
+            at = ROST_WRAPPER + player.offset + 0x36 + order.index(name)
+            require(raw[at] == player.record.values[name], f"template {row['index']} {name}: codec and byte disagree")
+            if raw[at] != value:
+                out.append((at, raw[at], value))
+    return out
+
+
+def apply_templates(path: Path | str, templates: Mapping[str, Any] | None = None) -> dict[str, Any]:
+    """Write the fitted template ratings into the image's main roster (a COPY), in place."""
+    from . import nfl2k5_roster_records as rr  # noqa: PLC0415
+    with rr._outer_image()(path, writable=True) as archive:
+        entry = archive.entries[MAIN_ROST_OUTER]
+        before = archive.read(entry.virtual_offset, entry.size)
+        writes = template_writes(before, templates)
+        after = bytearray(before)
+        for at, _old, new in writes:
+            after[at] = new
+        if writes:
+            require(archive.write(entry.virtual_offset, bytes(after)) == len(after), "short write of the main roster")
+            require(archive.read(entry.virtual_offset, entry.size) == bytes(after), "main roster read-back differs")
+    return {"templates": 4 * len(POSITIONS), "bytes_changed": len(writes), "sha256_before": sha(before),
+            "sha256_after": sha(bytes(after))}
+
+
 # ------------------------------------------------------------------------------------------------ the image
 FILLER = "rh1_faces_end.bin"
 
@@ -760,12 +829,14 @@ def apply_to_image(path: Path | str, read_xbe: Callable[[Path], bytes], write_xb
     disc = hs.rewrite_archive(path, {}, appended)
     patched, xbe_receipt = xbe_apply(payload, p["table"])
     write_xbe(path, patched)
+    say("Rookie faces: class-generator templates")
+    templates_receipt = apply_templates(path)                      # b779-rf3
     state = image_status(path, read_xbe, bank=bank)
     require(state == "applied", f"rookie faces read-back: {state}")
     return {"state": state, "faces_added": p["added"], "record": RECORD_NAME, "aggregate": CDF_NAME,
             "record_bytes": len(p["record"]), "aggregate_bytes": len(p["cdf"]),
             "record_sha256": sha(p["record"]), "aggregate_sha256": sha(p["cdf"]), "nick0": p["pool_nick0"],
-            "table_sha256": sha(p["table"]), "xbe": xbe_receipt,
+            "table_sha256": sha(p["table"]), "xbe": xbe_receipt, "templates": templates_receipt,
             "archive": {k: v for k, v in disc.items() if k != "packs"}}
 
 
