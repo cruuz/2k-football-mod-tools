@@ -316,7 +316,7 @@ def authored_kits():
     return kits.validate_document(json.loads((DATA_DIR / "kits.json").read_text(encoding="utf-8")))
 
 
-def authored_kits_status(path):
+def authored_kits_status(path, retail=None):
     """'applied' when the classic teams' authored kit packages and cards are installed, 'retail' when none is,
     'foreign' otherwise."""
     from . import nfl2k5_moment_kits as kits
@@ -324,23 +324,23 @@ def authored_kits_status(path):
         doc = authored_kits()
         if not doc["kits"]:
             return "not_applicable"
-        return kits.image_status(path, doc)
+        return kits.image_status(path, doc, retail)
     except (ValueError, KeyError, IndexError, struct.error, OSError):
         return "foreign"
 
 
-def install_authored_kits(path):
+def install_authored_kits(path, retail=None):
     """Install the classic teams' authored kit packages and aggregate cards before the classic files are compiled.
     Replay is a no-op; a partly installed or foreign kit refuses."""
     from . import nfl2k5_moment_kits as kits
     doc = authored_kits()
     if not doc["kits"]:
         return dict(status="none")
-    state = kits.image_status(path, doc)
+    state = kits.image_status(path, doc, retail)
     if state == "applied":
         return dict(status="already_applied")
     require(state == "retail", f"classic teams: the authored kit is {state}")
-    return dict(kits.apply_to_image(path, doc), status="applied")
+    return dict(kits.apply_to_image(path, doc, retail), status="applied")
 
 
 def apply_xbe(payload, rows):
@@ -541,7 +541,7 @@ def image_status(path, source, data=None):
     try:
         payload = e.read_xbe(path)
         state = xbe_status(payload)
-        authored = authored_kits_status(path)
+        authored = authored_kits_status(path, source)
         if authored == "foreign":
             return "foreign"
         field_state = field.status(path, source)
@@ -583,7 +583,7 @@ def apply_to_image(path, source, data=None):
     payload = e.read_xbe(path)
     require(h1.status(payload) == "applied", "classic teams need historic teams in Quick Game")
     require(xbe_status(payload) == "retail", "classic teams: the executable is not clean")
-    authored_receipt = install_authored_kits(path)
+    authored_receipt = install_authored_kits(path, source)
     from . import nfl2k5_classic_field as field
     field_edits, field_receipts = field.edits(path, source)
     prefix = "HTS-" if h1.season_routing_status(payload) else ""
