@@ -29,6 +29,17 @@ roster player); the tail replays the two displaced instructions and returns to `
 retail merge is not re-entered, so the hook cannot recurse, and the weekly-progression wrapper at
 ``0x134e05`` sees the credited line in its post-merge read.  The fix is a stat correction, not a
 gameplay change: it does not move a player, alter a rating, or change a play.
+
+The same 256-byte cave carries a small second entry (``GUARD_OFFSET``) used by the franchise
+scheduled-game simulator. Report (b779, v0.7): an injured running back scored a touchdown in a
+simulated ("Game Cast") game. The simulator's lineup picker ``FUN_000e8790`` asks
+``FUN_000e8340`` whether a player fills a depth slot.  That routine's own injured path keys on the
+save's status (`+0x24` bits 28..30), so a player whose status is 0 or was cleared while the
+injury report still shows weeks out (`+0x20` bits 22..29) is accepted.  In the scheduled simulator
+(game mode ``[0xE5FF80] == 4``) the guard refuses any player with the injured bit (`+0x20` bit 31)
+or a nonzero weeks field before retail's check runs, so the picker walks to the next depth player.
+Played games (modes 5..7), practice, and every other caller of ``FUN_000e8340`` keep retail.  This
+is a lineup eligibility guard only; no injury field is written and no retail routine is changed.
 """
 
 from __future__ import annotations
@@ -39,12 +50,13 @@ import struct
 OWNER = "nfl2k5_sim_cb_tackles"
 CODE_SIZE = 256
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16),)
-BUILD_CAPTION = "Cornerback tackle credit (experimental)"
+BUILD_CAPTION = "Cornerback tackle credit and sim injuries (experimental)"
 HELP_TEXT = ("EXPERIMENTAL. In simulated and played games a starting cornerback's season tackle total gets a "
              "per-game bonus drawn from the NFL distribution through the game's own RNG (about 3.4 a game in all, "
              "with rare zero-tackle games); the nickel and dime corners use lower bonus tables. The single-game box "
              "score keeps the engine's line. Interceptions, forced fumbles, sacks and every other position are "
-             "unchanged.")
+             "unchanged. Simulated franchise games also leave out any player whose injury report shows weeks out, "
+             "including a probable player or one whose status field was cleared.")
 
 # The hook is the first two instructions of the merge body (after the prologue saved EBP = live player and
 # EDI = roster player): `mov eax,[ebp+0x30] ; mov ebx,[eax]`.  It is inside FUN_001334b0, not at the
@@ -58,6 +70,18 @@ MERGE_SIZE = 0x2E8                # 0x1334b0..0x133798 (ret 8)
 MERGE_SHA256 = "8707a68d8dc6481ee3d01385cef25162a5715c5e656f383852b191ef35470ea5"
 # v0.6.1 carries a 7-byte cave jump at 0x1336b2 from the team-column owner; the merge logic is intact.
 V061_MERGE_SHA256 = "6ae07e90d515c3611b0eac54b0d11e52e1b888adb48794db9c2d9e7f07fd2204"
+
+# The simulator's lineup picker FUN_000e8790 asks FUN_000e8340 at two call sites (forward and reverse depth
+# search). The surrounding code, after restoring those two retail calls, is byte-identical in the USA retail,
+# v0.6.1 and v0.7 executables. The guard is gated on the scheduled-sim game mode (4) so played games and every
+# other caller keep retail. See the docstring.
+PICKER = 0x000E8790
+PICKER_PIN = (0x000E87F0, 0x110, "e9ca4dc737e13b19b200884c27c353a287a6c7f8b0601f3a0b2cf3e7d64d1598")
+GUARD_HOOKS = ((0x000E8864, bytes.fromhex("e8d7faffff")),   # call 0xe8340, forward depth search
+               (0x000E88EC, bytes.fromhex("e84ffaffff")))  # call 0xe8340, reverse depth search
+SIM_MODE = 0x00E5FF80             # game-mode word: 4 = the franchise scheduled-game simulator
+INJURY_WEEKS = 0xBFC00000         # +0x20 bit 31 (injured) plus bits 22..29 (weeks out)
+GUARD_OFFSET = 160                # second entry inside the 256-byte cave, before TABLE_OFF (192)
 
 # NFL-calibrated bonus draws (1/128 cumulative): the engine already credits a starting corner some tackles, so
 # the owner draws the shortfall as a bonus rather than a whole line.  Means are calibrated to the measured retail
@@ -162,14 +186,35 @@ def code_for(code_va):
     a.b("8b4530")                 # mov eax, [ebp+0x30]      ; displaced
     a.b("8b18")                   # mov ebx, [eax]           ; displaced
     a.b("c3")                     # ret to 0x1334c8
+    used = len(a.assemble())
+    require(used <= GUARD_OFFSET, f"merge body is {used} bytes, guard offset {GUARD_OFFSET}")
+    a.b("cc" * (GUARD_OFFSET - used))
+    a.label("sim_guard")
+    # Entry from the two picker call sites: EDX = the player record, ECX and the stack args are the
+    # caller's slot request. Scheduled sim only; any injured bit or weeks value is refused.
+    a.b("803d" + struct.pack("<I", SIM_MODE).hex() + "04")   # cmp byte [mode], 4
+    a.j8("75", "guard_retail")                                # not the scheduled sim: retail
+    a.b("f74220" + struct.pack("<I", INJURY_WEEKS).hex())     # test dword [edx+0x20], injured | weeks
+    a.j8("74", "guard_retail")                                # healthy: retail
+    a.b("31c0")                                               # xor eax, eax  -> does not fill the slot
+    a.b("c3")
+    a.label("guard_retail")
+    a.jmp_abs(0x000E8340)                                     # tail-jump: keep the caller's stack args
     body = a.assemble()
+    require(a.labels["sim_guard"] == GUARD_OFFSET,
+            f"sim guard is at {a.labels['sim_guard']}, expected {GUARD_OFFSET}")
     require(len(body) <= TABLE_OFF, f"cornerback tackle tail is {len(body)} bytes, table offset {TABLE_OFF}")
     return (body.ljust(TABLE_OFF, b"\xcc") + TABLES).ljust(CODE_SIZE, b"\xcc")
 
 
 def sites(code_va):
+    guard = code_va + GUARD_OFFSET
     return [("merge_body", SITE, SITE_BEFORE,
-             b"\xe8" + struct.pack("<i", code_va - SITE - 5))]
+             b"\xe8" + struct.pack("<i", code_va - SITE - 5)),
+            ("sim_guard_forward", GUARD_HOOKS[0][0], GUARD_HOOKS[0][1],
+             b"\xe8" + struct.pack("<i", guard - GUARD_HOOKS[0][0] - 5)),
+            ("sim_guard_reverse", GUARD_HOOKS[1][0], GUARD_HOOKS[1][1],
+             b"\xe8" + struct.pack("<i", guard - GUARD_HOOKS[1][0] - 5))]
 
 
 def _recognize(payload):
@@ -193,6 +238,11 @@ def _recognize(payload):
     content[SITE - MERGE:SITE - MERGE + len(SITE_BEFORE)] = SITE_BEFORE   # our own hook back to retail
     merge_hash = hashlib.sha256(content).hexdigest()
     require(merge_hash in (MERGE_SHA256, V061_MERGE_SHA256), "Foreign post-game merge context")
+    picker_va, picker_size, picker_digest = PICKER_PIN
+    picker = bytearray(image.read(picker_va, picker_size))
+    for hook_va, retail in GUARD_HOOKS:            # our own two hooks back to retail
+        picker[hook_va - picker_va:hook_va - picker_va + len(retail)] = retail
+    require(hashlib.sha256(picker).hexdigest() == picker_digest, "Foreign scheduled-sim lineup picker")
     return next(iter(states))
 
 
