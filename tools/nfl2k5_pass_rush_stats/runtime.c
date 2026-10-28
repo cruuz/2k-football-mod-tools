@@ -48,7 +48,7 @@ enum { S_PRS, S_QBH, S_PA, S_HA, S_SA };
 #define HIST_GET   ((i32 (FC *)(u32, u32))0x0014EE40)      /* current season slot value */
 #define HIST_SET   ((void (FC *)(u32, u32, u32))0x0014F430)
 #define HIST_AGO   ((i32 (FC *)(u32, u32, u32))0x0014EF20) /* value N seasons ago */
-#define HIST_SUM   ((i32 (FC *)(u32, u32))0x0014EEC0)      /* every season of the class, summed */
+#define CLASS 0x00BD7F98u                                   /* history class: 0 regular season, 1 postseason */
 
 #define PLAY_COUNT 0x00E53804u
 #define OFFENSE 0x00E60280u
@@ -409,8 +409,18 @@ float FC prs_card_value(u32 row, u32 field) {
     i32 v = 0;
     if (!player || field < FIELD0 || field >= FIELD0 + NSTAT)
         return 0.0f;
-    if (bank == 9)
-        v = HIST_SUM(player, field);
+    if (bank == 9) {
+        /* career: every live word of this field in the current class (the native search 0x14E800's filter) */
+        const volatile u32 *w = (const volatile u32 *)G(player + 0x2C);
+        u32 cls = G(CLASS);
+        for (u32 n = 0; w && n < 50000; n++, w++) {
+            u32 word = *w;
+            if (((word >> 16) & 0x7F) == field && ((word >> 29) & 1) == cls && !(word & 0x10000000))
+                v += (i32)(short)(word & 0xFFFF);
+            if (word & 0x80000000)
+                break;
+        }
+    }
     else if (bank == 11)
         v = HIST_GET(player, field);
     else if (bank >= 12 && bank <= 26)
