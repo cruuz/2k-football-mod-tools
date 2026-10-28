@@ -162,6 +162,7 @@ from . import nfl2k5_draft_clock as draft_clock_patch  # noqa: F401  b778-dr1: l
 from . import nfl2k5_player_progress_screen as player_progress_patch  # noqa: F401  b778-pg2: late owner; imported so the cave manifest recorder observes it
 from . import nfl2k5_sim_cb_tackles as sim_cb_tackles_patch  # noqa: F401  b778-cb1: late owner (cornerback tackle credit); imported so the cave manifest recorder observes it
 from . import nfl2k5_sim_stats as sim_stats_patch  # noqa: F401  b778-sim1: in-place simulated-game pace fix; imported so the pinned closure records it
+from . import nfl2k5_option_defaults as option_defaults_patch  # noqa: F401  b779-df1: in-place fresh-profile default options; imported so the pinned closure records it
 from . import nfl2k5_clock_led as clock_led_patch  # noqa: F401  b778-sd4: late owner (modern LED clock digits); imported so the cave manifest recorder observes it
 from . import nfl2k5_team_number_scale as team_number_scale_patch  # noqa: F401  b776-ns1: its late owner is reserved with the first space pass
 from . import nfl2k5_contract_college_guard as contract_college_guard_patch  # noqa: F401  b778-cr1: late owner

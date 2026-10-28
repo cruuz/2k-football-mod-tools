@@ -82,6 +82,7 @@ FEATURE_KEYS += ("player_progress", "player_progress_visible")  # b778-pg2/pg3: 
 FEATURE_KEYS += ("contract_college_guard",)  # b778-cr1: Contracts null-college crash guard, late executable owner
 FEATURE_KEYS += ("sim_cb_tackles",)  # b778-cb1: cornerback tackle credit, late executable owner
 FEATURE_KEYS += ("sim_stats",)  # b778-sim1: simulated franchise game pace (in place, no allocation)
+FEATURE_KEYS += ("option_defaults", "default_quarter_minutes", "default_sim_quarter_minutes")  # b779-df1: fresh-profile default options (in place, no allocation)
 FEATURE_KEYS += ("modern_clock_led",)  # b778-sd4: LED play clock and score digits, late executable owner
 FEATURE_KEYS += ("inbox_standings",)  # b778-pc3: inbox story 23 standings setup (pointer-only edit)
 FEATURE_KEYS += ("modern_fans",)  # b77-fr1: the 2026 fans of the crowd-reaction cutaways

@@ -261,6 +261,7 @@ from mod_editor.core import nfl2k5_player_progress_screen as _player_progress  #
 from mod_editor.core import nfl2k5_contract_college_guard as _contract_guard  # noqa: E402
 from mod_editor.core import nfl2k5_sim_cb_tackles as _sim_cb_tackles  # noqa: E402
 from mod_editor.core import nfl2k5_sim_stats as _sim_stats  # noqa: E402
+from mod_editor.core import nfl2k5_option_defaults as _option_defaults  # noqa: E402  b779-df1
 from mod_editor.core import nfl2k5_clock_led as _clock_led  # noqa: E402
 BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                  ("team_ratings", "Modern team ratings",
@@ -297,6 +298,7 @@ BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                  ("contract_college_guard", _contract_guard.BUILD_CAPTION, _contract_guard.HELP_TEXT),  # b778-cr1
                  ("sim_cb_tackles", _sim_cb_tackles.BUILD_CAPTION, _sim_cb_tackles.HELP_TEXT),  # b778-cb1
                  ("sim_stats", _sim_stats.BUILD_CAPTION, _sim_stats.HELP_TEXT),  # b778-sim1
+                 ("option_defaults", _option_defaults.BUILD_CAPTION, _option_defaults.HELP_TEXT),  # b779-df1
                  ("modern_clock_led", _clock_led.BUILD_CAPTION, _clock_led.HELP_TEXT))  # b778-sd4
 BUILD_KEYS = tuple(row[0] for row in BUILD_OPTIONS)
 VENUE_BUILD_KEYS = (
