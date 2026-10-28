@@ -1,4 +1,5 @@
 """Persistent disc paths and permissions, without starting an emulator."""
+import json
 from pathlib import Path
 import sys
 import tempfile
@@ -86,6 +87,106 @@ class SettingsTests(unittest.TestCase):
                 config.unlink(); launcher.side_effect=OSError('failed')
                 with self.assertRaises(ValidationError):facade.launch_xemu(lambda *args:None)
                 self.assertFalse(config.exists())
+
+
+class PlayCheckTests(unittest.TestCase):
+    """The pre-play warning for a 128 MB build: reads xemu.toml and the BIOS file, never writes either."""
+
+    HASH = "ab" * 32
+
+    def _config(self, root: Path, *, memory="'128'", bios=None) -> Path:
+        text = "[sys]\n"
+        if memory is not None:
+            text += f"mem_limit = {memory}\n"
+        if bios is not None:
+            text += "\n[sys.files]\nflashrom_path = " + json.dumps(str(bios)) + "\n"
+        path = root / "xemu.toml"
+        path.write_text(text, encoding="utf-8", newline="\n")
+        return path
+
+    def _bios(self, root: Path) -> Path:
+        bios = root / "Complex 4627.bin"
+        bios.write_bytes(b"\0" * 1_048_576)
+        return bios
+
+    def test_the_project_bios_pin_is_the_one_megabyte_complex_4627_hash(self):
+        self.assertEqual(x.KNOWN_4627_FLASHROM,
+                         ((1_048_576, "34f1c8ded59116436065783f8ad2ef0939df3cbfc76277ec9e5c41bf9ccb93cd"),))
+
+    def test_matching_settings_produce_no_warning_and_leave_the_file_alone(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp).resolve()
+            config = self._config(root, bios=self._bios(root))
+            before = config.read_bytes()
+            with patch.object(x, "KNOWN_4627_FLASHROM", ((1_048_576, self.HASH),)):
+                self.assertEqual(x.play_warning(config, hash_file=lambda _path: self.HASH), "")
+            self.assertEqual(config.read_bytes(), before)
+            self.assertEqual(self._config(root, memory="128", bios=root / "Complex 4627.bin").is_file(), True)
+            with patch.object(x, "KNOWN_4627_FLASHROM", ((1_048_576, self.HASH),)):
+                self.assertEqual(x.play_warning(root / "xemu.toml", hash_file=lambda _path: self.HASH), "")
+
+    def test_sixty_four_megabytes_is_named_with_the_exact_setting(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp).resolve()
+            with patch.object(x, "KNOWN_4627_FLASHROM", ((1_048_576, self.HASH),)):
+                warning = x.play_warning(self._config(root, memory="'64'", bios=self._bios(root)),
+                                         hash_file=lambda _path: self.HASH)
+            self.assertIn("System Memory", warning)
+            self.assertIn("mem_limit = '128'", warning)
+
+    def test_a_missing_memory_value_is_named(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp).resolve()
+            with patch.object(x, "KNOWN_4627_FLASHROM", ((1_048_576, self.HASH),)):
+                warning = x.play_warning(self._config(root, memory=None, bios=self._bios(root)),
+                                         hash_file=lambda _path: self.HASH)
+            self.assertIn("System Memory is not set", warning)
+
+    def test_another_bios_image_is_named_as_not_the_tested_4627(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp).resolve()
+            with patch.object(x, "KNOWN_4627_FLASHROM", ((1_048_576, self.HASH),)):
+                warning = x.play_warning(self._config(root, bios=self._bios(root)),
+                                         hash_file=lambda _path: "00" * 32)
+            self.assertIn("not the tested Complex 4627 image", warning)
+            self.assertIn("Flash ROM (BIOS)", warning)
+
+    def test_a_missing_or_unset_bios_is_named(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp).resolve()
+            missing = root / "gone.bin"
+            with patch.object(x, "KNOWN_4627_FLASHROM", ((1_048_576, self.HASH),)):
+                self.assertIn("was not found", x.play_warning(self._config(root, bios=missing)))
+                self.assertIn("is not set", x.play_warning(self._config(root, bios=None)))
+
+    def test_missing_or_unreadable_settings_ask_for_the_two_values(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp).resolve()
+            warning = x.play_warning(root / "never-written.toml")
+            self.assertIn("were not found", warning)
+            self.assertIn("128 MiB", warning)
+            self.assertIn("Complex 4627", warning)
+            broken = root / "broken.toml"
+            broken.write_text("[broken", encoding="utf-8", newline="\n")
+            self.assertIn("could not be read", x.play_warning(broken))
+
+    def test_launch_emits_the_warning_before_starting_xemu(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp).resolve()
+            disc = root / "modded.xiso.iso"
+            disc.write_bytes(b"synthetic")
+            config = self._config(root, memory="'64'")
+            launched = []
+            facade = Nfl2k5StudioFacade(uniform_catalog=SimpleNamespace(), xemu_command=("xemu",),
+                                        process_launcher=lambda argv, **kwargs: launched.append(tuple(argv)))
+            facade._last_build = ExternalBuild(disc)
+            events = []
+            with patch.object(x, "config_path", return_value=config), \
+                    patch("mod_editor.studio.facade._validate_xemu_executable"):
+                result = facade.launch_xemu(lambda message, *_args: events.append(message))
+            self.assertTrue(launched)
+            self.assertTrue(any("System Memory" in message for message in events))
+            self.assertIn("System Memory", result.message)
 
 
 if __name__ == '__main__':unittest.main()
