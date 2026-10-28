@@ -58,7 +58,7 @@ class TemplateTests(unittest.TestCase):
         self.assertLessEqual(len(runtime.CODE), honors.CODE_SIZE)
         self.assertEqual(honors.HONORS_REQUESTS, (("nfl2k5_honors", "code", 2560, 16), ("nfl2k5_honors", "data", 16, 16)))
         # b779-hn1: the Super Bowl champions owner is installed with this one (its code page; the card's third page)
-        self.assertEqual(honors.REQUESTS, honors.HONORS_REQUESTS + (("nfl2k5_champions", "code", 4608, 16),))
+        self.assertEqual(honors.REQUESTS, honors.HONORS_REQUESTS + (("nfl2k5_champions", "code", 5120, 16),))
         for offset, kind, symbol, _value in runtime.RELOCATIONS:
             self.assertIn(kind, (1, 2))
             self.assertIn(symbol, ("code", "state", "champ_ratings", "champ_bio"))
@@ -117,7 +117,7 @@ class TemplateTests(unittest.TestCase):
         self.assertEqual(late[0], "nfl2k5_k128")
         # b773: mo1's historical coaches follow them, and sp2/ro1/tr1 append their owners and named directory spills
         # after those (none of them moves honors or the coach AI)
-        self.assertEqual(late[late.index("nfl2k5_honors"):][:2], ("nfl2k5_honors", "nfl2k5_coach_ai"))
+        self.assertEqual(late[late.index("nfl2k5_honors"):][:3], ("nfl2k5_honors", "nfl2k5_champions", "nfl2k5_coach_ai"))  # b779-hn1
         self.assertLess(late.index("nfl2k5_coach_ai"), late.index("nfl2k5_moment_coaches"))
         # b775-ct1 appends the classic teams' read-only helpers after the team ratings owners; b775-hs1's hair styles code
         # owner follows them (b775-int1: both merged), then b776-ai2's two CPU AI owners, b776-pa2's play art routes and
@@ -149,7 +149,7 @@ class TemplateTests(unittest.TestCase):
         mine = {r["kind"]: r for r in rows if r["owner"] == honors.OWNER}
         self.assertEqual({k: (v["size"], v["align"]) for k, v in mine.items()}, {"code": (2560, 16), "data": (16, 16)})
         champs = [r for r in rows if r["owner"] == "nfl2k5_champions"]
-        self.assertEqual([(r["kind"], r["size"], r["align"]) for r in champs], [("code", 4608, 16)])
+        self.assertEqual([(r["kind"], r["size"], r["align"]) for r in champs], [("code", 5120, 16)])
         rw = space._scale_regions()[1]
         self.assertTrue(rw["va"] <= mine["data"]["va"] and mine["data"]["va"] + 16 <= rw["va"] + rw["size"])
         for kind, row in mine.items():
@@ -263,7 +263,10 @@ class Machine:
         return value
 
     def wide(self, va, limit=120):
-        return bytes(self.uc.mem_read(va, limit * 2)).decode("utf-16le").split("\0")[0]
+        # stack buffers keep stale bytes after the terminator: decode up to the first NUL only
+        raw = bytes(self.uc.mem_read(va, limit * 2))
+        end = next((i for i in range(0, len(raw), 2) if raw[i:i + 2] == b"\0\0"), len(raw))
+        return raw[:end].decode("utf-16le")
 
     def float_at(self, va):
         return struct.unpack("<f", self.uc.mem_read(va, 4))[0]

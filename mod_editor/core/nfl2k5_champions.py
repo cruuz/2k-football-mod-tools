@@ -38,8 +38,8 @@ What this owner adds
   both rookies of the year are chosen again by production (``tools/nfl2k5_champions/runtime.c``, ``champions_modern_awards``;
   the rule is in ``AWARD_RULE`` below), and the honors owner records the new winners.
 
-Allocation: a trailing late owner (``nfl2k5_xbe_space.TRAILING_OWNERS``, after the module loader, so no other owner
-moves), code only.
+Allocation: a late owner (``nfl2k5_xbe_space.LATE_OWNERS``, right after the honors owner it is installed with, so the
+owners that Studio appends one by one later keep their places), code only; it does not fit the MyCareer gap.
 """
 
 from __future__ import annotations
@@ -55,7 +55,7 @@ from .nfl2k5_cave_oracle import XbeImage
 
 OWNER = "nfl2k5_champions"
 EVIDENCE = "EXPERIMENTAL"
-CODE_SIZE = 4608
+CODE_SIZE = 5120
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16),)
 
 HELP_TEXT = (

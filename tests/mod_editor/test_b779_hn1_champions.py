@@ -28,11 +28,12 @@ if str(ROOT) not in sys.path:
 
 from mod_editor.core import nfl2k5_champions as champions  # noqa: E402
 from mod_editor.core import nfl2k5_champions_code as runtime  # noqa: E402
+from mod_editor.core import nfl2k5_champions_history as history  # noqa: E402
 from mod_editor.core import nfl2k5_honors as honors  # noqa: E402
 from mod_editor.core import nfl2k5_xbe_space as space  # noqa: E402
 from mod_editor.core.nfl2k5_cave_oracle import XbeImage  # noqa: E402
 from tests.mod_editor.test_nfl2k5_honors import (  # noqa: E402
-    AWARDS, CLASS, HAVE_UC, LEAGUE_MODE, LEAGUE_TEAMS, SCORES, SEASONS, XBE, Machine, _retail, word,
+    AWARDS, CLASS, HAVE_UC, LEAGUE_MODE, LEAGUE_TEAMS, ROSTER, SCORES, SEASONS, XBE, Machine, _retail, word,
 )
 
 POSITIONS = champions.POSITIONS
@@ -48,7 +49,7 @@ class StaticTests(unittest.TestCase):
 
     def test_template_fits_and_links_only_to_itself(self):
         self.assertLessEqual(len(runtime.CODE), champions.CODE_SIZE)
-        self.assertEqual(champions.REQUESTS, (("nfl2k5_champions", "code", 4608, 16),))
+        self.assertEqual(champions.REQUESTS, (("nfl2k5_champions", "code", 5120, 16),))
         self.assertEqual(champions.CODE_SIZE % 16, 0)
         for offset, kind, symbol, _value in runtime.RELOCATIONS:
             self.assertIn(kind, (1, 2))
@@ -78,14 +79,16 @@ class StaticTests(unittest.TestCase):
         self.assertEqual({va: before for _l, va, before, _a in rows},
                          {0x2485FA: bytes.fromhex("e801550700"), 0x116E55: bytes.fromhex("e856f1ffff")})
 
-    def test_trailing_owner_is_placed_after_the_module_loader(self):
-        self.assertEqual(space.TRAILING_OWNERS, ("nfl2k5_champions",))
-        self.assertEqual(space.LATE_OWNERS[-1], "nfl2k5_module_loader")        # nothing moved
-        self.assertNotIn("nfl2k5_champions", space.LATE_OWNERS)
+    def test_the_owner_is_late_and_follows_honors(self):
+        late = space.LATE_OWNERS
+        self.assertEqual(late[late.index("nfl2k5_honors"):][:3], ("nfl2k5_honors", "nfl2k5_champions", "nfl2k5_coach_ai"))
+        self.assertEqual(late[-1], "nfl2k5_module_loader")
         self.assertTrue(set(champions.REQUESTS) <= set(honors.REQUESTS))
+        # an owner that comes later in LATE_OWNERS can still be appended to an installed image (Studio appends them
+        # one at a time): the champions rows do not move
         rows = space._scale_allocations(list(honors.REQUESTS) + [("nfl2k5_module_loader", "code", 64, 16)])
         code = [r["owner"] for r in rows if r["kind"] == "code"]
-        self.assertLess(code.index("nfl2k5_module_loader"), code.index("nfl2k5_champions"))
+        self.assertLess(code.index("nfl2k5_champions"), code.index("nfl2k5_module_loader"))
 
     def test_award_rule_weights_match_the_native_tables(self):
         source = (ROOT / "tools/nfl2k5_champions/runtime.c").read_text(encoding="utf-8")
@@ -208,7 +211,7 @@ class InstallTests(unittest.TestCase):
         self.assertEqual(champions.status(self.patched), "applied")
         self.assertEqual(champions.status(self.retail), "retail")
         found = champions.allocations(self.patched)
-        self.assertEqual((found["code"]["size"], found["code"]["align"]), (4608, 16))
+        self.assertEqual((found["code"]["size"], found["code"]["align"]), (5120, 16))
         self.assertEqual(self.receipt["champions"]["code_va"], hex(found["code"]["va"]))
         again, receipt = honors.apply(self.patched)
         self.assertEqual(again, self.patched)
@@ -258,6 +261,8 @@ class LeagueMachine(Machine):
 
     TEAMS = Machine.HEAP + 0x10000
     STRINGS = Machine.HEAP + 0x50000
+    ARENA = 0x58000                      # the arena length the owner reads (0xB72808); the roster root is HEAP
+    GAP = Machine.HEAP + 0x58000 - 0x400 + 352
 
     def __init__(self, payload):
         super().__init__(payload)
@@ -290,9 +295,7 @@ class LeagueMachine(Machine):
 
     def club(self, index, city, nick, abbr, members=(), record=(0, 0, 0)):
         base = self.team_ptr(index)
-        history = bytes(self.uc.mem_read(base + 0xE4, 32))     # the champions history lives in the club record
         self.uc.mem_write(base, bytes(0x1F4))
-        self.uc.mem_write(base + 0xE4, history)
         self.put(base + 0x138, self.string(city))
         self.put(base + 0x104, self.string(nick))
         self.put(base + 0x108, self.string(abbr))
@@ -300,6 +303,17 @@ class LeagueMachine(Machine):
             self.put(base + 4 * i, p)
         self.put8(base + 0x11C, len(members))
         self.records[base] = record
+
+    def reserve_block(self, present=True):
+        """The arena's last 0x400 bytes: the 352-byte reserve block, 448 spare zero bytes and the game's tail."""
+        self.put(0xB72808, self.ARENA)
+        self.put(ROSTER, self.ROOT)
+        self.uc.mem_write(self.GAP - 352, bytes(0x400))
+        if present:
+            self.uc.mem_write(self.GAP - 352, history.RESERVE_MAGIC + bytes(344))
+
+    def history(self):
+        return history.read_block(bytes(self.uc.mem_read(self.GAP, history.USED)))
 
     def wire(self, players):
         self.put(self.ROOT + 0x1C, self.TEAMS)
@@ -324,18 +338,6 @@ class LeagueMachine(Machine):
         self.put(YEAR_IMM, base + 11)
         self.put(SEASONS, season_index)
 
-    def slot(self, n):
-        return bytes(self.uc.mem_read(self.team_ptr(n % 32) + 0xE4, 32))
-
-
-def unpack_person(blob):
-    def get(at, count):
-        return sum(((blob[(at + b) >> 3] >> ((at + b) & 7)) & 1) << b for b in range(count))
-    def chr6(s):
-        return (" ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz -.'?" + " " * 7)[s]
-    first = get(0, 6)
-    last = "".join(chr6(get(6 + 6 * i, 6)) for i in range(12)).rstrip()
-    return (chr6(first) if first else "", last, POSITIONS[get(78, 5)])
 
 
 @unittest.skipUnless(XBE.is_file() and HAVE_UC, "pinned USA XBE and unicorn required")
@@ -351,7 +353,9 @@ class NativeTests(unittest.TestCase):
         cls.state = honors.allocations(cls.patched)["data"]["va"]
 
     def machine(self):
-        return LeagueMachine(self.patched)
+        m = LeagueMachine(self.patched)
+        m.reserve_block()
+        return m
 
     def season(self, m, *, winner=4, loser=9, high=31, low=24, mvp=True, sb_mvp=True, season_index=34, home_wins=True):
         """A finished Super Bowl in a 2026-based franchise: 2026 + 34 = 2060 -> Super Bowl 95; players on the winner."""
@@ -380,16 +384,13 @@ class NativeTests(unittest.TestCase):
         self.assertEqual(m.notices, [(0x0BADF00D, "Seattle Seahawks won Super Bowl XCV, 31-24 over the New England "
                                       "Patriots.\nSuper Bowl MVP: Kenneth Walker III, HB\nSeason MVP: Matthew "
                                       "Stafford, QB")])
-        slot = m.slot(95)
-        self.assertEqual(slot[:5], bytes([95, 5, 10, 31, 24]))
-        self.assertEqual(unpack_person(slot[5:16]), ("K", "Walker III", "HB"))
-        self.assertEqual(unpack_person(slot[16:27]), ("M", "Stafford", "QB"))
-        self.assertEqual(slot[27], 5)                                    # the MVP's club + 1 (Seattle is club 4)
-        check = 0xA5
-        for b in slot[:28]:
-            check ^= b
-        self.assertEqual(slot[28], check)
-        self.assertEqual(slot[29:], bytes(3))
+        rows = m.history()
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0], {"super_bowl": 95, "champion": 4, "runner_up": 9, "champion_points": 31,
+                                   "runner_up_points": 24,
+                                   "super_bowl_mvp": {"initial": "K", "last": "WALKER", "position": "HB"},
+                                   "season_mvp": {"initial": "M", "last": "STAFFORD", "position": "QB"},
+                                   "season_mvp_club": 4})         # a generational suffix is not kept, the club is Seattle's
 
     def test_a_road_winner_and_a_missing_mvp(self):
         m = self.machine()
@@ -397,9 +398,9 @@ class NativeTests(unittest.TestCase):
         self.season(m, home_wins=False, mvp=False, sb_mvp=False)
         m.call(self.champ["champions_advance"])
         self.assertEqual(m.notices[0][1], "Seattle Seahawks won Super Bowl XCV, 31-24 over the New England Patriots.")
-        slot = m.slot(95)
-        self.assertEqual(slot[:5], bytes([95, 5, 10, 31, 24]))
-        self.assertEqual(slot[5:27], bytes(22))
+        row, = m.history()
+        self.assertEqual((row["super_bowl"], row["champion"], row["runner_up"], row["champion_points"]), (95, 4, 9, 31))
+        self.assertEqual((row["super_bowl_mvp"], row["season_mvp"], row["season_mvp_club"]), (None, None, None))
 
     def test_it_stays_silent_outside_a_franchise_or_without_a_played_final(self):
         for label, change in (("not a franchise", lambda m: m.put(LEAGUE_MODE, 1)),
@@ -416,7 +417,7 @@ class NativeTests(unittest.TestCase):
                 m.call(self.champ["champions_advance"])
                 self.assertEqual(m.calls, ["retirement pass"])
                 self.assertEqual(m.notices, [])
-                self.assertEqual(m.slot(95), bytes(32))
+                self.assertEqual(m.history(), [])
 
     def test_the_site_runs_the_retail_pass_with_its_registers(self):
         # the stub restores every register before the retail routine: the retirement pass sees what it saw before
@@ -445,27 +446,52 @@ class NativeTests(unittest.TestCase):
             m.put(AWARDS + 0x5800, 0)
             m.call(self.champ["champions_advance"])
 
-    def test_the_ring_keeps_the_last_32_seasons(self):
+    def test_the_ring_keeps_the_last_22_seasons(self):
         m = self.machine()
         m.record(RETIRE, "retirement pass")
         self.fill(m, 60, 95)                                              # 36 seasons
-        for n in range(64, 96):
-            slot = m.slot(n)
-            self.assertEqual(slot[0], n, n)
-        for n in range(60, 64):                                           # 60..63 were overwritten by 92..95
-            self.assertEqual(m.slot(n)[0], n + 32)
+        self.assertEqual([r["super_bowl"] for r in m.history()], list(range(95, 73, -1)))
 
-    def test_nothing_outside_the_32_bytes_changes(self):
+    def test_only_the_history_block_changes_and_only_when_the_arena_has_one(self):
         m = self.machine()
         m.record(RETIRE, "retirement pass")
         self.season(m)
-        before = {i: bytes(m.uc.mem_read(m.team_ptr(i), 0x1F4)) for i in range(32)}
+        before = {i: bytes(m.uc.mem_read(m.team_ptr(i), 0x1F4)) for i in range(34)}
+        tail = bytes(m.uc.mem_read(m.GAP - 352, 0x400))
         m.call(self.champ["champions_advance"])
-        for i in range(32):
-            after = bytes(m.uc.mem_read(m.team_ptr(i), 0x1F4))
-            diff = [k for k in range(0x1F4) if after[k] != before[i][k]]
-            self.assertTrue(all(0xE4 <= k < 0x104 for k in diff), (i, diff))
-        self.assertEqual(m.slot(95)[0], 95)
+        for i in range(34):
+            self.assertEqual(bytes(m.uc.mem_read(m.team_ptr(i), 0x1F4)), before[i], i)     # no club record is touched
+        after = bytes(m.uc.mem_read(m.GAP - 352, 0x400))
+        changed = [k for k in range(0x400) if after[k] != tail[k]]
+        self.assertTrue(changed and all(352 <= k < 352 + history.USED for k in changed), changed[:5])
+        self.assertEqual(after[:352], tail[:352])                     # the reserve block
+        self.assertEqual(after[352 + history.USED:], tail[352 + history.USED:])   # the spare rest and the game's tail
+        # an arena without the Studio's reserve block: the notice still shows, nothing is written anywhere
+        m = self.machine()
+        m.reserve_block(present=False)
+        m.record(RETIRE, "retirement pass")
+        self.season(m)
+        m.call(self.champ["champions_advance"])
+        self.assertEqual(m.calls, ["notice", "retirement pass"])
+        self.assertEqual(bytes(m.uc.mem_read(m.GAP - 352, 0x400)), bytes(0x400))
+
+    def test_a_block_written_by_the_studio_reads_back_and_is_extended(self):
+        # the seeds the Studio writes into the roster body: the same layout the native code reads and extends
+        data = history.load()
+        entries = history.entries_for(data)
+        m = self.machine()
+        m.record(RETIRE, "retirement pass")
+        self.season(m, season_index=0)                                    # the 2026 season: Super Bowl 61 follows LX
+        m.uc.mem_write(m.GAP, history.block_bytes(entries))
+        newest = max(entries)
+        self.assertEqual(newest, 60)
+        m.call(self.champ["champions_advance"])
+        rows = m.history()
+        self.assertEqual([r["super_bowl"] for r in rows], list(range(61, 39, -1)))      # 61 replaced 39 in the ring
+        self.assertEqual((rows[1]["super_bowl"], rows[1]["champion"], rows[1]["champion_points"]), (60, 27, 29))
+        calls, text = self.draw_card(m, 2)
+        self.assertEqual(text[0][0], "2026 SEA")
+        self.assertEqual(text[1][0], "31-24 NE")
 
     # --- the Player Card page ---------------------------------------------------------------------------------
     def draw_card(self, m, page):
@@ -501,23 +527,23 @@ class NativeTests(unittest.TestCase):
             self.assertEqual(label[1:], (3, 2, 0xFF101010, (x - 8.0, y, 20.0)))
             self.assertEqual(value[1:], (3, 1, 0xFF101010, (x, y, 20.0)))
         lines = text[20:]
-        self.assertEqual([t[0] for t in lines], ["SUPER BOWL XCV: SEA 31-24 NE", "SB MVP: K. Walker III, HB",
-                                                 "MVP: M. Stafford, QB (SEA)"])
+        self.assertEqual([t[0] for t in lines], ["SUPER BOWL XCV: SEA 31-24 NE", "SB MVP: K. WALKER, HB",
+                                                 "MVP: M. STAFFORD, QB (SEA)"])
         for i, y in enumerate((137.0, 154.0, 171.0)):
             self.assertEqual(lines[i][1:], (8, 1, 0xFF101010, (198.0, y, 20.0)))
 
     def test_page_three_skips_missing_seasons_and_ignores_the_ones_outside_the_ring(self):
         m = self.machine()
         m.record(RETIRE, "retirement pass")
-        self.fill(m, 60, 60)                                               # 35 seasons before the newest: outside the ring
+        self.fill(m, 60, 60)
         self.fill(m, 70, 70)
         self.fill(m, 91, 93)
         self.season(m, season_index=34)                                    # Super Bowl 95; 94 is missing
         m.call(self.champ["champions_advance"])
         _calls, text = self.draw_card(m, 2)
-        wanted = ["2060 SEA"] + [f"{n + 1965} A{n % 31:02d}" for n in (93, 92, 91, 70)]
-        self.assertEqual([t[0] for t in text[0:10:2]], wanted)
-        self.assertEqual(len(text), 5 * 2 + 3)
+        wanted = ["2060 SEA"] + [f"{n + 1965} A{n % 31:02d}" for n in (93, 92, 91)]
+        self.assertEqual([t[0] for t in text[0:8:2]], wanted)             # 70 is 25 seasons back: outside the 22-slot ring
+        self.assertEqual(len(text), 4 * 2 + 3)
 
     def test_page_three_of_an_old_save_is_empty_and_a_corrupt_slot_reads_as_empty(self):
         m = self.machine()
@@ -528,8 +554,8 @@ class NativeTests(unittest.TestCase):
         m.record(RETIRE, "retirement pass")
         self.season(m)
         m.call(self.champ["champions_advance"])
-        base = m.team_ptr(95 % 32) + 0xE4
-        m.uc.mem_write(base + 3, bytes([m.uc.mem_read(base + 3, 1)[0] ^ 1]))       # break the check
+        at = m.GAP + history.ENTRIES_AT + (95 % history.RING) * history.ENTRY + 3
+        m.uc.mem_write(at, bytes([m.uc.mem_read(at, 1)[0] ^ 1]))                   # break the block's checksum
         _calls, text = self.draw_card(m, 2)
         self.assertEqual([t[0] for t in text], ["CHAMPIONS: NONE YET"])
 

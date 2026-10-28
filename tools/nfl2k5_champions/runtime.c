@@ -5,14 +5,17 @@
    retail addresses; the only relocations are this blob's own labels. The blob owns no writable memory: the champions
    history lives in the roster arena's team records (see HISTORY below), the pop-up text on the stack.
 
-   HISTORY. Each team record (500 bytes, saved with the roster arena in every franchise save) has 33 bytes at
-   +0xE3..+0x103 that no retail routine reads or writes (zero in the disc roster of every club and still zero after ten
-   simulated seasons). Season n (Super Bowl number n) is kept in team record n % 32, bytes +0xE4..+0x103:
-     [0] n, [1] champion club + 1, [2] runner-up club + 1, [3] champion points, [4] runner-up points,
-     [5..15] Super Bowl MVP, [16..26] season MVP (each: 13 six-bit characters, then a five-bit position code),
-     [27] season MVP club + 1, [28] check byte (xor of bytes 0..27, xor 0xA5).
-   The last 32 seasons are kept; a slot with a wrong check byte or a number that is not its own is empty, so an old
-   save (all zero) starts with an empty history and a foreign byte never reads as a champion. */
+   HISTORY. The roster arena ends with a 0x400-byte region: the 352-byte reserve block (magic "2K5RSV2") written by the
+   practice-squad owner, 448 bytes that are zero in every arena the Studio builds, and the game's own 224-byte tail. The
+   448 bytes are kept as one checked block (the arena is saved whole with every franchise, so the history costs no save
+   size and an old save simply has no block):
+     +0 magic "2K5CHMP\0", +8 version 1, +9 ring size (22), +12 Adler-32 of bytes 0..11 and 16..433,
+     +16 22 entries of 19 bytes, entry n % 22 holding Super Bowl number n:
+       [0] n, [1..3] champion + 1 (6 bits), runner-up + 1 (6), champion points (6), runner-up points (6),
+       [4..10] Super Bowl MVP, [11..17] season MVP (each 55 bits: initial, nine letters, position code; five bits each),
+       [18] the season MVP's club + 1.
+   A block or entry that fails its checks reads as empty, so a foreign write can only lose history, never show a wrong
+   champion; with no reserve block (an arena without the Studio's reserve schema) the history is simply off. */
 
 typedef unsigned int u32;
 typedef int i32;
@@ -54,6 +57,8 @@ typedef unsigned char u8;
 #define SEASONS 0x00E576B8u
 #define LEAGUE_MODE 0x00E576A0u
 #define CLASS 0x00BD7F98u
+#define ROSTER 0x00B72918u          /* the roster object (the arena root) */
+#define ARENA_SIZE 0x00B72808u      /* the arena length */
 #define AWARDS 0x00E5A2F0u
 #define POS_NAMES 0x004F26D0u       /* 17 pointers to the position abbreviations */
 #define BLACK 0xFF101010u
@@ -116,58 +121,73 @@ static u32 team_index(u32 team) {
     return team >= base && (team - base) % 500 == 0 ? (team - base) / 500 : 0xFFFF;
 }
 
-/* ---- the history slot ----------------------------------------------------------------------------------------- */
-static u8 *slot_of(u32 n) {
-    u32 team = TEAM_AT(n % 32);
-    return team ? (u8 *)(team + SLOT0) : 0;
-}
+/* ---- the history block ---------------------------------------------------------------------------------------- */
+#define RING 22u
+#define ENTRY 19u
+#define ENTRIES_AT 16u
+#define USED (ENTRIES_AT + RING * ENTRY)
 
-static u8 check_byte(const u8 *slot) {
-    u8 x = 0xA5;
-    for (u32 i = 0; i < SLOT_BODY; i++)
-        x ^= slot[i];
-    return x;
-}
-
-/* A slot holds season n only when its number matches the record it sits in and the check byte agrees. */
-static const u8 *valid_slot(u32 n) {
-    const u8 *slot = slot_of(n);
-    if (!slot || slot[0] != n || !n || slot[1] == 0 || slot[1] > 32 || slot[2] == 0 || slot[2] > 32 ||
-        slot[SLOT_BODY] != check_byte(slot))
+/* the 448 spare bytes after the reserve block at the end of the arena, or 0 when this arena has none */
+static u8 *gap(void) {
+    u32 root = G(ROSTER), size = G(ARENA_SIZE);
+    if (!root || size < 0x2000 || size > 0x400000)
         return 0;
-    return slot;
+    u32 block = root + size - 0x400;
+    return G(block) == 0x52354B32 && G(block + 4) == 0x00325653 ? (u8 *)(block + 352) : 0;
 }
 
-static u32 sym6(u32 c) {
+static u32 adler(const u8 *p, u32 n, u32 a, u32 b) {
+    for (u32 i = 0; i < n; i++) {
+        a = (a + p[i]) % 65521;
+        b = (b + a) % 65521;
+    }
+    return (b << 16) | a;
+}
+
+static u32 block_sum(const u8 *g) {
+    u32 first = adler(g, 12, 1, 0);
+    return adler(g + ENTRIES_AT, USED - ENTRIES_AT, first & 0xFFFF, first >> 16);
+}
+
+static const u8 magic[8] = {'2', 'K', '5', 'C', 'H', 'M', 'P', 0};
+
+static u32 block_ok(const u8 *g) {
+    for (u32 i = 0; i < 8; i++)
+        if (g[i] != magic[i])
+            return 0;
+    return g[8] == 1 && g[9] == RING && block_sum(g) == (u32)g[12] + ((u32)g[13] << 8) + ((u32)g[14] << 16) + ((u32)g[15] << 24);
+}
+
+static void seal(u8 *g) {
+    u32 sum = block_sum(g);
+    g[12] = (u8)sum;
+    g[13] = (u8)(sum >> 8);
+    g[14] = (u8)(sum >> 16);
+    g[15] = (u8)(sum >> 24);
+}
+
+/* Entry for Super Bowl n when the block and the entry both check out. */
+static const u8 *valid_entry(u32 n) {
+    const u8 *g = gap();
+    if (!g || !n || !block_ok(g))
+        return 0;
+    const u8 *e = g + ENTRIES_AT + (n % RING) * ENTRY;
+    u32 t = (u32)e[1] + ((u32)e[2] << 8) + ((u32)e[3] << 16), champion = t & 63, runner = t >> 6 & 63;
+    return e[0] == n && champion >= 1 && champion <= 32 && runner >= 1 && runner <= 32 ? e : 0;
+}
+
+static u32 sym5(u32 c) {
+    if (c >= 'a' && c <= 'z')
+        c -= 32;
     if (c >= 'A' && c <= 'Z')
         return c - 'A' + 1;
-    if (c >= 'a' && c <= 'z')
-        return c - 'a' + 27;
-    if (c == ' ')
-        return 53;
-    if (c == '-')
-        return 54;
-    if (c == '.')
-        return 55;
-    if (c == '\'')
-        return 56;
-    return 57;
+    return c == '-' ? 27 : c == '.' ? 28 : c == '\'' ? 29 : c == ' ' ? 30 : 31;
 }
 
-static u32 chr6(u32 s) {
+static u32 chr5(u32 s) {
     if (s >= 1 && s <= 26)
         return 'A' + s - 1;
-    if (s >= 27 && s <= 52)
-        return 'a' + s - 27;
-    if (s == 54)
-        return '-';
-    if (s == 55)
-        return '.';
-    if (s == 56)
-        return '\'';
-    if (s == 57)
-        return '?';
-    return ' ';
+    return s == 27 ? '-' : s == 28 ? '.' : s == 29 ? '\'' : s == 30 ? ' ' : '?';
 }
 
 static void put_bits(u8 *out, u32 at, u32 value, u32 count) {
@@ -184,35 +204,54 @@ static u32 get_bits(const u8 *in, u32 at, u32 count) {
     return value;
 }
 
-/* first initial + up to twelve letters of the last name + the position code */
+/* Length of a last name without a generational suffix ("Walker III" -> 6, "Harrison Jr." -> 8). */
+static u32 name_length(const u16 *last) {
+    u32 n = 0, space = 0;
+    if (!last)
+        return 0;
+    while (last[n] && n < 40) {
+        if (last[n] == ' ')
+            space = n;
+        n++;
+    }
+    if (space) {
+        static const char *const suffix[8] = {"Jr", "Jr.", "Sr", "Sr.", "II", "III", "IV", "V"};
+        for (u32 k = 0; k < 8; k++) {
+            u32 j = 0;
+            while (suffix[k][j] && last[space + 1 + j] == (u16)(u8)suffix[k][j])
+                j++;
+            if (!suffix[k][j] && !last[space + 1 + j])
+                return space;
+        }
+    }
+    return n;
+}
+
+/* first initial + up to nine letters of the last name + the position code: 55 bits in 7 bytes */
 static void pack_person(u8 *out, u32 player) {
     const u16 *first = (const u16 *)G(player + 0x10), *last = (const u16 *)G(player + 0x14);
-    u32 at = 0, ended = 0;
-    for (u32 i = 0; i < PERSON; i++)
+    u32 at = 5, length = name_length(last);
+    for (u32 i = 0; i < 7; i++)
         out[i] = 0;
-    put_bits(out, at, first && first[0] ? sym6(first[0]) : 0, 6);
-    at += 6;
-    for (u32 i = 0; i < 12; i++, at += 6) {
-        u32 c = last && !ended ? last[i] : 0;
-        ended |= !c;
-        put_bits(out, at, c ? sym6(c) : 0, 6);
-    }
+    put_bits(out, 0, first && first[0] ? sym5(first[0]) : 0, 5);
+    for (u32 i = 0; i < 9; i++, at += 5)
+        put_bits(out, at, i < length ? sym5(last[i]) : 0, 5);
     put_bits(out, at, B(player + 0x35) & 31, 5);
 }
 
-/* "K. Walker III, HB" */
+/* "K. WALKER I, HB" */
 static u16 *put_person(u16 *out, const u8 *in) {
-    u32 first = get_bits(in, 0, 6), pos = get_bits(in, 78, 5);
+    u32 first = get_bits(in, 0, 5), pos = get_bits(in, 50, 5);
     if (first) {
-        *out++ = (u16)chr6(first);
+        *out++ = (u16)chr5(first);
         *out++ = '.';
         *out++ = ' ';
     }
-    for (u32 i = 0; i < 12; i++) {
-        u32 s = get_bits(in, 6 + 6 * i, 6);
+    for (u32 i = 0; i < 9; i++) {
+        u32 s = get_bits(in, 5 + 5 * i, 5);
         if (!s)
             break;
-        *out++ = (u16)chr6(s);
+        *out++ = (u16)chr5(s);
     }
     if (pos < 17) {
         *out++ = ',';
@@ -231,23 +270,34 @@ static u16 *put_full_name(u16 *out, u32 player) {
 /* ---- recording ---------------------------------------------------------------------------------------------- */
 static void record_season(u32 n, u32 champion, u32 runner_up, u32 champion_points, u32 runner_points, u32 sb_mvp,
                           u32 mvp, u32 mvp_team) {
-    u8 *slot = slot_of(n);
-    if (!slot)
+    u8 *g = gap();
+    if (!g)
         return;
-    for (u32 i = 0; i < SLOT_SIZE; i++)
-        slot[i] = 0;
-    slot[0] = (u8)n;
-    slot[1] = (u8)(champion + 1);
-    slot[2] = (u8)(runner_up + 1);
-    slot[3] = (u8)(champion_points > 255 ? 255 : champion_points);
-    slot[4] = (u8)(runner_points > 255 ? 255 : runner_points);
-    if (sb_mvp)
-        pack_person(slot + 5, sb_mvp);
-    if (mvp) {
-        pack_person(slot + 16, mvp);
-        slot[27] = (u8)(mvp_team + 1);
+    if (!block_ok(g)) {                                   /* a new or unreadable block starts empty */
+        for (u32 i = 0; i < USED; i++)
+            g[i] = 0;
+        for (u32 i = 0; i < 8; i++)
+            g[i] = magic[i];
+        g[8] = 1;
+        g[9] = RING;
     }
-    slot[SLOT_BODY] = check_byte(slot);
+    u8 *e = g + ENTRIES_AT + (n % RING) * ENTRY;
+    for (u32 i = 0; i < ENTRY; i++)
+        e[i] = 0;
+    champion_points = champion_points > 63 ? 63 : champion_points;
+    runner_points = runner_points > 63 ? 63 : runner_points;
+    u32 t = (champion + 1) | (runner_up + 1) << 6 | champion_points << 12 | runner_points << 18;
+    e[0] = (u8)n;
+    e[1] = (u8)t;
+    e[2] = (u8)(t >> 8);
+    e[3] = (u8)(t >> 16);
+    if (sb_mvp)
+        pack_person(e + 4, sb_mvp);
+    if (mvp) {
+        pack_person(e + 11, mvp);
+        e[18] = (u8)(mvp_team < 32 ? mvp_team + 1 : 0);
+    }
+    seal(g);
 }
 
 /* Called from the stage-9 advance (0x2485FA) before the retail rollover: the Super Bowl row is still in the grid and the
@@ -269,15 +319,8 @@ void FC champions_advance_notice(u32 menu) {
     if (mvp) {
         u32 t = G(AWARDS + 0x5804);
         mvp_team = t < 32 ? t : team_index(t);
-        if (mvp_team > 31)
-            mvp_team = 0xFFFF;
     }
-    record_season(n, w, l, high, low, sb_mvp, mvp, mvp_team > 31 ? 0xFFFFFFFFu : mvp_team);
-    if (mvp && mvp_team > 31) {
-        u8 *slot = slot_of(n);
-        slot[27] = 0;
-        slot[SLOT_BODY] = check_byte(slot);
-    }
+    record_season(n, w, l, high, low, sb_mvp, mvp, mvp_team);
     u16 text[256], *out = text;
     out = put_text(out, (const u16 *)G(winner + 0x138));
     *out++ = ' ';
@@ -322,13 +365,13 @@ static void text_start(u32 *ctx, u32 font, u32 align) {
 }
 
 static u32 newest_season(void) {
+    const u8 *g = gap();
     u32 best = 0;
-    for (u32 i = 0; i < 32; i++) {
-        u32 team = TEAM_AT(i);
-        if (!team)
-            continue;
-        u32 n = B(team + SLOT0);
-        if (n > best && valid_slot(n))
+    if (!g || !block_ok(g))
+        return 0;
+    for (u32 i = 0; i < RING; i++) {
+        u32 n = g[ENTRIES_AT + i * ENTRY];
+        if (n > best && valid_entry(n))
             best = n;
     }
     return best;
@@ -339,27 +382,32 @@ static u16 *put_abbr(u16 *out, u32 index_plus_one) {
     return team ? put_text(out, (const u16 *)G(team + 0x108)) : out;
 }
 
+static u32 entry_champion(const u8 *e) { return ((u32)e[1] + ((u32)e[2] << 8) + ((u32)e[3] << 16)) & 63; }
+static u32 entry_runner_up(const u8 *e) { return (((u32)e[1] + ((u32)e[2] << 8) + ((u32)e[3] << 16)) >> 6) & 63; }
+static u32 entry_champion_points(const u8 *e) { return (((u32)e[1] + ((u32)e[2] << 8) + ((u32)e[3] << 16)) >> 12) & 63; }
+static u32 entry_runner_points(const u8 *e) { return (((u32)e[1] + ((u32)e[2] << 8) + ((u32)e[3] << 16)) >> 18) & 63; }
+
 /* Rating panel: the ten newest seasons in the ring, "YEAR ABBR" right-aligned at x - 8 and "pts-pts ABBR" at x. */
 void champions_ratings(void) {
     u32 ctx[32], newest = newest_season(), shown = 0;
     u16 label[24], value[24];
-    for (u32 n = newest; n && n + 32 > newest && shown < 10; n--) {
-        const u8 *slot = valid_slot(n);
+    for (u32 n = newest; n && n + RING > newest && shown < 10; n--) {
+        const u8 *e = valid_entry(n);
         u16 *out = label;
-        if (!slot)
+        if (!e)
             continue;
         float x = slot_x[shown / 5], y = slot_y[shown % 5];
         shown++;
         out = put_uint(out, n + 1965);
         *out++ = ' ';
-        out = put_abbr(out, slot[1]);
+        out = put_abbr(out, entry_champion(e));
         *out = 0;
         out = value;
-        out = put_uint(out, slot[3]);
+        out = put_uint(out, entry_champion_points(e));
         *out++ = '-';
-        out = put_uint(out, slot[4]);
+        out = put_uint(out, entry_runner_points(e));
         *out++ = ' ';
-        out = put_abbr(out, slot[2]);
+        out = put_abbr(out, entry_runner_up(e));
         *out = 0;
         text_start(ctx, 3, 2);
         TEXT_POS(ctx, x - 8.0f, y, 20.0f);
@@ -374,9 +422,9 @@ void champions_ratings(void) {
 void champions_bio(void) {
     u32 ctx[32], newest = newest_season();
     u16 text[96], *out;
-    const u8 *slot = newest ? valid_slot(newest) : 0;
+    const u8 *e = newest ? valid_entry(newest) : 0;
     u32 lines = 0;
-    if (!slot) {
+    if (!e) {
         out = put_ascii(text, "CHAMPIONS: NONE YET");
         *out = 0;
         text_start(ctx, 8, 1);
@@ -387,31 +435,31 @@ void champions_bio(void) {
     out = put_ascii(text, "SUPER BOWL ");
     out = put_roman(out, newest);
     out = put_ascii(out, ": ");
-    out = put_abbr(out, slot[1]);
+    out = put_abbr(out, entry_champion(e));
     *out++ = ' ';
-    out = put_uint(out, slot[3]);
+    out = put_uint(out, entry_champion_points(e));
     *out++ = '-';
-    out = put_uint(out, slot[4]);
+    out = put_uint(out, entry_runner_points(e));
     *out++ = ' ';
-    out = put_abbr(out, slot[2]);
+    out = put_abbr(out, entry_runner_up(e));
     *out = 0;
     text_start(ctx, 8, 1);
     TEXT_POS(ctx, 198.0f, line_y[lines++], 20.0f);
     TEXT_DRAW(ctx, text);
-    if (slot[5] | slot[6]) {
+    if (get_bits(e + 4, 0, 5) | get_bits(e + 4, 5, 5)) {
         out = put_ascii(text, "SB MVP: ");
-        out = put_person(out, slot + 5);
+        out = put_person(out, e + 4);
         *out = 0;
         text_start(ctx, 8, 1);
         TEXT_POS(ctx, 198.0f, line_y[lines++], 20.0f);
         TEXT_DRAW(ctx, text);
     }
-    if (slot[16] | slot[17]) {
+    if (get_bits(e + 11, 0, 5) | get_bits(e + 11, 5, 5)) {
         out = put_ascii(text, "MVP: ");
-        out = put_person(out, slot + 16);
-        if (slot[27]) {
+        out = put_person(out, e + 11);
+        if (e[18]) {
             out = put_ascii(out, " (");
-            out = put_abbr(out, slot[27]);
+            out = put_abbr(out, e[18]);
             *out++ = ')';
         }
         *out = 0;
