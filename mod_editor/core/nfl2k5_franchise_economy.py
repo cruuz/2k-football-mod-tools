@@ -157,6 +157,9 @@ CLASS_COUNT = 0x2BF942              # mov ecx, 0x17C before the preseason -> reg
 CLASS_TARGET_CMP = 0x2BDCC4         # cmp eax, 0x17C: free + retiring records the pass wants
 CLASS_TARGET_NEED = 0x2BDCCB        # mov ecx, 0x17C: the same target for the top-up's count
 CLASS_TOPUP = 0x2BDCD6              # call 0x2BD0E0: the lowest-rated free agents of any age
+# Prepared for Noah, NOT enabled (0 in every build): 1 makes the class floor take only generated players with no
+# career history, 27 or older and rated 60 or less, lowest-rated first (runtime.c economy_floor_protected).
+FLOOR_PROTECTED_VA = SYMBOLS["economy_floor_protected"]
 for _va, _digest in ((0x382200, "dc79bd8fe3a5e4434acf93056e6e304d0cfd27e357e5f39f7cc8d0cb02395dfb"),
                      (CLASS_ALLOCATOR_TEST, "91c65bd8dfe375045d530c034260d1a544235a843998bff7e9829cac9ef2eb0d"),
                      (CLASS_FREE_COUNT, "7f03603229d3a06e2d02df062acf57d6a44497e3478eff1282674dd829334c10"),
@@ -164,9 +167,10 @@ for _va, _digest in ((0x382200, "dc79bd8fe3a5e4434acf93056e6e304d0cfd27e357e5f39
                      (PRESEASON_GATE, "551b621b386d156f5f45bfae6b145c26bf3977a4dee94547f9bd9d9ecac98e17"),
                      (CLASS_COUNT, "f008c3fa909493263fd331107548176e582177a844cf24494a65a528282960fe"), (CLASS_TARGET_CMP, "075f6eb388d93fa575f9b33881521db17155f726719799a6277ccb13f317d9ba"), (CLASS_TARGET_NEED, "f008c3fa909493263fd331107548176e582177a844cf24494a65a528282960fe"),
                      (CLASS_TOPUP, "03bb89c27f1d99b2d64519869c63afbb1bf09143bfbeae0017d38785f312a4a5"), (0x3A5F20, "932cacdaee4ff7c5eab50c13fa7b179c41e50dde4fe9a91587a09dbf1eba8956"), (0x3BAB20, "64eede86bf0bcb5253985b1d803e8d72d59a173eb6b2067abab634eb72adcc4e"),
+                     (0x3E2310, "13baf0ded46367e2a729f859d8138e99a03b870ec8083d8775afec21bcb29eaf"),
                      (0x41E2A0, "6380da53ed52f0ec42021477b15a441b2b0532da2189e902ea9c02225ff7aec7")):
     PINS[_va] = _digest
-REVISION_4_SITES = frozenset({0x382200, 0x41E2A0, 0x3A5F20, 0x3BAB20, CLASS_ALLOCATOR_TEST, CLASS_FREE_COUNT,
+REVISION_4_SITES = frozenset({0x382200, 0x41E2A0, 0x3A5F20, 0x3BAB20, 0x3E2310, CLASS_ALLOCATOR_TEST, CLASS_FREE_COUNT,
                               CLASS_POSITION, PRESEASON_GATE, CLASS_COUNT, CLASS_TARGET_CMP, CLASS_TARGET_NEED,
                               CLASS_TOPUP})
 REVISION = 4

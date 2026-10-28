@@ -530,14 +530,15 @@ SECTION(".roster_f") __attribute__((naked)) void economy_class_free(void) {
 /* b779 rc1 (Noah 10/28: "there should always be a ton of rookie prospects. Every draft, every position pool
  * should have undrafted players that nobody wants"): a generated class asks for CLASS_SIZE prospects (the
  * native loop asked for 380; the first class is still the disc's own 380-record window). The mix per 450 is
- * the most the CPU's 224-pick draft took per position in simulated v0.7 seasons 3-5 plus 8, scaled so a
- * 355-player class (what the league frees in a normal year) leaves every group with undrafted players: QB 26,
- * K 9, P 9, WR 33, CB 44, FS 18, SS 17, HB 29, FB 11, TE 28, OLB 19, ILB 19, C 36, G 28, T 36, DT 41, DE 47. Under the
+ * the CPU's average 224-pick draft per position over simulated v0.7 drafts 3-10, plus a target left over
+ * (K/P 4, FB 6, QB 11, the rest 6-11 by how much the CPU's demand for the position varies), for a 355-player
+ * class (what the league frees in a normal year), scaled to 450: QB 24, K 5, P 5, WR 37, CB 54, FS 15, SS 15,
+ * HB 28, FB 9, TE 28, OLB 19, ILB 19, C 24, G 26, T 40, DT 48, DE 54. Under the
  * one-pool scheme no rostered player carries OLB (10), and the class must conserve that
  * (nfl2k5_position_pools), so an OLB slot becomes LB (11). */
 #define CLASS_SIZE 450
 SECTION(".roster_f_rodata") static const u8 class_counts[17] = {
-    26, 9, 9, 33, 44, 18, 17, 29, 11, 28, 19, 19, 36, 28, 36, 41, 47};
+    24, 5, 5, 37, 54, 15, 15, 28, 9, 28, 19, 19, 24, 26, 40, 48, 54};
 
 SECTION(".roster_f") static unsigned league_has_olb(void) {
     u8 *root = *(u8 **)0xB72918;   /* the roster's own 32 club blocks, valid whenever a class is generated */
@@ -598,14 +599,35 @@ SECTION(".roster_g") static int eligible(u8 *p, int over) {
     return !(p[8] & 0x18) && p[0x35] < 17 && past_age(p) >= over;
 }
 
-/* Still short: the lowest-rated free agent within two years of his position's age, one at a time. */
-SECTION(".roster_i") __attribute__((noinline)) static int near_age(u8 **list, unsigned n, int need) {
+/* A player the class generator made: his first-name pointer is one of the generated-name pool's entries
+ * (ROST root +0x50 count, +0x54 entries of {first, last}); real and created players own their name storage. */
+SECTION(".roster_j") static int generated(u8 *p) {
+    u8 *root = *(u8 **)0xB72918;
+    unsigned *entry = *(unsigned **)(root + 0x54), n = *(unsigned *)(root + 0x50);
+    for (unsigned i = 0; i < n && i < 2048; ++i)
+        if (entry[2 * i] == *(unsigned *)(p + 16)) return 1;
+    return 0;
+}
+
+/* Protected floor candidates (not enabled; see floor_protected): a generated player with no career history
+ * (+0x2C), at least 27 years old and rated no higher than 0.60 (60 OVR). */
+SECTION(".roster_j") static int protectable(u8 *p, float r) {
+    unsigned season = *(unsigned *)0x247AC7 + *(unsigned *)0xE576B8 + 1;
+    unsigned age = (season - ((*(unsigned *)(p + 24) >> 21) & 127)) % 100;
+    union { float f; unsigned u; } v = { r };   /* r >= 0: compare the bits; 0x3F19999A = 0.60f, no float literal */
+    return age >= 27 && !*(unsigned *)(p + 0x2C) && v.u <= 0x3F19999AU && generated(p);
+}
+
+/* The lowest-rated candidate one at a time while more than `keep` are needed: mode 0 = within two years of his
+ * position's age, mode 1 = a protected floor candidate. */
+SECTION(".roster_i") __attribute__((noinline)) static int lowest(u8 **list, unsigned n, int need, int keep, int mode) {
     u8 *best;
     float low, r;
-    while (need > 0) {
+    while (need > keep) {
         best = 0; low = 0;
         for (unsigned i = 0; i < n; ++i)   /* no float literal: compiler constants land in the "value" window */
-            if (eligible(list[i], -2) && ((r = n_rating(list[i], 1)) < low || !best)) { low = r; best = list[i]; }
+            if (eligible(list[i], mode ? -40 : -2) && ((r = n_rating(list[i], 1)) < low || !best) &&
+                    (!mode || protectable(list[i], r))) { low = r; best = list[i]; }
         if (!best) break;
         best[8] |= 8; --need;
     }
@@ -626,10 +648,15 @@ SECTION(".roster_h") static int oldest(u8 **list, unsigned n, int need, int lo, 
  * often (b) and (c) fire and the ages (c) reaches. 350 keeps every position with undrafted players after the
  * 224-pick draft (Noah 10/28: "never fewer than about 350"). */
 #define MIN_CLASS 350
+/* 0 (shipped): pass (c) takes the oldest remaining free agents. 1 (prepared for Noah, not enabled): pass (c)
+ * takes only generated players with no career history, 27 or older and rated 60 or less, lowest-rated first,
+ * and a class may stay under MIN_CLASS. nfl2k5_franchise_economy.FLOOR_PROTECTED_VA is this byte. */
+SECTION(".roster_h_rodata") const unsigned char economy_floor_protected = 0;
 SECTION(".roster_h") int STD economy_class_topup(int need, unsigned retiring) {
     u8 *root = *(u8 **)0xB72918, **list = *(u8 ***)(root + 0x3c);
     unsigned n = *(unsigned *)(root + 0x38);
     (void)retiring;
-    need = near_age(list, n, oldest(list, n, need, 0, 0));
+    need = lowest(list, n, oldest(list, n, need, 0, 0), 0, 0);
+    if (*(volatile const unsigned char *)&economy_floor_protected) return lowest(list, n, need, CLASS_SIZE - MIN_CLASS, 1);
     return oldest(list, n, need, -40, CLASS_SIZE - MIN_CLASS);
 }

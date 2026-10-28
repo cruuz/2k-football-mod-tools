@@ -126,7 +126,7 @@ class MyCareerCapacityCreateTests(unittest.TestCase):
 # ------------------------------------------------------------------------------------------- draft classes
 # Revision 4's class mix per 450 (Noah 10/28: deep classes, undrafted players at every position):
 #             QB   K   P  WR  CB  FS  SS  HB  FB  TE OLB ILB   C   G   T  DT  DE
-CLASS_MIX = (26, 9, 9, 33, 44, 18, 17, 29, 11, 28, 19, 19, 36, 28, 36, 41, 47)
+CLASS_MIX = (24, 5, 5, 37, 54, 15, 15, 28, 9, 28, 19, 19, 24, 26, 40, 48, 54)
 ONE_POOL_MIX = CLASS_MIX[:10] + (0, CLASS_MIX[10] + CLASS_MIX[11]) + CLASS_MIX[12:]   # no rostered OLB: OLB is LB
 
 
