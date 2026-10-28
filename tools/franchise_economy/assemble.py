@@ -27,7 +27,7 @@ WINDOWS = {"value": (0x2BD440, 1082), "contracts": (0x3228A0, 215),
            "roster_c": (0x3D2890, 352), "roster_d": (0x3BA4B0, 352), "roster_e": (0x3975F0, 224),
            # b779 rc1 (revision 4): one more unreferenced retail library function for the draft-class
            # record supply and position mix (dead_code.py WINDOWS).
-           "roster_f": (0x382200, 192), "roster_g": (0x41E2A0, 192), "roster_h": (0x3A5F20, 192), "roster_i": (0x3BAB20, 192), "roster_j": (0x3E2310, 176)}
+           "roster_f": (0x382200, 192), "roster_g": (0x41E2A0, 192), "roster_h": (0x3A5F20, 192), "roster_i": (0x3BAB20, 192), "roster_j": (0x3E2310, 176), "roster_k": (0x3E9740, 160), "roster_l": (0x3E21D0, 160), "roster_m": (0x3DBC10, 160)}
 # b778 fa2: retail routines the C code calls directly (rel32 instead of mov/call reg).
 NATIVE = {"n_rating": 0x246D80, "n_recount": 0xC3F00, "n_human": 0x13EC30, "n_team": 0xC4C50,
           "n_teams": 0xC4BE0, "n_roster_limit": 0x247AF0, "n_salary": 0xE6380, "n_base": 0xE6040,

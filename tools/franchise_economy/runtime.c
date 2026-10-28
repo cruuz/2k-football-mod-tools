@@ -540,7 +540,7 @@ SECTION(".roster_f") __attribute__((naked)) void economy_class_free(void) {
 SECTION(".roster_f_rodata") static const u8 class_counts[17] = {
     24, 5, 5, 37, 54, 15, 15, 28, 9, 28, 19, 19, 24, 26, 40, 48, 54};
 
-SECTION(".roster_f") static unsigned league_has_olb(void) {
+SECTION(".roster_f") __attribute__((noinline)) unsigned league_has_olb(void) {
     u8 *root = *(u8 **)0xB72918;   /* the roster's own 32 club blocks, valid whenever a class is generated */
     for (unsigned t = 0; t < 32; ++t) {
         u8 *team = *(u8 **)(root + 0x1c) + 500 * t;
@@ -589,10 +589,16 @@ SECTION(".roster_g") __attribute__((naked)) void economy_preseason_gate(void) {
  * 0x2BCF90 starts, nfl2k5_progression's NFL career lengths from nflverse draft_picks 1994-2013) + 24, the age
  * at which a typical starter has retired (base + 2 years pro, a rookie being 1 at about 22): QB/K/P 38,
  * HB 30, FB/CB 31, WR/S/LB 32, TE/DT/DE 33, G/T 34, C 35. */
+/* Noah 10/28: "some of the guys waiting for a shot might be willing to wait it out a few extra years". Each
+ * player gets his own 0-6 extra years (most 0-3), fixed by his record index so it is the same after a reload:
+ * 5 in 16 none, 4 one, 3 two, 2 three, 1 four, 1 six (mean 1.4). */
+SECTION(".roster_g_rodata") static const u8 hold_years[16] = {0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 3, 3, 4, 6};
 SECTION(".roster_g") static int past_age(u8 *p) {
+    u8 *root = *(u8 **)0xB72918;
     unsigned season = *(unsigned *)0x247AC7 + *(unsigned *)0xE576B8 + 1;
+    unsigned index = ((unsigned)p - *(unsigned *)(root + 4)) / 84;
     int age = (int)((season - ((*(unsigned *)(p + 24) >> 21) & 127)) % 100);
-    return age - (int)(*(unsigned *)(0xACEDE0 + 4 * p[0x35]) + 24);
+    return age - (int)(*(unsigned *)(0xACEDE0 + 4 * p[0x35]) + 24) - hold_years[(index * 2654435761U) >> 28];
 }
 
 SECTION(".roster_g") static int eligible(u8 *p, int over) {
@@ -609,17 +615,19 @@ SECTION(".roster_j") static int generated(u8 *p) {
     return 0;
 }
 
-/* Protected floor candidates (not enabled; see floor_protected): a generated player with no career history
- * (+0x2C), at least 27 years old and rated no higher than 0.60 (60 OVR). */
+/* Protected floor candidates: a generated player with no career history (+0x2C); mode 1 also needs him to be at
+ * least 27 and rated no higher than 0.60 (60 OVR); mode 2 (variant B) takes any age and rating. */
+extern const unsigned char economy_floor_protected;
 SECTION(".roster_j") static int protectable(u8 *p, float r) {
+    unsigned mode = *(volatile const unsigned char *)&economy_floor_protected;
     unsigned season = *(unsigned *)0x247AC7 + *(unsigned *)0xE576B8 + 1;
     unsigned age = (season - ((*(unsigned *)(p + 24) >> 21) & 127)) % 100;
     union { float f; unsigned u; } v = { r };   /* r >= 0: compare the bits; 0x3F19999A = 0.60f, no float literal */
-    return age >= 27 && !*(unsigned *)(p + 0x2C) && v.u <= 0x3F19999AU && generated(p);
+    return (mode == 2 || (age >= 27 && v.u <= 0x3F19999AU)) && !*(unsigned *)(p + 0x2C) && generated(p);
 }
 
 /* The lowest-rated candidate one at a time while more than `keep` are needed: mode 0 = within two years of his
- * position's age, mode 1 = a protected floor candidate. */
+ * position's age, mode 1 or 2 = a protected floor candidate of that kind. */
 SECTION(".roster_i") __attribute__((noinline)) static int lowest(u8 **list, unsigned n, int need, int keep, int mode) {
     u8 *best;
     float low, r;
@@ -635,7 +643,7 @@ SECTION(".roster_i") __attribute__((noinline)) static int lowest(u8 **list, unsi
 }
 
 /* Oldest first: every free agent at least `lo` years past his position's age, while more than `keep` are needed. */
-SECTION(".roster_h") static int oldest(u8 **list, unsigned n, int need, int lo, int keep) {
+SECTION(".roster_m") __attribute__((noinline)) static int oldest(u8 **list, unsigned n, int need, int lo, int keep) {
     for (int over = 12; over >= lo && need > keep; --over)
         for (unsigned i = 0; i < n && need > keep; ++i)
             if (eligible(list[i], over)) { list[i][8] |= 8; --need; }
@@ -648,15 +656,53 @@ SECTION(".roster_h") static int oldest(u8 **list, unsigned n, int need, int lo, 
  * often (b) and (c) fire and the ages (c) reaches. 350 keeps every position with undrafted players after the
  * 224-pick draft (Noah 10/28: "never fewer than about 350"). */
 #define MIN_CLASS 350
-/* 0 (shipped): pass (c) takes the oldest remaining free agents. 1 (prepared for Noah, not enabled): pass (c)
- * takes only generated players with no career history, 27 or older and rated 60 or less, lowest-rated first,
- * and a class may stay under MIN_CLASS. nfl2k5_franchise_economy.FLOOR_PROTECTED_VA is this byte. */
-SECTION(".roster_h_rodata") const unsigned char economy_floor_protected = 0;
+#define DRAFT_FLOOR 256   /* 224 picks + 32: below this even the protected floor takes the oldest free agents */
+/* Pass (c), the class floor. 0: the oldest remaining free agents. 1: only generated players with no career
+ * history, 27 or older and rated 60 or less, lowest-rated first. 2 (variant B): only generated players with no
+ * career history, any age and rating, lowest-rated first; real and created identities and anyone with history
+ * are never taken by the floor. With 1 or 2 a class may stay under MIN_CLASS.
+ * nfl2k5_franchise_economy.FLOOR_PROTECTED_VA is this byte. */
+SECTION(".roster_h_rodata") const unsigned char economy_floor_protected = 2;
 SECTION(".roster_h") int STD economy_class_topup(int need, unsigned retiring) {
     u8 *root = *(u8 **)0xB72918, **list = *(u8 ***)(root + 0x3c);
     unsigned n = *(unsigned *)(root + 0x38);
     (void)retiring;
     need = lowest(list, n, oldest(list, n, need, 0, 0), 0, 0);
-    if (*(volatile const unsigned char *)&economy_floor_protected) return lowest(list, n, need, CLASS_SIZE - MIN_CLASS, 1);
+    if (*(volatile const unsigned char *)&economy_floor_protected)   /* the draft must never run dry: 256 */
+        return oldest(list, n, lowest(list, n, need, CLASS_SIZE - MIN_CLASS, 1), -40, CLASS_SIZE - DRAFT_FLOOR);
     return oldest(list, n, need, -40, CLASS_SIZE - MIN_CLASS);
+}
+
+/* b779 rc1 (Noah 10/28: "make it smart, so teams aren't cutting guys that they need at certain positions. They'll
+ * prioritize the lowest overall at a position where they have more than they need, according to modern NFL
+ * position keeping"). Replaces the native cut-down 0x2BF9A0 (fastcall team, target; every caller: the preseason
+ * gate, retail's Simulate Preseason, the economy's trims, MyCareer's signing room). While the club has more than
+ * `target` active players it releases (native 0x2BD900, as the native cut does) the lowest-rated player at a
+ * position still above its minimum; only when no position is above its minimum, the lowest-rated player at a
+ * position with two or more. Minimums: 2024 53-man rosters (atlantafalcons.com, 2024-08-28, all 32 teams:
+ * QB 2.4, RB 3.6, WR 5.9, TE 3.3, OL 9.4, DL 7.9, LB 7.3, DB 10.3, K 1, P 1 on average), at or below the league
+ * average: QB 2, K 1, P 1, WR 5, CB 5, FS 2, SS 2, HB 3, FB 0, TE 3, LB 5 (OLB 3 + ILB 2 when the league has
+ * OLBs, else ILB 5 under the one-pool scheme), C 2, G 3, T 3 (OL 8), DT 3, DE 4 (DL 7). 44 in all. */
+SECTION(".roster_l_rodata") static const u8 cut_min[17] = {2, 1, 1, 5, 5, 2, 2, 3, 0, 3, 3, 2, 2, 3, 3, 3, 4};
+
+/* The lowest-rated active player at a position with more than mins[position] (floor 0), or more than one
+ * (floor 1). */
+SECTION(".roster_k") __attribute__((noinline)) static u8 *cut_pick(u8 *team, const u8 *mins, unsigned floor) {
+    unsigned n = team[0x11c], i, pos;
+    u8 *best = 0, *p;
+    float low = 0, r;
+    for (i = 0; i < n; ++i) {
+        p = ((u8 **)team)[i]; pos = p[0x35];
+        if (pos >= 17 || n_at_position(team, pos) <= (floor ? 1 : mins[pos])) continue;   /* native 0xC3CB0 */
+        if ((r = n_rating(p, 1)) < low || !best) { low = r; best = p; }
+    }
+    return best;
+}
+
+SECTION(".roster_l") void FAST economy_smart_cut(u8 *team, unsigned target) {
+    u8 mins[17], *best;
+    for (unsigned i = 0; i < 17; ++i) mins[i] = cut_min[i];
+    if (!league_has_olb()) { mins[10] = 0; mins[11] = 5; }
+    while (team[0x11c] > target && ((best = cut_pick(team, mins, 0)) || (best = cut_pick(team, mins, 1))))
+        n_release(team, best, 1, 1);
 }

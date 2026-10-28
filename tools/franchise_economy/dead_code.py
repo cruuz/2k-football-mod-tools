@@ -44,6 +44,9 @@ WINDOWS = {  # start: (size, sha256 of the retail bytes)
     # b779 rc1 (revision 4, "roster_h" / "roster_i"): the age-based class top-up.
     0x3A5F20: (192, "932cacdaee4ff7c5eab50c13fa7b179c41e50dde4fe9a91587a09dbf1eba8956"),
     0x3E2310: (176, "13baf0ded46367e2a729f859d8138e99a03b870ec8083d8775afec21bcb29eaf"),   # b779 rc1 "roster_j": the protected floor variant's candidate tests
+    0x3E9740: (160, "94bd3db8784a2160f517bbf77e925a896179d1cafe956e1b4b34a27f38553b8a"),   # b779 rc1 "roster_k": the smart cut-down's pick
+    0x3E21D0: (160, "30a0fdf7c568efef21be4aeaa4461f101cca85fd9a54263e904ac053531de2c2"),   # b779 rc1 "roster_l": the smart cut-down
+    0x3DBC10: (160, "6f22f98b376a8bed14faf2552886a6b5396ca8347ea08e98ad8b1813c5ad2244"),   # b779 rc1 "roster_m": the top-up's oldest-first pass
     0x3BAB20: (192, "64eede86bf0bcb5253985b1d803e8d72d59a173eb6b2067abab634eb72adcc4e"),
     0x41E2A0: (192, "6380da53ed52f0ec42021477b15a441b2b0532da2189e902ea9c02225ff7aec7"),
 }

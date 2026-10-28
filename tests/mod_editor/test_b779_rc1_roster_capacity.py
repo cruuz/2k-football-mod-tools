@@ -222,14 +222,14 @@ class DraftClassSupplyTests(unittest.TestCase):
 
     def test_a_small_pool_still_gets_a_full_draft_and_keeps_the_vacancies(self):
         # The retail roster has only 241 free agents, mostly young: retiring by age alone frees far fewer than
-        # 450 records, so the floor pass retires the oldest free agents toward MIN_CLASS (350). Here that takes
-        # every free agent the retail roster has (305 records in all), still well over the 224-pick draft.
-        # Every create vacancy survives and every position group is in the class.
+        # 450 records. The default floor (variant B) may take only generated never-played players, and a fresh
+        # retail franchise has none, so the draft floor (DRAFT_FLOOR, 256) takes the oldest free agents until the
+        # class can fill the 224-pick draft. Every create vacancy survives and every position group is in the class.
         from mod_editor.core import nfl2k5_franchise_economy as economy
         before, after, positions, written, _ = _turnover(self.current, self.body, economy.CLASS_SIZE)
         self.assertGreater(before, 100)
         self.assertEqual(after, before)                    # Create Player / MyCareer / imports keep their records
-        self.assertGreaterEqual(len(positions), 300)
+        self.assertGreaterEqual(len(positions), 256)
         counts = [positions.count(p) for p in range(17)]
         self.assertTrue(all(counts), counts)               # the retail roster carries OLBs, so none fold to LB
         self.assertEqual(written, positions)               # the generator wrote each prospect at that position
@@ -328,11 +328,17 @@ class ReleasedRosterClassTests(unittest.TestCase):
         cls.released, cls.body = RELEASED_XBE.read_bytes(), RELEASED_BODY.read_bytes()
         cls.fixed = economy.apply(cls.released)[0]
 
-    def test_the_second_class_is_450_deep_by_age_and_keeps_144_vacancies(self):
+    def test_the_second_class_is_350_deep_by_age_and_keeps_144_vacancies(self):
+        # Retirement by each position's age plus each player's own 0-6 extra years: the year-0 turnover frees about
+        # 358 records on the v0.7 roster; no generated never-played player exists yet for the floor.
         from mod_editor.core import nfl2k5_franchise_economy as economy
         before, after, positions, written, ages = _turnover(self.fixed, self.body, economy.CLASS_SIZE)
         self.assertEqual((before, after), (144, 144))
-        self.assertEqual(tuple(positions.count(p) for p in range(17)), ONE_POOL_MIX)
+        self.assertGreaterEqual(len(positions), 350)
+        share = len(positions) / economy.CLASS_SIZE
+        for code, want in enumerate(ONE_POOL_MIX):          # a short class samples every group (stride 151)
+            if want:
+                self.assertGreaterEqual(positions.count(code), max(1, int(want * share * 0.75)), code)
         self.assertEqual(written, positions)
         self.assertTrue(ages)
         # Every top-up retiree is past his position's age, or (second pass) within two years of it: never younger.
@@ -412,6 +418,104 @@ class ReleasedRosterDraftTests(unittest.TestCase):
             for code, left in enumerate(draft):
                 if code != 10:                              # one pool: no OLB at all (they are LB)
                     self.assertGreater(left, 0, f"position {code} ran out: {draft}")
+
+
+# Modern 53-man minimums the smart cut keeps (2024 rosters, atlantafalcons.com 2024-08-28), one-pool LB = ILB 5.
+#            QB K  P  WR CB FS SS HB FB TE OLB ILB C  G  T  DT DE
+MODERN_MIN = (2, 1, 1, 5, 5, 2, 2, 3, 0, 3, 0, 5, 2, 3, 3, 3, 4)
+
+
+def _cut(payload, body, composition, target):
+    """A fresh native franchise; club 1 is rebuilt from free agents to exactly `composition` (count per position
+    code, each with a one-year contract), then the native cut-down 0x2BF9A0(club, target) runs. Returns (counts
+    after, positions released)."""
+    from tests.nfl2k5_supersim_draft_fixture import Machine
+    m = Machine(payload, trace_writes=False)
+    size = len(body) - 0x40
+    m.uc.mem_write(m.ARENA + 0x300, body)
+    m.put(0xB72804, m.ARENA + 0x300)
+    m.put(0xB72808, size if size > 0x91000 else 0x91000)
+    m.put(0xB7280C, size)
+    m.fixup_roster(m.ARENA + 0x340)
+    m.seed(12345)
+    for a, v in ((0xE5FF80, 4), (0xE60120, 1), (0xE6000C, 5), (0xE60010, 5)):
+        m.put(a, v)
+    m.leaf(0x177990, lambda: m.ret(pop=4), reason="progress renderer only")
+    m.leaf(0x14E520, lambda: m.ret(), reason="informational dialog acknowledgement only")
+    released = []
+    m.uc.hook_add(m.u.UC_HOOK_CODE, lambda *_: released.append(m.reg("EDX")), begin=0x2BD900, end=0x2BD900)
+    m.call(0x13EE10, budget=2_000_000_000)
+    team, lst = m.team_base + 500, m.root + 0x38
+
+    def members():
+        return [m.get(team + 4 * i) for i in range(m.uc.mem_read(team + 0x11C, 1)[0])]
+
+    def position(p):
+        return m.uc.mem_read(p + 0x35, 1)[0]
+
+    pool = [m.call(0x242500, ecx=lst, edx=i) for i in range(m.call(0x2424F0, ecx=lst))]
+    for code, want in enumerate(composition):
+        have = [p for p in members() if position(p) == code]
+        for p in have[want:]:                               # native release to the free-agent list
+            m.call(0x2BD900, ecx=team, edx=p, args=(1, 1), budget=int(2e9))
+        for p in [p for p in pool if position(p) == code][:max(0, want - len(have))]:
+            m.call(0x2425C0, ecx=lst, edx=p)
+            raw = bytearray(m.uc.mem_read(p, 84))
+            raw[0x27] = (raw[0x27] & 0xF0) | 1; raw[0x24] = (raw[0x24] & 0xF0) | 1   # a one-year contract
+            struct.pack_into("<H", raw, 10, 60)
+            m.uc.mem_write(p, bytes(raw))
+            assert m.call(0xC3EE0, ecx=team, edx=p), "preseason append refused"
+    assert sorted(position(p) for p in members()) == sorted(c for c, k in enumerate(composition) for _ in range(k))
+    m.call(0xC3F00, ecx=team)
+    released.clear()
+    m.call(0x2BF9A0, ecx=team, edx=target, budget=int(2e10))
+    n = m.uc.mem_read(team + 0x11C, 1)[0]
+    counts = [0] * 17
+    for i in range(n):
+        counts[m.uc.mem_read(m.get(team + 4 * i) + 0x35, 1)[0]] += 1
+    return counts, [m.uc.mem_read(p + 0x35, 1)[0] for p in released]
+
+
+@unittest.skipUnless(HAVE_UC and RELEASED_BODY.is_file() and RELEASED_XBE.is_file(),
+                     "the released v0.7 default.xbe and main ROST body (private) are absent")
+class SmartCutTests(unittest.TestCase):
+    """Noah 10/28: "make it smart, so teams aren't cutting guys that they need at certain positions"."""
+
+    @classmethod
+    def setUpClass(cls):
+        from mod_editor.core import nfl2k5_franchise_economy as economy
+        cls.released, cls.body = RELEASED_XBE.read_bytes(), RELEASED_BODY.read_bytes()
+        cls.fixed = economy.apply(cls.released)[0]
+
+    def test_a_58_man_club_cut_to_53_keeps_every_modern_minimum(self):
+        # Every position at its modern minimum (46 with FB 1 and DT 4) plus 12 extras.
+        club = list(MODERN_MIN)
+        club[8], club[15] = 1, 4
+        for code, extra in ((3, 3), (4, 2), (13, 2), (16, 3), (0, 1), (7, 1)):
+            club[code] += extra
+        self.assertEqual(sum(club), 58)
+        counts, cut = _cut(self.fixed, self.body, club, 53)
+        self.assertEqual(sum(counts), 53)
+        for code, least in enumerate(MODERN_MIN):
+            self.assertGreaterEqual(counts[code], least, f"position {code}: {counts}")
+        self.assertEqual(len(cut), 5)
+
+    def test_a_club_at_the_modern_minimums_cuts_only_its_extras(self):
+        # 46 players: every position at its modern minimum except FB 1 and DT 4 (one over each). Cut to 44.
+        club = list(MODERN_MIN)
+        club[8], club[15] = 1, 4
+        counts, cut = _cut(self.fixed, self.body, club, 44)
+        self.assertEqual(sorted(cut), [8, 15])
+        self.assertEqual(counts, list(MODERN_MIN))
+
+    def test_the_released_cut_goes_below_the_modern_minimums(self):
+        # Negative control: v0.7's native cut uses the old minimum table (FS 1, SS 1, HB 2, TE 2, DT 4, FB 1),
+        # so on the same club it takes the safeties below two and keeps the extra fullback and tackle.
+        club = list(MODERN_MIN)
+        club[8], club[15] = 1, 4
+        counts, cut = _cut(self.released, self.body, club, 44)
+        self.assertNotEqual(sorted(cut), [8, 15])
+        self.assertTrue(any(counts[code] < least for code, least in enumerate(MODERN_MIN)), counts)
 
 
 if __name__ == "__main__":
