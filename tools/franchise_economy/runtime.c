@@ -503,3 +503,57 @@ SECTION(".week") __attribute__((naked)) void economy_after(void) {
 SECTION(".week") __attribute__((naked)) void economy_stage6(void) {
     __asm__("xor %ecx, %ecx\nmov $1, %edx\ncall economy_clubs\njmp 0x247fd7\n");
 }
+
+/* ---------------------------------------------------------------------------
+ * b779 rc1 (revision 4): the draft class keeps the create vacancies and the
+ * first class's position mix. Window "roster_f" is the unreferenced retail
+ * library function 0x382200..0x3822BF (tools/franchise_economy/dead_code.py).
+ *
+ * PROVED OFFLINE (Unicorn, released v0.7 XBE + disc ROST): with revision 3 the
+ * league keeps its unsigned free agents, so the retirement pass 0x2BDB00 retires
+ * only 236 and tops retirements up until free + retiring >= 380 counting the 144
+ * create vacancies (flags & 5 == 1) as free. The class allocator 0x2BD390 then
+ * takes the first 380 records with bit 2 clear, vacancies included, and each
+ * prospect keeps the reused record's old position: the second class was 144 FB,
+ * 4 QB, 0 K, 0 P, and no vacancy was left for Create Player, MyCareer or a
+ * moment/historic import.
+ * ------------------------------------------------------------------------- */
+
+/* Not available to the class: a used record (bit 2) or a create vacancy (bit 0).
+ * Replaces 0x2BD380 (bit 2 only) at the allocator 0x2BD3C0 and at the retirement
+ * pass's free count 0x2BDCAE, so the top-up retires enough free agents for a full
+ * class without the vacancies. ECX = record; EAX nonzero = skip; EDX preserved. */
+SECTION(".roster_f") __attribute__((naked)) void economy_class_free(void) {
+    __asm__("movzbl 8(%ecx), %eax\nand $5, %eax\nret\n");
+}
+
+/* The disc class window's position mix (retail and SOFTDRINK: 380 records, codes
+ * 0..16). Under the one-pool scheme no rostered player carries OLB (10), and the
+ * class must conserve that (nfl2k5_position_pools), so an OLB slot becomes LB (11). */
+SECTION(".roster_f_rodata") static const u8 class_counts[17] = {
+    27, 19, 23, 41, 34, 12, 16, 10, 13, 24, 21, 20, 25, 31, 18, 23, 23};
+
+SECTION(".roster_f") static unsigned league_has_olb(void) {
+    u8 *root = *(u8 **)0xB72918;   /* the roster's own 32 club blocks, valid whenever a class is generated */
+    for (unsigned t = 0; t < 32; ++t) {
+        u8 *team = *(u8 **)(root + 0x1c) + 500 * t;
+        for (unsigned i = 0; i < team[0x11c] && i < 65; ++i)
+            if (((u8 **)team)[i][0x35] == 10) return 1;
+    }
+    return 0;
+}
+
+/* Prospect k of a class (the generator's countdown [0xE41CDC], 380..1) takes slot
+ * (k - 1) x 151 mod 380 of the window mix (151 is prime to 380, so a full class
+ * visits every slot once and has the first class's counts: 27 QB, 19 K, 23 P ...
+ * 23 DE; a class cut short by a small free-agent pool still samples every group). */
+SECTION(".roster_f") unsigned FAST economy_class_position(void) {
+    unsigned k = (*(unsigned *)0xE41CDC - 1) * 151 % 380, pos = 0;
+    while (pos < 16 && k >= class_counts[pos]) k -= class_counts[pos++];
+    return pos == 10 && !league_has_olb() ? 11 : pos;
+}
+
+/* 0x2BE91D in the class loop 0x2BE900: was movzx edx, [eax+0x35]; mov ecx, eax. */
+SECTION(".roster_f") __attribute__((naked)) void economy_class_slot(void) {
+    __asm__("push %eax\ncall economy_class_position\nmov %eax, %edx\npop %eax\nmov %eax, %ecx\nret\n");
+}

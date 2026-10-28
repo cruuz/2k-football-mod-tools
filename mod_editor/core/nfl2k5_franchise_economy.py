@@ -128,7 +128,28 @@ PREVIOUS = {
 REVISION_3_SITES = frozenset({0x323870, 0x396F50, 0x3B9F60, 0x3D2890, 0x3BA4B0, 0x3975F0, AFTER_STAGE, STAGE6_CASE,
                               USER_FLOOR, USER_FLOOR_TEXT, OFFER_DAYS_SEED, USER_TRADE_FLOOR, USER_TRADE_TEXT,
                               EXPIRING_RELEASE, FA_RETIREMENT})
-REVISION = 3
+
+# b779 rc1 (revision 4). PROVED OFFLINE (Unicorn, released v0.7 XBE + disc ROST, retirement pass 0x2BDB00 ->
+# Combine cleanup 0x2BDA90 -> class generator 0x2BE940): revision 3 keeps unsigned free agents, so the pass
+# retires only 236 and tops retirements up until free + retiring >= 380 counting the 144 create vacancies as
+# free; the allocator 0x2BD390 takes the first 380 records with bit 2 clear (vacancies included) and each
+# prospect keeps the reused record's old position. The second class was 144 FB, 4 QB, 0 K, 0 P, and no
+# vacancy was left for Create Player, MyCareer or a moment/historic import (player reports 10/27-28).
+# Revision 4 (code in the unreferenced retail library function 0x382200, tools/franchise_economy/dead_code.py):
+# - the allocator and the pass's free count skip create vacancies (flags & 5 != 0), so the top-up retires
+#   enough of the lowest-rated free agents for a full class and every vacancy survives;
+# - prospect k of a class takes the k-th slot of the disc class window's position mix (27 QB, 19 K, 23 P,
+#   41 WR ... 23 DE), with OLB slots as LB when no rostered player carries OLB (the one-pool scheme).
+CLASS_ALLOCATOR_TEST = 0x2BD3C0     # call 0x2BD380 in the class allocator 0x2BD390
+CLASS_FREE_COUNT = 0x2BDCAE         # call 0x2BD380 in the retirement pass's free-record count
+CLASS_POSITION = 0x2BE91D           # movzx edx, [eax+0x35]; mov ecx, eax in the class loop 0x2BE900
+for _va, _digest in ((0x382200, "dc79bd8fe3a5e4434acf93056e6e304d0cfd27e357e5f39f7cc8d0cb02395dfb"),
+                     (CLASS_ALLOCATOR_TEST, "91c65bd8dfe375045d530c034260d1a544235a843998bff7e9829cac9ef2eb0d"),
+                     (CLASS_FREE_COUNT, "7f03603229d3a06e2d02df062acf57d6a44497e3478eff1282674dd829334c10"),
+                     (CLASS_POSITION, "a903b0c5b757d2cf70e654919af4145c3cf31d154b59e65d1789d2f3961b137d")):
+    PINS[_va] = _digest
+REVISION_4_SITES = frozenset({0x382200, CLASS_ALLOCATOR_TEST, CLASS_FREE_COUNT, CLASS_POSITION})
+REVISION = 4
 
 
 class EconomyError(ValueError):
@@ -143,9 +164,10 @@ class Site:
 
 
 def sites(revision: int = REVISION) -> tuple[Site, ...]:
-    if revision not in (1, 2, 3):
+    if revision not in (1, 2, 3, 4):
         raise EconomyError("unknown economy revision")
-    windows = {va: code for va, code in WINDOWS.items() if revision >= 3 or va not in REVISION_3_SITES}
+    windows = {va: code for va, code in WINDOWS.items()
+               if (revision >= 3 or va not in REVISION_3_SITES) and (revision >= 4 or va not in REVISION_4_SITES)}
     replacements = {**windows, ROOKIE_TABLE_VA: ROOKIE_TABLE,
                     0x13EF17: bytes.fromhex("c70578c2e300") + struct.pack("<I", GAME_CAP),
                     0x4FE7A0: struct.pack("<f", CAP_GROWTH),
@@ -170,6 +192,10 @@ def sites(revision: int = REVISION) -> tuple[Site, ...]:
         replacements[USER_TRADE_TEXT] = str(FLOOR_PLAYERS).encode("utf-16-le")
         replacements[EXPIRING_RELEASE] = b"\xe8" + struct.pack("<i", SYMBOLS["economy_expire"] - EXPIRING_RELEASE - 5)
         replacements[FA_RETIREMENT] = b"\xe8" + struct.pack("<i", SYMBOLS["economy_fa_retire"] - FA_RETIREMENT - 5)
+    if revision >= 4:
+        for address in (CLASS_ALLOCATOR_TEST, CLASS_FREE_COUNT):
+            replacements[address] = b"\xe8" + struct.pack("<i", SYMBOLS["economy_class_free"] - address - 5)
+        replacements[CLASS_POSITION] = b"\xe8" + struct.pack("<i", SYMBOLS["economy_class_slot"] - CLASS_POSITION - 5) + b"\x90"
     return tuple(Site(a, b, PINS[a]) for a, b in sorted(replacements.items()))
 
 
@@ -181,7 +207,8 @@ def _site_state(image: XbeImage, site: Site) -> str:
 
 def _standalone_status(payload: bytes) -> str:
     """retail | applied | legacy (revision 1 or 2: the revision-1 sites with their revision-1/2 bytes, the
-    revision-2 sites retail or applied, the revision-3 sites retail) | foreign."""
+    revision-2 sites retail or applied, the revision-3 and -4 sites retail; or revision 3: every site applied
+    but the revision-4 sites, which are retail) | foreign."""
     try:
         image = XbeImage(payload)
         states = {}
@@ -194,9 +221,14 @@ def _standalone_status(payload: bytes) -> str:
         unique = set(states.values())
         if len(unique) == 1 and unique <= {"applied", "retail"}:
             return next(iter(unique))
-        core = {state for va, state in states.items() if va not in REVISION_2_SITES | REVISION_3_SITES}
+        # b779 rc1: a revision-3 image (beta-78 / v0.7) upgrades in place to revision 4.
+        if {states[va] for va in REVISION_4_SITES} == {"retail"} and \
+                {state for va, state in states.items() if va not in REVISION_4_SITES} == {"applied"}:
+            return "legacy"
+        core = {state for va, state in states.items()
+                if va not in REVISION_2_SITES | REVISION_3_SITES | REVISION_4_SITES}
         if core <= {"applied", "previous"} and "previous" in core and \
-                {states[va] for va in REVISION_3_SITES} == {"retail"} and \
+                {states[va] for va in REVISION_3_SITES | REVISION_4_SITES} == {"retail"} and \
                 len({states[va] for va in REVISION_2_SITES}) == 1 and states[VETERAN_CUT_SURPLUS] in ("retail", "applied"):
             return "legacy"
         return "foreign"

@@ -38,6 +38,8 @@ WINDOWS = {  # start: (size, sha256 of the retail bytes)
     0x3D2890: (352, "144d399994dc288d29b729f8172ecba63d4ce22a1e66427b0f4e70426dc95565"),
     0x3BA4B0: (352, "ac9713c06a3ec301ddf29ec79afdc40699b72730df3ed8e17303809076ef8f97"),
     0x3975F0: (224, "3bfc5caea3ae7fb715b36e87d20e2e45d00d8da5d244823709af655fcdadbe9a"),
+    # b779 rc1 (revision 4, "roster_f"): the draft-class record supply and position mix.
+    0x382200: (192, "dc79bd8fe3a5e4434acf93056e6e304d0cfd27e357e5f39f7cc8d0cb02395dfb"),
 }
 
 

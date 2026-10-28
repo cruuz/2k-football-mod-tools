@@ -11,6 +11,7 @@ generic MyCareer, capacity arena) in Unicorn; no game boot. Skipped when the ret
 from __future__ import annotations
 
 import importlib.util
+import os
 import struct
 import sys
 import unittest
@@ -120,6 +121,137 @@ class MyCareerCapacityCreateTests(unittest.TestCase):
         index = (record - base) // 84
         primary = 0x40 + 4 + struct.unpack_from("<i", self.body, 0x44)[0] - 1   # self-relative +1 pointer
         self.assertEqual(self.body[primary + 84 * index + 8] & 5, 1)
+
+
+# ------------------------------------------------------------------------------------------- draft classes
+# The disc class window's position mix (retail; SOFTDRINK folds OLB into LB): QB K P WR CB FS SS HB FB TE OLB ILB C G T DT DE
+WINDOW_MIX = (27, 19, 23, 41, 34, 12, 16, 10, 13, 24, 21, 20, 25, 31, 18, 23, 23)
+
+
+def _revision_three(current, retail):
+    """The beta-78 / v0.7 economy (revision 3): the current image with the revision-4 sites back to retail."""
+    from mod_editor.core import nfl2k5_franchise_economy as economy
+    from mod_editor.core.nfl2k5_bump_strength import _sections, section_digest
+    from mod_editor.core.nfl2k5_cave_oracle import XbeImage
+    image, source, out = XbeImage(current), XbeImage(retail), bytearray(current)
+    for site in economy.sites():
+        if site.va in economy.REVISION_4_SITES:
+            offset = image.offset(site.va, len(site.patched))
+            out[offset:offset + len(site.patched)] = source.read(site.va, len(site.patched))
+    for section in _sections(bytes(out)):
+        out[section.header_offset + 36:section.header_offset + 56] = section_digest(bytes(out), section)
+    return bytes(out)
+
+
+def _turnover(payload, body):
+    """A fresh native franchise (0x13EE10 generates the first class), then one league year's record turnover:
+    the retirement pass 0x2BDB00, the Combine cleanup 0x2BDA90 that frees the retirees, and the class generator
+    0x2BE940(380). Returns (vacancies before, vacancies after, generated positions, positions written)."""
+    from tests.nfl2k5_supersim_draft_fixture import Machine
+    m = Machine(payload, trace_writes=False)
+    size = len(body) - 0x40
+    m.uc.mem_write(m.ARENA + 0x300, body)
+    m.put(0xB72804, m.ARENA + 0x300)
+    m.put(0xB72808, size if size > 0x91000 else 0x91000)
+    m.put(0xB7280C, size)
+    m.fixup_roster(m.ARENA + 0x340)
+    m.seed(12345)
+    for a, v in ((0xE5FF80, 4), (0xE60120, 0), (0xE6000C, 5), (0xE60010, 5)):
+        m.put(a, v)
+    m.leaf(0x177990, lambda: m.ret(pop=4), reason="progress renderer only")
+    m.leaf(0x14E520, lambda: m.ret(), reason="informational dialog only")
+    generated = []   # Unicorn code hooks must exist before the generator's blocks are first translated
+    m.uc.hook_add(m.u.UC_HOOK_CODE, lambda *_: generated.append((m.reg("ECX"), m.reg("EDX") & 0xFF)),
+                  begin=0x2BE6F0, end=0x2BE6F0)
+    m.call(0x13EE10, budget=2_000_000_000)
+    n, base = m.get(m.root), m.get(m.root + 4)
+
+    def vacancies():
+        raw = bytes(m.uc.mem_read(base, 84 * n))
+        return sum(1 for i in range(n) if raw[84 * i + 8] & 5 == 1)
+
+    before = vacancies()
+    m.call(0x2BDB00, budget=4_000_000_000)
+    m.call(0x2BDA90, budget=2_000_000_000)
+    generated.clear()
+    m.call(0x2BE940, ecx=380, budget=4_000_000_000)
+    written = [m.uc.mem_read(record + 0x35, 1)[0] for record, _ in generated]
+    return before, vacancies(), [p for _, p in generated], written
+
+
+@unittest.skipUnless(HAVE_UC, "Unicorn is not installed")
+class DraftClassSupplyTests(unittest.TestCase):
+    """Native class turnover on the retail roster with the economy owner (unsigned free agents survive)."""
+
+    @classmethod
+    def setUpClass(cls):
+        from tests.nfl2k5_supersim_draft_fixture import retail_bytes, retail_roster
+        from mod_editor.core import nfl2k5_franchise_economy as economy
+        cls.retail, cls.body = retail_bytes(), retail_roster()
+        cls.current = economy.apply(cls.retail)[0]
+        cls.previous = _revision_three(cls.current, cls.retail)
+
+    def test_revision_three_reads_legacy_and_upgrades_in_place(self):
+        from mod_editor.core import nfl2k5_franchise_economy as economy
+        self.assertEqual(economy.REVISION, 4)
+        self.assertEqual(economy.status(self.previous), "legacy")
+        upgraded, receipt = economy.apply(self.previous)
+        self.assertEqual(upgraded, self.current)
+        self.assertEqual(receipt.get("upgraded_from"), "legacy")
+        self.assertEqual(sorted(int(e["va"], 16) for e in receipt["edits"]), sorted(economy.REVISION_4_SITES))
+
+    def test_every_class_keeps_the_vacancies_and_samples_every_position(self):
+        # The retail roster has only 241 free agents: retiring all of them still frees fewer than 380 records, so
+        # this class is short (retail itself spends vacancies here). It keeps every vacancy and every group.
+        before, after, positions, written = _turnover(self.current, self.body)
+        self.assertGreater(before, 100)
+        self.assertEqual(after, before)                    # Create Player / MyCareer / imports keep their records
+        self.assertGreater(len(positions), 224)            # still more than seven full rounds
+        counts = [positions.count(p) for p in range(17)]
+        share = len(positions) / 380
+        for code, want in enumerate(WINDOW_MIX):           # the retail roster carries OLBs, so none fold to LB
+            self.assertGreaterEqual(counts[code], int(want * share) - 1, code)
+        self.assertEqual(written, positions)               # the generator wrote each prospect at that position
+
+    def test_revision_three_spends_the_vacancies_and_skews_the_class(self):
+        # Negative control: the released (v0.7) economy. Revision 4 must differ from this.
+        before, after, positions, _ = _turnover(self.previous, self.body)
+        self.assertEqual(len(positions), 380)
+        self.assertLess(after, before)
+
+
+RELEASED_BODY = Path(os.environ.get("NFL2K5_RC1_V07_BODY",
+                                    "/home/noah/2k-worktrees/.b77-scratch/b779/rc1/work/rel_body.bin"))
+
+
+@unittest.skipUnless(HAVE_UC and RELEASED_BODY.is_file(), "the released v0.7 main ROST body (private) is absent")
+class ReleasedRosterClassTests(unittest.TestCase):
+    """The v0.7 disc roster (0xB0000 arena, 879 free agents, 144 create vacancies), retail XBE + economy only."""
+
+    @classmethod
+    def setUpClass(cls):
+        from tests.nfl2k5_supersim_draft_fixture import retail_bytes
+        from mod_editor.core import nfl2k5_franchise_economy as economy
+        cls.retail, cls.body = retail_bytes(), RELEASED_BODY.read_bytes()
+        cls.current = economy.apply(cls.retail)[0]
+        cls.previous = _revision_three(cls.current, cls.retail)
+
+    def test_the_second_class_has_the_first_class_mix_and_keeps_144_vacancies(self):
+        before, after, positions, written = _turnover(self.current, self.body)
+        self.assertEqual((before, after), (144, 144))
+        mix = list(WINDOW_MIX)
+        mix[11] += mix[10]
+        mix[10] = 0                                         # one pool: no rostered OLB, so OLB slots are LB
+        self.assertEqual(tuple(positions.count(p) for p in range(17)), tuple(mix))
+        self.assertEqual(written, positions)
+
+    def test_released_economy_reproduces_the_reports(self):
+        # v0.7 (revision 3): 144 FB, 4 QB, 0 K, 0 P and no vacancy left (SWeaR 10/27: 4 QBs, punters empty).
+        before, after, positions, _ = _turnover(self.previous, self.body)
+        self.assertEqual((before, after), (144, 0))
+        self.assertEqual(positions.count(8), 144)          # every vacancy is a fullback record
+        self.assertLess(positions.count(0), 10)             # the full v0.7 XBE measured 4 QB, 0 K, 0 P
+        self.assertLess(positions.count(1) + positions.count(2), 5)
 
 
 if __name__ == "__main__":
