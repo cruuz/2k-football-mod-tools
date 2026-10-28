@@ -185,8 +185,8 @@ def created_identities(edits: dict, free_agents: dict, depth: dict) -> dict[str,
     found: dict[str, dict] = {}
     refresh = [p for p in edits.get("roster_refresh", {}).get("players", ()) if p.get("new")]
 
-    def add(p, birth, via):
-        found.setdefault(p["gsis_id"], {"first": p["first"], "last": p["last"], "birth_date": birth, "via": via})
+    def add(p, birth, via, full=False):
+        found.setdefault(p["gsis_id"], {"first": p["first"], "last": p["last"], "birth_date": birth, "via": via, "full": full})
     for p in refresh:
         if p.get("status") != "UFA":
             add(p, p["birth_date"], "roster_refresh_club")
@@ -194,7 +194,8 @@ def created_identities(edits: dict, free_agents: dict, depth: dict) -> dict[str,
         fields = p["fields"]
         add(p, f"{fields['birth_year']:04d}-{fields['birth_month']:02d}-{fields['birth_day']:02d}", "free_agents_2026")
     for p in sorted(depth.get("players", ()), key=lambda q: q.get("priority", 10**6)):
-        add(p, p["birth_date"], "free_agent_depth")
+        # the 26 hand-checked players (Kaepernick is priority 1) keep every season whatever the pool budget says
+        add(p, p["birth_date"], "free_agent_depth", full=p.get("priority", 10**6) <= 26)
     for p in refresh:
         add(p, p["birth_date"], "roster_refresh_free_agent")
     return found
@@ -227,7 +228,8 @@ def build(nflverse_dir: Path, edits_path: Path):
             summary[k] += v
         row = created[gsis]
         players.append({"gsis_id": gsis, "first": row["first"], "last": row["last"], "birth_date": row["birth_date"],
-                        "entry_year": entry, "years_pro": years_pro_for(entry), "seasons": seasons})
+                        "entry_year": entry, "years_pro": years_pro_for(entry), **({"full": True} if row.get("full") else {}),
+                        "seasons": seasons})
         summary["players"] += 1
         summary["seasons"] += len(seasons)
     fetched = (Path(nflverse_dir) / "FETCHED_AT.txt").read_text(encoding="utf-8").strip()

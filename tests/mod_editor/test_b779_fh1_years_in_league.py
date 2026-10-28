@@ -152,7 +152,7 @@ class CreatedHistoryTests(unittest.TestCase):
 
     def test_kaepernick_shows_san_francisco_2011_to_2016_with_his_real_lines(self):
         doc, receipt, (kaep,) = self.apply(["Colin Kaepernick"])
-        self.assertEqual(receipt["folded_players"], 0)
+        self.assertEqual(receipt["detail_levels"]["full"], 1)                  # protected: every season, whatever the budget
         key = ("primary", 0)
         rows = words_by_year(doc, key, 16)
         self.assertEqual(sorted(rows), list(range(2011, 2017)))
@@ -215,35 +215,79 @@ class CreatedHistoryTests(unittest.TestCase):
             words = ch.season_words(p, p["years_pro"], 2026)
             if not words:
                 continue
-            for depth in ch.FOLD_DEPTHS:
+            for depth in (12, 10, 8, 6, 4, 3, 2):
                 self.assertEqual(ch.fold_words(words, p["years_pro"], depth), upgrade.fold_words(words, p["years_pro"], depth))
 
-    def test_a_short_pool_folds_the_least_important_players_first_and_keeps_career_totals(self):
-        names = ["Colin Kaepernick"] + [f"{p['first']} {p['last']}" for p in HISTORY["players"] if len(p["seasons"]) >= 6][:3]
+    def items(self):
+        return [(rank, p["years_pro"], ch.season_words(p, p["years_pro"], 2026), bool(p.get("full")))
+                for rank, p in enumerate(HISTORY["players"])]
+
+    def test_the_shipped_budget_leaves_a_native_season_and_a_half_of_headroom_words(self):
+        """v0.7 had 15,538 free; the first fill left 72. The pass now spends only what is free beyond HEADROOM."""
+        free = 50000 - 34462 - ch.HISTORY_RESERVE
+        chosen, levels = ch.allocate(self.items(), max(free - ch.HEADROOM, 0), free)
+        total = sum(len(w) for w in chosen)
+        self.assertLessEqual(total, free - ch.HEADROOM)
+        self.assertGreaterEqual(50000 - 34462 - total, ch.HEADROOM + ch.HISTORY_RESERVE)
+        self.assertEqual(levels["none"], 0)
+        self.assertEqual(levels["latest"], 0)
+        self.assertGreaterEqual(levels["full"], 26)                      # the 26 hand-checked players
+        self.assertEqual(sum(levels.values()), 763)
+        self.assertEqual(levels["full"] + levels["base"], sum(1 for _, _, w, _ in self.items() if w) + sum(1 for _, _, w, _ in self.items() if not w))
+
+    def test_every_player_keeps_a_clean_latest_season_with_team_and_totals_stay_whole(self):
+        for p in HISTORY["players"]:
+            words = ch.season_words(p, p["years_pro"], 2026)
+            if len(p["seasons"]) < 3:
+                continue
+            base = ch.detail(words, p["years_pro"], 1)
+            newest = max(s["year"] for s in p["seasons"])
+            slot = p["years_pro"] - (2026 - newest)
+            row = {cs.Word(w).field: cs.Word(w) for w in base if cs.Word(w).slot == slot}
+            self.assertFalse(row[0].folded, p["last"])
+            self.assertEqual(row[87].raw & 0xFFFF, next(s for s in p["seasons"] if s["year"] == newest)["team_index"] + 1)
+            # the folded older row has no TEAM word; career games add up to the sourced total
+            self.assertFalse(any(cs.Word(w).field == 87 and cs.Word(w).folded for w in base))
+            games = sum(cs.Word(w).raw & 0xFFFF for w in base if cs.Word(w).field == 0)
+            self.assertEqual(games, sum(s["stats"]["games"] for s in p["seasons"]), p["last"])
+
+    def test_over_budget_the_least_important_drop_first_and_protected_players_never_do(self):
+        items = self.items()
+        free = 15538 - ch.HISTORY_RESERVE
+        base_total = sum(len(ch.detail(w, yp, 1)) for _, yp, w, full in items if not full) + sum(len(w) for _, _, w, full in items if full)
+        chosen, levels = ch.allocate(items, base_total - 400, free)
+        self.assertGreater(levels["latest"], 0)
+        self.assertLessEqual(sum(len(w) for w in chosen), base_total - 400)
+        downgraded = [j for j, (_, yp, w, full) in enumerate(items) if len(chosen[j]) < len(ch.detail(w, yp, 1)) and not full]
+        kept = [j for j, (_, yp, w, full) in enumerate(items) if len(chosen[j]) >= len(ch.detail(w, yp, 1)) and w and not full]
+        self.assertTrue(downgraded and kept)
+        self.assertGreater(min(downgraded), max(j for j in kept if j < min(downgraded)) if any(j < min(downgraded) for j in kept) else -1)
+        for j, (_, yp, w, full) in enumerate(items):
+            if full:
+                self.assertEqual(len(chosen[j]), len(w))
+        # a budget below the protected players alone refuses instead of overfilling
+        with self.assertRaises(cs.CareerStatsError):
+            ch.allocate(items, 0, 100)
+
+    def test_a_synthetic_pool_end_to_end_with_a_tiny_free_space(self):
+        names = ["Colin Kaepernick"] + [f"{p['first']} {p['last']}" for p in HISTORY["players"] if len(p["seasons"]) >= 6 and not p.get("full")][:3]
         players = [person(n) for n in names]
         spec = copy.deepcopy(HISTORY)
         spec["players"] = players
-        full = sum(len(ch.season_words(p, p["years_pro"], 2026)) for p in players)
         body = body_for(players)
-        saved = ch.HISTORY_RESERVE
+        saved = ch.HEADROOM
         try:
             doc = cs.decode_body(body)
-            ch.HISTORY_RESERVE = doc.pool_capacity - doc.pool_used - (full - 12)       # 12 dwords too few
+            free = doc.pool_capacity - doc.pool_used - ch.HISTORY_RESERVE
+            ch.HEADROOM = free - 40                 # 40 words of budget: the three others cannot all keep a folded career row
             out, receipt = ch.apply_body(body, spec)
         finally:
-            ch.HISTORY_RESERVE = saved
-        self.assertGreaterEqual(receipt["folded_players"], 1)
-        self.assertLessEqual(receipt["words_written"], full - 12)
-        doc = cs.decode_body(out)
-        # the most important player (first in the data) keeps every season and its TEAM word
-        rows = words_by_year(doc, ("primary", 0), 16)
+            ch.HEADROOM = saved
+        self.assertLessEqual(receipt["words_written"], free)
+        self.assertEqual(receipt["detail_levels"]["full"], 1)
+        self.assertGreater(receipt["detail_levels"]["latest"] + receipt["detail_levels"]["none"], 0)
+        rows = words_by_year(cs.decode_body(out), ("primary", 0), 16)
         self.assertEqual(sorted(rows), list(range(2011, 2017)))
-        # the folded player's passing yards still add up to his sourced career
-        last = players[-1]
-        index = len(players) - 1
-        total = sum(s["stats"].get("games", 0) for s in last["seasons"])
-        got = sum(cs.Word(w).raw & 0xFFFF for w in doc.history_words["primary", index] if cs.Word(w).field == 0)
-        self.assertEqual(got, total)
 
 
 if __name__ == "__main__":

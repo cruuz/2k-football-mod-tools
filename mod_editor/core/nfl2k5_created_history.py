@@ -12,9 +12,11 @@ history can only be placed when years pro is the number of seasons since the pla
 stamp ``years_pro_convention = game_years_in_league`` and the record's own years pro are both checked: a record
 that still carries the old accrued-season count is refused, never half-labelled.
 
-The pool holds 50,000 dwords.  When the sourced seasons do not fit the free space (less ``HISTORY_RESERVE``), the
-least important players' oldest seasons are folded by the game's own fold (``nfl2k5_franchise_upgrade.fold_words``),
-so their career totals stay whole; a folded row reads ``--`` for TEAM.  Importance is the spec's player order.
+The pool holds 50,000 dwords and the game appends about 10,000 words a season to it (measured, see HEADROOM), so this
+pass never fills it: it spends only what is free beyond ``HEADROOM``.  Every created player gets his latest season (TEAM and
+stats) plus one folded career row for the older ones (the game's own fold, so totals stay whole; a folded row reads ``--`` for
+TEAM); the 26 protected players (data ``full``) and then the most important others get every season while the budget lasts;
+over budget the least important drop to their latest season and then to nothing.  Importance is the spec's player order.
 """
 from __future__ import annotations
 
@@ -32,10 +34,17 @@ from . import nfl2k5_save_rost as sr
 SCHEMA = "nfl2k5_created_history/v1"
 DATA_VERSION = "2026-10-28"
 DEFAULT_DATA = Path(__file__).resolve().parents[1] / "data" / "nfl2k5_created_history_2026.v1.json"
-DATA_SHA256 = "17700012ed679a9011b9205b7a345104d14dda01ca0225baa582fb9ac7b121e7"
+DATA_SHA256 = "fc4ab716e40b2ff04da2de5ce521d5819307fd68771a67bf5d2add1f765b8d08"
 CONVENTION = "game_years_in_league"
 HISTORY_RESERVE = 64
-FOLD_DEPTHS = (12, 10, 8, 6, 4)
+# b779 fh1 (coordinator review: "year after year after year"): dwords this pass leaves FREE for the first franchise season.
+# Measured native seasons (the game's own sim in two saturated real franchises, Noah's MyNFL3 and the dl3 save): 9,575 words
+# (a season in progress), 10,020 and 10,795 per season, 83-92 stat fields over 1,154-1,346 players with games, the TEAM word
+# included. The pool is 50,000 and can never hold ten seasons (about 108,000 words): the game folds the oldest seasons when it is
+# full (FUN_0014F220 -> compaction 0x14E9D0 -> fold 0x14EFE0, dropping the write only if nothing can be folded), and Noah's real
+# franchises sit at 49,982 and 49,802 used. 8,000 keeps three quarters of a season free, so the first native fold of a new franchise
+# starts around week 13 of its first year and only touches the oldest visible rows (v0.7 had 15,538 free; the first 49.9k fill had 72).
+HEADROOM = 8000
 TEAM_FIELD = 87
 HONOR_FIELD_FIRST = 96          # fields 96..105 are the honors owner's; a created player may already carry them
 
@@ -137,6 +146,60 @@ def season_words(identity: dict, years_pro: int, epoch: int) -> list[int]:
     return words
 
 
+def _ages(words, years_pro):
+    return sorted({years_pro - cs.Word(w).slot for w in words})
+
+
+def detail(words, years_pro, keep):
+    """The player's words with only his ``keep`` most recent seasons separate: every older season is folded by the game's own
+    fold into the slot of the next older season (career totals stay whole; the aggregate row reads ``--`` for TEAM, so its
+    meaningless merged TEAM word is not written). ``keep=None`` keeps every season."""
+    words = list(words)
+    ages = _ages(words, years_pro)
+    if keep is None or len(ages) <= keep:
+        return words
+    folded = fold_words(words, years_pro, ages[keep] + 1)
+    out = [w & ~END_BIT & 0xFFFFFFFF for w in folded if not (w & FOLD_BIT and (w >> 16) & 127 == TEAM_FIELD)]
+    out.sort(key=lambda w: (cs.Word(w).slot, cs.Word(w).field))
+    return out
+
+
+def latest_only(words, years_pro):
+    ages = _ages(words, years_pro)
+    return [w for w in words if years_pro - cs.Word(w).slot == ages[0]] if ages else []
+
+
+def allocate(items, budget, free):
+    """items: [(rank, years_pro, words, full)] most important first. Returns ([chosen words per item], level counts).
+
+    Everybody starts at one clean season plus one folded career row ("base"); the 26 protected players start at every season.
+    Over budget: the least important players drop to their latest season only, then to nothing. Under budget: players are
+    raised to every season in importance order while the budget lasts."""
+    full = [list(i[2]) for i in items]
+    base = [detail(i[2], i[1], 1) for i in items]
+    last = [latest_only(i[2], i[1]) for i in items]
+    level = ["full" if i[3] else "base" for i in items]
+    pick = {"full": full, "base": base, "latest": last, "none": [[] for _ in items]}
+    total = sum(len(pick[l][j]) for j, l in enumerate(level))
+    order = sorted(range(len(items)), key=lambda j: -items[j][0])            # least important first
+    for stage, nxt in (("base", "latest"), ("latest", "none")):
+        for j in order:
+            if total <= budget:
+                break
+            if level[j] == stage:
+                total -= len(pick[stage][j]) - len(pick[nxt][j])
+                level[j] = nxt
+    require(total <= free, f"created history needs {total} dwords for its protected players alone, {free} are free")
+    if total < budget:
+        for j in sorted(range(len(items)), key=lambda j: items[j][0]):          # most important first
+            if level[j] == "base" and total - len(base[j]) + len(full[j]) <= budget:
+                total += len(full[j]) - len(base[j])
+                level[j] = "full"
+    chosen = [pick[l][j] for j, l in enumerate(level)]
+    counts = {name: level.count(name) for name in ("full", "base", "latest", "none")}
+    return chosen, counts
+
+
 def apply_body(body: bytes, spec: dict):
     require(spec.get("schema") == SCHEMA, "unknown created-history schema")
     require(spec.get("years_pro_convention") == CONVENTION,
@@ -175,29 +238,14 @@ def apply_body(body: bytes, spec: dict):
             continue
         words = season_words(identity, count, epoch)
         if words:
-            wanted.append((rank, player.key, count, words, existing))
+            wanted.append((rank, player.key, count, words, existing, bool(identity.get("full"))))
     require(not wrong_years, "years pro differs from the created-history data (old accrued-season count?): "
             + "; ".join(wrong_years[:5]) + (f" and {len(wrong_years) - 5} more" if len(wrong_years) > 5 else ""))
     free = doc.pool_capacity - doc.pool_used - HISTORY_RESERVE
-    total = sum(len(item[3]) for item in wanted)
-    folded_players, depth_used, depth_used_for = 0, None, {}
-    if total > free:
-        wanted = [list(item) for item in wanted]
-        for item in sorted(wanted, key=lambda it: -it[0]):                  # least important player first
-            for depth in FOLD_DEPTHS:                                       # shallowest fold first, deeper only if still short
-                if total <= free:
-                    break
-                folded = list(fold_words(item[3], item[2], depth))
-                if len(folded) < len(item[3]):
-                    total -= len(item[3]) - len(folded)
-                    item[3] = folded
-                    folded_players += 1 if depth_used_for.get(item[1]) is None else 0
-                    depth_used_for[item[1]] = depth
-            if total <= free:
-                break
-        depth_used = min(depth_used_for.values(), default=None)
-        wanted = [tuple(item) for item in wanted]
-    require(total <= free, f"created history needs {total} dwords, {free} are free")
+    budget = max(free - HEADROOM, 0)
+    chosen, levels = allocate([(item[0], item[2], item[3], item[5]) for item in wanted], budget, free)
+    total = sum(len(w) for w in chosen)
+    wanted = [(item[0], item[1], item[2], w, item[4]) for item, w in zip(wanted, chosen) if w]
     replacements = {}
     for _rank, key, _count, words, existing in wanted:
         merged = sorted([w & 0x7FFFFFFF for w in words] + existing, key=lambda w: (cs.Word(w).slot, cs.Word(w).field))
@@ -206,5 +254,6 @@ def apply_body(body: bytes, spec: dict):
     result, receipt = fh.repack(body, doc, replacements)
     return result, {**receipt, "schema": SCHEMA, "base_year": epoch, "players_written": len(replacements),
                     "words_written": total, "players_not_in_roster": len(missing), "players_already_with_history": len(already),
-                    "folded_players": folded_players, "fold_depth": depth_used, "history_reserve": HISTORY_RESERVE,
+                    "detail_levels": levels, "headroom_target": HEADROOM, "budget": budget, "free_before": free + HISTORY_RESERVE,
+                    "history_reserve": HISTORY_RESERVE,
                     "source_body_sha256": hashlib.sha256(body).hexdigest(), "output_body_sha256": hashlib.sha256(result).hexdigest()}
