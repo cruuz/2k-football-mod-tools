@@ -50,7 +50,11 @@ typedef short i16;
 
 enum { H_MVP, H_OPOY, H_DPOY, H_OROY, H_DROY, H_SB, H_SBMVP, H_PB, H_AP, H_RUSH };
 
-extern volatile u32 honors_state[4];  /* [0] page (0 = retail card, 1 = honors) */
+extern volatile u32 honors_state[4];  /* [0] page (0 = retail card, 1 = honors, 2 = champions when that owner is installed) */
+/* b779-hn1: the champions page (owner nfl2k5_champions, the third page of the card). The link resolves to 0 when that
+   owner is not installed, and then the card has its two retail pages only. */
+extern void champ_ratings(void) __attribute__((weak));
+extern void champ_bio(void) __attribute__((weak));
 
 typedef struct { u32 count[HONORS]; u32 years[HONORS]; u32 earlier[HONORS]; i32 earlier_slot[HONORS]; } Tally;
 
@@ -182,6 +186,10 @@ static void text_start(u32 *ctx, u32 font, u32 align) {
 
 /* Page 2, rating panel: label right-aligned at x - 8, count left-aligned at x (the retail rating layout). */
 void honors_counts(void) {
+    if (honors_state[0] == 2 && champ_ratings) {
+        champ_ratings();
+        return;
+    }
     Tally t;
     u32 ctx[32];
     u16 value[12];
@@ -201,6 +209,10 @@ void honors_counts(void) {
 
 /* Page 2, bio panel: up to three "LABEL: years" lines (the retail bio font and first column). */
 void honors_years(void) {
+    if (honors_state[0] == 2 && champ_bio) {
+        champ_bio();
+        return;
+    }
     Tally t;
     u32 ctx[32];
     u16 text[96];
@@ -228,6 +240,19 @@ void honors_years(void) {
         TEXT_POS(ctx, 198.0f + (float)(width + 8), line_y[0], 20.0f);
         TEXT_DRAW(ctx, none_value);
     }
+}
+
+/* Black, R trigger: next page; White, L trigger: previous page (retail 0 -> honors 1 -> champions 2 -> 0). Without the
+   champions owner there are two pages and every button toggles them, as in beta 77. */
+void FC honors_flip(u32 buttons) {
+    u32 pages = champ_ratings ? 3 : 2, page = honors_state[0];
+    if (page >= pages)
+        page = 0;
+    if (buttons & 0x6000)
+        page = page ? page - 1 : pages - 1;
+    else
+        page = page + 1 < pages ? page + 1 : 0;
+    honors_state[0] = page;
 }
 
 /* Set an honor (value 1) in the player's current season slot, always in the regular-season class so the

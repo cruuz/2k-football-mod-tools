@@ -513,7 +513,7 @@ def extend_scaleout(payload: bytes, extra) -> tuple[bytes, dict]:
     _, _, current = _validate(payload)
     new = _requests(extra)
     new = [r for r in new if r != LOGO_REQUEST]
-    _require(new and all(r[0] in LATE_OWNERS for r in new), "only late owners can be appended to an installed image")
+    _require(new and all(r[0] in _ALL_LATE_OWNERS for r in new), "only late owners can be appended to an installed image")
     taken = {(o, k) for o, k, _s, _a in current}
     _require(not any((o, k) in taken for o, k, _s, _a in new), "owner already allocated in this image")
     wanted = _requests(list(current) + new)
@@ -532,7 +532,7 @@ def extend_scaleout(payload: bytes, extra) -> tuple[bytes, dict]:
         stable = [r for r in before if r["owner"] != DIRECTORY_OWNER]
     _require(all(row in after for row in stable), "appending the owner would move an existing allocation")
     added = [row for row in after if row not in before and row["owner"] != DIRECTORY_OWNER]
-    _require(added and all(row["owner"] in LATE_OWNERS for row in added), "unexpected allocation change")
+    _require(added and all(row["owner"] in _ALL_LATE_OWNERS for row in added), "unexpected allocation change")
     buf = bytearray(payload)
     # b778-xs1: a late owner that no v3 run holds is appended to the pool, growing it (and converting a v3 image to
     # v4) without moving any byte that is already placed.
@@ -753,6 +753,10 @@ LATE_OWNERS = (LATE_OWNER, "nfl2k5_letter_grades", "nfl2k5_letter_grades_progres
                "nfl2k5_return_coverage",  # b778-kr1: return coverage pursuit angles, before the module loader (int3)
                "nfl2k5_pass_protection",  # b778-pr1: after every other b778 owner, before the module loader
                "nfl2k5_module_loader")  # b778-xs1: last (it needs Career Home and gates screens; integration: after this round's owners)
+# b779-hn1: owners placed after the module loader (the loader stays the last of LATE_OWNERS, whose tail many tests pin),
+# so no earlier owner moves. The Super Bowl champions owner is installed with the honors owner.
+TRAILING_OWNERS = ("nfl2k5_champions",)
+_ALL_LATE_OWNERS = LATE_OWNERS + TRAILING_OWNERS
 # b77-i1 (coordinator-approved fix of the all-owner union overflow): late owners whose code is placed top-down in the
 # reserved legacy RX page tails (0x14D9000 first, then 0x14BA000) instead of the full scale-out run. Static, so the
 # placement does not depend on which other owners are present.
@@ -991,8 +995,8 @@ def _scale_allocations(requests):
     requests = [r for r in requests if r[0] not in DIRECTORY_CODE_OWNERS]
     # b76-k1: the K128 owner is placed after every other owner, the promoted MyCareer code and the grown
     # sprite scorebug included, so adding it to a union moves no other owner's address.
-    late = sorted((r for r in requests if r[0] in LATE_OWNERS), key=lambda r: (LATE_OWNERS.index(r[0]), r))
-    requests = [r for r in requests if r[0] not in LATE_OWNERS]
+    late = sorted((r for r in requests if r[0] in _ALL_LATE_OWNERS), key=lambda r: (_ALL_LATE_OWNERS.index(r[0]), r))
+    requests = [r for r in requests if r[0] not in _ALL_LATE_OWNERS]
     extra = [r for r in requests if r[0] == MYCAREER_M3_STATE_OWNER]
     _require(not extra or extra == [(MYCAREER_M3_STATE_OWNER, "data", PAGE, 16)],
              "MyCareer M3 state has a fixed 4096-byte reservation")

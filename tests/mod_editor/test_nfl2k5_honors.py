@@ -56,13 +56,16 @@ class TemplateTests(unittest.TestCase):
 
     def test_template_fits_and_relocations_are_owned(self):
         self.assertLessEqual(len(runtime.CODE), honors.CODE_SIZE)
-        self.assertEqual(honors.REQUESTS, (("nfl2k5_honors", "code", 2560, 16), ("nfl2k5_honors", "data", 16, 16)))
+        self.assertEqual(honors.HONORS_REQUESTS, (("nfl2k5_honors", "code", 2560, 16), ("nfl2k5_honors", "data", 16, 16)))
+        # b779-hn1: the Super Bowl champions owner is installed with this one (its code page; the card's third page)
+        self.assertEqual(honors.REQUESTS, honors.HONORS_REQUESTS + (("nfl2k5_champions", "code", 4608, 16),))
         for offset, kind, symbol, _value in runtime.RELOCATIONS:
             self.assertIn(kind, (1, 2))
-            self.assertIn(symbol, ("code", "state"))
+            self.assertIn(symbol, ("code", "state", "champ_ratings", "champ_bio"))
             self.assertLessEqual(offset + 4, len(runtime.CODE))
         for entry in ("honors_page_input", "honors_page_enter", "honors_page_ratings", "honors_page_bio",
-                      "honors_season_hook", "honors_sb_hook", "honors_fold_rule", "commit_season", "commit_sb"):
+                      "honors_season_hook", "honors_sb_hook", "honors_fold_rule", "commit_season", "commit_sb",
+                      "honors_flip"):
             self.assertIn(entry, runtime.LABELS)
 
     def test_code_for_relocates_against_both_blocks(self):
@@ -73,9 +76,15 @@ class TemplateTests(unittest.TestCase):
         differ = [i for i in range(len(a)) if a[i] != b[i]]
         state_fields = {off for off, kind, sym, _v in runtime.RELOCATIONS if sym == "state"}
         code_abs = {off for off, kind, sym, _v in runtime.RELOCATIONS if sym == "code" and kind == 1}
-        allowed = {off + k for off in state_fields | code_abs for k in range(4)}
+        # the champions links (b779-hn1) resolve to 0 without that owner: absolute ones do not move, the call's
+        # displacement follows the call site
+        champ_rel = {off for off, kind, sym, _v in runtime.RELOCATIONS if sym.startswith("champ_") and kind == 2}
+        allowed = {off + k for off in state_fields | code_abs | champ_rel for k in range(4)}
         self.assertTrue(differ)
         self.assertTrue(set(differ) <= allowed)
+        for off, kind, sym, _v in runtime.RELOCATIONS:
+            if sym.startswith("champ_") and kind == 1:
+                self.assertEqual(struct.unpack_from("<I", a, off)[0], 0)
         # the page flag is the first dword of the RW block in every reference
         for off in state_fields:
             self.assertEqual(struct.unpack_from("<I", a, off)[0], 0x14F3AB0)
@@ -130,7 +139,8 @@ class TemplateTests(unittest.TestCase):
         k128 = (("nfl2k5_k128", "code", 1024, 16),)
         rows = space._scale_allocations(list(honors.REQUESTS) + list(letter) + list(k128))
         code = [r for r in rows if r["kind"] == "code"]
-        self.assertEqual([r["owner"] for r in code][-3:], ["nfl2k5_k128", "nfl2k5_letter_grades", "nfl2k5_honors"])
+        self.assertEqual([r["owner"] for r in code][-4:], ["nfl2k5_k128", "nfl2k5_letter_grades", "nfl2k5_honors",
+                                                           "nfl2k5_champions"])
         # b77-f5b / i1: the honors owner is part of the complete union. Its code sits in the 8 KiB MyCareer footprint
         # (unreferenced 0xCC padding once M3 promotes the old request) and its 16 RW bytes at the top of the legacy RW page
         union = space.dormant_union()
@@ -138,6 +148,8 @@ class TemplateTests(unittest.TestCase):
         rows = space._scale_allocations(union)
         mine = {r["kind"]: r for r in rows if r["owner"] == honors.OWNER}
         self.assertEqual({k: (v["size"], v["align"]) for k, v in mine.items()}, {"code": (2560, 16), "data": (16, 16)})
+        champs = [r for r in rows if r["owner"] == "nfl2k5_champions"]
+        self.assertEqual([(r["kind"], r["size"], r["align"]) for r in champs], [("code", 4608, 16)])
         rw = space._scale_regions()[1]
         self.assertTrue(rw["va"] <= mine["data"]["va"] and mine["data"]["va"] + 16 <= rw["va"] + rw["size"])
         for kind, row in mine.items():
@@ -403,20 +415,44 @@ class NativeTests(unittest.TestCase):
         m.call(0x320D40, ecx=m.SCREEN)
         return m.get(self.state), list(m.calls)
 
-    def test_bumpers_and_triggers_flip_the_page_and_b_still_pops(self):
+    def test_bumpers_and_triggers_turn_the_page_and_b_still_pops(self):
+        # b779-hn1: three pages (card, honors, champions). Black and R1 go forward, White and L1 go back.
         m = self.machine()
         m.record(0x38650, "sound_lookup", result=0x1234)
         m.record(0x89DA0, "sound_play", pop=0x18)
         m.record(0x320D30, "pop")
-        for bit, name in ((0x1000, "Black"), (0x2000, "White"), (0x4000, "L1"), (0x8000, "R1")):
+        sound = ["sound_lookup", "sound_play"]
+        for bit, name in ((0x1000, "Black"), (0x8000, "R1")):
             with self.subTest(button=name):
-                self.assertEqual(self.pad_frame(m, bit, 0), (1, ["sound_lookup", "sound_play"]))
-                self.assertEqual(self.pad_frame(m, bit, 1), (0, ["sound_lookup", "sound_play"]))
+                self.assertEqual(self.pad_frame(m, bit, 0), (1, sound))
+                self.assertEqual(self.pad_frame(m, bit, 1), (2, sound))
+                self.assertEqual(self.pad_frame(m, bit, 2), (0, sound))
+        for bit, name in ((0x2000, "White"), (0x4000, "L1")):
+            with self.subTest(button=name):
+                self.assertEqual(self.pad_frame(m, bit, 0), (2, sound))
+                self.assertEqual(self.pad_frame(m, bit, 2), (1, sound))
+                self.assertEqual(self.pad_frame(m, bit, 1), (0, sound))
+        self.assertEqual(self.pad_frame(m, 0x1000, 7), (1, sound))             # a stray page number is repaired
         self.assertEqual(self.pad_frame(m, 0x200, 1), (1, ["pop"]))            # B
         self.assertEqual(self.pad_frame(m, 0x20, 0), (0, ["pop"]))             # Back
         self.assertEqual(self.pad_frame(m, 0x100 | 0x400 | 0x800, 1), (1, []))  # A, X, Y do nothing
-        self.assertEqual(self.pad_frame(m, 0x1000 | 0x200, 0), (1, ["sound_lookup", "sound_play", "pop"]))
+        self.assertEqual(self.pad_frame(m, 0x1000 | 0x200, 0), (1, sound + ["pop"]))
         self.assertEqual(self.pad_frame(m, 0, 1), (1, []))
+
+    def test_without_the_champions_owner_the_card_keeps_two_pages(self):
+        # the links resolve to 0 when nfl2k5_champions is not installed (the beta 77 behaviour)
+        retail_code = honors.code_for(self.code_va, self.state)
+        payload = bytearray(self.patched)
+        off = self.code_va - 0x14DA000 + 0
+        image = XbeImage(self.patched)
+        raw = image.offset(self.code_va, honors.CODE_SIZE)
+        payload[raw:raw + honors.CODE_SIZE] = retail_code
+        m = self.machine(bytes(payload))
+        m.record(0x38650, "sound_lookup", result=0x1234)
+        m.record(0x89DA0, "sound_play", pop=0x18)
+        for bit in (0x1000, 0x2000, 0x4000, 0x8000):
+            self.assertEqual(self.pad_frame(m, bit, 0)[0], 1)
+            self.assertEqual(self.pad_frame(m, bit, 1)[0], 0)
 
     def test_retail_pad_loop_ignores_the_shoulders(self):
         m = self.machine(self.retail)
