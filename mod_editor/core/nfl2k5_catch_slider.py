@@ -77,6 +77,11 @@ CONST_ONE = 0x004E419C
 CONST_TWO = 0x004E6084
 CEIL_SITES = (0x0014AC20, 0x0014B490)   # Human / CPU Catching "maximum" callbacks
 CATCHING_FACTOR_INDEX = 4
+# Default odds multiplier m = K * (human + cpu) = K at every difficulty preset (the pair always sums to 1.0).
+# K is a retail float constant in .rdata, referenced by address.
+ODDS_SCALE = 1.5
+ODDS_SCALE_VA = {1.25: 0x004EF1CC, 1.5: 0x004E6D0C, 1.75: 0x004E81A4, 2.0: 0x004E6084, 2.5: 0x004E6D44,
+                 3.0: 0x004E6D4C, 4.0: 0x004E6D40}[ODDS_SCALE]
 CPU_CATCHING_CELL = FACTOR_TABLE + 4 * CATCHING_FACTOR_INDEX           # side 0 (CPU)
 HUMAN_CATCHING_CELL = FACTOR_TABLE + 4 * (CATCHING_FACTOR_INDEX + 10)  # side 1 (Human)
 # Difficulty presets (FUN_000e3740 jump table 0xE3B00): Human, CPU slider value for every slider.
@@ -108,11 +113,10 @@ def _rel32(src: int, dst: int) -> bytes:
 
 
 def cave_bytes() -> bytes:
-    """rand -> rand / (2 * (human + cpu Catching)) for an offense or kicked-ball catcher,
-    rand / (2 * Interception) for any other defender (that branch is in the tail,
-    ``kick_gate_bytes``).  The sliders are read from the factor table ``0xAAB8C0`` (the same
-    cells ``FUN_0017b8f0`` returns: CPU index 4, Human index 14), so the result does not depend
-    on which side the catcher is on."""
+    """rand -> rand / (K * (human + cpu Catching)) for an offense or kicked-ball catcher,
+    rand / (2 * Interception) for any other defender; both finish in the tail (``kick_gate_bytes``).
+    The sliders are read from the factor table ``0xAAB8C0`` (the same cells ``FUN_0017b8f0`` returns:
+    CPU index 4, Human index 14), so the result does not depend on which side the catcher is on."""
 
     code = b""
     code += b"\xe8" + _rel32(CAVE_VA + len(code), RAND_FN)                      # call rand            st0 = rand
@@ -121,26 +125,32 @@ def cave_bytes() -> bytes:
     code += b"\xa1" + struct.pack("<I", OFFENSE_TEAM_GLOBAL)                    # mov eax,[offense team]
     code += b"\x3b\x43\x38"                                                    # cmp eax,[ebx+0x38]   catcher's team?
     here = CAVE_VA + len(code)
-    code += b"\x0f\x85" + struct.pack("<i", KICK_GATE_VA - (here + 6))          # jne defender (tail)
+    code += b"\x0f\x85" + struct.pack("<i", KICK_GATE_VA - (here + 6))          # jne defender (tail +0)
     code += b"\xd9\x05" + struct.pack("<I", CPU_CATCHING_CELL)                  # offense: fld [cpu Catching]
     code += b"\xd8\x05" + struct.pack("<I", HUMAN_CATCHING_CELL)                # fadd [human Catching]
-    code += b"\xd8\xc0"                                                         # fadd st0,st0         m = 2*(h+c)
-    code += b"\xd8\xf9"                                                         # fdivr st0,st1        st0 = rand/m
-    code += b"\xdd\xd9"                                                         # fstp st1             pop the spare rand
-    code += b"\xc3"                                                             # ret
+    here = CAVE_VA + len(code)
+    code += b"\xe9" + _rel32(here, KICK_GATE_VA + DEFENDER_BYTES)                # jmp tail +11 (scale and divide)
     code += b"\x90" * (CAVE_SIZE - len(code))
     assert len(code) == CAVE_SIZE, len(code)
     return code
 
 
+DEFENDER_BYTES = 11
+
+
 def kick_gate_bytes() -> bytes:
-    """The interception branch (the slot of the former kick gate): rand / (2 * Interception)."""
+    """The 22-byte tail (the slot of the former kick gate): +0 the interception branch,
+    rand / (2 * Interception); +11 the catching branch, rand / (ODDS_SCALE * (human + cpu))."""
 
     code = b"\xd9\x05" + struct.pack("<I", INT_SLIDER_GLOBAL)  # fld [Interception slider]
     code += b"\xd8\xc0"                                         # fadd st0,st0           2*slider
     code += b"\xde\xf9"                                         # fdivp st1,st0          rand/(2*slider)
     code += b"\xc3"                                             # ret
-    code += b"\xcc" * (KICK_GATE_SIZE - len(code))
+    assert len(code) == DEFENDER_BYTES
+    code += b"\xd8\x0d" + struct.pack("<I", ODDS_SCALE_VA)     # fmul [K]               m = K*(h+c)
+    code += b"\xd8\xf9"                                         # fdivr st0,st1          st0 = rand/m
+    code += b"\xdd\xd9"                                         # fstp st1               pop the spare rand
+    code += b"\xc3"                                             # ret
     assert len(code) == KICK_GATE_SIZE, len(code)
     return code
 
@@ -152,12 +162,12 @@ IMAGE_BASE = 0x10000
 
 
 def odds_multiplier(human_slider: float, cpu_slider: float | None = None, defender: bool = False) -> float:
-    """Odds multiplier the cave applies: ``2 * (human + cpu)`` for a catcher (the same for both
+    """Odds multiplier the cave applies: ``ODDS_SCALE * (human + cpu)`` for a catcher (the same for both
     sides; a lone value stands for both sliders), ``2 * interception`` for another defender."""
 
     if defender:
         return 2.0 * human_slider
-    return 2.0 * (human_slider + (human_slider if cpu_slider is None else cpu_slider))
+    return ODDS_SCALE * (human_slider + (human_slider if cpu_slider is None else cpu_slider))
 
 
 def _header_size(payload: bytes) -> int:

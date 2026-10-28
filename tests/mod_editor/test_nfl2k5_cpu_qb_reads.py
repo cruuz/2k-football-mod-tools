@@ -54,9 +54,28 @@ class WriterTests(unittest.TestCase):
         cls.zone, cls.zone_receipt = reads.apply(cls.retail, zone_windows=True)
         cls.recheck, cls.recheck_receipt = reads.apply(cls.retail, recheck=True)
         cls.both, cls.both_receipt = reads.apply(cls.retail, zone_windows=True, recheck=True)
+        cls.tiers, cls.tiers_receipt = reads.apply(cls.retail, zone_windows=True, tiers=True)
+
+    def test_skill_tiers_change_only_the_two_curves_and_need_the_zone_option(self):
+        self.assertEqual(reads.read_settings(self.tiers),
+                         {"status": "applied", "zone_windows": True, "recheck": False, "tiers": True})
+        self.assertEqual(reads.component_status(self.tiers, "tiers"), "applied")
+        self.assertEqual(reads.component_status(self.zone, "tiers"), "retail")
+        with self.assertRaises(reads.CpuQbReadsError):
+            reads.apply(self.retail, tiers=True, recheck=True)          # tiers without the zone-defender option
+        with self.assertRaises(reads.CpuQbReadsError):
+            reads.apply(self.zone, zone_windows=True, tiers=True)       # a different selection needs a clean base
+        again, receipt = reads.apply(self.tiers, zone_windows=True, tiers=True)
+        self.assertEqual(again, self.tiers)
+        self.assertEqual(receipt["changed_bytes"], 0)
+        self.assertEqual([e["label"] for e in self.tiers_receipt["edits"]], ["covered_window_curve", "pass_threshold_curve"])
+        self.assertEqual(self.tiers_receipt["file_growth"], 0)
+        self.assertLessEqual(self.tiers_receipt["changed_bytes"] - self.zone_receipt["changed_bytes"], 40)
+        self.assertEqual(reads.TIER_THRESHOLD_Y[0] < reads.RETAIL_THRESHOLD_Y[0], True)
+        self.assertEqual(sorted(reads.TIER_THRESHOLD_Y), list(reads.TIER_THRESHOLD_Y))   # a stronger reader demands more
 
     def test_retail_reads_retail_and_options_default_off(self):
-        self.assertEqual(reads.read_settings(self.retail), {"status": "retail", "zone_windows": False, "recheck": False})
+        self.assertEqual(reads.read_settings(self.retail), {"status": "retail", "zone_windows": False, "recheck": False, "tiers": False})
         with self.assertRaises(reads.CpuQbReadsError):
             reads.apply(self.retail)
 
@@ -73,7 +92,7 @@ class WriterTests(unittest.TestCase):
         self.assertEqual(values[0], 5)
         self.assertEqual(values[1::2], tuple(struct.unpack("<f", struct.pack("<f", x))[0] for x in reads.ZONE_X))
         self.assertEqual(values[2::2], tuple(struct.unpack("<f", struct.pack("<f", y))[0] for y in reads.ZONE_Y))
-        self.assertEqual(reads.read_settings(self.zone), {"status": "applied", "zone_windows": True, "recheck": False})
+        self.assertEqual(reads.read_settings(self.zone), {"status": "applied", "zone_windows": True, "recheck": False, "tiers": False})
         for s in _sections(self.zone):
             self.assertEqual(section_digest(self.zone, s), s.stored_digest)
 
@@ -91,11 +110,11 @@ class WriterTests(unittest.TestCase):
             target = va + width + 4 + struct.unpack_from("<i", raw, width)[0]
             self.assertEqual(target, c + assembly.LABELS[name], name)
         self.assertEqual(image.read(reads.ZONE_CURVE_VA, 44), reads.RETAIL_ZONE_CURVE)
-        self.assertEqual(reads.read_settings(self.recheck), {"status": "applied", "zone_windows": False, "recheck": True})
+        self.assertEqual(reads.read_settings(self.recheck), {"status": "applied", "zone_windows": False, "recheck": True, "tiers": False})
         self.assertEqual(space.status(self.recheck), "applied")
 
     def test_both_replay_exactly_and_refuse_a_different_selection(self):
-        self.assertEqual(reads.read_settings(self.both), {"status": "applied", "zone_windows": True, "recheck": True})
+        self.assertEqual(reads.read_settings(self.both), {"status": "applied", "zone_windows": True, "recheck": True, "tiers": False})
         again, receipt = reads.apply(self.both, zone_windows=True, recheck=True)
         self.assertEqual(again, self.both)
         self.assertEqual(receipt["status"], "already_applied")
@@ -195,7 +214,7 @@ class B775Tests(unittest.TestCase):
                                      nfl2k5_qb_spy_runtime as spy)
         for module in (scrambles, money, screen, spy):
             self.assertEqual(module.status(self.final), module.status(self.b775), module.__name__)
-        self.assertEqual(reads.read_settings(self.final), {"status": "applied", "zone_windows": True, "recheck": True})
+        self.assertEqual(reads.read_settings(self.final), {"status": "applied", "zone_windows": True, "recheck": True, "tiers": False})
 
 
 if __name__ == "__main__":
