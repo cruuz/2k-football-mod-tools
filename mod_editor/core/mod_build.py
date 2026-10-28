@@ -5800,6 +5800,9 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         retail = require_step_source(source if _retail_source is None else _retail_source, "Classic teams")
         classic_receipt = classic.apply_to_image(target, retail)
         receipt["steps"].append({"step": "classic_teams", **classic_receipt})
+        for note in (classic_receipt.get("authored_kits") or {}).get("user_notes", ()):   # b779-ce1
+            progress(note, 0, 0)
+            receipt.setdefault("user_notes", []).append(note)
         receipt["result"]["classic_teams"] = classic.image_status(target, retail)
         if receipt["result"]["classic_teams"] != "applied":
             raise ValueError("the classic teams failed their read-back on the copy")

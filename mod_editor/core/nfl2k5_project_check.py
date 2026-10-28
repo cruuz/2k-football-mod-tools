@@ -232,8 +232,8 @@ def kit_dry_run(plan, chunks: dict, asset_paths: dict, index, retail, progress=N
     for feature, doc in documents:
         report, skipped = [], {}
         kits.compose(doc, donors, retail_packages, report, skipped)
-        for note in kits.user_notes(dict(substitutions=report, skipped_kits=skipped)):
-            findings.append(Finding(NOTE, feature, note.removeprefix("Anniversary moment kits: ")))
+        for note in kits.user_notes(dict(substitutions=report, skipped_kits=skipped), feature):
+            findings.append(Finding(NOTE, feature, note.removeprefix(feature + ": ")))
     return findings
 
 

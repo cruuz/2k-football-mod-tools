@@ -2048,6 +2048,7 @@ def main() -> int:
         "mod_editor.core.nfl2k5_sim_cb_tackles",                  # b778-cb1
         "mod_editor.core.nfl2k5_sim_stats",                      # b778-sim1, in-place
         "mod_editor.core.nfl2k5_clock_led",                       # b778-sd4
+        "mod_editor.core.nfl2k5_project_check",                   # b779-ce1 Check my project
         "mod_editor.core.nfl2k5_kickoff_blocking",                # b76-vb3 E1
         "mod_editor.core.nfl2k5_widescreen_menus",                # b76-vb3 D2
         "mod_editor.core.nfl2k5_team_logo_swap",                  # b76-pf P1

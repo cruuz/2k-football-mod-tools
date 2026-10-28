@@ -324,7 +324,7 @@ def authored_kits_status(path, retail=None):
         doc = authored_kits()
         if not doc["kits"]:
             return "not_applicable"
-        return kits.image_status(path, doc, retail)
+        return kits.image_status(path, doc, retail, allow_skip=False)
     except (ValueError, KeyError, IndexError, struct.error, OSError):
         return "foreign"
 
@@ -336,11 +336,11 @@ def install_authored_kits(path, retail=None):
     doc = authored_kits()
     if not doc["kits"]:
         return dict(status="none")
-    state = kits.image_status(path, doc, retail)
+    state = kits.image_status(path, doc, retail, allow_skip=False)
     if state == "applied":
         return dict(status="already_applied")
     require(state == "retail", f"classic teams: the authored kit is {state}")
-    return dict(kits.apply_to_image(path, doc, retail), status="applied")
+    return dict(kits.apply_to_image(path, doc, retail, allow_skip=False, feature="Classic teams' kits"), status="applied")
 
 
 def apply_xbe(payload, rows):

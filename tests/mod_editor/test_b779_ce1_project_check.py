@@ -217,9 +217,10 @@ class DryRun(unittest.TestCase):
                 {"tset:1:4:0:socks00": Path("a.png")}, "index", "retail.iso")
         self.assertEqual(len(findings), 1)            # only the A side reads the edited chunk from 18A0
         self.assertEqual(findings[0].severity, pc.NOTE)
-        self.assertIn("K1 NYG A", findings[0].title)
+        self.assertIn("K1 (NYG, away)", findings[0].title)
         self.assertIn("18A0", findings[0].title)
-        self.assertIn("chunk(s) 4", findings[0].title)
+        self.assertIn("chunk 4", findings[0].title)
+        self.assertIn("socks", findings[0].title)
 
     def test_nothing_to_do_without_features_or_edits(self):
         plan = types.SimpleNamespace(source="x", espn25_more_moments=False, classic_teams=False)

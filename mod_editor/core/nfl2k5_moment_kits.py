@@ -322,8 +322,7 @@ def compose(doc, packages, retail=None, report=None, skipped=None):
     for kit in doc["kits"]:
         try:
             made = {package_name(kit["code"], letter, kit["style"]):
-                    compose_side(side, packages, retail, report, f"{kit['id']} {kit['team']} {letter}" if "team" in kit
-                                 else f"{kit['id']} {letter}")
+                    compose_side(side, packages, retail, report, _side_label(kit, letter))
                     for letter, side in kit["sides"].items()}
         except ValueError as exc:
             if skipped is None:
@@ -332,6 +331,10 @@ def compose(doc, packages, retail=None, report=None, skipped=None):
             continue
         out.update(made)
     return out
+
+
+def _side_label(kit, letter):
+    return f"{kit['id']} ({kit.get('team', kit['code'])}, {'away' if letter == 'A' else 'home'})"
 
 
 def without_kits(doc, skipped):
@@ -488,12 +491,13 @@ class RetailPackages(dict):
         return True
 
 
-def read_inputs(target, doc, retail=None):
+def read_inputs(target, doc, retail=None, allow_skip=True):
     """Everything the stage reads from the build copy (hs.Target). ``retail`` (a path or a callable returning one)
-    lets a kit that cannot be composed from the copy's own donors use the retail kits' chunks instead."""
+    lets a kit that cannot be composed from the copy's own donors use the retail kits' chunks instead;
+    ``allow_skip``: a kit that cannot be composed even then is left out (False: the refusal stands)."""
     from . import nfl2k5_historic_styles as hs
     inputs = dict(packages={}, files={}, members={}, retail=RetailPackages(retail) if retail is not None else None,
-                  report=[], skipped={})
+                  report=[], skipped={}, allow_skip=allow_skip)
     for selector in donors(doc):
         require(target.has(selector_name(selector)), selector + ": donor kit absent from the copy")
         inputs["packages"][selector] = target.get(selector_name(selector))
@@ -513,7 +517,8 @@ def expected(doc, inputs):
     """(packages, members {aggregate: {name: slot}}, files {name: bytes}, situ bytes) of the applied state."""
     from . import nfl2k5_historic_styles as hs
     packages = compose(doc, inputs["packages"], inputs.get("retail"), inputs.setdefault("report", []),
-                       inputs.setdefault("skipped", {}) if inputs.get("retail") is not None else None)
+                       inputs.setdefault("skipped", {}) if inputs.get("retail") is not None
+                       and inputs.get("allow_skip", True) else None)
     doc = without_kits(doc, inputs.get("skipped"))
     members = {a["name"]: {} for a in hs.AGGREGATES}
     for kit in doc["kits"]:
@@ -549,7 +554,7 @@ def _installed_document(doc, inputs):
     retail chunks) really does fail. Anything else is a partial or foreign install and keeps the whole document."""
     from . import nfl2k5_historic_styles as hs
     retail = inputs.get("retail")
-    if retail is None or len(doc["kits"]) < 2:
+    if retail is None or len(doc["kits"]) < 2 or not inputs.get("allow_skip", True):
         return doc
     fields = _situ_fields(inputs["situ"])
     hashes = {name: set(hs.parse_record(record)[2]) for name, (record, _cdf) in inputs["members"].items()}
@@ -613,7 +618,7 @@ def state_of(doc, inputs, target, *, pinned_packages=None):
     return "applied"
 
 
-def image_status(path, doc=None, retail=None):
+def image_status(path, doc=None, retail=None, allow_skip=True):
     from . import nfl2k5_historic_styles as hs
     from . import nfl2k5_music_archive as archive
     pinned = None
@@ -628,7 +633,7 @@ def image_status(path, doc=None, retail=None):
             target = hs.Target(disc)
             if doc.get("selections") and len(_situ_fields(target.get(identity=hs.SITU_OUTER_ID))) != 2 * MOMENT_ROWS:
                 return "not_applicable"
-            return state_of(doc, read_inputs(target, doc, retail), target, pinned_packages=pinned)
+            return state_of(doc, read_inputs(target, doc, retail, allow_skip), target, pinned_packages=pinned)
     except (ValueError, KeyError, IndexError, struct.error, OSError):
         return "foreign"
 
@@ -688,44 +693,54 @@ def compile_edits(target, doc, inputs):
                                  skipped_kits=skipped, substitutions=list(inputs.get("report") or []))
 
 
-def user_notes(receipt):
+CHUNK_NAMES = {4: "socks", 5: "elbow pads", 6: "gloves", 7: "long sleeves", 8: "shoes (styles 1, 2, 3)",
+               9: "shoes (styles 4, 5, 6)", 10: "wristbands"}
+
+
+def _chunk_words(indexes):
+    words = [CHUNK_NAMES.get(i, f"piece {i}") for i in indexes]
+    return ", ".join(words[:-1]) + " and " + words[-1] if len(words) > 1 else words[0]
+
+
+def user_notes(receipt, feature="Anniversary moment kits"):
     """Plain sentences for the build log and summary: every swap and every kit left out, by name (b779-ce1)."""
     notes = []
     for row in receipt.get("substitutions", ()):
-        chunks = ", ".join(str(c) for c in row["chunks"])
-        notes.append(f"Anniversary moment kits: {row['side']} takes the retail artwork of its {', '.join(row['from_kits'])} "
-                     f"kit for chunk(s) {chunks}, because your edited version cannot be used in this new kit "
-                     f"({row['reason'].removeprefix('Anniversary moment kits: ')}). Your own kits keep your artwork.")
+        kits_from = " and ".join(row["from_kits"])
+        why = row["reason"].split(": ", 1)[-1]
+        notes.append(f"{feature}: the new kit {row['side']} uses the retail {_chunk_words(row['chunks'])} of {kits_from} "
+                     f"(chunk{'s' if len(row['chunks']) > 1 else ''} {', '.join(str(c) for c in row['chunks'])}), because "
+                     f"your edited version cannot be used in a new kit ({why}). Your own kits keep your artwork.")
     for kit_id, reason in sorted(receipt.get("skipped_kits", {}).items()):
-        notes.append(f"Anniversary moment kits: kit {kit_id} was left out and its moment sides keep the kit they had "
-                     f"({reason.removeprefix('Anniversary moment kits: ')}).")
+        notes.append(f"{feature}: the new kit {kit_id} was left out and the moment sides that use it keep the kit they "
+                     f"had ({reason.split(': ', 1)[-1]}).")
     return notes
 
 
-def apply_to_image(path, doc=None, retail=None):
+def apply_to_image(path, doc=None, retail=None, allow_skip=True, feature="Anniversary moment kits"):
     """Install every new kit and moment selection on a private build copy; replay is a no-op.
 
     ``retail`` (a path or a callable returning one): when a donor kit of the user's cannot be composed into a new
     kit, that chunk (or, last, the whole kit) is taken from the retail disc and named in ``user_notes`` rather than
-    stopping the build."""
+    stopping the build. ``allow_skip=False`` (the classic teams' own kit, which their files need): no kit is left out."""
     from . import nfl2k5_historic_styles as hs
     from . import nfl2k5_music_archive as archive
     doc = doc or document()
     path = Path(path).resolve()
-    state = image_status(path, doc, retail)
+    state = image_status(path, doc, retail, allow_skip)
     if state in ("applied", "not_applicable"):
         return dict(state=state, written=0)
     require(state == "retail", "the copy is " + state)
     with archive.Disc(path, descriptors=()) as disc:
         target = hs.Target(disc)
-        inputs = read_inputs(target, doc, retail)
+        inputs = read_inputs(target, doc, retail, allow_skip)
         edits, appended, receipt = compile_edits(target, doc, inputs)
-    notes = user_notes(receipt)
+    notes = user_notes(receipt, feature)
     if not appended:
         # every kit was left out: nothing to write, the copy stays as it is
         return dict(state="skipped_all", experimental=True, runtime_witnessed=False, owner=OWNER, written=0,
                     user_notes=notes, **receipt)
-    rewrite = hs.rewrite_archive(path, edits, appended, verify=lambda p: image_status(p, doc, retail) == "applied")
+    rewrite = hs.rewrite_archive(path, edits, appended, verify=lambda p: image_status(p, doc, retail, allow_skip) == "applied")
     return dict(state="applied", experimental=True, runtime_witnessed=False, owner=OWNER, user_notes=notes,
                 **receipt, **rewrite)
 

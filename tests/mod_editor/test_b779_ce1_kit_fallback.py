@@ -178,8 +178,11 @@ class WholeKit(Harness):
         self.assertEqual(len(notes), 2)
         self.assertIn("K1 NYG A", notes[0])
         self.assertIn("18A0", notes[0])
-        self.assertIn("4, 8", notes[0])
+        self.assertIn("socks and shoes", notes[0])
+        self.assertIn("chunks 4, 8", notes[0])
         self.assertIn("kit K7 was left out", notes[1])
+        self.assertTrue(notes[0].startswith("Anniversary moment kits: "))
+        self.assertTrue(mk.user_notes(receipt, "Classic teams' kits")[1].startswith("Classic teams' kits: "))
         self.assertNotIn("—", "".join(notes))                  # no em dashes in user-facing text
 
 
