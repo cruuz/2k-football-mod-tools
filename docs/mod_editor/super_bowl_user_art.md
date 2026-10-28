@@ -6,16 +6,16 @@ banners and the crowd's banners. Permanent venue signs keep their bytes. Row 34 
 
 ## What is on the walls
 
-- **Event art.** An original event plate for each game (a chamfered championship plate with the game's numerals in
-  chrome from 2017, in the host city's colours from 2008 to 2015, or in a 1990s block serif before that), SUPER BOWL
-  and the numerals in metal type, the host city and year, and ribbon boards laid out as an event band over a
-  matchup band. No Super Bowl or broadcaster logo is copied; the network is plain type on a chip.
+- **Event art.** The real Super Bowl logo of each game, from the bundled set (`data/nfl2k5_super_bowl_logos/`,
+  Noah 2026-10-28). Before this set the walls used an original event plate (a chamfered championship plate with the
+  game's numerals in chrome, in the host city's colours or a 1990s block serif); that plate remains the fallback when
+  a slot has no bundled file.
 - **The NFL shield.** From the 2008 season on, the mod's own official shield
   (`data/nfl2k5_espn25_fields/row45/center_logo.png`). For earlier seasons (Super Bowls XXIII, XXV, XXXII, XXXIV,
   XXXVI and XLII) the build reads the period shield from your own retail disc (`s43dd.iff`, field texture
   `center_logo`), so no retail pixels ship.
-- **Team logos.** The mod's own team logos. Four team-seasons the mod has no logo for show a plain club roundel:
-  the 1988 Bengals (XXIII), the 1990 Giants (XXV) and the 1999 and 2001 Rams (XXXIV, XXXVI).
+- **Team logos.** The mod's own 2026 team logos, plus the bundled real logo for the four team-seasons the mod has
+  no logo for: the 1988 Bengals (XXIII), the 1990 Giants (XXV) and the 1999 and 2001 Rams (XXXIV, XXXVI).
 
 The art is drawn by `tools/nfl2k5_super_bowl_walls_art.py` into `data/nfl2k5_super_bowl_walls/`: for each surface a
 base PNG and a `.marks.png` layer with the authored marks of its slots. The manifest lists every slot box.
@@ -31,9 +31,10 @@ its marks, at the measured size (`data/nfl2k5_super_bowl_fields/manifest.json`):
 - XXIII: the event logo on both 35s; XXV: the period NFL shield on both 35s (its midfield is the SB XXV mark);
 - XXXII, XXXIV and XXXVI: each club's mark on the 30 at its own end zone.
 
-The shipped event marks are drawn by `tools/nfl2k5_super_bowl_marks_art.py` from geometry and type in each game's
-design system (no logo is copied or traced). A `super_bowl/<NUMERALS>.png` in your folder replaces the mark on the
-field too, and `teams/<CODE>_<SEASON>.png` or `teams/<CODE>.png` replaces a club mark on the 30s.
+The field marks use the same logo folder as the walls: the bundled real event or team logo by default, or a file
+from your folder. Where a slot has no file, the authored mark drawn by `tools/nfl2k5_super_bowl_marks_art.py` from
+geometry and type in the game's design system is used. A `super_bowl/<NUMERALS>.png` in your folder replaces the
+mark on the field too, and `teams/<CODE>_<SEASON>.png` or `teams/<CODE>.png` replaces a club mark on the 30s.
 
 Franchise Super Bowls: LXI at SoFi Stadium has the NFL shield at midfield and the LXI mark on both 25s. With the
 2026 season on, the next three seasons' Super Bowls are played in the announced hosts (LXII Mercedes-Benz Stadium,
@@ -42,10 +43,12 @@ logos are not revealed yet (`super_bowl/LXII.png` and so on replace them).
 
 ## Your own logos (optional)
 
-On **Build**, beside the official marks pack, **Your Super Bowl logos** takes a folder. **Create folder...** makes
-`user_art/` with three empty folders and a `README.md` that lists every file name, the size to aim for, the largest
-slot each file fills and where it appears. The recipe field is `BuildPlan.super_bowl_user_art` (a folder path, or
-empty).
+Every build uses the bundled real logos by default. On **Build**, beside the official marks pack, **Your Super Bowl
+logos** takes a folder of your own PNG files and uses them instead. **Create folder...** makes `user_art/` with three
+empty folders and a `README.md` that lists every file name, the size to aim for, the largest slot each file fills
+and where it appears. The recipe field is `BuildPlan.super_bowl_user_art` (a folder path, or empty for the bundled
+set). A slot with no file in your folder keeps the mod's own designed mark; a folder with none of these names keeps
+the mod's own designs everywhere.
 
 ```
 user_art/
@@ -66,16 +69,18 @@ user_art/
 - Upper or lower case names both work. Files over 8 MB, over 4096 pixels on a side, fully transparent or not PNG are
   ignored, and the slot keeps its authored mark.
 - The NFL shield is never taken from this folder.
-- Nothing in this folder ships with the Studio or a SOFTDRINK pack.
+- The Studio's own copy of the logos ships with the Studio and with a SOFTDRINK pack. This folder is for your
+  replacements and nothing in it is required.
 
 The Build panel shows how many files it found. The build log then lists what happened, for example:
 
 ```
-Super Bowl walls: your logos folder /home/me/user_art
-Super Bowl walls: filled from your folder: brands/nbc.png (XXIII, XXXII, XLIII, XLVI, XLIX, LII, LVI); super_bowl/XLVI.png (XLVI)
-Super Bowl walls: authored marks kept for: super_bowl/XXIII.png, super_bowl/XXV.png, ...
-Super Bowl walls: ignored brands/cbs.png: not a PNG file
+Super Bowl walls: bundled real logos /path/to/2K5-Mod-Studio/data/nfl2k5_super_bowl_logos
+Super Bowl walls: filled from the bundled real logos: brands/nbc.png (XXIII, XXXII, ...); super_bowl/XLVI.png (XLVI)
+Super Bowl walls: authored marks kept for: super_bowl/LXII.png
 ```
+
+With your own folder, the first line says `your logos folder`, and the filled line names the files it placed.
 
 The same lines and a record of every slot's source are in the build receipt, in the `espn25_fields` step
 under `fields` > `super_bowl_walls` (and each alias's `detail` > `super_bowl_walls` > `slots`).

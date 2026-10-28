@@ -1370,12 +1370,13 @@ class BuildPanel(QWidget):
         super_bowl_row.addWidget(QLabel("Your Super Bowl logos"))
         self.super_bowl_user_art_field = QLineEdit()
         self.super_bowl_user_art_field.setPlaceholderText(
-            "Optional folder: super_bowl/XLVI.png, brands/nbc.png, teams/STL.png")
+            "Empty uses the bundled real logos; choose a folder to use your own")
         self.super_bowl_user_art_field.setToolTip(
-            "Your own PNG files for the Super Bowl moments' walls, ribbon boards and banners. A file placed in the "
-            "folder replaces the authored mark in its slots; anything missing keeps the authored marks. Nothing in "
-            "this folder is shipped. Create folder... makes the layout with a README listing every file name. "
-            "Used with Anniversary: named previews and period fields.")
+            "The Studio ships real Super Bowl, network and team-season logos and uses them on the Super Bowl walls "
+            "by default. Choose a folder of your own PNG files to use them instead: a file placed in the folder "
+            "replaces the bundled mark in its slots; anything missing keeps the mod's own designed marks. Create "
+            "folder... makes the layout with a README listing every file name. Used with Anniversary: named "
+            "previews and period fields.")
         super_bowl_row.addWidget(self.super_bowl_user_art_field, 1)
         self.super_bowl_user_art_button = QPushButton("Choose...")
         self.super_bowl_user_art_button.clicked.connect(self._choose_super_bowl_user_art)
@@ -3424,7 +3425,9 @@ class BuildPanel(QWidget):
         folder = self.super_bowl_user_art_field.text().strip()
         if not folder:
             self.super_bowl_user_art_status.setText(
-                "Super Bowl walls use the authored event marks, network type and the mod's team logos.")
+                "Super Bowl walls use the bundled real Super Bowl, network and team-season logos. Choose a folder "
+                "to use your own PNG files instead; a folder with none of these names keeps the mod's designed "
+                "marks.")
             return
         try:
             found = walls.user_art_status(folder)
