@@ -78,6 +78,19 @@ def tool_row(document, player):
     ]
 
 
+TOOL_FIELDS = [name.lstrip('#') for name in TOOL_HEADER.rstrip(',').split(',')]
+TOOL_INDEX = {name: index for index, name in enumerate(TOOL_FIELDS)}
+
+
+def tool_export_one(document, player, **columns):
+    """One real tool row with selected columns replaced, ready for a one-team section."""
+    values = tool_row(document, player)
+    for name, value in columns.items():
+        values[TOOL_INDEX[name]] = str(value)
+    return (TOOL_HEADER + '\n' + f"Team = {rr._csv_row(document, player)['team']}    Players:1\n"
+            + ','.join(values) + ',\n')
+
+
 def tool_export(document):
     lines = [TOOL_HEADER]
     for team in document.teams:
@@ -162,14 +175,88 @@ class CsvTests(unittest.TestCase):
 
     def test_nfl2k5tool_full_export_round_trips_every_column(self):
         self.assertTrue(set(rr.NFL2K5TOOL_COLUMNS.values()) <= set(rr.CSV_COLUMNS))
+        self.assertEqual(len(rr.NFL2K5TOOL_RATING_COLUMNS), 27)
+        self.assertTrue({rr.NFL2K5TOOL_COLUMNS[name]
+                         for name in rr.NFL2K5TOOL_RATING_COLUMNS} <= set(rr.CSV_COLUMNS))
         before = self.doc.to_body()
         text = tool_export(self.doc)
         self.assertNotIn('Team = DraftClass', text)
         receipt = rr.import_csv(self.doc, text)
         self.assertEqual(receipt['format'], rr.NFL2K5TOOL_CSV)
         self.assertFalse(receipt['refused'])
+        self.assertTrue(receipt['rating_only'])
+        self.assertEqual(len(receipt['ignored_columns']),
+                         len(rr.NFL2K5TOOL_COLUMNS) - 27)
         self.assertEqual((receipt['rows'], receipt['changed'], receipt['fields']), (7, 0, 0))
         self.assertEqual(self.doc.to_body(), before)
+        receipt = rr.import_csv(self.doc, text, include_appearance=True)
+        self.assertFalse(receipt['rating_only'])
+        self.assertEqual(receipt['ignored_columns'], [])
+        self.assertEqual((receipt['rows'], receipt['changed'], receipt['fields']), (7, 0, 0))
+        self.assertEqual(self.doc.to_body(), before)
+
+    def test_nfl2k5tool_default_ignores_appearance_photo_pbp_and_reports_them(self):
+        player = self.doc.players[0]
+        initial = dict(player.record.values)
+        initial_college, initial_birth = player.college, player.record.birth_date
+        initial_weight, initial_position = player.record.weight, player.record.position_code
+        initial_skin = player.record.skin
+        text = tool_export_one(
+            self.doc, player,
+            Position='WR', JerseyNumber='99', Speed='99',
+            College='Nowhere', DOB='not-a-date', PBP='8888', Photo='9999',
+            Height='tall', Weight='250', Skin='Skin23', Face='Face99')
+        preview = rr.preview_csv(self.doc, text)
+        self.assertEqual(preview.receipt['format'], rr.NFL2K5TOOL_CSV)
+        self.assertTrue(preview.receipt['rating_only'])
+        self.assertEqual((preview.receipt['rows'], preview.receipt['changed'],
+                          preview.receipt['fields']), (1, 1, 1))
+        self.assertFalse(preview.receipt['refused'])
+        self.assertEqual(preview.receipt['changes'][0]['changes'],
+                         [{'field': 'speed', 'before': 66, 'after': 99}])
+        ignored = preview.receipt['ignored_columns']
+        self.assertEqual(len(ignored), len(rr.NFL2K5TOOL_NON_RATING_COLUMNS))
+        self.assertTrue({'position', 'jerseynumber', 'college', 'dob', 'pbp', 'photo',
+                         'height', 'weight', 'skin', 'face'} <= set(ignored))
+        rr.apply_csv_preview(self.doc, preview)
+        reread = rr.load_body(self.doc.to_body()).players[0]
+        self.assertEqual(reread.record.get('speed'), 99)
+        for name in ('jersey', 'pbp_id', 'photo_id', 'height', 'face'):
+            self.assertEqual(reread.record.values[name], initial[name], name)
+        self.assertEqual(reread.record.weight, initial_weight)
+        self.assertEqual(reread.record.skin, initial_skin)
+        self.assertEqual(reread.record.position_code, initial_position)
+        self.assertEqual(reread.college, initial_college)
+        self.assertEqual(reread.record.birth_date, initial_birth)
+
+    def test_nfl2k5tool_appearance_opt_in_imports_them(self):
+        player = self.doc.players[0]
+        self.assertNotEqual(player.college, 'Michigan')
+        text = tool_export_one(
+            self.doc, player,
+            Position='WR', JerseyNumber='99', Speed='97',
+            College='Michigan', DOB='1/1/1990', PBP='8888', Photo='9999',
+            Height='5\'5"', Weight='250', Skin='Skin4', Face='Face3')
+        preview = rr.preview_csv(self.doc, text, include_appearance=True)
+        self.assertFalse(preview.receipt['rating_only'])
+        self.assertEqual(preview.receipt['ignored_columns'], [])
+        self.assertFalse(preview.receipt['refused'])
+        fields = {field['field'] for change in preview.receipt['changes']
+                  for field in change['changes']}
+        self.assertTrue({'speed', 'position', 'jersey', 'college', 'birth_date', 'pbp_id',
+                         'photo_id', 'height', 'weight', 'skin', 'face'} <= fields)
+        rr.apply_csv_preview(self.doc, preview)
+        reread = rr.load_body(self.doc.to_body()).players[0]
+        self.assertEqual(reread.record.get('speed'), 97)
+        self.assertEqual(reread.record.values['jersey'], 99)
+        self.assertEqual(reread.record.values['photo_id'], 9999)
+        self.assertEqual(reread.record.values['pbp_id'], 8888)
+        self.assertEqual(reread.record.values['height'], 65)
+        self.assertEqual(reread.record.weight, 250)
+        self.assertEqual(reread.record.skin, 3)
+        self.assertEqual(reread.record.values['face'], 2)
+        self.assertEqual(reread.college, 'Michigan')
+        self.assertEqual(reread.record.birth_date, rr.dt.date(1990, 1, 1))
 
     def test_nfl2k5tool_fixture_imports_into_the_retail_roster(self):
         from test_nfl2k5_roster_records import RETAIL_EXTRACTION, retail_body
@@ -196,7 +283,7 @@ class CsvTests(unittest.TestCase):
                 "QB,Peyton,Manning,18,21,\n"
                 "WR,Marvin,Harrison,88,Face17,\n"
                 "HB,Edgerrin,James,32,Face16,\n")
-        receipt = rr.import_csv(self.doc, text)
+        receipt = rr.import_csv(self.doc, text, include_appearance=True)
         self.assertEqual((receipt['changed'], receipt['fields']), (1, 1))
         self.assertFalse(receipt['refused'])
         self.assertEqual(receipt['changes'][0]['changes'],
@@ -254,7 +341,7 @@ class CsvTests(unittest.TestCase):
                 text = (f"#Position,fname,lname,{header},\n"
                         "Team = IND    Players:1\n"
                         f"QB,Peyton,Manning,{value},\n")
-                receipt = rr.import_csv(self.doc, text)
+                receipt = rr.import_csv(self.doc, text, include_appearance=True)
                 self.assertEqual((receipt['changed'], receipt['fields']), (0, 0))
                 self.assertEqual(len(receipt['refused']), 1)
                 self.assertIn(header.casefold(), receipt['refused'][0]['reason'].casefold())
@@ -444,6 +531,43 @@ class GuiCsvTests(unittest.TestCase):
         self.assertEqual(self.panel.document.to_body(), before)
         self.panel.redo()
         self.assertEqual(self.panel.document.to_body(), after)
+
+    def test_nfl2k5tool_preview_checkbox_opt_in_repreviews_appearance(self):
+        document = self.panel.document
+        player = document.players[0]
+        row = rr._csv_row(document, player)
+        text = tool_export_one(document, player,
+                               Speed=str(int(row['speed']) + 1),
+                               Photo=str(int(row['photo_id']) + 1),
+                               PBP=str(int(row['pbp_id']) + 1))
+        preview = self.panel.preview_csv_text(text)
+        self.assertTrue(preview.receipt['rating_only'])
+        self.assertTrue(preview.receipt['ignored_columns'])
+        calls = []
+
+        def repreview(include):
+            calls.append(include)
+            return self.panel.preview_csv_text(text, include_appearance=include)
+
+        dialog = PlayerCsvPreviewDialog(preview, self.panel, repreview=repreview)
+        try:
+            self.assertIsNotNone(dialog.appearance_checkbox)
+            self.assertFalse(dialog.appearance_checkbox.isChecked())
+            self.assertIn(f'{len(preview.receipt["ignored_columns"])} non-rating columns were ignored',
+                          dialog.summary.text())
+            dialog.appearance_checkbox.setChecked(True)
+            self.assertEqual(calls, [True])
+            self.assertFalse(dialog.preview.receipt['rating_only'])
+            self.assertEqual(dialog.preview.receipt['ignored_columns'], [])
+            fields = {field['field'] for change in dialog.preview.receipt['changes']
+                      for field in change['changes']}
+            self.assertTrue({'speed', 'photo_id', 'pbp_id'} <= fields)
+            dialog.appearance_checkbox.setChecked(False)
+            self.assertEqual(calls, [True, False])
+            self.assertTrue(dialog.preview.receipt['rating_only'])
+            self.assertTrue(dialog.preview.receipt['ignored_columns'])
+        finally:
+            dialog.reject()
 
     def test_nfl2k5tool_file_action_previews_and_applies(self):
         before = self.panel.document.to_body()

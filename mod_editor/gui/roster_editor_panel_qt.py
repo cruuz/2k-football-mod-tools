@@ -182,21 +182,55 @@ class UndoStack:
 class PlayerCsvPreviewDialog(QDialog):
     """Read-only full diff, including every refused row, before one import command."""
 
-    def __init__(self, preview: rr.CsvPreview, parent=None):
+    def __init__(self, preview: rr.CsvPreview, parent=None, repreview=None):
         super().__init__(parent)
         self.setWindowTitle("Preview player CSV import")
         self.resize(950, 620)
+        self._repreview = repreview
+        self.preview = preview
         layout = QVBoxLayout(self)
+        self.summary = QLabel()
+        self.summary.setWordWrap(True)
+        layout.addWidget(self.summary)
+        self.appearance_checkbox = None
         receipt = preview.receipt
-        summary = QLabel(f"{receipt['changed']} players, {receipt['fields']} fields change; "
-                         f"{len(receipt['refused'])} rows refused. Apply changes to the loaded roster, then "
-                         "use Undo to reverse the whole import.")
-        summary.setWordWrap(True)
-        layout.addWidget(summary)
+        if receipt.get('format') == rr.NFL2K5TOOL_CSV and repreview is not None:
+            self.appearance_checkbox = QCheckBox("Also import appearance and bio columns")
+            self.appearance_checkbox.setToolTip(
+                "Imports the tool's position, jersey number, college, DOB, ids, body and equipment "
+                "columns too. Leave this off for a community ratings file.")
+            self.appearance_checkbox.setChecked(not receipt.get('rating_only', True))
+            self.appearance_checkbox.toggled.connect(self._toggle_appearance)
+            layout.addWidget(self.appearance_checkbox)
         self.table = QTableWidget(0, 6)
         self.table.setHorizontalHeaderLabels(("CSV row", "Player / pool + index", "Field", "Before", "After", "Refusal"))
         self.table.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.table.setAccessibleName("Player CSV changes and refused rows")
+        layout.addWidget(self.table)
+        help_text = QLabel(rr.CSV_HELP)
+        help_text.setWordWrap(True)
+        layout.addWidget(help_text)
+        self.buttons = QDialogButtonBox(QDialogButtonBox.Apply | QDialogButtonBox.Cancel)
+        self.apply_button = self.buttons.button(QDialogButtonBox.Apply)
+        self.apply_button.setText("Apply valid rows")
+        self.apply_button.clicked.connect(self.accept)
+        self.buttons.rejected.connect(self.reject)
+        layout.addWidget(self.buttons)
+        self._fill(preview)
+
+    def _fill(self, preview: rr.CsvPreview) -> None:
+        self.preview = preview
+        receipt = preview.receipt
+        ignored = receipt.get('ignored_columns') or []
+        summary = (f"{receipt['changed']} players, {receipt['fields']} fields change; "
+                   f"{len(receipt['refused'])} rows refused.")
+        if ignored:
+            summary += (f" {len(ignored)} non-rating columns were ignored (position, jersey, "
+                        "appearance, equipment and bio)")
+            summary += ("; tick the box to import them."
+                        if self.appearance_checkbox is not None else ".")
+        summary += (" Apply changes to the loaded roster, then use Undo to reverse the whole import.")
+        self.summary.setText(summary)
         entries = []
         for row in receipt['changes']:
             identity = row.get('label') or f"{row['pool']}:{row['index']}"
@@ -211,17 +245,16 @@ class PlayerCsvPreviewDialog(QDialog):
             for j, value in enumerate(row):
                 self.table.setItem(i, j, QTableWidgetItem(str(value)))
         self.table.resizeColumnsToContents()
-        layout.addWidget(self.table)
-        help_text = QLabel(rr.CSV_HELP)
-        help_text.setWordWrap(True)
-        layout.addWidget(help_text)
-        self.buttons = QDialogButtonBox(QDialogButtonBox.Apply | QDialogButtonBox.Cancel)
-        apply = self.buttons.button(QDialogButtonBox.Apply)
-        apply.setText("Apply valid rows")
-        apply.setEnabled(preview.before != preview.after)
-        apply.clicked.connect(self.accept)
-        self.buttons.rejected.connect(self.reject)
-        layout.addWidget(self.buttons)
+        self.apply_button.setEnabled(preview.before != preview.after)
+
+    def _toggle_appearance(self, checked: bool) -> None:
+        try:
+            preview = self._repreview(bool(checked))
+        except (rr.RosterRecordError, ValueError, csv.Error) as exc:
+            QMessageBox.warning(self, "Could not preview the CSV again",
+                                f"{exc}\nCorrect the CSV and preview it again.")
+            return
+        self._fill(preview)
 
 
 # --------------------------------------------------------------------------------------------- cards
@@ -3639,10 +3672,10 @@ class RosterEditorPanel(QWidget):
         players = None if everything else self.visible_players()
         return rr.export_csv(self.document, players)
 
-    def preview_csv_text(self, text: str) -> rr.CsvPreview:
+    def preview_csv_text(self, text: str, *, include_appearance: bool = False) -> rr.CsvPreview:
         if self.document is None:
             raise rr.RosterRecordError("No roster is loaded; open a disc roster or Xbox save first.")
-        return rr.preview_csv(self.document, text)
+        return rr.preview_csv(self.document, text, include_appearance=include_appearance)
 
     def apply_csv_preview(self, preview: rr.CsvPreview) -> dict[str, Any]:
         if self.document is None:
@@ -3656,14 +3689,17 @@ class RosterEditorPanel(QWidget):
             self.undo_stack.push(UndoEntry(f"CSV import ({receipt['changed']} players)",
                                            lambda: restore(preview.before), lambda: restore(preview.after)))
             restore(preview.after)
+        ignored = receipt.get('ignored_columns') or []
         self._set_status(f"CSV: {receipt['rows']} rows matched, {receipt['changed']} players, "
-                         f"{receipt['fields']} fields; {len(receipt['refused'])} rows refused. "
-                         "Your source was not changed.")
+                         f"{receipt['fields']} fields; {len(receipt['refused'])} rows refused"
+                         + (f"; {len(ignored)} non-rating columns ignored" if ignored else "")
+                         + ". Your source was not changed.")
         return receipt
 
-    def import_csv_text(self, text: str) -> dict[str, Any]:
+    def import_csv_text(self, text: str, *, include_appearance: bool = False) -> dict[str, Any]:
         """Programmatic import; the file action displays the same preview first."""
-        return self.apply_csv_preview(self.preview_csv_text(text))
+        return self.apply_csv_preview(
+            self.preview_csv_text(text, include_appearance=include_appearance))
 
     # ------------------------------------------------------------------ .PlayerData
     def export_player_data_bytes(self) -> bytes:
@@ -3745,10 +3781,14 @@ class RosterEditorPanel(QWidget):
                 raw = stream.read(rr.CSV_MAX_BYTES + 1)
             if len(raw) > rr.CSV_MAX_BYTES:
                 raise rr.RosterRecordError("Player CSV exceeds 16 MiB; export a smaller list.")
-            preview = self.preview_csv_text(raw.decode("utf-8-sig"))
-            dialog = PlayerCsvPreviewDialog(preview, self)
+            text = raw.decode("utf-8-sig")
+            preview = self.preview_csv_text(text)
+            dialog = PlayerCsvPreviewDialog(
+                preview, self,
+                repreview=lambda include: self.preview_csv_text(
+                    text, include_appearance=include))
             if dialog.exec_() == QDialog.Accepted:
-                self.apply_csv_preview(preview)
+                self.apply_csv_preview(dialog.preview)
         except (OSError, ValueError, csv.Error) as exc:
             QMessageBox.warning(self, "Could not import players", f"{exc}\nCorrect the CSV and preview it again.")
 

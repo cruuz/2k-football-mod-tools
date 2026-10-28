@@ -1291,7 +1291,9 @@ league or the list, and restore height, weight and date of birth to what the ros
 **CSV ▾** exports the list or the whole league and reads it back — it also reads Finn's
 semicolon-delimited export, and a spreadsheet with three columns is a legal edit. Files exported
 by Bad_AL's NFL2K5Tool import directly, matched by team and name with position and jersey as
-tie-breakers.
+tie-breakers. They import ratings only by default, so a community ratings sheet for another
+roster cannot change faces, gear, height, weight, college, photo or PBP ids; the preview counts
+the ignored columns, and its **Also import appearance and bio columns** box imports them too.
 
 **Teams.** Under the grid: **Release to free agency**, **Sign to ▾** / **Move to ▾** a team,
 **Swap with…** another rostered player. These are Finn's operations done his way — the team's pointer

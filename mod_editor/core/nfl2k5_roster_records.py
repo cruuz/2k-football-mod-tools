@@ -3573,7 +3573,10 @@ CSV_HELP = (
     "For Excel use Data > From Text/CSV, UTF-8, and Text for names, college and birth_date. "
     "Conflicting edits to a raw field and its style/date view refuse the row. "
     "CSV files exported by Bad_AL's NFL2K5Tool also import directly; rows are matched by team "
-    "and name, with position and jersey as tie-breakers. "
+    "and name, with position and jersey as tie-breakers. By default only its 27 rating columns "
+    "are applied; its position, jersey, appearance, equipment and bio columns are ignored and "
+    "counted in the preview. Tick 'Also import appearance and bio columns' in the preview to "
+    "import the rest. "
     "Your source is unchanged; use the page's copy or saved-edits action after review."
 )
 CSV_MAX_BYTES = 16 * 1024 * 1024
@@ -3707,6 +3710,18 @@ NFL2K5TOOL_HEADER_ALIASES = {
 }
 NFL2K5TOOL_IDENTITY_COLUMNS = frozenset({"fname", "lname", "team"})
 NFL2K5TOOL_UNSUPPORTED_COLUMNS = {"depth": "the tool's Depth byte has no Studio CSV field"}
+# The tool's 27 PlayerOffsets ratings, including PowerRunStyle.  Everything else it can write --
+# position, jersey number, college, dates, ids, body and equipment -- is ignored unless the caller
+# explicitly opts in, so a ratings sheet made for another roster cannot silently overwrite this
+# roster's look or identity.  Names are the tool's own header key names, lowercased.
+NFL2K5TOOL_RATING_COLUMNS = frozenset({
+    "speed", "agility", "strength", "jumping", "coverage", "passrush", "runcoverage",
+    "passblocking", "runblocking", "catch", "runroute", "breaktackle", "holdontoball",
+    "powerrunstyle", "passaccuracy", "passarmstrength", "passreadcoverage", "tackle",
+    "kickpower", "kickaccuracy", "stamina", "durability", "leadership", "scramble",
+    "composure", "consistency", "aggressiveness",
+})
+NFL2K5TOOL_NON_RATING_COLUMNS = frozenset(NFL2K5TOOL_COLUMNS) - NFL2K5TOOL_RATING_COLUMNS
 
 
 def _csv_key(value: Any) -> str:
@@ -3977,11 +3992,14 @@ def _nfl2k5tool_match(row: Mapping[str, str], section_team: str | None,
                          f"match; add Position or JerseyNumber to choose: {examples}")
 
 
-def _nfl2k5tool_cells(row: Mapping[str, str], document: RosterDocument) -> dict[str, str]:
+def _nfl2k5tool_cells(row: Mapping[str, str], document: RosterDocument, *,
+                      include_appearance: bool = True) -> dict[str, str]:
     cells: dict[str, str] = {}
     for name, text in row.items():
         column = NFL2K5TOOL_COLUMNS.get(name)
         if column is None or not str(text).strip():
+            continue
+        if not include_appearance and name not in NFL2K5TOOL_RATING_COLUMNS:
             continue
         try:
             value = _nfl2k5tool_cell(column, str(text), document)
@@ -3993,17 +4011,24 @@ def _nfl2k5tool_cells(row: Mapping[str, str], document: RosterDocument) -> dict[
 
 
 def preview_nfl2k5tool_csv(document: RosterDocument, text: str, *,
-                           normalise_commentary: bool = True) -> CsvPreview:
+                           normalise_commentary: bool = True,
+                           include_appearance: bool = False) -> CsvPreview:
     """Stage a Bad_AL NFL2K5Tool export, matching players by team and name only.
 
     Position and jersey number only break a name tie.  Unmatched, ambiguous and duplicate rows
-    are listed and refused; no player is ever created.
+    are listed and refused; no player is ever created.  By default only the 27 rating columns
+    are applied; position, jersey, college, dates, ids, body and equipment are ignored and
+    counted in ``receipt["ignored_columns"]`` unless ``include_appearance`` is true.
     """
 
     text = text.lstrip("\ufeff")
     _require(len(text.encode("utf-8")) <= CSV_MAX_BYTES,
              "Player CSV exceeds 16 MiB; export a smaller list and try again.")
+    names, _delimiter, _header_index = _nfl2k5tool_header(text)
     records = _nfl2k5tool_rows(text)
+    ignored_columns = ([] if include_appearance else
+                       list(dict.fromkeys(name for name in names
+                                          if name in NFL2K5TOOL_NON_RATING_COLUMNS)))
     matched: list[tuple[int, Player, dict[str, str], str]] = []
     refused: list[dict[str, Any]] = []
     for line, section_team, row, reason in records:
@@ -4019,7 +4044,7 @@ def preview_nfl2k5tool_csv(document: RosterDocument, text: str, *,
                             "reason": reason})
             continue
         try:
-            cells = _nfl2k5tool_cells(row, document)
+            cells = _nfl2k5tool_cells(row, document, include_appearance=include_appearance)
         except ValueError as exc:
             refused.append({"row": line, "pool": player.pool, "index": player.index,
                             "label": row_label, "reason": str(exc)})
@@ -4074,6 +4099,8 @@ def preview_nfl2k5tool_csv(document: RosterDocument, text: str, *,
                                 key=lambda item: item["row"] if isinstance(item["row"], int) else 10 ** 9)
     receipt["log"] = [f"row {item['row']}: {item['reason']}" for item in receipt["refused"]]
     receipt["format"] = NFL2K5TOOL_CSV
+    receipt["rating_only"] = not include_appearance
+    receipt["ignored_columns"] = ignored_columns
     return CsvPreview(preview.before, preview.after, preview.scheme, preview.reference_year,
                       receipt, preview.normalise_commentary)
 
@@ -4089,21 +4116,24 @@ class CsvPreview:
 
 
 def preview_csv(document: RosterDocument, text: str, *, delimiter: str | None = None,
-                normalise_commentary: bool = True) -> CsvPreview:
+                normalise_commentary: bool = True,
+                include_appearance: bool = False) -> CsvPreview:
     """Stage valid rows on a private document; a refused row contributes no edits.
 
     Duplicate identities are ALL refused, including the first occurrence. Unknown
     headers and malformed CSV refuse the sheet. A Bad_AL NFL2K5Tool export is
     detected here and matched by team and name; the Studio sheet stays keyed by
-    pool + index. Unchanged cells preserve existing out-of-editor-range values
-    byte for byte. Field-scoped native writers can defer commentary to the final
-    full save.
+    pool + index. The tool export is ratings-only by default; ``include_appearance``
+    also takes its position, jersey, appearance and bio columns. Unchanged cells
+    preserve existing out-of-editor-range values byte for byte. Field-scoped native
+    writers can defer commentary to the final full save.
     """
     _require(isinstance(text, str) and len(text.encode("utf-8")) <= CSV_MAX_BYTES,
              "Player CSV exceeds 16 MiB; export a smaller list and try again.")
     text = text.lstrip("\ufeff")
     if _is_nfl2k5tool_csv(text):
-        return preview_nfl2k5tool_csv(document, text, normalise_commentary=normalise_commentary)
+        return preview_nfl2k5tool_csv(document, text, normalise_commentary=normalise_commentary,
+                                      include_appearance=include_appearance)
     sample = text.splitlines()[0] if text.strip() else ""
     delimiter = delimiter or (";" if sample.count(";") > sample.count(",") else ",")
     try:
@@ -4210,10 +4240,12 @@ def apply_csv_preview(document: RosterDocument, preview: CsvPreview) -> dict[str
 
 
 def import_csv(document: RosterDocument, text: str, *, delimiter: str | None = None,
-               normalise_commentary: bool = True) -> dict[str, Any]:
+               normalise_commentary: bool = True,
+               include_appearance: bool = False) -> dict[str, Any]:
     """Apply a validated CSV as one candidate. The GUI displays preview_csv first."""
     return apply_csv_preview(document, preview_csv(document, text, delimiter=delimiter,
-                                                   normalise_commentary=normalise_commentary))
+                                                   normalise_commentary=normalise_commentary,
+                                                   include_appearance=include_appearance))
 
 
 def _apply_csv_cell(document: RosterDocument, player: Player, column: str,
