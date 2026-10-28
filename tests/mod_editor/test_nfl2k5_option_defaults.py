@@ -225,7 +225,7 @@ class NativeTests(unittest.TestCase):
         """The loader and its callers are byte-identical to retail in a patched image."""
         image_r, image_p = XbeImage(self.retail), XbeImage(self.patched)
         for va, size in ((0xE2E00, 0x30), (0x63B00, 0xC0), (0x84490, 0xD0), (0x84D60, 0x60), (0x16D1D0, 0x20),
-                         (0x16E7A8, 0x20), (0x16E860, 0x20), (0x28FA50, 0x30), (0x127A70, 0xFA)):
+                         (0x16E7A8, 0x20), (0x16E860, 0x20), (0x28FA50, 0x30), (0x28FE90, 0x40), (0x127A70, 0xFA)):
             self.assertEqual(image_r.read(va, size), image_p.read(va, size), hex(va))
 
 

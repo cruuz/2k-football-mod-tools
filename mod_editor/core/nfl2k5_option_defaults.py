@@ -8,9 +8,9 @@ How retail picks defaults (USA ``default.xbe`` sha256 73105b17..., all addresses
 
 * The options live in one flat 0x2E0-byte block at ``.data`` 0xE5FF80..0xE6025F (Game Options, Franchise Settings,
   difficulty, sliders, penalties, presentation, camera).  The same block is what Settings and every franchise save carry.
-* ``FUN_00077D20`` (called once from the boot sequence at 0x74AA6) zeroes the block and calls ``FUN_00077C50``, the
-  defaults routine.  ``FUN_00077C50`` stores the fixed values, calls ``FUN_000E3B90`` (difficulty Pro, every slider,
-  the camera) and, through 0xE3330, ``FUN_000E2C70`` (penalty sliders 0.5, toggles).  ``FUN_00127A70`` (the
+* ``FUN_00077D20`` (called once from the boot sequence at 0x74AA6) clears the block and calls ``FUN_00077C50``, the
+  defaults routine.  ``FUN_00077C50`` clears the block again, stores the fixed values, calls ``FUN_000E3B90``
+  (difficulty Pro, every slider, the camera) and, through 0xE3330, ``FUN_000E2C70`` (penalty sliders 0.5, toggles).  ``FUN_00127A70`` (the
   restore-defaults path used when a session starts or ends, called at 0x12D4E8 and jumped to from 0x64CC1) calls the
   same ``FUN_00077C50`` and then puts back a few fields it must keep.  So one edit of ``FUN_00077C50`` covers a fresh
   profile and every reset.
