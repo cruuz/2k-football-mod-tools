@@ -6220,10 +6220,19 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         progress("Rookie faces: new draft headshots", 0, 0)
         alien = _core_module("nfl2k5_alien_prospect") if plan.alien_prospect else None  # b778-ee1
         extras = {} if alien is None else dict(extra_faces=[alien.portrait_face()], extra_appended=alien.appended(target))
+        # b779-pt1: the real free agents' official-headshot portraits ride the same record (ids 30000..30999)
+        real = _core_module("nfl2k5_real_portraits")
+        real_faces = [] if real is None else real.prepare(target)
+        if real_faces:
+            extras["extra_faces"] = [*extras.get("extra_faces", []), *real_faces]
         faces_receipt = faces.apply_to_image(target, _xbe_bytes, _write_xbe_bytes,
                                              progress=lambda message: progress(message, 0, 0), **extras)
         receipt["steps"].append({"step": "rookie_faces", **faces_receipt})
         receipt["result"]["rookie_faces"] = faces_receipt["state"]
+        if real_faces:
+            real_receipt = real.apply_assignments(target)
+            receipt["steps"].append({"step": "real_portraits", "faces": len(real_faces), **real_receipt})
+            receipt["result"]["real_portraits"] = real_receipt["status"]
         if alien is not None:
             # b778-ee1: his portrait and face outers rode the rookie-faces rewrite above; now the gray skin textures
             # (outer 3, before any hair-style textures) and the executable (in place, zero allocator bytes).

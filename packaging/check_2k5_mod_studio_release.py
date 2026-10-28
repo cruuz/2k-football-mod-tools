@@ -333,7 +333,7 @@ ANNIVERSARY_FIELD_PNG_CATALOG_SHA256 = "c621d94c4f48f26ab6c44e912dd5d5ff7a36d070
 # (b778 cf1-cf4: photo-derived likeness textures, Noah 2026-10-12; see the catalog's classification). It grants no general PNG
 # exception inside those folders; tools/b77/modern_art_png_catalog.py regenerates it and prints the digest below.
 MODERN_ART_PNG_CATALOG = "packaging/nfl2k5_modern_art_pngs.json"
-MODERN_ART_PNG_CATALOG_SHA256 = "bfa84f7a2d2ddfc63f3fb2812b39b65454814eba78b4f746c7930936a2a667a3"  # b778 cf5: seven scanned coach heads (ARI BUF DEN HOU LV NO SEA); b778 3d1: classification names the scanned heads as photo-derived; b778-pg2: + the TROPHY ROOM emblem; b778-ee1: + the 4 gray alien PNGs; b778-ss1: + the 15 Seamen card/field/face PNGs; b778-rh1/rh2: + the 18 rookie face bank atlases; b778 cf1: four scanned coach heads; b778 cf2: seven scanned coach heads and the PIT rescan; b778 cf3: seven scanned coach heads; b778 cf4: seven scanned coach heads, KC head.png in place of head_mask + head_overlay; b778 cm2: six coach heads and apparel; b776-int2: + fn2 four Titans 7 digits; b775-int1: sb1 marks + hs1 nine hair textures
+MODERN_ART_PNG_CATALOG_SHA256 = "3bde439b257072881977fdfc0c6a9237a5244dad7e4f4df138c2a7b99e272880"  # b779-pt1: + the 8 real free-agent portrait atlases; b778 cf5: seven scanned coach heads (ARI BUF DEN HOU LV NO SEA); b778 3d1: classification names the scanned heads as photo-derived; b778-pg2: + the TROPHY ROOM emblem; b778-ee1: + the 4 gray alien PNGs; b778-ss1: + the 15 Seamen card/field/face PNGs; b778-rh1/rh2: + the 18 rookie face bank atlases; b778 cf1: four scanned coach heads; b778 cf2: seven scanned coach heads and the PIT rescan; b778 cf3: seven scanned coach heads; b778 cf4: seven scanned coach heads, KC head.png in place of head_mask + head_overlay; b778 cm2: six coach heads and apparel; b776-int2: + fn2 four Titans 7 digits; b775-int1: sb1 marks + hs1 nine hair textures
 
 
 def _scorebug_template_pngs(root: Path) -> dict:
@@ -388,7 +388,8 @@ def _modern_art_pngs(root: Path) -> dict:
 def _validate_reviewed_png(path: Path, relative: str, info, contract: dict, label: str) -> None:
     import struct
     # b778-rh1/rh2: the rookie face banks are 2048x2048 atlases, much larger than a single authored texture.
-    limit = MAX_RELEASE_FILE_BYTES if relative.startswith("data/nfl2k5_rookie_faces/") else 512 * 1024
+    limit = (MAX_RELEASE_FILE_BYTES if relative.startswith(("data/nfl2k5_rookie_faces/", "data/nfl2k5_real_portraits/"))
+             else 512 * 1024)  # b779-pt1: the real portrait atlases are 2048x2048 like the rookie bank
     if info.st_size != contract["size"] or info.st_size > limit:
         raise ReleaseCheckError(f"reviewed {label} PNG size changed: {relative}")
     with path.open("rb") as stream:

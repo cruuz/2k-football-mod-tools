@@ -2018,6 +2018,17 @@ data/nfl2k5_alien_prospect/portrait.png
 data/nfl2k5_alien_prospect/face_f.png
 data/nfl2k5_alien_prospect/face_h.png
 data/nfl2k5_alien_prospect/face_n.png
+# b779-pt1: real official-headshot Player Card portraits for the created real free agents
+mod_editor/core/nfl2k5_real_portraits.py
+data/nfl2k5_real_portraits/portraits.json
+data/nfl2k5_real_portraits/faces_00.png
+data/nfl2k5_real_portraits/faces_00_pal.png
+data/nfl2k5_real_portraits/faces_01.png
+data/nfl2k5_real_portraits/faces_01_pal.png
+data/nfl2k5_real_portraits/faces_02.png
+data/nfl2k5_real_portraits/faces_02_pal.png
+data/nfl2k5_real_portraits/faces_03.png
+data/nfl2k5_real_portraits/faces_03_pal.png
 data/nfl2k5_rookie_faces/faces_00.png
 data/nfl2k5_rookie_faces/faces_00_pal.png
 data/nfl2k5_rookie_faces/faces_01.png

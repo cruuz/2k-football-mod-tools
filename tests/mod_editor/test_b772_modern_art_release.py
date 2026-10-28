@@ -25,6 +25,7 @@ FOLDERS = ("data/nfl2k5_modern_coaches", "data/nfl2k5_modern_fans", "data/nfl2k5
            "data/nfl2k5_hair_styles/art",  # b775-hs1
            "data/nfl2k5_classic_teams",  # b778-ss1/ss2
            "data/nfl2k5_rookie_faces",  # b778-rh1/rh2/rh3
+           "data/nfl2k5_real_portraits",  # b779-pt1
            "data/nfl2k5_alien_prospect",  # b778-ee1
            "data/trophy_room_logo",  # b778-pg2
            "data/nfl2k5_glyph_fixes_2026")  # b776-fn2 (int2)
@@ -72,7 +73,7 @@ class ModernArtReleaseTests(unittest.TestCase):
         document, refused = tool.build(ROOT)
         self.assertEqual(refused, {})
         self.assertEqual((tool.NOT_AUTHORED, tool.NOT_AUTHORED_BY_NAME), ({}, {}))
-        self.assertEqual(len(document["files"]), 922)   # b778 cf4: KC head.png in place of head_mask + head_overlay; b778 int2: + classic teams, 28 rookie face atlases, alien, Trophy Room; keeps fn2 four Titans 7 digits and hs1 nine hair textures
+        self.assertEqual(len(document["files"]), 930)   # b779-pt1: + 8 real free-agent portrait atlases; b778 cf4: KC head.png in place of head_mask + head_overlay; b778 int2: + classic teams, 28 rookie face atlases, alien, Trophy Room; keeps fn2 four Titans 7 digits and hs1 nine hair textures
         for relative in ("data/nfl2k5_modern_coaches/portraits/7031.png",
                          "data/nfl2k5_modern_coaches/portraits/7034.png",
                          "data/nfl2k5_modern_coaches/DAL/headset.png"):
