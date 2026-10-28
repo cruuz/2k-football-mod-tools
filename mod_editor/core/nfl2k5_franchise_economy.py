@@ -135,7 +135,7 @@ REVISION_3_SITES = frozenset({0x323870, 0x396F50, 0x3B9F60, 0x3D2890, 0x3BA4B0, 
 # free; the allocator 0x2BD390 takes the first 380 records with bit 2 clear (vacancies included) and each
 # prospect keeps the reused record's old position. The second class was 144 FB, 4 QB, 0 K, 0 P, and no
 # vacancy was left for Create Player, MyCareer or a moment/historic import (player reports 10/27-28).
-# Revision 4 (code in the unreferenced retail library function 0x382200, tools/franchise_economy/dead_code.py):
+# Revision 4 (code in the unreferenced retail library functions 0x382200 and 0x41E2A0, tools/franchise_economy/dead_code.py):
 # - the allocator and the pass's free count skip create vacancies (flags & 5 != 0), so the top-up retires
 #   enough of the lowest-rated free agents for a full class and every vacancy survives;
 # - prospect k of a class takes the k-th slot of the disc class window's position mix (27 QB, 19 K, 23 P,
@@ -143,12 +143,31 @@ REVISION_3_SITES = frozenset({0x323870, 0x396F50, 0x3B9F60, 0x3D2890, 0x3BA4B0, 
 CLASS_ALLOCATOR_TEST = 0x2BD3C0     # call 0x2BD380 in the class allocator 0x2BD390
 CLASS_FREE_COUNT = 0x2BDCAE         # call 0x2BD380 in the retirement pass's free-record count
 CLASS_POSITION = 0x2BE91D           # movzx edx, [eax+0x35]; mov ecx, eax in the class loop 0x2BE900
+# b779 rc1: the stage-7 advance (0x24821A) asks 0x2BF950 (payroll <= cap, active <= the in-season limit) for each
+# user club and refuses with "You must be under the salary cap and have a maximum of 53 players ..."; the Season
+# screen's automatic advance asks again at once, so the notice never went away. economy_preseason_gate first cuts
+# a club over the limit with the native cut-down 0x2BF9A0, as retail's Simulate Preseason path 0x2BFD60 does.
+PRESEASON_GATE = 0x248241           # call 0x2BF950 in the stage-7 (preseason -> regular season) advance
+# b779 rc1 (Noah 10/28, deep classes, retirement by age): generated classes ask for CLASS_SIZE prospects and the
+# retirement pass makes room for that many; its top-up retires only free agents past their position's age (oldest
+# first), then if still short the lowest-rated within two years of it, never a younger player (runtime.c).
+CLASS_SIZE = 450
+CLASS_COUNT = 0x2BF942              # mov ecx, 0x17C before the preseason -> regular season class (0x2BF8B0)
+CLASS_TARGET_CMP = 0x2BDCC4         # cmp eax, 0x17C: free + retiring records the pass wants
+CLASS_TARGET_NEED = 0x2BDCCB        # mov ecx, 0x17C: the same target for the top-up's count
+CLASS_TOPUP = 0x2BDCD6              # call 0x2BD0E0: the lowest-rated free agents of any age
 for _va, _digest in ((0x382200, "dc79bd8fe3a5e4434acf93056e6e304d0cfd27e357e5f39f7cc8d0cb02395dfb"),
                      (CLASS_ALLOCATOR_TEST, "91c65bd8dfe375045d530c034260d1a544235a843998bff7e9829cac9ef2eb0d"),
                      (CLASS_FREE_COUNT, "7f03603229d3a06e2d02df062acf57d6a44497e3478eff1282674dd829334c10"),
-                     (CLASS_POSITION, "a903b0c5b757d2cf70e654919af4145c3cf31d154b59e65d1789d2f3961b137d")):
+                     (CLASS_POSITION, "a903b0c5b757d2cf70e654919af4145c3cf31d154b59e65d1789d2f3961b137d"),
+                     (PRESEASON_GATE, "551b621b386d156f5f45bfae6b145c26bf3977a4dee94547f9bd9d9ecac98e17"),
+                     (CLASS_COUNT, "f008c3fa909493263fd331107548176e582177a844cf24494a65a528282960fe"), (CLASS_TARGET_CMP, "075f6eb388d93fa575f9b33881521db17155f726719799a6277ccb13f317d9ba"), (CLASS_TARGET_NEED, "f008c3fa909493263fd331107548176e582177a844cf24494a65a528282960fe"),
+                     (CLASS_TOPUP, "03bb89c27f1d99b2d64519869c63afbb1bf09143bfbeae0017d38785f312a4a5"), (0x3A5F20, "932cacdaee4ff7c5eab50c13fa7b179c41e50dde4fe9a91587a09dbf1eba8956"), (0x3BAB20, "64eede86bf0bcb5253985b1d803e8d72d59a173eb6b2067abab634eb72adcc4e"),
+                     (0x41E2A0, "6380da53ed52f0ec42021477b15a441b2b0532da2189e902ea9c02225ff7aec7")):
     PINS[_va] = _digest
-REVISION_4_SITES = frozenset({0x382200, CLASS_ALLOCATOR_TEST, CLASS_FREE_COUNT, CLASS_POSITION})
+REVISION_4_SITES = frozenset({0x382200, 0x41E2A0, 0x3A5F20, 0x3BAB20, CLASS_ALLOCATOR_TEST, CLASS_FREE_COUNT,
+                              CLASS_POSITION, PRESEASON_GATE, CLASS_COUNT, CLASS_TARGET_CMP, CLASS_TARGET_NEED,
+                              CLASS_TOPUP})
 REVISION = 4
 
 
@@ -196,6 +215,11 @@ def sites(revision: int = REVISION) -> tuple[Site, ...]:
         for address in (CLASS_ALLOCATOR_TEST, CLASS_FREE_COUNT):
             replacements[address] = b"\xe8" + struct.pack("<i", SYMBOLS["economy_class_free"] - address - 5)
         replacements[CLASS_POSITION] = b"\xe8" + struct.pack("<i", SYMBOLS["economy_class_slot"] - CLASS_POSITION - 5) + b"\x90"
+        replacements[PRESEASON_GATE] = b"\xe8" + struct.pack("<i", SYMBOLS["economy_preseason_gate"] - PRESEASON_GATE - 5)
+        replacements[CLASS_COUNT] = b"\xb9" + struct.pack("<I", CLASS_SIZE)
+        replacements[CLASS_TARGET_CMP] = b"\x3d" + struct.pack("<I", CLASS_SIZE)
+        replacements[CLASS_TARGET_NEED] = b"\xb9" + struct.pack("<I", CLASS_SIZE)
+        replacements[CLASS_TOPUP] = b"\xe8" + struct.pack("<i", SYMBOLS["economy_class_topup"] - CLASS_TOPUP - 5)
     return tuple(Site(a, b, PINS[a]) for a, b in sorted(replacements.items()))
 
 

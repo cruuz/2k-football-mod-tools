@@ -124,8 +124,10 @@ class MyCareerCapacityCreateTests(unittest.TestCase):
 
 
 # ------------------------------------------------------------------------------------------- draft classes
-# The disc class window's position mix (retail; SOFTDRINK folds OLB into LB): QB K P WR CB FS SS HB FB TE OLB ILB C G T DT DE
-WINDOW_MIX = (27, 19, 23, 41, 34, 12, 16, 10, 13, 24, 21, 20, 25, 31, 18, 23, 23)
+# Revision 4's class mix per 450 (Noah 10/28: deep classes, undrafted players at every position):
+#             QB   K   P  WR  CB  FS  SS  HB  FB  TE OLB ILB   C   G   T  DT  DE
+CLASS_MIX = (24, 10, 10, 52, 48, 18, 18, 32, 10, 28, 18, 22, 20, 32, 32, 36, 40)
+ONE_POOL_MIX = CLASS_MIX[:10] + (0, CLASS_MIX[10] + CLASS_MIX[11]) + CLASS_MIX[12:]   # no rostered OLB: OLB is LB
 
 
 def _revision_three(current, retail):
@@ -143,10 +145,11 @@ def _revision_three(current, retail):
     return bytes(out)
 
 
-def _turnover(payload, body):
+def _turnover(payload, body, class_size=380):
     """A fresh native franchise (0x13EE10 generates the first class), then one league year's record turnover:
     the retirement pass 0x2BDB00, the Combine cleanup 0x2BDA90 that frees the retirees, and the class generator
-    0x2BE940(380). Returns (vacancies before, vacancies after, generated positions, positions written)."""
+    0x2BE940(class_size). Returns (vacancies before, vacancies after, generated positions, positions written,
+    years past his position's age of every free agent the pass's top-up call (0x2BDCD6) retired)."""
     from tests.nfl2k5_supersim_draft_fixture import Machine
     m = Machine(payload, trace_writes=False)
     size = len(body) - 0x40
@@ -163,6 +166,22 @@ def _turnover(payload, body):
     generated = []   # Unicorn code hooks must exist before the generator's blocks are first translated
     m.uc.hook_add(m.u.UC_HOOK_CODE, lambda *_: generated.append((m.reg("ECX"), m.reg("EDX") & 0xFF)),
                   begin=0x2BE6F0, end=0x2BE6F0)
+    topped = []
+
+    def retiring_agents():
+        lst, count = m.get(m.root + 0x3C), m.get(m.root + 0x38)
+        return {p for p in (m.get(lst + 4 * i) for i in range(count)) if m.uc.mem_read(p + 8, 1)[0] & 8}
+
+    def past_age(p):
+        season = m.get(0x247AC7) + m.get(0xE576B8) + 1
+        raw = (m.get(p + 24) >> 21) & 127
+        position = m.uc.mem_read(p + 0x35, 1)[0]
+        return (season - raw) % 100 - (m.get(0xACEDE0 + 4 * position) + 24)
+
+    m.uc.hook_add(m.u.UC_HOOK_CODE, lambda *_: topped.append(retiring_agents()), begin=0x2BDCD6, end=0x2BDCD6)
+    def after_topup():   # ages now: the Combine cleanup clears these records before the class reuses them
+        topped.append([past_age(p) for p in retiring_agents() - topped[0]])
+    m.uc.hook_add(m.u.UC_HOOK_CODE, lambda *_: after_topup(), begin=0x2BDCDB, end=0x2BDCDB)
     m.call(0x13EE10, budget=2_000_000_000)
     n, base = m.get(m.root), m.get(m.root + 4)
 
@@ -174,9 +193,10 @@ def _turnover(payload, body):
     m.call(0x2BDB00, budget=4_000_000_000)
     m.call(0x2BDA90, budget=2_000_000_000)
     generated.clear()
-    m.call(0x2BE940, ecx=380, budget=4_000_000_000)
+    m.call(0x2BE940, ecx=class_size, budget=4_000_000_000)
     written = [m.uc.mem_read(record + 0x35, 1)[0] for record, _ in generated]
-    return before, vacancies(), [p for _, p in generated], written
+    ages = topped[1] if len(topped) == 2 else []
+    return before, vacancies(), [p for _, p in generated], written, ages
 
 
 @unittest.skipUnless(HAVE_UC, "Unicorn is not installed")
@@ -200,22 +220,22 @@ class DraftClassSupplyTests(unittest.TestCase):
         self.assertEqual(receipt.get("upgraded_from"), "legacy")
         self.assertEqual(sorted(int(e["va"], 16) for e in receipt["edits"]), sorted(economy.REVISION_4_SITES))
 
-    def test_every_class_keeps_the_vacancies_and_samples_every_position(self):
-        # The retail roster has only 241 free agents: retiring all of them still frees fewer than 380 records, so
-        # this class is short (retail itself spends vacancies here). It keeps every vacancy and every group.
-        before, after, positions, written = _turnover(self.current, self.body)
+    def test_a_small_pool_still_gets_a_full_draft_and_keeps_the_vacancies(self):
+        # The retail roster has only 241 free agents, mostly young: retiring by age alone frees far fewer than
+        # 450 records, so the floor pass retires the oldest free agents until the class has MIN_CLASS (256),
+        # more than the 224-pick draft. Every create vacancy survives and every position group is in the class.
+        from mod_editor.core import nfl2k5_franchise_economy as economy
+        before, after, positions, written, _ = _turnover(self.current, self.body, economy.CLASS_SIZE)
         self.assertGreater(before, 100)
         self.assertEqual(after, before)                    # Create Player / MyCareer / imports keep their records
-        self.assertGreater(len(positions), 224)            # still more than seven full rounds
+        self.assertGreaterEqual(len(positions), 256)
         counts = [positions.count(p) for p in range(17)]
-        share = len(positions) / 380
-        for code, want in enumerate(WINDOW_MIX):           # the retail roster carries OLBs, so none fold to LB
-            self.assertGreaterEqual(counts[code], int(want * share) - 1, code)
+        self.assertTrue(all(counts), counts)               # the retail roster carries OLBs, so none fold to LB
         self.assertEqual(written, positions)               # the generator wrote each prospect at that position
 
     def test_revision_three_spends_the_vacancies_and_skews_the_class(self):
         # Negative control: the released (v0.7) economy. Revision 4 must differ from this.
-        before, after, positions, _ = _turnover(self.previous, self.body)
+        before, after, positions, _, _ = _turnover(self.previous, self.body)
         self.assertEqual(len(positions), 380)
         self.assertLess(after, before)
 
@@ -224,34 +244,37 @@ RELEASED_BODY = Path(os.environ.get("NFL2K5_RC1_V07_BODY",
                                     "/home/noah/2k-worktrees/.b77-scratch/b779/rc1/work/rel_body.bin"))
 
 
-@unittest.skipUnless(HAVE_UC and RELEASED_BODY.is_file(), "the released v0.7 main ROST body (private) is absent")
+RELEASED_XBE = Path(os.environ.get("NFL2K5_RC1_V07_XBE", "/home/noah/2k-worktrees/.b77-scratch/b779/rc1/work/rel.xbe"))
+
+
+@unittest.skipUnless(HAVE_UC and RELEASED_BODY.is_file() and RELEASED_XBE.is_file(),
+                     "the released v0.7 default.xbe and main ROST body (private) are absent")
 class ReleasedRosterClassTests(unittest.TestCase):
-    """The v0.7 disc roster (0xB0000 arena, 879 free agents, 144 create vacancies), retail XBE + economy only."""
+    """The released v0.7 executable (every owner, season 2026) and disc roster (0xB0000 arena, 879 free agents,
+    144 create vacancies): as shipped (revision 3) and upgraded in place to revision 4."""
 
     @classmethod
     def setUpClass(cls):
-        from tests.nfl2k5_supersim_draft_fixture import retail_bytes
         from mod_editor.core import nfl2k5_franchise_economy as economy
-        cls.retail, cls.body = retail_bytes(), RELEASED_BODY.read_bytes()
-        cls.current = economy.apply(cls.retail)[0]
-        cls.previous = _revision_three(cls.current, cls.retail)
+        cls.released, cls.body = RELEASED_XBE.read_bytes(), RELEASED_BODY.read_bytes()
+        cls.fixed = economy.apply(cls.released)[0]
 
-    def test_the_second_class_has_the_first_class_mix_and_keeps_144_vacancies(self):
-        before, after, positions, written = _turnover(self.current, self.body)
+    def test_the_second_class_is_450_deep_by_age_and_keeps_144_vacancies(self):
+        from mod_editor.core import nfl2k5_franchise_economy as economy
+        before, after, positions, written, ages = _turnover(self.fixed, self.body, economy.CLASS_SIZE)
         self.assertEqual((before, after), (144, 144))
-        mix = list(WINDOW_MIX)
-        mix[11] += mix[10]
-        mix[10] = 0                                         # one pool: no rostered OLB, so OLB slots are LB
-        self.assertEqual(tuple(positions.count(p) for p in range(17)), tuple(mix))
+        self.assertEqual(tuple(positions.count(p) for p in range(17)), ONE_POOL_MIX)
         self.assertEqual(written, positions)
+        self.assertTrue(ages)
+        # Every top-up retiree is past his position's age, or (second pass) within two years of it: never younger.
+        self.assertGreaterEqual(min(ages), -2)
 
     def test_released_economy_reproduces_the_reports(self):
         # v0.7 (revision 3): 144 FB, 4 QB, 0 K, 0 P and no vacancy left (SWeaR 10/27: 4 QBs, punters empty).
-        before, after, positions, _ = _turnover(self.previous, self.body)
+        before, after, positions, _, _ = _turnover(self.released, self.body)
         self.assertEqual((before, after), (144, 0))
         self.assertEqual(positions.count(8), 144)          # every vacancy is a fullback record
-        self.assertLess(positions.count(0), 10)             # the full v0.7 XBE measured 4 QB, 0 K, 0 P
-        self.assertLess(positions.count(1) + positions.count(2), 5)
+        self.assertEqual((positions.count(0), positions.count(1), positions.count(2)), (4, 0, 0))
 
 
 if __name__ == "__main__":

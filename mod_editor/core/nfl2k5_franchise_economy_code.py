@@ -171,9 +171,32 @@ WINDOWS = {
         bytes.fromhex(
             "0fb6410883e005c30f0b5589e55653a11829b7008b401c8d88803e00000fb6981c01000031d283fa"
             "41741039da730c8b3490807e350a741042ebeb05f401000039c175d931c0eb05b8010000005b5e5d"
-            "c355b97c01000031d289e55331db6905dc1ce400970000002d97000000f7f10fb683ac22380039c2"
+            "c355b9c201000031d289e55331db6905dc1ce400970000002d97000000f7f10fb683ac22380039c2"
             "720a4329c283fb1075edeb1483fb0a750fe87cffffff85c0b80b0000000f44d889d85b5dc350e8ae"
-            "ffffff89c25889c1c30f0b901b131729220c100a0d181514191f121717"
+            "ffffff89c25889c1c30f0b90180a0a34301212200a1c12161420202428"
+        ).ljust(192, b"\xcc")
+    ),
+    0x41e2a0: (  # roster_g: 124/192 bytes
+        bytes.fromhex(
+            "510fb61578f92b0038911c0100007605e8eb16eaff59e99516eaff0f0b5589e553a1b876e500bb64"
+            "0000008b4d080305c77a2400408b5118c1ea1583e27f29d031d2f7f35b5d8d42e80fb651352b0495"
+            "e0edac00c35531d289e58b4508f6400818751580783510770f50e8aeffffff5a31d23b450c0f9dc2"
+            "c989d0c3"
+        ).ljust(192, b"\xcc")
+    ),
+    0x3a5f20: (  # roster_h: 148/192 bytes
+        bytes.fromhex(
+            "5589e55756be0c00000053538b5d103b75147c353b5d187e3031ff3b7d0c73263b5d187e218b4508"
+            "8b0cb85651894df0e8a08307005a5985c074088b4df04b8049080847ebd54eebc68d65f489d85b5e"
+            "5f5dc35589e55653a11829b7008b583c8b70386a006a00ff75085653e88fffffff505653e8874b01"
+            "0083c42068c20000006ad8505653e875ffffff8d65f85b5e5dc20800"
+        ).ljust(192, b"\xcc")
+    ),
+    0x3bab20: (  # roster_i: 116/192 bytes
+        bytes.fromhex(
+            "5589e557565383ec088b7d1085ff7e5ac745f00000000031f631db3b750c743f8b45088b0cb06afe"
+            "51894dece8a43706005a5985c08b4dec7422ba01000000e81cc2e8ffd945f0dff1770485db750b8b"
+            "4508d95df08b1cb0eb02ddd846ebbc85db7407804b08084feba28d65f489f85b5e5f5dc3"
         ).ljust(192, b"\xcc")
     ),
 }
@@ -186,4 +209,4 @@ ROOKIE_TABLE = bytes.fromhex(
     "fc567100fd5671000000000000000000000000000000000000000000000000000000000000000000"
     "000000000000000000000000000000000000000000000000"
 )
-SYMBOLS = {'economy_pick': 2861856, 'economy_value': 2872384, 'economy_floor': 2872924, 'economy_penalty': 2872975, 'economy_cap': 2873047, 'economy_offer_room': 2873174, 'economy_reconcile': 2882528, 'economy_money': 3270016, 'economy_fill_gate': 3270149, 'economy_contract': 3287200, 'economy_offer_gate': 3287364, 'economy_rookie': 3287424, 'economy_week': 3291248, 'economy_after': 3291679, 'economy_stage6': 3291695, 'economy_class_free': 3678720, 'economy_class_position': 3678801, 'economy_class_slot': 3678877, 'economy_renew_gate': 3765744, 'economy_expire': 3765821, 'economy_fa_retire': 3765897, 'economy_restructure': 3907424, 'economy_fill_room': 3908784, 'economy_renew_room': 3908855, 'economy_clubs': 3908968, 'economy_best_room': 4008080}
+SYMBOLS = {'economy_pick': 2861856, 'economy_value': 2872384, 'economy_floor': 2872924, 'economy_penalty': 2872975, 'economy_cap': 2873047, 'economy_offer_room': 2873174, 'economy_reconcile': 2882528, 'economy_money': 3270016, 'economy_fill_gate': 3270149, 'economy_contract': 3287200, 'economy_offer_gate': 3287364, 'economy_rookie': 3287424, 'economy_week': 3291248, 'economy_after': 3291679, 'economy_stage6': 3291695, 'economy_class_free': 3678720, 'economy_class_position': 3678801, 'economy_class_slot': 3678877, 'economy_renew_gate': 3765744, 'economy_expire': 3765821, 'economy_fa_retire': 3765897, 'economy_class_topup': 3825523, 'economy_restructure': 3907424, 'economy_fill_room': 3908784, 'economy_renew_room': 3908855, 'economy_clubs': 3908968, 'economy_best_room': 4008080, 'economy_preseason_gate': 4317856}
