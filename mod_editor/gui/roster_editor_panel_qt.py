@@ -194,16 +194,18 @@ class PlayerCsvPreviewDialog(QDialog):
         summary.setWordWrap(True)
         layout.addWidget(summary)
         self.table = QTableWidget(0, 6)
-        self.table.setHorizontalHeaderLabels(("CSV row", "Pool + index", "Field", "Before", "After", "Refusal"))
+        self.table.setHorizontalHeaderLabels(("CSV row", "Player / pool + index", "Field", "Before", "After", "Refusal"))
         self.table.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.table.setAccessibleName("Player CSV changes and refused rows")
         entries = []
         for row in receipt['changes']:
+            identity = row.get('label') or f"{row['pool']}:{row['index']}"
             for field in row['changes']:
-                entries.append((row['row'], f"{row['pool']}:{row['index']}", field['field'],
+                entries.append((row['row'], identity, field['field'],
                                 field['before'], field['after'], ""))
         for row in receipt['refused']:
-            entries.append((row['row'], f"{row['pool']}:{row['index']}", "", "", "", row['reason']))
+            identity = row.get('label') or f"{row['pool']}:{row['index']}"
+            entries.append((row['row'], identity, "", "", "", row['reason']))
         self.table.setRowCount(len(entries))
         for i, row in enumerate(entries):
             for j, value in enumerate(row):

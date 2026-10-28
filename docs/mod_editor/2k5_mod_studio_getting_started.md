@@ -1289,7 +1289,9 @@ name fields always says how much room is left.
 play-by-play or photo unless you ask for the photo. **One-shot passes ▾** advance years pro for the
 league or the list, and restore height, weight and date of birth to what the roster shipped with.
 **CSV ▾** exports the list or the whole league and reads it back — it also reads Finn's
-semicolon-delimited export, and a spreadsheet with three columns is a legal edit.
+semicolon-delimited export, and a spreadsheet with three columns is a legal edit. Files exported
+by Bad_AL's NFL2K5Tool import directly, matched by team and name with position and jersey as
+tie-breakers.
 
 **Teams.** Under the grid: **Release to free agency**, **Sign to ▾** / **Move to ▾** a team,
 **Swap with…** another rostered player. These are Finn's operations done his way — the team's pointer

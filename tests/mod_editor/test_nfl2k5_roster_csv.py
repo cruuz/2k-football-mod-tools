@@ -33,6 +33,68 @@ def change_csv(text, index=0, **changes):
     return out.getvalue()
 
 
+TOOL_HEADER = ("#Position,fname,lname,JerseyNumber,Speed,Agility,Strength,Jumping,Coverage,"
+               "PassRush,RunCoverage,PassBlocking,RunBlocking,Catch,RunRoute,BreakTackle,"
+               "HoldOntoBall,PowerRunStyle,PassAccuracy,PassArmStrength,PassReadCoverage,Tackle,"
+               "KickPower,KickAccuracy,Stamina,Durability,Leadership,Scramble,Composure,"
+               "Consistency,Aggressiveness,College,DOB,PBP,Photo,YearsPro,Hand,Weight,Height,"
+               "BodyType,Skin,Face,Dreads,Helmet,FaceMask,Visor,EyeBlack,MouthPiece,LeftGlove,"
+               "RightGlove,LeftWrist,RightWrist,LeftElbow,RightElbow,Sleeves,LeftShoe,RightShoe,"
+               "NeckRoll,Turtleneck,")
+
+
+def compact(value):
+    return str(value).replace(' ', '').replace('/', '')
+
+
+def tool_shoe(value):
+    return 'Taped' if value == 6 else f'Shoe{value + 1}'
+
+
+def tool_row(document, player):
+    row = rr._csv_row(document, player)
+    birth = rr.dt.date.fromisoformat(row['birth_date'])
+    return [
+        row['position'], player.first, player.last, str(row['jersey']),
+        *[str(row[column]) for column in
+          ('speed', 'agility', 'strength', 'jumping', 'coverage', 'pass_rush', 'run_coverage',
+           'pass_blocking', 'run_blocking', 'catch', 'run_route', 'break_tackle', 'hold_onto_ball')],
+        str(row['power_run_style']),
+        *[str(row[column]) for column in
+          ('pass_accuracy', 'pass_arm_strength', 'pass_read_coverage', 'tackle', 'kick_power',
+           'kick_accuracy', 'stamina', 'durability', 'leadership', 'scramble', 'composure',
+           'consistency', 'aggressiveness')],
+        row['college'], f'{birth.month}/{birth.day}/{birth.year}',
+        f"{row['pbp_id']:04d}", f"{row['photo_id']:04d}", str(row['years_pro']),
+        row['hand'], str(row['weight']), f"{row['height'] // 12}'{row['height'] % 12}\"",
+        compact(row['body']), compact(rr.SKINS[row['skin']]), compact(rr.FACES[row['face']]),
+        row['dreads'], row['helmet'], compact(rr.FACE_MASKS[row['face_mask']]),
+        row['face_shield'], row['eye_black'], row['mouthpiece'],
+        compact(rr.GLOVES[row['left_glove']]), compact(rr.GLOVES[row['right_glove']]),
+        compact(rr.WRISTS[row['left_wrist']]), compact(rr.WRISTS[row['right_wrist']]),
+        compact(rr.ELBOWS[row['left_elbow']]), compact(rr.ELBOWS[row['right_elbow']]),
+        row['sleeves'], tool_shoe(row['left_shoe']), tool_shoe(row['right_shoe']),
+        row['neck_roll'], row['turtleneck'],
+    ]
+
+
+def tool_export(document):
+    lines = [TOOL_HEADER]
+    for team in document.teams:
+        members = [document.by_offset[offset] for offset in team.slots
+                   if offset in document.by_offset]
+        if not members:
+            continue
+        lines.append(f'Team = {team.abbreviation}    Players:{len(members)}')
+        lines.extend(','.join(tool_row(document, player)) + ',' for player in members)
+    free_agents = [document.by_offset[offset] for offset in document.free_agents
+                   if offset in document.by_offset]
+    if free_agents:
+        lines.append(f'Team = FreeAgents    Players:{len(free_agents)}')
+        lines.extend(','.join(tool_row(document, player)) + ',' for player in free_agents)
+    return '\n'.join(lines) + '\n'
+
+
 class CsvTests(unittest.TestCase):
     def setUp(self):
         self.doc = rr.load_body(synthetic_body())
@@ -66,6 +128,161 @@ class CsvTests(unittest.TestCase):
         duplicate = 'pool,index,speed\nprimary,0,77\nprimary,00,80\n'
         receipt = rr.import_csv(self.doc, duplicate)
         self.assertEqual((receipt['changed'], len(receipt['refused'])), (0, 2))
+
+    def test_nfl2k5tool_fixture_imports_retail_ratings(self):
+        before = self.doc.to_body()
+        players = len(self.doc.players)
+        text = ("#Position,fname,lname,JerseyNumber,Speed,Agility,Strength,Consistency,PowerRunStyle,\n"
+                "Team = IND    Players:3\n"
+                "QB,Peyton,Manning,18,77,78,60,80,Power,\n"
+                "WR,Marvin,Harrison,88,88,48,53,73,Balanced,\n"
+                "HB,Edgerrin,James,32,85,51,56,76,Finesse,\n")
+        self.assertEqual(rr.detect_csv_format(text), rr.NFL2K5TOOL_CSV)
+        preview = rr.preview_csv(self.doc, text)
+        self.assertEqual(self.doc.to_body(), before)
+        self.assertEqual((preview.receipt['rows'], preview.receipt['changed']), (3, 3))
+        self.assertEqual(preview.receipt['fields'], 9)
+        self.assertFalse(preview.receipt['refused'])
+        changes = {change['row']: {field['field']: field for field in change['changes']}
+                   for change in preview.receipt['changes']}
+        self.assertEqual(set(changes[3]), {'speed', 'agility', 'strength', 'consistency',
+                                           'power_run_style'})
+        self.assertEqual((changes[3]['speed']['before'], changes[3]['speed']['after']), (66, 77))
+        self.assertEqual(changes[4]['power_run_style']['after'], 50)
+        self.assertEqual(changes[5]['power_run_style']['after'], 1)
+        rr.apply_csv_preview(self.doc, preview)
+        reread = rr.load_body(self.doc.to_body())
+        self.assertEqual(len(reread.players), players)
+        manning = reread.players[0].record
+        self.assertEqual((manning.get('speed'), manning.get('agility'), manning.get('strength'),
+                          manning.get('consistency'), manning.get('power_run_style')),
+                         (77, 78, 60, 80, 99))
+        self.assertEqual(reread.players[1].record.get('power_run_style'), 50)
+        self.assertEqual(reread.players[2].record.get('power_run_style'), 1)
+
+    def test_nfl2k5tool_full_export_round_trips_every_column(self):
+        self.assertTrue(set(rr.NFL2K5TOOL_COLUMNS.values()) <= set(rr.CSV_COLUMNS))
+        before = self.doc.to_body()
+        text = tool_export(self.doc)
+        self.assertNotIn('Team = DraftClass', text)
+        receipt = rr.import_csv(self.doc, text)
+        self.assertEqual(receipt['format'], rr.NFL2K5TOOL_CSV)
+        self.assertFalse(receipt['refused'])
+        self.assertEqual((receipt['rows'], receipt['changed'], receipt['fields']), (7, 0, 0))
+        self.assertEqual(self.doc.to_body(), before)
+
+    def test_nfl2k5tool_fixture_imports_into_the_retail_roster(self):
+        from test_nfl2k5_roster_records import RETAIL_EXTRACTION, retail_body
+        from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+
+        require_nfl_retail_packs(RETAIL_EXTRACTION)
+        document = rr.load_body(retail_body())
+        team = document.teams[0]
+        player = document.by_offset[team.slots[0]]
+        values = tool_row(document, player)
+        speed = int(values[4])
+        values[4] = str(speed + 1 if speed < 99 else speed - 1)
+        text = (TOOL_HEADER + "\n" + f"Team = {team.abbreviation}    Players:1\n"
+                + ",".join(values) + ",\n")
+        receipt = rr.import_csv(document, text)
+        self.assertEqual((receipt['rows'], receipt['changed'], receipt['fields']), (1, 1, 1))
+        self.assertFalse(receipt['refused'])
+        self.assertEqual(player.record.get('speed'), int(values[4]))
+        self.assertEqual((player.first, player.last), ('Ahmed', 'Plummer'))
+
+    def test_nfl2k5tool_face_high_bits_use_the_studio_low_nibble(self):
+        text = ("#Position,fname,lname,JerseyNumber,Face,\n"
+                "Team = IND    Players:3\n"
+                "QB,Peyton,Manning,18,21,\n"
+                "WR,Marvin,Harrison,88,Face17,\n"
+                "HB,Edgerrin,James,32,Face16,\n")
+        receipt = rr.import_csv(self.doc, text)
+        self.assertEqual((receipt['changed'], receipt['fields']), (1, 1))
+        self.assertFalse(receipt['refused'])
+        self.assertEqual(receipt['changes'][0]['changes'],
+                         [{'field': 'face', 'before': 0, 'after': 5}])
+        self.assertEqual(self.doc.players[0].record.values['face'], 5)
+        self.assertEqual(self.doc.players[1].record.values['face'], 0)
+        self.assertEqual(self.doc.players[2].record.values['face'], 0)
+
+    def test_nfl2k5tool_unmatched_ambiguous_and_unknown_teams_refuse(self):
+        second = ('Peyton', 'Manning', 0, 19, 7, 230, 77, rr.dt.date(1976, 3, 24), 0, 66, 0)
+        doc = rr.load_body(synthetic_body([SAMPLE[0], second, SAMPLE[1]]))
+        text = ("#Position,fname,lname,JerseyNumber,Speed,\n"
+                "Team = IND    Players:3\n"
+                "QB,Peyton,Manning,,80,\n"
+                "QB,Peyton,Manning,19,81,\n"
+                "QB,Nobody,Here,5,80,\n"
+                "Team = Atlantis\n"
+                "QB,Peyton,Manning,18,80,\n"
+                "Team = DraftClass\n"
+                "QB,Draft,Prospect,99,60,\n")
+        receipt = rr.import_csv(doc, text)
+        self.assertEqual(receipt['format'], rr.NFL2K5TOOL_CSV)
+        self.assertEqual((receipt['changed'], receipt['fields']), (1, 1))
+        self.assertEqual(len(receipt['refused']), 4)
+        reasons = [row['reason'] for row in receipt['refused']]
+        self.assertTrue(any('ambiguous' in reason for reason in reasons))
+        self.assertTrue(any('no City0 Team0 player named Nobody Here' in reason for reason in reasons))
+        self.assertTrue(any('not in this loaded roster' in reason for reason in reasons))
+        self.assertTrue(any('DraftClass' in reason for reason in reasons))
+        self.assertEqual(len(doc.players), 3)
+        self.assertEqual(doc.players[0].record.get('speed'), 66)
+        self.assertEqual(doc.players[1].record.get('speed'), 81)
+
+    def test_nfl2k5tool_duplicate_rows_refuse_every_occurrence(self):
+        text = ("#Position,fname,lname,JerseyNumber,Speed,\n"
+                "Team = IND\n"
+                "QB,Peyton,Manning,18,80,\n"
+                "QB,Peyton,Manning,18,81,\n")
+        receipt = rr.import_csv(self.doc, text)
+        self.assertEqual((receipt['changed'], receipt['fields']), (0, 0))
+        self.assertEqual(len(receipt['refused']), 2)
+        self.assertTrue(all('duplicate player' in row['reason'] for row in receipt['refused']))
+        self.assertEqual(self.doc.players[0].record.get('speed'), 66)
+
+    def test_nfl2k5tool_header_and_cell_errors_refuse_cleanly(self):
+        for text, message in [
+                ('#Position,fname,lname,Mystery,\nQB,Pat,Player,1,\n', 'not recognized'),
+                ('#Position,fname,lname,Depth,\nQB,Pat,Player,1,\n', 'no Studio CSV field'),
+                ('#Position,Speed,\nQB,77,\n', 'fname and lname'),
+                ('#Position,fname,lname,Speed,Speed,\nQB,Pat,Player,1,2,\n', 'Duplicate')]:
+            with self.subTest(text=text), self.assertRaisesRegex(rr.RosterRecordError, message):
+                rr.preview_csv(self.doc, text)
+        for header, value in [('Speed', 'fast'), ('Height', 'tall'), ('DOB', 'not-a-date')]:
+            with self.subTest(header=header):
+                text = (f"#Position,fname,lname,{header},\n"
+                        "Team = IND    Players:1\n"
+                        f"QB,Peyton,Manning,{value},\n")
+                receipt = rr.import_csv(self.doc, text)
+                self.assertEqual((receipt['changed'], receipt['fields']), (0, 0))
+                self.assertEqual(len(receipt['refused']), 1)
+                self.assertIn(header.casefold(), receipt['refused'][0]['reason'].casefold())
+
+    def test_nfl2k5tool_bom_semicolons_and_crlf_are_safe(self):
+        text = ("\ufeff#Position;fname;lname;JerseyNumber;Speed;\r\n"
+                "Team = IND    Players:1\r\n"
+                "QB;Peyton;Manning;18;77;\r\n"
+                "KR1;WR2\r\nKR2;HB1\r\nPR;CB3\r\nLS;TE1\r\n")
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / 'the1wam-ratings.csv'
+            path.write_text(text, encoding='utf-8', newline='')
+            loaded = path.read_text(encoding='utf-8-sig')
+        receipt = rr.import_csv(self.doc, loaded)
+        self.assertEqual((receipt['rows'], receipt['changed'], receipt['fields']), (1, 1, 1))
+        self.assertFalse(receipt['refused'])
+        self.assertEqual(self.doc.players[0].record.get('speed'), 77)
+        prefixed = text.replace('#Position', 'Key=Position', 1)
+        self.assertEqual(rr.detect_csv_format(prefixed), rr.NFL2K5TOOL_CSV)
+
+    def test_studio_csv_round_trip_is_unchanged_and_not_mistaken_for_the_tool(self):
+        text = rr.export_csv(self.doc)
+        self.assertEqual(rr.detect_csv_format(text), rr.STUDIO_CSV)
+        before = self.doc.to_body()
+        receipt = rr.import_csv(self.doc, text)
+        self.assertEqual((receipt['changed'], receipt['fields'], receipt['refused']), (0, 0, []))
+        self.assertEqual(self.doc.to_body(), before)
+        self.assertNotIn('format', receipt)
 
     def test_secondary_pool_and_duplicate_names_have_exact_identity(self):
         body = bytearray(synthetic_body([SAMPLE[0], SAMPLE[0]]))
@@ -204,6 +421,47 @@ class GuiCsvTests(unittest.TestCase):
         self.assertEqual(self.panel.undo_stack.depth, (0, 0))
         noop = PlayerCsvPreviewDialog(self.panel.preview_csv_text(self.panel.export_csv_text(True)), self.panel)
         self.assertFalse(noop.buttons.button(QDialogButtonBox.Apply).isEnabled())
+
+    def test_nfl2k5tool_import_previews_and_undoes_as_one_action(self):
+        before = self.panel.document.to_body()
+        text = ("#Position,fname,lname,JerseyNumber,Speed,\n"
+                "Team = IND    Players:1\n"
+                "QB,F00,Last00,1,77,\n")
+        preview = self.panel.preview_csv_text(text)
+        self.assertEqual(preview.receipt['format'], rr.NFL2K5TOOL_CSV)
+        self.assertEqual((preview.receipt['changed'], preview.receipt['fields']), (1, 1))
+        dialog = PlayerCsvPreviewDialog(preview, self.panel)
+        self.assertEqual(dialog.table.rowCount(), 1)
+        self.assertIn('F00 Last00', dialog.table.item(0, 1).text())
+        dialog.reject()
+        self.assertEqual(self.panel.document.to_body(), before)
+        receipt = self.panel.import_csv_text(text)
+        self.assertEqual(receipt['changed'], 1)
+        self.assertEqual(self.panel.undo_stack.depth, (1, 0))
+        after = self.panel.document.to_body()
+        self.assertNotEqual(after, before)
+        self.panel.undo()
+        self.assertEqual(self.panel.document.to_body(), before)
+        self.panel.redo()
+        self.assertEqual(self.panel.document.to_body(), after)
+
+    def test_nfl2k5tool_file_action_previews_and_applies(self):
+        before = self.panel.document.to_body()
+        text = ("#Position,fname,lname,JerseyNumber,Speed,\n"
+                "Team = IND    Players:1\n"
+                "QB,F00,Last00,1,78,\n")
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / 'the1wam-ratings.csv'
+            path.write_text(text, encoding='utf-8', newline='')
+            with patch('mod_editor.gui.roster_editor_panel_qt.QFileDialog.getOpenFileName',
+                       return_value=(str(path), '')), \
+                 patch('mod_editor.gui.roster_editor_panel_qt.PlayerCsvPreviewDialog.exec_',
+                       return_value=QDialog.Accepted):
+                self.panel._import_csv()
+        self.assertEqual(self.panel.undo_stack.depth, (1, 0))
+        self.assertNotEqual(self.panel.document.to_body(), before)
+        self.panel.undo()
+        self.assertEqual(self.panel.document.to_body(), before)
 
     def test_real_save_layout_and_franchise_round_trip_never_write_source(self):
         for label, payload in [('roster', synthetic_save_v0(synthetic_body())),
