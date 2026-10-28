@@ -67,7 +67,7 @@ class SharedSprintTests(unittest.TestCase):
         self.assertEqual(abilities.apply(built)[0], built)
         self.assertEqual(space.layout(self.before)['allocations'], space.layout(built)['allocations'])
         self.assertEqual(len(self.before), len(built))
-        self.assertEqual(abilities.revision(built), 'superstar-charge')
+        self.assertEqual(abilities.revision(built), 'universal-sprint')
         self.assertEqual(abilities.read_settings(self.before)['star_access'],
                          abilities.read_settings(built)['star_access'])
         a = next(a for a in space.layout(built)['allocations'] if a['owner'] == burst.OWNER)
@@ -91,14 +91,14 @@ class SharedSprintTests(unittest.TestCase):
                 self.assertEqual(results[0], results[1])
                 self.assertEqual(results[0], results[2])
 
-    def test_charge_requires_ratings_and_existing_permission_cpu_human_carrier_defender(self):
+    def test_charge_is_star_only_regardless_of_movement_ratings_cpu_human_carrier_defender(self):
         m = self.machines[1]
         for carrier, controller, speed, agility, word in itertools.product(
                 (False, True), (-1, 0), (89, 90, 127, 128), (84, 85, 127, 128),
                 (0, 0x20, 0x100, 0x120)):
             m.setup(carrier=carrier, controller=controller, speed=speed, abilities=word)
             m.uc.mem_write(m.R + 0x37, bytes((agility,)))
-            allowed = bool(word & 0x100) and 90 <= speed <= 127 and 85 <= agility <= 127
+            allowed = bool(word & 0x100)
             m.run(0x2D46D0)
             with self.subTest(carrier=carrier, controller=controller, speed=speed, agility=agility, word=word):
                 self.assertEqual(m.number(m.S + 0x44), 1 if allowed else 0)
@@ -109,7 +109,23 @@ class SharedSprintTests(unittest.TestCase):
                 _, duration = m.enter_burst()
                 self.assertAlmostEqual(duration, 1.5 if allowed else .49 if speed == 89 else .5, places=6)
 
-    def test_native_grants_and_off_week_still_deny_superstar_charge(self):
+    def test_star_carrier_holding_a_charges_at_any_movement_rating(self):
+        m = self.machines[1]
+        for speed, agility in ((87, 77), (70, 60), (39, 43), (90, 85), (99, 99)):
+            m.setup(carrier=True, controller=0, abilities=0x100 | (1 << 14), speed=speed)
+            m.uc.mem_write(m.R + 0x37, bytes((agility,)))
+            for _ in range(90):
+                m.frame(True)
+            with self.subTest(speed=speed, agility=agility):
+                self.assertEqual(m.number(m.S + 0x44), 1)
+                self.assertEqual(m.read(m.S + 0x90) & 3, 3)
+        m.setup(carrier=True, controller=0, abilities=1 << 14, speed=99)
+        m.uc.mem_write(m.R + 0x37, b'\x63')
+        for _ in range(90):
+            m.frame(True)
+        self.assertEqual(m.number(m.S + 0x44), 0)
+
+    def test_native_grants_and_off_week_still_deny_star_charge(self):
         for access, off_week in (('none', None), ('flicks', None), ('full', 7)):
             raw = abilities.apply_shared(self.retail, charge_stars_only=True,
                                          star_access=(access,) * 4, abilities_off_week=off_week)[0]
@@ -122,6 +138,14 @@ class SharedSprintTests(unittest.TestCase):
                 m.run(0x2D46D0)
                 with self.subTest(access=access, off_week=off_week, controller=controller):
                     self.assertEqual(m.number(m.S + 0x44), 0)
+        raw = abilities.apply_shared(self.retail, charge_stars_only=True)[0]
+        m = SprintMachine(raw)
+        for controller, speed, agility in itertools.product((-1, 0), (70, 89), (43, 84)):
+            m.setup(controller=controller, speed=speed, abilities=0x100 | (1 << 14))
+            m.uc.mem_write(m.R + 0x37, bytes((agility,)))
+            m.run(0x2D46D0)
+            with self.subTest(slow_star=True, controller=controller, speed=speed, agility=agility):
+                self.assertEqual(m.number(m.S + 0x44), 1)
 
     def test_native_cpu_intent_and_command_emitter_are_preserved(self):
         counts = []
@@ -176,7 +200,7 @@ class SharedSprintTests(unittest.TestCase):
             write_xbe_copy(source, target, **settings)
             raw = target.read_bytes()
             self.assertFalse(space.is_scaleout(raw))
-            self.assertEqual(abilities.revision(raw), 'superstar-charge')
+            self.assertEqual(abilities.revision(raw), 'universal-sprint')
             a = next(a for a in space.layout(raw)['allocations'] if a['owner'] == burst.OWNER)
             self.assertEqual(XbeImage(raw).read(a['va'], a['size']), burst.code_for(a['va'], shared=True)[0])
             with self.assertRaisesRegex(ValueError, "nothing to write"):
@@ -190,7 +214,7 @@ class SharedSprintTests(unittest.TestCase):
         full = abilities.apply_shared(allocated, charge_stars_only=True)[0]
         self.assertEqual(space.layout(allocated)['allocations'], space.layout(full)['allocations'])
         self.assertEqual(abilities.apply_shared(full)[0], full)
-        self.assertEqual(abilities.revision(full), 'superstar-charge')
+        self.assertEqual(abilities.revision(full), 'universal-sprint')
         unlocked = abilities.apply_shared(self.retail, charge_stars_only=False)[0]
         m = SprintMachine(unlocked)
         m.setup(controller=-1, speed=70, abilities=0)
