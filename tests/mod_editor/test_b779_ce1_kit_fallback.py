@@ -186,6 +186,32 @@ class WholeKit(Harness):
         self.assertNotIn("—", "".join(notes))                  # no em dashes in user-facing text
 
 
+class Policy(Harness):
+    """Which stage may leave a kit out, and that the build says so."""
+
+    def inputs(self, **extra):
+        broken = self.donors(**{"18A8": package(c0=span(kind=b"T"))})
+        retail = mk.RetailPackages("unused")
+        retail.update(self.retail)
+        return dict(packages=broken, retail=retail, **extra)
+
+    def doc(self):
+        return {"kits": [{"id": "K1", "team": "NYG", "code": "18", "style": 9,
+                          "sides": {"H": {"base": "18A8"}, "A": {"base": "18A8"}}}], "selections": []}
+
+    def test_the_classic_teams_kit_is_never_left_out(self):
+        inputs = self.inputs(allow_skip=False)
+        with self.assertRaisesRegex(ValueError, "not a kit package"):
+            mk.expected(self.doc(), dict(inputs, main=b"", files={}, situ=b"", members={}))
+
+    def test_the_build_names_the_swaps_of_both_stages(self):
+        text = (ROOT / "mod_editor/core/mod_build.py").read_text(encoding="utf-8")
+        self.assertIn('for note in kits_receipt.get("user_notes", ()):', text)
+        self.assertIn('for note in (classic_receipt.get("authored_kits") or {}).get("user_notes", ()):', text)
+        classic = (ROOT / "mod_editor/core/nfl2k5_classic_teams.py").read_text(encoding="utf-8")
+        self.assertEqual(classic.count("allow_skip=False"), 3)
+
+
 class Installed(Harness):
     """A disc where one kit was left out earlier reads as installed, not foreign."""
 
