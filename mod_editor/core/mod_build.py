@@ -2768,13 +2768,19 @@ def _check_playbook_menus(target: Path, progress: Callable[..., Any]) -> dict[st
         return None
     progress("Checking every playbook's names and play menus", 0, 0)
     books, problems = 0, []
-    with packs._outer_image().OuterImage(target) as archive:
+    recode = packs._outer_image()
+    names = {index: name for name, index in getattr(recode, "BOOK_ENTRIES", {}).items()}
+    with recode.OuterImage(target) as archive:
         for entry in archive.entries_with_head(b"PLAY"):
             books += 1
             raw = archive.read_entry(entry.index)
             issues = inspector.playcall_ui_problems(raw)
             if not issues:
                 issues = inspector.category_menu_problems(raw)
+            if not issues and hasattr(packs, "audible_table_problems"):
+                # b779 au1: the header audibles (offense No Huddle, defense audibles at the line) must name a play the
+                # native panel can show; a defensive audible left on a front crashed the v0.7 game when browsed.
+                issues = packs.audible_table_problems(raw, book_name=names.get(entry.index))
             problems += [f"book {entry.index}: {problem}"
                          for problem in issues]
     if problems:
