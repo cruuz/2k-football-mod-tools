@@ -242,8 +242,9 @@ class NativeTests(unittest.TestCase):
     def toggle(self, m, view):
         m.mem_write(DATA, bytes([view]))
 
-    def toggle_event(self, m):
-        # The retail event at 0xF4221 is entered with EDI and ESI already on the stack.
+    def retail_event(self, m):
+        # The retail event at 0xF4221 is entered with EDI and ESI already on the stack. The fixed
+        # handler is the retail no-op, so one call is one ignored-event frame.
         sp = STACK + 0x8000
         m.mem_write(sp, struct.pack("<III", 0x1111, 0x2222, SENTINEL))
         m.reg_write(x86.UC_X86_REG_ESP, sp)
@@ -257,7 +258,11 @@ class NativeTests(unittest.TestCase):
     def record_bytes(self, m):
         return bytes(m.mem_read(RECORD, record.RECORD_SIZE))
 
-    def test_visibility_toggle_and_header(self):
+    def write_record_header(self, m, count, head):
+        m.mem_write(RECORD, struct.pack("<IBBHB", screen.RECORD_MAGIC, 1, 3, 2027, 30)
+                    + bytes([6, count, head]))
+
+    def test_row_label_stays_on_the_season_row(self):
         m = self.machine()
         for stage, hidden in ((0, 1), (1, 0), (2, 0), (3, 0), (4, 1), (5, 1), (6, 1), (7, 0), (8, 0), (9, 0)):
             m.mem_write(0xE576A4, struct.pack("<I", stage))
@@ -265,13 +270,19 @@ class NativeTests(unittest.TestCase):
             self.call(m, "visibility", edx=ROWPTR)
             self.assertEqual(struct.unpack("<I", m.mem_read(ROWPTR + 8, 4))[0], hidden, stage)
         self.assertEqual(self.call(m, "header")[1], 0xEB92D8)
-        for view in range(1, 9):
-            self.toggle_event(m)
-            self.assertEqual(m.mem_read(DATA, 1), bytes([view]))
-            expected = CODE + screen._TEXT_OFFSET + (view - 1) * 24
-            self.assertEqual(self.call(m, "header")[1], expected)
-        self.toggle_event(m)
+        # the per-frame ignored event is now the retail no-op: the view byte and label never move
+        for _ in range(12):
+            self.retail_event(m)
         self.assertEqual(m.mem_read(DATA, 1), b"\x00")
+        self.assertEqual(self.call(m, "header")[1], 0xEB92D8)
+        # even a valid three-week record and a stale view byte keep the retail label
+        self.write_record_header(m, count=3, head=3)
+        self.toggle(m, 3)
+        self.retail_event(m)
+        self.assertEqual(m.mem_read(DATA, 1), bytes([3]))
+        self.assertEqual(self.call(m, "header")[1], 0xEB92D8)
+        # view 0 is the season row the header now always names
+        self.toggle(m, 0)
         self.assertEqual(self.call(m, "header")[1], 0xEB92D8)
 
     def test_baseline_season_and_week_history(self):
