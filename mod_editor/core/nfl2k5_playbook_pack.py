@@ -1484,18 +1484,23 @@ def audible_table_problems(resource: bytes, *, book_name: str | None = None) -> 
     return out
 
 
-def repair_defense_audibles(resource: bytearray) -> list[dict[str, int]]:
+def repair_defense_audibles(resource: bytearray, source: bytes | None = None) -> list[dict[str, int]]:
     """Point each defensive audible (header entries 5-9) that no longer names a coverage at the nearest coverage
     of the same formation's menu (an unused one first, the lower slot on a tie). Sound entries keep their bytes.
+    With ``source`` (the resource before the writer ran) only entries that were sound there are repaired, so a book
+    the retail game already ships with offense plays in the defensive half (PRACTICE, reference) is left as it is.
     Edits ``resource`` (wrapper + body) in place and returns one receipt per moved entry."""
     from .nfl2k5_playbook_inspector import FORMATION_AUX_BASE, FORMATION_AUX_SIZE, MENU_EMPTY_PLAY
     if len(resource) != RESOURCE_SIZE:
         raise PlaybookPackError("Defensive audible repair needs one whole PLAY resource")
+    before = _audible_body(source) if source is not None and len(source) == RESOURCE_SIZE else None
     base = RESOURCE_HEADER_SIZE + AUDIBLE_TABLE
     moves = []
     for entry in range(DEFENSE_AUDIBLE_FIRST, AUDIBLE_ENTRIES):
         body = bytes(resource[RESOURCE_HEADER_SIZE:])
-        if _audible_entry_problem(body, entry) is None:
+        if source is not None and (before is None or not _audible_entry_sound(before, entry)):
+            continue
+        if _audible_entry_sound(body, entry):
             continue
         fi, old = resource[base + 2 * entry], resource[base + 2 * entry + 1]
         if fi >= int.from_bytes(body[0x34:0x38], "little") or not 4 <= lib.formation_record(body, fi).type_code <= 7:
@@ -1528,7 +1533,7 @@ def _keep_defense_audibles(compiled, source: bytes):
     """b779 au1: after a defense pack rebuilt the menus, re-seat the defensive audibles it left on a front."""
     from .nfl2k5_formation_play_writer import _difference_ranges
     out = bytearray(compiled.replacement)
-    moves = repair_defense_audibles(out)
+    moves = repair_defense_audibles(out, source)
     if not moves:
         return compiled
     out = bytes(out)
