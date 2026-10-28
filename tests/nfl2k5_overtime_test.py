@@ -28,6 +28,10 @@ HEADER_SIZE = 0xCC4
 TEXT_VA = 0x11000
 TEXT_RAW = 0x2000
 TEXT_SIZE = 0x320000
+ONLINE_VA = 0x4D3000
+ONLINE_RAW = 0x340000
+ONLINE_SIZE = 0x2000
+ONLINE_INDEX = 1
 RETAIL_XBE = Path("/media/noah/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)/default.xbe")
 HAVE_UNICORN = importlib.util.find_spec("unicorn") is not None
 HAVE_CAPSTONE = importlib.util.find_spec("capstone") is not None
@@ -43,6 +47,12 @@ def _text_off(va: int) -> int:
     return TEXT_RAW + (va - TEXT_VA)
 
 
+def _off(va: int) -> int:
+    if ONLINE_VA <= va < ONLINE_VA + ONLINE_SIZE:
+        return ONLINE_RAW + (va - ONLINE_VA)
+    return _text_off(va)
+
+
 def _retail_sites() -> list[tuple[int, bytes]]:
     return [(ot.MAIN_CAVE_VA, ot.RETAIL_MAIN_CAVE), (ot.AUX_CAVE_VA, ot.RETAIL_AUX_CAVE),
             (ot.INIT_SITE_VA, ot.RETAIL_INIT), (ot.OT_KICKOFF_SITE_VA, ot.RETAIL_OT_KICKOFF),
@@ -50,11 +60,15 @@ def _retail_sites() -> list[tuple[int, bytes]]:
             (ot.PRED_SITE_VA, ot.RETAIL_PRED),
             (ot.EXPIRY_SITE_VA, ot.RETAIL_EXPIRY), (ot.EXPIRY2_SITE_VA, ot.RETAIL_EXPIRY2),
             (ot.SIM_RESET_SITE_VA, ot.RETAIL_SIM_RESET), (ot.SIM_ROLL_SITE_VA, ot.RETAIL_SIM_ROLL),
-            (ot.SIM_TIE_SITE_VA, ot.RETAIL_SIM_TIE), (ot.SIM_PERIOD_SITE_VA, ot.RETAIL_SIM_PERIOD)]
+            (ot.SIM_TIE_SITE_VA, ot.RETAIL_SIM_TIE), (ot.SIM_PERIOD_SITE_VA, ot.RETAIL_SIM_PERIOD),
+            (ot.SIM_STEP_SITE_VA, ot.RETAIL_SIM_STEP), (ot.SIM_OT_SKIP_SITE_VA, ot.RETAIL_SIM_OT_SKIP),
+            (ot.SIM_CORE_CAVE_VA, ot.RETAIL_SIM_CORE_CAVE), (ot.SIM_FINISH_CAVE_VA, ot.RETAIL_SIM_FINISH_CAVE),
+            (ot.SIM_STEP_CAVE_VA, ot.RETAIL_SIM_STEP_CAVE)] + [
+                (site, retail) for site, _target, retail in ot.SIM_SCORE_SKIP_SITES]
 
 
 def _build_synthetic_xbe() -> bytes:
-    buf = bytearray(TEXT_RAW + TEXT_SIZE)
+    buf = bytearray(ONLINE_RAW + ONLINE_SIZE)
     buf[0:4] = strength.XBE_MAGIC
     struct.pack_into("<I", buf, 0x104, IMAGE_BASE)
     struct.pack_into("<I", buf, 0x108, HEADER_SIZE)
@@ -66,11 +80,17 @@ def _build_synthetic_xbe() -> bytes:
             fields[1] = TEXT_VA
             fields[3] = TEXT_RAW
             fields[4] = TEXT_SIZE
+        elif index == ONLINE_INDEX:
+            fields[1] = ONLINE_VA
+            fields[3] = ONLINE_RAW
+            fields[4] = ONLINE_SIZE
         struct.pack_into(strength.SECTION_TABLE_FIELDS, buf, header, *fields)
     for va, retail in _retail_sites():
-        buf[_text_off(va): _text_off(va) + len(retail)] = retail
+        buf[_off(va): _off(va) + len(retail)] = retail
     header = TABLE_OFF
     buf[header + 36: header + 56] = _section_digest(bytes(buf), TEXT_RAW, TEXT_SIZE)
+    online_header = TABLE_OFF + ONLINE_INDEX * strength.SECTION_HEADER_SIZE
+    buf[online_header + 36: online_header + 56] = _section_digest(bytes(buf), ONLINE_RAW, ONLINE_SIZE)
     return bytes(buf)
 
 
@@ -106,6 +126,19 @@ class CaveShapeTests(unittest.TestCase):
             self.assertEqual(retail[:3], bytes.fromhex("558bec"), "cave hosts start with push ebp / mov ebp, esp")
         self.assertEqual(ot.RETAIL_MAIN_CAVE[-1:], b"\xc3")
         self.assertEqual(ot.RETAIL_AUX_CAVE[-3:], bytes.fromhex("c20400"))
+        core, finish, step, labels = ot._sim_caves()
+        self.assertEqual(len(core), ot.SIM_CORE_CAVE_SIZE)
+        self.assertEqual(len(finish), ot.SIM_FINISH_CAVE_SIZE)
+        self.assertEqual(len(step), ot.SIM_STEP_CAVE_SIZE)
+        self.assertEqual(len(ot.RETAIL_SIM_CORE_CAVE), ot.SIM_CORE_CAVE_SIZE)
+        self.assertEqual(len(ot.RETAIL_SIM_FINISH_CAVE), ot.SIM_FINISH_CAVE_SIZE)
+        self.assertEqual(len(ot.RETAIL_SIM_STEP_CAVE), ot.SIM_STEP_CAVE_SIZE)
+        for blob in (core, finish, step):
+            self.assertTrue(blob.endswith(b"\xcc"))
+        for name, base, size in (("sim_check", ot.SIM_CORE_CAVE_VA, ot.SIM_CORE_CAVE_SIZE),
+                                 ("sim_finish_offense_scored", ot.SIM_FINISH_CAVE_VA, ot.SIM_FINISH_CAVE_SIZE),
+                                 ("sim_step_wrapper", ot.SIM_STEP_CAVE_VA, ot.SIM_STEP_CAVE_SIZE)):
+            self.assertTrue(base <= labels[name] < base + size, name)
 
     def test_scale_float_is_the_only_setting_dependent_byte_run(self) -> None:
         default = ot.main_cave_bytes(10)
@@ -196,7 +229,7 @@ class SyntheticXbeTests(unittest.TestCase):
         self.assertEqual(ot.status(self.payload), "retail")
         patched, receipt = ot.apply(self.payload)
         self.assertEqual(ot.status(patched), "applied")
-        self.assertEqual(receipt["sections_repinned"], [0])
+        self.assertEqual(receipt["sections_repinned"], [0, 1])
         settings = ot.read_settings(patched)
         self.assertEqual(settings, {"status": "applied", "regular_minutes": 10.0, "both_possessions": True,
                                     "postseason_no_ties": True, "sim_engine": True})
@@ -241,14 +274,22 @@ class SyntheticXbeTests(unittest.TestCase):
         self.assertEqual(tie[7:], b"\x90\x90")
         expected[_text_off(ot.PRED_SITE_VA)] = pred
         expected[_text_off(ot.SIM_TIE_SITE_VA)] = tie
+        for _group, label, off, _before, after in ot._sites(self.payload, 10, True, True, True):
+            if off not in expected:
+                expected[off] = after
         allowed = set()
         for off, blob in expected.items():
             self.assertEqual(patched[off: off + len(blob)], blob, hex(off))
             allowed.update(range(off, off + len(blob)))
         allowed.update(range(TABLE_OFF + 36, TABLE_OFF + 56))
+        online_header = TABLE_OFF + ONLINE_INDEX * strength.SECTION_HEADER_SIZE
+        allowed.update(range(online_header + 36, online_header + 56))
         changed = {i for i, (a, b) in enumerate(zip(self.payload, patched)) if a != b}
         self.assertTrue(changed <= allowed, sorted(hex(i) for i in changed - allowed)[:10])
         self.assertEqual(patched[TABLE_OFF + 36: TABLE_OFF + 56], _section_digest(patched, TEXT_RAW, TEXT_SIZE))
+        online_header = TABLE_OFF + ONLINE_INDEX * strength.SECTION_HEADER_SIZE
+        self.assertEqual(patched[online_header + 36: online_header + 56],
+                         _section_digest(patched, ONLINE_RAW, ONLINE_SIZE))
         self.assertEqual(receipt["changed_bytes"], len(changed))
 
     def test_hook_lengths_match_the_displaced_retail_bytes(self) -> None:
@@ -265,8 +306,13 @@ class SyntheticXbeTests(unittest.TestCase):
         for va, retail in ((ot.PRED_SITE_VA, ot.RETAIL_PRED), (ot.KICKOFF_SITE_VA, ot.RETAIL_KICKOFF),
                            (ot.EXPIRY_SITE_VA, ot.RETAIL_EXPIRY), (ot.EXPIRY2_SITE_VA, ot.RETAIL_EXPIRY2),
                            (ot.SIM_RESET_SITE_VA, ot.RETAIL_SIM_RESET), (ot.SIM_ROLL_SITE_VA, ot.RETAIL_SIM_ROLL),
-                           (ot.SIM_TIE_SITE_VA, ot.RETAIL_SIM_TIE), (ot.SIM_PERIOD_SITE_VA, ot.RETAIL_SIM_PERIOD)):
-            self.assertEqual(patched[_text_off(va): _text_off(va) + len(retail)], retail, hex(va))
+                           (ot.SIM_TIE_SITE_VA, ot.RETAIL_SIM_TIE), (ot.SIM_PERIOD_SITE_VA, ot.RETAIL_SIM_PERIOD),
+                           (ot.SIM_STEP_SITE_VA, ot.RETAIL_SIM_STEP), (ot.SIM_OT_SKIP_SITE_VA, ot.RETAIL_SIM_OT_SKIP),
+                           (ot.SIM_CORE_CAVE_VA, ot.RETAIL_SIM_CORE_CAVE),
+                           (ot.SIM_FINISH_CAVE_VA, ot.RETAIL_SIM_FINISH_CAVE),
+                           (ot.SIM_STEP_CAVE_VA, ot.RETAIL_SIM_STEP_CAVE),
+                           *[(site, retail) for site, _target, retail in ot.SIM_SCORE_SKIP_SITES]):
+            self.assertEqual(patched[_off(va): _off(va) + len(retail)], retail, hex(va))
         labels = {e["label"] for e in receipt["edits"]}
         self.assertEqual(labels, {"main_cave", "aux_cave", "init_hook", "ot_kickoff_hook", "situation_hook"})
 
@@ -284,7 +330,7 @@ class SyntheticXbeTests(unittest.TestCase):
     def test_foreign_bytes_are_refused(self) -> None:
         for va, _retail in _retail_sites():
             broken = bytearray(self.payload)
-            broken[_text_off(va)] ^= 0xFF
+            broken[_off(va)] ^= 0xFF
             self.assertEqual(ot.status(bytes(broken)), "foreign", hex(va))
             with self.assertRaises(ot.OvertimeError):
                 ot.apply(bytes(broken))
@@ -310,8 +356,8 @@ class RetailXbeSmokeTests(unittest.TestCase):
         self.assertEqual(ot.status(payload), "retail")
         patched, receipt = ot.apply(payload)
         self.assertEqual(ot.status(patched), "applied")
-        self.assertEqual(receipt["sections_repinned"], [0])
-        self.assertLess(receipt["changed_bytes"], 700)
+        self.assertEqual(receipt["sections_repinned"], [0, 6])
+        self.assertLess(receipt["changed_bytes"], 1600)
         self.assertEqual(ot.read_settings(patched)["regular_minutes"], 10.0)
         # the state dword lives in .data's BSS tail: mapped at runtime, absent from the file
         sizes = {s.virtual_address: (s, struct.unpack_from("<I", payload, s.header_offset + 8)[0])
