@@ -129,7 +129,7 @@ class CatchSliderKickBoundaryTests(unittest.TestCase):
             for human in (False, True):
                 for slider in (0.25, 0.5, 0.75, 1.0, 2.0):
                     with self.subTest(on_offense=on_offense, human=human, catching=slider):
-                        # Different sliders per side: the catch odds are 2 * (human + cpu), never one side's own,
+                        # Different sliders per side: the catch odds are ODDS_SCALE * (human + cpu), never one side's own,
                         # and a kicked ball always takes the catching branch (never the Interception slider).
                         got, trace = _run(
                             patched, 0.6, human_catching=slider, cpu_catching=0.5,
@@ -138,7 +138,7 @@ class CatchSliderKickBoundaryTests(unittest.TestCase):
                             offense_is_human=human if on_offense else not human,
                             defense_is_human=human, ball_kind=3,
                         )
-                        self.assertAlmostEqual(got, 0.6 / (2 * (slider + 0.5)), places=6)
+                        self.assertAlmostEqual(got, 0.6 / (cs.ODDS_SCALE * (slider + 0.5)), places=6)
                         self.assertNotIn(cs.KICK_GATE_VA, trace)
 
     def test_native_release_sets_loose_ball_kind_in_kickoff_and_scrimmage_phases(self) -> None:
@@ -204,6 +204,7 @@ class CatchSliderKickPatchTests(unittest.TestCase):
         self.assertEqual(len(code), 48)
         self.assertEqual(code[:5], previous_cave[:5])                   # call rand
         self.assertEqual(cs.kick_gate_bytes()[:11], bytes.fromhex("d9050c02e600d8c0def9c3"))  # rand / (2 * Interception)
+        self.assertEqual(len(cs.kick_gate_bytes()), 22)
         self.assertEqual(len(cs.kick_gate_bytes()), 22)
         self.assertEqual(len(self.patched), len(self.retail))
         self.assertEqual(self.patched[0xA40:0xCAC], self.retail[0xA40:0xCAC])

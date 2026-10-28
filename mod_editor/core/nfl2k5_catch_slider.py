@@ -27,14 +27,15 @@ This patch redirects that one call into a 48-byte code cave placed inside the XB
 boot-logo bitmap (``0x00010A10``; the kernel reads it once at boot, the game never
 does; the thunk tables in .text looked dead statically but ARE called at runtime):
 
-    offense or kicked-ball catcher: rand -> rand / (2 * (Human Catching + CPU Catching))
+    offense or kicked-ball catcher: rand -> rand / (K * (Human Catching + CPU Catching))
     other defense catcher:         rand -> rand / (2 * Interception slider)
 
-so a pass is caught when ``rand < P * m`` with ``m = 2 * (human + cpu)`` and the two Catching
-sliders are read straight from the factor table.  Human and CPU receivers get the SAME odds:
+so a pass is caught when ``rand < P * m`` with ``m = K * (human + cpu)``, K = ``ODDS_SCALE`` = 2.0 (the
+retail float constant 2.0 at 0x4E6084), and the two Catching sliders are read straight from the factor table.  Human and CPU receivers get the SAME odds:
 the multiplier is the sum of both sliders, never the receiving side's own.  Every difficulty
 preset sets the pair to values that average 0.5 (Rookie 1.0/0.0, Pro 0.75/0.25, All-Pro
-0.5/0.5, Legend 0.25/0.75), so ``m = 2`` for every preset and every saved profile; moving
+0.5/0.5, Legend 0.25/0.75), so ``m = 2`` (double the retail catch odds) for every preset and every saved
+profile; moving
 either slider moves both teams.  (The previous revision used the receiving side's own slider:
 the Pro human got x1.5 and the CPU stayed at retail odds, which is why the CPU dropped many
 more passes than the human.)  Interception keeps its full range: 0 makes picks impossible, 50
@@ -79,7 +80,7 @@ CEIL_SITES = (0x0014AC20, 0x0014B490)   # Human / CPU Catching "maximum" callbac
 CATCHING_FACTOR_INDEX = 4
 # Default odds multiplier m = K * (human + cpu) = K at every difficulty preset (the pair always sums to 1.0).
 # K is a retail float constant in .rdata, referenced by address.
-ODDS_SCALE = 1.5
+ODDS_SCALE = 2.0
 ODDS_SCALE_VA = {1.25: 0x004EF1CC, 1.5: 0x004E6D0C, 1.75: 0x004E81A4, 2.0: 0x004E6084, 2.5: 0x004E6D44,
                  3.0: 0x004E6D4C, 4.0: 0x004E6D40}[ODDS_SCALE]
 CPU_CATCHING_CELL = FACTOR_TABLE + 4 * CATCHING_FACTOR_INDEX           # side 0 (CPU)

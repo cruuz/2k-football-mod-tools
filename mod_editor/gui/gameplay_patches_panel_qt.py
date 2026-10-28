@@ -38,7 +38,8 @@ PATCHES = (
     ("catch_slider", "Catching and Interception sliders decide the outcome",
      "Retail: the Catching slider barely reaches play and the Interception slider is scaled by difficulty "
      "and floored at a 10 % pick chance, which is why the forums call it broken. Patch: the catch roll is "
-     "divided by twice the receiver's side's Catching slider (goes to 200) and a defender's roll by twice the "
+     "multiplied by 2 x (Human Catching + CPU Catching), the same for human and CPU receivers (goes to 200), and "
+     "a defender's roll is divided by twice the "
      "Interception slider (0 = no picks, 50 = retail, 100 = double)."),
     ("accel_ramp", "Legacy acceleration ramp",
      "Retail: native movement already accelerates. Patch: adds a rating-based speed envelope "

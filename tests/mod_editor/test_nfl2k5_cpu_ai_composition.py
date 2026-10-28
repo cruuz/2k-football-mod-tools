@@ -71,7 +71,7 @@ class GameplayPairTests(unittest.TestCase):
         final = cpu_ai(result)
         self.assertEqual({o.OWNER: o.status(final) for o in (*before, owner)}, status)
         self.assertTrue(all(value == "applied" for value in status.values()), status)
-        self.assertEqual(reads.read_settings(final), {"status": "applied", "zone_windows": True, "recheck": True})
+        self.assertEqual(reads.read_settings(final), {"status": "applied", "zone_windows": True, "recheck": True, "tiers": False})
         self.assertEqual(ball.status(final), "applied")
         for o in (*before, owner):
             self.assertEqual(o.apply(final)[0], final, o.OWNER)
