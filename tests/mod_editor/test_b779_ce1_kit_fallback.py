@@ -212,6 +212,17 @@ class Policy(Harness):
         self.assertEqual(classic.count("allow_skip=False"), 3)
 
 
+class Pinned(unittest.TestCase):
+    def test_shipped_donors_keep_the_strict_compose(self):
+        with mock.patch.object(mk, "pins", return_value={"donors": {"18A0": mk.sha(b"x")}}):
+            self.assertTrue(mk._donors_pinned({"18A0": b"x"}))
+            self.assertFalse(mk._donors_pinned({"18A0": b"y"}))
+            self.assertFalse(mk._donors_pinned({"18A0": b"x", "07A0": b"x"}))
+            self.assertFalse(mk._donors_pinned({}))
+        with mock.patch.object(mk, "pins", side_effect=ValueError("moment kit data changed after the pins")):
+            self.assertFalse(mk._donors_pinned({"18A0": b"x"}))
+
+
 class Installed(Harness):
     """A disc where one kit was left out earlier reads as installed, not foreign."""
 

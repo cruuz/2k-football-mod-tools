@@ -510,7 +510,18 @@ def read_inputs(target, doc, retail=None, allow_skip=True):
         inputs["members"][a["name"]] = (target.get(identity=a["record"]), target.get(identity=a["cdf"]))
     inputs["new_present"] = {package_name(k["code"], l, k["style"]): target.has(package_name(k["code"], l, k["style"]))
                              for k in doc["kits"] for l in "HA"}
+    if inputs["retail"] is not None and _donors_pinned(inputs["packages"]):
+        # the SOFTDRINK donors compose exactly to the shipped pins; a refusal there is a bug to see, not to work around
+        inputs["retail"] = None
     return inputs
+
+
+def _donors_pinned(packages):
+    try:
+        pin = pins()
+    except (OSError, ValueError, KeyError):
+        return False
+    return bool(packages) and all(sha(data) == pin["donors"].get(selector) for selector, data in packages.items())
 
 
 def expected(doc, inputs):
