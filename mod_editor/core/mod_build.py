@@ -506,6 +506,12 @@ class BuildPlan:
     # A late executable owner (nfl2k5_pass_protection). EXPERIMENTAL: on in the Advanced and Experimental presets
     # (holtbolt 10/24: "pass rush incredibly easy ... even when you have great guards").
     pass_protection: bool = False
+    # b779-st1: pass rush stats: pressures and QB hits for defenders, pressures / QB hits / sacks allowed for
+    # offensive linemen (counted in played games, drawn from NFL rates in simulated games), saved as history
+    # fields 106-110, plus Player Card columns (TGT for backs and receivers, PRS/QBH on the defensive sheet, a new
+    # PA/HA/SA sheet for linemen). A late executable owner (nfl2k5_pass_rush_stats). EXPERIMENTAL: on in the
+    # Advanced and Experimental presets (Noah 10/28: "if you could include pressures as a stat...").
+    pass_rush_stats: bool = False
     # b778-fo1: modern sideline catches: no force-out credit. Retail rules a receiver carried out of bounds by a
     # defender (contact state) a catch without his feet down, the pre-2008 force-out rule; from the 2008 season a
     # receiver must get both feet down in bounds. A late executable owner (nfl2k5_force_out) hooks the credit read at
@@ -683,7 +689,7 @@ class BuildPlan:
                 or self.guardian_overlay or self.my_career or self.screen_hooks or self.coverage_trail or self.franchise_edit_player or self.cpu_money_downs != "retail" or self.accelerated_clock or self.coin_defer or self.decided_clock or self.cpu_scrambles == "modern" or self.weather_haze or self.number_kerning or self.modern_color or self.weekly_prep or self.weekly_prep_cpu or self.weekly_prep_remember or self.coach_ai or self.playbook_pair or self.deep_zone_facing or self.deep_zone_bail or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave or self.historic_teams_quick_game or self.espn25_more_moments or self.historic_stock_books or self.espn25_era_rules or self.k128_memory or self.team_ratings or self.play_art_routes or self.letter_grades or self.honors_page or self.sim_cb_tackles or self.sim_stats
                 or self.momentum_collisions or self.scorebug_runtime or self.indicator_names_style != "retail" or self.momentum > 0 or self.momentum_contact or self.defensive_try or self.zone_drop_cap or self.all_stadiums or self.music_shuffle or self.practice_squad_screen or self.abilities or self.qb_spy or self.calendar_engine or self.coverage_slider or self.scramble_tuning or self.flatter_deep_ball or self.chop_block_toggle or self.music_policy != "retail" or self.music_unlock or self.music_userlist
                 or bool(self.music_library and _music_library_document(self.music_library)["bank"] == "cribmusic")
-                or self.pass_protection)  # b778-pr1
+                or self.pass_protection or self.pass_rush_stats)  # b778-pr1, b779-st1
 
     def to_recipe(self) -> dict[str, Any]:
         d = asdict(self)
@@ -821,6 +827,13 @@ for _preset in PRESETS.values():
     _preset["pass_protection"] = False
 PRESETS["softdrink_advanced"]["pass_protection"] = True
 PRESETS["softdrink_experimental"]["pass_protection"] = True
+del _preset
+# b779-st1: pass rush stats: on in the Advanced and Experimental presets (with the honors page, whose fold rule
+# should cover fields 96-127); Basic keeps the retail stats.
+for _preset in PRESETS.values():
+    _preset["pass_rush_stats"] = False
+PRESETS["softdrink_advanced"]["pass_rush_stats"] = True
+PRESETS["softdrink_experimental"]["pass_rush_stats"] = True
 del _preset
 # b778-fo1: modern sideline catches (no force-out from 2008): a modern rule like overtime and the kick rules, so on in
 # the Advanced and Experimental presets; Basic keeps the game in 2004 (the force-out catch of its time).
@@ -1185,6 +1198,21 @@ def _pass_protection_preflight(source: Path, progress) -> None:
                          "build from your unmodified retail dump.")
 
 
+def _pass_rush_stats_preflight(source: Path, progress) -> None:
+    """b779-st1: refuse a source whose pass rush, sack log, commit or Player Card sites are foreign, before any write."""
+    module = _core_module("nfl2k5_pass_rush_stats")
+    if module is None or _core_module("nfl2k5_xbe_space") is None:
+        raise ValueError("Pass rush stats is not available in this installation.")
+    progress("Checking the pass rush and Player Card code for pass rush stats", 0, 0)
+    try:
+        payload = _xbe_bytes(source)
+    except (OSError, ValueError) as exc:
+        raise ValueError(f"Pass rush stats cannot read default.xbe: {exc}") from exc
+    if module.status(payload) == "foreign":
+        raise ValueError("The pass rush or Player Card code in this source is not retail or Pass rush stats. Turn it "
+                         "off or build from your unmodified retail dump.")
+
+
 def _force_out_preflight(source: Path, progress) -> None:
     """b778-fo1: refuse a source whose sideline catch ruling is foreign, before any write (as qb3 does)."""
     module = _core_module("nfl2k5_force_out")
@@ -1245,6 +1273,7 @@ _LATE_OWNER_OPTIONS = (
     ("nfl2k5_team_number_scale", "Jersey number sizes", lambda p: bool(p.team_number_scale)),
     ("nfl2k5_run_blocking", "Run blocking", lambda p: p.run_blocking),
     ("nfl2k5_pass_protection", "Pass protection", lambda p: p.pass_protection),  # b778-pr1
+    ("nfl2k5_pass_rush_stats", "Pass rush stats", lambda p: p.pass_rush_stats),  # b779-st1
     ("nfl2k5_qb_accuracy", "Accurate short throws", lambda p: p.qb_accuracy),
     ("nfl2k5_formation_art_spacing", "Play art: icon spacing", lambda p: p.play_art_routes),  # b777-tp1
     ("nfl2k5_force_out", "Modern sideline catches", lambda p: p.modern_force_out),  # b778-fo1
@@ -1910,6 +1939,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
                                ("play_art_routes", "nfl2k5_play_art_routes"),  # b776-pa2
                                ("run_blocking", "nfl2k5_run_blocking"),  # b777-ol1
                                ("pass_protection", "nfl2k5_pass_protection"),  # b778-pr1
+                               ("pass_rush_stats", "nfl2k5_pass_rush_stats"),  # b779-st1
                                ("modern_force_out", "nfl2k5_force_out"),  # b778-fo1
                                ("module_loader", "nfl2k5_module_loader"),  # b778-xs1
                                ("crib_trophy_room", "nfl2k5_crib_trophy_room"),  # b778-xs1
@@ -2142,6 +2172,8 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
     out["run_blocking"] = run_blocking.status(_xbe_bytes(source)) if run_blocking is not None else "unavailable"
     pass_protection = _core_module("nfl2k5_pass_protection")  # b778-pr1
     out["pass_protection"] = pass_protection.status(_xbe_bytes(source)) if pass_protection is not None else "unavailable"
+    pass_rush_stats = _core_module("nfl2k5_pass_rush_stats")  # b779-st1
+    out["pass_rush_stats"] = pass_rush_stats.status(_xbe_bytes(source)) if pass_rush_stats is not None else "unavailable"
     force_out = _core_module("nfl2k5_force_out")  # b778-fo1
     out["modern_force_out"] = force_out.status(_xbe_bytes(source)) if force_out is not None else "unavailable"
     inbox = _core_module("nfl2k5_inbox_standings")
@@ -3739,6 +3771,23 @@ def _apply_pass_protection(plan, target, receipt, progress):
     receipt["result"]["pass_protection"] = "applied"
 
 
+def _apply_pass_rush_stats(plan, target, receipt, progress):
+    """b779-st1: the pass rush stats owner, right after pass protection (nfl2k5_xbe_space.LATE_OWNERS order)."""
+    if not plan.pass_rush_stats:
+        return
+    module = _core_module("nfl2k5_pass_rush_stats")
+    if module is None:
+        raise RuntimeError("The pass rush stats module is not available in this build")
+    progress("Pass rush stats: pressures, QB hits and allowed stats", 0, 0)
+    xbe, result = module.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, xbe)
+    if module.status(_xbe_bytes(target)) != "applied":
+        raise RuntimeError("Pass rush stats: the executable does not read back as applied")
+    receipt["steps"].append({"step": "pass_rush_stats", **{k: v for k, v in result.items() if k not in ("edits", "reservations")},
+                             "edits": result.get("edits", [])})
+    receipt["result"]["pass_rush_stats"] = "applied"
+
+
 def _roster_capacity_records(plan):
     """b778 fa4: records the paired arena writer must reserve for the dated free-agent plan."""
     if not plan.roster_edits:
@@ -3944,6 +3993,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("Run blocking must be Off or On.")
     if type(plan.pass_protection) is not bool:  # b778-pr1
         raise ValueError("Pass protection must be Off or On.")
+    if type(plan.pass_rush_stats) is not bool:  # b779-st1
+        raise ValueError("Pass rush stats must be Off or On.")
     if type(plan.weekly_progression) is not bool:  # b778-pg1
         raise ValueError("Weekly player progression must be Off or On.")
     if type(plan.modern_force_out) is not bool:  # b778-fo1
@@ -4713,6 +4764,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         _run_blocking_preflight(source, progress)
     if plan.pass_protection:  # b778-pr1: like run blocking, before any write
         _pass_protection_preflight(source, progress)
+    if plan.pass_rush_stats:  # b779-st1: before any write
+        _pass_rush_stats_preflight(source, progress)
     if plan.modern_force_out:  # b778-fo1: like qb3, before any write
         _force_out_preflight(source, progress)
     if plan.inbox_standings:
@@ -5261,7 +5314,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         **tt._r62_space_options(r62), camera=plan.camera,
         hair_styles=plan.hair_styles, cpu_qb_reads=bool(plan.cpu_qb_zone_windows or plan.cpu_qb_recheck),
         db_ball_play=plan.db_ball_play, play_art_routes=plan.play_art_routes,
-        team_number_scale=bool(plan.team_number_scale), run_blocking=plan.run_blocking, pass_protection=plan.pass_protection, return_coverage=plan.return_coverage,
+        team_number_scale=bool(plan.team_number_scale), run_blocking=plan.run_blocking, pass_protection=plan.pass_protection, pass_rush_stats=plan.pass_rush_stats, return_coverage=plan.return_coverage,
         qb_accuracy=plan.qb_accuracy, modern_force_out=plan.modern_force_out,
         practice_injuries=plan.practice_injuries, cpu_ball_carriers=plan.cpu_ball_carriers,
         star_retention=plan.star_retention, star_career=plan.star_career,
@@ -5309,7 +5362,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             or plan.reserves_16 or plan.created_teams_extra or plan.defensive_try or plan.zone_drop_cap or plan.all_stadiums or plan.coverage_slider or plan.scramble_tuning
             or plan.music_shuffle or plan.practice_squad_screen or plan.abilities or plan.qb_spy or plan.calendar_engine or plan.camera or plan.franchise_autosave
             or plan.historic_teams_quick_game or plan.espn25_more_moments or plan.historic_stock_books or plan.espn25_era_rules or r62.get("anniversary_kickoff") or r62.get("widescreen_menus") or r62.get("team_logo_swap") or r62.get("period_goalposts") or plan.k128_memory or plan.letter_grades or plan.honors_page
-            or plan.return_coverage or plan.pass_protection):
+            or plan.return_coverage or plan.pass_protection or plan.pass_rush_stats):
         progress("Adding experimental extra patch space", 0, 0)
         playlist_selection, playlist_preflight = None, None
         if plan.music_shuffle:
@@ -5335,7 +5388,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             dynamic_kickoff_settings=plan.dynamic_kickoff_settings,
             hair_styles=plan.hair_styles, cpu_qb_reads=bool(plan.cpu_qb_zone_windows or plan.cpu_qb_recheck),
             db_ball_play=plan.db_ball_play, play_art_routes=plan.play_art_routes,
-            team_number_scale=bool(plan.team_number_scale), run_blocking=plan.run_blocking, pass_protection=plan.pass_protection, return_coverage=plan.return_coverage,
+            team_number_scale=bool(plan.team_number_scale), run_blocking=plan.run_blocking, pass_protection=plan.pass_protection, pass_rush_stats=plan.pass_rush_stats, return_coverage=plan.return_coverage,
             qb_accuracy=plan.qb_accuracy, modern_force_out=plan.modern_force_out,
             practice_injuries=plan.practice_injuries, cpu_ball_carriers=plan.cpu_ball_carriers,
             star_retention=plan.star_retention, star_career=plan.star_career,
@@ -6356,6 +6409,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     # then qb3's QB accuracy, the last late allocator owner, so nothing else moves.
     _apply_run_blocking(plan, target, receipt, progress)
     _apply_pass_protection(plan, target, receipt, progress)  # b778-pr1: after run blocking
+    _apply_pass_rush_stats(plan, target, receipt, progress)  # b779-st1: after pass protection (LATE_OWNERS order)
     _apply_qb_accuracy(plan, target, receipt, progress)
     # b777-tp1: the formation art icon spacing (with play_art_routes) is the last late allocator owner
     _apply_formation_art_spacing(plan, target, receipt, progress)
@@ -6430,6 +6484,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("the jersey number sizes did not survive the final passes")
     if plan.pass_protection and _core_module("nfl2k5_pass_protection").status(_xbe_bytes(target)) != "applied":  # b778-pr1
         raise RuntimeError("Pass protection: the output does not read back as applied")
+    if plan.pass_rush_stats and _core_module("nfl2k5_pass_rush_stats").status(_xbe_bytes(target)) != "applied":  # b779-st1
+        raise RuntimeError("Pass rush stats: the output does not read back as applied")
     if plan.run_blocking and _core_module("nfl2k5_run_blocking").status(_xbe_bytes(target)) != "applied":  # b777-ol1
         raise ValueError("run blocking did not survive the final passes")
     if plan.qb_accuracy and _core_module("nfl2k5_qb_accuracy").status(_xbe_bytes(target)) != "applied":  # b777-qb3

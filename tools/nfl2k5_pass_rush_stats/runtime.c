@@ -232,11 +232,12 @@ static u32 binomial(u32 n, float mean) {
 }
 
 /* Expected pressures a game for a defender (NFL, PFR advanced defense 2021-2025 per game, starters with 8+
-   starts: DE 1.54, OLB 1.42, DT 0.79, LB 0.56, S 0.18, CB 0.06; elite edges about 3.3 a game), as a curve of
+   starts: DE 1.54, OLB 1.42, DT 0.79, LB 0.56, S 0.18, CB 0.06; elite edges about 3.3 a game; tuned on a simulated
+   2026 season of the SOFTDRINK roster, whose starting edges rate higher than the NFL average), as a curve of
    Pass Rush: base + scale * x^1.5 with x = (rating - 50) / 45 clamped to 0..1. Backups (depth rank 2 and
    deeper) play part of the snaps. Index by position code 0..16. */
 static const float rush_base[17] = {0, 0, 0, 0, 0.02f, 0.05f, 0.06f, 0, 0, 0, 0.25f, 0.10f, 0, 0, 0, 0.15f, 0.25f};
-static const float rush_scale[17] = {0, 0, 0, 0, 0.15f, 0.35f, 0.45f, 0, 0, 0, 3.05f, 1.10f, 0, 0, 0, 2.10f, 3.05f};
+static const float rush_scale[17] = {0, 0, 0, 0, 0.15f, 0.35f, 0.45f, 0, 0, 0, 2.80f, 1.10f, 0, 0, 0, 1.80f, 2.80f};
 extern volatile float prs_rush_share, prs_hit_share, prs_ol_per_game, prs_ol_hit_share, prs_ol_sack_share;
 
 static float rush_curve(u32 rating) {
@@ -332,6 +333,7 @@ void FC prs_on_commit(u32 team, u32 club, u32 side) {
                 u32 pbk = GB(player + 0x46);
                 u32 w = pbk >= 115 ? 1 : 115 - pbk;
                 w = w * w / 16 + 1;           /* (115 - pbk)^2 / 16: weaker blockers are charged more */
+                w = w * (pos == 14 ? 27u : pos == 13 ? 19u : 16u) / 20;   /* tackles face the edges (PFF: T > G > C) */
                 u32 starter = depth_rank(player) <= 1;
                 if (!starter)
                     w = w / 5 + 1;

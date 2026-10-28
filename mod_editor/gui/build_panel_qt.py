@@ -229,6 +229,7 @@ ANNIVERSARY_OPTIONS = (
 from mod_editor.core import nfl2k5_cpu_qb_reads as _cpu_qb_reads, nfl2k5_db_ball_play as _db_ball_play  # noqa: E402
 from mod_editor.core import nfl2k5_run_blocking as _run_blocking  # noqa: E402  b777-ol1
 from mod_editor.core import nfl2k5_pass_protection as _pass_protection  # noqa: E402  b778-pr1
+from mod_editor.core import nfl2k5_pass_rush_stats as _pass_rush_stats  # noqa: E402  b779-st1
 CPU_AI_OPTIONS = (
     ("cpu_qb_zone_windows", _cpu_qb_reads.BUILD_CAPTION_ZONE, _cpu_qb_reads.HELP_ZONE),
     ("cpu_qb_recheck", _cpu_qb_reads.BUILD_CAPTION_RECHECK, _cpu_qb_reads.HELP_RECHECK),
@@ -273,6 +274,7 @@ BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                   "3 yards. Lines stay inside the panel. How plays run is unchanged. Not yet tested in-game."),
                  ("run_blocking", _run_blocking.BUILD_CAPTION, _run_blocking.HELP_TEXT),
                  ("pass_protection", _pass_protection.BUILD_CAPTION, _pass_protection.HELP_TEXT),
+                 ("pass_rush_stats", _pass_rush_stats.BUILD_CAPTION, _pass_rush_stats.HELP_TEXT),
                  ("modern_force_out", _force_out.BUILD_CAPTION, _force_out.HELP_TEXT),  # b778-fo1
                  ("module_loader", _module_loader.BUILD_CAPTION, _module_loader.HELP_TEXT),  # b778-xs1
                  ("crib_trophy_room", _crib_trophy_room.BUILD_CAPTION, _crib_trophy_room.HELP_TEXT),  # b778-xs1

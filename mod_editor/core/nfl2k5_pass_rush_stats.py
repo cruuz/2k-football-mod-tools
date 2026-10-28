@@ -40,7 +40,7 @@ from . import nfl2k5_pass_rush_stats_code as runtime
 
 OWNER = "nfl2k5_pass_rush_stats"
 EVIDENCE = "EXPERIMENTAL"
-CODE_SIZE = 3072
+CODE_SIZE = 3328
 READ_ONLY_SIZE = 2304
 DATA_SIZE = 1152
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "read_only", READ_ONLY_SIZE, 16), (OWNER, "data", DATA_SIZE, 16))

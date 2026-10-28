@@ -40,8 +40,8 @@ class StaticTests(unittest.TestCase):
 
     def test_presets_options_and_late_owner_order(self):
         # b778-int2: fa1's star retention stays before every later b778 owner; the module loader and return coverage are last.
-        self.assertEqual(space.LATE_OWNERS[-14], sr.OWNER)
-        self.assertEqual(space.LATE_OWNERS[-4:], ("nfl2k5_cpu_third_down", "nfl2k5_return_coverage", "nfl2k5_pass_protection", "nfl2k5_module_loader"))
+        self.assertEqual(space.LATE_OWNERS[-15], sr.OWNER)
+        self.assertEqual(space.LATE_OWNERS[-5:], ("nfl2k5_cpu_third_down", "nfl2k5_return_coverage", "nfl2k5_pass_protection", "nfl2k5_pass_rush_stats", "nfl2k5_module_loader"))
         self.assertEqual(space.LATE_OWNERS[-1], "nfl2k5_module_loader")
         self.assertIs(mod_build.BuildPlan(Path("source.iso"), Path("target.iso")).star_retention, False)
         for name, preset in mod_build.PRESETS.items():
