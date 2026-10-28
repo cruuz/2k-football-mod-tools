@@ -173,7 +173,7 @@ WINDOWS = {
             "41741039da730c8b3490807e350a741042ebeb05f401000039c175d931c0eb05b8010000005b5e5d"
             "c355b9c201000031d289e55331db6905dc1ce400970000002d97000000f7f10fb683ac22380039c2"
             "720a4329c283fb1075edeb1483fb0a750fe87cffffff85c0b80b0000000f44d889d85b5dc350e8ae"
-            "ffffff89c25889c1c30f0b90180a0a34301212200a1c12161420202428"
+            "ffffff89c25889c1c30f0b901a0a0a212d0d111f0b1b16161d1e2f232a"
         ).ljust(192, b"\xcc")
     ),
     0x41e2a0: (  # roster_g: 124/192 bytes
@@ -184,12 +184,12 @@ WINDOWS = {
             "c989d0c3"
         ).ljust(192, b"\xcc")
     ),
-    0x3a5f20: (  # roster_h: 148/192 bytes
+    0x3a5f20: (  # roster_h: 145/192 bytes
         bytes.fromhex(
             "5589e55756be0c00000053538b5d103b75147c353b5d187e3031ff3b7d0c73263b5d187e218b4508"
             "8b0cb85651894df0e8a08307005a5985c074088b4df04b8049080847ebd54eebc68d65f489d85b5e"
             "5f5dc35589e55653a11829b7008b583c8b70386a006a00ff75085653e88fffffff505653e8874b01"
-            "0083c42068c20000006ad8505653e875ffffff8d65f85b5e5dc20800"
+            "0083c4206a646ad8505653e878ffffff8d65f85b5e5dc20800"
         ).ljust(192, b"\xcc")
     ),
     0x3bab20: (  # roster_i: 116/192 bytes

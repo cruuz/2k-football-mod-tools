@@ -150,7 +150,8 @@ CLASS_POSITION = 0x2BE91D           # movzx edx, [eax+0x35]; mov ecx, eax in the
 PRESEASON_GATE = 0x248241           # call 0x2BF950 in the stage-7 (preseason -> regular season) advance
 # b779 rc1 (Noah 10/28, deep classes, retirement by age): generated classes ask for CLASS_SIZE prospects and the
 # retirement pass makes room for that many; its top-up retires only free agents past their position's age (oldest
-# first), then if still short the lowest-rated within two years of it, never a younger player (runtime.c).
+# first), then if still short the lowest-rated within two years of it; only to keep a class at 350 the oldest
+# remaining free agents (runtime.c MIN_CLASS).
 CLASS_SIZE = 450
 CLASS_COUNT = 0x2BF942              # mov ecx, 0x17C before the preseason -> regular season class (0x2BF8B0)
 CLASS_TARGET_CMP = 0x2BDCC4         # cmp eax, 0x17C: free + retiring records the pass wants

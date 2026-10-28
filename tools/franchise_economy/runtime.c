@@ -530,13 +530,14 @@ SECTION(".roster_f") __attribute__((naked)) void economy_class_free(void) {
 /* b779 rc1 (Noah 10/28: "there should always be a ton of rookie prospects. Every draft, every position pool
  * should have undrafted players that nobody wants"): a generated class asks for CLASS_SIZE prospects (the
  * native loop asked for 380; the first class is still the disc's own 380-record window). The mix per 450 is
- * about twice the NFL's draft share per position, so a 7-round, 224-pick draft leaves every group with
- * undrafted players, with floors QB 24, K 10, P 10 (QB K P WR CB FS SS HB FB TE OLB ILB C G T DT DE). Under the
+ * the CPU's own 224-pick draft per position (measured over a simulated v0.7 draft) x 1.4, at least 8 left
+ * over, so even a 350-player class leaves every group with undrafted players: QB 26, K 10, P 10, WR 33,
+ * CB 45, FS 13, SS 17, HB 31, FB 11, TE 27, OLB 22, ILB 22, C 29, G 30, T 47, DT 35, DE 42. Under the
  * one-pool scheme no rostered player carries OLB (10), and the class must conserve that
  * (nfl2k5_position_pools), so an OLB slot becomes LB (11). */
 #define CLASS_SIZE 450
 SECTION(".roster_f_rodata") static const u8 class_counts[17] = {
-    24, 10, 10, 52, 48, 18, 18, 32, 10, 28, 18, 22, 20, 32, 32, 36, 40};
+    26, 10, 10, 33, 45, 13, 17, 31, 11, 27, 22, 22, 29, 30, 47, 35, 42};
 
 SECTION(".roster_f") static unsigned league_has_olb(void) {
     u8 *root = *(u8 **)0xB72918;   /* the roster's own 32 club blocks, valid whenever a class is generated */
@@ -620,9 +621,11 @@ SECTION(".roster_h") static int oldest(u8 **list, unsigned n, int need, int lo, 
 }
 
 /* (a) past the position's age, oldest first; (b) within two years of it, lowest-rated first; (c) only when the
- * class would still have fewer than MIN_CLASS records (more than the 224-pick draft plus a margin, so the draft
- * never runs dry), the oldest remaining free agents. The sims report how often (b) and (c) fire. */
-#define MIN_CLASS 256
+ * class would still have fewer than MIN_CLASS records, the oldest remaining free agents. The roster file has a
+ * fixed number of records, so a class can only be as deep as the league frees each year: the sims report how
+ * often (b) and (c) fire and the ages (c) reaches. 350 keeps every position with undrafted players after the
+ * 224-pick draft (Noah 10/28: "never fewer than about 350"). */
+#define MIN_CLASS 350
 SECTION(".roster_h") int STD economy_class_topup(int need, unsigned retiring) {
     u8 *root = *(u8 **)0xB72918, **list = *(u8 ***)(root + 0x3c);
     unsigned n = *(unsigned *)(root + 0x38);

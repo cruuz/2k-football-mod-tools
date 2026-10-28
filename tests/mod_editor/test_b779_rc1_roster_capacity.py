@@ -126,7 +126,7 @@ class MyCareerCapacityCreateTests(unittest.TestCase):
 # ------------------------------------------------------------------------------------------- draft classes
 # Revision 4's class mix per 450 (Noah 10/28: deep classes, undrafted players at every position):
 #             QB   K   P  WR  CB  FS  SS  HB  FB  TE OLB ILB   C   G   T  DT  DE
-CLASS_MIX = (24, 10, 10, 52, 48, 18, 18, 32, 10, 28, 18, 22, 20, 32, 32, 36, 40)
+CLASS_MIX = (26, 10, 10, 33, 45, 13, 17, 31, 11, 27, 22, 22, 29, 30, 47, 35, 42)
 ONE_POOL_MIX = CLASS_MIX[:10] + (0, CLASS_MIX[10] + CLASS_MIX[11]) + CLASS_MIX[12:]   # no rostered OLB: OLB is LB
 
 
@@ -222,13 +222,14 @@ class DraftClassSupplyTests(unittest.TestCase):
 
     def test_a_small_pool_still_gets_a_full_draft_and_keeps_the_vacancies(self):
         # The retail roster has only 241 free agents, mostly young: retiring by age alone frees far fewer than
-        # 450 records, so the floor pass retires the oldest free agents until the class has MIN_CLASS (256),
-        # more than the 224-pick draft. Every create vacancy survives and every position group is in the class.
+        # 450 records, so the floor pass retires the oldest free agents toward MIN_CLASS (350). Here that takes
+        # every free agent the retail roster has (305 records in all), still well over the 224-pick draft.
+        # Every create vacancy survives and every position group is in the class.
         from mod_editor.core import nfl2k5_franchise_economy as economy
         before, after, positions, written, _ = _turnover(self.current, self.body, economy.CLASS_SIZE)
         self.assertGreater(before, 100)
         self.assertEqual(after, before)                    # Create Player / MyCareer / imports keep their records
-        self.assertGreaterEqual(len(positions), 256)
+        self.assertGreaterEqual(len(positions), 300)
         counts = [positions.count(p) for p in range(17)]
         self.assertTrue(all(counts), counts)               # the retail roster carries OLBs, so none fold to LB
         self.assertEqual(written, positions)               # the generator wrote each prospect at that position
@@ -238,6 +239,74 @@ class DraftClassSupplyTests(unittest.TestCase):
         before, after, positions, _, _ = _turnover(self.previous, self.body)
         self.assertEqual(len(positions), 380)
         self.assertLess(after, before)
+
+
+def _preseason_advance(payload, body, user=1):
+    """A native franchise with the preseason on, one user club signed one over the in-season limit (the gate's own
+    immediate at 0x2BF978) during the preseason, the preseason weeks played natively (0x247D40), then the stage
+    advance 0x2480B0 twice. Returns (stage after, user club count after, notices)."""
+    from tests.nfl2k5_supersim_draft_fixture import Machine
+    m = Machine(payload, trace_writes=False)
+    size = len(body) - 0x40
+    m.uc.mem_write(m.ARENA + 0x300, body)
+    m.put(0xB72804, m.ARENA + 0x300)
+    m.put(0xB72808, size if size > 0x91000 else 0x91000)
+    m.put(0xB7280C, size)
+    m.fixup_roster(m.ARENA + 0x340)
+    m.seed(12345)
+    for a, v in ((0xE5FF80, 4), (0xE60120, 1), (0xE6000C, 5), (0xE60010, 5)):
+        m.put(a, v)
+    notices = []
+
+    def notice():
+        p = m.reg("EDX")
+        notices.append(bytes(m.uc.mem_read(p, 400)).decode("utf-16-le", "replace").split("\0")[0])
+        m.ret()
+    m.leaf(0x177990, lambda: m.ret(pop=4), reason="progress renderer only")
+    m.leaf(0x14E520, notice, reason="informational dialog acknowledgement only")
+    m.call(0x13EE10, budget=2_000_000_000)
+    team = m.team_base + 500 * user
+    m.call(0xC4D30, ecx=team, edx=1)
+    limit = m.uc.mem_read(0x2BF978, 1)[0]
+    lst = m.root + 0x38
+    while m.uc.mem_read(team + 0x11C, 1)[0] <= limit:
+        p = m.call(0x242500, ecx=lst, edx=0)
+        m.call(0x2425C0, ecx=lst, edx=p)
+        assert m.call(0xC3EE0, ecx=team, edx=p), "preseason append refused"
+    m.call(0xC3F00, ecx=team)
+    menu = m.ARENA + 0x1A0000
+    advances = 0
+    while m.get(0xE576A4) == 7 and advances < 2:
+        if m.get(0xE576B4) < m.get(0xE576B0):
+            m.call(0x247D40, ecx=menu, budget=int(2e10))
+        else:
+            m.call(0x2480B0, ecx=menu, budget=int(2e10))
+            advances += 1
+    return m.get(0xE576A4), m.uc.mem_read(team + 0x11C, 1)[0], limit, notices
+
+
+@unittest.skipUnless(HAVE_UC, "Unicorn is not installed")
+class PreseasonGateTests(unittest.TestCase):
+    """SWeaR 10/27: "You must be under the salary cap and have a maximum of 53 players to enter the regular season.
+    The Titans need attention." did not go away and locked the season."""
+
+    @classmethod
+    def setUpClass(cls):
+        from tests.nfl2k5_supersim_draft_fixture import retail_bytes, retail_roster
+        from mod_editor.core import nfl2k5_franchise_economy as economy
+        cls.retail, cls.body = retail_bytes(), retail_roster()
+        cls.current = economy.apply(cls.retail)[0]
+        cls.previous = _revision_three(cls.current, cls.retail)
+
+    def test_a_user_club_over_the_limit_is_cut_down_and_the_season_starts(self):
+        stage, count, limit, notices = _preseason_advance(self.current, self.body)
+        self.assertEqual((stage, notices), (8, []))
+        self.assertLessEqual(count, limit)
+
+    def test_revision_three_repeats_the_notice_and_stays_in_the_preseason(self):
+        stage, count, limit, notices = _preseason_advance(self.previous, self.body)
+        self.assertEqual((stage, count, len(notices)), (7, limit + 1, 2))
+        self.assertIn("need attention", notices[0])
 
 
 RELEASED_BODY = Path(os.environ.get("NFL2K5_RC1_V07_BODY",
