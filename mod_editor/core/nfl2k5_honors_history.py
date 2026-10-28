@@ -263,6 +263,15 @@ def apply(path, spec: str = "builtin", *, base_year: int = 2026, progress=None) 
         summary = {k: v for k, v in receipt.items() if k not in ("rows",)}
         summary["skipped"] = len(receipt["skipped"])
         summary["identity_mismatches"] = len(receipt["identity_mismatches"])
+        if builtin:
+            # b779-hn1: the Super Bowls before the 2026 start, for the champions history (the arena's spare bytes)
+            from . import nfl2k5_champions_history as champions_history
+            say("Writing the Super Bowl champions before the franchise starts")
+            try:
+                new_body, champions_receipt = champions_history.apply_body(new_body)
+            except champions_history.ChampionsHistoryError as exc:
+                champions_receipt = {"status": "skipped", "reason": str(exc)}
+            summary["champions"] = champions_receipt
         if new_body == body:
             return {"status": "unchanged", "spec": spec, **summary}
         replacement = header + new_body

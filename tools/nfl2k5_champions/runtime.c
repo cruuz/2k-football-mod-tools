@@ -166,10 +166,10 @@ static void seal(u8 *g) {
     g[15] = (u8)(sum >> 24);
 }
 
-/* Entry for Super Bowl n when the block and the entry both check out. */
-static const u8 *valid_entry(u32 n) {
-    const u8 *g = gap();
-    if (!g || !n || !block_ok(g))
+/* Entry for Super Bowl n of a block that has already been checked (block_ok), or 0 when the entry itself is empty or
+   not in its own ring slot. */
+static const u8 *entry_at(const u8 *g, u32 n) {
+    if (!n)
         return 0;
     const u8 *e = g + ENTRIES_AT + (n % RING) * ENTRY;
     u32 t = (u32)e[1] + ((u32)e[2] << 8) + ((u32)e[3] << 16), champion = t & 63, runner = t >> 6 & 63;
@@ -364,14 +364,17 @@ static void text_start(u32 *ctx, u32 font, u32 align) {
     TEXT_ALIGN(ctx, align);
 }
 
-static u32 newest_season(void) {
+/* The checked block, or 0 when this arena has none or it is empty or damaged. */
+static const u8 *history_block(void) {
     const u8 *g = gap();
+    return g && block_ok(g) ? g : 0;
+}
+
+static u32 newest_season(const u8 *g) {
     u32 best = 0;
-    if (!g || !block_ok(g))
-        return 0;
-    for (u32 i = 0; i < RING; i++) {
+    for (u32 i = 0; g && i < RING; i++) {
         u32 n = g[ENTRIES_AT + i * ENTRY];
-        if (n > best && valid_entry(n))
+        if (n > best && entry_at(g, n))
             best = n;
     }
     return best;
@@ -389,10 +392,11 @@ static u32 entry_runner_points(const u8 *e) { return (((u32)e[1] + ((u32)e[2] <<
 
 /* Rating panel: the ten newest seasons in the ring, "YEAR ABBR" right-aligned at x - 8 and "pts-pts ABBR" at x. */
 void champions_ratings(void) {
-    u32 ctx[32], newest = newest_season(), shown = 0;
+    const u8 *g = history_block();
+    u32 ctx[32], newest = newest_season(g), shown = 0;
     u16 label[24], value[24];
     for (u32 n = newest; n && n + RING > newest && shown < 10; n--) {
-        const u8 *e = valid_entry(n);
+        const u8 *e = entry_at(g, n);
         u16 *out = label;
         if (!e)
             continue;
@@ -420,9 +424,10 @@ void champions_ratings(void) {
 
 /* Bio lines: the newest Super Bowl in words, its MVP and the season MVP. */
 void champions_bio(void) {
-    u32 ctx[32], newest = newest_season();
+    const u8 *g = history_block();
+    u32 ctx[32], newest = newest_season(g);
     u16 text[96], *out;
-    const u8 *e = newest ? valid_entry(newest) : 0;
+    const u8 *e = newest ? entry_at(g, newest) : 0;
     u32 lines = 0;
     if (!e) {
         out = put_ascii(text, "CHAMPIONS: NONE YET");
