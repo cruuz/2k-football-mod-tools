@@ -81,6 +81,20 @@ def upgrade_team_history(payload: bytes, disc_body: bytes, evidence: Mapping | N
     events_by_player = defaultdict(list)
     for event in native_events:
         events_by_player[event["player_index"]].append(event["index"])
+    # The shipped retail history covers the seasons the retail roster already carries. It is the
+    # only source for an old save whose roster is not the disc's main roster (and for a save made
+    # before the TEAM fields were baked): the disc lookup below cannot match those identities.
+    from . import nfl2k5_team_history as team_history
+    retail_rows: dict[tuple[str, str, str], dict[int, str]] = {}
+    try:
+        csv_rows, _provenance = team_history.load_rows(None)
+    except (OSError, ValueError):
+        csv_rows = []
+    for row in csv_rows:
+        if row.birth is None:
+            continue
+        key = (team_history.normalise_name(row.first), team_history.normalise_name(row.last), str(row.birth))
+        retail_rows.setdefault(key, {})[row.season] = row.team
     native_evidence = {
         "ledger_write_cursor": save.u32(save.front_office_block + fs.F_LEDGER_CURSOR),
         "ledger_boundary_cursors": list(struct.unpack_from(
@@ -184,6 +198,19 @@ def upgrade_team_history(payload: bytes, disc_body: bytes, evidence: Mapping | N
                             found = (clubs[disc.teams[index].abbreviation] + 1,
                                      {"kind": "disc_history", "disc_body_sha256": sha(disc_body),
                                       "source_player_index": source_player.index, "source_slot": source_slot})
+                if found is None:
+                    key = (team_history.normalise_name(player.first), team_history.normalise_name(player.last),
+                           identity(player)[2])
+                    csv_team = retail_rows.get(key, {}).get(year)
+                    if csv_team:
+                        try:
+                            abbreviation, _note = team_history.resolve_team(csv_team, year)
+                        except ValueError:
+                            abbreviation = None
+                        if abbreviation in clubs:
+                            found = (clubs[abbreviation] + 1,
+                                     {"kind": "retail_csv", "source": "nflverse retail team history",
+                                      "csv_sha256": team_history.SHIPPED_CSV_SHA256})
             common = {"pool": player.pool, "index": player.index, "player": f"{player.first} {player.last}",
                       "birth_date": identity(player)[2], "season": year, "slot": slot}
             if found is None:
@@ -218,8 +245,11 @@ def upgrade_team_history(payload: bytes, disc_body: bytes, evidence: Mapping | N
     # Native FUN_0014e8b0 inserts a word into the used pool with memmove,
     # adjusts later player pointers, and increments +0x40. Unused native slots
     # can contain stale words after compaction; zero bytes are not required.
-    # Only accept the known native arena pool, not an arbitrary relocated span.
-    require(not additions or pool == roster.layout.root + 0x41A34,
+    # The capacity arena moves the pool by the inserted 0x54-byte records, so
+    # accept the codec's own pool wherever the arena places it instead of only
+    # the retail root+0x41A34 span.
+    from . import nfl2k5_roster_arena as arena
+    require(not additions or (pool is not None and pool >= roster.layout.root + 0x70),
             "unsupported history pool location")
     intervals = {key: (start, start + 4 * len(roster.history_words[key]))
                  for key, start in roster.history_offsets.items() if start is not None}
@@ -235,7 +265,7 @@ def upgrade_team_history(payload: bytes, disc_body: bytes, evidence: Mapping | N
     needed = sum(len(new) for _, new in insertions.values()) + sum(map(len, clones.values()))
     require(used + needed <= roster.pool_capacity, "insufficient history capacity for TEAM repair")
     end = pool + (used + needed) * 4
-    require(end <= roster.layout.end, "TEAM repair exceeds roster arena")
+    require(end <= arena.data_end(roster.layout), "TEAM repair exceeds roster arena")
     for table in roster.tables.values():
         if table.offset is not None and table.count and needed:
             require(end <= table.offset or pool >= table.offset + table.count * table.stride,
