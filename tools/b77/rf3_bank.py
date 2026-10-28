@@ -13,7 +13,8 @@ Noah, 10/28: "generate a ton more ... so the ugly faces are drowned out a bit mo
   plainest/ugliest last, so the down-weighted zone (zone_start) holds them.
 * The beta-78 atlases stay byte-identical; new and re-framed faces go to new atlases (graded and quantised like rh1).
 
-usage: rf3_bank.py --labels NEW_LABELS.json --crops DIR [--recrop DIR] [--retire IDS] [--start 13569] [--apply]
+usage: rf3_bank.py --base BETA78_BANK.json --labels NEW_LABELS.json --crops DIR [--recrop DIR] [--retire IDS]
+                   [--start 13569] [--apply]
 """
 from __future__ import annotations
 
@@ -53,9 +54,10 @@ def main() -> int:
     ap.add_argument("--recrop", type=Path, help="folder of re-framed beta-78 faces (legacy id.png)")
     ap.add_argument("--retire", default="", help="comma-separated beta-78 ids that leave the rows")
     ap.add_argument("--start", type=int, default=13569)
+    ap.add_argument("--base", type=Path, default=rf.BANK_JSON, help="the beta-78 (v2) bank.json (git show 57576211c:...)")
     ap.add_argument("--apply", action="store_true")
     args = ap.parse_args()
-    old = json.loads(rf.BANK_JSON.read_text(encoding="utf-8"))
+    old = json.loads(args.base.read_text(encoding="utf-8"))
     if old["schema"] != "nfl2k5_rookie_faces_bank/v2":
         raise SystemExit("expects the beta-78 (v2) bank")
     retire = {int(x) for x in args.retire.split(",") if x}
@@ -162,6 +164,10 @@ def main() -> int:
                         for r in bank["buckets"]]}
     print(json.dumps(summary))
     if args.apply:
+        keep = {a["file"] for a in atlases}
+        for stale in rf.DATA_DIR.glob("faces_*.png"):    # an earlier rf3 build's extra atlases
+            if stale.name not in keep:
+                stale.unlink()
         for n, d in blobs:
             (rf.DATA_DIR / n).write_bytes(d)
         rf.BANK_JSON.write_text(json.dumps(bank, indent=0) + "\n", encoding="utf-8", newline="\n")

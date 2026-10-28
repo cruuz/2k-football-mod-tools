@@ -72,6 +72,14 @@ they should be ... the occasional large edge"; SWeaR 10/27: "Some rookie headsho
      faces (the review's plainest and ugliest, ordered there by tools/b77/rf3_bank.py) are redrawn once when the first
      draw lands there, so they come up about (5/16)^2 = 10 % of the time instead of 31 % (nothing is deleted).  The
      generic head-shape draw moved from region D to region A to make room.
+   * ratings (Noah 10/28 13:00, "make sure rookie ratings are well done"): region C (0xE6D51..0xE6F56) keeps the
+     retail rating loop (each of 29 ratings b + r * (a - b) between the position's two templates, so every position
+     keeps its own profile) but draws r through qrand: 1 prospect in 64 (BLUEK) is a blue-chip whose every rating
+     lands in the upper half of his range, the rare 80+ first-rounder.  The three capped rolls after the loop
+     (consistency, aggressiveness, composure: templates capped at 100) are the same arithmetic in a small loop, which
+     makes the room.  Measured with the game's own class loop and OVR routine (3 classes of 450): round 1 74.4 OVR,
+     round 2 69.0, rounds 4-7 63.4..59.6, UDFA 55.1, about 2 to 3 prospects of 80+ a class; the real 2026 draft as
+     the SOFTDRINK roster rates it: 74.9, 66.9, 60.7..57.6.  Rookie consistency stays 30..67.
    * the rows were laid out again from 13569 so they can grow; every beta-78 id stays a portrait of the same face
      (legacy_id), so prospects drafted on that disc keep their headshot, skin and hair.  Faces whose crop cut the top of
      the head were re-framed by the eyes (both ids show the fixed crop); the few with no source image left the rows.
@@ -101,7 +109,8 @@ HELP_TEXT = ("EXPERIMENTAL. Generated draft prospects get new fictional draft he
              "photos: the face matches his in-game skin tone and build (his weight), his name and position make his "
              "skin tone as likely as in the real NFL, and a face an active player already wears is avoided. A few "
              "prospects get a nickname first name, and now and then an East Asian or South Asian prospect appears "
-             "with a fitting name. Their height and weight follow real NFL combine measurements for the position. "
+             "with a fitting name. Their height and weight follow real NFL combine measurements for the position, and "
+             "now and then a blue-chip prospect rates in the 80s. "
              "Disc images only. Not yet tested in a long franchise.")
 EVIDENCE = "EXPERIMENTAL"
 DATA_DIR = ROOT / "data" / "nfl2k5_rookie_faces"
@@ -114,6 +123,8 @@ SCHEMA_NAMES = "nfl2k5_rookie_faces_names/v1"
 IMAGE_BASE = 0x10000
 REGION_A = 0xE67EA            # retail skin/face draw (132 bytes) and weight/height roll (b779-rf3: 181 bytes) of FUN_000E6780
 REGION_A_END = 0xE6923        # the next retail instruction (the +0x20 bits 3-9 coin)
+REGION_C = 0xE6D51            # b779-rf3: the rating loop and the three capped rolls (consistency, aggressiveness, composure)
+REGION_C_END = 0xE6F56        # up to the retail "mov byte [esi+8], 6"
 REGION_B = 0xE7019            # retail portrait pick and epilogue, plus the 9 nop bytes of padding after its ret 4
 REGION_B_END = 0xE7120        # (0xE7117..0xE7120 is inter-routine padding, no reference lands there; next routine 0xE7120)
 TABLE_VA = 0x4F4F40           # retail generic-portrait range table (41 rows + sentinel), only read by REGION_B
@@ -135,6 +146,12 @@ CODE_A = bytes.fromhex(
     "440d1d44440d1a5f420d4051450b4d3d490b374a450d3949450d8834490987514a08825d4b097177480a4b4e480b0fb6"
     "7e358d3cbd94680e00e813ffffff50668b0fe877ffffff88462ae802ffffff5ac1e00888d00d000000ff668b4f02e85b"
     "ffffff88462b6a0759e8d7feffff01d2806622f1085622eb00")
+CODE_C = bytes.fromhex(
+    "e89e00000089d9ff178944241cdb44241cd95c241089e9ff178944241cdb44241cd95c241cb9a0fce500e887000000d9"
+    "442410d864241c51dec9d8442420d91c24e879d1ffff88c289f1ff57fc83c71481fff84e4f007cad6a025f0fb6971e6e"
+    "0e00520fbe041383f8647c036a64580fbe4c150083f9647c036a645929c85150e825faffff0fb7c05a0fafc2c1f81059"
+    "01c85a8804164f79c2b9a0fce500e962010000e802faffff3c0419c089442418bfb44c4f00c3e8841df6fff644241801"
+    "740ad9e8dec1d80d84414e00c34e5150")
 CODE_B = bytes.fromhex(
     "89068b2d1829b7008b5d548b4d5083c3048b4614e8d3f7ffff897c241431d239cf732289f8c1e8020fb68008504f0089"
     "f983e10301c9d3e883e0030fbe90744f4f008b4d508954241083eb048b4610e898f7ffffe8bcf7ffff8b03668b00663b"
@@ -437,6 +454,7 @@ def _spans(table: bytes) -> list[tuple[int, bytes]]:
     pad = lambda code, size: code + b"\xcc" * (size - len(code))  # noqa: E731
     return [(REGION_A, pad(CODE_A, REGION_A_END - REGION_A)),
             (REGION_B, pad(CODE_B, REGION_B_END - REGION_B)),
+            (REGION_C, pad(CODE_C, REGION_C_END - REGION_C)),
             (TABLE_VA, table + pad(CODE_D, TABLE_END - TABLE_VA - TABLE_DATA)),
             (STRING_VA, RECORD_NAME.encode("utf-16-le"))]
 
@@ -444,6 +462,7 @@ def _spans(table: bytes) -> list[tuple[int, bytes]]:
 RETAIL_SPAN_SHA256 = {       # retail and every released SOFTDRINK image (v0.6.1 checked) carry these bytes
     REGION_A: "04826d6dd2b2ae65acc69b3b631683dffd65dc057a77daacc50ab4de1ea93deb",
     REGION_B: "8c8c09860c0f31519aa72f0293c805c646f84ca632611890705977d32f317692",
+    REGION_C: "bd0c79972cb0b066c11f0f3b69c72e95978e3d10809173d91ac33453556f9fab",
     TABLE_VA: "e6ec955562c16009edf4ca8790a0b310d685f3c04443ff1106323fc5514567fd",
     STRING_VA: "8d322c825fff63a505e786350f7fe8da17d68dd292769f9f5146c2605ea14ae2",
 }
@@ -463,8 +482,8 @@ def xbe_status(payload: bytes) -> str:
     if all(sha(current[va]) == RETAIL_SPAN_SHA256[va] for va in current):
         return "retail"
     spans = dict(_spans(bytes(TABLE_DATA)))
-    a, b, d, s = (current[REGION_A], current[REGION_B], current[TABLE_VA], current[STRING_VA])
-    if (a == spans[REGION_A] and b == spans[REGION_B] and s == spans[STRING_VA]
+    a, b, c, d, s = (current[REGION_A], current[REGION_B], current[REGION_C], current[TABLE_VA], current[STRING_VA])
+    if (a == spans[REGION_A] and b == spans[REGION_B] and c == spans[REGION_C] and s == spans[STRING_VA]
             and d[TABLE_DATA:] == spans[TABLE_VA][TABLE_DATA:]):
         return "applied"
     return "foreign"
@@ -500,11 +519,12 @@ def xbe_apply(payload: bytes, table: bytes) -> tuple[bytes, dict[str, Any]]:
 
 
 SPAN_LABELS = ("class generator skin/face draw and weight/height roll -> body table + helpers", "class generator portrait pick",
+               "class generator rating loop -> blue-chip draw + compact capped rolls",
                "rookie-face tables + code (retail generic range table)", "PORTRAIT record file name")
 
 
 def reservations(payload: bytes) -> list[dict[str, Any]]:
-    """The four owned spans of an applied executable, for the cave manifest."""
+    """The five owned spans of an applied executable, for the cave manifest."""
     require(xbe_status(payload) == "applied", "rookie faces are not applied")
     return [{"start": hex(va), "size": len(d), "owner": OWNER, "basis": "declared edit: " + label}
             for (va, d), label in zip(_spans(bytes(TABLE_DATA)), SPAN_LABELS)]

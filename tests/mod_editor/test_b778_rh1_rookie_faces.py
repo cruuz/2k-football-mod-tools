@@ -428,7 +428,7 @@ class RetailXbe(unittest.TestCase):
         headers = [h + 36 for _va, _raw, _rs, h in rf._section_map(payload)]
         for i in diff:
             self.assertTrue(any(o <= i < o + n for o, n in spans) or any(h <= i < h + 20 for h in headers), hex(i))
-        self.assertEqual(len(receipt["edits"]), 4)
+        self.assertEqual(len(receipt["edits"]), 5)   # b779-rf3: + the rating loop (region C)
 
 
 class Portraits(unittest.TestCase):
@@ -647,6 +647,72 @@ class NativeRf3(unittest.TestCase):
         self.assertLess(share, 0.17, "about 10 % of draws, not 31 %")
         self.assertGreater(share, 0.04)
 
+
+
+class NativeRf3Ratings(unittest.TestCase):
+    """b779-rf3 region C: the rating loop with the blue-chip draw and the compact capped rolls, under Unicorn with stand-in
+    getters/setters (one per rating byte), the game's own float rand (0x48B90, copied) and a float-to-int stand-in."""
+
+    FRAND = bytes.fromhex("51c74424000000803fe8b2ffffff8b4c240025ffff7f000bc8894c2400d9442400d8259c414e0059c3")
+
+    def run_region(self, n=1500, seed=3):
+        from unicorn import Uc, UC_ARCH_X86, UC_MODE_32
+        from unicorn.x86_const import UC_X86_REG_EBX, UC_X86_REG_EBP, UC_X86_REG_ESI, UC_X86_REG_ESP, UC_X86_REG_ECX
+        mu = _emulator(bytes(rf.TABLE_DATA), seed)
+        mu.mem_write(0x48B90, self.FRAND)                     # retail frand: rand() mantissa | 1.0f, minus 1.0
+        mu.mem_write(0x4E419C, struct.pack("<f", 1.0))
+        mu.mem_write(0x4E4184, struct.pack("<f", 0.5))
+        mu.mem_write(0xE3F10, bytes.fromhex("d9442404db5c24048b442404c20400"))   # fld [esp+4]; fistp [esp+4]; ret 4
+        stubs = 0x600000
+        for i in range(29):
+            g, st = stubs + 16 * i, stubs + 0x400 + 16 * i
+            mu.mem_write(g, bytes.fromhex("0fb641") + bytes((0x36 + i,)) + b"\xc3")      # movzx eax, byte [ecx+off]
+            mu.mem_write(st, bytes.fromhex("8851") + bytes((0x36 + i,)) + b"\xc3")       # mov [ecx+off], dl
+            mu.mem_write(0x4F4CB4 + 0x14 * i, struct.pack("<I", g))
+            mu.mem_write(0x4F4CB0 + 0x14 * i, struct.pack("<I", st))
+        hi, lo, rec = 0x2000000, 0x2000100, 0x2000200
+        a = bytes(80 if k % 2 else 60 for k in range(0x54))
+        b = bytes(40 if k % 2 else 20 for k in range(0x54))
+        a = a[:0x4E] + bytes((120,)) + a[0x4F:0x50] + bytes((95, 101)) + a[0x52:]   # composure / consistency / aggressiveness
+        b = b[:0x4E] + bytes((70,)) + b[0x4F:0x50] + bytes((30, 50)) + b[0x52:]
+        mu.mem_write(hi, a); mu.mem_write(lo, b)
+        out = []
+        for _ in range(n):
+            mu.mem_write(rec, bytes(0x54))
+            sp = STACK + 0x1000
+            mu.reg_write(UC_X86_REG_ESP, sp); mu.reg_write(UC_X86_REG_EBX, hi); mu.reg_write(UC_X86_REG_EBP, lo)
+            mu.reg_write(UC_X86_REG_ESI, rec)
+            mu.emu_start(rf.REGION_C, rf.REGION_C_END, count=200_000)
+            self.assertEqual((mu.reg_read(UC_X86_REG_ESP), mu.reg_read(UC_X86_REG_EBX), mu.reg_read(UC_X86_REG_EBP),
+                              mu.reg_read(UC_X86_REG_ESI), mu.reg_read(UC_X86_REG_ECX)), (sp, hi, lo, rec, 0xE5FCA0))
+            r = bytes(mu.mem_read(rec, 0x54))
+            out.append((r, struct.unpack_from("<i", bytes(mu.mem_read(sp + 0x14, 4)))[0]))
+        return out
+
+    def test_code_fits(self):
+        self.assertLessEqual(len(rf.CODE_C), rf.REGION_C_END - rf.REGION_C)
+
+    def test_ratings_stay_in_the_template_range_and_blue_chips_are_rare(self):
+        res = self.run_region()
+        blue = [r for r, flag in res if flag == -1]
+        plain = [r for r, flag in res if flag == 0]
+        self.assertEqual(len(blue) + len(plain), len(res))
+        self.assertTrue(0.007 < len(blue) / len(res) < 0.03, len(blue))
+        for r, flag in res:
+            for i in range(29):
+                if 0x36 + i in (0x4E, 0x50, 0x51):              # the capped rolls write these after the loop
+                    continue
+                lo_, hi_ = (40, 80) if (0x36 + i) % 2 else (20, 60)
+                self.assertTrue(lo_ <= r[0x36 + i] <= hi_, (i, r[0x36 + i]))
+                if flag:
+                    self.assertGreaterEqual(r[0x36 + i], (lo_ + hi_) // 2, "a blue-chip rolls the upper half")
+            self.assertTrue(30 <= r[0x50] <= 95, r[0x50])          # consistency between its templates
+            self.assertTrue(50 <= r[0x51] <= 100, r[0x51])         # a template above 100 counts as 100
+            self.assertTrue(70 <= r[0x4E] <= 100, r[0x4E])
+        mean = sum(r[0x37] for r in plain) / len(plain)
+        self.assertLess(abs(mean - 60), 1.5, "an ordinary prospect is uniform between the templates")
+        cons = [r[0x50] for r, _f in res]
+        self.assertLess(abs(sum(cons) / len(cons) - 62.5), 2.5)
 
 if __name__ == "__main__":
     unittest.main()

@@ -33,7 +33,13 @@
 .set HEAVYMIN, 125        # weight - 150 >= 125: heavy (>= 275 lb)
 .set TRIES, 24
 .set OUTK, 4            # heavy outlier: 4 in 256 prospects (1.6 %)
-.set OUTADD, 384         # +3 sd on S (sd of S = 128, the table's c = 8 sd)
+.set OUTADD, 384
+.set BLUEK, 4            # blue-chip prospects: 4 in 256 (1.6 %)
+.set FRAND, 0x48B90       # float rand [0, 1) (ecx = generator)
+.set FTOI, 0xE3F10        # float (stack) -> int, ret 4
+.set GETTAB, 0x4F4CB4     # rating getter/setter table (stride 0x14, setter at -4)
+.set GETEND, 0x4F4EF8
+.set HALF, 0x4E4184       # .rdata 0.5f         # +3 sd on S (sd of S = 128, the table's c = 8 sd)
 
 .text
 .globl _start
@@ -149,7 +155,85 @@ body:                               # esi = prospect (his template's position at
 regionA_end:
     .fill 0xE6923 - 0xE67EA - (regionA_end - regionA), 1, 0xCC
 28:
-    .fill 0xE7019 - 0xE6923, 1, 0
+    .fill 0xE6D51 - 0xE6923, 1, 0
+regionC:                            # b779-rf3: the rating loop (29 getter/setter pairs at 0x4F4CB4, retail semantics:
+    call qsetup                     # value = b + r * (a - b) between the two templates) with r from qrand, then the
+40: mov ecx, ebx                    # three capped rolls (consistency, aggressiveness, composure) as one small loop
+    call [edi]
+    mov [esp+0x1c], eax
+    fild dword ptr [esp+0x1c]
+    fstp dword ptr [esp+0x10]       # a (template A)
+    mov ecx, ebp
+    call [edi]
+    mov [esp+0x1c], eax
+    fild dword ptr [esp+0x1c]
+    fstp dword ptr [esp+0x1c]       # b (template B)
+    mov ecx, RNG
+    call qrand
+    fld dword ptr [esp+0x10]
+    fsub dword ptr [esp+0x1c]
+    push ecx
+    fmulp st(1), st
+    fadd dword ptr [esp+0x20]
+    fstp dword ptr [esp]
+    call FTOI
+    mov dl, al
+    mov ecx, esi
+    call [edi-4]
+    add edi, 0x14
+    cmp edi, GETEND
+    jl 40b
+    push 2                          # consistency +0x50, aggressiveness +0x51, composure +0x4E:
+    pop edi                         # b + (a - b) * r16 >> 16, a and b capped at 100 (retail: the same in x87)
+41: movzx edx, byte ptr [cofs+edi]
+    push edx
+    movsx eax, byte ptr [ebx+edx]
+    cmp eax, 100
+    jl 42f
+    push 100
+    pop eax
+42: movsx ecx, byte ptr [ebp+edx]
+    cmp ecx, 100
+    jl 43f
+    push 100
+    pop ecx
+43: sub eax, ecx
+    push ecx
+    push eax
+    call rnd
+    movzx eax, ax
+    pop edx
+    imul eax, edx
+    sar eax, 16
+    pop ecx
+    add eax, ecx
+    pop edx
+    mov [esi+edx], al
+    dec edi
+    jns 41b
+    mov ecx, RNG                    # the next retail instruction draws with it
+    jmp 29f
+qsetup:                             # one byte per prospect: a blue-chip (BLUEK in 256) rolls every rating in the upper
+    call rnd                        # half of his template range; the flag lives in the frame's free slot [esp+0x14]
+    cmp al, BLUEK
+    sbb eax, eax
+    mov [esp+4+0x14], eax
+    mov edi, GETTAB
+    ret
+qrand:                              # st0 = r, or (r + 1) / 2 for a blue-chip
+    call FRAND
+    test byte ptr [esp+4+0x14], 1
+    jz 44f
+    fld1
+    faddp st(1), st
+    fmul dword ptr [HALF]
+44: ret
+cofs:
+    .byte 0x4E, 0x51, 0x50
+regionC_end:
+    .fill 0xE6F56 - 0xE6D51 - (regionC_end - regionC), 1, 0xCC
+29:
+    .fill 0xE7019 - 0xE6F56, 1, 0
 regionB:
     mov [esi], eax                  # college (retail store)
     mov ebp, [ROSTER]
