@@ -3416,7 +3416,9 @@ def build_with_project(plan, service, cache, session, progress=None, *, require_
             from .equipment_staging import cached_equipment_fit_rows
             quick = project_check.check(plan, asset_ids=project_check.assets_from_session(session), document=document,
                                         fit_rows=cached_equipment_fit_rows(session), progress=progress,
-                                        run_preflight=False)
+                                        run_preflight=False,
+                                        asset_paths=project_check.paths_from_session(session),
+                                        source_index=getattr(cache, "pack0", None))
             if not quick.ok:
                 raise ValueError(quick.text())
             (progress or (lambda *_: None))(

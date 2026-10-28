@@ -121,7 +121,7 @@ class Data(unittest.TestCase):
     def test_studio_runs_after_the_anniversary_moment_kits(self):
         text = (ROOT / "mod_editor/core/mod_build.py").read_text(encoding="utf-8")
         at = text.index("nameplate_fixes.apply_to_image(")
-        moment = text.index("moment_kits.apply_to_image(target)")
+        moment = text.index("moment_kits.apply_to_image(target, retail=kits_retail)")
         self.assertLess(moment, at)
         self.assertLess(text.index("kit_fixes.apply_nameplates(target)"), at)
         self.assertLess(at, text.index("if plan.roster_edits:", moment))

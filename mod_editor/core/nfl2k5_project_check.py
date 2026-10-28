@@ -177,15 +177,79 @@ def kit_fix_note(packages: set) -> list:
                     "your artwork. Kits: " + _named(both) + ".")]
 
 
+def _feature_documents(plan) -> list:
+    documents = []
+    if getattr(plan, "espn25_more_moments", False):
+        from . import nfl2k5_moment_kits as kits
+        documents.append(("Anniversary moment kits", kits.document()))
+    if getattr(plan, "classic_teams", False) and getattr(plan, "historic_teams_quick_game", False):
+        from . import nfl2k5_classic_teams as classic
+        documents.append(("Classic teams' kits", classic.authored_kits()))
+    return documents
+
+
+def donors_with_edits(documents, chunks: dict, asset_paths: dict, index, retail, progress=None) -> dict:
+    """{selector: kit package bytes} of every donor the kit features read: the retail package with the user's sock,
+    glove and shoe replacements compiled in by the same writer Build uses (read-only; the compile result is the same
+    fixed TSET span Build would write). Uniform-art replacements are not modelled here: they never change a kit's
+    allocation or its clean/mud pairing."""
+    from nfl_txtr import parse_chunks
+    from . import nfl2k5_moment_kits as kits
+    from .nfl2k5_uniform_equipment_writer import build_unified_uniform_equipment_imports, load_targets
+    retail_packages = kits.RetailPackages(retail)
+    donors = {}
+    for _feature, doc in documents:
+        for selector in kits.donors(doc):
+            donors[selector] = bytes(retail_packages[selector])
+    targets, _physical = load_targets()
+    todo = sorted((key, ids) for key, ids in chunks.items() if key[0] in donors)
+    for number, ((selector, chunk_index), ids) in enumerate(todo, 1):
+        if progress:
+            progress(f"Compiling your edited {selector} chunk {chunk_index} for the kit check", number, len(todo))
+        paths = [(asset_id, asset_paths[asset_id]) for asset_id in ids if asset_id in asset_paths]
+        if not paths:
+            continue
+        compiled = build_unified_uniform_equipment_imports(Path(index), paths, preflight_only=True)
+        package = bytearray(donors[selector])
+        chunk = next(c for c in parse_chunks(bytes(package), allow_trailing=True) if c.index == chunk_index)
+        if len(compiled.rebuilt_span) != chunk.end_offset - chunk.offset:
+            raise ValueError(f"{selector} chunk {chunk_index}: the compiled span changed size")
+        package[chunk.offset:chunk.end_offset] = compiled.rebuilt_span
+        donors[selector] = bytes(package)
+    return donors
+
+
+def kit_dry_run(plan, chunks: dict, asset_paths: dict, index, retail, progress=None) -> list:
+    """Compose the new Anniversary / classic kits from the user's edited donors exactly as Build will (retail chunks
+    where an edited one cannot be used), and report each swap and each left-out kit by name."""
+    from . import nfl2k5_moment_kits as kits
+    documents = _feature_documents(plan)
+    if not documents or not chunks:
+        return []
+    donors = donors_with_edits(documents, chunks, asset_paths, index, retail, progress)
+    retail_packages = kits.RetailPackages(retail)
+    findings = []
+    for feature, doc in documents:
+        report, skipped = [], {}
+        kits.compose(doc, donors, retail_packages, report, skipped)
+        for note in kits.user_notes(dict(substitutions=report, skipped_kits=skipped)):
+            findings.append(Finding(NOTE, feature, note.removeprefix("Anniversary moment kits: ")))
+    return findings
+
+
 # ------------------------------------------------------------------------------------------------- the whole check
 
 def check(plan, *, asset_ids: Iterable[str] = (), document: dict | None = None, fit_rows: Iterable[dict] = (),
-          progress: Callable[..., None] | None = None, run_preflight: bool = True) -> Report:
+          progress: Callable[..., None] | None = None, run_preflight: bool = True,
+          asset_paths: dict | None = None, source_index=None) -> Report:
     """Run every quick check for ``plan`` and the project's replacements; never writes anything.
 
     ``asset_ids``: the replaced asset ids of the project. ``document``: its artwork recipe (``{"edits": [{"kind",
     "target"...}]}``) for the option-conflict check. ``fit_rows``: the equipment fit receipts the project carries.
-    ``run_preflight``: also run the source-disc preflights Build runs first (a few minutes on a full option set)."""
+    ``run_preflight``: also run the source-disc preflights Build runs first (a few minutes on a full option set).
+    ``asset_paths`` ({asset id: replacement PNG}) and ``source_index`` (the Studio source cache's pack 0): also
+    compile the user's edited sock, glove and shoe chunks of the kit features' donors and compose the new kits from
+    them, exactly as Build will (a minute or two), so each swap and each left-out kit is named before Build starts."""
     from . import mod_build
     started = time.monotonic()
     report = Report()
@@ -221,14 +285,17 @@ def check(plan, *, asset_ids: Iterable[str] = (), document: dict | None = None, 
 
     say("Mapping your edited kits to the built-in kit features", 0, 0)
     chunks, packages = edited_kit_chunks(asset_ids)
-    documents = []
-    if getattr(plan, "espn25_more_moments", False):
-        from . import nfl2k5_moment_kits as kits
-        documents.append(("Anniversary moment kits", kits.document()))
-    if getattr(plan, "classic_teams", False) and getattr(plan, "historic_teams_quick_game", False):
-        from . import nfl2k5_classic_teams as classic
-        documents.append(("Classic teams' kits", classic.authored_kits()))
-    report.findings.extend(moment_kit_notes(documents, chunks))
+    documents = _feature_documents(plan)
+    if asset_paths and source_index is not None and plan.source and documents and chunks:
+        try:
+            report.findings.extend(kit_dry_run(plan, chunks, asset_paths, source_index, plan.source, progress))
+            _step(report, "new kits composed from your edited kits", started)
+        except (ValueError, OSError) as exc:
+            report.findings.append(Finding(NOTE, "Kit check", "The new kits could not be tried on your edited kits.",
+                                           str(exc)[:600]))
+            report.findings.extend(moment_kit_notes(documents, chunks))
+    else:
+        report.findings.extend(moment_kit_notes(documents, chunks))
     report.findings.extend(kit_fix_note(packages))
     _step(report, "kit features", started)
 
@@ -250,6 +317,11 @@ def assets_from_session(session) -> list:
     return [edit.asset_id for edit in session.iter_project_png_edits()]
 
 
+def paths_from_session(session) -> dict:
+    """{asset id: staged replacement PNG} of an open Studio session."""
+    return {edit.asset_id: Path(edit.replacement_path) for edit in session.iter_project_png_edits()}
+
+
 # ------------------------------------------------------------------------------------------------- a .2k5mod on disk
 
 def read_archive(path) -> dict:
@@ -263,7 +335,24 @@ def read_archive(path) -> dict:
                                target=str(e["asset_id"])) for e in edits]}
     rows = [row for group in (manifest.get("fit_receipts") or {}).values() for row in group]
     return dict(asset_ids=[e["asset_id"] for e in edits], document=document, fit_rows=rows,
-                settings=manifest.get("build_settings") or {})
+                settings=manifest.get("build_settings") or {},
+                members={e["asset_id"]: e.get("file") for e in edits if e.get("file")})
+
+
+def extract_assets(path, members: dict, wanted: Iterable[str], folder) -> dict:
+    """Copy the named replacement PNGs of an archive into ``folder`` (a private temporary folder) and return
+    {asset id: path}. Archive member names are never used as paths."""
+    import zipfile
+    out = {}
+    with zipfile.ZipFile(path) as archive:
+        for number, asset_id in enumerate(sorted(set(wanted))):
+            member = members.get(asset_id)
+            if member is None:
+                continue
+            target = Path(folder) / f"{number:05d}.png"
+            target.write_bytes(archive.read(member))
+            out[asset_id] = target
+    return out
 
 
 def main(argv=None) -> int:
@@ -274,13 +363,30 @@ def main(argv=None) -> int:
     parser.add_argument("--json", type=Path, help="also write the report here")
     parser.add_argument("--no-source-preflight", action="store_true",
                         help="skip the disc preflights (the quick checks only)")
+    parser.add_argument("--source-cache", type=Path, help="Studio's private source cache folder (default: the usual one); "
+                        "with it the check also tries your edited kits in the new Anniversary kits. The first read of "
+                        "a disc takes a few minutes")
+    parser.add_argument("--no-kit-compile", action="store_true", help="map the edited kits only, do not compile them")
     args = parser.parse_args(argv)
+    import tempfile
     from . import nfl2k5_build_settings as saved
     data = read_archive(args.project)
     plan = saved.to_plan(data["settings"], str(args.source), str(args.source.with_name("project-check-never-written.iso")))
-    report = check(plan, asset_ids=data["asset_ids"], document=data["document"], fit_rows=data["fit_rows"],
-                   progress=lambda message, *_: print(message, file=sys.stderr, flush=True),
-                   run_preflight=not args.no_source_preflight)
+    progress = lambda message, *_: print(message, file=sys.stderr, flush=True)  # noqa: E731
+    with tempfile.TemporaryDirectory(prefix="2k5-project-check-") as folder:
+        paths, index = None, None
+        chunks, _packages = edited_kit_chunks(data["asset_ids"])
+        if chunks and not args.no_kit_compile and _feature_documents(plan):
+            from . import nfl2k5_moment_kits as kits
+            from .nfl2k5_source_cache import Nfl2k5SourceCache
+            donors = {s for _f, doc in _feature_documents(plan) for s in kits.donors(doc)}
+            wanted = [a for (selector, _c), ids in chunks.items() if selector in donors for a in ids]
+            progress("Reading your disc into Studio's private cache (the first time takes a few minutes)", 0, 0)
+            index = Nfl2k5SourceCache(args.source_cache).index(args.source).pack0
+            paths = extract_assets(args.project, data["members"], wanted, folder)
+        report = check(plan, asset_ids=data["asset_ids"], document=data["document"], fit_rows=data["fit_rows"],
+                       progress=progress, run_preflight=not args.no_source_preflight,
+                       asset_paths=paths, source_index=index)
     print(report.text())
     if args.json:
         args.json.write_text(json.dumps(report.as_dict(), indent=2) + "\n", encoding="utf-8", newline="\n")

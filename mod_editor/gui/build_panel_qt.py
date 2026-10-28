@@ -4535,16 +4535,19 @@ class BuildPanel(QWidget):
 
         def operation(progress):
             from mod_editor.core import nfl2k5_project_check as project_check
-            asset_ids, document, fit_rows = [], None, []
+            asset_ids, document, fit_rows, paths, index = [], None, [], None, None
             if include_session:
                 from mod_editor.core.equipment_staging import cached_equipment_fit_rows
                 with facade._lock:
                     session = facade._session
                     asset_ids = project_check.assets_from_session(session)
+                    paths = project_check.paths_from_session(session)
                     fit_rows = list(cached_equipment_fit_rows(session))
+                    cache = facade._cache
+                    index = cache.pack0 if cache is not None else None
                 document = facade.build_service.preflight_project(session)
             return project_check.check(plan, asset_ids=asset_ids, document=document, fit_rows=fit_rows,
-                                       progress=progress)
+                                       progress=progress, asset_paths=paths, source_index=index)
 
         task = _Task(operation)
         task.signals.progress.connect(self.progress_label.setText)

@@ -157,11 +157,93 @@ class Archive(unittest.TestCase):
                 self.assertEqual(pc.main([str(bad), "--source", str(Path(folder) / "r.iso"), "--no-source-preflight"]), 1)
 
 
+class DryRun(unittest.TestCase):
+    """The user's edited chunks are compiled into the donors, then the new kits are composed from them."""
+
+    SPAN = 10
+
+    @staticmethod
+    def span(video=100, flag=0, kind=b"T"):
+        import struct
+        return kind + struct.pack("<II", video, 7) + bytes([flag])
+
+    def package(self, **chunks):
+        return b"".join(chunks.get(f"c{i}", self.span(kind=b"U" if i == 0 else b"T")) for i in range(53))
+
+    @staticmethod
+    def parse(raw, allow_trailing=False):
+        import struct
+        rows = []
+        for index in range(len(raw) // 10):
+            kind = {b"U": "Unif", b"T": "TSET"}[raw[index * 10:index * 10 + 1]]
+            video, system = struct.unpack_from("<II", raw, index * 10 + 1)
+            rows.append(types.SimpleNamespace(index=index, kind=kind, offset=index * 10, end_offset=index * 10 + 10,
+                                              video_bytes=video, system_bytes=system))
+        return rows
+
+    def setUp(self):
+        import nfl_txtr
+        from mod_editor.core import nfl2k5_kit_fixes_2026 as fixes
+        from mod_editor.core import nfl2k5_moment_kits as kits
+        self.kits = kits
+        self.retail = {"18A0": self.package(), "18A8": self.package()}
+        for patch in (mock.patch.object(nfl_txtr, "parse_chunks", self.parse),
+                      mock.patch.object(kits, "MAX_VIDEO_BYTES", 53 * 100),
+                      mock.patch.object(kits, "MAX_SYSTEM_BYTES", 53 * 7),
+                      mock.patch.object(kits.RetailPackages, "__missing__", self.missing, create=True)):
+            patch.start()
+            self.addCleanup(patch.stop)
+        self.doc = {"kits": [{"id": "K1", "team": "NYG", "code": "18", "style": 9,
+                              "sides": {"H": {"base": "18A8"}, "A": {"base": "18A8", "chunks": {"4": "18A0"}}}}]}
+
+    def missing(self, selector):
+        raise KeyError(selector)
+
+    def test_the_edited_chunk_is_compiled_into_the_retail_donor_and_the_overflow_is_named(self):
+        grown = self.span(video=100 + 400, flag=0)
+
+        def compile_group(index, edits, **kwargs):
+            self.assertTrue(kwargs["preflight_only"])
+            return types.SimpleNamespace(rebuilt_span=grown, video_end=500)
+
+        retail = self.kits.RetailPackages("unused")
+        retail.update(self.retail)
+        with mock.patch.object(pc, "_feature_documents", return_value=[("Anniversary moment kits", self.doc)]), \
+                mock.patch("mod_editor.core.nfl2k5_uniform_equipment_writer.build_unified_uniform_equipment_imports",
+                           compile_group), \
+                mock.patch.object(self.kits, "RetailPackages", return_value=retail):
+            findings = pc.kit_dry_run(
+                types.SimpleNamespace(source="retail.iso"), {("18A0", 4): ["tset:1:4:0:socks00"]},
+                {"tset:1:4:0:socks00": Path("a.png")}, "index", "retail.iso")
+        self.assertEqual(len(findings), 1)            # only the A side reads the edited chunk from 18A0
+        self.assertEqual(findings[0].severity, pc.NOTE)
+        self.assertIn("K1 NYG A", findings[0].title)
+        self.assertIn("18A0", findings[0].title)
+        self.assertIn("chunk(s) 4", findings[0].title)
+
+    def test_nothing_to_do_without_features_or_edits(self):
+        plan = types.SimpleNamespace(source="x", espn25_more_moments=False, classic_teams=False)
+        self.assertEqual(pc.kit_dry_run(plan, {("18A0", 4): ["x"]}, {}, "i", "r"), [])
+        with mock.patch.object(pc, "_feature_documents", return_value=[("f", self.doc)]):
+            self.assertEqual(pc.kit_dry_run(plan, {}, {}, "i", "r"), [])
+
+    def test_a_dry_run_that_cannot_compile_leaves_the_static_notes_and_says_so(self):
+        plan = mod_build.BuildPlan("/never/read.iso", "/never/written.iso", espn25_more_moments=True)
+        ids = [sock_id("18A0")]
+        with mock.patch.object(pc, "kit_dry_run", side_effect=ValueError("no cache")):
+            report = pc.check(plan, asset_ids=ids, asset_paths={ids[0]: Path("a.png")}, source_index="i",
+                              run_preflight=False)
+        self.assertTrue(report.ok)
+        titles = [f.title for f in report.notes]
+        self.assertIn("The new kits could not be tried on your edited kits.", titles)
+        self.assertTrue(any("K1" in t for t in titles))            # the static map still names the kit
+
+
 class BuildGate(unittest.TestCase):
     """The long build runs the same quick check first and stops with its list."""
 
     def session(self):
-        edit = types.SimpleNamespace(asset_id=sock_id("14H8"))
+        edit = types.SimpleNamespace(asset_id=sock_id("14H8"), replacement_path="/never/a.png")
         return types.SimpleNamespace(iter_project_png_edits=lambda: [edit])
 
     def service(self, document):

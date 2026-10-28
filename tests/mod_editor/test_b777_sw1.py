@@ -128,7 +128,7 @@ class Contract(unittest.TestCase):
     def test_studio_build_order_and_packaging(self):
         text = (ROOT / "mod_editor/core/mod_build.py").read_text(encoding="utf-8")
         self.assertLess(text.index("kit_fixes.apply_chiefs(target)"), text.index("kit_fixes.apply_swooshes(target)"))
-        self.assertLess(text.index("kit_fixes.apply_swooshes(target)"), text.index("moment_kits.apply_to_image(target)"))
+        self.assertLess(text.index("kit_fixes.apply_swooshes(target)"), text.index("moment_kits.apply_to_image(target, retail=kits_retail)"))
         self.assertIn("data/nfl2k5_kit_fixes_2026_sw1.json",
                       (ROOT / "packaging/release-allowlist.txt").read_text(encoding="utf-8"))
 
