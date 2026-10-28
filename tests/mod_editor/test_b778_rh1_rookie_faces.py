@@ -1,4 +1,6 @@
-"""b778-rh1 rookie faces: tables, the in-place generator code under Unicorn, the bank, the names and the portraits."""
+"""b778-rh1 rookie faces: tables, the in-place generator code under Unicorn, the bank, the names and the portraits.
+
+b779-rf3: prospect bodies (region A), the down-weighted zone (region D), the v3 bank with legacy ids."""
 from __future__ import annotations
 
 import collections
@@ -179,7 +181,9 @@ def _emulator(table, rand_seed=1):
 OBJ, TABLE, ENTRIES, STACK, SENT = 0x2000000, 0x2100000, 0x2300000, 0x2400000, 0x2500000
 
 
-def run_class(table, prospects, roster_photos=(), seed=1):
+def run_class(table, prospects, roster_photos=(), seed=1, keep_body=False):
+    """Region A (b779-rf3: body draw + generic head shape), then region B..D, per prospect.  Unless keep_body, the
+    prospect's given weight is written back after region A so the face tests choose the build."""
     from unicorn.x86_const import UC_X86_REG_EAX, UC_X86_REG_ESI, UC_X86_REG_ESP
     mu = _emulator(table, seed)
     n = len(roster_photos) + len(prospects)
@@ -201,6 +205,12 @@ def run_class(table, prospects, roster_photos=(), seed=1):
         struct.pack_into("<II", blob, 0x10, 0x2200000 + 64 * fi, 0x2280000 + 64 * li)
         blob[0x35], blob[0x2A] = pos, wt - 150
         mu.mem_write(rec, bytes(blob))
+        mu.reg_write(UC_X86_REG_ESI, rec)
+        mu.reg_write(UC_X86_REG_ESP, STACK + 0x800)
+        mu.emu_start(rf.REGION_A, rf.REGION_A_END, count=100_000)
+        body = bytes(mu.mem_read(rec + 0x2A, 2))
+        if not keep_body:
+            mu.mem_write(rec + 0x2A, bytes((wt - 150,)))
         sp = STACK + 0x1000
         mu.mem_write(sp, struct.pack("<IIII", 0x11, 0x22, 0x33, 0x44) + bytes(8) + struct.pack("<II", SENT, 0))
         mu.reg_write(UC_X86_REG_ESP, sp)
@@ -210,7 +220,7 @@ def run_class(table, prospects, roster_photos=(), seed=1):
         r = bytes(mu.mem_read(rec, 0x54))
         d18, d20 = struct.unpack_from("<I", r, 0x18)[0], struct.unpack_from("<I", r, 0x20)[0]
         out.append(dict(photo=struct.unpack_from("<H", r, 6)[0], tone=(d18 >> 7) & 7, dreads=d18 & 1,
-                        face=(d20 >> 17) & 7, first=(struct.unpack_from("<I", r, 0x10)[0] - 0x2200000) // 64,
+                        face=(d20 >> 17) & 7, weight=body[0] + 150, height=body[1], first=(struct.unpack_from("<I", r, 0x10)[0] - 0x2200000) // 64,
                         changed={k for k in range(0x54) if r[k] != blob[k]}, college=struct.unpack_from("<I", r, 0)[0],
                         esp=mu.reg_read(UC_X86_REG_ESP) - sp,
                         regs=tuple(struct.unpack_from("<IIII", bytes(mu.mem_read(sp, 16))))))
@@ -241,13 +251,18 @@ class Native(unittest.TestCase):
         self.assertLessEqual(len(rf.CODE_A), rf.REGION_A_END - rf.REGION_A)
         self.assertLessEqual(len(rf.CODE_B), rf.REGION_B_END - rf.REGION_B)
         self.assertLessEqual(len(rf.CODE_D), rf.TABLE_END - rf.TABLE_VA - rf.TABLE_DATA)
-        self.assertEqual(rf.CODE_A[:5], b"\xe9" + struct.pack("<i", 0xE686E - (rf.REGION_A + 5)))
+        target = rf.REGION_A + 5 + struct.unpack("<i", rf.CODE_A[1:5])[0]
+        self.assertEqual(rf.CODE_A[0], 0xE9)
+        self.assertTrue(rf.BODY_TABLE_VA + 68 <= target < rf.REGION_A_END, "region A enters the body draw")
+        self.assertEqual(len(rf.CODE_A), rf.REGION_A_END - rf.REGION_A)
+        self.assertEqual(rf.CODE_A[-2:], b"\xeb\x00", "and leaves at the next retail instruction (0xE6923)")
 
     def test_frame_and_scope(self):
         for r in self.res:
             self.assertEqual(r["esp"], 0x20, "pops four registers, the 8-byte frame and ret 4")
             self.assertEqual(r["college"], 0xC0FFEE, "the college store the retail tail made")
-            self.assertLessEqual(r["changed"], {0, 1, 2, 3, 6, 7, 0x10, 0x11, 0x12, 0x13, 0x18, 0x19, 0x20, 0x21, 0x22})
+            self.assertLessEqual(r["changed"], {0, 1, 2, 3, 6, 7, 0x10, 0x11, 0x12, 0x13, 0x18, 0x19, 0x20, 0x21, 0x22,
+                                                0x2A, 0x2B})  # b779-rf3: region A draws weight and height
 
     def test_face_matches_bucket(self):
         for (fi, li, pos, wt), r in zip(self.prospects, self.res):
@@ -351,7 +366,8 @@ class NativeRh2(unittest.TestCase):
         res = run_class(table, pros, seed=11)
         idx = [r["photo"] - (1000 + 400 * (3 * r["tone"])) for r in res]
         self.assertTrue(all(0 <= k < 400 for k in idx), "lean rows: start + index")
-        self.assertGreater(sum(k >= 256 for k in idx), 60, "indices past 255 are drawn")
+        # b779-rf3: the row's last (5 * 400) >> 4 = 125 faces (275..399) are down-weighted, so ~16 % land past 255
+        self.assertGreater(sum(k >= 256 for k in idx), 30, "indices past 255 are drawn")
         for k, r in zip(idx, res):
             self.assertEqual(r["dreads"], int(k < 100), "hanging = the first 100 faces, also when the index is past 255")
 
@@ -474,13 +490,15 @@ class Bank(unittest.TestCase):
     def test_ids_and_buckets(self):
         ids = rf.bank_ids(self.bank)
         self.assertEqual(len(ids), len(set(ids)))
-        self.assertEqual(sorted(ids), sorted(f["id"] for f in self.bank["faces"]))
+        self.assertEqual(sorted(ids), sorted(f["id"] for f in self.bank["faces"] if f["id"] is not None))
         for f in self.bank["faces"]:
+            if f["id"] is None:
+                continue
             b = (rf.BUCKETS + 3 * rf.RARE_GROUPS.index(f["rare"]) + f["build"]) if f.get("rare") else f["tone"] * 3 + f["build"]
             row = self.bank["buckets"][b]
             self.assertTrue(row["start"] <= f["id"] < row["start"] + row["count"])
             self.assertEqual(f["hanging"], f["id"] - row["start"] < row["hanging"])
-        self.assertTrue(all(rf.ID_MIN <= i < rf.ID_END for i in ids))
+        self.assertTrue(all(rf.ID_MIN <= i < rf.ID_END for i in rf.portrait_ids(self.bank)))
 
     def test_rare_rows_and_tags(self):
         rows = self.bank["buckets"]
@@ -493,9 +511,141 @@ class Bank(unittest.TestCase):
 
     def test_atlases(self):
         faces = dict(rf.bank_faces(self.bank))
-        self.assertEqual(len(faces), len(self.bank["faces"]))
-        for rgb in list(faces.values())[:40]:
+        self.assertEqual(len(faces), len(rf.portrait_ids(self.bank)))
+        for rgb in list(faces.values())[:40] + list(faces.values())[-40:]:
             self.assertLessEqual(len(set(rgb[i:i + 3] for i in range(0, len(rgb), 3))), 256)
+
+    def test_beta78_ids_keep_their_face(self):
+        """b779-rf3: a prospect drafted on beta-78 keeps his portrait id in the save; that id still shows a face of
+        the same tone, build and hair class (the beta-78 row layout below), so his skin and Dreads bits still match."""
+        legacy = {f["legacy_id"]: f for f in self.bank["faces"] if f.get("legacy_id") is not None}
+        self.assertEqual(sorted(legacy), list(range(10000, 10000 + sum(r[2] for r in BETA78_ROWS))))
+        for b, (start, _unused, count, hanging, tone) in enumerate(BETA78_ROWS):
+            build = b % 3
+            for k in range(count):
+                f = legacy[start + k]
+                self.assertEqual((f["tone"], f["build"], f["hanging"]), (tone, build, k < hanging), start + k)
+
+    def test_zone_holds_the_plainest(self):
+        """b779-rf3: inside each row the faces the review rated plainest sit in the down-weighted zone."""
+        sev = {"striking": 0, "good": 1, "ordinary": 2, "plain": 3, "novelty": 4, "homely": 5, "ugly": 6, "extreme": 7}
+        by_id = {f["id"]: f for f in self.bank["faces"] if f["id"] is not None}
+        for row in self.bank["buckets"]:
+            z = row["start"] + rf.zone_start(row["count"])
+            inside = [sev[by_id[i]["look"]] for i in range(z, row["start"] + row["count"])]
+            outside = [sev[by_id[i]["look"]] for i in range(row["start"] + row["hanging"], z)]
+            self.assertLessEqual(row["hanging"], rf.zone_start(row["count"]))
+            if inside and outside:
+                self.assertGreaterEqual(min(inside), max(outside), row)
+
+
+# The beta-78 / SOFTDRINK v0.7 bank rows: (start, unused, count, hanging, tone) in row order.
+BETA78_ROWS = ((11806, 0, 239, 0, 0), (11291, 0, 268, 0, 0), (10719, 0, 299, 0, 0), (13248, 0, 80, 0, 1),
+               (13403, 0, 70, 0, 1), (13328, 0, 75, 0, 1), (10000, 0, 380, 61, 2), (11559, 0, 247, 50, 2),
+               (12263, 0, 200, 27, 2), (10380, 0, 339, 76, 3), (12463, 0, 167, 31, 3), (12630, 0, 160, 42, 3),
+               (12045, 0, 218, 47, 4), (12790, 0, 129, 21, 4), (12919, 0, 114, 25, 4), (11018, 0, 273, 53, 5),
+               (13033, 0, 111, 24, 5), (13144, 0, 104, 26, 5), (13493, 0, 19, 0, 1), (13512, 0, 19, 0, 1),
+               (13473, 0, 20, 0, 1), (13559, 0, 10, 0, 2), (13531, 0, 14, 0, 2), (13545, 0, 14, 0, 2))
+
+
+class NativeRf3(unittest.TestCase):
+    """b779-rf3: prospect height / weight by position (region A) and the down-weighted zone (region D)."""
+
+    @classmethod
+    def setUpClass(cls):
+        try:
+            import unicorn  # noqa: F401
+        except ImportError:  # pragma: no cover
+            raise unittest.SkipTest("unicorn is not installed")
+        cls.firsts, cls.lasts = shipped_pool()
+        cls.table = rf.tables(cls.firsts, cls.lasts, toy_bank())
+
+    @staticmethod
+    def exact(lo, c, outlier):
+        """The exact distribution of value = lo + (c * S') >> 10 (three uniform bytes, the 1-in-64 outlier)."""
+        two = [0] * 511
+        for i in range(256):
+            for j in range(256):
+                two[i + j] += 1
+        dist = collections.Counter()
+        for i, a in enumerate(two):
+            for j in range(256):
+                p = a / 256 ** 3
+                if outlier:
+                    dist[lo + ((c * (i + j)) >> 10)] += p * (1 - rf.OUTLIER_K / 256)
+                    dist[lo + ((c * (i + j + rf.OUTLIER_ADD)) >> 10)] += p * rf.OUTLIER_K / 256
+                else:
+                    dist[lo + ((c * (i + j)) >> 10)] += p
+        mean = sum(v * p for v, p in dist.items())
+        return dist, mean, math.sqrt(sum((v - mean) ** 2 * p for v, p in dist.items()))
+
+    def test_body_table_is_in_the_code(self):
+        at = rf.BODY_TABLE_VA - rf.REGION_A
+        self.assertEqual(rf.CODE_A[at:at + 68], rf.body_table())
+
+    def test_body_table_matches_the_combine_data(self):
+        for pos in ("DE", "DT", "HB", "QB", "CB", "T", "WR", "TE"):
+            wlo, wc, hlo, hc, wmean, wsd, hmean, hsd, _n = rf.BODY[pos]
+            dist, mean, sd = self.exact(wlo, wc, True)
+            self.assertLess(abs(mean + 150 - wmean), 0.6, pos)
+            self.assertLess(abs(sd - wsd) / wsd, 0.05, pos)
+            self.assertLessEqual(max(dist), 255, "the weight byte never wraps")
+            hd, hm, hs = self.exact(hlo, hc, False)
+            self.assertLess(abs(hm - hmean), 0.3, pos)
+            self.assertLess(abs(hs - hsd), 0.35, pos)
+
+    def run_bodies(self, pos, n=600, seed=21):
+        return run_class(self.table, [(rng_i % 445, 5, rf.POSITIONS.index(pos), 200) for rng_i in range(n)],
+                         seed=seed, keep_body=True)
+
+    def test_native_edge_bodies(self):
+        """EDGE (DE): nflverse combine EDGE 2018-2026 254 +/- 10 lb, 75.7 +/- 1.3 in.  Retail SOFTDRINK v0.7 rolled
+        245..320 lb uniformly (mean 282, a quarter at 300 lb or more)."""
+        res = self.run_bodies("DE")
+        w = [r["weight"] for r in res]
+        h = [r["height"] for r in res]
+        self.assertLess(abs(sum(w) / len(w) - 254.2), 3)
+        self.assertLess(sum(x >= 280 for x in w) / len(w), 0.05)
+        self.assertLess(sum(x >= 300 for x in w) / len(w), 0.01)
+        self.assertGreaterEqual(min(h), 71)
+        self.assertLessEqual(max(h), 80)
+        self.assertLess(abs(sum(h) / len(h) - 75.7), 0.4)
+        mw, mh = sum(w) / len(w), sum(h) / len(h)
+        cov = sum((a - mw) * (b - mh) for a, b in zip(w, h))
+        self.assertGreater(cov, 0, "height follows weight a little")
+
+    def test_native_rare_heavy_back(self):
+        res = self.run_bodies("HB", n=3000, seed=4)
+        w = [r["weight"] for r in res]
+        self.assertLess(abs(sum(w) / len(w) - 211.6), 2)
+        heavy = sum(x >= 250 for x in w) / len(w)
+        self.assertTrue(0.002 < heavy < 0.03, heavy)
+        self.assertLessEqual(max(w), 211.6 + 6.5 * 12.8)
+
+    def test_body_draw_scope(self):
+        res = self.run_bodies("DT", n=50)
+        for r in res:
+            self.assertLessEqual(r["changed"], {0, 1, 2, 3, 6, 7, 0x10, 0x11, 0x12, 0x13, 0x18, 0x19, 0x20, 0x21, 0x22,
+                                                0x2A, 0x2B})
+            self.assertLessEqual(r["face"], 6)
+            self.assertTrue(260 <= r["weight"] <= 405)
+
+    def test_zone_is_down_weighted(self):
+        """Rows big enough that few faces are in use: about (150 / 480) ** 2 = 10 % of draws land in the zone (the
+        last 150 faces, 31 % of the row).  When a row fills up, the in-use redraws reach the zone like any face."""
+        bank = toy_bank(count=480, hanging=10, start=1000)
+        for r in bank["buckets"][18:]:
+            r["start"] += 480 * 18 - 40 * 18
+        table = rf.tables(self.firsts, self.lasts, bank)
+        pros = [(i % 445, 5, rf.POSITIONS.index("CB"), 190) for i in range(500)]
+        res = run_class(table, pros, seed=8)
+        z0 = rf.zone_start(480)
+        self.assertEqual(z0, 330)
+        idx = [r["photo"] - (1000 + 480 * (3 * r["tone"])) for r in res]
+        self.assertTrue(all(0 <= k < 480 for k in idx))
+        share = sum(k >= z0 for k in idx) / len(idx)
+        self.assertLess(share, 0.17, "about 10 % of draws, not 31 %")
+        self.assertGreater(share, 0.04)
 
 
 if __name__ == "__main__":

@@ -3937,6 +3937,18 @@
       "size": 142999,
       "width": 256
     },
+    "data/nfl2k5_rookie_faces/faces_14.png": {
+      "height": 2048,
+      "sha256": "2ad0e9c80032ab20e43a67b1e27e97285cf66d1dd39d23e6aa8d6ea340aa41e8",
+      "size": 88226,
+      "width": 2048
+    },
+    "data/nfl2k5_rookie_faces/faces_14_pal.png": {
+      "height": 8,
+      "sha256": "c11ce1c91572a67139ce1b387e00dc4ddbf602a94e173e35fb00949779cc7d4e",
+      "size": 4830,
+      "width": 256
+    },
     "data/nfl2k5_super_bowl_fields/hosts/h41/banner_away_team.png": {
       "height": 128,
       "sha256": "460618bcbc119f33df223c42bb827b5dcd0293867e653710747f3aa4cd511e31",
