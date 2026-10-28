@@ -2051,6 +2051,10 @@ data/nfl2k5_rookie_faces/faces_13.png
 data/nfl2k5_rookie_faces/faces_13_pal.png
 data/nfl2k5_rookie_faces/faces_14.png
 data/nfl2k5_rookie_faces/faces_14_pal.png
+data/nfl2k5_rookie_faces/faces_15.png
+data/nfl2k5_rookie_faces/faces_15_pal.png
+data/nfl2k5_rookie_faces/faces_16.png
+data/nfl2k5_rookie_faces/faces_16_pal.png
 mod_editor/core/nfl2k5_return_coverage.py
 mod_editor/core/nfl2k5_cpu_third_down.py
 tools/nfl2k5_weather_editor.py

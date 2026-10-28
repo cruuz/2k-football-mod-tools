@@ -3939,14 +3939,38 @@
     },
     "data/nfl2k5_rookie_faces/faces_14.png": {
       "height": 2048,
-      "sha256": "2ad0e9c80032ab20e43a67b1e27e97285cf66d1dd39d23e6aa8d6ea340aa41e8",
-      "size": 88226,
+      "sha256": "97ef944d48a1639fad5e9ae67cce589dc7b086a436c71cfe5ccb573380edb9cf",
+      "size": 2435832,
       "width": 2048
     },
     "data/nfl2k5_rookie_faces/faces_14_pal.png": {
-      "height": 8,
-      "sha256": "c11ce1c91572a67139ce1b387e00dc4ddbf602a94e173e35fb00949779cc7d4e",
-      "size": 4830,
+      "height": 256,
+      "sha256": "1fe9ef8befc65096dbf59404bef53b597aa33f31d515a3e7694f04a59509623c",
+      "size": 147865,
+      "width": 256
+    },
+    "data/nfl2k5_rookie_faces/faces_15.png": {
+      "height": 2048,
+      "sha256": "53b97f7c0dc93b18ca436848fc7b7a240f3843dc016d535596ea3b52d6690062",
+      "size": 2485336,
+      "width": 2048
+    },
+    "data/nfl2k5_rookie_faces/faces_15_pal.png": {
+      "height": 256,
+      "sha256": "6c25f105a65b7c991df7b8446235d1a2a176791e1ee7ecc31b09e981448d4aa2",
+      "size": 153525,
+      "width": 256
+    },
+    "data/nfl2k5_rookie_faces/faces_16.png": {
+      "height": 2048,
+      "sha256": "2a81ad4ff1138454866097361317c221c76692fc52cc233df32c8271b82bf40d",
+      "size": 565763,
+      "width": 2048
+    },
+    "data/nfl2k5_rookie_faces/faces_16_pal.png": {
+      "height": 58,
+      "sha256": "6f0d1844c810cbef24888de8c38e262a50ad2cf519a5c5f496c29c2ddfebcc5f",
+      "size": 34862,
       "width": 256
     },
     "data/nfl2k5_super_bowl_fields/hosts/h41/banner_away_team.png": {
