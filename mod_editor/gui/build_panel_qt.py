@@ -498,15 +498,19 @@ class BuildPanel(QWidget):
         self.setStyleSheet(build_panel_stylesheet(self._theme))
         presets = QGroupBox("Choose a SOFTDRINK preset")
         pr = QVBoxLayout(presets)
-        preset_grid = QGridLayout()
-        preset_grid.setHorizontalSpacing(6)
+        # b779-ui3: the three preset captions used to sit side by side in one grid row. Their buttons do
+        # not wrap, so the row set the page's minimum width (946 px at 100% and 1,322 px at 144 DPI, more
+        # on Windows) and the Build tab gained a sideways scrollbar at 1280x720. One preset per row keeps
+        # the same buttons, text and fonts; only the arrangement changes.
         self.preset_basic_button = QPushButton(tab_title(PRESET_BUTTONS["softdrink_basic"]))
         self.preset_advanced_button = QPushButton(tab_title(PRESET_BUTTONS["softdrink_advanced"]))
         self.preset_experimental_button = QPushButton(tab_title(PRESET_BUTTONS["softdrink_experimental"]))
         self.preset_captions: dict[str, QLabel] = {}
-        for column, (name, button) in enumerate((("softdrink_basic", self.preset_basic_button),
-                                                 ("softdrink_advanced", self.preset_advanced_button),
-                                                 ("softdrink_experimental", self.preset_experimental_button))):
+        for index, (name, button) in enumerate((("softdrink_basic", self.preset_basic_button),
+                                                ("softdrink_advanced", self.preset_advanced_button),
+                                                ("softdrink_experimental", self.preset_experimental_button))):
+            if index:
+                pr.addSpacing(8)
             button.setObjectName("presetButton")
             button.setToolTip(PRESET_CAPTIONS[name])
             button.setAccessibleName(f"{PRESET_LABELS[name]} preset")
@@ -516,11 +520,10 @@ class BuildPanel(QWidget):
             caption.setObjectName("throwMuted")
             caption.setWordWrap(True)
             caption.setAlignment(Qt.AlignTop | Qt.AlignLeft)
+            caption.setContentsMargins(2, 0, 0, 0)
             self.preset_captions[name] = caption
-            preset_grid.addWidget(button, 0, column)
-            preset_grid.addWidget(caption, 1, column)
-            preset_grid.setColumnStretch(column, 1)
-        pr.addLayout(preset_grid)
+            pr.addWidget(button)
+            pr.addWidget(caption)
         self.preset_note = WrappedLabel(PRESET_NOTE)
         self.preset_note.setObjectName("throwMuted")
         self.preset_note.setWordWrap(True)
@@ -915,10 +918,16 @@ class BuildPanel(QWidget):
         mode_row.addWidget(QLabel("Jersey mode"))
         self.uniform_choice_mode = QComboBox()
         self.uniform_choice_mode.setAccessibleName("Jersey choice mode")
-        self.uniform_choice_mode.addItem(
-            "choice: choose either colour on Controller Assign / exhibition Team Select", "choice")
-        self.uniform_choice_mode.addItem(
-            "rule: fixed home dark / away white (no colour choice)", "rule")
+        # b779-ui3: the old item text was a 70-character sentence, so the closed combo alone needed
+        # 475 px (684 px at 144 DPI). Keep the short name visible and the full wording in each item's
+        # tooltip, where it is still reachable but does not set the page width.
+        self.uniform_choice_mode.addItem("Choose either colour", "choice")
+        self.uniform_choice_mode.setItemData(
+            0, "On Controller Assign and exhibition Team Select the player chooses either team colour.",
+            Qt.ToolTipRole)
+        self.uniform_choice_mode.addItem("Fixed home dark, away white", "rule")
+        self.uniform_choice_mode.setItemData(
+            1, "Fixed home dark and away white; no colour choice.", Qt.ToolTipRole)
         self.uniform_choice_mode.setToolTip(r62_ui.UNIFORM_CHOICE_HELP)
         self.uniform_choice_mode.currentIndexChanged.connect(lambda _i: self._refresh())
         mode_row.addWidget(self.uniform_choice_mode)
@@ -1591,7 +1600,10 @@ class BuildPanel(QWidget):
         self.custom_details.content.addLayout(honors_row)
         ol.addWidget(self.custom_details)
 
-        self.advanced_details = Details("More inputs (modern or classic playbooks, commentary, packs, description)")
+        # b779-ui3: this title is a tool button, which cannot wrap on its own; the full phrase alone
+        # needed 483 px at 100% and 695 px at 144 DPI. Explicit line breaks keep every word visible
+        # and let the collapsed Details meet a narrow page.
+        self.advanced_details = Details("More inputs\n(modern or classic playbooks,\ncommentary, packs, description)")
         adv = self.advanced_details.content
         self.commentary_box = QGroupBox("Commentary replacements (0)")
         cb = QVBoxLayout(self.commentary_box)
@@ -1599,25 +1611,32 @@ class BuildPanel(QWidget):
         self.commentary_list.setAccessibleName("Commentary replacements")
         self.commentary_list.setMaximumHeight(90)
         cb.addWidget(self.commentary_list)
-        crow = QHBoxLayout()
-        crow.addWidget(QLabel("Line ID"))
+        # b779-ui3: seven controls shared one row (653 px at 100%, about 940 px at 144 DPI). They stack
+        # into the line, the file and the list buttons; same widgets and copy, narrower floor.
+        stream_row = QHBoxLayout()
+        stream_row.addWidget(QLabel("Line ID"))
         self.commentary_stream_field = QLineEdit()
         self.commentary_stream_field.setPlaceholderText("bank:index, e.g. cutsceneaudio:12 (Presentation ▸ Commentary lists them)")
-        crow.addWidget(self.commentary_stream_field, 1)
-        crow.addWidget(QLabel("Replacement WAV"))
+        stream_row.addWidget(self.commentary_stream_field, 1)
+        cb.addLayout(stream_row)
+        wav_row = QHBoxLayout()
+        wav_row.addWidget(QLabel("Replacement WAV"))
         self.commentary_wav_field = QLineEdit()
         self.commentary_wav_field.setPlaceholderText("A WAV or other audio file")
-        crow.addWidget(self.commentary_wav_field, 1)
+        wav_row.addWidget(self.commentary_wav_field, 1)
         self.commentary_wav_button = QPushButton("Choose…")
         self.commentary_wav_button.clicked.connect(self._choose_commentary_wav)
-        crow.addWidget(self.commentary_wav_button)
+        wav_row.addWidget(self.commentary_wav_button)
+        cb.addLayout(wav_row)
+        line_buttons = QHBoxLayout()
         self.commentary_add_button = QPushButton("Add line…")
         self.commentary_add_button.clicked.connect(self._add_commentary_line)
-        crow.addWidget(self.commentary_add_button)
+        line_buttons.addWidget(self.commentary_add_button)
         self.commentary_remove_button = QPushButton("Remove selected")
         self.commentary_remove_button.clicked.connect(self._remove_commentary_line)
-        crow.addWidget(self.commentary_remove_button)
-        cb.addLayout(crow)
+        line_buttons.addWidget(self.commentary_remove_button)
+        line_buttons.addStretch(1)
+        cb.addLayout(line_buttons)
         self.commentary_label = WrappedLabel("Each line is cut to its slot's length (a shorter recording is padded with silence). "
                                        "Presentation ▸ Commentary previews the fit; this list is a direct input to the build.")
         self.commentary_label.setObjectName("throwMuted")
@@ -1641,11 +1660,15 @@ class BuildPanel(QWidget):
         for button in (self.book_all_button, self.book_none_button, self.book_choose_button):
             button.setAccessibleName(button.text() + " modern books")
             book_row.addWidget(button)
+        book_row.addStretch(1)
+        pb.addLayout(book_row)
+        # b779-ui3: the status sentence shared the button row, so "Modern books:" + three buttons +
+        # the whole sentence set a 835 px row (1,200 px at 144 DPI) even inside a collapsed Details.
         self.book_set_status = QLabel("")
         self.book_set_status.setObjectName("bookSetStatus")
         self.book_set_status.setAccessibleName("Modern and classic book count")
-        book_row.addWidget(self.book_set_status, 1)
-        pb.addLayout(book_row)
+        self.book_set_status.setWordWrap(True)
+        pb.addWidget(self.book_set_status)
         self.book_set_note = WrappedLabel(BOOK_SET_EXPLAINER + " Change one team at a time on Playbooks & Plays.")
         self.book_set_note.setObjectName("throwMuted")
         self.book_set_note.setWordWrap(True)
@@ -1654,18 +1677,24 @@ class BuildPanel(QWidget):
         self.packs_list.setAccessibleName("Playbook packs")
         self.packs_list.setMaximumHeight(80)
         pb.addWidget(self.packs_list)
-        prow = QHBoxLayout()
+        # b779-ui3: five buttons in one line set a 1,194 px minimum (1,700 px at 144 DPI). Keep the same
+        # buttons and labels, one per row; only Expand-ed Details shows this box.
+        prow = QVBoxLayout()
+        prow.setSpacing(4)
+        small_row = QHBoxLayout()
         self.packs_add_button = QPushButton("Add pack…")
         self.packs_add_button.clicked.connect(self._add_playbook_pack)
-        prow.addWidget(self.packs_add_button)
+        small_row.addWidget(self.packs_add_button)
+        self.packs_remove_button = QPushButton("Remove selected")
+        self.packs_remove_button.clicked.connect(self._remove_playbook_pack)
+        small_row.addWidget(self.packs_remove_button)
+        small_row.addStretch(1)
+        prow.addLayout(small_row)
         self.modern_defense_button = QPushButton("Add modern defense (experimental)")
         self.modern_defense_button.setToolTip(
             "EXPERIMENTAL / UNWITNESSED. Spy is a shallow middle zone; "
             "a true spy needs the runtime patch (not yet shipped).")
         self.modern_defense_button.clicked.connect(self._add_modern_defense_pack)
-        self.packs_remove_button = QPushButton("Remove selected")
-        self.packs_remove_button.clicked.connect(self._remove_playbook_pack)
-        prow.addWidget(self.packs_remove_button)
         prow.addWidget(self.modern_defense_button)
         self.match_coverage_button = QPushButton("Add match coverage experiments")
         self.match_coverage_button.setToolTip(
@@ -1678,7 +1707,6 @@ class BuildPanel(QWidget):
         self.option_pack_button.setToolTip("Eight replacement calls in MIN I Jokers. Experimental and unwitnessed. Use the selected defensive test formation. Incompatible with the stock MIN Modern Gun Core seed.")
         self.option_pack_button.clicked.connect(self._add_option_pack)
         prow.addWidget(self.option_pack_button)
-        prow.addStretch(1)
         pb.addLayout(prow)
         packs_note = WrappedLabel("Installed in order into the copy's team books; full disc required. "
                             "Playbooks & Plays ▸ Install Playbook Pack… previews what a pack replaces.")
@@ -1761,12 +1789,21 @@ class BuildPanel(QWidget):
         box.setAccessibleDescription(helper)
         box.setToolTip(helper or details or label)
         head.addWidget(box)
-        badge_label = QLabel(badge)
-        badge_label.setObjectName("optionBadge")
-        badge_label.setVisible(bool(badge))
-        head.addWidget(badge_label)
         head.addStretch(1)
         rl.addLayout(head)
+        # b779-ui3: the qualifier badge sat beside the check box, so a long check box label plus a long
+        # badge set the row's minimum width (a 425 px label + a 200 px badge at 100%, nearly 1,000 px on
+        # Windows). It now gets its own line and wraps; the badge still names every qualifier at a glance.
+        badge_label = QLabel(badge)
+        badge_label.setObjectName("optionBadge")
+        badge_label.setWordWrap(True)
+        badge_label.setContentsMargins(30, 0, 0, 0)
+        badge_label.setVisible(bool(badge))
+        badge_row = QHBoxLayout()
+        badge_row.setContentsMargins(0, 0, 0, 0)
+        badge_row.addWidget(badge_label)
+        badge_row.addStretch(1)
+        rl.addLayout(badge_row)
         helper_label = WrappedLabel(helper)
         helper_label.setObjectName("throwMuted")
         helper_label.setWordWrap(True)

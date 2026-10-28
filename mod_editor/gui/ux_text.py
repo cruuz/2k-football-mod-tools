@@ -367,7 +367,8 @@ class Details(QWidget):
 
     def _apply(self, expanded: bool) -> None:
         self.body.setVisible(expanded)
-        self.button.setText(f"{self._title} {'▾' if expanded else '▸'}")
+        head, sep, rest = self._title.partition("\n")
+        self.button.setText(f"{head} {'▾' if expanded else '▸'}{sep}{rest}")
         self.toggled.emit(expanded)
 
     def add_text(self, text: str, *, object_name: str = "throwMuted") -> QLabel:
