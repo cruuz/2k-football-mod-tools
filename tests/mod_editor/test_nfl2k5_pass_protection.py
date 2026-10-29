@@ -23,7 +23,8 @@ class TemplateTests(unittest.TestCase):
         self.assertEqual(len(code), pp.CODE_SIZE)
         self.assertLessEqual(assembly.LABELS["code_end"], pp.CODE_SIZE)
         for label, value in (("k_base", pp.DELAY_BASE), ("k_slope", pp.DELAY_SLOPE),
-                             ("k_min", pp.DELAY_MIN), ("k_max", pp.DELAY_MAX)):
+                             ("k_min", pp.DELAY_MIN), ("k_max", pp.DELAY_MAX),
+                             ("k_floor", 1.0 - pp.DELAY_SPREAD), ("k_scale", 2.0 * pp.DELAY_SPREAD / 65535.0)):
             self.assertAlmostEqual(struct.unpack_from("<f", code, assembly.LABELS[label])[0], value, places=6)
             self.assertAlmostEqual(struct.unpack_from("<f", assembly.CODE, assembly.LABELS[label])[0], value, places=6,
                                    msg=label)
@@ -68,19 +69,24 @@ class WriterTests(unittest.TestCase):
         self.assertEqual(image.read(0x23317A, 8), bytes.fromhex("c7442418cdcc4c3d"))
         self.assertEqual(image.read(0x4E696C, 4), struct.pack("<f", 0.25))
         self.assertEqual(self.receipt["runtime_witnessed"], False)
-        self.assertEqual({e["label"] for e in self.receipt["edits"]}, {"pass_delay"})
+        self.assertEqual({e["label"] for e in self.receipt["edits"]},
+                         {"pass_delay"} | {name for name, *_ in pp.SIM_EDITS})
         self.assertEqual(space.status(self.final), "applied")
 
-    def test_only_owned_bytes_change_in_text(self):
+    def test_only_owned_bytes_change_in_text_and_rdata(self):
         a, b = XbeImage(self.retail), XbeImage(self.final)
-        text = next(s for s in a.sections if s.name == ".text")
-        x, y = a.read(text.start, text.raw_size), b.read(text.start, text.raw_size)
-        changed = [text.start + i for i in range(len(x)) if x[i] != y[i]]
         allowed = set()
-        for _name, at, before, _after in pp.sites(pp.allocation(self.final)["va"]):
+        for _name, at, before, _after in pp.sites(pp.allocation(self.final)["va"]) + pp.sim_sites():
             allowed.update(range(at, at + len(before)))
-        self.assertTrue(changed)
-        self.assertLessEqual(set(changed), allowed)
+        for name in (".text", ".rdata"):
+            section = next(s for s in a.sections if s.name == name)
+            x, y = a.read(section.start, section.raw_size), b.read(section.start, section.raw_size)
+            changed = [section.start + i for i in range(len(x)) if x[i] != y[i]]
+            self.assertLessEqual(set(changed), allowed, name)
+            self.assertTrue(changed or name == ".rdata", name)
+            if name == ".rdata":
+                self.assertEqual(set(changed), {pp.SIM_LIST_VA + i for i, (p, q) in enumerate(zip(
+                    struct.pack("<15i", *pp.SIM_LIST_RETAIL), struct.pack("<15i", *pp.SIM_LIST_NEW))) if p != q})
 
     def test_replay_and_foreign_refusal_before_mutation(self):
         again, receipt = pp.apply(self.final)
