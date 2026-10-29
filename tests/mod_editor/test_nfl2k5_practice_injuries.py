@@ -25,7 +25,8 @@ except ImportError:  # pragma: no cover
     uc = x86 = None
 
 # The cave as installed at 0x14EC5D0 (where the released v0.6.1 executable places it).
-CAVE_AT_14EC5D0 = "a1a076e50083f803741285c0740c833d80ffe50002770339c0c385e4c3"
+CAVE_AT_14EC5D0 = "a1a076e50085c07423803d80ffe5000276063c037413eb14f746200000c0bf7408804e2380804e274039c0c385e4c3"
+OLD_PI1_CAVE = bytes.fromhex("a1a076e50083f803741285c0740c833d80ffe50002770339c0c385e4c3")
 
 
 class StaticTests(unittest.TestCase):
@@ -113,7 +114,9 @@ class DecisionTests(unittest.TestCase):
     COPY, STACK, RETURN = 0x3000000, 0x3100000, 0x3200000
     HEAL = 0xE6680
     INJURED = 0xC0C83C71       # Carnell Tate in MyNFL3: injured, 3 weeks out (+0x20)
+    WEEKS_ONLY = 0x00C83C71    # 3 weeks out, injured bit clear (the save the injury report still lists)
     STATUS_OUT = 0x44360293    # status 4 = out (+0x24)
+    STATUS_PROBABLE = 0x14360293  # status 1 = probable
 
     @classmethod
     def setUpClass(cls):
@@ -161,6 +164,78 @@ class DecisionTests(unittest.TestCase):
             return "heal"
         return "keep"
 
+    def inspect(self, payload, *, mode, league, word20, word24):
+        """Run 0x61540 and return (outcome, +0x20, +0x24) after the call or heal."""
+        m = uc.Uc(uc.UC_ARCH_X86, uc.UC_MODE_32)
+        image = XbeImage(payload)
+        pages = sorted({va for s in image.sections for va in range(s.start & -4096, (s.start + s.size + 4095) & -4096, 4096)})
+        start = prev = None
+        for va in pages + [None]:
+            if va is not None and prev is not None and va == prev + 4096:
+                prev = va
+                continue
+            if start is not None:
+                m.mem_map(start, prev + 4096 - start)
+            start = prev = va
+        for s in image.sections:
+            if s.raw_size:
+                m.mem_write(s.start, image.read(s.start, s.raw_size))
+        for base in (self.COPY, self.STACK, self.RETURN):
+            m.mem_map(base, 0x10000)
+        put = lambda va, v: m.mem_write(va, struct.pack("<I", v))
+        put(self.COPY + 0x20, word20)
+        put(self.COPY + 0x24, word24)
+        put(0xE5FF80, mode)
+        put(0xE576A0, league)
+        esp = self.STACK + 0x8000
+        put(esp, self.RETURN)
+        m.reg_write(x86.UC_X86_REG_ESI, self.COPY)
+        m.reg_write(x86.UC_X86_REG_ESP, esp)
+        m.reg_write(x86.UC_X86_REG_EBX, 0xEFFFFFFF)
+        m.reg_write(x86.UC_X86_REG_EDI, 7)
+        seen = []
+        m.hook_add(uc.UC_HOOK_CODE, lambda u, address, size, _: (seen.append(address),
+                   u.emu_stop() if address in (self.HEAL, self.RETURN) else None))
+        m.emu_start(0x61540, 0, count=100)
+        self.assertIn(seen[-1], (self.HEAL, self.RETURN))
+        word20 = struct.unpack("<I", m.mem_read(self.COPY + 0x20, 4))[0]
+        word24 = struct.unpack("<I", m.mem_read(self.COPY + 0x24, 4))[0]
+        return ("heal" if seen[-1] == self.HEAL else "keep"), word20, word24
+
+    def eligible(self, payload, *, status):
+        """0x188440 with ESI/EDX = a synthetic primary-pool copy: True when it passes the status gate."""
+        m = uc.Uc(uc.UC_ARCH_X86, uc.UC_MODE_32)
+        image = XbeImage(payload)
+        pages = sorted({va for s in image.sections for va in range(s.start & -4096, (s.start + s.size + 4095) & -4096, 4096)})
+        start = prev = None
+        for va in pages + [None]:
+            if va is not None and prev is not None and va == prev + 4096:
+                prev = va
+                continue
+            if start is not None:
+                m.mem_map(start, prev + 4096 - start)
+            start = prev = va
+        for s in image.sections:
+            if s.raw_size:
+                m.mem_write(s.start, image.read(s.start, s.raw_size))
+        for base in (self.COPY, self.STACK, self.RETURN):
+            m.mem_map(base, 0x10000)
+        put = lambda va, v: m.mem_write(va, struct.pack("<I", v))
+        put(self.COPY + 0x34, 1)                         # pool kind 1 -> threshold [0xE6019C]
+        put(self.COPY + 0x24, (status << 28) | 0x04360293)
+        put(0xE6019C, 1)
+        put(0xE601AC, 1)
+        esp = self.STACK + 0x8000
+        put(esp, self.RETURN)
+        put(esp + 4, 0)                                  # the one stack argument (ret 4)
+        m.reg_write(x86.UC_X86_REG_EDX, self.COPY)
+        m.reg_write(x86.UC_X86_REG_ESP, esp)
+        seen = []
+        m.hook_add(uc.UC_HOOK_CODE, lambda u, address, size, _: (seen.append(address),
+                   u.emu_stop() if address in (self.RETURN, 0x188475) else None))
+        m.emu_start(0x188440, 0, count=50)               # status gate: continues at 0x188475 or returns 0
+        return bool(seen) and seen[-1] == 0x188475
+
     def test_retail_heals_franchise_practice(self):
         # the reported bug: Coach's Desk Practice (mode 1) with a franchise loaded (league type 2) heals the copy
         for mode in (0, 1, 2):
@@ -176,8 +251,8 @@ class DecisionTests(unittest.TestCase):
     def test_patched_is_retail_everywhere_else(self):
         for mode in range(0, 10):
             for league in (0, 1, 2, 3):
-                for word in (self.INJURED, 0x40083C71):
-                    if mode <= 2 and league and word == self.INJURED:
+                for word in (self.INJURED, 0x40083C71, self.WEEKS_ONLY):
+                    if mode <= 2 and league and word & 0xBFC00000:
                         continue
                     self.assertEqual(self.decide(self.final, mode=mode, league=league, word20=word),
                                      self.decide(self.retail, mode=mode, league=league, word20=word), (mode, league, word))
@@ -185,6 +260,55 @@ class DecisionTests(unittest.TestCase):
         self.assertEqual(self.decide(self.final, mode=1, league=0), "heal")
         # a healthy player is never "kept" by the new case (retail clears his fields, as before)
         self.assertEqual(self.decide(self.final, mode=1, league=2, word20=0x40083C71), "heal")
+
+    def test_weeks_only_injury_is_marked_out_in_franchise_practice(self):
+        # The v0.7 base only checked the injured bit, so an injury whose bit was clear was healed and the
+        # player lined up. The fix marks the disposable copy: bit 31 and status 4, so 0x188440 refuses him.
+        outcome, word20, word24 = self.inspect(self.retail, mode=1, league=2,
+                                               word20=self.WEEKS_ONLY, word24=0x04360293)
+        self.assertEqual(outcome, "heal")                    # retail heals the weeks-only injury
+        self.assertFalse(word20 & 0x80000000)
+        self.assertTrue(self.eligible(self.retail, status=0))  # the "healed" starter is eligible
+        outcome, word20, word24 = self.inspect(self.final, mode=1, league=2,
+                                               word20=self.WEEKS_ONLY, word24=0x04360293)
+        self.assertEqual(outcome, "keep")
+        self.assertTrue(word20 & 0x80000000)
+        self.assertEqual((word24 >> 28) & 7, 4)
+        self.assertFalse(self.eligible(self.final, status=4))  # the native slot gate refuses him
+
+    def test_probable_injury_is_marked_out_in_franchise_practice(self):
+        # The released pi1 cave kept the copy but left status 1, which 0x188440 accepts. The new cave bumps
+        # the copy to out; a league game (mode 7) keeps retail status 1 untouched.
+        pi1_only = bytearray(self.final)
+        cave = pi.allocation(self.final)["va"]
+        off = XbeImage(bytes(pi1_only)).offset(cave, pi.CODE_SIZE)
+        pi1_only[off:off + pi.CODE_SIZE] = OLD_PI1_CAVE.ljust(pi.CODE_SIZE, b"\xcc")
+        outcome, word20, word24 = self.inspect(bytes(pi1_only), mode=1, league=2,
+                                               word20=self.INJURED, word24=self.STATUS_PROBABLE)
+        self.assertEqual(outcome, "keep")
+        self.assertEqual((word24 >> 28) & 7, 1)
+        self.assertTrue(self.eligible(bytes(pi1_only), status=1))       # the base accepts the injured starter
+        outcome, word20, word24 = self.inspect(self.final, mode=1, league=2,
+                                               word20=self.INJURED, word24=self.STATUS_PROBABLE)
+        self.assertEqual(outcome, "keep")
+        self.assertEqual((word24 >> 28) & 7, 5)                          # 0x40 set: status 1 -> 5
+        self.assertFalse(self.eligible(self.final, status=5))
+        # a league game never reaches the hook: status 1 stays 1
+        outcome, word20, word24 = self.inspect(self.final, mode=7, league=2,
+                                               word20=self.INJURED, word24=self.STATUS_PROBABLE)
+        self.assertEqual(outcome, "keep")
+        self.assertEqual((word24 >> 28) & 7, 1)
+
+    def test_main_menu_practice_and_healthy_players_are_unchanged(self):
+        for payload in (self.retail, self.final):
+            outcome, _word20, word24 = self.inspect(payload, mode=1, league=0,
+                                                    word20=self.WEEKS_ONLY, word24=0x04360293)
+            self.assertEqual(outcome, "heal")
+            self.assertEqual((word24 >> 28) & 7, 0)
+            outcome, _word20, word24 = self.inspect(payload, mode=1, league=2,
+                                                    word20=0x00083C71, word24=0x04360293)
+            self.assertEqual(outcome, "heal")
+            self.assertEqual((word24 >> 28) & 7, 0)
 
 
 if __name__ == "__main__":

@@ -914,7 +914,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_formation_art_spacing.py": "288fa57184b01a1980d706e66d099b8c7e95c77753d1c2d93d05b061f9571e99",
         "mod_editor/core/nfl2k5_force_out.py": "9498bc3bc5ecb8dc7bc40ddb0a821b1402b9162efb167a1d020a4fb9dc9ed574",
         "mod_editor/core/nfl2k5_star_retention.py": "cdfaf54656a83c66f6bae0e3f9212eb510c6312b27d02cc3f05b73c953ea22b6",  # b778-fa1
-        "mod_editor/core/nfl2k5_practice_injuries.py": "b6d4cddd5431ce5f4df436052312c31b3eb9c24d0eb8487581eb08184a3f2626",  # b778-pi1
+        "mod_editor/core/nfl2k5_practice_injuries.py": "8b411bcd88201f1155319b140c7c6a9555e9bcf8751921c7264dd28f8955c518",  # b778-pi1
         "mod_editor/core/nfl2k5_ball_carrier_ai.py": "9d340302650510dede5db01f8a2cbae31807394f57ff9ef38db3998f7660ed7e",  # b778-ai5
         "mod_editor/core/nfl2k5_return_coverage.py": "3be0439c2f122ea0c7a5b53f50b89b0b31c8455ce13baa9ce8728ba9d2470db0",  # b778-kr1
         "mod_editor/core/nfl2k5_star_career.py": "a495c8108fa24d790504df752a6ed0384ef2e7331dac5a4b859beeaaa2629858",  # b778-st2
@@ -925,7 +925,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_player_progress_screen.py": "b055661ed0ff586d06a59b69ab139bbf5371ff3816fd894f48c2b9701a6703eb",  # b778-pg2
         "mod_editor/core/nfl2k5_player_progression.py": "205cf22ec9021f1e4c681ef5a6673390d5cbe999710de999eeecd055bb95e365",  # b778-pg2
         "mod_editor/core/nfl2k5_contract_college_guard.py": "4bf8deeb95c3718380e8dc248ec2a2f0c81116f304d1a93723e277cc4bd32fe6",  # b778-cr1
-        "mod_editor/core/nfl2k5_sim_cb_tackles.py": "55f652e9eb349daaae28437f1d327410c42f16acdf192fe0f484ad1012e090fc",  # b778-cb1
+        "mod_editor/core/nfl2k5_sim_cb_tackles.py": "3b2edca3e19d008b8366522a02591cb8dd45f57f963e9334e2226ec580d88af6",  # b778-cb1
         "mod_editor/core/nfl2k5_sim_stats.py": "26af040eea115ef53bea9bbd38a329185e42ea27cea201866e6432cd71b3ef00",  # b778-sim1
         "mod_editor/core/nfl2k5_clock_led.py": "ab030b1fbed873b96e0ba6055fcc38ef53193c31f2df496128e2de581e7b01c2",  # b778-sd4
         "mod_editor/core/nfl2k5_module_loader.py": "8ed99bf2572f30a5affc2b82adc0171a62c14369156b888cefb1809e908b8c48",
