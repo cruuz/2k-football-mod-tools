@@ -91,6 +91,16 @@ USER_FLOOR = 0x2BF992               # cmp byte [ecx+0x11C], 42: the user club's 
 USER_FLOOR_TEXT = 0xE8922A          # "42" in "The %s %s must have at least 42 players."
 OFFER_DAYS_SEED = 0x32327E          # new offers copied player +0x25 bits 5-7 into their day count
 FA_RETIREMENT = 0x2BDB74           # call 0x2BCF90 for each free agent in the retirement pass 0x2BDB00
+# b779 vs1: the transaction list's "Signed ... (n/$...)" formats n from the live player record
+# +0x27. 0x2BD900 clears both contract bytes when a signed player is released, so his old signing
+# line reads "0 years". The formatter case at 0x369133 is replaced with a call to economy_txn_years,
+# which keeps the live term while the player is under contract and otherwise reads the term the
+# transaction log recorded (packed >> 5, low 16 bits). All signing log callers put 0 in the packed
+# field's high part, so the shift is the recorded term. b779-int1: replayed onto revision 4 as a
+# revision-4 site (the stub lives in the picks window's spare bytes, so the picks window changes too).
+TXN_YEARS = 0x369133
+TXN_YEARS_RETAIL = bytes.fromhex("8a512783e20f89542410")
+PICKS_WINDOW = 0x2BAB20
 EXPIRING_RELEASE = 0x3237AC        # call 0x322B60: the re-signing stage releases an expiring contract
 USER_TRADE_FLOOR = 0x2BB13C         # cmp ebp, 42: an in-season trade may not leave the user club below it
 USER_TRADE_TEXT = 0xE99FA4          # "42" in "You must keep 42 players on your team or you will not be able to ..."
@@ -108,12 +118,16 @@ for _va, _digest in ((0x323870, "7ff0b7859e73de1e317c60d8c9d3f405f5e5519767a0e19
                      (OFFER_DAYS_SEED, "b4296d8e851226474af9a26c93be4874e70e454e69e0dc4c52bf790ac1a806b1"),
                      (USER_TRADE_FLOOR, "490566c6a8181843df6c7111073ac94bc538a1bce677071bb93660193154107a"),
                      (EXPIRING_RELEASE, "df8ba409850ca02e7cb8d6609900617acc3c9a69c2b5b9860f9a953650ffb4e8"),
+                     (TXN_YEARS, "26f69ea76f3ceabb519494c1f55f1a33e02bc06f27cd7a9c9873dc844f0016ec"),
                      (FA_RETIREMENT, "fe751a30c55501954375e0fd44439dc22498b7e447f069b7ad11817f220119d2"),
                      (USER_TRADE_TEXT, "e24460917716856724254344202653c566f02f7c2074430cd4b9b6884b39c5cd")):
     PINS[_va] = _digest
 # Revision 1 and 2 bytes of every site whose revision-3 bytes differ (the windows and the jumps into code
 # that moved), so an image built before revision 3 reads "legacy" and is upgraded in place.
 PREVIOUS = {
+    # b779 vs1: the picks window of revisions 1 to 3 (every beta-78 / v0.7 image), before the
+    # transaction-years stub joined its spare bytes; it reads "previous" and is rewritten on upgrade.
+    PICKS_WINDOW: "1329e11a30b5e42b215e27919b6331e37222f908828a3c12c44c98553f4dc484",
     0x13ECA0: "4ffed08531493e9a5b249be6eb693b41a725dd59b730397ed269bd67cf1a5bef",
     0x13ED30: "e6db715c203a5ad265ccc283cd7b1c10d07d04f1a5e1c034ffef0245703f19e0",
     0x247BC6: "93bcf088d60a02096f8e9e588f0e0897189d4d145f3f47edcde91f78312acf5b",
@@ -178,7 +192,7 @@ for _va, _digest in ((0x382200, "dc79bd8fe3a5e4434acf93056e6e304d0cfd27e357e5f39
     PINS[_va] = _digest
 REVISION_4_SITES = frozenset({0x382200, 0x41E2A0, 0x3A5F20, 0x3BAB20, 0x3E2310, 0x3E9740, 0x3E21D0, 0x3DBC10, SMART_CUT, CLASS_ALLOCATOR_TEST, CLASS_FREE_COUNT,
                               CLASS_POSITION, PRESEASON_GATE, CLASS_COUNT, CLASS_TARGET_CMP, CLASS_TARGET_NEED,
-                              CLASS_TOPUP})
+                              CLASS_TOPUP, TXN_YEARS})  # b779 vs1: the transaction-years call
 REVISION = 4
 
 
@@ -231,6 +245,8 @@ def sites(revision: int = REVISION) -> tuple[Site, ...]:
         replacements[CLASS_TARGET_CMP] = b"\x3d" + struct.pack("<I", CLASS_SIZE)
         replacements[CLASS_TARGET_NEED] = b"\xb9" + struct.pack("<I", CLASS_SIZE)
         replacements[CLASS_TOPUP] = b"\xe8" + struct.pack("<i", SYMBOLS["economy_class_topup"] - CLASS_TOPUP - 5)
+        replacements[TXN_YEARS] = (b"\xe8" + struct.pack("<i", SYMBOLS["economy_txn_years"] - TXN_YEARS - 5)
+                                   + b"\x90" * (len(TXN_YEARS_RETAIL) - 5))  # b779 vs1
         replacements[SMART_CUT] = b"\xe9" + struct.pack("<i", SYMBOLS["economy_smart_cut"] - SMART_CUT - 5)
     return tuple(Site(a, b, PINS[a]) for a, b in sorted(replacements.items()))
 
@@ -257,9 +273,10 @@ def _standalone_status(payload: bytes) -> str:
         unique = set(states.values())
         if len(unique) == 1 and unique <= {"applied", "retail"}:
             return next(iter(unique))
-        # b779 rc1: a revision-3 image (beta-78 / v0.7) upgrades in place to revision 4.
-        if {states[va] for va in REVISION_4_SITES} == {"retail"} and \
-                {state for va, state in states.items() if va not in REVISION_4_SITES} == {"applied"}:
+        # b779 rc1: a revision-3 image (beta-78 / v0.7) upgrades in place to revision 4. b779 vs1: its picks
+        # window is the revision-3 one (no transaction-years stub yet), which reads "previous".
+        if {states[va] for va in REVISION_4_SITES} == {"retail"} and states[PICKS_WINDOW] in ("applied", "previous") and \
+                {state for va, state in states.items() if va not in REVISION_4_SITES | {PICKS_WINDOW}} == {"applied"}:
             return "legacy"
         core = {state for va, state in states.items()
                 if va not in REVISION_2_SITES | REVISION_3_SITES | REVISION_4_SITES}

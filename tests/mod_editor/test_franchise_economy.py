@@ -141,6 +141,56 @@ class NativeEconomyTests(unittest.TestCase):
         with self.assertRaises(economy.EconomyError):
             economy.apply(bytes(mixed))
 
+    def test_transaction_years_keep_the_logged_term_after_a_release(self):
+        # b779 vs1: the "Signed ... (%d/$...)" formatter at 0x369133 read the live player's
+        # +0x27. 0x2BD900 clears it on release, so a signed-then-cut player's transaction line
+        # read "0 years". The patch keeps the live term while he is under contract and reads
+        # the term the log recorded otherwise.
+        site = next(s for s in economy.sites() if s.va == economy.TXN_YEARS)
+        self.assertEqual(site.patched, b"\xe8" + struct.pack(
+            "<i", economy.SYMBOLS["economy_txn_years"] - economy.TXN_YEARS - 5) + b"\x90" * 5)
+        self.assertEqual(len(site.patched), len(economy.TXN_YEARS_RETAIL))
+        # A real free agent of the retail roster whose live term is 0 (the state a released
+        # signing is left in). The retail game's own FA list points at these records.
+        table = self.m.get(self.m.root + 0x3C)
+        count = self.m.get(self.m.root + 0x38)
+        player = next(self.m.get(table + 4 * i) for i in range(count)
+                      if self.m.uc.mem_read(self.m.get(table + 4 * i) + 0x27, 1)[0] & 0x0F == 0)
+        entry = self.m.ARENA + 0x1B0000
+        self.m.put(entry, (3 << 5) | 1)                # log: 3 years, type 1 (Signed)
+        self.m.put(entry + 4, player)
+        esp = self.m.STACK
+        self.m.uc.mem_write(esp, struct.pack("<I", self.m.STOP))
+        self.m.uc.mem_write(esp + 0x10, struct.pack("<I", 0xDEADBEEF))
+        self.m.reg("ESP", esp)
+        self.m.reg("ECX", player)
+        self.m.reg("ESI", entry)
+        self.m.uc.emu_start(site.va, site.va + len(site.patched))
+        self.assertEqual(struct.unpack("<I", self.m.uc.mem_read(esp + 0x10, 4))[0], 3)
+        # The retail block at the same place reads the cleared live term: the base failure.
+        self.m.uc.mem_write(site.va, economy.TXN_YEARS_RETAIL)
+        self.m.uc.ctl_flush_tb()
+        self.m.uc.mem_write(esp + 0x10, struct.pack("<I", 0))
+        self.m.reg("ESP", esp)
+        self.m.reg("ECX", player)
+        self.m.reg("ESI", entry)
+        self.m.uc.emu_start(site.va, site.va + len(economy.TXN_YEARS_RETAIL))
+        self.assertEqual(struct.unpack("<I", self.m.uc.mem_read(esp + 0x10, 4))[0], 0)
+        # A kept contract keeps its live term; the draft announcement logs 0 years for a 4-year deal.
+        self.m.uc.mem_write(player + 0x27, bytes([4]))
+        entry2 = entry + 0x10
+        self.m.put(entry2, (0 << 5) | 1)
+        self.m.put(entry2 + 4, player)
+        self.m.uc.mem_write(site.va, site.patched)
+        self.m.uc.ctl_flush_tb()
+        self.m.uc.mem_write(esp + 0x10, struct.pack("<I", 0))
+        self.m.reg("ESP", esp)
+        self.m.reg("ECX", player)
+        self.m.reg("ESI", entry2)
+        self.m.uc.emu_start(site.va, site.va + len(site.patched))
+        self.assertEqual(struct.unpack("<I", self.m.uc.mem_read(esp + 0x10, 4))[0], 4)
+        self.m.uc.mem_write(player + 0x27, b"\x00")   # restore the shared retail-roster record
+
     def test_section_digests_and_default_build_writer(self):
         from mod_editor.core.nfl2k5_bump_strength import _sections, section_digest
         from mod_editor.core import nfl2k5_throw_tuning as tt
