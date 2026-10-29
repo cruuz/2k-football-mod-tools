@@ -61,9 +61,6 @@ typedef unsigned char u8;
 #define AWARDS 0x00E5A2F0u
 #define POS_NAMES 0x004F26D0u       /* 17 pointers to the position abbreviations */
 #define BLACK 0xFF101010u
-#define SCENE 0x00C901C0u           /* the Player Card's scene */
-#define SHEETS 0x00535E4Cu          /* x0, x1, y0, y1 of the stats table in the first card screen definition */
-#define SHEET_STRIDE 0x268u
 
 /* ---- small text helpers ------------------------------------------------------------------------------------ */
 static u16 *put_text(u16 *out, const u16 *text) {
@@ -403,27 +400,22 @@ static u32 entry_runner_up(const u8 *e) { return (((u32)e[1] + ((u32)e[2] << 8) 
 static u32 entry_champion_points(const u8 *e) { return (((u32)e[1] + ((u32)e[2] << 8) + ((u32)e[3] << 16)) >> 12) & 63; }
 static u32 entry_runner_points(const u8 *e) { return (((u32)e[1] + ((u32)e[2] << 8) + ((u32)e[3] << 16)) >> 18) & 63; }
 
-/* The stats table of page 1 (header row and row bars) is hidden on this page and its area holds the history list.
-   The bars are the scene's "gray" and "light_gray" nodes (blend factors 0x302/0x303 normally; zero and one draws nothing);
-   the table's rectangle is four floats of the card's screen definitions (x0, x1, y0, y1 = 312). */
-void FC champions_table(u32 hide);
-extern u32 FC champions_find(u32 name);   /* stubs.S: the card scene's node of that UTF-16 name, or 0 */
-
-void FC champions_table(u32 hide) {
-    if (G(SCENE)) {
-        static const u32 names[2] = {0x00EA2DA8u, 0x00EA2DB4u};
-        for (u32 i = 0; i < 2; i++) {
-            u32 node = champions_find(names[i]);
-            if (node) {
-                *(volatile u16 *)(node + 0x74) = hide ? 0 : 0x302;
-                *(volatile u16 *)(node + 0x76) = hide ? 1 : 0x303;
-            }
+/* The stats table of page 1 is the card screen's only element (its header, row bars and rows are all that element's
+   draw): the screen's element count (screen + 0x10C = the context, count at +0x658) is zero while this page shows, so the
+   draw loop (0x27CA90) skips it, and the saved count (state[3]) is put back on every other page and when the card
+   closes. state[2] is the card screen, recorded by the enter hook. */
+void FC champions_table(volatile u32 *state, u32 hide) {
+    u32 screen = state[2], ctx = screen ? G(screen + 0x10C) : 0;
+    if (!ctx)
+        return;
+    if (hide) {
+        if (G(ctx + 0x658)) {
+            state[3] = G(ctx + 0x658);
+            G(ctx + 0x658) = 0;
         }
-    }
-    for (u32 k = 0; k < 7; k++) {
-        u32 at = SHEETS + k * SHEET_STRIDE;
-        if (G(at) == 0x43220000u && G(at + 4) == 0x44138000u && G(at + 8) == 0x43430000u)
-            G(at + 12) = hide ? G(at + 8) : 0x439C0000u;
+    } else if (state[3] && !G(ctx + 0x658)) {
+        G(ctx + 0x658) = state[3];
+        state[3] = 0;
     }
 }
 
@@ -440,6 +432,11 @@ u32 FC champions_flip(u32 buttons, volatile u32 *state) {
             state[1]--;
         return 1;
     }
+    if (!(buttons & 0xF000)) {
+        if (buttons & 0x220)
+            champions_table(state, 0);    /* B or Back: the card closes, its table is whole again */
+        return 0;
+    }
     if (page >= 3)
         page = 0;
     if (buttons & 0x6000)
@@ -449,13 +446,13 @@ u32 FC champions_flip(u32 buttons, volatile u32 *state) {
     state[0] = page;
     state[1] = 0;
     if (page != 2)
-        champions_table(0);
+        champions_table(state, 0);
     return 1;
 }
 
 void FC champions_enter(volatile u32 *state) {
     state[1] = 0;
-    champions_table(0);
+    state[3] = 0;
 }
 
 /* Seasons are listed newest first; ROWS fit in the table's area, UP and DOWN scroll (state[1] = first row shown). */
@@ -469,7 +466,7 @@ void FC champions_ratings(volatile u32 *state) {
     for (u32 n = newest; n && n + RING > newest; n--)
         if (entry_at(g, n))
             seasons[count++] = n;
-    champions_table(1);
+    champions_table(state, 1);
     u32 first = state[1];
     if (first + ROWS > count)
         first = count > ROWS ? count - ROWS : 0;
@@ -497,13 +494,12 @@ void FC champions_ratings(volatile u32 *state) {
         TEXT_DRAW(ctx, text);
     }
     if (count > ROWS) {
-        u16 *out = put_ascii(text, "SUPER BOWLS ");
-        out = put_uint(out, first + 1);
+        u16 *out = put_uint(text, first + 1);
         *out++ = '-';
         out = put_uint(out, first + ROWS < count ? first + ROWS : count);
         out = put_ascii(out, " OF ");
         out = put_uint(out, count);
-        out = put_ascii(out, "   UP DOWN: SCROLL");
+        out = put_ascii(out, "  UP/DOWN");
         *out = 0;
         text_start(ctx, 8, 1);
         TEXT_POS(ctx, 215.0f, 330.0f, 20.0f);

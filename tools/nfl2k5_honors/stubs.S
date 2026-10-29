@@ -10,7 +10,7 @@
    and L, two pages or three) with the menu cursor sound; the retail B/Back test is then repeated so the caller's jump
    sees its own flags. */
 honors_page_input:
-    test eax, 0x300F000
+    test eax, 0x300F220
     jz 1f
     push eax
     push ecx
@@ -41,7 +41,9 @@ honors_page_input:
 /* 0x320210, in place of "mov ecx, [0xC90248]" (6 bytes, call + nop) in the card's enter action: every card
    opens on the retail page. */
 honors_page_enter:
+    push ecx
     call honors_enter
+    pop ecx
     mov ecx, dword ptr [0x00C90248]
     ret
 

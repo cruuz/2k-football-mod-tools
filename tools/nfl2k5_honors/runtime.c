@@ -250,15 +250,16 @@ void honors_years(void) {
 u32 FC honors_flip(u32 buttons) {
     if (champ_flip)
         return champ_flip(buttons, honors_state);
-    if (buttons & 0x3000000)
+    if (!(buttons & 0xF000))
         return 0;
     honors_state[0] ^= 1;
     return 1;
 }
 
 /* Every card opens on the retail page with its stats table shown. */
-void honors_enter(void) {
+void FC honors_enter(u32 screen) {
     honors_state[0] = 0;
+    honors_state[2] = screen;
     if (champ_enter)
         champ_enter(honors_state);
 }

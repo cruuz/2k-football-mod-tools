@@ -57,7 +57,7 @@ class StaticTests(unittest.TestCase):
             self.assertLessEqual(offset + 4, len(runtime.CODE))
         for entry in ("champions_advance", "champions_awards", "champions_ratings", "champions_bio",
                       "champions_advance_notice", "champions_modern_awards", "champions_table", "champions_flip",
-                      "champions_enter", "champions_find"):
+                      "champions_enter"):
             self.assertIn(entry, runtime.LABELS)
 
     def test_code_for_relocates_with_the_page(self):
@@ -533,21 +533,13 @@ class NativeTests(unittest.TestCase):
         m.call(0x320B70)
         return list(m.calls), list(m.text)
 
-    def scene(self, m):
-        """A card scene with the two row-bar nodes the owner hides (names are the game's own strings)."""
-        scene, nodes = m.HEAP + 0x7C000, m.HEAP + 0x7C100
-        m.put(0xC901C0, scene)
-        m.put(scene + 0x1C, 2)
-        m.put(scene + 0x20, nodes)
-        for i, name in enumerate((0xEA2DA8, 0xEA2DB4)):
-            node = nodes + 0x80 * i
-            m.uc.mem_write(node, bytes(0x80))
-            m.put(node, name)
-            m.uc.mem_write(node + 0x74, struct.pack("<HH", 0x302, 0x303))
-        return [nodes + 0x80 * i for i in range(2)]
-
-    def sheet_bottoms(self, m):
-        return [m.get(0x535E4C + k * 0x268 + 12) for k in range(6)]
+    def screen(self, m):
+        """The card screen the enter hook recorded (state[2]): its context pointer and element count (the stats table)."""
+        screen, ctx = m.HEAP + 0x7C000, m.HEAP + 0x7C100
+        m.put(screen + 0x10C, ctx)
+        m.put(ctx + 0x658, 1)
+        m.put(self.state + 8, screen)
+        return ctx
 
     def test_page_three_lists_the_seasons_newest_first_in_the_table_area(self):
         m = self.machine()
@@ -563,7 +555,7 @@ class NativeTests(unittest.TestCase):
         self.assertEqual(rows[5].split()[0], "2055")                         # six rows: 2060 .. 2055
         for r, (t, expected_y) in enumerate(zip(text[:6], (203.0 + 17.0 * i for i in range(6)))):
             self.assertEqual(t[1:], (8, 1, 0xFF101010, (215.0, expected_y, 20.0)), r)
-        self.assertEqual(text[6][0], "SUPER BOWLS 1-6 OF 10   UP DOWN: SCROLL")
+        self.assertEqual(text[6][0], "1-6 OF 10  UP/DOWN")
         self.assertEqual(text[6][4], (215.0, 330.0, 20.0))
         lines = text[7:]
         self.assertEqual([t[0] for t in lines], ["SUPER BOWL XCV: SEA 31-24 NE", "SB MVP: K. WALKER, HB",
@@ -584,10 +576,10 @@ class NativeTests(unittest.TestCase):
         self.assertEqual(m.get(self.state + 4), 3)
         _calls, text = self.draw_card(m, 2)
         self.assertEqual([t[0].split()[0] for t in text[:6]], [str(n + 1965) for n in range(92, 86, -1)])
-        self.assertEqual(text[6][0], "SUPER BOWLS 4-9 OF 16   UP DOWN: SCROLL")
+        self.assertEqual(text[6][0], "4-9 OF 16  UP/DOWN")
         m.put(self.state + 4, 99)                                          # far past the end: the last window
         _calls, text = self.draw_card(m, 2)
-        self.assertEqual(text[6][0], "SUPER BOWLS 11-16 OF 16   UP DOWN: SCROLL")
+        self.assertEqual(text[6][0], "11-16 OF 16  UP/DOWN")
         self.assertEqual(m.get(self.state + 4), 10)
         m.call(self.champ["champions_flip"], ecx=0x1000000, edx=self.state)  # up
         self.assertEqual(m.get(self.state + 4), 9)
@@ -597,24 +589,30 @@ class NativeTests(unittest.TestCase):
 
     def test_page_three_hides_the_stats_table_and_the_other_pages_bring_it_back(self):
         m = self.machine()
-        bars = self.scene(m)
-        before = self.sheet_bottoms(m)
-        self.assertEqual(before, [0x439C0000] * 6)
+        ctx = self.screen(m)
+        flip = lambda buttons: m.call(self.champ["champions_flip"], ecx=buttons, edx=self.state)
         self.draw_card(m, 2)
-        self.assertEqual(self.sheet_bottoms(m), [0x43430000] * 6)          # y1 = y0: no table height
-        for node in bars:
-            self.assertEqual(struct.unpack("<HH", bytes(m.uc.mem_read(node + 0x74, 4))), (0, 1))   # bars draw nothing
+        self.assertEqual(m.get(ctx + 0x658), 0)                            # no element to draw: header, bars, rows gone
+        self.assertEqual(m.get(self.state + 12), 1)
+        self.draw_card(m, 2)                                               # drawn every frame: stays hidden, count kept
+        self.assertEqual((m.get(ctx + 0x658), m.get(self.state + 12)), (0, 1))
         m.put(self.state, 2)
-        m.call(self.champ["champions_flip"], ecx=0x1000, edx=self.state)  # Black: next page = card
-        self.assertEqual(m.get(self.state), 0)
-        self.assertEqual(self.sheet_bottoms(m), [0x439C0000] * 6)
-        for node in bars:
-            self.assertEqual(struct.unpack("<HH", bytes(m.uc.mem_read(node + 0x74, 4))), (0x302, 0x303))
+        flip(0x1000)                                                       # Black: next page = card
+        self.assertEqual((m.get(self.state), m.get(ctx + 0x658), m.get(self.state + 12)), (0, 1, 0))
         self.draw_card(m, 2)
-        m.call(self.champ["champions_enter"], ecx=self.state)               # a new card opens on page 1
-        self.assertEqual(self.sheet_bottoms(m), [0x439C0000] * 6)
-        # the seventh definition has a different layout and is never touched
-        self.assertNotEqual(m.get(0x536CBC), 0x43430000)
+        flip(0x20)                                                         # B while the champions page shows: whole again
+        self.assertEqual(m.get(ctx + 0x658), 1)
+        self.draw_card(m, 2)
+        m.put(self.state, 2)
+        flip(0x2000)                                                       # White: back to the honors page
+        self.assertEqual((m.get(self.state), m.get(ctx + 0x658)), (1, 1))
+        self.draw_card(m, 0)                                               # the retail page never hides it
+        self.assertEqual(m.get(ctx + 0x658), 1)
+        self.draw_card(m, 1)
+        self.assertEqual(m.get(ctx + 0x658), 1)
+        self.assertEqual(flip(0x220), 0)                                   # a plain B press is not a page turn (no sound)
+        m.call(self.champ["champions_enter"], ecx=self.state)
+        self.assertEqual((m.get(self.state + 4), m.get(self.state + 12)), (0, 0))
 
     def test_page_three_of_an_old_save_is_empty_and_a_corrupt_slot_reads_as_empty(self):
         m = self.machine()

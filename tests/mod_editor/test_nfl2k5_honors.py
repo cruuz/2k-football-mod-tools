@@ -85,9 +85,9 @@ class TemplateTests(unittest.TestCase):
         for off, kind, sym, _v in runtime.RELOCATIONS:
             if sym.startswith("champ_") and kind == 1:
                 self.assertEqual(struct.unpack_from("<I", a, off)[0], 0)
-        # the page flag is the first dword of the RW block in every reference
+        # every reference is into the 16-byte RW block (page, list row, card screen, saved element count)
         for off in state_fields:
-            self.assertEqual(struct.unpack_from("<I", a, off)[0], 0x14F3AB0)
+            self.assertIn(struct.unpack_from("<I", a, off)[0], range(0x14F3AB0, 0x14F3AC0, 4))
 
     def test_sites_are_rel32_into_the_entries(self):
         code_va = 0x14EB150
