@@ -83,7 +83,7 @@ class StaticTests(unittest.TestCase):
     def test_the_owner_is_late_and_follows_honors(self):
         late = space.LATE_OWNERS
         self.assertEqual(late[late.index("nfl2k5_honors"):][:3], ("nfl2k5_honors", "nfl2k5_champions", "nfl2k5_coach_ai"))
-        self.assertEqual(late[-3:], ("nfl2k5_module_loader", "nfl2k5_preseason_warning", "nfl2k5_sim_rb_injuries"))  # b779-int1: sim2 last
+        self.assertEqual(late[late.index("nfl2k5_module_loader"):][:3], ("nfl2k5_module_loader", "nfl2k5_preseason_warning", "nfl2k5_sim_rb_injuries"))  # b779-int1: sim2 follows
         self.assertTrue(set(champions.REQUESTS) <= set(honors.REQUESTS))
         # an owner that comes later in LATE_OWNERS can still be appended to an installed image (Studio appends them
         # one at a time): the champions rows do not move

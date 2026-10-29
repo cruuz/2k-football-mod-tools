@@ -593,7 +593,7 @@ class PreseasonWarningLayoutTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_preseason_warning as warning, nfl2k5_xbe_space as space
         self.assertEqual(warning.REQUESTS, (("nfl2k5_preseason_warning", "data", 16, 16),))
         # Last: the shipped v0.7 image already holds the module loader's data row, so only the tail is append-safe.
-        self.assertEqual(space.LATE_OWNERS[-3:-1], ("nfl2k5_module_loader", warning.OWNER))  # b779-int1: sim2's RB injury owner follows
+        self.assertEqual(space.LATE_OWNERS[space.LATE_OWNERS.index("nfl2k5_module_loader"):][:2], ("nfl2k5_module_loader", warning.OWNER))  # b779-int1: sim2's owners follow
         self.assertEqual(warning.TEXT, "Cut your roster to 53 before the regular season, or the game will make "
                                        "the cuts for you.")
         self.assertNotIn("\u2014", warning.TEXT)
