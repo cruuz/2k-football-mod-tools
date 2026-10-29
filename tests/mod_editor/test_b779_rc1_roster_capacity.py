@@ -518,5 +518,149 @@ class SmartCutTests(unittest.TestCase):
         self.assertTrue(any(counts[code] < least for code, least in enumerate(MODERN_MIN)), counts)
 
 
+def _desk_weeks(payload, body, count, user=1):
+    """A native franchise with the preseason on and one user club at COUNT. The Coach's Desk is opened twice at
+    the start and after every preseason week (its call at 0x143013: the warning owner when installed, else the
+    native automatic advance 0x2486F0, with a screen manager in ECX), then the stage advance into the regular
+    season. Returns (notices as (week, end, text), stage after, club count after, the warned byte after)."""
+    from tests.nfl2k5_supersim_draft_fixture import Machine
+    from mod_editor.core import nfl2k5_preseason_warning as warning
+    applied = warning.status(payload) == "applied"
+    flag = warning.allocation(payload)["va"] if applied else None
+    m = Machine(payload, trace_writes=False)
+    size = len(body) - 0x40
+    m.uc.mem_write(m.ARENA + 0x300, body)
+    m.put(0xB72804, m.ARENA + 0x300)
+    m.put(0xB72808, size)
+    m.put(0xB7280C, size)
+    m.fixup_roster(m.ARENA + 0x340)
+    m.seed(12345)
+    for a, v in ((0xE5FF80, 4), (0xE60120, 1), (0xE6000C, 5), (0xE60010, 5)):
+        m.put(a, v)
+    notices = []
+
+    def notice():
+        p = m.reg("EDX")
+        notices.append((m.get(0xE576B4), m.get(0xE576B0),
+                        bytes(m.uc.mem_read(p, 400)).decode("utf-16-le", "replace").split("\0")[0]))
+        m.ret()
+    m.leaf(0x177990, lambda: m.ret(pop=4), reason="progress renderer only")
+    m.leaf(0x14E520, notice, reason="informational dialog acknowledgement only (one OK)")
+    m.call(0x13EE10, budget=2_000_000_000)
+    team = m.team_base + 500 * user
+    m.call(0xC4D30, ecx=team, edx=1)
+    lst = m.root + 0x38
+    while m.uc.mem_read(team + 0x11C, 1)[0] < count:
+        p = m.call(0x242500, ecx=lst, edx=0)
+        m.call(0x2425C0, ecx=lst, edx=p)
+        raw = bytearray(m.uc.mem_read(p, 84))      # a one-year minimum deal, so only the roster limit is in play
+        raw[0x27] = (raw[0x27] & 0xF0) | 1
+        raw[0x24] = (raw[0x24] & 0xF0) | 1
+        struct.pack_into("<H", raw, 10, 60)
+        m.uc.mem_write(p, bytes(raw))
+        assert m.call(0xC3EE0, ecx=team, edx=p), "preseason append refused"
+    m.call(0xC3F00, ecx=team)
+    assert m.uc.mem_read(team + 0x11C, 1)[0] == count
+    menu = m.ARENA + 0x1A0000
+    entry = warning.CODE_VA if applied else 0x2486F0
+
+    def desk():
+        for _ in range(2):
+            m.call(entry, ecx=menu, budget=int(2e10))
+    desk()
+    advances = 0
+    while m.get(0xE576A4) == 7 and advances < 2:
+        if m.get(0xE576B4) < m.get(0xE576B0):
+            m.call(0x247D40, ecx=menu, budget=int(2e10))
+        else:
+            m.call(0x2480B0, ecx=menu, budget=int(2e10))
+            advances += 1
+        desk()
+    return (notices, m.get(0xE576A4), m.uc.mem_read(team + 0x11C, 1)[0],
+            m.uc.mem_read(flag, 1)[0] if flag else None)
+
+
+class PreseasonWarningLayoutTests(unittest.TestCase):
+    """Noah 10/28: tell the user before the game cuts his roster. One 16-byte RW request (the warned byte), two
+    unreferenced retail functions for the code and the text, one 5-byte call at the Coach's Desk."""
+
+    def test_request_order_text_and_template(self):
+        from mod_editor.core import nfl2k5_preseason_warning as warning, nfl2k5_xbe_space as space
+        self.assertEqual(warning.REQUESTS, (("nfl2k5_preseason_warning", "data", 16, 16),))
+        # Last: the shipped v0.7 image already holds the module loader's data row, so only the tail is append-safe.
+        self.assertEqual(space.LATE_OWNERS[-2:], ("nfl2k5_module_loader", warning.OWNER))
+        self.assertEqual(warning.TEXT, "Cut your roster to 53 before the regular season, or the game will make "
+                                       "the cuts for you.")
+        self.assertNotIn("\u2014", warning.TEXT)
+        code = warning.code_for(0x14FD1C0)
+        self.assertEqual(len(code), warning.CODE_SIZE)
+        self.assertEqual((code[0x70], code[0x71:]), (0xC3, b"\xcc" * (warning.CODE_SIZE - 0x71)))   # 113 bytes of code
+        for at, target in warning.CALLS:
+            self.assertEqual(warning.CODE_VA + at + 4 + struct.unpack_from("<i", code, at)[0], target)
+        for at in warning.FLAG_AT:
+            self.assertEqual(struct.unpack_from("<I", code, at)[0], 0x14FD1C0)
+        self.assertEqual(struct.unpack_from("<I", code, warning.TEXT_AT)[0], warning.TEXT_VA)
+        self.assertEqual(warning.text_bytes()[:len(warning.TEXT) * 2 + 2], warning.TEXT.encode("utf-16-le") + b"\0\0")
+        self.assertEqual(warning.hook_bytes(), b"\xe8" + struct.pack("<i", warning.CODE_VA - warning.HOOK_VA - 5))
+
+
+@unittest.skipUnless(HAVE_UC, "Unicorn is not installed")
+class PreseasonWarningInstallTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        from tests.nfl2k5_supersim_draft_fixture import retail_bytes
+        from mod_editor.core import nfl2k5_franchise_economy as economy, nfl2k5_preseason_warning as warning
+        cls.retail = retail_bytes()
+        cls.economy = economy.apply(cls.retail)[0]
+        cls.warned, cls.receipt = warning.apply(cls.economy)
+
+    def test_the_windows_are_unreferenced_retail_functions_and_the_install_reads_back(self):
+        from mod_editor.core import nfl2k5_preseason_warning as warning, nfl2k5_xbe_space as space
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage
+        windows = {warning.CODE_VA: (warning.CODE_SIZE, warning.PINS[warning.CODE_VA]),
+                   warning.TEXT_VA: (warning.TEXT_SIZE, warning.PINS[warning.TEXT_VA])}
+        if (ROOT / "tools/franchise_economy/dead_code.py").is_file():   # a source checkout (not in release zips)
+            from franchise_economy import dead_code
+            self.assertEqual(dead_code.references(self.retail, windows), {hex(va): [] for va in windows})
+        self.assertEqual(warning.status(self.retail), "retail")
+        self.assertEqual(warning.status(self.economy), "retail")     # the economy leaves all three spans retail
+        self.assertEqual((warning.status(self.warned), space.status(self.warned)), ("applied", "applied"))
+        image, owned = XbeImage(self.warned), warning.allocation(self.warned)
+        self.assertEqual((owned["kind"], owned["size"]), ("data", 16))
+        self.assertEqual(image.read(owned["va"], 16), bytes(16))
+        self.assertEqual(image.read(warning.HOOK_VA, 5), warning.hook_bytes())
+        self.assertEqual(warning.apply(self.warned)[1]["status"], "already_applied")
+
+
+@unittest.skipUnless(HAVE_UC and RELEASED_BODY.is_file() and RELEASED_XBE.is_file(),
+                     "the released v0.7 default.xbe and main ROST body (private) are absent")
+class PreseasonWarningTests(unittest.TestCase):
+    """On the released v0.7 executable and roster (limit 53 with the practice squad, a four-week preseason)."""
+
+    @classmethod
+    def setUpClass(cls):
+        from mod_editor.core import nfl2k5_franchise_economy as economy, nfl2k5_preseason_warning as warning
+        cls.body = RELEASED_BODY.read_bytes()
+        cls.economy = economy.apply(RELEASED_XBE.read_bytes())[0]
+        cls.warned = warning.apply(cls.economy)[0]
+
+    def test_one_notice_in_the_last_preseason_week_and_the_gate_cuts_to_53(self):
+        from mod_editor.core import nfl2k5_preseason_warning as warning
+        notices, stage, count, flag = _desk_weeks(self.warned, self.body, 54)
+        # Opened twice at the start and after every week: one notice, in the last week (week 3 of 4), none on
+        # the second open, none after the last game and none in the regular season; the byte is clear again.
+        self.assertEqual(notices, [(3, 4, warning.TEXT)])
+        self.assertEqual((stage, count, flag), (8, 53, 0))
+
+    def test_no_notice_at_53(self):
+        notices, stage, count, flag = _desk_weeks(self.warned, self.body, 53)
+        self.assertEqual((notices, stage, count, flag), ([], 8, 53, 0))
+
+    def test_without_the_owner_the_desk_never_warns(self):
+        # Negative control: the economy alone (the v0.7 desk path) cuts at the gate without telling the user.
+        notices, stage, count, flag = _desk_weeks(self.economy, self.body, 54)
+        self.assertEqual((notices, stage, count, flag), ([], 8, 53, None))
+
+
 if __name__ == "__main__":
     unittest.main()
