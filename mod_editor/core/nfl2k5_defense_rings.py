@@ -38,6 +38,7 @@ K_SNAPS, K_DROPBACKS = 12.0, 15.0
 # Loss weights (DESIGN): personnel first (a dime defense against two backs is the worst miss), then blitz, coverage family.
 W_PERS, W_FAM, W_MAN, W_BLITZ, W_SIM, W_DISGUISE = 4.0, 2.0, 2.0, 3.0, 1.0, 1.0
 W_SEASON = 6.0
+W_BIN = 3.0             # the same terms per down-and-distance bin (five rings each), so short / medium / long each land
 W_REUSE, W_FRONT_REPEAT, W_PACKAGE = 0.004, 0.01, 0.003
 BEAR_OUTSIDE_SHORT = 1.0
 
@@ -217,7 +218,8 @@ def build(book, body, reachable, pairs_of, team: str) -> tuple[list[list[calls.C
         raise ValueError(f"{team}: fewer than four distinct ring calls in the compiled book")
     feats = [_feat(c) for c in cands]
     package = identity.get("package", ())
-    bonus = [_package_bonus(c, package) for c in cands]
+    # The book's own front bands carry the coordinator's front style (pb/v2/defense/design.py FRONT_STYLE): prefer them.
+    bonus = [_package_bonus(c, package) + W_PACKAGE * max(0, 2 - c.front_band) / 2 for c in cands]
     def bear_cost(i, p):
         return BEAR_OUTSIDE_SHORT if cands[i].bear and not (p // 5 == 0 and p % 5 in (0, 1, 2)) else 0.0
     rings: list[list[int]] = [[] for _ in range(15)]
@@ -251,30 +253,37 @@ def build(book, body, reachable, pairs_of, team: str) -> tuple[list[list[calls.C
             uses[key(best[1])] += 1
 
     zw = sum(weights) or 1.0
+    zb = [sum(weights[b * 5:(b + 1) * 5]) or 1.0 for b in range(3)]
+    bin_target = [_season_target(targets[b * 5:(b + 1) * 5], weights[b * 5:(b + 1) * 5]) for b in range(3)]
     acc = Counter()
+    accb = [Counter() for _ in range(3)]
 
     def add(i, p, sign):
-        f, w = feats[i], sign * weights[p] / 4 / zw
-        acc["p_" + f["pers"]] += w
-        acc["f_" + f["fam"]] += w
-        for k in ("man", "blitz", "sim"):
-            acc[k] += f[k] * w
+        f, w = feats[i], sign * weights[p] / 4
+        for a, z in ((acc, zw), (accb[p // 5], zb[p // 5])):
+            a["p_" + f["pers"]] += w / z
+            a["f_" + f["fam"]] += w / z
+            for k in ("man", "blitz", "sim"):
+                a[k] += f[k] * w / z
 
     for p in range(15):
         for i in rings[p]:
             add(i, p, +1)
     costs = [ring_cost(p, rings[p]) for p in range(15)]
+    bins_now = [W_BIN / W_SEASON * _season_loss(accb[b], bin_target[b]) for b in range(3)]
     season_now = _season_loss(acc, season)
-    current = sum(costs) + reuse_cost() + season_now
+    current = sum(costs) + reuse_cost() + season_now + sum(bins_now)
     for _sweep in range(6):
         improved = False
         for p in range(15):
             if weights[p] <= 0 and p % 5:
                 continue
+            b = p // 5
             for slot in range(4):
                 old = rings[p][slot]
                 taken = {key(i) for j, i in enumerate(rings[p]) if j != slot}
-                best = (0.0, old, costs[p], season_now)
+                base_now = season_now + bins_now[b]
+                best = (0.0, old, costs[p], season_now, bins_now[b])
                 add(old, p, -1)
                 for i in range(len(cands)):
                     if i == old or key(i) in taken:
@@ -283,17 +292,18 @@ def build(book, body, reachable, pairs_of, team: str) -> tuple[list[list[calls.C
                     rc = ring_cost(p, rings[p])
                     add(i, p, +1)
                     sl = _season_loss(acc, season)
+                    bl = W_BIN / W_SEASON * _season_loss(accb[b], bin_target[b])
                     add(i, p, -1)
                     reuse = W_REUSE * ((uses[key(i)] >= 1) - (uses[key(old)] >= 2))
-                    delta = (rc - costs[p]) + (sl - season_now) + reuse
+                    delta = (rc - costs[p]) + (sl + bl - base_now) + reuse
                     if delta < best[0] - 1e-9:
-                        best = (delta, i, rc, sl)
+                        best = (delta, i, rc, sl, bl)
                 rings[p][slot] = best[1]
                 add(best[1], p, +1)
                 if best[1] != old:
                     uses[key(old)] -= 1
                     uses[key(best[1])] += 1
-                    costs[p], season_now = best[2], best[3]
+                    costs[p], season_now, bins_now[b] = best[2], best[3], best[4]
                     current += best[0]
                     improved = True
         if not improved:

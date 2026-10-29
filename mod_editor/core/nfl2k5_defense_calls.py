@@ -56,6 +56,7 @@ class Call:
     presnap: str              # "two" or "one" (high safeties before the snap) or "" when unknown
     postsnap: str             # "two" or "one" from the coverage family
     disguise: bool            # pre-snap shell differs from the post-snap shell
+    front_band: int = 2       # the front's CPU score band (header bits 9-11; lower is called more by the native lottery)
 
     def to_json(self) -> dict:
         return asdict(self)
@@ -156,4 +157,4 @@ def classify(book, body, formation: int, front: int, coverage: int) -> Call:
     return Call(formation, front, coverage, name, book.plays[front].name.strip(), book.plays[coverage].name.strip(),
                 rec.type_code, code, PERSONNEL.get(code, "other"), "bear" in name.lower() or "46" in name,
                 family, man >= 4, n, len(rushers), n >= 5, n == 4 and bool(non_line), dl_drop, pre, post,
-                bool(pre and post and pre != post))
+                bool(pre and post and pre != post), (book.plays[front].flags_or_id >> 9) & 7)

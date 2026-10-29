@@ -292,3 +292,24 @@ fit-only rings.
 `nfl2k5_formation_menu_pages` measures a different cause of repetition: a formation
 whose link count is not a multiple of three repeats its last play on the empty buttons
 of its last menu page.
+
+## Defensive rings by situation and club (b779 dp1)
+
+Every CPU defensive call of an automatic current-NFL side comes from the fifteen defensive rings: native `F7450`
+picks ring `bin * 5 + group` (bin from `F7010`, down and distance: 1st down 1-7 yards short, 8-16 medium, 17+ long;
+2nd 1-4 / 5-10 / 11+; 3rd 1 / 2-3 / 4+; no ring on 4th down, which goes to the native lottery; group from the
+offense's lined-up personnel category: 0 not known yet, 1 codes 0-2, 2 codes 3-4, 3 codes 5-7, 4 codes 8-10) and
+`17DFC0` draws one of its four entries uniformly, never the (formation, coverage) it called last. Before b779 the
+fifteen defensive rings shared one marginal (man rate and five-plus rushers of the head coach's charted seasons)
+and only type 5/6 formations were eligible, so 4-3 clubs called base, nickel and dime about a third each on every
+down against every personnel, and BAL, HOU, NE, PIT and SD (whose only type 5/6 formation is the Bear) called the
+Bear 46 on every CPU snap.
+
+`nfl2k5_defense_rings` now fits each ring to the 2026 defensive coordinator's 2025 calls in that very cell
+(`data/vip/defense_identity_2026.json`, from `pb/research/defense_situational_2025.py`: defensive personnel, coverage
+family, man, five-plus rushers and a simulated-pressure proxy, shrunk toward the league's rate in the cell), with
+season-wide and per-bin terms so the four-call quantization averages out, the coordinator's disguise share (single-high
+calls shown two-high before the snap; a lineage judgement) and a variety term. Three-down (type 4) formations are
+eligible (the VIP menu reachability rule is unchanged). The classification of every (formation, front, coverage)
+triple comes from its executable assignments (`nfl2k5_defense_calls`). `pb/v2/defense/cpu_callmix.py` prints the
+expected CPU mix per club against the real 2025 rates from any set of final books.

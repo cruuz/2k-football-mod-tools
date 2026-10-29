@@ -3624,6 +3624,10 @@ mod_editor/core/nfl2k5_coach_ai_code.py
 mod_editor/core/nfl2k5_vip.py
 # b776 pb2: CPU coach play-ring variety and the formation menu page check (nfl2k5_vip imports the first).
 mod_editor/core/nfl2k5_coach_diversity.py
+# b779 dp1: situational, team-specific CPU defensive rings (nfl2k5_vip imports both) and their identity data.
+mod_editor/core/nfl2k5_defense_calls.py
+mod_editor/core/nfl2k5_defense_rings.py
+data/vip/defense_identity_2026.json
 mod_editor/core/nfl2k5_formation_menu_pages.py
 # b777 sc1: route reversal model and screen-blocker repair (imported by the offense generator only).
 mod_editor/core/nfl2k5_route_reversal.py
