@@ -530,15 +530,15 @@ SECTION(".roster_f") __attribute__((naked)) void economy_class_free(void) {
 /* b779 rc1 (Noah 10/28: "there should always be a ton of rookie prospects. Every draft, every position pool
  * should have undrafted players that nobody wants"): a generated class asks for CLASS_SIZE prospects (the
  * native loop asked for 380; the first class is still the disc's own 380-record window). The mix per 450 is
- * the CPU's average 224-pick draft per position over simulated v0.7 drafts 3-10, plus a target left over
- * (K/P 4, FB 6, QB 11, the rest 6-11 by how much the CPU's demand for the position varies), for a 355-player
- * class (what the league frees in a normal year), scaled to 450: QB 24, K 5, P 5, WR 37, CB 54, FS 15, SS 15,
- * HB 28, FB 9, TE 28, OLB 19, ILB 19, C 24, G 26, T 40, DT 48, DE 54. Under the
+ * the CPU's average 224-pick draft per position over simulated v0.7 drafts 3-10, plus a target left over, for a
+ * 355-player class (what the league frees in a normal year), scaled to 450, then moved toward T, DT and WR after
+ * the smart cut-down (CPU clubs now keep their linemen): QB 24, K 5, P 5, WR 40, CB 46, FS 14, SS 14, HB 28,
+ * FB 9, TE 28, OLB 19, ILB 19, C 24, G 26, T 48, DT 55, DE 46. Under the
  * one-pool scheme no rostered player carries OLB (10), and the class must conserve that
  * (nfl2k5_position_pools), so an OLB slot becomes LB (11). */
 #define CLASS_SIZE 450
 SECTION(".roster_f_rodata") static const u8 class_counts[17] = {
-    24, 5, 5, 37, 54, 15, 15, 28, 9, 28, 19, 19, 24, 26, 40, 48, 54};
+    24, 5, 5, 40, 46, 14, 14, 28, 9, 28, 19, 19, 24, 26, 48, 55, 46};
 
 SECTION(".roster_f") __attribute__((noinline)) unsigned league_has_olb(void) {
     u8 *root = *(u8 **)0xB72918;   /* the roster's own 32 club blocks, valid whenever a class is generated */
