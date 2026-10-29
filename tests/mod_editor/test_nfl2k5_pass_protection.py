@@ -70,13 +70,13 @@ class WriterTests(unittest.TestCase):
         self.assertEqual(image.read(0x4E696C, 4), struct.pack("<f", 0.25))
         self.assertEqual(self.receipt["runtime_witnessed"], False)
         self.assertEqual({e["label"] for e in self.receipt["edits"]},
-                         {"pass_delay"} | {name for name, *_ in pp.SIM_EDITS})
+                         {"pass_delay"} | {name for name, *_ in pp.SIM_EDITS} | {name for name, *_ in pp.SIM_HOOKS})
         self.assertEqual(space.status(self.final), "applied")
 
     def test_only_owned_bytes_change_in_text_and_rdata(self):
         a, b = XbeImage(self.retail), XbeImage(self.final)
         allowed = set()
-        for _name, at, before, _after in pp.sites(pp.allocation(self.final)["va"]) + pp.sim_sites():
+        for _name, at, before, _after in pp.sites(pp.allocation(self.final)["va"]) + pp.sim_sites(pp.allocation(self.final)["va"]):
             allowed.update(range(at, at + len(before)))
         for name in (".text", ".rdata"):
             section = next(s for s in a.sections if s.name == name)
@@ -85,7 +85,7 @@ class WriterTests(unittest.TestCase):
             self.assertLessEqual(set(changed), allowed, name)
             if name == ".rdata":
                 expected = set()
-                for _n, at, before, after in pp.sim_sites():
+                for _n, at, before, after in pp.sim_sites(pp.allocation(self.final)["va"]):
                     if section.start <= at < section.start + section.raw_size:
                         expected.update(at + i for i, (p, q) in enumerate(zip(before, after)) if p != q)
                 self.assertEqual(set(changed), expected)

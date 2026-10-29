@@ -14,8 +14,9 @@
 .intel_syntax noprefix
 .code32
 .text
-.global pass_delay, k_base, k_slope, k_min, k_max, k_floor, k_scale, code_end
+.global pass_delay, sack_draw, sack_norm, k_base, k_slope, k_min, k_max, k_floor, k_scale, k_taper, k_start_i, k_one, code_end
 .extern rating
+.extern season
 
 pass_delay:
     pushfd
@@ -71,6 +72,44 @@ pass_delay:
     popfd
     ret
 
+/* Simulated sacker draw (b779-pr1): the weight c^3 of a front-seven candidate is multiplied by
+ * 1 / (1 + k_taper * max(0, season half-sacks - k_start)), so a season leader gets fewer of the next sacks and the
+ * normaliser (which uses the same factor) hands them to the rest of the line.  ST0 = c on entry, c^3 * g on exit.
+ * Called from 0x1037E0 (the draw, EDX = candidate) and 0x10404D (the normaliser loop, candidate = [EBX + EDI*4 + 4]).
+ * Every GPR, EFLAGS and XMM0 are preserved; the x87 stack gains nothing. */
+sack_draw:
+    mov ecx, edx
+    jmp scale_cube
+sack_norm:
+    mov ecx, dword ptr [ebx+edi*4+4]
+scale_cube:
+    pushfd
+    pushad
+    sub esp, 32
+    movups xmmword ptr [esp], xmm0
+    mov edx, 19                              /* season history field 19 = defensive sacks, in half-sacks */
+    call season
+    sub eax, dword ptr [k_start_i]
+    jg 1f
+    xor eax, eax
+1:
+    cvtsi2ss xmm0, eax
+    mulss xmm0, dword ptr [k_taper]
+    addss xmm0, dword ptr [k_one]
+    movss dword ptr [esp+16], xmm0
+    movss xmm0, dword ptr [k_one]
+    divss xmm0, dword ptr [esp+16]
+    movss dword ptr [esp+16], xmm0
+    movups xmm0, xmmword ptr [esp]
+    fld st(0)
+    fmul st, st(1)
+    fmulp st(1), st
+    fmul dword ptr [esp+16]
+    add esp, 32
+    popad
+    popfd
+    ret
+
     .balign 4
 k_base:  .float 0.60
 k_slope: .float 1.40
@@ -78,4 +117,7 @@ k_min:   .float 0.10
 k_max:   .float 1.80
 k_floor: .float 0.55
 k_scale: .float 0.0000137330
+k_taper: .float 0.055
+k_one:   .float 1.0
+k_start_i: .long 8
 code_end:

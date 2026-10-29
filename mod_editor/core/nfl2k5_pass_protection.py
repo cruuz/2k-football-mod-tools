@@ -16,9 +16,9 @@ through the game's own rating accessor 0x17B010. On run plays it writes 0, exact
 Nothing else is changed: the pass start roll, the paired-block animation share, the run latch and the shed
 random draw keep every retail byte.
 
-b779-pr1 adds the SIMULATED half of the same feature (Franchise sims, Game Cast, supersim), as nine in-place
-edits that need no cave.  In the sim's pass-play block ``0x108368..0x1084c0`` the sack/scramble chance is
-``1 - clamp(0.875 + o, 0.825, 0.925) - 0.005*QB``, where ``o`` was drawn UNIFORMLY from
+b779-pr1 adds the SIMULATED half of the same feature (Franchise sims, Game Cast, supersim): nine in-place edits
+that need no cave and two calls into this owner.  In the sim's pass-play block ``0x108368..0x1084c0`` the
+sack/scramble chance is ``1 - clamp(0.875 + o, 0.825, 0.925) - 0.005*QB``, where ``o`` was drawn UNIFORMLY from
 ``[min(x,-0.1), max(x,0.1)]`` and ``x = Pass Block(team +0x9c) - Pass Rush(team +0xa0)`` plus noise.  ``x`` has a
 standard deviation of 0.04, so only the 3.5% of dropbacks with ``|x| > 0.1`` moved the chance.  The edit makes
 ``o = 0.75 * x`` (a deterministic function of the two lines; a gain below 1 limits how far a roster whose line
@@ -28,7 +28,11 @@ defensive backs a combined 20% of all sacks (NFL: 5.6%).  The normaliser now sum
 bound ``0x1c -> 0x16``, leftover constant 0.1 -> 0.25) and the candidate list puts the defensive backs last, so a
 back gets only the leftover (about 5%, safeties first).  The pass-rusher composite (category 4) weighs Speed and
 Agility up and Strength and Tackle down, which moves sacks from big tackles to ends and linebackers (NFL share of
-sacks: ends 34%, linebackers 39%, tackles 18%).
+sacks: ends 34%, linebackers 39%, tackles 18%).  Finally the cube ``c^3`` in the draw (``0x1037E0``) and in the
+normaliser (``0x10404D``) becomes ``c^3 / (1 + 0.055 * max(0, season half-sacks - 8))`` through two calls into the
+owner (``sack_draw`` / ``sack_norm``, season field 19 through the game's getter ``0x14EE40``), so a leader gets
+fewer of the next sacks and the normaliser hands them to the rest of the line: the NFL's leaderboard top is flatter
+than a pure rating draw gives (12+ sacks: 7 to 11 players a season).
 """
 from __future__ import annotations
 
@@ -36,7 +40,7 @@ import hashlib
 import struct
 
 OWNER = "nfl2k5_pass_protection"
-CODE_SIZE = 240
+CODE_SIZE = 352
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16),)
 BUILD_CAPTION = "Pass rush and pass protection: ratings decide who wins (played and simulated games)"
 HELP_TEXT = ("EXPERIMENTAL. Played games: on a pass play a beaten blocker holds his rusher for a moment instead of "
@@ -46,9 +50,10 @@ HELP_TEXT = ("EXPERIMENTAL. Played games: on a pass play a beaten blocker holds 
              "coin flip, and sacks go to the defensive line and linebackers by Pass Rush (defensive backs only "
              "rarely) as in the NFL. Run blocking keeps every byte of the existing run-blocking option.")
 HOOK = ("pass_delay", 0x00233162, bytes.fromhex("c744241800000000"), "pass_delay")
-SYMBOLS = dict(rating=0x0017B010)
+SYMBOLS = dict(rating=0x0017B010, season=0x0014EE40)
 # Tuning (seconds, rating units 0..1). The template holds the same values; code_for() writes these.
 DELAY_BASE, DELAY_SLOPE, DELAY_MIN, DELAY_MAX = 0.60, 1.40, 0.10, 1.80
+TAPER_K, TAPER_START = 0.055, 8   # simulated sacker weight / (1 + TAPER_K * max(0, season half-sacks - TAPER_START))
 DELAY_SPREAD = 0.45      # each engagement draws its hold in mean * (1 - spread .. 1 + spread) from a per-play hash
 RETAIL_DELAY = 0.0       # 0x233162 stores zero; the run constant at 0x23317A is skipped on passes
 GUARDS = (
@@ -119,6 +124,8 @@ def code_for(code_va):
                          ("k_min", DELAY_MIN), ("k_max", DELAY_MAX),
                          ("k_floor", 1.0 - DELAY_SPREAD), ("k_scale", 2.0 * DELAY_SPREAD / 65535.0)):
         struct.pack_into("<f", out, assembly.LABELS[label], value)
+    struct.pack_into("<f", out, assembly.LABELS["k_taper"], TAPER_K)
+    struct.pack_into("<i", out, assembly.LABELS["k_start_i"], TAPER_START)
     require(len(out) <= CODE_SIZE, "Pass-protection code exceeds its RX allocation")
     return bytes(out).ljust(CODE_SIZE, b"\xcc")
 
@@ -162,22 +169,45 @@ def _recognize_owner(payload):
     return next(iter(states))
 
 
-def sim_sites():
-    return list(SIM_EDITS)
+SIM_HOOKS = (            # (label, va, retail bytes, entry label): two x87 multiply pairs become calls into the owner
+    ("sim_sacker_taper_draw", 0x001037E0, bytes.fromhex("d84c2408d84c2408"), "sack_draw"),
+    ("sim_sacker_taper_norm", 0x0010404D, bytes.fromhex("d84c2438d84c2438"), "sack_norm"),
+)
+
+
+def sim_hook_sites(code_va=0):
+    from . import nfl2k5_pass_protection_code as assembly
+    out = []
+    for name, va, before, label in SIM_HOOKS:
+        call = b"\xe8" + struct.pack("<i", code_va + assembly.LABELS[label] - va - 5)
+        out.append((name, va, before, call.ljust(len(before), b"\x90")))
+    return out
+
+
+def sim_sites(code_va=0):
+    return list(SIM_EDITS) + sim_hook_sites(code_va)
+
+
+def _owner_va(payload):
+    from . import nfl2k5_xbe_space as space
+    rows = [r for r in space.layout(payload)["allocations"] if r["owner"] == OWNER]
+    return rows[0]["va"] if rows else None
 
 
 def _sim_state(payload):
     """'retail' or 'applied' for the simulated-game edits; raises on any foreign byte."""
     from .nfl2k5_cave_oracle import XbeImage
     image = XbeImage(payload)
+    owned = _owner_va(payload)
+    edits = list(SIM_EDITS) + sim_hook_sites(owned or 0)
     states = set()
-    for _name, va, before, after in SIM_EDITS:
+    for _name, va, before, after in edits:
         raw = image.read(va, len(before))
-        states.add("retail" if raw == before else "applied" if raw == after else "foreign")
+        states.add("retail" if raw == before else "applied" if owned and raw == after else "foreign")
     require(states in ({"retail"}, {"applied"}), "Foreign or mixed simulated pass-rush sites")
     for va, size, digest in SIM_GUARDS:
         content = bytearray(image.read(va, size))
-        for _name, at, before, _after in SIM_EDITS:
+        for _name, at, before, _after in edits:
             if va <= at and at + len(before) <= va + size:
                 content[at - va:at - va + len(before)] = before
         require(hashlib.sha256(content).hexdigest() == digest, f"Foreign simulated pass-rush prerequisite at {va:#x}")
@@ -235,7 +265,9 @@ def _apply_sim(payload):
     from .nfl2k5_cave_oracle import XbeImage
     image = XbeImage(payload)
     buf = bytearray(payload)
-    for _, va, old, new in SIM_EDITS:
+    owned = _owner_va(payload)
+    require(owned is not None, "The simulated sacker taper calls into the pass-protection owner, which is not installed")
+    for _, va, old, new in sim_sites(owned):
         off = image.offset(va, len(old))
         require(bytes(buf[off:off + len(old)]) == old, f"Simulated pass-rush site {va:#x} is not retail")
         buf[off:off + len(old)] = new
@@ -261,7 +293,7 @@ def apply(payload):
         labels += [dict(label=name, va=hex(va), before=old.hex(), after=new.hex()) for name, va, old, new in edits]
     if _sim_state(payload) == "retail":
         payload = _apply_sim(payload)
-        labels += [dict(label=name, va=hex(va), before=old.hex(), after=new.hex()) for name, va, old, new in SIM_EDITS]
+        labels += [dict(label=name, va=hex(va), before=old.hex(), after=new.hex()) for name, va, old, new in sim_sites(_owner_va(payload))]
     result = payload
     require(_recognize(result) == "applied" and space.status(result) == "applied",
             "Pass-protection postcondition failed")
@@ -275,4 +307,4 @@ def apply(payload):
 
 
 __all__ = ["OWNER", "REQUESTS", "GUARDS", "HOOK", "apply", "status", "read_settings",
-           "allocation", "code_for", "sites", "sim_sites", "SIM_EDITS", "SIM_GUARDS", "DELAY_BASE", "DELAY_SLOPE", "DELAY_MIN", "DELAY_MAX"]
+           "allocation", "code_for", "sites", "sim_sites", "sim_hook_sites", "SIM_HOOKS", "SIM_EDITS", "SIM_GUARDS", "DELAY_BASE", "DELAY_SLOPE", "DELAY_MIN", "DELAY_MAX"]

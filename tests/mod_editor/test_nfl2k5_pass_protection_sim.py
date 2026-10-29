@@ -39,6 +39,13 @@ BACKS = range(23, 29)       # list slots 23-28 defensive backs
 
 
 class BytesTests(unittest.TestCase):
+    def test_two_hooks_call_the_owner_in_place_of_the_cube(self):
+        self.assertEqual([h[0] for h in pp.SIM_HOOKS], ["sim_sacker_taper_draw", "sim_sacker_taper_norm"])
+        for _name, _va, before, after in pp.sim_hook_sites(0x14F0000):
+            self.assertEqual(len(before), len(after))
+            self.assertEqual(after[0], 0xE8)
+            self.assertEqual(set(after[5:]), {0x90} if len(after) > 5 else set())
+
     def test_edits_are_nine_in_place_sites_with_no_allocation(self):
         names = [name for name, *_ in pp.SIM_EDITS]
         self.assertEqual(names, ["sim_event_chance", "sim_event_centre", "sim_rusher_slots", "sim_rusher_leftover", "sim_rusher_list",
@@ -80,10 +87,14 @@ class BytesTests(unittest.TestCase):
 
     def test_sim_edits_apply_replay_and_refuse_foreign_bytes(self):
         retail = retail_bytes()
-        patched = pp._apply_sim(retail)
+        owner_only = pp._apply_owner(retail)[0]
+        self.assertEqual(pp._sim_state(owner_only), "retail")
+        patched = pp._apply_sim(owner_only)
         self.assertEqual(pp._sim_state(patched), "applied")
+        with self.assertRaises(pp.PassProtectionError):
+            pp._apply_sim(retail)             # the taper calls into the owner: no owner, no edit
         image = XbeImage(patched)
-        for _name, va, _before, after in pp.SIM_EDITS:
+        for _name, va, _before, after in pp.sim_sites(pp._owner_va(patched)):
             self.assertEqual(image.read(va, len(after)), after)
         from tests.mod_editor.test_nfl2k5_owner_pairwise_composition import repin_edit
         for label, va, content in (("event block", 0x108400, b"\x90"), ("sacker draw", 0x103800, b"\x90"),
@@ -98,18 +109,64 @@ class BytesTests(unittest.TestCase):
         self.assertEqual(pp.status(final), "applied")
         self.assertTrue(receipt["simulated_sacks"])
         labels = {e["label"] for e in receipt["edits"]}
-        self.assertEqual(labels, {"pass_delay"} | {name for name, *_ in pp.SIM_EDITS})
+        self.assertEqual(labels, {"pass_delay"} | {name for name, *_ in pp.SIM_EDITS} | {name for name, *_ in pp.SIM_HOOKS})
         again, replay = pp.apply(final)
         self.assertEqual(again, final)
         self.assertEqual(replay["status"], "already_applied")
         # a build with only the played half installed is completed in place, never refused
-        owner_only, _ = pp._apply_owner(retail)[0], None
+        owner_only = pp._apply_owner(retail)[0]
         self.assertEqual(pp._recognize(owner_only), "partial")
         self.assertEqual(pp.status(owner_only), "partial")
         completed, receipt2 = pp.apply(owner_only)
         self.assertEqual(pp.status(completed), "applied")
-        self.assertEqual({e["label"] for e in receipt2["edits"]}, {name for name, *_ in pp.SIM_EDITS})
+        self.assertEqual({e["label"] for e in receipt2["edits"]}, {name for name, *_ in pp.SIM_EDITS} | {name for name, *_ in pp.SIM_HOOKS})
         self.assertEqual(completed, final)
+
+
+@unittest.skipUnless(uc is not None, "unicorn is not installed")
+class TaperTests(unittest.TestCase):
+    """The owner's sacker weight: c^3 / (1 + k * max(0, season half-sacks - start)), registers and flags kept."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.payload, _ = pp.apply(retail_bytes())
+        cls.va = pp._owner_va(cls.payload)
+
+    def run_taper(self, entry, c, half_sacks):
+        from tests.nfl2k5_supersim_draft_fixture import Machine
+        from pathlib import Path as _P
+        from mod_editor.core import nfl2k5_pass_protection_code as assembly
+        m = Machine(self.payload, trace_writes=False)
+        stub, data = m.ARENA + 0x1000, m.ARENA + 0x1100
+        m.uc.mem_protect(m.ARENA + 0x1000, 0x1000, uc.UC_PROT_ALL)
+        m.f32(data, c)
+        target = self.va + assembly.LABELS[entry]
+        code = (b"\xd9\x05" + struct.pack("<I", data) + b"\xe8" + struct.pack("<i", target - (stub + 11))
+                + b"\xd9\x1d" + struct.pack("<I", data + 4) + b"\xc3")
+        m.uc.mem_write(stub, code)
+        seen = []
+        m.leaf(0x14EE40, lambda: (seen.append((m.reg("ECX"), m.reg("EDX"))), m.ret(half_sacks))[1], reason="season getter returns a chosen value")
+        m.put(m.ARENA + 0x2000 + 4 * 5 + 4, 0)       # candidate pointers for sack_norm: [ebx + edi*4 + 4]
+        m.reg("EFLAGS", 0x202)
+        m.call(stub, ecx=0x1234, edx=0x7777, ebx=m.ARENA + 0x2000, esi=0x22222222, edi=5)
+        return m.f32(data + 4), seen, m
+
+    def test_weight_is_cubed_and_tapers_with_season_sacks(self):
+        k, start = pp.TAPER_K, pp.TAPER_START
+        for half_sacks in (0, 8, 9, 20, 40):
+            out, seen, m = self.run_taper("sack_draw", 0.8, half_sacks)
+            want = 0.8 ** 3 / (1 + k * max(0, half_sacks - start))
+            self.assertAlmostEqual(out, want, places=5, msg=half_sacks)
+            self.assertEqual(seen, [(0x7777, 19)])               # the draw passes EDX as the candidate; field 19 = sacks
+        flat = self.run_taper("sack_draw", 0.8, 8)[0]
+        leader = self.run_taper("sack_draw", 0.8, 30)[0]        # 15 sacks
+        self.assertLess(leader, 0.6 * flat)
+
+    def test_norm_entry_reads_the_candidate_from_the_slot_table_and_keeps_registers(self):
+        out, seen, m = self.run_taper("sack_norm", 0.7, 24)
+        self.assertAlmostEqual(out, 0.7 ** 3 / (1 + pp.TAPER_K * (24 - pp.TAPER_START)), places=5)
+        self.assertEqual(seen[0][1], 19)
+        self.assertEqual((m.reg("EBX"), m.reg("ESI"), m.reg("EDI")), (m.ARENA + 0x2000, 0x22222222, 5))
 
 
 def _setup(payload, save, seed):
