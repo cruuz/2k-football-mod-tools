@@ -270,6 +270,8 @@ def _star_charge(blob, *, superstar=False):
     carrier() validates the entity/state/steer pointers even for a defender.
     Its CF is ignored here. Restrict live player entities on both teams, human
     or CPU. Never write sprint, throttle, the burst multiplier or burst timer.
+    ``superstar`` is the released v0.7 movement gate, kept only to recognise and
+    upgrade that owner; Studio installs the star gate alone.
     """
     labels = assembly.LABELS
     start, end = labels["maintain"], labels["maintain_yes"]
@@ -638,27 +640,29 @@ def apply(payload, **settings):
 def apply_shared(payload, **settings):
     """Studio sprint parity, retaining the historical apply() for pinned repairs.
 
-    With the star-charge option enabled, a movement superstar is a roster star
-    with raw Speed 90..127 and Agility 85..127 AND the existing charge grant.
-    This narrows permission; it never adds Speedster, a star, or a tier grant.
-    No new allocation, runtime timer, native decision or charged math is added.
+    The star-charge policy is the roster-star charge grant alone. It never adds
+    Speedster, a star, a tier grant or a movement-rating threshold. The released
+    v0.7 owner narrowed charge to raw Speed 90..127 and Agility 85..127, which
+    locked most starred players out of the meter; a same-size owner upgrade
+    restores the star gate. No new allocation, runtime timer, native decision or
+    charged math is added.
     """
     native, receipt = apply(payload, **settings)
     wanted = _inspect(native)[1]
     edits = list(receipt.get("edits", []))
-    if wanted["charge_stars_only"] and revision(native) != "superstar-charge":
+    if wanted["charge_stars_only"] and revision(native) == "superstar-charge":
         a = allocation(native)
-        content, _ = code_for(a["va"], **wanted, _superstar_charge=True)
+        content, _ = code_for(a["va"], **wanted)
         buf = bytearray(native)
         buf[a["raw"]:a["raw"] + a["size"]] = content
         human_tap_burst._seal_upgrade(native, buf)
         native = bytes(buf)
-        _require(revision(native) == "superstar-charge", "superstar charge postcondition failed")
-        edits.append(dict(label="superstar_charge", va=hex(a["va"]), size=a["size"]))
+        _require(revision(native) == "universal-sprint", "star charge postcondition failed")
+        edits.append(dict(label="star_charge_gate", va=hex(a["va"]), size=a["size"]))
     result, burst = human_tap_burst.apply_shared(native)
     _require(status(result) == "applied", "shared sprint postcondition failed")
     return result, {**receipt, "status": "applied" if result != payload else "already_applied",
-                    "shared_tap_burst": burst, "superstar_charge": wanted["charge_stars_only"],
+                    "shared_tap_burst": burst, "star_charge": wanted["charge_stars_only"],
                     "edits": edits + burst["edits"], "reservations": reservations(result),
                     "changed_bytes": space.count_differing_bytes(payload, result) + len(result) - len(payload),
                     "file_growth": len(result) - len(payload),

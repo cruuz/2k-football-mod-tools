@@ -87,6 +87,30 @@ class ImageTests(unittest.TestCase):
         self.assertTrue(all(s.stored_digest == section_digest(result, s) for s in _sections(result)))
         self.assertFalse(self.receipt['runtime_witnessed'])
 
+    def test_studio_shared_profile_installs_the_star_charge_gate(self):
+        built, receipt = patch.apply_shared(self.retail, charge_stars_only=True)
+        self.assertEqual(patch.revision(built), 'universal-sprint')
+        self.assertTrue(receipt['star_charge'])
+        self.assertEqual(patch.apply_shared(built)[0], built)
+        a = patch.allocation(built)
+        content = XbeImage(built).read(a['va'], a['size'])
+        self.assertEqual(content, patch.code_for(a['va'], charge_stars_only=True)[0])
+        self.assertNotIn(bytes.fromhex('8079365a'), content)   # no Speed >= 90 movement gate
+        self.assertNotIn(bytes.fromhex('80793755'), content)   # no Agility >= 85 movement gate
+
+    def test_studio_shared_profile_upgrades_a_released_v07_movement_gate(self):
+        gate = patch.apply(self.retail, charge_stars_only=True)[0]
+        a = patch.allocation(gate)
+        movement, _ = patch.code_for(a['va'], charge_stars_only=True, _superstar_charge=True)
+        buf = bytearray(gate)
+        buf[a['raw']:a['raw'] + a['size']] = movement
+        patch.human_tap_burst._seal_upgrade(gate, buf)
+        v07 = bytes(buf)
+        self.assertEqual(patch.revision(v07), 'superstar-charge')
+        fixed, receipt = patch.apply_shared(v07)
+        self.assertEqual(patch.revision(fixed), 'universal-sprint')
+        self.assertTrue(any(edit['label'] == 'star_charge_gate' for edit in receipt['edits']))
+
     def test_every_hook_mixed_missing_and_foreign_refuses_before_mutation(self):
         for name, (va, before) in patch.HOOKS.items():
             for seed, replacement in ((self.patched, before), (self.retail, b'\x90' * len(before))):
