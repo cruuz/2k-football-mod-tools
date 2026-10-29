@@ -3,7 +3,7 @@
    Freestanding i386 code for the late allocator owner nfl2k5_champions, built by tools/nfl2k5_champions_build.py into
    mod_editor/core/nfl2k5_champions_code.py; no retail bytes live here. Game routines are called through their fixed
    retail addresses; the only relocations are this blob's own labels. The blob owns no writable memory: the champions
-   history lives in the roster arena's team records (see HISTORY below), the pop-up text on the stack.
+   history lives in the spare bytes at the end of the roster arena (see HISTORY below), the pop-up text on the stack.
 
    HISTORY. The roster arena ends with a 0x400-byte region: the 352-byte reserve block (magic "2K5RSV2") written by the
    practice-squad owner, 448 bytes that are zero in every arena the Studio builds, and the game's own 224-byte tail. The
@@ -51,7 +51,6 @@ typedef unsigned char u8;
 #define LOSSES     ((u32 (FC *)(u32))0x000C7750)
 #define TIES       ((u32 (FC *)(u32))0x000C7780)
 
-#define CARD_PLAYER 0x00C90248u
 #define CARD_YEAR_IMM 0x003204ADu   /* the card's year base: mov ecx, base_year + 11 */
 #define SB_ROW_IMM 0x00133A41u      /* the Super Bowl week row: 0x14 retail, 0x15 with the 18-week season */
 #define SEASONS 0x00E576B8u
@@ -62,10 +61,6 @@ typedef unsigned char u8;
 #define AWARDS 0x00E5A2F0u
 #define POS_NAMES 0x004F26D0u       /* 17 pointers to the position abbreviations */
 #define BLACK 0xFF101010u
-#define SLOT0 0xE4u                 /* first history byte in a team record */
-#define SLOT_SIZE 32u
-#define SLOT_BODY 28u               /* bytes covered by the check byte */
-#define PERSON 11u
 
 /* ---- small text helpers ------------------------------------------------------------------------------------ */
 static u16 *put_text(u16 *out, const u16 *text) {

@@ -41,7 +41,9 @@ MORE = ("nfl2k5_xs1_probe_more", "code", 9000, 16)
 # the v4 pool).  The v3 half of this file must be built from a set that genuinely
 # fits v3, so it is the complete union without exactly that owner; the full union
 # is covered separately below and by test_nfl2k5_allocator_scaleout.
-V3_REQUESTS = tuple(r for r in REQUESTS if r[0] != "nfl2k5_cpu_third_down")
+# b779-hn1: the Super Bowl champions owner (5 KB of code installed with the honors owner) does not fit a v3 tail slot
+# either, so it is left out of the v3 fixture too and spills into the pool.
+V3_REQUESTS = tuple(r for r in REQUESTS if r[0] not in ("nfl2k5_cpu_third_down", "nfl2k5_champions"))
 
 
 def rows(layout):
@@ -95,7 +97,7 @@ class PoolPlannerTests(unittest.TestCase):
         self.assertLessEqual(rows(v3), rows(full))
         pooled = [a["owner"] for a in full["allocations"]
                   if a["va"] >= space.POOL_VA and a["owner"] != space.DIRECTORY_OWNER]
-        self.assertEqual(pooled, ["nfl2k5_cpu_third_down"])
+        self.assertEqual(sorted(pooled), ["nfl2k5_champions", "nfl2k5_cpu_third_down"])
         self.assertEqual(sum(1 for r in full["regions"] if r["kind"] == "pool"), 1)
 
     def test_late_owner_appended_after_the_pool_moves_nothing(self):
