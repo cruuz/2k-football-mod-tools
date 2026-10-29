@@ -23,7 +23,7 @@ honors.json (honors.py), predraft/*.json (predraft.py); cited 40s in nfl2k5.fort
 """
 import collections, glob, json, math, statistics
 from mod_editor.core.nfl2k5_ratings_model import (name_key, load_forty_sources, reviewed_hb_rating_deltas,
-                                                       reviewed_hb_consistency_map)
+                                                       reviewed_hb_consistency_map, reviewed_qb_break_tackle_table)
 from common import CFG, nfl, read_csv, work
 
 W = {2025: 1.0, 2024: 0.5}
@@ -719,6 +719,19 @@ def rate_all(D, players, draft):
                 out['scramble'] = s
                 basis['scramble']['family'] = 'mobile (even, scramble + agility > 150)' if s + a > 150 else \
                     'pocket (even, scramble + agility <= 150)'
+                # b779-sim2 reviewed: the QB profile left break tackle at the tier median (25-32) while the
+                # retail mobile QBs were 57-72. Follow the same rushing-mobility percentile as the scramble
+                # byte, which the sim's ball-carrier selection (category 8, break tackle weight 0.4, fourth
+                # power) and run result (0x10A6DE) read. One rating, quarterbacks only; measured 2.0-2.7x
+                # QB rushing in two paired Sim QL 15 seasons (b779 sim2 round-3 report).
+                qm = D._qb_mob.get(p['gsis'], 0.3)
+                bt_table = (D.ref['QB'][p['tier']]['ratings']['break_tackle'] if D.ref['QB'][p['tier']]['n']
+                            else D.ref['QB']['all']['ratings']['break_tackle'])
+                out['break_tackle'] = reviewed_qb_break_tackle_table(
+                    bt_table, min(Q_CLIP[1], max(Q_CLIP[0], qm)))
+                basis['break_tackle'] = {'q': round(qm, 3),
+                                         'rule': 'b779-sim2 reviewed: retail QB tier break tackle at the '
+                                                 'rushing-mobility percentile'}
             p['ratings'], p['basis'] = out, basis
     # b779-sim2 reviewed rescale: the modern halfback physical ratings sat 5-8 points above the retail 2004
     # halfback population; the top-40 consistency map is applied by build.py once the game's OVR is known.

@@ -722,6 +722,10 @@ def rate_player(row: Mapping, stats: SeasonStats, reference: Reference, *, honor
             ratings[rating] = clamp(reference.quantile(position, rating, aspects.get(driver, q_value)))
         else:
             ratings[rating] = clamp(reference.profile(position, rating, q_value))
+    if position == "QB":
+        q_mobility = aspects.get("mobility", 0.3)   # no rushing data: the pocket-QB baseline percentile
+        ratings["break_tackle"] = reviewed_qb_break_tackle(reference, q_mobility)
+        basis["reviewed_qb_break_tackle"] = {"q": round(q_mobility, 4), "rule": REVIEWED_QB_BREAK_TACKLE_RULE}
     # physicals: the retail 2004 ratings of the same player when the caller has them, else measurables
     weight = _num(row.get("weight")) or 0.0
     if anchor:
@@ -759,6 +763,43 @@ def _age(birth_date, season: int) -> int:
     except (TypeError, ValueError):
         return 0
     return season - year - (1 if month > 9 else 0)
+
+
+# b779-sim2 round 3, reviewed 2026-10-28: the modern generator left the club quarterbacks' break tackle at the
+# retail QB *profile* (starters 25-32; club mean 29.6, SD 4.6) because the model has no QB rushing component for
+# that rating. The retail 2004 mobile QBs
+# were rated far higher (McNabb 70, Culpepper 72, Vick 65, Garcia 61, McNair 57), and the scheduled simulator reads
+# break tackle both directly in the run result (0x10A6DE) and with 0.4 weight in the ball-carrier composite
+# (category 8), whose fourth power selects the carrier. Two Sim QL 15 seasons of the round-2 build produced a QB
+# rushing leader of 89 and 109 yards (nflverse 2021-2025: 579-1,143, mean 848) and Josh Allen at 60 and 107 (real
+# 524-763); the same absence is visible in played games. The reviewed step restores retail's relationship: a QB's
+# break tackle is the retail QB break-tackle quantile at the same rushing-mobility percentile that already drives
+# the scramble byte (0.4 scrambles/dropback + 0.3 designed runs/game + 0.3 rushing yards/game, shrunk). It changes
+# one rating on quarterbacks only; accuracy, arm, reads, speed, agility and the style bytes are untouched. Measured
+# in two paired Sim QL 15 seasons (seeds 2501/2502): QB rushing top-10 70.0 -> 161.4, Josh Allen 83.5 -> 172,
+# leader 99 -> 281.5, close to the retail 2004 control (177/327) on the same engine; see the b779 sim2 round-3
+# report.
+REVIEWED_QB_BREAK_TACKLE_RULE = ("b779-sim2 reviewed: QB break tackle at the rushing-mobility percentile "
+                                 "(retail's mobile-QB scale)")
+
+
+def reviewed_qb_break_tackle_table(table: Sequence[float], mobility_q: float) -> int:
+    """Retail QB break tackle at one rushing-mobility percentile (0..1), clamped to 1..99.
+
+    ``table`` is a retail QB break-tackle quantile table (the core reference or the v2 tier table). Linear
+    interpolation between the 41 retail grid points, the same rule as ``Reference.quantile``.
+    """
+    q = max(0.0, min(1.0, float(mobility_q)))
+    at = q * (len(table) - 1)
+    low = int(math.floor(at))
+    high = min(low + 1, len(table) - 1)
+    value = table[low] + (table[high] - table[low]) * (at - low)
+    return max(1, min(99, int(round(value))))
+
+
+def reviewed_qb_break_tackle(reference: "Reference", mobility_q: float) -> int:
+    """Retail QB break tackle at one rushing-mobility percentile (0..1), clamped to 1..99."""
+    return reviewed_qb_break_tackle_table(reference.positions["QB"]["quantiles"]["break_tackle"], mobility_q)
 
 
 # b779-sim2, reviewed 2026-10-28: the modern roster's halfbacks broke tackles, kept the ball and held their
