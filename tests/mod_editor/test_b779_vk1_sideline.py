@@ -46,12 +46,12 @@ class PinnedListTests(unittest.TestCase):
         rows = document["kits"]
         selectors = [row["selector"] for row in rows]
         self.assertEqual(selectors, sorted(set(selectors)))
-        self.assertEqual(len(rows), 22)
+        self.assertGreaterEqual(len(rows), 22)          # vk1's 22, extended by the b779-vk2 audit
         for row in rows:
             self.assertRegex(row["selector"], r"^\d\d[HA]\d+$")
             self.assertTrue(row["parts"] and all(part in kit.SIDELINE_PARTS for part in row["parts"]))
-            if any(part in ("sleeve", "helmet") for part in row["parts"]):
-                self.assertRegex(row["donor"], r"^\d\d[HA]\d$")
+            if "field" not in row and any(part in ("sleeve", "helmet") for part in row["parts"]):
+                self.assertRegex(row["donor"], r"^\d\d[HA]\d+$")
 
     def test_the_reported_vikings_away_kit_names_all_three_parts(self) -> None:
         rows = {row["selector"]: row for row in kit.sideline()["kits"]}
