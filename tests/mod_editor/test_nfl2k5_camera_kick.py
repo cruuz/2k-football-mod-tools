@@ -38,10 +38,10 @@ class KickStaticTests(unittest.TestCase):
         sets = c.kick_sets()
         self.assertEqual(len(sets), 4 * c.KICK_SET_SIZE)
         expected = {
-            c.KICK_FG_GROUND: ((0.0, 340.0, -220.0), 36.0, (0.0, 260.0, -1980.0)),
-            c.KICK_PUNT_GROUND: ((0.0, 300.0, -500.0), 36.0, (0.0, 400.0, -2400.0)),
+            c.KICK_FG_GROUND: ((0.0, 100.0, 1365.0), 38.0, (0.0, 450.0, -3665.0)),
+            c.KICK_PUNT_GROUND: ((0.0, 100.0, 387.0), 34.0, (0.0, 550.0, -3287.0)),
             c.KICK_FG_AIR: ((0.0, 100.0, 2200.0), 34.0, (0.0, 350.0, -4100.0)),
-            c.KICK_PUNT_AIR: ((0.0, 200.0, 2000.0), 32.0, (0.0, 450.0, -4600.0)),
+            c.KICK_PUNT_AIR: ((0.0, 100.0, 2000.0), 32.0, (0.0, 450.0, -4600.0)),
         }
         self.assertEqual(c.KICK_VALUES, expected)
         for index, (target, lens, offset) in expected.items():
@@ -122,7 +122,7 @@ class KickNativeTests(unittest.TestCase):
                 if kick_index is None:
                     self.assertEqual(got, normal[state], (state, kind))
                     # the sideline mount: x minimum positive, y box 1400..1500
-                    self.assertEqual((got[2][0], got[2][1], got[2][4]), (2500.0, 1400.0, 1500.0))
+                    self.assertEqual((got[2][0], got[2][1], got[2][5]), (2500.0, 1400.0, 1500.0))
                     continue
                 target, lens, offset = c.KICK_VALUES[kick_index]
                 raw = struct.unpack('<12f', c.kick_sets()[48 * kick_index:48 * kick_index + 48])
@@ -140,7 +140,7 @@ class KickNativeTests(unittest.TestCase):
             for kind in range(0, 7):
                 p = self.setup(state, kind)
                 self.assertEqual(self.words(p, 0x3C0, 1), (2500.0,), (state, kind))
-                self.assertEqual(self.words(p, 0x410, 1), (c.BROADCAST_LENSES[c.broadcast_slot(state)],), (state, kind))
+                self.assertEqual(self.words(p, 0x410, 1), (c._f32(c.BROADCAST_LENSES[c.broadcast_slot(state)]),), (state, kind))
         # state 11 with a pass or run kind (4, 5) or a kickoff kind (1, 2) is the sideline pre-snap
         for kind in (0, 1, 2, 4, 5):
             p = self.setup(11, kind)
@@ -183,22 +183,39 @@ class KickNativeTests(unittest.TestCase):
                 self.assertAlmostEqual(eye[0], 0.0, places=3)
 
     def test_uprights_and_the_kicker_read_on_the_ground_view(self):
-        # Field goal snap view, projected through the native solver (4:3): the whole upright (top, crossbar, foot)
-        # is on screen for kicks from the extra-point distance to 70 yards, the kicker and holder sit above the
-        # scorebar (y < 381 of 480), the ball in the lower middle.
-        p = self.setup(9, 3)
-        for distance in (1100, 2500, 4500, 7000):
-            top_l = p.point(-282, 1372, distance)
-            top_r = p.point(282, 1372, distance)
-            foot = p.point(0, 0, distance)
-            self.assertTrue(0 < top_l[1] < foot[1] < 381 and 0 < top_l[0] < 640 and 0 < top_r[0] < 640, (distance, top_l, foot))
-        for z in (0, -700):
-            x, y = p.point(0, 100, z)
-            self.assertTrue(200 < x < 440 and 150 < y < 381, (z, x, y))
-        p = self.setup(10, 6)
-        for z in (0, -1400):
-            x, y = p.point(0, 100, z)
-            self.assertTrue(200 < x < 440 and 150 < y < 381, (z, x, y))
+        # Native play-state evidence (xemu, released v0.7 disc): in the field goal and extra point snap view (state 9)
+        # the camera focus is the kicker, about 7 yards (640 cm) behind the line of scrimmage, so the uprights are
+        # 1800 cm (an extra point from the 2) to 7700 cm (a 70-yard try) ahead of the focus. Projected through the
+        # native solver (4:3 and 16:9): the whole upright (top, crossbar, foot) is on screen and above the scorebar
+        # (y < 381 of 480) at every distance, the kicker sits in the middle of the frame and the line of scrimmage
+        # (700 cm ahead of him) is in view.
+        from mod_editor.core import nfl2k5_widescreen as wide
+        for aspect in ('4:3', '16:9'):
+            payload = self.patched if aspect == '4:3' else wide.apply(self.patched, aspect)[0]
+            p = FinalProjection(payload)
+            self.put(p, c.CAMERA_STATE_VA, 9)
+            self.put(p, c.PLAY_KIND_VA, 3)
+            p.setup(self.table[9][1])
+            for distance in (1800, 3200, 5200, 7700):
+                top_l, top_r = p.point(-282, 1372, distance), p.point(282, 1372, distance)
+                bar, foot = p.point(0, 305, distance), p.point(0, 0, distance)
+                self.assertTrue(0 < top_l[1] < bar[1] < foot[1] < 300, (aspect, distance, top_l, bar, foot))
+                self.assertTrue(250 < top_r[0] < top_l[0] < 390, (aspect, distance, top_l, top_r))
+            head, foot = p.point(0, 190, 0), p.point(0, 0, 0)
+            self.assertTrue(150 < head[1] < foot[1] < 381 and abs(head[0] - 320) < 5, (aspect, head, foot))
+            line = p.point(0, 175, 700)
+            self.assertTrue(100 < line[1] < head[1], (aspect, line))
+            self.assertTrue(0 < p.point(-600, 175, 700)[0] < 640 and 0 < p.point(600, 175, 700)[0] < 640)
+            # Punt snap view (state 10): the focus is the punter, 15 yards behind the line of scrimmage.
+            q = FinalProjection(payload)
+            self.put(q, c.CAMERA_STATE_VA, 10)
+            self.put(q, c.PLAY_KIND_VA, 6)
+            q.setup(self.table[10][1])
+            head, foot = q.point(0, 190, 0), q.point(0, 0, 0)
+            self.assertTrue(150 < head[1] < foot[1] < 381 and abs(head[0] - 320) < 5, (aspect, head, foot))
+            for x in (-600, 0, 600):
+                px = q.point(x, 175, 1371)
+                self.assertTrue(80 < px[1] < head[1] and 0 < px[0] < 640, (aspect, x, px))
 
 
 if __name__ == '__main__':
