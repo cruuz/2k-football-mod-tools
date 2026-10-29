@@ -5,17 +5,23 @@ Reads pinned nflverse-data release files (CC-BY-4.0) that the caller downloaded 
 Treat those files as untrusted data: they are only parsed.
 
   b779_fh1_history_data.py build --nflverse DIR --edits ROSTER_EDITS.json --out-history H.json --out-entry E.json
-  b779_fh1_history_data.py check --nflverse DIR --history H.json --entry E.json
+  b779_fh1_history_data.py league-games --nflverse DIR --edits ROSTER_EDITS.json --out FIXED.json
 
 Entry year = ``entry_year`` of the player's LATEST annual roster row in ``rosters/roster_YYYY.csv`` (the league year he
 joined an NFL roster, drafted or not).  It is present for every player the SOFTDRINK recipe writes; ``rookie_year`` (first
 season played) is not used because a draftee who spent his first year on injured reserve is still one year older in the
 league, which is how the game's own rollover counts.  Years pro = season - entry_year + 1 (rookie = 1).
 
-Season rows follow the policy the franchise history was generated with (reproduced exactly for all 6,203 league
-player-seasons of the v0.7 plan by the test): regular season, nflverse ``stats_player_reg_YYYY.csv`` 2000..2025 with games
-above zero; the stat mapping below; team = the club(s) on the player's latest week of the annual roster, a tie broken by the
-stat row's ``recent_team`` only when it is one of the candidates (no other inference).
+Season rows follow the policy the franchise history was generated with (every stat and team value reproduced exactly for all
+6,203 league player-seasons of the v0.7 plan): regular season, nflverse ``stats_player_reg_YYYY.csv`` 2000..2025; the stat
+mapping below; team = the club(s) on the player's latest week of the annual roster, a tie broken by the stat row's
+``recent_team`` only when it is one of the candidates (no other inference).
+
+GAMES (b779 fh1, the Andrew Thomas bug): ``stats_player.games`` counts only the weeks with a box-score stat line, which cut
+offensive linemen to 1-8 games a year. Games are now the larger of that count and the snap-count games (a snap on offense,
+defense or special teams, ``snap_counts_YYYY.csv``, 2013 on); before 2013 no snap data exists and the stat-line count is kept as
+a lower bound. A season with snaps but no stat line is added (games and TEAM only). ``league-games`` applies the same rule to
+the roster-edits document's ``franchise_history`` (the 1,932 league players).
 """
 from __future__ import annotations
 
@@ -40,6 +46,7 @@ ENTRY_SCHEMA = "nfl2k5_entry_years/v1"
 BASE_YEAR = 2026
 FIRST_STATS_YEAR = 2000
 LAST_STATS_YEAR = 2025
+FIRST_SNAP_YEAR = 2013          # nflverse snap_counts_2012.csv is header only; real rows start in 2013
 RELEASE = "https://github.com/nflverse/nflverse-data/releases/download"
 ATTRIBUTION = "nflverse contributors (https://github.com/nflverse/nflverse-data), CC-BY-4.0"
 ENTRY_RULE = ("entry_year of the latest annual roster row (rosters/roster_YYYY.csv, 2000..2026); years pro = "
@@ -101,10 +108,11 @@ class Nflverse:
         self.dir = Path(directory)
         self._stats: dict[tuple[str, int], dict] | None = None
         self._roster: dict[tuple[str, int], list[dict]] | None = None
+        self._snaps: dict[tuple[str, int], set] | None = None
         self.used: dict[str, str] = {}
 
     def _path(self, kind: str, year: int) -> Path:
-        name = f"roster_{year}.csv" if kind == "rosters" else f"stats_player_reg_{year}.csv"
+        name = {"rosters": f"roster_{year}.csv", "snaps": f"snap_counts_{year}.csv"}.get(kind, f"stats_player_reg_{year}.csv")
         return self.dir / name
 
     def _read(self, kind: str, year: int):
@@ -121,6 +129,37 @@ class Nflverse:
                     if row.get("season_type", "REG") == "REG":
                         self._stats[(row["player_id"], year)] = row
         return self._stats
+
+    def snaps(self) -> dict[tuple[str, int], set]:
+        """(gsis_id, season) -> the regular-season GAMES the player took a snap in (offense, defense or special teams > 0).
+
+        nflverse ``stats_player.games`` counts only the weeks in which the player has a box-score stat line, so a tackle or guard
+        with no penalty, a long snapper, or a defender with no tackle in a week is missing from it (Andrew Thomas 2022-2025: 4,
+        1, 3 and 3 games there against 16, 10, 6 and 13 with snaps). ``snap_counts_YYYY.csv`` (2013 on) lists every player with a
+        snap; its ``pfr_player_id`` is mapped to the GSIS id through ``players.csv``. Games = distinct game ids."""
+        if self._snaps is None:
+            raw = (self.dir / "players.csv").read_bytes()
+            self.used["players.csv"] = hashlib.sha256(raw).hexdigest()
+            pfr = {r["pfr_id"]: r["gsis_id"] for r in csv.DictReader(raw.decode("utf-8").splitlines()) if r["pfr_id"]}
+            self._snaps = collections.defaultdict(set)
+            for year in range(FIRST_SNAP_YEAR, LAST_STATS_YEAR + 1):
+                for row in self._read("snaps", year):
+                    if row["game_type"] != "REG":
+                        continue
+                    if _num(row, "offense_snaps") + _num(row, "defense_snaps") + _num(row, "st_snaps") <= 0:
+                        continue
+                    gsis = pfr.get(row["pfr_player_id"])
+                    if gsis:
+                        self._snaps[(gsis, year)].add(row["game_id"])
+        return self._snaps
+
+    def games(self, gsis_id: str, year: int, stats_games: float) -> tuple[int, str]:
+        """Games played: the larger of the stat-line count and the snap count (2013 on); 2012 and earlier keep the stat-line
+        count, which is a LOWER bound (no snap data exists for those seasons)."""
+        if year < FIRST_SNAP_YEAR:
+            return int(stats_games), "stat_line_games_lower_bound"
+        snapped = len(self.snaps().get((gsis_id, year), ()))
+        return (max(int(stats_games), snapped), "snap_counts" if snapped >= stats_games else "stat_line_games")
 
     def roster(self) -> dict[tuple[str, int], list[dict]]:
         if self._roster is None:
@@ -157,20 +196,33 @@ class Nflverse:
         out, notes = [], collections.Counter()
         for year in range(FIRST_STATS_YEAR, LAST_STATS_YEAR + 1):
             row = self.stats().get((gsis_id, year))
-            if row is None or _num(row, "games") <= 0:
+            stat_games = _num(row, "games") if row is not None else 0.0
+            games, basis = self.games(gsis_id, year, stat_games)
+            if games <= 0:
                 continue
             if entry is not None and year < entry:
                 notes["before_entry_year"] += 1
                 continue
-            stats = {k: (int(v) if float(v).is_integer() else v) for k, v in season_stats(row).items() if v}
+            stats = {k: (int(v) if float(v).is_integer() else v) for k, v in season_stats(row or {}).items() if v}
+            stats["games"] = games
+            if row is None:
+                notes["season_from_snaps_only"] += 1
+            if games != int(stat_games):
+                notes["games_raised_from_snaps"] += 1
             season = {"year": year, "stats": stats}
-            code, how = self.team(gsis_id, year, row)
+            code, how = self.team(gsis_id, year, row or {})
             notes["team_" + how] += 1
             if code is not None:
                 season["team"] = code
                 season["team_index"] = team_index(code, year)
             out.append(season)
         return out, dict(notes)
+
+
+def source_url(name: str) -> str:
+    tag = ("rosters" if name.startswith("roster_") else "snap_counts" if name.startswith("snap_counts_")
+           else "players" if name == "players.csv" else "stats_player")
+    return f"{RELEASE}/{tag}/{name}"
 
 
 def years_pro_for(entry_year: int) -> int:
@@ -233,11 +285,13 @@ def build(nflverse_dir: Path, edits_path: Path):
         summary["players"] += 1
         summary["seasons"] += len(seasons)
     fetched = (Path(nflverse_dir) / "FETCHED_AT.txt").read_text(encoding="utf-8").strip()
-    sources = {name: {"sha256": sha, "url": f"{RELEASE}/{'rosters' if name.startswith('roster_') else 'stats_player'}/{name}"}
-               for name, sha in sorted(data.used.items())}
+    sources = {name: {"sha256": sha, "url": source_url(name)} for name, sha in sorted(data.used.items())}
     meta = {"attribution": ATTRIBUTION, "fetched_utc": fetched, "base_year": BASE_YEAR, "sources": sources}
     history = {"schema": HISTORY_SCHEMA, **meta,
-               "policy": ("Completed regular seasons 2000..2025 with games above zero from nflverse stats_player; team = the club on the "
+               "policy": ("Completed regular seasons 2000..2025; games = the larger of the stats_player games (weeks with a stat line) and the "
+                          "snap_counts games (a snap on offense, defense or special teams, 2013 on, which fixes linemen, snappers and "
+                          "quiet defenders; before 2013 the stat-line count is a lower bound); a season with snaps but no stat line "
+                          "carries games and TEAM only; team = the club on the "
                           "latest week of the annual roster (a tie only by the stat row's recent_team when it is a candidate). Seasons "
                           "before 2000 and playoff games are not in the source and are not invented. Sparse counters: zero stays unset."),
                "years_pro_convention": "game_years_in_league",
@@ -245,6 +299,58 @@ def build(nflverse_dir: Path, edits_path: Path):
     entry = {"schema": ENTRY_SCHEMA, **meta, "rule": ENTRY_RULE, "years_pro_convention": "game_years_in_league",
              "entries": entries}
     return history, entry, dict(summary)
+
+
+def patch_league(nflverse_dir: Path, edits: dict) -> tuple[dict, dict]:
+    """The roster-edits document's ``franchise_history`` (the 1,932 league players) with games played from snap counts.
+
+    The league history was generated from ``stats_player`` only, so its ``games`` (and which seasons exist at all) follow the weeks
+    with a box-score line. This raises every season's games to the snap-count games (2013 on) and adds the seasons a player has
+    snaps in but no stat line (games and TEAM words only). Values change for 55 percent of the league seasons; the new seasons add
+    two words each. Sources: nflverse snap_counts and players.csv, pinned like the existing ones."""
+    out = json.loads(json.dumps(edits))
+    data = Nflverse(nflverse_dir)
+    history = out["franchise_history"]
+    report = collections.Counter()
+    fetched = (Path(nflverse_dir) / "FETCHED_AT.txt").read_text(encoding="utf-8").strip()
+    for player in history["players"]:
+        gsis = player["gsis_id"]
+        entry = data.entry_year(gsis) or 0
+        have = {s["year"]: s for s in player["seasons"]}
+        for season in player["seasons"]:
+            old = int(season["stats"]["games"])
+            new, basis = data.games(gsis, season["year"], old)
+            report["seasons"] += 1
+            if new > old:
+                season["stats"]["games"] = new
+                report["games_raised"] += 1
+            if basis == "stat_line_games_lower_bound":
+                report["seasons_before_2013_stat_line_lower_bound"] += 1
+        for year in range(FIRST_SNAP_YEAR, LAST_STATS_YEAR + 1):
+            snapped = len(data.snaps().get((gsis, year), ()))
+            if year in have or snapped <= 0 or year < entry:
+                continue
+            season = {"source": f"snap_counts_{year}.csv", "stats": {"games": snapped}, "year": year}
+            code, how = data.team(gsis, year, {})
+            report["new_season_team_" + how] += 1
+            if code is not None:
+                rows = data.roster()[(gsis, year)]
+                latest = max(int(float(r["week"])) if r.get("week") else 0 for r in rows)
+                season.update(team_index=team_index(code, year), team_source=f"roster_{year}.csv",
+                              team_selection={"candidates": [code], "selected": code, "tie_break": None, "week": latest})
+            player["seasons"].append(season)
+            report["seasons_added"] += 1
+        player["seasons"].sort(key=lambda s: s["year"])
+    pins = history["sources"]
+    for name, sha in sorted(data.used.items()):
+        if name.startswith(("snap_counts_", "players")) and name not in pins:
+            raw = (Path(nflverse_dir) / name).read_bytes()
+            pins[name] = {"bytes": len(raw), "file": f"data/{name}", "sha256": sha,
+                          "tag": "snap_counts" if name.startswith("snap_counts_") else "players",
+                          "updated_at": fetched, "url": source_url(name)}
+    history["games_policy"] = ("games = max(stats_player games, snap_counts games with a snap on offense, defense or special teams) "
+                               "from 2013; 2012 and earlier keep the stat-line count (a lower bound). Added by b779 fh1.")
+    return out, dict(report)
 
 
 def _dump(path: Path, document: dict) -> None:
@@ -260,7 +366,18 @@ def main(argv=None) -> int:
     b.add_argument("--edits", type=Path, required=True)
     b.add_argument("--out-history", type=Path, required=True)
     b.add_argument("--out-entry", type=Path, required=True)
+    lg = sub.add_parser("league-games")
+    lg.add_argument("--nflverse", type=Path, required=True)
+    lg.add_argument("--edits", type=Path, required=True)
+    lg.add_argument("--out", type=Path, required=True)
     args = parser.parse_args(argv)
+    if args.command == "league-games":
+        if args.out.exists():
+            parser.error("output exists; choose a fresh path")
+        document, summary = patch_league(args.nflverse, json.loads(args.edits.read_text(encoding="utf-8")))
+        args.out.write_text(json.dumps(document, indent=1) + "\n", encoding="utf-8", newline="\n")
+        print(json.dumps(summary, sort_keys=True))
+        return 0
     history, entry, summary = build(args.nflverse, args.edits)
     _dump(args.out_history, history)
     _dump(args.out_entry, entry)
