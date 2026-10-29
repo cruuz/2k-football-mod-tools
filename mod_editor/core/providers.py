@@ -628,7 +628,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_ausb_fixed_slots.py": "56a39ad842d3552dd26e2089d3c859cba8b59fd61701e63f2f9265db20422d4a",
         "mod_editor/core/nfl2k5_boot_logo.py": "9ee25b1fb49859951ba4780ec2b4a3d71773f7199d5a308338acf51f84bdb257",
         "mod_editor/core/nfl2k5_build_service.py": "e22d670a851ddc493d913d741818a9cc567f5bc827ef3c44da12d48b12439438",
-        "mod_editor/core/nfl2k5_build_settings.py": "44a159a05581ba6f8c955b5121fcdb1fa938a6a6cd02f035e29ef372b247ba3a",
+        "mod_editor/core/nfl2k5_build_settings.py": "86e72c3086432224c069f5e70ef96869518e7a5566c63fea70b4f99faa8d5f79",
         "mod_editor/core/nfl2k5_build_service.py": "e22d670a851ddc493d913d741818a9cc567f5bc827ef3c44da12d48b12439438",
         "mod_editor/core/nfl2k5_midfield_art.py": "da5ff3541f2d7a7674cd3fc715c831379ecbe17c307951ce547ecaf8d3b4ab89",
         "mod_editor/core/nfl2k5_split_endzone_art.py": "c135625db5663efa13f3f446f98e7cfe8d071148f7b892ea378d18a05d845957",
