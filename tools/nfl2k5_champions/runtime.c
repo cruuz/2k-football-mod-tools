@@ -476,8 +476,9 @@ typedef struct {
 } Line;
 
 /* Production in hundredths of a point: 1 point per 25 passing yards, 4 per passing TD, -2 per interception, 1 per 10
-   rushing or receiving yards, 6 per touchdown, half a point per catch; 2 per sack, 0.4 per tackle, 8 per interception,
-   3 per forced fumble. */
+   rushing or receiving yards, 6 per touchdown, half a point per catch; 3.5 per half sack (7 per sack), 0.25 per tackle,
+   7 per interception, 3 per forced fumble. (Tuned on simulated seasons: sacks are the scarce stat in the game's sim, so a
+   sack counts for more than a tackle and an interception, the way edge rushers and tackles have won the award.) */
 static i32 offense_points(const Line *s) {
     i32 v = s->pass_yds * 4 + s->pass_td * 400 - s->pass_int * 200 + s->rush_yds * 10 + s->rush_td * 600 +
             s->rec_yds * 10 + s->rec * 50 + s->rec_td * 600;
@@ -485,14 +486,14 @@ static i32 offense_points(const Line *s) {
 }
 
 static i32 defense_points(const Line *s) {
-    i32 v = s->sacks2 * 200 + s->tackles * 40 + s->def_int * 800 + s->ff * 300;
+    i32 v = s->sacks2 * 350 + s->tackles * 25 + s->def_int * 700 + s->ff * 300;
     return v > 0 ? v : 0;
 }
 
 /* percent weights by position code: MVP (offense and defense), offensive and defensive player of the year */
 static const u8 mvp_weight[17] = {100, 0, 0, 58, 38, 36, 36, 60, 40, 48, 40, 40, 0, 0, 0, 44, 44};
 static const u8 opoy_weight[17] = {72, 0, 0, 100, 0, 0, 0, 100, 55, 88, 0, 0, 0, 0, 0, 0, 0};
-static const u8 dpoy_weight[17] = {0, 0, 0, 0, 108, 96, 96, 0, 0, 0, 100, 92, 0, 0, 0, 100, 100};
+static const u8 dpoy_weight[17] = {0, 0, 0, 0, 100, 45, 45, 0, 0, 0, 100, 65, 0, 0, 0, 105, 100};
 
 /* Otherworldly seasons, as a percentage of a mark nobody has reached in the NFL: a single one at 100 or more wins MVP. */
 static u32 otherworldly(const Line *s) {
@@ -584,7 +585,7 @@ void champions_modern_awards(void) {
                         consider(&dpoy, value * dpoy_weight[pos], p, team);
                 }
                 if (((G(p + 0x24) >> 8) & 31) == 1)
-                    consider(offense_side_player ? &oroy : &droy, value, p, team);
+                    consider(offense_side_player ? &oroy : &droy, offense_side_player ? value : value * dpoy_weight[pos], p, team);
             }
         }
         if (pass == 0) {

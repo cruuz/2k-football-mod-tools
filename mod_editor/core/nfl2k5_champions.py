@@ -71,10 +71,10 @@ HELP_TEXT = (
 AWARD_RULE = {
     "offense_points": "1 per 25 passing yards, 4 per passing TD, -2 per interception, 1 per 10 rushing or receiving "
                       "yards, 6 per rushing or receiving TD, 0.5 per catch",
-    "defense_points": "2 per sack, 0.4 per tackle, 8 per interception, 3 per forced fumble",
+    "defense_points": "3.5 per half sack (7 per sack), 0.25 per tackle, 7 per interception, 3 per forced fumble",
     "mvp_weight_percent": (100, 0, 0, 58, 38, 36, 36, 60, 40, 48, 40, 40, 0, 0, 0, 44, 44),
     "opoy_weight_percent": (72, 0, 0, 100, 0, 0, 0, 100, 55, 88, 0, 0, 0, 0, 0, 0, 0),
-    "dpoy_weight_percent": (0, 0, 0, 0, 108, 96, 96, 0, 0, 0, 100, 92, 0, 0, 0, 100, 100),
+    "dpoy_weight_percent": (0, 0, 0, 0, 100, 45, 45, 0, 0, 0, 100, 65, 0, 0, 0, 105, 100),
     "team_factor": "35% at a .400 record or worse rising to 100% at .750 or better (MVP only)",
     "otherworldly": {"sacks": 30, "tackles": 300, "rushing_yards": 2500, "receiving_yards": 2200, "passing_yards": 6000,
                      "passing_touchdowns": 60, "interceptions": 15},
@@ -96,7 +96,7 @@ def offense_points(s) -> int:
 
 
 def defense_points(s) -> int:
-    v = s["sacks2"] * 200 + s["tackles"] * 40 + s["def_int"] * 800 + s["ff"] * 300
+    v = s["sacks2"] * 350 + s["tackles"] * 25 + s["def_int"] * 700 + s["ff"] * 300
     return max(v, 0)
 
 
@@ -141,7 +141,7 @@ def choose_awards(players, record) -> dict:
     dpoy = best((p, value(p) * weights["dpoy_weight_percent"][p["pos"]]) for p in rest if p["pos"] not in _OFFENSE)
     rookies = [p for p in rows if p["yrs"] == 1]
     oroy = best((p, value(p)) for p in rookies if p["pos"] in _OFFENSE)
-    droy = best((p, value(p)) for p in rookies if p["pos"] not in _OFFENSE)
+    droy = best((p, value(p) * weights["dpoy_weight_percent"][p["pos"]]) for p in rookies if p["pos"] not in _OFFENSE)
     return {"mvp": mvp, "opoy": opoy, "dpoy": dpoy, "oroy": oroy, "droy": droy}
 
 
