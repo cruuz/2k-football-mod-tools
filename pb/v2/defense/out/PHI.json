@@ -3,10 +3,10 @@
  "dc": "Vic Fangio",
  "roles": {
   "base": {
-   "name": "4-3 Wide",
+   "name": "4-3 Tite",
    "source": "4-3",
    "index": 24,
-   "family": "Wide",
+   "family": "Tite",
    "situation": [
     2,
     1,
@@ -15,15 +15,15 @@
    "merged_into_category": null,
    "positions": [
     [
-     560,
+     430,
      0
     ],
     [
-     -420,
+     -430,
      0
     ],
     [
-     200,
+     255,
      0
     ],
     [
@@ -31,16 +31,16 @@
      0
     ],
     [
-     275,
+     180,
      457
     ],
     [
-     -40,
+     -90,
      457
     ],
     [
-     -455,
-     320
+     -640,
+     365
     ],
     [
      640,
@@ -74,10 +74,10 @@
    ]
   },
   "nickel": {
-   "name": "Nickel Wide",
+   "name": "Nickel Tite",
    "source": "Nickel",
    "index": 25,
-   "family": "Wide",
+   "family": "Tite",
    "situation": [
     1,
     1,
@@ -86,15 +86,15 @@
    "merged_into_category": null,
    "positions": [
     [
-     560,
+     430,
      0
     ],
     [
-     -420,
+     -430,
      0
     ],
     [
-     200,
+     255,
      0
     ],
     [
@@ -145,10 +145,10 @@
    ]
   },
   "dime": {
-   "name": "Dime Wide",
+   "name": "Dime Tite",
    "source": "Dime",
    "index": 26,
-   "family": "Wide",
+   "family": "Tite",
    "situation": [
     4,
     2,
@@ -157,15 +157,15 @@
    "merged_into_category": null,
    "positions": [
     [
-     560,
+     430,
      0
     ],
     [
-     -420,
+     -430,
      0
     ],
     [
-     200,
+     255,
      0
     ],
     [
@@ -482,15 +482,15 @@
    "source": null,
    "rushers": null,
    "spy_slots": [],
-   "authored_nodes": 4
+   "authored_nodes": 6
   },
   {
    "play": 1,
    "appended": false,
-   "name": "Attack",
+   "name": "Contain Rush",
    "component": "front",
-   "concept": "Front: Attack",
-   "band": 2,
+   "concept": "Front: Contain Rush",
+   "band": 1,
    "pressure": false,
    "roles": [
     "base",
@@ -504,7 +504,7 @@
    "source": null,
    "rushers": null,
    "spy_slots": [],
-   "authored_nodes": 4
+   "authored_nodes": 6
   },
   {
    "play": 2,
@@ -548,15 +548,15 @@
    "source": null,
    "rushers": null,
    "spy_slots": [],
-   "authored_nodes": 2
+   "authored_nodes": 4
   },
   {
    "play": 4,
    "appended": false,
-   "name": "Pinch",
+   "name": "Attack",
    "component": "front",
-   "concept": "Front: Pinch",
-   "band": 3,
+   "concept": "Front: Attack",
+   "band": 2,
    "pressure": false,
    "roles": [
     "base",
@@ -575,9 +575,9 @@
   {
    "play": 5,
    "appended": false,
-   "name": "TE Stunt Weak",
+   "name": "ET Stunt Strong",
    "component": "front",
-   "concept": "Front: TE Stunt Weak",
+   "concept": "Front: ET Stunt Strong",
    "band": 2,
    "pressure": false,
    "roles": [
@@ -597,10 +597,10 @@
   {
    "play": 6,
    "appended": false,
-   "name": "ET Stunt Strong",
+   "name": "Pinch",
    "component": "front",
-   "concept": "Front: ET Stunt Strong",
-   "band": 2,
+   "concept": "Front: Pinch",
+   "band": 3,
    "pressure": false,
    "roles": [
     "base",
@@ -619,9 +619,9 @@
   {
    "play": 7,
    "appended": false,
-   "name": "Contain Rush",
+   "name": "TE Stunt Weak",
    "component": "front",
-   "concept": "Front: Contain Rush",
+   "concept": "Front: TE Stunt Weak",
    "band": 3,
    "pressure": false,
    "roles": [
@@ -641,7 +641,7 @@
   {
    "play": 8,
    "appended": false,
-   "name": "Cover 3 Sky Weak",
+   "name": "Cover 3 Sky Strong",
    "component": "coverage",
    "concept": "Cover 3 Sky",
    "band": 3,
@@ -653,9 +653,9 @@
    "donor": 8,
    "donor_name": "4 Sky",
    "source": {
-    "book": "ATL",
-    "play": 8,
-    "name": "3 Weak"
+    "book": "CIN",
+    "play": 2,
+    "name": "3 Sky"
    },
    "rushers": 4,
    "spy_slots": [],
@@ -664,7 +664,7 @@
   {
    "play": 9,
    "appended": false,
-   "name": "Cover 3 Cloud Strong",
+   "name": "Rotate 3 Cloud Strong",
    "component": "coverage",
    "concept": "Cover 3 Cloud",
    "band": 3,
@@ -674,16 +674,24 @@
     "nickel"
    ],
    "new_links": [],
-   "donor": 27,
-   "donor_name": "4 Cloud",
+   "donor": 28,
+   "donor_name": "3 Buzz",
    "source": {
     "book": "PHI",
-    "play": 27,
-    "name": "4 Cloud"
+    "play": 28,
+    "name": "3 Buzz"
    },
    "rushers": 4,
    "spy_slots": [],
-   "authored_nodes": 0
+   "authored_nodes": 4,
+   "disguise": {
+    "rotating_slots": [
+     7,
+     8
+    ],
+    "presnap": "two",
+    "postsnap": "C3"
+   }
   },
   {
    "play": 10,
@@ -713,7 +721,7 @@
   {
    "play": 11,
    "appended": false,
-   "name": "Cover 1 Rat Press",
+   "name": "Cover 1 Robber Off",
    "component": "coverage",
    "concept": "Cover 1 Robber",
    "band": 1,
@@ -723,12 +731,12 @@
     "nickel"
    ],
    "new_links": [],
-   "donor": 10,
-   "donor_name": "2 Hard",
+   "donor": 33,
+   "donor_name": "2 Man",
    "source": {
-    "book": "ARZ",
-    "play": 12,
-    "name": "1 Hang"
+    "book": "DAL",
+    "play": 30,
+    "name": "1 Robber"
    },
    "rushers": 4,
    "spy_slots": [],
@@ -737,7 +745,7 @@
   {
    "play": 12,
    "appended": false,
-   "name": "Cover 1 Corner Fire",
+   "name": "Cover 1 Mike Fire",
    "component": "coverage",
    "concept": "Cover 1 Blitz",
    "band": 1,
@@ -748,12 +756,12 @@
     "nickel"
    ],
    "new_links": [],
-   "donor": 23,
-   "donor_name": "Weak Crash 1",
+   "donor": 21,
+   "donor_name": "Middle Blast 1",
    "source": {
     "book": "PHI",
-    "play": 23,
-    "name": "Weak Crash 1"
+    "play": 21,
+    "name": "Middle Blast 1"
    },
    "rushers": 5,
    "spy_slots": [],
@@ -762,7 +770,7 @@
   {
    "play": 13,
    "appended": false,
-   "name": "Cover 1 Robber Off",
+   "name": "Cover 1 Rat Press",
    "component": "coverage",
    "concept": "Cover 1 Robber",
    "band": 3,
@@ -773,12 +781,12 @@
     "nickel"
    ],
    "new_links": [],
-   "donor": 33,
-   "donor_name": "2 Man",
+   "donor": 10,
+   "donor_name": "2 Hard",
    "source": {
     "book": "ARZ",
-    "play": 38,
-    "name": "1 Dog the Dig"
+    "play": 12,
+    "name": "1 Hang"
    },
    "rushers": 4,
    "spy_slots": [],
@@ -836,7 +844,7 @@
   {
    "play": 16,
    "appended": false,
-   "name": "Cover 3 Cloud Strong Bail",
+   "name": "Cover 3 Cloud Strong",
    "component": "coverage",
    "concept": "Cover 3 Cloud",
    "band": 3,
@@ -848,8 +856,8 @@
    "donor": 8,
    "donor_name": "4 Sky",
    "source": {
-    "book": "BUF",
-    "play": 13,
+    "book": "KC",
+    "play": 11,
     "name": "3 Strong"
    },
    "rushers": 4,
@@ -955,7 +963,7 @@
   {
    "play": 21,
    "appended": false,
-   "name": "Cover 2 Match",
+   "name": "Cover 2 Soft",
    "component": "coverage",
    "concept": "Cover 2",
    "band": 2,
@@ -965,21 +973,21 @@
     "nickel"
    ],
    "new_links": [],
-   "donor": 8,
-   "donor_name": "4 Sky",
+   "donor": 10,
+   "donor_name": "2 Hard",
    "source": {
-    "book": "CHI",
-    "play": 27,
-    "name": "Combo Strong Zone"
+    "book": "DAL",
+    "play": 36,
+    "name": "Combo Weak Man"
    },
    "rushers": 4,
    "spy_slots": [],
-   "authored_nodes": 16
+   "authored_nodes": 14
   },
   {
    "play": 22,
    "appended": false,
-   "name": "Cover 3 Cloud",
+   "name": "Cover 3 Cloud Strong Bail",
    "component": "coverage",
    "concept": "Cover 3 Cloud",
    "band": 2,
@@ -991,9 +999,9 @@
    "donor": 8,
    "donor_name": "4 Sky",
    "source": {
-    "book": "KC",
-    "play": 11,
-    "name": "3 Strong"
+    "book": "BUF",
+    "play": 14,
+    "name": "4 Cloud Strong"
    },
    "rushers": 4,
    "spy_slots": [],
@@ -1002,7 +1010,7 @@
   {
    "play": 23,
    "appended": false,
-   "name": "Cover 3 Sky Strong",
+   "name": "Cover 3 Sky Strong Bail",
    "component": "coverage",
    "concept": "Cover 3 Sky",
    "band": 2,
@@ -1050,7 +1058,7 @@
   {
    "play": 25,
    "appended": false,
-   "name": "Cover 3 Sky Strong Bail",
+   "name": "Cover 3 Sky",
    "component": "coverage",
    "concept": "Cover 3 Sky",
    "band": 1,
@@ -1063,8 +1071,8 @@
    "donor_name": "4 Sky",
    "source": {
     "book": "CIN",
-    "play": 17,
-    "name": "3 Dog T"
+    "play": 204,
+    "name": "Bear Key Zone"
    },
    "rushers": 4,
    "spy_slots": [],
@@ -1085,9 +1093,9 @@
    "donor": 33,
    "donor_name": "2 Man",
    "source": {
-    "book": "DAL",
-    "play": 30,
-    "name": "1 Robber"
+    "book": "ARZ",
+    "play": 38,
+    "name": "1 Dog the Dig"
    },
    "rushers": 4,
    "spy_slots": [],
@@ -1118,7 +1126,7 @@
   {
    "play": 28,
    "appended": false,
-   "name": "Cover 2 Soft",
+   "name": "Cover 2 Sink",
    "component": "coverage",
    "concept": "Cover 2",
    "band": 2,
@@ -1142,7 +1150,7 @@
   {
    "play": 29,
    "appended": false,
-   "name": "Cover 3 Cloud Bail",
+   "name": "Cover 3 Cloud",
    "component": "coverage",
    "concept": "Cover 3 Cloud",
    "band": 3,
@@ -1154,13 +1162,13 @@
    "donor": 8,
    "donor_name": "4 Sky",
    "source": {
-    "book": "ARZ",
-    "play": 13,
-    "name": "3 Robber"
+    "book": "SEA",
+    "play": 8,
+    "name": "4 Sky"
    },
    "rushers": 4,
    "spy_slots": [],
-   "authored_nodes": 14
+   "authored_nodes": 4
   },
   {
    "play": 30,
@@ -1174,12 +1182,12 @@
     "nickel"
    ],
    "new_links": [],
-   "donor": 33,
-   "donor_name": "2 Man",
+   "donor": 186,
+   "donor_name": "Strong Bracket 1",
    "source": {
     "book": "PHI",
-    "play": 33,
-    "name": "2 Man"
+    "play": 186,
+    "name": "Strong Bracket 1"
    },
    "rushers": 4,
    "spy_slots": [],
@@ -1188,7 +1196,7 @@
   {
    "play": 31,
    "appended": false,
-   "name": "Sim 2-Deep Mike",
+   "name": "Sim 2-Deep Nickel",
    "component": "coverage",
    "concept": "Cover 2 Sim",
    "band": 2,
@@ -1197,12 +1205,12 @@
     "nickel"
    ],
    "new_links": [],
-   "donor": 15,
-   "donor_name": "Combo Inside Zone",
+   "donor": 25,
+   "donor_name": "Sting Zone Blitz",
    "source": {
     "book": "PHI",
-    "play": 15,
-    "name": "Combo Inside Zone"
+    "play": 25,
+    "name": "Sting Zone Blitz"
    },
    "rushers": 4,
    "spy_slots": [],
@@ -1211,7 +1219,7 @@
   {
    "play": 32,
    "appended": false,
-   "name": "Cover 2 Sink",
+   "name": "Cover 2 Zone 2",
    "component": "coverage",
    "concept": "Cover 2",
    "band": 2,
@@ -1236,7 +1244,7 @@
   {
    "play": 33,
    "appended": false,
-   "name": "Cover 3 Cloud Strong 2",
+   "name": "Cover 3 Cloud Bail",
    "component": "coverage",
    "concept": "Cover 3 Cloud",
    "band": 2,
@@ -1304,7 +1312,7 @@
   {
    "play": 36,
    "appended": false,
-   "name": "Cover 2 Zone 2",
+   "name": "Cover 2 Zone 3",
    "component": "coverage",
    "concept": "Cover 2",
    "band": 3,
@@ -1316,13 +1324,13 @@
    "donor": 10,
    "donor_name": "2 Hard",
    "source": {
-    "book": "WAS",
-    "play": 34,
-    "name": "2 Corners"
+    "book": "TB",
+    "play": 166,
+    "name": "2 Soft"
    },
    "rushers": 4,
    "spy_slots": [],
-   "authored_nodes": 14
+   "authored_nodes": 10
   },
   {
    "play": 37,
@@ -1357,12 +1365,12 @@
     "dime"
    ],
    "new_links": [],
-   "donor": 186,
-   "donor_name": "Strong Bracket 1",
+   "donor": 33,
+   "donor_name": "2 Man",
    "source": {
     "book": "PHI",
-    "play": 186,
-    "name": "Strong Bracket 1"
+    "play": 33,
+    "name": "2 Man"
    },
    "rushers": 4,
    "spy_slots": [],
@@ -1403,14 +1411,14 @@
     "dime"
    ],
    "new_links": [],
-   "donor": 17,
-   "donor_name": "All Blitz 0",
+   "donor": 39,
+   "donor_name": "Greyhound 0",
    "source": {
     "book": "PHI",
-    "play": 17,
-    "name": "All Blitz 0"
+    "play": 39,
+    "name": "Greyhound 0"
    },
-   "rushers": 7,
+   "rushers": 6,
    "spy_slots": [],
    "authored_nodes": 0
   },
@@ -1547,7 +1555,7 @@
   {
    "play": 201,
    "appended": false,
-   "name": "Cover 1 Will Off Fire",
+   "name": "Cover 1 Safety Blitz",
    "component": "coverage",
    "concept": "Cover 1 Blitz",
    "band": 1,
@@ -1556,42 +1564,27 @@
     "bear"
    ],
    "new_links": [],
-   "donor": 20,
-   "donor_name": "Weak Blast 1",
+   "donor": 22,
+   "donor_name": "Strong Indian 1",
    "source": {
     "book": "PHI",
-    "play": 20,
-    "name": "Weak Blast 1"
+    "play": 22,
+    "name": "Strong Indian 1"
    },
    "rushers": 5,
    "spy_slots": [],
-   "authored_nodes": 0
+   "authored_nodes": 2,
+   "presnap_kept_onside": [
+    {
+     "slot": 8,
+     "walkup_yd": 5.0,
+     "now_yd": -0.0,
+     "presnap_depth_yd": 4.49
+    }
+   ]
   },
   {
    "play": 202,
-   "appended": false,
-   "name": "Cover 1 Safety Blitz",
-   "component": "coverage",
-   "concept": "Cover 1 Blitz",
-   "band": 3,
-   "pressure": true,
-   "roles": [
-    "bear"
-   ],
-   "new_links": [],
-   "donor": 40,
-   "donor_name": "Weak Indian 1",
-   "source": {
-    "book": "PHI",
-    "play": 40,
-    "name": "Weak Indian 1"
-   },
-   "rushers": 5,
-   "spy_slots": [],
-   "authored_nodes": 0
-  },
-  {
-   "play": 203,
    "appended": false,
    "name": "Cover 1 Will Press Fire",
    "component": "coverage",
@@ -1614,9 +1607,9 @@
    "authored_nodes": 0
   },
   {
-   "play": 204,
+   "play": 203,
    "appended": false,
-   "name": "Cover 1 Mike Fire",
+   "name": "Cover 1 Will Off Fire",
    "component": "coverage",
    "concept": "Cover 1 Blitz",
    "band": 3,
@@ -1625,12 +1618,35 @@
     "bear"
    ],
    "new_links": [],
-   "donor": 21,
-   "donor_name": "Middle Blast 1",
+   "donor": 20,
+   "donor_name": "Weak Blast 1",
    "source": {
     "book": "PHI",
-    "play": 21,
-    "name": "Middle Blast 1"
+    "play": 20,
+    "name": "Weak Blast 1"
+   },
+   "rushers": 5,
+   "spy_slots": [],
+   "authored_nodes": 0
+  },
+  {
+   "play": 204,
+   "appended": false,
+   "name": "Cover 1 Safety Press Fire",
+   "component": "coverage",
+   "concept": "Cover 1 Blitz",
+   "band": 3,
+   "pressure": true,
+   "roles": [
+    "bear"
+   ],
+   "new_links": [],
+   "donor": 40,
+   "donor_name": "Weak Indian 1",
+   "source": {
+    "book": "PHI",
+    "play": 40,
+    "name": "Weak Indian 1"
    },
    "rushers": 5,
    "spy_slots": [],
@@ -1639,10 +1655,10 @@
   {
    "play": 205,
    "appended": false,
-   "name": "Cover 3 Sky",
+   "name": "Cover 3 Sky Weak",
    "component": "coverage",
    "concept": "Cover 3 Sky",
-   "band": 2,
+   "band": 3,
    "pressure": false,
    "roles": [
     "bear"
@@ -1651,9 +1667,9 @@
    "donor": 8,
    "donor_name": "4 Sky",
    "source": {
-    "book": "CIN",
-    "play": 204,
-    "name": "Bear Key Zone"
+    "book": "TB",
+    "play": 10,
+    "name": "3 Weak"
    },
    "rushers": 4,
    "spy_slots": [],
@@ -1685,7 +1701,7 @@
   {
    "play": 207,
    "appended": false,
-   "name": "Cover 1 Safety Off Fire",
+   "name": "Cover 1 Corner Fire",
    "component": "coverage",
    "concept": "Cover 1 Blitz",
    "band": 3,
@@ -1694,29 +1710,52 @@
     "bear"
    ],
    "new_links": [],
-   "donor": 22,
-   "donor_name": "Strong Indian 1",
+   "donor": 23,
+   "donor_name": "Weak Crash 1",
    "source": {
     "book": "PHI",
-    "play": 22,
-    "name": "Strong Indian 1"
+    "play": 23,
+    "name": "Weak Crash 1"
    },
    "rushers": 5,
    "spy_slots": [],
    "authored_nodes": 2,
    "presnap_kept_onside": [
     {
-     "slot": 8,
-     "walkup_yd": 5.0,
-     "now_yd": -0.0,
-     "presnap_depth_yd": 4.49
+     "slot": 9,
+     "walkup_yd": 3.0,
+     "now_yd": 0.67,
+     "presnap_depth_yd": 1.0
     }
    ]
   },
   {
    "play": 208,
    "appended": false,
-   "name": "Cover 1 Sam Fire",
+   "name": "Cover 1 Double Fire",
+   "component": "coverage",
+   "concept": "Cover 1 Blitz",
+   "band": 3,
+   "pressure": true,
+   "roles": [
+    "bear"
+   ],
+   "new_links": [],
+   "donor": 16,
+   "donor_name": "Force Fire 0",
+   "source": {
+    "book": "BUF",
+    "play": 17,
+    "name": "Strong Fire 1"
+   },
+   "rushers": 6,
+   "spy_slots": [],
+   "authored_nodes": 14
+  },
+  {
+   "play": 209,
+   "appended": false,
+   "name": "Cover 1 Safety Off Fire",
    "component": "coverage",
    "concept": "Cover 1 Blitz",
    "band": 3,
@@ -1729,41 +1768,18 @@
    "donor_name": "Force Fire 0",
    "source": {
     "book": "ARZ",
-    "play": 28,
-    "name": "Strong Blast 1"
+    "play": 30,
+    "name": "Strong Indian 1"
    },
    "rushers": 5,
    "spy_slots": [],
-   "authored_nodes": 8
-  },
-  {
-   "play": 209,
-   "appended": false,
-   "name": "Cover 1 Corner Blitz",
-   "component": "coverage",
-   "concept": "Cover 1 Blitz",
-   "band": 3,
-   "pressure": true,
-   "roles": [
-    "bear"
-   ],
-   "new_links": [],
-   "donor": 16,
-   "donor_name": "Force Fire 0",
-   "source": {
-    "book": "ATL",
-    "play": 21,
-    "name": "Weak Crash 1"
-   },
-   "rushers": 5,
-   "spy_slots": [],
-   "authored_nodes": 14,
+   "authored_nodes": 8,
    "presnap_kept_onside": [
     {
-     "slot": 9,
-     "walkup_yd": 3.0,
-     "now_yd": 0.67,
-     "presnap_depth_yd": 1.0
+     "slot": 8,
+     "walkup_yd": 5.0,
+     "now_yd": -0.0,
+     "presnap_depth_yd": 4.49
     }
    ]
   },
@@ -1782,8 +1798,8 @@
    "donor": 8,
    "donor_name": "4 Sky",
    "source": {
-    "book": "CHI",
-    "play": 26,
+    "book": "CIN",
+    "play": 17,
     "name": "3 Dog T"
    },
    "rushers": 4,
@@ -1819,7 +1835,7 @@
    "name": "Cover 3 Buzz Weak Bail",
    "component": "coverage",
    "concept": "Cover 3 Buzz",
-   "band": 3,
+   "band": 2,
    "pressure": false,
    "roles": [
     "bear"
@@ -1828,9 +1844,9 @@
    "donor": 8,
    "donor_name": "4 Sky",
    "source": {
-    "book": "CLE",
-    "play": 20,
-    "name": "3 Buzz"
+    "book": "ARZ",
+    "play": 13,
+    "name": "3 Robber"
    },
    "rushers": 4,
    "spy_slots": [],
@@ -1839,7 +1855,7 @@
   {
    "play": 213,
    "appended": false,
-   "name": "Cover 2 Zone 3",
+   "name": "Cover 2 Match",
    "component": "coverage",
    "concept": "Cover 2",
    "band": 2,
@@ -1851,59 +1867,59 @@
    "donor": 10,
    "donor_name": "2 Hard",
    "source": {
-    "book": "CHI",
-    "play": 213,
-    "name": "2 Soft"
+    "book": "MIA",
+    "play": 25,
+    "name": "Zone Double Steal"
    },
    "rushers": 4,
    "spy_slots": [],
-   "authored_nodes": 10
+   "authored_nodes": 18
   },
   {
    "play": 214,
    "appended": false,
-   "name": "Cover 3 Buzz",
+   "name": "Cover 3 Cloud Weak",
    "component": "coverage",
-   "concept": "Cover 3 Buzz",
+   "concept": "Cover 3 Cloud",
    "band": 2,
    "pressure": false,
    "roles": [
     "bear"
    ],
    "new_links": [],
-   "donor": 8,
-   "donor_name": "4 Sky",
+   "donor": 27,
+   "donor_name": "4 Cloud",
    "source": {
-    "book": "CIN",
-    "play": 185,
-    "name": "Cover 8"
+    "book": "PHI",
+    "play": 27,
+    "name": "4 Cloud"
    },
-   "rushers": 3,
+   "rushers": 4,
    "spy_slots": [],
-   "authored_nodes": 16
+   "authored_nodes": 0
   },
   {
    "play": 215,
    "appended": false,
-   "name": "Cover 3 Buzz Bail",
+   "name": "Cover 3 Sky Weak Bail",
    "component": "coverage",
-   "concept": "Cover 3 Buzz",
+   "concept": "Cover 3 Sky",
    "band": 2,
    "pressure": false,
    "roles": [
     "bear"
    ],
    "new_links": [],
-   "donor": 8,
-   "donor_name": "4 Sky",
+   "donor": 24,
+   "donor_name": "3 Weak",
    "source": {
-    "book": "CHI",
-    "play": 35,
-    "name": "Cover 8 Tackle Drop"
+    "book": "PHI",
+    "play": 24,
+    "name": "3 Weak"
    },
-   "rushers": 3,
+   "rushers": 4,
    "spy_slots": [],
-   "authored_nodes": 16
+   "authored_nodes": 0
   },
   {
    "play": 216,
@@ -1931,7 +1947,7 @@
   {
    "play": 217,
    "appended": false,
-   "name": "Fire Zone 3 Double",
+   "name": "Fire Zone 3 Sam",
    "component": "coverage",
    "concept": "Fire Zone 3",
    "band": 3,
@@ -1940,14 +1956,14 @@
     "bear"
    ],
    "new_links": [],
-   "donor": 202,
-   "donor_name": "Bear Force Fire 3",
+   "donor": 201,
+   "donor_name": "Bear Inside Blast 3",
    "source": {
     "book": "PHI",
-    "play": 202,
-    "name": "Bear Force Fire 3"
+    "play": 201,
+    "name": "Bear Inside Blast 3"
    },
-   "rushers": 6,
+   "rushers": 5,
    "spy_slots": [],
    "authored_nodes": 0
   },
@@ -1999,19 +2015,19 @@
   "offense_pack": "data/playbooks/softdrink_phi_modern.2k5book",
   "offense_pack_sha256": "3a68a01ff3de627b83f977870b0162b36d790854bf6c71896d4db771077932b6",
   "source_fingerprint": "290988860c552d19cec20f43b0b040d5f8ea06353768f0053c8a29102e9e12fe",
-  "replacement_sha256": "2bd239d76fe19f05d26f4ddee69d18040b7dbcfcbcd47469a3e56b6ddafcc67d",
-  "semantic_sha256": "76cd45801e346dd9ddec6043d5d631fc40880166c0678365272a66f28b5fdc76",
+  "replacement_sha256": "55f078c80db6c19b927f5ab8e4d36c6c838d6427f6f6b5ca7e12a479b1efd5fb",
+  "semantic_sha256": "8cc84c84f3a216e9e33de40fc6fba09bd3475fbfa574153ba2a2778288239d68",
   "plays": 66,
   "formations": 4,
-  "nodes": 2786,
+  "nodes": 2758,
   "node_capacity": 3500,
   "formation_count": 50,
   "play_count": 270,
   "misses": [],
-  "band_loss": 0.19739,
+  "band_loss": 0.19295,
   "spy_play": null,
   "native_scoring_faults": 0,
   "pack": "data/playbooks/softdrink_phi_defense.2k5book",
-  "pack_sha256": "6c192cfd3b2e2ab706bffc54fcc9f80911bb0ef0a416b6e42501c126fc7c2ac8"
+  "pack_sha256": "68005e81d068d04bc96434fd8788f972a23befbd60e2bdec0207ef058aab960f"
  }
 }

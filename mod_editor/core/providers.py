@@ -836,7 +836,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_playbook_pack.py": "4d295768d0b5e7763d845f314604b1cd30d00e816e9bbc7fe5f5977898d7c81a",
         "mod_editor/core/nfl2k5_coach_ai.py": "23bf403f7cb4c5776ed7d757effc5b057a95e3fd3f65979727570eb4c0eefc06",
         "mod_editor/core/nfl2k5_coach_ai_code.py": "5f42221d20454018f74430fa2fff8c1987143536549ce7dd52b55f00b0975afa",
-        "mod_editor/core/nfl2k5_vip.py": "3c62f043584c1dffe529cfa1cb49ae14dc3fc29f3d24db56267d476fed622d7c",
+        "mod_editor/core/nfl2k5_vip.py": "0b736632d4b7761bd45317e1abea29f89fb728a270a27343eef1e1d1d80bc64f",
         "mod_editor/core/nfl2k5_coach_diversity.py": "a56f23767967090df58f4da16ebc9d5d66d713f12628da5da241a1f36104aa53",
         "mod_editor/core/nfl2k5_playbook_pair.py": "4965a39ce7e651b05896d76567c1cf9662ef8ef8f9ced30d0c41e3f0b930888d",
         "mod_editor/core/nfl2k5_playbook_pair_code.py": "78e97a0ce01e49af9a22c59d540ea8121097ae26c31f6650983baa7a945969ae",

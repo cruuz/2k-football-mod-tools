@@ -25,7 +25,7 @@
  "formations": [
   {
    "id": "f24",
-   "custom_name": "4-3 Wide",
+   "custom_name": "4-3 Tite",
    "donor": {
     "index": 24,
     "name": "4-3"
@@ -33,13 +33,13 @@
    "replace_index": 24,
    "replace_name": "4-3",
    "slot_positions": [
-    [560, 0],
-    [-420, 0],
-    [200, 0],
+    [430, 0],
+    [-430, 0],
+    [255, 0],
     [-255, 0],
-    [275, 457],
-    [-40, 457],
-    [-455, 320],
+    [180, 457],
+    [-90, 457],
+    [-640, 365],
     [640, 1188],
     [-640, 1097],
     [1371, 365],
@@ -77,7 +77,7 @@
   },
   {
    "id": "f25",
-   "custom_name": "Nickel Wide",
+   "custom_name": "Nickel Tite",
    "donor": {
     "index": 25,
     "name": "Nickel"
@@ -85,9 +85,9 @@
    "replace_index": 25,
    "replace_name": "Nickel",
    "slot_positions": [
-    [560, 0],
-    [-420, 0],
-    [200, 0],
+    [430, 0],
+    [-430, 0],
+    [255, 0],
     [-255, 0],
     [230, 457],
     [-60, 457],
@@ -103,7 +103,7 @@
   },
   {
    "id": "f26",
-   "custom_name": "Dime Wide",
+   "custom_name": "Dime Tite",
    "donor": {
     "index": 26,
     "name": "Dime"
@@ -111,9 +111,9 @@
    "replace_index": 26,
    "replace_name": "Dime",
    "slot_positions": [
-    [560, 0],
-    [-420, 0],
-    [200, 0],
+    [430, 0],
+    [-430, 0],
+    [255, 0],
     [-255, 0],
     [822, 457],
     [40, 503],
@@ -147,7 +147,7 @@
    "link_group": null,
    "assignments": [
     null,
-    null,
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [1, 1, 0]]],
     [[27, [0, 0, 0, 0, 0, 0]], [11, [1, 11, 0]]],
     [[27, [0, 0, 0, 0, 0, 0]], [11, [1, 5, 0]]],
     null,
@@ -169,23 +169,23 @@
   },
   {
    "id": "d1",
-   "custom_name": "Attack",
+   "custom_name": "Contain Rush",
    "play_type": "defense",
-   "concept": "Front: Attack",
+   "concept": "Front: Contain Rush",
    "donor": {
     "index": 1,
     "name": "Gap Left",
     "flags": 16778309,
     "signature": "defense/v1:01000445:1-1b.0b,1-1b.0b,1-1b.0b,1-1b.0b,0-01.01,0-01.01,0-01.01,0-01.01,0-01.01,0-01.01,0-01.01"
    },
-   "play_flags": 16778309,
+   "play_flags": 16777797,
    "replace_index": 1,
    "replace_name": "Gap Left",
    "link_formation": null,
    "link_group": null,
    "assignments": [
-    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 13, 0]]],
-    null,
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [3, 16, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [3, 0, 0]]],
     null,
     [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 5, 0]]],
     null,
@@ -223,7 +223,7 @@
    "link_group": null,
    "assignments": [
     [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 11, 0]]],
-    null,
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 0, 0]]],
     null,
     [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 3, 0]]],
     null,
@@ -261,7 +261,7 @@
    "link_group": null,
    "assignments": [
     [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 15, 0]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 5, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 3, 0]]],
     [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 13, 0]]],
     [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 7, 0]]],
     null,
@@ -283,25 +283,25 @@
   },
   {
    "id": "d4",
-   "custom_name": "Pinch",
+   "custom_name": "Attack",
    "play_type": "defense",
-   "concept": "Front: Pinch",
+   "concept": "Front: Attack",
    "donor": {
     "index": 4,
     "name": "Fan",
     "flags": 16778309,
     "signature": "defense/v1:01000445:1-1b.0b,1-1b.0b,1-1b.0b,1-1b.0b,0-01.01,0-01.01,0-01.01,0-01.01,0-01.01,0-01.01,0-01.01"
    },
-   "play_flags": 16778821,
+   "play_flags": 16778309,
    "replace_index": 4,
    "replace_name": "Fan",
    "link_formation": null,
    "link_group": null,
    "assignments": [
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 13, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 1, 0]]],
     [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 11, 0]]],
     [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 5, 0]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 9, 0]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 7, 0]]],
     null,
     null,
     null,
@@ -321,9 +321,9 @@
   },
   {
    "id": "d5",
-   "custom_name": "TE Stunt Weak",
+   "custom_name": "ET Stunt Strong",
    "play_type": "defense",
-   "concept": "Front: TE Stunt Weak",
+   "concept": "Front: ET Stunt Strong",
    "donor": {
     "index": 5,
     "name": "Pinch",
@@ -333,44 +333,6 @@
    "play_flags": 16778309,
    "replace_index": 5,
    "replace_name": "Pinch",
-   "link_formation": null,
-   "link_group": null,
-   "assignments": [
-    [[27, [0, 0, 0, 0, 0, 0]], [11, [1, 10, 0.2]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [11, [1, 3, 0]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 13, 0]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [11, [1, 5, 0]]],
-    null,
-    null,
-    null,
-    null,
-    null,
-    null,
-    null
-   ],
-   "defense_formation": "Nickel",
-   "front_index": 1,
-   "component": "front",
-   "preset_recipe": false,
-   "spy_intent": {
-    "schema": "nfl2k5_spy_intent/v1",
-    "slots": []
-   }
-  },
-  {
-   "id": "d6",
-   "custom_name": "ET Stunt Strong",
-   "play_type": "defense",
-   "concept": "Front: ET Stunt Strong",
-   "donor": {
-    "index": 6,
-    "name": "Twist Right",
-    "flags": 16778309,
-    "signature": "defense/v1:01000445:1-1b.0b,1-1b.0b,1-1b.0b,1-1b.0b,0-01.01,0-01.01,0-01.01,0-01.01,0-01.01,0-01.01,0-01.01"
-   },
-   "play_flags": 16778309,
-   "replace_index": 6,
-   "replace_name": "Twist Right",
    "link_formation": null,
    "link_group": null,
    "assignments": [
@@ -396,10 +358,48 @@
    }
   },
   {
-   "id": "d7",
-   "custom_name": "Contain Rush",
+   "id": "d6",
+   "custom_name": "Pinch",
    "play_type": "defense",
-   "concept": "Front: Contain Rush",
+   "concept": "Front: Pinch",
+   "donor": {
+    "index": 6,
+    "name": "Twist Right",
+    "flags": 16778309,
+    "signature": "defense/v1:01000445:1-1b.0b,1-1b.0b,1-1b.0b,1-1b.0b,0-01.01,0-01.01,0-01.01,0-01.01,0-01.01,0-01.01,0-01.01"
+   },
+   "play_flags": 16778821,
+   "replace_index": 6,
+   "replace_name": "Twist Right",
+   "link_formation": null,
+   "link_group": null,
+   "assignments": [
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 11, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 5, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 9, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 7, 0]]],
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "defense_formation": "Nickel",
+   "front_index": 1,
+   "component": "front",
+   "preset_recipe": false,
+   "spy_intent": {
+    "schema": "nfl2k5_spy_intent/v1",
+    "slots": []
+   }
+  },
+  {
+   "id": "d7",
+   "custom_name": "TE Stunt Weak",
+   "play_type": "defense",
+   "concept": "Front: TE Stunt Weak",
    "donor": {
     "index": 7,
     "name": "Twist Left",
@@ -412,10 +412,10 @@
    "link_formation": null,
    "link_group": null,
    "assignments": [
-    [[27, [0, 0, 0, 0, 0, 0]], [11, [3, 16, 0]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [11, [3, 0, 0]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 11, 0]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 5, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [1, 10, 0.2]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [1, 1, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 13, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [11, [1, 5, 0]]],
     null,
     null,
     null,
@@ -435,7 +435,7 @@
   },
   {
    "id": "d8",
-   "custom_name": "Fire Zone 3 Sam",
+   "custom_name": "Fire Zone 3 Sam Rotate",
    "play_type": "defense",
    "concept": "Fire Zone 3",
    "donor": {
@@ -449,7 +449,19 @@
    "replace_name": "Cover 3",
    "link_formation": null,
    "link_group": null,
-   "assignments": [null, null, null, null, null, null, null, null, null, null, null],
+   "assignments": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [0, 1645.92, 7, 9, 8, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [-914.4, 731.52, 7, 6, 6, 0, 0]]],
+    null,
+    null
+   ],
    "defense_formation": "4-3",
    "front_index": 1,
    "component": "coverage",
@@ -601,14 +613,14 @@
   },
   {
    "id": "d13",
-   "custom_name": "Cover 1 Corner Fire",
+   "custom_name": "Cover 1 Nickel Fire",
    "play_type": "defense",
    "concept": "Cover 1 Blitz",
    "donor": {
-    "index": 19,
-    "name": "Weak Crash 1",
+    "index": 28,
+    "name": "Strong Blast 1",
     "flags": 8979525,
-    "signature": "defense/v1:00890445:0-01.01,0-01.01,0-01.01,0-01.01,1-1b.0e,1-1b.0e,1-1b.0e,1-1b.0e,1-1b.0d,1-1b.0b,1-1b.0e"
+    "signature": "defense/v1:00890445:0-01.01,0-01.01,0-01.01,0-01.01,1-1b.0e,1-1b.0e,1-1b.0b,1-1b.0d,1-1b.0e,1-1b.0e,1-1b.0e"
    },
    "play_flags": 8979013,
    "replace_index": 13,
@@ -627,7 +639,7 @@
   },
   {
    "id": "d14",
-   "custom_name": "Cover 3 Sky Strong",
+   "custom_name": "Rotate 3 Sky Strong",
    "play_type": "defense",
    "concept": "Cover 3 Sky",
    "donor": {
@@ -641,7 +653,19 @@
    "replace_name": "Sting 2 Hard",
    "link_formation": null,
    "link_group": null,
-   "assignments": [null, null, null, null, null, null, null, null, null, null, null],
+   "assignments": [
+    null,
+    null,
+    null,
+    null,
+    [[27, [3, 3, 0, 0, 16, 1]], [13, [914.4, 731.52, 9, 10, 5, 0, 0]]],
+    [[27, [3, 3, 0, 91.44, 7, 1]], [13, [0, 731.52, 8, 7, 4, 0, 0]]],
+    [[27, [2, 0, 0, 304.8, 0, 0]], [14, [0, 457.2, 0, 12, 0, 0, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [0, 1645.92, 9, 7, 8, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [-914.4, 731.52, 7, 6, 6, 0, 0]]],
+    null,
+    null
+   ],
    "defense_formation": "Nickel",
    "front_index": 1,
    "component": "coverage",
@@ -717,7 +741,7 @@
   },
   {
    "id": "d17",
-   "custom_name": "Sim Pressure Mike",
+   "custom_name": "Sim Pressure Mike Rotate",
    "play_type": "defense",
    "concept": "Sim Pressure 3",
    "donor": {
@@ -739,8 +763,8 @@
     [[27, [0, 0, 0, 0, 0, 0]], [13, [914.4, 731.52, 10, 9, 4, 0, 0]]],
     [[27, [0, 0, 0, 0, 0, 0]], [11, [2, 7, 0]]],
     [[27, [0, 0, 0, 0, 0, 0]], [13, [-914.4, 731.52, 7, 6, 4, 0, 0]]],
-    null,
-    [[27, [0, 0, 0, -274.32, 0, 1]], [13, [-1097.28, 731.52, 6, 7, 6, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [0, 1645.92, 7, 9, 8, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [-1097.28, 731.52, 6, 7, 6, 0, 0]]],
     [[27, [0, 0, 0, 548.64, 0, 1]], [13, [1463.04, 1645.92, 10, 9, 9, 0, 0]]],
     [[27, [0, 0, 0, 548.64, 0, 1]], [13, [-1463.04, 1645.92, 6, 7, 10, 0, 0]]]
    ],
@@ -895,7 +919,7 @@
   },
   {
    "id": "d22",
-   "custom_name": "2-Man Off",
+   "custom_name": "2-Man Press",
    "play_type": "defense",
    "concept": "2-Man Under",
    "donor": {
@@ -909,7 +933,19 @@
    "replace_name": "Spear 1",
    "link_formation": null,
    "link_group": null,
-   "assignments": [null, null, null, null, null, null, null, null, null, null, null],
+   "assignments": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    [[27, [2, 0, 0, 91.44, 0, 0]], [14, [0, 182.88, 0, 13, 0, 0, 0, 0]]],
+    [[27, [2, 0, 0, 91.44, 0, 0]], [14, [0, 182.88, 0, 13, 0, 0, 0, 0]]]
+   ],
    "defense_formation": "4-3",
    "front_index": 1,
    "component": "coverage",
@@ -959,16 +995,16 @@
   },
   {
    "id": "d24",
-   "custom_name": "Cover 2 Match",
+   "custom_name": "Cover 2 Soft",
    "play_type": "defense",
    "concept": "Cover 2",
    "donor": {
-    "index": 8,
-    "name": "Cover 3",
-    "flags": 9454661,
-    "signature": "defense/v1:00904445:0-01.01,0-01.01,0-01.01,0-01.01,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d"
+    "index": 9,
+    "name": "2 Hard",
+    "flags": 9438277,
+    "signature": "defense/v1:00900445:0-01.01,0-01.01,0-01.01,0-01.01,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d"
    },
-   "play_flags": 9454661,
+   "play_flags": 9438277,
    "replace_index": 24,
    "replace_name": "2 Soft",
    "link_formation": null,
@@ -978,17 +1014,13 @@
     null,
     null,
     null,
-    [[27, [0, 0, 0, 0, 0, 0]], [13, [731.52, 914.4, 10, 0, 5, 1, 2]], [14, [0, 274.32, 0, 10, 7, 9, 1, 1]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [13, [-274.32, 731.52, 8, 7, 4, 0, 0]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [13, [-914.4, 640.08, 7, 6, 4, 0, 0]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [13, [-182.88, 1645.92, 7, 9, 8, 0, 0]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [13, [-1188.72, 1645.92, 6, 7, 10, 0, 0]]],
-    [
-     [27, [2, 0, 0, 182.88, 0, 0]],
-     [14, [0, 457.2, 2, 10, 13, 0, 2, 0]],
-     [13, [1280.16, 1645.92, 10, 0, 9, 1, 1]]
-    ],
-    [[27, [0, 0, 0, 0, 0, 0]], [13, [-1280.16, 0, 6, 7, 6, 0, 0]]]
+    null,
+    null,
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [-914.4, 548.64, 7, 6, 4, 0, 0]]],
+    null,
+    null,
+    null,
+    null
    ],
    "defense_formation": "Nickel",
    "front_index": 1,
@@ -1001,7 +1033,7 @@
   },
   {
    "id": "d25",
-   "custom_name": "Cover 2 Soft",
+   "custom_name": "Cover 2 Sink",
    "play_type": "defense",
    "concept": "Cover 2",
    "donor": {
@@ -1039,7 +1071,7 @@
   },
   {
    "id": "d26",
-   "custom_name": "2-Man Under",
+   "custom_name": "2-Man Off",
    "play_type": "defense",
    "concept": "2-Man Under",
    "donor": {
@@ -1053,19 +1085,7 @@
    "replace_name": "Combo Inside Zone",
    "link_formation": null,
    "link_group": null,
-   "assignments": [
-    null,
-    null,
-    null,
-    null,
-    null,
-    null,
-    null,
-    null,
-    null,
-    [[27, [2, 0, 0, 91.44, 0, 0]], [14, [1, -91.44, 0, 13, 0, 0, 0, 0]]],
-    [[27, [2, 0, 0, 91.44, 0, 0]], [14, [1, -91.44, 0, 13, 0, 0, 0, 0]]]
-   ],
+   "assignments": [null, null, null, null, null, null, null, null, null, null, null],
    "defense_formation": "Nickel",
    "front_index": 1,
    "component": "coverage",
@@ -1077,14 +1097,14 @@
   },
   {
    "id": "d27",
-   "custom_name": "Cover 0 Nickel Blitz",
+   "custom_name": "Cover 0 Double A Off",
    "play_type": "defense",
    "concept": "Cover 0 Blitz",
    "donor": {
-    "index": 29,
-    "name": "Force Fire 0",
+    "index": 40,
+    "name": "Weak Fire 0",
     "flags": 8979525,
-    "signature": "defense/v1:00890445:0-01.01,0-01.01,0-01.01,0-01.01,1-1b.0b,1-1b.0e,1-1b.0b,1-1b.0e,1-1b.0e,1-1b.0e,1-1b.0e"
+    "signature": "defense/v1:00890445:0-01.01,0-01.01,0-01.01,0-01.01,1-1b.0b,1-1b.0b,1-1b.0e,1-1b.0e,1-1b.0e,1-1b.0e,1-1b.0e"
    },
    "play_flags": 8979525,
    "replace_index": 27,
@@ -1103,12 +1123,12 @@
   },
   {
    "id": "d28",
-   "custom_name": "Cover 3 Cloud Strong",
+   "custom_name": "Rotate 3 Cloud Strong",
    "play_type": "defense",
    "concept": "Cover 3 Cloud",
    "donor": {
-    "index": 10,
-    "name": "Key Zone",
+    "index": 13,
+    "name": "3 Robber",
     "flags": 9454661,
     "signature": "defense/v1:00904445:0-01.01,0-01.01,0-01.01,0-01.01,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d"
    },
@@ -1117,7 +1137,19 @@
    "replace_name": "Strong Blast 1",
    "link_formation": null,
    "link_group": null,
-   "assignments": [null, null, null, null, null, null, null, null, null, null, null],
+   "assignments": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [0, 1645.92, 7, 9, 8, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [-457.2, 731.52, 7, 6, 4, 0, 0]]],
+    null,
+    null
+   ],
    "defense_formation": "Nickel",
    "front_index": 1,
    "component": "coverage",
@@ -1129,12 +1161,12 @@
   },
   {
    "id": "d29",
-   "custom_name": "Cover 3 Cloud Strong Bail",
+   "custom_name": "Rotate 3 Cloud Strong Bail",
    "play_type": "defense",
    "concept": "Cover 3 Cloud",
    "donor": {
-    "index": 13,
-    "name": "3 Robber",
+    "index": 8,
+    "name": "Cover 3",
     "flags": 9454661,
     "signature": "defense/v1:00904445:0-01.01,0-01.01,0-01.01,0-01.01,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d"
    },
@@ -1143,7 +1175,19 @@
    "replace_name": "Force Fire 0",
    "link_formation": null,
    "link_group": null,
-   "assignments": [null, null, null, null, null, null, null, null, null, null, null],
+   "assignments": [
+    null,
+    null,
+    null,
+    null,
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [1463.04, 640.08, 10, 9, 5, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [182.88, 731.52, 9, 8, 4, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [-1463.04, 457.2, 6, 7, 6, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [0, 1645.92, 7, 9, 8, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [-731.52, 731.52, 7, 6, 4, 0, 0]]],
+    null,
+    null
+   ],
    "defense_formation": "Nickel",
    "front_index": 1,
    "component": "coverage",
@@ -1185,10 +1229,10 @@
    "play_type": "defense",
    "concept": "Cover 1 Blitz",
    "donor": {
-    "index": 190,
-    "name": "Bear Man 1",
+    "index": 33,
+    "name": "Weak Blast 1",
     "flags": 8979525,
-    "signature": "defense/v1:00890445:0-01.01,0-01.01,0-01.01,0-01.01,1-1b.0b,1-1b.0e,1-1b.0e,1-1b.0d,1-1b.0e,1-1b.0e,1-1b.0e"
+    "signature": "defense/v1:00890445:0-01.01,0-01.01,0-01.01,0-01.01,1-1b.0b,1-1b.0e,1-1b.0e,1-1b.0e,1-1b.0d,1-1b.0e,1-1b.0e"
    },
    "play_flags": 8980037,
    "replace_index": 31,
@@ -1361,7 +1405,7 @@
   },
   {
    "id": "d37",
-   "custom_name": "2-Man Trail",
+   "custom_name": "2-Man Under",
    "play_type": "defense",
    "concept": "2-Man Under",
    "donor": {
@@ -1380,13 +1424,13 @@
     null,
     null,
     null,
-    [[27, [2, 0, 0, 182.88, 0, 0]], [14, [0, -152.4, 0, 9, 0, 0, 0, 0]]],
-    [[27, [2, 0, 0, 274.32, 0, 0]], [14, [0, -152.4, 0, 8, 0, 0, 0, 0]]],
-    [[27, [2, 0, 0, 182.88, 0, 0]], [14, [0, -152.4, 0, 7, 0, 0, 0, 0]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [13, [0, 1645.92, 9, 7, 11, 0, 0]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [13, [-1371.6, 1371.6, 6, 0, 10, 1, 2]], [14, [0, 457.2, 0, 6, 9, 10, 1, 1]]],
-    [[27, [2, 0, 0, 91.44, 0, 0]], [14, [0, -152.4, 2, 10, 0, 0, 0, 0]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [14, [0, -152.4, 1, 6, 7, 8, 2, 0]], [13, [-1371.6, 1097.28, 6, 0, 6, 1, 1]]]
+    null,
+    null,
+    null,
+    null,
+    null,
+    [[27, [2, 0, 0, 91.44, 0, 0]], [14, [1, -91.44, 0, 13, 0, 0, 0, 0]]],
+    [[27, [2, 0, 0, 91.44, 0, 0]], [14, [1, -91.44, 0, 13, 0, 0, 0, 0]]]
    ],
    "defense_formation": "Dime",
    "front_index": 1,
@@ -1399,14 +1443,14 @@
   },
   {
    "id": "d38",
-   "custom_name": "Cover 1 Safety Fire",
+   "custom_name": "Cover 1 Mike Fire",
    "play_type": "defense",
    "concept": "Cover 1 Blitz",
    "donor": {
-    "index": 22,
-    "name": "Spear 1",
+    "index": 20,
+    "name": "Middle Blast 1",
     "flags": 8979525,
-    "signature": "defense/v1:00890445:0-01.01,0-01.01,0-01.01,0-01.01,1-1b.0e,1-1b.0e,1-1b.0e,1-1b.0d,1-1b.0b,1-1b.0e,1-1b.0e"
+    "signature": "defense/v1:00890445:0-01.01,0-01.01,0-01.01,0-01.01,1-1b.0e,1-1b.0b,1-1b.0e,1-1b.0d,1-1b.0e,1-1b.0e,1-1b.0e"
    },
    "play_flags": 8980037,
    "replace_index": 38,
@@ -1425,7 +1469,7 @@
   },
   {
    "id": "d39",
-   "custom_name": "Cover 3 Cloud",
+   "custom_name": "Rotate 3 Cloud Weak",
    "play_type": "defense",
    "concept": "Cover 3 Cloud",
    "donor": {
@@ -1444,11 +1488,11 @@
     null,
     null,
     null,
-    [[27, [0, 0, 0, 0, 8, 0]], [13, [457.2, 731.52, 9, 10, 4, 0, 0]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [13, [-457.2, 731.52, 7, 6, 4, 0, 0]]],
+    null,
+    null,
+    null,
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [0, 1645.92, 7, 9, 8, 0, 0]]],
     [[27, [0, 0, 0, 0, 0, 0]], [13, [-1280.16, 731.52, 6, 7, 6, 0, 0]]],
-    [[27, [0, 0, 182.88, -457.2, 0, 1]], [13, [1280.16, 731.52, 10, 9, 5, 0, 0]]],
-    [[27, [0, 0, 640.08, 91.44, 0, 1]], [13, [0, 1645.92, 7, 9, 8, 0, 0]]],
     null,
     null
    ],
@@ -1667,14 +1711,14 @@
   },
   {
    "id": "d190",
-   "custom_name": "Cover 1 Sam Fire",
+   "custom_name": "Cover 1 Will Off Fire",
    "play_type": "defense",
    "concept": "Cover 1 Blitz",
    "donor": {
-    "index": 28,
-    "name": "Strong Blast 1",
+    "index": 190,
+    "name": "Bear Man 1",
     "flags": 8979525,
-    "signature": "defense/v1:00890445:0-01.01,0-01.01,0-01.01,0-01.01,1-1b.0e,1-1b.0e,1-1b.0b,1-1b.0d,1-1b.0e,1-1b.0e,1-1b.0e"
+    "signature": "defense/v1:00890445:0-01.01,0-01.01,0-01.01,0-01.01,1-1b.0b,1-1b.0e,1-1b.0e,1-1b.0d,1-1b.0e,1-1b.0e,1-1b.0e"
    },
    "play_flags": 8979013,
    "replace_index": 190,
@@ -1693,14 +1737,14 @@
   },
   {
    "id": "d191",
-   "custom_name": "Cover 1 Safety Blitz",
+   "custom_name": "Cover 1 Safety Fire",
    "play_type": "defense",
    "concept": "Cover 1 Blitz",
    "donor": {
-    "index": 32,
-    "name": "Weak Indian 1",
+    "index": 22,
+    "name": "Spear 1",
     "flags": 8979525,
-    "signature": "defense/v1:00890445:0-01.01,0-01.01,0-01.01,0-01.01,1-1b.0e,1-1b.0e,1-1b.0e,1-1b.0b,1-1b.0d,1-1b.0e,1-1b.0e"
+    "signature": "defense/v1:00890445:0-01.01,0-01.01,0-01.01,0-01.01,1-1b.0e,1-1b.0e,1-1b.0e,1-1b.0d,1-1b.0b,1-1b.0e,1-1b.0e"
    },
    "play_flags": 8979013,
    "replace_index": 191,
@@ -1719,14 +1763,14 @@
   },
   {
    "id": "d192",
-   "custom_name": "Cover 0 Double A Off",
+   "custom_name": "Cover 0 Safety Blitz",
    "play_type": "defense",
    "concept": "Cover 0 Blitz",
    "donor": {
-    "index": 188,
-    "name": "Bear Weak Fire 0",
+    "index": 201,
+    "name": "Bear Double Indian 0",
     "flags": 8979525,
-    "signature": "defense/v1:00890445:0-01.01,0-01.01,0-01.01,0-01.01,1-1b.0b,1-1b.0b,1-1b.0e,1-1b.0e,1-1b.0e,1-1b.0e,1-1b.0e"
+    "signature": "defense/v1:00890445:0-01.01,0-01.01,0-01.01,0-01.01,1-1b.0e,1-1b.0e,1-1b.0e,1-1b.0b,1-1b.0b,1-1b.0e,1-1b.0e"
    },
    "play_flags": 8979013,
    "replace_index": 192,
@@ -1797,7 +1841,7 @@
   },
   {
    "id": "d195",
-   "custom_name": "Cover 3 Sky Strong Bail",
+   "custom_name": "Cover 3 Sky Strong",
    "play_type": "defense",
    "concept": "Cover 3 Sky",
    "donor": {
@@ -1839,8 +1883,8 @@
    "play_type": "defense",
    "concept": "Cover 3 Buzz",
    "donor": {
-    "index": 8,
-    "name": "Cover 3",
+    "index": 10,
+    "name": "Key Zone",
     "flags": 9454661,
     "signature": "defense/v1:00904445:0-01.01,0-01.01,0-01.01,0-01.01,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d"
    },
@@ -1849,19 +1893,7 @@
    "replace_name": "Bear Inside Fire 0",
    "link_formation": null,
    "link_group": null,
-   "assignments": [
-    null,
-    null,
-    null,
-    null,
-    [[27, [0, 0, 0, 0, 0, 0]], [13, [1371.6, 548.64, 10, 9, 5, 0, 0]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [13, [-457.2, 640.08, 7, 6, 4, 0, 0]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [13, [-1371.6, 548.64, 6, 7, 6, 0, 0]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [13, [640.08, 548.64, 9, 10, 4, 0, 0]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [13, [-91.44, 1645.92, 7, 9, 8, 0, 0]]],
-    [[27, [0, 0, 0, 457.2, 0, 0]], [13, [1371.6, 1645.92, 10, 9, 9, 0, 0]]],
-    [[27, [0, 0, 0, 457.2, 0, 0]], [13, [-1371.6, 1645.92, 6, 7, 10, 0, 0]]]
-   ],
+   "assignments": [null, null, null, null, null, null, null, null, null, null, null],
    "defense_formation": "Bear",
    "front_index": 1,
    "component": "coverage",
@@ -1873,21 +1905,21 @@
   },
   {
    "id": "d197",
-   "custom_name": "Cover 1 Mike Fire",
+   "custom_name": "Cover 1 Safety Blitz",
    "play_type": "defense",
    "concept": "Cover 1 Blitz",
    "donor": {
-    "index": 20,
-    "name": "Middle Blast 1",
+    "index": 30,
+    "name": "Strong Indian 1",
     "flags": 8979525,
-    "signature": "defense/v1:00890445:0-01.01,0-01.01,0-01.01,0-01.01,1-1b.0e,1-1b.0b,1-1b.0e,1-1b.0d,1-1b.0e,1-1b.0e,1-1b.0e"
+    "signature": "defense/v1:00890445:0-01.01,0-01.01,0-01.01,0-01.01,1-1b.0e,1-1b.0e,1-1b.0e,1-1b.0d,1-1b.0b,1-1b.0e,1-1b.0e"
    },
    "play_flags": 8980037,
    "replace_index": 197,
    "replace_name": "Bear Cover 4",
    "link_formation": null,
    "link_group": null,
-   "assignments": [null, null, null, null, null, null, null, null, null, null, null],
+   "assignments": [null, null, null, null, null, null, null, null, [[27, [0, 0, 0, 0, 0, 1]], [11, [2, 0, 0]]], null, null],
    "defense_formation": "Bear",
    "front_index": 1,
    "component": "coverage",
@@ -1903,8 +1935,8 @@
    "play_type": "defense",
    "concept": "Cover 0 Blitz",
    "donor": {
-    "index": 189,
-    "name": "Bear Blaze Twist 0",
+    "index": 200,
+    "name": "Bear Double Sting 0",
     "flags": 8979525,
     "signature": "defense/v1:00890445:0-01.01,0-01.01,0-01.01,0-01.01,1-1b.0e,1-1b.0b,1-1b.0b,1-1b.0e,1-1b.0e,1-1b.0e,1-1b.0e"
    },
@@ -1963,14 +1995,14 @@
   },
   {
    "id": "d200",
-   "custom_name": "Fire Zone 3 Double",
+   "custom_name": "Fire Zone 3 Sam",
    "play_type": "defense",
    "concept": "Fire Zone 3",
    "donor": {
-    "index": 192,
-    "name": "Bear Force Fire 3",
+    "index": 191,
+    "name": "Bear Inside Blast 3",
     "flags": 9520197,
-    "signature": "defense/v1:00914445:0-01.01,0-01.01,0-01.01,0-01.01,1-1b.0b,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0b,1-1b.0d,1-1b.0d"
+    "signature": "defense/v1:00914445:0-01.01,0-01.01,0-01.01,0-01.01,1-1b.0d,1-1b.0d,1-1b.0b,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d"
    },
    "play_flags": 9520709,
    "replace_index": 200,
@@ -1989,7 +2021,7 @@
   },
   {
    "id": "d201",
-   "custom_name": "Cover 3 Sky",
+   "custom_name": "Cover 3 Sky Weak",
    "play_type": "defense",
    "concept": "Cover 3 Sky",
    "donor": {
@@ -2008,11 +2040,11 @@
     null,
     null,
     null,
-    [[27, [3, 3, 0, 91.44, 16, 1]], [13, [914.4, 731.52, 9, 10, 5, 0, 0]]],
-    [[27, [3, 3, 0, 60.96, 9, 1]], [13, [0, 731.52, 8, 7, 4, 0, 0]]],
-    [[27, [2, 0, 0, 304.8, 0, 0]], [14, [0, 457.2, 0, 12, 0, 0, 0, 0]]],
-    null,
-    [[27, [0, 0, -182.88, -365.76, 0, 1]], [13, [-914.4, 731.52, 7, 6, 6, 0, 0]]],
+    [[27, [0, 0, 0, 0, 8, 0]], [13, [457.2, 731.52, 9, 10, 4, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [-457.2, 731.52, 7, 6, 4, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [-1280.16, 731.52, 6, 7, 6, 0, 0]]],
+    [[27, [0, 0, 182.88, -457.2, 0, 1]], [13, [1280.16, 731.52, 10, 9, 5, 0, 0]]],
+    [[27, [0, 0, 640.08, 91.44, 0, 1]], [13, [0, 1645.92, 7, 9, 8, 0, 0]]],
     null,
     null
    ],
@@ -2046,13 +2078,13 @@
     null,
     null,
     null,
-    [[27, [0, 0, 0, 0, 0, 0]], [13, [1463.04, 640.08, 10, 9, 5, 0, 0]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [13, [182.88, 731.52, 9, 8, 4, 0, 0]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [13, [-1463.04, 457.2, 6, 7, 6, 0, 0]]],
-    null,
-    [[27, [0, 0, 182.88, -365.76, 0, 1]], [13, [-731.52, 731.52, 7, 6, 4, 0, 0]]],
-    null,
-    null
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [1371.6, 548.64, 10, 9, 5, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [-457.2, 640.08, 7, 6, 4, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [-1371.6, 548.64, 6, 7, 6, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [640.08, 548.64, 9, 10, 4, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [-91.44, 1645.92, 7, 9, 8, 0, 0]]],
+    [[27, [0, 0, 0, 457.2, 0, 0]], [13, [1188.72, 1645.92, 0, 0, 9, 0, 0]]],
+    [[27, [0, 0, 0, 457.2, 0, 0]], [13, [-1280.16, 1645.92, 6, 7, 10, 0, 0]]]
    ],
    "defense_formation": "Bear",
    "front_index": 1,
@@ -2069,8 +2101,8 @@
    "play_type": "defense",
    "concept": "Cover 3 Buzz",
    "donor": {
-    "index": 8,
-    "name": "Cover 3",
+    "index": 34,
+    "name": "4 Sky",
     "flags": 9454661,
     "signature": "defense/v1:00904445:0-01.01,0-01.01,0-01.01,0-01.01,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d"
    },
@@ -2079,19 +2111,7 @@
    "replace_name": "Bear 1 Hard",
    "link_formation": null,
    "link_group": null,
-   "assignments": [
-    [[27, [0, 0, 0, 0, 0, 0]], [13, [457.2, 640.08, 9, 10, 4, 0, 0]]],
-    null,
-    null,
-    null,
-    [[27, [0, 0, 0, 0, 0, 0]], [13, [1097.28, 457.2, 6, 7, 5, 0, 0]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [13, [-182.88, 640.08, 8, 7, 4, 0, 0]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [13, [-1371.6, 457.2, 6, 7, 6, 0, 0]]],
-    null,
-    [[27, [0, 0, 182.88, -365.76, 0, 1]], [13, [-640.08, 640.08, 7, 6, 4, 0, 0]]],
-    [[27, [0, 0, 0, 518.16, 0, 0]], [13, [1371.6, 1645.92, 10, 9, 9, 0, 0]]],
-    null
-   ],
+   "assignments": [null, null, null, null, null, null, null, null, null, null, null],
    "defense_formation": "Bear",
    "front_index": 1,
    "component": "coverage",
@@ -2103,7 +2123,7 @@
   },
   {
    "id": "d206",
-   "custom_name": "Cover 2 Sink",
+   "custom_name": "Cover 2 Zone 2",
    "play_type": "defense",
    "concept": "Cover 2",
    "donor": {
@@ -2122,13 +2142,13 @@
     null,
     null,
     null,
-    [[27, [0, 0, 0, 0, 0, 0]], [13, [914.4, 731.52, 9, 10, 1, 0, 0]]],
-    [[27, [0, 0, 0, 0, 8, 0]], [13, [0, 731.52, 8, 7, 4, 0, 0]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [13, [-914.4, 731.52, 7, 6, 2, 0, 0]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [13, [1097.28, 1645.92, 10, 9, 11, 0, 0]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [13, [-1097.28, 1645.92, 7, 6, 11, 0, 0]]],
-    [[27, [2, 0, 0, 0, 0, 0]], [14, [1, -91.44, 2, 13, 0, 0, 0, 0]]],
-    [[27, [2, 0, 0, 0, 0, 0]], [14, [1, -91.44, 2, 13, 0, 0, 0, 0]]]
+    [[27, [2, 0, 0, 365.76, 0, 0]], [14, [0, 274.32, 0, 9, 0, 0, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [0, 822.96, 8, 7, 5, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [-1005.84, 731.52, 7, 6, 4, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [914.4, 1645.92, 9, 10, 11, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [-731.52, 1645.92, 7, 6, 11, 0, 0]]],
+    [[27, [2, 0, 0, 274.32, 0, 0]], [14, [0, 457.2, 2, 10, 0, 0, 0, 0]]],
+    [[27, [0, 0, 0, 182.88, 0, 0]], [13, [-1463.04, 914.4, 6, 7, 6, 0, 0]]]
    ],
    "defense_formation": "Bear",
    "front_index": 1,
@@ -2141,7 +2161,7 @@
   },
   {
    "id": "d207",
-   "custom_name": "Cover 3 Cloud Bail",
+   "custom_name": "Cover 3 Cloud Weak Bail",
    "play_type": "defense",
    "concept": "Cover 3 Cloud",
    "donor": {
@@ -2160,13 +2180,13 @@
     null,
     null,
     null,
-    [[27, [0, 0, 0, 0, 0, 0]], [13, [914.4, 731.52, 9, 10, 5, 0, 0]]],
-    [[27, [0, 0, 0, 0, 8, 0]], [13, [-91.44, 731.52, 8, 9, 4, 0, 0]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [13, [-731.52, 731.52, 7, 6, 4, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [548.64, 640.08, 9, 8, 5, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [-152.4, 731.52, 7, 8, 4, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [-1463.04, 274.32, 6, 7, 6, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [1371.6, 1645.92, 10, 9, 9, 0, 0]]],
     [[27, [0, 0, 0, 0, 0, 0]], [13, [0, 1645.92, 7, 9, 8, 0, 0]]],
-    [[27, [0, 0, 0, 0, 0, 0]], [13, [-1371.6, 1645.92, 6, 7, 10, 0, 0]]],
-    null,
-    [[27, [0, 0, 0, 0, 0, 1]], [13, [-1371.6, 731.52, 6, 7, 6, 0, 0]]]
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [1371.6, 91.44, 10, 9, 5, 0, 0]]],
+    [[27, [0, 0, 0, 731.52, 0, 0]], [13, [-1371.6, 1645.92, 6, 7, 10, 0, 0]]]
    ],
    "defense_formation": "Bear",
    "front_index": 1,
@@ -2179,7 +2199,7 @@
   },
   {
    "id": "d208",
-   "custom_name": "Cover 1 Will Off Fire",
+   "custom_name": "Cover 1 Will Fire 2",
    "play_type": "defense",
    "concept": "Cover 1 Blitz",
    "donor": {
@@ -2217,16 +2237,16 @@
   },
   {
    "id": "d209",
-   "custom_name": "Cover 2 Cloud",
+   "custom_name": "Cover 2 Match",
    "play_type": "defense",
    "concept": "Cover 2 Hard",
    "donor": {
-    "index": 9,
-    "name": "2 Hard",
-    "flags": 9438277,
-    "signature": "defense/v1:00900445:0-01.01,0-01.01,0-01.01,0-01.01,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d"
+    "index": 8,
+    "name": "Cover 3",
+    "flags": 9454661,
+    "signature": "defense/v1:00904445:0-01.01,0-01.01,0-01.01,0-01.01,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d,1-1b.0d"
    },
-   "play_flags": 9438277,
+   "play_flags": 9454661,
    "replace_index": 209,
    "replace_name": "Bear Full Zone",
    "link_formation": null,
@@ -2236,13 +2256,17 @@
     null,
     null,
     null,
-    null,
-    null,
-    [[27, [0, 0, 0, 0, 0, 0]], [13, [-914.4, 548.64, 7, 6, 4, 0, 0]]],
-    null,
-    null,
-    null,
-    null
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [731.52, 914.4, 10, 0, 5, 1, 2]], [14, [0, 274.32, 0, 10, 7, 9, 1, 1]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [-274.32, 731.52, 8, 7, 4, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [-914.4, 640.08, 7, 6, 4, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [-182.88, 1645.92, 7, 9, 8, 0, 0]]],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [-1188.72, 1645.92, 6, 7, 10, 0, 0]]],
+    [
+     [27, [2, 0, 0, 182.88, 0, 0]],
+     [14, [0, 457.2, 2, 10, 13, 0, 2, 0]],
+     [13, [1280.16, 1645.92, 10, 0, 9, 1, 1]]
+    ],
+    [[27, [0, 0, 0, 0, 0, 0]], [13, [-1280.16, 0, 6, 7, 6, 0, 0]]]
    ],
    "defense_formation": "Bear",
    "front_index": 1,

@@ -67,9 +67,31 @@ BEAR = LineFamily('Bear', {'WE': ('5', WEAK), 'SE': ('5', STRONG), 'WT': ('0', W
                   'strong 3-technique tackle; the outside backers stand off the line behind them.')
 ODD = LineFamily('Okie', {'WE': ('4i', WEAK), 'SE': ('5', STRONG), 'N': ('0', STRONG)},
                  'Three-down Okie: weak 4i, 0-technique nose, strong 5-technique, standing edges outside both ends.')
+# b779 dp1: team front families (DESIGN by coordinator lineage, pb/research/defense_profiles.json).  Four-down rosters:
+UNDER = LineFamily('Under', {'WE': ('w5', WEAK), 'SE': ('5', STRONG), 'WT': ('3', WEAK), 'ST': ('1', STRONG)},
+                   'Four-down Under (Spagnuolo / Golden / Campanile): weak 3-technique, strong 1-technique shade, strong '
+                   '5-technique end, wide-5 weak end; the Sam stands off the ball over the tight end.')
+WIDE9 = LineFamily('Wide 9', {'WE': ('w9', WEAK), 'SE': ('9', STRONG), 'WT': ('3', WEAK), 'ST': ('1', STRONG)},
+                   'Four-down Wide 9 (Seattle / Saleh / Schwartz / Ryans / Glenn): both ends wide (weak wide 9, strong '
+                   '9 outside the tight end), weak 3-technique, strong 1-technique shade.')
+TITE4 = LineFamily('Tite', {'WE': ('w5', WEAK), 'SE': ('w5', STRONG), 'WT': ('4i', WEAK), 'ST': ('4i', STRONG)},
+                   'Four-down Tite (Fangio / Staley / Gannon / Evero): both tackles in 4i shades, both ends wide 5; the '
+                   'reduced interior that funnels runs to the split safeties.')
+# Three-down (3-4 roster) families beside the Okie:
+TITE3 = LineFamily('Tite', {'WE': ('4i', WEAK), 'SE': ('4i', STRONG), 'N': ('0', STRONG)},
+                   'Three-down Tite: 4i-0-4i, standing edges outside both ends.')
+EAGLE = LineFamily('Eagle', {'WE': ('3', WEAK), 'SE': ('3', STRONG), 'N': ('0', STRONG)},
+                   'Three-down Double Eagle (the 3-0-3 "bear front" of the Flores / Belichick pressure trees): both '
+                   'ends in 3-techniques, nose on the centre, standing edges outside.')
+FOUR_DOWN = {'Over': None, 'Wide': None, 'Under': UNDER, 'Wide 9': WIDE9, 'Tite': TITE4}
+THREE_DOWN = {'Okie': None, 'Tite': TITE3, 'Eagle': EAGLE}
 MUG = LineFamily('Mug', {'WE': ('w9', WEAK), 'SE': ('9', STRONG), 'WT': ('4i', WEAK), 'ST': ('4i', STRONG)},
                  'Double-A mug pressure look: both tackles in 4i shades, ends wide, two linebackers walked into '
                  'the A gaps 1.1 yd off the ball.')
+
+
+FOUR_DOWN.update({'Over': OVER, 'Wide': WIDE})
+THREE_DOWN.update({'Okie': ODD})
 
 
 def dl_x(family: LineFamily, role: str) -> int:
@@ -104,6 +126,18 @@ def base_43(family: LineFamily, kinds) -> dict:
         pos[sam] = (-455, 320)                   # stands off the ball outside the tight end, 3.5 yd (never on the line)
         pos[mike] = (-40, 457)
         pos[will] = (275, 457)
+    elif family is UNDER:
+        pos[sam] = (-470, 320)                   # Under: Sam off the ball over the tight end, 3.5 yd
+        pos[mike] = (40, 457)                    # Mike over the weak A gap (the 1-shade covers the strong A)
+        pos[will] = (300, 503)                   # Will stacked behind the weak 3-technique, 5.5 yd
+    elif family is WIDE9:
+        pos[sam] = (-410, 411)                   # Wide 9: Sam inside the strong 9-technique end, 4.5 yd
+        pos[mike] = (-30, 503)                   # Mike 5.5 yd: the wide ends leave the B gaps to the backers
+        pos[will] = (250, 457)
+    elif family is TITE4:
+        pos[sam] = (-640, 365)                   # Tite: Sam outside the strong wide-5 end, 4 yd (a stacked edge)
+        pos[mike] = (-90, 457)
+        pos[will] = (180, 457)
     else:
         pos[sam] = (-430, 411)                   # Over: Sam off the ball over the tight end's inside eye
         pos[mike] = (-50, 457)                   # 10/20 alignment, strong A gap
@@ -163,9 +197,11 @@ def odd_roles(kinds):
     return {'WE': 1, 'SE': 2, 'N': 3}
 
 
-def odd_front(kinds, *, base: bool) -> dict:
-    pos = line(ODD, odd_roles(kinds))
-    pos[0] = (t('4i', WEAK) + 265, 91)          # weak edge, standing, outside the 4i (wide 5 spot)
+def odd_front(kinds, *, base: bool, family: LineFamily = None) -> dict:
+    family = family or ODD
+    pos = line(family, odd_roles(kinds))
+    weak_x = dl_x(family, 'WE')
+    pos[0] = (max(weak_x + 265, t('4i', WEAK) + 265), 91)   # weak edge, standing, outside the weak end (wide 5 spot)
     # b776 de2: every OLB-kind slot after slot 0 is the STRONG EDGE (the 3-4 base's slot 6, the HOU/NE/PIT/SD nickel and
     # dime's slot 5, the 3-3's slot 4), and the position recode makes it an EDGE player.  It stands on the edge like the
     # base's, not inside as a third inside backer (it used to: nickel/dime put it at 5 yd, -2 yd, which is where the
@@ -224,6 +260,51 @@ def four_down_fronts(family: LineFamily) -> list[FrontCall]:
         FrontCall('Double Twist', 'four', {'WE': (1, 10, 0.2), 'SE': (1, 6, 0.2), 'WT': (2, 13, 0), 'ST': (2, 3, 0)}, 3,
                   'Both tackles penetrate outside, both ends loop inside.'),
     ]
+
+
+# b779 dp1: front-call styles.  A front group has room for about eight calls, so the ORDER decides which calls a book
+# carries and the band (bits 9-11) how often the native lottery calls each (the coach-profile rings prefer the low
+# bands too).  Every name below is one of the calls above; nothing new is authored.
+FRONT_STYLE = {
+    # Wide 9 / Seattle trees: speed off the edge, tackles penetrate, few line games.
+    'speed': (('Wide Rush', 1), ('Attack', 1), ('Base', 2), ('Slant Strong', 2), ('Slant Weak', 2), ('ET Stunt Strong', 2),
+              ('Contain Rush', 3), ('Pinch', 3), ('TE Stunt Weak', 3), ('Double Twist', 3)),
+    # Pressure trees: line games and penetration.
+    'games': (('Attack', 1), ('TE Stunt Weak', 1), ('ET Stunt Strong', 2), ('Double Twist', 2), ('Pinch', 2), ('Base', 2),
+              ('Slant Strong', 2), ('Slant Weak', 3), ('Wide Rush', 3), ('Contain Rush', 3)),
+    # Fangio / split-safety trees: read the run on the way to the QB, keep the rush lanes.
+    'read': (('Base', 1), ('Contain Rush', 1), ('Slant Strong', 2), ('Slant Weak', 2), ('Attack', 2), ('ET Stunt Strong', 2),
+             ('Pinch', 3), ('TE Stunt Weak', 3), ('Wide Rush', 3), ('Double Twist', 3)),
+}
+STYLE_OF = {'speed': ('ATL', 'CLE', 'TEN', 'SF', 'HOU', 'MIA', 'NYJ', 'DET'),
+            'games': ('KC', 'TB', 'MIN', 'WAS', 'BUF', 'DEN', 'CHI', 'BAL', 'PIT', 'NE', 'IND', 'JAX', 'CIN', 'NYG', 'SEA',
+                      'OAK'),
+            'read': ('PHI', 'DAL', 'NO', 'CAR', 'GB', 'ARZ', 'STL', 'SD')}
+
+
+def styled_fronts(calls: list[FrontCall], team: str) -> list[FrontCall]:
+    """``calls`` reordered and re-banded for the team's front style (unchanged for a team without one)."""
+    style = next((k for k, teams in STYLE_OF.items() if team in teams), None)
+    if style is None:
+        return calls
+    by_name = {c.name: c for c in calls}
+    out = [FrontCall(c.name, c.family, c.lanes, band, c.note) for name, band in FRONT_STYLE[style]
+           if (c := by_name.get(name)) is not None]
+    return out + [c for c in calls if c.name not in {x.name for x in out}]
+
+
+ODD_STYLE = {'games': (('Okie Attack', 1), ('Slant Strong', 1), ('Slant Weak', 2), ('Pinch', 2), ('Okie', 2), ('Contain', 3)),
+             'read': (('Okie', 1), ('Contain', 1), ('Slant Strong', 2), ('Slant Weak', 2), ('Okie Attack', 2), ('Pinch', 3)),
+             'speed': (('Okie Attack', 1), ('Contain', 2), ('Okie', 2), ('Slant Strong', 2), ('Slant Weak', 2), ('Pinch', 3))}
+
+
+def styled_odd_fronts(team: str) -> list[FrontCall]:
+    calls = odd_fronts()
+    style = next((k for k, teams in STYLE_OF.items() if team in teams), None)
+    if style is None:
+        return calls
+    by_name = {c.name: c for c in calls}
+    return [FrontCall(n, by_name[n].family, by_name[n].lanes, b, by_name[n].note) for n, b in ODD_STYLE[style]]
 
 
 def odd_fronts() -> list[FrontCall]:
@@ -292,44 +373,65 @@ class Scheme:
     mug: bool = False
     package: tuple = ()
     note: str = ''
+    line4: str = ''             # b779 dp1: four-down front family (FOUR_DOWN key); '' = Over (even) / Wide (odd)
+    line3: str = 'Okie'         # b779 dp1: three-down front family (THREE_DOWN key)
+    disguise: float = 0.3       # b779 dp1: share of single-high calls shown from a two-high shell (DESIGN, lineage)
 
 
 SPLIT = ('Cover 6', 'Cover 4 Quarters', 'Cover 2 Invert', '2-Read Match')
 PRESSURE = ('Cover 0 Blitz', 'Sim Pressure', 'Fire Zone 3', 'Cover 1 Blitz')
 SCHEMES = {
-    'ARZ': Scheme('odd', False, SPLIT, 'Rallis: Gannon split-safety family.'),
-    'ATL': Scheme('even', False, ('Cover 3 Buzz', 'Cover 1 Robber', 'Cover 4 Quarters'), 'Ulbrich: Saleh/Seattle 4-down.'),
+    'ARZ': Scheme('odd', False, SPLIT, 'Rallis: Gannon split-safety family.', line4='Tite'),
+    'ATL': Scheme('even', False, ('Cover 3 Buzz', 'Cover 1 Robber', 'Cover 4 Quarters'), 'Ulbrich: Saleh/Seattle 4-down.', line4='Wide 9'),
     'BAL': Scheme('odd', True, ('Sim Pressure', 'Cover 3 Match', 'Cover 6'), 'Weaver: Ravens pressure-disguise family.'),
-    'BUF': Scheme('odd', True, ('Sim Pressure', 'Cover 1 Blitz', 'Cover 0 Blitz'), 'Leonhard: Pettine/Joseph pressure.'),
-    'CAR': Scheme('odd', False, SPLIT, 'Evero: Fangio/Staley split coverage.'),
+    'BUF': Scheme('odd', True, ('Sim Pressure', 'Cover 1 Blitz', 'Cover 0 Blitz'), 'Leonhard: Pettine/Joseph pressure.', line3='Eagle'),
+    'CAR': Scheme('odd', False, SPLIT, 'Evero: Fangio/Staley split coverage.', line4='Tite'),
     'CHI': Scheme('even', False, ('Cover 1 Blitz', 'Cover 0 Blitz', '2-Man Under'), 'Allen: Saints man pressure.'),
-    'CIN': Scheme('even', False, ('Cover 3 Match', 'Cover 1 Robber', 'Cover 6'), 'Golden: multiple, low blitz.'),
-    'CLE': Scheme('even', False, ('Cover 3 Buzz', 'Cover 1 Robber', 'Cover 4 Quarters'), 'Rutenberg: Saleh/Ulbrich 4-down.'),
-    'DAL': Scheme('odd', False, SPLIT, 'Parker: Fangio split coverage.'),
+    'CIN': Scheme('even', False, ('Cover 3 Match', 'Cover 1 Robber', 'Cover 6'), 'Golden: multiple, low blitz.', line4='Under'),
+    'CLE': Scheme('even', False, ('Cover 3 Buzz', 'Cover 1 Robber', 'Cover 4 Quarters'), 'Rutenberg: Saleh/Ulbrich 4-down.', line4='Wide 9'),
+    'DAL': Scheme('odd', False, SPLIT, 'Parker: Fangio split coverage.', line4='Tite', line3='Tite'),
     'DEN': Scheme('odd', True, PRESSURE, 'Joseph: Phillips/Joseph pressure.'),
-    'DET': Scheme('even', False, ('Cover 1 Blitz', '2-Man Under', 'Cover 1 Robber'), 'Sheppard: Glenn/Allen man.'),
-    'GB': Scheme('odd', False, SPLIT + ('Mug Pressure',), 'Gannon: Zimmer/Gannon split coverage.'),
-    'HOU': Scheme('even', False, ('Cover 3 Buzz', 'Cover 4 Quarters', 'Cover 2'), 'Burke: Ryans/Schwartz 4-down.'),
+    'DET': Scheme('even', False, ('Cover 1 Blitz', '2-Man Under', 'Cover 1 Robber'), 'Sheppard: Glenn/Allen man.', line4='Wide 9'),
+    'GB': Scheme('odd', False, SPLIT + ('Mug Pressure',), 'Gannon: Zimmer/Gannon split coverage.', line4='Tite'),
+    'HOU': Scheme('even', False, ('Cover 3 Buzz', 'Cover 4 Quarters', 'Cover 2'), 'Burke: Ryans/Schwartz 4-down.', line4='Wide 9'),
     'IND': Scheme('even', False, ('Cover 6', 'Sim Pressure', 'Cover 4 Quarters'), 'Anarumo: multiple disguise.'),
-    'JAX': Scheme('even', False, ('Cover 3 Match', 'Cover 2', 'Cover 6'), 'Campanile: Hafley/Flores multiple.'),
-    'KC': Scheme('even', True, PRESSURE + ('QB Spy',), 'Spagnuolo: Jim Johnson pressure, one situational spy.'),
-    'MIA': Scheme('even', False, ('Cover 3 Sky', 'Cover 2', 'Cover 4 Quarters'), 'Duggan: Hafley 4-down zone.'),
-    'MIN': Scheme('odd', True, ('Sim Pressure', 'Cover 0 Blitz', 'Cover 2', 'Cover 6'), 'Flores: Belichick pressure disguise.'),
+    'JAX': Scheme('even', False, ('Cover 3 Match', 'Cover 2', 'Cover 6'), 'Campanile: Hafley/Flores multiple.', line4='Under'),
+    'KC': Scheme('even', True, PRESSURE + ('QB Spy',), 'Spagnuolo: Jim Johnson pressure, one situational spy.', line4='Under'),
+    'MIA': Scheme('even', False, ('Cover 3 Sky', 'Cover 2', 'Cover 4 Quarters'), 'Duggan: Hafley 4-down zone.', line4='Wide 9'),
+    'MIN': Scheme('odd', True, ('Sim Pressure', 'Cover 0 Blitz', 'Cover 2', 'Cover 6'), 'Flores: Belichick pressure disguise.', line3='Eagle'),
     'NE': Scheme('odd', False, ('Cover 1 Robber', 'Cover 3 Match', 'Cover 2'), 'Kuhr: Vrabel/Bowen multiple.'),
-    'NO': Scheme('odd', False, SPLIT, 'Staley: Fangio split coverage.'),
+    'NO': Scheme('odd', False, SPLIT, 'Staley: Fangio split coverage.', line4='Tite'),
     'NYG': Scheme('odd', False, ('Cover 3 Match', 'Cover 2', 'Sim Pressure'), 'Wilson: Ravens/Eagles multiple.'),
-    'NYJ': Scheme('even', True, ('Cover 2', 'Cover 3 Match', 'Sim Pressure'), 'Duker: Glenn/Weaver multiple.'),
+    'NYJ': Scheme('even', True, ('Cover 2', 'Cover 3 Match', 'Sim Pressure'), 'Duker: Glenn/Weaver multiple.', line4='Wide 9'),
     'OAK': Scheme('odd', False, ('Cover 3 Sky', 'Cover 4 Quarters', 'Cover 2'), 'Leonard: Graham/Ravens multiple.'),
-    'PHI': Scheme('odd', False, SPLIT, 'Fangio: split coverage.'),
+    'PHI': Scheme('odd', False, SPLIT, 'Fangio: split coverage.', line4='Tite'),
     'PIT': Scheme('odd', False, ('Cover 3 Sky', 'Sim Pressure', 'Cover 4 Quarters'), 'Graham: Belichick multiple disguise.'),
-    'SD': Scheme('odd', False, ('Cover 3 Match', 'Cover 2', 'Cover 6'), "O'Leary: Minter/Notre Dame multiple."),
+    'SD': Scheme('odd', False, ('Cover 3 Match', 'Cover 2', 'Cover 6'), "O'Leary: Minter/Notre Dame multiple.", line3='Tite'),
     'SEA': Scheme('odd', False, ('Sim Pressure', 'Cover 2', 'Cover 3 Match'), 'Durde: Macdonald/Quinn multiple.'),
-    'SF': Scheme('even', False, ('Cover 3 Buzz', 'Tampa 2', 'Cover 4 Quarters'), 'Morris: Tampa/Rams split coverage.'),
-    'STL': Scheme('odd', False, ('Cover 3 Sky', 'Cover 6', 'Cover 2'), 'Shula: Phillips/Staley/Morris multiple.'),
-    'TB': Scheme('odd', True, ('Cover 0 Blitz', 'Cover 1 Blitz', 'Fire Zone 3'), 'Bowles: Bowles/Arians pressure.'),
-    'TEN': Scheme('even', False, ('Cover 3 Sky', 'Cover 4 Quarters', 'Cover 6'), 'Bradley: Seattle/Saleh 4-down.'),
-    'WAS': Scheme('odd', True, ('Sim Pressure', 'Cover 0 Blitz', 'Cover 2'), 'Jones: Flores/Zimmer disguise.'),
+    'SF': Scheme('even', False, ('Cover 3 Buzz', 'Tampa 2', 'Cover 4 Quarters'), 'Morris: Tampa/Rams split coverage.', line4='Wide 9'),
+    'STL': Scheme('odd', False, ('Cover 3 Sky', 'Cover 6', 'Cover 2'), 'Shula: Phillips/Staley/Morris multiple.', line4='Tite'),
+    'TB': Scheme('odd', True, ('Cover 0 Blitz', 'Cover 1 Blitz', 'Fire Zone 3'), 'Bowles: Bowles/Arians pressure.', line3='Eagle'),
+    'TEN': Scheme('even', False, ('Cover 3 Sky', 'Cover 4 Quarters', 'Cover 6'), 'Bradley: Seattle/Saleh 4-down.', line4='Wide 9'),
+    'WAS': Scheme('odd', True, ('Sim Pressure', 'Cover 0 Blitz', 'Cover 2'), 'Jones: Flores/Zimmer disguise.', line3='Eagle'),
 }
+
+# b779 dp1 (DESIGN by coaching lineage, INFERRED: no public 2025 pre-snap shell charting exists): the share of
+# single-high calls a coordinator shows from a two-high shell before the snap.  The generator converts single-high
+# records (their rotating safety's pre-snap walk-down becomes a post-snap rotation) until the book reaches it; the CPU
+# coach-profile rings (mod_editor/core/nfl2k5_defense_rings.py) aim at the same share.
+DISGUISE = {
+    # Ravens / Belichick / Flores disguise trees: rotate late out of two-high shells.
+    'SEA': .55, 'MIN': .55, 'WAS': .55, 'PIT': .5, 'IND': .5, 'BAL': .5, 'NYG': .45,
+    # Fangio / Staley / Gannon split-safety trees: two-high looks that spin to one-high at the snap.
+    'PHI': .45, 'DAL': .45, 'NO': .45, 'CAR': .45, 'GB': .45, 'ARZ': .45, 'STL': .4, 'SD': .45,
+    # Pressure and multiple-front coordinators.
+    'KC': .35, 'TB': .3, 'BUF': .35, 'DEN': .3, 'CHI': .3, 'NYJ': .3, 'NE': .35, 'OAK': .3, 'DET': .25,
+    'CIN': .3, 'JAX': .3,
+    # Seattle / Saleh four-down single-high trees: show the shell they play.
+    'ATL': .2, 'CLE': .2, 'TEN': .2, 'SF': .25, 'HOU': .2, 'MIA': .25,
+}
+for _team, _share in DISGUISE.items():
+    SCHEMES[_team].disguise = _share
 
 # Formation situation ratings (bits 21-23 short, 24-26 medium, 27-29 long; PROVED OFFLINE 0x207EF0: curve over
 # rating-2 in normal play, rating-1 on the long/short field when the offense is urgent; rating 1 is best).
