@@ -44,8 +44,8 @@ class AuditRowsTests(unittest.TestCase):
 
     def test_the_list_validates_and_keeps_vk1_rows(self) -> None:
         kit._sideline_rows()                               # every row passes the validator
-        self.assertEqual(len(self.rows), 61)
-        for selector in ("03A9", "15A6", "15H6", "24A10"):
+        self.assertEqual(len(self.rows), 63)
+        for selector in ("03A9", "15A6", "15H6", "24A10", "22H5", "22A5"):
             self.assertIn(selector, self.rows)
         self.assertEqual(self.rows["15A6"]["parts"], ["pants", "sleeve", "helmet"])
 
@@ -169,6 +169,90 @@ class RowValidationTests(unittest.TestCase):
             self.check({"selector": "06A0", "parts": ["pants"], "reason": "x"})
         with self.assertRaises(ValueError):                                      # torso needs field colours
             self.check({"selector": "06A5", "parts": ["torso"], "donor": "06H5"})
+
+
+def texture(colour, size=(256, 512), stripe=None):
+    image = np.zeros(size + (4,), np.uint8)
+    image[..., 3] = 255
+    image[..., :3] = colour
+    if stripe is not None:
+        x0, x1, c = stripe
+        image[:, x0:x1, :3] = c
+    return image
+
+
+class QualityPassTests(unittest.TestCase):
+    """The coordinator's quality pass: rough recolours are rebuilt from the kit's own field textures."""
+
+    def setUp(self) -> None:
+        self.rows = {row["selector"]: row for row in kit.sideline()["kits"]}
+
+    def test_every_pants_island_is_laid_from_its_field_pants(self) -> None:
+        for selector, row in self.rows.items():
+            if "pants" in row["parts"] and "field" in row:
+                self.assertIn("pants", row.get("compose", {}), selector)
+
+    def test_the_bumblebee_torso_and_the_shells_are_rows(self) -> None:
+        for selector in ("22H5", "22A5"):
+            self.assertIn("torso", self.rows[selector]["compose"])
+        for selector in ("05A4", "05H4", "19H2", "19A2", "25A7", "25H7", "27A6"):
+            self.assertIn("decal", self.rows[selector]["shell"]["helmet"], selector)
+
+    def test_compose_lays_the_field_crop_and_keeps_the_island_folds(self) -> None:
+        alt = atlas(pants=(14, 75, 203))
+        alt[30:40, 0:128, :3] = (10, 60, 160)                                    # a darker fold
+        pants = texture((255, 255, 255), stripe=(357, 382, (200, 210, 230)))
+        row = {"selector": "99A9", "parts": ["pants"], "field": {"pants": [255, 255, 255]}, "compose": {"pants": {}}}
+        out, changed = kit.sideline_measured_repair(alt, {}, {"pants": np.array([255, 255, 255])}, row,
+                                                    {"pants": pants})
+        self.assertGreater(changed["pants"], 8000)
+        self.assertGreater(int(out[60, 20, :3].min()), 225)                       # white fabric
+        stripe = int(round((357 + 12 - 255) * 128 / 257))
+        self.assertLess(int(out[60, stripe, 0]), 225)                            # the field stripe is there
+        self.assertLess(int(out[35, 20, 0]), int(out[60, 20, 0]))                  # the fold still shades it
+        again, changed = kit.sideline_measured_repair(out, {}, {"pants": np.array([255, 255, 255])}, row,
+                                                      {"pants": pants})
+        self.assertFalse(any(changed.values()))                                  # idempotent
+        self.assertTrue(np.array_equal(out, again))
+
+    def test_shell_repaints_the_helmet_and_places_the_field_logo(self) -> None:
+        alt = atlas(helmet=(9, 17, 32))
+        alt[109:120, 101:119, :3] = (181, 119, 59)                               # the retail orange C
+        helmet = texture((209, 79, 24), size=(256, 256))
+        helmet[150:190, 48:108, :3] = (13, 26, 50)                               # the field navy C
+        row = {"selector": "99A4", "parts": ["helmet"], "field": {"helmet": [209, 79, 24]},
+               "shell": {"helmet": {"decal": {"box": [48, 150, 108, 190], "at": [110, 113, 14]}}}}
+        out, changed = kit.sideline_measured_repair(alt, {}, {"helmet": np.array([209, 79, 24])}, row,
+                                                    {"helmet": helmet})
+        self.assertGreater(changed["helmet"], 2000)
+        self.assertLess(int(np.abs(out[100, 60, :3].astype(int) - [209, 79, 24]).max()), 30)   # orange shell
+        self.assertLess(int(out[113, 110, :3].max()), 60)                                     # navy logo
+        again, changed = kit.sideline_measured_repair(out, {}, {"helmet": np.array([209, 79, 24])}, row,
+                                                      {"helmet": helmet})
+        self.assertFalse(any(changed.values()))
+
+    def test_a_shell_keeps_only_the_kept_marks_own_texels(self) -> None:
+        alt = atlas(helmet=(253, 253, 253))
+        alt[95:105, 40:90, :3] = (64, 26, 113)                                   # a retail blob
+        alt[106:122, 100:120, :3] = (200, 160, 40)                               # the kept mark
+        row = {"selector": "99A5", "parts": ["helmet"], "field": {"helmet": [239, 239, 237]},
+               "shell": {"helmet": {"keep": [[98, 103, 126, 128]]}}}
+        out, _ = kit.sideline_measured_repair(alt, {}, {"helmet": np.array([239, 239, 237])}, row,
+                                              {"helmet": texture((239, 239, 237), size=(256, 256))})
+        self.assertGreater(int(out[100, 60, :3].min()), 200)                     # the blob is gone
+        self.assertEqual(tuple(out[112, 110, :3]), (200, 160, 40))               # the mark stays
+
+    def test_compose_rows_validate(self) -> None:
+        kit._sideline_rows({"schema": kit.SIDELINE_SCHEMA, "kits": [
+            {"selector": "22H5", "parts": ["torso"], "field": {"torso": [245, 180, 24]},
+             "compose": {"torso": {"keep": [[128, 0, 144, 48]]}}}]})
+        for bad in ({"compose": {"helmet": {}}}, {"shell": {"torso": {}}},
+                    {"compose": {"torso": {"keep": [[0, 0, 10, 10]]}}}):
+            row = {"selector": "22H5", "parts": ["torso", "helmet"],
+                   "field": {"torso": [245, 180, 24], "helmet": [0, 0, 0]}}
+            row.update(bad)
+            with self.assertRaises(ValueError, msg=str(bad)):
+                kit._sideline_rows({"schema": kit.SIDELINE_SCHEMA, "kits": [row]})
 
 
 if __name__ == "__main__":

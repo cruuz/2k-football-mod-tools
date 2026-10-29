@@ -1787,10 +1787,12 @@ def _sideline_settle(alt, out, parts):
     out = out.copy()
     moved = np.abs(out[..., :3].astype(np.int16) - alt[..., :3]).max(axis=2)
     for part in parts:
-        region = _sideline_box(out.shape[:2], SIDELINE_BOXES[part])
-        if part == "pants":
-            region[0:6, :] = False
-        if int(((moved > 32) & region).sum()) <= SIDELINE_SETTLED * int(region.sum()):
+        region = _sideline_box(out.shape[:2], SIDELINE_BOXES[part])     # the pants with their belt row
+        area = int(region.sum())
+        sparse = int(((moved > 32) & region).sum()) <= SIDELINE_SETTLED * area
+        # a rebuilt part (compose/shell) re-lit from its own repaired folds drifts by a few levels only
+        drift = float(moved[region].mean()) <= 14.0 and int(((moved > 48) & region).sum()) <= 0.03 * area
+        if sparse or drift:
             out[region] = alt[region]
     return out
 
@@ -1938,18 +1940,169 @@ def _sideline_part_colour(atlas, part):
     return _sideline_mode(atlas, _sideline_rule_region(atlas.shape[:2], part, sampling=True))
 
 
-def sideline_measured_repair(alt, donors, field, row):
+# b779-vk2 quality pass (coordinator review): a recolour of the retail island can posterise it or leave jagged
+# remnants of the retail design. Two cleaner rebuilds of a part, both from the kit's OWN field textures:
+# ``compose`` lays the field texture's crop that the island shows (fitted by correlation over the 64 retail primary
+# kits: sleeve00 (0, 0, 121, 65), pants00 (255, 15, 512, 227) (laid from the belt row, 255 0 512 227), jersey00 (0, 0, 391, 253)) into the island, lit by
+# the retail island's own painted folds; ``shell`` repaints the helmet side as a flat field shell with those folds
+# and places the logo cut from the field helmet texture (``decal``).
+SIDELINE_COMPOSE = {"sleeve": ((195, 101, 256, 127), (0, 0, 121, 65)),
+                    "pants": ((0, 0, 128, 90), (255, 0, 512, 227)),
+                    "torso": ((128, 0, 256, 100), (0, 0, 391, 253))}
+SIDELINE_SHELL_BOX = (38, 91, 126, 128)          # the helmet side inside the island's border
+SIDELINE_NECK_GREY = (217, 217, 217)            # jersey00's collar placeholder: the island keeps its neck hole there
+
+
+def _sideline_blur(a, passes=2):
+    """A small separable [1, 2, 1] blur, edges clamped (numpy only)."""
+    out = a.astype(np.float32)
+    for _ in range(passes):
+        p = np.pad(out, 1, mode="edge")
+        out = (p[1:-1, :-2] + 2 * p[1:-1, 1:-1] + p[1:-1, 2:]) / 4.0
+        p = np.pad(out, 1, mode="edge")
+        out = (p[:-2, 1:-1] + 2 * p[1:-1, 1:-1] + p[2:, 1:-1]) / 4.0
+    return out
+
+
+def _sideline_folds(rgba, box, tolerance=0.18, strength=1.0):
+    """The painted folds of one island as a brightness ratio (about 1.0), measured on the island's fabric only: a
+    texel that is not a shade of the fabric (a logo, stripe or retail panel) counts as unshaded (1.0), so a dark
+    panel cannot leave a smudge. Blurred to take out the retail palette's steps, median 1 (idempotent)."""
+    x0, y0, x1, y1 = box
+    fabric = _sideline_mode(rgba, _sideline_box(rgba.shape[:2], box))
+    sub = rgba[y0:y1, x0:x1, :3].astype(np.float32) / 255.0
+    luma = sub @ SIDELINE_LUMA
+    member, _k = _sideline_membership(sub, luma, [int(v) for v in fabric], tolerance, narrow=True)
+    known = member > 0.5
+    core = known.copy()           # one texel in from any logo or panel, so its soft outline is not read as a fold
+    core[1:, :] &= known[:-1, :]
+    core[:-1, :] &= known[1:, :]
+    core[:, 1:] &= known[:, :-1]
+    core[:, :-1] &= known[:, 1:]
+    known = core if core.sum() > 0.2 * core.size else known
+    luma = luma + 0.05            # the offset keeps a near-black island's noise out of the folds
+    ratio = np.ones_like(luma)
+    if known.any():
+        ratio[known] = luma[known] / float(np.median(luma[known]))
+    # a near-black island's folds are mostly palette noise: they are kept faint
+    strength *= float(np.clip((float(np.asarray(fabric, np.float32) @ SIDELINE_LUMA) / 255.0) / 0.25, 0.25, 1.0))
+    ratio = 1.0 + (_sideline_blur(ratio) - 1.0) * strength
+    for _ in range(3):
+        ratio = np.clip(ratio / float(np.median(ratio)), 0.75, 1.2)
+    return ratio
+
+
+def _sideline_lit(colour, ratio):
+    """``colour`` (0..1, h x w x 3) lit by ``ratio``; a light colour keeps less of the retail contrast."""
+    light = (colour.mean(axis=2, keepdims=True) > 0.8)
+    k = ratio[..., None]
+    k = np.where(light, 1.0 - (1.0 - k) * 0.45, k)
+    return np.clip(colour * k, 0.0, 1.0)
+
+
+def _sideline_resize(rgb_u8, size):
+    from PIL import Image
+    return np.asarray(Image.fromarray(np.ascontiguousarray(rgb_u8)).resize(size, Image.BOX), np.float32) / 255.0
+
+
+def _sideline_compose(rgba, part, texture, op):
+    """Lay the field texture's island crop into the part's island, lit by the island's own folds."""
+    (x0, y0, x1, y1), crop = SIDELINE_COMPOSE[part]
+    cx0, cy0, cx1, cy1 = op.get("crop", crop)
+    w, h = x1 - x0, y1 - y0
+    src = _sideline_resize(texture[cy0:cy1, cx0:cx1, :3], (w, h))
+    ratio = _sideline_folds(rgba, (x0, y0, x1, y1))
+    new = _sideline_lit(src, ratio)
+    keep = np.zeros((h, w), bool)
+    if part == "torso":
+        # the neck hole: where the field jersey has its grey collar placeholder, the island keeps its own pixels
+        neck = np.abs(src * 255.0 - np.asarray(SIDELINE_NECK_GREY, np.float32)).max(axis=2) <= 12
+        grown = neck.copy()                     # one texel more, so the placeholder's soft edge never shows
+        grown[1:, :] |= neck[:-1, :]
+        grown[:-1, :] |= neck[1:, :]
+        grown[:, 1:] |= neck[:, :-1]
+        grown[:, :-1] |= neck[:, 1:]
+        keep |= grown
+    for kx0, ky0, kx1, ky1 in op.get("keep", ()):
+        keep[max(0, ky0 - y0):max(0, ky1 - y0), max(0, kx0 - x0):max(0, kx1 - x0)] = True
+    out = rgba.copy()
+    sub = out[y0:y1, x0:x1, :3]
+    sub[~keep] = np.round(new[~keep] * 255).astype(np.uint8)
+    return out
+
+
+def _sideline_shell_repaint(rgba, texture, shell, op):
+    """The helmet side as a flat field shell lit by the island's folds, with the field helmet's logo placed."""
+    from PIL import Image
+    x0, y0, x1, y1 = SIDELINE_SHELL_BOX
+    ratio = _sideline_folds(rgba, (x0, y0, x1, y1), strength=0.7)
+    flat = np.broadcast_to(np.asarray(shell, np.float32) / 255.0, (y1 - y0, x1 - x0, 3))
+    new = _sideline_lit(np.array(flat), ratio)
+    out = rgba.copy()
+    if op.get("keep"):
+        # a kept same-team mark (MIN's Viking head, CLE's centre stripe): only its own texels, not the retail shell
+        # around it, so the new shell runs under it without a seam
+        island = rgba[y0:y1, x0:x1, :3].astype(np.float32) / 255.0
+        fabric = _sideline_mode(rgba, _sideline_box(rgba.shape[:2], (x0, y0, x1, y1)))
+        member, _k = _sideline_membership(island, island @ SIDELINE_LUMA, [int(v) for v in fabric], 0.18, narrow=True)
+        mark = member < 0.5
+        for kx0, ky0, kx1, ky1 in op["keep"]:
+            box = np.zeros(mark.shape, bool)
+            box[ky0 - y0:ky1 - y0, kx0 - x0:kx1 - x0] = True
+            take = mark & box
+            new[take] = island[take]
+    decal = op.get("decal")
+    if decal:
+        dx0, dy0, dx1, dy1 = decal["box"]
+        crop = texture[dy0:dy1, dx0:dx1, :3].astype(np.float32)
+        # the logo is every texel that is not the shell: alpha from the distance to the shell colour
+        alpha = np.clip((np.abs(crop - np.asarray(shell, np.float32)).max(axis=2) - 24.0) / 40.0, 0.0, 1.0)
+        if decal.get("flip"):
+            crop, alpha = crop[:, ::-1], alpha[:, ::-1]
+        cx, cy, height = decal["at"]
+        width = max(1, int(round(height * (dx1 - dx0) / (dy1 - dy0))))
+        rgb = np.asarray(Image.fromarray(crop.astype(np.uint8)).resize((width, height), Image.LANCZOS), np.float32) / 255.0
+        a = np.asarray(Image.fromarray((alpha * 255).astype(np.uint8)).resize((width, height), Image.LANCZOS),
+                       np.float32) / 255.0
+        lx, ly = int(round(cx - width / 2)) - x0, int(round(cy - height / 2)) - y0
+        for yy in range(height):
+            for xx in range(width):
+                ty, tx = ly + yy, lx + xx
+                if 0 <= ty < y1 - y0 and 0 <= tx < x1 - x0:
+                    k = float(np.clip(a[yy, xx], 0.0, 1.0))
+                    shade = float(np.clip(1.0 - (1.0 - ratio[ty, tx]) * 0.5, 0.85, 1.1))
+                    new[ty, tx] = new[ty, tx] * (1 - k) + np.clip(rgb[yy, xx] * shade, 0, 1) * k
+    out[y0:y1, x0:x1, :3] = np.round(new * 255).astype(np.uint8)
+    return out
+
+
+def sideline_measured_repair(alt, donors, field, row, textures=None):
     """vk2's measured path for one row. ``donors`` maps part -> donor atlas (absent: repaired in place), ``field``
-    part -> the measured field colour. Returns the atlas and the texels each part moved (net, so a re-run over a
-    repaired atlas reports zero)."""
+    part -> the measured field colour, ``textures`` part -> the kit's own field texture (``compose``/``shell``).
+    Returns the atlas and the texels each part moved (net, so a re-run over a repaired atlas reports zero)."""
     out = alt.copy()
     rules = row.get("recolour") or {}
     fills = row.get("fill") or {}
     inpaints = row.get("inpaint") or {}
+    composes = row.get("compose") or {}
+    shells = row.get("shell") or {}
     for part in ("torso", "helmet", "sleeve", "pants"):
         if part not in row["parts"]:
             continue
         box = SIDELINE_BOXES[part]
+        if part in composes or part in shells:
+            require(textures is not None and part in textures, row["selector"] + ": the field texture is needed")
+            donor = donors.get(part)
+            if donor is not None:
+                region = _sideline_box(out.shape[:2], box)
+                out[region] = donor[region]
+            if part in composes:
+                out = _sideline_compose(out, part, textures[part], composes[part])
+            else:
+                out = _sideline_shell_repaint(out, textures[part], field[part], shells[part])
+            for op in inpaints.get(part, ()):
+                out = _sideline_inpaint(out, tuple(op["box"]), op["keep"], float(op.get("tolerance", 0.18)))
+            continue
         donor = donors.get(part)
         if donor is not None:
             region = _sideline_box(out.shape[:2], box)
@@ -1983,8 +2136,6 @@ def sideline_measured_repair(alt, donors, field, row):
     moved = np.abs(out[..., :3].astype(np.int16) - alt[..., :3]).max(axis=2)
     for part in row["parts"]:
         region = _sideline_box(out.shape[:2], SIDELINE_BOXES[part])
-        if part == "pants":
-            region[0:6, :] = False
         changed[part] = int(((moved > 2) & region).sum())
     return out, changed
 
@@ -2024,18 +2175,31 @@ def _sideline_compile(span, rgba):
     import nfl_tset_png_import as palette_tools
     chunk, decoded, textures = native_textures(span, "txtr")
     texture = textures[0]
-    levels = _sideline_mips(np.ascontiguousarray(rgba), texture["width"], texture["height"], texture["mips"])
     _decoded, info = decode_chunk(span, chunk)
+    # b779-vk2: a busier atlas can need more in-place decode overlap than the retail scratch word allows (the fill
+    # refuses it); such an atlas is encoded again with the colour's lowest bits dropped (1 to 3 levels), which
+    # changes the stream and not the picture
+    error = None
+    for mask in (0xFF, 0xFE, 0xFC, 0xF8):
+        source = np.ascontiguousarray(np.asarray(rgba, np.uint8) & np.uint8(mask))
+        source[..., 3] = np.asarray(rgba)[..., 3]
+        levels = _sideline_mips(source, texture["width"], texture["height"], texture["mips"])
 
-    def build(palette, index_levels):
-        chain = b"".join(swizzle_2d(indices, mip.width, mip.height, 1)
-                         for indices, mip in zip(index_levels, levels))
-        return decoded[:chunk.system_bytes] + chain + palette_tools.palette_bytes(palette)
+        def build(palette, index_levels, levels=levels):
+            chain = b"".join(swizzle_2d(indices, mip.width, mip.height, 1)
+                             for indices, mip in zip(index_levels, levels))
+            return decoded[:chunk.system_bytes] + chain + palette_tools.palette_bytes(palette)
 
-    bounded = palette_tools.quantize_levels_to_vc_lz_bound(
-        levels, build, stream_tag=info.stream_tag, offset_bits=info.offset_bits,
-        max_encoded_size=chunk.stored_size)
-    fixed, fit = _rebuild(span, bounded.decoded)
+        bounded = palette_tools.quantize_levels_to_vc_lz_bound(
+            levels, build, stream_tag=info.stream_tag, offset_bits=info.offset_bits,
+            max_encoded_size=chunk.stored_size)
+        try:
+            fixed, fit = _rebuild(span, bounded.decoded)
+            break
+        except Exception as exc:          # nfl_txtr.TxtrError: the fill could not keep the scratch word
+            error = exc
+    else:
+        raise error
     check = _sideline_rgba(fixed, "txtr", "splayer")
     require(check.shape == rgba.shape, "sideline span round trip changed the texture size")
     return fixed, fit
@@ -2058,7 +2222,8 @@ def _sideline_rows(document=None):
         measured = "field" in row
         if not measured:
             require("torso" not in parts and int(selector[3:]) > 0
-                    and not any(key in row for key in ("donors", "recolour", "fill", "inpaint", "always")),
+                    and not any(key in row for key in ("donors", "recolour", "fill", "inpaint", "always", "compose",
+                                                        "shell")),
                     selector + ": torso, primary-kit, per-part donor, recolour and fill rows need their field colours")
             if any(p in parts for p in ("sleeve", "helmet")):
                 require(_sideline_selector(row.get("donor")),
@@ -2074,7 +2239,17 @@ def _sideline_rows(document=None):
                 selector + ": donors must map repaired parts to NN[HA]N kits")
         require(isinstance(row.get("always", []), list) and all(p in (row.get("recolour") or {}) for p in row.get("always", [])),
                 selector + ": always names parts with recolour rules")
-        for key in ("recolour", "fill", "inpaint"):
+        for part, op in (row.get("compose") or {}).items():
+            require(part in SIDELINE_COMPOSE and isinstance(op, dict)
+                    and all(_sideline_inside(b, SIDELINE_BOXES[part]) for b in op.get("keep", ())),
+                    selector + ": bad " + part + " compose")
+        for part, op in (row.get("shell") or {}).items():
+            decal = op.get("decal") if isinstance(op, dict) else None
+            require(part == "helmet" and isinstance(op, dict) and part not in (row.get("compose") or {})
+                    and (decal is None or (isinstance(decal.get("box"), list) and len(decal["box"]) == 4
+                                           and isinstance(decal.get("at"), list) and len(decal["at"]) == 3)),
+                    selector + ": a shell is a helmet repaint with an optional decal {box, at}")
+        for key in ("recolour", "fill", "inpaint", "compose", "shell"):
             require(isinstance(row.get(key, {}), dict) and all(k in parts for k in row.get(key, {})),
                     selector + ": " + key + " must be keyed by repaired parts")
         for part, rules in (row.get("recolour") or {}).items():
@@ -2146,7 +2321,7 @@ def _sideline_measured_plan(row, entry, raw, chunks, splayer, alt, package):
                 donor_atlas[donor] = _sideline_rgba(
                     donor_raw[donor_chunks[51].offset:donor_chunks[51].end_offset], "txtr", "splayer")
     repaired, changed = sideline_measured_repair(
-        alt, {part: donor_atlas[d] for part, d in donors.items() if d and part != "pants"}, field, row)
+        alt, {part: donor_atlas[d] for part, d in donors.items() if d and part != "pants"}, field, row, textures)
     if not any(changed.values()):
         return (entry, [], dict(selector=selector, state="unchanged", changed_texels=changed))
     new_span, fit = _sideline_compile(splayer, repaired)
