@@ -115,13 +115,13 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
 B69_GAME_RUNTIME_PINS = {
     "mod_editor/core/nfl2k5_weather.py": "ec3d253e348ff0cf7fb1951b5dad2983d8aebc0802d5c6fca32c74dc80a6985b",
     "mod_editor/core/nfl2k5_weather_haze.py": "b8c58c592794312358eb1554b1d3be43a1ca41f7fdd8fd3cd498d4f345c641cc",
-    "mod_editor/gui/build_panel_qt.py": "179979882f53d16dbc2aeb9bd8c7d1626debd64369d2e1622e520ee9491d277a",
+    "mod_editor/gui/build_panel_qt.py": "8dd604cf728c8f274d760f3b7fbd6e0674dc5c5b39060622e2a1369d2a1558db",
     "mod_editor/gui/gameplay_patches_panel_qt.py": "47a41b66663c3365ba33ee12f6c1e77c7e7c64ff6dec0580ee038a2d5789b726",
     "mod_editor/gui/my_career_panel_qt.py": "cd39ce1685ed119288122e46b0f8c1c8ba586cea611f5d5feee096a71d7ea9ac",
     "mod_editor/gui/gameplay_project_ui.py": "4927318677c5dbd1183b139d5b4d2c460136e38a3f9bf5d5b979ba62e1ed016e",
     "mod_editor/gui/beta62_options.py": "4b4152b4830092afc360230bf869df68c56b5ce9c668769fb28cde9f61cd3d3f",
     "tools/nfl2k5_weather_editor.py": "39a2847b873bbdc567712ca87657d700fa95e226c3408983acce4d714b1031de",
-    "mod_editor/gui/build_panel_qt.py": "179979882f53d16dbc2aeb9bd8c7d1626debd64369d2e1622e520ee9491d277a",
+    "mod_editor/gui/build_panel_qt.py": "8dd604cf728c8f274d760f3b7fbd6e0674dc5c5b39060622e2a1369d2a1558db",
     "mod_editor/gui/gameplay_patches_panel_qt.py": "47a41b66663c3365ba33ee12f6c1e77c7e7c64ff6dec0580ee038a2d5789b726",
     "mod_editor/gui/my_career_panel_qt.py": "cd39ce1685ed119288122e46b0f8c1c8ba586cea611f5d5feee096a71d7ea9ac",
     "mod_editor/gui/gameplay_project_ui.py": "4927318677c5dbd1183b139d5b4d2c460136e38a3f9bf5d5b979ba62e1ed016e",
@@ -2028,6 +2028,8 @@ def main() -> int:
         "mod_editor.core.nfl2k5_run_blocking_code",               # b777-ol1
         "mod_editor.core.nfl2k5_pass_protection",                 # b778-pr1
         "mod_editor.core.nfl2k5_pass_protection_code",            # b778-pr1
+        "mod_editor.core.nfl2k5_pass_rush_stats",                 # b779-st1
+        "mod_editor.core.nfl2k5_pass_rush_stats_code",            # b779-st1
         "mod_editor.core.nfl2k5_qb_accuracy",                     # b777-qb3
         "mod_editor.core.nfl2k5_qb_accuracy_code",                # b777-qb3
         "mod_editor.core.nfl2k5_formation_art_spacing",           # b777-tp1

@@ -116,8 +116,9 @@ class PlanTests(unittest.TestCase):
     def test_late_owner_sits_before_the_module_loader(self):
         # b778-xs1: the module loader must stay the last late owner. Pass protection follows every other
         # b778 owner (pi1's practice injuries included) and comes immediately before the loader.
-        self.assertEqual(space.LATE_OWNERS[-2], "nfl2k5_module_loader")
-        self.assertEqual(space.LATE_OWNERS[-3], pp.OWNER)
+        self.assertEqual(space.LATE_OWNERS[:space.LATE_OWNERS.index("nfl2k5_module_loader") + 1][-1], "nfl2k5_module_loader")
+        self.assertEqual(space.LATE_OWNERS[:space.LATE_OWNERS.index("nfl2k5_module_loader") + 1][-3], pp.OWNER)
+        self.assertEqual(space.LATE_OWNERS[:space.LATE_OWNERS.index("nfl2k5_module_loader") + 1][-2], "nfl2k5_pass_rush_stats")  # b779-st1: right after pass protection
         owners = list(space.LATE_OWNERS)
         self.assertLess(owners.index("nfl2k5_practice_injuries"), owners.index(pp.OWNER))
         self.assertLess(owners.index("nfl2k5_run_blocking"), owners.index(pp.OWNER))
