@@ -55,11 +55,18 @@ The patch (two caves, both dead functions with no reference anywhere in the imag
   when tied); regular-season games keep retail's one-period-then-tie rule.
 * ``sim_engine``: the simulator's overtime period gets the same ``regular_minutes / 15`` clock
   fraction and a regular-season game that is still tied after it ends as a tie instead of the
-  1-in-40 roll; playoff simulations keep playing periods.  The simulator's sudden death and
-  possession rule are NOT changed (documented follow-up).
+  1-in-40 roll; playoff simulations keep playing periods.  The simulator now uses the modern
+  possession rule too: the state dispatcher (``FUN_0010b250`` -> ``0x105020``) calls a small
+  check before every handler, the four scoring handlers no longer return 5 by themselves, and
+  ``FUN_001061f0``'s retail score test is bypassed.  A score ends a simulated overtime only
+  after both teams have possessed, unless the score is a defensive score (which ends it at
+  once); a touchdown or field goal on the first possession always gives the opponent its
+  possession.  The three new caves live in unreferenced XONLINE functions (``0x4d3805``,
+  ``0x4d44af``, ``0x4d4591``) whose direct branch targets were checked across the image.
 
-Everything is pattern-checked against the retail bytes and the ``.text`` digest is recomputed.
-Unverified at runtime.
+Everything is pattern-checked against the retail bytes and every touched section digest is
+recomputed.  The simulator rule is proved in Unicorn on the retail executable; the played-game
+rule remains the existing 2025 owner.
 """
 
 from __future__ import annotations
@@ -159,6 +166,61 @@ RETAIL_SIM_TIE = bytes.fromhex("a1d471a90085c07515")
 SIM_TIE_CONTINUE_VA = 0x00106427    # "game over" path of that test
 SIM_PERIOD_SITE_VA = 0x0010720C     # FUN_001071e0 (period kickoff handler): mov [0xA971F8], 1.0
 RETAIL_SIM_PERIOD = bytes.fromhex("c705f871a9000000803f")
+
+# b779-ot1: the simulator's scoring handlers return 5 directly in overtime, and its
+# per-play evaluator 0x1061F0 ends on any score difference.  The modern rule is
+# applied at the state dispatcher (0x105020) before every simulated state handler:
+# possession is tracked per team, a score only ends the game after both teams have
+# had the ball (or immediately for a defensive score), and the four scoring
+# handlers no longer end the game by themselves.
+SIM_STEP_SITE_VA = 0x00105020       # FUN_0010b250: mov eax, [0xA971B8] (state dispatch)
+RETAIL_SIM_STEP = bytes.fromhex("a1b871a900")
+SIM_STEP_CAVE_VA = 0x004D3805       # XONLINE FUN_004d3805: unreferenced, no direct interior targets
+SIM_STEP_CAVE_SIZE = 268
+RETAIL_SIM_STEP_CAVE = bytes.fromhex(
+    "558bec538b5d08568b73085756897508e884fbffff85c00f84e60000008b430c394310724a8b4b048b098b5108c1e0"
+    "0483c00383e0fc03c23b4104894108760589510833d285d20f84b60000008b4b0c8b7314c1e1038bc1c1e9028bfaf3"
+    "a58bc883e103f3a4d1630c8b75088953148b4304f6402d06745883650800837b100076548b7b14ff7704ff37ff7618"
+    "ff7610e813d6ffff85c07e10ff45088b450883c7083b431072deeb2d8b4b108bc12b45087423c1e1038bd08b431403"
+    "c18b78f889388b78fc83e9084a89780475eaeb068b43108945088b4b148b56108b4508c1e0038914088b4b148b5618"
+    "89540104ff431033c089462489461089461889461440eb0233c05f5e5b5dc20400"
+)
+SIM_OT_SKIP_SITE_VA = 0x00106242    # FUN_001061f0: retail "period >= 4 and scores differ -> game over"
+RETAIL_SIM_OT_SKIP = bytes.fromhex("7e183bfb741c5f5ec705b871a90012000000b8050000005b59c3")
+SIM_OT_SKIP_CONTINUE_VA = 0x0010625C
+SIM_FINISH_CAVE_VA = 0x004D44AF     # XONLINE FUN_004d44af: unreferenced
+SIM_FINISH_CAVE_SIZE = 216
+RETAIL_SIM_FINISH_CAVE = bytes.fromhex(
+    "558bec538b5d085657ff750c53e80eefffff85c00f84b50000008b45108b3056e883cfffff8bf885ff0f84a90000"
+    "008b038b58088d4cbf0383e1fc03cb3b4804894808760589580833db85db895d10747183650c0085ff7634837d0c"
+    "008b46048b36751533c9413bf9760e8b56048b368d04808d04c2894d0c50ff7510e8babfffffff450c397d0c8945"
+    "1072cc8b75108b7d082bf35657e84fefffff85c074318b7f248bce8bd1c1e9028bf3f3a58bca8b550883e103f3a4"
+    "8b4d102bcb014a24eb0f6812fcffffff7508e825c8ffff33c05f5e5b5dc20c00"
+)
+SIM_CORE_CAVE_VA = 0x004D4591      # XONLINE FUN_004d4591: unreferenced
+SIM_CORE_CAVE_SIZE = 208
+RETAIL_SIM_CORE_CAVE = bytes.fromhex(
+    "558bec535657ff750c8b7d0857e82ceeffff85c00f84ad0000008b7510668b0e6685c90f84a70000008b078b5808"
+    "0fb7c98d4c890383e1fc03cb3b4804894808760589580833db85db895d0c746e668b0e33ff6685c9762f85ff8b44"
+    "be0475106683f901760a8b4e088d0480478d04c150ff750ce8e1beffff668b0e89450c0fb7c1473bf872d18b750c"
+    "8b7d082bf35657e873eeffff85c0742f8b7f248bce8bd1c1e9028bf3f3a58bca8b550883e103f3a48b4d0c2bcb01"
+    "4a24eb0d6812fcffff57e84bc7ffff33c05f5e5b5dc20c00"
+)
+SIM_SCORE_SKIP_SITES = (
+    (0x001080C1, 0x0010822F, bytes.fromhex("833df071a90003")),                    # 0x108240 return 5
+    (0x001089CF, 0x001090FB, bytes.fromhex("833df071a90003")),                    # 0x108240 second path
+    (0x0010A0E1, 0x0010A0EF, bytes.fromhex("833df071a90003b8050000007f05")),     # 0x109a00 kick score
+    (0x0010AD7C, 0x0010ADC7, bytes.fromhex("833df071a90003")),                    # 0x10a4b0 return score
+)
+SIM_OFFENSE = 0x00A9719C            # the simulator's offense/possession object
+SIM_DEFENSE = 0x00A971A0            # the simulator's defense object
+SIM_KIND = 0x00A971C0               # sim play kind (0 scrimmage, 1 kickoff, 4 try)
+SIM_STATE = 0x00A971B8              # sim state index
+SIM_OT_FLAGS = 0x00E602A8           # bit0 home possessed, bit1 away possessed (BSS, no image references)
+SIM_OT_INIT = 0x00E602AB           # bit0: overtime state initialised
+SIM_OT_LAST_HOME = 0x00E602AC      # word: last home score
+SIM_OT_LAST_AWAY = 0x00E602AE      # word: last away score
+SIM_HOME_TEAM = 0x00A96B68         # the simulator's home team object
 
 GROUPS = ("core", "possession", "postseason", "sim")
 
@@ -365,7 +427,11 @@ def _aux_code(base: int, flag_team_va: int) -> tuple[bytes, dict[str, int]]:
     # ---- sim_reset: replaces `mov [0xA971C4], ebx` (ebx == 0) at every simulator setup
     a.label("sim_reset")
     a.b("891d" + _imm(SIM_SCRATCH_ZEROED))          # mov [0xA971C4], ebx
-    a.b("c605" + _imm(STATE_SIM_TIES) + "00")       # mov byte [sim ties], 0
+    a.b("50")                                       # push eax
+    a.b("31c0")                                     # xor eax, eax
+    a.b("a3" + _imm(SIM_OT_FLAGS))                  # clears flags/scaled/sim ties/init (0xA8..0xAB)
+    a.b("a3" + _imm(SIM_OT_LAST_HOME))              # clears the two last scores (0xAC..0xAF)
+    a.b("58")                                       # pop eax
     a.b("c3")
     # ---- sim_roll: replaces `mov ecx, 0x28 ; div ecx` (only reached when ties are allowed)
     a.label("sim_roll")
@@ -420,6 +486,8 @@ def cave_labels() -> dict[str, int]:
     labels["main_end"] = main["end"]
     labels.update({name: va for name, va in aux.items() if name != "end"})
     labels["aux_end"] = aux["end"]
+    _core, _finish, _step, sim = _sim_caves()
+    labels.update(sim)
     return labels
 
 
@@ -431,6 +499,286 @@ def _rel8(opcode: int, site: int, target: int) -> bytes:
     rel = target - (site + 2)
     _require(-128 <= rel <= 127, "rel8 out of range")
     return bytes([opcode]) + struct.pack("<b", rel)
+
+
+_SIM_J32 = {0x7C: b"\x0f\x8c", 0x75: b"\x0f\x85", 0x74: b"\x0f\x84",
+            0x72: b"\x0f\x82", 0x76: b"\x0f\x86", 0xEB: b"\xe9"}
+
+
+def _assemble_flexible(a: _Asm) -> bytes:
+    """Assemble an _Asm body, widening only the rel8 jumps that are out of range."""
+
+    for _ in range(20):
+        pos, labels = 0, {}
+        for item in a.items:
+            if isinstance(item, bytes):
+                pos += len(item)
+            elif item[0] == "label":
+                labels[item[1]] = pos
+            elif item[0] == "j8":
+                pos += 2
+            elif item[0] == "j32":
+                pos += len(item[1]) + 4
+            else:
+                pos += 5
+        changed = False
+        for index, item in enumerate(a.items):
+            if not isinstance(item, tuple) or item[0] != "j8":
+                continue
+            here = 0
+            for prev in a.items[:index]:
+                if isinstance(prev, bytes):
+                    here += len(prev)
+                elif prev[0] == "label":
+                    pass
+                elif prev[0] == "j8":
+                    here += 2
+                elif prev[0] == "j32":
+                    here += len(prev[1]) + 4
+                else:
+                    here += 5
+            if not -128 <= labels[item[2]] - (here + 2) <= 127:
+                a.items[index] = ("j32", _SIM_J32[item[1][0]], item[2])
+                changed = True
+        if not changed:
+            break
+    a.labels = labels
+    return a.assemble()
+
+
+def _sim_core_code(base: int, no_score_va: int, offense_va: int, defense_va: int) -> tuple[bytes, dict[str, int]]:
+    """Score-change detection only: the state dispatcher already marked possession."""
+
+    a = _Asm(base)
+    a.label("check")
+    a.b("535152565755")
+    a.b("833d" + _imm(SIM_PERIOD_INDEX) + "04")
+    a.j8("7c", "cont_local")
+    a.b("8b35" + _imm(SIM_OFFENSE))                        # mov esi, [offense]
+    a.b("31ed")                                            # xor ebp, ebp
+    a.b("81fe" + _imm(SIM_HOME_TEAM))
+    a.j8("75", "map_away")
+    a.b("8bc7")                                            # mov eax, edi  home
+    a.b("8bcb")                                            # mov ecx, ebx  away
+    a.j8("eb", "mapped")
+    a.label("map_away")
+    a.b("45")                                              # inc ebp
+    a.b("8bc3")                                            # mov eax, ebx  home
+    a.b("8bcf")                                            # mov ecx, edi  away
+    a.label("mapped")
+    a.b("89c3")                                            # mov ebx, eax  home score
+    a.b("89cf")                                            # mov edi, ecx  away score
+    a.b("663b05" + _imm(SIM_OT_LAST_HOME))
+    a.j8("75", "home_changed")
+    a.b("663b0d" + _imm(SIM_OT_LAST_AWAY))
+    a.j8("75", "away_changed")
+    a.jmp_abs(no_score_va)
+    a.label("home_changed")
+    a.b("66a3" + _imm(SIM_OT_LAST_HOME))
+    a.b("66890d" + _imm(SIM_OT_LAST_AWAY))
+    a.b("30d2")                                            # xor dl, dl
+    a.b("85ed")                                            # test ebp, ebp
+    a.j8("74", "scored_common")
+    a.b("fec2")                                            # inc dl (defense scored)
+    a.j8("eb", "scored_common")
+    a.label("away_changed")
+    a.b("66a3" + _imm(SIM_OT_LAST_HOME))
+    a.b("66890d" + _imm(SIM_OT_LAST_AWAY))
+    a.b("30d2")
+    a.b("85ed")
+    a.j8("75", "scored_common")
+    a.b("fec2")
+    a.label("scored_common")
+    a.b("84d2")                                            # test dl, dl
+    a.j8("75", "to_defense")
+    a.jmp_abs(offense_va)
+    a.label("to_defense")
+    a.jmp_abs(defense_va)
+    a.label("cont_local")
+    a.b("31c0")
+    a.b("5d5f5e5a595b")
+    a.b("c3")
+    return _assemble_flexible(a), dict(a.labels)
+
+
+def _sim_finish_code(base: int, sim_flag_va: int, opp_va: int, off_va: int) -> tuple[bytes, dict[str, int]]:
+    """The decisions after a score or a change of possession."""
+
+    a = _Asm(base)
+    a.label("offense_scored")
+    a.b("833d" + _imm(SIM_KIND) + "01")
+    a.j8("74", "over")                                     # kicking team scored on a kickoff
+    a.b("89f1")                                            # mov ecx, esi
+    a.b("b201")                                            # mov dl, 1
+    a.call(sim_flag_va)
+    a.call(opp_va)
+    a.j8("74", "cont")                                     # ZF=1: opponent has not possessed
+    a.b("85ed")                                            # test ebp, ebp
+    a.j8("75", "os_away")
+    a.b("39fb")                                            # cmp ebx, edi
+    a.j8("7f", "over")                                     # home leads
+    a.j8("eb", "cont")
+    a.label("os_away")
+    a.b("39df")                                            # cmp edi, ebx
+    a.j8("7f", "over")                                     # away leads
+    a.j8("eb", "cont")
+    a.label("defense_scored")
+    a.b("833d" + _imm(SIM_KIND) + "04")
+    a.j8("74", "cont")                                     # defensive try points do not end it
+    a.b("833d" + _imm(SIM_KIND) + "01")
+    a.j8("74", "kick_return")
+    a.j8("eb", "over")
+    a.label("kick_return")
+    a.b("8b0d" + _imm(SIM_DEFENSE))
+    a.b("b201")
+    a.call(sim_flag_va)
+    a.call(off_va)
+    a.j8("74", "cont")                                     # ZF=1: kicking team has not possessed
+    a.j8("eb", "over")
+    a.label("no_score")
+    a.b("85ed")
+    a.j8("75", "ns_away")
+    a.b("39fb")
+    a.j8("76", "cont")
+    a.j8("eb", "ns_check")
+    a.label("ns_away")
+    a.b("39df")
+    a.j8("76", "cont")
+    a.label("ns_check")
+    a.call(opp_va)
+    a.j8("74", "cont")
+    a.j8("eb", "over")
+    a.label("cont")
+    a.b("31c0")
+    a.b("5d5f5e5a595b")
+    a.b("c3")
+    a.label("over")
+    a.b("c705" + _imm(SIM_STATE) + "12000000")
+    a.b("b805000000")
+    a.b("5d5f5e5a595b")
+    a.b("c3")
+    a.label("test_opponent")
+    a.b("a0" + _imm(SIM_OT_FLAGS))
+    a.b("85ed")
+    a.j8("75", "opp_away")
+    a.b("a802")
+    a.b("c3")
+    a.label("opp_away")
+    a.b("a801")
+    a.b("c3")
+    a.label("test_offense")
+    a.b("a0" + _imm(SIM_OT_FLAGS))
+    a.b("85ed")
+    a.j8("75", "off_away")
+    a.b("a801")
+    a.b("c3")
+    a.label("off_away")
+    a.b("a802")
+    a.b("c3")
+    a.label("sim_flag")
+    a.b("85c9")
+    a.j8("74", "ft_ret")
+    a.b("81f9" + _imm(SIM_HOME_TEAM))
+    a.j8("75", "ft_away")
+    a.b("0815" + _imm(SIM_OT_FLAGS))
+    a.b("c3")
+    a.label("ft_away")
+    a.b("00d2")
+    a.b("0815" + _imm(SIM_OT_FLAGS))
+    a.label("ft_ret")
+    a.b("c3")
+    return _assemble_flexible(a), dict(a.labels)
+
+
+def _sim_step_code(base: int, core_va: int, sim_flag_va: int) -> tuple[bytes, dict[str, int]]:
+    """Before every simulator state handler: initialise, track possession, apply the rule."""
+
+    a = _Asm(base)
+    a.label("wrapper")
+    a.b("60")                                              # pushad
+    a.b("8b15" + _imm(SIM_PERIOD_INDEX))
+    a.b("83fa04")
+    a.j8("7c", "done")
+    a.b("b8" + _imm(SIM_HOME_TEAM))
+    a.call(0x00102200)                                     # score of a team (float)
+    a.b("51")
+    a.b("d91c24")
+    a.call(0x00100F00)                                     # float -> int
+    a.b("8bf0")                                            # mov esi, eax (home)
+    a.b("b8" + _imm(0x00A96E80))
+    a.call(0x00102200)
+    a.b("51")
+    a.b("d91c24")
+    a.call(0x00100F00)
+    a.b("8be8")                                            # mov ebp, eax (away)
+    a.b("a1" + _imm(SIM_OFFENSE))
+    a.b("3d" + _imm(SIM_HOME_TEAM))
+    a.j8("75", "w_away")
+    a.b("89f7")                                            # mov edi, esi  home
+    a.b("89eb")                                            # mov ebx, ebp  away
+    a.j8("eb", "w_mapped")
+    a.label("w_away")
+    a.b("89ef")                                            # mov edi, ebp  away
+    a.b("89f3")                                            # mov ebx, esi  home
+    a.label("w_mapped")
+    a.b("8a15" + _imm(SIM_OT_INIT))
+    a.b("f6c201")
+    a.j8("75", "w_inited")
+    a.b("c605" + _imm(SIM_OT_INIT) + "01")
+    a.b("c605" + _imm(SIM_OT_FLAGS) + "00")
+    a.b("668935" + _imm(SIM_OT_LAST_HOME))
+    a.b("66892d" + _imm(SIM_OT_LAST_AWAY))
+    a.label("w_inited")
+    a.b("a1" + _imm(SIM_STATE))
+    a.b("83f801")                                          # period kickoff setup
+    a.j8("74", "w_sync")
+    a.b("83f807")                                          # kickoff setup after a score
+    a.j8("74", "w_sync")
+    a.b("833d" + _imm(SIM_KIND) + "01")                    # kickoff/kick result
+    a.j8("74", "w_core")
+    a.b("8b0d" + _imm(SIM_OFFENSE))
+    a.b("b201")
+    a.call(sim_flag_va)
+    a.j8("eb", "w_core")
+    a.label("w_sync")
+    a.b("668935" + _imm(SIM_OT_LAST_HOME))
+    a.b("66892d" + _imm(SIM_OT_LAST_AWAY))
+    a.j8("eb", "done")
+    a.label("w_core")
+    a.b("8b15" + _imm(SIM_PERIOD_INDEX))
+    a.call(core_va)
+    a.b("85c0")
+    a.j8("74", "done")
+    a.b("c705" + _imm(SIM_STATE) + "12000000")
+    a.label("done")
+    a.b("61")                                              # popad
+    a.b("a1" + _imm(SIM_STATE))
+    a.b("c3")
+    return _assemble_flexible(a), dict(a.labels)
+
+
+def _sim_caves() -> tuple[bytes, bytes, bytes, dict[str, int]]:
+    """Assemble the three simulator caves in two passes so cross-cave calls resolve."""
+
+    _finish, flabels = _sim_finish_code(SIM_FINISH_CAVE_VA, SIM_FINISH_CAVE_VA,
+                                        SIM_FINISH_CAVE_VA, SIM_FINISH_CAVE_VA)
+    sim_flag = SIM_FINISH_CAVE_VA + flabels["sim_flag"]
+    opp = SIM_FINISH_CAVE_VA + flabels["test_opponent"]
+    off = SIM_FINISH_CAVE_VA + flabels["test_offense"]
+    finish, flabels = _sim_finish_code(SIM_FINISH_CAVE_VA, sim_flag, opp, off)
+    core, clabels = _sim_core_code(SIM_CORE_CAVE_VA, SIM_FINISH_CAVE_VA + flabels["no_score"],
+                                   SIM_FINISH_CAVE_VA + flabels["offense_scored"],
+                                   SIM_FINISH_CAVE_VA + flabels["defense_scored"])
+    step, slabels = _sim_step_code(SIM_STEP_CAVE_VA, SIM_CORE_CAVE_VA + clabels["check"], sim_flag)
+    _require(len(core) <= SIM_CORE_CAVE_SIZE, "sim core cave too large")
+    _require(len(finish) <= SIM_FINISH_CAVE_SIZE, "sim finish cave too large")
+    _require(len(step) <= SIM_STEP_CAVE_SIZE, "sim step cave too large")
+    labels = {f"sim_{name}": SIM_CORE_CAVE_VA + off for name, off in clabels.items()}
+    labels.update({f"sim_finish_{name}": SIM_FINISH_CAVE_VA + off for name, off in flabels.items()})
+    labels.update({f"sim_step_{name}": SIM_STEP_CAVE_VA + off for name, off in slabels.items()})
+    return (core + b"\xcc" * (SIM_CORE_CAVE_SIZE - len(core)),
+            finish + b"\xcc" * (SIM_FINISH_CAVE_SIZE - len(finish)),
+            step + b"\xcc" * (SIM_STEP_CAVE_SIZE - len(step)), labels)
 
 
 def _header_size(payload: bytes) -> int:
@@ -462,6 +810,9 @@ def _sites(payload: bytes, regular_minutes: float, both_possessions: bool, posts
     expiry2 += b"\x90" * (len(RETAIL_EXPIRY2) - len(expiry2))
     sim_tie = _rel32_call(SIM_TIE_SITE_VA, labels["sim_tie"]) + _rel8(0x75, SIM_TIE_SITE_VA + 5, SIM_TIE_CONTINUE_VA)
     sim_tie += b"\x90" * (len(RETAIL_SIM_TIE) - len(sim_tie))
+    sim_core, sim_finish, sim_step, _sim_labels = _sim_caves()
+    sim_skip = (b"\xe9" + struct.pack("<i", SIM_OT_SKIP_CONTINUE_VA - (SIM_OT_SKIP_SITE_VA + 5))
+                + b"\x90" * (len(RETAIL_SIM_OT_SKIP) - 5))
     sites: list[tuple[str, str, int, bytes, bytes]] = [
         ("core", "main_cave", _offset(payload, MAIN_CAVE_VA), RETAIL_MAIN_CAVE, main_cave_bytes(regular_minutes)),
         ("core", "aux_cave", _offset(payload, AUX_CAVE_VA), RETAIL_AUX_CAVE, aux_cave_bytes()),
@@ -483,7 +834,16 @@ def _sites(payload: bytes, regular_minutes: float, both_possessions: bool, posts
         ("sim", "sim_tie_hook", _offset(payload, SIM_TIE_SITE_VA), RETAIL_SIM_TIE, sim_tie),
         ("sim", "sim_period_hook", _offset(payload, SIM_PERIOD_SITE_VA), RETAIL_SIM_PERIOD,
          _rel32_call(SIM_PERIOD_SITE_VA, labels["sim_period"]) + b"\x90" * 5),
+        ("sim", "sim_core_cave", _offset(payload, SIM_CORE_CAVE_VA), RETAIL_SIM_CORE_CAVE, sim_core),
+        ("sim", "sim_finish_cave", _offset(payload, SIM_FINISH_CAVE_VA), RETAIL_SIM_FINISH_CAVE, sim_finish),
+        ("sim", "sim_step_cave", _offset(payload, SIM_STEP_CAVE_VA), RETAIL_SIM_STEP_CAVE, sim_step),
+        ("sim", "sim_step_hook", _offset(payload, SIM_STEP_SITE_VA), RETAIL_SIM_STEP,
+         _rel32_call(SIM_STEP_SITE_VA, SIM_STEP_CAVE_VA)),
+        ("sim", "sim_ot_skip_hook", _offset(payload, SIM_OT_SKIP_SITE_VA), RETAIL_SIM_OT_SKIP, sim_skip),
     ]
+    for index, (site_va, target_va, retail) in enumerate(SIM_SCORE_SKIP_SITES):
+        sites.append(("sim", f"sim_score_skip_{index}", _offset(payload, site_va), retail,
+                      b"\xe9" + struct.pack("<i", target_va - (site_va + 5)) + b"\x90" * (len(retail) - 5)))
     wanted = {"core": True, "possession": both_possessions, "postseason": postseason_no_ties, "sim": sim_engine}
     return [(g, label, off, before, after if wanted[g] else before) for g, label, off, before, after in sites]
 
@@ -590,4 +950,10 @@ __all__ = ["OvertimeError", "MAIN_CAVE_VA", "MAIN_CAVE_SIZE", "AUX_CAVE_VA", "AU
            "SIM_PERIOD_SITE_VA", "RETAIL_INIT", "RETAIL_OT_KICKOFF", "RETAIL_KICKOFF", "RETAIL_PRED", "RETAIL_EXPIRY",
            "RETAIL_EXPIRY2", "RETAIL_SIM_RESET", "RETAIL_SIM_ROLL", "RETAIL_SIM_TIE", "RETAIL_SIM_PERIOD", "GROUPS",
            "NO_TIE_MODES", "RETAIL_REGULAR_MINUTES", "apply", "aux_cave_bytes", "cave_labels", "main_cave_bytes",
-           "overtime_clock_seconds", "read_settings", "scale_for", "status"]
+           "overtime_clock_seconds", "read_settings", "scale_for", "status",
+           "SIM_OFFENSE", "SIM_DEFENSE", "SIM_KIND", "SIM_STATE", "SIM_HOME_TEAM", "SIM_PERIOD_INDEX",
+           "SIM_CLOCK_FRACTION", "SIM_OT_FLAGS", "SIM_OT_INIT", "SIM_OT_LAST_HOME", "SIM_OT_LAST_AWAY",
+           "SIM_STEP_SITE_VA", "RETAIL_SIM_STEP", "SIM_OT_SKIP_SITE_VA", "RETAIL_SIM_OT_SKIP",
+           "SIM_CORE_CAVE_VA", "SIM_CORE_CAVE_SIZE", "RETAIL_SIM_CORE_CAVE", "SIM_FINISH_CAVE_VA",
+           "SIM_FINISH_CAVE_SIZE", "RETAIL_SIM_FINISH_CAVE", "SIM_STEP_CAVE_VA", "SIM_STEP_CAVE_SIZE",
+           "RETAIL_SIM_STEP_CAVE", "SIM_SCORE_SKIP_SITES"]

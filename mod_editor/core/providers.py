@@ -825,7 +825,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_my_career_home_code.py": "c23c0177432f74ec2d8c51b99400bd47c9160fc6e563b8aca05eebd12d7ac485",
         "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
         "mod_editor/core/nfl2k5_my_career_save.py": "6d22db867baaac9ddef430a11b7d4af824d3f41b238c7b27bf21bfdbd795f252",
-        "mod_editor/core/nfl2k5_overtime.py": "3ff6cb4883cf9c6846029564a777c3cf26b891b10afc3a1a06c8baee72c02e4b",
+        "mod_editor/core/nfl2k5_overtime.py": "ca2e8703dce510bec31ad95a51e7c4545770f9b6edb040f5ad65d96417758703",
         "mod_editor/core/nfl2k5_p8_texture_writer.py": "4a519adf657eeb5ecbf8be6a8cba99411cbd0e5843bf55d7bd7e142723498485",
         "mod_editor/core/nfl2k5_penalties.py": "f74e61d6404d30b54811442b1bbb58fa6d233d55f57856043a6cc6e8730c1ed8",
         "mod_editor/core/nfl2k5_play_codec.py": "3f01db64ac7230102fb8c37c3baa2ad60932803a576a8f7404dc3c0d347b268e",
