@@ -57,7 +57,9 @@ MENU_ROWS = (0, 1, 2, 3, 4, 5, BROADCAST_ROW)
 # Every gameplay/preview state gets an independent eye, including kicks and
 # pass states. Presentation/replay states and all seven other rows stay native.
 BROADCAST_STATES = (1, *range(7, 20))
-BROADCAST_LENSES = (68.0, 78.2, 57.8, 48.0)
+# v7.1 (Noah 10/29: "zoom the camera slightly on the side angle to better resemble how it looks on tv"): every sideline lens
+# is 1.15 times the v6 word (68, 78.2, 57.8, 48), a narrower lens, the same mount, so the 1.15 and 0.85 family ratios hold.
+BROADCAST_LENSES = (78.2, 89.93, 66.47, 55.2)
 
 def broadcast_slot(state):
     return 1 if 16 <= state <= 19 else 2 if state in (13, 15) else 0 if state == 9 else 3
@@ -88,7 +90,10 @@ BROADCAST_TEMPLATE_VA = 0xA881E0
 # a setup box, but that box precedes smoothing. v6 constrains the actual final
 # eye at the reset/smoothing merge and anchors the filter to it, with an earlier
 # corner pull-in. The four lens families share that boundary. See ASTRA_REPORT.md.
-BROADCAST_VALUES = ((400.0, 0.0, 250.0), 68.0, (4500.0, 1400.0, 200.0))
+# The look-at sits 1 m below the ground line (y -100, the pitch goes up by about 1.5 degrees) with the mount's offset raised by the
+# same amount, so the eye stays at 1400 cm: the closer lens would otherwise push the near wideout under the scorebar.
+BROADCAST_VALUES = ((400.0, -100.0, 250.0), 78.2, (4500.0, 1500.0, 200.0))
+LEGACY54_VALUES = ((400.0, 0.0, 250.0), 68.0, (4500.0, 1400.0, 200.0))
 # v7 kick views. Camera states (proved by polling B616C0 in a headless xemu Quick Game on the released v0.7 disc, and by the
 # native play-type decode at 0x894A0 and the release dispatch at 0x9FFB6): 9 = field goal / extra point snap and kick,
 # 10 = punt snap and kick, 13 = field goal ball in the air (play kind E602BC = 3), 14 = punt ball in the air (kind 6),
@@ -195,10 +200,10 @@ FAR_RETAIL_VALUES: dict[int, Values] = {
 # (look-at xyz, lens word, camera offset xyz) in the offense-relative frame (z toward the opponent's goal), centimetres.
 # Native type 2: eye = focus + look-at + offset, so the eye relative to the ball is look-at + offset.
 KICK_VALUES: dict[int, Values] = {
-    KICK_FG_GROUND: ((0.0, 100.0, 1365.0), 38.0, (0.0, 450.0, -3665.0)),
-    KICK_PUNT_GROUND: ((0.0, 100.0, 387.0), 34.0, (0.0, 550.0, -3287.0)),
-    KICK_FG_AIR: ((0.0, 100.0, 2200.0), 34.0, (0.0, 350.0, -4100.0)),
-    KICK_PUNT_AIR: ((0.0, 100.0, 2000.0), 32.0, (0.0, 450.0, -4600.0)),
+    KICK_FG_GROUND: ((0.0, 100.0, 1365.0), 42.0, (0.0, 450.0, -3665.0)),
+    KICK_PUNT_GROUND: ((0.0, 100.0, 387.0), 40.0, (0.0, 550.0, -3287.0)),
+    KICK_FG_AIR: ((0.0, 100.0, 2200.0), 40.0, (0.0, 350.0, -4100.0)),
+    KICK_PUNT_AIR: ((0.0, 100.0, 2000.0), 37.0, (0.0, 450.0, -4600.0)),
 }
 
 PRESETS: dict[str, dict[int, Values]] = {
@@ -537,22 +542,22 @@ def allocation(payload: bytes, kind: str = "code", revision: int = VERSION) -> d
     return next(a for a in rows if a["kind"] == kind)
 
 
-def broadcast_descriptor(code_va: int = 0, slot: int = 0) -> bytes:
+def broadcast_descriptor(code_va: int = 0, slot: int = 0, revision: int = VERSION) -> bytes:
     """Native sideline lag/setup, with following type 2, a 2.5 m lead and the v5.3 loge-front mount and lens.
 
     The untouched retail type-0 record has lens 120 and a fixed world eye.
     Reusing it verbatim would frame only a small part of a live play. No retail
     shared descriptor is mutated, and no inherited previous eye is required.
     """
-    record = bytearray(descriptor_bytes(BROADCAST_RETAIL_DESCRIPTOR, BROADCAST_VALUES))
+    record = bytearray(descriptor_bytes(BROADCAST_RETAIL_DESCRIPTOR, LEGACY54_VALUES if revision == 54 else BROADCAST_VALUES))
     struct.pack_into("<I", record, 0, 2)
-    struct.pack_into("<f", record, FIELD_FOV, BROADCAST_LENSES[slot])
+    struct.pack_into("<f", record, FIELD_FOV, LEGACY54_VALUES[1] if revision == 54 else BROADCAST_LENSES[slot])
     struct.pack_into("<I", record, 0x40, code_va + 160)
     return bytes(record)
 
 
 def broadcast_records(code_va: int, revision: int = VERSION) -> bytes:
-    return b"".join(broadcast_descriptor(code_va, slot) for slot in range(1 if revision == 54 else 4))
+    return b"".join(broadcast_descriptor(code_va, slot, revision) for slot in range(1 if revision == 54 else 4))
 
 
 def _read(payload: bytes, va: int, size: int) -> bytes:

@@ -39,7 +39,7 @@ class IntegrityTests(unittest.TestCase):
         # x and y (+48, +52: the loge front, 45 m out and 14 m up, instead of the template's press box) differ from
         # the retail template; the mount's z (+56), flag, lag pointer, callbacks and padding stay exact.
         self.assertEqual([i for i in range(0, 80, 4)
-                          if descriptor[i:i+4] != c.BROADCAST_RETAIL_DESCRIPTOR[i:i+4]], [0, 16, 24, 32, 48, 52, 64])
+                          if descriptor[i:i+4] != c.BROADCAST_RETAIL_DESCRIPTOR[i:i+4]], [0, 16, 20, 24, 32, 48, 52, 64])
         self.assertEqual(c.decode_descriptor(descriptor)['type'], 2)
         self.assertEqual(c.decode_descriptor(descriptor)['flag'], 0)
         self.assertEqual(self.receipt['version'], 7)

@@ -64,7 +64,10 @@ class CameraV6Tests(unittest.TestCase):
             b=historical(self.retail,revision) if revision=='v5.3' else self.patched
             p=FinalProjection(wide.apply(b,'16:9')[0])
             p.setup(c.read_preset_table(b)[7][9][1]);samples.append(p.point(2200,175,0))
-        self.assertEqual(samples[0],samples[1])
+        # v7.1 (Noah 10/29) deliberately zooms the sideline views 15%: the near wideout is bigger than in v5.3 (further
+        # from the ball on screen) and still above the scorebar. The v5.3 pre-snap parity of v6 no longer holds.
+        self.assertGreater(samples[1][0],samples[0][0]);self.assertLess(samples[1][0],640)
+        self.assertTrue(0<samples[1][1]<381,samples)
         p=FinalProjection(wide.apply(self.patched,'16:9')[0]);scales=[]
         for state in (9,17,15,13,7):
             p.setup(c.read_preset_table(self.patched)[7][state][1])
@@ -102,7 +105,7 @@ class CameraV6Tests(unittest.TestCase):
         uc.reg_write(r.UC_X86_REG_ESP,h.STACK)
         uc.emu_start(0xA572D,0xA5741,count=10000)
         self.assertEqual(uc.reg_read(r.UC_X86_REG_EIP),0xA5741)
-        self.assertEqual(h.f(uc,0xA82D50)[0],48.)
+        self.assertAlmostEqual(h.f(uc,0xA82D50)[0],c.BROADCAST_LENSES[3],places=4)
         self.assertEqual(struct.unpack('<I',uc.mem_read(0xA82D70,4))[0],c.allocation(self.patched)['va']+160)
         # Once a kickoff play is selected, 189640 reads its real +8 pointer
         # and 894A0 decodes native play type 8 into camera state 8.
