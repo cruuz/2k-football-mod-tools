@@ -49,14 +49,15 @@ class StaticTests(unittest.TestCase):
 
     def test_template_fits_and_links_only_to_itself(self):
         self.assertLessEqual(len(runtime.CODE), champions.CODE_SIZE)
-        self.assertEqual(champions.REQUESTS, (("nfl2k5_champions", "code", 5120, 16),))
+        self.assertEqual(champions.REQUESTS, (("nfl2k5_champions", "code", 5632, 16),))
         self.assertEqual(champions.CODE_SIZE % 16, 0)
         for offset, kind, symbol, _value in runtime.RELOCATIONS:
             self.assertIn(kind, (1, 2))
             self.assertEqual(symbol, "code")
             self.assertLessEqual(offset + 4, len(runtime.CODE))
         for entry in ("champions_advance", "champions_awards", "champions_ratings", "champions_bio",
-                      "champions_advance_notice", "champions_modern_awards"):
+                      "champions_advance_notice", "champions_modern_awards", "champions_table", "champions_flip",
+                      "champions_enter", "champions_find"):
             self.assertIn(entry, runtime.LABELS)
 
     def test_code_for_relocates_with_the_page(self):
@@ -93,11 +94,11 @@ class StaticTests(unittest.TestCase):
     def test_award_rule_weights_match_the_native_tables(self):
         source = (ROOT / "tools/nfl2k5_champions/runtime.c").read_text(encoding="utf-8")
         for name, key in (("mvp_weight", "mvp_weight_percent"), ("opoy_weight", "opoy_weight_percent"),
-                          ("dpoy_weight", "dpoy_weight_percent")):
+                          ("dpoy_weight", "dpoy_weight_percent"), ("droy_weight", "droy_weight_percent")):
             found = re.search(r"static const u8 %s\[17\] = \{([^}]*)\};" % name, source)
             self.assertIsNotNone(found, name)
             self.assertEqual(tuple(int(x) for x in found.group(1).split(",")), champions.AWARD_RULE[key], name)
-        for key in ("mvp_weight_percent", "opoy_weight_percent", "dpoy_weight_percent"):
+        for key in ("mvp_weight_percent", "opoy_weight_percent", "dpoy_weight_percent", "droy_weight_percent"):
             self.assertEqual(len(champions.AWARD_RULE[key]), 17)
         marks = dict(champions.OTHERWORLDLY_MARKS)
         self.assertEqual(marks, {"sacks2": 60, "tackles": 300, "rush_yds": 2500, "rec_yds": 2200, "pass_yds": 6000,
@@ -164,6 +165,31 @@ class ModelTests(unittest.TestCase):
         two = [player("A", "DE", 2, sacks2=61), player("B", "ILB", 2, tackles=450)]  # the bigger ratio wins
         self.assertEqual(self.names([qb] + two)["mvp"], "B")
 
+    def test_elite_edges_corners_tackles_and_linebackers_win_defensive_awards_when_the_season_merits_it(self):
+        # a typical field of the simulated league's best defenders, then one elite season of each kind (lines in the
+        # range of real winners: Watt/Garrett/Donald sacks, Gilmore/Surtain interceptions, Parsons rushing from linebacker)
+        field = [player("EDGE15", "DE", 1, sacks2=30, tackles=60, ff=2), player("DT16", "DT", 1, sacks2=32, tackles=55),
+                 player("ILB", "ILB", 1, tackles=135, sacks2=12, def_int=3, ff=2), player("CB6", "CB", 1, def_int=6, tackles=60),
+                 player("SS", "SS", 1, tackles=118, def_int=6, ff=3), player("OLB11", "OLB", 1, sacks2=22, tackles=80, ff=3)]
+        elite = {
+            "edge, 22.5 sacks": player("WATT", "OLB", 1, sacks2=45, tackles=64, ff=4),
+            "tackle, 20.5 sacks": player("DONALD", "DT", 1, sacks2=41, tackles=59, ff=4),
+            "corner, 11 interceptions": player("LOCK", "CB", 1, def_int=11, tackles=65),
+            "linebacker, 18 sacks and 130 tackles": player("PARSONS", "ILB", 1, sacks2=36, tackles=130, def_int=2, ff=3),
+            "edge, 17 sacks": player("GARRETT", "DE", 1, sacks2=34, tackles=51, ff=4),
+        }
+        qb = player("QB", "QB", 0, pass_yds=4500, pass_td=35)
+        for label, star in elite.items():
+            with self.subTest(label):
+                self.assertEqual(self.winners([qb] + field + [star])["dpoy"]["name"], star["name"])
+        # the same lines win the rookie award when the player is a rookie, with the rookie weights
+        for label, star in (("rookie edge", player("VERSE", "DE", 2, yrs=1, sacks2=18, tackles=40, ff=2)),
+                            ("rookie corner", player("GARDNER", "CB", 2, yrs=1, def_int=5, tackles=55)),
+                            ("rookie linebacker", player("PARSONS", "OLB", 2, yrs=1, sacks2=26, tackles=70, ff=3))):
+            with self.subTest(label):
+                weak = [player("RILB", "ILB", 2, yrs=1, tackles=95, sacks2=4, def_int=1)]
+                self.assertEqual(self.winners([qb, star] + weak)["droy"]["name"], star["name"])
+
     def test_the_mvp_cannot_also_win_a_position_award(self):
         wonder = player("WONDER", "DE", 2, sacks2=70, tackles=80, ff=5)
         other = player("OTHER", "DE", 1, sacks2=30, tackles=60)
@@ -211,7 +237,7 @@ class InstallTests(unittest.TestCase):
         self.assertEqual(champions.status(self.patched), "applied")
         self.assertEqual(champions.status(self.retail), "retail")
         found = champions.allocations(self.patched)
-        self.assertEqual((found["code"]["size"], found["code"]["align"]), (5120, 16))
+        self.assertEqual((found["code"]["size"], found["code"]["align"]), (5632, 16))
         self.assertEqual(self.receipt["champions"]["code_va"], hex(found["code"]["va"]))
         again, receipt = honors.apply(self.patched)
         self.assertEqual(again, self.patched)
@@ -224,7 +250,7 @@ class InstallTests(unittest.TestCase):
         code = XbeImage(self.patched).read(code_va, honors.CODE_SIZE)
         absolute = [struct.unpack_from("<I", code, off)[0] for off, kind, sym, _v in honors.runtime.RELOCATIONS
                     if kind == 1 and sym.startswith("champ_")]
-        self.assertEqual(set(absolute), {at["champions_ratings"], at["champions_bio"]})
+        self.assertEqual(set(absolute), {at["champions_ratings"], at["champions_bio"], at["champions_flip"], at["champions_enter"]})
 
     def test_a_single_foreign_site_is_refused(self):
         champ_va = champions.allocations(self.patched)["code"]["va"]
@@ -490,8 +516,8 @@ class NativeTests(unittest.TestCase):
         self.assertEqual([r["super_bowl"] for r in rows], list(range(61, 39, -1)))      # 61 replaced 39 in the ring
         self.assertEqual((rows[1]["super_bowl"], rows[1]["champion"], rows[1]["champion_points"]), (60, 27, 29))
         calls, text = self.draw_card(m, 2)
-        self.assertEqual(text[0][0], "2026 SEA")
-        self.assertEqual(text[1][0], "31-24 NE")
+        self.assertEqual(text[0][0], "2026 SEA 31-24 NE  WALKER, HB")
+        self.assertEqual(text[1][0].split()[0], "2025")                       # the seeded Super Bowl LX is next
 
     # --- the Player Card page ---------------------------------------------------------------------------------
     def draw_card(self, m, page):
@@ -507,7 +533,23 @@ class NativeTests(unittest.TestCase):
         m.call(0x320B70)
         return list(m.calls), list(m.text)
 
-    def test_page_three_lists_the_ten_newest_seasons_and_the_latest_final(self):
+    def scene(self, m):
+        """A card scene with the two row-bar nodes the owner hides (names are the game's own strings)."""
+        scene, nodes = m.HEAP + 0x7C000, m.HEAP + 0x7C100
+        m.put(0xC901C0, scene)
+        m.put(scene + 0x1C, 2)
+        m.put(scene + 0x20, nodes)
+        for i, name in enumerate((0xEA2DA8, 0xEA2DB4)):
+            node = nodes + 0x80 * i
+            m.uc.mem_write(node, bytes(0x80))
+            m.put(node, name)
+            m.uc.mem_write(node + 0x74, struct.pack("<HH", 0x302, 0x303))
+        return [nodes + 0x80 * i for i in range(2)]
+
+    def sheet_bottoms(self, m):
+        return [m.get(0x535E4C + k * 0x268 + 12) for k in range(6)]
+
+    def test_page_three_lists_the_seasons_newest_first_in_the_table_area(self):
         m = self.machine()
         m.record(RETIRE, "retirement pass")
         self.fill(m, 86, 94)
@@ -515,35 +557,64 @@ class NativeTests(unittest.TestCase):
         m.call(self.champ["champions_advance"])
         calls, text = self.draw_card(m, 2)
         self.assertEqual(calls, ["header", "photo", "model"])
-        counts = text[:20]
-        labels = [t[0] for t in counts[0::2]]
-        values = [t[0] for t in counts[1::2]]
-        self.assertEqual(labels[0], "2060 SEA")                             # Super Bowl 95 = the 2060 season
-        self.assertEqual(values[0], "31-24 NE")
-        self.assertEqual(len(labels), 10)
-        xs = (310.0,) * 5 + (490.0,) * 5
-        ys = (318.0, 333.0, 347.0, 362.0, 377.0) * 2
-        for (label, value, x, y) in zip(counts[0::2], counts[1::2], xs, ys):
-            self.assertEqual(label[1:], (3, 2, 0xFF101010, (x - 8.0, y, 20.0)))
-            self.assertEqual(value[1:], (3, 1, 0xFF101010, (x, y, 20.0)))
-        lines = text[20:]
+        rows = [t[0] for t in text[:6]]
+        self.assertEqual(rows[0], "2060 SEA 31-24 NE  WALKER, HB")
+        self.assertEqual(rows[1], f"2059 A{94 % 31:02d} {20 + 94 % 15}-{7 + 94 % 6} A{(94 + 7) % 31:02d}")
+        self.assertEqual(rows[5].split()[0], "2055")                         # six rows: 2060 .. 2055
+        for r, (t, expected_y) in enumerate(zip(text[:6], (203.0 + 17.0 * i for i in range(6)))):
+            self.assertEqual(t[1:], (8, 1, 0xFF101010, (215.0, expected_y, 20.0)), r)
+        self.assertEqual(text[6][0], "SUPER BOWLS 1-6 OF 10   UP DOWN: SCROLL")
+        self.assertEqual(text[6][4], (215.0, 330.0, 20.0))
+        lines = text[7:]
         self.assertEqual([t[0] for t in lines], ["SUPER BOWL XCV: SEA 31-24 NE", "SB MVP: K. WALKER, HB",
                                                  "MVP: M. STAFFORD, QB (SEA)"])
         for i, y in enumerate((137.0, 154.0, 171.0)):
             self.assertEqual(lines[i][1:], (8, 1, 0xFF101010, (198.0, y, 20.0)))
 
-    def test_page_three_skips_missing_seasons_and_ignores_the_ones_outside_the_ring(self):
+    def test_up_and_down_scroll_and_the_list_clamps(self):
         m = self.machine()
         m.record(RETIRE, "retirement pass")
-        self.fill(m, 60, 60)
-        self.fill(m, 70, 70)
-        self.fill(m, 91, 93)
-        self.season(m, season_index=34)                                    # Super Bowl 95; 94 is missing
+        self.fill(m, 80, 94)
+        self.season(m, season_index=34)                                    # 16 seasons: 95 .. 80
         m.call(self.champ["champions_advance"])
+        self.assertEqual(m.call(self.champ["champions_flip"], ecx=0x2000000, edx=self.state), 0)   # page 1: ignored
+        m.put(self.state, 2)
+        for _ in range(3):
+            self.assertEqual(m.call(self.champ["champions_flip"], ecx=0x2000000, edx=self.state), 1)
+        self.assertEqual(m.get(self.state + 4), 3)
         _calls, text = self.draw_card(m, 2)
-        wanted = ["2060 SEA"] + [f"{n + 1965} A{n % 31:02d}" for n in (93, 92, 91)]
-        self.assertEqual([t[0] for t in text[0:8:2]], wanted)             # 70 is 25 seasons back: outside the 22-slot ring
-        self.assertEqual(len(text), 4 * 2 + 3)
+        self.assertEqual([t[0].split()[0] for t in text[:6]], [str(n + 1965) for n in range(92, 86, -1)])
+        self.assertEqual(text[6][0], "SUPER BOWLS 4-9 OF 16   UP DOWN: SCROLL")
+        m.put(self.state + 4, 99)                                          # far past the end: the last window
+        _calls, text = self.draw_card(m, 2)
+        self.assertEqual(text[6][0], "SUPER BOWLS 11-16 OF 16   UP DOWN: SCROLL")
+        self.assertEqual(m.get(self.state + 4), 10)
+        m.call(self.champ["champions_flip"], ecx=0x1000000, edx=self.state)  # up
+        self.assertEqual(m.get(self.state + 4), 9)
+        m.put(self.state + 4, 0)
+        m.call(self.champ["champions_flip"], ecx=0x1000000, edx=self.state)
+        self.assertEqual(m.get(self.state + 4), 0)
+
+    def test_page_three_hides_the_stats_table_and_the_other_pages_bring_it_back(self):
+        m = self.machine()
+        bars = self.scene(m)
+        before = self.sheet_bottoms(m)
+        self.assertEqual(before, [0x439C0000] * 6)
+        self.draw_card(m, 2)
+        self.assertEqual(self.sheet_bottoms(m), [0x43430000] * 6)          # y1 = y0: no table height
+        for node in bars:
+            self.assertEqual(struct.unpack("<HH", bytes(m.uc.mem_read(node + 0x74, 4))), (0, 1))   # bars draw nothing
+        m.put(self.state, 2)
+        m.call(self.champ["champions_flip"], ecx=0x1000, edx=self.state)  # Black: next page = card
+        self.assertEqual(m.get(self.state), 0)
+        self.assertEqual(self.sheet_bottoms(m), [0x439C0000] * 6)
+        for node in bars:
+            self.assertEqual(struct.unpack("<HH", bytes(m.uc.mem_read(node + 0x74, 4))), (0x302, 0x303))
+        self.draw_card(m, 2)
+        m.call(self.champ["champions_enter"], ecx=self.state)               # a new card opens on page 1
+        self.assertEqual(self.sheet_bottoms(m), [0x439C0000] * 6)
+        # the seventh definition has a different layout and is never touched
+        self.assertNotEqual(m.get(0x536CBC), 0x43430000)
 
     def test_page_three_of_an_old_save_is_empty_and_a_corrupt_slot_reads_as_empty(self):
         m = self.machine()

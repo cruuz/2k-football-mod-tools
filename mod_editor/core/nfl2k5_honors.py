@@ -177,11 +177,13 @@ def code_for(code_va: int, data_va: int, champions_code_va: int = 0) -> bytes:
     ``champions_code_va`` is the champions owner's code page: the card's third page calls into it. 0 (no such owner)
     links both calls to nothing and the card keeps its two pages."""
 
-    symbols = {"code": code_va, "state": data_va, "champ_ratings": 0, "champ_bio": 0}
+    symbols = {"code": code_va, "state": data_va, "champ_ratings": 0, "champ_bio": 0, "champ_flip": 0, "champ_enter": 0}
     if champions_code_va:
         at = champions.labels(champions_code_va)
         symbols["champ_ratings"] = at["champions_ratings"]
         symbols["champ_bio"] = at["champions_bio"]
+        symbols["champ_flip"] = at["champions_flip"]
+        symbols["champ_enter"] = at["champions_enter"]
     result = bytearray(runtime.CODE)
     for offset, kind, symbol, value in runtime.RELOCATIONS:
         target = symbols[symbol] + value + struct.unpack_from("<i", result, offset)[0]

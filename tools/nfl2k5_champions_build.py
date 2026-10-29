@@ -20,7 +20,7 @@ FLAGS = ["-m32", "-Os", "-ffreestanding", "-fno-builtin", "-fno-strict-aliasing"
          "-fno-stack-protector", "-fno-asynchronous-unwind-tables", "-fno-unwind-tables", "-fomit-frame-pointer",
          "-fno-jump-tables", "-mpreferred-stack-boundary=2", "-mno-sse", "-mno-mmx", "-Wall", "-Wextra", "-Werror"]
 EXTERNAL = {}  # no relocation outside the blob itself
-ENTRIES = ("champions_advance", "champions_awards", "champions_ratings", "champions_bio")
+ENTRIES = ("champions_advance", "champions_awards", "champions_ratings", "champions_bio", "champions_table", "champions_flip", "champions_enter")
 
 
 def generate(source: Path = SOURCE) -> str:

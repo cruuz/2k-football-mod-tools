@@ -58,14 +58,14 @@ class TemplateTests(unittest.TestCase):
         self.assertLessEqual(len(runtime.CODE), honors.CODE_SIZE)
         self.assertEqual(honors.HONORS_REQUESTS, (("nfl2k5_honors", "code", 2560, 16), ("nfl2k5_honors", "data", 16, 16)))
         # b779-hn1: the Super Bowl champions owner is installed with this one (its code page; the card's third page)
-        self.assertEqual(honors.REQUESTS, honors.HONORS_REQUESTS + (("nfl2k5_champions", "code", 5120, 16),))
+        self.assertEqual(honors.REQUESTS, honors.HONORS_REQUESTS + (("nfl2k5_champions", "code", 5632, 16),))
         for offset, kind, symbol, _value in runtime.RELOCATIONS:
             self.assertIn(kind, (1, 2))
-            self.assertIn(symbol, ("code", "state", "champ_ratings", "champ_bio"))
+            self.assertIn(symbol, ("code", "state", "champ_ratings", "champ_bio", "champ_flip", "champ_enter"))
             self.assertLessEqual(offset + 4, len(runtime.CODE))
         for entry in ("honors_page_input", "honors_page_enter", "honors_page_ratings", "honors_page_bio",
                       "honors_season_hook", "honors_sb_hook", "honors_fold_rule", "commit_season", "commit_sb",
-                      "honors_flip"):
+                      "honors_flip", "honors_enter"):
             self.assertIn(entry, runtime.LABELS)
 
     def test_code_for_relocates_against_both_blocks(self):
@@ -149,7 +149,7 @@ class TemplateTests(unittest.TestCase):
         mine = {r["kind"]: r for r in rows if r["owner"] == honors.OWNER}
         self.assertEqual({k: (v["size"], v["align"]) for k, v in mine.items()}, {"code": (2560, 16), "data": (16, 16)})
         champs = [r for r in rows if r["owner"] == "nfl2k5_champions"]
-        self.assertEqual([(r["kind"], r["size"], r["align"]) for r in champs], [("code", 5120, 16)])
+        self.assertEqual([(r["kind"], r["size"], r["align"]) for r in champs], [("code", 5632, 16)])
         rw = space._scale_regions()[1]
         self.assertTrue(rw["va"] <= mine["data"]["va"] and mine["data"]["va"] + 16 <= rw["va"] + rw["size"])
         for kind, row in mine.items():
@@ -442,6 +442,24 @@ class NativeTests(unittest.TestCase):
         self.assertEqual(self.pad_frame(m, 0x1000 | 0x200, 0), (1, sound + ["pop"]))
         self.assertEqual(self.pad_frame(m, 0, 1), (1, []))
 
+    def test_up_and_down_scroll_the_champions_page_only(self):
+        m = self.machine()
+        m.record(0x38650, "sound_lookup", result=0x1234)
+        m.record(0x89DA0, "sound_play", pop=0x18)
+        sound = ["sound_lookup", "sound_play"]
+        for page in (0, 1):                                                    # the retail and honors pages ignore them
+            self.assertEqual(self.pad_frame(m, 0x2000000, page), (page, []))
+            self.assertEqual(self.pad_frame(m, 0x1000000, page), (page, []))
+        self.assertEqual(self.pad_frame(m, 0x2000000, 2), (2, sound))          # down: the cursor sound and a row
+        self.assertEqual(m.get(self.state + 4), 1)
+        self.assertEqual(self.pad_frame(m, 0x1000000, 2), (2, sound))          # up
+        self.assertEqual(m.get(self.state + 4), 0)
+        self.assertEqual(self.pad_frame(m, 0x1000000, 2), (2, sound))          # up at the top stays there
+        self.assertEqual(m.get(self.state + 4), 0)
+        m.put(self.state + 4, 5)
+        self.assertEqual(self.pad_frame(m, 0x1000, 2), (0, sound))             # turning the page resets the scroll
+        self.assertEqual(m.get(self.state + 4), 0)
+
     def test_without_the_champions_owner_the_card_keeps_two_pages(self):
         # the links resolve to 0 when nfl2k5_champions is not installed (the beta 77 behaviour)
         retail_code = honors.code_for(self.code_va, self.state)
@@ -456,6 +474,7 @@ class NativeTests(unittest.TestCase):
         for bit in (0x1000, 0x2000, 0x4000, 0x8000):
             self.assertEqual(self.pad_frame(m, bit, 0)[0], 1)
             self.assertEqual(self.pad_frame(m, bit, 1)[0], 0)
+        self.assertEqual(self.pad_frame(m, 0x2000000, 1), (1, []))            # Up and Down do nothing without the list
 
     def test_retail_pad_loop_ignores_the_shoulders(self):
         m = self.machine(self.retail)

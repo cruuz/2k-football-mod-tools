@@ -6,17 +6,19 @@
     .globl honors_season_hook, honors_sb_hook, honors_fold_rule
 
 /* 0x320D7B, in place of "test eax, 0x220" in the card's pad loop: eax = buttons pressed this frame. Black,
-   White, L trigger (the game's L1) or R trigger (R1) turns the page (honors_flip: forward on Black and R, back on White
+   White, L trigger (the game's L1) or R trigger (R1) turns the page; Up and Down scroll the champions list (honors_flip: forward on Black and R, back on White
    and L, two pages or three) with the menu cursor sound; the retail B/Back test is then repeated so the caller's jump
    sees its own flags. */
 honors_page_input:
-    test eax, 0xF000
+    test eax, 0x300F000
     jz 1f
     push eax
     push ecx
     push edx
     mov ecx, eax
     call honors_flip
+    test eax, eax
+    jz 2f
     push 0
     push 0
     push 0
@@ -30,7 +32,7 @@ honors_page_input:
     mov ecx, eax
     mov eax, 0x00089DA0
     call eax
-    pop edx
+2:  pop edx
     pop ecx
     pop eax
 1:  test eax, 0x220
@@ -39,7 +41,7 @@ honors_page_input:
 /* 0x320210, in place of "mov ecx, [0xC90248]" (6 bytes, call + nop) in the card's enter action: every card
    opens on the retail page. */
 honors_page_enter:
-    mov dword ptr [honors_state], 0
+    call honors_enter
     mov ecx, dword ptr [0x00C90248]
     ret
 

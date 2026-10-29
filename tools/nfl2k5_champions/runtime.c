@@ -61,6 +61,9 @@ typedef unsigned char u8;
 #define AWARDS 0x00E5A2F0u
 #define POS_NAMES 0x004F26D0u       /* 17 pointers to the position abbreviations */
 #define BLACK 0xFF101010u
+#define SCENE 0x00C901C0u           /* the Player Card's scene */
+#define SHEETS 0x00535E4Cu          /* x0, x1, y0, y1 of the stats table in the first card screen definition */
+#define SHEET_STRIDE 0x268u
 
 /* ---- small text helpers ------------------------------------------------------------------------------------ */
 static u16 *put_text(u16 *out, const u16 *text) {
@@ -256,6 +259,23 @@ static u16 *put_person(u16 *out, const u8 *in) {
     return out;
 }
 
+/* "STAFFORD, QB" */
+static u16 *put_person_last(u16 *out, const u8 *in) {
+    u32 pos = get_bits(in, 50, 5);
+    for (u32 i = 0; i < 9; i++) {
+        u32 s = get_bits(in, 5 + 5 * i, 5);
+        if (!s)
+            break;
+        *out++ = (u16)chr5(s);
+    }
+    if (pos < 17) {
+        *out++ = ',';
+        *out++ = ' ';
+        out = put_text(out, (const u16 *)G(POS_NAMES + 4 * pos));
+    }
+    return out;
+}
+
 static u16 *put_full_name(u16 *out, u32 player) {
     out = put_text(out, (const u16 *)G(player + 0x10));
     *out++ = ' ';
@@ -348,8 +368,6 @@ void FC champions_advance_notice(u32 menu) {
 }
 
 /* ---- Player Card page 3: the champions ------------------------------------------------------------------------ */
-static const float slot_x[2] = {310.0f, 490.0f};
-static const float slot_y[5] = {318.0f, 333.0f, 347.0f, 362.0f, 377.0f};
 static const float line_y[3] = {137.0f, 154.0f, 171.0f};
 
 static void text_start(u32 *ctx, u32 font, u32 align) {
@@ -385,35 +403,111 @@ static u32 entry_runner_up(const u8 *e) { return (((u32)e[1] + ((u32)e[2] << 8) 
 static u32 entry_champion_points(const u8 *e) { return (((u32)e[1] + ((u32)e[2] << 8) + ((u32)e[3] << 16)) >> 12) & 63; }
 static u32 entry_runner_points(const u8 *e) { return (((u32)e[1] + ((u32)e[2] << 8) + ((u32)e[3] << 16)) >> 18) & 63; }
 
-/* Rating panel: the ten newest seasons in the ring, "YEAR ABBR" right-aligned at x - 8 and "pts-pts ABBR" at x. */
-void champions_ratings(void) {
+/* The stats table of page 1 (header row and row bars) is hidden on this page and its area holds the history list.
+   The bars are the scene's "gray" and "light_gray" nodes (blend factors 0x302/0x303 normally; zero and one draws nothing);
+   the table's rectangle is four floats of the card's screen definitions (x0, x1, y0, y1 = 312). */
+void FC champions_table(u32 hide);
+extern u32 FC champions_find(u32 name);   /* stubs.S: the card scene's node of that UTF-16 name, or 0 */
+
+void FC champions_table(u32 hide) {
+    if (G(SCENE)) {
+        static const u32 names[2] = {0x00EA2DA8u, 0x00EA2DB4u};
+        for (u32 i = 0; i < 2; i++) {
+            u32 node = champions_find(names[i]);
+            if (node) {
+                *(volatile u16 *)(node + 0x74) = hide ? 0 : 0x302;
+                *(volatile u16 *)(node + 0x76) = hide ? 1 : 0x303;
+            }
+        }
+    }
+    for (u32 k = 0; k < 7; k++) {
+        u32 at = SHEETS + k * SHEET_STRIDE;
+        if (G(at) == 0x43220000u && G(at + 4) == 0x44138000u && G(at + 8) == 0x43430000u)
+            G(at + 12) = hide ? G(at + 8) : 0x439C0000u;
+    }
+}
+
+/* Page turns for the card (called from the honors owner's pad hook): Black and R forward, White and L back through
+   card, honors, champions; Up and Down scroll the list on the champions page. Returns 1 when the cursor sound is due. */
+u32 FC champions_flip(u32 buttons, volatile u32 *state) {
+    u32 page = state[0];
+    if (buttons & 0x3000000) {
+        if (page != 2)
+            return 0;
+        if (buttons & 0x2000000)
+            state[1]++;
+        else if (state[1])
+            state[1]--;
+        return 1;
+    }
+    if (page >= 3)
+        page = 0;
+    if (buttons & 0x6000)
+        page = page ? page - 1 : 2;
+    else
+        page = page < 2 ? page + 1 : 0;
+    state[0] = page;
+    state[1] = 0;
+    if (page != 2)
+        champions_table(0);
+    return 1;
+}
+
+void FC champions_enter(volatile u32 *state) {
+    state[1] = 0;
+    champions_table(0);
+}
+
+/* Seasons are listed newest first; ROWS fit in the table's area, UP and DOWN scroll (state[1] = first row shown). */
+#define ROWS 6u
+
+/* Table area: "YEAR ABBR pts-pts ABBR  NAME, POS" one season per row, then a position line under the table. */
+void FC champions_ratings(volatile u32 *state) {
     const u8 *g = history_block();
-    u32 ctx[32], newest = newest_season(g), shown = 0;
-    u16 label[24], value[24];
-    for (u32 n = newest; n && n + RING > newest && shown < 10; n--) {
+    u32 ctx[32], newest = newest_season(g), count = 0, seasons[RING];
+    u16 text[64];
+    for (u32 n = newest; n && n + RING > newest; n--)
+        if (entry_at(g, n))
+            seasons[count++] = n;
+    champions_table(1);
+    u32 first = state[1];
+    if (first + ROWS > count)
+        first = count > ROWS ? count - ROWS : 0;
+    state[1] = first;
+    for (u32 r = 0; r < ROWS && first + r < count; r++) {
+        u32 n = seasons[first + r];
         const u8 *e = entry_at(g, n);
-        u16 *out = label;
-        if (!e)
-            continue;
-        float x = slot_x[shown / 5], y = slot_y[shown % 5];
-        shown++;
-        out = put_uint(out, n + 1965);
+        u16 *out = put_uint(text, n + 1965);
         *out++ = ' ';
         out = put_abbr(out, entry_champion(e));
-        *out = 0;
-        out = value;
+        *out++ = ' ';
         out = put_uint(out, entry_champion_points(e));
         *out++ = '-';
         out = put_uint(out, entry_runner_points(e));
         *out++ = ' ';
         out = put_abbr(out, entry_runner_up(e));
+        if (get_bits(e + 4, 5, 5)) {
+            *out++ = ' ';
+            *out++ = ' ';
+            out = put_person_last(out, e + 4);
+        }
         *out = 0;
-        text_start(ctx, 3, 2);
-        TEXT_POS(ctx, x - 8.0f, y, 20.0f);
-        TEXT_DRAW(ctx, label);
-        TEXT_ALIGN(ctx, 1);
-        TEXT_POS(ctx, x, y, 20.0f);
-        TEXT_DRAW(ctx, value);
+        text_start(ctx, 8, 1);
+        TEXT_POS(ctx, 215.0f, 203.0f + 17.0f * (float)r, 20.0f);
+        TEXT_DRAW(ctx, text);
+    }
+    if (count > ROWS) {
+        u16 *out = put_ascii(text, "SUPER BOWLS ");
+        out = put_uint(out, first + 1);
+        *out++ = '-';
+        out = put_uint(out, first + ROWS < count ? first + ROWS : count);
+        out = put_ascii(out, " OF ");
+        out = put_uint(out, count);
+        out = put_ascii(out, "   UP DOWN: SCROLL");
+        *out = 0;
+        text_start(ctx, 8, 1);
+        TEXT_POS(ctx, 215.0f, 330.0f, 20.0f);
+        TEXT_DRAW(ctx, text);
     }
 }
 
@@ -477,7 +571,7 @@ typedef struct {
 
 /* Production in hundredths of a point: 1 point per 25 passing yards, 4 per passing TD, -2 per interception, 1 per 10
    rushing or receiving yards, 6 per touchdown, half a point per catch; 3.5 per half sack (7 per sack), 0.25 per tackle,
-   7 per interception, 3 per forced fumble. (Tuned on simulated seasons: sacks are the scarce stat in the game's sim, so a
+   10 per interception, 3 per forced fumble. (Tuned on simulated seasons: sacks are the scarce stat in the game's sim, so a
    sack counts for more than a tackle and an interception, the way edge rushers and tackles have won the award.) */
 static i32 offense_points(const Line *s) {
     i32 v = s->pass_yds * 4 + s->pass_td * 400 - s->pass_int * 200 + s->rush_yds * 10 + s->rush_td * 600 +
@@ -486,14 +580,16 @@ static i32 offense_points(const Line *s) {
 }
 
 static i32 defense_points(const Line *s) {
-    i32 v = s->sacks2 * 350 + s->tackles * 25 + s->def_int * 700 + s->ff * 300;
+    i32 v = s->sacks2 * 350 + s->tackles * 25 + s->def_int * 1000 + s->ff * 300;
     return v > 0 ? v : 0;
 }
 
 /* percent weights by position code: MVP (offense and defense), offensive and defensive player of the year */
 static const u8 mvp_weight[17] = {100, 0, 0, 58, 38, 36, 36, 60, 40, 48, 40, 40, 0, 0, 0, 44, 44};
 static const u8 opoy_weight[17] = {72, 0, 0, 100, 0, 0, 0, 100, 55, 88, 0, 0, 0, 0, 0, 0, 0};
-static const u8 dpoy_weight[17] = {0, 0, 0, 0, 100, 45, 45, 0, 0, 0, 100, 65, 0, 0, 0, 105, 100};
+static const u8 dpoy_weight[17] = {0, 0, 0, 0, 110, 45, 45, 0, 0, 0, 100, 85, 0, 0, 0, 105, 100};
+/* rookies: inside linebackers pile up tackles in the sim, so their weight is lower and the edge and corner weights higher */
+static const u8 droy_weight[17] = {0, 0, 0, 0, 120, 45, 45, 0, 0, 0, 105, 60, 0, 0, 0, 105, 110};
 
 /* Otherworldly seasons, as a percentage of a mark nobody has reached in the NFL: a single one at 100 or more wins MVP. */
 static u32 otherworldly(const Line *s) {
@@ -585,7 +681,7 @@ void champions_modern_awards(void) {
                         consider(&dpoy, value * dpoy_weight[pos], p, team);
                 }
                 if (((G(p + 0x24) >> 8) & 31) == 1)
-                    consider(offense_side_player ? &oroy : &droy, offense_side_player ? value : value * dpoy_weight[pos], p, team);
+                    consider(offense_side_player ? &oroy : &droy, offense_side_player ? value : value * droy_weight[pos], p, team);
             }
         }
         if (pass == 0) {
