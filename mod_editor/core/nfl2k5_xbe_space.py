@@ -753,7 +753,9 @@ LATE_OWNERS = (LATE_OWNER, "nfl2k5_letter_grades", "nfl2k5_letter_grades_progres
                "nfl2k5_return_coverage",  # b778-kr1: return coverage pursuit angles, before the module loader (int3)
                "nfl2k5_pass_protection",  # b778-pr1: after every other b778 owner, before the module loader
                "nfl2k5_module_loader",  # b778-xs1: last (it needs Career Home and gates screens; integration: after this round's owners)
-               "nfl2k5_sim_rb_injuries")  # b779-sim2: weekly RB injury roll and simulated-game carrier guard
+               "nfl2k5_sim_rb_injuries",  # b779-sim2: weekly RB injury roll and simulated-game carrier guard
+               "nfl2k5_sim_realism",  # b779-sim2 r4: scheduled-sim season realism
+               "nfl2k5_sim_realism_state")  # b779-sim2 r4: its 16-byte hand-off state
 # b77-i1 (coordinator-approved fix of the all-owner union overflow): late owners whose code is placed top-down in the
 # reserved legacy RX page tails (0x14D9000 first, then 0x14BA000) instead of the full scale-out run. Static, so the
 # placement does not depend on which other owners are present.
