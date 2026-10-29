@@ -851,7 +851,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_bump_texture_writer.py": "a6044fe22a734e44f9e4e997e7f8032806efdf0aea28bae12ca525768755efb9",
         "mod_editor/core/nfl2k5_era_kits.py": "56ba010687a680ae320f63a5b49ee341a876b4e10e9577dfeb5ce1168278b1f7",
         "mod_editor/core/nfl2k5_moment_kits.py": "191b11bbc9ede21ba74c0b3cbd910165bb316a0b91daaa4d1dd29263f76d08b8",
-        "mod_editor/core/nfl2k5_project_check.py": "2087dca0d06bf85f92ff553bad5100810845a152d19128b0d8f5af1bd400e6f7",
+        "mod_editor/core/nfl2k5_project_check.py": "9650627aa627bce5e24ab9d3c14ae3ce183666ae427e12f10931bd07ba301620",
         "mod_editor/core/nfl2k5_moment_scans.py": "99445768a0d0ff24576aab37c5cae3d9ffcb2816034f447cd93d3092d18c616c",
         "mod_editor/core/nfl2k5_unc_bowl_uniforms.py": "275077f9c2de33c43f73bb397536fba7d666dfbead8a5cbaf317921b0115f52a",
         "mod_editor/core/nfl2k5_nyg_numbers.py": "812f042c6293db1e66567d940228af53acf0955ab9eeec0ff936f64bc243587b",

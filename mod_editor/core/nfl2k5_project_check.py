@@ -148,15 +148,16 @@ def moment_kit_notes(documents: Iterable[tuple[str, dict]], chunks: dict) -> lis
                         hit.setdefault(selector, set()).add(index)
             if not hit:
                 continue
-            where = "; ".join(f"{selector} chunk{'s' if len(c) > 1 else ''} {', '.join(str(i) for i in sorted(c))}"
-                              for selector, c in sorted(hit.items()))
+            from . import nfl2k5_moment_kits as kits
+            where = "; ".join(
+                f"{selector} chunk{'s' if len(c) > 1 else ''} {', '.join(str(i) for i in sorted(c))} "
+                f"({kits._chunk_words(sorted(c))})" for selector, c in sorted(hit.items()))
             notes.append(Finding(
                 NOTE, feature,
                 f"The new {kit.get('team', kit['code'])} kit {kit['id']} is built from kits you edited.",
-                f"It reads {where}. Build keeps your edited artwork in it when it fits; if it does not fit the kit "
-                "(more video memory than any game kit, or a sock whose clean and mud copies no longer share their "
-                "image), Build uses the retail version of that piece in this new kit only and names it in the build "
-                "log. Your own kits keep your artwork either way.",
+                f"It reads {where}. If your version cannot be used in the new kit (it needs more video memory than any "
+                "game kit, or a sock whose clean and mud copies no longer share their image), Build uses the retail piece "
+                "in the new kit only and names it in the build log. Your own kits keep your artwork either way.",
                 ""))
     return notes
 
