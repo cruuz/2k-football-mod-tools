@@ -3,10 +3,10 @@
  "dc": "Mike Rutenberg",
  "roles": {
   "base": {
-   "name": "4-3 Over",
+   "name": "4-3 Wide 9",
    "source": "4-3",
    "index": 27,
-   "family": "Over",
+   "family": "Wide 9",
    "situation": [
     2,
     1,
@@ -15,31 +15,31 @@
    "merged_into_category": null,
    "positions": [
     [
-     430,
+     560,
      0
     ],
     [
-     -365,
+     -515,
      0
     ],
     [
-     50,
+     200,
      0
-    ],
-    [
-     -200,
-     0
-    ],
-    [
-     260,
-     457
     ],
     [
      -50,
+     0
+    ],
+    [
+     250,
      457
     ],
     [
-     -430,
+     -30,
+     503
+    ],
+    [
+     -410,
      411
     ],
     [
@@ -74,10 +74,10 @@
    ]
   },
   "nickel": {
-   "name": "Nickel Over",
+   "name": "Nickel Wide 9",
    "source": "Nickel",
    "index": 28,
-   "family": "Over",
+   "family": "Wide 9",
    "situation": [
     1,
     1,
@@ -86,19 +86,19 @@
    "merged_into_category": null,
    "positions": [
     [
-     430,
+     560,
      0
     ],
     [
-     -365,
+     -515,
      0
     ],
     [
-     50,
+     200,
      0
     ],
     [
-     -200,
+     -50,
      0
     ],
     [
@@ -145,10 +145,10 @@
    ]
   },
   "dime": {
-   "name": "Dime Over",
+   "name": "Dime Wide 9",
    "source": "Dime",
    "index": 29,
-   "family": "Over",
+   "family": "Wide 9",
    "situation": [
     4,
     2,
@@ -157,19 +157,19 @@
    "merged_into_category": null,
    "positions": [
     [
-     430,
+     560,
      0
     ],
     [
-     -365,
+     -515,
      0
     ],
     [
-     50,
+     200,
      0
     ],
     [
-     -200,
+     -50,
      0
     ],
     [
@@ -459,9 +459,9 @@
   {
    "play": 0,
    "appended": false,
-   "name": "Base",
+   "name": "Wide Rush",
    "component": "front",
-   "concept": "Front: Base",
+   "concept": "Front: Wide Rush",
    "band": 1,
    "pressure": false,
    "roles": [
@@ -476,7 +476,7 @@
    "source": null,
    "rushers": null,
    "spy_slots": [],
-   "authored_nodes": 4
+   "authored_nodes": 6
   },
   {
    "play": 1,
@@ -484,7 +484,7 @@
    "name": "Attack",
    "component": "front",
    "concept": "Front: Attack",
-   "band": 2,
+   "band": 1,
    "pressure": false,
    "roles": [
     "base",
@@ -498,14 +498,14 @@
    "source": null,
    "rushers": null,
    "spy_slots": [],
-   "authored_nodes": 6
+   "authored_nodes": 4
   },
   {
    "play": 2,
    "appended": false,
-   "name": "Slant Strong",
+   "name": "Base",
    "component": "front",
-   "concept": "Front: Slant Strong",
+   "concept": "Front: Base",
    "band": 2,
    "pressure": false,
    "roles": [
@@ -525,9 +525,9 @@
   {
    "play": 3,
    "appended": false,
-   "name": "Slant Weak",
+   "name": "Slant Strong",
    "component": "front",
-   "concept": "Front: Slant Weak",
+   "concept": "Front: Slant Strong",
    "band": 2,
    "pressure": false,
    "roles": [
@@ -542,15 +542,15 @@
    "source": null,
    "rushers": null,
    "spy_slots": [],
-   "authored_nodes": 0
+   "authored_nodes": 8
   },
   {
    "play": 4,
    "appended": false,
-   "name": "Pinch",
+   "name": "Slant Weak",
    "component": "front",
-   "concept": "Front: Pinch",
-   "band": 3,
+   "concept": "Front: Slant Weak",
+   "band": 2,
    "pressure": false,
    "roles": [
     "base",
@@ -564,14 +564,14 @@
    "source": null,
    "rushers": null,
    "spy_slots": [],
-   "authored_nodes": 4
+   "authored_nodes": 8
   },
   {
    "play": 5,
    "appended": false,
-   "name": "TE Stunt Weak",
+   "name": "ET Stunt Strong",
    "component": "front",
-   "concept": "Front: TE Stunt Weak",
+   "concept": "Front: ET Stunt Strong",
    "band": 2,
    "pressure": false,
    "roles": [
@@ -591,10 +591,10 @@
   {
    "play": 6,
    "appended": false,
-   "name": "ET Stunt Strong",
+   "name": "Contain Rush",
    "component": "front",
-   "concept": "Front: ET Stunt Strong",
-   "band": 2,
+   "concept": "Front: Contain Rush",
+   "band": 3,
    "pressure": false,
    "roles": [
     "base",
@@ -613,9 +613,9 @@
   {
    "play": 7,
    "appended": false,
-   "name": "Contain Rush",
+   "name": "Pinch",
    "component": "front",
-   "concept": "Front: Contain Rush",
+   "concept": "Front: Pinch",
    "band": 3,
    "pressure": false,
    "roles": [
@@ -716,12 +716,12 @@
     "base"
    ],
    "new_links": [],
-   "donor": 21,
-   "donor_name": "3 Robber",
+   "donor": 20,
+   "donor_name": "3 Buzz",
    "source": {
     "book": "CLE",
-    "play": 21,
-    "name": "3 Robber"
+    "play": 20,
+    "name": "3 Buzz"
    },
    "rushers": 4,
    "spy_slots": [],
@@ -867,7 +867,7 @@
   {
    "play": 18,
    "appended": false,
-   "name": "Cover 1 Nickel Fire",
+   "name": "Cover 1 Safety Fire",
    "component": "coverage",
    "concept": "Cover 1 Blitz",
    "band": 2,
@@ -877,12 +877,12 @@
     "nickel"
    ],
    "new_links": [],
-   "donor": 8,
-   "donor_name": "Strong Blast 1",
+   "donor": 28,
+   "donor_name": "Weak Indian 1",
    "source": {
     "book": "CLE",
-    "play": 8,
-    "name": "Strong Blast 1"
+    "play": 28,
+    "name": "Weak Indian 1"
    },
    "rushers": 5,
    "spy_slots": [],
@@ -990,12 +990,12 @@
     "nickel"
    ],
    "new_links": [],
-   "donor": 26,
-   "donor_name": "Spear 3",
+   "donor": 31,
+   "donor_name": "Sting 3",
    "source": {
     "book": "CLE",
-    "play": 26,
-    "name": "Spear 3"
+    "play": 31,
+    "name": "Sting 3"
    },
    "rushers": 5,
    "spy_slots": [],
@@ -1013,12 +1013,12 @@
     "nickel"
    ],
    "new_links": [],
-   "donor": 32,
-   "donor_name": "2 Corners",
+   "donor": 29,
+   "donor_name": "2 Soft",
    "source": {
     "book": "CLE",
-    "play": 32,
-    "name": "2 Corners"
+    "play": 29,
+    "name": "2 Soft"
    },
    "rushers": 4,
    "spy_slots": [],
@@ -1082,12 +1082,12 @@
     "nickel"
    ],
    "new_links": [],
-   "donor": 20,
-   "donor_name": "3 Buzz",
+   "donor": 21,
+   "donor_name": "3 Robber",
    "source": {
     "book": "CLE",
-    "play": 20,
-    "name": "3 Buzz"
+    "play": 21,
+    "name": "3 Robber"
    },
    "rushers": 4,
    "spy_slots": [],
@@ -1167,7 +1167,7 @@
   {
    "play": 31,
    "appended": false,
-   "name": "Cover 1 Will Blitz",
+   "name": "Cover 1 Nickel Fire",
    "component": "coverage",
    "concept": "Cover 1 Blitz",
    "band": 3,
@@ -1176,12 +1176,12 @@
     "nickel"
    ],
    "new_links": [],
-   "donor": 207,
-   "donor_name": "Bear Man 1",
+   "donor": 11,
+   "donor_name": "Sting Blitz 1",
    "source": {
     "book": "CLE",
-    "play": 207,
-    "name": "Bear Man 1"
+    "play": 11,
+    "name": "Sting Blitz 1"
    },
    "rushers": 5,
    "spy_slots": [],
@@ -1233,7 +1233,7 @@
   {
    "play": 34,
    "appended": false,
-   "name": "Cover 1 Will Off Fire",
+   "name": "Cover 1 Will Blitz",
    "component": "coverage",
    "concept": "Cover 1 Blitz",
    "band": 2,
@@ -1265,12 +1265,12 @@
     "dime"
    ],
    "new_links": [],
-   "donor": 11,
-   "donor_name": "Sting Blitz 1",
+   "donor": 8,
+   "donor_name": "Strong Blast 1",
    "source": {
     "book": "CLE",
-    "play": 11,
-    "name": "Sting Blitz 1"
+    "play": 8,
+    "name": "Strong Blast 1"
    },
    "rushers": 5,
    "spy_slots": [],
@@ -1289,12 +1289,12 @@
     "dime"
    ],
    "new_links": [],
-   "donor": 29,
-   "donor_name": "2 Soft",
+   "donor": 32,
+   "donor_name": "2 Corners",
    "source": {
     "book": "CLE",
-    "play": 29,
-    "name": "2 Soft"
+    "play": 32,
+    "name": "2 Corners"
    },
    "rushers": 4,
    "spy_slots": [],
@@ -1395,7 +1395,7 @@
   {
    "play": 41,
    "appended": false,
-   "name": "Cover 1 Safety Fire",
+   "name": "Cover 1 Dime Fire",
    "component": "coverage",
    "concept": "Cover 1 Blitz",
    "band": 3,
@@ -1404,12 +1404,12 @@
     "dime"
    ],
    "new_links": [],
-   "donor": 28,
-   "donor_name": "Weak Indian 1",
+   "donor": 207,
+   "donor_name": "Bear Man 1",
    "source": {
     "book": "CLE",
-    "play": 28,
-    "name": "Weak Indian 1"
+    "play": 207,
+    "name": "Bear Man 1"
    },
    "rushers": 5,
    "spy_slots": [],
@@ -1521,7 +1521,7 @@
   {
    "play": 207,
    "appended": false,
-   "name": "Cover 1 Will Fire 2",
+   "name": "Cover 1 Corner Blitz",
    "component": "coverage",
    "concept": "Cover 1 Blitz",
    "band": 1,
@@ -1533,18 +1533,26 @@
    "donor": 8,
    "donor_name": "Strong Blast 1",
    "source": {
-    "book": "BUF",
-    "play": 30,
-    "name": "Weak Blast 1"
+    "book": "DAL",
+    "play": 32,
+    "name": "Strong Crash 1"
    },
    "rushers": 5,
    "spy_slots": [],
-   "authored_nodes": 12
+   "authored_nodes": 14,
+   "presnap_kept_onside": [
+    {
+     "slot": 10,
+     "walkup_yd": 3.0,
+     "now_yd": 0.67,
+     "presnap_depth_yd": 1.0
+    }
+   ]
   },
   {
    "play": 208,
    "appended": false,
-   "name": "Cover 1 Safety Blitz",
+   "name": "Cover 1 Corner Off Fire",
    "component": "coverage",
    "concept": "Cover 1 Blitz",
    "band": 1,
@@ -1556,13 +1564,21 @@
    "donor": 8,
    "donor_name": "Strong Blast 1",
    "source": {
-    "book": "ARZ",
-    "play": 22,
-    "name": "Spear 1"
+    "book": "ATL",
+    "play": 21,
+    "name": "Weak Crash 1"
    },
    "rushers": 5,
    "spy_slots": [],
-   "authored_nodes": 10
+   "authored_nodes": 14,
+   "presnap_kept_onside": [
+    {
+     "slot": 9,
+     "walkup_yd": 3.0,
+     "now_yd": 0.67,
+     "presnap_depth_yd": 1.0
+    }
+   ]
   },
   {
    "play": 209,
@@ -1576,12 +1592,12 @@
     "bear"
    ],
    "new_links": [],
-   "donor": 205,
-   "donor_name": "Bear Weak Fire 0",
+   "donor": 217,
+   "donor_name": "Bear Double Sting 0",
    "source": {
     "book": "CLE",
-    "play": 205,
-    "name": "Bear Weak Fire 0"
+    "play": 217,
+    "name": "Bear Double Sting 0"
    },
    "rushers": 6,
    "spy_slots": [],
@@ -1611,7 +1627,7 @@
   {
    "play": 211,
    "appended": false,
-   "name": "Cover 1 Will Press Fire",
+   "name": "Cover 1 Safety Blitz",
    "component": "coverage",
    "concept": "Cover 1 Blitz",
    "band": 2,
@@ -1623,9 +1639,9 @@
    "donor": 8,
    "donor_name": "Strong Blast 1",
    "source": {
-    "book": "ARZ",
-    "play": 42,
-    "name": "Weak Sting 1"
+    "book": "CHI",
+    "play": 17,
+    "name": "Weak Indian 1"
    },
    "rushers": 5,
    "spy_slots": [],
@@ -1643,12 +1659,12 @@
     "bear"
    ],
    "new_links": [],
-   "donor": 206,
-   "donor_name": "Bear Blaze Twist 0",
+   "donor": 205,
+   "donor_name": "Bear Weak Fire 0",
    "source": {
     "book": "CLE",
-    "play": 206,
-    "name": "Bear Blaze Twist 0"
+    "play": 205,
+    "name": "Bear Weak Fire 0"
    },
    "rushers": 6,
    "spy_slots": [],
@@ -1657,7 +1673,7 @@
   {
    "play": 213,
    "appended": false,
-   "name": "Cover 1 Mike Fire",
+   "name": "Cover 1 Safety Off Fire",
    "component": "coverage",
    "concept": "Cover 1 Blitz",
    "band": 3,
@@ -1669,13 +1685,21 @@
    "donor": 8,
    "donor_name": "Strong Blast 1",
    "source": {
-    "book": "ARZ",
-    "play": 20,
-    "name": "Middle Blast 1"
+    "book": "DEN",
+    "play": 32,
+    "name": "Strong Indian 1"
    },
    "rushers": 5,
    "spy_slots": [],
-   "authored_nodes": 8
+   "authored_nodes": 6,
+   "presnap_kept_onside": [
+    {
+     "slot": 8,
+     "walkup_yd": 5.0,
+     "now_yd": -0.0,
+     "presnap_depth_yd": 4.49
+    }
+   ]
   },
   {
    "play": 214,
@@ -1749,7 +1773,7 @@
   {
    "play": 217,
    "appended": false,
-   "name": "Cover 1 Safety Off Fire",
+   "name": "Cover 1 Double Fire",
    "component": "coverage",
    "concept": "Cover 1 Blitz",
    "band": 3,
@@ -1761,21 +1785,13 @@
    "donor": 8,
    "donor_name": "Strong Blast 1",
    "source": {
-    "book": "DEN",
-    "play": 32,
-    "name": "Strong Indian 1"
+    "book": "STL",
+    "play": 176,
+    "name": "Strong Stab 1"
    },
-   "rushers": 5,
+   "rushers": 6,
    "spy_slots": [],
-   "authored_nodes": 6,
-   "presnap_kept_onside": [
-    {
-     "slot": 8,
-     "walkup_yd": 5.0,
-     "now_yd": -0.0,
-     "presnap_depth_yd": 4.49
-    }
-   ]
+   "authored_nodes": 14
   },
   {
    "play": 218,
@@ -1827,11 +1843,11 @@
   "offense_pack": "data/playbooks/softdrink_cle_modern.2k5book",
   "offense_pack_sha256": "3620dc05ab13044fd84db8e02032a52352048de7dc2f0e8fbd65df6e7d3400f4",
   "source_fingerprint": "bff10a1b0123d16e3af8f18dfe96fe5b9536e33d4726951b781783aeb5d7b5ab",
-  "replacement_sha256": "13bb20cbed3e2d26177553844415c8996753d866632e598de18d01196f0fa3a3",
-  "semantic_sha256": "1624afe4dffa3a4169a25518d34980bfc59235e42b5bbcc21ae661c8c040c78d",
+  "replacement_sha256": "0ed91141dd08eaa87ba043a91815617125525ed17894f0321c1de341df91f6bc",
+  "semantic_sha256": "9f95228210bb76437d8c1b71e8edaa86cd8bcf8d753e8cf97300f8782305917e",
   "plays": 60,
   "formations": 4,
-  "nodes": 2676,
+  "nodes": 2700,
   "node_capacity": 3500,
   "formation_count": 50,
   "play_count": 270,
@@ -1840,6 +1856,6 @@
   "spy_play": null,
   "native_scoring_faults": 0,
   "pack": "data/playbooks/softdrink_cle_defense.2k5book",
-  "pack_sha256": "fb2deae960456b9117d91112fc25edd59ba57f0ffc03549fec7626fa58a725a0"
+  "pack_sha256": "518410ab96b21b270cd2650e1a28316c0322eeaf40f2349d69d0d34ddf3d7d1e"
  }
 }

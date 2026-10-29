@@ -1403,7 +1403,148 @@ def apply_pack_to_resource(resource: bytes, pack: PlaybookPack, *, asset_id: str
         if pack.formations or any(p.replace_index is None for p in pack.plays):
             raise PlaybookPackError("Option packs keep native formations and replace existing plays only")
     formation_rows, play_rows, link_rows = pack_requests(pack, asset_id, book)
-    return _score_compiled(compile_formation_play_creations(resource, formation_rows, play_rows, link_rows), xbe, resource)
+    compiled = compile_formation_play_creations(resource, formation_rows, play_rows, link_rows)
+    if any(p.play_type == "defense" for p in pack.plays):
+        compiled = _keep_defense_audibles(compiled, resource)
+    return _score_compiled(compiled, xbe, resource)
+
+
+#: b779 au1: the PLAY body header table at 0x4C holds ten (formation index, menu slot) byte pairs. Entries 0-4 are
+#: the offense's No Huddle buttons (b778 pb7). Entries 5-9 are the DEFENSE's audibles at the line: with the user's
+#: side on defense, Y opens a five-button panel (0xFEE70 sets five buttons for a non-special defensive formation)
+#: and 0xFEFA0 -> 0xFF0B2 reads entry 5 + button, then the play in that formation's menu slot. A defensive
+#: audible is a coverage: every retail entry 5-9 of the 32 club books, GEN, WCO and Editor names one.
+#: The SOFTDRINK defense packs rebuild the defensive menus (fronts and coverages interleave) but used to keep
+#: these bytes, so 16 v0.7 club books pointed one audible at a front (TEN: Bear 46 slot 28 = "Bear Pinch").
+AUDIBLE_TABLE = 0x4C
+AUDIBLE_ENTRIES = 10
+DEFENSE_AUDIBLE_FIRST = 5
+#: Retail ships these two books with offense plays in the defensive half; neither is a game book a club plays
+#: with (Practice has no audible panel; the reference book is the Crib's play reference).
+AUDIBLE_RETAIL_EXEMPT_DEFENSE = frozenset({"PRACTICE", "reference"})
+
+
+def _audible_body(resource: bytes) -> bytes:
+    data = bytes(resource)
+    if len(data) == RESOURCE_SIZE:
+        data = data[RESOURCE_HEADER_SIZE:]
+    if len(data) != BODY_SIZE:
+        raise PlaybookPackError(f"not a PLAY body ({len(data):,} bytes)")
+    return data
+
+
+def _audible_entry_problem(body: bytes, entry: int) -> str | None:
+    """Why header audible ``entry`` (0-9) is not one the native panel can show, or None."""
+    from .nfl2k5_playbook_inspector import FORMATION_AUX_BASE, FORMATION_AUX_SIZE, MENU_EMPTY_PLAY
+    fi, slot = body[AUDIBLE_TABLE + 2 * entry], body[AUDIBLE_TABLE + 2 * entry + 1]
+    formations = int.from_bytes(body[0x34:0x38], "little")
+    plays = int.from_bytes(body[0x38:0x3C], "little")
+    if fi >= formations:
+        return f"formation {fi} is past the book's {formations} formations"
+    if slot >= FORMATION_PLAY_LINKS:
+        return f"menu slot {slot} is past the {FORMATION_PLAY_LINKS} a formation holds"
+    word = int.from_bytes(body[FORMATION_AUX_BASE + fi * FORMATION_AUX_SIZE + 2 * slot:][:2], "little")
+    play = word & MENU_EMPTY_PLAY
+    if play == MENU_EMPTY_PLAY:
+        return f"formation {fi} menu slot {slot} is empty"
+    if play >= plays:
+        return f"formation {fi} menu slot {slot} names play {play}, past the book's {plays} plays"
+    kind = lib.formation_record(body, fi).type_code
+    if entry < DEFENSE_AUDIBLE_FIRST:
+        return None if kind < 4 else f"formation {fi} is not an offensive formation (type {kind})"
+    if not 4 <= kind <= 7:
+        return f"formation {fi} is not a defensive formation (type {kind})"
+    component = lib.defense_component(lib.decoded_chains(body, play))
+    if component not in ("coverage", "full"):
+        return f"formation {fi} menu slot {slot} is play {play}, a defensive {component}, not a coverage"
+    return None
+
+
+def _audible_entry_sound(body: bytes, entry: int) -> bool:
+    try:
+        return _audible_entry_problem(body, entry) is None
+    except (ValueError, IndexError, KeyError, ValidationError):
+        return False      # a source the native reader would not accept either; nothing to preserve
+
+
+def audible_table_problems(resource: bytes, *, book_name: str | None = None) -> list[str]:
+    """Every header audible entry (offense No Huddle 0-4, defense audibles 5-9) that names no showable play.
+
+    Empty when the table is sound. Retail: no problem in any of the 37 books (with the PRACTICE / reference
+    defensive halves exempt, see ``AUDIBLE_RETAIL_EXEMPT_DEFENSE``)."""
+    body = _audible_body(resource)
+    out = []
+    for entry in range(AUDIBLE_ENTRIES):
+        if entry >= DEFENSE_AUDIBLE_FIRST and book_name in AUDIBLE_RETAIL_EXEMPT_DEFENSE:
+            continue
+        problem = _audible_entry_problem(body, entry)
+        if problem:
+            side = "offense No Huddle" if entry < DEFENSE_AUDIBLE_FIRST else "defense audible"
+            out.append(f"{side} {entry % DEFENSE_AUDIBLE_FIRST}: {problem}")
+    return out
+
+
+def repair_defense_audibles(resource: bytearray, source: bytes | None = None) -> list[dict[str, int]]:
+    """Point each defensive audible (header entries 5-9) that no longer names a coverage at the nearest coverage
+    of the same formation's menu (an unused one first, the lower slot on a tie). Sound entries keep their bytes.
+    With ``source`` (the resource before the writer ran) only entries that were sound there are repaired, so a book
+    the retail game already ships with offense plays in the defensive half (PRACTICE, reference) is left as it is.
+    Edits ``resource`` (wrapper + body) in place and returns one receipt per moved entry."""
+    from .nfl2k5_playbook_inspector import FORMATION_AUX_BASE, FORMATION_AUX_SIZE, MENU_EMPTY_PLAY
+    if len(resource) != RESOURCE_SIZE:
+        raise PlaybookPackError("Defensive audible repair needs one whole PLAY resource")
+    before = _audible_body(source) if source is not None and len(source) == RESOURCE_SIZE else None
+    base = RESOURCE_HEADER_SIZE + AUDIBLE_TABLE
+    moves = []
+    for entry in range(DEFENSE_AUDIBLE_FIRST, AUDIBLE_ENTRIES):
+        body = bytes(resource[RESOURCE_HEADER_SIZE:])
+        if source is not None and (before is None or not _audible_entry_sound(before, entry)):
+            continue
+        if _audible_entry_sound(body, entry):
+            continue
+        fi, old = resource[base + 2 * entry], resource[base + 2 * entry + 1]
+        if fi >= int.from_bytes(body[0x34:0x38], "little") or not 4 <= lib.formation_record(body, fi).type_code <= 7:
+            raise PlaybookPackError(f"Defensive audible {entry - DEFENSE_AUDIBLE_FIRST} names formation {fi}, "
+                                    "which is not a defensive formation of this book")
+        taken = {(resource[base + 2 * e], resource[base + 2 * e + 1])
+                 for e in range(DEFENSE_AUDIBLE_FIRST, AUDIBLE_ENTRIES) if e != entry}
+        words = [int.from_bytes(body[FORMATION_AUX_BASE + fi * FORMATION_AUX_SIZE + 2 * s:][:2], "little")
+                 for s in range(FORMATION_PLAY_LINKS)]
+        candidates = []
+        for s, word in enumerate(words):
+            if word & MENU_EMPTY_PLAY == MENU_EMPTY_PLAY:
+                break
+            resource[base + 2 * entry + 1] = s
+            if _audible_entry_problem(bytes(resource[RESOURCE_HEADER_SIZE:]), entry) is None:
+                candidates.append(((fi, s) in taken, abs(s - old), s))
+        if not candidates:
+            resource[base + 2 * entry + 1] = old
+            raise PlaybookPackError(f"Defensive audible {entry - DEFENSE_AUDIBLE_FIRST}: formation {fi} lists no "
+                                    "coverage")
+        slot = min(candidates)[2]
+        resource[base + 2 * entry + 1] = slot
+        moves.append(dict(audible=entry - DEFENSE_AUDIBLE_FIRST, formation=fi, old_slot=old,
+                          old_play=words[old] & MENU_EMPTY_PLAY if old < len(words) else MENU_EMPTY_PLAY,
+                          slot=slot, play=words[slot] & MENU_EMPTY_PLAY))
+    return moves
+
+
+def _keep_defense_audibles(compiled, source: bytes):
+    """b779 au1: after a defense pack rebuilt the menus, re-seat the defensive audibles it left on a front."""
+    from .nfl2k5_formation_play_writer import _difference_ranges
+    out = bytearray(compiled.replacement)
+    moves = repair_defense_audibles(out, source)
+    if not moves:
+        return compiled
+    out = bytes(out)
+    spans = _difference_ranges(source, out)
+    digest = hashlib.sha256(out).hexdigest()
+    compiled = _dc_replace(compiled, replacement=out, replacement_sha256=digest, changed_ranges=tuple(spans),
+                           changed_byte_count=sum(b - a for a, b in spans),
+                           parsed_replacement=parse_playbook_resource(out, asset_id=compiled.asset_id))
+    compiled.report.update(replacement_sha256=digest, changed_ranges=[list(s) for s in spans],
+                           defense_audibles=moves)
+    return compiled
 
 
 def _score_compiled(compiled, xbe, source):
@@ -1430,6 +1571,13 @@ def _score_compiled(compiled, xbe, source):
     problems = playcall_ui_problems(compiled.replacement)
     if problems:
         raise PlaybookPackError("Compiled play-call UI is unsafe: " + "; ".join(problems[:3]))
+    # b779 au1: no writer may leave a header audible that was sound in its source pointing at nothing showable.
+    if len(source) == RESOURCE_SIZE:
+        before, after = _audible_body(source), _audible_body(compiled.replacement)
+        broken = [f"audible entry {e}: {_audible_entry_problem(after, e)}" for e in range(AUDIBLE_ENTRIES)
+                  if _audible_entry_sound(before, e) and not _audible_entry_sound(after, e)]
+        if broken:
+            raise PlaybookPackError("Compiled book breaks an audible at the line: " + "; ".join(broken[:3]))
     compiled.report['native_scoring'] = require_safe(compiled.replacement, xbe)
     return compiled
 
@@ -2355,6 +2503,7 @@ __all__ = [
     "PackFormation", "PackPlay", "PackPreview", "PlanRow", "PlaybookPack", "PlaybookPackError",
     "Resolution",
     "SCHEMA", "FINAL_INTENT_REPORT_SCHEMA", "TEAM_BOOKS", "apply_pack_to_resource", "apply_packs_to_archive",
+    "audible_table_problems", "repair_defense_audibles",
     "apply_packs_to_image", "book_fingerprint",
     "budget_totals", "check_pack", "install_plan", "load_pack", "loads_pack", "pack_from_json",
     "pack_from_staged_rows", "pack_requests", "permute_assignments", "preview_pack",

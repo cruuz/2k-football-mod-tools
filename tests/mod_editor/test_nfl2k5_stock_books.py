@@ -55,8 +55,7 @@ if HAVE_UNICORN:
             historical = self.r(0xE5FF80) == 8 or self.r(team + 0x128) == 4
             if self.r(0xE5FF80) != 8 and historical:
                 # b776-int2: a classic team of 2010 on (team identity, low byte) takes its franchise's current book
-                first, last = sb.CLASSIC_MODERN_IDS
-                if first <= self.r(team + 0x118) & 0xFF <= last:
+                if sb.classic_modern(self.r(team + 0x118)):
                     historical = False
             if self.r(0xE5FF80) == 8:
                 count, base, ordinal = self.r(0xC8F0D8), self.r(0xC8F0D4), self.r(0xBF1858)

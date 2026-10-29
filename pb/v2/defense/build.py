@@ -144,12 +144,26 @@ def detect_roles(book, body, team: str, scheme: D.Scheme) -> dict[str, Role]:
 
 def role_family(role: Role, scheme: D.Scheme) -> D.LineFamily:
     if role.type_code == 4:
-        return D.ODD
+        # b779 dp1: Okie / Tite / Eagle per coordinator.  Tite and Eagle pull the strong end inside the tackle, so a
+        # three-down layout without a strong standing edge (the 3-2 dime's lone OLB is the weak edge) keeps the Okie's
+        # strong 5-technique, or nobody would be on the line outside the strong tackle (lint DEF_NO_EDGE).
+        if not any(role.kinds[s] == D.OLB for s in range(4, 7)):
+            return D.ODD
+        return D.THREE_DOWN.get(scheme.line3) or D.ODD
     if role.key == 'bear':
         return D.BEAR
     if role.key == 'mug':
         return D.MUG
-    return D.WIDE if scheme.family == 'odd' else D.OVER
+    fam = D.FOUR_DOWN.get(scheme.line4) if scheme.line4 else None   # b779 dp1: Over / Under / Wide 9 / Tite / Wide
+    return fam or (D.WIDE if scheme.family == 'odd' else D.OVER)
+
+
+def family_name(role: Role) -> str:
+    """b779 dp1: the role's display name with its front family (4-3 Over -> 4-3 Wide 9, 3-4 Okie -> 3-4 Tite)."""
+    for old in (' Over', ' Wide', ' Okie'):
+        if role.name.endswith(old) and role.family and role.family not in ('Bear', 'Mug', 'retail'):
+            return role.name[:-len(old)] + ' ' + role.family
+    return role.name
 
 
 def role_positions(role: Role, scheme: D.Scheme, retail_xy) -> dict:
@@ -157,7 +171,7 @@ def role_positions(role: Role, scheme: D.Scheme, retail_xy) -> dict:
     role.family = fam.name
     k = role.kinds
     if role.type_code == 4:
-        moved = D.odd_front(k, base=role.key in ('base', 'base2'))
+        moved = D.odd_front(k, base=role.key in ('base', 'base2'), family=fam)
     elif role.key in ('base', 'base2'):
         moved = D.base_43(fam, k)
     elif role.key == 'bear':
@@ -313,12 +327,12 @@ def assign_fronts(slots: dict[int, Slot], roles: dict[str, Role], scheme: D.Sche
         idx.sort()
         types = {roles[r].type_code for r in grp}
         if types == {4}:
-            calls = D.odd_fronts()
+            calls = D.styled_odd_fronts(team)                          # b779 dp1: team front style
         elif grp == frozenset({'bear'}):
             calls = D.bear_fronts(full=True)
         else:
             primary = next(r for r in ROLE_PRIORITY if r in grp and r != 'bear')
-            calls = D.four_down_fronts(role_family_obj(roles[primary], scheme))
+            calls = D.styled_fronts(D.four_down_fronts(role_family_obj(roles[primary], scheme)), team)
         if len(idx) > len(calls):
             raise ValueError(f'{team}: front group {sorted(grp)} has {len(idx)} records for {len(calls)} calls')
         for i, call in zip(idx, calls):
@@ -605,6 +619,13 @@ class OddState:
         self.deferred: list = []
 
 
+def spread(team: str, key: str) -> int:
+    """b779 dp1: a per-team order over equally valid retail scripts.  The v2 picker took the most POPULAR retail script
+    first, so every club drew the same few scripts for each concept (one reason every book felt generic); hashing the
+    team with the script spreads the clubs over the whole library while every pick still passes the same checks."""
+    return int(hashlib.sha1(f'{team}|{key}'.encode()).hexdigest()[:8], 16)
+
+
 def _role_cost(r: str) -> float:
     return ROLE_WEIGHT.get(r, .3)
 
@@ -617,7 +638,7 @@ def _rank_variant(v: okie.Variant, designed_roles, blitz: bool, home: Role, team
             cost,
             0 if sc.formation == home.source_name and sc.codes == home.codes else 1,
             0 if (sc.book == team and sc.play_index == slot_index) else 1 if sc.book == team else 2,
-            len(v.converted), -library.popularity[sc.key], sc.book, sc.play_index, v.key)
+            len(v.converted), spread(team, sc.key), sc.book, sc.play_index, v.key)
 
 
 def odd_variants_for(s: Slot, roles: dict[str, Role], library: Library, state: OddState, extra_sources=()):
@@ -705,7 +726,7 @@ def pick_odd(s: Slot, ch: Choice, home: Role, roles: dict[str, Role], library: L
                     total += _role_cost(r) * (4.0 * (covers if vd == 'bad' else .35 * covers)
                                               + (1.0 if st.n_rush >= 5 and not blitz_concept else 0.0))
                     exact = exact or st.label in labels
-                return (total, 0 if exact else 1, len(v.converted), -library.popularity[v.source.key],
+                return (total, 0 if exact else 1, len(v.converted), spread(team, v.source.key),
                         v.source.book, v.source.play_index, v.key)
             v, hit, designed, bad = min(keep, key=cost)
             throttled = tuple(sorted(set(designed) | set(bad) |
@@ -764,7 +785,7 @@ def pick_scripts(slots, roles, library: Library, team: str, book, body, targets_
                     continue
                 def rank(c):
                     return (0 if (c.book == team and c.play_index == s.index) else 1 if c.book == team else 2,
-                            -library.popularity[c.key], c.book, c.play_index)
+                            spread(team, c.key), c.book, c.play_index)
                 pick = min(cands, key=rank)
                 break
             if pick is None and ('preset', lab) not in used:
@@ -794,7 +815,7 @@ def pick_scripts(slots, roles, library: Library, team: str, book, body, targets_
                 cands = [x for x in library.candidates(home.source_name, home.codes, c) + library.same_type(home.type_code, c)
                          if x.key not in used and valid_in_roles(x, s.roles, roles)]
                 if cands:
-                    pick = min(cands, key=lambda x: (x.book != team, -library.popularity[x.key], x.book, x.play_index))
+                    pick = min(cands, key=lambda x: (x.book != team, spread(team, x.key), x.book, x.play_index))
                     ch.note = f'fallback {ch.concept} -> {c} (last resort)'
                     ch.concept = c
                     break
@@ -922,8 +943,24 @@ def name_options(label: str, st: L.Structure, kinds, xy, chains) -> list[str]:
     return [label]
 
 
+# b779 dp1: the book's string pool ends at the coach-profile tag (body 0x13000): ``(0x13000 - 0x10840) / 2`` UTF-16
+# units.  The offense fills most of it (pb7: TEN 5066 of 5088), so a defense whose names grow past it makes the Build's
+# coach profile refuse the book ("Declared PLAY strings overlap coach profile storage").  run_team compiles with the
+# full names first and retries with shorter ones (NAME_MODE 1: the shortest unused option; 2: also at most 20
+# characters; 3: also the formations' pre-b779 names) until the pool fits.
+NAME_MODE = 0
+NAME_POOL_UNITS = (0x13000 - 0x10840) // 2
+
+
+def pool_units(resource: bytes) -> int:
+    import struct
+    return struct.unpack_from('<I', resource, ip.RESOURCE_HEADER_SIZE + 0x1083C)[0]
+
+
 def play_name(label: str, st: L.Structure, kinds, xy, chains=None, used=None) -> str:
     opts = name_options(label, st, kinds, xy, chains)
+    if NAME_MODE:
+        opts = sorted(opts, key=len)
     used = used if used is not None else set()
     for o in opts:
         if o not in used:
@@ -935,7 +972,7 @@ YD_ = 91.44
 
 
 def unique(name: str, used: set) -> str:
-    base = name[:36]
+    base = name[:20 if NAME_MODE >= 2 else 36].rstrip()
     n, out = 2, base
     while out in used:
         out = f'{base} {n}'
@@ -1245,6 +1282,7 @@ def plan_team(team: str, source: bytes, library: Library, profiles, rates_all) -
             r.family = 'retail'
             continue
         r.positions = role_positions(r, scheme, [(s.x[0], s.z[0]) for s in rec.slots])
+        r.name = family_name(r) if NAME_MODE < 3 else r.name
         r.situation = D.SITUATION[ROLE_SITUATION[r.key]]
         if r.key == 'nickel_odd' and r.name.endswith('Pressure'):
             r.situation = D.SITUATION['mug']
@@ -1348,6 +1386,96 @@ def source_front_index(book, body, fi: int) -> int:
     raise ValueError(f'formation {fi} has no source front')
 
 
+SAFETY_KINDS = (D.FS, D.SS)
+SINGLE_HIGH_FAMILIES = ('C0', 'C1', 'C3', 'ZONE1')
+
+
+def _shells(full, positions, kinds):
+    from mod_editor.core import nfl2k5_defense_calls as dcalls
+    safeties = [k for k in range(11) if kinds[k] in SAFETY_KINDS]
+    return dcalls.shell([dcalls.presnap_point(positions[k], full[k]) for k in safeties]), safeties
+
+
+def rotators(full, positions, kinds) -> list[int]:
+    """Safety slots that walk to their single-high spot BEFORE the snap (a spot-relative Defense Start of more than a
+    yard) and then play a zone: the slots a disguise turns into a post-snap rotation.  A safety in man (or aligned on
+    a receiver) is never one: starting him deep would leave his man uncovered."""
+    out = []
+    for k in range(11):
+        if kinds[k] not in SAFETY_KINDS or not full[k]:
+            continue
+        first = full[k][0]
+        if first[0] != 0x1B or int(round(float(first[1][0]))) != 0:
+            continue
+        if math.hypot(float(first[1][2]), float(first[1][3])) < YD_:
+            continue
+        if L.first_action(full[k])[0] != 0x0D:
+            return []
+        out.append(k)
+    for k in range(11):
+        if kinds[k] in SAFETY_KINDS and full[k] and L.first_action(full[k])[0] == 0x0E:
+            return []
+    return out
+
+
+def rotate_name(base: str) -> str:
+    """'Cover 3 Cloud Strong' -> 'Rotate 3 Cloud Strong', 'Sim Pressure Mike' -> 'Sim Pressure Mike Rotate': the call a
+    two-high shell rotates into at the snap."""
+    return 'Rotate ' + base[len('Cover '):] if base.startswith('Cover ') else base + ' Rotate'
+
+
+def apply_disguise(rows: dict, roles: dict, scheme: D.Scheme, team: str, body) -> dict:
+    """b779 dp1.  Coordinators who disguise show two high safeties before the snap and rotate to one high after it.
+    Retail scripts already do that on part of their single-high calls (no pre-snap walk-down); this pass converts more
+    of them (only the rotating safeties' leading Defense Start becomes neutral: their post-snap zones are unchanged)
+    until the share of single-high calls shown two-high reaches ``scheme.disguise``.  Bear and Mug calls (one-high
+    formations) and records whose safeties play man are never touched.  Returns a receipt."""
+    pool = []
+    shown = single = 0
+    for i, r in sorted(rows.items()):
+        sl = r['slot']
+        if sl.component != 'coverage' or r['st'] is None or r.get('full') is None:
+            continue
+        listed = sl.roles | sl.extra_links
+        if listed & {'bear', 'mug'}:
+            continue
+        home = r['home']
+        if r['st'].family not in SINGLE_HIGH_FAMILIES:
+            continue
+        single += 1
+        pre, _ = _shells(r['full'], home.positions, home.kinds)
+        if pre == 'two':
+            shown += 1
+            continue
+        rot = rotators(r['full'], home.positions, home.kinds)
+        if rot:
+            pool.append((spread(team, f'disguise|{i}'), i, rot))
+    want = math.ceil(scheme.disguise * single - 1e-9) - shown
+    converted = []
+    for _, i, rot in sorted(pool):
+        if want <= 0:
+            break
+        r = rows[i]
+        full = [[(n[0], list(n[1])) for n in c] if c else c for c in r['full']]
+        for k in rot:
+            full[k][0] = (NEUTRAL_START[0], list(NEUTRAL_START[1]))
+        ok = all(_shells(full, roles[x].positions, roles[x].kinds)[0] == 'two'
+                 for x in (r['slot'].roles | r['slot'].extra_links) if x in roles)
+        if not ok:
+            continue
+        for c in full:
+            if c:
+                codec.validate_defense_operands(c)
+        r['full'] = full
+        r['chains'] = diff_against(full, lib.decoded_chains(body, r['donor']))
+        r['disguise'] = dict(rotating_slots=rot, presnap='two', postsnap=r['st'].family)
+        converted.append(i)
+        want -= 1
+    return dict(target=scheme.disguise, single_high_calls=single, shown_two_high_before=shown,
+                converted=converted, shown_two_high_after=shown + len(converted),
+                share_after=round((shown + len(converted)) / single, 3) if single else None)
+
+
 def make_pack(plan: dict) -> tuple[pk.PlaybookPack, list[dict], dict]:
     team, book, body, roles, slots = plan['team'], plan['book'], plan['body'], plan['roles'], plan['slots']
     scheme = plan['scheme']
@@ -1409,7 +1537,9 @@ def make_pack(plan: dict) -> tuple[pk.PlaybookPack, list[dict], dict]:
             st = L.structure(full, home.kinds, front_slots_of(home), ('odd:' if home.type_code == 4 else 'even:') + home.source_name)
             label, concept = st.label, st.label
         rows[s.index] = dict(slot=s, donor=donor, chains=chains, home=home, label=label, concept=concept, st=st,
-                             donor_flags=book.plays[donor].flags_or_id)
+                             donor_flags=book.plays[donor].flags_or_id,
+                             full=(onside if s.component == 'coverage' and moved else
+                                   (full if s.component == 'coverage' else None)))
         if moved:
             rows[s.index]['onside'] = [dict(slot=k, walkup_yd=round(-a / codec.YD_CM, 2), now_yd=round(-b / codec.YD_CM, 2),
                                             presnap_depth_yd=round(d / codec.YD_CM, 2)) for k, a, b, d in moved]
@@ -1417,6 +1547,8 @@ def make_pack(plan: dict) -> tuple[pk.PlaybookPack, list[dict], dict]:
             rows[s.index]['sts'] = {r: L.structure(full, roles[r].kinds, front_slots_of(roles[r]), okie.role_layout(roles[r]))
                                     for r in s.roles if roles[r].type_code == 4}
         s.pressure = bool(rows[s.index]['donor_flags'] & PRESSURE_BIT)
+    # 1b. b779 dp1: disguise (single-high calls shown from a two-high shell) up to the coordinator's share.
+    disguised = apply_disguise(rows, roles, scheme, team, body)
     # 2. bands (coverages; fronts keep their call band)
     cov = [r['slot'] for r in rows.values() if r['slot'].component == 'coverage']
     def concept_of(s, role=None):
@@ -1479,6 +1611,11 @@ def make_pack(plan: dict) -> tuple[pk.PlaybookPack, list[dict], dict]:
                     (s.content.script.chains if isinstance(s.content, Choice) and s.content.script else None))
             if isinstance(s.content, Choice) and s.content.spy_slots:
                 name = unique(r['label'].replace('Sky', '').replace('Buzz', '').replace('Cloud', '').strip() + ' Spy', used)
+            elif r.get('disguise'):
+                opts = [rotate_name(o) for o in name_options(r['label'], r['st'], home.kinds, home.positions, full)]
+                if NAME_MODE:
+                    opts.sort(key=len)
+                name = unique(next((o for o in opts if o not in used), opts[0]), used)
             else:
                 name = unique(play_name(r['label'], r['st'], home.kinds, home.positions, full, used), used)
         flags = (r['donor_flags'] & ~0xE00) | (s.band << 9)
@@ -1508,6 +1645,8 @@ def make_pack(plan: dict) -> tuple[pk.PlaybookPack, list[dict], dict]:
                             authored_nodes=sum(len(c) for c in r['chains'] if c)))
         if r.get('onside'):
             catalog[-1]['presnap_kept_onside'] = r['onside']   # b778 of1
+        if r.get('disguise'):
+            catalog[-1]['disguise'] = r['disguise']            # b779 dp1
     formations = []
     for key in ('base', 'base2', 'bear', 'nickel', 'dime', 'nickel_odd', 'dime_odd'):
         r = roles.get(key)
@@ -1530,7 +1669,7 @@ def make_pack(plan: dict) -> tuple[pk.PlaybookPack, list[dict], dict]:
     pack = pk.PlaybookPack(pk.PackBook(team, f'NFL 2K28 {team} Defense v2', AUTHOR, VERSION, 'CC0-1.0', (), notes),
                            pk.PackBase(pk.book_fingerprint(body), len(book.formations), len(book.plays), book.node_count),
                            tuple(formations), tuple(plays), pk.DEFENSE_SCHEMA)
-    return pack, catalog, dict(band_loss=loss, modeled=modeled)
+    return pack, catalog, dict(band_loss=loss, modeled=modeled, disguise=disguised)
 
 
 def compile_and_check(source: bytes, pack: pk.PlaybookPack, xbe: bytes):
@@ -1554,10 +1693,21 @@ def semantic(pack) -> str:
 def run_team(team: str, offense_dir: Path, library: Library, *, write: bool = True, xbe: bytes | None = None) -> dict:
     profiles, rates = load_research()
     source, offense_path = compiled_source(team, offense_dir)
-    plan = plan_team(team, source, library, profiles, rates)
-    pack, catalog, fit = make_pack(plan)
+    global NAME_MODE
     xbe = xbe or RETAIL_XBE.read_bytes()
-    check, result, lint = compile_and_check(source, pack, xbe)
+    try:
+        for NAME_MODE in range(4):
+            plan = plan_team(team, source, library, profiles, rates)
+            pack, catalog, fit = make_pack(plan)
+            check, result, lint = compile_and_check(source, pack, xbe)
+            if pool_units(result.replacement) <= NAME_POOL_UNITS:
+                break
+        else:
+            raise ValueError(f'{team}: play names need {pool_units(result.replacement)} of {NAME_POOL_UNITS} string units '
+                             'even with the shortest names')
+        name_mode = NAME_MODE
+    finally:
+        NAME_MODE = 0
     if lint:
         raise ValueError(f'{team} lint: ' + '; '.join(f.message for f in lint))
     receipt = dict(team=team, offense_pack=str(offense_path.relative_to(ROOT)) if offense_path.is_relative_to(ROOT) else str(offense_path),
@@ -1568,7 +1718,8 @@ def run_team(team: str, offense_dir: Path, library: Library, *, write: bool = Tr
                    nodes=result.report['new_node_count'], node_capacity=pk.NODE_CAPACITY,
                    formation_count=result.report['new_formation_count'], play_count=result.report['new_play_count'],
                    misses=plan['misses'], band_loss=round(fit['band_loss'], 5), spy_play=plan['spy'],
-                   native_scoring_faults=result.report.get('native_scoring', {}).get('fault_count'))
+                   native_scoring_faults=result.report.get('native_scoring', {}).get('fault_count'),
+                   name_pool_units=pool_units(result.replacement), name_pool_capacity=NAME_POOL_UNITS, name_mode=name_mode)
     if write:
         dest = ROOT / f'data/playbooks/softdrink_{team.lower()}_defense.2k5book'
         pk.save_pack(pack, dest)
