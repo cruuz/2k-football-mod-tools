@@ -469,6 +469,23 @@ def franchise_uniforms(main_rost, asset_code):
     raise MoreMomentsError(f"no NFL team uses asset code {asset_code}")
 
 
+def franchise_style_pairs(main_rost, asset_code):
+    """The 14 (first, last) style pairs at team +0x15A, 56 bytes, of the NFL team with this asset code.
+
+    ``compile_records`` chooses the SITU kit index against this table (``franchise_uniforms``), and the game resolves
+    that index against the team file it loads. A compiled moment team file therefore has to carry the same table; the
+    template's own pairs name the template's era (e.g. the 2000 Ravens template says 1997-1999 for style 1) and would
+    relabel the kit the data chose. The kit art is keyed by the style index and is untouched; only the pairs move."""
+    body = main_rost[32:]
+    rel = lambda a: (a + struct.unpack_from("<i", body, a)[0] - 1) if struct.unpack_from("<i", body, a)[0] else None
+    table, count = rel(0x40 + 0x1C), struct.unpack_from("<I", body, 0x40 + 0x18)[0]
+    for i in range(min(count, 32)):
+        t = table + i * rr.TEAM_SIZE
+        if sc.utf16(body, rel(t + 0x10C)) == asset_code:
+            return bytes(body[t + 0x15A:t + 0x15A + 4 * 14])
+    raise MoreMomentsError(f"no NFL team uses asset code {asset_code}")
+
+
 def compile_records(data, main_rost):
     """The new SITU records (108 bytes each, pointer fields zero) and their six strings."""
     out = []
@@ -658,13 +675,14 @@ def photo_taken(main_photos, photo, first, last):
 
 
 def compile_team(template_raw, team, rows, colleges, identity, people=None, *, appearance=None, main_photos=frozenset(),
-                 missing_colleges=None, scans=None):
+                 missing_colleges=None, scans=None, uniform_pairs=None):
     """A one-team historic roster file for one team-season, from a retail historic file of the same franchise.
     appearance: the team's appearance.json rows (or None); main_photos: every photo id the current main roster's named
     records use. scans: {retail face id: unused id holding a copy of that retail scan} (nfl2k5_moment_scans; None reads
     the shipped table).
     missing_colleges: None refuses a college the main table lacks. A list instead keeps the template's own college
-    for that player and records the name in it (classic teams: a user's roster may reuse a retail college slot)."""
+    for that player and records the name in it (classic teams: a user's roster may reuse a retail college slot).
+    uniform_pairs: the main roster franchise's 56-byte style table (franchise_style_pairs); None keeps the template's."""
     from . import nfl2k5_my_career_prospects as prospects
     require(template_raw[:4] == b"ROST" and struct.unpack_from("<I", template_raw, 4)[0] == len(template_raw) - 32,
             "template is not a one-team ROST resource")
@@ -672,6 +690,10 @@ def compile_team(template_raw, team, rows, colleges, identity, people=None, *, a
     doc = rr.RosterDocument(bytes(body))
     require(len(doc.players) == 53 and len(doc.teams) == 1 and doc.teams[0].player_count == 53,
             "template must be a 53-player one-team file")
+    if uniform_pairs is not None:
+        require(len(uniform_pairs) == 4 * 14, "uniform_pairs is the 14 style pairs (56 bytes)")
+        at = doc.teams[0].offset + 0x15A
+        body[at:at + len(uniform_pairs)] = uniform_pairs
     players = sorted(doc.players, key=lambda p: p.index)
     donors = {}
     for p in players:
@@ -1327,10 +1349,11 @@ def compile_files(main, templates, data, *, one_pool=False):
     out = {}
     entries = table_entries(data)
     for n, (key, filename, _entry, _selector, identity) in enumerate(entries):
-        raw = compile_team(templates[key], data.teams[key], data.rosters[key], colleges, identity, people,
-                           appearance=looks.get(key), main_photos=main_photos)
+        t = data.teams[key]
+        raw = compile_team(templates[key], t, data.rosters[key], colleges, identity, people,
+                           appearance=looks.get(key), main_photos=main_photos,
+                           uniform_pairs=franchise_style_pairs(main, t["asset_code"]))
         if one_pool:
-            t = data.teams[key]
             raw = _one_pool(raw, front.mapping_scheme("moments", key, t["abbreviation"], t["season"]))
         if n == len(entries) - 1:
             raw = pad_to_sector(raw)
