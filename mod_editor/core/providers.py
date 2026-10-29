@@ -880,7 +880,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_roster_arena_code.py": "b4da3a566ae817b1ec91c0d1a6202bd182d1ea3b55b96eb7d924ee8156ccfbac",
         "mod_editor/core/nfl2k5_roster_arena_code_b78.py": "d09e15c483d8cf67ea33716929efe4712d8e75a21b7bb99670c9944efa5ff1fc",
         "mod_editor/core/nfl2k5_roster_arena_growth.py": "39cb20559131e54e041b5d903a048d73f9bf5dc5d2016e0cfb8ec450234a24cd",
-        "mod_editor/core/nfl2k5_roster_arena_image.py": "328d218bdfb4619e946e9f7f430370e7932f933a03bbdc64a0497f2b5602c8c9",
+        "mod_editor/core/nfl2k5_roster_arena_image.py": "bc438e13c6aed320ee3cbc45682210f7db36ab657d921dd2c79d6bb603ed9814",
         "mod_editor/core/nfl2k5_draft_picks.py": "3a2d018fa44df1100b512b01db97b2306ddc5d9ac585a596569b9a525268bdd5",
         "mod_editor/core/nfl2k5_hback.py": "7d82d304cfb2f39d4a435d522e9b536974a40ba7cb6b7a1ede57a2c1a7efb94d",
         "mod_editor/core/nfl2k5_roster_refresh.py": "656cc45da53ad9a269fa38197669500043439ff2abf611b833772fd201843a6a",
