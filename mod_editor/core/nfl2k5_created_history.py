@@ -34,7 +34,7 @@ from . import nfl2k5_save_rost as sr
 SCHEMA = "nfl2k5_created_history/v1"
 DATA_VERSION = "2026-10-28"
 DEFAULT_DATA = Path(__file__).resolve().parents[1] / "data" / "nfl2k5_created_history_2026.v1.json"
-DATA_SHA256 = "fc4ab716e40b2ff04da2de5ce521d5819307fd68771a67bf5d2add1f765b8d08"
+DATA_SHA256 = "397b384289fbd25758eaf5da82500fd044cbd2eb6b2c3eeab7a5a71907cdad53"
 CONVENTION = "game_years_in_league"
 HISTORY_RESERVE = 64
 # b779 fh1 (coordinator review: "year after year after year"): dwords this pass leaves FREE for the first franchise season.

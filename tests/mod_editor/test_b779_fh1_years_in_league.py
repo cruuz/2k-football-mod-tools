@@ -23,6 +23,7 @@ from mod_editor.core import nfl2k5_team_history as th
 from tests.mod_editor.test_nfl2k5_team_history import synthetic_body
 
 import b779_years_in_league as conv
+import b779_fh1_history_data as hd
 
 DATA = _REPO_ROOT / "mod_editor" / "data"
 
@@ -288,6 +289,69 @@ class CreatedHistoryTests(unittest.TestCase):
         self.assertGreater(receipt["detail_levels"]["latest"] + receipt["detail_levels"]["none"], 0)
         rows = words_by_year(cs.decode_body(out), ("primary", 0), 16)
         self.assertEqual(sorted(rows), list(range(2011, 2017)))
+
+
+class SnapGamesTests(unittest.TestCase):
+    """Games played come from snap counts, not from weeks with a box-score line (Andrew Thomas 2025 read 3 games, he played 13)."""
+
+    def make_dir(self, tmp, snaps, stats, roster_rows):
+        d = Path(tmp)
+        (d / "FETCHED_AT.txt").write_text("2026-10-28T17:18:58Z\n", encoding="utf-8")
+        (d / "players.csv").write_text("gsis_id,pfr_id\n00-1,ThomAn02\n00-2,SnapLo00\n", encoding="utf-8")
+        for year in range(2000, 2027):
+            rows = [r for r in roster_rows if r[0] == year]
+            (d / f"roster_{year}.csv").write_text("season,team,gsis_id,week,entry_year\n" + "".join(
+                f"{y},{t},{g},{w},{e}\n" for y, t, g, w, e in rows), encoding="utf-8")
+        for year in range(2000, 2026):
+            rows = [r for r in stats if r[0] == year]
+            (d / f"stats_player_reg_{year}.csv").write_text("player_id,season_type,games,recent_team,completions\n" + "".join(
+                f"{g},REG,{n},{t},0\n" for _y, g, n, t in rows), encoding="utf-8")
+        for year in range(2012, 2026):
+            rows = [r for r in snaps if r[0] == year]
+            (d / f"snap_counts_{year}.csv").write_text("game_id,game_type,pfr_player_id,offense_snaps,defense_snaps,st_snaps\n" + "".join(
+                f"{gid},{gt},{pfr},{o},{dd},{st}\n" for _y, gid, gt, pfr, o, dd, st in rows), encoding="utf-8")
+        return hd.Nflverse(d)
+
+    def test_games_use_snaps_and_the_larger_count_wins(self):
+        snaps = [(2025, f"2025_{w:02d}_A_B", "REG", "ThomAn02", 60, 0, 0) for w in range(1, 14)]        # 13 games
+        snaps += [(2025, "2025_01_A_B", "REG", "ThomAn02", 60, 0, 0)]                                     # duplicate row, same game
+        snaps += [(2025, "2025_18_A_B", "POST", "ThomAn02", 60, 0, 0), (2025, "2025_19_A_B", "REG", "ThomAn02", 0, 0, 0)]  # not counted
+        snaps += [(2025, f"2025_{w:02d}_A_B", "REG", "SnapLo00", 0, 0, 12) for w in range(1, 9)]          # a long snapper: special teams only
+        with tempfile.TemporaryDirectory() as tmp:
+            data = self.make_dir(tmp, snaps, [(2025, "00-1", 3, "NYG")], [(2025, "NYG", "00-1", 18, 2020), (2025, "NYG", "00-2", 18, 2020)])
+            self.assertEqual(data.games("00-1", 2025, 3), (13, "snap_counts"))
+            self.assertEqual(data.games("00-2", 2025, 0), (8, "snap_counts"))
+            self.assertEqual(data.games("00-1", 2025, 17), (17, "stat_line_games"))          # the stat line count is never lowered
+            self.assertEqual(data.games("00-1", 2012, 4), (4, "stat_line_games_lower_bound"))  # no snap data before 2013
+            seasons, notes = data.seasons("00-2", 2020)
+            self.assertEqual([(s["year"], s["stats"]["games"], s["team"]) for s in seasons], [(2025, 8, "NYG")])
+            self.assertEqual(notes["season_from_snaps_only"], 1)
+
+    def test_league_history_games_are_raised_and_snap_only_seasons_added(self):
+        snaps = [(2025, f"g{w}", "REG", "ThomAn02", 60, 0, 0) for w in range(1, 14)]
+        snaps += [(2024, f"h{w}", "REG", "ThomAn02", 60, 0, 0) for w in range(1, 7)]
+        with tempfile.TemporaryDirectory() as tmp:
+            data_dir = Path(tmp)
+            self.make_dir(tmp, snaps, [(2025, "00-1", 3, "NYG")], [(2025, "NYG", "00-1", 18, 2020), (2024, "NYG", "00-1", 18, 2020)])
+            edits = {"franchise_history": {"sources": {"roster_2025.csv": {"sha256": "0" * 64}}, "players": [
+                {"gsis_id": "00-1", "first": "Andrew", "last": "Thomas", "seasons": [
+                    {"year": 2025, "source": "stats_player_reg_2025.csv", "stats": {"games": 3}, "team_index": 15}]}]}}
+            out, report = hd.patch_league(data_dir, edits)
+        seasons = out["franchise_history"]["players"][0]["seasons"]
+        self.assertEqual([(s["year"], s["stats"]["games"]) for s in seasons], [(2024, 6), (2025, 13)])
+        self.assertEqual(seasons[0]["source"], "snap_counts_2024.csv")
+        self.assertEqual(seasons[0]["team_index"], 15)                                       # NYG, from the annual roster
+        self.assertEqual((report["games_raised"], report["seasons_added"]), (1, 1))
+        self.assertIn("snap_counts_2025.csv", out["franchise_history"]["sources"])
+        self.assertIn("players.csv", out["franchise_history"]["sources"])
+        self.assertEqual(edits["franchise_history"]["players"][0]["seasons"][0]["stats"]["games"], 3)  # input not mutated
+
+    def test_shipped_created_history_uses_snap_games(self):
+        kaep = person("Colin Kaepernick")
+        games = {s["year"]: s["stats"]["games"] for s in kaep["seasons"]}
+        self.assertEqual(games[2016], 12)         # 11 weeks with a stat line, 12 games played
+        self.assertEqual(games[2012], 13)         # before 2013 the stat-line count is kept (a lower bound)
+        self.assertIn("games = the larger", HISTORY["policy"])
 
 
 if __name__ == "__main__":
