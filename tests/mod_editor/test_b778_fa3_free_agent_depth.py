@@ -251,6 +251,7 @@ class FranchiseUpgradeTests(unittest.TestCase):
         out, step = up.sync_free_agents(payload, disc)
         self.assertIsNotNone(step["save_arena_growth"])
         self.assertEqual(step["save_arena_growth"]["arena_size_after"], arena.CAPACITY_ARENA_SIZE)
+        self.assertEqual(step["arena_growth"], "grown")                  # b779 up2: the receipt says which
         self.assertGreater(len(out), len(payload))
         self.assertEqual(len(out), 720044 + arena.CAPACITY_ARENA_SIZE - arena.RETAIL_SIZE)
         self.assertEqual(len(step["changes"]), len(depth.load()["players"]))
@@ -260,6 +261,7 @@ class FranchiseUpgradeTests(unittest.TestCase):
         again, second = up.sync_free_agents(out, disc)
         self.assertEqual((again, second["changes"]), (out, []))
         self.assertIsNone(second["save_arena_growth"])
+        self.assertEqual(second["arena_growth"], "already the disc's arena size")
 
     def test_free_agents_is_a_command_and_part_of_upgrade(self):
         self.assertIn("free-agents", service.COMMANDS)

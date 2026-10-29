@@ -1101,6 +1101,8 @@ def sync_free_agents(payload: bytes, disc_body: bytes, *, keep: int = SAVE_KEEP_
     disc_layout = sr.decode(disc_body, preamble=0, reference_year=BASE_YEAR).layout
     capacity_request = arena.capacity_descriptor(disc_body, disc_layout)
     growth = None
+    growth_state = ("already the disc's arena size" if capacity_request and roster.layout.arena_size >= disc_layout.arena_size
+                    else "the disc has no larger arena")
     if capacity_request and roster.layout.arena_size < disc_layout.arena_size:
         # b779 ag1: the disc's appended records are create vacancies (the dated free agents went into them) and free
         # draft-class records (flags 0); a retail save takes as many vacancies as the disc made and the class records
@@ -1110,7 +1112,10 @@ def sync_free_agents(payload: bytes, disc_body: bytes, *, keep: int = SAVE_KEEP_
         grow = ((roster.overflow is None and not legacy_capacity)
                 or (legacy_capacity and arena.capacity_descriptor(payload, roster.layout) is not None))
         require(grow or legacy_capacity, "capacity migration does not compose with a 16-reserve save")
+        growth_state = ("kept its size: this save was migrated by the game and has no growth descriptor"
+                        if not grow else growth_state)
         if grow:
+            growth_state = "grown"
             vacancies = capacity_request[0] - arena.capacity_class_count(disc_body, disc_layout)
             migrated, migration = arena.migrate(payload, reserves_16=False, capacity_records=vacancies,
                                                 class_records=None)
@@ -1192,7 +1197,7 @@ def sync_free_agents(payload: bytes, disc_body: bytes, *, keep: int = SAVE_KEEP_
                     "free_agents_before": len(document.original_free_agents), "free_agents_after": len(check.free_agents),
                     "already_in_franchise": already, "not_on_disc": absent, "no_room": left,
                     "changes": changes, "outside_declared_fields_identical": True,
-                    "save_arena_growth": growth,
+                    "save_arena_growth": growth, "arena_growth": growth_state,
                     "changed_bytes": sum(a != b for a, b in zip(base_payload, result))}
 
 

@@ -72,6 +72,13 @@ def preview_text(plan):
             lines += [f"  {c['player']}" for c in step["changes"][:12]]
             if len(step["changes"]) > 12:
                 lines.append(f"  …and {len(step['changes']) - 12} more in the receipt.")
+            growth = step.get("save_arena_growth")
+            if growth:
+                lines.append(f"Roster arena grown: {growth['arena_size_before']:,} to {growth['arena_size_after']:,} bytes, "
+                             f"{growth['class_records']} more draft-class player records (the save is "
+                             f"{growth['file_growth']:,} bytes larger).")
+            elif step.get("arena_growth", "").startswith("kept"):
+                lines.append(f"Roster arena not grown: {step['arena_growth']}.")
             if step["no_room"]:
                 lines.append(f"  No room for {len(step['no_room'])} more: the save has no empty player records left.")
         elif step["operation"] == "rookie_templates":   # b779-rf3
