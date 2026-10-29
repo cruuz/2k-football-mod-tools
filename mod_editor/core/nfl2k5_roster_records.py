@@ -2002,12 +2002,33 @@ class RosterDocument:
     def demote_active(self, team_index: int, primary_index: int) -> dict[str, Any]:
         return self._reserve_move(team_index, primary_index, promote=False)
 
-    def check_depth_locks(self, *, exhibition: bool = True) -> int:
-        """Refuse conflicting depth locks. ``exhibition=False`` (read-only checks of a game-written save, for
-        example Franchise > Upgrade) only enforces the 32 clubs: the released v0.7 roster already carries
-        conflicts among its celebrity, alumni and all-star squads, and a save the game wrote with them loads fine.
-        Returns the number of conflicts that were not enforced."""
+    def _inherited_lock_conflicts(self, source: bytes | None = None) -> set:
+        """Exhibition-squad lock conflicts the loaded bytes already had (the released v0.7 roster carries a dozen on its
+        celebrity, alumni and all-star squads). Keyed by team, role, position, row and the players involved."""
+        cached = getattr(self, "_inherited_locks", None)
+        if cached is not None and source is None:
+            return cached
+        pristine = type(self)(self.original if source is None else source, base=self.base, scheme=self.scheme,
+                              reference_year=self.reference_year, base_year=self.base_year)
+        keys = set()
+        for team in pristine.teams:
+            if team.index >= 32:
+                for c in pristine.depth_lock_conflicts(team.index):
+                    keys.add((team.index, c["role"], c["position"], c["row"], tuple(sorted(c["players"]))))
+        if source is None:
+            self._inherited_locks = keys
+        return keys
+
+    def check_depth_locks(self, *, exhibition: bool = True, inherited_from: bytes | None = None) -> int:
+        """Refuse conflicting depth locks.
+
+        ``exhibition=False`` (read-only checks of a game-written save, for example Franchise > Upgrade) only enforces
+        the 32 clubs and returns how many conflicts it did not enforce. With the default, an exhibition-squad conflict
+        that the loaded bytes (``inherited_from``, default this document's own original) already had is not an error:
+        the released v0.7 roster has such conflicts and the game loads and saves them fine; a conflict an edit
+        creates is still refused."""
         skipped = 0
+        inherited = None
         for team in self.teams:
             conflicts = self.depth_lock_conflicts(team.index)
             if not exhibition and team.index >= 32:
@@ -2021,6 +2042,11 @@ class RosterDocument:
                 conflicts = [c for c in conflicts if not all(
                     any(t < 32 for t in self.by_offset[offset].teams)
                     for offset in c["players"])]
+                if conflicts:
+                    if inherited is None:
+                        inherited = self._inherited_lock_conflicts(inherited_from)
+                    conflicts = [c for c in conflicts if (team.index, c["role"], c["position"], c["row"],
+                                                          tuple(sorted(c["players"]))) not in inherited]
             _require(not conflicts,
                      f"{team.display}: conflicting depth locks; unlock or assign distinct rows before saving")
         return skipped

@@ -419,7 +419,7 @@ class FranchiseSave:
         payload = self.to_bytes()
         # the roster codec is consulted only when roster state changed since the load (beta-63.1)
         validate_save_edit(self.original, payload)
-        rr.RosterDocument(payload, base=ARENA_PREAMBLE).check_depth_locks()
+        rr.RosterDocument(payload, base=ARENA_PREAMBLE).check_depth_locks(inherited_from=self.original)
         return self.container.write(target, payload, overwrite=overwrite)
 
     # ------------------------------------------------------------------ raw helpers

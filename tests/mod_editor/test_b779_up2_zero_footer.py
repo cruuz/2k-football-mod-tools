@@ -19,6 +19,7 @@ from mod_editor.core import nfl2k5_franchise_upgrade as up  # noqa: E402
 from mod_editor.core import nfl2k5_my_career_save as career  # noqa: E402
 from mod_editor.core import nfl2k5_player_progression as pp  # noqa: E402
 from mod_editor.core import nfl2k5_roster_arena as arena  # noqa: E402
+from mod_editor.core import nfl2k5_roster_records as rr  # noqa: E402
 from mod_editor.core import nfl2k5_save_rost as sr  # noqa: E402
 from mod_editor.core import nfl2k5_save_writer as writer  # noqa: E402
 from tests.mod_editor.test_franchise_upgrade import capacity_fixture  # noqa: E402
@@ -226,6 +227,33 @@ class RealV07Save(unittest.TestCase):
         self.assertEqual(report["players"], 3299)
         self.assertGreaterEqual(report["exhibition_depth_lock_conflicts_not_enforced"], 0)
         self.assertEqual(college.scan(self.data).findings, ())
+
+    def test_studio_writes_a_copy_of_it_and_the_zero_footer_stays(self):
+        folder = REAL.parent
+        if not (folder / "EXTRA").is_file():
+            self.skipTest("EXTRA is not beside the scratch save")
+        with tempfile.TemporaryDirectory() as td:
+            loaded = fs.FranchiseSave.load(folder)
+            loaded.write(Path(td) / "copy")
+            self.assertEqual((Path(td) / "copy" / "SAVEGAME.DAT").read_bytes(), self.data)
+            container = rr.SaveContainer.load(folder)
+            rr.save_document(container.document(), Path(td) / "rosters")
+            copy = (Path(td) / "rosters" / "SAVEGAME.DAT").read_bytes()    # the Rosters tab also repairs commentary
+            self.assertEqual(len(copy), len(self.data))
+            self.assertEqual(copy[-pp.FOOTER_SIZE:], ZERO)
+
+    def test_an_exhibition_lock_conflict_that_the_save_did_not_have_is_still_refused(self):
+        document = rr.RosterDocument(self.data, base=0x300)
+        document.check_depth_locks()                    # the v0.7 conflicts are inherited: no error
+        other = bytearray(self.data)                    # a pristine that lacks the conflicts one player takes part in
+        bit = __import__("mod_editor.core.nfl2k5_depth_locks", fromlist=["LOCK_BITS"]).LOCK_BITS["rank"]
+        offset = rr.FIELD_BY_NAME["unknown_52"].offset
+        for player in document.players:
+            if player.teams and 35 in player.teams and player.record.depth_locks["rank"]:
+                other[player.offset + offset] &= ~bit & 0xFF
+        with self.assertRaises(rr.RosterRecordError):
+            document.check_depth_locks(inherited_from=bytes(other))
+        self.assertGreater(document.check_depth_locks(exhibition=False), 0)
 
 
 if __name__ == "__main__":
