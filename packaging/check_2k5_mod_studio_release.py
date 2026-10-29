@@ -333,7 +333,7 @@ ANNIVERSARY_FIELD_PNG_CATALOG_SHA256 = "c621d94c4f48f26ab6c44e912dd5d5ff7a36d070
 # (b778 cf1-cf4: photo-derived likeness textures, Noah 2026-10-12; see the catalog's classification). It grants no general PNG
 # exception inside those folders; tools/b77/modern_art_png_catalog.py regenerates it and prints the digest below.
 MODERN_ART_PNG_CATALOG = "packaging/nfl2k5_modern_art_pngs.json"
-MODERN_ART_PNG_CATALOG_SHA256 = "a36f9ee6382ee52c7a389178a572b40587fccf15d80e83c5f6bebbcd71d91cd0"  # b779-rf3: + new rookie face atlases (faces_14..16); b778 cf5: seven scanned coach heads (ARI BUF DEN HOU LV NO SEA); b778 3d1: classification names the scanned heads as photo-derived; b778-pg2: + the TROPHY ROOM emblem; b778-ee1: + the 4 gray alien PNGs; b778-ss1: + the 15 Seamen card/field/face PNGs; b778-rh1/rh2: + the 18 rookie face bank atlases; b778 cf1: four scanned coach heads; b778 cf2: seven scanned coach heads and the PIT rescan; b778 cf3: seven scanned coach heads; b778 cf4: seven scanned coach heads, KC head.png in place of head_mask + head_overlay; b778 cm2: six coach heads and apparel; b776-int2: + fn2 four Titans 7 digits; b775-int1: sb1 marks + hs1 nine hair textures
+MODERN_ART_PNG_CATALOG_SHA256 = "2059015d354534ca395ae9da0a0d53b92baed4bc50b106dee212635c9f8b2625"  # b779-int1: rf3 + pt1 regenerated together (936 files); b779-pt1: + the 8 real free-agent portrait atlases; b779-rf3: + new rookie face atlases (faces_14..16); b778 cf5: seven scanned coach heads (ARI BUF DEN HOU LV NO SEA); b778 3d1: classification names the scanned heads as photo-derived; b778-pg2: + the TROPHY ROOM emblem; b778-ee1: + the 4 gray alien PNGs; b778-ss1: + the 15 Seamen card/field/face PNGs; b778-rh1/rh2: + the 18 rookie face bank atlases; b778 cf1: four scanned coach heads; b778 cf2: seven scanned coach heads and the PIT rescan; b778 cf3: seven scanned coach heads; b778 cf4: seven scanned coach heads, KC head.png in place of head_mask + head_overlay; b778 cm2: six coach heads and apparel; b776-int2: + fn2 four Titans 7 digits; b775-int1: sb1 marks + hs1 nine hair textures
 
 # sb3: Noah (2026-10-28) cleared real logos for this free fan mod, so his real Super Bowl event logos, network marks
 # and team-season logos ship as the bundled default. This is a separate exact catalog, not an authored-art exception:
@@ -409,7 +409,8 @@ def _super_bowl_logo_pngs(root: Path) -> dict:
 def _validate_reviewed_png(path: Path, relative: str, info, contract: dict, label: str) -> None:
     import struct
     # b778-rh1/rh2: the rookie face banks are 2048x2048 atlases, much larger than a single authored texture.
-    limit = MAX_RELEASE_FILE_BYTES if relative.startswith("data/nfl2k5_rookie_faces/") else 512 * 1024
+    limit = (MAX_RELEASE_FILE_BYTES if relative.startswith(("data/nfl2k5_rookie_faces/", "data/nfl2k5_real_portraits/"))
+             else 512 * 1024)  # b779-pt1: the real portrait atlases are 2048x2048 like the rookie bank
     if info.st_size != contract["size"] or info.st_size > limit:
         raise ReleaseCheckError(f"reviewed {label} PNG size changed: {relative}")
     with path.open("rb") as stream:

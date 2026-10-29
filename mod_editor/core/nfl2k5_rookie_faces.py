@@ -639,7 +639,8 @@ def build_portraits(record: bytes, cdf: bytes, faces: Iterable[tuple[int, bytes]
         name = f"{pid:04d}"
         h = member_hash(name)
         require(h not in slots, f"portrait {name} already exists on this image")
-        indices, palette = face_pixels(rgb)
+        # b779-pt1: a face may arrive already as P8 ((indices, RGBA palette), the real portraits' soft-alpha cutouts)
+        indices, palette = rgb if isinstance(rgb, tuple) else face_pixels(rgb)
         slots[h] = make_slot(template, name, indices, palette)
         added += 1
     order = sorted(slots)
@@ -792,8 +793,11 @@ def plan(path: Path | str, bank: Mapping[str, Any] | None = None,
     require(len(ids) == len(set(ids)), "bank ids and faces disagree")
     ids = ids + [pid for pid, _rgb in extra_faces]
     require(len(ids) == len(set(ids)), "an extra portrait id is also a bank id")
+    # b779-pt1: an extra face given as P8 (tuple) belongs to a roster player by design (the real free-agent portraits);
+    # every other id must be unused by every roster on the image.
+    owned = {pid for pid, rgb in extra_faces if isinstance(rgb, tuple)}
     used = roster_photo_ids(path)
-    clash = sorted(set(ids) & used)
+    clash = sorted((set(ids) - owned) & used)
     require(not clash, f"rosters on this image already use portrait ids {clash[:8]}: the rookie bank cannot take them")
     with _archive_entries(path) as archive:
         record_entry, cdf_entry = _outer(archive, RETAIL_RECORD_NAME), _outer(archive, RETAIL_CDF_NAME)

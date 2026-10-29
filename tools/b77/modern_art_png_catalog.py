@@ -30,11 +30,13 @@ FOLDERS = ("data/nfl2k5_modern_coaches/", "data/nfl2k5_modern_fans/", "data/nfl2
            "data/nfl2k5_super_bowl_fields/",
            "data/nfl2k5_hair_styles/art/",  # b775-hs1
            "data/nfl2k5_rookie_faces/",  # b778-rh1: the authored rookie face bank atlases
+           "data/nfl2k5_real_portraits/",  # b779-pt1: official-headshot Player Card portraits (game format)
            "data/nfl2k5_classic_teams/",  # b778-ss1: the Seamen card, field and face art
            "data/nfl2k5_alien_prospect/",  # b778-ee1: the gray alien portrait and face textures
            "data/trophy_room_logo/",  # b778-pg2: the authored TROPHY ROOM emblem
            "data/nfl2k5_glyph_fixes_2026/")  # b776-fn2 (int2)
-CLASSIFICATION = ("b778 rh1/rh2's rookie face bank atlases are generated fictional draft headshots (Codex image_gen), "
+CLASSIFICATION = ("b779 pt1's real portrait atlases are the official NFL.com / ESPN headshot photographs of the created real free agents, cropped and reduced to the game's 128 x 128 P8 portrait format (Noah 2026-10-28: the card shows the real picture, like the NFL roster does); the original photo files never ship, only these game-format portraits. "
+                  "b778 rh1/rh2's rookie face bank atlases are generated fictional draft headshots (Codex image_gen), "
                   "reviewed face by face; no photograph or retail-extracted pixels. "
                   "b778 ss1's Seamen card, field and face art is drawn from the video references and the authored kit. "
                   "b778 ee1/ee2's gray alien portrait and face textures are authored from a generated headshot. "
