@@ -5706,6 +5706,16 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                                      **{k: v for k, v in names_fix_receipt.items() if k != "kits"},
                                      "kits": [{k: v for k, v in kit.items() if k != "parts"}
                                               for kit in names_fix_receipt["kits"]]})
+        # b779-vk1 (SWeaR 10/27: the Vikings 2026 Alternate 2 is right on the field but wrong on the sideline):
+        # the bench and far players are drawn from the kit's own chunk 51 splayer atlas, and the retail style slot
+        # the alternate reused left its pants (and, for some slots, sleeve or helmet) in that atlas. The pass takes
+        # the pinned 2026 alternates and repaints only the listed parts from the field colours (and, where the retail
+        # slot's part is another design, the 2026 primary atlas). Pinned selectors and parts only.
+        sideline_receipt = kit_fixes.apply_sideline(target)
+        if sideline_receipt["state"] == "applied" and sideline_receipt["kits"]:
+            receipt["steps"].append({"step": "sideline_2026",
+                                     **{k: v for k, v in sideline_receipt.items() if k != "kits"},
+                                     "kits": sideline_receipt["kits"]})
         if plan.espn25_more_moments:
             # b775-ek1 (Noah 10/17): every Anniversary side wears the uniform of its game. Missing looks become NEW
             # style indexes composed from kits already on the copy (read after every uniform writer above), labelled
