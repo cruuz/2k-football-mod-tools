@@ -1,4 +1,4 @@
-"""Simulated pass rush (b779-pr1): the eight in-place edits of nfl2k5_pass_protection, byte tests and real native games.
+"""Simulated pass rush (b779-pr1): the nine in-place edits of nfl2k5_pass_protection, byte tests and real native games.
 
 The pinned USA retail default.xbe and the signed f0 franchise are read from the private fixtures; the native
 tests skip when they are absent.  The native tests run whole simulated games (retail simulator, real step
@@ -39,9 +39,9 @@ BACKS = range(23, 29)       # list slots 23-28 defensive backs
 
 
 class BytesTests(unittest.TestCase):
-    def test_edits_are_eight_in_place_sites_with_no_allocation(self):
+    def test_edits_are_nine_in_place_sites_with_no_allocation(self):
         names = [name for name, *_ in pp.SIM_EDITS]
-        self.assertEqual(names, ["sim_event_chance", "sim_rusher_slots", "sim_rusher_leftover", "sim_rusher_list",
+        self.assertEqual(names, ["sim_event_chance", "sim_event_centre", "sim_rusher_slots", "sim_rusher_leftover", "sim_rusher_list",
                                  "sim_rusher_speed", "sim_rusher_agility", "sim_rusher_strength",
                                  "sim_rusher_tackle"])
         for _name, _va, before, after in pp.SIM_EDITS:
@@ -65,7 +65,8 @@ class BytesTests(unittest.TestCase):
     def test_constants_land_on_existing_rdata_floats(self):
         retail = retail_bytes()
         image = XbeImage(retail)
-        self.assertAlmostEqual(struct.unpack("<f", image.read(pp.SIM_GAIN_VA, 4))[0], 0.5, places=6)
+        self.assertAlmostEqual(struct.unpack("<f", image.read(pp.SIM_GAIN_VA, 4))[0], 0.75, places=6)
+        self.assertAlmostEqual(struct.unpack("<f", image.read(pp.SIM_CENTRE_VA, 4))[0], 0.866, places=4)
         self.assertAlmostEqual(struct.unpack("<f", image.read(pp.SIM_NORM_VA, 4))[0], 0.25, places=6)
         self.assertAlmostEqual(struct.unpack("<f", image.read(0x4F6BD4, 4))[0], 0.875, places=6)   # the shared one stays
         self.assertAlmostEqual(struct.unpack("<f", image.read(0x4E6D5C, 4))[0], 0.1, places=6)
@@ -198,7 +199,7 @@ class NativeTests(unittest.TestCase):
         patched_corr = self.correlation(patched_rows)
         # retail: only |x| > 0.1 (about 3.5% of dropbacks) moves the chance; the rest is a uniform draw
         self.assertGreater(retail_corr, -0.45, retail_corr)
-        # patched: the chance is 1 - clamp(0.875 + 0.5 * x) - 0.005 * QB term, so it falls as the blockers win
+        # patched: the chance is 1 - clamp(0.866 + 0.75 * x) - 0.005 * QB term, so it falls as the blockers win
         self.assertLess(patched_corr, -0.6, patched_corr)
         thresholds = [t for _, t in patched_rows]
         self.assertLessEqual(max(thresholds), 0.175 + 1e-6)         # 1 - 0.825 with no QB term

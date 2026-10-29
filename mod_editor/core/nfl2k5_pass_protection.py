@@ -16,13 +16,13 @@ through the game's own rating accessor 0x17B010. On run plays it writes 0, exact
 Nothing else is changed: the pass start roll, the paired-block animation share, the run latch and the shed
 random draw keep every retail byte.
 
-b779-pr1 adds the SIMULATED half of the same feature (Franchise sims, Game Cast, supersim), as eight in-place
+b779-pr1 adds the SIMULATED half of the same feature (Franchise sims, Game Cast, supersim), as nine in-place
 edits that need no cave: in the sim's pass-play block ``0x108368..0x1084c0`` the sack/scramble chance is
 ``1 - clamp(0.875 + o, 0.825, 0.925) - 0.005*QB``, where ``o`` was drawn UNIFORMLY from ``[min(x,-0.1), max(x,0.1)]``
 and ``x = Pass Block(team +0x9c) - Pass Rush(team +0xa0)`` plus noise.  ``x`` has a standard deviation of 0.04,
-so 96.5% of simulated dropbacks ignored both lines completely.  The edit makes ``o = 0.5 * x`` (a deterministic
-function of the two lines; half gain keeps the league total steady when a roster's line ratings differ from the
-shipped roster's) and fixes the sacker draw ``0x103760``: its candidate weights ``c^3 / (sum over the 14
+so 96.5% of simulated dropbacks ignored both lines completely.  The edit makes ``o = 0.75 * x`` (a deterministic
+function of the two lines; the 0.75 gain keeps team totals spread like the NFL's while a roster whose line ratings
+differ from the shipped roster's moves the league total by less than a full gain would) around a centre of 0.866 and fixes the sacker draw ``0x103760``: its candidate weights ``c^3 / (sum over the 14
 defensive slots + 0.1)`` gave seven defensive backs a combined 20% of all sacks (NFL: 5.6%).  The normaliser now
 sums the eight front slots only (loop bound ``0x1c -> 0x16``, leftover constant 0.1 -> 0.25) and the candidate
 list puts the defensive backs last, so a back gets only the leftover (about 5%, safeties first).  The
@@ -57,13 +57,15 @@ GUARDS = (
 SIM_LIST_VA = 0x004F6B0C
 SIM_LIST_RETAIL = (15, 18, 19, 21, 17, 16, 27, 20, 23, 24, 25, 22, 26, 28, -1)   # sacker candidates (slot ids)
 SIM_LIST_NEW = (15, 18, 19, 21, 17, 16, 20, 22, 27, 28, 23, 24, 25, 26, -1)      # DL, LB, then backs last
-SIM_GAIN_VA = 0x004E4184         # float 0.5 in retail .rdata: the lines' effect on the sack chance (retail: none)
+SIM_GAIN_VA = 0x004E6968         # float 0.75 in retail .rdata: the lines' effect on the sack chance (retail: none)
+SIM_CENTRE_VA = 0x004E73E4       # float 0.866 in retail .rdata (the shared 0.875 at 0x4F6BD4 stays for its other reader)
 SIM_NORM_VA = 0x004E696C         # float 0.25 (retail 0x4E6D5C = 0.1)
 SIM_EDITS = (
     ("sim_event_chance", 0x00108398,
      bytes.fromhex("d94424188b4c2418d81d5c6d4e00894c2428dfe0f6c4417408c7442428cdcccc3dd905d86b4f00d85c2418"
                    "c7442418cdccccbddfe0f6c4057b04894c2418"),
-     bytes.fromhex("d9442418d80d84414e00d95c24188b4c2418894c2428").ljust(0x3E, b"\x90")),
+     bytes.fromhex("d9442418d80d68694e00d95c24188b4c2418894c2428").ljust(0x3E, b"\x90")),
+    ("sim_event_centre", 0x001083F8, struct.pack("<I", 0x004F6BD4), struct.pack("<I", SIM_CENTRE_VA)),
     ("sim_rusher_slots", 0x0010404C, bytes([0x1C]), bytes([0x16])),
     ("sim_rusher_leftover", 0x00104068, struct.pack("<I", 0x004E6D5C), struct.pack("<I", SIM_NORM_VA)),
     ("sim_rusher_list", SIM_LIST_VA, struct.pack("<15i", *SIM_LIST_RETAIL), struct.pack("<15i", *SIM_LIST_NEW)),
