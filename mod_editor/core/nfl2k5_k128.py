@@ -60,7 +60,7 @@ from .nfl2k5_cave_oracle import XbeImage
 
 OWNER = "nfl2k5_k128"
 EVIDENCE = "EXPERIMENTAL"
-CODE_SIZE = 0x400
+CODE_SIZE = 0x600   # b779-km1: 0x400 was full; the two failure messages need 651 bytes at +0x200
 # Code only: the RW pages are full in the complete owner union, and the roster heap needs no state of its
 # own (the heap control block's "HEAP" magic at the region start says it is built).
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16),)
@@ -148,25 +148,31 @@ OPT_K128, OPT_ROSTER_HEAP, OPT_EARLY, OPT_REQUIRE = 0x1, 0x2, 0x4, 0x8
 # phase 1 like k128_entry; when the machine will not get 128 MB (the guards fail, or the page count is not 0x4000 or
 # 0x8000) and 128 MB is not already managed, it takes an 8 MB contiguous buffer below 32 MB (MmAllocateContiguousMemoryEx
 # through the title's import), scans it out (NV_PCRTC_START; a 32-bit pitch for the mode's width, CR01 -> CR13/CR19; CR28 32
-# bpp; the attribute display bit; SR01 screen on), draws "THIS BUILD NEEDS 128 MB / SET XEMU SYSTEM MEMORY / TO 128
-# MB" and stops in a hlt loop instead of starting the game. Otherwise it continues exactly as k128_entry does (and,
-# with the early form, runs k128_arena at once), reading the option word at +0x3FC.
+# bpp; the attribute display bit; SR01 screen on), draws three lines of text and stops in a hlt loop instead of starting
+# the game. The text names the failed setting (b779-km1): xemu memory below 128 MB draws "THIS BUILD NEEDS 128 MB / SET
+# XEMU SYSTEM MEMORY / TO 128 MB"; with 128 MB set (NV_PFB_CSTATUS = 0x08000000) any other guard failure, which means
+# the kernel is not the 4627 build K128 supports or is in an unsupported state, draws "THIS BUILD NEEDS THE 4627 / XBOX
+# BIOS (COMPLEX 4627) / IN XEMU SETTINGS > SYSTEM". Otherwise it continues exactly as k128_entry does (and, with the
+# early form, runs k128_arena at once), reading the option word at CODE_SIZE-4.
 REQUIRE_CODE = bytes.fromhex(
-    "609ce8000000005de8a8feffff753fa1d4b203803d0040000074073d00800000752cc705d4b2038000800000f685f501"
-    "000004740d9d61e8f2fdffff68d16b0100c39d6168d16b0100c3fbf4ebfd813dd4b2038000800000750c813d400830c0"
-    "6700000474c66a046a0068ffffff016a006800008000ff15a43c4e0085c074ca89c625ffffff03a3000860fdbad41360"
-    "fdc602010fb65a0143c1e30589d8c1e803c60213884201c1e80324e0c60219884201c60228804a01038a4206c642ec20"
-    "bac4030cfdc60201806201df89f7b90000200031c0f3ab8d95a30100000fb70285c00f8462ffffff0fb74a020fafc301"
-    "f08d3c880fb64a0483c2050fb602425156578db5440100008d048001c66a0559ac57516a0759d0e8731b57515083c8ff"
-    "6a0459890789470489470889470c01dfe2f158595f8d3c9fe2dc595f83c710e2cf5f5e5983c760e2b2eb920000000000"
-    "01017f01017f0808087f00417f410046494949317f494949363f4040403f7f404040407f4141221c7f0408107f7f4949"
-    "49417f021c027f631408146307087008073e4141413e7f0919294600427f400042615149463649494936b4002c001701"
-    "02030400050603070800090a0a080400101112000b05e400380016040a01000c0a0b0600040d04010a0b000b0a0b0e0f"
-    "0d1401d40009010e00101112000b050000"
+    "609ce8000000005de8a8feffff753fa1d4b203803d0040000074073d00800000752cc705d4b2038000800000f685f5030000"
+    "04740d9d61e8f2fdffff68d16b0100c39d6168d16b0100c3fbf4ebfd813dd4b2038000800000750c813d400830c067000004"
+    "74c66a046a0068ffffff016a006800008000ff15a43c4e0085c074ca89c625ffffff03a3000860fdbad41360fdc602010fb6"
+    "5a0143c1e30589d8c1e803c60213884201c1e80324e0c60219884201c60228804a01038a4206c642ec20bac4030cfdc60201"
+    "806201df89f7b90000200031c0f3ab813d0c0210fd000000088d952902000074068d95e20100000fb70285c00f8450ffffff"
+    "0fb74a020fafc301f08d3c880fb64a0483c2050fb602425156578db5560100008d048001c66a0559ac57516a0759d0e8731b"
+    "57515083c8ff6a0459890789470489470889470c01dfe2f158595f8d3c9fe2dc595f83c710e2cf5f5e5983c760e2b2eb9200"
+    "0000000001017f01017f0808087f00417f410046494949317f494949363f4040403f7f404040407f4141221c7f0408107f7f"
+    "494949417f021c027f631408146307087008073e4141413e7f0919294600427f4000426151494636494949361814127f103c"
+    "4a4949300171090503001c2241000041221c003e414141227f0909090641221408003e41494938b4002c0017010203040005"
+    "0603070800090a0a080400101112000b05e400380016040a01000c0a0b0600040d04010a0b000b0a0b0e0f0d1401d4000901"
+    "0e00101112000b050000b4001400190102030400050603070800090a0a08040001020a0013141115e4002000180c050e0c00"
+    "05030e040016180e0b19070a0c00131411151714011400190309000c0a0b0600040a010103091b04001a00040d04010a0b00"
+    "00"
 )
-REQUIRE_CODE_SHA256 = "df6650849510abd7f8ed719c30212c9a906615baa07ffefb3a8413ad4a91e573"
+REQUIRE_CODE_SHA256 = "5ae638250eb9579f224963e1af3b7557a703736726552d6d747b6d270d656976"
 REQUIRE_HALT_OFFSET = REQUIRE_OFFSET + 0x4B      # the hlt of the stop loop
-assert len(REQUIRE_CODE) == 497 and hashlib.sha256(REQUIRE_CODE).hexdigest() == REQUIRE_CODE_SHA256
+assert len(REQUIRE_CODE) == 651 and hashlib.sha256(REQUIRE_CODE).hexdigest() == REQUIRE_CODE_SHA256
 assert REQUIRE_CODE[REQUIRE_HALT_OFFSET - REQUIRE_OFFSET:REQUIRE_HALT_OFFSET - REQUIRE_OFFSET + 3] == b"\xf4\xeb\xfd"
 MM_PAGES = 0x8003B2D4                # MmNumberOfPhysicalPages (the STICKY section)
 
@@ -178,8 +184,9 @@ HELP_TEXT = (
     "built its graphics memory, so every retail address stays in place, and the game's own >64 MB code then takes "
     "a 63 MB extra region. Needs xemu set to 128 MB (xemu.toml: [sys] mem_limit = '128'); at 64 MB, or on any "
     "other kernel, the patch stays asleep and the game runs as retail. A disc that also has the Guardian overlay, "
-    "16 reserves or the extra created teams needs the 128 MB: without it the disc stops at startup with a message "
-    "saying so, instead of failing at the pregame intro. xemu only; a console has 64 MB.")
+    "16 reserves or the extra created teams needs the 128 MB: without it the disc stops at startup and names the "
+    "failed setting on screen (System Memory below 128 MB, or the Flash ROM/BIOS is not the 4627 build), instead of "
+    "failing at the pregame intro. xemu only; a console has 64 MB.")
 ROSTER_HEAP_HELP = (
     "EXPERIMENTAL / UNWITNESSED. Needs the 128 MB option. Retail: the roster block (580 KB, the arena that 16 "
     "reserves and extra created teams grow) sits in the main heap, and each game's in-game block takes all but "

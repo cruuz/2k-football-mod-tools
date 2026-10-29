@@ -1,15 +1,18 @@
-# b76-k1: K128's "needs 128 MB" entry (nfl2k5_k128.REQUIRE_CODE). The XBE entry points here when the disc was built
-# with options that need the extra memory. It runs phase 1 like k128_entry (R1's guards, the page count); when the
+# b76-k1/b779-km1: K128's "needs 128 MB" entry (nfl2k5_k128.REQUIRE_CODE). The XBE entry points here when the disc was
+# built with options that need the extra memory. It runs phase 1 like k128_entry (R1's guards, the page count); when the
 # machine will not get 128 MB it takes an 8 MB contiguous buffer below 32 MB, scans it out (NV_PCRTC_START, a 32-bit pitch for the
 # mode's width, the screen and the display turned on), draws three lines of text into it and stops in a hlt loop
-# instead of starting the game (which would otherwise fail later, at the pregame intro).
-# Position independent: it sits at +0x200 of the 1 KB K128 code block; R1's guards are at +0xB5, k128_arena at +0x2E,
+# instead of starting the game (which would otherwise fail later, at the pregame intro). The message names the failed
+# setting (b779-km1): xemu memory below 128 MB keeps the memory lines, and 128 MB with any other guard failing (the
+# kernel is not the 4627 build, or an unsupported kernel state) draws the 4627 BIOS lines.
+# Position independent: it sits at +0x200 of the 0x600-byte K128 code block; R1's guards are at +0xB5, k128_arena at +0x2E,
 # the option word at +0x3FC. Assemble: as --32 require_guard.S -o g.o && objcopy -O binary -j .text g.o g.bin
         .intel_syntax noprefix
         .code32
         .text
         .set MM_PAGES, 0x8003B2D4          # MmNumberOfPhysicalPages (4627)
         .set PDE_210, 0xC0300840           # PDE[0x210] through the page-directory self-map
+        .set CSTATUS, 0xFD10020C           # NV_PFB_CSTATUS: 0x08000000 at 128 MB, 0x04000000 at 64 MB
         .set PCRTC_START, 0xFD600800       # NV2A scanout start (physical)
         .set CRTC_INDEX, 0xFD6013D4        # VGA CRTC index; data at +1
         .set ENTRY, 0x00016BD1             # the title's original entry
@@ -27,7 +30,7 @@ base:   pop     ebp                        # ebp = start + 7
         cmp     eax, 0x8000
         jne     fail
 set:    mov     dword ptr [MM_PAGES], 0x8000
-go:     test    byte ptr [ebp + (start + 0x1FC - base)], 4    # the early form: phase 2 at once
+go:     test    byte ptr [ebp + (start + 0x3FC - base)], 4    # the early form: phase 2 at once (options at 0x5FC)
         jz      late
         popfd
         popad
@@ -81,7 +84,11 @@ message:
         mov     ecx, 0x00200000
         xor     eax, eax
         rep     stosd
-        lea     edx, [ebp + (text - base)]          # records: y (word), x (word), count (byte), glyph indices
+        cmp     dword ptr [CSTATUS], 0x08000000      # the memory itself is right: another guard failed (BIOS/kernel)
+        lea     edx, [ebp + (kernel_text - base)]
+        je      draw
+        lea     edx, [ebp + (text - base)]
+draw:
 3:      movzx   eax, word ptr [edx]
         test    eax, eax
         jz      halt
@@ -135,12 +142,15 @@ message:
         add     edi, 96                             # the next 6-column cell
         loop    4b
         jmp     3b
-font:   # 0 space, 1 T, 2 H, 3 I, 4 S, 5 B, 6 U, 7 L, 8 D, 9 N, 10 E, 11 M, 12 X, 13 Y, 14 O, 15 R, 16 1, 17 2, 18 8
+font:   # 0 space, 1 T, 2 H, 3 I, 4 S, 5 B, 6 U, 7 L, 8 D, 9 N, 10 E, 11 M, 12 X, 13 Y, 14 O, 15 R, 16 1, 17 2, 18 8,
+        # 19 4, 20 6, 21 7, 22 (, 23 ), 24 C, 25 P, 26 >, 27 G
         .byte 0x00,0x00,0x00,0x00,0x00, 0x01,0x01,0x7F,0x01,0x01, 0x7F,0x08,0x08,0x08,0x7F, 0x00,0x41,0x7F,0x41,0x00
         .byte 0x46,0x49,0x49,0x49,0x31, 0x7F,0x49,0x49,0x49,0x36, 0x3F,0x40,0x40,0x40,0x3F, 0x7F,0x40,0x40,0x40,0x40
         .byte 0x7F,0x41,0x41,0x22,0x1C, 0x7F,0x04,0x08,0x10,0x7F, 0x7F,0x49,0x49,0x49,0x41, 0x7F,0x02,0x1C,0x02,0x7F
         .byte 0x63,0x14,0x08,0x14,0x63, 0x07,0x08,0x70,0x08,0x07, 0x3E,0x41,0x41,0x41,0x3E, 0x7F,0x09,0x19,0x29,0x46
-        .byte 0x00,0x42,0x7F,0x40,0x00, 0x42,0x61,0x51,0x49,0x46, 0x36,0x49,0x49,0x49,0x36
+        .byte 0x00,0x42,0x7F,0x40,0x00, 0x42,0x61,0x51,0x49,0x46, 0x36,0x49,0x49,0x49,0x36, 0x18,0x14,0x12,0x7F,0x10
+        .byte 0x3C,0x4A,0x49,0x49,0x30, 0x01,0x71,0x09,0x05,0x03, 0x00,0x1C,0x22,0x41,0x00, 0x00,0x41,0x22,0x1C,0x00
+        .byte 0x3E,0x41,0x41,0x41,0x22, 0x7F,0x09,0x09,0x09,0x06, 0x41,0x22,0x14,0x08,0x00, 0x3E,0x41,0x49,0x49,0x38
 text:   # "THIS BUILD NEEDS 128 MB" / "SET XEMU SYSTEM MEMORY" / "TO 128 MB"
         .word 180, 44
         .byte 23, 1,2,3,4,0, 5,6,3,7,8,0, 9,10,10,8,4,0, 16,17,18,0, 11,5
@@ -148,4 +158,12 @@ text:   # "THIS BUILD NEEDS 128 MB" / "SET XEMU SYSTEM MEMORY" / "TO 128 MB"
         .byte 22, 4,10,1,0, 12,10,11,6,0, 4,13,4,1,10,11,0, 11,10,11,14,15,13
         .word 276, 212
         .byte 9, 1,14,0, 16,17,18,0, 11,5
+        .word 0
+kernel_text:  # "THIS BUILD NEEDS THE 4627" / "XBOX BIOS (COMPLEX 4627)" / "IN XEMU SETTINGS > SYSTEM"
+        .word 180, 20
+        .byte 25, 1,2,3,4,0, 5,6,3,7,8,0, 9,10,10,8,4,0, 1,2,10,0, 19,20,17,21
+        .word 228, 32
+        .byte 24, 12,5,14,12,0, 5,3,14,4,0, 22,24,14,11,25,7,10,12,0, 19,20,17,21,23
+        .word 276, 20
+        .byte 25, 3,9,0, 12,10,11,6,0, 4,10,1,1,3,9,27,4,0, 26,0, 4,13,4,1,10,11
         .word 0

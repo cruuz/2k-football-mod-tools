@@ -136,7 +136,7 @@ class TemplateTests(unittest.TestCase):
         # without a promoted MyCareer there is no gap: the code is appended after the other late owners, whatever
         # order the requests arrive in
         letter = (("nfl2k5_letter_grades", "code", 160, 16), ("nfl2k5_letter_grades", "read_only", 240, 16))
-        k128 = (("nfl2k5_k128", "code", 1024, 16),)
+        k128 = (("nfl2k5_k128", "code", 1536, 16),)
         rows = space._scale_allocations(list(honors.REQUESTS) + list(letter) + list(k128))
         code = [r for r in rows if r["kind"] == "code"]
         self.assertEqual([r["owner"] for r in code][-4:], ["nfl2k5_k128", "nfl2k5_letter_grades", "nfl2k5_honors",

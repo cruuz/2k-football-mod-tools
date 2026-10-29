@@ -769,7 +769,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_hud_layout.py": "9953e899093daf2517adc74d101a4160353377e36e273eba5fdec7f82bbb8da3",
         "mod_editor/core/nfl2k5_import_preflight.py": "7f7cbcac329171f70e4931d818af806edcf851c46ac04d5e8ebef95ed7db6454",
         "mod_editor/core/nfl2k5_period_goalposts.py": "842d5700f255b81294537d3c2d60378b0d5e444bc734a1b30e312db56d013015",
-        "mod_editor/core/nfl2k5_k128.py": "90492ab22afe76e3f0f64875e99081d22fc42f21942e362342ac51a5ee297859",
+        "mod_editor/core/nfl2k5_k128.py": "9640011d159ae088acc8ee0d340d39c79d84007589414524b91700bcfac30b7c",
         "mod_editor/core/nfl2k5_kick_laces.py": "a495864f35b60f335855b17f8a12ec304f78ecf3c363a597bb0e519e64790754",
         "mod_editor/core/nfl2k5_punter_holder.py": "5ea1ecabf2fdf288f2de3478fc4719aa0fc45eae3cc64c1e29e06d919b3e7748",
         "mod_editor/core/nfl2k5_kick_rules.py": "885525ea94351521fc5e22c1c40c17ef3f374d665862e5920c4d9a644cd53be2",

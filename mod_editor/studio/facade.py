@@ -3893,6 +3893,13 @@ class Nfl2k5StudioFacade:
                 or result.output_xiso.is_symlink():
             raise ValidationError("Build a modded XISO before launching xemu.")
         assert_image_available(result.output_xiso)
+        settings_warning = ""
+        try:
+            settings_warning = xemu_settings.play_warning(xemu_settings.config_path(command))
+        except (OSError, ValueError, TypeError):
+            settings_warning = ""
+        if settings_warning:
+            progress(settings_warning, 0, 1)
         progress("Starting xemu", 0, 1)
         argv = _xemu_launch_argv(command, result.output_xiso)
         if sys.platform == "win32":
@@ -3922,6 +3929,7 @@ class Nfl2k5StudioFacade:
         except (OSError, ValueError, TypeError) as exc:
             settings_note = f" Could not remember the disc in xemu settings: {exc}."
         message = (f"xemu launched. {xemu_settings.disc_help(result.output_xiso)}."
+                   + (f" {settings_warning}" if settings_warning else "")
                    + (f" {permission_note}" if permission_note else "") + settings_note)
         progress(message, 1, 1)
         return StudioOperationResult(

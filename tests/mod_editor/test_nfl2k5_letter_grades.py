@@ -213,8 +213,10 @@ class AllocatorTests(unittest.TestCase):
                 self.assertEqual(new[k], row, f"{k} moved")
         old_directory = [a for a in space._scale_allocations(without) if a["owner"] == space.DIRECTORY_OWNER]
         new_directory = [a for a in space._scale_allocations(union) if a["owner"] == space.DIRECTORY_OWNER]
+        # b779-km1: K128's 1,536-byte request alone makes the base union a v4 image, so it already carries
+        # the pool directory page before letter grades is added.
         self.assertEqual([(a["size"], a["va"], a["raw"]) for a in old_directory],
-                         [(4096, space.SCALE_DIRECTORY_VA, space.SCALE_DIRECTORY)])
+                         [(4096, space.SCALE_DIRECTORY_VA, space.SCALE_DIRECTORY), (4096, space.POOL_VA, space.POOL_RAW)])
         self.assertEqual([(a["size"], a["va"], a["raw"]) for a in new_directory],
                          [(1104, space.SCALE_DIRECTORY_VA, space.SCALE_DIRECTORY), (4096, space.POOL_VA, space.POOL_RAW)])
         added = sorted((k[0], k[1]) for k in new if k not in old and k[0] != space.DIRECTORY_OWNER)
@@ -232,9 +234,11 @@ class AllocatorTests(unittest.TestCase):
                                         ("nfl2k5_cpu_money_downs_late_state", "data"),
                                         ("nfl2k5_star_career", "code"), ("nfl2k5_star_career", "data"),  # b778 st2
                                         ("nfl2k5_cpu_third_down", "code")]))  # b778 ai8
-        # after K128 in its region, contiguous with it
+        # b779-km1: K128's 1,536-byte request no longer fits the legacy code tail, so it moves whole to the v4
+        # pool and letter grades takes the free tail; both stay late owners, K128 still placed first.
         k128, mine = new[("nfl2k5_k128", "code", 0)], new[(lg.OWNER, "code", 0)]
-        self.assertEqual(mine["va"], k128["va"] + k128["size"])
+        self.assertGreaterEqual(k128["va"], space.POOL_VA)
+        self.assertLess(mine["va"], space.POOL_VA)
         self.assertGreaterEqual(plan_with["capacity"]["code"]["available_bytes"], 0)
         self.assertGreater(plan_without["capacity"]["code"]["available_bytes"],
                            plan_with["capacity"]["code"]["available_bytes"])

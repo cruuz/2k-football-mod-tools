@@ -6,7 +6,7 @@
 4. Choose where to save the **new image**, such as `SOFTDRINK 2K28.xiso.iso`. Wait for **Disc ready**.
 5. In xemu, choose **Machine → Load Disc** and select that **new image**, or click **Play latest disc in xemu** in Studio. In the game, **load the disc roster and start a fresh franchise**. Existing franchises keep their saved rosters.
 
-Set xemu System Memory to **128 MiB**. See [recommended xemu settings](recommended_xemu_settings.md).
+Set xemu System Memory to **128 MiB**. See [recommended xemu settings](recommended_xemu_settings.md). If the game stops on a white message, it names the setting to fix: **System Memory → 128 MiB**, and **Machine → Settings → System → Flash ROM (BIOS)** set to **COMPLEX 4627**.
 
 Studio: [downloads](https://github.com/cruuz/2k-football-mod-tools/releases).
 SOFTDRINK: [patch downloads](https://github.com/cruuz/softdrink-2k28/releases).

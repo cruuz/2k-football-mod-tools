@@ -55,7 +55,7 @@ class PlannerTests(unittest.TestCase):
         self.assertEqual([report['capacity'][k]['capacity_bytes'] for k in ('code', 'data', 'read_only')],
                          [109024, 86016, 17952])  # 2528 directory bytes hold code; 464 hold the read-only rating table.
         self.assertEqual([report['capacity'][k]['available_bytes'] for k in ('code', 'data', 'read_only')],
-                         [0, 0, 16])  # b777-ci2: the synthetic owner is one code request now, so the union's 16 free read-only bytes stay free; b776-sm1: none after the classic teams' 288 and a 16-byte synthetic constant; b775-ct1: 16 after the classic teams' 240 and a 48-byte synthetic constant; the synthetic RX still fills the code pages; b76-pf P1: the team-logo table takes 64 RO bytes; b77-f4: 80 left after the grades owner and the 256-byte synthetic constant; b77-v1b: 48
+                         [832, 0, 16])  # b779-km1: K128's 1,536-byte code request moves it whole to the v4 pool, leaving 832 bytes in the legacy code run; b777-ci2: the synthetic owner is one 16-byte code request; b776-sm1: none after the classic teams' 288 and a 16-byte synthetic constant; b775-ct1: 16 after the classic teams' 240 and a 48-byte synthetic constant; b76-pf P1: the team-logo table takes 64 RO bytes; b77-f4: 80 left after the grades owner and the 256-byte synthetic constant; b77-v1b: 48
         self.assertEqual(len(report['pages']), 55)  # b778-ai8: + the third-down owner and its v4 pool page; b779-hn1: + the champions owner's pool page
         for a in report['allocations']:
             self.assertEqual(a['va'] % a['align'], 0)
@@ -69,7 +69,7 @@ class PlannerTests(unittest.TestCase):
         report = space.plan(requests)
         self.assertEqual({tuple(row) for row in requests}, set(space.dormant_union()))
         self.assertEqual([report['capacity'][k]['available_bytes'] for k in ('code', 'data', 'read_only')],
-                         [16, 0, 16])  # b776-sm1: the classic teams' 288 RO; b775-ct1: the classic teams' 240 RO; b76-pf P1: the team-logo table, 64 RO; b77-f4: letter grades, 160 RX and 240 RO; b77-f4b: progression row, 16 RX; b77-v1b: period goalposts 32 RO (its 176 RX in the legacy tail)
+                         [448, 0, 16])  # b779-km1: the fixture's K128 request is 1,536 bytes and lives in the v4 pool, so its run keeps 448 bytes (the fixture also carries the four star-career/money-downs rows); b776-sm1: the classic teams' 288 RO; b775-ct1: the classic teams' 240 RO; b76-pf P1: the team-logo table, 64 RO; b77-f4: letter grades, 160 RX and 240 RO; b77-f4b: progression row, 16 RX; b77-v1b: period goalposts 32 RO (its 176 RX in the legacy tail)
         # e2 adds 3,584 RX, 16 RW and 2,176 RO bytes. The old fixture also
         # reserved the nonexistent nfl2k5_guardian_cap_overlay (2,048 RX,
         # 336 RW), in addition to the real nfl2k5_guardian_overlay owner.

@@ -108,6 +108,14 @@ class ShapeTests(unittest.TestCase):
         self.assertIn("mov dword ptr [eax + 0x8c], 0xb04e24", pick)
         self.assertEqual(pick[-2:], ["mov eax, 0xb04e24", "ret"])
 
+    @unittest.skipUnless(capstone is not None, "capstone is required to read the 128 MB entry")
+    def test_the_128_mb_entry_picks_the_message_from_the_memory_register(self) -> None:
+        code = _disasm(k128.REQUIRE_CODE, CODE_VA + k128.REQUIRE_OFFSET)
+        self.assertIn("cmp dword ptr [0xfd10020c], 0x8000000", code)
+        self.assertEqual(sum("lea edx, [ebp + 0x" in line for line in code), 2, "one text pointer per failure")
+        self.assertEqual(len(k128.REQUIRE_CODE), 651)
+        self.assertLessEqual(k128.REQUIRE_OFFSET + len(k128.REQUIRE_CODE), k128.OPTIONS_OFFSET)
+
     def test_the_ui_strings_carry_no_em_dash_and_claim_no_console_result(self) -> None:
         for text in (k128.UI_LABEL, k128.HELP_TEXT, k128.ROSTER_HEAP_LABEL, k128.ROSTER_HEAP_HELP, k128.EARLY_LABEL,
                      k128.EARLY_HELP, k128.__doc__):
@@ -130,7 +138,7 @@ class ShapeTests(unittest.TestCase):
         self.assertEqual(k128.sites(CODE_VA, k128.OPT_K128 | k128.OPT_EARLY), [])
 
     def test_the_owner_is_code_only(self) -> None:
-        self.assertEqual(k128.REQUESTS, (("nfl2k5_k128", "code", 0x400, 16),))
+        self.assertEqual(k128.REQUESTS, (("nfl2k5_k128", "code", 0x600, 16),))
 
 
 @unittest.skipUnless(unicorn is not None, "unicorn is required for the native stub proof")
@@ -316,24 +324,32 @@ class ModelKernelTests(unittest.TestCase):
         self.assertEqual(uc.reg_read(x86_const.UC_X86_REG_EIP), CODE_VA + k128.REQUIRE_HALT_OFFSET)
         self.assertTrue(uc.reg_read(x86_const.UC_X86_REG_EFLAGS) & 0x200, "interrupts on in the stop loop")
 
-    @staticmethod
-    def _expected_screen() -> bytes:
+    FONT = {" ": "0000000000", "T": "01017f0101", "H": "7f0808087f", "I": "00417f4100", "S": "4649494931",
+            "B": "7f49494936", "U": "3f4040403f", "L": "7f40404040", "D": "7f4141221c", "N": "7f0408107f",
+            "E": "7f49494941", "M": "7f021c027f", "X": "6314081463", "Y": "0708700807", "O": "3e4141413e",
+            "R": "7f09192946", "1": "00427f4000", "2": "4261514946", "8": "3649494936", "4": "1814127f10",
+            "6": "3c4a494930", "7": "0171090503", "(": "001c224100", ")": "0041221c00", "C": "3e41414122",
+            "P": "7f09090906", ">": "4122140800", "G": "3e41494938"}
+
+    @classmethod
+    def _expected_screen(cls, lines=((180, 44, "THIS BUILD NEEDS 128 MB"), (228, 56, "SET XEMU SYSTEM MEMORY"),
+                                     (276, 212, "TO 128 MB"))) -> bytes:
         """The three lines in the classic 5x7 font at 4x, white on black, 640 x 480 32-bit pixels."""
-        font = {" ": "0000000000", "T": "01017f0101", "H": "7f0808087f", "I": "00417f4100", "S": "4649494931",
-                "B": "7f49494936", "U": "3f4040403f", "L": "7f40404040", "D": "7f4141221c", "N": "7f0408107f",
-                "E": "7f49494941", "M": "7f021c027f", "X": "6314081463", "Y": "0708700807", "O": "3e4141413e",
-                "R": "7f09192946", "1": "00427f4000", "2": "4261514946", "8": "3649494936"}
         screen = bytearray(640 * 480 * 4)
-        for y0, x0, text in ((180, 44, "THIS BUILD NEEDS 128 MB"), (228, 56, "SET XEMU SYSTEM MEMORY"),
-                             (276, 212, "TO 128 MB")):
+        for y0, x0, text in lines:
             for i, ch in enumerate(text):
-                for c, column in enumerate(bytes.fromhex(font[ch])):
+                for c, column in enumerate(bytes.fromhex(cls.FONT[ch])):
                     for r in range(7):
                         if column >> r & 1:
                             for dy in range(4):
                                 at = ((y0 + 4 * r + dy) * 640 + x0 + 24 * i + 4 * c) * 4
                                 screen[at:at + 16] = b"\xff" * 16
         return bytes(screen)
+
+    @classmethod
+    def _expected_kernel_screen(cls) -> bytes:
+        return cls._expected_screen(((180, 20, "THIS BUILD NEEDS THE 4627"), (228, 32, "XBOX BIOS (COMPLEX 4627)"),
+                                     (276, 20, "IN XEMU SETTINGS > SYSTEM")))
 
     def test_at_64_mb_the_128_mb_entry_scans_out_its_own_buffer_draws_the_message_and_stops(self) -> None:
         for cr01, pitch in ((79, 2560), (159, 5120)):         # a 640 and a 1280 pixel wide mode
@@ -352,6 +368,25 @@ class ModelKernelTests(unittest.TestCase):
                 self.assertEqual(bytes(uc.mem_read(self.FB_VA + 0x00800000 - 16, 16)), bytes(16), "all 8 MB cleared")
                 self.assertEqual((self._d(uc, 0x8003B2D4), self._d(uc, 0xC0300840), self._d(uc, 0x80030000)),
                                  (0x4000, 0, 0))
+
+    def test_with_128_mb_set_but_another_guard_failing_the_entry_draws_the_4627_bios_message(self) -> None:
+        for label, kwargs in (("another kernel", dict(build=5838)), ("other prologue", dict(prologue=False)),
+                              ("odd page count", dict(pages=0x5000))):
+            with self.subTest(label):
+                uc = self._require_machine(**kwargs)
+                self._stop(uc)
+                pitch = 2560
+                rows = b"".join(bytes(uc.mem_read(self.FB_VA + y * pitch, 640 * 4)) for y in range(480))
+                self.assertEqual(rows, self._expected_kernel_screen())
+                self.assertEqual((self._d(uc, 0x8003B2D4), self._d(uc, 0xC0300840), self._d(uc, 0x80030000)),
+                                 (kwargs.get("pages", 0x4000), kwargs.get("pde", 0), 0), "the kernel is left alone")
+
+    def test_a_64_mb_machine_with_another_kernel_still_draws_the_memory_message(self) -> None:
+        uc = self._require_machine(build=5838, cstatus=0x04000000)
+        self._stop(uc)
+        pitch = 2560
+        rows = b"".join(bytes(uc.mem_read(self.FB_VA + y * pitch, 640 * 4)) for y in range(480))
+        self.assertEqual(rows, self._expected_screen(), "the memory failure is named first")
 
     def test_without_a_buffer_the_128_mb_entry_stops_without_touching_the_display(self) -> None:
         uc = self._require_machine(cstatus=0x04000000, alloc=False)

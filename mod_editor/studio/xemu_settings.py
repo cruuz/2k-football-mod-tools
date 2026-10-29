@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import configparser
 import copy
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -115,6 +116,73 @@ def grant_build_folder(command, folder: Path, *, runner=None) -> str:
     except (OSError, subprocess.TimeoutExpired, configparser.Error) as exc:
         return f"Could not remember Flatpak read-only access to {folder}: {exc}."
     return f"Granted persistent Flatpak read-only access to the build folder: {folder}."
+
+
+# The lab firmware pin for the modified retail Complex 4627 Flash ROM (1 MiB). The project pins this exact
+# image in its xemu runtime tools; the file itself is never shipped. Other BIOS images may work, but they are
+# not the combination the 128 MB startup patch was built and tested on, so Studio only warns (never edits).
+KNOWN_4627_FLASHROM = ((1_048_576, "34f1c8ded59116436065783f8ad2ef0939df3cbfc76277ec9e5c41bf9ccb93cd"),)
+
+
+def _sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as stream:
+        for block in iter(lambda: stream.read(1 << 20), b""):
+            digest.update(block)
+    return digest.hexdigest()
+
+
+def play_problems(config: Path, *, hash_file=None) -> tuple[str, ...]:
+    """Name the xemu settings a 128 MB SOFTDRINK build needs. Reads only; the caller never writes xemu.toml."""
+
+    path = Path(config)
+    hasher = _sha256 if hash_file is None else hash_file
+    try:
+        raw = path.read_bytes()
+    except OSError:
+        return ("xemu settings were not found at " + os.fspath(path)
+                + "; set System Memory to 128 MiB and Flash ROM (BIOS) to Complex 4627.",)
+    try:
+        document = tomllib.loads(raw.decode("utf-8"))
+    except (UnicodeDecodeError, tomllib.TOMLDecodeError):
+        return ("xemu settings at " + os.fspath(path) + " could not be read; set System Memory to 128 MiB "
+                "and Flash ROM (BIOS) to Complex 4627 in xemu's System settings.",)
+    system = document.get("sys")
+    if not isinstance(system, dict):
+        system = {}
+    files = system.get("files")
+    if not isinstance(files, dict):
+        files = {}
+    problems = []
+    memory = system.get("mem_limit")
+    if str(memory).strip().strip("'\"") != "128":
+        problems.append("System Memory is " + (repr(memory) if memory is not None else "not set")
+                        + "; set it to 128 MiB (xemu.toml [sys] mem_limit = '128').")
+    flash = files.get("flashrom_path")
+    if not isinstance(flash, str) or not flash.strip():
+        problems.append("Flash ROM (BIOS) is not set; choose the Complex 4627 image in xemu's System settings.")
+    else:
+        bios = Path(flash).expanduser()
+        try:
+            size = bios.stat().st_size
+        except OSError:
+            problems.append("Flash ROM (BIOS) " + os.fspath(bios) + " was not found; choose the Complex 4627 "
+                            "image in xemu's System settings.")
+        else:
+            known = [digest for known_size, digest in KNOWN_4627_FLASHROM if size == known_size]
+            if not known or hasher(bios) not in known:
+                problems.append("Flash ROM (BIOS) " + os.fspath(bios) + " is not the tested Complex 4627 "
+                                "image; 128 MB builds need that BIOS in xemu's System settings.")
+    return tuple(problems)
+
+
+def play_warning(config: Path, *, hash_file=None) -> str:
+    """One sentence for the launch screen; empty when the settings match what 128 MB builds need."""
+
+    problems = play_problems(config, hash_file=hash_file)
+    if not problems:
+        return ""
+    return "xemu settings need attention: " + " ".join(problems)
 
 
 def disc_help(disc: Path) -> str:
