@@ -34,6 +34,7 @@ LEGACY_CAPACITY_ARENA_SIZE = 0xB0000      # beta-78 / v0.7
 CAPACITY_ARENA_SIZE = 0xCA000             # beta-79 / v0.8
 CAPACITY_ARENA_SIZES = (LEGACY_CAPACITY_ARENA_SIZE, CAPACITY_ARENA_SIZE)
 ARENA_SIZES = (ARENA_SIZE,) + CAPACITY_ARENA_SIZES
+NAME_BUFFER = 34       # one UTF-16 name buffer in the arena
 CAPACITY_PRIMARY_LIMIT = 4096
 CAPACITY_MAGIC = b'2K5CAP\0\0'
 CAPACITY_DESCRIPTOR_SIZE = 16
@@ -455,17 +456,33 @@ def _migrate_capacity(payload: bytes, records: int, class_records: int | None = 
         # Extension: only free class records are added; the existing vacancies stay as they are.
         vacancies = 0
         base_count = old_count - appended
-        free = (capacity_class_records(base_count, appended, old_end - root, arena_size)
-                if class_records is None else class_records)
         tail_from = root + layout.arena_size - CAPACITY_TAIL - CAPACITY_DESCRIPTOR_SIZE
         names_old_start = (old_end + appended * 84 + 1) & ~1
         names_old_end = names_old_start + appended * 68
-        require(not any(payload[names_old_end:tail_from]), 'the capacity arena has data after its names')
+        # b779 up2: a save the game wrote can hold more name strings after the descriptor's names (the v0.7 game
+        # puts 21 blank-name buffers there for its Create Player records); they move with the growth, after the
+        # new names, and the pointers that select them are rebased.
+        extra_end = tail_from
+        while extra_end > names_old_end and not payload[extra_end - 1]:
+            extra_end -= 1
+        extra_end = min(tail_from, (extra_end + 1) & ~1)
+        # A game-written save re-points some records at buffers that straddle the descriptor's names end; the
+        # relocated block starts at the first such buffer so no string is cut.
+        extra_from = names_old_end
+        if extra_end > names_old_end:
+            for field in pointer_fields(document):
+                target = document.rel(field, label='capacity relocation')
+                if target is not None and names_old_end - NAME_BUFFER < target < names_old_end:
+                    extra_from = min(extra_from, target)
+        extra = bytes(payload[extra_from:extra_end])
+        free = (capacity_class_records(base_count, appended, old_end - root + max(0, extra_end - names_old_end), arena_size)
+                if class_records is None else class_records)
         source = 'capacity'
     else:
         require(layout.version in (0, 17), 'capacity growth requires a retail or saved roster')
         require(layout.arena_size in (RETAIL_SIZE, 0x90F20), 'capacity growth requires the retail arena')
         appended, old_end, vacancies = 0, layout.end, records
+        extra, extra_from = b'', None
         base_count = old_count
         free = (capacity_class_records(base_count, records, old_end - root, arena_size)
                 if class_records is None else class_records)
@@ -484,7 +501,10 @@ def _migrate_capacity(payload: bytes, records: int, class_records: int | None = 
     names_start = (old_end + total * 84 + 1) & ~1
     names_end = names_start + total * 68
     block_at = root + block_offset(arena_size)
-    require(names_end <= block_at - CAPACITY_DESCRIPTOR_SIZE, 'capacity records and names do not fit the arena')
+    require(names_end + len(extra) <= block_at - CAPACITY_DESCRIPTOR_SIZE,
+            'capacity records and names do not fit the arena')
+    names_shift = free * 68 if extra else 0       # the extra name strings follow the new names
+    extra_moves = (names_old_end - extra_from + insert + names_shift) if extra else 0
     fields = pointer_fields(document)
     targets = {field: document.rel(field, label='capacity relocation') for field in fields}
     source_end = layout.end if prior is None else tail_from
@@ -493,6 +513,8 @@ def _migrate_capacity(payload: bytes, records: int, class_records: int | None = 
         if value is None:
             return None
         require(value < source_end, 'pointer outside the source arena')
+        if extra and value >= extra_from:
+            return value + extra_moves
         return value + insert if value >= point else value
 
     # The last blank create record is the vacancy template; the last free window record is the class template.
@@ -525,7 +547,12 @@ def _migrate_capacity(payload: bytes, records: int, class_records: int | None = 
     else:
         new_end = root + arena_size
         tail = payload[tail_from:layout.end]
-        out = bytearray(payload[:point]) + bytearray(insert) + bytearray(payload[point:names_old_end])
+        keep_to = extra_from if extra else names_old_end
+        out = bytearray(payload[:point]) + bytearray(insert) + bytearray(payload[point:keep_to])
+        if extra:
+            require(not any(f >= extra_from for f in fields), 'a relocation field lies in the extra name strings')
+            out.extend(bytes(names_old_end + insert + names_shift - len(out)))   # new names are written below
+            out.extend(extra)
         out.extend(bytes(new_end - len(tail) - len(out)))
         out.extend(tail)
         out.extend(payload[layout.end:])
