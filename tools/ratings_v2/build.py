@@ -68,6 +68,19 @@ def step_rate(args):
     retail, body_u7, u7, rows = base()
     D, players = rated_league(args.forty_sources or ())
     d2 = with_ratings(body_u7, players)
+    # b779-sim2 reviewed rescale: map the top-40 halfbacks' consistency onto the retail club top-40 mean and
+    # spread, using the game's own OVR to choose the 40 (the physical deltas are in model.rate_all).
+    from ovr import game_ovr
+    from mod_editor.core.nfl2k5_ratings_model import reviewed_hb_consistency_map
+    by = {(p.pool, p.index): p for p in d2.players}
+    hbs = [p for p in players if p['pos'] == 'HB' and p.get('team') is not None]
+    hbs.sort(key=lambda p: (-game_ovr(by[(p['pool'], p['index'])].record.encode())[1], p['index']))
+    top = hbs[:40]
+    mapped = reviewed_hb_consistency_map([p['ratings']['consistency'] for p in top])
+    for p, value in zip(top, mapped):
+        p['ratings']['consistency'] = value
+        by[(p['pool'], p['index'])].record.set('consistency', value)
+        p['basis']['consistency']['reviewed_hb_map'] = value
     plan = ab.plan_auto_assign(d2, top_n=10)          # the studio's own tiers, as u1's merge ran them
     ab_receipt = ab.apply_plan(d2, plan)
     body_v2 = d2.to_body()

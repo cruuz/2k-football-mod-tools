@@ -353,5 +353,33 @@ class RealSeasonTests(unittest.TestCase):
         self.assertLess(rate("Matt Cassel", "QB")["pass_accuracy"], 70)
 
 
+class ReviewedHalfbackRescaleTests(unittest.TestCase):
+    """b779-sim2: the reviewed 2026 halfback rescale table and its two pure steps."""
+
+    def test_table_is_pinned(self):
+        self.assertEqual(rm.REVIEWED_HB_RATING_DELTAS,
+                         (("break_tackle", -8), ("strength", -5), ("hold_onto_ball", -5)))
+        self.assertEqual(rm.REVIEWED_HB_CONSISTENCY, {"players": 40, "mean": 59.2, "sd": 20.8})
+
+    def test_deltas_apply_only_to_the_named_ratings_and_clamp(self):
+        source = {"break_tackle": 88, "strength": 60, "hold_onto_ball": 87, "speed": 85}
+        out = rm.reviewed_hb_rating_deltas(source)
+        self.assertEqual(out, {"break_tackle": 80, "strength": 55, "hold_onto_ball": 82, "speed": 85})
+        self.assertEqual(source["break_tackle"], 88)             # no mutation
+        self.assertEqual(rm.reviewed_hb_rating_deltas({"break_tackle": 3})["break_tackle"], 1)
+
+    def test_consistency_map_hits_the_retail_mean_and_spread(self):
+        values = [48, 60, 69, 83, 83]
+        mapped = rm.reviewed_hb_consistency_map(values)
+        self.assertEqual(len(mapped), len(values))
+        mean = sum(mapped) / len(mapped)
+        sd = (sum((v - mean) ** 2 for v in mapped) / (len(mapped) - 1)) ** 0.5
+        self.assertAlmostEqual(mean, 59.2, delta=1.5)
+        self.assertAlmostEqual(sd, 20.8, delta=2.0)
+        self.assertEqual(mapped, sorted(mapped))
+        self.assertEqual(rm.reviewed_hb_consistency_map([]), [])
+        self.assertEqual(rm.reviewed_hb_consistency_map([70]), [59])
+
+
 if __name__ == "__main__":
     unittest.main()

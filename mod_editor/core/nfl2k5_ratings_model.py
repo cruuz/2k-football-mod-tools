@@ -761,11 +761,50 @@ def _age(birth_date, season: int) -> int:
     return season - year - (1 if month > 9 else 0)
 
 
+# b779-sim2, reviewed 2026-10-28: the modern roster's halfbacks broke tackles, kept the ball and held their
+# strength about 5-8 points above the retail 2004 halfback population, and their consistency was 10 points high
+# and much too narrow. Two simulated seasons at Sim QL 5 (measured in the b779 sim2 round-1 report) had 30 and 31
+# rushers over 1,000 yards against the NFL's 13.6; the retail 2004 roster on the same engine reproduced the
+# real 2004 count exactly. This table is the reviewed rescale for the roster generator (not a hand edit of a
+# shipped roster): physical deltas on every halfback and a linear map of the top 40 halfbacks' consistency onto
+# the retail club top-40 mean and spread.
+REVIEWED_HB_RATING_DELTAS = (("break_tackle", -8), ("strength", -5), ("hold_onto_ball", -5))
+REVIEWED_HB_CONSISTENCY = {"players": 40, "mean": 59.2, "sd": 20.8}
+
+
+def reviewed_hb_rating_deltas(ratings: Mapping) -> dict:
+    """Apply the reviewed halfback physical deltas to one ratings mapping (returns a new dict)."""
+    out = {key: int(value) for key, value in ratings.items()}
+    for rating, delta in REVIEWED_HB_RATING_DELTAS:
+        if rating in out:
+            out[rating] = max(1, min(99, out[rating] + delta))
+    return out
+
+
+def reviewed_hb_consistency_map(values: Sequence[int]) -> list[int]:
+    """Map the given halfback consistency values linearly onto the retail top-40 mean and spread (1..99)."""
+    values = [int(v) for v in values]
+    if not values:
+        return []
+    mean = sum(values) / len(values)
+    if len(values) < 2:
+        return [max(1, min(99, round(REVIEWED_HB_CONSISTENCY["mean"])))]
+    variance = sum((v - mean) ** 2 for v in values) / (len(values) - 1)
+    sd = variance ** 0.5
+    target_mean, target_sd = REVIEWED_HB_CONSISTENCY["mean"], REVIEWED_HB_CONSISTENCY["sd"]
+    if sd <= 1e-9:
+        return [max(1, min(99, round(target_mean)))] * len(values)
+    return [max(1, min(99, round(target_mean + (v - mean) * target_sd / sd))) for v in values]
+
+
 def rate_players(rows: Iterable[Mapping], stats: SeasonStats, reference: Reference, *,
-                 honors: Mapping | None = None, anchors: Mapping | None = None) -> list[dict]:
+                 honors: Mapping | None = None, anchors: Mapping | None = None,
+                 reviewed_hb_rescale: bool = False) -> list[dict]:
     """Rate a list of rows. Each output row is the input row plus the 28 ratings and ``rating_basis`` (JSON).
 
     ``anchors``: optional {gsis_id or "first last|birth_date": retail ratings} for players 2K5 already had.
+    ``reviewed_hb_rescale``: apply REVIEWED_HB_RATING_DELTAS to halfbacks. The top-40 consistency map is a
+    league-wide step (reviewed_hb_consistency_map) and the caller applies it once all halfbacks are rated.
     """
     out = []
     for row in rows:
@@ -774,6 +813,9 @@ def rate_players(rows: Iterable[Mapping], stats: SeasonStats, reference: Referen
             anchor = anchors.get(row.get("gsis_id") or "") or anchors.get(
                 f"{row.get('first', '')} {row.get('last', '')}|{row.get('birth_date', '')}".lower())
         ratings, basis = rate_player(row, stats, reference, honors=honors, anchor=anchor)
+        if reviewed_hb_rescale and str(row.get("position", "")).upper() in ("HB", "RB"):
+            ratings = reviewed_hb_rating_deltas(ratings)
+            basis["reviewed_hb_rescale"] = dict(REVIEWED_HB_RATING_DELTAS)
         out.append({**row, **{k: str(v) for k, v in ratings.items()},
                     "rating_basis": json.dumps(basis, sort_keys=True, separators=(",", ":"))})
     return out

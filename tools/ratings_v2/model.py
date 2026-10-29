@@ -22,7 +22,8 @@ Inputs (all under <work>, made by build.py): features_<season>.json, ratings_v2_
 honors.json (honors.py), predraft/*.json (predraft.py); cited 40s in nfl2k5.forty_sources.v1 files.
 """
 import collections, glob, json, math, statistics
-from mod_editor.core.nfl2k5_ratings_model import name_key, load_forty_sources
+from mod_editor.core.nfl2k5_ratings_model import (name_key, load_forty_sources, reviewed_hb_rating_deltas,
+                                                       reviewed_hb_consistency_map)
 from common import CFG, nfl, read_csv, work
 
 W = {2025: 1.0, 2024: 0.5}
@@ -719,6 +720,12 @@ def rate_all(D, players, draft):
                 basis['scramble']['family'] = 'mobile (even, scramble + agility > 150)' if s + a > 150 else \
                     'pocket (even, scramble + agility <= 150)'
             p['ratings'], p['basis'] = out, basis
+    # b779-sim2 reviewed rescale: the modern halfback physical ratings sat 5-8 points above the retail 2004
+    # halfback population; the top-40 consistency map is applied by build.py once the game's OVR is known.
+    for p in players:
+        if p['pos'] == 'HB' and p.get('team') is not None:
+            p['ratings'] = reviewed_hb_rating_deltas(p['ratings'])
+            p['basis']['reviewed_hb_rescale'] = 'b779-sim2 reviewed halfback physical rescale'
     return players
 
 
