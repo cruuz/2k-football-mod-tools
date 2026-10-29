@@ -11,40 +11,50 @@ The difficulty presets pre-bias the sliders (``FUN_000e3740``: Rookie Human 1.00
 Pro 0.75 / 0.25, All-Pro 0.50 / 0.50, Legend 0.25 / 0.75; a fresh profile starts on Pro,
 ``FUN_000e3b90``), so "default" is 0.75 for the human side and 0.25 for the CPU side.
 
-The catch decision (``FUN_001c78d0``) computes a catch probability and, at
-``0x001C8317`` (``mov ecx, 0xE5FCA0; call FUN_00048B90``), draws a random
-number; the pass is caught when ``rand < probability``.  The same roll decides
-interceptions: a defender reaching the ball is just another catcher.  This patch
-redirects that one call into a 48-byte code cave placed inside the XBE header's
+The catch decision (``FUN_001c78d0``) computes a catch probability P (stack slot
+``[esp+0x14]``) and, at ``0x001C8317`` (``mov ecx, 0xE5FCA0; call FUN_00048B90``), draws a
+random number; the pass is caught when ``rand < P`` and no veto (``[esp+0x30]``) is set.  The
+same roll decides interceptions: a defender reaching the ball is just another catcher.  For
+a ball that reaches the hands (contact mask in edi & 0x420000) P is the "hands" curve
+(table 0x50AC84) of the catcher's Catching skill (0.1 at skill 0, 0.8 at 0.5, 1.0 at 0.65,
+1.5 at 1.0; skill is rating/100 through ``FUN_0017b010``), minus the defender pressure from
+``FUN_001c6640`` (at most 0.5), minus 0.4 * (1 - skill) for a diving/one-handed state
+(``FUN_001e6250``), minus 0.25 * (1 - skill) * min(failed attempts on this ball, 2)
+(``[0xE3C020]``); a defender at the ball sets 0.1.  P at or above 1.0 is a sure catch, so
+drops come from low skill, tight coverage and second touches.
+
+This patch redirects that one call into a 48-byte code cave placed inside the XBE header's
 boot-logo bitmap (``0x00010A10``; the kernel reads it once at boot, the game never
 does; the thunk tables in .text looked dead statically but ARE called at runtime):
 
-    offense or kicked-ball catcher: rand -> min(rand, rand / (2 * own-side Catching))
+    offense or kicked-ball catcher: rand -> rand / (K * (Human Catching + CPU Catching))
     other defense catcher:         rand -> rand / (2 * Interception slider)
 
-The main cave keeps its 48-byte slot. Its team load detours through the 22-byte
-unused tail of the SAME boot-logo bitmap (0x10CAC..0x10CC2), after the EDGE legend
-and before the bitmap ends. This is the header-cave growth path: pin the tail,
-declare it in _sites, and let the existing boot-logo writer relocate the bitmap;
-no section growth, runtime storage, or neighboring owner's bytes are needed.
-The selector uses ball kind [0xE602C0] == 3 (non-forward loose ball, including
-kicks and backward passes); forward passes are kind 4. Retail's kick launch
-FUN_000b73b0 stores 3 at 0xB7410, while FUN_000b6700 stores 4 at 0xB6705.
-For kind 3 it loads the catcher's team instead of the possession team, so the
-unchanged comparison and Catching branch select that catcher's controller.
+so a pass is caught when ``rand < P * m`` with ``m = K * (human + cpu)``.  K = ``ODDS_SCALE`` = 2.0 is
+the retail float constant at 0x4E6084 and the two Catching sliders are read straight from the
+factor table.  Human and CPU receivers get the SAME odds: the multiplier is the sum of both
+sliders, never the receiving side's own.  Every difficulty preset sets the pair to values that
+sum to 1.0 (Rookie 1.0/0.0, Pro 0.75/0.25, All-Pro 0.5/0.5, Legend 0.25/0.75), so ``m = 2``
+(double the retail catch odds) for every preset and every saved profile; moving either slider
+moves both teams.  (The previous revision used the receiving side's own slider: the Pro human
+got x1.5 and the CPU stayed at retail odds, which is why the CPU dropped many more passes than
+the human.)  Interception keeps its full range: 0 makes picks impossible, 50 is retail, 100
+doubles them (the game's own slider branch keeps a 10 % floor and scales with difficulty,
+which is why the forums call it broken).  The Human and CPU Catching menu ceilings
+(``0x0014AC20`` / ``0x0014B490``) are repointed from the shared 1.0 constant to the shared 2.0
+constant so the slider can show 200.
 
-"Side" is decided the way the game's own attribute accessor does it: the team is
-human when its controller record ``[team+0x30]`` is non-zero (``0xE60280`` is the
-team with possession, not the human team; the two possession globals swap on every
-turnover and kick).  For the offense the slider can only ADD catches: 50 and below is
-byte-for-byte the retail odds (so the Pro / Legend / Rookie presets never make a side
-worse than retail, and the Rookie CPU value of 0 no longer divides by zero), 75 is
-x1.5 catch odds, 100 doubles them, 200 quadruples them.  Interception keeps its full
-range: 0 makes picks impossible, 50 is retail, 100 doubles them (the game's own
-slider branch keeps a 10 % floor and scales with difficulty, which is why the forums
-call it broken).  The Human and CPU Catching menu ceilings (``0x0014AC20`` /
-``0x0014B490``) are repointed from the shared 1.0 constant to the shared 2.0 constant
-so the slider can show 200.
+The roll repeats while the ball stays in reach (b779 gp1 read 3 to 5 successive rolls by one
+defender at the ball, P = 0.1, from the running game), and the failed-attempt counter
+``[0xE3C020]`` (the second-touch penalty above) rises between them, so one pass can carry
+several rolls and a drop is the compound of them.
+
+The selector uses ball kind [0xE602C0] == 3 (non-forward loose ball, including kicks and
+backward passes); forward passes are kind 4. Retail's kick launch FUN_000b73b0 stores 3 at
+0xB7410, while FUN_000b6700 stores 4 at 0xB6705.  A kind-3 ball always takes the catching
+branch (a returner is on the team WITHOUT possession), and the cave tests that inline.  The
+interception branch lives in the 22-byte unused tail of the same boot-logo bitmap
+(0x10CAC..0x10CC2, after the EDGE legend; the former kick gate's slot).
 
 Everything is pattern-checked: every patched byte must hold its exact retail
 value (or the exact already-patched value, which reports as applied), the
@@ -64,7 +74,8 @@ KICK_GATE_VA = 0x00010CAC  # unused boot-logo tail: EDGE legend ends here; bitma
 KICK_GATE_SIZE = 22
 HOOK_VA = 0x001C8317
 RAND_FN = 0x00048B90
-FACTOR_FN = 0x0017B8F0          # ReadFactor(idx=ecx, side=edx != 0); side 1 = Human table, 0 = CPU
+FACTOR_FN = 0x0017B8F0          # ReadFactor(idx=ecx, side=edx != 0); side 1 = Human table, 0 = CPU (documentation)
+FACTOR_TABLE = 0x00AAB8C0       # nine sliders per side, ten floats apart
 OFFENSE_TEAM_GLOBAL = 0x00E60280   # team with possession (swapped with 0xE60284 on turnovers/kicks)
 INT_SLIDER_GLOBAL = 0x00E6020C     # the menu's "Interception" slider, 0.0..1.0
 BALL_KIND_GLOBAL = 0x00E602C0     # 3 = kicks/backward passes; 4 = forward pass
@@ -72,6 +83,13 @@ CONST_ONE = 0x004E419C
 CONST_TWO = 0x004E6084
 CEIL_SITES = (0x0014AC20, 0x0014B490)   # Human / CPU Catching "maximum" callbacks
 CATCHING_FACTOR_INDEX = 4
+# Default odds multiplier m = K * (human + cpu) = K at every difficulty preset (the pair always sums to 1.0).
+# K is a retail float constant in .rdata, referenced by address.
+ODDS_SCALE = 2.0
+ODDS_SCALE_VA = {1.25: 0x004EF1CC, 1.5: 0x004E6D0C, 1.75: 0x004E81A4, 2.0: 0x004E6084, 2.5: 0x004E6D44,
+                 3.0: 0x004E6D4C, 4.0: 0x004E6D40}[ODDS_SCALE]
+CPU_CATCHING_CELL = FACTOR_TABLE + 4 * CATCHING_FACTOR_INDEX           # side 0 (CPU)
+HUMAN_CATCHING_CELL = FACTOR_TABLE + 4 * (CATCHING_FACTOR_INDEX + 10)  # side 1 (Human)
 # Difficulty presets (FUN_000e3740 jump table 0xE3B00): Human, CPU slider value for every slider.
 DIFFICULTY_PRESETS = {"Rookie": (1.0, 0.0), "Pro": (0.75, 0.25), "All-Pro": (0.5, 0.5), "Legend": (0.25, 0.75)}
 FRESH_PROFILE_DIFFICULTY = "Pro"   # FUN_000e3b90 stores 1 into DAT_00e5ff84 before FUN_000e3740
@@ -101,46 +119,44 @@ def _rel32(src: int, dst: int) -> bytes:
 
 
 def cave_bytes() -> bytes:
-    """rand -> min(rand, rand / (2 * Catching)) for offense/kicked-ball catchers,
-    rand / (2 * Interception) for other defenders. Side follows the attribute accessor
-    (``FUN_0017b010``): a team is "human" when ``[team+0x30]`` (its controller record) is
-    non-zero; ``[0xE60280]`` is the team with possession.  ``ReadFactor`` treats any non-zero
-    edx as the human side, so the controller pointer itself is passed as the side."""
+    """rand -> rand / (K * (human + cpu Catching)) for an offense or kicked-ball catcher,
+    rand / (2 * Interception) for any other defender; both finish in the tail (``kick_gate_bytes``).
+    The sliders are read from the factor table ``0xAAB8C0`` (the same cells ``FUN_0017b8f0`` returns:
+    CPU index 4, Human index 14), so the result does not depend on which side the catcher is on."""
 
     code = b""
-    code += b"\xe8" + _rel32(CAVE_VA + len(code), RAND_FN)       # call rand              st0 = rand
-    code += b"\xe9" + _rel32(CAVE_VA + len(code), KICK_GATE_VA) # select comparison team; resumes at +10
-    code += b"\x3b\x43\x38"                                     # cmp eax,[ebx+0x38]     catcher's team?
-    code += b"\x75\x16"                                         # jne defender (+22)
-    code += b"\x8b\x50\x30"                                     # mov edx,[eax+0x30]     controller record (0 = CPU)
-    code += b"\x6a\x04"                                         # push 4                 Catching
-    code += b"\x59"                                             # pop ecx
-    code += b"\xe8" + _rel32(CAVE_VA + len(code), FACTOR_FN)     # call ReadFactor        st0 = slider, st1 = rand
-    code += b"\xd8\xc0"                                         # fadd st0,st0           2*slider
-    code += b"\xd8\xf9"                                         # fdivr st0,st1          st0 = rand/(2*slider), st1 = rand
-    code += b"\xdb\xe9"                                         # fucomi st0,st1         CF = st0 < st1
-    code += b"\xdb\xc1"                                         # fcmovnb st0,st1        st0 = min(rand/(2s), rand)
-    code += b"\xdd\xd9"                                         # fstp st1               pop the spare rand
-    code += b"\xc3"                                             # ret
-    code += b"\xd9\x05" + struct.pack("<I", INT_SLIDER_GLOBAL)  # defender: fld [Interception slider]
-    code += b"\xd8\xc0"                                         # fadd st0,st0           2*slider
-    code += b"\xde\xf9"                                         # fdivp st1,st0          rand/(2*slider)
-    code += b"\xc3"                                             # ret
+    code += b"\xe8" + _rel32(CAVE_VA + len(code), RAND_FN)                      # call rand            st0 = rand
+    code += b"\x83\x3d" + struct.pack("<I", BALL_KIND_GLOBAL) + b"\x03"        # cmp [ball kind],3
+    code += b"\x74\x0e"                                                        # je offense (+14)     kicked ball: catcher
+    code += b"\xa1" + struct.pack("<I", OFFENSE_TEAM_GLOBAL)                    # mov eax,[offense team]
+    code += b"\x3b\x43\x38"                                                    # cmp eax,[ebx+0x38]   catcher's team?
+    here = CAVE_VA + len(code)
+    code += b"\x0f\x85" + struct.pack("<i", KICK_GATE_VA - (here + 6))          # jne defender (tail +0)
+    code += b"\xd9\x05" + struct.pack("<I", CPU_CATCHING_CELL)                  # offense: fld [cpu Catching]
+    code += b"\xd8\x05" + struct.pack("<I", HUMAN_CATCHING_CELL)                # fadd [human Catching]
+    here = CAVE_VA + len(code)
+    code += b"\xe9" + _rel32(here, KICK_GATE_VA + DEFENDER_BYTES)                # jmp tail +11 (scale and divide)
+    code += b"\x90" * (CAVE_SIZE - len(code))
     assert len(code) == CAVE_SIZE, len(code)
     return code
 
 
-def kick_gate_bytes() -> bytes:
-    """Select the catcher's own team for kind 3; preserve all other ball kinds.
+DEFENDER_BYTES = 11
 
-    Only eax and flags change, just as for the replaced team load and following
-    comparison. The main cave overwrites these flags immediately on return.
-    """
-    code = b"\xa1" + struct.pack("<I", OFFENSE_TEAM_GLOBAL)     # mov eax,[offense team]
-    code += b"\x83\x3d" + struct.pack("<I", BALL_KIND_GLOBAL) + b"\x03"
-    code += b"\x75\x03"                                       # jne resume (not kind 3)
-    code += b"\x8b\x43\x38"                                   # mov eax,[ebx+0x38] catcher's team
-    code += b"\xe9" + _rel32(KICK_GATE_VA + len(code), CAVE_VA + 10)
+
+def kick_gate_bytes() -> bytes:
+    """The 22-byte tail (the slot of the former kick gate): +0 the interception branch,
+    rand / (2 * Interception); +11 the catching branch, rand / (ODDS_SCALE * (human + cpu))."""
+
+    code = b"\xd9\x05" + struct.pack("<I", INT_SLIDER_GLOBAL)  # fld [Interception slider]
+    code += b"\xd8\xc0"                                         # fadd st0,st0           2*slider
+    code += b"\xde\xf9"                                         # fdivp st1,st0          rand/(2*slider)
+    code += b"\xc3"                                             # ret
+    assert len(code) == DEFENDER_BYTES
+    code += b"\xd8\x0d" + struct.pack("<I", ODDS_SCALE_VA)     # fmul [K]               m = K*(h+c)
+    code += b"\xd8\xf9"                                         # fdivr st0,st1          st0 = rand/m
+    code += b"\xdd\xd9"                                         # fstp st1               pop the spare rand
+    code += b"\xc3"                                             # ret
     assert len(code) == KICK_GATE_SIZE, len(code)
     return code
 
@@ -151,12 +167,13 @@ PATCHED_HOOK = b"\xe8" + _rel32(HOOK_VA, CAVE_VA)
 IMAGE_BASE = 0x10000
 
 
-def odds_multiplier(slider: float, defender: bool = False) -> float:
-    """Catch-odds multiplier the cave applies for a slider value (0.0 .. 2.0)."""
+def odds_multiplier(human_slider: float, cpu_slider: float | None = None, defender: bool = False) -> float:
+    """Odds multiplier the cave applies: ``ODDS_SCALE * (human + cpu)`` for a catcher (the same for both
+    sides; a lone value stands for both sliders), ``2 * interception`` for another defender."""
 
     if defender:
-        return 2.0 * slider
-    return max(1.0, 2.0 * slider)
+        return 2.0 * human_slider
+    return ODDS_SCALE * (human_slider + (human_slider if cpu_slider is None else cpu_slider))
 
 
 def _header_size(payload: bytes) -> int:

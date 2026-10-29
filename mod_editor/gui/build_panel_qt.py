@@ -233,6 +233,7 @@ from mod_editor.core import nfl2k5_pass_rush_stats as _pass_rush_stats  # noqa: 
 CPU_AI_OPTIONS = (
     ("cpu_qb_zone_windows", _cpu_qb_reads.BUILD_CAPTION_ZONE, _cpu_qb_reads.HELP_ZONE),
     ("cpu_qb_recheck", _cpu_qb_reads.BUILD_CAPTION_RECHECK, _cpu_qb_reads.HELP_RECHECK),
+    ("cpu_qb_tiers", _cpu_qb_reads.BUILD_CAPTION_TIERS, _cpu_qb_reads.HELP_TIERS),  # b779-gp1
     ("db_ball_play", _db_ball_play.BUILD_CAPTION, _db_ball_play.HELP_TEXT),
 )
 # b777-qb3: QB accuracy on short and on-the-run throws (on in the experimental preset only).
@@ -666,8 +667,8 @@ class BuildPanel(QWidget):
         g.addWidget(self.throw_details)
         self.catch_check = self._option(g, "catch_slider", "Fix Catching & Interception sliders",
                                         "Catching controls drops; Interception controls picks.",
-                                        details="The catch roll is divided by twice the receiver's side's Catching slider (the menu goes to 200) "
-                                                "and a defender's roll by twice the Interception slider (0 = no picks, 50 = original, 100 = double).")
+                                        details="The catch odds are multiplied by 2 x (Human Catching + CPU Catching), the same for both teams (the menu goes to 200), "
+                                                "and a defender's roll is divided by twice the Interception slider (0 = no picks, 50 = original, 100 = double).")
         self.accel_check = self._option(g, "accel_ramp", "Legacy acceleration ramp",
             "Adds a rating-based speed envelope to controller-driven players.",
             details="Native movement already accelerates. This legacy profile does not apply equally to CPU players.")

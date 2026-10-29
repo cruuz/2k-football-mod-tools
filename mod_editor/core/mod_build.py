@@ -484,6 +484,10 @@ class BuildPlan:
     # EXPERIMENTAL / UNWITNESSED: off in every preset; a test recipe turns them on.
     cpu_qb_zone_windows: bool = False
     cpu_qb_recheck: bool = False
+    # b779-gp1: cpu_qb_tiers (nfl2k5_cpu_qb_reads, data only, needs cpu_qb_zone_windows and turns it on): the CPU QB's pass
+    # threshold follows his Pass Read Coverage the other way round from retail (elite readers wait for a clear window,
+    # weak readers still throw at covered receivers). EXPERIMENTAL / UNWITNESSED: on in Advanced and Experimental.
+    cpu_qb_tiers: bool = False
     db_ball_play: bool = False
     # b777-qb3: nfl2k5_qb_accuracy, a late executable owner hooked where the pass accuracy routine stores the miss
     # distance: a miss on a throw under 40 yd shrinks with the passer's Pass Accuracy and falls behind the receiver as
@@ -801,7 +805,13 @@ del _preset
 for _preset in PRESETS.values():
     _preset["cpu_qb_zone_windows"] = False
     _preset["cpu_qb_recheck"] = False
+    _preset["cpu_qb_tiers"] = False
     _preset["db_ball_play"] = False
+# b779-gp1: CPU QB skill tiers (elite readers wait for clear windows, weak readers force throws): Noah 10/28 "I want the CPU
+# to be more challenging ... Elite quarterbacks should be able to pick zones apart ... rookie quarterbacks are more likely to
+# throw picks". EXPERIMENTAL / UNWITNESSED: on in Advanced and Experimental, off in Basic.
+PRESETS["softdrink_advanced"]["cpu_qb_tiers"] = True
+PRESETS["softdrink_experimental"]["cpu_qb_tiers"] = True
 # b777-qb3: QB accuracy is experimental and unwitnessed: on only in the experimental preset, the one the SOFTDRINK 2K28
 # recipe builds from (Noah 10/20 asked for it in the next build).
 for _preset in PRESETS.values():
@@ -1106,18 +1116,18 @@ def _kick_meter_available() -> bool:  # b76-km
 def _cpu_ai_preflight(plan: "BuildPlan", source: Path, progress) -> None:
     """b776-ai2: refuse a source whose CPU AI sites are foreign or carry a different selection, before any write."""
     reads, ball = _core_module("nfl2k5_cpu_qb_reads"), _core_module("nfl2k5_db_ball_play")
-    if (plan.cpu_qb_zone_windows or plan.cpu_qb_recheck) and reads is None or plan.db_ball_play and ball is None:
+    if (plan.cpu_qb_zone_windows or plan.cpu_qb_recheck or plan.cpu_qb_tiers) and reads is None or plan.db_ball_play and ball is None:
         raise ValueError("The CPU AI options are not available in this installation.")
     progress("Checking the CPU passing and coverage code for the CPU AI options", 0, 0)
     try:
         payload = _xbe_bytes(source)
     except (OSError, ValueError) as exc:
         raise ValueError(f"The CPU AI options cannot read default.xbe: {exc}") from exc
-    if plan.cpu_qb_zone_windows or plan.cpu_qb_recheck:
+    if plan.cpu_qb_zone_windows or plan.cpu_qb_recheck or plan.cpu_qb_tiers:
         settings = reads.read_settings(payload)
-        wanted = (plan.cpu_qb_zone_windows, plan.cpu_qb_recheck)
+        wanted = (plan.cpu_qb_zone_windows or plan.cpu_qb_tiers, plan.cpu_qb_recheck, plan.cpu_qb_tiers)
         if settings["status"] == "foreign" or (settings["status"] == "applied"
-                                               and (settings["zone_windows"], settings["recheck"]) != wanted):
+                                               and (settings["zone_windows"], settings["recheck"], settings["tiers"]) != wanted):
             raise ValueError("The CPU quarterback code in this source is not retail or this selection of the CPU QB "
                              "options. Turn them off or rebuild from a supported USA source.")
     if plan.db_ball_play and ball.status(payload) == "foreign":
@@ -1130,8 +1140,9 @@ def _apply_cpu_ai(plan: "BuildPlan", target: Path, receipt: dict, progress) -> N
     reads, ball = _core_module("nfl2k5_cpu_qb_reads"), _core_module("nfl2k5_db_ball_play")
     progress("CPU AI: quarterback reads and defenders playing the ball", 0, 0)
     payload = _xbe_bytes(target)
-    if plan.cpu_qb_zone_windows or plan.cpu_qb_recheck:
-        payload, qb_receipt = reads.apply(payload, zone_windows=plan.cpu_qb_zone_windows, recheck=plan.cpu_qb_recheck)
+    if plan.cpu_qb_zone_windows or plan.cpu_qb_recheck or plan.cpu_qb_tiers:
+        payload, qb_receipt = reads.apply(payload, zone_windows=plan.cpu_qb_zone_windows or plan.cpu_qb_tiers,
+                                          recheck=plan.cpu_qb_recheck, tiers=plan.cpu_qb_tiers)
         receipt["steps"].append({"step": "cpu_qb_reads", **{k: v for k, v in qb_receipt.items() if k != "reservations"}})
     if plan.db_ball_play:
         payload, ball_receipt = ball.apply(payload)
@@ -1140,13 +1151,14 @@ def _apply_cpu_ai(plan: "BuildPlan", target: Path, receipt: dict, progress) -> N
     final = _xbe_bytes(target)
     if final != payload:
         raise RuntimeError("CPU AI: the written default.xbe does not read back")
-    if plan.cpu_qb_zone_windows or plan.cpu_qb_recheck:
+    if plan.cpu_qb_zone_windows or plan.cpu_qb_recheck or plan.cpu_qb_tiers:
         settings = reads.read_settings(final)
-        if (settings["status"], settings.get("zone_windows"), settings.get("recheck")) != (
-                "applied", plan.cpu_qb_zone_windows, plan.cpu_qb_recheck):
+        if (settings["status"], settings.get("zone_windows"), settings.get("recheck"), settings.get("tiers")) != (
+                "applied", plan.cpu_qb_zone_windows or plan.cpu_qb_tiers, plan.cpu_qb_recheck, plan.cpu_qb_tiers):
             raise RuntimeError("CPU QB reads: the output does not read back as the selected options")
-        receipt["result"]["cpu_qb_zone_windows"] = "applied" if plan.cpu_qb_zone_windows else "retail"
+        receipt["result"]["cpu_qb_zone_windows"] = "applied" if plan.cpu_qb_zone_windows or plan.cpu_qb_tiers else "retail"
         receipt["result"]["cpu_qb_recheck"] = "applied" if plan.cpu_qb_recheck else "retail"
+        receipt["result"]["cpu_qb_tiers"] = "applied" if plan.cpu_qb_tiers else "retail"
     if plan.db_ball_play:
         if ball.status(final) != "applied":
             raise RuntimeError("Defenders break on the thrown ball: the output does not read back as applied")
@@ -1268,7 +1280,7 @@ _LATE_OWNER_OPTIONS = (
     ("nfl2k5_team_ratings", "Modern team ratings", lambda p: p.team_ratings),
     ("nfl2k5_classic_teams", "Classic teams", lambda p: p.classic_teams and p.historic_teams_quick_game),
     ("nfl2k5_hair_styles", "Hair styles", lambda p: p.hair_styles),
-    ("nfl2k5_cpu_qb_reads", "CPU QB reads", lambda p: p.cpu_qb_zone_windows or p.cpu_qb_recheck),
+    ("nfl2k5_cpu_qb_reads", "CPU QB reads", lambda p: p.cpu_qb_zone_windows or p.cpu_qb_recheck or p.cpu_qb_tiers),
     ("nfl2k5_db_ball_play", "Defender ball play", lambda p: p.db_ball_play),
     ("nfl2k5_play_art_routes", "Play art: full-length routes", lambda p: p.play_art_routes),
     ("nfl2k5_team_number_scale", "Jersey number sizes", lambda p: bool(p.team_number_scale)),
@@ -1910,6 +1922,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
         # b776-ai2: the CPU AI owners need only their modules and the allocator
         **{key: _core_module(module) is not None and _core_module("nfl2k5_xbe_space") is not None
            for key, module in (("cpu_qb_zone_windows", "nfl2k5_cpu_qb_reads"), ("cpu_qb_recheck", "nfl2k5_cpu_qb_reads"),
+                               ("cpu_qb_tiers", "nfl2k5_cpu_qb_reads"),
                                ("db_ball_play", "nfl2k5_db_ball_play"), ("qb_accuracy", "nfl2k5_qb_accuracy"))},
         "team_number_scale": _core_module("nfl2k5_team_number_scale") is not None
                              and _core_module("nfl2k5_xbe_space") is not None,  # b776-ns1
@@ -2720,6 +2733,7 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
         xbe = None
     for key, module, read in (("cpu_qb_zone_windows", reads, lambda m, x: m.component_status(x, "zone_windows")),
                               ("cpu_qb_recheck", reads, lambda m, x: m.component_status(x, "recheck")),
+                              ("cpu_qb_tiers", reads, lambda m, x: m.component_status(x, "tiers")),
                               ("db_ball_play", ball, lambda m, x: m.status(x))):
         out[key] = "unavailable" if module is None else "unknown" if xbe is None else read(module, xbe)
     accuracy = _core_module("nfl2k5_qb_accuracy")  # b777-qb3
@@ -4067,6 +4081,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                          "and the overlay pins their retail positions. Turn one of them off.")
     for key, label in (("cpu_qb_zone_windows", "CPU QB respects zone defenders"),  # b776-ai2
                        ("cpu_qb_recheck", "CPU QB re-checks his read before throwing"),
+                       ("cpu_qb_tiers", "CPU QB skill tiers"),  # b779-gp1
                        ("db_ball_play", "Defenders break on the thrown ball"),
                        ("qb_accuracy", "Accurate short throws and throws on the run")):  # b777-qb3
         if type(getattr(plan, key)) is not bool:
@@ -4783,7 +4798,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         if hair_state not in ("retail", "applied"):
             raise ValueError("The player models, hair textures or the executable's hair hook are not the supported "
                              "retail or already-styled set. Turn Hair styles off or rebuild from a supported USA source.")
-    if plan.cpu_qb_zone_windows or plan.cpu_qb_recheck or plan.db_ball_play:  # b776-ai2
+    if plan.cpu_qb_zone_windows or plan.cpu_qb_recheck or plan.cpu_qb_tiers or plan.db_ball_play:  # b776-ai2
         _cpu_ai_preflight(plan, source, progress)
     if plan.qb_accuracy:  # b777-qb3: the pass accuracy routine must be retail or this owner, before any write
         _qb_accuracy_preflight(source, progress)
@@ -5339,7 +5354,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         music_shuffle=plan.music_shuffle, practice_squad_screen=plan.practice_squad_screen,
         abilities=plan.abilities, qb_spy=plan.qb_spy, calendar_engine=plan.calendar_engine,
         **tt._r62_space_options(r62), camera=plan.camera,
-        hair_styles=plan.hair_styles, cpu_qb_reads=bool(plan.cpu_qb_zone_windows or plan.cpu_qb_recheck),
+        hair_styles=plan.hair_styles, cpu_qb_reads=bool(plan.cpu_qb_recheck),
         db_ball_play=plan.db_ball_play, play_art_routes=plan.play_art_routes,
         team_number_scale=bool(plan.team_number_scale), run_blocking=plan.run_blocking, pass_protection=plan.pass_protection, pass_rush_stats=plan.pass_rush_stats, return_coverage=plan.return_coverage,
         qb_accuracy=plan.qb_accuracy, modern_force_out=plan.modern_force_out,
@@ -5413,7 +5428,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             qb_spy=plan.qb_spy, qb_spy_intent_table=spy_table,
             calendar_engine=plan.calendar_engine, camera=plan.camera, season_cap=plan.season_cap, practice_squad=plan.practice_squad, franchise_practice=plan.franchise_practice,
             dynamic_kickoff_settings=plan.dynamic_kickoff_settings,
-            hair_styles=plan.hair_styles, cpu_qb_reads=bool(plan.cpu_qb_zone_windows or plan.cpu_qb_recheck),
+            hair_styles=plan.hair_styles, cpu_qb_reads=bool(plan.cpu_qb_recheck),
             db_ball_play=plan.db_ball_play, play_art_routes=plan.play_art_routes,
             team_number_scale=bool(plan.team_number_scale), run_blocking=plan.run_blocking, pass_protection=plan.pass_protection, pass_rush_stats=plan.pass_rush_stats, return_coverage=plan.return_coverage,
             qb_accuracy=plan.qb_accuracy, modern_force_out=plan.modern_force_out,
@@ -6280,7 +6295,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                                  "xbe": {k: v for k, v in hair_xbe_receipt.items() if k != "edits"},
                                  "roster": hair_roster})
         receipt["result"]["hair_styles"] = "applied"
-    if plan.cpu_qb_zone_windows or plan.cpu_qb_recheck or plan.db_ball_play:
+    if plan.cpu_qb_zone_windows or plan.cpu_qb_recheck or plan.cpu_qb_tiers or plan.db_ball_play:
         # b776-ai2: the CPU AI owners are the last executable writers. Their allocations are late owners placed after
         # hair_styles (nfl2k5_xbe_space.LATE_OWNERS), so this step must follow it and nothing else moves.
         _apply_cpu_ai(plan, target, receipt, progress)
