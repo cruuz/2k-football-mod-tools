@@ -249,5 +249,48 @@ class RepairTests(unittest.TestCase):
             hs.team_records = original
 
 
+class SidelineAtlasTests(unittest.TestCase):
+    """b779-vk1: the far/sideline atlas of a slot built from a retail alternate can carry saturated pants (MIN's
+    retail 2004 Alternate 2 away is red). The pants pass must recolour the retail colour family, not only neutral
+    pixels, or the old red survives beside a purple field kit."""
+
+    @staticmethod
+    def atlas(pants):
+        image = np.zeros((128, 256, 4), np.uint8)
+        image[..., 3] = 255
+        image[..., :3] = (80, 40, 130)
+        image[0:90, 0:128, :3] = pants
+        image[0:90, 46:66, :3] = (235, 224, 201)          # the pants stripe
+        image[13:23, 69:85, :3] = (183, 155, 85)          # the maker mark
+        return image
+
+    def test_a_saturated_retail_pants_family_becomes_the_2026_pants_colour(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            equipment = root / "equipment"
+            equipment.mkdir()
+            Image.fromarray(self.atlas((200, 0, 50)), "RGBA").save(equipment / "p8_4001_splayer.png")
+            Image.fromarray(self.atlas((51, 35, 107)), "RGBA").save(equipment / "p8_4000_splayer.png")
+            spec_path = root / "spec.json"
+            spec_path.write_text(json.dumps({
+                "schema": ud.art.SCHEMA, "team": "MIN", "name": "Vikings", "asset_code": "15", "season": 2026,
+                "status": "test", "sources": [], "palette": {}, "marks": {}, "kits": {}, "roster": [],
+                "albedo": {"deep_purple": "#33236B", "deep_helmet": "#241B58", "ivory": "#E9E0C9",
+                           "metal_gold": "#B79B55"}}))
+            spec = ud.art.Spec(spec_path)
+            kit = {"selector": "15H6", "outer_index": 4001,
+                   "splayer": {"torso_donor_outer": 4000, "sleeve_from_donor": False, "recolour": []},
+                   "torso": {"base_colour": "deep_purple"},
+                   "sleeve": {"base_colour": "deep_purple"},
+                   "pants": {"base_colour": "deep_purple", "stripe": [["ivory", 4]]},
+                   "socks": {"colour": "deep_purple"},
+                   "helmet": {"shell": "deep_helmet"}}
+            master = ud.art.author_splayer(spec, kit, equipment, root / "marks")
+            out = ud.art.downscale(master)
+            pants = np.round(np.median(out[10:80, 5:40, :3].reshape(-1, 3), axis=0) * 255).astype(int)
+            self.assertLess(int(np.abs(pants - np.array([51, 35, 107])).max()), 8,
+                            f"retail red survived the pants pass: {pants}")
+
+
 if __name__ == "__main__":
     unittest.main()

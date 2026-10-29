@@ -1433,9 +1433,16 @@ def author_splayer(spec: Spec, kit: dict, equipment: Path, marks: Path) -> np.nd
     pants_box = _box(shape, SPLAYER["pants"])
     ref = np.median(target[10:80, 5:40, :3].reshape(-1, 3), axis=0)
     pant = spec.colour(kit["pants"]["base_colour"])
-    # every neutral (low-saturation) pixel of the pant leg is fabric, whatever its shade; the belt strip on top stays
+    # every neutral (low-saturation) pixel of the pant leg is fabric, whatever its shade, and so is every shaded
+    # version of the retail fabric colour itself: a retail alternate's pants need not be neutral (MIN's 2004
+    # Alternate 2 away is red), and a neutral-only mask left those old colours on the sideline player.
     sat = rgbv.max(axis=2) - rgbv.min(axis=2)
-    fabric = smooth_threshold(1.0 - np.clip(sat / 0.25, 0.0, 1.0), 0.2, 0.7) * pants_box
+    neutral = smooth_threshold(1.0 - np.clip(sat / 0.25, 0.0, 1.0), 0.2, 0.7)
+    luma = rgbv @ LUMA
+    k = np.clip(luma / max(float(ref @ LUMA), 1e-3), 0.0, 2.5)
+    distance = np.linalg.norm(rgbv - ref[None, None, :] * k[..., None], axis=2)
+    family = smooth_threshold(np.clip(1.0 - distance / 0.18, 0.0, 1.0), 0.3, 0.7)
+    fabric = np.clip(neutral + family, 0.0, 1.0) * pants_box
     fabric *= 1.0 - _box(shape, (0, 0, 128, 6))
     kp = shade_ratio(rgbv.mean(axis=2) / max(float(ref.mean()), 1e-3), pant)[..., None]
     rgbv[:] = rgbv * (1 - fabric[..., None]) + np.clip(pant[None, None, :] * kp, 0, 1) * fabric[..., None]
