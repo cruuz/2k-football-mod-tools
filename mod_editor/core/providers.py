@@ -838,6 +838,8 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_coach_ai_code.py": "5f42221d20454018f74430fa2fff8c1987143536549ce7dd52b55f00b0975afa",
         "mod_editor/core/nfl2k5_vip.py": "0b736632d4b7761bd45317e1abea29f89fb728a270a27343eef1e1d1d80bc64f",
         "mod_editor/core/nfl2k5_coach_diversity.py": "a56f23767967090df58f4da16ebc9d5d66d713f12628da5da241a1f36104aa53",
+        "mod_editor/core/nfl2k5_defense_calls.py": "24101801896efc6667c7be3b787fa1fe9044a0679dda85a5f1d72ae6b56e9302",
+        "mod_editor/core/nfl2k5_defense_rings.py": "07f33943226aa848a299c47a9284ece043d768787b5234aadb82fc6c4394ce0d",
         "mod_editor/core/nfl2k5_playbook_pair.py": "4965a39ce7e651b05896d76567c1cf9662ef8ef8f9ced30d0c41e3f0b930888d",
         "mod_editor/core/nfl2k5_playbook_pair_code.py": "78e97a0ce01e49af9a22c59d540ea8121097ae26c31f6650983baa7a945969ae",
         "mod_editor/core/nfl2k5_playbook_route_writer.py": "87ac9ab729e15c665774223c406a248931b77a05ca2fa258b04e1f0cd06674c5",
@@ -1055,6 +1057,7 @@ class Nfl2k5UnifiedVisualProvider:
     data_pins: Mapping[str, str] = {
         "data/vip/coach_sources_2026.json": "54fac5e396a2d76c574d63b94217261c58ef2dbfa4f1906fbbade6e7951c9b63",
         "data/vip/coach_portraits_2026.json": "aa398aa7b0e695c73b4a809ba5886bb7df95d1c4173adb00f542d6fd0ccfebe1",
+        "data/vip/defense_identity_2026.json": "12e2bcc1b7ede02dcac2d2f43351c7985e88ab4a62ad908d900168b4009a55e7",
         "data/vip/coaches/ARI.json": "f05194553bd87ea58fd07e8c32a0f6c127ab72c84b337ce23fb28e88adf6bb25",
         "data/vip/coaches/ATL.json": "47b81905bbcf74fd0fb3e70098e81191d17a47f0c332a2a2f7f9fc2f41f81713",
         "data/vip/coaches/BAL.json": "3fb8a696df304884656d0c291ef07cc0ec3d29779433e2b2678cf2a2868db404",
