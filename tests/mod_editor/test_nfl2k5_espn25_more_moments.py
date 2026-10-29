@@ -382,6 +382,20 @@ class RetailCompileTests(unittest.TestCase):
                              - {p.record.position_name for p in rr.RosterDocument(raw[32:]).players
                                 if p.record.position_name != "OLB"})
 
+    def test_moment_team_files_carry_the_franchise_style_table(self):
+        """The SITU kit index is chosen against the main roster's franchise style pairs; the game resolves that index
+        against the moment team file, so the compiled file must carry the same 14 pairs. The template's own pairs
+        name a different era (e.g. the 2000 Ravens template says 1997-1999 for style 1, the era kit's label is
+        2008-2025). The kit art is keyed by the style index and does not move."""
+        colleges = rr.RosterDocument(self.main[32:]).colleges
+        for key, filename, entry, selector, identity in mm.table_entries(self.data):
+            pairs = mm.franchise_style_pairs(self.main, TEAMS[key]["asset_code"])
+            raw = mm.compile_team(self.templates[key], self.data.teams[key], self.data.rosters[key], colleges,
+                                  identity, uniform_pairs=pairs)
+            doc = rr.RosterDocument(raw[32:])
+            team = doc.teams[0]
+            self.assertEqual(raw[32 + team.offset + 0x15A:32 + team.offset + 0x15A + 56], pairs, key)
+
     def test_special_teams_are_chosen_from_the_new_roster(self):
         """The six team-record special-teams bytes (slot indexes) point at this roster's own players."""
         colleges = rr.RosterDocument(self.main[32:]).colleges
