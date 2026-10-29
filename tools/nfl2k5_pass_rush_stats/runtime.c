@@ -66,7 +66,7 @@ typedef struct {
     u32 live;          /* a played-game event happened since the last play-log reset */
     u32 throws, sacks, sheds, credits;   /* diagnostics (played events seen) */
     u32 last_defenders;                  /* defenders scanned at the last throw */
-    u32 last_min_mm;                     /* nearest defender at the last throw, mm */
+    u32 last_min_mm;                     /* nearest defender at the last throw, game units (cm: 91.44 a yard) */
     u32 commits;                         /* players committed (diagnostic) */
     u32 rng;                             /* draw state while committing a simulated game */
     u8 cnt[NCODE][NSTAT];

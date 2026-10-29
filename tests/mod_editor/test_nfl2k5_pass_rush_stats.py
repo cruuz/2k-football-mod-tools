@@ -26,7 +26,7 @@ from mod_editor.core.nfl2k5_cave_oracle import XbeImage  # noqa: E402
 HAVE_UC = importlib.util.find_spec("unicorn") is not None
 OFFENSE_TEAM, DEFENSE_TEAM = 0x00E5FC20, 0x00E5FC60
 SIDE0, SIDE1, REC = 0x00B30C4C, 0x00B321A0, 0x54
-YD = 914.4
+YD = 91.44           # game positions are centimetres
 
 
 def retail():
@@ -225,7 +225,7 @@ class PlayedTests(unittest.TestCase):
         self.assertEqual(self.g.counts(self.g.pcode(1, 7)), [0, 0, 0, 0, 0])
         self.assertEqual(self.g.counts(self.g.pcode(0, 30)), [0, 0, 1, 1, 0])
         self.assertEqual(self.g.diag("last_defenders"), 3)
-        self.assertAlmostEqual(self.g.diag("last_min_mm"), 0.6 * YD, delta=2)
+        self.assertAlmostEqual(self.g.diag("last_min_mm"), 0.6 * YD, delta=1)
         del sp
 
     def test_a_shed_from_an_earlier_play_is_not_charged(self):

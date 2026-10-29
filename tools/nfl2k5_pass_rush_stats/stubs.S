@@ -140,8 +140,8 @@ prs_card_def:
     ret 4
 
     .balign 4
-prs_hurry_mm2:     .float 3344509.0      /* (1828.8 mm = 2 yd)^2: a defender this close at the release hurried */
-prs_hit_mm2:       .float 836127.0       /* (914.4 mm = 1 yd)^2: this close at the release hit the passer */
+prs_hurry_mm2:     .float 33445.09       /* (182.88 cm = 2 yd)^2: a defender this close at the release hurried */
+prs_hit_mm2:       .float 8361.27        /* (91.44 cm = 1 yd)^2: this close at the release hit the passer */
 prs_rush_share:    .float 0.71           /* simulated: hurries + knockdowns per pressure (PFR: sacks 0.29) */
 prs_hit_share:     .float 0.53           /* simulated: knockdowns per non-sack pressure (PFR 0.37 / 0.70) */
 prs_ol_per_game:   .float 4.3            /* simulated: non-sack pressures charged to the line a game */
