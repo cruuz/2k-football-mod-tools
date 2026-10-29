@@ -558,6 +558,14 @@ def check_context(payload, edits, *, installed=False):
         legacy.require(economy.status(payload) in ("applied", "legacy"), "foreign initial-cap economy companion")
         cap_after = next(s.patched for s in economy.sites() if s.va == cap_va)
         camera_edits.append(("economy_initial_cap", cap_va, cap_before, cap_after))
+    # b779 ag1: economy revision 4 (rc1) jumps the native cut-down 0x2BF9A0, which MyCareer's signing room calls, to
+    # economy_smart_cut (same contract: fastcall team, target). Accept that exact jump only after the complete economy
+    # owner validates, then restore the retail first instruction in this hash view.
+    cut_before = bytes.fromhex("83ec545556")
+    if image.read(economy.SMART_CUT, len(cut_before)) != cut_before:
+        legacy.require(economy.status(payload) in ("applied", "legacy"), "foreign cut-down economy companion")
+        cut_after = next(s.patched for s in economy.sites() if s.va == economy.SMART_CUT)
+        camera_edits.append(("economy_smart_cut", economy.SMART_CUT, cut_before, cut_after))
     # The optional dated pick owner shares this initializer. Normalize only
     # its exact hook after its complete allocation, code and contexts validate.
     # It does not call MyCareer validation, so this introduces no guard cycle.

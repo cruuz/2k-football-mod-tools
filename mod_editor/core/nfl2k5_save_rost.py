@@ -374,8 +374,8 @@ def decode(payload: bytes | bytearray, *, preamble: int | None = None,
                 _require(end <= len(data), 'truncated declared ROST resource')
             else:
                 wrapper = None
-                expected = {0: (0x91020,), 1: (0x92020,), 17: (0x90F60,),
-                            18: (0x92040, 0xB0040)}[version]
+                from . import nfl2k5_roster_arena as _arena
+                expected = _arena.BARE_BODY_SIZES[version]
                 _require(base == 0 and len(data) in expected, 'unframed ROST has unknown boundaries')
                 end = len(data)
             candidates.append(SaveRost(data, Layout(version, wrapper, base, root, end),

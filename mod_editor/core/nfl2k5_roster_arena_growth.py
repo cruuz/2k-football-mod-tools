@@ -23,6 +23,10 @@ REQUESTS = ((OWNER, 'code', CODE_SIZE, 16),)
 OPTION_OFFSET = (len(assembly.CODE) + 3) & ~3
 CAPACITY_OPTION_OFFSET = (len(assembly.CAPACITY_CODE) + 3) & ~3
 CAPACITY_FLAG = 0x200
+# b779 ag1: an already built beta-78 executable carries the 0xB0000 capacity runtime (frozen in
+# nfl2k5_roster_arena_code_b78). It is recognized (status, settings, the retail projection other owners validate
+# against) but never installed; the flag below only marks it in _owned_state's answer, it is not an option word.
+LEGACY_FLAG = 0x10000
 RESOURCE_BODY_LIMIT = arena.ARENA_SIZE + 0x40
 CAPACITY_RESOURCE_BODY_LIMIT = arena.CAPACITY_ARENA_SIZE + 0x40
 # The disc ROST handler C1EA0 reads the declared body size (resource header +4) into EDI and
@@ -84,17 +88,29 @@ def allocation(payload):
     return result
 
 
-def code_for(va, flags):
+def _legacy():
+    from . import nfl2k5_roster_arena_code_b78 as legacy
+    return legacy
+
+
+def code_for(va, flags, legacy=False):
     capacity = bool(flags & CAPACITY_FLAG)
     options(bool(flags & 0x100), flags & 255, capacity)
     require(flags & ~0x302 == 0, 'unknown arena executable options')
-    blob = assembly.CAPACITY_CODE if capacity else assembly.CODE
-    option_offset = CAPACITY_OPTION_OFFSET if capacity else OPTION_OFFSET
+    require(not legacy or capacity, 'only the capacity runtime has a beta-78 form')
+    if legacy:
+        old = _legacy()
+        blob, relocations = old.LEGACY_CAPACITY_CODE, old.LEGACY_CAPACITY_RELOCATIONS
+        option_offset = (len(blob) + 3) & ~3
+    else:
+        blob = assembly.CAPACITY_CODE if capacity else assembly.CODE
+        relocations = assembly.CAPACITY_RELOCATIONS if capacity else assembly.RELOCATIONS
+        option_offset = CAPACITY_OPTION_OFFSET if capacity else OPTION_OFFSET
     out = bytearray(blob)
     out.extend(b'\xcc' * (option_offset - len(out)))
     out.extend(struct.pack('<I', flags))
     symbols = {'code': va, 'arena_options': va + option_offset, '': 0}
-    for off, kind, symbol, value in (assembly.CAPACITY_RELOCATIONS if capacity else assembly.RELOCATIONS):
+    for off, kind, symbol, value in relocations:
         addend = struct.unpack_from('<I', out, off)[0]
         target = symbols[symbol] + value + addend
         if kind == 2:
@@ -123,12 +139,13 @@ def _my_career_present(payload):
         return False
 
 
-def sites(va, capacity=False, my_career=False):
+def sites(va, capacity=False, my_career=False, legacy=False):
     from . import nfl2k5_practice_reserves as pr
-    labels = {name: va + offset for name, offset in
-              (assembly.CAPACITY_LABELS if capacity else assembly.LABELS).items()}
-    arena_size = arena.CAPACITY_ARENA_SIZE if capacity else arena.ARENA_SIZE
-    block_offset = arena.CAPACITY_BLOCK_OFFSET if capacity else arena.BLOCK_OFFSET
+    table = (_legacy().LEGACY_CAPACITY_LABELS if legacy else
+             assembly.CAPACITY_LABELS if capacity else assembly.LABELS)
+    labels = {name: va + offset for name, offset in table.items()}
+    arena_size = (arena.LEGACY_CAPACITY_ARENA_SIZE if legacy else
+                  arena.CAPACITY_ARENA_SIZE if capacity else arena.ARENA_SIZE)
     result = []
     for old_name, new_name in BRIDGES.items():
         address = ps.SYMBOLS[old_name]
@@ -222,22 +239,24 @@ def _owned_state(payload):
                 require(image.read(address, len(before)) == before, 'arena hook with empty allocation')
         require(ps._base_status(payload) != 'foreign', 'reserve bridge installed with empty arena allocation')
         return 'retail', site, None
-    for capacity, offset in ((False, OPTION_OFFSET), (True, CAPACITY_OPTION_OFFSET)):
+    legacy_offset = (len(_legacy().LEGACY_CAPACITY_CODE) + 3) & ~3
+    for capacity, offset, legacy in ((False, OPTION_OFFSET, False), (True, CAPACITY_OPTION_OFFSET, False),
+                                     (True, legacy_offset, True)):
         if offset + 4 > CODE_SIZE:
             continue
         flags = struct.unpack_from('<I', blob, offset)[0]
         if flags & ~0x302 or bool(flags & CAPACITY_FLAG) != capacity:
             continue
         try:
-            candidate = code_for(site['va'], flags)
+            candidate = code_for(site['va'], flags, legacy)
         except ValueError:
             continue
         if blob == candidate:
-            all_edits = sites(site['va'], capacity, False)
-            status_edits = sites(site['va'], capacity, my_career)
+            all_edits = sites(site['va'], capacity, False, legacy)
+            status_edits = sites(site['va'], capacity, my_career, legacy)
             _check_guards(image, all_edits, payload, my_career)
             require(rdata.status(payload, status_edits) == 'applied', 'mixed arena runtime bridges/hooks')
-            return 'applied', site, flags
+            return 'applied', site, flags | (LEGACY_FLAG if legacy else 0)
     require(False, 'foreign arena runtime code/options')
 
 
@@ -251,7 +270,7 @@ def project(payload):
         return payload
     out = bytearray(payload)
     capacity = bool(flags & CAPACITY_FLAG)
-    for _, address, before, _after in sites(site['va'], capacity, False):
+    for _, address, before, _after in sites(site['va'], capacity, False, bool(flags & LEGACY_FLAG)):
         at = rdata.offset_of(payload, address)
         out[at:at + len(before)] = before
     for section in _sections(out):
@@ -275,8 +294,11 @@ def read_settings(payload):
     if state != 'applied':
         return {'status': state, 'reserves_16': False, 'created_teams_extra': 0, 'capacity': False}
     flags = _owned_state(payload)[2]
+    legacy = bool(flags & LEGACY_FLAG)
     return {'status': state, 'reserves_16': bool(flags & 0x100), 'created_teams_extra': flags & 255,
-            'capacity': bool(flags & CAPACITY_FLAG)}
+            'capacity': bool(flags & CAPACITY_FLAG), 'legacy_capacity': legacy,
+            'arena_size': (arena.LEGACY_CAPACITY_ARENA_SIZE if legacy else
+                           arena.CAPACITY_ARENA_SIZE if flags & CAPACITY_FLAG else arena.ARENA_SIZE)}
 
 
 def apply(payload, *, reserves_16=True, created_teams_extra=0, capacity=False):
@@ -296,7 +318,9 @@ def apply(payload, *, reserves_16=True, created_teams_extra=0, capacity=False):
     common['save_path_shims'] = bool(capacity and not my_career)
     common['my_career_companion'] = bool(capacity and my_career)
     if state == 'applied':
-        require(_owned_state(payload)[2] == flags, 'arena options differ; rebuild from original')
+        owned = _owned_state(payload)[2]
+        require(not owned & LEGACY_FLAG, 'a beta-78 capacity runtime (0xB0000) is installed; rebuild from the original')
+        require(owned == flags, 'arena options differ; rebuild from original')
         return payload, {**common, 'already_applied': True, 'changed_bytes': 0}
     # Validate the full input before constructing any candidate. Each dependency
     # also pins complete foreign/mixed states, and all operations are copy-only.

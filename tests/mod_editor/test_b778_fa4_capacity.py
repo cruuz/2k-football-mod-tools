@@ -1,4 +1,7 @@
-"""b778 fa4: capacity-grown ROST arena (0xB0000) and the 561-candidate free-agent plan.
+"""b778 fa4: capacity-grown ROST arena and the 561-candidate free-agent plan.
+
+b779 ag1: the arena is nfl2k5_roster_arena.CAPACITY_ARENA_SIZE (0xCA000; beta-78 shipped 0xB0000) and the growth
+appends free draft-class records after the create vacancies until the primary pool holds 4,096 records.
 
 Private fixtures are skipped when absent; every structural claim runs on the real writer/codec.
 """
@@ -62,13 +65,30 @@ class CapacityMigrationTests(unittest.TestCase):
         doc = codec.decode(self.grown)
         self.assertEqual(doc.layout.version, 18)
         self.assertEqual(doc.layout.arena_size, arena.CAPACITY_ARENA_SIZE)
-        self.assertEqual(doc.tables['primary'].count, 2619 + RECORDS)
+        added = self.receipt['class_records']
+        self.assertEqual(added, arena.CAPACITY_PRIMARY_LIMIT - 2619 - RECORDS)       # 865 for the disc base
+        self.assertEqual(doc.tables['primary'].count, 2619 + RECORDS + added)
+        self.assertEqual(doc.tables['primary'].count, arena.CAPACITY_PRIMARY_LIMIT)
         self.assertEqual(doc.tables['primary'].count, self.receipt['primary_after'])
         self.assertEqual(doc.overflow.reserves_enabled, False)
         self.assertEqual(arena.capacity_descriptor(self.grown, doc.layout),
-                         (RECORDS, self.receipt['names_start'] - RECORDS * 84))
+                         (RECORDS + added, self.receipt['names_start'] - (RECORDS + added) * 84))
         self.assertEqual(len(self.grown), arena.CAPACITY_ARENA_SIZE + 0x40)
+        # the class records are not Create Player vacancies: the vacancies are exactly the retail ones plus RECORDS
         self.assertEqual(spare.import_vacancies(self.grown), 155 + RECORDS)
+        self.assertEqual(arena.capacity_class_count(self.grown, doc.layout), added)
+        primary = doc.tables['primary']
+        for index in range(primary.count - added, primary.count):
+            at = primary.offset + index * 84
+            self.assertEqual(self.grown[at + 8], 0)                       # free for the class (flags & 5 == 0)
+            self.assertIsNotNone(doc.rel(at))                             # the window's college, never null
+            self.assertIsNone(doc.rel(at + 0x2C))                         # no history stream
+            first, last = doc.rel(at + 0x10), doc.rel(at + 0x14)
+            self.assertEqual(last, first + 34)
+            self.assertEqual(self.grown[first:first + 68], bytes(68))     # private empty names
+        self.assertLessEqual(self.receipt['names_end'], doc.layout.root + arena.CAPACITY_BLOCK_OFFSET - 16)
+        # the history pool keeps its 50,000 words
+        self.assertEqual(doc.pool_capacity, 50000)
         # A disc resource grows from a disc resource; the retail-geometry inspectors get it back byte for byte.
         source = b'ROST' + struct.pack('<7I', len(self.base), len(self.base), 0, 0, 0, 0, 0) + self.base
         grown, _ = arena.migrate(source, reserves_16=False, capacity_records=RECORDS)
@@ -126,7 +146,7 @@ class CapacityMigrationTests(unittest.TestCase):
                                       scheme='one_pool')
         self.assertEqual(len(body), len(grown))
         final = rr.RosterDocument(body, scheme='one_pool', reference_year=2026)
-        self.assertEqual(len(final.by_pool('primary')), 2619 + records)
+        self.assertEqual(len(final.by_pool('primary')), arena.CAPACITY_PRIMARY_LIMIT)     # vacancies + class records
         self.assertEqual(len(final.free_agents), 346 + CANDIDATES)
         vacancies = spare.import_vacancies(body)
         self.assertEqual(vacancies, receipt['roster_refresh']['import_floor']['vacancies_after'])
@@ -174,7 +194,9 @@ class CapacityMigrationTests(unittest.TestCase):
         doc = codec.decode(grown)
         self.assertEqual(doc.layout.version, 1)
         self.assertEqual(doc.layout.arena_size, arena.CAPACITY_ARENA_SIZE)
-        self.assertEqual(doc.tables['primary'].count, 2479 + RECORDS)
+        self.assertEqual(doc.tables['primary'].count, 2479 + RECORDS + receipt['class_records'])
+        self.assertLessEqual(doc.tables['primary'].count, arena.CAPACITY_PRIMARY_LIMIT)
+        self.assertGreater(receipt['class_records'], 0)
         self.assertEqual(struct.unpack_from('<I', grown, 0x2E8)[0], 366)
         self.assertEqual(grown[0x320 + arena.CAPACITY_ARENA_SIZE - 366:0x320 + arena.CAPACITY_ARENA_SIZE],
                          original[0x91320 - 366:0x91320])
@@ -198,15 +220,20 @@ class CapacityMigrationTests(unittest.TestCase):
             self.assertTrue(rr.verify_extra(reopened.savegame, reopened.members[reopened.extra_name]))
             cold, _ = codec.load_save(target)
             self.assertEqual(cold.layout.arena_size, arena.CAPACITY_ARENA_SIZE)
-            self.assertEqual(cold.tables['primary'].count, 2479 + RECORDS)
+            self.assertEqual(cold.tables['primary'].count, 2479 + RECORDS + receipt['class_records'])
             self.assertEqual(fs.FranchiseSave(cold.to_bytes()).header, fs.FranchiseSave(original).header)
 
     def test_sizes_match_the_save_writer_and_container(self):
         self.assertEqual(arena.CAPACITY_ARENA_SIZE - arena.RETAIL_SIZE, save_writer.CAPACITY_SAVE_GROWTH)
         self.assertEqual(save_writer.CAPACITY_SAVE_SIZE, 720044 + save_writer.CAPACITY_SAVE_GROWTH)
         self.assertEqual(arena.CAPACITY_BLOCK_OFFSET, arena.CAPACITY_ARENA_SIZE - 0x400)
-        self.assertEqual(arena.CAPACITY_ARENA_SIZE + 0x60, 0xB0060)
-        self.assertEqual(arena.CAPACITY_ARENA_SIZE + 0x40, 0xB0040)
+        self.assertEqual(arena.CAPACITY_ARENA_SIZE + 0x60, arena.disc_resource_size())
+        self.assertEqual(save_writer.CAPACITY_SAVE_SIZE, arena.save_size())
+        # beta-78's geometry stays readable: these are the shipped v0.7 numbers
+        self.assertEqual((arena.LEGACY_CAPACITY_ARENA_SIZE, arena.LEGACY_CAPACITY_SAVE_SIZE,
+                          arena.disc_resource_size(arena.LEGACY_CAPACITY_ARENA_SIZE)), (0xB0000, 847020, 0xB0060))
+        self.assertEqual((arena.CAPACITY_ARENA_SIZE, arena.CAPACITY_SAVE_SIZE), (0xCA000, 953516))
+        self.assertEqual(save_writer.CAPACITY_SAVE_SIZES, (847020, 953516))
 
 
 @unittest.skipUnless(XBE.is_file(), 'pinned USA XBE required for the capacity image build')

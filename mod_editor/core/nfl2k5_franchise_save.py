@@ -363,9 +363,7 @@ class FranchiseSave:
         elif self.ppg_offset is not None:
             raise FranchiseSaveError("unsupported franchise container length before the Player Progress footer")
         from . import nfl2k5_roster_arena as arena
-        capacity_growth = arena.CAPACITY_ARENA_SIZE - arena.RETAIL_SIZE
-        _require(native_size in (FRANCHISE_SAVE_SIZE, FRANCHISE_SAVE_SIZE + 0x1000,
-                                 FRANCHISE_SAVE_SIZE + capacity_growth),
+        _require(native_size in (FRANCHISE_SAVE_SIZE, FRANCHISE_SAVE_SIZE + 0x1000) + arena.CAPACITY_SAVE_SIZES,
                  f"unsupported franchise container length: {len(data):,}; expected a 720,044-byte "
                  "native save, the 724,140-byte 16-reserve save or the capacity-grown save, optionally "
                  "followed by a 128-byte career block")

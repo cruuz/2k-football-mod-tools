@@ -23,13 +23,14 @@ REL_BODY = Path(os.environ.get("B779_HN1_REL_ROSTER",
 
 
 def synthetic_body(size: int = 0xB0040) -> bytes:
-    """A roster body ending like the Studio's arena: the reserve block, 448 spare zero bytes, the game's 224-byte tail."""
+    """A roster body ending like a franchise save's arena: the reserve block, free zero bytes, then the save's 366-byte
+    auxiliary tail (the last bytes of the arena)."""
 
     body = bytearray(size)
     start = size - 0x400
     body[start:start + 8] = history.RESERVE_MAGIC
     body[start + 8:start + 352] = bytes((i % 251) + 1 for i in range(344))
-    body[start + 800:] = bytes(((i * 3) % 255) + 1 for i in range(224))
+    body[-366:] = bytes(((i * 3) % 255) + 1 for i in range(366))
     return bytes(body)
 
 
@@ -46,7 +47,8 @@ class DataTests(unittest.TestCase):
             self.assertTrue(set(row["sources"]) <= set(data["sources"]) and row["sources"], row["super_bowl"])
             self.assertGreater(row["champion_points"], row["runner_up_points"], row["super_bowl"])
             self.assertNotEqual(row["champion"], row["runner_up"])
-            self.assertTrue(row["super_bowl_mvp"] and row["season_mvp"], row["super_bowl"])
+            self.assertTrue(row["super_bowl_mvp"] and row["season_mvp"], row["super_bowl"])        # the data is complete;
+            # the arena keeps the Super Bowl MVP of every season and the season MVP of the newest only
 
     def test_well_known_games(self):
         by = {r["super_bowl"]: r for r in history.load()["seasons"]}
@@ -107,11 +109,11 @@ class PackingTests(unittest.TestCase):
         self.assertEqual(history.split_name("Cooper Kupp"), ("Cooper", "Kupp"))
 
     def test_entries_and_block(self):
-        e = history.entry_bytes(60, 27, 21, 29, 13, ("Kenneth Walker III", "HB"), ("Matthew Stafford", "QB"), 23)
+        e = history.entry_bytes(60, 27, 21, 29, 13, ("Kenneth Walker III", "HB"))
         self.assertEqual(len(e), history.ENTRY)
-        block = history.block_bytes({60: e})
+        block = history.block_bytes({60: e}, history.mvp_slot(60, ("Matthew Stafford", "QB"), 23))
         self.assertEqual(len(block), history.USED)
-        self.assertEqual(block[:10], b"2K5CHMP\0\x01\x16")
+        self.assertEqual(block[:10], b"2K5CHMP\0\x02\x16")
         rows = history.read_block(block)
         self.assertEqual(rows, [{"super_bowl": 60, "champion": 27, "runner_up": 21, "champion_points": 29,
                                  "runner_up_points": 13,
@@ -120,9 +122,9 @@ class PackingTests(unittest.TestCase):
                                  "season_mvp_club": 23}])
 
     def test_checks_make_damage_read_as_empty(self):
-        e = history.entry_bytes(60, 27, 21, 29, 13, None, None, None)
+        e = history.entry_bytes(60, 27, 21, 29, 13, None)
         block = bytearray(history.block_bytes({60: e}))
-        for at in (0, 8, 9, 12, history.ENTRIES_AT + (60 % 22) * 19 + 2, history.USED - 1):
+        for at in (0, 8, 9, 12, history.ENTRIES_AT + (60 % 22) * history.ENTRY + 2, history.USED - 1):
             damaged = bytearray(block)
             damaged[at] ^= 0x40
             self.assertEqual(history.read_block(bytes(damaged)), [], at)
@@ -130,14 +132,15 @@ class PackingTests(unittest.TestCase):
         self.assertEqual(history.read_block(b"short"), [])
         # an entry stored in the wrong ring slot is skipped even with a good checksum
         wrong = bytearray(block)
-        slot = history.ENTRIES_AT + (60 % 22) * 19
-        wrong[history.ENTRIES_AT + 3 * 19:history.ENTRIES_AT + 4 * 19] = wrong[slot:slot + 19]
-        wrong[slot:slot + 19] = bytes(19)
+        n = history.ENTRY
+        slot = history.ENTRIES_AT + (60 % 22) * n
+        wrong[history.ENTRIES_AT + 3 * n:history.ENTRIES_AT + 4 * n] = wrong[slot:slot + n]
+        wrong[slot:slot + n] = bytes(n)
         wrong[12:16] = history.checksum(bytes(wrong)).to_bytes(4, "little")
         self.assertEqual(history.read_block(bytes(wrong)), [])
 
     def test_the_ring_keeps_22(self):
-        entries = {n: history.entry_bytes(n, n % 32, (n + 1) % 32, n % 60, 3, None, None, None) for n in range(1, 60)}
+        entries = {n: history.entry_bytes(n, n % 32, (n + 1) % 32, n % 60, 3, None) for n in range(1, 60)}
         rows = history.read_block(history.block_bytes(entries))
         self.assertEqual([r["super_bowl"] for r in rows], list(range(59, 37, -1)))
         self.assertEqual(len(rows), history.RING)
@@ -147,8 +150,10 @@ class SeedTests(unittest.TestCase):
     def test_the_seeds_are_the_newest_22_before_2026(self):
         entries = history.entries_for(history.load())
         self.assertEqual(sorted(entries), list(range(39, 61)))
-        rows = history.read_block(history.block_bytes(entries))
+        rows = history.read_block(history.seeded_block())
         self.assertEqual([r["super_bowl"] for r in rows], list(range(60, 38, -1)))
+        self.assertEqual(rows[0]["season_mvp"], {"initial": "M", "last": "STAFFORD", "position": "QB"})
+        self.assertTrue(all(r["season_mvp"] is None for r in rows[1:]))
         self.assertEqual(rows[0]["champion"], history.CLUBS.index("Seahawks"))
         self.assertEqual(rows[0]["runner_up"], history.CLUBS.index("Patriots"))
 
@@ -160,7 +165,8 @@ class SeedTests(unittest.TestCase):
         self.assertEqual((receipt["newest_super_bowl"], receipt["oldest_super_bowl"]), (60, 39))
         diff = [i for i in range(len(body)) if body[i] != out[i]]
         self.assertTrue(diff and all(at <= i < at + history.USED for i in diff))
-        self.assertEqual(out[at + history.USED:at + history.SPARE], bytes(history.SPARE - history.USED))
+        self.assertEqual(out[at + history.USED:at + history.FREE], bytes(history.FREE - history.USED))
+        self.assertEqual(out[-366:], body[-366:])                       # the auxiliary tail is untouched
         self.assertEqual(len(history.read_body(out)), 22)
         again, receipt2 = history.apply_body(out)                       # idempotent
         self.assertEqual(again, out)

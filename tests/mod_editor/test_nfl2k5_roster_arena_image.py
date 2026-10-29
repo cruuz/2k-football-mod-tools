@@ -142,7 +142,11 @@ class PairedArchiveTests(unittest.TestCase):
                                      created_teams_extra=0, capacity_records=612)
         self.assertEqual(writer.image_status(destination), 'applied')
         self.assertEqual(receipt['verification']['status'], 'verified')
-        self.assertEqual(receipt['rost']['capacity_records'], 612)
+        # b779 ag1: 612 create vacancies, then free draft-class records up to what the arena holds (4,096 at most)
+        self.assertEqual(receipt['rost']['vacancy_records'], 612)
+        added = receipt['rost']['class_records']
+        self.assertGreater(added, 0)
+        self.assertEqual(receipt['rost']['capacity_records'], 612 + added)
         self.assertEqual(receipt['rost']['arena_size'], arena.CAPACITY_ARENA_SIZE)
         self.assertEqual(receipt['xbe']['capacity'], True)
         with archive.Disc(destination, descriptors=()) as disc:
@@ -152,7 +156,8 @@ class PairedArchiveTests(unittest.TestCase):
             resource = disc.read_entry_range(entry, 0, entry.size)
             grown = decode(resource)
             self.assertEqual(grown.layout.arena_size, arena.CAPACITY_ARENA_SIZE)
-            self.assertEqual(grown.tables['primary'].count, 2479 + 612)
+            self.assertEqual(grown.tables['primary'].count, 2479 + 612 + added)
+            self.assertLessEqual(grown.tables['primary'].count, arena.CAPACITY_PRIMARY_LIMIT)
             self.assertIsNotNone(arena.capacity_descriptor(resource, grown.layout))
         self.assertEqual(self.before, archive.file_hash(self.source))
 

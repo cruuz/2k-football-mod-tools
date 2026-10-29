@@ -1,5 +1,6 @@
 """Synthetic migration, history ownership, signing and Studio command regressions."""
 import copy
+import datetime as dt
 import json
 import os
 from pathlib import Path
@@ -12,12 +13,15 @@ import zlib
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
+from mod_editor.core import nfl2k5_franchise_save as fs
 from mod_editor.core import nfl2k5_franchise_upgrade as up
+from mod_editor.core import nfl2k5_roster_arena as arena
 from mod_editor.core import nfl2k5_save_rost as sr
 from mod_editor.core import nfl2k5_roster_records as rr
 from mod_editor.core import nfl2k5_franchise_upgrade_io as service
 from tests.mod_editor.test_nfl2k5_franchise_save import synthetic_franchise
-from tests.mod_editor.test_nfl2k5_team_history import entry
+from tests.mod_editor.test_nfl2k5_roster_records import synthetic_save_v0
+from tests.mod_editor.test_nfl2k5_team_history import PLAYERS_OFF, entry, games, synthetic_body
 
 
 def fixture(*, current=False, shared=False):
@@ -44,6 +48,47 @@ def fixture(*, current=False, shared=False):
         if current:
             data[player.offset + 0x25] += 1
     return bytes(data), cohort
+
+
+CAPACITY_TOTAL = arena.LEGACY_CAPACITY_SAVE_SIZE      # 847,020: tc2's fixture is a beta-78 / v0.7 save
+BLANK = "****************"
+
+
+def capacity_fixture(*, first="Test", last="Player", birth=dt.date(1980, 1, 1), count=5,
+                     slots=(1, 2, 3, 4), year_field=1, disc_team=True):
+    """A synthetic franchise grown to the v0.7 capacity arena, plus a disc body whose same player has
+    the last season's club (SF) in history. The save's 2026 row must stay without a TEAM word."""
+    pattern = BLANK.encode("utf-16le") + b"\0\0"
+
+    def save(disc=False):
+        extra = [entry(slots[-1], 87, 1)] if disc and disc_team else []
+        stream = games(list(slots), extra=extra)
+        players = [
+            {"first": first, "last": last, "birth": birth, "position": 0, "count": count,
+             "stream": stream},
+            {"first": BLANK, "last": BLANK, "birth": None, "position": 0, "count": 0, "stream": None},
+        ]
+        body = bytearray(synthetic_body(players))
+        struct.pack_into("<i", body, 0x14, 0x40 - 0x14 + 1)
+        body[PLAYERS_OFF + 0x54 + 8] = 1                      # the blank Create Player template
+        out = bytearray(synthetic_save_v0(
+            bytes(body), suffix=synthetic_franchise(year_field=year_field)[fs.SEASON_BLOCK:]))
+        document = sr.decode(bytes(out))
+        at = document.tables["primary"].offset + 0x54
+        name_at = document.rel(at + 0x10)
+        out[name_at + 34:name_at + 68] = pattern              # retail blank names are adjacent 34-byte buffers
+        struct.pack_into("<i", out, at + 0x14, (name_at + 34) - (at + 0x14) + 1)
+        return bytes(out)
+
+    # b779 ag1: a beta-78 / v0.7 save (0xB0000 arena, 612 appended records), the size tc2's report was about;
+    # CapacitySaveTests also grows it to the current arena.
+    grown, _receipt = arena._migrate_capacity(save(), 612, class_records=0,
+                                             arena_size=arena.LEGACY_CAPACITY_ARENA_SIZE)
+    disc_save = save(disc=True)
+    disc_body = bytearray(bytes(0x40) + disc_save[0x320:0x320 + rr.BODY_SIZE - 0x40])
+    disc_body[0x0C:0x10] = b"ROST"
+    struct.pack_into("<Ii", disc_body, 0x10, 17, 0x2D)
+    return grown, bytes(disc_body)
 
 
 def signed_folder(root, payload):
@@ -170,6 +215,61 @@ class ExperienceTests(unittest.TestCase):
             up.upgrade_years(bytes(data), cohort)
         with self.assertRaises(up.UpgradeRefused):
             up.upgrade_years(bytes(736), cohort)
+
+
+class CapacitySaveTests(unittest.TestCase):
+    """b779 tc2: Upgrade must understand the capacity roster arena and its moved history pool."""
+
+    def test_capacity_save_reads_its_year_and_upgrades_pre_franchise_team_rows(self):
+        save, disc_body = capacity_fixture()
+        self.assertEqual(len(save), CAPACITY_TOTAL)
+        document = sr.decode(save, base_year=up.BASE_YEAR)
+        self.assertEqual(document.reference_year, up.BASE_YEAR + 1)
+        self.assertEqual(document.layout.arena_size, arena.LEGACY_CAPACITY_ARENA_SIZE)
+        save_object, roster = up.franchise(save)
+        self.assertEqual(save_object.header.team_count, 32)
+        self.assertEqual(roster.layout.arena_size, arena.LEGACY_CAPACITY_ARENA_SIZE)
+        out, receipt = up.upgrade_team_history(save, disc_body)
+        self.assertEqual([(row["season"], row["after"], row["slot"]) for row in receipt["changes"]],
+                         [(2025, "SF", 3)])
+        self.assertEqual(receipt["used_after"], receipt["used_before"] + 1)
+        words = sr.decode(out, base_year=up.BASE_YEAR).history_words[("primary", 0)]
+        teams = [((w >> 23) & 0x1F, w & 0xFFFF) for w in words if ((w >> 16) & 0x7F) == 87]
+        self.assertEqual(teams, [(3, 1)])
+        self.assertFalse(any(slot == 4 for slot, _value in teams))   # the 2026 row stays '--' on a copied save
+
+    def test_retail_history_csv_fills_a_pre_2004_row_and_leaves_2026_blank(self):
+        save, disc_body = capacity_fixture(first="Jeff", last="Blake", birth=dt.date(1970, 12, 4), count=31,
+                                           slots=(1,), year_field=0, disc_team=False)
+        out, receipt = up.upgrade_team_history(save, disc_body)
+        self.assertEqual([(row["season"], row["after"]) for row in receipt["changes"]], [(1996, "CIN")])
+        self.assertEqual(receipt["changes"][0]["basis"]["kind"], "retail_csv")
+        words = sr.decode(out, base_year=up.BASE_YEAR).history_words[("primary", 0)]
+        teams = [((w >> 23) & 0x1F, w & 0xFFFF) for w in words if ((w >> 16) & 0x7F) == 87]
+        self.assertEqual(teams, [(1, 3)])                     # CIN is index 2 -> value 3
+        self.assertFalse(any(slot == 31 for slot, _value in teams))   # the 2026 row stays '--'
+
+    def test_current_capacity_save_reads_its_year_and_upgrades_the_same_row(self):
+        # b779 ag1: the same v0.7 save grown to the current arena (records appended, pool moved again) reads the same
+        # year and gets the same TEAM row.
+        legacy, disc_body = capacity_fixture()
+        save, receipt = arena.migrate(legacy, reserves_16=False, capacity_records=612)
+        self.assertEqual(len(save), arena.CAPACITY_SAVE_SIZE)
+        self.assertEqual(receipt["source"], "capacity")
+        document = sr.decode(save, base_year=up.BASE_YEAR)
+        self.assertEqual(document.reference_year, up.BASE_YEAR + 1)
+        self.assertEqual(document.layout.arena_size, arena.CAPACITY_ARENA_SIZE)
+        self.assertEqual(document.history_words, sr.decode(legacy, base_year=up.BASE_YEAR).history_words)
+        out, changes = up.upgrade_team_history(save, disc_body)
+        self.assertEqual([(row["season"], row["after"], row["slot"]) for row in changes["changes"]],
+                         [(2025, "SF", 3)])
+
+    def test_played_clubs_command_follows_the_capacity_pool(self):
+        save, disc_body = capacity_fixture()
+        out, receipt = up.infer_played_clubs(save, disc_body)
+        self.assertEqual(receipt["operation"], "played_clubs")
+        self.assertEqual(len(receipt["changes"]), 1)
+        self.assertEqual(len(out), len(save))
 
 
 class StudioCommandTests(unittest.TestCase):

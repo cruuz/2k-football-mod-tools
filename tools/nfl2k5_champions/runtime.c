@@ -6,14 +6,15 @@
    history lives in the spare bytes at the end of the roster arena (see HISTORY below), the pop-up text on the stack.
 
    HISTORY. The roster arena ends with a 0x400-byte region: the 352-byte reserve block (magic "2K5RSV2") written by the
-   practice-squad owner, 448 bytes that are zero in every arena the Studio builds, and the game's own 224-byte tail. The
-   448 bytes are kept as one checked block (the arena is saved whole with every franchise, so the history costs no save
-   size and an old save simply has no block):
-     +0 magic "2K5CHMP\0", +8 version 1, +9 ring size (22), +12 Adler-32 of bytes 0..11 and 16..433,
-     +16 22 entries of 19 bytes, entry n % 22 holding Super Bowl number n:
+   practice-squad owner, then free bytes, and a franchise save's auxiliary tail (up to 366 bytes, the last bytes of the
+   arena). The history is one checked 270-byte block placed right after the reserve block, so it ends 0x192 bytes before
+   the arena's end, clear of the auxiliary tail (which begins 0x16E before the end) with 36 bytes to spare (the arena is
+   saved whole with every franchise, so the history costs no save size and an old save simply has no block):
+     +0 magic "2K5CHMP\0", +8 version 2, +9 ring size (22), +12 Adler-32 of bytes 0..11 and 16..269,
+     +16 the newest season's MVP: [0] Super Bowl number, [1..7] the player (55 bits: initial, nine letters, position code;
+       five bits each), [8] the player's club + 1;  +28 22 entries of 11 bytes, entry n % 22 holding Super Bowl number n:
        [0] n, [1..3] champion + 1 (6 bits), runner-up + 1 (6), champion points (6), runner-up points (6),
-       [4..10] Super Bowl MVP, [11..17] season MVP (each 55 bits: initial, nine letters, position code; five bits each),
-       [18] the season MVP's club + 1.
+       [4..10] Super Bowl MVP (55 bits as above).
    A block or entry that fails its checks reads as empty, so a foreign write can only lose history, never show a wrong
    champion; with no reserve block (an arena without the Studio's reserve schema) the history is simply off. */
 
@@ -118,11 +119,12 @@ static u32 team_index(u32 team) {
 
 /* ---- the history block ---------------------------------------------------------------------------------------- */
 #define RING 22u
-#define ENTRY 19u
-#define ENTRIES_AT 16u
+#define ENTRY 11u
+#define MVP_AT 16u
+#define ENTRIES_AT 28u
 #define USED (ENTRIES_AT + RING * ENTRY)
 
-/* the 448 spare bytes after the reserve block at the end of the arena, or 0 when this arena has none */
+/* the free bytes after the reserve block at the end of the arena, or 0 when this arena has none */
 static u8 *gap(void) {
     u32 root = G(ROSTER), size = G(ARENA_SIZE);
     if (!root || size < 0x2000 || size > 0x400000)
@@ -141,7 +143,7 @@ static u32 adler(const u8 *p, u32 n, u32 a, u32 b) {
 
 static u32 block_sum(const u8 *g) {
     u32 first = adler(g, 12, 1, 0);
-    return adler(g + ENTRIES_AT, USED - ENTRIES_AT, first & 0xFFFF, first >> 16);
+    return adler(g + MVP_AT, USED - MVP_AT, first & 0xFFFF, first >> 16);
 }
 
 static const u8 magic[8] = {'2', 'K', '5', 'C', 'H', 'M', 'P', 0};
@@ -150,7 +152,7 @@ static u32 block_ok(const u8 *g) {
     for (u32 i = 0; i < 8; i++)
         if (g[i] != magic[i])
             return 0;
-    return g[8] == 1 && g[9] == RING && block_sum(g) == (u32)g[12] + ((u32)g[13] << 8) + ((u32)g[14] << 16) + ((u32)g[15] << 24);
+    return g[8] == 2 && g[9] == RING && block_sum(g) == (u32)g[12] + ((u32)g[13] << 8) + ((u32)g[14] << 16) + ((u32)g[15] << 24);
 }
 
 static void seal(u8 *g) {
@@ -290,7 +292,7 @@ static void record_season(u32 n, u32 champion, u32 runner_up, u32 champion_point
             g[i] = 0;
         for (u32 i = 0; i < 8; i++)
             g[i] = magic[i];
-        g[8] = 1;
+        g[8] = 2;
         g[9] = RING;
     }
     u8 *e = g + ENTRIES_AT + (n % RING) * ENTRY;
@@ -305,9 +307,13 @@ static void record_season(u32 n, u32 champion, u32 runner_up, u32 champion_point
     e[3] = (u8)(t >> 16);
     if (sb_mvp)
         pack_person(e + 4, sb_mvp);
-    if (mvp) {
-        pack_person(e + 11, mvp);
-        e[18] = (u8)(mvp_team < 32 ? mvp_team + 1 : 0);
+    if (mvp) {                                            /* the newest season's MVP has one slot of its own */
+        u8 *m = g + MVP_AT;
+        for (u32 i = 0; i < 9; i++)
+            m[i] = 0;
+        m[0] = (u8)n;
+        pack_person(m + 1, mvp);
+        m[8] = (u8)(mvp_team < 32 ? mvp_team + 1 : 0);
     }
     seal(g);
 }
@@ -544,12 +550,13 @@ void champions_bio(void) {
         TEXT_POS(ctx, 198.0f, line_y[lines++], 20.0f);
         TEXT_DRAW(ctx, text);
     }
-    if (get_bits(e + 11, 0, 5) | get_bits(e + 11, 5, 5)) {
+    const u8 *m = g + MVP_AT;
+    if (m[0] == newest && (get_bits(m + 1, 0, 5) | get_bits(m + 1, 5, 5))) {
         out = put_ascii(text, "MVP: ");
-        out = put_person(out, e + 11);
-        if (e[18]) {
+        out = put_person(out, m + 1);
+        if (m[8]) {
             out = put_ascii(out, " (");
-            out = put_abbr(out, e[18]);
+            out = put_abbr(out, m[8]);
             *out++ = ')';
         }
         *out = 0;

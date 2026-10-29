@@ -89,11 +89,13 @@ HEADER_BASELINE = 1
 HEADER_HISTORY = 2
 
 # Native geometry: the native save size before any footer for each supported arena.
-RETAIL_SAVE_SIZE = 720_044
-RESERVE_SAVE_SIZE = 724_140
-CAPACITY_SAVE_SIZE = 847_020
+from . import nfl2k5_roster_arena as _arena
+RETAIL_SAVE_SIZE = _arena.RETAIL_SAVE_SIZE
+RESERVE_SAVE_SIZE = _arena.save_size(_arena.ARENA_SIZE)
+CAPACITY_SAVE_SIZE = _arena.CAPACITY_SAVE_SIZE                 # b779 ag1: the current capacity arena
+LEGACY_CAPACITY_SAVE_SIZE = _arena.LEGACY_CAPACITY_SAVE_SIZE   # beta-78 / v0.7 (847,020)
 MYCAREER_FOOTER_SIZE = 128
-NATIVE_SAVE_SIZES = (RETAIL_SAVE_SIZE, RESERVE_SAVE_SIZE, CAPACITY_SAVE_SIZE)
+NATIVE_SAVE_SIZES = (RETAIL_SAVE_SIZE, RESERVE_SAVE_SIZE) + _arena.CAPACITY_SAVE_SIZES
 SAVE_SIZES = tuple(size + footer for size in NATIVE_SAVE_SIZES
                    for footer in (FOOTER_SIZE, MYCAREER_FOOTER_SIZE + FOOTER_SIZE))
 PPG_SAVE_SIZES = tuple(size + FOOTER_SIZE for size in NATIVE_SAVE_SIZES)

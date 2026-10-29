@@ -83,7 +83,7 @@ class StaticTests(unittest.TestCase):
     def test_the_owner_is_late_and_follows_honors(self):
         late = space.LATE_OWNERS
         self.assertEqual(late[late.index("nfl2k5_honors"):][:3], ("nfl2k5_honors", "nfl2k5_champions", "nfl2k5_coach_ai"))
-        self.assertEqual(late[-1], "nfl2k5_module_loader")
+        self.assertEqual(late[-2:], ("nfl2k5_module_loader", "nfl2k5_preseason_warning"))
         self.assertTrue(set(champions.REQUESTS) <= set(honors.REQUESTS))
         # an owner that comes later in LATE_OWNERS can still be appended to an installed image (Studio appends them
         # one at a time): the champions rows do not move
@@ -331,10 +331,11 @@ class LeagueMachine(Machine):
         self.records[base] = record
 
     def reserve_block(self, present=True):
-        """The arena's last 0x400 bytes: the 352-byte reserve block, 448 spare zero bytes and the game's tail."""
+        """The arena's last 0x400 bytes: the 352-byte reserve block, free zero bytes and a save's 366-byte auxiliary tail."""
         self.put(0xB72808, self.ARENA)
         self.put(ROSTER, self.ROOT)
         self.uc.mem_write(self.GAP - 352, bytes(0x400))
+        self.uc.mem_write(self.GAP - 352 + 0x400 - 366, AUX_TAIL)
         if present:
             self.uc.mem_write(self.GAP - 352, history.RESERVE_MAGIC + bytes(344))
 
@@ -364,6 +365,9 @@ class LeagueMachine(Machine):
         self.put(YEAR_IMM, base + 11)
         self.put(SEASONS, season_index)
 
+
+
+AUX_TAIL = bytes(((i * 7) % 255) + 1 for i in range(366))     # a franchise save's auxiliary tail: the last 366 arena bytes
 
 
 @unittest.skipUnless(XBE.is_file() and HAVE_UC, "pinned USA XBE and unicorn required")
@@ -491,7 +495,8 @@ class NativeTests(unittest.TestCase):
         changed = [k for k in range(0x400) if after[k] != tail[k]]
         self.assertTrue(changed and all(352 <= k < 352 + history.USED for k in changed), changed[:5])
         self.assertEqual(after[:352], tail[:352])                     # the reserve block
-        self.assertEqual(after[352 + history.USED:], tail[352 + history.USED:])   # the spare rest and the game's tail
+        self.assertEqual(after[352 + history.USED:], tail[352 + history.USED:])   # the free rest and the auxiliary tail
+        self.assertEqual(after[0x400 - 366:], AUX_TAIL)
         # an arena without the Studio's reserve block: the notice still shows, nothing is written anywhere
         m = self.machine()
         m.reserve_block(present=False)
@@ -499,7 +504,7 @@ class NativeTests(unittest.TestCase):
         self.season(m)
         m.call(self.champ["champions_advance"])
         self.assertEqual(m.calls, ["notice", "retirement pass"])
-        self.assertEqual(bytes(m.uc.mem_read(m.GAP - 352, 0x400)), bytes(0x400))
+        self.assertEqual(bytes(m.uc.mem_read(m.GAP - 352, 0x400)), bytes(0x400 - 366) + AUX_TAIL)
 
     def test_a_block_written_by_the_studio_reads_back_and_is_extended(self):
         # the seeds the Studio writes into the roster body: the same layout the native code reads and extends
@@ -508,7 +513,7 @@ class NativeTests(unittest.TestCase):
         m = self.machine()
         m.record(RETIRE, "retirement pass")
         self.season(m, season_index=0)                                    # the 2026 season: Super Bowl 61 follows LX
-        m.uc.mem_write(m.GAP, history.block_bytes(entries))
+        m.uc.mem_write(m.GAP, history.seeded_block(data))
         newest = max(entries)
         self.assertEqual(newest, 60)
         m.call(self.champ["champions_advance"])
