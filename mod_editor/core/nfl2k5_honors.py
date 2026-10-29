@@ -75,7 +75,7 @@ DATA_SIZE = 16
 HONORS_REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "data", DATA_SIZE, 16))
 REQUESTS = HONORS_REQUESTS + champions.REQUESTS
 
-UI_LABEL = "Player Card honors page, Super Bowl champions notice and history, modern award voting"
+UI_LABEL = "Player Card honors, Super Bowl champions and award votes"  # b779-int1: 60-character caption rule
 HELP_TEXT = (
     "EXPERIMENTAL / UNWITNESSED. Retail: the Franchise Player Card has one page and the game forgets every season's "
     "awards. Patch: the bumpers (Black/White; LB/RB in xemu) and the triggers flip any Player Card to an honors page: "

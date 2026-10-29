@@ -779,7 +779,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_letter_grades_attributes.py": "49aa89728a2cb73f902b7e9c4f0fa5d3818fa17ff50164dec38009ee2f34fef0",
         "mod_editor/core/nfl2k5_letter_grades_code.py": "b01bcdb0e8a0e8c6a41f606500afeffd41034f2615c776dda6a9b24be6548dbd",
         "mod_editor/core/nfl2k5_letter_grades_progress.py": "5088c0b6a545b95efae98f906b5c4c2e030774b22f87a35fd08a2c1c80b31a90",
-        "mod_editor/core/nfl2k5_honors.py": "ae096fbae9e66fa898f65047d3f9235639a84cacb3f23fda7dd168b144280933",
+        "mod_editor/core/nfl2k5_honors.py": "c5c672701bc05be43b5f9ee99a196348ecd857cabdbb91a45b24d987e675d08e",
         "mod_editor/core/nfl2k5_honors_code.py": "5f74c634876b93f5a6fb37073b742d2248f7118f6074651473459791caccef59",
         "mod_editor/core/nfl2k5_champions.py": "735e89d85b1225fe738a2cd3fe5e6443f36280597fbbed622a99ce4507b5067f",
         "mod_editor/core/nfl2k5_champions_code.py": "ab0d581c1a41a0399a226c5cd0c2dd5868e52f20dca851f4339e39be52021661",
