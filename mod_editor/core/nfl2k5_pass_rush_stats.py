@@ -27,7 +27,11 @@ rates driven by Pass Rush and Pass Blocking and the engine's own sacks. History 
 Player Card: TGT on the HB/FB and WR/TE sheets, PRS and QBH after SACK on the defensive sheet, and a new
 offensive-line sheet (Games, PA, HA, SA) by routing C/G/T to the defensive card definition and switching the
 sheet's column list at the card's own selector. The column lists are copies in the owner's read-only block; the
-retail lists (and the TEAM column's in-place edits) are untouched. Fields 106-110 fold by sum when the honors
+retail lists (and the TEAM column's in-place edits) are untouched.
+
+League Leaders and the stats sheets (Noah 10/28: "new stats yes"): the blocked-kick columns (FBK field goal blocks, XBK extra
+point blocks, PBK punt blocks) give their slots to PRS, QBH and SA in place; every other column is unchanged. The new
+columns are integer stat columns cloned from FBK (cookie 0x307BA) with this owner's getter in place of 0x3216C0. Fields 106-110 fold by sum when the honors
 owner is installed (its fold rule covers fields 96-127).
 """
 
@@ -41,7 +45,7 @@ from . import nfl2k5_pass_rush_stats_code as runtime
 OWNER = "nfl2k5_pass_rush_stats"
 EVIDENCE = "EXPERIMENTAL"
 CODE_SIZE = 3328
-READ_ONLY_SIZE = 2304
+READ_ONLY_SIZE = 2816
 DATA_SIZE = 1152
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "read_only", READ_ONLY_SIZE, 16), (OWNER, "data", DATA_SIZE, 16))
 
@@ -50,7 +54,8 @@ HELP_TEXT = ("EXPERIMENTAL. Adds pressures and QB hits for defenders, pressures,
              "offensive linemen, and shows targets for receivers. Played games count them on the field (a "
              "defender within 2 yards of the passer at the throw, the sacker, and the blocker he beat); simulated "
              "games draw them from NFL rates using Pass Rush and Pass Blocking. The Player Card shows TGT for "
-             "backs and receivers, PRS and QBH for defenders and a new PA / HA / SA sheet for linemen. Each value "
+             "backs and receivers, PRS and QBH for defenders and a new PA / HA / SA sheet for linemen; League "
+             "Leaders show PRS, QBH and SA in place of the blocked-kick columns (FBK, XBK, PBK). Each value "
              "is saved in the player's season history (about 1,300 more history words per franchise season).")
 
 FIELD0 = 106
@@ -97,6 +102,14 @@ YR, GAMES, REC, SACK = 0x00535020, 0x005350D0, 0x00533CE0, 0x00534050
 TEAM_DESCRIPTOR = 0x00047370      # nfl2k5_team_column.DESCRIPTOR_VA (kept if present in a list)
 DESCRIPTOR_SIZE = 0xB0
 CARD_GETTER = 0x00320430
+# League Leaders / stats sheets (Noah 10/28: "new stats yes"): the blocked-kick columns give their slots to the new
+# stats in place. (slot VA, retail descriptor, new column). Lists: 0x547C2C, 0x548224, 0x548E6C (defense; FBK only) and
+# 0x548854 (defense with TEAM; FBK, XBK, PBK). Every other pointer of every list is unchanged.
+FBK, XBK, PBK = 0x00545AD8, 0x00545B88, 0x00545C38
+LEADER_SLOTS = ((0x00547C6C, FBK, "prs"), (0x00548268, FBK, "prs"), (0x00548EAC, FBK, "prs"),
+                (0x005488A0, FBK, "prs"), (0x005488A4, XBK, "qbh"), (0x005488A8, PBK, "sa"))
+LEADER_KEYS = ("prs", "qbh", "sa")
+LEADER_GETTER = 0x003216C0
 # new columns: (key, abbreviation, long name, stat id)
 COLUMNS = (("tgt", "TGT", "Targets", TARGETS_SELECTOR),
            ("prs", "PRS", "Pressures", FIELDS["pressures"]),
@@ -188,15 +201,18 @@ def read_only_layout(read_only_va):
     for key in ("rb", "wr", "def", "ol"):
         out["list_" + key] = at
         at += LIST_STRIDE
+    for key in LEADER_KEYS:
+        out["ld_" + key] = at
+        at += DESCRIPTOR_SIZE
     out["end"] = at
     _require(at - read_only_va <= READ_ONLY_SIZE, "the pass rush read-only block exceeds its budget")
     return out
 
 
-def _descriptor(template, getter, abbr_va, long_va, stat_id):
+def _descriptor(template, getter, abbr_va, long_va, stat_id, cookie=0x200B3):
     d = bytearray(template)
-    _require(struct.unpack_from("<I", d, 0x00)[0] == 4 and struct.unpack_from("<I", d, 0x0C)[0] == 0x200B3,
-             "the REC column descriptor is not the retail integer stat column")
+    _require(struct.unpack_from("<I", d, 0x00)[0] == 4 and struct.unpack_from("<I", d, 0x0C)[0] == cookie,
+             "the template is not the retail integer stat column")
     for off in (0x68, 0x80, 0x98):
         _require(struct.unpack_from("<II", d, off) == (0x0027CCD0, 0x10000), "column descriptor text shape")
     struct.pack_into("<I", d, 0x08, getter)
@@ -284,6 +300,12 @@ def read_only_bytes(image, code_va, read_only_va, source_lists):
     for key in ("rb", "wr", "def"):
         put(lay["list_" + key], _list_copy(lists[key], _spliced(_list_pointers(lists[key]), key, lay)))
     put(lay["list_ol"], _list_copy(lists["def"], _ol_pointers(def_pointers, lay)))
+    leader_template = image.read(FBK, DESCRIPTOR_SIZE)
+    _require(struct.unpack_from("<I", leader_template, 0x08)[0] == LEADER_GETTER, "the FBK leaders column is not retail")
+    leader = labels(code_va)["prs_leader_value"]
+    for key in LEADER_KEYS:
+        put(lay["ld_" + key], _descriptor(leader_template, leader, lay["s_" + key], lay["l_" + key], FIELDS[
+            {"prs": "pressures", "qbh": "qb_hits", "sa": "sacks_allowed"}[key]], cookie=0x307BA))
     return bytes(buf)
 
 
@@ -299,11 +321,15 @@ def sites(code_va):
     return out
 
 
-def data_edits(code_va):
-    """The table edits in .text: (label, VA, retail bytes, patched bytes)."""
+def data_edits(code_va, read_only_va=0):
+    """The table edits: the card jump table and screen bytes (.text), the League Leaders slots (.rdata)."""
     at = labels(code_va)
+    lay = read_only_layout(read_only_va) if read_only_va else None
     out = [(label, va, struct.pack("<I", retail), struct.pack("<I", at[stub])) for label, va, retail, stub in CARD_JUMPS]
     out.append(("card_ol_screens", CARD_POSITION_TABLE + OL_POSITIONS[0], bytes([6, 6, 6]), bytes([4, 4, 4])))
+    for va, retail, key in LEADER_SLOTS:
+        out.append((f"leaders_{key}_{va:x}", va, struct.pack("<I", retail),
+                    struct.pack("<I", lay["ld_" + key] if lay else 0)))
     return out
 
 
@@ -363,7 +389,7 @@ def _recognize(payload):
     for _l, va, before, after in sites(code_va):
         got = image.read(va, len(before))
         states.add("retail" if got == before else "applied" if rows and got == after else "foreign")
-    for _l, va, before, after in data_edits(code_va):
+    for _l, va, before, after in data_edits(code_va, ro_va):
         got = image.read(va, len(before))
         states.add("retail" if got == before else "applied" if rows and got == after else "foreign")
     if rows:
@@ -412,7 +438,7 @@ def apply(payload):
     image = XbeImage(payload)
     buf = bytearray(payload)
     edits = []
-    for label, va, old, new in sites(code_va) + data_edits(code_va):
+    for label, va, old, new in sites(code_va) + data_edits(code_va, ro_va):
         off = image.offset(va, len(old))
         _require(bytes(buf[off:off + len(old)]) == old, f"pass rush site {va:#x} is not retail")
         buf[off:off + len(new)] = new

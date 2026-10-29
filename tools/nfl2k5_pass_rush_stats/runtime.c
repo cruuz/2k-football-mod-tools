@@ -405,14 +405,13 @@ void FC prs_on_commit(u32 team, u32 club, u32 side) {
         prs_on_reset();
 }
 
-/* ---- the Player Card: column getter (descriptor cookie 0x200B3: ecx = row, edx = stat id = history field) -- */
-float FC prs_card_value(u32 row, u32 field) {
-    u32 bank = G(CARD_BANKS + 4 * row);
-    u32 player = G(CARD_PLAYER);
+/* ---- read a field for a native stat bank: 8/9 career, 10/11 the current season, 12..26 that many seasons ago (the
+   native bank numbering of 0xCB240; live-game banks 0..7 read 0, the counters are committed after the game) -------- */
+static float bank_value(u32 player, u32 field, u32 bank) {
     i32 v = 0;
     if (!player || field < FIELD0 || field >= FIELD0 + NSTAT)
         return 0.0f;
-    if (bank == 9) {
+    if (bank == 8 || bank == 9) {
         /* career: every live word of this field in the current class (the native search 0x14E800's filter) */
         const volatile u32 *w = (const volatile u32 *)G(player + 0x2C);
         u32 cls = G(CLASS);
@@ -424,9 +423,20 @@ float FC prs_card_value(u32 row, u32 field) {
                 break;
         }
     }
-    else if (bank == 11)
+    else if (bank == 10 || bank == 11)
         v = HIST_GET(player, field);
     else if (bank >= 12 && bank <= 26)
         v = HIST_AGO(player, field, bank - 11);
     return (float)v;
+}
+
+/* the Player Card: column getter (descriptor cookie 0x200B3: ecx = row, edx = stat id = history field) */
+float FC prs_card_value(u32 row, u32 field) {
+    return bank_value(G(CARD_PLAYER), field, G(CARD_BANKS + 4 * row));
+}
+
+/* League Leaders / stats sheets: column getter in place of 0x3216C0 (cookie 0x307BA: ecx = player record,
+   edx = stat id = history field, [esp+4] = bank; callee pops it like 0xCB240) */
+float FC prs_leader_value(u32 player, u32 field, u32 bank) {
+    return bank_value(player, field, bank);
 }

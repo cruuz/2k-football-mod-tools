@@ -454,5 +454,70 @@ class CardTests(unittest.TestCase):
         del p
 
 
+@unittest.skipUnless(HAVE_UC, "unicorn is needed")
+class LeadersTests(unittest.TestCase):
+    """League Leaders: PRS, QBH and SA take the blocked-kick slots in place; the getter reads the native banks."""
+
+    LISTS = ((0x547C2C, 18), (0x548224, 19), (0x548854, 23), (0x548E6C, 18))
+
+    def setUp(self):
+        self.retail, self.data = retail(), patched()
+        if self.data is None:
+            self.skipTest("pinned USA retail XBE is not available")
+        self.lay = prs.read_only_layout(prs.allocations(self.data)["read_only"]["va"])
+
+    def test_only_the_blocked_kick_slots_change(self):
+        before, after = XbeImage(self.retail), XbeImage(self.data)
+        slots = {va: key for va, _old, key in prs.LEADER_SLOTS}
+        for start, words in self.LISTS:
+            old = struct.unpack(f"<{words}I", before.read(start, 4 * words))
+            new = struct.unpack(f"<{words}I", after.read(start, 4 * words))
+            for i, (o, n) in enumerate(zip(old, new)):
+                va = start + 4 * i
+                if va in slots:
+                    self.assertIn(o, (prs.FBK, prs.XBK, prs.PBK))
+                    self.assertEqual(n, self.lay["ld_" + slots[va]], hex(va))
+                else:
+                    self.assertEqual(o, n, hex(va))
+            self.assertEqual(new[-1], 0)
+        self.assertEqual(sorted({k for _v, _o, k in prs.LEADER_SLOTS}), ["prs", "qbh", "sa"])
+
+    def test_columns_are_the_native_leader_column_with_new_headers(self):
+        image = XbeImage(self.data)
+        fbk = image.read(prs.FBK, 0xB0)
+        for key, abbr, field in (("prs", "PRS", 106), ("qbh", "QBH", 107), ("sa", "SA", 110)):
+            d = image.read(self.lay["ld_" + key], 0xB0)
+            self.assertEqual(struct.unpack_from("<I", d, 0x0C)[0], 0x307BA)
+            self.assertEqual(struct.unpack_from("<I", d, 0x08)[0], prs.labels(prs.allocations(self.data)["code"]["va"])["prs_leader_value"])
+            self.assertEqual(struct.unpack_from("<I", d, 0xA0)[0], field)
+            self.assertEqual(image.read(struct.unpack_from("<I", d, 0x70)[0], 2 * len(abbr)).decode("utf-16-le"), abbr)
+            same = [i for i in range(0, 0xB0, 4) if i not in (0x08, 0x70, 0x88, 0xA0)]
+            self.assertEqual([d[i:i + 4] for i in same], [fbk[i:i + 4] for i in same])
+
+    def test_getter_reads_season_years_ago_and_career(self):
+        from tests.mod_editor.test_nfl2k5_honors import word
+        g = Game(self.data)
+        m = g.m
+        p = m.roster([(3, [word(106, 3, 9), word(106, 2, 4), word(110, 3, 2), word(107, 1, 5)])])[0]
+        getter = struct.unpack_from("<I", XbeImage(self.data).read(self.lay["ld_prs"], 0xB0), 0x08)[0]
+        tramp, res = m.HEAP + 0x47000, m.HEAP + 0x47100
+
+        def value(bank, field):
+            m.uc.mem_write(tramp, b"\x68" + struct.pack("<I", bank) + b"\xe8" + struct.pack("<i", getter - (tramp + 10))
+                           + bytes.fromhex("d91d") + struct.pack("<I", res) + b"\xc3")
+            m.uc.ctl_remove_cache(tramp, tramp + 32)
+            m.call(tramp, ecx=p, edx=field)
+            return m.float_at(res)
+
+        self.assertEqual(value(11, 106), 9.0)       # this season (slot 3)
+        self.assertEqual(value(10, 106), 9.0)
+        self.assertEqual(value(12, 106), 4.0)       # last season
+        self.assertEqual(value(9, 106), 13.0)       # career
+        self.assertEqual(value(11, 110), 2.0)
+        self.assertEqual(value(13, 107), 5.0)
+        self.assertEqual(value(0, 106), 0.0)        # live-game banks: counters land at the commit
+        self.assertEqual(value(11, 50), 0.0)        # not this owner's field
+
+
 if __name__ == "__main__":
     unittest.main()
