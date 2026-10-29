@@ -277,6 +277,49 @@ class MomentCoachIdentity(unittest.TestCase):
             coaches.situation(bytes(raw), stats={})
 
 
+class HistoricEaglesSet(unittest.TestCase):
+    """The historic styles option replaces the Eagles' era set 9 with the retail style-0 kit; a project that edited it now
+    hears about it (it used to lose the edits silently)."""
+
+    class Disc:
+        def __init__(self, files):
+            self.files = files
+
+        def has(self, name):
+            return name in self.files
+
+        def get(self, name):
+            return self.files[name]
+
+    def test_an_edited_eagles_set_is_named(self):
+        from mod_editor.core import nfl2k5_historic_styles as hs
+        retail = self.Disc({"21h9.iff": b"retail-h", "21a9.iff": b"retail-a"})
+        edited = self.Disc({"21h9.iff": b"edited-h", "21a9.iff": b"retail-a"})
+        notes = hs.overwritten_user_kits(edited, retail, {"21": 9})
+        self.assertEqual(len(notes), 1)
+        self.assertIn("21H9", notes[0])
+        self.assertNotIn("21A9", notes[0])
+        self.assertIn("not in the finished disc", notes[0])
+
+    def test_unedited_sets_and_other_franchises_say_nothing(self):
+        from mod_editor.core import nfl2k5_historic_styles as hs
+        retail = self.Disc({"21h9.iff": b"h", "21a9.iff": b"a", "18h8.iff": b"x"})
+        self.assertEqual(hs.overwritten_user_kits(self.Disc(dict(retail.files)), retail, {"21": 9}), [])
+        edited = self.Disc({"21h9.iff": b"h", "21a9.iff": b"a", "18h8.iff": b"changed"})
+        self.assertEqual(hs.overwritten_user_kits(edited, retail, {"18": 8}), [])     # only the Eagles replace a kit
+
+    def test_the_build_prints_the_note_and_the_check_warns_before_building(self):
+        text = (ROOT / "mod_editor/core/mod_build.py").read_text(encoding="utf-8")
+        self.assertIn('for note in styles_receipt.get("user_notes", ()):', text)
+        from mod_editor.core import nfl2k5_project_check as pc
+        plan = types.SimpleNamespace(espn25_more_moments=True)
+        notes = pc.historic_kit_note(plan, {"21H9", "21A9", "14H8"})
+        self.assertEqual(len(notes), 1)
+        self.assertIn("21A9 and 21H9", notes[0].title)
+        self.assertEqual(pc.historic_kit_note(plan, {"14H8"}), [])
+        self.assertEqual(pc.historic_kit_note(types.SimpleNamespace(espn25_more_moments=False), {"21H9"}), [])
+
+
 class Installed(Harness):
     """A disc where one kit was left out earlier reads as installed, not foreign."""
 

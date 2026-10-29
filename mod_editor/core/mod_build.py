@@ -5563,6 +5563,9 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         retail = require_step_source(source if _retail_source is None else _retail_source, "Historic team styles")
         styles_receipt = styles.apply_to_image(target, retail)
         receipt["steps"].append({"step": "historic_styles", **styles_receipt})
+        for note in styles_receipt.get("user_notes", ()):    # b779-ce1: a replaced kit of the user's is said, not dropped
+            progress(note, 0, 0)
+            receipt.setdefault("user_notes", []).append(note)
         receipt["result"]["historic_styles"] = styles.image_status(target, retail)
         if receipt["result"]["historic_styles"] != "applied":
             raise ValueError("the historic team styles failed their read-back on the copy")

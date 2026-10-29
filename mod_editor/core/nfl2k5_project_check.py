@@ -162,6 +162,23 @@ def moment_kit_notes(documents: Iterable[tuple[str, dict]], chunks: dict) -> lis
     return notes
 
 
+def historic_kit_note(plan, packages: set) -> list:
+    """The Eagles' era set 9 is replaced by the historic styles option (they have no free uniform index)."""
+    if not getattr(plan, "espn25_more_moments", False):
+        return []
+    from . import nfl2k5_historic_styles as styles
+    edited = sorted(f"{styles.EAGLES}{side}{styles.EAGLES_SPARE}" for side in "HA"
+                    if f"{styles.EAGLES}{side}{styles.EAGLES_SPARE}" in packages)
+    if not edited:
+        return []
+    both = " and ".join(edited)
+    return [Finding(NOTE, "Historic teams",
+                    f"Your edits to the Eagles' set {styles.EAGLES_SPARE} ({both}) will not be in the finished disc.",
+                    "The Eagles use all 15 uniform sets, so the historic teams' spare replaces that set with the retail "
+                    f"current Eagles kit. Untick 25 more Anniversary moments to keep {both}, or move the artwork to "
+                    "another Eagles set.")]
+
+
 def kit_fix_note(packages: set) -> list:
     """One note: how many of the user's edited kits the 2026 kit repairs would otherwise rewrite."""
     from . import nfl2k5_kit_fixes_2026 as fixes
@@ -314,6 +331,7 @@ def check(plan, *, asset_ids: Iterable[str] = (), document: dict | None = None, 
             report.findings.extend(moment_kit_notes(documents, chunks))
     else:
         report.findings.extend(moment_kit_notes(documents, chunks))
+    report.findings.extend(historic_kit_note(plan, packages))
     report.findings.extend(kit_fix_note(packages))
     _step(report, "kit features", started)
 
