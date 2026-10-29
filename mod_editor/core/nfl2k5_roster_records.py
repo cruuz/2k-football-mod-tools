@@ -2002,9 +2002,17 @@ class RosterDocument:
     def demote_active(self, team_index: int, primary_index: int) -> dict[str, Any]:
         return self._reserve_move(team_index, primary_index, promote=False)
 
-    def check_depth_locks(self) -> None:
+    def check_depth_locks(self, *, exhibition: bool = True) -> int:
+        """Refuse conflicting depth locks. ``exhibition=False`` (read-only checks of a game-written save, for
+        example Franchise > Upgrade) only enforces the 32 clubs: the released v0.7 roster already carries
+        conflicts among its celebrity, alumni and all-star squads, and a save the game wrote with them loads fine.
+        Returns the number of conflicts that were not enforced."""
+        skipped = 0
         for team in self.teams:
             conflicts = self.depth_lock_conflicts(team.index)
+            if not exhibition and team.index >= 32:
+                skipped += len(conflicts)
+                continue
             # Retail celebrity/alumni/Pro Bowl teams alias active club records.
             # Club locks cannot be independent on those views. Keep diagnostics
             # visible, but do not reject otherwise valid club assignments solely
@@ -2015,6 +2023,7 @@ class RosterDocument:
                     for offset in c["players"])]
             _require(not conflicts,
                      f"{team.display}: conflicting depth locks; unlock or assign distinct rows before saving")
+        return skipped
 
     def team_of(self, player: Player) -> int | None:
         """The first team this player is listed on (a club before an all-star side), or None."""

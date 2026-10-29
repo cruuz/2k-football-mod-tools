@@ -247,12 +247,19 @@ def apply_slider_edits(
 # A7: franchise fields
 # ---------------------------------------------------------------------------
 
+def _native_length(payload) -> int:
+    """Save length without a trailing Player Progress footer (stamped, or the v0.7 game's all-zero one)."""
+    from .nfl2k5_player_progression import footer_start
+    at = footer_start(bytes(payload))
+    return len(payload) if at is None else at
+
+
 def save_kind(payload: bytes) -> str:
     if len(payload) == SETTINGS_SAVE_SIZE:
         return "settings"
     if len(payload) == FRANCHISE_SAVE_SIZE:
         return "franchise"
-    if len(payload) in ((FRANCHISE_SAVE_SIZE + 0x1000, FRANCHISE_SAVE_SIZE + 128,
+    if _native_length(payload) in ((FRANCHISE_SAVE_SIZE + 0x1000, FRANCHISE_SAVE_SIZE + 128,
                          FRANCHISE_SAVE_SIZE + 0x1000 + 128) + CAPACITY_SAVE_SIZES
                         + tuple(n + 128 for n in CAPACITY_SAVE_SIZES)):
         from .nfl2k5_franchise_save import is_franchise_save
@@ -264,8 +271,8 @@ def save_kind(payload: bytes) -> str:
 def _franchise_shift(payload) -> int:
     if len(payload) == FRANCHISE_SAVE_SIZE:
         return 0
-    _require(len(payload) in (FRANCHISE_SAVE_SIZE + 0x1000, FRANCHISE_SAVE_SIZE + 128,
-                             FRANCHISE_SAVE_SIZE + 0x1000 + 128) + CAPACITY_SAVE_SIZES
+    _require(_native_length(payload) in (FRANCHISE_SAVE_SIZE + 0x1000, FRANCHISE_SAVE_SIZE + 128,
+                                         FRANCHISE_SAVE_SIZE + 0x1000 + 128) + CAPACITY_SAVE_SIZES
              + tuple(n + 128 for n in CAPACITY_SAVE_SIZES), "unsupported franchise container length")
     from .nfl2k5_franchise_save import FranchiseSave
     try:

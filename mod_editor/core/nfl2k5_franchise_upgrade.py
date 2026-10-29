@@ -361,7 +361,9 @@ def validate_save(payload: bytes) -> dict:
     findings = rr.validate(document)
     errors = [row for row in findings if row["level"] == "error"]
     require(not errors, f"Studio structural validation failed: {errors[:3]}")
-    document.check_depth_locks()
+    # b779 up2: a save the released v0.7 game wrote carries depth-lock conflicts on its exhibition squads (the v0.7
+    # roster has them); the 32 clubs are still enforced, the exhibition ones are counted in the receipt.
+    exhibition_conflicts = document.check_depth_locks(exhibition=False)
     reserves = ps.validate_save(payload)
     positions = Counter()
     for player in document.players:
@@ -381,6 +383,11 @@ def validate_save(payload: bytes) -> dict:
             pointer = roster.rel(team.offset + relative, size=table.stride, label=field)
             if pointer is None:
                 require(team.index >= 32, f"{team.abbreviation}: null {field} reference")
+                continue
+            # b779 up2: the released v0.7 roster gives the two user slots (32, 33) their own book records outside
+            # the label table; the pointer is already bounds-checked inside the arena by roster.rel. Clubs and
+            # every other team must still point at a table record.
+            if team.index in (32, 33) and field == "playbook":
                 continue
             require(table.offset is not None and pointer >= table.offset
                     and (pointer - table.offset) % table.stride == 0
@@ -414,6 +421,7 @@ def validate_save(payload: bytes) -> dict:
                 "holder, returner, kicker and snapper slot bounds",
                 "team coach and book record references", "schedule team references",
                 "byte-identical Studio round trip")},
+            "exhibition_depth_lock_conflicts_not_enforced": exhibition_conflicts,
             "findings": findings, "changes": []}
 
 
