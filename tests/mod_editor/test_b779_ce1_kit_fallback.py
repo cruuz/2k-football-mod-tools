@@ -278,44 +278,88 @@ class MomentCoachIdentity(unittest.TestCase):
 
 
 class HistoricEaglesSet(unittest.TestCase):
-    """The historic styles option replaces the Eagles' era set 9 with the retail style-0 kit; a project that edited it now
-    hears about it (it used to lose the edits silently)."""
+    """The Eagles use all 15 uniform sets, so the historic styles option puts their retail look on an existing set (era set
+    9). A set the user edited is never replaced: the spare moves to an unedited set nobody wears, or is skipped."""
 
-    class Disc:
-        def __init__(self, files):
-            self.files = files
+    RETAIL = Path(__import__("os").environ.get("NFL2K5_RETAIL_XISO",
+                                                "/media/noah/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso"))
 
-        def has(self, name):
-            return name in self.files
-
-        def get(self, name):
-            return self.files[name]
-
-    def test_an_edited_eagles_set_is_named(self):
+    def choose(self, states, worn_styles=(), historic=None):
         from mod_editor.core import nfl2k5_historic_styles as hs
-        retail = self.Disc({"21h9.iff": b"retail-h", "21a9.iff": b"retail-a"})
-        edited = self.Disc({"21h9.iff": b"edited-h", "21a9.iff": b"retail-a"})
-        notes = hs.overwritten_user_kits(edited, retail, {"21": 9})
-        self.assertEqual(len(notes), 1)
-        self.assertIn("21H9", notes[0])
-        self.assertNotIn("21A9", notes[0])
-        self.assertIn("not in the finished disc", notes[0])
+        sides = [(0, "away", hs.EAGLES, style, 0, "x") for style in worn_styles]
+        with mock.patch.object(hs, "_eagles_set_state", side_effect=lambda t, s, style: states.get(style, "edited")), \
+                mock.patch.object(hs, "historic_style", side_effect=lambda raw: raw):
+            return hs.eagles_spare(types.SimpleNamespace(has=lambda n: False), types.SimpleNamespace(has=lambda n: False),
+                                   historic or {}, sides)
 
-    def test_unedited_sets_and_other_franchises_say_nothing(self):
+    def test_an_unedited_set_9_keeps_the_shipped_choice(self):
         from mod_editor.core import nfl2k5_historic_styles as hs
-        retail = self.Disc({"21h9.iff": b"h", "21a9.iff": b"a", "18h8.iff": b"x"})
-        self.assertEqual(hs.overwritten_user_kits(self.Disc(dict(retail.files)), retail, {"21": 9}), [])
-        edited = self.Disc({"21h9.iff": b"h", "21a9.iff": b"a", "18h8.iff": b"changed"})
-        self.assertEqual(hs.overwritten_user_kits(edited, retail, {"18": 8}), [])     # only the Eagles replace a kit
+        self.assertEqual(self.choose({9: "retail"}), (9, []))
+        self.assertEqual(self.choose({9: "spare"}), (9, []))
+        self.assertEqual(hs.spare_style("21", {"21": 15}), 9)
 
-    def test_the_build_prints_the_note_and_the_check_warns_before_building(self):
+    def test_an_edited_set_9_moves_the_spare_to_the_first_free_unedited_set(self):
+        style, named = self.choose({9: "edited", 11: "retail", 10: "retail"})
+        self.assertEqual(style, 11)
+        self.assertEqual(named, ["21H9", "21A9"])
+        self.assertEqual(self.choose({9: "edited", 11: "edited", 10: "retail"})[0], 10)
+
+    def test_a_set_a_historic_team_or_moment_wears_is_not_free_unless_it_already_holds_the_copy(self):
+        self.assertEqual(self.choose({9: "edited", 11: "retail", 10: "retail"}, worn_styles=(11,))[0], 10)
+        self.assertEqual(self.choose({9: "edited", 11: "spare", 10: "retail"}, worn_styles=(11,))[0], 11)
+        # the Eagles era kit (style 14) and every set the user edited are never taken
+        states = {9: "edited", **{s: "edited" for s in (11, 10, 12, 13, 8, 7, 6, 5, 4, 3, 2)}, 1: "retail"}
+        self.assertEqual(self.choose(states, worn_styles=(1,))[0], None)
+
+    def test_the_choice_reads_back_the_same_after_the_copy_is_written(self):
+        before = {9: "edited", 11: "retail", 10: "retail"}
+        after = {**before, 11: "spare"}
+        self.assertEqual(self.choose(before, worn_styles=())[0], self.choose(after, worn_styles=(11,))[0])
+
+    def test_the_notes_say_where_the_look_went_or_that_nothing_was_replaced(self):
+        from mod_editor.core import nfl2k5_historic_styles as hs
+        self.assertEqual(hs.spare_notes(dict(eagles=9, eagles_edited=[])), [])
+        moved = hs.spare_notes(dict(eagles=11, eagles_edited=["21H9"]))
+        self.assertEqual(len(moved), 1)
+        self.assertIn("set 11", moved[0])
+        self.assertIn("your set 9 is kept", moved[0])
+        skipped = hs.spare_notes(dict(eagles=None, eagles_edited=["21H9", "21A9"]))
+        self.assertIn("Nothing of yours was replaced", skipped[0])
+
+    def test_the_retail_disc_keeps_set_9(self):
+        if not self.RETAIL.is_file():
+            self.skipTest("the retail disc is not available")
+        from mod_editor.core import nfl2k5_historic_styles as hs
+        from mod_editor.core import nfl2k5_music_archive as archive
+        with archive.Disc(self.RETAIL, descriptors=()) as disc, hs.Source(self.RETAIL) as src:
+            target = hs.Target(disc)
+            self.assertEqual(hs._eagles_set_state(target, src, 9), "retail")
+            styles, historic, sides, _situ, _modern = hs._read_inputs(target, src)
+            self.assertEqual(hs.eagles_spare(target, src, historic, sides), (9, []))
+
+    def test_the_roster_status_reads_an_eagles_file_with_a_moved_spare(self):
+        from mod_editor.core import nfl2k5_espn25_rosters as rosters
+        calls = []
+
+        def fake(payload, target, **kw):
+            calls.append(payload)
+            return "retail" if payload == b"normalized" else "foreign"
+        target = {"code": "21", "size": 3}
+        with mock.patch.object(rosters, "_resource_status", side_effect=fake), \
+                mock.patch("mod_editor.core.nfl2k5_historic_styles.undo_spare", return_value=b"normalized"), \
+                mock.patch("mod_editor.core.nfl2k5_historic_styles.with_spare", return_value=b"abc"):
+            self.assertEqual(rosters.resource_status(b"abc", target), "retail")
+        with mock.patch.object(rosters, "_resource_status", return_value="foreign"):
+            self.assertEqual(rosters.resource_status(b"abc", {"code": "18", "size": 3}), "foreign")
+
+    def test_the_build_prints_the_note_and_the_check_says_it_before_building(self):
         text = (ROOT / "mod_editor/core/mod_build.py").read_text(encoding="utf-8")
         self.assertIn('for note in styles_receipt.get("user_notes", ()):', text)
         from mod_editor.core import nfl2k5_project_check as pc
         plan = types.SimpleNamespace(espn25_more_moments=True)
         notes = pc.historic_kit_note(plan, {"21H9", "21A9", "14H8"})
         self.assertEqual(len(notes), 1)
-        self.assertIn("21A9 and 21H9", notes[0].title)
+        self.assertIn("are kept", notes[0].title)
         self.assertEqual(pc.historic_kit_note(plan, {"14H8"}), [])
         self.assertEqual(pc.historic_kit_note(types.SimpleNamespace(espn25_more_moments=False), {"21H9"}), [])
 

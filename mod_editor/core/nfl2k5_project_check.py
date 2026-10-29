@@ -163,7 +163,7 @@ def moment_kit_notes(documents: Iterable[tuple[str, dict]], chunks: dict) -> lis
 
 
 def historic_kit_note(plan, packages: set) -> list:
-    """The Eagles' era set 9 is replaced by the historic styles option (they have no free uniform index)."""
+    """The historic teams' retail Eagles look needs one Eagles set (they use all 15); era set 9 unless it is edited."""
     if not getattr(plan, "espn25_more_moments", False):
         return []
     from . import nfl2k5_historic_styles as styles
@@ -173,10 +173,11 @@ def historic_kit_note(plan, packages: set) -> list:
         return []
     both = " and ".join(edited)
     return [Finding(NOTE, "Historic teams",
-                    f"Your edits to the Eagles' set {styles.EAGLES_SPARE} ({both}) will not be in the finished disc.",
-                    "The Eagles use all 15 uniform sets, so the historic teams' spare replaces that set with the retail "
-                    f"current Eagles kit. Untick 25 more Anniversary moments to keep {both}, or move the artwork to "
-                    "another Eagles set.")]
+                    f"Your edits to the Eagles' set {styles.EAGLES_SPARE} ({both}) are kept.",
+                    "The Eagles use all 15 uniform sets, and the historic Eagles teams need one for their retail look "
+                    f"(usually set {styles.EAGLES_SPARE}). Because you edited it, Build puts that look on another Eagles set "
+                    "nobody edited or wears and names it in the build log; if there is none, it leaves that look out. "
+                    "Nothing of yours is replaced.")]
 
 
 def kit_fix_note(packages: set) -> list:

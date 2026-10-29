@@ -471,6 +471,31 @@ def without_historic_styles(payload, target):
 def resource_status(payload, target, *, colleges=None, source_colleges=None):
     """retail / applied (retail positions), one_pool / one_pool_applied (One-pool reclassified), or foreign.
 
+    b779-ce1: the Eagles' spare moves to another set when the project edited era set 9, so an Eagles file that is foreign
+    with the default spare is read again with each other set undone (a retail file with a real style byte is already
+    recognized by the first read; only a file that fails it is tried, and the full roster pins still decide)."""
+    result = _resource_status(payload, target, colleges=colleges, source_colleges=source_colleges)
+    if result != "foreign" or target.get("code") != "21" or not isinstance(payload, (bytes, bytearray)):
+        return result
+    from . import nfl2k5_historic_styles as styles
+    for spare in range(1, 15):
+        if spare == HISTORIC_SPARES["21"]:
+            continue
+        try:
+            candidate = styles.undo_spare(payload, "21", spare)
+            if styles.with_spare(candidate, spare) != payload or candidate == payload:
+                continue
+        except (ValueError, KeyError, IndexError, struct.error):
+            continue
+        again = _resource_status(candidate, target, colleges=colleges, source_colleges=source_colleges)
+        if again != "foreign":
+            return again
+    return "foreign"
+
+
+def _resource_status(payload, target, *, colleges=None, source_colleges=None):
+    """The status of one resource with the default spare normalized (see resource_status).
+
     The input states are read with the EDGE rename's placeholder surnames put back; the applied states hold no
     placeholder at all (every name is a dataset name).
     """
