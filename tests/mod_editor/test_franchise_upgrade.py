@@ -50,7 +50,7 @@ def fixture(*, current=False, shared=False):
     return bytes(data), cohort
 
 
-CAPACITY_TOTAL = 847020
+CAPACITY_TOTAL = arena.LEGACY_CAPACITY_SAVE_SIZE      # 847,020: tc2's fixture is a beta-78 / v0.7 save
 BLANK = "****************"
 
 
@@ -80,7 +80,10 @@ def capacity_fixture(*, first="Test", last="Player", birth=dt.date(1980, 1, 1), 
         struct.pack_into("<i", out, at + 0x14, (name_at + 34) - (at + 0x14) + 1)
         return bytes(out)
 
-    grown, _receipt = arena.migrate(save(), reserves_16=False, capacity_records=612)
+    # b779 ag1: a beta-78 / v0.7 save (0xB0000 arena, 612 appended records), the size tc2's report was about;
+    # CapacitySaveTests also grows it to the current arena.
+    grown, _receipt = arena._migrate_capacity(save(), 612, class_records=0,
+                                             arena_size=arena.LEGACY_CAPACITY_ARENA_SIZE)
     disc_save = save(disc=True)
     disc_body = bytearray(bytes(0x40) + disc_save[0x320:0x320 + rr.BODY_SIZE - 0x40])
     disc_body[0x0C:0x10] = b"ROST"
@@ -222,10 +225,10 @@ class CapacitySaveTests(unittest.TestCase):
         self.assertEqual(len(save), CAPACITY_TOTAL)
         document = sr.decode(save, base_year=up.BASE_YEAR)
         self.assertEqual(document.reference_year, up.BASE_YEAR + 1)
-        self.assertEqual(document.layout.arena_size, arena.CAPACITY_ARENA_SIZE)
+        self.assertEqual(document.layout.arena_size, arena.LEGACY_CAPACITY_ARENA_SIZE)
         save_object, roster = up.franchise(save)
         self.assertEqual(save_object.header.team_count, 32)
-        self.assertEqual(roster.layout.arena_size, arena.CAPACITY_ARENA_SIZE)
+        self.assertEqual(roster.layout.arena_size, arena.LEGACY_CAPACITY_ARENA_SIZE)
         out, receipt = up.upgrade_team_history(save, disc_body)
         self.assertEqual([(row["season"], row["after"], row["slot"]) for row in receipt["changes"]],
                          [(2025, "SF", 3)])
@@ -245,6 +248,21 @@ class CapacitySaveTests(unittest.TestCase):
         teams = [((w >> 23) & 0x1F, w & 0xFFFF) for w in words if ((w >> 16) & 0x7F) == 87]
         self.assertEqual(teams, [(1, 3)])                     # CIN is index 2 -> value 3
         self.assertFalse(any(slot == 31 for slot, _value in teams))   # the 2026 row stays '--'
+
+    def test_current_capacity_save_reads_its_year_and_upgrades_the_same_row(self):
+        # b779 ag1: the same v0.7 save grown to the current arena (records appended, pool moved again) reads the same
+        # year and gets the same TEAM row.
+        legacy, disc_body = capacity_fixture()
+        save, receipt = arena.migrate(legacy, reserves_16=False, capacity_records=612)
+        self.assertEqual(len(save), arena.CAPACITY_SAVE_SIZE)
+        self.assertEqual(receipt["source"], "capacity")
+        document = sr.decode(save, base_year=up.BASE_YEAR)
+        self.assertEqual(document.reference_year, up.BASE_YEAR + 1)
+        self.assertEqual(document.layout.arena_size, arena.CAPACITY_ARENA_SIZE)
+        self.assertEqual(document.history_words, sr.decode(legacy, base_year=up.BASE_YEAR).history_words)
+        out, changes = up.upgrade_team_history(save, disc_body)
+        self.assertEqual([(row["season"], row["after"], row["slot"]) for row in changes["changes"]],
+                         [(2025, "SF", 3)])
 
     def test_played_clubs_command_follows_the_capacity_pool(self):
         save, disc_body = capacity_fixture()

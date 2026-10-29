@@ -1090,17 +1090,28 @@ def sync_free_agents(payload: bytes, disc_body: bytes, *, keep: int = SAVE_KEEP_
     require(type(keep) is int and keep >= 0, "keep must be a non-negative record count")
     cohort = free_agent_cohort() if cohort is None else cohort
     disc = rr.RosterDocument(disc_body, scheme="one_pool", reference_year=BASE_YEAR)
-    capacity_request = arena.capacity_descriptor(disc_body, sr.decode(
-        disc_body, preamble=0, reference_year=BASE_YEAR).layout)
+    disc_layout = sr.decode(disc_body, preamble=0, reference_year=BASE_YEAR).layout
+    capacity_request = arena.capacity_descriptor(disc_body, disc_layout)
     growth = None
-    if capacity_request and roster.layout.arena_size < arena.CAPACITY_ARENA_SIZE:
-        require(roster.overflow is None, "capacity migration does not compose with a 16-reserve save")
-        migrated, migration = arena.migrate(payload, reserves_16=False, capacity_records=capacity_request[0])
-        growth = {"arena_size_before": roster.layout.arena_size, "arena_size_after": arena.CAPACITY_ARENA_SIZE,
-                  "records": capacity_request[0], "file_growth": len(migrated) - len(payload),
-                  "migration": migration}
-        payload = migrated
-        save, roster = franchise(payload)
+    if capacity_request and roster.layout.arena_size < disc_layout.arena_size:
+        # b779 ag1: the disc's appended records are create vacancies (the dated free agents went into them) and free
+        # draft-class records (flags 0); a retail save takes as many vacancies as the disc made and the class records
+        # that fit, a beta-78 capacity save (0xB0000, with its descriptor) keeps its vacancies and gains class records.
+        # A grown save the game itself migrated (no descriptor) and a 16-reserve save are left at their size.
+        legacy_capacity = arena.is_capacity_size(roster.layout.arena_size)
+        grow = ((roster.overflow is None and not legacy_capacity)
+                or (legacy_capacity and arena.capacity_descriptor(payload, roster.layout) is not None))
+        require(grow or legacy_capacity, "capacity migration does not compose with a 16-reserve save")
+        if grow:
+            vacancies = capacity_request[0] - arena.capacity_class_count(disc_body, disc_layout)
+            migrated, migration = arena.migrate(payload, reserves_16=False, capacity_records=vacancies,
+                                                class_records=None)
+            growth = {"arena_size_before": roster.layout.arena_size, "arena_size_after": disc_layout.arena_size,
+                      "records": migration["capacity_records"], "vacancy_records": migration.get("vacancy_records"),
+                      "class_records": migration.get("class_records"),
+                      "file_growth": len(migrated) - len(payload), "migration": migration}
+            payload = migrated
+            save, roster = franchise(payload)
     document = rr.RosterDocument(payload, base=roster.layout.preamble, scheme="one_pool", base_year=BASE_YEAR)
     require(document.free_agent_list is not None, "the franchise has no free-agent list")
     base_payload = payload

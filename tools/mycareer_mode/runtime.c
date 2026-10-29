@@ -135,12 +135,12 @@ u32 FC inline_stage(const u8 *file,u32 size) {
     u32 base,growth,arena,pool,p,i,ref,declared,native;
     const u8 *b,*r;
     S(2660)=0; S(2664)=0;
-    /* b778 fa6: a capacity (0xB0000) arena writes 847,020-byte saves (847,148 with the MyCareer
+    /* b778 fa6: a capacity arena writes larger saves (beta-78's 0xB0000: 847,020, 847,148 with the MyCareer
      * footer). b778-pg3: the Player Progress footer (34,320 B) follows the MyCareer footer when
-     * both are present. The native size follows the ROST wrapper the save itself declares, so the
-     * three geometries need no size list. */
+     * both are present. The native size follows the ROST wrapper the save itself declares: retail,
+     * 0x92000, beta-78's 0xB0000, or this build's own arena ([0xB72808], b779 ag1), never a larger one. */
     declared=W(file,0x2e4);
-    if(declared!=0x91020 && declared!=0x92020 && declared!=0xb0020) return 0;
+    if(declared!=0x91020 && declared!=0x92020 && declared!=0xb0020 && declared!=G(0xB72808)+0x20) return 0;
     native=declared+0x1ec8c;
     if(size==native+34320 || size==native+128+34320) size-=34320;
     if(size!=native && size!=native+128) return 0;
@@ -167,9 +167,10 @@ u32 FC inline_stage(const u8 *file,u32 size) {
 }
 /* Metadata admission is independent of the currently loaded career. */
 u32 FC inline_admit(u32 size) {
-    u32 max=G(0xB72808), base=720044;
-    if(max>=0xB0000) base=847020;
-    else if(max>=0x92000) base=724140;
+    /* b779 ag1: this build's native size follows its arena (720,044 + arena - 0x91000: 724,140 for 0x92000);
+     * a larger capacity build also admits beta-78's 0xB0000 saves (847,020 / 847,148), which load and migrate. */
+    u32 max=G(0xB72808), base=720044+max-0x91000;
+    if(max>0xB0000 && (size==847020 || size==847148)) return 1;
     return size==720044 || size==720172 || size==base || size==base+128;
 }
 

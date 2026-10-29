@@ -70,18 +70,19 @@ void FC arena_load(u8 *w) {
     aux=(ver==17 || ver==18)?0:word8;
     if(aux>ARENA_SIZE-BLOCK_OFFSET-352) return;
     root=w+52+U32(w,52)-1;
+    old_size=declared+32-((u32)root-(u32)w);
     if(ver==1 || ver==18) {
         u32 full=ver==1?ARENA_SIZE+0x20:ARENA_SIZE+0x40;
         if(root!=w+(ver==1?64:96) || declared>full || declared<(ver==1?0x92020:0x92040)) return;
-        b=root+BLOCK_OFFSET;
-        if(U32(b,0)!=0x52354b32 && ARENA_CAPACITY && declared<full) b=root+0x91c00U;
+        /* b779 ag1: an older grown arena (0x92000, or beta-78's 0xB0000 capacity arena) keeps its block 0x400 before
+         * ITS end; every grown schema does (nfl2k5_roster_arena.CAPACITY_TAIL). */
+        b=root+(ARENA_CAPACITY?old_size-0x400U:BLOCK_OFFSET);
         if(U32(b,0)!=0x52354b32 || U32(b,4)!=0x00325653 ||
            U32(b,8)!=0x00200002 || U32(b,12)!=0x00020005 ||
            (U32(b,28)&~0x102U) || crc(b)!=U32(b,20)) return;
     } else if(ver==0) {
         if(root!=w+64 || declared!=0x91020) return;
     } else if(ver!=17 || root!=w+96 || declared!=0x90f60) return;
-    old_size=declared+32-((u32)root-(u32)w);
     U32(w,8)=aux;
     retail_load(w);
     U32(w,8)=word8;
@@ -92,13 +93,14 @@ void FC arena_load(u8 *w) {
         zero(root+old_size,ARENA_SIZE-old_size-aux);
         initialize(root);
     } else if(ARENA_CAPACITY && old_size<ARENA_SIZE) {
-        /* A 0x92000 save or disc loaded into the capacity arena: preserve its auxiliary tail and move the
-         * overflow block to its new, fixed position. Capacity builds never combine reserves with the
-         * capacity growth, but an older save may still carry an empty reserve block. */
+        /* A 0x92000 or beta-78 0xB0000 (capacity) save or disc loaded into the capacity arena: preserve its
+         * auxiliary tail and move the overflow block, with the capacity descriptor in the 16 bytes before it, to
+         * the new, fixed position. Capacity builds never combine reserves with the capacity growth, but an older
+         * save may still carry an empty reserve block. Its records stay where they are (no record is added). */
         copy(root+ARENA_SIZE-aux,root+old_size-aux,aux);
         zero(root+old_size,ARENA_SIZE-old_size-aux);
-        b=root+0x91c00U;
-        if(U32(b,0)==0x52354b32 && U32(b,4)==0x00325653) copy(root+BLOCK_OFFSET,b,352);
+        b=root+old_size-0x400U;
+        if(U32(b,0)==0x52354b32 && U32(b,4)==0x00325653) copy(root+BLOCK_OFFSET-16,b-16,368);
     }
     U32((u8 *)0xB7280C,0)=ARENA_SIZE-aux;
     if(aux) U32((u8 *)0xBDB758,0)=(u32)root+ARENA_SIZE-aux;

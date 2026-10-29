@@ -41,6 +41,7 @@ import struct
 from pathlib import Path
 
 from . import platform_compat
+from . import nfl2k5_roster_arena as _arena
 
 XBE_MAGIC = b"XBEH"
 MASTER_XBOX_KEY = bytes.fromhex("5C0733AE0401F7E8BA7993FDCD2F1FE0")
@@ -48,8 +49,11 @@ MASTER_XBOX_KEY = bytes.fromhex("5C0733AE0401F7E8BA7993FDCD2F1FE0")
 SETTINGS_SAVE_SIZE = 736
 SETTINGS_BLOCK_SIZE = 0x2E0
 FRANCHISE_SAVE_SIZE = 720044
-CAPACITY_SAVE_GROWTH = 0x1F000          # b778 fa4: 0x91000 -> 0xB0000 arena
-CAPACITY_SAVE_SIZE = FRANCHISE_SAVE_SIZE + CAPACITY_SAVE_GROWTH
+# b778 fa4 / b779 ag1: the capacity arena's growth over the retail 0x91000 arena, from the one layout helper
+# (nfl2k5_roster_arena.CAPACITY_ARENA_SIZE). Both capacity geometries (beta-78's 847,020 and the current one) read.
+CAPACITY_SAVE_GROWTH = _arena.CAPACITY_SAVE_GROWTH
+CAPACITY_SAVE_SIZE = _arena.CAPACITY_SAVE_SIZE
+CAPACITY_SAVE_SIZES = _arena.CAPACITY_SAVE_SIZES
 FRANCHISE_STATE_OFFSET = 0x91320
 FRANCHISE_STAGE_WEEKS_OFFSET = 0x91324
 FRANCHISE_WEEK_OFFSET = 0x91325
@@ -248,9 +252,9 @@ def save_kind(payload: bytes) -> str:
         return "settings"
     if len(payload) == FRANCHISE_SAVE_SIZE:
         return "franchise"
-    if len(payload) in (FRANCHISE_SAVE_SIZE + 0x1000, FRANCHISE_SAVE_SIZE + 128,
-                        FRANCHISE_SAVE_SIZE + 0x1000 + 128, CAPACITY_SAVE_SIZE,
-                        CAPACITY_SAVE_SIZE + 128):
+    if len(payload) in ((FRANCHISE_SAVE_SIZE + 0x1000, FRANCHISE_SAVE_SIZE + 128,
+                         FRANCHISE_SAVE_SIZE + 0x1000 + 128) + CAPACITY_SAVE_SIZES
+                        + tuple(n + 128 for n in CAPACITY_SAVE_SIZES)):
         from .nfl2k5_franchise_save import is_franchise_save
         if is_franchise_save(payload):
             return "franchise"
@@ -261,8 +265,8 @@ def _franchise_shift(payload) -> int:
     if len(payload) == FRANCHISE_SAVE_SIZE:
         return 0
     _require(len(payload) in (FRANCHISE_SAVE_SIZE + 0x1000, FRANCHISE_SAVE_SIZE + 128,
-                             FRANCHISE_SAVE_SIZE + 0x1000 + 128, CAPACITY_SAVE_SIZE,
-                             CAPACITY_SAVE_SIZE + 128), "unsupported franchise container length")
+                             FRANCHISE_SAVE_SIZE + 0x1000 + 128) + CAPACITY_SAVE_SIZES
+             + tuple(n + 128 for n in CAPACITY_SAVE_SIZES), "unsupported franchise container length")
     from .nfl2k5_franchise_save import FranchiseSave
     try:
         save = FranchiseSave(payload)

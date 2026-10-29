@@ -95,7 +95,10 @@ HISTORIC_ROST_ENTRIES = range(113, 188)
 # after that growth, so the scan has to read the grown shape; nothing else about it changes.
 ROST_VERSION_RETAIL = 17
 ROST_VERSION_GROWN = 18
-GROWN_ARENA_SIZES = (0x92000, 0xB0000)
+if str(_HERE.parent) not in sys.path:
+    sys.path.append(str(_HERE.parent))
+from mod_editor.core import nfl2k5_roster_arena as _arena  # noqa: E402  (b779 ag1: the one layout helper)
+GROWN_ARENA_SIZES = _arena.ARENA_SIZES
 PURE_THREE_FOUR_BOOKS = ("BAL", "HOU", "NE", "PIT", "SD")
 DUAL_BOOKS = ("DAL", "MIN", "NYJ", "OAK", "GEN", "WCO", "reference")
 

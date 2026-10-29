@@ -243,7 +243,7 @@ class HostBudgetTests(unittest.TestCase):
             # b779 rc1: mode_grown_member reads the capacity (0xB0000) arena's overflow row too, so MyCareer
             # creation no longer refuses "Roster is full." on v0.7 (test_b779_rc1_roster_capacity).
             'tools/mycareer_mode/runtime.c':
-                '7d5ff233df81bce6905e2e3387c13a797be52619aa5c43390518e88b463d88f4',
+                '9d0f9925d0eedf97af2b28784dcc592d8778551ad02293f9bf9c9ce03ff4e32c',
             'tools/mycareer_mode/runtime.S':
                 '768241d4390839629906e81678ca46cb7f2d2578ac791a72dd71df5a3cde0484',
             'mod_editor/core/nfl2k5_my_career_mode.py':
@@ -255,7 +255,7 @@ class HostBudgetTests(unittest.TestCase):
                 # mo2: guard view accepts the moment context hook over the pinned 0xCB240 span.
                 # b778 bd3: recognition views for the star-career class-loop hooks and the Player Progress
                 # screen chained over the inline footer hooks (runtime code unchanged).
-                '30767783d1aff7436d3b0502809c7bc53586900f3dd4eeb8a17c6a14b5d43990',
+                'b65ffa6a2f646805cc64e41ec28f00b73a7eeaee1d48500113d9a0b8caef2eee',
             'mod_editor/core/nfl2k5_my_career_code.py':
                 '0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b',
             'mod_editor/core/nfl2k5_my_career_progression.py':

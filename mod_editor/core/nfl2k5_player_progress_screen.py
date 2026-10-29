@@ -707,26 +707,27 @@ def _assemble(code_va: int, data_va: int, map_va: int, text_va: int,
     a.b("61"); a.b("9d"); a.b("c3")
 
     a.label("admission")
+    # b779 ag1: admitted franchise sizes, each also with the MyCareer footer, the Player Progress footer or both:
+    # retail (720,044), this build's own native size (720,044 + [0xB72808] - 0x91000: 724,140 on the 0x92000 arena,
+    # the capacity size on the capacity arena), and on a capacity build larger than beta-78's, beta-78's 847,020
+    # save (nfl2k5_roster_arena.LEGACY_CAPACITY_SAVE_SIZE), which loads and migrates.
     a.b("8b8eccc1bd00")                         # mov ecx,[esi+0xbdc1cc] (file size)
-    a.b("8b15" + _imm(0x00B72808))              # mov edx,[0xb72808] (arena size)
-    a.b("b8" + _imm(record.RETAIL_SAVE_SIZE))
-    a.b("81fa" + _imm(0x000B0000)); a.j8("72", "adm_92")
-    a.b("b8" + _imm(record.CAPACITY_SAVE_SIZE)); a.j8("eb", "adm_base")
-    a.label("adm_92")
-    a.b("81fa" + _imm(0x00092000)); a.j8("72", "adm_base")
-    a.b("b8" + _imm(record.RESERVE_SAVE_SIZE))
-    a.label("adm_base")
-    a.b("39c1"); a.j8("74", "adm_ok")
-    a.b("8d90" + _imm(record.MYCAREER_FOOTER_SIZE)); a.b("39d1"); a.j8("74", "adm_ok")
-    a.b("8d90" + _imm(FOOTER_SIZE)); a.b("39d1"); a.j8("74", "adm_ok")
-    a.b("8d90" + _imm(record.MYCAREER_FOOTER_SIZE + FOOTER_SIZE)); a.b("39d1"); a.j8("74", "adm_ok")
-    a.b("81f9" + _imm(record.RETAIL_SAVE_SIZE)); a.j8("74", "adm_ok")
-    a.b("81f9" + _imm(record.RETAIL_SAVE_SIZE + record.MYCAREER_FOOTER_SIZE)); a.j8("74", "adm_ok")
-    a.b("81f9" + _imm(record.RETAIL_SAVE_SIZE + FOOTER_SIZE)); a.j8("74", "adm_ok")
-    a.b("81f9" + _imm(record.RETAIL_SAVE_SIZE + record.MYCAREER_FOOTER_SIZE + FOOTER_SIZE)); a.j8("74", "adm_ok")
+    a.b("b8" + _imm(record.RETAIL_SAVE_SIZE)); a.j32("e8", "adm_family"); a.j8("74", "adm_ok")
+    a.b("a1" + _imm(0x00B72808))                # mov eax,[0xb72808] (arena size)
+    a.b("05" + _imm(record.RETAIL_SAVE_SIZE - 0x91000)); a.j32("e8", "adm_family"); a.j8("74", "adm_ok")
+    a.b("3d" + _imm(record.LEGACY_CAPACITY_SAVE_SIZE)); a.j8("76", "adm_bad")
+    a.b("b8" + _imm(record.LEGACY_CAPACITY_SAVE_SIZE)); a.j32("e8", "adm_family"); a.j8("74", "adm_ok")
+    a.label("adm_bad")
     a.b("b801000000"); a.b("5e"); a.b("c3")     # mov eax,1 ; pop esi ; ret (damaged)
     a.label("adm_ok")
     a.b("31c0"); a.b("5e"); a.b("c3")
+    a.label("adm_family")                       # ZF: ecx is eax plus 0, the career, the progress or both footers
+    a.b("39c1"); a.j8("74", "adm_family_done")
+    a.b("8d90" + _imm(record.MYCAREER_FOOTER_SIZE)); a.b("39d1"); a.j8("74", "adm_family_done")
+    a.b("8d90" + _imm(FOOTER_SIZE)); a.b("39d1"); a.j8("74", "adm_family_done")
+    a.b("8d90" + _imm(record.MYCAREER_FOOTER_SIZE + FOOTER_SIZE)); a.b("39d1")
+    a.label("adm_family_done")
+    a.b("c3")
     return a.assemble(), dict(a.labels)
 
 
