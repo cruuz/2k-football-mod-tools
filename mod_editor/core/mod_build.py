@@ -1259,6 +1259,7 @@ _LATE_OWNER_OPTIONS = (
     ("nfl2k5_sim_cb_tackles", "Cornerback tackle credit", lambda p: p.sim_cb_tackles),  # b778-cb1
     ("nfl2k5_clock_led", "Modern clock digits", lambda p: p.modern_clock_led),  # b778-sd4
     ("nfl2k5_return_coverage", "Return coverage pursuit angles", lambda p: p.return_coverage),  # b778-kr1
+    ("nfl2k5_preseason_warning", "2026 franchise economy", lambda p: p.franchise_economy),  # b779-rc1: the warned flag
 )
 _REBUILD_HINT = " Build from your unmodified retail dump instead."
 
@@ -3738,6 +3739,22 @@ def _apply_pass_protection(plan, target, receipt, progress):
     receipt["steps"].append({"step": "pass_protection", **{k: v for k, v in result.items() if k not in ("edits", "reservations")},
                              "edits": result.get("edits", [])})
     receipt["result"]["pass_protection"] = "applied"
+
+
+def _apply_preseason_warning(plan, target, receipt, progress):
+    """b779-rc1: with the franchise economy, warn once in the last preseason week that the gate will cut to 53."""
+    if not plan.franchise_economy:
+        return
+    module = _core_module("nfl2k5_preseason_warning")
+    if module is None:
+        raise RuntimeError("The pre-season roster warning module is not available in this build")
+    progress("Franchise: pre-season roster warning", 0, 0)
+    xbe, result = module.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, xbe)
+    if module.status(_xbe_bytes(target)) != "applied":
+        raise RuntimeError("Pre-season roster warning: the executable does not read back as applied")
+    receipt["steps"].append({"step": "preseason_warning", **result})
+    receipt["result"]["preseason_warning"] = "applied"
 
 
 def _roster_capacity_records(plan):
@@ -6396,6 +6413,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     _apply_module_loader(plan, target, receipt, progress)
     # b778-kr1: return coverage, after the module loader (nfl2k5_xbe_space.LATE_OWNERS order)
     _apply_return_coverage(plan, target, receipt, progress)
+    # b779-rc1: the pre-season roster warning (with the franchise economy), the last late allocator owner
+    _apply_preseason_warning(plan, target, receipt, progress)
     # b778-pg2: the Player Progress screen and weekly snapshot (a late allocator owner after force_out)
     # b778-cb1: cornerback tackle credit, after force_out
     # b778-sd4: modern clock digits, after modern sideline catches
