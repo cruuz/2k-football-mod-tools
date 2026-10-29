@@ -766,7 +766,14 @@ def _pool(path: Path | str) -> tuple[list[str], list[str]]:
     from . import nfl2k5_roster_records as rr  # noqa: PLC0415
     from . import nfl2k5_roster_arena as arena  # noqa: PLC0415
     with rr._outer_image()(path) as archive:
-        if arena.grown_outer(archive, rr.ROST_OUTER_INDEX):
+        entry = archive.entries[rr.ROST_OUTER_INDEX] if len(archive.entries) > rr.ROST_OUTER_INDEX else None
+        if entry is not None and entry.size in tuple(arena.disc_resource_size(size) for size in arena.CAPACITY_ARENA_SIZES):
+            # b779-int1: a capacity-grown roster is read in place. The name pool is reached through field-relative
+            # pointers, so the grown resource gives the same pool as the retail-geometry view (proved equal on the
+            # v0.7 0xB0060 roster); the view itself cannot be rebuilt for the v0.8 0xCA060 roster after the dated
+            # refresh (a retained player's name sits behind the removed capacity records), which stopped the build.
+            resource = archive.read(entry.virtual_offset, entry.size)
+        elif arena.grown_outer(archive, rr.ROST_OUTER_INDEX):
             resource = arena.inspection_resource(archive, rr.ROST_OUTER_INDEX)
         else:
             entry = rr._entry(archive)
