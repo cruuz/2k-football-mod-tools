@@ -60,9 +60,38 @@ genuinely ugly people", "it's very rare you stumble onto the same face twice"):
    * code: region B grows by the 9 nop bytes of padding after its ret 4 (0xE7117..0xE7120, no reference lands there);
      the lean / heavy cut-offs are code immediates; still zero allocator bytes.
 
+b779-rf3 (Noah 10/28: "generate a ton more ... so the ugly faces are drowned out a bit more ... unique ... realistic";
+"an edge rusher is ... probably under 280 ... make sure the prospects ... are roughly, on average, the size and weight
+they should be ... the occasional large edge"; SWeaR 10/27: "Some rookie headshots are cut off/cropped out"):
+   * bodies: retail rolls weight and height each uniformly and independently between the position's two template
+     records, and the SOFTDRINK templates put an EDGE anywhere in 245..320 lb and 72..78 in (mean 282 lb).  Region A now
+     also replaces that roll (0xE686E..0xE6923) with the per-position BODY table (nflverse combine means and sds): a
+     bell from -3 to +3 sd, weight and height correlated, 1 prospect in 64 a heavy outlier around +3 sd.  The table is
+     code, so old saves get it too; templates and ratings are untouched.
+   * more faces and fewer plain/ugly ones drawn: new ordinary faces join the rows, and each row's last (5 * count) >> 4
+     faces (the review's plainest and ugliest, ordered there by tools/b77/rf3_bank.py) are redrawn once when the first
+     draw lands there, so they come up about (5/16)^2 = 10 % of the time instead of 31 % (nothing is deleted).  The
+     generic head-shape draw moved from region D to region A to make room.
+   * ratings (Noah 10/28 13:00, "make sure rookie ratings are well done"): region C (0xE6D51..0xE6F56) keeps the
+     retail rating loop (each of 29 ratings b + r * (a - b) between the position's two templates, so every position
+     keeps its own profile) but draws r through qrand: 10 prospects in 256 (BLUEK) are blue-chips whose every rating
+     lands in the upper half of his range, the rare 80+ first-rounder.  The three capped rolls after the loop
+     (consistency, aggressiveness, composure: templates capped at 100) are the same arithmetic in a small loop, which
+     makes the room.  With the rf3 templates (below) and progression, measured with the game's own class loop and OVR
+     routine (3 classes of 450): round 1 72.6 OVR (8 at 80+ in 3 classes), round 2 67.7, rounds 4-7 61.9..57.2, UDFA
+     53.7; the real 2026 draft as the SOFTDRINK roster rates it: 74.9, 66.9, 60.7..57.6.
+   * templates (Noah 10/28: "fix the templates ... similar to what makes the game play the best"): templates.json
+     holds the 68 template rating bytes fitted to the real 2026 rookies on the SOFTDRINK roster, written into the main
+     roster by the build (apply_templates).
+   * the rows were laid out again from 13569 so they can grow; every beta-78 id stays a portrait of the same face
+     (legacy_id), so prospects drafted on that disc keep their headshot, skin and hair.  Faces whose crop cut the top of
+     the head were re-framed by the eyes (both ids show the fixed crop); the few with no source image left the rows.
+
 Saves: the code reads the pool, the roster and the position from the live roster, so an old franchise save gets the
 new faces for every class it generates after the update (its own name pool may lack the nicknames; nothing else
-differs).  Players already in a save keep their portrait ids.
+differs).  Players already in a save keep their portrait ids.  The bodies, the blue-chip draw and the zone are
+code, so old saves get them; the templates are roster data, and a franchise save carries its own roster copy, so the
+fitted templates reach franchises started on the new disc.
 """
 from __future__ import annotations
 
@@ -85,18 +114,24 @@ HELP_TEXT = ("EXPERIMENTAL. Generated draft prospects get new fictional draft he
              "photos: the face matches his in-game skin tone and build (his weight), his name and position make his "
              "skin tone as likely as in the real NFL, and a face an active player already wears is avoided. A few "
              "prospects get a nickname first name, and now and then an East Asian or South Asian prospect appears "
-             "with a fitting name. Disc images only. Not yet tested in a long franchise.")
+             "with a fitting name. Their height and weight follow real NFL combine measurements for the position, and "
+             "now and then a blue-chip prospect rates in the 80s. "
+             "Disc images only. Not yet tested in a long franchise.")
 EVIDENCE = "EXPERIMENTAL"
 DATA_DIR = ROOT / "data" / "nfl2k5_rookie_faces"
 BANK_JSON = DATA_DIR / "bank.json"
 NAMES_JSON = DATA_DIR / "name_odds.json"
-SCHEMA_BANK = "nfl2k5_rookie_faces_bank/v2"
+TEMPLATES_JSON = DATA_DIR / "templates.json"   # b779-rf3: the class generator's 68 templates (rating bytes)
+SCHEMA_TEMPLATES = "nfl2k5_rookie_faces_templates/v1"
+SCHEMA_BANK = "nfl2k5_rookie_faces_bank/v3"
 SCHEMA_NAMES = "nfl2k5_rookie_faces_names/v1"
 
 # ------------------------------------------------------------------------------------------------ the executable
 IMAGE_BASE = 0x10000
-REGION_A = 0xE67EA            # retail skin/face draw, 132 bytes up to the weight code at 0xE686E
-REGION_A_END = 0xE686E
+REGION_A = 0xE67EA            # retail skin/face draw (132 bytes) and weight/height roll (b779-rf3: 181 bytes) of FUN_000E6780
+REGION_A_END = 0xE6923        # the next retail instruction (the +0x20 bits 3-9 coin)
+REGION_C = 0xE6D51            # b779-rf3: the rating loop and the three capped rolls (consistency, aggressiveness, composure)
+REGION_C_END = 0xE6F56        # up to the retail "mov byte [esi+8], 6"
 REGION_B = 0xE7019            # retail portrait pick and epilogue, plus the 9 nop bytes of padding after its ret 4
 REGION_B_END = 0xE7120        # (0xE7117..0xE7120 is inter-routine padding, no reference lands there; next routine 0xE7120)
 TABLE_VA = 0x4F4F40           # retail generic-portrait range table (41 rows + sentinel), only read by REGION_B
@@ -109,11 +144,21 @@ RECORD_NAME = "Portrai2.iff"
 CDF_NAME = "portrai2.cdf"
 RETAIL_RECORD_NAME = "Portrait.iff"
 RETAIL_CDF_NAME = "portrait.cdf"
-# Assembled from tools/b77/rh1_rookie_faces.S (GNU as, linked at 0xE67EA; b778-rh2 version); the listing is in that file.
+# Assembled from tools/b77/rh1_rookie_faces.S (GNU as, linked at 0xE67EA; b779-rf3 version); the listing is in that file.
 CODE_A = bytes.fromhex(
-    "e97f00000051e8060000005931d2f7f1c3b9a0fce500e94b23f6ff31ff39cf73083904fb740347ebf4c38b4d008b5504"
+    "e9e900000051e8060000005931d2f7f1c3b9a0fce500e94b23f6ff31ff39cf73083904fb740347ebf4c38b4d008b5504"
     "85c9740c66394206740983c25449ebf083c901c30fb705a04f4f0039c7722e39cf732a663b3d9d4f4f00730de8b0ffff"
-    "ff8405a24f4f0074140fb70da04f4f00e890ffffff89d78b04fb894610c3")
+    "ff8405a24f4f0074140fb70da04f4f00e890ffffff89d78b04fb894610c3500fb6d40fb6c001d00fb654240201d0807c"
+    "240304730505800100005a0fb6d50fafc2c1e80a0fb6c901c8c32850460e007a4212166c4510096f43111241440c1d44"
+    "440d1d44440d1a5f420d4051450b4d3d490b374a450d3949450d8834490987514a08825d4b097177480a4b4e480b0fb6"
+    "7e358d3cbd94680e00e813ffffff50668b0fe877ffffff88462ae802ffffff5ac1e00888d00d000000ff668b4f02e85b"
+    "ffffff88462b6a0759e8d7feffff01d2806622f1085622eb00")
+CODE_C = bytes.fromhex(
+    "e89e00000089d9ff178944241cdb44241cd95c241089e9ff178944241cdb44241cd95c241cb9a0fce500e887000000d9"
+    "442410d864241c51dec9d8442420d91c24e879d1ffff88c289f1ff57fc83c71481fff84e4f007cad6a025f0fb6971e6e"
+    "0e00520fbe041383f8647c036a64580fbe4c150083f9647c036a645929c85150e825faffff0fb7c05a0fafc2c1f81059"
+    "01c85a8804164f79c2b9a0fce500e962010000e802faffff3c0a19c089442418bfb44c4f00c3e8841df6fff644241801"
+    "740ad9e8dec1d80d84414e00c34e5150")
 CODE_B = bytes.fromhex(
     "89068b2d1829b7008b5d548b4d5083c3048b4614e8d3f7ffff897c241431d239cf732289f8c1e8020fb68008504f0089"
     "f983e10301c9d3e883e0030fbe90744f4f008b4d508954241083eb048b4610e898f7ffffe8bcf7ffff8b03668b00663b"
@@ -123,9 +168,9 @@ CODE_B = bytes.fromhex(
     "0fb6462a31d23c4a7606423c7d720142e964df4000")
 CODE_D = bytes.fromhex(
     "895c24108b442414662b05a34f4f0083f803732c31c93c020f93c18a99514f4f00895c24108d59068b0e83e1038d0481"
-    "6603059d4f4f008b4d548b0cc1894e108d3c5b01d78d3cbda84f4f006a185b0fb74f0280e501e81217bfff895424140f"
-    "b70701d0e82917bfff75034b75e1668946068b4e1881e17efcffff8b442410c1e00709c10fb64703d1e8394424147301"
-    "41894e186a0759e8d116bfff01d2806622f10856225f5e5d5b83c408c20400")
+    "6603059d4f4f008b4d548b0cc1894e108d3c5b01d78d3cbda84f4f006a185b0fb74f0280e501e81217bfff80fb18750c"
+    "8d0489c1e80429c139ca7310895424140fb70701d0e81817bfff75034b75d0668946068b4e1881e17efcffff8b442410"
+    "c1e00709c10fb64703d1e839442414730141894e185f5e5d5b83c408c20400")
 
 # table layout (offsets from TABLE_VA)
 T_POS, T_TONES, T_FIRST, T_LASTCODE, T_SIG = 0x00, 0x11, 0x14, 0x34, 0x38
@@ -172,6 +217,49 @@ NICKMASK = 7                  # keep a drawn nickname one time in eight
 UNITS = 16                    # table logits are 1/16 nat
 
 
+# b779-rf3 prospect bodies.  Retail draws weight and height each uniformly and independently between the position's two
+# secondary template records (SOFTDRINK v0.7: EDGE 245..320 lb x 72..78 in, a 300 lb 6'0" edge was ordinary).  Region A
+# now draws value = lo + (c * S) >> 10 with S the sum of three random bytes (mean 382.5, sd 128: a bell from -3 to +3 sd,
+# so c = 8 sd), weight and height sharing one byte (correlation 1/3; nflverse within-position r is 0.17..0.70), and
+# 1 weight draw in 64 (OUTLIER_K / 256) adds OUTLIER_ADD to S: a heavy outlier centred on +3 sd (the occasional 260 lb
+# back or 290 lb edge).  The table is in the code (region A), so old franchise saves get it too; the templates and every
+# rating are untouched.  (lo, c) per position were fitted so that the exact distribution of the native draw, outliers
+# included, has the mean and sd of the nflverse combine measurements (combine.csv, sha256 5648886b1bb9de8a...,
+# https://github.com/nflverse/nflverse-data/releases/tag/combine; position labels and seasons as noted).
+# Columns: weight lo (lb - 150), weight c, height lo (in), height c, then the target mean / sd lb, mean / sd in, n.
+BODY = {
+    "QB": ( 40,  80, 70, 14,  219.9, 10.6, 74.61, 1.84, 192),  # QB 2015-26
+    "K": (  0, 122, 66, 18,  195.5, 18.8, 72.07, 2.25,  54),  # K 2015-26
+    "P": ( 22, 108, 69, 16,  212.6, 14.5, 74.42, 2.00,  60),  # P 2015-26
+    "WR": (  9, 111, 67, 17,  200.6, 14.8, 72.84, 2.28, 572),  # WR 2015-26
+    "CB": ( 18,  65, 68, 12,  192.2,  8.7, 71.89, 1.65, 420),  # CB 2015-26
+    "FS": ( 29,  68, 68, 13,  204.3,  9.1, 72.35, 1.55, 255),  # S+SAF 2015-26
+    "SS": ( 29,  68, 68, 13,  204.3,  9.1, 72.35, 1.55, 255),  # S+SAF 2015-26
+    "HB": ( 26,  95, 66, 13,  211.6, 12.8, 70.39, 1.86, 353),  # RB 2015-26
+    "FB": ( 64,  81, 69, 11,  244.4, 10.8, 72.54, 1.46, 122),  # FB 2000-26
+    "TE": ( 77,  61, 73, 11,  249.6,  8.0, 76.38, 1.41, 242),  # TE 2015-26
+    "OLB": ( 55,  74, 69, 13,  232.5,  9.9, 73.53, 1.61, 174),  # LB 2021-26
+    "ILB": ( 57,  73, 69, 13,  234.2,  9.6, 73.42, 1.55, 238),  # LB 2021-26 + ILB 2015-18
+    "C": (136,  52, 73,  9,  305.2,  7.0, 75.73, 1.14,  90),  # C 2015-26
+    "G": (135,  81, 74,  8,  315.3, 10.7, 76.46, 1.18, 169),  # OG+G 2015-26
+    "T": (130,  93, 75,  9,  314.9, 12.5, 77.77, 1.25, 268),  # OT 2015-26
+    "DT": (113, 119, 72, 10,  307.6, 16.0, 75.27, 1.48, 246),  # DT 2015-26
+    "DE": ( 75,  78, 72, 11,  254.2, 10.2, 75.69, 1.32, 196),  # EDGE 2018-26
+}
+BODY_TABLE_VA = 0xE6894       # the 68 table bytes inside region A (label bodytab in the .S)
+OUTLIER_K, OUTLIER_ADD = 4, 384
+ZONE_NUM, ZONE_SHIFT = 5, 4   # region D: a first draw in the row's last (5 * count) >> 4 faces is drawn again
+
+
+def body_table() -> bytes:
+    return bytes(v for pos in POSITIONS for v in BODY[pos][:4])
+
+
+def zone_start(count: int) -> int:
+    """First row index of the down-weighted zone (the review's plainest / ugliest faces sit there)."""
+    return count - ((ZONE_NUM * count) >> ZONE_SHIFT)
+
+
 class RookieFacesError(ValueError):
     """A foreign layout, an unexpected disc or a failed read-back."""
 
@@ -206,11 +294,29 @@ def load_bank(path: Path | None = None) -> dict[str, Any]:
         require(1 <= row["count"] <= ROW_COUNT_MAX and 0 <= row["hanging"] <= min(row["count"], ROW_HANGING_MAX),
                 f"row {b} has a bad count")
         require(ID_MIN <= row["start"] and row["start"] + row["count"] <= ID_END, f"row {b} ids must stay in {ID_MIN}..{ID_END - 1}")
+    rows = bank_ids(doc)
+    drawn = [f["id"] for f in doc["faces"] if f.get("id") is not None]
+    require(sorted(rows) == sorted(drawn), "every row id needs exactly one face")
+    legacy = legacy_ids(doc)
+    require(len(set(legacy)) == len(legacy) and not set(legacy) & set(rows), "legacy portrait ids must be unique")
+    require(all(ID_MIN <= i < ID_END for i in legacy), f"legacy ids must stay in {ID_MIN}..{ID_END - 1}")
     return doc
 
 
 def bank_ids(bank: Mapping[str, Any]) -> list[int]:
+    """The portrait ids the generator draws (the 24 rows)."""
     return [row["start"] + k for row in bank["buckets"] for k in range(row["count"])]
+
+
+def legacy_ids(bank: Mapping[str, Any]) -> list[int]:
+    """b779-rf3: the ids the beta-78 / v0.7 bank used.  A prospect drafted on that disc keeps his portrait id in the
+    save, so every old id still carries its face (the same image as its new row id; a re-framed image for the faces
+    whose crop cut the top of the head).  No row draws them."""
+    return [f["legacy_id"] for f in bank["faces"] if f.get("legacy_id") is not None]
+
+
+def portrait_ids(bank: Mapping[str, Any]) -> list[int]:
+    return bank_ids(bank) + legacy_ids(bank)
 
 
 def _key(name: str) -> str:
@@ -355,13 +461,15 @@ def _spans(table: bytes) -> list[tuple[int, bytes]]:
     pad = lambda code, size: code + b"\xcc" * (size - len(code))  # noqa: E731
     return [(REGION_A, pad(CODE_A, REGION_A_END - REGION_A)),
             (REGION_B, pad(CODE_B, REGION_B_END - REGION_B)),
+            (REGION_C, pad(CODE_C, REGION_C_END - REGION_C)),
             (TABLE_VA, table + pad(CODE_D, TABLE_END - TABLE_VA - TABLE_DATA)),
             (STRING_VA, RECORD_NAME.encode("utf-16-le"))]
 
 
 RETAIL_SPAN_SHA256 = {       # retail and every released SOFTDRINK image (v0.6.1 checked) carry these bytes
-    REGION_A: "6e6acd5a0be9dbac8fa24161f92fe29b314117851773a9577534a498e73165c6",
+    REGION_A: "04826d6dd2b2ae65acc69b3b631683dffd65dc057a77daacc50ab4de1ea93deb",
     REGION_B: "8c8c09860c0f31519aa72f0293c805c646f84ca632611890705977d32f317692",
+    REGION_C: "bd0c79972cb0b066c11f0f3b69c72e95978e3d10809173d91ac33453556f9fab",
     TABLE_VA: "e6ec955562c16009edf4ca8790a0b310d685f3c04443ff1106323fc5514567fd",
     STRING_VA: "8d322c825fff63a505e786350f7fe8da17d68dd292769f9f5146c2605ea14ae2",
 }
@@ -381,8 +489,8 @@ def xbe_status(payload: bytes) -> str:
     if all(sha(current[va]) == RETAIL_SPAN_SHA256[va] for va in current):
         return "retail"
     spans = dict(_spans(bytes(TABLE_DATA)))
-    a, b, d, s = (current[REGION_A], current[REGION_B], current[TABLE_VA], current[STRING_VA])
-    if (a == spans[REGION_A] and b == spans[REGION_B] and s == spans[STRING_VA]
+    a, b, c, d, s = (current[REGION_A], current[REGION_B], current[REGION_C], current[TABLE_VA], current[STRING_VA])
+    if (a == spans[REGION_A] and b == spans[REGION_B] and c == spans[REGION_C] and s == spans[STRING_VA]
             and d[TABLE_DATA:] == spans[TABLE_VA][TABLE_DATA:]):
         return "applied"
     return "foreign"
@@ -417,12 +525,13 @@ def xbe_apply(payload: bytes, table: bytes) -> tuple[bytes, dict[str, Any]]:
                            for (va, d), label in zip(_spans(table), SPAN_LABELS)]}
 
 
-SPAN_LABELS = ("class generator skin/face draw -> jump + helpers", "class generator portrait pick",
+SPAN_LABELS = ("class generator skin/face draw and weight/height roll -> body table + helpers", "class generator portrait pick",
+               "class generator rating loop -> blue-chip draw + compact capped rolls",
                "rookie-face tables + code (retail generic range table)", "PORTRAIT record file name")
 
 
 def reservations(payload: bytes) -> list[dict[str, Any]]:
-    """The four owned spans of an applied executable, for the cave manifest."""
+    """The five owned spans of an applied executable, for the cave manifest."""
     require(xbe_status(payload) == "applied", "rookie faces are not applied")
     return [{"start": hex(va), "size": len(d), "owner": OWNER, "basis": "declared edit: " + label}
             for (va, d), label in zip(_spans(bytes(TABLE_DATA)), SPAN_LABELS)]
@@ -507,7 +616,11 @@ def bank_faces(bank: Mapping[str, Any]) -> Iterable[tuple[int, bytes]]:
         require(index.mode == "L", "a face atlas must be 8-bit indices")
         cell = index.crop((col * 128, row * 128, col * 128 + 128, row * 128 + 128)).tobytes()
         pal = palette.crop((0, row * 16 + col, 256, row * 16 + col + 1)).tobytes()
-        yield face["id"], b"".join(pal[3 * i:3 * i + 3] for i in cell)
+        rgb = b"".join(pal[3 * i:3 * i + 3] for i in cell)
+        if face.get("id") is not None:
+            yield face["id"], rgb
+        if face.get("legacy_id") is not None:     # same person (a re-framed face shows its fixed crop there too)
+            yield face["legacy_id"], rgb
 
 
 def build_portraits(record: bytes, cdf: bytes, faces: Iterable[tuple[int, bytes]]) -> tuple[bytes, bytes, int]:
@@ -536,6 +649,68 @@ def build_portraits(record: bytes, cdf: bytes, faces: Iterable[tuple[int, bytes]
     new_record += struct.pack(f"<{len(order)}I", *order) + bytes(20)
     struct.pack_into("<I", new_record, 4, len(new_record) - 32)
     return bytes(new_record), b"".join(slots[h] for h in order), added
+
+
+# ------------------------------------------------------------------------------------------------ templates (b779-rf3)
+# Noah 10/28: "fix the templates, of course. All prospects should have ratings similar to what makes the game play the
+# best."  The generator rolls every rating between two of the position's four secondary records (FUN_000E6780, region
+# C), so the 68 templates are each position's rookie profile.  templates.json holds rating bytes fitted so the drafted
+# prospects match the real 2026 rookies as the SOFTDRINK roster rates them; the build writes them into the main roster
+# (outer 5, the secondary pool) in place, same size, after every other roster writer.  Style channels are not touched.
+TEMPLATE_STYLE = ("kicking_style", "power_run_style", "scramble")
+ROST_WRAPPER = 0x20
+MAIN_ROST_OUTER = 5
+
+
+def load_templates(path: Path | None = None) -> dict[str, Any]:
+    doc = json.loads(Path(path or TEMPLATES_JSON).read_text(encoding="utf-8"))
+    require(doc.get("schema") == SCHEMA_TEMPLATES, "unknown rookie template document")
+    rows = doc["templates"]
+    require([r["index"] for r in rows] == list(range(4 * len(POSITIONS))), "the templates need 68 rows in order")
+    for r in rows:
+        require(r["position"] == POSITIONS[r["index"] // 4], f"template {r['index']} is not a {POSITIONS[r['index'] // 4]}")
+        require(all(0 <= v <= 99 for v in r["ratings"].values()), f"template {r['index']} has a rating outside 0..99")
+        require(not set(r["ratings"]) & set(TEMPLATE_STYLE), "style channels are not template ratings")
+    return doc
+
+
+def template_writes(raw: bytes, templates: Mapping[str, Any] | None = None) -> list[tuple[int, int, int]]:
+    """(offset in the ROST resource, old byte, new byte) for every template rating that differs."""
+    from . import nfl2k5_roster_records as rr  # noqa: PLC0415
+    templates = templates or load_templates()
+    require(raw[:4] == b"ROST", "not a ROST resource")
+    body_length = struct.unpack_from("<I", raw, 4)[0]
+    document = rr.RosterDocument(raw[ROST_WRAPPER:ROST_WRAPPER + body_length])
+    sec = document.by_pool("secondary")
+    require(len(sec) == 4 * len(POSITIONS), f"the main roster has {len(sec)} templates, not 68")
+    order = list(rr.RATING_BYTE_ORDER)
+    out = []
+    for row in templates["templates"]:
+        player = sec[row["index"]]
+        require(player.record.values["position"] == row["index"] // 4, f"template {row['index']} holds another position")
+        for name, value in row["ratings"].items():
+            at = ROST_WRAPPER + player.offset + 0x36 + order.index(name)
+            require(raw[at] == player.record.values[name], f"template {row['index']} {name}: codec and byte disagree")
+            if raw[at] != value:
+                out.append((at, raw[at], value))
+    return out
+
+
+def apply_templates(path: Path | str, templates: Mapping[str, Any] | None = None) -> dict[str, Any]:
+    """Write the fitted template ratings into the image's main roster (a COPY), in place."""
+    from . import nfl2k5_roster_records as rr  # noqa: PLC0415
+    with rr._outer_image()(path, writable=True) as archive:
+        entry = archive.entries[MAIN_ROST_OUTER]
+        before = archive.read(entry.virtual_offset, entry.size)
+        writes = template_writes(before, templates)
+        after = bytearray(before)
+        for at, _old, new in writes:
+            after[at] = new
+        if writes:
+            require(archive.write(entry.virtual_offset, bytes(after)) == len(after), "short write of the main roster")
+            require(archive.read(entry.virtual_offset, entry.size) == bytes(after), "main roster read-back differs")
+    return {"templates": 4 * len(POSITIONS), "bytes_changed": len(writes), "sha256_before": sha(before),
+            "sha256_after": sha(bytes(after))}
 
 
 # ------------------------------------------------------------------------------------------------ the image
@@ -613,8 +788,8 @@ def plan(path: Path | str, bank: Mapping[str, Any] | None = None,
     bank = bank or load_bank()
     firsts, lasts = _pool(path)
     table = tables(firsts, lasts, bank)
-    ids = bank_ids(bank)
-    require(len(ids) == len(set(ids)) == len(bank["faces"]), "bank ids and faces disagree")
+    ids = portrait_ids(bank)
+    require(len(ids) == len(set(ids)), "bank ids and faces disagree")
     ids = ids + [pid for pid, _rgb in extra_faces]
     require(len(ids) == len(set(ids)), "an extra portrait id is also a bank id")
     used = roster_photo_ids(path)
@@ -654,12 +829,14 @@ def apply_to_image(path: Path | str, read_xbe: Callable[[Path], bytes], write_xb
     disc = hs.rewrite_archive(path, {}, appended)
     patched, xbe_receipt = xbe_apply(payload, p["table"])
     write_xbe(path, patched)
+    say("Rookie faces: class-generator templates")
+    templates_receipt = apply_templates(path)                      # b779-rf3
     state = image_status(path, read_xbe, bank=bank)
     require(state == "applied", f"rookie faces read-back: {state}")
     return {"state": state, "faces_added": p["added"], "record": RECORD_NAME, "aggregate": CDF_NAME,
             "record_bytes": len(p["record"]), "aggregate_bytes": len(p["cdf"]),
             "record_sha256": sha(p["record"]), "aggregate_sha256": sha(p["cdf"]), "nick0": p["pool_nick0"],
-            "table_sha256": sha(p["table"]), "xbe": xbe_receipt,
+            "table_sha256": sha(p["table"]), "xbe": xbe_receipt, "templates": templates_receipt,
             "archive": {k: v for k, v in disc.items() if k != "packs"}}
 
 
@@ -681,7 +858,7 @@ def image_status(path: Path | str, read_xbe: Callable[[Path], bytes], *,
             return "foreign"
         bank = bank or load_bank()
         index = {h: i for i, h in enumerate(hashes)}
-        for pid in bank_ids(bank):
+        for pid in portrait_ids(bank):
             name = f"{pid:04d}"
             i = index.get(member_hash(name))
             if i is None:
