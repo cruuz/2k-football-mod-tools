@@ -108,6 +108,15 @@ ROST_OUTER_INDEX = 5
 RESOURCE_HEADER_SIZE = 0x20
 BODY_SIZE = 0x90F60
 RESOURCE_SIZE = RESOURCE_HEADER_SIZE + BODY_SIZE
+# b779-int1: the disc main ROST outer entry sizes: retail, the grown version-18 arena (0x92060) and every capacity arena
+# (beta-78 0xB0060, beta-79 0xCA060 from ag1's 4,096-record growth). Fixed 0xB0060 refused the grown v0.8 roster in the
+# dated refresh pass of a full build ("outer entry 5 is 0xca060 bytes, not the main roster").
+def _main_roster_resource_sizes():
+    from . import nfl2k5_roster_arena as arena
+    return (RESOURCE_SIZE, 0x92060) + tuple(arena.disc_resource_size(size) for size in arena.CAPACITY_ARENA_SIZES)
+
+
+MAIN_ROSTER_RESOURCE_SIZES = _main_roster_resource_sizes()
 OBJ_OFF = 0x40
 # where the roster object sits relative to the ROST preamble, by version: 17 = the disc resource layout (object at
 # +0x40); 0 = the runtime arena the game serialises into SAVEGAME.DAT (object at +0x20; the file-relative wrapper at
@@ -2592,7 +2601,7 @@ def _entry(archive) -> Any:
     entries = archive.entries
     _require(len(entries) > ROST_OUTER_INDEX, f"the archive has no outer entry {ROST_OUTER_INDEX}")
     entry = entries[ROST_OUTER_INDEX]
-    _require(entry.size in (RESOURCE_SIZE, 0x92060, 0xB0060),
+    _require(entry.size in MAIN_ROSTER_RESOURCE_SIZES,
              f"outer entry {ROST_OUTER_INDEX} is 0x{entry.size:x} bytes, not the main roster")
     return entry
 
@@ -2630,7 +2639,7 @@ def load_image(path: Path | str, *, scheme: str = "retail", detect: bool = False
     with _outer_image()(path) as archive:
         entry = _entry(archive)
         resource = archive.read(entry.virtual_offset, entry.size)
-    _require(resource[:4] == b"ROST" and len(resource) in (RESOURCE_SIZE, 0x92060, 0xB0060),
+    _require(resource[:4] == b"ROST" and len(resource) in MAIN_ROSTER_RESOURCE_SIZES,
              "the roster resource is foreign")
     document = RosterDocument(resource[RESOURCE_HEADER_SIZE:], base=0, source=str(path),
                               resource_header=resource[:RESOURCE_HEADER_SIZE], scheme=scheme,
@@ -2644,7 +2653,7 @@ def load_image(path: Path | str, *, scheme: str = "retail", detect: bool = False
 def resource_status(resource: bytes) -> str:
     """retail | edited | foreign for an outer-entry-5 payload."""
 
-    if len(resource) not in (RESOURCE_SIZE, 0x92060, 0xB0060) or resource[:4] != b"ROST":
+    if len(resource) not in MAIN_ROSTER_RESOURCE_SIZES or resource[:4] != b"ROST":
         return "foreign"
     body = resource[RESOURCE_HEADER_SIZE:]
     if hashlib.sha256(body).hexdigest() == RETAIL_BODY_SHA256:
