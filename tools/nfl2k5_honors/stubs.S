@@ -74,11 +74,12 @@ honors_sb_hook:
     popad
     ret
 
-/* 0x14F168, in place of "mov eax, [esi*4 + 0xAA26C0]" (7 bytes, call + 2 nops) in the history fold: honor
-   fields always fold by sum, every other field keeps the retail lookup (including its reads past field 86). */
+/* 0x14F168, in place of "mov eax, [esi*4 + 0xAA26C0]" (7 bytes, call + 2 nops) in the history fold: the fields 96..127
+   (the ten honors, st1's pressure and hit counters 106..110 and anything added after them) always fold by sum, every
+   other field keeps the retail lookup (including its reads past field 86). */
 honors_fold_rule:
     lea eax, [esi - 96]
-    cmp eax, 10
+    cmp eax, 32
     jb 1f
     mov eax, dword ptr [esi*4 + 0x00AA26C0]
     ret

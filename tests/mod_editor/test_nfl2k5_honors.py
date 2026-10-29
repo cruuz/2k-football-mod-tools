@@ -643,8 +643,9 @@ class NativeTests(unittest.TestCase):
     def fold(self, payload):
         m = self.machine(payload)
         m.record(0x177990, "progress", pop=4)
+        extra = [word(f, s, v) for f in (106, 107, 108, 109, 110, 120, 127) for s, v in ((1, f - 100), (2, 2))]
         words = [word(96, 1, 1), word(2, 1, 100), word(16, 1, 5),
-                 word(96, 2, 1), word(2, 2, 200), word(16, 2, 9), word(0, 4, 16)]
+                 word(96, 2, 1), word(2, 2, 200), word(16, 2, 9), word(0, 4, 16)] + extra
         rec = m.roster([(5, words)])[0]
         m.put(CLASS, 0)
         m.call(0x14EFE0, stack=(4,))                              # fold every season 4 or more seasons ago
@@ -661,6 +662,10 @@ class NativeTests(unittest.TestCase):
         self.assertEqual(patched[(96, 2)], (2, True))               # honors: two MVPs stay two
         self.assertEqual(retail[(96, 2)], (1, True))                # retail would read past the table: max, one
         self.assertEqual(patched[(0, 4)], (16, False))
+        # b779-hn1 (coordinator note for st1): fields 106..110 (pressures, QB hits and sacks allowed) and anything up to
+        # 127 fold by sum with the patch; the retail lookup reads unrelated variables there
+        for field in (106, 107, 108, 109, 110, 120, 127):
+            self.assertEqual(patched[(field, 2)], (field - 100 + 2, True), field)
 
 
 if __name__ == "__main__":

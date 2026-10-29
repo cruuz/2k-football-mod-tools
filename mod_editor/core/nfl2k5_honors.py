@@ -25,7 +25,8 @@ What this owner adds
   (``FUN_00135310``'s last call, 0x1356B4) that ``FUN_00133A30`` calls the Super Bowl, every player of the winning
   team and the Super Bowl MVP get theirs. Franchise only (``[0xE576A0] == 2``). Pro Bowl honors are seeded, not live.
 * The history fold (``FUN_0014EFE0``, run when the pool is full) merges a season by sum or max from ``.data``
-  0xAA26C0[field]; past field 86 that lookup reads unrelated variables, so the honor fields get a fixed rule: sum.
+  0xAA26C0[field]; past field 86 that lookup reads unrelated variables, so fields 96..127 get a fixed rule: sum (the ten
+  honors, the pressure and QB-hit counters 106..110 of job st1, and any field added after them; b779-hn1).
   Every other field keeps the retail lookup.
 * The card: the Black/White buttons (LB/RB on a modern pad in xemu) and the triggers (the game's L1/R1) flip the
   card to an honors page and back (with the menu cursor sound); every card opens on the retail page. On the honors
