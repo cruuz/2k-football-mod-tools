@@ -42,7 +42,7 @@ class IntegrityTests(unittest.TestCase):
                           if descriptor[i:i+4] != c.BROADCAST_RETAIL_DESCRIPTOR[i:i+4]], [0, 16, 24, 32, 48, 52, 64])
         self.assertEqual(c.decode_descriptor(descriptor)['type'], 2)
         self.assertEqual(c.decode_descriptor(descriptor)['flag'], 0)
-        self.assertEqual(self.receipt['version'], 6)
+        self.assertEqual(self.receipt['version'], 7)
         self.assertFalse(self.receipt['coach_mode_changed'])
         self.assertFalse(self.receipt['exact_coach_director_proved'])
 
@@ -69,7 +69,7 @@ class IntegrityTests(unittest.TestCase):
         allocated = space.apply(self.retail, ((c.OWNER, 'code', 64, 16),), scaleout=True)[0]
         with self.assertRaises(c.CameraPatchError):
             c.apply(allocated)
-        self.assertEqual((ro['size'], c.CODE_SIZE), (320, 512))
+        self.assertEqual((ro['size'], c.CODE_SIZE), (320, 864))
 
 
 @unittest.skipUnless(old.XBE.is_file() and old.u is not None,
