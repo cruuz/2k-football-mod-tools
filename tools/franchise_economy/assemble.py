@@ -97,6 +97,8 @@ def generate():
         script = script.replace("*(.reconcile_rodata)", "*(.fill_room)")
         script = script.replace("*(.contracts_rodata)", "*(.offer_gate) *(.renew_gate)")
         script = script.replace("*(.money_rodata)", "*(.fill_gate)")
+        # b779 vs1: the transaction-years display stub shares the picks window's spare bytes.
+        script = script.replace("*(.picks_rodata)", "*(.txn_years) *(.picks_rodata)")
         script += "\n/DISCARD/ : { *(.comment) *(.note*) *(.eh_frame*) } }\n"
         # fastcall/stdcall decorations: @name@N / _name@N / plain cdecl names.
         script += "".join(f"{name} = {address:#x};\n" for name, address in NATIVE.items())

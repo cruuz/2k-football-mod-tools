@@ -219,6 +219,17 @@ SECTION(".offer_room") unsigned FAST economy_offer_room(u8 *offer) {
     return 1;
 }
 
+/* b779 vs1: the transaction list's "Signed ... (n/$...)" formats n from the live player
+ * record +0x27. A signing that is later released has +0x27 cleared by 0x2BD900, so its old
+ * transaction line reads "0 years". Use the live term while the player is under contract and
+ * the term the transaction log recorded (packed >> 5 & 0xffff) once it was cleared. Caller
+ * 0x369133 has ESI = log entry, ECX = player; the formatter's years slot is 0x10(%esp)
+ * before the call, 0x14(%esp) inside this stub. */
+SECTION(".txn_years") __attribute__((naked)) void economy_txn_years(void) {
+    __asm__("movzbl 0x27(%ecx), %edx\nandl $15, %edx\njnz 1f\nmovl (%esi), %edx\nshrl $5, %edx\n"
+            "1: movl %edx, 0x14(%esp)\nret\n");
+}
+
 SECTION(".offer_gate") __attribute__((naked)) void economy_offer_gate(void) {
     __asm__("mov %edi, %ecx\ncall economy_offer_room\ntest %eax, %eax\n"
             "jz 0x323cbd\nmov 0xb72918, %ecx\njmp 0x323bb9\n");

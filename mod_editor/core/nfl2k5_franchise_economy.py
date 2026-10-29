@@ -91,6 +91,14 @@ USER_FLOOR = 0x2BF992               # cmp byte [ecx+0x11C], 42: the user club's 
 USER_FLOOR_TEXT = 0xE8922A          # "42" in "The %s %s must have at least 42 players."
 OFFER_DAYS_SEED = 0x32327E          # new offers copied player +0x25 bits 5-7 into their day count
 FA_RETIREMENT = 0x2BDB74           # call 0x2BCF90 for each free agent in the retirement pass 0x2BDB00
+# b779 vs1: the transaction list's "Signed ... (n/$...)" formats n from the live player record
+# +0x27. 0x2BD900 clears both contract bytes when a signed player is released, so his old signing
+# line reads "0 years". The formatter case at 0x369133 is replaced with a call to economy_txn_years,
+# which keeps the live term while the player is under contract and otherwise reads the term the
+# transaction log recorded (packed >> 5, low 16 bits). All signing log callers put 0 in the packed
+# field's high part, so the shift is the recorded term.
+TXN_YEARS = 0x369133
+TXN_YEARS_RETAIL = bytes.fromhex("8a512783e20f89542410")
 EXPIRING_RELEASE = 0x3237AC        # call 0x322B60: the re-signing stage releases an expiring contract
 USER_TRADE_FLOOR = 0x2BB13C         # cmp ebp, 42: an in-season trade may not leave the user club below it
 USER_TRADE_TEXT = 0xE99FA4          # "42" in "You must keep 42 players on your team or you will not be able to ..."
@@ -108,12 +116,20 @@ for _va, _digest in ((0x323870, "7ff0b7859e73de1e317c60d8c9d3f405f5e5519767a0e19
                      (OFFER_DAYS_SEED, "b4296d8e851226474af9a26c93be4874e70e454e69e0dc4c52bf790ac1a806b1"),
                      (USER_TRADE_FLOOR, "490566c6a8181843df6c7111073ac94bc538a1bce677071bb93660193154107a"),
                      (EXPIRING_RELEASE, "df8ba409850ca02e7cb8d6609900617acc3c9a69c2b5b9860f9a953650ffb4e8"),
+                     (TXN_YEARS, "26f69ea76f3ceabb519494c1f55f1a33e02bc06f27cd7a9c9873dc844f0016ec"),
                      (FA_RETIREMENT, "fe751a30c55501954375e0fd44439dc22498b7e447f069b7ad11817f220119d2"),
                      (USER_TRADE_TEXT, "e24460917716856724254344202653c566f02f7c2074430cd4b9b6884b39c5cd")):
     PINS[_va] = _digest
 # Revision 1 and 2 bytes of every site whose revision-3 bytes differ (the windows and the jumps into code
 # that moved), so an image built before revision 3 reads "legacy" and is upgraded in place.
+# b779 vs1: a late additive site. An image that carries every other economy site but not this one
+# (the v0.7 release, any beta-78 build) still reads "applied" and apply() upgrades it in place; the
+# transaction formatter patch does not move any economy byte.
+ADDITIVE_SITES = frozenset({TXN_YEARS})
 PREVIOUS = {
+    # b779 vs1: every beta-78 / v0.7 image carries the picks window without the
+    # transaction-years stub; apply() upgrades it in place.
+    0x2BAB20: "1329e11a30b5e42b215e27919b6331e37222f908828a3c12c44c98553f4dc484",
     0x13ECA0: "4ffed08531493e9a5b249be6eb693b41a725dd59b730397ed269bd67cf1a5bef",
     0x13ED30: "e6db715c203a5ad265ccc283cd7b1c10d07d04f1a5e1c034ffef0245703f19e0",
     0x247BC6: "93bcf088d60a02096f8e9e588f0e0897189d4d145f3f47edcde91f78312acf5b",
@@ -169,6 +185,8 @@ def sites(revision: int = REVISION) -> tuple[Site, ...]:
         replacements[USER_TRADE_FLOOR] = bytes.fromhex("83fd") + bytes((FLOOR_PLAYERS,))
         replacements[USER_TRADE_TEXT] = str(FLOOR_PLAYERS).encode("utf-16-le")
         replacements[EXPIRING_RELEASE] = b"\xe8" + struct.pack("<i", SYMBOLS["economy_expire"] - EXPIRING_RELEASE - 5)
+        replacements[TXN_YEARS] = (b"\xe8" + struct.pack("<i", SYMBOLS["economy_txn_years"] - TXN_YEARS - 5)
+                                   + b"\x90" * (len(TXN_YEARS_RETAIL) - 5))
         replacements[FA_RETIREMENT] = b"\xe8" + struct.pack("<i", SYMBOLS["economy_fa_retire"] - FA_RETIREMENT - 5)
     return tuple(Site(a, b, PINS[a]) for a, b in sorted(replacements.items()))
 
@@ -194,7 +212,14 @@ def _standalone_status(payload: bytes) -> str:
         unique = set(states.values())
         if len(unique) == 1 and unique <= {"applied", "retail"}:
             return next(iter(unique))
-        core = {state for va, state in states.items() if va not in REVISION_2_SITES | REVISION_3_SITES}
+        additive = {states[va] for va in ADDITIVE_SITES}
+        non_additive = {state for va, state in states.items() if va not in ADDITIVE_SITES}
+        if additive <= {"applied", "retail"} and non_additive == {"applied"}:
+            return "applied"
+        if additive <= {"applied", "retail"} and non_additive == {"applied", "previous"}:
+            return "legacy"
+        core = {state for va, state in states.items()
+                if va not in REVISION_2_SITES | REVISION_3_SITES | ADDITIVE_SITES}
         if core <= {"applied", "previous"} and "previous" in core and \
                 {states[va] for va in REVISION_3_SITES} == {"retail"} and \
                 len({states[va] for va in REVISION_2_SITES}) == 1 and states[VETERAN_CUT_SURPLUS] in ("retail", "applied"):
@@ -220,7 +245,13 @@ def revert(payload: bytes, retail: bytes) -> tuple[bytes, dict]:
 def apply(payload: bytes) -> tuple[bytes, dict]:
     state = status(payload)
     if state == "applied":
-        return payload, {"already_applied": True, "changed_bytes": 0}
+        from . import nfl2k5_roster_fill_composition as composition
+        view = XbeImage(composition.project(payload, "economy"))
+        todo = tuple(site for site in sites()
+                     if site.va in ADDITIVE_SITES and _site_state(view, site) != "applied")
+        if not todo:
+            return payload, {"already_applied": True, "changed_bytes": 0}
+        state = "legacy"  # additive-only upgrade; the shared chain and every other site are in place
     if state not in ("retail", "legacy"):
         raise EconomyError(f"economy sites are {state}; refusing to patch")
     from . import nfl2k5_roster_fill_composition as composition
@@ -228,8 +259,9 @@ def apply(payload: bytes) -> tuple[bytes, dict]:
     shared = composition.installation_edits(payload, "economy") if state == "retail" else []
     todo = sites()
     if state == "legacy":
-        # A revision-1/2 image: rewrite only the sites that differ in its owner view; the CPU fill entry
-        # 0x322BB0 may belong to the shared practice-squad chain and is already correct.
+        # A revision-1/2 image (or an additive-only upgrade): rewrite only the sites that differ in its
+        # owner view; the CPU fill entry 0x322BB0 may belong to the shared practice-squad chain and is
+        # already correct.
         from . import nfl2k5_roster_fill_composition as composition
         view = XbeImage(composition.project(payload, "economy"))
         todo = tuple(s for s in todo if _site_state(view, s) != "applied")
