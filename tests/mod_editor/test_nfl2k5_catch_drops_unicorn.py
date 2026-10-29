@@ -139,6 +139,9 @@ class Routine:
 POSITION_GROUPS = ((0.62, 78, 8), (0.21, 68, 10), (0.17, 58, 10))     # share, mean rating, sd
 # Defender pressure at the catch (FUN_001C6640, 0 .. 0.5): share of rolls with none / light / tight coverage.
 PRESSURE_MIX = ((0.55, 0.0, 0.0), (0.30, 0.05, 0.25), (0.15, 0.25, 0.5))   # share, low, high
+HARSH_MIX = ((0.25, 0.0, 0.0), (0.35, 0.05, 0.25), (0.40, 0.25, 0.5))       # tight coverage on 40 % of the targets
+# NFL 2022-25 regular season (nflverse play-by-play + FTN charting, 71,653 targets): drops per catchable target.
+NFL_DROP_PER_CATCHABLE = 0.0516
 
 
 @unittest.skipUnless(Uc is not None and RETAIL_XBE.is_file(), "unicorn or the private retail XBE is absent")
@@ -185,17 +188,17 @@ class CatchDropDecisionTests(unittest.TestCase):
                         expected = sum(1 for r in (0.02, 0.2, 0.4, 0.6, 0.8, 0.98) if r < native * m)
                         self.assertEqual(caught, expected, (skill, pressure, human, cpu, offense_human))
 
-    def drop_rate(self, m, *, bands=None):
+    def drop_rate(self, m, *, bands=None, mix=PRESSURE_MIX, **scenario):
         """Expected drops per roll over the target mix; ``m`` = catch-odds multiplier."""
         total = weight = 0.0
         per_band = {}
         grid = [(share_g, mean, sd, share_p, low, high)
-                for share_g, mean, sd in POSITION_GROUPS for share_p, low, high in PRESSURE_MIX]
+                for share_g, mean, sd in POSITION_GROUPS for share_p, low, high in mix]
         for share_g, mean, sd, share_p, low, high in grid:
             for z in (-1.5, -0.5, 0.5, 1.5):            # 4-point normal quadrature (equal weights)
                 rating = max(30.0, min(99.0, mean + z * sd))
                 for pressure in {low, (low + high) / 2, high}:
-                    native = self.retail.run(rating / 100, pressure=pressure)["P"]
+                    native = self.retail.run(rating / 100, pressure=pressure, **scenario)["P"]
                     w = share_g * share_p / (4 * len({low, (low + high) / 2, high}))
                     drop = max(0.0, 1.0 - min(1.0, native * m))
                     total += w * drop
@@ -219,6 +222,21 @@ class CatchDropDecisionTests(unittest.TestCase):
         self.assertLess(new, retail)
         ordered = [new_bands[b] for b in sorted(new_bands)]
         self.assertEqual(ordered, sorted(ordered, reverse=True), "low-catch players must drop more than high-catch players")
+
+    def test_new_drop_rate_stays_below_the_nfl_rate_and_above_zero(self) -> None:
+        m = cs.odds_multiplier(0.75, 0.25)
+        for label, mix, scenario in (("assumed coverage", PRESSURE_MIX, {}), ("harsh coverage", HARSH_MIX, {}),
+                                     ("harsh coverage, diving catches", HARSH_MIX, {"diving": 1})):
+            retail = self.drop_rate(1.0, mix=mix, **scenario)
+            old_human = self.drop_rate(1.5, mix=mix, **scenario)
+            new = self.drop_rate(m, mix=mix, **scenario)
+            print(f"{label}: drops per roll retail {retail:.4f}, beta-78 human {old_human:.4f}, new {new:.4f} "
+                  f"(NFL {NFL_DROP_PER_CATCHABLE:.4f})", flush=True)
+            self.assertLess(new, old_human)
+            self.assertLess(new, retail / 3)
+            self.assertGreater(new, 0.002, "a drop every now and then must remain")
+            if not scenario:
+                self.assertLess(new, NFL_DROP_PER_CATCHABLE)      # never more drops than real life
 
 
 if __name__ == "__main__":

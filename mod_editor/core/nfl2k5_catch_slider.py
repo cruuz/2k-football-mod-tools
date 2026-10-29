@@ -30,19 +30,24 @@ does; the thunk tables in .text looked dead statically but ARE called at runtime
     offense or kicked-ball catcher: rand -> rand / (K * (Human Catching + CPU Catching))
     other defense catcher:         rand -> rand / (2 * Interception slider)
 
-so a pass is caught when ``rand < P * m`` with ``m = K * (human + cpu)``, K = ``ODDS_SCALE`` = 2.0 (the
-retail float constant 2.0 at 0x4E6084), and the two Catching sliders are read straight from the factor table.  Human and CPU receivers get the SAME odds:
-the multiplier is the sum of both sliders, never the receiving side's own.  Every difficulty
-preset sets the pair to values that average 0.5 (Rookie 1.0/0.0, Pro 0.75/0.25, All-Pro
-0.5/0.5, Legend 0.25/0.75), so ``m = 2`` (double the retail catch odds) for every preset and every saved
-profile; moving
-either slider moves both teams.  (The previous revision used the receiving side's own slider:
-the Pro human got x1.5 and the CPU stayed at retail odds, which is why the CPU dropped many
-more passes than the human.)  Interception keeps its full range: 0 makes picks impossible, 50
-is retail, 100 doubles them (the game's own slider branch keeps a 10 % floor and scales with
-difficulty, which is why the forums call it broken).  The Human and CPU Catching menu ceilings
+so a pass is caught when ``rand < P * m`` with ``m = K * (human + cpu)``.  K = ``ODDS_SCALE`` = 2.0 is
+the retail float constant at 0x4E6084 and the two Catching sliders are read straight from the
+factor table.  Human and CPU receivers get the SAME odds: the multiplier is the sum of both
+sliders, never the receiving side's own.  Every difficulty preset sets the pair to values that
+sum to 1.0 (Rookie 1.0/0.0, Pro 0.75/0.25, All-Pro 0.5/0.5, Legend 0.25/0.75), so ``m = 2``
+(double the retail catch odds) for every preset and every saved profile; moving either slider
+moves both teams.  (The previous revision used the receiving side's own slider: the Pro human
+got x1.5 and the CPU stayed at retail odds, which is why the CPU dropped many more passes than
+the human.)  Interception keeps its full range: 0 makes picks impossible, 50 is retail, 100
+doubles them (the game's own slider branch keeps a 10 % floor and scales with difficulty,
+which is why the forums call it broken).  The Human and CPU Catching menu ceilings
 (``0x0014AC20`` / ``0x0014B490``) are repointed from the shared 1.0 constant to the shared 2.0
 constant so the slider can show 200.
+
+The roll repeats while the ball stays in reach (b779 gp1 read 3 to 5 successive rolls by one
+defender at the ball, P = 0.1, from the running game), and the failed-attempt counter
+``[0xE3C020]`` (the second-touch penalty above) rises between them, so one pass can carry
+several rolls and a drop is the compound of them.
 
 The selector uses ball kind [0xE602C0] == 3 (non-forward loose ball, including kicks and
 backward passes); forward passes are kind 4. Retail's kick launch FUN_000b73b0 stores 3 at
