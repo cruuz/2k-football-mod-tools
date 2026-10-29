@@ -532,13 +532,15 @@ SECTION(".roster_f") __attribute__((naked)) void economy_class_free(void) {
  * native loop asked for 380; the first class is still the disc's own 380-record window). The mix per 450 is
  * the CPU's average 224-pick draft per position over simulated v0.7 drafts 3-10, plus a target left over, for a
  * 355-player class (what the league frees in a normal year), scaled to 450, then moved toward T, DT and WR after
- * the smart cut-down (CPU clubs now keep their linemen): QB 24, K 5, P 5, WR 40, CB 46, FS 14, SS 14, HB 28,
- * FB 9, TE 28, OLB 19, ILB 19, C 24, G 26, T 48, DT 55, DE 46. Under the
+ * the smart cut-down (CPU clubs now keep their linemen). b779 ag1: with the 4,096-record arena every class is a
+ * full 450, so the mix was retuned from the CPU's undrafted leftovers over ten simulated 450-player drafts (sim
+ * fastX1: K and P all undrafted at 5, FS, C, G and DE down to 6, DT 22-34 left over): QB 22, K 9, P 9, WR 38, CB 44,
+ * FS 18, SS 14, HB 26, FB 9, TE 26, OLB 18, ILB 18, C 28, G 28, T 46, DT 45, DE 52. Under the
  * one-pool scheme no rostered player carries OLB (10), and the class must conserve that
  * (nfl2k5_position_pools), so an OLB slot becomes LB (11). */
 #define CLASS_SIZE 450
 SECTION(".roster_f_rodata") static const u8 class_counts[17] = {
-    24, 5, 5, 40, 46, 14, 14, 28, 9, 28, 19, 19, 24, 26, 48, 55, 46};
+    22, 9, 9, 38, 44, 18, 14, 26, 9, 26, 18, 18, 28, 28, 46, 45, 52};
 
 SECTION(".roster_f") __attribute__((noinline)) unsigned league_has_olb(void) {
     u8 *root = *(u8 **)0xB72918;   /* the roster's own 32 club blocks, valid whenever a class is generated */
@@ -653,9 +655,11 @@ SECTION(".roster_m") __attribute__((noinline)) static int oldest(u8 **list, unsi
 /* (a) past the position's age, oldest first; (b) within two years of it, lowest-rated first; (c) only when the
  * class would still have fewer than MIN_CLASS records, the oldest remaining free agents. The roster file has a
  * fixed number of records, so a class can only be as deep as the league frees each year: the sims report how
- * often (b) and (c) fire and the ages (c) reaches. 350 keeps every position with undrafted players after the
- * 224-pick draft (Noah 10/28: "never fewer than about 350"). */
-#define MIN_CLASS 350
+ * often (b) and (c) fire and the ages (c) reaches. 350 kept every position with undrafted players after the
+ * 224-pick draft on the 3,231-record arena (Noah 10/28: "never fewer than about 350"). b779 ag1: on the 4,096-record
+ * arena the floor is the full class, so every draft has about 226 undrafted players (Noah 10/28: "a ton of rookie
+ * prospects"); the variant-B floor below only retires generated players who never played. */
+#define MIN_CLASS 450
 #define DRAFT_FLOOR 256   /* 224 picks + 32: below this even the protected floor takes the oldest free agents */
 /* Pass (c), the class floor. 0: the oldest remaining free agents. 1: only generated players with no career
  * history, 27 or older and rated 60 or less, lowest-rated first. 2 (variant B): only generated players with no
