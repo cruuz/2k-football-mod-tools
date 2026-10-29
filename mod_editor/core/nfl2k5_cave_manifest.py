@@ -537,7 +537,10 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
                                     # b778-fa1: CPU clubs keep their stars, the last late owner, observed on the same copy.
                                     star_retention=False,
                                     # b779-int1: st1's pass rush stats and sim2's RB injury owner are late allocator owners too.
-                                    pass_rush_stats=False, sim_rb_injuries=False),
+                                    pass_rush_stats=False, sim_rb_injuries=False,
+                                    # b779-int1: the Experimental preset now selects the CPU QB reads owner (zone windows +
+                                    # gp1's skill tiers); keep it off here so the probe copy below installs one complete set.
+                                    cpu_qb_zone_windows=False, cpu_qb_recheck=False, cpu_qb_tiers=False),
                             progress=lambda message, *_: progress(message))
             owner_base = build._xbe_bytes(target)
             # All current owners, even the hidden opt-in patch, reserve their space.
@@ -680,7 +683,9 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
                                           + contract_guard.REQUESTS + sim_cb_tackles.REQUESTS + clock_led.REQUESTS
                                           + return_coverage.REQUESTS + pass_protection.REQUESTS + pass_rush_stats.REQUESTS
                                           + preseason_warning.REQUESTS + sim_rb_injuries.REQUESTS, scaleout=True)
-            cpu_ai_probe, _ = cpu_qb_reads.apply(cpu_ai_probe, zone_windows=True, recheck=True)
+            # b779-int1: gp1's QB skill tiers (cpu_qb_tiers, on in Advanced/Experimental) ride on the zone-defender option;
+            # the allocation base carries all three options, so observe the same set (apply refuses a different one).
+            cpu_ai_probe, _ = cpu_qb_reads.apply(cpu_ai_probe, zone_windows=True, recheck=True, tiers=True)
             cpu_ai_probe, _ = db_ball_play.apply(cpu_ai_probe)
             cpu_ai_probe, _ = play_art.apply(cpu_ai_probe)
             cpu_ai_probe, _ = number_scale.apply(cpu_ai_probe, {"13H0": 1.1, "13A0": 1.1})
