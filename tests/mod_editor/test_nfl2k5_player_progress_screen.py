@@ -493,9 +493,14 @@ class NativeTests(unittest.TestCase):
     def test_admission_accepts_every_native_and_footer_size(self):
         m = self.machine()
         m.mem_write(META, bytes(0xC00000))
+        # b779 ag1: the 0xCA000 capacity arena (953,516) also admits beta-78's 0xB0000 saves (847,020) and footers;
+        # the beta-78 arena never admits the larger size.
         for arena, accepted, rejected in (
+                (0xCA000, (953516, 953644, 987836, 987964, 847020, 847148, 881340, 881468,
+                           720044, 720172, 754364, 754492),
+                 (953515, 953517, 724140, 724268, 847021, 881339, 0)),
                 (0xB0000, (847020, 847148, 881340, 881468, 720044, 720172, 754364, 754492),
-                 (724140, 724268, 881339, 0, 847021)),
+                 (724140, 724268, 881339, 0, 847021, 953516, 953644)),
                 (0x92000, (724140, 724268, 758460, 758588, 720044, 720172, 754364, 754492),
                  (847020, 881340, 758459)),
                 (0x91000, (720044, 720172, 754364, 754492), (724140, 847020, 881340, 754363))):

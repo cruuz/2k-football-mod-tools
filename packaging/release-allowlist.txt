@@ -3797,3 +3797,5 @@ tests/mod_editor/test_b778_cs1_choose_side.py
 tests/mod_editor/test_b778_bd3_build_blockers.py
 # b779 rc1: v0.7 roster capacity family (MyCareer on the capacity arena, draft-class records, CPU signings)
 tests/mod_editor/test_b779_rc1_roster_capacity.py
+# b779 ag1: capacity arena 0xCA000 (4,096 player records), one layout helper, beta-78 saves migrate
+tests/mod_editor/test_b779_ag1_capacity_arena.py
