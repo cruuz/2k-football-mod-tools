@@ -3603,7 +3603,8 @@ def _apply_roster_history(plan, target, receipt, progress):
         # historic imports, player tags and QB rating adjustments have run.
         refresh_follows = "roster_refresh" in edits_document
         if refresh_follows:
-            edits_document = {k: v for k, v in edits_document.items() if k != "roster_refresh"}
+            # b779 fh1: created-player history waits for the refresh pass that creates the rest of the identities
+            edits_document = {k: v for k, v in edits_document.items() if k not in ("roster_refresh", "created_history")}
         modern_history = edits_document.get("franchise_history")
         from . import nfl2k5_free_agents
         if plan.season_2026 and plan.position_pools and nfl2k5_free_agents.is_pack_input(edits_document):
@@ -3768,6 +3769,8 @@ def _apply_roster_refresh(plan, target, receipt, progress):
         raise ValueError("Dated roster refresh requires modern position pools")
     progress("Applying the dated roster refresh", 0, 0)
     directive = {"schema": records.EDITS_SCHEMA, "edits": [], "roster_refresh": document["roster_refresh"]}
+    if document.get("created_history"):
+        directive["created_history"] = document["created_history"]       # b779 fh1: after every identity exists
     if plan.espn25_more_moments or plan.historic_teams_quick_game:
         # b775 (Noah 10/17: both sides of a moment were the home team): the refresh's new players use vacant
         # records; keep the two-team import floor, as the historic spare capacity does for the dated free agents.

@@ -62,6 +62,9 @@ def load(path=DATA):
 
 def validate(data):
     require(data.get("schema") == SCHEMA, "unknown free-agent depth data")
+    # b779 fh1: years pro = NFL seasons since entering the league; accrued-season data is refused, never mixed
+    require(data.get("years_pro_convention") == rr.YEARS_PRO_CONVENTION,
+            "free-agent depth data predates the years-in-league convention; convert it with tools/b77/b779_years_in_league.py")
     players = data["players"]
     require([p["priority"] for p in players] == list(range(1, len(players) + 1)), "priorities must be 1..n in order")
     require(len({p["gsis_id"] for p in players}) == len(players), "duplicate player")
