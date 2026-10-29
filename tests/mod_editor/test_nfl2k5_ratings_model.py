@@ -176,6 +176,19 @@ class RatingTests(unittest.TestCase):
         qb = self.rate(position="QB", gsis_id="Q20")[0]
         self.assertEqual(qb["scramble"] % 2, 0)
 
+    def test_mobile_quarterback_rates_above_pocket_quarterback(self):
+        pocket, pocket_basis = self.rate(position="QB", gsis_id="Q00")
+        mobile, mobile_basis = self.rate(position="QB", gsis_id="Q39")
+        self.assertIn("reviewed_qb_break_tackle", mobile_basis)
+        self.assertIn("reviewed_qb_break_tackle", pocket_basis)
+        self.assertGreater(mobile["break_tackle"], pocket["break_tackle"] + 20)
+        self.assertGreaterEqual(mobile["break_tackle"], 60)
+
+    def test_other_positions_keep_their_profile_break_tackle(self):
+        ratings, basis = self.rate(position="WR", gsis_id="W10")
+        self.assertNotIn("reviewed_qb_break_tackle", basis)
+        self.assertGreater(ratings["break_tackle"], 0)
+
     def test_anchor_keeps_retail_physicals_and_style(self):
         anchor = {r: 70 for r in rr.RATING_BYTE_ORDER}
         anchor.update(speed=80, agility=78, scramble=97, pass_arm_strength=99)
@@ -351,6 +364,58 @@ class RealSeasonTests(unittest.TestCase):
         self.assertGreaterEqual(rate("Tom Brady", "QB")["pass_accuracy"], 94)
         self.assertGreaterEqual(rate("Randy Moss", "WR")["catch"], 95)
         self.assertLess(rate("Matt Cassel", "QB")["pass_accuracy"], 70)
+
+
+class ReviewedHalfbackRescaleTests(unittest.TestCase):
+    """b779-sim2: the reviewed 2026 halfback rescale table and its two pure steps."""
+
+    def test_table_is_pinned(self):
+        self.assertEqual(rm.REVIEWED_HB_RATING_DELTAS,
+                         (("break_tackle", -8), ("strength", -5), ("hold_onto_ball", -5)))
+        self.assertEqual(rm.REVIEWED_HB_CONSISTENCY, {"players": 40, "mean": 59.2, "sd": 20.8})
+
+    def test_deltas_apply_only_to_the_named_ratings_and_clamp(self):
+        source = {"break_tackle": 88, "strength": 60, "hold_onto_ball": 87, "speed": 85}
+        out = rm.reviewed_hb_rating_deltas(source)
+        self.assertEqual(out, {"break_tackle": 80, "strength": 55, "hold_onto_ball": 82, "speed": 85})
+        self.assertEqual(source["break_tackle"], 88)             # no mutation
+        self.assertEqual(rm.reviewed_hb_rating_deltas({"break_tackle": 3})["break_tackle"], 1)
+
+    def test_consistency_map_hits_the_retail_mean_and_spread(self):
+        values = [48, 60, 69, 83, 83]
+        mapped = rm.reviewed_hb_consistency_map(values)
+        self.assertEqual(len(mapped), len(values))
+        mean = sum(mapped) / len(mapped)
+        sd = (sum((v - mean) ** 2 for v in mapped) / (len(mapped) - 1)) ** 0.5
+        self.assertAlmostEqual(mean, 59.2, delta=1.5)
+        self.assertAlmostEqual(sd, 20.8, delta=2.0)
+        self.assertEqual(mapped, sorted(mapped))
+        self.assertEqual(rm.reviewed_hb_consistency_map([]), [])
+        self.assertEqual(rm.reviewed_hb_consistency_map([70]), [59])
+
+
+class ReviewedQuarterbackBreakTackleTests(unittest.TestCase):
+    """b779-sim2 round 3: a QB's break tackle follows his rushing-mobility percentile (retail's mobile-QB scale)."""
+
+    def test_retail_quantile_at_the_mobility_percentile(self):
+        ref = rm.Reference.load()
+        table = ref.positions["QB"]["quantiles"]["break_tackle"]
+        self.assertEqual(rm.reviewed_qb_break_tackle(ref, 0.0), 1)
+        self.assertEqual(rm.reviewed_qb_break_tackle(ref, 0.5), 31)
+        self.assertEqual(rm.reviewed_qb_break_tackle(ref, 0.95), 57)
+        self.assertEqual(rm.reviewed_qb_break_tackle(ref, 1.0), 72)
+        self.assertLess(rm.reviewed_qb_break_tackle(ref, 0.2), rm.reviewed_qb_break_tackle(ref, 0.8))
+        self.assertEqual(rm.reviewed_qb_break_tackle_table(table, -1.0), 1)
+        self.assertEqual(rm.reviewed_qb_break_tackle_table(table, 2.0), 72)
+        # a short table (the v2 tier reference) interpolates and clamps the same way
+        self.assertEqual(rm.reviewed_qb_break_tackle_table([20.0, 40.0], 0.5), 30)
+        self.assertEqual(rm.reviewed_qb_break_tackle_table([0.0, 200.0], 1.0), 99)
+
+    def test_helper_is_pure(self):
+        ref = rm.Reference.load()
+        qb = {"break_tackle": 25, "scramble": 88}
+        self.assertEqual(rm.reviewed_qb_break_tackle(ref, 0.9), 56)
+        self.assertEqual(qb["break_tackle"], 25)
 
 
 if __name__ == "__main__":

@@ -797,7 +797,7 @@ def build(args) -> int:
                            "birth_date": r["birth_date"], "years_pro": r["years_exp"],
                            "draft_number": r.get("draft_number", ""), "depth": int(round(r["depth_rank_src"])) + 1,
                            "full_name": r["full_name"]})
-    rated = rm.rate_players(model_rows, stats, reference)
+    rated = rm.rate_players(model_rows, stats, reference, reviewed_hb_rescale=True)  # b779-sim2 reviewed halfback table
     for r, m in zip(rows, rated):
         r["ratings"] = {k: int(m[k]) for k in rr.RATING_BYTE_ORDER}
         r["rating_basis"] = m.get("rating_basis", "")

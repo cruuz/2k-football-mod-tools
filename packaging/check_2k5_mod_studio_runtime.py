@@ -115,13 +115,13 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
 B69_GAME_RUNTIME_PINS = {
     "mod_editor/core/nfl2k5_weather.py": "ec3d253e348ff0cf7fb1951b5dad2983d8aebc0802d5c6fca32c74dc80a6985b",
     "mod_editor/core/nfl2k5_weather_haze.py": "b8c58c592794312358eb1554b1d3be43a1ca41f7fdd8fd3cd498d4f345c641cc",
-    "mod_editor/gui/build_panel_qt.py": "d50c1bc58affd8c1cc7ae2a612cb7cfb7f126a4a1aa463956b48bba99afaba89",
+    "mod_editor/gui/build_panel_qt.py": "31600906056e31f7c7f8589122728f14dda7eed0bbe26c30d4374f6286cfe999",
     "mod_editor/gui/gameplay_patches_panel_qt.py": "8a463a6c45f83feb3412f1d1926e60de80b6b1487b98b5199bbcae52bae88305",
     "mod_editor/gui/my_career_panel_qt.py": "cd39ce1685ed119288122e46b0f8c1c8ba586cea611f5d5feee096a71d7ea9ac",
     "mod_editor/gui/gameplay_project_ui.py": "4927318677c5dbd1183b139d5b4d2c460136e38a3f9bf5d5b979ba62e1ed016e",
     "mod_editor/gui/beta62_options.py": "4b4152b4830092afc360230bf869df68c56b5ce9c668769fb28cde9f61cd3d3f",
     "tools/nfl2k5_weather_editor.py": "39a2847b873bbdc567712ca87657d700fa95e226c3408983acce4d714b1031de",
-    "mod_editor/gui/build_panel_qt.py": "d50c1bc58affd8c1cc7ae2a612cb7cfb7f126a4a1aa463956b48bba99afaba89",
+    "mod_editor/gui/build_panel_qt.py": "31600906056e31f7c7f8589122728f14dda7eed0bbe26c30d4374f6286cfe999",
     "mod_editor/gui/gameplay_patches_panel_qt.py": "8a463a6c45f83feb3412f1d1926e60de80b6b1487b98b5199bbcae52bae88305",
     "mod_editor/gui/my_career_panel_qt.py": "cd39ce1685ed119288122e46b0f8c1c8ba586cea611f5d5feee096a71d7ea9ac",
     "mod_editor/gui/gameplay_project_ui.py": "4927318677c5dbd1183b139d5b4d2c460136e38a3f9bf5d5b979ba62e1ed016e",
@@ -2050,6 +2050,7 @@ def main() -> int:
         "mod_editor.core.nfl2k5_player_progress_screen",          # b778-pg2
         "mod_editor.core.nfl2k5_contract_college_guard",          # b778-cr1
         "mod_editor.core.nfl2k5_sim_cb_tackles",                  # b778-cb1
+        "mod_editor.core.nfl2k5_sim_rb_injuries",                 # b779-sim2
         "mod_editor.core.nfl2k5_sim_stats",                      # b778-sim1, in-place
         "mod_editor.core.nfl2k5_option_defaults",                # b779-df1, in-place
         "mod_editor.core.nfl2k5_clock_led",                       # b778-sd4
