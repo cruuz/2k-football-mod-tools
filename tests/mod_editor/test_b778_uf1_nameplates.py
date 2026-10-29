@@ -112,7 +112,7 @@ class Data(unittest.TestCase):
         for earlier in ("kit_fixes.apply_finish(target)", "glyph_fixes.apply_to_image(target",
                         "kit_fixes.apply_swooshes(target)"):
             self.assertLess(text.index(earlier), at)
-        self.assertLess(at, text.index("moment_kits.apply_to_image(target)"))
+        self.assertLess(at, text.index("moment_kits.apply_to_image(target, retail=kits_retail)"))
 
     def test_rows_need_their_donor(self):
         row = self.doc["textures"][0]

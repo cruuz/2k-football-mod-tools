@@ -3519,6 +3519,21 @@ def build_with_project(plan, service, cache, session, progress=None, *, require_
         preflight_project_options(plan, document)
         if not document["edits"]:
             return build(plan, progress, require_change=require_change)
+        # b779-ce1: the quick "Check my project" findings come first, so a build that cannot finish stops now with
+        # the list of what to change (the source-disc preflights follow inside build(), before any texture work).
+        if callable(getattr(session, "iter_project_png_edits", None)):
+            from . import nfl2k5_project_check as project_check
+            from .equipment_staging import cached_equipment_fit_rows
+            quick = project_check.check(plan, asset_ids=project_check.assets_from_session(session), document=document,
+                                        fit_rows=cached_equipment_fit_rows(session), progress=progress,
+                                        run_preflight=False,
+                                        asset_paths=project_check.paths_from_session(session),
+                                        source_index=getattr(cache, "pack0", None))
+            if not quick.ok:
+                raise ValueError(quick.text())
+            (progress or (lambda *_: None))(
+                f"Project check passed ({len(quick.notes)} note{'s' if len(quick.notes) != 1 else ''}; nothing to change)",
+                0, 0)
     validate_build_plan(plan, session)
     models = plan_rows(session)
     report = progress or (lambda *_: None)
@@ -5706,6 +5721,9 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         retail = require_step_source(source if _retail_source is None else _retail_source, "Historic team styles")
         styles_receipt = styles.apply_to_image(target, retail)
         receipt["steps"].append({"step": "historic_styles", **styles_receipt})
+        for note in styles_receipt.get("user_notes", ()):    # b779-ce1: a replaced kit of the user's is said, not dropped
+            progress(note, 0, 0)
+            receipt.setdefault("user_notes", []).append(note)
         receipt["result"]["historic_styles"] = styles.image_status(target, retail)
         if receipt["result"]["historic_styles"] != "applied":
             raise ValueError("the historic team styles failed their read-back on the copy")
@@ -5882,10 +5900,17 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             if moment_kits is None:
                 raise RuntimeError("the Anniversary moment kits module is not available in this build")
             progress("Dressing the Anniversary teams in their game uniforms", 0, 0)
-            kits_receipt = moment_kits.apply_to_image(target)
+            # b779-ce1: a kit the user's own artwork cannot be composed into takes the retail chunk (or is left out)
+            # and is named below; it used to stop the build hours in (Coach Edwards' project).
+            kits_retail = lambda: require_step_source(source if _retail_source is None else _retail_source,
+                                                      "Anniversary moment kits")
+            kits_receipt = moment_kits.apply_to_image(target, retail=kits_retail)
             receipt["steps"].append({"step": "moment_kits", **kits_receipt})
-            receipt["result"]["moment_kits"] = moment_kits.image_status(target)
-            if receipt["result"]["moment_kits"] != "applied":
+            for note in kits_receipt.get("user_notes", ()):
+                progress(note, 0, 0)
+                receipt.setdefault("user_notes", []).append(note)
+            receipt["result"]["moment_kits"] = moment_kits.image_status(target, retail=kits_retail)
+            if receipt["result"]["moment_kits"] != "applied" and kits_receipt.get("state") != "skipped_all":
                 raise ValueError("the Anniversary moment kits failed their read-back on the copy")
         # b778-uf2 (Noah 10/22): the 2026 Jaguars nameplates on the retail letter structure (white letters with the
         # black outline on the teal home kit, black letters with their counters on the road and Bold City kits), then
@@ -5946,6 +5971,9 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         retail = require_step_source(source if _retail_source is None else _retail_source, "Classic teams")
         classic_receipt = classic.apply_to_image(target, retail)
         receipt["steps"].append({"step": "classic_teams", **classic_receipt})
+        for note in (classic_receipt.get("authored_kits") or {}).get("user_notes", ()):   # b779-ce1
+            progress(note, 0, 0)
+            receipt.setdefault("user_notes", []).append(note)
         receipt["result"]["classic_teams"] = classic.image_status(target, retail)
         if receipt["result"]["classic_teams"] != "applied":
             raise ValueError("the classic teams failed their read-back on the copy")
@@ -6443,7 +6471,10 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         retail = require_step_source(source if _retail_source is None else _retail_source, "Historic team styles")
         if _core_module("nfl2k5_historic_styles").image_status(target, retail) != "applied":
             raise ValueError("the historic team styles did not survive the intro video pass on the copy")
-        if _core_module("nfl2k5_moment_kits").image_status(target) != "applied":
+        kits_state = _core_module("nfl2k5_moment_kits").image_status(
+            target, retail=lambda: require_step_source(source if _retail_source is None else _retail_source,
+                                                       "Anniversary moment kits"))
+        if kits_state != "applied" and (kits_state, receipt["result"].get("moment_kits")) != ("retail", "retail"):
             raise ValueError("the Anniversary moment kits did not survive the intro video pass on the copy")
     if plan.espn25_more_moments:
         progress("Restoring historical Anniversary coaches", 0, 51)

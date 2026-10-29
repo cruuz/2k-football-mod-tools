@@ -75,6 +75,23 @@ post **Copy Build summary** and the first error, including the named edit and fi
 matched the source; the changes may already have been installed. Neither message is a played
 verification of every feature. The original game disc is not changed.
 
+## Can I find out what will stop a long build before I start it?
+
+Yes. On the Build tab press **Check my project**. It runs in minutes, writes nothing, and lists
+exactly what to untick or change (an option that cannot be combined with another, stadium
+edits that conflict with the Modern stadium boards, a disc problem the build would find at the
+start) and, separately, what Build will do with your work. The same list can be made from a
+saved project without opening Studio:
+`python -m mod_editor.core.nfl2k5_project_check MyProject.2k5mod --source "ESPN NFL 2K5 (USA).xiso.iso"`.
+
+The built-in Anniversary and classic kits are composed from kits already on the disc, which
+may be kits you edited. If one of your edited sock, glove or shoe chunks cannot be used in
+a new kit (it needs more video memory than any game kit, or a sock whose clean and mud copies
+no longer share their image), the build uses the retail version of that one chunk in that new
+kit only, names it in the build log, and keeps your artwork in your own kit. In the message
+"composed kit allocation 10752/2867776" the two numbers are bytes (system and video memory of
+the kit), not counts; the largest kit in the game uses 2,840,256 video bytes.
+
 ## Can I use uniforms from another year?
 
 X_Ray and maumau78 asked about older uniforms. You can author another era's artwork for the

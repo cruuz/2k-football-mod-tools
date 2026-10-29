@@ -571,6 +571,12 @@ class BuildPanel(QWidget):
         self.build_button.setObjectName("primaryButton")
         self.build_button.clicked.connect(self._build)
         actions.addWidget(self.build_button)
+        self.check_button = QPushButton("Check my project")
+        self.check_button.setToolTip("Finds in minutes what Make my disc would refuse or change in your project and "
+                                     "options, and says what to untick. Nothing is written.")
+        self.check_button.setAccessibleDescription(self.check_button.toolTip())
+        self.check_button.clicked.connect(self._check_project)
+        actions.addWidget(self.check_button)
         self.cancel_button = QPushButton("Cancel")
         self.cancel_button.setEnabled(False)
         self.cancel_button.clicked.connect(lambda: self._task.cancelled.set() if self._task else None)
@@ -3403,6 +3409,7 @@ class BuildPanel(QWidget):
             and self.source_field.text().strip() and self.music_library_field.text().strip()
             and not (self.operation_guard and self.operation_guard())))
         self.build_button.setEnabled(not blocker)
+        self.check_button.setEnabled(not blocker)
         self.blocker_label.setText(blocker)
         self.build_button.setToolTip(blocker or "Copies the disc and writes the selected changes into the copy (a few minutes).")
         self.build_button.setAccessibleDescription(self.build_button.toolTip())
@@ -4562,6 +4569,56 @@ class BuildPanel(QWidget):
         self.progress_bar.show()
         self._refresh()
         self._pool.start(task)
+
+    def _check_project(self) -> None:
+        """Check my project (b779-ce1): the quick checks of nfl2k5_project_check, off the GUI thread, nothing written."""
+        if self.blocker():
+            return
+        plan = self.plan()
+        include_session = self._include_session_project()
+        facade = self._facade
+
+        def operation(progress):
+            from mod_editor.core import nfl2k5_project_check as project_check
+            asset_ids, document, fit_rows, paths, index = [], None, [], None, None
+            if include_session:
+                from mod_editor.core.equipment_staging import cached_equipment_fit_rows
+                with facade._lock:
+                    session = facade._session
+                    asset_ids = project_check.assets_from_session(session)
+                    paths = project_check.paths_from_session(session)
+                    fit_rows = list(cached_equipment_fit_rows(session))
+                    cache = facade._cache
+                    index = cache.pack0 if cache is not None else None
+                document = facade.build_service.preflight_project(session)
+            return project_check.check(plan, asset_ids=asset_ids, document=document, fit_rows=fit_rows,
+                                       progress=progress, asset_paths=paths, source_index=index)
+
+        task = _Task(operation)
+        task.signals.progress.connect(self.progress_label.setText)
+        task.signals.counts.connect(self._progress_counts)
+        task.signals.finished.connect(self._check_done)
+        task.signals.failed.connect(self._failed)
+        self._task = task
+        self._heartbeat_timer.start()
+        self._heartbeat()
+        self.operation_state_changed.emit(True)
+        self.progress_bar.show()
+        self._refresh()
+        self._pool.start(task)
+
+    def _check_done(self, report: object) -> None:
+        self._heartbeat_timer.stop()
+        self._task = None
+        self.operation_state_changed.emit(False)
+        self.progress_bar.hide()
+        self.progress_label.setText("")
+        text = report.text()
+        self._last_build_summary = f"2K5 Mod Studio {BUILD_RELEASE_TAG}\nCheck my project\n\n{text}"
+        self.copy_summary_button.setEnabled(True)
+        self.status_label.setText(text)
+        QMessageBox.information(self, "Check my project", text)
+        self._refresh()
 
     def _progress_counts(self, done, total):
         self.progress_bar.setRange(0, total if total > 0 else 0)

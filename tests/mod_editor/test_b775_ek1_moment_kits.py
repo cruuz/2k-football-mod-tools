@@ -134,7 +134,7 @@ class Data(unittest.TestCase):
 class Wiring(unittest.TestCase):
     def test_runs_after_every_uniform_writer_and_before_the_roster_steps(self):
         source = (ROOT / "mod_editor/core/mod_build.py").read_text(encoding="utf-8")
-        at = source.index("kits_receipt = moment_kits.apply_to_image(target)")
+        at = source.index("kits_receipt = moment_kits.apply_to_image(target, retail=kits_retail)")
         for earlier in ("styles_receipt = styles.apply_to_image(target, retail)",
                         "era_receipt = era_kits.apply_to_image(target",
                         "uniforms_receipt = uniforms.apply_to_image(target)",
@@ -142,7 +142,9 @@ class Wiring(unittest.TestCase):
                         "hem_receipt = pants_hem.apply_to_image(target)"):
             self.assertGreater(at, source.index(earlier), earlier)
         self.assertLess(at, source.index("_apply_roster_refresh(plan, target, receipt, progress)\n    _apply_draft"))
-        self.assertIn('if _core_module("nfl2k5_moment_kits").image_status(target) != "applied":', source)
+        # b779-ce1: the read-back knows the retail disc (a kit left out or built with retail chunks reads back too)
+        self.assertIn('moment_kits.image_status(target, retail=kits_retail)', source)
+        self.assertIn('kits_state = _core_module("nfl2k5_moment_kits").image_status(', source)
 
     def test_historic_spares_never_take_an_ek1_index(self):
         # Browns and Chiefs have no spare: their first free index used to be the ek1 index

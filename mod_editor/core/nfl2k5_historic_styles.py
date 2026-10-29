@@ -705,6 +705,26 @@ def image_status(path, source):
         return "foreign"
 
 
+def overwritten_user_kits(target, source, spares):
+    """Plain sentences for every kit this option replaces that the user's own artwork had changed (b779-ce1).
+
+    A franchise with a free uniform index gets its spare as NEW kit files; the Eagles use all 15 indexes, so their spare
+    takes era style 9 (``EAGLES_SPARE``) and REPLACES ``21h9.iff`` and ``21a9.iff`` with the retail style-0 kits. A project
+    that edited those two packages lost the edits without a word. ``target`` and ``source`` are read by name."""
+    spare = spares.get(EAGLES)
+    if spare is None:
+        return []
+    names = [f"{EAGLES}{side}{spare}.iff" for side in "ha"]
+    changed = [n.removesuffix(".iff").upper() for n in names if target.has(n) and source.has(n)
+               and target.get(n) != source.get(n)]
+    if not changed:
+        return []
+    both = " and ".join(changed)
+    return [f"Historic teams: the Eagles have no free uniform set, so Eagles set {spare} ({both}) is replaced by the "
+            f"retail current Eagles kit, which the historic Eagles teams wear. Your edits to {both} are not in the finished "
+            "disc. Untick 25 more Anniversary moments to keep them."]
+
+
 def apply_to_image(path, source):
     """Install every spare on a private build copy (after the 2026 style-0 writers); replay is a no-op."""
     from . import nfl2k5_music_archive as archive
@@ -717,8 +737,9 @@ def apply_to_image(path, source):
         target = Target(disc)
         plan = plan_spares(target, src)
         edits, appended = compile_spares(target, src, plan)
+        notes = overwritten_user_kits(target, src, plan["spares"])
     receipt = rewrite_archive(path, edits, appended, verify=lambda p: image_status(p, source) == "applied")
-    return dict(status="applied", experimental=True, runtime_witnessed=False,
+    return dict(status="applied", experimental=True, runtime_witnessed=False, user_notes=notes,
                 spares={code: spare for code, spare in sorted(plan["spares"].items())},
                 reasons={code: reasons for code, reasons in sorted(plan["affected"].items())},
                 kit_copies=[name for name, _data in appended if name != FILLER], **receipt)

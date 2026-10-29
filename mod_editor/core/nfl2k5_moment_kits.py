@@ -140,8 +140,67 @@ def donors(doc=None):
     return sorted(out)
 
 
-def compose_side(side, packages):
-    """The new kit package of one side, from ``packages`` {selector: bytes}."""
+def compose_side(side, packages, retail=None, report=None, label=""):
+    """The new kit package of one side, from ``packages`` {selector: bytes}.
+
+    b779-ce1 (Coach Edwards' project): a donor kit the user's own artwork made bigger than any retail kit, or whose
+    clean and _mud textures no longer share their indices (an own-texture sock), used to stop the whole build hours in.
+    When ``retail`` ({selector: retail package bytes}) is given, such a donor chunk is taken from the retail kit
+    instead, in this new Anniversary kit only (the user's own kit keeps its texture), and the swap is appended to
+    ``report`` by name. Only the chunks that cause the refusal are swapped; if that still does not compose, the
+    original refusal stands (the caller can then leave the whole kit out)."""
+    try:
+        return _compose_side(side, packages, {})
+    except ValueError as first:
+        if retail is None:
+            raise
+        for swaps in _swap_plans(side, packages, retail):
+            try:
+                out = _compose_side(side, packages, swaps, retail)
+            except ValueError:
+                continue
+            if report is not None:
+                report.append(dict(side=label, reason=str(first), chunks=sorted(swaps),
+                                   from_kits=sorted({swaps[i] for i in swaps})))
+            return out
+        raise first
+
+
+def _swap_plans(side, packages, retail):
+    """The chunk swaps to try, smallest first: {chunk index: donor selector whose RETAIL chunk replaces it}."""
+    from nfl_txtr import parse_chunks
+    from . import nfl2k5_kit_fixes_2026 as fixes
+    sources = _expand(side.get("chunks", {}))
+    art = {row["chunk"] for row in side.get("art", [])}
+    size_changed, unshared, differs = {}, {}, {}
+    for index in range(1, 53):
+        selector = sources.get(index, side["base"])
+        if selector not in packages or selector not in retail:
+            continue
+        have, was = parse_chunks(packages[selector]), parse_chunks(retail[selector])
+        if len(have) != 53 or len(was) != 53:
+            continue
+        a, b = have[index], was[index]
+        span, original = packages[selector][a.offset:a.end_offset], retail[selector][b.offset:b.end_offset]
+        if (a.video_bytes, a.system_bytes) != (b.video_bytes, b.system_bytes):
+            size_changed[index] = selector
+        elif span != original and index in art:
+            differs[index] = selector
+            if a.kind == "TSET":
+                try:
+                    fixes.native_textures(span, "tset")
+                except ValueError:
+                    unshared[index] = selector
+    first = {**size_changed, **unshared}
+    plans = []
+    if first:
+        plans.append(first)
+    if differs and {**first, **differs} != first:
+        plans.append({**first, **differs})
+    return plans
+
+
+def _compose_side(side, packages, swaps, retail=None):
     from nfl_txtr import decode_chunk, parse_chunks
     from . import nfl2k5_era_kits as era
     from . import nfl2k5_kit_fixes_2026 as fixes
@@ -151,7 +210,8 @@ def compose_side(side, packages):
     sources = _expand(side.get("chunks", {}))
     spans = []
     for c in chunks:
-        donor = packages[sources[c.index]] if c.index in sources else base
+        selector = sources.get(c.index, side["base"])
+        donor = (retail if c.index in swaps else packages)[selector]
         dc = parse_chunks(donor)
         require(len(dc) == 53 and dc[c.index].kind == c.kind, f"chunk {c.index} kind differs in the donor")
         spans.append(donor[dc[c.index].offset:dc[c.index].end_offset])
@@ -252,12 +312,39 @@ def palette_map(span, row):
     return era._encoded_span(span, new, chunk.video_bytes)
 
 
-def compose(doc, packages):
-    """{new package name: bytes} for every kit."""
+def compose(doc, packages, retail=None, report=None, skipped=None):
+    """{new package name: bytes} for every kit.
+
+    ``retail`` / ``report``: see ``compose_side``. ``skipped`` (a dict, b779-ce1): a kit that cannot be composed even
+    with retail chunks is left out and recorded as {kit id: reason} instead of stopping the build; the donors are
+    never touched. Without it the refusal propagates (the shipped SOFTDRINK documents compose exactly)."""
     out = {}
     for kit in doc["kits"]:
-        for letter, side in kit["sides"].items():
-            out[package_name(kit["code"], letter, kit["style"])] = compose_side(side, packages)
+        try:
+            made = {package_name(kit["code"], letter, kit["style"]):
+                    compose_side(side, packages, retail, report, _side_label(kit, letter))
+                    for letter, side in kit["sides"].items()}
+        except ValueError as exc:
+            if skipped is None:
+                raise
+            skipped[kit["id"]] = str(exc)
+            continue
+        out.update(made)
+    return out
+
+
+def _side_label(kit, letter):
+    return f"{kit['id']} ({kit.get('team', kit['code'])}, {'away' if letter == 'A' else 'home'})"
+
+
+def without_kits(doc, skipped):
+    """The document without the kits in ``skipped`` ({kit id: reason}) and without the selections that point at them
+    (those moment sides keep the kit they had)."""
+    if not skipped:
+        return doc
+    out = dict(doc)
+    out["kits"] = [k for k in doc["kits"] if k["id"] not in skipped]
+    out["selections"] = [s for s in doc["selections"] if s.get("kit") not in skipped]
     return out
 
 
@@ -374,10 +461,43 @@ def _situ_fields(situ):
     return {(row + 1, side): (kit, field) for row, side, _sel, _season, kit, field in hs.situ_sides(situ)}
 
 
-def read_inputs(target, doc):
-    """Everything the stage reads from the build copy (hs.Target)."""
+class RetailPackages(dict):
+    """{selector: retail kit package bytes} read lazily from the retail disc (only a fallback ever asks)."""
+
+    def __init__(self, retail):
+        super().__init__()
+        self._retail = retail
+        self._names = None
+
+    def _open(self):
+        from . import nfl2k5_historic_styles as hs
+        from . import nfl2k5_music_archive as archive
+        path = self._retail() if callable(self._retail) else self._retail
+        return archive.Disc(Path(path), descriptors=()), hs
+
+    def __missing__(self, selector):
+        disc, hs = self._open()
+        with disc:
+            target = hs.Target(disc)
+            require(target.has(selector_name(selector)), selector + ": retail kit absent from the retail disc")
+            value = self[selector] = target.get(selector_name(selector))
+        return value
+
+    def __contains__(self, selector):
+        try:
+            self[selector]
+        except (ValueError, OSError, KeyError):
+            return False
+        return True
+
+
+def read_inputs(target, doc, retail=None, allow_skip=True):
+    """Everything the stage reads from the build copy (hs.Target). ``retail`` (a path or a callable returning one)
+    lets a kit that cannot be composed from the copy's own donors use the retail kits' chunks instead;
+    ``allow_skip``: a kit that cannot be composed even then is left out (False: the refusal stands)."""
     from . import nfl2k5_historic_styles as hs
-    inputs = dict(packages={}, files={}, members={})
+    inputs = dict(packages={}, files={}, members={}, retail=RetailPackages(retail) if retail is not None else None,
+                  report=[], skipped={}, allow_skip=allow_skip)
     for selector in donors(doc):
         require(target.has(selector_name(selector)), selector + ": donor kit absent from the copy")
         inputs["packages"][selector] = target.get(selector_name(selector))
@@ -390,13 +510,27 @@ def read_inputs(target, doc):
         inputs["members"][a["name"]] = (target.get(identity=a["record"]), target.get(identity=a["cdf"]))
     inputs["new_present"] = {package_name(k["code"], l, k["style"]): target.has(package_name(k["code"], l, k["style"]))
                              for k in doc["kits"] for l in "HA"}
+    if inputs["retail"] is not None and _donors_pinned(inputs["packages"]):
+        # the SOFTDRINK donors compose exactly to the shipped pins; a refusal there is a bug to see, not to work around
+        inputs["retail"] = None
     return inputs
+
+
+def _donors_pinned(packages):
+    try:
+        pin = pins()
+    except (OSError, ValueError, KeyError):
+        return False
+    return bool(packages) and all(sha(data) == pin["donors"].get(selector) for selector, data in packages.items())
 
 
 def expected(doc, inputs):
     """(packages, members {aggregate: {name: slot}}, files {name: bytes}, situ bytes) of the applied state."""
     from . import nfl2k5_historic_styles as hs
-    packages = compose(doc, inputs["packages"])
+    packages = compose(doc, inputs["packages"], inputs.get("retail"), inputs.setdefault("report", []),
+                       inputs.setdefault("skipped", {}) if inputs.get("retail") is not None
+                       and inputs.get("allow_skip", True) else None)
+    doc = without_kits(doc, inputs.get("skipped"))
     members = {a["name"]: {} for a in hs.AGGREGATES}
     for kit in doc["kits"]:
         authored = {}
@@ -423,6 +557,41 @@ def expected(doc, inputs):
     return packages, members, files, bytes(situ)
 
 
+def _installed_document(doc, inputs):
+    """The document minus the kits an earlier install of this stage left out (b779-ce1).
+
+    A kit is read as left out only when none of its packages or card members is on the copy, its moment sides still
+    have the kit they had, at least one other kit IS installed, and composing it from the copy's donors (with the
+    retail chunks) really does fail. Anything else is a partial or foreign install and keeps the whole document."""
+    from . import nfl2k5_historic_styles as hs
+    retail = inputs.get("retail")
+    if retail is None or len(doc["kits"]) < 2 or not inputs.get("allow_skip", True):
+        return doc
+    fields = _situ_fields(inputs["situ"])
+    hashes = {name: set(hs.parse_record(record)[2]) for name, (record, _cdf) in inputs["members"].items()}
+    absent, here = [], []
+    for kit in doc["kits"]:
+        names = [package_name(kit["code"], l, kit["style"]) for l in "HA"]
+        members = [hs.member_hash(new) in hashes[agg] for new, (agg, _old) in card_sources(kit).items()]
+        sides = [s for s in doc["selections"] if s.get("kit") == kit["id"]]
+        if not any(inputs["new_present"][n] for n in names) and not any(members) and all(
+                fields[(s["row"], s["side"])][0] == s["before"] for s in sides):
+            absent.append(kit)
+        else:
+            here.append(kit)
+    if not absent or not here:
+        return doc
+    skipped = {}
+    try:
+        compose(dict(doc, kits=absent), inputs["packages"], retail, [], skipped)
+    except ValueError:
+        return doc
+    if {k["id"] for k in absent} != set(skipped):
+        return doc
+    inputs["skipped"] = skipped
+    return without_kits(doc, skipped)
+
+
 def state_of(doc, inputs, target, *, pinned_packages=None):
     """'retail' (nothing installed, every selection as before), 'applied', else 'foreign'.
 
@@ -431,9 +600,11 @@ def state_of(doc, inputs, target, *, pinned_packages=None):
     rewrite the long-sleeve palettes of the DONOR kits, so composing again from the copy's donors no longer gives
     the bytes this stage wrote, while the installed kits are exactly the pinned ones."""
     from . import nfl2k5_historic_styles as hs
+    doc = _installed_document(doc, inputs)
     fields = _situ_fields(inputs["situ"])
     kits_now = {(s["row"], s["side"]): fields[(s["row"], s["side"])][0] for s in doc["selections"]}
-    present = inputs["new_present"]
+    present = {n: v for n, v in inputs["new_present"].items()
+               if n in {package_name(k["code"], l, k["style"]) for k in doc["kits"] for l in "HA"}}
     hashes = {name: set(hs.parse_record(record)[2]) for name, (record, _cdf) in inputs["members"].items()}
     new_members = {(agg, new) for k in doc["kits"] for new, (agg, _old) in card_sources(k).items()}
     member_present = {m: hs.member_hash(m[1]) in hashes[m[0]] for m in new_members}
@@ -458,7 +629,7 @@ def state_of(doc, inputs, target, *, pinned_packages=None):
     return "applied"
 
 
-def image_status(path, doc=None):
+def image_status(path, doc=None, retail=None, allow_skip=True):
     from . import nfl2k5_historic_styles as hs
     from . import nfl2k5_music_archive as archive
     pinned = None
@@ -473,7 +644,7 @@ def image_status(path, doc=None):
             target = hs.Target(disc)
             if doc.get("selections") and len(_situ_fields(target.get(identity=hs.SITU_OUTER_ID))) != 2 * MOMENT_ROWS:
                 return "not_applicable"
-            return state_of(doc, read_inputs(target, doc), target, pinned_packages=pinned)
+            return state_of(doc, read_inputs(target, doc, retail, allow_skip), target, pinned_packages=pinned)
     except (ValueError, KeyError, IndexError, struct.error, OSError):
         return "foreign"
 
@@ -484,6 +655,11 @@ def compile_edits(target, doc, inputs):
     for name, there in inputs["new_present"].items():
         require(not there, name + " already exists: the index is not free")
     packages, members, files, situ = expected(doc, inputs)
+    skipped = dict(inputs.get("skipped") or {})
+    doc = without_kits(doc, skipped)
+    if not packages:
+        return {}, [], dict(kits=[], pinned_donors=None, members=0, team_files=[], selections=0,
+                            skipped_kits=skipped, substitutions=list(inputs.get("report") or []))
     edits = {}
     for aggregate in hs.AGGREGATES:
         record, cdf = inputs["members"][aggregate["name"]]
@@ -524,25 +700,59 @@ def compile_edits(target, doc, inputs):
     return edits, appended, dict(kits=rows, pinned_donors=pinned,
                                  members=sum(len(v) for v in members.values()),
                                  team_files=sorted(n for n in files if files[n] != inputs["files"][n]),
-                                 selections=len(doc["selections"]))
+                                 selections=len(doc["selections"]),
+                                 skipped_kits=skipped, substitutions=list(inputs.get("report") or []))
 
 
-def apply_to_image(path, doc=None):
-    """Install every new kit and moment selection on a private build copy; replay is a no-op."""
+CHUNK_NAMES = {4: "socks", 5: "elbow pads", 6: "gloves", 7: "long sleeves", 8: "shoes", 9: "shoes", 10: "wristbands"}
+
+
+def _chunk_words(indexes):
+    words = list(dict.fromkeys(CHUNK_NAMES.get(i, f"piece {i}") for i in indexes))
+    return ", ".join(words[:-1]) + " and " + words[-1] if len(words) > 1 else words[0]
+
+
+def user_notes(receipt, feature="Anniversary moment kits"):
+    """Plain sentences for the build log and summary: every swap and every kit left out, by name (b779-ce1)."""
+    notes = []
+    for row in receipt.get("substitutions", ()):
+        kits_from = " and ".join(row["from_kits"])
+        why = row["reason"].split(": ", 1)[-1]
+        notes.append(f"{feature}: the new kit {row['side']} uses the retail {_chunk_words(row['chunks'])} of {kits_from} "
+                     f"(chunk{'s' if len(row['chunks']) > 1 else ''} {', '.join(str(c) for c in row['chunks'])}), because "
+                     f"your edited version cannot be used in a new kit ({why}). Your own kits keep your artwork.")
+    for kit_id, reason in sorted(receipt.get("skipped_kits", {}).items()):
+        notes.append(f"{feature}: the new kit {kit_id} was left out and the moment sides that use it keep the kit they "
+                     f"had ({reason.split(': ', 1)[-1]}).")
+    return notes
+
+
+def apply_to_image(path, doc=None, retail=None, allow_skip=True, feature="Anniversary moment kits"):
+    """Install every new kit and moment selection on a private build copy; replay is a no-op.
+
+    ``retail`` (a path or a callable returning one): when a donor kit of the user's cannot be composed into a new
+    kit, that chunk (or, last, the whole kit) is taken from the retail disc and named in ``user_notes`` rather than
+    stopping the build. ``allow_skip=False`` (the classic teams' own kit, which their files need): no kit is left out."""
     from . import nfl2k5_historic_styles as hs
     from . import nfl2k5_music_archive as archive
     doc = doc or document()
     path = Path(path).resolve()
-    state = image_status(path, doc)
+    state = image_status(path, doc, retail, allow_skip)
     if state in ("applied", "not_applicable"):
         return dict(state=state, written=0)
     require(state == "retail", "the copy is " + state)
     with archive.Disc(path, descriptors=()) as disc:
         target = hs.Target(disc)
-        inputs = read_inputs(target, doc)
+        inputs = read_inputs(target, doc, retail, allow_skip)
         edits, appended, receipt = compile_edits(target, doc, inputs)
-    rewrite = hs.rewrite_archive(path, edits, appended, verify=lambda p: image_status(p, doc) == "applied")
-    return dict(state="applied", experimental=True, runtime_witnessed=False, owner=OWNER, **receipt, **rewrite)
+    notes = user_notes(receipt, feature)
+    if not appended:
+        # every kit was left out: nothing to write, the copy stays as it is
+        return dict(state="skipped_all", experimental=True, runtime_witnessed=False, owner=OWNER, written=0,
+                    user_notes=notes, **receipt)
+    rewrite = hs.rewrite_archive(path, edits, appended, verify=lambda p: image_status(p, doc, retail, allow_skip) == "applied")
+    return dict(state="applied", experimental=True, runtime_witnessed=False, owner=OWNER, user_notes=notes,
+                **receipt, **rewrite)
 
 
 def main(argv=None):
