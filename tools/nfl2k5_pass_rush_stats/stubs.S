@@ -146,7 +146,7 @@ prs_rush_share:    .float 0.71           /* simulated: hurries + knockdowns per 
 prs_hit_share:     .float 0.53           /* simulated: knockdowns per non-sack pressure (PFR 0.37 / 0.70) */
 prs_ol_per_game:   .float 4.3            /* simulated: non-sack pressures charged to the line a game */
 prs_ol_hit_share:  .float 0.45           /* simulated: share of those that are QB hits */
-prs_ol_sack_share: .float 0.70           /* simulated: share of the team's sacks charged to a lineman */
+prs_ol_sack_share: .float 0.60           /* simulated: share of the team's sacks charged to a lineman */
 prs_list_rb:       .long 0               /* the column lists (filled by the owner): HB/FB */
 prs_list_wr:       .long 0               /* WR/TE */
 prs_list_def:      .long 0               /* defense */

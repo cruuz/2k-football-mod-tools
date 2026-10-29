@@ -69,7 +69,7 @@ STATE_SIZE = 4 * len(STATE_DIAGNOSTICS) + NCODE * NSTAT + NCODE + 2 * NCODE
 # Positions are in centimetres (91.44 a yard: 210 uses of 91.44 in the retail XBE; xemu RAM of prsA2/prsA3).
 TUNING = (("prs_hurry_mm2", 182.88 ** 2), ("prs_hit_mm2", 91.44 ** 2), ("prs_rush_share", 0.71),
           ("prs_hit_share", 0.53), ("prs_ol_per_game", 4.3), ("prs_ol_hit_share", 0.45),
-          ("prs_ol_sack_share", 0.70))
+          ("prs_ol_sack_share", 0.60))
 
 # (label, VA, retail bytes, entry label, kind) - kind "call" = call rel32, "jmp" = jmp rel32 + NOP padding
 SITE_TABLE = (
