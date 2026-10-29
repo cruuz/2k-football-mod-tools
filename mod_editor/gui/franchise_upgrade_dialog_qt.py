@@ -72,8 +72,19 @@ def preview_text(plan):
             lines += [f"  {c['player']}" for c in step["changes"][:12]]
             if len(step["changes"]) > 12:
                 lines.append(f"  …and {len(step['changes']) - 12} more in the receipt.")
+            growth = step.get("save_arena_growth")
+            if growth:
+                lines.append(f"Roster arena grown: {growth['arena_size_before']:,} to {growth['arena_size_after']:,} bytes, "
+                             f"{growth['class_records']} more draft-class player records (the save is "
+                             f"{growth['file_growth']:,} bytes larger).")
+            elif step.get("arena_growth", "").startswith("kept"):
+                lines.append(f"Roster arena not grown: {step['arena_growth']}.")
             if step["no_room"]:
                 lines.append(f"  No room for {len(step['no_room'])} more: the save has no empty player records left.")
+        elif step["operation"] == "rookie_templates":   # b779-rf3
+            lines.append(f"Draft-class templates from the disc: {step['templates_changed']} of {step['templates']} updated "
+                         f"({len(step['changes'])} ratings). Future draft classes use them; no current player or "
+                         "prospect changes.")
         elif step["operation"] == "team_history":
             lines.append(f"Historical teams restored: {len(step['changes'])}; "
                          f"rows without historical evidence: {step['unresolved_rows']}")
@@ -99,7 +110,7 @@ class FranchiseUpgradeDialog(QDialog):
         layout = QVBoxLayout(self)
         hint = QLabel("For older SOFTDRINK franchises that began with the 2026 roster. "
                       "Choose the current build's disc to update experience, playbooks, coach appearances, hair styles, "
-                      "award history and the free-agent pool. "
+                      "award history, the free-agent pool and the draft-class templates. "
                       "Preview first, then write a new signed save folder.")
         hint.setWordWrap(True)
         layout.addWidget(hint)

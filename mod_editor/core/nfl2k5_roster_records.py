@@ -703,6 +703,15 @@ NUMERIC_LIMITS: dict[str, tuple[int, int]] = {
 # straight into the record made every 2026 draftee read 0, every 2025 draftee read R, and every veteran one year low.
 ROOKIE_YEARS_PRO = 1
 YEARS_PRO_MAX = 31                        # the field is five bits
+# b779 fh1 (Noah 10/28: "just do years in the league, so 16 for Kaepernick, for everybody"): the stored years pro is the
+# number of NFL seasons since the player entered the league, counting the season in progress (rookie = 1), whether or not
+# he played in every one.  That is what the game's own rollover (0x247B40) adds one to each year, what the Player Card
+# labels its season rows from (year = base - (years pro - slot)), and what age, progression and retirement are tuned to.
+# The first year is nflverse's ``entry_year`` (data/nfl2k5_entry_years_2026.v1.json).  The earlier ``game_rookie_1``
+# convention (nflverse accrued seasons + 1) is refused wherever a data file or edits document is stamped with it.
+YEARS_PRO_CONVENTION = "game_years_in_league"
+YEARS_PRO_CONVENTION_NOTE = ("years pro = NFL seasons since the player entered the league, counting the season in progress "
+                             "(rookie = 1, the card prints R): base season - nflverse entry_year + 1")
 
 
 def years_pro_from_years_exp(years_exp: Any) -> int:
@@ -942,7 +951,8 @@ def franchise_reference_year(payload: bytes | bytearray, preamble: int,
     from . import nfl2k5_my_career_save as career
     if native_size in career.SIZES:
         native_size = career.native_size(payload)
-    if (native_size in (writer.FRANCHISE_SAVE_SIZE, writer.FRANCHISE_SAVE_SIZE + 0x1000) and preamble == 0x300
+    if (native_size in (writer.FRANCHISE_SAVE_SIZE, writer.FRANCHISE_SAVE_SIZE + 0x1000) + writer.CAPACITY_SAVE_SIZES
+            and preamble == 0x300
             and payload[0x2E0:0x2E4] == b"ROST"
             and struct.unpack_from("<I", payload, 0x2E4)[0] == 0x91020 + native_size - writer.FRANCHISE_SAVE_SIZE
             and payload[0x30C:0x310] == b"ROST"
@@ -1992,9 +2002,38 @@ class RosterDocument:
     def demote_active(self, team_index: int, primary_index: int) -> dict[str, Any]:
         return self._reserve_move(team_index, primary_index, promote=False)
 
-    def check_depth_locks(self) -> None:
+    def _inherited_lock_conflicts(self, source: bytes | None = None) -> set:
+        """Exhibition-squad lock conflicts the loaded bytes already had (the released v0.7 roster carries a dozen on its
+        celebrity, alumni and all-star squads). Keyed by team, role, position, row and the players involved."""
+        cached = getattr(self, "_inherited_locks", None)
+        if cached is not None and source is None:
+            return cached
+        pristine = type(self)(self.original if source is None else source, base=self.base, scheme=self.scheme,
+                              reference_year=self.reference_year, base_year=self.base_year)
+        keys = set()
+        for team in pristine.teams:
+            if team.index >= 32:
+                for c in pristine.depth_lock_conflicts(team.index):
+                    keys.add((team.index, c["role"], c["position"], c["row"], tuple(sorted(c["players"]))))
+        if source is None:
+            self._inherited_locks = keys
+        return keys
+
+    def check_depth_locks(self, *, exhibition: bool = True, inherited_from: bytes | None = None) -> int:
+        """Refuse conflicting depth locks.
+
+        ``exhibition=False`` (read-only checks of a game-written save, for example Franchise > Upgrade) only enforces
+        the 32 clubs and returns how many conflicts it did not enforce. With the default, an exhibition-squad conflict
+        that the loaded bytes (``inherited_from``, default this document's own original) already had is not an error:
+        the released v0.7 roster has such conflicts and the game loads and saves them fine; a conflict an edit
+        creates is still refused."""
+        skipped = 0
+        inherited = None
         for team in self.teams:
             conflicts = self.depth_lock_conflicts(team.index)
+            if not exhibition and team.index >= 32:
+                skipped += len(conflicts)
+                continue
             # Retail celebrity/alumni/Pro Bowl teams alias active club records.
             # Club locks cannot be independent on those views. Keep diagnostics
             # visible, but do not reject otherwise valid club assignments solely
@@ -2003,8 +2042,14 @@ class RosterDocument:
                 conflicts = [c for c in conflicts if not all(
                     any(t < 32 for t in self.by_offset[offset].teams)
                     for offset in c["players"])]
+                if conflicts:
+                    if inherited is None:
+                        inherited = self._inherited_lock_conflicts(inherited_from)
+                    conflicts = [c for c in conflicts if (team.index, c["role"], c["position"], c["row"],
+                                                          tuple(sorted(c["players"]))) not in inherited]
             _require(not conflicts,
                      f"{team.display}: conflicting depth locks; unlock or assign distinct rows before saving")
+        return skipped
 
     def team_of(self, player: Player) -> int | None:
         """The first team this player is listed on (a club before an all-star side), or None."""
@@ -2990,6 +3035,11 @@ def read_edits(source: Path | str | Mapping[str, Any]) -> dict[str, Any]:
     if "qb_throw_power" in document:
         from . import nfl2k5_qb_throw_power
         nfl2k5_qb_throw_power.normalise_directive(document["qb_throw_power"])
+    if "years_pro_convention" in document:
+        # b779 fh1: a document stamped with another years pro meaning is refused, never mixed with this one
+        _require(document["years_pro_convention"] == YEARS_PRO_CONVENTION,
+                 f"the roster-edits document counts years pro as {document['years_pro_convention']!r}; this Studio writes "
+                 f"{YEARS_PRO_CONVENTION!r} (seasons since entering the NFL). Convert it with tools/b77/b779_years_in_league.py")
     return dict(document)
 
 
@@ -3212,7 +3262,15 @@ def apply_body(body: bytes, source: Path | str | Mapping[str, Any], *,
             from . import nfl2k5_spare_capacity
             out, floor_receipt = nfl2k5_spare_capacity.restore_import_floor(out)
             refresh_receipt = dict(refresh_receipt, import_floor=floor_receipt)
-    return out, {"roster_refresh": refresh_receipt, "modern_free_agents": fa_receipt, "franchise_history": history_receipt, "edits": len(doc["edits"]), "players_changed": applied,
+    created_receipt = None
+    if doc.get("created_history"):
+        # b779 fh1: season history for the real players created from zero (free agents, refresh signings); after every
+        # pass that creates an identity, before the honors owner appends its award words.
+        from . import nfl2k5_created_history
+        _require(doc["created_history"] == nfl2k5_created_history.DATA_VERSION, "Unknown created-history version")
+        out, created_receipt = nfl2k5_created_history.apply_body(out, nfl2k5_created_history.load_data())
+    return out, {"roster_refresh": refresh_receipt, "modern_free_agents": fa_receipt, "franchise_history": history_receipt,
+                 "created_history": created_receipt, "edits": len(doc["edits"]), "players_changed": applied,
                  "fields_written": fields_written, "moves": len(doc.get("moves") or []),
                  "players_moved": moved, "coach_names_written": coaches,
                  "team_uniform_years_written": uniform_years,

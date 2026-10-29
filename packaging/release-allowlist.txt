@@ -83,6 +83,7 @@ mod_editor/core/nfl2k5_bump_texture_writer.py
 mod_editor/core/nfl2k5_throw_tuning.py
 mod_editor/core/nfl2k5_franchise_economy.py
 mod_editor/core/nfl2k5_franchise_economy_code.py
+mod_editor/core/nfl2k5_created_history.py
 mod_editor/core/nfl2k5_franchise_history.py
 mod_editor/core/nfl2k5_roster_fill_composition.py
 mod_editor/core/nfl2k5_crib.py
@@ -1033,6 +1034,7 @@ mod_editor/core/nfl2k5_read_option_runtime_code.py
 mod_editor/core/nfl2k5_resource_growth.py
 mod_editor/core/nfl2k5_roster_arena.py
 mod_editor/core/nfl2k5_roster_arena_code.py
+mod_editor/core/nfl2k5_roster_arena_code_b78.py
 mod_editor/core/nfl2k5_roster_arena_growth.py
 mod_editor/core/nfl2k5_roster_arena_image.py
 mod_editor/core/nfl2k5_screen_hooks.py
@@ -3022,6 +3024,8 @@ mod_editor/core/nfl2k5_free_agents.py
 mod_editor/core/nfl2k5_roster_appearance_transfer.py
 mod_editor/data/nfl2k5_free_agents_2026.v1.json
 mod_editor/data/nfl2k5_free_agent_depth_2026.v1.json
+mod_editor/data/nfl2k5_created_history_2026.v1.json
+mod_editor/data/nfl2k5_entry_years_2026.v1.json
 
 mod_editor/core/nfl2k5_anniversary_pack.py
 mod_editor/core/nfl2k5_espn25_fields.py
@@ -3701,6 +3705,7 @@ mod_editor/core/nfl2k5_pass_protection.py
 mod_editor/core/nfl2k5_pass_protection_code.py
 tests/mod_editor/test_nfl2k5_pass_protection.py
 tests/mod_editor/test_nfl2k5_pass_protection_unicorn.py
+mod_editor/core/nfl2k5_preseason_warning.py
 tests/mod_editor/test_nfl2k5_run_blocking.py
 tests/mod_editor/test_nfl2k5_team_sleeves.py
 tests/mod_editor/test_nfl2k5_run_blocking_unicorn.py
@@ -3792,3 +3797,8 @@ tests/mod_editor/test_b778_ap1_appearance.py
 # b778 cs1: mid-game Choose Side leaves a fresh coach VIP context on the native CPU caller
 tests/mod_editor/test_b778_cs1_choose_side.py
 tests/mod_editor/test_b778_bd3_build_blockers.py
+# b779 rc1: v0.7 roster capacity family (MyCareer on the capacity arena, draft-class records, CPU signings)
+tests/mod_editor/test_b779_rc1_roster_capacity.py
+# b779 ag1: capacity arena 0xCA000 (4,096 player records), one layout helper, beta-78 saves migrate
+tests/mod_editor/test_b779_ag1_capacity_arena.py
+tests/mod_editor/test_b779_up2_zero_footer.py

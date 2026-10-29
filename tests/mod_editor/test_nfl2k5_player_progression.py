@@ -34,8 +34,8 @@ class RecordTests(unittest.TestCase):
         self.assertEqual(pp.RECORD_SIZE, 34287)
         self.assertEqual(pp.FOOTER_HEADER_SIZE, 32)
         self.assertEqual(pp.FOOTER_SIZE, 34320)
-        self.assertEqual(pp.PPG_SAVE_SIZES, (754364, 758460, 881340))
-        self.assertEqual(pp.PPG_CAREER_SAVE_SIZES, (754492, 758588, 881468))
+        self.assertEqual(pp.PPG_SAVE_SIZES, (754364, 758460, 881340, 987836))
+        self.assertEqual(pp.PPG_CAREER_SAVE_SIZES, (754492, 758588, 881468, 987964))
         self.assertIn(881340, career.CONTAINER_SIZES)
         self.assertIn(881468, career.CONTAINER_SIZES)
 

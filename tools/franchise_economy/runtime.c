@@ -503,3 +503,211 @@ SECTION(".week") __attribute__((naked)) void economy_after(void) {
 SECTION(".week") __attribute__((naked)) void economy_stage6(void) {
     __asm__("xor %ecx, %ecx\nmov $1, %edx\ncall economy_clubs\njmp 0x247fd7\n");
 }
+
+/* ---------------------------------------------------------------------------
+ * b779 rc1 (revision 4): the draft class keeps the create vacancies and the
+ * first class's position mix. Window "roster_f" is the unreferenced retail
+ * library function 0x382200..0x3822BF (tools/franchise_economy/dead_code.py).
+ *
+ * PROVED OFFLINE (Unicorn, released v0.7 XBE + disc ROST): with revision 3 the
+ * league keeps its unsigned free agents, so the retirement pass 0x2BDB00 retires
+ * only 236 and tops retirements up until free + retiring >= 380 counting the 144
+ * create vacancies (flags & 5 == 1) as free. The class allocator 0x2BD390 then
+ * takes the first 380 records with bit 2 clear, vacancies included, and each
+ * prospect keeps the reused record's old position: the second class was 144 FB,
+ * 4 QB, 0 K, 0 P, and no vacancy was left for Create Player, MyCareer or a
+ * moment/historic import.
+ * ------------------------------------------------------------------------- */
+
+/* Not available to the class: a used record (bit 2) or a create vacancy (bit 0).
+ * Replaces 0x2BD380 (bit 2 only) at the allocator 0x2BD3C0 and at the retirement
+ * pass's free count 0x2BDCAE, so the top-up retires enough free agents for a full
+ * class without the vacancies. ECX = record; EAX nonzero = skip; EDX preserved. */
+SECTION(".roster_f") __attribute__((naked)) void economy_class_free(void) {
+    __asm__("movzbl 8(%ecx), %eax\nand $5, %eax\nret\n");
+}
+
+/* b779 rc1 (Noah 10/28: "there should always be a ton of rookie prospects. Every draft, every position pool
+ * should have undrafted players that nobody wants"): a generated class asks for CLASS_SIZE prospects (the
+ * native loop asked for 380; the first class is still the disc's own 380-record window). The mix per 450 is
+ * the CPU's average 224-pick draft per position over simulated v0.7 drafts 3-10, plus a target left over, for a
+ * 355-player class (what the league frees in a normal year), scaled to 450, then moved toward T, DT and WR after
+ * the smart cut-down (CPU clubs now keep their linemen). b779 ag1: with the 4,096-record arena every class is a
+ * full 450, so the mix was retuned from the CPU's undrafted leftovers over ten simulated 450-player drafts (sim
+ * fastX1: K and P all undrafted at 5, FS, C, G and DE down to 6, DT 22-34 left over), then C and DT up after the
+ * second run (fastX4: C and DT once at 5): QB 21, K 9, P 9, WR 37, CB 44, FS 18, SS 14, HB 25, FB 9, TE 25, OLB 18,
+ * ILB 18, C 30, G 28, T 44, DT 49, DE 52. Under the
+ * one-pool scheme no rostered player carries OLB (10), and the class must conserve that
+ * (nfl2k5_position_pools), so an OLB slot becomes LB (11). */
+#define CLASS_SIZE 450
+SECTION(".roster_f_rodata") static const u8 class_counts[17] = {
+    21, 9, 9, 37, 44, 18, 14, 25, 9, 25, 18, 18, 30, 28, 44, 49, 52};
+
+SECTION(".roster_f") __attribute__((noinline)) unsigned league_has_olb(void) {
+    u8 *root = *(u8 **)0xB72918;   /* the roster's own 32 club blocks, valid whenever a class is generated */
+    for (unsigned t = 0; t < 32; ++t) {
+        u8 *team = *(u8 **)(root + 0x1c) + 500 * t;
+        for (unsigned i = 0; i < team[0x11c] && i < 65; ++i)
+            if (((u8 **)team)[i][0x35] == 10) return 1;
+    }
+    return 0;
+}
+
+/* Prospect k of a class (the generator's countdown [0xE41CDC], CLASS_SIZE..1) takes slot (k - 1) x 151
+ * mod 450 of the mix (151 is prime to 450, so a full class visits every slot once and has exactly the counts
+ * above; a class cut short, such as the disc's 380-record first class, still samples every group). */
+SECTION(".roster_f") unsigned FAST economy_class_position(void) {
+    unsigned k = (*(unsigned *)0xE41CDC - 1) * 151 % CLASS_SIZE, pos = 0;
+    while (pos < 16 && k >= class_counts[pos]) k -= class_counts[pos++];
+    return pos == 10 && !league_has_olb() ? 11 : pos;
+}
+
+/* 0x2BE91D in the class loop 0x2BE900: was movzx edx, [eax+0x35]; mov ecx, eax. */
+SECTION(".roster_f") __attribute__((naked)) void economy_class_slot(void) {
+    __asm__("push %eax\ncall economy_class_position\nmov %eax, %edx\npop %eax\nmov %eax, %ecx\nret\n");
+}
+
+/* b779 rc1: the preseason -> regular season gate. The stage-7 advance (0x24821A)
+ * asks 0x2BF950 for every user club (payroll <= cap and active players <= the
+ * in-season limit, 53 with the practice squad) and, on a refusal, shows "You must
+ * be under the salary cap and have a maximum of 53 players to enter the regular
+ * season. The %s need attention." and returns; the Season screen's automatic
+ * advance (0x2486F0) asks again at once, so the notice never went away (SWeaR
+ * 10/27, Titans, Aug 28 2032). Before asking, cut a user club that is over the
+ * limit to it with the native cut-down 0x2BF9A0, exactly what retail's Simulate
+ * Preseason path (0x2BFD60) does for every user club. The limit is the gate's own
+ * immediate (0x2BF978). An over-the-cap club still gets the notice. */
+SECTION(".roster_g") __attribute__((naked)) void economy_preseason_gate(void) {
+    __asm__("push %ecx\nmovzbl 0x2bf978, %edx\ncmpb %dl, 0x11c(%ecx)\njbe 1f\n"
+            "call 0x2bf9a0\n1: pop %ecx\njmp 0x2bf950\n");
+}
+
+/* b779 rc1 (Noah 10/28: "I want players to retire at an appropriate age, not just retire because they're an
+ * older free agent nobody signed ... guys should always be available"). The retirement pass (0x2BDB00) asks
+ * for enough retirements that the next class gets its records (CLASS_SIZE, 0x2BDCC4/0x2BDCCB); the retail
+ * top-up 0x2BD0E0 retired the lowest-rated free agents of any age. This top-up (0x2BDCD6) retires only free
+ * agents who are past their position's age, oldest first, and then, only if still short, the lowest-rated
+ * free agents within two years of it. Never a younger player: a class may come up short instead.
+ * The position's age is the installed career length (0xACEDE0: years pro at which the native retirement
+ * 0x2BCF90 starts, nfl2k5_progression's NFL career lengths from nflverse draft_picks 1994-2013) + 24, the age
+ * at which a typical starter has retired (base + 2 years pro, a rookie being 1 at about 22): QB/K/P 38,
+ * HB 30, FB/CB 31, WR/S/LB 32, TE/DT/DE 33, G/T 34, C 35. */
+/* Noah 10/28: "some of the guys waiting for a shot might be willing to wait it out a few extra years". Each
+ * player gets his own 0-6 extra years (most 0-3), fixed by his record index so it is the same after a reload:
+ * 5 in 16 none, 4 one, 3 two, 2 three, 1 four, 1 six (mean 1.4). */
+SECTION(".roster_g_rodata") static const u8 hold_years[16] = {0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 3, 3, 4, 6};
+SECTION(".roster_g") static int past_age(u8 *p) {
+    u8 *root = *(u8 **)0xB72918;
+    unsigned season = *(unsigned *)0x247AC7 + *(unsigned *)0xE576B8 + 1;
+    unsigned index = ((unsigned)p - *(unsigned *)(root + 4)) / 84;
+    int age = (int)((season - ((*(unsigned *)(p + 24) >> 21) & 127)) % 100);
+    return age - (int)(*(unsigned *)(0xACEDE0 + 4 * p[0x35]) + 24) - hold_years[(index * 2654435761U) >> 28];
+}
+
+SECTION(".roster_g") static int eligible(u8 *p, int over) {
+    return !(p[8] & 0x18) && p[0x35] < 17 && past_age(p) >= over;
+}
+
+/* A player the class generator made: his first-name pointer is one of the generated-name pool's entries
+ * (ROST root +0x50 count, +0x54 entries of {first, last}); real and created players own their name storage. */
+SECTION(".roster_j") static int generated(u8 *p) {
+    u8 *root = *(u8 **)0xB72918;
+    unsigned *entry = *(unsigned **)(root + 0x54), n = *(unsigned *)(root + 0x50);
+    for (unsigned i = 0; i < n && i < 2048; ++i)
+        if (entry[2 * i] == *(unsigned *)(p + 16)) return 1;
+    return 0;
+}
+
+/* Protected floor candidates: a generated player with no career history (+0x2C); mode 1 also needs him to be at
+ * least 27 and rated no higher than 0.60 (60 OVR); mode 2 (variant B) takes any age and rating. */
+extern const unsigned char economy_floor_protected;
+SECTION(".roster_j") static int protectable(u8 *p, float r) {
+    unsigned mode = *(volatile const unsigned char *)&economy_floor_protected;
+    unsigned season = *(unsigned *)0x247AC7 + *(unsigned *)0xE576B8 + 1;
+    unsigned age = (season - ((*(unsigned *)(p + 24) >> 21) & 127)) % 100;
+    union { float f; unsigned u; } v = { r };   /* r >= 0: compare the bits; 0x3F19999A = 0.60f, no float literal */
+    return (mode == 2 || (age >= 27 && v.u <= 0x3F19999AU)) && !*(unsigned *)(p + 0x2C) && generated(p);
+}
+
+/* The lowest-rated candidate one at a time while more than `keep` are needed: mode 0 = within two years of his
+ * position's age, mode 1 or 2 = a protected floor candidate of that kind. */
+SECTION(".roster_i") __attribute__((noinline)) static int lowest(u8 **list, unsigned n, int need, int keep, int mode) {
+    u8 *best;
+    float low, r;
+    while (need > keep) {
+        best = 0; low = 0;
+        for (unsigned i = 0; i < n; ++i)   /* no float literal: compiler constants land in the "value" window */
+            if (eligible(list[i], mode ? -40 : -2) && ((r = n_rating(list[i], 1)) < low || !best) &&
+                    (!mode || protectable(list[i], r))) { low = r; best = list[i]; }
+        if (!best) break;
+        best[8] |= 8; --need;
+    }
+    return need;
+}
+
+/* Oldest first: every free agent at least `lo` years past his position's age, while more than `keep` are needed. */
+SECTION(".roster_m") __attribute__((noinline)) static int oldest(u8 **list, unsigned n, int need, int lo, int keep) {
+    for (int over = 12; over >= lo && need > keep; --over)
+        for (unsigned i = 0; i < n && need > keep; ++i)
+            if (eligible(list[i], over)) { list[i][8] |= 8; --need; }
+    return need;
+}
+
+/* (a) past the position's age, oldest first; (b) within two years of it, lowest-rated first; (c) only when the
+ * class would still have fewer than MIN_CLASS records, the oldest remaining free agents. The roster file has a
+ * fixed number of records, so a class can only be as deep as the league frees each year: the sims report how
+ * often (b) and (c) fire and the ages (c) reaches. 350 kept every position with undrafted players after the
+ * 224-pick draft on the 3,231-record arena (Noah 10/28: "never fewer than about 350"). b779 ag1: on the 4,096-record
+ * arena the floor is the full class, so every draft has about 226 undrafted players (Noah 10/28: "a ton of rookie
+ * prospects"); the variant-B floor below only retires generated players who never played. */
+#define MIN_CLASS 450
+#define DRAFT_FLOOR 256   /* 224 picks + 32: below this even the protected floor takes the oldest free agents */
+/* Pass (c), the class floor. 0: the oldest remaining free agents. 1: only generated players with no career
+ * history, 27 or older and rated 60 or less, lowest-rated first. 2 (variant B): only generated players with no
+ * career history, any age and rating, lowest-rated first; real and created identities and anyone with history
+ * are never taken by the floor. With 1 or 2 a class may stay under MIN_CLASS.
+ * nfl2k5_franchise_economy.FLOOR_PROTECTED_VA is this byte. */
+SECTION(".roster_h_rodata") const unsigned char economy_floor_protected = 2;
+SECTION(".roster_h") int STD economy_class_topup(int need, unsigned retiring) {
+    u8 *root = *(u8 **)0xB72918, **list = *(u8 ***)(root + 0x3c);
+    unsigned n = *(unsigned *)(root + 0x38);
+    (void)retiring;
+    need = lowest(list, n, oldest(list, n, need, 0, 0), 0, 0);
+    if (*(volatile const unsigned char *)&economy_floor_protected)   /* the draft must never run dry: 256 */
+        return oldest(list, n, lowest(list, n, need, CLASS_SIZE - MIN_CLASS, 1), -40, CLASS_SIZE - DRAFT_FLOOR);
+    return oldest(list, n, need, -40, CLASS_SIZE - MIN_CLASS);
+}
+
+/* b779 rc1 (Noah 10/28: "make it smart, so teams aren't cutting guys that they need at certain positions. They'll
+ * prioritize the lowest overall at a position where they have more than they need, according to modern NFL
+ * position keeping"). Replaces the native cut-down 0x2BF9A0 (fastcall team, target; every caller: the preseason
+ * gate, retail's Simulate Preseason, the economy's trims, MyCareer's signing room). While the club has more than
+ * `target` active players it releases (native 0x2BD900, as the native cut does) the lowest-rated player at a
+ * position still above its minimum; only when no position is above its minimum, the lowest-rated player at a
+ * position with two or more. Minimums: 2024 53-man rosters (atlantafalcons.com, 2024-08-28, all 32 teams:
+ * QB 2.4, RB 3.6, WR 5.9, TE 3.3, OL 9.4, DL 7.9, LB 7.3, DB 10.3, K 1, P 1 on average), at or below the league
+ * average: QB 2, K 1, P 1, WR 5, CB 5, FS 2, SS 2, HB 3, FB 0, TE 3, LB 5 (OLB 3 + ILB 2 when the league has
+ * OLBs, else ILB 5 under the one-pool scheme), C 2, G 3, T 3 (OL 8), DT 3, DE 4 (DL 7). 44 in all. */
+SECTION(".roster_l_rodata") static const u8 cut_min[17] = {2, 1, 1, 5, 5, 2, 2, 3, 0, 3, 3, 2, 2, 3, 3, 3, 4};
+
+/* The lowest-rated active player at a position with more than mins[position] (floor 0), or more than one
+ * (floor 1). */
+SECTION(".roster_k") __attribute__((noinline)) static u8 *cut_pick(u8 *team, const u8 *mins, unsigned floor) {
+    unsigned n = team[0x11c], i, pos;
+    u8 *best = 0, *p;
+    float low = 0, r;
+    for (i = 0; i < n; ++i) {
+        p = ((u8 **)team)[i]; pos = p[0x35];
+        if (pos >= 17 || n_at_position(team, pos) <= (floor ? 1 : mins[pos])) continue;   /* native 0xC3CB0 */
+        if ((r = n_rating(p, 1)) < low || !best) { low = r; best = p; }
+    }
+    return best;
+}
+
+SECTION(".roster_l") void FAST economy_smart_cut(u8 *team, unsigned target) {
+    u8 mins[17], *best;
+    for (unsigned i = 0; i < 17; ++i) mins[i] = cut_min[i];
+    if (!league_has_olb()) { mins[10] = 0; mins[11] = 5; }
+    while (team[0x11c] > target && ((best = cut_pick(team, mins, 0)) || (best = cut_pick(team, mins, 1))))
+        n_release(team, best, 1, 1);
+}

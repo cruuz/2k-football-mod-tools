@@ -1259,6 +1259,7 @@ _LATE_OWNER_OPTIONS = (
     ("nfl2k5_sim_cb_tackles", "Cornerback tackle credit", lambda p: p.sim_cb_tackles),  # b778-cb1
     ("nfl2k5_clock_led", "Modern clock digits", lambda p: p.modern_clock_led),  # b778-sd4
     ("nfl2k5_return_coverage", "Return coverage pursuit angles", lambda p: p.return_coverage),  # b778-kr1
+    ("nfl2k5_preseason_warning", "2026 franchise economy", lambda p: p.franchise_economy),  # b779-rc1: the warned flag
 )
 _REBUILD_HINT = " Build from your unmodified retail dump instead."
 
@@ -3603,7 +3604,8 @@ def _apply_roster_history(plan, target, receipt, progress):
         # historic imports, player tags and QB rating adjustments have run.
         refresh_follows = "roster_refresh" in edits_document
         if refresh_follows:
-            edits_document = {k: v for k, v in edits_document.items() if k != "roster_refresh"}
+            # b779 fh1: created-player history waits for the refresh pass that creates the rest of the identities
+            edits_document = {k: v for k, v in edits_document.items() if k not in ("roster_refresh", "created_history")}
         modern_history = edits_document.get("franchise_history")
         from . import nfl2k5_free_agents
         if plan.season_2026 and plan.position_pools and nfl2k5_free_agents.is_pack_input(edits_document):
@@ -3739,6 +3741,22 @@ def _apply_pass_protection(plan, target, receipt, progress):
     receipt["result"]["pass_protection"] = "applied"
 
 
+def _apply_preseason_warning(plan, target, receipt, progress):
+    """b779-rc1: with the franchise economy, warn once in the last preseason week that the gate will cut to 53."""
+    if not plan.franchise_economy:
+        return
+    module = _core_module("nfl2k5_preseason_warning")
+    if module is None:
+        raise RuntimeError("The pre-season roster warning module is not available in this build")
+    progress("Franchise: pre-season roster warning", 0, 0)
+    xbe, result = module.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, xbe)
+    if module.status(_xbe_bytes(target)) != "applied":
+        raise RuntimeError("Pre-season roster warning: the executable does not read back as applied")
+    receipt["steps"].append({"step": "preseason_warning", **result})
+    receipt["result"]["preseason_warning"] = "applied"
+
+
 def _roster_capacity_records(plan):
     """b778 fa4: records the paired arena writer must reserve for the dated free-agent plan."""
     if not plan.roster_edits:
@@ -3768,6 +3786,8 @@ def _apply_roster_refresh(plan, target, receipt, progress):
         raise ValueError("Dated roster refresh requires modern position pools")
     progress("Applying the dated roster refresh", 0, 0)
     directive = {"schema": records.EDITS_SCHEMA, "edits": [], "roster_refresh": document["roster_refresh"]}
+    if document.get("created_history"):
+        directive["created_history"] = document["created_history"]       # b779 fh1: after every identity exists
     if plan.espn25_more_moments or plan.historic_teams_quick_game:
         # b775 (Noah 10/17: both sides of a moment were the home team): the refresh's new players use vacant
         # records; keep the two-team import floor, as the historic spare capacity does for the dated free agents.
@@ -6393,6 +6413,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     _apply_module_loader(plan, target, receipt, progress)
     # b778-kr1: return coverage, after the module loader (nfl2k5_xbe_space.LATE_OWNERS order)
     _apply_return_coverage(plan, target, receipt, progress)
+    # b779-rc1: the pre-season roster warning (with the franchise economy), the last late allocator owner
+    _apply_preseason_warning(plan, target, receipt, progress)
     # b778-pg2: the Player Progress screen and weekly snapshot (a late allocator owner after force_out)
     # b778-cb1: cornerback tackle credit, after force_out
     # b778-sd4: modern clock digits, after modern sideline catches

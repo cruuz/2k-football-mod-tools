@@ -81,6 +81,20 @@ def upgrade_team_history(payload: bytes, disc_body: bytes, evidence: Mapping | N
     events_by_player = defaultdict(list)
     for event in native_events:
         events_by_player[event["player_index"]].append(event["index"])
+    # The shipped retail history covers the seasons the retail roster already carries. It is the
+    # only source for an old save whose roster is not the disc's main roster (and for a save made
+    # before the TEAM fields were baked): the disc lookup below cannot match those identities.
+    from . import nfl2k5_team_history as team_history
+    retail_rows: dict[tuple[str, str, str], dict[int, str]] = {}
+    try:
+        csv_rows, _provenance = team_history.load_rows(None)
+    except (OSError, ValueError):
+        csv_rows = []
+    for row in csv_rows:
+        if row.birth is None:
+            continue
+        key = (team_history.normalise_name(row.first), team_history.normalise_name(row.last), str(row.birth))
+        retail_rows.setdefault(key, {})[row.season] = row.team
     native_evidence = {
         "ledger_write_cursor": save.u32(save.front_office_block + fs.F_LEDGER_CURSOR),
         "ledger_boundary_cursors": list(struct.unpack_from(
@@ -184,6 +198,19 @@ def upgrade_team_history(payload: bytes, disc_body: bytes, evidence: Mapping | N
                             found = (clubs[disc.teams[index].abbreviation] + 1,
                                      {"kind": "disc_history", "disc_body_sha256": sha(disc_body),
                                       "source_player_index": source_player.index, "source_slot": source_slot})
+                if found is None:
+                    key = (team_history.normalise_name(player.first), team_history.normalise_name(player.last),
+                           identity(player)[2])
+                    csv_team = retail_rows.get(key, {}).get(year)
+                    if csv_team:
+                        try:
+                            abbreviation, _note = team_history.resolve_team(csv_team, year)
+                        except ValueError:
+                            abbreviation = None
+                        if abbreviation in clubs:
+                            found = (clubs[abbreviation] + 1,
+                                     {"kind": "retail_csv", "source": "nflverse retail team history",
+                                      "csv_sha256": team_history.SHIPPED_CSV_SHA256})
             common = {"pool": player.pool, "index": player.index, "player": f"{player.first} {player.last}",
                       "birth_date": identity(player)[2], "season": year, "slot": slot}
             if found is None:
@@ -218,8 +245,11 @@ def upgrade_team_history(payload: bytes, disc_body: bytes, evidence: Mapping | N
     # Native FUN_0014e8b0 inserts a word into the used pool with memmove,
     # adjusts later player pointers, and increments +0x40. Unused native slots
     # can contain stale words after compaction; zero bytes are not required.
-    # Only accept the known native arena pool, not an arbitrary relocated span.
-    require(not additions or pool == roster.layout.root + 0x41A34,
+    # The capacity arena moves the pool by the inserted 0x54-byte records, so
+    # accept the codec's own pool wherever the arena places it instead of only
+    # the retail root+0x41A34 span.
+    from . import nfl2k5_roster_arena as arena
+    require(not additions or (pool is not None and pool >= roster.layout.root + 0x70),
             "unsupported history pool location")
     intervals = {key: (start, start + 4 * len(roster.history_words[key]))
                  for key, start in roster.history_offsets.items() if start is not None}
@@ -235,7 +265,7 @@ def upgrade_team_history(payload: bytes, disc_body: bytes, evidence: Mapping | N
     needed = sum(len(new) for _, new in insertions.values()) + sum(map(len, clones.values()))
     require(used + needed <= roster.pool_capacity, "insufficient history capacity for TEAM repair")
     end = pool + (used + needed) * 4
-    require(end <= roster.layout.end, "TEAM repair exceeds roster arena")
+    require(end <= arena.data_end(roster.layout), "TEAM repair exceeds roster arena")
     for table in roster.tables.values():
         if table.offset is not None and table.count and needed:
             require(end <= table.offset or pool >= table.offset + table.count * table.stride,
@@ -331,7 +361,9 @@ def validate_save(payload: bytes) -> dict:
     findings = rr.validate(document)
     errors = [row for row in findings if row["level"] == "error"]
     require(not errors, f"Studio structural validation failed: {errors[:3]}")
-    document.check_depth_locks()
+    # b779 up2: a save the released v0.7 game wrote carries depth-lock conflicts on its exhibition squads (the v0.7
+    # roster has them); the 32 clubs are still enforced, the exhibition ones are counted in the receipt.
+    exhibition_conflicts = document.check_depth_locks(exhibition=False)
     reserves = ps.validate_save(payload)
     positions = Counter()
     for player in document.players:
@@ -351,6 +383,11 @@ def validate_save(payload: bytes) -> dict:
             pointer = roster.rel(team.offset + relative, size=table.stride, label=field)
             if pointer is None:
                 require(team.index >= 32, f"{team.abbreviation}: null {field} reference")
+                continue
+            # b779 up2: the released v0.7 roster gives the two user slots (32, 33) their own book records outside
+            # the label table; the pointer is already bounds-checked inside the arena by roster.rel. Clubs and
+            # every other team must still point at a table record.
+            if team.index in (32, 33) and field == "playbook":
                 continue
             require(table.offset is not None and pointer >= table.offset
                     and (pointer - table.offset) % table.stride == 0
@@ -384,6 +421,7 @@ def validate_save(payload: bytes) -> dict:
                 "holder, returner, kicker and snapper slot bounds",
                 "team coach and book record references", "schedule team references",
                 "byte-identical Studio round trip")},
+            "exhibition_depth_lock_conflicts_not_enforced": exhibition_conflicts,
             "findings": findings, "changes": []}
 
 
@@ -1060,17 +1098,33 @@ def sync_free_agents(payload: bytes, disc_body: bytes, *, keep: int = SAVE_KEEP_
     require(type(keep) is int and keep >= 0, "keep must be a non-negative record count")
     cohort = free_agent_cohort() if cohort is None else cohort
     disc = rr.RosterDocument(disc_body, scheme="one_pool", reference_year=BASE_YEAR)
-    capacity_request = arena.capacity_descriptor(disc_body, sr.decode(
-        disc_body, preamble=0, reference_year=BASE_YEAR).layout)
+    disc_layout = sr.decode(disc_body, preamble=0, reference_year=BASE_YEAR).layout
+    capacity_request = arena.capacity_descriptor(disc_body, disc_layout)
     growth = None
-    if capacity_request and roster.layout.arena_size < arena.CAPACITY_ARENA_SIZE:
-        require(roster.overflow is None, "capacity migration does not compose with a 16-reserve save")
-        migrated, migration = arena.migrate(payload, reserves_16=False, capacity_records=capacity_request[0])
-        growth = {"arena_size_before": roster.layout.arena_size, "arena_size_after": arena.CAPACITY_ARENA_SIZE,
-                  "records": capacity_request[0], "file_growth": len(migrated) - len(payload),
-                  "migration": migration}
-        payload = migrated
-        save, roster = franchise(payload)
+    growth_state = ("already the disc's arena size" if capacity_request and roster.layout.arena_size >= disc_layout.arena_size
+                    else "the disc has no larger arena")
+    if capacity_request and roster.layout.arena_size < disc_layout.arena_size:
+        # b779 ag1: the disc's appended records are create vacancies (the dated free agents went into them) and free
+        # draft-class records (flags 0); a retail save takes as many vacancies as the disc made and the class records
+        # that fit, a beta-78 capacity save (0xB0000, with its descriptor) keeps its vacancies and gains class records.
+        # A grown save the game itself migrated (no descriptor) and a 16-reserve save are left at their size.
+        legacy_capacity = arena.is_capacity_size(roster.layout.arena_size)
+        grow = ((roster.overflow is None and not legacy_capacity)
+                or (legacy_capacity and arena.capacity_descriptor(payload, roster.layout) is not None))
+        require(grow or legacy_capacity, "capacity migration does not compose with a 16-reserve save")
+        growth_state = ("kept its size: this save was migrated by the game and has no growth descriptor"
+                        if not grow else growth_state)
+        if grow:
+            growth_state = "grown"
+            vacancies = capacity_request[0] - arena.capacity_class_count(disc_body, disc_layout)
+            migrated, migration = arena.migrate(payload, reserves_16=False, capacity_records=vacancies,
+                                                class_records=None)
+            growth = {"arena_size_before": roster.layout.arena_size, "arena_size_after": disc_layout.arena_size,
+                      "records": migration["capacity_records"], "vacancy_records": migration.get("vacancy_records"),
+                      "class_records": migration.get("class_records"),
+                      "file_growth": len(migrated) - len(payload), "migration": migration}
+            payload = migrated
+            save, roster = franchise(payload)
     document = rr.RosterDocument(payload, base=roster.layout.preamble, scheme="one_pool", base_year=BASE_YEAR)
     require(document.free_agent_list is not None, "the franchise has no free-agent list")
     base_payload = payload
@@ -1143,5 +1197,49 @@ def sync_free_agents(payload: bytes, disc_body: bytes, *, keep: int = SAVE_KEEP_
                     "free_agents_before": len(document.original_free_agents), "free_agents_after": len(check.free_agents),
                     "already_in_franchise": already, "not_on_disc": absent, "no_room": left,
                     "changes": changes, "outside_declared_fields_identical": True,
-                    "save_arena_growth": growth,
+                    "save_arena_growth": growth, "arena_growth": growth_state,
                     "changed_bytes": sum(a != b for a, b in zip(base_payload, result))}
+
+
+# --- b779-rf3: the class generator's templates (the save's own copy of the 68 secondary records) ---------------
+#: Noah 10/28: "if you can upgrade existing franchises, that's awesome". A franchise save carries its whole roster,
+#: the 68 templates the draft-class generator rolls every rookie between included, so a franchise started before the
+#: rf3 templates keeps the old ones. Only the template records' rating bytes are copied from the disc roster; no
+#: player or generated prospect is touched, and the style channels (kicking style, power-run style, scramble) stay.
+TEMPLATE_RATINGS_AT = 0x36
+TEMPLATE_STYLE = ("kicking_style", "power_run_style", "scramble")
+
+
+def sync_rookie_templates(payload: bytes, disc_body: bytes) -> tuple[bytes, dict]:
+    """Copy the disc roster's 68 class-generator templates (rating bytes only) into the franchise's own templates."""
+    from . import nfl2k5_roster_records as rr  # noqa: PLC0415
+    _save, roster = franchise(payload)
+    target = sr.decode(disc_body, preamble=0, reference_year=BASE_YEAR)
+    require(target.layout.version in (17, 18), "template source must be a disc ROST")
+    saved = [p for p in roster.players if p.pool == "secondary"]
+    disc = [p for p in target.players if p.pool == "secondary"]
+    require(len(saved) == len(disc) == 68, f"expected 68 templates, save {len(saved)} disc {len(disc)}")
+    order = list(rr.RATING_BYTE_ORDER)
+    rated = [i for i, name in enumerate(order) if name not in TEMPLATE_STYLE]
+    out = bytearray(payload)
+    masks: dict[int, int] = {}
+    changes = []
+    for index, (mine, theirs) in enumerate(zip(saved, disc)):
+        position = payload[mine.offset + 0x35]
+        require(position == disc_body[theirs.offset + 0x35] == index // 4,
+                f"template {index}: position {position} does not match the generator's table")
+        for i in rated:
+            at, src = mine.offset + TEMPLATE_RATINGS_AT + i, theirs.offset + TEMPLATE_RATINGS_AT + i
+            if payload[at] != disc_body[src]:
+                changes.append({"template": index, "field": order[i], "offset": at, "before": payload[at],
+                                "after": disc_body[src]})
+                out[at] = disc_body[src]
+                masks[at] = 0xFF
+    result = bytes(out)
+    scope = prove_scope(payload, result, masks)
+    after = sr.decode(result, base_year=BASE_YEAR)
+    require([(p.pool, p.index, p.offset) for p in after.players] == [(p.pool, p.index, p.offset) for p in roster.players],
+            "the roster layout moved")
+    return result, {"operation": "rookie_templates", "before_sha256": sha(payload), "after_sha256": sha(result),
+                    "disc_roster_sha256": sha(disc_body), "templates": 68,
+                    "templates_changed": len({c["template"] for c in changes}), "changes": changes, **scope}

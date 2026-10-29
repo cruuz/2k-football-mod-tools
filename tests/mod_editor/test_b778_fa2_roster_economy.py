@@ -37,7 +37,7 @@ class Revision3ImageTests(unittest.TestCase):
         cls.current, cls.receipt = economy.apply(cls.retail)
 
     def test_revision_three_sites(self):
-        self.assertEqual(economy.REVISION, 3)
+        self.assertIn(economy.REVISION, (3, 4))   # b779 rc1 revision 4 keeps every revision-3 site
         image = XbeImage(self.current)
         self.assertEqual(image.read(economy.USER_FLOOR, 7), bytes.fromhex("80b91c01000032"))
         text = image.read(0xE891F0, 120).decode("utf-16-le").split("\0")[0]
@@ -292,9 +292,16 @@ class FreeAgentsSurviveTheNewLeagueYearTests(unittest.TestCase):
     def test_revision_three_retires_them_on_age_and_rating_only(self):
         # The pass still retires the lowest-rated free agents (0x2BD0E0) when the roster file needs free
         # records for the draft class, so the pool keeps its best players instead of none.
-        n, retired, values = self.marked(economy.apply(retail_bytes())[0])
+        # b779 rc1: measured on the revision-3 bytes. Revision 4 no longer counts the create vacancies as class
+        # records, so on this 241-agent retail roster the class needs every free agent (as retail does); the
+        # 879-agent v0.7 roster keeps most of them (test_b779_rc1_roster_capacity).
+        from tests.mod_editor.test_b779_rc1_roster_capacity import _revision_three
+        current = economy.apply(retail_bytes())[0]
+        n, retired, values = self.marked(_revision_three(current, retail_bytes()))
         self.assertLess(len(retired), n - 50)
         self.assertEqual(set(bytes(v) for v in values), {b"\0\0"})   # the lent unit is returned
+        n4, retired4, values4 = self.marked(current)
+        self.assertEqual(set(bytes(v) for v in values4), {b"\0\0"})
 
 
 @unittest.skipUnless(HAVE_UC, "Unicorn is not installed")
