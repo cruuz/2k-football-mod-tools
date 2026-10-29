@@ -120,6 +120,31 @@ class GrowthTests(unittest.TestCase):
         self.assertEqual(extended, self.grown)
         self.assertEqual(arena.legacy_disc_resource(extended), self.retail)
 
+    def test_hn1_champions_bytes_keep_their_place_before_the_end(self):
+        # b779 hn1: the champions history is one checked block in the 448 spare bytes after the 352-byte reserve block,
+        # which starts 0x400 before the arena end (nfl2k5_champions_history.FROM_END / RESERVE_BLOCK / SPARE). A growth
+        # keeps the reserve block at the new end - 0x400 and moves those 448 bytes with it.
+        legacy, _ = arena._migrate_capacity(self.retail, 612, class_records=0,
+                                            arena_size=arena.LEGACY_CAPACITY_ARENA_SIZE)
+        doc = codec.decode(legacy)
+        reserve = doc.layout.end - 0x400
+        self.assertEqual(legacy[reserve:reserve + 8], arena.MAGIC)
+        spare = reserve + arena.BLOCK_SIZE
+        self.assertFalse(any(legacy[spare:spare + 448]))
+        block = b'2K5CHMP\0' + bytes(range(1, 256)) + bytes(range(1, 186))     # 448 bytes
+        self.assertEqual(len(block), 448)
+        legacy = legacy[:spare] + block + legacy[spare + 448:]
+        grown, receipt = arena.migrate(legacy, reserves_16=False, capacity_records=612)
+        self.assertEqual(receipt['source'], 'capacity')
+        new = codec.decode(grown)
+        reserve = new.layout.end - 0x400
+        self.assertEqual(reserve - new.layout.root, arena.CAPACITY_BLOCK_OFFSET)
+        self.assertEqual(grown[reserve:reserve + 8], arena.MAGIC)
+        self.assertIsNotNone(new.overflow)
+        self.assertEqual(grown[reserve + arena.BLOCK_SIZE:reserve + arena.BLOCK_SIZE + 448], block)
+        # the whole 0x400 tail moved unchanged (the descriptor before it now counts the appended class records)
+        self.assertEqual(grown[new.layout.end - 0x400:new.layout.end], legacy[doc.layout.end - 0x400:doc.layout.end])
+
     def test_replay_is_a_no_op_and_the_limit_holds(self):
         again, receipt = arena.migrate(self.grown, reserves_16=False, capacity_records=612)
         self.assertTrue(receipt['already_applied'])

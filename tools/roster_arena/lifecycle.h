@@ -93,14 +93,14 @@ void FC arena_load(u8 *w) {
         zero(root+old_size,ARENA_SIZE-old_size-aux);
         initialize(root);
     } else if(ARENA_CAPACITY && old_size<ARENA_SIZE) {
-        /* A 0x92000 or beta-78 0xB0000 (capacity) save or disc loaded into the capacity arena: preserve its
-         * auxiliary tail and move the overflow block, with the capacity descriptor in the 16 bytes before it, to
-         * the new, fixed position. Capacity builds never combine reserves with the capacity growth, but an older
-         * save may still carry an empty reserve block. Its records stay where they are (no record is added). */
-        copy(root+ARENA_SIZE-aux,root+old_size-aux,aux);
-        zero(root+old_size,ARENA_SIZE-old_size-aux);
-        b=root+old_size-0x400U;
-        if(U32(b,0)==0x52354b32 && U32(b,4)==0x00325653) copy(root+BLOCK_OFFSET-16,b-16,368);
+        /* A 0x92000 or beta-78 0xB0000 (capacity) save or disc loaded into the capacity arena (its block was
+         * validated above): move its whole 0x410-byte tail to the new end, keeping every byte's distance from
+         * the end: the capacity descriptor, the overflow block, the 448 spare bytes after it (b779 hn1's
+         * champions history) and the auxiliary tail. Then clear the old tail and the new gap. Capacity builds
+         * never combine reserves with the capacity growth, but an older save may still carry an empty reserve
+         * block. Its records stay where they are (no record is added). */
+        copy(root+ARENA_SIZE-0x410U,root+old_size-0x410U,0x410U);
+        zero(root+old_size-0x410U,ARENA_SIZE-old_size);
     }
     U32((u8 *)0xB7280C,0)=ARENA_SIZE-aux;
     if(aux) U32((u8 *)0xBDB758,0)=(u32)root+ARENA_SIZE-aux;

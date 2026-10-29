@@ -180,6 +180,15 @@ class CapacitySavePathTests(unittest.TestCase):
                                             arena_size=arena.LEGACY_CAPACITY_ARENA_SIZE)
         self.assertEqual(len(source), LEGACY_TOTAL)
         old = codec.decode(source)
+        # b779 hn1 keeps its champions history in the 448 spare bytes after the reserve block (arena end - 0x400 + 352);
+        # a pattern in the part the auxiliary tail does not use must arrive at the same distance from the new end.
+        aux = struct.unpack_from('<I', source, fs.ARENA_WRAPPER + 8)[0]
+        gap = old.layout.root + arena.LEGACY_CAPACITY_BLOCK_OFFSET + arena.BLOCK_SIZE
+        gap_end = old.layout.end - aux
+        self.assertGreater(gap_end - gap, 200)
+        pattern = bytes((7 * i + 1) & 0xFF or 1 for i in range(gap_end - gap))
+        source = source[:gap] + pattern + source[gap_end:]
+        old = codec.decode(source)
         self.assertEqual(old.layout.arena_size, arena.LEGACY_CAPACITY_ARENA_SIZE)
         descriptor = arena.capacity_descriptor(source, old.layout)
         from tests.mod_editor import test_nfl2k5_roster_arena_growth as growth_tests
@@ -232,6 +241,12 @@ class CapacitySavePathTests(unittest.TestCase):
                          old_arena[old_block - 16:old_block + arena.BLOCK_SIZE])
         if aux:
             self.assertEqual(new_arena[-aux:], old_arena[-aux:])
+        # the whole 0x400 tail keeps its distance from the end (hn1's 448 spare bytes included) ...
+        self.assertEqual(new_arena[-0x410:], old_arena[-0x410:])
+        start = new_block + arena.BLOCK_SIZE
+        self.assertEqual(new_arena[start:start + len(pattern)], pattern)
+        # ... and the old tail and the new gap are cleared
+        self.assertFalse(any(new_arena[old_block - 16:new_block - 16]))
         self.assertEqual(again.history_words, old.history_words)
 
 
