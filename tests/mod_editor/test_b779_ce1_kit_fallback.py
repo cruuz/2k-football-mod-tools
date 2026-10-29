@@ -241,6 +241,42 @@ class ClassicHelperPage(unittest.TestCase):
         self.assertEqual(space.EXECUTABLE_READ_ONLY_OWNERS, ("nfl2k5_classic_teams",))
 
 
+class MomentCoachIdentity(unittest.TestCase):
+    """The end-of-build refusal after the classic teams: "coach catalog does not match this physical moment" for a project
+    that ticks the 25 more moments without Named previews (six retail moments keep their retail titles)."""
+
+    RETAIL = Path(__import__("os").environ.get("NFL2K5_RETAIL_XISO",
+                                                "/media/noah/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso"))
+
+    def situ(self, named):
+        if not self.RETAIL.is_file():
+            self.skipTest("the retail disc is not available")
+        from mod_editor.core import nfl2k5_espn25_more_moments as more
+        from mod_editor.core import nfl2k5_historic_styles as hs
+        from mod_editor.core import nfl2k5_music_archive as archive
+        with archive.Disc(self.RETAIL, descriptors=()) as disc:
+            target = hs.Target(disc)
+            collection, main = target.get(identity=hs.SITU_OUTER_ID), target.get(identity=hs.ROSTER_OUTER_ID)
+        return more.compile_situ(collection, more.Data.load(), main, named=named)
+
+    def test_the_catalog_matches_the_moments_with_and_without_named_previews(self):
+        from mod_editor.core import nfl2k5_moment_coaches as coaches
+        for named in (False, True):
+            rebuilt = coaches.situation(self.situ(named), stats={})
+            self.assertEqual(rebuilt[:4], b"SITU")
+
+    def test_a_different_moment_is_still_refused(self):
+        from mod_editor.core import nfl2k5_moment_coaches as coaches
+        from mod_editor.core import nfl2k5_espn25_scenarios as sc
+        raw = bytearray(self.situ(False))
+        at = 32 + sc.RECORDS + 12 * sc.STRIDE
+        # the row's date pointer now reads its title text: not this moment
+        title = struct.unpack_from("<i", raw, at)[0]
+        struct.pack_into("<i", raw, at + 12, title - 12)
+        with self.assertRaisesRegex(ValueError, "does not match this physical moment"):
+            coaches.situation(bytes(raw), stats={})
+
+
 class Installed(Harness):
     """A disc where one kit was left out earlier reads as installed, not foreign."""
 
