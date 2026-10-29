@@ -14,14 +14,17 @@ plates) and an optional layer holding the authored marks that sit in the surface
             (``data/nfl2k5_espn25_fields/row45/center_logo.png``, pinned). Before that it is the period shield, taken
             at build time from the user's retail disc (field ``center_logo`` of ``s43dd.iff``), so no retail pixel
             ships.
-``event``   the game's event mark: the authored event plate, or ``user_art/super_bowl/<NUMERALS>.png``.
-``brand``   the broadcaster: the authored type chip, or ``user_art/brands/<name>.png``.
-``team``    a club: the mod's own team logo (baked into the layer at author time) or authored type for a season whose
-            logo the mod does not carry, or ``user_art/teams/<CODE>.png``.
+``event``   the game's event mark: the bundled real logo (``super_bowl/<NUMERALS>.png`` below) or a file from the
+            user's own folder.
+``brand``   the broadcaster: the bundled real mark (``brands/<name>.png`` below) or a file from the user's folder.
+``team``    a club: the mod's own team logo (baked into the layer at author time), the bundled real logo for the four
+            team-seasons the mod lacks, or a file from the user's folder.
 
-The optional user folder is the user's own: nothing in it ships, a missing file falls back to the authored mark, and
-an unreadable one is ignored with a reason in the receipt. A placed file is trimmed to its visible pixels, fitted by
-aspect inside the slot's safe margin, held to the slot's palette budget and composited with its alpha.
+The bundled folder (``data/nfl2k5_super_bowl_logos``) is Noah's real-logo set, approved 2026-10-28 for this free fan
+mod and carried by the Studio and the SOFTDRINK pack. A build whose ``super_bowl_user_art`` is empty uses it; a
+non-empty user folder is used instead, and a slot it does not name keeps the authored mark. A missing or unreadable
+bundled file also falls back to the authored mark. A placed file is trimmed to its visible pixels, fitted by aspect
+inside the slot's safe margin, held to the slot's palette budget and composited with its alpha.
 """
 from __future__ import annotations
 
@@ -31,6 +34,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 ART = ROOT / "data/nfl2k5_super_bowl_walls"
+#: the bundled real Super Bowl, network and team-season logos (sb3); the default logo folder of every build
+BUNDLED_LOGOS = ROOT / "data/nfl2k5_super_bowl_logos"
+LOGO_SCHEMA = "nfl2k5_super_bowl_logos/v1"
 SCHEMA = "nfl2k5_super_bowl_walls/v2"
 ALPHA_MODES = ("opaque", "source", "art")
 SLOT_KINDS = ("shield", "event", "brand", "team")
@@ -98,6 +104,45 @@ def manifest():
                     s["kind"] == "shield" for s in t.get("slots", ())), f"row {r['row']}: {t['material']} layer")
         _MANIFEST = doc
     return _MANIFEST
+
+
+_LOGO_MANIFEST = None
+
+
+def logo_manifest():
+    """The bundled real logos' manifest: ``{relative PNG path: sha256, size, width, height}``."""
+    global _LOGO_MANIFEST
+    if _LOGO_MANIFEST is None:
+        raw = (BUNDLED_LOGOS / "manifest.json").read_bytes()
+        require(len(raw) < 256 * 1024, "Super Bowl logo manifest is too large")
+        doc = json.loads(raw)
+        require(doc.get("schema") == LOGO_SCHEMA, "foreign Super Bowl logo manifest")
+        files = doc.get("files")
+        require(isinstance(files, dict) and files, "Super Bowl logo manifest is empty")
+        for name, item in files.items():
+            require(isinstance(name, str) and name.endswith(".png") and name == Path(name).as_posix()
+                    and ".." not in name.split("/") and not name.startswith("/"), f"{name}: bundled logo path")
+            require(isinstance(item, dict) and isinstance(item.get("sha256"), str) and len(item["sha256"]) == 64
+                    and isinstance(item.get("size"), int) and item["size"] > 0
+                    and isinstance(item.get("width"), int) and item["width"] > 0
+                    and isinstance(item.get("height"), int) and item["height"] > 0,
+                    f"{name}: bundled logo entry")
+        _LOGO_MANIFEST = doc
+    return _LOGO_MANIFEST
+
+
+def effective_user_art(folder=""):
+    """The logo folder a build uses: the bundled real logos when ``folder`` is empty, else the user's folder."""
+    text = str(folder).strip() if folder else ""
+    return text or str(BUNDLED_LOGOS)
+
+
+def is_bundled(folder):
+    """True when ``folder`` is the bundled real logo folder."""
+    if not folder:
+        return False
+    from . import platform_compat as io
+    return io.path_key(io.absolute_path(folder)) == io.path_key(BUNDLED_LOGOS)
 
 
 def entry(row):
@@ -249,11 +294,12 @@ def load_user_png(path):
 
 
 class Marks:
-    """The build-time marks: the era shields and the user's optional art folder."""
+    """The build-time marks: the era shields and the bundled or user logo folder (see :func:`effective_user_art`)."""
 
     def __init__(self, period_shield=None, user_art=None):
         self.period = period_shield
         self.user_art = str(user_art) if user_art else ""
+        self.bundled = is_bundled(self.user_art)
         self._cache = {}
         self._fitted = {}
 
@@ -289,7 +335,15 @@ class Marks:
         result = (None, "authored", reason)
         if path is not None:
             try:
-                result = (load_user_png(path), "user_art", f"{USER_FOLDERS[kind]}/{path.name}")
+                rel = f"{USER_FOLDERS[kind]}/{path.name}"
+                if self.bundled:
+                    item = logo_manifest()["files"].get(rel)
+                    require(item is not None and sha(path.read_bytes()) == item["sha256"],
+                            f"{rel}: bundled logo differs from its manifest")
+                    origin = "bundled_logo"
+                else:
+                    origin = "user_art"
+                result = (load_user_png(path), origin, rel)
             except (OSError, ValueError, UnidentifiedImageError) as exc:
                 result = (None, "authored", f"{USER_FOLDERS[kind]}/{path.name}: {exc}")
         self._cache[(kind, key, season)] = result
@@ -437,7 +491,7 @@ def compose(texture, row_entry, marks):
             placed = marks_layer[y0:y1, x0:x1]
             origin = slot.get("authored", "authored")
         else:
-            placed = marks.fitted(mark, origin, note if origin == "user_art" else None, w, h, slot)
+            placed = marks.fitted(mark, origin, note if origin in ("user_art", "bundled_logo") else None, w, h, slot)
             if slot.get("shade"):
                 placed = shade_like(placed, region)
         base[y0:y1, x0:x1] = over(region, placed)
@@ -576,7 +630,8 @@ def apply(bundle, row, *, period_shield=None, user_art=None, marks=None):
     """(bundle, receipt) with the row's event walls; rows without event walls return (bundle, None) unchanged.
 
     ``period_shield`` is the RGBA from :func:`period_shield` (needed for Super Bowls before the 2008 season);
-    ``user_art`` is the optional user folder. ``marks`` may carry both instead.
+    ``user_art`` is the logo folder (:func:`effective_user_art` picks the bundled one for an empty plan field).
+    ``marks`` may carry both instead.
     """
     from . import nfl2k5_modern_metlife as mm
     row_entry = entry(row)
@@ -694,10 +749,10 @@ def user_art_readme():
     lines = [
         "# Your Super Bowl logos (optional)",
         "",
-        "2K5 Mod Studio paints every Super Bowl moment's walls, ribbon boards and banners with original event art,",
-        "the NFL shield of that season and the mod's own team logos. Put your own PNG files here and the next build",
-        "places them in the matching slots instead of the authored marks. Nothing in this folder is shipped with the",
-        "Studio or with a SOFTDRINK pack, and nothing here is required: a missing file keeps the authored mark.",
+        "2K5 Mod Studio ships real Super Bowl event logos, network marks and the four team-season logos, and places",
+        "them on every Super Bowl moment's walls, ribbon boards and banners by default. Put your own PNG files here",
+        "and the next build places them in the matching slots instead of the bundled logos and the mod's own",
+        "designed marks. Nothing in this folder is required: a missing file keeps the mod's own mark.",
         "",
         "How files are placed:",
         "",
@@ -707,24 +762,27 @@ def user_art_readme():
         "  the game's 256-colour textures. An image without transparency is placed as a rectangle.",
         "- The recommended size is a comfortable source size; the largest slot in the game is much smaller, so a",
         "  sharp, simple mark reads best. Up to 4096 pixels on a side and 8 MB per file.",
-        "- The build log lists which slots were filled from this folder and which kept the authored marks.",
+        "- The build log lists which slots were filled from this folder and which kept the mod's own marks.",
         "- An event logo also fills that game's field marks on the 25s, 30s or 35s, and a team file the club marks on",
         "  the 30s of Super Bowls XXXII, XXXIV and XXXVI. Franchise Super Bowls take LXII.png, LXIII.png, LXIV.png.",
         "- The NFL shield is not taken from this folder: seasons from 2008 use the mod's official shield, and earlier",
         "  seasons use the period shield read from your own retail disc.",
         "",
-        "Turn this on in Build: Your Super Bowl logos folder, or set `BuildPlan.super_bowl_user_art` to this folder.",
+        "Leave **Your Super Bowl logos** empty in Build to use the bundled real logos, or set",
+        "`BuildPlan.super_bowl_user_art` to this folder to use your files instead. A folder with none of these names",
+        "keeps the mod's own designed marks.",
         "",
     ]
     titles = {"event": "Event logos (`super_bowl/`)", "brand": "Network marks (`brands/`)",
               "team": "Team logos (`teams/`, optional)"}
     notes = {
-        "event": "One per Super Bowl moment, named by its Roman numerals.",
-        "brand": "The networks that carried these games, plus ESPN (the game's own presentation banner).",
-        "team": ("The mod's own team logos are used already, so nothing is needed here. The four names with a "
-                 "season (CIN_1988, NYG_1990, STL_1999, STL_2001) are the team-seasons whose logo the mod does not "
-                 "carry; a plain club roundel shows there until you add one. CODE.png replaces that club's logo in "
-                 "every Super Bowl it plays; CODE_SEASON.png (the year the season began) only in that season."),
+        "event": ("One per Super Bowl moment, named by its Roman numerals. The Studio bundles the real logo of "
+                  "each game; a file here replaces it."),
+        "brand": ("The networks that carried these games, plus ESPN (the game's own presentation banner). The "
+                  "Studio bundles the real network marks; a file here replaces one."),
+        "team": ("The Studio bundles the real logo of the four team-seasons below, so nothing is needed here. The "
+                 "mod's own 2026 team logos fill the other clubs. CODE.png replaces that club's logo in every Super "
+                 "Bowl it plays; CODE_SEASON.png (the year the season began) only in that season."),
     }
     catalog = slot_catalog()
     for kind in ("event", "brand", "team"):
@@ -744,7 +802,7 @@ def user_art_readme():
                             for code, how in r.get("team_logos", {}).items() if how == "authored"},
                            key=lambda e: _order(e[0]))
     if teams_without:
-        lines += ["Team-seasons that show a club roundel until you add a file: " +
+        lines += ["Team-seasons with their own bundled real logo: " +
                   ", ".join(f"Super Bowl {e} `teams/{c}.png`" for e, c in teams_without) + ".", ""]
     return "\n".join(lines)
 
@@ -765,9 +823,9 @@ def create_user_art_layout(folder):
 
 
 def user_art_summary(receipts):
-    """Build-log lines from the walls receipts: the slots filled from the user folder and those that kept the
-    authored marks."""
-    filled, kept, refused = {}, {}, []
+    """Build-log lines from the walls receipts: the slots filled from the user folder, those filled from the bundled
+    real logos, and those that kept the authored marks."""
+    filled, bundled, kept, refused = {}, {}, {}, []
     for walls in receipts:
         for s in walls.get("slots", ()):
             if s["kind"] == "shield":
@@ -775,6 +833,8 @@ def user_art_summary(receipts):
             name = s.get("file") or f"{USER_FOLDERS[s['kind']]}/{s['key']}.png"
             if s["source"] == "user_art":
                 filled.setdefault(s.get("note", name), set()).add(walls["event"])
+            elif s["source"] == "bundled_logo":
+                bundled.setdefault(s.get("note", name), set()).add(walls["event"])
             else:
                 kept.setdefault(name, set()).add(walls["event"])
                 if s.get("note"):
@@ -785,6 +845,9 @@ def user_art_summary(receipts):
             f"{name} ({', '.join(sorted(events, key=_order))})" for name, events in sorted(filled.items())))
     else:
         lines.append("Super Bowl walls: no files from your folder were placed")
+    if bundled:
+        lines.append("Super Bowl walls: filled from the bundled real logos: " + "; ".join(
+            f"{name} ({', '.join(sorted(events, key=_order))})" for name, events in sorted(bundled.items())))
     if kept:
         lines.append("Super Bowl walls: authored marks kept for: " + ", ".join(sorted(kept, key=lambda n: (
             list(USER_FOLDERS.values()).index(n.split("/")[0]), _order(n)))))

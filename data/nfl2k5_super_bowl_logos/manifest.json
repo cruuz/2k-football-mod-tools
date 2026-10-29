@@ -1,0 +1,156 @@
+{
+  "files": {
+    "brands/abc.png": {
+      "height": 1024,
+      "sha256": "40089deda13e1be30afd5c0c7d07dccc5c9918507541497c6575f2d67c71896a",
+      "size": 48494,
+      "width": 1023
+    },
+    "brands/cbs.png": {
+      "height": 1024,
+      "sha256": "7b7b3482fcfbe90b783800457d85404949d717a6ff8ba1534576015609193ccc",
+      "size": 55192,
+      "width": 1024
+    },
+    "brands/espn.png": {
+      "height": 253,
+      "sha256": "89dc92e83232b12e19e0efcac3d44e2ed61c3a38b4f06d82384a8802cb430679",
+      "size": 14809,
+      "width": 1024
+    },
+    "brands/fox.png": {
+      "height": 441,
+      "sha256": "845daec20b134a879a8e9e1662c4e909277271d0814810907e788e3ae928ac6b",
+      "size": 24441,
+      "width": 1024
+    },
+    "brands/nbc.png": {
+      "height": 1009,
+      "sha256": "79763cd0c5f72ea741875e3c6e353b79dc67e5a4f8a05f90e7caff08a7afaba4",
+      "size": 73176,
+      "width": 1024
+    },
+    "super_bowl/LI.png": {
+      "height": 1024,
+      "sha256": "35d9ceb588c55bcdb5b01a1e8d86e0b1c82df1d5d765299a11833b628a772cda",
+      "size": 203544,
+      "width": 1000
+    },
+    "super_bowl/LII.png": {
+      "height": 837,
+      "sha256": "4d29dc721ef89c2557c5fd5d6827d6daca27ec9197bd50fe67cba496f31e7f33",
+      "size": 161855,
+      "width": 1024
+    },
+    "super_bowl/LIV.png": {
+      "height": 803,
+      "sha256": "5fd1a4ea668e38570f7659a6ab2944b9234d227728c0b90180cef39e113a5a82",
+      "size": 176080,
+      "width": 1024
+    },
+    "super_bowl/LVI.png": {
+      "height": 1022,
+      "sha256": "97fc8e02cc63059aaeac49deab4281da5bc96a8eba9fa506e250323fd67fa28d",
+      "size": 288668,
+      "width": 1024
+    },
+    "super_bowl/LVIII.png": {
+      "height": 760,
+      "sha256": "0e581e17c81fff5aca3d796155e6bf51ba485a9bd3806c1d33f89c1577b6f46a",
+      "size": 279637,
+      "width": 1024
+    },
+    "super_bowl/XLII.png": {
+      "height": 840,
+      "sha256": "16f8f8a31110b95ff134e38b850246fe234e96fc2df9a63ae004ad31d9acd4a8",
+      "size": 105327,
+      "width": 1024
+    },
+    "super_bowl/XLIII.png": {
+      "height": 613,
+      "sha256": "7dd945a696a03d435f48ba52f6731c938ffc55f5d891eae31af104d73ace7e94",
+      "size": 60967,
+      "width": 1024
+    },
+    "super_bowl/XLIV.png": {
+      "height": 512,
+      "sha256": "260a7d63a99f1aab41a29a90918afd37a2d64843a579a11ea47771c5b0056c82",
+      "size": 52874,
+      "width": 1024
+    },
+    "super_bowl/XLIX.png": {
+      "height": 295,
+      "sha256": "b19dfb80f755903da9f2eef5fb21eb13628364b0e98849d41de7e515659eca9c",
+      "size": 72897,
+      "width": 280
+    },
+    "super_bowl/XLVI.png": {
+      "height": 1024,
+      "sha256": "04c1f3e83de84cd8710ae35eb9d1feec0bd77c2089c2c2e4ae0fe5fc7b7f0ffe",
+      "size": 173315,
+      "width": 906
+    },
+    "super_bowl/XLVII.png": {
+      "height": 1016,
+      "sha256": "2d54985087ffe8ebb8133db8760ab1daab8762eddc20ec6ae20b2d66dab4fac5",
+      "size": 182837,
+      "width": 1024
+    },
+    "super_bowl/XXIII.png": {
+      "height": 483,
+      "sha256": "130f5e2405c2c23789e1810f7650dec47b7a31e2b64eb01d88365d9aa87c16f3",
+      "size": 21124,
+      "width": 1024
+    },
+    "super_bowl/XXV.png": {
+      "height": 1024,
+      "sha256": "85f2451c355d842f98eaace1a02d708856a644e620b40e0481c6de78baff1c88",
+      "size": 117195,
+      "width": 913
+    },
+    "super_bowl/XXXII.png": {
+      "height": 766,
+      "sha256": "bc42798dfc53c7373bbbe8b0dad65216fbb248c260a256782116c2e69ce939ac",
+      "size": 93775,
+      "width": 1024
+    },
+    "super_bowl/XXXIV.png": {
+      "height": 1000,
+      "sha256": "de5bb748d5dd335625baff3bf887aeac6df85f5a31dcea19fd359d798d0ed327",
+      "size": 130644,
+      "width": 1024
+    },
+    "super_bowl/XXXVI.png": {
+      "height": 964,
+      "sha256": "8915b4f6a5b523cea6020e47614ea969b53ca9926029b52052e24a71b7916819",
+      "size": 182758,
+      "width": 1024
+    },
+    "teams/CIN_1988.png": {
+      "height": 289,
+      "sha256": "6d382e567a2188ae78de7520b1dcccd14e4a858af27f085bb91064a41216c636",
+      "size": 25845,
+      "width": 301
+    },
+    "teams/NYG_1990.png": {
+      "height": 424,
+      "sha256": "a43168ac74d9a9cf8e04f739a331086f3797aeeeafe2652b2cd2d4373d9ee0e2",
+      "size": 1655,
+      "width": 545
+    },
+    "teams/STL_1999.png": {
+      "height": 287,
+      "sha256": "ed4fbc293ede71dc5f39fa7f9db6c4928c117e8abd1faaeb7cba19b2cacd566a",
+      "size": 20348,
+      "width": 304
+    },
+    "teams/STL_2001.png": {
+      "height": 365,
+      "sha256": "8bfd3de6c9c804ccfca5b356359e7125475b4040d0730b53da4f47e21ffad1dd",
+      "size": 40180,
+      "width": 512
+    }
+  },
+  "note": "Bundled real Super Bowl event logos, network marks and the four team-season logos, copied from Noah's Desktop user_art folder on 2026-10-28 (Noah: real logos are fine in this free fan mod). The build uses this folder when BuildPlan.super_bowl_user_art is empty; a non-empty folder replaces it file by file. SOURCES.txt lists where each file came from.",
+  "schema": "nfl2k5_super_bowl_logos/v1"
+}

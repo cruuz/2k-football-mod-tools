@@ -231,8 +231,9 @@ class BuildPlan:
     espn25_era_rules: bool = False  # e2: season-specific live rules for each moment
     historic_stock_books: bool = False  # e2: isolated retail bank and per-side resolver
     espn25_named_previews: bool = False  # named previews, period field aliases and historic venue profile
-    # b773-sb2: optional folder of the user's own Super Bowl logos (super_bowl/<NUMERALS>.png, brands/<name>.png,
-    # teams/<CODE>.png) placed in the Super Bowl walls' slots; "" keeps the authored marks. Never in a preset.
+    # b773-sb2, sb3: the Super Bowl logos folder (super_bowl/<NUMERALS>.png, brands/<name>.png, teams/<CODE>.png).
+    # "" uses the bundled real logos (data/nfl2k5_super_bowl_logos, Noah 2026-10-28); a non-empty folder is used
+    # instead and overrides file by file. Empty in every preset (the bundled set is the default).
     super_bowl_user_art: str = ""
     espn25_more_moments: bool = False  # Anniversary collection with its own team-seasons; experimental, needs an image
     # b76-k1: 128 MB memory on stock xemu (K128, R1's late form: a 226-byte startup patch that teaches xemu's
@@ -1041,7 +1042,7 @@ for _preset_values in PRESETS.values():
 # b76-u4: the 2026 venue art is in no preset; choosing a preset clears a chosen art folder.
 for _preset_values in PRESETS.values():
     _preset_values.setdefault("modern_venues_2026", "")
-# b773-sb2: the user's Super Bowl logos folder is in no preset either.
+# b773-sb2: the user's Super Bowl logos folder is in no preset either; sb3: empty means the bundled real logos.
 for _preset_values in PRESETS.values():
     _preset_values.setdefault("super_bowl_user_art", "")
 
@@ -6394,13 +6395,14 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         receipt["result"]["moment_booth"] = "applied"
     # Use the completed venue models and edited SITU, after all other resource passes.
     if plan.espn25_named_previews:
+        from . import nfl2k5_super_bowl_walls as super_bowl_walls  # sb3: bundled real Super Bowl logos by default
         progress("Building period Anniversary fields", 0, 51)
         field_pack = _core_module("nfl2k5_anniversary_pack")
         if field_pack is None:
             raise ValueError("the Anniversary field compiler is unavailable")
         field_receipt = field_pack.apply_fields_to_image(
             target, retail, progress=lambda i, n, name: progress("Building period Anniversary fields: " + name, i, n),
-            user_art=plan.super_bowl_user_art or None, log=lambda line: progress(line, 0, 0))
+            user_art=super_bowl_walls.effective_user_art(plan.super_bowl_user_art), log=lambda line: progress(line, 0, 0))
         receipt["steps"].append({"step": "espn25_fields", **field_receipt})
         receipt["result"]["espn25_fields"] = "applied"
         # b773-me1: the second ball palette the moment-venue selector picks for moments before 2006. b777 ar1: the
@@ -6430,13 +6432,14 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     if plan.season_2026 and tt.is_disc_image(target):
         # sb1: the announced Super Bowl hosts (LXII Atlanta, LXIII Las Vegas, LXIV Nashville) for franchise seasons 1
         # to 3: new bundles copied from the finished host bundles after every field and colour pass, with Super Bowl
-        # fields; the neutral rows and the executable's season codes point at them.
+        # fields; the neutral rows and the executable's season codes point at them. sb3: bundled real logos by default.
+        from . import nfl2k5_super_bowl_walls as super_bowl_walls
         hosts = _core_module("nfl2k5_super_bowl_hosts")
         if hosts is None:
             raise ValueError("the Super Bowl hosts step is unavailable")
         progress("Super Bowl hosts for the franchise", 0, 0)
-        hosts_receipt = hosts.apply_to_image(target, user_art=plan.super_bowl_user_art or None, progress=progress,
-                                             xbe=_xbe_bytes(target))
+        hosts_receipt = hosts.apply_to_image(target, user_art=super_bowl_walls.effective_user_art(plan.super_bowl_user_art),
+                                             progress=progress, xbe=_xbe_bytes(target))
         executable = hosts_receipt.pop("executable", None)
         if executable is not None:
             _write_xbe_bytes(target, executable)
