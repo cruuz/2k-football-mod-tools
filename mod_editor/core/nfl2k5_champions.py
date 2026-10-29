@@ -233,8 +233,43 @@ def guard_digests(payload: bytes) -> dict[str, str]:
     return {name: _guard_digest(image, va, size, sites(0x14DA000)) for name, va, size, _d in GUARDS}
 
 
+# b779-int1: the SOFTDRINK builds change the shared position abbreviation table before this owner is checked: position
+# pools point ILB at "LB" (0xE69C30) and DE at "EDGE" (0x10CA2), b777-rb2 renames "HB" to "RB" in place, and the H-back
+# owner may point FB at its own label. The runtime only reads the pointers to print the text, so accept exactly the
+# variants nfl2k5_my_career_mode.check_context accepts (the H-back label only while the H-back owner validates).
+POSITION_NAMES = ("QB", "K", "P", "WR", "CB", "FS", "SS", "HB", "FB", "TE", "OLB", "ILB", "C", "G", "T", "DT", "DE")
+POSITION_POINTERS = (0xE69BE8, 0xE69BF0, 0xE69BF4, 0xE69BF8, 0xE69C00, 0xE69C08, 0xE69C10, 0xE69C18, 0xE69C20, 0xE69C28,
+                     0xE69C54, 0xE69C5C, 0xE69C38, 0xE69C3C, 0xE69C40, 0xE69C44, 0xE69C4C)
+
+
+def _position_names_ok(image: XbeImage) -> bool:
+    try:
+        for i, (pointer, name) in enumerate(zip(POSITION_POINTERS, POSITION_NAMES)):
+            actual = struct.unpack("<I", image.read(0x004F26D0 + 4 * i, 4))[0]
+            if i == 11 and actual == 0xE69C30:
+                name, pointer = "LB", actual
+            if i == 16 and actual == 0x10CA2:
+                name, pointer = "EDGE", actual
+            if i == 7 and image.read(actual, 6) == "RB\0".encode("utf-16le"):
+                name = "RB"
+            if i == 8 and actual != pointer:
+                from . import nfl2k5_hback as hback
+                if hback.status(image.data) != "applied":
+                    return False
+                pointer = hback.strings(hback.allocation(image.data)["va"])[1]["abbr"]
+                name = hback.TEXT["abbr"]
+            if actual != pointer or image.read(actual, 2 * (len(name) + 1)) != (name + "\0").encode("utf-16le"):
+                return False
+        return True
+    except (ValueError, IndexError, KeyError, TypeError, struct.error):
+        return False
+
+
 def _check_guards(image: XbeImage, checked_sites) -> None:
     for name, va, size, digest in GUARDS:
+        if name == "position names" and _guard_digest(image, va, size, checked_sites) != digest:
+            _require(_position_names_ok(image), f"foreign champions dependency: {name} ({va:#x})")
+            continue
         _require(_guard_digest(image, va, size, checked_sites) == digest, f"foreign champions dependency: {name} ({va:#x})")
     _require(image.read(SUPER_BOWL_ROW_VA, 1)[0] in SUPER_BOWL_ROWS, "foreign Super Bowl row predicate")
 

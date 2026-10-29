@@ -781,7 +781,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_letter_grades_progress.py": "5088c0b6a545b95efae98f906b5c4c2e030774b22f87a35fd08a2c1c80b31a90",
         "mod_editor/core/nfl2k5_honors.py": "ae096fbae9e66fa898f65047d3f9235639a84cacb3f23fda7dd168b144280933",
         "mod_editor/core/nfl2k5_honors_code.py": "5f74c634876b93f5a6fb37073b742d2248f7118f6074651473459791caccef59",
-        "mod_editor/core/nfl2k5_champions.py": "543a0755dad3313dc50bd3c3c8aa3fccfcb28b698bb48783cb30a24c0dc70b2e",
+        "mod_editor/core/nfl2k5_champions.py": "735e89d85b1225fe738a2cd3fe5e6443f36280597fbbed622a99ce4507b5067f",
         "mod_editor/core/nfl2k5_champions_code.py": "ab0d581c1a41a0399a226c5cd0c2dd5868e52f20dca851f4339e39be52021661",
         "mod_editor/core/nfl2k5_hair_styles.py": "878038ed2cc33d7b30fded5c1bfcbf500cc8842dec487d8ddcf0ab4ebdde3cd6",
         "mod_editor/core/nfl2k5_play_art_routes.py": "b2e652809e1a030608fcd3811bce6346903b3af3f06b5e737250d091b98681cf",
