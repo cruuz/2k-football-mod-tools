@@ -617,6 +617,15 @@ class BuildPlan:
     # CB tackle / weekly progression owners are untouched. On in the Advanced and Experimental presets (the
     # SOFTDRINK 2K28 recipe builds from Experimental); Basic keeps the retail pace.
     sim_stats: bool = False
+    # b779-df1: best-experience defaults for a FRESH profile (and Reset to defaults): Quarter Length 7 minutes,
+    # Franchise Settings > Sim. Quarter Length 15 minutes (kept at the retail 5 unless sim_stats is also on, because a
+    # 15-minute sim quarter inflates simulated games without it) and the Chop Block penalty On when chop_block_toggle is on.
+    # One in-place owner (nfl2k5_option_defaults) edits the options-defaults routine at 0x77CAE and 0xE2CBE. A saved
+    # Settings or franchise file keeps its stored values: no load path is hooked. Off in Basic; on in Advanced and
+    # Experimental (the SOFTDRINK 2K28 recipe builds from Experimental).
+    option_defaults: bool = False
+    default_quarter_minutes: int = 7          # Game Options > Quarter Length, 1..15 (retail 5)
+    default_sim_quarter_minutes: int = 15     # Franchise Settings > Sim. Quarter Length, 3..15 (retail 5); needs sim_stats
     # b778-sd4: modern clock digits: the stadium loader's generated 6x7 bulb font for the play clock, game clock and
     # scores is rewritten in place as a solid warm-white LED matrix. A late executable owner (nfl2k5_clock_led) hooks
     # the end of the clock-font lookup loop at 0x9999A. Every stadium and weather variant uses the same atlas.
@@ -691,7 +700,7 @@ class BuildPlan:
                 or self.guardian_overlay or self.my_career or self.screen_hooks or self.coverage_trail or self.franchise_edit_player or self.cpu_money_downs != "retail" or self.accelerated_clock or self.coin_defer or self.decided_clock or self.cpu_scrambles == "modern" or self.weather_haze or self.number_kerning or self.modern_color or self.weekly_prep or self.weekly_prep_cpu or self.weekly_prep_remember or self.coach_ai or self.playbook_pair or self.deep_zone_facing or self.deep_zone_bail or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave or self.historic_teams_quick_game or self.espn25_more_moments or self.historic_stock_books or self.espn25_era_rules or self.k128_memory or self.team_ratings or self.play_art_routes or self.letter_grades or self.honors_page
                 or self.sportscenter_lineup or self.momentum_collisions or self.scorebug_runtime or self.indicator_names_style != "retail" or self.momentum > 0 or self.momentum_contact or self.defensive_try or self.zone_drop_cap or self.all_stadiums or self.music_shuffle or self.practice_squad_screen or self.abilities or self.qb_spy or self.calendar_engine or self.coverage_slider or self.scramble_tuning or self.flatter_deep_ball or self.chop_block_toggle or self.music_policy != "retail" or self.music_unlock or self.music_userlist
                 or self.guardian_overlay or self.my_career or self.screen_hooks or self.coverage_trail or self.franchise_edit_player or self.cpu_money_downs != "retail" or self.accelerated_clock or self.coin_defer or self.decided_clock or self.cpu_scrambles == "modern" or self.weather_haze or self.number_kerning or self.modern_color or self.weekly_prep or self.weekly_prep_cpu or self.weekly_prep_remember or self.coach_ai or self.playbook_pair or self.deep_zone_facing or self.deep_zone_bail or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave or self.historic_teams_quick_game or self.espn25_more_moments or self.historic_stock_books or self.espn25_era_rules or self.k128_memory or self.team_ratings or self.play_art_routes or self.letter_grades or self.honors_page or self.contract_college_guard
-                or self.guardian_overlay or self.my_career or self.screen_hooks or self.coverage_trail or self.franchise_edit_player or self.cpu_money_downs != "retail" or self.accelerated_clock or self.coin_defer or self.decided_clock or self.cpu_scrambles == "modern" or self.weather_haze or self.number_kerning or self.modern_color or self.weekly_prep or self.weekly_prep_cpu or self.weekly_prep_remember or self.coach_ai or self.playbook_pair or self.deep_zone_facing or self.deep_zone_bail or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave or self.historic_teams_quick_game or self.espn25_more_moments or self.historic_stock_books or self.espn25_era_rules or self.k128_memory or self.team_ratings or self.play_art_routes or self.letter_grades or self.honors_page or self.sim_cb_tackles or self.sim_stats
+                or self.guardian_overlay or self.my_career or self.screen_hooks or self.coverage_trail or self.franchise_edit_player or self.cpu_money_downs != "retail" or self.accelerated_clock or self.coin_defer or self.decided_clock or self.cpu_scrambles == "modern" or self.weather_haze or self.number_kerning or self.modern_color or self.weekly_prep or self.weekly_prep_cpu or self.weekly_prep_remember or self.coach_ai or self.playbook_pair or self.deep_zone_facing or self.deep_zone_bail or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave or self.historic_teams_quick_game or self.espn25_more_moments or self.historic_stock_books or self.espn25_era_rules or self.k128_memory or self.team_ratings or self.play_art_routes or self.letter_grades or self.honors_page or self.sim_cb_tackles or self.sim_stats or self.option_defaults
                 or self.momentum_collisions or self.scorebug_runtime or self.indicator_names_style != "retail" or self.momentum > 0 or self.momentum_contact or self.defensive_try or self.zone_drop_cap or self.all_stadiums or self.music_shuffle or self.practice_squad_screen or self.abilities or self.qb_spy or self.calendar_engine or self.coverage_slider or self.scramble_tuning or self.flatter_deep_ball or self.chop_block_toggle or self.music_policy != "retail" or self.music_unlock or self.music_userlist
                 or bool(self.music_library and _music_library_document(self.music_library)["bank"] == "cribmusic")
                 or self.pass_protection or self.pass_rush_stats)  # b778-pr1, b779-st1
@@ -941,6 +950,12 @@ for _preset in PRESETS.values():
     _preset["sim_stats"] = False
 PRESETS["softdrink_advanced"]["sim_stats"] = True
 PRESETS["softdrink_experimental"]["sim_stats"] = True
+del _preset
+# b779-df1: SOFTDRINK default options (7:00 quarters, 15:00 sim quarters, Chop Block on): Basic keeps the retail defaults.
+for _preset in PRESETS.values():
+    _preset["option_defaults"] = False
+PRESETS["softdrink_advanced"]["option_defaults"] = True
+PRESETS["softdrink_experimental"]["option_defaults"] = True
 del _preset
 # b778-sd4: modern LED clock digits are a presentation fix like the modern goalposts and the 2026 boards, so on in the
 # Advanced and Experimental presets; Basic keeps the retail bulbs.
@@ -1810,6 +1825,43 @@ def _apply_sim_stats(plan: "BuildPlan", target: Path, receipt: dict, progress) -
                                                     if k not in ("reservations", "edits")},
                              "edits": sim_receipt.get("edits", [])})
     receipt["result"]["sim_stats"] = "applied"
+def _option_defaults_preflight(source: Path, progress) -> None:
+    """b779-df1: refuse a source whose options-defaults routine is foreign, before any write."""
+    module = _core_module("nfl2k5_option_defaults")
+    if module is None:
+        raise ValueError("The SOFTDRINK default options are not available in this installation.")
+    progress("Checking the options-defaults routine for the SOFTDRINK default options", 0, 0)
+    try:
+        payload = _xbe_bytes(source)
+    except (OSError, ValueError) as exc:
+        raise ValueError(f"The SOFTDRINK default options cannot read default.xbe: {exc}") from exc
+    if module.status(payload) == "foreign":
+        raise ValueError("The options-defaults routine in this source is not retail or the SOFTDRINK default options. "
+                         "Turn it off or rebuild from a supported USA source.")
+def _option_defaults_values(plan: "BuildPlan") -> dict:
+    """The values this plan installs: Sim. Quarter Length only leaves 5 when the simulator pace fix is in the build."""
+    module = _core_module("nfl2k5_option_defaults")
+    return {"quarter_minutes": plan.default_quarter_minutes,
+            "sim_minutes": plan.default_sim_quarter_minutes if plan.sim_stats else module.RETAIL_MINUTES,
+            "chop_block": bool(plan.chop_block_toggle)}
+def _apply_option_defaults(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    """b779-df1: fresh-profile defaults (in place, no allocator request, no load path hooked)."""
+    if not plan.option_defaults:
+        return
+    module = _core_module("nfl2k5_option_defaults")
+    if module is None:
+        raise RuntimeError("The SOFTDRINK default options need nfl2k5_option_defaults.")
+    progress("Options: SOFTDRINK default options", 0, 0)
+    wanted = _option_defaults_values(plan)
+    payload, od_receipt = module.apply(_xbe_bytes(target), **wanted)
+    _write_xbe_bytes(target, payload)
+    final = _xbe_bytes(target)
+    if final != payload or module.status(final) != "applied":
+        raise RuntimeError("The SOFTDRINK default options: the output does not read back as applied")
+    receipt["steps"].append({"step": "option_defaults", **{k: v for k, v in od_receipt.items()
+                                                          if k not in ("reservations", "edits")},
+                             "edits": od_receipt.get("edits", [])})
+    receipt["result"]["option_defaults"] = "applied"
 def _clock_led_preflight(source: Path, progress) -> None:
     """b778-sd4: refuse a source whose stadium-loader clock-font loop is foreign, before any write."""
     module = _core_module("nfl2k5_clock_led")
@@ -1985,6 +2037,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
                                ("abilities", "nfl2k5_abilities_runtime"), ("qb_spy", "nfl2k5_qb_spy_runtime"),
                                ("calendar_engine", "nfl2k5_calendar_engine"))},
         "sim_stats": _core_module("nfl2k5_sim_stats") is not None,  # b778-sim1; in place, no allocator
+        "option_defaults": _core_module("nfl2k5_option_defaults") is not None,  # b779-df1; in place, no allocator
         "franchise_2026_rules": bool(tt.franchise_2026_patch.RUNTIME_READY),
         "senior_bowl": bool(tt.senior_bowl_patch.NATIVE_EVENT_AVAILABLE),
         "trim_intro_videos": _core_module("nfl2k5_intro_videos") is not None,
@@ -2224,6 +2277,8 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
     out["sim_cb_tackles"] = cb_tackles.status(_xbe_bytes(source)) if cb_tackles is not None else "unavailable"
     sim_stats = _core_module("nfl2k5_sim_stats")  # b778-sim1
     out["sim_stats"] = sim_stats.status(_xbe_bytes(source)) if sim_stats is not None else "unavailable"
+    option_defaults = _core_module("nfl2k5_option_defaults")  # b779-df1
+    out["option_defaults"] = option_defaults.status(_xbe_bytes(source)) if option_defaults is not None else "unavailable"
     clock_led = _core_module("nfl2k5_clock_led")  # b778-sd4
     out["modern_clock_led"] = clock_led.status(_xbe_bytes(source)) if clock_led is not None else "unavailable"
     # b778-bd2: these three are in the Modern preset but were missing from this report, so the
@@ -4075,6 +4130,11 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("Cornerback tackle credit must be Off or On.")
     if type(plan.sim_stats) is not bool:  # b778-sim1
         raise ValueError("The franchise sim pace fix must be Off or On.")
+    if type(plan.option_defaults) is not bool:  # b779-df1
+        raise ValueError("The SOFTDRINK default options must be Off or On.")
+    if (type(plan.default_quarter_minutes) is not int or not 1 <= plan.default_quarter_minutes <= 15
+            or type(plan.default_sim_quarter_minutes) is not int or not 3 <= plan.default_sim_quarter_minutes <= 15):
+        raise ValueError("Default Quarter Length must be 1 to 15 minutes and default Sim. Quarter Length 3 to 15 minutes.")
     if type(plan.modern_clock_led) is not bool:  # b778-sd4
         raise ValueError("Modern clock digits must be Off or On.")
     if plan.hair_styles and plan.guardian_overlay:  # b775-hs1
@@ -4839,6 +4899,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         _player_progress_preflight(source, progress)
     if plan.sim_stats:  # b778-sim1: like qb3, before any write
         _sim_stats_preflight(source, progress)
+    if plan.option_defaults:  # b779-df1: like sim1, before any write
+        _option_defaults_preflight(source, progress)
     if plan.modern_clock_led:  # b778-sd4: like qb3, before any write
         _clock_led_preflight(source, progress)
     _rebuild_refusals(plan, source, is_image, progress)  # fx1: late refusals of earlier-built discs, before any write
@@ -6493,6 +6555,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     _apply_sim_cb_tackles(plan, target, receipt, progress)
     # b778-sim1: the simulated-game pace fix is in place and touches no allocator owner
     _apply_sim_stats(plan, target, receipt, progress)
+    # b779-df1: the fresh-profile default options are in place and touch no allocator owner or load path
+    _apply_option_defaults(plan, target, receipt, progress)
     # b778-sd4: the LED clock, after the cornerback tackle owner (LATE_OWNERS order)
     _apply_clock_led(plan, target, receipt, progress)
     # b778-pc3: pointer-only final executable edit; integration places this after
@@ -6585,6 +6649,10 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("cornerback tackle credit did not survive the final passes")
     if plan.sim_stats and _core_module("nfl2k5_sim_stats").status(_xbe_bytes(target)) != "applied":  # b778-sim1
         raise ValueError("the franchise sim pace fix did not survive the final passes")
+    if plan.option_defaults and _core_module("nfl2k5_option_defaults").settings(_xbe_bytes(target)) != {  # b779-df1
+            "state": "applied", "quarter_minutes": _option_defaults_values(plan)["quarter_minutes"],
+            "sim_minutes": _option_defaults_values(plan)["sim_minutes"], "chop_block": _option_defaults_values(plan)["chop_block"]}:
+        raise ValueError("the SOFTDRINK default options did not survive the final passes")
     if plan.modern_clock_led and _core_module("nfl2k5_clock_led").status(_xbe_bytes(target)) != "applied":  # b778-sd4
         raise ValueError("modern clock digits did not survive the final passes")
     if plan.hair_styles and is_image:  # b778-hr3: scenes, textures, owner + hook and the 2026 roster bytes

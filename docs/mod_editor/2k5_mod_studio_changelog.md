@@ -38,6 +38,7 @@ On means on in that preset. "Pack" is the SOFTDRINK 2K28 v0.7 disc.
 | Kick and punt coverage lead (`return_coverage`) | off | on | on | on |
 | Pass protection hold (`pass_protection`) | off | on | on | on |
 | Simulated game pace (`sim_stats`) | off | on | on | on |
+| SOFTDRINK default options: 7:00 quarters, 15:00 sim quarters, Chop Block on (`option_defaults`) | off | on | on | on |
 | Simulated cornerback tackles (`sim_cb_tackles`) | off | on | on | on |
 | No force-out catches after 2007 (`modern_force_out`) | off | on | on | on |
 | SportsCenter lineup by identity (`sportscenter_lineup`) | on | on | on | on |
