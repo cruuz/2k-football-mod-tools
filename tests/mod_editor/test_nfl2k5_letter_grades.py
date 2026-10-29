@@ -200,8 +200,9 @@ class AllocatorTests(unittest.TestCase):
         without = tuple(r for r in union if r[0] not in later)
         # Includes five fixed tap/draft/H-back/rating slot requests; b775 mo2: + the moment context state; b775-ct1: +
         # the classic teams read-only helpers; b778 ai6: + the late-traffic code and its 8-byte state; b778 st2: +
-        # star career's code and data; b778 ai8: + third-down code (the five rows this test's pin predates).
-        self.assertEqual(len(union) - len(without), 23)
+        # star career's code and data; b778 ai8: + third-down code (the five rows this test's pin predates);
+        # b779-hn1: + the Super Bowl champions owner (after honors).
+        self.assertEqual(len(union) - len(without), 24)
         plan_with, plan_without = space.plan(union), space.plan(without)
         # b778 xs1/bd3: a union that no longer fits the v3 runs is a v4 image, which adds a second
         # allocator-directory row at POOL_VA; owner_offset keeps the two pages apart.
@@ -223,6 +224,7 @@ class AllocatorTests(unittest.TestCase):
         self.assertEqual(added, sorted([(lg.OWNER, "code"), (lg.OWNER, "read_only"), (lg.PROGRESS_OWNER, "code"),
                                         ("nfl2k5_period_goalposts", "code"), ("nfl2k5_period_goalposts", "read_only"),
                                         ("nfl2k5_honors", "code"), ("nfl2k5_honors", "data"),
+                                        ("nfl2k5_champions", "code"),  # b779-hn1
                                         ("nfl2k5_coach_ai", "code"), ("nfl2k5_coach_ai", "data"),
                                         ("nfl2k5_moment_coaches", "code"), ("nfl2k5_moment_coaches", "data"),
                                         ("nfl2k5_moment_context", "data"),  # b775 mo2
