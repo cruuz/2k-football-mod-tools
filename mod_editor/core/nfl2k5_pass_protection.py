@@ -17,17 +17,18 @@ Nothing else is changed: the pass start roll, the paired-block animation share, 
 random draw keep every retail byte.
 
 b779-pr1 adds the SIMULATED half of the same feature (Franchise sims, Game Cast, supersim), as nine in-place
-edits that need no cave: in the sim's pass-play block ``0x108368..0x1084c0`` the sack/scramble chance is
-``1 - clamp(0.875 + o, 0.825, 0.925) - 0.005*QB``, where ``o`` was drawn UNIFORMLY from ``[min(x,-0.1), max(x,0.1)]``
-and ``x = Pass Block(team +0x9c) - Pass Rush(team +0xa0)`` plus noise.  ``x`` has a standard deviation of 0.04,
-so 96.5% of simulated dropbacks ignored both lines completely.  The edit makes ``o = 0.75 * x`` (a deterministic
-function of the two lines; the 0.75 gain keeps team totals spread like the NFL's while a roster whose line ratings
-differ from the shipped roster's moves the league total by less than a full gain would) around a centre of 0.866 and fixes the sacker draw ``0x103760``: its candidate weights ``c^3 / (sum over the 14
-defensive slots + 0.1)`` gave seven defensive backs a combined 20% of all sacks (NFL: 5.6%).  The normaliser now
-sums the eight front slots only (loop bound ``0x1c -> 0x16``, leftover constant 0.1 -> 0.25) and the candidate
-list puts the defensive backs last, so a back gets only the leftover (about 5%, safeties first).  The
-pass-rusher composite (category 4) weighs Speed and Agility up and Strength and Tackle down, which moves sacks
-from big tackles to ends and linebackers (NFL share of sacks: ends 34%, linebackers 39%, tackles 18%).
+edits that need no cave.  In the sim's pass-play block ``0x108368..0x1084c0`` the sack/scramble chance is
+``1 - clamp(0.875 + o, 0.825, 0.925) - 0.005*QB``, where ``o`` was drawn UNIFORMLY from
+``[min(x,-0.1), max(x,0.1)]`` and ``x = Pass Block(team +0x9c) - Pass Rush(team +0xa0)`` plus noise.  ``x`` has a
+standard deviation of 0.04, so only the 3.5% of dropbacks with ``|x| > 0.1`` moved the chance.  The edit makes
+``o = 0.75 * x`` (a deterministic function of the two lines; a gain below 1 limits how far a roster whose line
+ratings differ from the shipped roster's moves the league total) around a centre of 0.866.  It also fixes the
+sacker draw ``0x103760``: its candidate weights ``c^3 / (sum over the 14 defensive slots + 0.1)`` gave seven
+defensive backs a combined 20% of all sacks (NFL: 5.6%).  The normaliser now sums the eight front slots only (loop
+bound ``0x1c -> 0x16``, leftover constant 0.1 -> 0.25) and the candidate list puts the defensive backs last, so a
+back gets only the leftover (about 5%, safeties first).  The pass-rusher composite (category 4) weighs Speed and
+Agility up and Strength and Tackle down, which moves sacks from big tackles to ends and linebackers (NFL share of
+sacks: ends 34%, linebackers 39%, tackles 18%).
 """
 from __future__ import annotations
 
@@ -166,7 +167,7 @@ def sim_sites():
 
 
 def _sim_state(payload):
-    """'retail' or 'applied' for the six simulated-game edits; raises on any foreign byte."""
+    """'retail' or 'applied' for the simulated-game edits; raises on any foreign byte."""
     from .nfl2k5_cave_oracle import XbeImage
     image = XbeImage(payload)
     states = set()
@@ -184,7 +185,10 @@ def _sim_state(payload):
 
 
 def _recognize(payload):
-    """'retail', 'applied', or 'partial' (a v1 build: the played-game owner without the simulated edits)."""
+    """'retail', 'applied', or 'partial' (the played-game owner installed, the simulated edits not).
+
+    A disc built by the b778 owner (160 bytes) is not recognised: the owner grew to 240 bytes, so such an image is
+    'foreign' and is rebuilt from the retail dump like every other owner."""
     owner = _recognize_owner(payload)
     sim = _sim_state(payload)
     return owner if owner == sim else "partial"
@@ -241,7 +245,7 @@ def _apply_sim(payload):
 
 
 def apply(payload):
-    """Install, or replay an identical installation.  Completes a 'partial' (v1) build in place."""
+    """Install, or replay an identical installation.  Completes a 'partial' build (played half only) in place."""
     from . import nfl2k5_xbe_space as space
     try:
         state = _recognize(payload)

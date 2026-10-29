@@ -92,7 +92,7 @@ class BytesTests(unittest.TestCase):
             with self.assertRaises(pp.PassProtectionError, msg=label):
                 pp._sim_state(bad)
 
-    def test_apply_installs_both_halves_and_completes_a_v1_build(self):
+    def test_apply_installs_both_halves_and_completes_a_partial_build(self):
         retail = retail_bytes()
         final, receipt = pp.apply(retail)
         self.assertEqual(pp.status(final), "applied")
@@ -102,7 +102,7 @@ class BytesTests(unittest.TestCase):
         again, replay = pp.apply(final)
         self.assertEqual(again, final)
         self.assertEqual(replay["status"], "already_applied")
-        # a build made by the b778 owner alone (played half only) is completed in place, never refused
+        # a build with only the played half installed is completed in place, never refused
         owner_only, _ = pp._apply_owner(retail)[0], None
         self.assertEqual(pp._recognize(owner_only), "partial")
         self.assertEqual(pp.status(owner_only), "partial")
