@@ -121,7 +121,7 @@ class GrowthTests(unittest.TestCase):
         self.assertEqual(arena.legacy_disc_resource(extended), self.retail)
 
     def test_hn1_champions_bytes_keep_their_place_before_the_end(self):
-        # b779 hn1: the champions history is one checked block in the 448 spare bytes after the 352-byte reserve block,
+        # b779 hn1: the champions history is one checked block (270 bytes now, after the aux-tail fix) right after the 352-byte reserve block,
         # which starts 0x400 before the arena end (nfl2k5_champions_history.FROM_END / RESERVE_BLOCK / SPARE). A growth
         # keeps the reserve block at the new end - 0x400 and moves those 448 bytes with it.
         legacy, _ = arena._migrate_capacity(self.retail, 612, class_records=0,

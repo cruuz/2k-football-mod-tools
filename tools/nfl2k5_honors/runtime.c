@@ -50,7 +50,13 @@ typedef short i16;
 
 enum { H_MVP, H_OPOY, H_DPOY, H_OROY, H_DROY, H_SB, H_SBMVP, H_PB, H_AP, H_RUSH };
 
-extern volatile u32 honors_state[4];  /* [0] page (0 = retail card, 1 = honors) */
+extern volatile u32 honors_state[4];  /* [0] page (0 = retail card, 1 = honors, 2 = champions when that owner is installed) */
+/* b779-hn1: the champions page (owner nfl2k5_champions, the third page of the card). The link resolves to 0 when that
+   owner is not installed, and then the card has its two retail pages only. */
+extern void FC champ_ratings(volatile u32 *) __attribute__((weak));   /* the history list (state[1] = first row) */
+extern void champ_bio(void) __attribute__((weak));
+extern u32 FC champ_flip(u32, volatile u32 *) __attribute__((weak));   /* the page turn and the list scroll */
+extern void FC champ_enter(volatile u32 *) __attribute__((weak));      /* every card opens on page 1 */
 
 typedef struct { u32 count[HONORS]; u32 years[HONORS]; u32 earlier[HONORS]; i32 earlier_slot[HONORS]; } Tally;
 
@@ -182,6 +188,10 @@ static void text_start(u32 *ctx, u32 font, u32 align) {
 
 /* Page 2, rating panel: label right-aligned at x - 8, count left-aligned at x (the retail rating layout). */
 void honors_counts(void) {
+    if (honors_state[0] == 2 && champ_ratings) {
+        champ_ratings(honors_state);
+        return;
+    }
     Tally t;
     u32 ctx[32];
     u16 value[12];
@@ -201,6 +211,10 @@ void honors_counts(void) {
 
 /* Page 2, bio panel: up to three "LABEL: years" lines (the retail bio font and first column). */
 void honors_years(void) {
+    if (honors_state[0] == 2 && champ_bio) {
+        champ_bio();
+        return;
+    }
     Tally t;
     u32 ctx[32];
     u16 text[96];
@@ -228,6 +242,26 @@ void honors_years(void) {
         TEXT_POS(ctx, 198.0f + (float)(width + 8), line_y[0], 20.0f);
         TEXT_DRAW(ctx, none_value);
     }
+}
+
+/* Black, R trigger or White, L trigger turn the page. With the champions owner it decides (three pages, Up and Down scroll
+   its list, a return of 1 plays the cursor sound); without it there are two pages and every shoulder button toggles
+   them, as in beta 77. */
+u32 FC honors_flip(u32 buttons) {
+    if (champ_flip)
+        return champ_flip(buttons, honors_state);
+    if (!(buttons & 0xF000))
+        return 0;
+    honors_state[0] ^= 1;
+    return 1;
+}
+
+/* Every card opens on the retail page with its stats table shown. */
+void FC honors_enter(u32 screen) {
+    honors_state[0] = 0;
+    honors_state[2] = screen;
+    if (champ_enter)
+        champ_enter(honors_state);
 }
 
 /* Set an honor (value 1) in the player's current season slot, always in the regular-season class so the

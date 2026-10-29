@@ -56,7 +56,7 @@ class PlannerTests(unittest.TestCase):
                          [109024, 86016, 17952])  # 2528 directory bytes hold code; 464 hold the read-only rating table.
         self.assertEqual([report['capacity'][k]['available_bytes'] for k in ('code', 'data', 'read_only')],
                          [0, 0, 16])  # b777-ci2: the synthetic owner is one code request now, so the union's 16 free read-only bytes stay free; b776-sm1: none after the classic teams' 288 and a 16-byte synthetic constant; b775-ct1: 16 after the classic teams' 240 and a 48-byte synthetic constant; the synthetic RX still fills the code pages; b76-pf P1: the team-logo table takes 64 RO bytes; b77-f4: 80 left after the grades owner and the 256-byte synthetic constant; b77-v1b: 48
-        self.assertEqual(len(report['pages']), 54)  # b778-ai8: + the third-down owner and its v4 pool page
+        self.assertEqual(len(report['pages']), 55)  # b778-ai8: + the third-down owner and its v4 pool page; b779-hn1: + the champions owner's pool page
         for a in report['allocations']:
             self.assertEqual(a['va'] % a['align'], 0)
         self.assertEqual(space.plan(reversed(REQUESTS + LARGE)), report)
@@ -158,7 +158,7 @@ class PlannerTests(unittest.TestCase):
             self.assertIn('0 available', run.stdout)
             run = subprocess.run(cmd + ['--json'], capture_output=True, text=True, timeout=30)
             self.assertEqual(run.returncode, 0, run.stderr)
-            self.assertEqual(len(json.loads(run.stdout)['pages']), 54)
+            self.assertEqual(len(json.loads(run.stdout)['pages']), 55)  # b779-hn1: the champions owner's pool page
             # b778-xs1: 81,921 RW bytes now land in the v4 pool; one request above MAX_REQUEST_BYTES still refuses.
             path.write_text(json.dumps([['owner', 'data', space.MAX_REQUEST_BYTES + 1, 1]]), encoding='utf-8')
             run = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
@@ -332,7 +332,7 @@ class SyntheticTests(unittest.TestCase):
         spans = recorder.finish(self.grown)
         for reservation in space.reservations(self.grown):
             self.assertTrue(any(all(s[k] == reservation[k] for k in ('start', 'end', 'owner')) for s in spans), reservation)
-        self.assertEqual(len([r for r in space.reservations(self.grown) if r['owner'] == space.OWNER]), 54)
+        self.assertEqual(len([r for r in space.reservations(self.grown) if r['owner'] == space.OWNER]), 55)  # b779-hn1
 
     def test_music_both_orders_and_all_legacy_bytes_stay_identical(self):
         data = b'synthetic music metadata'

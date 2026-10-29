@@ -2,7 +2,7 @@
 
 Background: ``nfl2k5_defensive_try`` pins the history engine (VA 0x14E7E0, 3,216 bytes) because it writes field 59
 through the engine's writer. ``nfl2k5_honors`` (job F5) replaces one 7-byte instruction in that span (0x14F168, the
-fold's rule-table load) so the ten honor fields 96..105 always fold by sum. Every reader of the rule table and every
+fold's rule-table load) so the fields 96..127 (the ten honors and the counters after them) always fold by sum. Every reader of the rule table and every
 caller of the fold lies inside the same span (checked below), so the edit cannot move to a site outside the pin.
 defensive_try therefore restores the retail bytes of that one site before it hashes its context, and only while the
 honors owner validates as exactly applied. This file proves the two edits are independent:
@@ -39,7 +39,7 @@ from tests.mod_editor.test_nfl2k5_honors import CLASS, HAVE_UC, Machine, _retail
 
 RULE_TABLE, FOLD_SITE = 0xAA26C0, 0x14F168
 SPAN = (0x14E7E0, 3216)                    # defensive_try's history-engine pin
-HONOR_FIELDS = range(96, 106)
+HONOR_FIELDS = range(96, 128)      # b779-hn1: the fold rule covers 96..127 (honors, st1's counters 106..110, later fields)
 V4 = os.environ.get("B77_V4_XBE", "")      # optional: the integrator's stacked default.xbe
 
 
@@ -211,7 +211,7 @@ class NativeTests(unittest.TestCase):
 
     def fold(self, payload, scratch=0):
         m = Machine(payload)
-        for i in range(10):                                          # the live UI text object that fields 96..105 alias
+        for i in range(32):                                          # the live UI text object that fields 96..127 alias
             m.put(RULE_TABLE + 4 * (96 + i), scratch)
         m.record(0x177990, "progress", pop=4)
         rec = m.roster([(5, self.population())])[0]
@@ -225,8 +225,8 @@ class NativeTests(unittest.TestCase):
 
     def test_the_fold_is_identical_for_every_non_honor_field_with_and_without_the_edit(self):
         without, with_edit = self.fold(self.dt_only), self.fold(self.both)
-        other = {k for k in without if not 96 <= k[0] <= 105}
-        self.assertGreater(len(other), 118)
+        other = {k for k in without if not 96 <= k[0] <= 127}
+        self.assertGreater(len(other), 90)
         self.assertEqual({k: without[k] for k in other}, {k: with_edit[k] for k in other})
         self.assertEqual(with_edit[(59, 2, False)], (first(59) + second(59), True))   # defensive_try's field: native sum rule
         self.assertEqual(with_edit[(59, 3, True)], (5, False))          # its postseason word is not folded

@@ -19,7 +19,7 @@ TARGET = ROOT / "mod_editor/core/nfl2k5_honors_code.py"
 FLAGS = ["-m32", "-Os", "-ffreestanding", "-fno-builtin", "-fno-strict-aliasing", "-fno-pic", "-fno-pie",
          "-fno-stack-protector", "-fno-asynchronous-unwind-tables", "-fno-unwind-tables", "-fomit-frame-pointer",
          "-fno-jump-tables", "-mpreferred-stack-boundary=2", "-mno-sse", "-mno-mmx", "-Wall", "-Wextra", "-Werror"]
-EXTERNAL = {"honors_state": "state"}
+EXTERNAL = {"honors_state": "state", "champ_ratings": "champ_ratings", "champ_bio": "champ_bio", "champ_flip": "champ_flip", "champ_enter": "champ_enter"}
 ENTRIES = ("honors_page_input", "honors_page_enter", "honors_page_ratings", "honors_page_bio",
            "honors_season_hook", "honors_sb_hook", "honors_fold_rule")
 

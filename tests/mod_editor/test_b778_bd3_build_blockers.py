@@ -72,7 +72,10 @@ class DirectorySlotConversionTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_draft_picks as draft_picks, nfl2k5_hback as hback
         from mod_editor.core import nfl2k5_team_ratings as team_ratings
         retail = _retail()
-        cls.early = tt._selected_space_requests(**RELEASE_SPACE_OPTIONS, **RELEASE_LATE_OWNERS)
+        # b779-hn1: the Super Bowl champions owner (installed with the honors owner) is 5 KB of code that spills into
+        # the v4 pool, so this v3 fixture is the release set without it; the overlap it reproduces is unchanged.
+        cls.early = [r for r in tt._selected_space_requests(**RELEASE_SPACE_OPTIONS, **RELEASE_LATE_OWNERS)
+                     if r[0] != "nfl2k5_champions"]
         installed, _ = space.apply(retail, cls.early, scaleout=True)
         cls.v3 = installed
         payload, _ = space.extend_scaleout(installed, draft_picks.REQUESTS)

@@ -725,7 +725,9 @@ LATE_OWNER = "nfl2k5_k128"
 # repairs append them to the v0.5 directory), so adding it moves no other owner's address.
 # b77-f5: the Player Card honors page last (its native repair runs after F4, F4b and V1b).
 LATE_OWNERS = (LATE_OWNER, "nfl2k5_letter_grades", "nfl2k5_letter_grades_progress",  # b77-f4b: progression after F4
-               "nfl2k5_period_goalposts", "nfl2k5_honors", "nfl2k5_coach_ai",
+               "nfl2k5_period_goalposts", "nfl2k5_honors",
+               "nfl2k5_champions",  # b779-hn1: Super Bowl pop-up, champions history, award voting (installed with the honors owner)
+               "nfl2k5_coach_ai",
                "nfl2k5_draft_picks", "nfl2k5_hback",
                "nfl2k5_moment_coaches", "nfl2k5_moment_context", "nfl2k5_human_tap_burst", *DIRECTORY_CODE_OWNERS, "nfl2k5_team_ratings", "nfl2k5_team_ratings_display",
                "nfl2k5_classic_teams",  # b775-ct1: the classic teams' helpers, the last read-only bytes

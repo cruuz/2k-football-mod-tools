@@ -1233,6 +1233,7 @@ _LATE_OWNER_OPTIONS = (
     ("nfl2k5_letter_grades", "Letter grades", lambda p: p.letter_grades),
     ("nfl2k5_letter_grades_progress", "Letter grades", lambda p: p.letter_grades),
     ("nfl2k5_honors", "Honors page", lambda p: p.honors_page),
+    ("nfl2k5_champions", "Honors page", lambda p: p.honors_page),  # b779-hn1: installed with the honors owner
     ("nfl2k5_coach_ai", "Automatic coach AI", lambda p: p.coach_ai),
     ("nfl2k5_moment_coaches", "25 more Anniversary moments", lambda p: p.espn25_more_moments),
     ("nfl2k5_moment_context", "25 more Anniversary moments", lambda p: p.espn25_more_moments),

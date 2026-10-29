@@ -7567,11 +7567,12 @@
       "input_constraints": [
         "Pinned USA XBE or verified composed input; the owner is a late allocator owner placed after the letter grades (or appended to an installed sealed image by nfl2k5_xbe_space.extend_scaleout). It is not part of the complete dormant-owner union (192 RX and 0 RW bytes left there). Foreign or mixed bytes refuse.",
         "Owned 2,560 RX bytes (the page drawers, the pad check, the award commits and the history fold rule) and a 16-byte RW block (the page flag). Edits: seven call/jump sites at 0x320D7B, 0x320210, 0x320B75, 0x320B7A (the Player Card), 0x116E5F (the season awards tail), 0x1356B4 (the game commit) and 0x14F168 (the career-history fold).",
+        "b779-hn1: a second late allocator owner, nfl2k5_champions (5,632 RX bytes, code only, placed right after the honors owner), is installed with this one: the Super Bowl champion notice at the stage-9 advance (0x2485FA), the champions history (a checked 434-byte block in the 448 spare bytes after the reserve block at the end of the roster arena: no save size change, 22 seasons, inert on an arena without the reserve block), the Player Card champions page (the honors page's bumpers now cycle three pages) and the modern award voting (0x116E55).",
         "Award history: history fields 96..105 in each player's career-stat stream (one word per honor and season); the built-in data covers the 2026 roster and is skipped on other rosters; a user JSON or CSV must match the roster exactly.",
         "Rebuild from a verified base to remove it."
       ],
       "portme": [
-        "Franchise: open any Player Card and press LB/RB (Black/White) or a trigger: the ten rating rows become honor counts (MVP, OFF. POY, DEF. POY, OFF. ROOKIE, DEF. ROOKIE, SUPER BOWLS, SB MVP, PRO BOWLS, ALL-PRO, RUSH TITLES) and the bio lines show the years; press again for the ratings; B still leaves. Sim past week 17 and after the Super Bowl: the season's winners appear on their cards."
+        "Franchise: open any Player Card and press LB/RB (Black/White) or a trigger: the ten rating rows become honor counts (MVP, OFF. POY, DEF. POY, OFF. ROOKIE, DEF. ROOKIE, SUPER BOWLS, SB MVP, PRO BOWLS, ALL-PRO, RUSH TITLES) and the bio lines show the years; press again for the champions page (the ten newest Super Bowls and the latest final, MVP and season MVP), again for the ratings; B still leaves. Sim past week 17 and after the Super Bowl: the season's winners appear on their cards. Advance to the offseason after the Super Bowl: a notice names the champion, the score, the Super Bowl MVP and the season MVP."
       ],
       "public_distribution": {
         "game_data": "never-bundle-retail-data",
@@ -7581,7 +7582,7 @@
       },
       "runtime": {
         "evidence": [],
-        "scope": "The card's pad loop, enter action and draw (with the text calls captured), the season-awards tail and the game commit through the game's own history writer, and the history fold run under Unicorn on the retail executable with the owner installed. No game boot, no gameplay witness.",
+        "scope": "The card's pad loop, enter action and draw (with the text calls captured), the season-awards tail and the game commit through the game's own history writer, and the history fold run under Unicorn on the retail executable with the owner installed; b779-hn1: the champions notice, history block, third card page and award voting run the same way (python3 -m tests.mod_editor.test_b779_hn1_champions), and whole simulated seasons with the patched executable are in the job report. No game boot, no gameplay witness.",
         "status": "not-tested"
       },
       "selectors": {
@@ -7607,9 +7608,9 @@
         "resource": "XBE .text sites listed above; owned 2,560 RX and 16 RW bytes in the allocator's late region; the ROST career-stat pool for the award history.",
         "retail_file": "user-owned default.xbe and vc_53450030/0 in an NFL 2K5 USA disc"
       },
-      "summary": "Adds a second page to every Franchise Player Card, flipped with the bumpers or triggers: the player's honors (MVP, offensive and defensive player of the year, rookies of the year, Super Bowls, Super Bowl MVP, Pro Bowls, All-Pro, rushing titles) with the years. The game records each season's winners itself, and the built-in data carries the real history of the 2026 roster, every honor cited.",
+      "summary": "Adds a second page to every Franchise Player Card, flipped with the bumpers or triggers: the player's honors (MVP, offensive and defensive player of the year, rookies of the year, Super Bowls, Super Bowl MVP, Pro Bowls, All-Pro, rushing titles) with the years. The game records each season's winners itself, and the built-in data carries the real history of the 2026 roster, every honor cited. Beta 79 adds a Super Bowl champion notice at Advance to Offseason, a list of the last 22 champions (a third card page; the 2026 start is seeded with Super Bowls XXXIX to LX, cited) and award voting by production the way the last decade went (a quarterback on a winning team for MVP, skill players for offensive player of the year, with an exception for a record-breaking season at any position).",
       "surface": "gameplay_tuning_sliders",
-      "title": "Player Card honors page and award history (experimental, unwitnessed)",
+      "title": "Player Card honors page, award history, Super Bowl champions notice and history, modern award voting (experimental, unwitnessed)",
       "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_honors"
     },
     {
