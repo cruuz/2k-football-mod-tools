@@ -240,6 +240,41 @@ class MyCareerSaveSizeTests(unittest.TestCase):
 
 @unittest.skipUnless(XBE.is_file(), 'the pinned USA XBE is required')
 class CompositionTests(unittest.TestCase):
+    def test_a_beta78_capacity_runtime_is_recognized_but_never_installed(self):
+        # An already built beta-78 executable (0xB0000 runtime) reads as the installed capacity owner, so the owners
+        # that validate against the growth owner's retail projection (economy, practice squad) still work on it; the
+        # Studio refuses to install over it.
+        from mod_editor.core import nfl2k5_roster_arena_growth as growth, nfl2k5_xbe_space as space
+        from mod_editor.core import nfl2k5_rdata_sites as rdata
+        from mod_editor.core.nfl2k5_bump_strength import _sections, section_digest
+        xbe, _ = growth.apply(XBE.read_bytes(), reserves_16=False, created_teams_extra=0, capacity=True)
+        self.assertFalse(growth.read_settings(xbe)['legacy_capacity'])
+        site = growth.allocation(xbe)
+        flags = growth.options(False, 0, True)
+        old = bytearray(xbe)
+        blob = growth.code_for(site['va'], flags, legacy=True)
+        at = rdata.offset_of(xbe, site['va'])
+        old[at:at + len(blob)] = blob
+        for _name, address, _before, after in growth.sites(site['va'], True, False, legacy=True):
+            at = rdata.offset_of(xbe, address)
+            old[at:at + len(after)] = after
+        space._seal_scaleout(old, space._validate(xbe)[2])
+        for section in _sections(old):
+            old[section.header_offset + 36:section.header_offset + 56] = section_digest(old, section)
+        old = bytes(old)
+        self.assertEqual(growth.status(old), 'applied')
+        settings = growth.read_settings(old)
+        self.assertTrue(settings['legacy_capacity'])
+        self.assertEqual(settings['arena_size'], arena.LEGACY_CAPACITY_ARENA_SIZE)
+        self.assertIn(struct.pack('<I', 0xB0000), growth.code_for(site['va'], flags, legacy=True))
+        # the retail projection restores every hook site
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage
+        projected = XbeImage(growth.project(old))
+        for name, address, before, _after in growth.sites(site['va'], True, False, legacy=True):
+            self.assertEqual(projected.read(address, len(before)), before, name)
+        with self.assertRaises(growth.ArenaGrowthError):
+            growth.apply(old, reserves_16=False, created_teams_extra=0, capacity=True)
+
     def test_mycareer_validates_next_to_economy_revision_four(self):
         # MyCareer's native-context hash covers the cut-down 0x2BF9A0 that revision 4 jumps to its smart cut.
         from mod_editor.core import nfl2k5_k128 as k128, nfl2k5_roster_arena_growth as growth

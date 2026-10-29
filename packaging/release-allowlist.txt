@@ -1034,6 +1034,7 @@ mod_editor/core/nfl2k5_read_option_runtime_code.py
 mod_editor/core/nfl2k5_resource_growth.py
 mod_editor/core/nfl2k5_roster_arena.py
 mod_editor/core/nfl2k5_roster_arena_code.py
+mod_editor/core/nfl2k5_roster_arena_code_b78.py
 mod_editor/core/nfl2k5_roster_arena_growth.py
 mod_editor/core/nfl2k5_roster_arena_image.py
 mod_editor/core/nfl2k5_screen_hooks.py

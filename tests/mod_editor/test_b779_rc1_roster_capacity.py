@@ -100,7 +100,8 @@ class MyCareerCapacityCreateTests(unittest.TestCase):
     def undrafted(self):
         m = self.machine(self.xbe)
         m.capacity_frontend(self.body)
-        self.assertEqual(m.get(0xB72808), 0xB0000)
+        from mod_editor.core import nfl2k5_roster_arena as arena
+        self.assertEqual(m.get(0xB72808), arena.CAPACITY_ARENA_SIZE)     # b779 ag1: 0xCA000 (beta-78: 0xB0000)
         for rng in (0xB12680, 0xE5FCA0):
             m.call(0x48BE0, ecx=rng, edx=12345)
         m.call(0x6E390, ecx=m.manager, edx=0x5015CC)
@@ -126,7 +127,8 @@ class MyCareerCapacityCreateTests(unittest.TestCase):
 # ------------------------------------------------------------------------------------------- draft classes
 # Revision 4's class mix per 450 (Noah 10/28: deep classes, undrafted players at every position):
 #             QB   K   P  WR  CB  FS  SS  HB  FB  TE OLB ILB   C   G   T  DT  DE
-CLASS_MIX = (24, 5, 5, 40, 46, 14, 14, 28, 9, 28, 19, 19, 24, 26, 48, 55, 46)
+# b779 ag1: retuned on the 4,096-record arena (sim fastX1 leftovers)
+CLASS_MIX = (22, 9, 9, 38, 44, 18, 14, 26, 9, 26, 18, 18, 28, 28, 46, 45, 52)
 ONE_POOL_MIX = CLASS_MIX[:10] + (0, CLASS_MIX[10] + CLASS_MIX[11]) + CLASS_MIX[12:]   # no rostered OLB: OLB is LB
 
 

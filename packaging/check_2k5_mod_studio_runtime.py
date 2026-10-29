@@ -1983,6 +1983,7 @@ def main() -> int:
         "mod_editor.core.nfl2k5_resource_growth",
         "mod_editor.core.nfl2k5_roster_arena",
         "mod_editor.core.nfl2k5_roster_arena_code",
+        "mod_editor.core.nfl2k5_roster_arena_code_b78",
         "mod_editor.core.nfl2k5_roster_arena_growth",
         "mod_editor.core.nfl2k5_roster_arena_image",
         "mod_editor.core.nfl2k5_screen_hooks",
