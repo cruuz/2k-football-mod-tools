@@ -131,8 +131,9 @@ void FC prs_on_throw(u32 passer) {
     if (!t || !team || G(passer + 0x38) == team)
         return;
     float qx = GF(t + 0x30), qz = GF(t + 0x38);
-    u32 head = G(team);
-    u32 d = head ? G(head + 4) : 0;
+    /* the defense team object's on-field list: first actor at +4, next at +0x34 (team +0 is the OTHER team's
+       object; xemu RAM, b779 st1 run prsA2) */
+    u32 d = G(team + 4);
     u32 seen = 0;
     float best = 1.0e12f;
     for (u32 n = 0; d && n < 16; n++, d = G(d + 0x34)) {

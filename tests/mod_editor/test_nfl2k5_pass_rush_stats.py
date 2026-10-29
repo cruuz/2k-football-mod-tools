@@ -126,10 +126,12 @@ class Game:
         self.m.uc.mem_write(0x00B30980, bytes([40]))     # side 0 live record count (0x61B90 wraps after it)
         self.actors = self.m.HEAP + 0x50000
         self.n_actors = 0
-        self.head = self.m.HEAP + 0x4F000
-        self.m.put(DEFENSE_TEAM, self.head)
-        self.m.put(self.head + 4, 0)
-        self.last_defender = None
+        # team objects as xemu shows them: +0 = the other team's object, +4 = the first on-field actor, +0x34 next
+        self.m.put(DEFENSE_TEAM, OFFENSE_TEAM)
+        self.m.put(OFFENSE_TEAM, DEFENSE_TEAM)
+        self.m.put(DEFENSE_TEAM + 4, 0)
+        self.m.put(OFFENSE_TEAM + 4, 0)
+        self.last = {True: None, False: None}
 
     def live(self, side, slot):
         rec = (SIDE1 if side else SIDE0) + slot * REC
@@ -150,12 +152,12 @@ class Game:
         self.m.uc.mem_write(t + 0x38, struct.pack("<f", z))
         self.m.put(a + 0x38, DEFENSE_TEAM if defense else OFFENSE_TEAM)
         self.m.put(a + 0x3C, self.live(side, slot))
-        if defense:
-            if self.last_defender is None:
-                self.m.put(self.head + 4, a)
-            else:
-                self.m.put(self.last_defender + 0x34, a)
-            self.last_defender = a
+        team = DEFENSE_TEAM if defense else OFFENSE_TEAM
+        if self.last[defense] is None:
+            self.m.put(team + 4, a)
+        else:
+            self.m.put(self.last[defense] + 0x34, a)
+        self.last[defense] = a
         return a
 
     def counts(self, code):
