@@ -18,6 +18,7 @@ from mod_editor.core import nfl2k5_franchise_save as fs  # noqa: E402
 from mod_editor.core import nfl2k5_franchise_upgrade as up  # noqa: E402
 from mod_editor.core import nfl2k5_my_career_save as career  # noqa: E402
 from mod_editor.core import nfl2k5_player_progression as pp  # noqa: E402
+from mod_editor.core import nfl2k5_roster_arena as arena  # noqa: E402
 from mod_editor.core import nfl2k5_save_rost as sr  # noqa: E402
 from mod_editor.core import nfl2k5_save_writer as writer  # noqa: E402
 from tests.mod_editor.test_franchise_upgrade import capacity_fixture  # noqa: E402
@@ -115,11 +116,14 @@ class ZeroFooterSaves(unittest.TestCase):
             fs.FranchiseSave(bytes(corrupt))
 
     def test_college_check_repairs_around_the_zero_footer(self):
-        scan = college.scan(self.save)
-        self.assertEqual(scan.findings, ())
-        fixed, receipt = college.repair(self.save)
-        self.assertEqual(fixed, self.save)
-        self.assertEqual(receipt["changed"], 0)
+        from tests.mod_editor.test_nfl2k5_college_check import corrupt
+        payload = synthetic_franchise() + ZERO
+        self.assertEqual(college.scan(payload).findings, ())
+        bad, _field = corrupt(payload, "outside")
+        fixed, receipt = college.repair(bad)
+        self.assertEqual(fixed, payload)
+        self.assertEqual(receipt["changed"], 1)
+        self.assertEqual(fixed[-pp.FOOTER_SIZE:], ZERO)
 
     def test_the_team_history_step_keeps_the_zero_footer_and_the_length(self):
         out, receipt = up.upgrade_team_history(self.save, self.disc)
@@ -139,6 +143,65 @@ class ZeroFooterSaves(unittest.TestCase):
         self.assertEqual(loaded.career_offset, len(base))
         self.assertEqual(loaded.to_bytes(), save)
         self.assertEqual(writer.save_kind(save), "franchise")
+
+
+def with_game_written_names(legacy: bytes) -> tuple[bytes, dict]:
+    """What the v0.7 game does to a new franchise: the last vacancies are re-pointed at name buffers that sit after the
+    descriptor's names, the first of them straddling the names end. Also marks one vacancy as a free class record so
+    that a growth has one to copy."""
+    doc = sr.decode(legacy)
+    layout = doc.layout
+    appended, old_end = arena.capacity_descriptor(legacy, layout)
+    names_old_end = ((old_end + appended * 84 + 1) & ~1) + appended * 68
+    primary = doc.tables["primary"]
+    out = bytearray(legacy)
+    template = primary.offset + (primary.count - 3) * 84          # a free class record: flags 0, a college
+    out[template + 8] = 0
+    struct.pack_into("<i", out, template, doc.rel(doc.players[0].offset + 0x10) - template + 1)
+    texts = {}
+    first = names_old_end - 10                                      # straddles the descriptor's names end
+    for n, (label_first, label_last) in enumerate((("EXTRA ONE", "EXTRA TWO"), ("EXTRA THREE", "EXTRA FOUR"))):
+        at = primary.offset + (primary.count - 1 - n) * 84
+        for field, label in ((0x10, label_first), (0x14, label_last)):
+            raw = (label.encode("utf-16-le") + b"\0\0").ljust(34, b"\0")
+            out[first:first + 34] = raw
+            struct.pack_into("<i", out, at + field, first - (at + field) + 1)
+            texts[(primary.count - 1 - n, field)] = label
+            first += 34
+    return bytes(out), texts
+
+
+class GrowthKeepsWhatTheGameWrote(unittest.TestCase):
+    def test_extra_name_buffers_after_the_names_move_with_their_pointers(self):
+        legacy, _disc = capacity_fixture()
+        game, texts = with_game_written_names(legacy)
+        sr.decode(game)
+        grown, receipt = arena.migrate(game, reserves_16=False, capacity_records=612, class_records=5)
+        self.assertEqual(receipt["class_records"], 5)
+        self.assertEqual(len(grown), arena.CAPACITY_SAVE_SIZE)
+        before = sr.decode(game)
+        after = sr.decode(grown)
+        self.assertEqual(after.tables["primary"].count, before.tables["primary"].count + 5)
+        for (index, field), label in texts.items():
+            old_at = before.rel(before.tables["primary"].offset + index * 84 + field)
+            new_at = after.rel(after.tables["primary"].offset + index * 84 + field)
+            self.assertEqual(game[old_at:old_at + 34], grown[new_at:new_at + 34])
+            self.assertEqual(grown[new_at:new_at + 2 * len(label)].decode("utf-16-le"), label)
+        for index in range(before.tables["primary"].count):
+            for field in (0x10, 0x14):
+                old_at = before.rel(before.tables["primary"].offset + index * 84 + field)
+                new_at = after.rel(after.tables["primary"].offset + index * 84 + field)
+                self.assertEqual(game[old_at:old_at + 34], grown[new_at:new_at + 34], (index, field))
+        self.assertEqual(arena.capacity_descriptor(grown, after.layout), (617, arena.capacity_descriptor(game, before.layout)[1]))
+
+    def test_the_zero_footer_travels_with_the_grown_save(self):
+        legacy, _disc = capacity_fixture()
+        game, _texts = with_game_written_names(legacy)
+        grown, _ = arena.migrate(game + ZERO, reserves_16=False, capacity_records=612, class_records=5)
+        self.assertEqual(len(grown), arena.CAPACITY_SAVE_SIZE + pp.FOOTER_SIZE)
+        self.assertEqual(pp.footer_start(grown), arena.CAPACITY_SAVE_SIZE)
+        self.assertEqual(grown[-pp.FOOTER_SIZE:], ZERO)
+        self.assertTrue(fs.is_franchise_save(grown))
 
 
 class RealV07Save(unittest.TestCase):

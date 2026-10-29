@@ -114,7 +114,7 @@ def read(payload, *, identity=True):
     base = native_size(payload)
     require(len(payload) in (base + SIZE, base + SIZE + PPG_SIZE),
             "this Franchise has no inline MyCareer block")
-    block = validate(payload[base:], arena_size=0x91000 + base - BASE_SIZES[0])
+    block = validate(payload[base:base + SIZE], arena_size=0x91000 + base - BASE_SIZES[0])
     if identity:
         from . import nfl2k5_save_rost as codec
         doc = codec.decode(payload)
