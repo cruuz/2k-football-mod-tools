@@ -83,10 +83,13 @@ class WriterTests(unittest.TestCase):
             x, y = a.read(section.start, section.raw_size), b.read(section.start, section.raw_size)
             changed = [section.start + i for i in range(len(x)) if x[i] != y[i]]
             self.assertLessEqual(set(changed), allowed, name)
-            self.assertTrue(changed or name == ".rdata", name)
             if name == ".rdata":
-                self.assertEqual(set(changed), {pp.SIM_LIST_VA + i for i, (p, q) in enumerate(zip(
-                    struct.pack("<15i", *pp.SIM_LIST_RETAIL), struct.pack("<15i", *pp.SIM_LIST_NEW))) if p != q})
+                expected = set()
+                for _n, at, before, after in pp.sim_sites():
+                    if section.start <= at < section.start + section.raw_size:
+                        expected.update(at + i for i, (p, q) in enumerate(zip(before, after)) if p != q)
+                self.assertEqual(set(changed), expected)
+            self.assertTrue(changed, name)
 
     def test_replay_and_foreign_refusal_before_mutation(self):
         again, receipt = pp.apply(self.final)
@@ -96,7 +99,10 @@ class WriterTests(unittest.TestCase):
         for label, (va, content) in {"hook": (0x233163, struct.pack("<i", 0)),
                                      "code": (code + 3, b"\x90"),
                                      "shed decision": (0x2330D6, b"\x90"),
-                                     "shed entry": (0x233041, b"\x90")}.items():
+                                     "shed entry": (0x233041, b"\x90"),
+                                     "simulated pass block": (0x108430, b"\x90"),
+                                     "simulated sacker draw": (0x103800, b"\x90"),
+                                     "simulated category weights": (0x514E51, b"\x90")}.items():
             bad = repin_edit(self.final, va, content)
             self.assertEqual(pp.status(bad), "foreign", label)
             with self.assertRaises(pp.PassProtectionError):

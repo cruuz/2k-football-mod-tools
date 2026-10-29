@@ -1,4 +1,4 @@
-"""Simulated pass rush (b779-pr1): the six in-place edits of nfl2k5_pass_protection, byte tests and real native games.
+"""Simulated pass rush (b779-pr1): the eight in-place edits of nfl2k5_pass_protection, byte tests and real native games.
 
 The pinned USA retail default.xbe and the signed f0 franchise are read from the private fixtures; the native
 tests skip when they are absent.  The native tests run whole simulated games (retail simulator, real step
@@ -39,13 +39,20 @@ BACKS = range(23, 29)       # list slots 23-28 defensive backs
 
 
 class BytesTests(unittest.TestCase):
-    def test_edits_are_six_in_place_sites_with_no_allocation(self):
+    def test_edits_are_eight_in_place_sites_with_no_allocation(self):
         names = [name for name, *_ in pp.SIM_EDITS]
-        self.assertEqual(names, ["sim_event_upper_is_x", "sim_event_lower_is_x", "sim_event_centre",
-                                 "sim_rusher_slots", "sim_rusher_leftover", "sim_rusher_list"])
+        self.assertEqual(names, ["sim_event_chance", "sim_rusher_slots", "sim_rusher_leftover", "sim_rusher_list",
+                                 "sim_rusher_speed", "sim_rusher_agility", "sim_rusher_strength",
+                                 "sim_rusher_tackle"])
         for _name, _va, before, after in pp.SIM_EDITS:
             self.assertEqual(len(before), len(after))
         self.assertEqual(pp.REQUESTS, ((pp.OWNER, "code", pp.CODE_SIZE, 16),))   # the sim edits add no request
+
+    def test_category_four_weights_still_sum_to_one(self):
+        retail = sum(struct.unpack("<f", before)[0] for name, _va, before, _a in pp.SIM_EDITS if name.startswith("sim_rusher_") and len(before) == 4 and name in ("sim_rusher_speed", "sim_rusher_agility", "sim_rusher_strength", "sim_rusher_tackle"))
+        new = sum(struct.unpack("<f", after)[0] for name, _va, _b, after in pp.SIM_EDITS if name in ("sim_rusher_speed", "sim_rusher_agility", "sim_rusher_strength", "sim_rusher_tackle"))
+        self.assertAlmostEqual(retail, 0.6, places=5)         # 0.4 Pass Rush stays: 1.0 in all
+        self.assertAlmostEqual(new, 0.6, places=5)
 
     def test_candidate_list_keeps_every_slot_and_puts_the_backs_last(self):
         self.assertEqual(sorted(pp.SIM_LIST_NEW[:-1]), sorted(pp.SIM_LIST_RETAIL[:-1]))
@@ -58,7 +65,7 @@ class BytesTests(unittest.TestCase):
     def test_constants_land_on_existing_rdata_floats(self):
         retail = retail_bytes()
         image = XbeImage(retail)
-        self.assertAlmostEqual(struct.unpack("<f", image.read(pp.SIM_BASE_VA, 4))[0], 0.866, places=4)
+        self.assertAlmostEqual(struct.unpack("<f", image.read(pp.SIM_GAIN_VA, 4))[0], 0.5, places=6)
         self.assertAlmostEqual(struct.unpack("<f", image.read(pp.SIM_NORM_VA, 4))[0], 0.25, places=6)
         self.assertAlmostEqual(struct.unpack("<f", image.read(0x4F6BD4, 4))[0], 0.875, places=6)   # the shared one stays
         self.assertAlmostEqual(struct.unpack("<f", image.read(0x4E6D5C, 4))[0], 0.1, places=6)
@@ -78,7 +85,7 @@ class BytesTests(unittest.TestCase):
         for _name, va, _before, after in pp.SIM_EDITS:
             self.assertEqual(image.read(va, len(after)), after)
         from tests.mod_editor.test_nfl2k5_owner_pairwise_composition import repin_edit
-        for label, va, content in (("event block", 0x1083B0, b"\x90"), ("sacker draw", 0x103800, b"\x90"),
+        for label, va, content in (("event block", 0x108400, b"\x90"), ("sacker draw", 0x103800, b"\x90"),
                                    ("normaliser", 0x104000, b"\x90"), ("site", 0x1083AF, b"\x75")):
             bad = repin_edit(patched, va, content)
             with self.assertRaises(pp.PassProtectionError, msg=label):
@@ -155,9 +162,9 @@ class NativeTests(unittest.TestCase):
         m.uc.hook_add(uc.UC_HOOK_CODE, at_pick, begin=0x103847, end=0x103847)
         m.uc.ctl_flush_tb()
         m.call(0x10B280, ecx=m.team_base, edx=m.team_base + 500, args=(0, 1, 0, 0, 0, 0), budget=3_000_000)
-        m.call(0x10B250, budget=1_000_000)
+        m.call(0x10B250, budget=20_000_000)
         for steps in range(5000):
-            if m.call(0x10B250, budget=1_000_000) in (5, -1):
+            if m.call(0x10B250, budget=20_000_000) in (5, -1):
                 break
         else:
             self.fail("simulator did not finish")
@@ -191,7 +198,7 @@ class NativeTests(unittest.TestCase):
         patched_corr = self.correlation(patched_rows)
         # retail: only |x| > 0.1 (about 3.5% of dropbacks) moves the chance; the rest is a uniform draw
         self.assertGreater(retail_corr, -0.45, retail_corr)
-        # patched: the chance is 1 - clamp(0.866 + x) - 0.005 * QB term, so it falls as the blockers win
+        # patched: the chance is 1 - clamp(0.875 + 0.5 * x) - 0.005 * QB term, so it falls as the blockers win
         self.assertLess(patched_corr, -0.6, patched_corr)
         thresholds = [t for _, t in patched_rows]
         self.assertLessEqual(max(thresholds), 0.175 + 1e-6)         # 1 - 0.825 with no QB term

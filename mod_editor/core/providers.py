@@ -784,7 +784,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_team_number_scale.py": "1be5d406dfa34e809488f9c5efbcbdc23e012c697c118fa7ac665c8a4cc49269",
         "mod_editor/core/nfl2k5_run_blocking.py": "96251a09e80032838fc0cf9fa8ca187063fc2d7a60c823b7b4a3daca41e54d7f",
         "mod_editor/core/nfl2k5_run_blocking_code.py": "622c8683badbb73ad0997e96d68a9d116317c5916d92a70be2758b05914e244b",
-        "mod_editor/core/nfl2k5_pass_protection.py": "5e51b2142238ad889ba3c4f70fdeed74b64aa4b6f3e434337ff0663e21795fee",
+        "mod_editor/core/nfl2k5_pass_protection.py": "7f8c46d19b0f3ed33a22400a2e3ffbfb5748966d12684662ee8d6438c4ea3665",
         "mod_editor/core/nfl2k5_pass_protection_code.py": "4630dae40aa3581aee06c00a8e8c714964b9dc78b6ae1fedea639da0bb95fc28",
         "mod_editor/core/nfl2k5_lineman_rating.py": "e1c08c86e0a31c58fd86d5a155c56ad200cf5ef237771c95b39bfe29215261c1",
         "mod_editor/core/nfl2k5_match_coverage.py": "d9c1a93508a25a17d389b1dfa628ab8d0ac2da25d99bcc64a347b98f4447cfa2",

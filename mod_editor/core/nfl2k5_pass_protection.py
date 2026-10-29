@@ -16,16 +16,18 @@ through the game's own rating accessor 0x17B010. On run plays it writes 0, exact
 Nothing else is changed: the pass start roll, the paired-block animation share, the run latch and the shed
 random draw keep every retail byte.
 
-b779-pr1 adds the SIMULATED half of the same feature (Franchise sims, Game Cast, supersim), as six in-place
+b779-pr1 adds the SIMULATED half of the same feature (Franchise sims, Game Cast, supersim), as eight in-place
 edits that need no cave: in the sim's pass-play block ``0x108368..0x1084c0`` the sack/scramble chance is
 ``1 - clamp(0.875 + o, 0.825, 0.925) - 0.005*QB``, where ``o`` was drawn UNIFORMLY from ``[min(x,-0.1), max(x,0.1)]``
 and ``x = Pass Block(team +0x9c) - Pass Rush(team +0xa0)`` plus noise.  ``x`` has a standard deviation of 0.04,
-so 96.5% of simulated dropbacks ignored both lines completely.  The edits make ``o = x`` (a deterministic
-function of the two lines), shift the centre to 0.866 so the league keeps 2.4 sacks a team-game, and fix the
-sacker draw ``0x103760``: its candidate weights ``c^3 / (sum over the 14 defensive slots + 0.1)`` gave
-seven defensive backs a combined 20% of all sacks (NFL: 5.6%).  The normaliser now sums the eight front
-slots only (loop bound ``0x1c -> 0x16``, leftover constant 0.1 -> 0.25) and the candidate list puts the
-defensive backs last, so a back gets only the leftover (about 5%, safeties first).
+so 96.5% of simulated dropbacks ignored both lines completely.  The edit makes ``o = 0.5 * x`` (a deterministic
+function of the two lines; half gain keeps the league total steady when a roster's line ratings differ from the
+shipped roster's) and fixes the sacker draw ``0x103760``: its candidate weights ``c^3 / (sum over the 14
+defensive slots + 0.1)`` gave seven defensive backs a combined 20% of all sacks (NFL: 5.6%).  The normaliser now
+sums the eight front slots only (loop bound ``0x1c -> 0x16``, leftover constant 0.1 -> 0.25) and the candidate
+list puts the defensive backs last, so a back gets only the leftover (about 5%, safeties first).  The
+pass-rusher composite (category 4) weighs Speed and Agility up and Strength and Tackle down, which moves sacks
+from big tackles to ends and linebackers (NFL share of sacks: ends 34%, linebackers 39%, tackles 18%).
 """
 from __future__ import annotations
 
@@ -55,20 +57,28 @@ GUARDS = (
 SIM_LIST_VA = 0x004F6B0C
 SIM_LIST_RETAIL = (15, 18, 19, 21, 17, 16, 27, 20, 23, 24, 25, 22, 26, 28, -1)   # sacker candidates (slot ids)
 SIM_LIST_NEW = (15, 18, 19, 21, 17, 16, 20, 22, 27, 28, 23, 24, 25, 26, -1)      # DL, LB, then backs last
-SIM_BASE_VA = 0x004E73E4         # float 0.866 in retail .rdata (0.875 at 0x4F6BD4 is shared with another reader)
+SIM_GAIN_VA = 0x004E4184         # float 0.5 in retail .rdata: the lines' effect on the sack chance (retail: none)
 SIM_NORM_VA = 0x004E696C         # float 0.25 (retail 0x4E6D5C = 0.1)
 SIM_EDITS = (
-    ("sim_event_upper_is_x", 0x001083AF, bytes.fromhex("7408"), bytes.fromhex("eb08")),
-    ("sim_event_lower_is_x", 0x001083D0, bytes.fromhex("7b04"), bytes.fromhex("9090")),
-    ("sim_event_centre", 0x001083F8, struct.pack("<I", 0x004F6BD4), struct.pack("<I", SIM_BASE_VA)),
+    ("sim_event_chance", 0x00108398,
+     bytes.fromhex("d94424188b4c2418d81d5c6d4e00894c2428dfe0f6c4417408c7442428cdcccc3dd905d86b4f00d85c2418"
+                   "c7442418cdccccbddfe0f6c4057b04894c2418"),
+     bytes.fromhex("d9442418d80d84414e00d95c24188b4c2418894c2428").ljust(0x3E, b"\x90")),
     ("sim_rusher_slots", 0x0010404C, bytes([0x1C]), bytes([0x16])),
     ("sim_rusher_leftover", 0x00104068, struct.pack("<I", 0x004E6D5C), struct.pack("<I", SIM_NORM_VA)),
     ("sim_rusher_list", SIM_LIST_VA, struct.pack("<15i", *SIM_LIST_RETAIL), struct.pack("<15i", *SIM_LIST_NEW)),
+    # category 4 (the pass rusher composite): weights Pass Rush 0.4 stay; Speed 0.1 -> 0.2, Agility 0.1 -> 0.15,
+    # Strength 0.2 -> 0.1, Tackle 0.2 -> 0.15, so ends and linebackers outweigh big tackles as in the NFL
+    ("sim_rusher_speed", 0x00514E78, struct.pack("<f", 0.1), struct.pack("<f", 0.2)),
+    ("sim_rusher_agility", 0x00514E80, struct.pack("<f", 0.1), struct.pack("<f", 0.15)),
+    ("sim_rusher_strength", 0x00514E88, struct.pack("<f", 0.2), struct.pack("<f", 0.1)),
+    ("sim_rusher_tackle", 0x00514E90, struct.pack("<f", 0.2), struct.pack("<f", 0.15)),
 )
 SIM_GUARDS = (          # (va, size, sha256 of the retail bytes): the pass-play block, the sacker draw, the normaliser
     (0x00108340, 0x180, "6dd48d900dd0e5db53e3da2f06fb5ed310bcce76dbdbeae68a7ca503f3e373f2"),
     (0x00103760, 0x0F2, "687d3b1ffbe23412b264c51348747fb8ba0a11ddfb49a25706429c5d60e27930"),
     (0x00103F61, 0x220, "962183d67eb47d7b99ff6152a4f2d95eb8454c4cea3c1b0b6d64f4ff33fc0c80"),
+    (0x00514E50, 0x048, "9839d631c32d91bea828cfd8d86fe6f7d0916fbeef5771d979f4d404436b8313"),                  # the pass-rusher composite entry (count, weights, getters)
 )
 # 0x17B010 is not hash-guarded: the abilities runtime replaces its entry with a jump to its own copy of the
 # accessor on the release disc, so its bytes are not a stable prerequisite. Every call still goes through
