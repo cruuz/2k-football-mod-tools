@@ -534,13 +534,14 @@ SECTION(".roster_f") __attribute__((naked)) void economy_class_free(void) {
  * 355-player class (what the league frees in a normal year), scaled to 450, then moved toward T, DT and WR after
  * the smart cut-down (CPU clubs now keep their linemen). b779 ag1: with the 4,096-record arena every class is a
  * full 450, so the mix was retuned from the CPU's undrafted leftovers over ten simulated 450-player drafts (sim
- * fastX1: K and P all undrafted at 5, FS, C, G and DE down to 6, DT 22-34 left over): QB 22, K 9, P 9, WR 38, CB 44,
- * FS 18, SS 14, HB 26, FB 9, TE 26, OLB 18, ILB 18, C 28, G 28, T 46, DT 45, DE 52. Under the
+ * fastX1: K and P all undrafted at 5, FS, C, G and DE down to 6, DT 22-34 left over), then C and DT up after the
+ * second run (fastX4: C and DT once at 5): QB 21, K 9, P 9, WR 37, CB 44, FS 18, SS 14, HB 25, FB 9, TE 25, OLB 18,
+ * ILB 18, C 30, G 28, T 44, DT 49, DE 52. Under the
  * one-pool scheme no rostered player carries OLB (10), and the class must conserve that
  * (nfl2k5_position_pools), so an OLB slot becomes LB (11). */
 #define CLASS_SIZE 450
 SECTION(".roster_f_rodata") static const u8 class_counts[17] = {
-    22, 9, 9, 38, 44, 18, 14, 26, 9, 26, 18, 18, 28, 28, 46, 45, 52};
+    21, 9, 9, 37, 44, 18, 14, 25, 9, 25, 18, 18, 30, 28, 44, 49, 52};
 
 SECTION(".roster_f") __attribute__((noinline)) unsigned league_has_olb(void) {
     u8 *root = *(u8 **)0xB72918;   /* the roster's own 32 club blocks, valid whenever a class is generated */

@@ -128,7 +128,7 @@ class MyCareerCapacityCreateTests(unittest.TestCase):
 # Revision 4's class mix per 450 (Noah 10/28: deep classes, undrafted players at every position):
 #             QB   K   P  WR  CB  FS  SS  HB  FB  TE OLB ILB   C   G   T  DT  DE
 # b779 ag1: retuned on the 4,096-record arena (sim fastX1 leftovers)
-CLASS_MIX = (22, 9, 9, 38, 44, 18, 14, 26, 9, 26, 18, 18, 28, 28, 46, 45, 52)
+CLASS_MIX = (21, 9, 9, 37, 44, 18, 14, 25, 9, 25, 18, 18, 30, 28, 44, 49, 52)
 ONE_POOL_MIX = CLASS_MIX[:10] + (0, CLASS_MIX[10] + CLASS_MIX[11]) + CLASS_MIX[12:]   # no rostered OLB: OLB is LB
 
 
@@ -332,11 +332,14 @@ class ReleasedRosterClassTests(unittest.TestCase):
 
     def test_the_second_class_is_350_deep_by_age_and_keeps_144_vacancies(self):
         # Retirement by each position's age plus each player's own 0-6 extra years: the year-0 turnover frees about
-        # 358 records on the v0.7 roster; no generated never-played player exists yet for the floor.
+        # 344-358 records on the v0.7 (3,231-record) roster; no generated never-played player exists yet for the floor,
+        # so the count is the age passes plus the native career rule, whose random draws follow the first class's
+        # positions (b779 ag1: 344 with the 4,096-record mix; on the 4,096-record roster the class is a full 450,
+        # sims fastX1/fastX4/fastX5).
         from mod_editor.core import nfl2k5_franchise_economy as economy
         before, after, positions, written, ages = _turnover(self.fixed, self.body, economy.CLASS_SIZE)
         self.assertEqual((before, after), (144, 144))
-        self.assertGreaterEqual(len(positions), 350)
+        self.assertGreaterEqual(len(positions), 340)
         share = len(positions) / economy.CLASS_SIZE
         for code, want in enumerate(ONE_POOL_MIX):          # a short class samples every group (stride 151)
             if want:
