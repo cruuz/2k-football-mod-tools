@@ -6566,9 +6566,15 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         retail = require_step_source(source if _retail_source is None else _retail_source, "Historic team styles")
         if _core_module("nfl2k5_historic_styles").image_status(target, retail) != "applied":
             raise ValueError("the historic team styles did not survive the intro video pass on the copy")
+        # b779-int1: the packages must still be the bytes the moment kits stage wrote and read back on this copy
+        # (its receipt rows). The shipped pins only describe the shipped donors: b779-vk2's sideline pass repaints
+        # three donor kits before that stage, and the team-coloured sleeves repaint donors after it, so neither a
+        # fresh composition nor stale pins can stand for "survived the intro pass".
+        installed = {row["file"]: row["sha256"] for step in receipt["steps"] if step.get("step") == "moment_kits"
+                     for row in step.get("kits", ())}
         kits_state = _core_module("nfl2k5_moment_kits").image_status(
             target, retail=lambda: require_step_source(source if _retail_source is None else _retail_source,
-                                                       "Anniversary moment kits"))
+                                                       "Anniversary moment kits"), installed=installed or None)
         if kits_state != "applied" and (kits_state, receipt["result"].get("moment_kits")) != ("retail", "retail"):
             raise ValueError("the Anniversary moment kits did not survive the intro video pass on the copy")
     if plan.espn25_more_moments:

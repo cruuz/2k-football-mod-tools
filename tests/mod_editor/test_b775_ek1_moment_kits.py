@@ -45,6 +45,28 @@ def _after_sw1(src, packages):
     return out
 
 
+def _after_vk2(packages):
+    """b779-vk2's sideline pass (after every kit writer, before this stage) repaints the splayer atlas of three donor
+    kits (06A0, 06H0, 30H3); the fixture disc predates it. Run vk2's own measured repair on those donors, as the build
+    does, before comparing with the pins (b779-int1)."""
+    from mod_editor.core import nfl2k5_kit_fixes_2026 as fixes
+    rows = {row["selector"]: row for row in fixes._sideline_rows(None)}
+    out = dict(packages)
+    for selector in sorted(set(rows) & set(packages)):
+        row, raw = rows[selector], packages[selector]
+        chunks = {chunk.index: chunk for chunk in fixes.parse_chunks(raw)}
+        splayer = raw[chunks[51].offset:chunks[51].end_offset]
+        alt = fixes._sideline_rgba(splayer, "txtr", "splayer")
+        assert "field" in row, selector
+        _entry, parts, receipt = fixes._sideline_measured_plan(row, None, raw, chunks, splayer, alt, None)
+        assert receipt["state"] in ("repaired", "unchanged"), (selector, receipt["state"])
+        buf = bytearray(raw)
+        for at, data in parts:
+            buf[at:at + len(data)] = data
+        out[selector] = bytes(buf)
+    return out
+
+
 class Data(unittest.TestCase):
     def test_document_validates_and_every_selection_is_wired(self):
         doc = mk.document()
@@ -170,7 +192,7 @@ class Disc(unittest.TestCase):
         cls.doc = mk.document()
         cls.src = hs.Source(DISC)
         cls.inputs = mk.read_inputs(cls.src, cls.doc)
-        cls.inputs["packages"] = _after_sw1(cls.src, cls.inputs["packages"])
+        cls.inputs["packages"] = _after_vk2(_after_sw1(cls.src, cls.inputs["packages"]))
 
     @classmethod
     def tearDownClass(cls):
@@ -353,6 +375,39 @@ class Disc(unittest.TestCase):
         bad[len(bad) // 2] ^= 1                                    # neither the pin nor a recomposition
         overlay.put(name="30h5.iff", data=bytes(bad))
         self.assertEqual(mk.state_of(self.doc, mk.read_inputs(overlay, self.doc), overlay, pinned_packages=pinned),
+                         "foreign")
+
+    def test_the_stage_receipt_stands_in_for_stale_pins_after_a_donor_repaint(self):
+        # b779-int1: b779-vk2's sideline pass repaints donor kits BEFORE this stage, so what the stage composes no
+        # longer equals the shipped pins (stale pins: every pinned package differs here); after the sleeves repaint the
+        # donors again, only the stage's own receipt rows (the bytes it wrote and read back) can say the kits survived.
+        # One byte off is still foreign.
+        packages, members, files, situ = mk.expected(self.doc, self.inputs)
+        stale = {name: "0" * 64 for name in mk.pins()["packages"]}
+        _edits, _appended, receipt = mk.compile_edits(Overlay(self.src), self.doc, self.inputs)
+        installed = {row["file"]: row["sha256"] for row in receipt["kits"]}
+        self.assertEqual(installed, {n: sha(d) for n, d in packages.items()})
+        self.assertEqual(receipt["donors"], {s: sha(d) for s, d in self.inputs["packages"].items()})
+        overlay = Overlay(self.src)
+        for a in hs.AGGREGATES:
+            record, cdf = self.inputs["members"][a["name"]]
+            record, cdf = hs.grow_aggregate(record, cdf, members[a["name"]])
+            overlay.put(identity=a["record"], data=record)
+            overlay.put(identity=a["cdf"], data=cdf)
+        for name, data in {**files, **packages}.items():
+            overlay.put(name=name, data=data)
+        overlay.put(identity=hs.SITU_OUTER_ID, data=situ)
+        for selector, data in self.inputs["packages"].items():   # the donors repainted after the stage
+            changed = bytearray(data)
+            changed[-1] ^= 1
+            overlay.put(name=mk.selector_name(selector), data=bytes(changed))
+        after = mk.read_inputs(overlay, self.doc)
+        self.assertEqual(mk.state_of(self.doc, after, overlay, pinned_packages=stale), "foreign")
+        self.assertEqual(mk.state_of(self.doc, after, overlay, pinned_packages=installed), "applied")
+        bad = bytearray(packages["30h5.iff"])
+        bad[len(bad) // 2] ^= 1
+        overlay.put(name="30h5.iff", data=bytes(bad))
+        self.assertEqual(mk.state_of(self.doc, mk.read_inputs(overlay, self.doc), overlay, pinned_packages=installed),
                          "foreign")
 
     @unittest.skipUnless(RETAIL.is_file(), "retail disc absent")

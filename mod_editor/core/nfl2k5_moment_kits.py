@@ -629,11 +629,16 @@ def state_of(doc, inputs, target, *, pinned_packages=None):
     return "applied"
 
 
-def image_status(path, doc=None, retail=None, allow_skip=True):
+def image_status(path, doc=None, retail=None, allow_skip=True, installed=None):
+    """``installed`` ({package name: sha256}, b779-int1): the packages a build's own stage wrote and read back on this
+    copy; a later read-back of that build accepts exactly those bytes in place of the shipped pins (later passes
+    repaint donor kits, so composing again differs; see ``state_of``)."""
     from . import nfl2k5_historic_styles as hs
     from . import nfl2k5_music_archive as archive
-    pinned = None
-    if doc is None:
+    pinned = dict(installed) if installed else None
+    if doc is None and installed:
+        doc = document()
+    elif doc is None:
         doc = document()
         try:
             pinned = pins()["packages"]
@@ -698,6 +703,7 @@ def compile_edits(target, doc, inputs):
                 require(sha(data) == pin["packages"][name], name + ": composed kit differs from its pin")
     rows = [dict(file=n, size=len(d), sha256=sha(d)) for n, d in sorted(packages.items())]
     return edits, appended, dict(kits=rows, pinned_donors=pinned,
+                                 donors={selector: sha(data) for selector, data in sorted(inputs["packages"].items())},
                                  members=sum(len(v) for v in members.values()),
                                  team_files=sorted(n for n in files if files[n] != inputs["files"][n]),
                                  selections=len(doc["selections"]),
