@@ -677,7 +677,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_bump_strength.py": "79f9264fbe0813db9be66f22e35f8944e35b92ae415132d819eda50920e41bb0",
         "mod_editor/core/nfl2k5_calendar_engine.py": "24dc9c152a79c81d75232b556f82ebc3ab6892a662c3d8071a4da85a6cd45644",
         "mod_editor/core/nfl2k5_calendar_engine_code.py": "9b43e835f1df76f85ecb13e7ef593d2eee884a1fa82fe41ea3d813186445ca22",
-        "mod_editor/core/nfl2k5_camera.py": "a3ab8251d27c808febe288de44e20c7ea0611bdfd9d1092a9a44ec73a71d36aa",
+        "mod_editor/core/nfl2k5_camera.py": "be80c5275d9defc644b0810a9a733f8174d4d448e31ee59f0ca0f1176ea12f42",
         "mod_editor/core/nfl2k5_catch_slider.py": "87bd3509affba3d38d59189fa9e8b4b0519a7dda105b6fea34aa57da9bea4b61",
         "mod_editor/core/nfl2k5_cave_oracle.py": "8be24dd71d7503dba209061747bb74c439833970978a045a96f740cedafb940e",
         "mod_editor/core/nfl2k5_college_check.py": "9aeab1abca54ffef2708e02354baec7525b17d2d354c655c0d1d80b6141efbf9",

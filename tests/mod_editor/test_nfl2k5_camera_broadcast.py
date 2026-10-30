@@ -39,7 +39,7 @@ class IntegrityTests(unittest.TestCase):
         # x and y (+48, +52: the loge front, 45 m out and 14 m up, instead of the template's press box) differ from
         # the retail template; the mount's z (+56), flag, lag pointer, callbacks and padding stay exact.
         self.assertEqual([i for i in range(0, 80, 4)
-                          if descriptor[i:i+4] != c.BROADCAST_RETAIL_DESCRIPTOR[i:i+4]], [0, 16, 24, 32, 48, 52, 64])
+                          if descriptor[i:i+4] != c.BROADCAST_RETAIL_DESCRIPTOR[i:i+4]], [0, 16, 20, 24, 32, 48, 52, 56, 64])
         self.assertEqual(c.decode_descriptor(descriptor)['type'], 2)
         self.assertEqual(c.decode_descriptor(descriptor)['flag'], 0)
         self.assertEqual(self.receipt['version'], 7)
@@ -301,20 +301,38 @@ class NativeTests(unittest.TestCase):
             else:
                 for a, b in zip(y, references[key]):
                     self.assertAlmostEqual(a, b, places=3)
-            if row['state'] != 9:
-                # V6's other states have deliberately different lenses. The
-                # dedicated final-eye suite checks their native framing.
+            if row['state'] not in (11, 16):
+                # The other states keep their own lenses; the dedicated final-eye suite checks their native framing.
                 continue
-            for name, (x, y) in row['points_640x480'].items():
-                # v5.2 is the TV director's wide shot following the ball: the focus, the backfield, both flats and
-                # the 15-yard receiver stay inside every aspect and above the scorebug; receivers 25 and 40 yards
-                # deep are past the downfield edge until the camera follows the ball, as on television.
-                self.assertTrue(0 < y < 381, (row['aspect'], name, x, y))
-                if name not in ('left_deep', 'right_deep', 'deep_middle'):
-                    self.assertTrue(0 < x < 640, (row['aspect'], name, x, y))
-                else:  # past the downfield edge, whichever way the offense is moving
-                    self.assertTrue(x < 0 if row['direction'] == 1 else x > 640, (row['aspect'], name, x, y))
-            self.assertTrue(abs(row['points_640x480']['focus'][0] - 320) < 64, row['points_640x480']['focus'])
+            points = row['points_640x480']
+            # v7.2 (Noah 10/29: "go tighter like a broadcast"): the old check pinned the v5.2 wide shot, in which receivers
+            # 15 yards deep stayed inside every aspect. Real NFL television frames about 25 yards of field at the snap: the
+            # ball, both tackles, the slot receivers, the shotgun quarterback and the backfield stay in frame above the
+            # scorebug in every aspect; the outside wideouts may sit at or just past the frame edge; the deep receivers are
+            # past the downfield edge until the camera follows the ball. A play in motion (state 16) keeps the ball in frame.
+            box = ('focus', 'left_tackle', 'right_tackle', 'slot_left', 'slot_right', 'shotgun_qb', 'backfield')
+            for name in (box if row['state'] == 11 else ('focus', 'left_tackle', 'right_tackle')):
+                x, y = points[name]
+                self.assertTrue(0 < y < 381, (row['aspect'], row['state'], name, x, y))
+                self.assertTrue(0 < x < 640, (row['aspect'], row['state'], name, x, y))
+            if row['state'] == 11:
+                for name in ('near_wideout', 'far_wideout'):   # at or just past the edge: never far outside
+                    self.assertTrue(-120 < points[name][1] < 480, (row['aspect'], name, points[name]))
+                    self.assertTrue(0 < points[name][0] < 640, (row['aspect'], name, points[name]))
+                # downfield is the screen's long axis: about 25 yards across, so a 25-yard receiver is out of frame
+                for name in ('left_deep', 'right_deep', 'deep_middle'):
+                    self.assertTrue(points[name][0] < 0 if row['direction'] == 1 else points[name][0] > 640, (row['aspect'], name))
+            self.assertTrue(abs(points['focus'][0] - 320) < 64, points['focus'])
+
+    def test_sideline_lenses_are_television_tight(self):
+        # v0.7 words 68, 78.2, 57.8, 48. The snap view is twice the v0.7 on-screen size; the live view is at least 1.5 times.
+        self.assertEqual(c.BROADCAST_LENSES[3], 2 * 48.0)
+        self.assertGreaterEqual(c.BROADCAST_LENSES[1], 1.5 * 78.2)
+        self.assertGreater(c.BROADCAST_LENSES[2], 1.5 * 57.8)
+        self.assertLess(c.BROADCAST_LENSES[2], c.BROADCAST_LENSES[1])   # the ball in the air stays wider than a live run
+        # the eye relative to the focus is the v6 mount, so the crowd and structure limits of the stands test still apply
+        target, _lens, offset = c.BROADCAST_VALUES
+        self.assertEqual((offset[0] + target[0], offset[1] + target[1], offset[2] + target[2]), (4900.0, 1400.0, 450.0))
 
 
 if __name__ == '__main__':

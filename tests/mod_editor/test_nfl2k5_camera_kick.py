@@ -38,10 +38,10 @@ class KickStaticTests(unittest.TestCase):
         sets = c.kick_sets()
         self.assertEqual(len(sets), 4 * c.KICK_SET_SIZE)
         expected = {
-            c.KICK_FG_GROUND: ((0.0, 100.0, 1365.0), 38.0, (0.0, 450.0, -3665.0)),
-            c.KICK_PUNT_GROUND: ((0.0, 100.0, 387.0), 34.0, (0.0, 550.0, -3287.0)),
-            c.KICK_FG_AIR: ((0.0, 100.0, 2200.0), 34.0, (0.0, 350.0, -4100.0)),
-            c.KICK_PUNT_AIR: ((0.0, 100.0, 2000.0), 32.0, (0.0, 450.0, -4600.0)),
+            c.KICK_FG_GROUND: ((0.0, 100.0, 2844.0), 50.0, (0.0, 450.0, -5144.0)),
+            c.KICK_PUNT_GROUND: ((0.0, 100.0, 387.0), 50.0, (0.0, 550.0, -3287.0)),
+            c.KICK_FG_AIR: ((0.0, 100.0, 2200.0), 48.0, (0.0, 350.0, -4100.0)),
+            c.KICK_PUNT_AIR: ((0.0, 100.0, 2000.0), 44.0, (0.0, 450.0, -4600.0)),
         }
         self.assertEqual(c.KICK_VALUES, expected)
         for index, (target, lens, offset) in expected.items():
