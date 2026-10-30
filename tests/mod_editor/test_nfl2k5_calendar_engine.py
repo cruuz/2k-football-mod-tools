@@ -51,7 +51,7 @@ class PureTests(unittest.TestCase):
         self.assertTrue(plan)
 
     def test_assembly_reproduces_committed_code(self):
-        from _gnu_elf32_as import gnu_elf32_as
+        gnu_elf32_as = __import__("importlib").import_module(("tests.mod_editor." if __package__ else "") + "_gnu_elf32_as").gnu_elf32_as  # script and module form (b779-int1)
         if not gnu_elf32_as():
             self.skipTest("GNU x86 as producing ELF32 is absent; the generated runtime template needs no assembler")
         subprocess.run([sys.executable, str(ROOT / "tools/nfl2k5_calendar_engine_assemble.py"), "--check"], check=True)

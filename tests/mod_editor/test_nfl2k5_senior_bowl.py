@@ -227,7 +227,7 @@ class PublicTests(unittest.TestCase):
         self.assertFalse(row["gui"]["default_enabled"])
 
     def test_template_reproduction(self):
-        from _gnu_elf32_as import gnu_elf32_as
+        gnu_elf32_as = __import__("importlib").import_module(("tests.mod_editor." if __package__ else "") + "_gnu_elf32_as").gnu_elf32_as  # script and module form (b779-int1)
         if not gnu_elf32_as():
             self.skipTest("template reproduction requires GNU i386 as producing ELF32")
         subprocess.run([sys.executable, str(ROOT / "tools/nfl2k5_senior_bowl_assemble.py"), "--check"], check=True)

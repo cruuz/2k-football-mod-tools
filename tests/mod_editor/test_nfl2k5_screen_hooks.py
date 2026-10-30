@@ -56,7 +56,7 @@ class ContractTests(unittest.TestCase):
         self.assertLessEqual(len(patch.BUILD_CAPTION), 60)
 
     def test_reproducible_assembler(self):
-        from _gnu_elf32_as import gnu_elf32_as
+        gnu_elf32_as = __import__("importlib").import_module(("tests.mod_editor." if __package__ else "") + "_gnu_elf32_as").gnu_elf32_as  # script and module form (b779-int1)
         if not gnu_elf32_as():
             self.skipTest("GNU ELF32 assembler absent; no assembler required at runtime")
         from nfl2k5_screen_hooks_assemble import generate, TARGET

@@ -67,7 +67,7 @@ class TableTests(unittest.TestCase):
             with self.assertRaises(spy.QbSpyError): spy.validate_intent_table(bad.ljust(512, b'\0'))
 
     def test_assembler_reproduces_shipped_bytes(self):
-        from _gnu_elf32_as import gnu_elf32_as
+        gnu_elf32_as = __import__("importlib").import_module(("tests.mod_editor." if __package__ else "") + "_gnu_elf32_as").gnu_elf32_as  # script and module form (b779-int1)
         if not gnu_elf32_as():
             self.skipTest('GNU ELF32 as is absent; runtime application does not require it')
         from nfl2k5_qb_spy_runtime_assemble import generate, TARGET

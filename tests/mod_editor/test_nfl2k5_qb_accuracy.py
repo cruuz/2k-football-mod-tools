@@ -67,7 +67,7 @@ class StaticTests(unittest.TestCase):
     def test_assembler_reproduces_shipped_bytes(self):
         # Apple's assembler lacks GNU --32 and MinGW's emits COFF; the shipped byte template is the
         # runtime input, so those hosts skip the reproduction instead of failing on it.
-        from _gnu_elf32_as import gnu_elf32_as
+        gnu_elf32_as = __import__("importlib").import_module(("tests.mod_editor." if __package__ else "") + "_gnu_elf32_as").gnu_elf32_as  # script and module form (b779-int1)
         if not shutil.which("as") or not gnu_elf32_as():
             self.skipTest("GNU as with ELF32 output is required for template reproduction")
         from nfl2k5_cpu_ai_assemble import template
