@@ -236,6 +236,16 @@ def _recognize(payload):
     require(len(context) == MERGE_SIZE, "short retail merge context")
     content = bytearray(context)
     content[SITE - MERGE:SITE - MERGE + len(SITE_BEFORE)] = SITE_BEFORE   # our own hook back to retail
+    # b779-int1: b779-sim2's season realism owner hooks the same merge (its tackle entry at 0x1334d3). When that
+    # owner is installed, its exact hook bytes inside the merge are put back to retail before hashing; any other
+    # byte, or a different hook, still makes the context foreign ("cornerback tackle credit did not survive the
+    # final passes" stopped the observed full build once both were on).
+    from . import nfl2k5_sim_realism as realism
+    realism_rows = [r for r in space.layout(payload)["allocations"] if r["owner"] == realism.OWNER and r["kind"] == "code"]
+    if realism_rows:
+        for _name, va, before, after in realism.sites(realism_rows[0]["va"]):
+            if MERGE <= va and va + len(before) <= MERGE + MERGE_SIZE and bytes(content[va - MERGE:va - MERGE + len(after)]) == after:
+                content[va - MERGE:va - MERGE + len(before)] = before
     merge_hash = hashlib.sha256(content).hexdigest()
     require(merge_hash in (MERGE_SHA256, V061_MERGE_SHA256), "Foreign post-game merge context")
     picker_va, picker_size, picker_digest = PICKER_PIN

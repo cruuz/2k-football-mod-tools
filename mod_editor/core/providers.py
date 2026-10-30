@@ -926,7 +926,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_player_progress_screen.py": "f403162115845e3114fa5cf66b8a01d7984a1a624eb744d8ffb9877e6c5d57c8",  # b778-pg2
         "mod_editor/core/nfl2k5_player_progression.py": "205cf22ec9021f1e4c681ef5a6673390d5cbe999710de999eeecd055bb95e365",  # b778-pg2
         "mod_editor/core/nfl2k5_contract_college_guard.py": "4bf8deeb95c3718380e8dc248ec2a2f0c81116f304d1a93723e277cc4bd32fe6",  # b778-cr1
-        "mod_editor/core/nfl2k5_sim_cb_tackles.py": "3b2edca3e19d008b8366522a02591cb8dd45f57f963e9334e2226ec580d88af6",  # b778-cb1
+        "mod_editor/core/nfl2k5_sim_cb_tackles.py": "f869030643a77aad996dc008d3c950311cfba6ca831dedd08281f003d1250f08",  # b778-cb1
         "mod_editor/core/nfl2k5_sim_rb_injuries.py": "95200888adb01533bb9887f08ac016fd254dee25b1a16da82a1f44f351c87925",  # b779-sim2
         "mod_editor/core/nfl2k5_sim_realism.py": "ad88739365135bbe5770ae73b5935e1d84a55a84d83a50b03b3cf0b592dd8e3b",  # b779-sim2 r6
         "mod_editor/core/nfl2k5_sim_stats.py": "26af040eea115ef53bea9bbd38a329185e42ea27cea201866e6432cd71b3ef00",  # b778-sim1

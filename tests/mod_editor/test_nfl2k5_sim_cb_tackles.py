@@ -87,6 +87,23 @@ class CodeTests(unittest.TestCase):
         self.assertEqual(XbeImage(data).read(0x134E05, 5), cb.RETAIL_PG1_CALL)
 
     @unittest.skipUnless(V061.is_file(), "the released v0.6.1 extraction is not in this scratch")
+    def test_season_realism_hook_in_the_merge_keeps_this_owner_applied(self):
+        # b779-int1: sim2's season realism hooks the same merge (tackle entry 0x1334d3); with both installed this
+        # owner must still read applied (the full build's survival check), and a stray byte there must still not.
+        from mod_editor.core import nfl2k5_sim_realism as realism
+        data = retail()
+        if data is None:
+            self.skipTest("retail USA default.xbe not available")
+        payload, _ = space.apply(data, cb.REQUESTS + realism.REQUESTS, scaleout=True)
+        payload, _ = cb.apply(payload)
+        payload, _ = realism.apply(payload)
+        self.assertEqual((cb.status(payload), realism.status(payload)), ("applied", "applied"))
+        image = XbeImage(payload)
+        broken = bytearray(payload)
+        off = image.offset(realism.TACKLE_ENTRY_SITE + 5, 1)
+        broken[off] ^= 0xFF
+        self.assertEqual(cb.status(bytes(broken)), "foreign")
+
     def test_released_v061_merge_context_is_supported(self):
         self.assertEqual(cb.status(V061.read_bytes()), "retail")
 
