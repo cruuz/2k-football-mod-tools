@@ -58,23 +58,23 @@ class CameraV6Tests(unittest.TestCase):
         self.assertLess(row['eye'][1],1400)
         self.assertEqual(row['eye'][2],3436.)
 
-    def test_presnap_is_v53_and_state_lenses_are_native(self):
-        samples=[]
-        for revision in ('v5.3','v6'):
-            b=historical(self.retail,revision) if revision=='v5.3' else self.patched
-            p=FinalProjection(wide.apply(b,'16:9')[0])
-            p.setup(c.read_preset_table(b)[7][9][1]);samples.append(p.point(2200,175,0))
-        # v7.1 (Noah 10/29) deliberately zooms the sideline views 15%: the near wideout is bigger than in v5.3 (further
-        # from the ball on screen) and still above the scorebar. The v5.3 pre-snap parity of v6 no longer holds.
-        self.assertGreater(samples[1][0],samples[0][0]);self.assertLess(samples[1][0],640)
-        self.assertTrue(0<samples[1][1]<381,samples)
+    def test_snap_view_is_tv_tight_and_state_lenses_are_native(self):
+        # v7.2 (Noah 10/29, "go tighter like a broadcast"): the v5.3 pre-snap parity of v6 is gone on purpose. The snap
+        # view (state 11) puts the ball near the middle of a 16:9 frame and the near outside wideout inside it.
+        b=self.patched
+        p=FinalProjection(wide.apply(b,'16:9')[0])
+        p.setup(c.read_preset_table(b)[7][11][1])
+        ball,wr=p.point(0,0,0),p.point(1800,175,0)
+        self.assertTrue(abs(ball[0]-320)<64 and 0<ball[1]<381,ball)
+        self.assertTrue(0<wr[0]<640 and 0<wr[1]<381,wr)
         p=FinalProjection(wide.apply(self.patched,'16:9')[0]);scales=[]
         for state in (9,17,15,13,7):
             p.setup(c.read_preset_table(self.patched)[7][state][1])
             scales.append(p.metrics['native_lens_scale'])
             self.assertAlmostEqual(p.metrics['lens_word'],c.BROADCAST_LENSES[c.broadcast_slot(state)],places=4)
-        self.assertAlmostEqual(scales[1]/scales[0],1.15,places=5)
-        self.assertAlmostEqual(scales[2]/scales[0],.85,places=5)
+        # v7.2: the lens families are no longer the 1.15 and 0.85 ratios of v6; the native scale follows c.BROADCAST_LENSES.
+        ratios=[c.BROADCAST_LENSES[c.broadcast_slot(s)]/c.BROADCAST_LENSES[0] for s in (9,17,15,13,7)]
+        for scale,ratio in zip(scales,ratios):self.assertAlmostEqual(scale/scales[0],ratio,places=5)
         self.assertEqual(scales[2],scales[3]);self.assertLess(scales[4],scales[2])
 
     def test_kickoff_setup_and_actual_native_row7_lookup(self):

@@ -89,6 +89,8 @@ def prove(retail):
                     decoded = p.setup(descriptor, direction=direction, zoom=zoom)
                     samples = {name: p.point(x, y, z * direction) for name, x, y, z in (
                         ('focus', 0, 0, 0), ('backfield', 0, 0, -700), ('shotgun_qb', 0, 175, -600),
+                        ('left_tackle', -210, 175, 0), ('right_tackle', 210, 175, 0),
+                        ('slot_left', -900, 175, 0), ('slot_right', 900, 175, 0),
                         ('left_flat', -1600, 175, 500), ('right_flat', 1600, 175, 500),
                         ('near_wideout', 2200, 175, 0), ('far_wideout', -2200, 175, 0),
                         ('middle_15', 0, 175, 1500),

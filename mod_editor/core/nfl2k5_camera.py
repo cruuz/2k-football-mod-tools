@@ -57,9 +57,12 @@ MENU_ROWS = (0, 1, 2, 3, 4, 5, BROADCAST_ROW)
 # Every gameplay/preview state gets an independent eye, including kicks and
 # pass states. Presentation/replay states and all seven other rows stay native.
 BROADCAST_STATES = (1, *range(7, 20))
-# v7.1 (Noah 10/29: "zoom the camera slightly on the side angle to better resemble how it looks on tv"): every sideline lens
-# is 1.15 times the v6 word (68, 78.2, 57.8, 48), a narrower lens, the same mount, so the 1.15 and 0.85 family ratios hold.
-BROADCAST_LENSES = (78.2, 89.93, 66.47, 55.2)
+# v7.2 (Noah 10/29: "go tighter like a broadcast", after a 15 percent step he called too subtle): real NFL television framing.
+# Snap view (camera states 7, 8, 11, 12, the slot-3 lens) is twice the v6 word, 96 instead of 48: about 25 yards of field across
+# a 16:9 frame, the box and the slot receivers in frame, the outside wideouts at or past the edge. The live states (16 to 19,
+# slot 1) go from 78.2 to 125 and the ball in the air (state 15, slot 2) from 57.8 to 100: tighter, but the follow must keep the
+# ball and the carrier in frame, so the live lens is less than doubled. Slot 0 is state 9, which is a kick view in play.
+BROADCAST_LENSES = (112.0, 125.0, 100.0, 96.0)
 
 def broadcast_slot(state):
     return 1 if 16 <= state <= 19 else 2 if state in (13, 15) else 0 if state == 9 else 3
@@ -90,9 +93,11 @@ BROADCAST_TEMPLATE_VA = 0xA881E0
 # a setup box, but that box precedes smoothing. v6 constrains the actual final
 # eye at the reset/smoothing merge and anchors the filter to it, with an earlier
 # corner pull-in. The four lens families share that boundary. See ASTRA_REPORT.md.
-# The look-at sits 1 m below the ground line (y -100, the pitch goes up by about 1.5 degrees) with the mount's offset raised by the
-# same amount, so the eye stays at 1400 cm: the closer lens would otherwise push the near wideout under the scorebar.
-BROADCAST_VALUES = ((400.0, -100.0, 250.0), 78.2, (4500.0, 1500.0, 200.0))
+# The look-at sits 1 m below the ground line (y -100) with the mount's offset raised by the same amount, and its lead is 1.5 m
+# instead of 2.5 m with the offset z raised by the difference, so the eye stays at (4900, 1400, 450) relative to the focus as in
+# v6 (same crowd and structure limits). The closer lens would otherwise push the near wideout under the scorebar and the
+# backfield past the downfield edge.
+BROADCAST_VALUES = ((400.0, -100.0, 150.0), 112.0, (4500.0, 1500.0, 300.0))
 LEGACY54_VALUES = ((400.0, 0.0, 250.0), 68.0, (4500.0, 1400.0, 200.0))
 # v7 kick views. Camera states (proved by polling B616C0 in a headless xemu Quick Game on the released v0.7 disc, and by the
 # native play-type decode at 0x894A0 and the release dispatch at 0x9FFB6): 9 = field goal / extra point snap and kick,
@@ -200,10 +205,10 @@ FAR_RETAIL_VALUES: dict[int, Values] = {
 # (look-at xyz, lens word, camera offset xyz) in the offense-relative frame (z toward the opponent's goal), centimetres.
 # Native type 2: eye = focus + look-at + offset, so the eye relative to the ball is look-at + offset.
 KICK_VALUES: dict[int, Values] = {
-    KICK_FG_GROUND: ((0.0, 100.0, 1365.0), 42.0, (0.0, 450.0, -3665.0)),
-    KICK_PUNT_GROUND: ((0.0, 100.0, 387.0), 40.0, (0.0, 550.0, -3287.0)),
-    KICK_FG_AIR: ((0.0, 100.0, 2200.0), 40.0, (0.0, 350.0, -4100.0)),
-    KICK_PUNT_AIR: ((0.0, 100.0, 2000.0), 37.0, (0.0, 450.0, -4600.0)),
+    KICK_FG_GROUND: ((0.0, 100.0, 2844.0), 50.0, (0.0, 450.0, -5144.0)),
+    KICK_PUNT_GROUND: ((0.0, 100.0, 387.0), 50.0, (0.0, 550.0, -3287.0)),
+    KICK_FG_AIR: ((0.0, 100.0, 2200.0), 48.0, (0.0, 350.0, -4100.0)),
+    KICK_PUNT_AIR: ((0.0, 100.0, 2000.0), 44.0, (0.0, 450.0, -4600.0)),
 }
 
 PRESETS: dict[str, dict[int, Values]] = {
