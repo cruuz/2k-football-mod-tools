@@ -4,7 +4,7 @@
 
 - Star-only charge-ups now follow the roster star tag and the configured ability tier alone. The beta-78 build also required raw Speed 90 and Agility 85, so most starred players (for example a star running back or quarterback) could not fill the meter; only fast cornerbacks and receivers could. Non-stars still do not charge. Studio upgrades an already built beta-78 executable in place, and the sprint burst curve from beta-78 is unchanged.
 
-## Beta 78 (RC113 / APF alpha.109, 2026-10-26)
+## v1.0 RC113, beta 78: SOFTDRINK 2K28 v0.7 (APF alpha.109, 2026-10-26)
 
 Prepared by Claude on Noah's behalf.
 
