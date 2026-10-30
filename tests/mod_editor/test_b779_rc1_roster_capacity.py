@@ -636,6 +636,21 @@ class PreseasonWarningInstallTests(unittest.TestCase):
         self.assertEqual(image.read(warning.HOOK_VA, 5), warning.hook_bytes())
         self.assertEqual(warning.apply(self.warned)[1]["status"], "already_applied")
 
+    def test_the_build_union_reserves_the_flag_before_the_sim_owners(self):
+        # b779-int1: the Studio build plans the whole late-owner union up front; with sim2's RB injury and season
+        # realism owners (later in LATE_OWNERS) already placed, the warned flag could not be appended at the tail
+        # ("appending the owner would move an existing allocation"). The union now reserves it with the economy.
+        from mod_editor.core import nfl2k5_throw_tuning as tt, nfl2k5_xbe_space as space
+        from mod_editor.core import nfl2k5_preseason_warning as warning, nfl2k5_sim_rb_injuries as rb, nfl2k5_sim_realism as sr
+        from mod_editor.core import nfl2k5_franchise_economy as economy
+        requests = tt._selected_space_requests(sim_rb_injuries=True, sim_realism=True, preseason_warning=True)
+        self.assertIn(warning.OWNER, [r[0] for r in requests])
+        self.assertNotIn(warning.OWNER, [r[0] for r in tt._selected_space_requests(sim_rb_injuries=True, sim_realism=True)])
+        payload = economy.apply(space.apply(self.retail, requests, scaleout=True)[0])[0]
+        for module in (warning, rb, sr):                 # the build's own order: the warning, then the sim owners
+            payload = module.apply(payload)[0]
+            self.assertEqual(module.status(payload), "applied", module.OWNER)
+
 
 @unittest.skipUnless(HAVE_UC and RELEASED_BODY.is_file() and RELEASED_XBE.is_file(),
                      "the released v0.7 default.xbe and main ROST body (private) are absent")
