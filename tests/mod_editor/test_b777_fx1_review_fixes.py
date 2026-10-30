@@ -82,7 +82,10 @@ class RebuildRefusals(unittest.TestCase):
     def scaleout_with_qb_accuracy(self):
         from mod_editor.core import nfl2k5_xbe_space as space, nfl2k5_qb_accuracy as qa
         from mod_editor.core import nfl2k5_throw_tuning as tt
-        payload, _ = space.apply(_retail(), tt._selected_space_requests(coach_ai=True), scaleout=True)
+        # The earlier Studio build reserved QB accuracy with the rest of its request set. (Appending it afterwards to a
+        # coach_ai image can no longer work: nfl2k5_cpu_third_down, which coach_ai requests, sorts after nfl2k5_qb_accuracy
+        # in LATE_OWNERS since the b778 pool order, so the append would move it.)
+        payload, _ = space.apply(_retail(), tt._selected_space_requests(coach_ai=True, qb_accuracy=True), scaleout=True)
         return qa.apply(payload)[0]
 
     def test_a_retail_source_is_never_judged(self):
