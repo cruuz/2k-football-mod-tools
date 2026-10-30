@@ -49,7 +49,7 @@ READ_ONLY_SIZE = 2816
 DATA_SIZE = 1152
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "read_only", READ_ONLY_SIZE, 16), (OWNER, "data", DATA_SIZE, 16))
 
-BUILD_CAPTION = "Pass rush stats: pressures, QB hits, allowed stats, targets (experimental)"
+BUILD_CAPTION = "Pass rush stats: pressures, QB hits, targets (experimental)"
 HELP_TEXT = ("EXPERIMENTAL. Adds pressures and QB hits for defenders, pressures, QB hits and sacks allowed for "
              "offensive linemen, and shows targets for receivers. Played games count them on the field (a "
              "defender within 2 yards of the passer at the throw, the sacker, and the blocker he beat); simulated "

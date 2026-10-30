@@ -46,7 +46,7 @@ from .nfl2k5_bump_strength import _section_for_offset, _sections, section_digest
 from .nfl2k5_cave_oracle import XbeImage
 
 OWNER = "nfl2k5_option_defaults"
-BUILD_CAPTION = "SOFTDRINK default options (7:00 quarters, 15:00 sim quarters)"
+BUILD_CAPTION = "SOFTDRINK default options (7:00 / 15:00 quarters)"
 HELP_TEXT = ("A fresh profile (and Reset to defaults) starts with 7 minute quarters, 15 minute Sim. Quarter Length "
              "(when the franchise pace fix is on) and the Chop Block penalty on. Saved settings and saved franchises "
              "keep what they stored; nothing here overwrites a value a player chose.")
