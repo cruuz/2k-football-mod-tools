@@ -264,7 +264,27 @@ def _owned(payload: bytes) -> tuple[Mapping[str, object], Mapping[str, object]] 
 
 def _guard_state(payload: bytes) -> bool:
     image = XbeImage(payload)
-    return all(hashlib.sha256(image.read(va, size)).hexdigest() == digest for va, size, digest in GUARDS)
+    return all(hashlib.sha256(_guard_view(payload, va, image.read(va, size))).hexdigest() == digest
+               for va, size, digest in GUARDS)
+
+
+def _guard_view(payload: bytes, va: int, raw: bytes) -> bytes:
+    """b779-int1: franchise economy revision 4 (rc1/ag1) hooks the class loop's position read at 0x2BE91D (inside the
+    pinned loop head) with its own exact call; that one hook reads as the retail instruction it replaced. Any other
+    byte in the guarded spans, or a different call there, still reads foreign. (RC build try 8 stopped here:
+    'the star-career sites are foreign' with economy revision 4 and this owner in one build.)"""
+    from . import nfl2k5_franchise_economy as economy
+    out = bytearray(raw)
+    for site in economy.sites():
+        if site.va != economy.CLASS_POSITION or not va <= site.va < site.va + len(site.patched) <= va + len(raw):
+            continue
+        at = site.va - va
+        if bytes(out[at:at + len(site.patched)]) == site.patched:
+            out[at:at + len(site.patched)] = _ECONOMY_CLASS_POSITION_RETAIL
+    return bytes(out)
+
+
+_ECONOMY_CLASS_POSITION_RETAIL = bytes.fromhex("0fb650358bc8")   # movzx edx, byte [eax+0x35] ; mov ecx, eax
 
 
 def _site_state(payload: bytes) -> str:
