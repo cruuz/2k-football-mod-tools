@@ -42,7 +42,9 @@ class ScopeTests(unittest.TestCase):
         with mock.patch.object(b.shutil, "disk_usage") as usage:
             usage.return_value.free = 50 * 1024**3 + 99
             with self.assertRaisesRegex(ValueError, "50 GiB"):
-                b.check_room(ROOT, 100)
+                # b779-int1: the reserve applies on the root filesystem; ROOT itself may be a checkout on another
+                # drive (no reserve there), so the reserve is checked on "/" directly.
+                b.check_room(Path("/"), 100)
 
 
 class CopyTests(unittest.TestCase):
