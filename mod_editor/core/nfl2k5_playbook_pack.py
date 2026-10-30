@@ -2347,29 +2347,43 @@ def prewarm_install_steps(archive: Any, packs: Sequence[tuple[str, PlaybookPack]
         return 0
     helper = Path(__file__).resolve().parents[2] / "tools" / "nfl2k5_playbook_warm.py"
     flags = getattr(subprocess, "CREATE_NO_WINDOW", 0) if os.name == "nt" else 0
+    # b779-int1: the request travels in a private temporary file named on the command line, not through stdin. The
+    # stdin pipe could leave the helper blocked reading a request the parent's timed communicate() loop had not
+    # finished writing under heavy load (seen by b779-au1); with no stdin there is nothing to wait for.
+    import tempfile
     try:
-        process = subprocess.Popen([sys.executable, str(helper)], stdin=subprocess.PIPE,
-                                   stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
-                                   creationflags=flags)
+        handle, request_path = tempfile.mkstemp(prefix="nfl2k5-warm-", suffix=".pickle")
+        with os.fdopen(handle, "wb") as stream:
+            stream.write(request)
     except OSError:
         return 0
-    started = time.monotonic()
-    output = None
     try:
-        payload = request
-        while output is None:
-            try:
-                output, _ = process.communicate(payload, timeout=2.0)
-            except subprocess.TimeoutExpired:
-                payload = None
-                if progress is not None:
-                    # Also the cancel point: a cancelled build raises here.
-                    progress(f"Compiling {len(chains)} playbooks in parallel "
-                             f"({int(time.monotonic() - started)} s)")
-    except BaseException:
-        process.kill()
-        process.wait()
-        raise
+        try:
+            process = subprocess.Popen([sys.executable, str(helper), request_path], stdin=subprocess.DEVNULL,
+                                       stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+                                       creationflags=flags)
+        except OSError:
+            return 0
+        started = time.monotonic()
+        output = None
+        try:
+            while output is None:
+                try:
+                    output, _ = process.communicate(timeout=2.0)
+                except subprocess.TimeoutExpired:
+                    if progress is not None:
+                        # Also the cancel point: a cancelled build raises here.
+                        progress(f"Compiling {len(chains)} playbooks in parallel "
+                                 f"({int(time.monotonic() - started)} s)")
+        except BaseException:
+            process.kill()
+            process.wait()
+            raise
+    finally:
+        try:
+            os.unlink(request_path)
+        except OSError:
+            pass
     if process.returncode != 0:
         return 0
     try:
