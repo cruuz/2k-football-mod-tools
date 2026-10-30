@@ -928,7 +928,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_contract_college_guard.py": "4bf8deeb95c3718380e8dc248ec2a2f0c81116f304d1a93723e277cc4bd32fe6",  # b778-cr1
         "mod_editor/core/nfl2k5_sim_cb_tackles.py": "3b2edca3e19d008b8366522a02591cb8dd45f57f963e9334e2226ec580d88af6",  # b778-cb1
         "mod_editor/core/nfl2k5_sim_rb_injuries.py": "95200888adb01533bb9887f08ac016fd254dee25b1a16da82a1f44f351c87925",  # b779-sim2
-        "mod_editor/core/nfl2k5_sim_realism.py": "3f1b14462ab58827dfe2ac979861cb1ecc6306d85370c9e7755f8c36c789b973",  # b779-sim2 r4
+        "mod_editor/core/nfl2k5_sim_realism.py": "0a58041c65a0eb2069f85da79ac701d57eb11bc5e7465c2031204ad171fd4040",  # b779-sim2 r6
         "mod_editor/core/nfl2k5_sim_stats.py": "26af040eea115ef53bea9bbd38a329185e42ea27cea201866e6432cd71b3ef00",  # b778-sim1
         "mod_editor/core/nfl2k5_option_defaults.py": "0c11d6e395642fbae86158c1504e674a6ba4987c8c96682f68c7a17c29404608",  # b779-df1
         "mod_editor/core/nfl2k5_clock_led.py": "ab030b1fbed873b96e0ba6055fcc38ef53193c31f2df496128e2de581e7b01c2",  # b778-sd4
