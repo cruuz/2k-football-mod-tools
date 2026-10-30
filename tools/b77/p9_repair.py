@@ -105,6 +105,14 @@ def declared_ranges(xbe: bytes) -> tuple[list[tuple[int, int]], list[dict]]:
     ranges, rows = [], []
     ranges.append((allocation["raw"], allocation["raw"] + allocation["size"]))
     rows.append(dict(label="owner code allocation", va=hex(allocation["va"]), file_offset=hex(allocation["raw"]), size=allocation["size"]))
+    # b778 ai6: the upgrade also installs the late fourth-down companion (code plus 8 bytes of state) when the image lacks it.
+    # They are this owner's own allocations, so they are declared like the main code (and their sections are resealed below).
+    owned_rows = [allocation]
+    for label, row in (("late owner code allocation", md._late_row(xbe)), ("late owner state allocation", md._late_state_row(xbe))):
+        if row is not None:
+            owned_rows.append(row)
+            ranges.append((row["raw"], row["raw"] + row["size"]))
+            rows.append(dict(label=label, va=hex(row["va"]), file_offset=hex(row["raw"]), size=row["size"]))
     for name, va, before, _after in md.sites(allocation["va"], "modern2"):
         at = rdata.offset_of(xbe, va)
         ranges.append((at, at + len(before)))
@@ -114,13 +122,18 @@ def declared_ranges(xbe: bytes) -> tuple[list[tuple[int, int]], list[dict]]:
     text = next(s for s in sections if s.virtual_address <= 0x20B180 < s.virtual_address + s.raw_size)
     derived = [("section digest of .text", text.header_offset + 36, 20)]
     regions = space._scale_regions()
-    owner_region = next(i for i, r in enumerate(regions) if r["raw"] <= allocation["raw"] < r["raw"] + r["size"])
+    owner_regions = sorted({next(i for i, r in enumerate(regions) if r["raw"] <= row["raw"] < r["raw"] + r["size"])
+                            for row in owned_rows})
     directory_region = next(i for i, r in enumerate(regions) if r["raw"] <= space.SCALE_DIRECTORY < r["raw"] + r["size"])
-    for label, index in (("descriptor digest of the section holding the owner code", owner_region),
-                         ("descriptor digest of the section holding the allocator directory page", directory_region)):
+    for label, index in ([("descriptor digest of the section holding the owner code", i) for i in owner_regions]
+                         + [("descriptor digest of the section holding the allocator directory page", directory_region)]):
         derived.append((label, space.META_START + index * 56 + 36, 20))
     derived.append(("allocator directory header copy: sha256 of the directory page", space.DIRECTORY + 20, 32))
     derived.append(("allocator directory page: sha256 seal of the scale-out code", space.SCALE_DIRECTORY + 12, 32))
+    # The append of the late companion rewrites the allocator's own request document (the compressed row list that
+    # starts the directory page); its size is the sealed block's, so the declared span is exactly that document.
+    derived.append(("allocator directory page: request document with the late companion rows",
+                    space.SCALE_DIRECTORY, space._directory_document_size(xbe)))
     for label, at, size in derived:
         ranges.append((at, at + size))
         rows.append(dict(label=f"{label} (derived)", file_offset=hex(at), size=size))
