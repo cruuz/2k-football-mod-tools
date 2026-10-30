@@ -159,6 +159,16 @@ class InstallTests(unittest.TestCase):
         self.assertEqual(again, patched)
         self.assertEqual(second["status"], "already_applied")
 
+    def test_apply_reuses_the_allocation_a_full_build_made(self):
+        # b779-int1: the build allocates the owner with the selected request set before this step installs it
+        from mod_editor.core import nfl2k5_xbe_space as space
+        data = retail_bytes()
+        allocated, _ = space.apply(data, r.REQUESTS, scaleout=True)
+        self.assertEqual(r.status(allocated), "retail")
+        patched, receipt = r.apply(allocated)
+        self.assertEqual(r.status(patched), "applied")
+        self.assertEqual(r.apply(patched)[1]["status"], "already_applied")
+
     def test_foreign_site_is_refused(self):
         data = retail_bytes()
         if data is None:

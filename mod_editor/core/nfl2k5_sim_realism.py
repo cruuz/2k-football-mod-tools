@@ -518,11 +518,16 @@ def apply(payload):
         return payload, {"owner": OWNER, "status": "already_applied", "code_va": hex(code["va"]),
                          "data_va": hex(data["va"]), "changed_bytes": 0}
     before = payload
-    if space.status(payload) == "retail":
-        payload, receipt = space.apply(payload, REQUESTS, scaleout=True)
-    else:
-        require(space.is_scaleout(payload), "Simulated season realism needs the scale-out allocator")
-        payload, receipt = space.extend_scaleout(payload, REQUESTS)
+    receipt = {}
+    # b779-int1: a full build allocates this owner with the selected request set (nfl2k5_throw_tuning) before this
+    # step installs the code; reuse that allocation, as the RB injury owner does ("owner already allocated in this
+    # image" stopped the observed cave build and would have stopped the release build).
+    if not any(r["owner"] == OWNER for r in space.layout(payload)["allocations"]):
+        if space.status(payload) == "retail":
+            payload, receipt = space.apply(payload, REQUESTS, scaleout=True)
+        else:
+            require(space.is_scaleout(payload), "Simulated season realism needs the scale-out allocator")
+            payload, receipt = space.extend_scaleout(payload, REQUESTS)
     code, data = _allocations(payload)
     payload, _ = space.install_code(payload, OWNER, code_for(code["va"], data["va"]))
     image = XbeImage(payload)
