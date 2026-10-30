@@ -6,7 +6,9 @@ with its surplus term on. Under the 2026 franchise economy that value clamps an 
 to one unit, so real contracts (Mahomes, Kittle, Stanley) were released after free agency and
 the draft, when no club had room to sign them. Economy revision 2 passes surplus=0 at that one
 call (salary is compared with the modelled market value); a revision-1 image reads "legacy" and
-is upgraded in place by the economy and the build writer.
+is upgraded in place by the economy and the build writer. The released-disc check reads the disc players hold
+(v0.7, economy revision 3); v0.6.1 stopped being an in-place upgrade source when b778 tr2 recompiled the
+practice-squad runtime that the economy composes with.
 """
 from __future__ import annotations
 
@@ -208,11 +210,21 @@ class RolloverDecrementTests(unittest.TestCase):
         self.assertEqual([self.years_left_after(current, n) for n in (0, 1, 3, 8, 15)], [0, 0, 2, 7, 14])
 
 
-@unittest.skipUnless(os.environ.get("NFL2K5_V061_DISC"), "set NFL2K5_V061_DISC to the released v0.6.1 image")
+# The disc players hold is the upgrade source the Studio promises to take in place ("Studio upgrades an already
+# built beta-78 executable in place"; the release notes tell players to start from the original dump, not from
+# v0.6.1). b778 tr2 (shipped in beta-78 / v0.7) recompiled the practice-squad runtime, so a v0.6.1 executable is no
+# longer a recognised squad owner and its economy reads "foreign": v0.6.1 is not a supported upgrade source since
+# beta-78. The released v0.7 executable carries the current squad runtime and an older economy revision, so it reads
+# "legacy" and is the real image for this check (the synthetic revision-1 image above covers revision 1 itself).
+RELEASED_V07 = Path(os.environ.get("NFL2K5_V07_DISC",
+                                   "/media/noah/Storage/2K5 Discs/SOFTDRINK 2K28 v0.7 (2026-10-27).xiso.iso"))
+
+
+@unittest.skipUnless(RELEASED_V07.is_file(), "set NFL2K5_V07_DISC to the released v0.7 image")
 class ReleasedDiscTests(unittest.TestCase):
     def test_released_disc_is_legacy_and_upgrades_in_place(self):
         from mod_editor.core.nfl2k5_depth_chart_storage import image_file_node
-        path = Path(os.environ["NFL2K5_V061_DISC"])
+        path = RELEASED_V07
         size = path.stat().st_size
         with path.open("rb") as stream:
             def read(length, offset):
