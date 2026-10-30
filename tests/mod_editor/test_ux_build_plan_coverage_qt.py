@@ -50,6 +50,8 @@ NOT_A_CONTROL = {
     "abilities_charge_stars_only": "the Charge-ups: stars only checkbox under the Player abilities option (abilities_star_checks)",
     "abilities_star_access": "the four Star access combos under the Player abilities option (abilities_access_combos)",
     "abilities_button_moves_stars_only": "the Button moves: stars only checkbox under the Player abilities option (abilities_star_checks)",
+    "default_quarter_minutes": "fixed at 7 by the SOFTDRINK default options check box (b779 df1, Noah 10/28); a recipe / project key, not a per-user tuning",
+    "default_sim_quarter_minutes": "fixed at 15 by the SOFTDRINK default options check box (b779 df1, Noah 10/28; applies with sim_stats); a recipe / project key",
     "music_shuffle_selection": "the Music page's playlist document, delivered by the shell",
     "calendar_engine": "carried by the combined 128-season franchise option (season_cap)",
     "hires_folder": "the Hi-res folder field of the hi-res pack option",

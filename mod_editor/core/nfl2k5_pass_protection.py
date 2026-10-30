@@ -42,7 +42,7 @@ import struct
 OWNER = "nfl2k5_pass_protection"
 CODE_SIZE = 352
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16),)
-BUILD_CAPTION = "Pass rush and pass protection: ratings decide who wins (played and simulated games)"
+BUILD_CAPTION = "Pass rush and pass protection: ratings decide who wins"
 HELP_TEXT = ("EXPERIMENTAL. Played games: on a pass play a beaten blocker holds his rusher for a moment instead of "
              "the retail instant shed, and how long depends on Pass Blocking against Pass Rush with some variance "
              "from play to play, so elite pass rushers get free and elite tackles hold up. Simulated games "

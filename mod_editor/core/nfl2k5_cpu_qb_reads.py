@@ -44,7 +44,7 @@ OWNER = "nfl2k5_cpu_qb_reads"
 CODE_SIZE, DATA_SIZE = 1280, 192
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "data", DATA_SIZE, 16))
 BUILD_CAPTION_ZONE = "CPU QB respects zone defenders (experimental)"
-BUILD_CAPTION_TIERS = "CPU QB skill tiers: elite QBs read windows, weak QBs force throws (experimental)"
+BUILD_CAPTION_TIERS = "CPU QB skill tiers: elite read windows (experimental)"
 BUILD_CAPTION_RECHECK = "CPU QB re-checks his read before throwing (experimental)"
 HELP_ZONE = ("EXPERIMENTAL / UNWITNESSED. Off in every preset. The CPU quarterback stops treating a receiver as "
              "open when a zone or man defender will reach the catch point with the ball or before it. Receivers "
