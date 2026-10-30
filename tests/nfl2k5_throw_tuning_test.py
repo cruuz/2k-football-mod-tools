@@ -561,9 +561,13 @@ class ProgressionTests(unittest.TestCase):
         curve = [0] * 21
         out = progression.reshape_curve(curve, "routes_passrush_coverage")
         self.assertEqual(out[0], 0)
-        self.assertEqual(out[5], 6)                      # full growth by year 5
-        self.assertEqual(out[10], 6)                     # the plateau
-        self.assertEqual(out[15], 1)                     # 5 extra years of decline at 1/yr
+        # b779 rf3 re-tuned routes_passrush_coverage to (growth 5.4, decline 1.0/yr after year 10): 5.4 rounds to 5
+        # (b778's 6.0 gave 6), and five extra years of decline at 1/yr leave 5.4 - 5 = 0.4, which rounds to 0 (b778: 1).
+        growth, decline, after = progression.SHAPE["routes_passrush_coverage"][:3]
+        self.assertEqual((growth, decline, after), (5.4, 1.0, 10))
+        self.assertEqual(out[5], 5)                      # full growth by year 5 (round(5.4))
+        self.assertEqual(out[10], 5)                     # the plateau
+        self.assertEqual(out[15], 0)                     # 5 extra years of decline at 1/yr (round(5.4 - 5))
         self.assertTrue(all(-127 <= v <= 127 for v in progression.reshape_curve([120] * 21, "consistency")))
         self.assertEqual(progression.reshape_curve([3] * 21, "hidden_4f"), [3] * 21)
 
