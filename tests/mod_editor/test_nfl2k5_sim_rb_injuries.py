@@ -17,7 +17,7 @@ class ConstantTests(unittest.TestCase):
         self.assertAlmostEqual(inj.LONG_THRESHOLD / 65536 * 17, 0.2101, places=3)
         self.assertAlmostEqual((inj.SHORT_END - inj.LONG_THRESHOLD) / 65536 * 17, 1.4804, places=3)
         self.assertEqual(inj.INJURY_MASK, 0xBFC00000)
-        self.assertEqual(inj.ROTATION_THRESHOLD, 3932)          # 6% of a healthy HB selection goes to the next back
+        self.assertEqual(inj.ROTATION_THRESHOLD, 1311)          # 2% of a healthy HB selection goes to the next back (b779-int1)
 
     def test_owner_and_allocation_request(self):
         self.assertEqual(inj.OWNER, "nfl2k5_sim_rb_injuries")

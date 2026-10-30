@@ -53,6 +53,13 @@ touchdown leader at 16/14 with 9/6 players over 10.  The post-conversion pass sc
 target rate 0.14 and the tackle correction 10 percent.  CODE_SIZE stays 832 bytes; the
 allocation is proven by the union test.
 
+Integration rebalance (b779-int1, constants only): with every simulated-season owner installed together (the
+cornerback credit and its injured-player guard, the RB injuries, this owner) two QL 15 seasons gave 23.1-23.3
+points, 8-10 backs and 28-33 receivers over 1,000 yards.  ``PASS_SCALE`` 0.92 (stat space), ``RUSH_BONUS_PCT`` 20
+(stat space), ``RZ_PASS_SCALE`` 0.64 and the RB owner's rotation at 2% give, over seeds 2501/2502/2503:
+22.78/22.42/22.49 points, pass TD 1.57/1.55/1.60, rush TD 0.97/0.95/0.87, 18/18/12 backs and 24/22/26
+receivers over 1,000 yards.
+
 Every site is recognised by its pinned retail bytes; the module refuses a foreign executable.  The
 data reservation (16 bytes) holds the temporary merge and run-outcome hand-offs and nothing else.
 The played-game path (game mode other than 4 at the merge gate), the live playbook calls and every
@@ -115,10 +122,10 @@ QB_MOBILE_SUM = 150                  # mobile family: scramble + agility > 150
 QB_BONUS_YARDS = 3.0
 QB_BONUS_RZ_LINE = 20.0              # inside the opponent 20 is the red zone for both yard scales
 INTERCEPT_SCALE = 1.35
-PASS_SCALE = 0.96
+PASS_SCALE = 0.92
 RUN_RZ_SCALE = 0.94              # red-zone run yardage (round 6: near-retail, small trim)
-RZ_PASS_SCALE = 0.70             # red-zone pass yardage before the native conversion (scoring lever)
-RUSH_BONUS_PCT = 13              # post-game season rush-yard correction (RBs and other non-QBs)
+RZ_PASS_SCALE = 0.64             # red-zone pass yardage before the native conversion (scoring lever)
+RUSH_BONUS_PCT = 20              # post-game season rush-yard correction (RBs and other non-QBs)
 TACKLE_BONUS_PCT = 10
 SKIP_TACKLE_POSITION = 4             # cornerbacks are calibrated by nfl2k5_sim_cb_tackles
 

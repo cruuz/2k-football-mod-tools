@@ -27,8 +27,9 @@ the simulator's own ball-carrier selection (``0x106CFA``, the call whose EAX is 
 global ``0xA971A4``): if the selected match copy is an injured halfback (``+0x35`` position 7 and the injury
 mask), the cave finds the same club through the roster pointer list, walks to the next healthy halfback and
 returns that player's match copy instead (the match copies are byte-identical to the roster record up to
-``+0x2C``). A healthy halfback keeps retail most of the time, but 6% of his selections go to the next healthy
-back as well; with the injury weeks this moves the lead back's season share from about 0.60 to 0.48-0.49, inside the NFL range. It is a scheduled-sim
+``+0x2C``). A healthy halfback keeps retail most of the time, but 2% of his selections go to the next healthy
+back as well (b779-int1: 6% before the integration rebalance, which with every sim owner installed left too few
+1,000-yard backs); with the injury weeks the lead back keeps a little over half of the club's carries. It is a scheduled-sim
 path only and writes no roster field; every other selection returns retail's own pointer. The game's own
 lineup guard remains the first line; this covers the weeks-only cases that guard and the sim's status clear
 leave standing.
@@ -84,8 +85,8 @@ HEALTHY_HB_MASK = INJURY_MASK
 # modern room's depth-2 halfback is about 20 OVR below the starter, so the reviewed depth-gradient target (5.7)
 # would need implausible backup boosts. Instead the carrier guard hands 6% of every healthy halfback selection
 # to the next healthy back. With the injuries above the measured season share lands near 0.48-0.49.
-# 3932/65536 = 0.06.
-ROTATION_THRESHOLD = 3932
+# b779-int1 rebalance: 2% (1311/65536 = 0.02); with all sim owners together 6% left 8-10 backs over 1,000 yards.
+ROTATION_THRESHOLD = 1311
 
 
 class SimRbInjuriesError(ValueError):
@@ -170,12 +171,12 @@ def _carrier(a):
     a.b("807e3507")                                    # cmp byte [esi+0x35], 7
     a.j32("0f85", "done")
     a.b("f74620" + struct.pack("<I", INJURY_MASK).hex())  # test dword [esi+0x20], injured | weeks
-    a.j32("0f84", "maybe_rotate")                      # healthy: 6% of the room's carries go to the next back
+    a.j32("0f84", "maybe_rotate")                      # healthy: 2% of the room's carries go to the next back
     a.j32("e9", "find_team")                           # injured: always the next healthy back
     a.label("maybe_rotate")
     a.call(FN_RAND)
     a.b("0fb7c0")                                      # movzx eax, ax
-    a.b("3d" + struct.pack("<I", ROTATION_THRESHOLD).hex())  # cmp eax, 3932
+    a.b("3d" + struct.pack("<I", ROTATION_THRESHOLD).hex())  # cmp eax, 1311
     a.j32("0f82", "find_team")
     a.j32("e9", "done")
     a.label("find_team")
