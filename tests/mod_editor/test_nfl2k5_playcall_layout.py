@@ -99,7 +99,7 @@ class PatchTests(unittest.TestCase):
         from mod_editor.core.nfl2k5_cave_manifest import Recorder
         code,_ = owner.code_for(0x5100000,0x5200000)
         self.assertEqual((owner.CODE_SIZE,owner.DATA_SIZE,owner.REVISION),(5376,128,14))  # b773-hd1: the watermark position revision
-        self.assertEqual(len(code.rstrip(b'\xcc')),5297)  # b773-hd1: +10 bytes
+        self.assertEqual(len(code.rstrip(b'\xcc')),5327)  # b773-hd1: +10 bytes; b778 sb2: sprite engine 3583 -> 3613 B (+30: ball-on stays up, record digits), owner allocation unchanged at 5376
         self.assertEqual(len(pc.code_for(0x5100000)),129)
         rec = Recorder(self.retail)
         rec.observe(owner,'apply',self.retail,self.patched,self.receipt)
