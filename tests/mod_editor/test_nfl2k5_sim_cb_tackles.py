@@ -104,6 +104,35 @@ class CodeTests(unittest.TestCase):
         broken[off] ^= 0xFF
         self.assertEqual(cb.status(bytes(broken)), "foreign")
 
+    def test_defensive_try_jump_in_the_merge_at_any_cave_address_keeps_this_owner(self):
+        # b779-int1: the defensive try owner jumps out of the merge at 0x1336B2 to its own code, which the allocator
+        # places anywhere; only v0.6.1's address was pinned (RC build try 9 refused the source). Its exact jump,
+        # while that owner reads applied, is accepted; a jump anywhere else still reads foreign.
+        from unittest import mock
+        from mod_editor.core import nfl2k5_defensive_try as dtry
+        data = retail()
+        if data is None:
+            self.skipTest("retail USA default.xbe not available")
+        payload, _ = cb.apply(space.apply(data, cb.REQUESTS, scaleout=True)[0])
+        va = dtry.HOOKS["season_merge"][0]
+
+        def with_jump(target):
+            buf = bytearray(payload)
+            hook = dtry._hook_bytes("season_merge", {"season_merge": target})
+            off = XbeImage(payload).offset(va, len(hook))
+            buf[off:off + len(hook)] = hook
+            from mod_editor.core.nfl2k5_bump_strength import _sections, section_digest
+            for section in _sections(buf):       # a real install keeps the section digests current
+                buf[section.header_offset + 36:section.header_offset + 56] = section_digest(buf, section)
+            return bytes(buf)
+        labels = {"season_merge": 0x015123A0}
+        with mock.patch.object(dtry, "status", return_value="applied"), \
+             mock.patch.object(dtry, "assembled", return_value=(b"", b"", b"", labels)):
+            self.assertEqual(cb.status(with_jump(0x015123A0)), "applied")
+            self.assertEqual(cb.status(with_jump(0x015123B0)), "foreign")
+        with mock.patch.object(dtry, "status", return_value="retail"):
+            self.assertEqual(cb.status(with_jump(0x015123A0)), "foreign")
+
     def test_released_v061_merge_context_is_supported(self):
         self.assertEqual(cb.status(V061.read_bytes()), "retail")
 

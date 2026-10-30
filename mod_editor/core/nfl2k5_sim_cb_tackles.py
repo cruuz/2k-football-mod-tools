@@ -249,6 +249,18 @@ def _recognize(payload):
         for _name, va, before, after in realism.sites(realism_rows[0]["va"]):
             if MERGE <= va and va + len(before) <= MERGE + MERGE_SIZE and bytes(content[va - MERGE:va - MERGE + len(after)]) == after:
                 content[va - MERGE:va - MERGE + len(before)] = before
+    # b779-int1: the defensive try owner (era rules) jumps out of the merge at 0x1336B2 to its own code. The v0.6.1
+    # pin above holds that jump at v0.6.1's cave address only; wherever the allocator now puts that code, its exact
+    # installed jump reads as the retail instructions it replaced (RC build try 9 stopped: "the source executable is
+    # not retail or Cornerback tackle credit"). Any other byte there still reads foreign.
+    from . import nfl2k5_defensive_try as defensive_try
+    va, before, _kind = defensive_try.HOOKS["season_merge"]
+    before = bytes.fromhex(before)
+    at = va - MERGE
+    if bytes(content[at:at + len(before)]) != before and defensive_try.status(payload) == "applied":
+        labels = defensive_try.assembled(payload)[3]
+        if bytes(content[at:at + len(before)]) == defensive_try._hook_bytes("season_merge", labels):
+            content[at:at + len(before)] = before
     merge_hash = hashlib.sha256(content).hexdigest()
     require(merge_hash in (MERGE_SHA256, V061_MERGE_SHA256), "Foreign post-game merge context")
     picker_va, picker_size, picker_digest = PICKER_PIN
