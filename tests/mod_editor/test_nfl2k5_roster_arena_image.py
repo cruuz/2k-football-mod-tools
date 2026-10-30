@@ -41,39 +41,55 @@ class PublicTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_xbe_space as space
         before = space._scale_allocations([r for r in REQUESTS if r[0] != growth.OWNER])
         after = space._scale_allocations(REQUESTS)
-        # Growth adds 8 KiB before the promoted MyCareer code and its four
-        # following code owners. Static tails, the honors gap, every data/RO
-        # row and every other code allocation keep their complete records.
+        # Growth adds 8 KiB before the promoted MyCareer code and its code owners that follow. Static tails, the honors
+        # gap, every data/RO row and every other code allocation keep their complete records.
+        #   - my_career and the sprite scorebug sit directly behind the growth owner: +8,192.
+        #   - b779 km1/hn1: K128 (1,536 B) and champions (5,632 B in the plan) fit the v3 code run before the growth
+        #     but not after it (the 8 KiB fills the run), so both go whole to the pool, in LATE_OWNERS order.
+        #   - letter_grades and its progression row sit behind K128 in the run; K128 leaving it frees 1,536 B, so they
+        #     move +8,192 - 1,536 = +6,656.
+        #   - cpu_third_down (last, 192 B) used to sit behind champions; with champions in the pool it sits directly
+        #     behind the progression row (+16) instead.
         movers = {(name, 'code', 0) for name in (
-            'nfl2k5_my_career', 'nfl2k5_scorebug_runtime', 'nfl2k5_k128',
-            'nfl2k5_letter_grades', 'nfl2k5_letter_grades_progress')}
+            'nfl2k5_my_career', 'nfl2k5_scorebug_runtime', 'nfl2k5_k128', 'nfl2k5_champions',
+            'nfl2k5_letter_grades', 'nfl2k5_letter_grades_progress', 'nfl2k5_cpu_third_down')}
         key = lambda row: (row['owner'], row['kind'], row.get('owner_offset', 0))
         self.assertTrue(movers.issubset({key(row) for row in before}))
         added = [row for row in after if row['owner'] == growth.OWNER]
         self.assertEqual([(row['kind'], row['size']) for row in added], [('code', 8192)])
-        # b778 ai8/xs1: ai8's third-down owner is the last v3 code row; the 8 KiB growth fills the run and it
-        # becomes the pool's only owner (the pool's own directory page precedes it). It keeps its identity and
-        # every row still in v3 keeps its complete record.
-        spills = {('nfl2k5_cpu_third_down', 'code', 0)}
+        spills = [('nfl2k5_k128', 'code', 0), ('nfl2k5_champions', 'code', 0)]
+        shifts = {('nfl2k5_my_career', 'code', 0): 8192, ('nfl2k5_scorebug_runtime', 'code', 0): 8192,
+                  ('nfl2k5_letter_grades', 'code', 0): 8192 - 1536,
+                  ('nfl2k5_letter_grades_progress', 'code', 0): 8192 - 1536}
+        by_before = {key(row): row for row in before}
+        k128_size = by_before[spills[0]]['size']
+        self.assertEqual(k128_size, 1536)
         expected = []
         for row in before:
             if key(row) in spills:
                 continue
             result = dict(row)
-            if key(row) in movers:
-                result['va'] += 8192
-                result['raw'] += 8192
+            if key(row) in shifts:
+                result['va'] += shifts[key(row)]
+                result['raw'] += shifts[key(row)]
+            elif key(row) == ('nfl2k5_cpu_third_down', 'code', 0):
+                moved = {**by_before[('nfl2k5_letter_grades_progress', 'code', 0)]}
+                result['va'] = moved['va'] + shifts[('nfl2k5_letter_grades_progress', 'code', 0)] + moved['size']
+                result['raw'] = moved['raw'] + shifts[('nfl2k5_letter_grades_progress', 'code', 0)] + moved['size']
             expected.append(result)
         self.assertEqual(expected, [row for row in after
                                     if row['owner'] != growth.OWNER and row['va'] < space.POOL_VA])
-        old_spill = next(row for row in before if key(row) in spills)
-        new_spill = next(row for row in after if key(row) in spills)
-        self.assertEqual((new_spill['va'], new_spill['raw']), (space.POOL_VA + space.PAGE, space.POOL_RAW + space.PAGE))
-        self.assertEqual({k: v for k, v in old_spill.items() if k not in ('va', 'raw')},
-                         {k: v for k, v in new_spill.items() if k not in ('va', 'raw')})
+        # The spilled owners keep their identity; the pool holds its directory page, then K128, then champions
+        # (aligned 16: K128's 1,536 B end on 0x600).
+        for spill in spills:
+            old_spill, new_spill = by_before[spill], next(row for row in after if key(row) == spill)
+            self.assertEqual({k: v for k, v in old_spill.items() if k not in ('va', 'raw')},
+                             {k: v for k, v in new_spill.items() if k not in ('va', 'raw')})
+        pool_k128 = space.POOL_VA + space.PAGE
         self.assertEqual(sorted((row['owner'], row['kind'], row['size'], row['va'])
                                 for row in after if row['va'] >= space.POOL_VA),
-                         sorted([('nfl2k5_cpu_third_down', 'code', 192, space.POOL_VA + space.PAGE),
+                         sorted([('nfl2k5_k128', 'code', 1536, pool_k128),
+                                 ('nfl2k5_champions', 'code', by_before[spills[1]]['size'], pool_k128 + 1536),
                                  (space.DIRECTORY_OWNER, 'read_only', 4096, space.POOL_VA)]))
         for kwargs in (dict(created_teams_extra=1), dict(created_teams_extra=True), dict(reserves_16=1),
                        dict(reserves_16=False, created_teams_extra=0)):
