@@ -197,7 +197,10 @@ def code_for(code_va):
     a.b("f74220" + struct.pack("<I", INJURY_WEEKS).hex())     # test dword [edx+0x20], injured | weeks
     a.j8("74", "guard_retail")                                # healthy: retail
     a.b("31c0")                                               # xor eax, eax  -> does not fill the slot
-    a.b("c3")
+    # b779-int1: FUN_000e8340 is callee-clean (every exit is `ret 0xc`), so the refusal must pop the caller's three
+    # stack arguments too; a plain `ret` left 12 bytes on the picker's stack and the scheduled sim crashed in its
+    # first week (Unicorn season run: a null-ish team pointer read at 0xE0890).
+    a.b("c20c00")                                             # ret 0xc
     a.label("guard_retail")
     a.jmp_abs(0x000E8340)                                     # tail-jump: keep the caller's stack args
     body = a.assemble()

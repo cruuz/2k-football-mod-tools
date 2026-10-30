@@ -59,16 +59,16 @@ class CodeTests(unittest.TestCase):
 
     def test_sim_guard_is_the_second_cave_entry_at_the_two_picker_calls(self):
         code = cb.code_for(0x14E0000)
-        guard = code[cb.GUARD_OFFSET:cb.GUARD_OFFSET + 27]
+        guard = code[cb.GUARD_OFFSET:cb.GUARD_OFFSET + 29]
         # cmp byte [0xE5FF80],4 ; jne retail ; test [edx+0x20],injured|weeks ; jz retail
-        # xor eax,eax ; ret ; retail: jmp 0xe8340
+        # xor eax,eax ; ret 0xc (FUN_000e8340 is callee-clean, b779-int1) ; retail: jmp 0xe8340
         self.assertEqual(guard[:7], bytes.fromhex("803d80ffe50004"))
-        self.assertEqual(guard[7:9], bytes.fromhex("750c"))
+        self.assertEqual(guard[7:9], bytes.fromhex("750e"))
         self.assertEqual(guard[9:16], bytes.fromhex("f742200000c0bf"))
-        self.assertEqual(guard[16:18], bytes.fromhex("7403"))
-        self.assertEqual(guard[18:21], bytes.fromhex("31c0c3"))
-        self.assertEqual(guard[21], 0xE9)
-        self.assertEqual(0x14E0000 + cb.GUARD_OFFSET + 21 + 5 + struct.unpack_from("<i", guard, 22)[0], 0xE8340)
+        self.assertEqual(guard[16:18], bytes.fromhex("7405"))
+        self.assertEqual(guard[18:23], bytes.fromhex("31c0c20c00"))
+        self.assertEqual(guard[23], 0xE9)
+        self.assertEqual(0x14E0000 + cb.GUARD_OFFSET + 23 + 5 + struct.unpack_from("<i", guard, 24)[0], 0xE8340)
         edits = cb.sites(0x14E0000)
         self.assertEqual([row[0] for row in edits],
                          ["merge_body", "sim_guard_forward", "sim_guard_reverse"])
@@ -357,8 +357,11 @@ class GuardTests(unittest.TestCase):
         m.put(player + 0x24, word24)
         m.put(0xE5FF80, mode)
         hits = []
-        m.leaf(0xE8340, lambda: (hits.append(1), m.ret(1))[1], reason="retail depth/status check")
-        eax = m.call(self.code, edx=player, budget=1000)
+        # b779-int1: retail FUN_000e8340 takes three stack arguments and pops them (`ret 0xc`); both guard exits
+        # must leave the caller's stack exactly as retail does
+        m.leaf(0xE8340, lambda: (hits.append(1), m.ret(1, pop=12))[1], reason="retail depth/status check")
+        eax = m.call(self.code, edx=player, args=(0x11, 0x22, 0x33), budget=1000)
+        self.assertEqual(m.reg("ESP"), m.STACK + 4 + 12, "the caller's three stack arguments must be popped")
         return eax, hits, m.leaves
 
     def test_weeks_out_and_injured_bit_are_refused_in_the_scheduled_sim(self):
