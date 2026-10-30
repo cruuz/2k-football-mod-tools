@@ -103,17 +103,21 @@ class RepairTests(unittest.TestCase):
         finally:
             os.close(fd)
         self.assertEqual(len(data), pins['appendix_size'])
-        # b778 sb2 redrew the record cells in the score_buga atlas (and zoomed the logos, but not Washington's, whose
-        # hu1 corner clearance holds it at 0.94), so after that the tree no longer reproduces the v0.6.1 atlas pin.
-        layout = json.loads((ROOT/'data/nfl2k5_scorebug_sprite/layout.json').read_text(encoding='utf-8'))
-        redrawn = 'b778_sb2_record_font' in layout['provenance']
         for row in pins['spans']:
             off, size = offsets[row['name']]
             self.assertEqual((off, size), (row['appendix_offset'], row['size']))
-            if row['name'] == 'score_buga' and redrawn:
-                self.assertNotEqual(repair.sha(data[off:off+size]), row['after_sha256'])
-                continue
             self.assertEqual(repair.sha(data[off:off+size]), row['after_sha256'], row['name'])
+
+    @unittest.skipUnless(PACK.is_file(), 'Pinned USA retail pack 0 required')
+    def test_repair_uses_the_frozen_v061_layout_not_the_live_one(self):
+        # b778 sb2..sb5 redrew the live scorebug (record font, logo zoom, ESPN fidelity, connected clock). The repair
+        # therefore compiles from its frozen beta-77.1 copy; the live data must differ so the freeze is not vacuous.
+        live = ROOT/'data/nfl2k5_scorebug_sprite'
+        frozen = repair.SPRITE_FOLDER
+        self.assertTrue((frozen/'layout.json').is_file() and (frozen/'template.png').is_file())
+        self.assertNotEqual((live/'layout.json').read_bytes(), (frozen/'layout.json').read_bytes())
+        self.assertNotEqual((live/'template.png').read_bytes(), (frozen/'template.png').read_bytes())
+        self.assertNotIn('b778_sb2_record_font', json.loads((frozen/'layout.json').read_text(encoding='utf-8'))['provenance'])
 
     def test_menu_stage_follows_the_studio_document(self):
         source = (ROOT/'tools/b77/hu1_repair.py').read_text(encoding='utf-8')
