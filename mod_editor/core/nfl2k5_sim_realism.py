@@ -20,9 +20,16 @@ read-only code and leaves the played game alone:
 * **Targets** (``TARGET_HOOK``): after the engine's target pick, a target that is neither the
   depth-chart WR1 nor TE1 is replaced by one of them at ``TARGET_RATE`` (WR1 3 times in 4).
 * **QB runs** (``QB_HOOK``): after the engine's carrier pick, a QB with a mobile scramble byte is
-  chosen at a rate that rises with the scramble rating; and every mobile QB carry gains
-  ``QB_BONUS_YARDS`` yards in the run outcome (``QB_BONUS_HOOKS``).  Pocket QBs keep the retail
-  outcome.
+  chosen at a rate that rises with the scramble rating; every mobile QB carry gains
+  ``QB_BONUS_YARDS`` in the run outcome (``QB_BONUS_HOOKS``).  Pocket QBs keep the retail outcome.
+* **Red-zone run scale** (``RUN_BONUS_SITE``): a run snapped inside the opponent 20 gains
+  ``RUN_RZ_SCALE`` of its retail yardage.  Round 5 set this to 0.50 to cut scoring; round 6
+  restores it to 0.94 so red-zone runs score again and the rushing-touchdown mix returns to the
+  retail level.
+* **Red-zone pass scale** (``PASS_SCALE_HOOK``): a completion snapped inside the opponent 20 has
+  its yard value multiplied by ``RZ_PASS_SCALE`` before the native ``FN_YARD_CONVERT`` runs, so
+  the engine moves the ball by fewer yards and some red-zone pass touchdowns become field goals
+  or rushing touchdowns.  This is the round-6 scoring lever and a real play-outcome change.
 * **Interceptions** (``INTERCEPT_HOOK``): the native interception probability ``0x102ad0`` (already
   built from the passer's and defender's ratings and clamped to 0.0015..0.035) is multiplied by
   ``INTERCEPT_SCALE`` just before its random draw.
@@ -30,6 +37,21 @@ read-only code and leaves the played game alone:
   the career tackle delta of that game is read from the merge (career field 18 before/after) and
   ``TACKLE_BONUS_PCT`` of it is added back, so the single native tackle counter keeps its shape.
   Cornerbacks are skipped because the experimental cornerback tackle owner already calibrates them.
+* **Stat-space scales** (``PASS_SCALE`` / ``RUSH_BONUS_PCT``): after the native conversion pass
+  yards are multiplied by ``PASS_SCALE`` at the three completion commits and season rush yards of
+  non-quarterbacks get ``RUSH_BONUS_PCT`` of each game's delta added back after the merge.  Both
+  change the recorded season line only; the engine's field position and play outcomes are
+  untouched.  The red-zone pass scale above is different: it runs before the conversion.
+
+Round 5 calibration: two QL 15 seasons and one QL 5 season with the round-3 roster gave
+22.65/22.35 points, 1.84/1.82 pass touchdowns, 0.50/0.52 rush touchdowns and 110.7/109.6 rush
+yards a team-game at QL 15.  Round 6 restores most of the red-zone run yardage
+(``RUN_RZ_SCALE`` 0.94) and moves the scoring cut to the red-zone pass conversion
+(``RZ_PASS_SCALE`` 0.70, applied before the native conversion), so the touchdown mix returns to
+pass 1.52/1.52 and rush 0.87/0.81 a team-game.  Points land at 22.49/22.11 and the rushing
+touchdown leader at 16/14 with 9/6 players over 10.  The post-conversion pass scale is 0.96, the
+target rate 0.14 and the tackle correction 10 percent.  CODE_SIZE stays 832 bytes; the
+allocation is proven by the union test.
 
 Every site is recognised by its pinned retail bytes; the module refuses a foreign executable.  The
 data reservation (16 bytes) holds the temporary merge and run-outcome hand-offs and nothing else.
@@ -42,7 +64,7 @@ import hashlib
 import struct
 
 OWNER = "nfl2k5_sim_realism"
-CODE_SIZE = 768
+CODE_SIZE = 832
 DATA_SIZE = 16
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "data", DATA_SIZE, 4))
 BUILD_CAPTION = "Simulated season realism (experimental)"
@@ -50,8 +72,9 @@ HELP_TEXT = (
     "EXPERIMENTAL. In franchise games the CPU simulates (not games you play) the play mix moves toward "
     "the modern NFL (about 33 passes and 27 runs a team), targets concentrate on the top receiver and "
     "tight end, mobile quarterbacks run for NFL-sized totals, team interceptions move toward 12.8, and "
-    "tackle totals move toward the NFL leader and top-10 levels. Played games, ratings and rosters are "
-    "unchanged. The numbers are calibrated from nflverse 2021-2025 regular seasons."
+    "tackle totals move toward the NFL leader and top-10 levels. Red-zone passes gain fewer yards so scoring "
+    "and the touchdown mix land near the modern NFL, and season rush yards get a post-game correction. Played "
+    "games, ratings and rosters are unchanged. The numbers are calibrated from nflverse 2021-2025 regular seasons."
 )
 
 SIM_MODE = 0x00E5FF80                # game mode word: 4 = the franchise scheduled-game simulator
@@ -83,29 +106,37 @@ PASS_SITES = (
 FN_YARD_CONVERT = 0x00106480
 
 MIX_BIAS = 8.5                       # run score must beat pass score by this much to stay a run
-TARGET_RATE = 0.12                   # share of non-WR1/TE1 targets redirected
+TARGET_RATE = 0.14                   # share of non-WR1/TE1 targets redirected
 TARGET_WR1_SHARE = 0.75              # of the redirected targets, the rest go to the TE1
 QB_SCRAMBLE_BASE = 45
 QB_SCRAMBLE_SCALE = 0.0036           # extra QB-carry probability per scramble point above the base
 QB_SCRAMBLE_CAP = 32                 # points, so the maximum is 0.1152
 QB_MOBILE_SUM = 150                  # mobile family: scramble + agility > 150
 QB_BONUS_YARDS = 3.0
+QB_BONUS_RZ_LINE = 20.0              # inside the opponent 20 is the red zone for both yard scales
 INTERCEPT_SCALE = 1.35
-PASS_SCALE = 0.86
-TACKLE_BONUS_PCT = 12
+PASS_SCALE = 0.96
+RUN_RZ_SCALE = 0.94              # red-zone run yardage (round 6: near-retail, small trim)
+RZ_PASS_SCALE = 0.70             # red-zone pass yardage before the native conversion (scoring lever)
+RUSH_BONUS_PCT = 13              # post-game season rush-yard correction (RBs and other non-QBs)
+TACKLE_BONUS_PCT = 10
 SKIP_TACKLE_POSITION = 4             # cornerbacks are calibrated by nfl2k5_sim_cb_tackles
 
 # Fixed float-pool offsets inside the code cave (the assembler must not cross them).
-MIX_BIAS_OFF = 640
-RED_ZONE_OFF = 672
-ZERO_OFF = 676
-TARGET_RATE_OFF = 644
-TARGET_WR1_OFF = 648
-QB_SCALE_OFF = 652
-QB_BONUS_VALUE_OFF = 656
-INTERCEPT_SCALE_OFF = 660
-PASS_SCALE_OFF = 664
-TACKLE_PCT_OFF = 668
+MIX_BIAS_OFF = 704
+TARGET_RATE_OFF = 708
+TARGET_WR1_OFF = 712
+QB_SCALE_OFF = 716
+QB_BONUS_VALUE_OFF = 720
+INTERCEPT_SCALE_OFF = 724
+PASS_SCALE_OFF = 728
+TACKLE_PCT_OFF = 732
+QB_BONUS_RZ_OFF = 736
+RUN_RZ_SCALE_OFF = 740
+RUSH_BONUS_PCT_OFF = 744
+RZ_PASS_SCALE_OFF = 748
+RED_ZONE_OFF = 752
+ZERO_OFF = 756
 FLOAT_POOL = MIX_BIAS_OFF
 
 
@@ -123,6 +154,27 @@ def tackle_bonus(game_tackles):
     if game_tackles <= 0:
         return 0
     return (game_tackles * TACKLE_BONUS_PCT + 50) // 100
+
+
+def rush_bonus(game_yards):
+    """The integer season rush-yard correction added after a scheduled simulated game."""
+    if game_yards <= 0:
+        return 0
+    return (game_yards * RUSH_BONUS_PCT + 50) // 100
+
+
+def pass_rz_scale(spot):
+    """The pass-yard multiplier for a completion snapped this many yards from the goal."""
+    if spot is None:
+        return 1.0
+    return RZ_PASS_SCALE if spot <= QB_BONUS_RZ_LINE else 1.0
+
+
+def run_rz_scale(spot):
+    """The run-yard multiplier for a carry snapped this many yards from the goal."""
+    if spot is None:
+        return 1.0
+    return RUN_RZ_SCALE if spot <= QB_BONUS_RZ_LINE else 1.0
 
 
 def qb_carry_rate(scramble):
@@ -151,7 +203,7 @@ def _assemble(code_va, data_va):
     a.b("d81d" + _u32(code_va + RED_ZONE_OFF).hex())      # fcomp 79.5
     a.b("dfe0")                                           # fnstsw ax
     a.b("f6c441")                                         # test ah,0x41
-    a.j8("74", "mix_red")                                 # spot > 79.5: red zone
+    a.j8("74", "mix_red")                                 # spot > 79.5: own side, retail call
     a.b("d9442414")                                       # fld [esp+0x14]
     a.b("d8642418")                                       # fsub [esp+0x18]
     a.b("d81d" + _u32(code_va + MIX_BIAS_OFF).hex())      # fcomp bias
@@ -250,8 +302,17 @@ def _assemble(code_va, data_va):
     a.b("b9" + _u32(MATCH_RNG).hex())
     a.b("c3")
 
-    # ---- run yardage bonus for mobile QBs (scrimmage run commit) --------------------------
+    # ---- run yardage scale and mobile-QB bonus (scrimmage run commit) ----------------------
     a.label("qb_bonus")
+    a.b("d905" + _u32(0x00A97200).hex())                  # fld [spot]  yards to the opponent goal
+    a.b("d81d" + _u32(code_va + QB_BONUS_RZ_OFF).hex())   # fcomp 20.0
+    a.b("dfe0")                                           # fnstsw ax
+    a.b("f6c441")                                         # test ah,0x41
+    a.j8("74", "qb_bonus_out")                            # spot > 20: not a red-zone carry
+    a.b("d9442414")                                       # fld dword [esp+0x14]
+    a.b("d80d" + _u32(code_va + RUN_RZ_SCALE_OFF).hex())
+    a.b("d95c2414")                                       # fstp dword [esp+0x14]
+    a.label("qb_bonus_out")
     a.b("a1" + _u32(0x00A971A4).hex())                    # mov eax,[ball carrier]
     a.b("80783500")                                       # cmp byte [eax+0x35],0
     a.j8("75", "qb_bonus_done")
@@ -260,7 +321,7 @@ def _assemble(code_va, data_va):
     a.b("03ca")                                           # add ecx,edx
     a.b("81f9" + struct.pack("<I", QB_MOBILE_SUM).hex())
     a.j8("7e", "qb_bonus_done")
-    a.b("d9442414")                                       # fld dword [esp+0x14]  (frame+0x10, call pushed)
+    a.b("d9442414")                                       # fld dword [esp+0x14]
     a.b("d805" + _u32(code_va + QB_BONUS_VALUE_OFF).hex())
     a.b("d95c2414")                                       # fstp dword [esp+0x14]
     a.label("qb_bonus_done")
@@ -271,6 +332,15 @@ def _assemble(code_va, data_va):
 
     # ---- pass yardage scale (three completion commits) -------------------------------------
     a.label("pass_scale")
+    a.b("d905" + _u32(0x00A97200).hex())                  # fld [spot]  yards to the opponent goal
+    a.b("d81d" + _u32(code_va + QB_BONUS_RZ_OFF).hex())   # fcomp 20.0
+    a.b("dfe0")                                           # fnstsw ax
+    a.b("f6c441")                                         # test ah,0x41
+    a.j8("74", "pass_scale_out")                          # spot > 20: keep the retail yards
+    a.b("d9442404")                                       # fld dword [esp+4]  pushed yard arg
+    a.b("d80d" + _u32(code_va + RZ_PASS_SCALE_OFF).hex())
+    a.b("d95c2404")                                       # fstp dword [esp+4]
+    a.label("pass_scale_out")
     a.b("8b0424")                                         # mov eax,[esp]   hook return
     a.b("a3" + _u32(state_out + 4).hex())
     a.b("58")                                             # pop eax
@@ -293,6 +363,10 @@ def _assemble(code_va, data_va):
     a.b("89f9")                                           # mov ecx,edi
     a.call(FN_STAT_READ)
     a.b("a3" + _u32(state + 4).hex())
+    a.b("ba02000000")                                     # mov edx,2
+    a.b("89f9")                                           # mov ecx,edi
+    a.call(FN_STAT_READ)
+    a.b("a3" + _u32(state + 8).hex())
     a.label("tackle_entry_skip")
     a.b("61")                                             # popad
     a.b("8d9424e0000000")                                 # lea edx,[esp+0xe0] (replayed +4)
@@ -304,8 +378,30 @@ def _assemble(code_va, data_va):
     a.b("60")                                             # pushad
     a.b("a1" + _u32(state).hex())
     a.b("85c0")
-    a.j8("74", "tackle_done")
+    a.j32("0f84", "tackle_done")
+    a.b("80783500")                                       # cmp byte [eax+0x35],0  quarterbacks keep their line
+    a.j8("74", "rush_done")
     a.b("8bc8")                                           # mov ecx,eax
+    a.b("ba02000000")                                     # mov edx,2
+    a.call(FN_STAT_READ)
+    a.b("8b0d" + _u32(state + 8).hex())
+    a.b("2bc1")                                           # sub eax,ecx
+    a.b("85c0")
+    a.j8("7e", "rush_done")
+    a.b("69c0" + struct.pack("<I", RUSH_BONUS_PCT).hex())
+    a.b("0532000000")                                     # add eax,50
+    a.b("99")                                             # cdq
+    a.b("b964000000")                                     # mov ecx,100
+    a.b("f7f9")                                           # idiv ecx
+    a.b("85c0")
+    a.j8("7e", "rush_done")
+    a.b("50")                                             # push bonus
+    a.b("6a02")                                           # push 2
+    a.b("5a")                                             # pop edx
+    a.b("8b0d" + _u32(state).hex())
+    a.call(FN_HISTORY_ADD)
+    a.label("rush_done")
+    a.b("8b0d" + _u32(state).hex())                       # mov ecx,[state]
     a.b("ba12000000")                                     # mov edx,18
     a.call(FN_STAT_READ)
     a.b("8b0d" + _u32(state + 4).hex())
@@ -335,7 +431,9 @@ def _assemble(code_va, data_va):
     require(len(body) <= FLOAT_POOL, f"sim realism code is {len(body)} bytes, float pool {FLOAT_POOL}")
     body = body.ljust(FLOAT_POOL, b"\xcc")
     pool = (_flt(MIX_BIAS) + _flt(TARGET_RATE) + _flt(TARGET_WR1_SHARE) + _flt(QB_SCRAMBLE_SCALE)
-            + _flt(QB_BONUS_YARDS) + _flt(INTERCEPT_SCALE) + _flt(PASS_SCALE) + _flt(TACKLE_BONUS_PCT))
+            + _flt(QB_BONUS_YARDS) + _flt(INTERCEPT_SCALE) + _flt(PASS_SCALE) + _flt(TACKLE_BONUS_PCT)
+            + _flt(QB_BONUS_RZ_LINE) + _flt(RUN_RZ_SCALE) + _flt(RUSH_BONUS_PCT)
+            + _flt(RZ_PASS_SCALE))
     pool = pool.ljust(RED_ZONE_OFF - FLOAT_POOL, b"\xcc") + _flt(79.5) + _flt(0.0)
     body += pool.ljust(CODE_SIZE - FLOAT_POOL, b"\xcc")
     require(len(body) == CODE_SIZE, "sim realism code size")
@@ -456,6 +554,8 @@ def status(payload):
 
 
 __all__ = ["OWNER", "CODE_SIZE", "DATA_SIZE", "REQUESTS", "BUILD_CAPTION", "HELP_TEXT",
-           "MIX_BIAS", "TARGET_RATE", "TARGET_WR1_SHARE", "QB_BONUS_YARDS", "INTERCEPT_SCALE",
-           "TACKLE_BONUS_PCT", "tackle_bonus", "qb_carry_rate", "code_for", "sites", "apply",
+           "MIX_BIAS", "TARGET_RATE", "TARGET_WR1_SHARE", "QB_BONUS_YARDS", "QB_BONUS_RZ_LINE",
+           "INTERCEPT_SCALE", "PASS_SCALE", "RUN_RZ_SCALE", "RZ_PASS_SCALE",
+           "TACKLE_BONUS_PCT", "RUSH_BONUS_PCT", "tackle_bonus", "rush_bonus", "pass_rz_scale",
+           "run_rz_scale", "qb_carry_rate", "code_for", "sites", "apply",
            "status", "SimRealismError"]

@@ -1,4 +1,4 @@
-"""Pins and installation tests for the b779-sim2 round-4 simulated season realism owner."""
+"""Pins and installation tests for the b779-sim2 round-6 simulated season realism owner."""
 
 from __future__ import annotations
 
@@ -17,25 +17,45 @@ from mod_editor.core.nfl2k5_cave_oracle import XbeImage
 class ConstantTests(unittest.TestCase):
     def test_owner_and_allocation_request(self):
         self.assertEqual(r.OWNER, "nfl2k5_sim_realism")
-        self.assertEqual(r.REQUESTS, (("nfl2k5_sim_realism", "code", 768, 16),
+        self.assertEqual(r.REQUESTS, (("nfl2k5_sim_realism", "code", 832, 16),
                                       ("nfl2k5_sim_realism", "data", 16, 4)))
-        self.assertEqual((r.CODE_SIZE, r.DATA_SIZE), (768, 16))
+        self.assertEqual((r.CODE_SIZE, r.DATA_SIZE), (832, 16))
 
     def test_calibration_constants(self):
         self.assertEqual(r.MIX_BIAS, 8.5)
-        self.assertEqual(r.TARGET_RATE, 0.12)
+        self.assertEqual(r.TARGET_RATE, 0.14)
         self.assertEqual(r.TARGET_WR1_SHARE, 0.75)
         self.assertEqual(r.QB_BONUS_YARDS, 3.0)
+        self.assertEqual(r.QB_BONUS_RZ_LINE, 20.0)
+        self.assertEqual(r.PASS_SCALE, 0.96)
+        self.assertEqual(r.RUN_RZ_SCALE, 0.94)
+        self.assertEqual(r.RZ_PASS_SCALE, 0.70)
+        self.assertEqual(r.RUSH_BONUS_PCT, 13)
         self.assertEqual(r.INTERCEPT_SCALE, 1.35)
-        self.assertEqual(r.TACKLE_BONUS_PCT, 12)
+        self.assertEqual(r.TACKLE_BONUS_PCT, 10)
         self.assertEqual(r.SKIP_TACKLE_POSITION, 4)
 
-    def test_tackle_bonus_is_rounded_12_percent(self):
+    def test_tackle_bonus_is_rounded_10_percent(self):
         self.assertEqual(r.tackle_bonus(0), 0)
         self.assertEqual([r.tackle_bonus(n) for n in (1, 2, 3, 5, 10, 140)],
-                         [0, 0, 0, 1, 1, 17])
-        self.assertEqual(r.tackle_bonus(169), 20)          # 20.28 -> 20
-        self.assertEqual(r.tackle_bonus(171), 21)          # 20.52 -> 21
+                         [0, 0, 0, 1, 1, 14])
+        self.assertEqual(r.tackle_bonus(169), 17)          # 16.9 -> 17
+        self.assertEqual(r.tackle_bonus(171), 17)          # 17.1 -> 17
+
+    def test_rush_bonus_is_rounded_13_percent(self):
+        self.assertEqual(r.rush_bonus(0), 0)
+        self.assertEqual(r.rush_bonus(-3), 0)
+        self.assertEqual([r.rush_bonus(n) for n in (1, 4, 10, 50, 100)],
+                         [0, 1, 1, 7, 13])
+        self.assertEqual(r.rush_bonus(150), 20)            # 19.5 -> 20
+
+    def test_red_zone_scales_split_run_and_pass(self):
+        self.assertEqual([r.run_rz_scale(s) for s in (None, 1, 20, 21, 80)],
+                         [1.0, 0.94, 0.94, 1.0, 1.0])        # round 6: near-retail red-zone runs
+        self.assertEqual([r.pass_rz_scale(s) for s in (None, 1, 20, 21, 80)],
+                         [1.0, 0.70, 0.70, 1.0, 1.0])        # the scoring cut is red-zone passes
+        self.assertLess(r.pass_rz_scale(10), r.run_rz_scale(10))
+        self.assertGreater(r.run_rz_scale(10), 0.9)
 
     def test_qb_carry_rate_follows_the_scramble_byte(self):
         self.assertEqual(r.qb_carry_rate(20), 0.0)
@@ -95,8 +115,12 @@ class CodeTests(unittest.TestCase):
         # the float pool carries the calibrated constants
         import struct as _s
         self.assertAlmostEqual(_s.unpack_from("<f", code, r.MIX_BIAS_OFF)[0], 8.5, places=6)
-        self.assertAlmostEqual(_s.unpack_from("<f", code, r.TARGET_RATE_OFF)[0], 0.12, places=6)
+        self.assertAlmostEqual(_s.unpack_from("<f", code, r.TARGET_RATE_OFF)[0], 0.14, places=6)
         self.assertAlmostEqual(_s.unpack_from("<f", code, r.INTERCEPT_SCALE_OFF)[0], 1.35, places=6)
+        self.assertAlmostEqual(_s.unpack_from("<f", code, r.PASS_SCALE_OFF)[0], 0.96, places=6)
+        self.assertAlmostEqual(_s.unpack_from("<f", code, r.RUN_RZ_SCALE_OFF)[0], 0.94, places=6)
+        self.assertAlmostEqual(_s.unpack_from("<f", code, r.RZ_PASS_SCALE_OFF)[0], 0.70, places=6)
+        self.assertAlmostEqual(_s.unpack_from("<f", code, r.RUSH_BONUS_PCT_OFF)[0], 13.0, places=6)
 
     def test_code_has_no_self_reference_shortcut(self):
         # A different data VA must move every scratch reference.
