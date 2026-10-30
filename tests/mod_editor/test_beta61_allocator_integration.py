@@ -84,20 +84,29 @@ class CompleteOwnerTests(unittest.TestCase):
         self.assertEqual([r["size"] for r in regions if r["kind"] == "code"], [4096, 4096, 24 * 4096])
         # Beta 76: era rules add 2048 RX, stock books 1536 RX, and moment
         # venue labels 2304 RX to the previous 91879-byte union.
-        self.assertEqual(sum(a["size"] for a in layout["allocations"] if a["kind"] == "code"), 108839)  # b773 i4: + 3,040 = 512 moment coaches code (mo1) and the four named directory code spills (tap burst 512, draft picks 544, H-back 1024, team ratings 448); b772-vt1: + 5,120 coach AI code; b77-f4: + the 160 RX bytes of the letter grades owner; b77-f4b: + 16 for the progression row; b77-v1b: + 176 period goalposts (legacy RX tail); b77-f5: + 2,560 honors code (MyCareer footprint gap)
+        self.assertEqual(sum(a["size"] for a in layout["allocations"] if a["kind"] == "code"), 115527)  # b778 ai8: + 192 cpu_third_down (the pin was stale on the beta-78 base: 109,031); b779: + 352 camera code (512 -> 864, cm2 grew the camera code owner), + 512 K128 (1,024 -> 1,536, km1), + 5,632 champions code (hn1) = 115,527. Earlier history: b773 i4: + 3,040 = 512 moment coaches code (mo1) and the four named directory code spills (tap burst 512, draft picks 544, H-back 1024, team ratings 448); b772-vt1: + 5,120 coach AI code; b77-f4: + the 160 RX bytes of the letter grades owner; b77-f4b: + 16 for the progression row; b77-v1b: + 176 period goalposts (legacy RX tail); b77-f5: + 2,560 honors code (MyCareer footprint gap)
         # Era rules also add one 16-byte state allocation.
         self.assertEqual(sum(a["size"] for a in layout["allocations"] if a["kind"] == "data"), 85218)  # b775 mo2: + the 16-byte moment context state (legacy RW tail); b773 mo1: + the 512-byte moment coaches state; b772-vt1: + 128 coach AI state; b77-f5: + the 16-byte honors state block (legacy RW tail)
         image = XbeImage(self.full)
         for a in layout["allocations"]:
             section = image.section(a["va"], a["size"])
             self.assertNotEqual(section.name, ".text")
-            self.assertEqual(section.writable, a["kind"] == "data")
-            if a["kind"] == "read_only":
-                # b773 sp2/ro1/tr1: the named code spills in the allocator directory page make the shared general
-                # read-only section executable; the music storage section stays plain read-only. Never writable.
-                self.assertFalse(section.writable)
+            if a["va"] >= space.POOL_VA:
+                # b778-xs1 (shipped in beta-78, reached by this union since b779 km1/hn1 moved K128 and champions
+                # whole into the pool): the v4 pool is ONE preloaded writable + executable section (flags 0x07,
+                # like retail .data), so every row in it, of any kind, is writable and executable. It is the only
+                # section where that holds; every row in the v3 runs keeps the strict rule below.
+                self.assertEqual(section.flags, space.POOL_FLAGS)
+                self.assertTrue(section.writable and section.executable)
+                self.assertEqual(section.start, space.POOL_VA)
             else:
-                self.assertEqual(section.executable, a["kind"] == "code")
+                self.assertEqual(section.writable, a["kind"] == "data")
+                if a["kind"] == "read_only":
+                    # b773 sp2/ro1/tr1: the named code spills in the allocator directory page make the shared general
+                    # read-only section executable; the music storage section stays plain read-only. Never writable.
+                    self.assertFalse(section.writable)
+                else:
+                    self.assertEqual(section.executable, a["kind"] == "code")
             if a["kind"] == "data":
                 self.assertEqual(image.read(a["va"], a["size"]), bytes(a["size"]))
         self.assertEqual(image.section(music_storage.VA).raw, music_storage.RAW)
@@ -114,14 +123,19 @@ class CompleteOwnerTests(unittest.TestCase):
         # Beta 76 s15: the 4,608-byte sprite owner no longer fits the 4 KiB code page at CODE_VA+126976, so the
         # two-owner layout opens the 24-page code region and its file is exactly as long as the full union's.
         self.assertEqual(len(legacy) - space.FILE_SIZE, 270336)
-        self.assertEqual(len(legacy), len(self.full))
+        # b778-xs1/b779 km1+hn1: the full union is a v4 image. K128 (1,536 B) and champions (5,632 B) sit whole in the
+        # pool behind its directory page: 4,096 + 1,536 + 5,632 = 11,264 bytes = 3 pages appended to the v3 file.
+        pool_bytes = space.plan(REQUESTS)["file_size"] - len(legacy)
+        self.assertEqual(pool_bytes, 3 * space.PAGE)
+        self.assertEqual(len(self.full), len(legacy) + pool_bytes)
         # Beta 71: the sprite scorebug owner's 4,096-byte code no longer fits the first cave after the kickoff
         # owner (it was 1,408 at CODE_VA+2656 through beta 70) and is allocated in the scale region after the union.
         # Beta 76 s15: at 4,608 bytes it starts the 24-page code region, and the region directory follows the union.
         self.assertEqual([a["va"] for a in space.layout(legacy)["allocations"]],
                          [space.CODE_VA, space.CODE_VA+704, space.DATA_VA, space.DATA_VA+16,
                           space.CODE_VA+131072, space.DATA_VA+307200])
-        full_sites = {(a["owner"], a["kind"]): a for a in layout["allocations"]}
+        # the v3 rows only: the v4 pool holds a second allocator directory row (its document page) at POOL_VA
+        full_sites = {(a["owner"], a["kind"]): a for a in layout["allocations"] if a["va"] < space.POOL_VA}
         for a in space.layout(legacy)["allocations"]:
             if a["owner"] == tt.scorebug_runtime_patch.OWNER and a["kind"] == "code":
                 continue   # beta 71: the grown sprite owner sits after the union; the gates and the manifest pin it
@@ -149,21 +163,47 @@ class CompleteOwnerTests(unittest.TestCase):
             space.apply(self.full, tt.momentum_patch.REQUESTS)
         # The era and stock-book owners consume 3584 of the previous 3776
         # spare RX bytes. Venue labels occupy legacy tails. Pin the remaining
-        # 192-byte boundary, including alignment and the final K128 owner.
-        # b77-f4: the letter grades owner takes 160 of those 192 bytes (and 240 read-only bytes): 32 remain.
-        # b77-f4b: the progression row takes 16 more: 16 remain.
+        # boundary, including alignment and the final late owners.
+        # b779 (km1/hn1): K128 (1,536 B) and champions (5,632 B) no longer fit the v3 code run and live whole in the
+        # v4 pool, so the run's last page holds letter_grades 160 (0x14F1CA0), its progression row 16, and cpu_third_down
+        # 192, ending 0x14F1E10: 496 bytes of the run (end 0x14F2000) remain.
         overflow, _ = space.apply(self.retail, REQUESTS + (("extra", "code", 16, 16),))
         self.assertTrue(space.is_scaleout(overflow))
         self.assertEqual(space.status(overflow), "applied")
-        # b778-xs1: what the v3 runs cannot hold goes whole to the v4 pool; every v3 row stays where it was
-        # ("extra" is an ordinary owner: like any new ordinary owner in v3 it packs ahead of later owners, so a
-        # 32-byte one pushes the last of them into the pool; one bigger than the whole run lands in the pool itself.)
-        self.assertEqual(space.plan(REQUESTS + (("extra", "code", 32, 16),))["version"], 4)
+        # b778-xs1: what the v3 runs cannot hold goes whole to the v4 pool; every row still in v3 stays where it was
+        # ("extra" is an ordinary owner: like any new ordinary owner in v3 it packs ahead of later owners.)
         v3 = space.plan(REQUESTS)
+        self.assertEqual(v3["version"], 4)      # the complete union is itself a v4 image since ai8/km1/hn1
+        run = space._scale_regions()[3]
+        run_end = run["va"] + run["size"]
+
+        def pooled(report):
+            return [a["owner"] for a in sorted(report["allocations"], key=lambda a: a["va"])
+                    if a["va"] >= space.POOL_VA and a["owner"] != space.DIRECTORY_OWNER]
+
+        free = run_end - max(a["va"] + a["size"] for a in v3["allocations"]
+                             if a["kind"] == "code" and run["va"] <= a["va"] < run_end)
+        self.assertEqual(free, 496)
+        self.assertEqual(pooled(v3), ["nfl2k5_k128", "nfl2k5_champions"])
+        self.assertEqual(pooled(space.plan(REQUESTS + (("extra", "code", 32, 16),))), pooled(v3))
+        self.assertEqual(pooled(space.plan(REQUESTS + (("extra", "code", free, 16),))), pooled(v3))    # fills the run exactly
+        # one aligned step more pushes the last late code owner of the run, cpu_third_down, whole into the pool
+        self.assertEqual(pooled(space.plan(REQUESTS + (("extra", "code", free + 16, 16),))),
+                         ["nfl2k5_k128", "nfl2k5_champions", "nfl2k5_cpu_third_down"])
         v4 = space.plan(REQUESTS + (("extra", "code", 98305, 16),))
         extra = next(a for a in v4["allocations"] if a["owner"] == "extra")
         self.assertEqual((v4["version"], extra["va"], extra["size"]), (4, space.POOL_VA + space.PAGE, 98305))
-        self.assertTrue(all(a in v4["allocations"] for a in v3["allocations"] if a["owner"] != space.DIRECTORY_OWNER))
+        # An ordinary owner is placed before the late ones, so it takes the pool's first slot and the pool's late
+        # owners (k128, champions) follow it: they keep their allocation (owner, kind, size, align) and only their
+        # pool address moves. Every v3 row keeps its complete record.
+        self.assertTrue(all(a in v4["allocations"] for a in v3["allocations"]
+                            if a["owner"] != space.DIRECTORY_OWNER and a["va"] < space.POOL_VA))
+        self.assertEqual(pooled(v4), ["extra", "nfl2k5_k128", "nfl2k5_champions"])
+        for old_row in (a for a in v3["allocations"] if a["va"] >= space.POOL_VA and a["owner"] != space.DIRECTORY_OWNER):
+            moved = next(a for a in v4["allocations"] if (a["owner"], a["kind"]) == (old_row["owner"], old_row["kind"]))
+            self.assertEqual({k: v for k, v in moved.items() if k not in ("va", "raw")},
+                             {k: v for k, v in old_row.items() if k not in ("va", "raw")})
+            self.assertGreater(moved["va"], extra["va"] + extra["size"] - 1)
         with self.assertRaisesRegex(ValueError, "capacity"):
             space.plan(REQUESTS + (("extra", "code", space.MAX_REQUEST_BYTES + 1, 16),))
 
