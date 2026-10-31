@@ -570,7 +570,11 @@ class BuildPanel(QWidget):
         self.synced_note.setAccessibleName("Cloud-synced folder warning")
         self.synced_note.hide()
         mk.addWidget(self.synced_note)
+        # b779 rv1: Make my disc, Check my project and Cancel share one row; Copy Build summary and the
+        # reason Make my disc is unavailable get a second row. One row of all five was 1,083 px under
+        # Windows Python and made the 1280x720 Build tab scroll sideways.
         actions = QHBoxLayout()
+        actions_more = QHBoxLayout()
         self.build_button = QPushButton("Make my disc")
         self.build_button.setObjectName("primaryButton")
         self.build_button.clicked.connect(self._build)
@@ -585,6 +589,7 @@ class BuildPanel(QWidget):
         self.cancel_button.setEnabled(False)
         self.cancel_button.clicked.connect(lambda: self._task.cancelled.set() if self._task else None)
         actions.addWidget(self.cancel_button)
+        actions.addStretch(1)
         self._last_build_summary = ""
         self._requested_build_summary = ""
         self._requested_build_labels = []
@@ -592,13 +597,14 @@ class BuildPanel(QWidget):
         self.copy_summary_button.setToolTip("Copy this build's source, selected changes, result and first error for a help request.")
         self.copy_summary_button.setEnabled(False)
         self.copy_summary_button.clicked.connect(self._copy_build_summary)
-        actions.addWidget(self.copy_summary_button)
+        actions_more.addWidget(self.copy_summary_button)
         self.blocker_label = WrappedLabel("")
         self.blocker_label.setObjectName("throwMuted")
         self.blocker_label.setWordWrap(True)
         self.blocker_label.setAccessibleName("Why Make my disc is unavailable")
-        actions.addWidget(self.blocker_label, 1)
+        actions_more.addWidget(self.blocker_label, 1)
         mk.addLayout(actions)
+        mk.addLayout(actions_more)
         prog = QHBoxLayout()
         self.progress_label = WrappedLabel("")
         self.progress_label.setObjectName("throwMuted")
