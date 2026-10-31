@@ -4052,8 +4052,9 @@ def _apply_champions_history(plan, target, receipt, progress, capacity_records):
         note = decision["note"]
         progress(note, 0, 0)
         receipt.setdefault("user_notes", []).append(note)
+        # the step's own user_notes reach the finished-disc dialog (build_feedback); the receipt-level list, the summary
         receipt["steps"].append({"step": "champions_history", "status": "no_room", "seeded": False,
-                                 "seed_requested": decision["seed_requested"], "reason": note})
+                                 "seed_requested": decision["seed_requested"], "reason": note, "user_notes": [note]})
         receipt["result"]["champions_history"] = "no_room"
         return
     if not decision["seed_requested"]:

@@ -28,6 +28,7 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from mod_editor.core import build_feedback  # noqa: E402
 from mod_editor.core import mod_build  # noqa: E402
 from mod_editor.core import nfl2k5_champions as champions  # noqa: E402
 from mod_editor.core import nfl2k5_champions_history as history  # noqa: E402
@@ -227,6 +228,10 @@ class PlainPresetTests(Harness):
             self.assertIn(history.NO_ROOM_NOTE, receipt["user_notes"])
             self.assertIn(history.NO_ROOM_NOTE, self.lines)
             self.assertEqual(receipt["result"]["champions_history"], "no_room")
+            self.assertEqual(step["user_notes"], [history.NO_ROOM_NOTE])
+            _title, message = build_feedback.completion(
+                {"steps": receipt["steps"], "outcome": {"status": "changed", "message": "Disc ready."}})
+            self.assertIn(history.NO_ROOM_NOTE, message)       # the finished-disc dialog says it
             self.assertEqual(bytes(FakeOuterImage.archives[path]), before, name)
 
     def test_basic_does_nothing(self):
