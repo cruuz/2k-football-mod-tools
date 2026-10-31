@@ -201,8 +201,9 @@ class AllocatorTests(unittest.TestCase):
         # Includes five fixed tap/draft/H-back/rating slot requests; b775 mo2: + the moment context state; b775-ct1: +
         # the classic teams read-only helpers; b778 ai6: + the late-traffic code and its 8-byte state; b778 st2: +
         # star career's code and data; b778 ai8: + third-down code (the five rows this test's pin predates);
-        # b779-hn1: + the Super Bowl champions owner (after honors).
-        self.assertEqual(len(union) - len(without), 24)
+        # b779-hn1: + the Super Bowl champions owner (after honors); b779-fixD (4c89ebbb2): + return coverage (1 row)
+        # and the module loader (2 rows), which dormant_union() now lists to match the manifest builder.
+        self.assertEqual(len(union) - len(without), 27)
         plan_with, plan_without = space.plan(union), space.plan(without)
         # b778 xs1/bd3: a union that no longer fits the v3 runs is a v4 image, which adds a second
         # allocator-directory row at POOL_VA; owner_offset keeps the two pages apart.
@@ -235,7 +236,9 @@ class AllocatorTests(unittest.TestCase):
                                         ("nfl2k5_cpu_money_downs_late", "code"),  # b778 ai6
                                         ("nfl2k5_cpu_money_downs_late_state", "data"),
                                         ("nfl2k5_star_career", "code"), ("nfl2k5_star_career", "data"),  # b778 st2
-                                        ("nfl2k5_cpu_third_down", "code")]))  # b778 ai8
+                                        ("nfl2k5_cpu_third_down", "code"),  # b778 ai8
+                                        ("nfl2k5_return_coverage", "code"),  # b779-fixD: dormant_union lists it
+                                        ("nfl2k5_module_loader", "code"), ("nfl2k5_module_loader", "data")]))
         # b779-km1: K128's 1,536-byte request no longer fits the legacy code tail, so it moves whole to the v4
         # pool and letter grades takes the free tail; both stay late owners, K128 still placed first.
         k128, mine = new[("nfl2k5_k128", "code", 0)], new[(lg.OWNER, "code", 0)]
