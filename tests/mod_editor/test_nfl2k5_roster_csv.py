@@ -462,6 +462,200 @@ class CsvTests(unittest.TestCase):
         self.assertEqual(receipt['changed'], 2)
 
 
+class CsvCheckpointEquivalenceTests(unittest.TestCase):
+    """b779 rv1: the cheap college rollback must give exactly the old whole-document checkpoint's result.
+
+    The reviewer's 1,696-row file took 638.8 s with the box ticked because every college row deep-copied
+    the roster. ``_full_checkpoints=True`` is that old behaviour, kept as the reference.
+    """
+
+    def setUp(self):
+        self.doc = rr.load_body(league_body())
+
+    def _mixed_sheet(self):
+        text = rr.export_csv(self.doc)
+        reader = csv.DictReader(io.StringIO(text))
+        columns = reader.fieldnames
+        rows = list(reader)
+        self.assertGreater(columns.index('speed'), columns.index('college'))
+        colleges = self.doc.colleges
+        self.assertGreaterEqual(len(colleges), 3)
+        for i, row in enumerate(rows):
+            kind = i % 6
+            if kind == 0:      # a valid college change alone
+                row['college'] = colleges[(self.doc.players[i].college_index + 1) % len(colleges)]
+            elif kind == 1:    # a college the roster does not have: refused before anything changes
+                row['college'] = 'Nowhere State'
+            elif kind == 2:    # college applied, then a later column fails: the whole row must roll back
+                row['college'] = colleges[(self.doc.players[i].college_index + 2) % len(colleges)]
+                row['speed'] = '999'
+            elif kind == 3:    # a name change takes the full checkpoint path
+                row['first'] = 'Zed' + str(i)
+                row['college'] = colleges[(self.doc.players[i].college_index + 1) % len(colleges)]
+            elif kind == 4:    # scalar only
+                row['agility'] = str((int(row['agility']) + 3) % 100)
+            # kind 5: untouched
+        out = io.StringIO(newline='')
+        writer = csv.DictWriter(out, fieldnames=columns, lineterminator='\n')
+        writer.writeheader()
+        writer.writerows(rows)
+        return out.getvalue()
+
+    def test_college_rollback_matches_the_full_checkpoint_byte_for_byte(self):
+        text = self._mixed_sheet()
+        old = rr.preview_csv(self.doc, text, _full_checkpoints=True)
+        new = rr.preview_csv(self.doc, text)
+        self.assertGreater(len(old.receipt['refused']), 0)
+        self.assertGreater(old.receipt['changed'], 0)
+        self.assertEqual(old.before, new.before)
+        self.assertEqual(old.after, new.after)
+        self.assertEqual(old.receipt, new.receipt)
+        self.assertTrue(any('speed' in item['reason'] for item in new.receipt['refused']))
+        self.assertTrue(any('Nowhere State' in item['reason'] for item in new.receipt['refused']))
+        first, second = rr.load_body(league_body()), rr.load_body(league_body())
+        rr.apply_csv_preview(first, old)
+        rr.apply_csv_preview(second, new)
+        self.assertEqual(first.to_body(), second.to_body())
+
+    def test_a_refused_college_row_leaves_no_trace(self):
+        text = self._mixed_sheet()
+        preview = rr.preview_csv(self.doc, text)
+        refused_rows = {item['index'] for item in preview.receipt['refused'] if item.get('pool') == 'primary'}
+        changed = {change['index'] for change in preview.receipt['changes']}
+        self.assertFalse(refused_rows & changed)
+
+    def test_the_tool_export_with_the_box_ticked_matches_the_full_checkpoint(self):
+        document = self.doc
+        lines = tool_export(document).splitlines()
+        colleges = document.colleges
+        out, n = [], 0
+        for line in lines:
+            if line.startswith(('#', 'Team =')) or not line.strip():
+                out.append(line)
+                continue
+            cells = line.split(',')
+            index = TOOL_INDEX['College']
+            n += 1
+            if n % 4 == 0:
+                cells[index] = colleges[(colleges.index(cells[index]) + 1) % len(colleges)] \
+                    if cells[index] in colleges else colleges[0]
+            elif n % 4 == 1:
+                cells[index] = 'Nowhere State'
+            elif n % 4 == 2:
+                cells[TOOL_INDEX['Speed']] = str((int(cells[TOOL_INDEX['Speed']]) + 5) % 100)
+            out.append(','.join(cells))
+        text = '\n'.join(out) + '\n'
+        old = rr.preview_csv(document, text, include_appearance=True, _full_checkpoints=True)
+        new = rr.preview_csv(document, text, include_appearance=True)
+        self.assertEqual((old.before, old.after), (new.before, new.after))
+        self.assertEqual(old.receipt, new.receipt)
+        self.assertGreater(new.receipt['changed'], 0)
+        self.assertTrue(any('Nowhere State' in item['reason'] for item in new.receipt['skipped']))
+
+    def test_the_cheap_path_makes_no_document_copy_for_college_rows(self):
+        from unittest import mock
+        text = self._mixed_sheet()
+        reader = csv.DictReader(io.StringIO(text))
+        college_only = sum(1 for _ in reader)
+        calls = []
+        real = rr.copy.deepcopy
+
+        def counting(value, *args, **kwargs):
+            if isinstance(value, rr.RosterDocument):
+                calls.append(1)
+            return real(value, *args, **kwargs)
+
+        with mock.patch.object(rr.copy, 'deepcopy', side_effect=counting):
+            rr.preview_csv(self.doc, text)
+            cheap = len(calls)
+            calls.clear()
+            rr.preview_csv(self.doc, text, _full_checkpoints=True)
+            full = len(calls)
+        self.assertGreater(college_only, 20)
+        # working + verified copies, plus one checkpoint per name-change row (every sixth row, offset 3)
+        names = sum(1 for i in range(len(self.doc.players)) if i % 6 == 3)
+        self.assertEqual(cheap, 2 + names)
+        self.assertGreater(full, cheap)
+
+
+class CsvSkippedAppearanceTests(unittest.TestCase):
+    """b779 rv1 (R1 minor 4): one appearance or bio value the roster cannot take no longer costs the row its ratings."""
+
+    def setUp(self):
+        self.doc = rr.load_body(league_body())
+
+    def _row(self, index, **columns):
+        player = self.doc.players[index]
+        speed = int(rr._csv_row(self.doc, player)['speed'])
+        return player, tool_export_one(self.doc, player, Speed=str((speed + 7) % 100), **columns)
+
+    def test_a_college_the_roster_lacks_skips_only_the_college(self):
+        player, text = self._row(0, College='Nowhere State')
+        before_college = player.college
+        before_speed = player.record.get('speed')
+        preview = rr.preview_csv(self.doc, text, include_appearance=True)
+        receipt = preview.receipt
+        self.assertEqual(receipt['refused'], [])
+        fields = {f['field'] for change in receipt['changes'] for f in change['changes']}
+        self.assertIn('speed', fields)
+        self.assertNotIn('college', fields)
+        self.assertEqual(len(receipt['skipped']), 1)
+        skipped = receipt['skipped'][0]
+        self.assertEqual((skipped['field'], skipped['pool'], skipped['index']), ('college', player.pool, player.index))
+        self.assertIn('Nowhere State', skipped['reason'])
+        self.assertIsInstance(skipped['row'], int)
+        self.assertTrue(skipped['label'])
+        self.assertTrue(any('skipped college' in line for line in receipt['log']))
+        rr.apply_csv_preview(self.doc, preview)
+        reread = rr.load_body(self.doc.to_body()).players[0]
+        self.assertEqual(reread.college, before_college)
+        self.assertNotEqual(reread.record.get('speed'), before_speed)
+
+    def test_the_default_ratings_only_import_has_no_skip_and_still_refuses_nothing_new(self):
+        player, text = self._row(0, College='Nowhere State')
+        receipt = rr.preview_csv(self.doc, text).receipt
+        self.assertNotIn('skipped', receipt)
+        self.assertEqual(receipt['refused'], [])
+
+    def test_a_row_whose_only_real_change_is_the_bad_value_changes_nothing_and_says_so(self):
+        player = self.doc.players[0]
+        text = tool_export_one(self.doc, player, College='Nowhere State')
+        preview = rr.preview_csv(self.doc, text, include_appearance=True)
+        receipt = preview.receipt
+        self.assertEqual(receipt['changed'], 0)
+        self.assertEqual(preview.before, preview.after)
+        self.assertEqual(receipt['refused'], [])
+        self.assertEqual([item['field'] for item in receipt['skipped']], ['college'])
+
+    def test_a_hard_failure_in_a_ratings_column_still_refuses_the_whole_row(self):
+        player = self.doc.players[0]
+        text = tool_export_one(self.doc, player, College='Nowhere State', Speed='250')
+        receipt = rr.preview_csv(self.doc, text, include_appearance=True).receipt
+        self.assertEqual(receipt['changed'], 0)
+        self.assertEqual(len(receipt['refused']), 1)
+        self.assertIn('speed', receipt['refused'][0]['reason'].lower())
+        self.assertNotIn('skipped', receipt)
+
+    def test_the_skip_path_matches_the_full_checkpoint_path(self):
+        lines = []
+        for index in range(0, 24):
+            player, text = self._row(index, College='Nowhere State' if index % 3 == 0 else tool_college(self.doc, index))
+            body = text.splitlines()
+            lines.append((body[1], body[2]))
+        header = TOOL_HEADER
+        text = header + '\n' + '\n'.join(a + '\n' + b for a, b in lines) + '\n'
+        old = rr.preview_csv(self.doc, text, include_appearance=True, _full_checkpoints=True)
+        new = rr.preview_csv(self.doc, text, include_appearance=True)
+        self.assertEqual((old.before, old.after), (new.before, new.after))
+        self.assertEqual(old.receipt, new.receipt)
+        self.assertGreater(len(new.receipt.get('skipped', ())), 0)
+
+
+def tool_college(document, index):
+    colleges = document.colleges
+    return colleges[(document.players[index].college_index + 1) % len(colleges)]
+
+
 class GuiCsvTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -566,6 +760,70 @@ class GuiCsvTests(unittest.TestCase):
             self.assertEqual(calls, [True, False])
             self.assertTrue(dialog.preview.receipt['rating_only'])
             self.assertTrue(dialog.preview.receipt['ignored_columns'])
+        finally:
+            dialog.reject()
+
+    def test_a_failed_repreview_puts_the_box_back_and_keeps_the_shown_preview(self):
+        # b779 rv1 (R1 minor 3): box and preview must agree because Apply uses the preview.
+        document = self.panel.document
+        player = document.players[0]
+        text = tool_export_one(document, player, Speed=str(int(rr._csv_row(document, player)['speed']) + 1))
+        preview = self.panel.preview_csv_text(text)
+
+        def repreview(include):
+            raise rr.RosterRecordError('Pretend the second pass failed.')
+
+        dialog = PlayerCsvPreviewDialog(preview, self.panel, repreview=repreview)
+        try:
+            with patch('mod_editor.gui.roster_editor_panel_qt.QMessageBox.warning') as warning:
+                dialog.appearance_checkbox.setChecked(True)
+            self.assertFalse(dialog.appearance_checkbox.isChecked())
+            self.assertIs(dialog.preview, preview)
+            self.assertTrue(dialog.preview.receipt['rating_only'])
+            warning.assert_called_once()
+            self.assertIn('Pretend the second pass failed.', warning.call_args[0][2])
+        finally:
+            dialog.reject()
+
+    def test_the_repreview_runs_off_the_gui_thread_and_the_event_loop_keeps_turning(self):
+        import threading
+        import time
+        from PyQt5.QtCore import QTimer
+        from mod_editor.gui.roster_editor_panel_qt import run_in_background
+        ticks, threads = [], []
+        timer = QTimer()
+        timer.timeout.connect(lambda: ticks.append(1))
+        timer.start(10)
+
+        def slow():
+            threads.append(threading.current_thread())
+            time.sleep(0.4)
+            return 'done'
+
+        try:
+            self.assertEqual(run_in_background(self.panel, 'Test', 'Working', slow), 'done')
+        finally:
+            timer.stop()
+        self.assertIsNot(threads[0], threading.main_thread())
+        self.assertGreater(len(ticks), 5)
+        with self.assertRaisesRegex(ValueError, 'boom'):
+            run_in_background(self.panel, 'Test', 'Working', lambda: (_ for _ in ()).throw(ValueError('boom')))
+
+    def test_the_preview_lists_a_skipped_value_with_a_clear_note(self):
+        document = self.panel.document
+        player = document.players[0]
+        speed = int(rr._csv_row(document, player)['speed'])
+        text = tool_export_one(document, player, Speed=str((speed + 7) % 100), College='Nowhere State')
+        preview = self.panel.preview_csv_text(text, include_appearance=True)
+        dialog = PlayerCsvPreviewDialog(preview, self.panel, repreview=lambda include: preview)
+        try:
+            notes = [dialog.table.item(row, 5).text() for row in range(dialog.table.rowCount())]
+            note = next(n for n in notes if n.startswith('Skipped'))
+            self.assertIn('rest of the row imported', note)
+            self.assertIn('Nowhere State', note)
+            self.assertIn('1 appearance or bio values', dialog.summary.text())
+            self.assertIn('speed', {dialog.table.item(row, 2).text() for row in range(dialog.table.rowCount())})
+            self.assertTrue(dialog.apply_button.isEnabled())
         finally:
             dialog.reject()
 
