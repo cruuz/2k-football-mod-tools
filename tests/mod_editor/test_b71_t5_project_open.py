@@ -36,16 +36,21 @@ class ProjectTests(unittest.TestCase):
         events = []
         with (corpus.context(), patch.object(writer, '_compile_group', side_effect=AssertionError('open encoded')),
               patch.object(lz, 'compress_equipment_optimal', side_effect=AssertionError('open optimal'))):
-            start = time.monotonic()
+            start, cpu_start = time.monotonic(), time.process_time()
             self.assertEqual(session.load_shareable_project(corpus.project, progress=lambda *args: events.append(args)), 600)
-            elapsed = time.monotonic() - start
-        print(f'600 replacement open: {elapsed:.6f} seconds', flush=True)
+            elapsed, cpu = time.monotonic() - start, time.process_time() - cpu_start
+        print(f'600 replacement open: {elapsed:.6f} seconds ({cpu:.3f} s CPU)', flush=True)
         # The regression this guards is the old open, which encoded every group: 407.8 s at beta 69,
         # 431.6 at beta 70 and 429.3 at beta 71 for this same corpus. It measures 0.65 s here and
         # 25 s on the slowest hosted Windows runner, so the ceiling is set where a slow shared
         # machine still passes and a return to encoding on open cannot. The patched encoders above
-        # are what actually prove no encoding happened; this is the wall-clock backstop.
-        self.assertLess(elapsed, 120)
+        # are what actually prove no encoding happened; this is the backstop.
+        # b779 int1: the backstop counts this process's CPU time. Encoding on open is CPU work (hundreds of
+        # seconds), so the regression still fails it; wall clock on a loaded machine at idle priority
+        # (nice 19, ionice -c3) reached 132 s while the open itself did no more work. The wall clock stays
+        # as a hang guard.
+        self.assertLess(cpu, 120)
+        self.assertLess(elapsed, 900)
         self.assertEqual(corpus.project.read_bytes(), before)
         self.assertEqual(events[-1][1:], (600, 600))
         self.assertTrue(all(r['fit_status'] == 'fit pending' for r in staging.cached_equipment_fit_rows(session)))
