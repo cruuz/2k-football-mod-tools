@@ -4628,7 +4628,7 @@ class BuildPanel(QWidget):
         task.signals.progress.connect(self.progress_label.setText)
         task.signals.counts.connect(self._progress_counts)
         task.signals.finished.connect(self._check_done)
-        task.signals.failed.connect(self._failed)
+        task.signals.failed.connect(self._check_failed)
         self._task = task
         self._heartbeat_timer.start()
         self._heartbeat()
@@ -4725,6 +4725,20 @@ class BuildPanel(QWidget):
         running = self._running_line()
         QApplication.clipboard().setText(self._last_build_summary + ("\n" + running if running else ""))
         self.status_label.setText("Build summary copied. Paste it with the first error in your help request.")
+
+    def _check_failed(self, message: str) -> None:
+        """Check my project could not finish: say "check", and do not borrow the last build's summary."""
+        message = plain_error(message)
+        self._last_build_summary = f"2K5 Mod Studio {BUILD_RELEASE_TAG}\nCheck my project\n\nFirst error: {message}"
+        self.copy_summary_button.setEnabled(True)
+        self._heartbeat_timer.stop()
+        self._task = None
+        self.operation_state_changed.emit(False)
+        self.progress_bar.hide()
+        self.progress_label.setText("")
+        self.status_label.setText(plain_failure("check your project", message))
+        show_operation_error(self, "check your project", message)
+        self._refresh()
 
     def _failed(self, message: str) -> None:
         message = plain_error(message)

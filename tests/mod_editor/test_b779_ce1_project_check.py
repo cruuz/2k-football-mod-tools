@@ -300,6 +300,26 @@ class BuildPageButton(unittest.TestCase):
         self.assertIsNone(self.panel._task)
         self.assertEqual(sorted(p.name for p in Path(self.temp.name).iterdir()), before)
 
+    def test_a_failed_check_says_check_and_does_not_borrow_the_last_build_summary(self):
+        # b779 rv1 (R1 minor 2): the error read "Could not make the disc" and started with the last build's summary.
+        from PyQt5.QtWidgets import QMessageBox
+        self.panel._requested_build_summary = "Build summary from an earlier build\nSource: old.iso"
+        self.panel.target_field.setText(str(Path(self.temp.name) / "never.iso"))
+        shown = []
+        with mock.patch.object(pc, "check", side_effect=KeyError("surprise")), \
+                mock.patch.object(QMessageBox, "exec_", lambda box: shown.append((box.windowTitle(), box.text())) or 0):
+            self.panel._check_project()
+        self.assertTrue(shown)
+        title, body = shown[0]
+        self.assertIn("check", title.lower())
+        self.assertNotIn("make the disc", (title + body + self.panel.status_label.text()).lower())
+        self.assertIn("check your project", self.panel.status_label.text().lower())
+        summary = self.panel._last_build_summary
+        self.assertIn("Check my project", summary)
+        self.assertIn("First error:", summary)
+        self.assertNotIn("earlier build", summary)
+        self.assertIsNone(self.panel._task)
+
 
 class BuildGate(unittest.TestCase):
     """The long build runs the same quick check first and stops with its list."""
