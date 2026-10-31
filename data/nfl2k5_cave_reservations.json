@@ -3407,7 +3407,7 @@
     "mod_editor/core/nfl2k5_roster_arena_growth.py": "39cb20559131e54e041b5d903a048d73f9bf5dc5d2016e0cfb8ec450234a24cd",
     "mod_editor/core/nfl2k5_roster_arena_image.py": "bc438e13c6aed320ee3cbc45682210f7db36ab657d921dd2c79d6bb603ed9814",
     "mod_editor/core/nfl2k5_roster_fill_composition.py": "96547bdc1c66889f68f44deb147bd5f6095ee169d343d53aaa4f532d12ee53e8",
-    "mod_editor/core/nfl2k5_roster_records.py": "eac3005af16e435bbd4407cf1a2f66c781d07ecda5c8810a1876c53519162b77",
+    "mod_editor/core/nfl2k5_roster_records.py": "3bb5bafb9f16e60fe7663e5e14a31edb7af74513d34bd8f7a29320a1ba2eace7",
     "mod_editor/core/nfl2k5_roster_storage.py": "b2bed5fb92dedd9d1c4312a7e9344ca1558225d9ed12977e4fe69f4ca9d85bb6",
     "mod_editor/core/nfl2k5_rules_patch.py": "49849dbc7908511afb5562298adb8764090df32fb126f380681f800472c0f959",
     "mod_editor/core/nfl2k5_run_blocking.py": "96251a09e80032838fc0cf9fa8ca187063fc2d7a60c823b7b4a3daca41e54d7f",
