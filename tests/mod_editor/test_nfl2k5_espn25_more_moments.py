@@ -1004,5 +1004,52 @@ class AnniversaryQcRetailTests(unittest.TestCase):
                             main_photos=frozenset({4321, 777}), scans={4321: 777})
 
 
+@unittest.skipUnless(retail_available(), "user-owned USA disc folder absent")
+class ShippedMomentLooksRetailTests(unittest.TestCase):
+    """b779-mo4 (Ju3tin 10/28-29: "disappearing" / "invisible players" in newer moments): every shipped moment team
+    file, compiled from the retail templates exactly as the build does, keeps each player inside what a moment can
+    draw. The headless bit (+0x0C bit 7) draws the model without a head; a hair_style other than 0 asks for the added
+    hair models of the main-roster hair step; the game has facemasks 00..26 only (nfl2k5_modern_helmets); and a player
+    without his own face falls back to the generic head f(9001 + 100 * tone + face), which exists only for tone 0..5
+    and face 0..6 (nfl2k5_rookie_faces, retail FUN_000E6780). A moment team has 53 players; the live team holds 65.
+    Static guard only: the emulator runs of b779-mo4 did not reproduce the report (reports/b779_mo4_REPORT.md)."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.data = mm.Data.load()
+        with outer_image() as archive:
+            cls.main = archive.read(archive.entries[5].virtual_offset, archive.entries[5].size)
+            by_id = {e.name_id: e for e in archive.entries}
+            descriptors = mm._retail_descriptors(cls.main)
+            cls.templates = {}
+            for key in cls.data.team_order():
+                d = mm.template_for(cls.data.teams[key], descriptors)
+                cls.templates[key] = archive.read(by_id[d["id"]].virtual_offset, by_id[d["id"]].size)
+        cls.files = mm.compile_files(cls.main, cls.templates, cls.data)
+
+    def test_every_moment_player_stays_inside_what_a_moment_draws(self):
+        self.assertEqual(len(self.files), len(self.data.team_order()))
+        for filename, raw in self.files.items():
+            doc = rr.RosterDocument(raw[32:])
+            self.assertEqual((len(doc.players), doc.teams[0].player_count), (53, 53), filename)
+            for p in doc.players:
+                v = p.record.values
+                who = f"{filename} {p.first} {p.last}"
+                self.assertEqual(v["headless"], 0, who)
+                self.assertEqual(v["hair_style"], 0, who)
+                self.assertLessEqual(v["face_mask"], 26, who)
+                self.assertLessEqual(p.record.skin & 7, 5, who)
+                self.assertLessEqual(v["face"] & 7, 6, who)
+
+    def test_the_templates_are_inside_the_same_envelope(self):
+        """The compiled records keep the donors' gear (helmet shell, facemask, sleeves); the donors are retail
+        historic records, so the envelope above is the retail one."""
+        for key, raw in self.templates.items():
+            for p in rr.RosterDocument(raw[32:]).players:
+                v = p.record.values
+                self.assertEqual((v["headless"], v["hair_style"]), (0, 0), key)
+                self.assertLessEqual(v["face_mask"], 26, key)
+
+
 if __name__ == "__main__":
     unittest.main()
