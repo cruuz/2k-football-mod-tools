@@ -4079,7 +4079,8 @@ def _nfl2k5tool_cells(row: Mapping[str, str], document: RosterDocument, *,
 
 def preview_nfl2k5tool_csv(document: RosterDocument, text: str, *,
                            normalise_commentary: bool = True,
-                           include_appearance: bool = False) -> CsvPreview:
+                           include_appearance: bool = False,
+                           _full_checkpoints: bool = False) -> CsvPreview:
     """Stage a Bad_AL NFL2K5Tool export, matching players by team and name only.
 
     Position and jersey number only break a name tie.  Unmatched, ambiguous and duplicate rows
@@ -4147,8 +4148,13 @@ def preview_nfl2k5tool_csv(document: RosterDocument, text: str, *,
             value = cells.get(column, initial[column])
             out[column] = _csv_protect(value) if column in CSV_TEXT_COLUMNS else value
         writer.writerow(out)
+    # b779 rv1: with the box ticked, one appearance or bio value the roster cannot take (a retired
+    # position code, a college it does not carry) skips just that column; the ratings still import.
+    optional = (frozenset(NFL2K5TOOL_COLUMNS[name] for name in NFL2K5TOOL_NON_RATING_COLUMNS)
+                if include_appearance else frozenset())
     preview = preview_csv(document, stream.getvalue(), delimiter=",",
-                          normalise_commentary=normalise_commentary)
+                          normalise_commentary=normalise_commentary,
+                          _full_checkpoints=_full_checkpoints, _optional_columns=optional)
     receipt = preview.receipt
     for change in receipt["changes"]:
         key = (change["pool"], change["index"])
@@ -4162,9 +4168,15 @@ def preview_nfl2k5tool_csv(document: RosterDocument, text: str, *,
         key = (refusal.get("pool"), refusal.get("index"))
         if key in lines:
             refusal["row"], refusal["label"] = lines[key], labels[key]
+    for item in receipt.get("skipped", ()):
+        key = (item["pool"], item["index"])
+        if key in lines:
+            item["row"], item["label"] = lines[key], labels[key]
     receipt["refused"] = sorted(refused + receipt["refused"],
                                 key=lambda item: item["row"] if isinstance(item["row"], int) else 10 ** 9)
     receipt["log"] = [f"row {item['row']}: {item['reason']}" for item in receipt["refused"]]
+    receipt["log"] += [f"row {item['row']}: skipped {item['field']} ({item['reason']}); the rest of the row was imported"
+                       for item in receipt.get("skipped", ())]
     receipt["format"] = NFL2K5TOOL_CSV
     receipt["rating_only"] = not include_appearance
     receipt["ignored_columns"] = ignored_columns
@@ -4184,7 +4196,9 @@ class CsvPreview:
 
 def preview_csv(document: RosterDocument, text: str, *, delimiter: str | None = None,
                 normalise_commentary: bool = True,
-                include_appearance: bool = False) -> CsvPreview:
+                include_appearance: bool = False,
+                _full_checkpoints: bool = False,
+                _optional_columns: frozenset = frozenset()) -> CsvPreview:
     """Stage valid rows on a private document; a refused row contributes no edits.
 
     Duplicate identities are ALL refused, including the first occurrence. Unknown
@@ -4194,13 +4208,20 @@ def preview_csv(document: RosterDocument, text: str, *, delimiter: str | None = 
     also takes its position, jersey, appearance and bio columns. Unchanged cells
     preserve existing out-of-editor-range values byte for byte. Field-scoped native
     writers can defer commentary to the final full save.
+
+    A row that changes only scalar fields and the college is rolled back from a few saved
+    values; a row that can touch names, teams or depth locks still takes a full document
+    checkpoint (b779 rv1: a deep copy per college row took 0.32 s each on a 4,164-record
+    roster). ``_full_checkpoints`` forces the old full checkpoint for every complex row; the
+    tests use it as the reference the faster path must match byte for byte.
     """
     _require(isinstance(text, str) and len(text.encode("utf-8")) <= CSV_MAX_BYTES,
              "Player CSV exceeds 16 MiB; export a smaller list and try again.")
     text = text.lstrip("\ufeff")
     if _is_nfl2k5tool_csv(text):
         return preview_nfl2k5tool_csv(document, text, normalise_commentary=normalise_commentary,
-                                      include_appearance=include_appearance)
+                                      include_appearance=include_appearance,
+                                      _full_checkpoints=_full_checkpoints)
     sample = text.splitlines()[0] if text.strip() else ""
     delimiter = delimiter or (";" if sample.count(";") > sample.count(",") else ",")
     try:
@@ -4227,7 +4248,7 @@ def preview_csv(document: RosterDocument, text: str, *, delimiter: str | None = 
         identities.append(key)
         if key is not None:
             counts[key] = counts.get(key, 0) + 1
-    changes, refused, matched = [], [], 0
+    changes, refused, skipped, matched = [], [], [], 0
     for (number, row), key in zip(rows, identities):
         reason = ("row width differs from header" if None in row or None in row.values() else
                   "invalid pool + index; identity is never matched by name" if key is None else
@@ -4246,31 +4267,61 @@ def preview_csv(document: RosterDocument, text: str, *, delimiter: str | None = 
         edits = {k: v for k, v in clean.items() if k not in CSV_READ_ONLY and v != str(initial[k])}
         if not edits:
             continue
-        # Scalar-only rows need only a record copy. Pool/membership operations can
-        # affect other players; use a complete checkpoint for those rows.
-        complex_row = any(k in {"first", "last", "college", "team"} or k in CSV_LOCK_COLUMNS for k in edits)
-        checkpoint = copy.deepcopy(working) if complex_row else None
-        original_record = player.record
-        player.record = original_record.copy()
-        try:
-            expected = {}
-            for column, value in edits.items():
-                _apply_csv_cell(working, player, column, value, normalise_commentary=normalise_commentary)
-                expected[column] = _csv_row(working, player)[column]
-            new = _csv_row(working, player)
-            _require(all(new[k] == v for k, v in expected.items()),
-                     "conflicting raw and derived fields; edit one style/date view at a time")
-            fields = [{"field": k, "before": old[k], "after": new[k]}
-                      for k in CSV_COLUMNS if old[k] != new[k]]
-            if fields:
-                changes.append({"row": number, "pool": key[0], "index": key[1], "changes": fields})
-        except (RosterRecordError, ValueError, OverflowError) as exc:
-            if checkpoint is not None:
-                working = checkpoint
-                by_key = {(p.pool, p.index): p for p in working.players}
-            else:
-                player.record = original_record
-            refused.append({"row": number, "pool": key[0], "index": key[1], "reason": f"{column}: {exc}"})
+        # b779 rv1: with ``_optional_columns`` (the tool's position, college, dates, ids, body and
+        # equipment), a value the roster cannot take skips only that column and the rest of the row
+        # still imports; a hard failure or a skipped column that was the row's only edit refuses it.
+        row_edits = dict(edits)
+        row_skipped: list[tuple[str, str]] = []
+        while True:
+            edits = row_edits
+            # Scalar-only rows need only a record copy. Pool/membership operations can
+            # affect other players; use a complete checkpoint for those rows.
+            complex_row = any(k in {"first", "last", "college", "team"} or k in CSV_LOCK_COLUMNS for k in edits)
+            # b779 rv1: a college edit only touches the player's college pointer (four body bytes, the
+            # record value and the two cached college fields), so it is undone from those, not from a
+            # whole-document copy. Anything that can touch names, teams or locks still gets the copy.
+            college_only = (complex_row and not _full_checkpoints and
+                            not any(k in {"first", "last", "team"} or k in CSV_LOCK_COLUMNS for k in edits))
+            checkpoint = copy.deepcopy(working) if complex_row and not college_only else None
+            saved_college = None
+            if college_only:
+                pointer_at = player.offset + FIELD_BY_NAME["college_pointer"].offset
+                saved_college = (pointer_at, bytes(working.body[pointer_at: pointer_at + 4]),
+                                 player.college_index, player.college)
+            original_record = player.record
+            player.record = original_record.copy()
+            try:
+                expected = {}
+                for column, value in edits.items():
+                    _apply_csv_cell(working, player, column, value, normalise_commentary=normalise_commentary)
+                    expected[column] = _csv_row(working, player)[column]
+                new = _csv_row(working, player)
+                _require(all(new[k] == v for k, v in expected.items()),
+                         "conflicting raw and derived fields; edit one style/date view at a time")
+                fields = [{"field": k, "before": old[k], "after": new[k]}
+                          for k in CSV_COLUMNS if old[k] != new[k]]
+                if fields:
+                    changes.append({"row": number, "pool": key[0], "index": key[1], "changes": fields})
+                for skipped_column, reason in row_skipped:
+                    skipped.append({"row": number, "pool": key[0], "index": key[1],
+                                    "field": skipped_column, "reason": reason})
+                break
+            except (RosterRecordError, ValueError, OverflowError) as exc:
+                if checkpoint is not None:
+                    working = checkpoint
+                    by_key = {(p.pool, p.index): p for p in working.players}
+                    player = by_key[key]
+                else:
+                    player.record = original_record
+                    if saved_college is not None:
+                        pointer_at, pointer_bytes, player.college_index, player.college = saved_college
+                        working.body[pointer_at: pointer_at + 4] = pointer_bytes
+                if column in _optional_columns and column in row_edits and len(row_edits) > 1:
+                    row_skipped.append((column, str(exc)))
+                    row_edits = {k: v for k, v in row_edits.items() if k != column}
+                    continue
+                refused.append({"row": number, "pool": key[0], "index": key[1], "reason": f"{column}: {exc}"})
+                break
     # Include changes to peers when a returner lock transfers to another player.
     source_rows = {key: number for (number, _), key in zip(rows, identities) if key is not None}
     final_changes = []
@@ -4294,6 +4345,10 @@ def preview_csv(document: RosterDocument, text: str, *, delimiter: str | None = 
     receipt = {"rows": matched, "changed": len(changes),
                "fields": sum(len(row["changes"]) for row in changes), "changes": changes,
                "refused": refused, "log": [f"row {r['row']}: {r['reason']}" for r in refused]}
+    if skipped:
+        receipt["skipped"] = skipped
+        receipt["log"] += [f"row {item['row']}: skipped {item['field']} ({item['reason']}); the rest of the row was imported"
+                           for item in skipped]
     return CsvPreview(before, after, document.scheme, document.reference_year, receipt, normalise_commentary)
 
 

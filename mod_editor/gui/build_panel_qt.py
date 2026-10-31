@@ -46,9 +46,13 @@ from mod_editor.core import nfl2k5_throw_tuning as tt
 from mod_editor.core.errors import ModEditorError
 from mod_editor.gui.playbook_pack_dialog_qt import BOOK_SET_EXPLAINER, BookSetTeamsDialog, book_set_status_text
 from mod_editor.gui.ux_text import (
-    NOT_TESTED, STUDIO_THEMES, XEMU_LINE, Details, WrappedLabel, build_panel_stylesheet,
+    NOT_TESTED, STUDIO_THEMES, XEMU_LINE, Details, WrappedLabel, WrappingCheckBox, build_panel_stylesheet,
     plain_failure, show_operation_error, source_captions, suggest_copy_name, tab_title,
 )
+
+
+#: The narrowest a combo box on the Build page asks to be (see BuildPanel.__init__).
+COMBO_FLOOR_WIDTH = 220
 
 
 def _resolved_build_file(path, what: str) -> Path:
@@ -459,7 +463,7 @@ class BuildPanel(QWidget):
         intro.setObjectName("throwMuted")
         intro.setWordWrap(True)
         root.addWidget(intro)
-        self.softdrink_project_check = QCheckBox("Include SOFTDRINK league artwork")
+        self.softdrink_project_check = WrappingCheckBox("Include SOFTDRINK league artwork")
         self.softdrink_project_check.toggled.connect(self._refresh)
         self.softdrink_project_check.hide()
         root.addWidget(self.softdrink_project_check)
@@ -570,7 +574,11 @@ class BuildPanel(QWidget):
         self.synced_note.setAccessibleName("Cloud-synced folder warning")
         self.synced_note.hide()
         mk.addWidget(self.synced_note)
+        # b779 rv1: Make my disc, Check my project and Cancel share one row; Copy Build summary and the
+        # reason Make my disc is unavailable get a second row. One row of all five was 1,083 px under
+        # Windows Python and made the 1280x720 Build tab scroll sideways.
         actions = QHBoxLayout()
+        actions_more = QHBoxLayout()
         self.build_button = QPushButton("Make my disc")
         self.build_button.setObjectName("primaryButton")
         self.build_button.clicked.connect(self._build)
@@ -585,6 +593,7 @@ class BuildPanel(QWidget):
         self.cancel_button.setEnabled(False)
         self.cancel_button.clicked.connect(lambda: self._task.cancelled.set() if self._task else None)
         actions.addWidget(self.cancel_button)
+        actions.addStretch(1)
         self._last_build_summary = ""
         self._requested_build_summary = ""
         self._requested_build_labels = []
@@ -592,13 +601,14 @@ class BuildPanel(QWidget):
         self.copy_summary_button.setToolTip("Copy this build's source, selected changes, result and first error for a help request.")
         self.copy_summary_button.setEnabled(False)
         self.copy_summary_button.clicked.connect(self._copy_build_summary)
-        actions.addWidget(self.copy_summary_button)
+        actions_more.addWidget(self.copy_summary_button)
         self.blocker_label = WrappedLabel("")
         self.blocker_label.setObjectName("throwMuted")
         self.blocker_label.setWordWrap(True)
         self.blocker_label.setAccessibleName("Why Make my disc is unavailable")
-        actions.addWidget(self.blocker_label, 1)
+        actions_more.addWidget(self.blocker_label, 1)
         mk.addLayout(actions)
+        mk.addLayout(actions_more)
         prog = QHBoxLayout()
         self.progress_label = WrappedLabel("")
         self.progress_label.setObjectName("throwMuted")
@@ -640,7 +650,7 @@ class BuildPanel(QWidget):
                                         "How far the strongest arm can throw; the original maximum at 99 Pass Arm Strength is 55 yards.")
         throw_row = QHBoxLayout()
         throw_row.addSpacing(30)
-        throw_row.addWidget(QLabel("Longest throw at 99 Pass Arm Strength"))
+        throw_row.addWidget(WrappedLabel("Longest throw at 99 Pass Arm Strength"))
         self.ceiling_spin = QSpinBox()
         self.ceiling_spin.setRange(int(tt.MIN_MAX_DEEP_YARDS), int(tt.MAX_MAX_DEEP_YARDS))
         self.ceiling_spin.setValue(80)
@@ -651,12 +661,12 @@ class BuildPanel(QWidget):
         g.addLayout(throw_row)
         flight_row = QHBoxLayout()
         flight_row.addSpacing(30)
-        self.realistic_check = QCheckBox("Realistic deep-ball flight")
+        self.realistic_check = WrappingCheckBox("Realistic deep-ball flight")
         self.realistic_check.setChecked(True)
         self.realistic_check.setToolTip("The speed table elite NFL arms actually produce: 3.2-3.9 s hang for 60-80 air yards. "
                                         "Overrides the manual arc below.")
         flight_row.addWidget(self.realistic_check)
-        self.arc_by_distance_check = QCheckBox("Realistic arc by distance, with deep-ball touch")
+        self.arc_by_distance_check = WrappingCheckBox("Realistic arc by distance, with deep-ball touch")
         self.arc_by_distance_check.setToolTip("Throws up to 40 yards keep the original speeds. Extra touch at 45-60 yards; "
                                               "60-80 yards hang about 3.2-3.8 seconds, with modeled apex below 20 yards. "
                                               "Discs and SOFTDRINK patches made before beta 76.2 with this option keep "
@@ -744,7 +754,7 @@ class BuildPanel(QWidget):
         for key, caption in (("abilities_lock_right_stick", "Lock right-stick moves behind the ability"),
                              ("abilities_lock_special_moves", "Lock special moves behind their abilities"),
                              ("abilities_lock_speedster", "Lock Speedster speed")):
-            box = QCheckBox(caption)
+            box = WrappingCheckBox(caption)
             box.setChecked(tt.abilities_patch.DEFAULT_LOCKS[key.removeprefix("abilities_")])
             box.setEnabled(False)
             box.setToolTip("Rules v2 setting of the Player abilities option. Both move locks off restores the retail "
@@ -769,7 +779,7 @@ class BuildPanel(QWidget):
                 ("abilities_button_moves_stars_only", "Button moves: stars only",
                  "Only starred players can spin, truck, stiff-arm or use the button jukes. Off in every preset: "
                  "button moves stay open to everyone by default. Needs the Player abilities option and a rebuilt disc.")):
-            box = QCheckBox(caption)
+            box = WrappingCheckBox(caption)
             box.setChecked(tt.abilities_patch.DEFAULT_STARS[key.removeprefix("abilities_")])
             box.setEnabled(False)
             box.setToolTip(tip)
@@ -843,7 +853,7 @@ class BuildPanel(QWidget):
         self.cpu_scrambles_level.addItem("Modern (experimental)", "modern")
         self.cpu_scrambles_level.setAccessibleName(tt.cpu_scrambles_patch.BUILD_CAPTION)
         self.cpu_scrambles_level.setToolTip(tt.cpu_scrambles_patch.HELP_TEXT)
-        g.addWidget(QLabel(tt.cpu_scrambles_patch.BUILD_CAPTION))
+        g.addWidget(WrappedLabel(tt.cpu_scrambles_patch.BUILD_CAPTION))
         g.addWidget(self.cpu_scrambles_level)
         self.cpu_scrambles_level.currentIndexChanged.connect(lambda _index: self._refresh())
         for parent, children in r62_ui.CHILDREN.items():
@@ -1382,8 +1392,12 @@ class BuildPanel(QWidget):
         pack_row.addWidget(self.official_marks_pack_button)
         self.official_marks_import_button = QPushButton("From a SOFTDRINK pack...")
         self.official_marks_import_button.clicked.connect(self._choose_official_marks_file)
-        pack_row.addWidget(self.official_marks_import_button)
+        # b779 rv1: the second button wraps to its own line so this row cannot set the page width.
+        pack_row_more = QHBoxLayout()
+        pack_row_more.addWidget(self.official_marks_import_button)
+        pack_row_more.addStretch(1)
         r.addLayout(pack_row)
+        r.addLayout(pack_row_more)
         self.official_marks_status = WrappedLabel()
         self.official_marks_status.setWordWrap(True)
         self.official_marks_status.setTextFormat(Qt.PlainText)
@@ -1407,8 +1421,11 @@ class BuildPanel(QWidget):
         super_bowl_row.addWidget(self.super_bowl_user_art_button)
         self.super_bowl_user_art_create = QPushButton("Create folder...")
         self.super_bowl_user_art_create.clicked.connect(self._create_super_bowl_user_art)
-        super_bowl_row.addWidget(self.super_bowl_user_art_create)
+        super_bowl_row_more = QHBoxLayout()
+        super_bowl_row_more.addWidget(self.super_bowl_user_art_create)
+        super_bowl_row_more.addStretch(1)
         r.addLayout(super_bowl_row)
+        r.addLayout(super_bowl_row_more)
         self.super_bowl_user_art_status = WrappedLabel()
         self.super_bowl_user_art_status.setWordWrap(True)
         self.super_bowl_user_art_status.setTextFormat(Qt.PlainText)
@@ -1494,7 +1511,8 @@ class BuildPanel(QWidget):
         self.hires_scale_combo.addItem("2x detail", 2)
         self.hires_scale_combo.addItem("Original size", 1)
         self.hires_scale_combo.currentIndexChanged.connect(self._refresh)
-        hires_row.addWidget(self.hires_scale_combo)
+        hires_row_more = QHBoxLayout()
+        hires_row_more.addWidget(self.hires_scale_combo)
         self.hires_target_combo = QComboBox()
         self.hires_target_combo.addItem("64 MiB", "xemu-64")
         self.hires_target_combo.addItem("128 MiB (unavailable)", "xemu-128")
@@ -1502,8 +1520,10 @@ class BuildPanel(QWidget):
         self.hires_target_combo.setItemData(1, "The game still limits texture addresses to the first 64 MiB.", Qt.ToolTipRole)
         self.hires_target_combo.setToolTip("The game still limits texture addresses to the first 64 MiB.")
         self.hires_target_combo.currentIndexChanged.connect(self._refresh)
-        hires_row.addWidget(self.hires_target_combo)
+        hires_row_more.addWidget(self.hires_target_combo)
+        hires_row_more.addStretch(1)
         pl.addLayout(hires_row)
+        pl.addLayout(hires_row_more)
         self.hires_receipt_label = WrappedLabel("")
         self.hires_receipt_label.setWordWrap(True)
         pl.addWidget(self.hires_receipt_label)
@@ -1771,6 +1791,12 @@ class BuildPanel(QWidget):
 
         # Every input feeds one refresh (M03): a lone camera tick enables the button, and a
         # ticked option whose required file is missing names that file instead of vanishing.
+        # b779 rv1: a combo box asks for the width of its longest entry (729 px under Windows Python), which
+        # the page copied into its minimum width. It still takes that width when there is room, but may
+        # narrow to this floor, and the choices stay readable in the drop-down.
+        for combo in self.findChildren(QComboBox):
+            if combo.minimumWidth() == 0 and combo.minimumSizeHint().width() > COMBO_FLOOR_WIDTH:
+                combo.setMinimumWidth(COMBO_FLOOR_WIDTH)
         for box in self.findChildren(QCheckBox):
             box.toggled.connect(lambda _c: self._refresh())
         self.ceiling_spin.valueChanged.connect(lambda _v: self._refresh())
@@ -1801,7 +1827,7 @@ class BuildPanel(QWidget):
         rl.setSpacing(1)
         head = QHBoxLayout()
         head.setSpacing(8)
-        box = QCheckBox(tab_title(label))
+        box = WrappingCheckBox(tab_title(label))
         box.setAccessibleDescription(helper)
         box.setToolTip(helper or details or label)
         head.addWidget(box)
@@ -4602,7 +4628,7 @@ class BuildPanel(QWidget):
         task.signals.progress.connect(self.progress_label.setText)
         task.signals.counts.connect(self._progress_counts)
         task.signals.finished.connect(self._check_done)
-        task.signals.failed.connect(self._failed)
+        task.signals.failed.connect(self._check_failed)
         self._task = task
         self._heartbeat_timer.start()
         self._heartbeat()
@@ -4699,6 +4725,20 @@ class BuildPanel(QWidget):
         running = self._running_line()
         QApplication.clipboard().setText(self._last_build_summary + ("\n" + running if running else ""))
         self.status_label.setText("Build summary copied. Paste it with the first error in your help request.")
+
+    def _check_failed(self, message: str) -> None:
+        """Check my project could not finish: say "check", and do not borrow the last build's summary."""
+        message = plain_error(message)
+        self._last_build_summary = f"2K5 Mod Studio {BUILD_RELEASE_TAG}\nCheck my project\n\nFirst error: {message}"
+        self.copy_summary_button.setEnabled(True)
+        self._heartbeat_timer.stop()
+        self._task = None
+        self.operation_state_changed.emit(False)
+        self.progress_bar.hide()
+        self.progress_label.setText("")
+        self.status_label.setText(plain_failure("check your project", message))
+        show_operation_error(self, "check your project", message)
+        self._refresh()
 
     def _failed(self, message: str) -> None:
         message = plain_error(message)

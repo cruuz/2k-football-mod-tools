@@ -1,11 +1,34 @@
 """Project colour controls. Pure preview and settings; the core owner does all writes."""
 from copy import deepcopy
 
-from PyQt5.QtCore import Qt, QSignalBlocker, pyqtSignal
+from PyQt5.QtCore import QSize, Qt, QSignalBlocker, pyqtSignal
 from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel,
                              QPushButton, QCheckBox, QComboBox, QSlider, QDoubleSpinBox,
                              QTabWidget, QStackedWidget, QScrollArea, QFrame)
 from mod_editor.core import nfl2k5_modern_color as colour
+from mod_editor.gui.ux_text import WrappingCheckBox
+
+
+class _SwatchLabel(QLabel):
+    """A colour read-out that asks for a steady width but may narrow when the page is squeezed.
+
+    b779 rv1: the read-outs set a fixed minimum equal to the text "255, 255, 255" (237 px under
+    Windows Python), so two of them plus a slider and a spin box held the whole Build tab wide.
+    """
+
+    NARROWEST = 96
+
+    def __init__(self, preferred_width: int, parent=None):
+        super().__init__(parent)
+        self._preferred_width = preferred_width
+
+    def sizeHint(self):
+        hint = super().sizeHint()
+        return QSize(max(hint.width(), self._preferred_width), hint.height())
+
+    def minimumSizeHint(self):
+        hint = super().minimumSizeHint()
+        return QSize(min(self._preferred_width, self.NARROWEST), hint.height())
 
 
 class ColourLightingControls(QWidget):
@@ -95,13 +118,13 @@ class ColourLightingControls(QWidget):
         page = QWidget()
         layout = QGridLayout(page)
         layout.setAlignment(Qt.AlignTop)
-        toggle = QCheckBox("Adjust " + colour.GROUPS[group].lower())
+        toggle = WrappingCheckBox("Adjust " + colour.GROUPS[group].lower())
         toggle.setObjectName("colour_group_" + group)
         self.groups[group] = toggle
         layout.addWidget(toggle, 0, 0, 1, 4)
         toggle.toggled.connect(lambda on, g=group: self._group_changed(g, on))
         if group in ("endzones", "outside"):
-            link = QCheckBox("Link surfaces: follow field" if group == "outside" else "Follow turf colour")
+            link = WrappingCheckBox("Link surfaces: follow field" if group == "outside" else "Follow turf colour")
             if group == "outside":
                 link.setToolTip("Linked outside grass follows the field target for each condition. Unlink to use your saved outside colour.")
             self.links[group] = link
@@ -117,7 +140,7 @@ class ColourLightingControls(QWidget):
         for key, spec in colour.control_specs().items():
             if spec["group"] != group:
                 continue
-            use = QCheckBox(spec["label"])
+            use = WrappingCheckBox(spec["label"])
             use.setObjectName("colour_use_" + key)
             use.setToolTip("On uses the saved value. Off uses this lever's retail value; your saved value is retained.")
             slider, spin = QSlider(Qt.Horizontal), QDoubleSpinBox()
@@ -130,9 +153,8 @@ class ColourLightingControls(QWidget):
             spin.setKeyboardTracking(False)
             for w in (slider, spin):
                 w.setAccessibleName(colour.GROUPS[group] + ": " + spec["label"])
-            prediction, target = QLabel(), QLabel()
+            prediction, target = _SwatchLabel(swatch_width), _SwatchLabel(swatch_width)
             for label in (prediction, target):
-                label.setMinimumWidth(swatch_width)
                 label.setAlignment(Qt.AlignCenter)
             self.rows[key] = dict(use=use, slider=slider, spin=spin, prediction=prediction, target=target)
             layout.addWidget(use, n, 0, 1, 4)

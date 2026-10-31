@@ -62,14 +62,16 @@ import shutil
 import struct
 import copy
 import csv
+import threading
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable, Mapping, Sequence
 
-from PyQt5.QtCore import QObject, QRunnable, QSize, Qt, QThreadPool, pyqtSignal
+from PyQt5.QtCore import QObject, QRunnable, QSignalBlocker, QSize, Qt, QThreadPool, pyqtSignal
 from PyQt5.QtGui import QColor, QFont, QPainter, QPen
 from PyQt5.QtWidgets import (
     QAbstractItemView,
+    QApplication,
     QCheckBox,
     QComboBox,
     QDialog,
@@ -86,6 +88,7 @@ from PyQt5.QtWidgets import (
     QMenu,
     QMessageBox,
     QPlainTextEdit,
+    QProgressDialog,
     QPushButton,
     QScrollArea,
     QSizePolicy,
@@ -179,6 +182,45 @@ class UndoStack:
         return len(self._done), len(self._undone)
 
 
+def run_in_background(parent: QWidget | None, title: str, text: str, work: Callable[[], Any]) -> Any:
+    """Run ``work()`` on a worker thread while a busy dialog keeps the window painting.
+
+    Returns what ``work`` returns, or raises what it raised, on the calling thread. The call
+    blocks the way a modal dialog does (nothing else in the Studio can be clicked), but the
+    event loop keeps running, so the window never goes "Not Responding" during a long CSV preview.
+    """
+
+    outcome: dict[str, Any] = {}
+
+    def target() -> None:
+        try:
+            outcome["value"] = work()
+        except Exception as exc:  # noqa: BLE001 - handed back to the caller's thread below
+            outcome["error"] = exc
+
+    progress = QProgressDialog(text, "", 0, 0, parent)
+    progress.setWindowTitle(title)
+    progress.setCancelButton(None)
+    progress.setWindowModality(Qt.WindowModal)
+    progress.setMinimumDuration(0)
+    progress.setAutoClose(False)
+    progress.setAutoReset(False)
+    progress.show()
+    worker = threading.Thread(target=target, name="roster-csv-preview", daemon=True)
+    worker.start()
+    try:
+        while worker.is_alive():
+            QApplication.processEvents()
+            worker.join(0.03)
+    finally:
+        worker.join()
+        progress.close()
+        progress.deleteLater()
+    if "error" in outcome:
+        raise outcome["error"]
+    return outcome.get("value")
+
+
 class PlayerCsvPreviewDialog(QDialog):
     """Read-only full diff, including every refused row, before one import command."""
 
@@ -229,6 +271,10 @@ class PlayerCsvPreviewDialog(QDialog):
                         "appearance, equipment and bio)")
             summary += ("; tick the box to import them."
                         if self.appearance_checkbox is not None else ".")
+        skipped = receipt.get('skipped') or []
+        if skipped:
+            summary += (f" {len(skipped)} appearance or bio values this roster cannot take were skipped; "
+                        "the rest of those rows still imports (listed below).")
         summary += (" Apply changes to the loaded roster, then use Undo to reverse the whole import.")
         self.summary.setText(summary)
         entries = []
@@ -240,6 +286,10 @@ class PlayerCsvPreviewDialog(QDialog):
         for row in receipt['refused']:
             identity = row.get('label') or f"{row['pool']}:{row['index']}"
             entries.append((row['row'], identity, "", "", "", row['reason']))
+        for row in skipped:
+            identity = row.get('label') or f"{row['pool']}:{row['index']}"
+            entries.append((row['row'], identity, row['field'], "", "",
+                            "Skipped, rest of the row imported: " + row['reason']))
         self.table.setRowCount(len(entries))
         for i, row in enumerate(entries):
             for j, value in enumerate(row):
@@ -249,10 +299,18 @@ class PlayerCsvPreviewDialog(QDialog):
 
     def _toggle_appearance(self, checked: bool) -> None:
         try:
-            preview = self._repreview(bool(checked))
-        except (rr.RosterRecordError, ValueError, csv.Error) as exc:
+            preview = run_in_background(
+                self, "Previewing the CSV",
+                "Checking every row against the roster again. This can take a little while on a big file.",
+                lambda: self._repreview(bool(checked)))
+        except Exception as exc:  # noqa: BLE001 - a slot must never raise into Qt
+            # b779 rv1: the box and the preview must agree, because Apply uses the preview. The old
+            # preview is still the one shown, so put the box back to match it and say what failed.
+            with QSignalBlocker(self.appearance_checkbox):
+                self.appearance_checkbox.setChecked(not checked)
             QMessageBox.warning(self, "Could not preview the CSV again",
-                                f"{exc}\nCorrect the CSV and preview it again.")
+                                f"{exc}\nThe box was put back to match the preview shown. "
+                                "Correct the CSV and preview it again.")
             return
         self._fill(preview)
 
@@ -3782,7 +3840,9 @@ class RosterEditorPanel(QWidget):
             if len(raw) > rr.CSV_MAX_BYTES:
                 raise rr.RosterRecordError("Player CSV exceeds 16 MiB; export a smaller list.")
             text = raw.decode("utf-8-sig")
-            preview = self.preview_csv_text(text)
+            preview = run_in_background(
+                self, "Previewing the CSV", "Checking every row against the roster. This can take a little while on a big file.",
+                lambda: self.preview_csv_text(text))
             dialog = PlayerCsvPreviewDialog(
                 preview, self,
                 repreview=lambda include: self.preview_csv_text(
