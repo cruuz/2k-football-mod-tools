@@ -200,7 +200,12 @@ class RetailTests(unittest.TestCase):
                                 and row["size"] == size for row in spans))
         manifest = ReservationManifest.load(DEFAULT_MANIFEST, XbeImage(self.retail))
         self.assertEqual(manifest.overlaps(zone.HOOK_VA, zone.CONTINUE_VA, exclude_owner=zone.OWNER), [])
-        proof = space.allocation_evidence(self.retail, manifest)
+        # The current manifest reserves the complete production owner union (it carries return coverage and the
+        # module loader, which space.dormant_union() does not list), so the ownership proof is made against that
+        # union's allocated image, exactly as the xbe_space and cave-reference suites pass `allocated=`.
+        from tests.nfl2k5_allocator_stack import production_union
+        union_image, _ = space.apply(self.retail, production_union(), scaleout=True)
+        proof = space.allocation_evidence(self.retail, manifest, allocated=union_image)
         # The dormant union is v3 since beta 62: the legacy pages stay encoding-free, the
         # large runs disclose their raw candidates and never overlap a retail mapping.
         self.assertEqual(proof["legacy_encoded_references"], [])
