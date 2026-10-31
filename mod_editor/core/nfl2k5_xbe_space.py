@@ -826,6 +826,8 @@ def dormant_union():
     from . import nfl2k5_honors as honors  # b77-f5 (i1: code in the MyCareer footprint, data in the legacy RW tail)
     from . import nfl2k5_star_career as star_career  # b778-st2: late owner
     from . import nfl2k5_classic_teams as classic_teams  # b775-ct1: late, last read-only owner
+    from . import nfl2k5_return_coverage as return_coverage  # b778-kr1: in build_manifest's all_requests (verification tooling)
+    from . import nfl2k5_module_loader as module_loader  # b778-xs1: the last late owner
     # keep this in step with tests/nfl2k5_allocator_stack.REQUESTS and the manifest builder's all_requests
     return (camera.REQUESTS + relocated.REQUESTS + momentum.REQUESTS + defensive_try.REQUESTS + runtime.REQUESTS
             + zone_drop.REQUESTS + roster_storage.REQUESTS + coverage.REQUESTS + scramble.REQUESTS + playlist.REQUESTS
@@ -849,7 +851,9 @@ def dormant_union():
             + draft_picks.REQUESTS + hback.REQUESTS + team_ratings.REQUESTS + moment_context.REQUESTS
             + star_career.REQUESTS  # b778-st2
             + third_down.REQUESTS  # b778-ai8
-            + classic_teams.REQUESTS)  # b775-ct1 after b775-mo2
+            + classic_teams.REQUESTS  # b775-ct1 after b775-mo2
+            + return_coverage.REQUESTS  # b779-fixD: matches build_manifest's all_requests so allocation_evidence() needs no allocated=
+            + module_loader.REQUESTS)
 
 
 def is_scaleout(payload):
