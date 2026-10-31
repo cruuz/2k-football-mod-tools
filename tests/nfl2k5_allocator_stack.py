@@ -103,14 +103,11 @@ REQUESTS += classic_teams.REQUESTS
 def production_union():
     """The owner union the production cave-manifest build allocates (``build_manifest``'s ``all_requests``).
 
-    ``space.dormant_union()`` plus the two owners the builder lists after it: return coverage (b778-kr1) and the
-    on-demand module loader (b778-xs1), which the product installs through ``extend_scaleout`` but whose pages the
-    observed full build already carries in the one grown allocator span. Bounded projections that must keep the
-    coverage check exact allocate this union, so the inherited ``nfl2k5_xbe_space`` span lies inside their regions.
+    ``space.dormant_union()`` includes return coverage and the on-demand module loader, matching the observed
+    full build's grown allocator span. Bounded projections allocate that complete union exactly once so the
+    inherited ``nfl2k5_xbe_space`` span lies inside their regions without duplicate owner/kind requests.
     """
-    from mod_editor.core import nfl2k5_module_loader as module_loader
-    from mod_editor.core import nfl2k5_return_coverage as return_coverage
-    return tuple(space.dormant_union()) + return_coverage.REQUESTS + module_loader.REQUESTS
+    return tuple(space.dormant_union())
 
 
 SONGS = [dict(title=f"Tone {i+1:03}", artist="Synthetic", frames=256) for i in range(200)]

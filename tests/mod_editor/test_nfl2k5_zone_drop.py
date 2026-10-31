@@ -201,7 +201,7 @@ class RetailTests(unittest.TestCase):
         manifest = ReservationManifest.load(DEFAULT_MANIFEST, XbeImage(self.retail))
         self.assertEqual(manifest.overlaps(zone.HOOK_VA, zone.CONTINUE_VA, exclude_owner=zone.OWNER), [])
         # The current manifest reserves the complete production owner union (it carries return coverage and the
-        # module loader, which space.dormant_union() does not list), so the ownership proof is made against that
+        # module loader, both included in space.dormant_union()), so the ownership proof is made against that
         # union's allocated image, exactly as the xbe_space and cave-reference suites pass `allocated=`.
         from tests.nfl2k5_allocator_stack import production_union
         union_image, _ = space.apply(self.retail, production_union(), scaleout=True)
