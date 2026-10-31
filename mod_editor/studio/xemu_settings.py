@@ -171,8 +171,12 @@ def play_problems(config: Path, *, hash_file=None) -> tuple[str, ...]:
         else:
             known = [digest for known_size, digest in KNOWN_4627_FLASHROM if size == known_size]
             if not known or hasher(bios) not in known:
-                problems.append("Flash ROM (BIOS) " + os.fspath(bios) + " is not the tested Complex 4627 "
-                                "image; 128 MB builds need that BIOS in xemu's System settings.")
+                # b779 rv1: the game only needs a 4627 kernel, and that kernel is compressed inside the flash
+                # image, so the version cannot be read from the file cheaply or reliably. Only the one image
+                # the project tested is recognised; any other is "not confirmed", never "wrong".
+                problems.append("Flash ROM (BIOS) " + os.fspath(bios) + " could not be confirmed as a 4627 BIOS "
+                                "(only the tested Complex 4627 image is recognised here). 128 MB builds need a 4627 "
+                                "kernel; if this one is 4627, you can ignore this note.")
     return tuple(problems)
 
 

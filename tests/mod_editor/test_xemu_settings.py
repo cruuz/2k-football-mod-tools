@@ -142,13 +142,15 @@ class PlayCheckTests(unittest.TestCase):
                                          hash_file=lambda _path: self.HASH)
             self.assertIn("System Memory is not set", warning)
 
-    def test_another_bios_image_is_named_as_not_the_tested_4627(self):
+    def test_another_bios_image_is_not_confirmed_as_4627_rather_than_called_wrong(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp).resolve()
             with patch.object(x, "KNOWN_4627_FLASHROM", ((1_048_576, self.HASH),)):
                 warning = x.play_warning(self._config(root, bios=self._bios(root)),
                                          hash_file=lambda _path: "00" * 32)
-            self.assertIn("not the tested Complex 4627 image", warning)
+            self.assertIn("could not be confirmed as a 4627 BIOS", warning)
+            self.assertIn("you can ignore this note", warning)
+            self.assertNotIn("not the tested", warning)
             self.assertIn("Flash ROM (BIOS)", warning)
 
     def test_a_missing_or_unset_bios_is_named(self):
