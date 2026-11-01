@@ -1,4 +1,8 @@
-# 2K5 Mod Studio: v1.0 RC113 Release Status
+# 2K5 Mod Studio: v1.0 RC114 Release Status
+
+## Beta 79 (RC114 / APF alpha.110, 2026-11-01)
+
+Beta 79 pairs RC114 with SOFTDRINK 2K28 v0.8. It fixes the bugs players reported after beta-78 (MyCareer "Roster is full", thin later draft classes, the 53-man lock, the empty TEAM column and years pro of the free agents, the audible list, Situation mode playbooks, injured players at practice, sideline uniforms, the Player Progress label and the 128 MiB message) and adds a 4,096-player roster with 450-prospect draft classes, retirement by age and a smarter 53-man cut, real history and headshots for the created free agents, CPU defenses that call their real 2025 coordinators' fronts and coverages, pass rush and pass blocking by the ratings, pressures, QB hits, sacks allowed and targets, equal catch odds for human and CPU, CPU quarterback reads by rating, star charge-ups for every star, a Super Bowl champion and MVP notice with a champions history page, modern award voting, realistic simulated rushing with running back injuries, simulated overtime under the 2025 rule, the real Super Bowl, network and team-season logos, and new-profile defaults. Studio adds Check my project, NFL2K5Tool roster CSV import, Franchise > Upgrade for v0.7 saves and a Build tab that fits 1280x720. APF 2K8 code is unchanged; its version moves with the release. The release disc was built from this branch and checked in headless emulator runs; nobody played a full season before release. See the [2K5 changelog](docs/mod_editor/2k5_mod_studio_changelog.md) and the [release page](https://github.com/cruuz/2k-football-mod-tools/releases/tag/beta-79).
 
 ## Beta 78 (RC113 / APF alpha.109, 2026-10-26)
 

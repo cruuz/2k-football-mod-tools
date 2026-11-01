@@ -19,13 +19,65 @@ ARENA_SIZE = 0x92000
 # b778 fa4: a capacity-grown arena keeps the same version numbers (18 disc / 1 save) and the same
 # 0x54-byte primary records; only the declared arena length, the block position and the number of
 # records/names change. The original 0x92000 reserve schema is still read and written exactly.
-CAPACITY_ARENA_SIZE = 0xB0000
-ARENA_SIZES = (ARENA_SIZE, CAPACITY_ARENA_SIZE)
+#
+# b779 ag1 (Noah 10/28: "ideally we just add more slots"): THE capacity layout. Every size that the
+# Studio, the save tools and the native owners name is derived from CAPACITY_ARENA_SIZE here (save
+# sizes, wrapper sizes, the block position, the disc resource size); nothing else spells a literal.
+# beta-78 / v0.7 shipped the 0xB0000 arena (3,231 primary records, 847,020-byte franchise saves); it
+# stays readable and migrates: in the game an old save loads into the bigger arena with its own records
+# (tools/roster_arena/lifecycle.h moves its tail), and Franchise > Upgrade can append the new records.
+# 0xCA000 holds 4,096 primary records from the retail 2,619-record roster (1,477 appended records of
+# 84 bytes plus 68 bytes of private names each, ending at 0xC7D18 for a retail save) with the reserve
+# block and descriptor at the end and about 7.6 KB to spare. 4,096 is MyCareer's own bound on the pool
+# (tools/mycareer_mode/runtime.c player_bounds / mode_create; its state stores the index below 4,096).
+LEGACY_CAPACITY_ARENA_SIZE = 0xB0000      # beta-78 / v0.7
+CAPACITY_ARENA_SIZE = 0xCA000             # beta-79 / v0.8
+CAPACITY_ARENA_SIZES = (LEGACY_CAPACITY_ARENA_SIZE, CAPACITY_ARENA_SIZE)
+ARENA_SIZES = (ARENA_SIZE,) + CAPACITY_ARENA_SIZES
+NAME_BUFFER = 34       # one UTF-16 name buffer in the arena
+CAPACITY_PRIMARY_LIMIT = 4096
 CAPACITY_MAGIC = b'2K5CAP\0\0'
 CAPACITY_DESCRIPTOR_SIZE = 16
+CAPACITY_TAIL = 0x400                     # reserve block (and the save's auxiliary tail) before the arena end
+CAPACITY_RECORD_BYTES = 84 + 68           # one appended primary record and its two private 34-byte names
 BLOCK_SIZE = 352
 BLOCK_OFFSET = 0x91C00
-CAPACITY_BLOCK_OFFSET = CAPACITY_ARENA_SIZE - 0x400
+CAPACITY_BLOCK_OFFSET = CAPACITY_ARENA_SIZE - CAPACITY_TAIL
+LEGACY_CAPACITY_BLOCK_OFFSET = LEGACY_CAPACITY_ARENA_SIZE - CAPACITY_TAIL
+# Native franchise save geometry: settings 0x2E0 + ROST wrapper (arena + 0x40) + season 0x83DC + front
+# office 0x165B0 (0x16AA10). A save's wrapper declares arena + 0x20; a disc main ROST resource is the arena
+# plus its 0x20 wrapper and 0x40 object.
+RETAIL_SAVE_SIZE = 720044
+
+
+def save_size(arena_size: int = CAPACITY_ARENA_SIZE) -> int:
+    """Native franchise save size (no footer) for an arena size, as 0x16AA10 computes it."""
+    return RETAIL_SAVE_SIZE + arena_size - RETAIL_SIZE
+
+
+def save_declared(arena_size: int = CAPACITY_ARENA_SIZE) -> int:
+    """ROST wrapper +4 of a franchise save (version 0/1) with this arena."""
+    return arena_size + 0x20
+
+
+def disc_resource_size(arena_size: int = CAPACITY_ARENA_SIZE) -> int:
+    """Outer-archive size of a grown disc main ROST (version 18) with this arena."""
+    return arena_size + 0x60
+
+
+CAPACITY_SAVE_SIZE = save_size(CAPACITY_ARENA_SIZE)                   # 953,516
+LEGACY_CAPACITY_SAVE_SIZE = save_size(LEGACY_CAPACITY_ARENA_SIZE)     # 847,020
+CAPACITY_SAVE_SIZES = tuple(save_size(size) for size in CAPACITY_ARENA_SIZES)
+CAPACITY_SAVE_GROWTH = CAPACITY_ARENA_SIZE - RETAIL_SIZE
+
+
+def is_capacity_size(arena_size) -> bool:
+    return arena_size in CAPACITY_ARENA_SIZES
+
+
+# Bare (unframed) ROST bodies by version: the save codec and the college check accept exactly these lengths.
+BARE_BODY_SIZES = {0: (0x91020,), 1: (0x92020,), 17: (0x90F60,),
+                   18: (ARENA_SIZE + 0x40,) + tuple(size + 0x40 for size in CAPACITY_ARENA_SIZES)}
 MAGIC = b"2K5RSV2\0"
 VERSION = 2
 SAVE_VERSION = 1
@@ -73,8 +125,8 @@ def block_offset(arena_size):
 
     if arena_size == ARENA_SIZE:
         return BLOCK_OFFSET
-    require(arena_size == CAPACITY_ARENA_SIZE, 'unsupported arena size')
-    return CAPACITY_BLOCK_OFFSET
+    require(is_capacity_size(arena_size), 'unsupported arena size')
+    return arena_size - CAPACITY_TAIL
 
 
 def data_end(layout):
@@ -88,9 +140,9 @@ def data_end(layout):
 def capacity_descriptor(payload, layout):
     """(records, old_end) from the capacity marker, or None for the reserve schema."""
 
-    if layout.arena_size != CAPACITY_ARENA_SIZE:
+    if not is_capacity_size(layout.arena_size):
         return None
-    at = layout.root + CAPACITY_BLOCK_OFFSET - CAPACITY_DESCRIPTOR_SIZE
+    at = layout.root + block_offset(layout.arena_size) - CAPACITY_DESCRIPTOR_SIZE
     raw = bytes(payload[at:at + CAPACITY_DESCRIPTOR_SIZE])
     if raw[:8] != CAPACITY_MAGIC:
         return None
@@ -189,7 +241,8 @@ def pointer_fields(document) -> tuple[int, ...]:
 
 
 def migrate(payload: bytes, *, reserves_16: bool = True, created_teams_extra: int = 0,
-            eligible_team_mask: int = 0, capacity_records: int = 0) -> tuple[bytes, dict]:
+            eligible_team_mask: int = 0, capacity_records: int = 0,
+            class_records: int | None = None) -> tuple[bytes, dict]:
     """Copy-only v0/v17 migration. Eligibility is an explicit per-team decision.
 
     Created IDs CREATED_IDS (250/251) are distinct from the retail special
@@ -204,7 +257,7 @@ def migrate(payload: bytes, *, reserves_16: bool = True, created_teams_extra: in
     if capacity_records:
         require(not reserves_16 and not created_teams_extra and not eligible_team_mask,
                 'capacity growth composes with neither the reserve overflow nor extra created teams')
-        return _migrate_capacity(payload, capacity_records)
+        return _migrate_capacity(payload, capacity_records, class_records)
     require(reserves_16 or created_teams_extra, 'select at least one arena growth option')
     block = Overflow(eligible_mask=eligible_team_mask, extra_teams=created_teams_extra,
                      reserves_enabled=reserves_16)
@@ -313,122 +366,260 @@ def migrate(payload: bytes, *, reserves_16: bool = True, created_teams_extra: in
                     'after_sha256': hashlib.sha256(result).hexdigest()}
 
 
-def _migrate_capacity(payload: bytes, records: int) -> tuple[bytes, dict]:
-    """Append blank primary records and private name buffers, growing the arena to CAPACITY_ARENA_SIZE.
+def capacity_fit(old_end_rel: int, arena_size: int = CAPACITY_ARENA_SIZE) -> int:
+    """How many appended records (84 bytes plus 68 bytes of names) fit after arena-relative ``old_end_rel``."""
+    room = arena_size - CAPACITY_TAIL - CAPACITY_DESCRIPTOR_SIZE - ((old_end_rel + 1) & ~1)
+    return max(0, room // CAPACITY_RECORD_BYTES)
+
+
+def capacity_class_records(primary_before: int, records: int, old_end_rel: int,
+                           arena_size: int = CAPACITY_ARENA_SIZE) -> int:
+    """b779 ag1: free records appended after the ``records`` create vacancies, up to CAPACITY_PRIMARY_LIMIT.
+
+    They are the native "free for a draft class" state (flags & 5 == 0, like the disc's own 380-record first-class
+    window): no team, no free-agent entry, no Create Player vacancy. The economy's class allocator and the
+    retirement pass's free count (tools/franchise_economy/runtime.c economy_class_free) take them first, so the
+    league can keep more unsigned players before it has to retire anyone to make a class."""
+    fit = capacity_fit(old_end_rel, arena_size)
+    return max(0, min(CAPACITY_PRIMARY_LIMIT - primary_before - records, fit - records))
+
+
+def capacity_class_count(payload, layout) -> int:
+    """Appended capacity records still in the free class state (flags byte 0): the class records a growth added."""
+    from .nfl2k5_save_rost import decode
+    descriptor = capacity_descriptor(payload, layout)
+    if descriptor is None:
+        return 0
+    primary = decode(payload, preamble=layout.preamble).tables['primary']
+    first = primary.count - descriptor[0]
+    return sum(1 for i in range(first, primary.count) if payload[primary.offset + i * 84 + 8] == 0)
+
+
+def _class_template(payload, document, primary):
+    """The last free record (flags 0, a college, no history, owned by nobody): the disc's first-class window."""
+    owned = set()
+    for team in document.teams:
+        owned.update(team.player_offsets)
+    fa = document.tables['free_agents']
+    if fa.offset is not None:
+        owned.update(document.rel(fa.offset + i * 4) for i in range(fa.count))
+    for index in range(primary.count - 1, 0, -1):
+        at = primary.offset + index * 84
+        if payload[at + 8] != 0 or at in owned or document.rel(at) is None or document.rel(at + 0x2C) is not None:
+            continue
+        return at
+    return None
+
+
+def _migrate_capacity(payload: bytes, records: int, class_records: int | None = None,
+                      arena_size: int = CAPACITY_ARENA_SIZE) -> tuple[bytes, dict]:
+    """Append blank primary records and private name buffers, growing the arena to ``arena_size``.
 
     Every existing table and object keeps its bytes; the primary insertion moves everything after
-    the primary table by records * 0x54 and rebases the exact pointer inventory used by C0730. The
-    new records copy the last vacant create record and point at two fresh 34-byte blank names in the
-    growth area, so the native Create Player and the dated refresh can both use them. The free-agent
-    list is not moved or extended here; the roster writers append entries into the native list's
-    existing 2,500-slot capacity. The reserve block moves to the end of the grown arena and stays
-    empty, which is what the capacity runtime validates.
+    the primary table by (appended records) * 0x54 and rebases the exact pointer inventory used by C0730.
+    The first ``records`` new records copy the last vacant create record (Create Player and the dated
+    refresh use them); the next ``class_records`` (default: up to CAPACITY_PRIMARY_LIMIT primary records,
+    capacity_class_records) copy the last free first-class record (flags 0) so the draft class can use
+    them. Every new record points at two fresh 34-byte names in the growth area: '*' blanks for a vacancy,
+    zeros (empty, like the disc window's) for a class record. The free-agent list is not moved or extended
+    here; the roster writers append entries into the native list's existing 2,500-slot capacity. The reserve
+    block moves to the end of the grown arena and stays empty, which is what the capacity runtime validates.
+
+    b779 ag1: a beta-78 capacity roster or save (0xB0000, with its descriptor) is grown the same way: the new
+    records follow its existing appended records, their names follow its names, and the 0x400-byte tail
+    (descriptor, block, a save's auxiliary bytes) moves to the new end. The result is byte for byte the layout a
+    single growth of all the appended records would make, so one descriptor still describes it.
     """
     from .nfl2k5_save_rost import decode
-    require(0 < records < 0x10000, 'invalid capacity record request')
+    require(0 <= records < 0x10000, 'invalid capacity record request')
+    require(is_capacity_size(arena_size) and arena_size > ARENA_SIZE, 'unsupported capacity arena size')
     payload = bytes(payload)
     document = decode(payload)
     layout = document.layout
-    prior = read(payload, layout.root, layout.end, layout.version)
-    if prior is not None:
-        descriptor = capacity_descriptor(payload, layout)
-        require(descriptor is not None and descriptor[0] == records,
-                'arena settings differ; rebuild from the original')
-        return payload, {'already_applied': True, 'changed_bytes': 0, 'file_growth': 0,
-                         'capacity_records': records, 'arena_size': layout.arena_size}
-    require(layout.version in (0, 17), 'capacity growth requires a retail or saved roster')
-    require(layout.arena_size in (RETAIL_SIZE, 0x90F20), 'capacity growth requires the retail arena')
     primary = document.tables['primary']
     require(primary.offset is not None, 'missing primary player table')
-    old_count, old_end, root = primary.count, layout.end, layout.root
+    prior = read(payload, layout.root, layout.end, layout.version)
+    root = layout.root
+    old_count = primary.count
+    if prior is not None:
+        descriptor = capacity_descriptor(payload, layout)
+        require(descriptor is not None, 'arena settings differ; rebuild from the original')
+        appended, old_end = descriptor
+        if layout.arena_size == arena_size:
+            fill = capacity_class_records(old_count - appended, records, old_end - root, arena_size)
+            ok = (records <= appended <= records + fill if class_records is None
+                  else appended == records + class_records)
+            require(ok, 'arena settings differ; rebuild from the original')
+            return payload, {'already_applied': True, 'changed_bytes': 0, 'file_growth': 0,
+                             'capacity_records': appended, 'arena_size': layout.arena_size}
+        require(layout.arena_size < arena_size, 'capacity arena is already larger than requested')
+        # Extension: only free class records are added; the existing vacancies stay as they are.
+        vacancies = 0
+        base_count = old_count - appended
+        tail_from = root + layout.arena_size - CAPACITY_TAIL - CAPACITY_DESCRIPTOR_SIZE
+        names_old_start = (old_end + appended * 84 + 1) & ~1
+        names_old_end = names_old_start + appended * 68
+        # b779 up2: a save the game wrote can hold more name strings after the descriptor's names (the v0.7 game
+        # puts 21 blank-name buffers there for its Create Player records); they move with the growth, after the
+        # new names, and the pointers that select them are rebased.
+        extra_end = tail_from
+        while extra_end > names_old_end and not payload[extra_end - 1]:
+            extra_end -= 1
+        extra_end = min(tail_from, (extra_end + 1) & ~1)
+        # A game-written save re-points some records at buffers that straddle the descriptor's names end; the
+        # relocated block starts at the first such buffer so no string is cut.
+        extra_from = names_old_end
+        if extra_end > names_old_end:
+            for field in pointer_fields(document):
+                target = document.rel(field, label='capacity relocation')
+                if target is not None and names_old_end - NAME_BUFFER < target < names_old_end:
+                    extra_from = min(extra_from, target)
+        extra = bytes(payload[extra_from:extra_end])
+        free = (capacity_class_records(base_count, appended, old_end - root + max(0, extra_end - names_old_end), arena_size)
+                if class_records is None else class_records)
+        source = 'capacity'
+    else:
+        require(layout.version in (0, 17), 'capacity growth requires a retail or saved roster')
+        require(layout.arena_size in (RETAIL_SIZE, 0x90F20), 'capacity growth requires the retail arena')
+        appended, old_end, vacancies = 0, layout.end, records
+        extra, extra_from = b'', None
+        base_count = old_count
+        free = (capacity_class_records(base_count, records, old_end - root, arena_size)
+                if class_records is None else class_records)
+        names_old_end = None
+        source = 'retail'
+    require(type(free) is int and free >= 0, 'invalid class record request')
+    class_template = _class_template(payload, document, primary) if free else None
+    if class_records is None and class_template is None:
+        free = 0        # no free first-class record to copy (a synthetic or emptied roster): vacancies only
+    total = appended + vacancies + free
+    # an extension with nothing to copy (no free first-class record) still moves the tail to the bigger arena
+    require(0 < total < 0x10000 and (vacancies + free > 0 or prior is not None), 'nothing to append')
+    require(base_count + total <= CAPACITY_PRIMARY_LIMIT, 'the primary pool would exceed MyCareer\'s 4,096 records')
     point = primary.offset + old_count * 84
-    insert = records * 84
-    names_start = (old_end + insert + 1) & ~1
-    names_end = names_start + records * 68
-    block_at = root + CAPACITY_BLOCK_OFFSET
-    require(names_end <= block_at - CAPACITY_DESCRIPTOR_SIZE, 'capacity records and names do not fit the arena')
+    insert = (vacancies + free) * 84
+    names_start = (old_end + total * 84 + 1) & ~1
+    names_end = names_start + total * 68
+    block_at = root + block_offset(arena_size)
+    require(names_end + len(extra) <= block_at - CAPACITY_DESCRIPTOR_SIZE,
+            'capacity records and names do not fit the arena')
+    names_shift = free * 68 if extra else 0       # the extra name strings follow the new names
+    extra_moves = (names_old_end - extra_from + insert + names_shift) if extra else 0
     fields = pointer_fields(document)
     targets = {field: document.rel(field, label='capacity relocation') for field in fields}
+    source_end = layout.end if prior is None else tail_from
 
     def moved(value):
         if value is None:
             return None
-        require(value < old_end, 'pointer outside the source arena')
+        require(value < source_end, 'pointer outside the source arena')
+        if extra and value >= extra_from:
+            return value + extra_moves
         return value + insert if value >= point else value
 
-    # The last blank create record is the template; every new record gets private name buffers.
+    # The last blank create record is the vacancy template; the last free window record is the class template.
     template = None
-    for index in range(old_count - 1, 0, -1):
-        at = primary.offset + index * 84
-        if payload[at + 8] & 5 != 1:
-            continue
-        first = document.rel(at + 0x10)
-        last = document.rel(at + 0x14)
-        if first is None or last is None or last != first + 34:
-            continue
-        if document.original[first:first + 34] == '****************'.encode('utf-16le') + b'\0\0' \
-                and document.original[last:last + 34] == '****************'.encode('utf-16le') + b'\0\0':
-            template = at
-            break
-    require(template is not None, 'capacity growth needs a blank create record to copy')
-    template_raw = payload[template:template + 84]
-    template_targets = {field: document.rel(template + field) for field in TABLE_POINTERS['primary']}
+    if vacancies:
+        for index in range(old_count - 1, 0, -1):
+            at = primary.offset + index * 84
+            if payload[at + 8] & 5 != 1:
+                continue
+            first = document.rel(at + 0x10)
+            last = document.rel(at + 0x14)
+            if first is None or last is None or last != first + 34:
+                continue
+            if document.original[first:first + 34] == '****************'.encode('utf-16le') + b'\0\0' \
+                    and document.original[last:last + 34] == '****************'.encode('utf-16le') + b'\0\0':
+                template = at
+                break
+        require(template is not None, 'capacity growth needs a blank create record to copy')
+    require(not free or class_template is not None, 'capacity growth needs a free first-class record to copy')
+    templates = {}
+    for kind, at in (('vacancy', template), ('class', class_template)):
+        if at is not None:
+            templates[kind] = (payload[at:at + 84], {field: document.rel(at + field) for field in TABLE_POINTERS['primary']})
 
-    new_end = root + CAPACITY_ARENA_SIZE
-    out = bytearray(payload[:point]) + bytearray(insert) + bytearray(payload[point:old_end])
-    out.extend(bytes(new_end - len(out)))
-    out.extend(payload[old_end:])
+    if prior is None:
+        new_end = root + arena_size
+        out = bytearray(payload[:point]) + bytearray(insert) + bytearray(payload[point:old_end])
+        out.extend(bytes(new_end - len(out)))
+        out.extend(payload[old_end:])
+    else:
+        new_end = root + arena_size
+        tail = payload[tail_from:layout.end]
+        keep_to = extra_from if extra else names_old_end
+        out = bytearray(payload[:point]) + bytearray(insert) + bytearray(payload[point:keep_to])
+        if extra:
+            require(not any(f >= extra_from for f in fields), 'a relocation field lies in the extra name strings')
+            out.extend(bytes(names_old_end + insert + names_shift - len(out)))   # new names are written below
+            out.extend(extra)
+        out.extend(bytes(new_end - len(tail) - len(out)))
+        out.extend(tail)
+        out.extend(payload[layout.end:])
+        require(len(out) == len(payload) + arena_size - layout.arena_size, 'capacity extension length mismatch')
     for field, target in targets.items():
         field_at = moved(field)
         target_at = moved(target)
         struct.pack_into('<i', out, field_at, 0 if target_at is None else target_at - field_at + 1)
-    struct.pack_into('<I', out, root, old_count + records)
-    for i in range(records):
+    struct.pack_into('<I', out, root, old_count + vacancies + free)
+    star = '****************'.encode('utf-16le') + b'\0\0'
+    for i in range(vacancies + free):
+        kind = 'vacancy' if i < vacancies else 'class'
+        raw, template_targets = templates[kind]
         at = point + i * 84
-        out[at:at + 84] = template_raw
+        out[at:at + 84] = raw
         for field in TABLE_POINTERS['primary']:
             target_at = moved(template_targets[field])
-            # A blank create record has no college/history identity; new vacancies start null.
-            if field in (0, 0x2C):
+            # A blank create record has no college/history identity; new vacancies start null. A class record keeps
+            # the window's college (the class generator does not set one; a null college bugchecks the FA panel).
+            if field == 0x2C or (field == 0 and kind == 'vacancy'):
                 target_at = None
             struct.pack_into('<i', out, at + field, 0 if target_at is None else target_at - at - field + 1)
-        name = names_start + i * 68
-        blank = '****************'.encode('utf-16le') + b'\0\0'
+        name = names_start + (appended + i) * 68
+        blank = star if kind == 'vacancy' else bytes(34)
         out[name:name + 34] = blank
         out[name + 34:name + 68] = blank
         for field, target_at in ((0x10, name), (0x14, name + 34)):
             struct.pack_into('<i', out, at + field, target_at - at - field + 1)
-    struct.pack_into('<I', out, layout.preamble + 0x10,
-                     SAVE_VERSION if layout.version == 0 else DISC_VERSION)
+    if prior is None:
+        struct.pack_into('<I', out, layout.preamble + 0x10,
+                         SAVE_VERSION if layout.version == 0 else DISC_VERSION)
     descriptor_at = block_at - CAPACITY_DESCRIPTOR_SIZE
     out[descriptor_at:descriptor_at + CAPACITY_DESCRIPTOR_SIZE] = struct.pack(
-        '<8sII', CAPACITY_MAGIC, records, old_end)
-    write_block(out, root, Overflow(reserves_enabled=False), arena_size=CAPACITY_ARENA_SIZE)
+        '<8sII', CAPACITY_MAGIC, total, old_end)
+    if prior is None:
+        write_block(out, root, Overflow(reserves_enabled=False), arena_size=arena_size)
     if layout.wrapper is not None:
-        struct.pack_into('<I', out, layout.wrapper + 4, root + CAPACITY_ARENA_SIZE - layout.preamble)
-        if layout.version == 0:
+        struct.pack_into('<I', out, layout.wrapper + 4, root + arena_size - layout.preamble)
+        if layout.version in (0, 1) and prior is None:
             auxiliary = struct.unpack_from('<I', payload, layout.wrapper + 8)[0]
             if not auxiliary and any(payload[old_end - 366:old_end]):
                 # Some real saves leave the native 366-byte auxiliary tail undeclared (wrapper +8 = 0)
                 # while the tail still holds state. Preserve it and declare it in the grown wrapper.
                 auxiliary = 366
-            require(auxiliary <= CAPACITY_ARENA_SIZE - CAPACITY_BLOCK_OFFSET - BLOCK_SIZE,
+            require(auxiliary <= CAPACITY_TAIL - BLOCK_SIZE,
                     'native auxiliary tail overlaps the capacity block')
             if auxiliary:
                 out[new_end - auxiliary:new_end] = payload[old_end - auxiliary:old_end]
                 struct.pack_into('<I', out, layout.wrapper + 8, auxiliary)
-        else:
-            struct.pack_into('<I', out, layout.wrapper + 8, root + CAPACITY_ARENA_SIZE - layout.preamble)
+        elif layout.version in (17, 18):
+            struct.pack_into('<I', out, layout.wrapper + 8, root + arena_size - layout.preamble)
     result = bytes(out)
     final = decode(result)
-    require(final.tables['primary'].count == old_count + records, 'capacity record count mismatch')
-    require(capacity_descriptor(result, final.layout) == (records, old_end), 'capacity descriptor mismatch')
+    require(final.layout.arena_size == arena_size, 'capacity arena size mismatch')
+    require(final.tables['primary'].count == old_count + vacancies + free, 'capacity record count mismatch')
+    require(capacity_descriptor(result, final.layout) == (total, old_end), 'capacity descriptor mismatch')
+    require(read(result, final.layout.root, final.layout.end, final.layout.version) is not None,
+            'capacity block missing after growth')
     return result, {'already_applied': False, 'experimental': True, 'runtime_witnessed': False,
-                    'arena_size': CAPACITY_ARENA_SIZE, 'capacity_records': records,
-                    'primary_before': old_count, 'primary_after': old_count + records,
+                    'source': source, 'arena_size_before': layout.arena_size,
+                    'arena_size': arena_size, 'capacity_records': total,
+                    'vacancy_records': vacancies, 'class_records': free,
+                    'primary_before': old_count, 'primary_after': old_count + vacancies + free,
+                    'primary_limit': CAPACITY_PRIMARY_LIMIT,
                     'record_insert_offset': point, 'record_insert_bytes': insert,
                     'names_start': names_start, 'names_end': names_end,
-                    'block_offset': CAPACITY_BLOCK_OFFSET, 'pointer_fields_rebased': len(fields),
+                    'block_offset': block_offset(arena_size), 'pointer_fields_rebased': len(fields),
                     'file_growth': len(result) - len(payload),
                     'before_sha256': hashlib.sha256(payload).hexdigest(),
                     'after_sha256': hashlib.sha256(result).hexdigest()}
@@ -505,9 +696,9 @@ def legacy_disc_resource(payload: bytes) -> bytes:
     from .nfl2k5_save_rost import decode
     from . import nfl2k5_practice_squad as ps
     payload = bytes(payload)
-    if len(payload) == CAPACITY_ARENA_SIZE + 0x60:
+    if len(payload) in tuple(disc_resource_size(size) for size in CAPACITY_ARENA_SIZES):
         document = decode(payload)
-        require(document.layout.arena_size == CAPACITY_ARENA_SIZE, 'not a grown disc roster')
+        require(disc_resource_size(document.layout.arena_size) == len(payload), 'not a grown disc roster')
         legacy = _legacy_capacity(payload, document.layout)
         require(len(legacy) == LEGACY_DISC_RESOURCE_SIZE, 'capacity reverse is not retail geometry')
         return legacy
@@ -558,7 +749,7 @@ def grown_outer(archive, index: int) -> bool:
     """True when outer ``index`` of an OuterImage-style archive has a grown disc roster size."""
     entries = archive.entries
     return len(entries) > index and entries[index].size in (
-        GROWN_DISC_RESOURCE_SIZE, CAPACITY_ARENA_SIZE + 0x60)
+        (GROWN_DISC_RESOURCE_SIZE,) + tuple(disc_resource_size(size) for size in CAPACITY_ARENA_SIZES))
 
 
 def inspection_resource(archive, index: int) -> bytes:
@@ -633,13 +824,13 @@ def remap_reserves(original, candidate, identity_map):
 
 
 def migrate_save(source, target, *, reserves_16=True, created_teams_extra=0, eligible_team_mask=0,
-                 capacity_records=0):
+                 capacity_records=0, class_records=None):
     """Verify the original signature and write/reopen a newly signed COPY."""
     from . import nfl2k5_save_rost as codec
     document, container = codec.load_save(source)
     payload, receipt = migrate(document.to_bytes(), reserves_16=reserves_16,
                                created_teams_extra=created_teams_extra, eligible_team_mask=eligible_team_mask,
-                               capacity_records=capacity_records)
+                               capacity_records=capacity_records, class_records=class_records)
     written = container.write(target, payload)
     reopened, _ = codec.load_save(target)
     require(reopened.to_bytes() == payload, 'migrated signed copy differs')
@@ -657,7 +848,8 @@ def main(argv=None):
     parser.add_argument('--created-teams-extra', type=int, choices=(0, 2), default=0)
     parser.add_argument('--reserves-16', action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument('--capacity-records', type=int, default=0,
-                        help='b778 fa4: grow to the 0xB0000 capacity arena with this many blank records')
+                        help='grow to the capacity arena (CAPACITY_ARENA_SIZE) with this many create vacancies; '
+                             'free class records fill the pool up to CAPACITY_PRIMARY_LIMIT')
     parser.add_argument('--eligible-team-mask', type=lambda s: int(s, 0), default=0)
     args = parser.parse_args(argv)
     try:

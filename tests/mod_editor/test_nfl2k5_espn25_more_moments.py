@@ -169,7 +169,7 @@ class WiringTests(unittest.TestCase):
         self.assertEqual(len(sites["announcer"][2]), 31)
 
     def test_template_reproduces(self):
-        from _gnu_elf32_as import gnu_elf32_as
+        gnu_elf32_as = __import__("importlib").import_module(("tests.mod_editor." if __package__ else "") + "_gnu_elf32_as").gnu_elf32_as  # script and module form (b779-int1)
         if not shutil.which("as") or not gnu_elf32_as():
             self.skipTest("GNU as with ELF32 output is required for template reproduction")
         subprocess.run([sys.executable, str(ROOT / "tools/nfl2k5_espn25_more_moments_assemble.py"), "--check"],
@@ -381,6 +381,20 @@ class RetailCompileTests(unittest.TestCase):
             self.assertNotIn("OLB", {p.record.position_name for p in rr.RosterDocument(one_pool[32:]).players}
                              - {p.record.position_name for p in rr.RosterDocument(raw[32:]).players
                                 if p.record.position_name != "OLB"})
+
+    def test_moment_team_files_carry_the_franchise_style_table(self):
+        """The SITU kit index is chosen against the main roster's franchise style pairs; the game resolves that index
+        against the moment team file, so the compiled file must carry the same 14 pairs. The template's own pairs
+        name a different era (e.g. the 2000 Ravens template says 1997-1999 for style 1, the era kit's label is
+        2008-2025). The kit art is keyed by the style index and does not move."""
+        colleges = rr.RosterDocument(self.main[32:]).colleges
+        for key, filename, entry, selector, identity in mm.table_entries(self.data):
+            pairs = mm.franchise_style_pairs(self.main, TEAMS[key]["asset_code"])
+            raw = mm.compile_team(self.templates[key], self.data.teams[key], self.data.rosters[key], colleges,
+                                  identity, uniform_pairs=pairs)
+            doc = rr.RosterDocument(raw[32:])
+            team = doc.teams[0]
+            self.assertEqual(raw[32 + team.offset + 0x15A:32 + team.offset + 0x15A + 56], pairs, key)
 
     def test_special_teams_are_chosen_from_the_new_roster(self):
         """The six team-record special-teams bytes (slot indexes) point at this roster's own players."""
@@ -988,6 +1002,53 @@ class AnniversaryQcRetailTests(unittest.TestCase):
         with self.assertRaises(mm.MoreMomentsError):             # a main-roster record using the copy's id would show him
             mm.compile_team(template, self.data.teams["falcons_1998"], rows, doc.colleges, 200, appearance=looks,
                             main_photos=frozenset({4321, 777}), scans={4321: 777})
+
+
+@unittest.skipUnless(retail_available(), "user-owned USA disc folder absent")
+class ShippedMomentLooksRetailTests(unittest.TestCase):
+    """b779-mo4 (Ju3tin 10/28-29: "disappearing" / "invisible players" in newer moments): every shipped moment team
+    file, compiled from the retail templates exactly as the build does, keeps each player inside what a moment can
+    draw. The headless bit (+0x0C bit 7) draws the model without a head; a hair_style other than 0 asks for the added
+    hair models of the main-roster hair step; the game has facemasks 00..26 only (nfl2k5_modern_helmets); and a player
+    without his own face falls back to the generic head f(9001 + 100 * tone + face), which exists only for tone 0..5
+    and face 0..6 (nfl2k5_rookie_faces, retail FUN_000E6780). A moment team has 53 players; the live team holds 65.
+    Static guard only: the emulator runs of b779-mo4 did not reproduce the report (reports/b779_mo4_REPORT.md)."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.data = mm.Data.load()
+        with outer_image() as archive:
+            cls.main = archive.read(archive.entries[5].virtual_offset, archive.entries[5].size)
+            by_id = {e.name_id: e for e in archive.entries}
+            descriptors = mm._retail_descriptors(cls.main)
+            cls.templates = {}
+            for key in cls.data.team_order():
+                d = mm.template_for(cls.data.teams[key], descriptors)
+                cls.templates[key] = archive.read(by_id[d["id"]].virtual_offset, by_id[d["id"]].size)
+        cls.files = mm.compile_files(cls.main, cls.templates, cls.data)
+
+    def test_every_moment_player_stays_inside_what_a_moment_draws(self):
+        self.assertEqual(len(self.files), len(self.data.team_order()))
+        for filename, raw in self.files.items():
+            doc = rr.RosterDocument(raw[32:])
+            self.assertEqual((len(doc.players), doc.teams[0].player_count), (53, 53), filename)
+            for p in doc.players:
+                v = p.record.values
+                who = f"{filename} {p.first} {p.last}"
+                self.assertEqual(v["headless"], 0, who)
+                self.assertEqual(v["hair_style"], 0, who)
+                self.assertLessEqual(v["face_mask"], 26, who)
+                self.assertLessEqual(p.record.skin & 7, 5, who)
+                self.assertLessEqual(v["face"] & 7, 6, who)
+
+    def test_the_templates_are_inside_the_same_envelope(self):
+        """The compiled records keep the donors' gear (helmet shell, facemask, sleeves); the donors are retail
+        historic records, so the envelope above is the retail one."""
+        for key, raw in self.templates.items():
+            for p in rr.RosterDocument(raw[32:]).players:
+                v = p.record.values
+                self.assertEqual((v["headless"], v["hair_style"]), (0, 0), key)
+                self.assertLessEqual(v["face_mask"], 26, key)
 
 
 if __name__ == "__main__":

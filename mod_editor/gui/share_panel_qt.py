@@ -35,7 +35,7 @@ from PyQt5.QtWidgets import (
 )
 
 from mod_editor.core import mod_build, modpack, platform_compat
-from mod_editor.gui.ux_text import XEMU_LINE, Details, WrappedLabel, disc_next_steps
+from mod_editor.gui.ux_text import XEMU_LINE, Details, FlowLayout, WrappedLabel, disc_next_steps
 from mod_editor.gui.task_delivery import bound
 
 IMAGE_FILTER = "Disc images (*.iso *.xiso);;All files (*)"
@@ -254,7 +254,7 @@ class SharePanel(QWidget):
         self.check_status.setWordWrap(True)
         apply_layout.addWidget(self.check_status)
         self.target_field, self.target_button = self._path_row(apply_layout, "Save disc copy as", self._choose_target)
-        apply_actions = QHBoxLayout()
+        apply_actions = FlowLayout()      # b779 rv1: wraps instead of setting the page width
         self.check_button = QPushButton("Check it fits my disc")
         self.check_button.setEnabled(False)
         self.check_button.clicked.connect(self.start_check)
@@ -263,7 +263,6 @@ class SharePanel(QWidget):
         self.apply_button.setEnabled(False)
         self.apply_button.clicked.connect(self.start_apply)
         apply_actions.addWidget(self.apply_button)
-        apply_actions.addStretch(1)
         apply_layout.addLayout(apply_actions)
         self.apply_status = WrappedLabel("")
         self.apply_status.setWordWrap(True)
@@ -285,7 +284,7 @@ class SharePanel(QWidget):
 
     def _path_row(self, parent: QVBoxLayout, label: str, chooser: Callable[[], None]) -> tuple[QLineEdit, QPushButton]:
         row = QHBoxLayout()
-        row.addWidget(QLabel(label))
+        row.addWidget(WrappedLabel(label))
         field = QLineEdit()
         field.textChanged.connect(self._refresh)
         row.addWidget(field, 1)
@@ -472,7 +471,7 @@ class SharePanel(QWidget):
         """One action: choose source, pack and destination; verification is part of apply."""
         if self.busy:
             return
-        source, _ = QFileDialog.getOpenFileName(self, "1 of 3: Choose your unmodified ESPN NFL 2K5 USA Xbox image", "", IMAGE_FILTER)
+        source, _ = QFileDialog.getOpenFileName(self, "1 of 3: Choose your unmodified ESPN NFL 2K5 USA Xbox image file (an .iso or .xiso, not a game folder)", "", IMAGE_FILTER)
         if not source:
             return
         pack_path, _ = QFileDialog.getOpenFileName(self, "2 of 3: Choose the downloaded .2k5patch file (do not extract it)", "", PACK_FILTER)

@@ -20,12 +20,12 @@ What this step does, on the Super Bowl rows only (the 17 rows in ``data/nfl2k5_s
   and stays hidden). A ``team`` flank shows each club on the side of its own end zone: ``era_flankA`` on the south
   (+z) 30, ``era_flankN`` on the north (-z) 30, and the other quad of each material collapses to a point.
 
-Sources of the marks. ``event``: the user's ``super_bowl/<NUMERALS>.png`` from the optional Super Bowl logos folder
-(never shipped), else the authored mark shipped here (drawn by ``tools/nfl2k5_super_bowl_marks_art.py`` from
+Sources of the marks. ``event``: the bundled real ``super_bowl/<NUMERALS>.png`` (sb3) or a file from the plan's
+logo folder, else the authored mark shipped here (drawn by ``tools/nfl2k5_super_bowl_marks_art.py`` from
 geometry, in the event's design system). ``shield``: the season's NFL shield (the period shield read from the
-user's retail disc before 2008, the mod's official 2008 shield after). ``team``: ``teams/<CODE>_<SEASON>.png`` or
-``teams/<CODE>.png`` from the folder, else the authored club mark shipped here (the mod's own logo where it is the
-season's, else a club roundel).
+user's retail disc before 2008, the mod's official 2008 shield after). ``team``: the bundled or user's
+``teams/<CODE>_<SEASON>.png`` or ``teams/<CODE>.png``, else the authored club mark shipped here (the mod's own logo
+where it is the season's, else a club roundel).
 
 Regular venue resources and every other material, texture and vertex keep their bytes. EXPERIMENTAL and UNWITNESSED in
 game unless a report says otherwise.
@@ -326,13 +326,21 @@ def apply_field(out, rec, decoded, row, marks, *, spec=None):
 
 
 def user_art_lines(receipts):
-    """Build-log lines: the field flank marks filled from the user's folder."""
-    filled = {}
+    """Build-log lines: the field flank marks filled from the bundled real logos or the user's folder."""
+    filled, bundled = {}, {}
     for rec in receipts:
         for s in rec.get("slots", ()):
             if s["source"] == "user_art":
                 filled.setdefault(s.get("note") or s["key"], set()).add(rec["event"])
-    if not filled:
-        return ["Super Bowl fields: the flank marks use the authored art"]
-    return ["Super Bowl fields: flank marks filled from your folder: " + "; ".join(
-        f"{name} ({', '.join(sorted(events))})" for name, events in sorted(filled.items()))]
+            elif s["source"] == "bundled_logo":
+                bundled.setdefault(s.get("note") or s["key"], set()).add(rec["event"])
+    lines = []
+    if filled:
+        lines.append("Super Bowl fields: flank marks filled from your folder: " + "; ".join(
+            f"{name} ({', '.join(sorted(events))})" for name, events in sorted(filled.items())))
+    if bundled:
+        lines.append("Super Bowl fields: flank marks filled from the bundled real logos: " + "; ".join(
+            f"{name} ({', '.join(sorted(events))})" for name, events in sorted(bundled.items())))
+    if not lines:
+        lines.append("Super Bowl fields: the flank marks use the authored art")
+    return lines

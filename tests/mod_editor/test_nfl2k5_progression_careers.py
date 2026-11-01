@@ -300,7 +300,13 @@ class RoutineTests(unittest.TestCase):
             if not any(b[o] in (0, 100) for o in range(0x36, 0x52)):
                 emus[1].call(0x000E63F0, ecx=flat[1][i], edx=new, args=(old,))
                 emus[1].call(0x000E63F0, ecx=flat[1][i], edx=old, args=(new,))
-                self.assertEqual(emus[1].record(flat[1][i]), b)
+                back = bytearray(emus[1].record(flat[1][i]))
+                # b779-rf3: aggression (0x51) is aged by two families in a row and the retail adder clamps to 0..100
+                # after each, so near a bound a mixed-sign pair cannot be undone exactly (seen: 96 -> 101 -> 100 -> 99,
+                # back 95); every other byte must come back exactly.
+                if not 10 < b[0x51] < 90:
+                    back[0x51] = b[0x51]
+                self.assertEqual(bytes(back), b)
         self.assertGreater(checked, 3000)
         self.assertTrue(qb_capped)
 

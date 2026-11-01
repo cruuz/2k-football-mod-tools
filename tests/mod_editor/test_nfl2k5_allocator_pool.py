@@ -41,7 +41,12 @@ MORE = ("nfl2k5_xs1_probe_more", "code", 9000, 16)
 # the v4 pool).  The v3 half of this file must be built from a set that genuinely
 # fits v3, so it is the complete union without exactly that owner; the full union
 # is covered separately below and by test_nfl2k5_allocator_scaleout.
-V3_REQUESTS = tuple(r for r in REQUESTS if r[0] != "nfl2k5_cpu_third_down")
+# b779-hn1: the Super Bowl champions owner (5 KB of code installed with the honors owner) does not fit a v3 tail slot
+# either, so it is left out of the v3 fixture too and spills into the pool.
+# b779-int1 (km1 + hn1): km1's 1,536-byte K128 code no longer fits its legacy run and moves whole to the v4 pool, and the
+# legacy tail it frees takes ai8's third-down owner again, so the v3 half is the union without K128 and champions.
+POOLED = ("nfl2k5_champions", "nfl2k5_k128")
+V3_REQUESTS = tuple(r for r in REQUESTS if r[0] not in POOLED)
 
 
 def rows(layout):
@@ -87,7 +92,7 @@ class PoolPlannerTests(unittest.TestCase):
 
     def test_complete_union_is_v4_and_keeps_every_v3_address(self):
         # PB46: the production union legitimately outgrew v3; prove the only
-        # difference is ai8's late third-down owner, which spills into the pool,
+        # difference is the owners in POOLED (b779: K128 and champions), which spill into the pool,
         # and that every owner of the v3 fixture keeps its v3 allocation row.
         v3 = space.plan(V3_REQUESTS)
         full = space.plan(REQUESTS)
@@ -95,7 +100,7 @@ class PoolPlannerTests(unittest.TestCase):
         self.assertLessEqual(rows(v3), rows(full))
         pooled = [a["owner"] for a in full["allocations"]
                   if a["va"] >= space.POOL_VA and a["owner"] != space.DIRECTORY_OWNER]
-        self.assertEqual(pooled, ["nfl2k5_cpu_third_down"])
+        self.assertEqual(sorted(pooled), sorted(POOLED))
         self.assertEqual(sum(1 for r in full["regions"] if r["kind"] == "pool"), 1)
 
     def test_late_owner_appended_after_the_pool_moves_nothing(self):

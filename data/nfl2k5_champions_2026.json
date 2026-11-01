@@ -1,0 +1,772 @@
+{
+ "schema": "nfl2k5_champions_history/v1",
+ "base_year": 2026,
+ "first_super_bowl": 29,
+ "last_super_bowl": 60,
+ "rules": {
+  "season": "the NFL season that ends with the game (Super Bowl N closes the season 1965 + N)",
+  "season_mvp": "AP NFL Most Valuable Player of that season; the first named when the award was shared",
+  "position": "the position the source names; linebackers are OLB unless the override table says otherwise"
+ },
+ "sources": {
+  "wiki_sbchamps": {
+   "title": "List of Super Bowl champions",
+   "url": "https://en.wikipedia.org/w/index.php?title=List_of_Super_Bowl_champions&oldid=1377491145",
+   "revision": 1377491145,
+   "sha256": "e6c0af384434e85a1481daa5021d2ed69e0b60c7450d44394a9d682b509f242f",
+   "publisher": "Wikipedia"
+  },
+  "wiki_sbmvp": {
+   "title": "Super Bowl Most Valuable Player",
+   "url": "https://en.wikipedia.org/w/index.php?title=Super_Bowl_Most_Valuable_Player&oldid=1370881027",
+   "revision": 1370881027,
+   "sha256": "1c48f3ae996e3ba4569eeb2a2c1833add144687a9d3af6c3a0d3191ac839bc6c",
+   "publisher": "Wikipedia"
+  },
+  "wiki_mvp": {
+   "title": "AP NFL Most Valuable Player",
+   "url": "https://en.wikipedia.org/w/index.php?title=AP_NFL_Most_Valuable_Player&oldid=1376867134",
+   "revision": 1376867134,
+   "sha256": "f4751b025145a585e9e7a195d8d42264561a53a24c58abc4aa72945618c67c2f",
+   "publisher": "Wikipedia"
+  }
+ },
+ "seasons": [
+  {
+   "super_bowl": 29,
+   "season": 1994,
+   "champion": "San Francisco 49ers",
+   "runner_up": "San Diego Chargers",
+   "champion_points": 49,
+   "runner_up_points": 26,
+   "super_bowl_mvp": {
+    "name": "Steve Young",
+    "position": "QB",
+    "team": "San Francisco 49ers"
+   },
+   "season_mvp": {
+    "name": "Steve Young",
+    "position": "QB",
+    "team": "San Francisco 49ers"
+   },
+   "sources": [
+    "wiki_sbchamps",
+    "wiki_sbmvp",
+    "wiki_mvp"
+   ]
+  },
+  {
+   "super_bowl": 30,
+   "season": 1995,
+   "champion": "Dallas Cowboys",
+   "runner_up": "Pittsburgh Steelers",
+   "champion_points": 27,
+   "runner_up_points": 17,
+   "super_bowl_mvp": {
+    "name": "Larry Brown",
+    "position": "CB",
+    "team": "Dallas Cowboys"
+   },
+   "season_mvp": {
+    "name": "Brett Favre",
+    "position": "QB",
+    "team": "Green Bay Packers"
+   },
+   "sources": [
+    "wiki_sbchamps",
+    "wiki_sbmvp",
+    "wiki_mvp"
+   ]
+  },
+  {
+   "super_bowl": 31,
+   "season": 1996,
+   "champion": "Green Bay Packers",
+   "runner_up": "New England Patriots",
+   "champion_points": 35,
+   "runner_up_points": 21,
+   "super_bowl_mvp": {
+    "name": "Desmond Howard",
+    "position": "WR",
+    "team": "Green Bay Packers"
+   },
+   "season_mvp": {
+    "name": "Brett Favre",
+    "position": "QB",
+    "team": "Green Bay Packers"
+   },
+   "sources": [
+    "wiki_sbchamps",
+    "wiki_sbmvp",
+    "wiki_mvp"
+   ]
+  },
+  {
+   "super_bowl": 32,
+   "season": 1997,
+   "champion": "Denver Broncos",
+   "runner_up": "Green Bay Packers",
+   "champion_points": 31,
+   "runner_up_points": 24,
+   "super_bowl_mvp": {
+    "name": "Terrell Davis",
+    "position": "HB",
+    "team": "Denver Broncos"
+   },
+   "season_mvp": {
+    "name": "Brett Favre",
+    "position": "QB",
+    "team": "Green Bay Packers"
+   },
+   "sources": [
+    "wiki_sbchamps",
+    "wiki_sbmvp",
+    "wiki_mvp"
+   ]
+  },
+  {
+   "super_bowl": 33,
+   "season": 1998,
+   "champion": "Denver Broncos",
+   "runner_up": "Atlanta Falcons",
+   "champion_points": 34,
+   "runner_up_points": 19,
+   "super_bowl_mvp": {
+    "name": "John Elway",
+    "position": "QB",
+    "team": "Denver Broncos"
+   },
+   "season_mvp": {
+    "name": "Terrell Davis",
+    "position": "HB",
+    "team": "Denver Broncos"
+   },
+   "sources": [
+    "wiki_sbchamps",
+    "wiki_sbmvp",
+    "wiki_mvp"
+   ]
+  },
+  {
+   "super_bowl": 34,
+   "season": 1999,
+   "champion": "St. Louis Rams",
+   "runner_up": "Tennessee Titans",
+   "champion_points": 23,
+   "runner_up_points": 16,
+   "super_bowl_mvp": {
+    "name": "Kurt Warner",
+    "position": "QB",
+    "team": "St. Louis Rams"
+   },
+   "season_mvp": {
+    "name": "Kurt Warner",
+    "position": "QB",
+    "team": "St. Louis Rams"
+   },
+   "sources": [
+    "wiki_sbchamps",
+    "wiki_sbmvp",
+    "wiki_mvp"
+   ]
+  },
+  {
+   "super_bowl": 35,
+   "season": 2000,
+   "champion": "Baltimore Ravens",
+   "runner_up": "New York Giants",
+   "champion_points": 34,
+   "runner_up_points": 7,
+   "super_bowl_mvp": {
+    "name": "Ray Lewis",
+    "position": "ILB",
+    "team": "Baltimore Ravens"
+   },
+   "season_mvp": {
+    "name": "Marshall Faulk",
+    "position": "HB",
+    "team": "St. Louis Rams"
+   },
+   "sources": [
+    "wiki_sbchamps",
+    "wiki_sbmvp",
+    "wiki_mvp"
+   ]
+  },
+  {
+   "super_bowl": 36,
+   "season": 2001,
+   "champion": "New England Patriots",
+   "runner_up": "St. Louis Rams",
+   "champion_points": 20,
+   "runner_up_points": 17,
+   "super_bowl_mvp": {
+    "name": "Tom Brady",
+    "position": "QB",
+    "team": "New England Patriots"
+   },
+   "season_mvp": {
+    "name": "Kurt Warner",
+    "position": "QB",
+    "team": "St. Louis Rams"
+   },
+   "sources": [
+    "wiki_sbchamps",
+    "wiki_sbmvp",
+    "wiki_mvp"
+   ]
+  },
+  {
+   "super_bowl": 37,
+   "season": 2002,
+   "champion": "Tampa Bay Buccaneers",
+   "runner_up": "Oakland Raiders",
+   "champion_points": 48,
+   "runner_up_points": 21,
+   "super_bowl_mvp": {
+    "name": "Dexter Jackson",
+    "position": "FS",
+    "team": "Tampa Bay Buccaneers"
+   },
+   "season_mvp": {
+    "name": "Rich Gannon",
+    "position": "QB",
+    "team": "Oakland Raiders"
+   },
+   "sources": [
+    "wiki_sbchamps",
+    "wiki_sbmvp",
+    "wiki_mvp"
+   ]
+  },
+  {
+   "super_bowl": 38,
+   "season": 2003,
+   "champion": "New England Patriots",
+   "runner_up": "Carolina Panthers",
+   "champion_points": 32,
+   "runner_up_points": 29,
+   "super_bowl_mvp": {
+    "name": "Tom Brady",
+    "position": "QB",
+    "team": "New England Patriots"
+   },
+   "season_mvp": {
+    "name": "Peyton Manning",
+    "position": "QB",
+    "team": "Indianapolis Colts"
+   },
+   "sources": [
+    "wiki_sbchamps",
+    "wiki_sbmvp",
+    "wiki_mvp"
+   ]
+  },
+  {
+   "super_bowl": 39,
+   "season": 2004,
+   "champion": "New England Patriots",
+   "runner_up": "Philadelphia Eagles",
+   "champion_points": 24,
+   "runner_up_points": 21,
+   "super_bowl_mvp": {
+    "name": "Deion Branch",
+    "position": "WR",
+    "team": "New England Patriots"
+   },
+   "season_mvp": {
+    "name": "Peyton Manning",
+    "position": "QB",
+    "team": "Indianapolis Colts"
+   },
+   "sources": [
+    "wiki_sbchamps",
+    "wiki_sbmvp",
+    "wiki_mvp"
+   ]
+  },
+  {
+   "super_bowl": 40,
+   "season": 2005,
+   "champion": "Pittsburgh Steelers",
+   "runner_up": "Seattle Seahawks",
+   "champion_points": 21,
+   "runner_up_points": 10,
+   "super_bowl_mvp": {
+    "name": "Hines Ward",
+    "position": "WR",
+    "team": "Pittsburgh Steelers"
+   },
+   "season_mvp": {
+    "name": "Shaun Alexander",
+    "position": "HB",
+    "team": "Seattle Seahawks"
+   },
+   "sources": [
+    "wiki_sbchamps",
+    "wiki_sbmvp",
+    "wiki_mvp"
+   ]
+  },
+  {
+   "super_bowl": 41,
+   "season": 2006,
+   "champion": "Indianapolis Colts",
+   "runner_up": "Chicago Bears",
+   "champion_points": 29,
+   "runner_up_points": 17,
+   "super_bowl_mvp": {
+    "name": "Peyton Manning",
+    "position": "QB",
+    "team": "Indianapolis Colts"
+   },
+   "season_mvp": {
+    "name": "LaDainian Tomlinson",
+    "position": "HB",
+    "team": "San Diego Chargers"
+   },
+   "sources": [
+    "wiki_sbchamps",
+    "wiki_sbmvp",
+    "wiki_mvp"
+   ]
+  },
+  {
+   "super_bowl": 42,
+   "season": 2007,
+   "champion": "New York Giants",
+   "runner_up": "New England Patriots",
+   "champion_points": 17,
+   "runner_up_points": 14,
+   "super_bowl_mvp": {
+    "name": "Eli Manning",
+    "position": "QB",
+    "team": "New York Giants"
+   },
+   "season_mvp": {
+    "name": "Tom Brady",
+    "position": "QB",
+    "team": "New England Patriots"
+   },
+   "sources": [
+    "wiki_sbchamps",
+    "wiki_sbmvp",
+    "wiki_mvp"
+   ]
+  },
+  {
+   "super_bowl": 43,
+   "season": 2008,
+   "champion": "Pittsburgh Steelers",
+   "runner_up": "Arizona Cardinals",
+   "champion_points": 27,
+   "runner_up_points": 23,
+   "super_bowl_mvp": {
+    "name": "Santonio Holmes",
+    "position": "WR",
+    "team": "Pittsburgh Steelers"
+   },
+   "season_mvp": {
+    "name": "Peyton Manning",
+    "position": "QB",
+    "team": "Indianapolis Colts"
+   },
+   "sources": [
+    "wiki_sbchamps",
+    "wiki_sbmvp",
+    "wiki_mvp"
+   ]
+  },
+  {
+   "super_bowl": 44,
+   "season": 2009,
+   "champion": "New Orleans Saints",
+   "runner_up": "Indianapolis Colts",
+   "champion_points": 31,
+   "runner_up_points": 17,
+   "super_bowl_mvp": {
+    "name": "Drew Brees",
+    "position": "QB",
+    "team": "New Orleans Saints"
+   },
+   "season_mvp": {
+    "name": "Peyton Manning",
+    "position": "QB",
+    "team": "Indianapolis Colts"
+   },
+   "sources": [
+    "wiki_sbchamps",
+    "wiki_sbmvp",
+    "wiki_mvp"
+   ]
+  },
+  {
+   "super_bowl": 45,
+   "season": 2010,
+   "champion": "Green Bay Packers",
+   "runner_up": "Pittsburgh Steelers",
+   "champion_points": 31,
+   "runner_up_points": 25,
+   "super_bowl_mvp": {
+    "name": "Aaron Rodgers",
+    "position": "QB",
+    "team": "Green Bay Packers"
+   },
+   "season_mvp": {
+    "name": "Tom Brady",
+    "position": "QB",
+    "team": "New England Patriots"
+   },
+   "sources": [
+    "wiki_sbchamps",
+    "wiki_sbmvp",
+    "wiki_mvp"
+   ]
+  },
+  {
+   "super_bowl": 46,
+   "season": 2011,
+   "champion": "New York Giants",
+   "runner_up": "New England Patriots",
+   "champion_points": 21,
+   "runner_up_points": 17,
+   "super_bowl_mvp": {
+    "name": "Eli Manning",
+    "position": "QB",
+    "team": "New York Giants"
+   },
+   "season_mvp": {
+    "name": "Aaron Rodgers",
+    "position": "QB",
+    "team": "Green Bay Packers"
+   },
+   "sources": [
+    "wiki_sbchamps",
+    "wiki_sbmvp",
+    "wiki_mvp"
+   ]
+  },
+  {
+   "super_bowl": 47,
+   "season": 2012,
+   "champion": "Baltimore Ravens",
+   "runner_up": "San Francisco 49ers",
+   "champion_points": 34,
+   "runner_up_points": 31,
+   "super_bowl_mvp": {
+    "name": "Joe Flacco",
+    "position": "QB",
+    "team": "Baltimore Ravens"
+   },
+   "season_mvp": {
+    "name": "Adrian Peterson",
+    "position": "HB",
+    "team": "Minnesota Vikings"
+   },
+   "sources": [
+    "wiki_sbchamps",
+    "wiki_sbmvp",
+    "wiki_mvp"
+   ]
+  },
+  {
+   "super_bowl": 48,
+   "season": 2013,
+   "champion": "Seattle Seahawks",
+   "runner_up": "Denver Broncos",
+   "champion_points": 43,
+   "runner_up_points": 8,
+   "super_bowl_mvp": {
+    "name": "Malcolm Smith",
+    "position": "OLB",
+    "team": "Seattle Seahawks"
+   },
+   "season_mvp": {
+    "name": "Peyton Manning",
+    "position": "QB",
+    "team": "Denver Broncos"
+   },
+   "sources": [
+    "wiki_sbchamps",
+    "wiki_sbmvp",
+    "wiki_mvp"
+   ]
+  },
+  {
+   "super_bowl": 49,
+   "season": 2014,
+   "champion": "New England Patriots",
+   "runner_up": "Seattle Seahawks",
+   "champion_points": 28,
+   "runner_up_points": 24,
+   "super_bowl_mvp": {
+    "name": "Tom Brady",
+    "position": "QB",
+    "team": "New England Patriots"
+   },
+   "season_mvp": {
+    "name": "Aaron Rodgers",
+    "position": "QB",
+    "team": "Green Bay Packers"
+   },
+   "sources": [
+    "wiki_sbchamps",
+    "wiki_sbmvp",
+    "wiki_mvp"
+   ]
+  },
+  {
+   "super_bowl": 50,
+   "season": 2015,
+   "champion": "Denver Broncos",
+   "runner_up": "Carolina Panthers",
+   "champion_points": 24,
+   "runner_up_points": 10,
+   "super_bowl_mvp": {
+    "name": "Von Miller",
+    "position": "OLB",
+    "team": "Denver Broncos"
+   },
+   "season_mvp": {
+    "name": "Cam Newton",
+    "position": "QB",
+    "team": "Carolina Panthers"
+   },
+   "sources": [
+    "wiki_sbchamps",
+    "wiki_sbmvp",
+    "wiki_mvp"
+   ]
+  },
+  {
+   "super_bowl": 51,
+   "season": 2016,
+   "champion": "New England Patriots",
+   "runner_up": "Atlanta Falcons",
+   "champion_points": 34,
+   "runner_up_points": 28,
+   "super_bowl_mvp": {
+    "name": "Tom Brady",
+    "position": "QB",
+    "team": "New England Patriots"
+   },
+   "season_mvp": {
+    "name": "Matt Ryan",
+    "position": "QB",
+    "team": "Atlanta Falcons"
+   },
+   "sources": [
+    "wiki_sbchamps",
+    "wiki_sbmvp",
+    "wiki_mvp"
+   ]
+  },
+  {
+   "super_bowl": 52,
+   "season": 2017,
+   "champion": "Philadelphia Eagles",
+   "runner_up": "New England Patriots",
+   "champion_points": 41,
+   "runner_up_points": 33,
+   "super_bowl_mvp": {
+    "name": "Nick Foles",
+    "position": "QB",
+    "team": "Philadelphia Eagles"
+   },
+   "season_mvp": {
+    "name": "Tom Brady",
+    "position": "QB",
+    "team": "New England Patriots"
+   },
+   "sources": [
+    "wiki_sbchamps",
+    "wiki_sbmvp",
+    "wiki_mvp"
+   ]
+  },
+  {
+   "super_bowl": 53,
+   "season": 2018,
+   "champion": "New England Patriots",
+   "runner_up": "Los Angeles Rams",
+   "champion_points": 13,
+   "runner_up_points": 3,
+   "super_bowl_mvp": {
+    "name": "Julian Edelman",
+    "position": "WR",
+    "team": "New England Patriots"
+   },
+   "season_mvp": {
+    "name": "Patrick Mahomes",
+    "position": "QB",
+    "team": "Kansas City Chiefs"
+   },
+   "sources": [
+    "wiki_sbchamps",
+    "wiki_sbmvp",
+    "wiki_mvp"
+   ]
+  },
+  {
+   "super_bowl": 54,
+   "season": 2019,
+   "champion": "Kansas City Chiefs",
+   "runner_up": "San Francisco 49ers",
+   "champion_points": 31,
+   "runner_up_points": 20,
+   "super_bowl_mvp": {
+    "name": "Patrick Mahomes",
+    "position": "QB",
+    "team": "Kansas City Chiefs"
+   },
+   "season_mvp": {
+    "name": "Lamar Jackson",
+    "position": "QB",
+    "team": "Baltimore Ravens"
+   },
+   "sources": [
+    "wiki_sbchamps",
+    "wiki_sbmvp",
+    "wiki_mvp"
+   ]
+  },
+  {
+   "super_bowl": 55,
+   "season": 2020,
+   "champion": "Tampa Bay Buccaneers",
+   "runner_up": "Kansas City Chiefs",
+   "champion_points": 31,
+   "runner_up_points": 9,
+   "super_bowl_mvp": {
+    "name": "Tom Brady",
+    "position": "QB",
+    "team": "Tampa Bay Buccaneers"
+   },
+   "season_mvp": {
+    "name": "Aaron Rodgers",
+    "position": "QB",
+    "team": "Green Bay Packers"
+   },
+   "sources": [
+    "wiki_sbchamps",
+    "wiki_sbmvp",
+    "wiki_mvp"
+   ]
+  },
+  {
+   "super_bowl": 56,
+   "season": 2021,
+   "champion": "Los Angeles Rams",
+   "runner_up": "Cincinnati Bengals",
+   "champion_points": 23,
+   "runner_up_points": 20,
+   "super_bowl_mvp": {
+    "name": "Cooper Kupp",
+    "position": "WR",
+    "team": "Los Angeles Rams"
+   },
+   "season_mvp": {
+    "name": "Aaron Rodgers",
+    "position": "QB",
+    "team": "Green Bay Packers"
+   },
+   "sources": [
+    "wiki_sbchamps",
+    "wiki_sbmvp",
+    "wiki_mvp"
+   ]
+  },
+  {
+   "super_bowl": 57,
+   "season": 2022,
+   "champion": "Kansas City Chiefs",
+   "runner_up": "Philadelphia Eagles",
+   "champion_points": 38,
+   "runner_up_points": 35,
+   "super_bowl_mvp": {
+    "name": "Patrick Mahomes",
+    "position": "QB",
+    "team": "Kansas City Chiefs"
+   },
+   "season_mvp": {
+    "name": "Patrick Mahomes",
+    "position": "QB",
+    "team": "Kansas City Chiefs"
+   },
+   "sources": [
+    "wiki_sbchamps",
+    "wiki_sbmvp",
+    "wiki_mvp"
+   ]
+  },
+  {
+   "super_bowl": 58,
+   "season": 2023,
+   "champion": "Kansas City Chiefs",
+   "runner_up": "San Francisco 49ers",
+   "champion_points": 25,
+   "runner_up_points": 22,
+   "super_bowl_mvp": {
+    "name": "Patrick Mahomes",
+    "position": "QB",
+    "team": "Kansas City Chiefs"
+   },
+   "season_mvp": {
+    "name": "Lamar Jackson",
+    "position": "QB",
+    "team": "Baltimore Ravens"
+   },
+   "sources": [
+    "wiki_sbchamps",
+    "wiki_sbmvp",
+    "wiki_mvp"
+   ]
+  },
+  {
+   "super_bowl": 59,
+   "season": 2024,
+   "champion": "Philadelphia Eagles",
+   "runner_up": "Kansas City Chiefs",
+   "champion_points": 40,
+   "runner_up_points": 22,
+   "super_bowl_mvp": {
+    "name": "Jalen Hurts",
+    "position": "QB",
+    "team": "Philadelphia Eagles"
+   },
+   "season_mvp": {
+    "name": "Josh Allen",
+    "position": "QB",
+    "team": "Buffalo Bills"
+   },
+   "sources": [
+    "wiki_sbchamps",
+    "wiki_sbmvp",
+    "wiki_mvp"
+   ]
+  },
+  {
+   "super_bowl": 60,
+   "season": 2025,
+   "champion": "Seattle Seahawks",
+   "runner_up": "New England Patriots",
+   "champion_points": 29,
+   "runner_up_points": 13,
+   "super_bowl_mvp": {
+    "name": "Kenneth Walker III",
+    "position": "HB",
+    "team": "Seattle Seahawks"
+   },
+   "season_mvp": {
+    "name": "Matthew Stafford",
+    "position": "QB",
+    "team": "Los Angeles Rams"
+   },
+   "sources": [
+    "wiki_sbchamps",
+    "wiki_sbmvp",
+    "wiki_mvp"
+   ]
+  }
+ ]
+}

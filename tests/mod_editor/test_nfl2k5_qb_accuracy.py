@@ -57,8 +57,8 @@ class StaticTests(unittest.TestCase):
         self.assertAlmostEqual(ys[0], 1.0)
 
     def test_late_owner_last_and_off_outside_the_experimental_preset(self):
-        self.assertEqual(space.LATE_OWNERS[-19:], (accuracy.OWNER, "nfl2k5_formation_art_spacing", "nfl2k5_force_out",
-                                                  "nfl2k5_practice_injuries", "nfl2k5_ball_carrier_ai", "nfl2k5_star_retention", "nfl2k5_star_career", "nfl2k5_cpu_money_downs_late", "nfl2k5_cpu_money_downs_late_state", "nfl2k5_draft_clock", "nfl2k5_weekly_progression", "nfl2k5_player_progress_screen", "nfl2k5_contract_college_guard", "nfl2k5_sim_cb_tackles", "nfl2k5_clock_led", "nfl2k5_cpu_third_down", "nfl2k5_return_coverage", "nfl2k5_pass_protection", "nfl2k5_module_loader"))  # b778-kr1: the return coverage owner last
+        self.assertEqual(space.LATE_OWNERS[:space.LATE_OWNERS.index("nfl2k5_module_loader") + 1][-20:], (accuracy.OWNER, "nfl2k5_formation_art_spacing", "nfl2k5_force_out",
+                                                  "nfl2k5_practice_injuries", "nfl2k5_ball_carrier_ai", "nfl2k5_star_retention", "nfl2k5_star_career", "nfl2k5_cpu_money_downs_late", "nfl2k5_cpu_money_downs_late_state", "nfl2k5_draft_clock", "nfl2k5_weekly_progression", "nfl2k5_player_progress_screen", "nfl2k5_contract_college_guard", "nfl2k5_sim_cb_tackles", "nfl2k5_clock_led", "nfl2k5_cpu_third_down", "nfl2k5_return_coverage", "nfl2k5_pass_protection", "nfl2k5_pass_rush_stats", "nfl2k5_module_loader"))  # b778-kr1: the return coverage owner last; b779-st1 pass rush stats
         self.assertIs(mod_build.BuildPlan(Path('source.iso'), Path('target.iso')).qb_accuracy, False)
         for name, preset in mod_build.PRESETS.items():
             self.assertIs(preset["qb_accuracy"], name == "softdrink_experimental", name)
@@ -67,7 +67,7 @@ class StaticTests(unittest.TestCase):
     def test_assembler_reproduces_shipped_bytes(self):
         # Apple's assembler lacks GNU --32 and MinGW's emits COFF; the shipped byte template is the
         # runtime input, so those hosts skip the reproduction instead of failing on it.
-        from _gnu_elf32_as import gnu_elf32_as
+        gnu_elf32_as = __import__("importlib").import_module(("tests.mod_editor." if __package__ else "") + "_gnu_elf32_as").gnu_elf32_as  # script and module form (b779-int1)
         if not shutil.which("as") or not gnu_elf32_as():
             self.skipTest("GNU as with ELF32 output is required for template reproduction")
         from nfl2k5_cpu_ai_assemble import template

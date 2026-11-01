@@ -46,9 +46,13 @@ from mod_editor.core import nfl2k5_throw_tuning as tt
 from mod_editor.core.errors import ModEditorError
 from mod_editor.gui.playbook_pack_dialog_qt import BOOK_SET_EXPLAINER, BookSetTeamsDialog, book_set_status_text
 from mod_editor.gui.ux_text import (
-    NOT_TESTED, STUDIO_THEMES, XEMU_LINE, Details, WrappedLabel, build_panel_stylesheet,
+    NOT_TESTED, STUDIO_THEMES, XEMU_LINE, Details, WrappedLabel, WrappingCheckBox, build_panel_stylesheet,
     plain_failure, show_operation_error, source_captions, suggest_copy_name, tab_title,
 )
+
+
+#: The narrowest a combo box on the Build page asks to be (see BuildPanel.__init__).
+COMBO_FLOOR_WIDTH = 220
 
 
 def _resolved_build_file(path, what: str) -> Path:
@@ -229,9 +233,11 @@ ANNIVERSARY_OPTIONS = (
 from mod_editor.core import nfl2k5_cpu_qb_reads as _cpu_qb_reads, nfl2k5_db_ball_play as _db_ball_play  # noqa: E402
 from mod_editor.core import nfl2k5_run_blocking as _run_blocking  # noqa: E402  b777-ol1
 from mod_editor.core import nfl2k5_pass_protection as _pass_protection  # noqa: E402  b778-pr1
+from mod_editor.core import nfl2k5_pass_rush_stats as _pass_rush_stats  # noqa: E402  b779-st1
 CPU_AI_OPTIONS = (
     ("cpu_qb_zone_windows", _cpu_qb_reads.BUILD_CAPTION_ZONE, _cpu_qb_reads.HELP_ZONE),
     ("cpu_qb_recheck", _cpu_qb_reads.BUILD_CAPTION_RECHECK, _cpu_qb_reads.HELP_RECHECK),
+    ("cpu_qb_tiers", _cpu_qb_reads.BUILD_CAPTION_TIERS, _cpu_qb_reads.HELP_TIERS),  # b779-gp1
     ("db_ball_play", _db_ball_play.BUILD_CAPTION, _db_ball_play.HELP_TEXT),
 )
 # b777-qb3: QB accuracy on short and on-the-run throws (on in the experimental preset only).
@@ -260,7 +266,10 @@ from mod_editor.core import nfl2k5_weekly_progression as _weekly_progression  # 
 from mod_editor.core import nfl2k5_player_progress_screen as _player_progress  # noqa: E402
 from mod_editor.core import nfl2k5_contract_college_guard as _contract_guard  # noqa: E402
 from mod_editor.core import nfl2k5_sim_cb_tackles as _sim_cb_tackles  # noqa: E402
+from mod_editor.core import nfl2k5_sim_rb_injuries as _sim_rb_injuries  # noqa: E402  b779-sim2
+from mod_editor.core import nfl2k5_sim_realism as _sim_realism  # noqa: E402  b779-sim2 r4
 from mod_editor.core import nfl2k5_sim_stats as _sim_stats  # noqa: E402
+from mod_editor.core import nfl2k5_option_defaults as _option_defaults  # noqa: E402  b779-df1
 from mod_editor.core import nfl2k5_clock_led as _clock_led  # noqa: E402
 BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                  ("team_ratings", "Modern team ratings",
@@ -273,6 +282,7 @@ BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                   "3 yards. Lines stay inside the panel. How plays run is unchanged. Not yet tested in-game."),
                  ("run_blocking", _run_blocking.BUILD_CAPTION, _run_blocking.HELP_TEXT),
                  ("pass_protection", _pass_protection.BUILD_CAPTION, _pass_protection.HELP_TEXT),
+                 ("pass_rush_stats", _pass_rush_stats.BUILD_CAPTION, _pass_rush_stats.HELP_TEXT),
                  ("modern_force_out", _force_out.BUILD_CAPTION, _force_out.HELP_TEXT),  # b778-fo1
                  ("module_loader", _module_loader.BUILD_CAPTION, _module_loader.HELP_TEXT),  # b778-xs1
                  ("crib_trophy_room", _crib_trophy_room.BUILD_CAPTION, _crib_trophy_room.HELP_TEXT),  # b778-xs1
@@ -296,7 +306,10 @@ BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                   _player_progress.VISIBLE_HELP_TEXT),  # b778-pg3
                  ("contract_college_guard", _contract_guard.BUILD_CAPTION, _contract_guard.HELP_TEXT),  # b778-cr1
                  ("sim_cb_tackles", _sim_cb_tackles.BUILD_CAPTION, _sim_cb_tackles.HELP_TEXT),  # b778-cb1
+                 ("sim_rb_injuries", _sim_rb_injuries.BUILD_CAPTION, _sim_rb_injuries.HELP_TEXT),  # b779-sim2
+                 ("sim_realism", _sim_realism.BUILD_CAPTION, _sim_realism.HELP_TEXT),  # b779-sim2 r4
                  ("sim_stats", _sim_stats.BUILD_CAPTION, _sim_stats.HELP_TEXT),  # b778-sim1
+                 ("option_defaults", _option_defaults.BUILD_CAPTION, _option_defaults.HELP_TEXT),  # b779-df1
                  ("modern_clock_led", _clock_led.BUILD_CAPTION, _clock_led.HELP_TEXT))  # b778-sd4
 BUILD_KEYS = tuple(row[0] for row in BUILD_OPTIONS)
 VENUE_BUILD_KEYS = (
@@ -450,7 +463,7 @@ class BuildPanel(QWidget):
         intro.setObjectName("throwMuted")
         intro.setWordWrap(True)
         root.addWidget(intro)
-        self.softdrink_project_check = QCheckBox("Include SOFTDRINK league artwork")
+        self.softdrink_project_check = WrappingCheckBox("Include SOFTDRINK league artwork")
         self.softdrink_project_check.toggled.connect(self._refresh)
         self.softdrink_project_check.hide()
         root.addWidget(self.softdrink_project_check)
@@ -498,15 +511,19 @@ class BuildPanel(QWidget):
         self.setStyleSheet(build_panel_stylesheet(self._theme))
         presets = QGroupBox("Choose a SOFTDRINK preset")
         pr = QVBoxLayout(presets)
-        preset_grid = QGridLayout()
-        preset_grid.setHorizontalSpacing(6)
+        # b779-ui3: the three preset captions used to sit side by side in one grid row. Their buttons do
+        # not wrap, so the row set the page's minimum width (946 px at 100% and 1,322 px at 144 DPI, more
+        # on Windows) and the Build tab gained a sideways scrollbar at 1280x720. One preset per row keeps
+        # the same buttons, text and fonts; only the arrangement changes.
         self.preset_basic_button = QPushButton(tab_title(PRESET_BUTTONS["softdrink_basic"]))
         self.preset_advanced_button = QPushButton(tab_title(PRESET_BUTTONS["softdrink_advanced"]))
         self.preset_experimental_button = QPushButton(tab_title(PRESET_BUTTONS["softdrink_experimental"]))
         self.preset_captions: dict[str, QLabel] = {}
-        for column, (name, button) in enumerate((("softdrink_basic", self.preset_basic_button),
-                                                 ("softdrink_advanced", self.preset_advanced_button),
-                                                 ("softdrink_experimental", self.preset_experimental_button))):
+        for index, (name, button) in enumerate((("softdrink_basic", self.preset_basic_button),
+                                                ("softdrink_advanced", self.preset_advanced_button),
+                                                ("softdrink_experimental", self.preset_experimental_button))):
+            if index:
+                pr.addSpacing(8)
             button.setObjectName("presetButton")
             button.setToolTip(PRESET_CAPTIONS[name])
             button.setAccessibleName(f"{PRESET_LABELS[name]} preset")
@@ -516,11 +533,10 @@ class BuildPanel(QWidget):
             caption.setObjectName("throwMuted")
             caption.setWordWrap(True)
             caption.setAlignment(Qt.AlignTop | Qt.AlignLeft)
+            caption.setContentsMargins(2, 0, 0, 0)
             self.preset_captions[name] = caption
-            preset_grid.addWidget(button, 0, column)
-            preset_grid.addWidget(caption, 1, column)
-            preset_grid.setColumnStretch(column, 1)
-        pr.addLayout(preset_grid)
+            pr.addWidget(button)
+            pr.addWidget(caption)
         self.preset_note = WrappedLabel(PRESET_NOTE)
         self.preset_note.setObjectName("throwMuted")
         self.preset_note.setWordWrap(True)
@@ -558,15 +574,26 @@ class BuildPanel(QWidget):
         self.synced_note.setAccessibleName("Cloud-synced folder warning")
         self.synced_note.hide()
         mk.addWidget(self.synced_note)
+        # b779 rv1: Make my disc, Check my project and Cancel share one row; Copy Build summary and the
+        # reason Make my disc is unavailable get a second row. One row of all five was 1,083 px under
+        # Windows Python and made the 1280x720 Build tab scroll sideways.
         actions = QHBoxLayout()
+        actions_more = QHBoxLayout()
         self.build_button = QPushButton("Make my disc")
         self.build_button.setObjectName("primaryButton")
         self.build_button.clicked.connect(self._build)
         actions.addWidget(self.build_button)
+        self.check_button = QPushButton("Check my project")
+        self.check_button.setToolTip("Finds in minutes what Make my disc would refuse or change in your project and "
+                                     "options, and says what to untick. Nothing is written.")
+        self.check_button.setAccessibleDescription(self.check_button.toolTip())
+        self.check_button.clicked.connect(self._check_project)
+        actions.addWidget(self.check_button)
         self.cancel_button = QPushButton("Cancel")
         self.cancel_button.setEnabled(False)
         self.cancel_button.clicked.connect(lambda: self._task.cancelled.set() if self._task else None)
         actions.addWidget(self.cancel_button)
+        actions.addStretch(1)
         self._last_build_summary = ""
         self._requested_build_summary = ""
         self._requested_build_labels = []
@@ -574,13 +601,14 @@ class BuildPanel(QWidget):
         self.copy_summary_button.setToolTip("Copy this build's source, selected changes, result and first error for a help request.")
         self.copy_summary_button.setEnabled(False)
         self.copy_summary_button.clicked.connect(self._copy_build_summary)
-        actions.addWidget(self.copy_summary_button)
+        actions_more.addWidget(self.copy_summary_button)
         self.blocker_label = WrappedLabel("")
         self.blocker_label.setObjectName("throwMuted")
         self.blocker_label.setWordWrap(True)
         self.blocker_label.setAccessibleName("Why Make my disc is unavailable")
-        actions.addWidget(self.blocker_label, 1)
+        actions_more.addWidget(self.blocker_label, 1)
         mk.addLayout(actions)
+        mk.addLayout(actions_more)
         prog = QHBoxLayout()
         self.progress_label = WrappedLabel("")
         self.progress_label.setObjectName("throwMuted")
@@ -622,7 +650,7 @@ class BuildPanel(QWidget):
                                         "How far the strongest arm can throw; the original maximum at 99 Pass Arm Strength is 55 yards.")
         throw_row = QHBoxLayout()
         throw_row.addSpacing(30)
-        throw_row.addWidget(QLabel("Longest throw at 99 Pass Arm Strength"))
+        throw_row.addWidget(WrappedLabel("Longest throw at 99 Pass Arm Strength"))
         self.ceiling_spin = QSpinBox()
         self.ceiling_spin.setRange(int(tt.MIN_MAX_DEEP_YARDS), int(tt.MAX_MAX_DEEP_YARDS))
         self.ceiling_spin.setValue(80)
@@ -633,12 +661,12 @@ class BuildPanel(QWidget):
         g.addLayout(throw_row)
         flight_row = QHBoxLayout()
         flight_row.addSpacing(30)
-        self.realistic_check = QCheckBox("Realistic deep-ball flight")
+        self.realistic_check = WrappingCheckBox("Realistic deep-ball flight")
         self.realistic_check.setChecked(True)
         self.realistic_check.setToolTip("The speed table elite NFL arms actually produce: 3.2-3.9 s hang for 60-80 air yards. "
                                         "Overrides the manual arc below.")
         flight_row.addWidget(self.realistic_check)
-        self.arc_by_distance_check = QCheckBox("Realistic arc by distance, with deep-ball touch")
+        self.arc_by_distance_check = WrappingCheckBox("Realistic arc by distance, with deep-ball touch")
         self.arc_by_distance_check.setToolTip("Throws up to 40 yards keep the original speeds. Extra touch at 45-60 yards; "
                                               "60-80 yards hang about 3.2-3.8 seconds, with modeled apex below 20 yards. "
                                               "Discs and SOFTDRINK patches made before beta 76.2 with this option keep "
@@ -664,8 +692,8 @@ class BuildPanel(QWidget):
         g.addWidget(self.throw_details)
         self.catch_check = self._option(g, "catch_slider", "Fix Catching & Interception sliders",
                                         "Catching controls drops; Interception controls picks.",
-                                        details="The catch roll is divided by twice the receiver's side's Catching slider (the menu goes to 200) "
-                                                "and a defender's roll by twice the Interception slider (0 = no picks, 50 = original, 100 = double).")
+                                        details="The catch odds are multiplied by 2 x (Human Catching + CPU Catching), the same for both teams (the menu goes to 200), "
+                                                "and a defender's roll is divided by twice the Interception slider (0 = no picks, 50 = original, 100 = double).")
         self.accel_check = self._option(g, "accel_ramp", "Legacy acceleration ramp",
             "Adds a rating-based speed envelope to controller-driven players.",
             details="Native movement already accelerates. This legacy profile does not apply equally to CPU players.")
@@ -726,7 +754,7 @@ class BuildPanel(QWidget):
         for key, caption in (("abilities_lock_right_stick", "Lock right-stick moves behind the ability"),
                              ("abilities_lock_special_moves", "Lock special moves behind their abilities"),
                              ("abilities_lock_speedster", "Lock Speedster speed")):
-            box = QCheckBox(caption)
+            box = WrappingCheckBox(caption)
             box.setChecked(tt.abilities_patch.DEFAULT_LOCKS[key.removeprefix("abilities_")])
             box.setEnabled(False)
             box.setToolTip("Rules v2 setting of the Player abilities option. Both move locks off restores the retail "
@@ -751,7 +779,7 @@ class BuildPanel(QWidget):
                 ("abilities_button_moves_stars_only", "Button moves: stars only",
                  "Only starred players can spin, truck, stiff-arm or use the button jukes. Off in every preset: "
                  "button moves stay open to everyone by default. Needs the Player abilities option and a rebuilt disc.")):
-            box = QCheckBox(caption)
+            box = WrappingCheckBox(caption)
             box.setChecked(tt.abilities_patch.DEFAULT_STARS[key.removeprefix("abilities_")])
             box.setEnabled(False)
             box.setToolTip(tip)
@@ -825,7 +853,7 @@ class BuildPanel(QWidget):
         self.cpu_scrambles_level.addItem("Modern (experimental)", "modern")
         self.cpu_scrambles_level.setAccessibleName(tt.cpu_scrambles_patch.BUILD_CAPTION)
         self.cpu_scrambles_level.setToolTip(tt.cpu_scrambles_patch.HELP_TEXT)
-        g.addWidget(QLabel(tt.cpu_scrambles_patch.BUILD_CAPTION))
+        g.addWidget(WrappedLabel(tt.cpu_scrambles_patch.BUILD_CAPTION))
         g.addWidget(self.cpu_scrambles_level)
         self.cpu_scrambles_level.currentIndexChanged.connect(lambda _index: self._refresh())
         for parent, children in r62_ui.CHILDREN.items():
@@ -915,10 +943,16 @@ class BuildPanel(QWidget):
         mode_row.addWidget(QLabel("Jersey mode"))
         self.uniform_choice_mode = QComboBox()
         self.uniform_choice_mode.setAccessibleName("Jersey choice mode")
-        self.uniform_choice_mode.addItem(
-            "choice: choose either colour on Controller Assign / exhibition Team Select", "choice")
-        self.uniform_choice_mode.addItem(
-            "rule: fixed home dark / away white (no colour choice)", "rule")
+        # b779-ui3: the old item text was a 70-character sentence, so the closed combo alone needed
+        # 475 px (684 px at 144 DPI). Keep the short name visible and the full wording in each item's
+        # tooltip, where it is still reachable but does not set the page width.
+        self.uniform_choice_mode.addItem("Choose either colour", "choice")
+        self.uniform_choice_mode.setItemData(
+            0, "On Controller Assign and exhibition Team Select the player chooses either team colour.",
+            Qt.ToolTipRole)
+        self.uniform_choice_mode.addItem("Fixed home dark, away white", "rule")
+        self.uniform_choice_mode.setItemData(
+            1, "Fixed home dark and away white; no colour choice.", Qt.ToolTipRole)
         self.uniform_choice_mode.setToolTip(r62_ui.UNIFORM_CHOICE_HELP)
         self.uniform_choice_mode.currentIndexChanged.connect(lambda _i: self._refresh())
         mode_row.addWidget(self.uniform_choice_mode)
@@ -1358,8 +1392,12 @@ class BuildPanel(QWidget):
         pack_row.addWidget(self.official_marks_pack_button)
         self.official_marks_import_button = QPushButton("From a SOFTDRINK pack...")
         self.official_marks_import_button.clicked.connect(self._choose_official_marks_file)
-        pack_row.addWidget(self.official_marks_import_button)
+        # b779 rv1: the second button wraps to its own line so this row cannot set the page width.
+        pack_row_more = QHBoxLayout()
+        pack_row_more.addWidget(self.official_marks_import_button)
+        pack_row_more.addStretch(1)
         r.addLayout(pack_row)
+        r.addLayout(pack_row_more)
         self.official_marks_status = WrappedLabel()
         self.official_marks_status.setWordWrap(True)
         self.official_marks_status.setTextFormat(Qt.PlainText)
@@ -1370,20 +1408,24 @@ class BuildPanel(QWidget):
         super_bowl_row.addWidget(QLabel("Your Super Bowl logos"))
         self.super_bowl_user_art_field = QLineEdit()
         self.super_bowl_user_art_field.setPlaceholderText(
-            "Optional folder: super_bowl/XLVI.png, brands/nbc.png, teams/STL.png")
+            "Empty uses the bundled real logos; choose a folder to use your own")
         self.super_bowl_user_art_field.setToolTip(
-            "Your own PNG files for the Super Bowl moments' walls, ribbon boards and banners. A file placed in the "
-            "folder replaces the authored mark in its slots; anything missing keeps the authored marks. Nothing in "
-            "this folder is shipped. Create folder... makes the layout with a README listing every file name. "
-            "Used with Anniversary: named previews and period fields.")
+            "The Studio ships real Super Bowl, network and team-season logos and uses them on the Super Bowl walls "
+            "by default. Choose a folder of your own PNG files to use them instead: a file placed in the folder "
+            "replaces the bundled mark in its slots; anything missing keeps the mod's own designed marks. Create "
+            "folder... makes the layout with a README listing every file name. Used with Anniversary: named "
+            "previews and period fields.")
         super_bowl_row.addWidget(self.super_bowl_user_art_field, 1)
         self.super_bowl_user_art_button = QPushButton("Choose...")
         self.super_bowl_user_art_button.clicked.connect(self._choose_super_bowl_user_art)
         super_bowl_row.addWidget(self.super_bowl_user_art_button)
         self.super_bowl_user_art_create = QPushButton("Create folder...")
         self.super_bowl_user_art_create.clicked.connect(self._create_super_bowl_user_art)
-        super_bowl_row.addWidget(self.super_bowl_user_art_create)
+        super_bowl_row_more = QHBoxLayout()
+        super_bowl_row_more.addWidget(self.super_bowl_user_art_create)
+        super_bowl_row_more.addStretch(1)
         r.addLayout(super_bowl_row)
+        r.addLayout(super_bowl_row_more)
         self.super_bowl_user_art_status = WrappedLabel()
         self.super_bowl_user_art_status.setWordWrap(True)
         self.super_bowl_user_art_status.setTextFormat(Qt.PlainText)
@@ -1469,7 +1511,8 @@ class BuildPanel(QWidget):
         self.hires_scale_combo.addItem("2x detail", 2)
         self.hires_scale_combo.addItem("Original size", 1)
         self.hires_scale_combo.currentIndexChanged.connect(self._refresh)
-        hires_row.addWidget(self.hires_scale_combo)
+        hires_row_more = QHBoxLayout()
+        hires_row_more.addWidget(self.hires_scale_combo)
         self.hires_target_combo = QComboBox()
         self.hires_target_combo.addItem("64 MiB", "xemu-64")
         self.hires_target_combo.addItem("128 MiB (unavailable)", "xemu-128")
@@ -1477,8 +1520,10 @@ class BuildPanel(QWidget):
         self.hires_target_combo.setItemData(1, "The game still limits texture addresses to the first 64 MiB.", Qt.ToolTipRole)
         self.hires_target_combo.setToolTip("The game still limits texture addresses to the first 64 MiB.")
         self.hires_target_combo.currentIndexChanged.connect(self._refresh)
-        hires_row.addWidget(self.hires_target_combo)
+        hires_row_more.addWidget(self.hires_target_combo)
+        hires_row_more.addStretch(1)
         pl.addLayout(hires_row)
+        pl.addLayout(hires_row_more)
         self.hires_receipt_label = WrappedLabel("")
         self.hires_receipt_label.setWordWrap(True)
         pl.addWidget(self.hires_receipt_label)
@@ -1591,7 +1636,10 @@ class BuildPanel(QWidget):
         self.custom_details.content.addLayout(honors_row)
         ol.addWidget(self.custom_details)
 
-        self.advanced_details = Details("More inputs (modern or classic playbooks, commentary, packs, description)")
+        # b779-ui3: this title is a tool button, which cannot wrap on its own; the full phrase alone
+        # needed 483 px at 100% and 695 px at 144 DPI. Explicit line breaks keep every word visible
+        # and let the collapsed Details meet a narrow page.
+        self.advanced_details = Details("More inputs\n(modern or classic playbooks,\ncommentary, packs, description)")
         adv = self.advanced_details.content
         self.commentary_box = QGroupBox("Commentary replacements (0)")
         cb = QVBoxLayout(self.commentary_box)
@@ -1599,25 +1647,32 @@ class BuildPanel(QWidget):
         self.commentary_list.setAccessibleName("Commentary replacements")
         self.commentary_list.setMaximumHeight(90)
         cb.addWidget(self.commentary_list)
-        crow = QHBoxLayout()
-        crow.addWidget(QLabel("Line ID"))
+        # b779-ui3: seven controls shared one row (653 px at 100%, about 940 px at 144 DPI). They stack
+        # into the line, the file and the list buttons; same widgets and copy, narrower floor.
+        stream_row = QHBoxLayout()
+        stream_row.addWidget(QLabel("Line ID"))
         self.commentary_stream_field = QLineEdit()
         self.commentary_stream_field.setPlaceholderText("bank:index, e.g. cutsceneaudio:12 (Presentation ▸ Commentary lists them)")
-        crow.addWidget(self.commentary_stream_field, 1)
-        crow.addWidget(QLabel("Replacement WAV"))
+        stream_row.addWidget(self.commentary_stream_field, 1)
+        cb.addLayout(stream_row)
+        wav_row = QHBoxLayout()
+        wav_row.addWidget(QLabel("Replacement WAV"))
         self.commentary_wav_field = QLineEdit()
         self.commentary_wav_field.setPlaceholderText("A WAV or other audio file")
-        crow.addWidget(self.commentary_wav_field, 1)
+        wav_row.addWidget(self.commentary_wav_field, 1)
         self.commentary_wav_button = QPushButton("Choose…")
         self.commentary_wav_button.clicked.connect(self._choose_commentary_wav)
-        crow.addWidget(self.commentary_wav_button)
+        wav_row.addWidget(self.commentary_wav_button)
+        cb.addLayout(wav_row)
+        line_buttons = QHBoxLayout()
         self.commentary_add_button = QPushButton("Add line…")
         self.commentary_add_button.clicked.connect(self._add_commentary_line)
-        crow.addWidget(self.commentary_add_button)
+        line_buttons.addWidget(self.commentary_add_button)
         self.commentary_remove_button = QPushButton("Remove selected")
         self.commentary_remove_button.clicked.connect(self._remove_commentary_line)
-        crow.addWidget(self.commentary_remove_button)
-        cb.addLayout(crow)
+        line_buttons.addWidget(self.commentary_remove_button)
+        line_buttons.addStretch(1)
+        cb.addLayout(line_buttons)
         self.commentary_label = WrappedLabel("Each line is cut to its slot's length (a shorter recording is padded with silence). "
                                        "Presentation ▸ Commentary previews the fit; this list is a direct input to the build.")
         self.commentary_label.setObjectName("throwMuted")
@@ -1641,11 +1696,15 @@ class BuildPanel(QWidget):
         for button in (self.book_all_button, self.book_none_button, self.book_choose_button):
             button.setAccessibleName(button.text() + " modern books")
             book_row.addWidget(button)
+        book_row.addStretch(1)
+        pb.addLayout(book_row)
+        # b779-ui3: the status sentence shared the button row, so "Modern books:" + three buttons +
+        # the whole sentence set a 835 px row (1,200 px at 144 DPI) even inside a collapsed Details.
         self.book_set_status = QLabel("")
         self.book_set_status.setObjectName("bookSetStatus")
         self.book_set_status.setAccessibleName("Modern and classic book count")
-        book_row.addWidget(self.book_set_status, 1)
-        pb.addLayout(book_row)
+        self.book_set_status.setWordWrap(True)
+        pb.addWidget(self.book_set_status)
         self.book_set_note = WrappedLabel(BOOK_SET_EXPLAINER + " Change one team at a time on Playbooks & Plays.")
         self.book_set_note.setObjectName("throwMuted")
         self.book_set_note.setWordWrap(True)
@@ -1654,18 +1713,24 @@ class BuildPanel(QWidget):
         self.packs_list.setAccessibleName("Playbook packs")
         self.packs_list.setMaximumHeight(80)
         pb.addWidget(self.packs_list)
-        prow = QHBoxLayout()
+        # b779-ui3: five buttons in one line set a 1,194 px minimum (1,700 px at 144 DPI). Keep the same
+        # buttons and labels, one per row; only Expand-ed Details shows this box.
+        prow = QVBoxLayout()
+        prow.setSpacing(4)
+        small_row = QHBoxLayout()
         self.packs_add_button = QPushButton("Add pack…")
         self.packs_add_button.clicked.connect(self._add_playbook_pack)
-        prow.addWidget(self.packs_add_button)
+        small_row.addWidget(self.packs_add_button)
+        self.packs_remove_button = QPushButton("Remove selected")
+        self.packs_remove_button.clicked.connect(self._remove_playbook_pack)
+        small_row.addWidget(self.packs_remove_button)
+        small_row.addStretch(1)
+        prow.addLayout(small_row)
         self.modern_defense_button = QPushButton("Add modern defense (experimental)")
         self.modern_defense_button.setToolTip(
             "EXPERIMENTAL / UNWITNESSED. Spy is a shallow middle zone; "
             "a true spy needs the runtime patch (not yet shipped).")
         self.modern_defense_button.clicked.connect(self._add_modern_defense_pack)
-        self.packs_remove_button = QPushButton("Remove selected")
-        self.packs_remove_button.clicked.connect(self._remove_playbook_pack)
-        prow.addWidget(self.packs_remove_button)
         prow.addWidget(self.modern_defense_button)
         self.match_coverage_button = QPushButton("Add match coverage experiments")
         self.match_coverage_button.setToolTip(
@@ -1678,7 +1743,6 @@ class BuildPanel(QWidget):
         self.option_pack_button.setToolTip("Eight replacement calls in MIN I Jokers. Experimental and unwitnessed. Use the selected defensive test formation. Incompatible with the stock MIN Modern Gun Core seed.")
         self.option_pack_button.clicked.connect(self._add_option_pack)
         prow.addWidget(self.option_pack_button)
-        prow.addStretch(1)
         pb.addLayout(prow)
         packs_note = WrappedLabel("Installed in order into the copy's team books; full disc required. "
                             "Playbooks & Plays ▸ Install Playbook Pack… previews what a pack replaces.")
@@ -1727,6 +1791,12 @@ class BuildPanel(QWidget):
 
         # Every input feeds one refresh (M03): a lone camera tick enables the button, and a
         # ticked option whose required file is missing names that file instead of vanishing.
+        # b779 rv1: a combo box asks for the width of its longest entry (729 px under Windows Python), which
+        # the page copied into its minimum width. It still takes that width when there is room, but may
+        # narrow to this floor, and the choices stay readable in the drop-down.
+        for combo in self.findChildren(QComboBox):
+            if combo.minimumWidth() == 0 and combo.minimumSizeHint().width() > COMBO_FLOOR_WIDTH:
+                combo.setMinimumWidth(COMBO_FLOOR_WIDTH)
         for box in self.findChildren(QCheckBox):
             box.toggled.connect(lambda _c: self._refresh())
         self.ceiling_spin.valueChanged.connect(lambda _v: self._refresh())
@@ -1757,16 +1827,25 @@ class BuildPanel(QWidget):
         rl.setSpacing(1)
         head = QHBoxLayout()
         head.setSpacing(8)
-        box = QCheckBox(tab_title(label))
+        box = WrappingCheckBox(tab_title(label))
         box.setAccessibleDescription(helper)
         box.setToolTip(helper or details or label)
         head.addWidget(box)
-        badge_label = QLabel(badge)
-        badge_label.setObjectName("optionBadge")
-        badge_label.setVisible(bool(badge))
-        head.addWidget(badge_label)
         head.addStretch(1)
         rl.addLayout(head)
+        # b779-ui3: the qualifier badge sat beside the check box, so a long check box label plus a long
+        # badge set the row's minimum width (a 425 px label + a 200 px badge at 100%, nearly 1,000 px on
+        # Windows). It now gets its own line and wraps; the badge still names every qualifier at a glance.
+        badge_label = QLabel(badge)
+        badge_label.setObjectName("optionBadge")
+        badge_label.setWordWrap(True)
+        badge_label.setContentsMargins(30, 0, 0, 0)
+        badge_label.setVisible(bool(badge))
+        badge_row = QHBoxLayout()
+        badge_row.setContentsMargins(0, 0, 0, 0)
+        badge_row.addWidget(badge_label)
+        badge_row.addStretch(1)
+        rl.addLayout(badge_row)
         helper_label = WrappedLabel(helper)
         helper_label.setObjectName("throwMuted")
         helper_label.setWordWrap(True)
@@ -3360,6 +3439,7 @@ class BuildPanel(QWidget):
             and self.source_field.text().strip() and self.music_library_field.text().strip()
             and not (self.operation_guard and self.operation_guard())))
         self.build_button.setEnabled(not blocker)
+        self.check_button.setEnabled(not blocker)
         self.blocker_label.setText(blocker)
         self.build_button.setToolTip(blocker or "Copies the disc and writes the selected changes into the copy (a few minutes).")
         self.build_button.setAccessibleDescription(self.build_button.toolTip())
@@ -3424,7 +3504,9 @@ class BuildPanel(QWidget):
         folder = self.super_bowl_user_art_field.text().strip()
         if not folder:
             self.super_bowl_user_art_status.setText(
-                "Super Bowl walls use the authored event marks, network type and the mod's team logos.")
+                "Super Bowl walls use the bundled real Super Bowl, network and team-season logos. Choose a folder "
+                "to use your own PNG files instead; a folder with none of these names keeps the mod's designed "
+                "marks.")
             return
         try:
             found = walls.user_art_status(folder)
@@ -4518,6 +4600,56 @@ class BuildPanel(QWidget):
         self._refresh()
         self._pool.start(task)
 
+    def _check_project(self) -> None:
+        """Check my project (b779-ce1): the quick checks of nfl2k5_project_check, off the GUI thread, nothing written."""
+        if self.blocker():
+            return
+        plan = self.plan()
+        include_session = self._include_session_project()
+        facade = self._facade
+
+        def operation(progress):
+            from mod_editor.core import nfl2k5_project_check as project_check
+            asset_ids, document, fit_rows, paths, index = [], None, [], None, None
+            if include_session:
+                from mod_editor.core.equipment_staging import cached_equipment_fit_rows
+                with facade._lock:
+                    session = facade._session
+                    asset_ids = project_check.assets_from_session(session)
+                    paths = project_check.paths_from_session(session)
+                    fit_rows = list(cached_equipment_fit_rows(session))
+                    cache = facade._cache
+                    index = cache.pack0 if cache is not None else None
+                document = facade.build_service.preflight_project(session)
+            return project_check.check(plan, asset_ids=asset_ids, document=document, fit_rows=fit_rows,
+                                       progress=progress, asset_paths=paths, source_index=index)
+
+        task = _Task(operation)
+        task.signals.progress.connect(self.progress_label.setText)
+        task.signals.counts.connect(self._progress_counts)
+        task.signals.finished.connect(self._check_done)
+        task.signals.failed.connect(self._check_failed)
+        self._task = task
+        self._heartbeat_timer.start()
+        self._heartbeat()
+        self.operation_state_changed.emit(True)
+        self.progress_bar.show()
+        self._refresh()
+        self._pool.start(task)
+
+    def _check_done(self, report: object) -> None:
+        self._heartbeat_timer.stop()
+        self._task = None
+        self.operation_state_changed.emit(False)
+        self.progress_bar.hide()
+        self.progress_label.setText("")
+        text = report.text()
+        self._last_build_summary = f"2K5 Mod Studio {BUILD_RELEASE_TAG}\nCheck my project\n\n{text}"
+        self.copy_summary_button.setEnabled(True)
+        self.status_label.setText(text)
+        QMessageBox.information(self, "Check my project", text)
+        self._refresh()
+
     def _progress_counts(self, done, total):
         self.progress_bar.setRange(0, total if total > 0 else 0)
         if total > 0:
@@ -4593,6 +4725,20 @@ class BuildPanel(QWidget):
         running = self._running_line()
         QApplication.clipboard().setText(self._last_build_summary + ("\n" + running if running else ""))
         self.status_label.setText("Build summary copied. Paste it with the first error in your help request.")
+
+    def _check_failed(self, message: str) -> None:
+        """Check my project could not finish: say "check", and do not borrow the last build's summary."""
+        message = plain_error(message)
+        self._last_build_summary = f"2K5 Mod Studio {BUILD_RELEASE_TAG}\nCheck my project\n\nFirst error: {message}"
+        self.copy_summary_button.setEnabled(True)
+        self._heartbeat_timer.stop()
+        self._task = None
+        self.operation_state_changed.emit(False)
+        self.progress_bar.hide()
+        self.progress_label.setText("")
+        self.status_label.setText(plain_failure("check your project", message))
+        show_operation_error(self, "check your project", message)
+        self._refresh()
 
     def _failed(self, message: str) -> None:
         message = plain_error(message)

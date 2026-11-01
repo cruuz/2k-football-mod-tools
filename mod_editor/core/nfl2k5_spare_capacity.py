@@ -44,7 +44,9 @@ def sha(raw):
     return hashlib.sha256(raw).hexdigest()
 
 def _wrapped(body):
-    require(len(body) in (BODY_SIZE, 0xB0040), 'spare capacity requires a native main ROST size')
+    from . import nfl2k5_roster_arena as arena
+    require(len(body) in (BODY_SIZE,) + tuple(size + 0x40 for size in arena.CAPACITY_ARENA_SIZES),
+            'spare capacity requires a native main ROST size')
     return b'ROST' + struct.pack('<7I', len(body), len(body), 0, 0, 0, 0, 0) + bytes(body)
 
 def _decode(body):

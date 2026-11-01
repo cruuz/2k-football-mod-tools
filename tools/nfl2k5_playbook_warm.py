@@ -11,7 +11,7 @@ Anything this helper cannot compile is simply not handed back.
 It is a separate script so the worker pool never re-runs the caller's main
 module under the ``spawn`` start method (a build script, or the Studio GUI).
 
-stdin:  pickle {"chains": [(before, [(pack, team), ...]), ...], "xbe": bytes | None,
+stdin (or the file named by argv[1]):  pickle {"chains": [(before, [(pack, team), ...]), ...], "xbe": bytes | None,
                 "workers": int}
 stdout: pickle [[(key, compiled), ...] per chain]
 """
@@ -72,7 +72,12 @@ def _exit_with_parent():
 
 
 def main() -> int:
-    request = pickle.load(sys.stdin.buffer)
+    # b779-int1: the request comes from the file named on the command line (stdin when there is none)
+    if len(sys.argv) > 1:
+        with open(sys.argv[1], "rb") as stream:
+            request = pickle.load(stream)
+    else:
+        request = pickle.load(sys.stdin.buffer)
     chains = request["chains"]
     workers = max(1, min(int(request["workers"]), len(chains)))
     tasks = [(before, steps, request["xbe"]) for before, steps in chains]

@@ -89,11 +89,13 @@ HEADER_BASELINE = 1
 HEADER_HISTORY = 2
 
 # Native geometry: the native save size before any footer for each supported arena.
-RETAIL_SAVE_SIZE = 720_044
-RESERVE_SAVE_SIZE = 724_140
-CAPACITY_SAVE_SIZE = 847_020
+from . import nfl2k5_roster_arena as _arena
+RETAIL_SAVE_SIZE = _arena.RETAIL_SAVE_SIZE
+RESERVE_SAVE_SIZE = _arena.save_size(_arena.ARENA_SIZE)
+CAPACITY_SAVE_SIZE = _arena.CAPACITY_SAVE_SIZE                 # b779 ag1: the current capacity arena
+LEGACY_CAPACITY_SAVE_SIZE = _arena.LEGACY_CAPACITY_SAVE_SIZE   # beta-78 / v0.7 (847,020)
 MYCAREER_FOOTER_SIZE = 128
-NATIVE_SAVE_SIZES = (RETAIL_SAVE_SIZE, RESERVE_SAVE_SIZE, CAPACITY_SAVE_SIZE)
+NATIVE_SAVE_SIZES = (RETAIL_SAVE_SIZE, RESERVE_SAVE_SIZE) + _arena.CAPACITY_SAVE_SIZES
 SAVE_SIZES = tuple(size + footer for size in NATIVE_SAVE_SIZES
                    for footer in (FOOTER_SIZE, MYCAREER_FOOTER_SIZE + FOOTER_SIZE))
 PPG_SAVE_SIZES = tuple(size + FOOTER_SIZE for size in NATIVE_SAVE_SIZES)
@@ -134,13 +136,27 @@ def _ratings(player: Mapping[str, object]) -> list[int]:
     return list(values)
 
 
+def is_empty_footer(payload: bytes) -> bool:
+    """True for the all-zero footer region the released v0.7 game writes (881,340 bytes for a fresh save).
+
+    The v0.7 executable reserves the footer but never stamps ``PPGF0001`` into it, so a fresh franchise
+    save ends in 34,320 zero bytes. That means "no weekly history yet". It is only recognised at a total
+    length that is a known native container (optionally with the 128-byte MyCareer block) plus the footer.
+    """
+    return (len(payload) in PPG_SAVE_SIZES + PPG_CAREER_SAVE_SIZES
+            and not any(payload[len(payload) - FOOTER_SIZE:]))
+
+
 def footer_start(payload: bytes) -> int | None:
-    """Offset of a valid Player Progress footer, or ``None`` for every native save."""
+    """Offset of the Player Progress footer region (valid, or all zero = no history yet), else ``None``.
+
+    Every native save without a footer returns ``None``. Use ``is_empty_footer`` to tell a zero region
+    from a stamped footer."""
     if len(payload) < FOOTER_SIZE:
         return None
     at = len(payload) - FOOTER_SIZE
     if payload[at:at + 8] != FOOTER_MAGIC:
-        return None
+        return at if is_empty_footer(payload) else None
     magic, version, header_size, record_size, *_ = FOOTER_HEADER.unpack_from(payload, at)
     if (magic, version, header_size, record_size) != (FOOTER_MAGIC, FOOTER_VERSION,
                                                       FOOTER_HEADER_SIZE, RECORD_SIZE):
@@ -153,6 +169,8 @@ def read_footer(payload: bytes) -> dict[str, object]:
     at = footer_start(payload)
     if at is None:
         return {"present": False, "header": None, "slots": [], "footer_offset": None}
+    if payload[at:at + 8] != FOOTER_MAGIC:       # the v0.7 game's all-zero footer: no weekly history yet
+        return {"present": False, "header": None, "slots": [], "footer_offset": at, "empty": True}
     record = payload[at + FOOTER_HEADER_SIZE:at + FOOTER_HEADER_SIZE + RECORD_SIZE]
     return {**read_record(record), "footer_offset": at}
 
@@ -357,5 +375,5 @@ __all__ = ["FLAG_BASELINE", "FLAG_IDENTITY", "FOOTER_HEADER_SIZE", "FOOTER_MAGIC
            "MYCAREER_FOOTER_SIZE", "NATIVE_SAVE_SIZES", "OWNER", "ProgressionError", "RATING_COUNT",
            "RATING_OFFSET", "RECORD_HEADER_SIZE", "RECORD_MAGIC", "RECORD_SIZE", "ROW_MAP",
            "SAVE_SIZES", "PPG_SAVE_SIZES", "PPG_CAREER_SAVE_SIZES", "SCHEMA", "SCREEN_SCHEMA", "SLOT_SIZE", "SNAPSHOT_SIZE", "TEAM_SLOTS", "VERSION",
-           "advance_week", "append_footer", "baseline", "empty_footer", "encode_record", "footer_start",
+           "advance_week", "append_footer", "baseline", "empty_footer", "encode_record", "footer_start", "is_empty_footer",
            "read_footer", "read_record", "screen_rows", "snapshot_index", "strip_footer"]

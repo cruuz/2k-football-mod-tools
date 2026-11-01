@@ -200,8 +200,10 @@ class AllocatorTests(unittest.TestCase):
         without = tuple(r for r in union if r[0] not in later)
         # Includes five fixed tap/draft/H-back/rating slot requests; b775 mo2: + the moment context state; b775-ct1: +
         # the classic teams read-only helpers; b778 ai6: + the late-traffic code and its 8-byte state; b778 st2: +
-        # star career's code and data; b778 ai8: + third-down code (the five rows this test's pin predates).
-        self.assertEqual(len(union) - len(without), 23)
+        # star career's code and data; b778 ai8: + third-down code (the five rows this test's pin predates);
+        # b779-hn1: + the Super Bowl champions owner (after honors); b779-fixD (4c89ebbb2): + return coverage (1 row)
+        # and the module loader (2 rows), which dormant_union() now lists to match the manifest builder.
+        self.assertEqual(len(union) - len(without), 27)
         plan_with, plan_without = space.plan(union), space.plan(without)
         # b778 xs1/bd3: a union that no longer fits the v3 runs is a v4 image, which adds a second
         # allocator-directory row at POOL_VA; owner_offset keeps the two pages apart.
@@ -213,14 +215,17 @@ class AllocatorTests(unittest.TestCase):
                 self.assertEqual(new[k], row, f"{k} moved")
         old_directory = [a for a in space._scale_allocations(without) if a["owner"] == space.DIRECTORY_OWNER]
         new_directory = [a for a in space._scale_allocations(union) if a["owner"] == space.DIRECTORY_OWNER]
+        # b779-km1: K128's 1,536-byte request alone makes the base union a v4 image, so it already carries
+        # the pool directory page before letter grades is added.
         self.assertEqual([(a["size"], a["va"], a["raw"]) for a in old_directory],
-                         [(4096, space.SCALE_DIRECTORY_VA, space.SCALE_DIRECTORY)])
+                         [(4096, space.SCALE_DIRECTORY_VA, space.SCALE_DIRECTORY), (4096, space.POOL_VA, space.POOL_RAW)])
         self.assertEqual([(a["size"], a["va"], a["raw"]) for a in new_directory],
                          [(1104, space.SCALE_DIRECTORY_VA, space.SCALE_DIRECTORY), (4096, space.POOL_VA, space.POOL_RAW)])
         added = sorted((k[0], k[1]) for k in new if k not in old and k[0] != space.DIRECTORY_OWNER)
         self.assertEqual(added, sorted([(lg.OWNER, "code"), (lg.OWNER, "read_only"), (lg.PROGRESS_OWNER, "code"),
                                         ("nfl2k5_period_goalposts", "code"), ("nfl2k5_period_goalposts", "read_only"),
                                         ("nfl2k5_honors", "code"), ("nfl2k5_honors", "data"),
+                                        ("nfl2k5_champions", "code"),  # b779-hn1
                                         ("nfl2k5_coach_ai", "code"), ("nfl2k5_coach_ai", "data"),
                                         ("nfl2k5_moment_coaches", "code"), ("nfl2k5_moment_coaches", "data"),
                                         ("nfl2k5_moment_context", "data"),  # b775 mo2
@@ -231,10 +236,14 @@ class AllocatorTests(unittest.TestCase):
                                         ("nfl2k5_cpu_money_downs_late", "code"),  # b778 ai6
                                         ("nfl2k5_cpu_money_downs_late_state", "data"),
                                         ("nfl2k5_star_career", "code"), ("nfl2k5_star_career", "data"),  # b778 st2
-                                        ("nfl2k5_cpu_third_down", "code")]))  # b778 ai8
-        # after K128 in its region, contiguous with it
+                                        ("nfl2k5_cpu_third_down", "code"),  # b778 ai8
+                                        ("nfl2k5_return_coverage", "code"),  # b779-fixD: dormant_union lists it
+                                        ("nfl2k5_module_loader", "code"), ("nfl2k5_module_loader", "data")]))
+        # b779-km1: K128's 1,536-byte request no longer fits the legacy code tail, so it moves whole to the v4
+        # pool and letter grades takes the free tail; both stay late owners, K128 still placed first.
         k128, mine = new[("nfl2k5_k128", "code", 0)], new[(lg.OWNER, "code", 0)]
-        self.assertEqual(mine["va"], k128["va"] + k128["size"])
+        self.assertGreaterEqual(k128["va"], space.POOL_VA)
+        self.assertLess(mine["va"], space.POOL_VA)
         self.assertGreaterEqual(plan_with["capacity"]["code"]["available_bytes"], 0)
         self.assertGreater(plan_without["capacity"]["code"]["available_bytes"],
                            plan_with["capacity"]["code"]["available_bytes"])

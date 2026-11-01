@@ -56,13 +56,16 @@ class TemplateTests(unittest.TestCase):
 
     def test_template_fits_and_relocations_are_owned(self):
         self.assertLessEqual(len(runtime.CODE), honors.CODE_SIZE)
-        self.assertEqual(honors.REQUESTS, (("nfl2k5_honors", "code", 2560, 16), ("nfl2k5_honors", "data", 16, 16)))
+        self.assertEqual(honors.HONORS_REQUESTS, (("nfl2k5_honors", "code", 2560, 16), ("nfl2k5_honors", "data", 16, 16)))
+        # b779-hn1: the Super Bowl champions owner is installed with this one (its code page; the card's third page)
+        self.assertEqual(honors.REQUESTS, honors.HONORS_REQUESTS + (("nfl2k5_champions", "code", 5632, 16),))
         for offset, kind, symbol, _value in runtime.RELOCATIONS:
             self.assertIn(kind, (1, 2))
-            self.assertIn(symbol, ("code", "state"))
+            self.assertIn(symbol, ("code", "state", "champ_ratings", "champ_bio", "champ_flip", "champ_enter"))
             self.assertLessEqual(offset + 4, len(runtime.CODE))
         for entry in ("honors_page_input", "honors_page_enter", "honors_page_ratings", "honors_page_bio",
-                      "honors_season_hook", "honors_sb_hook", "honors_fold_rule", "commit_season", "commit_sb"):
+                      "honors_season_hook", "honors_sb_hook", "honors_fold_rule", "commit_season", "commit_sb",
+                      "honors_flip", "honors_enter"):
             self.assertIn(entry, runtime.LABELS)
 
     def test_code_for_relocates_against_both_blocks(self):
@@ -73,12 +76,18 @@ class TemplateTests(unittest.TestCase):
         differ = [i for i in range(len(a)) if a[i] != b[i]]
         state_fields = {off for off, kind, sym, _v in runtime.RELOCATIONS if sym == "state"}
         code_abs = {off for off, kind, sym, _v in runtime.RELOCATIONS if sym == "code" and kind == 1}
-        allowed = {off + k for off in state_fields | code_abs for k in range(4)}
+        # the champions links (b779-hn1) resolve to 0 without that owner: absolute ones do not move, the call's
+        # displacement follows the call site
+        champ_rel = {off for off, kind, sym, _v in runtime.RELOCATIONS if sym.startswith("champ_") and kind == 2}
+        allowed = {off + k for off in state_fields | code_abs | champ_rel for k in range(4)}
         self.assertTrue(differ)
         self.assertTrue(set(differ) <= allowed)
-        # the page flag is the first dword of the RW block in every reference
+        for off, kind, sym, _v in runtime.RELOCATIONS:
+            if sym.startswith("champ_") and kind == 1:
+                self.assertEqual(struct.unpack_from("<I", a, off)[0], 0)
+        # every reference is into the 16-byte RW block (page, list row, card screen, saved element count)
         for off in state_fields:
-            self.assertEqual(struct.unpack_from("<I", a, off)[0], 0x14F3AB0)
+            self.assertIn(struct.unpack_from("<I", a, off)[0], range(0x14F3AB0, 0x14F3AC0, 4))
 
     def test_sites_are_rel32_into_the_entries(self):
         code_va = 0x14EB150
@@ -108,13 +117,13 @@ class TemplateTests(unittest.TestCase):
         self.assertEqual(late[0], "nfl2k5_k128")
         # b773: mo1's historical coaches follow them, and sp2/ro1/tr1 append their owners and named directory spills
         # after those (none of them moves honors or the coach AI)
-        self.assertEqual(late[late.index("nfl2k5_honors"):][:2], ("nfl2k5_honors", "nfl2k5_coach_ai"))
+        self.assertEqual(late[late.index("nfl2k5_honors"):][:3], ("nfl2k5_honors", "nfl2k5_champions", "nfl2k5_coach_ai"))  # b779-hn1
         self.assertLess(late.index("nfl2k5_coach_ai"), late.index("nfl2k5_moment_coaches"))
         # b775-ct1 appends the classic teams' read-only helpers after the team ratings owners; b775-hs1's hair styles code
         # owner follows them (b775-int1: both merged), then b776-ai2's two CPU AI owners, b776-pa2's play art routes and
         # b776-ns1's jersey number sizes (int2 order), then b777-ol1's run blocking and b777-qb3's QB accuracy (int7).
         # b778-fo1/pi1/ai5/fa1/st2/ai6/dr1/pg1/pg2/cr1/cb1/sd4/ai8/kr1/pr1 append the rest; xs1's module loader is last.
-        self.assertEqual(late[-28:], (
+        self.assertEqual(late[-33:], (
             "nfl2k5_team_ratings", "nfl2k5_team_ratings_display", "nfl2k5_classic_teams", "nfl2k5_hair_styles",
             "nfl2k5_cpu_qb_reads", "nfl2k5_db_ball_play", "nfl2k5_play_art_routes", "nfl2k5_team_number_scale",
             "nfl2k5_run_blocking", "nfl2k5_qb_accuracy", "nfl2k5_formation_art_spacing", "nfl2k5_force_out",
@@ -122,15 +131,16 @@ class TemplateTests(unittest.TestCase):
             "nfl2k5_cpu_money_downs_late", "nfl2k5_cpu_money_downs_late_state", "nfl2k5_draft_clock",
             "nfl2k5_weekly_progression", "nfl2k5_player_progress_screen", "nfl2k5_contract_college_guard",
             "nfl2k5_sim_cb_tackles", "nfl2k5_clock_led", "nfl2k5_cpu_third_down", "nfl2k5_return_coverage",
-            "nfl2k5_pass_protection", "nfl2k5_module_loader"))  # b778 ai8/kr1/pr1/xs1 tail
+            "nfl2k5_pass_protection", "nfl2k5_pass_rush_stats", "nfl2k5_module_loader", "nfl2k5_preseason_warning", "nfl2k5_sim_rb_injuries", "nfl2k5_sim_realism", "nfl2k5_sim_realism_state"))  # b778 ai8/kr1/pr1/xs1, b779 st1 + rc1 + sim2 tail
         self.assertLess(late.index("nfl2k5_letter_grades"), late.index("nfl2k5_honors"))
         # without a promoted MyCareer there is no gap: the code is appended after the other late owners, whatever
         # order the requests arrive in
         letter = (("nfl2k5_letter_grades", "code", 160, 16), ("nfl2k5_letter_grades", "read_only", 240, 16))
-        k128 = (("nfl2k5_k128", "code", 1024, 16),)
+        k128 = (("nfl2k5_k128", "code", 1536, 16),)
         rows = space._scale_allocations(list(honors.REQUESTS) + list(letter) + list(k128))
         code = [r for r in rows if r["kind"] == "code"]
-        self.assertEqual([r["owner"] for r in code][-3:], ["nfl2k5_k128", "nfl2k5_letter_grades", "nfl2k5_honors"])
+        self.assertEqual([r["owner"] for r in code][-4:], ["nfl2k5_k128", "nfl2k5_letter_grades", "nfl2k5_honors",
+                                                           "nfl2k5_champions"])
         # b77-f5b / i1: the honors owner is part of the complete union. Its code sits in the 8 KiB MyCareer footprint
         # (unreferenced 0xCC padding once M3 promotes the old request) and its 16 RW bytes at the top of the legacy RW page
         union = space.dormant_union()
@@ -138,6 +148,8 @@ class TemplateTests(unittest.TestCase):
         rows = space._scale_allocations(union)
         mine = {r["kind"]: r for r in rows if r["owner"] == honors.OWNER}
         self.assertEqual({k: (v["size"], v["align"]) for k, v in mine.items()}, {"code": (2560, 16), "data": (16, 16)})
+        champs = [r for r in rows if r["owner"] == "nfl2k5_champions"]
+        self.assertEqual([(r["kind"], r["size"], r["align"]) for r in champs], [("code", 5632, 16)])
         rw = space._scale_regions()[1]
         self.assertTrue(rw["va"] <= mine["data"]["va"] and mine["data"]["va"] + 16 <= rw["va"] + rw["size"])
         for kind, row in mine.items():
@@ -251,7 +263,10 @@ class Machine:
         return value
 
     def wide(self, va, limit=120):
-        return bytes(self.uc.mem_read(va, limit * 2)).decode("utf-16le").split("\0")[0]
+        # stack buffers keep stale bytes after the terminator: decode up to the first NUL only
+        raw = bytes(self.uc.mem_read(va, limit * 2))
+        end = next((i for i in range(0, len(raw), 2) if raw[i:i + 2] == b"\0\0"), len(raw))
+        return raw[:end].decode("utf-16le")
 
     def float_at(self, va):
         return struct.unpack("<f", self.uc.mem_read(va, 4))[0]
@@ -403,20 +418,63 @@ class NativeTests(unittest.TestCase):
         m.call(0x320D40, ecx=m.SCREEN)
         return m.get(self.state), list(m.calls)
 
-    def test_bumpers_and_triggers_flip_the_page_and_b_still_pops(self):
+    def test_bumpers_and_triggers_turn_the_page_and_b_still_pops(self):
+        # b779-hn1: three pages (card, honors, champions). Black and R1 go forward, White and L1 go back.
         m = self.machine()
         m.record(0x38650, "sound_lookup", result=0x1234)
         m.record(0x89DA0, "sound_play", pop=0x18)
         m.record(0x320D30, "pop")
-        for bit, name in ((0x1000, "Black"), (0x2000, "White"), (0x4000, "L1"), (0x8000, "R1")):
+        sound = ["sound_lookup", "sound_play"]
+        for bit, name in ((0x1000, "Black"), (0x8000, "R1")):
             with self.subTest(button=name):
-                self.assertEqual(self.pad_frame(m, bit, 0), (1, ["sound_lookup", "sound_play"]))
-                self.assertEqual(self.pad_frame(m, bit, 1), (0, ["sound_lookup", "sound_play"]))
+                self.assertEqual(self.pad_frame(m, bit, 0), (1, sound))
+                self.assertEqual(self.pad_frame(m, bit, 1), (2, sound))
+                self.assertEqual(self.pad_frame(m, bit, 2), (0, sound))
+        for bit, name in ((0x2000, "White"), (0x4000, "L1")):
+            with self.subTest(button=name):
+                self.assertEqual(self.pad_frame(m, bit, 0), (2, sound))
+                self.assertEqual(self.pad_frame(m, bit, 2), (1, sound))
+                self.assertEqual(self.pad_frame(m, bit, 1), (0, sound))
+        self.assertEqual(self.pad_frame(m, 0x1000, 7), (1, sound))             # a stray page number is repaired
         self.assertEqual(self.pad_frame(m, 0x200, 1), (1, ["pop"]))            # B
         self.assertEqual(self.pad_frame(m, 0x20, 0), (0, ["pop"]))             # Back
         self.assertEqual(self.pad_frame(m, 0x100 | 0x400 | 0x800, 1), (1, []))  # A, X, Y do nothing
-        self.assertEqual(self.pad_frame(m, 0x1000 | 0x200, 0), (1, ["sound_lookup", "sound_play", "pop"]))
+        self.assertEqual(self.pad_frame(m, 0x1000 | 0x200, 0), (1, sound + ["pop"]))
         self.assertEqual(self.pad_frame(m, 0, 1), (1, []))
+
+    def test_up_and_down_scroll_the_champions_page_only(self):
+        m = self.machine()
+        m.record(0x38650, "sound_lookup", result=0x1234)
+        m.record(0x89DA0, "sound_play", pop=0x18)
+        sound = ["sound_lookup", "sound_play"]
+        for page in (0, 1):                                                    # the retail and honors pages ignore them
+            self.assertEqual(self.pad_frame(m, 0x2000000, page), (page, []))
+            self.assertEqual(self.pad_frame(m, 0x1000000, page), (page, []))
+        self.assertEqual(self.pad_frame(m, 0x2000000, 2), (2, sound))          # down: the cursor sound and a row
+        self.assertEqual(m.get(self.state + 4), 1)
+        self.assertEqual(self.pad_frame(m, 0x1000000, 2), (2, sound))          # up
+        self.assertEqual(m.get(self.state + 4), 0)
+        self.assertEqual(self.pad_frame(m, 0x1000000, 2), (2, sound))          # up at the top stays there
+        self.assertEqual(m.get(self.state + 4), 0)
+        m.put(self.state + 4, 5)
+        self.assertEqual(self.pad_frame(m, 0x1000, 2), (0, sound))             # turning the page resets the scroll
+        self.assertEqual(m.get(self.state + 4), 0)
+
+    def test_without_the_champions_owner_the_card_keeps_two_pages(self):
+        # the links resolve to 0 when nfl2k5_champions is not installed (the beta 77 behaviour)
+        retail_code = honors.code_for(self.code_va, self.state)
+        payload = bytearray(self.patched)
+        off = self.code_va - 0x14DA000 + 0
+        image = XbeImage(self.patched)
+        raw = image.offset(self.code_va, honors.CODE_SIZE)
+        payload[raw:raw + honors.CODE_SIZE] = retail_code
+        m = self.machine(bytes(payload))
+        m.record(0x38650, "sound_lookup", result=0x1234)
+        m.record(0x89DA0, "sound_play", pop=0x18)
+        for bit in (0x1000, 0x2000, 0x4000, 0x8000):
+            self.assertEqual(self.pad_frame(m, bit, 0)[0], 1)
+            self.assertEqual(self.pad_frame(m, bit, 1)[0], 0)
+        self.assertEqual(self.pad_frame(m, 0x2000000, 1), (1, []))            # Up and Down do nothing without the list
 
     def test_retail_pad_loop_ignores_the_shoulders(self):
         m = self.machine(self.retail)
@@ -604,8 +662,9 @@ class NativeTests(unittest.TestCase):
     def fold(self, payload):
         m = self.machine(payload)
         m.record(0x177990, "progress", pop=4)
+        extra = [word(f, s, v) for f in (106, 107, 108, 109, 110, 120, 127) for s, v in ((1, f - 100), (2, 2))]
         words = [word(96, 1, 1), word(2, 1, 100), word(16, 1, 5),
-                 word(96, 2, 1), word(2, 2, 200), word(16, 2, 9), word(0, 4, 16)]
+                 word(96, 2, 1), word(2, 2, 200), word(16, 2, 9), word(0, 4, 16)] + extra
         rec = m.roster([(5, words)])[0]
         m.put(CLASS, 0)
         m.call(0x14EFE0, stack=(4,))                              # fold every season 4 or more seasons ago
@@ -622,6 +681,10 @@ class NativeTests(unittest.TestCase):
         self.assertEqual(patched[(96, 2)], (2, True))               # honors: two MVPs stay two
         self.assertEqual(retail[(96, 2)], (1, True))                # retail would read past the table: max, one
         self.assertEqual(patched[(0, 4)], (16, False))
+        # b779-hn1 (coordinator note for st1): fields 106..110 (pressures, QB hits and sacks allowed) and anything up to
+        # 127 fold by sum with the patch; the retail lookup reads unrelated variables there
+        for field in (106, 107, 108, 109, 110, 120, 127):
+            self.assertEqual(patched[(field, 2)], (field - 100 + 2, True), field)
 
 
 if __name__ == "__main__":

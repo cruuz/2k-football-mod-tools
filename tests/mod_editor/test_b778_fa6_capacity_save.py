@@ -4,6 +4,9 @@ The retail writer already sizes itself from [0xB72808]; this suite pins the two 
 not follow the capacity arena (the save-list admission size and the load path's wrapper-size
 answer) and the old-save migration into the 0xB0000 in-memory arena. Native tests execute the
 real functions from the pinned USA XBE; private saves/discs are skipped when absent.
+
+b779 ag1: the capacity arena is nfl2k5_roster_arena.CAPACITY_ARENA_SIZE (0xCA000); beta-78's 0xB0000 saves
+(847,020 / 847,148) are admitted, report their own wrapper size and load into the bigger arena.
 """
 from __future__ import annotations
 
@@ -30,7 +33,8 @@ XBE = Path(os.environ.get('NFL2K5_RETAIL_EXTRACTION',
 HUB = Path(os.environ.get('NFL2K5_SAVE_FIXTURES', '/home/noah/Desktop/2K5-8 Editors/save_fixtures'))
 SAVE = HUB / 'f0/UDATA/53450030/0B8506889D40/SAVEGAME.DAT'
 RECORDS = 612
-CAPACITY_TOTAL = 847020
+CAPACITY_TOTAL = arena.CAPACITY_SAVE_SIZE
+LEGACY_TOTAL = arena.LEGACY_CAPACITY_SAVE_SIZE
 
 
 def _unicorn():
@@ -104,9 +108,11 @@ class CapacitySavePathTests(unittest.TestCase):
 
     def test_save_list_admits_every_pre_capacity_size(self):
         base = self._machine()
-        for size in (720044, 720172, CAPACITY_TOTAL):
+        self.assertEqual((LEGACY_TOTAL, CAPACITY_TOTAL), (847020, 953516))
+        for size in (720044, 720172, LEGACY_TOTAL, LEGACY_TOTAL + 128, CAPACITY_TOTAL):
             self.assertEqual(self._damaged(base, size), 0, f'{size} was marked damaged')
-        for size in (719000, 720043, 720045, 720171, 720173, 847019, 847021, 847148, 0):
+        for size in (719000, 720043, 720045, 720171, 720173, 847019, 847021, 847147, 847149,
+                     CAPACITY_TOTAL - 1, CAPACITY_TOTAL + 1, CAPACITY_TOTAL + 128, 0):
             self.assertEqual(self._damaged(base, size), 1, f'{size} was admitted')
         # 724140/724268 are the 16-reserve layouts; that experimental option refuses capacity
         # growth, so this capacity build does not claim them.
@@ -116,7 +122,7 @@ class CapacitySavePathTests(unittest.TestCase):
     def test_load_path_reads_an_old_saves_suffix_at_its_own_offset(self):
         base = self._machine()
         shim = self.labels['capacity_load_size']
-        for declared, expected in ((0x91020, 0x91040), (0x92020, 0x92040)):
+        for declared, expected in ((0x91020, 0x91040), (0x92020, 0x92040), (0xB0020, 0xB0040)):
             base.uc.mem_write(self.file, bytes(0x1000))
             base.uc.mem_write(self.file + 0x2E4, struct.pack('<I', declared))
             self.assertEqual(self._call_esi(base, shim, self.file), expected)
@@ -162,6 +168,87 @@ class CapacitySavePathTests(unittest.TestCase):
         self.assertEqual(base.word(base.OUT + 4), arena.CAPACITY_ARENA_SIZE + 0x20)
         self.assertEqual(base.word(base.OUT + 48), 1)
         self.assertEqual(base.call(0x16AA10), CAPACITY_TOTAL)
+
+    def test_beta78_capacity_save_loads_into_the_larger_arena_with_its_records(self):
+        # b779 ag1: a beta-78 save (0xB0000 arena, 847,020 bytes, the descriptor and empty block 0x400 before its
+        # end) loads into the current arena: records, history and the auxiliary tail stay where they are, the block
+        # and descriptor move to the new end, the load path reads its suffix at 0xB0040, and a resave is the new size.
+        if not SAVE.is_file():
+            self.skipTest(f'preserved old save absent: {SAVE}')
+        retail_save = SAVE.read_bytes()
+        source, _ = arena._migrate_capacity(retail_save, RECORDS, class_records=0,
+                                            arena_size=arena.LEGACY_CAPACITY_ARENA_SIZE)
+        self.assertEqual(len(source), LEGACY_TOTAL)
+        old = codec.decode(source)
+        # b779 hn1 keeps its champions history in the 448 spare bytes after the reserve block (arena end - 0x400 + 352);
+        # a pattern in the part the auxiliary tail does not use must arrive at the same distance from the new end.
+        aux = struct.unpack_from('<I', source, fs.ARENA_WRAPPER + 8)[0]
+        gap = old.layout.root + arena.LEGACY_CAPACITY_BLOCK_OFFSET + arena.BLOCK_SIZE
+        gap_end = old.layout.end - aux
+        self.assertGreater(gap_end - gap, 200)
+        pattern = bytes((7 * i + 1) & 0xFF or 1 for i in range(gap_end - gap))
+        source = source[:gap] + pattern + source[gap_end:]
+        old = codec.decode(source)
+        self.assertEqual(old.layout.arena_size, arena.LEGACY_CAPACITY_ARENA_SIZE)
+        descriptor = arena.capacity_descriptor(source, old.layout)
+        from tests.mod_editor import test_nfl2k5_roster_arena_growth as growth_tests
+        base = growth_tests.NativeTests('test_native_old_save_load_migrates_auxiliary_tail')
+        base.patched, base.body = self.xbe, self.body
+        base.setUp()
+        base.put(0xB72808, arena.CAPACITY_ARENA_SIZE)
+        base.put(0xB7280C, arena.CAPACITY_ARENA_SIZE)
+        base.uc.mem_map(self.file, 0x200000)
+        base.uc.mem_write(self.file, source)
+        import unicorn as uni
+        from unicorn.x86_const import UC_X86_REG_EIP, UC_X86_REG_ESP
+        refresh = (0x77AE0, 0x77B20, 0x77A90, 0x77AB0, 0x77B00, 0x77470)
+        def service(uc, _address, _size, _data):
+            esp = uc.reg_read(UC_X86_REG_ESP)
+            uc.reg_write(UC_X86_REG_EIP, base.word(esp))
+            uc.reg_write(UC_X86_REG_ESP, esp + 4)
+        hook = base.uc.hook_add(uni.UC_HOOK_CODE, service, begin=min(refresh), end=max(refresh))
+        growth_bytes = arena.LEGACY_CAPACITY_ARENA_SIZE - arena.RETAIL_SIZE
+        try:
+            base.uc.mem_write(base.OUT, source[fs.ARENA_WRAPPER:fs.ARENA_END + growth_bytes])
+            base.call(0xC2040, ecx=base.OUT, budget=12000000)
+        finally:
+            base.uc.hook_del(hook)
+        root = base.word(0xB72918)
+        self.assertNotEqual(root, 0)
+        aux = struct.unpack_from('<I', source, fs.ARENA_WRAPPER + 8)[0]
+        self.assertEqual(base.word(0xB7280C), arena.CAPACITY_ARENA_SIZE - aux)
+        self.assertEqual(base.call(self.labels['integrity']), 1)
+        self.assertEqual(base.word(root), old.tables['primary'].count)
+        # The load path's season/front-office offsets still address the old buffer.
+        self.assertEqual(self._call_esi(base, self.labels['capacity_load_size'], self.file), 0xB0040)
+        # A save from this loaded state is the current capacity size and version 1, and decodes with its records.
+        base.call(0xC1F90, ecx=base.OUT, budget=12000000)
+        self.assertEqual(base.word(base.OUT + 4), arena.CAPACITY_ARENA_SIZE + 0x20)
+        self.assertEqual(base.word(base.OUT + 48), 1)
+        self.assertEqual(base.call(0x16AA10), CAPACITY_TOTAL)
+        resaved = bytes(base.uc.mem_read(base.OUT, 0x20 + 0x20 + arena.CAPACITY_ARENA_SIZE))
+        again = codec.decode(bytes(source[:fs.ARENA_WRAPPER]) + resaved)
+        self.assertEqual(again.layout.arena_size, arena.CAPACITY_ARENA_SIZE)
+        self.assertEqual(again.tables['primary'].count, old.tables['primary'].count)
+        self.assertEqual(arena.capacity_descriptor(again.original, again.layout), descriptor)
+        old_arena = source[old.layout.root:old.layout.end]
+        new_arena = again.original[again.layout.root:again.layout.end]
+        old_block, new_block = arena.LEGACY_CAPACITY_BLOCK_OFFSET, arena.CAPACITY_BLOCK_OFFSET
+        # every byte before the old tail is the save's own (records, names, history pool, tables) ...
+        self.assertEqual(new_arena[:old_block - 16], old_arena[:old_block - 16])
+        # ... the descriptor and block sit before the new end, the auxiliary tail at the end, zeros between
+        self.assertEqual(new_arena[new_block - 16:new_block + arena.BLOCK_SIZE],
+                         old_arena[old_block - 16:old_block + arena.BLOCK_SIZE])
+        if aux:
+            self.assertEqual(new_arena[-aux:], old_arena[-aux:])
+        # the whole 0x400 tail keeps its distance from the end (hn1's 448 spare bytes included) ...
+        self.assertEqual(new_arena[-0x410:], old_arena[-0x410:])
+        start = new_block + arena.BLOCK_SIZE
+        self.assertEqual(new_arena[start:start + len(pattern)], pattern)
+        # ... and the old tail and the new gap are cleared
+        self.assertFalse(any(new_arena[old_block - 16:new_block - 16]))
+        self.assertEqual(again.history_words, old.history_words)
+
 
 
 @unittest.skipUnless(XBE.is_file(), 'the capacity build needs the pinned USA XBE')

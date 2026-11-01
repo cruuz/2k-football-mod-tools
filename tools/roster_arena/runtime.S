@@ -185,19 +185,24 @@ created_adapter:
  mov ecx, eax
  jmp arena_created
 
-/* b778 fa6: capacity franchise save-list admission. The retail compare at 0x16ABCF only accepts
- * the exact capacity total size, so a pre-capacity 720,044-byte save reads as DAMAGED. Four real
- * sizes are admitted (720044/720172/724140/724268); 720044/724140 differ only in bit 8 from their
- * 128-byte MyCareer-footer forms, so one masked compare covers each pair. The handler's expected
- * size stays in EAX; the stack still carries 16AB70's pushed ESI. */
+/* b778 fa6 / b779 ag1: capacity franchise save-list admission. The retail compare at 0x16ABCF only accepts
+ * the exact capacity total size, so an older save would read as DAMAGED. Admitted: the current size (EAX),
+ * the retail save and the beta-78 capacity save (0xB0000 arena), each also with its 128-byte MyCareer footer.
+ * The sizes come from nfl2k5_roster_arena (build_runtime.py passes them as symbols). The handler's expected
+ * size stays in EAX; the stack still carries 16AB70's pushed ESI; ECX is free (16AB70 returns). */
 .section .text.capacity_admission,"ax",@progbits
 .global capacity_admission
 capacity_admission:
- cmp DWORD PTR [esi+0xbdc1cc], eax
+ mov ecx, DWORD PTR [esi+0xbdc1cc]
+ cmp ecx, eax
  je 1f
- cmp DWORD PTR [esi+0xbdc1cc], 0xafcac
+ sub ecx, RETAIL_SAVE
  je 1f
- cmp DWORD PTR [esi+0xbdc1cc], 0xafd2c
+ add ecx, -128
+ je 1f
+ sub ecx, LEGACY_CAPACITY_SAVE-RETAIL_SAVE-128
+ je 1f
+ add ecx, -128
  je 1f
  mov eax, 1
  jmp 2f
@@ -206,23 +211,22 @@ capacity_admission:
 2:
  pop esi
  ret
-/* b778 fa6: the franchise load path asks BFE50 for the wrapper size after C2040. On a capacity
- * build BFE50 answers the capacity wrapper (0xB0040), but an old buffer still stores its season
- * and front-office blocks at the old offsets. Return the source wrapper size (declared + 0x20)
- * for an old ROST version 0/1 wrapper; a capacity wrapper falls through to BFE50 unchanged.
+/* b778 fa6 / b779 ag1: the franchise load path asks BFE50 for the wrapper size after C2040. On a capacity
+ * build BFE50 answers the capacity wrapper (arena + 0x40), but an older buffer still stores its season and
+ * front-office blocks at its own offsets. Return the source wrapper size (declared + 0x20) for a retail,
+ * 0x92000 or beta-78 capacity wrapper; the current capacity wrapper falls through to BFE50 unchanged.
  * ESI is the file buffer and the wrapper starts at +0x2E0. */
 .section .text.capacity_load_size,"ax",@progbits
 .global capacity_load_size
 capacity_load_size:
  mov eax, DWORD PTR [esi+0x2e0+4]
- cmp eax, 0x91020
+ cmp eax, RETAIL_DECLARED
  je 1f
- cmp eax, 0x92020
- je 2f
+ cmp eax, RESERVE_DECLARED
+ je 1f
+ cmp eax, LEGACY_CAPACITY_DECLARED
+ je 1f
  jmp 0xbfe50
 1:
- mov eax, 0x91040
- ret
-2:
- mov eax, 0x92040
+ add eax, 0x20
  ret

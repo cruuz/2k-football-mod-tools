@@ -71,10 +71,26 @@ class GameplayPairTests(unittest.TestCase):
         final = cpu_ai(result)
         self.assertEqual({o.OWNER: o.status(final) for o in (*before, owner)}, status)
         self.assertTrue(all(value == "applied" for value in status.values()), status)
-        self.assertEqual(reads.read_settings(final), {"status": "applied", "zone_windows": True, "recheck": True})
+        self.assertEqual(reads.read_settings(final), {"status": "applied", "zone_windows": True, "recheck": True, "tiers": False})
         self.assertEqual(ball.status(final), "applied")
         for o in (*before, owner):
-            self.assertEqual(o.apply(final)[0], final, o.OWNER)
+            replayed = o.apply(final)[0]
+            if o.OWNER == stack.money_downs.OWNER and not stack.money_downs.read_settings(final)["late_policy"]:
+                # b779 km1 grew K128 to 1,536 B, which moved it whole into the pool and left room in the v3 code run
+                # for the 400-byte late companion (cpu_money_downs_late, ordered after both CPU AI owners). This
+                # seed reserves only the 2,048-byte owner, so the first Modern 2 install keeps the ai4 template; the
+                # replay on the image that now has room is the owner's own native repair (upgrade_to_modern2): it
+                # appends the companion and switches the template. Before km1 the run was full and the repair
+                # kept the ai4 template, which is why this used to be a byte-exact replay. The upgrade must finish
+                # the job (late policy on, same status, CPU AI owners untouched) and then be a fixed point.
+                self.assertTrue(stack.money_downs.read_settings(replayed)["late_policy"])
+                self.assertEqual(o.apply(replayed)[0], replayed, o.OWNER)
+                self.assertEqual({x.OWNER: x.status(replayed) for x in (*before, owner)}, status)
+                self.assertEqual(reads.read_settings(replayed), reads.read_settings(final))
+                self.assertEqual(ball.status(replayed), "applied")
+                final = replayed
+                continue
+            self.assertEqual(replayed, final, o.OWNER)
         self.assertEqual(cpu_ai(final), final)
         self.assertEqual(space.status(final), "applied")
 

@@ -34,6 +34,11 @@ OCT13_XBE = "1b41ec19aac6377484b9b30ee7a5c5ab220fb93d61aa3c14bafdb70092a9504f"
 PACKERS_96 = "HTS-h-10-1996-packers-2.iff"   # the season-alias file Quick Game loads on these discs
 USER2 = 33
 ENTRY, MAIN_MENU, CREATE_PLAYER = 0x5015CC, 0x515660, 0x56F050
+# The Oct 13 disc's own MyCareer entry menu. Machine takes its labels from the Studio's CURRENT template, whose code
+# was re-laid out after beta-77.1 (the current entry_menu is 12 bytes earlier, 0x14F27A4), so the shipped executable's
+# menu is pinned here: it is the address the shipped code itself reaches, and it equals entry_menu of the beta-77.1
+# template (0c739fb0f), which is the layout the Oct 13 owner kept.
+SHIPPED_ENTRY_MENU = 0x14F27B0
 
 
 def disc_inputs(disc):
@@ -92,7 +97,7 @@ class HeldHistoricTeamTests(unittest.TestCase):
         cls.current = mc2_repair.build(cls.shipped)[0]    # the Studio's MyCareer owner on the same executable
         cls.roster, cls.team = body_of(main), files[PACKERS_96]
 
-    def held(self, m):
+    def held(self, m, entry_menu=None):
         from tests.nfl2k5_my_career_played_fixture import Machine  # noqa: F401
         m.frontend(self.roster)
         m.uc.mem_write(m.OUT, self.team[32:])
@@ -101,7 +106,7 @@ class HeldHistoricTeamTests(unittest.TestCase):
         self.assertEqual(m.uc.mem_read(user2 + 0x11C, 1)[0], 53)
         m.call(0x6E390, ecx=m.manager, edx=ENTRY)
         m.select(1)
-        self.assertEqual(m.top(), m.labels["entry_menu"])
+        self.assertEqual(m.top(), entry_menu or m.labels["entry_menu"])
         return free_records(m)
 
     def test_the_held_team_makes_the_first_free_record_a_split_one(self):
@@ -118,10 +123,10 @@ class HeldHistoricTeamTests(unittest.TestCase):
     def test_shipped_myCareer_refuses_with_roster_is_full(self):
         from tests.nfl2k5_my_career_played_fixture import Machine
         with Machine(self.shipped) as m:
-            self.held(m)
+            self.held(m, SHIPPED_ENTRY_MENU)
             m.select(1, budget=50000000)                   # Undrafted free agent: the same creation step
             self.assertIn(("notice", "Roster is full."), m.events)
-            self.assertEqual(m.top(), m.labels["entry_menu"])
+            self.assertEqual(m.top(), SHIPPED_ENTRY_MENU)
 
     def test_current_myCareer_creates_on_the_next_clean_record(self):
         from tests.nfl2k5_my_career_played_fixture import Machine

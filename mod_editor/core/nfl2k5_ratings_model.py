@@ -722,6 +722,10 @@ def rate_player(row: Mapping, stats: SeasonStats, reference: Reference, *, honor
             ratings[rating] = clamp(reference.quantile(position, rating, aspects.get(driver, q_value)))
         else:
             ratings[rating] = clamp(reference.profile(position, rating, q_value))
+    if position == "QB":
+        q_mobility = aspects.get("mobility", 0.3)   # no rushing data: the pocket-QB baseline percentile
+        ratings["break_tackle"] = reviewed_qb_break_tackle(reference, q_mobility)
+        basis["reviewed_qb_break_tackle"] = {"q": round(q_mobility, 4), "rule": REVIEWED_QB_BREAK_TACKLE_RULE}
     # physicals: the retail 2004 ratings of the same player when the caller has them, else measurables
     weight = _num(row.get("weight")) or 0.0
     if anchor:
@@ -761,11 +765,87 @@ def _age(birth_date, season: int) -> int:
     return season - year - (1 if month > 9 else 0)
 
 
+# b779-sim2 round 3, reviewed 2026-10-28: the modern generator left the club quarterbacks' break tackle at the
+# retail QB *profile* (starters 25-32; club mean 29.6, SD 4.6) because the model has no QB rushing component for
+# that rating. The retail 2004 mobile QBs
+# were rated far higher (McNabb 70, Culpepper 72, Vick 65, Garcia 61, McNair 57), and the scheduled simulator reads
+# break tackle both directly in the run result (0x10A6DE) and with 0.4 weight in the ball-carrier composite
+# (category 8), whose fourth power selects the carrier. Two Sim QL 15 seasons of the round-2 build produced a QB
+# rushing leader of 89 and 109 yards (nflverse 2021-2025: 579-1,143, mean 848) and Josh Allen at 60 and 107 (real
+# 524-763); the same absence is visible in played games. The reviewed step restores retail's relationship: a QB's
+# break tackle is the retail QB break-tackle quantile at the same rushing-mobility percentile that already drives
+# the scramble byte (0.4 scrambles/dropback + 0.3 designed runs/game + 0.3 rushing yards/game, shrunk). It changes
+# one rating on quarterbacks only; accuracy, arm, reads, speed, agility and the style bytes are untouched. Measured
+# in two paired Sim QL 15 seasons (seeds 2501/2502): QB rushing top-10 70.0 -> 161.4, Josh Allen 83.5 -> 172,
+# leader 99 -> 281.5, close to the retail 2004 control (177/327) on the same engine; see the b779 sim2 round-3
+# report.
+REVIEWED_QB_BREAK_TACKLE_RULE = ("b779-sim2 reviewed: QB break tackle at the rushing-mobility percentile "
+                                 "(retail's mobile-QB scale)")
+
+
+def reviewed_qb_break_tackle_table(table: Sequence[float], mobility_q: float) -> int:
+    """Retail QB break tackle at one rushing-mobility percentile (0..1), clamped to 1..99.
+
+    ``table`` is a retail QB break-tackle quantile table (the core reference or the v2 tier table). Linear
+    interpolation between the 41 retail grid points, the same rule as ``Reference.quantile``.
+    """
+    q = max(0.0, min(1.0, float(mobility_q)))
+    at = q * (len(table) - 1)
+    low = int(math.floor(at))
+    high = min(low + 1, len(table) - 1)
+    value = table[low] + (table[high] - table[low]) * (at - low)
+    return max(1, min(99, int(round(value))))
+
+
+def reviewed_qb_break_tackle(reference: "Reference", mobility_q: float) -> int:
+    """Retail QB break tackle at one rushing-mobility percentile (0..1), clamped to 1..99."""
+    return reviewed_qb_break_tackle_table(reference.positions["QB"]["quantiles"]["break_tackle"], mobility_q)
+
+
+# b779-sim2, reviewed 2026-10-28: the modern roster's halfbacks broke tackles, kept the ball and held their
+# strength about 5-8 points above the retail 2004 halfback population, and their consistency was 10 points high
+# and much too narrow. Two simulated seasons at Sim QL 5 (measured in the b779 sim2 round-1 report) had 30 and 31
+# rushers over 1,000 yards against the NFL's 13.6; the retail 2004 roster on the same engine reproduced the
+# real 2004 count exactly. This table is the reviewed rescale for the roster generator (not a hand edit of a
+# shipped roster): physical deltas on every halfback and a linear map of the top 40 halfbacks' consistency onto
+# the retail club top-40 mean and spread.
+REVIEWED_HB_RATING_DELTAS = (("break_tackle", -8), ("strength", -5), ("hold_onto_ball", -5))
+REVIEWED_HB_CONSISTENCY = {"players": 40, "mean": 59.2, "sd": 20.8}
+
+
+def reviewed_hb_rating_deltas(ratings: Mapping) -> dict:
+    """Apply the reviewed halfback physical deltas to one ratings mapping (returns a new dict)."""
+    out = {key: int(value) for key, value in ratings.items()}
+    for rating, delta in REVIEWED_HB_RATING_DELTAS:
+        if rating in out:
+            out[rating] = max(1, min(99, out[rating] + delta))
+    return out
+
+
+def reviewed_hb_consistency_map(values: Sequence[int]) -> list[int]:
+    """Map the given halfback consistency values linearly onto the retail top-40 mean and spread (1..99)."""
+    values = [int(v) for v in values]
+    if not values:
+        return []
+    mean = sum(values) / len(values)
+    if len(values) < 2:
+        return [max(1, min(99, round(REVIEWED_HB_CONSISTENCY["mean"])))]
+    variance = sum((v - mean) ** 2 for v in values) / (len(values) - 1)
+    sd = variance ** 0.5
+    target_mean, target_sd = REVIEWED_HB_CONSISTENCY["mean"], REVIEWED_HB_CONSISTENCY["sd"]
+    if sd <= 1e-9:
+        return [max(1, min(99, round(target_mean)))] * len(values)
+    return [max(1, min(99, round(target_mean + (v - mean) * target_sd / sd))) for v in values]
+
+
 def rate_players(rows: Iterable[Mapping], stats: SeasonStats, reference: Reference, *,
-                 honors: Mapping | None = None, anchors: Mapping | None = None) -> list[dict]:
+                 honors: Mapping | None = None, anchors: Mapping | None = None,
+                 reviewed_hb_rescale: bool = False) -> list[dict]:
     """Rate a list of rows. Each output row is the input row plus the 28 ratings and ``rating_basis`` (JSON).
 
     ``anchors``: optional {gsis_id or "first last|birth_date": retail ratings} for players 2K5 already had.
+    ``reviewed_hb_rescale``: apply REVIEWED_HB_RATING_DELTAS to halfbacks. The top-40 consistency map is a
+    league-wide step (reviewed_hb_consistency_map) and the caller applies it once all halfbacks are rated.
     """
     out = []
     for row in rows:
@@ -774,6 +854,9 @@ def rate_players(rows: Iterable[Mapping], stats: SeasonStats, reference: Referen
             anchor = anchors.get(row.get("gsis_id") or "") or anchors.get(
                 f"{row.get('first', '')} {row.get('last', '')}|{row.get('birth_date', '')}".lower())
         ratings, basis = rate_player(row, stats, reference, honors=honors, anchor=anchor)
+        if reviewed_hb_rescale and str(row.get("position", "")).upper() in ("HB", "RB"):
+            ratings = reviewed_hb_rating_deltas(ratings)
+            basis["reviewed_hb_rescale"] = dict(REVIEWED_HB_RATING_DELTAS)
         out.append({**row, **{k: str(v) for k, v in ratings.items()},
                     "rating_basis": json.dumps(basis, sort_keys=True, separators=(",", ":"))})
     return out

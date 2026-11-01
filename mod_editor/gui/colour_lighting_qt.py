@@ -1,11 +1,34 @@
 """Project colour controls. Pure preview and settings; the core owner does all writes."""
 from copy import deepcopy
 
-from PyQt5.QtCore import Qt, QSignalBlocker, pyqtSignal
+from PyQt5.QtCore import QSize, Qt, QSignalBlocker, pyqtSignal
 from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel,
                              QPushButton, QCheckBox, QComboBox, QSlider, QDoubleSpinBox,
                              QTabWidget, QStackedWidget, QScrollArea, QFrame)
 from mod_editor.core import nfl2k5_modern_color as colour
+from mod_editor.gui.ux_text import WrappingCheckBox
+
+
+class _SwatchLabel(QLabel):
+    """A colour read-out that asks for a steady width but may narrow when the page is squeezed.
+
+    b779 rv1: the read-outs set a fixed minimum equal to the text "255, 255, 255" (237 px under
+    Windows Python), so two of them plus a slider and a spin box held the whole Build tab wide.
+    """
+
+    NARROWEST = 96
+
+    def __init__(self, preferred_width: int, parent=None):
+        super().__init__(parent)
+        self._preferred_width = preferred_width
+
+    def sizeHint(self):
+        hint = super().sizeHint()
+        return QSize(max(hint.width(), self._preferred_width), hint.height())
+
+    def minimumSizeHint(self):
+        hint = super().minimumSizeHint()
+        return QSize(min(self._preferred_width, self.NARROWEST), hint.height())
 
 
 class ColourLightingControls(QWidget):
@@ -30,7 +53,11 @@ class ColourLightingControls(QWidget):
         self.state_label = QLabel()
         self.state_label.setWordWrap(True)
         root.addWidget(self.state_label)
-        selectors = QHBoxLayout()
+        # b779-ui3: the two labelled combos shared one line, so "Stadium class" plus the longest class
+        # name set a wide row that the Build tab copied into its minimum width. They now stack.
+        selectors = QGridLayout()
+        selectors.setHorizontalSpacing(8)
+        selectors.setVerticalSpacing(4)
         self.class_combo, self.rig_combo = QComboBox(), QComboBox()
         self.class_combo.setAccessibleName("Preview stadium class")
         self.rig_combo.setAccessibleName("Preview light condition")
@@ -38,10 +65,11 @@ class ColourLightingControls(QWidget):
             self.class_combo.addItem(ref["label"], key)
         for key, label in colour.RIG_LABELS.items():
             self.rig_combo.addItem(label, key)
-        selectors.addWidget(QLabel("Stadium class"))
-        selectors.addWidget(self.class_combo)
-        selectors.addWidget(QLabel("Condition"))
-        selectors.addWidget(self.rig_combo)
+        selectors.addWidget(QLabel("Stadium class"), 0, 0)
+        selectors.addWidget(self.class_combo, 0, 1)
+        selectors.addWidget(QLabel("Condition"), 1, 0)
+        selectors.addWidget(self.rig_combo, 1, 1)
+        selectors.setColumnStretch(1, 1)
         root.addLayout(selectors)
         self.model_note = QLabel(colour.preview()["scope"])
         self.model_note.setWordWrap(True)
@@ -90,25 +118,29 @@ class ColourLightingControls(QWidget):
         page = QWidget()
         layout = QGridLayout(page)
         layout.setAlignment(Qt.AlignTop)
-        toggle = QCheckBox("Adjust " + colour.GROUPS[group].lower())
+        toggle = WrappingCheckBox("Adjust " + colour.GROUPS[group].lower())
         toggle.setObjectName("colour_group_" + group)
         self.groups[group] = toggle
-        layout.addWidget(toggle, 0, 0, 1, 3)
+        layout.addWidget(toggle, 0, 0, 1, 4)
         toggle.toggled.connect(lambda on, g=group: self._group_changed(g, on))
         if group in ("endzones", "outside"):
-            link = QCheckBox("Link surfaces: follow field" if group == "outside" else "Follow turf colour")
+            link = WrappingCheckBox("Link surfaces: follow field" if group == "outside" else "Follow turf colour")
             if group == "outside":
                 link.setToolTip("Linked outside grass follows the field target for each condition. Unlink to use your saved outside colour.")
             self.links[group] = link
-            layout.addWidget(link, 1, 0, 1, 3)
+            layout.addWidget(link, 1, 0, 1, 4)
             link.toggled.connect(lambda on, g=group: self._link_changed(g, on))
-        layout.addWidget(QLabel("PREDICTED outside" if group == "outside" else "PREDICTED turf"), 1, 3)
-        layout.addWidget(QLabel("Field target" if group == "outside" else "Broadcast target"), 1, 4)
-        n = 2
+        # b779-ui3: each lever was one five-column row (label, slider, spin, prediction, target), so the
+        # row alone needed about 650 px and the Build panel copied it. The label now sits above its own
+        # controls: same widgets, same fonts, two lines instead of one, and the panel can be narrow.
+        layout.addWidget(QLabel("PREDICTED outside" if group == "outside" else "PREDICTED turf"), 2, 2)
+        layout.addWidget(QLabel("Field target" if group == "outside" else "Broadcast target"), 2, 3)
+        swatch_width = max(108, page.fontMetrics().horizontalAdvance("255, 255, 255") + 16)
+        n = 3
         for key, spec in colour.control_specs().items():
             if spec["group"] != group:
                 continue
-            use = QCheckBox(spec["label"])
+            use = WrappingCheckBox(spec["label"])
             use.setObjectName("colour_use_" + key)
             use.setToolTip("On uses the saved value. Off uses this lever's retail value; your saved value is retained.")
             slider, spin = QSlider(Qt.Horizontal), QDoubleSpinBox()
@@ -121,23 +153,25 @@ class ColourLightingControls(QWidget):
             spin.setKeyboardTracking(False)
             for w in (slider, spin):
                 w.setAccessibleName(colour.GROUPS[group] + ": " + spec["label"])
-            prediction, target = QLabel(), QLabel()
+            prediction, target = _SwatchLabel(swatch_width), _SwatchLabel(swatch_width)
             for label in (prediction, target):
-                label.setMinimumWidth(108)
                 label.setAlignment(Qt.AlignCenter)
             self.rows[key] = dict(use=use, slider=slider, spin=spin, prediction=prediction, target=target)
-            for col, widget in enumerate((use, slider, spin, prediction, target)):
-                layout.addWidget(widget, n, col)
+            layout.addWidget(use, n, 0, 1, 4)
+            layout.addWidget(slider, n + 1, 0)
+            layout.addWidget(spin, n + 1, 1)
+            layout.addWidget(prediction, n + 1, 2)
+            layout.addWidget(target, n + 1, 3)
             use.toggled.connect(lambda on, k=key: self._use_changed(k, on))
             slider.valueChanged.connect(lambda v, k=key: self._number_changed(k, v, True))
             spin.valueChanged.connect(lambda v, k=key: self._number_changed(k, v, False))
-            n += 1
+            n += 2
         if group == "turf":
             note = QLabel("Map contrast scales existing green value differences, including stripes already in a colour map.\n"
                           "It cannot add stripes. Material-only turf has no map contrast control.")
             note.setWordWrap(True)
-            layout.addWidget(note, n, 0, 1, 5)
-        layout.setColumnStretch(1, 1)
+            layout.addWidget(note, n, 0, 1, 4)
+        layout.setColumnStretch(0, 1)
         return page
 
     def settings(self):

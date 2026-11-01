@@ -724,8 +724,15 @@ LATE_OWNER = "nfl2k5_k128"
 # b77-v1b: the period goalposts owner is placed after them the same way (i1: after F4 and F4b, the order the native
 # repairs append them to the v0.5 directory), so adding it moves no other owner's address.
 # b77-f5: the Player Card honors page last (its native repair runs after F4, F4b and V1b).
+# b779-ce1: owners whose "read_only" bytes are x86 helpers the game calls. The read-only run must then be executable even
+# when no directory-code owner makes it so (Coach Edwards' old settings: Classic teams without On-demand Career Home:
+# "the classic helper page is not executable", hours into a build). Plans that already had an executable run keep
+# the same section flags, so no shipped layout changes.
+EXECUTABLE_READ_ONLY_OWNERS = ("nfl2k5_classic_teams",)
 LATE_OWNERS = (LATE_OWNER, "nfl2k5_letter_grades", "nfl2k5_letter_grades_progress",  # b77-f4b: progression after F4
-               "nfl2k5_period_goalposts", "nfl2k5_honors", "nfl2k5_coach_ai",
+               "nfl2k5_period_goalposts", "nfl2k5_honors",
+               "nfl2k5_champions",  # b779-hn1: Super Bowl pop-up, champions history, award voting (installed with the honors owner)
+               "nfl2k5_coach_ai",
                "nfl2k5_draft_picks", "nfl2k5_hback",
                "nfl2k5_moment_coaches", "nfl2k5_moment_context", "nfl2k5_human_tap_burst", *DIRECTORY_CODE_OWNERS, "nfl2k5_team_ratings", "nfl2k5_team_ratings_display",
                "nfl2k5_classic_teams",  # b775-ct1: the classic teams' helpers, the last read-only bytes
@@ -752,7 +759,12 @@ LATE_OWNERS = (LATE_OWNER, "nfl2k5_letter_grades", "nfl2k5_letter_grades_progres
                "nfl2k5_cpu_third_down",  # b778-ai8: third-down run preference, after the clock LED
                "nfl2k5_return_coverage",  # b778-kr1: return coverage pursuit angles, before the module loader (int3)
                "nfl2k5_pass_protection",  # b778-pr1: after every other b778 owner, before the module loader
-               "nfl2k5_module_loader")  # b778-xs1: last (it needs Career Home and gates screens; integration: after this round's owners)
+               "nfl2k5_pass_rush_stats",  # b779-st1: pressures / QB hits / allowed stats, before the module loader
+               "nfl2k5_module_loader",  # b778-xs1: last (it needs Career Home and gates screens; integration: after this round's owners)
+               "nfl2k5_preseason_warning",  # b779-rc1: 16-byte RW "already warned" byte, after the module loader
+               "nfl2k5_sim_rb_injuries",  # b779-sim2: weekly RB injury roll and simulated-game carrier guard (int1: after rc1)
+               "nfl2k5_sim_realism",  # b779-sim2 r4: scheduled-sim season realism
+               "nfl2k5_sim_realism_state")  # b779-sim2 r4: its 16-byte hand-off state
 # b77-i1 (coordinator-approved fix of the all-owner union overflow): late owners whose code is placed top-down in the
 # reserved legacy RX page tails (0x14D9000 first, then 0x14BA000) instead of the full scale-out run. Static, so the
 # placement does not depend on which other owners are present.
@@ -814,6 +826,8 @@ def dormant_union():
     from . import nfl2k5_honors as honors  # b77-f5 (i1: code in the MyCareer footprint, data in the legacy RW tail)
     from . import nfl2k5_star_career as star_career  # b778-st2: late owner
     from . import nfl2k5_classic_teams as classic_teams  # b775-ct1: late, last read-only owner
+    from . import nfl2k5_return_coverage as return_coverage  # b778-kr1: in build_manifest's all_requests (verification tooling)
+    from . import nfl2k5_module_loader as module_loader  # b778-xs1: the last late owner
     # keep this in step with tests/nfl2k5_allocator_stack.REQUESTS and the manifest builder's all_requests
     return (camera.REQUESTS + relocated.REQUESTS + momentum.REQUESTS + defensive_try.REQUESTS + runtime.REQUESTS
             + zone_drop.REQUESTS + roster_storage.REQUESTS + coverage.REQUESTS + scramble.REQUESTS + playlist.REQUESTS
@@ -837,7 +851,9 @@ def dormant_union():
             + draft_picks.REQUESTS + hback.REQUESTS + team_ratings.REQUESTS + moment_context.REQUESTS
             + star_career.REQUESTS  # b778-st2
             + third_down.REQUESTS  # b778-ai8
-            + classic_teams.REQUESTS)  # b775-ct1 after b775-mo2
+            + classic_teams.REQUESTS  # b775-ct1 after b775-mo2
+            + return_coverage.REQUESTS  # b779-fixD: matches build_manifest's all_requests so allocation_evidence() needs no allocated=
+            + module_loader.REQUESTS)
 
 
 def is_scaleout(payload):
@@ -953,7 +969,7 @@ def _scale_regions(requests=()):
         result.append(dict(kind=kind, va=va, raw=raw, size=pages * PAGE,
                            flags={"code": 0x36, "data": 3, "read_only": 0x32}[kind]))
         raw += pages * PAGE
-    if _directory_code_size(requests):
+    if _directory_code_size(requests) or any(row[0] in EXECUTABLE_READ_ONLY_OWNERS for row in requests):
         result[5]["flags"] = 0x36  # read-only executable, never writable
     if requests:
         size = _pool_size(requests)

@@ -147,26 +147,27 @@ class ModernMomentBooks(unittest.TestCase):
         The identity range is the classic teams' own data order."""
         from mod_editor.core import nfl2k5_classic_teams as ct
         data = ct.Data.load()
-        ids = {key: ct.FIRST_ID + n for n, key in enumerate(data.order())}
-        modern_ids = [i for key, i in ids.items() if data.teams[key]['season'] >= books.MODERN_FIRST_SEASON]
-        self.assertEqual(books.CLASSIC_MODERN_IDS, (min(modern_ids), max(modern_ids)))
-        self.assertEqual(sorted(modern_ids), list(range(min(modern_ids), max(modern_ids) + 1)))
+        # b779 au1: list position n carries identity ct.IDENTITIES[n] (226..249, then 252: b778-ss1 skipped the created
+        # teams 250/251), not FIRST_ID + n.
+        ids = {key: ct.IDENTITIES[n] for n, key in enumerate(data.order())}
+        modern_ids = sorted(i for key, i in ids.items() if data.teams[key]['season'] >= books.MODERN_FIRST_SEASON)
+        self.assertEqual([i for i in range(256) if books.classic_modern(i)], modern_ids)
         self.assertEqual(max(modern_ids), ct.LAST_ID)
-        self.assertEqual((ids['seahawks_2013'], ids['giants_2016'], ids['giants_2022'], ids['steelers_2005']), (233, 237, 246, 226))
+        self.assertEqual((ids['seahawks_2013'], ids['giants_2016'], ids['giants_2022'], ids['steelers_2005']), (234, 238, 247, 226))
         m = self.machine()
         self.seasons(m, 1990, 1990)
         for mode in (0, 1, 2, 3, 4, 7, 9):
-            for identity in (233, 237, 246, 231, 249):
+            for identity in (234, 238, 247, 232, 249, 252):
                 with self.subTest(mode=mode, identity=identity):
                     self.assertTrue(self.resolve(m, mode=mode, category=4, identity=identity))
                     self.assertTrue(self.resolve(m, mode=mode, category=4, identity=identity, home=True))
-            for identity in (226, 230, 120, 170, 176, 190, 225, 250, 251, 0):
+            for identity in (226, 230, 231, 120, 170, 176, 190, 225, 250, 251, 0):
                 with self.subTest(mode=mode, identity=identity):
                     self.assertFalse(self.resolve(m, mode=mode, category=4, identity=identity))   # E2R-BUF-pb.iff
             # an ordinary (category 0) side is untouched by the identity
             self.assertTrue(self.resolve(m, mode=mode, category=0, identity=120))
         # Anniversary mode ignores the identity: the moment season decides
-        for identity in (233, 0):
+        for identity in (234, 0):
             self.seasons(m, 1990, 1990)
             self.assertFalse(self.resolve(m, mode=8, identity=identity))
             self.seasons(m, 2022, 2022)

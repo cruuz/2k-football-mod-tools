@@ -25,7 +25,8 @@ What this owner adds
   (``FUN_00135310``'s last call, 0x1356B4) that ``FUN_00133A30`` calls the Super Bowl, every player of the winning
   team and the Super Bowl MVP get theirs. Franchise only (``[0xE576A0] == 2``). Pro Bowl honors are seeded, not live.
 * The history fold (``FUN_0014EFE0``, run when the pool is full) merges a season by sum or max from ``.data``
-  0xAA26C0[field]; past field 86 that lookup reads unrelated variables, so the honor fields get a fixed rule: sum.
+  0xAA26C0[field]; past field 86 that lookup reads unrelated variables, so fields 96..127 get a fixed rule: sum (the ten
+  honors, the pressure and QB-hit counters 106..110 of job st1, and any field added after them; b779-hn1).
   Every other field keeps the retail lookup.
 * The card: the Black/White buttons (LB/RB on a modern pad in xemu) and the triggers (the game's L1/R1) flip the
   card to an honors page and back (with the menu cursor sound); every card opens on the retail page. On the honors
@@ -59,6 +60,7 @@ import hashlib
 import struct
 from typing import Mapping
 
+from . import nfl2k5_champions as champions
 from . import nfl2k5_honors_code as runtime
 from . import nfl2k5_rdata_sites as rdata
 from . import nfl2k5_xbe_space as space
@@ -68,9 +70,12 @@ OWNER = "nfl2k5_honors"
 EVIDENCE = "EXPERIMENTAL"
 CODE_SIZE = 2560
 DATA_SIZE = 16
-REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "data", DATA_SIZE, 16))
+# b779-hn1: the Super Bowl champions owner (pop-up, history, award voting, the card's third page) is part of this
+# option: one toggle, one status, one set of requests.
+HONORS_REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "data", DATA_SIZE, 16))
+REQUESTS = HONORS_REQUESTS + champions.REQUESTS
 
-UI_LABEL = "Player Card honors page (award history)"
+UI_LABEL = "Player Card honors, Super Bowl champions and award votes"  # b779-int1: 60-character caption rule
 HELP_TEXT = (
     "EXPERIMENTAL / UNWITNESSED. Retail: the Franchise Player Card has one page and the game forgets every season's "
     "awards. Patch: the bumpers (Black/White; LB/RB in xemu) and the triggers flip any Player Card to an honors page: "
@@ -79,7 +84,8 @@ HELP_TEXT = (
     "with him and survives saves; season awards appear when the final regular-season week is completed, and "
     "Super Bowl champions and MVP after that game is committed. Pro Bowls are historical seeds only. "
     "Comeback, weekly/monthly awards and record books are not tracked on this page. Old saves start tracking "
-    "new supported honors without gaining missing past awards. Pair with the sourced history for new franchises.")
+    "new supported honors without gaining missing past awards. Pair with the sourced history for new franchises. "
+    "Beta 79 adds: " + champions.HELP_TEXT)
 BUILD_CAPTION = UI_LABEL
 
 FIELD0 = 96
@@ -165,10 +171,19 @@ def _rel32(source_end: int, target: int) -> bytes:
     return struct.pack("<i", target - source_end)
 
 
-def code_for(code_va: int, data_va: int) -> bytes:
-    """The owned RX content with the template's relocations applied, padded to CODE_SIZE with int3."""
+def code_for(code_va: int, data_va: int, champions_code_va: int = 0) -> bytes:
+    """The owned RX content with the template's relocations applied, padded to CODE_SIZE with int3.
 
-    symbols = {"code": code_va, "state": data_va}
+    ``champions_code_va`` is the champions owner's code page: the card's third page calls into it. 0 (no such owner)
+    links both calls to nothing and the card keeps its two pages."""
+
+    symbols = {"code": code_va, "state": data_va, "champ_ratings": 0, "champ_bio": 0, "champ_flip": 0, "champ_enter": 0}
+    if champions_code_va:
+        at = champions.labels(champions_code_va)
+        symbols["champ_ratings"] = at["champions_ratings"]
+        symbols["champ_bio"] = at["champions_bio"]
+        symbols["champ_flip"] = at["champions_flip"]
+        symbols["champ_enter"] = at["champions_enter"]
     result = bytearray(runtime.CODE)
     for offset, kind, symbol, value in runtime.RELOCATIONS:
         target = symbols[symbol] + value + struct.unpack_from("<i", result, offset)[0]
@@ -209,12 +224,15 @@ def guard_digests(payload: bytes) -> dict[str, str]:
     """The masked digests of every guarded span (used to pin GUARD_PINS from the retail executable)."""
 
     image = XbeImage(payload)
-    return {name: _guard_digest(image, va, size, sites(0x14DA000)) for name, va, size, _d in GUARDS}
+    masked = sites(0x14DA000) + champions.sites(0x14DA000)
+    return {name: _guard_digest(image, va, size, masked) for name, va, size, _d in GUARDS}
 
 
 def _check_guards(image: XbeImage, checked_sites) -> None:
+    # b779-hn1: the champions owner's two sites (0x116E55 lies inside the 'season awards' span) are masked like our own
+    masked = list(checked_sites) + champions.sites(0x14DA000)
     for name, va, size, digest in GUARDS:
-        _require(_guard_digest(image, va, size, checked_sites) == digest, f"foreign honors dependency: {name} ({va:#x})")
+        _require(_guard_digest(image, va, size, masked) == digest, f"foreign honors dependency: {name} ({va:#x})")
     _require(image.read(0x00133A41, 1)[0] in SUPER_BOWL_ROWS, "foreign Super Bowl row predicate")
     _require(image.read(0x00116D6E, 1)[0] in (16, 17), "foreign annual-awards week predicate")
     base = struct.unpack("<I", image.read(0x003204AD, 4))[0] - 11
@@ -229,33 +247,46 @@ def allocations(payload: bytes) -> dict[str, dict]:
         return {}
     found = {r["kind"]: r for r in rows}
     _require(len(rows) == len(found) == 2 and set(found) == {"code", "data"}
-             and all((found[k]["size"], found[k]["align"]) == (size, align) for _o, k, size, align in REQUESTS),
+             and all((found[k]["size"], found[k]["align"]) == (size, align) for _o, k, size, align in HONORS_REQUESTS),
              "foreign honors allocation")
     return found
 
 
+def _champions_va(payload: bytes, found) -> int:
+    """The champions owner's code page (it must be allocated exactly when this owner is), 0 when neither is."""
+
+    champs = champions.allocations(payload)
+    _require(bool(champs) == bool(found), "honors and champions allocations differ")
+    return champs["code"]["va"] if champs else 0
+
+
 def _owned_state(payload: bytes):
-    """-> ("retail" | "applied", allocations | None); anything else raises."""
+    """-> ("retail" | "applied", allocations | None); anything else raises. The champions owner must be in the same state."""
 
     _require(space.status(payload) != "foreign", "foreign XBE geometry, owner seal or section digest")
     image = XbeImage(payload)
     found = allocations(payload)
+    champions_state = champions.owned_state(payload)[0]
     if not found:
         retail_sites = sites(0x14DA000)  # the retail bytes do not depend on the pages
         _require(rdata.status(payload, retail_sites) == "retail", "honors sites changed without an allocation")
         _check_guards(image, retail_sites)
+        _champions_va(payload, found)
         return "retail", None
     code_va, data_va = found["code"]["va"], found["data"]["va"]
+    champs_va = _champions_va(payload, found)
     code = image.read(code_va, CODE_SIZE)
     if code == b"\xcc" * CODE_SIZE:
         edits = sites(code_va)
         _require(rdata.status(payload, edits) == "retail", "honors sites changed with an empty allocation")
         _check_guards(image, edits)
+        _require(champions_state == "retail", "honors and champions installations differ")
         return "retail", found
-    _require(code == code_for(code_va, data_va), "foreign honors code")
+    _require(code == code_for(code_va, data_va, champs_va), "foreign honors code")
     edits = sites(code_va)
     _require(rdata.status(payload, edits) == "applied", "mixed honors sites")
     _check_guards(image, edits)
+    _require(champions_state == "applied", "honors and champions installations differ")
     return "applied", found
 
 
@@ -283,7 +314,8 @@ def fold_site_edit(payload: bytes) -> list[tuple[int, bytes]]:
 
 def read_settings(payload: bytes) -> dict:
     state = status(payload)
-    return {"status": state, "honors_page": state == "applied", "fields": dict(FIELDS) if state == "applied" else None}
+    return {"status": state, "honors_page": state == "applied", "fields": dict(FIELDS) if state == "applied" else None,
+            "champions": state == "applied", "award_rule": champions.AWARD_RULE if state == "applied" else None}
 
 
 def reservations(payload: bytes) -> list[dict]:
@@ -291,14 +323,16 @@ def reservations(payload: bytes) -> list[dict]:
     base = allocations(payload)
     edits = sites(base["code"]["va"] if base else 0x14DA000)
     return rows + [dict(owner=OWNER, start=hex(va), end=hex(va + len(before)), size=len(before),
-                        basis="pinned live " + label + "; not a cave") for label, va, before, _after in edits]
+                        basis="pinned live " + label + "; not a cave") for label, va, before, _after in edits
+                   ] + champions.reservations(payload)
 
 
 def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
-    """Install the owner and its seven sites. Idempotent."""
+    """Install the owner and its seven sites, then the champions owner and its two. Idempotent."""
 
     state, found = _owned_state(payload)
-    common = {"owner": OWNER, "experimental": True, "code_bytes": len(runtime.CODE), "owner_bytes": CODE_SIZE + DATA_SIZE,
+    common = {"owner": OWNER, "experimental": True, "code_bytes": len(runtime.CODE),
+              "owner_bytes": CODE_SIZE + DATA_SIZE + champions.CODE_SIZE,
               "fields": dict(FIELDS)}
     if state == "applied":
         return payload, {**common, "already_applied": True, "changed_bytes": 0}
@@ -311,12 +345,15 @@ def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
         found = allocations(payload)
     _require(bool(found), "reserve the honors allocation first")
     code_va, data_va = found["code"]["va"], found["data"]["va"]
-    installed, code_receipt = space.install_code(payload, OWNER, code_for(code_va, data_va))
-    result, site_receipt = rdata.apply(installed, sites(code_va), OWNER)
+    champs_va = _champions_va(payload, found)
+    installed, code_receipt = space.install_code(payload, OWNER, code_for(code_va, data_va, champs_va))
+    installed, site_receipt = rdata.apply(installed, sites(code_va), OWNER)
+    result, champions_receipt = champions.install(installed)
     _require(status(result) == "applied", "honors postcondition failed")
     changed = sum(a != b for a, b in zip(before, result)) + abs(len(result) - len(before))
     return result, {**common, **site_receipt, "already_applied": False, "code_install": code_receipt,
                     "code_va": hex(code_va), "data_va": hex(data_va), "changed_bytes": changed,
+                    "champions": champions_receipt,
                     "sites": [{"label": label, "va": hex(va), "size": len(before_bytes)}
                               for label, va, before_bytes, _after in sites(code_va)],
                     "before_sha256": hashlib.sha256(before).hexdigest(),

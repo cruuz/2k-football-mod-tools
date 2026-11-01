@@ -27,6 +27,23 @@ except ImportError:  # pragma: no cover
     uc = x86 = None
 
 PASS_BLOCKING, PASS_RUSH = 16, 18
+PLAY_COUNT = 0xE53804
+
+
+def engagement_factor(blocker, defender, play_count, spread=None):
+    """The owner's per-engagement multiplier, re-derived in Python from the same 32-bit hash (b779-pr1)."""
+    spread = pp.DELAY_SPREAD if spread is None else spread
+    h = ((blocker * 0x9E3779B1) ^ (defender * 0x85EBCA6B) ^ (play_count * 0xC2B2AE35)) & 0xFFFFFFFF
+    h ^= h >> 16
+    u = h & 0xFFFF
+    return struct.unpack("<f", struct.pack("<f", u * struct.unpack("<f", struct.pack("<f", 2 * spread / 65535.0))[0]
+                                           + struct.unpack("<f", struct.pack("<f", 1.0 - spread))[0]))[0]
+
+
+def expected_delay(m, pb, pr, play_count):
+    blk, rusher = m.accessor(m.BLK, PASS_BLOCKING), m.accessor(m.DEF, PASS_RUSH)
+    mean = min(max(pp.DELAY_BASE + pp.DELAY_SLOPE * (blk - rusher), pp.DELAY_MIN), pp.DELAY_MAX)
+    return mean * engagement_factor(m.BLK, m.DEF, play_count)
 
 
 class Patched:
@@ -83,15 +100,46 @@ class ShedDelayTests(unittest.TestCase):
         rows = {}
         for pb, pr in ((0.95, 0.4), (0.85, 0.6), (0.72, 0.64), (0.6, 0.8), (0.4, 0.95)):
             m = self.patched.machine(pb, pr)
-            blk, rusher = m.accessor(m.BLK, PASS_BLOCKING), m.accessor(m.DEF, PASS_RUSH)
-            want = min(max(pp.DELAY_BASE + pp.DELAY_SLOPE * (blk - rusher), pp.DELAY_MIN), pp.DELAY_MAX)
-            n = m.ticks_to_shed()
+            m.u32(PLAY_COUNT, 7)
+            want = expected_delay(m, pb, pr, 7)
+            n = m.ticks_to_shed(limit=400)
             rows[(pb, pr)] = n
             self.assertIsNotNone(n)
-            self.assertAlmostEqual(n * DT, want, delta=DT * 1.01, msg=(pb, pr, blk, rusher))
+            self.assertAlmostEqual(n * DT, want, delta=DT * 1.01, msg=(pb, pr))
         ordered = [rows[k] for k in ((0.95, 0.4), (0.85, 0.6), (0.72, 0.64), (0.6, 0.8), (0.4, 0.95))]
         self.assertEqual(ordered, sorted(ordered, reverse=True))
         self.assertGreater(ordered[0], ordered[-1] * 4)
+
+    def test_hold_varies_from_play_to_play_but_not_from_tick_to_tick(self):
+        """One engagement draws one hold (the play count is constant while it lasts); another play draws again."""
+        holds = []
+        for play in range(24):
+            m = self.patched.machine(0.72, 0.68)
+            m.u32(PLAY_COUNT, 100 + play)
+            n = m.ticks_to_shed(limit=400)
+            self.assertIsNotNone(n)
+            self.assertAlmostEqual(n * DT, expected_delay(m, 0.72, 0.68, 100 + play), delta=DT * 1.01, msg=play)
+            holds.append(n * DT)
+        mean = min(max(pp.DELAY_BASE + pp.DELAY_SLOPE * 0.04, pp.DELAY_MIN), pp.DELAY_MAX)
+        self.assertGreaterEqual(min(holds), mean * (1 - pp.DELAY_SPREAD) - DT * 1.5)
+        self.assertLessEqual(max(holds), mean * (1 + pp.DELAY_SPREAD) + DT * 1.5)
+        self.assertGreater(max(holds) - min(holds), mean * pp.DELAY_SPREAD)     # real spread, not a constant
+        self.assertGreater(len(set(round(h / DT) for h in holds)), 6)
+
+    def test_elite_rusher_beats_a_backup_tackle_and_an_elite_tackle_holds_an_average_rusher(self):
+        def mean_hold(pb, pr):
+            out = []
+            for play in range(40):
+                m = self.patched.machine(pb, pr)
+                m.u32(PLAY_COUNT, 500 + play)
+                out.append(m.ticks_to_shed(limit=400) * DT)
+            return sum(out) / len(out)
+        average = mean_hold(0.80, 0.80)
+        elite_rusher = mean_hold(0.58, 0.97)        # backup tackle against an elite edge
+        elite_tackle = mean_hold(0.97, 0.80)        # elite tackle against an average edge
+        self.assertLess(elite_rusher, 0.35 * average)
+        self.assertGreater(elite_tackle, 1.25 * average)
+        self.assertLess(elite_rusher, 0.30)
 
     def test_run_state_keeps_the_retail_constant(self):
         for m in (self.retail_machine(0.95, 0.4, state=0), self.patched.machine(0.95, 0.4, state=0)):

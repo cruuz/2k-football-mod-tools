@@ -458,7 +458,7 @@ def compile_assets(get_built,get_retail,situ,*,progress=None,user_art=None):
 
     get_built reads the completed target's existing venue resources. get_retail
     reads the unchanged retail source. No input callback is ever written to.
-    ``user_art`` is the optional folder of the user's own Super Bowl logos.
+    ``user_art`` is the logo folder; the caller passes the bundled real logos when the plan field is empty.
 
     The callbacks are read here, in catalog order, exactly as before. Each row's
     field is then a pure function of the bytes read (nothing reads another
@@ -528,6 +528,7 @@ def compile_assets(get_built,get_retail,situ,*,progress=None,user_art=None):
         assets=receipts,total_bytes=sum(map(len,output.values())),
         super_bowl_walls=dict(manifest_sha256=sha((super_bowl_walls.ART/'manifest.json').read_bytes()),
             period_shield=shield_receipt,user_art=str(user_art) if user_art else None,
+            user_art_bundled=super_bowl_walls.is_bundled(user_art),
             log=super_bowl_walls.user_art_summary(walls_receipts) if user_art else []),
         super_bowl_fields=dict(manifest_sha256=sha((super_bowl_fields.ART/'manifest.json').read_bytes()),
             flanks=flank_receipts,log=super_bowl_fields.user_art_lines(flank_receipts)),

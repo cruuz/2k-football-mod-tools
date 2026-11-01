@@ -19,6 +19,19 @@ Two independent options for the CPU passing AI (0x19BB60), both off by default:
   the commit and none clears the pass threshold minus 0.05. Pocket pressure above 0.7, the
   native panic flag or a non-CPU passer keep the retail path.
 
+* ``tiers`` ("CPU QB skill tiers", b779 gp1, needs ``zone_windows``): one data table. The pass
+  threshold curve 0x50C394 (Pass Read Coverage -> openness a receiver needs before the CPU QB
+  adopts him) is retail 1.2 / 1.1 / 1.0 / 0.975 at 0.3 / 0.5 / 0.8 / 1.0, so a weak reader
+  demands MORE openness than a strong one and, because zone windows score 1.25, every QB
+  throws into zones whatever his rating. With the covered-window curve fixed, windows score
+  0.65-0.84 (a defender in or near the catch point), a man step behind 0.95, a man two yards
+  behind 1.11. The tier curve is 0.62 / 0.70 / 0.92 / 1.00: a rookie or low-rated reader
+  (Pass Read Coverage 0.3-0.5) still throws at a covered receiver (zone defender six yards
+  off the spot, man one yard behind), an average reader (0.7-0.8) needs a step of separation,
+  an elite reader (0.9+) waits for a clear window and finds it fast (his native read dwell is
+  0.2-0.4 s per receiver). The picker still adds its random term and the down/depth terms, so
+  every QB varies play to play.
+
 Human passing, ball flight and the defense are not changed. Settings are build-time only; a
 different selection needs a rebuild from a clean base.
 """
@@ -31,12 +44,18 @@ OWNER = "nfl2k5_cpu_qb_reads"
 CODE_SIZE, DATA_SIZE = 1280, 192
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "data", DATA_SIZE, 16))
 BUILD_CAPTION_ZONE = "CPU QB respects zone defenders (experimental)"
+BUILD_CAPTION_TIERS = "CPU QB skill tiers: elite read windows (experimental)"
 BUILD_CAPTION_RECHECK = "CPU QB re-checks his read before throwing (experimental)"
 HELP_ZONE = ("EXPERIMENTAL / UNWITNESSED. Off in every preset. The CPU quarterback stops treating a receiver as "
              "open when a zone or man defender will reach the catch point with the ball or before it. Receivers "
              "with a step of separation (the defender 0.1 s or more late) keep their retail rating. Expect more "
              "check-downs, more holds and some extra sacks or scrambles against good coverage. Human play is "
              "unchanged.")
+HELP_TIERS = ("EXPERIMENTAL / UNWITNESSED. Needs the zone-defender option (it turns that on). The CPU quarterback's "
+              "bar for a receiver now follows his Pass Read Coverage the way a real quarterback's does: an elite "
+              "reader waits for a clear window and finds one quickly, an average reader wants a step of separation, a "
+              "rookie or low-rated reader still throws at a covered receiver. Expect more completions and yards from "
+              "elite passers and more incompletions, interceptions and sacks from weak ones. Human play is unchanged.")
 HELP_RECHECK = ("EXPERIMENTAL / UNWITNESSED. Off in every preset. The CPU quarterback only throws to receivers he "
                 "looked at recently, keeps looking at the receiver he picked, and pulls the throw (at most twice a "
                 "play) when that window has closed by the time he is ready to release. Under heavy pocket pressure "
@@ -55,6 +74,14 @@ def _curve(xs, ys):
 RETAIL_ZONE_CURVE = _curve(ZONE_X, RETAIL_ZONE_Y)
 ZONE_CURVE = _curve(ZONE_X, ZONE_Y)
 ZONE_SITE = ("covered_window_curve", ZONE_CURVE_VA, RETAIL_ZONE_CURVE, ZONE_CURVE)
+
+THRESHOLD_CURVE_VA = 0x0050C394
+THRESHOLD_X = (0.3, 0.5, 0.8, 1.0)
+RETAIL_THRESHOLD_Y = (1.2, 1.1, 1.0, 0.975)
+TIER_THRESHOLD_Y = (0.62, 0.70, 0.92, 1.00)
+RETAIL_THRESHOLD_CURVE = _curve(THRESHOLD_X, RETAIL_THRESHOLD_Y)
+TIER_THRESHOLD_CURVE = _curve(THRESHOLD_X, TIER_THRESHOLD_Y)
+TIER_SITE = ("pass_threshold_curve", THRESHOLD_CURVE_VA, RETAIL_THRESHOLD_CURVE, TIER_THRESHOLD_CURVE)
 
 # name, VA, retail bytes, opcode, assembly label. The pick and stamp hooks are native calls;
 # hold is the native jne at 0x19BC72 (taken when committed and the release timer is <= 0.5 s).
@@ -128,13 +155,17 @@ def hook_sites(code_va=0):
 
 
 def _owned(payload):
-    """(zone_windows, recheck, recheck_sites) from this owner's own bytes, without neighbors."""
+    """(zone_windows, tiers, recheck, recheck_sites) from this owner's own bytes, without neighbors."""
     from . import nfl2k5_xbe_space as space
     from .nfl2k5_cave_oracle import XbeImage
     image = XbeImage(payload)
     curve = image.read(ZONE_CURVE_VA, len(RETAIL_ZONE_CURVE))
     require(curve in (RETAIL_ZONE_CURVE, ZONE_CURVE), "Foreign covered-window curve at 0x50C51C")
     zone = curve == ZONE_CURVE
+    threshold = image.read(THRESHOLD_CURVE_VA, len(RETAIL_THRESHOLD_CURVE))
+    require(threshold in (RETAIL_THRESHOLD_CURVE, TIER_THRESHOLD_CURVE), "Foreign pass threshold curve at 0x50C394")
+    tiers = threshold == TIER_THRESHOLD_CURVE
+    require(zone or not tiers, "CPU QB skill tiers need the covered-window curve")
     present = any(r["owner"] == OWNER for r in space.layout(payload)["allocations"])
     owned = allocations(payload) if present else None
     edits = hook_sites(owned["code"]["va"] if owned else 0)
@@ -149,7 +180,7 @@ def _owned(payload):
         states.add("retail" if raw == b"\xcc" * CODE_SIZE else "applied" if raw == code_for(c, d) else "foreign")
     require(states in ({"retail"}, {"applied"}), "Foreign or mixed CPU QB reads hooks/code")
     recheck = states == {"applied"}
-    return zone, recheck, (edits if recheck else [])
+    return zone, tiers, recheck, (edits if recheck else [])
 
 
 def normalized_sites(payload):
@@ -158,7 +189,7 @@ def normalized_sites(payload):
     image = XbeImage(payload)
     if all(image.read(va, len(before)) == before for _, va, before, _, _ in HOOKS):
         return []
-    _zone, recheck, edits = _owned(payload)
+    _zone, _tiers, recheck, edits = _owned(payload)
     require(recheck, "Foreign CPU QB reads neighbor")
     return edits
 
@@ -166,9 +197,11 @@ def normalized_sites(payload):
 def _recognize(payload):
     from . import nfl2k5_cpu_scrambles as scrambles
     from .nfl2k5_cave_oracle import XbeImage
-    zone, recheck, edits = _owned(payload)
+    zone, tiers, recheck, edits = _owned(payload)
     image = XbeImage(payload)
     neighbors = []
+    if tiers:
+        neighbors.append((TIER_SITE[0], THRESHOLD_CURVE_VA, RETAIL_THRESHOLD_CURVE, None))
     va, before = CPU_SCRAMBLES_HOOK
     if image.read(va, len(before)) != before:
         require(scrambles.status(payload) == "applied", "Foreign CPU scramble neighbor in the QB tick")
@@ -179,15 +212,16 @@ def _recognize(payload):
             if va <= at and at + len(before) <= va + size:
                 content[at - va:at - va + len(before)] = before
         require(hashlib.sha256(content).hexdigest() == digest, f"Foreign CPU QB reads prerequisite at {va:#x}")
-    return zone, recheck
+    return zone, recheck, tiers
 
 
 def read_settings(payload):
     try:
-        zone, recheck = _recognize(payload)
+        zone, recheck, tiers = _recognize(payload)
     except _ERRORS:
         return {"status": "foreign"}
-    return {"status": "applied" if zone or recheck else "retail", "zone_windows": zone, "recheck": recheck}
+    return {"status": "applied" if zone or recheck else "retail", "zone_windows": zone, "recheck": recheck,
+            "tiers": tiers}
 
 
 def status(payload):
@@ -195,29 +229,31 @@ def status(payload):
 
 
 def component_status(payload, key):
-    """'retail' | 'applied' | 'foreign' for one option ('zone_windows' or 'recheck')."""
+    """'retail' | 'applied' | 'foreign' for one option ('zone_windows', 'tiers' or 'recheck')."""
     settings = read_settings(payload)
     if settings["status"] == "foreign":
         return "foreign"
     return "applied" if settings[key] else "retail"
 
 
-def apply(payload, *, zone_windows=False, recheck=False):
+def apply(payload, *, zone_windows=False, recheck=False, tiers=False):
     """Install the selected options, or replay an identical installation."""
     from . import nfl2k5_xbe_space as space
     from .nfl2k5_bump_strength import _sections, section_digest
     from .nfl2k5_cave_oracle import XbeImage
-    require(type(zone_windows) is bool and type(recheck) is bool, "CPU QB reads options must be Off or On")
+    require(type(zone_windows) is bool and type(recheck) is bool and type(tiers) is bool,
+            "CPU QB reads options must be Off or On")
     require(zone_windows or recheck, "Select at least one CPU QB reads option")
+    require(zone_windows or not tiers, "CPU QB skill tiers need the zone-defender option")
     try:
         installed = _recognize(payload)
     except _ERRORS as exc:
         raise CpuQbReadsError(f"foreign/mixed CPU QB reads input: {exc}") from exc
     common = dict(owner=OWNER, experimental=True, runtime_witnessed=False,
-                  zone_windows=zone_windows, recheck=recheck)
-    if installed == (zone_windows, recheck):
+                  zone_windows=zone_windows, recheck=recheck, tiers=tiers)
+    if installed == (zone_windows, recheck, tiers):
         return payload, dict(common, status="already_applied", changed_bytes=0, edits=[])
-    require(installed == (False, False), "Different CPU QB reads options are installed; rebuild from a clean base")
+    require(installed == (False, False, False), "Different CPU QB reads options are installed; rebuild from a clean base")
     before = payload
     allocation_receipt = {}
     edits = []
@@ -234,6 +270,8 @@ def apply(payload, *, zone_windows=False, recheck=False):
         edits += hook_sites(c)
     if zone_windows:
         edits.append(ZONE_SITE)
+    if tiers:
+        edits.append(TIER_SITE)
     image = XbeImage(payload)
     buf = bytearray(payload)
     for _, va, old, new in edits:
@@ -243,7 +281,7 @@ def apply(payload, *, zone_windows=False, recheck=False):
     for section in _sections(buf):
         buf[section.header_offset + 36:section.header_offset + 56] = section_digest(buf, section)
     result = bytes(buf)
-    require(_recognize(result) == (zone_windows, recheck), "CPU QB reads postcondition failed")
+    require(_recognize(result) == (zone_windows, recheck, tiers), "CPU QB reads postcondition failed")
     if recheck:
         require(space.status(result) == "applied", "CPU QB reads allocator postcondition failed")
     receipt = dict(common, status="applied",
@@ -256,5 +294,6 @@ def apply(payload, *, zone_windows=False, recheck=False):
     return result, receipt
 
 
-__all__ = ["OWNER", "REQUESTS", "HOOKS", "GUARDS", "ZONE_SITE", "ZONE_Y", "RETAIL_ZONE_Y", "apply", "status",
+__all__ = ["OWNER", "REQUESTS", "HOOKS", "GUARDS", "ZONE_SITE", "ZONE_Y", "RETAIL_ZONE_Y", "TIER_SITE",
+           "TIER_THRESHOLD_Y", "RETAIL_THRESHOLD_Y", "HELP_TIERS", "BUILD_CAPTION_TIERS", "apply", "status",
            "read_settings", "component_status", "normalized_sites", "allocations", "code_for", "hook_sites"]

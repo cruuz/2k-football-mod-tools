@@ -105,7 +105,7 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
     "mod_editor/studio/audio_replacement_pack.py":
         "68b6887e0778391916a6465a722b062d1c09afe3a376c318026e9db8bd7ed23a",
     "mod_editor/studio/facade.py":
-        "6b1eec78dfb3aeed76fcc8c12c9b97b5da1419d89c590448a3e4264b92f0e063",
+        "257c44e8084e301c23d055ed967bfd8e33121f7e856b8c22263cce818a3fd33f",
     "mod_editor/studio/project_archive.py":
         "07ee0383db64aac79cd2846903da63756b45b09c05118de4fd6fec612701c8bb",
     "mod_editor/studio/session.py":
@@ -115,14 +115,14 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
 B69_GAME_RUNTIME_PINS = {
     "mod_editor/core/nfl2k5_weather.py": "ec3d253e348ff0cf7fb1951b5dad2983d8aebc0802d5c6fca32c74dc80a6985b",
     "mod_editor/core/nfl2k5_weather_haze.py": "b8c58c592794312358eb1554b1d3be43a1ca41f7fdd8fd3cd498d4f345c641cc",
-    "mod_editor/gui/build_panel_qt.py": "179979882f53d16dbc2aeb9bd8c7d1626debd64369d2e1622e520ee9491d277a",
-    "mod_editor/gui/gameplay_patches_panel_qt.py": "47a41b66663c3365ba33ee12f6c1e77c7e7c64ff6dec0580ee038a2d5789b726",
+    "mod_editor/gui/build_panel_qt.py": "9a1b96100f34266e9296e7ae27132c3d5190f4eac0f5c12c726fb8320a49cf4f",
+    "mod_editor/gui/gameplay_patches_panel_qt.py": "8a463a6c45f83feb3412f1d1926e60de80b6b1487b98b5199bbcae52bae88305",
     "mod_editor/gui/my_career_panel_qt.py": "cd39ce1685ed119288122e46b0f8c1c8ba586cea611f5d5feee096a71d7ea9ac",
     "mod_editor/gui/gameplay_project_ui.py": "4927318677c5dbd1183b139d5b4d2c460136e38a3f9bf5d5b979ba62e1ed016e",
     "mod_editor/gui/beta62_options.py": "4b4152b4830092afc360230bf869df68c56b5ce9c668769fb28cde9f61cd3d3f",
     "tools/nfl2k5_weather_editor.py": "39a2847b873bbdc567712ca87657d700fa95e226c3408983acce4d714b1031de",
-    "mod_editor/gui/build_panel_qt.py": "179979882f53d16dbc2aeb9bd8c7d1626debd64369d2e1622e520ee9491d277a",
-    "mod_editor/gui/gameplay_patches_panel_qt.py": "47a41b66663c3365ba33ee12f6c1e77c7e7c64ff6dec0580ee038a2d5789b726",
+    "mod_editor/gui/build_panel_qt.py": "9a1b96100f34266e9296e7ae27132c3d5190f4eac0f5c12c726fb8320a49cf4f",
+    "mod_editor/gui/gameplay_patches_panel_qt.py": "8a463a6c45f83feb3412f1d1926e60de80b6b1487b98b5199bbcae52bae88305",
     "mod_editor/gui/my_career_panel_qt.py": "cd39ce1685ed119288122e46b0f8c1c8ba586cea611f5d5feee096a71d7ea9ac",
     "mod_editor/gui/gameplay_project_ui.py": "4927318677c5dbd1183b139d5b4d2c460136e38a3f9bf5d5b979ba62e1ed016e",
     "mod_editor/gui/beta62_options.py": "4b4152b4830092afc360230bf869df68c56b5ce9c668769fb28cde9f61cd3d3f",
@@ -1983,6 +1983,7 @@ def main() -> int:
         "mod_editor.core.nfl2k5_resource_growth",
         "mod_editor.core.nfl2k5_roster_arena",
         "mod_editor.core.nfl2k5_roster_arena_code",
+        "mod_editor.core.nfl2k5_roster_arena_code_b78",
         "mod_editor.core.nfl2k5_roster_arena_growth",
         "mod_editor.core.nfl2k5_roster_arena_image",
         "mod_editor.core.nfl2k5_screen_hooks",
@@ -2027,6 +2028,8 @@ def main() -> int:
         "mod_editor.core.nfl2k5_run_blocking_code",               # b777-ol1
         "mod_editor.core.nfl2k5_pass_protection",                 # b778-pr1
         "mod_editor.core.nfl2k5_pass_protection_code",            # b778-pr1
+        "mod_editor.core.nfl2k5_pass_rush_stats",                 # b779-st1
+        "mod_editor.core.nfl2k5_pass_rush_stats_code",            # b779-st1
         "mod_editor.core.nfl2k5_qb_accuracy",                     # b777-qb3
         "mod_editor.core.nfl2k5_qb_accuracy_code",                # b777-qb3
         "mod_editor.core.nfl2k5_formation_art_spacing",           # b777-tp1
@@ -2035,6 +2038,7 @@ def main() -> int:
         "mod_editor.core.nfl2k5_crib_trophy_room",                # b778-xs1
         "mod_editor.core.nfl2k5_inbox_standings",                 # b778-pc3
         "mod_editor.core.nfl2k5_rookie_faces",                    # b778-rh1
+        "mod_editor.core.nfl2k5_real_portraits",                  # b779-pt1
         "mod_editor.core.nfl2k5_practice_injuries",               # b778-pi1
         "mod_editor.core.nfl2k5_ball_carrier_ai",                 # b778-ai5
         "mod_editor.core.nfl2k5_return_coverage",                  # b778-kr1
@@ -2046,8 +2050,12 @@ def main() -> int:
         "mod_editor.core.nfl2k5_player_progress_screen",          # b778-pg2
         "mod_editor.core.nfl2k5_contract_college_guard",          # b778-cr1
         "mod_editor.core.nfl2k5_sim_cb_tackles",                  # b778-cb1
+        "mod_editor.core.nfl2k5_sim_rb_injuries",                 # b779-sim2
+        "mod_editor.core.nfl2k5_sim_realism",                     # b779-sim2 r4
         "mod_editor.core.nfl2k5_sim_stats",                      # b778-sim1, in-place
+        "mod_editor.core.nfl2k5_option_defaults",                # b779-df1, in-place
         "mod_editor.core.nfl2k5_clock_led",                       # b778-sd4
+        "mod_editor.core.nfl2k5_project_check",                   # b779-ce1 Check my project
         "mod_editor.core.nfl2k5_kickoff_blocking",                # b76-vb3 E1
         "mod_editor.core.nfl2k5_widescreen_menus",                # b76-vb3 D2
         "mod_editor.core.nfl2k5_team_logo_swap",                  # b76-pf P1

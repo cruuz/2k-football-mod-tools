@@ -3,7 +3,8 @@
 
 The released main ROST is a fixed native resource. The dated refresh can only add a new identity to a vacant
 create record, and the two-team import floor plus a Create Player margin must survive. fa3 proved 19 of its 561
-candidates fit at the safe margin; this tool reserves the 0xB0000-byte capacity arena (the same version-18
+candidates fit at the safe margin; this tool reserves the capacity arena (nfl2k5_roster_arena.CAPACITY_ARENA_SIZE: 0xB0000
+in beta-78, 0xCA000 since beta-79, where free draft-class records fill the pool up to 4,096; the same version-18
 schema, a larger declared length and a block at the end) and then writes the refresh into the extra vacancies.
 
   python3 tools/b77/b778_fa4_capacity.py merge --edits IN.json --base ROSTER --out OUT.json
@@ -51,7 +52,7 @@ def require(ok, message):
 
 
 def grow(base_body, records, *, arena_size=DEFAULT_ARENA):
-    require(arena_size == DEFAULT_ARENA, "only the 0xB0000 capacity arena is implemented")
+    require(arena_size == DEFAULT_ARENA, "only the current capacity arena (nfl2k5_roster_arena.CAPACITY_ARENA_SIZE) is grown")
     require(len(base_body) == capacity.BODY_SIZE, "the capacity base must be the 0x90F60-byte main ROST body")
     grown, receipt = arena.migrate(bytes(base_body), reserves_16=False, capacity_records=records)
     require(len(grown) == arena_size + 0x40, "capacity body has the wrong length")

@@ -18,20 +18,18 @@ The change makes an existing CPU request receive the same rating-scaled benefit
 as the same human request. It does not force every CPU player to sprint every
 frame.
 
-With **star-only charge** selected, a movement superstar must have all of:
-
-- The existing roster-star charge grant, including the configured tier access.
-- Raw Speed from 90 through 127.
-- Raw Agility from 85 through 127.
-
-The upper bounds reject invalid signed rating bytes. This is a sprint-specific
-rating definition, not an overall-rating calculation. Speedster remains the
-separate permission for the above-retail Speed extension; adding Speedster alone
-does not grant charge. The rule covers CPU and human carriers and defenders,
-including direct consumption of a stale meter. Off-week and native permission
-checks remain in force. An allowed charged burst retains native 1.5-second
-arithmetic. Turning the star-only charge option off retains the existing charge
-policy.
+With **star-only charge** selected, a star charges when the existing roster-star
+charge grant is present, including the configured tier access. There is no
+movement-rating threshold: the charged burst stays a star power for every
+position. The released v0.7 profile required raw Speed 90 through 127 and raw
+Agility 85 through 127 as well, which denied the meter to most starred players;
+Studio now installs the star gate alone and upgrades a released v0.7 owner in
+place. Speedster remains the separate permission for the above-retail Speed
+extension; adding Speedster alone does not grant charge. The rule covers CPU and
+human carriers and defenders, including direct consumption of a stale meter.
+Off-week and native permission checks remain in force. An allowed charged burst
+retains native 1.5-second arithmetic. Turning the star-only charge option off
+retains the existing charge policy.
 
 Implementation reuses the existing 512-byte sprint child and 1,344-byte abilities
 owner. It adds no code/data reservation, hook, mutable timer or runtime dependency.

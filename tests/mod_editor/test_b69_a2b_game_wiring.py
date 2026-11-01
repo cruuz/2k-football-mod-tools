@@ -235,8 +235,10 @@ class CompactBuildTests(unittest.TestCase):
         target=self.root/'restored.iso'
         receipt=build.build(build.BuildPlan(str(self.source),str(target)))
         self.assertEqual(build._xbe_bytes(target),self.retail)
-        self.assertEqual([row['step'] for row in receipt['steps']][-3:],
-                         ['weather_haze', 'unc_bowl_uniforms', 'menu_icon_orientation'])
+        # b778 uf2 added nameplate_fixes_2026 between the Carolina uniforms and the icon owner, so the closing window is
+        # four rows: the haze restore still sits directly before the uniform, nameplate and icon owners that end the build.
+        self.assertEqual([row['step'] for row in receipt['steps']][-4:],
+                         ['weather_haze', 'unc_bowl_uniforms', 'nameplate_fixes_2026', 'menu_icon_orientation'])
         target.write_bytes(b'KEEP DESTINATION')
         with patch.object(weather,'apply_to_image',side_effect=OSError('simulated final write failure')):
             with self.assertRaises(OSError):build.build(build.BuildPlan(str(self.source),str(target),overwrite=True,weather_plan=str(self.plan_file)))

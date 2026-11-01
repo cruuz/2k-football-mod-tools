@@ -37,10 +37,13 @@ class LeagueTests(unittest.TestCase):
         self.assertEqual(len(set(signatures)),32)
     def test_menus_hold_pages_of_three_distinct_plays(self):
         # b776 pb1/pb2: a menu that is not a multiple of three repeats its last play on the empty buttons
+        # b779-int1: b777 (Noah 10/20, "triple the amount of plays") links a record into up to generator.MENU_MAX (36)
+        # sister formations, and short slot-rule menus keep one page; the bound follows the generator, the page rule stays.
+        from pb.v2 import generator as g
         for team,pack in self.packs.items():
             for fid,menu in pack.menus:
                 with self.subTest(team=team,formation=fid):
-                    self.assertTrue(6<=len(menu)<=18 and len(menu)%3==0,len(menu))
+                    self.assertTrue(3<=len(menu)<=g.MENU_MAX and len(menu)%3==0,len(menu))
                     doc=pack.to_json();doc['menus'][fid]=[*menu,menu[0]]
                     with self.assertRaisesRegex(p.PlaybookPackError,'duplicate play in menu'):p.pack_from_json(doc)
     def test_handoffs_reads_and_screens(self):

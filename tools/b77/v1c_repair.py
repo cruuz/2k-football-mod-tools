@@ -62,10 +62,10 @@ def scope(before, after, ranges):
 
 
 def repair_xbe(raw):
-    era.require(era.status(raw) == "applied", "expected recognized Anniversary era rules")
+    era.require(era.status(raw, neighbors=False) == "applied", "expected recognized Anniversary era rules")
     owned = era.places(raw)
     image = XbeImage(raw)
-    result, _ = era.apply(raw)
+    result, _ = era.apply(raw, neighbors=False)
     ranges = [(owned[k]["raw"], owned[k]["raw"] + owned[k]["size"], "era " + k)
               for k in ("code", "read_only")]
     # Existing hook locations are unchanged. Only the new classifier is added.

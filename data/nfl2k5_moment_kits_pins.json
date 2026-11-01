@@ -1,10 +1,10 @@
 {
  "schema": "nfl2k5_moment_kits_pins/v1",
- "about": "SOFTDRINK donors as the release-candidate Studio build holds them (measured on 'SOFTDRINK 2K28 v0.6.1 i4 test (2026-10-17)', read only) and the packages ek1's stage composes from them; with these donors every package must equal its pin. Members: the renamed aggregate slots (b776-sm1: helm and mini cards take the slot's own letter, so a swapped H/A kit keeps its helmet facing the right way); team files and SITU: before/after.",
+ "about": "SOFTDRINK donors as the release-candidate Studio build holds them (measured on 'SOFTDRINK 2K28 v0.6.1 i4 test (2026-10-17)', read only) and the packages ek1's stage composes from them; with these donors every package must equal its pin. Members: the renamed aggregate slots (b776-sm1: helm and mini cards take the slot's own letter, so a swapped H/A kit keeps its helmet facing the right way); team files and SITU: before/after. b779-int1: re-derived after b779-vk2's sideline pass, which repaints donors 06A0, 06H0 and 30H3 before this stage (06a13.iff and 06h13.iff change).",
  "data_sha256": "e2fcbb93f376f266f6973626a48e2244521df1f529f3fbe67ec28cfdc7565c18",
  "donors": {
-  "06A0": "be01941fac18e15ab4c49f76fc287f760ca4fe5df2e5191ddfc98372f017e072",
-  "06H0": "fb81c65f955b6eb1365c55d7487220ed4493506f870a48c5cd32a66d5bf746b2",
+  "06A0": "0d8e18a75c435b97ed7510b0cf691551a929cd78daa53bc6927a2d904d33940c",
+  "06H0": "543d541538c7fee24400e894f9c9a363d6e01bc7c051c469df2998fbc0c245a9",
   "07A2": "bf6f09f7ec7edb8144942a3b449f3ed076aa092e878f8380927d6cf4d6506e1a",
   "07A3": "75e7677ce28c5892a3d244fc716d5223365f234d14de4069b4cf6fc6f79e1b38",
   "07H3": "04bb64d9ff1a399e84c9be75d717b1d3651a295a14ff4232a0e54c1e9597b862",
@@ -31,7 +31,7 @@
   "30A2": "e392efd40647751db448666d2ffb00e9b964dd38ae45be29d7dd19e45b02c565",
   "30H0": "40d105495f5acd7313dbc34d73cf883e2838e534dd10514c6e64e6f18ead2ae9",
   "30H2": "472bb8d50a290b79b1ec7f447d0f70933a58bc524df80ad0db9c16e93043281b",
-  "30H3": "a379955e164914c16ef9bbe9e0ae6e349a387b8ed79404a1f6e4126210e2f630"
+  "30H3": "962f384c67a94ef02876af8565ac795a8296dd8d144cd296b27f64537dcd25e2"
  },
  "packages": {
   "18h9.iff": "5a6c242691cfb24bb265fed2625b64886b1b851a3b00a4818096714606f0fdab",
@@ -58,8 +58,8 @@
   "30a14.iff": "aeb32997d4aacf327a11571c0bb9539b441110352b53678d7a8643611f2d85ee",
   "23h13.iff": "cb380794b5613852d893367ef8c56bca486f2f7bd5e1eff2454e45944fe919e1",
   "23a13.iff": "424ce477e1b807150c7f4bb5128d46bcbf193f99c35c960d9a70fe1ad5437368",
-  "06h13.iff": "b365fd9383459da26ac24e32efb355cb998bb558c2e94c62671d1206a6570945",
-  "06a13.iff": "be01941fac18e15ab4c49f76fc287f760ca4fe5df2e5191ddfc98372f017e072"
+  "06h13.iff": "64cbc5d57729ab55dbe468d41cf4b5f94653e13de75343a86d08350a18444a34",
+  "06a13.iff": "0d8e18a75c435b97ed7510b0cf691551a929cd78daa53bc6927a2d904d33940c"
  },
  "sizes": {
   "18h9.iff": 1490704,
@@ -86,7 +86,7 @@
   "30a14.iff": 1409280,
   "23h13.iff": 1506416,
   "23a13.iff": 1543808,
-  "06h13.iff": 1499472,
+  "06h13.iff": 1497456,
   "06a13.iff": 1546512
  },
  "members": {

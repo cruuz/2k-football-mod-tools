@@ -48,10 +48,21 @@ def _output_path(path):
     return _path(path)
 
 
+FOLDER_DUMP_NEXT = ("Install SOFTDRINK 2K28 needs one image file (an .iso or .xiso), not an extracted game folder. "
+                    "Turn the folder into an xiso first (for example with extract-xiso), then choose that file. "
+                    "A raw (redump) dump or a rebuilt (repacked) image installs fine.")
+
+
 def _source_path(path):
     try:
         return m._regular_path(_path(path), "game image")
     except (m.ModpackError, OSError) as exc:
+        try:
+            folder = not os.path.islink(path) and os.path.isdir(path)
+        except (OSError, ValueError):
+            folder = False
+        if folder:
+            raise failure("a game folder, not an image file", str(exc), FOLDER_DUMP_NEXT) from exc
         raise failure("unreadable game image", str(exc), "Choose an accessible, regular ESPN NFL 2K5 USA Xbox image file.") from exc
 
 
@@ -638,6 +649,7 @@ def _transaction(target, inputs=(), overwrite=False):
         require(not _alias(target, Path(source)), "Output must be a different file from every input.")
     require(not target.exists() or overwrite, f"Output already exists: {target}")
     require(not target.is_symlink(), "Output cannot be a symbolic link")
+    require(target.parent.is_dir(), f"The output folder does not exist: {target.parent}. Choose an existing folder.")
     fd, name = tempfile.mkstemp(prefix=".2k5-", suffix=".part", dir=target.parent)
     os.close(fd)
     part = Path(name)

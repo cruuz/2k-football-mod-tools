@@ -1,5 +1,9 @@
 # APF 2K8 Mod Studio Changelog
 
+## 0.1.0-alpha.110: beta 79 (2026-11-01)
+
+- Version aligned with beta-79. APF 2K8 itself did not change in this release: the APF Studio, its tools and its docs are the same as in alpha.109 apart from the version number.
+
 ## 0.1.0-alpha.109: beta 78 (2026-10-26)
 
 Thanks to Basileus Maximus, who wrote these additions and shared them for the official Studio. His code is included with his permission under the Studio's MIT licence.

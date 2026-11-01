@@ -24,9 +24,12 @@ from pathlib import Path
 import re
 from string import Template
 
-from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtCore import QEvent, QPoint, QRect, QSize, Qt, pyqtSignal
 from PyQt5.QtGui import QColor, QPalette
-from PyQt5.QtWidgets import QLabel, QMessageBox, QSizePolicy, QToolButton, QVBoxLayout, QWidget
+from PyQt5.QtWidgets import (
+    QCheckBox, QLabel, QLayout, QMessageBox, QSizePolicy, QStyle, QStyleOptionButton, QToolButton,
+    QVBoxLayout, QWidget,
+)
 
 #: The compatibility line every executable-patch page shows once.
 XEMU_LINE = "For xemu; original Xbox support is not provided."
@@ -303,6 +306,155 @@ class WrappedLabel(QLabel):
         self.updateGeometry()
 
 
+class FlowLayout(QLayout):
+    """Lays widgets left to right and wraps to a new line when the width runs out.
+
+    Used for rows of buttons whose captions together are wider than a small window
+    (Qt's own flow-layout recipe). Its minimum width is its widest single item, so a row
+    of buttons never sets the width of the page it sits on.
+    """
+
+    def __init__(self, parent: QWidget | None = None, *, spacing: int = 6) -> None:
+        super().__init__(parent)
+        self._items: list = []
+        self._spacing = spacing
+        self.setContentsMargins(0, 0, 0, 0)
+
+    def addItem(self, item) -> None:  # type: ignore[no-untyped-def]
+        self._items.append(item)
+
+    def count(self) -> int:
+        return len(self._items)
+
+    def itemAt(self, index: int):  # type: ignore[no-untyped-def]
+        return self._items[index] if 0 <= index < len(self._items) else None
+
+    def takeAt(self, index: int):  # type: ignore[no-untyped-def]
+        return self._items.pop(index) if 0 <= index < len(self._items) else None
+
+    def expandingDirections(self):  # type: ignore[no-untyped-def]
+        return Qt.Orientations(0)
+
+    def hasHeightForWidth(self) -> bool:
+        return True
+
+    def heightForWidth(self, width: int) -> int:
+        return self._arrange(QRect(0, 0, width, 0), apply=False)
+
+    def setGeometry(self, rect: QRect) -> None:
+        super().setGeometry(rect)
+        self._arrange(rect, apply=True)
+
+    def sizeHint(self) -> QSize:
+        return self.minimumSize()
+
+    def minimumSize(self) -> QSize:
+        size = QSize()
+        for item in self._items:
+            size = size.expandedTo(item.minimumSize())
+        margins = self.contentsMargins()
+        return size + QSize(margins.left() + margins.right(), margins.top() + margins.bottom())
+
+    def _arrange(self, rect: QRect, *, apply: bool) -> int:
+        margins = self.contentsMargins()
+        area = rect.adjusted(margins.left(), margins.top(), -margins.right(), -margins.bottom())
+        x, y, line_height = area.x(), area.y(), 0
+        for item in self._items:
+            hint = item.sizeHint()
+            if x > area.x() and x + hint.width() > area.right() + 1:
+                x, y, line_height = area.x(), y + line_height + self._spacing, 0
+            if apply:
+                item.setGeometry(QRect(QPoint(x, y), hint))
+            x += hint.width() + self._spacing
+            line_height = max(line_height, hint.height())
+        return y + line_height - rect.y() + margins.bottom()
+
+
+class WrappingCheckBox(QCheckBox):
+    """A check box whose caption wraps to the width it is given instead of setting the page width.
+
+    A plain QCheckBox never wraps, so its one-line caption is the minimum width of everything
+    above it. The longest Build option captions (about 830 px under Windows Python) made the
+    Build tab scroll sideways at 1280x720 and at 125% text. This one folds its caption into
+    lines at word breaks for the width it has, keeps the full caption in ``text()`` and reports
+    a small minimum width so the layout can narrow it.
+    """
+
+    #: The narrowest caption column the box asks for (about two short words).
+    MIN_TEXT_WIDTH = 120
+
+    def __init__(self, text: str = "", parent: QWidget | None = None) -> None:
+        self._full_text = ""
+        self._shown_text = ""
+        super().__init__(parent)
+        self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Minimum)
+        if text:
+            self.setText(text)
+
+    def text(self) -> str:  # type: ignore[override]
+        return self._full_text
+
+    def setText(self, text: str) -> None:  # type: ignore[override]
+        self._full_text = text
+        self.setAccessibleName(text.replace("&&", "\0").replace("&", "").replace("\0", "&"))
+        self._rewrap()
+
+    def _measure(self, text: str) -> int:
+        return self.fontMetrics().horizontalAdvance(text.replace("&&", "\0").replace("&", "").replace("\0", "&"))
+
+    def _chrome_width(self) -> int:
+        """Indicator, spacing and padding: the width of the box that is not caption."""
+        option = QStyleOptionButton()
+        self.initStyleOption(option)
+        option.rect = self.rect() if self.width() > 0 else option.rect
+        contents = self.style().subElementRect(QStyle.SE_CheckBoxContents, option, self)
+        if self.width() > 0 and contents.width() > 0:
+            return max(0, self.width() - contents.width())
+        return self.sizeHint().width() - self._measure(self._shown_text.split("\n")[0]) if self._shown_text else 24
+
+    def _wrapped(self, available: int) -> str:
+        lines: list[str] = []
+        current = ""
+        for word in self._full_text.split(" "):
+            trial = word if not current else current + " " + word
+            if current and self._measure(trial) > available:
+                lines.append(current)
+                current = word
+            else:
+                current = trial
+        lines.append(current)
+        return "\n".join(lines)
+
+    def _rewrap(self) -> None:
+        if self.width() > 0:
+            available = max(self.MIN_TEXT_WIDTH, self.width() - self._chrome_width() - 2)
+            shown = self._wrapped(available)
+        else:
+            shown = self._full_text
+        if shown != self._shown_text:
+            self._shown_text = shown
+            QCheckBox.setText(self, shown)
+            self.updateGeometry()
+
+    def sizeHint(self) -> QSize:  # type: ignore[override]
+        hint = super().sizeHint()
+        one_line = self._chrome_width() + self._measure(self._full_text) + 2
+        return QSize(max(hint.width(), one_line), hint.height())
+
+    def minimumSizeHint(self) -> QSize:  # type: ignore[override]
+        hint = super().minimumSizeHint()
+        return QSize(min(hint.width(), self._chrome_width() + self.MIN_TEXT_WIDTH), hint.height())
+
+    def resizeEvent(self, event) -> None:  # type: ignore[no-untyped-def]
+        super().resizeEvent(event)
+        self._rewrap()
+
+    def changeEvent(self, event) -> None:  # type: ignore[no-untyped-def]
+        super().changeEvent(event)
+        if event.type() in (QEvent.FontChange, QEvent.StyleChange):
+            self._rewrap()
+
+
 def tab_title(text: str) -> str:
     """Escape a literal ampersand for a tab, button or check box caption."""
 
@@ -367,7 +519,8 @@ class Details(QWidget):
 
     def _apply(self, expanded: bool) -> None:
         self.body.setVisible(expanded)
-        self.button.setText(f"{self._title} {'▾' if expanded else '▸'}")
+        head, sep, rest = self._title.partition("\n")
+        self.button.setText(f"{head} {'▾' if expanded else '▸'}{sep}{rest}")
         self.toggled.emit(expanded)
 
     def add_text(self, text: str, *, object_name: str = "throwMuted") -> QLabel:

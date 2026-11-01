@@ -83,6 +83,7 @@ mod_editor/core/nfl2k5_bump_texture_writer.py
 mod_editor/core/nfl2k5_throw_tuning.py
 mod_editor/core/nfl2k5_franchise_economy.py
 mod_editor/core/nfl2k5_franchise_economy_code.py
+mod_editor/core/nfl2k5_created_history.py
 mod_editor/core/nfl2k5_franchise_history.py
 mod_editor/core/nfl2k5_roster_fill_composition.py
 mod_editor/core/nfl2k5_crib.py
@@ -471,6 +472,7 @@ tools/game_audio_convert.py
 tools/launch_2k5_mod_studio.sh
 tools/make_app_icons.py
 tools/nfl2k5_career_stats.py
+tools/nfl2k5_champions_seed.py
 tools/nfl2k5_honors.py
 tools/nfl2k5_depth_roles.py
 tools/nfl2k5_franchise_schedule_probe.py
@@ -577,8 +579,12 @@ mod_editor/core/nfl2k5_weekly_progression.py
 mod_editor/core/nfl2k5_player_progress_screen.py
 mod_editor/core/nfl2k5_contract_college_guard.py
 mod_editor/core/nfl2k5_sim_cb_tackles.py
+mod_editor/core/nfl2k5_option_defaults.py
+mod_editor/core/nfl2k5_sim_rb_injuries.py
+mod_editor/core/nfl2k5_sim_realism.py
 mod_editor/core/nfl2k5_sim_stats.py
 mod_editor/core/nfl2k5_clock_led.py
+mod_editor/core/nfl2k5_project_check.py
 mod_editor/core/nfl2k5_disc_extents.py
 mod_editor/core/nfl2k5_preseason.py
 mod_editor/core/nfl2k5_progression.py
@@ -641,6 +647,7 @@ data/nfl2k5_kit_fixes_2026_ov1.json
 data/nfl2k5_kit_fixes_2026_ku1.json
 data/nfl2k5_kit_fixes_2026_sw1.json
 data/nfl2k5_kit_fixes_2026_names.json
+data/nfl2k5_sideline_2026.json
 mod_editor/core/nfl2k5_menu_icon_uf3.py
 mod_editor/core/nfl2k5_pants_hem_2026.py
 data/nfl2k5_pants_hem_2026.json
@@ -663,6 +670,10 @@ mod_editor/core/nfl2k5_letter_grades_attributes.py
 mod_editor/core/nfl2k5_letter_grades_code.py
 mod_editor/core/nfl2k5_letter_grades_progress.py
 mod_editor/core/nfl2k5_period_goalposts.py
+mod_editor/core/nfl2k5_champions.py
+mod_editor/core/nfl2k5_champions_code.py
+mod_editor/core/nfl2k5_champions_history.py
+data/nfl2k5_champions_2026.json
 mod_editor/core/nfl2k5_honors.py
 mod_editor/core/nfl2k5_honors_code.py
 mod_editor/core/nfl2k5_honors_history.py
@@ -1033,6 +1044,7 @@ mod_editor/core/nfl2k5_read_option_runtime_code.py
 mod_editor/core/nfl2k5_resource_growth.py
 mod_editor/core/nfl2k5_roster_arena.py
 mod_editor/core/nfl2k5_roster_arena_code.py
+mod_editor/core/nfl2k5_roster_arena_code_b78.py
 mod_editor/core/nfl2k5_roster_arena_growth.py
 mod_editor/core/nfl2k5_roster_arena_image.py
 mod_editor/core/nfl2k5_screen_hooks.py
@@ -2008,6 +2020,7 @@ mod_editor/core/nfl2k5_star_career_code.py
 # b778-rh1: rookie faces (new draft headshots by skin tone, build and name; in-place generator rewrite)
 mod_editor/core/nfl2k5_rookie_faces.py
 data/nfl2k5_rookie_faces/name_odds.json
+data/nfl2k5_rookie_faces/templates.json
 data/nfl2k5_rookie_faces/bank.json
 # b778-ee1: the alien prospect (code, art pins, portrait and face art)
 mod_editor/core/nfl2k5_alien_prospect.py
@@ -2018,6 +2031,17 @@ data/nfl2k5_alien_prospect/portrait.png
 data/nfl2k5_alien_prospect/face_f.png
 data/nfl2k5_alien_prospect/face_h.png
 data/nfl2k5_alien_prospect/face_n.png
+# b779-pt1: real official-headshot Player Card portraits for the created real free agents
+mod_editor/core/nfl2k5_real_portraits.py
+data/nfl2k5_real_portraits/portraits.json
+data/nfl2k5_real_portraits/faces_00.png
+data/nfl2k5_real_portraits/faces_00_pal.png
+data/nfl2k5_real_portraits/faces_01.png
+data/nfl2k5_real_portraits/faces_01_pal.png
+data/nfl2k5_real_portraits/faces_02.png
+data/nfl2k5_real_portraits/faces_02_pal.png
+data/nfl2k5_real_portraits/faces_03.png
+data/nfl2k5_real_portraits/faces_03_pal.png
 data/nfl2k5_rookie_faces/faces_00.png
 data/nfl2k5_rookie_faces/faces_00_pal.png
 data/nfl2k5_rookie_faces/faces_01.png
@@ -2049,6 +2073,12 @@ data/nfl2k5_rookie_faces/faces_12.png
 data/nfl2k5_rookie_faces/faces_12_pal.png
 data/nfl2k5_rookie_faces/faces_13.png
 data/nfl2k5_rookie_faces/faces_13_pal.png
+data/nfl2k5_rookie_faces/faces_14.png
+data/nfl2k5_rookie_faces/faces_14_pal.png
+data/nfl2k5_rookie_faces/faces_15.png
+data/nfl2k5_rookie_faces/faces_15_pal.png
+data/nfl2k5_rookie_faces/faces_16.png
+data/nfl2k5_rookie_faces/faces_16_pal.png
 mod_editor/core/nfl2k5_return_coverage.py
 mod_editor/core/nfl2k5_cpu_third_down.py
 tools/nfl2k5_weather_editor.py
@@ -3022,6 +3052,8 @@ mod_editor/core/nfl2k5_free_agents.py
 mod_editor/core/nfl2k5_roster_appearance_transfer.py
 mod_editor/data/nfl2k5_free_agents_2026.v1.json
 mod_editor/data/nfl2k5_free_agent_depth_2026.v1.json
+mod_editor/data/nfl2k5_created_history_2026.v1.json
+mod_editor/data/nfl2k5_entry_years_2026.v1.json
 
 mod_editor/core/nfl2k5_anniversary_pack.py
 mod_editor/core/nfl2k5_espn25_fields.py
@@ -3288,6 +3320,33 @@ data/nfl2k5_super_bowl_fields/marks/XLVI.png
 data/nfl2k5_super_bowl_fields/marks/XLVII.png
 data/nfl2k5_super_bowl_fields/marks/XXIII.png
 data/nfl2k5_super_bowl_fields/marks/XXXVIII.png
+data/nfl2k5_super_bowl_logos/brands/abc.png
+data/nfl2k5_super_bowl_logos/brands/cbs.png
+data/nfl2k5_super_bowl_logos/brands/espn.png
+data/nfl2k5_super_bowl_logos/brands/fox.png
+data/nfl2k5_super_bowl_logos/brands/nbc.png
+data/nfl2k5_super_bowl_logos/manifest.json
+data/nfl2k5_super_bowl_logos/SOURCES.txt
+data/nfl2k5_super_bowl_logos/super_bowl/LII.png
+data/nfl2k5_super_bowl_logos/super_bowl/LI.png
+data/nfl2k5_super_bowl_logos/super_bowl/LIV.png
+data/nfl2k5_super_bowl_logos/super_bowl/LVIII.png
+data/nfl2k5_super_bowl_logos/super_bowl/LVI.png
+data/nfl2k5_super_bowl_logos/super_bowl/XLIII.png
+data/nfl2k5_super_bowl_logos/super_bowl/XLII.png
+data/nfl2k5_super_bowl_logos/super_bowl/XLIV.png
+data/nfl2k5_super_bowl_logos/super_bowl/XLIX.png
+data/nfl2k5_super_bowl_logos/super_bowl/XLVII.png
+data/nfl2k5_super_bowl_logos/super_bowl/XLVI.png
+data/nfl2k5_super_bowl_logos/super_bowl/XXIII.png
+data/nfl2k5_super_bowl_logos/super_bowl/XXV.png
+data/nfl2k5_super_bowl_logos/super_bowl/XXXII.png
+data/nfl2k5_super_bowl_logos/super_bowl/XXXIV.png
+data/nfl2k5_super_bowl_logos/super_bowl/XXXVI.png
+data/nfl2k5_super_bowl_logos/teams/CIN_1988.png
+data/nfl2k5_super_bowl_logos/teams/NYG_1990.png
+data/nfl2k5_super_bowl_logos/teams/STL_1999.png
+data/nfl2k5_super_bowl_logos/teams/STL_2001.png
 mod_editor/core/nfl2k5_super_bowl_walls.py
 data/nfl2k5_super_bowl_walls/manifest.json
 data/nfl2k5_super_bowl_walls/row14/banner_away_team.marks.png
@@ -3599,6 +3658,7 @@ data/nfl2k5_espn25_fields/source/sb34.png
 data/nfl2k5_espn25_fields/source/sb36.png
 packaging/nfl2k5_espn25_field_pngs.json
 packaging/nfl2k5_modern_art_pngs.json
+packaging/nfl2k5_super_bowl_logo_pngs.json
 
 packaging/check_packaged_runtime.py
 tools/b765/s1_coplanar.py
@@ -3624,6 +3684,10 @@ mod_editor/core/nfl2k5_coach_ai_code.py
 mod_editor/core/nfl2k5_vip.py
 # b776 pb2: CPU coach play-ring variety and the formation menu page check (nfl2k5_vip imports the first).
 mod_editor/core/nfl2k5_coach_diversity.py
+# b779 dp1: situational, team-specific CPU defensive rings (nfl2k5_vip imports both) and their identity data.
+mod_editor/core/nfl2k5_defense_calls.py
+mod_editor/core/nfl2k5_defense_rings.py
+data/vip/defense_identity_2026.json
 mod_editor/core/nfl2k5_formation_menu_pages.py
 # b777 sc1: route reversal model and screen-blocker repair (imported by the offense generator only).
 mod_editor/core/nfl2k5_route_reversal.py
@@ -3701,6 +3765,11 @@ mod_editor/core/nfl2k5_pass_protection.py
 mod_editor/core/nfl2k5_pass_protection_code.py
 tests/mod_editor/test_nfl2k5_pass_protection.py
 tests/mod_editor/test_nfl2k5_pass_protection_unicorn.py
+mod_editor/core/nfl2k5_preseason_warning.py
+mod_editor/core/nfl2k5_pass_rush_stats.py
+mod_editor/core/nfl2k5_pass_rush_stats_code.py
+tests/mod_editor/test_nfl2k5_pass_rush_stats.py
+tests/mod_editor/test_nfl2k5_pass_protection_sim.py
 tests/mod_editor/test_nfl2k5_run_blocking.py
 tests/mod_editor/test_nfl2k5_team_sleeves.py
 tests/mod_editor/test_nfl2k5_run_blocking_unicorn.py
@@ -3715,6 +3784,7 @@ tests/mod_editor/test_b778_rh1_rookie_faces.py
 tools/b77/rh1_names.py
 tools/b77/rh1_bank.py
 tools/b77/rh2_names.py
+tools/b77/rf3_bank.py
 tests/mod_editor/test_nfl2k5_star_retention.py
 tests/mod_editor/test_nfl2k5_practice_injuries.py
 tests/mod_editor/test_nfl2k5_ball_carrier_ai.py
@@ -3779,8 +3849,13 @@ tests/mod_editor/test_nfl2k5_weekly_progression.py
 tests/mod_editor/test_nfl2k5_player_progress_screen.py
 tests/mod_editor/test_nfl2k5_contract_college_guard.py
 tests/mod_editor/test_nfl2k5_sim_cb_tackles.py
+tests/mod_editor/test_nfl2k5_option_defaults.py
+tests/mod_editor/test_nfl2k5_sim_rb_injuries.py
+tests/mod_editor/test_nfl2k5_sim_realism.py
 tests/mod_editor/test_nfl2k5_sim_stats.py
 tests/mod_editor/test_b778_clock_led.py
+tests/mod_editor/test_b779_ce1_kit_fallback.py
+tests/mod_editor/test_b779_ce1_project_check.py
 tests/mod_editor/test_b778_tr1_trade_deadline.py
 tests/mod_editor/test_b778_tr2_trade_guard.py
 tests/mod_editor/test_trophy_room_logo.py
@@ -3792,3 +3867,8 @@ tests/mod_editor/test_b778_ap1_appearance.py
 # b778 cs1: mid-game Choose Side leaves a fresh coach VIP context on the native CPU caller
 tests/mod_editor/test_b778_cs1_choose_side.py
 tests/mod_editor/test_b778_bd3_build_blockers.py
+# b779 rc1: v0.7 roster capacity family (MyCareer on the capacity arena, draft-class records, CPU signings)
+tests/mod_editor/test_b779_rc1_roster_capacity.py
+# b779 ag1: capacity arena 0xCA000 (4,096 player records), one layout helper, beta-78 saves migrate
+tests/mod_editor/test_b779_ag1_capacity_arena.py
+tests/mod_editor/test_b779_up2_zero_footer.py

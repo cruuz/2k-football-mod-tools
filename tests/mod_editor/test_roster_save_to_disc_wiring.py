@@ -197,13 +197,24 @@ class WiringTests(unittest.TestCase):
             1906: 9057,  # Colby Bockwoldt: 9051 -> 9057
             2118: 9097,  # Martin Zdyrko: 9783 -> 9097
         }
+        # b778 rd1: a full-name cue that records another player's first AND last name (Berman calling Jonathan Taylor
+        # "Chester Taylor") is repaired to the player's own recorded name, else his surname cue, else his number. Only
+        # cues retail_name_cues() proves wrong for this exact first name change; every other cue stays exact.
+        rd1_repaired = 0
         for src, dst in zip(source.players, target.players):
             self.assertEqual((src.first, src.last, src.college), (dst.first, dst.last, dst.college))
             for field in importer.CARRIED_FIELDS:
                 expected = src.record.get(field)
                 if field == 'pbp_id' and src.pool == 'primary':
                     expected = canonical_pbp.get(src.index, expected)
+                    if src.index not in canonical_pbp and rr.is_wrong_name_cue(expected, src.first, src.last):
+                        expected = rr.commentary_id(src.last, src.record.get('jersey'), expected,
+                                                    first=src.first, sync_numbers=False)
+                        self.assertNotEqual(expected, src.record.get(field), (src.index, src.first, src.last))
+                        self.assertFalse(rr.is_wrong_name_cue(expected, src.first, src.last), (src.index, field))
+                        rd1_repaired += 1
                 self.assertEqual(expected, dst.record.get(field), (src.index, field))
+        self.assertGreater(rd1_repaired, 0, 'the signed 2026 save carries wrong full-name cues (504 on rd1)')
         for src, dst in zip(source.teams, target.teams):
             self.assertEqual([source.by_offset[o].index for o in src.slots],
                              [target.by_offset[o].index for o in dst.slots])

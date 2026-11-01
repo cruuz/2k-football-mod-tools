@@ -24,6 +24,10 @@ PACK0 = EXTRACTION / "ESPN NFL 2K5 (USA)" / "vc_53450030" / "0"
 INVENTORY = REPO / "reports" / "assets" / "nfl2k5_resource_chunks_v2.json"
 HAVE_DISC = PACK0.is_file() and INVENTORY.is_file()
 
+# b779 int1: the real-disc reads are bounded by a hang guard, not a speed claim; at idle priority on a
+# loaded machine (nice 19, ionice -c3) the 4,616-model catalog took over 120 s to load from the HDD.
+REAL_DISC_WAIT_MS = 900_000
+
 
 class ModelsPanelTests(unittest.TestCase):
     @classmethod
@@ -115,14 +119,14 @@ class ModelsPanelTests(unittest.TestCase):
         panel.set_source_paths(PACK0, INVENTORY)
         self.assertTrue(panel.reload_button.isEnabled())
         panel.reload()
-        self.assertTrue(panel.wait_idle(120_000))
+        self.assertTrue(panel.wait_idle(REAL_DISC_WAIT_MS))
         self.app.processEvents()
         self.assertEqual(panel.model_list.count(), 4616)
         panel.search.setText("referee")
         self.app.processEvents()
         self.assertIn("o346c109", panel.visible_keys())
         self.assertTrue(panel.select_key("o346c109"))
-        self.assertTrue(panel.wait_idle(60_000))
+        self.assertTrue(panel.wait_idle(REAL_DISC_WAIT_MS))
         self.app.processEvents()
         self.assertIn("ref_high", panel.details.toPlainText())
         self.assertIn("skin: 25 joints", panel.details.toPlainText())
@@ -130,7 +134,7 @@ class ModelsPanelTests(unittest.TestCase):
         self.assertFalse(panel.check_button.isEnabled())       # no edited file yet
         with tempfile.TemporaryDirectory() as tmp:
             panel.export_to(Path(tmp) / "referee.gltf")
-            self.assertTrue(panel.wait_idle(60_000))
+            self.assertTrue(panel.wait_idle(REAL_DISC_WAIT_MS))
             self.app.processEvents()
             self.assertTrue((Path(tmp) / "referee.gltf").is_file())
             self.assertTrue((Path(tmp) / "referee-README.txt").is_file())
@@ -139,14 +143,14 @@ class ModelsPanelTests(unittest.TestCase):
             self.app.processEvents()
             self.assertTrue(panel.check_button.isEnabled())
             panel.compile_edited(Path(tmp) / "referee.gltf")     # unchanged: refused, nothing staged
-            self.assertTrue(panel.wait_idle(120_000))
+            self.assertTrue(panel.wait_idle(REAL_DISC_WAIT_MS))
             self.app.processEvents()
         self.assertFalse(panel.write_button.isEnabled())
         self.assertFalse(panel.export_set_button.isEnabled())    # the referee is not part of a body set
         panel.search.setText("hi_body")
         self.app.processEvents()
         self.assertTrue(panel.select_key("o3c114"))
-        self.assertTrue(panel.wait_idle(120_000))
+        self.assertTrue(panel.wait_idle(REAL_DISC_WAIT_MS))
         self.app.processEvents()
         body_set = panel.current_body_set()
         self.assertIsNotNone(body_set)

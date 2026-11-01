@@ -88,7 +88,8 @@ class WiringTests(unittest.TestCase):
         self.session.stage_model(self.record)
         service = BS.Nfl2k5BuildService(runner=fixtures.InlineBackend())
         plan = self.builder.BuildPlan(source=str(self.fixture.path),target=str(self.root/'combined.iso'))
-        def gameplay(plan, progress, *, _project_builder):
+        def gameplay(plan, progress, *, _project_builder, require_change=False):
+            # b778 bd2: build() takes the Build & Share require_change flag; build_with_project forwards it.
             # The actual project service runs first. This artificial XBE write
             # represents the next writer; no retail gameplay claim is made.
             result = _project_builder(Path(plan.target))

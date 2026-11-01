@@ -6,15 +6,19 @@
     .globl honors_season_hook, honors_sb_hook, honors_fold_rule
 
 /* 0x320D7B, in place of "test eax, 0x220" in the card's pad loop: eax = buttons pressed this frame. Black,
-   White, L trigger (the game's L1) or R trigger (R1) flips the page with the menu cursor sound; the retail
-   B/Back test is then repeated so the caller's jump sees its own flags. */
+   White, L trigger (the game's L1) or R trigger (R1) turns the page; Up and Down scroll the champions list (honors_flip: forward on Black and R, back on White
+   and L, two pages or three) with the menu cursor sound; the retail B/Back test is then repeated so the caller's jump
+   sees its own flags. */
 honors_page_input:
-    test eax, 0xF000
+    test eax, 0x300F220
     jz 1f
     push eax
     push ecx
     push edx
-    xor dword ptr [honors_state], 1
+    mov ecx, eax
+    call honors_flip
+    test eax, eax
+    jz 2f
     push 0
     push 0
     push 0
@@ -28,7 +32,7 @@ honors_page_input:
     mov ecx, eax
     mov eax, 0x00089DA0
     call eax
-    pop edx
+2:  pop edx
     pop ecx
     pop eax
 1:  test eax, 0x220
@@ -37,7 +41,9 @@ honors_page_input:
 /* 0x320210, in place of "mov ecx, [0xC90248]" (6 bytes, call + nop) in the card's enter action: every card
    opens on the retail page. */
 honors_page_enter:
-    mov dword ptr [honors_state], 0
+    push ecx
+    call honors_enter
+    pop ecx
     mov ecx, dword ptr [0x00C90248]
     ret
 
@@ -72,11 +78,12 @@ honors_sb_hook:
     popad
     ret
 
-/* 0x14F168, in place of "mov eax, [esi*4 + 0xAA26C0]" (7 bytes, call + 2 nops) in the history fold: honor
-   fields always fold by sum, every other field keeps the retail lookup (including its reads past field 86). */
+/* 0x14F168, in place of "mov eax, [esi*4 + 0xAA26C0]" (7 bytes, call + 2 nops) in the history fold: the fields 96..127
+   (the ten honors, st1's pressure and hit counters 106..110 and anything added after them) always fold by sum, every
+   other field keeps the retail lookup (including its reads past field 86). */
 honors_fold_rule:
     lea eax, [esi - 96]
-    cmp eax, 10
+    cmp eax, 32
     jb 1f
     mov eax, dword ptr [esi*4 + 0x00AA26C0]
     ret

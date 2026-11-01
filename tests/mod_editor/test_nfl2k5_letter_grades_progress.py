@@ -72,6 +72,10 @@ class StubTests(unittest.TestCase):
         self.assertEqual(space.LATE_OWNERS.index(progress.OWNER), space.LATE_OWNERS.index(lg.OWNER) + 1)
 
 
+_RUN = space._scale_regions()[3]      # the v3 code run (0x14DA000, 24 pages) the owners after the progression row share
+RUN_END = _RUN["va"] + _RUN["size"]
+
+
 class AllocatorTests(unittest.TestCase):
     def test_the_complete_dormant_union_still_fits_and_nobody_moves(self) -> None:
         union = tuple(space.dormant_union())
@@ -79,8 +83,25 @@ class AllocatorTests(unittest.TestCase):
         without = tuple(r for r in union if r[0] != progress.OWNER)
         old = {(a["owner"], a["kind"]): a for a in space._scale_allocations(without)}
         new = {(a["owner"], a["kind"]): a for a in space._scale_allocations(union)}
+        # An owner placed after the progression row in LATE_OWNERS order shares the code run's tail with it (b779 km1:
+        # K128 grew to 1,536 B and now lives whole in the v4 pool, so the run's last page holds letter_grades, this
+        # row, then cpu_money_downs_late and cpu_third_down). Those later owners follow it by exactly its 16-byte
+        # slot, in the same run and with the rest of their record unchanged. Nothing placed before it (every
+        # non-late owner and every earlier late owner) moves, and no pool row moves: the append-to-an-installed-image
+        # proof (extend_scaleout) refuses a later owner that would move, so the append order stays the load order.
+        order = space.LATE_OWNERS.index(progress.OWNER)
+        shifted = []
         for key, row in old.items():
+            if (key[1] == "code" and key[0] in space.LATE_OWNERS and space.LATE_OWNERS.index(key[0]) > order
+                    and row["va"] < RUN_END):
+                at = new[(progress.OWNER, "code")]
+                if row["va"] >= at["va"]:
+                    shifted.append(key)
+                    self.assertEqual(new[key], dict(row, va=row["va"] + 16, raw=row["raw"] + 16), f"{key} moved by more than 16")
+                    continue
             self.assertEqual(new[key], row, f"{key} moved")
+        self.assertEqual(sorted(shifted), [("nfl2k5_cpu_money_downs_late", "code"), ("nfl2k5_cpu_third_down", "code")])
+        self.assertTrue(all(new[key]["va"] + new[key]["size"] <= RUN_END for key in shifted))   # still inside the v3 code run
         self.assertEqual(sorted(k for k in new if k not in old), [(progress.OWNER, "code")])
         mine, f4 = new[(progress.OWNER, "code")], new[(lg.OWNER, "code")]
         self.assertEqual(mine["va"], f4["va"] + f4["size"])

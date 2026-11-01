@@ -106,7 +106,7 @@ class Shields(unittest.TestCase):
         self.assertIn("super_bowl_walls.apply(after, row['row'], marks=marks)", source)
         self.assertIn('def compile_assets(get_built,get_retail,situ,*,progress=None,user_art=None)', source)
         build = (ROOT / 'mod_editor/core/mod_build.py').read_text()
-        self.assertIn('user_art=plan.super_bowl_user_art or None, log=lambda line: progress(line, 0, 0)', build)
+        self.assertIn('user_art=super_bowl_walls.effective_user_art(plan.super_bowl_user_art)', build)
 
 
 class ShippedArt(unittest.TestCase):
@@ -145,10 +145,23 @@ class ShippedArt(unittest.TestCase):
                         inside[y0:y1, x0:x1] = True
                     self.assertFalse((lyr[~inside, 3] > 0).any())
 
-    def test_no_user_art_ships(self):
+    def test_bundled_real_logos_ship_and_match_the_packaging_catalog(self):
+        root = ROOT / 'data/nfl2k5_super_bowl_logos'
         allow = [line.strip() for line in (ROOT / 'packaging/release-allowlist.txt').read_text().splitlines()]
         self.assertFalse([line for line in allow if 'user_art' in line.split('/')[:-1]])
         self.assertFalse(any('user_art' in p.parts for p in (ROOT / 'data').rglob('*')))
+        catalog = json.loads((ROOT / 'packaging/nfl2k5_super_bowl_logo_pngs.json').read_text())
+        self.assertEqual(catalog['schema'], 'nfl2k5_super_bowl_logo_pngs/v1')
+        on_disk = {p.relative_to(root).as_posix() for p in root.rglob('*.png')}
+        self.assertEqual(set(catalog['files']),
+                         {f'data/nfl2k5_super_bowl_logos/{name}' for name in on_disk})
+        for relative, item in catalog['files'].items():
+            raw = (ROOT / relative).read_bytes()
+            self.assertEqual(item['sha256'], hashlib.sha256(raw).hexdigest(), relative)
+            self.assertEqual(item['size'], len(raw), relative)
+            self.assertIn(relative, allow)
+        self.assertIn('data/nfl2k5_super_bowl_logos/manifest.json', allow)
+        self.assertIn('data/nfl2k5_super_bowl_logos/SOURCES.txt', allow)
 
     def test_build_plan_and_saved_settings_carry_the_folder(self):
         from mod_editor.core import mod_build, nfl2k5_build_settings as settings
@@ -156,6 +169,8 @@ class ShippedArt(unittest.TestCase):
         self.assertIn('super_bowl_user_art', settings.FEATURE_KEYS)
         for preset in mod_build.PRESETS.values():
             self.assertEqual(preset.get('super_bowl_user_art'), '')
+        self.assertEqual(walls.effective_user_art(''), str(walls.BUNDLED_LOGOS))
+        self.assertEqual(walls.effective_user_art('/tmp/my logos'), '/tmp/my logos')
 
 
 class UserArt(unittest.TestCase):
@@ -308,7 +323,7 @@ class Gui(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             panel = BuildPanel()
             try:
-                self.assertIn('authored event marks', panel.super_bowl_user_art_status.text())
+                self.assertIn('bundled real Super Bowl', panel.super_bowl_user_art_status.text())
                 with patch('mod_editor.gui.build_panel_qt.QFileDialog.getExistingDirectory', return_value=temp):
                     panel.super_bowl_user_art_create.click()
                 folder = Path(temp) / 'user_art'

@@ -89,11 +89,16 @@ class ScheduleStaticTests(unittest.TestCase):
 
     def test_schedule_costs_mycareer_no_byte(self):
         """MyCareer's compressed RW template carries the Apartment's three Career Home addresses; with the layout pad
-        they cost what ui1's layout cost (13 spare without Career Home, 7 with it, on this retail-length image).
-        b778 mc6 spends 4 of them on the identity fix (primary +2, inline_stage/inline_decode +2 after alignment)."""
+        they cost 6 bytes of the 20,463-byte code budget (ui1 measured 13 spare without Career Home, 7 with it).
+        b778 mc6 spends 4 of them on the identity fix (primary +2, inline_stage/inline_decode +2 after alignment).
+        The spare bytes follow the generated MyCareer runtime: the beta-78 ship left them at 32 / 26 (the pin of
+        9 / 3 was stale), and b779 ag1 (the 0xCA000 capacity arena and the 128-byte block reader, commits ddf823673 and
+        e957bda25) shrank the runtime by 12 bytes: 20 / 14 on this retail-length image."""
         code, data = mode.legacy.allocations(self.career17)
         alone = mode.TAG_OFFSET - (mode.code_for(code['va'], data['va'])[1]['content_end'] - code['va'])
-        self.assertEqual((alone, home.check_static(self.p17)['mycareer_spare_bytes']), (9, 3))
+        with_home = home.check_static(self.p17)['mycareer_spare_bytes']
+        self.assertEqual((alone, with_home), (20, 14))
+        self.assertEqual(alone - with_home, 6)       # Career Home's three addresses cost 6 bytes, as at ui1 and on the beta-78 base
         self.assertGreaterEqual(home.check_static(self.p18)['mycareer_spare_bytes'], 0)
 
     def test_runtime_reads_the_same_season_byte(self):

@@ -21,10 +21,15 @@ and makes it useful all season:
   by the roster list index. The depth chart reorders after games; an index would overwrite or lose
   a player's history.
 * **Screen values** (0x365B20): the season view returns the stored baseline for ``Previously``, the
-  live rating for ``Currently`` and their difference for ``Change``. A toggle cycles the historical
-  weekly views: ``Previously`` is the previous stored week, ``Currently`` the selected stored week
-  and ``Change`` that week's delta. The header shows ``Last Week`` or ``2..8 Weeks``.
-* **Toggle** (screen event): any input event the screen currently ignores cycles the view.
+  live rating for ``Currently`` and their difference for ``Change``. The historical weekly ring is
+  still stored (below); the release keeps the season row instead of a view switcher.
+* **Stable row label** (b779-pp5): the old toggle replaced the screen's ignored-event slot (0xF4268)
+  and incremented the view on every call. That slot is a per-frame event (event 9), so the label
+  cycled at frame rate while the value getter clamped the view to the stored week count: the video's
+  "+/- Change" / "Weeks" flicker and overlap. No distinct Black/UP/DOWN event reaches that class, so
+  the shipped fix keeps the retail no-op handler and the retail ``+/- Change`` header. The weekly
+  ring and its capture are unchanged; a future screen-scoped input can expose them without touching
+  the save format.
 
 The record is the ``PPG3`` v1 history ring and the footer is ``PPGF0001`` in
 ``nfl2k5_player_progression``. The footer follows the complete native save (and the MyCareer footer
@@ -60,8 +65,7 @@ VISIBLE_HELP_TEXT = (
 HELP_TEXT = (
     "EXPERIMENTAL. The Front Office Player Progress screen is available every week of the regular "
     "season and playoffs. Previously is the season-opening rating, Currently is the live rating and "
-    "+/- Change is movement since the season began; an unused pad button cycles the change row through "
-    "Last Week and the previous stored weeks. Old saves load normally."
+    "+/- Change is movement since the season began. Old saves load normally."
 )
 
 IMAGE_BASE = 0x10000
@@ -97,6 +101,7 @@ FN_STAGE_ENTER = 0x00247B20
 FN_STAGE = 0x000C4BB0
 FN_LEAGUE = 0x000C4B80
 RETAIL_HEADER_TEXT = 0x00EB92D8
+
 
 # --- hook sites ---------------------------------------------------------------------------------
 SITE_VISIBILITY = (0x002C26A0, bytes.fromhex("568bf2c746"))
@@ -219,31 +224,21 @@ def _assemble(code_va: int, data_va: int, map_va: int, text_va: int,
     if visible_only:
         return a.assemble(), dict(a.labels)
 
-    # ---- toggle: cycle season (0) and the stored weeks 1..8 -----------------------------------
+    # ---- stable row label (b779-pp5) ----------------------------------------------------------
+    # The old toggle sat on the screen's ignored-event class, which is a per-frame event (event 9):
+    # it incremented on every frame and the label cycled at frame rate. No distinct Black/UP/DOWN
+    # event reaches this class, so a reliable button gate is not available here. The released fix
+    # keeps the season row ("+/- Change") and leaves the stored weekly ring for a future, properly
+    # screen-scoped switcher. Both hooks stay installed so the install layout is unchanged; the
+    # handler is the retail no-op and the header returns the retail string.
     a.label("toggle")
     a.b("5f")                                   # pop edi (the retail event's stack contract)
-    a.b("a0" + _imm(data_va))                   # mov al,[toggle]
-    a.b("04" + "01")                            # add al,1
-    a.b("3c" + f"{MAX_VIEW_WEEKS + 1:02x}")     # cmp al,9
-    a.j8("72", "tog_store")                     # jb tog_store
-    a.b("30c0")                                 # xor al,al
-    a.label("tog_store")
-    a.b("a2" + _imm(data_va))                   # mov [toggle],al
     a.b("b801000000")                           # mov eax,1
     a.b("5e")                                   # pop esi
     a.b("c3")
 
-    # ---- change header ------------------------------------------------------------------------
     a.label("header")
-    a.b("ba" + _imm(RETAIL_HEADER_TEXT))        # mov edx,retail
-    a.b("a0" + _imm(data_va))                   # mov al,[toggle]
-    a.b("84c0")                                 # test al,al
-    a.j8("74", "hdr_done")
-    a.b("0fb6c0")                               # movzx eax,al
-    a.b("48")                                   # dec eax
-    a.b("6bc0" + f"{_TEXT_STRIDE:02x}")         # imul eax,eax,24
-    a.b("8d90" + _imm(text_va))                 # lea edx,[eax+text]
-    a.label("hdr_done")
+    a.b("ba" + _imm(RETAIL_HEADER_TEXT))        # mov edx,retail "+/- Change"
     a.b("c3")
 
     # ---- stage-8 call wrapper: enter the stage, then capture the season baseline --------------
@@ -613,6 +608,7 @@ def _assemble(code_va: int, data_va: int, map_va: int, text_va: int,
     a.label("cap_baseline_header")
     a.b("bd" + _imm(record_va))
     a.b("c6450501"); a.b("c6450900")
+    a.b("c605" + _imm(data_va) + "00")          # a new baseline starts on the season view
     a.label("cap_team_index")
     a.b("8b0424")                               # team pointer
     a.b("8b0d" + _imm(ROSTER_VA)); a.b("8b491c")
@@ -707,26 +703,27 @@ def _assemble(code_va: int, data_va: int, map_va: int, text_va: int,
     a.b("61"); a.b("9d"); a.b("c3")
 
     a.label("admission")
+    # b779 ag1: admitted franchise sizes, each also with the MyCareer footer, the Player Progress footer or both:
+    # retail (720,044), this build's own native size (720,044 + [0xB72808] - 0x91000: 724,140 on the 0x92000 arena,
+    # the capacity size on the capacity arena), and on a capacity build larger than beta-78's, beta-78's 847,020
+    # save (nfl2k5_roster_arena.LEGACY_CAPACITY_SAVE_SIZE), which loads and migrates.
     a.b("8b8eccc1bd00")                         # mov ecx,[esi+0xbdc1cc] (file size)
-    a.b("8b15" + _imm(0x00B72808))              # mov edx,[0xb72808] (arena size)
-    a.b("b8" + _imm(record.RETAIL_SAVE_SIZE))
-    a.b("81fa" + _imm(0x000B0000)); a.j8("72", "adm_92")
-    a.b("b8" + _imm(record.CAPACITY_SAVE_SIZE)); a.j8("eb", "adm_base")
-    a.label("adm_92")
-    a.b("81fa" + _imm(0x00092000)); a.j8("72", "adm_base")
-    a.b("b8" + _imm(record.RESERVE_SAVE_SIZE))
-    a.label("adm_base")
-    a.b("39c1"); a.j8("74", "adm_ok")
-    a.b("8d90" + _imm(record.MYCAREER_FOOTER_SIZE)); a.b("39d1"); a.j8("74", "adm_ok")
-    a.b("8d90" + _imm(FOOTER_SIZE)); a.b("39d1"); a.j8("74", "adm_ok")
-    a.b("8d90" + _imm(record.MYCAREER_FOOTER_SIZE + FOOTER_SIZE)); a.b("39d1"); a.j8("74", "adm_ok")
-    a.b("81f9" + _imm(record.RETAIL_SAVE_SIZE)); a.j8("74", "adm_ok")
-    a.b("81f9" + _imm(record.RETAIL_SAVE_SIZE + record.MYCAREER_FOOTER_SIZE)); a.j8("74", "adm_ok")
-    a.b("81f9" + _imm(record.RETAIL_SAVE_SIZE + FOOTER_SIZE)); a.j8("74", "adm_ok")
-    a.b("81f9" + _imm(record.RETAIL_SAVE_SIZE + record.MYCAREER_FOOTER_SIZE + FOOTER_SIZE)); a.j8("74", "adm_ok")
+    a.b("b8" + _imm(record.RETAIL_SAVE_SIZE)); a.j32("e8", "adm_family"); a.j8("74", "adm_ok")
+    a.b("a1" + _imm(0x00B72808))                # mov eax,[0xb72808] (arena size)
+    a.b("05" + _imm(record.RETAIL_SAVE_SIZE - 0x91000)); a.j32("e8", "adm_family"); a.j8("74", "adm_ok")
+    a.b("3d" + _imm(record.LEGACY_CAPACITY_SAVE_SIZE)); a.j8("76", "adm_bad")
+    a.b("b8" + _imm(record.LEGACY_CAPACITY_SAVE_SIZE)); a.j32("e8", "adm_family"); a.j8("74", "adm_ok")
+    a.label("adm_bad")
     a.b("b801000000"); a.b("5e"); a.b("c3")     # mov eax,1 ; pop esi ; ret (damaged)
     a.label("adm_ok")
     a.b("31c0"); a.b("5e"); a.b("c3")
+    a.label("adm_family")                       # ZF: ecx is eax plus 0, the career, the progress or both footers
+    a.b("39c1"); a.j8("74", "adm_family_done")
+    a.b("8d90" + _imm(record.MYCAREER_FOOTER_SIZE)); a.b("39d1"); a.j8("74", "adm_family_done")
+    a.b("8d90" + _imm(FOOTER_SIZE)); a.b("39d1"); a.j8("74", "adm_family_done")
+    a.b("8d90" + _imm(record.MYCAREER_FOOTER_SIZE + FOOTER_SIZE)); a.b("39d1")
+    a.label("adm_family_done")
+    a.b("c3")
     return a.assemble(), dict(a.labels)
 
 

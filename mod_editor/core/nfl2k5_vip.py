@@ -782,6 +782,26 @@ def diversify_defense(rings, choices, weights=diversity.DEFAULT_WEIGHTS):
                 spread_before=spread_before, spread_after=spread(rings))
 
 
+def _situational_defense(resource, tendency):
+    """b779 dp1: (rings of DefenseChoice, receipt) from nfl2k5_defense_rings for a club with an identity row, else None.
+
+    Ring formations are the native VIP menu's reachable ones (as before) of types 4, 5 and 6: three-down books now
+    take part instead of falling back to their only four-down formation (the Bear)."""
+    from . import nfl2k5_defense_rings as situational
+    team = (tendency.get("provenance") or {}).get("archive_book") or tendency.get("team")
+    if not isinstance(team, str) or situational.team_identity(team) is None:
+        return None
+    book = ip.parse_playbook_resource(resource)
+    body = resource[32:]
+    built = situational.build(book, body, vip_defense_formations(book, body), library.defense_pairs, team)
+    if built is None:
+        return None
+    rings, receipt = built
+    out = [[DefenseChoice(c.formation, c.front, c.coverage, c.man, c.raw_rushers, c.formation_name, c.front_name,
+                          c.coverage_name) for c in ring] for ring in rings]
+    return out, receipt
+
+
 def build_coach(template: VipSave, resource: bytes, tendency: dict, name: str, book_index: int, *,
                 varied: bool = True):
     """Coach-derived offense history plus measured defensive pressure/coverage.
@@ -800,11 +820,20 @@ def build_coach(template: VipSave, resource: bytes, tendency: dict, name: str, b
         require(value is None or type(value) in (int, float) and math.isfinite(value) and 0 <= value <= 1,
                 f"Invalid defensive {key} rate")
     defense, rings = [], []
-    for index in range(15):
-        row, selected = make_defense_pool(choices, target, index * 7)
-        rings.append(selected)
-    defense_variety = (diversify_defense(rings, choices, varied if isinstance(varied, diversity.Weights)
-                                         else diversity.DEFAULT_WEIGHTS) if varied else None)
+    # b779 dp1: a current NFL club gets situational rings fitted to its 2026 coordinator's 2025 calls in each of the
+    # fifteen native ring cells (nfl2k5_defense_rings); other profiles keep the single-marginal fit below.
+    situational = _situational_defense(resource, tendency)
+    if situational is not None:
+        rings, defense_receipt = situational
+        defense_variety = dict(schema=defense_receipt["schema"], rule="situational fit (nfl2k5_defense_rings)",
+                               distinct_calls=defense_receipt["distinct_calls"])
+        receipt["defense_identity"] = defense_receipt
+    else:
+        for index in range(15):
+            row, selected = make_defense_pool(choices, target, index * 7)
+            rings.append(selected)
+        defense_variety = (diversify_defense(rings, choices, varied if isinstance(varied, diversity.Weights)
+                                             else diversity.DEFAULT_WEIGHTS) if varied else None)
     for index, selected in enumerate(rings):
         start = CONTEXT + 0xA3C + index * 62
         data[start:start + 62] = defense_row(selected)

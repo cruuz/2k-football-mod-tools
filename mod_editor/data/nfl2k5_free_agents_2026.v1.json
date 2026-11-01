@@ -53420,6 +53420,6 @@
       ]
     }
   ],
-  "years_pro_convention": "game_rookie_1",
-  "years_pro_convention_note": "years pro counts the season in progress (rookie = 1, the card prints R): nflverse years_exp (rookie = 0) plus 1"
+  "years_pro_convention": "game_years_in_league",
+  "years_pro_convention_note": "years pro = NFL seasons since the player entered the league, counting the season in progress (rookie = 1, the card prints R): base season - nflverse entry_year + 1"
 }

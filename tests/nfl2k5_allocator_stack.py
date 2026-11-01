@@ -100,6 +100,16 @@ from mod_editor.core import nfl2k5_moment_context as moment_context  # b775 mo2
 REQUESTS += moment_context.REQUESTS
 from mod_editor.core import nfl2k5_classic_teams as classic_teams  # b775-ct1
 REQUESTS += classic_teams.REQUESTS
+def production_union():
+    """The owner union the production cave-manifest build allocates (``build_manifest``'s ``all_requests``).
+
+    ``space.dormant_union()`` includes return coverage and the on-demand module loader, matching the observed
+    full build's grown allocator span. Bounded projections allocate that complete union exactly once so the
+    inherited ``nfl2k5_xbe_space`` span lies inside their regions without duplicate owner/kind requests.
+    """
+    return tuple(space.dormant_union())
+
+
 SONGS = [dict(title=f"Tone {i+1:03}", artist="Synthetic", frames=256) for i in range(200)]
 
 

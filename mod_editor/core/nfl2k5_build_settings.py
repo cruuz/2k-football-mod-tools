@@ -57,11 +57,12 @@ FEATURE_KEYS += ("espn_wipes_boards_2026",)  # b76-p2: ESPN 2026 wipes and board
 FEATURE_KEYS += ("kick_meter_2026",)  # b76-km: the kick meter in the 2026 ESPN bar's look
 FEATURE_KEYS += ("modern_goalposts",)  # b77-v1: the uprights 35 ft above the crossbar (NFL since 2014)
 FEATURE_KEYS += ("modern_coaches",)  # b77-co1: the 2026 head coaches (sideline look, faces, DAL/WAS pictures)
-FEATURE_KEYS += ("cpu_qb_zone_windows", "cpu_qb_recheck", "db_ball_play")  # b776-ai2: CPU AI late executable owners, off in every preset
+FEATURE_KEYS += ("cpu_qb_zone_windows", "cpu_qb_recheck", "cpu_qb_tiers", "db_ball_play")  # b776-ai2: CPU AI late executable owners, off in every preset
 FEATURE_KEYS += ("hair_styles",)  # b775-hs1: added hair models chosen per player (roster +0x0D), late executable owner
 FEATURE_KEYS += ("play_art_routes",)  # b776-pa2: play art routes at their real length, late executable owner
 FEATURE_KEYS += ("run_blocking",)  # b777-ol1: run blocking, the last late executable owner
 FEATURE_KEYS += ("pass_protection",)  # b778-pr1: pass protection, a late executable owner
+FEATURE_KEYS += ("pass_rush_stats",)  # b779-st1: pressures / QB hits / allowed stats, a late executable owner (b779-int1: key was missing)
 FEATURE_KEYS += ("team_number_scale",)  # b776-ns1: per-kit jersey number size {kit: scale}, late executable owner
 FEATURE_KEYS += ("qb_accuracy",)  # b777-qb3: accurate short and on-the-run throws by Pass Accuracy, late executable owner
 FEATURE_KEYS += ("star_retention",)  # b778-fa1: CPU clubs keep their stars (veteran cap cut), late executable owner
@@ -81,7 +82,10 @@ FEATURE_KEYS += ("trophy_room",)  # b778-pg2: the Crib display name
 FEATURE_KEYS += ("player_progress", "player_progress_visible")  # b778-pg2/pg3: Player Progress screen/row, late executable owner
 FEATURE_KEYS += ("contract_college_guard",)  # b778-cr1: Contracts null-college crash guard, late executable owner
 FEATURE_KEYS += ("sim_cb_tackles",)  # b778-cb1: cornerback tackle credit, late executable owner
+FEATURE_KEYS += ("sim_rb_injuries",)  # b779-sim2: weekly RB injury roll and simulated-game carry guard
+FEATURE_KEYS += ("sim_realism",)  # b779-sim2 r4: scheduled-sim season realism, late executable owner
 FEATURE_KEYS += ("sim_stats",)  # b778-sim1: simulated franchise game pace (in place, no allocation)
+FEATURE_KEYS += ("option_defaults", "default_quarter_minutes", "default_sim_quarter_minutes")  # b779-df1: fresh-profile default options (in place, no allocation)
 FEATURE_KEYS += ("modern_clock_led",)  # b778-sd4: LED play clock and score digits, late executable owner
 FEATURE_KEYS += ("inbox_standings",)  # b778-pc3: inbox story 23 standings setup (pointer-only edit)
 FEATURE_KEYS += ("modern_fans",)  # b77-fr1: the 2026 fans of the crowd-reaction cutaways
@@ -98,7 +102,7 @@ FEATURE_KEYS += ("coach_ai",)  # preserved as an explicit editable Build setting
 FEATURE_KEYS += ("honors_page", "honors_history")  # b77-f5: Player Card honors page (allocator owner, late) and its award history
 FEATURE_KEYS += ("contract_college_guard",)  # b778-cr1: Player Contracts null-college screen guard (late owner)
 FEATURE_KEYS += ("my_career_home",)  # ui1: MyCareer Career Home (default on with MyCareer)
-FEATURE_KEYS += ("super_bowl_user_art",)  # b773-sb2: optional folder of the user's own Super Bowl logos, "" = off
+FEATURE_KEYS += ("super_bowl_user_art",)  # b773-sb2: Super Bowl logos folder; "" = the bundled real logos (sb3)
 MUSIC_KEYS = ("music_shuffle", "music_shuffle_selection")
 
 

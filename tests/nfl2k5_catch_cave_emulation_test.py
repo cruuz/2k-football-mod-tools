@@ -97,24 +97,30 @@ class CatchCaveEmulationTests(unittest.TestCase):
         payload = RETAIL_XBE.read_bytes()
         cls.patched, _receipt = cs.apply(payload)
 
-    def test_offense_catcher_uses_its_side_and_never_drops_below_retail(self) -> None:
+    def test_offense_catcher_uses_both_sliders_and_both_sides_get_the_same_odds(self) -> None:
         for rand in (0.05, 0.5, 0.99):
-            for slider in (0.0, 0.25, 0.5, 0.75, 1.0, 2.0):
-                for human in (True, False):
-                    got, trace = _run(self.patched, rand, human_catching=slider if human else 9.0,
-                                      cpu_catching=slider if not human else 9.0, interception=0.5,
-                                      catcher_on_offense=True, offense_is_human=human)
-                    expected = min(rand, rand / (2 * slider)) if slider > 0 else rand
-                    self.assertAlmostEqual(got, expected, places=6, msg=(rand, slider, human))
-                    self.assertIn(cs.FACTOR_FN, trace, "the game's own ReadFactor must be called")
-                    self.assertEqual(trace[0], cs.CAVE_VA)
-        # the Pro defaults: the human side gets x1.5 odds, the CPU side stays retail
-        human, _ = _run(self.patched, 0.6, human_catching=0.75, cpu_catching=0.25, interception=0.5,
-                        catcher_on_offense=True, offense_is_human=True)
-        cpu, _ = _run(self.patched, 0.6, human_catching=0.75, cpu_catching=0.25, interception=0.5,
-                      catcher_on_offense=True, offense_is_human=False)
-        self.assertAlmostEqual(human, 0.6 / 1.5, places=6)
-        self.assertAlmostEqual(cpu, 0.6, places=6)
+            for human_slider in (0.0, 0.25, 0.5, 0.75, 1.0, 2.0):
+                for cpu_slider in (0.0, 0.25, 0.5, 1.0, 2.0):
+                    results = []
+                    for human in (True, False):
+                        got, trace = _run(self.patched, rand, human_catching=human_slider, cpu_catching=cpu_slider,
+                                          interception=0.5, catcher_on_offense=True, offense_is_human=human)
+                        results.append(got)
+                        self.assertIn(cs.CAVE_VA, trace[:1])
+                        self.assertNotIn(cs.KICK_GATE_VA, trace)
+                    total = human_slider + cpu_slider
+                    expected = rand / (cs.ODDS_SCALE * total) if total > 0 else float("inf")
+                    self.assertEqual(results[0], results[1], (rand, human_slider, cpu_slider))
+                    if expected == float("inf"):
+                        self.assertEqual(results[0], float("inf"))
+                    else:
+                        self.assertAlmostEqual(results[0], expected, places=6, msg=(rand, human_slider, cpu_slider))
+        # Every difficulty preset pair sums to 1.0, so m = ODDS_SCALE for all of them (and for any saved profile).
+        for name, (human_slider, cpu_slider) in cs.DIFFICULTY_PRESETS.items():
+            for human in (True, False):
+                got, _ = _run(self.patched, 0.6, human_catching=human_slider, cpu_catching=cpu_slider, interception=0.5,
+                              catcher_on_offense=True, offense_is_human=human)
+                self.assertAlmostEqual(got, 0.6 / cs.ODDS_SCALE, places=6, msg=name)
 
     def test_defender_uses_the_interception_slider_over_its_full_range(self) -> None:
         for rand in (0.05, 0.5, 0.99):
@@ -128,10 +134,13 @@ class CatchCaveEmulationTests(unittest.TestCase):
                 self.assertNotIn(cs.FACTOR_FN, trace)
 
     def test_odds_multiplier_matches_the_cave(self) -> None:
-        for slider in (0.0, 0.25, 0.5, 0.75, 1.0, 2.0):
-            got, _ = _run(self.patched, 0.4, human_catching=slider, cpu_catching=9.0, interception=0.5,
-                          catcher_on_offense=True, offense_is_human=True)
-            self.assertAlmostEqual(0.4 / got, cs.odds_multiplier(slider), places=5)
+        for human_slider in (0.0, 0.25, 0.5, 0.75, 1.0, 2.0):
+            for cpu_slider in (0.25, 0.5, 1.0, 2.0):
+                got, _ = _run(self.patched, 0.4, human_catching=human_slider, cpu_catching=cpu_slider, interception=0.5,
+                              catcher_on_offense=True, offense_is_human=True)
+                self.assertAlmostEqual(0.4 / got, cs.odds_multiplier(human_slider, cpu_slider), places=5)
+        self.assertEqual(cs.odds_multiplier(0.75, 0.25), cs.ODDS_SCALE)
+        self.assertEqual(cs.odds_multiplier(0.5, defender=True), 1.0)
 
 
 if __name__ == "__main__":

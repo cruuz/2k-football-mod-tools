@@ -410,26 +410,31 @@ def _money_downs_two_point(payload):
     return ((va, retail),)
 
 
-def _prerequisites(payload):
+def _prerequisites(payload, neighbors=True):
+    """``neighbors=False`` (native repairs of a pinned shipped executable only) skips the recognizers of the OTHER owners
+    and the dependency-region hashes: those know only the current template of every neighbour, so an executable shipped
+    before a neighbour was revised reads foreign although the repair never touches that neighbour. Every site this
+    owner hooks or displaces is still checked."""
     from . import nfl2k5_anniversary_kickoff as gate, nfl2k5_kick_rules as kr, nfl2k5_overtime as ot
     from . import nfl2k5_defensive_try as dt, nfl2k5_coin_defer as coin, nfl2k5_decided_clock as clock
-    for module in (gate, kr, ot, dt):
-        require(module.status(payload) == "applied", f"era rules require installed {module.__name__}")
-    settings = ot.read_settings(payload)
-    require(settings["both_possessions"] and settings["postseason_no_ties"], "era OT requires complete modern OT base")
-    for module in (coin, clock):
-        require(module.status(payload) in ("applied", "retail"), "foreign optional era neighbor")
     image = XbeImage(payload)
     manifest = json.loads((ROOT / "data/nfl2k5_era_rules.json").read_text())
     pins = manifest["retail_sites"]
-    tolerated = _money_downs_two_point(payload)
-    for guard in manifest["retail_guards"]:
-        raw = bytearray(image.read(guard["va"], guard["size"]))
-        for va, retail in tolerated:
-            if guard["va"] <= va and va + len(retail) <= guard["va"] + guard["size"]:
-                raw[va - guard["va"]:va - guard["va"] + len(retail)] = retail
-        require(hashlib.sha256(raw).hexdigest() == guard["sha256"],
-                "foreign era dependency at " + hex(guard["va"]))
+    if neighbors:
+        for module in (gate, kr, ot, dt):
+            require(module.status(payload) == "applied", f"era rules require installed {module.__name__}")
+        settings = ot.read_settings(payload)
+        require(settings["both_possessions"] and settings["postseason_no_ties"], "era OT requires complete modern OT base")
+        for module in (coin, clock):
+            require(module.status(payload) in ("applied", "retail"), "foreign optional era neighbor")
+        tolerated = _money_downs_two_point(payload)
+        for guard in manifest["retail_guards"]:
+            raw = bytearray(image.read(guard["va"], guard["size"]))
+            for va, retail in tolerated:
+                if guard["va"] <= va and va + len(retail) <= guard["va"] + guard["size"]:
+                    raw[va - guard["va"]:va - guard["va"] + len(retail)] = retail
+            require(hashlib.sha256(raw).hexdigest() == guard["sha256"],
+                    "foreign era dependency at " + hex(guard["va"]))
     for name, site, size, dispatch in specs():
         if dispatch == "try_event":
             require(image.read(site, size) == bytes.fromhex("c7407405000000"), "foreign era try event setter")
@@ -440,7 +445,7 @@ def _prerequisites(payload):
             require(image.read(site, size) == expected, "foreign era defensive site " + name)
 
 
-def status(payload):
+def status(payload, neighbors=True):
     try:
         base = underlying_view(payload)
         if base == payload:
@@ -454,14 +459,15 @@ def status(payload):
                         require(image.read(site, len(raw)) == raw,
                                 "foreign disabled era hook")
             return "retail"
-        _prerequisites(base)
+        _prerequisites(base, neighbors)
         return "applied"
     except (ValueError, KeyError, IndexError, TypeError, struct.error):
         return "foreign"
 
 
-def apply(payload, *, enabled=True):
-    before = status(payload)
+def apply(payload, *, enabled=True, neighbors=True):
+    """``neighbors=False``: see ``_prerequisites`` (native repair of a pinned shipped executable)."""
+    before = status(payload, neighbors)
     require(before != "foreign", "foreign era rules installation")
     if not enabled:
         result = underlying_view(payload)
@@ -480,7 +486,7 @@ def apply(payload, *, enabled=True):
             clear[region["raw"]:region["raw"] + region["size"]] = padding * region["size"]
         space._seal_scaleout(clear, space._read_scale_directory(payload))
         payload = _seal(clear)
-    _prerequisites(payload)
+    _prerequisites(payload, neighbors)
     owned = places(payload)
     require(owned is not None, "reserve era rules in the complete owner union")
     image = XbeImage(payload)
@@ -493,7 +499,7 @@ def apply(payload, *, enabled=True):
         at = image.offset(site, len(raw))
         buffer[at:at + len(raw)] = raw
     result = _seal(buffer)
-    require(status(result) == "applied", "era rules postcondition")
+    require(status(result, neighbors) == "applied", "era rules postcondition")
     return result, dict(status="applied", owner=OWNER, classification="PROVED OFFLINE", profiles=PROFILE_COUNT,
                         hooks=len(edits), changed_bytes=sum(a != b for a, b in zip(payload, result)), profile_sha256=hashlib.sha256(profiles()).hexdigest(), runtime_witnessed=False)
 

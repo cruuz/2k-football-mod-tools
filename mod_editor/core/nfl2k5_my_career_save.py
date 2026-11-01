@@ -18,7 +18,9 @@ import struct
 
 MAGIC = b"MCPL0001"
 SIZE = 128
-BASE_SIZES = (720044, 724140, 847020)
+from . import nfl2k5_roster_arena as _arena
+# retail, 16-reserve, and both capacity geometries (beta-78's 847,020 and the current arena)
+BASE_SIZES = (_arena.RETAIL_SAVE_SIZE, _arena.save_size(_arena.ARENA_SIZE)) + _arena.CAPACITY_SAVE_SIZES
 SIZES = tuple(n + SIZE for n in BASE_SIZES)
 # b778-pg3: the Player Progress footer may follow the native container, the career footer, or both.
 from .nfl2k5_player_progression import (FOOTER_SIZE as PPG_SIZE, PPG_SAVE_SIZES,
@@ -60,7 +62,7 @@ def seal(block):
     return bytes(result)
 
 
-def validate(block, *, arena_size=0xB0000):
+def validate(block, *, arena_size=_arena.CAPACITY_ARENA_SIZE):
     require(isinstance(block, (bytes, bytearray)) and len(block) == SIZE,
             "career block must contain 128 bytes")
     require(block[:8] == MAGIC and block[8:12] == struct.pack("<HH", 1, SIZE),
@@ -112,7 +114,7 @@ def read(payload, *, identity=True):
     base = native_size(payload)
     require(len(payload) in (base + SIZE, base + SIZE + PPG_SIZE),
             "this Franchise has no inline MyCareer block")
-    block = validate(payload[base:], arena_size=0x91000 + base - BASE_SIZES[0])
+    block = validate(payload[base:base + SIZE], arena_size=0x91000 + base - BASE_SIZES[0])
     if identity:
         from . import nfl2k5_save_rost as codec
         doc = codec.decode(payload)

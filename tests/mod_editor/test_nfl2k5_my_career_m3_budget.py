@@ -30,16 +30,22 @@ class PlanningTests(unittest.TestCase):
         owners = sorted({r[0] for r in REQUESTS} - {mode.OWNER, mode.EXTRA_OWNER})
         unions = [('m3', mode.REQUESTS), ('full', REQUESTS), ('budget', budget)]
         unions += [(owner, mode.REQUESTS + tuple(r for r in REQUESTS if r[0] == owner)) for owner in owners]
-        # b778 ai8/xs1: the full union is a v4 image (ai8's third-down owner is the 192-byte spill) and the beta62
-        # budget is already v4. M3's fixed 4 KiB state page shortens the v3 data run, so the late owners that sat in
-        # its last page now fall whole into the pool. These are the only rows that leave a v3 address; every other
-        # v3 row keeps its address, and the pool rows keep their owner, kind, size and alignment.
+        # b778 ai8/xs1 + b779 km1/hn1: the full union and the beta62 budget are v4 images. M3's fixed 4 KiB state page
+        # shortens the v3 data run, and K128 is now 1,536 bytes (km1) and the champions owner 5,120 bytes of code
+        # (hn1, 5,632 with its alignment slack in the plan): neither fits the v3 code run once M3's promoted code
+        # is placed, so both fall whole into the pool (k128 first, in LATE_OWNERS order). That frees the 1,024 bytes
+        # K128 used to hold in the run, so cpu_money_downs_late and cpu_third_down (b778 spills) now fit the v3 run
+        # and are no longer spills. In the budget union the star_career pair (code 2,080 + data 4,096) and the
+        # money-downs state word still do not fit and also fall to the pool. Everything else keeps its v3 address.
         spills = {
-            'full': {('nfl2k5_cpu_third_down', 'code', 0)},
-            'budget': {('nfl2k5_star_career', 'code', 0), ('nfl2k5_star_career', 'data', 0),
-                       ('nfl2k5_cpu_money_downs_late', 'code', 0),
+            'full': {('nfl2k5_k128', 'code', 0), ('nfl2k5_champions', 'code', 0)},
+            'budget': {('nfl2k5_k128', 'code', 0), ('nfl2k5_champions', 'code', 0),
+                       ('nfl2k5_star_career', 'code', 0), ('nfl2k5_star_career', 'data', 0),
                        ('nfl2k5_cpu_money_downs_late_state', 'data', 0),
-                       ('nfl2k5_cpu_third_down', 'code', 0)},
+                       # b779-fixD (4c89ebbb2): the beta62 budget fixture now also lists return coverage (code 192)
+                       # and the module loader (code 256, data 32), late owners that fall to the pool after them.
+                       ('nfl2k5_return_coverage', 'code', 0),
+                       ('nfl2k5_module_loader', 'code', 0), ('nfl2k5_module_loader', 'data', 0)},
         }
         for label, requests in unions:
             with self.subTest(owners=sorted({r[0] for r in requests})):
@@ -83,11 +89,15 @@ class PlanningTests(unittest.TestCase):
                 self.assertEqual(current[mode.OWNER, 'code', 0]['size'], 20480)
                 extra = current[mode.EXTRA_OWNER, 'data', 0]
                 self.assertEqual((extra['va'], extra['size']), (mode.EXTRA_VA, 4096))
-                # The six fixed v3 regions never change; v4 only appends the pool, and the fixed state page is why
-                # the budget and full-union pools are 2 and 3 pages (b778 ai8/xs1).
+                # The six fixed v3 regions never change; v4 only appends the pool. Pool pages, derived from the pool
+                # rows: the 4,096-byte directory page, then the spills in LATE_OWNERS order.
+                #   full:   4,096 + k128 1,536 + champions 5,632 = 11,264 -> 3 pages
+                #   budget: 4,096 + 1,536 + 5,632 + star_career code 2,080 + star_career data 4,096 (aligned) + the
+                #           8-byte money-downs state word = 17,448, + return coverage 192 + module loader 256 + 32
+                #           (b779-fixD) -> still 5 pages
                 self.assertEqual(before['regions'][:6], after['regions'][:6])
-                expected_size = {'full': space.SCALE3_FILE_SIZE + 2 * space.PAGE,
-                                 'budget': space.SCALE3_FILE_SIZE + 3 * space.PAGE}.get(label, space.SCALE3_FILE_SIZE)
+                expected_size = {'full': space.SCALE3_FILE_SIZE + 3 * space.PAGE,
+                                 'budget': space.SCALE3_FILE_SIZE + 5 * space.PAGE}.get(label, space.SCALE3_FILE_SIZE)
                 self.assertEqual(after['file_size'], expected_size)
                 if label == 'budget':
                     self.assertEqual(before['file_size'], space.SCALE3_FILE_SIZE + 2 * space.PAGE)

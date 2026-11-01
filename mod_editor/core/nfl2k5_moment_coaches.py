@@ -64,6 +64,10 @@ def metadata(row):
     return bytes(out)
 
 
+def _same_team(selector, name):
+    return selector.lower().replace(' ', '') == name.lower().replace(' ', '')
+
+
 def situation(raw, stats=None):
     """Rebuild SITU string pointers, putting versioned coach data after each goal's NUL.
 
@@ -82,8 +86,13 @@ def situation(raw, stats=None):
     out = bytearray(src[:sc.RECORDS + 51*sc.STRIDE])
     for i, row in enumerate(rows()):
         at = sc.RECORDS + i*sc.STRIDE
-        require(sc.utf16(src, sc.rel(src, at)) == row['title']
-                and sc.utf16(src, sc.rel(src, at+12)) == row['date'],
+        # b779-ce1: a moment is identified by its date and its title, or its date and its two teams: with
+        # "Named previews" off, six of the retail moments keep their retail titles, and the build used to stop here,
+        # at the very end of a long build, for every project that ticks the 25 more moments without Named previews.
+        require(sc.utf16(src, sc.rel(src, at+12)) == row['date']
+                and (sc.utf16(src, sc.rel(src, at)) == row['title']
+                     or (_same_team(sc.utf16(src, sc.rel(src, at+20)), row['away']['team'])
+                         and _same_team(sc.utf16(src, sc.rel(src, at+24)), row['home']['team']))),
                 'coach catalog does not match this physical moment')
         for field in sc.POINTERS:
             site = sc.RECORDS + i*sc.STRIDE + field

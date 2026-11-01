@@ -35,10 +35,10 @@ class CodeTests(unittest.TestCase):
     def test_code_fits_tables_are_16_bit_and_the_tail_replays_the_merge_head(self):
         code = cb.code_for(0x14E0000)
         self.assertEqual(len(code), cb.CODE_SIZE)
-        body = code[:cb.TABLE_OFF].rstrip(b"\xcc")
-        self.assertLessEqual(len(body), cb.TABLE_OFF)
-        # the last instructions are the two displaced merge instructions and the return
-        self.assertEqual(body[-7:], bytes.fromhex("618b45308b18c3"))
+        merge = code[:cb.GUARD_OFFSET].rstrip(b"\xcc")
+        self.assertLessEqual(len(merge), cb.TABLE_OFF)
+        # the merge tail is still the two displaced merge instructions and the return
+        self.assertEqual(merge[-7:], bytes.fromhex("618b45308b18c3"))
         self.assertEqual(code[cb.TABLE_OFF:cb.TABLE_OFF + len(cb.TABLES)], cb.TABLES)
         self.assertEqual(len(cb.TABLES), len(cb.LCB_CDF) + len(cb.RCB_CDF) + len(cb.NICKEL_CDF) + len(cb.DIME_CDF))
         for table in (cb.LCB_CDF, cb.RCB_CDF, cb.NICKEL_CDF, cb.DIME_CDF):
@@ -57,6 +57,27 @@ class CodeTests(unittest.TestCase):
         self.assertEqual(after[:1], b"\xe8")
         self.assertEqual((va + 5 + struct.unpack_from("<i", after, 1)[0]) & 0xFFFFFFFF, 0x14E0000)
 
+    def test_sim_guard_is_the_second_cave_entry_at_the_two_picker_calls(self):
+        code = cb.code_for(0x14E0000)
+        guard = code[cb.GUARD_OFFSET:cb.GUARD_OFFSET + 29]
+        # cmp byte [0xE5FF80],4 ; jne retail ; test [edx+0x20],injured|weeks ; jz retail
+        # xor eax,eax ; ret 0xc (FUN_000e8340 is callee-clean, b779-int1) ; retail: jmp 0xe8340
+        self.assertEqual(guard[:7], bytes.fromhex("803d80ffe50004"))
+        self.assertEqual(guard[7:9], bytes.fromhex("750e"))
+        self.assertEqual(guard[9:16], bytes.fromhex("f742200000c0bf"))
+        self.assertEqual(guard[16:18], bytes.fromhex("7405"))
+        self.assertEqual(guard[18:23], bytes.fromhex("31c0c20c00"))
+        self.assertEqual(guard[23], 0xE9)
+        self.assertEqual(0x14E0000 + cb.GUARD_OFFSET + 23 + 5 + struct.unpack_from("<i", guard, 24)[0], 0xE8340)
+        edits = cb.sites(0x14E0000)
+        self.assertEqual([row[0] for row in edits],
+                         ["merge_body", "sim_guard_forward", "sim_guard_reverse"])
+        for (name, va, before, after), (hook_va, hook_before) in zip(edits[1:], cb.GUARD_HOOKS):
+            self.assertEqual(name, "sim_guard_forward" if hook_va == 0xE8864 else "sim_guard_reverse")
+            self.assertEqual((va, before), (hook_va, hook_before))
+            self.assertEqual((va + 5 + struct.unpack_from("<i", after, 1)[0]) & 0xFFFFFFFF,
+                             0x14E0000 + cb.GUARD_OFFSET)
+
     def test_retail_is_recognised_without_writing(self):
         data = retail()
         if data is None:
@@ -64,6 +85,53 @@ class CodeTests(unittest.TestCase):
         self.assertEqual(cb.status(data), "retail")
         self.assertEqual(XbeImage(data).read(cb.SITE, len(cb.SITE_BEFORE)), cb.SITE_BEFORE)
         self.assertEqual(XbeImage(data).read(0x134E05, 5), cb.RETAIL_PG1_CALL)
+
+    @unittest.skipUnless(V061.is_file(), "the released v0.6.1 extraction is not in this scratch")
+    def test_season_realism_hook_in_the_merge_keeps_this_owner_applied(self):
+        # b779-int1: sim2's season realism hooks the same merge (tackle entry 0x1334d3); with both installed this
+        # owner must still read applied (the full build's survival check), and a stray byte there must still not.
+        from mod_editor.core import nfl2k5_sim_realism as realism
+        data = retail()
+        if data is None:
+            self.skipTest("retail USA default.xbe not available")
+        payload, _ = space.apply(data, cb.REQUESTS + realism.REQUESTS, scaleout=True)
+        payload, _ = cb.apply(payload)
+        payload, _ = realism.apply(payload)
+        self.assertEqual((cb.status(payload), realism.status(payload)), ("applied", "applied"))
+        image = XbeImage(payload)
+        broken = bytearray(payload)
+        off = image.offset(realism.TACKLE_ENTRY_SITE + 5, 1)
+        broken[off] ^= 0xFF
+        self.assertEqual(cb.status(bytes(broken)), "foreign")
+
+    def test_defensive_try_jump_in_the_merge_at_any_cave_address_keeps_this_owner(self):
+        # b779-int1: the defensive try owner jumps out of the merge at 0x1336B2 to its own code, which the allocator
+        # places anywhere; only v0.6.1's address was pinned (RC build try 9 refused the source). Its exact jump,
+        # while that owner reads applied, is accepted; a jump anywhere else still reads foreign.
+        from unittest import mock
+        from mod_editor.core import nfl2k5_defensive_try as dtry
+        data = retail()
+        if data is None:
+            self.skipTest("retail USA default.xbe not available")
+        payload, _ = cb.apply(space.apply(data, cb.REQUESTS, scaleout=True)[0])
+        va = dtry.HOOKS["season_merge"][0]
+
+        def with_jump(target):
+            buf = bytearray(payload)
+            hook = dtry._hook_bytes("season_merge", {"season_merge": target})
+            off = XbeImage(payload).offset(va, len(hook))
+            buf[off:off + len(hook)] = hook
+            from mod_editor.core.nfl2k5_bump_strength import _sections, section_digest
+            for section in _sections(buf):       # a real install keeps the section digests current
+                buf[section.header_offset + 36:section.header_offset + 56] = section_digest(buf, section)
+            return bytes(buf)
+        labels = {"season_merge": 0x015123A0}
+        with mock.patch.object(dtry, "status", return_value="applied"), \
+             mock.patch.object(dtry, "assembled", return_value=(b"", b"", b"", labels)):
+            self.assertEqual(cb.status(with_jump(0x015123A0)), "applied")
+            self.assertEqual(cb.status(with_jump(0x015123B0)), "foreign")
+        with mock.patch.object(dtry, "status", return_value="retail"):
+            self.assertEqual(cb.status(with_jump(0x015123A0)), "foreign")
 
     @unittest.skipUnless(V061.is_file(), "the released v0.6.1 extraction is not in this scratch")
     def test_released_v061_merge_context_is_supported(self):
@@ -297,6 +365,129 @@ class DrawTests(unittest.TestCase):
         self.assertEqual(self.d.m.reg("EBX"), self.d.context)
         self.assertEqual(self.d.m.get(self.d.m.SP - 4), self.d.m.STOP)
         self.assertEqual(self.d.m.reg("ESP"), self.d.m.SP)
+
+
+@unittest.skipUnless(HAVE_UC, "unicorn is needed")
+class GuardTests(unittest.TestCase):
+    """The scheduled-sim guard at the picker's two FUN_000e8340 calls (EDX = the player copy)."""
+
+    @classmethod
+    def setUpClass(cls):
+        data = retail()
+        if data is None:
+            raise unittest.SkipTest("pinned USA retail XBE is not available")
+        cls.patched = cb.apply(data)[0]
+        cls.code = cb.allocation(cls.patched)["va"] + cb.GUARD_OFFSET
+
+    def call_guard(self, *, mode, word20=0, word24=0):
+        from tests.nfl2k5_supersim_draft_fixture import Machine
+        m = Machine(self.patched, trace_writes=False)
+        player = m.ARENA + 0x1000
+        m.put(player + 0x20, word20)
+        m.put(player + 0x24, word24)
+        m.put(0xE5FF80, mode)
+        hits = []
+        # b779-int1: retail FUN_000e8340 takes three stack arguments and pops them (`ret 0xc`); both guard exits
+        # must leave the caller's stack exactly as retail does
+        m.leaf(0xE8340, lambda: (hits.append(1), m.ret(1, pop=12))[1], reason="retail depth/status check")
+        eax = m.call(self.code, edx=player, args=(0x11, 0x22, 0x33), budget=1000)
+        self.assertEqual(m.reg("ESP"), m.STACK + 4 + 12, "the caller's three stack arguments must be popped")
+        return eax, hits, m.leaves
+
+    def test_weeks_out_and_injured_bit_are_refused_in_the_scheduled_sim(self):
+        for word20 in (6 << 22, 0x80000000, 0x80000000 | (6 << 22)):
+            with self.subTest(word20=hex(word20)):
+                eax, hits, _leaves = self.call_guard(mode=4, word20=word20)
+                self.assertEqual(eax, 0)
+                self.assertEqual(hits, [])
+
+    def test_healthy_players_and_other_modes_keep_retail(self):
+        for mode, word20 in ((4, 0), (7, 6 << 22), (1, 6 << 22), (0, 6 << 22)):
+            with self.subTest(mode=mode, word20=hex(word20)):
+                eax, hits, leaves = self.call_guard(mode=mode, word20=word20)
+                self.assertEqual(eax, 1)
+                self.assertEqual(hits, [1])
+                self.assertEqual(len(leaves), 1)
+
+    def test_retail_picker_is_unpatched_and_the_guard_is_installed(self):
+        data = retail()
+        if data is None:
+            raise unittest.SkipTest("pinned USA retail XBE is not available")
+        image = XbeImage(data)
+        for va, before in cb.GUARD_HOOKS:
+            self.assertEqual(image.read(va, 5), before)
+        self.assertEqual(cb.status(data), "retail")
+        self.assertEqual(cb.status(self.patched), "applied")
+
+
+@unittest.skipUnless(HAVE_UC, "unicorn is needed")
+class SimLineupBaseTests(unittest.TestCase):
+    """The reported Game Cast bug: a weeks-only injury is not in the save's status field, so the retail
+    scheduled simulator's depth picker still seats the starter.  The base chooses him; the guard refuses
+    the same picker call.  (The full patched init reaches a native reverse-depth fallback whose table the
+    signed-save fixture does not build; the guard unit tests cover that call.)"""
+
+    @classmethod
+    def setUpClass(cls):
+        from tests.nfl2k5_supersim_draft_fixture import signed_save
+        cls.base = retail()
+        if cls.base is None:
+            raise unittest.SkipTest("pinned USA retail XBE is not available")
+        try:
+            cls.save = signed_save()
+        except unittest.SkipTest:
+            raise unittest.SkipTest("private signed f0 franchise is absent")
+
+    def chosen_after_init(self, payload, *, weeks, status, injured_bit):
+        from tests.nfl2k5_supersim_draft_fixture import Machine
+        m = Machine(payload, trace_writes=False)
+        m.load_franchise(self.save)
+        t0 = m.team_base
+        count = m.uc.mem_read(t0 + 0x11C, 1)[0]
+        pointers = [m.get(t0 + 4 * i) for i in range(count)]
+        hbs = []
+        for index, pointer in enumerate(pointers):
+            position = m.uc.mem_read(pointer + 0x35, 1)[0]
+            rank = (m.get(pointer + 0x28) >> 10) & 7
+            if position == 7:                       # halfback in this roster's position table
+                hbs.append((index, rank, pointer))
+        hbs.sort(key=lambda row: row[1])
+        starter = hbs[0]
+        m.put(starter[2] + 0x20, ((weeks << 22) | (0x80000000 if injured_bit else 0)) & 0xFFFFFFFF)
+        m.put(starter[2] + 0x24, (status << 28) & 0xFFFFFFFF)
+        m.seed(12345)
+        for address, value in ((0xE5FF80, 4), (0xE576A4, 8), (0xE6000C, 5), (0xE60010, 5)):
+            m.put(address, value)
+        m.call(0x77AE0, ecx=m.team_base)
+        m.call(0x77B20, ecx=m.team_base + 500)
+        m.call(0x10B280, ecx=m.team_base, edx=m.team_base + 500,
+               args=(0, 1, 0, 0, 0, 0), budget=3_000_000)
+        chosen = set()
+        for slot in range(2, 40):
+            pointer = m.get(0xA96B68 + 4 * slot)
+            if 0xB30C4C <= pointer < 0xB30C4C + 0x54 * 53:
+                chosen.add((pointer - 0xB30C4C) // 0x54)
+        return starter[0], chosen
+
+    def test_retail_seats_a_weeks_only_injury_and_the_guard_refuses_it(self):
+        starter, chosen = self.chosen_after_init(self.base, weeks=6, status=0, injured_bit=False)
+        self.assertIn(starter, chosen)              # the reported "Saquon scored with a 6-week injury"
+        patched = cb.apply(self.base)[0]
+        guard = cb.allocation(patched)["va"] + cb.GUARD_OFFSET
+        from tests.nfl2k5_supersim_draft_fixture import Machine
+        m = Machine(patched, trace_writes=False)
+        player = m.ARENA + 0x1000
+        m.put(player + 0x20, 6 << 22)
+        m.put(player + 0x24, 0)
+        m.put(0xE5FF80, 4)
+        hits = []
+        m.leaf(0xE8340, lambda: (hits.append(1), m.ret(1))[1], reason="retail depth/status check")
+        self.assertEqual(m.call(guard, edx=player, budget=1000), 0)
+        self.assertEqual(hits, [])
+
+    def test_retail_benches_an_out_status(self):
+        starter, chosen = self.chosen_after_init(self.base, weeks=6, status=4, injured_bit=True)
+        self.assertNotIn(starter, chosen)           # status 4 already works in the base; the gap is weeks-only
 
 
 @unittest.skipUnless(HAVE_UC, "unicorn is needed")

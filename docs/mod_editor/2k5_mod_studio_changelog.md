@@ -1,6 +1,264 @@
 # 2K5 Mod Studio — Product Changelog
 
-## Beta 78 (RC113 / APF alpha.109, 2026-10-26)
+## v1.0 RC114, beta 79: SOFTDRINK 2K28 v0.8 (APF alpha.110, 2026-11-01)
+
+Prepared by Claude on Noah's behalf.
+
+This release pairs 2K5 Mod Studio **v1.0 RC114** and APF 2K8 Mod Studio **0.1.0-alpha.110** with **[SOFTDRINK 2K28 v0.8](https://github.com/cruuz/softdrink-2k28/releases/tag/v0.8)**. It covers the b779 wave (October 28 and 29): every bug players reported on Discord after the beta-78 / v0.7 release on October 27, and the feature asks Noah added on October 28 ("Instead of a hotfix, I'd rather make it good"), which is why this is beta-79 and v0.8 instead of a small fix.
+
+About 28 jobs went into it, each with its own tests and a pin recheck, followed by one integration pass with the full local test suite, a cave reservation regeneration from an observed full-feature build, a plan-only preflight of the release recipe, a release-candidate disc build and headless emulator checks on that disc (see Release checks). Noah tests the release-candidate disc before this page is published.
+
+The game changes are listed here in full, and again on the SOFTDRINK page for players who only use the pack. Each change has a Studio build option where noted, so you can turn it off in your own build.
+
+### Build options added or changed
+
+On means on in that preset. "Pack" is the SOFTDRINK 2K28 v0.8 disc.
+
+| Option (key) | Basic | Advanced | Experimental | Pack |
+| --- | --- | --- | --- | --- |
+| Pass rush stats: pressures, QB hits, allowed, targets (`pass_rush_stats`) | off | on | on | on |
+| CPU QB reads follow the ratings (`cpu_qb_tiers`) | off | on | on | on |
+| New-profile defaults: Quarter Length 7, Sim Quarter Length 15, Chop Block on (`option_defaults`) | off | on | on | on |
+| Simulated RB injuries and carry rotation (`sim_rb_injuries`) | off | on | on | on |
+| Simulated season realism: pass/run balance, target shares, QB runs, interceptions and tackles (`sim_realism`) | off | on | on | on |
+| Overtime: now also simulated overtime (`overtime`) | off | on | on | on |
+| Player Card honors: now with the Super Bowl notice and the champions page (the page needs a bigger roster) (`honors_page`) | off | on | on | on |
+| Pass protection: now with ratings variance and the simulated pass rush (`pass_protection`) | off | on | on | on |
+| Catch odds equal for human and CPU (`catch_slider`) | on | on | on | on |
+| Practice injuries: two more injury states sit out (`practice_injuries`) | off | on | on | on |
+| Simulated cornerback tackles, now with the Game Cast injury guard (`sim_cb_tackles`) | off | on | on | on |
+| Rookie faces, now with the real headshots of the created players (`rookie_faces`) | off | off | on | on |
+| Franchise economy revision 4: 450-deep classes, retirement by age, smart cut-down, preseason warning (`franchise_economy`) | off | off | off | on |
+
+Changed inside existing options: the star charge-up (every star), the 128 MiB startup message, the Player Progress footer, the sideline uniforms of 63 kits, the moment team files' uniform labels, the defensive audibles and Situation mode books, and the default Super Bowl, network and team-season logos (the real ones, bundled). The 4,096-record roster, years pro, the free agents' history, games played and the halfback ratings ride in the roster edits. The defense identities are in the team packs.
+
+The Basic preset is the 2004 game and keeps original behaviour for nearly all of these.
+
+### Franchise, roster and free agency
+
+#### A bigger roster file: 4,096 players
+
+The roster file grows from 3,231 to **4,096 player records**. The 865 new records go to the draft classes. Every draft class now has **450 prospects**, with undrafted players left at every position each year, and the free agent pool grows to about 1,700 over a long franchise. In 10 simulated seasons on the new roster, every generated class had 450 prospects and 226 players went undrafted every year; in the runs checked, every position kept at least 5 undrafted players from the third draft on.
+
+Franchise saves made on this disc are 953,516 bytes of roster (987,836 bytes as the game writes them, 987,964 with a MyCareer player). Franchise and MyCareer saves from v0.7 still load and keep their 3,231 records; only a new franchise, or Franchise > Upgrade (below), gets the bigger file. This needs the 128 MiB memory setting in xemu, as v0.7 did.
+
+To keep the file at its limit, the class floor retires only generated players who never played a down, lowest rated first. Real players are never retired to make room.
+
+#### Retirement by age, and room for the free agents
+
+Free agents retire by age, not for going unsigned. Each veteran free agent gets a few extra seasons (zero to six) before he hangs it up, so a real unsigned veteran like Colin Kaepernick stays signable into his forties instead of vanishing the first offseason.
+
+#### MyCareer on the bigger roster
+
+MyCareer could not create a player on the v0.7 roster ("Roster is full"). It creates him again: Enter the Draft and Undrafted Free Agent both take a free record of the bigger roster, and the career saves and reloads.
+
+#### The 53-man cut and the preseason warning
+
+In v0.7 the 53-player preseason notice could lock the season. The cut to 53 is now done by a smarter cut-down: it keeps every modern position minimum and releases the lowest rated players at the positions with a surplus. In the last preseason week the Coach's Desk now warns you once if your club is over 53, before the game makes the cuts for you. The warning blocks nothing.
+
+#### Signed players keep their contract length in the transaction list
+
+A signing that was later released showed as a "0 year deal" in the transactions list, because the list read the player's current contract (cleared on release). The line now keeps the term that was signed. This is a display fix: the signings themselves were never lost. In two simulated seasons on the original 2004 roster, 237 CPU signings reached their rosters and none went missing; 45 of them were later cut by the same club, which is what the "0 year" lines were.
+
+#### Years pro, season history and games played for the free agents
+
+Years pro now counts the seasons since a player entered the NFL, including the current one, for every real player. Colin Kaepernick shows 16. Created free agents (the real unsigned players added in v0.7, and the players the dated refresh created) now carry their real season-by-season history and teams on the Player Card instead of an empty TEAM column. Games played in the history come from snap counts for 2013 and later, so a lineman who played every week but never recorded a stat no longer shows 1 or 3 games (one starting tackle went from 4, 1, 3 and 3 games to 16, 10, 6 and 13). Seasons before 2013 still count only games with a stat line.
+
+The game keeps one shared pool for all career history. This release leaves about 8,000 of its 50,000 words free at the start of a franchise; when it fills, the game folds the oldest rows, as it always has.
+
+#### Real headshots for the created free agents
+
+946 created players (856 free agents and 90 players the dated refresh created) now have their real official headshot as their portrait instead of NO PHOTO, on screens such as Contracts > Free Agents and the draft cards. Colin Kaepernick has one. A player you rename or sign into a different record keeps the photo slot of his record.
+
+#### Super Bowl champion and MVP, champions history, award voting
+
+When you advance a franchise to the offseason, the game now tells you who won the Super Bowl, the score, the Super Bowl MVP and the season MVP. The Player Card has a third page, a champions history of the last 22 seasons with a scrolling list; a new 2026 franchise on the SOFTDRINK disc starts with every real Super Bowl from XXXIX to LX filled in. In a Studio build the history needs the bigger roster (the pack's 4,096-player roster, 16 reserves or the two extra created teams): on the game's own roster size the Super Bowl notice still shows, the page reads CHAMPIONS: NONE YET, and the build says so. Season awards (MVP, Offensive and Defensive Player of the Year, the rookie awards) are now voted on production, position and team record the way the votes have gone in recent seasons, with an override for a truly historic season (for example 30 sacks, 2,500 rushing yards or 60 touchdown passes). This rides on the Player Card honors option and is experimental.
+
+#### Pressures, QB hits, sacks allowed and targets
+
+New stats: defenders track pressures and QB hits; offensive linemen track pressures allowed, QB hits allowed and sacks allowed on a new Player Card sheet; receivers and backs show targets. They are counted on the field in played games and drawn from real NFL rates in simulated games. On the League Leaders screen, the defensive leader lists show pressures (PRS) in place of the blocked field goal column. Imported history from before 2026 shows 0 pressures, QB hits, sacks allowed and targets.
+
+#### Injured players stay out
+
+Injured players no longer practice in a franchise (two injury states still reached the practice field in v0.7), and simulated games no longer use a player whose injury report still shows weeks out.
+
+#### Simulated seasons: running backs
+
+Simulated seasons produced more than 30 thousand-yard rushers a year, a 2,000-yard leader most years and no running back injuries at all. Two changes:
+
+- Halfback ratings come down to the level of real backs: break tackle 8, strength 5 and ball security 5 points lower for every club halfback, and the consistency of the top 40 backs spread to the real range (their average goes from 71 to 59), so only the best backs are reliably great.
+- Running backs now get hurt in simulated weeks at real NFL rates (short injuries of two or three weeks, rare long ones of four or five), and the lead back hands about 2% of his carries to the next back.
+
+Measured over two simulated seasons with this release's simulation code and ratings, at a 15-minute sim quarter: 18 backs over 1,000 yards in each (NFL average 13.6; a third season had 12), 3 and 1 over 1,500 (the leaders ran for 1,780 and 1,574 yards) and none over 2,000. Quarterbacks' break tackle now follows how much they really run, so Jalen Hurts, Lamar Jackson, Josh Allen and Jayden Daniels break tackles like the game's own mobile quarterbacks and pocket passers less.
+
+#### Simulated seasons: passing, receiving, quarterback runs, interceptions and tackles
+
+Simulated games now call passes and runs in NFL proportions, spread targets the way real offenses do, let mobile quarterbacks scramble and run designed plays, and produce interceptions and tackle totals closer to real seasons. Measured over the same two simulated seasons: 24 and 22 receivers over 1,000 yards (NFL average 24; the leader 154 to 164 targets and 1,517 to 1,621 yards), 5 and 6 passers over 4,000 yards, about 12 interceptions per team, the tackle leader at 159 to 161, the 64 busiest cornerbacks at about 58 tackles, and the ten best quarterback rushers averaging about 545 yards (NFL about 510). Scoring lands at about 22.6 points per team and game (NFL about 22), with about 1.56 passing and 0.96 rushing touchdowns per team and game, and rushing touchdown leaders with 15 and 16.
+
+#### Simulated overtime follows the 2025 rule
+
+Franchise-simulated overtime now uses the 2025 rule: both teams get a possession, a first-possession field goal or touchdown no longer ends the sim, and a defensive score still does. Played overtime already used it. This comes with the overtime option (on in Advanced and Experimental).
+
+#### Simulated pass rush
+
+In simulated games the sack chance now follows the two lines' ratings, and sacks go to ends, tackles and linebackers in NFL proportions: defensive backs dropped from about 20% of simulated sacks to about 6% (NFL 5.6%), with about 2.3 sacks per team and game (NFL 2.4).
+
+#### Franchise > Upgrade for v0.7 saves
+
+Franchise > Upgrade now opens franchises the v0.7 game saved (881,340 bytes) and brings them to the new roster file with the 865 extra draft-class records, the new rookie class templates, and the Player Card TEAM rows filled for seasons before 2004 from the shipped real team history. The 2026 row of a copied save still reads `--`. Best played on a fresh MyNFL; see the Upgrade section for what an upgraded save gets.
+
+### Draft prospects, faces and development
+
+Draft prospects now have realistic heights, weights and ratings for their position, fitted to the real 2026 rookies. There are about 685 more ordinary, realistic draft headshots (4,249 drawn faces in all), fewer ugly faces in each class, and no more cropped rookie headshots. Now and then a blue-chip prospect rates in the 80s. Player development produces busts and late-round steals at close to real-life rates: about one first-round pick in five busts, and far fewer players reach 90+ consistency (after four seasons, 2.2% instead of 11.8%).
+
+### Gameplay
+
+#### CPU defenses play like their 2025 coordinators
+
+Each club's CPU defense now calls its real 2025 mix of base, nickel and dime, coverages and blitzes by down, distance and offensive personnel, lines up in its own fronts (Wide 9, Under, Tite, Okie, Eagle) with its own line games, and disguises two-high shells the way its coordinator does. In v0.7 every club shared one target, and five 3-4 clubs had the Bear 46 in every call slot; 3-4 teams no longer call the Bear 46 on every snap. Clubs whose 2025 coordinators share a staff tree play alike.
+
+#### Pass rush and pass blocking
+
+In played games a rusher who beats his man is now held for a time that depends on the blocker's Pass Blocking against his Pass Rush, with some variance from play to play, so a great tackle against a weak end holds much longer than the reverse. This is the existing pass protection option, extended.
+
+#### Catching
+
+Catching now works the same for human and CPU receivers. Every difficulty used to give the human receiver better catch odds than the CPU; now both use the same odds, and drops are a rare event for good hands. The catch slider still works.
+
+#### CPU quarterbacks read by their ratings (experimental)
+
+The CPU quarterback's reads now follow his Pass Read Coverage rating: elite passers wait for clear windows and check down, weak ones still force throws into coverage. This is a new option, on in Advanced and Experimental.
+
+#### Star charge-ups for every star
+
+The star-only charge-up now works for every star player in normal play. In v0.7 it also required 90 speed and 85 agility, so only fast corners, receivers and safeties could charge; a star running back can now charge too. Non-stars still do not.
+
+#### Defensive audibles and Situation mode
+
+The defensive audibles at the line now offer coverages only (16 club books listed a defensive front there). Situation mode now plays with the same modern playbooks as Quick Game and Franchise (it loaded the original books). The 2008 Lions and 2025 Seahawks classic teams now get their own era's playbook.
+
+#### Best-experience defaults
+
+New profiles now start with 7-minute quarters, a 15-minute franchise sim quarter and the Chop Block penalty on. Settings and franchises you already saved are not changed: to use them on an existing profile, set Quarter Length 7 and Chop Block On in Options and save, and set Sim Quarter Length 15 in each franchise.
+
+### Presentation
+
+#### Broadcast camera on kicks
+
+With the Broadcast camera, field goals, extra points and punts are now shown from behind the kicker or punter, the way TV shows them. Every other play keeps the sideline view. The Broadcast camera is also tighter, like a TV broadcast: before the snap it shows about 25 yards of field across a 16:9 screen (twice as close as v0.7), with the ball, both tackles, the slot receivers and the backfield in frame, and during the play it follows the ball closer while keeping the ball carrier in view. Field goals and punts are framed tight on the kicker and holder or the punter, with the posts in frame.
+
+#### Real Super Bowl, network and team-season logos
+
+The real Super Bowl logos, network marks and team-season logos are now the default for every build (Noah's logo set, 25 files). A user logo folder still replaces them file by file.
+
+#### Sideline uniforms
+
+Players on the sideline now wear the uniform they are playing in. The sideline art of 61 of the 186 kits was wrong on v0.7, including eight with another team's art (for example the Vikings' Alternate 2 sideline had red pants), and wrong colours on seven primary kits. All 63 sideline sheets were rebuilt from each kit's own field textures.
+
+#### Moments
+
+The 2012 Ravens in the 49ers vs Ravens Super Bowl XLVII moment showed a 1997 to 1999 uniform label and the old helmet on the controller screen. Moment team files now carry the main roster's uniform labels for all 50 moments. A report of players disappearing in that moment was not reproduced.
+
+#### Player Progress
+
+The Player Progress footer row label is stable again and always matches the numbers shown (the season "+/- Change" row); the frame-rate flicker between "+/- Change" and "Weeks" is gone. The weekly views are not reachable in this build; the weekly data is still recorded.
+
+#### The startup memory screen
+
+The startup screen now names the setting that is wrong: System Memory below 128 MiB keeps the memory text, and 128 MiB with a BIOS other than the 4627 one shows a "THIS BUILD NEEDS THE 4627 XBOX BIOS" message.
+
+### Studio: editor, build and save fixes
+
+#### Franchise > Upgrade
+
+- Opens franchises saved by the v0.7 game (881,340 bytes: the 847,020-byte save plus the game's all-zero Player Progress footer). The Studio refused them before.
+- Moves an upgraded save to the new 4,096-record roster file (a v0.7 franchise goes from 881,340 to 987,836 bytes) and adds the 865 draft-class records. A save the game itself already moved keeps its size and the receipt says so.
+- New step **Rookie templates** (command `rookie-templates`, part of `upgrade`): copies the 68 rookie class templates' rating bytes into the save, so future draft classes of an existing franchise get the new realistic prospects. No player or prospect already in the save is touched, and repeating it changes nothing.
+- TEAM rows on the Player Card: the team-history step now works on v0.7's bigger saves and fills seasons before 2004 from the shipped real team history (matched by name and birth date, only for a season with a games row and no TEAM). The 2026 row of a copied save still reads `--`.
+- Depth-lock conflicts on the exhibition squads that a v0.7 save already carries are no longer refused (new conflicts still are), and a user-slot playbook reference is accepted.
+- Name buffers the game wrote after the roster's names are kept when the roster file grows.
+- The receipt and the dialog say whether the roster file was grown or kept.
+
+#### Check my project
+
+A new **Check my project** button (and `python3 -m mod_editor.core.nfl2k5_project_check`) checks a whole Studio project against the build before the long build starts, and the build runs the same check first. It came out of a player's project that stopped after hours of building:
+
+- Anniversary and classic moment kits no longer stop the build when a kit chunk the project edited cannot be composed into a moment kit: that new kit takes the chunk from the retail kit instead (or the moment kit is left out; classic kits never are), and the build log names every swap.
+- Two more refusals found on the same project are fixed: the classic teams' helper page "not executable", and "coach catalog does not match this physical moment" (moments are now matched by date and title, or date and teams).
+- The FAQ explains why socks look wrong on some later uniform sets: the game's uniform picker does not offer every package (for example the 2004 Alternate 1 home set), which is not a Studio write bug.
+
+#### Roster CSV import from NFL2K5Tool
+
+The Rosters page CSV import now recognises exports from NFL2K5Tool and BAD-AL. Rows are matched by team and first and last name (position and jersey break ties); unmatched, ambiguous or duplicate rows are refused with a reason, and no player is ever created. By default only the 27 rating columns are imported; appearance, equipment, bio, position and jersey columns are ignored and counted, and a checkbox **Also import appearance and bio columns** brings them in. The default keeps the real headshot photo ids of this release.
+
+#### Build tab fits 1280x720
+
+The Build tab no longer scrolls sideways at 1280x720 at 100%, 120% or 144% text, or in the smallest Studio window (1040x600): presets are stacked one per row, option badges wrap, the jersey mode list uses short names (the full wording is in the tooltips) and the colour levers sit on two rows. Checked with offscreen Qt layouts at those scales, not on a real Windows PC.
+
+#### xemu settings warning
+
+When you launch xemu from the Studio, it now warns if `xemu.toml` is not set to 128 MiB of System Memory or does not point at the Complex 4627 BIOS image. It never changes `xemu.toml` and never blocks the launch.
+
+#### Saved Build settings
+
+Saved Build settings that included the new pass rush stats option were refused as "Unsupported Build settings"; fixed during integration.
+
+#### Check box captions
+
+Four Build tab check boxes (pass protection, pass rush stats, CPU quarterback reads and the SOFTDRINK default options) had captions longer than the tab's 60-character limit; they are shorter now, and the full wording is in each option's help text.
+
+#### Parallel playbook compile
+
+On a heavily loaded computer the parallel playbook compile could stall at "Compiling 32 playbooks in parallel", with the helper waiting for its request. The request is now handed over as a private temporary file instead of through a pipe. Build output is unchanged.
+
+#### Building from an older SOFTDRINK disc
+
+As the beta-78 notes say, build from your original game dump. Since beta-78, a v0.6.1 SOFTDRINK disc is not a supported starting point for an in-place economy upgrade (its practice squad code is older); a v0.7 disc is.
+
+### Existing franchises: Franchise > Upgrade
+
+This release is best played on a fresh MyNFL: the bigger roster file, the deeper draft classes, the new years pro and the free agents' history and photos are part of the disc roster, and a franchise save keeps its own copy of the roster. Old saves (v0.6.1 and v0.7) still load on the new disc, and the new game code (defense calls, pass rush, catching, sim injuries and overtime, awards, the new stats, the preseason warning, the smarter cut-down) works on any save loaded on it.
+
+To bring a v0.7 franchise forward:
+
+1. Copy your save somewhere safe.
+2. In the Studio open **Rosters**, then **Open Xbox save…**, and choose the save.
+3. On the **Franchise** page choose **Upgrade franchise save to the current build**, then **Choose disc…** and pick your v0.8 disc.
+4. Click **Preview upgrade**, read the list, then **Write signed copy**. The new save is written beside the original, which is not touched.
+
+What the upgrade adds to a v0.7 save: the bigger roster file with the 865 extra draft-class records, the new rookie class templates (future classes only), and the Player Card TEAM rows for seasons before 2004. It does not add the champions history (it starts empty and fills from your next Super Bowl), the free agents' new season history and photos, or the new years pro of players already in the save; start a new franchise for those.
+
+### Known issues and limits
+
+- **Nobody played a season on this disc before release.** The headless checks covered menus, single simulated weeks, short CPU-v-CPU stretches and the new screens; whole seasons were only simulated in the game's own code outside the emulator.
+- **The audible crash** reported after v0.7 was not reproduced: 21 audible panels were opened at the line and flicked hard on v0.7 and on this disc, including big under-center Seahawks formations, and the game stayed up every time. A read of the audible screen code found nothing a long menu or a fast flick can overrun. It is not proven fixed. The audible list itself is fixed (coverages only). If it still happens, report the team, mode, formation and button.
+- **Invisible players in the moments** were not reproduced. Super Bowl LVI was played five times, Super Bowl XLVII three times and Super Bowl LVIII twice, also chained one after another, after an exhibition and with the Vulkan renderer, with every player drawn each time; every moment team file was checked for valid models, heads and helmets. The uniform label bug found in the 49ers vs Ravens moment is fixed. If you see it, report the moment, your renderer and memory setting, and when in the moment it starts. The 2021 Rams still show STL in that moment.
+- **Existing profiles keep their old defaults.** The 7-minute quarter, 15-minute sim quarter and Chop Block defaults apply to new profiles and to a reset. Set them by hand on an existing profile and in each franchise.
+- **Upgraded franchises** start the champions history empty (it fills from the next Super Bowl) and keep the years pro, history and photos of the players already in the save. Start a new franchise for those.
+- **QB hits and sacks allowed** are on the Player Card sheets. On the League Leaders screen only pressures replace a retail column. A pressure is counted when a rusher gets within 2 yards of the passer, a QB hit within 1 yard. Imported seasons before 2026 show 0 pressures, QB hits, sacks allowed and targets.
+- **Drops** are now rare: about 0.1 to 0.3 per team and game, below the NFL's 1.2. Tell us if catching feels too sure.
+- **Simulated stats that still differ from the NFL**: team rushing runs about 130 yards a team-game (NFL about 117), because the season rush correction that brings the leading backs to NFL totals also adds to every other runner; passers over 4,000 yards are 5 or 6 a season (NFL about 8) and the receiving leader is about 1,570 yards (NFL about 1,810). Scoring, touchdowns, interceptions, tackles, sacks and quarterback rushing are close to the NFL.
+- **CPU camp bodies.** CPU clubs still sign and cut fringe players in camp; that is economy tuning, not the "0 year" display bug fixed here.
+- **Broadcast camera on punts you return.** When you are the receiving team, the view from behind the punter is wider than when you punt.
+- **Weekly Player Progress views** are not reachable in this build; the screen shows the season change. The weekly data is still recorded.
+- **Photos.** A free agent you sign into a different record, or rename, keeps that record's photo (often NO PHOTO). Colin Kaepernick's photo is from a smaller source and is a little softer.
+- **Sideline uniforms.** A few rebuilt sideline sheets keep small flaws: faint fold lines on the orange Bengals torsos, flat Colts torso folds, a thin orange collar trim on the Bengals home set and a red collar on one Buccaneers alternate. A few same-team older marks remain (the Dolphins' old sleeve logo on two sets, a Giants alternate helmet, two dark grey Cardinals sets).
+- **The 4627 BIOS check** recognises the common Complex 4627 image by its exact bytes. Another working 4627 dump shows the BIOS message at 128 MiB; tell us if that happens.
+- **History pool.** The game keeps one 50,000-word pool for every player's career history. A new franchise starts with about 8,000 words free; after a few seasons the game folds the oldest rows, as it always has.
+- **Old franchises' first new draft** after the upgrade can be 344 to 358 prospects, because records already spent are not recovered.
+- **Steam Deck free agency freeze** reported once was not reproduced.
+- **69 real players are on no club and not on the free agent list** of the disc roster (for example Michael Pittman, Kelvin Banks, Montez Sweat and Jaycee Horn), so a franchise may never use them. This was already so in v0.7 and is not fixed in this release.
+- **Not tested on a real Windows PC or on Xbox hardware.**
+
+### Release checks
+
+- **The disc** is a full Studio build of the release recipe from the release source, the same build a user runs: 6,335,561,728 bytes, sha256 b0a72eda50ea9b90c643ed5b36da8450162527a928d949bf0bef60afd5782ad5. The build checks itself before it publishes the disc (every executable patch read back, every playbook scored); two earlier builds a day apart, whose source differed only in tests, checks and pins, were byte-identical, so the build is reproducible.
+- **Test suite:** the full local suite, all 1,216 test files, one process per file at the lowest machine priority; every failure it found was fixed (six test files: four timing checks now measure work rather than wall-clock time, and two allocator proofs follow a grown owner list), and every file the last fixes touched was run again on the release source, all green.
+- **Emulator checks** (xemu, headless, 16:9, 128 MiB unless noted), on the release disc or on an earlier build whose bytes match it everywhere outside the champions history page: boot at 128 MiB, and the "needs 128 MB" screen at 64 MiB; a new MyNFL on the 4,096-record roster saved, reloaded cold and read back; a v0.7 franchise brought forward with Franchise > Upgrade, loaded with 4,096 records; MyCareer Enter the Draft and Undrafted Free Agent; the preseason warning and the cut to 53; one simulated week, then Player Cards (Colin Kaepernick's YRS PRO 16 and San Francisco rows with his headshot on Contracts > Free Agents, a defender's pressures and QB hits, an offensive lineman's PA / HA / SA sheet) and League Leaders with the PRS column; Situation mode with the modern books, the coverage-only audible panel and the 2025 Seahawks book; the Broadcast camera on snaps, passes, extra points, punts and field goals; the Vikings Alternate 2 and Buccaneers Alternate 1 sidelines; the Super Bowl XLVII moment's Ravens label, helmet and real logo, and Super Bowl LVI with every player drawn; a whole simulated season to the Super Bowl champion and MVP notice; the champions history page on a new franchise (22 seasons, Super Bowl LX on top); a quick game of several plays; Situation mode with a modern book, at the line with the audible panel open and flicked hard.
+- **Simulation check:** two full seasons simulated in the game's own code (outside the emulator) with this release's simulation code and ratings, for the numbers quoted above.
+- **Star charge-up:** checked in the game's own code on this disc's executable (a star running back and a star quarterback charge; a non-star does not; on v0.7 the same backs and quarterback could not), and in the emulator on this disc: the Bills’ star running back charged to full while carrying the ball with the charge button held.
+
+## v1.0 RC113, beta 78: SOFTDRINK 2K28 v0.7 (APF alpha.109, 2026-10-26)
 
 Prepared by Claude on Noah's behalf.
 

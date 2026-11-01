@@ -81,7 +81,7 @@ class WiringTests(unittest.TestCase):
         self.assertEqual(code[len(patch.assembly.CODE):], b"\xcc" * (patch.CODE_SIZE - len(patch.assembly.CODE)))
 
     def test_template_reproduces(self):
-        from _gnu_elf32_as import gnu_elf32_as
+        gnu_elf32_as = __import__("importlib").import_module(("tests.mod_editor." if __package__ else "") + "_gnu_elf32_as").gnu_elf32_as  # script and module form (b779-int1)
         if not shutil.which("as") or not gnu_elf32_as():
             self.skipTest("GNU as with ELF32 output is required for template reproduction")
         subprocess.run([sys.executable, str(ROOT / "tools/nfl2k5_historic_teams_quick_game_assemble.py"), "--check"],

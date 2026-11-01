@@ -673,12 +673,18 @@ def coach_entry(roster_cfg: dict, abbreviation: str, disc: str, nfl: Path | None
 
 
 def written_years_pro(row: dict) -> int:
-    """The record's years pro for an nflverse roster row.
+    """The record's years pro for an nflverse roster row: NFL seasons since the player entered the league, counting
+    the season in progress (rookie = 1, the card prints R).
 
-    nflverse ``years_exp`` counts completed seasons (a 2026 rookie is 0); the game's years pro counts the season in
-    progress too (a rookie stores 1 and the card prints R, a 2025 draftee stores 2). Writing ``years_exp`` as it came
-    made every 2026 draftee read 0, every 2025 draftee read R and every veteran one year low (Noah 2026-10-07, job f12).
+    b779 fh1 (Noah 10/28: "just do years in the league, so 16 for Kaepernick, for everybody"): the first year is the
+    row's ``entry_year`` (the league year he joined a roster, drafted or not), so a player who sat out seasons still
+    counts them, as the game's own rollover does. nflverse ``years_exp`` counts completed seasons in a way that agrees
+    for players on a 2026 roster but not for a returning veteran or a free agent, so it is only the fallback for a
+    row that has no entry year. Before b77 f12 the value was ``years_exp`` as it came (rookies read 0).
     """
+    entry = str(row.get("entry_year") or "").strip()
+    if entry:
+        return rr.years_pro_for_season(2026, int(float(entry)))
     return rr.years_pro_from_years_exp(row["years_exp"])
 
 
@@ -791,7 +797,7 @@ def build(args) -> int:
                            "birth_date": r["birth_date"], "years_pro": r["years_exp"],
                            "draft_number": r.get("draft_number", ""), "depth": int(round(r["depth_rank_src"])) + 1,
                            "full_name": r["full_name"]})
-    rated = rm.rate_players(model_rows, stats, reference)
+    rated = rm.rate_players(model_rows, stats, reference, reviewed_hb_rescale=True)  # b779-sim2 reviewed halfback table
     for r, m in zip(rows, rated):
         r["ratings"] = {k: int(m[k]) for k in rr.RATING_BYTE_ORDER}
         r["rating_basis"] = m.get("rating_basis", "")

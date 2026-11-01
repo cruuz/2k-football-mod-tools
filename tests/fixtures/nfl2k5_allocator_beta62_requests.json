@@ -224,7 +224,7 @@
  [
   "nfl2k5_camera",
   "code",
-  512,
+  864,
   16
  ],
  [
@@ -422,7 +422,7 @@
  [
   "nfl2k5_k128",
   "code",
-  1024,
+  1536,
   16
  ],
  [
@@ -465,6 +465,12 @@
   "nfl2k5_honors",
   "data",
   16,
+  16
+ ],
+ [
+  "nfl2k5_champions",
+  "code",
+  5632,
   16
  ],
  [
@@ -591,6 +597,24 @@
   "nfl2k5_cpu_third_down",
   "code",
   192,
+  16
+ ],
+ [
+  "nfl2k5_return_coverage",
+  "code",
+  192,
+  16
+ ],
+ [
+  "nfl2k5_module_loader",
+  "code",
+  256,
+  16
+ ],
+ [
+  "nfl2k5_module_loader",
+  "data",
+  32,
   16
  ]
 ]

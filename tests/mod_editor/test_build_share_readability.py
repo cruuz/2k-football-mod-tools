@@ -27,7 +27,7 @@ from mod_editor.core import mod_build  # noqa: E402
 from mod_editor.gui.build_panel_qt import BuildPanel  # noqa: E402
 from mod_editor.gui.studio_qt import StudioMainWindow  # noqa: E402
 from mod_editor.gui.ux_text import (  # noqa: E402
-    STUDIO_THEMES, THEME_TEXT_PAIRS, Details, WrappedLabel,
+    STUDIO_THEMES, THEME_TEXT_PAIRS, Details, FlowLayout, WrappedLabel, WrappingCheckBox,
     build_panel_stylesheet, contrast_ratio, studio_palette,
 )
 
@@ -215,11 +215,10 @@ class WindowFitTests(unittest.TestCase):
         return window
 
     def test_supported_sizes_have_no_horizontal_scroll(self) -> None:
-        # b778 ship: Qt's offscreen platform on Windows lays text out about 1.5x wider than on
-        # Linux/macOS (measured under the Setup's own runtime: the Build panel needs 1530 px), so
-        # the 1280x720 fit is checked on Linux and macOS only. 1920x1080 is checked everywhere.
-        # The release notes list a sideways scroll at 1280x720 on Windows as a known issue.
-        sizes = ((1920, 1080),) if sys.platform == "win32" else ((1280, 720), (1920, 1080))
+        # b779-ui3: this used to skip 1280x720 on Windows because the page needed about 1530 px
+        # there. The preset buttons, option badges, the colour lever rows and the long Details
+        # title no longer set the width, so the same check now runs on every platform.
+        sizes = ((1280, 720), (1366, 768), (1920, 1080))
         for width, height in sizes:
             for theme in ("dark", "light"):
                 window = self._window(theme, width, height)
@@ -238,6 +237,39 @@ class WindowFitTests(unittest.TestCase):
                 with self.subTest(size=(width, height), theme=theme, tab="share"):
                     self.assertEqual(scroll.horizontalScrollBar().maximum(), 0)
 
+    def test_125_percent_text_keeps_the_build_tab_fitting(self) -> None:
+        # Windows at 125% draws every point size larger. 13 px * 1.25 is 16.25, so 16 px is the
+        # nearest whole-pixel body size; the shell's 13 px rule is the one the whole page uses.
+        for theme in ("dark", "light"):
+            window = self._window(theme, 1280, 720)
+            window.setStyleSheet(window.styleSheet() + "\nQWidget { font-size: 16px; }")
+            for _ in range(20):
+                APP.processEvents()
+            scroll = window._build_panel.parent()
+            while scroll is not None and not isinstance(scroll, QScrollArea):
+                scroll = scroll.parent()
+            self.assertIsInstance(scroll, QScrollArea)
+            with self.subTest(theme=theme):
+                self.assertEqual(scroll.horizontalScrollBar().maximum(), 0)
+                self.assertLessEqual(
+                    window._build_panel.minimumSizeHint().width(), scroll.viewport().width()
+                )
+
+    def test_the_minimum_window_has_no_horizontal_scroll(self) -> None:
+        # 1040x600 is the shell's own floor and the closest a 1280x720 screen at 125% scaling can
+        # get (the logical desktop is 1024x576). The Build tab must still fit inside it.
+        for theme in ("dark", "light"):
+            window = self._window(theme, 1040, 600)
+            scroll = window._build_panel.parent()
+            while scroll is not None and not isinstance(scroll, QScrollArea):
+                scroll = scroll.parent()
+            self.assertIsInstance(scroll, QScrollArea)
+            with self.subTest(theme=theme):
+                self.assertEqual(scroll.horizontalScrollBar().maximum(), 0)
+                self.assertLessEqual(
+                    window._build_panel.minimumSizeHint().width(), scroll.viewport().width()
+                )
+
     def test_a_missing_official_marks_pack_does_not_widen_the_page(self) -> None:
         # b778 ci2: a lean checkout has no saved logo pack. The old full "missing"
         # paragraph was used as an unwrapped badge and made the Build tab scroll.
@@ -251,8 +283,7 @@ class WindowFitTests(unittest.TestCase):
                 mock.patch.dict(os.environ, {marks.ENVIRONMENT: ""}), \
                 mock.patch.object(mod_build, "_espn_marks_available", return_value=False), \
                 mock.patch.object(mod_build, "_espn_wipes_boards_available", return_value=False):
-            # Windows offscreen text is ~1.5x wider (see above): the badge check uses the widest supported size there.
-            window = self._window("dark", *((1920, 1080) if sys.platform == "win32" else (1280, 720)))
+            window = self._window("dark", 1280, 720)
             scroll = window._build_panel.parent()
             while scroll is not None and not isinstance(scroll, QScrollArea):
                 scroll = scroll.parent()
@@ -262,6 +293,59 @@ class WindowFitTests(unittest.TestCase):
             self.assertLessEqual(
                 window._build_panel.minimumSizeHint().width(), scroll.viewport().width()
             )
+
+
+class WrappingWidgetTests(unittest.TestCase):
+    """b779 rv1: widgets that must never set the page width (the Windows 1280x720 blocker)."""
+
+    CAPTION = "Coin toss: CPU defer (modern, experimental; CPU winners only) and then some more words"
+
+    def test_a_check_box_keeps_its_caption_and_wraps_to_the_width_it_has(self) -> None:
+        box = WrappingCheckBox(self.CAPTION)
+        self.addCleanup(box.deleteLater)
+        self.assertEqual(box.text(), self.CAPTION)
+        self.assertEqual(box.accessibleName(), self.CAPTION)
+        box.show()
+        one_line = box.sizeHint()
+        self.assertLess(box.minimumSizeHint().width(), one_line.width() // 2)
+        box.resize(box.minimumSizeHint().width() + 60, 200)
+        for _ in range(6):
+            APP.processEvents()
+        self.assertEqual(box.text(), self.CAPTION)
+        shown = super(WrappingCheckBox, box).text()
+        self.assertGreaterEqual(shown.count("\n"), 1)
+        self.assertEqual(" ".join(shown.split()), self.CAPTION)
+        box.resize(one_line.width() + 40, 40)
+        for _ in range(6):
+            APP.processEvents()
+        self.assertNotIn("\n", super(WrappingCheckBox, box).text())
+
+    def test_an_ampersand_caption_is_escaped_for_qt_and_read_back_whole(self) -> None:
+        box = WrappingCheckBox("Rosters && positions")
+        self.addCleanup(box.deleteLater)
+        self.assertEqual(box.text(), "Rosters && positions")
+        self.assertEqual(box.accessibleName(), "Rosters & positions")
+
+    def test_a_flow_layout_wraps_buttons_and_its_minimum_is_one_button(self) -> None:
+        host = QPushButton()          # any widget; it only owns the layout
+        self.addCleanup(host.deleteLater)
+        flow = FlowLayout(host)
+        buttons = [QPushButton("A button with a fairly long caption " + str(i)) for i in range(3)]
+        for button in buttons:
+            flow.addWidget(button)
+        widest = max(button.sizeHint().width() for button in buttons)
+        self.assertEqual(flow.minimumSize().width(), widest)
+        host.resize(widest + 10, 300)
+        host.show()
+        for _ in range(4):
+            APP.processEvents()
+        tops = {button.geometry().top() for button in buttons}
+        self.assertEqual(len(tops), 3)                 # one per line at this width
+        host.resize(widest * 3 + 60, 300)
+        for _ in range(4):
+            APP.processEvents()
+        self.assertEqual(len({button.geometry().top() for button in buttons}), 1)
+        self.assertGreater(flow.heightForWidth(widest + 10), flow.heightForWidth(widest * 3 + 60))
 
 
 class FooterReadabilityTests(unittest.TestCase):

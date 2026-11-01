@@ -1,6 +1,10 @@
 # APF 2K8 Mod Studio — Status
 
-> **Product identity (source/UI): `0.1.0-alpha.109`.** Historical sealed packages below retain prior alpha numbers.
+> **Product identity (source/UI): `0.1.0-alpha.110`.** Historical sealed packages below retain prior alpha numbers.
+
+## 0.1.0-alpha.110: beta 79 (2026-11-01)
+
+Version aligned with beta-79. APF 2K8 code did not change in this release: the APF Studio, its tools and its docs are the same as in alpha.109 apart from the version number. The shared update check now reports beta-79.
 
 ## 0.1.0-alpha.109: beta 78 (2026-10-26)
 

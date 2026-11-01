@@ -92,6 +92,7 @@ import hmac
 import importlib
 import io
 import json
+import re
 import shutil
 import struct
 import sys
@@ -107,6 +108,15 @@ ROST_OUTER_INDEX = 5
 RESOURCE_HEADER_SIZE = 0x20
 BODY_SIZE = 0x90F60
 RESOURCE_SIZE = RESOURCE_HEADER_SIZE + BODY_SIZE
+# b779-int1: the disc main ROST outer entry sizes: retail, the grown version-18 arena (0x92060) and every capacity arena
+# (beta-78 0xB0060, beta-79 0xCA060 from ag1's 4,096-record growth). Fixed 0xB0060 refused the grown v0.8 roster in the
+# dated refresh pass of a full build ("outer entry 5 is 0xca060 bytes, not the main roster").
+def _main_roster_resource_sizes():
+    from . import nfl2k5_roster_arena as arena
+    return (RESOURCE_SIZE, 0x92060) + tuple(arena.disc_resource_size(size) for size in arena.CAPACITY_ARENA_SIZES)
+
+
+MAIN_ROSTER_RESOURCE_SIZES = _main_roster_resource_sizes()
 OBJ_OFF = 0x40
 # where the roster object sits relative to the ROST preamble, by version: 17 = the disc resource layout (object at
 # +0x40); 0 = the runtime arena the game serialises into SAVEGAME.DAT (object at +0x20; the file-relative wrapper at
@@ -703,6 +713,15 @@ NUMERIC_LIMITS: dict[str, tuple[int, int]] = {
 # straight into the record made every 2026 draftee read 0, every 2025 draftee read R, and every veteran one year low.
 ROOKIE_YEARS_PRO = 1
 YEARS_PRO_MAX = 31                        # the field is five bits
+# b779 fh1 (Noah 10/28: "just do years in the league, so 16 for Kaepernick, for everybody"): the stored years pro is the
+# number of NFL seasons since the player entered the league, counting the season in progress (rookie = 1), whether or not
+# he played in every one.  That is what the game's own rollover (0x247B40) adds one to each year, what the Player Card
+# labels its season rows from (year = base - (years pro - slot)), and what age, progression and retirement are tuned to.
+# The first year is nflverse's ``entry_year`` (data/nfl2k5_entry_years_2026.v1.json).  The earlier ``game_rookie_1``
+# convention (nflverse accrued seasons + 1) is refused wherever a data file or edits document is stamped with it.
+YEARS_PRO_CONVENTION = "game_years_in_league"
+YEARS_PRO_CONVENTION_NOTE = ("years pro = NFL seasons since the player entered the league, counting the season in progress "
+                             "(rookie = 1, the card prints R): base season - nflverse entry_year + 1")
 
 
 def years_pro_from_years_exp(years_exp: Any) -> int:
@@ -942,7 +961,8 @@ def franchise_reference_year(payload: bytes | bytearray, preamble: int,
     from . import nfl2k5_my_career_save as career
     if native_size in career.SIZES:
         native_size = career.native_size(payload)
-    if (native_size in (writer.FRANCHISE_SAVE_SIZE, writer.FRANCHISE_SAVE_SIZE + 0x1000) and preamble == 0x300
+    if (native_size in (writer.FRANCHISE_SAVE_SIZE, writer.FRANCHISE_SAVE_SIZE + 0x1000) + writer.CAPACITY_SAVE_SIZES
+            and preamble == 0x300
             and payload[0x2E0:0x2E4] == b"ROST"
             and struct.unpack_from("<I", payload, 0x2E4)[0] == 0x91020 + native_size - writer.FRANCHISE_SAVE_SIZE
             and payload[0x30C:0x310] == b"ROST"
@@ -1992,9 +2012,38 @@ class RosterDocument:
     def demote_active(self, team_index: int, primary_index: int) -> dict[str, Any]:
         return self._reserve_move(team_index, primary_index, promote=False)
 
-    def check_depth_locks(self) -> None:
+    def _inherited_lock_conflicts(self, source: bytes | None = None) -> set:
+        """Exhibition-squad lock conflicts the loaded bytes already had (the released v0.7 roster carries a dozen on its
+        celebrity, alumni and all-star squads). Keyed by team, role, position, row and the players involved."""
+        cached = getattr(self, "_inherited_locks", None)
+        if cached is not None and source is None:
+            return cached
+        pristine = type(self)(self.original if source is None else source, base=self.base, scheme=self.scheme,
+                              reference_year=self.reference_year, base_year=self.base_year)
+        keys = set()
+        for team in pristine.teams:
+            if team.index >= 32:
+                for c in pristine.depth_lock_conflicts(team.index):
+                    keys.add((team.index, c["role"], c["position"], c["row"], tuple(sorted(c["players"]))))
+        if source is None:
+            self._inherited_locks = keys
+        return keys
+
+    def check_depth_locks(self, *, exhibition: bool = True, inherited_from: bytes | None = None) -> int:
+        """Refuse conflicting depth locks.
+
+        ``exhibition=False`` (read-only checks of a game-written save, for example Franchise > Upgrade) only enforces
+        the 32 clubs and returns how many conflicts it did not enforce. With the default, an exhibition-squad conflict
+        that the loaded bytes (``inherited_from``, default this document's own original) already had is not an error:
+        the released v0.7 roster has such conflicts and the game loads and saves them fine; a conflict an edit
+        creates is still refused."""
+        skipped = 0
+        inherited = None
         for team in self.teams:
             conflicts = self.depth_lock_conflicts(team.index)
+            if not exhibition and team.index >= 32:
+                skipped += len(conflicts)
+                continue
             # Retail celebrity/alumni/Pro Bowl teams alias active club records.
             # Club locks cannot be independent on those views. Keep diagnostics
             # visible, but do not reject otherwise valid club assignments solely
@@ -2003,8 +2052,14 @@ class RosterDocument:
                 conflicts = [c for c in conflicts if not all(
                     any(t < 32 for t in self.by_offset[offset].teams)
                     for offset in c["players"])]
+                if conflicts:
+                    if inherited is None:
+                        inherited = self._inherited_lock_conflicts(inherited_from)
+                    conflicts = [c for c in conflicts if (team.index, c["role"], c["position"], c["row"],
+                                                          tuple(sorted(c["players"]))) not in inherited]
             _require(not conflicts,
                      f"{team.display}: conflicting depth locks; unlock or assign distinct rows before saving")
+        return skipped
 
     def team_of(self, player: Player) -> int | None:
         """The first team this player is listed on (a club before an all-star side), or None."""
@@ -2546,7 +2601,7 @@ def _entry(archive) -> Any:
     entries = archive.entries
     _require(len(entries) > ROST_OUTER_INDEX, f"the archive has no outer entry {ROST_OUTER_INDEX}")
     entry = entries[ROST_OUTER_INDEX]
-    _require(entry.size in (RESOURCE_SIZE, 0x92060, 0xB0060),
+    _require(entry.size in MAIN_ROSTER_RESOURCE_SIZES,
              f"outer entry {ROST_OUTER_INDEX} is 0x{entry.size:x} bytes, not the main roster")
     return entry
 
@@ -2584,7 +2639,7 @@ def load_image(path: Path | str, *, scheme: str = "retail", detect: bool = False
     with _outer_image()(path) as archive:
         entry = _entry(archive)
         resource = archive.read(entry.virtual_offset, entry.size)
-    _require(resource[:4] == b"ROST" and len(resource) in (RESOURCE_SIZE, 0x92060, 0xB0060),
+    _require(resource[:4] == b"ROST" and len(resource) in MAIN_ROSTER_RESOURCE_SIZES,
              "the roster resource is foreign")
     document = RosterDocument(resource[RESOURCE_HEADER_SIZE:], base=0, source=str(path),
                               resource_header=resource[:RESOURCE_HEADER_SIZE], scheme=scheme,
@@ -2598,7 +2653,7 @@ def load_image(path: Path | str, *, scheme: str = "retail", detect: bool = False
 def resource_status(resource: bytes) -> str:
     """retail | edited | foreign for an outer-entry-5 payload."""
 
-    if len(resource) not in (RESOURCE_SIZE, 0x92060, 0xB0060) or resource[:4] != b"ROST":
+    if len(resource) not in MAIN_ROSTER_RESOURCE_SIZES or resource[:4] != b"ROST":
         return "foreign"
     body = resource[RESOURCE_HEADER_SIZE:]
     if hashlib.sha256(body).hexdigest() == RETAIL_BODY_SHA256:
@@ -2990,6 +3045,11 @@ def read_edits(source: Path | str | Mapping[str, Any]) -> dict[str, Any]:
     if "qb_throw_power" in document:
         from . import nfl2k5_qb_throw_power
         nfl2k5_qb_throw_power.normalise_directive(document["qb_throw_power"])
+    if "years_pro_convention" in document:
+        # b779 fh1: a document stamped with another years pro meaning is refused, never mixed with this one
+        _require(document["years_pro_convention"] == YEARS_PRO_CONVENTION,
+                 f"the roster-edits document counts years pro as {document['years_pro_convention']!r}; this Studio writes "
+                 f"{YEARS_PRO_CONVENTION!r} (seasons since entering the NFL). Convert it with tools/b77/b779_years_in_league.py")
     return dict(document)
 
 
@@ -3212,7 +3272,15 @@ def apply_body(body: bytes, source: Path | str | Mapping[str, Any], *,
             from . import nfl2k5_spare_capacity
             out, floor_receipt = nfl2k5_spare_capacity.restore_import_floor(out)
             refresh_receipt = dict(refresh_receipt, import_floor=floor_receipt)
-    return out, {"roster_refresh": refresh_receipt, "modern_free_agents": fa_receipt, "franchise_history": history_receipt, "edits": len(doc["edits"]), "players_changed": applied,
+    created_receipt = None
+    if doc.get("created_history"):
+        # b779 fh1: season history for the real players created from zero (free agents, refresh signings); after every
+        # pass that creates an identity, before the honors owner appends its award words.
+        from . import nfl2k5_created_history
+        _require(doc["created_history"] == nfl2k5_created_history.DATA_VERSION, "Unknown created-history version")
+        out, created_receipt = nfl2k5_created_history.apply_body(out, nfl2k5_created_history.load_data())
+    return out, {"roster_refresh": refresh_receipt, "modern_free_agents": fa_receipt, "franchise_history": history_receipt,
+                 "created_history": created_receipt, "edits": len(doc["edits"]), "players_changed": applied,
                  "fields_written": fields_written, "moves": len(doc.get("moves") or []),
                  "players_moved": moved, "coach_names_written": coaches,
                  "team_uniform_years_written": uniform_years,
@@ -3571,6 +3639,11 @@ CSV_HELP = (
     "without significant leading zeros; pointers and long numeric identifiers are never exported. "
     "For Excel use Data > From Text/CSV, UTF-8, and Text for names, college and birth_date. "
     "Conflicting edits to a raw field and its style/date view refuse the row. "
+    "CSV files exported by Bad_AL's NFL2K5Tool also import directly; rows are matched by team "
+    "and name, with position and jersey as tie-breakers. By default only its 27 rating columns "
+    "are applied; its position, jersey, appearance, equipment and bio columns are ignored and "
+    "counted in the preview. Tick 'Also import appearance and bio columns' in the preview to "
+    "import the rest. "
     "Your source is unchanged; use the page's copy or saved-edits action after review."
 )
 CSV_MAX_BYTES = 16 * 1024 * 1024
@@ -3667,6 +3740,450 @@ def _enum_value(name: str, text: str) -> int:
     return int(value)
 
 
+# ------------------------------------------------------------------- NFL2K5Tool twin
+# Bad_AL's NFL2K5Tool exports its text box as "csv": a "#Position,fname,lname,..." header, then a
+# "Team = 49ers    Players:53" section line before each club's player rows.  The names and the
+# appearance spelling below come from its enum definitions and GetPlayerData, not from a guess:
+# https://github.com/BAD-AL/NFL2K5Tool/blob/master/EnumDefinitions.cs
+# https://github.com/BAD-AL/NFL2K5Tool/blob/master/GamesaveTool.cs
+NFL2K5TOOL_CSV = "nfl2k5tool"
+STUDIO_CSV = "studio"
+
+NFL2K5TOOL_COLUMNS: dict[str, str] = {
+    "position": "position", "jerseynumber": "jersey",
+    "speed": "speed", "agility": "agility", "strength": "strength", "jumping": "jumping",
+    "coverage": "coverage", "passrush": "pass_rush", "runcoverage": "run_coverage",
+    "passblocking": "pass_blocking", "runblocking": "run_blocking", "catch": "catch",
+    "runroute": "run_route", "breaktackle": "break_tackle", "holdontoball": "hold_onto_ball",
+    "powerrunstyle": "power_run_style", "passaccuracy": "pass_accuracy",
+    "passarmstrength": "pass_arm_strength", "passreadcoverage": "pass_read_coverage",
+    "tackle": "tackle", "kickpower": "kick_power", "kickaccuracy": "kick_accuracy",
+    "stamina": "stamina", "durability": "durability", "leadership": "leadership",
+    "scramble": "scramble", "composure": "composure", "consistency": "consistency",
+    "aggressiveness": "aggressiveness", "college": "college", "dob": "birth_date",
+    "pbp": "pbp_id", "photo": "photo_id", "yearspro": "years_pro", "hand": "hand",
+    "weight": "weight", "height": "height", "bodytype": "body", "skin": "skin",
+    "face": "face", "dreads": "dreads", "helmet": "helmet", "facemask": "face_mask",
+    "visor": "face_shield", "eyeblack": "eye_black", "mouthpiece": "mouthpiece",
+    "leftglove": "left_glove", "rightglove": "right_glove", "leftwrist": "left_wrist",
+    "rightwrist": "right_wrist", "leftelbow": "left_elbow", "rightelbow": "right_elbow",
+    "sleeves": "sleeves", "leftshoe": "left_shoe", "rightshoe": "right_shoe",
+    "neckroll": "neck_roll", "turtleneck": "turtleneck",
+}
+NFL2K5TOOL_HEADER_ALIASES = {
+    "firstname": "fname", "lastname": "lname",
+    "number": "jerseynumber", "jersey": "jerseynumber",
+    "birthdate": "dob", "dateofbirth": "dob", "stamana": "stamina",
+}
+NFL2K5TOOL_IDENTITY_COLUMNS = frozenset({"fname", "lname", "team"})
+NFL2K5TOOL_UNSUPPORTED_COLUMNS = {"depth": "the tool's Depth byte has no Studio CSV field"}
+# The tool's 27 PlayerOffsets ratings, including PowerRunStyle.  Everything else it can write --
+# position, jersey number, college, dates, ids, body and equipment -- is ignored unless the caller
+# explicitly opts in, so a ratings sheet made for another roster cannot silently overwrite this
+# roster's look or identity.  Names are the tool's own header key names, lowercased.
+NFL2K5TOOL_RATING_COLUMNS = frozenset({
+    "speed", "agility", "strength", "jumping", "coverage", "passrush", "runcoverage",
+    "passblocking", "runblocking", "catch", "runroute", "breaktackle", "holdontoball",
+    "powerrunstyle", "passaccuracy", "passarmstrength", "passreadcoverage", "tackle",
+    "kickpower", "kickaccuracy", "stamina", "durability", "leadership", "scramble",
+    "composure", "consistency", "aggressiveness",
+})
+NFL2K5TOOL_NON_RATING_COLUMNS = frozenset(NFL2K5TOOL_COLUMNS) - NFL2K5TOOL_RATING_COLUMNS
+
+
+def _csv_key(value: Any) -> str:
+    return "".join(ch for ch in str(value).casefold() if ch.isalnum())
+
+
+def _nfl2k5tool_label(text: str, labels: Sequence[str], name: str) -> str:
+    wanted = _csv_key(text)
+    for label in labels:
+        if _csv_key(label) == wanted:
+            return label
+    raise ValueError(f"{text!r} is not one of the {name} values")
+
+
+def _nfl2k5tool_number(text: str) -> str:
+    try:
+        return str(int(str(text).strip()))
+    except ValueError as exc:
+        raise ValueError(f"{text!r} is not a whole number") from exc
+
+
+def _nfl2k5tool_height(text: str) -> str:
+    value = str(text).strip().rstrip('"')
+    if "'" in value:
+        feet, inches = value.split("'", 1)
+        if feet.strip().isdigit() and inches.strip().isdigit():
+            return str(int(feet) * 12 + int(inches))
+    return _nfl2k5tool_number(value)
+
+
+def _nfl2k5tool_date(text: str) -> str:
+    value = str(text).strip()
+    for pattern in ("%Y-%m-%d", "%m/%d/%Y", "%m/%d/%y", "%m-%d-%Y"):
+        try:
+            return dt.datetime.strptime(value, pattern).date().isoformat()
+        except ValueError:
+            continue
+    raise ValueError(f"{text!r} is not a date like 3/26/1976")
+
+
+def _nfl2k5tool_power_style(text: str) -> str:
+    key = _csv_key(text)
+    names = ("finesse", "balanced", "power")
+    if key in names:
+        return str(POWER_RUN_STYLE_VALUES[names.index(key)])
+    return _nfl2k5tool_number(text)
+
+
+def _nfl2k5tool_shoe(text: str) -> str:
+    key = _csv_key(text)
+    if key.startswith("shoe") and key[4:].isdigit():
+        text = "Style " + key[4:]
+    return _nfl2k5tool_label(text, SHOES, "shoe")
+
+
+def _nfl2k5tool_face(text: str) -> str | None:
+    key = _csv_key(text)
+    named = key.startswith("face")
+    digits = key[4:] if named else key
+    if digits.isdigit():
+        value = int(digits) - 1 if named else int(digits)
+        if value >= 0:
+            index = value & 0x0F
+            return FACES[index] if index < len(FACES) else None
+    return _nfl2k5tool_label(text, FACES, "face")
+
+
+def _nfl2k5tool_cell(column: str, text: str, document: RosterDocument) -> str:
+    if column == "position":
+        return position_name(position_code(str(text).strip()), document.scheme)
+    if column == "birth_date":
+        return _nfl2k5tool_date(text)
+    if column == "height":
+        return _nfl2k5tool_height(text)
+    if column == "power_run_style":
+        return _nfl2k5tool_power_style(text)
+    if column == "college":
+        return str(text).strip()
+    labels = {
+        "hand": (HANDS, "hand"), "body": (BODIES, "body"), "helmet": (HELMETS, "helmet"),
+        "face_shield": (FACE_SHIELDS, "visor"), "dreads": (YES_NO, "dreads"),
+        "eye_black": (YES_NO, "eye black"), "mouthpiece": (YES_NO, "mouthpiece"),
+        "skin": (SKINS, "skin"), "face_mask": (FACE_MASKS, "face mask"),
+        "left_glove": (GLOVES, "glove"), "right_glove": (GLOVES, "glove"),
+        "left_wrist": (WRISTS, "wrist"), "right_wrist": (WRISTS, "wrist"),
+        "left_elbow": (ELBOWS, "elbow"), "right_elbow": (ELBOWS, "elbow"),
+        "sleeves": (SLEEVES, "sleeves"), "turtleneck": (TURTLENECKS, "turtleneck"),
+        "neck_roll": (NECK_ROLLS, "neck roll"),
+    }
+    if column == "face":
+        return _nfl2k5tool_face(text)
+    if column == "left_shoe":
+        return _nfl2k5tool_shoe(text)
+    if column == "right_shoe":
+        return _nfl2k5tool_shoe(text)
+    if column in labels:
+        table, name = labels[column]
+        return _nfl2k5tool_label(text, table, name)
+    return _nfl2k5tool_number(text)
+
+
+def _nfl2k5tool_header(text: str) -> tuple[list[str], str, int]:
+    lines = text.lstrip("\ufeff").splitlines()
+    header_index = next((index for index, line in enumerate(lines) if line.strip()), None)
+    if header_index is None:
+        raise RosterRecordError("The player CSV is empty.")
+    first = lines[header_index].strip()
+    delimiter = ";" if first.count(";") > first.count(",") else ","
+    try:
+        fields = next(csv.reader([first], delimiter=delimiter, strict=True))
+    except csv.Error as exc:
+        raise RosterRecordError(f"Malformed NFL2K5Tool CSV header: {exc}.") from exc
+    if fields:
+        head = fields[0].lstrip()
+        if head.casefold().startswith("key="):
+            fields[0] = head[4:]
+        elif head.startswith("#"):
+            fields[0] = head[1:]
+    while fields and not fields[-1].strip():
+        fields.pop()
+    names = [NFL2K5TOOL_HEADER_ALIASES.get(_csv_key(field), _csv_key(field)) for field in fields]
+    return names, delimiter, header_index
+
+
+def _is_nfl2k5tool_csv(text: str) -> bool:
+    try:
+        names, _delimiter, _index = _nfl2k5tool_header(text)
+    except RosterRecordError:
+        return False
+    if "fname" in names and "lname" in names:
+        return True
+    lines = [line for line in text.lstrip("\ufeff").splitlines() if line.strip()]
+    if not lines:
+        return False
+    head = lines[0].strip()
+    marked = head.startswith("#") or head.casefold().startswith("key=")
+    return marked and any(name in NFL2K5TOOL_COLUMNS for name in names)
+
+
+def detect_csv_format(text: str) -> str:
+    """Return ``studio``, ``nfl2k5tool`` or ``unknown`` for a player CSV."""
+
+    if _is_nfl2k5tool_csv(text):
+        return NFL2K5TOOL_CSV
+    try:
+        names, _delimiter, _index = _nfl2k5tool_header(text)
+    except RosterRecordError:
+        return "unknown"
+    return STUDIO_CSV if "pool" in names and "index" in names else "unknown"
+
+
+def _nfl2k5tool_rows(text: str) -> list[tuple[int, str | None, dict[str, str] | None, str]]:
+    names, delimiter, header_index = _nfl2k5tool_header(text)
+    if len(names) != len(set(names)):
+        raise RosterRecordError("Duplicate NFL2K5Tool CSV column; keep each header once.")
+    if "fname" not in names or "lname" not in names:
+        raise RosterRecordError("NFL2K5Tool CSV needs fname and lname columns to match players.")
+    for name in names:
+        if name in NFL2K5TOOL_UNSUPPORTED_COLUMNS:
+            raise RosterRecordError(
+                f"NFL2K5Tool column {name!r}: {NFL2K5TOOL_UNSUPPORTED_COLUMNS[name]}; remove it and try again.")
+        if name not in NFL2K5TOOL_COLUMNS and name not in NFL2K5TOOL_IDENTITY_COLUMNS:
+            raise RosterRecordError(
+                f"NFL2K5Tool CSV column {name!r} is not recognized; use the tool's own key names.")
+    lines = text.lstrip("\ufeff").splitlines()
+    body = "\n".join(lines[header_index + 1:])
+    rows: list[tuple[int, str | None, dict[str, str] | None, str]] = []
+    team: str | None = None
+    try:
+        reader = csv.reader(io.StringIO(body, newline=""), delimiter=delimiter, strict=True)
+        for values in reader:
+            line = header_index + 1 + reader.line_num
+            if not any(value.strip() for value in values):
+                continue
+            first = values[0].strip() if values else ""
+            section = re.match(r"^#?\s*Team\s*=\s*([^\s(]+)", first, re.IGNORECASE)
+            if section:
+                team = section.group(1)
+                continue
+            if first.startswith("#") or first.startswith(";"):
+                continue
+            if len(values) <= 2 and first.casefold() in {"kr1", "kr2", "pr", "ls"}:
+                continue
+            if len(values) > len(names):
+                extra = [value for value in values[len(names):] if value.strip()]
+                if extra:
+                    rows.append((line, team, None, "row width differs from header"))
+                    continue
+                values = values[:len(names)]
+            values += [""] * (len(names) - len(values))
+            rows.append((line, team, dict(zip(names, values)), ""))
+    except csv.Error as exc:
+        raise RosterRecordError(
+            f"Malformed NFL2K5Tool CSV: {exc}. Correct the quoting and try again.") from exc
+    return rows
+
+
+def _nfl2k5tool_name(value: Any) -> str:
+    return " ".join(str(value).replace("\u2019", "'").casefold().split())
+
+
+def _nfl2k5tool_team(document: RosterDocument, token: str) -> tuple[list[Player], str, str]:
+    key = _csv_key(token)
+    if key in ("freeagents", "freeagent", "fa"):
+        players = [document.by_offset[offset] for offset in document.free_agents
+                   if offset in document.by_offset]
+        return players, "Free Agents", ""
+    if key in ("draftclass", "draft"):
+        return [], "Draft Class", ("DraftClass rows are refused; the draft class is never imported "
+                                   "or auto-created")
+    matches = []
+    for team in document.teams:
+        tokens = {team.abbreviation, team.city, team.nickname, team.display}
+        if key and key in {_csv_key(item) for item in tokens if item}:
+            matches.append(team)
+    if not matches:
+        return [], token, f"team {token!r} is not in this loaded roster"
+    if len(matches) > 1:
+        names = ", ".join(team.display for team in matches)
+        return [], token, f"team {token!r} matches more than one team ({names})"
+    team = matches[0]
+    players = [document.by_offset[offset] for offset in team.slots if offset in document.by_offset]
+    return players, team.display, ""
+
+
+def _nfl2k5tool_match(row: Mapping[str, str], section_team: str | None,
+                      document: RosterDocument) -> tuple[Player | None, str, str]:
+    token = (row.get("team") or section_team or "").strip()
+    if not token:
+        return None, "", "row is not inside a Team = section"
+    players, label, reason = _nfl2k5tool_team(document, token)
+    if reason:
+        return None, label, reason
+    first = str(row.get("fname", "")).strip()
+    last = str(row.get("lname", "")).strip()
+    if not first or not last:
+        return None, label, "row needs both a first and a last name"
+    candidates = [player for player in players
+                  if _nfl2k5tool_name(player.first) == _nfl2k5tool_name(first)
+                  and _nfl2k5tool_name(player.last) == _nfl2k5tool_name(last)]
+    if not candidates:
+        return None, label, f"no {label} player named {first} {last}"
+    if len(candidates) > 1 and str(row.get("position", "")).strip():
+        try:
+            code = position_code(str(row["position"]).strip())
+        except RosterRecordError:
+            code = None
+        if code is not None:
+            narrowed = [player for player in candidates if player.record.position_code == code]
+            if narrowed:
+                candidates = narrowed
+    if len(candidates) > 1 and str(row.get("jerseynumber", "")).strip():
+        try:
+            jersey = int(str(row["jerseynumber"]).strip())
+        except ValueError:
+            jersey = None
+        if jersey is not None:
+            narrowed = [player for player in candidates
+                        if player.record.values["jersey"] == jersey]
+            if narrowed:
+                candidates = narrowed
+    if len(candidates) == 1:
+        return candidates[0], label, ""
+    examples = ", ".join(
+        f"{player.first} {player.last} ({player.record.position_name} #{player.record.values['jersey']})"
+        for player in candidates[:6])
+    return None, label, (f"ambiguous: {len(candidates)} {label} players named {first} {last} "
+                         f"match; add Position or JerseyNumber to choose: {examples}")
+
+
+def _nfl2k5tool_cells(row: Mapping[str, str], document: RosterDocument, *,
+                      include_appearance: bool = True) -> dict[str, str]:
+    cells: dict[str, str] = {}
+    for name, text in row.items():
+        column = NFL2K5TOOL_COLUMNS.get(name)
+        if column is None or not str(text).strip():
+            continue
+        if not include_appearance and name not in NFL2K5TOOL_RATING_COLUMNS:
+            continue
+        try:
+            value = _nfl2k5tool_cell(column, str(text), document)
+        except (RosterRecordError, ValueError) as exc:
+            raise ValueError(f"{name}: {exc}") from exc
+        if value is not None:
+            cells[column] = value
+    return cells
+
+
+def preview_nfl2k5tool_csv(document: RosterDocument, text: str, *,
+                           normalise_commentary: bool = True,
+                           include_appearance: bool = False,
+                           _full_checkpoints: bool = False) -> CsvPreview:
+    """Stage a Bad_AL NFL2K5Tool export, matching players by team and name only.
+
+    Position and jersey number only break a name tie.  Unmatched, ambiguous and duplicate rows
+    are listed and refused; no player is ever created.  By default only the 27 rating columns
+    are applied; position, jersey, college, dates, ids, body and equipment are ignored and
+    counted in ``receipt["ignored_columns"]`` unless ``include_appearance`` is true.
+    """
+
+    text = text.lstrip("\ufeff")
+    _require(len(text.encode("utf-8")) <= CSV_MAX_BYTES,
+             "Player CSV exceeds 16 MiB; export a smaller list and try again.")
+    names, _delimiter, _header_index = _nfl2k5tool_header(text)
+    records = _nfl2k5tool_rows(text)
+    ignored_columns = ([] if include_appearance else
+                       list(dict.fromkeys(name for name in names
+                                          if name in NFL2K5TOOL_NON_RATING_COLUMNS)))
+    matched: list[tuple[int, Player, dict[str, str], str]] = []
+    refused: list[dict[str, Any]] = []
+    for line, section_team, row, reason in records:
+        if row is None:
+            refused.append({"row": line, "pool": "", "index": "", "label": "",
+                            "reason": reason})
+            continue
+        player, label, reason = _nfl2k5tool_match(row, section_team, document)
+        who = f"{str(row.get('fname', '')).strip()} {str(row.get('lname', '')).strip()}".strip()
+        row_label = f"{label} / {who}" if label and who else who
+        if reason or player is None:
+            refused.append({"row": line, "pool": "", "index": "", "label": row_label,
+                            "reason": reason})
+            continue
+        try:
+            cells = _nfl2k5tool_cells(row, document, include_appearance=include_appearance)
+        except ValueError as exc:
+            refused.append({"row": line, "pool": player.pool, "index": player.index,
+                            "label": row_label, "reason": str(exc)})
+            continue
+        matched.append((line, player, cells, row_label))
+    counts: dict[tuple[str, int], int] = {}
+    for _line, player, _cells, _label in matched:
+        key = (player.pool, player.index)
+        counts[key] = counts.get(key, 0) + 1
+    kept = []
+    for line, player, cells, row_label in matched:
+        if counts[(player.pool, player.index)] > 1:
+            refused.append({"row": line, "pool": player.pool, "index": player.index,
+                            "label": row_label,
+                            "reason": "duplicate player in this CSV; every occurrence refused"})
+        else:
+            kept.append((line, player, cells, row_label))
+    used = {column for _line, _player, cells, _label in kept for column in cells}
+    columns = [column for column in CSV_COLUMNS if column in used]
+    stream = io.StringIO(newline="")
+    writer = csv.DictWriter(stream, fieldnames=["pool", "index"] + columns,
+                            lineterminator="\n", extrasaction="ignore")
+    writer.writeheader()
+    by_key: dict[tuple[str, int], Player] = {}
+    lines: dict[tuple[str, int], int] = {}
+    labels: dict[tuple[str, int], str] = {}
+    for line, player, cells, row_label in kept:
+        key = (player.pool, player.index)
+        by_key[key], lines[key], labels[key] = player, line, row_label
+        initial = _csv_row(document, player)
+        out: dict[str, Any] = {"pool": player.pool, "index": player.index}
+        for column in columns:
+            value = cells.get(column, initial[column])
+            out[column] = _csv_protect(value) if column in CSV_TEXT_COLUMNS else value
+        writer.writerow(out)
+    # b779 rv1: with the box ticked, one appearance or bio value the roster cannot take (a retired
+    # position code, a college it does not carry) skips just that column; the ratings still import.
+    optional = (frozenset(NFL2K5TOOL_COLUMNS[name] for name in NFL2K5TOOL_NON_RATING_COLUMNS)
+                if include_appearance else frozenset())
+    preview = preview_csv(document, stream.getvalue(), delimiter=",",
+                          normalise_commentary=normalise_commentary,
+                          _full_checkpoints=_full_checkpoints, _optional_columns=optional)
+    receipt = preview.receipt
+    for change in receipt["changes"]:
+        key = (change["pool"], change["index"])
+        if key in lines:
+            change["row"], change["label"] = lines[key], labels[key]
+        else:
+            player = by_key.get(key)
+            change["row"] = "related player"
+            change["label"] = (f"{player.display} (related)" if player is not None else "")
+    for refusal in receipt["refused"]:
+        key = (refusal.get("pool"), refusal.get("index"))
+        if key in lines:
+            refusal["row"], refusal["label"] = lines[key], labels[key]
+    for item in receipt.get("skipped", ()):
+        key = (item["pool"], item["index"])
+        if key in lines:
+            item["row"], item["label"] = lines[key], labels[key]
+    receipt["refused"] = sorted(refused + receipt["refused"],
+                                key=lambda item: item["row"] if isinstance(item["row"], int) else 10 ** 9)
+    receipt["log"] = [f"row {item['row']}: {item['reason']}" for item in receipt["refused"]]
+    receipt["log"] += [f"row {item['row']}: skipped {item['field']} ({item['reason']}); the rest of the row was imported"
+                       for item in receipt.get("skipped", ())]
+    receipt["format"] = NFL2K5TOOL_CSV
+    receipt["rating_only"] = not include_appearance
+    receipt["ignored_columns"] = ignored_columns
+    return CsvPreview(preview.before, preview.after, preview.scheme, preview.reference_year,
+                      receipt, preview.normalise_commentary)
+
+
 @dataclass(frozen=True)
 class CsvPreview:
     before: bytes
@@ -3678,17 +4195,33 @@ class CsvPreview:
 
 
 def preview_csv(document: RosterDocument, text: str, *, delimiter: str | None = None,
-                normalise_commentary: bool = True) -> CsvPreview:
+                normalise_commentary: bool = True,
+                include_appearance: bool = False,
+                _full_checkpoints: bool = False,
+                _optional_columns: frozenset = frozenset()) -> CsvPreview:
     """Stage valid rows on a private document; a refused row contributes no edits.
 
     Duplicate identities are ALL refused, including the first occurrence. Unknown
-    headers and malformed CSV refuse the sheet. No name matching or scheme conversion.
-    Unchanged cells preserve existing out-of-editor-range values byte for byte.
-    Field-scoped native writers can defer commentary to the final full save.
+    headers and malformed CSV refuse the sheet. A Bad_AL NFL2K5Tool export is
+    detected here and matched by team and name; the Studio sheet stays keyed by
+    pool + index. The tool export is ratings-only by default; ``include_appearance``
+    also takes its position, jersey, appearance and bio columns. Unchanged cells
+    preserve existing out-of-editor-range values byte for byte. Field-scoped native
+    writers can defer commentary to the final full save.
+
+    A row that changes only scalar fields and the college is rolled back from a few saved
+    values; a row that can touch names, teams or depth locks still takes a full document
+    checkpoint (b779 rv1: a deep copy per college row took 0.32 s each on a 4,164-record
+    roster). ``_full_checkpoints`` forces the old full checkpoint for every complex row; the
+    tests use it as the reference the faster path must match byte for byte.
     """
     _require(isinstance(text, str) and len(text.encode("utf-8")) <= CSV_MAX_BYTES,
              "Player CSV exceeds 16 MiB; export a smaller list and try again.")
     text = text.lstrip("\ufeff")
+    if _is_nfl2k5tool_csv(text):
+        return preview_nfl2k5tool_csv(document, text, normalise_commentary=normalise_commentary,
+                                      include_appearance=include_appearance,
+                                      _full_checkpoints=_full_checkpoints)
     sample = text.splitlines()[0] if text.strip() else ""
     delimiter = delimiter or (";" if sample.count(";") > sample.count(",") else ",")
     try:
@@ -3715,7 +4248,7 @@ def preview_csv(document: RosterDocument, text: str, *, delimiter: str | None = 
         identities.append(key)
         if key is not None:
             counts[key] = counts.get(key, 0) + 1
-    changes, refused, matched = [], [], 0
+    changes, refused, skipped, matched = [], [], [], 0
     for (number, row), key in zip(rows, identities):
         reason = ("row width differs from header" if None in row or None in row.values() else
                   "invalid pool + index; identity is never matched by name" if key is None else
@@ -3734,31 +4267,61 @@ def preview_csv(document: RosterDocument, text: str, *, delimiter: str | None = 
         edits = {k: v for k, v in clean.items() if k not in CSV_READ_ONLY and v != str(initial[k])}
         if not edits:
             continue
-        # Scalar-only rows need only a record copy. Pool/membership operations can
-        # affect other players; use a complete checkpoint for those rows.
-        complex_row = any(k in {"first", "last", "college", "team"} or k in CSV_LOCK_COLUMNS for k in edits)
-        checkpoint = copy.deepcopy(working) if complex_row else None
-        original_record = player.record
-        player.record = original_record.copy()
-        try:
-            expected = {}
-            for column, value in edits.items():
-                _apply_csv_cell(working, player, column, value, normalise_commentary=normalise_commentary)
-                expected[column] = _csv_row(working, player)[column]
-            new = _csv_row(working, player)
-            _require(all(new[k] == v for k, v in expected.items()),
-                     "conflicting raw and derived fields; edit one style/date view at a time")
-            fields = [{"field": k, "before": old[k], "after": new[k]}
-                      for k in CSV_COLUMNS if old[k] != new[k]]
-            if fields:
-                changes.append({"row": number, "pool": key[0], "index": key[1], "changes": fields})
-        except (RosterRecordError, ValueError, OverflowError) as exc:
-            if checkpoint is not None:
-                working = checkpoint
-                by_key = {(p.pool, p.index): p for p in working.players}
-            else:
-                player.record = original_record
-            refused.append({"row": number, "pool": key[0], "index": key[1], "reason": f"{column}: {exc}"})
+        # b779 rv1: with ``_optional_columns`` (the tool's position, college, dates, ids, body and
+        # equipment), a value the roster cannot take skips only that column and the rest of the row
+        # still imports; a hard failure or a skipped column that was the row's only edit refuses it.
+        row_edits = dict(edits)
+        row_skipped: list[tuple[str, str]] = []
+        while True:
+            edits = row_edits
+            # Scalar-only rows need only a record copy. Pool/membership operations can
+            # affect other players; use a complete checkpoint for those rows.
+            complex_row = any(k in {"first", "last", "college", "team"} or k in CSV_LOCK_COLUMNS for k in edits)
+            # b779 rv1: a college edit only touches the player's college pointer (four body bytes, the
+            # record value and the two cached college fields), so it is undone from those, not from a
+            # whole-document copy. Anything that can touch names, teams or locks still gets the copy.
+            college_only = (complex_row and not _full_checkpoints and
+                            not any(k in {"first", "last", "team"} or k in CSV_LOCK_COLUMNS for k in edits))
+            checkpoint = copy.deepcopy(working) if complex_row and not college_only else None
+            saved_college = None
+            if college_only:
+                pointer_at = player.offset + FIELD_BY_NAME["college_pointer"].offset
+                saved_college = (pointer_at, bytes(working.body[pointer_at: pointer_at + 4]),
+                                 player.college_index, player.college)
+            original_record = player.record
+            player.record = original_record.copy()
+            try:
+                expected = {}
+                for column, value in edits.items():
+                    _apply_csv_cell(working, player, column, value, normalise_commentary=normalise_commentary)
+                    expected[column] = _csv_row(working, player)[column]
+                new = _csv_row(working, player)
+                _require(all(new[k] == v for k, v in expected.items()),
+                         "conflicting raw and derived fields; edit one style/date view at a time")
+                fields = [{"field": k, "before": old[k], "after": new[k]}
+                          for k in CSV_COLUMNS if old[k] != new[k]]
+                if fields:
+                    changes.append({"row": number, "pool": key[0], "index": key[1], "changes": fields})
+                for skipped_column, reason in row_skipped:
+                    skipped.append({"row": number, "pool": key[0], "index": key[1],
+                                    "field": skipped_column, "reason": reason})
+                break
+            except (RosterRecordError, ValueError, OverflowError) as exc:
+                if checkpoint is not None:
+                    working = checkpoint
+                    by_key = {(p.pool, p.index): p for p in working.players}
+                    player = by_key[key]
+                else:
+                    player.record = original_record
+                    if saved_college is not None:
+                        pointer_at, pointer_bytes, player.college_index, player.college = saved_college
+                        working.body[pointer_at: pointer_at + 4] = pointer_bytes
+                if column in _optional_columns and column in row_edits and len(row_edits) > 1:
+                    row_skipped.append((column, str(exc)))
+                    row_edits = {k: v for k, v in row_edits.items() if k != column}
+                    continue
+                refused.append({"row": number, "pool": key[0], "index": key[1], "reason": f"{column}: {exc}"})
+                break
     # Include changes to peers when a returner lock transfers to another player.
     source_rows = {key: number for (number, _), key in zip(rows, identities) if key is not None}
     final_changes = []
@@ -3782,6 +4345,10 @@ def preview_csv(document: RosterDocument, text: str, *, delimiter: str | None = 
     receipt = {"rows": matched, "changed": len(changes),
                "fields": sum(len(row["changes"]) for row in changes), "changes": changes,
                "refused": refused, "log": [f"row {r['row']}: {r['reason']}" for r in refused]}
+    if skipped:
+        receipt["skipped"] = skipped
+        receipt["log"] += [f"row {item['row']}: skipped {item['field']} ({item['reason']}); the rest of the row was imported"
+                           for item in skipped]
     return CsvPreview(before, after, document.scheme, document.reference_year, receipt, normalise_commentary)
 
 
@@ -3795,10 +4362,12 @@ def apply_csv_preview(document: RosterDocument, preview: CsvPreview) -> dict[str
 
 
 def import_csv(document: RosterDocument, text: str, *, delimiter: str | None = None,
-               normalise_commentary: bool = True) -> dict[str, Any]:
+               normalise_commentary: bool = True,
+               include_appearance: bool = False) -> dict[str, Any]:
     """Apply a validated CSV as one candidate. The GUI displays preview_csv first."""
     return apply_csv_preview(document, preview_csv(document, text, delimiter=delimiter,
-                                                   normalise_commentary=normalise_commentary))
+                                                   normalise_commentary=normalise_commentary,
+                                                   include_appearance=include_appearance))
 
 
 def _apply_csv_cell(document: RosterDocument, player: Player, column: str,

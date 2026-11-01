@@ -19,7 +19,8 @@ from . import nfl2k5_save_rost as sr
 #: The migrations a franchise can take. Hair styles and honors come from the disc;
 #: played-clubs uses the same verified club repair as Upgrade; undated candidates stay in the receipt;
 #: b778-fa3: free-agents adds the disc's 2026-10-22 free-agent depth players the franchise lacks.
-COMMANDS = ("upgrade", "coach-sync", "team-history", "hair-styles", "honors", "played-clubs", "free-agents")
+COMMANDS = ("upgrade", "coach-sync", "team-history", "hair-styles", "honors", "played-clubs", "free-agents",
+            "rookie-templates")
 DEFAULT_COHORT = Path(__file__).resolve().parents[2] / "mod_editor/data/f12_cohort.json"
 
 
@@ -128,7 +129,7 @@ def plan_upgrade(source: Path, disc: Path, *, command: str = "upgrade",
                  cohort_path: Path = DEFAULT_COHORT, team_history_path: Path | None = None) -> UpgradePlan:
     """Read, validate and preview every change, without creating any files."""
     upgrade.require(command in COMMANDS, "unknown upgrade command")
-    upgrade.require(team_history_path is None or command not in ("coach-sync", "hair-styles", "honors"),
+    upgrade.require(team_history_path is None or command not in ("coach-sync", "hair-styles", "honors", "rookie-templates"),
                     "TEAM evidence requires upgrade, team-history, played-clubs or free-agents")
     container = load_container(source)
     before_validation = upgrade.validate_save(container.savegame)
@@ -159,6 +160,11 @@ def plan_upgrade(source: Path, disc: Path, *, command: str = "upgrade",
     if command in ("upgrade", "honors"):
         # b778-pc2: a franchise started before the disc had the honors page shows "HONORS: NONE YET" for everyone
         payload, step = upgrade.sync_honors(payload, body)
+        steps.append(step)
+    if command in ("upgrade", "rookie-templates"):
+        # b779-rf3: the save's own class-generator templates, so its future draft classes use the disc's (rating bytes
+        # of the 68 secondary records only; players and generated prospects are not touched)
+        payload, step = upgrade.sync_rookie_templates(payload, body)
         steps.append(step)
     if command in ("upgrade", "free-agents"):
         # b778-fa3: the free-agent depth fills vacant records of the save itself; free-agents alone refuses without room

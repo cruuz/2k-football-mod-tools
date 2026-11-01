@@ -575,6 +575,20 @@ class PlaybookStepMemoTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr[-2000:])
         self.assertEqual(pickle.loads(result.stdout), [[], [], []])
 
+    def test_warm_helper_reads_its_request_from_a_file_with_no_stdin(self):
+        # b779-int1: the Studio passes the request as a temporary file (argv[1]); stdin is closed, so the helper can
+        # never block waiting for a request the parent has not finished writing (the load-dependent warm deadlock).
+        import tempfile
+        request = pickle.dumps({"chains": [(b"not a book %d" % n, [(SimpleNamespace(), "ARZ")])
+                                           for n in range(3)], "xbe": b"xbe", "workers": 3})
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "request.pickle"
+            path.write_bytes(request)
+            result = subprocess.run([sys.executable, str(ROOT / "tools/nfl2k5_playbook_warm.py"), str(path)],
+                                    stdin=subprocess.DEVNULL, capture_output=True, timeout=300)
+        self.assertEqual(result.returncode, 0, result.stderr[-2000:])
+        self.assertEqual(pickle.loads(result.stdout), [[], [], []])
+
     def test_warm_pool_workers_end_when_the_helper_is_killed(self):
         """fx1 (review pr69 #1): a cancelled build kills the helper; its spawn pool workers must not live on."""
         import signal
@@ -640,14 +654,19 @@ class PlaybookStepMemoTests(unittest.TestCase):
         compiled = SimpleNamespace(replacement=b"done")
         seen = []
 
+        self_test = self
+
         class Popen:
             returncode = 0
 
             def __init__(self, argv, **kwargs):
                 seen.append(argv)
+                self.argv = argv
 
-            def communicate(self, payload, timeout=None):
-                request = pickle.loads(payload)
+            def communicate(self, payload=None, timeout=None):
+                # b779-int1: the request travels in the temporary file named by argv[2], not through stdin
+                self_test.assertIsNone(payload)
+                request = pickle.loads(Path(self.argv[2]).read_bytes())
                 return pickle.dumps([[(packs.install_step_key(before, None, steps[0][1], request["xbe"]),
                                        compiled)] for before, steps in request["chains"]]), b""
         packs._COMPILED_INSTALL_STEPS.clear()

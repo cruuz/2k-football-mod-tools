@@ -20,10 +20,14 @@ How retail treats injuries (static disassembly of the USA executable plus a head
 
 This owner replaces the ten bytes ``call 0x0C4B80; cmp eax, 3; jne 0x61569`` at 0x61550 with a call into a small cave
 and the same ``jne``. The cave answers the retail question (league type 3: keep) and adds one case: practice
-(mode 0..2) while a season or franchise is loaded (league type not 0) keeps the injury as well. A kept injury then
-behaves exactly as in a league game: 0x188440 benches a player whose status is above the threshold and the depth chart's
-next healthy player lines up. Nothing is written to the roster: only the disposable match copies differ. Main-menu
-practice with no franchise loaded, Basic Training, exhibitions, Anniversary moments and league games are unchanged.
+(mode 0..2) while a season or franchise is loaded (league type not 0) keeps the injury as well. For that case it also
+marks the disposable copy itself: a player with any active injury, the injured bit (``+0x20`` bit 31) or a weeks value
+(``+0x20`` bits 22..29), gets the injured bit and status 4 (out) in the copy, so 0x188440 benches him even when the
+save's status is only probable (1) or was cleared while the weeks remained. The roster record is untouched. A kept
+injury then behaves exactly as in a league game: 0x188440 benches him and the depth chart's next healthy player lines
+up. Main-menu practice with no franchise loaded, Basic Training, exhibitions, Anniversary moments and league games are
+unchanged (modes 5..7 never reach the hook; league type 3 outside practice keeps retail's decision without the status
+marker).
 """
 from __future__ import annotations
 
@@ -31,12 +35,13 @@ import hashlib
 import struct
 
 OWNER = "nfl2k5_practice_injuries"
-CODE_SIZE = 32
+CODE_SIZE = 48
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16),)
 BUILD_CAPTION = "Franchise practice: injured players sit out"
 HELP_TEXT = ("Practice started from a franchise or season leaves injured players out, as a league game does: the next "
-             "healthy player on the depth chart takes the spot. Retail heals every player for practice, so a starter "
-             "who is out for weeks still practices. Practice from the main menu with no franchise loaded is unchanged. "
+             "healthy player on the depth chart takes the spot. Any weeks-out value counts, not only the save's "
+             "probable/questionable/doubtful/out status. Retail heals every player for practice, so a starter who is "
+             "out for weeks still practices. Practice from the main menu with no franchise loaded is unchanged. "
              "Nothing is saved to the roster.")
 LEAGUE, MODE = 0xE576A0, 0xE5FF80                 # league type (0 = none loaded), game mode (practice 0..2)
 KEEP_MODE = 0x00061540                             # FUN_00061540: keep or heal one match copy (esi)
@@ -62,21 +67,32 @@ def require(ok, message):
 
 def code_for(code_va):
     """The cave (CODE_SIZE bytes). Returns ZF set to keep the copy's injury (0x6155A then keeps it only if bit 31 is
-    set, as retail), ZF clear to heal. Only EAX and the flags change; 0x6155A reloads EAX."""
+    set, as retail), ZF clear to heal. Only EAX and the flags change; 0x6155A reloads EAX.
+
+    In practice with a league loaded the cave also marks the disposable copy: the injured bit (+0x20 bit 31) or any
+    weeks value (+0x20 bits 22..29) gets bit 31 and status 4 (out, the +0x24 high nibble), so 0x188440 refuses him even
+    when the saved status is 1 or 0. Nothing outside the match copy changes.
+    """
     from .nfl2k5_draft_ai import _Asm
     a = _Asm(code_va)
     a.b("a1" + struct.pack("<I", LEAGUE).hex())                  # mov eax, [league type]   (retail 0x0C4B80)
-    a.b("83f803")                                                # cmp eax, 3
-    a.j8("74", "done")                                           # retail: league type 3 keeps (ZF set)
     a.b("85c0")                                                  # test eax, eax
     a.j8("74", "heal")                                           # nothing loaded: retail heals
-    a.b("833d" + struct.pack("<I", MODE).hex() + "02")           # cmp dword [mode], 2
-    a.j8("77", "heal")                                           # not practice (unsigned): retail heals
+    a.b("803d" + struct.pack("<I", MODE).hex() + "02")           # cmp byte [mode], 2
+    a.j8("76", "practice")                                       # practice: mode 0..2 with a league loaded
+    a.b("3c03")                                                  # cmp al, 3
+    a.j8("74", "keep")                                           # retail: league type 3 keeps (ZF set)
+    a.j8("eb", "heal")                                           # any other mode: retail heals
+    a.label("practice")
+    a.b("f74620" + struct.pack("<I", 0xBFC00000).hex())          # test dword [esi+0x20], bit 31 | weeks 22..29
+    a.j8("74", "keep")                                           # no active injury: 0x6155A heals a healthy copy
+    a.b("804e2380")                                              # or byte [esi+0x23], 0x80   injured bit
+    a.b("804e2740")                                              # or byte [esi+0x27], 0x40   status = out
+    a.label("keep")
     a.b("39c0")                                                  # cmp eax, eax: ZF set, keep
     a.b("c3")
     a.label("heal")
     a.b("85e4")                                                  # test esp, esp: ZF clear, heal
-    a.label("done")
     a.b("c3")
     body = a.assemble()
     require(len(body) <= CODE_SIZE, "practice injury cave exceeds its allocation")

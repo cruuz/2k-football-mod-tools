@@ -12,7 +12,13 @@ It is NOT a claim to reproduce the coach-mode television director: retail TV
 records include inherited eyes and close-up framing. The seventh menu choice
 uses engine row 7, skipping First Person (6), without setting Coach Mode.
 
-512 owned RX bytes and four immutable 80-byte descriptors, no RW or retail cave.
+v7 (beta-79, Noah 10/29: "broadcasts don't normally show [kicks] sideways"): field goals, extra points and
+punts leave the sideline mount and use a behind-the-kicker television view, in the air as well as at the snap.
+The setup callback of the owned descriptors swaps the camera's own target, lens and offset words for one of four
+constant sets, and stores a matching eye box, when the camera state is a kick state. Kickoffs, returns and every
+scrimmage state keep the sideline eye. See ASTRA_CAMERA_V2_REPORT.md and reports/b779_cm2_REPORT.md.
+
+864 owned RX bytes and four immutable 80-byte descriptors, no RW or retail cave.
 Reserve REQUESTS with
 all other selected owners before apply. Rebuild historical descriptor-only
 installations from retail; mixed/foreign inputs refuse before mutation.
@@ -31,8 +37,8 @@ from .nfl2k5_draft_ai import _Asm
 from .nfl2k5_bump_strength import _sections, _section_for_offset, section_digest
 
 OWNER = "nfl2k5_camera"
-VERSION = 6
-CODE_SIZE = 512
+VERSION = 7
+CODE_SIZE = 864
 READ_ONLY_SIZE = 320
 LEGACY54_CODE_SIZE = 208
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "read_only", READ_ONLY_SIZE, 16))
@@ -51,7 +57,12 @@ MENU_ROWS = (0, 1, 2, 3, 4, 5, BROADCAST_ROW)
 # Every gameplay/preview state gets an independent eye, including kicks and
 # pass states. Presentation/replay states and all seven other rows stay native.
 BROADCAST_STATES = (1, *range(7, 20))
-BROADCAST_LENSES = (68.0, 78.2, 57.8, 48.0)
+# v7.2 (Noah 10/29: "go tighter like a broadcast", after a 15 percent step he called too subtle): real NFL television framing.
+# Snap view (camera states 7, 8, 11, 12, the slot-3 lens) is twice the v6 word, 96 instead of 48: about 25 yards of field across
+# a 16:9 frame, the box and the slot receivers in frame, the outside wideouts at or past the edge. The live states (16 to 19,
+# slot 1) go from 78.2 to 125 and the ball in the air (state 15, slot 2) from 57.8 to 100: tighter, but the follow must keep the
+# ball and the carrier in frame, so the live lens is less than doubled. Slot 0 is state 9, which is a kick view in play.
+BROADCAST_LENSES = (112.0, 125.0, 100.0, 96.0)
 
 def broadcast_slot(state):
     return 1 if 16 <= state <= 19 else 2 if state in (13, 15) else 0 if state == 9 else 3
@@ -82,7 +93,30 @@ BROADCAST_TEMPLATE_VA = 0xA881E0
 # a setup box, but that box precedes smoothing. v6 constrains the actual final
 # eye at the reset/smoothing merge and anchors the filter to it, with an earlier
 # corner pull-in. The four lens families share that boundary. See ASTRA_REPORT.md.
-BROADCAST_VALUES = ((400.0, 0.0, 250.0), 68.0, (4500.0, 1400.0, 200.0))
+# The look-at sits 1 m below the ground line (y -100) with the mount's offset raised by the same amount, and its lead is 1.5 m
+# instead of 2.5 m with the offset z raised by the difference, so the eye stays at (4900, 1400, 450) relative to the focus as in
+# v6 (same crowd and structure limits). The closer lens would otherwise push the near wideout under the scorebar and the
+# backfield past the downfield edge.
+BROADCAST_VALUES = ((400.0, -100.0, 150.0), 112.0, (4500.0, 1500.0, 300.0))
+LEGACY54_VALUES = ((400.0, 0.0, 250.0), 68.0, (4500.0, 1400.0, 200.0))
+# v7 kick views. Camera states (proved by polling B616C0 in a headless xemu Quick Game on the released v0.7 disc, and by the
+# native play-type decode at 0x894A0 and the release dispatch at 0x9FFB6): 9 = field goal / extra point snap and kick,
+# 10 = punt snap and kick, 13 = field goal ball in the air (play kind E602BC = 3), 14 = punt ball in the air (kind 6),
+# 8 = kickoff (kept sideline), 11 = scrimmage pre-snap (sideline, except a stale kick kind), 15 = pass in the air.
+KICK_FG_GROUND, KICK_PUNT_GROUND, KICK_FG_AIR, KICK_PUNT_AIR = range(4)
+KICK_SET_STATE = {9: KICK_FG_GROUND, 10: KICK_PUNT_GROUND, 13: KICK_FG_AIR, 14: KICK_PUNT_AIR}
+KICK_GATED_STATE = 11                    # shared with scrimmage: a kick view only while the play kind is FG (3) or punt (6)
+PLAY_KIND_VA = 0x00E602BC
+CAMERA_STATE_VA = 0x00B616C0
+KICK_EYE_MIN_Y = 200.0                   # the eye box of a kick view: behind the kicker, inside the field and end zones
+KICK_EYE_MAX_Y = 1400.0
+KICK_SET_SIZE = 48
+SETUP_OFFSET = 160
+SETUP_SLOT = 208
+CLAMP_OFFSET = SETUP_OFFSET + SETUP_SLOT
+CLAMP_SLOT = 208
+CLAMP_CONSTANTS_OFFSET = CLAMP_OFFSET + CLAMP_SLOT
+KICK_SETS_OFFSET = CLAMP_CONSTANTS_OFFSET + 96
 OPTION_GLOBAL_VA = 0x00E5FFF0            # DAT_00e5fff0: the Options "Camera" value (= table row)
 OPTION_DEFAULT_SITE_VA = 0x000E3C68      # FUN_000e3b90: `xor edi,edi ; mov dword ptr [0xE5FFF0], edi` (fresh-profile default 0)
 RETAIL_OPTION_DEFAULT = bytes.fromhex("33ff893df0ffe500")   # xor edi,edi ; mov dword [0xE5FFF0], edi
@@ -166,6 +200,15 @@ FAR_RETAIL_VALUES: dict[int, Values] = {
     17: ((0.0, 80.0, -70.0), 28.0, (0.0, 400.0, -1050.0)),
     18: ((0.0, 0.0, 0.0), 28.0, (0.0, 200.0, -800.0)),
     19: ((0.0, 80.0, -70.0), 28.0, (0.0, 400.0, -1050.0)),
+}
+
+# (look-at xyz, lens word, camera offset xyz) in the offense-relative frame (z toward the opponent's goal), centimetres.
+# Native type 2: eye = focus + look-at + offset, so the eye relative to the ball is look-at + offset.
+KICK_VALUES: dict[int, Values] = {
+    KICK_FG_GROUND: ((0.0, 100.0, 2844.0), 50.0, (0.0, 450.0, -5144.0)),
+    KICK_PUNT_GROUND: ((0.0, 100.0, 387.0), 50.0, (0.0, 550.0, -3287.0)),
+    KICK_FG_AIR: ((0.0, 100.0, 2200.0), 48.0, (0.0, 350.0, -4100.0)),
+    KICK_PUNT_AIR: ((0.0, 100.0, 2000.0), 44.0, (0.0, 450.0, -4600.0)),
 }
 
 PRESETS: dict[str, dict[int, Values]] = {
@@ -404,47 +447,93 @@ def code_for(va: int, revision: int = VERSION) -> bytes:
     _require(max(len(forward), len(backward)) <= 48, "camera enum wrapper exceeds its slot")
     prefix = (body.ljust(32, b"\xcc") + load.ljust(32, b"\xcc")
               + forward.ljust(48, b"\xcc") + backward.ljust(48, b"\xcc"))
-    setup = bytearray()
     bounds = ((0x3B4, 100.), (0x3D0, 5600.), (0x3C8, -5500.), (0x3D8, 5500.))
-    if revision == 6:
+    if revision != 54:
         bounds = ((0x3B4, 100.), (0x3C0, 2500.), (0x3D0, EYE_MAX_X),
                   (0x3C4, 1400.), (0x3D4, 1500.), (0x3C8, -EYE_MAX_Z), (0x3D8, EYE_MAX_Z))
+    setup = bytearray()
     for field, value in bounds:
         setup += b"\xc7\x81" + struct.pack("<If", field, value)
-    setup += b"\xc3"
     if revision == 54:
+        setup += b"\xc3"
         return prefix + bytes(setup).ljust(48, b"\xcc")
+    # Setup callback (called by the native 60090 right after it copies the descriptor; ECX = the camera). The copied
+    # descriptor words are replaced, and a matching eye box is stored, for the four kick states only. Camera state 11 is
+    # the scrimmage pre-snap shared with every run and pass, so it takes a kick view only while the play kind is FG or punt.
+    sets = va + KICK_SETS_OFFSET
+    a = _Asm(va + SETUP_OFFSET)
+    a.b(bytes(setup).hex())
+    a.b("a1" + struct.pack("<I", CAMERA_STATE_VA).hex())             # mov eax,[camera state]
+    for state, label in ((9, "s0"), (10, "s1"), (13, "s2"), (14, "s3")):
+        a.b("83f8" + bytes((state,)).hex())
+        a.j8("74", label)
+    a.b("83f80b")                                                     # state 11 only for a stale FG/punt kind
+    a.j8("75", "done")
+    a.b("a1" + struct.pack("<I", PLAY_KIND_VA).hex())
+    a.b("83f803"); a.j8("74", "s0")
+    a.b("83f806"); a.j8("75", "done")
+    for label, index in (("s1", KICK_PUNT_GROUND), ("s0", KICK_FG_GROUND), ("s2", KICK_FG_AIR), ("s3", KICK_PUNT_AIR)):
+        a.label(label)
+        a.b("ba" + struct.pack("<I", sets + KICK_SET_SIZE * index).hex())   # mov edx,set
+        if label != "s3":
+            a.j8("eb", "copy")
+    a.label("copy")
+    a.b("565751 fc 8db9" + struct.pack("<I", 0x400).hex() + "8bf2 b90c000000 f3a5 595f5e")
+    a.b("8b4210 8981" + struct.pack("<I", 0x388).hex())                # lens lag start = the kick lens (no blend from the slot lens)
+    for field, value in ((0x3C0, -EYE_MAX_X), (0x3C4, KICK_EYE_MIN_Y), (0x3D4, KICK_EYE_MAX_Y)):
+        a.b("c781" + struct.pack("<If", field, value).hex())
+    a.label("done")
+    a.b("c3")
+    setup_code = a.assemble()
+    _require(len(setup_code) <= SETUP_SLOT, "camera setup callback exceeds its slot")
     # Both reset and smoothed paths meet at 5FC74, BEFORE eye-to-target
     # vector/lens/projection construction. EBX is the camera index * 0x460.
-    a = _Asm(va + 240)
-    a.b("9c 50")
-    a.b("81bb702da800" + struct.pack("<I", va + 160).hex())
+    a = _Asm(va + CLAMP_OFFSET)
+    a.b("9c 50 51")
+    a.b("81bb702da800" + struct.pack("<I", va + SETUP_OFFSET).hex())
     a.j32("0f85", "done")
+    # The constants of the eye box: the sideline mount (stored x minimum positive) or a kick view (negative).
+    constants = va + CLAMP_CONSTANTS_OFFSET
+    a.b("b9" + struct.pack("<I", constants).hex())
+    a.b("f783002da800" + struct.pack("<I", 0x80000000).hex())
+    a.j8("74", "box")
+    a.b("b9" + struct.pack("<I", constants + 48).hex())
+    a.label("box")
     # SSE1 only (Xbox Pentium III). Preserve both scratch XMM registers.
     a.b("83ec20 0f110424 0f114c2410")
     a.b("0f2883f02ba800")
-    constants = va + 464
-    a.b("0f5f05" + struct.pack("<I", constants).hex())
-    a.b("0f5d05" + struct.pack("<I", constants + 16).hex())
+    a.b("0f5f01")
+    a.b("0f5d4110")
     a.b("0f2983f02ba800")
     # x <= EYE_MAX_X - max(0, abs(z) - CORNER_START_Z). This continuous corner boundary
     # pulls inward rather than crossing the corner fascia while following.
     a.b("8b83f82ba800 25ffffff7f 50 f30f100424 83c404")
-    a.b("f30f5c05" + struct.pack("<I", constants + 32).hex())
+    a.b("f30f5c4120")
     a.b("0f57c9 f30f5fc1")
-    a.b("f30f100d" + struct.pack("<I", constants + 16).hex())
+    a.b("f30f104910")
     a.b("f30f5cc8 f30f5d8bf02ba800 f30f118bf02ba800")
     # Anchor the filter position at the constrained eye; discard velocity
     # only in axes which hit a limit. Untouched axes keep native smoothing.
     a.b("0f2883f02ba800 0f288b702ca800 0fc2c800")
     a.b("0f548b802ca800 0f298b802ca800 0f2983702ca800")
     a.b("0f100424 0f104c2410 83c420")
-    a.label("done"); a.b("58 9d d983002ca800 c3")
+    a.label("done"); a.b("59 58 9d d983002ca800 c3")
     clamp = a.assemble()
-    _require(len(clamp) <= 224, "final camera clamp exceeds owned slot")
+    _require(len(clamp) <= CLAMP_SLOT, "final camera clamp exceeds owned slot")
     constants_blob = struct.pack("<12f", 2500., 1400., -EYE_MAX_Z, -100000.,
                                 EYE_MAX_X, 1500., EYE_MAX_Z, 100000., CORNER_START_Z, 0., 0., 0.)
-    return prefix + bytes(setup).ljust(80, b"\xcc") + clamp.ljust(224, b"\xcc") + constants_blob
+    constants_blob += struct.pack("<12f", -EYE_MAX_X, KICK_EYE_MIN_Y, -EYE_MAX_Z, -100000.,
+                                  EYE_MAX_X, KICK_EYE_MAX_Y, EYE_MAX_Z, 100000., CORNER_START_Z, 0., 0., 0.)
+    return (prefix + setup_code.ljust(SETUP_SLOT, b"\xcc") + clamp.ljust(CLAMP_SLOT, b"\xcc")
+            + constants_blob + kick_sets())
+
+
+def kick_sets() -> bytes:
+    """The four 48-byte kick constant sets: the broadcast record's words from +0x10 (look-at) to +0x40 (offset), in order."""
+    out = b""
+    for index in range(4):
+        out += descriptor_bytes(BROADCAST_RETAIL_DESCRIPTOR, KICK_VALUES[index])[FIELD_TARGET:FIELD_TARGET + KICK_SET_SIZE]
+    return out
 
 
 def allocation(payload: bytes, kind: str = "code", revision: int = VERSION) -> dict | None:
@@ -458,22 +547,22 @@ def allocation(payload: bytes, kind: str = "code", revision: int = VERSION) -> d
     return next(a for a in rows if a["kind"] == kind)
 
 
-def broadcast_descriptor(code_va: int = 0, slot: int = 0) -> bytes:
+def broadcast_descriptor(code_va: int = 0, slot: int = 0, revision: int = VERSION) -> bytes:
     """Native sideline lag/setup, with following type 2, a 2.5 m lead and the v5.3 loge-front mount and lens.
 
     The untouched retail type-0 record has lens 120 and a fixed world eye.
     Reusing it verbatim would frame only a small part of a live play. No retail
     shared descriptor is mutated, and no inherited previous eye is required.
     """
-    record = bytearray(descriptor_bytes(BROADCAST_RETAIL_DESCRIPTOR, BROADCAST_VALUES))
+    record = bytearray(descriptor_bytes(BROADCAST_RETAIL_DESCRIPTOR, LEGACY54_VALUES if revision == 54 else BROADCAST_VALUES))
     struct.pack_into("<I", record, 0, 2)
-    struct.pack_into("<f", record, FIELD_FOV, BROADCAST_LENSES[slot])
+    struct.pack_into("<f", record, FIELD_FOV, LEGACY54_VALUES[1] if revision == 54 else BROADCAST_LENSES[slot])
     struct.pack_into("<I", record, 0x40, code_va + 160)
     return bytes(record)
 
 
 def broadcast_records(code_va: int, revision: int = VERSION) -> bytes:
-    return b"".join(broadcast_descriptor(code_va, slot) for slot in range(1 if revision == 54 else 4))
+    return b"".join(broadcast_descriptor(code_va, slot, revision) for slot in range(1 if revision == 54 else 4))
 
 
 def _read(payload: bytes, va: int, size: int) -> bytes:
@@ -488,7 +577,7 @@ def _sites(payload: bytes, preset: str, revision: int = VERSION) -> list[tuple[s
     a = allocation(payload, revision=revision)
     va = a["va"] if a else 0  # used only to recognize retail with no allocation
     replacements = {
-        "final_eye_clamp": b"\xe8" + struct.pack("<i", va + 240 - 0x5FC79) + b"\x90",
+        "final_eye_clamp": b"\xe8" + struct.pack("<i", va + (240 if revision == 54 else CLAMP_OFFSET) - 0x5FC79) + b"\x90",
         "game_entry_select": b"\xe9" + struct.pack("<i", va - 0xA55F0),
         "spectator_session_choice": b"\x90\x90",
         # Keep native 1.02 growth, direction, reset and lag decisions. The

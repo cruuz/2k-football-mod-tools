@@ -315,7 +315,7 @@ class ReleaseClosureTests(unittest.TestCase):
                 stdin=subprocess.DEVNULL,
                 capture_output=True,
                 text=True,
-                timeout=120,
+                timeout=900,  # b779 int1: a hang guard; at idle priority on a loaded machine this check took over 120 s
                 check=False,
             )
             self.assertEqual(result.returncode, 0, result.stderr)
@@ -486,7 +486,7 @@ class PerUserLifecycleTests(unittest.TestCase):
             stdin=subprocess.DEVNULL,
             capture_output=True,
             text=True,
-            timeout=120,
+            timeout=900,  # b779 int1: a hang guard (see above)
             check=False,
         )
         self.assertEqual(runtime_result.returncode, 0, runtime_result.stderr)

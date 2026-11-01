@@ -258,6 +258,21 @@ class RetailInstall(unittest.TestCase):
         for name, va, before, size in patch.HOOKS:
             self.assertNotEqual(image.read(va, size)[:len(before)], before, name)
 
+    def test_economy_revision_4_class_slot_hook_keeps_this_owner_installable(self):
+        # b779-int1: economy revision 4 hooks the class loop's position read at 0x2BE91D, inside this owner's pinned
+        # loop-head guard; with the economy installed first (the Studio build order) this owner must still install
+        # and read applied (RC build try 8 stopped with "the star-career sites are foreign"); one other byte in the
+        # guarded loop head still reads foreign.
+        from mod_editor.core import nfl2k5_franchise_economy as economy
+        payload, _ = space.apply(self.payload, patch.REQUESTS, scaleout=True)
+        payload = economy.apply(payload)[0]
+        self.assertEqual((economy.status(payload), patch.status(payload)), ("applied", "retail"))
+        installed, receipt = patch.apply(payload)
+        self.assertEqual((patch.status(installed), economy.status(installed)), ("applied", "applied"))
+        broken = bytearray(installed)
+        broken[XbeImage(installed).offset(0x2BE905, 1)] ^= 0xFF
+        self.assertEqual(patch.status(bytes(broken)), "foreign")
+
     def test_foreign_site_refused(self):
         payload = bytearray(self.payload)
         payload[0x24857A] ^= 0xFF

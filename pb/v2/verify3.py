@@ -6,7 +6,8 @@ pack check (7 stages, native scoring), the Build tail (``pb/v2/compose.py``: off
 kickoff alignment and returns, depth roles, screen timing D with the shipped pins), the playbook linter, the native
 menu walk of every formation (retail instructions under Unicorn), the native PLAY scoring gate, the automatic coach
 profile build (``nfl2k5_coach_ai.build_profile``: its tail tag and index bounds), name pool / node / record counts,
-and the menu page rule (every offense formation lists a multiple of three plays).  Writes the composed books to
+and the menu page rule (every offense formation lists a multiple of three plays), and the header audible table
+(b779 au1: every No Huddle and defensive audible entry names a showable play).  Writes the composed books to
 ``--books`` and ``pb/v2/receipts/league-offline-v3.json``.  Never starts an emulator; gameplay is unwitnessed.
 
     python3 pb/v2/verify3.py --image RETAIL.iso --xbe default.xbe --books /tmp/v3books [--team KC] [--workers 4]
@@ -71,8 +72,10 @@ def team_job(job):
     short_pages = [f.name for f in offense_forms if len(f.play_links) % 3]
     dup_links = [f.name for f in book.formations if len({l.play_index for l in f.play_links}) != len(f.play_links)]
     pool_units = struct.unpack_from("<I", final, 32 + 0x1083C)[0]
+    # b779 au1: the header audibles (offense No Huddle, defense audibles at the line) name showable plays
+    audibles = packs.audible_table_problems(final, book_name=team)
     ok = (not offense_findings and all(w["ended"] for w in walks) and scoring.get("fault_count") == 0
-          and coach_ok["ok"] and not short_pages and not dup_links
+          and coach_ok["ok"] and not short_pages and not dup_links and not audibles
           and insp.STRING_BASE + 2 * pool_units <= 0x13000)
     return dict(team=team, ok=ok, offense_pack_sha256=sha(pack_path(team).read_bytes()), compose=receipt,
                 lint=report.counts(), offense_findings=offense_findings[:20],
@@ -80,6 +83,7 @@ def team_job(job):
                 walks_ended=all(w["ended"] for w in walks), scoring=dict(status=scoring.get("status"),
                                                                        faults=scoring.get("fault_count")),
                 coach_ai=coach_ok, short_page_formations=short_pages, duplicate_link_formations=dup_links,
+                audible_problems=audibles,
                 counts=dict(formations=len(book.formations), plays=len(book.plays), categories=len(book.categories),
                             nodes=book.node_count, name_pool_units=pool_units,
                             strings_end=hex(insp.STRING_BASE + 2 * pool_units)),

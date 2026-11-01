@@ -148,7 +148,11 @@ class SigningTests(unittest.TestCase):
             m.uc.mem_write(m.root + arena.BLOCK_OFFSET, bytes(block))
             self.assertGreater(m.call(0x3EE10C, ecx=team), 0)
             before = bytes(m.uc.mem_read(m.root, player - m.root + 84))
-            m.select(1)
+            # The search for the next clean free record walks the roster's records and cross-checks each one against the
+            # corrupted overflow metadata: measured with an instruction hook, 1,009,899 emulated instructions on the beta-78
+            # base and 1,010,031 on the b779 head, just over the fixture's default 1,000,000. 2,000,000 keeps the
+            # budget a real runaway guard (about two times the measured walk).
+            m.select(1, budget=2000000)
             # mc2 (D01): the overflow-owned record is never used; creation takes
             # the next clean free record instead of refusing the whole career.
             self.assertEqual(m.top(), 0x56F050)

@@ -123,24 +123,23 @@ class CatchSliderKickBoundaryTests(unittest.TestCase):
             for label in self.variants
         })
 
-    def test_kicks_use_the_catchers_own_human_or_cpu_catching_factor(self) -> None:
+    def test_kicks_use_the_combined_catching_sliders_whatever_side_catches(self) -> None:
         patched = self.variants["catch_slider_only"]
         for on_offense in (False, True):
             for human in (False, True):
-                for slider in (0.0, 0.25, 0.5, 0.75, 1.0, 2.0):
+                for slider in (0.25, 0.5, 0.75, 1.0, 2.0):
                     with self.subTest(on_offense=on_offense, human=human, catching=slider):
-                        # A different factor on the other team exposes accidental
-                        # use of the kicking/possession team's controller record.
+                        # Different sliders per side: the catch odds are ODDS_SCALE * (human + cpu), never one side's own,
+                        # and a kicked ball always takes the catching branch (never the Interception slider).
                         got, trace = _run(
-                            patched, 0.6, human_catching=slider if human else 2.0,
-                            cpu_catching=2.0 if human else slider, interception=0.0,
+                            patched, 0.6, human_catching=slider, cpu_catching=0.5,
+                            interception=0.0,
                             catcher_on_offense=on_offense,
                             offense_is_human=human if on_offense else not human,
                             defense_is_human=human, ball_kind=3,
                         )
-                        self.assertAlmostEqual(got, 0.6 / max(1.0, 2 * slider), places=6)
-                        self.assertIn(cs.FACTOR_FN, trace)
-                        self.assertIn(cs.KICK_GATE_VA, trace)
+                        self.assertAlmostEqual(got, 0.6 / (cs.ODDS_SCALE * (slider + 0.5)), places=6)
+                        self.assertNotIn(cs.KICK_GATE_VA, trace)
 
     def test_native_release_sets_loose_ball_kind_in_kickoff_and_scrimmage_phases(self) -> None:
         # Kick launch 222D01 calls DDCA0 -> A0910 -> B80F0. Execute the
@@ -195,15 +194,17 @@ class CatchSliderKickPatchTests(unittest.TestCase):
                 cs.apply(bytes(mixed))
 
     def test_main_cave_arithmetic_and_neighbors_are_unchanged(self) -> None:
-        # Shipped beta-63 code (authored patch bytes, not a retail fixture).
-        legacy = bytes.fromhex(
-            "e87b810300a18002e6003b433875168b50306a0459e8c6ae1600"
+        # The beta-78 installation (own-side slider, kick gate in the tail): authored patch bytes.
+        previous_cave = bytes.fromhex(
+            "e87b810300e9920200003b433875168b50306a0459e8c6ae1600"
             "d8c0d8f9dbe9dbc1ddd9c3d9050c02e600d8c0def9c3"
         )
+        previous_gate = bytes.fromhex("a18002e600833dc002e6000375038b4338e958fdffff")
         code = cs.cave_bytes()
         self.assertEqual(len(code), 48)
-        self.assertEqual(code[:5], legacy[:5])
-        self.assertEqual(code[10:], legacy[10:])
+        self.assertEqual(code[:5], previous_cave[:5])                   # call rand
+        self.assertEqual(cs.kick_gate_bytes()[:11], bytes.fromhex("d9050c02e600d8c0def9c3"))  # rand / (2 * Interception)
+        self.assertEqual(len(cs.kick_gate_bytes()), 22)
         self.assertEqual(len(cs.kick_gate_bytes()), 22)
         self.assertEqual(len(self.patched), len(self.retail))
         self.assertEqual(self.patched[0xA40:0xCAC], self.retail[0xA40:0xCAC])
@@ -213,8 +214,8 @@ class CatchSliderKickPatchTests(unittest.TestCase):
             self.assertEqual(section_digest(self.patched, section), section.stored_digest)
         # An old installation must be rebuilt, never misreported as fixed.
         old = bytearray(self.patched)
-        old[0xA10:0xA40] = legacy
-        old[0xCAC:0xCC2] = cs.RETAIL_KICK_GATE
+        old[0xA10:0xA40] = previous_cave
+        old[0xCAC:0xCC2] = previous_gate
         self.assertEqual(cs.status(bytes(old)), "foreign")
         with self.assertRaises(cs.CatchSliderError):
             cs.apply(bytes(old))

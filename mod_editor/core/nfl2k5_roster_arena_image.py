@@ -68,9 +68,12 @@ def image_status(path):
             capacity = arena.capacity_descriptor(disc.read_entry_range(entry, 0, entry.size), doc.layout) is not None
         if doc.overflow is None:
             return 'retail' if settings['status'] == 'retail' else 'foreign'
-        return 'applied' if settings == dict(status='applied', reserves_16=doc.overflow.reserves_enabled,
-                                             created_teams_extra=doc.overflow.extra_teams,
-                                             capacity=capacity) else 'foreign'
+        expected = dict(status='applied', reserves_16=doc.overflow.reserves_enabled,
+                        created_teams_extra=doc.overflow.extra_teams, capacity=capacity)
+        # b779 ag1: the runtime's arena must be the ROST's (a beta-78 0xB0000 runtime does not pair with 0xCA000)
+        paired = {key: settings.get(key) for key in expected} == expected and (
+            not capacity or settings.get('arena_size') == doc.layout.arena_size)
+        return 'applied' if paired else 'foreign'
     except (ValueError, OSError, IndexError, KeyError):
         return 'foreign'
 

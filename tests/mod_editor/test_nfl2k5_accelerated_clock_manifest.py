@@ -20,7 +20,7 @@ from mod_editor.core import nfl2k5_xbe_space as space
 from mod_editor.core import nfl2k5_music_metadata as music
 from mod_editor.core.nfl2k5_cave_oracle import DEFAULT_MANIFEST, OracleError, ReservationManifest, XbeImage
 from tests.mod_editor.test_nfl2k5_owner_pairwise_composition import retail_xbe
-from tests.nfl2k5_allocator_stack import REQUESTS, SONGS, manifest_for_allocated_union
+from tests.nfl2k5_allocator_stack import production_union, SONGS, manifest_for_allocated_union
 
 OBSERVED_SOURCES = (
     "mod_editor/core/nfl2k5_accelerated_clock.py",
@@ -48,7 +48,7 @@ def bounded_projection(retail, document=None):
         if historical.overlaps(va, va+len(before), exclude_owner=patch.OWNER):
             raise OracleError("accelerated clock hook collides with an existing owner")
     recorder = builder.Recorder(retail)
-    allocated, receipt = space.apply(retail, REQUESTS, scaleout=True)
+    allocated, receipt = space.apply(retail, production_union(), scaleout=True)
     recorder.observe(space, "apply", retail, allocated, receipt)
     # The inherited production manifest includes the separate music allocation.
     # Observe the same synthetic metadata used by both gates, so inherited music

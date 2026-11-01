@@ -517,11 +517,8 @@ def situ_sides(situ):
     return out
 
 
-def plan_spares(target, source, modern=None):
-    """Everything the option writes, from the build copy (target) and the retail source (copies, styles).
-
-    modern: the (SITU row, side) pairs whose authored kit is "modern" (style 0 is the 2026 kit): they keep kit 0 and do not
-    count as users of the retail style 0 (default: read from the shipped moments data)."""
+def _read_inputs(target, source, modern=None):
+    """(styles, historic files, moment sides, situ, modern) read from the build copy and the retail source."""
     from . import nfl2k5_espn25_more_moments as moments
     if modern is None:
         modern = moments.modern_sides(moments.Data.load())
@@ -551,11 +548,89 @@ def plan_spares(target, source, modern=None):
                 filename, code = hits[0], hits[0][2:4]
             historic.setdefault(filename, target.get(filename))
         sides.append((row, side, code, kit, field, filename))
+    return styles, historic, sides, situ, set(modern)
+
+
+# b779-ce1: where the Eagles' retail-look spare may go when era set 9 is not available, nearest the old choice first.
+EAGLES_FALLBACKS = (11, 10, 12, 13, 8, 7, 6, 5, 4, 3, 2, 1)
+
+
+def _eagles_set_state(target, source, style):
+    """('retail' | 'spare' | 'edited', ...) of the Eagles' set ``style``: its two kit files and its card members compared
+    with the retail set and with the retail style-0 copy this option writes there."""
+    zero_ok = retail_ok = True
+    for side in "ha":
+        name = f"{EAGLES}{side}{style}.iff"
+        if not target.has(name):
+            return "edited"
+        have = target.get(name)
+        retail_ok &= source.has(name) and have == source.get(name)
+        zero_ok &= source.has(f"{EAGLES}{side}0.iff") and have == source.get(f"{EAGLES}{side}0.iff")
+    for aggregate in AGGREGATES:
+        record, cdf = target.get(identity=aggregate["record"]), target.get(identity=aggregate["cdf"])
+        src_record, src_cdf = source.get(identity=aggregate["record"]), source.get(identity=aggregate["cdf"])
+        _c, _s, have_hashes = parse_record(record)
+        _c, _s, src_hashes = parse_record(src_record)
+        for pattern in aggregate["members"]:
+            new, zero = pattern.format(c=EAGLES, s=style), pattern.format(c=EAGLES, s=0)
+            if member_hash(new) not in have_hashes:
+                if member_hash(new) in src_hashes:
+                    return "edited"
+                continue
+            slot = member_slot(record, cdf, new)
+            retail_ok &= member_hash(new) in src_hashes and slot == member_slot(src_record, src_cdf, new)
+            zero_ok &= member_hash(zero) in src_hashes and slot == rename_slot(member_slot(src_record, src_cdf, zero), new)
+    return "retail" if retail_ok else "spare" if zero_ok else "edited"
+
+
+def eagles_spare(target, source, historic, sides):
+    """(style, edited names) the Eagles' retail-look spare takes (b779-ce1).
+
+    The Eagles use all 15 uniform sets, so their spare REPLACES an existing set: era set 9, the redundant one (the m1
+    census). A project that edited set 9 must not lose it: the spare goes to the first set (``EAGLES_FALLBACKS``) that
+    nobody edited and that no historic team or moment wears (a set already holding this option's copy counts as free, so
+    the choice reads back the same on the finished disc). ``style`` is None when no such set exists: the Eagles' spare
+    is then skipped and nothing is overwritten. ``edited`` names the set-9 kit files the user changed."""
+    named = []
+    first = _eagles_set_state(target, source, EAGLES_SPARE)
+    if first != "edited":
+        return EAGLES_SPARE, []
+    for side in "ha":
+        name = f"{EAGLES}{side}{EAGLES_SPARE}.iff"
+        if target.has(name) and source.has(name) and target.get(name) != source.get(name):
+            named.append(f"{EAGLES}{side.upper()}{EAGLES_SPARE}")
+    named = named or [f"{EAGLES}{side.upper()}{EAGLES_SPARE}" for side in "ha"]
+    from . import nfl2k5_era_kits as era
+    from . import nfl2k5_moment_kits as moment_kits
+    worn = {style for raw in historic.values() for code, style in [historic_style(raw)] if code == EAGLES}
+    worn |= {kit for _r, _s, code, kit, _f, _n in sides if code == EAGLES}
+    worn |= {r["style"] for r in era.recipes() if r["code"] == EAGLES}
+    worn |= {index for code, index in moment_kits.reserved_styles() if code == EAGLES}
+    for style in EAGLES_FALLBACKS:
+        state = _eagles_set_state(target, source, style)
+        if state == "spare" or (state == "retail" and style not in worn):
+            return style, named
+    return None, named
+
+
+def plan_spares(target, source, modern=None):
+    """Everything the option writes, from the build copy (target) and the retail source (copies, styles).
+
+    modern: the (SITU row, side) pairs whose authored kit is "modern" (style 0 is the 2026 kit): they keep kit 0 and do not
+    count as users of the retail style 0 (default: read from the shipped moments data)."""
+    styles, historic, sides, situ, modern = _read_inputs(target, source, modern)
     affected = census(historic, [(r, s, c, k) for r, s, c, k, _f, _n in sides if (r, s) not in modern])
     taken = taken_styles(source, styles)
-    spares = {code: spare_style(code, styles, taken) for code in affected}
+    eagles, edited = eagles_spare(target, source, historic, sides)
+    skipped = []
+    if eagles is None and EAGLES in affected:
+        skipped.append(EAGLES)
+        affected = {code: reasons for code, reasons in affected.items() if code != EAGLES}
+    spares = {code: spare_style(code, styles, taken) for code in affected if code != EAGLES}
+    if EAGLES in affected:
+        spares[EAGLES] = eagles
     return dict(styles=styles, taken=taken, affected=affected, spares=spares, sides=sides, historic=historic,
-                situ=situ, modern=set(modern))
+                situ=situ, modern=set(modern), eagles=eagles, eagles_edited=edited, skipped=skipped)
 
 
 def compile_spares(target, source, plan):
@@ -635,12 +710,15 @@ def retail_spare_selectors(path, source):
     out = []
     with archive.Disc(Path(path), descriptors=()) as disc, Source(source) as src:
         target = Target(disc)
-        styles = franchise_styles(src.get(identity=ROSTER_OUTER_ID))
+        styles, historic, sides, _situ, _modern = _read_inputs(target, src)
         taken = taken_styles(src, styles)
+        eagles, _edited = eagles_spare(target, src, historic, sides)
         for code in sorted(styles):
             try:
-                spare = spare_style(code, styles, taken)
+                spare = spare_style(code, styles, taken) if code != EAGLES else eagles
             except HistoricStylesError:
+                continue
+            if spare is None:
                 continue
             for side in "ha":
                 name, retail = f"{code}{side}{spare}.iff", f"{code}{side}0.iff"
@@ -661,21 +739,24 @@ def image_status(path, source):
             target = Target(disc)
             plan = plan_spares(target, src)
             styles, taken = plan["styles"], plan["taken"]
-            spare_of = {code: spare_style(code, styles, taken) for code in styles}
+            spare_of = {code: spare_style(code, styles, taken) for code in styles if code != EAGLES}
+            if plan["eagles"] is not None:
+                spare_of[EAGLES] = plan["eagles"]
             users = set()
             for raw in plan["historic"].values():
                 code, style = historic_style(raw)
-                if code in styles and style in (0, spare_of[code]):
+                if code in styles and style in (0, spare_of.get(code, 0)):
                     users.add(code)
             for _row, _side, code, kit, _field, _filename in plan["sides"]:
                 if (_row, _side) in plan["modern"]:
                     continue                      # style 0 is the 2026 kit there: not a user of the retail look
-                if code in styles and kit in (0, spare_of[code]):
+                if code in styles and kit in (0, spare_of.get(code, 0)):
                     users.add(code)
             # b775-ek1: a later stage (nfl2k5_moment_kits) may move a franchise's last moment side off its spare to a
             # new game-accurate index; the installed spare stays and is still checked byte for byte.
             users |= {code for code in styles if code != EAGLES and spare_of[code] >= styles[code]
                       and all(target.has(f"{code}{side}{spare_of[code]}.iff") for side in "ha")}
+            users &= set(spare_of)         # an Eagles spare skipped for want of an unedited set is no user of one
             if not users:
                 return "retail"
             spares = {code: spare_of[code] for code in users}
@@ -705,6 +786,24 @@ def image_status(path, source):
         return "foreign"
 
 
+def spare_notes(plan):
+    """Plain sentences when the Eagles' spare could not take its usual set because the user edited it (b779-ce1).
+
+    The Eagles use all 15 uniform sets, so their spare replaces an existing set (era set 9 by default). A set the user
+    edited is never replaced: the spare moves to an unedited set nobody wears, or is skipped."""
+    edited = plan.get("eagles_edited") or []
+    if not edited:
+        return []
+    both = " and ".join(edited)
+    if plan.get("eagles") is not None:
+        style = plan["eagles"]
+        return [f"Historic teams: you edited Eagles set {EAGLES_SPARE} ({both}), so the retail current Eagles kit the historic "
+                f"Eagles teams wear goes on set {style}, which nobody edited, and your set {EAGLES_SPARE} is kept."]
+    return [f"Historic teams: you edited Eagles set {EAGLES_SPARE} ({both}) and every other Eagles set is edited or worn by a "
+            "historic team or moment, so the retail current Eagles kit was not added: the historic Eagles teams keep the "
+            "current uniform. Nothing of yours was replaced."]
+
+
 def apply_to_image(path, source):
     """Install every spare on a private build copy (after the 2026 style-0 writers); replay is a no-op."""
     from . import nfl2k5_music_archive as archive
@@ -717,8 +816,9 @@ def apply_to_image(path, source):
         target = Target(disc)
         plan = plan_spares(target, src)
         edits, appended = compile_spares(target, src, plan)
+        notes = spare_notes(plan)
     receipt = rewrite_archive(path, edits, appended, verify=lambda p: image_status(p, source) == "applied")
-    return dict(status="applied", experimental=True, runtime_witnessed=False,
+    return dict(status="applied", experimental=True, runtime_witnessed=False, user_notes=notes,
                 spares={code: spare for code, spare in sorted(plan["spares"].items())},
                 reasons={code: reasons for code, reasons in sorted(plan["affected"].items())},
                 kit_copies=[name for name, _data in appended if name != FILLER], **receipt)

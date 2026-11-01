@@ -33,10 +33,14 @@ from mod_editor.core.nfl2k5_cave_oracle import XbeImage
 from tools.b77.g2_repair import read, scope_receipt, sha, write_new
 from tools.b77.sp1_repair import open_binary, digest_disc, require
 
+# b779 re-pin: the two REPAIRED_* hashes are the output of the Studio's CURRENT MyCareer owner on the pinned base, as
+# this tool's name says ("Studio-equal"). The owner changed after the b774 pin (b775 and later), so the b774 hashes
+# (0708249c.../1fb13c22...) were already stale at beta-77.1 (that tree gave 2b431a27...). Derived with `xbe` and the
+# read-only `predict` on the 10-13 base disc; scope: only the owner's regions, hooks and seals change.
 BASE_DISC_SHA256 = "520429148f57c29a23f56b5f43c5fe04be39728d01a101210aad8336b60581a4"
 BASE_XBE_SHA256 = "1b41ec19aac6377484b9b30ee7a5c5ab220fb93d61aa3c14bafdb70092a9504f"
-REPAIRED_XBE_SHA256 = "0708249cd549e8feebf33ae0724cad6f74488a67babf594ed57053288702c5b5"
-REPAIRED_DISC_SHA256 = "1fb13c220a2df7240a932274a46c817dc9db1039c5b5189f46b02fe7d1ca2704"
+REPAIRED_XBE_SHA256 = "0544e9a3ee0f991ae7a4917c47a7f7649c42cb2612e9985f016b3bbad01bf404"
+REPAIRED_DISC_SHA256 = "996cd19caf0b42af1044e9ae1a9f305d9678f85fd6a21fc25167da32b575893c"
 DISC_SIZE, XBE_OFFSET, XBE_SIZE = 6004408320, 2398208, 12300288
 
 
@@ -84,7 +88,9 @@ def build(payload: bytes) -> tuple[bytes, dict]:
             spans.append((at, 20))
             buf[at:at + 20] = section_digest(bytes(buf), section)
     result = bytes(buf)
-    if mode.status(result) != "applied":
+    # The shipped (10-13) executable carries older templates of owners revised since (draft AI, economy, honors,
+    # overtime), which the whole-image check of the neighbours cannot recognize; the MyCareer owner itself is checked.
+    if mode.status(result, context=False) != "applied":
         raise ValueError("the repaired MyCareer owner does not validate")
     if space.status(result) != "applied" or space._read_scale_directory(result) != requests:
         raise ValueError("allocator postcondition failed")

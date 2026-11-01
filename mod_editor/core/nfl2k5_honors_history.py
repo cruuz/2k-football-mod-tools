@@ -263,6 +263,10 @@ def apply(path, spec: str = "builtin", *, base_year: int = 2026, progress=None) 
         summary = {k: v for k, v in receipt.items() if k not in ("rows",)}
         summary["skipped"] = len(receipt["skipped"])
         summary["identity_mismatches"] = len(receipt["identity_mismatches"])
+        # b779 ch2 (review R2, BLOCKER 1): the Super Bowls before the 2026 start are NOT written here. They live after
+        # the arena's reserve block, which the arena growth writes much later in the build (this step only ever sees
+        # the game's own roster size, so it used to skip them without a word). The build seeds them after its last
+        # main-roster writer: mod_build._apply_champions_history with nfl2k5_champions_history.apply_image.
         if new_body == body:
             return {"status": "unchanged", "spec": spec, **summary}
         replacement = header + new_body
