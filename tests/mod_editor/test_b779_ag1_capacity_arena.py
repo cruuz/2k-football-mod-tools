@@ -20,9 +20,9 @@ if str(ROOT) not in sys.path:
 from mod_editor.core import nfl2k5_roster_arena as arena
 from mod_editor.core import nfl2k5_save_rost as codec
 
-XBE = Path(os.environ.get('NFL2K5_RETAIL_EXTRACTION',
-                          '/media/noah/Storage/for codex 1.0/extracted')) / 'ESPN NFL 2K5 (USA)/default.xbe'
-HUB = Path(os.environ.get('NFL2K5_SAVE_FIXTURES', '/home/noah/Desktop/2K5-8 Editors/save_fixtures'))
+# Private fixtures come from the environment only (the release gate refuses host paths in shipped files).
+XBE = Path(os.environ.get('NFL2K5_RETAIL_EXTRACTION', '')) / 'ESPN NFL 2K5 (USA)/default.xbe'
+HUB = Path(os.environ.get('NFL2K5_SAVE_FIXTURES', ''))
 SAVE = HUB / 'f0/UDATA/53450030/0B8506889D40/SAVEGAME.DAT'
 HAVE_UC = importlib.util.find_spec('unicorn') is not None
 

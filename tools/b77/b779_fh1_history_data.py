@@ -354,7 +354,7 @@ def patch_league(nflverse_dir: Path, edits: dict) -> tuple[dict, dict]:
 
 
 def _dump(path: Path, document: dict) -> None:
-    Path(path).write_text(json.dumps(document, indent=None, separators=(",", ":"), sort_keys=False) + "\n",
+    Path(path).write_text(json.dumps(document, indent=None, separators=(", ", ": "), sort_keys=False) + "\n",  # release gate: no 4 KiB tokens
                           encoding="utf-8", newline="\n")
 
 

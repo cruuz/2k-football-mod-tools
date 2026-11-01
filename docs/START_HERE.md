@@ -10,9 +10,12 @@ the NFLPA, ESPN, 2K or any team. The tools and the pack contain no game data: yo
 
 ## 1. What you need
 
-1. **Your own ESPN NFL 2K5 (USA, Xbox) disc image**, dumped from a disc you own. It should be an untouched dump (an `.iso` or
-   `.xiso`). A disc someone else already modded will be refused, and so will a rebuilt ("repacked") image when you apply a patch.
-   If the Studio says so, start again from a clean dump.
+1. **Your own ESPN NFL 2K5 (USA, Xbox) disc image**, dumped from a disc you own. It should be an untouched dump in one image
+   file (an `.iso` or `.xiso`). A raw (redump) dump, an untrimmed image and a rebuilt ("repacked") image all install SOFTDRINK
+   fine. A disc someone else already modded will be refused. If the Studio says so, start again from a clean dump.
+   - **Install SOFTDRINK 2K28 needs an image file.** If your dump is an extracted ("HDD ready") game folder, turn the folder
+     into an xiso first (for example with extract-xiso), then pick that file.
+   - Pick the image file itself, not a shortcut or symbolic link to it. A symbolic link is refused.
 2. **2K5 Mod Studio**, the free editor. Download it from the
    [Studio releases](https://github.com/cruuz/2k-football-mod-tools/releases) (use the newest one at the top of the list; it
    may be marked Pre-release). On the release page open
@@ -21,7 +24,8 @@ the NFLPA, ESPN, 2K or any team. The tools and the pack contain no game data: yo
    - Windows: run `2K5-Mod-Studio-*-Setup.exe`, then open 2K5 Mod Studio from the Start Menu. The Setup includes Python, so you
      do not install anything else.
    - macOS: extract the archive and double-click `2K5-Mod-Studio.command` (the first time, right-click it and choose Open).
-     macOS has no bundled disc extractor, so point the Studio at an already-extracted game folder if it asks.
+     macOS has no bundled disc extractor, so point the Studio at an already-extracted game folder if it asks. That works for
+     Build & Share; Install SOFTDRINK 2K28 still needs an image file (see item 1).
    - Linux and Steam Deck (Desktop Mode): extract the archive, run `./2K5-Mod-Studio.sh --setup` once, then `./2K5-Mod-Studio.sh`.
 
    If you already downloaded the source ZIP, see [If you downloaded the source ZIP](#if-you-downloaded-the-source-zip) below.
@@ -64,8 +68,9 @@ For every new SOFTDRINK version, start again from your original untouched image,
 
 ## 3. Point xemu at the disc
 
-1. In xemu, open the settings and set **System Memory** to **128 MiB**, then restart xemu. This is required for SOFTDRINK
-   2K28 v0.7: the disc uses the bigger roster built for the 128 MiB layout. Do not run this disc at 64 MiB.
+1. In xemu, open the settings, set **System Memory** to **128 MiB** and choose the **Complex 4627** BIOS image as the Flash ROM
+   (BIOS), then restart xemu. This is required for SOFTDRINK 2K28 v0.8: the disc uses the bigger roster built for the 128 MiB
+   layout, and its startup patch needs the 4627 BIOS. Do not run this disc at 64 MiB.
 2. In xemu choose **Machine, Load Disc** and select the new image. (Or click **Play latest disc in xemu** in the Studio.)
 3. If the picture looks grainy, try **View, Int. Resolution Scale, 2x**.
 4. Start the game. If it sits on the Xbox logo, restart xemu.
@@ -80,7 +85,7 @@ SOFTDRINK's 2026 players and depth charts live on the disc, but a game or save y
 2. Start a **fresh franchise** (or a Quick Game, which uses the disc roster).
 
 The Crib is now the **Trophy Room** only: bought items no longer open, and furniture you placed stays as decoration. In
-Franchise, the Front Office **Player Progress** row now shows weekly rating changes for your club; an older save starts a
+Franchise, the Front Office **Player Progress** row shows your club's rating changes this season; an older save starts a
 fresh history the first time it loads.
 
 If the game looks unchanged or shows 2004 rosters, check in this order: you loaded the new image and not the old one; you

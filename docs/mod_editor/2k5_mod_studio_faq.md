@@ -1,4 +1,4 @@
-# 2K5 Mod Studio FAQ, beta 78
+# 2K5 Mod Studio FAQ, beta 79
 
 Start with the [Getting Started guide](2k5_mod_studio_getting_started.md).
 These answers combine the previous release FAQ and the community reports for beta 71.1.

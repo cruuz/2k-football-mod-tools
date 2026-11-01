@@ -246,7 +246,7 @@ class MomentCoachIdentity(unittest.TestCase):
     that ticks the 25 more moments without Named previews (six retail moments keep their retail titles)."""
 
     RETAIL = Path(__import__("os").environ.get("NFL2K5_RETAIL_XISO",
-                                                "/media/noah/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso"))
+                                                ""))
 
     def situ(self, named):
         if not self.RETAIL.is_file():
@@ -282,7 +282,7 @@ class HistoricEaglesSet(unittest.TestCase):
     9). A set the user edited is never replaced: the spare moves to an unedited set nobody wears, or is skipped."""
 
     RETAIL = Path(__import__("os").environ.get("NFL2K5_RETAIL_XISO",
-                                                "/media/noah/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso"))
+                                                ""))
 
     def choose(self, states, worn_styles=(), historic=None):
         from mod_editor.core import nfl2k5_historic_styles as hs

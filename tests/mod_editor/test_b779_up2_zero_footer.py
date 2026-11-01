@@ -27,9 +27,8 @@ from tests.mod_editor.test_nfl2k5_franchise_save import synthetic_franchise  # n
 
 ZERO = bytes(pp.FOOTER_SIZE)
 #: a real game-written 881,340-byte save made with the released v0.7 disc in xemu; kept in scratch, never in the repo
-REAL = Path(os.environ.get(
-    "B779_UP2_REAL_SAVE",
-    "/home/noah/2k-worktrees/.b77-scratch/b779/up2/fixture/v07_franchise1/SAVEGAME.DAT"))
+#: the release gate refuses host paths in shipped files, so the path comes from the environment only
+REAL = Path(os.environ.get("B779_UP2_REAL_SAVE", ""))
 
 
 def career_block(payload: bytes) -> bytes:

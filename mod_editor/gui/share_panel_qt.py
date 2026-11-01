@@ -471,7 +471,7 @@ class SharePanel(QWidget):
         """One action: choose source, pack and destination; verification is part of apply."""
         if self.busy:
             return
-        source, _ = QFileDialog.getOpenFileName(self, "1 of 3: Choose your unmodified ESPN NFL 2K5 USA Xbox image", "", IMAGE_FILTER)
+        source, _ = QFileDialog.getOpenFileName(self, "1 of 3: Choose your unmodified ESPN NFL 2K5 USA Xbox image file (an .iso or .xiso, not a game folder)", "", IMAGE_FILTER)
         if not source:
             return
         pack_path, _ = QFileDialog.getOpenFileName(self, "2 of 3: Choose the downloaded .2k5patch file (do not extract it)", "", PACK_FILTER)

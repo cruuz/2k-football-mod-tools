@@ -11,6 +11,24 @@ versions (`v1.0-RC36`, `0.1.0-alpha.39`) and only change when their code does.
 
 ---
 
+## beta-79: 2026-11-01
+
+2K5 is **v1.0-RC114** and APF is **0.1.0-alpha.110**. The pack is
+**SOFTDRINK 2K28 v0.8**. The [complete 2K5 changelog](docs/mod_editor/2k5_mod_studio_changelog.md)
+records every change since beta-78, what was checked and how, and what is still open. APF 2K8 code is
+unchanged in this release; its version moves with the tag.
+
+- Grow the roster file to 4,096 player records, with 450-prospect draft classes every year, retirement by age and a smarter 53-man cut with a preseason warning; MyCareer can create a player again.
+- Give the created free agents their real season history, years pro since entering the NFL and real official headshots.
+- CPU defenses call their real 2025 coordinators' mix of fronts, coverages and blitzes; defensive audibles offer coverages only, and Situation mode uses the modern books.
+- Pass rush and pass blocking follow the ratings in played and simulated games; new stats: pressures, QB hits, sacks allowed and targets.
+- Equal catch odds for human and CPU receivers, CPU quarterback reads by rating, and star charge-ups for every star.
+- A Super Bowl champion and MVP notice, a champions history page and modern award voting.
+- Simulated seasons: realistic rushing with running back injuries, NFL pass and run balance, and overtime under the 2025 rule.
+- Realistic draft prospects and headshots, and development with real bust and steal rates.
+- The real Super Bowl, network and team-season logos by default, rebuilt sideline uniforms for 63 kits, a tighter Broadcast camera, and new-profile defaults of 7-minute quarters.
+- Studio: Check my project, NFL2K5Tool roster CSV import, Franchise > Upgrade for v0.7 saves, an xemu settings warning, and a Build tab that fits 1280x720.
+
 ## beta-78: 2026-10-26
 
 2K5 is **v1.0-RC113** and APF is **0.1.0-alpha.109**. The pack is

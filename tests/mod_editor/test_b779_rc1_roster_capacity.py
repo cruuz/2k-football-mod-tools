@@ -311,11 +311,11 @@ class PreseasonGateTests(unittest.TestCase):
         self.assertIn("need attention", notices[0])
 
 
-RELEASED_BODY = Path(os.environ.get("NFL2K5_RC1_V07_BODY",
-                                    "/home/noah/2k-worktrees/.b77-scratch/b779/rc1/work/rel_body.bin"))
+# Private fixtures come from the environment only (the release gate refuses host paths in shipped files).
+RELEASED_BODY = Path(os.environ.get("NFL2K5_RC1_V07_BODY", ""))
 
 
-RELEASED_XBE = Path(os.environ.get("NFL2K5_RC1_V07_XBE", "/home/noah/2k-worktrees/.b77-scratch/b779/rc1/work/rel.xbe"))
+RELEASED_XBE = Path(os.environ.get("NFL2K5_RC1_V07_XBE", ""))
 
 
 @unittest.skipUnless(HAVE_UC and RELEASED_BODY.is_file() and RELEASED_XBE.is_file(),

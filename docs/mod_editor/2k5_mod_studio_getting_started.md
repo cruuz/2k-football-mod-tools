@@ -1,4 +1,4 @@
-# 2K5 Mod Studio v1.0 RC113: Getting Started (beta 78)
+# 2K5 Mod Studio v1.0 RC114: Getting Started (beta 79)
 
 2K5 Mod Studio lets you modify your own legally dumped USA Xbox copy of
 **ESPN NFL 2K5** without using a hex editor. Think of the source XISO as the
@@ -130,7 +130,10 @@ the same:
   one, because every writer finds its file through the disc directory, but a
   `.2k5patch` cannot: a patch addresses bytes by their position in the game
   partition, and a repack moved them. Build the mod yourself instead of applying
-  a patch file, or rebuild the image from the original dump.
+  a patch file, or rebuild the image from the original dump. The SOFTDRINK 2K28
+  pack is different: it carries the finished files, so Install SOFTDRINK 2K28
+  accepts a repack (and a raw or untrimmed dump). It needs one image file, not
+  an extracted game folder; turn a folder into an xiso first.
 - a **pre-modded image**, where somebody's roster or gameplay mod is already in
   `default.xbe` or `vc_53450030/0`. The studio's writers start from retail bytes,
   so a build refuses. Start again from a clean dump of your own disc.
