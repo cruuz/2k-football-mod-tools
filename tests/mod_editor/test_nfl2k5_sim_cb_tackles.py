@@ -133,6 +133,7 @@ class CodeTests(unittest.TestCase):
         with mock.patch.object(dtry, "status", return_value="retail"):
             self.assertEqual(cb.status(with_jump(0x015123A0)), "foreign")
 
+    @unittest.skipUnless(V061.is_file(), "the released v0.6.1 extraction is not in this scratch")
     def test_released_v061_merge_context_is_supported(self):
         self.assertEqual(cb.status(V061.read_bytes()), "retail")
 

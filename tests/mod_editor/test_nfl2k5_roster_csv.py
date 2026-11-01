@@ -787,25 +787,35 @@ class GuiCsvTests(unittest.TestCase):
 
     def test_the_repreview_runs_off_the_gui_thread_and_the_event_loop_keeps_turning(self):
         import threading
-        import time
         from PyQt5.QtCore import QTimer
         from mod_editor.gui.roster_editor_panel_qt import run_in_background
         ticks, threads = [], []
+        turned = threading.Event()
+
+        def tick():
+            ticks.append(1)
+            if len(ticks) >= 5:
+                turned.set()
+
         timer = QTimer()
-        timer.timeout.connect(lambda: ticks.append(1))
+        timer.timeout.connect(tick)
         timer.start(10)
 
         def slow():
+            # The worker only finishes once the GUI event loop has delivered five timer ticks, so the test measures
+            # that the loop turns while the worker runs, not how many ticks a slow runner fits into a fixed time.
             threads.append(threading.current_thread())
-            time.sleep(0.4)
-            return 'done'
+            started = len(ticks)
+            if not turned.wait(60):
+                return 'the event loop did not turn while the worker ran'
+            return 'done' if len(ticks) > started else 'no tick arrived while the worker ran'
 
         try:
             self.assertEqual(run_in_background(self.panel, 'Test', 'Working', slow), 'done')
         finally:
             timer.stop()
         self.assertIsNot(threads[0], threading.main_thread())
-        self.assertGreater(len(ticks), 5)
+        self.assertGreaterEqual(len(ticks), 5)
         with self.assertRaisesRegex(ValueError, 'boom'):
             run_in_background(self.panel, 'Test', 'Working', lambda: (_ for _ in ()).throw(ValueError('boom')))
 

@@ -311,7 +311,10 @@ class BuildPageButton(unittest.TestCase):
             self.panel._check_project()
         self.assertTrue(shown)
         title, body = shown[0]
-        self.assertIn("check", title.lower())
+        # macOS message boxes have no title (Qt drops it there, as the macOS guidelines ask), so the first line of
+        # the text carries the same words on every platform.
+        self.assertTrue(body.startswith("Couldn't check your project."), body)
+        self.assertIn("check", (title + " " + body).lower())
         self.assertNotIn("make the disc", (title + body + self.panel.status_label.text()).lower())
         self.assertIn("check your project", self.panel.status_label.text().lower())
         summary = self.panel._last_build_summary
