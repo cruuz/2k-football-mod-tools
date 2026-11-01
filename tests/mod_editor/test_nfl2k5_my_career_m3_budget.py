@@ -41,7 +41,11 @@ class PlanningTests(unittest.TestCase):
             'full': {('nfl2k5_k128', 'code', 0), ('nfl2k5_champions', 'code', 0)},
             'budget': {('nfl2k5_k128', 'code', 0), ('nfl2k5_champions', 'code', 0),
                        ('nfl2k5_star_career', 'code', 0), ('nfl2k5_star_career', 'data', 0),
-                       ('nfl2k5_cpu_money_downs_late_state', 'data', 0)},
+                       ('nfl2k5_cpu_money_downs_late_state', 'data', 0),
+                       # b779-fixD (4c89ebbb2): the beta62 budget fixture now also lists return coverage (code 192)
+                       # and the module loader (code 256, data 32), late owners that fall to the pool after them.
+                       ('nfl2k5_return_coverage', 'code', 0),
+                       ('nfl2k5_module_loader', 'code', 0), ('nfl2k5_module_loader', 'data', 0)},
         }
         for label, requests in unions:
             with self.subTest(owners=sorted({r[0] for r in requests})):
@@ -89,7 +93,8 @@ class PlanningTests(unittest.TestCase):
                 # rows: the 4,096-byte directory page, then the spills in LATE_OWNERS order.
                 #   full:   4,096 + k128 1,536 + champions 5,632 = 11,264 -> 3 pages
                 #   budget: 4,096 + 1,536 + 5,632 + star_career code 2,080 + star_career data 4,096 (aligned) + the
-                #           8-byte money-downs state word = 17,448 -> 5 pages
+                #           8-byte money-downs state word = 17,448, + return coverage 192 + module loader 256 + 32
+                #           (b779-fixD) -> still 5 pages
                 self.assertEqual(before['regions'][:6], after['regions'][:6])
                 expected_size = {'full': space.SCALE3_FILE_SIZE + 3 * space.PAGE,
                                  'budget': space.SCALE3_FILE_SIZE + 5 * space.PAGE}.get(label, space.SCALE3_FILE_SIZE)
