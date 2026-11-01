@@ -25,15 +25,19 @@ What this owner adds
 * ``champions_advance`` at 0x2485FA: one native notice ("<City Team> won Super Bowl <numeral>, 29-13 over the <City
   Team>.", "Super Bowl MVP: <name>, <pos>", "Season MVP: ..."), then the retail retirement pass. Franchise only. It also
   records the season in the history below. One confirm closes the notice; nothing else changes.
-* The history: season n (Super Bowl number n, the season's year minus 1965) is kept in team record n % 32, bytes
-  +0xE4..+0x103 (32 bytes: number, champion, runner-up, both scores, the Super Bowl MVP and the season MVP as six-bit
-  packed names with a position code, the MVP's club, a check byte). Those bytes of the 500-byte team record are zero in
-  every club of the disc roster, are never read or written by a retail routine (checked over ten simulated seasons) and
-  travel with the roster arena in every franchise save, so the save size, the layout and the player history pool are
-  untouched, an old save simply reads as an empty history, and the last 32 seasons are kept.
-* The viewer is a third page of the Player Card (the honors page's bumpers now cycle card, honors, champions): the ten
-  newest seasons in the rating panel ("2025 SEA" with "29-13 NE") and the newest Super Bowl, its MVP and the season MVP
-  in the bio lines.
+* The history: the last 22 Super Bowls (season n is Super Bowl number n, the season's year minus 1965) in one checked
+  270-byte block right after the arena's 352-byte reserve block ("2K5RSV2", 0x400 bytes before the arena's end), clear
+  of a franchise save's auxiliary tail: Super Bowl number, champion, runner-up, both scores and the Super Bowl MVP per
+  season, plus the newest season's MVP (layout: ``nfl2k5_champions_history`` and ``tools/nfl2k5_champions/runtime.c``).
+  The arena travels whole with every franchise save, so the save size, the layout and the player history pool are
+  untouched and an old save simply reads as an empty history. Only the Studio's arena growth (16 reserves, two extra
+  created teams or the roster capacity) writes the reserve block; on a roster without it the history is off (the
+  notice still shows, the page reads "CHAMPIONS: NONE YET"). (hn1 first used team record bytes +0xE4..+0x103; those are
+  player pointer slots 57..64, so it moved here, ledger 10-28.) A 2026 build with the built-in award history seeds
+  Super Bowls XXXIX to LX (``mod_build._apply_champions_history``).
+* The viewer is a third page of the Player Card (the honors page's bumpers now cycle card, honors, champions): one row
+  per season, newest first ("2025 SEA 29-13 NE  WALKER, HB"), six at a time with Up/Down to scroll; the top three bio
+  lines are unchanged.
 * ``champions_awards`` at 0x116E55: after the retail award pass, the MVP, offensive and defensive player of the year and
   both rookies of the year are chosen again by production (``tools/nfl2k5_champions/runtime.c``, ``champions_modern_awards``;
   the rule is in ``AWARD_RULE`` below), and the honors owner records the new winners.
@@ -61,8 +65,11 @@ REQUESTS = ((OWNER, "code", CODE_SIZE, 16),)
 HELP_TEXT = (
     "EXPERIMENTAL / UNWITNESSED. Retail: nobody is told who won the Super Bowl and the game keeps no list of champions. "
     "Patch: advancing to the offseason shows who won the Super Bowl, the score, the Super Bowl MVP and the season MVP, "
-    "and keeps the last 32 champions in the team records (no save size change; old saves start empty); the Player Card "
-    "gets a third page, champions. MVP, offensive and defensive player of the year and the rookies of the year are "
+    "and the Player Card gets a third page, champions: the last 22 Super Bowls, kept in spare bytes at the end of the "
+    "roster (no save size change; old saves start empty). Those bytes exist only on a bigger roster (the SOFTDRINK "
+    "pack, 16 reserves or the two extra created teams); on the game's own roster size the page reads CHAMPIONS: NONE YET "
+    "and the build says so. A 2026 build with the sourced award history starts with Super Bowls XXXIX to LX filled in. "
+    "MVP, offensive and defensive player of the year and the rookies of the year are "
     "voted by production the way they have gone in the last decade: a quarterback on a winning team almost always, "
     "skill players for offensive player of the year, pass rushers, tackles, linebackers and corners for defensive "
     "player of the year, and any position can win MVP with a season far beyond a record.")

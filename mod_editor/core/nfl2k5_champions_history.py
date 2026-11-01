@@ -18,6 +18,13 @@ This module writes the real Super Bowls XXXIX (February 2005) to LX (February 20
 franchise shows who won the Super Bowl before it began. The data is ``data/nfl2k5_champions_2026.json``
 (``tools/nfl2k5_champions_seed.py`` builds it from three Wikipedia pages read at pinned revisions; every row lists its
 sources). Only the block's 270 bytes are written; they must be zero or already hold exactly this data.
+
+b779 ch2 (release review R2, BLOCKER 1): the block lives after the reserve block, and only the Studio's arena growth
+(16 reserves, two extra created teams or the roster capacity of the SOFTDRINK pack) writes that block. The build
+therefore seeds the disc's main roster with ``apply_image`` after its last main-roster writer (``mod_build``,
+``_apply_champions_history``), long after the growth, and refuses to finish when a grown roster does not take the
+seeds. A roster without a reserve block has no room for the history: the Super Bowl notice still shows, and the
+champions page reads "CHAMPIONS: NONE YET" (``NO_ROOM_NOTE``); the build says so instead of growing the roster.
 """
 from __future__ import annotations
 
@@ -265,6 +272,74 @@ def read_body(body: bytes) -> list[dict]:
     return read_block(body[at:at + USED])
 
 
+# b779 ch2: the disc's main roster (outer entry 5: a 0x20-byte resource wrapper, then the body, which ends with the arena)
+ROST_OUTER_INDEX = 5
+RESOURCE_HEADER = 0x20
+NO_ROOM_NOTE = ("Champions history: this build keeps the game's own roster size, which has no room for it, so the "
+                "Player Card champions page reads CHAMPIONS: NONE YET (the Super Bowl notice still shows). The SOFTDRINK "
+                "pack, or a build with 16 reserves or the two extra created teams, keeps the champions history.")
+
+
+def has_room(body: bytes) -> bool:
+    """True when the roster body ends with the arena's reserve block, i.e. the champions history has its bytes."""
+
+    at = len(body) - FROM_END
+    return at > 0 and body[at:at + 8] == RESERVE_MAGIC
+
+
+def _outer_image():
+    from . import nfl2k5_team_history as team_history
+    return team_history._outer_image()
+
+
+def _main_roster(archive) -> tuple[object, bytes, bytes]:
+    entries = archive.entries
+    _require(len(entries) > ROST_OUTER_INDEX, f"the archive has no outer entry {ROST_OUTER_INDEX}")
+    entry = entries[ROST_OUTER_INDEX]
+    raw = archive.read(entry.virtual_offset, entry.size)
+    _require(len(raw) == entry.size and raw[:4] == b"ROST" and len(raw) > RESOURCE_HEADER + FROM_END,
+             "the main roster resource is foreign")
+    return entry, raw[:RESOURCE_HEADER], raw[RESOURCE_HEADER:]
+
+
+def image_has_room(path) -> bool:
+    """Whether the main roster of the disc image (or pack folder) at ``path`` has the reserve block."""
+
+    with _outer_image()(path) as archive:
+        return has_room(_main_roster(archive)[2])
+
+
+def read_image(path) -> list[dict]:
+    """The seasons in the main roster of the disc image at ``path``, newest first; [] for an empty or damaged block."""
+
+    with _outer_image()(path) as archive:
+        return read_body(_main_roster(archive)[2])
+
+
+def apply_image(path, data: Mapping | None = None) -> dict:
+    """Write the seasons into the main roster of the disc image at ``path`` (a COPY), in place, with a read-back.
+
+    Raises ``ChampionsHistoryError`` when the roster has no reserve block, when its spare bytes hold anything else, or
+    when the read-back differs; the caller (the build) stops on it.
+    """
+
+    data = load() if data is None else data
+    with _outer_image()(path, writable=True) as archive:
+        entry, header, body = _main_roster(archive)
+        new_body, receipt = apply_body(body, data)
+        if new_body != body:
+            replacement = header + new_body
+            count = archive.write(entry.virtual_offset, replacement)
+            _require(count == len(replacement), "short write of the main roster")
+            _require(archive.read(entry.virtual_offset, entry.size) == replacement, "read-back of the main roster differs")
+        rows = read_body(archive.read(entry.virtual_offset, entry.size)[RESOURCE_HEADER:])
+    expected = sorted(entries_for(data), reverse=True)
+    _require([r["super_bowl"] for r in rows] == expected, "the champions history does not read back as written")
+    return {"status": "applied", **receipt, "rost_outer": ROST_OUTER_INDEX, "rost_virtual_offset": hex(entry.virtual_offset),
+            "rost_size": entry.size, "seasons_read_back": len(rows)}
+
+
 __all__ = ["SCHEMA", "DEFAULT_DATA", "RING", "ENTRY", "ChampionsHistoryError", "CLUBS", "pack_person", "unpack_person",
            "club_index", "entry_bytes", "mvp_slot", "newest_mvp", "seeded_block", "block_bytes", "read_block", "checksum", "load", "validate", "entries_for",
-           "gap_offset", "apply_body", "read_body"]
+           "gap_offset", "apply_body", "read_body", "has_room", "image_has_room", "read_image", "apply_image",
+           "NO_ROOM_NOTE"]

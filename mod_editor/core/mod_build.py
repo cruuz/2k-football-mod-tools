@@ -4005,6 +4005,76 @@ def _roster_capacity_records(plan):
     return value if type(value) is int and value > 0 else 0
 
 
+def _champions_history_plan(plan, capacity_records=None) -> dict[str, Any]:
+    """b779 ch2 (release review R2, BLOCKER 1 / MAJOR 1): what this build does with the champions history.
+
+    The history (the Player Card's third page, part of the honors option) lives in the spare bytes after the arena's
+    reserve block, which only the arena growth writes (16 reserves, the two extra created teams, or the roster capacity
+    a roster-edits document asks for, as the SOFTDRINK pack does). ``seed``: a grown 2026 build with the built-in award
+    history gets Super Bowls XXXIX to LX after its last main-roster writer, and the build fails if they do not land.
+    ``empty``: a grown build without the built-in 2026 history starts empty and the game fills it from its first Super
+    Bowl. ``no_room``: without growth there are no bytes for it; the build does not grow the roster for it (that would
+    change every save's size and the roster capacity), it says so in the log and the Build summary instead.
+    """
+    if not plan.honors_page:
+        return {"status": "off"}
+    if capacity_records is None:
+        capacity_records = _roster_capacity_records(plan)
+    grows = bool(plan.reserves_16 or plan.created_teams_extra or capacity_records)
+    wanted = bool(plan.season_2026 and plan.honors_history and plan.honors_history.strip() == "builtin")
+    if not grows:
+        return {"status": "no_room", "grows_arena": False, "seed_requested": wanted,
+                "note": _core_module("nfl2k5_champions_history").NO_ROOM_NOTE}
+    return {"status": "seed" if wanted else "empty", "grows_arena": True, "seed_requested": wanted}
+
+
+def _apply_champions_history(plan, target, receipt, progress, capacity_records):
+    """b779 ch2: seed Super Bowls XXXIX to LX into the main roster, or say why the champions history has no seeds."""
+    decision = _champions_history_plan(plan, capacity_records)
+    if decision["status"] == "off":
+        return
+    module = _core_module("nfl2k5_champions_history")
+    if module is None:
+        raise RuntimeError("the champions history module is not available in this build")
+    if not tt.is_disc_image(target):
+        # an executable-only build carries no roster; the history goes wherever the user's own disc roster has room
+        receipt["steps"].append({"step": "champions_history", "status": "no_roster", "seeded": False,
+                                 "reason": "this build writes no disc roster"})
+        return
+    try:
+        room = module.image_has_room(target)
+    except (OSError, ValueError) as exc:
+        raise RuntimeError(f"Champions history: the main roster could not be read ({exc})") from exc
+    if not room:
+        if decision["grows_arena"]:
+            raise RuntimeError("Champions history: the roster arena was grown but the main roster has no reserve "
+                               "block, so the champions history has no room; the build stops here")
+        note = decision["note"]
+        progress(note, 0, 0)
+        receipt.setdefault("user_notes", []).append(note)
+        # the step's own user_notes reach the finished-disc dialog (build_feedback); the receipt-level list, the summary
+        receipt["steps"].append({"step": "champions_history", "status": "no_room", "seeded": False,
+                                 "seed_requested": decision["seed_requested"], "reason": note, "user_notes": [note]})
+        receipt["result"]["champions_history"] = "no_room"
+        return
+    if not decision["seed_requested"]:
+        receipt["steps"].append({"step": "champions_history", "status": "empty", "seeded": False,
+                                 "reason": "no built-in 2026 award history: the game fills it from its first Super Bowl"})
+        receipt["result"]["champions_history"] = "empty"
+        return
+    progress("Writing Super Bowls XXXIX to LX into the champions history", 0, 0)
+    try:
+        champions_receipt = module.apply_image(target)
+    except (OSError, ValueError) as exc:
+        raise RuntimeError(f"Champions history: Super Bowls XXXIX to LX could not be written ({exc}); "
+                           "the build stops here") from exc
+    if (champions_receipt.get("status") != "applied" or champions_receipt.get("seasons_read_back") != 22
+            or (champions_receipt.get("oldest_super_bowl"), champions_receipt.get("newest_super_bowl")) != (39, 60)):
+        raise RuntimeError("Champions history: the seeded seasons do not read back as Super Bowls XXXIX to LX")
+    receipt["steps"].append({"step": "champions_history", **champions_receipt, "seeded": True})
+    receipt["result"]["champions_history"] = "applied"
+
+
 def _apply_roster_refresh(plan, target, receipt, progress):
     if not plan.roster_edits:
         return
@@ -5145,6 +5215,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     if plan.music_project and not Path(plan.music_project).is_file():
         raise ValueError(f"The Music project is missing: {plan.music_project}")
     if _preflight_only:
+        receipt["champions_history"] = _champions_history_plan(plan)   # b779 ch2
         return receipt
 
     # 1. copy + executable and text patches through the proven writer (throw tables, caves, EDGE rename
@@ -6726,6 +6797,9 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                                                        style=plan.indicator_names_style)
         receipt["steps"].append({"step": "indicator_names", **names_receipt})
         receipt["result"]["indicator_names"] = names_receipt["state"]
+    # b779 ch2 (review R2, BLOCKER 1): the champions history lives after the arena's reserve block, which the arena
+    # growth wrote above; seeded here, after the last main-roster writer, so no later pass rewrites those bytes.
+    _apply_champions_history(plan, target, receipt, progress, capacity_records)
     if tt.is_disc_image(target):
         # DESIGN: all growth writers have finished. Compact only this disposable
         # build copy, then run the publication gates through its new directory.
@@ -6804,6 +6878,10 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("the SOFTDRINK default options did not survive the final passes")
     if plan.modern_clock_led and _core_module("nfl2k5_clock_led").status(_xbe_bytes(target)) != "applied":  # b778-sd4
         raise ValueError("modern clock digits did not survive the final passes")
+    if receipt["result"].get("champions_history") == "applied":  # b779 ch2
+        seasons = [row["super_bowl"] for row in _core_module("nfl2k5_champions_history").read_image(target)]
+        if seasons != list(range(60, 38, -1)):
+            raise ValueError("the champions history (Super Bowls XXXIX to LX) did not survive the final passes")
     if plan.hair_styles and is_image:  # b778-hr3: scenes, textures, owner + hook and the 2026 roster bytes
         hair_step = next((s for s in receipt["steps"] if s.get("step") == "hair_styles"), {})
         receipt["result"]["hair_styles_final"] = _core_module("nfl2k5_hair_styles").verify_final(
