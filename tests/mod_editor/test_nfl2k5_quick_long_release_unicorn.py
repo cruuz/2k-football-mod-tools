@@ -25,8 +25,9 @@ from mod_editor.core import nfl2k5_quick_long_release as q
 try:
     import unicorn
     from unicorn import x86_const as x86
-except ImportError:  # pragma: no cover
-    unicorn = x86 = None
+    from tools.nfl2k5_back_throws_replay import NativeMachine
+except ImportError:  # pragma: no cover - unicorn or the shared native fixture is not in this tree
+    unicorn = x86 = NativeMachine = None
 
 # (table VA, descriptor count): the 20 throw tables the game initialises at 0x2D8840
 TABLES = ((0xAD1388, 14), (0xAD1468, 14), (0xAD1548, 14), (0xAD1628, 2),
@@ -58,9 +59,7 @@ def expected_start_rate(throw_type, t81, patched):
     return 1.0
 
 
-if unicorn is not None:
-    from tools.nfl2k5_back_throws_replay import NativeMachine
-
+if NativeMachine is not None:
     class ThrowMachine(NativeMachine):
         TASK, CTRL, STATE, ANIM, SLOT, SLOT2, TARGET = (0x2020000, 0x2020400, 0x2020800, 0x2021000, 0x2021400,
                                                         0x2021800, 0x2021C00)
@@ -172,7 +171,7 @@ if unicorn is not None:
             raise AssertionError("the clip never reached its release event")
 
 
-@unittest.skipIf(unicorn is None, "unicorn is required for the native probe")
+@unittest.skipIf(NativeMachine is None, "unicorn and tools/nfl2k5_back_throws_replay.py are required for the native probe")
 class NativeTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
