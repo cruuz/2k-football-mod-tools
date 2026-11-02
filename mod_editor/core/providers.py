@@ -712,7 +712,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_equipment_import.py": "d061bc77992dcc1b12d11f3051de25024ac48574fc41ff24f45cab46ae79097f",
         "mod_editor/core/nfl2k5_equipment_lz.py": "2804d1828097e90fc5038ea7dbed0b081a84073e5018145628079fee032e1796",
         "mod_editor/core/nfl2k5_digit_art.py": "7a2a9596679b27518aa8462c7b2f8bec360d0b89630404668b2b744a43e073be",
-        "mod_editor/core/nfl2k5_digit_texture.py": "38112506a194aae7b0e229cdb0d40d0fbbba52bf7ac5e3e81c7a67743352e79c",
+        "mod_editor/core/nfl2k5_digit_texture.py": "9b31dfbaf0ab7d2cb3d7b0a534d9ca5cb8b58ceb0b941aababfc43001c80b20a",
         "mod_editor/core/nfl2k5_disc_identity.py": "000ec3164d1da4a9e0fb4a4bd48deb55e4241cff90d7ee4762dd1caa446eff3e",
         "mod_editor/core/nfl2k5_display_list_stability.py": "34649b364e65566cc798df8e0ad60410609f7178973358e95ee3691b2f6e6031",
         "mod_editor/core/nfl2k5_draft_ai.py": "e21d0e8e57605d3b60981a26b32bec883c8f073ac02febf97b211db0ff2239f0",
