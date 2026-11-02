@@ -45,7 +45,7 @@ class Manifest(unittest.TestCase):
             self.assertTrue(r["first"] and r["last"] and 1 <= r["birth_month"] <= 12 and 1 <= r["birth_day"] <= 31)
             self.assertTrue(r["source_url"].startswith(("https://static.www.nfl.com/", "https://a.espncdn.com/")))
             self.assertEqual(len(r["source_sha256"]), 64)
-            self.assertIn(r["group"], ("free_agent", "refresh_created"))
+            self.assertIn(r["group"], ("free_agent", "refresh_created", "created_player"))
             self.assertIn(r["review"], ("ok", "ok_flagged"))
         self.assertEqual(len(gsis), len(self.doc["portraits"]))
 
@@ -61,6 +61,65 @@ class Manifest(unittest.TestCase):
         rows = [r for r in self.doc["portraits"] if r["gsis_id"] == "00-0027974"]
         self.assertEqual(len(rows), 1)
         self.assertEqual(rows[0]["source_url"], "https://a.espncdn.com/i/headshots/nfl/players/full/14001.png")
+
+
+class SignedAndUnattachedPlayers(unittest.TestCase):
+    """b780-b9 (D12): the created real players that were neither free agents nor refresh-created when pt1 listed its targets
+    (signed or unattached players: the v0.8 roster holds 49 of them with a no-photo selector) get the same real headshots."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.doc = rp.load_manifest()
+        cls.rows = [r for r in cls.doc["portraits"] if r["group"] == "created_player"]
+
+    def test_the_forty_nine_extra_players_follow_pt1_in_the_same_window(self):
+        self.assertEqual(len(self.rows), 49)
+        self.assertEqual([r["id"] for r in self.rows], list(range(30946, 30946 + 49)))
+        self.assertLess(self.rows[-1]["id"], rp.ID_LIMIT)
+        self.assertEqual(len(self.doc["portraits"]), 995)
+        names = {(r["first"], r["last"]) for r in self.rows}
+        for who in (("Andre", "James"), ("Eric", "Kendricks"), ("Jake", "Haener"), ("Marte", "Mapu"), ("Deuce", "Vaughn")):
+            self.assertIn(who, names)
+        # nobody is listed twice, in these rows or against the pt1 rows
+        every = [(r["first"], r["last"], r["birth_month"], r["birth_day"]) for r in self.doc["portraits"]]
+        self.assertEqual(len(every), len(set(every)))
+        self.assertEqual(len({r["source_sha256"] for r in self.doc["portraits"]}), len(self.doc["portraits"]),
+                         "no two players share a source image (a placeholder or the wrong person)")
+
+    def test_sources_are_official_and_the_espn_rows_name_their_espn_id(self):
+        for r in self.rows:
+            self.assertIn(r["source_list"], ("roster_2026", "players.csv", "espn"))
+            self.assertTrue(r["source_url"].startswith(("https://static.www.nfl.com/", "https://a.espncdn.com/")), r["source_url"])
+            self.assertEqual(r["review"], "ok")
+        espn = [r for r in self.rows if r["source_list"] == "espn"]
+        self.assertEqual(len(espn), 8)
+        for r in espn:
+            self.assertRegex(r["source_url"], r"^https://a\.espncdn\.com/i/headshots/nfl/players/full/\d+\.png$")
+        self.assertEqual(self.doc["additions"][0]["rows"], 49)
+
+    def test_the_atlas_cells_are_distinct_and_decode(self):
+        faces = dict(rp.faces(self.doc))
+        cells = {(r["atlas"], tuple(r["cell"])) for r in self.doc["portraits"]}
+        self.assertEqual(len(cells), len(self.doc["portraits"]), "two portraits share an atlas cell")
+        for r in self.rows:
+            idx, pal = faces[r["id"]]
+            self.assertEqual((len(idx), len(pal)), (128 * 128, 1024))
+            alpha = bytes(pal[4 * i + 3] for i in idx)
+            self.assertGreater(sum(1 for a in alpha if a >= 200) / len(alpha), 0.25, r["id"])
+
+    def test_a_player_who_is_on_a_team_or_on_no_list_still_gets_his_portrait(self):
+        """The build matches by name and birth day, never by free-agent membership or slot (the v0.8 roster holds these 49
+        with a 21701..22898 selector, off the free-agent list)."""
+        P = Assignment.P
+        doc = Assignment.Doc([P("primary", "Andre", "James", 21701, 5, 2, 0x1000),       # a signed C with a selector
+                              P("primary", "Eric", "Kendricks", 22410, 2, 29, 0x2000),    # unattached ILB
+                              P("primary", "Jake", "Haener", 1532, 3, 10, 0x3000)])        # already holds a real portrait id
+        plan = rp.plan_assignments(doc, self.doc)
+        by = {name: (off, pid) for off, pid, name in plan["writes"]}
+        self.assertEqual(by["Andre James"][0], 0x1000 + rp.PHOTO_FIELD)
+        self.assertEqual(by["Eric Kendricks"][0], 0x2000 + rp.PHOTO_FIELD)
+        self.assertNotIn("Jake Haener", by)
+        self.assertIn("Jake Haener", plan["kept"])
 
 
 class Faces(unittest.TestCase):
