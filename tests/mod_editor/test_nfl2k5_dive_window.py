@@ -48,7 +48,7 @@ class StaticTests(unittest.TestCase):
                 exits.append((symbol, 0x1500000 + off + 4 + struct.unpack_from("<i", code, off)[0]))
         self.assertEqual(sorted(set(exits)), sorted({("catch_roll", 0x1F56E0), ("ret_zero", 0x1F55CF),
                                                     ("swat_test", 0x1F56FF)}))
-        for name in ("k_reach", "k_beyond", "k_line2", "k_one"):
+        for name in ("k_reach", "k_beyond", "k_line2"):
             self.assertLess(assembly.LABELS[name] + 4, len(assembly.CODE) + 1)
         self.assertAlmostEqual(struct.unpack_from("<f", assembly.CODE, assembly.LABELS["k_reach"])[0], 1.5 * YD, places=3)
         self.assertAlmostEqual(struct.unpack_from("<f", assembly.CODE, assembly.LABELS["k_beyond"])[0], 0.03 / 0.3, places=6)
@@ -251,16 +251,16 @@ class CaveTests(unittest.TestCase):
         self.assertEqual(self.run_window(side=2.0 * YD), self.ZERO)
         self.assertEqual(self.run_window(side=1.2 * YD), self.THREE)       # inside the reach: retail
 
-    def test_closing_on_the_ball_fast_enough_still_leaps(self):
-        # Q at depth 1200 is 0.45 s ahead; 2 yd out he must close 0.5 yd: 9 yd/s toward the path does it.
-        self.assertEqual(self.run_window(side=2.0 * YD, velocity=(-9 * YD, 0.0)), self.THREE)
-        self.assertEqual(self.run_window(side=2.9 * YD, velocity=(-9 * YD, 0.0)), self.THREE)
-        self.assertEqual(self.run_window(side=-2.0 * YD, velocity=(9 * YD, 0.0)), self.THREE)   # mirrored
+    def test_no_leap_from_beyond_a_yard_and_a_half_even_sprinting_at_the_ball(self):
+        # Defenders break on the thrown ball brings sprinting corners into the 3-yard window early: still no leap.
+        self.assertEqual(self.run_window(side=2.0 * YD, velocity=(-9 * YD, 0.0)), self.ZERO)
+        self.assertEqual(self.run_window(side=2.9 * YD, velocity=(-9 * YD, 0.0)), self.ZERO)
+        self.assertEqual(self.run_window(side=-2.0 * YD, velocity=(9 * YD, 0.0)), self.ZERO)    # mirrored
 
-    def test_reach_boundary_is_the_closing_distance(self):
-        # 0.5 yd to close in 0.45 s needs 1.11 yd/s toward the path.
-        self.assertEqual(self.run_window(side=2.0 * YD, velocity=(-1.0 * YD, 0.0)), self.ZERO)
-        self.assertEqual(self.run_window(side=2.0 * YD, velocity=(-1.25 * YD, 0.0)), self.THREE)
+    def test_reach_boundary_is_a_yard_and_a_half(self):
+        self.assertEqual(self.run_window(side=1.45 * YD), self.THREE)
+        self.assertEqual(self.run_window(side=1.55 * YD), self.ZERO)
+        self.assertEqual(self.run_window(side=-1.45 * YD, velocity=(-9 * YD, 0.0)), self.THREE)  # running away
 
     def test_running_away_or_alongside_does_not_leap(self):
         self.assertEqual(self.run_window(side=2.0 * YD, velocity=(9 * YD, 0.0)), self.ZERO)
@@ -273,7 +273,7 @@ class CaveTests(unittest.TestCase):
         self.assertEqual(self.run_window(side=1.2 * YD, catch=(0.0, 1100.0)), self.ZERO)
         self.assertEqual(self.run_window(side=0.8 * YD, catch=(0.0, 1000.0)), self.ZERO)   # no catch try either
         # 20 cm (0.01 s) before it, or after it: the other tests decide.
-        self.assertEqual(self.run_window(side=2.0 * YD, velocity=fast, catch=(0.0, 1180.0)), self.THREE)
+        self.assertEqual(self.run_window(side=1.2 * YD, velocity=fast, catch=(0.0, 1180.0)), self.THREE)
         self.assertEqual(self.run_window(side=1.2 * YD, catch=(0.0, 1400.0)), self.THREE)
         self.assertEqual(self.run_window(side=0.8 * YD, catch=(0.0, 1400.0)), self.ROLL)
 
@@ -291,11 +291,11 @@ class CaveTests(unittest.TestCase):
         self.assertEqual(self.run_window(side=2.0 * YD, cpu=False), self.THREE)
         self.assertEqual(self.run_window(side=0.8 * YD, cpu=False, catch=(0.0, 1000.0)), self.ROLL)
         self.assertEqual(self.run_window(side=2.0 * YD, a=(0.0, 150.0, 1200.0), c=(0.0, 120.0, 1200.0)), self.THREE)
-        self.assertEqual(self.run_window(side=2.0 * YD, velocity=(float("nan"), 0.0)), self.THREE)
+        self.assertEqual(self.run_window(side=2.0 * YD, velocity=(float("nan"), 0.0)), self.ZERO)   # velocity is not read
 
     def test_x87_stack_survives(self):
         self.assertEqual(self.run_window(side=2.0 * YD, fpu_depth=2), self.ZERO)
-        self.assertEqual(self.run_window(side=2.0 * YD, velocity=(-9 * YD, 0.0), fpu_depth=1), self.THREE)
+        self.assertEqual(self.run_window(side=1.2 * YD, velocity=(-9 * YD, 0.0), fpu_depth=1), self.THREE)
         self.assertEqual(self.run_window(side=0.8 * YD, fpu_depth=1), self.ROLL)
 
 
@@ -344,12 +344,13 @@ class DecisionTests(unittest.TestCase):
         self.assertEqual(self.decide("retail", 3.1, 9.0), 0)
         self.assertEqual(self.decide("retail", 4.0, 9.0, vx=-9.0), 0)     # no look-ahead of his own run
 
-    def test_long_leaps_need_him_closing_on_the_ball(self):
+    def test_no_long_leaps_whatever_his_motion(self):
         self.assertEqual(self.both(2.0, 9.0), (2, 0))                    # standing still 2 yd away
         self.assertEqual(self.both(2.0, 9.0, vx=9.0), (2, 0))            # running away
         self.assertEqual(self.both(2.0, 9.0, vz=9.0), (2, 0))            # running alongside the ball's line
-        self.assertEqual(self.both(2.0, 9.0, vx=-9.0), (2, 2))           # sprinting at the path
-        self.assertEqual(self.both(2.9, 9.0, vx=-9.0), (2, 2))
+        self.assertEqual(self.both(2.0, 9.0, vx=-9.0), (2, 0))           # sprinting at the path
+        self.assertEqual(self.both(2.9, 9.0, vx=-9.0), (2, 0))
+        self.assertEqual(self.both(1.4, 9.0, vx=-9.0), (2, 2))           # within a yard and a half: retail
 
     def test_close_plays_and_human_defenders_are_retail(self):
         for x in (0.5, 1.2):
@@ -363,11 +364,11 @@ class DecisionTests(unittest.TestCase):
     def test_no_leap_at_a_ball_the_receiver_catches_first(self):
         # catch point 2 yd before his line on the ball's path: the ball reaches the receiver 0.1 s earlier
         self.assertEqual(self.both(1.2, 9.0, catch=(0.0, 7.0)), (2, 0))
-        self.assertEqual(self.both(2.0, 9.0, vx=-9.0, catch=(0.0, 7.0)), (2, 0))
+        self.assertEqual(self.both(1.2, 9.0, vx=-9.0, catch=(0.0, 7.0)), (2, 0))
         retail, patched = self.both(0.5, 9.0, catch=(0.0, 7.0))
         self.assertEqual((patched, retail in (2, 3)), (0, True))           # no catch try at it either
         # catch point at or beyond his line: unchanged
-        self.assertEqual(self.both(2.0, 9.0, vx=-9.0, catch=(0.0, 12.0)), (2, 2))
+        self.assertEqual(self.both(1.2, 9.0, vx=-9.0, catch=(0.0, 12.0)), (2, 2))
         self.assertEqual(self.both(1.2, 9.0, catch=(0.0, 9.2)), (2, 2))
 
 

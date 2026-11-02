@@ -492,8 +492,8 @@ class BuildPlan:
     db_ball_play: bool = False
     # b780-cv3: nfl2k5_dive_window, a late executable owner in the ball-play decision 0x1F52C0 (before its 1-yard and
     # 3-yard tests): a CPU defender reacting to a throw leaps, dives or tries the catch (action 0x61) only for a ball he can
-    # reach: beyond 1.5 yd he must be closing on it fast enough, and never at a ball the receiver catches first. Works
-    # with or without db_ball_play.
+    # reach: not from more than 1.5 yd beside its path (retail 3 yd), and never at a ball the receiver catches first.
+    # Works with or without db_ball_play.
     # EXPERIMENTAL / UNWITNESSED: off in every preset.
     db_dive_window: bool = False
     # b777-qb3: nfl2k5_qb_accuracy, a late executable owner hooked where the pass accuracy routine stores the miss

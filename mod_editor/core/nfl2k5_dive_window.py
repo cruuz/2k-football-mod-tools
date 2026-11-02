@@ -14,8 +14,11 @@ This owner adds one test in front of the decision's 1-yard and 3-yard tests (a j
 * receiver first: no leap and no catch try when the closest point is more than 0.03 s of the ball's flight past the
   stored catch point (0xBF0DF0, valid flag 0xBF0E08, intended receiver [0xE3C000]) while that point is still ahead of
   the ball and on its line: the receiver gets the ball first (a tipped or overthrown ball keeps the retail decision);
-* reach: beyond 1.5 yards he must be closing on the ball fast enough to cover the rest before it arrives
-  (distance x (distance - 1.5 yd) < his velocity . (closest point - him) x the ball's time to that point).
+* reach: no leap from more than 1.5 yards beside the ball's path (the retail window is 3 yards). He keeps running
+  and commits later if he gets within 1.5 yards while the ball is still 0.3 s or more away; otherwise he meets the
+  ball and the receiver at the catch, where the native close-contest branch (within a yard of the target receiver in
+  his catch animation) still lets him play the ball. With Defenders break on the thrown ball, sprinting corners
+  reach the 3-yard edge 0.3-0.45 s early and leaped from there on every out, dig and slant measured; retail did not.
 
 When the test says no, the decision returns 0: he keeps running to his reaction point (the catch point with
 ``db_ball_play``) and the decision runs again next tick. Otherwise the retail 1-yard test, catch roll and 3-yard test
@@ -31,14 +34,14 @@ from pathlib import Path
 import struct
 
 OWNER = "nfl2k5_dive_window"
-CODE_SIZE = 464
+CODE_SIZE = 352
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16),)
 BUILD_CAPTION = "Defenders leap only for balls they can reach (experimental)"
 HELP_TEXT = ("EXPERIMENTAL / UNWITNESSED. A CPU defender who reacts to a pass no longer leaps or dives at a ball that "
-             "will pass more than a yard and a half from him unless he is already moving toward it fast enough to get "
-             "there, and no longer leaps or tries to catch a ball the receiver will catch before it reaches him. He "
-             "keeps running to the ball and plays the receiver at the catch instead. Close plays on the ball in front "
-             "of or beside the receiver are unchanged. Works with or without Defenders break on the thrown ball.")
+             "will pass more than a yard and a half from him, and no longer leaps or tries to catch a ball the "
+             "receiver will catch before it reaches him. He keeps running to the ball and plays the receiver at the "
+             "catch instead. Close plays on the ball in front of or beside the receiver are unchanged. Works with or "
+             "without Defenders break on the thrown ball.")
 # test edi, edi; jne 0x1F56E0; fld [esp+0x18]; fcomp [1 yd]; fnstsw ax; test ah, 5; jp 0x1F56FF (no branch enters it)
 HOOK = ("dive_window", 0x001F56CB, bytes.fromhex("85ff" "7511" "d9442418" "d81db8724e00" "dfe0" "f6c405" "7a1f"))
 RETURN_ZERO, CATCH_ROLL, SWAT_TEST = 0x001F55CF, 0x001F56E0, 0x001F56FF   # result 0 tail, catch roll, 3-yard test

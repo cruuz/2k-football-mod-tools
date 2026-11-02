@@ -7366,8 +7366,8 @@
       "id": "nfl2k5.gameplay.dive_window",
       "input_constraints": [
         "Pinned USA XBE or verified composed input; composes with Defenders break on the thrown ball. Foreign or mixed bytes refuse before mutation.",
-        "CPU defenders reacting to a throw only: inside the native 3-yard window, no leap or catch try at a ball more than 0.03 s of flight past the stored catch point while that point is still ahead of the ball and on its line (the receiver gets it first), and beyond 1.5 yards he must be closing on the ball fast enough to cover the rest before it arrives. Human-controlled defenders, tipped or overthrown balls and degenerate ball paths keep the retail decision.",
-        "A late allocator owner (464 RX bytes, no RW state), installed after every other late owner; rebuild from a clean base to turn it off."
+        "CPU defenders reacting to a throw only: no leap or catch try at a ball more than 0.03 s of flight past the stored catch point while that point is still ahead of the ball and on its line (the receiver gets it first), and no leap from more than 1.5 yards beside the ball's path (retail 3 yards). Human-controlled defenders, tipped or overthrown balls, the close-contest branch and degenerate ball paths keep the retail decision.",
+        "A late allocator owner (352 RX bytes, no RW state), installed after every other late owner; rebuild from a clean base to turn it off."
       ],
       "portme": [
         "Witness CPU defenders on deep balls, curls and outs in man and zone with the option on and off: fewer leaps from far away, no defender freezing, breakups within a yard unchanged."
@@ -7398,10 +7398,10 @@
         "hash_pins": [
           "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
         ],
-        "resource": "One jump at 0x1F56CB (21 bytes: the native 1-yard test of 0x1F52C0, run unchanged by the owner's code before the catch roll and the 3-yard test); owned 464 RX bytes, immutable constants inside code.",
+        "resource": "One jump at 0x1F56CB (21 bytes: the native 1-yard test of 0x1F52C0, run unchanged by the owner's code before the catch roll and the 3-yard test); owned 352 RX bytes, immutable constants inside code.",
         "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
       },
-      "summary": "A CPU defender who reacts to a pass leaps, dives or tries the catch only when he can reach the ball: not from far beside its path while standing or running the other way, and not at a ball the receiver catches first.",
+      "summary": "A CPU defender who reacts to a pass leaps, dives or tries the catch only when he can reach the ball: not from more than a yard and a half beside its path, and not at a ball the receiver catches first.",
       "surface": "gameplay_tuning_sliders",
       "title": "Defenders leap only for balls they can reach (experimental)",
       "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_dive_window"
