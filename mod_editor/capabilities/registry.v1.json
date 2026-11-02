@@ -10601,6 +10601,76 @@
     },
     {
       "backend": {
+        "command": "python3 tools/nfl2k5_coach_2026_data.py edits <league_roster_edits.json> <league_roster_edits_with_coach_records.json>",
+        "module": "tools/nfl2k5_coach_2026_data.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "data/nfl2k5_coaches_2026.json",
+        "mod_editor/core/nfl2k5_roster_records.py",
+        "tests/mod_editor/test_b780_c1_coach_data.py",
+        "tests/mod_editor/test_b780_c1_coach_records.py",
+        "tests/mod_editor/test_b780_c1_coach_records_native.py",
+        "tools/nfl2k5_coach_2026_data.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": false,
+        "mode": "edit",
+        "reason": "Rides on the roster edits file: a coaches entry may now carry ratings, tendencies, announcer, height_in and weight_lb next to the name and career numbers. The 2026 values come from data/nfl2k5_coaches_2026.json through the SOFTDRINK roster generator; the Rosters page does not edit them yet."
+      },
+      "id": "nfl2k5.rosters.coach_records_2026",
+      "input_constraints": [
+        "Retail, grown (version 18) or save-arena roster with the 35-record 0xA8-byte coach table; any other layout refuses with a log line and writes nothing.",
+        "Ratings 0..99 for the 23 names the Coach Matchup prints. Tendency groups run_share, run_by_score, run_redzone, run_by_down_distance, run_lane, formation_run, formation_pass and no_huddle; the distribution groups must add up to 100. Unknown names, bad ranges and free Create Team records are refused per entry, with the team and the reason in the log.",
+        "Other bytes of the tendency block (pass target zones, receiver roles, category weights, motion, defense flag shares) have no public per-zone source and keep the old coach's values."
+      ],
+      "portme": [
+        "Witness a Play Now game and a franchise advance with the flagged coaches: the generic coach cue (9299) instead of a 2004 coach name, and Coach Matchup showing the 2026 ratings."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source, the sourced coach data and recipes; never distribute the generated game disc or roster.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "tests/mod_editor/test_b780_c1_coach_records_native.py"
+        ],
+        "scope": "The game's own seeding routine (FUN_002818D0), CPU play pick (0x281D90, 0x20B670) and commentary handler (0x5A390) were run in Unicorn on records this writer produced; nothing was played in an emulator.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "Club abbreviation of the loaded roster (ARZ or ARI, SD or LAC, OAK or LV, STL or LAR ...)",
+            "name": "team",
+            "required": true
+          },
+          {
+            "allowed": "ratings {name: 0..99}; tendencies {group: number(s)}; announcer generic | named; height_in 48..96; weight_lb 100..450",
+            "name": "record fields",
+            "required": false
+          }
+        ],
+        "notes": "Applied by apply_coach_records after the coach names; a record-only entry never touches the biography strings."
+      },
+      "source_container": {
+        "format": "ROST/save body",
+        "hash_pins": [],
+        "resource": "Loaded RosterDocument; fixed spans of the 35 coach records (+0x14, +0x16, +0x1A bit 1, +0x42..+0xA7)",
+        "retail_file": "User-owned disc roster or verified signed save"
+      },
+      "summary": "Give each club's head coach 2026 ratings, play-calling tendencies and the generic announcer cue, derived from public data with the inputs pinned, through the roster edits file.",
+      "surface": "players_rosters",
+      "title": "Coach ratings, tendencies and announcer flag",
+      "validation_command": "python3 -m tests.mod_editor.test_b780_c1_coach_records"
+    },
+    {
+      "backend": {
         "command": "python3 -m mod_editor.core.nfl2k5_espn25_rosters build source.iso historic.iso --receipt historic-receipt.json",
         "module": "mod_editor/core/nfl2k5_espn25_rosters.py",
         "operation": "write"

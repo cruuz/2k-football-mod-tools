@@ -356,33 +356,58 @@ class EditsDocumentTests(unittest.TestCase):
 @unittest.skipUnless(_XISO.is_file(), "private retail NFL 2K5 disc absent (set NFL2K5_RETAIL_XISO)")
 class RetailRosterTests(unittest.TestCase):
     def test_all_thirty_two_entries_land_on_the_retail_roster_and_only_record_bytes_move(self) -> None:
-        base = rr.load_image(_XISO).to_body()
-        document = rr.RosterDocument(base)
-        clubs = [t for t in document.teams if t.index < 32]
-        data = cd.load_data()
-        entries = [dict(cd.record_entry(data, ct_code), team=team.abbreviation)
-                   for team in clubs for ct_code in [cd.ct.team(team.abbreviation)]]
-        new, receipt = rr.apply_body(base, {"schema": rr.EDITS_SCHEMA, "edits": [], "coaches": entries})
-        self.assertEqual(receipt["log"], [])
-        self.assertEqual(receipt["coach_records_written"], 32)
-        self.assertEqual(receipt["coach_names_written"], 0)
-        records = {t.coach_offset: t for t in clubs}
-        self.assertEqual(len(records), 32)
-        for index, (a, b) in enumerate(zip(base, new)):
-            if a != b:
-                owner = next((r for r in records if r <= index < r + rr.COACH_RECORD_SIZE), None)
-                self.assertIsNotNone(owner, f"byte 0x{index:X} outside the coach records changed")
-                rel = index - owner
-                self.assertTrue(rel in (0x14, 0x15, 0x16, 0x17, 0x1A) or 0x42 <= rel < 0xA8, f"+0x{rel:X}")
-        # every club's record reads back its own entry
-        after = rr.RosterDocument(new)
-        for team in after.teams[:32]:
-            entry = data["coaches"][cd.ct.team(team.abbreviation)]
-            record = team.coach_offset
-            self.assertEqual(list(new[record + 0x42: record + 0x59]), [entry["ratings"][n] for n in rr.COACH_RATING_NAMES])
-            self.assertEqual(new[record + 0x59], entry["tendencies"]["run_share"])
-            self.assertTrue(new[record + 0x1A] & 2)
-            self.assertFalse(new[record + 0x1A] & 1)
+        check_thirty_two(self, rr.load_image(_XISO).to_body())
+
+
+_V08 = Path(os.environ.get("NFL2K5_V08_XISO", "/media/noah/Storage/2K5 Discs/SOFTDRINK 2K28 v0.8 (2026-10-31).xiso.iso"))
+
+
+@unittest.skipUnless(_V08.is_file(), "released SOFTDRINK 2K28 v0.8 disc absent (set NFL2K5_V08_XISO)")
+class ReleasedRosterTests(unittest.TestCase):
+    def test_all_thirty_two_entries_land_on_the_released_grown_roster_and_nothing_else_moves(self) -> None:
+        """Acceptance (r2 report): the v0.8 roster gets 32 flags and ratings, nothing else moves."""
+        base = rr.load_image(_V08).to_body()
+        self.assertEqual(rr.RosterDocument(base).version, 18)
+        check_thirty_two(self, base)
+
+
+def check_thirty_two(test: unittest.TestCase, base: bytes) -> None:
+    """Apply the real data to a roster body and prove it lands on 32 records and moves nothing else."""
+    document = rr.RosterDocument(base)
+    clubs = [t for t in document.teams if t.index < 32]
+    data = cd.load_data()
+    entries = [dict(cd.record_entry(data, cd.ct.team(team.abbreviation)), team=team.abbreviation) for team in clubs]
+    new, receipt = rr.apply_body(base, {"schema": rr.EDITS_SCHEMA, "edits": [], "coaches": entries})
+    test.assertEqual(receipt["log"], [])
+    test.assertEqual(receipt["coach_records_written"], 32)
+    test.assertEqual(receipt["coach_names_written"], 0)
+    records = {t.coach_offset: t for t in clubs}
+    test.assertEqual(len(records), 32)
+    changed = 0
+    for index, (a, b) in enumerate(zip(base, new)):
+        if a != b:
+            changed += 1
+            owner = next((r for r in records if r <= index < r + rr.COACH_RECORD_SIZE), None)
+            test.assertIsNotNone(owner, f"byte 0x{index:X} outside the coach records changed")
+            rel = index - owner
+            test.assertTrue(rel in (0x14, 0x15, 0x16, 0x17, 0x1A) or 0x42 <= rel < 0xA8, f"+0x{rel:X}")
+    test.assertGreater(changed, 32 * 20)
+    after = rr.RosterDocument(new)
+    test.assertEqual(len(after.players), len(document.players))
+    for team in after.teams[:32]:
+        entry = data["coaches"][cd.ct.team(team.abbreviation)]
+        record = team.coach_offset
+        test.assertEqual(list(new[record + 0x42: record + 0x59]), [entry["ratings"][n] for n in rr.COACH_RATING_NAMES])
+        test.assertEqual(new[record + 0x59], entry["tendencies"]["run_share"])
+        test.assertEqual(list(new[record + 0x83: record + 0x8D]), entry["tendencies"]["formation_run"] + entry["tendencies"]["formation_pass"])
+        test.assertEqual(list(new[record + 0x7E: record + 0x83]), entry["tendencies"]["run_lane"])
+        test.assertTrue(new[record + 0x1A] & 2)
+        test.assertFalse(new[record + 0x1A] & 1)
+        # what the data does not author keeps its bytes (pass target zones, category weights, motion, defence flags)
+        test.assertEqual(new[record + 0x71: record + 0x7E], base[record + 0x71: record + 0x7E])
+        test.assertEqual(new[record + 0x8D: record + 0xA5], base[record + 0x8D: record + 0xA5])
+        test.assertEqual(new[record + 0xA3: record + 0xA5], base[record + 0xA3: record + 0xA5])
+        test.assertEqual(new[record + 0xA6: record + 0xA8], base[record + 0xA6: record + 0xA8])
 
 
 if __name__ == "__main__":
