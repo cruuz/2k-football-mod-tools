@@ -385,11 +385,12 @@ class LineButtonTests(unittest.TestCase):
         self.panel(w, 0, True, 5)                                              # No Huddle: five plays
         self.assertEqual(self.press(w, pc.EVENT_L, World.OFF), self.RESUME)
         self.panel(w, 0, True, 3); self.panel(w, 1, True, 5)
-        self.assertEqual(self.press(w, pc.EVENT_R, World.DEF), self.RESUME)    # the defense's menu
+        self.assertEqual(self.press(w, pc.EVENT_L, World.DEF), self.RESUME)    # the defense's menu: audible 4 (index 3)
+        self.assertEqual(self.press(w, pc.EVENT_R, World.DEF), self.RESUME)    # and audible 5 (index 4)
         self.panel(w, 0, False, 3)
         self.assertEqual(self.press(w, pc.EVENT_L, World.OFF), self.RESUME)    # menu not open
         w.uc.hook_del(h)
-        self.assertEqual(seen, [(World.OFF, 3), (World.DEF, 4), (World.OFF, 3)])
+        self.assertEqual(seen, [(World.OFF, 3), (World.DEF, 3), (World.DEF, 4), (World.OFF, 3)])
         self.assertEqual(w.uc.reg_read(x86.UC_X86_REG_EAX), 0x3C3C3C3C)
         self.assertEqual(w.state()["call"], 0)
 
