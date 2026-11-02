@@ -42,7 +42,8 @@ class IntegrityTests(unittest.TestCase):
                           if descriptor[i:i+4] != c.BROADCAST_RETAIL_DESCRIPTOR[i:i+4]], [0, 16, 20, 24, 32, 48, 52, 56, 64])
         self.assertEqual(c.decode_descriptor(descriptor)['type'], 2)
         self.assertEqual(c.decode_descriptor(descriptor)['flag'], 0)
-        self.assertEqual(self.receipt['version'], 7)
+        self.assertEqual(self.receipt['version'], c.VERSION)
+        self.assertEqual(c.VERSION, 8)   # b780-b9: the punt snap eye distance (D5) is a new camera revision
         self.assertFalse(self.receipt['coach_mode_changed'])
         self.assertFalse(self.receipt['exact_coach_director_proved'])
 

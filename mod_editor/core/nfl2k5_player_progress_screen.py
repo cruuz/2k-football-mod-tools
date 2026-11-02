@@ -21,15 +21,17 @@ and makes it useful all season:
   by the roster list index. The depth chart reorders after games; an index would overwrite or lose
   a player's history.
 * **Screen values** (0x365B20): the season view returns the stored baseline for ``Previously``, the
-  live rating for ``Currently`` and their difference for ``Change``. The historical weekly ring is
-  still stored (below); the release keeps the season row instead of a view switcher.
-* **Stable row label** (b779-pp5): the old toggle replaced the screen's ignored-event slot (0xF4268)
-  and incremented the view on every call. That slot is a per-frame event (event 9), so the label
-  cycled at frame rate while the value getter clamped the view to the stored week count: the video's
-  "+/- Change" / "Weeks" flicker and overlap. No distinct Black/UP/DOWN event reaches that class, so
-  the shipped fix keeps the retail no-op handler and the retail ``+/- Change`` header. The weekly
-  ring and its capture are unchanged; a future screen-scoped input can expose them without touching
-  the save format.
+  live rating for ``Currently`` and their difference for ``Change``. The view button (below) steps
+  the same three rows through the stored weeks.
+* **Weekly views, screen-scoped** (b780-b9, Noah's v0.8 known issue "weekly Player Progress views are not
+  reachable"): b779-pp5 found that the old toggle sat on the shared ignored-event slot (0xF4268), a per-frame event
+  (event 9), so the label cycled at frame rate with no button involved, and removed it.  The views come back through
+  an event wrapper that replaces only this screen's own descriptor pointer (0x551808, the list-screen handler
+  0xF40F0): on the per-frame event it reads the pad's held-button word, and each new press of the view button steps
+  the third row through the season change, last week, 2 weeks ago ... as many weeks as the record stores (at most
+  8), then back to the season.  Every other event is handed to the retail handler by a jump.  The row label names
+  the week the numbers show (clamped to the stored weeks, so it never names a week it does not show) and the
+  Front Office row list resets the view to the season each time it is built.
 
 The record is the ``PPG3`` v1 history ring and the footer is ``PPGF0001`` in
 ``nfl2k5_player_progression``. The footer follows the complete native save (and the MyCareer footer
@@ -38,7 +40,7 @@ when present); the native save transaction writes and signs it. Old saves have n
 Front Office in b778-pg2.
 
 The owner is a late executable owner. It requests **code 4,096 bytes** and **writable data 34,336
-bytes** (16 toggle bytes + the 34,320-byte footer). It needs the growable pool from job xs1. It
+bytes** (16 view and button-state bytes + the 34,320-byte footer). It needs the growable pool from job xs1. It
 composes with the generic MyCareer owner by chaining its displaced size/save/load hooks; MyCareer's
 runtime also admits the footer sizes (``tools/mycareer_mode/runtime.c``).
 """
@@ -82,10 +84,17 @@ SLOT_SIZE = record.SLOT_SIZE
 SNAPSHOT_SIZE = record.SNAPSHOT_SIZE
 RECORD_HEADER_SIZE = record.RECORD_HEADER_SIZE
 MAX_VIEW_WEEKS = 8
+# The per-frame event reads this pad word (port 0, sub 0: the "held buttons" word of the game's pad block, the one the
+# held accessor 0x709F0 returns) and this button bit.  Measured in the emulator (b780 b9, see the report).
+VIEW_PAD_VA = 0x00B37A88
+VIEW_PAD_MASK = 0x00001000
+PAD_COUNT = 8                    # the screens poll pads 0..7
+PAD_STRIDE = 0x244               # bytes between two pads' blocks
 
 _TEXT_STRIDE = 24
-_TEXTS = ("Last Week", "2 Weeks", "3 Weeks", "4 Weeks", "5 Weeks", "6 Weeks", "7 Weeks", "8 Weeks")
-LAST_WEEK_TEXT = b"".join(text.encode("utf-16-le") + b"\0\0" for text in _TEXTS).ljust(
+_TEXTS = ("Last Week", "2 Wks Ago", "3 Wks Ago", "4 Wks Ago", "5 Wks Ago", "6 Wks Ago", "7 Wks Ago", "8 Wks Ago")
+# every label sits on its own 24-byte stride (the header routine multiplies by it), padded with zero bytes
+LAST_WEEK_TEXT = b"".join(text.encode("utf-16-le").ljust(_TEXT_STRIDE, b"\0") for text in _TEXTS).ljust(
     _TEXT_STRIDE * MAX_VIEW_WEEKS, b"\0")
 
 # --- retail routines and globals the cave reads or calls -----------------------------------------
@@ -111,7 +120,7 @@ SITE_WEEK = (0x000C4E60, bytes.fromhex("890db476e500c3"))
 SITE_GAME_END = (0x001353FC, bytes.fromhex("e8cff9ffff"))         # call 0x134dd0 (second club's stat merge)
 SITE_VALUE = (0x00365B20, bytes.fromhex("538b5c240c"))
 SITE_HEADER = (0x00365E34, bytes.fromhex("bad892eb00"))
-SITE_EVENT_POINTER = (0x000F4268, struct.pack("<I", 0x000F4221))
+SITE_EVENT_POINTER = (0x00551808, struct.pack("<I", 0x000F40F0))   # screen descriptor +8: the list-screen event handler
 SITE_TOTAL_SIZE = (0x0016AA26, bytes.fromhex("e8555d1600"))       # call 0x2d0780 (front-office size)
 SITE_SAVE_FRONT_OFFICE = (0x0016E50D, bytes.fromhex("e87e221600"))  # call 0x2d0790 (write front office)
 SITE_LOAD_END = (0x0016E815, bytes.fromhex("e8661f1600"))          # call 0x2d0780 (after the load)
@@ -147,6 +156,7 @@ GUARDS = (
     ("week_advance", 0x000C5D14, 0x20, "eb8c8b928d15c51927b2be3d9d9be47d125ca6330ddf56f7814e814547e6ce79"),
     ("game_end", 0x001353D0, 0x40, "43aeb9adc0db3244104a928fe684f2915a6c8f34478a62f78828976d92c5f9e6"),
     ("screen_event", 0x000F4268, 0x10, "13e838dff3bb9b334bfccb42574a81b2fb743ca8130dd23f54099eb3d411f08a"),
+    ("list_screen_handler", 0x000F40F0, 0x139, "9b8cee178b68ce9a781b5c8e4dc16e1ed8b29f4b3ccaa07a580bdff39bf9478f"),
 )
 _ERRORS = (ValueError, TypeError, KeyError, IndexError, struct.error, OverflowError, AttributeError)
 
@@ -207,6 +217,8 @@ def _assemble(code_va: int, data_va: int, map_va: int, text_va: int,
 
     # ---- visibility: stage 1..4 and 7..9 visible, everything else hidden -----------------------
     a.label("visibility")
+    if not visible_only:
+        a.b("66c705" + _imm(data_va) + "0000")  # mov word [view,previous],0: the screen opens on the season row
     a.b("a1" + _imm(STAGE_VA))                  # mov eax,[stage]
     a.b("c7420801000000")                       # mov dword [edx+8],1
     a.b("83f804"); a.j8("74", "vis4")           # cmp eax,4 ; je vis4
@@ -224,21 +236,74 @@ def _assemble(code_va: int, data_va: int, map_va: int, text_va: int,
     if visible_only:
         return a.assemble(), dict(a.labels)
 
-    # ---- stable row label (b779-pp5) ----------------------------------------------------------
-    # The old toggle sat on the screen's ignored-event class, which is a per-frame event (event 9):
-    # it incremented on every frame and the label cycled at frame rate. No distinct Black/UP/DOWN
-    # event reaches this class, so a reliable button gate is not available here. The released fix
-    # keeps the season row ("+/- Change") and leaves the stored weekly ring for a future, properly
-    # screen-scoped switcher. Both hooks stay installed so the install layout is unchanged; the
-    # handler is the retail no-op and the header returns the retail string.
-    a.label("toggle")
-    a.b("5f")                                   # pop edi (the retail event's stack contract)
-    a.b("b801000000")                           # mov eax,1
-    a.b("5e")                                   # pop esi
-    a.b("c3")
+    # ---- the screen's own event wrapper and the row label (b780 b9, D11) ---------------------------
+    # b779-pp5 found that the old toggle sat on the shared ignored-event slot (0xF4268), which is the screen's
+    # PER-FRAME event (event 9): it incremented the view at frame rate, so the label flickered and no button was
+    # involved at all.  The wrapper below is screen-scoped instead: it replaces the screen descriptor's own event
+    # pointer (0x551808, the list-screen handler 0xF40F0), so no other screen sees it.  On the per-frame event it
+    # reads the pad's held-button word, and one press (not held, then held) steps the view: season, last week, 2
+    # weeks ago ... up to the weeks the record stores, then back to the season.  Every other event, and every frame
+    # without a new press, is handed to the retail handler by a plain jump, so it sees exactly the arguments the
+    # caller passed.  The previous-state byte follows the button on every frame, so a held button steps once.
+    a.label("event")
+    a.b("83fa09"); a.j8("75", "ev_chain")         # cmp edx,9 ; jne chain (not the per-frame event)
+    a.b("9c50")                                   # pushfd ; push eax
+    a.b("5351")                                   # push ebx ; push ecx
+    # the held-button word of every pad (the game polls eight, 0x244 bytes apart): whichever controller Noah uses
+    a.b("31c0")                                   # xor eax,eax
+    a.b("bb" + _imm(VIEW_PAD_VA))                 # mov ebx,first pad's held word
+    a.b("b9" + _imm(PAD_COUNT))                   # mov ecx,pads
+    a.label("ev_pads")
+    a.b("0b03")                                   # or eax,[ebx]
+    a.b("81c3" + _imm(PAD_STRIDE))                # add ebx,0x244
+    a.b("49"); a.j8("75", "ev_pads")              # dec ecx ; jnz
+    a.b("25" + _imm(VIEW_PAD_MASK))               # and eax,button mask
+    a.b("f7d8" "1bc0" "f7d8")                     # neg eax ; sbb eax,eax ; neg eax -> 1 when the button is down
+    a.b("0fb61d" + _imm(data_va + 1))             # movzx ebx,byte [previous]
+    a.b("a2" + _imm(data_va + 1))                 # mov [previous],al
+    a.b("85c0"); a.j8("74", "ev_done")            # test eax,eax ; jz done (up)
+    a.b("85db"); a.j8("75", "ev_done")            # test ebx,ebx ; jnz done (was already down)
+    # a new press: next view (0 = season, 1..count = stored weeks, never more than MAX_VIEW_WEEKS)
+    a.b("813d" + _imm(record_va) + _imm(RECORD_MAGIC)); a.j8("75", "ev_none")   # cmp [record],magic ; jne none
+    a.b("803d" + _imm(record_va + 4) + "01"); a.j8("75", "ev_none")              # cmp byte [version],1 ; jne none
+    a.b("f605" + _imm(record_va + 5) + "01"); a.j8("74", "ev_none")              # test byte [flags],1 ; jz none
+    a.b("0fb61d" + _imm(record_va + 10))          # movzx ebx,byte [count]
+    a.b("83fb" + f"{MAX_VIEW_WEEKS:02x}"); a.j8("76", "ev_count_ok")             # cmp ebx,8 ; jbe
+    a.b("b3" + f"{MAX_VIEW_WEEKS:02x}")           # mov bl,8
+    a.label("ev_count_ok")
+    a.b("0fb605" + _imm(data_va))                 # movzx eax,byte [view]
+    a.b("40")                                     # inc eax
+    a.b("39d8"); a.j8("76", "ev_store")           # cmp eax,ebx ; jbe store (still inside 0..count)
+    a.label("ev_none")
+    a.b("31c0")                                   # xor eax,eax (back to the season row)
+    a.label("ev_store")
+    a.b("a2" + _imm(data_va))                     # mov [view],al
+    a.label("ev_done")
+    a.b("59")                                     # pop ecx
+    a.b("5b589d")                                 # pop ebx ; pop eax ; popfd
+    a.label("ev_chain")
+    a.jmp_abs(0x000F40F0)                         # the retail list-screen handler, arguments untouched
 
+    # The label of the third row: the retail "+/- Change" for the season view, else the text of the stored week
+    # the numbers show.  The view is clamped to the stored weeks exactly like the value getter below, so the label
+    # never names a week the numbers do not show (no record, a short record, a stale byte: the retail label).
+    # Call site 0x365E34 replaced `mov edx,0xEB92D8`; EAX and ECX are dead there (ECX is reloaded by the next lea).
     a.label("header")
-    a.b("ba" + _imm(RETAIL_HEADER_TEXT))        # mov edx,retail "+/- Change"
+    a.b("ba" + _imm(RETAIL_HEADER_TEXT))          # mov edx,retail "+/- Change"
+    a.b("0fb605" + _imm(data_va))                 # movzx eax,byte [view]
+    a.b("85c0"); a.j8("74", "hdr_done")           # test eax,eax ; jz done (season)
+    a.b("813d" + _imm(record_va) + _imm(RECORD_MAGIC)); a.j8("75", "hdr_done")
+    a.b("803d" + _imm(record_va + 4) + "01"); a.j8("75", "hdr_done")
+    a.b("f605" + _imm(record_va + 5) + "01"); a.j8("74", "hdr_done")
+    a.b("0fb60d" + _imm(record_va + 10))          # movzx ecx,byte [count]
+    a.b("39c8"); a.j8("76", "hdr_clamped")        # cmp eax,ecx ; jbe
+    a.b("89c8")                                   # mov eax,ecx
+    a.label("hdr_clamped")
+    a.b("85c0"); a.j8("74", "hdr_done")           # no stored week: the season label
+    a.b("48")                                     # dec eax
+    a.b("6bc0" + f"{_TEXT_STRIDE:02x}")           # imul eax,eax,24
+    a.b("8d90" + _imm(text_va))                   # lea edx,[eax+text]
+    a.label("hdr_done")
     a.b("c3")
 
     # ---- stage-8 call wrapper: enter the stage, then capture the season baseline --------------
@@ -310,7 +375,7 @@ def _assemble(code_va: int, data_va: int, map_va: int, text_va: int,
     a.b("8b44241c"); a.b("8b4064")              # mov eax,[list+0x64]
     a.b("89442424")                             # [esp+0x24]=group
     # selected view: 0 = season, 1..count = stored week
-    a.b("0fb605" + _imm(data_va))               # movzx eax,byte [toggle]
+    a.b("0fb605" + _imm(data_va))               # movzx eax,byte [view]
     a.b("0fb64d0a")                             # movzx ecx,byte [record+10] count
     a.b("39c8"); a.j32(JBE, "view_ok")          # cmp eax,ecx ; jbe
     a.b("89c8")                                 # mov eax,ecx
@@ -792,7 +857,7 @@ def _sites(code_va: int) -> list[tuple[str, int, bytes, bytes]]:
     week = code_va + lab["week_setter"]
     value = code_va + lab["value"]
     header = code_va + lab["header"]
-    toggle = code_va + lab["toggle"]
+    event = code_va + lab["event"]
     return [
         ("visibility", SITE_VISIBILITY[0], SITE_VISIBILITY[1],
          b"\xe9" + _rel32(vis, SITE_VISIBILITY[0])),
@@ -809,7 +874,7 @@ def _sites(code_va: int) -> list[tuple[str, int, bytes, bytes]]:
         ("change_header", SITE_HEADER[0], SITE_HEADER[1],
          b"\xe8" + _rel32(header, SITE_HEADER[0])),
         ("event_pointer", SITE_EVENT_POINTER[0], SITE_EVENT_POINTER[1],
-         struct.pack("<I", toggle)),
+         struct.pack("<I", event)),
     ]
 
 

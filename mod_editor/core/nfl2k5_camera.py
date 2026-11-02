@@ -18,6 +18,14 @@ The setup callback of the owned descriptors swaps the camera's own target, lens 
 constant sets, and stores a matching eye box, when the camera state is a kick state. Kickoffs, returns and every
 scrimmage state keep the sideline eye. See ASTRA_CAMERA_V2_REPORT.md and reports/b779_cm2_REPORT.md.
 
+v8 (beta-80, v0.8 known issue "the view from behind the punter is wider when you are the receiving team than when you
+punt"): the punt snap eye sat 29 m behind the punter, but the final-eye clamp holds every kick eye to |z| <= 50 m, so a
+punter standing inside his own 24 yard line pulled the camera in to 4 to 12 m while a punt from midfield kept the full
+29 m: the same set framed a punter 3.4 times larger from his own 20 than from midfield.  The distance is now designed to
+be reachable from the 24 (PUNT_EYE_BEHIND, 12 m): every punt from the 24 out, whoever kicks and whoever receives, is
+framed identically (about 87 of 480 lines tall, feet clear of the scorebug); only a punter backed up inside the 24 still
+meets the clamp, as before.  See reports/b780_b9-presentation_REPORT.md.
+
 864 owned RX bytes and four immutable 80-byte descriptors, no RW or retail cave.
 Reserve REQUESTS with
 all other selected owners before apply. Rebuild historical descriptor-only
@@ -37,7 +45,7 @@ from .nfl2k5_draft_ai import _Asm
 from .nfl2k5_bump_strength import _sections, _section_for_offset, section_digest
 
 OWNER = "nfl2k5_camera"
-VERSION = 7
+VERSION = 8
 CODE_SIZE = 864
 READ_ONLY_SIZE = 320
 LEGACY54_CODE_SIZE = 208
@@ -204,9 +212,10 @@ FAR_RETAIL_VALUES: dict[int, Values] = {
 
 # (look-at xyz, lens word, camera offset xyz) in the offense-relative frame (z toward the opponent's goal), centimetres.
 # Native type 2: eye = focus + look-at + offset, so the eye relative to the ball is look-at + offset.
+PUNT_EYE_BEHIND = 1200.0            # v8: the punt snap eye is 12 m behind the punter (was 29 m, see the module notes)
 KICK_VALUES: dict[int, Values] = {
     KICK_FG_GROUND: ((0.0, 100.0, 2844.0), 50.0, (0.0, 450.0, -5144.0)),
-    KICK_PUNT_GROUND: ((0.0, 100.0, 387.0), 50.0, (0.0, 550.0, -3287.0)),
+    KICK_PUNT_GROUND: ((0.0, 100.0, 387.0), 50.0, (0.0, 550.0, -(PUNT_EYE_BEHIND + 387.0))),
     KICK_FG_AIR: ((0.0, 100.0, 2200.0), 48.0, (0.0, 350.0, -4100.0)),
     KICK_PUNT_AIR: ((0.0, 100.0, 2000.0), 44.0, (0.0, 450.0, -4600.0)),
 }

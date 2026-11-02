@@ -26,7 +26,7 @@ BOX = (0x3C0, 0x3C4, 0x3C8, 0x3D0, 0x3D4, 0x3D8)
 
 class KickStaticTests(unittest.TestCase):
     def test_states_and_constants_are_pinned(self):
-        self.assertEqual(c.VERSION, 7)
+        self.assertEqual(c.VERSION, 8)
         self.assertEqual(c.KICK_SET_STATE, {9: c.KICK_FG_GROUND, 10: c.KICK_PUNT_GROUND,
                                             13: c.KICK_FG_AIR, 14: c.KICK_PUNT_AIR})
         self.assertEqual(c.KICK_GATED_STATE, 11)
@@ -39,7 +39,7 @@ class KickStaticTests(unittest.TestCase):
         self.assertEqual(len(sets), 4 * c.KICK_SET_SIZE)
         expected = {
             c.KICK_FG_GROUND: ((0.0, 100.0, 2844.0), 50.0, (0.0, 450.0, -5144.0)),
-            c.KICK_PUNT_GROUND: ((0.0, 100.0, 387.0), 50.0, (0.0, 550.0, -3287.0)),
+            c.KICK_PUNT_GROUND: ((0.0, 100.0, 387.0), 50.0, (0.0, 550.0, -1587.0)),
             c.KICK_FG_AIR: ((0.0, 100.0, 2200.0), 48.0, (0.0, 350.0, -4100.0)),
             c.KICK_PUNT_AIR: ((0.0, 100.0, 2000.0), 44.0, (0.0, 450.0, -4600.0)),
         }
@@ -97,7 +97,7 @@ class KickNativeTests(unittest.TestCase):
         return p
 
     def test_receipt_and_allocation(self):
-        self.assertEqual(self.receipt['version'], 7)
+        self.assertEqual(self.receipt['version'], 8)
         self.assertEqual(self.receipt['owned_code_bytes'], 864)
         self.assertEqual(c.allocation(self.patched)['size'], 864)
         self.assertEqual(c.status(self.patched), 'applied')
@@ -170,6 +170,30 @@ class KickNativeTests(unittest.TestCase):
                     self.assertTrue(c.KICK_EYE_MIN_Y - 1e-3 <= y <= c.KICK_EYE_MAX_Y + 1e-3, (state, direction, row))
                     self.assertLessEqual(abs(z), c.EYE_MAX_Z + 1e-3, (state, direction, row))
                     self.assertEqual(row['eye'], row['filter_eye'])
+
+    def test_punt_snap_framing_does_not_depend_on_where_the_punter_stands(self):
+        """b780-b9 (D5, v0.8 known issue "the view from behind the punter is wider when you are the receiving team"): the
+        final-eye clamp keeps every kick eye at |z| <= 5000, so with the old 29 m design a punter inside his own 24 got a
+        camera 4 to 12 m behind him while one at midfield kept the full 29 m (3.4 times apart on screen).  Native settled
+        eye (0x5F760 and the owned clamp) for punters from the 16 to the 50, both directions: from the 24 out the
+        distance behind the punter is the designed 12 m, whoever kicks and whoever receives; inside it the clamp only ever
+        pulls the eye in, and the two directions agree."""
+        dist = {}
+        for direction in (1, -1):
+            p = self.setup(10, 6, direction)
+            for los in range(16, 51, 2):             # line of scrimmage, yards from the kicking team's own goal line
+                punter = (-4572.0 + (los - 15) * 91.44) * direction
+                row = p.frame((0.0, 0.0, punter), direction=direction, snap=True)
+                dist[(direction, los)] = (punter - row['eye'][2]) * direction
+        for direction in (1, -1):
+            free = [dist[(direction, los)] for los in range(24, 51, 2)]
+            self.assertLess(max(free) - min(free), 12.0, free)
+            self.assertAlmostEqual(free[0], c.PUNT_EYE_BEHIND, delta=12.0)
+            tight = [dist[(direction, los)] for los in range(16, 24, 2)]
+            self.assertTrue(all(a <= c.PUNT_EYE_BEHIND + 1.0 for a in tight), tight)
+            self.assertEqual(tight, sorted(tight), "deeper punters are never farther from the camera")
+        for los in range(16, 51, 2):
+            self.assertAlmostEqual(dist[(1, los)], dist[(-1, los)], delta=2.0, msg=los)
 
     def test_kick_eye_sits_behind_the_ball_and_looks_downfield(self):
         # settled native projection of each set at the ball: the eye is behind the ball (relative to the play
