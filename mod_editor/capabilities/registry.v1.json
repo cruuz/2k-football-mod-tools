@@ -7353,6 +7353,7 @@
       "classification": "offline-writer-proved",
       "evidence": [
         "tests/mod_editor/test_nfl2k5_dive_window.py",
+        "tests/mod_editor/test_nfl2k5_dive_window_flights.py",
         "tools/nfl2k5_dive_window.S"
       ],
       "game": "nfl2k5_xbox",
