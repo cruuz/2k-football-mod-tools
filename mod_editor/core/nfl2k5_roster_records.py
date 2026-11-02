@@ -3045,6 +3045,13 @@ def read_edits(source: Path | str | Mapping[str, Any]) -> dict[str, Any]:
     if "qb_throw_power" in document:
         from . import nfl2k5_qb_throw_power
         nfl2k5_qb_throw_power.normalise_directive(document["qb_throw_power"])
+    if document.get("staff"):
+        # b780 c2-staff: the coaching staff's own shape (clubs, names, created coaches); the roster checks come later
+        from . import nfl2k5_coach_staff
+        try:
+            nfl2k5_coach_staff.normalize(document["staff"])
+        except nfl2k5_coach_staff.StaffError as exc:
+            raise RosterRecordError(f"Coaching staff: {exc}") from exc
     if "years_pro_convention" in document:
         # b779 fh1: a document stamped with another years pro meaning is refused, never mixed with this one
         _require(document["years_pro_convention"] == YEARS_PRO_CONVENTION,
@@ -3230,7 +3237,8 @@ def apply_body(body: bytes, source: Path | str | Mapping[str, Any], *,
             _require(player.offset not in selected, "duplicate free-agent slot")
             selected.append(player.offset)
         roster.free_agents = selected
-    coaches = apply_coach_names(roster.body, roster.teams, doc.get("coaches") or [], log)
+    coach_edits = apply_coach_edits(roster.body, roster.teams, doc, log)
+    coaches = coach_edits["coach_names_written"]
     uniform_years = apply_team_uniform_years(roster.body, roster.teams, doc.get("teams") or [], log)
     # A dated refresh validates its final club chains after membership changes.
     # Alumni aliases cannot own independent locks, including on a replay after
@@ -3282,7 +3290,7 @@ def apply_body(body: bytes, source: Path | str | Mapping[str, Any], *,
     return out, {"roster_refresh": refresh_receipt, "modern_free_agents": fa_receipt, "franchise_history": history_receipt,
                  "created_history": created_receipt, "edits": len(doc["edits"]), "players_changed": applied,
                  "fields_written": fields_written, "moves": len(doc.get("moves") or []),
-                 "players_moved": moved, "coach_names_written": coaches,
+                 "players_moved": moved, "coach_names_written": coaches, "coach_staff": coach_edits["coach_staff"],
                  "team_uniform_years_written": uniform_years,
                  "special_team_slots_written": special_count, "log": log}
 
@@ -3455,6 +3463,21 @@ def apply_coach_names(body: bytearray, teams: Sequence[TeamRecord], entries: Seq
         got = cw.utf16z(check, cw.relative_target(check, field_offset, "coach"), "coach")
         _require(got == expect, f"coach {index} +0x{fields[field]:x} reads {got!r} after the rewrite")
     return len(wanted)
+
+
+def apply_coach_edits(body: bytearray, teams: Sequence[TeamRecord], document: Mapping[str, Any],
+                      log: list[str]) -> dict[str, Any]:
+    """Every coach edit of a roster-edits document, in the build's order (b780): the ``coaches`` names, biographies and
+    career numbers by club, then the coaching ``staff`` (head coach moves and created coaches,
+    ``nfl2k5_coach_staff``), whose content moves carry what the earlier writers put in each record. The build and
+    ``nfl2k5_coach_ai.roster_readiness`` both call this, so the readiness check sees the roster the build writes."""
+
+    names = apply_coach_names(body, teams, document.get("coaches") or [], log)
+    staff = None
+    if document.get("staff"):
+        from . import nfl2k5_coach_staff
+        staff = nfl2k5_coach_staff.apply_to_body(body, teams, document["staff"], log)
+    return {"coach_names_written": names, "coach_staff": staff}
 
 
 def _resolve_team(roster: RosterDocument, entry: Mapping[str, Any]) -> int | None:

@@ -782,13 +782,15 @@ def diversify_defense(rings, choices, weights=diversity.DEFAULT_WEIGHTS):
                 spread_before=spread_before, spread_after=spread(rings))
 
 
-def _situational_defense(resource, tendency):
+def _situational_defense(resource, tendency, defense_team=None):
     """b779 dp1: (rings of DefenseChoice, receipt) from nfl2k5_defense_rings for a club with an identity row, else None.
 
     Ring formations are the native VIP menu's reachable ones (as before) of types 4, 5 and 6: three-down books now
-    take part instead of falling back to their only four-down formation (the Bear)."""
+    take part instead of falling back to their only four-down formation (the Bear).
+    b780 c2-staff: ``defense_team`` (a book code) names the defensive coordinator whose identity row is fitted (a
+    club's own, or the one the coaching staff gives it); by default the head coach's own 2026 club."""
     from . import nfl2k5_defense_rings as situational
-    team = (tendency.get("provenance") or {}).get("archive_book") or tendency.get("team")
+    team = defense_team or (tendency.get("provenance") or {}).get("archive_book") or tendency.get("team")
     if not isinstance(team, str) or situational.team_identity(team) is None:
         return None
     book = ip.parse_playbook_resource(resource)
@@ -803,7 +805,7 @@ def _situational_defense(resource, tendency):
 
 
 def build_coach(template: VipSave, resource: bytes, tendency: dict, name: str, book_index: int, *,
-                varied: bool = True):
+                varied: bool = True, defense_team: str | None = None):
     """Coach-derived offense history plus measured defensive pressure/coverage.
 
     The fifteen defensive contexts currently share the observed coach marginal;
@@ -822,7 +824,7 @@ def build_coach(template: VipSave, resource: bytes, tendency: dict, name: str, b
     defense, rings = [], []
     # b779 dp1: a current NFL club gets situational rings fitted to its 2026 coordinator's 2025 calls in each of the
     # fifteen native ring cells (nfl2k5_defense_rings); other profiles keep the single-marginal fit below.
-    situational = _situational_defense(resource, tendency)
+    situational = _situational_defense(resource, tendency, defense_team)
     if situational is not None:
         rings, defense_receipt = situational
         defense_variety = dict(schema=defense_receipt["schema"], rule="situational fit (nfl2k5_defense_rings)",
