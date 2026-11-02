@@ -47,6 +47,12 @@ def slide_yards(selection):
     return math.hypot(selection["correction"][0], selection["correction"][2]) / CM_PER_YARD
 
 
+def same(a, b):
+    """Two selector answers are the same when the return value and all 80 record bytes are (floats are never compared:
+    probe records carry infinities and NaN != NaN)."""
+    return (a["returned"], a["raw"]) == (b["returned"], b["raw"])
+
+
 class Grid:
     """Mixin: the checks, run once per executable."""
     label = ""
@@ -90,7 +96,7 @@ class Grid:
             key = (old["direction"], old["distance_yards"])
             if old["defender"] and key in REFUSED:
                 continue
-            self.assertEqual(new["selection"], old["selection"], (key, old["defender"]))
+            self.assertTrue(same(new["selection"], old["selection"]), (key, old["defender"]))
             if old["motion"] is not None:
                 self.assertEqual(new["motion"], old["motion"], (key, old["defender"]))
 
@@ -125,14 +131,14 @@ class Grid:
                     a = self.old.select()
                     self.new.arrange(direction, yards, **kind)
                     b = self.new.select()
-                    self.assertEqual(b, a, (kind, direction, yards))
+                    self.assertTrue(same(b, a), (kind, direction, yards))
         for direction in DIRECTIONS:
             for yards in DISTANCES:
                 self.old.arrange(direction, yards)
                 a = self.old.select(0)
                 self.new.arrange(direction, yards)
                 b = self.new.select(0)
-                self.assertEqual(b, a, ("probe", direction, yards))
+                self.assertTrue(same(b, a), ("probe", direction, yards))
 
     def stored_yards(self, replay, key, *, replan=False, ticks=0, **arrange):
         replay.arrange(*key, **arrange)
@@ -199,7 +205,7 @@ class Grid:
             self.new.arrange_at(position, arrival, flight=flight, context=context)
             after = self.new.select()
             if not (before["returned"] and before["accepted"]):
-                self.assertEqual(after, before, index)
+                self.assertTrue(same(after, before), index)
                 continue
             counts["attempts"] += 1
             self.assertLessEqual(slide_yards(before), 1.0 + 1e-3, index)               # retail's own bound: reach + allowance
@@ -210,7 +216,7 @@ class Grid:
                 self.assertEqual((after["accepted"], after["rate"], after["clip"]), (0, 1.0, before["clip"]), index)
             else:
                 counts["kept"] += 1
-                self.assertEqual(after, before, index)
+                self.assertTrue(same(after, before), index)
         self.assertGreaterEqual(counts["long"], 5, counts)
         self.assertGreaterEqual(counts["kept"], 5, counts)
 
