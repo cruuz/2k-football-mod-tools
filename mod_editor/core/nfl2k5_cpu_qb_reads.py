@@ -206,6 +206,10 @@ def _recognize(payload):
     if image.read(va, len(before)) != before:
         require(scrambles.status(payload) == "applied", "Foreign CPU scramble neighbor in the QB tick")
         neighbors.append(("cpu_scrambles_threshold", va, before, None))
+    # b780 a-passer: the CPU passer owner's pump operands in the QB tick and its read dwell curve 0x50C548, only as
+    # its own complete verified installation (anything else raises and reads foreign).
+    from . import nfl2k5_cpu_passer_iq as passer
+    neighbors += [(name, at, old, None) for name, at, old, _new in passer.normalized_sites(payload)]
     for va, size, digest in GUARDS:
         content = bytearray(image.read(va, size))
         for _, at, before, _ in edits + neighbors:

@@ -7121,6 +7121,68 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_cpu_passer_iq --xbe source.xbe --apply --output new-cpu-passer.xbe",
+        "module": "mod_editor/core/nfl2k5_cpu_passer_iq.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "tests/mod_editor/test_nfl2k5_cpu_passer_iq.py",
+        "tests/mod_editor/test_nfl2k5_cpu_passer_iq_unicorn.py",
+        "tools/nfl2k5_cpu_passer_iq.S"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. On in Advanced and Experimental, off in Basic (b780 r1-cpu research, job A)."
+      },
+      "id": "nfl2k5.gameplay.cpu_passer_iq",
+      "input_constraints": [
+        "Pinned USA XBE or verified composed input; the CPU QB reads and CPU scramble owners compose (each normalizes the others' verified sites). Foreign or mixed bytes refuse before mutation.",
+        "CPU passers only: the short-throw term of targets nearer than 15 yards fades from 2 s after the snap (sooner once the first read cycle completed) to 20 percent, and to 20 percent at once at pocket pressure 0.7; human passers keep every retail score.",
+        "A late allocator owner (256 RX, 16 RW bytes), installed last; rebuild from a clean base to turn it off."
+      ],
+      "portme": [
+        "Measure CPU v CPU snap-to-release times, pump fakes and the share of targets to backs over a season sample before tuning FLOOR (the checkdown-rate lever)."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and recipes; never distribute generated game executable or disc bytes.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Bounded native instruction replays of the target scorer 0x19A7E0 with the field terms 0x199CE0, both pump-fake paths of the QB tick 0x19BB60, the throw press holdoff gate 0x19BAE0 and the read advance 0x199100, with declared input seams. Played games, completion rates and the target share of backs are unwitnessed.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false in Basic; true in Advanced and Experimental",
+            "name": "cpu_passer_iq",
+            "required": true
+          }
+        ],
+        "notes": "Build-time only. Off skips the writer and its allocation; there is no in-game toggle."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "Hook 0x199F23 (5); operands 0x19BFD1, 0x19C1C2 (to the retail 0.6 at 0x4EFE14) and 0x19C194 (20 to 60); read dwell curve 0x50C548 (44); owned 256 RX and 16 RW bytes.",
+        "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+      },
+      "summary": "CPU quarterbacks look downfield early, then check the ball down to an open back or tight end late in the play or under pressure; pump fakes block the throw 0.6 s instead of 1.5 s and every QB reads receivers faster.",
+      "surface": "gameplay_tuning_sliders",
+      "title": "CPU quarterbacks throw on time and check down (experimental)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_cpu_passer_iq"
+    },
+    {
+      "backend": {
         "command": "python3 tools/nfl2k5_modern_rules.py apply source.xbe --output new-rules.xbe --modern-scrambles",
         "module": "tools/nfl2k5_modern_rules.py",
         "operation": "write"

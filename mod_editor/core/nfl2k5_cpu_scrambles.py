@@ -48,8 +48,10 @@ def validate_neighbors(payload, image):
 def neighbor_sites(payload):
     # b776-ai2: the CPU QB reads owner hooks 0x19B7D3 (outside), 0x19BC72 and 0x19BD8C (inside
     # the guarded QB tick). Only its own completely verified installation is normalized.
+    # b780 a-passer: so are the CPU passer owner's pump operands (0x19BFD1, 0x19C1C2, 0x19C194).
     from . import nfl2k5_cpu_qb_reads as reads
-    return reads.normalized_sites(payload)
+    from . import nfl2k5_cpu_passer_iq as passer
+    return reads.normalized_sites(payload) + passer.normalized_sites(payload)
 
 
 def encode_options():

@@ -3769,6 +3769,10 @@ mod_editor/core/nfl2k5_preseason_warning.py
 mod_editor/core/nfl2k5_pass_rush_stats.py
 mod_editor/core/nfl2k5_pass_rush_stats_code.py
 tests/mod_editor/test_nfl2k5_pass_rush_stats.py
+mod_editor/core/nfl2k5_cpu_passer_iq.py
+mod_editor/core/nfl2k5_cpu_passer_iq_code.py
+tests/mod_editor/test_nfl2k5_cpu_passer_iq.py
+tests/mod_editor/test_nfl2k5_cpu_passer_iq_unicorn.py
 tests/mod_editor/test_nfl2k5_pass_protection_sim.py
 tests/mod_editor/test_nfl2k5_run_blocking.py
 tests/mod_editor/test_nfl2k5_team_sleeves.py
