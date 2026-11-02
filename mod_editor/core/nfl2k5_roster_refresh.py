@@ -48,7 +48,8 @@ LOCK_ROLES = ("rank", "side", "kr1", "kr2", "pr")
 
 
 def _rejoin_injured(by, rows, teams, assigned):
-    """The membership after the injured players rejoin: (active list by club index, rejoined, released, to FA)."""
+    """The membership after the injured players rejoin: (active list by club index, rejoined, released, to FA).
+    Called after the rows and the contract initializers are written, so it reads the final records."""
     from . import nfl2k5_practice_squad as ps
     from . import nfl2k5_roster_records as rr
     from .nfl2k5_my_career_prospects import native_overall
@@ -242,13 +243,9 @@ def apply_body(body, plan):
                     1 <= fields["contract_value"] <= 65535 and
                     0 <= fields["contract_type"] <= 7 and 0 <= fields["contract_bonus"] <= 7,
                     "Invalid native contract initializer")
-    # b780 b4-economy (D6): the injured players rejoin their clubs (see INJURED_STATUSES).
-    actives, rejoined, released, injured_free = _rejoin_injured(by, rows, teams, assigned)
-    free_agents = list(plan["free_agents"]) + released + injured_free
-    rr._require(len(free_agents) == len(set(free_agents)), "Refresh has duplicate or absent membership")
-    rr._require(len(free_agents) <= doc.free_agent_capacity, "Free-agent list is full")
-    owned = (owned - set(released)) | rejoined
-    # All identity/capacity gates precede mutation of this private document.
+    # All identity/capacity gates precede mutation of this private document (the injured-reserve placement below
+    # reads the records as this refresh writes them, so its own gates run after the rows; a refusal there still
+    # leaves the caller's body untouched).
     added = 0
     for row in rows:
         p = by[row["index"]]
@@ -282,12 +279,20 @@ def apply_body(body, plan):
     initialized_contracts = 0
     for row in contracts:
         rec = by[row["index"]].record
-        if row["index"] in owned and rec.get("contract_length") == 0:
+        if rec.get("contract_length") == 0:
             rr._require(rec.get("contract_value") == rec.get("contract_remaining") == 0,
                         "Malformed nonempty contract cannot be initialized")
             for key, value in row["fields"].items():
                 rec.set(key, value)
             initialized_contracts += 1
+    # b780 b4-economy (D6): the injured players rejoin their clubs (see INJURED_STATUSES), chosen on the records as
+    # this refresh leaves them (new players created, positions and modeled contracts written), so a replay on the
+    # output makes the same choices.
+    actives, rejoined, released, injured_free = _rejoin_injured(by, rows, teams, assigned)
+    free_agents = list(plan["free_agents"]) + released + injured_free
+    rr._require(len(free_agents) == len(set(free_agents)), "Refresh has duplicate or absent membership")
+    rr._require(len(free_agents) <= doc.free_agent_capacity, "Free-agent list is full")
+    owned = (owned - set(released)) | rejoined
     rr._require(all(by[i].record.get("contract_length") >= 1 for i in owned),
                 "Owned unsigned player needs a native contract initializer")
     for team, row in zip(doc.teams, teams):
