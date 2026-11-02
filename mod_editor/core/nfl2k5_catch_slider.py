@@ -39,8 +39,9 @@ sum to 1.0 (Rookie 1.0/0.0, Pro 0.75/0.25, All-Pro 0.5/0.5, Legend 0.25/0.75), s
 moves both teams.  b780 b5-sim: at m = 2 a receiver rated 70 or better never dropped a ball in his hands (only
 P < 0.5 drops) and the v0.8 release measured 0.1 to 0.3 drops a team-game against the NFL's 1.2. With m = 1.25 the
 real catch routine (Unicorn, the SOFTDRINK target mix weighted by simulated-season targets) drops 2.8 % of hands
-rolls with the assumed coverage and 6.0 % with harsh coverage (NFL 5.2 % of catchable targets, nflverse + FTN
-2022-25): Catching 90+ about 0.1 %, 80s 1.0-2.6 %, 70s 2.2-5.9 %, 60s 4.4-10 %. Elite hands stay sure.  (The previous revision used the receiving side's own slider: the Pro human
+rolls with the assumed coverage and 6.0 % with harsh coverage (gp1's lower-rated synthetic mix: 4.2 % and 8.7 %; NFL
+5.2 % of catchable targets, nflverse + FTN 2022-25): Catching 90+ about 0.1-0.8 %, 80s 1.0-3.5 %, 70s 2.2-6 %, 60s
+4-10 %. Elite hands stay almost sure.  (The previous revision used the receiving side's own slider: the Pro human
 got x1.5 and the CPU stayed at retail odds, which is why the CPU dropped many more passes than
 the human.)  Interception keeps its full range: 0 makes picks impossible, 50 is retail, 100
 doubles them (the game's own slider branch keeps a 10 % floor and scales with difficulty,
