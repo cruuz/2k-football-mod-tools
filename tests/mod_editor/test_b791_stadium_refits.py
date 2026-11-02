@@ -17,7 +17,6 @@ receipts and read-back staying applied; and mod_build carrying the lines into th
 from __future__ import annotations
 
 import hashlib
-import json
 import os
 import random
 import struct
