@@ -125,6 +125,14 @@ def route_point(name, frame, speed_yards_s=6.0):
             lateral / seconds * YARD if moving else 0, -back / seconds * YARD if moving else 0)
 
 
+def _longest(flags):
+    best = run = 0
+    for flag in flags:
+        run = run + 1 if flag else 0
+        best = max(best, run)
+    return best
+
+
 def summarize(rows, name):
     kind = ROUTES[name][0]
     stop = BREAK if name == "hitch" else BREAK + RETURN_FRAMES
@@ -154,6 +162,7 @@ def summarize(rows, name):
         "mean_gap_yards": sum(r["distance_yards"] for r in rows) / len(rows),
         "gap_at": {f: rows[f]["distance_yards"] for f in GAP_FRAMES},
         "held_ticks_after_break": sum(1 for r in rows[BREAK:] if r["final_throttle"] == 0 and r["throttle"] != 0),
+        "longest_hold_ticks": _longest(r["final_throttle"] == 0 and r["throttle"] != 0 for r in rows),
         "lapse_calls": sum(r["lapse_calls"] for r in rows),
         "rng_calls": sum(len(r["lapse_words"]) for r in rows),
     }
@@ -337,7 +346,7 @@ def main(argv=None):
         print(f"{key}: total={s['rotation_total_degrees']:.1f} stem_pivots={len(s['pre_break_large_pivot_frames'])} "
               f"post_pivots={len(s['large_pivot_frames'])} pairs={s['reversal_pairs']} tail={s['tail_total_degrees']:.2f} "
               f"gap_final={s['final_gap_yards']:.3f} gap_max_post={s['max_post_break_gap_yards']:.3f} "
-              f"held={s['held_ticks_after_break']} visits={case['owner_visits']}", flush=True)
+              f"held={s['held_ticks_after_break']} longest_hold={s['longest_hold_ticks']} visits={case['owner_visits']}", flush=True)
     if args.only == "all" and args.hz == 60 and not wanted:
         try:
             document["verification"] = verify_document(document, tuple(brake_builds))
