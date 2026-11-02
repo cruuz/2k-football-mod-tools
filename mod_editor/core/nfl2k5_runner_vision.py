@@ -43,10 +43,10 @@ REQUESTS = ((OWNER, "code", CODE_SIZE, 16),)
 BUILD_CAPTION = "CPU ball carriers see where defenders are going: cutbacks, less sideline drift (experimental)"
 HELP_TEXT = ("EXPERIMENTAL. CPU ball carriers judge defenders by where they are going, not only where they are: "
              "a defender who overruns the play is avoided where he will be, so the runner cuts back behind him, "
-             "and pursuit chasing from behind no longer pushes him to the sideline. Within nine yards of the "
-             "sideline he stops bending outward and runs upfield. Needs CPU ball carriers stay in bounds. When the "
-             "clock matters for his team late in a half he plays it like retail. Human-controlled players are "
-             "unchanged.")
+             "and pursuit chasing from behind no longer pushes him to the sideline. From nine yards out his bend "
+             "toward the sideline fades, so he turns upfield well before the line. Needs CPU ball carriers stay in "
+             "bounds. When the clock matters for his team late in a half he plays it like retail. Human-controlled "
+             "players are unchanged.")
 
 HOOK = ("push_call", 0x002E3072, bytes.fromhex("e8e9f1ffff"))       # call 0x2E2260 in the carrier task
 PUSH_VA, PUSH_SIZE = 0x002E2260, 0x520

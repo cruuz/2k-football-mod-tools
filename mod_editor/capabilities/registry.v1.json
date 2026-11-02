@@ -8175,6 +8175,72 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_runner_vision --xbe source.xbe --apply --output new-runner-vision.xbe",
+        "module": "mod_editor/core/nfl2k5_runner_vision.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "tests/mod_editor/test_nfl2k5_runner_vision.py",
+        "tests/mod_editor/test_nfl2k5_ball_carrier_ai.py",
+        "mod_editor/core/nfl2k5_runner_vision.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL. CPU ball carriers judge defenders by where they are going, so they cut back behind a man who overruns the play and stop bending to the sideline under pursuit. Needs CPU ball carriers stay in bounds (its wider 9-yard sideline limit). Off in every preset until its emulator gate passes."
+      },
+      "id": "nfl2k5.gameplay.runner_vision",
+      "input_constraints": [
+        "Pinned USA XBE or verified composed input; the ball-carrier push routine 0x2E2260 must be byte-identical to retail (its owner copy is made from the source's own bytes). Mixed or foreign owners refuse before mutation.",
+        "CPU-controlled ball carrier ([[carrier+0xC]] == -1) with his team's clock urgency 0.5 or less; human carriers and urgent clocks run the retail routine.",
+        "Defenders only: closest approach within 0.35 s and softer side and behind weights; teammates and blockers keep the retail look-ahead and weights.",
+        "Late allocator owner after nfl2k5_sim_realism_state; needs nfl2k5_ball_carrier_ai installed with wide_sideline. Rebuild from base to opt out."
+      ],
+      "portme": [
+        "Integration keeps nfl2k5_runner_vision after nfl2k5_ball_carrier_ai in LATE_OWNERS and regenerates the production cave manifest.",
+        "Emulator gate: CPU vs CPU attract demo or Quick Game, count CPU carries that reach the sideline untouched, owner on and off."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and recipes; never distribute generated game executable or disc bytes.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "tests/mod_editor/test_nfl2k5_runner_vision.py"
+        ],
+        "scope": "The real retail push routine, its relocated owner copy and the real sideline filter with the ball-carrier cave run in Unicorn on synthetic players; the copy equals the retail routine bit for bit when every player takes the retail path, and humans, urgent clocks and teammate-only scenes are bit-identical. Gameplay is not witnessed.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false in Basic, Advanced and Experimental; explicit opt-in with cpu_ball_carriers",
+            "name": "cpu_runner_vision",
+            "required": true
+          }
+        ],
+        "notes": "Retail: a CPU carrier pushes away from where defenders are now, so pursuit from inside bends him to the sideline and he never cuts back. Patch: CPU carriers on a calm clock judge each defender at their closest approach."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "One pinned five-byte call at 0x2E3072 in the ball-carrier task; 1,664-byte RX reservation holding a wrapper, the owner copy of 0x2E2260 built from the source and its constants; no owner RW state.",
+        "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+      },
+      "summary": "CPU ball carriers judge defenders by where they are going: cutbacks behind overpursuit and less sideline drift.",
+      "surface": "gameplay_tuning_sliders",
+      "title": "CPU ball carrier vision (experimental, unwitnessed)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_runner_vision"
+    },
+    {
+      "backend": {
         "command": "python3 -m mod_editor.core.nfl2k5_scramble_tuning <source.xbe> <new-copy.xbe>",
         "module": "mod_editor/core/nfl2k5_scramble_tuning.py",
         "operation": "write"
