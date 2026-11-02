@@ -196,5 +196,75 @@ class CaveTests(unittest.TestCase):
         self.assertEqual(self.run_window(side=2.0 * YD, velocity=(-9 * YD, 0.0), fpu_depth=1), 1)
 
 
+@unittest.skipUnless(uc is not None, "Unicorn is required for bounded instruction replay")
+class DecisionTests(unittest.TestCase):
+    """The real ball-play decision 0x1F52C0 (retail bytes, then with the hook): a CPU man defender, a flat ball flying
+    +z at 20 yd/s at the height of his hands (below his reach) that crosses his line 0.45 s from now."""
+
+    @classmethod
+    def setUpClass(cls):
+        from tests.mod_editor.test_nfl2k5_db_ball_play_unicorn import atl_body, coverage_nodes
+        from tests.nfl2k5_cpu_ai_native import ball_frame_class
+        node = next(n for _s, n in coverage_nodes(atl_body(), 183) if n.op == 0x0E)
+        retail = retail_xbe()
+        cls.machines = {}
+        for label, payload in (("retail", retail), ("patched", dive.apply(retail)[0])):
+            m = ball_frame_class()(payload, node, direction=1)
+            snap = [(s, bytes(m.uc.mem_read(s, e - s + 1))) for s, e, _ in m.uc.mem_regions()]
+            cls.machines[label] = (m, snap)
+
+    def decide(self, label, x, z, vx=0.0, vz=0.0, *, cpu=True, catch=None):
+        m, snap = self.machines[label]
+        for start, data in snap:
+            m.uc.mem_write(start, data)
+        m.place(m.p, x * YD, z * YD, vx * YD, vz * YD)
+        m.put(m.steer, 0xFFFFFFFF if cpu else 0)
+        m.uc.mem_write(0x2010100, struct.pack("<8f", 0, 150.0, 0, 1, 0, 0, 20 * YD, 0))
+        m.put(0x2010000, 0); m.put(0xE602C0, 4); m.put(m.GAME + 0x1B4, 0)
+        if catch is None:
+            m.put(0xBF0E08, 0)
+        else:
+            m.uc.mem_write(0xBF0DF0, struct.pack("<4f", catch[0] * YD, 142.04, catch[1] * YD, 1.0))
+            m.put(0xBF0E08, 1); m.put(0xE3C000, m.target)
+        point = 0x2058F00
+        m.uc.mem_write(point, struct.pack("<4f", 0, 0, 0, 1))
+        m.component(0x1F52C0, ecx=point, edx=m.p, args=(0,))
+        return m.uc.reg_read(x86.UC_X86_REG_EAX)
+
+    def both(self, *args, **kwargs):
+        return self.decide("retail", *args, **kwargs), self.decide("patched", *args, **kwargs)
+
+    def test_retail_commits_from_where_he_stands_whatever_his_motion(self):
+        self.assertEqual(self.decide("retail", 2.0, 9.0), 2)
+        self.assertEqual(self.decide("retail", 2.0, 9.0, vx=9.0), 2)      # running away from the ball's path
+        self.assertEqual(self.decide("retail", 2.9, 9.0), 2)
+        self.assertEqual(self.decide("retail", 3.1, 9.0), 0)
+        self.assertEqual(self.decide("retail", 4.0, 9.0, vx=-9.0), 0)     # no look-ahead of his own run
+
+    def test_long_leaps_need_him_closing_on_the_ball(self):
+        self.assertEqual(self.both(2.0, 9.0), (2, 0))                    # standing still 2 yd away
+        self.assertEqual(self.both(2.0, 9.0, vx=9.0), (2, 0))            # running away
+        self.assertEqual(self.both(2.0, 9.0, vz=9.0), (2, 0))            # running alongside the ball's line
+        self.assertEqual(self.both(2.0, 9.0, vx=-9.0), (2, 2))           # sprinting at the path
+        self.assertEqual(self.both(2.9, 9.0, vx=-9.0), (2, 2))
+
+    def test_close_plays_and_human_defenders_are_retail(self):
+        for x in (0.5, 1.2):
+            retail, patched = self.both(x, 9.0)
+            self.assertEqual(patched, retail, x)
+            self.assertIn(retail, (2, 3), x)
+        self.assertEqual(self.both(2.0, 9.0, cpu=False), (2, 2))
+        self.assertEqual(self.both(3.1, 9.0), (0, 0))
+        self.assertEqual(self.both(2.0, 4.0), (0, 0))                    # the ball crosses his line in 0.2 s
+
+    def test_no_leap_at_a_ball_the_receiver_catches_first(self):
+        # catch point 2 yd before his line on the ball's path: the ball reaches the receiver 0.1 s earlier
+        self.assertEqual(self.both(1.2, 9.0, catch=(0.0, 7.0)), (2, 0))
+        self.assertEqual(self.both(2.0, 9.0, vx=-9.0, catch=(0.0, 7.0)), (2, 0))
+        # catch point at or beyond his line: unchanged
+        self.assertEqual(self.both(2.0, 9.0, vx=-9.0, catch=(0.0, 12.0)), (2, 2))
+        self.assertEqual(self.both(1.2, 9.0, catch=(0.0, 9.2)), (2, 2))
+
+
 if __name__ == "__main__":
     unittest.main()
