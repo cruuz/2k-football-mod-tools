@@ -129,6 +129,7 @@ def code_for(code_va):
     a.label("exit")
     a.b("8b44241885c0"); a.j8("74", "out")                        # result = [esp+0x18]; nothing selected: retail
     a.b("8b4c241083e9" + "55" + "83f9" + "02"); a.j8("77", "out")  # request - 0x55 above 2: another request: retail
+    #   (the probe path, request 0, reuses [esp+0x10] for a float; no real float reads 0x55..0x57, a denormal near 1e-43)
     a.b("833d" + _imm(GAME_BALL_KIND) + "04"); a.j8("75", "out")  # not a forward pass in the air: retail
     a.b("8b0d" + _imm(GAME_OFFENSE_TEAM) + "3b4e38"); a.j8("74", "out")   # his team has the ball: a receiver, retail
     a.b("8b4e0c8339ff"); a.j8("75", "out")                        # not CPU-controlled ([[player+0xC]] != -1): retail

@@ -213,7 +213,6 @@ class WriterTests(unittest.TestCase):
             bc.apply(self.final)
 
     def test_the_build_reserves_both_and_either_writer_order_works(self):
-        from mod_editor.core import mod_build as build
         from mod_editor.core import nfl2k5_throw_tuning as tt
         requests = tt._selected_space_requests(cpu_ball_carriers=True, catch_snap_limit=True)
         self.assertIn(cs.REQUESTS[0], requests)

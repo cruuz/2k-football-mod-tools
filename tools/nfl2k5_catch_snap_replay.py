@@ -20,7 +20,6 @@ from __future__ import annotations
 import hashlib
 import math
 from pathlib import Path
-import struct
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -79,6 +78,9 @@ class CatchSnapReplay:
         self.initialization = {"records_including_aliases": len(records), "native_init_calls": m.catch_init_calls}
         for address, data in patches:
             m.uc.mem_write(address, data)
+        flush = getattr(m.uc, "ctl_flush_tb", None)
+        if patches and flush is not None:
+            flush()                                            # translated blocks must not outlive the patched bytes
         m.put(m.TEAM + 0x400, m.TEAM)
         m.put(m.TEAM + 0x408, m.TEAM + 0x500)
         m.put(m.TEAM + 0x50C, m.TEAM + 0x600)
@@ -134,6 +136,7 @@ class CatchSnapReplay:
         m.vec(m.P + 0x530, (px, 100, pz, 1))
         m.vec(m.BALL + 0x100, (0, 180, 2200, 1))
         m.vec(m.OUT, (0, 137.16, 1000, 1))
+        self.flight, self.arrival = .45, (0, 137.16, 1000)
         m.call(0x1CBDB0, (.45, 0., 0., 1, 0), ecx=m.BALL, edx=m.OUT)
         m.call(0x1CC820, (.45,), ecx=m.BALL, edx=m.OUT + 0x100)
         endpoint = m.vector(m.OUT + 0x100)
@@ -149,11 +152,12 @@ class CatchSnapReplay:
             return
         m = self.m
         t = ticks / 60
+        remaining = max(self.flight - t, 1 / 60)
         m.call(0x1CC820, (float(t),), ecx=m.BALL, edx=m.OUT + 0x100)
         m.vec(m.BALL + 0x100, m.vector(m.OUT + 0x100))
-        m.vec(m.OUT, (0, 137.16, 1000, 1))
-        m.call(0x1CBDB0, (float(.45 - t), 0., 0., 1, 0), ecx=m.BALL, edx=m.OUT)
-        m.call(0x1CC820, (float(.45 - t),), ecx=m.BALL, edx=m.OUT + 0x100)
+        m.vec(m.OUT, (*self.arrival, 1))
+        m.call(0x1CBDB0, (float(remaining), 0., 0., 1, 0), ecx=m.BALL, edx=m.OUT)
+        m.call(0x1CC820, (float(remaining),), ecx=m.BALL, edx=m.OUT + 0x100)
 
     def arrange_at(self, player_cm, arrival_cm=(0.0, 137.16, 1000.0), *, flight=0.45, context=0.8, defender=True,
                    cpu=True, human_team=False, ball_kind=4):
@@ -173,6 +177,7 @@ class CatchSnapReplay:
         m.vec(m.P + 0x530, (player_cm[0], 100, player_cm[1], 1))
         m.vec(m.BALL + 0x100, (0, 180, 2200, 1))
         m.vec(m.OUT, (*arrival_cm, 1))
+        self.flight, self.arrival = float(flight), tuple(arrival_cm)
         m.call(0x1CBDB0, (float(flight), 0., 0., 1, 0), ecx=m.BALL, edx=m.OUT)
         m.call(0x1CC820, (float(flight),), ecx=m.BALL, edx=m.OUT + 0x100)
         m.seed_rng(0x100000)
