@@ -360,6 +360,21 @@ class Doctor(unittest.TestCase):
         import base64
         self.assertNotIn(base64.b64encode(art)[:40], blobs)
 
+    def test_a_preflight_that_crashes_cannot_hide_the_option_findings(self):
+        path = archive(self.folder, {"custom_intro": "m.mp4", "trim_intro_videos": True})
+        source = self.folder / "retail.iso"
+        source.write_bytes(b"not a real disc")
+        with mock.patch.object(mod_build, "preflight_plan", side_effect=FileNotFoundError("reports/assets/x.json")):
+            report = pc.doctor(path, source, checks=["options", "preflight"])
+        self.assertEqual(report.section("preflight").status, "failed")
+        self.assertIn("x.json", report.section("preflight").summary)
+        self.assertEqual(report.section("options").status, "ran")
+        self.assertIn("Build options", [f.area for f in report.stops])      # the option conflict is still named
+        with mock.patch.object(mod_build, "preflight_plan", side_effect=ValueError("Choose a supported disc. More.")):
+            report = pc.doctor(path, source, checks=["preflight"])
+        self.assertEqual([f.code for f in report.stops], ["preflight.refused"])
+        self.assertIn("Build would refuse at the start", report.section("preflight").summary)
+
     def test_a_check_that_raises_is_a_failed_section_not_a_failed_doctor(self):
         path = archive(self.folder)
         with mock.patch.object(pc, "inventory", side_effect=RuntimeError("disk on fire")):

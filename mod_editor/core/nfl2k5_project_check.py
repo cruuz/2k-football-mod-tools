@@ -1269,8 +1269,9 @@ def doctor(project, source, settings=None, *, progress: Callable[..., None] | No
                     from .nfl2k5_source_cache import Nfl2k5SourceCache
                     index = Nfl2k5SourceCache(source_cache).index(Path(source)).pack0
                 paths = inputs.stage(needed, folder)
+            # the disc preflights are their own section (below): a preflight that crashes must not hide these findings
             quick = check(plan, asset_ids=inputs.asset_ids, document=inputs.document, fit_rows=inputs.fit_rows,
-                          progress=progress, run_preflight=("preflight" in wanted and have_source),
+                          progress=progress, run_preflight=False,
                           asset_paths=paths if do_compile else None, source_index=index if do_compile else None,
                           details=kit_details)
             for finding in quick.findings:
@@ -1278,13 +1279,30 @@ def doctor(project, source, settings=None, *, progress: Callable[..., None] | No
             report.findings.extend(quick.findings)
             section.summary = (f"{len(quick.stops)} to change, {len(quick.notes)} notes; checked "
                                + "; ".join(quick.steps) + ".")
-            if "preflight" in wanted and not have_source:
-                section.summary += " The disc preflights did not run: the disc is not there."
             section.data["lines"] = [f"Options on: {len(selected)}."] + (
                 [f"Your Modern colour values differ from the defaults in {len(report.options['colour_changes'])} "
                  "places: " + ", ".join(f"{lever} {a} -> {b}" for lever, a, b in report.options["colour_changes"][:20])
                  + ("." if len(report.options["colour_changes"]) <= 20 else ", ...")]
                 if report.options["colour_changes"] else [])
+
+        def preflight_section(section):
+            """The source-disc preflights Build runs first (``mod_build.preflight_plan``), as ``check`` runs them."""
+            if not have_source:
+                section.status = "skipped"
+                section.summary = "the disc is not there, so the disc preflights did not run."
+                return
+            from . import mod_build
+            say("Checking the disc and the options against it (several minutes)", 0, 0)
+            try:
+                mod_build.preflight_plan(plan, progress)
+            except ValueError as exc:
+                report.findings.append(Finding(STOP, "Disc and options", str(exc).strip().splitlines()[0][:400],
+                                               str(exc).strip()[:1200],
+                                               "Follow the sentence above: it names the option or the file.",
+                                               code="preflight.refused"))
+                section.summary = "Build would refuse at the start: " + str(exc).strip().splitlines()[0][:300]
+                return
+            section.summary = "passed: Build's own start-of-build checks accept this disc with these options."
 
         def kit_section(section):
             if not _feature_documents(plan):
@@ -1512,7 +1530,8 @@ def doctor(project, source, settings=None, *, progress: Callable[..., None] | No
             section.summary = (f"{data['edits']:,} edits in {data['kit_packages']:,} kit files; "
                                f"{len(over)} over a limit, {len(close)} close.")
 
-        bodies = dict(options=("options", "Options, artwork and disc checks", options),
+        bodies = dict(options=("options", "Options, artwork and kit checks", options),
+                      preflight=("preflight", "Disc and option preflights", preflight_section),
                       kits=("kits", "Anniversary and classic kits", kit_section),
                       stadiums=("stadiums", "Stadium and colour dry run", stadium_section),
                       untested=("untested", "Options no release build tried", untested_section),
@@ -1527,9 +1546,9 @@ def doctor(project, source, settings=None, *, progress: Callable[..., None] | No
             early_stadiums = pool.submit(dry.run, plan, source, progress=progress, workers=workers,
                                          stadium_models=stadium_models, use_cache=use_cache)
         try:
-            if "options" in wanted or "preflight" in wanted:
+            if "options" in wanted:
                 run(*bodies["options"])
-            for key in ("kits", "stadiums", "untested", "inventory"):
+            for key in ("preflight", "kits", "stadiums", "untested", "inventory"):
                 if key in wanted:
                     run(*bodies[key])
         finally:
