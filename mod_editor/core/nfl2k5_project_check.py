@@ -1198,15 +1198,30 @@ def doctor(project, source, settings=None, *, progress: Callable[..., None] | No
     given; reading a disc into the source cache the first time takes minutes).
 
     Every check that cannot run says so in its section (status "skipped" or "failed", with the reason); a check that
-    raises never stops the others. Build failures can call this to put the report in their diagnostic bundle
-    (job h3): ``doctor(session_or_path, plan.source, plan, checks=QUICK_CHECKS)`` takes seconds."""
+    raises never stops the others; a project file that cannot be read is a stop that says why, and the options are
+    still checked. Build failures can call this to put the report in their diagnostic bundle (job h3):
+    ``doctor(session_or_path, plan.source, plan, checks=QUICK_CHECKS)`` takes about a minute (most of it the kit
+    tries); ``checks=("options", "untested", "inventory")`` takes seconds."""
     import tempfile
+    import zipfile
     started = time.monotonic()
     say = progress or (lambda *_: None)
     wanted = tuple(DOCTOR_CHECKS if checks is None else [c for c in DOCTOR_CHECKS if c in set(checks)])
-    inputs = project_inputs(project, document=document, fit_rows=fit_rows)
+    unreadable = None
+    try:
+        inputs = project_inputs(project, document=document, fit_rows=fit_rows)
+    except (OSError, ValueError, KeyError, zipfile.BadZipFile) as exc:   # ValidationError is a ValueError
+        unreadable = exc
+        inputs = ProjectInputs(name=Path(str(project)).name if isinstance(project, (str, Path)) else "",
+                               document=document, fit_rows=list(fit_rows or ()))
     plan = _doctor_plan(settings, inputs, source)
     report = DoctorReport(studio=_studio(), source=_source_identity(source))
+    if unreadable is not None:
+        report.findings.append(Finding(
+            STOP, "Project file", "Your project file could not be read, so only your options were checked.",
+            f"{type(unreadable).__name__}: {str(unreadable)[:400]}",
+            "Open the project in Studio and save it again (File > Save project), then check again.",
+            code="project.unreadable"))
     report.project = dict(name=inputs.name, edits=len(inputs.asset_ids), manifest_bytes=inputs.manifest_bytes,
                           manifest_sha256=inputs.manifest_sha256, archive_bytes=inputs.archive_bytes)
     selected = [key for key, value in _plan_options(plan).items() if value is True]

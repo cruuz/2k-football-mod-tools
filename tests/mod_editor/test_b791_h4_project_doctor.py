@@ -338,6 +338,15 @@ class Doctor(unittest.TestCase):
         self.assertEqual(inventory["edits"], 2)
         self.assertEqual(inventory["families"], {"equipment": 1, "uniform": 1})
 
+    def test_an_unreadable_project_is_a_stop_and_the_options_are_still_checked(self):
+        bad = self.folder / "broken.2k5mod"
+        bad.write_bytes(b"this is not a zip file")
+        report = pc.doctor(bad, self.folder / "missing.iso", {"modern_arrowhead": True}, checks=pc.QUICK_CHECKS)
+        self.assertFalse(report.ok)
+        self.assertEqual(report.stops[0].code, "project.unreadable")
+        self.assertIn("could not be read", report.stops[0].title)
+        self.assertIn("modern_arrowhead", [i["option"] for i in report.section("untested").data["options"]])
+
     def test_the_report_never_carries_the_users_textures(self):
         marker = bytes(range(97, 123)) * 3          # an unmistakable run inside the user's PNG
         art = png(extra=marker)
