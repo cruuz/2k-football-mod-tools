@@ -366,9 +366,9 @@ def check_handoffs(view: PlayView, native_plan: NativePlan | None = None) -> lis
                 out.append(_finding(
                     view, "TOSS_SIDE_CROSS",
                     f"toss from the gun: "
-                    f"{codec.position_label(view.codes[target])} (slot {target}) stands {abs(offset):.1f} yd to the "
-                    f"{'right' if offset > 0 else 'left'} of the QB but the toss lane is {abs(lane):.1f} yd to the "
-                    f"{'left' if offset > 0 else 'right'}, so he has to cross behind the QB while it is pitched; retail "
+                    f"{codec.position_label(view.codes[target])} (slot {target}) stands {abs(offset):.1f} yd on the "
+                    f"{'+x' if offset > 0 else '-x'} side of the QB but the toss lane is {abs(lane):.1f} yd on the "
+                    f"{'-x' if offset > 0 else '+x'} side, so he has to cross behind the QB while it is pitched; retail "
                     f"tosses out of the gun go to the back's own side", target,
                     **data, offset_yd=round(offset, 2), lane_yd=round(lane, 2)))
         if native_plan is not None:

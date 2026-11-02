@@ -1029,8 +1029,9 @@ TOSS_BEHIND_DEADBAND_YD = 0.4
 
 
 def toss_own_side(ctx: oc.FormationContext, carrier: int) -> int | None:
-    """The side a shotgun or pistol toss to ``carrier`` has to go: his own (+1 right, -1 left), or None when he stands
-    directly behind the QB or the QB is under centre.
+    """The side a shotgun or pistol toss to ``carrier`` has to go: his own (+1 toward +x, -1 toward -x; +x is the right of the
+    Studio's diagrams and the offense's LEFT on the TV, measured in xemu b780 b6-plays), or None when he stands directly
+    behind the QB or the QB is under centre.
 
     b780 b6-plays (SWeaR 11/01: "the Crack Toss under Gun Spread ... your player starts to go outside then cuts
     immediately back into the middle"): the generator tossed to the formation's strong side even when the back stood on
@@ -1049,7 +1050,7 @@ def run_design(ctx: oc.FormationContext, scheme: str, *, weak: bool = False, car
                codes=None, direction: int | None = None, own_side_only: bool = True) -> PlayDesign:
     """A retail-template run re-aimed for this formation (raises ConceptUnavailable).
 
-    ``direction`` (+1 right, -1 left) fixes the run side outright (``weak`` is then derived from the formation's
+    ``direction`` (+1 toward +x, -1 toward -x) fixes the run side outright (``weak`` is then derived from the formation's
     strength); without it the side is the formation's run strength, flipped by ``weak``.  A shotgun or pistol toss
     always goes to the back's own side (``toss_own_side``): the opposite option is unavailable unless
     ``own_side_only`` is False (the playbook linter rebuilds an old, crossing toss to recognise it)."""

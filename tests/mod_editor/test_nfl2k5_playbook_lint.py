@@ -226,6 +226,55 @@ class TossRules(unittest.TestCase):
             om.run_design(pistol, "Zone Toss", weak=weak_flag, codes=self.CODES)
 
 
+class TossPackTool(unittest.TestCase):
+    """b780 b6-plays: pb/v2/toss_side.py turns the shipped crossing shotgun tosses (the books written before the generator
+    knew the back's side) and leaves everything else alone."""
+    #: JAX Gun Spread "Crack Toss" exactly as SOFTDRINK v0.8 shipped it: the back (slot 10, 2.5 yd on the minus-x side of the QB)
+    #: runs to the lane 5.83 yd on the plus-x side, across behind the QB
+    V08_CRACK_TOSS = [
+        [[1, [1, 4, 0, 0, 0, 0]], [3, [0]], [19, [10, 1]]],
+        [[1, [1, 3, 0, 0, 0, 0]], [17, [0, 0, 1, 0, 0, 91.44, 91.44, 0]]],
+        [[1, [1, 3, 0, 0, 0, 0]], [17, [0, 0, 1, 0, 0, 91.44, 91.44, 0]]],
+        [[1, [1, 2, 0, 0, 0, 0]], [2, [0]], [17, [0, 0, 1, 0, 2, 91.44, 91.44, 0]]],
+        [[1, [1, 3, 0, 0, 0, 0]], [17, [0, 0, 1, 0, 0, 91.44, 91.44, 0]]],
+        [[1, [1, 3, 0, 0, 0, 0]], [17, [0, 0, 1, 0, 0, 91.44, 91.44, 0]]],
+        [[1, [1, 3, 0, 0, 0, 0]], [17, [3, 0, 1, 0, 2, 0, 457.2, 1]], [17, [4, 0, 0, 0, 2, 640.08, 0, 1]]],
+        [[1, [1, 3, 0, 0, 0, 0]], [17, [0, 0, 1, 0, 2, -274.32, 91.44, 0]]],
+        [[1, [1, 3, 0, 0, 0, 0]], [17, [3, 0, 1, 0, 2, 0, 457.2, 1]]],
+        [[1, [1, 3, 0, 0, 0, 0]], [17, [0, 0, 1, 0, 2, -274.32, 91.44, 0]]],
+        [[1, [1, 3, 0, 0, 0, 0]], [22, [0, 0, 1]], [21, [0, 914.4, -91.44, 2, 15, 0, 0]]],
+    ]
+
+    def jax(self):
+        return json.loads((ROOT / "data/playbooks/softdrink_jax_modern.2k5book").read_text(encoding="utf-8"))
+
+    def test_tool_turns_the_v08_crossing_toss_once(self):
+        from pb.v2 import toss_side
+        doc = self.jax()
+        play = next(p for p in doc["plays"] if p["id"] == "p111")
+        play["assignments"], play["custom_name"] = json.loads(json.dumps(self.V08_CRACK_TOSS)), "Crack Toss"
+        stats, changed = toss_side.fix_doc(doc, {"p111": "Gun Spread"})
+        self.assertEqual((stats["tosses_rebuilt"], stats["links"]), (1, 1))
+        self.assertEqual(changed["p111"], ("Crack Toss", "Crack Toss Wk", 4, 0, ["Gun Spread"]))
+        self.assertEqual(play["custom_name"], "Crack Toss Wk")                # the lane is on the formation's weak side now
+        back = play["assignments"][10]
+        self.assertEqual([n[0] for n in back], [1, 22, 21])
+        self.assertEqual(back[1][1][2], 8)                                    # take handoff hole 8: 5.83 yd on the back's (minus x) side
+        self.assertEqual(back[2][1][1], -914.4)                               # and the run path out to the same side
+        self.assertEqual(play["assignments"][0], self.V08_CRACK_TOSS[0])      # the QB's pitch to slot 10 is unchanged
+        again, _ = toss_side.fix_doc(doc, {"p111": "Gun Spread"})
+        self.assertEqual(dict(again), {})                                     # a second pass changes nothing
+        self.assertEqual(toss_side.new_name("Crack Toss Wk"), "Crack Toss")   # the " Wk" mark follows the side
+
+    def test_shipped_packs_hold_the_own_side_toss(self):
+        doc = self.jax()
+        form = next(f for f in doc["formations"] if f["custom_name"] == "Gun Spread")
+        self.assertLess(form["slot_positions"][10][0], 0)                     # the back stands on the minus-x side of the QB ...
+        play = next(p for p in doc["plays"] if p["id"] == "p111")
+        self.assertEqual(play["assignments"][10][1][1][2], 8)                 # ... and the lane is on his side (hole 8, minus x)
+        self.assertEqual(play["custom_name"], "Crack Toss Wk")
+
+
 class DefenseAndPacks(unittest.TestCase):
     def test_mug_front_in_a_pack_is_reported(self):
         from types import SimpleNamespace
