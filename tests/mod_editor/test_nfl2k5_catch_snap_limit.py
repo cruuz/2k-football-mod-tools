@@ -11,6 +11,7 @@ The pinned USA retail default.xbe is read from NFL2K5_RETAIL_EXTRACTION (skipped
 """
 from pathlib import Path
 import math
+import random
 import struct
 import sys
 import tempfile
@@ -371,6 +372,45 @@ class StubTests(unittest.TestCase):
 
 
 
+    def test_random_frames_match_a_reference_model(self):
+        """120 seeded frames over every gate and the slide (including NaN, infinity, signed zero, denormals): the patched
+        stub demotes exactly where the written rule says and never changes anything else; retail never changes."""
+        rng = random.Random(780)
+        limit_sq = cs.LIMIT_SQUARED
+        demoted = 0
+        for index in range(120):
+            gates = dict(request=rng.choice([0, 0x54, 0x55, 0x55, 0x56, 0x57, 0x58]), ball_kind=rng.choice([3, 4, 4, 4, 0]),
+                         cpu=rng.random() < 0.8, defender=rng.random() < 0.8, accepted=rng.choice([0, 1, 1, 1]),
+                         clip=rng.random() < 0.9, family=rng.choice([0x000, 0x100, 0x100, 0x100, 0x200, 0x300]),
+                         result=rng.choice([0, 1, 1, 1]), rate=0.9)
+            pick = rng.random()
+            if pick < 0.05:
+                x, z = rng.choice([math.nan, math.inf, -math.inf, 0.0, -0.0, 1e-42]), rng.choice([0.0, 12.0, math.nan])
+            else:
+                while True:
+                    x, z = rng.uniform(-80, 80), rng.uniform(-80, 80)
+                    if abs(x * x + z * z - limit_sq) > 5.0:                 # keep away from the float rounding of the edge
+                        break
+            y = rng.choice([0.0, 300.0, -300.0])
+            gates["correction"] = (x, y, z)
+            old = self.stub(self.retail, **gates)
+            new = self.stub(self.final, **gates)
+            self.assertEqual(old["result"], gates["result"], index)             # retail never changes anything
+            long_slide = math.isnan(x) or math.isnan(z) or math.isinf(x) or math.isinf(z) or x * x + z * z > limit_sq
+            expect = (gates["result"] != 0 and gates["request"] in (0x55, 0x56, 0x57) and gates["ball_kind"] == 4
+                      and gates["defender"] and gates["cpu"] and gates["clip"] and gates["accepted"] != 0
+                      and gates["family"] == 0x100 and long_slide)
+            if expect:
+                demoted += 1
+                self.assertEqual((new["result"], new["accepted"], new["rate"]), (0, 0, 1.0), (index, gates))
+                self.assertEqual(new["clip"], old["clip"], index)
+                self.assertEqual(new["record"][0x10:0x1C], old["record"][0x10:0x1C], index)
+            else:
+                self.assertEqual({k: v for k, v in new.items() if k != "correction"},
+                                 {k: v for k, v in old.items() if k != "correction"}, (index, gates))   # bytes cover NaN
+        self.assertGreaterEqual(demoted, 3)
+
+
 @unittest.skipIf(uc is None, "unicorn is not installed")
 class CapStubTests(unittest.TestCase):
     """The setup's reach-cap stub at its real hook (0x1E5CCB), entered with the retail cap on the x87 stack and
@@ -432,6 +472,28 @@ class CapStubTests(unittest.TestCase):
             old, new = self.both(91.44, **kw)
             self.assertEqual(new, old, kw)
             self.assertAlmostEqual(new, 91.44, places=3)
+
+    def test_random_caps_match_a_reference_model(self):
+        rng = random.Random(781)
+        lowered = 0
+        for index in range(80):
+            kw = dict(cpu=rng.random() < 0.8, defender=rng.random() < 0.8, ball_kind=rng.choice([3, 4, 4, 4, 0]))
+            cap = rng.choice([math.nan, math.inf, 0.0, 91.44, 76.2, 45.72, 45.7, 45.8]) if rng.random() < 0.25 else rng.uniform(0.0, 120.0)
+            if not (math.isnan(cap) or math.isinf(cap)) and abs(cap - cs.LIMIT_CM) < 0.01:
+                cap += 0.5                                                   # keep away from the float rounding of the edge
+            old, new = self.both(cap, **kw)
+            if not math.isnan(cap):
+                self.assertAlmostEqual(old, cap, places=3, msg=(index, kw)) if math.isfinite(cap) else self.assertEqual(old, cap)
+            applies = kw["ball_kind"] == 4 and kw["defender"] and kw["cpu"]
+            if applies and (math.isnan(cap) or cap >= cs.LIMIT_CM):
+                lowered += 1
+                self.assertAlmostEqual(new, cs.LIMIT_CM, places=3, msg=(index, kw, cap))
+            elif math.isnan(cap):
+                self.assertTrue(math.isnan(new), (index, kw))
+            else:
+                self.assertAlmostEqual(new, old, places=3, msg=(index, kw, cap)) if math.isfinite(cap) else self.assertEqual(new, old)
+        self.assertGreaterEqual(lowered, 10)
+
 
 if __name__ == "__main__":
     unittest.main()
