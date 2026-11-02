@@ -1,7 +1,7 @@
 # b76-k1/b779-km1: K128's "needs 128 MB" entry (nfl2k5_k128.REQUIRE_CODE). The XBE entry points here when the disc was
 # built with options that need the extra memory. It runs phase 1 like k128_entry (R1's guards, the page count); when the
 # machine will not get 128 MB it takes an 8 MB contiguous buffer below 32 MB, scans it out (NV_PCRTC_START, a 32-bit pitch for the
-# mode's width, the screen and the display turned on), draws three lines of text into it and stops in a hlt loop
+# mode's width, the screen and the display turned on), draws its text lines into it and stops in a hlt loop
 # instead of starting the game (which would otherwise fail later, at the pregame intro). The message names the failed
 # setting (b779-km1): xemu memory below 128 MB keeps the memory lines, and 128 MB with any other guard failing (the
 # kernel is not the 4627 build, or an unsupported kernel state) draws the 4627 BIOS lines.
