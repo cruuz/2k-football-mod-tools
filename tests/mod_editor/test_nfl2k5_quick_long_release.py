@@ -53,7 +53,7 @@ class BytesTests(unittest.TestCase):
             self.assertLessEqual(e0, s1)
         text = (ROOT / "mod_editor/core/nfl2k5_quick_long_release.py").read_text(encoding="utf-8")
         self.assertNotIn("/home/", text)
-        self.assertNotIn("—", q.HELP_TEXT + q.BUILD_CAPTION + text)
+        self.assertNotIn("\u2014", q.HELP_TEXT + q.BUILD_CAPTION + text)
         self.assertTrue(q.BUILD_CAPTION.startswith("Quicker deep and rollout throws"))
 
     def test_every_site_carries_exactly_the_intended_number(self):
