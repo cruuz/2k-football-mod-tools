@@ -134,6 +134,37 @@ class CribOptionWords(unittest.TestCase):
         self.assertEqual(captions.count(crib.BUILD_CAPTION), 1)
 
 
+class CribPageNote(unittest.TestCase):
+    """The sidebar page called The Crib is where a person looks for the cut; it says where the check box is."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.app = QApplication.instance() or QApplication([])
+
+    def test_the_crib_page_names_the_check_box_that_keeps_the_whole_crib(self):
+        from mod_editor.core.nfl2k5_crib import load_nfl2k5_crib_catalog
+        from mod_editor.gui import crib_panel_qt
+        catalog = load_nfl2k5_crib_catalog()
+        host = crib_panel_qt.CallbackCribPanelHost(crib_panel_qt.CribPanelCallbacks(
+            list_assets=lambda: catalog.assets,
+            is_source_ready=lambda: False,
+            modified_ids=lambda: (),
+            preview=lambda _asset_id, _sink: Path("preview.png"),
+            export=lambda _asset_id, destination, _sink: destination,
+            replace=lambda _asset_id, _supplied, _sink: None,
+            revert=lambda _asset_id, _sink: None,
+        ))
+        panel = crib_panel_qt.CribPanel(host)
+        self.addCleanup(panel.close)
+        note = panel.cut_note
+        self.assertEqual(note.text(), crib_panel_qt.CUT_NOTE)
+        self.assertTrue(note.wordWrap())
+        for needle in (crib.BUILD_CAPTION, "Build & Share", "Gameplay", "SOFTDRINK 2K28 pack", "keeps only the Trophy Room"):
+            self.assertIn(needle, note.text())
+        self.assertNotIn(EM_DASH, note.text())
+        self.assertEqual(panel.count_label.text(), "498 assets  \u00b7  498 editable")   # the page still works as before
+
+
 @unittest.skipUnless(XBE.is_file(), "pinned USA XBE required")
 class UntickingReallyKeepsTheCrib(unittest.TestCase):
     """Through the real build entry point: the flag decides, and nothing else does."""
