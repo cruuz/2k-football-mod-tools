@@ -209,6 +209,8 @@ font:   # 0 space, 1 T, 2 H, 3 I, 4 S, 5 B, 6 U, 7 L, 8 D, 9 N, 10 E, 11 M, 12 X
 digits: .byte 30,16,17,31,19,32,20,21,18,33        # the glyph of each decimal digit 0..9
         .balign 4
 ten:    .long 10
+# kernel_line record layout (the tail above writes into it by these offsets): 0 y (word), 2 x (word), 4 length, 5..10 "KERNEL",
+# 11..15 the five digit cells, 16..21 " CODE ", 22 the check number, 23..24 the terminating word, 25..27 padding (7 dwords).
 kernel_line:   # "KERNEL", five digit cells (a 4-digit build leaves the first a space), " CODE ", the check number
         .word 324, 104                                # y 324, x 104 (18 cells centred in 640)
         .byte 18, 29,10,15,9,10,7, 0,0,0,0,0, 0,24,14,8,10,0, 0

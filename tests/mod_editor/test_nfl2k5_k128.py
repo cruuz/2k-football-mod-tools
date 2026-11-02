@@ -119,6 +119,21 @@ class ShapeTests(unittest.TestCase):
         self.assertEqual(len(k128.REQUIRE_CODE), 932)
         self.assertLessEqual(k128.REQUIRE_OFFSET + len(k128.REQUIRE_CODE), k128.OPTIONS_OFFSET)
 
+    def test_the_stop_screen_decides_its_code_with_the_same_checks_as_the_guards(self) -> None:
+        """b780-b11: CODE 1..4 repeats R1's guard compares in the same order, so each compare must exist exactly once in the
+        guards (K128_STUBS) and once in the stop screen; if a guard constant changes, this fails until the screen follows."""
+        for label, pattern in (("kernel build 4627", "668178041312"), ("MiAddPhysicalPages prologue", "813d1af90180568b7424"),
+                               ("PDE[0x210] empty", "833d400830c000"), ("NV_PFB_CSTATUS 128 MB", "813d0c0210fd00000008")):
+            needle = bytes.fromhex(pattern)
+            with self.subTest(label):
+                self.assertEqual((k128.K128_STUBS.count(needle), k128.REQUIRE_CODE.count(needle)), (1, 1))
+        # the guards' order is build, memory, tables, code (CSTATUS is what the screen already used to pick its text)
+        guards = k128.K128_STUBS[k128.GUARDS_OFFSET:]
+        order = [guards.find(bytes.fromhex(p)) for p in ("668178041312", "813d0c0210fd00000008", "833d400830c000",
+                                                          "813d1af90180568b7424")]
+        self.assertEqual(order, sorted(order))
+        self.assertTrue(all(i >= 0 for i in order))
+
     def test_the_128_mb_entry_keeps_the_beta_79_start_up_path_byte_for_byte(self) -> None:
         """b780-b11 only changed what the stop screen says: the guards, the page count, the early form and the memory
         re-check that run before the text choice are the bytes the v0.8 disc shipped (sha pinned from that disc)."""

@@ -137,14 +137,17 @@ def _sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+FLASH_SIZES = (FLASH_UNIT, 2 * FLASH_UNIT, 4 * FLASH_UNIT)      # the sizes xemu fills its 1 MiB flash from
+
+
 def flash_unit_fingerprint(path: Path):
-    """(unit size, sha256) of a Flash ROM image with a mirrored 256 KiB unit folded away, or None if the file is not a
-    whole number of 256 KiB units between 256 KiB and 1 MiB (or cannot be read). A 512 KiB or 1 MiB file that is its first
-    256 KiB repeated gives the same answer as that 256 KiB file; a larger image whose parts differ is hashed whole."""
+    """(unit size, sha256) of a Flash ROM image with a mirrored 256 KiB unit folded away, or None if the file is not 256 KiB,
+    512 KiB or 1 MiB (or cannot be read). A 512 KiB or 1 MiB file that is its first 256 KiB repeated gives the same answer as
+    that 256 KiB file; an image whose parts differ is hashed whole."""
 
     try:
         size = Path(path).stat().st_size
-        if size < FLASH_UNIT or size > 4 * FLASH_UNIT or size % FLASH_UNIT:
+        if size not in FLASH_SIZES:
             return None
         raw = Path(path).read_bytes()
     except OSError:
@@ -194,10 +197,10 @@ def play_problems(config: Path, *, hash_file=None) -> tuple[str, ...]:
                             "image in xemu's System settings.")
         else:
             known = [digest for known_size, digest in KNOWN_4627_FLASHROM if size == known_size]
-            unit = flash_unit_fingerprint(bios)
+            unit = None
             if known and hasher(bios) in known:
                 pass
-            elif unit is not None and unit in KNOWN_4627_UNITS:
+            elif (unit := flash_unit_fingerprint(bios)) is not None and unit in KNOWN_4627_UNITS:
                 pass                    # the tested BIOS saved at another size (256 KiB, 512 KiB or 1 MiB)
             else:
                 # b779 rv1 / b780-b11: the game only needs a 4627 kernel, and a BIOS file keeps that kernel packed: in the
@@ -208,8 +211,8 @@ def play_problems(config: Path, *, hash_file=None) -> tuple[str, ...]:
                 # never "wrong". The game itself checks the kernel when it starts and, if it is not 4627, stops with a
                 # screen that prints the number it found and which check failed (nfl2k5_k128, tools/k128/require_guard.S).
                 fingerprint = (unit[1] if unit is not None else "")[:12]
-                problems.append("Flash ROM (BIOS) " + os.fspath(bios) + " is not the Complex 4627 image this build was "
-                                "tested with" + (" (its fingerprint starts " + fingerprint + ")" if fingerprint else "")
+                problems.append("Flash ROM (BIOS) " + os.fspath(bios) + " was not recognised as the Complex 4627 image this "
+                                "build was tested with" + (" (its SHA-256 starts " + fingerprint + ")" if fingerprint else "")
                                 + ", and Studio cannot read a BIOS file's kernel number, so it cannot say whether this "
                                 "one is fine. If the game starts, ignore this note. If it stops at startup with "
                                 "'THIS BUILD NEEDS THE 4627 XBOX BIOS', that screen prints the kernel number it found: "

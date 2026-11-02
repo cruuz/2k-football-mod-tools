@@ -269,7 +269,8 @@ intro.
   tested one (2: the memory tables are already in use, 3: a kernel routine the patch needs is
   not where it expects, 4: the memory page count is unusual). If you see that, post a photo of
   the screen and the MD5 hash that xemu shows under **Flash ROM (BIOS)** (Machine, Settings,
-  System) in the Discord bugs channel, so we can tell which BIOS it is.
+  System), or the SHA-256 start that Studio's note showed, in the Discord bugs channel, so we can
+  tell which BIOS it is.
 
 ## Does Studio check my xemu settings and BIOS?
 
@@ -278,7 +279,7 @@ shows a note if System Memory is not 128 MiB or the Flash ROM is not set. The ch
 it never changes your BIOS or your memory setting and never stops the launch (the one thing
 Studio writes to `xemu.toml` is the path of your new disc, so xemu remembers it). It recognises
 the tested Complex 4627 image by its contents, so the same BIOS saved as a 256 KB, 512 KB or
-1 MB file counts as the same. For any other BIOS file it shows a short note with a fingerprint instead of an error. A
+1 MB file counts as the same. For any other BIOS file it shows a short note with a SHA-256 fingerprint instead of an error. A
 BIOS file keeps its kernel scrambled, so Studio cannot read the kernel number from the file.
 The game itself checks the kernel when it starts, which is what the screen above is. If your
 BIOS is not the tested one and the game starts at 128 MiB, nothing is wrong and you can ignore

@@ -154,7 +154,7 @@ class PlayCheckTests(unittest.TestCase):
             with patch.object(x, "KNOWN_4627_FLASHROM", ((1_048_576, self.HASH),)):
                 warning = x.play_warning(self._config(root, bios=self._bios(root)),
                                          hash_file=lambda _path: "00" * 32)
-            self.assertIn("is not the Complex 4627 image this build was tested with", warning)
+            self.assertIn("was not recognised as the Complex 4627 image this build was tested with", warning)
             self.assertIn("ignore this note", warning)
             self.assertIn("THIS BUILD NEEDS THE 4627 XBOX BIOS", warning)
             self.assertIn("kernel number", warning)
@@ -218,9 +218,9 @@ class PlayCheckTests(unittest.TestCase):
                 with self.subTest(name), patch.object(x, "KNOWN_4627_UNITS", ((x.FLASH_UNIT, digest),)), \
                         patch.object(x, "KNOWN_4627_FLASHROM", ()):
                     warning = x.play_warning(self._config(root, bios=bios))
-                    self.assertIn("is not the Complex 4627 image this build was tested with", warning)
+                    self.assertIn("was not recognised as the Complex 4627 image this build was tested with", warning)
                     seen = x.flash_unit_fingerprint(bios)
-                    self.assertIn("fingerprint starts " + seen[1][:12], warning)
+                    self.assertIn("SHA-256 starts " + seen[1][:12], warning)
                     self.assertNotEqual(seen[1], digest)
 
     def test_a_mirror_check_is_exact_and_odd_sizes_have_no_unit_fingerprint(self):
@@ -230,7 +230,7 @@ class PlayCheckTests(unittest.TestCase):
             nearly = bytearray(unit * 2)
             nearly[-1] ^= 1                                        # one byte off in the second copy: not a mirror
             for name, body, want_size in (("nearly.bin", bytes(nearly), 2 * x.FLASH_UNIT),
-                                          ("odd.bin", unit[:-1], None), ("small.bin", unit[:1000], None),
+                                          ("odd.bin", unit[:-1], None), ("small.bin", unit[:1000], None), ("three.bin", unit * 3, None),
                                           ("huge.bin", unit * 5, None), ("empty.bin", b"", None)):
                 bios = root / name
                 bios.write_bytes(body)
