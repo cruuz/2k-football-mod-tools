@@ -31,8 +31,8 @@ defender is untouched):
    demoted to retail's own non-catch answer: ``record[+0x40] = 0``, ``record[+4] = 1.0`` (the rate retail's fallback
    record carries) and the selector returns 0. Every caller (the AI tasks that decide to go for the ball and the begin
    callback that starts the clip) then sees the ordinary "no aligned catch from here" result, so there is no new code path,
-   no stale cached plan and no half-started action. He keeps running at the ball and gets his chance a tick later, when
-   the same ball needs a shorter slide (the selector's best plan moves from tick to tick: Unicorn measured 0.21, 0.56, 0.26
+   no stale cached plan and no half-started action. He keeps running at the ball and can get his chance a tick later, if
+   the same ball then needs a shorter slide (the selector's best plan moves from tick to tick: Unicorn measured 0.21, 0.56, 0.26
    yards on three neighbouring ticks for a defender standing still).
 2. **Cap the slide that is stored.** The plan setup (0x1E57B0) already scales the stored slide down to the catch
    context's reach (0x50AD3C, 0.5 to 1 yard) plus a 15 cm allowance for a CPU team; that is the bound that lets a plan
@@ -71,9 +71,9 @@ BUILD_CAPTION = "Limit CPU defender warping to the ball for picks (experimental)
 HELP_TEXT = ("EXPERIMENTAL, off unless you turn it on. When a CPU defender goes up for a pass, the game slides him a "
              "short way sideways to line his hands up with the ball, outside his running speed, and that slide can be close "
              "to a full yard (the 'warp' on a pick). With this on, a CPU defender gets that help only up to half a yard. If "
-             "the catch would need more, he does not go for it from there: he keeps running at the ball and goes for the "
-             "catch a moment later, once it needs a shorter slide. Receivers, human-controlled players, kicks, dives and "
-             "leaps are unchanged. Not yet tested in game.")
+             "the catch would need more, he does not go for it from there: he keeps running at the ball and can still go "
+             "for it a moment later, if the catch then needs a shorter slide. Receivers, human-controlled players, kicks, "
+             "dives and leaps are unchanged. Not yet tested in game.")
 
 # The selector's success exit: ``mov eax,[esp+0x18]`` (the result) then ``pop edi``; the epilogue resumes at ``pop esi``.
 HOOK = ("exit", 0x001E7B02, bytes.fromhex("8b4424185f"))
