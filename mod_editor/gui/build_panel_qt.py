@@ -77,7 +77,7 @@ PRESET_BUTTONS = {"softdrink_basic": "Basic — 2004 fixes",
                   "softdrink_experimental": "Experimental — extra changes"}
 PRESET_CAPTIONS = {
     "softdrink_basic": ("2004 season and rules. Throw/catching fixes, Franchise draft and free agency, CPU returners, "
-                        "kicking power, Player Card team column, Edit Player position and Pro Bowl tab order."),
+                        "kicking power, Player Card team column with real past teams, Edit Player position and Pro Bowl tab order."),
     "softdrink_advanced": ("Basic plus acceleration, progression, position changes, modern rules, 2026 season, "
                            "letter-grade ratings in Franchise, presentation, screen timing and other selected changes. "
                            "Includes changes not yet tested in-game."),
@@ -1009,17 +1009,21 @@ class BuildPanel(QWidget):
             details="Changes the cap, generated contracts and trade values. Use the separately imported 2026 "
                     "contract roster. Imported cap schedules are approximations, and original APY and guarantees "
                     "are not reproduced exactly. Keep this off for existing saves.")
-        self.team_column_check = self._option(f, "team_column", "Show TEAM in Player Card season stats",
-                                              "Which team each season was played for.",
-                                              details="The season in progress shows the club the player is on now; a finished season shows the club "
-                                                      "of his last game. Seasons played before this change was in the save, the folded \"pre\" row and "
-                                                      "the Total row read \"--\". Franchise saves stay loadable either way.")
-        self.team_history_check = self._option(f, "team_history", "Past teams in Player Card stats",
-                                               "New franchises only; missing seasons use the player's 2004 team.",
+        self.team_column_check = self._option(f, "team_column", "Show each season's team on the Player Card",
+                                              "Adds a TEAM column next to Yr. On the original 2004 rosters it also fills every past season with the real team.",
+                                              details="This one option does both jobs on the original rosters: it adds the TEAM column and writes the real "
+                                                      "team of every past season the roster already has stats for (built-in nflverse data, CC-BY-4.0). "
+                                                      "Seasons that data does not cover show the player's own 2004 team, and the few 2004 free agents "
+                                                      "with no team still read \"--\". The season in progress shows the team the player is on now; a "
+                                                      "finished season shows the team of his last game. The 2026 SOFTDRINK roster brings its own team history. "
+                                                      "Past seasons only appear in a franchise started from this disc. The folded \"pre\" row and the "
+                                                      "Total row read \"--\". Franchise saves stay loadable either way.")
+        self.team_history_check = self._option(f, "team_history", "Use my own team history file instead",
+                                               "Optional. Replaces the built-in past teams; needs the TEAM column above.",
                                                badge="New franchises only", needs_image=True,
-                                               details="Writes the real club of every past season the roster carries stats for (built-in nflverse data, "
-                                                       "CC-BY-4.0). Seasons the data does not cover are filled with the player's own 2004 club; only the 2004 "
-                                                       "free agents still read \"--\". A CSV under Custom data replaces the built-in data.")
+                                               details="You do not need this for the original rosters: the TEAM column above already writes the built-in "
+                                                       "past teams. Tick this only to use your own CSV (choose it under Custom data); a row in your file "
+                                                       "wins over the built-in data and over the player's own 2004 team.")
         self.career_stats_check = self._option(f, "career_stats", "Career stats from CSV",
                                                "Real per-season counters for the roster's past seasons, from a CSV you supply.",
                                                badge="New franchises only", needs_image=True,

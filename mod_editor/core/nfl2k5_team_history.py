@@ -661,6 +661,11 @@ def apply(path: Path | str, source: Path | str | None = "retail", *, base_year: 
         if state in ("applied", "applied-custom"):
             return {"status": state, "already_applied": True, "outer_index": ROST_OUTER_INDEX, **provenance}
         _require(state == "retail", f"the roster's history pool is {state}, not retail; refusing")
+        # b780 b2: the pool this writer accepts is the original roster's, whose season slots count back from ITS
+        # current season.  The franchise's own start year (2026 with the 2026 option) is a different thing: given here
+        # it threw away every real row ("outside the record") and left only the 2004-club fill in every season.
+        _require(base_year == BASE_YEAR, f"the original roster's seasons count back from {BASE_YEAR}, not {base_year}; "
+                                         "the franchise's start year does not move them")
         say("Matching the team history to the roster")
         body, receipt = apply_body(before[RESOURCE_HEADER_SIZE:], rows, base_year=base_year,
                                    infer_current_team=infer_current_team)

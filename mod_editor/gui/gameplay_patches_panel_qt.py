@@ -102,7 +102,10 @@ PATCHES = (
      "as one club. Patch: a TEAM column sits next to Yr (frozen, the stats still scroll). The season in progress "
      "shows the club the player is on now; every game he plays records his club for that season, so a finished "
      "season shows the club of his last game (a trade, signing or release shows from the next game on, and a "
-     "released player keeps the club he left). Seasons played before this patch was in the save, the folded "
+     "released player keeps the club he left). On the original 2004 rosters the Studio also writes the real club "
+     "of every past season the roster has stats for (built-in nflverse data; a season it does not cover shows the "
+     "player's own 2004 club), so this one option fills the whole column in a franchise started from the disc; the "
+     "2026 SOFTDRINK roster brings its own history. Seasons played before this patch was in an older save, the folded "
      "\"pre\" row and the Total row read \"--\". Offensive linemen have no stats table in the game and stay without "
      "it. Franchise saves stay loadable either way."),
     ("kick_rules", "Modern kicking: kickoff from the 35, touchbacks to the 35, PAT from the 15, ~70-yard legs",
@@ -319,7 +322,7 @@ LABELS: dict[str, tuple[str, str, str]] = {
     "draft_ai": ("Smarter Franchise drafts & free agency", "Changes CPU decisions; Fantasy Draft is separate.", ""),
     "returner_fix": ("Fix CPU kick & punt returners", "Changes automatic depth-chart selection.", ""),
     "progression": ("Change player growth & decline", "NFL career arcs by position: backs fade early, quarterbacks last; young QBs rise or fall on their play.", ""),
-    "team_column": ("Show TEAM in Player Card season stats", "Which team each season was played for.", ""),
+    "team_column": ("Show each season's team on the Player Card", "TEAM column; fills past seasons with real teams on the original rosters.", ""),
     "kick_rules": ("Modern kick spots & kicking power", "Kickoff: 35 · touchback: 35 · PAT snap: 15.", ""),
     "dynamic_kickoff": ("Dynamic kickoff: ready stance and close blocks", "Nobody moves until the ball comes down; landing zone; the CPU kicks to it. "
                         "Held players keep an idle pose facing the kick; return blockers take close assignments.", NOT_TESTED),
