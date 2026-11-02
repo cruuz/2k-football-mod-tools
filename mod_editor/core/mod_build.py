@@ -559,8 +559,10 @@ class BuildPlan:
     # a planned correction of up to nearly a yard straight to a defender's position, outside his running speed (the
     # pick "warp"). A late executable owner (nfl2k5_catch_snap_limit) hooks the catch selector's success exit (0x1E7B02):
     # a CPU defender's forward-pass catch that would slide him more than half a yard is answered the way retail answers
-    # "no aligned catch from here" (nothing slides, the AI tasks take their no-catch exit). Receivers, human-controlled
-    # defenders, kicks and dive clips keep retail. EXPERIMENTAL and off in every preset until it has an emulator witness.
+    # "no aligned catch from here" (nothing slides, the AI tasks take their no-catch exit), and lowers the plan setup's
+    # reach cap (0x1E5CCB) to half a yard so a plan that reaches the setup anyway cannot store a longer slide. Receivers,
+    # human-controlled defenders, kicks and dive clips keep retail. EXPERIMENTAL and off in every preset until it has an
+    # emulator witness.
     catch_snap_limit: bool = False
 
     # b778-st2: rookie stars and stars earned or lost over a career. The draft-class generator's 3..5 best prospects
