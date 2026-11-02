@@ -309,7 +309,8 @@ V08_XBE_SHA256 = "5f987568bc88122f566e30cb5bb8a574acde4549b915b6f2514beab37ab3e9
 
 
 def _franchise(payload, body):
-    """A fresh native franchise on the v0.8 disc roster (regular season, week 0), every club run by the CPU."""
+    """A fresh native franchise on the v0.8 disc roster with the preseason off (0xE60120 = 0), so it starts in the
+    regular season (stage 8, week 0) as the season sims do; every club run by the CPU."""
     from tests.nfl2k5_supersim_draft_fixture import Machine
     m = Machine(payload, trace_writes=False)
     size = len(body) - 0x40
@@ -319,7 +320,7 @@ def _franchise(payload, body):
     m.put(0xB7280C, size)
     m.fixup_roster(m.ARENA + 0x340)
     m.seed(12345)
-    for a, v in ((0xE5FF80, 4), (0xE60120, 1), (0xE6000C, 5), (0xE60010, 5)):
+    for a, v in ((0xE5FF80, 4), (0xE60120, 0), (0xE6000C, 5), (0xE60010, 5)):
         m.put(a, v)
     m.leaf(0x177990, lambda: m.ret(pop=4), reason="progress renderer only")
     m.leaf(0x14E520, lambda: m.ret(), reason="informational dialog acknowledgement only")
@@ -398,6 +399,7 @@ class CampTests(unittest.TestCase):
             raw = bytearray(m.uc.mem_read(p, 84))
             raw[0x25] = (raw[0x25] & 31) | 0x40
             m.uc.mem_write(p, bytes(raw))
+        self.assertEqual(m.get(0xE576A4), 8)                  # the regular season
         before = [_count(m, m.team_base + 500 * t) for t in range(32)]
         m.released.clear()
         m.call(code.SYMBOLS["economy_week"], ecx=m.ARENA + 0x1A0000, edx=0, args=(0, 0), budget=int(2e10))
