@@ -70,8 +70,10 @@ file (it carries the digests of earlier versions forward as `superseded_sha256`)
 `geometry` pin is the SHA-256 of its `geometry.json`; `python3 tools/b77/cm1_coach_models.py geometry|head --retail
 RETAIL.iso` rewrites the geometry and the painted heads from the recipes in that tool.
 
-Moved coaches (b780 c3-looks): when the roster edits' coaching staff (`staff.head_coaches`: {club: the club whose
-2026 head coach now leads it}) moves a head coach, the coach record his new club points at gets the model he wears
+Moved coaches (b780 c3-looks): when the Studio's coaching staff (b780 c2-staff, the roster edits' `staff` section)
+moves a head coach, his coach record content goes to his new club; the module reads who leads which club from the
+roster's coach records (the 2026 coach each club's record holds, by name and picture), the coach record his new club
+points at gets the model he wears
 (`+0x18`), and that model keeps his own head, headset, glasses and geometry while it takes the new club's `shirt.png`,
 `jacket.png` and `logo.png` (`APPAREL` in the module). Every retail coach model (c00-c30, c33, c36, c37, c50, c51) maps
 the same UV layout for those three textures (UV coverage identical at 4x for all 36; the jacket of c05, c18 and c22 has a

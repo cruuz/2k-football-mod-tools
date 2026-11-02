@@ -59,8 +59,10 @@ wear the body of a leaner retail coach. The vertex count, triangles, skin weight
 are retail. Their heads, and those of DAL, NYJ, TB, MIA, DET, CLE, NE, ATL and NYG, are painted on the head mesh in
 3D (one skin tone, painted hair and facial hair).
 
-Moved coaches (b780 c3-looks): the Studio can move a head coach to another club (the coaching staff of the roster
-edits, ``staff``: {club: the club whose 2026 head coach now leads it}). The look follows the man, the colours follow the
+Moved coaches (b780 c3-looks): the Studio's coaching staff (b780 c2-staff) moves a head coach to another club by moving
+his coach record content there. The staff this option dresses is read from the roster after every roster writer: the
+2026 coach each club's record holds, by name and picture (``roster_staff``: {club: the club whose 2026 head coach now
+leads it}; ``staff=`` overrides it). The look follows the man, the colours follow the
 club: the coach record the club points at gets the model the coach wears (``+0x18``), and that model is dressed in his
 own head, headset, glasses and geometry with the shirt, jacket and chest logo of the club he now leads (``APPAREL``).
 Every coach model maps the same UV layout for those three textures (measured on all 36 retail models), so a club's
@@ -303,24 +305,22 @@ def assignment(staff=None, *, document: dict | None = None) -> dict[str, str | N
     return out
 
 
-def staff_from_edits(document) -> dict | None:
-    """The head coaches of a roster-edits document's coaching staff, or None when it moves nobody: ``staff`` holds
-    ``head_coaches``, either {club: coach club} or a list of {"team": club, "coach": coach club} (2026 or roster
-    abbreviations; a coach of None is not one of the 32)."""
-    staff = (document or {}).get("staff") if isinstance(document, Mapping) else None
-    heads = staff.get("head_coaches") if isinstance(staff, Mapping) else None
-    if isinstance(heads, list):
-        require(all(isinstance(e, Mapping) and "team" in e and "coach" in e for e in heads),
-                "every head coach entry names its team and its coach")
-        heads = {e["team"]: e["coach"] for e in heads}
-    if not heads:
+def roster_staff(roster) -> dict | None:
+    """{club: the 2026 head coach it employs now (his 2026 club), or None for a coach who is not one of the 32}, read
+    from the coach records the 32 clubs point at, matched by name and picture by the coaching staff module
+    (``nfl2k5_coach_staff.coach_records``, b780 c2-staff, which moves a coach by moving his record content). None when
+    that module is not part of this Studio or the roster names none of the 2026 coaches (a retail roster): then each
+    club keeps its own 2026 coach as before."""
+    try:
+        from . import nfl2k5_coach_staff as coach_staff
+    except ImportError:
         return None
-    require(isinstance(heads, Mapping), "the head coaches must map each club to its coach")
-    moved = {str(k): (None if v is None else str(v)) for k, v in heads.items()}
-    clubs = [r["team"] for r in pins()["teams"]]
-    if all(v is not None and _club(k, clubs) == _club(v, clubs) for k, v in moved.items()):
+    try:
+        records = coach_staff.coach_records(roster.body, roster.teams)
+    except (ValueError, KeyError, IndexError, struct.error):
         return None
-    return moved
+    staff = {str(hc.club.team): (None if hc.directory_id is None else str(hc.directory_id)) for hc in records.values()}
+    return staff if any(staff.values()) else None
 
 
 def derive_head(retail_rgba, mask_rgb, classes: dict, overlay_rgba=None):
@@ -980,7 +980,8 @@ def _disc_staff(document: dict, spans: dict, body_at) -> dict:
 
 def _parts(archive, document: dict, staff=None) -> list[dict]:
     """Every owned span with its retail and applied digests and its current state for the coaching ``staff``
-    ({club: coach club}; None: the moves the disc already carries, none on a retail or 2026 disc)."""
+    ({club: coach club}; None: who leads which club as the roster names them (``roster_staff``), or, on a roster
+    without the 2026 names, the moved looks the disc already carries: none on a retail or 2026 disc)."""
     entries = {e.name_id: e for e in archive.entries}
     rows = {r["team"]: r for r in document["teams"]}
     base, doc, records = _coach_records(archive, list(rows))
@@ -994,8 +995,10 @@ def _parts(archive, document: dict, staff=None) -> list[dict]:
         require(entry is not None, f"{row['archive']} is not on this disc")
         at = entry.virtual_offset + row["span_offset"]
         spans[row["team"]] = (at, archive.read(at, row["span_size"]))
-    if staff is None:
-        staff = _disc_staff(document, spans, lambda club: field_at(club, BODY_FIELD))
+    if staff is None:                               # the coaches the roster names (c2-staff), else the looks on the disc
+        staff = roster_staff(doc)
+        if staff is None:
+            staff = _disc_staff(document, spans, lambda club: field_at(club, BODY_FIELD))
     assign = assignment(staff, document=document)
     host_of = {coach: host for host, coach in assign.items() if coach is not None}
     out = []

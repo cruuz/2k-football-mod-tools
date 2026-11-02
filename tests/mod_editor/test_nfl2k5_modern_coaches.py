@@ -329,9 +329,8 @@ class BuildWiring(unittest.TestCase):
 
     def test_the_build_step_and_panel_name_the_option(self):
         source = (ROOT / "mod_editor/core/mod_build.py").read_text(encoding="utf-8")
-        for needle in ("coaches.apply_to_image(target, progress=progress, staff=_coach_staff(plan))",
-                       '"step": "modern_coaches"', "coaches.image_status(source)",
-                       "coaches.assignment(_coach_staff(plan))"):
+        for needle in ("coaches.apply_to_image(target, progress=progress)", '"step": "modern_coaches"',
+                       "coaches.image_status(source)"):
             self.assertIn(needle, source)
         # after every roster writer and relocating pass: the coach step follows the goalposts step
         self.assertLess(source.index('"step": "modern_goalposts"'), source.index('"step": "modern_coaches"'))
@@ -387,26 +386,36 @@ class MovedCoaches(unittest.TestCase):
         with self.assertRaises(mc.ModernCoachesError):
             mc.assignment(["KC", "LV"])
 
-    def test_the_staff_comes_from_the_roster_edits(self):
-        self.assertIsNone(mc.staff_from_edits({"schema": "x", "edits": []}))
-        self.assertIsNone(mc.staff_from_edits({"staff": {"head_coaches": {"KC": "KC", "LV": "OAK"}}}))   # nobody moved
-        self.assertEqual(mc.staff_from_edits({"staff": {"head_coaches": {"LV": "KC", "KC": "LV"}}}), {"LV": "KC", "KC": "LV"})
-        listed = {"staff": {"head_coaches": [{"team": "LV", "coach": "KC"}, {"team": "KC", "coach": None}]}}
-        self.assertEqual(mc.staff_from_edits(listed), {"LV": "KC", "KC": None})
-        with self.assertRaises(mc.ModernCoachesError):
-            mc.staff_from_edits({"staff": {"head_coaches": [{"team": "LV"}]}})
-        self.assertIsNone(mc.staff_from_edits(None))
+    def test_the_staff_is_read_from_the_coach_records_the_clubs_point_at(self):
+        """b780 c2-staff moves a coach by moving his record content; ``nfl2k5_coach_staff.coach_records`` says which 2026
+        coach each club's record is (by name and picture). The build reads the staff there, after every roster writer."""
+        from types import ModuleType, SimpleNamespace
+        from unittest import mock
+        clubs = [r["team"] for r in mc.pins()["teams"]]
 
-    def test_the_build_reads_the_staff_from_the_roster_edits(self):
-        import tempfile
-        with tempfile.TemporaryDirectory(prefix="coach-staff-") as raw:
-            edits = Path(raw) / "edits.json"
-            edits.write_text(json.dumps({"schema": "2k5_mod_studio_roster_edits/v1", "edits": [],
-                                         "staff": {"head_coaches": {"LV": "KC", "KC": "LV"}}}), encoding="utf-8",
-                             newline="\n")
-            plan = mod_build.BuildPlan("s", "t", roster_edits=str(edits))
-            self.assertEqual(mod_build._coach_staff(plan), {"LV": "KC", "KC": "LV"})
-        self.assertIsNone(mod_build._coach_staff(mod_build.BuildPlan("s", "t")))
+        def stub(directory):
+            module = ModuleType("mod_editor.core.nfl2k5_coach_staff")
+            def coach_records(body, teams):
+                if directory == "raise":
+                    raise ValueError("not a main roster")
+                return {i: SimpleNamespace(club=SimpleNamespace(team=c), directory_id=directory.get(c, c))
+                        for i, c in enumerate(clubs)}
+            module.coach_records = coach_records
+            return module
+        roster = SimpleNamespace(body=b"", teams=[])
+        key = "mod_editor.core.nfl2k5_coach_staff"
+        with mock.patch.dict(sys.modules, {key: stub({})}):
+            self.assertEqual(mc.roster_staff(roster), {c: c for c in clubs})
+        with mock.patch.dict(sys.modules, {key: stub({"LV": "KC", "KC": "LV", "NYG": None})}):
+            staff = mc.roster_staff(roster)
+            self.assertEqual((staff["LV"], staff["KC"], staff["NYG"], staff["DAL"]), ("KC", "LV", None, "DAL"))
+            self.assertEqual(mc.assignment(staff)["NYG"], None)
+        with mock.patch.dict(sys.modules, {key: stub({c: None for c in clubs})}):
+            self.assertIsNone(mc.roster_staff(roster))          # a retail roster names none of them: per club as before
+        with mock.patch.dict(sys.modules, {key: stub("raise")}):
+            self.assertIsNone(mc.roster_staff(roster))
+        with mock.patch.dict(sys.modules, {key: None}):          # a Studio without the coaching staff module
+            self.assertIsNone(mc.roster_staff(roster))
 
 
 @unittest.skipUnless(HAVE_RETAIL, "retail USA image not present (NFL2K5_RETAIL_XISO)")

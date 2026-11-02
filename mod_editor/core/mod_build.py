@@ -1998,18 +1998,6 @@ def _modern_coaches_available() -> bool:  # b77-co1
     return module is not None and module.available()  # the pins and the shipped art must agree
 
 
-def _coach_staff(plan: "BuildPlan") -> dict | None:  # b780 c3-looks
-    """Who leads which club in this build (the roster edits' coaching staff, ``staff.head_coaches``): a moved head
-    coach keeps his own face and body and wears the colours of the club he now leads. None: nobody moved."""
-    if not plan.roster_edits:
-        return None
-    records = _core_module("nfl2k5_roster_records")
-    coaches = _core_module("nfl2k5_modern_coaches")
-    if records is None or coaches is None:
-        return None
-    return coaches.staff_from_edits(records.read_edits(Path(plan.roster_edits)))
-
-
 def _modern_fans_available() -> bool:  # b77-fr1
     module = _core_module("nfl2k5_modern_fans")
     return module is not None and module.available()  # the pins and the shipped art must agree
@@ -5113,10 +5101,6 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             raise ValueError(f"2026 head coaches cannot read the coach models: {exc}") from exc
         if coach_state not in ("retail", "applied", "mixed"):
             raise ValueError("A coach model or coach picture is not the supported retail or already-2026 bytes. Turn 2026 head coaches off or rebuild from a supported USA source.")
-        try:  # b780 c3-looks: a staff naming one coach for two clubs stops here, not hours in
-            coaches.assignment(_coach_staff(plan))
-        except (OSError, ValueError) as exc:
-            raise ValueError(f"2026 head coaches cannot dress the coaching staff: {exc}") from exc
     if plan.modern_fans:  # b77-fr1
         fans = _core_module("nfl2k5_modern_fans")
         if fans is None or not is_image:
@@ -6519,11 +6503,9 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         # 32 fixed-span coach scenes (cNN.iff chunk 0), two raw portrait spans in Portrait.iff and two 16-bit coach-record
         # photo ids in the main roster, found through the copy's own outer table after every relocating pass and every
         # roster writer above (a roster whose Dallas or Washington coach names another picture keeps it).
-        # b780 c3-looks: a head coach the roster edits move to another club keeps his own model and face and wears the
-        # colours of the club he leads (staff from the same roster-edits document the roster step applied)
         coaches = _core_module("nfl2k5_modern_coaches")
         progress("2026 head coaches", 0, 0)
-        coach_receipt = coaches.apply_to_image(target, progress=progress, staff=_coach_staff(plan))
+        coach_receipt = coaches.apply_to_image(target, progress=progress)
         receipt["steps"].append({"step": "modern_coaches", **coach_receipt})
         receipt["result"]["modern_coaches"] = coach_receipt["state"]
     if plan.modern_fans:  # b77-fr1
