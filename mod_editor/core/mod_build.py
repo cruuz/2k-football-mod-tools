@@ -551,8 +551,9 @@ class BuildPlan:
     cpu_ball_carriers: bool = False
     # b780 cv2-runner: CPU ball carriers read where defenders are going (cutbacks, less sideline drift). A late
     # executable owner (nfl2k5_runner_vision) hooks the carrier task's push call at 0x2E3072: CPU carriers on a calm
-    # clock use an owner copy of the push routine 0x2E2260 (made from the source's own retail bytes) that judges each
-    # defender at his closest approach, and nfl2k5_ball_carrier_ai installs its wider outward taper (9 yards). Needs
+    # clock use an owner copy of the push routine 0x2E2260 (made from the source's own retail bytes) that takes each
+    # defender's push side from their closest approach and its strength from his bearing now, and
+    # nfl2k5_ball_carrier_ai installs its wider outward taper (from 9 yards). Needs
     # cpu_ball_carriers. Human carriers and urgent clocks keep retail. EXPERIMENTAL.
     cpu_runner_vision: bool = False
     # b778-kr1: kick and punt return coverage takes pursuit angles. The far chase task 0x2E8F20 steers at the
