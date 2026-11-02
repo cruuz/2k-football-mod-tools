@@ -1133,18 +1133,21 @@ static NI void drafted(u32 manager) {
 }
 /* b780 b8 (HAIL ST. CLAIR 10/28: "drafted by teams like the giants and bears who have respectable QBs"): the draft
  * AI weighs a club's need only by head count and, in round 1, not at all (0x31DEA0 uses one fixed table per position
- * there), so a quarterback went to whichever club's turn came first. In the first three rounds a club now takes
- * MyPlayer only if he would win a starting job there: fewer than m3_starters[position] of its players at his
- * position have a native overall (0x246D90, the number on the Player Card) at least as high as his. Without that
- * need the club cannot take him until round 4, and the AI's own ratings and need decide from there on. The veto is
- * the draft AI's own "already taken" flag (0x20) held on his record for that one pick, so no native routine and no
- * other prospect changes. M(76) counts the vetoes (read by the emulator proof). Retail formation starters:
+ * there), so a quarterback went to whichever club's turn came first. A club now takes MyPlayer only if he would win
+ * a starting job there: fewer than m3_starters[position] of its players at his position have a native overall
+ * (0x246D90, the number on the Player Card) that beats his by M3_LEAD_PER_ROUND points for every round already
+ * gone (round 1: at least as high as his, round 2: 3 points higher, round 3: 6 higher ... a club's patience grows
+ * as the draft goes on, so no prospect is shut out). While a club has no need the draft AI's own "already taken"
+ * flag (0x20) is held on his record for that one pick, so no native routine and no other prospect changes.
+ * M(76) counts the vetoes (read by the emulator proof). Retail formation starters:
  * QB K P WR CB FS SS RB FB TE OLB ILB C G T DT DE. */
+#define M3_LEAD_PER_ROUND 3
 static const u8 m3_starters[17]={1,1,1,3,2,1,1,1,1,1,2,2,1,2,2,2,2};
 static NI u32 FC club_needs(const u8 *t,const u8 *me) {
     u32 mine=CALL2(0x246d90,(u32)me,0),pos=me[0x35],ahead=0,i,n=t[0x11c];
     const u8 *q;
     if(!mine || pos>=17) return 1;
+    mine+=M3_LEAD_PER_ROUND*G(0xE3C0A8);
     if(n>65) n=65;
     for(i=0;i<n;i++) {
         q=(const u8 *)W(t,4*i);
@@ -1158,7 +1161,7 @@ void FC m3_draft_tick(u32 manager) {
     option=G(0xE60134); G(0xE60134)=1;
     if(!CALL0(0x325d00)) {
         u8 *me=(u8 *)primary(),veto=0;
-        if(G(0xE3C0A8)<3 && (me[8]&0x34)==0x14 && !club_needs((const u8 *)CALL0(0x3254d0),me)) {
+        if((me[8]&0x34)==0x14 && !club_needs((const u8 *)CALL0(0x3254d0),me)) {
             me[8]|=0x20; veto=1; M(76)++;
         }
         CALL1(0x325b90,LEAGUE_MENU);

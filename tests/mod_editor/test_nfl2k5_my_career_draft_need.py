@@ -1,10 +1,10 @@
-"""b780 b8-mycareer (row C3): in the first three rounds a club takes MyPlayer only if he would start there.
+"""b780 b8-mycareer (row C3): a club takes MyPlayer only if he would start there; its patience grows each round.
 
 HAIL ST. CLAIR (10/28): "me getting drafted by teams like the giants and bears who have respectable QBs". The draft AI
 weighs a club's need by head count (and in round 1 by one fixed table per position), so the quarterback went to whichever
 club's turn came first. The MyCareer draft tick now holds the AI's own already-taken flag (0x20) on MyPlayer for one pick
-when the club on the clock already has m3_starters[position] players at his position with a native overall (0x246D90,
-the Player Card number) at least as high as his, in display rounds 1 to 3.
+when the club on the clock already has m3_starters[position] players at his position whose native overall (0x246D90,
+the Player Card number) beats his by LEAD_PER_ROUND points for every round already gone (round 1: at least as high as his).
 
 Native fixtures: the pinned f0 franchise at the untouched Combine, the real CAP, draft AI, pick, signing and cleanup run;
 only the services listed in tests/nfl2k5_my_career_*fixture.py are boundaries. The negative control writes 255 into the
@@ -25,6 +25,8 @@ from tests.nfl2k5_my_career_fixture import XBE, HAVE_UC
 # QB K P WR CB FS SS RB FB TE OLB ILB C G T DT DE (retail position codes 0..16)
 STARTERS = (1, 1, 1, 3, 2, 1, 1, 1, 1, 1, 2, 2, 1, 2, 2, 2, 2)
 VETOES = mode.EXTRA_VA + 76     # M(76): how many picks the gate held MyPlayer back
+ROUND = 0xE3C0A8                # the draft round, 0-based
+LEAD_PER_ROUND = 3
 
 
 class SourceTests(unittest.TestCase):
@@ -39,7 +41,8 @@ class SourceTests(unittest.TestCase):
         table = re.search(r'm3_starters\[17\]=\{([0-9,]+)\}', source)
         self.assertIsNotNone(table)
         self.assertEqual(tuple(int(x) for x in table.group(1).split(',')), STARTERS)
-        self.assertIn('G(0xE3C0A8)<3', source)          # display rounds 1 to 3 only
+        self.assertIn('#define M3_LEAD_PER_ROUND 3', source)
+        self.assertIn('M3_LEAD_PER_ROUND*G(0xE3C0A8)', source)    # patience grows with the round
         self.assertIn('CALL0(0x3254d0)', source)        # the club on the clock, the game's own getter
 
     def test_the_veto_uses_only_the_ai_taken_flag_and_restores_it(self):
@@ -105,14 +108,15 @@ class GateTests(unittest.TestCase):
         t = self.team(m, club)
         return [m.get(t + 4 * i) for i in range(m.uc.mem_read(t + 0x11C, 1)[0])]
 
-    def model_needs(self, m, club, me):
+    def model_needs(self, m, club, me, rnd=None):
         """The rule, written independently of the C: fewer than STARTERS[pos] teammates at his position have a native
-        overall at least as high as his (0 overall means unavailable: do not block)."""
+        overall that beats his by LEAD_PER_ROUND * round (0 overall means unavailable: do not block)."""
+        rnd = m.get(ROUND) if rnd is None else rnd
         mine, pos = self.iovr(m, me), self.position(m, me)
         if not mine or pos >= 17:
             return True
         ahead = sum(1 for q in self.roster_of(m, club)
-                    if q != me and self.position(m, q) == pos and self.iovr(m, q) >= mine)
+                    if q != me and self.position(m, q) == pos and self.iovr(m, q) >= mine + LEAD_PER_ROUND * rnd)
         return ahead < STARTERS[pos]
 
     # ---- club_needs: the rule at every position ----------------------------------------------------------------
@@ -120,6 +124,7 @@ class GateTests(unittest.TestCase):
         with self.machine() as m:
             m.prepare_draft(self.roster, complete=False)
             me = m.get(0xCB8B14)
+            m.put(ROUND, 0)
             for pos in range(17):
                 with self.subTest(position=pos):
                     club = next((c for c in range(32)
@@ -152,6 +157,24 @@ class GateTests(unittest.TestCase):
                     self.assertEqual(m.call('club_needs', ecx=t, edx=me), int(self.model_needs(m, club, me)))
                     # a record that is not on the roster being scanned and is MyPlayer himself never blocks
                     self.assertEqual(self.iovr(m, me), mine)
+            # the lead needed to block grows by LEAD_PER_ROUND each round: a 99 starter blocks a 95 in rounds 1 and 2 only
+            pos, club = 0, 0
+            t = self.team(m, club)
+            same = [q for q in self.roster_of(m, club) if self.position(m, q) == 0]
+            m.uc.mem_write(me + 0x35, bytes((0,)))
+            self.set_ratings(m, me, 95)
+            for q in same:
+                self.set_ratings(m, q, 0)
+            self.set_ratings(m, same[0], 99)
+            lead = self.iovr(m, same[0]) - self.iovr(m, me)
+            self.assertGreater(lead, 0)
+            for rnd in range(7):
+                with self.subTest(round=rnd):
+                    m.put(ROUND, rnd)
+                    expected = int(not (lead >= LEAD_PER_ROUND * rnd))
+                    self.assertEqual(m.call('club_needs', ecx=t, edx=me), expected)
+                    self.assertEqual(int(self.model_needs(m, club, me, rnd)), expected)
+            m.put(ROUND, 0)
             # overall 0 (unavailable) never vetoes
             m.uc.mem_write(me + 0x35, bytes((0,)))
             self.set_ratings(m, me, 0)
@@ -186,8 +209,8 @@ class GateTests(unittest.TestCase):
             club = order[rnd * 32 + pick]
             flags = m.uc.mem_read(me + 8, 1)[0]
             self.assertEqual(flags & 0x34, 0x14, 'MyPlayer must be an undrafted prospect with the taken flag clear')
-            needs = self.model_needs(m, club, me)
-            if rnd < 3 and not needs:
+            needs = self.model_needs(m, club, me, rnd)
+            if not needs:
                 expected += 1
             m.frame(budget=6000000000)
             after = m.uc.mem_read(me + 8, 1)[0]
@@ -214,7 +237,7 @@ class GateTests(unittest.TestCase):
             me, order, blocked = self.start_draft(m, blocked_picks=3)
             result = self.run_ticks(m, me, order)
             self.assertNotIn(result['club'], blocked)
-            self.assertTrue(result['needs'], 'a club that has better starters cannot draft him in rounds 1 to 3')
+            self.assertTrue(result['needs'], 'a club that has a better starter cannot draft him')
             self.assertGreaterEqual(result['pick'], 3)         # the three clubs with a 99 quarterback were passed
             self.assertEqual(result['round'], 0)
             self.assertEqual(result['vetoes'], result['expected'])
@@ -225,21 +248,33 @@ class GateTests(unittest.TestCase):
             self.assertEqual(m.uc.mem_read(me + 8, 1)[0] & 0x30, 0)
             self.assertEqual([c for c in range(32) if me in self.roster_of(m, c)], [result['club']])
 
-    def test_from_round_four_the_ai_alone_decides(self):
-        """The gate is for display rounds 1 to 3: in round 4 a club with a better starter may still take him."""
+    def test_a_club_gets_more_patient_each_round(self):
+        """A starter that leads MyPlayer by 3 to 5 points blocks him in round 2 (needs a lead below 3) and not in round 3
+        (a lead below 6 is patient enough): the same club, the same two players, only the round differs."""
         with self.machine() as m:
             me = m.prepare_draft(self.roster, ratings=95, position=0)
             m.select(0, budget=200000000)
             order = [m.uc.mem_read(0xE3C0B4 + i, 1)[0] for i in range(224)]
-            m.put(0xE3C0A8, 3)
-            m.put(0xE3C0A4, 0)
-            club = order[3 * 32]
+            club = order[32]
             qbs = [q for q in self.roster_of(m, club) if self.position(m, q) == 0]
             self.set_ratings(m, qbs[0], 99)
-            self.assertFalse(self.model_needs(m, club, me))
-            m.frame(budget=6000000000)
-            self.assertEqual(m.get(VETOES), 0)
-            self.assertFalse(m.uc.mem_read(me + 8, 1)[0] & 0x10, 'the AI took him in round 4 despite the better starter')
+            for rating in range(98, 80, -1):
+                self.set_ratings(m, me, rating)
+                lead = self.iovr(m, qbs[0]) - self.iovr(m, me)
+                if LEAD_PER_ROUND <= lead < 2 * LEAD_PER_ROUND:
+                    break
+            else:
+                self.fail('no rating gives MyPlayer a 3 to 5 point deficit to a 99 quarterback')
+            results = {}
+            for rnd in (1, 2):
+                m.put(ROUND, rnd)
+                m.put(0xE3C0A4, order[rnd * 32:rnd * 32 + 32].index(club))
+                self.assertEqual(self.model_needs(m, club, me, rnd), lead < LEAD_PER_ROUND * rnd)
+                before = m.get(VETOES)
+                m.frame(budget=6000000000)
+                results[rnd] = (m.get(VETOES) - before, not m.uc.mem_read(me + 8, 1)[0] & 0x10)
+            self.assertEqual(results[1], (1, False))     # lead >= 3: held back in round 2
+            self.assertEqual(results[2], (0, True))      # lead < 6: no veto in round 3, and the AI takes him
             self.assertEqual([c for c in range(32) if me in self.roster_of(m, c)], [club])
 
 
