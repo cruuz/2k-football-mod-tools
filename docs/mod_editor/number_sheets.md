@@ -5,8 +5,8 @@ sheet 0-9. Choose Jersey, Helmet, or Arm / shoulder, Detect layout from image, a
 retail size. The original game uses different sizes and different compressed
 budgets for individual digits, even within the same uniform.
 
-Use a transparent PNG with ten equal cells in 0-9 order. Leave out labels,
-guides, gutters and outside borders. These four layouts work:
+Use a PNG with a transparent background and the ten digits in order, 0 to 9.
+Leave out labels, guides and outside borders. These four layouts work:
 
 | Layout | Order | Size with 64x64 cells |
 | --- | --- | --- |
@@ -15,11 +15,57 @@ guides, gutters and outside borders. These four layouts work:
 | Five columns, two rows | 0-4 above 5-9 | 320x128 |
 | Two columns, five rows | 0 1, then 2 3, through 8 9 | 128x320 |
 
-Use one flat fill colour and one outline colour. Keep the glyph inside its
-cell with a transparent margin. Avoid gradients, noise and glow. AI output
-usually needs cleanup. The tool now applies that cleanup before encoding.
-It does not find a wrong digit order, remove a painted background or redraw
-an illegible number. JPEG cannot retain transparency.
+Larger cells work the same way, for example 640x256 for a 0-4 over 5-9 sheet of 128x128 cells.
+
+## The layout is found from the sheet
+
+Detect layout from image does not need exact textbook sizes. It tries three things, in order,
+and the preview says which one it used:
+
+1. **Equal square cells** that divide the sheet exactly (the table above at any scale).
+2. **Equal cells at rounded cut lines**, for sheets that do not divide evenly. A 1024x512
+   canvas holds five columns of 204.8 pixels, so the cuts fall at 205, 410, 614 and 819. This is
+   only used when every cut falls between two digits, so no digit is ever sliced.
+3. **The digits' own positions**, for sheets with margins, gaps of different sizes, tall or wide cells,
+   or digits of different widths laid out like typed text. The Studio finds the rows and the digits
+   in each row from the transparent gaps and puts each digit in a cell of its own.
+
+If you choose a layout yourself, that choice is honoured. When most of its cell borders would slice
+through digits, and the digits clearly sit in another layout (a 0-4 over 5-9 sheet whose width happens
+to divide by ten, picked as One row), the import is refused and names the layout that fits.
+
+A sheet is refused, with what it saw and how to fix it, when:
+
+- the digits touch or overlap, or there are labels or marks between them: the message says how many separate
+  shapes it found in each row and shows the sizes that work;
+- the sheet is not a picture the Studio can read, is empty, larger than 128 MiB, or over 16 million pixels
+  (1024x1024 cells fit; the message gives the actual size);
+- the picture has no transparent pixels at all (a JPEG or a flattened PNG): every digit would become a solid block;
+- a chosen layout cannot cut the sheet without slicing a digit, with the nearest canvas size that would work.
+
+A single empty cell among the ten, or a digit with no transparent pixels, is flagged in the notes on that digit.
+
+## Colours, gradients and the size of each slot
+
+Every digit has its own small compressed slot, and the slots differ a lot. Across the 634 uniform sets
+a jersey digit's slot holds between 544 and 3,312 bytes, and about a third of the sets average under 1,200.
+Current and recent alternate styles are the roomiest. Many throwback styles are the tightest: the Rams
+1965-1999 home and away sets hold 640 to 1,280 bytes per digit, the current and 2000-2004 Rams sets 1,088 to 2,320.
+
+A flat fill with one outline colour fits almost everywhere. Shading costs space:
+
+- A gradient (for example the 2020 Rams numerals, gold at the top fading to white) fits the roomy slots as drawn.
+- In a slot that is too small, the Studio tries gentler versions of your digit before it gives up, and it
+  never drops the outline or the fill. In order: hard edges at the largest size (the smaller views keep soft
+  edges, like many original digits), then the shading reduced to four, three and finally one flat fill
+  colour beside the outline. The notes for that digit say which one was used, for example
+  "its shading was reduced to 3 flat colours, with hard edges".
+- If even the simplest version does not fit, that digit keeps the original number, the preview marks it
+  KEPT RETAIL, and the note gives the numbers: how many bytes the simplest version needs, how many the
+  slot holds, and how many colours the digit used. The notes also list the space each digit used.
+
+To get a shaded numeral into every slot of a throwback set, use a flat fill with one outline colour there,
+or put the shaded numerals in a Current or Alternate style.
 
 Use ordinary straight-alpha PNG. Do not darken RGB by multiplying it by
 alpha yourself. That error is indistinguishable from intentionally dark
@@ -47,12 +93,14 @@ The encoder first tries the usual palette budgets down to 16 colours. Clean
 one-fill, one-outline art can also try 12 and 8 colours while keeping both
 regions. Match retail size may then try an additional 6% or 12% reduction.
 It does not erase an outline or accept a one-colour version of a two-colour
-number to force a fit. A digit that still cannot fit stays retail.
+number to force a fit. Only then does it use the simplifications above.
+A digit that still cannot fit stays retail.
 
 In the preview, each top sample is what the build will write and each bottom
 sample is the original retail digit at the same level. KEPT RETAIL marks a
 fallback beside the digit. The Import button counts the outcome, for example
-Import 7 digits, 3 kept retail. The 57 pair and small size views estimate how
+Import 7 digits, 3 kept retail, and is switched off when none of the ten
+would change. The 57 pair and small size views estimate how
 the digits look together. They do not reproduce camera perspective or jersey
 lighting. Inspect every row and the notes before accepting.
 
@@ -63,10 +111,8 @@ registration. Save the project and include its edits in the build. Verify
 front, back, shoulder and helmet numbers in play, both up close and from the
 broadcast camera. In-game appearance remains UNWITNESSED until played.
 
-Other equal cell sizes also work. Width must divide by the number of columns
-and height by the number of rows. The source must be a regular file no larger
-than 128 MiB or 16 million pixels. Automatic layout identifies all four
-square-cell templates above. Select a layout explicitly for other cell shapes.
+Other equal cell sizes also work. The source must be a regular file no larger
+than 128 MiB or 16 million pixels.
 
 ## Why did some digits stay old, look larger, or bleed?
 
