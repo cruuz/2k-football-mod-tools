@@ -8,8 +8,10 @@ the number, and the roster links must resolve.
 """
 from __future__ import annotations
 
+import contextlib
 import csv
 import gzip
+import io
 import json
 import re
 import sys
@@ -44,6 +46,7 @@ class Helpers(unittest.TestCase):
         self.assertEqual(B.parse_years("2017, 20-present"), {2017} | set(range(2020, 2026)))
         self.assertEqual(B.parse_years("1998-2001"), {1998, 1999, 2000, 2001})
         self.assertEqual(B.parse_years("2019"), {2019})
+        self.assertEqual(B.parse_years("2014-18, 26"), set(range(2014, 2019)))      # a 2026 roster note is no career season
 
     def test_game_dates_january_games_belong_to_the_previous_season(self):
         self.assertEqual(B.game_date("1/2/2022 vs. Kansas City"), ("2022-01-02", 2021))
@@ -93,6 +96,36 @@ class Helpers(unittest.TestCase):
         self.assertEqual([(rk, r["value"]) for rk, r in B.rank_rows(column)], [(1, 9), (1, 9), (3, 5), (4, 1)])
 
 
+class Plumbing(unittest.TestCase):
+    def test_title_candidates_try_the_plain_name_first_then_what_the_category_suggests(self):
+        c = B.title_candidates("Matt Fort\u00e9", {"rushing_yards"})
+        self.assertEqual(c[0], "Matt Fort\u00e9")
+        self.assertIn("Matt Forte", c)
+        self.assertIn("Matt Fort\u00e9 (American football)", c)
+        self.assertIn("Matt Fort\u00e9 (running back)", c)
+        self.assertLessEqual(len(c), 16)
+
+    def test_years_overlap_identifies_the_right_player(self):
+        self.assertTrue(B.years_overlap_ok({2008, 2009, 2010}, {2008, 2009, 2010, 2011}))
+        self.assertFalse(B.years_overlap_ok({1990, 1991}, {2008, 2009, 2010}))
+        self.assertFalse(B.years_overlap_ok(set(), {2008}))
+        self.assertTrue(B.years_overlap_ok({2008}, set()))                         # a season record names no career years
+
+    def test_the_evidence_is_plain_json_with_one_row_per_line(self):
+        obj = {"a": 1, "rows": [{"x": 1}, {"x": 2}], "empty": [], "nested": {"k": [1, 2]}}
+        text = B.dumps_by_line(obj)
+        self.assertEqual(json.loads(text), obj)
+        self.assertNotIn("\r", text)
+        self.assertTrue(text.endswith("}\n"))
+        self.assertEqual(text.count("\n"), 9)
+
+    def test_malformed_spans_do_not_break_a_table(self):
+        html = '<table class="wikitable"><tr><th rowspan="2"">Year</th><th>Team</th><th>Rushing Yds</th></tr><tr><td>2008</td><td>CHI</td><td>5</td></tr></table>'
+        self.assertEqual(B._span('2"'), 2)
+        self.assertEqual(B._span(None), 1)
+        self.assertEqual(len(B.html_tables(html)), 1)
+
+
 class WikipediaTables(unittest.TestCase):
     def test_offense_rows_sum_over_the_club_only_and_skip_postseason_and_college(self):
         # a header with a group row, written by hand (table() writes one flat header row)
@@ -126,6 +159,17 @@ class WikipediaTables(unittest.TestCase):
         self.assertEqual(r["sums"]["sacks_half"], 27.0)           # 13.5 sacks = 27 half sacks
         self.assertEqual(r["sums"]["tackles"], 224)
         self.assertEqual(r["sums"]["interceptions"], 5)
+
+    def test_an_ambiguous_team_cell_counts_only_for_the_club_the_player_otherwise_has(self):
+        rows = [["1985", "LA", "10", "100"], ["1986", "LA", "12", "120"], ["1990", "RAI", "5", "50"], ["1996", "OAK", "6", "60"]]
+        head = [["Year", "Team", "Rushing Att", "Rushing Yds"]]
+        html = table(rows, head)
+        raiders = B.club_sums(html, "LV")
+        self.assertEqual(raiders["sums"]["rushing_yards"], 100 + 120 + 50 + 60)      # every clear row is a Raiders row, so "LA" is the Raiders
+        rams = B.club_sums(html, "LAR")
+        self.assertNotIn("rushing_yards", rams["sums"])
+        mixed = table([["1985", "LA", "1", "10"], ["1996", "STL", "1", "20"], ["1993", "OAK", "1", "30"]], head)
+        self.assertEqual(B.club_sums(mixed, "LV")["sums"]["rushing_yards"], 30)       # Rams and Raiders rows both exist: the ambiguous row stays out
 
     def test_flat_header_without_group_names(self):
         html = table([["1981", "SD", "14", "109", "525", "4.8", "28", "3", "46", "329", "7.2", "29", "3"],
@@ -292,6 +336,106 @@ class Assembly(unittest.TestCase):
         self.assertEqual(sorted(data["clubs"]), sorted(B.CLUBS))
 
 
+class BuildOffline(unittest.TestCase):
+    """The whole ``build`` command on synthetic inputs: a guide file, nflverse weekly files, a pre-filled Wikipedia cache."""
+
+    NV_COLS = ["season_type", "team", "player_id", "player_display_name", "position", "week", "passing_yards", "passing_tds", "rushing_yards",
+               "rushing_tds", "receptions", "receiving_yards", "receiving_tds", "def_sacks", "def_interceptions", "def_tackles_solo", "def_tackle_assists"]
+
+    def write_nflverse(self, folder):
+        def row(team, pid, name, pos, week, rush=0, rec=0):
+            r = dict.fromkeys(self.NV_COLS, "0")
+            r.update(season_type="REG", team=team, player_id=pid, player_display_name=name, position=pos, week=str(week), rushing_yards=str(rush), receptions=str(rec))
+            return [r[c] for c in self.NV_COLS]
+        for yr in range(B.NV_WINDOW[0], B.NV_WINDOW[1] + 1):
+            rows = []
+            if yr >= 2020:                                          # Garrett Williams: 500 rushing yards and 50 catches a season, 2023 as two big games
+                for wk in range(1, 11):
+                    rush = (200 if wk == 5 else 300 if wk == 6 else 0) if yr == 2023 else 50
+                    rows.append(row("CHI", "p-gw", "Garrett Williams", "RB", wk, rush=rush, rec=5))
+            if 2010 <= yr <= 2014:                                  # someone the guide's rushing list does not print: 500 a season, no big game
+                rows += [row("CHI", "p-ob", "Other Back", "RB", wk, rush=50) for wk in range(1, 11)]
+            with gzip.open(Path(folder) / f"stats_player_week_{yr}.csv.gz", "wt", encoding="utf-8", newline="") as f:
+                w = csv.writer(f, lineterminator="\n")
+                w.writerow(self.NV_COLS)
+                w.writerows(rows)
+        header = ["season", "team", "status", "full_name", "first_name", "last_name", "birth_date", "gsis_id"]
+        with open(Path(folder) / "roster_2026.csv", "w", encoding="utf-8", newline="") as f:
+            w = csv.writer(f, lineterminator="\n")
+            w.writerow(header)
+            w.writerow(["2026", "CHI", "ACT", "Garrett Williams", "Garrett", "Williams", "2001-06-01", "00-0000001"])
+
+    def write_wikipedia_cache(self, folder):
+        wiki = B.Wiki(folder)
+        old_timer = [{"heading": "Regular season", "caption": "", "grid": [
+            ["Year", "Team", "Receiving", "Receiving"], ["", "", "Rec", "Yds"]] + [[str(y), "CHI", "40" if y < 1970 else "40", "400"] for y in range(1960, 1970)] + [["1970", "CHI", "0", "0"]]}]
+        infobox = {"heading": "", "caption": "", "grid": [["Old Timer", "Old Timer"], ["Position", "Wide receiver"]]}
+        pages = {"Old Timer": [infobox] + old_timer}
+        # every title the build may try is answered from the cache (a missing article is a cache entry too), so the test never touches the network
+        for name in ("Old Timer", "Garrett Williams", "Third Guy"):
+            for cats in ({"receptions"}, {"rushing_yards"}, {"receptions", "rushing_yards"}):
+                for title in B.title_candidates(name, cats):
+                    tables = pages.get(title)
+                    obj = ({"title": title, "missing": True, "retrieved": "2026-11-02"} if tables is None else
+                           {"title": title, "revid": 123, "canonical_title": title, "tables": tables, "retrieved": "2026-11-02"})
+                    wiki.path(title).write_text(json.dumps(obj), encoding="utf-8")
+
+    def guide(self):
+        def row(rank, name, years, value, raw=None):
+            return {"rank": rank, "tie": False, "name": name, "years": years, "value": value, "raw": raw or f"{rank}. {name} {years} {value}"}
+        lists = [
+            {"scope": "career", "category": "rec", "title": "CAREER RECEPTIONS", "pdf_page": 10, "kind": "list", "ranked_by": "receptions",
+             "scope_note": "regular season", "complete_to": 3,
+             "rows": [row(1, "Old Timer", "1960-70", 400), row(2, "Garrett Williams", "2020-25", 300), row(3, "Third Guy", "1980-85", 200)]},
+            {"scope": "career", "category": "rush_yds", "title": "CAREER RUSHING", "pdf_page": 11, "kind": "list", "ranked_by": "rushing yards",
+             "scope_note": "regular season", "complete_to": 2,
+             "rows": [row(1, "Garrett Williams", "2020-25", 3000), row(2, "Third Guy", "1980-85", 2000)]},
+            {"scope": "season", "category": "rush_yds", "title": "MOST RUSHING YARDS, SEASON", "pdf_page": 12, "kind": "list", "ranked_by": "rushing yards",
+             "scope_note": "regular season", "complete_to": 1, "rows": [row(1, "Garrett Williams", "2023", 500)]},
+            {"scope": "game", "category": "rush_yds", "title": "MOST RUSHING YARDS, GAME", "pdf_page": 13, "kind": "list", "ranked_by": "rushing yards",
+             "scope_note": "regular season", "complete_to": 1, "rows": [row(1, "Garrett Williams", "10/15/2023 vs. Minnesota", 300, "300 Garrett Williams 10/15/2023 vs. Minnesota")]},
+        ]
+        return {"team": "CHI", "guide_ident": "synthetic-chi-2026-media-guide", "through_season": 2025, "lists": lists,
+                "missing": [{"scope": "career", "category": "tackles", "why": "no list"}], "notes": ["synthetic \u2014 test"]}
+
+    def test_build_ships_what_two_sources_agree_on_and_verify_passes(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp = Path(tmp)
+            for sub in ("nv", "wp", "guides"):
+                (tmp / sub).mkdir()
+            self.write_nflverse(tmp / "nv")
+            self.write_wikipedia_cache(tmp / "wp")
+            (tmp / "guides" / "CHI.json").write_text(json.dumps(self.guide()), encoding="utf-8")
+            out, ev = tmp / "data.json", tmp / "evidence.json"
+            with contextlib.redirect_stdout(io.StringIO()):
+                rc = B.main(["build", "--guides", str(tmp / "guides"), "--nflverse", str(tmp / "nv"), "--wiki-cache", str(tmp / "wp"),
+                             "--clubs", "CHI", "--out", str(out), "--evidence", str(ev)])
+            self.assertEqual(rc, 0)
+            data, evidence = json.loads(out.read_text(encoding="utf-8")), json.loads(ev.read_text(encoding="utf-8"))
+            chi = data["clubs"]["CHI"]
+            # receptions: Old Timer by Wikipedia, Garrett Williams by nflverse (whole career 2020-25) and linked to his roster record; the
+            # third man has no second source, so the run ends at rank 2
+            rows = chi["career"]["receptions"]
+            self.assertEqual([(r["name"], r["value"], r["confirmed_by"]) for r in rows], [("Old Timer", 400, ["wikipedia"]), ("Garrett Williams", 300, ["nflverse"])])
+            self.assertEqual(rows[0]["position"], "WR")
+            self.assertEqual((rows[1]["position"], rows[1]["link"]["index"], rows[1]["link"]["gsis_id"]), ("HB", 0, "00-0000001"))
+            self.assertEqual(rows[1]["span"], [2020, 2025])
+            # rushing: nflverse knows a Bear with 2,500 yards whom the guide's list does not print, so the list cannot be complete
+            self.assertNotIn("rushing_yards", chi["career"])
+            reasons = {(e["category"], e["name"]): e["reason"] for e in evidence["excluded"]}
+            self.assertEqual(reasons[("rushing_yards", "Garrett Williams")], "incomplete list")
+            self.assertEqual(reasons[("receptions", "Third Guy")], "single")
+            # season and game records: nflverse equals the guide exactly; the January/October date gives the season and the week is found
+            season = chi["season"]["rushing_yards"][0]
+            self.assertEqual((season["season"], season["value"], season["confirmed_by"]), (2023, 500, ["nflverse"]))
+            game = chi["game"]["rushing_yards"][0]
+            self.assertEqual((game["season"], game["date"], game["week"], game["value"]), (2023, "2023-10-15", 6, 300))
+            self.assertTrue(any(e["reason"] == "not printed in the guide" for e in evidence["excluded"]))
+            self.assertNotIn("\u2014", json.dumps(evidence["sources"]))
+            with contextlib.redirect_stdout(io.StringIO()):
+                self.assertEqual(B.main(["verify", "--out", str(out), "--evidence", str(ev)]), 0)
+
+
 @unittest.skipUnless(DATA.exists() and EVIDENCE.exists(), "franchise leaders data not built yet")
 class ShippedData(unittest.TestCase):
     @classmethod
@@ -338,13 +482,13 @@ class ShippedData(unittest.TestCase):
     def test_the_guide_line_contains_the_number_and_the_other_sources_agree(self):
         by_key = {}
         for c in self.evidence["candidates"]:
-            by_key[(c["club"], c["scope"], c["category"], c["name"], c["rank"])] = c
+            by_key[(c["club"], c["scope"], c["category"], c["name"], c["rank"], c["guide"]["page"])] = c
         checked = 0
         for code, club in self.data["clubs"].items():
             for scope in B.SCOPES:
                 for cat, rows in club[scope].items():
                     for r in rows:
-                        c = by_key[(code, scope, cat, r["name"], r["rank"])]
+                        c = by_key[(code, scope, cat, r["name"], r["rank"], r["guide_page"])]
                         self.assertEqual(c["value"], r["value"])
                         raw = c["guide"]["raw"].replace(",", "")
                         unit = r["value"] / B.SCALE.get(cat, 1)

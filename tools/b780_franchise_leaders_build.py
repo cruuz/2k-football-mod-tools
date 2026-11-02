@@ -153,7 +153,7 @@ def parse_years(s: str, through: int = THROUGH) -> set[int]:
             out.update(range(a, (e + 100 if e < a else e) + 1))
         else:
             out.add(a)
-    return out
+    return {y for y in out if y <= through}               # the guides' totals end with the 2025 season ("2014-18, 26" is a 2026 roster note)
 
 
 def game_date(s: str):
@@ -480,8 +480,9 @@ def player_tables(source):
 
 def club_sums(source, club: str, through: int = THROUGH):
     """Regular-season stat rows of a player article (HTML or its tables) that belong to `club` -> sums, per-season values, seasons seen
-    (sacks are returned in half sacks)."""
-    rows, years, amb = {}, set(), 0
+    (sacks are returned in half sacks).  A team cell that is ambiguous that year ("LA" 1982-94: Rams or Raiders) counts for `club`
+    only when every unambiguous row of the player is `club`'s."""
+    parsed, others, amb = [], set(), 0
     for t in player_tables(source):
         if t["post"]:
             continue
@@ -494,17 +495,29 @@ def club_sums(source, club: str, through: int = THROUGH):
             if yr > through:
                 continue
             who = club_of_cell(r[cm["team"]], yr)
-            if who == "AMBIG":
-                amb += 1
+            if who is None:
                 continue
-            if who != club:
-                continue
-            years.add(yr)
+            if who != "AMBIG":
+                others.add(who)
+            vals = {}
             for cat in CATEGORIES:
                 if cat in cm and cm[cat] < len(r):
                     v = num(r[cm[cat]])
                     if v is not None:
-                        rows.setdefault(cat, {}).setdefault(yr, v * SCALE.get(cat, 1))     # a season repeated in a second table counts once
+                        vals[cat] = v * SCALE.get(cat, 1)
+            parsed.append((who, yr, vals))
+    ambiguous_is_ours = others == {club}
+    rows, years = {}, set()
+    for who, yr, vals in parsed:
+        if who == "AMBIG":
+            amb += 1
+            if not ambiguous_is_ours:
+                continue
+        elif who != club:
+            continue
+        years.add(yr)
+        for cat, v in vals.items():
+            rows.setdefault(cat, {}).setdefault(yr, v)               # a season repeated in a second table counts once
     return {"sums": {c: sum(by.values()) for c, by in rows.items()}, "seasons": {c: {str(y): v for y, v in by.items()} for c, by in rows.items()},
             "years": sorted(years), "ambiguous": amb}
 
@@ -599,27 +612,6 @@ class Wiki:
             out = {"title": title, "revid": None, "tables": html_tables(html), "retrieved": today}
         p.write_text(json.dumps(out), encoding="utf-8")
         return out
-
-    def exists(self, titles, cache_file) -> dict:
-        """title -> True when an article (not a disambiguation page) exists, by batched API calls (50 titles a call); cached"""
-        cache = json.loads(Path(cache_file).read_text(encoding="utf-8")) if Path(cache_file).exists() else {}
-        todo = [t for t in dict.fromkeys(titles) if t not in cache]
-        for i in range(0, len(todo), 50):
-            chunk = todo[i:i + 50]
-            q = "https://en.wikipedia.org/w/api.php?" + urllib.parse.urlencode(
-                {"action": "query", "titles": "|".join(chunk), "redirects": 1, "prop": "pageprops", "ppprop": "disambiguation", "format": "json"})
-            _, body = self._get(q)
-            d = json.loads(body).get("query", {})
-            nm = {n["from"]: n["to"] for n in d.get("normalized", [])}
-            rd = {r["from"]: r["to"] for r in d.get("redirects", [])}
-            pages = {pg["title"]: pg for pg in d.get("pages", {}).values()}
-            for t in chunk:
-                x = nm.get(t, t)
-                x = rd.get(x, x)
-                pg = pages.get(x)
-                cache[t] = bool(pg and "missing" not in pg and "invalid" not in pg and "pageprops" not in pg)
-            Path(cache_file).write_text(json.dumps(cache), encoding="utf-8")
-        return cache
 
     def fill_revids(self, titles) -> None:
         """batched revision-id lookup (<=50 titles a call) for cached pages; adds revid, canonical title, timestamp to the cache"""
@@ -754,11 +746,16 @@ class NFLverse:
         want = norm(name).split()
         if not want:
             return None
+        if not hasattr(self, "_index"):
+            self._index, self._years, self._norm = {}, {}, {}
+            for (c, pid) in self.career:
+                self._index.setdefault(c, []).append(pid)
+            for (c, pid, yr) in self.season:
+                self._years.setdefault((c, pid), set()).add(yr)
+            self._norm = {pid: norm(n).split() for pid, n in self.names.items()}
         best = None
-        for (c, pid) in self.career:
-            if c != club:
-                continue
-            have = norm(self.names.get(pid, "")).split()
+        for pid in self._index.get(club, []):
+            have = self._norm.get(pid, [])
             if have == want:
                 sc = 3
             elif len(want) == 1 and have and have[-1] == want[0]:                       # a guide that prints only the last name
@@ -767,15 +764,30 @@ class NFLverse:
                 sc = 2
             else:
                 continue
-            ys = {k[2] for k in self.season if k[0] == club and k[1] == pid}
+            ys = self._years.get((club, pid), set())
             ov = len(ys & set(years)) if years else 1
             if ov and (best is None or (sc, ov) > best[0]):
                 best = ((sc, ov), pid)
         return best[1] if best else None
 
+    def club_players(self, club):
+        """[(player id, career totals)] of one club"""
+        if not hasattr(self, "_by_club"):
+            self._by_club, self._seasons_by_club = {}, {}
+            for (c, pid), tot in self.career.items():
+                self._by_club.setdefault(c, []).append((pid, tot))
+            for (c, pid, yr), v in self.season.items():
+                self._seasons_by_club.setdefault(c, []).append((pid, yr, v))
+        return self._by_club.get(club, [])
+
+    def club_seasons(self, club):
+        """[(player id, season, season totals)] of one club"""
+        self.club_players(club)
+        return self._seasons_by_club.get(club, [])
+
     def same_person(self, pid, printed_names):
         """does an nflverse player match any name printed on the guide's list (same last name and first initial)?"""
-        have = norm(self.names.get(pid, "")).split()
+        have = getattr(self, "_norm", {}).get(pid) or norm(self.names.get(pid, "")).split()
         for nm in printed_names:
             w = nm.split()
             if have and w and have[-1] == w[-1] and have[0][:1] == w[0][:1]:
@@ -923,6 +935,7 @@ def assemble(evidence: dict):
                         row["week"] = c.get("week")
                 row["value"] = c["value"]
                 row["confirmed_by"] = d["confirmed_by"]
+                row["guide_page"] = c["guide"]["page"]                  # PDF page of the club guide that prints the row
                 if scope == "career" and c.get("link") is not None:
                     row["link"] = c["link"]
                 if c["kind"] == "column":
@@ -981,26 +994,18 @@ def load_guides(folder: Path, clubs=None) -> dict:
     return out
 
 
-def primary_lists(lists: list) -> dict:
-    """one list per (scope, category): a list ranked by exactly that stat beats a column of another list, then the longer one"""
-    out: dict = {}
-    for lst in lists:
-        key = (lst["scope"], lst["category"])
-        rank = (lst["kind"] != "list", -(lst.get("complete_to") or len(lst["rows"])))
-        if key not in out or rank < (out[key]["kind"] != "list", -(out[key].get("complete_to") or len(out[key]["rows"]))):
-            out[key] = lst
-    return out
-
-
 def select_rows(lst: dict, scope: str):
     return [(rk, r) for rk, r in rank_rows(lst) if rk <= SLOTS[scope]]
 
 
 def resolve_wikipedia(wiki: Wiki, need: dict, cache_file: Path) -> dict:
-    resolved = json.loads(cache_file.read_text(encoding="utf-8")) if cache_file.exists() else {}
+    """{'CLUB|Name': Wikipedia result or None}.  Every name is resolved afresh from the page cache (a cached article costs
+    milliseconds), so a change in the table reader is never hidden by an old answer; only articles not yet cached touch the network."""
+    resolved: dict = {}
     known_file = Path(cache_file).with_name("exists.json")
     known = json.loads(known_file.read_text(encoding="utf-8")) if known_file.exists() else {}
-    todo = [(club, name, info) for (club, name), info in sorted(need.items()) if f"{club}|{name}" not in resolved]
+    todo = [(club, name, info) for (club, name), info in sorted(need.items())]
+
     def one(item):
         club, name, info = item
         try:
@@ -1027,7 +1032,10 @@ def resolve_wikipedia(wiki: Wiki, need: dict, cache_file: Path) -> dict:
                 cache_file.write_text(json.dumps(resolved), encoding="utf-8")
                 print(f"  wikipedia: {n}/{len(todo)} names", flush=True)
     cache_file.write_text(json.dumps(resolved), encoding="utf-8")
-    wiki.fill_revids(sorted({v["title"] for v in resolved.values() if v}))
+    try:
+        wiki.fill_revids(sorted({v["title"] for v in resolved.values() if v}))
+    except RuntimeError as exc:                                   # the API is rate limited now and then; rerun to fill the rest
+        print("  wikipedia: revision ids incomplete:", exc, flush=True)
     for v in resolved.values():
         if v:
             pg = json.loads(wiki.path(v["title"]).read_text(encoding="utf-8"))
@@ -1193,15 +1201,15 @@ def cmd_build(args) -> int:
                 else:
                     bar = min(r["value"] for r in lst["rows"]) * k
                 best = None
-                for (c_, pid_), tot in nv.career.items():
-                    if c_ == club and tot.get(cat) and not nv.same_person(pid_, printed) and (best is None or tot[cat] > best[0]):
+                for pid_, tot in nv.club_players(club):
+                    if tot.get(cat) and (best is None or tot[cat] > best[0]) and not nv.same_person(pid_, printed):
                         best = (tot[cat], nv.names[pid_])
                 guards.append({"club": club, "scope": scope, "category": cat, "variant": variant, "bar": clean_number(bar),
                                "other_value": clean_number(best[0]) if best else None, "other_player": best[1] if best else None})
             else:
                 bar = chosen[0][1]["value"] * k
                 if scope == "season":
-                    best = max(((v.get(cat, 0.0), pid_, y) for (c_, pid_, y), v in nv.season.items() if c_ == club), default=None)
+                    best = max(((v.get(cat, 0.0), pid_, y) for pid_, y, v in nv.club_seasons(club)), default=None)
                 else:
                     best = max(((x[0], x[1], x[2]) for x in nv.game.get((club, cat), [])), default=None)
                 guards.append({"club": club, "scope": scope, "category": cat, "variant": variant, "bar": clean_number(bar),
