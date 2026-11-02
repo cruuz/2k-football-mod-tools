@@ -272,6 +272,22 @@ class GameResaveTests(unittest.TestCase):
         grown, _ = arena.migrate(native, reserves_16=False, capacity_records=612)
         self.assertEqual(filled, grown)                                          # byte for byte, arena and everything after it
 
+    @unittest.skipUnless(Path(os.environ.get("B780_B10_DISC_ROST", "")).is_file(),
+                         "the released disc's roster is not named in B780_B10_DISC_ROST")
+    def test_a_history_seeded_into_the_old_arena_survives_the_games_move(self):
+        """`champions` on a save that is still in the v0.7 arena: the game's own load moves the whole tail, block included."""
+        from mod_editor.core import nfl2k5_franchise_upgrade as up
+        original = REAL_FRANCHISE.read_bytes()
+        native = original[:-34320] if not any(original[-34320:]) else original
+        body = Path(os.environ["B780_B10_DISC_ROST"]).read_bytes()
+        seed = body[history.gap_offset(body):history.gap_offset(body) + history.USED]
+        seeded, receipt = up.sync_champions(native, body)
+        self.assertEqual((receipt["seeded"], len(receipt["added"])), (True, 22))
+        resaved = self.resave(seeded)
+        at = up.franchise(resaved)[0].arena_end - history.FROM_END + history.RESERVE_BLOCK
+        self.assertEqual(resaved[at:at + history.USED], seed)
+        self.assertEqual([r["super_bowl"] for r in history.read_block(resaved[at:at + history.USED])], list(range(60, 38, -1)))
+
 
 CAREER_OLD = Path(os.environ.get("B780_B10_CAREER_OLD", ""))
 CAREER_NEW = Path(os.environ.get("B780_B10_CAREER_NEW", ""))
