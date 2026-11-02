@@ -316,6 +316,22 @@ class StageRootTests(unittest.TestCase):
         self.assertEqual(stage_cache.edit_shape(edit), {"kind": "torso", "asset_code": "18", "side": "H"})
 
 
+class TimingLineTests(unittest.TestCase):
+    def test_a_long_step_says_where_its_time_went_and_a_short_one_says_nothing(self):
+        tool = backend()
+        self.assertIsNone(tool._stage_timing_line(59.0, {"waiting": 50.0, "writing": 5.0, "files": 10}))
+        self.assertEqual(
+            tool._stage_timing_line(12600.0, {"waiting": 11400.0, "writing": 480.0, "files": 78000}),
+            "Preparing the project took 210 min: 190 min waiting for the texture compilers (or the saved results), "
+            "8 min writing 78,000 small files, 12 min everything else")
+        self.assertEqual(
+            tool._stage_timing_line(75.0, {"waiting": 3.0, "writing": 40.0, "files": 282}),
+            "Preparing the project took 75 s: 3 s waiting for the texture compilers (or the saved results), "
+            "40 s writing 282 small files, 32 s everything else")
+        for text in (tool._stage_timing_line(300.0, {"waiting": 0.0, "writing": 0.0, "files": 0}),):
+            self.assertNotIn("\u2014", text)       # no em dash in text people read
+
+
 class EvictionTests(unittest.TestCase):
     def test_a_build_never_evicts_what_it_is_using_and_older_entries_go_first(self):
         with tempfile.TemporaryDirectory() as folder:

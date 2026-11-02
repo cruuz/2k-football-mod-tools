@@ -4374,6 +4374,19 @@ def project_edit_indices(edits):
     return indices
 
 
+def _stage_timing_line(loop_seconds: float, spent: dict[str, float]) -> str | None:
+    """Where the time of a long compile step went, in plain words (nothing for a step under a minute)."""
+    if loop_seconds < 60:
+        return None
+
+    def minutes(seconds: float) -> str:
+        return f"{seconds / 60:.0f} min" if seconds >= 90 else f"{seconds:.0f} s"
+    other = max(0.0, loop_seconds - spent["waiting"] - spent["writing"])
+    return (f"Preparing the project took {minutes(loop_seconds)}: {minutes(spent['waiting'])} waiting for the texture compilers "
+            f"(or the saved results), {minutes(spent['writing'])} writing {spent['files']:,} small files, "
+            f"{minutes(other)} everything else")
+
+
 def _group_paths(project: ProjectFile, dependencies: list[int]) -> list[str]:
     """The file names of one compile group, in the order its cache key reads them."""
     return [project.value["edits"][n][name] for n in dependencies
@@ -5259,13 +5272,9 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
             print("NFL2K5_STAGE_CACHE " + json.dumps(summary, sort_keys=True), flush=True)
             for line in units.plain_summary():
                 _item_progress(line, len(project.value["edits"]), len(project.value["edits"]))
-            if loop_seconds >= 60:
-                minutes = lambda seconds: f"{seconds / 60:.0f} min" if seconds >= 90 else f"{seconds:.0f} s"
-                _item_progress(
-                    f"The per-edit step took {minutes(loop_seconds)}: {minutes(spent['waiting'])} waiting for the texture compilers "
-                    f"(or the saved results), {minutes(spent['writing'])} writing {spent['files']:,} small files, "
-                    f"{minutes(max(0.0, loop_seconds - spent['waiting'] - spent['writing']))} everything else",
-                    len(project.value["edits"]), len(project.value["edits"]))
+            timing = _stage_timing_line(loop_seconds, spent)
+            if timing:
+                _item_progress(timing, len(project.value["edits"]), len(project.value["edits"]))
         print(f"NFL2K5_COMPILE_CACHE hits={cache.hits} misses={cache.misses}", flush=True)
         return PreparedProject(prepared, temp_root, temp_files, input_pins,
                                report_pins, kept_retail)
