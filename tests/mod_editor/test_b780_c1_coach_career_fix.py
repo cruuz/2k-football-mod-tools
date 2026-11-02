@@ -49,7 +49,7 @@ class SiteTests(unittest.TestCase):
         self.assertEqual([(i.mnemonic, i.size) for i in md.disasm(after[4:], va + 4)], [("nop", 4)])
 
     def test_plain_words_for_the_option(self) -> None:
-        self.assertNotIn("—", fix.HELP_TEXT + fix.BUILD_CAPTION)
+        self.assertNotIn("\u2014", fix.HELP_TEXT + fix.BUILD_CAPTION)
         self.assertLess(len(fix.HELP_TEXT), 400)
 
 
