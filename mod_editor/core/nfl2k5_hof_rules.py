@@ -12,7 +12,7 @@ The rule in plain words (``RULE_HELP`` repeats it for the Studio option text)
   later, so the score is computed once, then and kept). Score = honors + games + production, all whole points:
 
   - honors: 25 per first-team All-Pro season, 25 per MVP, 15 per Offensive or Defensive Player of the Year, 15 per Super
-    Bowl MVP, 10 per Rookie of the Year, 15 per rushing title (at most 4), 3 per Super Bowl ring (at most 4);
+    Bowl MVP, 10 for Rookie of the Year (once), 15 per rushing title (at most 4), 3 per Super Bowl ring (at most 4);
   - games: 1 point per 4 games above 80, at most 20 (35 for linemen, whose record is seasons as a starter);
   - production: up to 25 points, how close his career comes to a typical Hall of Famer at his position (touchdowns for
     quarterbacks, yards and touchdowns for backs and receivers, sacks and interceptions on defense, field goals for
@@ -36,7 +36,7 @@ non-inductees pass (5.0 %); none of the other 5,105 retirees does (the 5,057 lef
 yearly replay (one close per season from 2004, table filled year by year) makes classes of 2 to 5 for every class 2010-2026:
 68 inductees, 52 of them real Hall of Famers. The All-Pro weight and the production cap are the two knobs that matter (+/-20 %
 of either moves 5 to 10 players); the other weights and caps move at most one inductee and two non-inductees. The production
-term saturates, so scaling the game's sim production by 0.8 to 1.3 leaves the ten-season sim count at 17.
+term saturates, so scaling the game's sim production by 0.8 to 1.3 leaves the ten-season sim count at 15.
 
 What this module does not do: it does not read the save, the roster or the executable; the hall block layout belongs to
 ``nfl2k5_franchise_extension`` (job j23) and the records here are byte-compatible with it (``candidate_to_bytes`` /
@@ -93,6 +93,7 @@ POINTS = {"all_pro": 25, "mvp": 25, "player_of_year": 15, "super_bowl_mvp": 15, 
           "rushing_title": 15, "super_bowl": 3}
 RUSHING_TITLE_CAP = 4
 SUPER_BOWL_CAP = 4
+ROOKIE_OF_YEAR_CAP = 1      # a man is a rookie once (offense or defense)
 GAMES_FREE = 80
 GAMES_PER_POINT = 4
 GAMES_CAP = 20
@@ -108,7 +109,7 @@ UI_LABEL = "Hall of Fame classes with real retirees seeded"     # 60-character c
 
 RULE_HELP = (
     "Hall of Fame: when a player retires he is scored from his honors, games and production. First-team All-Pro 25, MVP 25, "
-    "Player of the Year 15, Super Bowl MVP 15, Rookie of the Year 10, rushing title 15, Super Bowl ring 3, one point per "
+    "Player of the Year 15, Super Bowl MVP 15, Rookie of the Year 10 (once), rushing title 15, Super Bowl ring 3, one point per "
     "4 games over 80 (most 20; 35 for linemen), and up to 25 for production at his position (none for linemen and punters). Pro Bowls and "
     "tackles do not count. With 80 points he becomes a candidate. Five seasons after he retires he can be inducted: each "
     "year up to 5 candidates with 100 points go in, and if fewer than 2 reach 100 the best candidates with 80 or more "
@@ -178,7 +179,7 @@ def composite(c: Career) -> int:
 def honors_points(c: Career) -> int:
     return (POINTS["all_pro"] * _n(c.all_pro) + POINTS["mvp"] * _n(c.mvp)
             + POINTS["player_of_year"] * (_n(c.opoy) + _n(c.dpoy)) + POINTS["super_bowl_mvp"] * _n(c.super_bowl_mvp)
-            + POINTS["rookie_of_year"] * (_n(c.oroy) + _n(c.droy))
+            + POINTS["rookie_of_year"] * min(_n(c.oroy) + _n(c.droy), ROOKIE_OF_YEAR_CAP)
             + POINTS["rushing_title"] * min(_n(c.rushing_title), RUSHING_TITLE_CAP)
             + POINTS["super_bowl"] * min(_n(c.super_bowl), SUPER_BOWL_CAP))
 
@@ -481,7 +482,7 @@ def native_table() -> dict:
 
     return {
         "group_of_position": GROUP_OF_POSITION,
-        "points": dict(POINTS), "rushing_title_cap": RUSHING_TITLE_CAP, "super_bowl_cap": SUPER_BOWL_CAP,
+        "points": dict(POINTS), "rushing_title_cap": RUSHING_TITLE_CAP, "super_bowl_cap": SUPER_BOWL_CAP, "rookie_of_year_cap": ROOKIE_OF_YEAR_CAP,
         "games_free": GAMES_FREE, "games_per_point": GAMES_PER_POINT, "games_cap": GAMES_CAP,
         "games_cap_linemen": GAMES_CAP_LINEMEN, "production_cap": PRODUCTION_CAP, "score_max": SCORE_MAX,
         "par": tuple(PAR.get(g, 0) for g in GROUPS), "bar": BAR, "floor": FLOOR, "wait": WAIT_SEASONS,
@@ -498,7 +499,7 @@ def c_header() -> str:
                  % ", ".join(map(str, t["par"])))
     for key in ("all_pro", "mvp", "player_of_year", "super_bowl_mvp", "rookie_of_year", "rushing_title", "super_bowl"):
         lines.append(f"#define HOF_PTS_{key.upper()} {t['points'][key]}")
-    for key in ("rushing_title_cap", "super_bowl_cap", "games_free", "games_per_point", "games_cap",
+    for key in ("rushing_title_cap", "super_bowl_cap", "rookie_of_year_cap", "games_free", "games_per_point", "games_cap",
                 "games_cap_linemen", "production_cap", "score_max", "bar", "floor", "wait", "window", "max_class", "min_class",
                 "candidate_slots", "inductee_slots"):
         lines.append(f"#define HOF_{key.upper()} {t[key]}")
@@ -536,7 +537,7 @@ unsigned hof_composite(const HofCareer *c) {
 unsigned hof_score(const HofCareer *c) {
     unsigned honors = HOF_PTS_ALL_PRO * hof_n(c->all_pro) + HOF_PTS_MVP * hof_n(c->mvp)
         + HOF_PTS_PLAYER_OF_YEAR * (hof_n(c->opoy) + hof_n(c->dpoy)) + HOF_PTS_SUPER_BOWL_MVP * hof_n(c->super_bowl_mvp)
-        + HOF_PTS_ROOKIE_OF_YEAR * (hof_n(c->oroy) + hof_n(c->droy))
+        + HOF_PTS_ROOKIE_OF_YEAR * hof_min(hof_n(c->oroy) + hof_n(c->droy), HOF_ROOKIE_OF_YEAR_CAP)
         + HOF_PTS_RUSHING_TITLE * hof_min(hof_n(c->rushing_title), HOF_RUSHING_TITLE_CAP)
         + HOF_PTS_SUPER_BOWL * hof_min(hof_n(c->super_bowl), HOF_SUPER_BOWL_CAP);
     unsigned cap = c->group == 4 ? HOF_GAMES_CAP_LINEMEN : HOF_GAMES_CAP;

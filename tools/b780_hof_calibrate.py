@@ -462,6 +462,7 @@ def build_dataset(cache: Path) -> dict:
         people.append({
             "name": r["pfr_player_name"], "norm": norm_name(r["pfr_player_name"]), "pos": r["position"], "group": CATEGORY_GROUP.get(r["category"], "?"),
             "draft": int(r["season"]), "first": int(r["season"]), "last": int(r["to"]), "gsis": r["gsis_id"], "hof": r["hof"] == "TRUE",
+            "pfr_hof": r["hof"] == "TRUE",
             "ap": int(_num(r["allpro"])), "pb": int(_num(r["probowls"])), "wav": _num(r["w_av"]), "games": int(_num(r["games"])),
             "ptd": int(_num(r["pass_tds"])), "rtd": int(_num(r["rush_tds"])), "ryds": int(_num(r["rush_yards"])),
             "recy": int(_num(r["rec_yards"])), "rectd": int(_num(r["rec_tds"])), "sack2": int(round(2 * _num(r["def_sacks"]))),
@@ -637,6 +638,29 @@ def build_dataset(cache: Path) -> dict:
                          1 if c["gsis"] in active else 0, club, (r or {}).get("birth_date", "") if recent else "",
                          c["gsis"] if recent else "", c["pyds"] if recent else 0, c["rec"] if recent else 0,
                          c["tkl"] if recent else 0, c["started"] if recent else 0])
+    # ---- two-source checks, recorded in the dataset so they can be re-read and re-run
+    honors_doc = json.loads((ROOT / "data" / "nfl2k5_honors_2026.json").read_text(encoding="utf-8"))
+    agree = {"all_pro": [0, 0], "pro_bowl": [0, 0]}
+    disagree = []
+    for pl in honors_doc["players"]:
+        n = norm_name(pl["first"] + " " + pl["last"])
+        for h in pl["honors"]:
+            if h["honor"] == "all_pro" and FIRST_STATS <= h["season"] <= LAST_STATS:
+                ok = n in ap_names[h["season"]]
+            elif h["honor"] == "pro_bowl" and FIRST_STATS <= h["season"] <= LAST_STATS:
+                ok = bool(n) and n in pb_blobs[h["season"]]
+            else:
+                continue
+            agree[h["honor"]][1] += 1
+            agree[h["honor"]][0] += ok
+            if not ok:
+                disagree.append([pl["first"] + " " + pl["last"], h["season"], h["honor"]])
+    pfr_only = sorted(p["name"] for p in people if p["pfr_hof"] and "class" not in p and p["last"] >= FIRST_STATS)
+    wiki_only = sorted(p["name"] for p in people if "class" in p and not p["pfr_hof"])
+    checks = {"honors_pages_vs_the_game_honors_dataset": {"all_pro_matched": agree["all_pro"], "pro_bowl_matched": agree["pro_bowl"],
+                                                          "not_matched": sorted(disagree)},
+              "pfr_hall_of_fame_flag_vs_wikipedia_list": {"flagged_by_pfr_not_on_the_list": pfr_only, "on_the_list_not_flagged_by_pfr": wiki_only,
+                                                          "drafted_members_on_both": sum(1 for p in people if p["pfr_hof"] and "class" in p)}}
     sources = {f"wiki:{k}": dict(v, url=wiki_url(v)) for k, v in sorted(PINS_WIKI.items())}
     sources.update({f"nflverse:{k}": dict(v) for k, v in sorted(PINS_NFLVERSE.items())})
     return {"schema": DATASET_SCHEMA, "attribution": ATTRIBUTION, "columns": list(COLUMNS), "rows": out_rows,
@@ -644,7 +668,7 @@ def build_dataset(cache: Path) -> dict:
             "counts": {"rows": len(out_rows), "retired_2005_2019_excluded_by_year": dict(sorted(excluded.items())),
                        "retired_2005_2019_excluded": sum(excluded.values()), "excluded_max_score": excluded_max,
                        "undrafted_careers_built": len(careers), "keep_score": KEEP_SCORE},
-            "notes": notes, "unresolved_awards": sorted(unresolved)}
+            "checks": checks, "notes": notes, "unresolved_awards": sorted(unresolved)}
 
 
 KEEP_SCORE = 40
@@ -874,7 +898,7 @@ def score_with(c: "rules.Career", p: Mapping) -> int:
 
     n = rules._n
     honors = (p["ap"] * n(c.all_pro) + p["mvp"] * n(c.mvp) + p["poy"] * (n(c.opoy) + n(c.dpoy)) + p["sbm"] * n(c.super_bowl_mvp)
-              + p["roy"] * (n(c.oroy) + n(c.droy)) + p["rt"] * min(n(c.rushing_title), rules.RUSHING_TITLE_CAP)
+              + p["roy"] * min(n(c.oroy) + n(c.droy), rules.ROOKIE_OF_YEAR_CAP) + p["rt"] * min(n(c.rushing_title), rules.RUSHING_TITLE_CAP)
               + p["sb"] * min(n(c.super_bowl), rules.SUPER_BOWL_CAP))
     games = min(p["gcap0"] if c.group in rules.BIG_GAMES_CAP else p["gcap"], n(c.games - rules.GAMES_FREE) // p["gpp"])
     prod = 0 if c.group in rules.NO_PRODUCTION else min(p["pcap"], p["pcap"] * rules.composite(c) // rules.PAR[rules.GROUPS[c.group]])
@@ -920,7 +944,8 @@ def search(rows: Sequence[Mapping], samples: int = 20000, seed: int = 20261102) 
 
     def run(p):
         honors = (p["ap"] * A["all_pro"] + p["mvp"] * A["mvp"] + p["poy"] * (A["opoy"] + A["dpoy"]) + p["sbm"] * A["super_bowl_mvp"]
-                  + p["roy"] * (A["oroy"] + A["droy"]) + p["rt"] * np.minimum(A["rushing_title"], rules.RUSHING_TITLE_CAP)
+                  + p["roy"] * np.minimum(A["oroy"] + A["droy"], rules.ROOKIE_OF_YEAR_CAP)
+                  + p["rt"] * np.minimum(A["rushing_title"], rules.RUSHING_TITLE_CAP)
                   + p["sb"] * np.minimum(A["super_bowl"], rules.SUPER_BOWL_CAP))
         games = np.minimum(np.where(linemen, p["gcap0"], p["gcap"]), np.maximum(A["games"] - rules.GAMES_FREE, 0) // p["gpp"])
         prod = np.where(nostat, 0, np.minimum(p["pcap"], p["pcap"] * comp // par))

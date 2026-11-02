@@ -75,6 +75,8 @@ class ScoreTests(unittest.TestCase):
         self.assertEqual(rules.score(Q(all_pro=4)), 100)
 
     def test_caps_and_floors(self):
+        self.assertEqual(rules.score(Q(oroy=1, droy=1)), 10)                  # a man is a rookie once
+        self.assertEqual(rules.score(Q(oroy=10)), 10)
         self.assertEqual(rules.score(Q(rushing_title=9)), 4 * 15)             # at most four rushing titles count
         self.assertEqual(rules.score(Q(super_bowl=9)), 4 * 3)                 # and four rings
         self.assertEqual([rules.games_points(Q(games=g)) for g in (0, 80, 83, 84, 160, 161, 400)], [0, 0, 0, 1, 20, 20, 20])
@@ -668,6 +670,16 @@ class DatasetTests(unittest.TestCase):
             self.assertNotIn(key, seen)
             seen.add(key)
 
+    def test_two_source_checks_recorded_in_the_dataset(self):
+        checks = self.data["checks"]
+        honors = checks["honors_pages_vs_the_game_honors_dataset"]
+        self.assertEqual((honors["all_pro_matched"], honors["pro_bowl_matched"]), ([184, 186], [674, 681]))
+        names = {row[0] for row in honors["not_matched"]}
+        self.assertEqual(names, {"Josh Hines-Allen", "Nnamdi Madubuike", "Pat Surtain"})            # spelling differences, not misses
+        labels = checks["pfr_hall_of_fame_flag_vs_wikipedia_list"]
+        self.assertEqual((labels["flagged_by_pfr_not_on_the_list"], labels["on_the_list_not_flagged_by_pfr"]), ([], []))
+        self.assertEqual(labels["drafted_members_on_both"], 101)
+
     def test_excluded_retirees_cannot_reach_the_floor(self):
         counts = self.data["counts"]
         self.assertEqual(counts["excluded_max_score"], 39)
@@ -1017,9 +1029,9 @@ class ToolTests(unittest.TestCase):
 class SimProxyTests(unittest.TestCase):
     def test_franchise_career_regime(self):
         out = TOOL.sim_proxy(Path(os.environ["B780_HN1_RUNS"]))
-        self.assertEqual({n: (v["at_bar"], v["at_floor"]) for n, v in out.items()}, {5: (4, 11), 8: (13, 22), 10: (17, 31)})
-        self.assertEqual(set(out[10]["production_scale"].values()) - {16, 17}, set())
-        self.assertEqual(out[10]["production_scale"]["rushing x1.3"], 17)
+        self.assertEqual({n: (v["at_bar"], v["at_floor"]) for n, v in out.items()}, {5: (4, 10), 8: (11, 21), 10: (15, 30)})
+        self.assertEqual(set(out[10]["production_scale"].values()) - {14, 15}, set())
+        self.assertEqual(out[10]["production_scale"]["rushing x1.3"], 15)
 
 
 @unittest.skipUnless(os.environ.get("B780_HOF_CACHE"), "set B780_HOF_CACHE to a folder filled by `b780_hof_calibrate.py fetch`")
