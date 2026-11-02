@@ -549,6 +549,12 @@ class BuildPlan:
     # 0x2E29E6 and the slide decision at 0x2E340E; human carriers and late-half clock urgency keep retail. EXPERIMENTAL:
     # on in the Advanced and Experimental presets (the SOFTDRINK 2K28 recipe builds from Experimental).
     cpu_ball_carriers: bool = False
+    # b780 cv2-runner: CPU ball carriers read where defenders are going (cutbacks, less sideline drift). A late
+    # executable owner (nfl2k5_runner_vision) hooks the carrier task's push call at 0x2E3072: CPU carriers on a calm
+    # clock use an owner copy of the push routine 0x2E2260 (made from the source's own retail bytes) that judges each
+    # defender at his closest approach, and nfl2k5_ball_carrier_ai installs its wider outward taper (9 yards). Needs
+    # cpu_ball_carriers. Human carriers and urgent clocks keep retail. EXPERIMENTAL.
+    cpu_runner_vision: bool = False
     # b778-kr1: kick and punt return coverage takes pursuit angles. The far chase task 0x2E8F20 steers at the
     # carrier's current position; a late executable owner (nfl2k5_return_coverage) replaces only that bearing call
     # (0x2E9148) with a bounded intercept point, gated on the game's play kind [0xE602BC] in {1 safety kick, 2 kickoff,
@@ -910,6 +916,10 @@ for _preset in PRESETS.values():
     _preset["cpu_ball_carriers"] = False
 PRESETS["softdrink_advanced"]["cpu_ball_carriers"] = True
 PRESETS["softdrink_experimental"]["cpu_ball_carriers"] = True
+# b780 cv2-runner: CPU ball carrier vision rides on CPU ball carriers (gameplay AI); off in every preset until its
+# emulator gate passes (see b77_session/reports/b780_cv2-runner_REPORT.md for the recommended preset values).
+for _preset in PRESETS.values():
+    _preset["cpu_runner_vision"] = False
 # b778-kr1: return coverage pursuit angles (gameplay AI, like ball carriers).
 for _preset in PRESETS.values():
     _preset["return_coverage"] = False
@@ -1341,6 +1351,7 @@ _LATE_OWNER_OPTIONS = (
     ("nfl2k5_clock_led", "Modern clock digits", lambda p: p.modern_clock_led),  # b778-sd4
     ("nfl2k5_return_coverage", "Return coverage pursuit angles", lambda p: p.return_coverage),  # b778-kr1
     ("nfl2k5_preseason_warning", "2026 franchise economy", lambda p: p.franchise_economy),  # b779-rc1: the warned flag
+    ("nfl2k5_runner_vision", "CPU ball carrier vision", lambda p: p.cpu_runner_vision),  # b780 cv2-runner
 )
 _REBUILD_HINT = " Build from your unmodified retail dump instead."
 
@@ -1374,6 +1385,21 @@ def _ball_carrier_preflight(source: Path, progress) -> None:
     if module.status(payload) == "foreign":
         raise ValueError("The ball-carrier AI code in this source is not retail or CPU ball carriers. Turn it off "
                          "or build from your unmodified retail dump.")
+
+
+def _runner_vision_preflight(source: Path, progress) -> None:
+    """b780 cv2-runner: refuse a source whose ball-carrier push routine or its call is foreign, before any write."""
+    module = _core_module("nfl2k5_runner_vision")
+    if module is None or _core_module("nfl2k5_xbe_space") is None:
+        raise ValueError("CPU ball carrier vision is not available in this installation.")
+    progress("Checking the ball-carrier steering for CPU ball carrier vision", 0, 0)
+    try:
+        payload = _xbe_bytes(source)
+    except (OSError, ValueError) as exc:
+        raise ValueError(f"CPU ball carrier vision cannot read default.xbe: {exc}") from exc
+    if module.status(payload) == "foreign":
+        raise ValueError("The ball-carrier steering code in this source is not retail or CPU ball carrier vision. Turn "
+                         "it off or build from your unmodified retail dump.")
 
 
 def _return_coverage_preflight(source: Path, progress) -> None:
@@ -1618,7 +1644,8 @@ def _apply_ball_carriers(plan: "BuildPlan", target: Path, receipt: dict, progres
     if module is None:
         raise RuntimeError("CPU ball carriers needs nfl2k5_ball_carrier_ai.")
     progress("CPU AI: ball carriers stay in bounds, QBs slide past the sticks", 0, 0)
-    payload, carrier_receipt = module.apply(_xbe_bytes(target))
+    # b780 cv2-runner: with CPU ball carrier vision the outward taper is the wider one (full room 9 yards in)
+    payload, carrier_receipt = module.apply(_xbe_bytes(target), wide_sideline=bool(plan.cpu_runner_vision))
     _write_xbe_bytes(target, payload)
     final = _xbe_bytes(target)
     if final != payload or module.status(final) != "applied":
@@ -1878,6 +1905,23 @@ def _apply_sim_realism(plan: "BuildPlan", target: Path, receipt: dict, progress)
     receipt["result"]["sim_realism"] = "applied"
 
 
+def _apply_runner_vision(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    """b780 cv2-runner: CPU ball carrier vision, after the b779 late owners (LATE_OWNERS order)."""
+    if not plan.cpu_runner_vision:
+        return
+    module = _core_module("nfl2k5_runner_vision")
+    if module is None:
+        raise RuntimeError("CPU ball carrier vision needs nfl2k5_runner_vision.")
+    progress("CPU AI: ball carriers see where defenders are going", 0, 0)
+    payload, vision_receipt = module.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, payload)
+    final = _xbe_bytes(target)
+    if final != payload or module.status(final) != "applied":
+        raise RuntimeError("CPU ball carrier vision: the output does not read back as applied")
+    receipt["steps"].append({"step": "cpu_runner_vision", **{k: v for k, v in vision_receipt.items() if k != "reservations"}})
+    receipt["result"]["cpu_runner_vision"] = "applied"
+
+
 def _sim_stats_preflight(source: Path, progress) -> None:
     """b778-sim1: refuse a source whose simulator initializer is foreign, before any write."""
     module = _core_module("nfl2k5_sim_stats")
@@ -2098,6 +2142,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
                                ("star_retention", "nfl2k5_star_retention"),  # b778-fa1
                                ("practice_injuries", "nfl2k5_practice_injuries"),  # b778-pi1
                                ("cpu_ball_carriers", "nfl2k5_ball_carrier_ai"),  # b778-ai5
+                               ("cpu_runner_vision", "nfl2k5_runner_vision"),  # b780 cv2-runner
                                ("return_coverage", "nfl2k5_return_coverage"),  # b778-kr1
                                ("sportscenter_lineup", "nfl2k5_sportscenter_lineup"),
                                ("franchise_draft_clock", "nfl2k5_draft_clock"),  # b778-dr1
@@ -2345,6 +2390,8 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
                                 else "unavailable")
     ball_carriers = _core_module("nfl2k5_ball_carrier_ai")  # b778-ai5
     out["cpu_ball_carriers"] = ball_carriers.status(_xbe_bytes(source)) if ball_carriers is not None else "unavailable"
+    runner_vision = _core_module("nfl2k5_runner_vision")  # b780 cv2-runner
+    out["cpu_runner_vision"] = runner_vision.status(_xbe_bytes(source)) if runner_vision is not None else "unavailable"
     return_coverage = _core_module("nfl2k5_return_coverage")  # b778-kr1
     out["return_coverage"] = return_coverage.status(_xbe_bytes(source)) if return_coverage is not None else "unavailable"
     sportscenter = _core_module("nfl2k5_sportscenter_lineup")
@@ -3179,6 +3226,10 @@ def validate_plan(plan: BuildPlan) -> list[str]:
     # b76-pf P1: the eighth field swap pair only reaches the practice facility's field (its midfield named teamlogo).
     if plan.modern_practice_field_team_logo is True and plan.modern_practice_field is not True:
         return ["The practicing team's logo at midfield needs the Modern practice facility: turn it on too."]
+    # b780 cv2-runner: CPU ball carrier vision's wider sideline limit is the CPU ball carriers owner's taper.
+    if plan.cpu_runner_vision is True and plan.cpu_ball_carriers is not True:
+        return ["CPU ball carrier vision needs \"CPU ball carriers stay in bounds\": turn that on too, or turn "
+                "CPU ball carrier vision off."]
     return []
 
 
@@ -4288,6 +4339,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("Franchise practice injuries must be Off or On.")
     if type(plan.cpu_ball_carriers) is not bool:  # b778-ai5
         raise ValueError("CPU ball carriers must be Off or On.")
+    if type(plan.cpu_runner_vision) is not bool:  # b780 cv2-runner
+        raise ValueError("CPU ball carrier vision must be Off or On.")
     if type(plan.return_coverage) is not bool:  # b778-kr1
         raise ValueError("Return coverage pursuit angles must be Off or On.")
     if type(plan.sportscenter_lineup) is not bool:
@@ -5065,6 +5118,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         _sim_realism_preflight(source, progress)
     if plan.cpu_ball_carriers:  # b778-ai5: before any write
         _ball_carrier_preflight(source, progress)
+    if plan.cpu_runner_vision:  # b780 cv2-runner: before any write
+        _runner_vision_preflight(source, progress)
     if plan.return_coverage:  # b778-kr1: before any write
         _return_coverage_preflight(source, progress)
     if plan.sportscenter_lineup:
@@ -5601,6 +5656,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         team_number_scale=bool(plan.team_number_scale), run_blocking=plan.run_blocking, pass_protection=plan.pass_protection, pass_rush_stats=plan.pass_rush_stats, return_coverage=plan.return_coverage,
         qb_accuracy=plan.qb_accuracy, modern_force_out=plan.modern_force_out,
         practice_injuries=plan.practice_injuries, cpu_ball_carriers=plan.cpu_ball_carriers,
+        cpu_runner_vision=plan.cpu_runner_vision,  # b780 cv2-runner
         star_retention=plan.star_retention, star_career=plan.star_career,
         franchise_draft_clock=plan.franchise_draft_clock, weekly_progression=plan.weekly_progression,
         player_progress=bool(plan.player_progress or plan.player_progress_visible), contract_college_guard=plan.contract_college_guard,
@@ -5676,6 +5732,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             team_number_scale=bool(plan.team_number_scale), run_blocking=plan.run_blocking, pass_protection=plan.pass_protection, pass_rush_stats=plan.pass_rush_stats, return_coverage=plan.return_coverage,
             qb_accuracy=plan.qb_accuracy, modern_force_out=plan.modern_force_out,
             practice_injuries=plan.practice_injuries, cpu_ball_carriers=plan.cpu_ball_carriers,
+            cpu_runner_vision=plan.cpu_runner_vision,  # b780 cv2-runner
             star_retention=plan.star_retention, star_career=plan.star_career,
             franchise_draft_clock=plan.franchise_draft_clock, weekly_progression=plan.weekly_progression,
             player_progress=bool(plan.player_progress or plan.player_progress_visible), contract_college_guard=plan.contract_college_guard,
@@ -6784,6 +6841,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     _apply_sim_rb_injuries(plan, target, receipt, progress)
     # b779-sim2 r4: scheduled-sim season realism, after the RB injury owner (LATE_OWNERS order)
     _apply_sim_realism(plan, target, receipt, progress)
+    # b780 cv2-runner: CPU ball carrier vision, after every b779 late owner (LATE_OWNERS order)
+    _apply_runner_vision(plan, target, receipt, progress)
     # b778-pg2: the Player Progress screen and weekly snapshot (a late allocator owner after force_out)
     # b778-cb1: cornerback tackle credit, after force_out
     # b778-sd4: modern clock digits, after modern sideline catches
@@ -6848,6 +6907,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("franchise practice injuries did not survive the final passes")  # b778-pi1
     if plan.cpu_ball_carriers and _core_module("nfl2k5_ball_carrier_ai").status(_xbe_bytes(target)) != "applied":  # b778-ai5
         raise ValueError("CPU ball carriers did not survive the final passes")
+    if plan.cpu_runner_vision and _core_module("nfl2k5_runner_vision").status(_xbe_bytes(target)) != "applied":  # b780 cv2-runner
+        raise ValueError("CPU ball carrier vision did not survive the final passes")
     if plan.rookie_faces and is_image and _core_module("nfl2k5_rookie_faces").image_status(
             target, _xbe_bytes) != "applied":  # b778-rh1
         raise ValueError("rookie faces did not survive the final passes")
