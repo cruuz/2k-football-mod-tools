@@ -88,6 +88,13 @@ def require(ok, message):
         raise ValueError("2026 kit fixes: " + message)
 
 
+class NothingToChange(ValueError):
+    """An art step that would leave its texture exactly as it is (b791-h2-kits): the colours or marks it works on are
+    not on this kit. It is a ValueError with the same message the plain check always raised, so every caller that
+    stops on it still does; the Anniversary moment kits stage reads it as "nothing to change here" on donors that are
+    not the shipped SOFTDRINK ones (a retail or user-made Giants sleeve has no 2026 maker marks to clear)."""
+
+
 def sha(data):
     return hashlib.sha256(data).hexdigest()
 
@@ -1037,12 +1044,14 @@ def compile_texture(span, row, donors=None, *, fixed=True):
         # ku1 (b776): the whole scheme moves in the palette first (indices kept, so every protected texel takes its
         # entry's new colour); the art operations then paint on the remapped texture
         palette, remapped = remap_palette(palette, row)
-        require(remapped, "the palette remap moved no entry")
+        if not remapped:
+            raise NothingToChange("2026 kit fixes: the palette remap moved no entry")
     original_palette = palette.copy()
     h, w = planes[0].shape
     base = palette[planes[0]].astype(np.uint8)
     painted, scope = paint(base, row.get("ops", []), donors)
-    require(scope.any() or remapped, "the art changed no texel")
+    if not (scope.any() or remapped):
+        raise NothingToChange("2026 kit fixes: the art changed no texel")
     alphas = painted[..., 3].astype(np.int64)
     alpha_changed = painted[..., 3] != base[..., 3]
     # exact art colours first, then the most frequent edge blends far from the palette, per alpha class in the art
@@ -1200,7 +1209,8 @@ def compile_palette(span, row):
         else:
             new_palette[hit, :3] = np.array(hex_rgb(mapping["to"]), np.int64)
         changed += [int(i) for i in np.flatnonzero(hit)]
-    require(changed and not np.array_equal(new_palette, palette), "the palette recolour changed nothing")
+    if not (changed and not np.array_equal(new_palette, palette)):
+        raise NothingToChange("2026 kit fixes: the palette recolour changed nothing")
     new = bytearray(decoded)
     new[at:at + 1024] = np.ascontiguousarray(new_palette[:, [2, 1, 0, 3]], np.uint8).tobytes()
     new = bytes(new)
