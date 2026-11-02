@@ -1,0 +1,216 @@
+{
+ "schema": "nfl2k5_hof_roster_check/v1",
+ "attribution": "nflverse contributors (https://github.com/nflverse/nflverse-data), CC-BY-4.0; Wikipedia contributors, CC BY-SA 4.0 (facts only: award winners, All-Pro and Pro Bowl rosters, Hall of Fame classes)",
+ "rule": "A retiree is on the game roster when his name (case, accents, punctuation and Jr, Sr, II, III ignored) and his birth date both match a roster player. A name match where either side has no birth date cannot be told apart and counts as the same man (name_only). A name match with two different birth dates is a different man and stays (other_birth_date). Checked: every dataset row whose last season is 2021 or later and who is not a real Hall of Famer.",
+ "roster": {
+  "image": "SOFTDRINK 2K28 v0.8 (2026-10-31).xiso.iso",
+  "resource_sha256": "526291e894e40ea92b3d5f0611b6a246d5c1ade2e7603d89b59cb24ecad6b048",
+  "resource_bytes": 827456,
+  "players": 4164,
+  "players_with_birth_date": 2707,
+  "reference_year": 2026
+ },
+ "retirees_checked": 123,
+ "counts": {
+  "on_roster": 26,
+  "name_only": 0,
+  "other_birth_date": 1
+ },
+ "on_roster": [
+  {
+   "name": "Michael Thomas",
+   "position": "WR",
+   "retired": 2023,
+   "birth_date": "1993-03-03",
+   "gsis_id": "00-0032765"
+  },
+  {
+   "name": "Dalvin Cook",
+   "position": "HB",
+   "retired": 2024,
+   "birth_date": "1995-08-10",
+   "gsis_id": "00-0033893"
+  },
+  {
+   "name": "De'Vondre Campbell",
+   "position": "OLB",
+   "retired": 2024,
+   "birth_date": "1993-07-01",
+   "gsis_id": "00-0032401"
+  },
+  {
+   "name": "Desmond King",
+   "position": "FS",
+   "retired": 2024,
+   "birth_date": "1994-12-14",
+   "gsis_id": "00-0033566"
+  },
+  {
+   "name": "Eddie Jackson",
+   "position": "FS",
+   "retired": 2024,
+   "birth_date": "1993-12-10",
+   "gsis_id": "00-0033784"
+  },
+  {
+   "name": "Ezekiel Elliott",
+   "position": "HB",
+   "retired": 2024,
+   "birth_date": "1995-07-22",
+   "gsis_id": "00-0033045"
+  },
+  {
+   "name": "Greg Zuerlein",
+   "position": "K",
+   "retired": 2024,
+   "birth_date": "1987-12-27",
+   "gsis_id": "00-0029621"
+  },
+  {
+   "name": "Justin Tucker",
+   "position": "K",
+   "retired": 2024,
+   "birth_date": "1989-11-21",
+   "gsis_id": "00-0029597"
+  },
+  {
+   "name": "Shaquil Barrett",
+   "position": "OLB",
+   "retired": 2024,
+   "birth_date": "1992-11-17",
+   "gsis_id": "00-0031101"
+  },
+  {
+   "name": "Bobby Wagner",
+   "position": "OLB",
+   "retired": 2025,
+   "birth_date": "1990-06-27",
+   "gsis_id": "00-0029255"
+  },
+  {
+   "name": "DeAndre Hopkins",
+   "position": "WR",
+   "retired": 2025,
+   "birth_date": "1992-06-06",
+   "gsis_id": "00-0030564"
+  },
+  {
+   "name": "Graham Gano",
+   "position": "K",
+   "retired": 2025,
+   "birth_date": "1987-04-09",
+   "gsis_id": "00-0026858"
+  },
+  {
+   "name": "Haason Reddick",
+   "position": "OLB",
+   "retired": 2025,
+   "birth_date": "1994-09-22",
+   "gsis_id": "00-0033875"
+  },
+  {
+   "name": "J.T. Gray",
+   "position": "CB",
+   "retired": 2025,
+   "birth_date": "1996-01-18",
+   "gsis_id": "00-0034116"
+  },
+  {
+   "name": "Jack Conklin",
+   "position": "T",
+   "retired": 2025,
+   "birth_date": "1994-08-17",
+   "gsis_id": "00-0033057"
+  },
+  {
+   "name": "Jamal Agnew",
+   "position": "CB",
+   "retired": 2025,
+   "birth_date": "1995-04-03",
+   "gsis_id": "00-0033572"
+  },
+  {
+   "name": "Joey Bosa",
+   "position": "DE",
+   "retired": 2025,
+   "birth_date": "1995-07-11",
+   "gsis_id": "00-0033156"
+  },
+  {
+   "name": "Jordan Poyer",
+   "position": "CB",
+   "retired": 2025,
+   "birth_date": "1991-04-25",
+   "gsis_id": "00-0030114"
+  },
+  {
+   "name": "Kareem Hunt",
+   "position": "HB",
+   "retired": 2025,
+   "birth_date": "1995-08-06",
+   "gsis_id": "00-0033923"
+  },
+  {
+   "name": "Leonard Floyd",
+   "position": "OLB",
+   "retired": 2025,
+   "birth_date": "1992-09-08",
+   "gsis_id": "00-0033072"
+  },
+  {
+   "name": "Marshon Lattimore",
+   "position": "CB",
+   "retired": 2025,
+   "birth_date": "1996-05-20",
+   "gsis_id": "00-0033874"
+  },
+  {
+   "name": "Matt Milano",
+   "position": "OLB",
+   "retired": 2025,
+   "birth_date": "1994-07-28",
+   "gsis_id": "00-0033571"
+  },
+  {
+   "name": "Quandre Diggs",
+   "position": "CB",
+   "retired": 2025,
+   "birth_date": "1993-01-22",
+   "gsis_id": "00-0031608"
+  },
+  {
+   "name": "Tre'Davious White",
+   "position": "CB",
+   "retired": 2025,
+   "birth_date": "1995-01-16",
+   "gsis_id": "00-0033884"
+  },
+  {
+   "name": "Tyler Lockett",
+   "position": "WR",
+   "retired": 2025,
+   "birth_date": "1992-09-28",
+   "gsis_id": "00-0032211"
+  },
+  {
+   "name": "Tyreek Hill",
+   "position": "WR",
+   "retired": 2025,
+   "birth_date": "1994-03-01",
+   "gsis_id": "00-0033040"
+  }
+ ],
+ "name_only": [],
+ "other_birth_date": [
+  {
+   "name": "A.J. Green",
+   "position": "WR",
+   "retired": 2022,
+   "birth_date": "1988-07-31",
+   "gsis_id": "00-0027942",
+   "roster_birth_dates": [
+    "1998-06-09"
+   ]
+  }
+ ]
+}

@@ -9,8 +9,76 @@
   "max_class": 5,
   "min_class": 2
  },
- "policy": "Real retirees whose last season is 2021 or later: the real committee has not judged them (its Class of 2026 is the last one in the sources). Retirees up to 2020 who were not elected stay out: the real committee passed on them, and the rule would only reproduce its false positives. A seeded player must not also exist on the game roster (match name and birth date): any with a 2026 roster row in ACT, RES, DEV or EXE are left out.",
- "count": 27,
+ "policy": "Real retirees whose last season is 2021 or later: the real committee has not judged them (its Class of 2026 is the last one in the sources). Retirees up to 2020 who were not elected stay out: the real committee passed on them, and the rule would only reproduce its false positives. A seeded player must not also exist on the game roster: anyone whose name and birth date match a roster player (data/nfl2k5_hof_roster_check_2026.json, read from the v0.8 disc) is left out and listed under removed_by_roster_check, and so is anyone the sources show on a 2026 roster (ACT, RES, DEV or EXE). A retirement whose last season is 2025 is INFERRED, not confirmed: it is marked retirement_confirmed false and named in inferred_retirements.",
+ "roster_check": {
+  "image": "SOFTDRINK 2K28 v0.8 (2026-10-31).xiso.iso",
+  "resource_sha256": "526291e894e40ea92b3d5f0611b6a246d5c1ade2e7603d89b59cb24ecad6b048",
+  "players": 4164,
+  "counts": {
+   "on_roster": 26,
+   "name_only": 0,
+   "other_birth_date": 1
+  }
+ },
+ "inferred_retirements": [
+  "Philip Rivers"
+ ],
+ "warnings": [
+  "1 seeded retiree(s) have an INFERRED retirement (last played 2025, no 2026 roster row in the sources): Philip Rivers. Check each before relying on it."
+ ],
+ "removed_by_roster_check": [
+  {
+   "name": "Bobby Wagner",
+   "position": "OLB",
+   "retired": 2025,
+   "score": 199,
+   "birth_date": "1990-06-27",
+   "retirement_confirmed": false,
+   "retirement": "INFERRED, not confirmed: last played 2025 and has no 2026 roster row in the sources; check him before relying on it",
+   "why_removed": "he is on the game roster (same name and birth date): he plays there, so he is not also a pending candidate"
+  },
+  {
+   "name": "Justin Tucker",
+   "position": "K",
+   "retired": 2024,
+   "score": 173,
+   "birth_date": "1989-11-21",
+   "retirement_confirmed": true,
+   "retirement": "confirmed: no season after 2024 in the sources",
+   "why_removed": "he is on the game roster (same name and birth date): he plays there, so he is not also a pending candidate"
+  },
+  {
+   "name": "Tyreek Hill",
+   "position": "WR",
+   "retired": 2025,
+   "score": 167,
+   "birth_date": "1994-03-01",
+   "retirement_confirmed": false,
+   "retirement": "INFERRED, not confirmed: last played 2025 and has no 2026 roster row in the sources; check him before relying on it",
+   "why_removed": "he is on the game roster (same name and birth date): he plays there, so he is not also a pending candidate"
+  },
+  {
+   "name": "DeAndre Hopkins",
+   "position": "WR",
+   "retired": 2025,
+   "score": 120,
+   "birth_date": "1992-06-06",
+   "retirement_confirmed": false,
+   "retirement": "INFERRED, not confirmed: last played 2025 and has no 2026 roster row in the sources; check him before relying on it",
+   "why_removed": "he is on the game roster (same name and birth date): he plays there, so he is not also a pending candidate"
+  },
+  {
+   "name": "Ezekiel Elliott",
+   "position": "HB",
+   "retired": 2024,
+   "score": 88,
+   "birth_date": "1995-07-22",
+   "retirement_confirmed": true,
+   "retirement": "confirmed: no season after 2024 in the sources",
+   "why_removed": "he is on the game roster (same name and birth date): he plays there, so he is not also a pending candidate"
+  }
+ ],
+ "count": 25,
  "candidates": [
   {
    "name": "Tom Brady",
@@ -21,16 +89,20 @@
    "first_season": 2000,
    "retired": 2022,
    "eligible_class": 2028,
-   "score": 312,
+   "score": 383,
    "parts": {
-    "honors": 267,
+    "honors": 255,
     "games": 20,
     "production": 25,
-    "score": 312
+    "championships": 48,
+    "milestones": 35,
+    "score": 383
    },
    "seasons": 23,
    "honors": 23,
    "super_bowls": 7,
+   "super_bowls_lost": 3,
+   "playoff_wins": 35,
    "keys": [
     649,
     89,
@@ -43,8 +115,9 @@
    "dpoy": 0,
    "gsis_id": "00-0019596",
    "birth_date": "1977-08-03",
-   "retirement": "confirmed (no season after 2024)",
-   "candidate_hex": "54c8403200000007e6073801170389025900000017070000"
+   "retirement_confirmed": true,
+   "retirement": "confirmed: no season after 2022 in the sources",
+   "candidate_hex": "54c8403200000007e6077f01170389025900000017070000"
   },
   {
    "name": "Adrian Peterson",
@@ -60,11 +133,15 @@
     "honors": 195,
     "games": 20,
     "production": 25,
+    "championships": 0,
+    "milestones": 0,
     "score": 240
    },
    "seasons": 15,
    "honors": 13,
    "super_bowls": 0,
+   "super_bowls_lost": 0,
+   "playoff_wins": 0,
    "keys": [
     14918,
     120,
@@ -77,7 +154,8 @@
    "dpoy": 0,
    "gsis_id": "00-0025394",
    "birth_date": "1985-03-21",
-   "retirement": "confirmed (no season after 2024)",
+   "retirement_confirmed": true,
+   "retirement": "confirmed: no season after 2021 in the sources",
    "candidate_hex": "01165ae47c0e1c1ce507f0000f03463a780031010d000000"
   },
   {
@@ -94,11 +172,15 @@
     "honors": 170,
     "games": 17,
     "production": 25,
+    "championships": 0,
+    "milestones": 0,
     "score": 212
    },
    "seasons": 12,
    "honors": 13,
    "super_bowls": 0,
+   "super_bowls_lost": 0,
+   "playoff_wins": 0,
    "keys": [
     584,
     229,
@@ -111,42 +193,9 @@
    "dpoy": 3,
    "gsis_id": "00-0027949",
    "birth_date": "1989-03-22",
-   "retirement": "confirmed (no season after 2024)",
+   "retirement_confirmed": true,
+   "retirement": "confirmed: no season after 2022 in the sources",
    "candidate_hex": "ea064a0100004008e607d4000c034802e50002000d000000"
-  },
-  {
-   "name": "Bobby Wagner",
-   "position": "OLB",
-   "group": "LB",
-   "club": "Redskins",
-   "club_index": 25,
-   "first_season": 2012,
-   "retired": 2025,
-   "eligible_class": 2031,
-   "score": 198,
-   "parts": {
-    "honors": 153,
-    "games": 20,
-    "production": 25,
-    "score": 198
-   },
-   "seasons": 14,
-   "honors": 16,
-   "super_bowls": 1,
-   "keys": [
-    1999,
-    79,
-    15
-   ],
-   "all_pro": 6,
-   "pro_bowl": 10,
-   "mvp": 0,
-   "opoy": 0,
-   "dpoy": 0,
-   "gsis_id": "00-0029255",
-   "birth_date": "1990-06-27",
-   "retirement": "not confirmed: last played 2025, no 2026 roster row",
-   "candidate_hex": "e286e38a0400281ae907c6000e03cf074f000f0010010000"
   },
   {
    "name": "Zack Martin",
@@ -162,11 +211,15 @@
     "honors": 175,
     "games": 20,
     "production": 0,
+    "championships": 0,
+    "milestones": 0,
     "score": 195
    },
    "seasons": 11,
    "honors": 16,
    "super_bowls": 0,
+   "super_bowls_lost": 0,
+   "playoff_wins": 0,
    "keys": [
     11,
     9,
@@ -179,7 +232,8 @@
    "dpoy": 0,
    "gsis_id": "00-0031402",
    "birth_date": "1990-11-20",
-   "retirement": "confirmed (no season after 2024)",
+   "retirement_confirmed": true,
+   "retirement": "confirmed: no season after 2024 in the sources",
    "candidate_hex": "ba0549930300340ce807c3000b030b000900070010000000"
   },
   {
@@ -191,16 +245,20 @@
    "first_season": 2011,
    "retired": 2023,
    "eligible_class": 2029,
-   "score": 181,
+   "score": 182,
    "parts": {
-    "honors": 153,
+    "honors": 150,
     "games": 28,
     "production": 0,
-    "score": 181
+    "championships": 4,
+    "milestones": 0,
+    "score": 182
    },
    "seasons": 13,
    "honors": 13,
    "super_bowls": 1,
+   "super_bowls_lost": 1,
+   "playoff_wins": 0,
    "keys": [
     12,
     7,
@@ -213,76 +271,9 @@
    "dpoy": 0,
    "gsis_id": "00-0028129",
    "birth_date": "1987-11-05",
-   "retirement": "confirmed (no season after 2024)",
-   "candidate_hex": "6a15360a0000300ee707b5000d030c00070006000d010000"
-  },
-  {
-   "name": "Justin Tucker",
-   "position": "K",
-   "group": "K",
-   "club": "Ravens",
-   "club_index": 24,
-   "first_season": 2012,
-   "retired": 2024,
-   "eligible_class": 2030,
-   "score": 173,
-   "parts": {
-    "honors": 128,
-    "games": 20,
-    "production": 25,
-    "score": 173
-   },
-   "seasons": 13,
-   "honors": 12,
-   "super_bowls": 1,
-   "keys": [
-    0,
-    7,
-    5
-   ],
-   "all_pro": 5,
-   "pro_bowl": 7,
-   "mvp": 0,
-   "opoy": 0,
-   "dpoy": 0,
-   "gsis_id": "00-0029597",
-   "birth_date": "1989-11-21",
-   "retirement": "confirmed (no season after 2024)",
-   "candidate_hex": "8ad6b18a04000419e807ad000d030000070005000c010000"
-  },
-  {
-   "name": "Tyreek Hill",
-   "position": "WR",
-   "group": "WR",
-   "club": "Dolphins",
-   "club_index": 12,
-   "first_season": 2016,
-   "retired": 2025,
-   "eligible_class": 2031,
-   "score": 166,
-   "parts": {
-    "honors": 128,
-    "games": 16,
-    "production": 22,
-    "score": 166
-   },
-   "seasons": 10,
-   "honors": 13,
-   "super_bowls": 1,
-   "keys": [
-    819,
-    11363,
-    83
-   ],
-   "all_pro": 5,
-   "pro_bowl": 8,
-   "mvp": 0,
-   "opoy": 0,
-   "dpoy": 0,
-   "gsis_id": "00-0033040",
-   "birth_date": "1994-03-01",
-   "retirement": "not confirmed: last played 2025, no 2026 roster row",
-   "candidate_hex": "1425c60000000c0de907a6000a033303632c53000d010000"
+   "retirement_confirmed": true,
+   "retirement": "confirmed: no season after 2023 in the sources",
+   "candidate_hex": "6a15360a0000300ee707b6000d030c00070006000d010000"
   },
   {
    "name": "Rob Gronkowski",
@@ -293,16 +284,20 @@
    "first_season": 2010,
    "retired": 2021,
    "eligible_class": 2027,
-   "score": 144,
+   "score": 146,
    "parts": {
-    "honors": 109,
+    "honors": 100,
     "games": 15,
     "production": 20,
-    "score": 144
+    "championships": 11,
+    "milestones": 0,
+    "score": 146
    },
    "seasons": 12,
    "honors": 9,
    "super_bowls": 3,
+   "super_bowls_lost": 2,
+   "playoff_wins": 0,
    "keys": [
     621,
     9286,
@@ -315,8 +310,9 @@
    "dpoy": 0,
    "gsis_id": "00-0027656",
    "birth_date": "1989-05-14",
-   "retirement": "confirmed (no season after 2024)",
-   "candidate_hex": "f2c8e7d6bb732507e50790000c036d0246245c0009030000"
+   "retirement_confirmed": true,
+   "retirement": "confirmed: no season after 2021 in the sources",
+   "candidate_hex": "f2c8e7d6bb732507e50792000c036d0246245c0009030000"
   },
   {
    "name": "Antonio Brown",
@@ -327,16 +323,20 @@
    "first_season": 2010,
    "retired": 2021,
    "eligible_class": 2027,
-   "score": 142,
+   "score": 143,
    "parts": {
-    "honors": 103,
+    "honors": 100,
     "games": 16,
     "production": 23,
-    "score": 142
+    "championships": 4,
+    "milestones": 0,
+    "score": 143
    },
    "seasons": 12,
    "honors": 11,
    "super_bowls": 1,
+   "super_bowls_lost": 1,
+   "playoff_wins": 0,
    "keys": [
     928,
     12291,
@@ -349,8 +349,9 @@
    "dpoy": 0,
    "gsis_id": "00-0027793",
    "birth_date": "1988-07-10",
-   "retirement": "confirmed (no season after 2024)",
-   "candidate_hex": "41c8771d00000c07e5078e000c03a003033053000b010000"
+   "retirement_confirmed": true,
+   "retirement": "confirmed: no season after 2021 in the sources",
+   "candidate_hex": "41c8771d00000c07e5078f000c03a003033053000b010000"
   },
   {
    "name": "Cordarrelle Patterson",
@@ -363,14 +364,18 @@
    "eligible_class": 2030,
    "score": 128,
    "parts": {
-    "honors": 103,
+    "honors": 100,
     "games": 20,
     "production": 5,
+    "championships": 3,
+    "milestones": 0,
     "score": 128
    },
    "seasons": 12,
    "honors": 8,
    "super_bowls": 1,
+   "super_bowls_lost": 0,
+   "playoff_wins": 0,
    "keys": [
     310,
     2875,
@@ -383,7 +388,8 @@
    "dpoy": 0,
    "gsis_id": "00-0030578",
    "birth_date": "1991-03-17",
-   "retirement": "confirmed (no season after 2024)",
+   "retirement_confirmed": true,
+   "retirement": "confirmed: no season after 2024 in the sources",
    "candidate_hex": "03064a8b9ccf0d1de80780000c0336013b0b110008010000"
   },
   {
@@ -395,16 +401,20 @@
    "first_season": 2010,
    "retired": 2022,
    "eligible_class": 2028,
-   "score": 126,
+   "score": 128,
    "parts": {
-    "honors": 88,
+    "honors": 85,
     "games": 20,
     "production": 18,
-    "score": 126
+    "championships": 5,
+    "milestones": 0,
+    "score": 128
    },
    "seasons": 13,
    "honors": 8,
    "super_bowls": 1,
+   "super_bowls_lost": 2,
+   "playoff_wins": 0,
    "keys": [
     599,
     143,
@@ -417,42 +427,9 @@
    "dpoy": 0,
    "gsis_id": "00-0027855",
    "birth_date": "1987-01-06",
-   "retirement": "confirmed (no season after 2024)",
-   "candidate_hex": "6e56040000003c0ee6077e000d0357028f00010008010000"
-  },
-  {
-   "name": "Tyrann Mathieu",
-   "position": "CB",
-   "group": "DB",
-   "club": "Saints",
-   "club_index": 26,
-   "first_season": 2013,
-   "retired": 2024,
-   "eligible_class": 2030,
-   "score": 123,
-   "parts": {
-    "honors": 78,
-    "games": 20,
-    "production": 25,
-    "score": 123
-   },
-   "seasons": 12,
-   "honors": 6,
-   "super_bowls": 1,
-   "keys": [
-    838,
-    22,
-    36
-   ],
-   "all_pro": 3,
-   "pro_bowl": 3,
-   "mvp": 0,
-   "opoy": 0,
-   "dpoy": 0,
-   "gsis_id": "00-0030459",
-   "birth_date": "1992-05-13",
-   "retirement": "confirmed (no season after 2024)",
-   "candidate_hex": "b4058a52a900101be8077b000c0346031600240006010000"
+   "retirement_confirmed": true,
+   "retirement": "confirmed: no season after 2022 in the sources",
+   "candidate_hex": "6e56040000003c0ee60780000d0357028f00010008010000"
   },
   {
    "name": "Matt Ryan",
@@ -463,16 +440,20 @@
    "first_season": 2008,
    "retired": 2022,
    "eligible_class": 2028,
-   "score": 120,
+   "score": 127,
    "parts": {
     "honors": 75,
     "games": 20,
     "production": 25,
-    "score": 120
+    "championships": 7,
+    "milestones": 0,
+    "score": 127
    },
    "seasons": 15,
    "honors": 7,
    "super_bowls": 0,
+   "super_bowls_lost": 1,
+   "playoff_wins": 4,
    "keys": [
     381,
     62,
@@ -485,42 +466,87 @@
    "dpoy": 0,
    "gsis_id": "00-0026143",
    "birth_date": "1985-05-17",
-   "retirement": "confirmed (no season after 2024)",
-   "candidate_hex": "4de6e0000000000be60778000f037d013e00000007000000"
+   "retirement_confirmed": true,
+   "retirement": "confirmed: no season after 2022 in the sources",
+   "candidate_hex": "4de6e0000000000be6077f000f037d013e00000007000000"
   },
   {
-   "name": "DeAndre Hopkins",
-   "position": "WR",
-   "group": "WR",
-   "club": "Ravens",
-   "club_index": 24,
+   "name": "Tyrann Mathieu",
+   "position": "CB",
+   "group": "DB",
+   "club": "Saints",
+   "club_index": 26,
    "first_season": 2013,
-   "retired": 2025,
-   "eligible_class": 2031,
-   "score": 119,
+   "retired": 2024,
+   "eligible_class": 2030,
+   "score": 124,
    "parts": {
     "honors": 75,
     "games": 20,
-    "production": 24,
-    "score": 119
+    "production": 25,
+    "championships": 4,
+    "milestones": 0,
+    "score": 124
    },
-   "seasons": 13,
-   "honors": 8,
-   "super_bowls": 0,
+   "seasons": 12,
+   "honors": 6,
+   "super_bowls": 1,
+   "super_bowls_lost": 1,
+   "playoff_wins": 0,
    "keys": [
-    1006,
-    13295,
-    85
+    838,
+    22,
+    36
    ],
    "all_pro": 3,
-   "pro_bowl": 5,
+   "pro_bowl": 3,
    "mvp": 0,
    "opoy": 0,
    "dpoy": 0,
-   "gsis_id": "00-0030564",
-   "birth_date": "1992-06-06",
-   "retirement": "not confirmed: last played 2025, no 2026 roster row",
-   "candidate_hex": "043db8929b000c19e90777000d03ee03ef33550008000000"
+   "gsis_id": "00-0030459",
+   "birth_date": "1992-05-13",
+   "retirement_confirmed": true,
+   "retirement": "confirmed: no season after 2024 in the sources",
+   "candidate_hex": "b4058a52a900101be8077c000c0346031600240006010000"
+  },
+  {
+   "name": "Cam Newton",
+   "position": "QB",
+   "group": "QB",
+   "club": "Panthers",
+   "club_index": 20,
+   "first_season": 2011,
+   "retired": 2021,
+   "eligible_class": 2027,
+   "score": 123,
+   "parts": {
+    "honors": 75,
+    "games": 17,
+    "production": 25,
+    "championships": 6,
+    "milestones": 0,
+    "score": 123
+   },
+   "seasons": 11,
+   "honors": 6,
+   "super_bowls": 0,
+   "super_bowls_lost": 1,
+   "playoff_wins": 3,
+   "keys": [
+    194,
+    32,
+    0
+   ],
+   "all_pro": 1,
+   "pro_bowl": 3,
+   "mvp": 1,
+   "opoy": 1,
+   "dpoy": 0,
+   "gsis_id": "00-0027939",
+   "birth_date": "1989-05-11",
+   "retirement_confirmed": true,
+   "retirement": "confirmed: no season after 2021 in the sources",
+   "candidate_hex": "c3954b9f03000015e5077b000b03c2002000000006000000"
   },
   {
    "name": "Patrick Peterson",
@@ -536,11 +562,15 @@
     "honors": 75,
     "games": 20,
     "production": 24,
+    "championships": 0,
+    "milestones": 0,
     "score": 119
    },
    "seasons": 13,
    "honors": 11,
    "super_bowls": 0,
+   "super_bowls_lost": 0,
+   "playoff_wins": 0,
    "keys": [
     652,
     8,
@@ -553,42 +583,9 @@
    "dpoy": 0,
    "gsis_id": "00-0027943",
    "birth_date": "1990-07-11",
-   "retirement": "confirmed (no season after 2024)",
+   "retirement_confirmed": true,
+   "retirement": "confirmed: no season after 2023 in the sources",
    "candidate_hex": "10165ae47c0e101de70777000d038c02080024000b000000"
-  },
-  {
-   "name": "Cam Newton",
-   "position": "QB",
-   "group": "QB",
-   "club": "Panthers",
-   "club_index": 20,
-   "first_season": 2011,
-   "retired": 2021,
-   "eligible_class": 2027,
-   "score": 117,
-   "parts": {
-    "honors": 75,
-    "games": 17,
-    "production": 25,
-    "score": 117
-   },
-   "seasons": 11,
-   "honors": 6,
-   "super_bowls": 0,
-   "keys": [
-    194,
-    32,
-    0
-   ],
-   "all_pro": 1,
-   "pro_bowl": 3,
-   "mvp": 1,
-   "opoy": 1,
-   "dpoy": 0,
-   "gsis_id": "00-0027939",
-   "birth_date": "1989-05-11",
-   "retirement": "confirmed (no season after 2024)",
-   "candidate_hex": "c3954b9f03000015e50775000b03c2002000000006000000"
   },
   {
    "name": "Richard Sherman",
@@ -599,16 +596,20 @@
    "first_season": 2011,
    "retired": 2021,
    "eligible_class": 2027,
-   "score": 117,
+   "score": 119,
    "parts": {
-    "honors": 78,
+    "honors": 75,
     "games": 16,
     "production": 23,
-    "score": 117
+    "championships": 5,
+    "milestones": 0,
+    "score": 119
    },
    "seasons": 11,
    "honors": 8,
    "super_bowls": 1,
+   "super_bowls_lost": 2,
+   "playoff_wins": 0,
    "keys": [
     493,
     4,
@@ -621,8 +622,48 @@
    "dpoy": 0,
    "gsis_id": "00-0028092",
    "birth_date": "1988-03-30",
-   "retirement": "confirmed (no season after 2024)",
-   "candidate_hex": "72a2225b70001007e50775000b03ed010400250008010000"
+   "retirement_confirmed": true,
+   "retirement": "confirmed: no season after 2021 in the sources",
+   "candidate_hex": "72a2225b70001007e50777000b03ed010400250008010000"
+  },
+  {
+   "name": "Ben Roethlisberger",
+   "position": "QB",
+   "group": "QB",
+   "club": "Steelers",
+   "club_index": 28,
+   "first_season": 2004,
+   "retired": 2021,
+   "eligible_class": 2027,
+   "score": 118,
+   "parts": {
+    "honors": 10,
+    "games": 20,
+    "production": 25,
+    "championships": 28,
+    "milestones": 35,
+    "score": 118
+   },
+   "seasons": 18,
+   "honors": 6,
+   "super_bowls": 2,
+   "super_bowls_lost": 1,
+   "playoff_wins": 13,
+   "keys": [
+    418,
+    64,
+    0
+   ],
+   "all_pro": 0,
+   "pro_bowl": 6,
+   "mvp": 0,
+   "opoy": 0,
+   "dpoy": 0,
+   "gsis_id": "00-0022924",
+   "birth_date": "1982-03-02",
+   "retirement_confirmed": true,
+   "retirement": "confirmed: no season after 2021 in the sources",
+   "candidate_hex": "42be42114b53001de50776001203a2014000000006020000"
   },
   {
    "name": "Stephon Gilmore",
@@ -633,16 +674,20 @@
    "first_season": 2012,
    "retired": 2024,
    "eligible_class": 2030,
-   "score": 108,
+   "score": 109,
    "parts": {
-    "honors": 68,
+    "honors": 65,
     "games": 20,
     "production": 20,
-    "score": 108
+    "championships": 4,
+    "milestones": 0,
+    "score": 109
    },
    "seasons": 13,
    "honors": 8,
    "super_bowls": 1,
+   "super_bowls_lost": 1,
+   "playoff_wins": 0,
    "keys": [
     617,
     2,
@@ -655,8 +700,9 @@
    "dpoy": 1,
    "gsis_id": "00-0029542",
    "birth_date": "1990-09-19",
-   "retirement": "confirmed (no season after 2024)",
-   "candidate_hex": "f324d69e2c001020e8076c000d0369020200200008010000"
+   "retirement_confirmed": true,
+   "retirement": "confirmed: no season after 2024 in the sources",
+   "candidate_hex": "f324d69e2c001020e8076d000d0369020200200008010000"
   },
   {
    "name": "Shaquille Leonard",
@@ -672,11 +718,15 @@
     "honors": 85,
     "games": 0,
     "production": 18,
+    "championships": 0,
+    "milestones": 0,
     "score": 103
    },
    "seasons": 6,
    "honors": 6,
    "super_bowls": 0,
+   "super_bowls_lost": 0,
+   "playoff_wins": 0,
    "keys": [
     637,
     32,
@@ -689,42 +739,9 @@
    "dpoy": 0,
    "gsis_id": "00-0034846",
    "birth_date": "1995-07-27",
-   "retirement": "confirmed (no season after 2024)",
+   "retirement_confirmed": true,
+   "retirement": "confirmed: no season after 2023 in the sources",
    "candidate_hex": "9395e7822400280ee707670006037d0220000c0006000000"
-  },
-  {
-   "name": "Chandler Jones",
-   "position": "DE",
-   "group": "DL",
-   "club": "Raiders",
-   "club_index": 22,
-   "first_season": 2012,
-   "retired": 2022,
-   "eligible_class": 2028,
-   "score": 96,
-   "parts": {
-    "honors": 53,
-    "games": 18,
-    "production": 25,
-    "score": 96
-   },
-   "seasons": 11,
-   "honors": 6,
-   "super_bowls": 1,
-   "keys": [
-    510,
-    224,
-    1
-   ],
-   "all_pro": 2,
-   "pro_bowl": 4,
-   "mvp": 0,
-   "opoy": 0,
-   "dpoy": 0,
-   "gsis_id": "00-0029585",
-   "birth_date": "1990-02-27",
-   "retirement": "confirmed (no season after 2024)",
-   "candidate_hex": "433d572600004017e60760000b03fe01e000010006010000"
   },
   {
    "name": "Andy Lee",
@@ -735,16 +752,20 @@
    "first_season": 2004,
    "retired": 2022,
    "eligible_class": 2028,
-   "score": 95,
+   "score": 96,
    "parts": {
     "honors": 75,
     "games": 20,
     "production": 0,
-    "score": 95
+    "championships": 1,
+    "milestones": 0,
+    "score": 96
    },
    "seasons": 19,
    "honors": 6,
    "super_bowls": 0,
+   "super_bowls_lost": 1,
+   "playoff_wins": 0,
    "keys": [
     1,
     3,
@@ -757,8 +778,48 @@
    "dpoy": 0,
    "gsis_id": "00-0022824",
    "birth_date": "1982-08-11",
-   "retirement": "confirmed (no season after 2024)",
-   "candidate_hex": "8195020000000808e6075f00130301000300030006000000"
+   "retirement_confirmed": true,
+   "retirement": "confirmed: no season after 2022 in the sources",
+   "candidate_hex": "8195020000000808e6076000130301000300030006000000"
+  },
+  {
+   "name": "Chandler Jones",
+   "position": "DE",
+   "group": "DL",
+   "club": "Raiders",
+   "club_index": 22,
+   "first_season": 2012,
+   "retired": 2022,
+   "eligible_class": 2028,
+   "score": 96,
+   "parts": {
+    "honors": 50,
+    "games": 18,
+    "production": 25,
+    "championships": 3,
+    "milestones": 0,
+    "score": 96
+   },
+   "seasons": 11,
+   "honors": 6,
+   "super_bowls": 1,
+   "super_bowls_lost": 0,
+   "playoff_wins": 0,
+   "keys": [
+    510,
+    224,
+    1
+   ],
+   "all_pro": 2,
+   "pro_bowl": 4,
+   "mvp": 0,
+   "opoy": 0,
+   "dpoy": 0,
+   "gsis_id": "00-0029585",
+   "birth_date": "1990-02-27",
+   "retirement_confirmed": true,
+   "retirement": "confirmed: no season after 2022 in the sources",
+   "candidate_hex": "433d572600004017e60760000b03fe01e000010006010000"
   },
   {
    "name": "Eric Weddle",
@@ -771,14 +832,18 @@
    "eligible_class": 2027,
    "score": 94,
    "parts": {
-    "honors": 53,
+    "honors": 50,
     "games": 20,
     "production": 21,
+    "championships": 3,
+    "milestones": 0,
     "score": 94
    },
    "seasons": 15,
    "honors": 8,
    "super_bowls": 1,
+   "super_bowls_lost": 0,
+   "playoff_wins": 0,
    "keys": [
     1177,
     19,
@@ -791,7 +856,8 @@
    "dpoy": 0,
    "gsis_id": "00-0025424",
    "birth_date": "1985-01-04",
-   "retirement": "confirmed (no season after 2024)",
+   "retirement_confirmed": true,
+   "retirement": "confirmed: no season after 2021 in the sources",
    "candidate_hex": "e516425801001018e5075e000f03990413001d0008010000"
   },
   {
@@ -803,16 +869,20 @@
    "first_season": 2011,
    "retired": 2023,
    "eligible_class": 2029,
-   "score": 93,
+   "score": 94,
    "parts": {
     "honors": 50,
     "games": 20,
     "production": 23,
-    "score": 93
+    "championships": 1,
+    "milestones": 0,
+    "score": 94
    },
    "seasons": 13,
    "honors": 9,
    "super_bowls": 0,
+   "super_bowls_lost": 1,
+   "playoff_wins": 0,
    "keys": [
     914,
     13703,
@@ -825,8 +895,9 @@
    "dpoy": 0,
    "gsis_id": "00-0027944",
    "birth_date": "1989-02-08",
-   "retirement": "confirmed (no season after 2024)",
-   "candidate_hex": "4a3d572600000c0ee7075d000d0392038735420009000000"
+   "retirement_confirmed": true,
+   "retirement": "confirmed: no season after 2023 in the sources",
+   "candidate_hex": "4a3d572600000c0ee7075e000d0392038735420009000000"
   },
   {
    "name": "Marcus Peters",
@@ -837,16 +908,20 @@
    "first_season": 2015,
    "retired": 2023,
    "eligible_class": 2029,
-   "score": 90,
+   "score": 91,
    "parts": {
     "honors": 60,
     "games": 9,
     "production": 21,
-    "score": 90
+    "championships": 1,
+    "milestones": 0,
+    "score": 91
    },
    "seasons": 9,
    "honors": 5,
    "super_bowls": 0,
+   "super_bowls_lost": 1,
+   "playoff_wins": 0,
    "keys": [
     389,
     4,
@@ -859,8 +934,9 @@
    "dpoy": 0,
    "gsis_id": "00-0032165",
    "birth_date": "1993-01-09",
-   "retirement": "confirmed (no season after 2024)",
-   "candidate_hex": "0d165ae404001017e7075a00090385010400210005000000"
+   "retirement_confirmed": true,
+   "retirement": "confirmed: no season after 2023 in the sources",
+   "candidate_hex": "0d165ae404001017e7075b00090385010400210005000000"
   },
   {
    "name": "Andrew Whitworth",
@@ -871,16 +947,20 @@
    "first_season": 2006,
    "retired": 2021,
    "eligible_class": 2027,
-   "score": 88,
+   "score": 89,
    "parts": {
-    "honors": 53,
+    "honors": 50,
     "games": 35,
     "production": 0,
-    "score": 88
+    "championships": 4,
+    "milestones": 0,
+    "score": 89
    },
    "seasons": 16,
    "honors": 6,
    "super_bowls": 1,
+   "super_bowls_lost": 1,
+   "playoff_wins": 0,
    "keys": [
     16,
     4,
@@ -893,42 +973,87 @@
    "dpoy": 0,
    "gsis_id": "00-0024270",
    "birth_date": "1981-12-12",
-   "retirement": "confirmed (no season after 2024)",
-   "candidate_hex": "e1a244ef93143918e5075800100310000400020006010000"
+   "retirement_confirmed": true,
+   "retirement": "confirmed: no season after 2021 in the sources",
+   "candidate_hex": "e1a244ef93143918e5075900100310000400020006010000"
   },
   {
-   "name": "Ezekiel Elliott",
-   "position": "HB",
-   "group": "RB",
-   "club": "Cowboys",
-   "club_index": 11,
-   "first_season": 2016,
-   "retired": 2024,
-   "eligible_class": 2030,
-   "score": 88,
+   "name": "Philip Rivers",
+   "position": "QB",
+   "group": "QB",
+   "club": "Colts",
+   "club_index": 10,
+   "first_season": 2004,
+   "retired": 2025,
+   "eligible_class": 2031,
+   "score": 85,
    "parts": {
-    "honors": 55,
-    "games": 13,
-    "production": 20,
-    "score": 88
+    "honors": 0,
+    "games": 20,
+    "production": 25,
+    "championships": 5,
+    "milestones": 35,
+    "score": 85
    },
-   "seasons": 9,
-   "honors": 4,
+   "seasons": 22,
+   "honors": 8,
    "super_bowls": 0,
+   "super_bowls_lost": 0,
+   "playoff_wins": 5,
    "keys": [
-    9130,
-    74,
-    368
+    425,
+    63,
+    0
    ],
-   "all_pro": 1,
-   "pro_bowl": 3,
+   "all_pro": 0,
+   "pro_bowl": 8,
    "mvp": 0,
    "opoy": 0,
    "dpoy": 0,
-   "gsis_id": "00-0033045",
-   "birth_date": "1995-07-22",
-   "retirement": "confirmed (no season after 2024)",
-   "candidate_hex": "a530961ea5001c0ce80758000903aa234a00700104000000"
+   "gsis_id": "00-0022942",
+   "birth_date": "1981-12-08",
+   "retirement_confirmed": false,
+   "retirement": "INFERRED, not confirmed: last played 2025 and has no 2026 roster row in the sources; check him before relying on it",
+   "candidate_hex": "50265be40400000be90755001603a9013f00000008000000"
+  },
+  {
+   "name": "Matthew Slater",
+   "position": "WR",
+   "group": "WR",
+   "club": "Patriots",
+   "club_index": 21,
+   "first_season": 2008,
+   "retired": 2023,
+   "eligible_class": 2029,
+   "score": 81,
+   "parts": {
+    "honors": 50,
+    "games": 20,
+    "production": 0,
+    "championships": 11,
+    "milestones": 0,
+    "score": 81
+   },
+   "seasons": 16,
+   "honors": 12,
+   "super_bowls": 3,
+   "super_bowls_lost": 2,
+   "playoff_wins": 0,
+   "keys": [
+    1,
+    46,
+    0
+   ],
+   "all_pro": 2,
+   "pro_bowl": 10,
+   "mvp": 0,
+   "opoy": 0,
+   "dpoy": 0,
+   "gsis_id": "00-0026293",
+   "birth_date": "1985-09-09",
+   "retirement_confirmed": true,
+   "retirement": "confirmed: no season after 2023 in the sources",
+   "candidate_hex": "6db2408b04000c16e7075100100301002e0000000c030000"
   }
  ]
 }

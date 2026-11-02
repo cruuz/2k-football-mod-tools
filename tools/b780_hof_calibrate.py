@@ -2,13 +2,15 @@
 """Hall of Fame rule calibration against real careers (job j6-hof, b780): data, fit, replay, seeds.
 
 The rule itself lives in ``mod_editor/core/nfl2k5_hof_rules.py``; this tool builds the evidence it was fitted on and
-re-checks it. Everything except ``fetch`` and ``build-data`` runs offline from the checked-in dataset
+re-checks it. Everything except ``fetch``, ``build-data`` and ``roster-check`` runs offline from the checked-in dataset
 ``data/nfl2k5_hof_calibration_2026.json`` (schema ``nfl2k5_hof_calibration/v1``: one row per retired player, 1999-2025).
 
   evaluate                      recall on real inductees and false positives on notable non-inductees, by split and position
   replay [--from Y --to Y]      the yearly Hall of Fame classes the rule makes from real retirees (default 2010 to 2026)
-  franchise [--to Y]            the classes made from the real retirees the real committee has not judged yet (2021 on),
-                                year by year from the first franchise close (season 2026)
+  franchise [--to Y]            the classes made from the real retirees the real committee has not judged yet (2021 on) and who are
+                                not on the game roster, year by year from the first franchise close (season 2026)
+  roster-check --image ISO      read the game roster (read-only) and write data/nfl2k5_hof_roster_check_2026.json: which retirees are
+                                on it (same name and birth date), so they are not seeded twice
   candidates [--out FILE]       the seeded pending candidates as data/nfl2k5_hof_candidates_2026.json (for the history seed)
   search [--samples N]          reproducible random search of the weights under the acceptance limits; ranks the shipped rule
   sensitivity                   one weight at a time, +/-20 %
@@ -27,6 +29,7 @@ import collections
 import csv
 import hashlib
 import importlib.util
+import io
 import json
 import random
 import re
@@ -111,6 +114,7 @@ PINS_WIKI = {
 }
 
 PINS_NFLVERSE = {
+    'games': {'file': 'games.csv', 'sha256': 'dcad503d5395076fd5d54b44e7b2253970224bda8d6b14a3ccfd05021b75bb3a', 'extract': 'postseason through 2025: season, type, teams, scores, starting QB ids', 'url': 'https://raw.githubusercontent.com/nflverse/nfldata/master/data/games.csv'},
     'draft_picks': {'file': 'draft_picks.csv', 'sha256': 'cc35472c1b12b58ea9588e2174dfd92b3cd02cf6b4fc8d31cb9757a4ea3e5f9f', 'url': 'https://github.com/nflverse/nflverse-data/releases/download/draft_picks/draft_picks.csv'},
     'stats_player_reg_1999': {'file': 'stats_player_reg_1999.csv', 'sha256': 'ea3f2092fcc04fa9141ef0976d51eec9e9f8f2448786605a3de03aa89837fc76', 'url': 'https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_reg_1999.csv'},
     'stats_player_reg_2000': {'file': 'stats_player_reg_2000.csv', 'sha256': '955a8b895920a2b01ecf02cb1eb29c2df7a9385c5e11385ae09107963dc0cf9a', 'url': 'https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_reg_2000.csv'},
@@ -197,8 +201,34 @@ def wiki_url(pin: Mapping) -> str:
     return f"https://en.wikipedia.org/w/index.php?title={pin['title'].replace(' ', '_')}&oldid={pin['revision']}&action=raw"
 
 
+POSTSEASON = ("WC", "DIV", "CON", "SB")
+
+
+def games_extract(text: str) -> list[str]:
+    """The postseason rows of the nflverse games file through 2025 (season, type, teams, scores, starting QB ids), sorted. The file
+    is rewritten every week, so the pin is the digest of these rows, which do not change after the season."""
+
+    rows = []
+    for r in csv.DictReader(io.StringIO(text, newline="")):
+        if r["game_type"] in POSTSEASON and int(r["season"]) <= LAST_STATS:
+            rows.append(",".join([r["season"], r["game_type"], r["away_team"], r["away_score"], r["home_team"], r["home_score"],
+                                  r["away_qb_id"], r["home_qb_id"]]))
+    return sorted(rows)
+
+
+def games_extract_digest(raw: bytes) -> str:
+    return hashlib.sha256(("\n".join(games_extract(raw.decode("utf-8"))) + "\n").encode("utf-8")).hexdigest()
+
+
+EXTRACT_DIGESTS = {"games.csv": games_extract_digest}          # files pinned by the digest of an extract, not of every byte
+
+
+def digest_of(name: str, raw: bytes) -> str:
+    return EXTRACT_DIGESTS[name](raw) if name in EXTRACT_DIGESTS else hashlib.sha256(raw).hexdigest()
+
+
 def source_files() -> dict[str, tuple[str, str, str]]:
-    """cache file name -> (pin key, url, sha256) for every input."""
+    """cache file name -> (pin key, url, sha256) for every input (the games file: the digest of its postseason extract)."""
 
     out = {}
     for key, pin in PINS_WIKI.items():
@@ -229,7 +259,7 @@ def fetch(cache: Path, *, only_missing: bool = True, pause: float = 0.6) -> list
                 time.sleep(2 * (attempt + 1))
         else:
             raise CalibrationError(f"could not fetch {url}")
-        _require(hashlib.sha256(raw).hexdigest() == digest, f"{name}: the text read does not match its pin ({key})")
+        _require(digest_of(name, raw) == digest, f"{name}: the text read does not match its pin ({key})")
         path.write_bytes(raw)
         fetched.append(name)
         time.sleep(pause)
@@ -244,7 +274,7 @@ def check_cache(cache: Path) -> dict:
         path = cache / name
         if not path.is_file():
             missing.append(name)
-        elif sha256_file(path) != digest:
+        elif digest_of(name, path.read_bytes()) != digest:
             bad.append(name)
         else:
             ok += 1
@@ -354,6 +384,10 @@ def parse_champions(text: str) -> dict[int, str]:
     return {row["season"]: row["champion"] for row in _seed_module().champions_rows(text).values()}
 
 
+def parse_runners_up(text: str) -> dict[int, str]:
+    return {row["season"]: row["runner_up"] for row in _seed_module().champions_rows(text).values()}
+
+
 def _strip_links(text: str) -> str:
     return _LINK.sub(lambda m: m.group(2) or m.group(1), text)
 
@@ -402,11 +436,13 @@ def pro_bowl_blob(text: str) -> str:
 # the dataset
 COLUMNS = ("name", "pos", "group", "first", "last", "hof", "src", "games", "ptd", "rtd", "ryds", "recy", "rectd", "sack2", "dint",
            "fgm", "ap", "pb", "mvp", "opoy", "dpoy", "oroy", "droy", "sbmvp", "rt", "sb", "active", "club", "birth", "gsis",
-           "pyds", "rec", "tkl", "started")
+           "pyds", "rec", "tkl", "started", "sbl", "pw")
 DATASET_SCHEMA = "nfl2k5_hof_calibration/v1"
 DATASET = ROOT / "data" / "nfl2k5_hof_calibration_2026.json"
 CANDIDATES = ROOT / "data" / "nfl2k5_hof_candidates_2026.json"
 PERSON_SCHEMA = "nfl2k5_hof_candidates/v1"
+ROSTER_CHECK = ROOT / "data" / "nfl2k5_hof_roster_check_2026.json"
+ROSTER_CHECK_SCHEMA = "nfl2k5_hof_roster_check/v1"
 
 CATEGORY_GROUP = {"QB": "QB", "RB": "RB", "WR": "WR", "TE": "TE", "OL": "OL", "DL": "DL", "LB": "LB", "DB": "DB", "K": "K", "P": "P"}
 STATS_GROUP = {"QB": "QB", "RB": "RB", "FB": "RB", "HB": "RB", "WR": "WR", "TE": "TE", "T": "OL", "G": "OL", "C": "OL", "OL": "OL",
@@ -425,11 +461,14 @@ TEAM_NICKNAME = {"ARI": "Cardinals", "ARZ": "Cardinals", "ATL": "Falcons", "BAL"
                  "NOR": "Saints", "NYG": "Giants", "NYJ": "Jets", "PHI": "Eagles", "PIT": "Steelers", "SEA": "Seahawks",
                  "SF": "49ers", "SFO": "49ers", "TB": "Buccaneers", "TAM": "Buccaneers", "TEN": "Titans", "WAS": "Redskins",
                  "WSH": "Redskins"}
-CHAMPION_CODES = {"Baltimore Ravens": ("BAL", "BLT"), "St. Louis Rams": ("STL", "LA"), "Los Angeles Rams": ("LA", "STL", "LAR"),
-                  "New England Patriots": ("NE",), "Tampa Bay Buccaneers": ("TB",), "Indianapolis Colts": ("IND",),
-                  "Pittsburgh Steelers": ("PIT",), "New York Giants": ("NYG",), "New Orleans Saints": ("NO",),
-                  "Green Bay Packers": ("GB",), "Seattle Seahawks": ("SEA",), "Denver Broncos": ("DEN",),
-                  "Philadelphia Eagles": ("PHI",), "Kansas City Chiefs": ("KC",)}
+# a club's nickname (the last word of its name on the champions page) -> the roster file's team codes
+CLUB_CODES = {"49ers": ("SF",), "Bears": ("CHI",), "Bengals": ("CIN",), "Bills": ("BUF",), "Broncos": ("DEN",), "Browns": ("CLE", "CLV"),
+              "Buccaneers": ("TB",), "Cardinals": ("ARI", "ARZ"), "Chargers": ("LAC", "SD"), "Chiefs": ("KC",), "Colts": ("IND",),
+              "Cowboys": ("DAL",), "Dolphins": ("MIA",), "Eagles": ("PHI",), "Falcons": ("ATL",), "Giants": ("NYG",),
+              "Jaguars": ("JAX", "JAC"), "Jets": ("NYJ",), "Lions": ("DET",), "Packers": ("GB",), "Panthers": ("CAR",),
+              "Patriots": ("NE",), "Raiders": ("OAK", "LV"), "Rams": ("LA", "STL", "LAR"), "Ravens": ("BAL", "BLT"),
+              "Redskins": ("WAS",), "Commanders": ("WAS",), "Saints": ("NO",), "Seahawks": ("SEA",), "Steelers": ("PIT",),
+              "Texans": ("HOU", "HST"), "Titans": ("TEN",), "Vikings": ("MIN",)}
 ACTIVE_STATUS = ("ACT", "RES", "DEV", "EXE")                       # on a 2026 roster; "CUT" and "RET" are not
 
 
@@ -499,27 +538,40 @@ def build_dataset(cache: Path) -> dict:
         give(table, key, side="O" if key == "oroy" else "D" if key == "droy" else None)
     unresolved = [u for u in unresolved if u[1] >= FIRST_STATS - 9]       # older seasons belong to retired-before-1999 players
 
-    # ---- Super Bowl rings: the champion's Super Bowl-week roster (2002 on; a season snapshot for 2000 and 2001)
-    champions = parse_champions(text("sbchamps"))
-    rings = collections.Counter()
+    # ---- Super Bowl rings and lost Super Bowls: each finalist's Super Bowl-week roster (2002 on; the season snapshot for 2000 and 2001)
+    champions, runners_up = parse_champions(text("sbchamps")), parse_runners_up(text("sbchamps"))
+    rings, losses = collections.Counter(), collections.Counter()
     notes = []
     for season in range(2000, 2026):
-        champ = champions.get(season)
-        if not champ:
-            continue
         rows = _read_csv(cache / f"roster_{season}.csv")
         if rows and "game_type" in rows[0]:
             rows = [r for r in rows if r["game_type"] == "SB"]
         else:
-            notes.append(f"{season}: no Super Bowl-week rows in the roster file; the season snapshot of the champion is used")
-        codes = next((v for k, v in CHAMPION_CODES.items() if k.split()[-1] == champ.split()[-1]), ())
+            notes.append(f"{season}: no Super Bowl-week rows in the roster file; the season snapshot of both finalists is used")
         teams = {r["team"] for r in rows}
-        use = [c for c in codes if c in teams]
-        _require(bool(use), f"{season}: champion {champ} has no roster team among {sorted(teams)}")
-        for gsis in {r["gsis_id"] for r in rows if r["team"] == use[0] and r["status"] in ("ACT", "INA") and r["gsis_id"]}:
-            rings[gsis] += 1
+        for club, tally in ((champions.get(season), rings), (runners_up.get(season), losses)):
+            if not club:
+                continue
+            codes = CLUB_CODES.get(club.split()[-1], ())
+            use = [c for c in codes if c in teams]
+            _require(bool(use), f"{season}: {club} has no roster team among {sorted(teams)}")
+            for gsis in {r["gsis_id"] for r in rows if r["team"] == use[0] and r["status"] in ("ACT", "INA") and r["gsis_id"]}:
+                tally[gsis] += 1
+    # ---- playoff wins of the starting quarterback (the nflverse games file, 1999-2025)
+    qb_wins = collections.Counter()
+    winning_qbs = {}                                                  # season -> the Super Bowl winner's starting quarterback
+    for r in _read_csv(cache / "games.csv"):
+        if r["game_type"] in POSTSEASON and int(r["season"]) <= LAST_STATS and r["home_score"] != "" and r["away_score"] != "":
+            home, away = int(r["home_score"]), int(r["away_score"])
+            qb = r["home_qb_id"] if home > away else r["away_qb_id"] if away > home else ""
+            if qb:
+                qb_wins[qb] += 1
+                if r["game_type"] == "SB":
+                    winning_qbs[int(r["season"])] = qb
     for p in people:
         p["sb"] = rings.get(p["gsis"], 0)
+        p["sbl"] = losses.get(p["gsis"], 0)
+        p["pw"] = qb_wins.get(p["gsis"], 0) if p["group"] == "QB" else 0
 
     # ---- Hall of Fame membership and class year (the Wikipedia list; the PFR flag is the second source)
     hall = parse_hof_list(text("hof_list"))
@@ -578,7 +630,8 @@ def build_dataset(cache: Path) -> dict:
              "sack2": int(round(2 * sum(_num(per_year[k]["def_sacks"]) for k in years))), "dint": total("def_interceptions"),
              "fgm": total("fg_made"), "src": "stats_player", "wav": 0.0, "pyds": total("passing_yards"), "rec": total("receptions"),
              "started": 0, "tkl": 0,
-             **{k: 0 for k in ("mvp", "opoy", "dpoy", "oroy", "droy", "sbmvp", "rt")}, "sb": rings.get(gsis, 0), "ap": 0, "pb": 0}
+             **{k: 0 for k in ("mvp", "opoy", "dpoy", "oroy", "droy", "sbmvp", "rt")}, "sb": rings.get(gsis, 0), "ap": 0, "pb": 0,
+             "sbl": losses.get(gsis, 0), "pw": qb_wins.get(gsis, 0) if STATS_GROUP.get(pos) == "QB" else 0}
         for y in years:
             if int(_num(per_year[y]["games"])) and (n, y) not in drafted_seasons:
                 c["ap"] += n in ap_names[y]
@@ -636,8 +689,8 @@ def build_dataset(cache: Path) -> dict:
                          c["src"], c["games"], c["ptd"], c["rtd"], c["ryds"], c["recy"], c["rectd"], c["sack2"], c["dint"], c["fgm"],
                          c["ap"], c["pb"], c["mvp"], c["opoy"], c["dpoy"], c["oroy"], c["droy"], c["sbmvp"], c["rt"], c["sb"],
                          1 if c["gsis"] in active else 0, club, (r or {}).get("birth_date", "") if recent else "",
-                         c["gsis"] if recent else "", c["pyds"] if recent else 0, c["rec"] if recent else 0,
-                         c["tkl"] if recent else 0, c["started"] if recent else 0])
+                         c["gsis"] if recent else "", c["pyds"] if recent else 0, c["rec"],
+                         c["tkl"] if recent else 0, c["started"] if recent else 0, c["sbl"], c["pw"]])
     # ---- two-source checks, recorded in the dataset so they can be re-read and re-run
     honors_doc = json.loads((ROOT / "data" / "nfl2k5_honors_2026.json").read_text(encoding="utf-8"))
     agree = {"all_pro": [0, 0], "pro_bowl": [0, 0]}
@@ -657,8 +710,28 @@ def build_dataset(cache: Path) -> dict:
                 disagree.append([pl["first"] + " " + pl["last"], h["season"], h["honor"]])
     pfr_only = sorted(p["name"] for p in people if p["pfr_hof"] and "class" not in p and p["last"] >= FIRST_STATS)
     wiki_only = sorted(p["name"] for p in people if "class" in p and not p["pfr_hof"])
+    # the rings come from the Super Bowl-week rosters and the champions page; two independent pages must agree with them: every Super Bowl MVP
+    # (his own page) wears a ring, and so does the quarterback the games file says won each Super Bowl
+    mvp_rings, mvp_missed = [0, 0], []
+    for season, names in sorted(award_tables["sbmvp"].items()):
+        for name in names if season >= 2000 else ():
+            mvp_rings[1] += 1
+            found = [p for p in by_norm.get(norm_name(name), []) if p["draft"] - 1 <= season <= p["last"]]
+            if any(rings.get(p["gsis"], 0) for p in found):
+                mvp_rings[0] += 1
+            else:
+                mvp_missed.append([season, name])
+    qb_rings, qb_missed = [0, 0], []
+    for season in range(2000, 2026):
+        qb_rings[1] += 1
+        if rings.get(winning_qbs.get(season, ""), 0):
+            qb_rings[0] += 1
+        else:
+            qb_missed.append([season, winning_qbs.get(season, "")])
     checks = {"honors_pages_vs_the_game_honors_dataset": {"all_pro_matched": agree["all_pro"], "pro_bowl_matched": agree["pro_bowl"],
                                                           "not_matched": sorted(disagree)},
+              "super_bowl_mvps_vs_champion_rosters": {"matched": mvp_rings, "not_matched": mvp_missed},
+              "super_bowl_winning_quarterbacks_vs_champion_rosters": {"matched": qb_rings, "not_matched": qb_missed},
               "pfr_hall_of_fame_flag_vs_wikipedia_list": {"flagged_by_pfr_not_on_the_list": pfr_only, "on_the_list_not_flagged_by_pfr": wiki_only,
                                                           "drafted_members_on_both": sum(1 for p in people if p["pfr_hof"] and "class" in p)}}
     sources = {f"wiki:{k}": dict(v, url=wiki_url(v)) for k, v in sorted(PINS_WIKI.items())}
@@ -678,6 +751,9 @@ DEFINITIONS = {
     "pb": "Pro Bowl selections (PFR for drafted players; name presence on the pinned Pro Bowl pages for the others); NOT used by the rule",
     "mvp opoy dpoy oroy droy sbmvp rt": "AP awards, Super Bowl MVP and rushing titles from the pinned Wikipedia pages, matched by name and season",
     "sb": "Super Bowl rings, 2000 onward only: the champion's Super Bowl-week roster (ACT or INA), a season snapshot for 2000-2001",
+    "sbl": "Super Bowls reached and lost, 2000 onward: the runner-up's Super Bowl-week roster (a season snapshot for 2000-2001)",
+    "pw": "quarterbacks only: postseason wins as the starting quarterback of the game, 1999-2025 (nflverse games file)",
+    "rec": "career receptions (PFR through draft_picks for drafted players, nflverse stats_player for the others)",
     "games ptd rtd ryds recy rectd sack2 dint": "career totals (PFR through nflverse draft_picks for drafted players, nflverse stats_player 1999-2025 "
                                                 "for the others); sack2 is half-sacks, dint is defensive interceptions",
     "fgm": "field goals made, nflverse stats_player 1999-2025 only (kickers who started before 1999 are short)",
@@ -700,7 +776,7 @@ def rows_career(row: Mapping) -> "rules.Career":
         droy=row["droy"], super_bowl=row["sb"], super_bowl_mvp=row["sbmvp"], pro_bowl=row["pb"], all_pro=row["ap"],
         rushing_title=row["rt"], passing_touchdowns=row["ptd"], rushing_touchdowns=row["rtd"], rushing_yards=row["ryds"],
         receiving_yards=row["recy"], receiving_touchdowns=row["rectd"], sacks_half=row["sack2"], interceptions=row["dint"],
-        field_goals_made=row["fgm"])
+        field_goals_made=row["fgm"], receptions=row["rec"], super_bowl_loss=row["sbl"], playoff_wins=row["pw"])
 
 
 def load_rows(path: Path | str | None = None) -> list[dict]:
@@ -712,12 +788,39 @@ def load_rows(path: Path | str | None = None) -> list[dict]:
 # --------------------------------------------------------------------------------------------------------------------
 # evaluation
 IN_RANGE = (2005, 2019)             # the calibration range: retired 2005..2019
+EXTENDED_RANGE = (2005, 2020)       # plus the retirees of 2020 (Fitzgerald, Brees): the Class of 2026 has seen them once
 TRAIN_THROUGH = 2012                # retired 2005..2012 fit, 2013..2019 test
 TARGET_RECALL, TARGET_FPR = 0.80, 0.10
+# The coordinator's follow-up asks: these careers must reach the bar (with every input the sources give), this one must not.
+REQUIRED_PASS = ("Ben Roethlisberger", "Larry Fitzgerald")
+REQUIRED_FAIL = ("Eli Manning",)
+NAMED_CASES = ("Ben Roethlisberger", "Larry Fitzgerald", "Eli Manning", "Philip Rivers", "Russell Wilson", "Matt Ryan", "Drew Brees",
+               "Peyton Manning", "Tom Brady", "Isaac Bruce", "Jason Witten", "Steve Smith Sr.", "Reggie Wayne", "Anquan Boldin",
+               "Tony Gonzalez", "Terrell Owens", "Randy Moss")
 
 
-def evaluate(rows: Sequence[Mapping], bar: int = rules.BAR) -> dict:
-    scored = [(r, rules.score(rows_career(r))) for r in rows if IN_RANGE[0] <= r["last"] <= IN_RANGE[1]]
+def live_only(career: "rules.Career") -> "rules.Career":
+    """The same career without the two optional counters (Super Bowls lost, quarterback playoff wins): what a franchise player reads
+    until the honors owner writes them."""
+
+    import dataclasses
+    return dataclasses.replace(career, super_bowl_loss=0, playoff_wins=0)
+
+
+def named_cases(rows: Sequence[Mapping], names: Sequence[str] = NAMED_CASES) -> list[dict]:
+    out = []
+    for name in names:
+        row = next((r for r in rows if r["name"] == name), None)
+        if row is None:
+            continue
+        career = rows_career(row)
+        out.append({"name": name, "group": row["group"], "last": row["last"], "hof": row["hof"], "score": rules.score(career),
+                    "parts": rules.score_parts(career), "live_only": rules.score(live_only(career))})
+    return out
+
+
+def evaluate(rows: Sequence[Mapping], bar: int = rules.BAR, years: Sequence[int] = IN_RANGE) -> dict:
+    scored = [(r, rules.score(rows_career(r))) for r in rows if years[0] <= r["last"] <= years[1]]
     hof = [(r, s) for r, s in scored if r["hof"]]
     peers = [(r, s) for r, s in scored if not r["hof"] and is_notable(r)]
     rest = [(r, s) for r, s in scored if not r["hof"] and not is_notable(r)]
@@ -725,7 +828,7 @@ def evaluate(rows: Sequence[Mapping], bar: int = rules.BAR) -> dict:
     def frac(group, pred=lambda rs: rs[1] >= bar):
         return (sum(1 for rs in group if pred(rs)), len(group))
 
-    out = {"bar": bar, "range": list(IN_RANGE), "inductees": len(hof), "notable_non_inductees": len(peers),
+    out = {"bar": bar, "range": list(years), "inductees": len(hof), "notable_non_inductees": len(peers),
            "other_retirees_in_dataset": len(rest), "other_retirees_that_pass": frac(rest)[0]}
     out["recall"] = frac(hof)
     out["recall_train"] = frac([rs for rs in hof if rs[0]["last"] <= TRAIN_THROUGH])
@@ -844,19 +947,114 @@ def owner_name(owner: Mapping, cand: "rules.Candidate") -> str:
     return row["name"] if row else rules.person_line(cand.person, cand.club)
 
 
-def franchise_replay(rows: Sequence[Mapping], last_close: int = 2035) -> dict:
-    """The first franchise classes: seeds = real retirees from 2021 on that the real committee has not judged; no later retirements."""
+# --------------------------------------------------------------------------------------------------------------------
+# the game roster: a seeded retiree must not also be a player there
+LAST_CONFIRMED_SEASON = 2024        # a retiree whose last season is later is inferred: the 2026 roster files simply do not list him
 
-    seeds = [r for r in rows if r["last"] >= SEED_FIRST_RETIRED and not r["hof"] and not r["active"]]
+
+def read_game_roster(image: Path | str) -> dict:
+    """The identities on a built disc's roster, read-only: {"players": [(first, last, birth date or "")], "sha256", "bytes"}.
+
+    Uses the Studio's own roster reader, so this one command needs the whole repository. Nothing is written to the image."""
+
+    from mod_editor.core import nfl2k5_roster_records as records
+    from mod_editor.core import nfl2k5_save_rost as save_rost
+    _require(Path(image).is_file(), f"no disc image at {image}")
+    try:
+        with records._outer_image()(str(image)) as archive:
+            entry = records._entry(archive)
+            resource = archive.read(entry.virtual_offset, entry.size)
+        body = resource[records.RESOURCE_HEADER_SIZE:]
+        document = save_rost.decode(body, preamble=0, reference_year=FIRST_FRANCHISE_SEASON)
+    except (OSError, ValueError) as exc:
+        raise CalibrationError(f"the roster could not be read from {Path(image).name}: {exc}") from exc
+    players = [(p.first, p.last, p.record.birth_date.isoformat() if p.record.birth_date else "") for p in document.players]
+    return {"players": players, "sha256": hashlib.sha256(body).hexdigest(), "bytes": len(body)}
+
+
+def match_roster(rows: Sequence[Mapping], players: Sequence[tuple[str, str, str]]) -> dict:
+    """The retirees a seed could come from (last season 2021 or later, not elected) against the roster, by name and birth date.
+
+    -> {"on_roster": the same name and the same birth date,
+        "name_only": the same name and a birth date missing on either side (not told apart: treated as the same man),
+        "other_birth_date": the same name and different birth dates (a different man, kept)}."""
+
+    dates: dict[str, list[str]] = collections.defaultdict(list)
+    for first, last, born in players:
+        dates[norm_name(f"{first} {last}")].append(born)
+    out: dict[str, list] = {"on_roster": [], "name_only": [], "other_birth_date": []}
+    for row in sorted(rows, key=lambda r: (r["last"], r["name"], r["gsis"])):
+        if row["last"] < SEED_FIRST_RETIRED or row["hof"]:
+            continue
+        roster_dates = dates.get(norm_name(row["name"]))
+        if not roster_dates:
+            continue
+        entry = {"name": row["name"], "position": row["pos"], "retired": row["last"], "birth_date": row["birth"] or None,
+                 "gsis_id": row["gsis"] or None}
+        if row["birth"] and row["birth"] in roster_dates:
+            out["on_roster"].append(entry)
+        elif row["birth"] and all(roster_dates):
+            out["other_birth_date"].append(dict(entry, roster_birth_dates=sorted(set(roster_dates))))
+        else:
+            out["name_only"].append(entry)
+    return out
+
+
+def roster_check_document(rows: Sequence[Mapping], roster: Mapping, image_name: str) -> dict:
+    found = match_roster(rows, roster["players"])
+    return {"schema": ROSTER_CHECK_SCHEMA, "attribution": ATTRIBUTION,
+            "rule": ("A retiree is on the game roster when his name (case, accents, punctuation and Jr, Sr, II, III ignored) and his birth "
+                     "date both match a roster player. A name match where either side has no birth date cannot be told apart and counts "
+                     "as the same man (name_only). A name match with two different birth dates is a different man and stays "
+                     "(other_birth_date). Checked: every dataset row whose last season is 2021 or later and who is not a real Hall of Famer."),
+            "roster": {"image": image_name, "resource_sha256": roster["sha256"], "resource_bytes": roster["bytes"],
+                       "players": len(roster["players"]), "players_with_birth_date": sum(1 for _f, _l, born in roster["players"] if born),
+                       "reference_year": FIRST_FRANCHISE_SEASON},
+            "retirees_checked": sum(1 for r in rows if r["last"] >= SEED_FIRST_RETIRED and not r["hof"]),
+            "counts": {k: len(v) for k, v in found.items()}, **found}
+
+
+def load_roster_check(path: Path | str | None = None) -> dict:
+    data = json.loads(Path(path or ROSTER_CHECK).read_text(encoding="utf-8"))
+    _require(data.get("schema") == ROSTER_CHECK_SCHEMA, "not a roster check file")
+    return data
+
+
+def roster_keys(roster_check: Mapping | None) -> set[tuple[str, str]]:
+    """(normalized name, birth date) of every retiree the check puts on the roster; empty without a check."""
+
+    if not roster_check:
+        return set()
+    return {(norm_name(e["name"]), e["birth_date"] or "") for e in list(roster_check["on_roster"]) + list(roster_check["name_only"])}
+
+
+def on_roster(row: Mapping, keys: set) -> bool:
+    return (norm_name(row["name"]), row["birth"] or "") in keys
+
+
+def franchise_replay(rows: Sequence[Mapping], last_close: int = 2035, roster_check: Mapping | None = None) -> dict:
+    """The first franchise classes: seeds = real retirees from 2021 on that the real committee has not judged and that are not on the
+    game roster; no later retirements."""
+
+    keys = roster_keys(roster_check)
+    seeds = [r for r in rows if r["last"] >= SEED_FIRST_RETIRED and not r["hof"] and not r["active"] and not on_roster(r, keys)]
     result = replay(seeds, FIRST_FRANCHISE_SEASON, last_close, retirees_from=SEED_FIRST_RETIRED, include_members=True)
     return {"classes": result["classes"], "sizes": dict(sorted(collections.Counter(len(v) for v in result["classes"].values()).items())),
             "left": result["table"], "result": result, "seeds": len(seeds)}
 
 
-def seed_document(rows: Sequence[Mapping]) -> dict:
-    """The seeded pending candidates (real retirees the real committee has not judged), best first."""
+def retirement_text(last: int) -> tuple[bool, str]:
+    if last <= LAST_CONFIRMED_SEASON:
+        return True, f"confirmed: no season after {last} in the sources"
+    return False, (f"INFERRED, not confirmed: last played {last} and has no {FIRST_FRANCHISE_SEASON} roster row in the sources; "
+                   "check him before relying on it")
 
-    out = []
+
+def seed_document(rows: Sequence[Mapping], roster_check: Mapping | None = None) -> dict:
+    """The seeded pending candidates (real retirees the real committee has not judged), best first, without anyone on the game roster."""
+
+    keys = roster_keys(roster_check)
+    out, removed = [], []
     for row in sorted(rows, key=lambda r: (-rules.score(rows_career(r)), r["name"])):
         if row["last"] < SEED_FIRST_RETIRED or row["hof"] or row["active"]:
             continue
@@ -864,22 +1062,40 @@ def seed_document(rows: Sequence[Mapping]) -> dict:
         s = rules.score(career)
         if s < rules.FLOOR:
             continue
+        confirmed, text = retirement_text(row["last"])
+        if on_roster(row, keys):
+            removed.append({"name": row["name"], "position": row["pos"], "retired": row["last"], "score": s,
+                            "birth_date": row["birth"] or None, "retirement_confirmed": confirmed, "retirement": text,
+                            "why_removed": "he is on the game roster (same name and birth date): he plays there, so he is not also a pending candidate"})
+            continue
         cand = make_candidate(row)
-        confirmed = row["last"] <= 2024
         out.append({"name": row["name"], "position": row["pos"], "group": row["group"], "club": row["club"] or None, "club_index": cand.club,
                     "first_season": row["first"], "retired": row["last"], "eligible_class": row["last"] + rules.WAIT_SEASONS + 1,
                     "score": s, "parts": rules.score_parts(career), "seasons": cand.seasons, "honors": cand.honors, "super_bowls": cand.sb_wins,
-                    "keys": list(cand.keys), "all_pro": row["ap"], "pro_bowl": row["pb"], "mvp": row["mvp"],
-                    "opoy": row["opoy"], "dpoy": row["dpoy"], "gsis_id": row["gsis"], "birth_date": row["birth"],
-                    "retirement": "confirmed (no season after 2024)" if confirmed else "not confirmed: last played 2025, no 2026 roster row",
+                    "super_bowls_lost": row["sbl"], "playoff_wins": row["pw"], "keys": list(cand.keys), "all_pro": row["ap"],
+                    "pro_bowl": row["pb"], "mvp": row["mvp"], "opoy": row["opoy"], "dpoy": row["dpoy"], "gsis_id": row["gsis"],
+                    "birth_date": row["birth"], "retirement_confirmed": confirmed, "retirement": text,
                     "candidate_hex": rules.candidate_to_bytes(cand).hex()})
+    inferred = [c["name"] for c in out if not c["retirement_confirmed"]]
+    warnings = []
+    if inferred:
+        warnings.append(f"{len(inferred)} seeded retiree(s) have an INFERRED retirement (last played {LAST_CONFIRMED_SEASON + 1}, no "
+                        f"{FIRST_FRANCHISE_SEASON} roster row in the sources): {', '.join(inferred)}. Check each before relying on it.")
+    if roster_check is None:
+        warnings.append("No roster check was applied: a seed may also be a player on the game roster.")
     return {"schema": PERSON_SCHEMA, "attribution": ATTRIBUTION,
             "rule": {"bar": rules.BAR, "floor": rules.FLOOR, "wait": rules.WAIT_SEASONS, "window": rules.WINDOW_SEASONS,
                      "max_class": rules.MAX_CLASS, "min_class": rules.MIN_CLASS},
             "policy": ("Real retirees whose last season is 2021 or later: the real committee has not judged them (its Class of 2026 "
                        "is the last one in the sources). Retirees up to 2020 who were not elected stay out: the real committee passed "
                        "on them, and the rule would only reproduce its false positives. A seeded player must not also exist on the "
-                       "game roster (match name and birth date): any with a 2026 roster row in ACT, RES, DEV or EXE are left out."),
+                       "game roster: anyone whose name and birth date match a roster player (data/nfl2k5_hof_roster_check_2026.json, read "
+                       "from the v0.8 disc) is left out and listed under removed_by_roster_check, and so is anyone the sources show on a "
+                       "2026 roster (ACT, RES, DEV or EXE). A retirement whose last season is 2025 is INFERRED, not confirmed: it is marked "
+                       "retirement_confirmed false and named in inferred_retirements."),
+            "roster_check": ({"image": roster_check["roster"]["image"], "resource_sha256": roster_check["roster"]["resource_sha256"],
+                              "players": roster_check["roster"]["players"], "counts": roster_check["counts"]} if roster_check else None),
+            "inferred_retirements": inferred, "warnings": warnings, "removed_by_roster_check": removed,
             "count": len(out), "candidates": out}
 
 
@@ -888,9 +1104,20 @@ def seed_document(rows: Sequence[Mapping]) -> dict:
 DEFAULT_PARAMS = {"ap": rules.POINTS["all_pro"], "mvp": rules.POINTS["mvp"], "poy": rules.POINTS["player_of_year"],
                   "sbm": rules.POINTS["super_bowl_mvp"], "roy": rules.POINTS["rookie_of_year"], "rt": rules.POINTS["rushing_title"],
                   "sb": rules.POINTS["super_bowl"], "gpp": rules.GAMES_PER_POINT, "gcap": rules.GAMES_CAP,
-                  "gcap0": rules.GAMES_CAP_LINEMEN, "pcap": rules.PRODUCTION_CAP, "bar": rules.BAR}
+                  "gcap0": rules.GAMES_CAP_LINEMEN, "pcap": rules.PRODUCTION_CAP, "bar": rules.BAR,
+                  # championships and milestones (the follow-up): quarterback ring and lost Super Bowl, the other positions' lost Super
+                  # Bowl, quarterback playoff win (and its cap), the 400-touchdown tier, the receivers' 15,000 and 17,000 yard tiers and the
+                  # 1,300 catch tier
+                  "ring_qb": rules.QB_RING_POINTS, "loss_qb": rules.QB_LOSS_POINTS, "loss": rules.LOSS_POINTS_DEFAULT,
+                  "pw": rules.PLAYOFF_WIN_POINTS, "pwcap": rules.PLAYOFF_WIN_CAP, "td400": rules.QB_TOUCHDOWN_TIERS[0][1],
+                  "y15": rules.RECEIVING_YARDS_TIERS[0][1], "y17": rules.RECEIVING_YARDS_TIERS[1][1], "r13": rules.RECEPTION_TIERS[0][1]}
 GRID = {"ap": (20, 25, 30), "mvp": (15, 25, 35, 45), "poy": (10, 15, 20), "sbm": (10, 15, 20), "roy": (5, 10, 15), "rt": (10, 15, 20),
-        "sb": (2, 3, 4), "gpp": (3, 4, 5, 6), "gcap": (15, 20, 25, 30), "gcap0": (25, 35, 45), "pcap": (20, 25, 30)}
+        "sb": (2, 3, 4), "gpp": (3, 4, 5, 6), "gcap": (15, 20, 25, 30), "gcap0": (25, 35, 45), "pcap": (20, 25, 30),
+        "ring_qb": (3, 6, 9), "loss_qb": (0, 3, 5), "loss": (0, 1, 2), "pw": (0, 1, 2), "pwcap": (10, 15, 20),
+        "td400": (25, 30, 35, 40, 45), "y15": (10, 15, 20), "y17": (10, 15, 20), "r13": (5, 10, 15)}
+TD_AT = rules.QB_TOUCHDOWN_TIERS[0][0]
+Y15_AT, Y17_AT = rules.RECEIVING_YARDS_TIERS[0][0], rules.RECEIVING_YARDS_TIERS[1][0]
+R13_AT = rules.RECEPTION_TIERS[0][0]
 
 
 def score_with(c: "rules.Career", p: Mapping) -> int:
@@ -898,11 +1125,19 @@ def score_with(c: "rules.Career", p: Mapping) -> int:
 
     n = rules._n
     honors = (p["ap"] * n(c.all_pro) + p["mvp"] * n(c.mvp) + p["poy"] * (n(c.opoy) + n(c.dpoy)) + p["sbm"] * n(c.super_bowl_mvp)
-              + p["roy"] * min(n(c.oroy) + n(c.droy), rules.ROOKIE_OF_YEAR_CAP) + p["rt"] * min(n(c.rushing_title), rules.RUSHING_TITLE_CAP)
-              + p["sb"] * min(n(c.super_bowl), rules.SUPER_BOWL_CAP))
+              + p["roy"] * min(n(c.oroy) + n(c.droy), rules.ROOKIE_OF_YEAR_CAP) + p["rt"] * min(n(c.rushing_title), rules.RUSHING_TITLE_CAP))
     games = min(p["gcap0"] if c.group in rules.BIG_GAMES_CAP else p["gcap"], n(c.games - rules.GAMES_FREE) // p["gpp"])
     prod = 0 if c.group in rules.NO_PRODUCTION else min(p["pcap"], p["pcap"] * rules.composite(c) // rules.PAR[rules.GROUPS[c.group]])
-    return honors + games + prod
+    qb = c.group == rules.G_QB
+    champ = ((p["ring_qb"] if qb else p["sb"]) * min(n(c.super_bowl), rules.SUPER_BOWL_CAP)
+             + (p["loss_qb"] if qb else p["loss"]) * min(n(c.super_bowl_loss), rules.SUPER_BOWL_CAP))
+    miles = 0
+    if qb:
+        champ += min(p["pwcap"], p["pw"] * n(c.playoff_wins))
+        miles = p["td400"] if c.passing_touchdowns >= TD_AT else 0
+    elif c.group in (rules.G_WR, rules.G_TE):
+        miles = (p["y15"] * (c.receiving_yards >= Y15_AT) + p["y17"] * (c.receiving_yards >= Y17_AT) + p["r13"] * (c.receptions >= R13_AT))
+    return honors + games + prod + champ + miles
 
 
 def _split_metrics(rows: Sequence[Mapping], careers: Sequence, p: Mapping) -> dict:
@@ -921,39 +1156,59 @@ def _split_metrics(rows: Sequence[Mapping], careers: Sequence, p: Mapping) -> di
 def feasible(m: Mapping, *, fpr: float = 0.055) -> bool:
     ratio = lambda t: t[0] / t[1] if t[1] else 0.0                    # noqa: E731
     return (ratio(m["recall_train"]) >= TARGET_RECALL and ratio(m["recall_test"]) >= TARGET_RECALL and ratio(m["fp"]) <= fpr
-            and ratio(m["fp_train"]) <= fpr + 0.005 and ratio(m["fp_test"]) <= fpr + 0.01)
+            and ratio(m["fp_train"]) <= fpr + 0.005 and ratio(m["fp_test"]) <= fpr + 0.01 and m.get("cases_ok", True))
 
 
 def search(rows: Sequence[Mapping], samples: int = 20000, seed: int = 20261102) -> dict:
-    """Reproducible random search over ``GRID`` (bar fixed at 100): how many parameter sets meet the limits and where the
-    shipped set ranks by (recall, then fewer false positives). Needs numpy."""
+    """Reproducible random search over ``GRID`` (bar fixed at 100): how many parameter sets meet the limits AND the follow-up's named
+    cases (``REQUIRED_PASS`` reach the bar, ``REQUIRED_FAIL`` stay under it) and where the shipped set ranks by (recall, then fewer
+    false positives). Needs numpy."""
 
     import numpy as np
 
     inr = [r for r in rows if IN_RANGE[0] <= r["last"] <= IN_RANGE[1] and (r["hof"] or is_notable(r))]
-    careers = [rows_career(r) for r in inr]
+    named = {name: next(r for r in rows if r["name"] == name) for name in REQUIRED_PASS + REQUIRED_FAIL}
+    pool = inr + [r for r in named.values() if not any(r is x for x in inr)]
+    careers = [rows_career(r) for r in pool]
+    n_in = len(inr)
+    index = {name: next(i for i, r in enumerate(pool) if r is named[name]) for name in named}
     hof = np.array([bool(r["hof"]) for r in inr])
     last = np.array([r["last"] for r in inr])
     # per-row vectors, so one parameter set is a handful of array operations
     A = {k: np.array([getattr(c, k) for c in careers], dtype=np.int64) for k in
-         ("all_pro", "mvp", "opoy", "dpoy", "oroy", "droy", "super_bowl_mvp", "super_bowl", "rushing_title", "games")}
+         ("all_pro", "mvp", "opoy", "dpoy", "oroy", "droy", "super_bowl_mvp", "super_bowl", "super_bowl_loss", "playoff_wins",
+          "rushing_title", "games", "passing_touchdowns", "receiving_yards", "receptions")}
     nostat = np.array([c.group in rules.NO_PRODUCTION for c in careers])
     linemen = np.array([c.group in rules.BIG_GAMES_CAP for c in careers])
+    qb = np.array([c.group == rules.G_QB for c in careers])
+    receiver = np.array([c.group in (rules.G_WR, rules.G_TE) for c in careers])
     par = np.array([rules.PAR.get(rules.GROUPS[c.group], 1) for c in careers], dtype=np.int64)
     comp = np.array([rules.composite(c) for c in careers], dtype=np.int64)
 
-    def run(p):
+    def total(p):
         honors = (p["ap"] * A["all_pro"] + p["mvp"] * A["mvp"] + p["poy"] * (A["opoy"] + A["dpoy"]) + p["sbm"] * A["super_bowl_mvp"]
                   + p["roy"] * np.minimum(A["oroy"] + A["droy"], rules.ROOKIE_OF_YEAR_CAP)
-                  + p["rt"] * np.minimum(A["rushing_title"], rules.RUSHING_TITLE_CAP)
-                  + p["sb"] * np.minimum(A["super_bowl"], rules.SUPER_BOWL_CAP))
+                  + p["rt"] * np.minimum(A["rushing_title"], rules.RUSHING_TITLE_CAP))
         games = np.minimum(np.where(linemen, p["gcap0"], p["gcap"]), np.maximum(A["games"] - rules.GAMES_FREE, 0) // p["gpp"])
         prod = np.where(nostat, 0, np.minimum(p["pcap"], p["pcap"] * comp // par))
-        passed = honors + games + prod >= p["bar"]
+        champ = (np.where(qb, p["ring_qb"], p["sb"]) * np.minimum(A["super_bowl"], rules.SUPER_BOWL_CAP)
+                 + np.where(qb, p["loss_qb"], p["loss"]) * np.minimum(A["super_bowl_loss"], rules.SUPER_BOWL_CAP)
+                 + np.where(qb, np.minimum(p["pwcap"], p["pw"] * A["playoff_wins"]), 0))
+        miles = (np.where(qb, p["td400"] * (A["passing_touchdowns"] >= TD_AT), 0)
+                 + np.where(receiver, p["y15"] * (A["receiving_yards"] >= Y15_AT) + p["y17"] * (A["receiving_yards"] >= Y17_AT)
+                            + p["r13"] * (A["receptions"] >= R13_AT), 0))
+        return honors + games + prod + champ + miles
+
+    def run(p):
+        scores = total(p)
+        passed = scores[:n_in] >= p["bar"]
         tr, te = last <= TRAIN_THROUGH, last > TRAIN_THROUGH
         cnt = lambda mask: (int(passed[mask].sum()), int(mask.sum()))      # noqa: E731
         return {"recall": cnt(hof), "recall_train": cnt(hof & tr), "recall_test": cnt(hof & te), "fp": cnt(~hof),
-                "fp_train": cnt(~hof & tr), "fp_test": cnt(~hof & te)}
+                "fp_train": cnt(~hof & tr), "fp_test": cnt(~hof & te),
+                "cases_ok": bool(all(scores[index[x]] >= p["bar"] for x in REQUIRED_PASS)
+                                 and all(scores[index[x]] < p["bar"] for x in REQUIRED_FAIL)),
+                "cases": {x: int(scores[index[x]]) for x in named}}
 
     rng = random.Random(seed)
     results = []
@@ -974,8 +1229,10 @@ def search(rows: Sequence[Mapping], samples: int = 20000, seed: int = 20261102) 
 def sensitivity(rows: Sequence[Mapping]) -> list[dict]:
     careers = [rows_career(r) for r in rows]
     base = dict(DEFAULT_PARAMS)
+    named = {name: rows_career(next(r for r in rows if r["name"] == name)) for name in REQUIRED_PASS + REQUIRED_FAIL}
     m0 = _split_metrics(rows, careers, base)
-    out = [{"parameter": "(shipped)", "value": None, "recall": m0["recall"], "fp": m0["fp"]}]
+    out = [{"parameter": "(shipped)", "value": None, "recall": m0["recall"], "fp": m0["fp"],
+            "cases": {n: score_with(c, base) for n, c in named.items()}}]
     for key in GRID:
         for factor in (0.8, 1.2):
             p = dict(base)
@@ -984,7 +1241,8 @@ def sensitivity(rows: Sequence[Mapping]) -> list[dict]:
                 continue
             m = _split_metrics(rows, careers, p)
             out.append({"parameter": key, "value": p[key], "recall": m["recall"], "fp": m["fp"],
-                        "delta_recall": m["recall"][0] - m0["recall"][0], "delta_fp": m["fp"][0] - m0["fp"][0]})
+                        "delta_recall": m["recall"][0] - m0["recall"][0], "delta_fp": m["fp"][0] - m0["fp"][0],
+                        "cases": {n: score_with(c, p) for n, c in named.items()}})
     return out
 
 
@@ -1004,8 +1262,8 @@ def sim_careers(runs: Path, seeds: Sequence[int]) -> list[tuple[str, int, "rules
     for seed in seeds:
         data = json.loads((runs / f"rel{seed}.json").read_text(encoding="utf-8"))
         text = data["advance"]["notices"][0]["text"] if data["advance"]["notices"] else ""
-        m = re.match(r"(.+?) won Super Bowl", text)
-        champion = m.group(1) if m else None
+        m = re.match(r"(.+?) won Super Bowl \S+, \d+-\d+ over the (.+?)\.", text)
+        champion, runner_up = (m.group(1), m.group(2)) if m else (None, None)
         clubs = {t["team"]: f"{t['city']} {t['nick']}" for t in data["teams"]}
         seen = set()
         for p in data["players"]:
@@ -1019,6 +1277,8 @@ def sim_careers(runs: Path, seeds: Sequence[int]) -> list[tuple[str, int, "rules
                 a[dst] += p[src]
             if champion and clubs.get(p["team"]) == champion:
                 a["super_bowl"] += 1
+            elif runner_up and clubs.get(p["team"]) == runner_up:
+                a["super_bowl_loss"] += 1
 
         def credit(slot, source, field):
             v = source.get(slot)
@@ -1033,32 +1293,38 @@ def sim_careers(runs: Path, seeds: Sequence[int]) -> list[tuple[str, int, "rules
     return [(name, pos, rules.Career(group=rules.GROUPS.index(SIM_GROUP[pos]), **dict(a))) for (name, pos), a in sorted(agg.items())]
 
 
-SIM_SCALES = {"rushing x1.3": ("rushing_yards", "rushing_touchdowns", 1.3), "rushing x0.8": ("rushing_yards", "rushing_touchdowns", 0.8),
-              "receiving x1.25": ("receiving_yards", "receiving_touchdowns", 1.25), "receiving x0.8": ("receiving_yards", "receiving_touchdowns", 0.8),
-              "passing touchdowns x1.2": ("passing_touchdowns", None, 1.2), "passing touchdowns x0.8": ("passing_touchdowns", None, 0.8),
-              "sacks and interceptions x1.2": ("sacks_half", "interceptions", 1.2), "sacks and interceptions x0.8": ("sacks_half", "interceptions", 0.8),
-              "all production x0.5": ("*", None, 0.5)}
-PRODUCTION_FIELDS = ("passing_touchdowns", "rushing_touchdowns", "rushing_yards", "receiving_yards", "receiving_touchdowns", "sacks_half",
-                     "interceptions", "field_goals_made")
+RECEIVING = ("receiving_yards", "receiving_touchdowns", "receptions")
+SIM_SCALES = {"rushing x1.3": (("rushing_yards", "rushing_touchdowns"), 1.3), "rushing x0.8": (("rushing_yards", "rushing_touchdowns"), 0.8),
+              "receiving x1.25": (RECEIVING, 1.25), "receiving x0.8": (RECEIVING, 0.8),
+              "passing touchdowns x1.2": (("passing_touchdowns",), 1.2), "passing touchdowns x0.8": (("passing_touchdowns",), 0.8),
+              "sacks and interceptions x1.2": (("sacks_half", "interceptions"), 1.2), "sacks and interceptions x0.8": (("sacks_half", "interceptions"), 0.8),
+              "all production x0.5": (("*",), 0.5)}
+PRODUCTION_FIELDS = ("passing_touchdowns", "rushing_touchdowns", "rushing_yards", "receptions", "receiving_yards", "receiving_touchdowns",
+                     "sacks_half", "interceptions", "field_goals_made")
 
 
 def _scaled(c: "rules.Career", spec) -> "rules.Career":
     import dataclasses
-    a, b, factor = spec
-    fields = PRODUCTION_FIELDS if a == "*" else [x for x in (a, b) if x]
+    fields, factor = spec
+    fields = PRODUCTION_FIELDS if fields == ("*",) else fields
     return dataclasses.replace(c, **{f: int(getattr(c, f) * factor) for f in fields})
 
 
 def sim_proxy(runs: Path, seasons: Sequence[int] = (5, 8, 10), first_seed: int = 301) -> dict:
     """Careers of the game's own sim at 5, 8 and 10 constant-ratings seasons: how many reach the bar and the floor, by position, and
-    (ten seasons) how that count moves when the sim's production is scaled (the production term saturates, so it barely does)."""
+    (ten seasons) how that count moves when the sim's production is scaled (the production term saturates, so it barely does).
+
+    The sim credits a lost Super Bowl from the champion notice; it has no per-game playoff results, so quarterback playoff wins
+    stay 0. ``*_live_only`` leaves out the lost Super Bowls as well: what a franchise player reads until the counters exist."""
 
     out = {}
     for n in seasons:
         careers = sim_careers(runs, range(first_seed, first_seed + n))
         scored = sorted(((rules.score(c), name, pos, c) for name, pos, c in careers), key=lambda x: (-x[0], x[1]))
         passed = [x for x in scored if x[0] >= rules.BAR]
+        live = [rules.score(live_only(x[3])) for x in scored]            # a franchise player until the honors owner writes the counters
         out[n] = {"players": len(scored), "at_bar": len(passed), "at_floor": sum(1 for x in scored if x[0] >= rules.FLOOR),
+                  "at_bar_live_only": sum(1 for v in live if v >= rules.BAR), "at_floor_live_only": sum(1 for v in live if v >= rules.FLOOR),
                   "by_group": dict(collections.Counter(rules.GROUPS[x[3].group] for x in passed)),
                   "top": [(x[1], rules.POSITIONS[x[2]], x[0]) for x in scored[:14]]}
         if n == max(seasons):
@@ -1069,16 +1335,24 @@ def sim_proxy(runs: Path, seasons: Sequence[int] = (5, 8, 10), first_seed: int =
 
 # --------------------------------------------------------------------------------------------------------------------
 def _print_evaluate(rows):
-    e = evaluate(rows)
     pct = lambda t: f"{t[0]}/{t[1]} = {100 * t[0] / t[1]:.1f}%" if t[1] else "0/0"        # noqa: E731
-    print(f"bar {e['bar']}, retired {e['range'][0]}-{e['range'][1]}: {e['inductees']} real inductees, {e['notable_non_inductees']} notable "
-          f"non-inductees, {e['other_retirees_in_dataset']} other retirees in the dataset ({e['other_retirees_that_pass']} of them pass)")
-    print(f"  inductees that pass: {pct(e['recall'])}   (retired <= {TRAIN_THROUGH}: {pct(e['recall_train'])}; later: {pct(e['recall_test'])})")
-    print(f"  notable non-inductees that pass: {pct(e['false_positives'])}   ({pct(e['false_positives_train'])}; {pct(e['false_positives_test'])})")
-    print("  by position:", {g: f"{a}/{b}" for g, (a, b) in e["by_group"].items()})
-    print("  misses:", "; ".join(f"{n} ({g}, {y}) {s}" for n, g, y, _h, s in e["misses"]))
-    print("  false positives:", "; ".join(f"{n} ({g}, {y}) {s}" for n, g, y, s in e["false_positive_names"]))
-    return e
+    first = None
+    for years in (IN_RANGE, EXTENDED_RANGE):
+        e = evaluate(rows, years=years)
+        first = first or e
+        print(f"bar {e['bar']}, retired {years[0]}-{years[1]}: {e['inductees']} real inductees, {e['notable_non_inductees']} notable "
+              f"non-inductees, {e['other_retirees_in_dataset']} other retirees in the dataset ({e['other_retirees_that_pass']} of them pass)")
+        print(f"  inductees that pass: {pct(e['recall'])}   (retired <= {TRAIN_THROUGH}: {pct(e['recall_train'])}; later: {pct(e['recall_test'])})")
+        print(f"  notable non-inductees that pass: {pct(e['false_positives'])}   ({pct(e['false_positives_train'])}; {pct(e['false_positives_test'])})")
+        print("  by position:", {g: f"{a}/{b}" for g, (a, b) in e["by_group"].items()})
+        print("  misses:", "; ".join(f"{n} ({g}, {y}) {s}" for n, g, y, _h, s in e["misses"]))
+        print("  false positives:", "; ".join(f"{n} ({g}, {y}) {s}" for n, g, y, s in e["false_positive_names"]))
+    print("named cases: score = honors + games + production + championships + milestones; live-only drops the two optional counters")
+    for c in named_cases(rows):
+        p = c["parts"]
+        print(f"  {c['name']} ({c['group']}, retired {c['last']}{', real ' + str(c['hof']) if c['hof'] else ''}): {c['score']} = {p['honors']} + "
+              f"{p['games']} + {p['production']} + {p['championships']} + {p['milestones']}; live-only {c['live_only']}")
+    return first
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -1096,6 +1370,13 @@ def main(argv: Sequence[str] | None = None) -> int:
     c = sub.add_parser("candidates")
     c.add_argument("--data", type=Path, default=DATASET)
     c.add_argument("--out", type=Path, default=CANDIDATES)
+    for q in (f, c):
+        q.add_argument("--roster-check", type=Path, default=ROSTER_CHECK)
+        q.add_argument("--no-roster-check", action="store_true", help="seed without the game roster dedupe (not what ships)")
+    rc = sub.add_parser("roster-check")
+    rc.add_argument("--data", type=Path, default=DATASET)
+    rc.add_argument("--image", type=Path, required=True, help="a built disc image (read only)")
+    rc.add_argument("--out", type=Path, default=ROSTER_CHECK)
     s = sub.add_parser("search")
     s.add_argument("--data", type=Path, default=DATASET)
     s.add_argument("--samples", type=int, default=20000)
@@ -1125,12 +1406,16 @@ def main(argv: Sequence[str] | None = None) -> int:
             out = real_replay(rows, args.first, args.last)
             print("\n".join(class_lines(out["classes"], range(args.first, args.last + 1))))
             print(f"class sizes {out['sizes']}; {out['inductees']} inductees, {out['real_members']} of them real Hall of Famers")
+        elif args.command == "roster-check":
+            doc = roster_check_document(load_rows(args.data), read_game_roster(args.image), args.image.name)
+            args.out.write_text(json.dumps(doc, indent=1, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n")
+            print(f"wrote {args.out}: {doc['counts']}, {doc['retirees_checked']} retirees checked against {doc['roster']['players']} roster players")
         elif args.command == "franchise":
-            out = franchise_replay(load_rows(args.data), args.last)
+            out = franchise_replay(load_rows(args.data), args.last, None if args.no_roster_check else load_roster_check(args.roster_check))
             print("\n".join(class_lines(out["classes"], range(2027, args.last + 2))))
             print(f"seeds {out['seeds']}, class sizes {out['sizes']}, still waiting {len(out['left'])}")
         elif args.command == "candidates":
-            doc = seed_document(load_rows(args.data))
+            doc = seed_document(load_rows(args.data), None if args.no_roster_check else load_roster_check(args.roster_check))
             args.out.write_text(json.dumps(doc, indent=1, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n")
             print(f"wrote {args.out} ({doc['count']} candidates)")
         elif args.command == "search":

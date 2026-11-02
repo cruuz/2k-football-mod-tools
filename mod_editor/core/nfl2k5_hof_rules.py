@@ -9,16 +9,26 @@ dependency, so the native history owner (job j23, "J3") can mirror it line for l
 The rule in plain words (``RULE_HELP`` repeats it for the Studio option text)
 ------------------------------------------------------------------------------
 * A player is judged when he retires (the retirement pass marks him; his record and history are dropped a few stages
-  later, so the score is computed once, then and kept). Score = honors + games + production, all whole points:
+  later, so the score is computed once, then and kept). Score = honors + championships + milestones + games + production,
+  all whole points:
 
   - honors: 25 per first-team All-Pro season, 25 per MVP, 15 per Offensive or Defensive Player of the Year, 15 per Super
-    Bowl MVP, 10 for Rookie of the Year (once), 15 per rushing title (at most 4), 3 per Super Bowl ring (at most 4);
+    Bowl MVP, 10 for Rookie of the Year (once), 15 per rushing title (at most 4);
+  - championships: a Super Bowl won is 3 points (6 for a quarterback) and a Super Bowl lost is 1 (3 for a quarterback), at
+    most 4 of each; a quarterback adds 1 per playoff win, at most 15;
+  - milestones, for the very top volume only: a quarterback with 400 career passing touchdowns gets 35; a wide receiver or
+    tight end gets 15 for 15,000 receiving yards, 15 more for 17,000, and 10 for 1,300 catches;
   - games: 1 point per 4 games above 80, at most 20 (35 for linemen, whose record is seasons as a starter);
   - production: up to 25 points, how close his career comes to a typical Hall of Famer at his position (touchdowns for
     quarterbacks, yards and touchdowns for backs and receivers, sacks and interceptions on defense, field goals for
     kickers; linemen and punters have no production line). Tackles are not counted (the sim piles them up).
 * Pro Bowls are not counted. The game records them only for seeded real players, never for new ones, so counting them
   would favour real careers over franchise careers; the calibration does as well without them (see below).
+* Two of the new inputs are OPTIONAL counters the game does not write today: Super Bowls lost (history field 120) and a
+  quarterback's playoff wins (field 121). A franchise player reads 0 for both until the honors owner adds them, so the rule
+  works without them (a quarterback is short at most 27 points, anyone else 4; the calibration reports both ways) and the seeded real retirees
+  carry them in their precomputed scores. Rings, touchdowns, receptions and receiving yards are read from fields the game
+  already writes.
 * A retiree with 80 points or more becomes a candidate (the table holds 64; when it is full a better score replaces the
   weakest). He is eligible five seasons after his last season and stays eligible for 15 more seasons (20 after he
   retires), then drops off.
@@ -32,11 +42,15 @@ Calibration (``tools/b780_hof_calibrate.py``; every number is re-checked by ``te
 Real careers of the 5,399 players in the sources who retired 2005-2019 (``data/nfl2k5_hof_calibration_2026.json``): 55 are real
 Hall of Famers (the Wikipedia list at a pinned revision, through the Class of 2026; j5's list agrees on all 55 classes). Bar
 100: 47 of the 55 inductees pass (85.5 %: retired 2005-2012 30 of 36, 2013-2019 17 of 19) and 12 of the 239 notable
-non-inductees pass (5.0 %); none of the other 5,105 retirees does (the 5,057 left out of the dataset score 39 or less). The
-yearly replay (one close per season from 2004, table filled year by year) makes classes of 2 to 5 for every class 2010-2026:
-68 inductees, 52 of them real Hall of Famers. The All-Pro weight and the production cap are the two knobs that matter (+/-20 %
-of either moves 5 to 10 players); the other weights and caps move at most one inductee and two non-inductees. The production
-term saturates, so scaling the game's sim production by 0.8 to 1.3 leaves the ten-season sim count at 15.
+non-inductees pass (5.0 %); none of the other retirees does. The follow-up credit (championships and milestones) changes
+nobody in that range; it lifts the 2020 retirees: with them added (2005-2020) 49 of 57 inductees pass (86.0 %) and 14 of 262
+notable non-inductees (5.3 %). Larry Fitzgerald goes from 70 to 111, Ben Roethlisberger (not yet judged) scores 118 (102
+without the two optional counters), Eli Manning stays under the bar at 95 (87). The yearly replay (one close per season from
+2004, table filled year by year) makes classes of 2 to 5 for every class 2010-2026: 69 inductees, 54 of them real Hall of
+Famers. The All-Pro weight and the production cap are the two knobs that matter (+/-20 % of either moves 5 to 10 players);
+the new weights move nobody across the bar in the real sample, and the other weights and caps move at most one inductee and
+two non-inductees. The production term saturates, so scaling the game's sim production by 0.8 to 1.3 leaves the ten-season
+sim count at 17.
 
 What this module does not do: it does not read the save, the roster or the executable; the hall block layout belongs to
 ``nfl2k5_franchise_extension`` (job j23) and the records here are byte-compatible with it (``candidate_to_bytes`` /
@@ -78,6 +92,7 @@ FIELD_GAMES = 0
 FIELD_RUSHING_YARDS = 2
 FIELD_RUSHING_TOUCHDOWNS = 3
 FIELD_PASSING_TOUCHDOWNS = 9
+FIELD_RECEPTIONS = 12
 FIELD_RECEIVING_YARDS = 13
 FIELD_RECEIVING_TOUCHDOWNS = 14
 FIELD_SACKS_HALF = 19
@@ -85,12 +100,17 @@ FIELD_INTERCEPTIONS = 20
 FIELDS_FIELD_GOALS = (61, 63, 65, 67)       # made, by distance bucket
 HONOR_FIELD0 = 96                           # mvp opoy dpoy oroy droy super_bowl super_bowl_mvp pro_bowl all_pro rushing_title
 HONORS = ("mvp", "opoy", "dpoy", "oroy", "droy", "super_bowl", "super_bowl_mvp", "pro_bowl", "all_pro", "rushing_title")
+# Two OPTIONAL counters, written like the honors (value 1 in the season slot, regular class, summed when folded; the honors fold
+# rule already sums fields 96..127). The game does not write them today; until the honors owner adds them a franchise player
+# reads 0 for both, and seeded real retirees carry them in their precomputed score. Proposed ids, free per the fold note (120+):
+FIELD_SUPER_BOWL_LOSS = 120                 # every player of the club that lost the Super Bowl (field 101 is the winner's)
+FIELD_PLAYOFF_WIN = 121                     # the quarterback with the most pass attempts on the winning club of a postseason game
 SIGNED_FIELDS = (FIELD_RUSHING_YARDS, FIELD_RECEIVING_YARDS)
 
 # --------------------------------------------------------------------------------------------------------------------
 # the score (whole points; every term is an integer product, a floor division by a constant, or a min)
 POINTS = {"all_pro": 25, "mvp": 25, "player_of_year": 15, "super_bowl_mvp": 15, "rookie_of_year": 10,
-          "rushing_title": 15, "super_bowl": 3}
+          "rushing_title": 15, "super_bowl": 3}      # "super_bowl" is the ring for every position but quarterback (see RING_POINTS)
 RUSHING_TITLE_CAP = 4
 SUPER_BOWL_CAP = 4
 ROOKIE_OF_YEAR_CAP = 1      # a man is a rookie once (offense or defense)
@@ -99,6 +119,19 @@ GAMES_PER_POINT = 4
 GAMES_CAP = 20
 GAMES_CAP_LINEMEN = 35
 PRODUCTION_CAP = 25
+# championships: a ring and a lost Super Bowl, worth more to a quarterback; playoff wins are a quarterback's only (optional counter)
+QB_RING_POINTS = 6
+LOSS_POINTS_DEFAULT, QB_LOSS_POINTS = 1, 3
+RING_POINTS = tuple(QB_RING_POINTS if g == 0 else POINTS["super_bowl"] for g in range(10))      # by group, QB first
+LOSS_POINTS = tuple(QB_LOSS_POINTS if g == 0 else LOSS_POINTS_DEFAULT for g in range(10))
+PLAYOFF_WIN_POINTS = 1
+PLAYOFF_WIN_CAP = 15
+# career milestones (each tier adds its points once the career total reaches it): the clubs of the very top volume. Quarterback
+# passing yards are not read (a folded sum wraps 16 bits); touchdowns say the same on the real sample (the 400-touchdown and the
+# 60,000-yard clubs have the same judged members) and the sim makes them at the real rate.
+QB_TOUCHDOWN_TIERS = ((400, 35),)
+RECEIVING_YARDS_TIERS = ((15000, 15), (17000, 15))                  # wide receivers and tight ends
+RECEPTION_TIERS = ((1300, 10),)
 SCORE_MAX = 0xFFFF          # the footer stores the score in a u16; the sum saturates here (a real career scores under 400)
 # production par: a career worth one par is a typical Hall of Famer at the position (35th percentile of the real inductees
 # who retired 2005-2019; kickers use a real threshold, 400 field goals, because the dataset's two kickers are partial).
@@ -108,12 +141,14 @@ PAR = {"QB": 2100, "RB": 21000, "WR": 18500, "TE": 18500, "DL": 3000, "LB": 1500
 UI_LABEL = "Hall of Fame classes with real retirees seeded"     # 60-character caption rule
 
 RULE_HELP = (
-    "Hall of Fame: when a player retires he is scored from his honors, games and production. First-team All-Pro 25, MVP 25, "
-    "Player of the Year 15, Super Bowl MVP 15, Rookie of the Year 10 (once), rushing title 15, Super Bowl ring 3, one point per "
-    "4 games over 80 (most 20; 35 for linemen), and up to 25 for production at his position (none for linemen and punters). Pro Bowls and "
-    "tackles do not count. With 80 points he becomes a candidate. Five seasons after he retires he can be inducted: each "
-    "year up to 5 candidates with 100 points go in, and if fewer than 2 reach 100 the best candidates with 80 or more "
-    "fill the class to 2. A candidate is dropped 20 seasons after he retired.")
+    "Hall of Fame: when a player retires he is scored from his honors, titles, games and production. First-team All-Pro 25, MVP 25, "
+    "Player of the Year 15, Super Bowl MVP 15, Rookie of the Year 10 (once), rushing title 15. A Super Bowl won is 3 (6 for a "
+    "quarterback) and a Super Bowl lost is 1 (3 for a quarterback), at most 4 of each, and a quarterback adds 1 per playoff win, up "
+    "to 15. Career milestones add points: 400 passing touchdowns 35; for a receiver or tight end 15,000 receiving yards 15, 17,000 "
+    "another 15 and 1,300 catches 10. One point per 4 games over 80 (most 20; 35 for linemen), and up to 25 for production at his "
+    "position (none for linemen and punters). Pro Bowls and tackles do not count. With 80 points he becomes a candidate. Five "
+    "seasons after he retires he can be inducted: each year up to 5 candidates with 100 points go in, and if fewer than 2 reach "
+    "100 the best candidates with 80 or more fill the class to 2. A candidate is dropped 20 seasons after he retired.")
 
 
 @dataclass(frozen=True)
@@ -135,11 +170,14 @@ class Career:
     passing_touchdowns: int = 0
     rushing_touchdowns: int = 0
     rushing_yards: int = 0
+    receptions: int = 0
     receiving_yards: int = 0
     receiving_touchdowns: int = 0
     sacks_half: int = 0
     interceptions: int = 0
     field_goals_made: int = 0
+    super_bowl_loss: int = 0        # optional counter (field 120): Super Bowls reached and lost
+    playoff_wins: int = 0           # optional counter (field 121), quarterbacks only
 
     @classmethod
     def from_position(cls, position: int | str, **fields) -> "Career":
@@ -180,8 +218,32 @@ def honors_points(c: Career) -> int:
     return (POINTS["all_pro"] * _n(c.all_pro) + POINTS["mvp"] * _n(c.mvp)
             + POINTS["player_of_year"] * (_n(c.opoy) + _n(c.dpoy)) + POINTS["super_bowl_mvp"] * _n(c.super_bowl_mvp)
             + POINTS["rookie_of_year"] * min(_n(c.oroy) + _n(c.droy), ROOKIE_OF_YEAR_CAP)
-            + POINTS["rushing_title"] * min(_n(c.rushing_title), RUSHING_TITLE_CAP)
-            + POINTS["super_bowl"] * min(_n(c.super_bowl), SUPER_BOWL_CAP))
+            + POINTS["rushing_title"] * min(_n(c.rushing_title), RUSHING_TITLE_CAP))
+
+
+def championship_points(c: Career) -> int:
+    """Super Bowl rings and lost Super Bowls (a quarterback's count for more) and, for a quarterback, playoff wins."""
+
+    points = (RING_POINTS[c.group] * min(_n(c.super_bowl), SUPER_BOWL_CAP)
+              + LOSS_POINTS[c.group] * min(_n(c.super_bowl_loss), SUPER_BOWL_CAP))
+    if c.group == G_QB:
+        points += min(PLAYOFF_WIN_CAP, PLAYOFF_WIN_POINTS * _n(c.playoff_wins))
+    return points
+
+
+def _tiers(value: int, tiers) -> int:
+    return sum(points for at, points in tiers if value >= at)
+
+
+def milestone_points(c: Career) -> int:
+    """The very top volume: 400 passing touchdowns for a quarterback; 15,000 and 17,000 receiving yards and 1,300 catches for a
+    wide receiver or tight end. Nobody else has a milestone."""
+
+    if c.group == G_QB:
+        return _tiers(c.passing_touchdowns, QB_TOUCHDOWN_TIERS)
+    if c.group in (G_WR, G_TE):
+        return _tiers(c.receiving_yards, RECEIVING_YARDS_TIERS) + _tiers(c.receptions, RECEPTION_TIERS)
+    return 0
 
 
 def games_points(c: Career) -> int:
@@ -199,11 +261,12 @@ def score(c: Career) -> int:
     """The Hall of Fame score (saturating at ``SCORE_MAX``); Pro Bowls are read nowhere. In 32-bit arithmetic the unclamped sum of
     even absurd inputs (every field 32,767) stays under 4 million, so the native code needs no wider type."""
 
-    return min(SCORE_MAX, honors_points(c) + games_points(c) + production_points(c))
+    return min(SCORE_MAX, honors_points(c) + games_points(c) + production_points(c) + championship_points(c) + milestone_points(c))
 
 
 def score_parts(c: Career) -> dict:
-    return {"honors": honors_points(c), "games": games_points(c), "production": production_points(c), "score": score(c)}
+    return {"honors": honors_points(c), "games": games_points(c), "production": production_points(c),
+            "championships": championship_points(c), "milestones": milestone_points(c), "score": score(c)}
 
 
 def honors_count(c: Career) -> int:
@@ -439,7 +502,8 @@ def history_words(c: Career) -> list[int]:
     must fit a signed 16-bit word (the game itself wraps a longer sum), so a vector never exceeds 32,767."""
 
     values = {FIELD_GAMES: c.games, FIELD_RUSHING_YARDS: c.rushing_yards, FIELD_RUSHING_TOUCHDOWNS: c.rushing_touchdowns,
-              FIELD_PASSING_TOUCHDOWNS: c.passing_touchdowns, FIELD_RECEIVING_YARDS: c.receiving_yards,
+              FIELD_PASSING_TOUCHDOWNS: c.passing_touchdowns, FIELD_RECEPTIONS: c.receptions,
+              FIELD_SUPER_BOWL_LOSS: c.super_bowl_loss, FIELD_PLAYOFF_WIN: c.playoff_wins, FIELD_RECEIVING_YARDS: c.receiving_yards,
               FIELD_RECEIVING_TOUCHDOWNS: c.receiving_touchdowns, FIELD_SACKS_HALF: c.sacks_half,
               FIELD_INTERCEPTIONS: c.interceptions, FIELDS_FIELD_GOALS[0]: c.field_goals_made}
     for i, name in enumerate(HONORS):
@@ -470,7 +534,9 @@ def career_from_words(group: int, words: Iterable[int]) -> Career:
         sums[fld] = sums.get(fld, 0) + v
     return Career(group=group, games=sums.get(FIELD_GAMES, 0), rushing_yards=sums.get(FIELD_RUSHING_YARDS, 0),
                   rushing_touchdowns=sums.get(FIELD_RUSHING_TOUCHDOWNS, 0),
-                  passing_touchdowns=sums.get(FIELD_PASSING_TOUCHDOWNS, 0), receiving_yards=sums.get(FIELD_RECEIVING_YARDS, 0),
+                  passing_touchdowns=sums.get(FIELD_PASSING_TOUCHDOWNS, 0), receptions=sums.get(FIELD_RECEPTIONS, 0),
+                  super_bowl_loss=sums.get(FIELD_SUPER_BOWL_LOSS, 0), playoff_wins=sums.get(FIELD_PLAYOFF_WIN, 0),
+                  receiving_yards=sums.get(FIELD_RECEIVING_YARDS, 0),
                   receiving_touchdowns=sums.get(FIELD_RECEIVING_TOUCHDOWNS, 0), sacks_half=sums.get(FIELD_SACKS_HALF, 0),
                   interceptions=sums.get(FIELD_INTERCEPTIONS, 0),
                   field_goals_made=sum(sums.get(f, 0) for f in FIELDS_FIELD_GOALS),
@@ -485,6 +551,9 @@ def native_table() -> dict:
         "points": dict(POINTS), "rushing_title_cap": RUSHING_TITLE_CAP, "super_bowl_cap": SUPER_BOWL_CAP, "rookie_of_year_cap": ROOKIE_OF_YEAR_CAP,
         "games_free": GAMES_FREE, "games_per_point": GAMES_PER_POINT, "games_cap": GAMES_CAP,
         "games_cap_linemen": GAMES_CAP_LINEMEN, "production_cap": PRODUCTION_CAP, "score_max": SCORE_MAX,
+        "ring_points": RING_POINTS, "loss_points": LOSS_POINTS, "playoff_win_points": PLAYOFF_WIN_POINTS,
+        "playoff_win_cap": PLAYOFF_WIN_CAP, "qb_touchdown_tiers": QB_TOUCHDOWN_TIERS,
+        "receiving_yards_tiers": RECEIVING_YARDS_TIERS, "reception_tiers": RECEPTION_TIERS,
         "par": tuple(PAR.get(g, 0) for g in GROUPS), "bar": BAR, "floor": FLOOR, "wait": WAIT_SEASONS,
         "window": WINDOW_SEASONS, "max_class": MAX_CLASS, "min_class": MIN_CLASS, "candidate_slots": CANDIDATE_SLOTS,
         "inductee_slots": INDUCTEE_SLOTS,
@@ -497,11 +566,17 @@ def c_header() -> str:
     lines.append("static const unsigned char HOF_GROUP[17] = {%s};" % ", ".join(map(str, t["group_of_position"])))
     lines.append("static const unsigned int HOF_PAR[10] = {%s}; /* QB RB WR TE OL DL LB DB K P; 0 = no stat line */"
                  % ", ".join(map(str, t["par"])))
+    lines.append("static const unsigned int HOF_RING_PTS[10] = {%s};   /* a Super Bowl ring, by group */" % ", ".join(map(str, t["ring_points"])))
+    lines.append("static const unsigned int HOF_LOSS_PTS[10] = {%s};   /* a lost Super Bowl, by group */" % ", ".join(map(str, t["loss_points"])))
+    lines.append("typedef struct { unsigned at, points; } HofTier;                /* the career total reaches `at`: add `points` */")
+    for name, key in (("QB_TD", "qb_touchdown_tiers"), ("RECEIVING_YARDS", "receiving_yards_tiers"), ("RECEPTIONS", "reception_tiers")):
+        lines.append("static const HofTier HOF_%s_TIERS[%d] = {%s};" % (name, len(t[key]), ", ".join(f"{{{a}u, {b}u}}" for a, b in t[key])))
+        lines.append(f"#define HOF_{name}_TIER_COUNT {len(t[key])}")
     for key in ("all_pro", "mvp", "player_of_year", "super_bowl_mvp", "rookie_of_year", "rushing_title", "super_bowl"):
         lines.append(f"#define HOF_PTS_{key.upper()} {t['points'][key]}")
     for key in ("rushing_title_cap", "super_bowl_cap", "rookie_of_year_cap", "games_free", "games_per_point", "games_cap",
-                "games_cap_linemen", "production_cap", "score_max", "bar", "floor", "wait", "window", "max_class", "min_class",
-                "candidate_slots", "inductee_slots"):
+                "games_cap_linemen", "production_cap", "playoff_win_points", "playoff_win_cap", "score_max", "bar", "floor", "wait",
+                "window", "max_class", "min_class", "candidate_slots", "inductee_slots"):
         lines.append(f"#define HOF_{key.upper()} {t[key]}")
     return "\n".join(lines) + "\n"
 
@@ -510,8 +585,9 @@ C_REFERENCE_BODY = r"""
 typedef struct {
     unsigned group;                                   /* 0 QB, 1 RB, 2 WR, 3 TE, 4 OL, 5 DL, 6 LB, 7 DB, 8 K, 9 P */
     int games, mvp, opoy, dpoy, oroy, droy, super_bowl, super_bowl_mvp, all_pro, rushing_title;
-    int passing_touchdowns, rushing_touchdowns, rushing_yards, receiving_yards, receiving_touchdowns;
+    int passing_touchdowns, rushing_touchdowns, rushing_yards, receptions, receiving_yards, receiving_touchdowns;
     int sacks_half, interceptions, field_goals_made;
+    int super_bowl_loss, playoff_wins;                /* the two optional counters: 0 when the game does not write them */
 } HofCareer;
 typedef struct { int valid; unsigned score, honors, seasons, retired; } HofSlot;
 
@@ -534,17 +610,34 @@ unsigned hof_composite(const HofCareer *c) {
     }
 }
 
+static unsigned hof_tiers(const HofTier *t, int count, int value) {
+    unsigned sum = 0;
+    int i;
+    for (i = 0; i < count; i++)
+        if (value > 0 && (unsigned)value >= t[i].at) sum += t[i].points;
+    return sum;
+}
+
 unsigned hof_score(const HofCareer *c) {
     unsigned honors = HOF_PTS_ALL_PRO * hof_n(c->all_pro) + HOF_PTS_MVP * hof_n(c->mvp)
         + HOF_PTS_PLAYER_OF_YEAR * (hof_n(c->opoy) + hof_n(c->dpoy)) + HOF_PTS_SUPER_BOWL_MVP * hof_n(c->super_bowl_mvp)
         + HOF_PTS_ROOKIE_OF_YEAR * hof_min(hof_n(c->oroy) + hof_n(c->droy), HOF_ROOKIE_OF_YEAR_CAP)
-        + HOF_PTS_RUSHING_TITLE * hof_min(hof_n(c->rushing_title), HOF_RUSHING_TITLE_CAP)
-        + HOF_PTS_SUPER_BOWL * hof_min(hof_n(c->super_bowl), HOF_SUPER_BOWL_CAP);
+        + HOF_PTS_RUSHING_TITLE * hof_min(hof_n(c->rushing_title), HOF_RUSHING_TITLE_CAP);
     unsigned cap = c->group == 4 ? HOF_GAMES_CAP_LINEMEN : HOF_GAMES_CAP;
     unsigned games = hof_min(cap, hof_n(c->games - HOF_GAMES_FREE) / HOF_GAMES_PER_POINT);
     unsigned prod = 0;
     if (HOF_PAR[c->group]) prod = hof_min(HOF_PRODUCTION_CAP, HOF_PRODUCTION_CAP * hof_composite(c) / HOF_PAR[c->group]);
-    unsigned total = honors + games + prod;
+    unsigned champ = HOF_RING_PTS[c->group] * hof_min(hof_n(c->super_bowl), HOF_SUPER_BOWL_CAP)
+        + HOF_LOSS_PTS[c->group] * hof_min(hof_n(c->super_bowl_loss), HOF_SUPER_BOWL_CAP);
+    unsigned miles = 0, total;
+    if (c->group == 0) {
+        champ += hof_min(HOF_PLAYOFF_WIN_CAP, HOF_PLAYOFF_WIN_POINTS * hof_n(c->playoff_wins));
+        miles = hof_tiers(HOF_QB_TD_TIERS, HOF_QB_TD_TIER_COUNT, c->passing_touchdowns);
+    } else if (c->group == 2 || c->group == 3) {
+        miles = hof_tiers(HOF_RECEIVING_YARDS_TIERS, HOF_RECEIVING_YARDS_TIER_COUNT, c->receiving_yards)
+            + hof_tiers(HOF_RECEPTIONS_TIERS, HOF_RECEPTIONS_TIER_COUNT, c->receptions);
+    }
+    total = honors + games + prod + champ + miles;
     return total > HOF_SCORE_MAX ? HOF_SCORE_MAX : total;
 }
 
@@ -639,7 +732,20 @@ def golden_vectors() -> list[dict]:
               (2, dict(games=400, all_pro=5)),
               (0, dict(games=80)), (0, dict(games=84)), (0, dict(games=159)), (0, dict(games=160)),   # games steps and cap
               (7, dict(rushing_yards=21000, rushing_touchdowns=0)),                              # production exactly at par
-              (7, dict(rushing_yards=20999))]                                                    # one tenth below par
+              (7, dict(rushing_yards=20999)),                                                    # one tenth below par
+              # championships: a quarterback's ring and lost Super Bowl are worth double, playoff wins are his alone, every count caps
+              (0, dict(super_bowl=1)), (0, dict(super_bowl_loss=1)), (0, dict(playoff_wins=1)),
+              (0, dict(super_bowl=2, super_bowl_loss=1, playoff_wins=13, games=250)),
+              (0, dict(super_bowl=9, super_bowl_loss=9, playoff_wins=40)),                        # 4 rings, 4 lost, 15 playoff wins
+              (7, dict(super_bowl=2, super_bowl_loss=2, playoff_wins=9)),                         # flat ring and loss, no playoff wins
+              (12, dict(super_bowl=9, super_bowl_loss=9)),
+              # milestones: each tier at the value just below and exactly at its threshold; only quarterbacks, receivers and tight ends
+              (0, dict(passing_touchdowns=399)), (0, dict(passing_touchdowns=400)),
+              (3, dict(receiving_yards=14999)), (3, dict(receiving_yards=15000)), (3, dict(receiving_yards=16999)),
+              (3, dict(receiving_yards=17000)), (3, dict(receptions=1299)), (3, dict(receptions=1300)),
+              (9, dict(receiving_yards=17000, receptions=1300, receiving_touchdowns=100)),
+              (7, dict(passing_touchdowns=500, receiving_yards=17000, receptions=1300)),         # no milestone for a back
+              (4, dict(receiving_yards=17000, receptions=1300))]                                 # nor for a cornerback
     out = []
     for position, fields in cases:
         c = Career.from_position(position, **fields)
@@ -650,7 +756,8 @@ def golden_vectors() -> list[dict]:
 
 __all__ = ["SCHEMA", "OWNER", "WAIT_SEASONS", "WINDOW_SEASONS", "MAX_CLASS", "MIN_CLASS", "BAR", "FLOOR", "INDUCTEE_SLOTS",
            "CANDIDATE_SLOTS", "UI_LABEL", "POSITIONS", "GROUPS", "GROUP_OF_POSITION", "POINTS", "PAR", "RULE_HELP", "Career", "Candidate",
-           "Inductee", "Close", "HofError", "composite", "honors_points", "games_points", "production_points", "score",
+           "Inductee", "Close", "HofError", "composite", "honors_points", "championship_points", "milestone_points", "games_points",
+           "production_points", "score",
            "score_parts", "honors_count", "seasons_from_games", "candidate_to_bytes", "candidate_from_bytes",
            "inductee_to_bytes", "inductee_from_bytes", "class_year", "is_eligible", "rank_key", "empty_table",
            "select_class", "admit", "admit_detail", "close_season", "person_line", "popup_texts", "history_words", "career_from_words",

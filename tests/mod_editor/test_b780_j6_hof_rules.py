@@ -40,9 +40,17 @@ def _load_tool():
 
 TOOL = _load_tool()
 ROWS = TOOL.load_rows()
+ROSTER = TOOL.load_roster_check()                      # which retirees are on the v0.8 game roster (read once from the disc, checked in)
 BY_NAME = {}
 for _row in ROWS:
     BY_NAME.setdefault(_row["name"], []).append(_row)
+
+
+def run_cli(*argv):
+    out = io.StringIO()
+    with redirect_stdout(out):
+        code = TOOL.main(list(argv))
+    return code, out.getvalue()
 
 
 def career(name: str, last: int | None = None):
@@ -53,6 +61,10 @@ def career(name: str, last: int | None = None):
 
 def Q(**kw):
     return rules.Career.from_position("QB", **kw)
+
+
+def P(position, **kw):
+    return rules.Career.from_position(position, **kw)
 
 
 # --------------------------------------------------------------------------------------------------------------------
@@ -68,17 +80,62 @@ class ScoreTests(unittest.TestCase):
             rules.Career.from_position(17)
 
     def test_every_honor_term(self):
-        one = {"all_pro": 25, "mvp": 25, "opoy": 15, "dpoy": 15, "super_bowl_mvp": 15, "oroy": 10, "droy": 10, "rushing_title": 15,
-               "super_bowl": 3}
+        one = {"all_pro": 25, "mvp": 25, "opoy": 15, "dpoy": 15, "super_bowl_mvp": 15, "oroy": 10, "droy": 10, "rushing_title": 15}
         for name, points in one.items():
             self.assertEqual(rules.score(Q(**{name: 1})), points, name)
+            self.assertEqual(rules.honors_points(Q(**{name: 1})), points, name)
         self.assertEqual(rules.score(Q(all_pro=4)), 100)
+
+    def test_championship_terms(self):
+        """A ring is 3 points (6 for a quarterback), a lost Super Bowl 1 (3), a quarterback's playoff win 1; every count caps."""
+
+        self.assertEqual((rules.score(Q(super_bowl=1)), rules.score(P("WR", super_bowl=1))), (6, 3))
+        self.assertEqual((rules.score(Q(super_bowl_loss=1)), rules.score(P("WR", super_bowl_loss=1))), (3, 1))
+        self.assertEqual((rules.score(Q(playoff_wins=1)), rules.score(P("WR", playoff_wins=1))), (1, 0))   # playoff wins are a quarterback's
+        self.assertEqual(rules.score(Q(super_bowl=9)), 4 * 6)
+        self.assertEqual(rules.score(Q(super_bowl_loss=9)), 4 * 3)
+        self.assertEqual(rules.score(Q(playoff_wins=99)), 15)
+        self.assertEqual(rules.score(P("WR", super_bowl=9, super_bowl_loss=9)), 4 * 3 + 4 * 1)
+        self.assertEqual(rules.score(P("T", super_bowl=9, super_bowl_loss=9, playoff_wins=9)), 16)
+        # Roethlisberger's titles: two rings, one lost Super Bowl, thirteen playoff wins
+        self.assertEqual(rules.championship_points(Q(super_bowl=2, super_bowl_loss=1, playoff_wins=13)), 12 + 3 + 13)
+        # championships are not honors, so they never touch the honors byte or the rank tie-break
+        self.assertEqual(rules.honors_points(Q(super_bowl=4, super_bowl_loss=4, playoff_wins=15)), 0)
+        self.assertEqual(rules.honors_count(Q(super_bowl=4, super_bowl_loss=4, playoff_wins=15)), 0)
+
+    def test_milestones_are_for_the_top_volume_only(self):
+        wr = lambda **kw: P("WR", **kw)                                                     # noqa: E731
+        self.assertEqual([rules.milestone_points(Q(passing_touchdowns=n)) for n in (0, 399, 400, 700)], [0, 0, 35, 35])
+        self.assertEqual([rules.milestone_points(wr(receiving_yards=y)) for y in (14999, 15000, 16999, 17000, 22000)], [0, 15, 15, 30, 30])
+        self.assertEqual([rules.milestone_points(wr(receptions=r)) for r in (1299, 1300, 1549)], [0, 10, 10])
+        self.assertEqual(rules.milestone_points(P("TE", receiving_yards=17000, receptions=1300)), 40)
+        for position in ("HB", "FB", "CB", "FS", "OLB", "DE", "DT", "C", "T", "K", "P"):          # nobody else has a milestone
+            self.assertEqual(rules.milestone_points(P(position, passing_touchdowns=500, receiving_yards=20000, receptions=2000)), 0, position)
+        self.assertEqual(rules.milestone_points(Q(receiving_yards=20000, receptions=2000)), 0)    # nor are another group's numbers read
+        self.assertEqual(rules.milestone_points(wr(passing_touchdowns=500)), 0)
+        self.assertEqual(rules.milestone_points(wr(receiving_yards=-20000, receptions=-5)), 0)    # a wrapped signed sum counts as zero
+        # the tiers are the rule's tables, and the checked-in tiers are what the calibration used
+        self.assertEqual(rules.QB_TOUCHDOWN_TIERS, ((400, 35),))
+        self.assertEqual(rules.RECEIVING_YARDS_TIERS, ((15000, 15), (17000, 15)))
+        self.assertEqual(rules.RECEPTION_TIERS, ((1300, 10),))
+
+    def test_the_new_terms_reach_the_coordinators_careers_without_letting_the_peers_through(self):
+        """Roethlisberger and Fitzgerald reach the bar, Eli Manning does not, with or without the two optional counters."""
+
+        self.assertGreaterEqual(rules.score(career("Ben Roethlisberger")), rules.BAR)
+        self.assertGreaterEqual(rules.score(TOOL.live_only(career("Ben Roethlisberger"))), rules.BAR)
+        self.assertGreaterEqual(rules.score(career("Larry Fitzgerald")), rules.BAR)
+        self.assertGreaterEqual(rules.score(TOOL.live_only(career("Larry Fitzgerald"))), rules.BAR)
+        self.assertLess(rules.score(career("Eli Manning")), rules.BAR)
+        for name in ("Jason Witten", "Steve Smith Sr.", "Reggie Wayne", "Anquan Boldin", "Philip Rivers", "Russell Wilson"):
+            self.assertLess(rules.score(career(name)), rules.BAR, name)
 
     def test_caps_and_floors(self):
         self.assertEqual(rules.score(Q(oroy=1, droy=1)), 10)                  # a man is a rookie once
         self.assertEqual(rules.score(Q(oroy=10)), 10)
         self.assertEqual(rules.score(Q(rushing_title=9)), 4 * 15)             # at most four rushing titles count
-        self.assertEqual(rules.score(Q(super_bowl=9)), 4 * 3)                 # and four rings
+        self.assertEqual(rules.score(Q(super_bowl=9)), 4 * 6)                 # and four rings (a quarterback's are worth 6)
+        self.assertEqual(rules.score(P("WR", super_bowl=9)), 4 * 3)
         self.assertEqual([rules.games_points(Q(games=g)) for g in (0, 80, 83, 84, 160, 161, 400)], [0, 0, 0, 1, 20, 20, 20])
         line = rules.Career.from_position("T", games=400)
         self.assertEqual(rules.games_points(line), 35)                        # linemen only
@@ -133,17 +190,37 @@ class ScoreTests(unittest.TestCase):
         for g in range(10):
             c = rules.Career(group=g, **top)
             self.assertEqual(rules.score(c), 0xFFFF)
-            self.assertLess(rules.honors_points(c) + rules.games_points(c) + rules.production_points(c), 2 ** 22)
+            self.assertLess(rules.honors_points(c) + rules.games_points(c) + rules.production_points(c)
+                            + rules.championship_points(c) + rules.milestone_points(c), 2 ** 22)
         self.assertEqual(rules.SCORE_MAX, 0xFFFF)
 
     def test_spot_values_on_real_careers(self):
-        spots = {"Peyton Manning": (351, 20, 25, 396), "Brett Favre": (165, 20, 25, 210), "Kurt Warner": (115, 10, 25, 150),
-                 "Tom Brady": (267, 20, 25, 312), "J.J. Watt": (170, 17, 25, 212), "Joe Thomas": (150, 21, 0, 171),
-                 "Calvin Johnson": (75, 13, 22, 110), "Isaac Bruce": (0, 20, 25, 45), "Shane Lechler": (150, 20, 0, 170),
-                 "Adam Vinatieri": (87, 20, 25, 132)}
-        for name, (honors, games, production, total) in spots.items():
+        # (honors, championships, milestones, games, production, total); the careers are checked by hand against the public record
+        spots = {"Peyton Manning": (345, 32, 35, 20, 25, 457), "Brett Favre": (165, 4, 35, 20, 25, 249), "Kurt Warner": (115, 15, 0, 10, 25, 165),
+                 "Tom Brady": (255, 48, 35, 20, 25, 383), "J.J. Watt": (170, 0, 0, 17, 25, 212), "Joe Thomas": (150, 0, 0, 21, 0, 171),
+                 "Calvin Johnson": (75, 0, 0, 13, 22, 110), "Isaac Bruce": (0, 1, 15, 20, 25, 61), "Shane Lechler": (150, 1, 0, 20, 0, 171),
+                 "Adam Vinatieri": (75, 13, 0, 20, 25, 133), "Ben Roethlisberger": (10, 28, 35, 20, 25, 118),
+                 "Larry Fitzgerald": (25, 1, 40, 20, 25, 111), "Eli Manning": (30, 20, 0, 20, 25, 95), "Drew Brees": (70, 15, 35, 20, 25, 165),
+                 "Philip Rivers": (0, 5, 35, 20, 25, 85), "Tony Gonzalez": (150, 0, 25, 20, 25, 220)}
+        for name, (honors, champs, miles, games, production, total) in spots.items():
             parts = rules.score_parts(career(name))
-            self.assertEqual((parts["honors"], parts["games"], parts["production"], parts["score"]), (honors, games, production, total), name)
+            self.assertEqual((parts["honors"], parts["championships"], parts["milestones"], parts["games"], parts["production"],
+                              parts["score"]), (honors, champs, miles, games, production, total), name)
+            self.assertEqual(honors + champs + miles + games + production, total, name)
+
+    def test_the_hand_checked_titles(self):
+        """The public record behind the championship column: Tom Brady has seven rings (four count), three lost Super Bowls and 35
+        playoff wins (fifteen count); Fitzgerald played one Super Bowl and lost it; Peyton Manning won two and lost two, 14 playoff wins."""
+
+        brady = career("Tom Brady")
+        self.assertEqual((brady.super_bowl, brady.super_bowl_loss, brady.playoff_wins), (7, 3, 35))
+        self.assertEqual(rules.championship_points(brady), 4 * 6 + 3 * 3 + 15)
+        fitz = career("Larry Fitzgerald")
+        self.assertEqual((fitz.super_bowl, fitz.super_bowl_loss, fitz.playoff_wins), (0, 1, 0))
+        manning = career("Peyton Manning")
+        self.assertEqual((manning.super_bowl, manning.super_bowl_loss, manning.playoff_wins), (2, 2, 14))
+        ben = career("Ben Roethlisberger")
+        self.assertEqual((ben.super_bowl, ben.super_bowl_loss, ben.playoff_wins), (2, 1, 13))
 
 
 class NativeParityTests(unittest.TestCase):
@@ -158,7 +235,7 @@ class NativeParityTests(unittest.TestCase):
         for v in a:
             c = rules.Career.from_position(v["position"], **v["fields"])
             self.assertEqual(rules.score(c), v["score"])
-            self.assertEqual(sum(v["parts"][k] for k in ("honors", "games", "production")), v["score"])
+            self.assertEqual(sum(v["parts"][k] for k in ("honors", "games", "production", "championships", "milestones")), v["score"])
 
     def test_history_words_sum_back_to_the_career(self):
         for v in rules.golden_vectors():
@@ -208,6 +285,18 @@ class NativeParityTests(unittest.TestCase):
         self.assertEqual(defined["PTS_ALL_PRO"], rules.POINTS["all_pro"])
         self.assertEqual(defined["CANDIDATE_SLOTS"], 64)
         self.assertEqual(defined["GAMES_CAP_LINEMEN"], 35)
+        self.assertEqual(defined["PLAYOFF_WIN_POINTS"], rules.PLAYOFF_WIN_POINTS)
+        self.assertEqual(defined["PLAYOFF_WIN_CAP"], rules.PLAYOFF_WIN_CAP)
+        for table, name in ((rules.RING_POINTS, "RING_PTS"), (rules.LOSS_POINTS, "LOSS_PTS")):
+            got = [int(x) for x in re.search(r"HOF_%s\[10\] = \{([^}]*)\}" % name, text).group(1).split(",")]
+            self.assertEqual(got, list(table))
+        for tiers, name in ((rules.QB_TOUCHDOWN_TIERS, "QB_TD"), (rules.RECEIVING_YARDS_TIERS, "RECEIVING_YARDS"),
+                            (rules.RECEPTION_TIERS, "RECEPTIONS")):
+            got = [(int(a), int(b)) for a, b in re.findall(r"\{(\d+)u, (\d+)u\}", re.search(r"HOF_%s_TIERS\[\d+\] = \{([^;]*)\};" % name, text).group(1))]
+            self.assertEqual(got, list(tiers))
+            self.assertEqual(defined[f"{name}_TIER_COUNT"], len(tiers))
+        self.assertEqual(rules.RING_POINTS[0], 6)                              # a quarterback's ring is double, everyone else's is 3
+        self.assertEqual(set(rules.RING_POINTS[1:]), {3})
 
 
 # --------------------------------------------------------------------------------------------------------------------
@@ -361,12 +450,13 @@ int main(void) {
             if (scanf("%u", &position) != 1) return 2;
             printf("%u\n", hof_group_of(position));
         } else if (cmd == 1) {
-            HofCareer c; int v[19]; int k;
-            for (k = 0; k < 19; k++) if (scanf("%d", &v[k]) != 1) return 2;
+            HofCareer c; int v[22]; int k;
+            for (k = 0; k < 22; k++) if (scanf("%d", &v[k]) != 1) return 2;
             c.group = (unsigned)v[0]; c.games = v[1]; c.mvp = v[2]; c.opoy = v[3]; c.dpoy = v[4]; c.oroy = v[5]; c.droy = v[6];
             c.super_bowl = v[7]; c.super_bowl_mvp = v[8]; c.all_pro = v[9]; c.rushing_title = v[10]; c.passing_touchdowns = v[11];
             c.rushing_touchdowns = v[12]; c.rushing_yards = v[13]; c.receiving_yards = v[14]; c.receiving_touchdowns = v[15];
             c.sacks_half = v[16]; c.interceptions = v[17]; c.field_goals_made = v[18];
+            c.receptions = v[19]; c.super_bowl_loss = v[20]; c.playoff_wins = v[21];
             printf("%u\n", hof_score(&c));
         } else {
             HofSlot t[HOF_CANDIDATE_SLOTS], c; int i, n, out[HOF_CANDIDATE_SLOTS]; unsigned season;
@@ -420,7 +510,7 @@ class CReferenceTests(unittest.TestCase):
 
     FIELDS = ("games", "mvp", "opoy", "dpoy", "oroy", "droy", "super_bowl", "super_bowl_mvp", "all_pro", "rushing_title",
               "passing_touchdowns", "rushing_touchdowns", "rushing_yards", "receiving_yards", "receiving_touchdowns", "sacks_half",
-              "interceptions", "field_goals_made")
+              "interceptions", "field_goals_made", "receptions", "super_bowl_loss", "playoff_wins")
 
     def test_score_agrees_on_golden_vectors_and_fuzzed_careers(self):
         cases = []
@@ -430,6 +520,12 @@ class CReferenceTests(unittest.TestCase):
         for _ in range(3000):
             scale = rng.choice([3, 12, 400, 5000, 32767])
             kw = {f: rng.randrange(-2, scale) if rng.random() < 0.6 else 0 for f in self.FIELDS}
+            cases.append(rules.Career(group=rng.randrange(10), **kw))
+        for _ in range(1500):                                                       # the milestone tiers: just under, at and over each edge
+            kw = {f: rng.randrange(0, 30) for f in self.FIELDS}
+            kw.update(passing_touchdowns=rng.choice((0, 399, 400, 401, 1200)), receiving_yards=rng.choice((0, 14999, 15000, 16999, 17000, 17001)),
+                      receptions=rng.choice((0, 1299, 1300, 1301)), playoff_wins=rng.choice((0, 14, 15, 16, 60)),
+                      super_bowl=rng.choice((0, 3, 4, 5)), super_bowl_loss=rng.choice((0, 3, 4, 5)))
             cases.append(rules.Career(group=rng.randrange(10), **kw))
         lines = [" ".join(["1", str(c.group)] + [str(getattr(c, f)) for f in self.FIELDS]) for c in cases]
         out = self.run_c("\n".join(lines) + "\n")
@@ -640,6 +736,8 @@ class DatasetTests(unittest.TestCase):
             self.assertIn(f"wiki:{key}", d["sources"])
         self.assertEqual(sum(1 for k in d["sources"] if k.startswith("wiki:allpro_")), 27)
         self.assertEqual(sum(1 for k in d["sources"] if k.startswith("nflverse:stats_player_reg_")), 27)
+        self.assertIn("nflverse:games", d["sources"])                                  # the playoff wins of the quarterbacks
+        self.assertEqual(d["columns"][-2:], ["sbl", "pw"])
 
     def test_pins_in_the_dataset_equal_the_tools_pins(self):
         for key, pin in TOOL.PINS_WIKI.items():
@@ -679,12 +777,15 @@ class DatasetTests(unittest.TestCase):
         labels = checks["pfr_hall_of_fame_flag_vs_wikipedia_list"]
         self.assertEqual((labels["flagged_by_pfr_not_on_the_list"], labels["on_the_list_not_flagged_by_pfr"]), ([], []))
         self.assertEqual(labels["drafted_members_on_both"], 101)
+        # the rings: every Super Bowl MVP since 2000 wears one by the champion rosters, and so does each winning quarterback of the games file
+        self.assertEqual(checks["super_bowl_mvps_vs_champion_rosters"], {"matched": [26, 26], "not_matched": []})
+        self.assertEqual(checks["super_bowl_winning_quarterbacks_vs_champion_rosters"], {"matched": [26, 26], "not_matched": []})
 
     def test_excluded_retirees_cannot_reach_the_floor(self):
         counts = self.data["counts"]
         self.assertEqual(counts["excluded_max_score"], 39)
         self.assertLess(counts["excluded_max_score"], rules.FLOOR)
-        self.assertEqual(counts["retired_2005_2019_excluded"], 5057)
+        self.assertEqual(counts["retired_2005_2019_excluded"], 5052)
         in_range = [r for r in ROWS if 2005 <= r["last"] <= 2019]
         self.assertEqual(len(in_range) + counts["retired_2005_2019_excluded"], 5399)
 
@@ -715,7 +816,7 @@ class CalibrationTests(unittest.TestCase):
         self.assertEqual((e["bar"], e["inductees"], e["notable_non_inductees"]), (100, 55, 239))
         self.assertEqual((e["recall"], e["recall_train"], e["recall_test"]), ((47, 55), (30, 36), (17, 19)))
         self.assertEqual((e["false_positives"], e["false_positives_train"], e["false_positives_test"]), ((12, 239), (5, 126), (7, 113)))
-        self.assertEqual([m[0] for m in e["misses"]], ["Orlando Pace", "Curtis Martin", "John Lynch", "Andre Johnson", "Devin Hester",
+        self.assertEqual([m[0] for m in e["misses"]], ["Orlando Pace", "Curtis Martin", "Devin Hester", "John Lynch", "Andre Johnson",
                                                        "Will Shields", "Bryant Young", "Isaac Bruce"])
         self.assertEqual({m[0] for m in e["false_positive_names"]},
                          {"Shane Lechler", "Kevin Williams", "Jahri Evans", "Priest Holmes", "James Harrison", "NaVorro Bowman",
@@ -725,7 +826,7 @@ class CalibrationTests(unittest.TestCase):
 
     def test_no_other_retiree_passes(self):
         others = [r for r in ROWS if 2005 <= r["last"] <= 2019 and not r["hof"] and not TOOL.is_notable(r)]
-        self.assertEqual(len(others), 48)
+        self.assertEqual(len(others), 53)
         self.assertEqual(sum(rules.score(TOOL.rows_career(r)) >= rules.BAR for r in others), 0)
 
     def test_the_search_code_scores_exactly_like_the_rule(self):
@@ -737,13 +838,24 @@ class CalibrationTests(unittest.TestCase):
         table = TOOL.sensitivity(ROWS)
         base = table[0]
         self.assertEqual((base["recall"], base["fp"]), ((47, 55), (12, 239)))
+        knobs = ("ap", "pcap", "gcap")                      # the weights that matter: All-Pro, the production cap and the games cap
+        new = ("ring_qb", "loss_qb", "pwcap", "td400", "y15", "y17", "r13")
         for row in table[1:]:
-            if row["parameter"] in ("ap", "pcap"):
+            if row["parameter"] in knobs:
                 continue
+            if row["parameter"] in new:                     # the follow-up's weights move nobody across the bar in the real sample
+                self.assertEqual((row["delta_recall"], row["delta_fp"]), (0, 0), row)
             self.assertLessEqual(abs(row["delta_recall"]), 1, row)
-            self.assertLessEqual(abs(row["delta_fp"]), 2, row)
+            self.assertLessEqual(abs(row["delta_fp"]), 1, row)
         ap = [r for r in table if r["parameter"] == "ap"]
         self.assertTrue(any(abs(r["delta_recall"]) >= 5 for r in ap))
+        self.assertEqual({r["parameter"] for r in table[1:]} & set(new), set(new))
+        # the coordinator's careers hold their verdicts for every +/-20 % move, except where Eli Manning (5 under) is pushed onto the bar
+        for row in table:
+            self.assertGreaterEqual(row["cases"]["Ben Roethlisberger"], rules.BAR, row)
+            self.assertGreaterEqual(row["cases"]["Larry Fitzgerald"], rules.BAR, row)
+            if row["parameter"] not in ("sbm", "pcap"):
+                self.assertLess(row["cases"]["Eli Manning"], rules.BAR, row)
 
     def test_the_shipped_set_is_in_the_feasible_region_of_the_search(self):
         try:
@@ -763,8 +875,8 @@ class ReplayTests(unittest.TestCase):
         out = TOOL.real_replay(ROWS, 2010, 2026)
         self.assertEqual(sorted(out["classes"]), list(range(2010, 2027)))
         self.assertTrue(all(2 <= len(v) <= 5 for v in out["classes"].values()), out["sizes"])
-        self.assertEqual(out["sizes"], {2: 3, 3: 1, 4: 6, 5: 7})
-        self.assertEqual((out["inductees"], out["real_members"]), (68, 52))
+        self.assertEqual(out["sizes"], {2: 3, 4: 7, 5: 7})
+        self.assertEqual((out["inductees"], out["real_members"]), (69, 54))
 
     def test_a_class_is_the_same_whatever_year_the_caller_starts_at(self):
         a = TOOL.real_replay(ROWS, 2010, 2026)["classes"]
@@ -775,28 +887,39 @@ class ReplayTests(unittest.TestCase):
     def test_a_few_real_classes(self):
         classes = TOOL.real_replay(ROWS, 2010, 2026)["classes"]
         names = lambda y: [r["name"] for r in classes[y]]                      # noqa: E731
-        self.assertEqual(names(2018), ["Ray Lewis", "Brian Urlacher", "Randy Moss", "Steve Hutchinson", "Ronde Barber"])
+        self.assertEqual(names(2018), ["Ray Lewis", "Randy Moss", "Brian Urlacher", "Steve Hutchinson", "Ronde Barber"])
         self.assertEqual(names(2021)[0], "Peyton Manning")
         self.assertEqual(names(2025)[:2], ["Luke Kuechly", "Adam Vinatieri"])
         self.assertEqual(names(2026)[0], "Drew Brees")
+        self.assertIn("Larry Fitzgerald", names(2026))                         # 70 points before the follow-up, 111 now: the Class of 2026
 
     def test_franchise_classes_from_the_real_retirees_nobody_has_judged(self):
-        out = TOOL.franchise_replay(ROWS, 2036)
+        out = TOOL.franchise_replay(ROWS, 2036, ROSTER)
         names = lambda y: [r["name"] for r in out["classes"][y]]               # noqa: E731
-        self.assertEqual(names(2027), ["Adrian Peterson", "Rob Gronkowski", "Antonio Brown", "Richard Sherman", "Cam Newton"])
-        self.assertEqual(names(2028), ["Tom Brady", "J.J. Watt", "Ndamukong Suh", "Matt Ryan"])
+        self.assertEqual(names(2027), ["Adrian Peterson", "Rob Gronkowski", "Antonio Brown", "Cam Newton", "Richard Sherman"])
+        self.assertEqual(names(2028), ["Tom Brady", "J.J. Watt", "Ndamukong Suh", "Matt Ryan", "Ben Roethlisberger"])
         for y in range(2027, 2032):
             self.assertTrue(2 <= len(names(y)) <= 5, y)
         all_names = {n for y in out["classes"] for n in names(y)}
         self.assertNotIn("Aaron Donald", all_names)                           # he has a 2026 roster row (ACT): not retired
+        for on_the_roster in ("Bobby Wagner", "Tyreek Hill", "DeAndre Hopkins", "Justin Tucker", "Ezekiel Elliott"):
+            self.assertNotIn(on_the_roster, all_names)                         # they play in the game: never also inducted from the seeds
+        self.assertIn("Philip Rivers", names(2034))                            # the one inferred retirement left, filling a floor class
         self.assertTrue(all(not r["hof"] and r["last"] >= TOOL.SEED_FIRST_RETIRED for v in out["classes"].values() for r in v))
         self.assertEqual(out["left"], [])
+        self.assertEqual(out["seeds"], len([r for r in ROWS if r["last"] >= 2021 and not r["hof"] and not r["active"]]) - 26)
+
+    def test_without_the_roster_check_the_game_players_would_be_seeded_twice(self):
+        out = TOOL.franchise_replay(ROWS, 2036)
+        all_names = {r["name"] for v in out["classes"].values() for r in v}
+        self.assertTrue({"Bobby Wagner", "Tyreek Hill", "Justin Tucker"} <= all_names)
+        self.assertEqual(out["seeds"] - TOOL.franchise_replay(ROWS, 2036, ROSTER)["seeds"], 26)
 
     def test_seed_candidates(self):
-        doc = TOOL.seed_document(ROWS)
+        doc = TOOL.seed_document(ROWS, ROSTER)
         self.assertEqual(doc["schema"], "nfl2k5_hof_candidates/v1")
         self.assertEqual(doc["count"], len(doc["candidates"]))
-        self.assertEqual(doc["count"], 27)
+        self.assertEqual(doc["count"], 25)
         self.assertLessEqual(doc["count"], rules.CANDIDATE_SLOTS)
         names = [c["name"] for c in doc["candidates"]]
         self.assertEqual(len(names), len(set(names)))
@@ -809,18 +932,150 @@ class ReplayTests(unittest.TestCase):
             entry = rules.candidate_from_bytes(bytes.fromhex(c["candidate_hex"]))
             self.assertEqual((entry.score, entry.retired, entry.flags & 3), (c["score"], c["retired"], 3))
             self.assertEqual(entry.club, c["club_index"])
+            self.assertEqual(sum(c["parts"][k] for k in ("honors", "games", "production", "championships", "milestones")), c["score"])
         brady = next(c for c in doc["candidates"] if c["name"] == "Tom Brady")
-        self.assertEqual((brady["eligible_class"], brady["score"], brady["club"]), (2028, 312, "Buccaneers"))
+        self.assertEqual((brady["eligible_class"], brady["score"], brady["club"]), (2028, 383, "Buccaneers"))
+        self.assertEqual((brady["super_bowls"], brady["super_bowls_lost"], brady["playoff_wins"]), (7, 3, 35))
+        ben = next(c for c in doc["candidates"] if c["name"] == "Ben Roethlisberger")
+        self.assertEqual((ben["score"], ben["eligible_class"], ben["parts"]["championships"], ben["parts"]["milestones"]), (118, 2027, 28, 35))
+
+    def test_nobody_on_the_game_roster_is_seeded_and_the_inferred_retirements_are_marked(self):
+        doc = TOOL.seed_document(ROWS, ROSTER)
+        seeded = {(TOOL.norm_name(c["name"]), c["birth_date"]) for c in doc["candidates"]}
+        for e in ROSTER["on_roster"] + ROSTER["name_only"]:
+            self.assertNotIn((TOOL.norm_name(e["name"]), e["birth_date"] or ""), seeded, e["name"])
+        removed = {r["name"]: r for r in doc["removed_by_roster_check"]}
+        # the three retirements phase 1 inferred (last played 2025, no 2026 roster row) are all players on the game roster: out, and said so
+        for name in ("Bobby Wagner", "Tyreek Hill", "DeAndre Hopkins"):
+            self.assertIn(name, removed)
+            self.assertFalse(removed[name]["retirement_confirmed"], name)
+            self.assertIn("INFERRED", removed[name]["retirement"])
+            self.assertIn("game roster", removed[name]["why_removed"])
+        for name in ("Justin Tucker", "Ezekiel Elliott"):                       # confirmed retirements (2024), still on the roster
+            self.assertTrue(removed[name]["retirement_confirmed"], name)
+        self.assertEqual(sorted(removed), ["Bobby Wagner", "DeAndre Hopkins", "Ezekiel Elliott", "Justin Tucker", "Tyreek Hill"])
+        # what stays inferred is flagged on the seed itself and in the top-level lists
+        self.assertEqual(doc["inferred_retirements"], ["Philip Rivers"])
+        for c in doc["candidates"]:
+            self.assertEqual(c["retirement_confirmed"], c["retired"] <= TOOL.LAST_CONFIRMED_SEASON, c["name"])
+            self.assertEqual(c["retirement"].startswith("INFERRED"), not c["retirement_confirmed"], c["name"])
+        self.assertTrue(any("INFERRED" in w and "Philip Rivers" in w for w in doc["warnings"]))
+        self.assertNotIn("Aaron Donald", {c["name"] for c in doc["candidates"]} | set(removed))   # ACT on the 2026 roster, not retired
+        self.assertEqual(doc["roster_check"]["counts"], {"on_roster": 26, "name_only": 0, "other_birth_date": 1})
+
+    def test_the_seeds_without_a_roster_check_say_so(self):
+        doc = TOOL.seed_document(ROWS)
+        self.assertEqual(doc["count"], 30)
+        self.assertIsNone(doc["roster_check"])
+        self.assertEqual(doc["removed_by_roster_check"], [])
+        self.assertTrue(any("No roster check" in w for w in doc["warnings"]))
+        self.assertEqual(doc["inferred_retirements"], ["Bobby Wagner", "Tyreek Hill", "DeAndre Hopkins", "Philip Rivers"])
 
     def test_checked_in_candidates_file_matches_the_tool(self):
         path = ROOT / "data" / "nfl2k5_hof_candidates_2026.json"
-        self.assertEqual(json.loads(path.read_text(encoding="utf-8")), json.loads(json.dumps(TOOL.seed_document(ROWS))))
+        self.assertEqual(json.loads(path.read_text(encoding="utf-8")), json.loads(json.dumps(TOOL.seed_document(ROWS, ROSTER))))
 
     def test_seeds_fit_the_table_with_room_for_the_next_retirees(self):
         table = rules.empty_table()
-        for c in TOOL.seed_document(ROWS)["candidates"]:
+        for c in TOOL.seed_document(ROWS, ROSTER)["candidates"]:
             self.assertEqual(rules.admit(table, rules.candidate_from_bytes(bytes.fromhex(c["candidate_hex"]))), "added")
         self.assertLessEqual(sum(x is not None for x in table), rules.CANDIDATE_SLOTS - 30)         # room for 30 more
+
+
+class RosterCheckTests(unittest.TestCase):
+    """Dedupe the seeds against the game roster by name and birth date (the follow-up): the matcher, the checked-in result, the disc read."""
+
+    @staticmethod
+    def row(name, born, last=2024, **kw):
+        base = dict(ROWS[0])
+        base.update(name=name, birth=born, last=last, hof=0, active=0, gsis="00-" + name.replace(" ", "")[:6])
+        base.update(kw)
+        return base
+
+    def test_the_same_name_and_birth_date_is_the_same_man(self):
+        rows = [self.row("Justin Tucker", "1989-11-21"), self.row("Tyler Lockett", "1992-09-28"), self.row("Nobody Here", "1990-01-01")]
+        found = TOOL.match_roster(rows, [("Justin", "Tucker", "1989-11-21"), ("Tyler", "Lockett", "1992-09-28"), ("Other", "Man", "1990-01-01")])
+        self.assertEqual([e["name"] for e in found["on_roster"]], ["Justin Tucker", "Tyler Lockett"])
+        self.assertEqual((found["name_only"], found["other_birth_date"]), ([], []))
+
+    def test_the_same_name_with_another_birth_date_is_another_man(self):
+        found = TOOL.match_roster([self.row("A.J. Green", "1988-07-31", last=2022)], [("A.J.", "Green", "1998-06-09")])
+        self.assertEqual(found["on_roster"], [])
+        self.assertEqual(found["other_birth_date"][0]["roster_birth_dates"], ["1998-06-09"])
+        self.assertEqual(TOOL.roster_keys({"on_roster": found["on_roster"], "name_only": found["name_only"]}), set())    # so he stays seeded
+
+    def test_a_missing_birth_date_on_either_side_cannot_be_told_apart_and_counts_as_the_same_man(self):
+        found = TOOL.match_roster([self.row("Some Player", "1990-02-02")], [("Some", "Player", "")])
+        self.assertEqual([e["name"] for e in found["name_only"]], ["Some Player"])
+        found = TOOL.match_roster([self.row("Some Player", "")], [("Some", "Player", "1990-02-02")])
+        self.assertEqual([e["name"] for e in found["name_only"]], ["Some Player"])
+        keys = TOOL.roster_keys({"on_roster": [], "name_only": found["name_only"]})
+        self.assertTrue(TOOL.on_roster(self.row("Some Player", ""), keys))
+        # two roster men with the name: one with a different date, one without: still not told apart
+        found = TOOL.match_roster([self.row("Some Player", "1990-02-02")], [("Some", "Player", "1999-09-09"), ("Some", "Player", "")])
+        self.assertEqual(len(found["name_only"]), 1)
+
+    def test_names_match_the_way_the_rest_of_the_tool_matches_them(self):
+        found = TOOL.match_roster([self.row("Odell Beckham Jr.", "1992-11-05"), self.row("T.J. Watt", "1994-10-11")],
+                                  [("Odell", "Beckham", "1992-11-05"), ("T. J.", "Watt", "1994-10-11")])
+        self.assertEqual(len(found["on_roster"]), 2)
+
+    def test_real_hall_of_famers_and_old_retirees_are_not_checked(self):
+        rows = [self.row("Tom Brady", "1977-08-03", last=2022, hof=2038), self.row("Old Timer", "1970-01-01", last=2019)]
+        found = TOOL.match_roster(rows, [("Tom", "Brady", "1977-08-03"), ("Old", "Timer", "1970-01-01")])
+        self.assertEqual({k: v for k, v in found.items()}, {"on_roster": [], "name_only": [], "other_birth_date": []})
+
+    def test_the_checked_in_result(self):
+        r = ROSTER
+        self.assertEqual(r["schema"], "nfl2k5_hof_roster_check/v1")
+        self.assertIn("CC-BY-4.0", r["attribution"])
+        self.assertEqual(r["counts"], {k: len(r[k]) for k in ("on_roster", "name_only", "other_birth_date")})
+        self.assertEqual(r["counts"], {"on_roster": 26, "name_only": 0, "other_birth_date": 1})
+        self.assertEqual(r["roster"]["players"], 4164)
+        self.assertRegex(r["roster"]["resource_sha256"], r"^[0-9a-f]{64}$")
+        self.assertTrue(r["roster"]["image"].endswith(".xiso.iso") and "/" not in r["roster"]["image"])
+        self.assertEqual(r["retirees_checked"], len([x for x in ROWS if x["last"] >= TOOL.SEED_FIRST_RETIRED and not x["hof"]]))
+        by_gsis = {x["gsis"]: x for x in ROWS if x["gsis"]}
+        for e in r["on_roster"]:
+            row = by_gsis[e["gsis_id"]]
+            self.assertEqual((row["name"], row["birth"], row["last"]), (e["name"], e["birth_date"], e["retired"]))
+            self.assertGreaterEqual(e["retired"], TOOL.SEED_FIRST_RETIRED)
+            self.assertEqual(row["hof"], 0)
+        green = r["other_birth_date"][0]
+        self.assertEqual((green["name"], green["birth_date"], green["roster_birth_dates"]), ("A.J. Green", "1988-07-31", ["1998-06-09"]))
+        names = {e["name"] for e in r["on_roster"]}
+        self.assertTrue({"Bobby Wagner", "Tyreek Hill", "DeAndre Hopkins", "Justin Tucker", "Ezekiel Elliott"} <= names)
+        self.assertNotIn("Aaron Donald", names)                                # he is active, so he is not in the dataset at all
+
+    def test_the_matcher_reproduces_the_checked_in_result_from_its_own_entries(self):
+        players = [(e["name"], "", e["birth_date"] or "") for e in ROSTER["on_roster"]]
+        players.append(("A.J.", "Green", ROSTER["other_birth_date"][0]["roster_birth_dates"][0]))
+        doc = TOOL.roster_check_document(ROWS, {"players": players, "sha256": ROSTER["roster"]["resource_sha256"],
+                                                "bytes": ROSTER["roster"]["resource_bytes"]}, ROSTER["roster"]["image"])
+        for key in ("on_roster", "name_only", "other_birth_date", "counts", "retirees_checked", "rule", "schema"):
+            self.assertEqual(doc[key], ROSTER[key], key)
+
+    def test_a_file_of_another_schema_is_refused(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "x.json"
+            path.write_text(json.dumps({"schema": "something/else"}), encoding="utf-8", newline="\n")
+            with self.assertRaises(TOOL.CalibrationError):
+                TOOL.load_roster_check(path)
+
+    def test_the_command_line_needs_the_check_or_an_explicit_choice_not_to_use_it(self):
+        with tempfile.TemporaryDirectory() as folder:
+            out = Path(folder) / "seeds.json"
+            code = run_cli("candidates", "--out", str(out), "--no-roster-check")
+            self.assertEqual(code[0], 0)
+            self.assertEqual(json.loads(out.read_text(encoding="utf-8"))["count"], 30)
+            self.assertEqual(json.loads(out.read_text(encoding="utf-8"))["roster_check"], None)
+
+    @unittest.skipUnless(os.environ.get("B780_HOF_DISC"), "set B780_HOF_DISC to a built disc image (read only) to re-read the roster")
+    def test_the_checked_in_result_is_what_the_disc_roster_gives(self):
+        roster = TOOL.read_game_roster(os.environ["B780_HOF_DISC"])
+        self.assertEqual(roster["sha256"], ROSTER["roster"]["resource_sha256"])
+        doc = TOOL.roster_check_document(ROWS, roster, ROSTER["roster"]["image"])
+        self.assertEqual(doc, ROSTER)
 
 
 # --------------------------------------------------------------------------------------------------------------------
@@ -981,21 +1236,35 @@ class ParserTests(unittest.TestCase):
 
 class ToolTests(unittest.TestCase):
     def run_cli(self, *argv):
-        out = io.StringIO()
-        with redirect_stdout(out):
-            code = TOOL.main(list(argv))
-        return code, out.getvalue()
+        return run_cli(*argv)
 
     def test_evaluate_and_replay_commands(self):
         code, text = self.run_cli("evaluate")
         self.assertEqual(code, 0)
         self.assertIn("inductees that pass: 47/55 = 85.5%", text)
         self.assertIn("notable non-inductees that pass: 12/239 = 5.0%", text)
+        self.assertIn("retired 2005-2020: 57 real inductees, 262 notable non-inductees", text)          # the extended range
+        self.assertIn("inductees that pass: 49/57 = 86.0%", text)
+        self.assertIn("notable non-inductees that pass: 14/262 = 5.3%", text)
+        self.assertIn("Ben Roethlisberger (QB, retired 2021): 118 = 10 + 20 + 25 + 28 + 35; live-only 102", text)
+        self.assertIn("Larry Fitzgerald (WR, retired 2020, real 2026): 111 = 25 + 20 + 25 + 1 + 40; live-only 110", text)
+        self.assertIn("Eli Manning (QB, retired 2019): 95 = 30 + 20 + 25 + 20 + 0; live-only 87", text)
         code, text = self.run_cli("replay", "--from", "2024", "--to", "2026")
         self.assertEqual(code, 0)
-        self.assertIn("2026 [3] Drew Brees", text)
+        self.assertIn("2026 [4] Drew Brees", text)
+        self.assertIn("Larry Fitzgerald (WR, retired 2020, 111, real 2026)", text)
         code, text = self.run_cli("franchise", "--to", "2029")
-        self.assertIn("2028 [4] Tom Brady", text)
+        self.assertIn("2028 [5] Tom Brady", text)
+        self.assertIn("Ben Roethlisberger (QB, retired 2021, 118)", text)
+        self.assertIn("seeds 97", text)
+        code, text = self.run_cli("franchise", "--to", "2029", "--no-roster-check")
+        self.assertIn("seeds 123", text)
+
+    def test_roster_check_refuses_a_missing_image(self):
+        with tempfile.TemporaryDirectory() as folder:
+            code, _text = self.run_cli("roster-check", "--image", str(Path(folder) / "none.iso"), "--out", str(Path(folder) / "x.json"))
+            self.assertEqual(code, 2)
+            self.assertFalse((Path(folder) / "x.json").exists())
 
     def test_candidates_command_is_deterministic(self):
         with tempfile.TemporaryDirectory() as folder:
@@ -1029,9 +1298,13 @@ class ToolTests(unittest.TestCase):
 class SimProxyTests(unittest.TestCase):
     def test_franchise_career_regime(self):
         out = TOOL.sim_proxy(Path(os.environ["B780_HN1_RUNS"]))
-        self.assertEqual({n: (v["at_bar"], v["at_floor"]) for n, v in out.items()}, {5: (4, 10), 8: (11, 21), 10: (15, 30)})
-        self.assertEqual(set(out[10]["production_scale"].values()) - {14, 15}, set())
-        self.assertEqual(out[10]["production_scale"]["rushing x1.3"], 15)
+        self.assertEqual({n: (v["at_bar"], v["at_floor"]) for n, v in out.items()}, {5: (4, 10), 8: (12, 21), 10: (17, 30)})
+        # without the lost Super Bowls (the franchise reads 0 for that counter today) it is one fewer at 8 and at 10 seasons
+        self.assertEqual({n: (v["at_bar_live_only"], v["at_floor_live_only"]) for n, v in out.items()}, {5: (4, 10), 8: (11, 21), 10: (16, 30)})
+        self.assertEqual(set(out[10]["production_scale"].values()) - {15, 17}, set())
+        self.assertEqual(out[10]["production_scale"]["rushing x1.3"], 17)
+        self.assertEqual(out[10]["production_scale"]["all production x0.5"], 15)
+        self.assertEqual(out[10]["by_group"]["QB"], 6)
 
 
 @unittest.skipUnless(os.environ.get("B780_HOF_CACHE"), "set B780_HOF_CACHE to a folder filled by `b780_hof_calibrate.py fetch`")
