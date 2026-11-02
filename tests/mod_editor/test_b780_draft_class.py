@@ -187,6 +187,17 @@ class BuildPathTests(unittest.TestCase):
         result, _ = self._write(returner_fix=True)
         self.assertEqual((result["draft_ai"], result["draft_class"]), ("retail", "retail"))
 
+    def test_other_bytes_at_the_class_sites_never_stop_the_draft_ai(self):
+        # A foreign patch (here the synthetic test image, which has no class sites) keeps the build going: the draft AI
+        # installs and the receipt says the class fix was skipped.
+        from mod_editor.core import nfl2k5_throw_tuning as tt
+        from tests.nfl2k5_throw_tuning_test import _build_synthetic_xbe
+        patched, receipt = tt._apply_all(_build_synthetic_xbe(), None, False, draft_ai=True)
+        self.assertEqual(ai.status(patched), "applied")
+        self.assertEqual(draft_class.status(patched), "foreign")
+        self.assertEqual(receipt["draft_class_patch"], {"skipped": True, "status": "foreign",
+                                                       "reason": "the draft class sites hold other bytes"})
+
 
 @unittest.skipUnless(HAVE_UC, "Unicorn is not installed")
 class NativeClassTurnoverTests(unittest.TestCase):

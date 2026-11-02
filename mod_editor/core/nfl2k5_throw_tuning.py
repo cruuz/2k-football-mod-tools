@@ -2198,7 +2198,6 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
     for flag, module, key, label in ((returner_fix, returner_fix_patch, "returner_fix_patch", "returner"),
                                      (progression, progression_patch, "progression_patch", "progression"),
                                      (franchise_economy, franchise_economy_patch, "franchise_economy_patch", franchise_economy_patch.BUILD_CAPTION),
-                                     (draft_ai, draft_class_patch, "draft_class_patch", draft_class_patch.BUILD_CAPTION),  # b780 b1-draft
                                      (scheme_labels, scheme_labels_patch, "scheme_labels_patch", "scheme-label"),
                                      (widescreen, widescreen_patch, "widescreen_patch", "widescreen"),
                                      (modern_naming, modern_naming_patch, "modern_naming_patch", "modern 2K mode names"),
@@ -2249,6 +2248,21 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
         else:
             _require(state == "applied", f"{label} sites are {state}; refusing to patch")
             receipt = {**receipt, key: {"already_applied": True}}
+    if draft_ai:
+        # b780 b1-draft (row B1): the class half of the draft fixes, economy revision 4's class sites (create vacancies
+        # kept, every class from the position mix). With the economy on, the economy installed the same bytes above.
+        # It never refuses the build: on an executable whose class sites hold other bytes (a foreign patch, a synthetic
+        # test image) the draft AI still installs, and the receipt and the report say the class fix is not there.
+        state = draft_class_patch.status(patched)
+        if state == "retail":
+            patched, class_receipt = draft_class_patch.apply(patched)
+            receipt = {**receipt, "draft_class_patch": class_receipt,
+                       "changed_byte_count": int(receipt.get("changed_byte_count", 0)) + int(class_receipt["changed_bytes"])}
+        elif state == "applied":
+            receipt = {**receipt, "draft_class_patch": {"already_applied": True}}
+        else:
+            receipt = {**receipt, "draft_class_patch": {"skipped": True, "status": state,
+                                                        "reason": "the draft class sites hold other bytes"}}
     if practice_squad and franchise_practice:
         # practice-only reserve staging (beta 61): reserves join the disposable practice roster; needs both patches above
         state = practice_reserves_patch.status(patched)
