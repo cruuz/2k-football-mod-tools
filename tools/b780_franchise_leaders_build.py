@@ -189,7 +189,7 @@ ABBR = {
     "STL": [_a("ARI", 1960, 1987), _a("LAR", 1995, 2015)], "ATL": [_a("ATL")],
     "BAL": [_a("IND", 1953, 1983), _a("BAL", 1996)], "BLC": [_a("IND")], "BLT": [_a("BAL")], "RAV": [_a("BAL")],
     "BUF": [_a("BUF")], "CAR": [_a("CAR")], "CHI": [_a("CHI")], "CIN": [_a("CIN")], "CLE": [_a("CLE")], "CLV": [_a("CLE")],
-    "DAL": [_a("DAL")], "DEN": [_a("DEN")], "DET": [_a("DET")], "GB": [_a("GB")], "GNB": [_a("GB")],
+    "DAL": [(None, 1960, 1962), _a("DAL", 1963)], "DTX": [_a("KC")], "DEN": [_a("DEN")], "DET": [_a("DET")], "GB": [_a("GB")], "GNB": [_a("GB")],
     "HOU": [_a("TEN", 1960, 1996), _a("HOU", 2002)], "HST": [_a("HOU")], "IND": [_a("IND", 1984)], "TEN": [_a("TEN", 1997)],
     "OTI": [_a("TEN", 1997)], "HOI": [_a("TEN")], "JAX": [_a("JAX")], "JAC": [_a("JAX")],
     "KC": [_a("KC")], "KAN": [_a("KC")], "DLT": [_a("KC")],
@@ -201,6 +201,7 @@ ABBR = {
     "SF": [_a("SF")], "SFO": [_a("SF")], "SEA": [_a("SEA")], "TB": [_a("TB")], "TAM": [_a("TB")],
     "WAS": [_a("WAS")], "WSH": [_a("WAS")],
 }
+AMBIGUOUS_SETS = {"LA": {"LAR", "LV"}, "DAL": {"DAL", "KC"}}      # who an ambiguous cell may be (the Rams or the Raiders, 1982-94; the Cowboys or the Texans, 1960-62)
 NICK = {
     "cardinals": "ARI", "falcons": "ATL", "ravens": "BAL", "bills": "BUF", "panthers": "CAR", "bears": "CHI", "bengals": "CIN",
     "browns": "CLE", "cowboys": "DAL", "broncos": "DEN", "lions": "DET", "packers": "GB", "texans": "HOU", "colts": "IND",
@@ -485,10 +486,11 @@ def player_tables(source):
     return out
 
 
-def club_sums(source, club: str, through: int = THROUGH):
+def club_sums(source, club: str, through: int = THROUGH, guide_years=None):
     """Regular-season stat rows of a player article (HTML or its tables) that belong to `club` -> sums, per-season values, seasons seen
-    (sacks are returned in half sacks).  A team cell that is ambiguous that year ("LA" 1982-94: Rams or Raiders) counts for `club`
-    only when every unambiguous row of the player is `club`'s."""
+    (sacks are returned in half sacks).  A team cell that is ambiguous that year ("LA" 1982-94: Rams or Raiders; "DAL" 1960-62: Cowboys or
+    Texans) counts for `club` when the club's printed seasons include that year, or else when the player's clear rows name `club` and not
+    the other club of the pair.  Only identity is decided this way; the values are still checked against the sources."""
     parsed, others, amb = [], set(), 0
     for t in player_tables(source):
         if t["post"]:
@@ -512,13 +514,15 @@ def club_sums(source, club: str, through: int = THROUGH):
                     v = num(r[cm[cat]])
                     if v is not None:
                         vals[cat] = v * SCALE.get(cat, 1)
-            parsed.append((who, yr, vals))
-    ambiguous_is_ours = others == {club}
+            key = re.sub(r"[^A-Za-z0-9]", "", r[cm["team"]]).upper()
+            parsed.append((who, yr, vals, key))
     rows, years = {}, set()
-    for who, yr, vals in parsed:
+    for who, yr, vals, key in parsed:
         if who == "AMBIG":
             amb += 1
-            if not ambiguous_is_ours:
+            pair = AMBIGUOUS_SETS.get(key, set())
+            ours = club in pair and ((guide_years and yr in guide_years) or (club in others and not ((pair - {club}) & others)))
+            if not ours:
                 continue
         elif who != club:
             continue
@@ -555,6 +559,18 @@ def infobox_position(source):
             if len(r) >= 2 and r[0].strip().lower().rstrip(":") in ("position", "positions", "position(s)"):
                 return r[1]
     return None
+
+
+def football_links(html: str):
+    """titles the entries of a disambiguation page link to, for the entries that say football"""
+    out = []
+    for li in re.findall(r"<li\b[^>]*>(.*?)</li>", html, re.S | re.I):
+        if "football" not in li.lower():
+            continue
+        m = re.search(r'<a\b[^>]*\btitle="([^"]+)"', li)
+        if m and m.group(1) not in out:
+            out.append(m.group(1).replace("&amp;", "&").replace("&#39;", "'"))
+    return out[:8]
 
 
 class Wiki:
@@ -607,14 +623,15 @@ class Wiki:
             if "html" in out:                                   # an older cache entry: keep the tables, drop the page text
                 out["tables"] = html_tables(out.pop("html"))
                 p.write_text(json.dumps(out), encoding="utf-8")
-            return out
+            if not (out.get("disambiguation") and "football_links" not in out):      # an older disambiguation entry is fetched again for its links
+                return out
         url = "https://en.wikipedia.org/w/index.php?" + urllib.parse.urlencode({"title": title.replace(" ", "_"), "action": "render"})
         status, html = self._get(url)
         today = time.strftime("%Y-%m-%d", time.gmtime())
         if status == 404 or not html:
             out = {"title": title, "missing": True, "retrieved": today}
         elif 'id="disambigbox"' in html or "dmbox-disambig" in html:
-            out = {"title": title, "missing": True, "disambiguation": True, "retrieved": today}
+            out = {"title": title, "missing": True, "disambiguation": True, "retrieved": today, "football_links": football_links(html)}
         else:
             out = {"title": title, "revid": None, "tables": html_tables(html), "retrieved": today}
         p.write_text(json.dumps(out), encoding="utf-8")
@@ -664,9 +681,17 @@ def title_candidates(name: str, cats=()):
     plain = "".join(c for c in unicodedata.normalize("NFKD", base) if not unicodedata.combining(c))
     suffixes = ["American football"] + [x for c in sorted(cats) for x in SUFFIX_HINT.get(c, [])]
     suffixes += [x for x in POS_SUFFIX if x not in suffixes][:3]
+    bases = [base, plain]
+    stripped = re.sub(r"\s+(?:Jr|Sr|II|III|IV)\.?$", "", plain).strip()
+    if stripped != plain:
+        bases.append(stripped)                                           # "Chris Godwin Jr." is the article "Chris Godwin"
+    else:
+        bases += [plain + " Sr.", plain + " Jr."]                       # "James Wilder" is the article "James Wilder Sr."
     out = []
-    for b in dict.fromkeys([base, plain]):
+    for b in dict.fromkeys(bases):
         out.append(b)
+        if b in (plain + " Sr.", plain + " Jr."):
+            continue
         out += [f"{b} ({x})" for x in dict.fromkeys(suffixes)]
     return list(dict.fromkeys(out))
 
@@ -804,12 +829,14 @@ class NFLverse:
 
 # ------------------------------------------------------------------------------------------------ the decision
 def tolerance(cat: str, v: float) -> float:
-    """how far play-by-play derived nflverse totals may sit from the official number before they count as contradicting it"""
+    """how far play-by-play derived nflverse totals may sit from the official number before they count as contradicting it.
+    Measured on the rows where the guide equals Wikipedia exactly (section 4 of the report): counts are exact or 1 to 3 off, yards up to
+    0.8 percent (career) and 1.2 percent (a season: Drew Brees 2011, nflverse 5,535, official 5,476), sacks up to 4 sacks."""
     if cat in ("passing_yards", "rushing_yards", "receiving_yards"):
-        return max(25.0, 0.006 * v)
+        return max(30.0, 0.015 * v)
     if cat == "sacks_half":
-        return max(5.0, 0.03 * v)
-    return max(2.0, 0.01 * v)
+        return max(8.0, 0.04 * v)
+    return max(3.0, 0.015 * v)
 
 
 def nv_status(cat: str, v1: float, nv_value, covered: bool) -> str:
@@ -1018,13 +1045,19 @@ def resolve_wikipedia(wiki: Wiki, need: dict, cache_file: Path) -> dict:
     def one(item):
         club, name, info = item
         try:
-            for cand in title_candidates(name, info["cats"]):
-                if known.get(cand) is False:
+            queue = list(title_candidates(name, info["cats"]))
+            seen = set()
+            while queue:
+                cand = queue.pop(0)
+                if cand in seen or known.get(cand) is False:
                     continue
+                seen.add(cand)
                 pg = wiki.page(cand)
                 if pg.get("missing"):
+                    if pg.get("disambiguation"):
+                        queue += [t for t in pg.get("football_links", []) if t not in seen][:6]       # the football entries of a disambiguation page
                     continue
-                r = club_sums(pg["tables"], club)
+                r = club_sums(pg["tables"], club, guide_years=info["years"])
                 if years_overlap_ok(r["years"], info["years"]):
                     return f"{club}|{name}", {"title": cand, "retrieved": pg["retrieved"], "sums": r["sums"], "seasons": r["seasons"],
                                               "years": r["years"], "ambiguous": r["ambiguous"], "position_text": infobox_position(pg["tables"])}
@@ -1128,6 +1161,11 @@ def cmd_import_guides(args) -> int:
     return 1 if bad else 0
 
 
+def short_note(text: str, limit: int = 220) -> str:
+    text = re.sub(r"\s+", " ", text).strip().replace("\u2014", "-").replace("\u2013", "-")
+    return text if len(text) <= limit else text[:limit].rsplit(" ", 1)[0] + " ..."
+
+
 def dumps_by_line(obj: dict) -> str:
     """compact JSON with every element of a top-level list of objects on its own line (diffable, still plain JSON)"""
     out = ["{"]
@@ -1212,7 +1250,9 @@ def cmd_build(args) -> int:
                 pid = nv.find(club, r["name"], ys) if cat != "tackles" else None
                 c = {"club": club, "scope": scope, "category": cat, "variant": variant, "rank": rk, "order": order, "name": r["name"], "years": r["years"],
                      "value": v1, "kind": lst["kind"], "complete_to": lst.get("complete_to") or len(lst["rows"]),
-                     "list_note": lst["scope_note"][:160], "guide": {"page": lst["pdf_page"], "title": lst["title"], "raw": r["raw"]}}
+                     "guide": {"page": lst["pdf_page"], "title": lst["title"], "raw": r["raw"]}}
+                if cat in ("sacks_half", "tackles"):
+                    c["list_note"] = short_note(lst["scope_note"])        # official or unofficial counting matters for these two
                 if r.get("tie"):
                     c["tie"] = True
                 if r.get("uncertain"):

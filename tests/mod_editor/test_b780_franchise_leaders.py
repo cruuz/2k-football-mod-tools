@@ -56,6 +56,15 @@ class Helpers(unittest.TestCase):
         self.assertEqual(B.game_date("11/20/77")[1], 1977)
         self.assertEqual(B.game_date("1998"), (None, 1998))
 
+    def test_the_arena_order_is_the_games_team_table(self):
+        from mod_editor.core import nfl2k5_champions_history as ch
+        for i, code in enumerate(B.ARENA_ORDER):
+            nickname = ch.FRANCHISE.get(B.CLUBS[code][0].split()[-1], B.CLUBS[code][0].split()[-1])
+            if code == "SF":
+                nickname = "49ers"
+            self.assertEqual(ch.CLUBS[i], nickname, code)
+        self.assertEqual(sorted(B.ARENA_ORDER), sorted(B.CLUBS))
+
     def test_names(self):
         self.assertEqual(B.split_name("Walter Payton"), ("Walter", "Payton", ""))
         self.assertEqual(B.split_name("Odell Beckham Jr."), ("Odell", "Beckham", "Jr."))
@@ -104,7 +113,9 @@ class Plumbing(unittest.TestCase):
         self.assertIn("Matt Forte", c)
         self.assertIn("Matt Fort\u00e9 (American football)", c)
         self.assertIn("Matt Fort\u00e9 (running back)", c)
-        self.assertLessEqual(len(c), 16)
+        self.assertLessEqual(len(c), 24)
+        self.assertIn("Chris Godwin", B.title_candidates("Chris Godwin Jr.", {"receiving_td"}))
+        self.assertIn("James Wilder Sr.", B.title_candidates("James Wilder", {"rushing_yards"}))
 
     def test_years_overlap_identifies_the_right_player(self):
         self.assertTrue(B.years_overlap_ok({2008, 2009, 2010}, {2008, 2009, 2010, 2011}))
@@ -172,6 +183,22 @@ class WikipediaTables(unittest.TestCase):
         mixed = table([["1985", "LA", "1", "10"], ["1996", "STL", "1", "20"], ["1993", "OAK", "1", "30"]], head)
         self.assertEqual(B.club_sums(mixed, "LV")["sums"]["rushing_yards"], 30)       # Rams and Raiders rows both exist: the ambiguous row stays out
 
+    def test_the_guides_own_seasons_decide_an_ambiguous_cell(self):
+        rows = [["1983", "LA", "10", "100"], ["1984", "LA", "12", "120"], ["1988", "IND", "9", "90"], ["1992", "RAI", "5", "50"]]
+        html = table(rows, [["Year", "Team", "Rushing Att", "Rushing Yds"]])
+        # the Rams' guide prints 1983-84: the two "LA" rows are the Rams'; the Raiders row of 1992 is a clear Raiders row
+        self.assertEqual(B.club_sums(html, "LAR", guide_years={1983, 1984})["sums"]["rushing_yards"], 220)
+        self.assertNotIn("rushing_yards", B.club_sums(html, "LAR")["sums"])                   # without the guide's years the rows stay out
+        texans = table([["1962", "DAL", "10", "100"], ["1963", "KC", "12", "120"]], [["Year", "Team", "Passing Att", "Passing Yds"]])
+        self.assertEqual(B.club_sums(texans, "KC", guide_years={1962, 1963, 1964})["sums"]["passing_yards"], 220)
+        self.assertEqual(B.club_sums(texans, "KC")["sums"]["passing_yards"], 220)             # the clear KC rows name KC and not the Cowboys
+
+    def test_disambiguation_pages_give_their_football_entries(self):
+        html = ('<ul><li><a href="/wiki/Mark_Clayton_(wide_receiver,_born_1961)" title="Mark Clayton (wide receiver, born 1961)">Mark Clayton</a>'
+                ' (born 1961), American football wide receiver</li><li><a href="/wiki/Mark_Clayton_(politician)" title="Mark Clayton (politician)">Mark Clayton</a>, '
+                'American politician</li></ul>')
+        self.assertEqual(B.football_links(html), ["Mark Clayton (wide receiver, born 1961)"])
+
     def test_flat_header_without_group_names(self):
         html = table([["1981", "SD", "14", "109", "525", "4.8", "28", "3", "46", "329", "7.2", "29", "3"],
                       ["1982", "SD", "9", "87", "430", "4.9", "48", "6", "13", "66", "5.1", "12", "0"],
@@ -234,10 +261,13 @@ class TheRule(unittest.TestCase):
 
     def test_tolerances(self):
         self.assertEqual(B.nv_status("rushing_yards", 8602, 8595, True), "close")
-        self.assertEqual(B.nv_status("rushing_yards", 8602, 8500, True), "off")
+        self.assertEqual(B.nv_status("rushing_yards", 8602, 8500, True), "close")          # 1.2 percent: play-by-play noise
+        self.assertEqual(B.nv_status("rushing_yards", 8602, 8300, True), "off")
+        self.assertEqual(B.nv_status("passing_yards", 5476, 5535, True), "close")           # Brees 2011: nflverse 5,535, official 5,476
         self.assertEqual(B.nv_status("sacks_half", 249, 245, True), "close")
         self.assertEqual(B.nv_status("receptions", 500, 500, True), "exact")
         self.assertEqual(B.nv_status("passing_td", 100, 130, False), "conflict")
+        self.assertEqual(B.nv_status("passing_td", 100, 102, False), "partial-ok")
 
     def test_guard(self):
         self.assertTrue(B.guard_violated("rushing_yards", {"bar": 3000, "other_value": 3500}))
