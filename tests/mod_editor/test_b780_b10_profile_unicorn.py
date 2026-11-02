@@ -12,7 +12,6 @@ results.  The tests skip without the private pinned retail ``default.xbe``.  Run
 from __future__ import annotations
 
 import os
-import struct
 import sys
 import unittest
 from pathlib import Path
@@ -23,14 +22,11 @@ for entry in (ROOT, ROOT / "tools"):
     if str(entry) not in sys.path:
         sys.path.insert(0, str(entry))
 
-from mod_editor.core import nfl2k5_champions as champions  # noqa: E402
 from mod_editor.core import nfl2k5_champions_history as history  # noqa: E402
-from mod_editor.core import nfl2k5_honors as honors  # noqa: E402
 from mod_editor.core import nfl2k5_option_defaults as defaults  # noqa: E402
 from mod_editor.core import nfl2k5_profile_defaults as profile  # noqa: E402
 from tests.mod_editor import test_b779_hn1_champions as hn1  # noqa: E402
 from tests.mod_editor.test_b780_b10_profile_defaults import NEW, settings_save  # noqa: E402
-from tests.mod_editor.test_b780_b10_upgrade_gaps import recorded  # noqa: E402
 from tests.nfl2k5_supersim_draft_fixture import HAVE_UC  # noqa: E402
 
 BLOCK, BLOCK_SIZE = 0xE5FF80, 0x2E0

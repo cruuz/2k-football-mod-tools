@@ -20,7 +20,10 @@ from mod_editor.gui.ux_text import failure_body
 
 from collections.abc import Callable
 from pathlib import Path
+import shutil
+import tempfile
 from typing import Any
+import weakref
 
 from PyQt5.QtCore import QObject, QRunnable, Qt, QThreadPool, pyqtSignal
 from PyQt5.QtWidgets import (
@@ -58,7 +61,27 @@ from mod_editor.core.nfl2k5_save_writer import (
 ProgressSink = Callable[[str, int, int], None]
 
 SAVE_FILTER = "NFL 2K5 saves (SAVEGAME.DAT *.DAT);;All files (*)"
-XBE_FILTER = "Xbox executables (default.xbe *.xbe);;All files (*)"
+XBE_FILTER = "Game disc or executable (*.iso *.xiso default.xbe *.xbe);;All files (*)"
+
+
+def resolve_xbe(chosen: Path, scratch: Path) -> Path:
+    """b780 b10-profile: the default.xbe to use for a chosen file.
+
+    A default.xbe is used as it is. A game disc image gives up the default.xbe inside it, copied to ``scratch`` (read only
+    from the disc), so the signed copy and the game's default settings both come from the disc the player actually plays."""
+    with chosen.open("rb") as handle:
+        if handle.read(4) == b"XBEH":
+            return chosen
+    from mod_editor.core import nfl2k5_espn25_rosters as disc_files
+    try:
+        data = disc_files.read_xbe(chosen)
+    except (OSError, ValueError, EOFError) as exc:
+        raise ValueError("this file is neither a default.xbe nor a game disc the Studio can read") from exc
+    if data[:4] != b"XBEH":
+        raise ValueError("the disc's default.xbe is not an Xbox executable")
+    target = scratch / "default.xbe"
+    target.write_bytes(data)
+    return target
 
 
 class _TaskSignals(QObject):
@@ -107,6 +130,8 @@ class SavePanel(QWidget):
         self._targets: dict[str, object] | None = None       # the chosen default.xbe's defaults (b780 b10-profile)
         self._default_report: dict[str, object] | None = None
         self._default_checks: dict[str, QCheckBox] = {}
+        self._xbe_file: Path | None = None                    # the default.xbe itself (inside a disc: a private copy)
+        self._scratch_dir: str | None = None
         self.setObjectName("savePanel")
         self._build_ui()
         self._connect()
@@ -124,7 +149,7 @@ class SavePanel(QWidget):
         title = QLabel("Xbox save: sliders && franchise year (experimental)")
         title.setObjectName("bumpTitle")
         subtitle = QLabel(
-            "Open SAVEGAME.DAT and the game's default.xbe, then save a signed copy. "
+            "Open SAVEGAME.DAT and your game disc (or its default.xbe), then save a signed copy. "
             "Keep the new SAVEGAME.DAT and EXTRA together when putting the save back."
         )
         subtitle.setObjectName("bumpMuted")
@@ -133,11 +158,11 @@ class SavePanel(QWidget):
         root.addWidget(subtitle)
 
         xbe_row = QHBoxLayout()
-        xbe_row.addWidget(QLabel("Game executable (default.xbe)"))
+        xbe_row.addWidget(QLabel("Game disc or executable"))
         self.xbe_field = QLineEdit()
         self.xbe_field.setReadOnly(True)
         self.xbe_field.setPlaceholderText(
-            "Choose your default.xbe (needed to re-sign the save)"
+            "Choose your game disc (.iso) or its default.xbe (needed to re-sign the save)"
         )
         xbe_row.addWidget(self.xbe_field, 1)
         self.xbe_button = QPushButton("Choose…")
@@ -199,7 +224,7 @@ class SavePanel(QWidget):
         defaults_header.setSectionResizeMode(0, QHeaderView.Stretch)
         self.defaults_table.setMaximumHeight(124)
         defaults_layout.addWidget(self.defaults_table)
-        self.defaults_status = QLabel("Choose a default.xbe and a save to compare their game settings.")
+        self.defaults_status = QLabel("Choose your game disc (or its default.xbe) and a save to compare their game settings.")
         self.defaults_status.setObjectName("bumpMuted")
         self.defaults_status.setWordWrap(True)
         defaults_layout.addWidget(self.defaults_status)
@@ -253,7 +278,7 @@ class SavePanel(QWidget):
         root.addLayout(progress_row)
 
         self.status_label = QLabel(
-            "Choose a default.xbe and a SAVEGAME.DAT to begin."
+            "Choose your game disc (or its default.xbe) and a SAVEGAME.DAT to begin."
         )
         self.status_label.setObjectName("bumpMuted")
         self.status_label.setWordWrap(True)
@@ -338,22 +363,37 @@ class SavePanel(QWidget):
 
     def _choose_xbe(self) -> None:
         chosen, _filter = QFileDialog.getOpenFileName(
-            self, "Choose your default.xbe", str(Path.home()), XBE_FILTER,
+            self, "Choose your game disc or default.xbe", str(Path.home()), XBE_FILTER,
         )
         if chosen:
             self.xbe_field.setText(chosen)
+            self._xbe_file = None
+            self._targets = None
             self._refresh_controls()
             self._read_build_defaults(Path(chosen))
 
-    def _read_build_defaults(self, xbe_path: Path) -> None:
-        """b780 b10-profile: what the chosen default.xbe starts a fresh profile with."""
+    def _scratch_path(self) -> Path:
+        """A private folder for a default.xbe taken out of a disc; removed when the panel goes away."""
+        if self._scratch_dir is None:
+            self._scratch_dir = tempfile.mkdtemp(prefix="2k5-saves-")
+            weakref.finalize(self, shutil.rmtree, self._scratch_dir, True)
+        return Path(self._scratch_dir)
+
+    def _read_build_defaults(self, chosen: Path) -> None:
+        """b780 b10-profile: find the default.xbe (inside a disc if a disc was chosen) and what it starts a fresh profile with."""
+
+        def work(progress: ProgressSink) -> dict[str, object]:
+            progress("Reading the game's default.xbe", 0, 0)
+            xbe = resolve_xbe(chosen, self._scratch_path())
+            return {"xbe": str(xbe), "targets": profile_defaults.build_targets(xbe.read_bytes())}
 
         def done(result: object) -> None:
             assert isinstance(result, dict)
-            self._targets = result
+            self._xbe_file = Path(str(result["xbe"]))
+            self._targets = result["targets"]
             self._refresh_defaults()
 
-        self._run(lambda progress: profile_defaults.build_targets(xbe_path.read_bytes()), done)
+        self._run(work, done)
 
     def _refresh_defaults(self) -> None:
         """Fill the Game defaults table from the chosen save and the chosen default.xbe (both needed)."""
@@ -361,7 +401,7 @@ class SavePanel(QWidget):
         self._default_report = None
         self.defaults_table.setRowCount(0)
         if self._save_info is None or self._targets is None:
-            self.defaults_status.setText("Choose a default.xbe and a save to compare their game settings.")
+            self.defaults_status.setText("Choose your game disc (or its default.xbe) and a save to compare their game settings.")
             return
         state = self._targets.get("state")
         if state not in ("applied", "retail"):
@@ -512,7 +552,7 @@ class SavePanel(QWidget):
         if self._save_info is None:
             return
         save_path = Path(str(self._save_info.get("path") or ""))
-        xbe_path = Path(self.xbe_field.text())
+        xbe_path = self._xbe_file or Path(self.xbe_field.text())
         out_path = Path(self.out_field.text())
         edits = self._collect_slider_edits()
         option_edits = self._collect_option_edits()

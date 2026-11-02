@@ -487,6 +487,7 @@ class DialogTextTests(unittest.TestCase):
         self.assertIn("Game settings taken from the disc (this franchise had the old defaults):", text)
         self.assertIn("  Quarter Length: 5 minutes -> 7 minutes", text)
         self.assertIn("  Sim. Quarter Length: kept at 12 minutes (set to 12 minutes by the player; left alone)", text)
+        self.assertIn("Your Settings save has its own copy of these settings: Gameplay > Saves & Sliders", text)
         none = self.preview({"operation": "game_settings", "rows": [], "changes": [],
                              "reason": "this disc starts new profiles with the retail settings"})
         self.assertIn("Game settings: not changed (this disc starts new profiles with the retail settings).", none)

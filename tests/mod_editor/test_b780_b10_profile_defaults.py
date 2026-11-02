@@ -410,6 +410,25 @@ class UpgradeStepTests(unittest.TestCase):
                 self.assertEqual(profile.read_options(plan.payload)["sim_minutes"], 15)
                 read.assert_called_once_with(disc)
 
+    def test_the_command_line_flag_skips_the_step_and_the_default_keeps_it(self):
+        import tools.nfl2k5_franchise_upgrade as cli
+        with mock.patch.object(cli, "plan_upgrade", return_value=object()) as plan, \
+                mock.patch.object(cli, "write_plan", return_value={"steps": [], "write": {}}), \
+                mock.patch.object(cli, "check_paths"):
+            for extra, expected in (([], True), (["--keep-game-settings"], False)):
+                with redirect_stdout(io.StringIO()):
+                    code = cli.main(["upgrade", "--input", "in", "--disc", "disc.iso", "--dry-run", "--receipt", "r.json", *extra])
+                self.assertEqual(code, 0)
+                self.assertIs(plan.call_args.kwargs["game_defaults"], expected)
+            for command in ("game-settings", "champions"):
+                with redirect_stdout(io.StringIO()):
+                    cli.main([command, "--input", "in", "--disc", "disc.iso", "--dry-run", "--receipt", "r.json"])
+                self.assertEqual(plan.call_args.kwargs["command"], command)
+
+    def test_the_build_tab_help_points_at_the_saves_page(self):
+        self.assertIn("Gameplay > Saves & Sliders", defaults.HELP_TEXT)
+        self.assertIn("Franchise > Upgrade", defaults.HELP_TEXT)
+
     def test_an_unreadable_disc_file_is_not_fatal(self):
         from mod_editor.core import nfl2k5_franchise_upgrade_io as service
         with tempfile.TemporaryDirectory() as td:
@@ -504,6 +523,67 @@ class SavesPanelTests(unittest.TestCase):
         self.assertTrue(done.called)
         self.assertIn("Sim. Quarter Length: 5 minutes -> 15 minutes", done.call_args[0][2])
         self.assertEqual(path.read_bytes(), settings_save(10, 5, 0))
+
+    def test_a_default_xbe_is_used_as_it_is(self):
+        from mod_editor.gui.save_panel_qt import resolve_xbe
+        self.assertEqual(resolve_xbe(self.xbe, self.root), self.xbe)
+
+    def test_a_game_disc_gives_up_its_default_xbe_to_a_private_copy(self):
+        from mod_editor.core import nfl2k5_espn25_rosters as disc_files
+        from mod_editor.gui.save_panel_qt import resolve_xbe
+        disc = self.root / "disc.xiso.iso"
+        disc.write_bytes(b"not an executable, a disc image")
+        scratch = self.root / "scratch"
+        scratch.mkdir()
+        with mock.patch.object(disc_files, "read_xbe", return_value=self.xbe.read_bytes()) as read:
+            found = resolve_xbe(disc, scratch)
+        read.assert_called_once_with(disc)
+        self.assertEqual((found, found.read_bytes()), (scratch / "default.xbe", self.xbe.read_bytes()))
+        with mock.patch.object(disc_files, "read_xbe", side_effect=ValueError("not a disc")), \
+                self.assertRaisesRegex(ValueError, "neither a default.xbe nor a game disc"):
+            resolve_xbe(disc, scratch)
+        with mock.patch.object(disc_files, "read_xbe", return_value=b"MZ not an xbe"), \
+                self.assertRaisesRegex(ValueError, "not an Xbox executable"):
+            resolve_xbe(disc, scratch)
+
+    def test_choosing_a_disc_reads_its_defaults_and_signs_with_its_executable(self):
+        from PyQt5.QtTest import QTest
+        from mod_editor.core import nfl2k5_espn25_rosters as disc_files
+        from PyQt5.QtWidgets import QFileDialog, QMessageBox
+        disc = self.root / "disc.xiso.iso"
+        disc.write_bytes(b"a disc image stand-in")
+        payload = self.root / "SAVEGAME.DAT"
+        payload.write_bytes(settings_save())
+        self.panel._save_info = writer.read_save(payload)
+        self.panel.save_field.setText(str(payload))
+        with mock.patch.object(QFileDialog, "getOpenFileName", return_value=(str(disc), "")), \
+                mock.patch.object(disc_files, "read_xbe", return_value=self.xbe.read_bytes()), \
+                mock.patch.object(profile, "build_targets", return_value=NEW):
+            self.panel._choose_xbe()
+            deadline = 50
+            while self.panel._busy and deadline:
+                QTest.qWait(100)
+                deadline -= 1
+            QTest.qWait(50)
+        self.assertEqual(self.panel.xbe_field.text(), str(disc))                 # the field names the disc the player chose
+        self.assertTrue(self.panel._xbe_file.is_file())
+        self.assertNotEqual(self.panel._xbe_file, disc)
+        self.assertEqual(self.panel._default_checks["quarter_minutes"].isChecked(), True)
+        out = self.root / "out" / "SAVEGAME.DAT"
+        self.panel.out_field.setText(str(out))
+        self.panel._refresh_controls()
+        with mock.patch.object(QMessageBox, "question", return_value=QMessageBox.Ok), \
+                mock.patch.object(QMessageBox, "information"):
+            self.panel._apply_clicked()
+            deadline = 50
+            while self.panel._busy and deadline:
+                QTest.qWait(100)
+                deadline -= 1
+            QTest.qWait(50)
+        self.assertTrue(out.is_file())
+        sig_key = writer.derive_sig_key(self.xbe.read_bytes())
+        self.assertTrue(writer.verify_extra(sig_key, out.read_bytes(), (out.parent / "EXTRA").read_bytes()))
+        self.assertEqual(profile.read_options(out.read_bytes()), {"quarter_minutes": 7, "sim_minutes": 15, "chop_block": 1})
 
     def test_nothing_ticked_and_nothing_else_edited_does_not_write(self):
         from PyQt5.QtWidgets import QMessageBox

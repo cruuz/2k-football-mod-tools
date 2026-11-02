@@ -54,6 +54,7 @@ def game_settings_lines(step):
     lines += [f"  {row['label']}: {row['current_text']} -> {row['target_text']}" for row in changed]
     lines += [f"  {row['label']}: kept at {row['current_text']} ({row['note']})"
               for row in step["rows"] if row["action"] == "kept"]
+    lines.append("  Your Settings save has its own copy of these settings: Gameplay > Saves & Sliders can do the same for it.")
     return lines
 
 
