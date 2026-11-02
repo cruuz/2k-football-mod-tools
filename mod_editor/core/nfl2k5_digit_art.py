@@ -18,6 +18,10 @@ from .nfl2k5_digit_texture import resize_cell, make_digit_mips, quantize_digit_l
 REGISTRATION_KEY = "nfl2k5_digit_registration"
 REGISTRATION_CHOICES = (("Match retail size", "retail"), ("As authored", "as_authored"))
 ALPHA_LOW, ALPHA_HIGH = 16, 240
+#: The cleanup keeps solid colour with a one texel soft edge. A digit that keeps under a quarter of the solid pixels it
+#: should have at its size is refused (it would be written blank or broken), and one that keeps under 0.6 of them gets a
+#: note in the preview. Digits with fewer than SURVIVAL_MIN_PIXELS expected solid pixels are too small to judge.
+SURVIVAL_REFUSE, SURVIVAL_NOTE, SURVIVAL_MIN_PIXELS = 0.25, 0.6, 24
 
 
 def registration_mode(payload: bytes) -> str:
@@ -133,6 +137,10 @@ def extend_edge_colours(image: Image.Image) -> Image.Image:
     return Image.frombytes("RGBA", image.size, bytes(data))
 
 
+def _solid_pixels(image: Image.Image) -> int:
+    return sum(1 for a in image.getchannel("A").getdata() if a >= ALPHA_HIGH)
+
+
 def prepare_digit(image: Image.Image, retail: Image.Image, mode: str = "retail") -> tuple[Image.Image, dict]:
     if image.size != retail.size or mode not in {"retail", "as_authored"}:
         raise ValidationError("Digit preparation needs matching canvases and a supported registration.")
@@ -153,7 +161,9 @@ def prepare_digit(image: Image.Image, retail: Image.Image, mode: str = "retail")
     image = flatten_regions(image, tones)
     bounds = image.getchannel("A").getbbox()
     if not bounds:
-        raise ValidationError("The number cell is empty after alpha cleanup. Supply a visible digit.")
+        raise ValidationError("This digit is almost invisible: every pixel is below 6 percent opacity, so nothing is left "
+                              "after cleanup. Draw the digit in solid colour on a transparent background, then preview again.")
+    source_solid = _solid_pixels(image)
     box = reference["box"]
     if not box:
         raise ValidationError("The retail digit has no measurable registration box.")
@@ -170,6 +180,21 @@ def prepare_digit(image: Image.Image, retail: Image.Image, mode: str = "retail")
         image.paste(glyph, (left, top))
         destination = [left, top, left+size[0], top+size[1]]
     image = one_texel_edge(bind_alpha(image))
+    kept, wanted = _solid_pixels(image), source_solid * scale * scale
+    if not image.getchannel("A").getbbox():
+        raise ValidationError("Nothing is left of this digit after cleanup. The game keeps a pixel only when it is at least "
+                              "half solid, so a digit drawn at 40 percent opacity, or with strokes thinner than about 2 pixels "
+                              "at the size the game uses, disappears. Make the digit fully opaque and thicker, then preview again.")
+    survival = None
+    if wanted >= SURVIVAL_MIN_PIXELS:
+        if kept < SURVIVAL_REFUSE * wanted:
+            raise ValidationError(
+                f"Most of this digit was removed by cleanup: about {kept:,} of the {round(wanted):,} solid pixels it should "
+                "have at this size remain. The game keeps only solid colour with a one pixel soft edge, so strokes thinner "
+                "than about 2 pixels at 64 and areas under half opacity disappear. Draw the digit with thicker, fully opaque "
+                "strokes, or simplify the art, then preview again.")
+        if kept < SURVIVAL_NOTE * wanted:
+            survival = round(kept / wanted, 2)
     image = flatten_regions(image, tones)
     image, after = collapse_colours(image)
     image = extend_edge_colours(image)
@@ -181,6 +206,7 @@ def prepare_digit(image: Image.Image, retail: Image.Image, mode: str = "retail")
                     "alpha_below_to_zero": ALPHA_LOW, "alpha_at_or_above_to_opaque": ALPHA_HIGH,
                     "antialias_band_texels": 1, "resample": "float_premultiplied_lanczos",
                     "transparent_rgb": "nearest_visible_edge", "mip_border_alpha_zero": True,
+                    **({"solid_area_kept": survival} if survival is not None else {}),
                     "applied": True},
     }
 

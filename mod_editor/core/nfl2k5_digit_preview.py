@@ -305,6 +305,12 @@ def preview_digit_sheet(
                 notes.append(f"Box {registration['destination_box']}, scale {registration['scale']:.4f}; "
                              "alpha bound, near colours merged, one texel soft edge, edge colours extended.")
             notes.extend(output.warnings)
+            kept = ((receipt.get("digit_preparation") or {}).get("cleanup") or {}).get("solid_area_kept")
+            if kept is not None:
+                notes.append(f"Digit {output.digit}: cleanup removed about {round((1 - kept) * 100)} percent of its solid pixels. "
+                             "The game keeps solid colour with a one pixel soft edge, so strokes thinner than about 2 pixels "
+                             "at 64 and areas under half opacity disappear. If it looks thin or broken above, thicken the "
+                             "strokes and make them fully opaque.")
             fit = receipt.get("bounded_palette_fit", {})
             if len(fit.get("attempts", ())) > 1:
                 notes.append(f"Digit {output.digit}: reduced to {receipt['quantization']['palette_entries']} palette colours "

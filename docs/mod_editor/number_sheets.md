@@ -41,7 +41,11 @@ A sheet is refused, with what it saw and how to fix it, when:
 - the sheet is not a picture the Studio can read, is empty, larger than 128 MiB, or over 16 million pixels
   (1024x1024 cells fit; the message gives the actual size);
 - the picture has no transparent pixels at all (a JPEG or a flattened PNG): every digit would become a solid block;
-- a chosen layout cannot cut the sheet without slicing a digit, with the nearest canvas size that would work.
+- a chosen layout cannot cut the sheet without slicing a digit, with the nearest canvas size that would work;
+- the cleanup would blank a digit or remove most of it, which happens to digits drawn below half opacity and to
+  strokes thinner than about 2 pixels at the size the game uses. The message gives how many solid pixels the digit
+  should have and how many remain, and says to draw thicker, fully opaque strokes. A digit that keeps most of
+  itself but loses part gets a note in the preview that says how much.
 
 A single empty cell among the ten, or a digit with no transparent pixels, is flagged in the notes on that digit.
 
@@ -65,7 +69,8 @@ A flat fill with one outline colour fits most slots, and one flat colour fits th
   then, for a digit with real shading, the shading reduced to four, three and two flat colours, and, for a
   numeral that is nothing but shading with no outline, one flat colour. The notes for that digit say which one
   was used, for example "its shading was reduced to 3 flat colours, with hard edges".
-- Trying these versions takes a few seconds per digit, so a sheet with many tight slots can take a minute to preview.
+- Trying these versions takes time: a sheet whose ten slots are all tight can take a minute or two to preview
+  (the progress bar counts the digits).
 - If even the simplest version does not fit, that digit keeps the original number, the preview marks it
   KEPT RETAIL, and the note gives the numbers: how many bytes the simplest version needs, how many the
   slot holds, and how many colours the digit used. The notes also list the space each digit used.

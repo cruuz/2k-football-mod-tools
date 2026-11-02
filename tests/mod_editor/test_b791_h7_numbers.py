@@ -531,6 +531,85 @@ class ResampleColourTests(unittest.TestCase):
                     self.assertEqual(len(solid), 2, (case, output.digit, sorted(solid)))
 
 
+def hairline_digit(digit, size, width, alpha=255):
+    """White strokes of one fixed width in pixels, no outline: a thin modern face."""
+    image = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(image)
+    for segment in _SEGMENTS[digit]:
+        draw.line([round(v * size / 64) for v in _POSITIONS[segment]], fill=(255, 255, 255, alpha), width=width)
+    return image
+
+
+def hairline_sheet(path, width, cell=128, alpha=255):
+    sheet = Image.new("RGBA", (10 * cell, cell))
+    for digit in range(10):
+        sheet.alpha_composite(hairline_digit(digit, cell, width, alpha), (digit * cell, 0))
+    sheet.save(path)
+    return Path(path)
+
+
+class SurvivalTests(unittest.TestCase):
+    """A digit the cleanup would blank, or mostly remove, is refused with the numbers and the cure.
+
+    Before this, a numeral drawn below half opacity, or with strokes under about 2 pixels at the game's size, was written
+    as a blank or one pixel digit and the preview said nothing (random noise became a one pixel digit the same way)."""
+
+    def prepare(self, image):
+        return art.prepare_digit(resize_cell(image, (64, 64)), retail_reference(), "retail")
+
+    def test_a_digit_drawn_below_half_opacity_is_refused_and_the_message_says_what_to_do(self):
+        for alpha in (110, 70):
+            with self.subTest(alpha=alpha), self.assertRaises(ValidationError) as caught:
+                self.prepare(hairline_digit(8, 128, 12, alpha))
+            self.assertIn("Nothing is left of this digit", str(caught.exception))
+            self.assertIn("fully opaque", str(caught.exception))
+
+    def test_a_digit_above_half_opacity_is_made_solid_and_imports(self):
+        for alpha in (150, 200):
+            prepared, receipt = self.prepare(hairline_digit(8, 128, 12, alpha))
+            self.assertGreater(art._solid_pixels(prepared), 200, alpha)
+            self.assertNotIn("solid_area_kept", receipt["cleanup"])
+
+    def test_strokes_thinner_than_two_pixels_are_refused_and_the_message_says_to_thicken_them(self):
+        for digit, width in ((0, 2), (5, 1)):
+            with self.subTest(digit=digit, width=width), self.assertRaisesRegex(
+                    ValidationError, "Nothing is left of this digit|Most of this digit was removed") as caught:
+                self.prepare(hairline_digit(digit, 128, width))
+            self.assertIn("thicker", str(caught.exception))
+
+    def test_strokes_of_three_pixels_import_and_a_digit_that_keeps_only_part_of_itself_says_so(self):
+        for digit in range(10):
+            prepared, receipt = self.prepare(hairline_digit(digit, 128, 3))
+            self.assertGreater(art._solid_pixels(prepared), 25, digit)
+            self.assertNotIn("solid_area_kept", receipt["cleanup"], "a digit that keeps most of itself has nothing to report")
+        # strokes that land badly between pixels keep part of the digit: noted when under 0.6, refused when under a quarter
+        _prepared, receipt = self.prepare(hairline_digit(3, 192, 4))
+        kept = receipt["cleanup"]["solid_area_kept"]
+        self.assertTrue(art.SURVIVAL_REFUSE <= kept < art.SURVIVAL_NOTE, kept)
+
+    def test_random_noise_is_refused_with_the_numbers_instead_of_becoming_a_one_pixel_digit(self):
+        import random
+        rng = random.Random(0x15682C05)
+        noise = Image.frombytes("RGBA", (64, 64), bytes(rng.randrange(256) for _ in range(64 * 64 * 4)))
+        with self.assertRaisesRegex(
+                ValidationError, r"Most of this digit was removed by cleanup: about [\d,]+ of the [\d,]+ solid pixels") as caught:
+            art.prepare_digit(noise, retail_reference(), "retail")
+        self.assertIn("simplify", str(caught.exception))
+
+    def test_ordinary_art_is_unchanged_and_reports_nothing_extra(self):
+        for digit in (0, 3, 8):
+            _prepared, receipt = art.prepare_digit(rams_digit(digit), retail_reference(), "retail")
+            self.assertNotIn("solid_area_kept", receipt["cleanup"], digit)
+        _prepared, receipt = art.prepare_digit(rams_digit(8), retail_reference(), "as_authored")
+        self.assertNotIn("solid_area_kept", receipt["cleanup"])
+
+    def test_the_smallest_digits_are_too_small_to_judge(self):
+        tiny = Image.new("RGBA", (64, 64), (0, 0, 0, 0))
+        tiny.paste((255, 255, 255, 255), (30, 30, 34, 34))   # 16 solid pixels
+        prepared, _receipt = art.prepare_digit(tiny, retail_reference(), "as_authored")
+        self.assertGreater(art._solid_pixels(prepared), 0)
+
+
 class SimplificationPartsTests(unittest.TestCase):
     def test_hard_edges_make_alpha_binary_and_leave_colours_alone(self):
         image = rams_digit(8)

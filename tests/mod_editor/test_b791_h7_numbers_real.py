@@ -25,7 +25,7 @@ from mod_editor.core.nfl2k5_digit_preview import decode_digit_texture, preview_d
 from mod_editor.core.nfl2k5_digit_sheet import split_digit_sheet
 import nfl_live_numbers_nameplate_png_import as writer
 import nfl_live_numbers_nameplate_targets as targets
-from test_b791_h7_numbers import grid_sheet, proportional_sheet, rams_digit
+from test_b791_h7_numbers import grid_sheet, hairline_sheet, proportional_sheet, rams_digit
 
 
 def rams_sheet(path, layout="horizontal", *, cell=128, **kwargs):
@@ -158,6 +158,25 @@ class RealSlotTests(unittest.TestCase):
             self.assertEqual(service.import_edited(kit, expected_set_selectors=("02H3",)).changed_count, 10)
             session.undo()
             self.assertEqual(session.modified_count, 0)
+
+    def test_a_thin_face_the_cleanup_would_blank_is_refused_with_the_digit_number_and_the_cure(self):
+        from mod_editor.core.errors import ValidationError
+        with tempfile.TemporaryDirectory() as temp:
+            sheet = hairline_sheet(Path(temp) / "thin2.png", 2)   # 2 pixel strokes in 128 pixel cells
+            with self.assertRaisesRegex(ValidationError,
+                                        r"Digit \d: (Nothing is left of this digit|Most of this digit was removed)") as caught:
+                self.preview(sheet, "23H0")
+            self.assertIn("thicker", str(caught.exception))
+
+    def test_thicker_strokes_import_and_a_digit_that_keeps_part_of_itself_gets_a_note(self):
+        with tempfile.TemporaryDirectory() as temp:
+            sheet = hairline_sheet(Path(temp) / "thin3.png", 3)   # 3 pixel strokes in 128 pixel cells
+            outputs, preview = self.preview(sheet, "23H0")
+            self.assertEqual(preview.kept_retail_count, 0)
+            self.assertNotIn("cleanup removed about", preview.details)
+            with patch.object(art, "SURVIVAL_NOTE", 0.999):   # every digit keeps a little less than all of itself
+                _outputs, noted = self.preview(sheet, "23H0")
+            self.assertRegex(noted.details, r"Digit \d: cleanup removed about \d+ percent of its solid pixels")
 
     def test_a_flat_picture_is_refused_before_any_digit_is_encoded(self):
         from mod_editor.core.errors import ValidationError
