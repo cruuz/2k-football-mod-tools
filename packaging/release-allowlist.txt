@@ -3880,3 +3880,5 @@ tests/mod_editor/test_b779_ag1_capacity_arena.py
 tests/mod_editor/test_b779_up2_zero_footer.py
 # b780 j23: franchise extension footer host and format
 tests/mod_editor/test_nfl2k5_franchise_footer.py
+tests/mod_editor/test_nfl2k5_history.py
+tests/mod_editor/test_nfl2k5_franchise_footer_transaction.py

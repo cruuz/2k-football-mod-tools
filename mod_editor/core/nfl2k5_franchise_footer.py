@@ -206,10 +206,10 @@ def _my_career_handlers(payload: bytes) -> dict[str, int] | None:
         found = [a for a in space.layout(payload)["allocations"] if a["owner"] == career.OWNER]
         if not found:
             return None
-        code, data = career.legacy.allocations(payload)
-        named = career.code_for(code["va"], data["va"])[1]
-        return {"total_size": named["inline_size"], "save": named["inline_save"], "load": named["inline_load_end"],
-                "admission": named["inline_admission"]}
+        code, _data = career.legacy.allocations(payload)
+        labels = career.assembly.LABELS          # the template's fixed offsets (code_for adds code_va to them)
+        return {"total_size": code["va"] + labels["inline_size"], "save": code["va"] + labels["inline_save"],
+                "load": code["va"] + labels["inline_load_end"], "admission": code["va"] + labels["inline_admission"]}
     except _ERRORS:
         return None
 
