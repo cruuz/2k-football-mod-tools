@@ -59,9 +59,19 @@ def _decode(value):
 
 
 class CompileCache:
-    def __init__(self, root: Path | None):
+    def __init__(self, root: Path | None, *, max_bytes: int | None = None, protect_used: bool = False):
+        """``max_bytes`` overrides the size cap for this cache (default: ``max_cache_bytes()``).
+
+        ``protect_used`` makes eviction skip every entry this process read or wrote: a build that uses a whole project's worth
+        of results must never evict one of them to make room for the next (least-recently-used eviction would then throw out
+        exactly what the next build needs first). The cache may exceed its cap by what one build uses; older entries go first.
+        """
         self.root = root
         self.hits = self.misses = 0
+        self.max_bytes = max_bytes
+        self.protect_used = protect_used
+        self.used: set[Path] = set()
+        self._all_in_use = False
         self._entries = None
         self._bytes = 0
         self._directory_stamp = None
@@ -94,6 +104,7 @@ class CompileCache:
         self._entries = OrderedDict((path, size) for _, path, size in sorted(entries))
         self._bytes = sum(self._entries.values())
         self._directory_stamp = stamp
+        self._all_in_use = False
 
     def _ready(self):
         if self.root is None:
@@ -129,6 +140,8 @@ class CompileCache:
                     os.utime(path, None)
                 if self._entries is not None and path in self._entries:
                     self._entries.move_to_end(path)
+                if self.protect_used:
+                    self.used.add(path)
                 self.hits += 1
                 return result
         except (OSError, ValueError, KeyError, TypeError, RecursionError):
@@ -181,9 +194,16 @@ class CompileCache:
             self._bytes -= self._entries.pop(destination, 0)
             self._entries[destination] = len(raw)
             self._bytes += len(raw)
-            limit = max_cache_bytes()
-            while self._bytes > limit and self._entries:
-                path, size = self._entries.popitem(last=False)
+            if self.protect_used:
+                self.used.add(destination)
+            limit = self.max_bytes if self.max_bytes is not None else max_cache_bytes()
+            while self._bytes > limit and self._entries and not self._all_in_use:
+                path = next((entry for entry in self._entries if entry not in self.used), None)
+                if path is None:
+                    # Everything left is in use by this build: keep it all rather than evict what the next build needs.
+                    self._all_in_use = True
+                    break
+                size = self._entries.pop(path)
                 path.unlink(missing_ok=True)
                 self._bytes -= size
             self._directory_stamp = self._stamp()

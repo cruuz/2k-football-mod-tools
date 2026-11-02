@@ -34,6 +34,7 @@ import threading
 import warnings
 from typing import Callable, Iterable, Protocol, Sequence
 
+from . import nfl2k5_stage_cache as stage_cache
 from . import platform_compat
 from .errors import ModEditorError, OutputRefusedError, ValidationError
 from .nfl2k5_source_cache import (
@@ -1515,14 +1516,18 @@ class Nfl2k5BuildService:
             build_command = self._command(
                 "build", backend, project_path, source, staged_xiso,
                 manifest, artifacts, cache, audio_safety)
-            # The canonical recipe itself lives in disposable staging. Keep the
-            # compile cache with the actual project/session so it survives builds.
+            # The canonical recipe itself lives in disposable staging. The compile cache must outlive a build, a session (a new
+            # folder every time a project is opened) and a Studio update, and is keyed by content only, so it sits beside the
+            # private source cache (see nfl2k5_stage_cache). Only a caller without a real source cache falls back to the place
+            # beside the project or session. The backend runs with a clean environment, so the place is passed on the command line.
             project_root = (Path(project).expanduser().resolve().parent
                             if isinstance(project, (str, os.PathLike))
                             else getattr(project, "root", None))
-            if project_root is not None:
-                build_command = (*build_command, "--compile-cache-root",
-                                 str(Path(project_root) / ".nfl2k5-compile-cache"))
+            stage_root = stage_cache.stage_cache_root(cache)
+            if stage_root is None and project_root is not None:
+                stage_root = Path(project_root) / ".nfl2k5-compile-cache"
+            if stage_root is not None:
+                build_command = (*build_command, "--compile-cache-root", str(stage_root))
             _emit(progress, BuildStage.BUILDING, 1, 4, "Building the modded XISO")
             timings["materialization"] = time.monotonic() - started
             started = time.monotonic()

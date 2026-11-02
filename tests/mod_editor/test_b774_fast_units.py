@@ -92,10 +92,14 @@ class Harness:
             list(range(len(self.project.value["edits"]))) if indices is None else indices)
 
     @contextlib.contextmanager
-    def patched(self):
+    def patched(self, table=None):
+        # b791 h6-cache: a unit's code identity is the source of the compile modules of its kind (and what they import),
+        # read from the repository, not every file the worker happened to load. The fake repository has one such module.
+        table = table or {"live_face": ("code/loaded.py",), "team_select": ("code/loaded.py",)}
         with patch.object(self.tool, "_unit_compile", side_effect=self.fake_compile), \
              patch.object(self.tool, "ROOT", self.root), \
-             patch.object(self.tool, "_UNIT_NATIVE_HELPERS", ()), \
+             patch.object(self.tool, "_UNIT_CODE_ROOTS", table), \
+             patch.object(self.tool, "_UNIT_DISPATCH", None), \
              patch.object(self.tool, "_loaded_code_files", return_value=("code/loaded.py",)):
             yield
 
@@ -322,12 +326,17 @@ class UnitCacheTests(unittest.TestCase):
             self.assertEqual((units.hits, units.misses), (6, 0))
 
     def test_a_native_helper_change_invalidates_even_though_it_is_never_imported(self):
+        # The compile module launches the helper by a literal repository path: code that is never imported.
         helper = self.root / "tools/nfl2k5_equipment_optimal"
         helper.parent.mkdir()
         helper.write_bytes(b"one")
-        with self.harness.patched(), patch.object(self.tool, "_UNIT_NATIVE_HELPERS",
-                                                  ("tools/nfl2k5_equipment_optimal",)):
+        (self.root / "code/loaded.py").write_text('HELPER = "tools/nfl2k5_equipment_optimal"\n')
+        stranger = self.root / "tools/apf_h7a_optimal"
+        stranger.write_bytes(b"one")
+        with self.harness.patched():
             self.harness.run(self.cache)
+            self.assertEqual(self.harness.run(self.cache)[0].hits, 6)
+            stranger.write_bytes(b"two")          # a helper no compile module names is not part of the identity
             self.assertEqual(self.harness.run(self.cache)[0].hits, 6)
             helper.write_bytes(b"two")
             self.assertEqual(self.harness.run(self.cache)[0].hits, 0)
@@ -350,7 +359,7 @@ class UnitCacheTests(unittest.TestCase):
             self.cache.put(keys[2], {"unit_zlib": zlib.compress(text.encode())[:20]})
             self.cache.put(keys[3], {"unit_zlib": b"\x00" * 9})
             record = _decode(json.loads(zlib.decompress(self.cache.get(keys[4])["unit_zlib"])))
-            record["code"] = {"code/loaded.py": "0" * 64}
+            record["code"] = dict(record["code"], modules={"code/loaded.py": "0" * 64})
             text = json.dumps(_encode(record), separators=(",", ":"))
             self.cache.put(keys[4], {"unit_zlib": zlib.compress(text.encode())})
             calls = len(self.harness.calls)
