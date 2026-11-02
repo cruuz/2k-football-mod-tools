@@ -80,8 +80,8 @@ class CodeIdentityTests(Repo):
         self.assertEqual(modules, (
             "mod_editor/core/adapter.py", "mod_editor/core/v.py", "mod_editor/core/w.py", "mod_editor/core/x.py",
             "mod_editor/core/y.py", "mod_editor/core/z.py", "tools/a.py", "tools/b.py", "tools/c.py", "tools/lazy_mod.py"))
-        # Package re-export files carry the version and import the world; reports are pinned and keyed on their own.
-        self.assertEqual(data, ("mod_editor/data/table.json", "tools/helper_bin"))
+        # Package re-export files carry the version and import the world; a report a module names is data it reads.
+        self.assertEqual(data, ("mod_editor/data/table.json", "reports/assets/r.json", "tools/helper_bin"))
 
     def test_comments_docstrings_and_whitespace_do_not_count_but_code_does(self):
         write_tree(self.root, {"tools/m.py": '"""Doc."""\n# comment\ndef f(x):\n    """Why."""\n    return x + 1\n'})
@@ -101,6 +101,16 @@ class CodeIdentityTests(Repo):
         after = self.identity("tools/root.py")
         self.assertNotEqual(after, before)
         self.assertEqual(stage_cache.changed_files(before, after), ["tools/dep.py"])
+
+    def test_a_leaf_counts_by_its_own_source_and_what_it_imports_does_not(self):
+        write_tree(self.root, {"tools/root.py": "V = 1\n", "tools/plumbing.py": "import deep\nP = 1\n", "tools/deep.py": "D = 1\n"})
+        before = self.identity("tools/root.py", leaves=("tools/plumbing.py",))
+        self.assertEqual(sorted(before["modules"]), ["tools/plumbing.py", "tools/root.py"])
+        write_tree(self.root, {"tools/deep.py": "D = 2\n"})
+        self.assertEqual(self.identity("tools/root.py", leaves=("tools/plumbing.py",)), before)
+        write_tree(self.root, {"tools/plumbing.py": "import deep\nP = 2\n"})
+        self.assertNotEqual(self.identity("tools/root.py", leaves=("tools/plumbing.py",)), before)
+        self.assertIsNone(self.identity("tools/root.py", leaves=("tools/missing.py",)))     # a leaf that cannot be read: no cache
 
     def test_a_data_file_the_code_names_counts(self):
         write_tree(self.root, {"tools/root.py": 'PATH = "mod_editor/data/t.json"\n', "mod_editor/data/t.json": "[1]"})
@@ -190,7 +200,8 @@ class RealRepositoryTests(unittest.TestCase):
 
     def identity(self, kind):
         return self.index.identity(self.tool._UNIT_CODE_ROOTS[kind], tool=self.tool._UNIT_DISPATCH[0],
-                                   entry_points=self.tool._UNIT_DISPATCH[1], ignore=self.tool._UNIT_DISPATCH_WORDING)
+                                   entry_points=self.tool._UNIT_DISPATCH[1], ignore=self.tool._UNIT_DISPATCH_WORDING,
+                                   leaves=self.tool._UNIT_PLUMBING)
 
     def test_every_unit_kind_has_an_identity_that_ignores_what_every_release_changes(self):
         self.assertEqual(set(self.tool._UNIT_CODE_ROOTS), set(self.tool.UNIT_KINDS))
@@ -279,7 +290,7 @@ class RealRepositoryTests(unittest.TestCase):
         for kind in sorted(self.tool.UNIT_KINDS):
             self.assertIn(kind, branches, f"{kind}: no branch found in the dispatch (did it move?)")
             self.assertTrue(branches[kind], kind)
-            covered = set(self.index.closure(self.tool._UNIT_CODE_ROOTS[kind])[0])
+            covered = set(self.identity(kind)["modules"])
             self.assertEqual(sorted(branches[kind] - covered), [], f"{kind}: the dispatch calls modules its identity lacks")
 
 
@@ -588,6 +599,13 @@ class FixtureBuildTests(unittest.TestCase):
         self.addCleanup(folder.cleanup)
         self.base = Path(folder.name).resolve()
         self.tool = backend()
+        # The fixture points the shared importer modules at its synthetic disc; put them back afterwards so a test that
+        # compiles real bytes in the same process (RealBytesTests) sees the real targets.
+        for owner, name in ((self.tool.jersey_targets, "select_target"), (self.tool.jersey_import, "select_target"),
+                            (self.tool.common, "EXPECTED_XBE_SIZE"), (self.tool.common, "EXPECTED_XBE_SHA256")):
+            patcher = patch.object(owner, name, getattr(owner, name))
+            patcher.start()
+            self.addCleanup(patcher.stop)
         self.session_one = self.session("one")
         fixture.configure(self.tool, self.base / "one")
         self.cache_root = self.base / "stage-cache"
@@ -641,8 +659,17 @@ class FixtureBuildTests(unittest.TestCase):
 
     @staticmethod
     def without_session(rows, root):
-        """The receipts name the project's own PNGs by design; compare everything else."""
-        return [(kind, selector, span, previews, report.replace(str(root), "$SESSION"))
+        """The receipts name the project's own PNGs by design; compare everything else (as data: on Windows the JSON text
+        doubles every backslash of a path)."""
+        def walk(value):
+            if isinstance(value, str):
+                return value.replace(str(root), "$SESSION")
+            if isinstance(value, list):
+                return [walk(item) for item in value]
+            if isinstance(value, dict):
+                return {key: walk(item) for key, item in value.items()}
+            return value
+        return [(kind, selector, span, previews, json.dumps(walk(json.loads(report)), sort_keys=True))
                 for kind, selector, span, previews, report in rows]
 
     @staticmethod
@@ -731,13 +758,43 @@ class RealBytesTests(unittest.TestCase):
             result, traced = late_step_trace.trace(self.compile_one, tool, edit)
             self.assertIn(result[0], {"ok", "kept"}, kind)
             identity = index.identity(tool._UNIT_CODE_ROOTS[kind], tool=tool._UNIT_DISPATCH[0],
-                                      entry_points=tool._UNIT_DISPATCH[1], ignore=tool._UNIT_DISPATCH_WORDING)
+                                      entry_points=tool._UNIT_DISPATCH[1], ignore=tool._UNIT_DISPATCH_WORDING,
+                                      leaves=tool._UNIT_PLUMBING)
             outside = sorted(name for name in traced["code"]
                              if name not in identity["modules"] and name != "tools/nfl2k5_visual_mod_project.py")
             self.assertEqual(outside, [], f"{kind}: executed code outside the identity")
             opened = sorted(name for name in traced["data"] if not name.startswith(("reports/", "tests/"))
                             and name not in identity["data"])
             self.assertEqual(opened, [], f"{kind}: opened data outside the identity")
+
+    @unittest.skipUnless(all(value and Path(value).exists() for value in (PROJECT, INDEX, INVENTORY)),
+                         "needs a canonical project and an opened retail source cache")
+    def test_the_tool_functions_a_compile_runs_are_all_reached_by_the_dispatch_digest(self):
+        tool = backend()
+        project_doc = json.loads(Path(self.PROJECT).read_text(encoding="utf-8"))
+        first = {}
+        for edit in project_doc["edits"]:
+            if edit["kind"] in tool.UNIT_KINDS:
+                first.setdefault(edit["kind"], edit)
+        reached = stage_cache.CodeIdentity(ROOT).dispatch_names(
+            tool._UNIT_DISPATCH[0], tool._UNIT_DISPATCH[1], tool._UNIT_DISPATCH_WORDING)
+        tool_file = str(TOOL)
+        for kind, edit in sorted(first.items()):
+            ran = set()
+
+            def profile(frame, event, _argument):
+                if event == "call" and frame.f_code.co_filename == tool_file:
+                    ran.add(frame.f_code.co_name)
+            sys.setprofile(profile)
+            try:
+                self.compile_one(tool, edit)
+            finally:
+                sys.setprofile(None)
+            module_level = {name for name in ran if callable(getattr(tool, name, None))
+                            and getattr(getattr(tool, name), "__module__", None) == tool.__name__
+                            and getattr(getattr(tool, name), "__qualname__", "") == name}
+            outside = sorted(module_level - reached - set(tool._UNIT_DISPATCH_WORDING) - {"_unit_worker"})
+            self.assertEqual(outside, [], f"{kind}: tool functions that ran but the dispatch digest does not cover")
 
     def compile_one(self, tool, edit):
         pins = {}

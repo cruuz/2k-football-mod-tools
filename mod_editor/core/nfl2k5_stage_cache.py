@@ -28,9 +28,10 @@ import sys
 from typing import Iterable
 
 CACHE_DIRNAME = "project-stage"
-#: Where a repository's data files live; a compile that reads one depends on its bytes. Reports under ``reports/`` are pinned and keyed
-#: by their own digests (``pin_reports``), and ``tools/`` holds the native helpers.
-DATA_PREFIXES = ("mod_editor/data/", "mod_editor/assets/", "tools/")
+#: Where a repository's data files live; a compile that reads one depends on its bytes. ``reports/`` holds the compatibility reports
+#: (the project tool also pins and keys the ones it hands to a kind, but a writer can read another: the P8 inventory), ``tools/`` the
+#: native helpers.
+DATA_PREFIXES = ("mod_editor/data/", "mod_editor/assets/", "reports/", "tools/")
 #: Edit fields that name a file. A cache key holds the file's content digest instead.
 PATH_FIELDS = ("png", "clean_png", "mud_png", "wav", "recipe")
 #: Default size cap of the stage cache. A build never evicts what it is using, so a bigger project simply keeps what it needs.
@@ -249,7 +250,14 @@ class CodeIdentity:
         return (isinstance(test, ast.Compare) and isinstance(test.left, ast.Name) and test.left.id == "__name__"
                 and any(isinstance(c, ast.Constant) and c.value == "__main__" for c in test.comparators))
 
-    def _reach(self, tree: ast.Module, entry_points: tuple[str, ...], ignore: frozenset[str] = frozenset()) -> str | None:
+    def dispatch_names(self, tool: str, entry_points: Iterable[str], ignore: Iterable[str] = ()) -> frozenset[str] | None:
+        """The top-level names of ``tool`` the entry points reach (what :meth:`dispatch_digest` covers); None when unreadable."""
+        tree = self._tree(tool)
+        found = None if tree is None else self._reach(tree, tuple(sorted(entry_points)), frozenset(ignore), names_only=True)
+        return found
+
+    def _reach(self, tree: ast.Module, entry_points: tuple[str, ...], ignore: frozenset[str] = frozenset(),
+               names_only: bool = False):
         defined: dict[str, list[ast.stmt]] = {}
         always: list[ast.stmt] = []
         for node in tree.body:
@@ -281,17 +289,25 @@ class CodeIdentity:
                 for node in ast.walk(stmt):
                     if isinstance(node, ast.Name) and node.id in defined and node.id not in needed:
                         stack.append(node.id)
+        if names_only:
+            return frozenset(needed)
         ordered = sorted(picked.values(), key=lambda stmt: (stmt.lineno, stmt.col_offset))
         return hashlib.sha256("\n".join(_dump(stmt) for stmt in ordered).encode("utf-8")).hexdigest()
 
     # -- the identity of one kind of compile ----------------------------
     def identity(self, roots: Iterable[str], *, tool: str | None = None, entry_points: Iterable[str] = (),
-                 ignore: Iterable[str] = ()) -> dict | None:
-        """``{"python": ..., "modules": {file: digest}, "data": {file: digest}, "dispatch": digest}`` or None (cache nothing)."""
+                 ignore: Iterable[str] = (), leaves: Iterable[str] = ()) -> dict | None:
+        """``{"python": ..., "modules": {file: digest}, "data": {file: digest}, "dispatch": digest}`` or None (cache nothing).
+
+        ``leaves`` are files that run during every compile without belonging to one kind (the project tool's file-ownership and
+        pinning helpers): each counts by its own source, and what it imports does not (the traced compile shows nothing beyond
+        them runs, and ``tests/mod_editor/test_b791_h6_stage_cache.py`` fails if that ever stops being true).
+        """
         closed = self.closure(roots)
         if closed is None:
             return None
         modules, data = closed
+        modules = tuple(sorted(set(modules) | set(leaves)))
         record: dict = {"python": f"{sys.version_info[0]}.{sys.version_info[1]}", "modules": {}, "data": {}}
         for relative in modules:
             digest = self.module_digest(relative)

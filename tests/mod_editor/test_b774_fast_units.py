@@ -100,6 +100,7 @@ class Harness:
              patch.object(self.tool, "ROOT", self.root), \
              patch.object(self.tool, "_UNIT_CODE_ROOTS", table), \
              patch.object(self.tool, "_UNIT_DISPATCH", None), \
+             patch.object(self.tool, "_UNIT_PLUMBING", ()), \
              patch.object(self.tool, "_loaded_code_files", return_value=("code/loaded.py",)):
             yield
 

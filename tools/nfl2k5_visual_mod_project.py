@@ -3536,6 +3536,9 @@ def _unit_code_roots() -> dict[str, tuple[str, ...]]:
 
 
 _UNIT_CODE_ROOTS: dict[str, tuple[str, ...]] = _unit_code_roots()
+#: What every compile runs besides its own importers: the file-ownership and pinning helpers that stage an edit's input copy.
+#: They count by their own source (see CodeIdentity.identity ``leaves``); the traced compile shows nothing beyond them runs.
+_UNIT_PLUMBING: tuple[str, ...] = (_repo_file(ownership), _repo_file(common))
 #: The project tool's own dispatch: only the functions the entry points reach by name count, not the other build steps.
 _UNIT_DISPATCH: tuple[str, tuple[str, ...]] | None = ("tools/nfl2k5_visual_mod_project.py", ("_unit_compile",))
 #: Helpers of that dispatch that only word a failure; only successful compiles are saved, so improving a message keeps every result.
@@ -3876,7 +3879,8 @@ class IndependentUnits:
                     self._code_index = stage_cache.CodeIdentity(ROOT)
                 identity = self._code_index.identity(
                     roots, tool=_UNIT_DISPATCH[0] if _UNIT_DISPATCH else None,
-                    entry_points=_UNIT_DISPATCH[1] if _UNIT_DISPATCH else (), ignore=_UNIT_DISPATCH_WORDING)
+                    entry_points=_UNIT_DISPATCH[1] if _UNIT_DISPATCH else (), ignore=_UNIT_DISPATCH_WORDING,
+                    leaves=_UNIT_PLUMBING)
             self._identities[kind] = identity
         return self._identities[kind]
 
@@ -4636,6 +4640,18 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
                 _item_progress("A saved result differed from a fresh compile (" + ", ".join(canary["mismatched"][:3])
                                + "); every texture of this build is compiled again", 0, len(project.value["edits"]))
         model_edits = [e for e in project.value["edits"] if e["kind"] == model_project.KIND]
+        # Where the time of this step goes, for the build log: waiting for the compilers (the cache and the workers), writing the
+        # small files of each edit (the span, its receipt, its previews; each one flushed to disk), or everything else.
+        spent = {"waiting": 0.0, "writing": 0.0, "files": 0}
+        loop_started = time.monotonic()
+
+        def staged_file(path: Path, payload: bytes):
+            started = time.monotonic()
+            owned = exclusive_payload(path, payload, temp_root)
+            spent["writing"] += time.monotonic() - started
+            spent["files"] += 1
+            return owned
+
         for edit_index, edit in enumerate(project.value["edits"]):
             _item_progress('Preparing ' + project_edit_label(edit, edit_index), edit_index, len(project.value['edits']))
             if edit_index in cached_handled:
@@ -4670,8 +4686,11 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
                 else:
                     # An independent unit compiled ahead by a worker (or from
                     # the verified cache); None compiles it right here instead.
-                    unit = (units.take(edit_index, len(prepared))
-                            if units is not None and units.handles(edit_index) else None)
+                    unit = None
+                    if units is not None and units.handles(edit_index):
+                        waiting_since = time.monotonic()
+                        unit = units.take(edit_index, len(prepared))
+                        spent["waiting"] += time.monotonic() - waiting_since
                     if unit is not None and unit[0] == "kept":
                         kept_retail.append(unit[1])
                         continue
@@ -5159,8 +5178,7 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
                     # Bound to retail bytes before any XISO copy.
                     runs: list[list[int]] = []
                     span_path = temporary / f"{order:05d}_replacement.bin"
-                    temp_files.append(exclusive_payload(
-                        span_path, replacement, temp_root))
+                    temp_files.append(staged_file(span_path, replacement))
                     normalized = normalized_import_report(report, effective_edit, kind)
                     if historical_import_reports is not None and not model_edits:
                         historical_import = historical_import_reports.get(order)
@@ -5171,15 +5189,13 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
                         )
                     import_payload = canonical_json(normalized)
                     import_path = temporary / f"{order:05d}_import.json"
-                    temp_files.append(exclusive_payload(
-                        import_path, import_payload, temp_root))
+                    temp_files.append(staged_file(import_path, import_payload))
                     preview_records: list[tuple[str, Path, int, str]] = []
                     for preview_order, (name, payload) in enumerate(previews):
                         final_name = (f"{order:05d}_{safe_name(selector)}_"
                                       f"{preview_order:02d}_{safe_name(name)}")
                         preview_path = temporary / final_name
-                        temp_files.append(exclusive_payload(
-                            preview_path, payload, temp_root))
+                        temp_files.append(staged_file(preview_path, payload))
                         preview_records.append(
                             (final_name, preview_path, len(payload), digest(payload)))
                     input_hashes: dict[str, str | None] = (
@@ -5223,9 +5239,20 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
             print(f"NFL2K5_UNIT_COMPILE workers={units.workers} hits={units.hits} "
                   f"misses={units.misses} serial_fallbacks={units.fallbacks}", flush=True)
             # Why anything was compiled again, in plain words for the build log and the project doctor.
-            print("NFL2K5_STAGE_CACHE " + json.dumps(units.summary(), sort_keys=True), flush=True)
+            loop_seconds = time.monotonic() - loop_started
+            summary = units.summary()
+            summary["seconds"] = {"per_edit_step": round(loop_seconds, 1), "waiting_for_compilers": round(spent["waiting"], 1),
+                                  "writing_files": round(spent["writing"], 1), "files_written": spent["files"]}
+            print("NFL2K5_STAGE_CACHE " + json.dumps(summary, sort_keys=True), flush=True)
             for line in units.plain_summary():
                 _item_progress(line, len(project.value["edits"]), len(project.value["edits"]))
+            if loop_seconds >= 60:
+                minutes = lambda seconds: f"{seconds / 60:.0f} min" if seconds >= 90 else f"{seconds:.0f} s"
+                _item_progress(
+                    f"The per-edit step took {minutes(loop_seconds)}: {minutes(spent['waiting'])} waiting for the texture compilers "
+                    f"(or the saved results), {minutes(spent['writing'])} writing {spent['files']:,} small files, "
+                    f"{minutes(max(0.0, loop_seconds - spent['waiting'] - spent['writing']))} everything else",
+                    len(project.value["edits"]), len(project.value["edits"]))
         print(f"NFL2K5_COMPILE_CACHE hits={cache.hits} misses={cache.misses}", flush=True)
         return PreparedProject(prepared, temp_root, temp_files, input_pins,
                                report_pins, kept_retail)

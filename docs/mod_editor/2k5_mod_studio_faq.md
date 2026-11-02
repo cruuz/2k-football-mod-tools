@@ -94,7 +94,9 @@ What the cache is and what deleting it costs: the compiled textures sit in a fol
 `project-stage`, next to the private game cache (Windows `%LOCALAPPDATA%\2k5-mod-studio\cache\project-stage`,
 Linux and macOS `~/.cache/2k5-mod-studio/project-stage`). They are made from your own disc, so keep
 the folder private like the game cache and never share it. It is limited to about 3 GiB and the
-oldest results go first; a build never removes what it is using. Deleting the folder is safe, and
+oldest results go first; a build never removes what it is using. Updating or reinstalling the studio
+does not delete it (your reused textures survive an update that does not change how textures are
+encoded). Deleting the folder yourself is safe, and
 costs one slow build, because every texture is compiled again (hours for thousands of textures).
 Your projects, your artwork and your original disc are not stored there. The working sessions
 under `sessions` hold copies of the artwork you opened and clean themselves up after two weeks;
