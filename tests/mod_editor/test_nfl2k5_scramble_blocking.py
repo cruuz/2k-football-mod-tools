@@ -260,6 +260,41 @@ class NativeTests(unittest.TestCase):
                     m.run(0x23CE70, ecx=who, budget=3_000_000)
                     self.assertGreater(m.readf(m.get(who + 0xC) + 0x10), 0.0)
                     self.assertEqual(m.get(m.task(who)), 0x23CE70)
+                # 3 s after the snap (past 0x23AA40's 2-second gate): every one of them is ahead of the quarterback,
+                # so the game's own release rule keeps his block
+                m.f32(m.GAME + 0x10, 3.0)
+                for who in m.receivers:
+                    m.run(0x23CE70, ecx=who, budget=3_000_000)
+                    self.assertEqual(m.get(m.task(who)), 0x23CE70)
+
+    def test_the_hook_preserves_the_ai_tick_state_and_is_cheap_when_closed(self):
+        regs = {x86.UC_X86_REG_EBX: 0x11223344, x86.UC_X86_REG_EDI: 0x55667788, x86.UC_X86_REG_EBP: 0x0BADF00D}
+        for case in ("dead ball", "live, short of the line", "converting"):
+            with self.subTest(case=case):
+                m = self.machine()
+                if case == "dead ball":
+                    m.put(dk.PLAY_STATE, 13)
+                elif case == "live, short of the line":
+                    m.carry(0.2)
+                for reg, value in regs.items():
+                    m.uc.reg_write(reg, value)
+                fpu = (m.uc.reg_read(x86.UC_X86_REG_FPSW) >> 11) & 7, m.uc.reg_read(x86.UC_X86_REG_FPTAG)
+                start = len(m.trace)
+                m.run(0x214FC0, stop=0x214FC5, esi=0x13572468, budget=4_000_000)
+                executed = len(m.trace) - start
+                for reg, value in regs.items():
+                    self.assertEqual(m.uc.reg_read(reg), value)
+                self.assertEqual(m.uc.reg_read(x86.UC_X86_REG_ESI), 0x13572468)
+                self.assertEqual(m.uc.reg_read(x86.UC_X86_REG_ESP), m.STACK)     # the call and its RET balance
+                self.assertEqual(m.uc.reg_read(x86.UC_X86_REG_EAX), m.get(dk.PLAY_STATE))
+                self.assertEqual(((m.uc.reg_read(x86.UC_X86_REG_FPSW) >> 11) & 7, m.uc.reg_read(x86.UC_X86_REG_FPTAG)),
+                                 fpu)                                            # x87 stack left as found
+                if case == "dead ball":
+                    self.assertLess(executed, 12)
+                elif case == "live, short of the line":
+                    self.assertLess(executed, 60)
+                else:
+                    self.assert_converted(m)
 
     def test_nothing_changes_outside_the_gate(self):
         cases = {
