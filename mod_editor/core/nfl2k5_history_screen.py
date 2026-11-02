@@ -81,8 +81,9 @@ HELP_TEXT = (
     "club records, all-time leaders, the NFL record book, the season awards and the Hall of Fame, starting from real "
     "NFL history (2002 to 2025) with everything made in your franchise added and marked NEW. Black/White change the "
     "page, L/R the team. On the Schedule, X opens the box score of a played game (the score by quarter for every game, "
-    "full team and player stats for your team's games), and the Player Card gets a game log page. Your franchise's own "
-    "history needs the franchise history save data (kept with your saves); without it the real history still shows.")
+    "full team and player stats for your team's games), and with the Player Card honors option the card gets a game log "
+    "page. Your franchise's own history needs the option Franchise history and records (it keeps that data in your "
+    "saves); without it the real history and the scores by quarter still show.")
 
 SEED_PATH = Path(__file__).resolve().parents[2] / "data" / "nfl2k5_history_2026.json"
 
