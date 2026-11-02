@@ -1434,7 +1434,7 @@ void FC box_draw(u32 manager) {
 #define SEL_ROW ((u32 (*)(void))0x0024B680)
 #define SEL_SLOT ((u32 (*)(void))0x0024B6C0)
 #define LEGEND_SET ((void (FC *)(u32, u32, const u16 *))0x000F35A0)
-#define LEGEND_X 8u                                  /* the |M_SECONDARY| slot of the menu legend */
+#define LEGEND_X 1u    /* the menu legend's |M_HELP| slot: the X glyph (|M_SECONDARY| is Y: the desk maps it to 0x800) */
 
 static u32 schedule_game(u32 *row, u32 *slot) {
     u32 r = SEL_ROW(), s = SEL_SLOT();
@@ -1446,7 +1446,8 @@ static u32 schedule_game(u32 *row, u32 *slot) {
 }
 
 /* From the Schedule input hook (0x24D2E5, once per port that may act this frame): the legend offers the box score while
-   a played game is selected, and a fresh X press opens it. Returns nonzero when the box score screen was pushed. */
+   a played game is selected, and a fresh X press opens it (and is consumed, so the menu's X help list does not open on
+   top). Returns nonzero when the box score screen was pushed. */
 u32 FC hist_schedule_x(u32 manager, u32 port) {
     u32 row = 0, slot = 0, played = G(LEAGUE_MODE) == 2 && schedule_game(&row, &slot);
     LEGEND_SET(manager, LEGEND_X, played ? (const u16 *)(hist_ro + RO_FIELD(RO_BOX_LEGEND)) : 0);

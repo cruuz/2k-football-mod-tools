@@ -687,7 +687,7 @@ class NativeTests(unittest.TestCase):
         m.put(PADS + 8, 0)
         self.assertEqual(m.call(self.at["hist_schedule_x"], ecx=m.manager, edx=0), 0)
         legend = self.ro + hist.ro_field(self.content, "box_legend")
-        self.assertEqual(legends[-1], (8, legend))
+        self.assertEqual(legends[-1], (1, legend))   # the |M_HELP| (X) slot
         self.assertEqual(pushes, [])
         m.put(PADS + 8, 0x400)                           # X pressed
         self.assertEqual(m.call(self.at["hist_schedule_x"], ecx=m.manager, edx=0), 1)
@@ -698,7 +698,7 @@ class NativeTests(unittest.TestCase):
         m.hook(0x24B6C0, lambda mm: 0xFFFF)
         m.put(PADS + 8, 0x400)
         self.assertEqual(m.call(self.at["hist_schedule_x"], ecx=m.manager, edx=0), 0)
-        self.assertEqual(legends[-1], (8, 0))
+        self.assertEqual(legends[-1], (1, 0))
         self.assertEqual(len(pushes), 1)
 
     def test_schedule_hook_keeps_the_retail_back_test(self):
