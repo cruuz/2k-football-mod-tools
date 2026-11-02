@@ -21,6 +21,7 @@ for entry in (ROOT, ROOT / "tests", ROOT / "tests" / "mod_editor"):
 from mod_editor.core import nfl2k5_franchise_save as fs  # noqa: E402
 from mod_editor.core import nfl2k5_roster_records as rr  # noqa: E402
 from test_nfl2k5_franchise_save import synthetic_franchise  # noqa: E402
+from test_nfl2k5_roster_records import synthetic_body  # noqa: E402
 
 COACH_AT = 0x85000                      # a zero stretch of the synthetic arena (file offset)
 STRINGS_AT = 0x86000
@@ -103,4 +104,46 @@ def synthetic_staff_franchise(*, year_field: int = 7, user_team: int = 0, contig
     if shared_text:
         assert first_text_at is not None
         _rel(data, 0x84000, first_text_at)                                   # a stray reference from a zero stretch
+    return bytes(data)
+
+
+BODY_COACH_AT = 0x50000                 # a zero stretch of the synthetic disc body
+BODY_STRINGS_AT = 0x51000
+
+
+def synthetic_staff_body() -> bytes:
+    """The synthetic disc ROST body (three clubs) with the same six coach records, for pages that read a disc."""
+
+    data = bytearray(synthetic_body())
+    cursor = BODY_STRINGS_AT
+
+    def put(text: str) -> int:
+        nonlocal cursor
+        raw = text.encode("utf-16-le") + b"\0\0"
+        at = cursor
+        data[at:at + len(raw)] = raw
+        cursor += len(raw)
+        return at
+
+    from mod_editor.core import nfl2k5_roster_records as records
+    obj = records.OBJ_OFF
+    for index, (first, last, bio, photo, body, flags, career, _team) in enumerate(STAFF):
+        record = BODY_COACH_AT + index * fs.COACH_SIZE
+        for field, text in zip(fs.COACH_STRING_FIELDS, (first, last, *bio)):
+            _rel(data, record + field, put(text))
+        struct.pack_into("<I", data, record + fs.COACH_FIELDS["body"][0], body)
+        data[record + fs.COACH_FLAGS] = flags
+        struct.pack_into("<H", data, record + fs.COACH_FIELDS["photo"][0], photo)
+        for name, value in career.items():
+            rel, fmt = fs.COACH_FIELDS[name]
+            struct.pack_into(fmt, data, record + rel, value)
+        data[record + fs.COACH_FIELDS["playcalling_run"][0]] = 40 + index
+        for k in range(len(fs.COACH_RATINGS)):
+            data[record + fs.COACH_RATINGS_OFFSET + k] = 50 + 3 * index + (k % 7)
+    struct.pack_into("<I", data, obj + 0x30, len(STAFF))
+    _rel(data, obj + 0x34, BODY_COACH_AT)
+    document = records.load_body(bytes(data))
+    for index, (*_rest, team) in enumerate(STAFF):
+        if team is not None:
+            _rel(data, document.teams[team].offset + records.TEAM_COACH, BODY_COACH_AT + index * fs.COACH_SIZE)
     return bytes(data)
