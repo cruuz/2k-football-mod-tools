@@ -34,8 +34,10 @@ GAME_TICK = 0xB71D10
 RECORDS, RECORD_COUNT, PANEL = 0xC168B0, 0xC16BB0, 0xBA3178
 BALL_VA, CLOCK_VA, STATE_VA, KIND_VA, CARRIER_VA = 0xE602EC, 0xE6029C, 0xE602B8, 0xE602BC, 0xBE4F8C
 SLIDE_STEP, SLIDE_MAX = 137.16, 274.32
-OL_ROLE = 7                       # 0x509E08 flag 0x20: pass-set legs reach the target coordinator (0x23A710)
-DL_ROLE, LB_ROLE, DB_ROLE = 15, 10, 4
+# Player +0x2D = the formation kind (personnel codes: 0 QB, 5 T, 6 C, 7 G, 10 HB, 12 DE, 13 DT, 14 MLB, 15 OLB, 16 FS,
+# 17 SS, 18 CB). 0x509E08[kind] & 0x20 marks the linemen whose pass-set legs reach the target coordinator (0x23A710);
+# & 4 marks DE/DT, whose facing score 0x2FA5E0 is 0 without the position terms.
+QB, T, C, G, HB, DE, DT, MLB, OLB, FS, SS, CB = 0, 5, 6, 7, 10, 12, 13, 14, 15, 16, 17, 18
 TARGET_PROBE = 0x2FAFF0           # the probe replaces the coordinator's entry: records [edx] (the set point), fldz, ret 0x1C
 PROBE_LOG = 0x3F00000
 
@@ -160,21 +162,21 @@ class World:
     def four_three(self, overload=-1):
         """Five linemen, a QB and a back; 4-3 front, two corners, a deep safety and a safety walked up on the
         `overload` side (local x sign), 5 yd off the ball."""
-        for x in (-280.0, -140.0, 0.0, 140.0, 280.0):
-            p = self.player(self.OFF, OL_ROLE, x, -30.0)
+        for x, kind in ((-280.0, T), (-140.0, G), (0.0, C), (140.0, G), (280.0, T)):
+            p = self.player(self.OFF, kind, x, -30.0)
             self.pass_leg(p, x, -150.0)
-        qb = self.player(self.OFF, 0, 0.0, -120.0)
+        qb = self.player(self.OFF, QB, 0.0, -120.0)
         self.u32(CARRIER_VA, qb)
         self.u32(qb + 0x10, qb + 0x1800); self.u32(qb + 0x1800 + 4, qb + 0x1900)
-        self.player(self.OFF, 7, 0.0, -600.0)
-        for x in (-330.0, -110.0, 110.0, 330.0):
-            self.player(self.DEF, DL_ROLE, x, 60.0)
-        for x in (-380.0, 0.0, 380.0):
-            self.player(self.DEF, LB_ROLE, x, 380.0)
-        self.player(self.DEF, DB_ROLE, overload * 520.0, 300.0)        # the walked-up safety
+        self.player(self.OFF, HB, 0.0, -600.0)
+        for x, kind in ((-330.0, DE), (-110.0, DT), (110.0, DT), (330.0, DE)):
+            self.player(self.DEF, kind, x, 60.0)
+        for x, kind in ((-380.0, OLB), (0.0, MLB), (380.0, OLB)):
+            self.player(self.DEF, kind, x, 380.0)
+        self.player(self.DEF, SS, overload * 520.0, 300.0)            # the walked-up safety
         for x in (-1500.0, 1500.0):
-            self.player(self.DEF, DB_ROLE, x, 600.0)
-        self.player(self.DEF, DB_ROLE, 0.0, 1400.0)
+            self.player(self.DEF, CB, x, 600.0)
+        self.player(self.DEF, FS, 0.0, 1400.0)
         self.records()
 
     def run(self, start, regs=None, stack=(), stops=None, budget=400_000):
