@@ -67,7 +67,10 @@ VISIBLE_HELP_TEXT = (
 HELP_TEXT = (
     "EXPERIMENTAL. The Front Office Player Progress screen is available every week of the regular "
     "season and playoffs. Previously is the season-opening rating, Currently is the live rating and "
-    "+/- Change is movement since the season began. Old saves load normally."
+    "+/- Change is movement since the season began. Each press of the Black button on the screen goes "
+    "one week further back (last week, 2 weeks ago and so on, up to 8 weeks of your games) and the "
+    "bottom row names the week shown; the press after the oldest week returns to the season. Old "
+    "saves load normally."
 )
 
 IMAGE_BASE = 0x10000
@@ -84,10 +87,16 @@ SLOT_SIZE = record.SLOT_SIZE
 SNAPSHOT_SIZE = record.SNAPSHOT_SIZE
 RECORD_HEADER_SIZE = record.RECORD_HEADER_SIZE
 MAX_VIEW_WEEKS = 8
-# The per-frame event reads this pad word (port 0, sub 0: the "held buttons" word of the game's pad block, the one the
-# held accessor 0x709F0 returns) and this button bit.  Measured in the emulator (b780 b9, see the report).
+# The per-frame event reads this pad word (port 0, sub block 0: the "held buttons" word of the game's pad block, the one
+# the held accessor 0x709F0 returns) and this button bit: the Black button.  Measured in the emulator on the v0.8 disc
+# (b780 b9, xemu headless, the keys driven through xdotool, the pad block read from guest RAM): with nothing pressed the
+# word is 0; held, Y sets 0x800, Black 0x1000 and White 0x2000 (the bits follow the controller's analog button order
+# A 0x100, B 0x200, X 0x400, Y 0x800, Black 0x1000, White 0x2000, left trigger 0x4000, right trigger 0x8000, matching
+# the A 0x100 and B 0x200 the game's own replay-skip and MyCareer code test).  b779-pp5 held Black on this very screen
+# for 120 frames and saw only the per-frame event 9, so the retail handler does nothing with it.
 VIEW_PAD_VA = 0x00B37A88
 VIEW_PAD_MASK = 0x00001000
+VIEW_BUTTON = "Black"
 PAD_COUNT = 8                    # the screens poll pads 0..7
 PAD_STRIDE = 0x244               # bytes between two pads' blocks
 

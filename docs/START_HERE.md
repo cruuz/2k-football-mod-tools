@@ -85,8 +85,9 @@ SOFTDRINK's 2026 players and depth charts live on the disc, but a game or save y
 2. Start a **fresh franchise** (or a Quick Game, which uses the disc roster).
 
 The Crib is now the **Trophy Room** only: bought items no longer open, and furniture you placed stays as decoration. In
-Franchise, the Front Office **Player Progress** row shows your club's rating changes this season; an older save starts a
-fresh history the first time it loads.
+Franchise, the Front Office **Player Progress** row shows your club's rating changes this season (press the Black button on
+that screen to step back through last week, 2 weeks ago and so on, up to 8 weeks); an older save starts a fresh history the
+first time it loads.
 
 If the game looks unchanged or shows 2004 rosters, check in this order: you loaded the new image and not the old one; you
 installed from the untouched image plus the `.2k5patch` file; you started a fresh franchise after loading the disc roster; xemu

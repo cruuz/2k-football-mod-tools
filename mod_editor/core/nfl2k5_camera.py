@@ -20,11 +20,14 @@ scrimmage state keep the sideline eye. See ASTRA_CAMERA_V2_REPORT.md and reports
 
 v8 (beta-80, v0.8 known issue "the view from behind the punter is wider when you are the receiving team than when you
 punt"): the punt snap eye sat 29 m behind the punter, but the final-eye clamp holds every kick eye to |z| <= 50 m, so a
-punter standing inside his own 24 yard line pulled the camera in to 4 to 12 m while a punt from midfield kept the full
-29 m: the same set framed a punter 3.4 times larger from his own 20 than from midfield.  The distance is now designed to
-be reachable from the 24 (PUNT_EYE_BEHIND, 12 m): every punt from the 24 out, whoever kicks and whoever receives, is
-framed identically (about 87 of 480 lines tall, feet clear of the scorebug); only a punter backed up inside the 24 still
-meets the clamp, as before.  See reports/b780_b9-presentation_REPORT.md.
+punt from inside his own 42 yard line (line of scrimmage) pulled the camera in (4 m behind the punter at the 15, 9 m at the
+20, 18 m at the 30) while a punt from the 42 out kept the full 29 m.  The same set therefore framed the punter 49 lines
+tall (of 480) from midfield and about 120 lines tall from the 20, and which one you saw depended on where the punt was,
+which reads as "wider when the other team punts".  The design distance is now 12 m (PUNT_EYE_BEHIND), reachable from the
+24 out: every punt from the 24 on, whoever kicks and whoever receives, is framed the same (native projection, lens 50,
+16:9 and 4:3: the punter 102 lines tall with his feet 14 lines above the scorebug, the line of scrimmage at line 122),
+which is the tight look the b779 punt zoom pass asked for.  A punter backed up inside the 24 still meets the clamp.
+See reports/b780_b9-presentation_REPORT.md.
 
 864 owned RX bytes and four immutable 80-byte descriptors, no RW or retail cave.
 Reserve REQUESTS with

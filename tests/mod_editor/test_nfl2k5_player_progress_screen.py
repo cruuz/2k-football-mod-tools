@@ -49,6 +49,16 @@ class StaticTests(unittest.TestCase):
         if released.is_file():
             cls.released = released.read_bytes()
 
+    def test_the_view_button_is_black_on_the_measured_held_word(self):
+        """b780 b9 emulator measurement (v0.8 disc, pad block read from guest RAM): the held word of port 0, sub block 0
+        is 0 idle and 0x800 / 0x1000 / 0x2000 while Y / Black / White is held.  The wrapper reads exactly that word and the
+        Black bit, for every one of the eight pads, and the help text names the button."""
+        self.assertEqual((screen.VIEW_PAD_VA, screen.VIEW_PAD_MASK, screen.VIEW_BUTTON), (0xB37A88, 0x1000, "Black"))
+        self.assertEqual(screen.VIEW_PAD_VA, 0xB37A0C + 0x64 + 0x18, "port 0 block base + header + held word offset")
+        self.assertEqual((screen.PAD_COUNT, screen.PAD_STRIDE), (8, 0x244))
+        self.assertIn("Black", screen.HELP_TEXT)
+        self.assertNotIn("\u2014", screen.HELP_TEXT)
+
     def test_retail_and_released_are_retail(self):
         self.assertEqual(screen.status(self.retail), "retail")
         if self.released is not None:
