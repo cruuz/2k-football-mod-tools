@@ -113,8 +113,15 @@ class ShapeTests(unittest.TestCase):
         code = _disasm(k128.REQUIRE_CODE, CODE_VA + k128.REQUIRE_OFFSET)
         self.assertIn("cmp dword ptr [0xfd10020c], 0x8000000", code)
         self.assertEqual(sum("lea edx, [ebp + 0x" in line for line in code), 2, "one text pointer per failure")
-        self.assertEqual(len(k128.REQUIRE_CODE), 651)
+        self.assertEqual(len(k128.REQUIRE_CODE), 932)
         self.assertLessEqual(k128.REQUIRE_OFFSET + len(k128.REQUIRE_CODE), k128.OPTIONS_OFFSET)
+
+    def test_the_128_mb_entry_keeps_the_beta_79_start_up_path_byte_for_byte(self) -> None:
+        """b780-b11 only changed what the stop screen says: the guards, the page count, the early form and the memory
+        re-check that run before the text choice are the bytes the v0.8 disc shipped (sha pinned from that disc)."""
+        head = k128.REQUIRE_CODE[:k128.REQUIRE_STARTUP_BYTES]
+        self.assertEqual(hashlib.sha256(head).hexdigest(), "15e8007ca0ee56594ca9014627156763b0e48fa86a56825920b3a08ebe57fd30")
+        self.assertEqual(head[-10:], bytes.fromhex("813d0c0210fd00000008"), "ends at cmp [NV_PFB_CSTATUS], 128 MB")
 
     def test_the_ui_strings_carry_no_em_dash_and_claim_no_console_result(self) -> None:
         for text in (k128.UI_LABEL, k128.HELP_TEXT, k128.ROSTER_HEAP_LABEL, k128.ROSTER_HEAP_HELP, k128.EARLY_LABEL,
@@ -329,11 +336,13 @@ class ModelKernelTests(unittest.TestCase):
             "E": "7f49494941", "M": "7f021c027f", "X": "6314081463", "Y": "0708700807", "O": "3e4141413e",
             "R": "7f09192946", "1": "00427f4000", "2": "4261514946", "8": "3649494936", "4": "1814127f10",
             "6": "3c4a494930", "7": "0171090503", "(": "001c224100", ")": "0041221c00", "C": "3e41414122",
-            "P": "7f09090906", ">": "4122140800", "G": "3e41494938"}
+            "P": "7f09090906", ">": "4122140800", "G": "3e41494938", "A": "7c1211127c", "K": "7f08142241",
+            "0": "3e5149453e", "3": "2141454b31", "5": "2745454539", "9": "064949291e"}
 
     @classmethod
     def _expected_screen(cls, lines=((180, 44, "THIS BUILD NEEDS 128 MB"), (228, 56, "SET XEMU SYSTEM MEMORY"),
-                                     (276, 212, "TO 128 MB"))) -> bytes:
+                                     (276, 212, "TO 128 MB"), (324, 92, "THEN CLOSE XEMU AND"),
+                                     (372, 164, "OPEN IT AGAIN"))) -> bytes:
         """The three lines in the classic 5x7 font at 4x, white on black, 640 x 480 32-bit pixels."""
         screen = bytearray(640 * 480 * 4)
         for y0, x0, text in lines:
@@ -347,9 +356,12 @@ class ModelKernelTests(unittest.TestCase):
         return bytes(screen)
 
     @classmethod
-    def _expected_kernel_screen(cls) -> bytes:
+    def _expected_kernel_screen(cls, build: int = 5838, code: int = 1) -> bytes:
+        """The three BIOS lines plus 'KERNEL<build> CODE <n>': five cells for the number, leading zeros as spaces."""
+        number = f"{build:5d}"
         return cls._expected_screen(((180, 20, "THIS BUILD NEEDS THE 4627"), (228, 32, "XBOX BIOS (COMPLEX 4627)"),
-                                     (276, 20, "IN XEMU SETTINGS > SYSTEM")))
+                                     (276, 20, "IN XEMU SETTINGS > SYSTEM"),
+                                     (324, 104, f"KERNEL{number} CODE {code}")))
 
     def test_at_64_mb_the_128_mb_entry_scans_out_its_own_buffer_draws_the_message_and_stops(self) -> None:
         for cr01, pitch in ((79, 2560), (159, 5120)):         # a 640 and a 1280 pixel wide mode
@@ -370,16 +382,29 @@ class ModelKernelTests(unittest.TestCase):
                                  (0x4000, 0, 0))
 
     def test_with_128_mb_set_but_another_guard_failing_the_entry_draws_the_4627_bios_message(self) -> None:
-        for label, kwargs in (("another kernel", dict(build=5838)), ("other prologue", dict(prologue=False)),
-                              ("odd page count", dict(pages=0x5000))):
+        """b780-b11: the BIOS screen prints the kernel number it found and which check failed first (CODE 1 the build is
+        not 4627, 2 the memory tables are in use, 3 the kernel code is not the 4627 code, 4 an odd page count)."""
+        for label, kwargs, build, code in (
+                ("another kernel", dict(build=5838), 5838, 1), ("a 5-digit build", dict(build=12345), 12345, 1),
+                ("a 3-digit build", dict(build=909), 909, 1), ("the biggest build", dict(build=0xFFFF), 65535, 1),
+                ("tables already there", dict(pde=0x04000067), 4627, 2),
+                ("other prologue", dict(prologue=False), 4627, 3), ("odd page count", dict(pages=0x5000), 4627, 4),
+                ("another kernel and tables", dict(build=5101, pde=0x04000067), 5101, 1)):
             with self.subTest(label):
                 uc = self._require_machine(**kwargs)
                 self._stop(uc)
                 pitch = 2560
                 rows = b"".join(bytes(uc.mem_read(self.FB_VA + y * pitch, 640 * 4)) for y in range(480))
-                self.assertEqual(rows, self._expected_kernel_screen())
+                self.assertEqual(rows, self._expected_kernel_screen(build, code))
                 self.assertEqual((self._d(uc, 0x8003B2D4), self._d(uc, 0xC0300840), self._d(uc, 0x80030000)),
                                  (kwargs.get("pages", 0x4000), kwargs.get("pde", 0), 0), "the kernel is left alone")
+
+    def test_the_bios_screen_draws_once_and_wide_modes_still_get_the_kernel_line(self) -> None:
+        uc = self._require_machine(build=5849, cr01=159)               # a 1280 pixel wide mode
+        self._stop(uc)
+        pitch = 5120
+        rows = b"".join(bytes(uc.mem_read(self.FB_VA + y * pitch, 640 * 4)) for y in range(480))
+        self.assertEqual(rows, self._expected_kernel_screen(5849, 1))
 
     def test_a_64_mb_machine_with_another_kernel_still_draws_the_memory_message(self) -> None:
         uc = self._require_machine(build=5838, cstatus=0x04000000)

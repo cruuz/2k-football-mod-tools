@@ -148,31 +148,44 @@ OPT_K128, OPT_ROSTER_HEAP, OPT_EARLY, OPT_REQUIRE = 0x1, 0x2, 0x4, 0x8
 # phase 1 like k128_entry; when the machine will not get 128 MB (the guards fail, or the page count is not 0x4000 or
 # 0x8000) and 128 MB is not already managed, it takes an 8 MB contiguous buffer below 32 MB (MmAllocateContiguousMemoryEx
 # through the title's import), scans it out (NV_PCRTC_START; a 32-bit pitch for the mode's width, CR01 -> CR13/CR19; CR28 32
-# bpp; the attribute display bit; SR01 screen on), draws three lines of text and stops in a hlt loop instead of starting
-# the game. The text names the failed setting (b779-km1): xemu memory below 128 MB draws "THIS BUILD NEEDS 128 MB / SET
-# XEMU SYSTEM MEMORY / TO 128 MB"; with 128 MB set (NV_PFB_CSTATUS = 0x08000000) any other guard failure, which means
-# the kernel is not the 4627 build K128 supports or is in an unsupported state, draws "THIS BUILD NEEDS THE 4627 / XBOX
-# BIOS (COMPLEX 4627) / IN XEMU SETTINGS > SYSTEM". Otherwise it continues exactly as k128_entry does (and, with the
-# early form, runs k128_arena at once), reading the option word at CODE_SIZE-4.
+# bpp; the attribute display bit; SR01 screen on), draws the text and stops in a hlt loop instead of starting the game.
+# The text names the failed setting (b779-km1): xemu memory below 128 MB draws "THIS BUILD NEEDS 128 MB / SET XEMU SYSTEM
+# MEMORY / TO 128 MB" and, since b780-b11, "THEN CLOSE XEMU AND / OPEN IT AGAIN" (xemu reads the memory setting only when it
+# starts); with 128 MB set (NV_PFB_CSTATUS = 0x08000000) any other guard failure, which means the kernel is not the 4627
+# build K128 supports or is in an unsupported state, draws "THIS BUILD NEEDS THE 4627 / XBOX BIOS (COMPLEX 4627) / IN XEMU
+# SETTINGS > SYSTEM" and, since b780-b11, a line "KERNEL <build> CODE <n>" (n: 1 the kernel is not the 4627 build, 2 the
+# memory tables are already in use, 3 MiAddPhysicalPages is not the 4627 code, 4 the page count is not 0x4000 or 0x8000), so a
+# photo of the screen names the cause. Otherwise it continues exactly as k128_entry does (and, with the early form, runs
+# k128_arena at once), reading the option word at CODE_SIZE-4. Everything before the text choice (the first
+# REQUIRE_STARTUP_BYTES bytes, the whole start-up path and the memory re-check) is byte for byte what beta-79 shipped.
 REQUIRE_CODE = bytes.fromhex(
-    "609ce8000000005de8a8feffff753fa1d4b203803d0040000074073d00800000752cc705d4b2038000800000f685f5030000"
-    "04740d9d61e8f2fdffff68d16b0100c39d6168d16b0100c3fbf4ebfd813dd4b2038000800000750c813d400830c067000004"
-    "74c66a046a0068ffffff016a006800008000ff15a43c4e0085c074ca89c625ffffff03a3000860fdbad41360fdc602010fb6"
-    "5a0143c1e30589d8c1e803c60213884201c1e80324e0c60219884201c60228804a01038a4206c642ec20bac4030cfdc60201"
-    "806201df89f7b90000200031c0f3ab813d0c0210fd000000088d952902000074068d95e20100000fb70285c00f8450ffffff"
-    "0fb74a020fafc301f08d3c880fb64a0483c2050fb602425156578db5560100008d048001c66a0559ac57516a0759d0e8731b"
-    "57515083c8ff6a0459890789470489470889470c01dfe2f158595f8d3c9fe2dc595f83c710e2cf5f5e5983c760e2b2eb9200"
-    "0000000001017f01017f0808087f00417f410046494949317f494949363f4040403f7f404040407f4141221c7f0408107f7f"
-    "494949417f021c027f631408146307087008073e4141413e7f0919294600427f4000426151494636494949361814127f103c"
-    "4a4949300171090503001c2241000041221c003e414141227f0909090641221408003e41494938b4002c0017010203040005"
-    "0603070800090a0a080400101112000b05e400380016040a01000c0a0b0600040d04010a0b000b0a0b0e0f0d1401d4000901"
-    "0e00101112000b050000b4001400190102030400050603070800090a0a08040001020a0013141115e4002000180c050e0c00"
-    "05030e040016180e0b19070a0c00131411151714011400190309000c0a0b0600040a010103091b04001a00040d04010a0b00"
-    "00"
+    "609ce8000000005de8a8feffff753fa1d4b203803d0040000074073d00800000752cc705d4b2038000800000f685f503"
+    "000004740d9d61e8f2fdffff68d16b0100c39d6168d16b0100c3fbf4ebfd813dd4b2038000800000750c813d400830c0"
+    "6700000474c66a046a0068ffffff016a006800008000ff15a43c4e0085c074ca89c625ffffff03a3000860fdbad41360"
+    "fdc602010fb65a0143c1e30589d8c1e803c60213884201c1e80324e0c60219884201c60228804a01038a4206c642ec20"
+    "bac4030cfdc60201806201df89f7b90000200031c0f3ab813d0c0210fd000000088d9542030000740a8d95d10200006a"
+    "01eb026a000fb70285c074630fb74a020fafc301f08d3c880fb64a0483c2050fb602425156578db5fc0100008d048001"
+    "c66a0559ac57516a0759d0e8731b57515083c8ff6a0459890789470489470889470c01dfe2f158595f8d3c9fe2dc595f"
+    "83c710e2cf5f5e5983c760e2b2eb96833c24000f85e1feffffc704240100000083ec1c5689e783c7048db5b5020000b9"
+    "07000000fcf3a55ea1a43b4e000fb740048d7c240fb90500000031d2f7b5b10200000fb69415a602000088174fe2eb8d"
+    "7c240bb904000000803f1e7506c6070047e2f5a1a43b4e00668178041312b101751b833d400830c000b1027510813d1a"
+    "f90180568b7424b1037502b1040fb6c90fb68c0da6020000884c241689e2e9f2feffff000000000001017f01017f0808"
+    "087f00417f410046494949317f494949363f4040403f7f404040407f4141221c7f0408107f7f494949417f021c027f63"
+    "1408146307087008073e4141413e7f0919294600427f4000426151494636494949361814127f103c4a49493001710905"
+    "03001c2241000041221c003e414141227f0909090641221408003e414949387c1211127c7f081422413e5149453e2141"
+    "454b312745454539064949291e1e10111f132014151221900a00000044016800121d0a0f090a07000000000000180e08"
+    "0a00000000000000b4002c00170102030400050603070800090a0a080400101112000b05e400380016040a01000c0a0b"
+    "0600040d04010a0b000b0a0b0e0f0d1401d40009010e00101112000b0544015c001301020a090018070e040a000c0a0b"
+    "06001c09087401a4000d0e190a09000301001c1b1c03090000b4001400190102030400050603070800090a0a08040001"
+    "020a0013141115e4002000180c050e0c0005030e040016180e0b19070a0c00131411151714011400190309000c0a0b06"
+    "00040a010103091b04001a00040d04010a0b0000"
 )
-REQUIRE_CODE_SHA256 = "5ae638250eb9579f224963e1af3b7557a703736726552d6d747b6d270d656976"
+REQUIRE_CODE_SHA256 = "6f19d49eea5c98c4b67dbdf39a4a6140f071fde14133d132c4dbec5ccbe4c774"
+REQUIRE_STARTUP_BYTES = 0xE1                     # up to and including the cmp of NV_PFB_CSTATUS that picks the text
+REQUIRE_STARTUP_SHA256 = "15e8007ca0ee56594ca9014627156763b0e48fa86a56825920b3a08ebe57fd30"   # the beta-79 bytes (v0.8 disc)
 REQUIRE_HALT_OFFSET = REQUIRE_OFFSET + 0x4B      # the hlt of the stop loop
-assert len(REQUIRE_CODE) == 651 and hashlib.sha256(REQUIRE_CODE).hexdigest() == REQUIRE_CODE_SHA256
+assert len(REQUIRE_CODE) == 932 and hashlib.sha256(REQUIRE_CODE).hexdigest() == REQUIRE_CODE_SHA256
+assert hashlib.sha256(REQUIRE_CODE[:REQUIRE_STARTUP_BYTES]).hexdigest() == REQUIRE_STARTUP_SHA256
 assert REQUIRE_CODE[REQUIRE_HALT_OFFSET - REQUIRE_OFFSET:REQUIRE_HALT_OFFSET - REQUIRE_OFFSET + 3] == b"\xf4\xeb\xfd"
 MM_PAGES = 0x8003B2D4                # MmNumberOfPhysicalPages (the STICKY section)
 
@@ -186,7 +199,8 @@ HELP_TEXT = (
     "other kernel, the patch stays asleep and the game runs as retail. A disc that also has the Guardian overlay, "
     "16 reserves or the extra created teams needs the 128 MB: without it the disc stops at startup and names the "
     "failed setting on screen (System Memory below 128 MB, or the Flash ROM/BIOS is not the 4627 build), instead of "
-    "failing at the pregame intro. xemu only; a console has 64 MB.")
+    "failing at the pregame intro; the BIOS message also prints the kernel number it found. xemu only; a console has "
+    "64 MB.")
 ROSTER_HEAP_HELP = (
     "EXPERIMENTAL / UNWITNESSED. Needs the 128 MB option. Retail: the roster block (580 KB, the arena that 16 "
     "reserves and extra created teams grow) sits in the main heap, and each game's in-game block takes all but "
