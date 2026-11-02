@@ -166,6 +166,7 @@ from . import nfl2k5_sim_stats as sim_stats_patch  # noqa: F401  b778-sim1: in-p
 from . import nfl2k5_option_defaults as option_defaults_patch  # noqa: F401  b779-df1: in-place fresh-profile default options; imported so the pinned closure records it
 from . import nfl2k5_sim_rb_injuries as sim_rb_injuries_patch  # noqa: F401  b779-sim2: late owner (weekly RB injury roll and simulated-game carrier guard); imported so the cave manifest recorder observes it
 from . import nfl2k5_sim_realism as sim_realism_patch  # noqa: F401  b779-sim2 r4: scheduled-sim season realism (late owner)
+from . import nfl2k5_speed_threshold as speed_threshold_patch  # noqa: F401  b780-cv5: late owner (speed separation); imported so the cave manifest recorder observes it and the presets read its SOFTDRINK strength
 from . import nfl2k5_preseason_warning as preseason_warning_patch  # noqa: F401  b779-int1: rc1's warned flag joins the union (LATE_OWNERS before the sim owners)
 from . import nfl2k5_clock_led as clock_led_patch  # noqa: F401  b778-sd4: late owner (modern LED clock digits); imported so the cave manifest recorder observes it
 from . import nfl2k5_team_number_scale as team_number_scale_patch  # noqa: F401  b776-ns1: its late owner is reserved with the first space pass

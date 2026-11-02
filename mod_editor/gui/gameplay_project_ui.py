@@ -52,6 +52,8 @@ def restore(panel, state):
         panel.colour_lighting.set_active(choices["modern_color"])
         panel.ceiling_spin.setValue(round(choices["max_deep_yards"]))
         panel.arc_spin.setValue(round(choices["arc"] * 100))
+        if hasattr(panel, "speed_threshold_spin"):  # b780-cv5: the Build page's Speed separation strength
+            panel.speed_threshold_spin.setValue(choices["speed_threshold"])
         panel._momentum_last_positive = choices["momentum"] or 50
         panel._collision_last_positive = choices["momentum_collision_level"] or 50
         for field, value in (("scorebug_watermark_combo", choices["scorebug_watermark"]),

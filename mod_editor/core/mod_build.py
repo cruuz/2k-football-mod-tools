@@ -555,6 +555,12 @@ class BuildPlan:
     # 6 punt} so scrimmage and field-goal pursuit is byte-for-byte retail. CPU defenders only; human defenders
     # keep the retail aim. On in the Advanced and Experimental presets (the SOFTDRINK recipe builds from Experimental).
     return_coverage: bool = False
+    # b780-cv5: speed separation on deep routes (Noah's X_Ray/Ju3tin/THE1WAM "speed barely matters" reports). A late
+    # executable owner (nfl2k5_speed_threshold) hooks the speed mapper's epilogue (0x2381B1) and takes
+    # strength x Speed gap / 10,000 off a slower CPU man defender's straight running speed once his faster receiver is
+    # 8 to 12 yards past the line (gap capped at 25 points). Strength is a whole number 0..100; 0 installs nothing.
+    # EXPERIMENTAL: 35 in the Experimental preset (the SOFTDRINK 2K28 recipe builds from it); Basic and Advanced keep 0.
+    speed_threshold: int = 0
 
     # b778-st2: rookie stars and stars earned or lost over a career. The draft-class generator's 3..5 best prospects
     # (the draft-AI key) and 1..2 later-round gems (a top development archetype) get the Star tier; every offseason,
@@ -915,6 +921,13 @@ for _preset in PRESETS.values():
     _preset["return_coverage"] = False
 PRESETS["softdrink_advanced"]["return_coverage"] = True
 PRESETS["softdrink_experimental"]["return_coverage"] = True
+del _preset
+# b780-cv5: speed separation on deep routes (coordinator default for the SOFTDRINK recipe: strength 35). It is an
+# unwitnessed gameplay tuning, so it is on only in the Experimental preset, the one the SOFTDRINK 2K28 recipe builds
+# from; Basic (the 2004 game) and Advanced keep 0, which installs nothing.
+for _preset in PRESETS.values():
+    _preset["speed_threshold"] = 0
+PRESETS["softdrink_experimental"]["speed_threshold"] = tt.speed_threshold_patch.SOFTDRINK
 del _preset
 # b778-ee1: the alien prospect rides on rookie faces: the same preset.
 for _preset in PRESETS.values():
@@ -1341,6 +1354,7 @@ _LATE_OWNER_OPTIONS = (
     ("nfl2k5_clock_led", "Modern clock digits", lambda p: p.modern_clock_led),  # b778-sd4
     ("nfl2k5_return_coverage", "Return coverage pursuit angles", lambda p: p.return_coverage),  # b778-kr1
     ("nfl2k5_preseason_warning", "2026 franchise economy", lambda p: p.franchise_economy),  # b779-rc1: the warned flag
+    ("nfl2k5_speed_threshold", "Speed separation", lambda p: bool(p.speed_threshold)),  # b780-cv5
 )
 _REBUILD_HINT = " Build from your unmodified retail dump instead."
 
@@ -1389,6 +1403,27 @@ def _return_coverage_preflight(source: Path, progress) -> None:
     if module.status(payload) == "foreign":
         raise ValueError("The pursuit AI code in this source is not retail or return coverage. Turn it off "
                          "or build from your unmodified retail dump.")
+
+
+def _speed_threshold_preflight(plan: "BuildPlan", source: Path, progress) -> None:
+    """b780-cv5: refuse, before any write, a source whose speed code is foreign or that already carries another strength."""
+    module = _core_module("nfl2k5_speed_threshold")
+    if module is None or _core_module("nfl2k5_xbe_space") is None:
+        raise ValueError("Speed separation is not available in this installation.")
+    progress("Checking the speed code for speed separation", 0, 0)
+    try:
+        payload = _xbe_bytes(source)
+    except (OSError, ValueError) as exc:
+        raise ValueError(f"Speed separation cannot read default.xbe: {exc}") from exc
+    state = module.status(payload)
+    if state == "foreign":
+        raise ValueError("The speed code in this source is not retail or Speed separation. Turn it off "
+                         "or build from your unmodified retail dump.")
+    if state == "applied":
+        installed = module.verify(payload)["value"]
+        if installed != plan.speed_threshold:
+            raise ValueError(f"This disc already has Speed separation set to {installed}. The strength cannot be "
+                             f"changed in place: build from your unmodified retail dump to use {plan.speed_threshold}.")
 
 
 
@@ -1878,6 +1913,25 @@ def _apply_sim_realism(plan: "BuildPlan", target: Path, receipt: dict, progress)
     receipt["result"]["sim_realism"] = "applied"
 
 
+def _apply_speed_threshold(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    """b780-cv5: speed separation on deep routes, the last late allocator owner (LATE_OWNERS order). Strength 0 does nothing."""
+    if not plan.speed_threshold:
+        return
+    module = _core_module("nfl2k5_speed_threshold")
+    if module is None:
+        raise RuntimeError("Speed separation needs nfl2k5_speed_threshold.")
+    progress("CPU AI: faster receivers pull away on deep routes", 0, 0)
+    payload, speed_receipt = module.apply(_xbe_bytes(target), value=plan.speed_threshold)
+    _write_xbe_bytes(target, payload)
+    final = _xbe_bytes(target)
+    if final != payload or module.status(final) != "applied":
+        raise RuntimeError("Speed separation: the output does not read back as applied")
+    module.verify(final, value=plan.speed_threshold)
+    receipt["steps"].append({"step": "speed_threshold", **{k: v for k, v in speed_receipt.items() if k != "reservations"}})
+    receipt["result"]["speed_threshold"] = "applied"
+    receipt["result"]["speed_threshold_value"] = plan.speed_threshold
+
+
 def _sim_stats_preflight(source: Path, progress) -> None:
     """b778-sim1: refuse a source whose simulator initializer is foreign, before any write."""
     module = _core_module("nfl2k5_sim_stats")
@@ -2099,6 +2153,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
                                ("practice_injuries", "nfl2k5_practice_injuries"),  # b778-pi1
                                ("cpu_ball_carriers", "nfl2k5_ball_carrier_ai"),  # b778-ai5
                                ("return_coverage", "nfl2k5_return_coverage"),  # b778-kr1
+                               ("speed_threshold", "nfl2k5_speed_threshold"),  # b780-cv5
                                ("sportscenter_lineup", "nfl2k5_sportscenter_lineup"),
                                ("franchise_draft_clock", "nfl2k5_draft_clock"),  # b778-dr1
                                ("weekly_progression", "nfl2k5_weekly_progression"),  # b778-pg1
@@ -2364,6 +2419,10 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
     out["sim_rb_injuries"] = rb_injuries.status(_xbe_bytes(source)) if rb_injuries is not None else "unavailable"
     sim_realism = _core_module("nfl2k5_sim_realism")  # b779-sim2 r4
     out["sim_realism"] = sim_realism.status(_xbe_bytes(source)) if sim_realism is not None else "unavailable"
+    speed_threshold = _core_module("nfl2k5_speed_threshold")  # b780-cv5
+    out["speed_threshold"] = speed_threshold.status(_xbe_bytes(source)) if speed_threshold is not None else "unavailable"
+    out["speed_threshold_settings"] = (speed_threshold.verify(_xbe_bytes(source))
+                                       if out["speed_threshold"] == "applied" else None)
     sim_stats = _core_module("nfl2k5_sim_stats")  # b778-sim1
     out["sim_stats"] = sim_stats.status(_xbe_bytes(source)) if sim_stats is not None else "unavailable"
     option_defaults = _core_module("nfl2k5_option_defaults")  # b779-df1
@@ -4290,6 +4349,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("CPU ball carriers must be Off or On.")
     if type(plan.return_coverage) is not bool:  # b778-kr1
         raise ValueError("Return coverage pursuit angles must be Off or On.")
+    if type(plan.speed_threshold) is not int or not 0 <= plan.speed_threshold <= 100:  # b780-cv5
+        raise ValueError("Speed separation must be a whole number from 0 to 100.")
     if type(plan.sportscenter_lineup) is not bool:
         raise ValueError("SportsCenter highlight lineups must be Off or On.")
     if type(plan.franchise_draft_clock) is not bool:  # b778-dr1
@@ -5067,6 +5128,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         _ball_carrier_preflight(source, progress)
     if plan.return_coverage:  # b778-kr1: before any write
         _return_coverage_preflight(source, progress)
+    if plan.speed_threshold:  # b780-cv5: before any write
+        _speed_threshold_preflight(plan, source, progress)
     if plan.sportscenter_lineup:
         _sportscenter_lineup_preflight(source, progress)
     if plan.franchise_draft_clock:  # b778-dr1: like fo1, before any write
@@ -6784,6 +6847,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     _apply_sim_rb_injuries(plan, target, receipt, progress)
     # b779-sim2 r4: scheduled-sim season realism, after the RB injury owner (LATE_OWNERS order)
     _apply_sim_realism(plan, target, receipt, progress)
+    # b780-cv5: speed separation on deep routes, after the last other late owner (nfl2k5_xbe_space.LATE_OWNERS order)
+    _apply_speed_threshold(plan, target, receipt, progress)
     # b778-pg2: the Player Progress screen and weekly snapshot (a late allocator owner after force_out)
     # b778-cb1: cornerback tackle credit, after force_out
     # b778-sd4: modern clock digits, after modern sideline catches
@@ -6868,6 +6933,10 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("simulated RB short injuries did not survive the final passes")  # b779-sim2
     if plan.sim_realism and _core_module("nfl2k5_sim_realism").status(_xbe_bytes(target)) != "applied":
         raise ValueError("simulated season realism did not survive the final passes")  # b779-sim2 r4
+    if plan.speed_threshold:  # b780-cv5
+        _speed = _core_module("nfl2k5_speed_threshold")
+        if _speed.status(_xbe_bytes(target)) != "applied" or _speed.verify(_xbe_bytes(target))["value"] != plan.speed_threshold:
+            raise ValueError("speed separation did not survive the final passes")
     if plan.sim_cb_tackles and _core_module("nfl2k5_sim_cb_tackles").status(_xbe_bytes(target)) != "applied":  # b778-cb1
         raise ValueError("cornerback tackle credit did not survive the final passes")
     if plan.sim_stats and _core_module("nfl2k5_sim_stats").status(_xbe_bytes(target)) != "applied":  # b778-sim1

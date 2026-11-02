@@ -84,6 +84,7 @@ FEATURE_KEYS += ("contract_college_guard",)  # b778-cr1: Contracts null-college 
 FEATURE_KEYS += ("sim_cb_tackles",)  # b778-cb1: cornerback tackle credit, late executable owner
 FEATURE_KEYS += ("sim_rb_injuries",)  # b779-sim2: weekly RB injury roll and simulated-game carry guard
 FEATURE_KEYS += ("sim_realism",)  # b779-sim2 r4: scheduled-sim season realism, late executable owner
+FEATURE_KEYS += ("speed_threshold",)  # b780-cv5: speed separation strength 0..100 on deep routes, late executable owner (0 = off)
 FEATURE_KEYS += ("sim_stats",)  # b778-sim1: simulated franchise game pace (in place, no allocation)
 FEATURE_KEYS += ("option_defaults", "default_quarter_minutes", "default_sim_quarter_minutes")  # b779-df1: fresh-profile default options (in place, no allocation)
 FEATURE_KEYS += ("modern_clock_led",)  # b778-sd4: LED play clock and score digits, late executable owner
@@ -144,6 +145,7 @@ def build_settings(value):
     for key in ("music_project", "music_library", "my_career_setup"):
         tt._require(choices[key] is None or type(choices[key]) is str, f"{key} must be a path or None")
     tt._require(choices["screen_timing"] in (None, "A", "B", "C", "D"), "Screen timing must be A, B, C, D or None")
+    tt._require(0 <= choices["speed_threshold"] <= 100, "Speed separation must be a whole number from 0 to 100")  # b780-cv5
     week = choices["abilities_off_week"]
     tt._require(week is None or type(week) is int and 0 <= week <= 17, "Abilities off week must be 0..17 or None")
     for key in ("player_tags", "playbook_packs"):
