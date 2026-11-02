@@ -155,6 +155,28 @@ class BytesTests(unittest.TestCase):
         patched, _ = q.apply(data)
         self.assertEqual(q.status(patched), "applied")
 
+    def test_released_v08_executable_keeps_every_other_owner_as_it_was(self):
+        """The v0.8 build carries every b778/b779 owner: none may change state, none may turn foreign, when this one is added."""
+        import importlib
+        path = Path(os.environ.get("NFL2K5_V08_XBE", "/nonexistent"))
+        if not path.is_file():
+            self.skipTest("the released v0.8 extraction is not in this scratch")
+        data = path.read_bytes()
+        patched, _ = q.apply(data)
+        seen = {}
+        for name in ("qb_accuracy", "db_ball_play", "pass_protection", "run_blocking", "ball_carrier_ai", "return_coverage",
+                     "scramble_tuning", "force_out", "coach_ai", "cpu_third_down", "sim_stats", "option_defaults",
+                     "catch_slider", "progression", "zone_drop", "coverage_slider", "kick_rules", "overtime",
+                     "decided_clock", "accelerated_clock", "coin_defer", "deep_zone", "qb_spy_runtime", "sim_cb_tackles",
+                     "sim_rb_injuries", "sim_realism", "clock_led", "weekly_progression", "star_career", "star_retention"):
+            module = importlib.import_module(f"mod_editor.core.nfl2k5_{name}")
+            before, after = module.status(data), module.status(patched)
+            seen[name] = before
+            with self.subTest(owner=name):
+                self.assertNotEqual(before, "foreign")
+                self.assertEqual(before, after)
+        self.assertGreaterEqual(sum(1 for state in seen.values() if state == "applied"), 20)
+
     def test_composes_with_the_neighbouring_throw_owners_in_both_orders(self):
         from mod_editor.core import nfl2k5_qb_accuracy as accuracy
         from mod_editor.core import nfl2k5_throw_tuning as tt
