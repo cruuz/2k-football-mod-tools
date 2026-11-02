@@ -48,11 +48,13 @@ import hashlib
 import json
 import re
 import sys
+import threading
 import time
 import unicodedata
 import urllib.error
 import urllib.parse
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor
 from html.parser import HTMLParser
 from pathlib import Path
 
@@ -219,6 +221,12 @@ def club_of_cell(cell: str, year):
     return None
 
 
+def _span(value) -> int:
+    """colspan / rowspan attribute -> a small positive integer (a malformed value such as '2"' reads as 2, nothing as 1)"""
+    m = re.search(r"\d+", value or "")
+    return max(1, min(int(m.group(0)), 60)) if m else 1
+
+
 class _Tables(HTMLParser):
     """Top-level tables of an article with the nearest heading, colspan/rowspan expanded."""
 
@@ -262,7 +270,7 @@ class _Tables(HTMLParser):
             self._col = 0
             self._fill()
         elif self.depth == 1 and tag in ("td", "th") and self._row is not None:
-            self._cell = {"text": [], "cs": int(a.get("colspan", 1) or 1), "rs": int(a.get("rowspan", 1) or 1)}
+            self._cell = {"text": [], "cs": _span(a.get("colspan")), "rs": _span(a.get("rowspan"))}
         elif tag == "br" and self._cell is not None:
             self._cell["text"].append(" ")
 
@@ -318,10 +326,44 @@ class _Tables(HTMLParser):
             self._cell["text"].append(data)
 
 
+_TABLE_TAG = re.compile(r"<(/?)table\b[^>]*>", re.I)
+_TABLE_OPEN_CLASS = re.compile(r"<table\b[^>]*\bclass=\"[^\"]*\b(?:wikitable|infobox)\b[^\"]*\"[^>]*>", re.I)
+_HEADING = re.compile(r"<h([234])\b[^>]*>(.*?)</h\1>", re.I | re.S)
+
+
 def html_tables(html: str):
-    p = _Tables()
-    p.feed(html)
-    return p.tables
+    """Top-level wikitables and infoboxes of an article (with the nearest heading), or every table of a bare snippet.
+    Only those tables are parsed: an article's references and navigation boxes are most of its HTML."""
+    spans = []
+    for m in _TABLE_OPEN_CLASS.finditer(html):
+        if spans and m.start() < spans[-1][1]:
+            continue                                            # nested inside the previous table
+        depth, end = 0, None
+        for t in _TABLE_TAG.finditer(html, m.start()):
+            depth += -1 if t.group(1) else 1
+            if depth == 0:
+                end = t.end()
+                break
+        if end:
+            spans.append((m.start(), end))
+    if not spans:
+        p = _Tables()
+        p.feed(html)
+        return p.tables
+    headings = [(h.start(), re.sub(r"\s+", " ", re.sub(r"<[^>]+>", "", h.group(2))).strip()) for h in _HEADING.finditer(html)]
+    out = []
+    for a, b in spans:
+        heading = ""
+        for pos, text in headings:
+            if pos < a:
+                heading = text
+            else:
+                break
+        p = _Tables()
+        p.heading = heading
+        p.feed(html[a:b])
+        out.extend(p.tables)
+    return out
 
 
 def num(s):
@@ -391,11 +433,12 @@ def flat_groups(heads):
     return out
 
 
-def player_tables(html: str):
-    """NFL career stat tables of a player article: {'heads', 'cmap', 'rows', 'heading', 'post'} (offense columns are only
-    mapped for offense tables and defense columns only for defense tables, so a quarterback's 'Sacks' are not defensive sacks)."""
+def player_tables(source):
+    """NFL career stat tables of a player article (HTML text or the tables ``html_tables`` made of it):
+    {'heads', 'cmap', 'rows', 'heading', 'post'} (offense columns are only mapped for offense tables and defense columns only for
+    defense tables, so a quarterback's 'Sacks' are not defensive sacks)."""
     out = []
-    for t in html_tables(html):
+    for t in (html_tables(source) if isinstance(source, str) else source):
         g = t["grid"]
         if len(g) < 3:
             continue
@@ -435,11 +478,11 @@ def player_tables(html: str):
     return out
 
 
-def club_sums(html: str, club: str, through: int = THROUGH):
-    """Regular-season stat rows of a player article that belong to `club` -> sums, per-season values, seasons seen
+def club_sums(source, club: str, through: int = THROUGH):
+    """Regular-season stat rows of a player article (HTML or its tables) that belong to `club` -> sums, per-season values, seasons seen
     (sacks are returned in half sacks)."""
     rows, years, amb = {}, set(), 0
-    for t in player_tables(html):
+    for t in player_tables(source):
         if t["post"]:
             continue
         cm = t["cmap"]
@@ -486,8 +529,8 @@ def position_code(text: str):
     return best[2] if best else None
 
 
-def infobox_position(html: str):
-    for t in html_tables(html)[:4]:
+def infobox_position(source):
+    for t in (html_tables(source) if isinstance(source, str) else source)[:4]:
         for r in t["grid"]:
             if len(r) >= 2 and r[0].strip().lower().rstrip(":") in ("position", "positions", "position(s)"):
                 return r[1]
@@ -497,18 +540,24 @@ def infobox_position(html: str):
 class Wiki:
     """Article HTML through index.php?action=render (edge cached, fast, polite gap); the API only for batched revision ids."""
 
-    def __init__(self, cache_dir, min_gap: float = 0.7):
+    def __init__(self, cache_dir, min_gap: float = 0.25):
         self.cache = Path(cache_dir)
         self.cache.mkdir(parents=True, exist_ok=True)
         self.gap = min_gap
         self._last = 0.0
+        self._lock = threading.Lock()
 
-    def _get(self, url: str):
-        for attempt in range(8):
+    def _pace(self) -> None:
+        """one global request rate (1 / gap per second) however many threads ask"""
+        with self._lock:
             wait = self.gap - (time.time() - self._last)
             if wait > 0:
                 time.sleep(wait)
             self._last = time.time()
+
+    def _get(self, url: str):
+        for attempt in range(8):
+            self._pace()
             try:
                 with urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": UA}), timeout=90) as r:   # nosec B310 - fixed https host
                     return r.status, r.read().decode("utf-8", "replace")
@@ -516,7 +565,11 @@ class Wiki:
                 if e.code == 404:
                     return 404, ""
                 if e.code in (429, 503):
-                    time.sleep(8 * (attempt + 1))
+                    try:
+                        wait = float(e.headers.get("Retry-After") or 0)
+                    except ValueError:
+                        wait = 0
+                    time.sleep(max(wait, 8 * (attempt + 1)) + 1)
                     continue
                 raise
             except (urllib.error.URLError, TimeoutError, ConnectionError):
@@ -527,9 +580,14 @@ class Wiki:
         return self.cache / (hashlib.sha1(title.encode()).hexdigest()[:16] + ".json")
 
     def page(self, title: str) -> dict:
+        """{'title', 'retrieved', 'revid', 'tables'} of an article (only its wikitables and infobox are kept), or {'missing': True}"""
         p = self.path(title)
         if p.exists():
-            return json.loads(p.read_text(encoding="utf-8"))
+            out = json.loads(p.read_text(encoding="utf-8"))
+            if "html" in out:                                   # an older cache entry: keep the tables, drop the page text
+                out["tables"] = html_tables(out.pop("html"))
+                p.write_text(json.dumps(out), encoding="utf-8")
+            return out
         url = "https://en.wikipedia.org/w/index.php?" + urllib.parse.urlencode({"title": title.replace(" ", "_"), "action": "render"})
         status, html = self._get(url)
         today = time.strftime("%Y-%m-%d", time.gmtime())
@@ -538,7 +596,7 @@ class Wiki:
         elif 'id="disambigbox"' in html or "dmbox-disambig" in html:
             out = {"title": title, "missing": True, "disambiguation": True, "retrieved": today}
         else:
-            out = {"title": title, "revid": None, "html": html, "retrieved": today}
+            out = {"title": title, "revid": None, "tables": html_tables(html), "retrieved": today}
         p.write_text(json.dumps(out), encoding="utf-8")
         return out
 
@@ -593,15 +651,24 @@ class Wiki:
 
 POS_SUFFIX = ["American football", "running back", "wide receiver", "quarterback", "linebacker", "defensive end", "cornerback",
               "safety", "tight end", "defensive tackle", "fullback", "halfback"]
+SUFFIX_HINT = {"passing_yards": ["quarterback"], "passing_td": ["quarterback"], "rushing_yards": ["running back", "halfback", "fullback"],
+               "rushing_td": ["running back", "halfback", "fullback"], "receptions": ["wide receiver", "tight end"],
+               "receiving_yards": ["wide receiver", "tight end"], "receiving_td": ["wide receiver", "tight end"],
+               "sacks_half": ["defensive end", "linebacker", "defensive tackle"], "interceptions": ["cornerback", "safety", "linebacker"],
+               "tackles": ["linebacker", "safety", "defensive end"]}
 
 
-def title_candidates(name: str):
+def title_candidates(name: str, cats=()):
+    """article titles to try for a player: the plain name first, then 'Name (American football)' and position variants the
+    category suggests (capped, so a missing player costs a handful of requests)"""
     base = re.sub(r"\s+", " ", name).strip()
     plain = "".join(c for c in unicodedata.normalize("NFKD", base) if not unicodedata.combining(c))
+    suffixes = ["American football"] + [x for c in sorted(cats) for x in SUFFIX_HINT.get(c, [])]
+    suffixes += [x for x in POS_SUFFIX if x not in suffixes][:3]
     out = []
     for b in dict.fromkeys([base, plain]):
         out.append(b)
-        out += [f"{b} ({s})" for s in POS_SUFFIX]
+        out += [f"{b} ({x})" for x in dict.fromkeys(suffixes)]
     return list(dict.fromkeys(out))
 
 
@@ -694,7 +761,9 @@ class NFLverse:
             have = norm(self.names.get(pid, "")).split()
             if have == want:
                 sc = 3
-            elif have and have[-1] == want[-1] and have[0][:1] == want[0][:1] and (have[0].startswith(want[0][:3]) or want[0].startswith(have[0][:3])):
+            elif len(want) == 1 and have and have[-1] == want[0]:                       # a guide that prints only the last name
+                sc = 1
+            elif have and len(want) > 1 and have[-1] == want[-1] and have[0][:1] == want[0][:1] and (have[0].startswith(want[0][:3]) or want[0].startswith(have[0][:3])):
                 sc = 2
             else:
                 continue
@@ -787,42 +856,59 @@ def person_fields(c: dict) -> dict:
     return out
 
 
+def evaluate_group(cat: str, rows: list, slots: int, guard) -> tuple:
+    """-> (taken [(candidate, decision)], excluded rows, decision counts) for one list of the guide"""
+    rows = sorted(rows, key=lambda c: (c["rank"], c["order"]))
+    incomplete = guard_violated(cat, guard)
+    taken, excluded, counts, stopped = [], [], {}, None
+    for c in rows:
+        d = decide(cat, c["value"], (c.get("wikipedia") or {}).get("value"), (c.get("nflverse") or {}).get("value"),
+                   bool((c.get("nflverse") or {}).get("covered")))
+        counts[d["decision"]] = counts.get(d["decision"], 0) + 1
+        reason = None
+        if incomplete:
+            reason = "incomplete list"
+        elif stopped is None and d["decision"] == "ship" and len(taken) < slots:
+            taken.append((c, d))
+            continue
+        elif stopped is None and d["decision"] != "ship":
+            stopped = d["decision"]
+            reason = d["decision"]
+        elif d["decision"] == "ship" and stopped:
+            reason = f"after a rank that is {stopped}"
+        elif d["decision"] == "ship":
+            continue                                    # a further row that is simply beyond the slots
+        else:
+            reason = d["decision"]
+        excluded.append({"club": c["club"], "scope": c["scope"], "category": cat, "rank": c["rank"], "name": c["name"], "years": c["years"],
+                         "reason": reason, "guide": c["value"], "wikipedia": (c.get("wikipedia") or {}).get("value"),
+                         "nflverse": (c.get("nflverse") or {}).get("value"), "detail": d["wikipedia"] + "/" + d["nflverse"]})
+    return taken, excluded, counts
+
+
 def assemble(evidence: dict):
-    """The shipped data and the excluded list, derived only from the evidence file (so ``verify`` can re-derive them offline)."""
+    """The shipped data and the excluded list, derived only from the evidence file (so ``verify`` can re-derive them offline).
+    A guide can print several lists for one stat (all-time and since 1982, top 10 table and record box): each is judged on its own
+    and the one with the longest verified run ships."""
     groups: dict = {}
     for c in evidence["candidates"]:
-        groups.setdefault((c["club"], c["scope"], c["category"]), []).append(c)
-    guards = {(g["club"], g["scope"], g["category"]): g for g in evidence.get("guards", [])}
-    clubs = {code: {"name": name, "arena_index": ARENA_ORDER.index(code), "career": {}, "season": {}, "game": {}} for code, (name, _) in CLUBS.items()}
+        groups.setdefault((c["club"], c["scope"], c["category"]), {}).setdefault(c.get("variant", 0), []).append(c)
+    guards = {(g["club"], g["scope"], g["category"], g.get("variant", 0)): g for g in evidence.get("guards", [])}
+    clubs = {code: {"name": name, "arena_index": ARENA_ORDER.index(code), "career": {}, "season": {}, "game": {}, "notes": {}}
+             for code, (name, _) in CLUBS.items()}
     excluded = []
     counts = {"shipped": {s: 0 for s in SCOPES}, "excluded": {}, "by_decision": {}}
-    for (club, scope, cat), rows in sorted(groups.items(), key=lambda kv: (kv[0][0], SCOPES.index(kv[0][1]), list(CATEGORIES).index(kv[0][2]))):
-        rows = sorted(rows, key=lambda c: (c["rank"], c["order"]))
-        slots = SLOTS[scope]
-        incomplete = guard_violated(cat, guards.get((club, scope, cat)))
-        taken, stopped = [], None
-        for c in rows:
-            d = decide(cat, c["value"], (c.get("wikipedia") or {}).get("value"), (c.get("nflverse") or {}).get("value"),
-                       bool((c.get("nflverse") or {}).get("covered")))
-            counts["by_decision"][d["decision"]] = counts["by_decision"].get(d["decision"], 0) + 1
-            reason = None
-            if incomplete:
-                reason = "incomplete list"
-            elif stopped is None and d["decision"] == "ship" and len(taken) < slots:
-                taken.append((c, d))
-                continue
-            elif stopped is None and d["decision"] != "ship":
-                stopped = d["decision"]
-                reason = d["decision"]
-            elif d["decision"] == "ship" and stopped:
-                reason = f"after a rank that is {stopped}"
-            elif d["decision"] == "ship":
-                continue                                    # a fourth row that is simply beyond the slots
-            else:
-                reason = d["decision"]
-            excluded.append({"club": club, "scope": scope, "category": cat, "rank": c["rank"], "name": c["name"], "years": c["years"],
-                             "reason": reason, "guide": c["value"], "wikipedia": (c.get("wikipedia") or {}).get("value"),
-                             "nflverse": (c.get("nflverse") or {}).get("value"), "detail": d["wikipedia"] + "/" + d["nflverse"]})
+    for (club, scope, cat), variants in sorted(groups.items(), key=lambda kv: (kv[0][0], SCOPES.index(kv[0][1]), list(CATEGORIES).index(kv[0][2]))):
+        best = None
+        for v, rows in sorted(variants.items()):
+            taken, exc, cnt = evaluate_group(cat, rows, SLOTS[scope], guards.get((club, scope, cat, v)))
+            pref = (len(taken), rows[0]["kind"] == "list", rows[0].get("complete_to") or len(rows), -v)
+            if best is None or pref > best[0]:
+                best = (pref, v, taken, exc, cnt)
+        _, v, taken, exc, cnt = best
+        for k, n in cnt.items():
+            counts["by_decision"][k] = counts["by_decision"].get(k, 0) + n
+        excluded.extend(exc)
         if taken:
             out = []
             for c, d in taken:
@@ -841,11 +927,15 @@ def assemble(evidence: dict):
                     row["link"] = c["link"]
                 if c["kind"] == "column":
                     row["basis"] = "column"
+                if c.get("tie"):
+                    row["tie"] = True
                 if c.get("adjusted"):
                     row["adjusted"] = c["adjusted"]
                 out.append(row)
             clubs[club][scope][cat] = out
             counts["shipped"][scope] += len(out)
+            if cat in ("sacks_half", "tackles") and taken[0][0].get("list_note"):
+                clubs[club]["notes"][f"{scope}.{cat}"] = taken[0][0]["list_note"]
     for e in excluded:
         counts["excluded"][e["reason"]] = counts["excluded"].get(e["reason"], 0) + 1
     for m in evidence.get("missing", []):
@@ -855,7 +945,7 @@ def assemble(evidence: dict):
     data = {
         "schema": SCHEMA, "base_year": 2026, "through_season": evidence["through_season"],
         "categories": CATEGORIES, "positions": list(POSITIONS),
-        "rules": evidence["rules"], "sources": evidence["public_sources"],
+        "rules": evidence["rules"], "sources": evidence["public_sources"], "credits": CREDITS,
         "counts": counts, "clubs": clubs,
     }
     return data, excluded
@@ -869,6 +959,11 @@ RULES = {
     "shipping": "A value ships only when the club's own 2026 media guide and a second, independent source agree: the player's Wikipedia season table summed over the club, or nflverse play-by-play totals where they cover the whole career. A disagreement, a single source, a failed earlier rank or a failed completeness check keeps the row out; every candidate with its sources is in the evidence file.",
     "ranks": "A club's list ships its longest run of verified ranks from rank 1. basis column: the guide prints the stat only as a column of a list ranked by another stat, so the order holds for the printed rows only (and for 1999-2025 careers nflverse confirms nobody is missing).",
     "links": "link is the roster identity (primary pool index, name, birth date) of a player who is on the club's 2026 roster, so his total keeps counting; null otherwise.",
+}
+CREDITS = {
+    "club_guides": "Record lists: each club's own 2026 media guide (the Steelers' 2025 guide), read from the copies in the Internet Archive collection nfl-media-guides. Facts only (names, years, numbers).",
+    "wikipedia": "Wikipedia player articles, text under CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/); facts only (regular-season statistics read from the articles' career tables).",
+    "nflverse": "nflverse (https://github.com/nflverse/nflverse-data), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/).",
 }
 PUBLIC_SOURCES = {
     "club_guides": "Each club's own 2026 media guide (Internet Archive collection nfl-media-guides); the Steelers' 2026 guide is not online, so their 2025 edition is used and the 2025 season is added from nflverse.",
@@ -903,30 +998,57 @@ def select_rows(lst: dict, scope: str):
 
 def resolve_wikipedia(wiki: Wiki, need: dict, cache_file: Path) -> dict:
     resolved = json.loads(cache_file.read_text(encoding="utf-8")) if cache_file.exists() else {}
-    todo = [(club, name, ys) for (club, name), ys in sorted(need.items()) if f"{club}|{name}" not in resolved]
-    exists = wiki.exists([t for _, name, _ in todo for t in title_candidates(name)], Path(cache_file).with_name("exists.json"))
-    for club, name, ys in todo:
-        key = f"{club}|{name}"
-        found = None
-        for cand in title_candidates(name):
-            if not exists.get(cand):
-                continue
-            pg = wiki.page(cand)
-            if pg.get("missing"):
-                continue
-            r = club_sums(pg["html"], club)
-            if years_overlap_ok(r["years"], ys):
-                found = {"title": cand, "retrieved": pg["retrieved"], "sums": r["sums"], "seasons": r["seasons"], "years": r["years"],
-                         "ambiguous": r["ambiguous"], "position_text": infobox_position(pg["html"])}
-                break
-        resolved[key] = found
-        cache_file.write_text(json.dumps(resolved), encoding="utf-8")
+    known_file = Path(cache_file).with_name("exists.json")
+    known = json.loads(known_file.read_text(encoding="utf-8")) if known_file.exists() else {}
+    todo = [(club, name, info) for (club, name), info in sorted(need.items()) if f"{club}|{name}" not in resolved]
+    def one(item):
+        club, name, info = item
+        try:
+            for cand in title_candidates(name, info["cats"]):
+                if known.get(cand) is False:
+                    continue
+                pg = wiki.page(cand)
+                if pg.get("missing"):
+                    continue
+                r = club_sums(pg["tables"], club)
+                if years_overlap_ok(r["years"], info["years"]):
+                    return f"{club}|{name}", {"title": cand, "retrieved": pg["retrieved"], "sums": r["sums"], "seasons": r["seasons"],
+                                              "years": r["years"], "ambiguous": r["ambiguous"], "position_text": infobox_position(pg["tables"])}
+        except Exception as exc:                                  # one bad page or a network hiccup must not stop the build
+            print(f"  wikipedia: {club} {name}: {exc!r} (left unresolved, rerun to retry)", flush=True)
+            return f"{club}|{name}", "ERROR"
+        return f"{club}|{name}", None
+
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        for n, (key, found) in enumerate(pool.map(one, todo), 1):
+            if found != "ERROR":
+                resolved[key] = found
+            if n % 20 == 0 or n == len(todo):
+                cache_file.write_text(json.dumps(resolved), encoding="utf-8")
+                print(f"  wikipedia: {n}/{len(todo)} names", flush=True)
+    cache_file.write_text(json.dumps(resolved), encoding="utf-8")
     wiki.fill_revids(sorted({v["title"] for v in resolved.values() if v}))
     for v in resolved.values():
         if v:
             pg = json.loads(wiki.path(v["title"]).read_text(encoding="utf-8"))
             v["revid"], v["canonical_title"] = pg.get("revid"), pg.get("canonical_title", v["title"])
     return resolved
+
+
+def dumps_by_line(obj: dict) -> str:
+    """compact JSON with every element of a top-level list of objects on its own line (diffable, still plain JSON)"""
+    out = ["{"]
+    keys = list(obj)
+    for i, k in enumerate(keys):
+        v, comma = obj[k], ("," if i < len(keys) - 1 else "")
+        if isinstance(v, list) and v and isinstance(v[0], dict):
+            out.append(json.dumps(k) + ": [")
+            out += [json.dumps(x, ensure_ascii=False, separators=(",", ":")) + ("," if j < len(v) - 1 else "") for j, x in enumerate(v)]
+            out.append("]" + comma)
+        else:
+            out.append(json.dumps(k) + ": " + json.dumps(v, ensure_ascii=False, separators=(",", ":")) + comma)
+    out.append("}")
+    return "\n".join(out) + "\n"
 
 
 def cmd_build(args) -> int:
@@ -962,13 +1084,16 @@ def cmd_build(args) -> int:
         if idx is None:
             return None
         rec = cohort_by_index[idx]
-        return {"pool": "primary", "index": idx, "first": rec[1], "last": rec[2], "birth_date": rec[3]}
+        return {"pool": "primary", "index": idx, "first": rec[1], "last": rec[2], "birth_date": rec[3], "gsis_id": r["gsis_id"]}
 
     need: dict = {}
     for club, g in guides.items():
-        for lst in primary_lists(g["lists"]).values():
+        for lst in g["lists"]:
             for rk, r in select_rows(lst, lst["scope"]):
-                need.setdefault((club, r["name"]), set()).update(parse_years(r["years"]) if lst["scope"] == "career" else set())
+                info = need.setdefault((club, r["name"]), {"years": set(), "cats": set()})
+                info["cats"].add(GUIDE_CATEGORY[lst["category"]])
+                if lst["scope"] == "career":
+                    info["years"].update(parse_years(r["years"]))
     resolved = resolve_wikipedia(wiki, need, Path(args.wiki_cache) / "resolved.json")
 
     cands, lists, missing, guards = [], [], [], []
@@ -976,29 +1101,32 @@ def cmd_build(args) -> int:
         through = int(g["through_season"])
         for m in g.get("missing", []):
             missing.append({"club": club, "scope": m["scope"], "category": GUIDE_CATEGORY[m["category"]], "why": m.get("why", "")})
-        primary = primary_lists(g["lists"])
+        seen_variant: dict = {}
         for lst in g["lists"]:
             scope, cat = lst["scope"], GUIDE_CATEGORY[lst["category"]]
             k = SCALE.get(cat, 1)
-            lists.append({"club": club, "scope": scope, "category": cat, "title": lst["title"], "page": lst["pdf_page"], "kind": lst["kind"],
-                          "ranked_by": lst["ranked_by"], "scope_note": lst["scope_note"], "complete_to": lst.get("complete_to"),
-                          "primary": lst is primary[(lst["scope"], lst["category"])],
+            variant = seen_variant[(scope, cat)] = seen_variant.get((scope, cat), -1) + 1
+            lists.append({"club": club, "scope": scope, "category": cat, "variant": variant, "title": lst["title"], "page": lst["pdf_page"],
+                          "kind": lst["kind"], "ranked_by": lst["ranked_by"], "scope_note": lst["scope_note"], "complete_to": lst.get("complete_to"),
                           "rows": [[r.get("rank"), r["name"], r["years"], clean_number(r["value"] * k)] for r in lst["rows"]]})
-            if lst is not primary[(lst["scope"], lst["category"])]:
-                continue
             chosen = select_rows(lst, scope)
             for order, (rk, r) in enumerate(chosen):
                 v1 = clean_number(r["value"] * k)
                 if scope == "career":
-                    ys = parse_years(r["years"])
+                    ys = parse_years(r["years"], through)
                     season, date = None, None
                 else:
                     date, season = game_date(r["years"])
                     ys = {season} if season else set()
                 res = resolved.get(f"{club}|{r['name']}")
                 pid = nv.find(club, r["name"], ys) if cat != "tackles" else None
-                c = {"club": club, "scope": scope, "category": cat, "rank": rk, "order": order, "name": r["name"], "years": r["years"],
-                     "value": v1, "kind": lst["kind"], "guide": {"page": lst["pdf_page"], "title": lst["title"], "raw": r["raw"]}}
+                c = {"club": club, "scope": scope, "category": cat, "variant": variant, "rank": rk, "order": order, "name": r["name"], "years": r["years"],
+                     "value": v1, "kind": lst["kind"], "complete_to": lst.get("complete_to") or len(lst["rows"]),
+                     "list_note": lst["scope_note"][:160], "guide": {"page": lst["pdf_page"], "title": lst["title"], "raw": r["raw"]}}
+                if r.get("tie"):
+                    c["tie"] = True
+                if r.get("uncertain"):
+                    c["uncertain"] = True
                 if scope == "career":
                     c["span"] = [min(ys), max(ys)] if ys else []
                 else:
@@ -1047,8 +1175,12 @@ def cmd_build(args) -> int:
                             if len(top) == 1 and have:
                                 c["week"] = top[0][3]
                         c["nflverse"] = {"value": clean_number(have), "covered": True, "player": nv.names[pid]}
+                toks = norm(r["name"]).split()
+                if pid is not None and toks and (len(toks) < 2 or len(toks[0]) <= 1):
+                    # the guide printed an initial or only a last name: use the full name nflverse knows (the value check below decides)
+                    c["printed_name"], c["name"] = r["name"], nv.names[pid]
                 if scope == "career":
-                    c["link"] = link_of(club, r["name"])
+                    c["link"] = link_of(club, c["name"])
                 cands.append(c)
             # ---- completeness guard
             if cat == "tackles" or not chosen:
@@ -1064,7 +1196,7 @@ def cmd_build(args) -> int:
                 for (c_, pid_), tot in nv.career.items():
                     if c_ == club and tot.get(cat) and not nv.same_person(pid_, printed) and (best is None or tot[cat] > best[0]):
                         best = (tot[cat], nv.names[pid_])
-                guards.append({"club": club, "scope": scope, "category": cat, "bar": clean_number(bar),
+                guards.append({"club": club, "scope": scope, "category": cat, "variant": variant, "bar": clean_number(bar),
                                "other_value": clean_number(best[0]) if best else None, "other_player": best[1] if best else None})
             else:
                 bar = chosen[0][1]["value"] * k
@@ -1072,7 +1204,7 @@ def cmd_build(args) -> int:
                     best = max(((v.get(cat, 0.0), pid_, y) for (c_, pid_, y), v in nv.season.items() if c_ == club), default=None)
                 else:
                     best = max(((x[0], x[1], x[2]) for x in nv.game.get((club, cat), [])), default=None)
-                guards.append({"club": club, "scope": scope, "category": cat, "bar": clean_number(bar),
+                guards.append({"club": club, "scope": scope, "category": cat, "variant": variant, "bar": clean_number(bar),
                                "other_value": clean_number(best[0]) if best else None, "other_player": nv.names[best[1]] if best else None,
                                "other_season": best[2] if best else None})
     ia = json.loads(Path(args.ia_manifest).read_text(encoding="utf-8")) if args.ia_manifest else {}
@@ -1093,8 +1225,10 @@ def cmd_build(args) -> int:
     }
     data, excluded = assemble(evidence)
     evidence["excluded"] = excluded
-    Path(args.evidence).write_text(json.dumps(evidence, separators=(",", ":"), ensure_ascii=False), encoding="utf-8")
-    Path(args.out).write_text(json.dumps(data, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
+    with open(args.evidence, "w", encoding="utf-8", newline="\n") as f:                 # LF on every platform (the repo guards generated files)
+        f.write(dumps_by_line(evidence))
+    with open(args.out, "w", encoding="utf-8", newline="\n") as f:
+        f.write(json.dumps(data, indent=1, ensure_ascii=False) + "\n")
     print(json.dumps(data["counts"]))
     return 0
 

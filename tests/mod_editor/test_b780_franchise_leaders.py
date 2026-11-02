@@ -261,6 +261,30 @@ class Assembly(unittest.TestCase):
         season = data["clubs"]["CHI"]["season"]["rushing_yards"][0]
         self.assertEqual((season["suffix"], "date" in season), ("Jr.", False))
 
+    def test_the_best_verified_list_of_a_stat_ships(self):
+        # the guide prints sacks twice: all-time (unofficial sacks included, Wikipedia differs) and since 1982 (verified)
+        a = [candidate("CHI", "career", "sacks_half", 1, 0, "Old Timer", 300, wiki=260, variant=0, complete_to=10, list_note="all-time, unofficial included"),
+             candidate("CHI", "career", "sacks_half", 2, 1, "Next One", 240, wiki=240, variant=0, complete_to=10, list_note="all-time, unofficial included")]
+        b = [candidate("CHI", "career", "sacks_half", 1, 0, "Richard Dent", 249, wiki=249, variant=1, complete_to=11, list_note="official sacks since 1982"),
+             candidate("CHI", "career", "sacks_half", 2, 1, "Steve McMichael", 185, wiki=185, variant=1, complete_to=11, list_note="official sacks since 1982")]
+        data, excluded = B.assemble(self.evidence(a + b))
+        rows = data["clubs"]["CHI"]["career"]["sacks_half"]
+        self.assertEqual([r["name"] for r in rows], ["Richard Dent", "Steve McMichael"])
+        self.assertEqual(data["clubs"]["CHI"]["notes"]["career.sacks_half"], "official sacks since 1982")
+        self.assertEqual(excluded, [])
+        # with no verified variant the longer, list-kind one is the one that is reported
+        data, excluded = B.assemble(self.evidence(a))
+        self.assertEqual(data["clubs"]["CHI"]["career"], {})
+        self.assertEqual([e["reason"] for e in excluded], ["conflict", "after a rank that is conflict"])
+
+    def test_ties_and_columns_are_marked(self):
+        cands = [candidate("CAR", "career", "rushing_td", 1, 0, "A One", 60, wiki=60, kind="column"),
+                 candidate("CAR", "career", "rushing_td", 2, 1, "B Two", 50, wiki=50, kind="column", tie=True)]
+        data, _ = B.assemble(self.evidence(cands))
+        rows = data["clubs"]["CAR"]["career"]["rushing_td"]
+        self.assertEqual([r.get("basis") for r in rows], ["column", "column"])
+        self.assertEqual([r.get("tie") for r in rows], [None, True])
+
     def test_missing_lists_are_listed(self):
         data, excluded = B.assemble(self.evidence([], missing=[{"club": "ATL", "scope": "career", "category": "tackles", "why": "no list"}]))
         self.assertEqual(excluded[0]["reason"], "not printed in the guide")

@@ -674,6 +674,7 @@ mod_editor/core/nfl2k5_champions.py
 mod_editor/core/nfl2k5_champions_code.py
 mod_editor/core/nfl2k5_champions_history.py
 data/nfl2k5_champions_2026.json
+data/nfl2k5_franchise_leaders_2026.json
 mod_editor/core/nfl2k5_honors.py
 mod_editor/core/nfl2k5_honors_code.py
 mod_editor/core/nfl2k5_honors_history.py
