@@ -760,7 +760,8 @@ def career_code(dd: Mapping[tuple[str, str], tuple[int, ...]]) -> tuple[bytes, d
 # (RETIRE_BASE_VA) -5/-4/-2/+1/+2/+3 for a (boosted, 0x246D80) overall above .9/.8/.7/.6/.5 or not, clamped to -5..5,
 # retires when a draw (0x48B90) is below P[delta] x Y[min(year, 4)] (0xACEDB0: 0 .02 .05 .10 .15 .30 .40 .50 .60 .70 1;
 # 0xACEE24: .6 .7 .8 .9 1). Nothing looks at the season the player just had, so an average starter in his late
-# twenties retires 10-30% of the time every year (one simulated v0.8 offseason: 33 of 73 club retirees 30 or younger).
+# twenties retires 10-30% of the time every year (one simulated v0.8 season, every game played: 84 club retirees, 20 of
+# them players who played 8+ games or started, before their position's age).
 # The rewrite, in the routine's own bytes, same callers and arguments:
 # * age in place of years pro: over = his age in the coming season (the economy top-up's age rule) - (base + 24), the
 #   position's age (QB/K/P 38, HB 30, FB/CB 31, WR/S/LB 32, TE/DT/DE 33, G/T 34, C 35); delta = over + 2 keeps the
