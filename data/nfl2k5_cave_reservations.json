@@ -3186,7 +3186,7 @@
     "mod_editor/core/nfl2k5_cpu_scrambles_code.py": "6519b049d4f570dc92c58ede831a521ebface07ce23fb8406eb42318bbf52a92",
     "mod_editor/core/nfl2k5_cpu_third_down.py": "e4cf6e7a6cbedf651dff6b797018fdd23959cf2d2ed045482611c56a5aa76ee8",
     "mod_editor/core/nfl2k5_crib_reclaim.py": "9acb8197fcf6449f3e09f5f04b90b84db89b963320ac9db25a3144f7c975b582",
-    "mod_editor/core/nfl2k5_crib_trophy_room.py": "7be0b1c26f63345e352b4a7d2ab11af02bab222557cd0ac193a89778879fb04c",
+    "mod_editor/core/nfl2k5_crib_trophy_room.py": "1ca109c95177e63990645a7c00c44b707cc750b5c6957b6d8e744f676d8dc0ee",
     "mod_editor/core/nfl2k5_custom_intro.py": "9f0724700c61178187e8e82977903e080368c20b2636ca1f58695a4840db7452",
     "mod_editor/core/nfl2k5_db_ball_play.py": "1da99c1ded8ec24816fc6c188675d1f4429c651b29a4be291862eeb1b0f6205d",
     "mod_editor/core/nfl2k5_db_ball_play_code.py": "4e380523a17918720ad3c229f1a7d3ca5682dc12ebc70df63ef022b3449db3b6",
@@ -24834,6 +24834,55 @@
         [
           "0xbb7ede",
           "0xbb7edf"
+        ]
+      ]
+    },
+    {
+      "owner": "nfl2k5_champions",
+      "function": "install",
+      "before_sha256": "5db43917f47c5541d656c36508131ec6e6ea610f81acdaaa4d8015cf5601933e",
+      "after_sha256": "817616eb34bb91487d341e37d292d26f488ab71ee20723ad40eda49de1b260d5",
+      "changed_bytes": 5646,
+      "file_runs": [
+        [
+          "0x394",
+          "0x3a8"
+        ],
+        [
+          "0x90c",
+          "0x920"
+        ],
+        [
+          "0x97c",
+          "0x990"
+        ],
+        [
+          "0xdb4",
+          "0xdd4"
+        ],
+        [
+          "0x106e56",
+          "0x106e5a"
+        ],
+        [
+          "0x2385fb",
+          "0x2385ff"
+        ],
+        [
+          "0xb8e610",
+          "0xb8e6b8"
+        ],
+        [
+          "0xb8e6b9",
+          "0xb8f300"
+        ],
+        [
+          "0xb8f301",
+          "0xb8fb9c"
+        ],
+        [
+          "0xbb600c",
+          "0xbb602c"
         ]
       ]
     },
@@ -90678,6 +90727,13 @@
       "start": "0x10394",
       "end": "0x103a8",
       "size": 20,
+      "owner": "nfl2k5_champions",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x10394",
+      "end": "0x103a8",
+      "size": 20,
       "owner": "nfl2k5_clock_led",
       "basis": "observed byte diff"
     },
@@ -92897,6 +92953,13 @@
       "start": "0x1090c",
       "end": "0x10920",
       "size": 20,
+      "owner": "nfl2k5_champions",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1090c",
+      "end": "0x10920",
+      "size": 20,
       "owner": "nfl2k5_clock_led",
       "basis": "observed byte diff"
     },
@@ -93514,6 +93577,13 @@
       "end": "0x10990",
       "size": 20,
       "owner": "nfl2k5_camera",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x1097c",
+      "end": "0x10990",
+      "size": 20,
+      "owner": "nfl2k5_champions",
       "basis": "observed byte diff"
     },
     {
@@ -94788,6 +94858,13 @@
       "end": "0x10dd4",
       "size": 32,
       "owner": "nfl2k5_camera",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x10db4",
+      "end": "0x10dd4",
+      "size": 32,
+      "owner": "nfl2k5_champions",
       "basis": "observed byte diff"
     },
     {
@@ -100738,6 +100815,20 @@
       "end": "0x116d6f",
       "size": 1,
       "owner": "nfl2k5_season_length",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x116e55",
+      "end": "0x116e5a",
+      "size": 5,
+      "owner": "nfl2k5_champions",
+      "basis": "declared edit: season_awards"
+    },
+    {
+      "start": "0x116e56",
+      "end": "0x116e5a",
+      "size": 4,
+      "owner": "nfl2k5_champions",
       "basis": "observed byte diff"
     },
     {
@@ -107696,6 +107787,20 @@
       "end": "0x24857f",
       "size": 5,
       "owner": "nfl2k5_star_career",
+      "basis": "observed byte diff"
+    },
+    {
+      "start": "0x2485fa",
+      "end": "0x2485ff",
+      "size": 5,
+      "owner": "nfl2k5_champions",
+      "basis": "declared edit: stage_advance"
+    },
+    {
+      "start": "0x2485fb",
+      "end": "0x2485ff",
+      "size": 4,
+      "owner": "nfl2k5_champions",
       "basis": "observed byte diff"
     },
     {
