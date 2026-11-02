@@ -555,9 +555,23 @@ class DoctorReport(Report):
                                  ("summary", f"{stem}-summary.txt", self.summary() + "\n")):
             path = folder / name
             with open(path, "w", encoding="utf-8", newline="\n") as stream:
-                stream.write(body)
+                stream.write(scrub(body))
             out[kind] = path
         return out
+
+
+def scrub(text: str) -> str:
+    """A report is shared on Discord: the person's home folder (their account name) becomes ``~`` in every path."""
+    try:
+        home = str(Path.home())
+    except (RuntimeError, OSError):
+        return text
+    if len(home) < 4:
+        return text
+    for form in sorted({home, home.replace("\\", "/"), home.replace("\\", "\\\\"), home.replace("/", "\\")},
+                       key=len, reverse=True):
+        text = text.replace(form, "~")
+    return text
 
 
 def _duration(seconds) -> str:

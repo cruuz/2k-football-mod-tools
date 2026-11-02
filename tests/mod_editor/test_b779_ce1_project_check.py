@@ -285,6 +285,8 @@ class BuildPageButton(unittest.TestCase):
         self.assertFalse(self.panel.check_button.isEnabled())
 
     def test_pressing_it_shows_the_report_and_writes_nothing(self):
+        # b791 h4: the button runs the whole doctor (which runs this quick check first) and shows its summary in a
+        # dialog with Save report...
         from PyQt5.QtWidgets import QMessageBox
         report = pc.Report(findings=[pc.Finding(pc.STOP, "Stadium boards", "Boards conflict with your stadium edits.", "",
                                                 "Turn off Modern stadium boards.")], steps=["x"], seconds=2)
@@ -292,7 +294,7 @@ class BuildPageButton(unittest.TestCase):
         self.panel.target_field.setText(str(Path(self.temp.name) / "never.iso"))
         shown = []
         with mock.patch.object(pc, "check", return_value=report) as check, \
-                mock.patch.object(QMessageBox, "information", side_effect=lambda *a: shown.append(a[2])):
+                mock.patch.object(QMessageBox, "exec_", lambda box: shown.append(box.text()) or 0):
             self.panel._check_project()
         check.assert_called_once()
         self.assertIn("What to do: Turn off Modern stadium boards.", self.panel.status_label.text())
@@ -306,7 +308,8 @@ class BuildPageButton(unittest.TestCase):
         self.panel._requested_build_summary = "Build summary from an earlier build\nSource: old.iso"
         self.panel.target_field.setText(str(Path(self.temp.name) / "never.iso"))
         shown = []
-        with mock.patch.object(pc, "check", side_effect=KeyError("surprise")), \
+        # b791 h4: one failing check inside the doctor is a failed section; the whole check failing is this path
+        with mock.patch.object(pc, "doctor", side_effect=KeyError("surprise")), \
                 mock.patch.object(QMessageBox, "exec_", lambda box: shown.append((box.windowTitle(), box.text())) or 0):
             self.panel._check_project()
         self.assertTrue(shown)

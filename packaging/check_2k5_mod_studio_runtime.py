@@ -115,13 +115,13 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
 B69_GAME_RUNTIME_PINS = {
     "mod_editor/core/nfl2k5_weather.py": "ec3d253e348ff0cf7fb1951b5dad2983d8aebc0802d5c6fca32c74dc80a6985b",
     "mod_editor/core/nfl2k5_weather_haze.py": "b8c58c592794312358eb1554b1d3be43a1ca41f7fdd8fd3cd498d4f345c641cc",
-    "mod_editor/gui/build_panel_qt.py": "9a1b96100f34266e9296e7ae27132c3d5190f4eac0f5c12c726fb8320a49cf4f",
+    "mod_editor/gui/build_panel_qt.py": "f49fb3e7ec083269ffc1a0a8b4033506f14732d22227513ab23c80f3fc6b687f",
     "mod_editor/gui/gameplay_patches_panel_qt.py": "8a463a6c45f83feb3412f1d1926e60de80b6b1487b98b5199bbcae52bae88305",
     "mod_editor/gui/my_career_panel_qt.py": "cd39ce1685ed119288122e46b0f8c1c8ba586cea611f5d5feee096a71d7ea9ac",
     "mod_editor/gui/gameplay_project_ui.py": "4927318677c5dbd1183b139d5b4d2c460136e38a3f9bf5d5b979ba62e1ed016e",
     "mod_editor/gui/beta62_options.py": "4b4152b4830092afc360230bf869df68c56b5ce9c668769fb28cde9f61cd3d3f",
     "tools/nfl2k5_weather_editor.py": "39a2847b873bbdc567712ca87657d700fa95e226c3408983acce4d714b1031de",
-    "mod_editor/gui/build_panel_qt.py": "9a1b96100f34266e9296e7ae27132c3d5190f4eac0f5c12c726fb8320a49cf4f",
+    "mod_editor/gui/build_panel_qt.py": "f49fb3e7ec083269ffc1a0a8b4033506f14732d22227513ab23c80f3fc6b687f",
     "mod_editor/gui/gameplay_patches_panel_qt.py": "8a463a6c45f83feb3412f1d1926e60de80b6b1487b98b5199bbcae52bae88305",
     "mod_editor/gui/my_career_panel_qt.py": "cd39ce1685ed119288122e46b0f8c1c8ba586cea611f5d5feee096a71d7ea9ac",
     "mod_editor/gui/gameplay_project_ui.py": "4927318677c5dbd1183b139d5b4d2c460136e38a3f9bf5d5b979ba62e1ed016e",
@@ -2056,6 +2056,8 @@ def main() -> int:
         "mod_editor.core.nfl2k5_option_defaults",                # b779-df1, in-place
         "mod_editor.core.nfl2k5_clock_led",                       # b778-sd4
         "mod_editor.core.nfl2k5_project_check",                   # b779-ce1 Check my project
+        "mod_editor.core.nfl2k5_stadium_dry_run",                 # b791-h4 Check my project v2
+        "mod_editor.core.nfl2k5_edit_survival",                   # b791-h4 edit-survival audit
         "mod_editor.core.nfl2k5_kickoff_blocking",                # b76-vb3 E1
         "mod_editor.core.nfl2k5_widescreen_menus",                # b76-vb3 D2
         "mod_editor.core.nfl2k5_team_logo_swap",                  # b76-pf P1
