@@ -65,11 +65,16 @@ def set_rate(hz):
 # name: (kind, back yards, lateral yards); the stem is six yards at the matrix speed
 ROUTES = {"hitch": ("return", 0, 0), "curl_1": ("return", 1, 0), "curl_1_5": ("return", 1.5, 0),
           "curl_2": ("return", 2, 0), "comeback": ("return", 1.5, 1),
-          "slant": ("slant", 0, 0), "go": ("go", 0, 0)}
+          "slant": ("slant", 0, 0), "go": ("go", 0, 0),
+          # exploratory (not in the acceptance): after the 1.5-yard curl the receiver drifts sideways at 0.5 yd/s
+          "curl_drift": ("drift", 1.5, 0)}
 MATRICES = {"r5": {"receiver_yards_s": 6.0, "speed": .90, "agility": .80, "routes": tuple(ROUTES)},
             "fast": {"receiver_yards_s": 9.0, "speed": .85, "agility": .80,
-                     "routes": ("hitch", "curl_1_5", "slant", "go")}}
+                     "routes": ("hitch", "curl_1_5", "slant", "go")},
+            "drift": {"receiver_yards_s": 6.0, "speed": .90, "agility": .80, "routes": ("curl_drift",)}}
+ACCEPTANCE = ("r5", "fast")  # the matrices the CV1 acceptance is checked on
 RETURN_ROUTES = {name for name, (kind, back, _l) in ROUTES.items() if kind == "return" and back}
+DRIFT_YARDS_S = 0.5
 
 
 def _read_bounded(path):
@@ -121,6 +126,9 @@ def route_point(name, frame, speed_yards_s=6.0):
     k = min(n, RETURN_FRAMES)
     moving = n < RETURN_FRAMES
     seconds = RETURN_FRAMES / HZ
+    if kind == "drift" and not moving:
+        drift = DRIFT_YARDS_S * (n - RETURN_FRAMES) / HZ
+        return (drift * YARD, stem - back * YARD, DRIFT_YARDS_S * YARD, 0)
     return (lateral * k / RETURN_FRAMES * YARD, stem - back * YARD * k / RETURN_FRAMES,
             lateral / seconds * YARD if moving else 0, -back / seconds * YARD if moving else 0)
 
@@ -220,6 +228,8 @@ def jobs(builds):
     plan = []
     for build in builds:
         for matrix, spec in MATRICES.items():
+            if matrix not in ACCEPTANCE and build == "retail":
+                continue
             for route in spec["routes"]:
                 for direction in (1, -1):
                     plan.append((build, matrix, route, direction, "man", False))
@@ -253,8 +263,8 @@ def verify_document(document, brake_builds=("v08_brake",)):
             failures.append(message)
 
     for build in brake_builds:
-        for matrix, spec in MATRICES.items():
-            for route in spec["routes"]:
+        for matrix in ACCEPTANCE:
+            for route in MATRICES[matrix]["routes"]:
                 for direction in (1, -1):
                     key = case_key(build, matrix, route, direction, "man", False)
                     s = cases[key]["summary"]
@@ -265,7 +275,7 @@ def verify_document(document, brake_builds=("v08_brake",)):
                     need(s["reversal_pairs"] == 0, f"{key}: a there-and-back pivot pair (jag)")
                     need(s["tail_total_degrees"] < 5, f"{key}: {s['tail_total_degrees']:.2f} degrees in the last 2 s")
                     need(s["final_gap_yards"] < .35, f"{key}: final gap {s['final_gap_yards']:.3f} yd")
-        for matrix in MATRICES:
+        for matrix in ACCEPTANCE:
             for direction in (1, -1):
                 s = cases[f"{build}/{matrix}/man/hitch/{direction}"]["summary"]
                 need(s["post_break_total_degrees"] < 10 and abs(s["stationary_target_winding_degrees"]) < 45,

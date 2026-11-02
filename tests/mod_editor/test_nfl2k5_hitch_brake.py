@@ -105,6 +105,11 @@ class PublicTests(unittest.TestCase):
                     self.assertAlmostEqual((turn[1] - late[1]) / YARD, back)
                     self.assertAlmostEqual(late[0] / YARD, lateral)
                     self.assertEqual(late[2:], (0, 0))
+                elif kind == "drift":   # the curl, then a slow sideways drift that never stops
+                    self.assertAlmostEqual((turn[1] - late[1]) / YARD, back)
+                    later = replay.route_point(name, replay.BREAK + replay.RETURN_FRAMES + 60, speed)
+                    self.assertAlmostEqual((later[0] - late[0]) / YARD, replay.DRIFT_YARDS_S)
+                    self.assertEqual(later[2:], (replay.DRIFT_YARDS_S * YARD, 0))
                 else:
                     self.assertAlmostEqual(math.hypot(*late[2:]) / YARD, speed)
 
