@@ -317,6 +317,10 @@ class RetailRoster(unittest.TestCase):
         self.assertEqual(result.fired, ["Klint Kubiak"])
         staff = st.set_playbook(staff, "LV", "coach")
         self.assertEqual(st.plan(staff, self.base, self.teams).clubs[22].playbook_from.book, "KC")
+        moved = st.move_head_coach(staff, "Pat Shurmur", "NYG", self.base, self.teams)    # a created coach moves too
+        self.assertIn({"team": "NYG", "created": "c"}, moved["head_coaches"])
+        self.assertIn({"team": "KC", "coach": "John Harbaugh"}, moved["head_coaches"])
+        self.assertTrue(st.plan(moved, self.base, self.teams).ok)
         staff = st.set_defensive_coordinator(staff, "DAL", "Vic Fangio")
         self.assertEqual(staff["defensive_coordinators"], [{"team": "DAL", "dc": "PHI"}, {"team": "PHI", "dc": "DAL"}])
         self.assertEqual(st.reset(staff), st.empty())

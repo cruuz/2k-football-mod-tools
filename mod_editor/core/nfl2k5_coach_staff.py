@@ -1080,9 +1080,11 @@ def move_head_coach(staff, coach_name: str, to, roster_body, teams=None, *, vaca
     host = club(to)
     assignment = final_assignment(staff, roster_body, teams)
     previous = assignment[host.index]
-    leaving = [i for i, who in assignment.items() if who.get("coach", "").casefold() == coach_name.casefold()
-               and i != host.index]
-    assignment[host.index] = {"coach": coach_name.strip()}
+    created = {f"{c['first']} {c['last']}".casefold(): c["id"] for c in normalize(staff)["created_coaches"]}
+    occupant = ({"created": created[coach_name.strip().casefold()]} if coach_name.strip().casefold() in created
+                else {"coach": coach_name.strip()})
+    leaving = [i for i, who in assignment.items() if who == occupant and i != host.index]
+    assignment[host.index] = occupant
     playbooks = {i: p for i, p in _playbooks(staff).items() if i != host.index}
     if leaving and vacancy == "swap":
         assignment[leaving[0]] = previous
