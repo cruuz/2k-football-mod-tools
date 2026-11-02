@@ -157,8 +157,9 @@ COUNT_VA, COUNT_RETAIL = 0x20C340, "b819000000c3"
 # from whatever player last owned the spare record (the importer takes the first record with flags & 5 == 1, BFF50).
 # The import now completes the record: the 11-byte site copies the dword +0x0C..+0x0F (the clone already wrote +0x0C
 # from the file, so only +0x0D..+0x0F change) and jumps to the owned code, which copies the whole +0x52 word, replays
-# the two retail instructions and resumes. Nothing else changes: +0x09 and +0x30..+0x33 are zero in every record any
-# writer makes, and +0x2C (the season history pointer) stays the record's own, as in retail.
+# the two retail instructions and resumes. Nothing else changes: +0x09 and +0x30..+0x33 are zero in every shipped moment
+# team record and every spare record of the released roster (no Studio module writes them), and +0x2C (the season
+# history pointer) stays the record's own, as in retail.
 STAR_VA, STAR_RETAIL, STAR_RESUME = 0xC1D6A, "8b4424100fb68e1c010000", 0xC1D75
 IMPORT_SITE_HEAD = bytes.fromhex("8b4d0c" "894f0c")     # mov ecx,[ebp+0x0C] ; mov [edi+0x0C],ecx
 TEST_VA = 0x20C390
@@ -1376,11 +1377,13 @@ def apply(payload, data=None, *, legacy_data=None):
                   display_order=list(display_order(data)), physical_order_preserved=True)
     if state == "applied":
         if row_hooks_status(payload, data) == "previous":
+            original = payload
             payload, receipt = _complete_row_hooks(payload, data, common)
-            if import_status(payload, data) == "previous":
+            if import_status(payload, data) == "previous":     # a real beta 76.5 disc also has the star-only tail
                 payload, more = _complete_import(payload, data, common)
                 receipt = dict(receipt, upgraded_from=receipt["upgraded_from"] + " + " + more["upgraded_from"],
-                               edits=receipt["edits"] + more["edits"], after_sha256=more["after_sha256"])
+                               edits=receipt["edits"] + more["edits"], after_sha256=more["after_sha256"],
+                               changed_bytes=sum(a != b for a, b in zip(original, payload)))
             return payload, receipt
         if import_status(payload, data) == "previous":
             return _complete_import(payload, data, common)

@@ -1096,6 +1096,39 @@ class AnniversaryQcRetailTests(unittest.TestCase):
                 self.assertEqual(mm.status(mixed, self.data), "foreign")
                 self.assertEqual(mm.import_status(mixed, self.data), "foreign")
 
+    def test_a_beta_765_install_gets_its_row_hooks_and_the_whole_import_in_one_pass(self):
+        """b780: a real beta 76.5 disc has neither the beta 77 row hooks nor the b780 import tail (it carries the
+        star-only tail and its plain jump). apply() completes both in one pass; the result equals a fresh install and
+        the receipt counts every changed byte."""
+        from mod_editor.core.nfl2k5_bump_strength import _sections, section_digest
+        current, _ = mm.apply(self.retail, self.data)
+        code, dat = mm.allocations(current)
+        image = XbeImage(current)
+        out = bytearray(current)
+        tail_at, site_at = code["raw"] + mm.STAR_OFFSET, image.offset(mm.STAR_VA, 11)
+        out[tail_at:tail_at + mm.TABLE_OFFSET - mm.STAR_OFFSET] = mm.previous_star_code(code["va"] + mm.STAR_OFFSET)
+        out[site_at:site_at + 11] = mm.previous_import_site(code["va"])
+        for label, va, before, _after in mm.sites(code["va"], dat["va"], mm.RETAIL_COUNT + len(self.data.moments)):
+            if label in mm.ROW_LABELS:
+                out[image.offset(va, len(before)):image.offset(va, len(before)) + len(before)] = before
+        if space.is_scaleout(current):
+            space._seal_scaleout(out, space._read_scale_directory(current))
+        else:
+            requests = space._read_directory(current)
+            out[space.DIRECTORY:space._directory_end(requests)] = space._directory(
+                requests, space._code_bytes(out, requests))
+        for sec in _sections(out):
+            out[sec.header_offset + 36:sec.header_offset + 56] = section_digest(out, sec)
+        beta765 = bytes(out)
+        self.assertEqual((mm.status(beta765, self.data), mm.row_hooks_status(beta765, self.data),
+                          mm.import_status(beta765, self.data)), ("applied", "previous", "previous"))
+        upgraded, receipt = mm.apply(beta765, self.data)
+        self.assertEqual((receipt["status"], receipt["rows_completed"]), ("upgraded", True))
+        self.assertIn("star-only import tail", receipt["upgraded_from"])
+        self.assertEqual(upgraded, current)
+        self.assertEqual(receipt["changed_bytes"], sum(a != b for a, b in zip(beta765, upgraded)))
+        self.assertEqual(mm.apply(upgraded, self.data)[1]["status"], "already_applied")
+
     def test_a_player_gets_his_own_art_or_none_and_his_tone(self):
         with outer_image() as archive:
             main = archive.read(archive.entries[5].virtual_offset, archive.entries[5].size)
