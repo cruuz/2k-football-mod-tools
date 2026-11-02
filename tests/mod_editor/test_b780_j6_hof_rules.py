@@ -15,6 +15,8 @@ import os
 from pathlib import Path
 import random
 import re
+import shutil
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -223,16 +225,17 @@ class ProcessTests(unittest.TestCase):
         self.assertEqual(rules.select_class(table, 2010), [0, 1, 2, 3, 4])
 
     def test_class_fills_to_two_from_the_floor(self):
+        floor = rules.FLOOR
         table = rules.empty_table()
         table[0] = cand("Aaa One", "QB", 2000, 140)
-        table[1] = cand("Bbb Two", "QB", 2000, 99)
-        table[2] = cand("Ccc Three", "QB", 2000, 80)
-        table[3] = cand("Ddd Four", "QB", 2000, 74)
-        self.assertEqual(rules.select_class(table, 2010), [0, 1])               # one over the bar, one filled from 99
+        table[1] = cand("Bbb Two", "QB", 2000, rules.BAR - 1)
+        table[2] = cand("Ccc Three", "QB", 2000, floor)
+        table[3] = cand("Ddd Four", "QB", 2000, floor - 1)
+        self.assertEqual(rules.select_class(table, 2010), [0, 1])               # one over the bar, one filled from BAR - 1
         table[0] = None
         self.assertEqual(rules.select_class(table, 2010), [1, 2])
         table[1] = None
-        self.assertEqual(rules.select_class(table, 2010), [2])                  # only one at 75 or more: a class of one
+        self.assertEqual(rules.select_class(table, 2010), [2])                  # only one at the floor or more: a class of one
         table[2] = None
         self.assertEqual(rules.select_class(table, 2010), [])                   # nobody: no class, no pop-up
 
@@ -256,7 +259,7 @@ class ProcessTests(unittest.TestCase):
 
     def test_admit_rules(self):
         table = rules.empty_table()
-        self.assertEqual(rules.admit(table, cand("Low Man", "WR", 2020, 74)), "refused")
+        self.assertEqual(rules.admit(table, cand("Low Man", "WR", 2020, rules.FLOOR - 1)), "refused")
         x = cand("Aaa One", "WR", 2020, 90)
         self.assertEqual(rules.admit(table, x), "added")
         self.assertEqual(rules.admit(table, x), "refused")                        # the retirement pass ran twice
@@ -264,17 +267,20 @@ class ProcessTests(unittest.TestCase):
         self.assertEqual(sum(c is not None for c in table), 2)
 
     def test_full_table_replaces_only_the_weakest_and_never_grows(self):
+        floor = rules.FLOOR
         table = rules.empty_table()
         for i in range(rules.CANDIDATE_SLOTS):
-            self.assertEqual(rules.admit(table, cand(f"Pl{i:03d}", "TE", 2020, 80 + i)), "added")
-        weak = cand("Weak Man", "TE", 2021, 79 + 0)
-        self.assertEqual(rules.admit(table, weak), "refused")                     # weaker than everyone
+            self.assertEqual(rules.admit(table, cand(f"Pl{i:03d}", "TE", 2020, floor + 1 + i)), "added")
+        weak = cand("Weak Man", "TE", 2021, floor)                                 # at the floor, but weaker than everyone
+        self.assertEqual(rules.admit(table, weak), "refused")
         strong = cand("Strong Man", "TE", 2021, 500)
-        self.assertEqual(rules.admit(table, strong), "replaced")
+        outcome, dropped = rules.admit_detail(table, strong)
+        self.assertEqual(outcome, "replaced")
+        self.assertEqual(dropped, cand("Pl000", "TE", 2020, floor + 1))           # the weakest is the one dropped
         self.assertEqual(len(table), 64)
         self.assertIn(strong, table)
-        self.assertNotIn(cand("Pl000", "TE", 2020, 80), table)                    # the weakest (score 80) is gone
-        equal = cand("Equal Man", "TE", 2021, 81)                                  # ties: earlier retirement ranks higher, so a later one loses
+        self.assertNotIn(dropped, table)
+        equal = cand("Equal Man", "TE", 2021, floor + 2)                           # ties: an earlier retirement ranks higher, so a later one loses
         self.assertEqual(rules.admit(table, equal), "refused")
 
     def test_close_season_order_and_bookkeeping(self):
@@ -289,6 +295,7 @@ class ProcessTests(unittest.TestCase):
         self.assertEqual(result.sources, [old, new])
         self.assertEqual([i.flags for i in result.inductees], [rules.FLAG_FRANCHISE | rules.FLAG_REAL, rules.FLAG_FRANCHISE])
         self.assertEqual([a for _, a in result.admitted], ["added", "refused"])
+        self.assertEqual(result.evicted, [])
         self.assertEqual([c for c in table if c is not None], [fresh[0]])
 
     def test_over_age_candidate_is_dropped_after_his_last_chance(self):
@@ -330,6 +337,159 @@ class ProcessTests(unittest.TestCase):
             over_bar = sum(1 for i in result.inductees if i.score >= rules.BAR)
             self.assertTrue(over_bar == len(result.inductees) or len(result.inductees) <= rules.MIN_CLASS)
             self.assertTrue(all(i.class_year == season + 1 for i in result.inductees))
+
+
+
+C_HARNESS = r"""
+#include <stdio.h>
+int main(void) {
+    int cmd;
+    while (scanf("%d", &cmd) == 1) {
+        if (cmd == 1) {
+            HofCareer c; int v[19]; int k;
+            for (k = 0; k < 19; k++) if (scanf("%d", &v[k]) != 1) return 2;
+            c.group = (unsigned)v[0]; c.games = v[1]; c.mvp = v[2]; c.opoy = v[3]; c.dpoy = v[4]; c.oroy = v[5]; c.droy = v[6];
+            c.super_bowl = v[7]; c.super_bowl_mvp = v[8]; c.all_pro = v[9]; c.rushing_title = v[10]; c.passing_touchdowns = v[11];
+            c.rushing_touchdowns = v[12]; c.rushing_yards = v[13]; c.receiving_yards = v[14]; c.receiving_touchdowns = v[15];
+            c.sacks_half = v[16]; c.interceptions = v[17]; c.field_goals_made = v[18];
+            printf("%u\n", hof_score(&c));
+        } else {
+            HofSlot t[HOF_CANDIDATE_SLOTS], c; int i, n, out[HOF_CANDIDATE_SLOTS]; unsigned season;
+            if (scanf("%u", &season) != 1) return 2;
+            for (i = 0; i < HOF_CANDIDATE_SLOTS; i++)
+                if (scanf("%d %u %u %u %u", &t[i].valid, &t[i].score, &t[i].honors, &t[i].seasons, &t[i].retired) != 5) return 2;
+            if (cmd == 2) {
+                n = hof_select(t, season, out);
+                printf("%d", n); for (i = 0; i < n; i++) printf(" %d", out[i]); printf("\n");
+            } else {
+                if (scanf("%d %u %u %u %u", &c.valid, &c.score, &c.honors, &c.seasons, &c.retired) != 5) return 2;
+                n = hof_admit(t, &c);
+                printf("%d", n);
+                for (i = 0; i < HOF_CANDIDATE_SLOTS; i++) printf(" %d:%u:%u:%u:%u", t[i].valid, t[i].score, t[i].honors, t[i].seasons, t[i].retired);
+                printf("\n");
+            }
+        }
+    }
+    return 0;
+}
+"""
+
+
+def _c_compiler():
+    return shutil.which("cc") or shutil.which("gcc") or shutil.which("clang")
+
+
+@unittest.skipUnless(_c_compiler(), "no C compiler on this machine")
+class CReferenceTests(unittest.TestCase):
+    """The generated C (``rules.c_reference``) agrees with this module on fuzzed careers, class selections and admissions."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.folder = tempfile.TemporaryDirectory()
+        base = Path(cls.folder.name)
+        (base / "ref.c").write_text(rules.c_reference() + C_HARNESS, encoding="utf-8", newline="\n")
+        exe = str(base / ("ref.exe" if os.name == "nt" else "ref"))
+        done = subprocess.run([_c_compiler(), "-std=c99", "-O1", "-Wall", "-Wno-unused-const-variable", "-o", exe, str(base / "ref.c")],
+                              capture_output=True, text=True)
+        assert done.returncode == 0, done.stderr
+        cls.exe = exe
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.folder.cleanup()
+
+    def run_c(self, text: str) -> list[str]:
+        done = subprocess.run([self.exe], input=text, capture_output=True, text=True, timeout=120)
+        self.assertEqual(done.returncode, 0, done.stderr)
+        return done.stdout.strip().split("\n")
+
+    FIELDS = ("games", "mvp", "opoy", "dpoy", "oroy", "droy", "super_bowl", "super_bowl_mvp", "all_pro", "rushing_title",
+              "passing_touchdowns", "rushing_touchdowns", "rushing_yards", "receiving_yards", "receiving_touchdowns", "sacks_half",
+              "interceptions", "field_goals_made")
+
+    def test_score_agrees_on_golden_vectors_and_fuzzed_careers(self):
+        cases = []
+        for v in rules.golden_vectors():
+            cases.append(rules.Career.from_position(v["position"], **v["fields"]))
+        rng = random.Random(11)
+        for _ in range(3000):
+            scale = rng.choice([3, 12, 400, 5000, 32767])
+            kw = {f: rng.randrange(-2, scale) if rng.random() < 0.6 else 0 for f in self.FIELDS}
+            cases.append(rules.Career(group=rng.randrange(10), **kw))
+        lines = [" ".join(["1", str(c.group)] + [str(getattr(c, f)) for f in self.FIELDS]) for c in cases]
+        out = self.run_c("\n".join(lines) + "\n")
+        self.assertEqual(len(out), len(cases))
+        for c, got in zip(cases, out):
+            self.assertEqual(int(got), rules.score(c), c)
+
+    @staticmethod
+    def slot_text(c):
+        return "0 0 0 0 0" if c is None else f"1 {c.score} {c.honors} {c.seasons} {c.retired}"
+
+    @staticmethod
+    def table_from(rng, fill):
+        table = rules.empty_table()
+        for i in range(rules.CANDIDATE_SLOTS):
+            if rng.random() < fill:
+                table[i] = rules.Candidate(bytes(7), None, rng.randrange(1996, 2036), rng.randrange(rules.FLOOR - 15, rules.BAR + 60),
+                                           rng.randrange(1, 18), honors=rng.randrange(0, 14))
+        return table
+
+    def test_class_selection_agrees(self):
+        rng = random.Random(21)
+        tables, lines = [], []
+        for _ in range(1500):
+            table = self.table_from(rng, rng.choice([0.05, 0.3, 0.7, 1.0]))
+            season = rng.randrange(2002, 2050)
+            tables.append((table, season))
+            lines.append("2 %d " % season + " ".join(self.slot_text(c) for c in table))
+        out = self.run_c("\n".join(lines) + "\n")
+        for (table, season), got in zip(tables, out):
+            self.assertEqual([int(x) for x in got.split()[1:]], rules.select_class(table, season))
+            self.assertEqual(int(got.split()[0]), len(rules.select_class(table, season)))
+
+    def test_admission_agrees_including_full_tables_and_ties(self):
+        rng = random.Random(31)
+        cases, lines = [], []
+        for _ in range(2000):
+            table = self.table_from(rng, rng.choice([0.2, 0.9, 1.0, 1.0]))
+            if rng.random() < 0.3:                                                # a candidate who ties somebody on three numbers
+                taken = [c for c in table if c is not None]
+                base = rng.choice(taken) if taken else None
+            else:
+                base = None
+            if base is not None:
+                new = rules.Candidate(bytes(7), None, base.retired + rng.choice([-1, 0, 1]), base.score, base.seasons, honors=base.honors)
+            else:
+                new = rules.Candidate(bytes(7), None, rng.randrange(1996, 2036), rng.randrange(rules.FLOOR - 15, rules.BAR + 60),
+                                      rng.randrange(1, 18), honors=rng.randrange(0, 14))
+            cases.append((table, new))
+            lines.append("3 2030 " + " ".join(self.slot_text(c) for c in table) + " " + self.slot_text(new))
+        out = self.run_c("\n".join(lines) + "\n")
+        codes = {"added": 1, "replaced": 2, "refused": 0}
+        for (table, new), got in zip(cases, out):
+            outcome = rules.admit(table, new)
+            parts = got.split()
+            self.assertEqual(int(parts[0]), codes[outcome])
+            self.assertEqual(parts[1:], [self.slot_text(c).replace(" ", ":") if c else "0:0:0:0:0" for c in table])
+
+    def test_a_c_year_by_year_run_matches(self):
+        """Thirty years of random retirements: the class close_season picks each year equals the C selection on the same table."""
+
+        rng = random.Random(41)
+        table, ctable, lines = rules.empty_table(), [], []
+        classes = []
+        # Python side only needs to be checked against C one close at a time with the table state copied across
+        for season in range(2026, 2056):
+            before = list(table)
+            lines.append("2 %d " % season + " ".join(self.slot_text(c) for c in before))
+            result = rules.close_season(table, season, [
+                rules.Candidate(bytes(7), None, season, rng.randrange(rules.FLOOR - 10, 260), rng.randrange(1, 18), honors=rng.randrange(0, 14))
+                for _ in range(rng.randrange(0, 9))])
+            classes.append([before.index(c) for c in result.sources])
+        out = self.run_c("\n".join(lines) + "\n")
+        for want, got in zip(classes, out):
+            self.assertEqual([int(x) for x in got.split()[1:]], want)
 
 
 # --------------------------------------------------------------------------------------------------------------------
@@ -590,7 +750,7 @@ class ReplayTests(unittest.TestCase):
         doc = TOOL.seed_document(ROWS)
         self.assertEqual(doc["schema"], "nfl2k5_hof_candidates/v1")
         self.assertEqual(doc["count"], len(doc["candidates"]))
-        self.assertEqual(doc["count"], 30)
+        self.assertEqual(doc["count"], 27)
         self.assertLessEqual(doc["count"], rules.CANDIDATE_SLOTS)
         names = [c["name"] for c in doc["candidates"]]
         self.assertEqual(len(names), len(set(names)))
@@ -614,7 +774,7 @@ class ReplayTests(unittest.TestCase):
         table = rules.empty_table()
         for c in TOOL.seed_document(ROWS)["candidates"]:
             self.assertEqual(rules.admit(table, rules.candidate_from_bytes(bytes.fromhex(c["candidate_hex"]))), "added")
-        self.assertLessEqual(sum(x is not None for x in table), rules.CANDIDATE_SLOTS - 30)
+        self.assertLessEqual(sum(x is not None for x in table), rules.CANDIDATE_SLOTS - 30)         # room for 30 more
 
 
 # --------------------------------------------------------------------------------------------------------------------
@@ -823,7 +983,7 @@ class ToolTests(unittest.TestCase):
 class SimProxyTests(unittest.TestCase):
     def test_franchise_career_regime(self):
         out = TOOL.sim_proxy(Path(os.environ["B780_HN1_RUNS"]))
-        self.assertEqual({n: (v["at_bar"], v["at_floor"]) for n, v in out.items()}, {5: (4, 11), 8: (13, 23), 10: (17, 33)})
+        self.assertEqual({n: (v["at_bar"], v["at_floor"]) for n, v in out.items()}, {5: (4, 11), 8: (13, 22), 10: (17, 31)})
         self.assertEqual(set(out[10]["production_scale"].values()) - {16, 17}, set())
         self.assertEqual(out[10]["production_scale"]["rushing x1.3"], 17)
 

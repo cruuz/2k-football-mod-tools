@@ -767,7 +767,7 @@ def replay(rows: Sequence[Mapping], first_close: int, last_close: int, *, retire
     table = rules.empty_table()
     for cand in seed_table:
         rules.admit(table, cand)
-    classes, closes = {}, []
+    classes, closes, occupancy, evictions = {}, [], {}, []
     for season in range(first_close, last_close + 1):
         # a season's own retirees can only join after the class; those older than the first close join before it
         pre = by_season.pop(first_close - 1, []) if season == first_close else []
@@ -780,7 +780,10 @@ def replay(rows: Sequence[Mapping], first_close: int, last_close: int, *, retire
         classes[result.class_year] = [dict(owner.get(id(c)) or {"name": rules.person_line(c.person, c.club), "group": "?", "last": c.retired,
                                                                  "hof": 0}, _score=c.score) for c in result.sources]
         closes.append(result)
-    return {"classes": classes, "closes": closes, "table": [c for c in table if c is not None], "owner": owner}
+        occupancy[season] = sum(1 for c in table if c is not None)
+        evictions += [(season, c) for c in result.evicted]
+    return {"classes": classes, "closes": closes, "table": [c for c in table if c is not None], "owner": owner,
+            "occupancy": occupancy, "evictions": evictions}
 
 
 def class_lines(classes: Mapping[int, Sequence[Mapping]], years: Sequence[int]) -> list[str]:
@@ -805,8 +808,16 @@ def real_replay(rows: Sequence[Mapping], first: int = 2010, last: int = 2026) ->
     classes = {y: v for y, v in result["classes"].items() if first <= y <= last}
     sizes = collections.Counter(len(v) for v in classes.values())
     inducted = [r for v in classes.values() for r in v]
+    occupancy = {s: n for s, n in result["occupancy"].items() if s >= first - 1}
+    evicted = [(s, owner_name(result["owner"], c), c.score) for s, c in result["evictions"]]
     return {"classes": classes, "sizes": dict(sorted(sizes.items())), "inductees": len(inducted),
-            "real_members": sum(1 for r in inducted if r.get("hof")), "result": result}
+            "real_members": sum(1 for r in inducted if r.get("hof")), "result": result,
+            "table_max": max(occupancy.values()) if occupancy else 0, "evictions": evicted}
+
+
+def owner_name(owner: Mapping, cand: "rules.Candidate") -> str:
+    row = owner.get(id(cand))
+    return row["name"] if row else rules.person_line(cand.person, cand.club)
 
 
 def franchise_replay(rows: Sequence[Mapping], last_close: int = 2035) -> dict:

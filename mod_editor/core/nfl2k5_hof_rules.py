@@ -19,12 +19,12 @@ The rule in plain words (``RULE_HELP`` repeats it for the Studio option text)
     kickers; linemen and punters have no production line). Tackles are not counted (the sim piles them up).
 * Pro Bowls are not counted. The game records them only for seeded real players, never for new ones, so counting them
   would favour real careers over franchise careers; the calibration does as well without them (see below).
-* A retiree with 75 points or more becomes a candidate (the table holds 64; when it is full a better score replaces the
+* A retiree with 80 points or more becomes a candidate (the table holds 64; when it is full a better score replaces the
   weakest). He is eligible five seasons after his last season and stays eligible for 15 more seasons (20 after he
   retires), then drops off.
 * At each season close the eligible candidates are ranked (score, then honors, seasons, earliest retirement, table slot):
-  up to 5 with 100 points or more are inducted. If fewer than 2 reach 100, the best candidates with 75 or more fill the
-  class up to 2. No eligible candidate with 75 points means no class that year (no pop-up).
+  up to 5 with 100 points or more are inducted. If fewer than 2 reach 100, the best candidates with 80 or more fill the
+  class up to 2. No eligible candidate with 80 points means no class that year (no pop-up).
 * The class is named for the next year ("Class of 2027" after the 2026 season), like the real one.
 
 Calibration (``tools/b780_hof_calibrate.py``; every number is re-checked by ``tests/mod_editor/test_b780_j6_hof_rules.py``)
@@ -59,7 +59,7 @@ WINDOW_SEASONS = 15         # and for this many more closes (retired + 5 .. reti
 MAX_CLASS = 5
 MIN_CLASS = 2
 BAR = 100                   # points that induct, whatever the class size so far (up to MAX_CLASS)
-FLOOR = 75                  # points to become a candidate, and the lowest that may fill a class up to MIN_CLASS
+FLOOR = 80                  # points to become a candidate, and the lowest that may fill a class up to MIN_CLASS
 INDUCTEE_SLOTS = 192
 CANDIDATE_SLOTS = 64
 
@@ -108,8 +108,8 @@ RULE_HELP = (
     "Hall of Fame: when a player retires he is scored from his honors, games and production. First-team All-Pro 25, MVP 25, "
     "Player of the Year 15, Super Bowl MVP 15, Rookie of the Year 10, rushing title 15, Super Bowl ring 3, one point per "
     "4 games over 80 (most 20; 35 for linemen), and up to 25 for production at his position (none for linemen and punters). Pro Bowls and "
-    "tackles do not count. With 75 points he becomes a candidate. Five seasons after he retires he can be inducted: each "
-    "year up to 5 candidates with 100 points go in, and if fewer than 2 reach 100 the best candidates with 75 or more "
+    "tackles do not count. With 80 points he becomes a candidate. Five seasons after he retires he can be inducted: each "
+    "year up to 5 candidates with 100 points go in, and if fewer than 2 reach 100 the best candidates with 80 or more "
     "fill the class to 2. A candidate is dropped 20 seasons after he retired.")
 
 
@@ -330,23 +330,27 @@ def select_class(table: Sequence[Candidate | None], season: int) -> list[int]:
     return chosen
 
 
-def admit(table: list, candidate: Candidate) -> str:
-    """Put a retiree on the table. -> "added", "replaced" (the weakest was dropped), "refused" (below the floor, a duplicate,
-    or the table is full of better candidates)."""
+def admit_detail(table: list, candidate: Candidate) -> tuple[str, Candidate | None]:
+    """Put a retiree on the table. -> (outcome, dropped): "added" (a free slot, nothing dropped), "replaced" (the weakest candidate was
+    dropped and is returned) or "refused" (below the floor, already on the table, or weaker than everyone in a full table)."""
 
     if candidate.score < FLOOR:
-        return "refused"
+        return "refused", None
     if any(c == candidate for c in table):                # the retirement pass ran twice for the same man
-        return "refused"
+        return "refused", None
     for i, c in enumerate(table):
         if c is None:
             table[i] = candidate
-            return "added"
+            return "added", None
     worst = max(range(len(table)), key=lambda i: rank_key(i, table[i]))
     if rank_key(worst, candidate) < rank_key(worst, table[worst]):
-        table[worst] = candidate
-        return "replaced"
-    return "refused"
+        dropped, table[worst] = table[worst], candidate
+        return "replaced", dropped
+    return "refused", None
+
+
+def admit(table: list, candidate: Candidate) -> str:
+    return admit_detail(table, candidate)[0]
 
 
 @dataclass
@@ -357,6 +361,7 @@ class Close:
     sources: list = field(default_factory=list)         # the Candidate each inductee came from (same order)
     expired: list = field(default_factory=list)         # Candidate dropped for age
     admitted: list = field(default_factory=list)        # (Candidate, "added" | "replaced" | "refused")
+    evicted: list = field(default_factory=list)         # Candidate dropped to make room (a full table)
 
 
 def close_season(table: list, season: int, retirees: Iterable[Candidate] = ()) -> Close:
@@ -374,7 +379,10 @@ def close_season(table: list, season: int, retirees: Iterable[Candidate] = ()) -
             result.expired.append(c)
             table[i] = None
     for retiree in retirees:
-        result.admitted.append((retiree, admit(table, retiree)))
+        outcome, dropped = admit_detail(table, retiree)
+        result.admitted.append((retiree, outcome))
+        if dropped is not None:
+            result.evicted.append(dropped)
     return result
 
 
@@ -495,6 +503,110 @@ def c_header() -> str:
     return "\n".join(lines) + "\n"
 
 
+C_REFERENCE_BODY = r"""
+typedef struct {
+    unsigned group;                                   /* 0 QB, 1 RB, 2 WR, 3 TE, 4 OL, 5 DL, 6 LB, 7 DB, 8 K, 9 P */
+    int games, mvp, opoy, dpoy, oroy, droy, super_bowl, super_bowl_mvp, all_pro, rushing_title;
+    int passing_touchdowns, rushing_touchdowns, rushing_yards, receiving_yards, receiving_touchdowns;
+    int sacks_half, interceptions, field_goals_made;
+} HofCareer;
+typedef struct { int valid; unsigned score, honors, seasons, retired; } HofSlot;
+
+static unsigned hof_n(int v) { return v > 0 ? (unsigned)v : 0u; }
+static unsigned hof_min(unsigned a, unsigned b) { return a < b ? a : b; }
+
+unsigned hof_composite(const HofCareer *c) {
+    switch (c->group) {
+    case 0: return 10u * hof_n(c->passing_touchdowns) + 20u * hof_n(c->rushing_touchdowns);
+    case 1: return hof_n(c->rushing_yards) + 60u * hof_n(c->rushing_touchdowns) + hof_n(c->receiving_yards) + 60u * hof_n(c->receiving_touchdowns);
+    case 2: case 3: return hof_n(c->receiving_yards) + 60u * hof_n(c->receiving_touchdowns);
+    case 5: return 15u * hof_n(c->sacks_half) + 40u * hof_n(c->interceptions);
+    case 6: return 15u * hof_n(c->sacks_half) + 50u * hof_n(c->interceptions);
+    case 7: return 50u * hof_n(c->interceptions) + 15u * hof_n(c->sacks_half);
+    case 8: return 10u * hof_n(c->field_goals_made);
+    default: return 0u;
+    }
+}
+
+unsigned hof_score(const HofCareer *c) {
+    unsigned honors = HOF_PTS_ALL_PRO * hof_n(c->all_pro) + HOF_PTS_MVP * hof_n(c->mvp)
+        + HOF_PTS_PLAYER_OF_YEAR * (hof_n(c->opoy) + hof_n(c->dpoy)) + HOF_PTS_SUPER_BOWL_MVP * hof_n(c->super_bowl_mvp)
+        + HOF_PTS_ROOKIE_OF_YEAR * (hof_n(c->oroy) + hof_n(c->droy))
+        + HOF_PTS_RUSHING_TITLE * hof_min(hof_n(c->rushing_title), HOF_RUSHING_TITLE_CAP)
+        + HOF_PTS_SUPER_BOWL * hof_min(hof_n(c->super_bowl), HOF_SUPER_BOWL_CAP);
+    unsigned cap = c->group == 4 ? HOF_GAMES_CAP_LINEMEN : HOF_GAMES_CAP;
+    unsigned games = hof_min(cap, hof_n(c->games - HOF_GAMES_FREE) / HOF_GAMES_PER_POINT);
+    unsigned prod = 0;
+    if (HOF_PAR[c->group]) prod = hof_min(HOF_PRODUCTION_CAP, HOF_PRODUCTION_CAP * hof_composite(c) / HOF_PAR[c->group]);
+    unsigned total = honors + games + prod;
+    return total > HOF_SCORE_MAX ? HOF_SCORE_MAX : total;
+}
+
+/* 1 when a ranks strictly before b, ignoring the slot: score, honors, seasons (larger first), earlier retirement */
+static int hof_better(const HofSlot *a, const HofSlot *b) {
+    if (a->score != b->score) return a->score > b->score;
+    if (a->honors != b->honors) return a->honors > b->honors;
+    if (a->seasons != b->seasons) return a->seasons > b->seasons;
+    return a->retired < b->retired;
+}
+
+/* 1 when slot a ranks before slot b: the order above, then the lower slot */
+int hof_before(const HofSlot *t, int a, int b) {
+    if (t[a].score != t[b].score || t[a].honors != t[b].honors || t[a].seasons != t[b].seasons || t[a].retired != t[b].retired)
+        return hof_better(&t[a], &t[b]);
+    return a < b;
+}
+
+static int hof_eligible(const HofSlot *s, unsigned season) {
+    return s->valid && s->retired + HOF_WAIT <= season && season <= s->retired + HOF_WAIT + HOF_WINDOW;
+}
+
+/* slots inducted at the close of `season`, best first; returns how many (at most HOF_MAX_CLASS) */
+int hof_select(const HofSlot *t, unsigned season, int *out) {
+    int n = 0, i, best, chosen[HOF_CANDIDATE_SLOTS] = {0};
+    for (;;) {                                         /* up to the class size with the bar or more */
+        best = -1;
+        for (i = 0; i < HOF_CANDIDATE_SLOTS; i++)
+            if (!chosen[i] && hof_eligible(&t[i], season) && t[i].score >= HOF_BAR && (best < 0 || hof_before(t, i, best))) best = i;
+        if (best < 0 || n >= HOF_MAX_CLASS) break;
+        chosen[best] = 1; out[n++] = best;
+    }
+    while (n < HOF_MIN_CLASS) {                        /* then the best with the floor or more, up to the minimum */
+        best = -1;
+        for (i = 0; i < HOF_CANDIDATE_SLOTS; i++)
+            if (!chosen[i] && hof_eligible(&t[i], season) && t[i].score >= HOF_FLOOR && (best < 0 || hof_before(t, i, best))) best = i;
+        if (best < 0) break;
+        chosen[best] = 1; out[n++] = best;
+    }
+    return n;
+}
+
+/* 0 refused, 1 added, 2 replaced the weakest; the same four numbers on the table mean the same man */
+int hof_admit(HofSlot *t, const HofSlot *c) {
+    int i, worst = 0;
+    if (c->score < HOF_FLOOR) return 0;
+    for (i = 0; i < HOF_CANDIDATE_SLOTS; i++)
+        if (t[i].valid && t[i].score == c->score && t[i].honors == c->honors && t[i].seasons == c->seasons && t[i].retired == c->retired) return 0;
+    for (i = 0; i < HOF_CANDIDATE_SLOTS; i++)
+        if (!t[i].valid) { t[i] = *c; t[i].valid = 1; return 1; }
+    for (i = 1; i < HOF_CANDIDATE_SLOTS; i++)
+        if (hof_before(t, worst, i)) worst = i;          /* the lowest ranked slot */
+    if (!hof_better(c, &t[worst])) return 0;             /* in his slot he would not rank before the one he replaces */
+    t[worst] = *c; t[worst].valid = 1;
+    return 2;
+}
+"""
+
+
+def c_reference() -> str:
+    """The rule as C on 32-bit integers (host-compilable; no library calls): ``hof_score``, ``hof_before``, ``hof_select`` and
+    ``hof_admit`` over a 64-slot table, with the constants from ``c_header``. The unit test compiles it, if a C compiler is
+    installed, and fuzzes it against this module. The native owner starts from it, so it is the proven starting point and
+    not a replacement for the owner's own Unicorn replay."""
+
+    return c_header() + C_REFERENCE_BODY
+
+
 def golden_vectors() -> list[dict]:
     """Deterministic cases covering every term, cap, group and clamp: ``{"group", "position", "fields", "score", "parts"}``.
     The native owner's Unicorn test builds each stream with ``history_words`` and compares its score with ``score``."""
@@ -535,5 +647,5 @@ __all__ = ["SCHEMA", "OWNER", "WAIT_SEASONS", "WINDOW_SEASONS", "MAX_CLASS", "MI
            "Inductee", "Close", "HofError", "composite", "honors_points", "games_points", "production_points", "score",
            "score_parts", "honors_count", "seasons_from_games", "candidate_to_bytes", "candidate_from_bytes",
            "inductee_to_bytes", "inductee_from_bytes", "class_year", "is_eligible", "rank_key", "empty_table",
-           "select_class", "admit", "close_season", "person_line", "popup_texts", "history_words", "career_from_words",
-           "native_table", "c_header", "golden_vectors"]
+           "select_class", "admit", "admit_detail", "close_season", "person_line", "popup_texts", "history_words", "career_from_words",
+           "native_table", "c_header", "c_reference", "golden_vectors"]

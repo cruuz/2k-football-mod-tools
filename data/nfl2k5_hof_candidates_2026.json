@@ -3,14 +3,14 @@
  "attribution": "nflverse contributors (https://github.com/nflverse/nflverse-data), CC-BY-4.0; Wikipedia contributors, CC BY-SA 4.0 (facts only: award winners, All-Pro and Pro Bowl rosters, Hall of Fame classes)",
  "rule": {
   "bar": 100,
-  "floor": 75,
+  "floor": 80,
   "wait": 5,
   "window": 15,
   "max_class": 5,
   "min_class": 2
  },
  "policy": "Real retirees whose last season is 2021 or later: the real committee has not judged them (its Class of 2026 is the last one in the sources). Retirees up to 2020 who were not elected stay out: the real committee passed on them, and the rule would only reproduce its false positives. A seeded player must not also exist on the game roster (match name and birth date): any with a 2026 roster row in ACT, RES, DEV or EXE are left out.",
- "count": 30,
+ "count": 27,
  "candidates": [
   {
    "name": "Tom Brady",
@@ -929,108 +929,6 @@
    "birth_date": "1995-07-22",
    "retirement": "confirmed (no season after 2024)",
    "candidate_hex": "a530961ea5001c0ce80758000903aa234a00700104000000"
-  },
-  {
-   "name": "Matthew Slater",
-   "position": "WR",
-   "group": "WR",
-   "club": "Patriots",
-   "club_index": 21,
-   "first_season": 2008,
-   "retired": 2023,
-   "eligible_class": 2029,
-   "score": 79,
-   "parts": {
-    "honors": 59,
-    "games": 20,
-    "production": 0,
-    "score": 79
-   },
-   "seasons": 16,
-   "honors": 12,
-   "super_bowls": 3,
-   "keys": [
-    1,
-    46,
-    0
-   ],
-   "all_pro": 2,
-   "pro_bowl": 10,
-   "mvp": 0,
-   "opoy": 0,
-   "dpoy": 0,
-   "gsis_id": "00-0026293",
-   "birth_date": "1985-09-09",
-   "retirement": "confirmed (no season after 2024)",
-   "candidate_hex": "6db2408b04000c16e7074f00100301002e0000000c030000"
-  },
-  {
-   "name": "Jason Pierre-Paul",
-   "position": "DE",
-   "group": "DL",
-   "club": "Buccaneers",
-   "club_index": 6,
-   "first_season": 2010,
-   "retired": 2025,
-   "eligible_class": 2031,
-   "score": 76,
-   "parts": {
-    "honors": 31,
-    "games": 20,
-    "production": 25,
-    "score": 76
-   },
-   "seasons": 16,
-   "honors": 4,
-   "super_bowls": 2,
-   "keys": [
-    627,
-    189,
-    5
-   ],
-   "all_pro": 1,
-   "pro_bowl": 3,
-   "mvp": 0,
-   "opoy": 0,
-   "dpoy": 0,
-   "gsis_id": "00-0027867",
-   "birth_date": "1989-01-01",
-   "retirement": "not confirmed: last played 2025, no 2026 roster row",
-   "candidate_hex": "0aa62265d9304007e9074c0010037302bd00050004020000"
-  },
-  {
-   "name": "Michael Thomas",
-   "position": "WR",
-   "group": "WR",
-   "club": "Saints",
-   "club_index": 26,
-   "first_season": 2016,
-   "retired": 2023,
-   "eligible_class": 2029,
-   "score": 76,
-   "parts": {
-    "honors": 65,
-    "games": 0,
-    "production": 11,
-    "score": 76
-   },
-   "seasons": 8,
-   "honors": 6,
-   "super_bowls": 0,
-   "keys": [
-    565,
-    6569,
-    36
-   ],
-   "all_pro": 2,
-   "pro_bowl": 3,
-   "mvp": 0,
-   "opoy": 1,
-   "dpoy": 0,
-   "gsis_id": "00-0032765",
-   "birth_date": "1993-03-03",
-   "retirement": "confirmed (no season after 2024)",
-   "candidate_hex": "8da2d7c204000c1be7074c0008033502a919240006000000"
   }
  ]
 }
