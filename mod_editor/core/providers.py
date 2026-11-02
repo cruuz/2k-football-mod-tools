@@ -862,6 +862,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_project_check.py": "af26ba975bf262c8954a1fc1b3080b5a03e3fd774dfea12a23dbd3b8d83cf868",
         "mod_editor/core/nfl2k5_stadium_dry_run.py": "2e5ceddd5a0b7236ba6185a3e4f0a91352ff3598677cc63430de02623f913087",
         "mod_editor/core/nfl2k5_edit_survival.py": "a613479cb60ec75e9f1454f68d1e2482560e9ba9fcf7249ae747e9204b686bf6",
+        "mod_editor/core/nfl2k5_practice_field_model.py": "ecd32cb66352aec954430e9878868b0363f437c81c801f37fe338a57fd26c78b",
         "mod_editor/core/nfl2k5_moment_scans.py": "99445768a0d0ff24576aab37c5cae3d9ffcb2816034f447cd93d3092d18c616c",
         "mod_editor/core/nfl2k5_unc_bowl_uniforms.py": "275077f9c2de33c43f73bb397536fba7d666dfbead8a5cbaf317921b0115f52a",
         "mod_editor/core/nfl2k5_nyg_numbers.py": "812f042c6293db1e66567d940228af53acf0955ab9eeec0ff936f64bc243587b",
