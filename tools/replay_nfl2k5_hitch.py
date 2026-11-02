@@ -36,6 +36,7 @@ from mod_editor.core import nfl2k5_coverage_trail as trail  # noqa: E402
 from mod_editor.core import nfl2k5_coverage_trail_code as template  # noqa: E402
 from mod_editor.core import nfl2k5_coverage_hitch_code as hitch_template  # noqa: E402
 from mod_editor.core import nfl2k5_xbe_space as space  # noqa: E402
+from tests import nfl2k5_coverage_trail_frame as frame_fixture  # noqa: E402
 from tests.nfl2k5_coverage_trail_frame import TrailFrame, YARD, DT, uni  # noqa: E402
 
 RETAIL_SHA256 = "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
@@ -47,8 +48,20 @@ V08_XBE = os.environ.get("NFL2K5_V08_XBE", "")
 V08_DISC = Path(os.environ.get("NFL2K5_V08_DISC",
                                "/media/noah/Storage/2K5 Discs/SOFTDRINK 2K28 v0.8 (2026-10-31).xiso.iso"))
 
-FRAMES, BREAK, RETURN_FRAMES = 240, 60, 20
+HZ = 60  # simulation ticks per second (the game's dt is 1 / HZ); --hz replays a slower frame rate
+FRAMES, BREAK, RETURN_FRAMES = 240, 60, 20  # four seconds, a one-second stem, a one-third-second return
 TAIL = 120  # the last two seconds
+GAP_FRAMES = (30, 59, 70, 80, 100, 140, 239)
+
+
+def set_rate(hz):
+    """Replay at `hz` ticks per second: same seconds and yards, dt = 1 / hz in the game's frame-time global."""
+    global HZ, FRAMES, BREAK, RETURN_FRAMES, TAIL, GAP_FRAMES
+    if type(hz) is not int or not 10 <= hz <= 60 or 60 % hz and hz % 10:
+        raise ValueError("hz must be a whole number of ticks per second from 10 to 60")
+    HZ, FRAMES, BREAK, RETURN_FRAMES, TAIL = hz, 4 * hz, hz, max(1, round(hz / 3)), 2 * hz
+    GAP_FRAMES = tuple(min(FRAMES - 1, round(f * hz / 60)) for f in (30, 59, 70, 80, 100, 140, 239))
+    frame_fixture.DT = 1 / hz
 # name: (kind, back yards, lateral yards); the stem is six yards at the matrix speed
 ROUTES = {"hitch": ("return", 0, 0), "curl_1": ("return", 1, 0), "curl_1_5": ("return", 1.5, 0),
           "curl_2": ("return", 2, 0), "comeback": ("return", 1.5, 1),
@@ -96,7 +109,7 @@ def load_builds():
 def route_point(name, frame, speed_yards_s=6.0):
     """(x, z, vx, vz) of the receiver at a tick, world units; the stem runs straight down the field (+z)."""
     kind, back, lateral = ROUTES[name]
-    step = speed_yards_s / 60 * YARD
+    step = speed_yards_s / HZ * YARD
     velocity = speed_yards_s * YARD
     stem = 800 + BREAK * step
     if kind == "go" or frame < BREAK:
@@ -107,8 +120,9 @@ def route_point(name, frame, speed_yards_s=6.0):
         return (-d, stem + d, -velocity / math.sqrt(2), velocity / math.sqrt(2))
     k = min(n, RETURN_FRAMES)
     moving = n < RETURN_FRAMES
+    seconds = RETURN_FRAMES / HZ
     return (lateral * k / RETURN_FRAMES * YARD, stem - back * YARD * k / RETURN_FRAMES,
-            lateral * 3 * YARD if moving else 0, -back * 3 * YARD if moving else 0)
+            lateral / seconds * YARD if moving else 0, -back / seconds * YARD if moving else 0)
 
 
 def summarize(rows, name):
@@ -138,7 +152,7 @@ def summarize(rows, name):
         "max_gap_yards": max(r["distance_yards"] for r in rows),
         "max_post_break_gap_yards": max(r["distance_yards"] for r in rows[BREAK:]),
         "mean_gap_yards": sum(r["distance_yards"] for r in rows) / len(rows),
-        "gap_at": {f: rows[f]["distance_yards"] for f in (30, 59, 70, 80, 100, 140, 239)},
+        "gap_at": {f: rows[f]["distance_yards"] for f in GAP_FRAMES},
         "held_ticks_after_break": sum(1 for r in rows[BREAK:] if r["final_throttle"] == 0 and r["throttle"] != 0),
         "lapse_calls": sum(r["lapse_calls"] for r in rows),
         "rng_calls": sum(len(r["lapse_words"]) for r in rows),
@@ -280,7 +294,10 @@ def main(argv=None):
     parser.add_argument("--extra", action="append", default=[], metavar="NAME=PATH",
                         help="another executable to replay (and verify as a brake build when it has the brake)")
     parser.add_argument("--only", choices=("all", "man", "pursuit"), default="all")
+    parser.add_argument("--hz", type=int, default=60, help="simulation ticks per second (robustness replays; no verify)")
+    parser.add_argument("--builds", default="", help="comma list to replay (default all)")
     args = parser.parse_args(argv)
+    set_rate(args.hz)
     builds = load_builds()
     builds["v08_brake"], receipt = trail.apply(builds["v08"], moving_arrival_brake=True)
     brake_builds = ["v08_brake"]
@@ -293,15 +310,16 @@ def main(argv=None):
             brake_builds.append(name)
     output = args.output_dir.resolve()
     output.mkdir(parents=True, exist_ok=True)
-    document = {"schema": 2, "runtime_witnessed": False, "scope": __doc__, "frames_per_case": FRAMES, "dt": DT,
+    document = {"schema": 2, "runtime_witnessed": False, "scope": __doc__, "frames_per_case": FRAMES, "dt": 1 / HZ, "hz": HZ,
                 "world_units_per_yard": YARD, "break_frame": BREAK, "return_frames": RETURN_FRAMES,
                 "matrices": MATRICES, "routes": ROUTES,
                 "inputs": {name: {"sha256": hashlib.sha256(p).hexdigest(), "bytes": len(p),
                                   "coverage_trail": trail.read_settings(p)} for name, p in builds.items()},
                 "brake_receipt": {k: v for k, v in receipt.items() if k not in ("reservations", "mapping")},
                 "cases": {}}
+    wanted = set(filter(None, args.builds.split(",")))
     for build, matrix, route, direction, planner, disabled in jobs(builds):
-        if args.only != "all" and planner != args.only:
+        if args.only != "all" and planner != args.only or wanted and build not in wanted:
             continue
         key = case_key(build, matrix, route, direction, planner, disabled)
         try:
@@ -320,7 +338,7 @@ def main(argv=None):
               f"post_pivots={len(s['large_pivot_frames'])} pairs={s['reversal_pairs']} tail={s['tail_total_degrees']:.2f} "
               f"gap_final={s['final_gap_yards']:.3f} gap_max_post={s['max_post_break_gap_yards']:.3f} "
               f"held={s['held_ticks_after_break']} visits={case['owner_visits']}", flush=True)
-    if args.only == "all":
+    if args.only == "all" and args.hz == 60 and not wanted:
         try:
             document["verification"] = verify_document(document, tuple(brake_builds))
         except AssertionError as exc:
@@ -331,7 +349,7 @@ def main(argv=None):
     summary["cases"] = {k: {f: v for f, v in c.items() if f != "rows"} for k, c in document["cases"].items()}
     (output / "summary.json").write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
     print(f"Recorded {len(document['cases'])} cases; no XBE written.", flush=True)
-    return 0 if document.get("verification", {}).get("passed", args.only != "all") else 1
+    return 0 if document.get("verification", {}).get("passed", not (args.only == "all" and args.hz == 60 and not wanted)) else 1
 
 
 if __name__ == "__main__":
