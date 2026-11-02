@@ -1,9 +1,9 @@
 """Reproduce the b776 CPU AI byte templates with GNU as; development use only.
 
-EXPERIMENTAL / UNWITNESSED. Four owners: ``nfl2k5_cpu_qb_reads`` (the CPU QB read re-check hooks),
+EXPERIMENTAL / UNWITNESSED. Owners: ``nfl2k5_cpu_qb_reads`` (the CPU QB read re-check hooks),
 ``nfl2k5_db_ball_play`` (defenders break on the thrown ball), ``nfl2k5_run_blocking`` (b777-ol1: blocks hold longer
-on running plays) and ``nfl2k5_qb_accuracy`` (b777-qb3/qb4: short and on-the-run pass accuracy) and ``nfl2k5_cpu_passer_iq`` (b780: the CPU
-passer's checkdown factor). The ELF32 reader is the one in
+on running plays), ``nfl2k5_qb_accuracy`` (b777-qb3/qb4: short and on-the-run pass accuracy), ``nfl2k5_pass_protection``
+(b778-pr1) and ``nfl2k5_cpu_passer_iq`` (b780: the CPU passer's checkdown factor). The ELF32 reader is the one in
 ``tools/nfl2k5_rules_assemble.py``; no compiler or ELF package is a runtime dependency.
 """
 from __future__ import annotations
