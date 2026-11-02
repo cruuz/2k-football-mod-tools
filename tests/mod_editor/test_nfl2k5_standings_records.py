@@ -259,17 +259,21 @@ class StaticTests(unittest.TestCase):
         for name in ("runtime.c", "stubs.S"):
             (folder / name).read_text(encoding="ascii")
 
-    def test_late_owner_is_last(self):
-        self.assertEqual(space.LATE_OWNERS[-1], sr.OWNER)
-        self.assertEqual(space.LATE_OWNERS[-3:], ("nfl2k5_sim_realism", "nfl2k5_sim_realism_state", sr.OWNER))
-        self.assertEqual(space.LATE_OWNERS.count(sr.OWNER), 1)
+    def test_late_owner_follows_every_owner_the_released_executable_carries(self):
+        """Appended after the last late owner of the released v0.8 executable, so no allocation it already holds moves
+        (a later job may append its own owner after this one)."""
+        owners = space.LATE_OWNERS
+        self.assertEqual(owners.count(sr.OWNER), 1)
+        self.assertGreater(owners.index(sr.OWNER), owners.index("nfl2k5_sim_realism_state"))
 
     def test_allocates_in_the_complete_owner_union_without_moving_any_owner(self):
         union = list(space.dormant_union())
         before = {(r["owner"], r["kind"]): (r["va"], r["size"]) for r in space._scale_allocations(union)}
         after_rows = space._scale_allocations(union + list(sr.REQUESTS))
         after = {(r["owner"], r["kind"]): (r["va"], r["size"]) for r in after_rows}
-        self.assertEqual({k: v for k, v in after.items() if k in before}, before)           # nothing moved
+        position = {name: i for i, name in enumerate(space.LATE_OWNERS)}
+        earlier = {k: v for k, v in before.items() if position.get(k[0], -1) < position[sr.OWNER]}
+        self.assertEqual({k: v for k, v in after.items() if k in earlier}, earlier)         # nothing before it moved
         mine = {k: v for k, v in after.items() if k[0] == sr.OWNER}
         self.assertEqual({k[1]: v[1] for k, v in mine.items()}, {"code": sr.CODE_SIZE, "data": sr.DATA_SIZE})
         self.assertTrue(all(va % 16 == 0 for va, _size in mine.values()))
