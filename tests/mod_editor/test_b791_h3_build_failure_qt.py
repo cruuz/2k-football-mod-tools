@@ -70,7 +70,8 @@ class DialogTextTests(unittest.TestCase):
         for needle in ("Step: Modern playing surfaces (modern_surfaces)", "Resource: s13ad.iff",
                        "Modern colour values: turf.value_lift=3.1 (default 1.0)",
                        "Build log: C:\\2K5\\out.xiso.iso.build-log.txt",
-                       "Diagnostic report: C:\\2K5\\out.xiso.iso.diagnostic-20261102-143005.zip"):
+                       "Diagnostic report: C:\\2K5\\out.xiso.iso.diagnostic-20261102-143005.zip (send it to the SOFTDRINK "
+                       "Discord)"):
             self.assertIn(needle, lines)
 
 

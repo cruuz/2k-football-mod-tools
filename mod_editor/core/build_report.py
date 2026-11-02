@@ -273,7 +273,7 @@ def errors_entry_text(tracker, exc: BaseException | None, *, operation: str = "m
         failure.get("message") or (str(exc) if exc is not None else "(no message)"),
         "",
     ]
-    lines += header_lines(tracker, plan=plan, labels=labels, result="failed")[3:]
+    lines += header_lines(tracker, plan=plan, labels=labels, result="failed")[4:]   # source, output, project, options, colour
     if tracker.left_out:
         lines += ["left out earlier in this build:"] + [f"  - {row['user_notes'][0]}" for row in tracker.left_out]
     if paths:

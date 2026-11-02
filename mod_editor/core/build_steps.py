@@ -331,11 +331,27 @@ for _base in _FAMILIES:
 del _base, _cls
 
 
+_DYNAMIC: dict[type, type] = {}
+
+
 def _wrapper_for(exc: BaseException) -> type:
-    for base in _FAMILIES:
-        if isinstance(exc, base):
-            return _WRAPPERS[base]
-    return StepFailure
+    """The wrapper class: a StepFailure that is also an instance of the original's own class.
+
+    The standard families use the named classes above (StepValueError, ...). Any other class (the Studio's
+    ValidationError, a module's KickMeterError, a test's sentinel) gets a subclass of its own, so ``except
+    ThatError`` around a build still catches it."""
+    cls = type(exc)
+    if cls in _WRAPPERS:
+        return _WRAPPERS[cls]
+    cached = _DYNAMIC.get(cls)
+    if cached is None:
+        try:
+            cached = type(f"Step{cls.__name__}", (StepFailure, cls),
+                          {"__module__": __name__, "__doc__": f"A {cls.__name__} that left a build step."})
+        except TypeError:  # pragma: no cover - a class that cannot be combined (layout conflict): nearest family
+            cached = next((_WRAPPERS[base] for base in _FAMILIES if isinstance(exc, base)), StepFailure)
+        _DYNAMIC[cls] = cached
+    return cached
 
 
 def is_cancel(exc: BaseException) -> bool:
@@ -362,8 +378,14 @@ def wrap(exc: BaseException, step: str, label: str, resource: str | None = None,
     head = f"During {label}" + (f" ({resource})" if resource else "")
     cls = _wrapper_for(exc)
     try:
-        wrapped = cls(f"{head}: {text}")
-    except Exception:  # pragma: no cover - a family whose constructor refuses one argument
+        # No call to the original class's own __init__ (it may need other arguments): the instance gets the
+        # message as its args and keeps the original's attributes (a selector, a kit list, ...).
+        wrapped = cls.__new__(cls, f"{head}: {text}")
+        BaseException.__init__(wrapped, f"{head}: {text}")
+        for key, value in getattr(exc, "__dict__", {}).items():
+            if not key.startswith("_studio_"):
+                setattr(wrapped, key, value)
+    except Exception:  # pragma: no cover - an exception type that refuses all of that
         wrapped = StepFailure(f"{head}: {text}")
     wrapped.message = f"{head}: {text}"
     wrapped.step, wrapped.label, wrapped.resource = step, label, resource

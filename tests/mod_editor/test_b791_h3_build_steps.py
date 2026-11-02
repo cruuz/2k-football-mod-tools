@@ -83,9 +83,27 @@ class StepContextTests(unittest.TestCase):
                     self.assertEqual((exc.errno, exc.filename), (original.errno, original.filename))
         class Custom(ValueError):
             pass
-        with self.assertRaises(ValueError):
+
+        class Sentinel(Exception):
+            def __init__(self, required, *, also):          # a constructor the wrapper must not call
+                super().__init__(required)
+                self.selector, self.also = required, also
+
+        with self.assertRaises(Custom) as caught:
             with build_steps.track():
                 raise Custom("x")
+        self.assertIsInstance(caught.exception, build_steps.StepFailure)
+        with self.assertRaises(Sentinel) as caught:
+            with build_steps.track():
+                build_steps.begin("moment_kits")
+                raise Sentinel("14H9", also=1)
+        exc = caught.exception
+        self.assertEqual(str(exc), "During the Anniversary moment kit pass: 14H9")
+        self.assertEqual((exc.selector, exc.also), ("14H9", 1))      # the original's attributes are kept
+        from mod_editor.core.errors import ValidationError
+        with self.assertRaises(ValidationError):
+            with build_steps.track():
+                raise ValidationError("The artwork recipe needs attention before building")
 
     def test_a_cancel_and_a_keyboard_interrupt_are_never_wrapped(self):
         cancel = BuildCancelled("Build cancelled; no output was published.")
