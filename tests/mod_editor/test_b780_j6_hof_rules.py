@@ -1305,6 +1305,13 @@ class SimProxyTests(unittest.TestCase):
         self.assertEqual(out[10]["production_scale"]["rushing x1.3"], 17)
         self.assertEqual(out[10]["production_scale"]["all production x0.5"], 15)
         self.assertEqual(out[10]["by_group"]["QB"], 6)
+        # the milestone tiers never fire in the sim: its best quarterback has 351 touchdowns, its best receiver 13,356 yards and 915 catches in ten seasons
+        careers = TOOL.sim_careers(Path(os.environ["B780_HN1_RUNS"]), range(301, 311))
+        self.assertEqual((max(c.passing_touchdowns for _n, _p, c in careers), max(c.receiving_yards for _n, _p, c in careers),
+                          max(c.receptions for _n, _p, c in careers)), (351, 13356, 915))
+        self.assertEqual(sum(rules.milestone_points(c) for _n, _p, c in careers), 0)
+        # the lost Super Bowl comes from the champion notice: as many players lose a final as win one, to within a roster
+        self.assertGreater(sum(1 for _n, _p, c in careers if c.super_bowl_loss), 300)
 
 
 @unittest.skipUnless(os.environ.get("B780_HOF_CACHE"), "set B780_HOF_CACHE to a folder filled by `b780_hof_calibrate.py fetch`")

@@ -1273,7 +1273,8 @@ def sim_careers(runs: Path, seeds: Sequence[int]) -> list[tuple[str, int, "rules
             seen.add(key)
             a = agg.setdefault(key, collections.Counter())
             for src, dst in (("games", "games"), ("pass_td", "passing_touchdowns"), ("rush_td", "rushing_touchdowns"), ("rush_yds", "rushing_yards"),
-                             ("rec_yds", "receiving_yards"), ("rec_td", "receiving_touchdowns"), ("sacks2", "sacks_half"), ("def_int", "interceptions")):
+                             ("rec", "receptions"), ("rec_yds", "receiving_yards"), ("rec_td", "receiving_touchdowns"), ("sacks2", "sacks_half"),
+                             ("def_int", "interceptions")):
                 a[dst] += p[src]
             if champion and clubs.get(p["team"]) == champion:
                 a["super_bowl"] += 1
