@@ -23,6 +23,89 @@ EXISTING_FIELDS = frozenset(("jersey", "position", "depth_rank", "depth_side"))
 CONTRACT_FIELDS = frozenset(("contract_value", "contract_length", "contract_remaining",
                              "contract_type", "contract_bonus"))
 
+# b780 b4-economy (row D6; v0.8 known issue "69 real players are on no club and not on the free agent list ... so a
+# franchise may never use them", e.g. Michael Pittman, Kelvin Banks, Montez Sweat, Jaycee Horn). The dated plan lists
+# every player on a 2026 injured reserve list (nflverse status RES) with his record and club, and the disc cannot seed
+# the franchise's own injured reserve list (that list is made in game), so the old writer checked their identity and
+# then put them on no club and on no free-agent list. In the v0.8 plan that is 81 players with records (the other 12
+# records on no club are the retail legends and celebrities of the alias squads, not franchise players). Now an
+# injured player rejoins his club's active roster with the contract he already has, unlocked at the overflow depth
+# row, so the game's own weekly depth sort seats him by rating. A club that would go past 53 releases, to the free
+# agents, the lowest-rated player at a position above the modern 53-man minimum, as the economy's smart cut-down does
+# at the regular-season gate (Noah 10/28: "prioritize the lowest overall at a position where they have more than they
+# need"), taking players on small deals first so a first-round pick or a paid veteran is not cut for the 53rd spot
+# (never a specialist, never a player who just rejoined); that player's contract is cleared like any unsigned free
+# agent's. An injured player without a contract or a club joins the free agents.
+INJURED_STATUSES = frozenset(("RES",))
+# tools/franchise_economy/runtime.c cut_min (b779 rc1: 2024 53-man rosters, atlantafalcons.com 2024-08-28), by position
+# code QB K P WR CB FS SS HB FB TE OLB ILB C G T DT DE; with no OLB in the league (the one-pool scheme) OLB 0 and LB 5.
+CUT_MINIMUMS = (2, 1, 1, 5, 5, 2, 2, 3, 0, 3, 3, 2, 2, 3, 3, 3, 4)
+# A "small deal": at most 60 a year in the record's contract units ($10,000 game; $600,000 game, $2.4M real at the
+# economy's 1:4 display). Late-round rookie deals and minimum contracts are below it; first-round deals are above it.
+SMALL_DEAL_PER_YEAR = 60
+OVERFLOW_DEPTH_ROW = 7
+LOCK_ROLES = ("rank", "side", "kr1", "kr2", "pr")
+
+
+def _rejoin_injured(by, rows, teams, assigned):
+    """The membership after the injured players rejoin: (active list by club index, rejoined, released, to FA)."""
+    from . import nfl2k5_practice_squad as ps
+    from . import nfl2k5_roster_records as rr
+    from .nfl2k5_my_career_prospects import native_overall
+
+    position = {i: p.record.values["position"] for i, p in by.items()}
+    for row in rows:
+        if "position" in row["fields"]:
+            position[row["index"]] = row["fields"]["position"]
+
+    def overall(index):
+        record = by[index].record.copy()
+        record.set("position", position[index])
+        return native_overall(record)
+
+    def big_deal(index):
+        record = by[index].record
+        return record.get("contract_value") > SMALL_DEAL_PER_YEAR * max(1, record.get("contract_length"))
+
+    placed, to_free = {}, []
+    by_team = {t["team"]: t for t in teams}
+    taken = set(assigned)
+    for row in rows:
+        if row.get("status") not in INJURED_STATUSES or row["index"] in taken:
+            continue
+        record = by[row["index"]].record
+        team = by_team.get(row.get("team"))
+        if team is None or record.get("contract_length") < 1 or record.get("contract_value") < 1:
+            to_free.append(row["index"])
+        else:
+            placed.setdefault(team["index"], []).append(row["index"])
+        taken.add(row["index"])
+    has_olb = any(position[i] == 10 for t in teams for i in t["active"])
+    minimums = list(CUT_MINIMUMS)
+    if not has_olb:
+        minimums[10], minimums[11] = 0, 5
+    actives, released = {}, []
+    for team in teams:
+        active = list(team["active"]) + placed.get(team["index"], [])
+        keep = set(placed.get(team["index"], ())) | {v for v in team["specialists"].values() if v is not None}
+        while len(active) > ps.ACTIVE_LIMIT:
+            counts = {}
+            for index in active:
+                counts[position[index]] = counts.get(position[index], 0) + 1
+            victim = None
+            for floor in (False, True):
+                pool = [i for i in active if i not in keep and position[i] < 17 and
+                        counts[position[i]] > (1 if floor else minimums[position[i]])]
+                if pool:
+                    victim = min(pool, key=lambda i: (big_deal(i), overall(i), i))
+                    break
+            rr._require(victim is not None, f"{team['team']}: no player can make room for an injured player")
+            active.remove(victim)
+            released.append(victim)
+        actives[team["index"]] = active
+    rejoined = {i for ids in placed.values() for i in ids}
+    return actives, rejoined, released, to_free
+
 
 def _repair_create_buffers(doc):
     """Keep each unused CAP name pair exclusive and adjacent for native creation.
@@ -159,6 +242,12 @@ def apply_body(body, plan):
                     1 <= fields["contract_value"] <= 65535 and
                     0 <= fields["contract_type"] <= 7 and 0 <= fields["contract_bonus"] <= 7,
                     "Invalid native contract initializer")
+    # b780 b4-economy (D6): the injured players rejoin their clubs (see INJURED_STATUSES).
+    actives, rejoined, released, injured_free = _rejoin_injured(by, rows, teams, assigned)
+    free_agents = list(plan["free_agents"]) + released + injured_free
+    rr._require(len(free_agents) == len(set(free_agents)), "Refresh has duplicate or absent membership")
+    rr._require(len(free_agents) <= doc.free_agent_capacity, "Free-agent list is full")
+    owned = (owned - set(released)) | rejoined
     # All identity/capacity gates precede mutation of this private document.
     added = 0
     for row in rows:
@@ -193,7 +282,7 @@ def apply_body(body, plan):
     initialized_contracts = 0
     for row in contracts:
         rec = by[row["index"]].record
-        if rec.get("contract_length") == 0:
+        if row["index"] in owned and rec.get("contract_length") == 0:
             rr._require(rec.get("contract_value") == rec.get("contract_remaining") == 0,
                         "Malformed nonempty contract cannot be initialized")
             for key, value in row["fields"].items():
@@ -202,21 +291,37 @@ def apply_body(body, plan):
     rr._require(all(by[i].record.get("contract_length") >= 1 for i in owned),
                 "Owned unsigned player needs a native contract initializer")
     for team, row in zip(doc.teams, teams):
-        team.slots = [by[i].offset for i in row["active"]]
+        active = actives[row["index"]]
+        team.slots = [by[i].offset for i in active]
         team.repaired = True
         doc.reserves[team.index] = tuple(row["reserves"])
-        for index in row["active"]:
+        for index in active:
             # These five low bits are depth preferences, separate from stars
             # and abilities. Pin current chains and replace stale return locks.
             rec = by[index].record
+            if index in rejoined:
+                # b780 b4-economy (D6): an injured player who rejoins is unlocked at the overflow row, so the
+                # weekly depth sort (and on a user's club the user) seats him by rating.
+                rec.set("depth_rank", OVERFLOW_DEPTH_ROW)
+                rec.set("depth_side", OVERFLOW_DEPTH_ROW)
+                for role in LOCK_ROLES:
+                    rec.set_depth_lock(role, False)
+                continue
             for role in ("rank", "side"):
                 rec.set_depth_lock(role, True)
             for role in ("kr1", "kr2", "pr"):
                 rec.set_depth_lock(role, row["specialists"][role] == index)
         for key, identity in row["specialists"].items():
             doc.body[team.offset + rr.SPECIAL_TEAM_OFFSETS[key]] = (
-                255 if identity is None else row["active"].index(identity))
-    doc.free_agents = [by[i].offset for i in plan["free_agents"]]
+                255 if identity is None else active.index(identity))
+    for index in released:
+        # b780 b4-economy (D6): released to make room, so an unsigned free agent like the others on the list.
+        rec = by[index].record
+        for key in CONTRACT_FIELDS:
+            rec.set(key, 0)
+        for role in LOCK_ROLES:
+            rec.set_depth_lock(role, False)
+    doc.free_agents = [by[i].offset for i in free_agents]
     doc._reindex_membership()
     # Celebrity/alumni squads alias the same records and cannot have independent
     # rank locks. Validate the 32 edited clubs, leaving alias pointers intact.
@@ -233,7 +338,13 @@ def apply_body(body, plan):
                     "initialized_contracts": initialized_contracts,
                     "appearance": created_appearance.receipt(appearance_created, appearance_written,
                                                              appearance_data),
-                    "active": sum(len(t["active"]) for t in teams),
+                    "active": sum(len(a) for a in actives.values()),
                     "reserves": sum(len(t["reserves"]) for t in teams),
                     "changed_bytes": sum(a != b for a, b in zip(body, result)),
-                    "unrepresented": len(plan.get("unrepresented", []))}
+                    "unrepresented": len(plan.get("unrepresented", [])),
+                    # b780 b4-economy (D6)
+                    "injured_reserve": {"rejoined": len(rejoined), "released_for_room": len(released),
+                                        "to_free_agents": len(injured_free),
+                                        "rejoined_players": sorted(by[i].display for i in rejoined),
+                                        "released_players": [by[i].display for i in released],
+                                        "free_agent_players": [by[i].display for i in injured_free]}}

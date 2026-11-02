@@ -35,6 +35,10 @@ Everything is pattern-checked against the retail tables; the section digests are
 
 b778 pg1 adds the native career layer described above ``PERF_VA`` below (position aging, quarterback form,
 retirement ages); a beta-77 executable with only the data tables reads ``legacy`` and is upgraded in place.
+
+b780 b4-economy rewrites the retirement decision ``RETIRE_VA`` in place (see the comment above it): retirement by age,
+and a player who starts or played most of the season never retires before his position's age. A beta-78/79
+executable with the b778 layer but the retail decision also reads ``legacy`` and is upgraded in place.
 """
 
 from __future__ import annotations
@@ -358,6 +362,10 @@ GUARDS = (  # retail code this layer calls or hooks; own edits are masked back t
     (0x0014EF20, 0x2A, "53e747dc5d477f71877fd3aadb5ab58627b629c061d4c54696d6c2d3ec4b22d3"),   # stat, seasons ago
     (0x000C4BE0, 0x1C, "2ab6d0df54e0fe9f355845269a30ce1774673fec28ee026ab01af7c486deab2d"),   # team count
     (0x000C4C50, 0x40, "806522d001c6ac072bbb5a6f9ff61bd8e12f55eef0e4d213f5c31ed37c4f2360"),   # team pointer
+    # b780 b4-economy: what the rewritten retirement decision calls
+    (0x0013E3A0, 0x3F, "1fefda8af6b4c61a053374b9697746aabc23b358dcff4fea12541ef190740cba"),   # career-ending injury
+    (0x000E5FE0, 0x0A, "b63535e79c6aa5d77d5db0683bfb5dcf73109d285105d2ed2330491364dd3614"),   # contract value
+    (0x0014EF00, 0x1A, "2a00b2097c61a841e096fa227ec9ba5cfacaebcbfa4548f060a20284a4b880a2"),   # stat, this season
     (0x002485B6, 0x2A, "5c9e84140c1ac6e4bea4c6d493c6ed9d5f846f117316bf36df927fd94bca0631"),   # Preseason calls
 )
 POS = {name: i for i, name in enumerate(POSITIONS)}
@@ -741,6 +749,139 @@ def career_code(dd: Mapping[tuple[str, str], tuple[int, ...]]) -> tuple[bytes, d
     return body.ljust(PERF_SIZE, b"\xcc"), labels
 
 
+# ---------------------------------------------------------------- b780 b4-economy: the retirement decision
+# SWeaR 11/01 (v0.8): "Getting some strange retirements... Chuba Hubbard for example rushed for 1600 yrds and 8TDs yet
+# retired the next year", "an 8 year DT Jordan Elliott put up career bests in all catagories and retire", "like 10% of
+# the retirements are questionable". Noah 10/28: retirement must be age-based, never because unsigned.
+# Retail 0x2BCF90 is the decision behind every retirement. The end-of-playoffs pass 0x2BDB00 asks it about every free
+# agent (0x2BDB74, through the economy's lent-value shim), every club player (0x2BDBC4, argument = the club) and every
+# injured-reserve entry (0x2BDC65); the practice-squad rollover asks it about reserves. Retail: a prospect never; a
+# career-ending injury (0x13E3A0) or no contract value (0xE5FE0) always; otherwise delta = years pro - base[position]
+# (RETIRE_BASE_VA) -5/-4/-2/+1/+2/+3 for a (boosted, 0x246D80) overall above .9/.8/.7/.6/.5 or not, clamped to -5..5,
+# retires when a draw (0x48B90) is below P[delta] x Y[min(year, 4)] (0xACEDB0: 0 .02 .05 .10 .15 .30 .40 .50 .60 .70 1;
+# 0xACEE24: .6 .7 .8 .9 1). Nothing looks at the season the player just had, so an average starter in his late
+# twenties retires 10-30% of the time every year (one simulated v0.8 offseason: 33 of 73 club retirees 30 or younger).
+# The rewrite, in the routine's own bytes, same callers and arguments:
+# * age in place of years pro: over = his age in the coming season (the economy top-up's age rule) - (base + 24), the
+#   position's age (QB/K/P 38, HB 30, FB/CB 31, WR/S/LB 32, TE/DT/DE 33, G/T 34, C 35); delta = over + 2 keeps the
+#   retail scale (a rookie is about 22 with years pro 1);
+# * a contributor, a club player who starts at his position (record depth row below RETIRE_STARTERS) or played
+#   RETIRE_GAMES regular-season games this season (field 0 of this season, 0x14EF00), never retires before his
+#   position's age, and past it his delta is RETIRE_PRODUCING_STEP lower, so idle veterans go before producing ones;
+# * the injury and contract checks, the overall steps, both tables and the draw stay retail.
+RETIRE_VA = 0x002BCF90
+RETIRE_SIZE = 0x150                   # the retail routine 0x2BCF90..0x2BD0D1 and its padding up to 0x2BD0E0
+RETAIL_RETIRE_SHA256 = "e9e7517b9d1516b6e877bac8018edf7db613708de7ba88241eb49261f3d11fa4"
+# Depth rows that start, by position code (QB K P WR CB FS SS HB FB TE OLB ILB C G T DT DE): three receivers and three
+# corners (nickel), three linebackers (a 4-3; a 3-4's outside backers are edge rushers), two of each line spot.
+RETIRE_STARTERS = (1, 1, 1, 3, 3, 1, 1, 1, 1, 1, 2, 3, 1, 2, 2, 2, 2)
+RETIRE_GAMES = 8
+RETIRE_PRODUCING_STEP = 2
+RETIRE_OVERALL_EDGES = (0.9, 0.8, 0.7, 0.6, 0.5)      # the retail .rdata constants, as float32
+RETIRE_OVERALL_STEP = (-5, -4, -2, 1, 2, 3)
+RETIRE_P = (0.0, 0.02, 0.05, 0.1, 0.15, 0.3, 0.4, 0.5, 0.6, 0.7, 1.0)   # retail 0xACEDB0, delta -5..5
+RETIRE_Y = (0.6, 0.7, 0.8, 0.9, 1.0)                                       # retail 0xACEE24, franchise year 0..4+
+FN_INJURY_RETIRES, FN_CONTRACT_VALUE, FN_RATING, FN_STAT_NOW, FN_DRAW = 0x13E3A0, 0xE5FE0, 0x246D80, 0x14EF00, 0x48B90
+SEASON_BASE_VA, FRANCHISE_YEAR_VA, RNG_VA = 0x247AC7, 0xE576B8, 0xE5FCA0
+RETIRE_P_VA, RETIRE_Y_VA = 0xACEDB0, 0xACEE24
+
+
+def retirement_code() -> tuple[bytes, dict[str, int]]:
+    """The RETIRE_SIZE bytes placed over 0x2BCF90 (edi = player, one stack argument = the club or 0, ret 4)."""
+
+    a = _Asm(RETIRE_VA)
+    a.label("retire")
+    a("51")                                # push ecx (the float scratch, as retail)
+    a("f6470810"); a.j32("0f85", "no0")    # a draft prospect: never
+    a("8bcf"); a.call(FN_INJURY_RETIRES)
+    a("85c0"); a.j32("0f85", "yes0")       # a career-ending injury: always
+    a("8bcf"); a.call(FN_CONTRACT_VALUE)
+    a("85c0"); a.j32("0f84", "yes0")       # no contract value: always (retail)
+    a("5653")                              # push esi; push ebx
+    a("a1" + struct.pack("<I", SEASON_BASE_VA).hex())       # eax = base season (the 2026 rules' immediate)
+    a("0305" + struct.pack("<I", FRANCHISE_YEAR_VA).hex())  # + franchise year
+    a("40")                                # + 1: the coming season
+    a("8b5718" "c1ea15" "83e27f" "2bc2")   # - birth year bits (+0x18 >> 21 & 127)
+    a("33d2" "6a6459" "f7f1")              # edx = (season - birth) % 100 = age
+    a("0fb64735" "8bf2")                   # eax = position; esi = age
+    a("83f810"); a.j32("0f87", "no2")      # not a position: never
+    a("2b3485" + struct.pack("<I", RETIRE_BASE_VA).hex())   # esi -= base[position]
+    a("83ee18")                            # esi = over (years past the position's age)
+    a("33db" "395c2410"); a.j8("74", "rated")   # ebx = 0; not on a club: no contributor test
+    a("0fb75728" "c1ea0a" "83e207")        # edx = depth row (+0x28 bits 10..12)
+    a("3a90"); a.abs32("starters")         # cmp dl, starters[position]
+    a.j8("72", "contrib")
+    a("8bcf" "33d2"); a.call(FN_STAT_NOW)  # games this regular season (field 0, this season's slot)
+    a("83f8%02x" % RETIRE_GAMES); a.j8("7c", "rated")
+    a.label("contrib")
+    a("85f6"); a.j32("0f88", "no2")        # a contributor before his position's age: never
+    a("b3%02x" % RETIRE_PRODUCING_STEP)
+    a.label("rated")
+    a("2bf3" "83c602")                     # delta = over - producing step + 2
+    a("ba01000000" "8bcf"); a.call(FN_RATING)   # st0 = overall (boosted), as retail
+    a("33c9")
+    a.label("edge")
+    a("d8148d"); a.abs32("edges")          # fcom dword [ecx*4 + edges]
+    a("dfe0" "f6c441"); a.j8("74", "edge_done")  # overall above this edge
+    a("41" "83f905"); a.j8("72", "edge")
+    a.label("edge_done")
+    a("ddd8")                              # fstp st(0)
+    a("0fbe89"); a.abs32("steps")          # movsx ecx, byte [ecx + steps]
+    a("03f1" "83fefb"); a.j8("7d", "c1"); a("6afb5e")
+    a.label("c1")
+    a("83fe05"); a.j8("7e", "c2"); a("6a055e")
+    a.label("c2")
+    a("d904b5" + struct.pack("<I", RETIRE_P_VA + 20).hex())   # fld P[delta]
+    a("a1" + struct.pack("<I", FRANCHISE_YEAR_VA).hex())
+    a("83f804"); a.j8("76", "y"); a("6a0458")
+    a.label("y")
+    a("d80c85" + struct.pack("<I", RETIRE_Y_VA).hex())        # fmul Y[min(year, 4)]
+    a("d95c2408")                          # fstp [esp+8] (the pushed ecx)
+    a("b9" + struct.pack("<I", RNG_VA).hex()); a.call(FN_DRAW)
+    a("d85c2408" "dfe0" "f6c405"); a.j8("7a", "no2")   # draw >= chance: stays
+    a("5b5e")
+    a.label("yes0")
+    a("b801000000" "59" "c20400")
+    a.label("no2")
+    a("5b5e")
+    a.label("no0")
+    a("33c0" "59" "c20400")
+    a.label("starters")
+    a.raw(bytes(RETIRE_STARTERS))
+    a.label("edges")
+    a.raw(struct.pack("<5f", *RETIRE_OVERALL_EDGES))
+    a.label("steps")
+    a.raw(struct.pack("<6b", *RETIRE_OVERALL_STEP))
+    body = a.assemble()
+    _require(len(body) <= RETIRE_SIZE, f"retirement code is {len(body)} bytes, the routine has {RETIRE_SIZE}")
+    labels = {k: v for k, v in a.labels.items() if k in ("retire", "starters", "edges", "steps")}
+    labels["used"] = len(body)
+    return body.ljust(RETIRE_SIZE, b"\xcc"), labels
+
+
+def retirement_chance(*, position: int, age: int, overall: float, year: int, club: bool, depth_row: int = 7,
+                      games: int = 0, prospect: bool = False, injured: bool = False, value: int = 1,
+                      base=NFL_RETIRE_BASE) -> float:
+    """The rewritten decision as a probability (the tests compare the native code with it). ``overall`` is the
+    0..1 value of 0x246D80; the edges are compared as the float32 constants the native code reads."""
+
+    if prospect:
+        return 0.0
+    if injured or value == 0:
+        return 1.0
+    over = age - base[position] - 24
+    step = 0
+    if club and (depth_row < RETIRE_STARTERS[position] or games >= RETIRE_GAMES):
+        if over < 0:
+            return 0.0
+        step = RETIRE_PRODUCING_STEP
+    delta = over + 2 - step
+    edges = struct.unpack("<5f", struct.pack("<5f", *RETIRE_OVERALL_EDGES))
+    k = next((i for i, edge in enumerate(edges) if overall > edge), 5)
+    delta = max(-5, min(5, delta + RETIRE_OVERALL_STEP[k]))
+    return RETIRE_P[delta + 5] * RETIRE_Y[min(year, 4)]
+
+
 # ---------------------------------------------------------------- XBE plumbing
 def _header_size(payload: bytes) -> int:
     return struct.unpack_from("<I", payload, 0x108)[0]
@@ -795,13 +936,21 @@ def _career_sites(payload: bytes) -> list[tuple[str, int, bytes | None, bytes]]:
     ]
 
 
-def _site_state(payload: bytes, va: int, before: bytes | None, after: bytes) -> str:
+def _retirement_sites() -> list[tuple[str, int, str, bytes]]:
+    """b780 b4-economy: the rewritten retirement decision (retail checked by its sha256)."""
+
+    code, _labels = retirement_code()
+    return [("retirement_decision", RETIRE_VA, RETAIL_RETIRE_SHA256, code)]
+
+
+def _site_state(payload: bytes, va: int, before: bytes | str | None, after: bytes) -> str:
     off = _offset(payload, va)
     got = payload[off: off + len(after)]
     if got == after:
         return "applied"
-    if before is None:
-        return "retail" if hashlib.sha256(got).hexdigest() == RETAIL_PERF_SHA256 else "foreign"
+    if before is None or isinstance(before, str):
+        digest = RETAIL_PERF_SHA256 if before is None else before
+        return "retail" if hashlib.sha256(got).hexdigest() == digest else "foreign"
     return "retail" if got == before else "foreign"
 
 
@@ -819,19 +968,22 @@ def _guards_hold(payload: bytes) -> bool:
 
 
 def status(payload: bytes) -> str:
-    """retail | legacy (the beta-77 curves and weights only) | applied | foreign."""
+    """retail | legacy (the beta-77 curves and weights only, or b778's layer with the retail retirement decision:
+    beta-78 / beta-79) | applied | foreign."""
 
     try:
         data = {_site_state(payload, va, before, after) for _l, va, before, after in _data_sites(payload)}
         career = {_site_state(payload, va, before, after) for _l, va, before, after in _career_sites(payload)}
+        retire = {_site_state(payload, va, before, after) for _l, va, before, after in _retirement_sites()}
         if not _guards_hold(payload):
             return "foreign"
     except (ProgressionError, ValueError, struct.error, IndexError, KeyError):
         return "foreign"
-    if len(data) != 1 or len(career) != 1 or "foreign" in data | career:
+    if len(data) != 1 or len(career) != 1 or "foreign" in data | career | retire:
         return "foreign"
-    return {("retail", "retail"): "retail", ("applied", "retail"): "legacy",
-            ("applied", "applied"): "applied"}.get((data.pop(), career.pop()), "foreign")
+    return {("retail", "retail", "retail"): "retail", ("applied", "retail", "retail"): "legacy",
+            ("applied", "applied", "retail"): "legacy",
+            ("applied", "applied", "applied"): "applied"}.get((data.pop(), career.pop(), retire.pop()), "foreign")
 
 
 def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
@@ -841,7 +993,7 @@ def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
     sections = _sections(payload)
     touched = set()
     edits = []
-    sites = _career_sites(payload) + (_data_sites(payload) if state == "retail" else [])
+    sites = _career_sites(payload) + _retirement_sites() + (_data_sites(payload) if state == "retail" else [])
     for label, va, before, after in sites:
         off = _offset(payload, va)
         old = bytes(buf[off: off + len(after)])
@@ -864,6 +1016,11 @@ def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
                                for k, v in SHAPE.items()},
                      "spread": SPREAD,
                      "retirement_base_years": dict(zip(POSITIONS, NFL_RETIRE_BASE)),
+                     "retirement_rule": {"by": "age", "position_age": dict(zip(POSITIONS, (b + 24 for b in NFL_RETIRE_BASE))),
+                                         "contributor_starting_rows": dict(zip(POSITIONS, RETIRE_STARTERS)),
+                                         "contributor_games": RETIRE_GAMES,
+                                         "producing_step": RETIRE_PRODUCING_STEP,
+                                         "code_bytes": retirement_code()[1]["used"], "code_capacity": RETIRE_SIZE},
                      "form_code_bytes": labels["used"], "form_code_capacity": PERF_SIZE,
                      "decline_tables": {f"{c}/{g}": list(v[DD_FIRST_YEAR:]) for (c, g), v in sorted(dd.items())},
                      "qb_rule": {"min_attempts": QB_MIN_ATTEMPTS, "young_max_years_pro": QB_YOUNG_MAX_YEARS,
@@ -874,5 +1031,6 @@ def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
 __all__ = ["ProgressionError", "CURVES_VA", "CURVES_SIZE", "WEIGHTS_VA", "WEIGHTS_SIZE", "PROFILES_VA", "TABLES",
            "SHAPE", "SPREAD", "PERF_VA", "PERF_SIZE", "AGING_CALL_VA", "MINI_LOAD_VA", "RETIRE_BASE_VA",
            "RETAIL_RETIRE_BASE", "NFL_RETIRE_BASE", "PERF_RULES", "D_TARGET", "CLASSES", "GROUPS", "QB_MINI",
-           "apply", "career_code", "career_layout", "decline_tables", "decode_curves", "decode_weights",
+           "RETIRE_VA", "RETIRE_SIZE", "RETIRE_STARTERS", "RETIRE_GAMES", "RETIRE_PRODUCING_STEP",
+           "apply", "career_code", "retirement_code", "retirement_chance", "career_layout", "decline_tables", "decode_curves", "decode_weights",
            "patched_tables", "reshape_curve", "retail_curves", "retail_weights", "spread_weights", "status"]

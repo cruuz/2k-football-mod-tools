@@ -193,7 +193,24 @@ for _va, _digest in ((0x382200, "dc79bd8fe3a5e4434acf93056e6e304d0cfd27e357e5f39
 REVISION_4_SITES = frozenset({0x382200, 0x41E2A0, 0x3A5F20, 0x3BAB20, 0x3E2310, 0x3E9740, 0x3E21D0, 0x3DBC10, SMART_CUT, CLASS_ALLOCATOR_TEST, CLASS_FREE_COUNT,
                               CLASS_POSITION, PRESEASON_GATE, CLASS_COUNT, CLASS_TARGET_CMP, CLASS_TARGET_NEED,
                               CLASS_TOPUP, TXN_YEARS})  # b779 vs1: the transaction-years call
-REVISION = 4
+# b780 b4-economy (revision 5, row D10; v0.8 known issue "CPU clubs still sign and cut fringe players in camp").
+# PROVED OFFLINE (Unicorn, released v0.8 XBE + disc ROST, every game played): (1) trim() held every CPU club at 54
+# after every stage action all year, so right after the draft each club released about six players, many of them
+# that day's picks; it now keeps the native camp limit (0x247AF0: 65) until the regular season, and the season
+# gate's smart cut-down makes the one cut to 53. (2) In season every CPU club signed a long-unsigned 70+ free agent
+# and cut a player for him every week (weeks 1-4 of the first season: 32 a week, median overall 74 in, 50 out); a
+# prove-it deal now goes only to a club with an open roster spot. Code: the reconcile, week and roster_m windows and
+# the two stub addresses they move (economy_after, economy_stage6). A revision-4 image (beta-79 / v0.8, and the
+# revision-3 v0.7, whose bytes at these five sites are the same) upgrades in place.
+REVISION_5_SITES = frozenset({0x2BFBE0, 0x323870, 0x3DBC10, AFTER_STAGE, STAGE6_CASE})
+PREVIOUS_REVISION_4 = {
+    0x2BFBE0: "2799f37d8a03a2f2461bc433c91551d686d2470ac4799536a6333f7365a962cb",   # reconcile (trim at 54)
+    0x323870: "8272fdbcca8a0f2015d99f13c4e7220cc4a826adc236dc8321854379b828c4a1",   # week (cut to sign)
+    0x3DBC10: "00e9fe65190ac0bf28e38e740cd4f929f449b091f97a5ba6cdb4f75de1349d48",   # roster_m (no camp limit)
+    AFTER_STAGE: "6583d740e2196efe9ca80190ae584679f28cf5af3431e097dadc538ed8c190c7",  # call economy_after 0x323A1F
+    STAGE6_CASE: "ffba3d1e8671bc9ead0fe8cf654d4b77e5ff66225a1d5a23b3cfd4c0affff716",  # economy_stage6 0x323A2F
+}
+REVISION = 5
 
 
 class EconomyError(ValueError):
@@ -208,7 +225,7 @@ class Site:
 
 
 def sites(revision: int = REVISION) -> tuple[Site, ...]:
-    if revision not in (1, 2, 3, 4):
+    if revision not in (1, 2, 3, 4, 5):
         raise EconomyError("unknown economy revision")
     windows = {va: code for va, code in WINDOWS.items()
                if (revision >= 3 or va not in REVISION_3_SITES) and (revision >= 4 or va not in REVISION_4_SITES)}
@@ -260,7 +277,8 @@ def _site_state(image: XbeImage, site: Site) -> str:
 def _standalone_status(payload: bytes) -> str:
     """retail | applied | legacy (revision 1 or 2: the revision-1 sites with their revision-1/2 bytes, the
     revision-2 sites retail or applied, the revision-3 and -4 sites retail; or revision 3: every site applied
-    but the revision-4 sites, which are retail) | foreign."""
+    but the revision-4 sites, which are retail; or revision 4: every site applied but the revision-5 sites, which
+    carry their revision-4 bytes) | foreign."""
     try:
         image = XbeImage(payload)
         states = {}
@@ -269,10 +287,20 @@ def _standalone_status(payload: bytes) -> str:
             if state == "foreign" and site.va in PREVIOUS and \
                     hashlib.sha256(image.read(site.va, len(site.patched))).hexdigest() == PREVIOUS[site.va]:
                 state = "previous"
+            if state == "foreign" and site.va in PREVIOUS_REVISION_4 and \
+                    hashlib.sha256(image.read(site.va, len(site.patched))).hexdigest() == PREVIOUS_REVISION_4[site.va]:
+                state = "revision4"
             states[site.va] = state
         unique = set(states.values())
         if len(unique) == 1 and unique <= {"applied", "retail"}:
             return next(iter(unique))
+        if "revision4" in unique:
+            # b780 b4-economy: a revision-4 image (beta-79 / v0.8) upgrades in place to revision 5. A revision-3
+            # image carries the same bytes at these sites, so they count as applied for the older rules below.
+            if {states[va] for va in REVISION_5_SITES} == {"revision4"} and \
+                    {state for va, state in states.items() if va not in REVISION_5_SITES} == {"applied"}:
+                return "legacy"
+            states = {va: "applied" if state == "revision4" else state for va, state in states.items()}
         # b779 rc1: a revision-3 image (beta-78 / v0.7) upgrades in place to revision 4. b779 vs1: its picks
         # window is the revision-3 one (no transaction-years stub yet), which reads "previous".
         if {states[va] for va in REVISION_4_SITES} == {"retail"} and states[PICKS_WINDOW] in ("applied", "previous") and \
