@@ -82,7 +82,8 @@ disc, and lists exactly what to untick or change (an option that cannot be combi
 another, stadium edits that conflict with a stadium option, a disc problem the build would find
 at the start, a new Anniversary kit a classic team needs that cannot be made from your kits)
 and, separately, what Build will do with your work. Since beta 79.1 it also tries the long
-build's risky steps on your own options and art, in about ten minutes for a big project: every
+build's risky steps on your own options and art (a few minutes for most projects, up to about half an hour
+with every stadium option on): every
 stadium field, bump map and divot layer that Modern colour, the modern stadiums, the practice
 facility, Modern surfaces and Broadcast greens refit, with your own Modern colour values; the
 new kits on your own kits; the options and settings no release build ever tried; and your

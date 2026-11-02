@@ -587,8 +587,9 @@ class BuildPanel(QWidget):
         self.check_button.setToolTip("A whole check of your project and options before a long build: what Make my disc "
                                      "would refuse or change, every stadium and colour refit tried with your values, the "
                                      "new kits on your own kits, options no release build tried, and your project against "
-                                     "every size limit. About 10 minutes for a big project; Save report keeps it all. "
-                                     "Nothing is written to your project or disc.")
+                                     "every size limit. A few minutes for most projects; up to about half an hour with "
+                                     "every stadium option on (the stadium refits are most of it). Save report keeps "
+                                     "it all. Nothing is written to your project or disc.")
         self.check_button.setAccessibleDescription(self.check_button.toolTip())
         self.check_button.clicked.connect(self._check_project)
         actions.addWidget(self.check_button)
