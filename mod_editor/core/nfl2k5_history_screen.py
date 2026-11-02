@@ -50,7 +50,7 @@ Where the data comes from
   16-byte record {"HSX1", flip, rows, bio} kept right before the cloned ESPN.com rows (it follows the row pointer this
   owner sets at 0x525674), so neither owner links to the other and either can be installed first.
 
-Allocation: one late owner (``nfl2k5_xbe_space.LATE_OWNERS``), code (``CODE_SIZE``), 64 RW bytes (page, club, scroll,
+Allocation: one late owner (``nfl2k5_xbe_space.LATE_OWNERS``), code (``CODE_SIZE``, 18 KiB), 64 RW bytes (page, club, scroll,
 the selected box score) and a read-only block (``RO_SIZE``, 36 KiB: descriptors, the cloned ESPN.com rows, the seed tables).
 Two retail sites: the ESPN.com descriptor's row-table pointer (0x525674, .rdata, a 4-byte pointer edit: the cloned table
 has the retail rows plus TEAM HISTORY) and the Schedule input (0x24D2E5, a 6-byte call). Nobody else patches either.
@@ -71,7 +71,7 @@ from .nfl2k5_cave_oracle import XbeImage
 
 OWNER = "nfl2k5_history_screen"
 EVIDENCE = "EXPERIMENTAL"
-CODE_SIZE = 16384
+CODE_SIZE = 0x4800                       # 18 KiB
 DATA_SIZE = 64
 RO_SIZE = 0x9000          # 36 KiB, resident: j5's seed takes 20,426 bytes, with j5b's leaders and records 32,883
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "data", DATA_SIZE, 16), (OWNER, "read_only", RO_SIZE, 16))

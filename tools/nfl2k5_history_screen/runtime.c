@@ -438,6 +438,13 @@ static u32 season_year(void) {
     return base_year() + G(SEASONS);
 }
 
+/* The real history shown is the history before this franchise began. A build whose franchise starts before the seed
+   ends (the retail 2004 calendar against a seed through 2025) shows only the seed's seasons, awards and Hall of Fame
+   classes and its dated records from before that year, and none of its undated career totals. */
+static u32 seed_whole(void) {
+    return RO_FIELD(RO_SEED_LAST) < base_year();
+}
+
 static u32 user_club(void) {
     u32 focus = G(FOCUS_TEAM), n = team_count();
     if (focus) {
@@ -542,6 +549,10 @@ static void page_seasons(u32 index) {
         if (seed_first + seed_count > RO_FIELD(RO_SEASON_COUNT))
             seed_count = 0;
     }
+    while (seed_count && RO_U16(RO_FIELD(RO_SEASONS) + 10 * seed_first) >= base_year()) {   /* newest first */
+        seed_first++;
+        seed_count--;
+    }
     const u8 *ring = x_block(X_SEASONS, 16 + SEASON_RECORD * SEASON_RING);
     u32 franchise = x_season_count(ring);
     /* row 0: the franchise era from the totals block (+0 u16 first year, +16 + club*16 the club's line) */
@@ -623,7 +634,7 @@ static u32 seed_club_record(u32 seed, u32 category, u32 kind, Mark *m) {
         u32 at = entries + 8 * (first + i);
         if (at + 8 > RO_FIELD(RO_SIZE))
             return 0;
-        if (RO_U8(at) == (category << 1 | kind)) {
+        if (RO_U8(at) == (category << 1 | kind) && RO_U16(at + 6) < base_year()) {
             m->value = RO_U16(at + 4);
             m->year = RO_U16(at + 6);
             m->club = game_club_of_seed(seed);
@@ -751,13 +762,15 @@ static u32 book_entry(u32 k, u32 *category, u32 *kind, Mark *m) {
     m->fresh = 0;
     m->name[0] = 0;
     put_seed_name(m->name, RO_U16(at + 2));
+    if (*kind == 2 ? !seed_whole() : m->year >= base_year())
+        m->value = 0;                                   /* set after this franchise began: not this franchise's past */
     Mark x;
     const u8 *b = x_block(X_RECORDS, RECORDS_SIZE);
     if (*kind < 2 && b && x_mark(b + LEAGUE_RECORDS_AT + 12 * (*category * 2 + *kind), &x) && x.value > m->value)
         *m = x;
     if (*kind == 2 && x_career_leader(*category, &x) && x.value > m->value)
         *m = x;
-    return 1;
+    return m->value != 0;
 }
 
 static void page_book(void) {
@@ -765,18 +778,21 @@ static void page_book(void) {
     cell_ascii(0, 370.0f, 2, "VALUE", GREY);
     cell_ascii(0, 380.0f, 1, "HOLDER", GREY);
     cell_ascii(0, 600.0f, 2, "YEAR", GREY);
+    u8 have[64];
+    u32 count = 0, category, kind;
+    Mark m;
+    for (u32 k = 0; ro_ok() && k < RO_FIELD(RO_BOOK_COUNT) && count < 64; k++)
+        if (book_entry(k, &category, &kind, &m))
+            have[count++] = (u8)k;
     List l;
-    list_start(&l, ro_ok() ? RO_FIELD(RO_BOOK_COUNT) : 0, 1);
-    if (!l.count) {
+    list_start(&l, count, 1);
+    if (!count) {
         cell_ascii(1, 60.0f, 1, "NO RECORDS IN THIS BUILD", GREY);
         return;
     }
-    for (u32 r = 0; r < l.rows && l.first + r < l.count; r++) {
-        u32 category, kind;
-        Mark m;
-        if (book_entry(l.first + r, &category, &kind, &m))
+    for (u32 r = 0; r < l.rows && l.first + r < count; r++)
+        if (book_entry(have[l.first + r], &category, &kind, &m))
             draw_mark(l.top + r, category, kind, &m, 1);
-    }
 }
 
 /* ---- LEADERS: the club's all-time top three per category --------------------------------------------------- */
@@ -808,7 +824,7 @@ static u32 leader_line(const u8 *b, u32 index, u32 seed, u32 category, u32 s, Ma
         put_person(m->name, e);
         return 1;
     }
-    u32 base = ro_ok() ? RO_FIELD(RO_LEADERS) : 0;
+    u32 base = ro_ok() && seed_whole() ? RO_FIELD(RO_LEADERS) : 0;
     if (!base || seed >= 32)
         return 0;
     u32 first = RO_U16(base + 4 * seed), count = RO_U16(base + 4 * seed + 2);
@@ -925,6 +941,10 @@ static void page_awards(u32 award) {
     if (ro_ok() && RO_FIELD(RO_AWARDS)) {
         seed_first = RO_U16(RO_FIELD(RO_AWARDS) + 4 * award);
         seed_count = RO_U16(RO_FIELD(RO_AWARDS) + 4 * award + 2);
+        while (seed_count && RO_U16(RO_FIELD(RO_AWARDS) + 32 + 6 * seed_first) >= base_year()) {
+            seed_first++;
+            seed_count--;
+        }
     }
     cell_ascii(0, 60.0f, 1, "YEAR", GREY);
     cell_ascii(0, 140.0f, 1, award == 6 ? "COACH" : "PLAYER", GREY);
@@ -984,7 +1004,7 @@ static void page_awards(u32 award) {
 static u32 seed_inductees(u32 filter_seed) {
     u32 base = RO_FIELD(RO_HOF), count = RO_FIELD(RO_HOF_COUNT), n = 0;
     for (u32 i = 0; base && i < count && i < 1024 && base + 6 * (i + 1) <= RO_FIELD(RO_SIZE); i++)
-        if (filter_seed == 0xFF || RO_U8(base + 6 * i + 5) == filter_seed)
+        if ((filter_seed == 0xFF || RO_U8(base + 6 * i + 5) == filter_seed) && RO_U16(base + 6 * i) <= base_year())
             n++;
     return n;
 }
@@ -997,7 +1017,7 @@ static u32 seed_inductee(u32 k, u32 filter_seed, u32 *at_out) {
         u32 at = base + 6 * i;
         if (at + 6 > RO_FIELD(RO_SIZE))
             return 0;
-        if (filter_seed != 0xFF && RO_U8(at + 5) != filter_seed)
+        if ((filter_seed != 0xFF && RO_U8(at + 5) != filter_seed) || RO_U16(at) > base_year())
             continue;
         if (n++ == k) {
             *at_out = at;
@@ -1034,6 +1054,8 @@ static void page_hof(u32 filter) {
         seed_count = seed_inductees(filter_seed);
     if (ro_ok() && RO_FIELD(RO_HOF) && RO_FIELD(RO_HOF_COUNT))
         newest = RO_U16(RO_FIELD(RO_HOF));               /* the seed lists the newest class first */
+    if (newest > base_year())
+        newest = base_year();                            /* classes after the franchise began are the franchise's */
     const u8 *b = x_block(X_HALL, HALL_SIZE);
     u8 order[HALL_SLOTS];
     u32 franchise = hall_order(b, filter, newest, order);

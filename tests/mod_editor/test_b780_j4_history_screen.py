@@ -131,7 +131,7 @@ class StaticTests(unittest.TestCase):
 
     def test_template_fits_and_links_only_to_known_symbols(self):
         self.assertLessEqual(len(runtime.CODE), hist.CODE_SIZE)
-        self.assertEqual(hist.REQUESTS, (("nfl2k5_history_screen", "code", 16384, 16),
+        self.assertEqual(hist.REQUESTS, (("nfl2k5_history_screen", "code", 0x4800, 16),
                                          ("nfl2k5_history_screen", "data", 64, 16),
                                          ("nfl2k5_history_screen", "read_only", 0x9000, 16)))
         for offset, kind, symbol, _value in runtime.RELOCATIONS:
@@ -370,8 +370,11 @@ class NativeTests(unittest.TestCase):
     FOOTER = 0x3100000            # 128 KiB mapped, then an unmapped page: a read past the footer faults
     WORDS = 0x3080000             # the footer owner's body-pointer word (as code_for linked it)
 
-    def machine(self, footer: bytes | None = None, seasons=0, at_end=False):
+    def machine(self, footer: bytes | None = None, seasons=0, at_end=False, base=2026):
+        """The installed image with a 32-club league; ``base`` is the franchise's first season (the card's year
+        immediate, which the 2026 season option sets: retail reads 2004)."""
         m = Machine(self.payload)
+        m.put(YEAR_IMM, base + 11)
         m.capture_text()
         m.rects = []
 
@@ -455,7 +458,7 @@ class NativeTests(unittest.TestCase):
         texts = self.draw(m, page=0, club=0)
         self.assertIn("NEW YORK GIANTS".upper(), [t.upper() for t in texts])
         rows = self.rows(m)
-        self.assertEqual(rows[0], ["SINCE 2004: NO SEASONS PLAYED YET"])   # the retail executable's year base
+        self.assertEqual(rows[0], ["SINCE 2026: NO SEASONS PLAYED YET"])   # the franchise's first season
         self.assertEqual(rows[1], ["YEAR", "W-L-T", "DIV", "PLAYOFFS", "HEAD COACH"])
         self.assertEqual(rows[2], ["2025", "4-13", "4TH", "C. ONE"])
         self.assertEqual(rows[5], ["2022", "9-7-1", "3RD", "LOST DIVISIONAL", "C. ONE"])
@@ -650,6 +653,51 @@ class NativeTests(unittest.TestCase):
         finally:
             type(self).payload = saved
 
+    def test_a_franchise_older_than_the_seed_shows_only_the_history_before_it(self):
+        """A franchise that starts in 2004 (the retail calendar) against a seed through 2025: only the seed's seasons,
+        awards, Hall of Fame classes and dated records before 2004 show, none of its career totals; the franchise's
+        own Hall of Fame classes (2005 on) still show."""
+        doc = seed_document()
+        doc["seasons"].append({"season": 2003, "teams": [{"club": "NYG", "w": 4, "l": 12, "t": 0, "place": 4,
+                                                          "playoffs": "missed", "coach": "Coach Old"}]})
+        doc["awards"].append({"season": 2003, "award": "mvp", "winners": [{"name": "Old Passer", "club": "IND",
+                                                                           "position": "QB"}]})
+        doc["hall_of_fame"].append({"year": 2004, "name": "Member Four", "position": "QB", "club": "NYG"})
+        doc["nfl_records"].append({"category": "rush_yds", "kind": "season", "value": 2105, "name": "Old Runner",
+                                   "year": 1984, "club": "LA", "position": "RB"})
+        doc["club_records"].append({"club": "NYG", "category": "rush_yds", "kind": "game", "value": 218,
+                                    "name": "Old Back", "year": 1950, "position": "RB"})
+        hall = bytearray(4624)
+        hall[16:23] = person("A", "NEWMAN", "WR")
+        struct.pack_into("<BHHBBH", hall, 23, 1, 2005, 2000, 1 | 4, 12, 900)
+        hall[0] = 1
+        payload, _ = hist.install(self.retail, seed=doc, xtnd_ptr_va=self.WORDS)
+        saved = self.payload
+        try:
+            type(self).payload = payload
+            m = self.machine(j23_body({5: bytes(hall)}), base=2004)
+            rows = list(self.draw_rows(m, page=0).values())
+            self.assertEqual(rows[2:], [["2003", "4-12", "4TH", "C. OLD"]])
+            rows = list(self.draw_rows(m, page=4).values())
+            self.assertEqual(rows[1:], [["2003", "O. PASSER", "QB", "IND"]])
+            rows = list(self.draw_rows(m, page=5).values())
+            self.assertEqual(rows[1:], [["2005", "A. NEWMAN", "WR", "NYG"], ["2004", "M. FOUR", "QB", "NYG"]])
+            rows = list(self.draw_rows(m, page=1).values())
+            self.assertEqual(rows[1:], [["RUSH YARDS", "GAME", "218", "O. BACK", "1950"]])
+            self.assertEqual(self.draw_rows(m, page=2)[1], ["NO ALL-TIME LEADERS IN THIS BUILD YET"])
+            rows = list(self.draw_rows(m, page=3).values())
+            self.assertEqual(rows[1:], [["RUSH YARDS", "SEASON", "2,105", "O. RUNNER (STL)", "1984"]])
+            # the same image in a 2026 franchise shows the whole seed
+            m = self.machine(j23_body({5: bytes(hall)}))
+            self.assertEqual(len(self.draw_rows(m, page=0)), 8)
+            self.assertEqual(self.draw_rows(m, page=2)[1], ["PASS YARDS", "1.", "57,023", "G. PASSER"])
+        finally:
+            type(self).payload = saved
+
+    def draw_rows(self, m, **kw):
+        self.draw(m, **kw)
+        return self.rows(m)
+
     def press(self, m, pressed=0, repeat=0):
         m.put(PADS, 1)
         m.put(PADS + 8, pressed)
@@ -689,7 +737,7 @@ class NativeTests(unittest.TestCase):
         m.uc.mem_write(GRID + 8 * (17 * row + slot), bytes((3, home, away, 9, 21, 26, 13, 0)))
         m.uc.mem_write(SCORES + 10 * (17 * row + slot), bytes(quarters[0] + quarters[1]))
 
-    def box_footer(self, row=2, slot=3, home=0, away=25, year=2004, links=(40, 41)):
+    def box_footer(self, row=2, slot=3, home=0, away=25, year=2026, links=(40, 41)):
         """One kept game: the user club (home, the Giants) lines by player record index, the opponent's leader."""
         box = bytearray(12304)
         struct.pack_into("<HBB", box, 0, year, 1, 1)
