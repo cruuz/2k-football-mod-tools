@@ -163,10 +163,10 @@ def user_notes(result: dict) -> list:
     notes = []
     if not checked and not result.get("not_checked"):
         return notes
-    if not lost:
+    if checked and not lost:
         notes.append(f"Your edits: all {result.get('kept', 0):,} edited kit and stadium pieces are on the finished disc "
                      "exactly as the texture stage wrote them.")
-    else:
+    elif lost:
         named = ", ".join(f"{piece_words(row)} ({row['state']})" for row in lost[:MAX_NAMED])
         more = f" and {len(lost) - MAX_NAMED} more" if len(lost) > MAX_NAMED else ""
         notes.append(f"Your edits: {len(lost)} of {checked:,} edited pieces did not survive the build as you made them: "

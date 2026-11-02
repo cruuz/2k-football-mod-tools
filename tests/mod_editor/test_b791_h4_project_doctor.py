@@ -644,6 +644,12 @@ class EditSurvival(unittest.TestCase):
         self.assertEqual(result["lost"], [])
         self.assertIn("all 2 edited kit and stadium pieces are on the finished disc", survival.user_notes(result)[0])
 
+    def test_nothing_edited_in_the_kit_files_says_nothing_about_them(self):
+        notes = survival.user_notes(dict(kept=0, lost=[], not_checked=3))
+        self.assertEqual(len(notes), 1)
+        self.assertIn("3 edits outside the kit files", notes[0])
+        self.assertEqual(survival.user_notes(dict(kept=0, lost=[], not_checked=0)), [])
+
     def test_the_audit_never_fails_a_finished_build(self):
         with mock.patch.object(survival, "_read", side_effect=OSError("gone")):
             step = survival.audit_step(self.snapshot(), "final.iso")
