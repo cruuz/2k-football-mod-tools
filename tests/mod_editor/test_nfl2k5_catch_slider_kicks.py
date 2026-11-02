@@ -220,6 +220,24 @@ class CatchSliderKickPatchTests(unittest.TestCase):
         with self.assertRaises(cs.CatchSliderError):
             cs.apply(bytes(old))
 
+    def test_beta79_revision_is_recognised_and_moved_to_the_current_scale(self) -> None:
+        # b780 b5-sim: beta-79 / v0.8 shipped K = 2.0 (0x4E6084); only the tail's constant address differs.
+        old = bytearray(self.patched)
+        off = cs._offset(self.retail, cs.KICK_GATE_VA)
+        old[off:off + cs.KICK_GATE_SIZE] = cs.kick_gate_bytes(cs.PREVIOUS_ODDS_SCALE_VA)
+        old = bytes(old)
+        self.assertNotEqual(cs.PREVIOUS_ODDS_SCALE_VA, cs.ODDS_SCALE_VA)
+        self.assertEqual(cs.status(old), "previous")
+        upgraded, receipt = cs.apply(old)
+        self.assertEqual(upgraded, self.patched)
+        self.assertEqual(receipt["upgraded_from"], "previous")
+        self.assertLessEqual(receipt["changed_bytes"], 4)
+        self.assertEqual(cs.status(upgraded), "applied")
+        partly = bytearray(old)                       # the old tail with a retail site elsewhere is still foreign
+        hook = cs._offset(self.retail, cs.HOOK_VA)
+        partly[hook:hook + 5] = cs.RETAIL_HOOK
+        self.assertEqual(cs.status(bytes(partly)), "foreign")
+
     def test_native_ball_kind_instructions(self) -> None:
         # Instruction pins independent of the selector emitter. The catch
         # routine itself excludes non-forward balls from its native INT block.

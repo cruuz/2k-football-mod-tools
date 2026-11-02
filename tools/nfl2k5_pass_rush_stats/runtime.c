@@ -232,13 +232,15 @@ static u32 binomial(u32 n, float mean) {
     return k;
 }
 
-/* Expected pressures a game for a defender (NFL, PFR advanced defense 2021-2025 per game, starters with 8+
-   starts: DE 1.54, OLB 1.42, DT 0.79, LB 0.56, S 0.18, CB 0.06; elite edges about 3.3 a game; tuned on a simulated
-   2026 season of the SOFTDRINK roster, whose starting edges rate higher than the NFL average), as a curve of
-   Pass Rush: base + scale * x^1.5 with x = (rating - 50) / 45 clamped to 0..1. Backups (depth rank 2 and
-   deeper) play part of the snaps. Index by position code 0..16. */
-static const float rush_base[17] = {0, 0, 0, 0, 0.02f, 0.05f, 0.06f, 0, 0, 0, 0.25f, 0.10f, 0, 0, 0, 0.15f, 0.25f};
-static const float rush_scale[17] = {0, 0, 0, 0, 0.15f, 0.35f, 0.45f, 0, 0, 0, 2.80f, 1.10f, 0, 0, 0, 1.80f, 2.80f};
+/* Expected pressures a game for a defender, as a curve of Pass Rush: base + scale * x^1.5 with x = (rating - 50) / 45
+   clamped to 0..1; backups (depth rank 2 and deeper) play part of the snaps. b779 st1 tuned the shape on PFR advanced
+   defense 2021-2025 per game (starters with 8+ starts: DE 1.54, OLB 1.42, DT 0.79, LB 0.56, S 0.18, CB 0.06). b780 b5-sim
+   moved the level to PFF's pressure counts (the numbers players quote: 2023 Hutchinson 101 with Parsons and Bosa over
+   100, 2024 Garrett and Hendrickson 83, Greenard 80, Verse 77, tenth about 63) through prs_rush_share, and raised the
+   interior line (PFF's best interior rushers reach 60-70 a season) from 0.15 + 1.80 to 0.20 + 2.40. Index by position
+   code 0..16. */
+static const float rush_base[17] = {0, 0, 0, 0, 0.02f, 0.05f, 0.06f, 0, 0, 0, 0.25f, 0.10f, 0, 0, 0, 0.20f, 0.25f};
+static const float rush_scale[17] = {0, 0, 0, 0, 0.15f, 0.35f, 0.45f, 0, 0, 0, 2.80f, 1.10f, 0, 0, 0, 2.40f, 2.80f};
 extern volatile float prs_rush_share, prs_hit_share, prs_ol_per_game, prs_ol_hit_share, prs_ol_sack_share;
 
 static float rush_curve(u32 rating) {
@@ -436,7 +438,10 @@ float FC prs_card_value(u32 row, u32 field) {
 }
 
 /* League Leaders / stats sheets: column getter in place of 0x3216C0 (cookie 0x307BA: ecx = player record,
-   edx = stat id = history field, [esp+4] = bank; callee pops it like 0xCB240) */
+   edx = stat id = history field, [esp+4] = bank; callee pops it like 0xCB240). b780 b5-sim: the stats sheets' own
+   row pickers (0x3216A0 "has this stat", 0x3216C0 the sort value) enter here too for ids 106..110 (stubs.S
+   prs_leader_a / prs_leader_c), so League Leaders ranks and filters by these fields instead of the native selectors
+   106..110, which have no history field and read 0. */
 float FC prs_leader_value(u32 player, u32 field, u32 bank) {
     return bank_value(player, field, bank);
 }

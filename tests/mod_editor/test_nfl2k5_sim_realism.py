@@ -1,4 +1,5 @@
-"""Pins and installation tests for the b779-sim2 round-6 simulated season realism owner."""
+"""Pins and installation tests for the b779-sim2 round-6 simulated season realism owner (b780 b5-sim: QB-scaled play
+mix, WR1-scaled target concentration, the season rush correction for lead backs only, the tackle constant used)."""
 
 from __future__ import annotations
 
@@ -17,9 +18,9 @@ from mod_editor.core.nfl2k5_cave_oracle import XbeImage
 class ConstantTests(unittest.TestCase):
     def test_owner_and_allocation_request(self):
         self.assertEqual(r.OWNER, "nfl2k5_sim_realism")
-        self.assertEqual(r.REQUESTS, (("nfl2k5_sim_realism", "code", 832, 16),
+        self.assertEqual(r.REQUESTS, (("nfl2k5_sim_realism", "code", 896, 16),
                                       ("nfl2k5_sim_realism", "data", 16, 4)))
-        self.assertEqual((r.CODE_SIZE, r.DATA_SIZE), (832, 16))
+        self.assertEqual((r.CODE_SIZE, r.DATA_SIZE), (896, 16))
 
     def test_calibration_constants(self):
         self.assertEqual(r.MIX_BIAS, 8.5)
@@ -185,6 +186,92 @@ class InstallTests(unittest.TestCase):
         self.assertEqual(r.status(bytes(buf)), "foreign")
         with self.assertRaises(r.SimRealismError):
             r.apply(bytes(buf))
+
+
+
+class NativeTests(unittest.TestCase):
+    """b780 b5-sim: the new branches run natively from the installed code (honors Unicorn harness: the game's own
+    history reader 0x14EE40 and additive writer 0x14F450 over a synthetic roster and history pool)."""
+
+    @classmethod
+    def setUpClass(cls):
+        import importlib.util
+        if importlib.util.find_spec("unicorn") is None:
+            raise unittest.SkipTest("unicorn is needed")
+        try:
+            data = retail_bytes()
+        except unittest.SkipTest:
+            raise
+        cls.patched, receipt = r.apply(data)
+        cls.code_va, cls.data_va = int(receipt["code_va"], 16), int(receipt["data_va"], 16)
+
+    def machine(self):
+        from tests.mod_editor.test_nfl2k5_honors import Machine
+        return Machine(self.patched)
+
+    def test_rush_correction_goes_to_the_lead_back_only(self):
+        from tests.mod_editor.test_nfl2k5_honors import word
+        game_yards = 120
+        for position, rank, expected in ((7, 0, r.rush_bonus(game_yards)), (7, 1, 0), (8, 0, 0), (3, 0, 0), (0, 0, 0)):
+            m = self.machine()
+            p = m.roster([(3, [word(2, 3, 400 + game_yards), word(18, 3, 10)])])[0]
+            m.put8(p + 0x35, position)
+            m.put(p + 0x28, (rank & 7) << 10)
+            m.put(self.data_va, p)                   # [state]: the player the merge just wrote
+            m.put(self.data_va + 4, 10)              # tackles before the merge (no new tackles)
+            m.put(self.data_va + 8, 400)             # rush yards before the merge
+            m.call(self.code_va + r.label_offsets()["tackle_return"], stack=(0, 0))
+            got = m.call(0x14EE40, ecx=p, edx=2) & 0xFFFF
+            self.assertEqual(got, 400 + game_yards + expected, (position, rank))
+            self.assertEqual(m.get(self.data_va), 0, "the hand-off is cleared")
+        self.assertGreater(r.rush_bonus(game_yards), 0)
+
+    def test_tackle_correction_uses_the_constant(self):
+        from tests.mod_editor.test_nfl2k5_honors import word
+        m = self.machine()
+        p = m.roster([(3, [word(2, 3, 0), word(18, 3, 30)])])[0]
+        m.put8(p + 0x35, 11)
+        m.put(self.data_va, p)
+        m.put(self.data_va + 4, 10)                  # 20 tackles in this game
+        m.put(self.data_va + 8, 0)
+        m.call(self.code_va + r.label_offsets()["tackle_return"], stack=(0, 0))
+        self.assertEqual(m.call(0x14EE40, ecx=p, edx=18) & 0xFFFF, 30 + r.tackle_bonus(20))
+        self.assertEqual(r.tackle_bonus(20), 2)       # 10 percent, rounded
+
+    def _mix(self, accuracy, run_minus_pass, *, deep_own_end=False, position=0):
+        """Run the mix hook: returns 'pass' or 'run' (its two retail continuations)."""
+        m = self.machine()
+        qb = m.HEAP + 0x70000
+        summary = m.HEAP + 0x71000
+        m.uc.mem_write(qb, bytes(0x54))
+        m.put8(qb + 0x35, position)
+        m.put8(qb + 0x42, accuracy)
+        m.put(summary + 8, qb)
+        m.put(r.TEAM_OFFENSE, summary)
+        m.uc.mem_write(0x00A97200, struct.pack("<f", 90.0 if deep_own_end else 50.0))   # yards to the opponent goal
+        hit = []
+        for name, va in (("pass", r.MIX_PASS), ("run", r.MIX_RUN)):
+            m.hook(va, (lambda n: (lambda mm: hit.append(n)))(name))
+        sp = m.SP - 0x100
+        m.put(sp, m.STOP)                            # the hook's own return (the call at the site, discarded)
+        m.put(sp + 4, m.STOP)                        # where the stand-ins for the two continuations return
+        m.uc.mem_write(sp + 0x14, struct.pack("<f", 30.0 + run_minus_pass))           # run score
+        m.uc.mem_write(sp + 0x18, struct.pack("<f", 30.0))                            # pass score
+        m.reg("ESP", sp)
+        m.uc.emu_start(self.code_va + r.label_offsets()["mix"], m.STOP, count=10_000)
+        self.assertEqual(len(hit), 1)
+        return hit[0]
+
+    def test_better_passers_call_more_passes_around_the_same_league_mix(self):
+        bias = lambda acc: r.MIX_BIAS + r.MIX_QB_SLOPE * (acc - r.MIX_QB_PIVOT)
+        margin = 0.5 * (bias(99) + r.MIX_BIAS)          # between the average and the elite thresholds
+        self.assertEqual(self._mix(r.MIX_QB_PIVOT, margin), "run")
+        self.assertEqual(self._mix(99, margin), "pass")
+        low = 0.5 * (bias(70) + r.MIX_BIAS)
+        self.assertEqual(self._mix(r.MIX_QB_PIVOT, low), "pass")
+        self.assertEqual(self._mix(70, low), "run")
+        self.assertEqual(self._mix(99, margin, position=3), "run")       # no quarterback in slot 0: the flat bias
+        self.assertEqual(self._mix(99, 0.5, deep_own_end=True), "run")   # own deep end: the retail call
 
 
 if __name__ == "__main__":

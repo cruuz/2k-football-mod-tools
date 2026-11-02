@@ -223,20 +223,26 @@ class CatchDropDecisionTests(unittest.TestCase):
         ordered = [new_bands[b] for b in sorted(new_bands)]
         self.assertEqual(ordered, sorted(ordered, reverse=True), "low-catch players must drop more than high-catch players")
 
-    def test_new_drop_rate_stays_below_the_nfl_rate_and_above_zero(self) -> None:
+    def test_new_drop_rate_is_near_the_nfl_rate_with_elite_hands_kept_sure(self) -> None:
+        # b780 b5-sim: at m = 2 (b779 gp1) only P < 0.5 could drop, so receivers rated 70+ never dropped a ball in their
+        # hands (0.1 to 0.3 drops a team-game in v0.8 against the NFL's 1.2). m = 1.25 puts the roll near the NFL's
+        # 5.2 % of catchable targets while keeping elite hands (Catching 90+) almost sure.
         m = cs.odds_multiplier(0.75, 0.25)
+        self.assertAlmostEqual(m, 1.25, places=6)
         for label, mix, scenario in (("assumed coverage", PRESSURE_MIX, {}), ("harsh coverage", HARSH_MIX, {}),
                                      ("harsh coverage, diving catches", HARSH_MIX, {"diving": 1})):
+            bands = {}
             retail = self.drop_rate(1.0, mix=mix, **scenario)
-            old_human = self.drop_rate(1.5, mix=mix, **scenario)
-            new = self.drop_rate(m, mix=mix, **scenario)
-            print(f"{label}: drops per roll retail {retail:.4f}, beta-78 human {old_human:.4f}, new {new:.4f} "
-                  f"(NFL {NFL_DROP_PER_CATCHABLE:.4f})", flush=True)
-            self.assertLess(new, old_human)
-            self.assertLess(new, retail / 3)
-            self.assertGreater(new, 0.002, "a drop every now and then must remain")
+            gp1 = self.drop_rate(2.0, mix=mix, **scenario)
+            new = self.drop_rate(m, mix=mix, bands=bands, **scenario)
+            print(f"{label}: drops per roll retail {retail:.4f}, beta-79 (m=2) {gp1:.4f}, new {new:.4f} "
+                  f"(NFL {NFL_DROP_PER_CATCHABLE:.4f}) bands {({b: round(v, 4) for b, v in bands.items()})}", flush=True)
+            self.assertLess(new, retail)
+            self.assertGreater(new, 1.5 * gp1, "average hands must drop more than in beta-79")
+            self.assertLess(bands.get(90, 0.0), 0.01, "elite hands stay almost sure")
             if not scenario:
-                self.assertLess(new, NFL_DROP_PER_CATCHABLE)      # never more drops than real life
+                self.assertGreater(new, 0.015)
+                self.assertLess(new, 1.4 * NFL_DROP_PER_CATCHABLE)
 
 
 if __name__ == "__main__":

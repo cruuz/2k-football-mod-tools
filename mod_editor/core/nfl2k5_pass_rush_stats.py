@@ -33,6 +33,23 @@ League Leaders and the stats sheets (Noah 10/28: "new stats yes"): the blocked-k
 point blocks, PBK punt blocks) give their slots to PRS, QBH and SA in place; every other column is unchanged. The new
 columns are integer stat columns cloned from FBK (cookie 0x307BA) with this owner's getter in place of 0x3216C0. Fields 106-110 fold by sum when the honors
 owner is installed (its fold rule covers fields 96-127).
+
+b780 b5-sim (SWeaR 11/01: "the league leader in the new pressure stat only seems to be getting like 30 pressures max when
+simming"; "add a category for offensive lineman in League Leaders that tracks their sacks allowed and pressure allowed"):
+* The sheets pick and rank their rows with the native getters 0x3216A0 ("has this stat", League Leaders' filter 0x321CEC) and
+  0x3216C0 (the sort value, League Leaders' builder 0x321D40 at 0x321DE6), keyed by the column's stat id. Ids 106-110 fell
+  to native selectors 106-110, which have no history field, so a PRS sort kept the top 40 by the category's qualifier
+  (tackles) and showed the best pass rusher among the top tacklers. Both getters now send ids 106-110 to this owner's
+  reader (hooks at their first instruction), so the rows are the real leaders.
+* League Leaders' Defense tab is a copy of the retail tab (same header, same default sort) with FBK back in its place and
+  PRS and QBH added at the end; a new eighth tab, Offensive Line, lists # NAME TEAM PA HA SA. The tab list of the League
+  Leaders spreadsheet (0x54A13C, null-terminated, read by the spreadsheet's own walker 0x174D00) takes the new tab in its
+  old terminator slot 0x54A158; the next word (0x54A15C, alignment padding) is the new terminator. The new tab uses the
+  Special Teams header (filter index 6: any player with a value in one of the tab's columns), so only linemen appear.
+* Simulated draws moved from PFR's charting level to PFF's (the counts players quote): prs_rush_share 0.71 -> 1.2, QB hits
+  kept at the NFL's official level (prs_hit_share 0.53 -> 0.33), interior linemen 0.15 + 1.80 -> 0.20 + 2.40, the line's
+  charge 4.3 -> 6.8 a game, line QB hits 0.45 -> 0.33, line sacks 60% -> 40% of the team's sacks (worst linemen
+  about 45-55 pressures and 12-15 sacks allowed a 17-game season, PFF's range).
 """
 
 from __future__ import annotations
@@ -45,7 +62,7 @@ from . import nfl2k5_pass_rush_stats_code as runtime
 OWNER = "nfl2k5_pass_rush_stats"
 EVIDENCE = "EXPERIMENTAL"
 CODE_SIZE = 3328
-READ_ONLY_SIZE = 2816
+READ_ONLY_SIZE = 3584
 DATA_SIZE = 1152
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "read_only", READ_ONLY_SIZE, 16), (OWNER, "data", DATA_SIZE, 16))
 
@@ -55,8 +72,10 @@ HELP_TEXT = ("EXPERIMENTAL. Adds pressures and QB hits for defenders, pressures,
              "defender within 2 yards of the passer at the throw, the sacker, and the blocker he beat); simulated "
              "games draw them from NFL rates using Pass Rush and Pass Blocking. The Player Card shows TGT for "
              "backs and receivers, PRS and QBH for defenders and a new PA / HA / SA sheet for linemen; League "
-             "Leaders show PRS, QBH and SA in place of the blocked-kick columns (FBK, XBK, PBK). Each value "
-             "is saved in the player's season history (about 1,300 more history words per franchise season).")
+             "Leaders rank by them: the Defense tab adds PRS and QBH and a new Offensive Line tab shows PA, HA and SA. "
+             "Simulated games draw at the level of PFF's pressure counts (league leaders about 80 to 95 a season), "
+             "with QB hits at the NFL's official level. Each value is saved in the player's season history (about "
+             "1,300 more history words per franchise season).")
 
 FIELD0 = 106
 STATS = ("pressures", "qb_hits", "pressures_allowed", "qb_hits_allowed", "sacks_allowed")
@@ -72,9 +91,12 @@ STATE_SIZE = 4 * len(STATE_DIAGNOSTICS) + NCODE * NSTAT + NCODE + 2 * NCODE
 
 # Tunables: (label, value). The template holds the same values; code_for() writes these.
 # Positions are in centimetres (91.44 a yard: 210 uses of 91.44 in the retail XBE; xemu RAM of prsA2/prsA3).
-TUNING = (("prs_hurry_mm2", 182.88 ** 2), ("prs_hit_mm2", 91.44 ** 2), ("prs_rush_share", 0.71),
-          ("prs_hit_share", 0.53), ("prs_ol_per_game", 4.3), ("prs_ol_hit_share", 0.45),
-          ("prs_ol_sack_share", 0.60))
+# b780 b5-sim: simulated draws at PFF's level (2023 Hutchinson 101, Parsons and Bosa over 100; 2024 Garrett and
+# Hendrickson 83, Greenard 80, Verse 77, tenth about 63), QB hits at the official level (nflverse def_qb_hits leaders
+# 36-47); calibrated on two simulated seasons (sim/calib_prs.py, calib_ol.py in the b5-sim scratch).
+TUNING = (("prs_hurry_mm2", 182.88 ** 2), ("prs_hit_mm2", 91.44 ** 2), ("prs_rush_share", 1.2),
+          ("prs_hit_share", 0.33), ("prs_ol_per_game", 6.8), ("prs_ol_hit_share", 0.33),
+          ("prs_ol_sack_share", 0.40))
 
 # (label, VA, retail bytes, entry label, kind) - kind "call" = call rel32, "jmp" = jmp rel32 + NOP padding
 SITE_TABLE = (
@@ -85,6 +107,9 @@ SITE_TABLE = (
     ("commit", 0x00134E1F, bytes.fromhex("6a00ba4c000000"), "prs_commit", "jmp"),
     ("reset_played", 0x000A78EF, bytes.fromhex("e80c550200"), "prs_reset1", "call"),
     ("reset_simulated", 0x0010B427, bytes.fromhex("e8d419fcff"), "prs_reset2", "call"),
+    # b780 b5-sim: the stats sheets' row pickers ("cmp edx, 0xE9" at each entry), ids 106-110 to this owner's reader
+    ("leaders_filter", 0x003216A0, bytes.fromhex("81fae9000000"), "prs_leader_a", "jmp"),
+    ("leaders_sort", 0x003216C0, bytes.fromhex("81fae9000000"), "prs_leader_c", "jmp"),
 )
 # 0x320C28[i]: the card's screen entries this owner takes over (label, entry VA, retail target, stub label)
 CARD_JUMPS = (("card_wr", 0x00320C34, 0x00320BD2, "prs_card_wr"),
@@ -110,6 +135,20 @@ LEADER_SLOTS = ((0x00547C6C, FBK, "prs"), (0x00548268, FBK, "prs"), (0x00548EAC,
                 (0x005488A0, FBK, "prs"), (0x005488A4, XBK, "qbh"), (0x005488A8, PBK, "sa"))
 LEADER_KEYS = ("prs", "qbh", "sa")
 LEADER_GETTER = 0x003216C0
+# b780 b5-sim: League Leaders tabs. The spreadsheet's null-terminated tab list, its Defense entry and the old terminator,
+# the retail Defense tab (0x9C header + 18 columns), the Special Teams tab (its header, filter index 6, is the new
+# tab's), the retail Defense columns, and the new tab's columns. The tab's default-sort list is [column, -999].
+LEADER_TABS = 0x0054A13C
+DEFENSE_TAB_SLOT, NEW_TAB_SLOT, TABS_TERMINATOR = 0x0054A148, 0x0054A158, 0x0054A15C
+DEFENSE_TAB, SPECIAL_TEAMS_TAB = 0x00548188, 0x00548438
+TAB_HEADER = 0x9C
+TAB_TITLE_OFF, TAB_FILTER_OFF, TAB_SORT_OFF = 0x08, 0x20, 0x94
+JERSEY, NAME_COLUMN, TEAM_NAME = 0x00540998, 0x00543928, 0x005439D8
+DEFENSE_COLUMNS = (JERSEY, NAME_COLUMN, TEAM_NAME, 0x00544FD8, 0x00545088, 0x00545138, 0x005451E8, 0x00545298,
+                   0x00545348, 0x005453F8, 0x005454A8, 0x00545608, 0x005456B8, 0x00545CE8, 0x00545768, 0x00545818,
+                   0x005458C8)    # # NAME TEAM TKL AST SACK YDS AVG PD INT YDS AVG LNG TD TFL FF FR, then FBK (0x548268)
+OL_TAB_TITLE = "Offensive Line"
+OL_LEADER_KEYS = ("pa", "ha")     # SA's leader column already exists (LEADER_KEYS)
 # new columns: (key, abbreviation, long name, stat id)
 COLUMNS = (("tgt", "TGT", "Targets", TARGETS_SELECTOR),
            ("prs", "PRS", "Pressures", FIELDS["pressures"]),
@@ -128,6 +167,10 @@ GUARDS = (
     ("sacker", 0x000D2C20, 0x14), ("sack writers", 0x000CC160, 0xCE), ("play log reset", 0x000CCE00, 0x34),
     ("shed caller", 0x00234725, 0x6A), ("release call", 0x002DB2B0, 0x23), ("sack branches", 0x000CE29C, 0xA3),
     ("commit tail", 0x00134E11, 0x1F), ("card selector", 0x00320B95, 0xC0), ("card getter", 0x00320430, 0x2C),
+    # b780 b5-sim: the League Leaders tabs this owner copies, and the padding word that becomes the tab list's terminator
+    ("defense tab header", 0x00548188, 0x9C), ("defense tab columns", 0x00548224, 0x44),
+    ("special teams tab header", 0x00548438, 0x9C), ("tab list padding", 0x0054A15C, 0x4),
+    ("leader getters", 0x003216A6, 0x2D), ("tab walker", 0x00174D00, 0x2D),
 )
 
 GUARD_SHA256_PINNED = {
@@ -148,6 +191,12 @@ GUARD_SHA256_PINNED = {
     "commit tail": "f350723032751912322c54d32afb1242e4fe5157a4e4b1a5845acd73f5d898fb",
     "card selector": "d907c98b2980b2b6d62b9fea93fdb90ead22e13dccd2b0a6c51cb15b761ccfbf",
     "card getter": "ac219e0b1b91c514ee1b0f58898e33ac9b211048592ca5455f917f1c8b577155",
+    "defense tab header": "e05dd50daa809d056ad5fe3e0c95164b55cae3c8f9f7330e66eeacde5ea9ecce",
+    "defense tab columns": "63eb614f6a404150daf99f55089c51e323103fbe774aae27d4204d94782ff523",
+    "special teams tab header": "1eaa9c2f10737066534f763a2ad2cc00fb90d0a10b5f2dbe7162b701bf8855b7",
+    "tab list padding": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119",
+    "leader getters": "f4c791d1942343440c23a0a1b9d27b7cd9aea7ea616c6306ac135781c714f543",
+    "tab walker": "db4741bbbfb6a913d3e2d2bd18c3bee4ecae2506e8647badb3fccc096b6d74ff",
 }
 
 
@@ -204,6 +253,18 @@ def read_only_layout(read_only_va):
     for key in LEADER_KEYS:
         out["ld_" + key] = at
         at += DESCRIPTOR_SIZE
+    # b780 b5-sim: the Offensive Line tab's leader columns, its title and default sort, the copied Defense tab, the new tab
+    for key in OL_LEADER_KEYS:
+        out["ld_" + key] = at
+        at += DESCRIPTOR_SIZE
+    out["t_ol"] = at
+    at = (at + len(_utf16(OL_TAB_TITLE)) + 3) & ~3
+    out["sort_ol"] = at
+    at += 8
+    out["tab_def"] = at
+    at += TAB_HEADER + 4 * (len(DEFENSE_COLUMNS) + 4)       # + FBK, PRS, QBH and the terminator
+    out["tab_ol"] = at
+    at += TAB_HEADER + 4 * 7                                # # NAME TEAM PA HA SA and the terminator
     out["end"] = at
     _require(at - read_only_va <= READ_ONLY_SIZE, "the pass rush read-only block exceeds its budget")
     return out
@@ -303,10 +364,33 @@ def read_only_bytes(image, code_va, read_only_va, source_lists):
     leader_template = image.read(FBK, DESCRIPTOR_SIZE)
     _require(struct.unpack_from("<I", leader_template, 0x08)[0] == LEADER_GETTER, "the FBK leaders column is not retail")
     leader = labels(code_va)["prs_leader_value"]
-    for key in LEADER_KEYS:
-        put(lay["ld_" + key], _descriptor(leader_template, leader, lay["s_" + key], lay["l_" + key], FIELDS[
-            {"prs": "pressures", "qbh": "qb_hits", "sa": "sacks_allowed"}[key]], cookie=0x307BA))
+    field_of = {"prs": "pressures", "qbh": "qb_hits", "sa": "sacks_allowed", "pa": "pressures_allowed",
+                "ha": "qb_hits_allowed"}
+    for key in LEADER_KEYS + OL_LEADER_KEYS:
+        put(lay["ld_" + key], _descriptor(leader_template, leader, lay["s_" + key], lay["l_" + key],
+                                          FIELDS[field_of[key]], cookie=0x307BA))
+    for va, data in league_leader_tabs(image, lay):
+        put(va, data)
     return bytes(buf)
+
+
+def league_leader_tabs(image, lay):
+    """b780 b5-sim: (VA, bytes) of the League Leaders tab copies. Defense: the retail tab's header (same filter, default
+    sort and row callbacks) with its retail columns, FBK back in its place, then PRS and QBH. Offensive Line: the Special
+    Teams header (filter index 6: a player with a value in any column of the tab) with this owner's title and a default
+    sort on its first stat column, and the columns # NAME TEAM PA HA SA."""
+    defense = image.read(DEFENSE_TAB, TAB_HEADER)
+    _require(struct.unpack_from(f"<{len(DEFENSE_COLUMNS)}I", image.read(DEFENSE_TAB + TAB_HEADER, 4 * len(DEFENSE_COLUMNS)))
+             == DEFENSE_COLUMNS, "the League Leaders defense tab is not retail")
+    tab_def = defense + struct.pack(f"<{len(DEFENSE_COLUMNS) + 4}I", *DEFENSE_COLUMNS, FBK, lay["ld_prs"], lay["ld_qbh"], 0)
+    header = bytearray(image.read(SPECIAL_TEAMS_TAB, TAB_HEADER))
+    _require(struct.unpack_from("<3I", header, TAB_FILTER_OFF - 8) == (0x0027CCD0, 0x10000, 6),
+             "the League Leaders special teams tab is not retail")
+    struct.pack_into("<I", header, TAB_TITLE_OFF, lay["t_ol"])
+    struct.pack_into("<I", header, TAB_SORT_OFF, lay["sort_ol"])
+    tab_ol = bytes(header) + struct.pack("<7I", JERSEY, NAME_COLUMN, TEAM_NAME, lay["ld_pa"], lay["ld_ha"], lay["ld_sa"], 0)
+    return [(lay["t_ol"], _utf16(OL_TAB_TITLE)), (lay["sort_ol"], struct.pack("<2i", 3, -999)),
+            (lay["tab_def"], tab_def), (lay["tab_ol"], tab_ol)]
 
 
 def sites(code_va):
@@ -330,6 +414,9 @@ def data_edits(code_va, read_only_va=0):
     for va, retail, key in LEADER_SLOTS:
         out.append((f"leaders_{key}_{va:x}", va, struct.pack("<I", retail),
                     struct.pack("<I", lay["ld_" + key] if lay else 0)))
+    out.append(("leaders_defense_tab", DEFENSE_TAB_SLOT, struct.pack("<I", DEFENSE_TAB),
+                struct.pack("<I", lay["tab_def"] if lay else 0)))
+    out.append(("leaders_offensive_line_tab", NEW_TAB_SLOT, bytes(4), struct.pack("<I", lay["tab_ol"] if lay else 0)))
     return out
 
 

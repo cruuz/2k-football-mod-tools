@@ -363,12 +363,16 @@ class CommitTests(unittest.TestCase):
                 self.assertLessEqual(r[4], r[3])            # sacks allowed are QB hits allowed
                 self.assertLessEqual(r[3], r[2])            # which are pressures allowed
         elite, weak = totals["elite"][0] / games, totals["weak"][0] / games
-        self.assertGreater(elite, 1.8)
-        self.assertLess(elite, 3.6)
-        self.assertLess(weak, 0.9)
-        self.assertGreater(elite, 2.5 * weak)
-        self.assertGreater(ol[0] / games, 2.5)             # charged non-sack + sack pressures a game
-        self.assertLess(ol[0] / games, 7.5)
+        # b780 b5-sim, PFF level: an elite edge (Pass Rush 95) expects 1.2 x 3.05 = 3.66 non-sack pressures a game
+        # (about 62 a 17-game season before his sacks), a weak one (58) 1.2 x 0.46 = 0.55
+        self.assertGreater(elite, 2.9)
+        self.assertLess(elite, 4.5)
+        self.assertLess(weak, 1.0)
+        self.assertGreater(elite, 3.0 * weak)
+        self.assertLess(totals["elite"][1], totals["elite"][0])   # QB hits stay a third of the non-sack pressures
+        self.assertGreater(totals["elite"][1], 0.2 * totals["elite"][0])
+        self.assertGreater(ol[0] / games, 3.5)             # charged non-sack + sack pressures a game (6.3 x f + half the sacks)
+        self.assertLess(ol[0] / games, 9.0)
         self.assertGreater(ol[2], 0)
 
     def test_draws_are_deterministic_and_skip_players_who_did_not_play(self):
@@ -517,6 +521,104 @@ class LeadersTests(unittest.TestCase):
         self.assertEqual(value(13, 107), 5.0)
         self.assertEqual(value(0, 106), 0.0)        # live-game banks: counters land at the commit
         self.assertEqual(value(11, 50), 0.0)        # not this owner's field
+
+
+
+@unittest.skipUnless(HAVE_UC, "unicorn is needed")
+class LeaderRankingTests(unittest.TestCase):
+    """b780 b5-sim: the stats sheets pick and rank rows with 0x3216A0 ("has this stat") and 0x3216C0 (the sort value),
+    keyed by the column's stat id. Ids 106-110 fell to native selectors without a history field, so League Leaders
+    ranked PRS by the category's qualifier (tackles). Both getters now read this owner's fields for those ids."""
+
+    def setUp(self):
+        self.retail, self.data = retail(), patched()
+        if self.data is None:
+            self.skipTest("pinned USA retail XBE is not available")
+        self.lay = prs.read_only_layout(prs.allocations(self.data)["read_only"]["va"])
+
+    def test_the_league_leaders_builder_uses_the_hooked_getters(self):
+        image = XbeImage(self.data)
+        self.assertEqual(image.read(0x321DE6, 5), b"\xe8" + struct.pack("<i", 0x3216C0 - 0x321DEB))   # sort value
+        self.assertEqual(image.read(0x321CEC, 5), b"\xe8" + struct.pack("<i", 0x3216A0 - 0x321CF1))   # row filter
+        at = prs.labels(prs.allocations(self.data)["code"]["va"])
+        for va, entry in ((0x3216A0, "prs_leader_a"), (0x3216C0, "prs_leader_c")):
+            raw = image.read(va, 6)
+            self.assertEqual(raw[0], 0xE9)
+            self.assertEqual(va + 5 + struct.unpack_from("<i", raw, 1)[0], at[entry])
+            self.assertEqual(raw[5], 0x90)
+
+    def _value(self, m, fn, player, field, bank):
+        tramp, res = m.HEAP + 0x47000, m.HEAP + 0x47100
+        m.uc.mem_write(res, struct.pack("<f", -1.0))
+        m.uc.mem_write(tramp, b"\x68" + struct.pack("<I", bank) + b"\xe8" + struct.pack("<i", fn - (tramp + 10))
+                       + bytes.fromhex("d91d") + struct.pack("<I", res) + b"\xc3")
+        m.uc.ctl_remove_cache(tramp, tramp + 32)
+        m.call(tramp, ecx=player, edx=field)
+        return m.float_at(res)
+
+    def test_getters_read_this_owners_fields_and_leave_every_other_id_to_the_retail_code(self):
+        from tests.mod_editor.test_nfl2k5_honors import word
+        g = Game(self.data)
+        m = g.m
+        p = m.roster([(3, [word(106, 3, 9), word(107, 3, 4), word(110, 3, 2), word(108, 2, 5), word(109, 1, 1)])])[0]
+        native = []
+        stub = m.HEAP + 0x47200
+        m.uc.mem_write(stub, bytes.fromhex("d9eec20400"))   # fldz; ret 4: stands in for the retail reader's answer
+
+        def at_native(_uc, _address, _size, _data):     # the retail stat reader: record the id and the bank it got
+            native.append((m.reg("ECX"), m.reg("EDX"), m.get(m.reg("ESP") + 4)))
+            m.reg("EIP", stub)
+        m.uc.hook_add(m.u.UC_HOOK_CODE, at_native, begin=0xCB240, end=0xCB240)
+        for fn in (0x3216A0, 0x3216C0):
+            self.assertEqual(self._value(m, fn, p, 106, 11), 9.0)      # this season
+            self.assertEqual(self._value(m, fn, p, 107, 10), 4.0)
+            self.assertEqual(self._value(m, fn, p, 110, 11), 2.0)
+            self.assertEqual(self._value(m, fn, p, 108, 12), 5.0)      # last season
+            self.assertEqual(self._value(m, fn, p, 109, 9), 1.0)       # career
+            self.assertEqual(self._value(m, fn, p, 106, 3), 0.0)       # live-game banks: counters land at the commit
+        self.assertEqual(native, [], "ids 106-110 never reach the retail reader")
+        for field in (105, 111, 50, 0):                                 # every other id: the retail code, untouched
+            self._value(m, 0x3216A0, p, field, 11)
+            self.assertEqual(native[-1], (p, field, 11))
+        self._value(m, 0x3216C0, p, 0xEA + 50, 12)                     # 0x3216C0 still folds ids above 0xE9
+        self.assertEqual(native[-1], (p, 50, 12))
+        count = len(native)
+        self.assertEqual(self._value(m, 0x3216A0, p, 0xEA + 50, 11), 0.0)   # 0x3216A0 still answers 0 above 0xE9
+        self.assertEqual(len(native), count)
+
+    def test_league_leaders_gets_a_defense_copy_and_an_offensive_line_tab(self):
+        before, after = XbeImage(self.retail), XbeImage(self.data)
+        lay = self.lay
+        old = struct.unpack("<10I", before.read(prs.LEADER_TABS, 40))
+        new = struct.unpack("<10I", after.read(prs.LEADER_TABS, 40))
+        self.assertEqual((old[3], old[7], old[8]), (prs.DEFENSE_TAB, 0, 0))   # retail: seven tabs, terminator, padding
+        self.assertEqual(new[:3] + new[4:7], old[:3] + old[4:7])
+        self.assertEqual((new[3], new[7], new[8], new[9]), (lay["tab_def"], lay["tab_ol"], 0, old[9]))
+        d = after.read(lay["tab_def"], prs.TAB_HEADER + 4 * 21)
+        self.assertEqual(d[:prs.TAB_HEADER], before.read(prs.DEFENSE_TAB, prs.TAB_HEADER))   # same filter, sort, rows
+        cols = struct.unpack("<21I", d[prs.TAB_HEADER:])
+        self.assertEqual(cols[:18], struct.unpack("<18I", before.read(prs.DEFENSE_TAB + prs.TAB_HEADER, 72)))
+        self.assertEqual(cols[17], prs.FBK)                            # the blocked field goals are back
+        self.assertEqual(cols[18:], (lay["ld_prs"], lay["ld_qbh"], 0))
+        o = after.read(lay["tab_ol"], prs.TAB_HEADER + 28)
+        header = bytearray(before.read(prs.SPECIAL_TEAMS_TAB, prs.TAB_HEADER))
+        self.assertEqual(struct.unpack_from("<I", header, prs.TAB_FILTER_OFF)[0], 6)   # any player with a value
+        struct.pack_into("<I", header, prs.TAB_TITLE_OFF, lay["t_ol"])
+        struct.pack_into("<I", header, prs.TAB_SORT_OFF, lay["sort_ol"])
+        self.assertEqual(o[:prs.TAB_HEADER], bytes(header))
+        self.assertEqual(struct.unpack("<7I", o[prs.TAB_HEADER:]),
+                         (prs.JERSEY, prs.NAME_COLUMN, prs.TEAM_NAME, lay["ld_pa"], lay["ld_ha"], lay["ld_sa"], 0))
+        self.assertEqual(after.read(lay["t_ol"], 30), "Offensive Line".encode("utf-16-le") + b"\0\0")
+        self.assertEqual(struct.unpack("<2i", after.read(lay["sort_ol"], 8)), (3, -999))
+        fbk = after.read(prs.FBK, 0xB0)
+        getter = prs.labels(prs.allocations(self.data)["code"]["va"])["prs_leader_value"]
+        for key, abbr, field in (("pa", "PA", 108), ("ha", "HA", 109), ("sa", "SA", 110)):
+            col = after.read(lay["ld_" + key], 0xB0)
+            self.assertEqual(struct.unpack_from("<I", col, 0x08)[0], getter)
+            self.assertEqual(struct.unpack_from("<I", col, 0xA0)[0], field)
+            self.assertEqual(after.read(struct.unpack_from("<I", col, 0x70)[0], 2 * len(abbr)).decode("utf-16-le"), abbr)
+            same = [i for i in range(0, 0xB0, 4) if i not in (0x08, 0x70, 0x88, 0xA0)]
+            self.assertEqual([col[i:i + 4] for i in same], [fbk[i:i + 4] for i in same])
 
 
 if __name__ == "__main__":

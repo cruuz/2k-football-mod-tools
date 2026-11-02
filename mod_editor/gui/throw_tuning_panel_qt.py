@@ -302,8 +302,9 @@ class ThrowTuningPanel(QWidget):
         self.catch_check = QCheckBox("Fix Catching && Interception sliders")
         self.catch_check.setToolTip(
             "Retail: the Catching slider barely reaches play. This executable patch multiplies the catch odds "
-            "by 2 x (Human Catching + CPU Catching), the same for both teams: every difficulty preset gives "
-            "x2 (double the retail odds), and moving either slider moves both teams. Raises both Catching menu "
+            "by 1.25 x (Human Catching + CPU Catching), the same for both teams: every difficulty preset gives "
+            "x1.25 (a quarter above the retail odds, about NFL drop rates), and moving either slider moves both "
+            "teams. Raises both Catching menu "
             "ceilings to 200. xemu-only."
         )
         also.addWidget(self.catch_check)

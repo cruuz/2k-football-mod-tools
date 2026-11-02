@@ -7,7 +7,7 @@
     .globl prs_shed, prs_throw, prs_sack1, prs_sack2, prs_commit, prs_reset1, prs_reset2, prs_card_def
     .globl prs_card_wr, prs_card_rb, prs_list_rb, prs_list_wr
     .globl prs_hurry_mm2, prs_hit_mm2, prs_rush_share, prs_hit_share, prs_ol_per_game, prs_ol_hit_share
-    .globl prs_ol_sack_share, prs_list_def, prs_list_ol
+    .globl prs_ol_sack_share, prs_list_def, prs_list_ol, prs_leader_a, prs_leader_c
 
 /* 0x23477A (jmp, 7 bytes "push 0; push 0; push 3; push esi") in the caller of the engaged-block tick, on the
    shed result (0x233040 returned 2): ebx and esi are the two engaged players. */
@@ -139,14 +139,36 @@ prs_card_def:
     call eax
     ret 4
 
+/* b780 b5-sim. 0x3216A0 and 0x3216C0 (jmp, 6 bytes "cmp edx, 0xE9"): the stats sheets' row pickers. 0x3216A0 is the
+   "has this stat" test (League Leaders' row filter 0x321CEC and the sheets' row counters) and 0x3216C0 the sort value
+   (League Leaders' builder 0x321DE6); both get ecx = player, edx = stat id, [esp+4] = bank and pop it. Ids 106..110 are
+   this owner's history fields, read like the column getter (prs_leader_value pops the bank too); every other id runs
+   the retail code from its own compare. Only the flags change before the retail path, as the retail compare does. */
+prs_leader_a:
+    cmp edx, 106
+    jb 1f
+    cmp edx, 110
+    jbe prs_leader_value
+1:  cmp edx, 0xE9
+    push 0x003216A6
+    ret
+prs_leader_c:
+    cmp edx, 106
+    jb 1f
+    cmp edx, 110
+    jbe prs_leader_value
+1:  cmp edx, 0xE9
+    push 0x003216C6
+    ret
+
     .balign 4
 prs_hurry_mm2:     .float 33445.09       /* (182.88 cm = 2 yd)^2: a defender this close at the release hurried */
 prs_hit_mm2:       .float 8361.27        /* (91.44 cm = 1 yd)^2: this close at the release hit the passer */
-prs_rush_share:    .float 0.71           /* simulated: hurries + knockdowns per pressure (PFR: sacks 0.29) */
-prs_hit_share:     .float 0.53           /* simulated: knockdowns per non-sack pressure (PFR 0.37 / 0.70) */
-prs_ol_per_game:   .float 4.3            /* simulated: non-sack pressures charged to the line a game */
-prs_ol_hit_share:  .float 0.45           /* simulated: share of those that are QB hits */
-prs_ol_sack_share: .float 0.60           /* simulated: share of the team's sacks charged to a lineman */
+prs_rush_share:    .float 1.2            /* simulated: non-sack pressures per unit of the curve (PFF level) */
+prs_hit_share:     .float 0.33           /* simulated: QB hits per non-sack pressure (keeps official QB hits) */
+prs_ol_per_game:   .float 6.8            /* simulated: non-sack pressures charged to the line a game */
+prs_ol_hit_share:  .float 0.33           /* simulated: share of those that are QB hits */
+prs_ol_sack_share: .float 0.40           /* simulated: share of the team's sacks charged to a lineman */
 prs_list_rb:       .long 0               /* the column lists (filled by the owner): HB/FB */
 prs_list_wr:       .long 0               /* WR/TE */
 prs_list_def:      .long 0               /* defense */
