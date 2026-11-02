@@ -109,7 +109,7 @@ def mapping():
 
 
 def _variant(enabled):
-    return SimpleNamespace(OWNER=OWNER, CODE_SIZE=CODE_SIZE, GUARDS=GUARDS,
+    return SimpleNamespace(OWNER=OWNER, CODE_SIZE=CODE_SIZE, GUARDS=GUARDS, REQUESTS=REQUESTS, mapping=mapping,
                            sites=sites, code_for=lambda va: code_for(va, moving_arrival_brake=enabled))
 
 
@@ -148,16 +148,13 @@ def _reconfigure(payload, place, enabled):
 
 
 def apply(payload, *, moving_arrival_brake=False):
-    """Default preserves v0.6.1 bytes; opt-in reuses this owner's reservation."""
+    """The default keeps the released v0.6 to v0.8 bytes; the brake reuses this owner's reservation."""
     if type(moving_arrival_brake) is not bool:
         raise ValueError("moving_arrival_brake must be boolean")
     settings = read_settings(payload)
     space._require(settings["status"] != "foreign", f"{OWNER}: foreign/mixed bytes; refusing")
-    if settings["status"] == "retail":
-        result, receipt = lever.apply(payload, sys.modules[__name__])
-    else:
-        result, receipt = payload, {"owner": OWNER, "already_applied": True,
-                                    "changed_bytes": 0, "edits": [], "mapping": mapping()}
+    # Retail installs the default template; an installed owner (either template) replays as already applied.
+    result, receipt = lever.apply(payload, _variant(settings["moving_arrival_brake"]))
     if settings["moving_arrival_brake"] != moving_arrival_brake:
         place = lever.allocation(result, OWNER, CODE_SIZE)
         result, installation = _reconfigure(result, place, moving_arrival_brake)

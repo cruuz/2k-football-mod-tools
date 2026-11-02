@@ -215,6 +215,11 @@ def case_key(build, matrix, route, direction, planner, disabled):
     return f"{build}{'_without_trail' if disabled else ''}/{matrix}/{planner}/{route}/{direction}"
 
 
+def twin_of(build):
+    """The same executable without the brake: v08 for v08_brake, NAME_nobrake for an --extra NAME_brake."""
+    return "v08" if build == "v08_brake" else build[:-len("_brake")] + "_nobrake" if build.endswith("_brake") else None
+
+
 def verify_document(document, brake_builds=("v08_brake",)):
     """Assert the CV1 acceptance over the complete matrix (never a selected case)."""
     cases = document["cases"]
@@ -242,12 +247,13 @@ def verify_document(document, brake_builds=("v08_brake",)):
                 s = cases[f"{build}/{matrix}/man/hitch/{direction}"]["summary"]
                 need(s["post_break_total_degrees"] < 10 and abs(s["stationary_target_winding_degrees"]) < 45,
                      f"{build}/{matrix} hitch {direction}: the stationary orbit is back")
+        twin = twin_of(build)
         for route in ("hitch", "curl_1_5"):
             for direction in (1, -1):
-                a = cases[f"v08/r5/pursuit/{route}/{direction}"]
+                a = cases.get(f"{twin}/r5/pursuit/{route}/{direction}")
                 b = cases[f"{build}/r5/pursuit/{route}/{direction}"]
-                need(a.get("rows") == b.get("rows") and a.get("error") == b.get("error"),
-                     f"{build} pursuit {route} {direction}: the man-only brake changed pursuit")
+                need(a is not None and a.get("rows") == b.get("rows") and a.get("error") == b.get("error"),
+                     f"{build} pursuit {route} {direction}: the man-only brake changed pursuit (twin {twin})")
     # The shipped bug and the controls must still reproduce, or the fixture proves nothing.
     for direction in (1, -1):
         s = cases[f"v08/r5/man/curl_1_5/{direction}"]["summary"]
