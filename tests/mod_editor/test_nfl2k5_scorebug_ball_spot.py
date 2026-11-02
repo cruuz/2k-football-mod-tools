@@ -65,7 +65,7 @@ class ArtAndLayoutTests(unittest.TestCase):
         cls.author = author()
         cls.spec, cls.template = sprite.load_layout()
         cls.template = cls.template.convert('RGBA')
-        cls.receipts = json.loads((ROOT / 'reports/b780_p2/author_receipts.json').read_text())
+        cls.receipts = json.loads((ROOT / 'reports/b780_p2/author_receipts.json').read_text(encoding='utf-8'))
         cls.label = cls.spec['glyph_sets']['label']['glyphs']
         cls.field = next(f for f in cls.spec['fields'] if f['name'] == 'down')
 

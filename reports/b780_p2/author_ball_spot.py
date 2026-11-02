@@ -111,7 +111,7 @@ def _cell(alpha, size):
 
 def _traced(digit):
     """The label digit's traced broadcast mask (88 rows at 4x), as coverage 0..1."""
-    rows = json.loads((TRACED / 'harvest.json').read_text())['glyphs']
+    rows = json.loads((TRACED / 'harvest.json').read_text(encoding='utf-8'))['glyphs']
     return np.asarray(Image.open(TRACED / 'glyphs' / rows['label_' + digit]['file']).convert('L')).astype(float) / 255
 
 
