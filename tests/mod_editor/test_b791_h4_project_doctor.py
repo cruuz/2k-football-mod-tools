@@ -376,6 +376,50 @@ class Doctor(unittest.TestCase):
         self.assertEqual(Path(from_plan.source).name, "r.iso")
         self.assertNotEqual(Path(from_plan.target).name, "out.iso")      # the doctor never names a real output
 
+    def dry_result(self):
+        rows = [dict(bundle="s13ad.iff", step="surfaces", status="failed", part="bundle", venue="Arrowhead Stadium (KC)",
+                     label="Modern playing surfaces",
+                     reason="cannot keep the retail scratch word: (no candidate was recorded: ...)"),
+                dict(bundle="s00dd.iff", step="colour", status="kept", part="normal", venue="State Farm Stadium (ARI)",
+                     label="Modern colour and lighting", reason="no room"),
+                dict(bundle="s00dd.iff", step="surfaces", status="refit", part="field", venue="State Farm Stadium (ARI)",
+                     label="Modern playing surfaces", reason="")]
+        return dry.DryRun(rows=rows, steps=["colour", "surfaces", "greens"], bundles=2, workers=1, seconds=3,
+                          not_covered=[("Stadium shadows", "geometry")])
+
+    def test_stadium_failures_are_stops_and_kept_spans_are_notes(self):
+        path = archive(self.folder, {"modern_color": True, "modern_surfaces": True})
+        source = self.folder / "retail.iso"
+        source.write_bytes(b"not a real disc")
+        with mock.patch.object(dry, "run", return_value=self.dry_result()) as run:
+            report = pc.doctor(path, source, checks=["stadiums"])
+        run.assert_called_once()
+        stops = [f for f in report.stops if f.area == "Stadiums and colour"]
+        self.assertEqual(len(stops), 1)
+        self.assertIn("Modern playing surfaces cannot refit 1 stadium bundle", stops[0].title)
+        self.assertIn("Arrowhead Stadium (KC) (s13ad.iff)", stops[0].title)
+        self.assertIn("Studio beta 79 stopped the whole build", stops[0].detail)
+        self.assertIn("Untick Modern playing surfaces", stops[0].fix)
+        notes = [f for f in report.notes if f.area == "Stadiums and colour"]
+        self.assertEqual(len(notes), 1)
+        self.assertIn("keeps 1 bump map as they are", notes[0].title)
+        section = report.section("stadiums")
+        self.assertIn("1 failed", section.summary)
+        self.assertTrue(any(line.startswith("FAILS: ") for line in section.data["lines"]))
+        self.assertTrue(any("Not tried here: Stadium shadows" in line for line in section.data["lines"]))
+
+    def test_a_step_build_leaves_out_instead_of_stopping_is_a_note(self):
+        path = archive(self.folder, {"modern_color": True, "modern_surfaces": True})
+        source = self.folder / "retail.iso"
+        source.write_bytes(b"not a real disc")
+        with mock.patch.object(dry, "run", return_value=self.dry_result()), \
+                mock.patch.object(mod_build, "OPTIONAL_STEPS", frozenset({"modern_surfaces"}), create=True):
+            report = pc.doctor(path, source, checks=["stadiums"])
+        self.assertTrue(report.ok, report.text())
+        left = [f for f in report.notes if "cannot refit" in f.title]
+        self.assertEqual(len(left), 1)
+        self.assertIn("leaves that step out of your disc", left[0].detail)
+
     def test_a_session_is_read_through_its_edits(self):
         staged = self.folder / "a.png"
         staged.write_bytes(png())
@@ -508,7 +552,7 @@ class Kits(unittest.TestCase):
                "classic_defaults": [{"file": "h-18-2007-giants-9.iff", "style": 9, "before": 8}]}
         from mod_editor.core import nfl2k5_moment_kits as kits
 
-        def compose(document, packages, retail=None, report=None, skipped=None):
+        def compose(document, packages, retail=None, report=None, skipped=None, *rest, **kw):
             skipped["K1"] = "2026 kit fixes: the art changed no texel"
             return {}
         retail = kits.RetailPackages("unused")

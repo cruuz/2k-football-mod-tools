@@ -99,6 +99,8 @@ class DryRun:
     seconds: float = 0.0
     cached_colour_refits: int = 0
     platform: str = ""
+    cpu_seconds: float = 0.0        # the bundle jobs' own processor time (what an idle machine needs, divided by workers)
+    digests: dict = field(default_factory=dict)  # {bundle: {step: sha256 of its bytes after that step}}
 
     def by_status(self, status):
         return [row for row in self.rows if row["status"] == status]
@@ -120,7 +122,8 @@ class DryRun:
 
     def as_dict(self) -> dict:
         return dict(schema=SCHEMA, steps=list(self.steps), bundles=self.bundles, workers=self.workers,
-                    seconds=round(self.seconds, 1), cached_colour_refits=self.cached_colour_refits,
+                    seconds=round(self.seconds, 1), cpu_seconds=round(self.cpu_seconds, 1),
+                    cached_colour_refits=self.cached_colour_refits, digests=dict(self.digests),
                     platform=self.platform, not_covered=[list(row) for row in self.not_covered],
                     skipped_bundles=dict(self.skipped_bundles),
                     counts={f"{step}/{status}": count for (step, status), count in sorted(self.counts().items())},
@@ -288,9 +291,10 @@ def chain(job) -> dict:
     dict of rows and output digests out (never bundle bytes)."""
     import importlib
     from . import nfl2k5_modern_color as colour
+    started, cpu = time.monotonic(), time.process_time()
+    job = _load(job)
     name, retail, outer, settings = job["name"], job["retail"], job["outer"], job["settings"]
     rows, digests = [], {}
-    started = time.monotonic()
 
     def record(step, status, part="bundle", reason="", **extra):
         rows.append(dict(bundle=name, step=step, status=status, part=part, reason=reason, **extra))
@@ -374,7 +378,25 @@ def chain(job) -> dict:
         except Exception as exc:  # noqa: BLE001
             failed("greens", exc)
             current = before
-    return dict(name=name, rows=rows, digests=digests, seconds=round(time.monotonic() - started, 2))
+    return dict(name=name, rows=rows, digests=digests, seconds=round(time.monotonic() - started, 2),
+                cpu_seconds=round(time.process_time() - cpu, 2))
+
+
+def _load(job):
+    """The job with its bundles: a worker reads its own bundle and the retail ones its writer needs from the disc
+    (``job["reads"]``: {job key: outer index}), so the main process never holds 477 bundles at once."""
+    reads = job.get("reads")
+    if not reads:
+        return job
+    from . import nfl2k5_modern_color as colour
+    job = dict(job)
+    with colour._outer_image()(str(job["source"])) as archive:
+        for key, outer in reads.items():
+            entry = archive.entries[outer]
+            job[key] = archive.read(entry.virtual_offset, entry.size)
+    if sha(job["retail"]) != job["retail_sha256"]:
+        raise ValueError(f"{job['name']}: the disc changed while it was being checked")
+    return job
 
 
 def _run_chain(job):
@@ -455,7 +477,8 @@ def run(plan, source, *, progress: Callable | None = None, workers: int | None =
     home = set(ms.HOME_BUNDLES)
     wanted = sorted(set(pins) - excluded) if names is None else sorted(set(names) & (set(pins) - excluded))
     say("Stadium dry run: reading the stadium bundles of your disc", 0, 0)
-    retail, owners = {}, {}
+    present, owners, spans, extra_outer, bundle_spans = {}, {}, {}, {}, {}
+    turf_bundle = None
     with colour._outer_image()(str(source)) as archive:
         indoor = ms.indoor_flags(archive)
         families = _greens_families(archive, plan) if "greens" in result.steps else {}
@@ -467,42 +490,46 @@ def run(plan, source, *, progress: Callable | None = None, workers: int | None =
             if sha(data) != pin["retail_sha256"]:
                 result.skipped_bundles[name] = "not the retail bundle on this disc (an earlier mod or edit changed it)"
                 continue
-            retail[name] = data
+            present[name] = pin["outer"]
             owners[name] = _owner(name, plan)
+            if settings is not None:
+                for kind, at, size in colour.bundle_plan(data):
+                    if kind in ("field", "normal", "divots"):
+                        span = data[at:at + size]
+                        spans.setdefault((kind, sha(span)), (kind, pin["outer"], span))
+                        bundle_spans.setdefault(name, []).append((kind, sha(span)))
         # the retail bundles a writer reads besides the bundle itself (dry variants, SoFi's turf source)
-        extra = set()
         for name, owner in owners.items():
             if owner is None:
                 continue
             step, module_name = owner
+            needed = []
             if step == "metlife":
                 from . import nfl2k5_modern_metlife as mt
-                extra.add(mt.dry_name(name))
+                needed.append(mt.dry_name(name))
             elif module_name is not None:
                 module = importlib.import_module(f"{__package__}.{module_name}")
-                extra.add(module.dry_of(name))
+                needed.append(module.dry_of(name))
                 if module_name == "nfl2k5_sofi_model":
-                    extra.add(module.TURF_SOURCE)
-        for name in sorted(extra - set(retail)):
-            pin = pins.get(name)
-            if pin is not None:
-                entry = archive.entries[pin["outer"]]
-                retail[name] = archive.read(entry.virtual_offset, entry.size)
+                    needed.append(module.TURF_SOURCE)
+            for other in needed:
+                if other in pins:
+                    extra_outer[other] = pins[other]["outer"]
+        sofi_turf = None
+        if any(o and o[1] == "nfl2k5_sofi_model" for o in owners.values()):
+            from . import nfl2k5_sofi_model as sofi_module
+            sofi_turf = sofi_module.TURF_SOURCE
+            entry = archive.entries[pins[sofi_turf]["outer"]]
+            turf_bundle = archive.read(entry.virtual_offset, entry.size)
     for name in sorted(excluded & set(pins)):
         if names is None or name in names:
             result.skipped_bundles[name] = "the classic teams' field goes here before the colour grade, which leaves it out"
-    todo = [n for n in wanted if n in retail]
+    todo = [n for n in wanted if n in present]
     result.bundles = len(todo)
     count = max(1, workers or min(8, max(1, (os.cpu_count() or 2) - 1)))
     result.workers = count
     refits = {}
-    if settings is not None and todo:
-        spans = {}
-        for name in todo:
-            for kind, at, size in colour.bundle_plan(retail[name]):
-                if kind in ("field", "normal", "divots"):
-                    span = retail[name][at:at + size]
-                    spans.setdefault((kind, sha(span)), (kind, pins[name]["outer"], span))
+    if settings is not None and spans:
         say(f"Stadium dry run: Modern colour refits ({len(spans)} distinct fields, bump maps and divot layers)", 0,
             len(spans))
         previous = os.environ.get("NFL2K5_DISABLE_MODERN_COLOR_CACHE")
@@ -518,47 +545,45 @@ def run(plan, source, *, progress: Callable | None = None, workers: int | None =
                     os.environ["NFL2K5_DISABLE_MODERN_COLOR_CACHE"] = previous
         result.cached_colour_refits = int(getattr(colour._refit_fields, "last_hits", 0) or 0)
     sid = colour.settings_id(settings) if settings is not None else None
-    models = {}
-    turf_normals = {}
+    spans = None
+    turf_normal = None
+    if turf_bundle is not None:
+        from . import nfl2k5_sofi_model as sofi_module
+        turf_normal = _graded_normal(sofi_module, turf_bundle, pins[sofi_turf]["outer"], settings, refits, sid)
+        turf_bundle = None
     jobs = []
     for name in todo:
-        data = retail[name]
+        outer = pins[name]["outer"]
         owner = owners.get(name)
-        job = dict(name=name, retail=data, outer=pins[name]["outer"], settings=settings, colour=settings is not None,
-                   writer=owner, marks_root=marks_root, stadium_models=stadium_models,
+        job = dict(name=name, source=str(source), outer=outer, retail_sha256=pins[name]["retail_sha256"],
+                   reads={"retail": outer}, settings=settings, colour=settings is not None, writer=owner,
+                   marks_root=marks_root, stadium_models=stadium_models,
                    surfaces="surfaces" in result.steps and name in home, indoor=indoor.get(name[:3], False),
                    greens=families.get(name[:3]) if "greens" in result.steps else None)
         if settings is not None:
-            job["refits"] = {(sid, kind, sha(data[at:at + size])): refits[(sid, kind, sha(data[at:at + size]))]
-                             for kind, at, size in colour.bundle_plan(data)
-                             if kind in ("field", "normal", "divots")
-                             and (sid, kind, sha(data[at:at + size])) in refits}
+            job["refits"] = {(sid, kind, span_sha): refits[(sid, kind, span_sha)]
+                             for kind, span_sha in bundle_spans.get(name, ()) if (sid, kind, span_sha) in refits}
         if owner is not None:
             step, module_name = owner
+            art_root = _plan_value(plan, "modern_venues_2026", "") or None
             if step == "metlife":
                 from . import nfl2k5_modern_metlife as mt
-                job["dry_retail"] = retail[mt.dry_name(name)]
+                job["reads"]["dry_retail"] = extra_outer[mt.dry_name(name)]
             elif step == "practice":
                 from . import nfl2k5_practice_field_model as pf
                 job["team_logo"] = bool(_plan_value(plan, "modern_practice_field_team_logo"))
-                art_root = _plan_value(plan, "modern_venues_2026", "") or None
                 job["shield"] = pf.league_shield(art_root) if art_root else None
             elif module_name is not None:
-                module = models.get(module_name) or importlib.import_module(f"{__package__}.{module_name}")
-                models[module_name] = module
-                art_root = _plan_value(plan, "modern_venues_2026", "") or None
+                module = importlib.import_module(f"{__package__}.{module_name}")
                 if module_name == "nfl2k5_sofi_model":
-                    job["dry"] = retail.get(f"{name[:4]}d.iff") if name[4] != "d" else None
+                    if name[4] != "d":
+                        job["reads"]["dry"] = extra_outer[f"{name[:4]}d.iff"]
                     if name[:3] != module.TURF_SOURCE[:3]:
-                        job["turf"] = retail.get(module.TURF_SOURCE)
-                        if module.TURF_SOURCE not in turf_normals:
-                            turf_normals[module.TURF_SOURCE] = _graded_normal(module, retail[module.TURF_SOURCE],
-                                                                              pins[module.TURF_SOURCE]["outer"],
-                                                                              settings, refits, sid)
-                        job["turf_normal"] = turf_normals[module.TURF_SOURCE]
+                        job["reads"]["turf"] = extra_outer[module.TURF_SOURCE]
+                        job["turf_normal"] = turf_normal
                 else:
                     job["team"] = (module.team_field_art(art_root) or None) if art_root else None
-                    job["dry_model"] = retail.get(module.dry_of(name))
+                    job["reads"]["dry_model"] = extra_outer[module.dry_of(name)]
                     if module_name == "nfl2k5_everbank_model":
                         job["construction"] = bool(_plan_value(plan, "modern_everbank_construction", True))
         jobs.append(job)
@@ -571,6 +596,8 @@ def run(plan, source, *, progress: Callable | None = None, workers: int | None =
         for job in jobs:
             out = _run_chain(job)
             result.rows.extend(out["rows"])
+            result.cpu_seconds += out.get("cpu_seconds", 0.0)
+            result.digests[out["name"]] = out.get("digests", {})
             done += 1
             say(f"Stadium dry run: {out['name']} ({done} of {len(jobs)})", done, len(jobs))
     else:
@@ -580,6 +607,8 @@ def run(plan, source, *, progress: Callable | None = None, workers: int | None =
             for future in as_completed(futures):
                 out = future.result()
                 result.rows.extend(out["rows"])
+                result.cpu_seconds += out.get("cpu_seconds", 0.0)
+                result.digests[out["name"]] = out.get("digests", {})
                 done += 1
                 say(f"Stadium dry run: {out['name']} ({done} of {len(jobs)})", done, len(jobs))
         except BaseException:

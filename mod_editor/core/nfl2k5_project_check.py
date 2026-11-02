@@ -266,15 +266,17 @@ def kit_dry_run(plan, chunks: dict, asset_paths: dict, index, retail, progress=N
     retail_packages = kits.RetailPackages(retail)
     findings, unchecked = [], []
     for feature, doc in documents:
-        report, skipped, baseline = [], {}, {}
-        kits.compose(doc, donors, retail_packages, report, skipped)
-        kits.compose(doc, plain, retail_packages, [], baseline)
-        for kit_id in sorted(baseline):
+        receipt, baseline = compose_receipt(doc, donors, retail_packages), compose_receipt(doc, plain, retail_packages)
+        skipped = dict(receipt["skipped_kits"])
+        for kit_id in sorted(baseline["skipped_kits"]):
             unchecked.append(kit_id)
             skipped.pop(kit_id, None)
-        report = [row for row in report if row["side"].split(" ", 1)[0] not in baseline]
-        for note in kits.user_notes(dict(substitutions=report, skipped_kits=skipped), feature):
-            findings.append(Finding(NOTE, feature, note.removeprefix(feature + ": ")))
+        mine = lambda rows: [row for row in rows if row["side"].split(" ", 1)[0] not in baseline["skipped_kits"]]  # noqa: E731
+        receipt = dict(receipt, substitutions=mine(receipt["substitutions"]), skipped_kits=skipped,
+                       unchanged_art=mine(receipt.get("unchanged_art", ())),
+                       dropped_defaults=[d for d in receipt.get("dropped_defaults", ()) if d.get("kit") in skipped])
+        for note in kits.user_notes(receipt, feature):
+            findings.append(Finding(NOTE, feature, note.removeprefix(feature + ": "), code="kits.dry_run"))
     if unchecked:
         findings.append(Finding(NOTE, "Kit check",
                                 f"{len(unchecked)} new kit{'s' if len(unchecked) != 1 else ''} cannot be tried before "
@@ -282,6 +284,21 @@ def kit_dry_run(plan, chunks: dict, asset_paths: dict, index, retail, progress=N
                                 "They are built from kits that the 2026 repairs change first, so Build checks them "
                                 "when it composes them and names any swap in its log."))
     return findings
+
+
+def compose_receipt(doc, packages, retail_packages) -> dict:
+    """What the kit stage would do with these donors: {substitutions, skipped_kits, unchanged_art, dropped_defaults}.
+    Uses the stage's own ``dry_run`` (b791 h2: art steps with nothing to change, defaults that go with a left-out kit)
+    when this Studio has it, else its ``compose`` (swaps and left-out kits only)."""
+    from . import nfl2k5_moment_kits as kits
+    if callable(getattr(kits, "dry_run", None)):
+        receipt = kits.dry_run(doc, packages, retail_packages)
+        return dict(substitutions=list(receipt.get("substitutions", ())), skipped_kits=dict(receipt.get("skipped_kits", {})),
+                    unchanged_art=list(receipt.get("unchanged_art", ())),
+                    dropped_defaults=list(receipt.get("dropped_defaults", ())))
+    report, skipped = [], {}
+    kits.compose(doc, packages, retail_packages, report, skipped)
+    return dict(substitutions=report, skipped_kits=skipped, unchanged_art=[], dropped_defaults=[])
 
 
 # ------------------------------------------------------------------------------------------------- the whole check
@@ -730,8 +747,19 @@ def _plain_value(value) -> str:
         return "off"
     if isinstance(value, dict) and set(value) == {"given"}:
         return "given" if value["given"] else "not given"
+    if isinstance(value, str):
+        return value
     text = json.dumps(value, default=str, sort_keys=True)
     return text if len(text) <= 80 else text[:77] + "..."
+
+
+def _dict_difference(mine, theirs) -> str:
+    """'touchback_yard 35 (release builds 25), ...' for two option dicts; the keys whose values differ."""
+    if not isinstance(mine, dict) or not isinstance(theirs, dict):
+        return ""
+    keys = sorted(k for k in set(mine) | set(theirs) if mine.get(k) != theirs.get(k))
+    return ", ".join(f"{k} {_plain_value(mine.get(k))} (release builds {_plain_value(theirs.get(k))})"
+                     for k in keys[:6]) + (", ..." if len(keys) > 6 else "")
 
 
 def _comparable(key, value):
@@ -743,8 +771,11 @@ def _comparable(key, value):
     if isinstance(value, (list, tuple)) and value and all(isinstance(v, (str, Path)) and ("/" in str(v) or "\\" in str(v))
                                                          for v in value):
         return {"given": True}
-    if isinstance(value, tuple):
-        return list(value)
+    if isinstance(value, (tuple, list, dict)) and key != "modern_color_settings":
+        try:   # nested tuples and lists compare equal, as the saved settings file stores them
+            return json.loads(json.dumps(value, default=str))
+        except (TypeError, ValueError):
+            return value
     if key == "modern_color_settings":
         from . import nfl2k5_modern_color as colour
         try:
@@ -819,6 +850,10 @@ def untested_options(plan, *, labels=None, platform=None) -> dict:
         seen = sorted({_plain_value(g["options"].get(key)) for g in gates})
         item = dict(option=key, label=option_label(key, labels), yours=_plain_value(comparable),
                     release_builds=", ".join(seen))
+        nearest = next((g["options"].get(key) for g in gates if isinstance(g["options"].get(key), dict)), None)
+        if isinstance(comparable, dict) and isinstance(nearest, dict) and set(comparable) != {"given"}:
+            item["yours"] = _dict_difference(comparable, nearest) or item["yours"]
+            item["release_builds"] = "the values in brackets"
         if key == "modern_color_settings":
             item["levers"] = [dict(lever=l, default=a, yours=b) for l, a, b in colour_lever_changes(value)]
         items.append(item)
@@ -1085,9 +1120,9 @@ def kit_dependencies(plan, retail, inputs: "ProjectInputs | None" = None, *, pro
         place = uniform_chunk(str(asset_id))
         if place is not None:
             uniform_pieces[place] = str(asset_id)
+    out["defaults_follow_kits"] = callable(getattr(kits, "dropped_defaults", None))
     for feature, doc in documents:
-        skipped = {}
-        kits.compose(doc, plain, retail_packages, [], skipped)
+        skipped = dict(compose_receipt(doc, plain, retail_packages)["skipped_kits"])
         for kit in doc["kits"]:
             on_user_art = []
             for letter, art, selector in _art_rows(kit):
@@ -1124,7 +1159,8 @@ def kit_dependencies(plan, retail, inputs: "ProjectInputs | None" = None, *, pro
             kit_id = by_code_style.get((default["file"][2:4], default["style"]))
             if kit_id is not None and default["style"] not in provided.get(default["file"], set()):
                 out["orphans"].append(dict(file=default["file"], style=default["style"], kit=kit_id,
-                                           sure=kit_id in out["left_out"], why=default.get("why", "")))
+                                           sure=kit_id in out["left_out"], why=default.get("why", ""),
+                                           stops_build=not out["defaults_follow_kits"]))
     return out
 
 
@@ -1254,8 +1290,17 @@ def doctor(project, source, settings=None, *, progress: Callable[..., None] | No
                     "These art steps were drawn for the SOFTDRINK kits (for example K1 paints two white boxes where the "
                     "2026 maker marks sit on the sleeve). On your art they paint the same boxes over your design in that "
                     "new kit only; your own kits keep your art.", code="kits.paints_your_art"))
-            sure = [o for o in found["orphans"] if o["sure"]]
-            unsure = [o for o in found["orphans"] if not o["sure"]]
+            followed = [o for o in found["orphans"] if not o.get("stops_build", True)]
+            if followed:
+                report.findings.append(Finding(
+                    NOTE, "Anniversary moment kits",
+                    "The classic team file" + ("s " if len({o["file"] for o in followed}) > 1 else " ")
+                    + _named(sorted({o["file"] for o in followed})) + " keep the default uniform they have, because "
+                    "the new kit " + _named(sorted({o["kit"] for o in followed})) + " they would open on "
+                    + ("is" if len({o["kit"] for o in followed}) == 1 else "are") + " left out.",
+                    "", code="kits.default_kept"))
+            sure = [o for o in found["orphans"] if o["sure"] and o.get("stops_build", True)]
+            unsure = [o for o in found["orphans"] if not o["sure"] and o.get("stops_build", True)]
             if sure:
                 files = sorted({o["file"] for o in sure})
                 report.findings.append(Finding(
@@ -1282,7 +1327,6 @@ def doctor(project, source, settings=None, *, progress: Callable[..., None] | No
                                   "their donors first)" if found["repaired_first"] else "") + ".")
 
         def stadium_section(section):
-            from . import mod_build
             from . import nfl2k5_stadium_dry_run as dry
             steps = dry.selected_steps(plan)
             if not steps:
@@ -1296,7 +1340,7 @@ def doctor(project, source, settings=None, *, progress: Callable[..., None] | No
             result = dry.run(plan, source, progress=progress, workers=workers, stadium_models=stadium_models,
                              use_cache=use_cache)
             section.data.update(result.as_dict())
-            optional = set(getattr(mod_build, "OPTIONAL_STEPS", ()) or ())
+            optional = optional_build_steps()
             counts = result.counts()
             per_step = []
             for step in result.steps:
@@ -1381,9 +1425,10 @@ def doctor(project, source, settings=None, *, progress: Callable[..., None] | No
                                                                                  for p in found["pairs"]], 8)
                     + ". Build may be the first to run them; the stadium and kit dry runs above tried what they "
                     "could.", code="untested.options"))
-            section.summary = (f"{len(found['options'])} options or settings no release build tried, "
-                               f"{len(found['pairs'])} combinations" + ("; Windows Python never ran the stadium steps"
-                                                                         if found["platform"] else "") + ".")
+            section.summary = (f"{len(found['options'])} option{'s' if len(found['options']) != 1 else ''} or "
+                               f"setting{'s' if len(found['options']) != 1 else ''} no release build tried, "
+                               f"{len(found['pairs'])} combination{'s' if len(found['pairs']) != 1 else ''}"
+                               + ("; Windows Python never ran the stadium steps" if found["platform"] else "") + ".")
 
         def inventory_section(section):
             say("Counting your project's edits", 0, 0)
@@ -1427,6 +1472,21 @@ def doctor(project, source, settings=None, *, progress: Callable[..., None] | No
                 run(*bodies[key])
     report.seconds = time.monotonic() - started
     return report
+
+
+def optional_build_steps() -> set:
+    """The receipt step names Build leaves out (restoring what they wrote) instead of stopping when they fail: job h3's
+    list (``build_steps.OPTIONAL_STEP_IDS`` or ``mod_build.OPTIONAL_STEPS``); empty on a Build without it, where every
+    stadium refit that raises stops the whole build."""
+    import importlib
+    found = set()
+    for module_name, attribute in (("build_steps", "OPTIONAL_STEP_IDS"), ("mod_build", "OPTIONAL_STEPS")):
+        try:
+            module = importlib.import_module(f"{__package__}.{module_name}")
+        except ImportError:
+            continue
+        found |= set(getattr(module, attribute, ()) or ())
+    return found
 
 
 def stadium_edit_conflicts(asset_ids, plan) -> list:
