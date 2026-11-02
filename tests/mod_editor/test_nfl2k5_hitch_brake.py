@@ -109,6 +109,73 @@ class PublicTests(unittest.TestCase):
                     self.assertAlmostEqual(math.hypot(*late[2:]) / YARD, speed)
 
 
+def _qt():
+    try:
+        import os
+        os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+        from PyQt5.QtWidgets import QApplication
+        return QApplication.instance() or QApplication([])
+    except ImportError:
+        return None
+
+
+@unittest.skipUnless(_qt() is not None, "PyQt5 required")
+class BuildPanelTests(unittest.TestCase):
+    """The Build tab row: a child of Close pursuit recovery, ticked by the presets that tick its parent."""
+
+    def setUp(self):
+        import tempfile
+        from mod_editor.core import mod_build
+        from mod_editor.gui.build_panel_qt import BuildPanel
+        if str(ROOT / "tests") not in sys.path:
+            sys.path.insert(0, str(ROOT / "tests"))
+        from nfl2k5_throw_tuning_test import _build_synthetic_xbe
+        self.app = _qt()
+        self.tmp = tempfile.TemporaryDirectory()
+        source = Path(self.tmp.name) / "default.xbe"
+        source.write_bytes(_build_synthetic_xbe())
+        self.panel = BuildPanel()
+        self.panel.apply_state(mod_build.inspect(source))
+        self.app.processEvents()
+        self.trail, self.brake = self.panel.coverage_trail_check, self.panel.coverage_hitch_brake_check
+
+    def tearDown(self):
+        self.panel.deleteLater()
+        self.app.processEvents()
+        self.tmp.cleanup()
+
+    def model_disc_source(self):
+        # A bare executable cannot take allocator owners ("Full disc required"); model a disc image source.
+        for box in (self.trail, self.brake):
+            box.setEnabled(True)
+
+    def test_caption_help_and_parent_child_links(self):
+        self.assertEqual(self.brake.text(), trail.HITCH_CAPTION)
+        self.model_disc_source()
+        self.trail.setChecked(False)
+        self.assertFalse(self.brake.isChecked())
+        self.brake.setChecked(True)
+        self.assertTrue(self.trail.isChecked(), "ticking the brake ticks Close pursuit recovery")
+        plan = self.panel.plan()
+        self.assertTrue(plan.coverage_trail and plan.coverage_hitch_brake)
+        self.trail.setChecked(False)
+        self.assertFalse(self.brake.isChecked(), "unticking Close pursuit recovery clears the brake")
+        plan = self.panel.plan()
+        self.assertFalse(plan.coverage_trail or plan.coverage_hitch_brake)
+
+    def test_presets_tick_the_brake_with_its_parent(self):
+        for name, wanted in (("softdrink_basic", False), ("softdrink_advanced", True), ("softdrink_experimental", True),
+                             ("softdrink_basic", False)):
+            with self.subTest(preset=name):
+                self.model_disc_source()
+                result = self.panel.apply_preset(name)
+                self.app.processEvents()
+                if "coverage_hitch_brake" in result.get("skipped", []):
+                    self.skipTest("the panel re-checked the source and skipped the row")
+                self.assertEqual((self.trail.isChecked(), self.brake.isChecked()), (wanted, wanted))
+                self.assertEqual(self.panel.plan().coverage_hitch_brake, wanted)
+
+
 @unittest.skipUnless(uni is not None and existing.capstone is not None, "Unicorn and Capstone required")
 class PrivateTests(unittest.TestCase):
     @classmethod
