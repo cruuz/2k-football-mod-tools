@@ -8,17 +8,19 @@ behind the receiver leaps at a ball the receiver catches first. (The 0.6 s proje
 only feeds a flag that is always zero.) Defenders break on the thrown ball (``nfl2k5_db_ball_play``) sends reactors
 at full speed, so they enter that 3-yard window sooner and from farther away.
 
-This owner changes only the 3-yard test (one call at 0x1F56FF), for CPU defenders:
+This owner adds one test in front of the decision's 1-yard and 3-yard tests (a jump at 0x1F56CB), for CPU defenders:
 
-* within a yard, or not CPU controlled, or a degenerate ball path: retail;
-* receiver first: no leap when the closest point is more than 0.03 s of the ball's flight past the stored catch point
-  (0xBF0DF0, valid flag 0xBF0E08, intended receiver [0xE3C000]), because the receiver gets the ball first;
+* not inside 3 yards, not CPU controlled, or a degenerate ball path: retail;
+* receiver first: no leap and no catch try when the closest point is more than 0.03 s of the ball's flight past the
+  stored catch point (0xBF0DF0, valid flag 0xBF0E08, intended receiver [0xE3C000]) while that point is still ahead of
+  the ball and on its line: the receiver gets the ball first (a tipped or overthrown ball keeps the retail decision);
 * reach: beyond 1.5 yards he must be closing on the ball fast enough to cover the rest before it arrives
   (distance x (distance - 1.5 yd) < his velocity . (closest point - him) x the ball's time to that point).
 
 When the test says no, the decision returns 0: he keeps running to his reaction point (the catch point with
-``db_ball_play``) and the decision runs again next tick. The catch try within a yard (result 3), the reaction lottery,
-the perception filter that decides who reacts, catching and interceptions are untouched. Settings are build-time only.
+``db_ball_play``) and the decision runs again next tick. Otherwise the retail 1-yard test, catch roll and 3-yard test
+run unchanged. The reaction lottery, the perception filter that decides who reacts, the close-contest branch, catching
+and interceptions are untouched. Settings are build-time only.
 """
 from __future__ import annotations
 
@@ -29,18 +31,18 @@ from pathlib import Path
 import struct
 
 OWNER = "nfl2k5_dive_window"
-CODE_SIZE = 416
+CODE_SIZE = 464
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16),)
 BUILD_CAPTION = "Defenders leap only for balls they can reach (experimental)"
 HELP_TEXT = ("EXPERIMENTAL / UNWITNESSED. A CPU defender who reacts to a pass no longer leaps or dives at a ball that "
              "will pass more than a yard and a half from him unless he is already moving toward it fast enough to get "
-             "there, and no longer leaps at a ball the receiver will catch before it reaches him. He keeps running to "
-             "the ball and plays the receiver at the catch instead. Catch tries within a yard are unchanged. Works "
-             "with or without Defenders break on the thrown ball.")
-HOOK = ("dive_window", 0x001F56FF,
-        bytes.fromhex("d9442418" "d81d28dd4e00" "dfe0" "f6c405" "0f8abbfeffff"))   # fld; fcomp [3 yd]; fnstsw; test; jp
-RETURN_ZERO = 0x001F55CF            # xor eax, eax; the decision's result 0 exit
-SYMBOLS = {}
+             "there, and no longer leaps or tries to catch a ball the receiver will catch before it reaches him. He "
+             "keeps running to the ball and plays the receiver at the catch instead. Close plays on the ball in front "
+             "of or beside the receiver are unchanged. Works with or without Defenders break on the thrown ball.")
+# test edi, edi; jne 0x1F56E0; fld [esp+0x18]; fcomp [1 yd]; fnstsw ax; test ah, 5; jp 0x1F56FF (no branch enters it)
+HOOK = ("dive_window", 0x001F56CB, bytes.fromhex("85ff" "7511" "d9442418" "d81db8724e00" "dfe0" "f6c405" "7a1f"))
+RETURN_ZERO, CATCH_ROLL, SWAT_TEST = 0x001F55CF, 0x001F56E0, 0x001F56FF   # result 0 tail, catch roll, 3-yard test
+SYMBOLS = dict(ret_zero=RETURN_ZERO, catch_roll=CATCH_ROLL, swat_test=SWAT_TEST)
 GUARDS = (
     (0x001F52C0, 1246, "8b56b7442d9e319dafed714f25aec04c2dab061d6f33ee5e2a1dadc12bfc7400"),   # ball-play decision
     # the reaction task's call to it and its result handling (db_ball_play's throttle push at 0x2E7462 is outside)
@@ -87,12 +89,11 @@ def code_for(code_va):
 
 
 def sites(code_va=0):
-    """call window; test eax, eax; jz 0x1F55CF (result 0); NOP to the end of the replaced 21 bytes."""
+    """jmp window, NOPs to the end of the replaced 21 bytes (the cave ends in the retail test or result 0)."""
     from . import nfl2k5_dive_window_code as assembly
     name, va, before = HOOK
-    call = b"\xe8" + struct.pack("<i", code_va + assembly.LABELS["window"] - va - 5)
-    jz = b"\x0f\x84" + struct.pack("<i", RETURN_ZERO - (va + 5 + 2 + 6))
-    return [(name, va, before, (call + b"\x85\xc0" + jz).ljust(len(before), b"\x90"))]
+    jump = b"\xe9" + struct.pack("<i", code_va + assembly.LABELS["window"] - va - 5)
+    return [(name, va, before, jump.ljust(len(before), b"\x90"))]
 
 
 def _recognize(payload):

@@ -714,7 +714,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
             cpu_ai_probe, _ = preseason_warning.apply(cpu_ai_probe)  # b779-rc1: the Coach's Desk call (0x143013), its two dead windows and 16-byte RW flag
             cpu_ai_probe, _ = sim_rb_injuries.apply(cpu_ai_probe)  # b779-sim2: the weekly roll tail hook, the carrier guard and owned code
             cpu_ai_probe, _ = sim_realism.apply(cpu_ai_probe)  # b779-sim2 r4-6: the scrimmage-play hooks, owned code and hand-off state
-            cpu_ai_probe, _ = dive_window.apply(cpu_ai_probe)  # b780-cv3: its hook (0x1F56FF) and owned code, the last late owner
+            cpu_ai_probe, _ = dive_window.apply(cpu_ai_probe)  # b780-cv3: its hook (0x1F56CB) and owned code, the last late owner
             # The early form (k128_early) writes only inside these spans: the owned allocation (its entry at +0x1A0)
             # and the XBE entry field; it leaves 0x327D1 retail.
             # Flatter flight and the old relocated high-arc band are mutually

@@ -1,30 +1,35 @@
-/* Defenders dive only for balls they can reach. EXPERIMENTAL / UNWITNESSED. GNU as --32.
+/* Defenders leap only for balls they can reach. EXPERIMENTAL / UNWITNESSED. GNU as --32.
  *
  * The ball-play decision 0x1F52C0 (only caller: the behavior-37 reaction task 0x2E7240, i.e. a defender reacting to
- * the throw) returns 2, "play the ball" (action 0x61, a leap or swat), whenever the ball passes within 3 yards
- * (0x4EDD28) of where he stands now, 0.3 to 0.6 s ahead and below his reach. It never asks whether he is moving
- * toward that point or whether the receiver gets the ball first.
+ * the throw) returns 3 (catch try, within a yard and the catch roll won) or 2 (play the ball: within 3 yards,
+ * 0x4EDD28) whenever the ball's path 0.3 to 0.6 s ahead passes that close to where he stands now, below his reach.
+ * Both queue action 0x61 (the leap, dive or swat). It never asks which way he is moving or whether the receiver
+ * gets the ball first.
  *
- * window (call at 0x1F56FF, replacing "fld [esp+0x18]; fcomp [0x4EDD28]; fnstsw ax; test ah,5; jp 0x1F55CF",
- * followed there by "test eax, eax; jz 0x1F55CF" and NOPs; EAX is dead at the site) returns EAX = 1 to keep the
- * native result 2 or 0 for result 0 (he keeps running and the decision runs again next tick):
- *   - retail when the ball is not inside 3 yd (0) or is within a yard (1: the catch try lost its roll), when the
- *     defender is not CPU controlled ([[ESI+0x0C]] != -1), or when the ball's path is degenerate;
- *   - receiver first: 0 when the closest point is more than BEYOND x 0.3 s of flight past the stored catch point
- *     (0xBF0DF0, valid 0xBF0E08 == 1, intended receiver [0xE3C000] != 0, and still within a yard of the ball's line,
- *     so a tipped ball is not judged by a stale point), i.e. the ball reaches the receiver first;
- *   - reach: beyond REACH he must close the rest before the ball gets there: 1 only when
- *     dist x (dist - REACH) < (his velocity . (Q - D)) x t, where t is the ball's time to the closest point Q.
- * Frame of 0x1F52C0 (F = ESP + 4 at entry): F+0x18 dist, F+0x20 Q (ball at the closest time), F+0x30 D (him, y =
- * reach height), F+0x40 the ball 0.3 s ahead, F+0x50 the ball 0.6 s ahead. Only EAX and EFLAGS change (EAX is
- * dead at the site; the "test eax, eax" after the call sets the flags); the x87 stack is left as it was.
+ * window (jmp at 0x1F56CB, replacing the 21-byte 1-yard test "test edi, edi; jne 0x1F56E0; fld [esp+0x18];
+ * fcomp [0x4E72B8]; fnstsw ax; test ah, 5; jp 0x1F56FF", NOPs after the jump; no branch enters those bytes) either
+ * exits to the native result-0 tail 0x1F55CF (he keeps running and the decision runs again next tick) or runs the
+ * same 1-yard test and continues at the catch roll 0x1F56E0 or the 3-yard test 0x1F56FF, exactly as retail:
+ *   - retail when the ball is not inside 3 yd, the decision's 'in front' flag EDI is set (never, in practice), the
+ *     defender is not CPU controlled ([[ESI+0x0C]] != -1), or the ball's path is degenerate;
+ *   - receiver first: result 0 when the closest point is more than BEYOND x 0.3 s of flight past the stored catch
+ *     point (0xBF0DF0, valid 0xBF0E08 == 1, intended receiver [0xE3C000] != 0), the catch point being still ahead
+ *     of the ball and within a yard of its line (so a tipped or overthrown ball is not judged by a stale point):
+ *     the receiver gets the ball first;
+ *   - reach: beyond REACH he must close the rest before the ball gets there: retail only when
+ *     dist x (dist - REACH) < (his velocity . (Q - D)) x t, t the ball's time to the closest point Q.
+ * Frame of 0x1F52C0 at the jump (F = ESP; F + 16 after the local block): F+0x18 dist, F+0x20 Q (the ball at the
+ * closest time), F+0x30 D (him, y = reach height), F+0x40 the ball 0.3 s ahead, F+0x50 0.6 s ahead, F+0x60 the ball
+ * now. EAX and EFLAGS change (neither is read by the native code at the three exits); ESI, EDI, EBX, EBP, ESP,
+ * ECX, EDX and the empty x87 stack are as they were.
  */
 .intel_syntax noprefix
 .code32
 .text
 .global window, code_end, k_reach, k_beyond, k_line2
+.extern ret_zero, catch_roll, swat_test
 
-.set F, 20                                   /* sub esp 16: the frame is at ESP + F */
+.set F, 16                                   /* sub esp 16: the frame is at ESP + F */
 
 window:
     sub esp, 16                              /* [esp] ux, [esp+4] uz, [esp+8] uu, [esp+12] t */
@@ -33,16 +38,12 @@ window:
     fnstsw ax
     and ah, 0x45
     cmp ah, 1
-    jne refuse                               /* not inside 3 yd, or unordered: retail result 0 */
-    fld dword ptr [esp+F+0x18]
-    fcomp dword ptr [0x4e72b8]               /* 1 yd */
-    fnstsw ax
-    and ah, 0x45
-    cmp ah, 1
-    je allow                                 /* within a yard: retail */
+    jne native                               /* not inside 3 yd, or unordered: retail */
+    test edi, edi
+    jnz native                               /* the native 'in front' flag (always 0 in practice): retail */
     mov eax, [esi+0xc]
     cmp dword ptr [eax], -1
-    jne allow                                /* not CPU controlled: retail */
+    jne native                               /* not CPU controlled: retail */
     fld dword ptr [esp+F+0x50]
     fsub dword ptr [esp+F+0x40]
     fst dword ptr [esp]                      /* ux: the ball's horizontal travel over 0.3 s */
@@ -56,11 +57,22 @@ window:
     fcomp dword ptr [0x4e4180]
     fnstsw ax
     test ah, 0x45
-    jnz allow                                /* uu <= 0 or unordered: retail */
+    jnz native                               /* uu <= 0 or unordered: retail */
     cmp dword ptr [0xbf0e08], 1
     jne reach
     cmp dword ptr [0xe3c000], 0
     je reach
+    fld dword ptr [0xbf0df0]
+    fsub dword ptr [esp+F+0x60]
+    fmul dword ptr [esp]
+    fld dword ptr [0xbf0df8]
+    fsub dword ptr [esp+F+0x68]
+    fmul dword ptr [esp+4]
+    faddp st(1), st(0)                       /* (catch - ball now) . u */
+    fcomp dword ptr [0x4e4180]
+    fnstsw ax
+    test ah, 0x45
+    jnz reach                                /* the ball is at or past the catch point (tip, drop, overthrow) */
     fld dword ptr [0xbf0df0]
     fsub dword ptr [esp+F+0x40]
     fmul dword ptr [esp+4]                   /* (catch x - A x) uz */
@@ -96,7 +108,7 @@ reach:
     fnstsw ax
     and ah, 0x45
     cmp ah, 1
-    je allow                                 /* inside REACH: retail */
+    je native                                /* inside REACH: retail */
     fld dword ptr [esp+F+0x20]
     fsub dword ptr [esp+F+0x40]
     fmul dword ptr [esp]
@@ -125,17 +137,22 @@ reach:
     fnstsw ax
     and ah, 0x45
     cmp ah, 1
-    je allow                                 /* lhs < rhs: he gets there in time */
+    je native                                /* lhs < rhs: he gets there in time */
     cmp ah, 0x45
-    je allow                                 /* unordered: retail */
+    je native                                /* unordered: retail */
 refuse:
-    xor eax, eax
-    jmp done
-allow:
-    mov eax, 1
-done:
     add esp, 16
-    ret
+    jmp ret_zero                             /* 0x1F55CF: xor eax, eax; the decision's result 0 */
+native:
+    add esp, 16
+    test edi, edi                            /* the retail 1-yard test, unchanged */
+    jne catch_roll                           /* 0x1F56E0 */
+    fld dword ptr [esp+0x18]
+    fcomp dword ptr [0x4e72b8]
+    fnstsw ax
+    test ah, 5
+    jp swat_test                             /* 0x1F56FF: not within a yard (or unordered) */
+    jmp catch_roll
 
 .balign 4
 k_reach: .float 137.16                       /* REACH = 1.5 yd */

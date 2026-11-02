@@ -37,28 +37,36 @@ class StaticTests(unittest.TestCase):
         code = dive.code_for(0x1500000)
         self.assertEqual(len(code), dive.CODE_SIZE)
         self.assertEqual(code[len(assembly.CODE):], b"\xcc" * (dive.CODE_SIZE - len(assembly.CODE)))
+        exits = []
         for off, kind, symbol, _value in assembly.RELOCATIONS:
-            self.assertEqual((kind, symbol), (1, "code"))   # only its own constants; no native call
-            target = struct.unpack_from("<I", code, off)[0]
-            self.assertTrue(0x1500000 <= target < 0x1500000 + len(assembly.CODE), hex(target))
+            if kind == 1:                                       # its own constants
+                self.assertEqual(symbol, "code")
+                target = struct.unpack_from("<I", code, off)[0]
+                self.assertTrue(0x1500000 <= target < 0x1500000 + len(assembly.CODE), hex(target))
+            else:                                               # the three native exits, rel32 jumps
+                self.assertEqual(kind, 2)
+                exits.append((symbol, 0x1500000 + off + 4 + struct.unpack_from("<i", code, off)[0]))
+        self.assertEqual(sorted(set(exits)), sorted({("catch_roll", 0x1F56E0), ("ret_zero", 0x1F55CF),
+                                                    ("swat_test", 0x1F56FF)}))
         for name in ("k_reach", "k_beyond", "k_line2", "k_one"):
             self.assertLess(assembly.LABELS[name] + 4, len(assembly.CODE) + 1)
         self.assertAlmostEqual(struct.unpack_from("<f", assembly.CODE, assembly.LABELS["k_reach"])[0], 1.5 * YD, places=3)
         self.assertAlmostEqual(struct.unpack_from("<f", assembly.CODE, assembly.LABELS["k_beyond"])[0], 0.03 / 0.3, places=6)
         self.assertAlmostEqual(struct.unpack_from("<f", assembly.CODE, assembly.LABELS["k_line2"])[0], YD * YD, places=1)
 
-    def test_site_is_one_call_then_the_native_zero_exit(self):
+    def test_site_is_one_jump_over_the_native_one_yard_test(self):
         (name, va, before, after), = dive.sites(0x14DA000)
-        self.assertEqual((name, va, len(before), len(after)), ("dive_window", 0x1F56FF, 21, 21))
+        self.assertEqual((name, va, len(before), len(after)), ("dive_window", 0x1F56CB, 21, 21))
         self.assertEqual(XbeImage(self.retail).read(va, 21), before)
-        self.assertEqual(after[0], 0xE8)
+        self.assertEqual(after[0], 0xE9)
         self.assertEqual(va + 5 + struct.unpack_from("<i", after, 1)[0], 0x14DA000 + assembly.LABELS["window"])
-        self.assertEqual(after[5:7], b"\x85\xc0")                  # test eax, eax
-        self.assertEqual(after[7:9], b"\x0f\x84")                  # jz
-        self.assertEqual(va + 13 + struct.unpack_from("<i", after, 9)[0], dive.RETURN_ZERO)
-        self.assertEqual(after[13:], b"\x90" * 8)
-        # The site is followed by the native "mov eax, 2" exit, which the call keeps when the window says yes.
-        self.assertEqual(XbeImage(self.retail).read(va + 21, 5), bytes.fromhex("b802000000"))
+        self.assertEqual(after[5:], b"\x90" * 16)
+        # The replaced bytes are the native 1-yard test, which the cave runs unchanged; the catch roll follows them
+        # (0x1F56E0 call 0x1F4250) and nothing else in the decision branches into them.
+        self.assertEqual(XbeImage(self.retail).read(va + 21, 5)[0], 0xE8)
+        cave = dive.code_for(0x14DA000)[assembly.LABELS["native"]:]
+        self.assertEqual(cave[3:5], before[:2])                         # test edi, edi
+        self.assertEqual(cave[11:26], before[4:19])                     # fld; fcomp [1 yd]; fnstsw; test ah, 5
 
     def test_apply_is_idempotent_and_reads_back(self):
         self.assertEqual(dive.status(self.retail), "retail")
@@ -66,7 +74,7 @@ class StaticTests(unittest.TestCase):
         self.assertEqual((receipt["status"], dive.status(out), space.status(out)), ("applied", "applied", "applied"))
         again, second = dive.apply(out)
         self.assertEqual((again, second["status"], second["changed_bytes"]), (out, "already_applied", 0))
-        self.assertEqual(receipt["edits"][0]["va"], hex(0x1F56FF))
+        self.assertEqual(receipt["edits"][0]["va"], hex(0x1F56CB))
 
     def test_composes_after_db_ball_play_and_leaves_it_applied(self):
         both, _ = dive.apply(ball.apply(self.retail)[0])
@@ -74,7 +82,7 @@ class StaticTests(unittest.TestCase):
         self.assertGreater(dive.allocation(both)["va"], ball.allocation(both)["va"])
 
     def test_foreign_site_and_foreign_prerequisites_are_refused(self):
-        site = repin_edit(self.retail, 0x1F56FF, b"\x90" * 21)
+        site = repin_edit(self.retail, 0x1F56CB, b"\x90" * 21)
         self.assertEqual(dive.status(site), "foreign")
         with self.assertRaises(dive.DiveWindowError):
             dive.apply(site)
@@ -96,7 +104,7 @@ class StaticTests(unittest.TestCase):
             if s.raw_size:
                 x, y = a.read(s.start, s.raw_size), b.read(s.start, s.raw_size)
                 changed += [s.start + i for i in range(len(x)) if x[i] != y[i]]
-        self.assertEqual(changed, list(range(0x1F56FF, 0x1F56FF + 21)))   # the replaced 21 bytes and nothing else
+        self.assertEqual(changed, list(range(0x1F56CB, 0x1F56CB + 21)))   # the replaced 21 bytes and nothing else
 
 
 class CompositionTests(unittest.TestCase):
@@ -161,7 +169,7 @@ class WiringTests(unittest.TestCase):
             self.assertEqual(dive.status(source.read_bytes()), "applied")
             mod_build._dive_window_preflight(source, lambda *a: None)          # an installed owner is not foreign
             foreign = Path(tmp) / "foreign.xbe"
-            foreign.write_bytes(repin_edit(retail, 0x1F56FF, b"\x90" * 21))
+            foreign.write_bytes(repin_edit(retail, 0x1F56CB, b"\x90" * 21))
             with self.assertRaises(ValueError):
                 mod_build._dive_window_preflight(foreign, lambda *a: None)
             off = mod_build.BuildPlan(Path("source.xbe"), Path("target.xbe"))
@@ -173,9 +181,14 @@ class WiringTests(unittest.TestCase):
 
 @unittest.skipUnless(uc is not None, "Unicorn is required for bounded instruction replay")
 class CaveTests(unittest.TestCase):
-    """The cave entered at its hook ABI: [ESP] return address, the decision's frame at ESP + 4, ESI the defender."""
+    """The cave entered at its hook ABI (a jump at 0x1F56CB: the decision's frame at ESP, ESI the defender, EDI the
+    decision's always-zero 'in front' flag) until it reaches one of the three native exits: ZERO = 0x1F55CF (result
+    0, he keeps running), ROLL = 0x1F56E0 (the retail catch roll, within a yard), THREE = 0x1F56FF (the retail 3-yard
+    test)."""
 
-    A, C = (0.0, 150.0, 900.0), (0.0, 120.0, 1500.0)   # the ball 0.3 s and 0.6 s ahead: +z at 2000 cm/s
+    A, C, NOW = (0.0, 150.0, 900.0), (0.0, 120.0, 1500.0), (0.0, 170.0, 300.0)   # +z at 2000 cm/s
+    ZERO, ROLL, THREE = "zero", "roll", "three"
+    EXITS = {0x1F55CF: ZERO, 0x1F56E0: ROLL, 0x1F56FF: THREE}
 
     @classmethod
     def setUpClass(cls):
@@ -183,99 +196,107 @@ class CaveTests(unittest.TestCase):
         cls.code = dive.allocation(cls.payload)["va"] + assembly.LABELS["window"]
 
     def run_window(self, *, side=2.0 * YD, depth=1200.0, velocity=(0.0, 0.0), cpu=True, catch=None,
-                   catch_flag=1, receiver=True, a=None, c=None, fpu_depth=0):
+                   catch_flag=1, receiver=True, a=None, c=None, now=None, front=0, fpu_depth=0):
         """side = the defender's x (cm); the ball's path is x = 0, so dist = |side| at depth inside [900, 1500]."""
         m = SpyMachine(self.payload, patched=False)
-        a, c = a or self.A, c or self.C
+        a, c, now = a or self.A, c or self.C, now or self.NOW
         frame = m.STACK - 0x100
         fraction = (depth - a[2]) / (c[2] - a[2]) if c[2] != a[2] else 0.0
         fraction = min(max(fraction, 0.0), 1.0)
         q = (a[0] + (c[0] - a[0]) * fraction, a[1] + (c[1] - a[1]) * fraction, a[2] + (c[2] - a[2]) * fraction)
         dist = math.hypot(side - q[0], depth - q[2])
+        for off, vector in ((0x20, q), (0x30, (side, 198.12, depth)), (0x40, a), (0x50, c), (0x60, now)):
+            m.uc.mem_write(frame + off, struct.pack("<4f", *vector, 1.0))
         m.uc.mem_write(frame + 0x18, struct.pack("<f", dist))
-        m.uc.mem_write(frame + 0x20, struct.pack("<4f", *q, 1.0))
-        m.uc.mem_write(frame + 0x30, struct.pack("<4f", side, 198.12, depth, 1.0))
-        m.uc.mem_write(frame + 0x40, struct.pack("<4f", *a, 1.0))
-        m.uc.mem_write(frame + 0x50, struct.pack("<4f", *c, 1.0))
-        m.u32(frame - 4, m.STOP)
         m.u32(m.P + 0x100, 0xFFFFFFFF if cpu else 0)
         m.f32(m.P + 0x400 + 0x40, velocity[0]); m.f32(m.P + 0x400 + 0x48, velocity[1])
         catch = catch if catch is not None else (0.0, 1500.0)
         m.uc.mem_write(0xBF0DF0, struct.pack("<4f", catch[0], 142.04, catch[1], 1.0))
         m.u32(0xBF0E08, catch_flag)
         m.u32(0xE3C000, m.RB if receiver else 0)
-        for name, value in (("ESP", frame - 4), ("ESI", m.P), ("EDI", 0x1234), ("EBX", 0x3456), ("EBP", 0x6789),
+        for name, value in (("ESP", frame), ("ESI", m.P), ("EDI", front), ("EBX", 0x3456), ("EBP", 0x6789),
                             ("ECX", 0x1111), ("EDX", 0x2222), ("EAX", 0x789A)):
             m.uc.reg_write(getattr(x86, "UC_X86_REG_" + name), value)
         m.uc.reg_write(x86.UC_X86_REG_FPCW, 0x37F)
-        if fpu_depth:   # values the caller left on the x87 stack must survive
+        if fpu_depth:   # values left on the x87 stack must survive
             m.uc.mem_write(m.SOURCE, struct.pack("<f", 12.5))
             for _ in range(fpu_depth):
                 m.uc.mem_write(m.SOURCE + 0x100, bytes.fromhex("d905") + struct.pack("<I", m.SOURCE) + b"\xf4")
                 m.uc.emu_start(m.SOURCE + 0x100, m.SOURCE + 0x106, count=10)
         top = (m.uc.reg_read(x86.UC_X86_REG_FPSW) >> 11) & 7
-        m.uc.emu_start(self.code, m.STOP, timeout=1_000_000, count=2000)
-        self.assertEqual(m.uc.reg_read(x86.UC_X86_REG_EIP), m.STOP)
+        reached = []
+
+        def stop(u, address, _size, _data):
+            reached.append(address)
+            u.emu_stop()
+        hooks = [m.uc.hook_add(uc.UC_HOOK_CODE, stop, begin=va, end=va) for va in self.EXITS]
+        m.uc.emu_start(self.code, 0, timeout=1_000_000, count=2000)
+        for h in hooks:
+            m.uc.hook_del(h)
+        self.assertEqual(len(reached), 1)
         self.assertEqual(m.uc.reg_read(x86.UC_X86_REG_ESP), frame)
-        for name, value in (("ESI", m.P), ("EDI", 0x1234), ("EBX", 0x3456), ("EBP", 0x6789), ("ECX", 0x1111),
+        for name, value in (("ESI", m.P), ("EDI", front), ("EBX", 0x3456), ("EBP", 0x6789), ("ECX", 0x1111),
                             ("EDX", 0x2222)):
             self.assertEqual(m.uc.reg_read(getattr(x86, "UC_X86_REG_" + name)), value, name)
         self.assertEqual((m.uc.reg_read(x86.UC_X86_REG_FPSW) >> 11) & 7, top)
-        result = m.uc.reg_read(x86.UC_X86_REG_EAX)
-        self.assertIn(result, (0, 1))
-        return result
+        return self.EXITS[reached[0]]
 
     def test_retail_outside_three_yards_and_within_a_yard(self):
-        self.assertEqual(self.run_window(side=3.1 * YD), 0)
-        self.assertEqual(self.run_window(side=0.8 * YD), 1)
-        self.assertEqual(self.run_window(side=float("nan")), 0)            # unordered: retail result 0
+        self.assertEqual(self.run_window(side=3.1 * YD), self.THREE)        # the retail 3-yard test then says 0
+        self.assertEqual(self.run_window(side=0.8 * YD), self.ROLL)
+        self.assertEqual(self.run_window(side=float("nan")), self.THREE)    # unordered: retail
+        self.assertEqual(self.run_window(side=2.0 * YD, front=1), self.ROLL)  # the native flag keeps its branch
 
     def test_standing_still_beyond_a_yard_and_a_half_keeps_running(self):
-        self.assertEqual(self.run_window(side=2.0 * YD), 0)
-        self.assertEqual(self.run_window(side=1.2 * YD), 1)                # inside the reach: retail
+        self.assertEqual(self.run_window(side=2.0 * YD), self.ZERO)
+        self.assertEqual(self.run_window(side=1.2 * YD), self.THREE)       # inside the reach: retail
 
     def test_closing_on_the_ball_fast_enough_still_leaps(self):
         # Q at depth 1200 is 0.45 s ahead; 2 yd out he must close 0.5 yd: 9 yd/s toward the path does it.
-        self.assertEqual(self.run_window(side=2.0 * YD, velocity=(-9 * YD, 0.0)), 1)
-        self.assertEqual(self.run_window(side=2.9 * YD, velocity=(-9 * YD, 0.0)), 1)
-        self.assertEqual(self.run_window(side=-2.0 * YD, velocity=(9 * YD, 0.0)), 1)   # other side, mirrored
+        self.assertEqual(self.run_window(side=2.0 * YD, velocity=(-9 * YD, 0.0)), self.THREE)
+        self.assertEqual(self.run_window(side=2.9 * YD, velocity=(-9 * YD, 0.0)), self.THREE)
+        self.assertEqual(self.run_window(side=-2.0 * YD, velocity=(9 * YD, 0.0)), self.THREE)   # mirrored
 
     def test_reach_boundary_is_the_closing_distance(self):
         # 0.5 yd to close in 0.45 s needs 1.11 yd/s toward the path.
-        self.assertEqual(self.run_window(side=2.0 * YD, velocity=(-1.0 * YD, 0.0)), 0)
-        self.assertEqual(self.run_window(side=2.0 * YD, velocity=(-1.25 * YD, 0.0)), 1)
+        self.assertEqual(self.run_window(side=2.0 * YD, velocity=(-1.0 * YD, 0.0)), self.ZERO)
+        self.assertEqual(self.run_window(side=2.0 * YD, velocity=(-1.25 * YD, 0.0)), self.THREE)
 
     def test_running_away_or_alongside_does_not_leap(self):
-        self.assertEqual(self.run_window(side=2.0 * YD, velocity=(9 * YD, 0.0)), 0)
-        self.assertEqual(self.run_window(side=2.0 * YD, velocity=(0.0, 9 * YD)), 0)
+        self.assertEqual(self.run_window(side=2.0 * YD, velocity=(9 * YD, 0.0)), self.ZERO)
+        self.assertEqual(self.run_window(side=2.0 * YD, velocity=(0.0, 9 * YD)), self.ZERO)
 
-    def test_receiver_first_refuses_a_ball_past_the_catch_point(self):
+    def test_receiver_first_refuses_leaps_and_catch_tries_past_the_catch_point(self):
         fast = (-9 * YD, 0.0)
         # The catch point 100 cm before his closest point: 0.05 s of flight earlier, more than 0.03 s.
-        self.assertEqual(self.run_window(side=2.0 * YD, velocity=fast, catch=(0.0, 1100.0)), 0)
-        self.assertEqual(self.run_window(side=1.2 * YD, catch=(0.0, 1100.0)), 0)
-        # 20 cm (0.01 s) before it, or after it: the reach test decides.
-        self.assertEqual(self.run_window(side=2.0 * YD, velocity=fast, catch=(0.0, 1180.0)), 1)
-        self.assertEqual(self.run_window(side=1.2 * YD, catch=(0.0, 1400.0)), 1)
-        # Within a yard stays retail even past the catch point.
-        self.assertEqual(self.run_window(side=0.8 * YD, catch=(0.0, 1000.0)), 1)
+        self.assertEqual(self.run_window(side=2.0 * YD, velocity=fast, catch=(0.0, 1100.0)), self.ZERO)
+        self.assertEqual(self.run_window(side=1.2 * YD, catch=(0.0, 1100.0)), self.ZERO)
+        self.assertEqual(self.run_window(side=0.8 * YD, catch=(0.0, 1000.0)), self.ZERO)   # no catch try either
+        # 20 cm (0.01 s) before it, or after it: the other tests decide.
+        self.assertEqual(self.run_window(side=2.0 * YD, velocity=fast, catch=(0.0, 1180.0)), self.THREE)
+        self.assertEqual(self.run_window(side=1.2 * YD, catch=(0.0, 1400.0)), self.THREE)
+        self.assertEqual(self.run_window(side=0.8 * YD, catch=(0.0, 1400.0)), self.ROLL)
 
-    def test_receiver_first_needs_a_valid_catch_point_on_the_ball_line(self):
+    def test_receiver_first_needs_a_live_catch_point_on_the_ball_line(self):
         early = (0.0, 1100.0)
-        self.assertEqual(self.run_window(side=1.2 * YD, catch=early, catch_flag=0), 1)
-        self.assertEqual(self.run_window(side=1.2 * YD, catch=early, receiver=False), 1)
-        self.assertEqual(self.run_window(side=1.2 * YD, catch=(1.2 * YD, 1100.0)), 1)   # off the line: a tipped ball
-        self.assertEqual(self.run_window(side=1.2 * YD, catch=(0.8 * YD, 1100.0)), 0)   # within a yard of the line
+        self.assertEqual(self.run_window(side=1.2 * YD, catch=early, catch_flag=0), self.THREE)
+        self.assertEqual(self.run_window(side=1.2 * YD, catch=early, receiver=False), self.THREE)
+        self.assertEqual(self.run_window(side=1.2 * YD, catch=(1.2 * YD, 1100.0)), self.THREE)   # off the line
+        self.assertEqual(self.run_window(side=1.2 * YD, catch=(0.8 * YD, 1100.0)), self.ZERO)    # within a yard of it
+        # the ball is already at or past the catch point (a tip, a drop, an overthrow): retail
+        self.assertEqual(self.run_window(side=1.2 * YD, catch=early, now=(0.0, 170.0, 1150.0)), self.THREE)
+        self.assertEqual(self.run_window(side=0.8 * YD, catch=early, now=(0.0, 170.0, 1100.0)), self.ROLL)
 
     def test_human_defenders_and_degenerate_paths_stay_retail(self):
-        self.assertEqual(self.run_window(side=2.0 * YD, cpu=False), 1)
-        self.assertEqual(self.run_window(side=2.0 * YD, cpu=False, catch=(0.0, 1100.0)), 1)
-        self.assertEqual(self.run_window(side=2.0 * YD, a=(0.0, 150.0, 1200.0), c=(0.0, 120.0, 1200.0)), 1)
-        self.assertEqual(self.run_window(side=2.0 * YD, velocity=(float("nan"), 0.0)), 1)
+        self.assertEqual(self.run_window(side=2.0 * YD, cpu=False), self.THREE)
+        self.assertEqual(self.run_window(side=0.8 * YD, cpu=False, catch=(0.0, 1000.0)), self.ROLL)
+        self.assertEqual(self.run_window(side=2.0 * YD, a=(0.0, 150.0, 1200.0), c=(0.0, 120.0, 1200.0)), self.THREE)
+        self.assertEqual(self.run_window(side=2.0 * YD, velocity=(float("nan"), 0.0)), self.THREE)
 
-    def test_caller_x87_stack_survives(self):
-        self.assertEqual(self.run_window(side=2.0 * YD, fpu_depth=2), 0)
-        self.assertEqual(self.run_window(side=2.0 * YD, velocity=(-9 * YD, 0.0), fpu_depth=1), 1)
+    def test_x87_stack_survives(self):
+        self.assertEqual(self.run_window(side=2.0 * YD, fpu_depth=2), self.ZERO)
+        self.assertEqual(self.run_window(side=2.0 * YD, velocity=(-9 * YD, 0.0), fpu_depth=1), self.THREE)
+        self.assertEqual(self.run_window(side=0.8 * YD, fpu_depth=1), self.ROLL)
 
 
 @unittest.skipUnless(uc is not None, "Unicorn is required for bounded instruction replay")
@@ -343,6 +364,8 @@ class DecisionTests(unittest.TestCase):
         # catch point 2 yd before his line on the ball's path: the ball reaches the receiver 0.1 s earlier
         self.assertEqual(self.both(1.2, 9.0, catch=(0.0, 7.0)), (2, 0))
         self.assertEqual(self.both(2.0, 9.0, vx=-9.0, catch=(0.0, 7.0)), (2, 0))
+        retail, patched = self.both(0.5, 9.0, catch=(0.0, 7.0))
+        self.assertEqual((patched, retail in (2, 3)), (0, True))           # no catch try at it either
         # catch point at or beyond his line: unchanged
         self.assertEqual(self.both(2.0, 9.0, vx=-9.0, catch=(0.0, 12.0)), (2, 2))
         self.assertEqual(self.both(1.2, 9.0, catch=(0.0, 9.2)), (2, 2))
