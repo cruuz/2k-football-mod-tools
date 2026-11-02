@@ -18,14 +18,16 @@ This owner gives CPU-controlled carriers (controller marker ``[[carrier+0xC]] ==
 0x2E2260. The copy is made at build time from the user's own retail executable (it is checked byte for byte against
 the retail routine; no game code ships with the Studio), its nine calls are relocated, and four things change:
 
-- For every DEFENDER the bearing is taken from where the carrier will be to where the defender will be at their
-  closest approach, looked ahead at most ``LOOKAHEAD`` seconds:
-  ``t = clamp(-(dp . dv) / |dv|^2, 0, LOOKAHEAD)`` with ``dp``/``dv`` the defender's position/velocity minus the
-  carrier's, and the bearing of ``dp + dv * t``. A man overrunning the play is seen outside where he is going, so
-  the runner cuts back behind him; a chaser running stride for stride stays behind (no push); a defender coming
-  head on is judged where he will meet the runner.
-- Defenders use ``DEFENDER_BEARING`` instead of table 0x50C7CC (less push from men beside and behind the runner).
-- Teammates (blockers) keep the retail look-ahead and table byte for byte, so blocking lanes work as retail.
+- For every DEFENDER the SIDE of his push comes from where he and the carrier will be at their closest approach,
+  looked ahead at most ``LOOKAHEAD`` seconds: ``t = clamp(-(dp . dv) / |dv|^2, 0, LOOKAHEAD)`` with ``dp``/``dv``
+  his position/velocity minus the carrier's, and the bearing of ``dp + dv * t``. Its STRENGTH comes from his
+  bearing now (the retail threat weighting), through ``DEFENDER_BEARING`` instead of table 0x50C7CC. So a man
+  overrunning the play is seen outside where he is going and the runner cuts back behind him, a chaser running
+  stride for stride behind him pushes nothing, and a man coming straight on still gets the full retail sidestep (a
+  first version that also took the strength from the closest approach let incoming tacklers look beside or behind
+  the runner: 43% of runs tackled against 31% for v0.8 in the random-scene check).
+- Defenders use ``DEFENDER_BEARING`` (less push from men beside and behind the runner).
+- Teammates (blockers) keep the retail look-ahead, bearing and table byte for byte, so blocking lanes work as retail.
 - Distances, player weights, the blocker and "one-sided pursuit" rules are retail.
 
 Human-controlled carriers and urgent clocks run the retail routine (its bytes are untouched); the only retail byte
@@ -60,7 +62,6 @@ LOOKAHEAD_SITES = ((0x0B7, bytes.fromhex("d80da0414e00")),          # fmul [0.01
 LOOKAHEAD_EDIT = bytes.fromhex("d84c24746690")                     # fmul [esp+0x74]; xchg ax,ax
 REFERENCE_SITES = ((0x0EB, bytes.fromhex("d8642448"), bytes.fromhex("d864247c")),   # fsub [carrier z] -> [esp+0x7C]
                    (0x0FB, bytes.fromhex("d8642440"), bytes.fromhex("d8642478")))   # fsub [carrier x] -> [esp+0x78]
-TABLE_SITE = (0x2D9, bytes.fromhex("b9ccc75000"), bytes.fromhex("8b4c241490"))     # mov ecx,0x50C7CC -> [esp+0x14]
 RETAIL_LOOKAHEAD, RETAIL_TABLE, OFFENSE = 0x004E41A0, 0x0050C7CC, 0x00E60280
 URGENCY_HALF = 0x3F000000         # 0.5f: a positive float above it compares greater as a signed integer
 LOOKAHEAD = 0.35                  # seconds
@@ -92,68 +93,53 @@ def _f32(value):
     return struct.pack("<f", value).hex()
 
 
-# Layout inside the allocation (offsets): constants first so every absolute operand is known before assembly.
-C_LOOKAHEAD, C_TABLE, C_ENTRY = 0x00, 0x10, 0x40
+# Layout inside the allocation (offsets): the 40-byte wrapper, its constants, the owner copy, the stubs. Every
+# absolute operand is known before assembly because the wrapper's size is fixed.
+C_ENTRY, C_LOOKAHEAD, C_TABLE, C_COPY = 0x00, 0x28, 0x2C, 0x54
+TEAMMATE = 0x7FFFFFFF             # [esp+0x0C] marker: this player is a teammate (a NaN, never a real distance)
+WEIGHT_SITE = (0x2D0, 0x312)      # the copy's bearing-weight block 0x2E2530..0x2E2572 (no outside jump lands inside)
 
 
-def _code(code_va, push, *, mode="closest", lookahead=LOOKAHEAD, bearing=DEFENDER_BEARING):
-    """The owner bytes at ``code_va`` from the retail push routine bytes ``push`` (1,312 bytes, checked)."""
+def _code(code_va, push, *, mode="vision", lookahead=LOOKAHEAD, bearing=DEFENDER_BEARING):
+    """The owner bytes at ``code_va`` from the retail push routine bytes ``push`` (1,312 bytes, checked).
+
+    mode "vision": each defender's push SIDE comes from where he and the carrier will be at their closest approach
+    (look-ahead clamped to ``lookahead``), its STRENGTH from his bearing now through the owner table, so a man
+    crossing in front is passed behind and a man coming straight on still gets the full retail sidestep.
+    mode "retail" (tests only): every player takes the retail values, so the copy equals 0x2E2260 bit for bit.
+    Frame slots the copy leaves unused: [esp+0x0C] dz now / TEAMMATE, [esp+0x14] dx now, [esp+0x74] look-ahead,
+    [esp+0x78] / [esp+0x7C] the carrier reference x / z."""
     from .nfl2k5_draft_ai import _Asm
     require(len(push) == PUSH_SIZE and hashlib.sha256(push).hexdigest() == PUSH_SHA256,
             "the ball-carrier push routine is not retail")
-    lookahead_va, table_va = code_va + C_LOOKAHEAD, code_va + C_TABLE
-    consts = struct.pack("<f", lookahead).ljust(C_TABLE - C_LOOKAHEAD, b"\0")
-    consts += b"".join(struct.pack("<ff", x, y) for x, y in zip(BEARING_POINTS, bearing))
-    consts = consts.ljust(C_ENTRY, b"\0")
+    require(mode in ("vision", "retail"), f"unknown mode {mode!r}")
+    lookahead_va, table_va, copy_va = code_va + C_LOOKAHEAD, code_va + C_TABLE, code_va + C_COPY
+    stub_va = copy_va + PUSH_SIZE
 
-    def wrapper(copy_va):
-        a = _Asm(code_va + C_ENTRY)
-        a.label("entry")                                          # called from 0x2E3072: [esp+4] = carrier, ret 4
-        a.b("8b442404" "8b480c" "8339ff"); a.j8("75", "retail")   # CPU-controlled only ([[carrier+0xC]] == -1)
-        a.b("8b4838" "8b490c" "81b9c4000000" + _imm(URGENCY_HALF)); a.j8("7f", "retail")   # clock urgency > 0.5
-        a.jmp_abs(copy_va)                                        # the owner copy returns (ret 4) to the task
-        a.label("retail"); a.jmp_abs(PUSH_VA)
-        return a
-
-    size = len(wrapper(0).assemble())
-    copy_off = (C_ENTRY + size + 15) & -16
-    copy_va = code_va + copy_off
-    stub_off = copy_off + PUSH_SIZE
-    stub_va = code_va + stub_off
-    w = wrapper(copy_va)
+    w = _Asm(code_va + C_ENTRY)
+    w.label("entry")                                              # called from 0x2E3072: [esp+4] = carrier, ret 4
+    w.b("8b442404" "8b480c" "8339ff"); w.j8("75", "retail")       # CPU-controlled only ([[carrier+0xC]] == -1)
+    w.b("8b4838" "8b490c" "81b9c4000000" + _imm(URGENCY_HALF)); w.j8("7f", "retail")   # clock urgency > 0.5
+    w.jmp_abs(copy_va)                                            # the owner copy returns (ret 4) to the task
+    w.label("retail"); w.jmp_abs(PUSH_VA)
     entry = w.assemble()
+    require(len(entry) == C_LOOKAHEAD, "runner vision wrapper size changed")
+    consts = struct.pack("<f", lookahead) + b"".join(struct.pack("<ff", x, y) for x, y in zip(BEARING_POINTS, bearing))
 
     s = _Asm(stub_va)
     s.label("player")                                             # every other player, esp = the routine's frame
-    s.b(PLAYER_SITE[1].hex())                                     # replay: eax = his transform, xmm0 = position
-    s.b("8b4e38" "3b0d" + _imm(OFFENSE)); s.j32("0f84", "mate")   # the retail teammate test ([0xE60280] team)
-    s.b("8b5318")                                                 # edx = carrier transform
-    if mode == "retail":                                          # tests only: everyone takes the retail values,
-        s.j32("e9", "mate")                                       # so the copy must equal 0x2E2260 bit for bit
-    elif mode == "closest":
-        s.b("d94040d86240" "d94048d86248" "d94030d86230" "d94038d86238")   # dz dx dvz dvx (him minus carrier)
-        s.b("d8cad9c9d8cbdec1" "d9c9d8c8d9cad8c8dec2" "d9e0")            # -(dp . dv), |dv|^2
-        s.b("d9eedff1"); s.j8("73", "now")                        # moving apart (or level): t = 0
-        s.b("d9c1d80d" + _imm(lookahead_va) + "dff1"); s.j8("76", "far")   # closest approach beyond the look-ahead
-        s.b("def1"); s.j8("eb", "have")                           # t = -(dp . dv) / |dv|^2
-        s.label("now"); s.b("ddd8ddd8d9ee"); s.j8("eb", "have")
-        s.label("far"); s.b("ddd8ddd8d905" + _imm(lookahead_va))
-        s.label("have"); s.b("d95c2474")                          # [esp+0x74] = t
-        s.b("d94240d84c2474d84230d95c2478")                       # [esp+0x78] = carrier x + vx t
-        s.b("d94248d84c2474d84238d95c247c")                       # [esp+0x7C] = carrier z + vz t
-    elif mode == "fixed":                                         # t = the look-ahead for every defender
-        s.b("d94240d80d" + _imm(lookahead_va) + "d84230d95c2478")
-        s.b("d94248d80d" + _imm(lookahead_va) + "d84238d95c247c")
-        s.b("8b0d" + _imm(lookahead_va) + "894c2474")
-    else:
-        raise RunnerVisionError(f"unknown look-ahead mode {mode!r}")
-    s.b("c7442410" + _imm(table_va))                              # defenders: the owner bearing table
-    s.jmp_abs(copy_va + PLAYER_RESUME)
-    s.label("mate")                                               # teammates: retail look-ahead, position, table
+    if mode == "vision":                                          # ("retail": everyone takes the teammate path)
+        s.b("8b4e38" "3b0d" + _imm(OFFENSE)); s.j32("0f84", "mate")   # the retail teammate test ([0xE60280])
+        _defender(s, lookahead_va)
+    s.label("mate")                                               # teammates: retail look-ahead and position
     s.b("8b4c2440894c2478" "8b4c2448894c247c" "8b0d" + _imm(RETAIL_LOOKAHEAD) + "894c2474")
-    s.b("c7442410" + _imm(RETAIL_TABLE))
+    s.b("c744240c" + _imm(TEAMMATE))
+    s.label("tail")
+    s.b(PLAYER_SITE[1].hex())                                     # replay: eax = his transform, xmm0 = position
     s.jmp_abs(copy_va + PLAYER_RESUME)
+    _weight(s, table_va, copy_va)
     stub = s.assemble()
+
 
     copy = bytearray(push)
     for off in PUSH_CALLS:
@@ -166,14 +152,52 @@ def _code(code_va, push, *, mode="closest", lookahead=LOOKAHEAD, bearing=DEFENDE
         copy[off:off + len(before)] = LOOKAHEAD_EDIT
     for off, before, after in REFERENCE_SITES:
         copy[off:off + len(before)] = after
-    off, before, after = TABLE_SITE
-    copy[off:off + len(before)] = after
+    lo, hi = WEIGHT_SITE
+    weight_va = stub_va + s.labels["weight"]
+    copy[lo:hi] = (b"\xe9" + struct.pack("<i", weight_va - (copy_va + lo + 5))).ljust(hi - lo, b"\xcc")
 
-    body = consts + entry.ljust(copy_off - C_ENTRY, b"\xcc") + bytes(copy) + stub
+    body = entry + consts + bytes(copy) + stub
+    require(len(entry + consts) == C_COPY, "runner vision constants size changed")
     require(len(body) <= CODE_SIZE, f"runner vision code exceeds its allocation ({len(body)} > {CODE_SIZE})")
-    labels = dict(entry=C_ENTRY, retail=C_ENTRY + w.labels["retail"], copy=copy_off, player=stub_off,
-                  mate=stub_off + s.labels["mate"], lookahead=C_LOOKAHEAD, table=C_TABLE, end=len(body))
+    labels = dict(entry=C_ENTRY, retail=C_ENTRY + w.labels["retail"], lookahead=C_LOOKAHEAD, table=C_TABLE,
+                  copy=C_COPY, player=C_COPY + PUSH_SIZE, mate=C_COPY + PUSH_SIZE + s.labels["mate"],
+                  weight=C_COPY + PUSH_SIZE + s.labels["weight"], end=len(body))
     return body.ljust(CODE_SIZE, b"\xcc"), labels
+
+
+def _defender(s, lookahead_va):
+    """Defender path of the player stub (falls through to "tail" via a short jump)."""
+    s.b("8b5318" "8b4618")                                        # edx = carrier transform, eax = his
+    s.b("d94040d86240" "d94048d86248")                            # dvz dvx (him minus carrier)
+    s.b("d94030d86230" "d9542414")                                # dx now -> [esp+0x14]
+    s.b("d94038d86238" "d954240c")                                # dz now -> [esp+0x0C]
+    s.b("d8cad9c9d8cbdec1" "d9c9d8c8d9cad8c8dec2" "d9e0")         # -(dp . dv), |dv|^2
+    s.b("d9eedff1"); s.j8("73", "now")                            # moving apart (or level): t = 0
+    s.b("d9c1d80d" + _imm(lookahead_va) + "dff1"); s.j8("76", "far")   # closest approach beyond the look-ahead
+    s.b("def1"); s.j8("eb", "have")                               # t = -(dp . dv) / |dv|^2
+    s.label("now"); s.b("ded9d9ee"); s.j8("eb", "have")
+    s.label("far"); s.b("ded9d905" + _imm(lookahead_va))
+    s.label("have")
+    s.b("d94240d8c9d84230d95c2478")                               # [esp+0x78] = carrier x + vx t
+    s.b("d94248d8c9d84238d95c247c")                               # [esp+0x7C] = carrier z + vz t
+    s.b("d95c2474"); s.j8("eb", "tail")                           # [esp+0x74] = t (his velocity scale)
+
+
+def _weight(s, table_va, copy_va):
+    """Replaces the copy's bearing-weight block 0x2E2530..0x2E2572 (entered by a jump, esp = the routine's frame)."""
+    s.label("weight")
+    s.b("8bc7" "b9" + _imm(RETAIL_TABLE))                         # eax = the bearing used for the side (edi)
+    s.b("817c240c" + _imm(TEAMMATE)); s.j8("74", "bear")          # teammates: retail bearing and table
+    s.b("ff74240c" "ff742418"); s.call(0x000210B0)                # defenders: bearing now (dx, dz now)
+    s.b("837c243c00"); s.j8("7d", "up")                           # the team's direction (+-1.0f at [esp+0x3C])
+    s.b("0500800000")
+    s.label("up"); s.b("0fbfc0" "b9" + _imm(table_va))            # owner table for defenders
+    s.label("bear"); s.b("9931d029d0" "50" "db0424" "d91c24" "6a055a")   # |bearing| as float; edx = 5 points (both
+    #                                                               tables; the retail count 0x50C7C8 is guarded)
+    s.call(0x001B0AE0)                                            # strength from the table (callee pops x)
+    s.b("85ff"); s.j8("7c", "right")                              # side: edi < 0 pushes right, else left
+    s.b("d9e0")
+    s.label("right"); s.jmp_abs(copy_va + WEIGHT_SITE[1])         # resume: fmul [esp+0x24] (player weight)
 
 
 def code_for(code_va, push):
@@ -280,6 +304,7 @@ def apply(payload):
 
 def mapping():
     return {"hook": hex(HOOK[1]), "push_routine": hex(PUSH_VA), "lookahead_seconds": LOOKAHEAD,
+            "push_side": "closest approach (defenders)", "push_strength": "bearing now (defenders)",
             "defender_bearing_weights": dict(zip(("0", "45", "90", "135", "180"), DEFENDER_BEARING)),
             "cpu_only": True, "calm_clock_only": True, "teammates_retail": True,
             "needs": "nfl2k5_ball_carrier_ai (wide_sideline)", "runtime_state_bytes": 0}

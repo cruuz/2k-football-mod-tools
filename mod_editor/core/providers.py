@@ -917,7 +917,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_star_retention.py": "cdfaf54656a83c66f6bae0e3f9212eb510c6312b27d02cc3f05b73c953ea22b6",  # b778-fa1
         "mod_editor/core/nfl2k5_practice_injuries.py": "8b411bcd88201f1155319b140c7c6a9555e9bcf8751921c7264dd28f8955c518",  # b778-pi1
         "mod_editor/core/nfl2k5_ball_carrier_ai.py": "ddcb45a9a6cbea475fd44b0b040ba5bc9262f9732ff33747b0498cbe4f10ebd5",  # b778-ai5
-        "mod_editor/core/nfl2k5_runner_vision.py": "0b49ffcad56b9ddcbbf67a2306e5d4b0da41143fa60e67fd83b6b08f508e1d11",  # b780 cv2-runner
+        "mod_editor/core/nfl2k5_runner_vision.py": "f783174fb1c30ab04c6420432269b1457c270846ac375bcfb5c11fcb2da4f18d",  # b780 cv2-runner
         "mod_editor/core/nfl2k5_return_coverage.py": "3be0439c2f122ea0c7a5b53f50b89b0b31c8455ce13baa9ce8728ba9d2470db0",  # b778-kr1
         "mod_editor/core/nfl2k5_star_career.py": "9190271ff9fe7a641a0eee544876b92e7f756950ccb9a498727245d5622d7616",  # b778-st2
         "mod_editor/core/nfl2k5_star_career_code.py": "47b34490a21113803ba97a985378dcec237c39d53fed8fd6e9f498b82ec39098",  # b778-st2

@@ -8196,7 +8196,7 @@
       "input_constraints": [
         "Pinned USA XBE or verified composed input; the ball-carrier push routine 0x2E2260 must be byte-identical to retail (its owner copy is made from the source's own bytes). Mixed or foreign owners refuse before mutation.",
         "CPU-controlled ball carrier ([[carrier+0xC]] == -1) with his team's clock urgency 0.5 or less; human carriers and urgent clocks run the retail routine.",
-        "Defenders only: closest approach within 0.35 s and softer side and behind weights; teammates and blockers keep the retail look-ahead and weights.",
+        "Defenders only: the side of each push from their closest approach within 0.35 s, its strength from their bearing now with softer side and behind weights; teammates and blockers keep the retail look-ahead, bearing and weights.",
         "Late allocator owner after nfl2k5_sim_realism_state; needs nfl2k5_ball_carrier_ai installed with wide_sideline. Rebuild from base to opt out."
       ],
       "portme": [
@@ -8224,7 +8224,7 @@
             "required": true
           }
         ],
-        "notes": "Retail: a CPU carrier pushes away from where defenders are now, so pursuit from inside bends him to the sideline and he never cuts back. Patch: CPU carriers on a calm clock judge each defender at their closest approach."
+        "notes": "Retail: a CPU carrier pushes away from where defenders are now, so pursuit from inside bends him to the sideline and he never cuts back. Patch: CPU carriers on a calm clock push away from where each defender will be at their closest approach, as hard as his bearing now warrants."
       },
       "source_container": {
         "format": "XBE in XDVDFS",

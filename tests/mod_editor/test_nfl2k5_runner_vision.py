@@ -46,12 +46,13 @@ class StaticTests(unittest.TestCase):
     def test_request_sites_and_layout(self):
         self.assertEqual(rv.REQUESTS, (("nfl2k5_runner_vision", "code", rv.CODE_SIZE, 16),))
         self.assertEqual(rv.sites(0x14DA0B0), [
-            ("push_call", 0x2E3072, bytes.fromhex("e8e9f1ffff"), b"\xe8" + struct.pack("<i", 0x14DA0F0 - 0x2E3077))])
+            ("push_call", 0x2E3072, bytes.fromhex("e8e9f1ffff"), b"\xe8" + struct.pack("<i", 0x14DA0B0 - 0x2E3077))])
         self.assertEqual(rv.PUSH_SIZE, 0x2E2780 - 0x2E2260)
         for off, before in rv.LOOKAHEAD_SITES:
             self.assertEqual(len(before), len(rv.LOOKAHEAD_EDIT))
-        for off, before, after in rv.REFERENCE_SITES + (rv.TABLE_SITE,):
+        for off, before, after in rv.REFERENCE_SITES:
             self.assertEqual(len(before), len(after))
+        self.assertEqual(rv.WEIGHT_SITE, (0x2E2530 - 0x2E2260, 0x2E2572 - 0x2E2260))
 
     def test_wiring_presets_and_late_owner_order(self):
         self.assertEqual(space.LATE_OWNERS[-1], rv.OWNER)                         # appended: no other owner moves
@@ -299,11 +300,11 @@ class PushTests(unittest.TestCase):
             retail, vision = self.both(f((10, 0, 0, 8)), [f((8, 2, 9, 1))], direction=d)
             self.assertGreater(retail * d, 1.0)
             self.assertLess(vision * d, -1.0)
-            # a man standing half a yard outside, three yards ahead: both steer inside (vision judges him where
-            # the runner will meet him, more beside than ahead, so a smaller push)
+            # a man standing half a yard outside, three yards ahead: they meet on the same side he stands now, and
+            # the strength is his bearing now, so the push is the retail sidestep exactly
             retail, vision = self.both(f((10, 0, 0, 8)), [f((10.5, 3, 0, 0))], direction=d)
-            self.assertLess(retail * d, vision * d)
-            self.assertLess(vision * d, -0.5)
+            self.assertEqual(struct.pack("<f", vision), struct.pack("<f", retail))
+            self.assertLess(vision * d, -1.0)
             # one behind and outside who is falling away: retail still pushes a little; vision none
             retail, vision = self.both(f((10, 0, 0, 8)), [f((12, -3, 0, 3))], direction=d)
             self.assertLess(retail * d, -0.05)
