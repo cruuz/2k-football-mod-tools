@@ -47,6 +47,13 @@ the 170 retail free agents, 92 of whose displayable seasons the CSV does not cov
 retail roster: 5,746 of 5,838 shown seasons carry a team (was 5,042), the pool goes 36,866 ->
 42,612 of 50,000, and the 29 seasons older than the card's 15-row window are still skipped because
 no row exists for them.  ``infer_current_team=False`` restores the CSV-only behaviour.
+
+b780 b2 (SharkMagick, "Team Card still empty" on the original rosters).  The column is only half of the feature: it names a
+season's club where the roster carries one, and the retail roster carries none, so this writer is what fills the original
+roster's past rows.  The Studio now runs it whenever the TEAM column is on and the roster is the original one (Basic used to
+leave it off, so every past row read "--"; the old second option is now "use my own file").  The roster's season slots count
+back from ITS current season, 2004, whatever year the franchise starts in: ``apply`` refuses any other ``base_year`` (the
+2026 option used to pass 2026 here, which made every real row "outside the record" and left only the 2004-club fill).
 """
 
 from __future__ import annotations

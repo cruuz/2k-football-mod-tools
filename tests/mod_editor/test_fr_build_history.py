@@ -132,6 +132,22 @@ class ImpliedTeamHistoryTests(unittest.TestCase):
             self.assertTrue(notes, kw)
             self.assertTrue(steps[0]['user_notes'], kw)
 
+    def test_every_preset_that_turns_the_column_on_gets_the_history_with_the_roster_epoch(self):
+        for name in ('softdrink_basic', 'softdrink_advanced', 'softdrink_experimental'):
+            plan = build.apply_preset(build.BuildPlan('s', 't'), name)
+            self.assertTrue(plan.team_column, name)
+            calls = []
+
+            def module(mod_name, calls=calls):
+                return SimpleNamespace(status=lambda path: 'retail', load_rows=lambda source: ([], {}),
+                                       apply=lambda *a, **kw: calls.append((mod_name, a, kw)) or {'log': []})
+            with patch.object(build, '_core_module', side_effect=module), \
+                    patch.object(build.tt, 'is_disc_image', return_value=True):
+                build._apply_roster_history(plan, 'fake-target', {'steps': []}, lambda *a: None)
+            history = [c for c in calls if c[0] == 'nfl2k5_team_history']
+            self.assertEqual(len(history), 1, name)
+            self.assertEqual(history[0][2]['base_year'], 2004, name)
+
     def test_a_real_write_error_after_the_checks_still_stops_the_build(self):
         with self.assertRaisesRegex(OSError, 'disk'):
             self.run_stage(apply_raises=OSError('disk full'))

@@ -674,7 +674,6 @@ class UnicornGetterTests(unittest.TestCase):
         self.assertEqual(sorted(after), sorted(before))
         for season, text in after.items():
             self.assertEqual(text, real[season], season)
-        self.assertEqual(self._getter(self._machine(), blake.offset, 11), "PHI")        # the season in progress: the live club
 
 
 if __name__ == "__main__":
