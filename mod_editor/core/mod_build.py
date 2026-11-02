@@ -3808,9 +3808,9 @@ def _validated_r62_plan_options(plan):
     return r62
 
 
+# The original roster's own current season: its players' season slots count back from it, whatever year the franchise
+# starts in (the 2026 option moves the calendar, not a retail player's seasons).
 RETAIL_ROSTER_EPOCH = 2004
-"""The original roster's own current season: its players' season slots count back from it, whatever year the franchise
-starts in (the 2026 option moves the calendar, not a retail player's seasons)."""
 
 
 def _apply_implied_team_history(target, receipt, progress):
