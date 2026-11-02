@@ -841,7 +841,7 @@ def apply_to_body(body: bytearray, teams, staff, log: list[str] | None = None) -
         return dict(schema=SCHEMA, status="none", changed_bytes=0)
     teams = _teams_of(body, teams)
     result = plan(staff, body, teams)
-    require(result.ok, "Coaching staff: " + " ".join(result.errors))
+    require(result.ok, "Coaching staff (Rosters > Coaches): " + " ".join(result.errors))
     table = _coach_table(body)
     records = _club_records(body, teams)
     before = bytes(body)
@@ -935,7 +935,7 @@ def apply_playbooks_to_image(target, staff_plan: StaffPlan, progress: Callable[[
     """Copy the final books for "bring his playbook" inside the disc image ``target`` (fixed span, one snapshot, read
     back). A profile tail on a copied book is cleared (the 2026 profiles are compiled after this step)."""
     from . import nfl2k5_playbook_pack as packs, nfl2k5_coach_ai as ai
-    require(staff_plan.ok, "Coaching staff: " + " ".join(staff_plan.errors))
+    require(staff_plan.ok, "Coaching staff (Rosters > Coaches): " + " ".join(staff_plan.errors))
     copies = playbook_copies(staff_plan)
     if not copies:
         return dict(step="coach_staff_playbooks", status="none", copies=[])
