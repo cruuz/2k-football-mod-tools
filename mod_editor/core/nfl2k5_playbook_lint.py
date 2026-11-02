@@ -799,8 +799,10 @@ def fix_toss_side(positions, codes, chains) -> tuple[list[Chain] | None, dict | 
     The generator tossed to the formation's strong side whatever side the back stood on, so in a gun set with the back
     beside the QB the back had to run behind the QB to the lane while the QB pitched (SWeaR 11/01: "the Crack toss under
     Gun Spread: your player starts to go outside then cuts immediately back into the middle").  A toss that matches the
-    SOFTDRINK template (QB, linemen and carrier byte for byte) is rebuilt for the back's own side; the receivers follow
-    the new side.  Plays that do not match are never rewritten.
+    SOFTDRINK template (QB, linemen and carrier byte for byte) is rebuilt for the back's own side.  Only those seven
+    chains change: a play can be linked to several formations whose receivers stand differently, and every link must
+    compile to the same chains, so the receivers keep their authored blocks here (the pack tool ``pb/v2/toss_side.py``
+    re-authors them in the play's home formation).  Plays that do not match are never rewritten.
     """
     from . import nfl2k5_offense_concepts as oc
     from . import nfl2k5_offense_modern as om
@@ -835,9 +837,12 @@ def fix_toss_side(positions, codes, chains) -> tuple[list[Chain] | None, dict | 
     scheme = "Zone Toss" if matched == TOSS_FAMILY[0] else ("Crack Toss" if _crack_receivers(chains_bytes, codes) else "HB Toss")
     fixed = om.run_design(ctx, scheme, direction=own, carrier=label, codes=codes)
     oc.fill_unassigned(ctx, fixed)
+    core = {*TOSS_CORE_SLOTS, car}
+    authored = _authored(chains_bytes)
+    result = [fixed.chains[s] if s in core else authored[s] for s in range(11)]
     offset = (positions[car][0] - positions[0][0]) / YD
-    return fixed.chains, dict(rule="toss_side", status="rebuilt", scheme=scheme, carrier=car, old_side=old, new_side=own,
-                              back_offset_yd=round(offset, 2))
+    return result, dict(rule="toss_side", status="rebuilt", scheme=scheme, carrier=car, old_side=old, new_side=own,
+                        back_offset_yd=round(offset, 2))
 
 
 def _authored(chains) -> list[Chain]:

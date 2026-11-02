@@ -136,6 +136,96 @@ class CheckdownRules(unittest.TestCase):
                                                      self.pass_play(lib.route_chain("Flat", 5, 1)))[0], None)
 
 
+class TossRules(unittest.TestCase):
+    """b780 b6-plays: out of the gun or the pistol a toss goes to the back's own side (SWeaR 11/01, Crack Toss under
+    Gun Spread: the back "starts to go outside then cuts immediately back into the middle")."""
+    CODES = (0, 5, 37, 6, 7, 39, 9, 73, 105, 41, 10)                   # QB T T2 C G G2, four WRs, HB (the JAX Gun Spread)
+    WRS = [(-1554, 0), (823, -137), (-823, -137), (1554, 0)]
+    GUN_LEFT = [(0, -482)] + LINE + WRS + [(-229, -482)]               # back 2.5 yd left of the QB
+    GUN_RIGHT = [(0, -482)] + LINE + WRS + [(229, -482)]
+    PISTOL = [(0, -365)] + LINE + WRS + [(0, -640)]                    # back 3 yd directly behind him
+    UC_SPLIT = [(0, -183)] + LINE + WRS + [(250, -502)]                # retail Split Pro back, 2.7 yd right
+    FLAGS = 0x0200820E                                                 # retail Weak G-Toss header: run, toss class
+
+    @classmethod
+    def design(cls, pos, scheme, direction):
+        from mod_editor.core import nfl2k5_offense_concepts as oc, nfl2k5_offense_modern as om
+        ctx = oc.FormationContext.build(pos, cls.CODES)
+        d = om.run_design(ctx, scheme, direction=direction, codes=cls.CODES, own_side_only=False)
+        oc.fill_unassigned(ctx, d)
+        return d.chains
+
+    def lint_codes(self, pos, chains):
+        return [f for f in lint.lint_views([view(pos, chains, self.FLAGS, codes=self.CODES)], "toss").findings]
+
+    def test_crossing_gun_toss_is_flagged_and_turned_to_the_backs_side(self):
+        for scheme in ("HB Toss", "Crack Toss", "Zone Toss"):
+            chains = self.design(self.GUN_LEFT, scheme, +1)                # back at -2.5, lane +5.83
+            self.assertIsNone(validate(self.FLAGS, chains), scheme)
+            found = self.lint_codes(self.GUN_LEFT, chains)
+            self.assertEqual([f.code for f in found], ["TOSS_SIDE_CROSS"], scheme)
+            self.assertEqual((found[0].data["offset_yd"], found[0].data["lane_yd"]), (-2.5, 5.83))
+            fixed, receipts = lint.normalize_offense_play(self.GUN_LEFT, self.CODES, chains)
+            toss = next(r for r in receipts if r["rule"] == "toss_side")
+            self.assertEqual((toss["scheme"], toss["old_side"], toss["new_side"], toss["carrier"]), (scheme, 1, -1, 10))
+            self.assertIsNone(validate(self.FLAGS, fixed), scheme)
+            self.assertEqual(self.lint_codes(self.GUN_LEFT, fixed), [])
+            # the QB's pitch, the lane, the run path and the line all turn to the back's side
+            self.assertEqual(fixed[10][1][0], 0x16)
+            self.assertEqual(int(fixed[10][1][1][2]), 8)                     # take handoff hole 8 = 5.83 yd left
+            self.assertLess(fixed[10][2][1][1], 0)                           # run path aims left
+            mirror, built, before = (lint._as_bytes(c) for c in (self.design(self.GUN_LEFT, scheme, -1), fixed, chains))
+            core = (0, 1, 2, 3, 4, 5, 10)
+            self.assertEqual([built[s] for s in core], [mirror[s] for s in core])
+            self.assertEqual([built[s] for s in range(6, 10)], [before[s] for s in range(6, 10)])   # receivers keep their blocks
+            again, more = lint.normalize_offense_play(self.GUN_LEFT, self.CODES, fixed)
+            self.assertIsNone(again)
+            self.assertEqual([r for r in more if r["rule"] == "toss_side"], [])
+
+    def test_gun_toss_to_the_backs_own_side_is_left_alone(self):
+        chains = self.design(self.GUN_RIGHT, "Crack Toss", +1)              # back at +2.5, lane +5.83: retail's shape
+        self.assertEqual(self.lint_codes(self.GUN_RIGHT, chains), [])
+        self.assertIsNone(lint.normalize_offense_play(self.GUN_RIGHT, self.CODES, chains)[0])
+
+    def test_pistol_toss_to_a_back_behind_the_qb_is_not_a_side_problem(self):
+        for direction in (+1, -1):
+            chains = self.design(self.PISTOL, "Zone Toss", direction)
+            self.assertNotIn("TOSS_SIDE_CROSS", [f.code for f in self.lint_codes(self.PISTOL, chains)])
+            self.assertIsNone(lint.normalize_offense_play(self.PISTOL, self.CODES, chains)[0])
+
+    def test_under_center_split_back_toss_keeps_retails_cross_behind(self):
+        chains = self.design(self.UC_SPLIT, "HB Toss", -1)                  # retail Split Pro "Strong Toss": back right, lane left
+        self.assertNotIn("TOSS_SIDE_CROSS", [f.code for f in self.lint_codes(self.UC_SPLIT, chains)])
+        self.assertIsNone(lint.normalize_offense_play(self.UC_SPLIT, self.CODES, chains)[0])
+
+    def test_edited_toss_is_never_rewritten(self):
+        chains = self.design(self.GUN_LEFT, "Crack Toss", +1)
+        chains[2] = [lib.start(3), lib.leg(0, 0, 1, turn=2)]               # hand-edited tackle
+        fixed, receipts = lint.normalize_offense_play(self.GUN_LEFT, self.CODES, chains)
+        self.assertIsNone(fixed)
+        self.assertEqual([r for r in receipts if r["rule"] == "toss_side"], [])
+        self.assertEqual([f.code for f in self.lint_codes(self.GUN_LEFT, chains)], ["TOSS_SIDE_CROSS"])
+
+    def test_generator_only_offers_the_back_side_toss_out_of_the_gun(self):
+        from mod_editor.core import nfl2k5_offense_concepts as oc, nfl2k5_offense_modern as om
+        ctx = oc.FormationContext.build(self.GUN_LEFT, self.CODES)
+        self.assertEqual((ctx.run_strong, om.toss_own_side(ctx, ctx.slot("B"))), (1, -1))
+        with self.assertRaises(oc.ConceptUnavailable):
+            om.run_design(ctx, "Crack Toss", codes=self.CODES)               # strong side: across behind the QB
+        weak = om.run_design(ctx, "Crack Toss", weak=True, codes=self.CODES)
+        self.assertEqual(weak.name, "Crack Toss Wk")
+        self.assertEqual(int(weak.chains[10][1][1][2]), 8)
+        # an explicit direction names the weak side itself; the wizard concept picks the back's side on its own
+        self.assertEqual(om.run_design(ctx, "Crack Toss", direction=-1, codes=self.CODES).name, "Crack Toss Wk")
+        built = oc.CONCEPTS["Crack Toss"].build(ctx)
+        self.assertEqual(int(built.chains[10][1][1][2]), 8)
+        # a back directly behind the QB (pistol) keeps both sides
+        pistol = oc.FormationContext.build(self.PISTOL, self.CODES)
+        self.assertIsNone(om.toss_own_side(pistol, pistol.slot("B")))
+        for weak_flag in (False, True):
+            om.run_design(pistol, "Zone Toss", weak=weak_flag, codes=self.CODES)
+
+
 class DefenseAndPacks(unittest.TestCase):
     def test_mug_front_in_a_pack_is_reported(self):
         from types import SimpleNamespace
