@@ -198,17 +198,15 @@ REVISION_4_SITES = frozenset({0x382200, 0x41E2A0, 0x3A5F20, 0x3BAB20, 0x3E2310, 
 # after every stage action all year, so right after the draft each club released about six players, many of them
 # that day's picks; it now keeps the native camp limit (0x247AF0: 65) until the regular season, and the season
 # gate's smart cut-down makes the one cut to 53. (2) In season every CPU club signed a long-unsigned 70+ free agent
-# and cut a player for him every week (weeks 1-4 of the first season: 32 a week, median overall 74 in, 50 out); a
-# prove-it deal now goes only to a club with an open roster spot. Code: the reconcile, week and roster_m windows and
-# the two stub addresses they move (economy_after, economy_stage6). A revision-4 image (beta-79 / v0.8, and the
-# revision-3 v0.7, whose bytes at these five sites are the same) upgrades in place.
-REVISION_5_SITES = frozenset({0x2BFBE0, 0x323870, 0x3DBC10, AFTER_STAGE, STAGE6_CASE})
+# and cut a player for him every week (weeks 1-4 of the first season: 32 a week, median overall 74 in, 50 out); the
+# prove-it pass now offers a free agent only to clubs with an open spot below 53, so its cut never runs. Code: the
+# reconcile, roster_c and roster_m windows. A revision-4 image (beta-79 / v0.8, and the revision-3 v0.7, whose
+# bytes at these three windows are the same) upgrades in place.
+REVISION_5_SITES = frozenset({0x2BFBE0, 0x3D2890, 0x3DBC10})
 PREVIOUS_REVISION_4 = {
     0x2BFBE0: "2799f37d8a03a2f2461bc433c91551d686d2470ac4799536a6333f7365a962cb",   # reconcile (trim at 54)
-    0x323870: "8272fdbcca8a0f2015d99f13c4e7220cc4a826adc236dc8321854379b828c4a1",   # week (cut to sign)
+    0x3D2890: "54acdc781f3da60b581bd64136523c9ea28f32386333b84051f0157fa410cff3",   # roster_c (best room: any club)
     0x3DBC10: "00e9fe65190ac0bf28e38e740cd4f929f449b091f97a5ba6cdb4f75de1349d48",   # roster_m (no camp limit)
-    AFTER_STAGE: "6583d740e2196efe9ca80190ae584679f28cf5af3431e097dadc538ed8c190c7",  # call economy_after 0x323A1F
-    STAGE6_CASE: "ffba3d1e8671bc9ead0fe8cf654d4b77e5ff66225a1d5a23b3cfd4c0affff716",  # economy_stage6 0x323A2F
 }
 REVISION = 5
 

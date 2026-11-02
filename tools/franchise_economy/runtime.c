@@ -405,7 +405,10 @@ SECTION(".roster_c") unsigned FAST economy_best_room(u8 *p, u8 **club) {
     int best = 0;
     for (unsigned t = 0; t < n_teams(); ++t) {
         u8 *team = n_team(t);
-        unsigned count = team[0x11c], better = 0, busy = 0, level;
+        /* b780 b4-economy (D10): the club that signs him (club != 0, the prove-it pass) needs an open spot below 53,
+         * so nobody is cut to make room (a full club reads busy); the ask (club == 0) still counts every club. Weeks 1-4
+         * of a simulated v0.8 season: every CPU club cut a player for one every week. */
+        unsigned count = team[0x11c], better = 0, busy = club && count >= 53, level;
         if (!CPU(team)) continue;
         for (unsigned j = 0; j < count; ++j) {
             u8 *q = ((u8 **)team)[j];
@@ -458,7 +461,8 @@ SECTION(".week") void FAST economy_week(void *menu, unsigned unused, float low, 
         if (!PROVE_IT_FREE_AGENT(p) || p[0x35] >= 17 || !(n_rating(p, 1) > PROVE_IT)) continue;
         unsigned ask = economy_value(p, 0, 0, 1, 1);
         if (economy_best_room(p, &club) < ask || !club) continue;
-        if (club[0x11c] >= limit) continue;
+        /* b780 b4-economy: economy_best_room no longer offers a full club (below), so this cut never runs now. */
+        if (club[0x11c] >= limit) n_cut_to(club, limit - 1);
         n_cpu_sign(club, p[0x35], ask + 1, menu);
     }
 }

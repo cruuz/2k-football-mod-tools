@@ -102,7 +102,7 @@ def generate():
         script = script.replace("*(.money_rodata)", "*(.fill_gate)")
         # b779 vs1: the transaction-years display stub shares the picks window's spare bytes.
         script = script.replace("*(.picks_rodata)", "*(.txn_years) *(.picks_rodata)")
-        # b780 b4-economy: the two stage stubs follow economy_week, which must start the window, in their own
+        # b780 b4-economy: the two stage stubs follow economy_week (which must start the window) in their own
         # input section, so gcc's function order inside .week cannot move them in front of it.
         script = script.replace("*(.week_rodata)", "*(.week_rodata) *(.week_tail)")
         script += "\n/DISCARD/ : { *(.comment) *(.note*) *(.eh_frame*) } }\n"

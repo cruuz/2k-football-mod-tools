@@ -215,7 +215,7 @@ class DraftClassSupplyTests(unittest.TestCase):
 
     def test_revision_three_reads_legacy_and_upgrades_in_place(self):
         from mod_editor.core import nfl2k5_franchise_economy as economy
-        self.assertEqual(economy.REVISION, 4)
+        self.assertIn(economy.REVISION, (4, 5))   # b780 b4-economy revision 5 keeps every revision-4 site
         self.assertEqual(economy.status(self.previous), "legacy")
         upgraded, receipt = economy.apply(self.previous)
         self.assertEqual(upgraded, self.current)
