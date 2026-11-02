@@ -63,10 +63,17 @@ Community slider sets are separate content and are not automatically installed b
 
 ## Why does a build take time, and what does Disc ready mean?
 
-The studio prepares your edits, copies the disc and verifies the output. Unchanged artwork
-can reuse the private compile cache, and the final check uses the build receipt instead of
-compiling that artwork again. Shared texture spans can require several related edits to be
-prepared together. Copying and comparing a whole disc still take time.
+The studio prepares your edits, copies the disc and verifies the output. Preparing is the long
+part for a big project: a project with thousands of textures needs hours the first time. What a
+build compiles is kept in a private cache beside the game files the studio read from your disc,
+and it is keyed by your artwork and by the studio's own encoder code, never by where a file or a
+project happens to be. So the next build reuses every texture whose artwork did not change: after
+a failed build, after closing and reopening the studio or the project, and after a studio update
+that does not touch the encoders. Only new or changed artwork is compiled again. When that step
+ends, the progress line says how many textures were reused and, for any compiled again, why. The
+final check uses the build receipt instead of compiling that artwork again. Shared texture spans
+can require several related edits to be prepared together. Copying and comparing a whole disc
+still take time.
 
 Coach Edwards and maumau78 reported builds of about five minutes after earlier long waits.
 That is their experience, not a timing promise for your project or computer. If a build fails,
@@ -74,6 +81,27 @@ post **Copy Build summary** and the first error, including the named edit and fi
 **Disc ready** describes the selection and result. **No changes written** means the output
 matched the source; the changes may already have been installed. Neither message is a played
 verification of every feature. The original game disc is not changed.
+
+## My build failed. Should I clear the cache, delete the sessions folder or reinstall?
+
+No. A failed build leaves your project and your artwork alone, and everything it had already
+compiled stays in the cache. The cache is what makes the next try fast: those textures are reused,
+so a retry skips the compile work, which is most of the time of a big project. Clearing it only
+makes the next build slow again. Reinstalling does not help either; it is for a studio that will
+not open or update (the first question above). Post **Copy Build summary** and the first error
+instead, so the cause can be found.
+
+What the cache is and what deleting it costs: the compiled textures sit in a folder called
+`project-stage`, next to the private game cache (Windows `%LOCALAPPDATA%\2k5-mod-studio\cache\project-stage`,
+Linux and macOS `~/.cache/2k5-mod-studio/project-stage`). They are made from your own disc, so keep
+the folder private like the game cache and never share it. It is limited to about 3 GiB and the
+oldest results go first; a build never removes what it is using. Updating or reinstalling the studio
+does not delete it, and your reused textures survive an update that does not change how textures are
+encoded. Deleting the folder yourself is safe, but it costs one slow build, because every texture is
+compiled again (hours for thousands of textures).
+Your projects, your artwork and your original disc are not stored there. The working sessions
+under `sessions` hold copies of the artwork you opened and clean themselves up after two weeks;
+the build no longer keeps its compiled textures in them.
 
 ## Can I find out what will stop a long build before I start it?
 

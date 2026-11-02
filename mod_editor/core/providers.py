@@ -511,7 +511,7 @@ class Nfl2k5UnifiedVisualProvider:
         "--source-xiso <retail.xiso.iso> --output-xiso <new.xiso.iso> "
         "--manifest <manifest.json> --artifact-dir <artifact-dir>"
     )
-    backend_module_sha256 = "27e31e9a122d1d3fcaff060c776f4eba541b1fb522fb4be8fabc86543f5d3fdd"
+    backend_module_sha256 = "de7fe94cea4695f950ab7a2b2cb2f440de9a061b738e0369bdebb557614c0bc7"
     module_pins: Mapping[str, str] = {
         "mod_editor/core/nfl2k5_defense_lint.py": "11863cffaf5250b3c150432b1f74d9f6115e6603fcc6d7a3e6127b9ebb6e2756",
         "mod_editor/core/nfl2k5_espn25_fields.py": "c6d78cdfca03089dece69ddb9ca9f97051d8f6f8fc4c937e7fef4979c23e38eb",
@@ -627,9 +627,9 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_ausb_build_adapter.py": "138eccfa097da8005dca74d43c0a10808558c4a4f1702c31e8f009cc49a7ecc7",
         "mod_editor/core/nfl2k5_ausb_fixed_slots.py": "56a39ad842d3552dd26e2089d3c859cba8b59fd61701e63f2f9265db20422d4a",
         "mod_editor/core/nfl2k5_boot_logo.py": "9ee25b1fb49859951ba4780ec2b4a3d71773f7199d5a308338acf51f84bdb257",
-        "mod_editor/core/nfl2k5_build_service.py": "e22d670a851ddc493d913d741818a9cc567f5bc827ef3c44da12d48b12439438",
+        "mod_editor/core/nfl2k5_build_service.py": "cdff75f2ceb2da2ad18d38b7c8f1915193f91075ac2275cb204474765d27dcc7",
         "mod_editor/core/nfl2k5_build_settings.py": "8351e0cf659e6e9115f13e08a6c2c971ab7cb11f7182d2438610d55e5bdfa510",
-        "mod_editor/core/nfl2k5_build_service.py": "e22d670a851ddc493d913d741818a9cc567f5bc827ef3c44da12d48b12439438",
+        "mod_editor/core/nfl2k5_build_service.py": "cdff75f2ceb2da2ad18d38b7c8f1915193f91075ac2275cb204474765d27dcc7",
         "mod_editor/core/nfl2k5_midfield_art.py": "da5ff3541f2d7a7674cd3fc715c831379ecbe17c307951ce547ecaf8d3b4ab89",
         "mod_editor/core/nfl2k5_split_endzone_art.py": "c135625db5663efa13f3f446f98e7cfe8d071148f7b892ea378d18a05d845957",
         "mod_editor/core/exact_math.py": "31b977deeda09cbb68dcde7561ea54c9ebfad2cb4ff74f6601d681e3f4d68564",
@@ -681,7 +681,8 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_catch_slider.py": "87bd3509affba3d38d59189fa9e8b4b0519a7dda105b6fea34aa57da9bea4b61",
         "mod_editor/core/nfl2k5_cave_oracle.py": "8be24dd71d7503dba209061747bb74c439833970978a045a96f740cedafb940e",
         "mod_editor/core/nfl2k5_college_check.py": "9aeab1abca54ffef2708e02354baec7525b17d2d354c655c0d1d80b6141efbf9",
-        "mod_editor/core/nfl2k5_compile_cache.py": "d5ed30d4ad41964186518f2fa2b7c5c2a2ec84a48225b74299c504f5455b115b",
+        "mod_editor/core/nfl2k5_compile_cache.py": "6e30bc377ab6b894b8d5b634cc2ed2426f143795d937a2ab423eece80876b40e",
+        "mod_editor/core/nfl2k5_stage_cache.py": "4e78b766d57fc320d2448cd7b2ade0ff4ad08a37f45e74f41cbfe9868c6df72a",
         "mod_editor/core/nfl2k5_late_steps.py": "da80a117d5b755d3e3e2c77bd3fe221b2737d995cb11740a409e4bd3af15a65a",
         "mod_editor/core/nfl2k5_coverage_slider.py": "e63025985e5e2a1f9e18fbc8f7375b16689f2b81bdb61766d86f8d8ee515fc0b",
         "mod_editor/core/nfl2k5_coverage_trail.py": "68b6548fc60cf8cbed4a912403b6323c44818eeba358cdc28fa8090642a3e969",
@@ -1024,7 +1025,7 @@ class Nfl2k5UnifiedVisualProvider:
         "tools/nfl2k5_scorebug_position_patch.py": "eb2b913bd4d0620dcefc4f280db1f6d73e4a5c348b0483a246bbf587506cdbff",
         "tools/nfl2k5_scorebug_reference.py": "5186fbbbc75619518cdad41763d4fcb9d438bb2bf37ee98bc74b265c6446b435",
         "tools/nfl2k5_roster_reclassify.py": "0f4800d1558de2c5b0f9f2722b5f3f5d7a4797a58f454f0a7db9179175af8831",
-        "tools/nfl2k5_visual_mod_project.py": "27e31e9a122d1d3fcaff060c776f4eba541b1fb522fb4be8fabc86543f5d3fdd",
+        "tools/nfl2k5_visual_mod_project.py": "de7fe94cea4695f950ab7a2b2cb2f440de9a061b738e0369bdebb557614c0bc7",
         "tools/nfl_all_texture_xiso_workflow.py": "61d0574ae5320cb7b12b96f1be0b34dcf1fdef363091b00de0fd0fac7130bd91",
         "tools/nfl_audo_wav_xiso_workflow.py": "d684cbe7b30f77caf808bcef3d0219777b333336ae5bee4837d10f69cc1d13c6",
         "tools/nfl_create_team_field_art_inventory.py": "da59018f1417871516b75769ea53a351a1d2b03ed855f985c1f88ac333b42489",
