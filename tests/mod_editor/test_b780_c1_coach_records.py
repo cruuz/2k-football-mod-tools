@@ -221,5 +221,36 @@ class ReleasedRosterTests(unittest.TestCase):
             self.assertEqual(new[team.coach_offset + 0x42], 70 + (team.index % 20))
 
 
+_SAVE = Path(os.environ.get("NFL2K5_FRANCHISE_SAVE",
+                            "/home/noah/2k-worktrees/.b77-scratch/b780/c6-carousel/fixtures/v08_save/SAVEGAME.DAT"))
+
+
+@unittest.skipUnless(_SAVE.is_file(), "a franchise SAVEGAME.DAT is absent (set NFL2K5_FRANCHISE_SAVE)")
+class FranchiseArenaTests(unittest.TestCase):
+    """The same writer on a real franchise save: the roster arena (version 1) at +0x300 of SAVEGAME.DAT."""
+
+    def test_the_arena_takes_the_records_and_nothing_else_moves(self) -> None:
+        raw = _SAVE.read_bytes()
+        document = rr.RosterDocument(raw, base=rr.SAVE_BLOCK_OFFSET, source="save")
+        clubs = [t for t in document.teams if t.index < 32]
+        entries = [{"team": t.abbreviation, "ratings": {"overall": 60 + t.index}, "announcer": "generic",
+                    "tendencies": {"run_share": 40 + t.index % 10}} for t in clubs]
+        log: list[str] = []
+        self.assertEqual(rr.apply_coach_records(document, entries, log), 32)
+        self.assertEqual(log, [])
+        new = bytes(document.body)
+        records = {t.coach_offset for t in clubs}
+        self.assertEqual(len(records), 32)
+        changed = [i for i, (a, b) in enumerate(zip(raw, new)) if a != b]
+        self.assertTrue(changed)
+        for index in changed:
+            owner = next((r for r in records if r <= index < r + rr.COACH_RECORD_SIZE), None)
+            self.assertIsNotNone(owner, f"byte 0x{index:X} outside the coach records changed")
+            self.assertIn(index - owner, (0x1A, 0x42, 0x59))
+        for team in clubs:
+            self.assertEqual(new[team.coach_offset + 0x42], 60 + team.index)
+            self.assertTrue(new[team.coach_offset + 0x1A] & 2)
+
+
 if __name__ == "__main__":
     unittest.main()
