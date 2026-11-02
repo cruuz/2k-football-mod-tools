@@ -151,6 +151,13 @@ class CheckdownScoreTests(unittest.TestCase):
                 a = self.machine(self.retail).score(point, **situation)
                 b = self.machine(self.patched).score(point, **situation)
                 self.assertEqual(struct.pack("<f", a), struct.pack("<f", b), (point, situation))
+        def covered_deep(m):                                            # a zone defender standing on a 17-yd spot
+            m.place(m.RB, 0.0, 12.0, 0.0, 0.0)
+            m.defender(role=13, x=0.0, depth=12.0, spot=(0.0, 12.0))
+        for situation in (dict(t=1.0), dict(t=3.5), dict(t=1.0, pressure=0.95)):
+            a = self.machine(self.retail, covered_deep).score((0.0, 12.0), **situation)
+            b = self.machine(self.patched, covered_deep).score((0.0, 12.0), **situation)
+            self.assertEqual(struct.pack("<f", a), struct.pack("<f", b), situation)
         for situation in (dict(t=3.5), dict(t=1.0, pressure=0.95)):
             a = self.machine(self.retail).score(BACK_5YD, human=True, **situation)
             b = self.machine(self.patched).score(BACK_5YD, human=True, **situation)
