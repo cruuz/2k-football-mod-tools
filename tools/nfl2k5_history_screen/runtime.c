@@ -18,8 +18,10 @@
      (the Team Standings geometry), text in the standings font (4) and colours.
    Box score (second descriptor, pushed from the Schedule with X on a played game): line score by quarter from the
      league grid for every game; for a game kept in the footer, the team stats of both clubs and the player lines.
-   Game log (Player Card page 4, called by the champions owner's page cycle): one line per stored game of the card's
-     player this season. */
+   Game log (Player Card page 4: the champions owner's page cycle finds hist_card_flip / hist_card_rows / hist_card_bio through the
+     extension record this owner keeps just before its ESPN.com rows, see build_ro): one line per stored game of the
+     card's player this season.
+   The footer layout is the j23-footer contract (nfl2k5_franchise_extension, envelope 1, blocks version 1). */
 
 typedef unsigned int u32;
 typedef int i32;
@@ -90,7 +92,6 @@ extern const volatile u32 hist_xtnd_ptr[] __attribute__((weak));
 #define S_BOX_ROW 5
 #define S_BOX_SLOT 6
 #define S_BOX_SCROLL 7
-#define S_LOG_SCROLL 8
 
 /* ---- small text helpers ------------------------------------------------------------------------------------ */
 static u16 *put_text(u16 *out, const u16 *text, u32 limit) {
@@ -310,46 +311,46 @@ static u32 game_club_of_seed(u32 seed) {
     return 0xFF;
 }
 
-/* ---- the franchise extension footer (draft 2K5XTND1, nfl2k5_history_screen.FOOTER_DRAFT) ---------------------------- */
+
+/* ---- the franchise extension footer (2K5XTND1 envelope 1, nfl2k5_franchise_extension, job j23-footer) -------------- */
+/* Body: +0 magic, +8 u16 envelope 1, +0xA u16 header size 64, +0xC u32 body size, +0x10 u16 directory offset 0x40,
+   +0x12 u16 slots 16, +0x14 u16 slot size 16; slot n (id n + 1): u16 id, u8 version, u8 flags (bit 0 present),
+   u32 offset, u32 size, u32 Adler-32. Blocks (version 1): 1 seasons, 2 totals, 3 records, 4 leaders, 5 hall,
+   6 box scores. A block whose entry fails any check reads as absent. */
 #define X_SEASONS 1
 #define X_TOTALS 2
-#define X_AWARDS 3
-#define X_CLUB_RECORDS 4
-#define X_LEADERS 5
-#define X_HOF 6
-#define X_BOX 7
+#define X_RECORDS 3
+#define X_LEADERS 4
+#define X_HALL 5
+#define X_BOX 6
 
 static const u8 *x_body(void) {
     u32 body = hist_xtnd_ptr ? hist_xtnd_ptr[0] : 0;
     return body >= 0x10000 && body < 0x08000000 && !(body & 3) ? (const u8 *)body : 0;
 }
 
-static u32 x_total(void) {
-    const u8 *f = x_body();
-    if (!f)
-        return 0;
+static u32 x_size(const u8 *f) {
     static const u8 magic[8] = {'2', 'K', '5', 'X', 'T', 'N', 'D', '1'};
     for (u32 i = 0; i < 8; i++)
         if (f[i] != magic[i])
             return 0;
-    u32 total = *(const u32 *)(f + 12), count = *(const u16 *)(f + 10);
-    return *(const u16 *)(f + 8) == 1 && count <= 16 && total >= 16 + 16 * count && total <= 0x20000 ? total : 0;
+    u32 size = *(const u32 *)(f + 12);
+    return *(const u16 *)(f + 8) == 1 && *(const u16 *)(f + 10) == 64 && *(const u16 *)(f + 16) == 0x40 &&
+           *(const u16 *)(f + 18) == 16 && *(const u16 *)(f + 20) == 16 && size >= 0x200 && size <= 0x20000 ? size : 0;
 }
 
-/* The block with this id (and at least this size), or 0. */
+/* The block with this id, version 1 and at least `need` bytes, or 0. */
 static const u8 *x_block(u32 id, u32 need) {
-    u32 total = x_total();
-    if (!total)
-        return 0;
     const u8 *f = x_body();
-    u32 count = *(const u16 *)(f + 10);
-    for (u32 i = 0; i < count; i++) {
-        const u8 *e = f + 16 + 16 * i;
-        u32 off = *(const u32 *)(e + 4), size = *(const u32 *)(e + 8);
-        if (*(const u16 *)e == id && size >= need && off >= 16 + 16 * count && off <= total && size <= total - off)
-            return f + off;
-    }
-    return 0;
+    u32 size = f ? x_size(f) : 0;
+    if (!size || id < 1 || id > 16)
+        return 0;
+    const u8 *e = f + 0x40 + 16 * (id - 1);
+    u32 off = *(const u32 *)(e + 4), length = *(const u32 *)(e + 8);
+    if (*(const u16 *)e != id || e[2] != 1 || !(e[3] & 1) || off < 0x200 || off > size || length > size - off ||
+        length < need)
+        return 0;
+    return f + off;
 }
 
 static u32 sym_char(u32 s) {
@@ -366,7 +367,7 @@ static u32 bits(const u8 *in, u32 at, u32 count) {
     return value;
 }
 
-/* The champions block's 55-bit person (initial, nine letters, position): "T. BRADY"; 0 letters = empty. */
+/* The 7-byte person (champions packing: initial, nine letters, position; 31 = coach / none): "T. BRADY". */
 static u32 person_empty(const u8 *p) {
     return !bits(p, 5, 5);
 }
@@ -393,8 +394,12 @@ static u32 person_pos(const u8 *p) {
 }
 
 /* ---- season year and the user's club ---------------------------------------------------------------------- */
+static u32 base_year(void) {
+    return (u32)((i32)G(CARD_YEAR_IMM) - 11);
+}
+
 static u32 season_year(void) {
-    return (u32)((i32)G(CARD_YEAR_IMM) - 11) + G(SEASONS);
+    return base_year() + G(SEASONS);
 }
 
 static u32 user_club(void) {
@@ -418,19 +423,23 @@ static const char *const award_name[AWARDS_N] = {"MOST VALUABLE PLAYER", "OFFENS
                                                  "DEFENSIVE PLAYER OF THE YEAR", "OFFENSIVE ROOKIE OF THE YEAR",
                                                  "DEFENSIVE ROOKIE OF THE YEAR", "COMEBACK PLAYER OF THE YEAR",
                                                  "COACH OF THE YEAR", "SUPER BOWL MVP"};
+/* the footer's record categories (j23 RECORD_CATEGORIES); the leaders use the first ten without completions and
+   forced fumbles (LEADER_CAT below maps them) */
 #define CATS 12
-static const char *const category_name[CATS] = {"PASS YARDS", "PASS TD", "RUSH YARDS", "RUSH TD", "RECEPTIONS",
-                                                "REC. YARDS", "REC. TD", "SACKS", "INTERCEPTIONS", "TACKLES",
-                                                "FIELD GOALS", "POINTS"};
+static const char *const category_name[CATS] = {"PASS YARDS", "PASS TD", "COMPLETIONS", "RUSH YARDS", "RUSH TD",
+                                                "RECEPTIONS", "REC. YARDS", "REC. TD", "SACKS", "INTERCEPTIONS",
+                                                "TACKLES", "FORCED FUMBLES"};
+#define C_SACKS 8
+#define LEADER_CATS 10
+static const u8 leader_category[LEADER_CATS] = {0, 1, 3, 4, 5, 6, 7, 8, 9, 10};
 static const char *const playoff_text[8] = {"", "LOST WILD CARD", "LOST DIVISIONAL", "LOST CONFERENCE",
                                             "LOST SUPER BOWL", "WON SUPER BOWL", "", ""};
 
 static u16 *put_value(u16 *out, u32 category, u32 value) {
-    return category == 7 ? put_halves(out, value) : put_thousands(out, value);
+    return category == C_SACKS ? put_halves(out, value) : put_thousands(out, value);
 }
 
-/* A list of lines, newest or best first: a page fills rows from it after the scroll. Each page computes its lines in a
-   stable order with a "line k" function, so scrolling needs no table. */
+/* A list of lines, newest or best first: a page fills rows from it after the scroll. */
 typedef struct {
     u32 count;          /* lines available */
     u32 first;          /* first line drawn (the scroll, clamped) */
@@ -449,30 +458,27 @@ static void list_start(List *l, u32 count, u32 top) {
     l->first = first;
 }
 
-/* ---- SEASONS: franchise seasons from the footer, newest first, then the seeded real seasons ---------------------- */
-#define SEASON_SLOT 260u
-#define SEASON_SLOTS 32u
+/* ---- the footer's seasons (block 1): a ring of 32 season records of 592 bytes, newest = slot head - 1 ----------- */
+#define SEASON_RECORD 592u
+#define SEASON_RING 32u
 
-/* The slots of a 32-season ring (year u16 at the start of each slot) ordered newest first; returns how many hold a season. */
-static u32 ring_order(const u8 *b, u32 slot_size, u8 *order) {
-    u32 count = 0;
+/* The k-th newest stored season record, or 0. */
+static const u8 *x_season(const u8 *b, u32 k) {
     if (!b)
         return 0;
-    for (u32 s = 0; s < SEASON_SLOTS; s++) {
-        u32 year = *(const u16 *)(b + slot_size * s);
-        if (year >= 1990 && year < 2200)
-            order[count++] = (u8)s;
-    }
-    for (u32 i = 0; i + 1 < count; i++) {                   /* selection sort, year descending */
-        u32 best = i;
-        for (u32 j = i + 1; j < count; j++)
-            if (*(const u16 *)(b + slot_size * order[j]) > *(const u16 *)(b + slot_size * order[best]))
-                best = j;
-        u8 t = order[i];
-        order[i] = order[best];
-        order[best] = t;
-    }
-    return count;
+    u32 count = b[0], head = b[1];
+    if (count > SEASON_RING || head >= SEASON_RING || k >= count)
+        return 0;
+    const u8 *r = b + 16 + SEASON_RECORD * ((head + SEASON_RING - 1 - k) % SEASON_RING);
+    u32 year = *(const u16 *)r;
+    return year >= 1990 && year < 2200 ? r : 0;
+}
+
+static u32 x_season_count(const u8 *b) {
+    u32 n = 0;
+    while (n < SEASON_RING && x_season(b, n))
+        n++;
+    return n;
 }
 
 static void draw_season_line(u32 row, u32 year, u32 w, u32 l, u32 t, u32 place, u32 playoff, const u16 *coach,
@@ -487,7 +493,7 @@ static void draw_season_line(u32 row, u32 year, u32 w, u32 l, u32 t, u32 place, 
         cell(row, 210.0f, 1, text, colour);
     }
     cell_ascii(row, 265.0f, 1, playoff_text[playoff & 7], colour);
-    if (coach)
+    if (coach && coach[0])
         cell(row, 445.0f, 1, coach, colour);
 }
 
@@ -500,16 +506,16 @@ static void page_seasons(u32 index) {
         if (seed_first + seed_count > RO_FIELD(RO_SEASON_COUNT))
             seed_count = 0;
     }
-    const u8 *ring = x_block(X_SEASONS, SEASON_SLOT * SEASON_SLOTS);
-    u8 order[SEASON_SLOTS];
-    u32 franchise = ring_order(ring, SEASON_SLOT, order);
-    /* row 0: the franchise era record from the totals block */
-    const u8 *totals = x_block(X_TOTALS, 384);
+    const u8 *ring = x_block(X_SEASONS, 16 + SEASON_RECORD * SEASON_RING);
+    u32 franchise = x_season_count(ring);
+    /* row 0: the franchise era from the totals block (+0 u16 first year, +16 + club*16 the club's line) */
+    const u8 *totals = x_block(X_TOTALS, 16 + 16 * 32);
+    u32 first_year = totals && *(const u16 *)totals ? *(const u16 *)totals : base_year();
     out = put_ascii(text, "SINCE ");
-    out = put_uint(out, (u32)((i32)G(CARD_YEAR_IMM) - 11));
+    out = put_uint(out, first_year);
     out = put_ascii(out, ": ");
-    if (totals && *(const u16 *)(totals + 12 * index + 10)) {
-        const u8 *c = totals + 12 * index;
+    const u8 *c = totals ? totals + 16 + 16 * index : 0;
+    if (c && c[10]) {
         out = put_record(out, *(const u16 *)c, *(const u16 *)(c + 2), *(const u16 *)(c + 4));
         out = put_ascii(out, "   PLAYOFFS ");
         out = put_uint(out, c[6]);
@@ -534,13 +540,22 @@ static void page_seasons(u32 index) {
     }
     for (u32 r = 0; r < l.rows && l.first + r < l.count; r++) {
         u32 k = l.first + r;
+        u16 coach[28];
+        coach[0] = 0;
         if (k < franchise) {
-            const u8 *s = ring + SEASON_SLOT * order[k], *c = s + 4 + 8 * index;
-            draw_season_line(l.top + r, *(const u16 *)s, c[0], c[1], c[2], c[3] & 15, c[3] >> 4, 0, YELLOW);
+            const u8 *s = x_season(ring, k), *line = s + 80 + 16 * index;
+            u32 outcome = line[3];
+            if (!(outcome & 0x80)) {                      /* no line for this club that season */
+                put_uint(text, *(const u16 *)s);
+                cell(l.top + r, 60.0f, 1, text, YELLOW);
+                continue;
+            }
+            if (!person_empty(line + 8))
+                put_person(coach, line + 8);
+            draw_season_line(l.top + r, *(const u16 *)s, line[0], line[1], line[2], ((outcome >> 5) & 3) + 1,
+                             outcome & 7, coach, YELLOW);
         } else {
             u32 at = RO_FIELD(RO_SEASONS) + 10 * (seed_first + k - franchise);
-            u16 coach[28];
-            coach[0] = 0;
             put_seed_name(coach, RO_U16(at + 6));
             draw_season_line(l.top + r, RO_U16(at), RO_U8(at + 2), RO_U8(at + 3), RO_U8(at + 4), RO_U8(at + 5) & 15,
                              RO_U8(at + 5) >> 4, coach, GREY);
@@ -549,9 +564,12 @@ static void page_seasons(u32 index) {
 }
 
 /* ---- RECORDS and RECORD BOOK -------------------------------------------------------------------------------- */
-/* Record entry, seed: {u8 category, u8 kind (0 game, 1 season, 2 career), u16 name, u32 value, u16 year, u8 club, u8 pos}.
-   Footer club records: 12 categories x {game, season} x {person 7, u8 flags, u16 year, u16 value} per club. */
+/* Seed entry (RO): {u8 category, u8 kind (0 game, 1 season, 2 career), u16 name, u32 value, u16 year, u8 club, u8 pos}.
+   Footer records (block 3): club entry ((club*12 + category)*2 + kind) at +16 and league entry (category*2 + kind) at
+   +9232, 12 B each: person (7), u8 club+1, u16 value, u8 year - 1900 (0 = empty), u8 week row + 1. */
 static const char *const kind_name[3] = {"GAME", "SEASON", "CAREER"};
+#define RECORDS_SIZE 9520u
+#define LEAGUE_RECORDS_AT 9232u
 
 typedef struct {
     u32 value, year, club, pos, fresh;   /* fresh: made in this franchise (NEW) */
@@ -570,7 +588,7 @@ static u32 seed_club_record(u32 seed, u32 category, u32 kind, Mark *m) {
         if (RO_U8(at) == category && RO_U8(at + 1) == kind) {
             m->value = RO_U32(at + 4);
             m->year = RO_U16(at + 8);
-            m->club = RO_U8(at + 10);
+            m->club = game_club_of_seed(seed);
             m->pos = RO_U8(at + 11);
             m->fresh = 0;
             m->name[0] = 0;
@@ -581,27 +599,31 @@ static u32 seed_club_record(u32 seed, u32 category, u32 kind, Mark *m) {
     return 0;
 }
 
-static u32 x_club_record(u32 index, u32 category, u32 kind, Mark *m) {
-    const u8 *b = x_block(X_CLUB_RECORDS, 32 * CATS * 2 * 12);
-    if (!b || index >= 32 || kind > 1)
+/* a footer record entry; entries dated before the franchise began are seeded real ones (not NEW) */
+static u32 x_mark(const u8 *e, Mark *m) {
+    if (person_empty(e) || !e[10])
         return 0;
-    const u8 *e = b + 12 * (2 * (CATS * index + category) + kind);
-    if (person_empty(e) || !*(const u16 *)(e + 10))
-        return 0;
-    m->value = *(const u16 *)(e + 10);
-    m->year = *(const u16 *)(e + 8);
-    m->club = index;
+    m->value = *(const u16 *)(e + 8);
+    m->year = 1900u + e[10];
+    m->club = e[7] && e[7] <= 32 ? e[7] - 1u : 0xFF;
     m->pos = person_pos(e);
-    m->fresh = 1;
+    m->fresh = m->year >= base_year();
     put_person(m->name, e);
     return 1;
 }
 
-/* the better of the seeded club record and the franchise one */
+static u32 x_club_record(u32 index, u32 category, u32 kind, Mark *m) {
+    const u8 *b = x_block(X_RECORDS, RECORDS_SIZE);
+    if (!b || index >= 32 || kind > 1 || category >= CATS)
+        return 0;
+    return x_mark(b + 16 + 12 * ((index * CATS + category) * 2 + kind), m);
+}
+
+/* the better of the seeded club record and the footer's */
 static u32 club_record(u32 index, u32 category, u32 kind, Mark *m) {
     Mark x;
     u32 have = seed_club_record(seed_of(index), category, kind, m);
-    if (x_club_record(index, category, kind, &x) && (!have || x.value > m->value)) {
+    if (x_club_record(index, category, kind, &x) && (!have || x.value > m->value || (x.value == m->value && !x.fresh))) {
         *m = x;
         have = 1;
     }
@@ -653,7 +675,29 @@ static void page_records(u32 index) {
     }
 }
 
-/* NFL record book: the seeded record, unless a club record made in this franchise beats it */
+/* NFL record book: the seeded record; a league record kept by the footer replaces it when it is better (career records:
+   the league career leader of the leaders block) */
+#define LEADERS_SIZE 16176u
+#define LEAGUE_LEADERS_AT 15376u
+
+static u32 x_career_leader(u32 category, Mark *m) {
+    const u8 *b = x_block(X_LEADERS, LEADERS_SIZE);
+    for (u32 c = 0; b && c < LEADER_CATS; c++)
+        if (leader_category[c] == category) {
+            const u8 *e = b + LEAGUE_LEADERS_AT + 16 * (c * 5);
+            if (!(e[7] & 1) || person_empty(e))
+                return 0;
+            m->value = *(const u32 *)(e + 8);
+            m->year = 0;
+            m->club = 0xFF;
+            m->pos = person_pos(e);
+            m->fresh = (e[7] & 8) != 0;
+            put_person(m->name, e);
+            return 1;
+        }
+    return 0;
+}
+
 static u32 book_entry(u32 k, u32 *category, u32 *kind, Mark *m) {
     u32 base = RO_FIELD(RO_BOOK), count = RO_FIELD(RO_BOOK_COUNT);
     if (!base || k >= count || base + 12 * (k + 1) > RO_FIELD(RO_SIZE))
@@ -668,12 +712,12 @@ static u32 book_entry(u32 k, u32 *category, u32 *kind, Mark *m) {
     m->fresh = 0;
     m->name[0] = 0;
     put_seed_name(m->name, RO_U16(at + 2));
-    if (*kind < 2) {
-        Mark x;
-        for (u32 i = 0; i < 32; i++)
-            if (x_club_record(i, *category, *kind, &x) && x.value > m->value)
-                *m = x;
-    }
+    Mark x;
+    const u8 *b = x_block(X_RECORDS, RECORDS_SIZE);
+    if (*kind < 2 && b && x_mark(b + LEAGUE_RECORDS_AT + 12 * (*category * 2 + *kind), &x) && x.value > m->value)
+        *m = x;
+    if (*kind == 2 && x_career_leader(*category, &x) && x.value > m->value)
+        *m = x;
     return 1;
 }
 
@@ -697,20 +741,19 @@ static void page_book(void) {
 }
 
 /* ---- LEADERS: the club's all-time top three per category --------------------------------------------------- */
-/* seed: per club {u16 first, u16 count} x 32, then entries {u8 category, u8 rank, u16 name, u32 value, u8 pos, u8 flags}
-   (10 B); footer: 32 clubs x 10 categories x 3 x {person 7, u8 flags, u32 value}. The footer's entries, when present,
-   are the live table (seeded at the franchise start and updated each season); otherwise the seed shows. */
-#define LEADER_CATS 10
-
+/* Footer (block 4): club entry ((club*10 + category)*3 + rank) at +16, 16 B: person (7), u8 flags (1 valid, 2 real,
+   4 linked, 8 franchise era), u32 value, u16 player, u16 check. When the footer keeps a club's table (seeded at the
+   franchise start, then counted), it is the live one; otherwise the seed's (RO: per club {u16 first, u16 count} x 32,
+   then 10-byte entries {u8 category (0..9), u8 rank, u16 name, u32 value, u8 pos, u8 flags}). */
 static u32 leader(u32 index, u32 k, Mark *m, u32 *category, u32 *rank) {
     *category = k / 3;
     *rank = k % 3;
-    const u8 *b = x_block(X_LEADERS, 32 * LEADER_CATS * 3 * 12);
+    const u8 *b = x_block(X_LEADERS, LEADERS_SIZE);
     if (b && index < 32) {
-        const u8 *e = b + 12 * (3 * (LEADER_CATS * index + *category) + *rank);
-        if (!person_empty(e) && *(const u32 *)(e + 8)) {
-            m->value = *(const u32 *)(e + 8) & 0xFFFFFF;
-            m->fresh = e[7] & 1;
+        const u8 *e = b + 16 + 16 * (3 * (LEADER_CATS * index + *category) + *rank);
+        if ((e[7] & 1) && !person_empty(e)) {
+            m->value = *(const u32 *)(e + 8);
+            m->fresh = (e[7] & 8) != 0;
             m->pos = person_pos(e);
             m->year = 0;
             m->club = index;
@@ -760,11 +803,11 @@ static void page_leaders(u32 index) {
         leader(index, have[l.first + r], &m, &category, &rank);
         u32 row = l.top + r, colour = m.fresh ? YELLOW : GREY;
         if (!rank || !r)
-            cell_ascii(row, 60.0f, 1, category_name[category], GREY);
+            cell_ascii(row, 60.0f, 1, category_name[leader_category[category]], GREY);
         out = put_uint(text, rank + 1);
         put_ascii(out, ".");
         cell(row, 215.0f, 2, text, DIM);
-        put_value(text, category, m.value);
+        put_value(text, leader_category[category], m.value);
         cell(row, 335.0f, 2, text, colour);
         cell(row, 350.0f, 1, m.name, colour);
         if (m.fresh)
@@ -772,13 +815,10 @@ static void page_leaders(u32 index) {
     }
 }
 
-/* ---- AWARDS: one award (L/R), one line per season newest first: footer seasons, then the seeded ones ----------- */
-#define AWARD_SLOT 66u
-
+/* ---- AWARDS: one award (L/R), one line per season newest first: the footer's seasons, then the seeded ones -------- */
 static void page_awards(u32 award) {
-    const u8 *ring = x_block(X_AWARDS, AWARD_SLOT * SEASON_SLOTS);
-    u8 order[SEASON_SLOTS];
-    u32 franchise = ring_order(ring, AWARD_SLOT, order), seed_first = 0, seed_count = 0;
+    const u8 *ring = x_block(X_SEASONS, 16 + SEASON_RECORD * SEASON_RING);
+    u32 franchise = x_season_count(ring), seed_first = 0, seed_count = 0;
     if (ro_ok() && RO_FIELD(RO_AWARDS)) {
         seed_first = RO_U16(RO_FIELD(RO_AWARDS) + 4 * award);
         seed_count = RO_U16(RO_FIELD(RO_AWARDS) + 4 * award + 2);
@@ -798,10 +838,10 @@ static void page_awards(u32 award) {
         u16 name[28], text[24];
         name[0] = 0;
         if (k < franchise) {
-            const u8 *s = ring + AWARD_SLOT * order[k], *e = s + 2 + 8 * award;
+            const u8 *s = x_season(ring, k), *e = s + 16 + 8 * award;
             year = *(const u16 *)s;
-            pos = person_pos(e);
-            team = e[7] ? e[7] - 1u : 0xFF;
+            pos = person_empty(e) ? 0xFF : person_pos(e);
+            team = e[7] && e[7] <= 32 ? e[7] - 1u : 0xFF;
             colour = YELLOW;
             if (person_empty(e))
                 put_ascii(name, "-");
@@ -832,33 +872,11 @@ static void page_awards(u32 award) {
 }
 
 /* ---- HALL OF FAME: classes newest first, franchise inductees then the seeded members; L/R filters by club --------- */
-#define HOF_SLOTS 192u
-#define HOF_ENTRY 12u
-
-/* footer inductees {person 7, u8 club + 1, u16 class year, u16 score} passing the filter, newest class first (then by
-   slot); returns how many */
-static u32 hof_order(const u8 *b, u32 filter, u8 *order) {
-    u32 count = 0;
-    if (!b)
-        return 0;
-    for (u32 s = 0; s < HOF_SLOTS; s++) {
-        const u8 *e = b + HOF_ENTRY * s;
-        u32 year = *(const u16 *)(e + 8);
-        if (year >= 1990 && year <= 2200 && !person_empty(e) && (!filter || e[7] == filter))
-            order[count++] = (u8)s;
-    }
-    for (u32 i = 0; i + 1 < count; i++) {
-        u32 best = i;
-        for (u32 j = i + 1; j < count; j++)
-            if (*(const u16 *)(b + HOF_ENTRY * order[j] + 8) > *(const u16 *)(b + HOF_ENTRY * order[best] + 8))
-                best = j;
-        u8 t = order[best];
-        for (u32 j = best; j > i; j--)                  /* rotate, so equal years keep their slot order */
-            order[j] = order[j - 1];
-        order[i] = t;
-    }
-    return count;
-}
+/* Footer (block 5): +0 u8 inductees, +16 192 x 16 B in induction order: person (7), u8 club+1, u16 induction year,
+   u16 retirement year, u8 flags (1 valid), u8 seasons, u16 score. A footer inductee of a class the seed already lists
+   (induction year up to the seed's newest class) is the seed's own member and is not listed twice. */
+#define HALL_SIZE 4624u
+#define HALL_SLOTS 192u
 
 static u32 seed_inductee(u32 k, u32 filter_seed, u32 *at_out) {
     u32 base = RO_FIELD(RO_HOF), count = RO_FIELD(RO_HOF_COUNT), n = 0;
@@ -878,19 +896,36 @@ static u32 seed_inductee(u32 k, u32 filter_seed, u32 *at_out) {
     return 0;
 }
 
+/* the footer inductees shown (newest first: the induction order reversed), filtered; returns how many */
+static u32 hall_order(const u8 *b, u32 filter, u32 newest_seed_class, u8 *order) {
+    u32 count = 0, n = b ? b[0] : 0;
+    if (n > HALL_SLOTS)
+        n = HALL_SLOTS;
+    for (u32 i = n; i-- > 0;) {
+        const u8 *e = b + 16 + 16 * i;
+        u32 year = *(const u16 *)(e + 8);
+        if (!(e[12] & 1) || person_empty(e) || year < 1990 || year > 2200 || year <= newest_seed_class ||
+            (filter && e[7] != filter))
+            continue;
+        order[count++] = (u8)i;
+    }
+    return count;
+}
+
 static void page_hof(u32 filter) {
-    u32 franchise = 0, seed_count = 0, at, filter_seed = 0xFF, filter_byte = 0;
+    u32 seed_count = 0, at, filter_seed = 0xFF, newest = 0;
     if (filter) {
-        filter_byte = filter;                          /* footer: club index + 1 */
         filter_seed = seed_of(filter - 1);
         if (filter_seed == 0xFF)
             filter_seed = 0xFE;                         /* a club without seed shows no seeded members */
     }
-    const u8 *b = x_block(X_HOF, HOF_SLOTS * HOF_ENTRY);
-    u8 order[HOF_SLOTS];
-    franchise = hof_order(b, filter_byte, order);
     while (seed_count < 1024 && ro_ok() && seed_inductee(seed_count, filter_seed, &at))
         seed_count++;
+    if (ro_ok() && RO_FIELD(RO_HOF) && RO_FIELD(RO_HOF_COUNT))
+        newest = RO_U16(RO_FIELD(RO_HOF));               /* the seed lists the newest class first */
+    const u8 *b = x_block(X_HALL, HALL_SIZE);
+    u8 order[HALL_SLOTS];
+    u32 franchise = hall_order(b, filter, newest, order);
     cell_ascii(0, 60.0f, 1, "CLASS", GREY);
     cell_ascii(0, 140.0f, 1, "MEMBER", GREY);
     cell_ascii(0, 420.0f, 1, "POS", GREY);
@@ -906,10 +941,10 @@ static void page_hof(u32 filter) {
         u16 name[28], text[24];
         name[0] = 0;
         if (k < franchise) {
-            const u8 *e = b + HOF_ENTRY * order[k];
+            const u8 *e = b + 16 + 16 * order[k];
             year = *(const u16 *)(e + 8);
             pos = person_pos(e);
-            team = e[7] ? e[7] - 1u : 0xFF;
+            team = e[7] && e[7] <= 32 ? e[7] - 1u : 0xFF;
             put_person(name, e);
             colour = YELLOW;
         } else {
@@ -1053,18 +1088,26 @@ void FC hist_draw(u32 manager) {
                           : "BLACK/WHITE: PAGE    L/R: TEAM    UP/DOWN: SCROLL    B: BACK");
 }
 
-/* ---- box scores ------------------------------------------------------------------------------------------------ */
-/* Footer box score (480 B): {u8 row, u8 slot, u8 home, u8 away, u8 user sides, u8 lines, u16 year,
-   team stats 2 x 14 u16 (home, away), 18 lines x 22 B {person 7, u8 side << 7 | kind, u16 player link, 6 x u16}}. */
-#define BOX_SIZE 480u
-#define BOX_SLOTS 24u
-#define BOX_LINES 18u
-#define TEAM_STATS 14u
-static const char *const team_stat_name[TEAM_STATS] = {"FIRST DOWNS", "TOTAL YARDS", "PASSING YARDS", "RUSHING YARDS",
-                                                       "PASS ATT-COMP", "", "RUSHES", "TURNOVERS", "FUMBLES LOST",
-                                                       "INTERCEPTIONS", "PENALTIES", "", "THIRD DOWNS", ""};
-enum { K_PASS = 1, K_RUSH, K_REC, K_DEF, K_KICK, K_PUNT };
-static const char *const kind_label[8] = {"", "PASSING", "RUSHING", "RECEIVING", "DEFENSE", "KICKING", "PUNTING", ""};
+/* ---- box scores (footer block 6) ------------------------------------------------------------------------------- */
+/* +0 u16 year, +2 u8 games, +3 u8 user club+1; game g at +16 + 512g: u8 row, slot, home, away, home points, away
+   points, user side (0 home, 1 away), flags (1 valid, 2 played by the user, 4 simulated), user lines; +16 team stats
+   home then away, 16 x u16 each; +80 opponent leaders 4 x 16 B {person 7, u8 kind 1..4, 4 x i16}; +144 user lines
+   23 x 16 B {u16 player record index, u8 position, u8 kind 1..5, 6 x i16}. */
+#define BOX_SIZE 12304u
+#define BOX_ENTRY 512u
+#define BOX_GAMES 24u
+#define BOX_LINES 23u
+enum { T_POINTS, T_FIRST, T_TOTAL, T_PASS, T_RUSH, T_PATT, T_COMP, T_RATT, T_TO, T_INT, T_FUM, T_SACKS, T_PEN, T_PENYDS,
+       T_3RD, T_3RDATT, TEAM_STATS };
+/* the team stat rows: (stat, second stat for a pair or 0xFF, separator) */
+static const u8 stat_row[][3] = {{T_FIRST, 0xFF, 0}, {T_TOTAL, 0xFF, 0}, {T_PASS, 0xFF, 0}, {T_RUSH, 0xFF, 0},
+                                 {T_COMP, T_PATT, '/'}, {T_RATT, 0xFF, 0}, {T_TO, 0xFF, 0}, {T_SACKS, 0xFF, 0},
+                                 {T_PEN, T_PENYDS, '-'}, {T_3RD, T_3RDATT, '/'}};
+static const char *const stat_name[] = {"FIRST DOWNS", "TOTAL YARDS", "PASSING YARDS", "RUSHING YARDS", "COMP/ATT",
+                                        "RUSHES", "TURNOVERS", "SACKS ALLOWED", "PENALTIES", "THIRD DOWNS"};
+#define STAT_ROWS (sizeof stat_row / sizeof stat_row[0])
+enum { K_PASS = 1, K_RUSH, K_REC, K_DEF, K_KICK };
+static const char *const kind_label[8] = {"", "PASSING", "RUSHING", "RECEIVING", "DEFENSE", "KICKING", "", ""};
 
 static u32 grid_ok(u32 row, u32 slot) {
     return row < 22 && slot < 17;
@@ -1074,70 +1117,113 @@ static const u8 *grid_cell(u32 row, u32 slot) {
     return (const u8 *)(GRID + 8 * (17 * row + slot));
 }
 
+static const u8 *x_boxes(void) {
+    const u8 *b = x_block(X_BOX, BOX_SIZE);
+    return b && *(const u16 *)b == season_year() && b[2] <= BOX_GAMES ? b : 0;
+}
+
 static const u8 *x_box(u32 row, u32 slot) {
-    const u8 *b = x_block(X_BOX, BOX_SIZE * BOX_SLOTS);
-    u32 year = season_year();
+    const u8 *b = x_boxes();
     if (!b || !grid_ok(row, slot))
         return 0;
     const u8 *c = grid_cell(row, slot);
-    for (u32 s = 0; s < BOX_SLOTS; s++) {
-        const u8 *e = b + BOX_SIZE * s;
-        if (e[0] == row && e[1] == slot && e[2] == c[1] && e[3] == c[2] && *(const u16 *)(e + 6) == year &&
-            e[5] <= BOX_LINES)
+    for (u32 g = 0; g < b[2]; g++) {
+        const u8 *e = b + 16 + BOX_ENTRY * g;
+        if ((e[7] & 1) && e[0] == row && e[1] == slot && e[2] == c[1] && e[3] == c[2] && e[8] <= BOX_LINES)
             return e;
     }
     return 0;
 }
 
-/* one player line of a box score as text: "22/31 250 YDS 2 TD 1 INT" */
-static u16 *put_line_stats(u16 *out, u32 kind, const u16 *v) {
+/* one line's numbers as text: "22/31  250 YDS  2 TD  1 INT" (values in LINE_KINDS order) */
+static u16 *put_line_stats(u16 *out, u32 kind, const i16 *v, u32 values) {
     switch (kind) {
     case K_PASS:
-        out = put_uint(out, v[0]);
+        out = put_int(out, v[0]);
         *out++ = '/';
-        out = put_uint(out, v[1]);
+        out = put_int(out, v[1]);
         out = put_ascii(out, "  ");
-        out = put_int(out, (i16)v[2]);
+        out = put_int(out, v[2]);
         out = put_ascii(out, " YDS  ");
-        out = put_uint(out, v[3]);
-        out = put_ascii(out, " TD  ");
-        out = put_uint(out, v[4]);
-        return put_ascii(out, " INT");
+        out = put_int(out, v[3]);
+        out = put_ascii(out, " TD");
+        if (values > 4) {
+            out = put_ascii(out, "  ");
+            out = put_int(out, v[4]);
+            out = put_ascii(out, " INT");
+        }
+        return out;
     case K_RUSH:
-        out = put_uint(out, v[0]);
+        out = put_int(out, v[0]);
         out = put_ascii(out, " CAR  ");
-        out = put_int(out, (i16)v[1]);
+        out = put_int(out, v[1]);
         out = put_ascii(out, " YDS  ");
-        out = put_uint(out, v[2]);
-        return put_ascii(out, " TD");
+        out = put_int(out, v[2]);
+        out = put_ascii(out, " TD");
+        if (values > 4 && v[3] > 0) {
+            out = put_ascii(out, "  ");
+            out = put_int(out, v[3]);
+            out = put_ascii(out, " REC ");
+            out = put_int(out, v[4]);
+            out = put_ascii(out, " YDS");
+        }
+        return out;
     case K_REC:
-        out = put_uint(out, v[0]);
+        out = put_int(out, v[0]);
         out = put_ascii(out, " REC  ");
-        out = put_int(out, (i16)v[1]);
+        out = put_int(out, v[1]);
         out = put_ascii(out, " YDS  ");
-        out = put_uint(out, v[2]);
+        out = put_int(out, v[2]);
         return put_ascii(out, " TD");
     case K_DEF:
-        out = put_uint(out, v[0]);
+        out = put_int(out, v[0]);
         out = put_ascii(out, " TKL  ");
-        out = put_halves(out, v[1]);
+        out = put_halves(out, v[1] > 0 ? (u32)v[1] : 0);
         out = put_ascii(out, " SACK  ");
-        out = put_uint(out, v[2]);
-        return put_ascii(out, " INT");
+        out = put_int(out, v[2]);
+        out = put_ascii(out, " INT");
+        if (v[3] > 0) {
+            out = put_ascii(out, "  ");
+            out = put_int(out, v[3]);
+            out = put_ascii(out, " FF");
+        }
+        return out;
     case K_KICK:
         out = put_ascii(out, "FG ");
-        out = put_uint(out, v[0]);
+        out = put_int(out, v[0]);
         *out++ = '/';
-        out = put_uint(out, v[1]);
+        out = put_int(out, v[1]);
         out = put_ascii(out, "  XP ");
-        out = put_uint(out, v[2]);
+        out = put_int(out, v[2]);
         *out++ = '/';
-        return put_uint(out, v[3]);
-    case K_PUNT:
-        out = put_uint(out, v[0]);
-        out = put_ascii(out, " PUNTS  ");
-        out = put_uint(out, v[1]);
-        return put_ascii(out, " YDS");
+        return put_int(out, v[3]);
+    }
+    *out = 0;
+    return out;
+}
+
+/* the player of a user line: "F. LASTNAME" from his roster record (the record index the capture kept) */
+#define ROSTER 0x00B72918u
+
+static u32 player_record(u32 link) {
+    u32 root = G(ROSTER);
+    if (!root || link >= 0xFFFF)
+        return 0;
+    u32 base = G(root + 4), count = G(root);
+    return base && link < count && count < 0x10000 ? base + 0x54 * link : 0;
+}
+
+static u16 *put_player(u16 *out, u32 player) {
+    const u16 *first = player ? (const u16 *)G(player + 0x10) : 0, *last = player ? (const u16 *)G(player + 0x14) : 0;
+    if (first && first[0]) {
+        u32 c = first[0];
+        *out++ = (u16)(c >= 'a' && c <= 'z' ? c - 32 : c);
+        *out++ = '.';
+        *out++ = ' ';
+    }
+    for (u32 i = 0; last && last[i] && i < 16; i++) {
+        u32 c = last[i];
+        *out++ = (u16)(c >= 'a' && c <= 'z' ? c - 32 : c);
     }
     *out = 0;
     return out;
@@ -1181,18 +1267,12 @@ static void line_score_row(u32 row, u32 index, const u8 *quarters, u32 total, u3
     cell(row, 560.0f, 2, text, colour);
 }
 
-static u32 week_label(u16 *out, u32 row) {
+static u16 *put_week(u16 *out, u32 row) {
     u32 weeks = B(WEEKS_BYTE);
     static const char *const round[4] = {"WILD CARD", "DIVISIONAL", "CONFERENCE", "SUPER BOWL"};
-    if (row < weeks) {
-        out = put_ascii(out, "WEEK ");
-        put_uint(out, row + 1);
-    } else if (row - weeks < 4) {
-        put_ascii(out, round[row - weeks]);
-    } else {
-        put_ascii(out, "PRO BOWL");
-    }
-    return 1;
+    if (row < weeks)
+        return put_uint(put_ascii(out, "WEEK "), row + 1);
+    return put_ascii(out, row - weeks < 4 ? round[row - weeks] : "PRO BOWL");
 }
 
 void FC box_draw(u32 manager) {
@@ -1206,12 +1286,9 @@ void FC box_draw(u32 manager) {
         return;
     i32 home = HOME_SCORE(row, slot), away = AWAY_SCORE(row, slot);
     const u8 *q = (const u8 *)(SCORES + 10 * (17 * row + slot));
-    bars(2);
-    /* sub-bar: "WEEK 3: GIANTS 24, EAGLES 17" */
-    week_label(text, row);
-    out = text;
-    while (*out)
-        out++;
+    bars(1);
+    /* sub-bar: "WEEK 3: Eagles 17, Giants 24" (away first, the game's own order) */
+    out = put_week(text, row);
     out = put_ascii(out, ": ");
     out = put_club_name(out, c[2], 0);
     *out++ = ' ';
@@ -1231,58 +1308,81 @@ void FC box_draw(u32 manager) {
         cell_ascii(0, 460.0f, 2, "OT", GREY);
     cell_ascii(0, 560.0f, 2, "T", GREY);
     line_score_row(1, c[2], q + 5, (u32)away, away > home ? WHITE : GREY);
-    /* the home line goes in row 2, the first row of the list below scrolls under it */
     line_score_row(2, c[1], q, (u32)home, home > away ? WHITE : GREY);
     const u8 *e = x_box(row, slot);
-    u32 lines = 0, top = 3, first = hist_state[S_BOX_SCROLL];
+    u32 top = 3, first = hist_state[S_BOX_SCROLL];
     if (!e) {
         cell_ascii(4, 60.0f, 1, "FULL STATS ARE KEPT FOR YOUR TEAM'S GAMES", GREY);
-        cell_ascii(5, 60.0f, 1, "(FROM THE FIRST GAME PLAYED WITH THIS FEATURE)", DIM);
+        cell_ascii(5, 60.0f, 1, "(GAMES PLAYED WITH THE HISTORY SAVE DATA ON)", DIM);
         legend("B: BACK");
         return;
     }
-    /* the list: team stats (one line per stat with a name), then the player lines */
-    u32 stat_rows[TEAM_STATS], stats = 0;
-    for (u32 s = 0; s < TEAM_STATS; s++)
-        if (team_stat_name[s][0])
-            stat_rows[stats++] = s;
-    u32 count = stats + e[5];
-    if (first + (ROWS - top) > count)
-        first = count > ROWS - top ? count - (ROWS - top) : 0;
+    /* the list: a header, the team stat rows, the user club's player lines, then the opponent's leaders */
+    u32 lines = e[8], leaders = 0, user = e[6] ? c[2] : c[1], them = e[6] ? c[1] : c[2];
+    for (u32 k = 0; k < 4; k++)
+        if (e[80 + 16 * k + 7] >= 1 && e[80 + 16 * k + 7] <= 4 && !person_empty(e + 80 + 16 * k))
+            leaders++;
+    u32 count = 1 + STAT_ROWS + lines + leaders, rows = ROWS - top, shown = 0;
+    if (first + rows > count)
+        first = count > rows ? count - rows : 0;
     hist_state[S_BOX_SCROLL] = first;
-    const u16 *home_stats = (const u16 *)(e + 8), *away_stats = home_stats + TEAM_STATS;
-    for (u32 r = 0; r < ROWS - top && first + r < count; r++, lines++) {
+    const u16 *home_stats = (const u16 *)(e + 16), *away_stats = home_stats + TEAM_STATS;
+    for (u32 r = 0; r < rows && first + r < count; r++, shown++) {
         u32 k = first + r, screen_row = top + r;
-        if (k < stats) {
-            u32 s = stat_rows[k];
-            cell_ascii(screen_row, 60.0f, 1, team_stat_name[s], GREY);
-            if (s == 4 || s == 12 || s == 10) {        /* pairs: att-comp, conversions-attempts, penalties-yards */
-                put_uint(put_ascii(put_uint(text, away_stats[s]), "-"), away_stats[s + 1]);
-                cell(screen_row, 420.0f, 2, text, GREY);
-                put_uint(put_ascii(put_uint(text, home_stats[s]), "-"), home_stats[s + 1]);
-                cell(screen_row, 560.0f, 2, text, GREY);
-            } else {
-                put_uint(text, away_stats[s]);
-                cell(screen_row, 420.0f, 2, text, GREY);
-                put_uint(text, home_stats[s]);
-                cell(screen_row, 560.0f, 2, text, GREY);
+        if (k == 0) {                                   /* column heads: the clubs, away then home */
+            cell_ascii(screen_row, 60.0f, 1, "TEAM STATS", DIM);
+            put_club_abbr(text, c[2]);
+            cell(screen_row, 420.0f, 2, text, DIM);
+            put_club_abbr(text, c[1]);
+            cell(screen_row, 560.0f, 2, text, DIM);
+            continue;
+        }
+        if (k <= STAT_ROWS) {
+            const u8 *s = stat_row[k - 1];
+            cell_ascii(screen_row, 60.0f, 1, stat_name[k - 1], GREY);
+            for (u32 side = 0; side < 2; side++) {
+                const u16 *v = side ? home_stats : away_stats;
+                out = put_uint(text, v[s[0]]);
+                if (s[1] != 0xFF) {
+                    *out++ = s[2];
+                    put_uint(out, v[s[1]]);
+                }
+                cell(screen_row, side ? 560.0f : 420.0f, 2, text, GREY);
             }
             continue;
         }
-        const u8 *line = e + 64 + 22 * (k - stats);
-        u32 kind = line[7] & 7, side = line[7] >> 7, colour = G(HUMAN + 4 * (side ? c[2] : c[1])) ? WHITE : GREY;
-        put_club_abbr(text, side ? c[2] : c[1]);
-        cell(screen_row, 60.0f, 1, text, DIM);
-        cell_ascii(screen_row, 105.0f, 1, kind_label[kind], DIM);
-        put_person(text, line);
-        cell(screen_row, 230.0f, 1, text, colour);
-        put_line_stats(text, kind, (const u16 *)(line + 10));
-        cell(screen_row, 600.0f, 2, text, colour);
+        k -= 1 + STAT_ROWS;
+        if (k < lines) {                                /* the user club's lines */
+            const u8 *line = e + 144 + 16 * k;
+            u32 kind = line[3] <= K_KICK ? line[3] : 0;
+            put_club_abbr(text, user);
+            cell(screen_row, 60.0f, 1, text, DIM);
+            cell_ascii(screen_row, 105.0f, 1, kind_label[kind], DIM);
+            put_player(text, player_record(*(const u16 *)line));
+            cell(screen_row, 230.0f, 1, text, WHITE);
+            put_line_stats(text, kind, (const i16 *)(line + 4), 6);
+            cell(screen_row, 600.0f, 2, text, WHITE);
+            continue;
+        }
+        k -= lines;
+        for (u32 j = 0, seen = 0; j < 4; j++) {         /* the opponent's leaders */
+            const u8 *ld = e + 80 + 16 * j;
+            if (ld[7] < 1 || ld[7] > 4 || person_empty(ld) || seen++ != k)
+                continue;
+            put_club_abbr(text, them);
+            cell(screen_row, 60.0f, 1, text, DIM);
+            cell_ascii(screen_row, 105.0f, 1, kind_label[ld[7]], DIM);
+            put_person(text, ld);
+            cell(screen_row, 230.0f, 1, text, GREY);
+            put_line_stats(text, ld[7], (const i16 *)(ld + 8), 4);
+            cell(screen_row, 600.0f, 2, text, GREY);
+            break;
+        }
     }
-    if (count > ROWS - top) {
+    if (count > rows) {
         out = put_uint(text, first + 1);
         *out++ = '-';
-        out = put_uint(out, first + lines);
+        out = put_uint(out, first + shown);
         out = put_ascii(out, " OF ");
         put_uint(out, count);
         text_at(text, 320.0f, 391.0f, 3, 3, DIM);
@@ -1325,52 +1425,33 @@ u32 FC hist_schedule_x(u32 manager, u32 port) {
     return 1;
 }
 
-/* ---- Player Card page 4: the game log ------------------------------------------------------------------------ */
-/* Lines of the card's player in this season's stored box scores, oldest first. The player is matched by his record
-   (the line's link = his index in the roster's player array) and his packed name. */
-#define ROSTER 0x00B72918u
-
-static u32 player_link(u32 player) {
+/* ---- Player Card: the game log page ---------------------------------------------------------------------------- */
+/* The card's player's lines in this season's stored games, oldest week first (matched by his record index). */
+static u32 player_index(u32 player) {
     u32 root = G(ROSTER);
     if (!root || !player)
         return 0xFFFF;
     u32 base = G(root + 4), count = G(root);
-    if (player < base || (player - base) % 0x54 || (player - base) / 0x54 >= count)
+    if (!base || player < base || (player - base) % 0x54 || (player - base) / 0x54 >= count)
         return 0xFFFF;
     return (player - base) / 0x54;
 }
 
-static u32 same_person(const u8 *p, u32 player) {
-    const u16 *last = (const u16 *)G(player + 0x14);
-    if (!last)
-        return 0;
-    for (u32 i = 0; i < 9; i++) {
-        u32 c = sym_char(bits(p, 5 + 5 * i, 5)), l = last[i];
-        if (l >= 'a' && l <= 'z')
-            l -= 32;
-        if (!c)
-            return 1;
-        if (c != l)
-            return 0;
-    }
-    return 1;
-}
-
-/* k-th game-log line of the player (oldest week first): sets the box score and line, returns 1 */
-static u32 log_line(u32 player, u32 k, const u8 **box, const u8 **line) {
-    const u8 *b = x_block(X_BOX, BOX_SIZE * BOX_SLOTS);
-    u32 link = player_link(player), year = season_year(), n = 0;
+/* k-th game-log line of the player (oldest week first): sets the game and the line, returns 1 */
+static u32 log_line(u32 player, u32 k, const u8 **game, const u8 **line) {
+    const u8 *b = x_boxes();
+    u32 link = player_index(player), n = 0;
     if (!b || link == 0xFFFF)
         return 0;
     for (u32 row = 0; row < 22; row++)
-        for (u32 s = 0; s < BOX_SLOTS; s++) {
-            const u8 *e = b + BOX_SIZE * s;
-            if (e[0] != row || *(const u16 *)(e + 6) != year || e[5] > BOX_LINES)
+        for (u32 g = 0; g < b[2]; g++) {
+            const u8 *e = b + 16 + BOX_ENTRY * g;
+            if (!(e[7] & 1) || e[0] != row || e[8] > BOX_LINES)
                 continue;
-            for (u32 i = 0; i < e[5]; i++) {
-                const u8 *l = e + 64 + 22 * i;
-                if (*(const u16 *)(l + 8) == link && same_person(l, player) && n++ == k) {
-                    *box = e;
+            for (u32 i = 0; i < e[8]; i++) {
+                const u8 *l = e + 144 + 16 * i;
+                if (*(const u16 *)l == link && n++ == k) {
+                    *game = e;
                     *line = l;
                     return 1;
                 }
@@ -1380,42 +1461,92 @@ static u32 log_line(u32 player, u32 k, const u8 **box, const u8 **line) {
 }
 
 #define LOG_ROWS 6u
+#define LOG 0x80000000u           /* state[1] of the card (the honors owner's state): the game log view of page 2 */
+#define S_CARD_FRAME 8            /* the game log's rows were drawn this frame (its bio entry draws, then clears it) */
 
-/* the card's stats table area (the champions page uses the same place; the honors owner hides the table) */
-void FC hist_log_ratings(volatile u32 *card_state) {
-    u32 player = G(CARD_PLAYER), count = 0, ctx[32];
-    const u8 *box, *line;
-    u16 text[80], *out;
-    (void)ctx;
-    while (count < 64 && log_line(player, count, &box, &line))
+/* The card's stats table is the card screen's only element: hidden while a history page shows (the element count at
+   context + 0x658 kept in state[3]), restored on every other page; the champions owner's champions_table, verbatim. */
+static void card_table(volatile u32 *state, u32 hide) {
+    u32 screen = state[2], ctx = screen ? G(screen + 0x10C) : 0;
+    if (!ctx)
+        return;
+    if (hide) {
+        if (G(ctx + 0x658)) {
+            state[3] = G(ctx + 0x658);
+            G(ctx + 0x658) = 0;
+        }
+    } else if (state[3] && !G(ctx + 0x658)) {
+        G(ctx + 0x658) = state[3];
+        state[3] = 0;
+    }
+}
+
+/* The card's page turn while this owner is there (the champions owner calls it): card, honors, champions, game log;
+   Black and R forward, White and L back; Up and Down scroll the champions list or the game log. Returns 1 when the
+   cursor sound is due. */
+u32 FC hist_card_flip(u32 buttons, volatile u32 *state) {
+    u32 page = state[0], log = state[1] & LOG;
+    if (buttons & 0x3000000) {
+        if (page != 2)
+            return 0;
+        u32 first = state[1] & ~LOG;
+        if (buttons & 0x2000000) {
+            if (first < 4096)
+                first++;
+        } else if (first) {
+            first--;
+        }
+        state[1] = first | log;
+        return 1;
+    }
+    if (!(buttons & 0xF000)) {
+        if (buttons & 0x220)
+            card_table(state, 0);         /* B or Back: the card closes, its table is whole again */
+        return 0;
+    }
+    u32 at = page >= 3 ? 0 : page == 2 && log ? 3 : page;
+    at = buttons & 0x6000 ? (at + 3) % 4 : (at + 1) % 4;
+    state[0] = at == 3 ? 2 : at;
+    state[1] = at == 3 ? LOG : 0;
+    hist_state[S_CARD_FRAME] = 0;
+    if (state[0] != 2)
+        card_table(state, 0);
+    return 1;
+}
+
+/* The game log in the card's table area (state = the honors owner's state, the view's first row in state[1]). */
+void FC hist_card_rows(volatile u32 *state) {
+    u32 player = G(CARD_PLAYER), count = 0;
+    const u8 *game, *line;
+    u16 text[96], *out;
+    card_table(state, 1);
+    hist_state[S_CARD_FRAME] = 1;
+    while (count < 64 && log_line(player, count, &game, &line))
         count++;
-    u32 first = card_state[1];
+    u32 first = state[1] & ~LOG;
     if (first + LOG_ROWS > count)
         first = count > LOG_ROWS ? count - LOG_ROWS : 0;
-    card_state[1] = first;
+    state[1] = first | LOG;
     if (!count) {
         put_ascii(text, "NO GAMES KEPT FOR THIS PLAYER THIS SEASON");
         text_at(text, 215.0f, 203.0f, 8, 1, BLACK);
         return;
     }
     for (u32 r = 0; r < LOG_ROWS && first + r < count; r++) {
-        log_line(player, first + r, &box, &line);
-        u32 side = line[7] >> 7, mine = side ? box[3] : box[2], theirs = side ? box[2] : box[3];
-        i32 us = side ? AWAY_SCORE(box[0], box[1]) : HOME_SCORE(box[0], box[1]);
-        i32 them = side ? HOME_SCORE(box[0], box[1]) : AWAY_SCORE(box[0], box[1]);
-        (void)mine;
-        out = put_ascii(text, box[0] < B(WEEKS_BYTE) ? "WK " : "PO ");
-        out = put_uint(out, box[0] < B(WEEKS_BYTE) ? box[0] + 1u : box[0] + 1u - B(WEEKS_BYTE));
-        *out++ = ' ';
-        out = put_ascii(out, side ? "@" : "VS ");
+        log_line(player, first + r, &game, &line);
+        u32 side = game[6] & 1, theirs = side ? game[2] : game[3], weeks = B(WEEKS_BYTE);
+        u32 us = side ? game[5] : game[4], them = side ? game[4] : game[5];
+        out = put_ascii(text, game[0] < weeks ? "WK " : "PO ");
+        out = put_uint(out, game[0] < weeks ? game[0] + 1u : game[0] + 1u - weeks);
+        out = put_ascii(out, side ? " @" : " VS ");
         out = put_club_abbr(out, theirs);
         *out++ = ' ';
         out = put_ascii(out, us > them ? "W " : us < them ? "L " : "T ");
-        out = put_int(out, us);
+        out = put_uint(out, us);
         *out++ = '-';
-        out = put_int(out, them);
+        out = put_uint(out, them);
         out = put_ascii(out, "  ");
-        put_line_stats(out, line[7] & 7, (const u16 *)(line + 10));
+        put_line_stats(out, line[3] <= K_KICK ? line[3] : 0, (const i16 *)(line + 4), 6);
         text_at(text, 215.0f, 203.0f + 17.0f * (float)r, 8, 1, BLACK);
     }
     if (count > LOG_ROWS) {
@@ -1429,10 +1560,15 @@ void FC hist_log_ratings(volatile u32 *card_state) {
     }
 }
 
-void FC hist_log_bio(void) {
+/* The bio lines of the game log, only in a frame whose rows it drew (the champions page keeps its own). */
+u32 hist_card_bio(void) {
     u16 text[48];
+    if (!hist_state[S_CARD_FRAME])
+        return 0;
+    hist_state[S_CARD_FRAME] = 0;
     put_ascii(text, "GAME LOG: THIS SEASON");
     text_at(text, 198.0f, 137.0f, 8, 1, BLACK);
     put_ascii(text, "YOUR TEAM'S GAMES ARE KEPT");
     text_at(text, 198.0f, 154.0f, 8, 1, DIM);
+    return 1;
 }

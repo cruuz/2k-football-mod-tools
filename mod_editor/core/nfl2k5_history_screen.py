@@ -38,11 +38,14 @@ Where the data comes from
   checked) is a read-only block this owner carries, built at install time from the Studio's pinned seed document
   (``data/nfl2k5_history_2026.json``, job j5-seed; ``build_ro``). Clubs are matched by their abbreviation, so the game's
   club order and the relocated clubs (STL, SD, OAK, JAC) need nothing.
-* Franchise history (seasons, totals, awards, records, leaders, Hall of Fame classes, box scores) is kept by the
-  franchise extension footer owner (job j23-footer, capture at the game commit and the season close). This screen only
-  reads it, through one word of that owner (``hist_xtnd_ptr``: the address of the footer body in RAM). Without that
-  owner the franchise parts read as empty and the real history still shows. ``FOOTER_DRAFT`` documents the block
-  layouts this screen reads (the r4 draft until the footer owner's format lands).
+* Franchise history (seasons with their awards and head coaches, totals, records, leaders, Hall of Fame classes, box
+  scores) is kept by the franchise extension footer (job j23-footer: ``nfl2k5_franchise_extension``, capture at the
+  game commit and the season close). This screen only reads it, through one word of the footer host
+  (``hist_xtnd_ptr``: the address of the body in RAM; ``footer_pointer_va``). Without that owner the franchise parts
+  read as empty and the real history still shows. ``FOOTER_BLOCKS`` pins the blocks the runtime reads.
+* The Player Card's fourth page: the champions owner (part of the honors option) finds this owner's game log through a
+  16-byte record {"HSX1", flip, rows, bio} kept right before the cloned ESPN.com rows (it follows the row pointer this
+  owner sets at 0x525674), so neither owner links to the other and either can be installed first.
 
 Allocation: one late owner (``nfl2k5_xbe_space.LATE_OWNERS``), code (``CODE_SIZE``), 64 RW bytes (page, club, scroll,
 the selected box score) and a read-only block (``RO_SIZE``: descriptors, the cloned ESPN.com rows, the seed tables).
@@ -140,13 +143,20 @@ VARIABLE_BYTES = ()
 
 # ---- the read-only block --------------------------------------------------------------------------------------------
 RO_MAGIC = b"HSR1"
+LOG_MAGIC = b"HSX1"
 RO_FIELDS = ("magic", "size", "clubs", "seasons", "season_count", "awards", "hof", "hof_count", "book", "book_count",
              "club_records", "leaders", "names", "names_size", "seed_last", "box_descriptor", "box_legend")
 RO_HEADER = 0x80
 AWARDS = ("mvp", "opoy", "dpoy", "oroy", "droy", "cpoy", "coy", "sbmvp")
-CATEGORIES = ("pass_yds", "pass_td", "rush_yds", "rush_td", "receptions", "rec_yds", "rec_td", "sacks", "interceptions",
-              "tackles", "field_goals", "points")
-LEADER_CATEGORIES = CATEGORIES[:10]
+CATEGORIES = ("passing_yards", "passing_td", "completions", "rushing_yards", "rushing_td", "receptions",
+              "receiving_yards", "receiving_td", "sacks_half", "interceptions", "tackles", "forced_fumbles")
+LEADER_CATEGORIES = ("passing_yards", "passing_td", "rushing_yards", "rushing_td", "receptions", "receiving_yards",
+                     "receiving_td", "sacks_half", "interceptions", "tackles")
+CATEGORY_ALIASES = {"pass_yds": "passing_yards", "pass_td": "passing_td", "rush_yds": "rushing_yards",
+                    "rush_td": "rushing_td", "rec": "receptions", "rec_yds": "receiving_yards",
+                    "rec_td": "receiving_td", "sacks": "sacks_half", "int": "interceptions", "ints": "interceptions",
+                    "def_int": "interceptions", "ff": "forced_fumbles", "comp": "completions",
+                    "passing_yds": "passing_yards", "rushing_yds": "rushing_yards", "receiving_yds": "receiving_yards"}
 KINDS = ("game", "season", "career")
 PLAYOFFS = {"": 0, "missed": 0, "none": 0, "lost_wild_card": 1, "lost_divisional": 2, "lost_conference": 3,
             "lost_super_bowl": 4, "won_super_bowl": 5}
@@ -191,6 +201,18 @@ def position_code(text) -> int:
     key = str(text).strip().upper()
     key = POSITION_ALIASES.get(key, key)
     return POSITIONS.index(key) if key in POSITIONS else 0xFF
+
+
+def category_key(text) -> str:
+    key = str(text or "").strip().lower()
+    return CATEGORY_ALIASES.get(key, key)
+
+
+def category_value(category: str, value) -> int:
+    """Sacks are kept in half sacks (the game's own unit); everything else as given."""
+
+    number = float(value or 0)
+    return int(round(number * 2)) if category == "sacks_half" else int(round(number))
 
 
 def club_key(text: str) -> str:
@@ -249,10 +271,10 @@ def _seed_tables(seed: Mapping | None):
         rows.sort(key=lambda r: -r["year"])
     book = []
     for row in seed.get("nfl_records", ()) or ():
-        category, kind = row.get("category"), row.get("kind")
+        category, kind = category_key(row.get("category")), row.get("kind")
         if category in CATEGORIES and kind in KINDS:
             book.append(dict(category=CATEGORIES.index(category), kind=KINDS.index(kind), name=row.get("name", ""),
-                             value=int(row.get("value", 0)), year=int(row.get("year", 0) or 0),
+                             value=category_value(category, row.get("value", 0)), year=int(row.get("year", 0) or 0),
                              club=club_key(row.get("club")), pos=position_code(row.get("position"))))
     hof = []
     for row in seed.get("hall_of_fame", ()) or ():
@@ -262,16 +284,18 @@ def _seed_tables(seed: Mapping | None):
     club_records = {key: [] for key in CLUBS_2026}
     for row in seed.get("club_records", ()) or ():
         key = club_key(row.get("club"))
-        if key in club_records and row.get("category") in CATEGORIES and row.get("kind") in ("game", "season"):
-            club_records[key].append(dict(category=CATEGORIES.index(row["category"]), kind=KINDS.index(row["kind"]),
-                                          name=row.get("name", ""), value=int(row.get("value", 0)),
+        category = category_key(row.get("category"))
+        if key in club_records and category in CATEGORIES and row.get("kind") in ("game", "season"):
+            club_records[key].append(dict(category=CATEGORIES.index(category), kind=KINDS.index(row["kind"]),
+                                          name=row.get("name", ""), value=category_value(category, row.get("value", 0)),
                                           year=int(row.get("year", 0) or 0), pos=position_code(row.get("position"))))
     leaders = {key: [] for key in CLUBS_2026}
     for row in seed.get("club_leaders", ()) or ():
         key = club_key(row.get("club"))
-        if key in leaders and row.get("category") in LEADER_CATEGORIES and 1 <= int(row.get("rank", 0)) <= 3:
-            leaders[key].append(dict(category=LEADER_CATEGORIES.index(row["category"]), rank=int(row["rank"]) - 1,
-                                     name=row.get("name", ""), value=int(row.get("value", 0)),
+        category = category_key(row.get("category"))
+        if key in leaders and category in LEADER_CATEGORIES and 1 <= int(row.get("rank", 0)) <= 3:
+            leaders[key].append(dict(category=LEADER_CATEGORIES.index(category), rank=int(row["rank"]) - 1,
+                                     name=row.get("name", ""), value=category_value(category, row.get("value", 0)),
                                      pos=position_code(row.get("position"))))
     return seasons_by_club, awards, book, hof, club_records, leaders
 
@@ -332,9 +356,16 @@ def build_ro(ro_va: int, code_va: int, item_rows: bytes, seed: Mapping | None = 
 
     hist_descriptor = descriptor(title, hist_events)
     fields["box_descriptor"] = descriptor(box_title, box_events)
-    # the ESPN.com rows: the retail twelve, TEAM HISTORY (type 0 = push the descriptor at +8), the end marker (type 3)
+    # the ESPN.com rows: the retail twelve, TEAM HISTORY (type 0 = push the descriptor at +8), the end marker (type 3),
+    # right after the card's game-log record {"HSX1", flip, rows, bio} that the champions owner finds through the rows
+    # pointer (the rows must not start in the first 16 bytes of a page: it reads the record from the rows' own page)
+    align(16)
+    if (ro_va + len(out) + 16) & 0xFFF < 16:
+        out.extend(bytes(16))
+    put(LOG_MAGIC + struct.pack("<3I", at["hist_card_flip"], at["hist_card_rows"], at["hist_card_bio"]))
     row = struct.pack("<13I", 0, ro_va + label, ro_va + hist_descriptor, *([0] * 10))
     rows = put(item_rows + row + struct.pack("<I", 3) + bytes(ESPN_ROW_SIZE - 4))
+    _require(rows >= 16 and (ro_va + rows) & 0xFFF >= 16 and out[rows - 16:rows - 12] == LOG_MAGIC, "game-log record")
     names = _Names()
     seasons_by_club, awards, book, hof, club_records, leaders = _seed_tables(seed)
     # clubs: 32 x {3 aliases x 4 ASCII, u16 first season line, u16 count}
@@ -408,72 +439,28 @@ def ro_field(content: bytes, name: str) -> int:
     return struct.unpack_from("<I", content, 4 * RO_FIELDS.index(name))[0]
 
 
-# ---- the franchise footer draft (what the screen reads; the footer owner writes it) ---------------------------------
+# ---- the franchise footer (job j23-footer, nfl2k5_franchise_extension, envelope 1) ----------------------------------
+# The runtime reads blocks 1 seasons (awards and head coaches inside the season records), 2 totals, 3 records, 4 leaders,
+# 5 hall and 6 box scores, version 1, at the offsets and sizes the body's directory gives (layouts: the *_LAYOUT texts
+# of nfl2k5_franchise_extension). FOOTER_BLOCKS pins the ids, versions and minimum sizes the runtime checks.
 FOOTER_MAGIC = b"2K5XTND1"
-FOOTER_VERSION = 1
-FOOTER_DRAFT = {
-    # id: (name, size, layout)
-    1: ("seasons", 32 * 260, "32 slots x {u16 year (0 empty), u8 flags, u8 champion+1, 32 clubs x {u8 w, l, t, "
-                             "place | playoff << 4, u16 pf, u16 pa}}"),
-    2: ("totals", 32 * 12, "32 clubs x {u16 w, l, t, u8 playoffs, division titles, conference titles, Super Bowl wins, "
-                           "u16 seasons}"),
-    3: ("awards", 32 * 66, "32 slots x {u16 year, 8 x {7-byte person, u8 club+1}}: MVP OPOY DPOY OROY DROY CPOY COY "
-                           "SBMVP"),
-    4: ("club_records", 32 * 12 * 2 * 12, "32 clubs x 12 categories x {game, season} x {person 7, u8 flags, u16 year, "
-                                          "u16 value}"),
-    5: ("leaders", 32 * 10 * 3 * 12, "32 clubs x 10 categories x 3 x {person 7, u8 flags (bit 0 NEW), u32 value}"),
-    6: ("hall_of_fame", 192 * 12, "192 x {person 7, u8 club+1, u16 class year, u16 score}"),
-    7: ("box_scores", 24 * 480, "24 x {u8 row, slot, home, away, user sides, lines, u16 year, 2 x 14 u16 team stats "
-                                "(home, away), 18 x 22-byte lines {person 7, u8 side << 7 | kind, u16 player link, "
-                                "6 x u16}}"),
-}
-BOX_KINDS = {"pass": 1, "rush": 2, "rec": 3, "def": 4, "kick": 5, "punt": 6}
-TEAM_STATS = ("first_downs", "total_yards", "passing_yards", "rushing_yards", "pass_att", "pass_comp", "rushes",
-              "turnovers", "fumbles_lost", "interceptions", "penalties", "penalty_yards", "third_conv", "third_att")
+FOOTER_BLOCKS = {1: ("seasons", 18960), 2: ("totals", 528), 3: ("records", 9520), 4: ("leaders", 16176),
+                 5: ("hall", 4624), 6: ("boxscores", 12304)}
+FOOTER_OWNER_MODULE = "nfl2k5_franchise_footer"     # the native host (j23); its body-pointer word is linked here
 
 
-def _sym(c: str) -> int:
-    c = c.upper()
-    if "A" <= c <= "Z":
-        return ord(c) - 64
-    return {"-": 27, ".": 28, "'": 29, " ": 30}.get(c, 31)
+def footer_pointer_va(payload: bytes) -> int:
+    """The footer host's RW word holding the body address, when that owner is installed in ``payload``; else 0."""
 
-
-def pack_person(first: str, last: str, pos: int | str) -> bytes:
-    """The champions block's 55-bit person: first initial, nine letters of the last name, position code."""
-
-    pos = position_code(pos) if isinstance(pos, str) else pos
-    value = _sym(first[0]) if first else 0
-    for i, c in enumerate(last[:9]):
-        value |= _sym(c) << (5 + 5 * i)
-    value |= (pos & 31) << 50
-    return value.to_bytes(7, "little")
-
-
-def adler32(data: bytes) -> int:
-    a, b = 1, 0
-    for byte in data:
-        a = (a + byte) % 65521
-        b = (b + a) % 65521
-    return (b << 16) | a
-
-
-def build_footer(blocks: Mapping[int, bytes] | None = None) -> bytes:
-    """A footer body in the draft layout (every block of ``FOOTER_DRAFT``, zero unless given). For tests and the
-    emulator fixture; the footer owner builds the real one."""
-
-    blocks = dict(blocks or {})
-    ids = sorted(FOOTER_DRAFT)
-    header = 16 + 16 * len(ids)
-    offset, directory, body = header, bytearray(), bytearray()
-    for i in ids:
-        size = FOOTER_DRAFT[i][1]
-        data = bytes(blocks.get(i, b"")).ljust(size, b"\0")[:size]
-        directory += struct.pack("<HHIII", i, 1, offset, size, adler32(data))
-        body += data
-        offset += size
-    total = offset
-    return FOOTER_MAGIC + struct.pack("<HHI", FOOTER_VERSION, len(ids), total) + bytes(directory) + bytes(body)
+    import importlib
+    try:
+        host = importlib.import_module(f"{__package__}.{FOOTER_OWNER_MODULE}")
+    except ImportError:
+        return 0
+    try:
+        return int(host.body_pointer_va(payload)) if host.status(payload) == "applied" else 0
+    except (AttributeError, ValueError, KeyError, TypeError, struct.error):
+        return 0
 
 
 # ---- installation ---------------------------------------------------------------------------------------------------
@@ -667,4 +654,4 @@ GUARD_PINS: dict[str, str] = {
 
 __all__ = ["OWNER", "REQUESTS", "UI_LABEL", "HELP_TEXT", "BUILD_CAPTION", "HistoryScreenError", "build_ro", "code_for",
            "sites", "labels", "allocations", "install", "status", "reservations", "guard_digests", "owned_state",
-           "FOOTER_DRAFT", "build_footer", "pack_person", "load_seed", "short_name"]
+           "FOOTER_BLOCKS", "footer_pointer_va", "load_seed", "short_name"]

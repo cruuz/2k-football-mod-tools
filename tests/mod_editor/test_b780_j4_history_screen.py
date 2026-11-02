@@ -2,14 +2,15 @@
 
 EXPERIMENTAL / UNWITNESSED in game. Static and model checks run everywhere. The native classes map the retail USA
 ``default.xbe`` with the owner installed and run the real code under Unicorn, with a synthetic league (32 clubs in the
-league's club table 0xE5786C, the league grid and quarter scores), a seed document and a franchise footer in the draft
-layout (``nfl2k5_history_screen.FOOTER_DRAFT``):
+league's club table 0xE5786C, the league grid and quarter scores), a seed document and a franchise footer body in the
+j23-footer layout (``nfl2k5_franchise_extension``, envelope 1; ``j23_body`` below encodes it and is checked against
+that module when the branch carrying it is present):
 
 * the ESPN.com row table (twelve retail rows, TEAM HISTORY, the end marker) and the two descriptors the game reads;
 * every page's text (captured from the game's own text calls), the page/club/award/filter cycling and the scroll;
 * the box score of a played game (line score from the grid; team stats and player lines from the footer) and the CPU
   game message, and the Schedule hook (X on a played game pushes the box score; the legend entry follows the selection);
-* the Player Card game log page;
+* the Player Card game log page and the card's four-page cycle through the champions owner (honors option);
 * a damaged or foreign footer reads as empty, and no page reads past the footer (it ends at an unmapped page).
 
 Boundaries: the menu manager, the pads and the Schedule's selection accessors are stand-ins; the in-game screens are
@@ -31,6 +32,47 @@ from mod_editor.core import nfl2k5_history_screen_code as runtime  # noqa: E402
 from mod_editor.core import nfl2k5_xbe_space as space  # noqa: E402
 from mod_editor.core.nfl2k5_cave_oracle import XbeImage  # noqa: E402
 from tests.mod_editor.test_nfl2k5_honors import HAVE_UC, LEAGUE_MODE, SCORES, SEASONS, Machine, _retail  # noqa: E402
+
+from mod_editor.core import nfl2k5_champions_history as champions_history  # noqa: E402
+
+# ---- the j23-footer body (nfl2k5_franchise_extension, envelope 1), as the History screen reads it ---------------------
+J23_BLOCKS = {1: (0x0200, 18960), 2: (0x4C10, 528), 3: (0x4E20, 9520), 4: (0x7350, 16176), 5: (0xB280, 4624),
+              6: (0xC490, 12304)}
+J23_BODY_SIZE = 0x18000 - 16
+POSITIONS = ("QB", "K", "P", "WR", "CB", "FS", "SS", "HB", "FB", "TE", "OLB", "ILB", "C", "G", "T", "DT", "DE")
+
+
+def adler(data: bytes, a: int = 1, b: int = 0) -> int:
+    for byte in data:
+        a = (a + byte) % 65521
+        b = (b + a) % 65521
+    return (b << 16) | a
+
+
+def j23_body(blocks: dict) -> bytes:
+    """A sealed body: header, the 16-slot directory (blocks 1..6 present, version 1), the blocks at their offsets."""
+    body = bytearray(J23_BODY_SIZE)
+    body[0:8] = b"2K5XTND1"
+    struct.pack_into("<HHIHHHH", body, 8, 1, 64, J23_BODY_SIZE, 0x40, 16, 16, 0)
+    for block_id, (offset, size) in J23_BLOCKS.items():
+        content = bytes(blocks.get(block_id, b"")).ljust(size, b"\0")[:size]
+        body[offset:offset + size] = content
+        struct.pack_into("<HBBIII", body, 0x40 + 16 * (block_id - 1), block_id, 1, 1, offset, size, adler(content))
+    struct.pack_into("<I", body, 0x3C, adler(bytes(body[0:0x3C]) + bytes(body[0x40:0x140])))
+    return bytes(body)
+
+
+def person(first: str, last: str, pos="QB") -> bytes:
+    """The 7-byte person (the champions packing; position code 0..31, 31 = coach)."""
+    code = POSITIONS.index(pos) if isinstance(pos, str) else pos
+    raw = bytearray(champions_history.pack_person((first + " " + last) if first else last, "QB"))
+    for b in range(5):
+        bit = 50 + b
+        raw[bit >> 3] &= ~(1 << (bit & 7)) & 0xFF
+        if code >> b & 1:
+            raw[bit >> 3] |= 1 << (bit & 7)
+    return bytes(raw)
+
 
 LEAGUE_TEAMS, TEAM_COUNT_VA, FOCUS, HUMAN, GRID = 0xE5786C, 0xE576AC, 0xE3C0A0, 0xE5775C, 0xE57C40
 CARD_PLAYER, ROSTER, YEAR_IMM = 0xC90248, 0xB72918, 0x3204AD
@@ -95,7 +137,7 @@ class StaticTests(unittest.TestCase):
             self.assertIn(symbol, ("code", "state", "ro", "xtnd_ptr"))
             self.assertLessEqual(offset + 4, len(runtime.CODE))
         for entry in ("hist_enter", "hist_input", "hist_draw", "box_enter", "box_input", "box_draw",
-                      "hist_schedule_hook", "hist_schedule_x", "hist_log_ratings", "hist_log_bio"):
+                      "hist_schedule_hook", "hist_schedule_x", "hist_card_flip", "hist_card_rows", "hist_card_bio"):
             self.assertIn(entry, runtime.LABELS)
 
     def test_code_relocates_with_its_pages(self):
@@ -203,15 +245,29 @@ class StaticTests(unittest.TestCase):
         self.assertEqual(hist.ro_field(content, "hof_count"), 3)
         self.assertEqual(hist.ro_field(content, "book_count"), 2)
 
-    def test_footer_draft(self):
-        body = hist.build_footer()
-        self.assertEqual(body[:8], b"2K5XTND1")
-        version, count, total = struct.unpack_from("<HHI", body, 8)
-        self.assertEqual((version, count, len(body)), (1, 7, total))
-        self.assertEqual(sum(size for _n, size, _l in hist.FOOTER_DRAFT.values()), total - 16 - 16 * count)
-        self.assertLessEqual(total, 65536)
-        self.assertEqual(hist.pack_person("Tom", "Brady", "QB"), hist.pack_person("T", "BRADY", 0))
-        self.assertEqual(len(hist.pack_person("Tom", "Brady", "QB")), 7)
+    def test_footer_blocks_and_the_encoder(self):
+        self.assertEqual(hist.FOOTER_MAGIC, b"2K5XTND1")
+        self.assertEqual({k: v[1] for k, v in hist.FOOTER_BLOCKS.items()}, {k: v[1] for k, v in J23_BLOCKS.items()})
+        body = j23_body({})
+        self.assertEqual(len(body), J23_BODY_SIZE)
+        try:
+            from mod_editor.core import nfl2k5_franchise_extension as ext
+        except ImportError:
+            return                                     # the footer branch is not in this tree yet
+        view = ext.read_body(body)
+        self.assertTrue(view["header_ok"], view)
+        self.assertEqual(sorted(view["blocks"]), [1, 2, 3, 4, 5, 6])
+        for block in ext.BLOCKS:
+            self.assertEqual((block.offset, block.size), J23_BLOCKS[block.id])
+            self.assertEqual(hist.FOOTER_BLOCKS[block.id], (block.name, block.size))
+        self.assertEqual(ext.pack_person("T", "BRADY", "QB"), person("T", "BRADY", "QB"))
+
+    def test_runtime_header_names_the_footer_layout(self):
+        source = (ROOT / "tools/nfl2k5_history_screen/runtime.c").read_text(encoding="utf-8")
+        for fragment in ("#define X_SEASONS 1", "#define X_TOTALS 2", "#define X_RECORDS 3", "#define X_LEADERS 4",
+                         "#define X_HALL 5", "#define X_BOX 6", "#define SEASON_RECORD 592u", "#define BOX_ENTRY 512u",
+                         "#define LEAGUE_RECORDS_AT 9232u", "#define LEAGUE_LEADERS_AT 15376u"):
+            self.assertIn(fragment, source)
 
     def test_help_text_is_plain(self):
         for text in (hist.HELP_TEXT, hist.UI_LABEL):
@@ -237,7 +293,7 @@ class NativeTests(unittest.TestCase):
         cls.content = XbeImage(cls.payload).read(cls.ro, hist.RO_SIZE)
 
     # ---- machine ----------------------------------------------------------------------------------------------
-    FOOTER = 0x3100000            # 64 KiB mapped, then an unmapped page: a read past the footer faults
+    FOOTER = 0x3100000            # 128 KiB mapped, then an unmapped page: a read past the footer faults
     WORDS = 0x3080000             # the footer owner's body-pointer word (as code_for linked it)
 
     def machine(self, footer: bytes | None = None, seasons=0, at_end=False):
@@ -252,10 +308,10 @@ class NativeTests(unittest.TestCase):
         m.sounds = []
         m.hook(0x14D390, lambda mm: mm.sounds.append(1))
         m.uc.mem_map(self.WORDS, 0x1000)
-        m.uc.mem_map(self.FOOTER, 0x10000)
+        m.uc.mem_map(self.FOOTER, 0x20000)
         if footer is not None:
-            body = self.FOOTER + (0x10000 - len(footer) if at_end else 0)
-            m.uc.mem_write(body, footer[:0x10000])
+            body = self.FOOTER + (0x20000 - len(footer) if at_end else 0)
+            m.uc.mem_write(body, footer[:0x20000])
             m.put(self.WORDS, body)
         # league: 32 clubs at the league table, names in the heap
         teams, names = m.HEAP + 0x4000, m.HEAP + 0x10000
@@ -343,26 +399,41 @@ class NativeTests(unittest.TestCase):
         self.assertEqual(rows[2], ["2025", "12-5", "1ST", "LOST DIVISIONAL", "C. TWO"])
 
     def season_footer(self):
-        seasons = bytearray(32 * 260)
-        totals = bytearray(32 * 12)
-        for slot, (year, w, l, t, place, playoff) in enumerate(((2026, 11, 6, 0, 1, 2), (2027, 13, 4, 0, 1, 5))):
-            base = 260 * (slot + 5)                     # any ring slot: the screen orders by year
-            struct.pack_into("<HBB", seasons, base, year, 1, 1)
-            struct.pack_into("<BBBBHH", seasons, base + 4, w, l, t, place | playoff << 4, 400, 300)
-        struct.pack_into("<HHHBBBBH", totals, 0, 24, 10, 0, 2, 2, 1, 1, 2)
+        """Two closed franchise seasons (2026, 2027) for the Giants (club 0), the totals, and 2027's awards."""
+        seasons = bytearray(18960)
+        records = []
+        for year, w, l, place, playoff, coach in ((2026, 11, 6, 1, 2, ("C", "NEWMAN")), (2027, 13, 4, 1, 5, ("C", "NEWMAN"))):
+            record = bytearray(592)
+            struct.pack_into("<HBBBBBB", record, 0, year, 1, 17, 1, 3, 30, 20)
+            line = struct.pack("<BBBBHH7sB", w, l, 0, playoff | 8 | (place - 1) << 5 | 0x80, 400, 300,
+                               person(*coach, 31), 1)
+            record[80:96] = line
+            if year == 2027:
+                record[16:23] = person("J", "SMITH", "HB")      # MVP
+                record[23] = 3                                  # club index 2 + 1
+            records.append(bytes(record))
+        for i, record in enumerate(records):                    # ring slots 0, 1; head = 2
+            seasons[16 + 592 * i:16 + 592 * (i + 1)] = record
+        struct.pack_into("<BBHHB", seasons, 0, 2, 2, 2027, 2026, 32)
+        totals = bytearray(528)
+        struct.pack_into("<HH", totals, 0, 2026, 2)
+        struct.pack_into("<HHHBBBBBBHH", totals, 16, 24, 10, 0, 2, 2, 1, 1, 2, 2, 4, 1)
         return {1: bytes(seasons), 2: bytes(totals)}
 
     def test_seasons_page_with_franchise_seasons(self):
-        m = self.machine(hist.build_footer(self.season_footer()), seasons=2)
+        m = self.machine(j23_body(self.season_footer()), seasons=2)
         self.draw(m, page=0, club=0)
         rows = self.rows(m)
-        self.assertEqual(rows[0], ["SINCE 2004: 24-10   PLAYOFFS 2   DIVISION TITLES 2   SUPER BOWLS 1"])
-        self.assertEqual(rows[2], ["2027", "13-4", "1ST", "WON SUPER BOWL"])
-        self.assertEqual(rows[3], ["2026", "11-6", "1ST", "LOST DIVISIONAL"])
+        self.assertEqual(rows[0], ["SINCE 2026: 24-10   PLAYOFFS 2   DIVISION TITLES 2   SUPER BOWLS 1"])
+        self.assertEqual(rows[2], ["2027", "13-4", "1ST", "WON SUPER BOWL", "C. NEWMAN"])
+        self.assertEqual(rows[3], ["2026", "11-6", "1ST", "LOST DIVISIONAL", "C. NEWMAN"])
         self.assertEqual(rows[4], ["2025", "4-13", "4TH", "C. ONE"])
         # scrolled: 7 lines, 8 rows: the scroll clamps to 0
         self.draw(m, page=0, club=0, scroll=5)
         self.assertEqual(m.get(self.state + 8), 0)
+        # another club has no line in those seasons: the year shows alone
+        self.draw(m, page=0, club=2)
+        self.assertEqual(self.rows(m)[2], ["2027"])
 
     def test_awards_page(self):
         m = self.machine()
@@ -378,26 +449,26 @@ class NativeTests(unittest.TestCase):
         self.assertEqual(self.rows(m)[1], ["2025", "E. RUSHER", "DE", "CLE"])
 
     def test_awards_with_franchise_winners(self):
-        awards = bytearray(32 * 66)
-        struct.pack_into("<H", awards, 66 * 3, 2026)
-        awards[66 * 3 + 2:66 * 3 + 9] = hist.pack_person("J", "SMITH", "HB")
-        awards[66 * 3 + 9] = 3                          # club index 2 + 1
-        m = self.machine(hist.build_footer({3: bytes(awards)}))
+        m = self.machine(j23_body(self.season_footer()))
         self.draw(m, page=4, award=0)
         rows = self.rows(m)
-        self.assertEqual(rows[1], ["2026", "J. SMITH", "HB", "ARI"])
-        self.assertEqual(rows[2], ["2025", "T. PASSER", "QB", "STL"])
+        self.assertEqual(rows[1], ["2027", "J. SMITH", "HB", "ARI"])
+        self.assertEqual(rows[2], ["2026", "-"])                 # a season with no MVP kept
+        self.assertEqual(rows[3], ["2025", "T. PASSER", "QB", "STL"])
 
     def test_hall_of_fame_page_and_filter(self):
-        hof = bytearray(192 * 12)
-        hof[0:7] = hist.pack_person("A", "NEWMAN", "WR")
-        hof[7] = 1                                       # club 0 (the Giants) + 1
-        struct.pack_into("<HH", hof, 8, 2031, 900)
-        m = self.machine(hist.build_footer({6: bytes(hof)}))
+        hall = bytearray(4624)
+        inductees = ((person("A", "OLDER", "QB"), 5, 2026), (person("A", "NEWMAN", "WR"), 1, 2031))
+        for i, (who, club_plus_one, year) in enumerate(inductees):
+            hall[16 + 16 * i:23 + 16 * i] = who
+            struct.pack_into("<BHHBBH", hall, 23 + 16 * i, club_plus_one, year, year - 5, 1, 12, 900)
+        hall[0] = len(inductees)
+        m = self.machine(j23_body({5: bytes(hall)}))
         self.draw(m, page=5, filt=0)
         rows = self.rows(m)
         self.assertEqual(rows[0], ["CLASS", "MEMBER", "POS", "CLUB"])
         self.assertEqual(rows[1], ["2031", "A. NEWMAN", "WR", "NYG"])
+        # the footer's 2026 inductee belongs to a class the seed lists (its newest is 2026): listed once, by the seed
         self.assertEqual(rows[2], ["2026", "M. TWO", "QB", "NO"])
         self.assertEqual(rows[3], ["2025", "M. ONE", "CB", "PHI"])
         self.assertEqual(rows[4], ["2025", "M. THREE", "OLB", "NYG"])
@@ -418,14 +489,19 @@ class NativeTests(unittest.TestCase):
         self.draw(m, page=1, club=0)
         rows = self.rows(m)
         self.assertEqual(rows[1], ["PASS YARDS", "SEASON", "4,933", "G. PASSER", "2011"])
-        # a franchise club record that beats the real NFL record replaces it, marked NEW
-        records = bytearray(32 * 12 * 2 * 12)
-        e = 12 * (2 * (12 * 5 + 0) + 1)                  # club 5, pass yards, season
-        records[e:e + 7] = hist.pack_person("Z", "ARM", "QB")
-        struct.pack_into("<BHH", records, e + 7, 1, 2028, 5600)
-        m = self.machine(hist.build_footer({4: bytes(records)}))
+        # a franchise league record that beats the real NFL record replaces it, marked NEW (records block, league part)
+        records = bytearray(9520)
+        e = 9232 + 12 * (0 * 2 + 1)                      # passing yards, season
+        records[e:e + 7] = person("Z", "ARM", "QB")
+        struct.pack_into("<BHBB", records, e + 7, 6, 5600, 2028 - 1900, 0)
+        e = 16 + 12 * ((0 * 12 + 0) * 2 + 1)             # the Giants' club record, passing yards, season
+        records[e:e + 7] = person("Z", "ARM", "QB")
+        struct.pack_into("<BHBB", records, e + 7, 1, 5600, 2028 - 1900, 0)
+        m = self.machine(j23_body({3: bytes(records)}))
         self.draw(m, page=3)
         self.assertEqual(self.rows(m)[1], ["PASS YARDS", "SEASON", "5,600", "Z. ARM (BUF)", "NEW", "2028"])
+        self.draw(m, page=1, club=0)
+        self.assertEqual(self.rows(m)[1], ["PASS YARDS", "SEASON", "5,600", "Z. ARM", "NEW", "2028"])
 
     def test_leaders_page(self):
         m = self.machine()
@@ -435,6 +511,18 @@ class NativeTests(unittest.TestCase):
         self.assertEqual(rows[2], ["2.", "33,462", "O. PASSER"])
         self.draw(m, page=2, club=3)
         self.assertEqual(self.rows(m)[1], ["NO ALL-TIME LEADERS IN THIS BUILD YET"])
+        # the footer's table (seeded at the franchise start, counted since) is the live one; NEW marks franchise entries
+        leaders = bytearray(16176)
+        for rank, (who, value, flags) in enumerate(((person("G", "PASSER", "QB"), 57400, 1 | 2 | 4),
+                                                    (person("N", "ROOKIE", "QB"), 41000, 1 | 8))):
+            e = 16 + 16 * ((0 * 10 + 0) * 3 + rank)
+            leaders[e:e + 7] = who
+            struct.pack_into("<BIHH", leaders, e + 7, flags, value, 0xFFFF, 0)
+        m = self.machine(j23_body({4: bytes(leaders)}))
+        self.draw(m, page=2, club=0)
+        rows = self.rows(m)
+        self.assertEqual(rows[1], ["PASS YARDS", "1.", "57,400", "G. PASSER"])
+        self.assertEqual(rows[2], ["2.", "41,000", "N. ROOKIE", "NEW"])
 
     def press(self, m, pressed=0, repeat=0):
         m.put(PADS, 1)
@@ -475,23 +563,36 @@ class NativeTests(unittest.TestCase):
         m.uc.mem_write(GRID + 8 * (17 * row + slot), bytes((3, home, away, 9, 21, 26, 13, 0)))
         m.uc.mem_write(SCORES + 10 * (17 * row + slot), bytes(quarters[0] + quarters[1]))
 
-    def box_footer(self, row=2, slot=3, home=0, away=25, year=2004):
-        box = bytearray(24 * 480)
-        e = 480 * 7
-        lines = [(hist.pack_person("D", "JONES", "QB"), 1, 0, 40, (22, 31, 250, 2, 1, 0)),
-                 (hist.pack_person("S", "BARKLEY", "HB"), 2, 0, 41, (21, 102, 1, 0, 0, 0)),
-                 (hist.pack_person("J", "HURTS", "QB"), 1, 1, 90, (18, 30, 199, 1, 0, 0))]
-        struct.pack_into("<BBBBBBH", box, e, row, slot, home, away, 1, len(lines), year)
-        stats = (21, 352, 250, 102, 31, 22, 25, 1, 0, 1, 5, 45, 6, 13)
-        stats_away = (17, 298, 199, 99, 30, 18, 24, 2, 1, 1, 7, 60, 4, 12)
-        struct.pack_into("<14H", box, e + 8, *stats)
-        struct.pack_into("<14H", box, e + 36, *stats_away)
-        for i, (person, kind, side, link, values) in enumerate(lines):
-            at = e + 64 + 22 * i
-            box[at:at + 7] = person
-            box[at + 7] = side << 7 | kind
-            struct.pack_into("<H6H", box, at + 8, link, *values)
-        return hist.build_footer({7: bytes(box)})
+    def box_footer(self, row=2, slot=3, home=0, away=25, year=2004, links=(40, 41)):
+        """One kept game: the user club (home, the Giants) lines by player record index, the opponent's leader."""
+        box = bytearray(12304)
+        struct.pack_into("<HBB", box, 0, year, 1, 1)
+        e = 16
+        struct.pack_into("<BBBBBBBBB", box, e, row, slot, home, away, 24, 17, 0, 1 | 2, len(links))
+        struct.pack_into("<16H", box, e + 16, 24, 21, 352, 250, 102, 31, 22, 25, 1, 1, 0, 2, 5, 45, 6, 13)
+        struct.pack_into("<16H", box, e + 48, 17, 17, 298, 199, 99, 30, 18, 24, 2, 1, 1, 3, 7, 60, 4, 12)
+        box[e + 80:e + 87] = person("J", "HURTS", "QB")
+        box[e + 87] = 1
+        struct.pack_into("<4h", box, e + 88, 18, 30, 199, 1)
+        lines = ((links[0], 0, 1, (22, 31, 250, 2, 1, 12)), (links[1], 7, 2, (21, 102, 1, 3, 20, 0)))
+        for i, (link, pos, kind, values) in enumerate(lines):
+            struct.pack_into("<HBB6h", box, e + 144 + 16 * i, link, pos, kind, *values)
+        return j23_body({6: bytes(box)})
+
+    def roster_players(self, m, names=(("Daniel", "Jones"), ("Saquon", "Barkley")), links=(40, 41)):
+        m.put(m.ROOT, 100)
+        m.put(m.ROOT + 4, m.PLAYERS)
+        at = m.HEAP + 0x30000
+        out = []
+        for (first, last), link in zip(names, links):
+            player = m.PLAYERS + link * 0x54
+            m.uc.mem_write(player, bytes(0x54))
+            for field, text in ((0x10, first), (0x14, last)):
+                m.uc.mem_write(at, (text + "\0").encode("utf-16le"))
+                m.put(player + field, at)
+                at += 2 * len(text) + 2
+            out.append(player)
+        return out
 
     def box(self, m, row=2, slot=3, scroll=0):
         m.put(self.state + 20, row)
@@ -517,16 +618,19 @@ class NativeTests(unittest.TestCase):
 
     def test_box_score_with_kept_stats(self):
         m = self.machine(self.box_footer())
+        self.roster_players(m)
         self.game(m)
         self.box(m)
         rows = self.rows(m)
-        self.assertEqual(rows[3], ["FIRST DOWNS", "17", "21"])
-        self.assertEqual(rows[7], ["PASS ATT-COMP", "30-18", "31-22"])
+        self.assertEqual(rows[3], ["TEAM STATS", "PHI", "NYG"])
+        self.assertEqual(rows[4], ["FIRST DOWNS", "17", "21"])
+        self.assertEqual(rows[8], ["COMP/ATT", "18/30", "22/31"])
         self.box(m, scroll=20)
         rows = self.rows(m)
+        self.assertEqual(rows[6], ["THIRD DOWNS", "4/12", "6/13"])
         self.assertEqual(rows[7], ["NYG", "PASSING", "D. JONES", "22/31  250 YDS  2 TD  1 INT"])
-        self.assertEqual(rows[8], ["NYG", "RUSHING", "S. BARKLEY", "21 CAR  102 YDS  1 TD"])
-        self.assertEqual(rows[9], ["PHI", "PASSING", "J. HURTS", "18/30  199 YDS  1 TD  0 INT"])
+        self.assertEqual(rows[8], ["NYG", "RUSHING", "S. BARKLEY", "21 CAR  102 YDS  1 TD  3 REC 20 YDS"])
+        self.assertEqual(rows[9], ["PHI", "PASSING", "J. HURTS", "18/30  199 YDS  1 TD"])
         self.assertEqual(m.get(self.state + 28), 7)      # 7 rows of 14 lines: the scroll clamps to 7
 
     def test_box_score_ignores_a_box_of_another_game_or_season(self):
@@ -579,40 +683,45 @@ class NativeTests(unittest.TestCase):
     # ---- the game log -----------------------------------------------------------------------------------------
     def test_game_log_page(self):
         m = self.machine(self.box_footer())
+        jones, barkley = self.roster_players(m)
         self.game(m)
-        player = m.PLAYERS + 40 * 0x54
-        m.uc.mem_write(player, bytes(0x54))
-        m.uc.mem_write(m.HEAP + 0x30000, "Jones\0".encode("utf-16le"))
-        m.put(player + 0x14, m.HEAP + 0x30000)
-        m.put(m.ROOT, 100)
-        m.put(m.ROOT + 4, m.PLAYERS)
-        m.put(CARD_PLAYER, player)
-        card = m.HEAP + 0x31000
-        m.uc.mem_write(card, bytes(16))
+        m.put(CARD_PLAYER, jones)
+        card = m.HEAP + 0x31000                          # the honors owner's state: page, first row, screen, saved
+        m.uc.mem_write(card, struct.pack("<4I", 2, 0x80000000, 0, 0))
         m.text.clear()
-        m.call(self.at["hist_log_ratings"], ecx=card)
+        m.call(self.at["hist_card_rows"], ecx=card)
         self.assertEqual([t[0] for t in m.text], ["WK 3 VS PHI W 24-17  22/31  250 YDS  2 TD  1 INT"])
-        # another player has no lines
-        m.put(CARD_PLAYER, player + 0x54)
+        self.assertEqual(m.get(card + 4), 0x80000000)
         m.text.clear()
-        m.call(self.at["hist_log_ratings"], ecx=card)
+        self.assertEqual(m.call(self.at["hist_card_bio"]), 1)
+        self.assertEqual([t[0] for t in m.text], ["GAME LOG: THIS SEASON", "YOUR TEAM'S GAMES ARE KEPT"])
+        self.assertEqual(m.call(self.at["hist_card_bio"]), 0)       # only in a frame whose rows it drew
+        m.put(CARD_PLAYER, barkley + 0x54)               # a player with no lines
+        m.text.clear()
+        m.call(self.at["hist_card_rows"], ecx=card)
         self.assertEqual([t[0] for t in m.text], ["NO GAMES KEPT FOR THIS PLAYER THIS SEASON"])
 
     # ---- damage ---------------------------------------------------------------------------------------------------
     def test_damaged_footers_read_as_empty(self):
-        good = hist.build_footer(self.season_footer())
-        for damage in ("magic", "version", "count", "offset", "size", "pointer"):
+        good = j23_body(self.season_footer())
+        for damage in ("magic", "version", "slots", "id", "block version", "absent", "offset", "size", "pointer"):
             body = bytearray(good)
             if damage == "magic":
                 body[0] = ord("X")
             elif damage == "version":
                 struct.pack_into("<H", body, 8, 2)
-            elif damage == "count":
-                struct.pack_into("<H", body, 10, 99)
+            elif damage == "slots":
+                struct.pack_into("<H", body, 0x12, 99)
+            elif damage == "id":
+                struct.pack_into("<H", body, 0x40, 9)
+            elif damage == "block version":
+                body[0x42] = 2
+            elif damage == "absent":
+                body[0x43] = 0
             elif damage == "offset":
-                struct.pack_into("<I", body, 16 + 4, 0xFFFFFF00)
+                struct.pack_into("<I", body, 0x44, 0xFFFFFF00)
             elif damage == "size":
-                struct.pack_into("<I", body, 16 + 8, 0x7FFFFFFF)
+                struct.pack_into("<I", body, 0x48, 0x7FFFFFFF)
             m = self.machine(bytes(body), seasons=2)
             if damage == "pointer":
                 m.put(self.WORDS, 0x3)
@@ -621,21 +730,71 @@ class NativeTests(unittest.TestCase):
             self.assertEqual(rows[2], ["2025", "4-13", "4TH", "C. ONE"], damage)
 
     def test_no_page_reads_past_the_footer(self):
-        # a footer whose last block ends at the end of the mapped region: every page and the box score draw without
-        # touching the unmapped page after it
-        blocks = self.season_footer()
-        body = self.box_footer()
-        body = hist.build_footer({**blocks, 7: body[16 + 16 * 7 + sum(s for _n, s, _l in list(hist.FOOTER_DRAFT.values())[:6]):]})
-        self.assertLessEqual(len(body), 0x10000)
+        # a body with every block full of 0xFF (counts, offsets and lines at their limits) at the end of the mapped region:
+        # every page, every club, the box score and the game log draw without touching the unmapped page after it
+        blocks = {i: b"\xff" * size for i, (_offset, size) in J23_BLOCKS.items()}
+        body = j23_body(blocks)
         self.assertEqual(len(body) % 4, 0)
         m = self.machine(body, seasons=2, at_end=True)
+        self.roster_players(m)
         for page in range(6):
             for club in (0, 31):
                 self.draw(m, page=page, club=club, scroll=99)
         self.game(m)
         for scroll in (0, 99):
             self.box(m, scroll=scroll)
+        card = m.HEAP + 0x31000
+        m.uc.mem_write(card, struct.pack("<4I", 2, 0x80000000, 0, 0))
+        m.put(CARD_PLAYER, m.PLAYERS + 40 * 0x54)
+        m.call(self.at["hist_card_rows"], ecx=card)
 
+    def test_card_cycle_through_the_champions_owner(self):
+        """Honors (with champions) and this owner on one image: the card cycles card, honors, champions, game log."""
+        from mod_editor.core import nfl2k5_champions as champions
+        from mod_editor.core import nfl2k5_honors as honors
+        both, _ = honors.apply(self.retail)
+        both, receipt = hist.install(both, seed=seed_document(), xtnd_ptr_va=self.WORDS)
+        self.assertEqual((honors.status(both), hist.status(both)), ("applied", "applied"))
+        ch = champions.labels(champions.allocations(both)["code"]["va"])
+        m = Machine(both)
+        m.capture_text()
+        m.uc.mem_map(self.WORDS, 0x1000)                 # the footer host's word: no body
+        state = m.HEAP + 0x31000
+        m.uc.mem_write(state, bytes(16))
+
+        def flip(buttons):
+            return m.call(ch["champions_flip"], ecx=buttons, edx=state)
+
+        pages = []
+        for _ in range(5):                               # Black: forward
+            flip(0x1000)
+            pages.append((m.get(state), m.get(state + 4)))
+        self.assertEqual(pages, [(1, 0), (2, 0), (2, 0x80000000), (0, 0), (1, 0)])
+        for _ in range(2):                               # White: back from honors to card, card to the game log
+            flip(0x2000)
+        self.assertEqual((m.get(state), m.get(state + 4)), (2, 0x80000000))
+        self.assertEqual(flip(0x2000000), 1)             # Down scrolls the game log, its view kept
+        self.assertEqual(m.get(state + 4), 0x80000001)
+        m.text.clear()
+        m.call(ch["champions_ratings"], ecx=state)       # the game log draws the table area
+        self.assertEqual([t[0] for t in m.text], ["NO GAMES KEPT FOR THIS PLAYER THIS SEASON"])
+        m.text.clear()
+        m.call(ch["champions_bio"])
+        self.assertEqual([t[0] for t in m.text], ["GAME LOG: THIS SEASON", "YOUR TEAM'S GAMES ARE KEPT"])
+        flip(0x2000)                                     # back to the champions page: its own list and bio again
+        self.assertEqual((m.get(state), m.get(state + 4)), (2, 0))
+        m.text.clear()
+        m.call(ch["champions_ratings"], ecx=state)
+        m.call(ch["champions_bio"])
+        self.assertIn("CHAMPIONS: NONE YET", [t[0] for t in m.text])
+        # without this owner (the retail row pointer), the champions owner keeps its three pages
+        m.put(0x525674, 0x5253C0)
+        m.uc.mem_write(state, bytes(16))
+        pages = []
+        for _ in range(4):
+            flip(0x1000)
+            pages.append(m.get(state))
+        self.assertEqual(pages, [1, 2, 0, 1])
 
 if __name__ == "__main__":
     unittest.main()

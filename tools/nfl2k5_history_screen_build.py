@@ -21,7 +21,7 @@ FLAGS = ["-m32", "-Os", "-ffreestanding", "-fno-builtin", "-fno-strict-aliasing"
          "-fno-jump-tables", "-mpreferred-stack-boundary=2", "-mno-sse", "-mno-mmx", "-Wall", "-Wextra", "-Werror"]
 EXTERNAL = {"hist_state": "state", "hist_ro": "ro", "hist_xtnd_ptr": "xtnd_ptr"}
 ENTRIES = ("hist_enter", "hist_input", "hist_draw", "box_enter", "box_input", "box_draw", "hist_schedule_hook",
-           "hist_schedule_x", "hist_log_ratings", "hist_log_bio")
+           "hist_schedule_x", "hist_card_flip", "hist_card_rows", "hist_card_bio")
 
 
 def generate(source: Path = SOURCE) -> str:
