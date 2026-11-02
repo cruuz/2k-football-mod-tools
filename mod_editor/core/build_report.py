@@ -183,7 +183,7 @@ def header_lines(tracker, *, plan=None, labels=None, result: str | None = None) 
     lines = [
         f"{APP_NAME} {studio_version()} build log",
         f"Result: {state}",
-        f"Started: {started} (local time); ran for {_duration(tracker.elapsed())}",
+        f"Started: {started} (local time); ran for {_duration(tracker.duration())}",
         f"Computer: {computer_line()}",
         f"Source disc: {source_identity(facts.get('source') or getattr(plan, 'source', ''), facts.get('source_sha256'))}",
         f"Output disc: {facts.get('target') or getattr(plan, 'target', '') or '(none)'}",
@@ -212,7 +212,7 @@ def step_lines(tracker) -> list[str]:
     stopped = (tracker.failure or {}).get("step")
     out = ["", "Steps (when each started, how long it took):"]
     for entry in tracker.steps:
-        took = (entry["end"] if entry["end"] is not None else tracker.elapsed()) - entry["start"]
+        took = (entry["end"] if entry["end"] is not None else tracker.duration()) - entry["start"]
         outcome = entry.get("outcome")
         mark = ""
         if outcome == "left_out":

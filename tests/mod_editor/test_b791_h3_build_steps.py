@@ -762,6 +762,21 @@ class ReportTests(unittest.TestCase):
         with mock.patch.object(build_report.inspect, "signature", side_effect=ValueError("no signature found")):
             self.assertEqual(build_report.doctor_keywords(h4_doctor, project_check), {})   # nothing to read: none
 
+    def test_the_zip_copy_of_the_build_log_does_not_count_the_doctor_as_build_time(self):
+        import re
+        tracker, exc = self._failed_tracker()
+
+        def slow_doctor():
+            tracker.started -= 3600          # an hour goes by while the doctor runs
+            return "ok", "Project doctor: nothing to change.\n", None
+
+        record = build_report.record_failure(tracker, exc, plan=self.plan, doctor=slow_doctor)
+        with zipfile.ZipFile(record.zip) as bundle:
+            inside = re.search(r"ran for ([^\n]+)", bundle.read("build-log.txt").decode("utf-8")).group(1)
+        beside = re.search(r"ran for ([^\n]+)", Path(record.build_log).read_text(encoding="utf-8")).group(1)
+        self.assertEqual(inside, beside)
+        self.assertNotIn("1:00:", inside)
+
     def test_a_refusal_before_the_long_work_does_not_run_the_doctor(self):
         with self.assertRaises(ValueError) as caught:
             with build_steps.track() as session:

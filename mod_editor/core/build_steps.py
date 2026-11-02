@@ -463,6 +463,7 @@ class Tracker:
         self.facts: dict[str, Any] = {}
         self.failure: dict[str, Any] | None = None
         self.result: str = "running"
+        self.ended: float | None = None         # seconds from the start when the build itself finished or stopped
         self._sequential: dict[str, Any] | None = None
         self._stack: list[dict[str, Any]] = []
         self._last_key: str | None = None
@@ -472,6 +473,10 @@ class Tracker:
     # -- time
     def elapsed(self) -> float:
         return time.monotonic() - self.started
+
+    def duration(self) -> float:
+        """How long the build ran: up to its finish or stop (a report written afterwards adds nothing)."""
+        return self.ended if self.ended is not None else self.elapsed()
 
     # -- steps
     def _enter_step(self, step_id: str, label: str, kind: str) -> dict[str, Any]:
@@ -524,6 +529,8 @@ class Tracker:
                 if entry["end"] is None:
                     entry["end"] = now
             self.result = result
+            if self.ended is None:
+                self.ended = now
 
     # -- progress
     def _add_record(self, now: float, text: str, done: Any, total: Any, *, kind: str = "line") -> None:
