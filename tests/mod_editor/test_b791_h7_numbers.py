@@ -22,13 +22,15 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 sys.path.insert(1, str(ROOT / "tools"))
+sys.path.insert(2, str(ROOT / "tests" / "fixtures"))
 
 from PIL import Image, ImageDraw
 
 from mod_editor.core import nfl2k5_digit_art as art
 from mod_editor.core.errors import ValidationError
 from mod_editor.core.nfl2k5_digit_sheet import split_digit_sheet, SHEET_HELP, SHEET_LAYOUT_CHOICES
-from mod_editor.core.nfl2k5_digit_texture import resize_cell
+from mod_editor.core import nfl2k5_digit_texture as texture
+from mod_editor.core.nfl2k5_digit_texture import resize_cell, visible_colour_range
 from nfl_tset_png_import import QualityBudgetError, palette_bytes
 from nfl_txtr import swizzle_2d
 
@@ -458,6 +460,75 @@ def noisy_two_tone(digit, size=64):
                 pixels[index] = (*strays[(seen // 41) % len(strays)], 255)
     image.putdata(pixels)
     return image
+
+
+def hard_digit(digit, size, outline, fill):
+    """A seven-segment numeral drawn without anti-aliasing: exactly two colours and fully opaque or fully clear."""
+    image = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(image)
+    for width, colour_ in ((11, outline), (6, fill)):
+        for segment in _SEGMENTS[digit]:
+            draw.line([round(v * size / 64) for v in _POSITIONS[segment]], fill=(*colour_, 255), width=round(width * size / 64))
+    return image
+
+
+class ResampleColourTests(unittest.TestCase):
+    """Lanczos overshoots past a flat colour. Resizing must not invent shades the artist never used.
+
+    Found through the quality test that needs the game files: its 62 and 66 pixel cell cases drifted the outline
+    colour by up to 45 per channel, and a font sheet scaled down from 128 pixels was no longer recognised as two
+    colours, so it needed many more bytes than the same numeral drawn at 64 pixels."""
+
+    def test_resized_colours_stay_inside_the_range_of_the_source(self):
+        big = hard_digit(8, 128, ROYAL, WHITE)
+        low, high = visible_colour_range(big)
+        self.assertEqual((low, high), (ROYAL, WHITE))
+
+        def outside(image):
+            return [p for p in image.getdata() if p[3] and any(not low[k] <= p[k] <= high[k] for k in range(3))]
+
+        self.assertEqual(outside(resize_cell(big, (64, 64))), [])
+        # the same resize without the limit does leave the range, which is the case the limit exists for
+        with unittest.mock.patch.object(texture, "visible_colour_range", return_value=((0, 0, 0), (255, 255, 255))):
+            self.assertTrue(outside(resize_cell(big, (64, 64))))
+
+    def test_invisible_pixels_never_widen_the_range(self):
+        image = Image.new("RGBA", (8, 8), (0, 0, 0, 0))
+        image.paste((200, 100, 50, 255), (2, 2, 6, 6))
+        image.putpixel((0, 0), (255, 0, 255, 0))  # invisible, with loud colour
+        self.assertEqual(visible_colour_range(image), ((200, 100, 50), (200, 100, 50)))
+        self.assertEqual(visible_colour_range(Image.new("RGBA", (4, 4))), ((0, 0, 0), (255, 255, 255)))
+
+    def test_soft_edges_and_gradients_are_resized_as_before_inside_their_own_range(self):
+        # a gradient spans its own range, so the limit never touches it: the result equals the unlimited resize
+        gradient = Image.new("RGBA", (96, 96))
+        gradient.putdata([(40 + y, 80 + y // 2, 200 - y, 255 if 8 <= x < 88 else 0) for y in range(96) for x in range(96)])
+        limited = resize_cell(gradient, (64, 64))
+        with unittest.mock.patch.object(texture, "visible_colour_range", return_value=((0, 0, 0), (255, 255, 255))):
+            loose = resize_cell(gradient, (64, 64))
+        changed = sum(1 for a, b in zip(limited.getdata(), loose.getdata()) if a != b)
+        self.assertLessEqual(changed, 64 * 4, "only a few edge texels may differ where the filter overshot the gradient's ends")
+
+    def test_a_scaled_down_two_colour_digit_keeps_the_colours_it_was_drawn_in(self):
+        for digit in (0, 3, 8):
+            small = resize_cell(hard_digit(digit, 128, ROYAL, WHITE), (64, 64))
+            tones = art.two_tone_colours(art.collapse_colours(art.bind_alpha(small))[0])
+            self.assertEqual(sorted(tones), sorted((WHITE, ROYAL)), digit)
+
+    def test_cells_of_62_and_66_pixels_keep_the_outline_and_fill_colours(self):
+        # the private-data quality test's cell_62 and cell_66 cases, on the synthetic digits and without the game files
+        from number_sheet_quality_cases import FILL, OUTLINE, author_sheet
+        for case in ("cell_62", "cell_66"):
+            with tempfile.TemporaryDirectory() as temp:
+                sheet = author_sheet(Path(temp) / "sheet.png", case)
+                for output in split_digit_sheet(sheet, assets(), orientation="horizontal"):
+                    with Image.open(BytesIO(output.png)) as opened:
+                        prepared, _ = art.prepare_digit(opened.convert("RGBA"), retail_reference(), "retail")
+                    solid = {p[:3] for p in prepared.getdata() if p[3] >= 240}
+                    for wanted in (OUTLINE, FILL):
+                        drift = min(max(abs(c[k] - wanted[k]) for k in range(3)) for c in solid)
+                        self.assertLess(drift, 24, (case, output.digit, wanted, sorted(solid)))
+                    self.assertEqual(len(solid), 2, (case, output.digit, sorted(solid)))
 
 
 class SimplificationPartsTests(unittest.TestCase):

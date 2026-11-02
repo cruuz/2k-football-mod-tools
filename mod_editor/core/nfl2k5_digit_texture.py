@@ -11,7 +11,7 @@ from collections import Counter
 from array import array
 from typing import Any
 
-from PIL import Image
+from PIL import Image, ImageChops
 
 from .errors import ValidationError
 
@@ -20,17 +20,36 @@ MIP_FILTER = "premultiplied_rgba_area_from_base"
 PALETTE_POLICY = "shared_bgra8888_coverage_and_authored_colours"
 
 
+def visible_colour_range(rgba: Image.Image) -> tuple[tuple[int, int, int], tuple[int, int, int]]:
+    """The lowest and highest value of each colour channel among the visible (non-zero alpha) pixels."""
+    alpha = rgba.getchannel("A")
+    visible = alpha.point(lambda a: 255 if a else 0)
+    if not visible.getbbox():
+        return (0, 0, 0), (255, 255, 255)
+    hidden = ImageChops.invert(visible)
+    low, high = [], []
+    for channel in rgba.split()[:3]:
+        low.append(ImageChops.lighter(channel, hidden).getextrema()[0])
+        high.append(ImageChops.darker(channel, visible).getextrema()[1])
+    return (low[0], low[1], low[2]), (high[0], high[1], high[2])
+
+
 def resize_cell(image: Image.Image, size: tuple[int, int]) -> Image.Image:
     """Filter premultiplied colour, then return straight-alpha PNG pixels.
 
     Pillow's RGBA Lanczos already premultiplies, but through eight-bit RGBa.
     Float channels avoid rounding faint edges to saturated or black RGB before
     filtering. Only the final straight-alpha PNG is rounded to eight bits.
+    Lanczos overshoots past a flat colour, which would invent shades the artist
+    never used (a darker outline, a brighter-than-white halo) and make a flat
+    two-colour digit look like a many-colour one, so each colour channel stays
+    inside the range the visible source pixels span.
     Never guess whether a user's *stored* RGB has already been premultiplied.
     """
     rgba = image.convert("RGBA")
     if rgba.size == size:
         return rgba
+    low, high = visible_colour_range(rgba)
     channels = [channel.tobytes() for channel in rgba.split()]
     filtered = []
     for channel in range(4):
@@ -43,7 +62,7 @@ def resize_cell(image: Image.Image, size: tuple[int, int]) -> Image.Image:
         a = max(0, min(255, round(alpha)))
         if a:
             for channel in range(3):
-                output[i * 4 + channel] = max(0, min(255, round(filtered[channel][i] / alpha)))
+                output[i * 4 + channel] = max(low[channel], min(high[channel], round(filtered[channel][i] / alpha)))
             output[i * 4 + 3] = a
     return Image.frombytes("RGBA", size, bytes(output))
 

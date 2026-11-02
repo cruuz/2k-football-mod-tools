@@ -89,8 +89,12 @@ preview again after editing.
 
 The tool binds faint alpha to transparent and nearly solid alpha to opaque,
 merges nearby shades, limits the soft edge to one texel, and filters with
-premultiplied colour before saving ordinary straight alpha. It extends edge
-colours into invisible pixels so filtering cannot pull in transparent black.
+premultiplied colour before saving ordinary straight alpha. Resizing keeps each
+colour channel inside the range your art uses: a resize filter overshoots past a
+flat colour, and that used to turn a royal blue outline a shade darker and make a
+flat two-colour numeral look like a many-colour one that needed more room. It
+extends edge colours into invisible pixels so filtering cannot pull in
+transparent black.
 Every smaller texture level is rebuilt with a clear border, matching the
 retail mip margins, and all levels share one palette.
 The receipt records the box, scale, cleanup and selected palette.
