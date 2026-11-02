@@ -256,7 +256,7 @@ _STEPS = (
     _Step("bands_1", "its shading was flattened to one colour, with hard edges", colours=1, hard=True),
 )
 _HARD_LUT = [0] * 128 + [255] * 128
-#: A fill with at least this many different solid colours is shading (a gradient), not separate flat regions.
+#: A fill chain that steps through at least this many 16-wide bands of colour is shading (a gradient), not a flat region.
 _SHADED = 6
 
 
@@ -336,17 +336,19 @@ def _rim_colour(image: Image.Image) -> tuple[int, int, int] | None:
 
 
 class _Shading:
-    """What a digit is made of: an outline colour (or none), the fill shades, and how many separate regions."""
+    """What a digit is made of: an outline colour (or none), the fill, and how many separate regions.
+
+    Only smooth pixels count (see ``_smooth_colours``). Smooth colours that lie within one gradient step of
+    each other form one chain, and a chain with a real share of the fill is one region, so a gradient is one
+    region however many shades it has, and a flat patch of another colour is a region of its own.
+    """
 
     def __init__(self, image: Image.Image) -> None:
         smooth = _smooth_colours(image)
         self.rim = _rim_colour(image)
-        total = sum(smooth.values())
         fill = Counter({c: n for c, n in smooth.items()
                         if self.rim is None or max(abs(c[k] - self.rim[k]) for k in range(3)) > 40})
-        self.fill = Counter({c: n for c, n in fill.items() if n >= max(2, total * 0.005)})
-        # colours within one gradient step of each other are one region; a flat patch of another colour is its own
-        colours = sorted(self.fill)
+        colours = sorted(fill)
         parent = list(range(len(colours)))
 
         def find(index: int) -> int:
@@ -359,9 +361,16 @@ class _Shading:
             for j in range(i + 1, len(colours)):
                 if sum((first[k] - colours[j][k]) ** 2 for k in range(3)) <= 48 * 48:
                     parent[find(i)] = find(j)
-        self.regions = len({find(i) for i in range(len(colours))}) + (1 if self.rim is not None else 0)
-        #: Many different fill shades are shading (a gradient). A few are flat regions.
-        self.shaded = len(self.fill) >= _SHADED
+        chains: dict[int, list[tuple[int, int, int]]] = {}
+        for index, colour in enumerate(colours):
+            chains.setdefault(find(index), []).append(colour)
+        total = sum(fill.values())
+        real = [chain for chain in chains.values() if sum(fill[c] for c in chain) >= max(4, total * 0.03)]
+        self.fill = Counter({c: fill[c] for chain in real for c in chain})
+        self.regions = len(real) + (1 if self.rim is not None else 0)
+        #: A chain that steps through many shades (16-wide steps of colour) is shading, a gradient; a flat colour is not.
+        steps = max((len({(c[0] // 16, c[1] // 16, c[2] // 16) for c in chain}) for chain in real), default=0)
+        self.shaded = steps >= _SHADED
 
 
 def flatten_shading(image: Image.Image, count: int) -> Image.Image | None:
@@ -461,13 +470,6 @@ def _ladder(art, size, mode, mip_count, candidate, *, stream_tag, offset_bits, s
         except QualityBudgetError as exc:
             attempts.extend({**a, **tag, "registration_factor": factor} for a in getattr(exc, "attempts", ()))
             continue
-        except ValidationError:
-            # The quantizer cannot protect this many solid colours in the palette tier it reached (a gradient with
-            # nine to sixteen shades is the usual case). That is "does not fit at this quality", not a bad sheet:
-            # record it and let the next simplification try, instead of refusing the whole sheet or build.
-            attempts.append({"maximum_palette_entries": floor, "palette_entries": None, "result": "too_many_colours",
-                             **tag, "registration_factor": factor})
-            return None, levels, factor, floor
         attempts.extend({**a, **tag, "registration_factor": factor} for a in fit.attempts)
         used = {fit.palette[i] for i in fit.index_levels[0] if fit.palette[i][3] >= ALPHA_LOW}
         if flatten_smaller and any(not any(max(abs(c[k]-region[k]) for k in range(3)) <= 24 for c in used)

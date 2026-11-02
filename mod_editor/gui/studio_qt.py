@@ -7473,7 +7473,7 @@ class StudioMainWindow(QMainWindow):
         registration = dict(REGISTRATION_CHOICES)[str(registration_label)]
         filename, _ = QFileDialog.getOpenFileName(
             self,
-            f"Choose the {label.lower()} 0-9 sheet (ten equal cells)",
+            f"Choose the {label.lower()} 0-9 sheet (the ten digits in order)",
             str(Path.home()),
             IMAGE_IMPORT_FILTER,
         )

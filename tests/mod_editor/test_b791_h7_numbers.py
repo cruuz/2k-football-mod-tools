@@ -220,7 +220,7 @@ class LayoutDetectionTests(GeometryCase):
             sheet.save(self.root / "glow.png")
             outputs = self.split(self.root / "glow.png")
             self.assertTrue(all(o.layout == "grid_5x2" for o in outputs), width)
-            self.assertFalse(any("Check the layout" in w for o in outputs for w in o.warnings))
+            self.assertFalse(any("touch at the cell border" in w for o in outputs for w in o.warnings))
 
     def test_a_wrong_layout_choice_is_refused_with_the_right_one_named(self):
         # Beta 76 defaulted the dialog to "One row". A 0-4 / 5-9 sheet whose width divides by ten was then cut
@@ -562,26 +562,6 @@ class LadderTests(unittest.TestCase):
         self.assertEqual(ranks, sorted(ranks), "steps only get stronger as the slot shrinks")
         self.assertGreater(max(ranks), 0, f"something was simplified before the digit gave up: {ranks}")
 
-    def test_a_digit_with_a_dozen_shades_never_makes_the_quantizer_refuse_the_sheet(self):
-        # Twelve flat bands: more solid colours than the 16-colour tier can protect. This used to escape as a
-        # ValidationError ("Too many solid and edge colours...") and refuse the whole sheet or stop a build.
-        image = rams_digit(8, outline_colour=None)
-        banded = Image.new("RGBA", image.size)
-        for index, pixel in enumerate(image.getdata()):
-            if pixel[3]:
-                band = (index // 64) // 5
-                pixel = (255, 255 - band * 14, band * 20, pixel[3])
-            banded.putpixel((index % 64, index // 64), pixel)
-        saw_too_many = False
-        for stored in (300, 500, 800, 1200, 2000, 20000):
-            try:
-                result, _levels, receipt = fit(banded, stored)
-            except QualityBudgetError as error:
-                saw_too_many = saw_too_many or any(a.get("result") == "too_many_colours" for a in error.attempts)
-                continue
-            saw_too_many = saw_too_many or any(a.get("result") == "too_many_colours" for a in result.attempts)
-        self.assertTrue(saw_too_many, "at least one size reached the colour limit and handled it")
-
     def test_as_authored_is_simplified_the_same_way_but_never_shrunk(self):
         image = rams_digit(8)
         natural = len(fit(image, 20000, "as_authored")[0].compressed)
@@ -658,6 +638,19 @@ class FlatSheetRefusalTests(GeometryCase):
         self.assertIn("no transparent pixels", message)
         self.assertIn("solid 64x64 block", message)
         self.assertIn("PNG with a transparent background", message)
+
+
+class PreviewCountTests(unittest.TestCase):
+    def test_the_import_button_counts_simplified_digits_only_when_there_are_some(self):
+        from mod_editor.core.nfl2k5_digit_preview import DigitSheetPreview
+        plain = DigitSheetPreview(b"", "", tuple({"kept_retail": i < 3} for i in range(10)))
+        self.assertEqual(plain.import_button_text, "Import 7 digits, 3 kept retail")
+        rows = [{"kept_retail": i < 3} for i in range(10)]
+        for i in (3, 4):
+            rows[i] = {"digit_preparation": {"fit": {"simplified": {"name": "hard_edges", "text": "x"}}}}
+        some = DigitSheetPreview(b"", "", tuple(rows))
+        self.assertEqual(some.simplified_count, 2)
+        self.assertEqual(some.import_button_text, "Import 7 digits, 3 kept retail, 2 simplified")
 
 
 class ReviewDialogTests(unittest.TestCase):

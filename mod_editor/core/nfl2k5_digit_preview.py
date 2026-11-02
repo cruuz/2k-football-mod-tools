@@ -53,8 +53,15 @@ class DigitSheetPreview:
         return len(self.receipts) - self.kept_retail_count
 
     @property
+    def simplified_count(self) -> int:
+        """Digits that fit only after a reported simplification (hard edges, fewer colours)."""
+        return sum(1 for row in self.receipts if not row.get("kept_retail")
+                   and ((row.get("digit_preparation") or {}).get("fit") or {}).get("simplified"))
+
+    @property
     def import_button_text(self) -> str:
-        return f"Import {self.import_count} digits, {self.kept_retail_count} kept retail"
+        text = f"Import {self.import_count} digits, {self.kept_retail_count} kept retail"
+        return text + (f", {self.simplified_count} simplified" if self.simplified_count else "")
 
 
 def jersey_preview_colour(path: Path) -> tuple[int, int, int]:
@@ -212,7 +219,8 @@ def _refuse_flat_sheet(images: tuple[DigitSheetPng, ...]) -> None:
     raise ValidationError(
         f"This sheet has no transparent pixels, so every digit would import as a solid {images[0].width}x{images[0].height} "
         "block. Export the sheet as a PNG with a transparent background (JPEG pictures and flattened images cannot "
-        "carry transparency) and try again. A painted background around the digits has to be removed in your image editor."
+        "carry transparency) and try again. A checkerboard, white or coloured background behind the digits is part of the "
+        "picture and has to be removed in your image editor."
     )
 
 

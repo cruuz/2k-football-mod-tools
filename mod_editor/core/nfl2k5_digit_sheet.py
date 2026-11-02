@@ -220,15 +220,15 @@ def _grid_boxes(xs: list[int], ys: list[int], columns: int, rows: int) -> tuple[
                  for digit in range(columns * rows))
 
 
-def _straddling_cuts(solid: Image.Image, xs: list[int], ys: list[int], columns: int, rows: int) -> list[str]:
-    """Plain descriptions of cut lines that would slice through a digit (empty when every cut is clean).
+def _straddling_cuts(solid: Image.Image, xs: list[int], ys: list[int], columns: int, rows: int) -> list[tuple[int, int, str, int]]:
+    """Cut lines that would slice through a digit, as ``(digit before, digit after, "x" or "y", position)``.
 
     A cut slices a digit when solid pixels sit on both sides of it at the same height or
     width. Checked per row or column of cells, so a gap in one row is not blamed on a digit
-    in another. Soft glows that merely meet at a border do not count.
+    in another. Soft glows that merely meet at a border do not count. Empty when every cut is clean.
     """
 
-    problems: list[str] = []
+    problems: list[tuple[int, int, str, int]] = []
     for row in range(rows):
         y0, y1 = ys[row], ys[row + 1]
         for column in range(1, columns):
@@ -236,8 +236,7 @@ def _straddling_cuts(solid: Image.Image, xs: list[int], ys: list[int], columns: 
             if 0 < x < solid.width:
                 left, right = solid.crop((x - 1, y0, x, y1)), solid.crop((x, y0, x + 1, y1))
                 if ImageChops.multiply(left, right).getbbox() is not None:
-                    a, b = row * columns + column - 1, row * columns + column
-                    problems.append(f"the cut between digit {a} and digit {b} (x={x}) would slice through a digit")
+                    problems.append((row * columns + column - 1, row * columns + column, "x", x))
     for column in range(columns):
         x0, x1 = xs[column], xs[column + 1]
         for row in range(1, rows):
@@ -245,9 +244,19 @@ def _straddling_cuts(solid: Image.Image, xs: list[int], ys: list[int], columns: 
             if 0 < y < solid.height:
                 upper, lower = solid.crop((x0, y - 1, x1, y)), solid.crop((x0, y, x1, y + 1))
                 if ImageChops.multiply(upper, lower).getbbox() is not None:
-                    a, b = (row - 1) * columns + column, row * columns + column
-                    problems.append(f"the cut between digit {a} and digit {b} (y={y}) would slice through a digit")
+                    problems.append(((row - 1) * columns + column, row * columns + column, "y", y))
     return problems
+
+
+def _slice_text(problem: tuple[int, int, str, int]) -> str:
+    before, after, axis, position = problem
+    return f"the cut between digit {before} and digit {after} ({axis}={position}) would slice through a digit"
+
+
+def _touch_text(problem: tuple[int, int, str, int]) -> str:
+    before, after, axis, position = problem
+    return (f"Digit {before} and digit {after} touch at the cell border ({axis}={position}), which is used as the cut. "
+            "If either looks cut off in the preview, leave a transparent gap between the digits.")
 
 
 def _empty_cells(ink: Image.Image, boxes: Iterable[_Box]) -> list[int]:
@@ -477,12 +486,12 @@ def _plan_explicit(image: Image.Image, masks: tuple[Image.Image, Image.Image], l
                 raise ValidationError(
                     f"You chose {_LAYOUT_WORDS[layout]}, but the digits in this {width}x{height} sheet sit in "
                     f"{_LAYOUT_WORDS[better[0].layout]}, and the cell borders of the layout you chose would slice "
-                    f"through digits ({crossings[0]}). Choose \"{label}\" or \"Detect layout from image\" and try again."
+                    f"through digits ({_slice_text(crossings[0])}). Choose \"{label}\" or \"Detect layout from image\" and try again."
                 )
         return _Plan(
             layout, _grid_boxes(xs, ys, columns, rows),
             f"Layout: {_LAYOUT_WORDS[layout]}, {width // columns}x{height // rows} cells.",
-            warnings=tuple(f"Check the layout: {c}." for c in crossings[:3]),
+            warnings=tuple(_touch_text(c) for c in crossings[:3]),
         )
     # Not divisible: only go on when the digits themselves show where to cut.
     reasons: list[str] = []
@@ -493,7 +502,7 @@ def _plan_explicit(image: Image.Image, masks: tuple[Image.Image, Image.Image], l
         empty = _empty_cells(ink, boxes)
         if not crossings and not empty:
             return _Plan(layout, boxes, _rounded_note(width, height, layout))
-        reasons.append(crossings[0] if crossings else
+        reasons.append(_slice_text(crossings[0]) if crossings else
                        f"the cell{'s' if len(empty) != 1 else ''} for digit{'s' if len(empty) != 1 else ''} "
                        f"{', '.join(str(d) for d in empty)} would be empty")
         plan, why = _group_plan(masks, layout)
