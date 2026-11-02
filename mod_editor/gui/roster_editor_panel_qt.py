@@ -49,6 +49,11 @@ source row says what was detected and why, and lets you override it.  The **rati
 they are keyed by the position code the way the game keys them, so a one-pool LB is scored on the
 linebacker card set and a one-pool EDGE on the defensive-end one.
 
+**Coaches** (beside Franchise and ESPN Anniversary) plans the coaching staff of a build: swap or hire head coaches,
+create a coach, change a defensive coordinator.  The plan is the ``staff`` section of the roster edits, its changes share
+this page's Undo and Redo, and it is off for an Xbox save (a franchise save changes its coaches on the Franchise page).
+See ``mod_editor/gui/coaches_panel_qt.py``.
+
 Field credit: Flying Finn (Glen Leskinen) and Bad_AL, re-verified against the retail disc.  See
 ``mod_editor/core/nfl2k5_roster_records.py``.
 """

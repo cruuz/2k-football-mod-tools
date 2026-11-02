@@ -9,14 +9,15 @@ move, a firing, a new coach, a coordinator change or a playbook choice.  Nothing
 The document, one entry per club that changes (clubs not listed keep their coach)::
 
     {"schema": "nfl2k5_coach_staff/v1",
-     "head_coaches": [{"team": "OAK", "coach": "Andy Reid", "playbook": "club"},
-                      {"team": "NYG", "created": "pat-shurmur", "playbook": "club"}],
+     "head_coaches": [{"team": "OAK", "coach": "Andy Reid"},
+                      {"team": "NYG", "created": "pat-shurmur", "playbook": "coach"}],
      "defensive_coordinators": [{"team": "DAL", "dc": "PHI"}],
      "created_coaches": [{"id": "pat-shurmur", "first": "Pat", "last": "Shurmur", "bio": ["", "", ""], "body": 50,
                           "photo": 8999, "style": "SF", "ratings": {"overall": 70}}]}
 
 ``team`` is the club's book code (SF CHI ... ARZ SD KC ... OAK STL WAS), ``coach`` a head coach's full name as the roster
-holds it, ``dc`` the home club's book code of a 2026 coordinator.  Every function here returns a new document and keeps
+holds it, ``dc`` the home club's book code of a 2026 coordinator, ``playbook`` is written only as ``coach`` (he brings his
+old club's playbook).  Every function here returns a new document and keeps
 the invariants the build checks: every club has exactly one head coach and one coordinator, nobody works two seats, and
 a coach who leaves a club is replaced there in the same move (a swap), or let go when a new person takes his seat.
 

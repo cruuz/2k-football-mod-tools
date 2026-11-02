@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import os
 import sys
-import tempfile
 import unittest
 from pathlib import Path
 from unittest import mock
@@ -21,13 +20,12 @@ for entry in (ROOT, ROOT / "tests", ROOT / "tests" / "mod_editor"):
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
-from PyQt5.QtCore import Qt  # noqa: E402
 from PyQt5.QtWidgets import QDialog  # noqa: E402
 
 from mod_editor.core import nfl2k5_franchise_save as fs  # noqa: E402
 from mod_editor.gui.franchise_panel_qt import ClubPickerDialog, FireHireDialog, FranchiseEdit  # noqa: E402
 from b780_staff_fixture import synthetic_staff_franchise  # noqa: E402
-from test_franchise_panel_qt import _PanelCase, written_savegame  # noqa: E402
+from test_franchise_panel_qt import _PanelCase  # noqa: E402
 from test_nfl2k5_franchise_save import FIXTURES, FRANCHISE1  # noqa: E402
 
 

@@ -682,7 +682,7 @@ class CoachesPanel(QWidget):
         by_name = {r.name: r for r in self._rows}
         homes = ui.head_coach_homes()
         base = self._row_for(club_)
-        self.club_title.setText(f"{club_.code} {club_.nickname}" + (f" · {base.display}" if base and base.display else ""))
+        self.club_title.setText(f"{base.display} ({club_.code})" if base and base.display else f"{club_.code} {club_.nickname}")
         if kind == "created":
             spec = ui.created_coaches(self._staff).get(value, {})
             name = ui.occupant_name(occupant, self._staff)

@@ -24,8 +24,8 @@ Build applies it when it makes the disc.
 ```json
 "staff": {
   "schema": "nfl2k5_coach_staff/v1",
-  "head_coaches": [{"team": "OAK", "coach": "Andy Reid", "playbook": "club"},
-                   {"team": "NYG", "created": "pat-shurmur", "playbook": "club"}],
+  "head_coaches": [{"team": "OAK", "coach": "Andy Reid"},
+                   {"team": "NYG", "created": "pat-shurmur", "playbook": "coach"}],
   "defensive_coordinators": [{"team": "DAL", "dc": "PHI"}],
   "created_coaches": [{"id": "pat-shurmur", "first": "Pat", "last": "Shurmur", "bio": ["", "", ""], "body": 50,
                        "photo": 8999, "style": "SF", "ratings": {"overall": 70}}]
@@ -33,14 +33,19 @@ Build applies it when it makes the disc.
 ```
 
 `team` is the club's book code (SF CHI CIN ... ARZ SD ... OAK STL WAS), `coach` a head coach's full name on the loaded
-roster, `dc` the book code of the club a 2026 coordinator comes from, `playbook` `club` (the club keeps its own) or
-`coach` (he brings his). Clubs not listed keep their coach. One head coach and one coordinator per club, nobody in two
-seats, nobody lost without being replaced: `mod_editor/core/nfl2k5_staff_ui.py` builds every document with those rules
-and `problems()` says in plain words what is wrong with one that was written by hand.
+roster, `dc` the book code of the club a 2026 coordinator comes from, `playbook` is written only as `coach` (he brings
+his playbook); without it the club keeps its own. Clubs not listed keep their coach. One head coach and one coordinator
+per club, nobody in two seats, nobody lost without being replaced, coaches told apart by name (a new coach cannot take
+the name of a head coach in the plan, and a new coach brings a playbook only when he calls plays like another coach):
+`mod_editor/core/nfl2k5_staff_ui.py` builds every document with those rules and `problems()` says in plain words what is
+wrong with one that was written by hand. This is the form `nfl2k5_coach_staff.normalize` returns, apart from empty
+`tendencies` and `fields` it adds to a new coach.
 
 The build-time writer is `nfl2k5_coach_staff` (b780 job c2-staff). When that module is in the Studio, the page asks it
-to judge the plan against the roster as well and shows what it says (including which clubs keep the automatic 2026 play
-calling); until then the page says so, and a build ignores the section.
+about the plan a moment after the last change (one question per burst of changes, only while the page is shown) and shows
+what it says: its notes and problems, and for the selected club where his playbook comes from and whether the automatic
+2026 play calling binds to the new coach and why not. The exported section is the engine's own canonical form. Until
+the module is there the page says so, and a build ignores the section.
 
 ```
 python3 -m mod_editor.core.nfl2k5_staff_ui                         # the 32 clubs and their coordinators

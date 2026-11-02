@@ -22,7 +22,6 @@ for entry in (ROOT, ROOT / "tests", ROOT / "tests" / "mod_editor"):
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
-from PyQt5.QtCore import Qt  # noqa: E402
 from PyQt5.QtWidgets import QApplication, QDialog  # noqa: E402
 
 from mod_editor.core import nfl2k5_roster_records as rr  # noqa: E402
