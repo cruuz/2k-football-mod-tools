@@ -1,0 +1,22 @@
+{
+ "ARI": {"reason": "fired", "date": "2026-01-05", "in_season": false, "wikipedia_phrase": "Gannon was fired on January 5",
+         "source": "https://www.nfl.com/news/cardinals-fire-hc-jonathan-gannon-following-three-seasons"},
+ "ATL": {"reason": "fired", "date": "2026-01-04", "in_season": false, "wikipedia_phrase": "Morris was fired on January 4",
+         "source": "https://www.nfl.com/news/falcons-firing-hc-raheem-morris-following-two-seasons-with-team"},
+ "BAL": {"reason": "fired", "date": "2026-01-06", "in_season": false, "wikipedia_phrase": "Harbaugh was fired on January 6",
+         "source": "https://www.nfl.com/news/ravens-fire-hc-john-harbaugh-after-his-18th-season-ends-with-missing-playoffs"},
+ "BUF": {"reason": "fired", "date": "2026-01-19", "in_season": false, "wikipedia_phrase": "McDermott was fired on January 19",
+         "source": "https://www.buffalobills.com/news/buffalo-bills-announce-sean-mcdermott-has-been-relieved-of-his-duties-as-head-coach"},
+ "CLE": {"reason": "fired", "date": "2026-01-05", "in_season": false, "wikipedia_phrase": "Stefanski was fired on January 5",
+         "source": "https://www.nfl.com/news/browns-fire-head-coach-kevin-stefanski-following-six-seasons-in-cleveland"},
+ "LV": {"reason": "fired", "date": "2026-01-05", "in_season": false, "wikipedia_phrase": "Carroll was fired on January 5",
+        "source": "https://www.nfl.com/news/raiders-fire-hc-pete-carroll-following-his-first-season-in-las-vegas"},
+ "MIA": {"reason": "fired", "date": "2026-01-08", "in_season": false, "wikipedia_phrase": "McDaniel was fired on January 8",
+         "source": "https://www.nfl.com/news/dolphins-fire-head-coach-mike-mcdaniel-after-four-seasons"},
+ "NYG": {"reason": "fired", "date": "2025-11-10", "in_season": true, "wikipedia_phrase": "Daboll was fired as head coach on November 10, 2025",
+         "source": "https://www.nfl.com/news/giants-fire-head-coach-brian-daboll-after-2-8-start"},
+ "PIT": {"reason": "resigned", "date": "2026-01-13", "in_season": false, "wikipedia_phrase": "Tomlin resigned on January 13",
+         "source": "https://www.nfl.com/news/mike-tomlin-stepping-down-as-head-coach-of-steelers-after-19-seasons"},
+ "TEN": {"reason": "fired", "date": "2025-10-13", "in_season": true, "wikipedia_phrase": "Callahan was fired as head coach on October 13, 2025",
+         "source": "https://www.nfl.com/news/brian-callahan-titans-fire-head-coach"}
+}

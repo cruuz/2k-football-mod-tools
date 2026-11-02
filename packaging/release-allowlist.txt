@@ -3872,3 +3872,8 @@ tests/mod_editor/test_b779_rc1_roster_capacity.py
 # b779 ag1: capacity arena 0xCA000 (4,096 player records), one layout helper, beta-78 saves migrate
 tests/mod_editor/test_b779_ag1_capacity_arena.py
 tests/mod_editor/test_b779_up2_zero_footer.py
+# b780 c5-owners: owner patience (sourced head coach history, owners, the firing hazard and its calibration) and the real-people
+# coach hiring pool, read by the coaching carousel
+mod_editor/core/nfl2k5_coach_owners.py
+data/nfl2k5_owners_2026.json
+data/nfl2k5_coach_pool_2026.json

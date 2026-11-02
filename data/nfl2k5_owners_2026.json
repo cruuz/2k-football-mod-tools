@@ -1,0 +1,5542 @@
+{
+ "schema": "nfl2k5_coach_owners/v1",
+ "base_year": 2026,
+ "status": "SOURCED history and owners; FITTED hazard; calibration SIMULATED. Nothing here has run in the game.",
+ "window": {
+  "first_season": 1999,
+  "last_season": 2025,
+  "offseasons": 27,
+  "decision": "after each season 1999-2025 the club either keeps the coach who opened that season or opens the next one with another (the last decision picked the 2026 coach); Houston starts in 2002",
+  "basis": "opening-day head coach, full-season record"
+ },
+ "sources": {
+  "nflverse_games": {
+   "title": "nflverse nfldata games.csv",
+   "url": "https://raw.githubusercontent.com/nflverse/nfldata/e28cf00d4fdffa262603191a0b339901d4a7efd0/data/games.csv",
+   "commit": "e28cf00d4fdffa262603191a0b339901d4a7efd0",
+   "bytes": 2185207,
+   "sha256": "a5181ec4974309828d1d58e6f881eb1d106ee85c15c038a51b6bdca7b7ee6cf5",
+   "publisher": "nflverse / Lee Sharpe",
+   "use": "head coach of every club's games and the season records, 1999-2025 only",
+   "licence": "no licence declared in the repository; only facts (dates, scores, coach names) are used"
+  },
+  "wikipedia_owners": {
+   "title": "List of current NFL franchise owners",
+   "url": "https://en.wikipedia.org/w/index.php?title=List_of_current_NFL_franchise_owners&oldid=1381227405",
+   "revision": 1381227405,
+   "sha256": "2c10af89b73ec3c02b33ea445baa45b11b6bcae22af925078d616486a31829da",
+   "publisher": "Wikipedia",
+   "licence": "CC BY-SA 4.0",
+   "use": "principal owner, since when, and the note that separates a family succession from a purchase"
+  },
+  "wikipedia_2026_season": {
+   "title": "2026 NFL season",
+   "url": "https://en.wikipedia.org/w/index.php?title=2026_NFL_season&oldid=1383458077",
+   "revision": 1383458077,
+   "sha256": "80d2b63331403fa520d1e56cf7e932c8febc5e305a7a2423b1b331f0872d453d",
+   "publisher": "Wikipedia",
+   "licence": "CC BY-SA 4.0",
+   "use": "the table of 2026 offseason head coach changes: who left, why and when"
+  },
+  "teams_2026": {
+   "title": "the repo's sourced 2026 head coaches",
+   "url": "https://github.com/cruuz/2k-football-mod-tools/tree/main/data/nfl2k5_teams_2026",
+   "files": [
+    "data/nfl2k5_teams_2026/*.json (roster.head_coach)",
+    "data/vip/coach_sources_2026.json (hire announcements)"
+   ],
+   "use": "the 2026 opening-day head coach of each club; the announcement URL of each is in history.current"
+  }
+ },
+ "rules": {
+  "owner_era": "an outside purchase after 1999 starts a new owner era (the club's earlier coaching decisions say nothing about him); a family succession, a founding family or a public owner does not",
+  "owner_scale": "fire_scale_q8 = 256 * (changes + k) / (expected_changes + k) over the owner's era, k = model.fit.frailty.shape; a club with no decisions under its owner yet (Seattle) is exactly 256. A smaller k widens the spread of owners (the data do not support one smaller than the stored k), a larger k narrows it",
+  "reading": "1.00 (256) is the league's average temper; above it the owner fires sooner than the league does for the same record and tenure, below it later",
+  "departure": "the 2026 offseason's ten head coach departures carry reason, date and a news source; every other change is derived from game data only"
+ },
+ "model": {
+  "name": "owner_fire_hazard/v1",
+  "unit": "permille",
+  "formula": "idx = ((2*W+T)*17 + G)//(2*G); b = 0 if n<=1, 1 if n==2, else 2; p = base_permille[b][idx]; p = (p*owner_q8*league_q8 + 32768) >> 16; p = min(p, 1000); fire when (draw % 1000) < p",
+  "tenure_bucket": "n = seasons with the club including the season just played; 0 first season, 1 second, 2 third or later",
+  "base_permille": [
+   [670, 567, 457, 352, 259, 184, 127, 86, 57, 37, 24, 16, 10, 7, 4, 3, 2, 1],
+   [844, 778, 693, 592, 483, 376, 280, 200, 139, 94, 63, 41, 27, 18, 11, 7, 5, 3],
+   [929, 894, 845, 778, 693, 592, 484, 376, 280, 200, 139, 94, 63, 41, 27, 18, 11, 7]
+  ],
+  "league_q8": 256,
+  "fit": {
+   "kind": "logistic regression on the season win percentage (centred at .500) with one intercept per tenure group",
+   "decisions": 861,
+   "changes": 191,
+   "intercept_unknown_tenure": -1.3578,
+   "intercepts": [-3.0288, -2.0443, -1.1643],
+   "slope_per_win_pct": -7.4726,
+   "standard_errors": [0.2435, 0.2791, 0.2402, 0.137, 0.6397],
+   "log_likelihood": -349.13,
+   "log_likelihood_null": -455.66,
+   "playoffs": "made-the-playoffs and won-a-playoff-game add nothing once the win percentage is known (2 df likelihood ratio 2.4); the model does not use them",
+   "frailty": {
+    "shape": 16.0,
+    "rule": "no spread between clubs beyond records and tenure: smallest shape not rejected at 95%",
+    "log_likelihood_poisson": -61.27,
+    "log_likelihood_at_shape": -63.151,
+    "likelihood_ratio_vs_no_spread": -3.761,
+    "sum_squared_dispersion": 21.09,
+    "clubs": 31
+   }
+  }
+ },
+ "league": {
+  "decisions": 861,
+  "changes": 191,
+  "offseasons": 27,
+  "changes_per_offseason": 7.074,
+  "by_offseason": {
+   "1999": 7,
+   "2000": 8,
+   "2001": 7,
+   "2002": 5,
+   "2003": 7,
+   "2004": 3,
+   "2005": 10,
+   "2006": 7,
+   "2007": 4,
+   "2008": 11,
+   "2009": 3,
+   "2010": 8,
+   "2011": 8,
+   "2012": 9,
+   "2013": 7,
+   "2014": 7,
+   "2015": 7,
+   "2016": 6,
+   "2017": 7,
+   "2018": 8,
+   "2019": 5,
+   "2020": 7,
+   "2021": 10,
+   "2022": 5,
+   "2023": 8,
+   "2024": 7,
+   "2025": 10
+  },
+  "fewest_in_an_offseason": 3,
+  "most_in_an_offseason": 11,
+  "median_fired_win_pct": 0.312,
+  "share_fired_after_a_winning_season": 0.152,
+  "median_tenure_when_fired": 3.0,
+  "fired_rate_by_tenure": [0.126, 0.209, 0.262],
+  "tenure_note": "tenure columns exclude the coaches who opened 1999 (their start is not in the data)"
+ },
+ "crosscheck_r2": {
+  "method": "coach of the club's last game of each season; consecutive seasons 1999-2025 (r2 prototype)",
+  "changes_per_club": {
+   "ARI": 7,
+   "ATL": 8,
+   "BAL": 1,
+   "BUF": 9,
+   "CAR": 6,
+   "CHI": 6,
+   "CIN": 3,
+   "CLE": 11,
+   "DAL": 6,
+   "DEN": 8,
+   "DET": 10,
+   "GB": 4,
+   "HOU": 7,
+   "IND": 6,
+   "JAX": 8,
+   "KC": 5,
+   "LAC": 7,
+   "LAR": 7,
+   "LV": 14,
+   "MIA": 10,
+   "MIN": 5,
+   "NE": 3,
+   "NO": 6,
+   "NYG": 6,
+   "NYJ": 8,
+   "PHI": 4,
+   "PIT": 1,
+   "SEA": 3,
+   "SF": 8,
+   "TB": 7,
+   "TEN": 5,
+   "WAS": 10
+  },
+  "changes": 209,
+  "per_offseason": 8.04,
+  "median_record_before_a_change": 0.353,
+  "why_not_used": "an in-season firing is counted against the previous season's record and its interim replacement counts again; nflverse has no interim coaches in 2024 and 2025"
+ },
+ "calibration": {
+  "records": {
+   "ARI": "6-10-0 3-13-0 7-9-0 5-11-0 4-12-0 6-10-0 5-11-0 5-11-0 8-8-0 9-7-0 10-6-0 5-11-0 8-8-0 5-11-0 10-6-0 11-5-0 13-3-0 7-8-1 8-8-0 3-13-0 5-10-1 8-8-0 11-6-0 4-13-0 4-13-0 8-9-0 3-14-0",
+   "ATL": "5-11-0 4-12-0 7-9-0 9-6-1 5-11-0 11-5-0 8-8-0 7-9-0 4-12-0 11-5-0 9-7-0 13-3-0 10-6-0 13-3-0 4-12-0 6-10-0 8-8-0 11-5-0 10-6-0 7-9-0 7-9-0 4-12-0 7-10-0 7-10-0 7-10-0 8-9-0 8-9-0",
+   "BAL": "8-8-0 12-4-0 10-6-0 7-9-0 10-6-0 9-7-0 6-10-0 13-3-0 5-11-0 11-5-0 9-7-0 12-4-0 12-4-0 10-6-0 8-8-0 10-6-0 5-11-0 8-8-0 9-7-0 10-6-0 14-2-0 11-5-0 8-9-0 10-7-0 13-4-0 12-5-0 8-9-0",
+   "BUF": "11-5-0 8-8-0 3-13-0 8-8-0 6-10-0 9-7-0 5-11-0 7-9-0 7-9-0 7-9-0 6-10-0 4-12-0 6-10-0 6-10-0 6-10-0 9-7-0 8-8-0 7-9-0 9-7-0 6-10-0 10-6-0 13-3-0 11-6-0 13-3-0 11-6-0 13-4-0 12-5-0",
+   "CAR": "8-8-0 7-9-0 1-15-0 7-9-0 11-5-0 7-9-0 11-5-0 8-8-0 7-9-0 12-4-0 8-8-0 2-14-0 6-10-0 7-9-0 12-4-0 7-8-1 15-1-0 6-10-0 11-5-0 7-9-0 5-11-0 5-11-0 5-12-0 7-10-0 2-15-0 5-12-0 8-9-0",
+   "CHI": "6-10-0 5-11-0 13-3-0 4-12-0 7-9-0 5-11-0 11-5-0 13-3-0 7-9-0 9-7-0 7-9-0 11-5-0 8-8-0 10-6-0 8-8-0 5-11-0 6-10-0 3-13-0 5-11-0 12-4-0 8-8-0 8-8-0 6-11-0 3-14-0 7-10-0 5-12-0 11-6-0",
+   "CIN": "4-12-0 4-12-0 6-10-0 2-14-0 8-8-0 8-8-0 11-5-0 8-8-0 7-9-0 4-11-1 10-6-0 4-12-0 9-7-0 10-6-0 11-5-0 10-5-1 12-4-0 6-9-1 7-9-0 6-10-0 2-14-0 4-11-1 10-7-0 12-4-0 9-8-0 9-8-0 6-11-0",
+   "CLE": "2-14-0 3-13-0 7-9-0 9-7-0 5-11-0 4-12-0 6-10-0 4-12-0 10-6-0 4-12-0 5-11-0 5-11-0 4-12-0 5-11-0 4-12-0 7-9-0 3-13-0 1-15-0 0-16-0 7-8-1 6-10-0 11-5-0 8-9-0 7-10-0 11-6-0 3-14-0 5-12-0",
+   "DAL": "8-8-0 5-11-0 5-11-0 5-11-0 10-6-0 6-10-0 9-7-0 9-7-0 13-3-0 9-7-0 11-5-0 6-10-0 8-8-0 8-8-0 8-8-0 12-4-0 4-12-0 13-3-0 9-7-0 10-6-0 8-8-0 6-10-0 12-5-0 12-5-0 12-5-0 7-10-0 7-9-1",
+   "DEN": "6-10-0 11-5-0 8-8-0 9-7-0 10-6-0 10-6-0 13-3-0 9-7-0 7-9-0 8-8-0 8-8-0 4-12-0 8-8-0 13-3-0 13-3-0 12-4-0 12-4-0 9-7-0 5-11-0 6-10-0 7-9-0 5-11-0 7-10-0 5-12-0 8-9-0 10-7-0 14-3-0",
+   "DET": "8-8-0 9-7-0 2-14-0 3-13-0 5-11-0 6-10-0 5-11-0 3-13-0 7-9-0 0-16-0 2-14-0 6-10-0 10-6-0 4-12-0 7-9-0 11-5-0 7-9-0 9-7-0 9-7-0 6-10-0 3-12-1 5-11-0 3-13-1 9-8-0 12-5-0 15-2-0 9-8-0",
+   "GB": "8-8-0 9-7-0 12-4-0 12-4-0 10-6-0 10-6-0 4-12-0 8-8-0 13-3-0 6-10-0 11-5-0 10-6-0 15-1-0 11-5-0 8-7-1 12-4-0 10-6-0 10-6-0 7-9-0 6-9-1 13-3-0 13-3-0 13-4-0 8-9-0 9-8-0 11-6-0 9-7-1",
+   "HOU": "4-12-0 5-11-0 7-9-0 2-14-0 6-10-0 8-8-0 8-8-0 9-7-0 6-10-0 10-6-0 12-4-0 2-14-0 9-7-0 9-7-0 9-7-0 4-12-0 11-5-0 10-6-0 4-12-0 4-13-0 3-13-1 10-7-0 10-7-0 12-5-0",
+   "IND": "13-3-0 10-6-0 6-10-0 10-6-0 12-4-0 12-4-0 14-2-0 12-4-0 13-3-0 12-4-0 14-2-0 10-6-0 2-14-0 11-5-0 11-5-0 11-5-0 8-8-0 8-8-0 4-12-0 10-6-0 7-9-0 11-5-0 9-8-0 4-12-1 9-8-0 8-9-0 8-9-0",
+   "JAX": "14-2-0 7-9-0 6-10-0 6-10-0 5-11-0 9-7-0 12-4-0 8-8-0 11-5-0 5-11-0 7-9-0 8-8-0 5-11-0 2-14-0 4-12-0 3-13-0 5-11-0 3-13-0 10-6-0 5-11-0 6-10-0 1-15-0 3-14-0 9-8-0 9-8-0 4-13-0 13-4-0",
+   "KC": "9-7-0 7-9-0 6-10-0 8-8-0 13-3-0 7-9-0 10-6-0 9-7-0 4-12-0 2-14-0 4-12-0 10-6-0 7-9-0 2-14-0 11-5-0 9-7-0 11-5-0 12-4-0 10-6-0 12-4-0 12-4-0 14-2-0 12-5-0 14-3-0 11-6-0 15-2-0 6-11-0",
+   "LAC": "8-8-0 1-15-0 5-11-0 8-8-0 4-12-0 12-4-0 9-7-0 14-2-0 11-5-0 8-8-0 13-3-0 9-7-0 8-8-0 7-9-0 9-7-0 9-7-0 4-12-0 5-11-0 9-7-0 12-4-0 5-11-0 7-9-0 9-8-0 10-7-0 5-12-0 11-6-0 11-6-0",
+   "LAR": "13-3-0 10-6-0 14-2-0 7-9-0 12-4-0 8-8-0 6-10-0 8-8-0 3-13-0 2-14-0 1-15-0 7-9-0 2-14-0 7-8-1 7-9-0 6-10-0 7-9-0 4-12-0 11-5-0 13-3-0 9-7-0 10-6-0 12-5-0 5-12-0 10-7-0 10-7-0 12-5-0",
+   "LV": "8-8-0 12-4-0 10-6-0 11-5-0 4-12-0 5-11-0 4-12-0 2-14-0 4-12-0 5-11-0 5-11-0 8-8-0 8-8-0 4-12-0 4-12-0 3-13-0 7-9-0 12-4-0 6-10-0 4-12-0 7-9-0 8-8-0 10-7-0 6-11-0 8-9-0 4-13-0 3-14-0",
+   "MIA": "9-7-0 11-5-0 11-5-0 9-7-0 10-6-0 4-12-0 9-7-0 6-10-0 1-15-0 11-5-0 7-9-0 7-9-0 6-10-0 7-9-0 8-8-0 8-8-0 6-10-0 10-6-0 6-10-0 7-9-0 5-11-0 10-6-0 9-8-0 9-8-0 11-6-0 8-9-0 7-10-0",
+   "MIN": "10-6-0 11-5-0 5-11-0 6-10-0 9-7-0 8-8-0 9-7-0 6-10-0 8-8-0 10-6-0 12-4-0 6-10-0 3-13-0 10-6-0 5-10-1 7-9-0 11-5-0 8-8-0 13-3-0 8-7-1 10-6-0 7-9-0 8-9-0 13-4-0 7-10-0 14-3-0 9-8-0",
+   "NE": "8-8-0 5-11-0 11-5-0 9-7-0 14-2-0 14-2-0 10-6-0 12-4-0 16-0-0 11-5-0 10-6-0 14-2-0 13-3-0 12-4-0 12-4-0 12-4-0 12-4-0 14-2-0 13-3-0 11-5-0 12-4-0 7-9-0 10-7-0 8-9-0 4-13-0 4-13-0 14-3-0",
+   "NO": "3-13-0 10-6-0 7-9-0 9-7-0 8-8-0 8-8-0 3-13-0 10-6-0 7-9-0 8-8-0 13-3-0 11-5-0 13-3-0 7-9-0 11-5-0 7-9-0 7-9-0 7-9-0 11-5-0 13-3-0 13-3-0 12-4-0 9-8-0 7-10-0 9-8-0 5-12-0 6-11-0",
+   "NYG": "7-9-0 12-4-0 7-9-0 10-6-0 4-12-0 6-10-0 11-5-0 8-8-0 10-6-0 12-4-0 8-8-0 10-6-0 9-7-0 9-7-0 7-9-0 6-10-0 6-10-0 11-5-0 3-13-0 5-11-0 4-12-0 6-10-0 4-13-0 9-7-1 6-11-0 3-14-0 4-13-0",
+   "NYJ": "8-8-0 9-7-0 10-6-0 9-7-0 6-10-0 10-6-0 4-12-0 10-6-0 4-12-0 9-7-0 9-7-0 11-5-0 8-8-0 6-10-0 8-8-0 4-12-0 10-6-0 5-11-0 5-11-0 4-12-0 7-9-0 2-14-0 4-13-0 7-10-0 7-10-0 5-12-0 3-14-0",
+   "PHI": "5-11-0 11-5-0 11-5-0 12-4-0 12-4-0 13-3-0 6-10-0 10-6-0 8-8-0 9-6-1 11-5-0 10-6-0 8-8-0 4-12-0 10-6-0 10-6-0 7-9-0 7-9-0 13-3-0 9-7-0 9-7-0 4-11-1 9-8-0 14-3-0 11-6-0 14-3-0 11-6-0",
+   "PIT": "6-10-0 9-7-0 13-3-0 10-5-1 6-10-0 15-1-0 11-5-0 8-8-0 10-6-0 12-4-0 9-7-0 12-4-0 12-4-0 8-8-0 8-8-0 11-5-0 10-6-0 11-5-0 13-3-0 9-6-1 8-8-0 12-4-0 9-7-1 9-8-0 10-7-0 10-7-0 10-7-0",
+   "SEA": "9-7-0 6-10-0 9-7-0 7-9-0 10-6-0 9-7-0 13-3-0 9-7-0 10-6-0 4-12-0 5-11-0 7-9-0 7-9-0 11-5-0 13-3-0 12-4-0 10-6-0 10-5-1 9-7-0 10-6-0 11-5-0 12-4-0 7-10-0 9-8-0 9-8-0 10-7-0 14-3-0",
+   "SF": "4-12-0 6-10-0 12-4-0 10-6-0 7-9-0 2-14-0 4-12-0 7-9-0 5-11-0 7-9-0 8-8-0 6-10-0 13-3-0 11-4-1 12-4-0 8-8-0 5-11-0 2-14-0 6-10-0 4-12-0 13-3-0 6-10-0 10-7-0 13-4-0 12-5-0 6-11-0 12-5-0",
+   "TB": "11-5-0 10-6-0 9-7-0 12-4-0 7-9-0 5-11-0 11-5-0 4-12-0 9-7-0 9-7-0 3-13-0 10-6-0 4-12-0 7-9-0 4-12-0 2-14-0 6-10-0 9-7-0 5-11-0 5-11-0 7-9-0 11-5-0 13-4-0 8-9-0 9-8-0 10-7-0 8-9-0",
+   "TEN": "13-3-0 13-3-0 7-9-0 11-5-0 12-4-0 5-11-0 4-12-0 8-8-0 10-6-0 13-3-0 8-8-0 6-10-0 9-7-0 6-10-0 7-9-0 2-14-0 3-13-0 9-7-0 9-7-0 9-7-0 9-7-0 11-5-0 12-5-0 7-10-0 6-11-0 3-14-0 3-14-0",
+   "WAS": "10-6-0 8-8-0 8-8-0 7-9-0 5-11-0 6-10-0 10-6-0 5-11-0 9-7-0 8-8-0 4-12-0 6-10-0 5-11-0 10-6-0 3-13-0 4-12-0 9-7-0 8-7-1 7-9-0 7-9-0 3-13-0 7-9-0 7-10-0 8-8-1 4-13-0 12-5-0 5-12-0"
+  },
+  "records_basis": "the real regular-season record of every club and season 1999-2025 (nflverse games.csv); the simulation gives each of its 32 clubs the sequence of a random real club from a random start, wrapping around, so the spread, tails and persistence of records are real",
+  "real": {
+   "decisions": 861,
+   "changes": 191,
+   "offseasons": 27,
+   "changes_per_offseason": 7.074,
+   "by_offseason": {
+    "1999": 7,
+    "2000": 8,
+    "2001": 7,
+    "2002": 5,
+    "2003": 7,
+    "2004": 3,
+    "2005": 10,
+    "2006": 7,
+    "2007": 4,
+    "2008": 11,
+    "2009": 3,
+    "2010": 8,
+    "2011": 8,
+    "2012": 9,
+    "2013": 7,
+    "2014": 7,
+    "2015": 7,
+    "2016": 6,
+    "2017": 7,
+    "2018": 8,
+    "2019": 5,
+    "2020": 7,
+    "2021": 10,
+    "2022": 5,
+    "2023": 8,
+    "2024": 7,
+    "2025": 10
+   },
+   "fewest_in_an_offseason": 3,
+   "most_in_an_offseason": 11,
+   "median_fired_win_pct": 0.312,
+   "share_fired_after_a_winning_season": 0.152,
+   "median_tenure_when_fired": 3.0,
+   "fired_rate_by_tenure": [0.126, 0.209, 0.262],
+   "tenure_note": "tenure columns exclude the coaches who opened 1999 (their start is not in the data)"
+  },
+  "replay_on_real_seasons": {
+   "expected_changes": 188.5,
+   "real_changes": 191,
+   "expected_per_offseason": 6.98,
+   "median_win_pct_of_the_fired": 0.312,
+   "note": "every real club season weighted by its chance of dismissal under the final table (owner scales included, integers)"
+  },
+  "simulation": {
+   "seed": 20261102,
+   "replications": 100,
+   "burn_in_seasons": 20,
+   "measured_seasons": 20,
+   "league_q8": 256,
+   "result": {
+    "offseasons": 2000,
+    "decisions": 64000,
+    "changes": 14505,
+    "changes_per_offseason": 7.253,
+    "fewest_in_an_offseason": 0,
+    "most_in_an_offseason": 17,
+    "median_fired_win_pct": 0.312,
+    "share_fired_after_a_winning_season": 0.127,
+    "median_tenure_when_fired": 3,
+    "fired_rate_by_tenure": [0.122, 0.215, 0.272]
+   }
+  },
+  "simulation_r2_headline": {
+   "target_per_offseason": 8.0,
+   "league_q8": 288,
+   "seed": 20261102,
+   "replications": 100,
+   "burn_in_seasons": 20,
+   "measured_seasons": 20,
+   "result": {
+    "offseasons": 2000,
+    "decisions": 64000,
+    "changes": 15837,
+    "changes_per_offseason": 7.918,
+    "fewest_in_an_offseason": 1,
+    "most_in_an_offseason": 17,
+    "median_fired_win_pct": 0.312,
+    "share_fired_after_a_winning_season": 0.125,
+    "median_tenure_when_fired": 3,
+    "fired_rate_by_tenure": [0.137, 0.24, 0.301]
+   },
+   "note": "the r2 research quoted 8 changes a year counting the coach at the end of each season, which counts a mid-season firing and the hire that replaces the interim as two; set model.league_q8 to this value to get that rate"
+  }
+ },
+ "clubs": [
+  {
+   "team": "ARI",
+   "name": "Arizona Cardinals",
+   "team_index": 7,
+   "fire_scale_q8": 257,
+   "owner": {
+    "name": "Michael Bidwill",
+    "since": 2019,
+    "acquired": "family",
+    "note": "Grandson of Charles Bidwill, who acquired the team in 1933",
+    "source": "wikipedia_owners"
+   },
+   "era": {
+    "first_season": 1999,
+    "decisions": 27,
+    "changes": 8,
+    "expected_changes": 7.9517,
+    "multiplier": 1.002
+   },
+   "history": {
+    "first_season": 1999,
+    "decisions": 27,
+    "changes": 8,
+    "head_coaches": [
+     {
+      "name": "Vince Tobin",
+      "first": 1999,
+      "last": 2000,
+      "seasons": 2,
+      "opened_window": true
+     },
+     {
+      "name": "Dave McGinnis",
+      "first": 2001,
+      "last": 2003,
+      "seasons": 3,
+      "opened_window": false
+     },
+     {
+      "name": "Dennis Green",
+      "first": 2004,
+      "last": 2006,
+      "seasons": 3,
+      "opened_window": false
+     },
+     {
+      "name": "Ken Whisenhunt",
+      "first": 2007,
+      "last": 2012,
+      "seasons": 6,
+      "opened_window": false
+     },
+     {
+      "name": "Bruce Arians",
+      "first": 2013,
+      "last": 2017,
+      "seasons": 5,
+      "opened_window": false
+     },
+     {
+      "name": "Steve Wilks",
+      "first": 2018,
+      "last": 2018,
+      "seasons": 1,
+      "opened_window": false
+     },
+     {
+      "name": "Kliff Kingsbury",
+      "first": 2019,
+      "last": 2022,
+      "seasons": 4,
+      "opened_window": false
+     },
+     {
+      "name": "Jonathan Gannon",
+      "first": 2023,
+      "last": 2025,
+      "seasons": 3,
+      "opened_window": false
+     },
+     {
+      "name": "Mike LaFleur",
+      "first": 2026,
+      "last": 2026,
+      "seasons": 1,
+      "opened_window": false
+     }
+    ],
+    "completed_tenures": [2, 3, 3, 6, 5, 1, 4, 3],
+    "average_tenure_started_in_window": 3.57,
+    "short_tenures_le2": 1,
+    "current": {
+     "name": "Mike LaFleur",
+     "since": 2026,
+     "source": "https://www.azcardinals.com/news/cardinals-choose-mike-lafleur-as-new-head-coach-2026",
+     "also": []
+    },
+    "changes_log": [
+     {
+      "after_season": 2000,
+      "left": "Vince Tobin",
+      "arrived": "Dave McGinnis",
+      "record": "3-13-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 2,
+      "tenure_is_minimum": true
+     },
+     {
+      "after_season": 2003,
+      "left": "Dave McGinnis",
+      "arrived": "Dennis Green",
+      "record": "4-12-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 3,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2006,
+      "left": "Dennis Green",
+      "arrived": "Ken Whisenhunt",
+      "record": "5-11-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 3,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2012,
+      "left": "Ken Whisenhunt",
+      "arrived": "Bruce Arians",
+      "record": "5-11-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 6,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2017,
+      "left": "Bruce Arians",
+      "arrived": "Steve Wilks",
+      "record": "8-8-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 5,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2018,
+      "left": "Steve Wilks",
+      "arrived": "Kliff Kingsbury",
+      "record": "3-13-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 1,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2022,
+      "left": "Kliff Kingsbury",
+      "arrived": "Jonathan Gannon",
+      "record": "4-13-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 4,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2025,
+      "left": "Jonathan Gannon",
+      "arrived": "Mike LaFleur",
+      "record": "3-14-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 3,
+      "tenure_is_minimum": false,
+      "departure": {
+       "reason": "fired",
+       "date": "2026-01-05",
+       "in_season": false,
+       "source": "https://www.nfl.com/news/cardinals-fire-hc-jonathan-gannon-following-three-seasons",
+       "also": "wikipedia_2026_season"
+      }
+     }
+    ]
+   },
+   "sources": [
+    "nflverse_games",
+    "wikipedia_owners",
+    "teams_2026",
+    "wikipedia_2026_season"
+   ]
+  },
+  {
+   "team": "ATL",
+   "name": "Atlanta Falcons",
+   "team_index": 14,
+   "fire_scale_q8": 280,
+   "owner": {
+    "name": "Arthur Blank",
+    "since": 2002,
+    "acquired": "purchase",
+    "note": "Majority owner",
+    "source": "wikipedia_owners"
+   },
+   "era": {
+    "first_season": 2002,
+    "decisions": 24,
+    "changes": 7,
+    "expected_changes": 5.066,
+    "multiplier": 1.092
+   },
+   "history": {
+    "first_season": 1999,
+    "decisions": 27,
+    "changes": 7,
+    "head_coaches": [
+     {
+      "name": "Dan Reeves",
+      "first": 1999,
+      "last": 2003,
+      "seasons": 5,
+      "opened_window": true
+     },
+     {
+      "name": "Jim Mora",
+      "first": 2004,
+      "last": 2006,
+      "seasons": 3,
+      "opened_window": false
+     },
+     {
+      "name": "Bobby Petrino",
+      "first": 2007,
+      "last": 2007,
+      "seasons": 1,
+      "opened_window": false
+     },
+     {
+      "name": "Mike Smith",
+      "first": 2008,
+      "last": 2014,
+      "seasons": 7,
+      "opened_window": false
+     },
+     {
+      "name": "Dan Quinn",
+      "first": 2015,
+      "last": 2020,
+      "seasons": 6,
+      "opened_window": false
+     },
+     {
+      "name": "Arthur Smith",
+      "first": 2021,
+      "last": 2023,
+      "seasons": 3,
+      "opened_window": false
+     },
+     {
+      "name": "Raheem Morris",
+      "first": 2024,
+      "last": 2025,
+      "seasons": 2,
+      "opened_window": false
+     },
+     {
+      "name": "Kevin Stefanski",
+      "first": 2026,
+      "last": 2026,
+      "seasons": 1,
+      "opened_window": false
+     }
+    ],
+    "completed_tenures": [5, 3, 1, 7, 6, 3, 2],
+    "average_tenure_started_in_window": 3.67,
+    "short_tenures_le2": 2,
+    "current": {
+     "name": "Kevin Stefanski",
+     "since": 2026,
+     "source": "https://www.wect.com/2026/01/18/atlanta-falcons-hire-kevin-stefanski-new-head-coach",
+     "also": [
+      "https://www.atlantafalcons.com/news/atlanta-falcons-name-kevin-stefanski-head-coach"
+     ]
+    },
+    "changes_log": [
+     {
+      "after_season": 2003,
+      "left": "Dan Reeves",
+      "arrived": "Jim Mora",
+      "record": "5-11-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 5,
+      "tenure_is_minimum": true
+     },
+     {
+      "after_season": 2006,
+      "left": "Jim Mora",
+      "arrived": "Bobby Petrino",
+      "record": "7-9-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 3,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2007,
+      "left": "Bobby Petrino",
+      "arrived": "Mike Smith",
+      "record": "4-12-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 1,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2014,
+      "left": "Mike Smith",
+      "arrived": "Dan Quinn",
+      "record": "6-10-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 7,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2020,
+      "left": "Dan Quinn",
+      "arrived": "Arthur Smith",
+      "record": "4-12-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 6,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2023,
+      "left": "Arthur Smith",
+      "arrived": "Raheem Morris",
+      "record": "7-10-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 3,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2025,
+      "left": "Raheem Morris",
+      "arrived": "Kevin Stefanski",
+      "record": "8-9-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 2,
+      "tenure_is_minimum": false,
+      "departure": {
+       "reason": "fired",
+       "date": "2026-01-04",
+       "in_season": false,
+       "source": "https://www.nfl.com/news/falcons-firing-hc-raheem-morris-following-two-seasons-with-team",
+       "also": "wikipedia_2026_season"
+      }
+     }
+    ]
+   },
+   "sources": [
+    "nflverse_games",
+    "wikipedia_owners",
+    "teams_2026",
+    "wikipedia_2026_season"
+   ]
+  },
+  {
+   "team": "BAL",
+   "name": "Baltimore Ravens",
+   "team_index": 24,
+   "fire_scale_q8": 234,
+   "owner": {
+    "name": "Steve Bisciotti",
+    "since": 2004,
+    "acquired": "purchase",
+    "note": "Majority owner",
+    "source": "wikipedia_owners"
+   },
+   "era": {
+    "first_season": 2004,
+    "decisions": 22,
+    "changes": 2,
+    "expected_changes": 3.6677,
+    "multiplier": 0.915
+   },
+   "history": {
+    "first_season": 1999,
+    "decisions": 27,
+    "changes": 2,
+    "head_coaches": [
+     {
+      "name": "Brian Billick",
+      "first": 1999,
+      "last": 2007,
+      "seasons": 9,
+      "opened_window": true
+     },
+     {
+      "name": "John Harbaugh",
+      "first": 2008,
+      "last": 2025,
+      "seasons": 18,
+      "opened_window": false
+     },
+     {
+      "name": "Jesse Minter",
+      "first": 2026,
+      "last": 2026,
+      "seasons": 1,
+      "opened_window": false
+     }
+    ],
+    "completed_tenures": [9, 18],
+    "average_tenure_started_in_window": 18.0,
+    "short_tenures_le2": 0,
+    "current": {
+     "name": "Jesse Minter",
+     "since": 2026,
+     "source": "https://www.baltimoreravens.com/news/jesse-minter-hired-ravens-head-coach-chargers-defensive-coordinator",
+     "also": []
+    },
+    "changes_log": [
+     {
+      "after_season": 2007,
+      "left": "Brian Billick",
+      "arrived": "John Harbaugh",
+      "record": "5-11-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 9,
+      "tenure_is_minimum": true
+     },
+     {
+      "after_season": 2025,
+      "left": "John Harbaugh",
+      "arrived": "Jesse Minter",
+      "record": "8-9-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 18,
+      "tenure_is_minimum": false,
+      "departure": {
+       "reason": "fired",
+       "date": "2026-01-06",
+       "in_season": false,
+       "source": "https://www.nfl.com/news/ravens-fire-hc-john-harbaugh-after-his-18th-season-ends-with-missing-playoffs",
+       "also": "wikipedia_2026_season"
+      }
+     }
+    ]
+   },
+   "sources": [
+    "nflverse_games",
+    "wikipedia_owners",
+    "teams_2026",
+    "wikipedia_2026_season"
+   ]
+  },
+  {
+   "team": "BUF",
+   "name": "Buffalo Bills",
+   "team_index": 3,
+   "fire_scale_q8": 286,
+   "owner": {
+    "name": "Terry Pegula",
+    "since": 2014,
+    "acquired": "purchase",
+    "note": "Principal owner. Minority stakes held by his daughter Laura Pegula, Arctos Partners LP, Theresia Gouw, Jozy Altidore, Tracy McGrady, Vince Carter, and others, along with the estate of Pegula's incapacitated wife Kim Pegula, whose share is controlled by Terry Pegula and Bob Long in trust.",
+    "source": "wikipedia_owners"
+   },
+   "era": {
+    "first_season": 2014,
+    "decisions": 12,
+    "changes": 3,
+    "expected_changes": 1.0302,
+    "multiplier": 1.116
+   },
+   "history": {
+    "first_season": 1999,
+    "decisions": 27,
+    "changes": 8,
+    "head_coaches": [
+     {
+      "name": "Wade Phillips",
+      "first": 1999,
+      "last": 2000,
+      "seasons": 2,
+      "opened_window": true
+     },
+     {
+      "name": "Gregg Williams",
+      "first": 2001,
+      "last": 2003,
+      "seasons": 3,
+      "opened_window": false
+     },
+     {
+      "name": "Mike Mularkey",
+      "first": 2004,
+      "last": 2005,
+      "seasons": 2,
+      "opened_window": false
+     },
+     {
+      "name": "Dick Jauron",
+      "first": 2006,
+      "last": 2009,
+      "seasons": 4,
+      "opened_window": false
+     },
+     {
+      "name": "Chan Gailey",
+      "first": 2010,
+      "last": 2012,
+      "seasons": 3,
+      "opened_window": false
+     },
+     {
+      "name": "Doug Marrone",
+      "first": 2013,
+      "last": 2014,
+      "seasons": 2,
+      "opened_window": false
+     },
+     {
+      "name": "Rex Ryan",
+      "first": 2015,
+      "last": 2016,
+      "seasons": 2,
+      "opened_window": false
+     },
+     {
+      "name": "Sean McDermott",
+      "first": 2017,
+      "last": 2025,
+      "seasons": 9,
+      "opened_window": false
+     },
+     {
+      "name": "Joe Brady",
+      "first": 2026,
+      "last": 2026,
+      "seasons": 1,
+      "opened_window": false
+     }
+    ],
+    "completed_tenures": [2, 3, 2, 4, 3, 2, 2, 9],
+    "average_tenure_started_in_window": 3.57,
+    "short_tenures_le2": 3,
+    "current": {
+     "name": "Joe Brady",
+     "since": 2026,
+     "source": "https://www.buffalobills.com/news/joe-brady-agrees-to-terms-to-be-the-next-buffalo-bills-head-coach",
+     "also": []
+    },
+    "changes_log": [
+     {
+      "after_season": 2000,
+      "left": "Wade Phillips",
+      "arrived": "Gregg Williams",
+      "record": "8-8-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 2,
+      "tenure_is_minimum": true
+     },
+     {
+      "after_season": 2003,
+      "left": "Gregg Williams",
+      "arrived": "Mike Mularkey",
+      "record": "6-10-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 3,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2005,
+      "left": "Mike Mularkey",
+      "arrived": "Dick Jauron",
+      "record": "5-11-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 2,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2009,
+      "left": "Dick Jauron",
+      "arrived": "Chan Gailey",
+      "record": "6-10-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 4,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2012,
+      "left": "Chan Gailey",
+      "arrived": "Doug Marrone",
+      "record": "6-10-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 3,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2014,
+      "left": "Doug Marrone",
+      "arrived": "Rex Ryan",
+      "record": "9-7-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 2,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2016,
+      "left": "Rex Ryan",
+      "arrived": "Sean McDermott",
+      "record": "7-9-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 2,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2025,
+      "left": "Sean McDermott",
+      "arrived": "Joe Brady",
+      "record": "12-5-0",
+      "made_playoffs": true,
+      "playoff_wins": 1,
+      "tenure": 9,
+      "tenure_is_minimum": false,
+      "departure": {
+       "reason": "fired",
+       "date": "2026-01-19",
+       "in_season": false,
+       "source": "https://www.buffalobills.com/news/buffalo-bills-announce-sean-mcdermott-has-been-relieved-of-his-duties-as-head-coach",
+       "also": "wikipedia_2026_season"
+      }
+     }
+    ]
+   },
+   "sources": [
+    "nflverse_games",
+    "wikipedia_owners",
+    "teams_2026",
+    "wikipedia_2026_season"
+   ]
+  },
+  {
+   "team": "CAR",
+   "name": "Carolina Panthers",
+   "team_index": 20,
+   "fire_scale_q8": 262,
+   "owner": {
+    "name": "David Tepper",
+    "since": 2018,
+    "acquired": "purchase",
+    "note": "",
+    "source": "wikipedia_owners"
+   },
+   "era": {
+    "first_season": 2018,
+    "decisions": 8,
+    "changes": 3,
+    "expected_changes": 2.5881,
+    "multiplier": 1.022
+   },
+   "history": {
+    "first_season": 1999,
+    "decisions": 27,
+    "changes": 5,
+    "head_coaches": [
+     {
+      "name": "George Seifert",
+      "first": 1999,
+      "last": 2001,
+      "seasons": 3,
+      "opened_window": true
+     },
+     {
+      "name": "John Fox",
+      "first": 2002,
+      "last": 2010,
+      "seasons": 9,
+      "opened_window": false
+     },
+     {
+      "name": "Ron Rivera",
+      "first": 2011,
+      "last": 2019,
+      "seasons": 9,
+      "opened_window": false
+     },
+     {
+      "name": "Matt Rhule",
+      "first": 2020,
+      "last": 2022,
+      "seasons": 3,
+      "opened_window": false
+     },
+     {
+      "name": "Frank Reich",
+      "first": 2023,
+      "last": 2023,
+      "seasons": 1,
+      "opened_window": false
+     },
+     {
+      "name": "Dave Canales",
+      "first": 2024,
+      "last": 2026,
+      "seasons": 3,
+      "opened_window": false
+     }
+    ],
+    "completed_tenures": [3, 9, 9, 3, 1],
+    "average_tenure_started_in_window": 5.5,
+    "short_tenures_le2": 1,
+    "current": {
+     "name": "Dave Canales",
+     "since": 2024,
+     "source": "https://www.panthers.com/news/panthers-agree-to-terms-with-dave-canales-to-become-head-coach",
+     "also": []
+    },
+    "changes_log": [
+     {
+      "after_season": 2001,
+      "left": "George Seifert",
+      "arrived": "John Fox",
+      "record": "1-15-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 3,
+      "tenure_is_minimum": true
+     },
+     {
+      "after_season": 2010,
+      "left": "John Fox",
+      "arrived": "Ron Rivera",
+      "record": "2-14-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 9,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2019,
+      "left": "Ron Rivera",
+      "arrived": "Matt Rhule",
+      "record": "5-11-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 9,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2022,
+      "left": "Matt Rhule",
+      "arrived": "Frank Reich",
+      "record": "7-10-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 3,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2023,
+      "left": "Frank Reich",
+      "arrived": "Dave Canales",
+      "record": "2-15-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 1,
+      "tenure_is_minimum": false
+     }
+    ]
+   },
+   "sources": [
+    "nflverse_games",
+    "wikipedia_owners",
+    "teams_2026"
+   ]
+  },
+  {
+   "team": "CHI",
+   "name": "Chicago Bears",
+   "team_index": 1,
+   "fire_scale_q8": 245,
+   "owner": {
+    "name": "George McCaskey",
+    "since": 2025,
+    "acquired": "family",
+    "note": "Grandson of George Halas, whose family has owned the team since its founding in 1920. McCaskey took over as principal owner following the death of his mother Virginia Halas McCaskey in 2025.",
+    "source": "wikipedia_owners"
+   },
+   "era": {
+    "first_season": 1999,
+    "decisions": 27,
+    "changes": 6,
+    "expected_changes": 6.9534,
+    "multiplier": 0.958
+   },
+   "history": {
+    "first_season": 1999,
+    "decisions": 27,
+    "changes": 6,
+    "head_coaches": [
+     {
+      "name": "Dick Jauron",
+      "first": 1999,
+      "last": 2003,
+      "seasons": 5,
+      "opened_window": true
+     },
+     {
+      "name": "Lovie Smith",
+      "first": 2004,
+      "last": 2012,
+      "seasons": 9,
+      "opened_window": false
+     },
+     {
+      "name": "Marc Trestman",
+      "first": 2013,
+      "last": 2014,
+      "seasons": 2,
+      "opened_window": false
+     },
+     {
+      "name": "John Fox",
+      "first": 2015,
+      "last": 2017,
+      "seasons": 3,
+      "opened_window": false
+     },
+     {
+      "name": "Matt Nagy",
+      "first": 2018,
+      "last": 2021,
+      "seasons": 4,
+      "opened_window": false
+     },
+     {
+      "name": "Matt Eberflus",
+      "first": 2022,
+      "last": 2024,
+      "seasons": 3,
+      "opened_window": false
+     },
+     {
+      "name": "Ben Johnson",
+      "first": 2025,
+      "last": 2026,
+      "seasons": 2,
+      "opened_window": false
+     }
+    ],
+    "completed_tenures": [5, 9, 2, 3, 4, 3],
+    "average_tenure_started_in_window": 4.2,
+    "short_tenures_le2": 1,
+    "current": {
+     "name": "Ben Johnson",
+     "since": 2025,
+     "source": "https://www.chicagobears.com/news/bears-hire-ben-johnson-as-head-coach-2025",
+     "also": []
+    },
+    "changes_log": [
+     {
+      "after_season": 2003,
+      "left": "Dick Jauron",
+      "arrived": "Lovie Smith",
+      "record": "7-9-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 5,
+      "tenure_is_minimum": true
+     },
+     {
+      "after_season": 2012,
+      "left": "Lovie Smith",
+      "arrived": "Marc Trestman",
+      "record": "10-6-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 9,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2014,
+      "left": "Marc Trestman",
+      "arrived": "John Fox",
+      "record": "5-11-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 2,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2017,
+      "left": "John Fox",
+      "arrived": "Matt Nagy",
+      "record": "5-11-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 3,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2021,
+      "left": "Matt Nagy",
+      "arrived": "Matt Eberflus",
+      "record": "6-11-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 4,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2024,
+      "left": "Matt Eberflus",
+      "arrived": "Ben Johnson",
+      "record": "5-12-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 3,
+      "tenure_is_minimum": false
+     }
+    ]
+   },
+   "sources": [
+    "nflverse_games",
+    "wikipedia_owners",
+    "teams_2026"
+   ]
+  },
+  {
+   "team": "CIN",
+   "name": "Cincinnati Bengals",
+   "team_index": 2,
+   "fire_scale_q8": 204,
+   "owner": {
+    "name": "Mike Brown",
+    "since": 1991,
+    "acquired": "family",
+    "note": "Son of Paul Brown, who founded the team in 1968",
+    "source": "wikipedia_owners"
+   },
+   "era": {
+    "first_season": 1999,
+    "decisions": 27,
+    "changes": 3,
+    "expected_changes": 7.7886,
+    "multiplier": 0.799
+   },
+   "history": {
+    "first_season": 1999,
+    "decisions": 27,
+    "changes": 3,
+    "head_coaches": [
+     {
+      "name": "Bruce Coslet",
+      "first": 1999,
+      "last": 2000,
+      "seasons": 2,
+      "opened_window": true
+     },
+     {
+      "name": "Dick LeBeau",
+      "first": 2001,
+      "last": 2002,
+      "seasons": 2,
+      "opened_window": false
+     },
+     {
+      "name": "Marvin Lewis",
+      "first": 2003,
+      "last": 2018,
+      "seasons": 16,
+      "opened_window": false
+     },
+     {
+      "name": "Zac Taylor",
+      "first": 2019,
+      "last": 2026,
+      "seasons": 8,
+      "opened_window": false
+     }
+    ],
+    "completed_tenures": [2, 2, 16],
+    "average_tenure_started_in_window": 9.0,
+    "short_tenures_le2": 1,
+    "current": {
+     "name": "Zac Taylor",
+     "since": 2019,
+     "source": "https://www.bengals.com/news/zac-taylor-named-10th-bengals-head-coach",
+     "also": []
+    },
+    "changes_log": [
+     {
+      "after_season": 2000,
+      "left": "Bruce Coslet",
+      "arrived": "Dick LeBeau",
+      "record": "4-12-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 2,
+      "tenure_is_minimum": true
+     },
+     {
+      "after_season": 2002,
+      "left": "Dick LeBeau",
+      "arrived": "Marvin Lewis",
+      "record": "2-14-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 2,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2018,
+      "left": "Marvin Lewis",
+      "arrived": "Zac Taylor",
+      "record": "6-10-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 16,
+      "tenure_is_minimum": false
+     }
+    ]
+   },
+   "sources": [
+    "nflverse_games",
+    "wikipedia_owners",
+    "teams_2026"
+   ]
+  },
+  {
+   "team": "CLE",
+   "name": "Cleveland Browns",
+   "team_index": 5,
+   "fire_scale_q8": 268,
+   "owner": {
+    "name": "Jimmy Haslam",
+    "since": 2012,
+    "acquired": "purchase",
+    "note": "Principal owner; his wife Dee Haslam owns roughly the same share",
+    "source": "wikipedia_owners"
+   },
+   "era": {
+    "first_season": 2012,
+    "decisions": 14,
+    "changes": 6,
+    "expected_changes": 5.0153,
+    "multiplier": 1.047
+   },
+   "history": {
+    "first_season": 1999,
+    "decisions": 27,
+    "changes": 10,
+    "head_coaches": [
+     {
+      "name": "Chris Palmer",
+      "first": 1999,
+      "last": 2000,
+      "seasons": 2,
+      "opened_window": true
+     },
+     {
+      "name": "Butch Davis",
+      "first": 2001,
+      "last": 2004,
+      "seasons": 4,
+      "opened_window": false
+     },
+     {
+      "name": "Romeo Crennel",
+      "first": 2005,
+      "last": 2008,
+      "seasons": 4,
+      "opened_window": false
+     },
+     {
+      "name": "Eric Mangini",
+      "first": 2009,
+      "last": 2010,
+      "seasons": 2,
+      "opened_window": false
+     },
+     {
+      "name": "Pat Shurmur",
+      "first": 2011,
+      "last": 2012,
+      "seasons": 2,
+      "opened_window": false
+     },
+     {
+      "name": "Rob Chudzinski",
+      "first": 2013,
+      "last": 2013,
+      "seasons": 1,
+      "opened_window": false
+     },
+     {
+      "name": "Mike Pettine",
+      "first": 2014,
+      "last": 2015,
+      "seasons": 2,
+      "opened_window": false
+     },
+     {
+      "name": "Hue Jackson",
+      "first": 2016,
+      "last": 2018,
+      "seasons": 3,
+      "opened_window": false
+     },
+     {
+      "name": "Freddie Kitchens",
+      "first": 2019,
+      "last": 2019,
+      "seasons": 1,
+      "opened_window": false
+     },
+     {
+      "name": "Kevin Stefanski",
+      "first": 2020,
+      "last": 2025,
+      "seasons": 6,
+      "opened_window": false
+     },
+     {
+      "name": "Todd Monken",
+      "first": 2026,
+      "last": 2026,
+      "seasons": 1,
+      "opened_window": false
+     }
+    ],
+    "completed_tenures": [2, 4, 4, 2, 2, 1, 2, 3, 1, 6],
+    "average_tenure_started_in_window": 2.78,
+    "short_tenures_le2": 5,
+    "current": {
+     "name": "Todd Monken",
+     "since": 2026,
+     "source": "https://www.clevelandbrowns.com/news/todd-monken-named-browns-head-coach",
+     "also": []
+    },
+    "changes_log": [
+     {
+      "after_season": 2000,
+      "left": "Chris Palmer",
+      "arrived": "Butch Davis",
+      "record": "3-13-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 2,
+      "tenure_is_minimum": true
+     },
+     {
+      "after_season": 2004,
+      "left": "Butch Davis",
+      "arrived": "Romeo Crennel",
+      "record": "4-12-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 4,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2008,
+      "left": "Romeo Crennel",
+      "arrived": "Eric Mangini",
+      "record": "4-12-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 4,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2010,
+      "left": "Eric Mangini",
+      "arrived": "Pat Shurmur",
+      "record": "5-11-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 2,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2012,
+      "left": "Pat Shurmur",
+      "arrived": "Rob Chudzinski",
+      "record": "5-11-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 2,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2013,
+      "left": "Rob Chudzinski",
+      "arrived": "Mike Pettine",
+      "record": "4-12-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 1,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2015,
+      "left": "Mike Pettine",
+      "arrived": "Hue Jackson",
+      "record": "3-13-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 2,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2018,
+      "left": "Hue Jackson",
+      "arrived": "Freddie Kitchens",
+      "record": "7-8-1",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 3,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2019,
+      "left": "Freddie Kitchens",
+      "arrived": "Kevin Stefanski",
+      "record": "6-10-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 1,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2025,
+      "left": "Kevin Stefanski",
+      "arrived": "Todd Monken",
+      "record": "5-12-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 6,
+      "tenure_is_minimum": false,
+      "departure": {
+       "reason": "fired",
+       "date": "2026-01-05",
+       "in_season": false,
+       "source": "https://www.nfl.com/news/browns-fire-head-coach-kevin-stefanski-following-six-seasons-in-cleveland",
+       "also": "wikipedia_2026_season"
+      }
+     }
+    ]
+   },
+   "sources": [
+    "nflverse_games",
+    "wikipedia_owners",
+    "teams_2026",
+    "wikipedia_2026_season"
+   ]
+  },
+  {
+   "team": "DAL",
+   "name": "Dallas Cowboys",
+   "team_index": 11,
+   "fire_scale_q8": 270,
+   "owner": {
+    "name": "Jerry Jones",
+    "since": 1989,
+    "acquired": "purchase",
+    "note": "",
+    "source": "wikipedia_owners"
+   },
+   "era": {
+    "first_season": 1999,
+    "decisions": 27,
+    "changes": 6,
+    "expected_changes": 4.8222,
+    "multiplier": 1.057
+   },
+   "history": {
+    "first_season": 1999,
+    "decisions": 27,
+    "changes": 6,
+    "head_coaches": [
+     {
+      "name": "Chan Gailey",
+      "first": 1999,
+      "last": 1999,
+      "seasons": 1,
+      "opened_window": true
+     },
+     {
+      "name": "Dave Campo",
+      "first": 2000,
+      "last": 2002,
+      "seasons": 3,
+      "opened_window": false
+     },
+     {
+      "name": "Bill Parcells",
+      "first": 2003,
+      "last": 2006,
+      "seasons": 4,
+      "opened_window": false
+     },
+     {
+      "name": "Wade Phillips",
+      "first": 2007,
+      "last": 2010,
+      "seasons": 4,
+      "opened_window": false
+     },
+     {
+      "name": "Jason Garrett",
+      "first": 2011,
+      "last": 2019,
+      "seasons": 9,
+      "opened_window": false
+     },
+     {
+      "name": "Mike McCarthy",
+      "first": 2020,
+      "last": 2024,
+      "seasons": 5,
+      "opened_window": false
+     },
+     {
+      "name": "Brian Schottenheimer",
+      "first": 2025,
+      "last": 2026,
+      "seasons": 2,
+      "opened_window": false
+     }
+    ],
+    "completed_tenures": [1, 3, 4, 4, 9, 5],
+    "average_tenure_started_in_window": 5.0,
+    "short_tenures_le2": 0,
+    "current": {
+     "name": "Brian Schottenheimer",
+     "since": 2025,
+     "source": "https://www.dallascowboys.com/news/brian-schottenheimer-officially-named-newest-cowboys-head-coach",
+     "also": []
+    },
+    "changes_log": [
+     {
+      "after_season": 1999,
+      "left": "Chan Gailey",
+      "arrived": "Dave Campo",
+      "record": "8-8-0",
+      "made_playoffs": true,
+      "playoff_wins": 0,
+      "tenure": 1,
+      "tenure_is_minimum": true
+     },
+     {
+      "after_season": 2002,
+      "left": "Dave Campo",
+      "arrived": "Bill Parcells",
+      "record": "5-11-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 3,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2006,
+      "left": "Bill Parcells",
+      "arrived": "Wade Phillips",
+      "record": "9-7-0",
+      "made_playoffs": true,
+      "playoff_wins": 0,
+      "tenure": 4,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2010,
+      "left": "Wade Phillips",
+      "arrived": "Jason Garrett",
+      "record": "6-10-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 4,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2019,
+      "left": "Jason Garrett",
+      "arrived": "Mike McCarthy",
+      "record": "8-8-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 9,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2024,
+      "left": "Mike McCarthy",
+      "arrived": "Brian Schottenheimer",
+      "record": "7-10-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 5,
+      "tenure_is_minimum": false
+     }
+    ]
+   },
+   "sources": [
+    "nflverse_games",
+    "wikipedia_owners",
+    "teams_2026"
+   ]
+  },
+  {
+   "team": "DEN",
+   "name": "Denver Broncos",
+   "team_index": 4,
+   "fire_scale_q8": 266,
+   "owner": {
+    "name": "Rob Walton",
+    "since": 2022,
+    "acquired": "purchase",
+    "note": "Head of an ownership group that includes Greg Penner, Carrie Walton Penner, Mellody Hobson, Condoleezza Rice, and Lewis Hamilton.",
+    "source": "wikipedia_owners"
+   },
+   "era": {
+    "first_season": 2022,
+    "decisions": 4,
+    "changes": 1,
+    "expected_changes": 0.3306,
+    "multiplier": 1.041
+   },
+   "history": {
+    "first_season": 1999,
+    "decisions": 27,
+    "changes": 7,
+    "head_coaches": [
+     {
+      "name": "Mike Shanahan",
+      "first": 1999,
+      "last": 2008,
+      "seasons": 10,
+      "opened_window": true
+     },
+     {
+      "name": "Josh McDaniels",
+      "first": 2009,
+      "last": 2010,
+      "seasons": 2,
+      "opened_window": false
+     },
+     {
+      "name": "John Fox",
+      "first": 2011,
+      "last": 2014,
+      "seasons": 4,
+      "opened_window": false
+     },
+     {
+      "name": "Gary Kubiak",
+      "first": 2015,
+      "last": 2016,
+      "seasons": 2,
+      "opened_window": false
+     },
+     {
+      "name": "Vance Joseph",
+      "first": 2017,
+      "last": 2018,
+      "seasons": 2,
+      "opened_window": false
+     },
+     {
+      "name": "Vic Fangio",
+      "first": 2019,
+      "last": 2021,
+      "seasons": 3,
+      "opened_window": false
+     },
+     {
+      "name": "Nathaniel Hackett",
+      "first": 2022,
+      "last": 2022,
+      "seasons": 1,
+      "opened_window": false
+     },
+     {
+      "name": "Sean Payton",
+      "first": 2023,
+      "last": 2026,
+      "seasons": 4,
+      "opened_window": false
+     }
+    ],
+    "completed_tenures": [10, 2, 4, 2, 2, 3, 1],
+    "average_tenure_started_in_window": 2.33,
+    "short_tenures_le2": 4,
+    "current": {
+     "name": "Sean Payton",
+     "since": 2023,
+     "source": "https://www.denverbroncos.com/news/broncos-name-sean-payton-as-head-coach",
+     "also": []
+    },
+    "changes_log": [
+     {
+      "after_season": 2008,
+      "left": "Mike Shanahan",
+      "arrived": "Josh McDaniels",
+      "record": "8-8-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 10,
+      "tenure_is_minimum": true
+     },
+     {
+      "after_season": 2010,
+      "left": "Josh McDaniels",
+      "arrived": "John Fox",
+      "record": "4-12-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 2,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2014,
+      "left": "John Fox",
+      "arrived": "Gary Kubiak",
+      "record": "12-4-0",
+      "made_playoffs": true,
+      "playoff_wins": 0,
+      "tenure": 4,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2016,
+      "left": "Gary Kubiak",
+      "arrived": "Vance Joseph",
+      "record": "9-7-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 2,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2018,
+      "left": "Vance Joseph",
+      "arrived": "Vic Fangio",
+      "record": "6-10-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 2,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2021,
+      "left": "Vic Fangio",
+      "arrived": "Nathaniel Hackett",
+      "record": "7-10-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 3,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2022,
+      "left": "Nathaniel Hackett",
+      "arrived": "Sean Payton",
+      "record": "5-12-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 1,
+      "tenure_is_minimum": false
+     }
+    ]
+   },
+   "sources": [
+    "nflverse_games",
+    "wikipedia_owners",
+    "teams_2026"
+   ]
+  },
+  {
+   "team": "DET",
+   "name": "Detroit Lions",
+   "team_index": 18,
+   "fire_scale_q8": 246,
+   "owner": {
+    "name": "Sheila Ford Hamp",
+    "since": 2020,
+    "acquired": "family",
+    "note": "Daughter of William Clay Ford Sr., who acquired the team in 1964",
+    "source": "wikipedia_owners"
+   },
+   "era": {
+    "first_season": 1999,
+    "decisions": 27,
+    "changes": 7,
+    "expected_changes": 7.9374,
+    "multiplier": 0.961
+   },
+   "history": {
+    "first_season": 1999,
+    "decisions": 27,
+    "changes": 7,
+    "head_coaches": [
+     {
+      "name": "Bobby Ross",
+      "first": 1999,
+      "last": 2000,
+      "seasons": 2,
+      "opened_window": true
+     },
+     {
+      "name": "Marty Mornhinweg",
+      "first": 2001,
+      "last": 2002,
+      "seasons": 2,
+      "opened_window": false
+     },
+     {
+      "name": "Steve Mariucci",
+      "first": 2003,
+      "last": 2005,
+      "seasons": 3,
+      "opened_window": false
+     },
+     {
+      "name": "Rod Marinelli",
+      "first": 2006,
+      "last": 2008,
+      "seasons": 3,
+      "opened_window": false
+     },
+     {
+      "name": "Jim Schwartz",
+      "first": 2009,
+      "last": 2013,
+      "seasons": 5,
+      "opened_window": false
+     },
+     {
+      "name": "Jim Caldwell",
+      "first": 2014,
+      "last": 2017,
+      "seasons": 4,
+      "opened_window": false
+     },
+     {
+      "name": "Matt Patricia",
+      "first": 2018,
+      "last": 2020,
+      "seasons": 3,
+      "opened_window": false
+     },
+     {
+      "name": "Dan Campbell",
+      "first": 2021,
+      "last": 2026,
+      "seasons": 6,
+      "opened_window": false
+     }
+    ],
+    "completed_tenures": [2, 2, 3, 3, 5, 4, 3],
+    "average_tenure_started_in_window": 3.33,
+    "short_tenures_le2": 1,
+    "current": {
+     "name": "Dan Campbell",
+     "since": 2021,
+     "source": "https://www.detroitlions.com/news/lions-agree-to-terms-with-dan-campbell-to-become-team-s-new-head-coach",
+     "also": []
+    },
+    "changes_log": [
+     {
+      "after_season": 2000,
+      "left": "Bobby Ross",
+      "arrived": "Marty Mornhinweg",
+      "record": "9-7-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 2,
+      "tenure_is_minimum": true
+     },
+     {
+      "after_season": 2002,
+      "left": "Marty Mornhinweg",
+      "arrived": "Steve Mariucci",
+      "record": "3-13-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 2,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2005,
+      "left": "Steve Mariucci",
+      "arrived": "Rod Marinelli",
+      "record": "5-11-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 3,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2008,
+      "left": "Rod Marinelli",
+      "arrived": "Jim Schwartz",
+      "record": "0-16-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 3,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2013,
+      "left": "Jim Schwartz",
+      "arrived": "Jim Caldwell",
+      "record": "7-9-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 5,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2017,
+      "left": "Jim Caldwell",
+      "arrived": "Matt Patricia",
+      "record": "9-7-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 4,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2020,
+      "left": "Matt Patricia",
+      "arrived": "Dan Campbell",
+      "record": "5-11-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 3,
+      "tenure_is_minimum": false
+     }
+    ]
+   },
+   "sources": [
+    "nflverse_games",
+    "wikipedia_owners",
+    "teams_2026"
+   ]
+  },
+  {
+   "team": "GB",
+   "name": "Green Bay Packers",
+   "team_index": 19,
+   "fire_scale_q8": 244,
+   "owner": {
+    "name": "Green Bay Packers, Inc.",
+    "since": 1923,
+    "acquired": "public",
+    "note": "Public corporation with a grandfathered exception to modern NFL ownership rules. The team is governed by a board of directors with president and CEO Ed Policy representing the team.",
+    "source": "wikipedia_owners"
+   },
+   "era": {
+    "first_season": 1999,
+    "decisions": 27,
+    "changes": 3,
+    "expected_changes": 3.9338,
+    "multiplier": 0.953
+   },
+   "history": {
+    "first_season": 1999,
+    "decisions": 27,
+    "changes": 3,
+    "head_coaches": [
+     {
+      "name": "Ray Rhodes",
+      "first": 1999,
+      "last": 1999,
+      "seasons": 1,
+      "opened_window": true
+     },
+     {
+      "name": "Mike Sherman",
+      "first": 2000,
+      "last": 2005,
+      "seasons": 6,
+      "opened_window": false
+     },
+     {
+      "name": "Mike McCarthy",
+      "first": 2006,
+      "last": 2018,
+      "seasons": 13,
+      "opened_window": false
+     },
+     {
+      "name": "Matt LaFleur",
+      "first": 2019,
+      "last": 2026,
+      "seasons": 8,
+      "opened_window": false
+     }
+    ],
+    "completed_tenures": [1, 6, 13],
+    "average_tenure_started_in_window": 9.5,
+    "short_tenures_le2": 0,
+    "current": {
+     "name": "Matt LaFleur",
+     "since": 2019,
+     "source": "https://www.packers.com/news/matt-lafleur-named-green-bay-s-15th-head-coach",
+     "also": []
+    },
+    "changes_log": [
+     {
+      "after_season": 1999,
+      "left": "Ray Rhodes",
+      "arrived": "Mike Sherman",
+      "record": "8-8-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 1,
+      "tenure_is_minimum": true
+     },
+     {
+      "after_season": 2005,
+      "left": "Mike Sherman",
+      "arrived": "Mike McCarthy",
+      "record": "4-12-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 6,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2018,
+      "left": "Mike McCarthy",
+      "arrived": "Matt LaFleur",
+      "record": "6-9-1",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 13,
+      "tenure_is_minimum": false
+     }
+    ]
+   },
+   "sources": [
+    "nflverse_games",
+    "wikipedia_owners",
+    "teams_2026"
+   ]
+  },
+  {
+   "team": "HOU",
+   "name": "Houston Texans",
+   "team_index": 29,
+   "fire_scale_q8": 241,
+   "owner": {
+    "name": "Cal McNair",
+    "since": 2024,
+    "acquired": "family",
+    "note": "Son of founding owner Bob McNair",
+    "source": "wikipedia_owners"
+   },
+   "era": {
+    "first_season": 2002,
+    "decisions": 24,
+    "changes": 5,
+    "expected_changes": 6.3132,
+    "multiplier": 0.941
+   },
+   "history": {
+    "first_season": 2002,
+    "decisions": 24,
+    "changes": 5,
+    "head_coaches": [
+     {
+      "name": "Dom Capers",
+      "first": 2002,
+      "last": 2005,
+      "seasons": 4,
+      "opened_window": false
+     },
+     {
+      "name": "Gary Kubiak",
+      "first": 2006,
+      "last": 2013,
+      "seasons": 8,
+      "opened_window": false
+     },
+     {
+      "name": "Bill O'Brien",
+      "first": 2014,
+      "last": 2020,
+      "seasons": 7,
+      "opened_window": false
+     },
+     {
+      "name": "David Culley",
+      "first": 2021,
+      "last": 2021,
+      "seasons": 1,
+      "opened_window": false
+     },
+     {
+      "name": "Lovie Smith",
+      "first": 2022,
+      "last": 2022,
+      "seasons": 1,
+      "opened_window": false
+     },
+     {
+      "name": "DeMeco Ryans",
+      "first": 2023,
+      "last": 2026,
+      "seasons": 4,
+      "opened_window": false
+     }
+    ],
+    "completed_tenures": [4, 8, 7, 1, 1],
+    "average_tenure_started_in_window": 4.2,
+    "short_tenures_le2": 2,
+    "current": {
+     "name": "DeMeco Ryans",
+     "since": 2023,
+     "source": "https://www.houstontexans.com/news/houston-texans-hire-demeco-ryans-as-head-coach",
+     "also": []
+    },
+    "changes_log": [
+     {
+      "after_season": 2005,
+      "left": "Dom Capers",
+      "arrived": "Gary Kubiak",
+      "record": "2-14-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 4,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2013,
+      "left": "Gary Kubiak",
+      "arrived": "Bill O'Brien",
+      "record": "2-14-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 8,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2020,
+      "left": "Bill O'Brien",
+      "arrived": "David Culley",
+      "record": "4-12-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 7,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2021,
+      "left": "David Culley",
+      "arrived": "Lovie Smith",
+      "record": "4-13-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 1,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2022,
+      "left": "Lovie Smith",
+      "arrived": "DeMeco Ryans",
+      "record": "3-13-1",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 1,
+      "tenure_is_minimum": false
+     }
+    ]
+   },
+   "sources": [
+    "nflverse_games",
+    "wikipedia_owners",
+    "teams_2026"
+   ]
+  },
+  {
+   "team": "IND",
+   "name": "Indianapolis Colts",
+   "team_index": 10,
+   "fire_scale_q8": 263,
+   "owner": {
+    "name": "Carlie Irsay-Gordon",
+    "since": 2025,
+    "acquired": "family",
+    "note": "Principal owner and CEO; granddaughter of Robert Irsay, who acquired the team in 1972. Vice chair under her father Jim Irsay until his death in 2025. Gordon's sisters, Casey Foyt and Kalen Jackson, hold equal ownership shares in addition to respectively serving as the team's executive vice president and chief brand officer.",
+    "source": "wikipedia_owners"
+   },
+   "era": {
+    "first_season": 1999,
+    "decisions": 27,
+    "changes": 5,
+    "expected_changes": 4.4455,
+    "multiplier": 1.027
+   },
+   "history": {
+    "first_season": 1999,
+    "decisions": 27,
+    "changes": 5,
+    "head_coaches": [
+     {
+      "name": "Jim Mora",
+      "first": 1999,
+      "last": 2001,
+      "seasons": 3,
+      "opened_window": true
+     },
+     {
+      "name": "Tony Dungy",
+      "first": 2002,
+      "last": 2008,
+      "seasons": 7,
+      "opened_window": false
+     },
+     {
+      "name": "Jim Caldwell",
+      "first": 2009,
+      "last": 2011,
+      "seasons": 3,
+      "opened_window": false
+     },
+     {
+      "name": "Chuck Pagano",
+      "first": 2012,
+      "last": 2017,
+      "seasons": 6,
+      "opened_window": false
+     },
+     {
+      "name": "Frank Reich",
+      "first": 2018,
+      "last": 2022,
+      "seasons": 5,
+      "opened_window": false
+     },
+     {
+      "name": "Shane Steichen",
+      "first": 2023,
+      "last": 2026,
+      "seasons": 4,
+      "opened_window": false
+     }
+    ],
+    "completed_tenures": [3, 7, 3, 6, 5],
+    "average_tenure_started_in_window": 5.25,
+    "short_tenures_le2": 0,
+    "current": {
+     "name": "Shane Steichen",
+     "since": 2023,
+     "source": "https://www.colts.com/news/shane-steichen-head-coach-eagles-offensive-coordinator-jalen-hurts-philip-rivers",
+     "also": []
+    },
+    "changes_log": [
+     {
+      "after_season": 2001,
+      "left": "Jim Mora",
+      "arrived": "Tony Dungy",
+      "record": "6-10-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 3,
+      "tenure_is_minimum": true
+     },
+     {
+      "after_season": 2008,
+      "left": "Tony Dungy",
+      "arrived": "Jim Caldwell",
+      "record": "12-4-0",
+      "made_playoffs": true,
+      "playoff_wins": 0,
+      "tenure": 7,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2011,
+      "left": "Jim Caldwell",
+      "arrived": "Chuck Pagano",
+      "record": "2-14-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 3,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2017,
+      "left": "Chuck Pagano",
+      "arrived": "Frank Reich",
+      "record": "4-12-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 6,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2022,
+      "left": "Frank Reich",
+      "arrived": "Shane Steichen",
+      "record": "4-12-1",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 5,
+      "tenure_is_minimum": false
+     }
+    ]
+   },
+   "sources": [
+    "nflverse_games",
+    "wikipedia_owners",
+    "teams_2026"
+   ]
+  },
+  {
+   "team": "JAX",
+   "name": "Jacksonville Jaguars",
+   "team_index": 16,
+   "fire_scale_q8": 251,
+   "owner": {
+    "name": "Shahid Khan",
+    "since": 2012,
+    "acquired": "purchase",
+    "note": "",
+    "source": "wikipedia_owners"
+   },
+   "era": {
+    "first_season": 2012,
+    "decisions": 14,
+    "changes": 5,
+    "expected_changes": 5.4568,
+    "multiplier": 0.979
+   },
+   "history": {
+    "first_season": 1999,
+    "decisions": 27,
+    "changes": 7,
+    "head_coaches": [
+     {
+      "name": "Tom Coughlin",
+      "first": 1999,
+      "last": 2002,
+      "seasons": 4,
+      "opened_window": true
+     },
+     {
+      "name": "Jack Del Rio",
+      "first": 2003,
+      "last": 2011,
+      "seasons": 9,
+      "opened_window": false
+     },
+     {
+      "name": "Mike Mularkey",
+      "first": 2012,
+      "last": 2012,
+      "seasons": 1,
+      "opened_window": false
+     },
+     {
+      "name": "Gus Bradley",
+      "first": 2013,
+      "last": 2016,
+      "seasons": 4,
+      "opened_window": false
+     },
+     {
+      "name": "Doug Marrone",
+      "first": 2017,
+      "last": 2020,
+      "seasons": 4,
+      "opened_window": false
+     },
+     {
+      "name": "Urban Meyer",
+      "first": 2021,
+      "last": 2021,
+      "seasons": 1,
+      "opened_window": false
+     },
+     {
+      "name": "Doug Pederson",
+      "first": 2022,
+      "last": 2024,
+      "seasons": 3,
+      "opened_window": false
+     },
+     {
+      "name": "Liam Coen",
+      "first": 2025,
+      "last": 2026,
+      "seasons": 2,
+      "opened_window": false
+     }
+    ],
+    "completed_tenures": [4, 9, 1, 4, 4, 1, 3],
+    "average_tenure_started_in_window": 3.67,
+    "short_tenures_le2": 2,
+    "current": {
+     "name": "Liam Coen",
+     "since": 2025,
+     "source": "https://www.jaguars.com/news/k000151-jacksonville-jaguars-agree-to-terms-with-liam-coen-to-become-head-coach",
+     "also": []
+    },
+    "changes_log": [
+     {
+      "after_season": 2002,
+      "left": "Tom Coughlin",
+      "arrived": "Jack Del Rio",
+      "record": "6-10-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 4,
+      "tenure_is_minimum": true
+     },
+     {
+      "after_season": 2011,
+      "left": "Jack Del Rio",
+      "arrived": "Mike Mularkey",
+      "record": "5-11-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 9,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2012,
+      "left": "Mike Mularkey",
+      "arrived": "Gus Bradley",
+      "record": "2-14-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 1,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2016,
+      "left": "Gus Bradley",
+      "arrived": "Doug Marrone",
+      "record": "3-13-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 4,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2020,
+      "left": "Doug Marrone",
+      "arrived": "Urban Meyer",
+      "record": "1-15-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 4,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2021,
+      "left": "Urban Meyer",
+      "arrived": "Doug Pederson",
+      "record": "3-14-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 1,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2024,
+      "left": "Doug Pederson",
+      "arrived": "Liam Coen",
+      "record": "4-13-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 3,
+      "tenure_is_minimum": false
+     }
+    ]
+   },
+   "sources": [
+    "nflverse_games",
+    "wikipedia_owners",
+    "teams_2026"
+   ]
+  },
+  {
+   "team": "KC",
+   "name": "Kansas City Chiefs",
+   "team_index": 9,
+   "fire_scale_q8": 261,
+   "owner": {
+    "name": "Clark Hunt",
+    "since": 2007,
+    "acquired": "family",
+    "note": "Principal owner; son of team founder Lamar Hunt. His siblings are also legal owners of the Chiefs.",
+    "source": "wikipedia_owners"
+   },
+   "era": {
+    "first_season": 1999,
+    "decisions": 27,
+    "changes": 5,
+    "expected_changes": 4.6202,
+    "multiplier": 1.018
+   },
+   "history": {
+    "first_season": 1999,
+    "decisions": 27,
+    "changes": 5,
+    "head_coaches": [
+     {
+      "name": "Gunther Cunningham",
+      "first": 1999,
+      "last": 2000,
+      "seasons": 2,
+      "opened_window": true
+     },
+     {
+      "name": "Dick Vermeil",
+      "first": 2001,
+      "last": 2005,
+      "seasons": 5,
+      "opened_window": false
+     },
+     {
+      "name": "Herm Edwards",
+      "first": 2006,
+      "last": 2008,
+      "seasons": 3,
+      "opened_window": false
+     },
+     {
+      "name": "Todd Haley",
+      "first": 2009,
+      "last": 2011,
+      "seasons": 3,
+      "opened_window": false
+     },
+     {
+      "name": "Romeo Crennel",
+      "first": 2012,
+      "last": 2012,
+      "seasons": 1,
+      "opened_window": false
+     },
+     {
+      "name": "Andy Reid",
+      "first": 2013,
+      "last": 2026,
+      "seasons": 14,
+      "opened_window": false
+     }
+    ],
+    "completed_tenures": [2, 5, 3, 3, 1],
+    "average_tenure_started_in_window": 3.0,
+    "short_tenures_le2": 1,
+    "current": {
+     "name": "Andy Reid",
+     "since": 2013,
+     "source": "https://www.nfl.com/news/story/0ap1000000121923/article/andy-reid-kansas-city-chiefs-make-it-official",
+     "also": []
+    },
+    "changes_log": [
+     {
+      "after_season": 2000,
+      "left": "Gunther Cunningham",
+      "arrived": "Dick Vermeil",
+      "record": "7-9-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 2,
+      "tenure_is_minimum": true
+     },
+     {
+      "after_season": 2005,
+      "left": "Dick Vermeil",
+      "arrived": "Herm Edwards",
+      "record": "10-6-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 5,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2008,
+      "left": "Herm Edwards",
+      "arrived": "Todd Haley",
+      "record": "2-14-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 3,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2011,
+      "left": "Todd Haley",
+      "arrived": "Romeo Crennel",
+      "record": "7-9-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 3,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2012,
+      "left": "Romeo Crennel",
+      "arrived": "Andy Reid",
+      "record": "2-14-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 1,
+      "tenure_is_minimum": false
+     }
+    ]
+   },
+   "sources": [
+    "nflverse_games",
+    "wikipedia_owners",
+    "teams_2026"
+   ]
+  },
+  {
+   "team": "LAC",
+   "name": "Los Angeles Chargers",
+   "team_index": 8,
+   "fire_scale_q8": 253,
+   "owner": {
+    "name": "Dean Spanos",
+    "since": 1994,
+    "acquired": "family",
+    "note": "Son of Alex Spanos, who acquired the team in 1984",
+    "source": "wikipedia_owners"
+   },
+   "era": {
+    "first_season": 1999,
+    "decisions": 27,
+    "changes": 6,
+    "expected_changes": 6.2295,
+    "multiplier": 0.99
+   },
+   "history": {
+    "first_season": 1999,
+    "decisions": 27,
+    "changes": 6,
+    "head_coaches": [
+     {
+      "name": "Mike Riley",
+      "first": 1999,
+      "last": 2001,
+      "seasons": 3,
+      "opened_window": true
+     },
+     {
+      "name": "Marty Schottenheimer",
+      "first": 2002,
+      "last": 2006,
+      "seasons": 5,
+      "opened_window": false
+     },
+     {
+      "name": "Norv Turner",
+      "first": 2007,
+      "last": 2012,
+      "seasons": 6,
+      "opened_window": false
+     },
+     {
+      "name": "Mike McCoy",
+      "first": 2013,
+      "last": 2016,
+      "seasons": 4,
+      "opened_window": false
+     },
+     {
+      "name": "Anthony Lynn",
+      "first": 2017,
+      "last": 2020,
+      "seasons": 4,
+      "opened_window": false
+     },
+     {
+      "name": "Brandon Staley",
+      "first": 2021,
+      "last": 2023,
+      "seasons": 3,
+      "opened_window": false
+     },
+     {
+      "name": "Jim Harbaugh",
+      "first": 2024,
+      "last": 2026,
+      "seasons": 3,
+      "opened_window": false
+     }
+    ],
+    "completed_tenures": [3, 5, 6, 4, 4, 3],
+    "average_tenure_started_in_window": 4.4,
+    "short_tenures_le2": 0,
+    "current": {
+     "name": "Jim Harbaugh",
+     "since": 2024,
+     "source": "https://www.chargers.com/news/chargers-name-jim-harbaugh-michigan-head-coach",
+     "also": []
+    },
+    "changes_log": [
+     {
+      "after_season": 2001,
+      "left": "Mike Riley",
+      "arrived": "Marty Schottenheimer",
+      "record": "5-11-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 3,
+      "tenure_is_minimum": true
+     },
+     {
+      "after_season": 2006,
+      "left": "Marty Schottenheimer",
+      "arrived": "Norv Turner",
+      "record": "14-2-0",
+      "made_playoffs": true,
+      "playoff_wins": 0,
+      "tenure": 5,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2012,
+      "left": "Norv Turner",
+      "arrived": "Mike McCoy",
+      "record": "7-9-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 6,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2016,
+      "left": "Mike McCoy",
+      "arrived": "Anthony Lynn",
+      "record": "5-11-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 4,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2020,
+      "left": "Anthony Lynn",
+      "arrived": "Brandon Staley",
+      "record": "7-9-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 4,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2023,
+      "left": "Brandon Staley",
+      "arrived": "Jim Harbaugh",
+      "record": "5-12-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 3,
+      "tenure_is_minimum": false
+     }
+    ]
+   },
+   "sources": [
+    "nflverse_games",
+    "wikipedia_owners",
+    "teams_2026"
+   ]
+  },
+  {
+   "team": "LAR",
+   "name": "Los Angeles Rams",
+   "team_index": 23,
+   "fire_scale_q8": 231,
+   "owner": {
+    "name": "Stan Kroenke",
+    "since": 2010,
+    "acquired": "purchase",
+    "note": "",
+    "source": "wikipedia_owners"
+   },
+   "era": {
+    "first_season": 2010,
+    "decisions": 16,
+    "changes": 2,
+    "expected_changes": 3.9745,
+    "multiplier": 0.901
+   },
+   "history": {
+    "first_season": 1999,
+    "decisions": 27,
+    "changes": 5,
+    "head_coaches": [
+     {
+      "name": "Dick Vermeil",
+      "first": 1999,
+      "last": 1999,
+      "seasons": 1,
+      "opened_window": true
+     },
+     {
+      "name": "Mike Martz",
+      "first": 2000,
+      "last": 2005,
+      "seasons": 6,
+      "opened_window": false
+     },
+     {
+      "name": "Scott Linehan",
+      "first": 2006,
+      "last": 2008,
+      "seasons": 3,
+      "opened_window": false
+     },
+     {
+      "name": "Steve Spagnuolo",
+      "first": 2009,
+      "last": 2011,
+      "seasons": 3,
+      "opened_window": false
+     },
+     {
+      "name": "Jeff Fisher",
+      "first": 2012,
+      "last": 2016,
+      "seasons": 5,
+      "opened_window": false
+     },
+     {
+      "name": "Sean McVay",
+      "first": 2017,
+      "last": 2026,
+      "seasons": 10,
+      "opened_window": false
+     }
+    ],
+    "completed_tenures": [1, 6, 3, 3, 5],
+    "average_tenure_started_in_window": 4.25,
+    "short_tenures_le2": 0,
+    "current": {
+     "name": "Sean McVay",
+     "since": 2017,
+     "source": "https://www.nfl.com/news/story/0ap3000000773406/article/los-angeles-rams-name-sean-mcvay-new-head-coach",
+     "also": []
+    },
+    "changes_log": [
+     {
+      "after_season": 1999,
+      "left": "Dick Vermeil",
+      "arrived": "Mike Martz",
+      "record": "13-3-0",
+      "made_playoffs": true,
+      "playoff_wins": 3,
+      "tenure": 1,
+      "tenure_is_minimum": true
+     },
+     {
+      "after_season": 2005,
+      "left": "Mike Martz",
+      "arrived": "Scott Linehan",
+      "record": "6-10-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 6,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2008,
+      "left": "Scott Linehan",
+      "arrived": "Steve Spagnuolo",
+      "record": "2-14-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 3,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2011,
+      "left": "Steve Spagnuolo",
+      "arrived": "Jeff Fisher",
+      "record": "2-14-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 3,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2016,
+      "left": "Jeff Fisher",
+      "arrived": "Sean McVay",
+      "record": "4-12-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 5,
+      "tenure_is_minimum": false
+     }
+    ]
+   },
+   "sources": [
+    "nflverse_games",
+    "wikipedia_owners",
+    "teams_2026"
+   ]
+  },
+  {
+   "team": "LV",
+   "name": "Las Vegas Raiders",
+   "team_index": 22,
+   "fire_scale_q8": 331,
+   "owner": {
+    "name": "Mark Davis",
+    "since": 2011,
+    "acquired": "family",
+    "note": "Son of Al Davis of A. D. Football, Inc., which acquired the Raiders in 1972. Principal owner; his mother Carol Davis owned roughly the same share prior to her death. Tom Brady became a limited partner in 2025.",
+    "source": "wikipedia_owners"
+   },
+   "era": {
+    "first_season": 1999,
+    "decisions": 27,
+    "changes": 13,
+    "expected_changes": 6.4294,
+    "multiplier": 1.293
+   },
+   "history": {
+    "first_season": 1999,
+    "decisions": 27,
+    "changes": 13,
+    "head_coaches": [
+     {
+      "name": "Jon Gruden",
+      "first": 1999,
+      "last": 2001,
+      "seasons": 3,
+      "opened_window": true
+     },
+     {
+      "name": "Bill Callahan",
+      "first": 2002,
+      "last": 2003,
+      "seasons": 2,
+      "opened_window": false
+     },
+     {
+      "name": "Norv Turner",
+      "first": 2004,
+      "last": 2005,
+      "seasons": 2,
+      "opened_window": false
+     },
+     {
+      "name": "Art Shell",
+      "first": 2006,
+      "last": 2006,
+      "seasons": 1,
+      "opened_window": false
+     },
+     {
+      "name": "Lane Kiffin",
+      "first": 2007,
+      "last": 2008,
+      "seasons": 2,
+      "opened_window": false
+     },
+     {
+      "name": "Tom Cable",
+      "first": 2009,
+      "last": 2010,
+      "seasons": 2,
+      "opened_window": false
+     },
+     {
+      "name": "Hue Jackson",
+      "first": 2011,
+      "last": 2011,
+      "seasons": 1,
+      "opened_window": false
+     },
+     {
+      "name": "Dennis Allen",
+      "first": 2012,
+      "last": 2014,
+      "seasons": 3,
+      "opened_window": false
+     },
+     {
+      "name": "Jack Del Rio",
+      "first": 2015,
+      "last": 2017,
+      "seasons": 3,
+      "opened_window": false
+     },
+     {
+      "name": "Jon Gruden",
+      "first": 2018,
+      "last": 2021,
+      "seasons": 4,
+      "opened_window": false
+     },
+     {
+      "name": "Josh McDaniels",
+      "first": 2022,
+      "last": 2023,
+      "seasons": 2,
+      "opened_window": false
+     },
+     {
+      "name": "Antonio Pierce",
+      "first": 2024,
+      "last": 2024,
+      "seasons": 1,
+      "opened_window": false
+     },
+     {
+      "name": "Pete Carroll",
+      "first": 2025,
+      "last": 2025,
+      "seasons": 1,
+      "opened_window": false
+     },
+     {
+      "name": "Klint Kubiak",
+      "first": 2026,
+      "last": 2026,
+      "seasons": 1,
+      "opened_window": false
+     }
+    ],
+    "completed_tenures": [3, 2, 2, 1, 2, 2, 1, 3, 3, 4, 2, 1, 1],
+    "average_tenure_started_in_window": 2.0,
+    "short_tenures_le2": 9,
+    "current": {
+     "name": "Klint Kubiak",
+     "since": 2026,
+     "source": "https://www.nfl.com/news/klint-kubiak-confirms-he-s-headed-to-raiders-as-hc-after-seahawks-super-bowl-win",
+     "also": []
+    },
+    "changes_log": [
+     {
+      "after_season": 2001,
+      "left": "Jon Gruden",
+      "arrived": "Bill Callahan",
+      "record": "10-6-0",
+      "made_playoffs": true,
+      "playoff_wins": 1,
+      "tenure": 3,
+      "tenure_is_minimum": true
+     },
+     {
+      "after_season": 2003,
+      "left": "Bill Callahan",
+      "arrived": "Norv Turner",
+      "record": "4-12-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 2,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2005,
+      "left": "Norv Turner",
+      "arrived": "Art Shell",
+      "record": "4-12-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 2,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2006,
+      "left": "Art Shell",
+      "arrived": "Lane Kiffin",
+      "record": "2-14-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 1,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2008,
+      "left": "Lane Kiffin",
+      "arrived": "Tom Cable",
+      "record": "5-11-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 2,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2010,
+      "left": "Tom Cable",
+      "arrived": "Hue Jackson",
+      "record": "8-8-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 2,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2011,
+      "left": "Hue Jackson",
+      "arrived": "Dennis Allen",
+      "record": "8-8-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 1,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2014,
+      "left": "Dennis Allen",
+      "arrived": "Jack Del Rio",
+      "record": "3-13-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 3,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2017,
+      "left": "Jack Del Rio",
+      "arrived": "Jon Gruden",
+      "record": "6-10-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 3,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2021,
+      "left": "Jon Gruden",
+      "arrived": "Josh McDaniels",
+      "record": "10-7-0",
+      "made_playoffs": true,
+      "playoff_wins": 0,
+      "tenure": 4,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2023,
+      "left": "Josh McDaniels",
+      "arrived": "Antonio Pierce",
+      "record": "8-9-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 2,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2024,
+      "left": "Antonio Pierce",
+      "arrived": "Pete Carroll",
+      "record": "4-13-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 1,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2025,
+      "left": "Pete Carroll",
+      "arrived": "Klint Kubiak",
+      "record": "3-14-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 1,
+      "tenure_is_minimum": false,
+      "departure": {
+       "reason": "fired",
+       "date": "2026-01-05",
+       "in_season": false,
+       "source": "https://www.nfl.com/news/raiders-fire-hc-pete-carroll-following-his-first-season-in-las-vegas",
+       "also": "wikipedia_2026_season"
+      }
+     }
+    ]
+   },
+   "sources": [
+    "nflverse_games",
+    "wikipedia_owners",
+    "teams_2026",
+    "wikipedia_2026_season"
+   ]
+  },
+  {
+   "team": "MIA",
+   "name": "Miami Dolphins",
+   "team_index": 12,
+   "fire_scale_q8": 275,
+   "owner": {
+    "name": "Stephen Ross",
+    "since": 2008,
+    "acquired": "purchase",
+    "note": "Principal owner. Minority stakes held by Emilio and Gloria Estefan, Marc Anthony, Venus and Serena Williams, and Stacy \"Fergie\" Ferguson.",
+    "source": "wikipedia_owners"
+   },
+   "era": {
+    "first_season": 2008,
+    "decisions": 18,
+    "changes": 5,
+    "expected_changes": 3.5719,
+    "multiplier": 1.073
+   },
+   "history": {
+    "first_season": 1999,
+    "decisions": 27,
+    "changes": 9,
+    "head_coaches": [
+     {
+      "name": "Jimmy Johnson",
+      "first": 1999,
+      "last": 1999,
+      "seasons": 1,
+      "opened_window": true
+     },
+     {
+      "name": "Dave Wannstedt",
+      "first": 2000,
+      "last": 2004,
+      "seasons": 5,
+      "opened_window": false
+     },
+     {
+      "name": "Nick Saban",
+      "first": 2005,
+      "last": 2006,
+      "seasons": 2,
+      "opened_window": false
+     },
+     {
+      "name": "Cam Cameron",
+      "first": 2007,
+      "last": 2007,
+      "seasons": 1,
+      "opened_window": false
+     },
+     {
+      "name": "Tony Sparano",
+      "first": 2008,
+      "last": 2011,
+      "seasons": 4,
+      "opened_window": false
+     },
+     {
+      "name": "Joe Philbin",
+      "first": 2012,
+      "last": 2015,
+      "seasons": 4,
+      "opened_window": false
+     },
+     {
+      "name": "Adam Gase",
+      "first": 2016,
+      "last": 2018,
+      "seasons": 3,
+      "opened_window": false
+     },
+     {
+      "name": "Brian Flores",
+      "first": 2019,
+      "last": 2021,
+      "seasons": 3,
+      "opened_window": false
+     },
+     {
+      "name": "Mike McDaniel",
+      "first": 2022,
+      "last": 2025,
+      "seasons": 4,
+      "opened_window": false
+     },
+     {
+      "name": "Jeff Hafley",
+      "first": 2026,
+      "last": 2026,
+      "seasons": 1,
+      "opened_window": false
+     }
+    ],
+    "completed_tenures": [1, 5, 2, 1, 4, 4, 3, 3, 4],
+    "average_tenure_started_in_window": 3.25,
+    "short_tenures_le2": 2,
+    "current": {
+     "name": "Jeff Hafley",
+     "since": 2026,
+     "source": "https://www.miamidolphins.com/news/miami-dolphins-agree-to-terms-with-jeff-hafley-as-head-coach",
+     "also": []
+    },
+    "changes_log": [
+     {
+      "after_season": 1999,
+      "left": "Jimmy Johnson",
+      "arrived": "Dave Wannstedt",
+      "record": "9-7-0",
+      "made_playoffs": true,
+      "playoff_wins": 1,
+      "tenure": 1,
+      "tenure_is_minimum": true
+     },
+     {
+      "after_season": 2004,
+      "left": "Dave Wannstedt",
+      "arrived": "Nick Saban",
+      "record": "4-12-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 5,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2006,
+      "left": "Nick Saban",
+      "arrived": "Cam Cameron",
+      "record": "6-10-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 2,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2007,
+      "left": "Cam Cameron",
+      "arrived": "Tony Sparano",
+      "record": "1-15-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 1,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2011,
+      "left": "Tony Sparano",
+      "arrived": "Joe Philbin",
+      "record": "6-10-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 4,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2015,
+      "left": "Joe Philbin",
+      "arrived": "Adam Gase",
+      "record": "6-10-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 4,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2018,
+      "left": "Adam Gase",
+      "arrived": "Brian Flores",
+      "record": "7-9-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 3,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2021,
+      "left": "Brian Flores",
+      "arrived": "Mike McDaniel",
+      "record": "9-8-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 3,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2025,
+      "left": "Mike McDaniel",
+      "arrived": "Jeff Hafley",
+      "record": "7-10-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 4,
+      "tenure_is_minimum": false,
+      "departure": {
+       "reason": "fired",
+       "date": "2026-01-08",
+       "in_season": false,
+       "source": "https://www.nfl.com/news/dolphins-fire-head-coach-mike-mcdaniel-after-four-seasons",
+       "also": "wikipedia_2026_season"
+      }
+     }
+    ]
+   },
+   "sources": [
+    "nflverse_games",
+    "wikipedia_owners",
+    "teams_2026",
+    "wikipedia_2026_season"
+   ]
+  },
+  {
+   "team": "MIN",
+   "name": "Minnesota Vikings",
+   "team_index": 31,
+   "fire_scale_q8": 261,
+   "owner": {
+    "name": "Zygi Wilf",
+    "since": 2005,
+    "acquired": "purchase",
+    "note": "Principal owner",
+    "source": "wikipedia_owners"
+   },
+   "era": {
+    "first_season": 2005,
+    "decisions": 21,
+    "changes": 4,
+    "expected_changes": 3.5922,
+    "multiplier": 1.021
+   },
+   "history": {
+    "first_season": 1999,
+    "decisions": 27,
+    "changes": 5,
+    "head_coaches": [
+     {
+      "name": "Dennis Green",
+      "first": 1999,
+      "last": 2001,
+      "seasons": 3,
+      "opened_window": true
+     },
+     {
+      "name": "Mike Tice",
+      "first": 2002,
+      "last": 2005,
+      "seasons": 4,
+      "opened_window": false
+     },
+     {
+      "name": "Brad Childress",
+      "first": 2006,
+      "last": 2010,
+      "seasons": 5,
+      "opened_window": false
+     },
+     {
+      "name": "Leslie Frazier",
+      "first": 2011,
+      "last": 2013,
+      "seasons": 3,
+      "opened_window": false
+     },
+     {
+      "name": "Mike Zimmer",
+      "first": 2014,
+      "last": 2021,
+      "seasons": 8,
+      "opened_window": false
+     },
+     {
+      "name": "Kevin O'Connell",
+      "first": 2022,
+      "last": 2026,
+      "seasons": 5,
+      "opened_window": false
+     }
+    ],
+    "completed_tenures": [3, 4, 5, 3, 8],
+    "average_tenure_started_in_window": 5.0,
+    "short_tenures_le2": 0,
+    "current": {
+     "name": "Kevin O'Connell",
+     "since": 2022,
+     "source": "https://www.vikings.com/news/kevin-oconnell-head-coach-announcement",
+     "also": []
+    },
+    "changes_log": [
+     {
+      "after_season": 2001,
+      "left": "Dennis Green",
+      "arrived": "Mike Tice",
+      "record": "5-11-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 3,
+      "tenure_is_minimum": true
+     },
+     {
+      "after_season": 2005,
+      "left": "Mike Tice",
+      "arrived": "Brad Childress",
+      "record": "9-7-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 4,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2010,
+      "left": "Brad Childress",
+      "arrived": "Leslie Frazier",
+      "record": "6-10-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 5,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2013,
+      "left": "Leslie Frazier",
+      "arrived": "Mike Zimmer",
+      "record": "5-10-1",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 3,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2021,
+      "left": "Mike Zimmer",
+      "arrived": "Kevin O'Connell",
+      "record": "8-9-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 8,
+      "tenure_is_minimum": false
+     }
+    ]
+   },
+   "sources": [
+    "nflverse_games",
+    "wikipedia_owners",
+    "teams_2026"
+   ]
+  },
+  {
+   "team": "NE",
+   "name": "New England Patriots",
+   "team_index": 21,
+   "fire_scale_q8": 255,
+   "owner": {
+    "name": "Robert Kraft",
+    "since": 1994,
+    "acquired": "purchase",
+    "note": "",
+    "source": "wikipedia_owners"
+   },
+   "era": {
+    "first_season": 1999,
+    "decisions": 27,
+    "changes": 3,
+    "expected_changes": 3.0486,
+    "multiplier": 0.997
+   },
+   "history": {
+    "first_season": 1999,
+    "decisions": 27,
+    "changes": 3,
+    "head_coaches": [
+     {
+      "name": "Pete Carroll",
+      "first": 1999,
+      "last": 1999,
+      "seasons": 1,
+      "opened_window": true
+     },
+     {
+      "name": "Bill Belichick",
+      "first": 2000,
+      "last": 2023,
+      "seasons": 24,
+      "opened_window": false
+     },
+     {
+      "name": "Jerod Mayo",
+      "first": 2024,
+      "last": 2024,
+      "seasons": 1,
+      "opened_window": false
+     },
+     {
+      "name": "Mike Vrabel",
+      "first": 2025,
+      "last": 2026,
+      "seasons": 2,
+      "opened_window": false
+     }
+    ],
+    "completed_tenures": [1, 24, 1],
+    "average_tenure_started_in_window": 12.5,
+    "short_tenures_le2": 1,
+    "current": {
+     "name": "Mike Vrabel",
+     "since": 2025,
+     "source": "https://www.patriots.com/news/patriots-hall-of-famer-mike-vrabel-returns-to-new-england-as-our-16th-head-coach",
+     "also": []
+    },
+    "changes_log": [
+     {
+      "after_season": 1999,
+      "left": "Pete Carroll",
+      "arrived": "Bill Belichick",
+      "record": "8-8-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 1,
+      "tenure_is_minimum": true
+     },
+     {
+      "after_season": 2023,
+      "left": "Bill Belichick",
+      "arrived": "Jerod Mayo",
+      "record": "4-13-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 24,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2024,
+      "left": "Jerod Mayo",
+      "arrived": "Mike Vrabel",
+      "record": "4-13-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 1,
+      "tenure_is_minimum": false
+     }
+    ]
+   },
+   "sources": [
+    "nflverse_games",
+    "wikipedia_owners",
+    "teams_2026"
+   ]
+  },
+  {
+   "team": "NO",
+   "name": "New Orleans Saints",
+   "team_index": 26,
+   "fire_scale_q8": 267,
+   "owner": {
+    "name": "Gayle Benson",
+    "since": 2018,
+    "acquired": "family",
+    "note": "Wife of Tom Benson, who acquired the team in 1985",
+    "source": "wikipedia_owners"
+   },
+   "era": {
+    "first_season": 1999,
+    "decisions": 27,
+    "changes": 6,
+    "expected_changes": 5.0717,
+    "multiplier": 1.044
+   },
+   "history": {
+    "first_season": 1999,
+    "decisions": 27,
+    "changes": 6,
+    "head_coaches": [
+     {
+      "name": "Mike Ditka",
+      "first": 1999,
+      "last": 1999,
+      "seasons": 1,
+      "opened_window": true
+     },
+     {
+      "name": "Jim Haslett",
+      "first": 2000,
+      "last": 2005,
+      "seasons": 6,
+      "opened_window": false
+     },
+     {
+      "name": "Sean Payton",
+      "first": 2006,
+      "last": 2011,
+      "seasons": 6,
+      "opened_window": false
+     },
+     {
+      "name": "Aaron Kromer",
+      "first": 2012,
+      "last": 2012,
+      "seasons": 1,
+      "opened_window": false
+     },
+     {
+      "name": "Sean Payton",
+      "first": 2013,
+      "last": 2021,
+      "seasons": 9,
+      "opened_window": false
+     },
+     {
+      "name": "Dennis Allen",
+      "first": 2022,
+      "last": 2024,
+      "seasons": 3,
+      "opened_window": false
+     },
+     {
+      "name": "Kellen Moore",
+      "first": 2025,
+      "last": 2026,
+      "seasons": 2,
+      "opened_window": false
+     }
+    ],
+    "completed_tenures": [1, 6, 6, 1, 9, 3],
+    "average_tenure_started_in_window": 5.0,
+    "short_tenures_le2": 1,
+    "current": {
+     "name": "Kellen Moore",
+     "since": 2025,
+     "source": "https://www.neworleanssaints.com/news/kellen-moore-new-orleans-saints-head-coach-search-philadelphia-eagles-offensive-coordinator",
+     "also": []
+    },
+    "changes_log": [
+     {
+      "after_season": 1999,
+      "left": "Mike Ditka",
+      "arrived": "Jim Haslett",
+      "record": "3-13-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 1,
+      "tenure_is_minimum": true
+     },
+     {
+      "after_season": 2005,
+      "left": "Jim Haslett",
+      "arrived": "Sean Payton",
+      "record": "3-13-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 6,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2011,
+      "left": "Sean Payton",
+      "arrived": "Aaron Kromer",
+      "record": "13-3-0",
+      "made_playoffs": true,
+      "playoff_wins": 1,
+      "tenure": 6,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2012,
+      "left": "Aaron Kromer",
+      "arrived": "Sean Payton",
+      "record": "7-9-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 1,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2021,
+      "left": "Sean Payton",
+      "arrived": "Dennis Allen",
+      "record": "9-8-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 9,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2024,
+      "left": "Dennis Allen",
+      "arrived": "Kellen Moore",
+      "record": "5-12-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 3,
+      "tenure_is_minimum": false
+     }
+    ]
+   },
+   "sources": [
+    "nflverse_games",
+    "wikipedia_owners",
+    "teams_2026"
+   ]
+  },
+  {
+   "team": "NYG",
+   "name": "New York Giants",
+   "team_index": 15,
+   "fire_scale_q8": 241,
+   "owner": {
+    "name": "John Mara",
+    "since": 2005,
+    "acquired": "family",
+    "note": "Principal owner; his grandfather Tim Mara founded the team in 1925. Executive vice president and board chairman Steve Tisch owns 50% of the team through his father Preston Robert Tisch, who acquired that share in 1991.",
+    "source": "wikipedia_owners"
+   },
+   "era": {
+    "first_season": 1999,
+    "decisions": 27,
+    "changes": 6,
+    "expected_changes": 7.3409,
+    "multiplier": 0.943
+   },
+   "history": {
+    "first_season": 1999,
+    "decisions": 27,
+    "changes": 6,
+    "head_coaches": [
+     {
+      "name": "Jim Fassel",
+      "first": 1999,
+      "last": 2003,
+      "seasons": 5,
+      "opened_window": true
+     },
+     {
+      "name": "Tom Coughlin",
+      "first": 2004,
+      "last": 2015,
+      "seasons": 12,
+      "opened_window": false
+     },
+     {
+      "name": "Ben McAdoo",
+      "first": 2016,
+      "last": 2017,
+      "seasons": 2,
+      "opened_window": false
+     },
+     {
+      "name": "Pat Shurmur",
+      "first": 2018,
+      "last": 2019,
+      "seasons": 2,
+      "opened_window": false
+     },
+     {
+      "name": "Joe Judge",
+      "first": 2020,
+      "last": 2021,
+      "seasons": 2,
+      "opened_window": false
+     },
+     {
+      "name": "Brian Daboll",
+      "first": 2022,
+      "last": 2025,
+      "seasons": 4,
+      "opened_window": false
+     },
+     {
+      "name": "John Harbaugh",
+      "first": 2026,
+      "last": 2026,
+      "seasons": 1,
+      "opened_window": false
+     }
+    ],
+    "completed_tenures": [5, 12, 2, 2, 2, 4],
+    "average_tenure_started_in_window": 4.4,
+    "short_tenures_le2": 3,
+    "current": {
+     "name": "John Harbaugh",
+     "since": 2026,
+     "source": "https://www.nbcnews.com/sports/football/new-york-giants-hire-john-harbaugh-coach-baltimore-ravens-firing-rcna254610",
+     "also": [
+      "https://www.giants.com/news/john-harbaugh-hired-head-coach-new-york-giants-nfl"
+     ]
+    },
+    "changes_log": [
+     {
+      "after_season": 2003,
+      "left": "Jim Fassel",
+      "arrived": "Tom Coughlin",
+      "record": "4-12-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 5,
+      "tenure_is_minimum": true
+     },
+     {
+      "after_season": 2015,
+      "left": "Tom Coughlin",
+      "arrived": "Ben McAdoo",
+      "record": "6-10-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 12,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2017,
+      "left": "Ben McAdoo",
+      "arrived": "Pat Shurmur",
+      "record": "3-13-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 2,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2019,
+      "left": "Pat Shurmur",
+      "arrived": "Joe Judge",
+      "record": "4-12-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 2,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2021,
+      "left": "Joe Judge",
+      "arrived": "Brian Daboll",
+      "record": "4-13-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 2,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2025,
+      "left": "Brian Daboll",
+      "arrived": "John Harbaugh",
+      "record": "4-13-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 4,
+      "tenure_is_minimum": false,
+      "departure": {
+       "reason": "fired",
+       "date": "2025-11-10",
+       "in_season": true,
+       "source": "https://www.nfl.com/news/giants-fire-head-coach-brian-daboll-after-2-8-start",
+       "also": "wikipedia_2026_season"
+      }
+     }
+    ]
+   },
+   "sources": [
+    "nflverse_games",
+    "wikipedia_owners",
+    "teams_2026",
+    "wikipedia_2026_season"
+   ]
+  },
+  {
+   "team": "NYJ",
+   "name": "New York Jets",
+   "team_index": 17,
+   "fire_scale_q8": 248,
+   "owner": {
+    "name": "Woody Johnson",
+    "since": 2000,
+    "acquired": "purchase",
+    "note": "Principal owner; his brother Christopher Johnson served that role during Woody's time as the 66th US Ambassador to the UK from November 2017 to January 2021.",
+    "source": "wikipedia_owners"
+   },
+   "era": {
+    "first_season": 2000,
+    "decisions": 26,
+    "changes": 7,
+    "expected_changes": 7.7541,
+    "multiplier": 0.968
+   },
+   "history": {
+    "first_season": 1999,
+    "decisions": 27,
+    "changes": 8,
+    "head_coaches": [
+     {
+      "name": "Bill Parcells",
+      "first": 1999,
+      "last": 1999,
+      "seasons": 1,
+      "opened_window": true
+     },
+     {
+      "name": "Al Groh",
+      "first": 2000,
+      "last": 2000,
+      "seasons": 1,
+      "opened_window": false
+     },
+     {
+      "name": "Herm Edwards",
+      "first": 2001,
+      "last": 2005,
+      "seasons": 5,
+      "opened_window": false
+     },
+     {
+      "name": "Eric Mangini",
+      "first": 2006,
+      "last": 2008,
+      "seasons": 3,
+      "opened_window": false
+     },
+     {
+      "name": "Rex Ryan",
+      "first": 2009,
+      "last": 2014,
+      "seasons": 6,
+      "opened_window": false
+     },
+     {
+      "name": "Todd Bowles",
+      "first": 2015,
+      "last": 2018,
+      "seasons": 4,
+      "opened_window": false
+     },
+     {
+      "name": "Adam Gase",
+      "first": 2019,
+      "last": 2020,
+      "seasons": 2,
+      "opened_window": false
+     },
+     {
+      "name": "Robert Saleh",
+      "first": 2021,
+      "last": 2024,
+      "seasons": 4,
+      "opened_window": false
+     },
+     {
+      "name": "Aaron Glenn",
+      "first": 2025,
+      "last": 2026,
+      "seasons": 2,
+      "opened_window": false
+     }
+    ],
+    "completed_tenures": [1, 1, 5, 3, 6, 4, 2, 4],
+    "average_tenure_started_in_window": 3.57,
+    "short_tenures_le2": 2,
+    "current": {
+     "name": "Aaron Glenn",
+     "since": 2025,
+     "source": "https://www.newyorkjets.com/news/jets-hire-aaron-glenn-head-coach-01-22-2025",
+     "also": []
+    },
+    "changes_log": [
+     {
+      "after_season": 1999,
+      "left": "Bill Parcells",
+      "arrived": "Al Groh",
+      "record": "8-8-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 1,
+      "tenure_is_minimum": true
+     },
+     {
+      "after_season": 2000,
+      "left": "Al Groh",
+      "arrived": "Herm Edwards",
+      "record": "9-7-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 1,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2005,
+      "left": "Herm Edwards",
+      "arrived": "Eric Mangini",
+      "record": "4-12-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 5,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2008,
+      "left": "Eric Mangini",
+      "arrived": "Rex Ryan",
+      "record": "9-7-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 3,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2014,
+      "left": "Rex Ryan",
+      "arrived": "Todd Bowles",
+      "record": "4-12-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 6,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2018,
+      "left": "Todd Bowles",
+      "arrived": "Adam Gase",
+      "record": "4-12-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 4,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2020,
+      "left": "Adam Gase",
+      "arrived": "Robert Saleh",
+      "record": "2-14-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 2,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2024,
+      "left": "Robert Saleh",
+      "arrived": "Aaron Glenn",
+      "record": "5-12-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 4,
+      "tenure_is_minimum": false
+     }
+    ]
+   },
+   "sources": [
+    "nflverse_games",
+    "wikipedia_owners",
+    "teams_2026"
+   ]
+  },
+  {
+   "team": "PHI",
+   "name": "Philadelphia Eagles",
+   "team_index": 13,
+   "fire_scale_q8": 241,
+   "owner": {
+    "name": "Jeffrey Lurie",
+    "since": 1994,
+    "acquired": "purchase",
+    "note": "",
+    "source": "wikipedia_owners"
+   },
+   "era": {
+    "first_season": 1999,
+    "decisions": 27,
+    "changes": 3,
+    "expected_changes": 4.2074,
+    "multiplier": 0.94
+   },
+   "history": {
+    "first_season": 1999,
+    "decisions": 27,
+    "changes": 3,
+    "head_coaches": [
+     {
+      "name": "Andy Reid",
+      "first": 1999,
+      "last": 2012,
+      "seasons": 14,
+      "opened_window": true
+     },
+     {
+      "name": "Chip Kelly",
+      "first": 2013,
+      "last": 2015,
+      "seasons": 3,
+      "opened_window": false
+     },
+     {
+      "name": "Doug Pederson",
+      "first": 2016,
+      "last": 2020,
+      "seasons": 5,
+      "opened_window": false
+     },
+     {
+      "name": "Nick Sirianni",
+      "first": 2021,
+      "last": 2026,
+      "seasons": 6,
+      "opened_window": false
+     }
+    ],
+    "completed_tenures": [14, 3, 5],
+    "average_tenure_started_in_window": 4.0,
+    "short_tenures_le2": 0,
+    "current": {
+     "name": "Nick Sirianni",
+     "since": 2021,
+     "source": "https://www.philadelphiaeagles.com/news/eagles-announce-nick-sirianni-as-head-coach",
+     "also": []
+    },
+    "changes_log": [
+     {
+      "after_season": 2012,
+      "left": "Andy Reid",
+      "arrived": "Chip Kelly",
+      "record": "4-12-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 14,
+      "tenure_is_minimum": true
+     },
+     {
+      "after_season": 2015,
+      "left": "Chip Kelly",
+      "arrived": "Doug Pederson",
+      "record": "7-9-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 3,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2020,
+      "left": "Doug Pederson",
+      "arrived": "Nick Sirianni",
+      "record": "4-11-1",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 5,
+      "tenure_is_minimum": false
+     }
+    ]
+   },
+   "sources": [
+    "nflverse_games",
+    "wikipedia_owners",
+    "teams_2026"
+   ]
+  },
+  {
+   "team": "PIT",
+   "name": "Pittsburgh Steelers",
+   "team_index": 28,
+   "fire_scale_q8": 236,
+   "owner": {
+    "name": "Art Rooney II",
+    "since": 2017,
+    "acquired": "family",
+    "note": "Part of the Rooney family, with his grandfather Art Rooney founding the team in 1933.",
+    "source": "wikipedia_owners"
+   },
+   "era": {
+    "first_season": 1999,
+    "decisions": 27,
+    "changes": 2,
+    "expected_changes": 3.5562,
+    "multiplier": 0.92
+   },
+   "history": {
+    "first_season": 1999,
+    "decisions": 27,
+    "changes": 2,
+    "head_coaches": [
+     {
+      "name": "Bill Cowher",
+      "first": 1999,
+      "last": 2006,
+      "seasons": 8,
+      "opened_window": true
+     },
+     {
+      "name": "Mike Tomlin",
+      "first": 2007,
+      "last": 2025,
+      "seasons": 19,
+      "opened_window": false
+     },
+     {
+      "name": "Mike McCarthy",
+      "first": 2026,
+      "last": 2026,
+      "seasons": 1,
+      "opened_window": false
+     }
+    ],
+    "completed_tenures": [8, 19],
+    "average_tenure_started_in_window": 19.0,
+    "short_tenures_le2": 0,
+    "current": {
+     "name": "Mike McCarthy",
+     "since": 2026,
+     "source": "https://www.steelers.com/news/labriola-on-why-it-was-mike-mccarthy",
+     "also": []
+    },
+    "changes_log": [
+     {
+      "after_season": 2006,
+      "left": "Bill Cowher",
+      "arrived": "Mike Tomlin",
+      "record": "8-8-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 8,
+      "tenure_is_minimum": true
+     },
+     {
+      "after_season": 2025,
+      "left": "Mike Tomlin",
+      "arrived": "Mike McCarthy",
+      "record": "10-7-0",
+      "made_playoffs": true,
+      "playoff_wins": 0,
+      "tenure": 19,
+      "tenure_is_minimum": false,
+      "departure": {
+       "reason": "resigned",
+       "date": "2026-01-13",
+       "in_season": false,
+       "source": "https://www.nfl.com/news/mike-tomlin-stepping-down-as-head-coach-of-steelers-after-19-seasons",
+       "also": "wikipedia_2026_season"
+      }
+     }
+    ]
+   },
+   "sources": [
+    "nflverse_games",
+    "wikipedia_owners",
+    "teams_2026",
+    "wikipedia_2026_season"
+   ]
+  },
+  {
+   "team": "SEA",
+   "name": "Seattle Seahawks",
+   "team_index": 27,
+   "fire_scale_q8": 256,
+   "owner": {
+    "name": "Neeru Khosla",
+    "since": 2026,
+    "acquired": "purchase",
+    "note": "Controlling owner; her husband Vinod and son Neal also have roles in the ownership group",
+    "source": "wikipedia_owners"
+   },
+   "era": {
+    "first_season": 2026,
+    "decisions": 0,
+    "changes": 0,
+    "expected_changes": 0,
+    "multiplier": 1.0
+   },
+   "history": {
+    "first_season": 1999,
+    "decisions": 27,
+    "changes": 3,
+    "head_coaches": [
+     {
+      "name": "Mike Holmgren",
+      "first": 1999,
+      "last": 2008,
+      "seasons": 10,
+      "opened_window": true
+     },
+     {
+      "name": "Jim Mora",
+      "first": 2009,
+      "last": 2009,
+      "seasons": 1,
+      "opened_window": false
+     },
+     {
+      "name": "Pete Carroll",
+      "first": 2010,
+      "last": 2023,
+      "seasons": 14,
+      "opened_window": false
+     },
+     {
+      "name": "Mike Macdonald",
+      "first": 2024,
+      "last": 2026,
+      "seasons": 3,
+      "opened_window": false
+     }
+    ],
+    "completed_tenures": [10, 1, 14],
+    "average_tenure_started_in_window": 7.5,
+    "short_tenures_le2": 1,
+    "current": {
+     "name": "Mike Macdonald",
+     "since": 2024,
+     "source": "https://www.seahawks.com/news/mike-macdonald-named-head-coach-of-the-seattle-seahawks",
+     "also": []
+    },
+    "changes_log": [
+     {
+      "after_season": 2008,
+      "left": "Mike Holmgren",
+      "arrived": "Jim Mora",
+      "record": "4-12-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 10,
+      "tenure_is_minimum": true
+     },
+     {
+      "after_season": 2009,
+      "left": "Jim Mora",
+      "arrived": "Pete Carroll",
+      "record": "5-11-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 1,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2023,
+      "left": "Pete Carroll",
+      "arrived": "Mike Macdonald",
+      "record": "9-8-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 14,
+      "tenure_is_minimum": false
+     }
+    ]
+   },
+   "sources": [
+    "nflverse_games",
+    "wikipedia_owners",
+    "teams_2026"
+   ]
+  },
+  {
+   "team": "SF",
+   "name": "San Francisco 49ers",
+   "team_index": 0,
+   "fire_scale_q8": 265,
+   "owner": {
+    "name": "Jed York",
+    "since": 2009,
+    "acquired": "family",
+    "note": "Principal owner; his mother Denise DeBartolo York is the daughter of Edward J. DeBartolo Sr., who acquired the team in 1977, and owns roughly the same share.",
+    "source": "wikipedia_owners"
+   },
+   "era": {
+    "first_season": 1999,
+    "decisions": 27,
+    "changes": 7,
+    "expected_changes": 6.2465,
+    "multiplier": 1.034
+   },
+   "history": {
+    "first_season": 1999,
+    "decisions": 27,
+    "changes": 7,
+    "head_coaches": [
+     {
+      "name": "Steve Mariucci",
+      "first": 1999,
+      "last": 2002,
+      "seasons": 4,
+      "opened_window": true
+     },
+     {
+      "name": "Dennis Erickson",
+      "first": 2003,
+      "last": 2004,
+      "seasons": 2,
+      "opened_window": false
+     },
+     {
+      "name": "Mike Nolan",
+      "first": 2005,
+      "last": 2008,
+      "seasons": 4,
+      "opened_window": false
+     },
+     {
+      "name": "Mike Singletary",
+      "first": 2009,
+      "last": 2010,
+      "seasons": 2,
+      "opened_window": false
+     },
+     {
+      "name": "Jim Harbaugh",
+      "first": 2011,
+      "last": 2014,
+      "seasons": 4,
+      "opened_window": false
+     },
+     {
+      "name": "Jim Tomsula",
+      "first": 2015,
+      "last": 2015,
+      "seasons": 1,
+      "opened_window": false
+     },
+     {
+      "name": "Chip Kelly",
+      "first": 2016,
+      "last": 2016,
+      "seasons": 1,
+      "opened_window": false
+     },
+     {
+      "name": "Kyle Shanahan",
+      "first": 2017,
+      "last": 2026,
+      "seasons": 10,
+      "opened_window": false
+     }
+    ],
+    "completed_tenures": [4, 2, 4, 2, 4, 1, 1],
+    "average_tenure_started_in_window": 2.33,
+    "short_tenures_le2": 4,
+    "current": {
+     "name": "Kyle Shanahan",
+     "since": 2017,
+     "source": "https://www.49ers.com/news/article-2/Kyle-Shanahan-Named-Head-Coach-of-the-San-Francisco-49ers/4f4c2e57-f237-4481-9483-3472833db519",
+     "also": []
+    },
+    "changes_log": [
+     {
+      "after_season": 2002,
+      "left": "Steve Mariucci",
+      "arrived": "Dennis Erickson",
+      "record": "10-6-0",
+      "made_playoffs": true,
+      "playoff_wins": 1,
+      "tenure": 4,
+      "tenure_is_minimum": true
+     },
+     {
+      "after_season": 2004,
+      "left": "Dennis Erickson",
+      "arrived": "Mike Nolan",
+      "record": "2-14-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 2,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2008,
+      "left": "Mike Nolan",
+      "arrived": "Mike Singletary",
+      "record": "7-9-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 4,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2010,
+      "left": "Mike Singletary",
+      "arrived": "Jim Harbaugh",
+      "record": "6-10-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 2,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2014,
+      "left": "Jim Harbaugh",
+      "arrived": "Jim Tomsula",
+      "record": "8-8-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 4,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2015,
+      "left": "Jim Tomsula",
+      "arrived": "Chip Kelly",
+      "record": "5-11-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 1,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2016,
+      "left": "Chip Kelly",
+      "arrived": "Kyle Shanahan",
+      "record": "2-14-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 1,
+      "tenure_is_minimum": false
+     }
+    ]
+   },
+   "sources": [
+    "nflverse_games",
+    "wikipedia_owners",
+    "teams_2026"
+   ]
+  },
+  {
+   "team": "TB",
+   "name": "Tampa Bay Buccaneers",
+   "team_index": 6,
+   "fire_scale_q8": 267,
+   "owner": {
+    "name": "Bryan Glazer",
+    "since": 2014,
+    "acquired": "family",
+    "note": "Part of the Glazer family, with his father Malcolm Glazer acquiring the team in 1995",
+    "source": "wikipedia_owners"
+   },
+   "era": {
+    "first_season": 1999,
+    "decisions": 27,
+    "changes": 7,
+    "expected_changes": 6.0122,
+    "multiplier": 1.045
+   },
+   "history": {
+    "first_season": 1999,
+    "decisions": 27,
+    "changes": 7,
+    "head_coaches": [
+     {
+      "name": "Tony Dungy",
+      "first": 1999,
+      "last": 2001,
+      "seasons": 3,
+      "opened_window": true
+     },
+     {
+      "name": "Jon Gruden",
+      "first": 2002,
+      "last": 2008,
+      "seasons": 7,
+      "opened_window": false
+     },
+     {
+      "name": "Raheem Morris",
+      "first": 2009,
+      "last": 2011,
+      "seasons": 3,
+      "opened_window": false
+     },
+     {
+      "name": "Greg Schiano",
+      "first": 2012,
+      "last": 2013,
+      "seasons": 2,
+      "opened_window": false
+     },
+     {
+      "name": "Lovie Smith",
+      "first": 2014,
+      "last": 2015,
+      "seasons": 2,
+      "opened_window": false
+     },
+     {
+      "name": "Dirk Koetter",
+      "first": 2016,
+      "last": 2018,
+      "seasons": 3,
+      "opened_window": false
+     },
+     {
+      "name": "Bruce Arians",
+      "first": 2019,
+      "last": 2021,
+      "seasons": 3,
+      "opened_window": false
+     },
+     {
+      "name": "Todd Bowles",
+      "first": 2022,
+      "last": 2026,
+      "seasons": 5,
+      "opened_window": false
+     }
+    ],
+    "completed_tenures": [3, 7, 3, 2, 2, 3, 3],
+    "average_tenure_started_in_window": 3.33,
+    "short_tenures_le2": 2,
+    "current": {
+     "name": "Todd Bowles",
+     "since": 2022,
+     "source": "https://www.buccaneers.com/news/bucs-bruce-arians-new-role-todd-bowles-named-head-coach",
+     "also": []
+    },
+    "changes_log": [
+     {
+      "after_season": 2001,
+      "left": "Tony Dungy",
+      "arrived": "Jon Gruden",
+      "record": "9-7-0",
+      "made_playoffs": true,
+      "playoff_wins": 0,
+      "tenure": 3,
+      "tenure_is_minimum": true
+     },
+     {
+      "after_season": 2008,
+      "left": "Jon Gruden",
+      "arrived": "Raheem Morris",
+      "record": "9-7-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 7,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2011,
+      "left": "Raheem Morris",
+      "arrived": "Greg Schiano",
+      "record": "4-12-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 3,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2013,
+      "left": "Greg Schiano",
+      "arrived": "Lovie Smith",
+      "record": "4-12-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 2,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2015,
+      "left": "Lovie Smith",
+      "arrived": "Dirk Koetter",
+      "record": "6-10-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 2,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2018,
+      "left": "Dirk Koetter",
+      "arrived": "Bruce Arians",
+      "record": "5-11-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 3,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2021,
+      "left": "Bruce Arians",
+      "arrived": "Todd Bowles",
+      "record": "13-4-0",
+      "made_playoffs": true,
+      "playoff_wins": 1,
+      "tenure": 3,
+      "tenure_is_minimum": false
+     }
+    ]
+   },
+   "sources": [
+    "nflverse_games",
+    "wikipedia_owners",
+    "teams_2026"
+   ]
+  },
+  {
+   "team": "TEN",
+   "name": "Tennessee Titans",
+   "team_index": 30,
+   "fire_scale_q8": 253,
+   "owner": {
+    "name": "Amy Adams Strunk",
+    "since": 2015,
+    "acquired": "family",
+    "note": "Daughter of Bud Adams, who founded the team as the Houston Oilers in 1960.",
+    "source": "wikipedia_owners"
+   },
+   "era": {
+    "first_season": 1999,
+    "decisions": 27,
+    "changes": 6,
+    "expected_changes": 6.2668,
+    "multiplier": 0.988
+   },
+   "history": {
+    "first_season": 1999,
+    "decisions": 27,
+    "changes": 6,
+    "head_coaches": [
+     {
+      "name": "Jeff Fisher",
+      "first": 1999,
+      "last": 2010,
+      "seasons": 12,
+      "opened_window": true
+     },
+     {
+      "name": "Mike Munchak",
+      "first": 2011,
+      "last": 2013,
+      "seasons": 3,
+      "opened_window": false
+     },
+     {
+      "name": "Ken Whisenhunt",
+      "first": 2014,
+      "last": 2015,
+      "seasons": 2,
+      "opened_window": false
+     },
+     {
+      "name": "Mike Mularkey",
+      "first": 2016,
+      "last": 2017,
+      "seasons": 2,
+      "opened_window": false
+     },
+     {
+      "name": "Mike Vrabel",
+      "first": 2018,
+      "last": 2023,
+      "seasons": 6,
+      "opened_window": false
+     },
+     {
+      "name": "Brian Callahan",
+      "first": 2024,
+      "last": 2025,
+      "seasons": 2,
+      "opened_window": false
+     },
+     {
+      "name": "Robert Saleh",
+      "first": 2026,
+      "last": 2026,
+      "seasons": 1,
+      "opened_window": false
+     }
+    ],
+    "completed_tenures": [12, 3, 2, 2, 6, 2],
+    "average_tenure_started_in_window": 3.0,
+    "short_tenures_le2": 3,
+    "current": {
+     "name": "Robert Saleh",
+     "since": 2026,
+     "source": "https://www.tennesseetitans.com/news/it-s-official-titans-hire-robert-saleh-as-team-s-new-head-coach",
+     "also": []
+    },
+    "changes_log": [
+     {
+      "after_season": 2010,
+      "left": "Jeff Fisher",
+      "arrived": "Mike Munchak",
+      "record": "6-10-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 12,
+      "tenure_is_minimum": true
+     },
+     {
+      "after_season": 2013,
+      "left": "Mike Munchak",
+      "arrived": "Ken Whisenhunt",
+      "record": "7-9-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 3,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2015,
+      "left": "Ken Whisenhunt",
+      "arrived": "Mike Mularkey",
+      "record": "3-13-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 2,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2017,
+      "left": "Mike Mularkey",
+      "arrived": "Mike Vrabel",
+      "record": "9-7-0",
+      "made_playoffs": true,
+      "playoff_wins": 1,
+      "tenure": 2,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2023,
+      "left": "Mike Vrabel",
+      "arrived": "Brian Callahan",
+      "record": "6-11-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 6,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2025,
+      "left": "Brian Callahan",
+      "arrived": "Robert Saleh",
+      "record": "3-14-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 2,
+      "tenure_is_minimum": false,
+      "departure": {
+       "reason": "fired",
+       "date": "2025-10-13",
+       "in_season": true,
+       "source": "https://www.nfl.com/news/brian-callahan-titans-fire-head-coach",
+       "also": "wikipedia_2026_season"
+      }
+     }
+    ]
+   },
+   "sources": [
+    "nflverse_games",
+    "wikipedia_owners",
+    "teams_2026",
+    "wikipedia_2026_season"
+   ]
+  },
+  {
+   "team": "WAS",
+   "name": "Washington Commanders",
+   "team_index": 25,
+   "fire_scale_q8": 255,
+   "owner": {
+    "name": "Josh Harris",
+    "since": 2023,
+    "acquired": "purchase",
+    "note": "Prominent limited partners include Mitchell Rales, Magic Johnson, and Mark Ein. Other investors include David Blitzer, Lee Ainslie, Eric Holoman, Michael Li, Marc Lipschultz, Mitchell Morgan, the Santo Domingo family, Michael Sapir, Eric Schmidt, and Andy Snyder.",
+    "source": "wikipedia_owners"
+   },
+   "era": {
+    "first_season": 2023,
+    "decisions": 3,
+    "changes": 1,
+    "expected_changes": 1.0794,
+    "multiplier": 0.995
+   },
+   "history": {
+    "first_season": 1999,
+    "decisions": 27,
+    "changes": 8,
+    "head_coaches": [
+     {
+      "name": "Norv Turner",
+      "first": 1999,
+      "last": 2000,
+      "seasons": 2,
+      "opened_window": true
+     },
+     {
+      "name": "Marty Schottenheimer",
+      "first": 2001,
+      "last": 2001,
+      "seasons": 1,
+      "opened_window": false
+     },
+     {
+      "name": "Steve Spurrier",
+      "first": 2002,
+      "last": 2003,
+      "seasons": 2,
+      "opened_window": false
+     },
+     {
+      "name": "Joe Gibbs",
+      "first": 2004,
+      "last": 2007,
+      "seasons": 4,
+      "opened_window": false
+     },
+     {
+      "name": "Jim Zorn",
+      "first": 2008,
+      "last": 2009,
+      "seasons": 2,
+      "opened_window": false
+     },
+     {
+      "name": "Mike Shanahan",
+      "first": 2010,
+      "last": 2013,
+      "seasons": 4,
+      "opened_window": false
+     },
+     {
+      "name": "Jay Gruden",
+      "first": 2014,
+      "last": 2019,
+      "seasons": 6,
+      "opened_window": false
+     },
+     {
+      "name": "Ron Rivera",
+      "first": 2020,
+      "last": 2023,
+      "seasons": 4,
+      "opened_window": false
+     },
+     {
+      "name": "Dan Quinn",
+      "first": 2024,
+      "last": 2026,
+      "seasons": 3,
+      "opened_window": false
+     }
+    ],
+    "completed_tenures": [2, 1, 2, 4, 2, 4, 6, 4],
+    "average_tenure_started_in_window": 3.29,
+    "short_tenures_le2": 3,
+    "current": {
+     "name": "Dan Quinn",
+     "since": 2024,
+     "source": "https://www.commanders.com/news/dan-quinn-named-washington-commanders-31st-head-coach",
+     "also": []
+    },
+    "changes_log": [
+     {
+      "after_season": 2000,
+      "left": "Norv Turner",
+      "arrived": "Marty Schottenheimer",
+      "record": "8-8-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 2,
+      "tenure_is_minimum": true
+     },
+     {
+      "after_season": 2001,
+      "left": "Marty Schottenheimer",
+      "arrived": "Steve Spurrier",
+      "record": "8-8-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 1,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2003,
+      "left": "Steve Spurrier",
+      "arrived": "Joe Gibbs",
+      "record": "5-11-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 2,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2007,
+      "left": "Joe Gibbs",
+      "arrived": "Jim Zorn",
+      "record": "9-7-0",
+      "made_playoffs": true,
+      "playoff_wins": 0,
+      "tenure": 4,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2009,
+      "left": "Jim Zorn",
+      "arrived": "Mike Shanahan",
+      "record": "4-12-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 2,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2013,
+      "left": "Mike Shanahan",
+      "arrived": "Jay Gruden",
+      "record": "3-13-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 4,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2019,
+      "left": "Jay Gruden",
+      "arrived": "Ron Rivera",
+      "record": "3-13-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 6,
+      "tenure_is_minimum": false
+     },
+     {
+      "after_season": 2023,
+      "left": "Ron Rivera",
+      "arrived": "Dan Quinn",
+      "record": "4-13-0",
+      "made_playoffs": false,
+      "playoff_wins": 0,
+      "tenure": 4,
+      "tenure_is_minimum": false
+     }
+    ]
+   },
+   "sources": [
+    "nflverse_games",
+    "wikipedia_owners",
+    "teams_2026"
+   ]
+  }
+ ],
+ "url_checks": {
+  "https://www.49ers.com/news/article-2/Kyle-Shanahan-Named-Head-Coach-of-the-San-Francisco-49ers/4f4c2e57-f237-4481-9483-3472833db519": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Shanahan"
+   ]
+  },
+  "https://www.atlantafalcons.com/news/atlanta-falcons-name-kevin-stefanski-head-coach": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Stefanski"
+   ]
+  },
+  "https://www.azcardinals.com/news/cardinals-choose-mike-lafleur-as-new-head-coach-2026": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "LaFleur"
+   ]
+  },
+  "https://www.baltimoreravens.com/news/jesse-minter-hired-ravens-head-coach-chargers-defensive-coordinator": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Minter"
+   ]
+  },
+  "https://www.bengals.com/news/zac-taylor-named-10th-bengals-head-coach": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Taylor"
+   ]
+  },
+  "https://www.buccaneers.com/news/bucs-bruce-arians-new-role-todd-bowles-named-head-coach": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Bowles"
+   ]
+  },
+  "https://www.buffalobills.com/news/buffalo-bills-announce-sean-mcdermott-has-been-relieved-of-his-duties-as-head-coach": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "McDermott"
+   ]
+  },
+  "https://www.buffalobills.com/news/joe-brady-agrees-to-terms-to-be-the-next-buffalo-bills-head-coach": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Brady"
+   ]
+  },
+  "https://www.chargers.com/news/chargers-name-jim-harbaugh-michigan-head-coach": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Harbaugh"
+   ]
+  },
+  "https://www.chicagobears.com/news/bears-hire-ben-johnson-as-head-coach-2025": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Johnson"
+   ]
+  },
+  "https://www.clevelandbrowns.com/news/todd-monken-named-browns-head-coach": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Monken"
+   ]
+  },
+  "https://www.colts.com/news/shane-steichen-head-coach-eagles-offensive-coordinator-jalen-hurts-philip-rivers": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Steichen"
+   ]
+  },
+  "https://www.commanders.com/news/dan-quinn-named-washington-commanders-31st-head-coach": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Quinn"
+   ]
+  },
+  "https://www.dallascowboys.com/news/brian-schottenheimer-officially-named-newest-cowboys-head-coach": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Schottenheimer"
+   ]
+  },
+  "https://www.denverbroncos.com/news/broncos-name-sean-payton-as-head-coach": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Payton"
+   ]
+  },
+  "https://www.detroitlions.com/news/lions-agree-to-terms-with-dan-campbell-to-become-team-s-new-head-coach": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Campbell"
+   ]
+  },
+  "https://www.giants.com/news/john-harbaugh-hired-head-coach-new-york-giants-nfl": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Harbaugh"
+   ]
+  },
+  "https://www.houstontexans.com/news/houston-texans-hire-demeco-ryans-as-head-coach": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Ryans"
+   ]
+  },
+  "https://www.jaguars.com/news/k000151-jacksonville-jaguars-agree-to-terms-with-liam-coen-to-become-head-coach": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Coen"
+   ]
+  },
+  "https://www.miamidolphins.com/news/miami-dolphins-agree-to-terms-with-jeff-hafley-as-head-coach": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Hafley"
+   ]
+  },
+  "https://www.nbcnews.com/sports/football/new-york-giants-hire-john-harbaugh-coach-baltimore-ravens-firing-rcna254610": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Harbaugh"
+   ]
+  },
+  "https://www.neworleanssaints.com/news/kellen-moore-new-orleans-saints-head-coach-search-philadelphia-eagles-offensive-coordinator": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Moore"
+   ]
+  },
+  "https://www.newyorkjets.com/news/jets-hire-aaron-glenn-head-coach-01-22-2025": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Glenn"
+   ]
+  },
+  "https://www.nfl.com/news/brian-callahan-titans-fire-head-coach": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Callahan"
+   ]
+  },
+  "https://www.nfl.com/news/browns-fire-head-coach-kevin-stefanski-following-six-seasons-in-cleveland": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Stefanski"
+   ]
+  },
+  "https://www.nfl.com/news/cardinals-fire-hc-jonathan-gannon-following-three-seasons": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Gannon"
+   ]
+  },
+  "https://www.nfl.com/news/dolphins-fire-head-coach-mike-mcdaniel-after-four-seasons": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "McDaniel"
+   ]
+  },
+  "https://www.nfl.com/news/falcons-firing-hc-raheem-morris-following-two-seasons-with-team": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Morris"
+   ]
+  },
+  "https://www.nfl.com/news/giants-fire-head-coach-brian-daboll-after-2-8-start": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Daboll"
+   ]
+  },
+  "https://www.nfl.com/news/klint-kubiak-confirms-he-s-headed-to-raiders-as-hc-after-seahawks-super-bowl-win": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Kubiak"
+   ]
+  },
+  "https://www.nfl.com/news/mike-tomlin-stepping-down-as-head-coach-of-steelers-after-19-seasons": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Tomlin"
+   ]
+  },
+  "https://www.nfl.com/news/raiders-fire-hc-pete-carroll-following-his-first-season-in-las-vegas": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Carroll"
+   ]
+  },
+  "https://www.nfl.com/news/ravens-fire-hc-john-harbaugh-after-his-18th-season-ends-with-missing-playoffs": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Harbaugh"
+   ]
+  },
+  "https://www.nfl.com/news/story/0ap1000000121923/article/andy-reid-kansas-city-chiefs-make-it-official": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Reid"
+   ]
+  },
+  "https://www.nfl.com/news/story/0ap3000000773406/article/los-angeles-rams-name-sean-mcvay-new-head-coach": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "McVay"
+   ]
+  },
+  "https://www.packers.com/news/matt-lafleur-named-green-bay-s-15th-head-coach": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "LaFleur"
+   ]
+  },
+  "https://www.panthers.com/news/panthers-agree-to-terms-with-dave-canales-to-become-head-coach": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Canales"
+   ]
+  },
+  "https://www.patriots.com/news/patriots-hall-of-famer-mike-vrabel-returns-to-new-england-as-our-16th-head-coach": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Vrabel"
+   ]
+  },
+  "https://www.philadelphiaeagles.com/news/eagles-announce-nick-sirianni-as-head-coach": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Sirianni"
+   ]
+  },
+  "https://www.seahawks.com/news/mike-macdonald-named-head-coach-of-the-seattle-seahawks": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Macdonald"
+   ]
+  },
+  "https://www.steelers.com/news/labriola-on-why-it-was-mike-mccarthy": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "McCarthy"
+   ]
+  },
+  "https://www.tennesseetitans.com/news/it-s-official-titans-hire-robert-saleh-as-team-s-new-head-coach": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Saleh"
+   ]
+  },
+  "https://www.vikings.com/news/kevin-oconnell-head-coach-announcement": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "O'Connell"
+   ]
+  },
+  "https://www.wect.com/2026/01/18/atlanta-falcons-hire-kevin-stefanski-new-head-coach": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Stefanski"
+   ]
+  }
+ }
+}
