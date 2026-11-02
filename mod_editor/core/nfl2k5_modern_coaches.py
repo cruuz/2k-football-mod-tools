@@ -99,9 +99,10 @@ HELP_TEXT = (
     "blended onto the game's coach head. Each coach stands on the game's coach body closest to his build (lean "
     "coaches on a lean body) and of his own skin (Tampa Bay's Todd Bowles on the game's 2004 Dennis Green model), "
     "Pittsburgh's Mike McCarthy wears a cap, Washington's Dan Quinn has a bald head, and Kansas City's Andy Reid wears the game's own 2004 Andy Reid model with today's white hair and glasses. His "
-    "sideline staff wear the same 2026 colours. Dallas and Washington pictures come from the SOFTDRINK league "
-    "data; without it they show the game's no-photo image. The animations are the game's own. Experimental: "
-    "not yet seen in the game by the SOFTDRINK tester."
+    "sideline staff wear the same 2026 colours. A head coach you move to another club in the Studio keeps his "
+    "own face and body there and wears his new club's colours; his picture goes with him. Dallas and Washington "
+    "pictures come from the SOFTDRINK league data; without it they show the game's no-photo image. The animations "
+    "are the game's own. Experimental: not yet seen in the game by the SOFTDRINK tester."
 )
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -1160,8 +1161,8 @@ def plan_image(source, *, document: dict | None = None, progress=None, retail=No
                 out["coach"] = part["coach"]
             if part["state"] in ("retail", "previous", "home", "moved") and part["kind"] == "coach":
                 moved = part["host"] != part["team"]
-                say(f"2026 head coaches: {part['team']}" + (f" leading {part['host']}" if moved else ""), index,
-                    len(parts))
+                say(f"2026 head coaches: {part['team']}" + (f" ({coach_name(part['team'], document)} leads "
+                                                              f"{part['host']})" if moved else ""), index, len(parts))
                 before, after, detail = _coach_plan(archive, entries, part, retail)
                 plan.append((part["at"], before, after))
                 out.update(written=True, archive=row["archive"], before_sha256=sha(before), after_sha256=sha(after),

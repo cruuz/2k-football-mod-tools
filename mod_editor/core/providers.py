@@ -721,7 +721,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_edge_rename.py": "8d07169164719fff6121c36b07f90ac8af0d350ea39cb2dcaee83a3ab4e3fc0d",
         "mod_editor/core/nfl2k5_elbow_options.py": "cd6921f1d7b2942f81c1415fab45eb18f3c4487e3e0aac1fda3a9dbd82760a1f",
         "mod_editor/core/nfl2k5_espn25_scenarios.py": "6c5249eaef0aad438a1a8f698ca0f3d5a08435023bc11a4013481aece433e46d",
-        "mod_editor/core/nfl2k5_modern_coaches.py": "db89c89e09ba670730809cbbd4f75c7bb697cb4a1da5a55ff5fc2fce72b63a2c",
+        "mod_editor/core/nfl2k5_modern_coaches.py": "1e91dd4b37d9565a14a67ca267e5cd5fcf69e6916ca2484392559f6ddbf6d6f8",
         "mod_editor/core/nfl2k5_moment_coaches.py": "13dc10ed4283be7dee3092c0012d26bd77a47bff649edb688532f3e71c464405",
         "mod_editor/core/nfl2k5_moment_context.py": "53c004fe1e5e12edc23e624bb2a117322c663f7683cfaabe9a14bb01184249e5",
         "mod_editor/core/nfl2k5_espn25_more_moments.py": "59f8bc48b65eca70f4451229be8a01f45cc8ec0f160508f4c2d340003bebbb8d",

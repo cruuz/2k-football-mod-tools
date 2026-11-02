@@ -70,4 +70,19 @@ file (it carries the digests of earlier versions forward as `superseded_sha256`)
 `geometry` pin is the SHA-256 of its `geometry.json`; `python3 tools/b77/cm1_coach_models.py geometry|head --retail
 RETAIL.iso` rewrites the geometry and the painted heads from the recipes in that tool.
 
+Moved coaches (b780 c3-looks): when the roster edits' coaching staff (`staff.head_coaches`: {club: the club whose
+2026 head coach now leads it}) moves a head coach, the coach record his new club points at gets the model he wears
+(`+0x18`), and that model keeps his own head, headset, glasses and geometry while it takes the new club's `shirt.png`,
+`jacket.png` and `logo.png` (`APPAREL` in the module). Every retail coach model (c00-c30, c33, c36, c37, c50, c51) maps
+the same UV layout for those three textures (UV coverage identical at 4x for all 36; the jacket of c05, c18 and c22 has a
+few collar triangles fewer), so any club's apparel fits any coach. The cap the capped models wear samples the shirt's
+cap patch, so it turns the new club's cap colour; the cap and chest logos the game binds at run time and the sideline
+staff are the club's own. Dallas's and Washington's reserved pictures (7031, 7034) follow their coaches. `pins.json`
+carries per club `scene_sha256` (the coach's compiled scene with the three apparel allocations zeroed) and
+`apparel_sha256` (the club's apparel allocations at every palette size of the ladder), so a moved look is recognised by
+its content and rebuilt from the retail, the 2026 or another moved look without the retail image; the apparel takes the
+first palette size, from the coach's own down, at which his scene fits its retail span (all 992 single moves fit).
+`bodies[club].coach` names each 2026 head coach for plain messages. Add the moved-coach pins after any art change with
+`python3 tools/b77/c3_record_pins.py --retail RETAIL.iso --check-applied --write` (`mc.record_pins` writes them too).
+
 EXPERIMENTAL / UNWITNESSED: proved offline; the look in the game is for Noah's eyes.
