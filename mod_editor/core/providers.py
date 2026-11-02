@@ -860,7 +860,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_era_kits.py": "56ba010687a680ae320f63a5b49ee341a876b4e10e9577dfeb5ce1168278b1f7",
         "mod_editor/core/nfl2k5_moment_kits.py": "df80c5673e51757638cfa6917c34d1ab3470a9cda47226f1f40e8643a86bc2e1",
         "mod_editor/core/nfl2k5_project_check.py": "9bfb67557832dbccf250ce3358029353cd2a8e43a5626a144825c13976096088",
-        "mod_editor/core/nfl2k5_stadium_dry_run.py": "b130a4f78b767340ca2d908a6c4ce14b521aeac4bd4cca5cb64c1f7abeb2cc41",
+        "mod_editor/core/nfl2k5_stadium_dry_run.py": "2e5ceddd5a0b7236ba6185a3e4f0a91352ff3598677cc63430de02623f913087",
         "mod_editor/core/nfl2k5_edit_survival.py": "a613479cb60ec75e9f1454f68d1e2482560e9ba9fcf7249ae747e9204b686bf6",
         "mod_editor/core/nfl2k5_moment_scans.py": "99445768a0d0ff24576aab37c5cae3d9ffcb2816034f447cd93d3092d18c616c",
         "mod_editor/core/nfl2k5_unc_bowl_uniforms.py": "275077f9c2de33c43f73bb397536fba7d666dfbead8a5cbaf317921b0115f52a",

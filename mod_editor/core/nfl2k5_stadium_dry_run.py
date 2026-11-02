@@ -218,9 +218,19 @@ def _reason(exc_or_text) -> str:
     return text[:900]
 
 
-def _kept_notes(receipt, limit=8) -> list:
-    """The kept-span reasons inside one step's receipt (Modern colour's ``unfit`` and the later keep-notes)."""
+def _kept_items(receipt, limit=12) -> list:
+    """[(part or None, plain reason)] of the spans one step's receipt says it kept as they were: Modern colour's
+    ``unfit``, and the b791 keep records (job h1: ``kept=[{site, reason, user_note}]``), or any ``user_notes``."""
     found = []
+
+    def text_of(value):
+        if isinstance(value, str):
+            return None, value
+        if isinstance(value, dict):
+            site = value.get("site") or value.get("kind") or value.get("part")
+            words = value.get("user_note") or value.get("reason") or value.get("why")
+            return (str(site) if site else None), str(words or value)
+        return None, str(value)
 
     def walk(node, depth=0):
         if depth > 6 or len(found) >= limit:
@@ -228,11 +238,14 @@ def _kept_notes(receipt, limit=8) -> list:
         if isinstance(node, dict):
             for key in KEPT_KEYS:
                 value = node.get(key)
-                if value:
-                    found.append(value if isinstance(value, str) else f"{key}: {value}")
+                if not value:
+                    continue
+                for item in (value if isinstance(value, (list, tuple)) else [value]):
+                    site, words = text_of(item)
+                    found.append((site or node.get("kind") or node.get("site"), words))
             notes = node.get("user_notes")
             if isinstance(notes, (list, tuple)):
-                found.extend(str(n) for n in notes if n)
+                found.extend((None, str(n)) for n in notes if n)
             for key, value in node.items():
                 if key not in KEPT_KEYS and key != "user_notes" and isinstance(value, (dict, list, tuple)):
                     walk(value, depth + 1)
@@ -242,7 +255,18 @@ def _kept_notes(receipt, limit=8) -> list:
                     walk(value, depth + 1)
 
     walk(receipt)
-    return list(dict.fromkeys(str(n)[:600] for n in found))[:limit]
+    seen, out = set(), []
+    for site, words in found:
+        key = (site, words[:600])
+        if key not in seen:
+            seen.add(key)
+            out.append((site, words[:600]))
+    return out[:limit]
+
+
+def _kept_notes(receipt, limit=8) -> list:
+    """The kept-span reasons inside one step's receipt, as plain sentences."""
+    return [words for _site, words in _kept_items(receipt, limit)]
 
 
 def _field_offset(bundle):
@@ -304,6 +328,13 @@ def chain(job) -> dict:
                          cpu=round(now - clock[0], 2), **extra))
         clock[0] = now
 
+    def record_step(step, receipt, before, after, part, **extra):
+        """One row for the step (refit / unchanged), plus one ``kept`` row per span its receipt says it kept."""
+        kept = _kept_items(receipt)
+        record(step, "refit" if after != before else "unchanged", part, "", **extra)
+        for site, words in kept:
+            record(step, "kept", site or part, words)
+
     def failed(step, exc, part="bundle"):
         record(step, "failed", part, _reason(exc), error=type(exc).__name__,
                trace="".join(traceback.format_exception(type(exc), exc, exc.__traceback__)[-4:])[-1500:])
@@ -347,11 +378,9 @@ def chain(job) -> dict:
             else:
                 module = importlib.import_module(f"{__package__}.{writer[1]}")
                 current, receipt = (_model_compose if job.get("stadium_models") else _model_field)(module, job, current)
-            kept = _kept_notes(receipt)
             if len(current) != len(before):
                 raise ValueError(f"{name}: the bundle changed size ({len(before)} to {len(current)} bytes)")
-            record(step, "kept" if kept else ("refit" if current != before else "unchanged"), "field",
-                   "; ".join(kept))
+            record_step(step, receipt, before, current, "field")
             digests[step] = sha(current)
         except Exception as exc:  # noqa: BLE001
             failed(step, exc, "field")
@@ -361,11 +390,9 @@ def chain(job) -> dict:
         before = current
         try:
             _n, current, receipt = ms._job((name, current, job["indoor"], settings, None))
-            kept = _kept_notes(receipt)
             parts = sorted({edit["kind"] for edit in receipt.get("edits", ())})
-            record("surfaces", "kept" if kept else ("refit" if current != before else "unchanged"),
-                   "+".join(parts) or "bundle", "; ".join(kept), normal=receipt.get("normal"),
-                   palette_cap=(receipt.get("field") or {}).get("palette_cap"))
+            record_step("surfaces", receipt, before, current, "+".join(parts) or "bundle", normal=receipt.get("normal"),
+                        palette_cap=(receipt.get("field") or {}).get("palette_cap"))
             digests["surfaces"] = sha(current)
         except Exception as exc:  # noqa: BLE001
             failed("surfaces", exc)
@@ -375,10 +402,8 @@ def chain(job) -> dict:
         before = current
         try:
             _n, current, receipt = gr._bundle_job((name, job["greens"], current))
-            kept = _kept_notes(receipt)
             parts = sorted({str(edit.get("scene")) for edit in receipt.get("edits", ())})
-            record("greens", "kept" if kept else ("refit" if current != before else "unchanged"),
-                   "+".join(parts) or "bundle", "; ".join(kept))
+            record_step("greens", receipt, before, current, "+".join(parts) or "bundle")
             digests["greens"] = sha(current)
         except Exception as exc:  # noqa: BLE001
             failed("greens", exc)

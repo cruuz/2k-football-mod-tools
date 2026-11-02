@@ -244,6 +244,14 @@ class StadiumDryRun(unittest.TestCase):
         self.assertEqual(mine[:40], theirs[:40])      # the same field placement; the stretch (40-48) is geometry
         self.assertEqual(mine[8:16], b"F" * 8)
 
+    def test_the_keep_records_of_the_b791_fixes_become_one_row_per_kept_span(self):
+        receipt = {"edits": [], "kept": [{"site": "divots", "reason": "cannot keep the retail scratch word: ...",
+                                          "user_note": "Modern surfaces: Arrowhead Stadium (s13ad.iff) keeps its divot "
+                                                       "layer as it was"}]}
+        self.assertEqual(dry._kept_items(receipt),
+                         [("divots", "Modern surfaces: Arrowhead Stadium (s13ad.iff) keeps its divot layer as it was")])
+        self.assertEqual(dry._kept_items({"kept": "whole bundle kept"}), [(None, "whole bundle kept")])
+
     def test_reasons_are_plain_and_bounded(self):
         self.assertIn("no candidate was recorded", dry._reason(ValueError("cannot keep the retail scratch word:")))
         self.assertEqual(dry._reason(ValueError("")), "ValueError with no message")
