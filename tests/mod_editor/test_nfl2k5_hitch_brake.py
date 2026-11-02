@@ -263,6 +263,7 @@ class PrivateTests(unittest.TestCase):
 
     def test_dispatcher_builds_both_modes_reports_them_and_refuses_a_silent_removal(self):
         retail = self.builds["retail"]
+        built = {}
         for enabled in (False, True):
             out, receipt = tt._apply_all(retail, None, False, coverage_trail=True, coverage_hitch_brake=enabled)
             self.assertEqual(trail.read_settings(out), {"status": "applied", "moving_arrival_brake": enabled})
@@ -270,13 +271,18 @@ class PrivateTests(unittest.TestCase):
             self.assertEqual(status["coverage_trail"], "applied")
             self.assertEqual(status["coverage_hitch_brake"], "applied" if enabled else "retail")
             self.assertEqual(receipt["coverage_trail_patch"]["moving_arrival_brake"], enabled)
-        # A released v0.8 executable gains the brake in place (Close pursuit recovery already installed).
-        upgraded, receipt = tt._apply_all(self.final, None, False, coverage_trail=True, coverage_hitch_brake=True)
-        self.assertEqual(trail.read_settings(upgraded)["moving_arrival_brake"], True)
+            built[enabled] = out
+        # The installed brake cannot be silently dropped by a later build; keeping it (or adding it) is accepted.
+        # (A released v0.8 executable gains the brake in place through the owner API: see the round-trip test. The full
+        # dispatcher also checks every other installed v0.8 setting against the plan first.)
+        with_brake = _r62_plan_options(BuildPlan("", "", coverage_trail=True, coverage_hitch_brake=True))
+        without = _r62_plan_options(BuildPlan("", "", coverage_trail=True))
         with self.assertRaisesRegex(ValueError, "rebuild from a verified base"):
-            tt._check_installed_runtime_settings(self.enabled, _r62_plan_options(BuildPlan("", "", coverage_trail=True)))
-        tt._check_installed_runtime_settings(self.enabled, _r62_plan_options(
-            BuildPlan("", "", coverage_trail=True, coverage_hitch_brake=True)))
+            tt._check_installed_runtime_settings(built[True], without)
+        with self.assertRaisesRegex(ValueError, "rebuild from a verified base"):
+            tt._check_installed_runtime_settings(self.enabled, without)
+        tt._check_installed_runtime_settings(built[True], with_brake)
+        tt._check_installed_runtime_settings(built[False], with_brake)
 
     def moving_machine(self, payload, *, distance=.1, callback=0x1A4830, velocity=100):
         m = TrailFrame(payload, planner="man", defender=(0, 0), heading=0)
@@ -371,6 +377,21 @@ class PrivateTests(unittest.TestCase):
         control.machine = lambda payload, **kw: self.moving_machine(payload, distance=kw.get("distance", 2))
         control.test_x87_values_callee_saved_registers_and_owner_write_bounds()
         control.test_one_genuine_native_lapse_is_preserved_with_identical_rng()
+
+
+
+@unittest.skipUnless(uni is not None and existing.capstone is not None, "Unicorn and Capstone required")
+class ReleasedReplayTests(unittest.TestCase):
+    """Eight 240-tick native replays (a few minutes): the released spins and the brake's single turn."""
+
+    @classmethod
+    def setUpClass(cls):
+        try:
+            cls.builds = replay.load_builds()
+        except FileNotFoundError as exc:
+            raise unittest.SkipTest(f"Private pinned inputs absent: {exc.filename}") from exc
+        cls.final = cls.builds["v08"]
+        cls.enabled, _ = trail.apply(cls.final, moving_arrival_brake=True)
 
     def test_released_curl_and_go_spins_become_at_most_one_turn(self):
         for route, matrix, allowed in (("curl_1_5", "r5", 1), ("go", "fast", 0)):
