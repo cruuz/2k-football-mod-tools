@@ -6284,7 +6284,7 @@
       "id": "nfl2k5.franchise.history_screen",
       "input_constraints": [
         "Pinned USA XBE or verified composed input; a late allocator owner placed after every b779 late owner (or appended to an installed sealed image by nfl2k5_xbe_space.extend_scaleout). Foreign or mixed bytes refuse.",
-        "Owned 16,384 RX bytes (the screens), 64 RW bytes (page, club, scroll, the selected box score) and a 48 KiB read-only block (two menu descriptors cloned from Team Standings, the ESPN.com rows plus TEAM HISTORY, the seeded real history). Edits: the ESPN.com descriptor's row-table pointer (0x525674, 4 bytes) and the Schedule input (0x24D2E5, 6 bytes).",
+        "Owned 16,384 RX bytes (the screens), 64 RW bytes (page, club, scroll, the selected box score) and a 24 KiB read-only block (two menu descriptors cloned from Team Standings, the ESPN.com rows plus TEAM HISTORY, the seeded real history). Edits: the ESPN.com descriptor's row-table pointer (0x525674, 4 bytes) and the Schedule input (0x24D2E5, 6 bytes).",
         "Franchise history is read from the franchise extension footer (b780 j23-footer, 2K5XTND1 envelope 1) through the footer host's body word when that owner is installed; without it the franchise parts read empty.",
         "The Player Card's game log page needs the honors option (the champions owner finds this owner through its ESPN.com rows).",
         "Rebuild from a verified base to remove it."

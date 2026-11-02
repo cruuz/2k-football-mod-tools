@@ -131,7 +131,7 @@ class StaticTests(unittest.TestCase):
         self.assertLessEqual(len(runtime.CODE), hist.CODE_SIZE)
         self.assertEqual(hist.REQUESTS, (("nfl2k5_history_screen", "code", 16384, 16),
                                          ("nfl2k5_history_screen", "data", 64, 16),
-                                         ("nfl2k5_history_screen", "read_only", 0xC000, 16)))
+                                         ("nfl2k5_history_screen", "read_only", 0x6000, 16)))
         for offset, kind, symbol, _value in runtime.RELOCATIONS:
             self.assertIn(kind, (1, 2))
             self.assertIn(symbol, ("code", "state", "ro", "xtnd_ptr"))
@@ -244,6 +244,17 @@ class StaticTests(unittest.TestCase):
         self.assertEqual(content[clubs + 16 * rams:clubs + 16 * rams + 12], b"LAR\0LA\0\0STL\0")
         self.assertEqual(hist.ro_field(content, "hof_count"), 3)
         self.assertEqual(hist.ro_field(content, "book_count"), 2)
+
+    def test_a_seed_that_does_not_fit_leaves_out_club_leaders_then_club_records(self):
+        doc = seed_document()
+        doc["club_leaders"] = [{"club": "NYG", "category": "passing_yards", "rank": 1, "value": i,
+                                "name": f"Leader Number{i:05d}", "position": "QB"} for i in range(2000)]
+        content, dropped = hist.build_ro_fitting(0x1800000, 0x1600000, bytes(624), doc)
+        self.assertEqual(dropped, ["club_leaders"])
+        self.assertEqual(hist.ro_field(content, "leaders"), 0)
+        self.assertEqual(hist.ro_field(content, "hof_count"), 3)
+        with self.assertRaises(hist.HistoryScreenError):
+            hist.build_ro(0x1800000, 0x1600000, bytes(624), doc)
 
     def test_footer_blocks_and_the_encoder(self):
         self.assertEqual(hist.FOOTER_MAGIC, b"2K5XTND1")

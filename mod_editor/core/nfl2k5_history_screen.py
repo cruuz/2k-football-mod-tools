@@ -48,7 +48,7 @@ Where the data comes from
   owner sets at 0x525674), so neither owner links to the other and either can be installed first.
 
 Allocation: one late owner (``nfl2k5_xbe_space.LATE_OWNERS``), code (``CODE_SIZE``), 64 RW bytes (page, club, scroll,
-the selected box score) and a read-only block (``RO_SIZE``: descriptors, the cloned ESPN.com rows, the seed tables).
+the selected box score) and a read-only block (``RO_SIZE``, 24 KiB: descriptors, the cloned ESPN.com rows, the seed tables).
 Two retail sites: the ESPN.com descriptor's row-table pointer (0x525674, .rdata, a 4-byte pointer edit: the cloned table
 has the retail rows plus TEAM HISTORY) and the Schedule input (0x24D2E5, a 6-byte call). Nobody else patches either.
 """
@@ -70,7 +70,7 @@ OWNER = "nfl2k5_history_screen"
 EVIDENCE = "EXPERIMENTAL"
 CODE_SIZE = 16384
 DATA_SIZE = 64
-RO_SIZE = 0xC000
+RO_SIZE = 0x6000                         # 24 KiB: j5's seed uses 20,426 bytes (resident, so kept small)
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "data", DATA_SIZE, 16), (OWNER, "read_only", RO_SIZE, 16))
 
 UI_LABEL = "Franchise History screen, box scores and game logs"
@@ -459,6 +459,26 @@ def build_ro(ro_va: int, code_va: int, item_rows: bytes, seed: Mapping | None = 
     return bytes(out).ljust(RO_SIZE, b"\0")
 
 
+def build_ro_fitting(ro_va: int, code_va: int, item_rows: bytes, seed: Mapping | None = None):
+    """``build_ro``; when the seed does not fit the block, the club leaders and then the club records are left out (the
+    footer's seed image can still carry them). Returns (content, the parts left out)."""
+
+    seed = dict(seed or {})
+    dropped = []
+    for part in (None, "club_leaders", "club_records"):
+        if part:
+            if not seed.get(part):
+                continue
+            seed[part] = []
+            dropped.append(part)
+        try:
+            return build_ro(ro_va, code_va, item_rows, seed), dropped
+        except HistoryScreenError as exc:
+            if "the history block needs" not in str(exc):
+                raise
+    return build_ro(ro_va, code_va, item_rows, seed), dropped
+
+
 def ro_rows_offset(content: bytes) -> int:
     return struct.unpack_from("<I", content, RO_HEADER - 8)[0]
 
@@ -638,7 +658,8 @@ def install(payload: bytes, seed: Mapping | None = None, xtnd_ptr_va: int = 0) -
     _require(bool(found), "reserve the history screen allocation first")
     image = XbeImage(payload)
     code_va, data_va, ro_va = found["code"]["va"], found["data"]["va"], found["read_only"]["va"]
-    ro = bytearray(build_ro(ro_va, code_va, _item_rows(image), seed))
+    content, dropped = build_ro_fitting(ro_va, code_va, _item_rows(image), seed)
+    ro = bytearray(content)
     struct.pack_into("<I", ro, RO_HEADER - 12, xtnd_ptr_va)
     installed, ro_receipt = space.install_read_only(payload, OWNER, bytes(ro))
     installed, code_receipt = space.install_code(installed, OWNER, code_for(code_va, data_va, ro_va, xtnd_ptr_va))
@@ -648,7 +669,7 @@ def install(payload: bytes, seed: Mapping | None = None, xtnd_ptr_va: int = 0) -
     return result, {**common, **site_receipt, "already_applied": False, "code_install": code_receipt,
                     "read_only_install": ro_receipt, "code_va": hex(code_va), "data_va": hex(data_va),
                     "ro_va": hex(ro_va), "footer_pointer": hex(xtnd_ptr_va), "changed_bytes": changed,
-                    "seeded": bool(seed), "ro_bytes": ro_field(bytes(ro), "size"),
+                    "seeded": bool(seed), "ro_bytes": ro_field(bytes(ro), "size"), "seed_parts_left_out": dropped,
                     "sites": [{"label": label, "va": hex(va), "size": len(b)}
                               for label, va, b, _after in sites(code_va, ro_va, ro_rows_offset(ro))]}
 
