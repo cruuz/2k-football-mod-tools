@@ -251,17 +251,18 @@ static u16 *put_uint(u16 *out, u32 value) {
     return out;
 }
 
+/* at most 20 characters of each name part: a notice line stays under 140 characters whatever the record holds */
 static u16 *put_name(u16 *out, const u8 *rec) {
-    out = put_text(out, (const u16 *)(*(const u32 *)rec), 24);
+    out = put_text(out, (const u16 *)(*(const u32 *)rec), 20);
     *out++ = ' ';
-    return put_text(out, (const u16 *)(*(const u32 *)(rec + 4)), 24);
+    return put_text(out, (const u16 *)(*(const u32 *)(rec + 4)), 20);
 }
 
 /* "Raiders parted ways with Klint Kubiak (3-14), hired Vic Fangio" (retirements and resignations are inside the
    chance, so "parted ways" is true for every change) */
 static u16 *put_change(u16 *out, const struct Club *c, const u8 *before, u32 rec) {
     *out++ = '\n';
-    out = put_text(out, (const u16 *)G(c->team + 0x104), 20);
+    out = put_text(out, (const u16 *)G(c->team + 0x104), 16);
     out = put_ascii(out, " parted ways with ");
     out = put_name(out, before);
     out = put_ascii(out, " (");
@@ -388,8 +389,9 @@ void FC carousel_run(u32 menu) {
             continue;
         i32 best = -0x7FFFFFFF;
         u32 pick = MAXC;
-        for (u32 j = 0; j < nm; j++)
-            if (j != k && moves[j].kind && !moves[j].taken && standing(saved[j]) > best) {
+        for (u32 j = 0; j < nm; j++)           /* not a club that already took this vacancy's coach (no swaps) */
+            if (j != k && moves[j].kind && !moves[j].taken && !(moves[j].kind == 2 && moves[j].from == k)
+                && standing(saved[j]) > best) {
                 best = standing(saved[j]);
                 pick = j;
             }
@@ -414,7 +416,7 @@ void FC carousel_run(u32 menu) {
     }
     if (!done)
         return;
-    u16 text[300], *out = text;
+    u16 text[512], *out = text;                      /* 17 + 3 lines of at most 136 characters + the end */
     u32 shown = 0;
     for (u32 k = 0; k < nm; k++) {
         if (!moves[k].kind)
