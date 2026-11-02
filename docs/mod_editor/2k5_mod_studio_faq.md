@@ -297,8 +297,8 @@ Mode, and check the memory still says 128 MiB before you load the disc.
 A freeze while scrolling Contracts or Free Agents has one known cause: players with no college
 on the screen's info panel. Franchises saved on SOFTDRINK 0.6.1 can still hold such players, and
 SOFTDRINK 0.7 and later make that panel show N/A for them instead of stopping. A new franchise
-from the current disc has none. A freeze on a Deck with a newer disc is not that bug, and we could
-not reproduce one on a PC (xemu 0.8.136; a Deck's own graphics driver was not available to test). If your Deck freezes, please post: xemu version, renderer
+from the current disc has none. A freeze on a Deck with a newer disc is not that bug, and we have
+not been able to reproduce one. If your Deck freezes, please post: xemu version, renderer
 (**Machine, Settings, Display**), the System Memory setting, whether the franchise is new or older,
 which list and position filter you were on and for how long you scrolled, and a photo of the
 frozen screen.
