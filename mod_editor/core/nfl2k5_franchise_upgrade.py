@@ -1365,12 +1365,12 @@ def sync_champions(payload: bytes, disc_body: bytes) -> tuple[bytes, dict]:
         return payload, {**base, "reason": reason}
 
     if not hist.has_room(disc_body):
-        return unchanged("the disc's roster has no room for a champions history (it keeps the game's own roster size)")
+        return unchanged("the disc's roster keeps the game's own roster size, which has no room for a champions history")
     seed = disc_body[hist.gap_offset(disc_body):hist.gap_offset(disc_body) + hist.USED]
     if not hist.block_ok(seed) or not hist.read_block(seed):
         return unchanged("the disc's champions history is empty")
     if payload[block_at:block_at + 8] != hist.RESERVE_MAGIC:
-        return unchanged("this save's roster file has no room for a champions history (no reserve block)")
+        return unchanged("this save's roster file has no reserve block, so it has no room for a champions history")
     auxiliary = struct.unpack_from("<I", payload, fs.ARENA_WRAPPER + 8)[0]
     if auxiliary > hist.AUX_TAIL:
         return unchanged(f"the save's auxiliary tail is {auxiliary} bytes, longer than the {hist.AUX_TAIL} the history leaves")

@@ -181,7 +181,7 @@ class ChampionsStepTests(unittest.TestCase):
         cases["an empty disc history"] = (save, disc_body(None), "disc's champions history is empty")
         # the save cannot take one
         from tests.mod_editor.test_nfl2k5_franchise_save import synthetic_franchise
-        cases["no reserve block"] = (synthetic_franchise(), body, "no room for a champions history (no reserve block)")
+        cases["no reserve block"] = (synthetic_franchise(), body, "has no reserve block, so it has no room")
         busy = bytearray(save)
         busy[gap + 5:gap + 9] = b"data"
         cases["something else lives there"] = (bytes(busy), body, "something other than a champions history")
