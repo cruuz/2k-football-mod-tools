@@ -239,10 +239,13 @@ class CatchDropDecisionTests(unittest.TestCase):
                   f"(NFL {NFL_DROP_PER_CATCHABLE:.4f}) bands {({b: round(v, 4) for b, v in bands.items()})}", flush=True)
             self.assertLess(new, retail)
             self.assertGreater(new, 1.5 * gp1, "average hands must drop more than in beta-79")
-            self.assertLess(bands.get(90, 0.0), 0.01, "elite hands stay almost sure")
-            if not scenario:
-                self.assertGreater(new, 0.015)
-                self.assertLess(new, 1.4 * NFL_DROP_PER_CATCHABLE)
+            # elite hands stay almost sure (1.5 % only when every catch is a diving catch in tight coverage)
+            self.assertLess(bands.get(90, 0.0), 0.03 if scenario else 0.01, "elite hands stay almost sure")
+            if label == "assumed coverage":        # the everyday mix lands near the NFL rate (4.2 % here, NFL 5.2 %)
+                self.assertGreater(new, 0.5 * NFL_DROP_PER_CATCHABLE)
+                self.assertLess(new, 1.25 * NFL_DROP_PER_CATCHABLE)
+            elif label == "harsh coverage":        # tight coverage on 40 % of the throws: more drops, still under 2 x NFL
+                self.assertLess(new, 2.0 * NFL_DROP_PER_CATCHABLE)
 
 
 if __name__ == "__main__":
