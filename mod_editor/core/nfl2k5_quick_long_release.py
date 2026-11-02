@@ -27,8 +27,16 @@ This owner changes constants only, nine sites in those three routines, no code, 
 Type 1 and type 0 starts are untouched, so a short or medium throw from the pocket keeps its exact 1/3 s release.
 The bullet hold (the clip is held at event 80 while a human holds the button), the hold fraction (counted in ticks), the
 ball launch (solved at the release moment from the release position) and every rating are rate independent and
-unchanged.  A faster clip only shortens the wind-up: the deep bomb leaves the hand about 0.18 s sooner and the average
-throw on the run about 0.09 s sooner (the slowest, 0.96 s, becomes 0.72 s).  Human and CPU passers share these routines.
+unchanged.  A faster clip only shortens the wind-up.  Seconds from the start of the throw to the ball leaving the hand,
+from the real routines in Unicorn over all 204 clips (tests/mod_editor/test_nfl2k5_quick_long_release_unicorn.py; one
+frame, 1/15 s, either way depending on whether the tick or the clip runs first in a frame):
+
+    two bomb clips (type 3)   button held 0.73 -> 0.54   button tapped 0.91 -> 0.61   CPU lob 0.83 -> 0.58
+    146 clips on the run      held, median 0.42 -> 0.33, slowest 0.96 -> 0.72   tapped, median 0.47 -> 0.34, slowest 1.12 -> 0.76
+    pocket throws (type 1)    0.333 -> 0.333 held; a tapped one eases 0.35 -> 0.35 (at most 0.03 s sooner)
+    plain on-the-run rows (type 0, 14 clips)   unchanged
+
+No clip, hold or passer is ever slower.  Human and CPU passers share these routines.
 
 Every site and every routine around it is pinned by SHA-256 against the retail bytes (the three throw routines, the
 min and max helpers the rate clamp calls, and the constants 1.0, 1.5, 3.0 and 0.05 the sites read), so a foreign or
@@ -46,9 +54,9 @@ from .nfl2k5_cave_oracle import XbeImage
 OWNER = "nfl2k5_quick_long_release"
 BUILD_CAPTION = "Quicker deep and rollout throws (experimental)"
 HELP_TEXT = ("EXPERIMENTAL / UNWITNESSED. Quarterbacks get the ball out faster on the longest bombs and on throws "
-             "while running: rollouts, scrambles and throws on the move. A very long bomb leaves the hand about "
-             "a fifth of a second sooner, and a throw on the run that took up to a full second now takes at most "
-             "about three quarters of one, most of them the same third of a second a pocket throw already takes. "
+             "while running: rollouts, scrambles and throws on the move. A very long bomb leaves the hand a fifth to "
+             "a third of a second sooner, and a throw on the run that took up to a full second or more now takes at "
+             "most about three quarters of one, most of them the same third of a second a pocket throw already takes. "
              "Short and medium throws from the pocket, how far and how accurately the ball goes, catching and every "
              "rating are unchanged. Human and CPU passers both get the quicker arm. Not yet tested in the game by a player.")
 REQUESTS = ()                     # constants only: no executable cave, data or file growth
