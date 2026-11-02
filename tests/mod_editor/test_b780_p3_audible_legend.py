@@ -358,7 +358,8 @@ class Native(unittest.TestCase):
                 self.assertLess(max(v[1] for v in last["verts"]), 247.5)
 
     def test_rows_sit_above_the_panel_inside_the_screen_without_overlap(self):
-        for side, header in (("left", (120.5, 247.5 - al.LIFT)), ("right", (519.5, 247.5 - al.LIFT))):
+        for side, header in (("left", (120.5, 247.5 - al.LIFT)), ("right", (519.5, 247.5 - al.LIFT)),
+                             ("screen edge", (24.5, 247.5))):
             with self.subTest(side=side):
                 draws = self._legend(self.patched_slide, header=header)[1:]
                 self.assertEqual(len(draws), 6)
@@ -376,9 +377,13 @@ class Native(unittest.TestCase):
                     for tb, b in boxes[i + 1:]:
                         apart = a[2] <= b[0] or b[2] <= a[0] or a[3] <= b[1] + 2.5 or b[3] <= a[1] + 2.5
                         self.assertTrue(apart, f"{ta} overlaps {tb}")
-                # the block's left edge is the panel's left edge for the left panel
+                # the block's left edge is the panel's left edge for the offense's panel (header x 120.5); any other
+                # header position is clamped so the whole block stays on screen (left column x >= 8, rows <= 632)
                 left = min(b[0] for _t, b in boxes)
-                self.assertAlmostEqual(left, header[0] - 110.0, delta=1.0 if side == "left" else 30.0)
+                anchor = min(max(header[0], al.ANCHOR_X_MIN), al.ANCHOR_X_MAX)
+                self.assertAlmostEqual(left, anchor - 110.0, delta=1.0)
+                self.assertGreaterEqual(left, 8.0 - 1.0)
+                self.assertLessEqual(max(b[2] for _t, b in boxes), 632.0 + 1.0)
 
 
 @unittest.skipUnless(V08_IMAGE.is_file(), "a SOFTDRINK 2K28 v0.8 image (env NFL2K5_V08_IMAGE) is required")

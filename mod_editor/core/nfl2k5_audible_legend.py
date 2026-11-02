@@ -87,8 +87,10 @@ LINE_HEIGHT = 14.0              # button icons 21 units tall (1.5 x), rows 21 un
 COLOUR = 0xFFE6E6E6             # light grey like the panel's own header (0xFFC0C0C0), a little brighter over grass
 ROW_DY = (-20.5, -41.5, -62.5)  # row tops relative to the header text position; row 1 ends one unit above it
 COLUMN_DX = (-110.0, 10.0)      # left-aligned columns relative to the header x (panel left edge = header x - 111)
-RIGHT_SIDE_X = 320.0            # a header right of the screen centre (the defense's panel) shifts the block left
-RIGHT_SHIFT = -23.0             # so the block's right edge sits as far right of the header as the left edge sits left
+BLOCK_WIDTH = 243.0             # widest table: 112 (LAST PLAY) + 8 gutter + 123 (FLIP ROUTES), measured natively
+SCREEN_MARGIN = 8.0             # the anchor x is clamped so the whole block stays inside x 8..632 (the clip is 0..640)
+ANCHOR_X_MIN = SCREEN_MARGIN - COLUMN_DX[0]                         # 118: left column at x >= 8
+ANCHOR_X_MAX = 640.0 - SCREEN_MARGIN - (BLOCK_WIDTH + COLUMN_DX[0])  # 499: widest row ends at x <= 632
 
 BROWSE, BACK = "|DPAD| BROWSE", "|TRIANGLE| BACK"
 FLIP_PLAY, FLIP_ROUTES, FLIP = "|R2| FLIP PLAY", "|R3| FLIP ROUTES", "|R2| FLIP"
@@ -235,9 +237,16 @@ def _emit(code_va: int, lift: bool, legend: bool, slide: bool, data: Mapping[str
         a.call(TEXT_SET_LINE_HEIGHT)
         a.b("ba01000000 8bcd")                   # left aligned
         a.call(TEXT_SET_ALIGN)
-        a.b("813c24" + _u(_f(RIGHT_SIDE_X)))     # positive floats order like signed integers
-        a.j8("7c", "anchored")
-        a.b("d90424 d805" + _u(data["right_shift"]) + "d91c24")
+        # Clamp the anchor x so every row stays on screen whatever the pane's placement (non-negative floats order
+        # like signed integers; a negative one compares below the minimum).
+        a.b("8b0424 3d" + _u(_f(ANCHOR_X_MIN)))
+        a.j8("7d", "anchor_low_ok")
+        a.b("c70424" + _u(_f(ANCHOR_X_MIN)))
+        a.j8("eb", "anchored")
+        a.label("anchor_low_ok")
+        a.b("3d" + _u(_f(ANCHOR_X_MAX)))
+        a.j8("7e", "anchored")
+        a.b("c70424" + _u(_f(ANCHOR_X_MAX)))
         a.label("anchored")
         a.b("8bf3")                              # mov esi, ebx (row table)
         a.label("item")
@@ -288,7 +297,7 @@ def _emit(code_va: int, lift: bool, legend: bool, slide: bool, data: Mapping[str
 
 
 def _data_blob(base_va: int, slide: bool, indicator: bool = False):
-    """Row tables (16-byte items: dx, dy, string VA, condition; string 0 ends a table), the shift and the strings."""
+    """Row tables (16-byte items: dx, dy, string VA, condition; string 0 ends a table) and the strings."""
     rows = tables(slide, indicator)
     strings = []
     for name in TABLE_ORDER:
@@ -302,8 +311,6 @@ def _data_blob(base_va: int, slide: bool, indicator: bool = False):
     for name in TABLE_ORDER:
         labels["t_" + name] = at
         at += 16 * (len(rows[name]) + 1)
-    labels["right_shift"] = at
-    at += 4
     text_va = {}
     for text in strings:
         text_va[text] = at
@@ -313,10 +320,9 @@ def _data_blob(base_va: int, slide: bool, indicator: bool = False):
         for row, col, text, cond in rows[name]:
             blob += struct.pack("<ffII", COLUMN_DX[col], ROW_DY[row - 1], text_va[text], cond)
         blob += bytes(16)
-    blob += struct.pack("<f", RIGHT_SHIFT)
     for text in strings:
         blob += (text + "\0").encode("utf-16le")
-    require(len(blob) == at - base_va and table_bytes + 4 + sum(2 * (len(t) + 1) for t in strings) == len(blob),
+    require(len(blob) == at - base_va and table_bytes + sum(2 * (len(t) + 1) for t in strings) == len(blob),
             "legend data layout")
     if indicator:
         labels["s_slide_left"], labels["s_slide_right"] = text_va[SLIDE_LEFT], text_va[SLIDE_RIGHT]
@@ -333,8 +339,7 @@ def code_for(code_va: int, *, lift: bool = True, legend: bool = True, slide: boo
     require(legend or not slide, "the slide row belongs to the legend")
     require(slide or slide_state is None, "a call state without the slide row")
     indicator = slide_state is not None
-    zero = {k: 0 for k in ("t_offense", "t_defense", "t_reduced", "t_basic", "right_shift", "s_slide_left",
-                           "s_slide_right")}
+    zero = {k: 0 for k in ("t_offense", "t_defense", "t_reduced", "t_basic", "s_slide_left", "s_slide_right")}
     sizing = _emit(code_va, lift, legend, slide, zero, slide_state)
     code = sizing.assemble()
     data_va = code_va + ((len(code) + 3) & ~3)
