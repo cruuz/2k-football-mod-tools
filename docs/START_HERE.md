@@ -112,9 +112,25 @@ them), award history and free agent pool. To bring it up to date:
 
 Your season progress, contracts and stats are kept. The upgrade only works on SOFTDRINK 2026 franchises. If it refuses, it says why.
 
+The upgrade also writes the disc's Super Bowl history into the save (the champions page of the Player Card; seasons the game
+already recorded in your franchise stay), adds the draft-class player records of the bigger roster file (this works whether or
+not the new game has already saved your franchise), and, with the box under **New save folder** ticked, takes the disc's
+default game settings (7 minute quarters, 15 minute Sim. Quarter Length, Chop Block on) into the franchise, but only for
+settings that still hold the old values of 5 minutes, 5 minutes and Off. A setting you changed yourself is kept, and the
+preview lists it.
+
 The upgrade does not change player ratings, colleges, announcer names, name suffixes or equipment. A franchise keeps its own
 roster copy, so those need a new franchise. Old saves still load without the upgrade; they just keep the old free agent pool.
 Saves made with the 16 reserves option (724,140 bytes) do not load on the bigger-roster disc, and the upgrade cannot move them.
+
+### Your saved settings profile (Gameplay, Saves & Sliders)
+
+New game defaults only reach new profiles: the game copies all the options saved in your Settings save (and in each franchise)
+over its own defaults when it loads them. To bring a saved profile up to date, open **Gameplay**, then **Saves & Sliders**,
+choose your disc's `default.xbe` and your `SAVEGAME.DAT` (Settings1 or a franchise), look at the **Game defaults** table and
+make a signed copy. Settings that still hold the old values are ticked; ones you changed yourself are not, and you can tick
+them to replace them. Put the new `SAVEGAME.DAT` and `EXTRA` back together. Do this for the Settings save and for each
+franchise you want, because each franchise keeps its own copy of these settings.
 
 ## 6. Add or change your own roster
 

@@ -253,6 +253,23 @@ only matching coaches' body and portrait IDs; it leaves progress, experience,
 playbooks, coach assignments and coaching statistics unchanged. The command
 never edits an HDD image or installs a save automatically.
 
+Three steps were added in beta 80. The **champions** step (also its own command,
+`champions`) merges the disc's Super Bowl history into the 270 spare bytes behind the
+arena's reserve block, filling only empty ring slots, so seasons the game recorded in
+this franchise are never replaced. When the new game has already moved a v0.7 franchise
+to the bigger arena without adding its draft-class records, the free-agents step now
+adds them inside the arena (`fill_class_records`; the file keeps its size), so the
+upgrade no longer has to run before the game's first save. After either arena change
+the MyCareer block of a career save is re-pointed at its player's name strings (the game
+refuses a career whose three references differ from the record's own pointers) and the
+upgrade refuses to write a copy whose career block would not read. The **game-settings**
+step (also its own command, `game-settings`; `--keep-game-settings` skips it inside
+`upgrade`) copies the disc's default Quarter Length, Sim. Quarter Length and Chop Block
+into the franchise's own copy of the options when they still hold the old values.
+`python3 -m mod_editor.core.nfl2k5_profile_defaults show|apply` does the same for a
+Settings save or a franchise `SAVEGAME.DAT` on its own. Years pro, season history and
+photos of players already in the save are not changed.
+
 The upgrade also restores missing TEAM entries for imported seasons before
 2026 when the disc and save match on full name, birth date, season and all
 regular-season counters. It preserves existing TEAM entries. It does not infer

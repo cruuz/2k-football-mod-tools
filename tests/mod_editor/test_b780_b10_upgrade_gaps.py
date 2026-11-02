@@ -319,6 +319,105 @@ class InPlaceFillTests(unittest.TestCase):
         self.assertEqual(doc.string(doc.tables["primary"].offset + 5 * 84 + 0x10), "Zed")
 
 
+def with_career(payload: bytes, ordinal: int = 5) -> bytes:
+    """The synthetic fixture plus a MyCareer block whose player is one of the appended Create Player records (as in the
+    game: MyCareer creates its player in a vacancy, whose name strings sit after the primary table), given a college."""
+    from mod_editor.core import nfl2k5_my_career_save as career
+    document = sr.decode(payload)
+    primary = document.tables["primary"]
+    out = bytearray(payload)
+    at = primary.offset + ordinal * 84
+    college = document.rel(primary.offset + 0x10)                 # any string before the table: the first player's name
+    struct.pack_into("<i", out, at, college - at + 1)
+    data = bytes(out)
+    document = sr.decode(data)
+    player = document.by_key[("primary", ordinal)].offset
+    block = bytearray(career.SIZE)
+    block[:8] = career.MAGIC
+    struct.pack_into("<HH", block, 8, 1, career.SIZE)
+    block[16] = 1
+    struct.pack_into("<I", block, 32, ordinal)
+    block[36:40] = bytes((3, 0, 0, data[player + 0x35]))
+    for field, stored in ((0, 44), (16, 48), (20, 52)):
+        struct.pack_into("<I", block, stored, document.rel(player + field) - document.layout.root)
+    block[56:60] = data[player + 4:player + 8]
+    struct.pack_into("<I", block, 60, career.word(data, player + 0x18) & career.BIRTH_MASK)
+    block[74] = 255
+    return career.append(data, career.seal(bytes(block)))[0]
+
+
+class CareerBlockTests(unittest.TestCase):
+    """A MyCareer save keeps three arena offsets to its player's strings; growing or filling the arena moves them, and the
+    game refuses the career when they differ from the record's own pointers (runtime.c inline_stage)."""
+
+    @classmethod
+    def setUpClass(cls):
+        from mod_editor.core import nfl2k5_my_career_save as career
+        cls.career = career
+        cls.legacy = with_career(with_class_template(capacity_fixture()[0]))      # draft-class records can be added
+        cls.with_class = cls.legacy
+
+    def test_the_fixture_reads_as_a_career_save(self):
+        self.assertEqual(self.career.read(self.legacy)[:8], self.career.MAGIC)
+        self.assertEqual(up.career_block_at(self.legacy), self.career.native_size(self.legacy))
+        self.assertIsNone(up.career_block_at(capacity_fixture()[0]))
+
+    def test_growth_leaves_the_references_stale_and_the_rebase_repairs_only_them(self):
+        grown, _ = arena.migrate(self.legacy, reserves_16=False, capacity_records=612)
+        with self.assertRaisesRegex(self.career.CareerSaveError, "name or college reference changed"):
+            self.career.read(grown)                                # what Upgrade used to hand the game
+        fixed, receipt = up.rebase_career_block(self.legacy, grown)
+        self.assertTrue(receipt["rebased"])
+        self.assertEqual(receipt["reason"], "")
+        self.career.read(fixed)
+        at = up.career_block_at(fixed)
+        changed = [i for i, (a, b) in enumerate(zip(grown, fixed)) if a != b]
+        self.assertTrue(changed and all(at + 12 <= i < at + 16 or at + 44 <= i < at + 56 for i in changed), changed)
+        self.assertEqual(fixed[at + 16:at + 44], grown[at + 16:at + 44])       # token, ordinal, club, birth identity: kept
+        again, second = up.rebase_career_block(fixed, fixed)
+        self.assertEqual((again, second["rebased"]), (fixed, False))              # nothing moved: nothing rewritten
+
+    def test_the_in_place_fill_needs_the_same_repair(self):
+        moved = game_moves_tail(self.with_class)
+        self.career.read(moved)                                        # a game resave keeps the strings where they were
+        filled, receipt = arena.fill_class_records(moved)
+        self.assertGreater(receipt["class_records"], 0)
+        with self.assertRaises(self.career.CareerSaveError):
+            self.career.read(filled)
+        fixed, info = up.rebase_career_block(moved, filled)
+        self.assertTrue(info["rebased"])
+        self.career.read(fixed)
+        up.check_career_block(moved, fixed)
+
+    def test_a_save_without_a_block_or_with_a_damaged_one_is_left_alone_and_says_why(self):
+        plain = capacity_fixture()[0]
+        grown, _ = arena.migrate(plain, reserves_16=False, capacity_records=612)
+        out, receipt = up.rebase_career_block(plain, grown)
+        self.assertEqual((out, receipt["career_block"]), (grown, False))
+        self.assertIn("no inline MyCareer block", receipt["reason"])
+        # a sealed block whose references already disagree with its record (the player's strings were edited): it did not
+        # read before, so it is not Upgrade's to repair or to refuse
+        odd = bytearray(self.legacy)
+        at = up.career_block_at(self.legacy)
+        struct.pack_into("<I", odd, at + 48, struct.unpack_from("<I", odd, at + 48)[0] + 2)
+        odd[at:at + 128] = self.career.seal(bytes(odd[at:at + 128]))
+        with self.assertRaisesRegex(self.career.CareerSaveError, "name or college reference changed"):
+            self.career.read(bytes(odd))
+        grown, _ = arena.migrate(bytes(odd), reserves_16=False, capacity_records=612)
+        out, receipt = up.rebase_career_block(bytes(odd), grown)
+        self.assertEqual((out, receipt["career_block"], receipt["rebased"]), (grown, True, False))
+        self.assertIn("did not read before", receipt["reason"])
+        up.check_career_block(bytes(odd), grown)
+
+    def test_the_guard_refuses_an_output_the_game_would_reject(self):
+        grown, _ = arena.migrate(self.legacy, reserves_16=False, capacity_records=612)
+        with self.assertRaisesRegex(up.UpgradeRefused, "MyCareer block unreadable"):
+            up.check_career_block(self.legacy, grown)
+        fixed, _ = up.rebase_career_block(self.legacy, grown)
+        up.check_career_block(self.legacy, fixed)
+        up.check_career_block(capacity_fixture()[0], grown)                           # no block, nothing to guard
+
+
 class DialogSettingsCheckboxTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

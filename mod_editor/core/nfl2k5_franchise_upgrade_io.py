@@ -199,6 +199,7 @@ def plan_upgrade(source: Path, disc: Path, *, command: str = "upgrade",
         disc_defaults = load_disc_defaults(disc)
         payload, step = upgrade.sync_game_settings(payload, disc_defaults)
         steps.append(step)
+    upgrade.check_career_block(container.savegame, payload)         # b780-b10: never emit a career the game would refuse
     after_validation = upgrade.validate_save(payload)
     receipt = {"schema": upgrade.SCHEMA, "command": command, "dry_run": True,
                "input": str(source.resolve()), "disc": str(disc.resolve()),

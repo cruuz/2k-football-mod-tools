@@ -1049,6 +1049,74 @@ def infer_played_clubs(payload: bytes, disc_body: bytes, evidence: Mapping | Non
                     "before_sha256": sha(payload), "after_sha256": sha(result),
                     "disc_roster_sha256": sha(disc_body), "fold_depth": 0,
                     "folded_players": [], "shared_history_skipped": []}
+# --- b780-b10: a MyCareer save's inline block follows the strings it points at ----------------------------------------
+def career_block_at(payload: bytes) -> int | None:
+    """Offset of the 128-byte inline MyCareer block of a franchise save, or None when the save has none."""
+    from . import nfl2k5_my_career_save as career
+    from . import nfl2k5_player_progression as progress
+    try:
+        base = career.native_size(payload)
+    except (career.CareerSaveError, ValueError):
+        return None
+    footer = progress.footer_start(payload)
+    return base if (len(payload) if footer is None else footer) == base + career.SIZE else None
+
+
+def rebase_career_block(before: bytes, after: bytes) -> tuple[bytes, dict]:
+    """Re-point the MyCareer block of ``after`` at the strings its player's record now uses.
+
+    The block keeps three roster-arena offsets (the player's college, first name and last name) and the game refuses the
+    career when they differ from the record's own pointers (tools/mycareer_mode/runtime.c ``inline_stage``; Studio's
+    ``nfl2k5_my_career_save.read``).  The arena growth and the in-place fill insert records ahead of those strings, so every
+    offset past the primary table moves.  A block that read cleanly in ``before`` is rewritten with the record's new
+    offsets and re-sealed; one that did not read, or a save without a block, is returned as it is, with the reason.
+    """
+    from . import nfl2k5_my_career_save as career
+    receipt = {"career_block": False, "reason": "this save has no inline MyCareer block"}
+    at_before = career_block_at(before)
+    if at_before is None:
+        return after, receipt
+    try:
+        block = career.read(before)
+    except career.CareerSaveError as exc:
+        return after, {"career_block": True, "rebased": False, "reason": f"the block did not read before the upgrade: {exc}"}
+    at_after = career_block_at(after)
+    require(at_after is not None, "the MyCareer block was lost while the roster arena changed")
+    document = sr.decode(after, base_year=BASE_YEAR)
+    player = document.by_key.get(("primary", career.word(block, 32)))
+    require(player is not None, "the MyPlayer record is missing after the upgrade")
+    root = document.layout.root
+    fixed = bytearray(block)
+    moved = []
+    for field, stored in ((0, 44), (16, 48), (20, 52)):
+        target = document.rel(player.offset + field)
+        require(target is not None, "the MyPlayer record lost a name or college reference")
+        value = target - root
+        if value != career.word(block, stored):
+            moved.append({"offset": stored, "before": career.word(block, stored), "after": value})
+        struct.pack_into("<I", fixed, stored, value)
+    out = bytearray(after)
+    out[at_after:at_after + career.SIZE] = career.seal(bytes(fixed))
+    result = bytes(out)
+    career.read(result)                                        # identity included: the game's own test
+    return result, {"career_block": True, "rebased": bool(moved), "references": moved, "reason": ""}
+
+
+def check_career_block(before: bytes, after: bytes) -> None:
+    """A MyCareer block that read cleanly before the upgrade must still read cleanly after it."""
+    from . import nfl2k5_my_career_save as career
+    if career_block_at(before) is None:
+        return
+    try:
+        career.read(before)
+    except career.CareerSaveError:
+        return
+    try:
+        career.read(after)
+    except career.CareerSaveError as exc:
+        raise UpgradeRefused(f"the upgrade would leave the MyCareer block unreadable ({exc}); nothing was written") from exc
+
+
 # b778-fa3: the 2026-10-22 free-agent depth (Kaepernick and the other verified unsigned, unretired veterans the dated
 # refresh adds to the disc's free agents). A franchise keeps its own roster, so an existing franchise only gains them
 # here. Nothing grows: each one fills a vacant create-player record of the save, inside the save's own arena.
@@ -1123,7 +1191,8 @@ def sync_free_agents(payload: bytes, disc_body: bytes, *, keep: int = SAVE_KEEP_
                       "records": migration["capacity_records"], "vacancy_records": migration.get("vacancy_records"),
                       "class_records": migration.get("class_records"),
                       "file_growth": len(migrated) - len(payload), "migration": migration}
-            payload = migrated
+            payload, career_receipt = rebase_career_block(original_payload, migrated)
+            growth["career"] = career_receipt
             save, roster = franchise(payload)
     elif (capacity_request and arena.is_capacity_size(roster.layout.arena_size)
           and roster.layout.arena_size == disc_layout.arena_size):
@@ -1140,7 +1209,8 @@ def sync_free_agents(payload: bytes, disc_body: bytes, *, keep: int = SAVE_KEEP_
                       "records": migration["capacity_records"], "vacancy_records": 0,
                       "class_records": migration.get("class_records"), "file_growth": len(filled) - len(payload),
                       "in_place": True, "migration": migration}
-            payload = filled
+            payload, career_receipt = rebase_career_block(original_payload, filled)
+            growth["career"] = career_receipt
             save, roster = franchise(payload)
     document = rr.RosterDocument(payload, base=roster.layout.preamble, scheme="one_pool", base_year=BASE_YEAR)
     require(document.free_agent_list is not None, "the franchise has no free-agent list")
