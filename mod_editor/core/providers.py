@@ -859,7 +859,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_bump_texture_writer.py": "a6044fe22a734e44f9e4e997e7f8032806efdf0aea28bae12ca525768755efb9",
         "mod_editor/core/nfl2k5_era_kits.py": "56ba010687a680ae320f63a5b49ee341a876b4e10e9577dfeb5ce1168278b1f7",
         "mod_editor/core/nfl2k5_moment_kits.py": "df80c5673e51757638cfa6917c34d1ab3470a9cda47226f1f40e8643a86bc2e1",
-        "mod_editor/core/nfl2k5_project_check.py": "57820de16456b13580dd36b31f741970db421a5136497ce375d219ce5968643b",
+        "mod_editor/core/nfl2k5_project_check.py": "629c37c295b6efa3bf3ff0c385c016b19b90aec103426f9afb948d7819bc55a1",
         "mod_editor/core/nfl2k5_stadium_dry_run.py": "2e5ceddd5a0b7236ba6185a3e4f0a91352ff3598677cc63430de02623f913087",
         "mod_editor/core/nfl2k5_edit_survival.py": "d7be022537979ac54cc58979d5c6fe0578d360a59bf25e6e9dd83126e9006356",
         "mod_editor/core/nfl2k5_practice_field_model.py": "ecd32cb66352aec954430e9878868b0363f437c81c801f37fe338a57fd26c78b",

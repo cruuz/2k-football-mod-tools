@@ -1025,14 +1025,26 @@ def inventory(inputs: ProjectInputs, plan, *, read_pngs=True, progress=None) -> 
                 limits=limits)
 
 
+_PART_WORDS = {"torso": "jerseys", "sleeve": "sleeves", "pants": "pants", "helmet": "helmets", "digits": "number digits",
+               "nameplate": "nameplates", "uniform": "uniform art", "equipment": "socks, gloves and shoes"}
+
+
+def _counted(count: int, word: str) -> str:
+    """'1 glove', '3 gloves', '1 pants' (a word that is plural already stays)."""
+    word = _PART_WORDS.get(word, word)
+    if count == 1 and word.endswith("s") and word not in ("pants", "Team Select cards") and not word.endswith("ss"):
+        word = word[:-1]
+    return f"{count:,} {word}"
+
+
 def _inventory_lines(data) -> list:
-    lines = [f"{data['edits']:,} edits: " + ", ".join(f"{count:,} {family}" for family, count in data["families"].items())
+    lines = [f"{data['edits']:,} edits: " + ", ".join(_counted(count, family) for family, count in data["families"].items())
              + f"; {data['kit_packages']:,} kit files of {data['teams']} teams."]
     if data["uniform_parts"]:
-        lines.append("Uniform art: " + ", ".join(f"{count:,} {part}" for part, count in
+        lines.append("Uniform art: " + ", ".join(_counted(count, part) for part, count in
                                                   sorted(data["uniform_parts"].items(), key=lambda kv: -kv[1])) + ".")
     if data["equipment_parts"]:
-        lines.append("Equipment: " + ", ".join(f"{count:,} {part}" for part, count in
+        lines.append("Equipment: " + ", ".join(_counted(count, part) for part, count in
                                                 sorted(data["equipment_parts"].items(), key=lambda kv: -kv[1])) + ".")
     if data["equipment_choices"]:
         lines.append("Equipment import choices: " + ", ".join(f"{count:,} {kind}" for kind, count in
