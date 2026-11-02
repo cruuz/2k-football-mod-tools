@@ -557,3 +557,39 @@ class BuildPreflight(unittest.TestCase):
             out, step = mod_build._coach_ai_decision(plan)
             self.assertTrue(out.coach_ai)
             self.assertIsNone(step)                       # every club has its 2026 coach (two of them moved)
+
+
+@unittest.skipUnless(_XISO.is_file(), "private retail NFL 2K5 disc absent (set NFL2K5_RETAIL_XISO)")
+class ModernCoachesFollowTheCoach(unittest.TestCase):
+    """modern_coaches writes each 2026 coach's body (and the DAL/WAS picture) at the record that holds HIM."""
+
+    def sites(self, body, teams):
+        from mod_editor.core import nfl2k5_modern_coaches as mc, nfl2k5_roster_records as rr
+        doc = rr.RosterDocument(bytes(body))
+        with patch.object(mc, "_roster", return_value=(1000, doc)):
+            return {team: (mc._coach_body_site(None, team), mc._coach_photo_site(None, team))
+                    for team in ("KC", "LV", "DAL", "NYG", "SF")}
+
+    def test_moved_fired_and_2004_rosters(self):
+        from mod_editor.core import nfl2k5_roster_records as rr
+        retail = rr.load_image(_XISO).to_body()
+        teams = rr.RosterDocument(retail).teams
+        offset = {t.abbreviation: t.coach_offset for t in teams[:32]}
+        body = bytearray(retail)
+        rr.apply_coach_names(body, teams, directory_coaches(), [])
+        unmoved = self.sites(body, teams)
+        self.assertEqual(unmoved["KC"][0][0], 1000 + offset["KC"] + 0x18)
+        self.assertEqual(unmoved["DAL"][1], (1000 + offset["DAL"] + 0x40, 7007))
+        staff = {"head_coaches": [{"team": "OAK", "coach": "Andy Reid"}, {"team": "KC", "coach": "Klint Kubiak"},
+                                  {"team": "NE", "coach": "Brian Schottenheimer"}, {"team": "DAL", "coach": "Mike Vrabel"},
+                                  {"team": "NYG", "created": "x"}],
+                 "created_coaches": [{"id": "x", "first": "Pat", "last": "Shurmur"}]}
+        st.apply_to_body(body, teams, staff, [])
+        moved = self.sites(body, teams)
+        self.assertEqual(moved["KC"][0], (1000 + offset["OAK"] + 0x18, 13))       # Reid's record is at LV now
+        self.assertEqual(moved["LV"][0], (1000 + offset["KC"] + 0x18, 20))        # Kubiak's at KC
+        self.assertEqual(moved["DAL"][1], (1000 + offset["NE"] + 0x40, 7007))     # Schottenheimer's picture id
+        self.assertEqual(moved["NYG"], ((None, None), (None, None)))              # John Harbaugh: no club employs him
+        self.assertEqual(moved["SF"], unmoved["SF"])
+        old = self.sites(retail, teams)                                           # a 2004 roster: per club, as before
+        self.assertEqual(old["KC"][0], (1000 + offset["KC"] + 0x18, 13))

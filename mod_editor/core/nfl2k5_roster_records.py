@@ -3237,7 +3237,7 @@ def apply_body(body: bytes, source: Path | str | Mapping[str, Any], *,
             _require(player.offset not in selected, "duplicate free-agent slot")
             selected.append(player.offset)
         roster.free_agents = selected
-    coach_edits = apply_coach_edits(roster.body, roster.teams, doc, log)
+    coach_edits = apply_coach_edits(roster.body, roster.teams, doc, log, obj_base=roster.obj_base)
     coaches = coach_edits["coach_names_written"]
     uniform_years = apply_team_uniform_years(roster.body, roster.teams, doc.get("teams") or [], log)
     # A dated refresh validates its final club chains after membership changes.
@@ -3466,10 +3466,11 @@ def apply_coach_names(body: bytearray, teams: Sequence[TeamRecord], entries: Seq
 
 
 def apply_coach_edits(body: bytearray, teams: Sequence[TeamRecord], document: Mapping[str, Any],
-                      log: list[str]) -> dict[str, Any]:
+                      log: list[str], *, obj_base: int | None = None) -> dict[str, Any]:
     """Every coach edit of a roster-edits document, in the build's order (b780): the ``coaches`` names, biographies and
-    career numbers by club, then the coaching ``staff`` (head coach moves and created coaches,
-    ``nfl2k5_coach_staff``), whose content moves carry what the earlier writers put in each record. The build and
+    career numbers by club, then the per-club coach records (c1-coachdata's ``apply_coach_records`` belongs HERE, with
+    ``obj_base``), then the coaching ``staff`` (head coach moves and created coaches, ``nfl2k5_coach_staff``), whose
+    content moves carry what the earlier writers put in each record. The build and
     ``nfl2k5_coach_ai.roster_readiness`` both call this, so the readiness check sees the roster the build writes."""
 
     names = apply_coach_names(body, teams, document.get("coaches") or [], log)
