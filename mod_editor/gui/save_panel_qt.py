@@ -295,7 +295,7 @@ class SavePanel(QWidget):
 
     def _refresh_controls(self) -> None:
         ready = not self._busy
-        have_xbe = bool(self.xbe_field.text())
+        have_xbe = self._xbe_file is not None          # a chosen disc counts once its default.xbe has been read
         have_save = self._save_info is not None
         have_out = bool(self.out_field.text())
         self.xbe_button.setEnabled(ready)

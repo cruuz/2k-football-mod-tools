@@ -571,7 +571,12 @@ class SavesPanelTests(unittest.TestCase):
         self.assertEqual(self.panel._default_checks["quarter_minutes"].isChecked(), True)
         out = self.root / "out" / "SAVEGAME.DAT"
         self.panel.out_field.setText(str(out))
+        self.panel._xbe_file, saved = None, self.panel._xbe_file                 # not read yet: nothing to sign with
         self.panel._refresh_controls()
+        self.assertFalse(self.panel.apply_button.isEnabled())
+        self.panel._xbe_file = saved
+        self.panel._refresh_controls()
+        self.assertTrue(self.panel.apply_button.isEnabled())
         with mock.patch.object(QMessageBox, "question", return_value=QMessageBox.Ok), \
                 mock.patch.object(QMessageBox, "information"):
             self.panel._apply_clicked()
