@@ -7176,7 +7176,7 @@
         "resource": "Hook 0x199F23 (5); operands 0x19BFD1, 0x19C1C2 (to the retail 0.6 at 0x4EFE14) and 0x19C194 (20 to 60); read dwell curve 0x50C548 (44); owned 256 RX and 16 RW bytes.",
         "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
       },
-      "summary": "CPU quarterbacks look downfield early, then check the ball down to an open back or tight end late in the play or under pressure; pump fakes block the throw 0.6 s instead of 1.5 s and every QB reads receivers faster.",
+      "summary": "CPU quarterbacks look downfield early, then check the ball down to an open back or tight end late in the play or under pressure; pump fakes block the throw 0.6 s instead of 1.5 s and weak readers move through their reads faster.",
       "surface": "gameplay_tuning_sliders",
       "title": "CPU quarterbacks throw on time and check down (experimental)",
       "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_cpu_passer_iq"
