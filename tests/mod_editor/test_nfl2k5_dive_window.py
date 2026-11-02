@@ -99,6 +99,36 @@ class StaticTests(unittest.TestCase):
         self.assertEqual(changed, list(range(0x1F56FF, 0x1F56FF + 21)))   # the replaced 21 bytes and nothing else
 
 
+class CompositionTests(unittest.TestCase):
+    """Every gameplay owner of the CPU AI composition suite, one at a time on its seed, then both CPU AI owners and
+    this owner last (the build order): every status holds and every owner replays byte-exactly."""
+
+    @classmethod
+    def setUpClass(cls):
+        from tests.mod_editor import test_nfl2k5_cpu_ai_composition as composition
+        cls.composition = composition
+        requests = sum((o.module.REQUESTS for _n, o in composition.GAMEPLAY), composition.stack.deep_zone.REQUESTS)
+        from tests.mod_editor.test_nfl2k5_owner_pairwise_composition import prerequisites
+        cls.seed, _ = space.apply(prerequisites(retail_xbe()), requests, scaleout=True)
+
+    def test_each_gameplay_owner_then_the_cpu_ai_owners_then_the_dive_window(self):
+        composition = self.composition
+        for name, owner in composition.GAMEPLAY:
+            with self.subTest(owner=name):
+                result, _ = owner.apply(self.seed)
+                result = composition.cpu_ai(result)
+                before = {"owner": owner.status(result), "ball": ball.status(result)}
+                final, _ = dive.apply(result)
+                self.assertEqual({"owner": owner.status(final), "ball": ball.status(final)}, before)
+                self.assertEqual(before, {"owner": "applied", "ball": "applied"})
+                self.assertEqual(dive.status(final), "applied")
+                if owner.OWNER != composition.stack.money_downs.OWNER:   # its own native upgrade, see the composition suite
+                    self.assertEqual(owner.apply(final)[0], final, name)
+                self.assertEqual(ball.apply(final)[0], final, name)
+                self.assertEqual(dive.apply(final)[0], final, name)
+                self.assertEqual(space.status(final), "applied")
+
+
 class WiringTests(unittest.TestCase):
     def test_presets_options_and_late_owner_order(self):
         from mod_editor.core import mod_build, nfl2k5_build_settings as settings, nfl2k5_throw_tuning as tt
