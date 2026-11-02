@@ -424,8 +424,8 @@ class PoolRunnerResourceTests(unittest.TestCase):
             list(late.ordered_map(lambda task: 1 / 0, [(1, 2)], 1))
         self.assertIsNone(getattr(caught.exception, "_studio_resource", None))
 
-    @unittest.skipUnless(multiprocessing.get_start_method(allow_none=True) in (None, "fork")
-                         and "fork" in multiprocessing.get_all_start_methods(), "pooled path needs fork-start workers")
+    @unittest.skipUnless(sys.platform.startswith("linux") and multiprocessing.get_context().get_start_method() == "fork",
+                         "pooled path checked where workers fork (spawn workers would import this test module)")
     def test_ordered_map_pool_names_the_failing_task(self):
         from mod_editor.core import nfl2k5_late_steps as late
         tasks = [(f"s{index:02d}dd.iff", index) for index in range(8)] + [("s13ad.iff", 99)]
@@ -561,7 +561,7 @@ class ReportTests(unittest.TestCase):
         self.source.write_bytes(self.canary)
         self.texture = self.folder / "chiefs-field.png"
         self.texture.write_bytes(b"\x89PNG\r\n\x1a\nTEXTURE-CANARY" * 64)
-        self.output = self.folder / "out" / "Edwards: disc?.xiso.iso"
+        self.output = self.folder / "out" / "Edwards disc (modded).xiso.iso"   # a name Windows accepts
         self.output.parent.mkdir()
         from mod_editor.core import nfl2k5_modern_color as colour
         settings = colour.default_settings()
