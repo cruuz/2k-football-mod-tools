@@ -236,8 +236,9 @@ def _compose_side(side, packages, swaps, retail=None, who="", unchanged=None):
     base = packages[side["base"]]
     chunks = parse_chunks(base)
     if len(chunks) != 53 or chunks[0].kind != "Unif":
-        raise ValueError(f"{FEATURE}: {who}: the base kit {side['base']} is not a kit package (it has {len(chunks)} "
-                         f"chunks and the first is {chunks[0].kind if chunks else 'missing'}, not Unif)")
+        what = (f"it has {len(chunks)} chunks, not 53" if len(chunks) != 53
+                else f"its first chunk is {chunks[0].kind}, not Unif")
+        raise ValueError(f"{FEATURE}: {who}: the base kit {side['base']} is not a kit package; {what}")
     sources = _expand(side.get("chunks", {}))
     spans = []
     for c in chunks:
@@ -245,9 +246,10 @@ def _compose_side(side, packages, swaps, retail=None, who="", unchanged=None):
         donor = (retail if c.index in swaps else packages)[selector]
         dc = parse_chunks(donor)
         if len(dc) != 53 or dc[c.index].kind != c.kind:
+            what = (f"the donor has {len(dc)} chunks, not 53" if len(dc) != 53
+                    else f"the donor chunk is {dc[c.index].kind}, not {c.kind}")
             raise ValueError(f"{FEATURE}: {who}: chunk {c.index} of the donor {selector} does not match the chunk it "
-                             f"replaces in {side['base']} (the donor has {len(dc)} chunks and this one is "
-                             f"{dc[c.index].kind if len(dc) > c.index else 'missing'}, not {c.kind})")
+                             f"replaces in {side['base']}; {what}")
         spans.append(donor[dc[c.index].offset:dc[c.index].end_offset])
     for row in side.get("art", []):
         i = row["chunk"]
@@ -901,14 +903,14 @@ def user_notes(receipt, feature=FEATURE):
         why = _plain(row["reason"], row["side"])
         notes.append(f"{feature}: the new kit {row['side']} uses the retail {_chunk_words(row['chunks'])} of {kits_from} "
                      f"(chunk{'s' if len(row['chunks']) > 1 else ''} {', '.join(str(c) for c in row['chunks'])}), because "
-                     f"your edited version cannot be used in a new kit ({why}). Your own kits keep your artwork.")
+                     f"your edited version cannot be used in a new kit: {why}. Your own kits keep your artwork.")
     for row in receipt.get("unchanged_art", ()):
         notes.append(f"{feature}: the new kit {row['side']} uses the {_chunk_words([row['chunk']])} of your kit unchanged "
                      f"(chunk {row['chunk']}{', ' + row['texture'] if row.get('texture') else ''}): the step "
                      f"\"{row['step']}\" had nothing to change on it.")
     for kit_id, reason in sorted(receipt.get("skipped_kits", {}).items()):
-        notes.append(f"{feature}: the new kit {kit_id} was left out and the moment sides that use it keep the kit they "
-                     f"had ({_plain(reason, _kit_label(kit_id, reason))}).")
+        notes.append(f"{feature}: the new kit {kit_id} was left out because {_plain(reason, _kit_label(kit_id, reason))}. "
+                     "The moment sides that use it keep the kit they had.")
     for row in receipt.get("dropped_defaults", ()):
         kept = f" (style {row['kept']})" if row.get("kept") is not None else ""
         because = (f"the new kit {row['kit']} it would open on was left out" if row.get("kit")

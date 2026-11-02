@@ -486,7 +486,8 @@ class Notes(unittest.TestCase):
         unchanged_art=[dict(side="K1 (NYG, away)", chunk=3, texture="sleeve00", art="tset",
                             step="remove the two 2026 maker marks above the stripes (2007 sleeves carry none)",
                             reason="the art changed no texel")],
-        skipped_kits={"K7": "Anniversary moment kits: K7 (SEA, home): the base kit 26H5 is not a kit package"},
+        skipped_kits={"K7": "Anniversary moment kits: K7 (SEA, home): the base kit 26H5 is not a kit package; its first "
+                            "chunk is TXTR, not Unif"},
         dropped_defaults=[dict(file=GIANTS_2007, style=9, kit="K1", kept=8, why="its kit was left out"),
                           dict(file="h-18-1990-giants-9.iff", style=5, kit=None, kept=2,
                                why="the file has no year pair for style 5")])
@@ -497,12 +498,13 @@ class Notes(unittest.TestCase):
         self.assertTrue(all(n.startswith("Anniversary moment kits: ") for n in notes))
         swap, nothing, left_out, dropped, odd = notes
         self.assertIn("uses the retail shoes of 07A2", swap)
+        self.assertIn("cannot be used in a new kit: composed kit allocation 10752/2867776 exceeds", swap)
         self.assertNotIn("K2 (DAL, away): composed", swap)                       # the side is already the subject
         self.assertIn("the new kit K1 (NYG, away) uses the sleeves of your kit unchanged (chunk 3, sleeve00)", nothing)
         self.assertIn("remove the two 2026 maker marks above the stripes (2007 sleeves carry none)", nothing)
         self.assertIn("had nothing to change on it.", nothing)
-        self.assertIn("the new kit K7 was left out", left_out)
-        self.assertIn("the base kit 26H5 is not a kit package", left_out)
+        self.assertIn("the new kit K7 was left out because the base kit 26H5 is not a kit package", left_out)
+        self.assertTrue(left_out.endswith("The moment sides that use it keep the kit they had."))
         self.assertNotIn("K7 (SEA, home): the base", left_out)                   # no repeated label
         self.assertEqual(dropped, f"Anniversary moment kits: the classic team file {GIANTS_2007} keeps the default uniform "
                                   "it has (style 8), because the new kit K1 it would open on was left out.")
