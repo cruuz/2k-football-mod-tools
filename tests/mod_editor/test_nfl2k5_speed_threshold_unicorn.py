@@ -2,8 +2,8 @@
 hook at its epilogue (0x2381B1) and the cave run in Unicorn.
 
 * Scalar cases call the real mapper for one defender and read the speed it returns: strength scaling, both field
-  directions, the 21 scope and fallback controls (each must return the unpatched value to the bit), the depth ramp, and
-  register, flag, x87 control word and stack-write bounds.
+  directions, the 20 fallback controls (each must return the unpatched value to the bit) and one eligible control (which
+  is slowed), the depth ramp, and register, flag, x87 control word and stack-write bounds.
 * Frame cases replay the real man planner, ordinary locomotion, root sampler and transforms at 60 Hz for a go route
   (WR Speed 93 against CB Speed 83) and compare the separation at 10, 20, 30 and 40 yards.
 
