@@ -1,10 +1,10 @@
 {
  "schema": "nfl2k5_moment_kits_pins/v1",
- "about": "SOFTDRINK donors as the release-candidate Studio build holds them (measured on 'SOFTDRINK 2K28 v0.6.1 i4 test (2026-10-17)', read only) and the packages ek1's stage composes from them; with these donors every package must equal its pin. Members: the renamed aggregate slots (b776-sm1: helm and mini cards take the slot's own letter, so a swapped H/A kit keeps its helmet facing the right way); team files and SITU: before/after. b779-int1: re-derived after b779-vk2's sideline pass, which repaints donors 06A0, 06H0 and 30H3 before this stage (06a13.iff and 06h13.iff change).",
+ "about": "SOFTDRINK donors as the release-candidate Studio build holds them (measured on 'SOFTDRINK 2K28 v0.6.1 i4 test (2026-10-17)', read only) and the packages ek1's stage composes from them; with these donors every package must equal its pin. Members: the renamed aggregate slots (b776-sm1: helm and mini cards take the slot's own letter, so a swapped H/A kit keeps its helmet facing the right way); team files and SITU: before/after. b779-int1: re-derived after b779-vk2's sideline pass, which repaints donors 06A0, 06H0 and 30H3 before this stage (06a13.iff and 06h13.iff change). b780-b12: re-derived after the D14 sideline fix, which removes the orange collar trim of donor 06H0's sideline atlas (06h13.iff changes).",
  "data_sha256": "e2fcbb93f376f266f6973626a48e2244521df1f529f3fbe67ec28cfdc7565c18",
  "donors": {
   "06A0": "0d8e18a75c435b97ed7510b0cf691551a929cd78daa53bc6927a2d904d33940c",
-  "06H0": "543d541538c7fee24400e894f9c9a363d6e01bc7c051c469df2998fbc0c245a9",
+  "06H0": "c53580a068ce1d00c80358017e06cad900a4ca37a8d996110cb20d5e9ed68e1b",
   "07A2": "bf6f09f7ec7edb8144942a3b449f3ed076aa092e878f8380927d6cf4d6506e1a",
   "07A3": "75e7677ce28c5892a3d244fc716d5223365f234d14de4069b4cf6fc6f79e1b38",
   "07H3": "04bb64d9ff1a399e84c9be75d717b1d3651a295a14ff4232a0e54c1e9597b862",
@@ -58,7 +58,7 @@
   "30a14.iff": "aeb32997d4aacf327a11571c0bb9539b441110352b53678d7a8643611f2d85ee",
   "23h13.iff": "cb380794b5613852d893367ef8c56bca486f2f7bd5e1eff2454e45944fe919e1",
   "23a13.iff": "424ce477e1b807150c7f4bb5128d46bcbf193f99c35c960d9a70fe1ad5437368",
-  "06h13.iff": "64cbc5d57729ab55dbe468d41cf4b5f94653e13de75343a86d08350a18444a34",
+  "06h13.iff": "0ef1d35143d5572bf745f2516df3bb77a995e0b1c0582b158d711a20aba05667",
   "06a13.iff": "0d8e18a75c435b97ed7510b0cf691551a929cd78daa53bc6927a2d904d33940c"
  },
  "sizes": {
@@ -86,7 +86,7 @@
   "30a14.iff": 1409280,
   "23h13.iff": 1506416,
   "23a13.iff": 1543808,
-  "06h13.iff": 1497456,
+  "06h13.iff": 1497248,
   "06a13.iff": 1546512
  },
  "members": {
