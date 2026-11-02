@@ -43,9 +43,9 @@ HELP_TEXT = (
     "and the receiver are unchanged. EXPERIMENTAL / UNWITNESSED in a played game. Changing the number later needs a "
     "rebuild from the source disc."
 )
-# Complete ordinary speed mapper, including every constant it reads. Hook is
-# normalized only after exact hook/cave recognition. Addresses and disassembly:
-# reports/ai1_speed/native.txt and tools/nfl2k5_speed_threshold_research.py.
+# Complete ordinary speed mapper, including every constant it reads. The hook is normalized only after exact
+# hook/cave recognition. Hashes taken from the retail executable (unchanged in the released v0.8 one); the
+# disassembly of each window is in the job/ai1-speed research (reports/ai1_speed/native.txt) and the b780 cv5 report.
 GUARDS = (
     (0x238020, 411, "be6e4950b42988a7368653d4e3abf11526d4a183fda3dd1aaa5243dc4459da2f"),
     (0x4e4180, 4, "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119"),

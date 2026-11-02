@@ -1,7 +1,11 @@
-/* Optional vertical man-coverage speed differential. Offline proposal only.
+/* Speed separation (b780-cv5; ported from job/ai1-speed e88b60246). EXPERIMENTAL / UNWITNESSED.
  * FUN_238020 epilogue: ECX=player, [ESP]=native speed, [ESP+24]=command.
  * Return ABI and all registers/flags/x87 state match the stolen instructions.
  * Only the function-local result can change. No rating/steering/task writes.
+ * The strength (0..100) is the byte at `setting`, 1,020 bytes into the cave; the cave is installed only for a
+ * nonzero strength. New speed = native * (1 - strength * min(WR Speed - CB Speed, 25) / 10000 * ramp), ramp 0..1
+ * over the 8th to 12th yard past the line. Globals 0xE60280 and 0xE60284 are the offense and defense team records.
+ * The last two instructions of the cave are the stolen `fld dword ptr [esp]; add esp, 20` and a jump back.
  */
 .intel_syntax noprefix
 .code32

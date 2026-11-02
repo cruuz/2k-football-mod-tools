@@ -918,7 +918,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_practice_injuries.py": "8b411bcd88201f1155319b140c7c6a9555e9bcf8751921c7264dd28f8955c518",  # b778-pi1
         "mod_editor/core/nfl2k5_ball_carrier_ai.py": "9d340302650510dede5db01f8a2cbae31807394f57ff9ef38db3998f7660ed7e",  # b778-ai5
         "mod_editor/core/nfl2k5_return_coverage.py": "3be0439c2f122ea0c7a5b53f50b89b0b31c8455ce13baa9ce8728ba9d2470db0",  # b778-kr1
-        "mod_editor/core/nfl2k5_speed_threshold.py": "615218426cbaaf46dba951ad80926350c31fd6d23c46774d0d8c533556bccb49",  # b780-cv5
+        "mod_editor/core/nfl2k5_speed_threshold.py": "3a3a65df7ccce0837c8f34c21feb3b92330b2ba6b5f307f92fb19b04e208f251",  # b780-cv5
         "mod_editor/core/nfl2k5_speed_threshold_code.py": "7578a910fadc5852901edaeca84d983f1a20e2e90ab227f00a678a08554d3e90",  # b780-cv5
         "mod_editor/core/nfl2k5_star_career.py": "9190271ff9fe7a641a0eee544876b92e7f756950ccb9a498727245d5622d7616",  # b778-st2
         "mod_editor/core/nfl2k5_star_career_code.py": "47b34490a21113803ba97a985378dcec237c39d53fed8fd6e9f498b82ec39098",  # b778-st2
