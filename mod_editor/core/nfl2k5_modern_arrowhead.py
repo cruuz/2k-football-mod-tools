@@ -139,8 +139,11 @@ def scene_targets(rec):
     return out
 
 
-def paint_scene(data, chunk):
-    """Author the decoded textures; the caller owns compression and wrappers."""
+def paint_scene(data, chunk, *, palette_cap=256):
+    """Author the decoded textures; the caller owns compression and wrappers.
+
+    ``palette_cap`` limits each authored texture's palette (b791: the combined field steps it down like Modern
+    MetLife when the graded field misses its fixed span; 256 is the pinned art)."""
     tx, inv, ResourceRecord, HEADER, stw = _tools()
     rec, decoded = _scene(data, chunk)
     span = bytes(data[chunk.offset:chunk.offset + HEADER.size + chunk.stored_size])
@@ -154,7 +157,7 @@ def paint_scene(data, chunk):
         dims = stw._mip_dimensions(width, height, levels)
         rgba = art_rgba(png, width, height)
         mips = stw._generate_dynamic_mips(rgba, dims)
-        palette, linear, quant = stw.quantize_levels(mips)
+        palette, linear, quant = stw.quantize_levels(mips, palette_cap)
         swizzled = b"".join(stw.swizzle_2d(indices, level.width, level.height, 1) for level, indices in zip(mips, linear))
         palette_payload = stw.palette_bytes(palette)
         pixel_start = system + int(row["pixel_offset"])
@@ -341,26 +344,98 @@ def apply_to_image(target, *, progress=None, retail_source=None):
     return receipt
 
 
-def combined_bundle(retail, graded, *, outer_index, settings=None):
-    """Compose art before colour grading and compress the shared field once."""
+#: b791: the authored textures' palette sizes the combined field steps down to (Modern MetLife's ladder).
+PALETTE_CAPS = (256, 128, 96, 64, 48, 32)
+#: The Arrowhead home venue's name in build notes.
+VENUE_NAME = "Arrowhead Stadium"
+
+
+def _art_painter(cap):
+    """A Modern colour field painter: the Arrowhead art with at most ``cap`` palette entries per texture."""
+    def paint(span, chunk):
+        return paint_scene(span, chunk, palette_cap=cap)
+    return paint
+
+
+def combined_field(retail, chunk, graded, *, outer_index, settings=None, name=None):
+    """(field span, detail) of one bundle's field: the Arrowhead art graded by Modern colour, refit in the retail span.
+
+    b791 (Coach Edwards' beta-79 builds stopped here on "cannot keep the retail scratch word:"): the field never stops
+    a build. The art and the grade are tried with every palette size of PALETTE_CAPS (256 first, the old output); then
+    the art WITHOUT the grade on this field (it keeps the CHIEFS end zones and midfield mark, the option's point, and
+    Modern surfaces repaints the grass of every home field anyway): refit with the retail wrapper kept, and else the
+    pinned Arrowhead-only refit, byte for byte what a build without Modern colour writes; last, the graded field as it
+    stands (the grade without the art). Every candidate is a complete, read-back-checked span of the same size. A
+    fallback carries ``kept`` (what was kept and why) and ``user_note`` (one plain line for the Build summary)."""
     from . import nfl2k5_modern_color as colour
+    tx, inv, ResourceRecord, HEADER, stw = _tools()
+    size = HEADER.size + chunk.stored_size
+    before = bytes(retail[chunk.offset:chunk.offset + size])
+    attempts = []
+    for cap in PALETTE_CAPS:
+        try:
+            after, detail = colour.modern_field_scene(before, outer_index=outer_index, settings=settings,
+                                                      painter=_art_painter(cap), rescue=True)
+        except (tx.TxtrError, ValueError) as exc:
+            attempts.append(f"art with the grade, {cap} colours: {exc}")
+            continue
+        require(len(after) == size and after[:HEADER.size] == before[:HEADER.size], "Combined field escaped its allocation")
+        return after, (dict(detail, palette_cap=cap, fit_attempts=attempts) if cap != PALETTE_CAPS[0] else detail)
+    label = f"{VENUE_NAME} ({name})" if name else VENUE_NAME
+    cause = "your colour settings leave" if settings is not None and colour.is_custom(settings) else "the colour grade leaves"
+    reason = " | ".join(attempts)
+    fallbacks = []
+    try:
+        painted, _receipt = paint_scene(before, tx.parse_chunks(before, allow_trailing=True)[0])
+        fitted, info = colour.fit_fixed_span(before, painted, rescue=True)
+        fallbacks.append(("art without the colour grade", fitted, dict(fit=info)))
+    except (tx.TxtrError, ValueError) as exc:
+        attempts.append(f"art without the grade, retail wrapper: {exc}")
+        try:
+            fitted, info = modern_scene_span(retail, chunk)
+            fallbacks.append(("art without the colour grade", fitted, dict(fit="Modern Arrowhead's own refit", **info)))
+        except (tx.TxtrError, ValueError) as exc2:
+            attempts.append(f"Modern Arrowhead's own refit: {exc2}")
+    current = bytes(graded[chunk.offset:chunk.offset + size])
+    fallbacks.append(("the colour-graded field without the Arrowhead art", current, {}))
+    for kept, after, extra in fallbacks:
+        back, _ = tx.decode_chunk(after, tx.parse_chunks(after, allow_trailing=True)[0])
+        if len(after) != size or after[:20] != before[:20]:
+            continue
+        if kept.startswith("art"):
+            note = (f"Modern Arrowhead: {label} keeps the Arrowhead field art without the colour grade on its field: "
+                    f"{cause} no room in its fixed slot.")
+        else:
+            note = (f"Modern Arrowhead: {label} keeps its colour-graded field without the Arrowhead field art: "
+                    f"{cause} no room in its fixed slot.")
+        return after, dict(extra, kept=dict(what=kept, reason=reason, attempts=attempts), user_note=note,
+                           decoded_bytes=len(back))
+    raise ModernArrowheadError(f"{label}: no field candidate fits: " + " | ".join(attempts))
+
+
+def combined_bundle(retail, graded, *, outer_index, settings=None, name=None):
+    """Compose art before colour grading and compress the shared field once (b791: see :func:`combined_field`)."""
     tx, inv, ResourceRecord, HEADER, stw = _tools()
     require(len(retail) == len(graded), "Combined bundle changed allocation")
     out = bytearray(graded)
     edits = []
-    for name, chunk in bundle_plan(retail):
+    for scene, chunk in bundle_plan(retail):
         size = HEADER.size + chunk.stored_size
         before = retail[chunk.offset:chunk.offset + size]
-        if name == "field":
-            after, detail = colour.modern_field_scene(before, outer_index=outer_index,
-                                                      settings=settings, modern_arrowhead=True)
+        if scene == "field":
+            after, detail = combined_field(retail, chunk, graded, outer_index=outer_index, settings=settings, name=name)
         else:
             after, detail = modern_scene_span(retail, chunk)
         require(len(after) == size, "Combined scene escaped its allocation")
         out[chunk.offset:chunk.offset + size] = after
-        edits.append(dict(kind=name, offset=chunk.offset, size=size,
+        edits.append(dict(kind=scene, offset=chunk.offset, size=size,
                           retail=sha(before), applied=sha(after), detail=detail))
     return bytes(out), edits
+
+
+def combined_notes(edits):
+    """The plain build-summary lines of one combined bundle's edits (empty when nothing was kept)."""
+    return [e["detail"]["user_note"] for e in edits if isinstance(e.get("detail"), dict) and e["detail"].get("user_note")]
 
 
 def apply_combined_to_image(target, *, retail_source, progress=None):
@@ -377,7 +452,7 @@ def apply_combined_to_image(target, *, retail_source, progress=None):
     say = progress or (lambda message, done, total: None)
     result = deepcopy(previous)
     combined = dict(art=art_pins(), bundles={})
-    todo = []
+    todo, notes = [], []
     with _outer_image()(retail_source) as source, _outer_image()(target) as output:
         for index, pin in enumerate(_pins()["bundles"]):
             say(f"Modern Arrowhead and colour: {pin['name']}", index, 9)
@@ -389,12 +464,18 @@ def apply_combined_to_image(target, *, retail_source, progress=None):
             graded = output.read(target_entry.virtual_offset, target_entry.size)
             row = result["bundle_pins"][pin["name"]]
             require(sha(graded) == row["applied_sha256"], "Colour bundle changed after preflight")
-            after, edits = combined_bundle(retail, graded, outer_index=pin["outer"], settings=previous["settings"])
+            after, edits = combined_bundle(retail, graded, outer_index=pin["outer"], settings=previous["settings"],
+                                           name=pin["name"])
             updated = dict(row, applied_sha256=sha(after), sites=[dict(site,
                 applied=sha(after[site["offset"]:site["offset"] + site["size"]])) for site in row["sites"]])
             result["bundle_pins"][pin["name"]] = updated
             combined["bundles"][pin["name"]] = dict(retail_sha256=pin["retail_sha256"],
                 applied_sha256=sha(after), sites=[{k:e[k] for k in ("kind", "offset", "size", "retail", "applied")} for e in edits])
+            kept = [dict(kind=e["kind"], **e["detail"]["kept"]) for e in edits
+                    if isinstance(e.get("detail"), dict) and e["detail"].get("kept")]
+            if kept:   # b791: a field kept by the fallback is recorded with its reason, and said in the Build summary
+                combined["bundles"][pin["name"]]["kept"] = kept
+                notes.extend(combined_notes(edits))
             # Each art span and every colour span must retain its pinned scope.
             require([(e["kind"], e["offset"], e["size"], e["retail"]) for e in edits] ==
                     [(s["kind"], s["offset"], s["size"], s["retail"]) for s in pin["sites"]], "Combined Arrowhead scope changed")
@@ -408,7 +489,10 @@ def apply_combined_to_image(target, *, retail_source, progress=None):
     result["modern_arrowhead"] = combined
     require(colour.image_status(target, receipt=result) == result["state"], "Combined colour read-back failed")
     colour._save_image_receipt(target, result)
-    return dict(verify(target), rewritten=len(todo), already_applied=0)
+    out = dict(verify(target), rewritten=len(todo), already_applied=0)
+    if notes:
+        out.update(user_notes=notes, kept=sorted(n for n, row in combined["bundles"].items() if row.get("kept")))
+    return out
 
 
 def record_pins(source, out_path=PINS_PATH, *, progress=None):

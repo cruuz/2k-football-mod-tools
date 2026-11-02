@@ -1171,11 +1171,13 @@ def _fit_encoded(span, decoded, encoded):
     fields = HEADER.unpack_from(span)
     stored, scratch = fields[1], fields[5]
     require(len(encoded) <= stored, "the stream exceeds its span")
+    reasons = []
     for filler in (lambda e: fill.fill_stream(e, decoded, stored, slack=min(scratch, 16))[0],
                    lambda e: colour._early_fill(e, decoded, stored)):
         try:
             filled = filler(encoded) if stored - len(encoded) > scratch else encoded
-        except tx.TxtrError:
+        except tx.TxtrError as exc:
+            reasons.append(f"fill: {exc}")
             continue
         padding = stored - len(filled)
         alias = tx.minimum_vc_lz_overlap_scratch(filled, stored, len(decoded))
@@ -1183,12 +1185,14 @@ def _fit_encoded(span, decoded, encoded):
             rebuilt = span[:HEADER.size] + filled + bytes(padding)
             try:
                 tx.check_vc_lz_native(rebuilt[HEADER.size:], stored, scratch, bytes(decoded))
-            except tx.TxtrError:
+            except tx.TxtrError as exc:
+                reasons.append(f"padding {padding}, needs {alias}, retail {scratch}, refused by the decoder check: {exc}")
                 continue
             back, info = tx.decompress_vc_lz(rebuilt[HEADER.size:], len(decoded))
             require(back == decoded and info.consumed_bytes == len(filled), "rebuilt stream failed its decode check")
             return rebuilt
-    raise ModernSurfacesError("the stream cannot keep the retail scratch word")
+        reasons.append(f"padding {padding}, needs {alias}, retail {scratch}")
+    raise ModernSurfacesError("the stream cannot keep the retail scratch word: " + ("; ".join(reasons) or "no fill was made"))
 
 
 def normal_span(span, kind, *, preserve_full=False, variant="full", strength=None):
@@ -1236,7 +1240,7 @@ def normal_span(span, kind, *, preserve_full=False, variant="full", strength=Non
     if flat == output:
         return bytes(span), "retail indices, flattened palette"
     try:
-        rebuilt, _fit = colour.fit_fixed_span(span, flat)
+        rebuilt, _fit = colour.fit_fixed_span(span, flat, rescue=True)
     except tx.TxtrError:
         rebuilt = None
     if rebuilt is not None:
@@ -1247,7 +1251,11 @@ def normal_span(span, kind, *, preserve_full=False, variant="full", strength=Non
 
 
 def divots_span(span, family, grass_mean=None):
-    """Divots on synthetic turf vanish (every palette alpha 0); on grass their greens follow the new grass."""
+    """Divots on synthetic turf vanish (every palette alpha 0); on grass their greens follow the new grass.
+
+    b791: the refit tries Modern colour's rescue candidates; when even those cannot keep the span, the fitter's
+    error (naming every candidate) is raised and the callers keep the layer as it was (:func:`surface_bundle`, the
+    practice field), never stopping the build."""
     tx, HEADER = _tools()
     chunk = tx.parse_chunks(span, allow_trailing=True)[0]
     output, info0 = tx.decode_chunk(span, chunk)
@@ -1272,7 +1280,7 @@ def divots_span(span, family, grass_mean=None):
     if info0 is None:
         return span[:HEADER.size] + bytes(edited) + span[HEADER.size + len(output):]
     from . import nfl2k5_modern_color as colour
-    rebuilt, _fit = colour.fit_fixed_span(span, bytes(edited))
+    rebuilt, _fit = colour.fit_fixed_span(span, bytes(edited), rescue=True)
     check, _ = tx.decode_chunk(rebuilt, tx.parse_chunks(rebuilt, allow_trailing=True)[0])
     require(check == bytes(edited), "divots refit read-back differs")
     return rebuilt
@@ -1327,13 +1335,15 @@ def _fit(span, decoded, *, optimal):
                 rebuilt = span[:HEADER.size] + filled + bytes(padding)
                 try:
                     tx.check_vc_lz_native(rebuilt[HEADER.size:], stored, scratch, bytes(decoded))
-                except tx.TxtrError:
+                except tx.TxtrError as exc:
+                    attempts.append(f"{name}/{fill_name}: padding {padding}, needs {alias}, retail {scratch}, "
+                                    f"refused by the decoder check: {exc}")
                     continue
                 back, info = tx.decompress_vc_lz(rebuilt[HEADER.size:], len(decoded))
                 require(back == decoded and info.consumed_bytes == len(filled), "rebuilt stream failed its decode check")
                 return rebuilt, dict(encoder=name, fill=fill_name, padding_bytes=padding)
             attempts.append(f"{name}/{fill_name}: padding {padding}, needs {alias}, retail {scratch}")
-    raise tx.TxtrError("; ".join(attempts))
+    raise tx.TxtrError("; ".join(attempts) or "no candidate stream")
 
 
 def field_span(span, *, look, cls, rig, colour_settings=None, tint=(255, 255, 255), target=None,
@@ -1427,7 +1437,7 @@ def surface_bundle(data, name, *, indoor, colour_settings=None, overrides=None,
                                             colour_settings=colour_settings, tint=tint, cap=256, detail=2,
                                             target=venue_target(prefix, look, cls),
                                             response=venue_response(prefix, cls))
-            after, fit = colour.fit_fixed_span(span, painted)
+            after, fit = colour.fit_fixed_span(span, painted, rescue=True)
             return after, dict(receipt, refit=True, palette_cap=256, **fit)
         rebuilt, loan_receipt = midfield.refit_washington_field(data, name, painter, normal_span=new_normal)
         out = bytearray(rebuilt)
@@ -1441,10 +1451,15 @@ def surface_bundle(data, name, *, indoor, colour_settings=None, overrides=None,
         new_normal, normal_variant = normal_span(bytes(data[at:at + size]), kind, preserve_full=preserve_full_normal,
                                                  variant=variant, strength=strength)
         out[at:at + size] = new_normal
+    kept = []
     if "divots" in sites and (not again or preserve_full_normal):
         at, size = sites["divots"]
         grass_mean = [v * (tt / 255.0) for v, tt in zip(frec["map_mean"], tint)]
-        out[at:at + size] = divots_span(bytes(data[at:at + size]), family, grass_mean)
+        try:
+            out[at:at + size] = divots_span(bytes(data[at:at + size]), family, grass_mean)
+        except ValueError as exc:   # b791: the wear layer is cosmetic; it keeps its bytes and the build goes on
+            kept.append(dict(site="divots", reason=str(exc) or type(exc).__name__,
+                             user_note=kept_note(name, "divot layer", colour_settings)))
     if family == "synthetic":
         at, _size = sites["fldd"]
         struct.pack_into("<I", out, at + 4, SYNTHETIC_WEAR)
@@ -1464,7 +1479,61 @@ def surface_bundle(data, name, *, indoor, colour_settings=None, overrides=None,
                    detail_strength=strength, edits=edits)
     if loan_receipt is not None:
         receipt["field_normal_loan"] = loan_receipt
+    if kept:
+        receipt["kept"] = kept
     return bytes(out), receipt
+
+
+def venue_label(name):
+    """'Arrowhead Stadium (s13ad.iff)' for a home bundle: the venue table's 2026 home stadium and the file."""
+    try:
+        venue = venues().get(name[:3], {}).get("venue")
+    except (ModernSurfacesError, OSError, ValueError, KeyError, AttributeError):
+        venue = None
+    return f"{venue} ({name})" if venue else name
+
+
+def _custom_colour(colour_settings):
+    if not colour_settings:
+        return False
+    from . import nfl2k5_modern_color as colour
+    try:
+        return colour.is_custom(colour_settings)
+    except ValueError:
+        return False
+
+
+def kept_note(name, what, colour_settings=None, why=None):
+    """One plain build-summary line for a part of a home bundle this option kept as it was (b791)."""
+    cause = why or ("your colour settings leave no room in its fixed slot" if _custom_colour(colour_settings)
+                    else "the new colours leave no room in its fixed slot")
+    return f"Modern surfaces: {venue_label(name)} keeps its {what} as it was: {cause}."
+
+
+def _plain_cause(exc):
+    """The plain clause of a kept bundle's note: a slot with no room, or that its surface could not be built."""
+    text = str(exc)
+    if any(key in text for key in ("does not fit", "scratch word", "exceeds", "needs more than", "cannot fit")):
+        return None
+    return f"its new surface could not be built ({type(exc).__name__}: {text[:160]})"
+
+
+def kept_bundle(name, data, indoor, overrides, colour_settings, exc):
+    """(bundle bytes unchanged, receipt) for a home bundle whose surface_bundle raised (b791): the build goes on."""
+    look = family = cls = rig = None
+    try:
+        prefix, t, _w = bundle_parts(name)
+        look = venue_look(prefix, overrides)
+        family = LOOKS[look]["family"]
+        cls = light_class(name, indoor)
+        rig = rig_name(cls, t)
+    except (ModernSurfacesError, ValueError, KeyError):
+        pass
+    reason = f"{type(exc).__name__}: {exc}"
+    note = kept_note(name, "field and surface", colour_settings, _plain_cause(exc))
+    return bytes(data), dict(name=name, look=look, family=family, light=cls, rig=rig, field={}, normal=None,
+                             detail_strength=None, edits=[],
+                             kept=[dict(site="bundle", reason=reason, user_note=note)])
 
 
 # --- disc images -----------------------------------------------------------------------------------------------------
@@ -1644,6 +1713,9 @@ def bundle_report(archive, name, entry, receipt, *, deep=False):
     data = archive.read(entry.virtual_offset, entry.size)
     if row is not None and sha(data) == row.get("applied_sha256"):
         return dict(state="applied", reason="receipt")
+    if row is not None and any(k.get("site") == "bundle" for k in row.get("kept") or ()):
+        # b791: the build kept this bundle as it was (its reason is in the receipt); a later writer may change it
+        return dict(state="applied", reason="kept as it was by this option (see the receipt)")
     try:
         strengths = _receipt_strengths(receipt)
         normal, kind, variant = _normal_state(name, data) if strengths is None else _normal_state(name, data, strengths)
@@ -1730,7 +1802,10 @@ def _job(args):
         options["tiled_normal"] = True
     if len(selected) > 3 and selected[3] is not None:
         options["detail_strength"] = selected[3]
-    out, rec = surface_bundle(data, name, indoor=indoor, colour_settings=settings, overrides=overrides, **options)
+    try:
+        out, rec = surface_bundle(data, name, indoor=indoor, colour_settings=settings, overrides=overrides, **options)
+    except Exception as exc:  # noqa: BLE001 - b791: a cosmetic bundle keeps its bytes, the other bundles proceed
+        out, rec = kept_bundle(name, data, indoor, overrides, settings, exc)
     return name, out, rec
 
 
@@ -1817,6 +1892,7 @@ def apply_to_image(target, *, progress=None, workers=None, overrides=None, prese
             say(f"Modern surfaces: {index + 1} of {len(jobs)} bundles", index + 1, len(jobs))
     receipt = dict(schema=RECEIPT_SCHEMA, label=LABEL, runtime_witnessed=False, revision=TRANSFORM_REVISION,
                    overrides=overrides or {}, colour=settings is not None, detail_strength=strengths, bundles={})
+    notes = []
     if tiled_selected:
         receipt["tiled_normal_prefixes"] = sorted(tiled_selected)
     if selected:
@@ -1842,6 +1918,9 @@ def apply_to_image(target, *, progress=None, workers=None, overrides=None, prese
                                             target=rec["field"].get("target"),
                                             edits=[{k: e[k] for k in ("kind", "offset", "size", "before", "after")}
                                                    for e in rec["edits"]])
+            if rec.get("kept"):   # b791: what this bundle kept as it was, why, and the line the Build summary shows
+                receipt["bundles"][name]["kept"] = rec["kept"]
+                notes.extend(row["user_note"] for row in rec["kept"] if row.get("user_note"))
             if colour_receipt is not None:
                 _update_colour_receipt(colour_receipt, name, out)
             if venues_receipt is not None and name in (venues_receipt.get("bundles") or {}):
@@ -1859,11 +1938,18 @@ def apply_to_image(target, *, progress=None, workers=None, overrides=None, prese
     save_receipt(target, receipt)
     require(image_status(target) == "applied", "the Modern surfaces read-back failed")
     looks = {}
-    for row in receipt["bundles"].values():
-        looks[row["look"]] = looks.get(row["look"], 0) + 1
-    return dict(state="applied", label=LABEL, runtime_witnessed=False, bundles=len(receipt["bundles"]), looks=looks,
-                colour=settings is not None, detail_strength=strengths, detail_fallbacks=sorted(n for n, r in receipt["bundles"].items() if r["normal"] != "full"),
-                reduced_patterns=sorted(n for n, r in receipt["bundles"].items() if (r.get("pattern_detail") or 2) < 2))
+    whole = {n for n, r in receipt["bundles"].items() if any(k.get("site") == "bundle" for k in r.get("kept") or ())}
+    for name, row in receipt["bundles"].items():
+        if name not in whole:
+            looks[row["look"]] = looks.get(row["look"], 0) + 1
+    result = dict(state="applied", label=LABEL, runtime_witnessed=False, bundles=len(receipt["bundles"]), looks=looks,
+                  colour=settings is not None, detail_strength=strengths,
+                  detail_fallbacks=sorted(n for n, r in receipt["bundles"].items() if n not in whole and r["normal"] != "full"),
+                  reduced_patterns=sorted(n for n, r in receipt["bundles"].items() if (r.get("pattern_detail") or 2) < 2))
+    if notes:
+        result["kept"] = {n: [k["site"] for k in r["kept"]] for n, r in sorted(receipt["bundles"].items()) if r.get("kept")}
+        result["user_notes"] = notes
+    return result
 
 
 # --- pins (developer) -------------------------------------------------------------------------------------------------

@@ -3872,3 +3872,5 @@ tests/mod_editor/test_b779_rc1_roster_capacity.py
 # b779 ag1: capacity arena 0xCA000 (4,096 player records), one layout helper, beta-78 saves migrate
 tests/mod_editor/test_b779_ag1_capacity_arena.py
 tests/mod_editor/test_b779_up2_zero_footer.py
+# b791 h1: stadium refits never stop a build (fitter reasons, rescue candidates, kept spans named)
+tests/mod_editor/test_b791_stadium_refits.py

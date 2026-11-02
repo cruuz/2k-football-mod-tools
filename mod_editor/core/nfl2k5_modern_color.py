@@ -32,6 +32,7 @@ from __future__ import annotations
 
 import colorsys
 import hashlib
+import itertools
 import json
 import math
 import os
@@ -859,12 +860,121 @@ def _early_fill(encoded, decoded, cap):
     return filled
 
 
-def fit_fixed_span(span, decoded):
+#: b791 (Coach Edwards' beta-79 builds stopped on "cannot keep the retail scratch word:" with nothing after the colon):
+#: the one stream shape that passes the padding and in-place overlap checks and still fails the retail decoder model.
+#: A stream that fills its stored body to the last byte AND ends on a full group of eight tokens makes the decoder at
+#: 0x4dc00 fetch one more flag byte (0x4dcb4, before its output test at 0x4dcc0) from one byte past its allocation.
+#: (Its high-byte-first match read and backward copy cannot differ from the overlap check for these streams: both code
+#: bytes are read before any write, and every encoder and fill here keeps a match no longer than its distance.)
+FINAL_FETCH_REASON = ("the stream fills the slot to its last byte and ends on a full group of eight tokens, so the "
+                      "decoder would fetch its next flag byte from past the slot")
+#: The fill aimed this many bytes short of the stored body by the rescue candidates (when the scratch word allows it).
+RESCUE_SHORT = (1, 2)
+#: Parity-shifted variants of one full fill tried by the rescue candidates.
+RESCUE_SHIFTS = 6
+
+
+def _token_count(stream):
+    """Tokens in a VC-LZ stream; the final flag group is full when this is a multiple of eight."""
+    import nfl_vc_lz_fill as fill  # noqa: E402
+    return len(fill.parse_tokens(stream)[3])
+
+
+def shift_final_group(stream, decoded, *, limit=RESCUE_SHIFTS):
+    """Yield streams of the same length and decoded bytes whose final flag group is NOT full (b791).
+
+    Three consecutive literals that repeat earlier output inside the window become one match (two tokens and one byte
+    fewer) and one literal is split off the end of another match of four or more bytes (one token and one byte more).
+    The length is unchanged, the token count drops by one (the last group holds seven tokens), so the decoder stops
+    without another flag fetch. Merges are taken from the end of the stream backwards, each first with the nearest
+    EARLIER split (the extra input byte is read before the merge removes one, so no later boundary needs more in-place
+    room) and then with the nearest later one (one more byte of room between the two, where the stream is usually far
+    ahead of its output: a fill leaves its literals at the front). The caller checks the overlap, the decoder model and
+    the decode of each. Every match stays no longer than its distance. Yields nothing when the final group is not full
+    or no such pair exists.
+    """
+    import nfl_vc_lz_fill as fill  # noqa: E402
+    size, tag, bits, tokens = fill.parse_tokens(stream)
+    if len(tokens) % 8:
+        return
+    max_distance = (1 << bits) - 1
+    positions, at = [], 0
+    for token in tokens:
+        positions.append(at)
+        at += token[2] if token[0] == "M" else 1
+    data = bytes(decoded)
+    splits = [j for j, token in enumerate(tokens) if token[0] == "M" and token[2] >= 4]
+    if not splits:
+        return
+    from bisect import bisect_left
+    made = 0
+    for i in range(len(tokens) - 3, -1, -1):
+        if not (tokens[i][0] == tokens[i + 1][0] == tokens[i + 2][0] == "L"):
+            continue
+        q = positions[i]
+        found = data.rfind(data[q:q + 3], max(0, q - max_distance), q)
+        if found < 0:
+            continue
+        k = bisect_left(splits, i)
+        for j in ((splits[k - 1] if k else None), (splits[k] if k < len(splits) else None)):
+            if j is None:
+                continue
+            token, p = tokens[j], positions[j]
+            split = [("M", token[1], token[2] - 1), ("L", data[p + token[2] - 1])]
+            if j < i:
+                merged = tokens[:j] + split + tokens[j + 1:i] + [("M", q - found, 3)] + tokens[i + 3:]
+            else:
+                merged = tokens[:i] + [("M", q - found, 3)] + tokens[i + 3:j] + split + tokens[j + 1:]
+            out = fill.serialize(size, tag, bits, merged)
+            if len(out) == len(stream) and len(merged) % 8:
+                made += 1
+                yield out
+                if made >= limit:
+                    return
+
+
+def _rescue_streams(encoded, decoded, stored, scratch):
+    """(label, stream) candidates tried only after the standard four all fail (b791), each built to end inside its slot:
+
+    * "stop N short": the trailing fill aimed 1 or 2 bytes short of the stored body (when the retail scratch word
+      allows that padding), so the decoder's last flag fetch reads a real byte of the slot; this is also the fullest
+      fill the overlap check can take with padding, for spans the standard fills (up to 16 bytes short, or none when
+      the stream is already within the scratch word) leave short of in-place room;
+    * "full fill": the trailing fill to the last byte (the lowest in-place need of all), and when its final flag group
+      is full, the same stream with that group's parity shifted (:func:`shift_final_group`): the only way to fit a span
+      whose scratch word is 0 or whose in-place room needs every byte.
+    """
+    tx = _tools()[0]
+    import nfl_vc_lz_fill as fill  # noqa: E402
+    if scratch >= 1:
+        for short in RESCUE_SHORT:
+            if short <= scratch and len(encoded) <= stored - short:
+                try:
+                    yield f"stop {short} short", fill.fill_stream(encoded, decoded, stored - short, slack=0)[0]
+                except tx.TxtrError:
+                    pass
+    try:
+        full = fill.fill_stream(encoded, decoded, stored, slack=0)[0] if len(encoded) < stored else encoded
+    except tx.TxtrError:
+        return
+    yield "full fill", full
+    if len(full) == stored:
+        for index, shifted in enumerate(shift_final_group(full, decoded), 1):
+            yield f"full fill, last group shifted ({index})", shifted
+
+
+def fit_fixed_span(span, decoded, *, rescue=False):
     """Recompress ``decoded`` into ``span`` keeping the 32-byte wrapper byte-identical.
 
     Wrapper word +0x14 is the loader's in-place scratch; raising it hung the
     loader on 2026-09-03, so every candidate is checked against the retail value:
     greedy then optimal parsing, each with the trailing fill and the front fill.
+
+    b791: every candidate's outcome is recorded, so a refusal always names each one (its padding, its in-place need
+    and, when the decoder model refused it, that reason); an identical stream is checked once. With ``rescue`` the
+    candidates of :func:`_rescue_streams` follow when the standard four all fail. The standard four come first and
+    their outputs are unchanged, so a span that fitted before fits to the same bytes; callers that step down a
+    palette ladder keep ``rescue`` off so their pinned rungs stay where they are.
     """
     tx, inv, ResourceRecord, HEADER = _tools()
     import nfl_vc_lz_fill as fill  # noqa: E402
@@ -876,9 +986,37 @@ def fit_fixed_span(span, decoded):
     declared, tag = struct.unpack_from("<II", prefix)
     bits = prefix[8]
     require(declared == len(decoded), "template stream declares another size")
-    attempts = []
+    attempts, seen = [], {}
+    decoded = bytes(decoded)
+
+    def check(label, filled):
+        """(rebuilt span, padding, in-place need) for a candidate the decoder accepts, else None (reason recorded)."""
+        digest = hashlib.sha256(filled).digest()
+        if digest in seen:
+            attempts.append(f"{label}: the same stream as {seen[digest]}")
+            return None
+        seen[digest] = label
+        padding = stored - len(filled)
+        alias = tx.minimum_vc_lz_overlap_scratch(filled, stored, len(decoded))
+        if padding > scratch or alias > scratch:
+            attempts.append(f"{label}: padding {padding}, needs {alias}, retail {scratch}")
+            return None
+        rebuilt = span[:HEADER.size] + filled + bytes(padding)
+        try:
+            tx.check_vc_lz_native(rebuilt[HEADER.size:], stored, scratch, decoded)
+        except tx.TxtrError as exc:
+            why = str(exc) or type(exc).__name__
+            if padding == 0 and _token_count(filled) % 8 == 0:
+                why += f" ({FINAL_FETCH_REASON})"
+            attempts.append(f"{label}: padding {padding}, needs {alias}, retail {scratch}, refused by the decoder check: {why}")
+            return None
+        back, info = tx.decompress_vc_lz(rebuilt[HEADER.size:], len(decoded))
+        require(back == decoded and info.consumed_bytes == len(filled), "rebuilt stream failed its decode check")
+        return rebuilt, padding, alias
+
     encoders = (("greedy", lambda: tx.compress_vc_lz(decoded, stream_tag=tag, offset_bits=bits, max_encoded_size=stored, verify_roundtrip=True)[0]),
                 ("optimal", lambda: fill.compress_optimal(decoded, stream_tag=tag, offset_bits=bits)))
+    streams = []
     for encoder_name, encode in encoders:
         try:
             encoded = encode()
@@ -888,6 +1026,7 @@ def fit_fixed_span(span, decoded):
         if len(encoded) > stored:
             attempts.append(f"{encoder_name}: {len(encoded)} bytes exceeds {stored}")
             continue
+        streams.append((encoder_name, encoded))
         for fill_name, filler in (("trailing", lambda e: fill.fill_stream(e, decoded, stored, slack=min(scratch, 16))[0]),
                                   ("front", lambda e: _early_fill(e, decoded, stored))):
             try:
@@ -895,25 +1034,60 @@ def fit_fixed_span(span, decoded):
             except tx.TxtrError as exc:
                 attempts.append(f"{encoder_name}/{fill_name}: {exc}")
                 continue
-            padding = stored - len(filled)
-            alias = tx.minimum_vc_lz_overlap_scratch(filled, stored, len(decoded))
-            if padding <= scratch and alias <= scratch:
-                rebuilt = span[:HEADER.size] + filled + bytes(padding)
-                try:
-                    tx.check_vc_lz_native(rebuilt[HEADER.size:], stored, scratch, bytes(decoded))
-                except tx.TxtrError:
-                    continue
-                back, info = tx.decompress_vc_lz(rebuilt[HEADER.size:], len(decoded))
-                require(back == decoded and info.consumed_bytes == len(filled), "rebuilt stream failed its decode check")
+            fitted = check(f"{encoder_name}/{fill_name}", filled)
+            if fitted is not None:
+                rebuilt, padding, alias = fitted
                 return rebuilt, dict(encoder=encoder_name, fill=fill_name, padding_bytes=padding, alias_scratch=alias, scratch_bytes=scratch)
-            attempts.append(f"{encoder_name}/{fill_name}: padding {padding}, needs {alias}, retail {scratch}")
-    raise tx.TxtrError("cannot keep the retail scratch word: " + "; ".join(attempts))
+    if rescue:
+        for encoder_name, encoded in streams:
+            for fill_name, filled in _rescue_streams(encoded, decoded, stored, scratch):
+                fitted = check(f"{encoder_name}/{fill_name}", filled)
+                if fitted is not None:
+                    rebuilt, padding, alias = fitted
+                    return rebuilt, dict(encoder=encoder_name, fill=fill_name, padding_bytes=padding, alias_scratch=alias,
+                                         scratch_bytes=scratch, rescue=True)
+        # Last: another offset width (the stream's own prefix byte; the wrapper is untouched). A stream that fills its
+        # slot exactly with no run of literals cannot change its last group's parity at the same size (every such
+        # shift consumes literals), so a span whose scratch word is 0 needs a different parse with room to fill. Only
+        # when a stream of the template width fitted its slot: a span that is simply too big is the caller's to step
+        # down (palette ladders), not worth minutes of re-encoding here.
+        if streams:
+            for width in rescue_widths(bits):
+                for encoder_name, encode in (
+                        ("greedy", lambda: tx.compress_vc_lz(decoded, stream_tag=tag, offset_bits=width,
+                                                            max_encoded_size=stored, verify_roundtrip=True)[0]),
+                        ("optimal", lambda: fill.compress_optimal(decoded, stream_tag=tag, offset_bits=width))):
+                    label = f"{encoder_name} {width}-bit"
+                    try:
+                        encoded = encode()
+                    except tx.TxtrError as exc:
+                        attempts.append(f"{label}: {exc}")
+                        continue
+                    if len(encoded) > stored:
+                        attempts.append(f"{label}: {len(encoded)} bytes exceeds {stored}")
+                        continue
+                    standard = (("trailing", fill.fill_stream(encoded, decoded, stored, slack=min(scratch, 16))[0]
+                                 if stored - len(encoded) > scratch else encoded),)
+                    for fill_name, filled in itertools.chain(standard, _rescue_streams(encoded, decoded, stored, scratch)):
+                        fitted = check(f"{label}/{fill_name}", filled)
+                        if fitted is not None:
+                            rebuilt, padding, alias = fitted
+                            return rebuilt, dict(encoder=encoder_name, fill=fill_name, padding_bytes=padding,
+                                                 alias_scratch=alias, scratch_bytes=scratch, rescue=True,
+                                                 offset_bits=width)
+    raise tx.TxtrError("cannot keep the retail scratch word: " + ("; ".join(attempts) or "no encoder produced a stream"))
 
 
-def modern_field_scene(span, *, outer_index=0, settings=None, modern_arrowhead=False, painter=None):
+def rescue_widths(bits):
+    """Other offset widths the rescue candidates try, nearest first (the retail spans use 10 to 14)."""
+    return tuple(w for w in (bits - 1, bits + 1, bits - 2, bits + 2) if 9 <= w <= 14)
+
+
+def modern_field_scene(span, *, outer_index=0, settings=None, modern_arrowhead=False, painter=None, rescue=False):
     """Refit one compressed ``field`` SCNE span with the broadcast grass edits.
 
-    Returns (new span, receipt). The span keeps its size and wrapper structure.
+    Returns (new span, receipt). The span keeps its size and wrapper structure. ``rescue`` is passed to
+    :func:`fit_fixed_span` (b791: on for the callers that keep a span when it cannot fit, off for palette ladders).
     """
     tx, inv, ResourceRecord, HEADER = _tools()
     chunks = tx.parse_chunks(span, allow_trailing=True)
@@ -1010,13 +1184,13 @@ def modern_field_scene(span, *, outer_index=0, settings=None, modern_arrowhead=F
                 receipt["vertex_tints"] += 1
     if bytes(out) == output:
         return bytes(span), dict(receipt, refit=False)
-    rebuilt, info = fit_fixed_span(span, bytes(out))
+    rebuilt, info = fit_fixed_span(span, bytes(out), rescue=rescue)
     check, _ = tx.decode_chunk(rebuilt, tx.parse_chunks(rebuilt, allow_trailing=True)[0])
     require(check == bytes(out), "refit read-back differs")
     return rebuilt, dict(receipt, refit=True, **info)
 
 
-def modern_normal_span(span, settings=None):
+def modern_normal_span(span, settings=None, *, rescue=False):
     """Flatten the detail_normal palette inside its chunk span (raw or compressed)."""
     tx, inv, ResourceRecord, HEADER = _tools()
     chunks = tx.parse_chunks(span, allow_trailing=True)
@@ -1036,13 +1210,13 @@ def modern_normal_span(span, settings=None):
         # Raw chunk: the decoded bytes follow the 32-byte wrapper directly.
         require(span[HEADER.size:HEADER.size + len(output)] == output, "raw chunk layout")
         return span[:HEADER.size] + bytes(edited) + span[HEADER.size + len(output):], dict(refit=False, raw=True)
-    rebuilt, fit_info = fit_fixed_span(span, bytes(edited))
+    rebuilt, fit_info = fit_fixed_span(span, bytes(edited), rescue=rescue)
     check, _ = tx.decode_chunk(rebuilt, tx.parse_chunks(rebuilt, allow_trailing=True)[0])
     require(check == bytes(edited), "detail_normal refit read-back differs")
     return rebuilt, dict(refit=True, **fit_info)
 
 
-def modern_divots_span(span, settings=None):
+def modern_divots_span(span, settings=None, *, rescue=False):
     """Fade the divots wear layer: greens re-graded like the turf, alpha scaled down."""
     tx, inv, ResourceRecord, HEADER = _tools()
     chunks = tx.parse_chunks(span, allow_trailing=True)
@@ -1062,7 +1236,7 @@ def modern_divots_span(span, settings=None):
     if decode_info is None:
         require(span[HEADER.size:HEADER.size + len(output)] == output, "raw chunk layout")
         return span[:HEADER.size] + bytes(edited) + span[HEADER.size + len(output):], dict(refit=False, raw=True)
-    rebuilt, fit_info = fit_fixed_span(span, bytes(edited))
+    rebuilt, fit_info = fit_fixed_span(span, bytes(edited), rescue=rescue)
     check, _ = tx.decode_chunk(rebuilt, tx.parse_chunks(rebuilt, allow_trailing=True)[0])
     require(check == bytes(edited), "divots refit read-back differs")
     return rebuilt, dict(refit=True, **fit_info)
@@ -1288,15 +1462,16 @@ def _refit_span(kind, span, outer_index, settings=None):
     A handful of retail streams leave no room. Such a field scene keeps its retail
     colour map (the stadium still gets the light rigs, the tint and, when its own
     bump span fits, the flatter bump map); such a bump map stays retail. The
-    receipt names every unfit span.
+    receipt names every unfit span. b791: the rescue candidates are tried before a
+    span is kept (a span the standard four fit keeps exactly its old bytes).
     """
     tx, inv, ResourceRecord, HEADER = _tools()
     try:
         if kind == "field":
-            return modern_field_scene(span, outer_index=outer_index, settings=settings)
+            return modern_field_scene(span, outer_index=outer_index, settings=settings, rescue=True)
         if kind == "divots":
-            return modern_divots_span(span, settings)
-        return modern_normal_span(span, settings)
+            return modern_divots_span(span, settings, rescue=True)
+        return modern_normal_span(span, settings, rescue=True)
     except tx.TxtrError as exc:
         message = str(exc)
         if "cannot keep the retail scratch word" in message or "exceeds" in message or "needs more than" in message:
@@ -1484,9 +1659,33 @@ def apply_to_image(target, *, progress=None, workers=None, settings=None, source
                     dict(kind=e["kind"], offset=e["offset"], size=e["size"], retail=e["before_sha256"], applied=e["after_sha256"]) for e in edits])
                 if index % 40 == 0:
                     say(f"Colour & lighting: writing stadium bundles ({index + 1} of {len(todo)})", index + 1, len(todo))
+    note = unfit_note(receipt["edits"], settings)
+    if note:   # b791: spans kept retail are said in the build log and the Build summary, not only in this receipt
+        receipt["user_notes"] = [note]
     require(image_status(target, receipt=receipt) == receipt["state"], "Colour & lighting bundles failed their read-back")
     _save_image_receipt(target, receipt)
     return receipt
+
+
+UNFIT_NAMES = 6
+KIND_WORDS = {"field": "field", "normal": "bump map", "divots": "divot layer"}
+
+
+def unfit_note(edits, settings=None):
+    """One plain line naming the stadium textures the grade kept retail because their fixed slot had no room (b791),
+    or None. ``edits`` is the receipt's {bundle: [edit, ...]}; each kept span carries its reason as ``unfit``."""
+    rows = sorted((name, edit["kind"]) for name, bundle_edits in (edits or {}).items() for edit in bundle_edits
+                  if isinstance(edit, dict) and edit.get("unfit"))
+    if not rows:
+        return None
+    shown = ", ".join(f"{name} {KIND_WORDS.get(kind, kind)}" for name, kind in rows[:UNFIT_NAMES])
+    more = f" and {len(rows) - UNFIT_NAMES} more" if len(rows) > UNFIT_NAMES else ""
+    cause = "your colour settings leave" if is_custom(settings) else "the grade leaves"
+    if len(rows) == 1:
+        return (f"Modern colour: 1 stadium texture keeps its retail colours ({shown}): {cause} no room in its fixed "
+                "slot. The receipt beside the disc says why.")
+    return (f"Modern colour: {len(rows)} stadium textures keep their retail colours ({shown}{more}): {cause} no room "
+            "in their fixed slots. The receipt beside the disc names each one and why.")
 
 
 def _game_folder(source):

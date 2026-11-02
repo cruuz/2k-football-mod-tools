@@ -2119,7 +2119,9 @@ def fit_keep_scratch(decoded, system_bytes, video_bytes, span):
                 body = filled + bytes(padding)
                 try:
                     tx.check_vc_lz_native(body, stored, scratch, bytes(decoded))
-                except tx.TxtrError:
+                except tx.TxtrError as exc:   # b791: a refusal is named, never an empty list after the colon
+                    attempts.append(f"{ename}/{fname}: padding {padding}, alias {alias}, retail scratch {scratch}, "
+                                    f"refused by the decoder check: {exc}")
                     continue
                 back, info = tx.decompress_vc_lz(body, len(decoded))
                 sb.require(back == bytes(decoded) and info.consumed_bytes == len(filled), "refit field failed its decode check")
@@ -2127,7 +2129,8 @@ def fit_keep_scratch(decoded, system_bytes, video_bytes, span):
                 return chunk, dict(encoder=ename, fill=fname, encoded=len(encoded), padding=padding, alias_scratch=alias,
                                    scratch=scratch)
             attempts.append(f"{ename}/{fname}: padding {padding}, alias {alias}, retail scratch {scratch}")
-    raise sb.ScneBuildError("the field does not fit with the retail scratch word: " + "; ".join(attempts))
+    raise sb.ScneBuildError("the field does not fit with the retail scratch word: "
+                            + ("; ".join(attempts) or "no encoder produced a stream"))
 
 
 def midfield_span(span, name, logo, *, caps=(256, 128, 64)):
