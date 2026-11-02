@@ -200,10 +200,13 @@ def play_problems(config: Path, *, hash_file=None) -> tuple[str, ...]:
             elif unit is not None and unit in KNOWN_4627_UNITS:
                 pass                    # the tested BIOS saved at another size (256 KiB, 512 KiB or 1 MiB)
             else:
-                # b779 rv1 / b780-b11: the game only needs a 4627 kernel, and a BIOS file keeps that kernel scrambled
-                # (compressed and encrypted), so its number cannot be read from the file. Only the one image the project
-                # tested is recognised by its bytes; any other is "not confirmed", never "wrong". The game itself checks
-                # the kernel when it starts and, if it is not 4627, stops with a screen that prints the number it found.
+                # b779 rv1 / b780-b11: the game only needs a 4627 kernel, and a BIOS file keeps that kernel packed: in the
+                # tested image everything between the boot table and the boot loader is uniformly random bytes (no
+                # cabinet-LZX stream starts anywhere in it, and the image's own boot code runs an RC4-style decrypt), so
+                # the number cannot be read from the file without the console's secret boot keys, which Studio must not
+                # carry. Only the one image the project tested is recognised by its bytes; any other is "not confirmed",
+                # never "wrong". The game itself checks the kernel when it starts and, if it is not 4627, stops with a
+                # screen that prints the number it found and which check failed (nfl2k5_k128, tools/k128/require_guard.S).
                 fingerprint = (unit[1] if unit is not None else "")[:12]
                 problems.append("Flash ROM (BIOS) " + os.fspath(bios) + " is not the Complex 4627 image this build was "
                                 "tested with" + (" (its fingerprint starts " + fingerprint + ")" if fingerprint else "")
