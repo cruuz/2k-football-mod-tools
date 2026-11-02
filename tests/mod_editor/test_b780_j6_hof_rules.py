@@ -186,6 +186,15 @@ class NativeParityTests(unittest.TestCase):
         with self.assertRaises(rules.HofError):
             rules.history_words(Q(passing_touchdowns=40000))
 
+    def test_studio_texts_follow_the_house_rules(self):
+        self.assertLessEqual(len(rules.UI_LABEL), 60)
+        for text in (rules.UI_LABEL, rules.RULE_HELP, rules.POPUP_TITLE):
+            self.assertTrue(text.isascii(), text)
+            self.assertNotIn("\u2014", text)
+        for number in (str(rules.BAR), str(rules.FLOOR), str(rules.MAX_CLASS), str(rules.MIN_CLASS)):
+            self.assertIn(number, rules.RULE_HELP)
+        self.assertIn("Pro Bowls", rules.RULE_HELP)
+
     def test_c_header_carries_the_constants(self):
         text = rules.c_header()
         self.assertIn("HOF_GROUP[17] = {" + ", ".join(map(str, rules.GROUP_OF_POSITION)) + "}", text)
@@ -345,7 +354,11 @@ C_HARNESS = r"""
 int main(void) {
     int cmd;
     while (scanf("%d", &cmd) == 1) {
-        if (cmd == 1) {
+        if (cmd == 4) {
+            unsigned position;
+            if (scanf("%u", &position) != 1) return 2;
+            printf("%u\n", hof_group_of(position));
+        } else if (cmd == 1) {
             HofCareer c; int v[19]; int k;
             for (k = 0; k < 19; k++) if (scanf("%d", &v[k]) != 1) return 2;
             c.group = (unsigned)v[0]; c.games = v[1]; c.mvp = v[2]; c.opoy = v[3]; c.dpoy = v[4]; c.oroy = v[5]; c.droy = v[6];
@@ -421,6 +434,27 @@ class CReferenceTests(unittest.TestCase):
         self.assertEqual(len(out), len(cases))
         for c, got in zip(cases, out):
             self.assertEqual(int(got), rules.score(c), c)
+
+    def test_builds_under_the_repos_freestanding_32_bit_flags(self):
+        gcc = shutil.which("gcc")
+        if not gcc:
+            self.skipTest("no gcc")
+        flags = ["-m32", "-Os", "-ffreestanding", "-fno-builtin", "-fno-strict-aliasing", "-fno-pic", "-fno-pie", "-fno-stack-protector",
+                 "-fno-asynchronous-unwind-tables", "-fno-unwind-tables", "-fomit-frame-pointer", "-fno-jump-tables",
+                 "-mpreferred-stack-boundary=2", "-mno-sse", "-mno-mmx", "-Wall", "-Wextra", "-Werror"]       # tools/nfl2k5_honors_build.py
+        base = Path(self.folder.name)
+        (base / "probe.c").write_text("int probe(void) { return 1; }\n", encoding="utf-8", newline="\n")
+        if subprocess.run([gcc, "-m32", "-c", str(base / "probe.c"), "-o", str(base / "probe.o")], capture_output=True).returncode != 0:
+            self.skipTest("this gcc cannot target 32-bit x86")
+        (base / "only.c").write_text(rules.c_reference(), encoding="utf-8", newline="\n")            # no harness, no library header
+        done = subprocess.run([gcc, *flags, "-c", str(base / "only.c"), "-o", str(base / "only.o")], capture_output=True, text=True)
+        self.assertEqual(done.returncode, 0, done.stderr)
+        self.assertLess((base / "only.o").stat().st_size, 8000)
+
+    def test_group_table_agrees(self):
+        out = self.run_c("\n".join(f"4 {p}" for p in range(0, 20)) + "\n")
+        self.assertEqual([int(x) for x in out[:17]], list(rules.GROUP_OF_POSITION))
+        self.assertEqual([int(x) for x in out[17:]], [255, 255, 255])
 
     @staticmethod
     def slot_text(c):

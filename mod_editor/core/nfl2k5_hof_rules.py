@@ -104,6 +104,8 @@ SCORE_MAX = 0xFFFF          # the footer stores the score in a u16; the sum satu
 # The composite is in tenths: see ``composite``.
 PAR = {"QB": 2100, "RB": 21000, "WR": 18500, "TE": 18500, "DL": 3000, "LB": 1500, "DB": 2000, "K": 4000}
 
+UI_LABEL = "Hall of Fame classes with real retirees seeded"     # 60-character caption rule
+
 RULE_HELP = (
     "Hall of Fame: when a player retires he is scored from his honors, games and production. First-team All-Pro 25, MVP 25, "
     "Player of the Year 15, Super Bowl MVP 15, Rookie of the Year 10, rushing title 15, Super Bowl ring 3, one point per "
@@ -512,6 +514,9 @@ typedef struct {
 } HofCareer;
 typedef struct { int valid; unsigned score, honors, seasons, retired; } HofSlot;
 
+/* position code 0..16 (the game's order) to the rule's group; 0xFF for anything else */
+unsigned hof_group_of(unsigned position) { return position < 17u ? HOF_GROUP[position] : 0xFFu; }
+
 static unsigned hof_n(int v) { return v > 0 ? (unsigned)v : 0u; }
 static unsigned hof_min(unsigned a, unsigned b) { return a < b ? a : b; }
 
@@ -643,7 +648,7 @@ def golden_vectors() -> list[dict]:
 
 
 __all__ = ["SCHEMA", "OWNER", "WAIT_SEASONS", "WINDOW_SEASONS", "MAX_CLASS", "MIN_CLASS", "BAR", "FLOOR", "INDUCTEE_SLOTS",
-           "CANDIDATE_SLOTS", "POSITIONS", "GROUPS", "GROUP_OF_POSITION", "POINTS", "PAR", "RULE_HELP", "Career", "Candidate",
+           "CANDIDATE_SLOTS", "UI_LABEL", "POSITIONS", "GROUPS", "GROUP_OF_POSITION", "POINTS", "PAR", "RULE_HELP", "Career", "Candidate",
            "Inductee", "Close", "HofError", "composite", "honors_points", "games_points", "production_points", "score",
            "score_parts", "honors_count", "seasons_from_games", "candidate_to_bytes", "candidate_from_bytes",
            "inductee_to_bytes", "inductee_from_bytes", "class_year", "is_eligible", "rank_key", "empty_table",
