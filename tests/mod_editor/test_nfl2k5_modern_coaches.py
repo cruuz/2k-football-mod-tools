@@ -700,6 +700,30 @@ class RetailMovedCoaches(unittest.TestCase):
         self.assertEqual({p["state"] for p in base_parts if p["kind"] == "coach"}, {"retail"})
 
 
+    def test_the_tightest_of_the_992_moves_still_fits(self):
+        """b780 c3-looks swept every single move (32 coaches x 31 clubs) on the retail disc: all fit, and Liam Coen's c30
+        in the Ravens' purple is the only one that needs the ladder's last step (64 colours for the apparel). A change to
+        either art that makes it fail would refuse that move in a build: this test says so first."""
+        row, host = self.rows["JAX"], self.rows["BAL"]
+        with mc._outer_image()(RETAIL) as archive:
+            entry = {e.name_id: e for e in archive.entries}[mc.name_id(row["archive"])]
+            raw = archive.read(entry.virtual_offset, entry.size)
+        rec, base, _detail = mc.compose_scene(raw, row)
+        after, detail = mc.compile_moved(raw[row["span_offset"]:row["span_offset"] + row["span_size"]], base, rec, row, host)
+        self.assertIn(detail["apparel_palette"], mc.PALETTE_LADDER)    # 64 today: the last step
+        self.assertEqual(mc.dressed_by(after, row, self.pins), "BAL")
+
+    def test_a_created_coach_standing_on_a_2026_model_is_noted_not_written(self):
+        """A club led by a coach who is not one of the 32 keeps the model its record names; when that model is a 2026
+        coach's (here the retail Kansas City record still names c13, Mike Macdonald's), the receipt says so."""
+        with mc._outer_image()(RETAIL) as archive:
+            parts = mc._parts(archive, self.pins, {"LV": "KC", "KC": None})
+        shared = [(p["team"], p["coach"], p["value"], p["state"]) for p in parts if p["kind"] == "shared_model"]
+        self.assertEqual(shared, [("KC", "SEA", 13, "kept")])
+        self.assertNotIn("KC", {p["team"] for p in parts if p["kind"] == "body_id"})
+        self.assertEqual({p["team"]: p["host"] for p in parts if p["kind"] == "coach"}["KC"], "LV")
+
+
 @unittest.skipUnless(HAVE_RETAIL and HAVE_V08, "retail and v0.8 images not present (NFL2K5_V08_XISO)")
 class ReleasedV08MovedCoaches(unittest.TestCase):
     """b780 c3-looks on the released v0.8 disc (read only): its coaches read applied with no staff; a staff asks the

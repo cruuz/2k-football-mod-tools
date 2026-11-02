@@ -1009,6 +1009,11 @@ def _parts(archive, document: dict, staff=None) -> list[dict]:
         host = row["team"]
         coach = assign[host]
         if coach is None:                           # not one of the 32: his record keeps the model it names
+            site, value = field_at(host, BODY_FIELD)
+            wearer = next((r["team"] for r in document["teams"] if int(r["body_code"]) == value), None)
+            if wearer is not None:                  # ... and that model is a 2026 coach's: a note, nothing written
+                out.append(dict(kind="shared_model", team=host, coach=wearer, at=site, size=2, state="kept",
+                                row=rows[wearer], value=value))
             continue
         crow = rows[coach]
         if coach == host and crow["body_code"] == crow["team_code"]:
@@ -1222,9 +1227,13 @@ def apply_to_image(target, *, document: dict | None = None, progress=None, retai
     require(state == "applied", f"the 2026 head coaches failed their read-back on the copy ({state})")
     moved = sorted(f"{r['team']}>{r['host']}" for r in rows if r["kind"] == "coach" and r["host"] != r["team"])
     kept = sorted(r["team"] for r in rows if r["kind"] == "body_id" and r["state_before"] == "kept")
+    host_of = {r["team"]: r["host"] for r in rows if r["kind"] == "coach"}
+    notes = [f"{r['team']}'s head coach is not one of the 32 2026 coaches but stands on model {r['value']:02d}, the model of "
+             f"{coach_name(r['coach'], document)}, so he shows that face in {host_of.get(r['coach'], r['coach'])}'s colours. Give him "
+             f"a model no 2026 head coach wears (c06, c11, c50 or c51)." for r in rows if r["kind"] == "shared_model"]
     return dict(label=LABEL, option=BUILD_KEY, state=state, runtime_witnessed=False, parts=rows, written=len(plan),
                 already_applied=len(rows) - len(plan), changed_bytes=sum(r["changed_bytes"] for r in rows),
-                moved_coaches=moved, kept_coach_models=kept)
+                moved_coaches=moved, kept_coach_models=kept, notes=notes)
 
 
 def verify(source, *, enabled: bool = True, document: dict | None = None, staff=None) -> dict[str, Any]:
