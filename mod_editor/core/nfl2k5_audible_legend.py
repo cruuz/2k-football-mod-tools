@@ -38,8 +38,11 @@ What this owner adds (two hooks, one late code allocation)
   tab is HUD y 390.8; the panel's bottom edge is y 435 in retail, 381 lifted). Applied whenever the build has the bar.
 * ``legend`` (0xFF60B, ``call 0xF1C70`` -> owner): the native header is drawn exactly as before, then up to three rows
   of button legend above the panel with the same text object (font slot 3, line height 14, left aligned, light grey,
-  drop shadow), anchored to the header position, only for a panel a person opened (controller byte != 0xFF). The rows
-  follow the native gates above, so the legend never names a button that does nothing at that moment.
+  drop shadow), anchored to the header position (x clamped to 118..499 so every row stays inside the 0..640 clip),
+  only for a panel a person opened (controller byte != 0xFF). The rows follow the native gates above, so the legend
+  never names a button that does nothing at that moment.
+* With the slide-call owner (``nfl2k5_protection_calls``) in the build, the offense's slide row reads that owner's call
+  state (its 16-byte data allocation, found in the allocator layout) and shows the active call, lit in yellow.
 * The 2026 score bar's own owner and every other pre-play screen stay untouched.
 
 Allocation: one late owner (appended at the end of ``nfl2k5_xbe_space.LATE_OWNERS``), CODE_SIZE bytes of code holding
