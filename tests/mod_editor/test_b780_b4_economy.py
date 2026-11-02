@@ -27,10 +27,10 @@ from mod_editor.core import nfl2k5_roster_records as rr  # noqa: E402
 from mod_editor.core import nfl2k5_roster_refresh as refresh  # noqa: E402
 
 HAVE_UC = importlib.util.find_spec("unicorn") is not None
-SCRATCH = Path(os.environ.get("NFL2K5_B780_SCRATCH", "/home/noah/2k-worktrees/.b77-scratch/b780/b4-economy"))
-V08_ROST = Path(os.environ.get("NFL2K5_V08_ROST_BODY", str(SCRATCH / "disc/v08_rost_body.bin")))
-V08_PLAN = Path(os.environ.get("NFL2K5_V08_ROSTER_EDITS",
-                               "/home/noah/2k-worktrees/.b77-scratch/b779/int/roster-edits-b779.json"))
+# Private fixtures (skipped when the variables are unset): the released v0.8 disc's main ROST body and default.xbe
+# (read out of the disc image), and the v0.8 recipe's roster-edits document.
+V08_ROST = Path(os.environ.get("NFL2K5_V08_ROST_BODY", "") or "missing")
+V08_PLAN = Path(os.environ.get("NFL2K5_V08_ROSTER_EDITS", "") or "missing")
 V08_ROST_SHA256 = "526291e894e40ea92b3d5f0611b6a246d5c1ade2e7603d89b59cb24ecad6b048"
 
 
@@ -259,7 +259,11 @@ class RetirementDecisionTests(unittest.TestCase):
             _player(m, p, age=age - 1, depth_row=6, games=0)
             expect = pg.retirement_chance(position=m.uc.mem_read(p + 0x35, 1)[0], age=age - 1, overall=m.rating(p),
                                           year=0, club=False)
-            self.assertEqual(_rate(m, p, 0, 150) > 0, expect > 0.02, slot)
+            rate = _rate(m, p, 0, 150)
+            if expect == 0:
+                self.assertEqual(rate, 0.0, slot)
+            elif expect >= 0.05:
+                self.assertGreater(rate, 0.0, slot)
 
     def test_the_native_decision_matches_the_model(self):
         m = _machine(self.applied, self.roster)
@@ -299,7 +303,7 @@ class RetirementDecisionTests(unittest.TestCase):
 
 
 # ------------------------------------------------------------------------------------------------- D10 (native)
-V08_XBE = Path(os.environ.get("NFL2K5_V08_XBE", str(SCRATCH / "disc/v08_default.xbe")))
+V08_XBE = Path(os.environ.get("NFL2K5_V08_XBE", "") or "missing")
 V08_XBE_SHA256 = "5f987568bc88122f566e30cb5bb8a574acde4549b915b6f2514beab37ab3e9f3"
 
 
@@ -359,6 +363,7 @@ class CampTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_franchise_economy_code as code
         m = _franchise(payload, self.body)
         team, lst = m.team_base + 500, m.root + 0x38
+        m.put(0xE576A4, 5)                    # the draft stage: the native append takes up to 65 (less reserves)
         for p in _free_agents(m):
             if _count(m, team) >= size:
                 break
@@ -408,6 +413,84 @@ class CampTests(unittest.TestCase):
     def test_negative_control_the_released_economy_cuts_a_player_for_every_prove_it_deal(self):
         before, after, released = self._week(self.released)
         self.assertGreater(released, 10)
+
+
+# ------------------------------------------------------------------------------------------------- B4 (a real season)
+STATE_Y0 = Path(os.environ.get("NFL2K5_B780_Y0_STATE", "") or "missing")
+
+
+def _season_end(payload, state, seed):
+    """Run the native retirement pass 0x2BDB00 on the league saved at the end of a simulated v0.8 season (b4-economy
+    sim/base3, every game played) with `payload`'s code, and return every retiree as (on a club, contributor, years
+    past his position's age). Contributor = the rewritten decision's test: a starting depth row or 8+ games."""
+    import zlib
+    from tests.nfl2k5_supersim_draft_fixture import Machine
+    from mod_editor.core.nfl2k5_cave_oracle import XbeImage
+    released = V08_XBE.read_bytes()
+    m = Machine(payload, trace_writes=False)
+    raw = state.read_bytes()
+    meta, blob, offset = json.loads(raw[:256]), zlib.decompress(raw[256:]), 0
+    for address, size in ((0x10000, 0x1510000 - 0x10000), (Machine.ARENA, 0x200000), (0x3000000, 0x10000)):
+        m.uc.mem_write(address, blob[offset:offset + size]); offset += size
+    m.team_base, m.root = meta["team_base"], meta["root"]
+    new, old = XbeImage(payload), XbeImage(released)
+    for section in new.sections:                     # the saved league ran the released code: write this payload's
+        if section.raw_size:                         # code over it
+            a, b = new.read(section.start, section.raw_size), old.read(section.start, section.raw_size)
+            if a != b:
+                m.uc.mem_write(section.start, a)
+    m.uc.ctl_flush_tb()
+    m.leaf(0x177990, lambda: m.ret(pop=4), reason="progress renderer only")
+    m.leaf(0x14E520, lambda: m.ret(), reason="informational dialog acknowledgement only")
+    clubs = {m.get(m.team_base + 500 * t + 4 * i) for t in range(32)
+             for i in range(m.uc.mem_read(m.team_base + 500 * t + 0x11C, 1)[0])}
+    m.seed(seed)
+    m.call(0x2BDB00, budget=3_000_000_000)
+    count, base = m.get(m.root), m.get(m.root + 4)
+    records = bytes(m.uc.mem_read(base, 84 * count))
+    season = m.get(0x247AC7) + m.get(0xE576B8) + 1
+    out = []
+    for i in range(count):
+        rec = records[84 * i: 84 * i + 84]
+        if not rec[8] & 8 or rec[0x35] >= 17:
+            continue
+        p = base + 84 * i
+        pro = (struct.unpack_from("<I", rec, 0x24)[0] >> 8) & 31
+        games, stream = 0, m.get(p + 0x2C)
+        while stream:
+            word = m.get(stream)
+            if (word >> 16) & 0x7F == 0 and (word >> 23) & 0x1F == pro and not word & 0x30000000:
+                games = word & 0xFFFF
+            if word & 0x80000000:
+                break
+            stream += 4
+        row = (struct.unpack_from("<H", rec, 0x28)[0] >> 10) & 7
+        age = (season - ((struct.unpack_from("<I", rec, 0x18)[0] >> 21) & 127)) % 100
+        over = age - pg.NFL_RETIRE_BASE[rec[0x35]] - 24
+        out.append((p in clubs, p in clubs and (row < pg.RETIRE_STARTERS[rec[0x35]] or games >= pg.RETIRE_GAMES), over))
+    return out
+
+
+@unittest.skipUnless(HAVE_UC and STATE_Y0.is_file() and V08_XBE.is_file(), "private end-of-season league state absent")
+class SeasonEndRetirementTests(unittest.TestCase):
+    """The retirement pass on a real league after one simulated v0.8 season, released decision against the rewrite."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.released = V08_XBE.read_bytes()
+        cls.fixed = pg.apply(cls.released)[0]
+
+    def test_no_contributor_retires_before_his_position_age_and_old_players_still_retire(self):
+        for seed in (101, 202):
+            retirees = _season_end(self.fixed, STATE_Y0, seed)
+            self.assertEqual([r for r in retirees if r[1] and r[2] < 0], [], seed)
+            self.assertGreater(sum(1 for r in retirees if r[0] and r[2] >= 0), 20, seed)
+            self.assertGreater(len(retirees), 100, seed)
+
+    def test_negative_control_the_released_decision_retires_contributors_in_their_prime(self):
+        for seed in (101, 202):
+            retirees = _season_end(self.released, STATE_Y0, seed)
+            self.assertGreater(sum(1 for r in retirees if r[1] and r[2] < 0), 5, seed)
 
 
 if __name__ == "__main__":

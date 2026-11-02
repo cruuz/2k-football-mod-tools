@@ -461,7 +461,7 @@ SECTION(".week") void FAST economy_week(void *menu, unsigned unused, float low, 
         if (!PROVE_IT_FREE_AGENT(p) || p[0x35] >= 17 || !(n_rating(p, 1) > PROVE_IT)) continue;
         unsigned ask = economy_value(p, 0, 0, 1, 1);
         if (economy_best_room(p, &club) < ask || !club) continue;
-        /* b780 b4-economy: economy_best_room no longer offers a full club (below), so this cut never runs now. */
+        /* b780 b4-economy (D10): economy_best_room no longer offers a full club, so this cut never runs now. */
         if (club[0x11c] >= limit) n_cut_to(club, limit - 1);
         n_cpu_sign(club, p[0x35], ask + 1, menu);
     }
