@@ -939,7 +939,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_roster_storage.py": "b2bed5fb92dedd9d1c4312a7e9344ca1558225d9ed12977e4fe69f4ca9d85bb6",
         "mod_editor/core/nfl2k5_safe_text_banks.py": "c7ea4288611615204f53c40f5da06728bd9e5511eec5ae06711145e509461d48",
         "mod_editor/core/nfl2k5_save_rost.py": "99120d2bc1ac2c324895dc0c83b50cd41ad5a57dce8e01afdfcc718f76aed881",
-        "mod_editor/core/nfl2k5_save_writer.py": "044ae5d45bc07b4ce294093842228f64334eb0442080c24dace59a429e95b58d",
+        "mod_editor/core/nfl2k5_save_writer.py": "c5581bf1ee51f0181ea0308146120e3a54163f837c81af4f8f27a07879ba086c",
         "mod_editor/core/nfl2k5_scorebar_v3.py": "4e3d58f8fdc71d6da202d1367826fec5e32350470dd88089ecfcb7d272ba67bf",
         "mod_editor/core/runtime_dependencies.py": "326c47fbd24a2cbd5e360b32fd8754434a8433d21bea7efda23bebbc0e9343ac",
         "mod_editor/core/nfl2k5_scorebug_assets.py": "9d7036c1a426faee7671337e976d6ef21ae8a7d4e01b03b9f1791651b75f6293",

@@ -811,7 +811,10 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps(read_save(args.savegame), indent=2, sort_keys=True))
         return 0
     sliders = {label: float(value) for label, value in args.slider}
-    options = {name: int(value) for name, value in getattr(args, "option", [])}
+    try:
+        options = {name: int(value) for name, value in getattr(args, "option", [])}
+    except ValueError as exc:
+        raise SaveWriterError("an --option value must be a whole number") from exc
     if args.command == "edit":
         result = edit_save_file(
             args.savegame, args.out_dat, args.out_extra,

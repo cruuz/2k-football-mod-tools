@@ -1049,6 +1049,8 @@ def infer_played_clubs(payload: bytes, disc_body: bytes, evidence: Mapping | Non
                     "before_sha256": sha(payload), "after_sha256": sha(result),
                     "disc_roster_sha256": sha(disc_body), "fold_depth": 0,
                     "folded_players": [], "shared_history_skipped": []}
+
+
 # --- b780-b10: a MyCareer save's inline block follows the strings it points at ----------------------------------------
 def career_block_at(payload: bytes) -> int | None:
     """Offset of the 128-byte inline MyCareer block of a franchise save, or None when the save has none."""

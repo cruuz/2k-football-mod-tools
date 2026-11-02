@@ -322,6 +322,12 @@ class CommandLineTests(unittest.TestCase):
         self.assertFalse(json.loads(text)["written"])
         self.assertFalse((self.root / "o.dat").exists())
 
+    def test_a_non_numeric_option_value_is_a_plain_error(self):
+        with self.assertRaisesRegex(writer.SaveWriterError, "whole number"):
+            writer.main(["edit", str(self.dat), "--out-dat", str(self.root / "n.dat"), "--out-extra", str(self.root / "n.x"),
+                         "--xbe", str(self.xbe), "--option", "quarter_minutes", "seven"])
+        self.assertFalse((self.root / "n.dat").exists())
+
     def test_the_save_writer_command_line_takes_option_flags(self):
         out, extra = self.root / "w.dat", self.root / "w.extra"
         buffer = io.StringIO()
