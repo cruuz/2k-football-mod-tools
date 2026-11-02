@@ -253,7 +253,7 @@ only matching coaches' body and portrait IDs; it leaves progress, experience,
 playbooks, coach assignments and coaching statistics unchanged. The command
 never edits an HDD image or installs a save automatically.
 
-Three steps were added in beta 80. The **champions** step (also its own command,
+Four steps were added in beta 80. The **champions** step (also its own command,
 `champions`) merges the disc's Super Bowl history into the 270 spare bytes behind the
 arena's reserve block, filling only empty ring slots, so seasons the game recorded in
 this franchise are never replaced. When the new game has already moved a v0.7 franchise
@@ -269,6 +269,21 @@ into the franchise's own copy of the options when they still hold the old values
 `python3 -m mod_editor.core.nfl2k5_profile_defaults show|apply` does the same for a
 Settings save or a franchise `SAVEGAME.DAT` on its own. Years pro, season history and
 photos of players already in the save are not changed.
+
+The **coach-records** step (also its own command, `coach-records`) copies the disc's 23 coach
+ratings, ten play-calling tendency groups (run share, run by score, red zone, down and distance,
+run lanes, run and pass formation classes, run and pass personnel, no-huddle) and the generic
+announcer line (bit 0x02 of the flags byte at coach record +0x1A) into the franchise's own coach
+records, which otherwise keep the 2004 coaches' numbers under the 2026 names. Coaches are matched
+by full name. A rating, a tendency group or the announcer line is replaced only when the franchise
+still holds the value the older discs had, which `mod_editor/data/nfl2k5_coach_records_old_disc.v1.json`
+records (read from the released v0.8 disc's roster; the v0.7 disc's roster and a real v0.7
+franchise save hold the same values). Anything else was changed in the franchise: it is kept and
+listed in the receipt. A tendency group is replaced whole or not at all, so a distribution never
+ends up half old and half new. Pass zones, motion, defense flag shares, height and weight are not
+part of the 2026 data and are never touched, and a disc without the 2026 coach data changes
+nothing. The earlier coach step now copies only the 16-bit body id and the portrait; it used to
+copy the 32-bit word that also holds the flags byte.
 
 The upgrade also restores missing TEAM entries for imported seasons before
 2026 when the disc and save match on full name, birth date, season and all

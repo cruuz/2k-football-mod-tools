@@ -117,7 +117,9 @@ already recorded in your franchise stay), adds the draft-class player records of
 not the new game has already saved your franchise), and, with the box under **New save folder** ticked, takes the disc's
 default game settings (7 minute quarters, 15 minute Sim. Quarter Length, Chop Block on) into the franchise, but only for
 settings that still hold the old values of 5 minutes, 5 minutes and Off. A setting you changed yourself is kept, and the
-preview lists it.
+preview lists it. When the disc carries the 2026 coach data, the upgrade also gives each head coach the disc's ratings,
+play-calling habits and generic announcer line, again only where your franchise still has the older value: a rating or habit
+you changed yourself is kept.
 
 The upgrade does not change player ratings, colleges, announcer names, name suffixes or equipment. A franchise keeps its own
 roster copy, so those need a new franchise. Old saves still load without the upgrade; they just keep the old free agent pool.

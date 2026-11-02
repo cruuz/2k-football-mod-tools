@@ -19,9 +19,11 @@ from . import nfl2k5_save_rost as sr
 
 #: The migrations a franchise can take. Hair styles and honors come from the disc;
 #: played-clubs uses the same verified club repair as Upgrade; undated candidates stay in the receipt;
-#: b778-fa3: free-agents adds the disc's 2026-10-22 free-agent depth players the franchise lacks.
+#: b778-fa3: free-agents adds the disc's 2026-10-22 free-agent depth players the franchise lacks;
+#: b780-b10: coach-records copies the disc's coach ratings, play-calling habits and announcer line where the franchise
+#: still has the older discs' values, champions seeds the Super Bowl history, game-settings the new default options.
 COMMANDS = ("upgrade", "coach-sync", "team-history", "hair-styles", "honors", "played-clubs", "free-agents",
-            "rookie-templates", "champions", "game-settings")
+            "rookie-templates", "champions", "game-settings", "coach-records")
 DEFAULT_COHORT = Path(__file__).resolve().parents[2] / "mod_editor/data/f12_cohort.json"
 
 
@@ -148,7 +150,7 @@ def plan_upgrade(source: Path, disc: Path, *, command: str = "upgrade",
     retail value. The ``game-settings`` command does only that."""
     upgrade.require(command in COMMANDS, "unknown upgrade command")
     upgrade.require(team_history_path is None or command not in ("coach-sync", "hair-styles", "honors", "rookie-templates",
-                                                                  "champions", "game-settings"),
+                                                                  "champions", "game-settings", "coach-records"),
                     "TEAM evidence requires upgrade, team-history, played-clubs or free-agents")
     container = load_container(source)
     before_validation = upgrade.validate_save(container.savegame)
@@ -167,6 +169,11 @@ def plan_upgrade(source: Path, disc: Path, *, command: str = "upgrade",
         steps.append(step)
     if command in ("upgrade", "coach-sync"):
         payload, step = upgrade.sync_coaches(payload, body)
+        steps.append(step)
+    if command in ("upgrade", "coach-records"):
+        # b780-b10: the disc's 2026 coach ratings, play-calling habits and announcer line, where the franchise still has the
+        # older discs' values (after coach-sync, which writes the body id and portrait of the same records)
+        payload, step = upgrade.sync_coach_records(payload, body)
         steps.append(step)
     if command in ("upgrade", "hair-styles"):
         # b778-hr3: a franchise started before the disc had hair styles keeps style 0 for everyone

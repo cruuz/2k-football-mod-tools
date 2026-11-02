@@ -58,6 +58,26 @@ def game_settings_lines(step):
     return lines
 
 
+def coach_records_lines(step):
+    """b780-b10: the coach ratings, play-calling habits and announcer line step in plain words."""
+    if not step["changes"]:
+        return [f"Coach ratings and play-calling: not changed ({step['reason']})."]
+    counts = {"ratings": 0, "tendencies": 0, "announcer": 0}
+    for change in step["changes"]:
+        counts[change["field"].split(".")[0]] += 1
+    text = (f"Coach ratings and play-calling from the disc: {step['coaches_changed']} coaches updated "
+            f"({counts['ratings']} ratings, {counts['tendencies']} play-calling groups, "
+            f"{counts['announcer']} announcer lines)")
+    if step["fields_kept"]:
+        text += f"; {step['fields_kept']} values that differ from the older discs' defaults are kept as they are"
+    lines = [text + "."]
+    if step["no_baseline_preserved"]:
+        names = ", ".join(row["coach"] for row in step["no_baseline_preserved"][:6])
+        lines.append(f"  Coaches that keep their own numbers (not on the older discs): {names}"
+                     + (f" and {len(step['no_baseline_preserved']) - 6} more" if len(step["no_baseline_preserved"]) > 6 else "."))
+    return lines
+
+
 def preview_text(plan):
     receipt = plan.receipt
     lines = ["Preview complete. Your source save is unchanged."]
@@ -122,6 +142,8 @@ def preview_text(plan):
                          "prospect changes.")
         elif step["operation"] == "champions":   # b780-b10
             lines += champions_lines(step)
+        elif step["operation"] == "coach_records":   # b780-b10
+            lines += coach_records_lines(step)
         elif step["operation"] == "game_settings":   # b780-b10
             lines += game_settings_lines(step)
         elif step["operation"] == "team_history":
@@ -150,10 +172,11 @@ class FranchiseUpgradeDialog(QDialog):
         self.resize(780, 580)
         layout = QVBoxLayout(self)
         hint = QLabel("For older SOFTDRINK franchises that began with the 2026 roster. "
-                      "Choose the current build's disc to update experience, playbooks, coach appearances, hair styles, "
-                      "award history, the Super Bowl history, the free-agent pool, the draft-class records and templates "
-                      "and the default game settings. It works whether or not the new game has already saved this "
-                      "franchise. Preview first, then write a new signed save folder; your original is never touched.")
+                      "Choose the current build's disc to update experience, playbooks, coach appearances, coach ratings and "
+                      "play-calling, hair styles, award history, the Super Bowl history, the free-agent pool, the "
+                      "draft-class records and templates and the default game settings. It works whether or not the new "
+                      "game has already saved this franchise. Preview first, then write a new signed save folder; "
+                      "your original is never touched.")
         hint.setWordWrap(True)
         layout.addWidget(hint)
         form = QFormLayout()

@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Upgrade an older SOFTDRINK 2026 franchise, or sync coach art, hair styles or award history from a disc
 (played-clubs restores verified club history and reports undated gaps; champions seeds the Super Bowl history;
-game-settings takes the disc's new default Quarter Length, Sim. Quarter Length and Chop Block into the franchise).
+coach-records takes the disc's coach ratings, play-calling habits and announcer line where the franchise still has
+the older discs' values; game-settings takes the disc's new default Quarter Length, Sim. Quarter Length and Chop Block
+into the franchise).
 
 Inputs are read only. Output is a new signed save directory; --dry-run writes
 only the requested receipt. The receipt includes input/output SHA-256 hashes
