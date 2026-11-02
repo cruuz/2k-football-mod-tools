@@ -511,7 +511,7 @@ class Nfl2k5UnifiedVisualProvider:
         "--source-xiso <retail.xiso.iso> --output-xiso <new.xiso.iso> "
         "--manifest <manifest.json> --artifact-dir <artifact-dir>"
     )
-    backend_module_sha256 = "74048ababca34ebc9f078922e367f74383e3230b9f48dcf96c7f144e5c119252"
+    backend_module_sha256 = "2346caea7e05dd5d57eb039beca0f80cfe654765d9df9e66b4030b5daa43a33d"
     module_pins: Mapping[str, str] = {
         "mod_editor/core/nfl2k5_defense_lint.py": "11863cffaf5250b3c150432b1f74d9f6115e6603fcc6d7a3e6127b9ebb6e2756",
         "mod_editor/core/nfl2k5_espn25_fields.py": "c6d78cdfca03089dece69ddb9ca9f97051d8f6f8fc4c937e7fef4979c23e38eb",
@@ -682,7 +682,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_cave_oracle.py": "8be24dd71d7503dba209061747bb74c439833970978a045a96f740cedafb940e",
         "mod_editor/core/nfl2k5_college_check.py": "9aeab1abca54ffef2708e02354baec7525b17d2d354c655c0d1d80b6141efbf9",
         "mod_editor/core/nfl2k5_compile_cache.py": "6e30bc377ab6b894b8d5b634cc2ed2426f143795d937a2ab423eece80876b40e",
-        "mod_editor/core/nfl2k5_stage_cache.py": "a9ff17fbdbcd5fd30c71695366519496170d68d4aef0da232bbfe9d152025956",
+        "mod_editor/core/nfl2k5_stage_cache.py": "4e78b766d57fc320d2448cd7b2ade0ff4ad08a37f45e74f41cbfe9868c6df72a",
         "mod_editor/core/nfl2k5_late_steps.py": "da80a117d5b755d3e3e2c77bd3fe221b2737d995cb11740a409e4bd3af15a65a",
         "mod_editor/core/nfl2k5_coverage_slider.py": "e63025985e5e2a1f9e18fbc8f7375b16689f2b81bdb61766d86f8d8ee515fc0b",
         "mod_editor/core/nfl2k5_coverage_trail.py": "68b6548fc60cf8cbed4a912403b6323c44818eeba358cdc28fa8090642a3e969",
@@ -1022,7 +1022,7 @@ class Nfl2k5UnifiedVisualProvider:
         "tools/nfl2k5_scorebug_position_patch.py": "eb2b913bd4d0620dcefc4f280db1f6d73e4a5c348b0483a246bbf587506cdbff",
         "tools/nfl2k5_scorebug_reference.py": "5186fbbbc75619518cdad41763d4fcb9d438bb2bf37ee98bc74b265c6446b435",
         "tools/nfl2k5_roster_reclassify.py": "0f4800d1558de2c5b0f9f2722b5f3f5d7a4797a58f454f0a7db9179175af8831",
-        "tools/nfl2k5_visual_mod_project.py": "74048ababca34ebc9f078922e367f74383e3230b9f48dcf96c7f144e5c119252",
+        "tools/nfl2k5_visual_mod_project.py": "2346caea7e05dd5d57eb039beca0f80cfe654765d9df9e66b4030b5daa43a33d",
         "tools/nfl_all_texture_xiso_workflow.py": "61d0574ae5320cb7b12b96f1be0b34dcf1fdef363091b00de0fd0fac7130bd91",
         "tools/nfl_audo_wav_xiso_workflow.py": "d684cbe7b30f77caf808bcef3d0219777b333336ae5bee4837d10f69cc1d13c6",
         "tools/nfl_create_team_field_art_inventory.py": "da59018f1417871516b75769ea53a351a1d2b03ed855f985c1f88ac333b42489",

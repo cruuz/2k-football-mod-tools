@@ -38,6 +38,18 @@ PATH_FIELDS = ("png", "clean_png", "mud_png", "wav", "recipe")
 STAGE_CACHE_MAX_BYTES = 3 * 1024 ** 3
 
 
+def stage_cache_max_bytes(environ=None) -> int:
+    """The size cap: ``NFL2K5_COMPILE_CACHE_MAX_MB`` (the switch every compile cache honours) when set, else 3 GiB."""
+    environ = os.environ if environ is None else environ
+    configured = str(environ.get("NFL2K5_COMPILE_CACHE_MAX_MB", "")).strip()
+    if configured:
+        try:
+            return max(1, int(configured)) * 1024 * 1024
+        except ValueError:
+            pass
+    return STAGE_CACHE_MAX_BYTES
+
+
 def stage_cache_root(source_cache=None, environ=None) -> Path | None:
     """``<private cache root>/project-stage`` for the loaded source cache, or None when there is no place for one.
 

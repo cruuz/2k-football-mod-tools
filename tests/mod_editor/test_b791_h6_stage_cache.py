@@ -304,6 +304,12 @@ class StageRootTests(unittest.TestCase):
         self.assertIsNone(stage_cache.stage_cache_root(None, {}))
         self.assertIsNone(stage_cache.stage_cache_root(object(), {"NFL2K5_PROJECT_STAGE_CACHE_ROOT": "  "}))
 
+    def test_the_size_cap_is_three_gib_unless_the_usual_switch_is_set(self):
+        self.assertEqual(stage_cache.stage_cache_max_bytes({}), 3 * 1024 ** 3)
+        self.assertEqual(stage_cache.stage_cache_max_bytes({"NFL2K5_COMPILE_CACHE_MAX_MB": "200"}), 200 * 1024 ** 2)
+        self.assertEqual(stage_cache.stage_cache_max_bytes({"NFL2K5_COMPILE_CACHE_MAX_MB": "  "}), 3 * 1024 ** 3)
+        self.assertEqual(stage_cache.stage_cache_max_bytes({"NFL2K5_COMPILE_CACHE_MAX_MB": "lots"}), 3 * 1024 ** 3)
+
     def test_edit_shape_drops_every_field_that_names_a_file(self):
         edit = {"kind": "torso", "asset_code": "18", "clean_png": "/s/1/a.png", "mud_png": None, "png": "/s/1/b.png",
                 "wav": "w", "recipe": "r", "side": "H"}

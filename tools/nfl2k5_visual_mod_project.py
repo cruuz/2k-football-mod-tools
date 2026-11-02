@@ -4408,7 +4408,7 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
     cache = CompileCache(None if not use_compile_cache or historical_import_reports is not None
                          or os.environ.get("NFL2K5_DISABLE_COMPILE_CACHE") == "1"
                          else compile_cache_root or project.path.parent / ".nfl2k5-compile-cache",
-                         max_bytes=stage_cache.STAGE_CACHE_MAX_BYTES, protect_used=True)
+                         max_bytes=stage_cache.stage_cache_max_bytes(), protect_used=True)
     compiler_hash = hashlib.sha256()
     # Invalidate transitively when any local writer/codec changes, including a
     # newly installed native helper. No manually maintained version can go stale.
