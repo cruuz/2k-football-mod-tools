@@ -45,4 +45,5 @@ hst_config:
     .long 0                             /* +12 the displaced season-close call target */
     .long 0, 5, 15, 5                   /* +16 hall bar, wait, window, class size */
     .long 0                             /* +32 flags */
-    .long 0, 0, 0, 0, 0, 0, 0           /* +36 reserved */
+    .long 0, 0, 0                       /* +36 seeds (VA), seed count, seed year */
+    .long 0, 0, 0, 0                    /* +48 reserved */

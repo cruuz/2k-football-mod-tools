@@ -95,7 +95,10 @@ struct config {
     u32 hall_window;
     u32 hall_class;
     u32 flags;          /* bit 0 records, 1 box scores, 2 leaders, 3 hall of fame */
-    u32 reserved[7];
+    u32 seeds;          /* the build's real retirees (j6-hof's seeds): 24-byte candidate entries, or 0 */
+    u32 seed_count;
+    u32 seed_year;      /* the first season close that admits them (2026) */
+    u32 reserved[4];
 };
 extern const struct config hst_config;
 
@@ -950,6 +953,25 @@ static void close_hall(u8 *b, u32 year) {
     HofSlot t[64];
     int chosen[HOF_MAX_CLASS > HOF_MIN_CLASS ? HOF_MAX_CLASS : HOF_MIN_CLASS];
     hall_slots(hall, t);
+    if (!(hall[4] & 1) && hst_config.seeds && hst_config.seed_count && year >= hst_config.seed_year) {
+        /* the first close of a seeded build: the real retirees join the table (hof_admit), then this class */
+        const u8 *seed = (const u8 *)hst_config.seeds;
+        for (u32 i = 0; i < hst_config.seed_count && i < 64; i++, seed += 24) {
+            HofSlot s;
+            s.valid = seed[13] & 1;
+            s.score = rd16(seed + 10);
+            s.honors = seed[20];
+            s.seasons = seed[12];
+            s.retired = rd16(seed + 8);
+            if (!s.valid || !hof_admit(t, &s))
+                continue;
+            for (u32 k = 0; k < 64; k++)
+                if (t[k].valid && t[k].score == s.score && t[k].honors == s.honors && t[k].seasons == s.seasons &&
+                    t[k].retired == s.retired)
+                    copy(candidate(hall, k), seed, 24);
+        }
+        hall[4] |= 1;
+    }
     int n = hof_select(t, year, chosen);
     for (int i = 0; i < n; i++) {
         u8 *e = candidate(hall, (u32)chosen[i]);

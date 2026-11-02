@@ -42,8 +42,10 @@ Allocation: code 12,288 B, late owner after ``nfl2k5_franchise_footer`` (it call
 from __future__ import annotations
 
 import hashlib
+import json
 import struct
-from typing import Mapping
+from pathlib import Path
+from typing import Mapping, Sequence
 
 from . import nfl2k5_franchise_extension as ext
 from . import nfl2k5_history_code as runtime
@@ -59,7 +61,9 @@ REQUESTS = ((OWNER, "code", CODE_SIZE, 16),)
 CONFIG_AT = runtime.LABELS["hst_config"]
 CONFIG_MAGIC, CONFIG_VERSION = 0x43545348, 1           # "HSTC"
 CONFIG_FIELDS = ("magic", "version", "body_fn", "chain_close", "hall_bar", "hall_wait", "hall_window", "hall_class",
-                 "flags")
+                 "flags", "seeds", "seed_count", "seed_year")
+SEED_ENTRY = 24                                         # a hall candidate entry (nfl2k5_franchise_extension)
+SEEDS_DATA = Path(__file__).resolve().parents[2] / "data" / "nfl2k5_hof_candidates_2026.json"
 FLAG_RECORDS, FLAG_BOXSCORES, FLAG_LEADERS, FLAG_HALL = 1, 2, 4, 8
 ALL_PARTS = FLAG_RECORDS | FLAG_BOXSCORES | FLAG_LEADERS | FLAG_HALL
 
@@ -101,7 +105,34 @@ def labels(code_va: int) -> dict[str, int]:
     return {name: code_va + offset for name, offset in runtime.LABELS.items()}
 
 
-def code_for(code_va: int, config: Mapping[str, int]) -> bytes:
+def seed_offset() -> int:
+    """Where a build's Hall of Fame seeds sit in the code allocation (after the code, 16-byte aligned)."""
+
+    return (len(runtime.CODE) + 15) & ~15
+
+
+def real_retiree_seeds(path: Path | str = SEEDS_DATA) -> list[bytes]:
+    """Job j6-hof's seeds (data/nfl2k5_hof_candidates_2026.json): the 24-byte candidate entries of the real retirees
+    nobody has judged yet, deduped against the v0.8 game roster (a 2026-season build only)."""
+
+    document = json.loads(Path(path).read_text(encoding="utf-8"))
+    entries = [bytes.fromhex(row["candidate_hex"]) for row in document["candidates"]]
+    _require(len(entries) == document["count"] and all(len(e) == SEED_ENTRY and e[13] & 1 for e in entries),
+             "the Hall of Fame seeds file does not read back")
+    return entries
+
+
+def code_for(code_va: int, config: Mapping[str, int], seeds: Sequence[bytes] = ()) -> bytes:
+    """The installed blob: code, relocations, CONFIG; the seeds (if any) after the code, CONFIG pointing at them."""
+
+    seeds = [bytes(e) for e in seeds]
+    _require(all(len(e) == SEED_ENTRY for e in seeds) and len(seeds) <= 64, "bad Hall of Fame seeds")
+    config = dict(config)
+    if seeds:
+        config.update(seeds=code_va + seed_offset(), seed_count=len(seeds),
+                      seed_year=config.get("seed_year") or 1 + max(struct.unpack_from("<H", e, 8)[0] for e in seeds))
+    else:
+        config.update(seeds=0, seed_count=0, seed_year=0)
     result = bytearray(runtime.CODE)
     for offset, kind, symbol, value in runtime.RELOCATIONS:
         _require(symbol == "code", "unexpected history relocation")
@@ -115,7 +146,22 @@ def code_for(code_va: int, config: Mapping[str, int]) -> bytes:
     for index, name in enumerate(CONFIG_FIELDS):
         struct.pack_into("<I", result, CONFIG_AT + 4 * index, int(values.get(name, 0)) & 0xFFFFFFFF)
     _require(len(result) <= CODE_SIZE, "the history runtime exceeds its fixed budget")
+    if seeds:
+        result = result.ljust(seed_offset(), b"\xcc") + b"".join(seeds)
+        _require(len(result) <= CODE_SIZE, "the Hall of Fame seeds do not fit the history allocation")
     return bytes(result).ljust(CODE_SIZE, b"\xcc")
+
+
+def seeds_of(blob: bytes, code_va: int) -> list[bytes]:
+    """The seeds an installed blob carries (CONFIG seeds / seed_count), [] without seeds."""
+
+    config = read_config(blob) or {}
+    count, at = config.get("seed_count", 0), config.get("seeds", 0)
+    if not count or not at:
+        return []
+    start = at - code_va
+    _require(start == seed_offset() and count <= 64 and start + count * SEED_ENTRY <= len(blob), "foreign seeds")
+    return [blob[start + k * SEED_ENTRY:start + (k + 1) * SEED_ENTRY] for k in range(count)]
 
 
 def read_config(blob: bytes) -> dict[str, int] | None:
@@ -182,7 +228,7 @@ def _recognize(payload: bytes):
         return "retail", found, None
     config = read_config(blob)
     _require(config is not None, "foreign history code (no CONFIG)")
-    _require(blob == code_for(code_va, config), "foreign history code")
+    _require(blob == code_for(code_va, config, seeds_of(blob, code_va)), "foreign history code")
     for label, va, _before, after in sites(code_va, config["chain_close"]):
         _require(image.read(va, len(after)) == after, f"history site {label} is not this owner's")
     from . import nfl2k5_franchise_footer as footer
@@ -222,9 +268,10 @@ def reservations(payload: bytes) -> list[dict]:
                         basis="pinned live " + label + "; not a cave") for label, va, before, _after in edits]
 
 
-def apply(payload: bytes, *, parts: int = ALL_PARTS, hall_rule: Mapping[str, int] | None = None
-          ) -> tuple[bytes, Mapping[str, object]]:
-    """Install the capture. The franchise footer host must already be installed (it owns the body)."""
+def apply(payload: bytes, *, parts: int = ALL_PARTS, hall_rule: Mapping[str, int] | None = None,
+          seeds: Sequence[bytes] = ()) -> tuple[bytes, Mapping[str, object]]:
+    """Install the capture. The franchise footer host must already be installed (it owns the body). ``seeds``: Hall of
+    Fame candidate entries the first season close admits (``real_retiree_seeds()`` on a 2026-season build)."""
 
     _require(type(parts) is int and 0 <= parts <= ALL_PARTS, "parts is a mask of the four history parts")
     state, found, _config = _recognize(payload)
@@ -249,7 +296,7 @@ def apply(payload: bytes, *, parts: int = ALL_PARTS, hall_rule: Mapping[str, int
     config = {"body_fn": footer.body_function_va(payload), "chain_close": RETAIL_CLOSE, "flags": parts,
               "hall_bar": rule["bar"], "hall_wait": rule["wait"], "hall_window": rule["window"],
               "hall_class": rule["class_size"]}
-    payload, code_receipt = space.install_code(payload, OWNER, code_for(code_va, config))
+    payload, code_receipt = space.install_code(payload, OWNER, code_for(code_va, config, seeds))
     buf = bytearray(payload)
     image = XbeImage(payload)
     for _label, va, _b, after in sites(code_va):
@@ -260,6 +307,7 @@ def apply(payload: bytes, *, parts: int = ALL_PARTS, hall_rule: Mapping[str, int
     result = bytes(buf)
     _require(status(result) == "applied", "history postcondition failed")
     return result, {**common, "status": "applied", "code_va": hex(code_va), "parts": parts, "hall_rule": rule,
+                    "hall_seeds": len(seeds),
                     "allocation": allocation_receipt, "code_install": code_receipt,
                     "before_sha256": hashlib.sha256(before).hexdigest(),
                     "after_sha256": hashlib.sha256(result).hexdigest(),
@@ -268,4 +316,5 @@ def apply(payload: bytes, *, parts: int = ALL_PARTS, hall_rule: Mapping[str, int
 
 
 __all__ = ["OWNER", "REQUESTS", "CODE_SIZE", "HALL_RULE", "HistoryError", "apply", "allocations", "code_for",
-           "guard_digests", "installed_sites", "labels", "owned_state", "read_config", "reservations", "sites", "status"]
+           "guard_digests", "installed_sites", "labels", "owned_state", "read_config", "real_retiree_seeds",
+           "reservations", "seed_offset", "seeds_of", "sites", "status"]

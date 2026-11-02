@@ -1850,7 +1850,9 @@ def _apply_franchise_history(plan: "BuildPlan", target: Path, receipt: dict, pro
     if history is None:
         raise RuntimeError("Franchise history and records needs nfl2k5_history.")
     progress("Franchise: history and records capture", 0, 0)
-    payload, history_receipt = history.apply(_xbe_bytes(target))
+    # j6-hof's real retirees (deduped against the v0.8 roster) seed the Hall of Fame on a 2026-season build only
+    seeds = history.real_retiree_seeds() if plan.season_2026 else ()
+    payload, history_receipt = history.apply(_xbe_bytes(target), seeds=seeds)
     _write_xbe_bytes(target, payload)
     final = _xbe_bytes(target)
     if final != payload or history.status(final) != "applied" or module.status(final) != "applied":

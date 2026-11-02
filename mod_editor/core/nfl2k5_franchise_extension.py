@@ -755,7 +755,8 @@ CANDIDATES_AT = 16 + HALL_INDUCTEES * INDUCTEE_ENTRY            # 3,088
 HALL_VALID, HALL_REAL, HALL_NEW = 1, 2, 4
 HALL_LAYOUT = """
 hall block (4,624 B): +0 u8 inductees (0..192), +1 u8 candidate slots in use (the high-water mark, 0..64), +2 u16 the
-  last class (its year), +4..+15 reserved;
+  last class (its year), +4 u8 flags (1 = the build's real-retiree seeds have joined; a 2026-season build admits job
+  j6-hof's seeds at its first season close), +5..+15 reserved;
   +16 inductees 192 x 16 B in induction order: person (7), u8 main club+1, u16 class year (the season closed + 1:
       "Class of 2027" after the 2026 season, job j6-hof's convention), u16 retirement year,
       u8 flags (1 valid, 2 real history, 4 franchise era), u8 seasons, u16 score

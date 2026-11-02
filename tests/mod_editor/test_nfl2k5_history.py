@@ -95,8 +95,8 @@ class CaptureTests(unittest.TestCase):
         fconfig = {"state": FDATA, "static_body": FDATA + footer.STATE_SIZE, "chain_size": 0, "chain_save": 0,
                    "chain_load": 0, "chain_franchise": 0}
         m.mem_write(FCODE, footer.code_for(FCODE, fconfig, bytes.fromhex("e856feffffeb13")))
-        hconfig = {"body_fn": FCODE + footer.runtime.LABELS["xt_body"], "chain_close": 0x13ED70,
-                   "flags": history.ALL_PARTS, "hall_bar": 100, "hall_wait": 1, "hall_window": 15, "hall_class": 2}
+        self.hconfig = hconfig = {"body_fn": FCODE + footer.runtime.LABELS["xt_body"], "chain_close": 0x13ED70,
+                                  "flags": history.ALL_PARTS}
         m.mem_write(HCODE, history.code_for(HCODE, hconfig))
         m.mem_write(FLD, b"\xd9\x05" + struct.pack("<I", SCRATCH) + b"\xc2\x04\x00")   # fld [scratch]; ret 4
         self.put(0xE576A0, 2)
@@ -527,28 +527,49 @@ class CaptureTests(unittest.TestCase):
             self.m.mem_write(at, career_struct(career))
             self.assertEqual(self.call_cdecl("hof_score", at), rules.score(career), fields)
 
-    def test_seeded_classes_follow_j6s_process(self):
-        import json
-        seeds = json.loads((ROOT / "data/nfl2k5_hof_candidates_2026.json").read_text(encoding="utf-8"))["candidates"]
-        self.assertEqual(len(seeds), 25)
-        for d in self.players.values():                              # no retirees in this league
+    def no_retirees(self):
+        for d in self.players.values():
             d["retired"] = False
         for p in self.players:
             self.m.mem_write(p + 8, b"\0")
+
+    def close(self, season):
+        self.put(0xE576B8, season - 2026)
+        self.m.mem_write(0xE57C40, bytes(374 * 8))
+        self.put(0xE576A4, 9)
+        self.call("history_season_close")
+        return ext.read_body(self.body())["blocks"][5]
+
+    def test_the_seeds_join_once_from_the_seed_year(self):
+        seeds = history.real_retiree_seeds()
+        self.m.mem_write(HCODE, history.code_for(HCODE, {**self.hconfig, "seed_year": 2027}, seeds))
+        self.no_retirees()
+        self.put(0xE576B8, 0)
+        self.play(0, 0, 9, 10, 21, 3)
+        hall = self.close(2026)
+        self.assertEqual((ext.decode_hall(hall)["candidates"], hall[4]), ([], 0))          # not before the seed year
+        hall = self.close(2027)
+        self.assertEqual(hall[4], 1)
+        view = ext.decode_hall(hall)
+        self.assertEqual(len(view["candidates"]) + len(view["inductees"]), 25)
+        self.assertTrue(all(c["real"] for c in view["candidates"]))
+        later = ext.decode_hall(self.close(2028))
+        self.assertEqual(len(later["candidates"]) + len(later["inductees"]), 25)          # never twice
+        self.assertEqual(self.writes, [])
+
+    def test_seeded_classes_follow_j6s_process(self):
+        entries = history.real_retiree_seeds()                        # job j6-hof's seeds file
+        self.assertEqual(len(entries), 25)
+        self.m.mem_write(HCODE, history.code_for(HCODE, self.hconfig, entries))
+        self.no_retirees()                                           # no retirees in this league
         self.put(0xE576B8, 0)                                        # the 2026 season
         self.play(0, 0, 9, 10, 21, 3)                                # the body exists from the first capture
-        pointer = self.get(FDATA + 4)
-        entries = [bytes.fromhex(s["candidate_hex"]) for s in seeds]
-        self.m.mem_write(pointer + ext.BLOCK_BY_NAME["hall"].offset, ext.encode_hall(candidates=entries))
         table = rules.empty_table()
         for k, raw in enumerate(entries):
             table[k] = rules.candidate_from_bytes(raw)
         classes = {}
         for season in range(2026, 2037):
-            self.put(0xE576B8, season - 2026)
-            self.m.mem_write(0xE57C40, bytes(374 * 8))
-            self.put(0xE576A4, 9)
-            self.call("history_season_close")
+            self.close(season)
             result = rules.close_season(table, season)
             hall = ext.decode_hall(ext.read_body(self.body())["blocks"][5])
             new = [i for i in hall["inductees"] if i["inducted"] == season + 1]
