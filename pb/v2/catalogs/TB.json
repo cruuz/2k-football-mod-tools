@@ -425,7 +425,7 @@
     "Slot Choice Return",
     "PA Slot Cross Dig",
     "X Mills Dig",
-    "Crack Toss Wk",
+    "Crack Toss",
     "RB Stretch Wk",
     "Steep In Seam",
     "01 Trap",
@@ -451,7 +451,7 @@
    "menu": [
     "Slot Slot Fade",
     "PA Z Post Go",
-    "Crack Toss",
+    "Crack Toss Wk",
     "Slot Bang Hitch",
     "X Hook Corner",
     "RB Levels Snag",
@@ -495,7 +495,7 @@
     "Inside Zone",
     "Slot Choice Return",
     "Z Steep In Seam",
-    "Crack Toss Wk",
+    "Crack Toss",
     "Slot Stick Return",
     "Z Comeback Seam",
     "Direct Snap Power",
@@ -570,7 +570,7 @@
     "01 Trap",
     "Slot Choice Return",
     "Z Comeback Seam",
-    "Crack Toss Wk",
+    "Crack Toss",
     "Z Hitch Seam",
     "Z Dagger Seam Out",
     "Z Bench Dig Bang",
@@ -819,7 +819,7 @@
    "menu": [
     "Y Double Slants",
     "Z Out Seam",
-    "Crack Toss Wk",
+    "Crack Toss",
     "X Curl Combo",
     "Bubble Screen",
     "X Double Move",
@@ -927,7 +927,7 @@
     "Slot Corner Post",
     "Slot Stick Return",
     "X Curl Combo",
-    "Crack Toss Wk",
+    "Crack Toss",
     "Z Bench Dig Bang",
     "PA Z Deep Post",
     "X Stick Out and Up",
@@ -2324,7 +2324,7 @@
   {
    "play": "p045",
    "play_index": 97,
-   "name": "Crack Toss Wk",
+   "name": "Crack Toss",
    "concept": "Crack Toss",
    "family": "run",
    "header": "run_toss",
@@ -2336,7 +2336,7 @@
    "must": "",
    "routes": [],
    "deep": false,
-   "lane": 0,
+   "lane": 4,
    "formations": [
     "Gun Wildcat",
     "Gun Doubles Clamp Stack",
@@ -3216,7 +3216,7 @@
   {
    "play": "p082",
    "play_index": 134,
-   "name": "Crack Toss",
+   "name": "Crack Toss Wk",
    "concept": "Crack Toss",
    "family": "run",
    "header": "run_toss",
@@ -3228,7 +3228,7 @@
    "must": "",
    "routes": [],
    "deep": false,
-   "lane": 4,
+   "lane": 0,
    "formations": [
     "Gun Spread"
    ]

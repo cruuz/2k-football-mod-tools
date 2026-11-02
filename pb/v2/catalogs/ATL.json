@@ -460,7 +460,7 @@
    "menu": [
     "RB Slip Screen",
     "Slot Scissors",
-    "Zone Toss",
+    "Zone Toss Wk",
     "Slot Bang Hitch",
     "Sprint Sail",
     "Sprint Curl Flat",
@@ -3660,7 +3660,7 @@
   {
    "play": "p096",
    "play_index": 151,
-   "name": "Zone Toss",
+   "name": "Zone Toss Wk",
    "concept": "Zone Toss",
    "family": "run",
    "header": "run_toss",
@@ -3672,7 +3672,7 @@
    "must": "",
    "routes": [],
    "deep": false,
-   "lane": 4,
+   "lane": 0,
    "formations": [
     "Gun Spread"
    ]

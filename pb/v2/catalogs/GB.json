@@ -793,7 +793,7 @@
    "menu": [
     "RB Slip Screen",
     "X Deep Over Return",
-    "Crack Toss",
+    "Crack Toss Wk",
     "PA Z Comeback Seam",
     "Z Steep In Seam",
     "QB Draw",
@@ -916,7 +916,7 @@
     "QB Draw",
     "X Comeback Seam",
     "X Bench",
-    "Crack Toss",
+    "Crack Toss Wk",
     "X Deep Over Return",
     "PA X Sail",
     "U Smash Seams",
@@ -3200,7 +3200,7 @@
   {
    "play": "p075",
    "play_index": 132,
-   "name": "Crack Toss",
+   "name": "Crack Toss Wk",
    "concept": "Crack Toss",
    "family": "run",
    "header": "run_toss",
@@ -3212,7 +3212,7 @@
    "must": "",
    "routes": [],
    "deep": false,
-   "lane": 4,
+   "lane": 0,
    "formations": [
     "Gun Ace Wing",
     "Gun Ace"

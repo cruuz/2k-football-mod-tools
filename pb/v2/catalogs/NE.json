@@ -152,7 +152,7 @@
    "menu": [
     "Y Double Slants",
     "PA Seam Shot",
-    "Crack Toss",
+    "Crack Toss Wk",
     "NE Four Verticals",
     "Drive",
     "Slot Stick",
@@ -192,7 +192,7 @@
    "menu": [
     "NE Hitch Seam",
     "Cluster Wheel",
-    "Crack Toss",
+    "Crack Toss Wk",
     "Slot Drive",
     "Y Double Slants",
     "NE Post Wheel",
@@ -217,7 +217,7 @@
    "menu": [
     "Slot Stick",
     "Slot Y Trail",
-    "Crack Toss",
+    "Crack Toss Wk",
     "Y Curls",
     "NE Post Wheel",
     "Slot Choice",
@@ -594,7 +594,7 @@
    "menu": [
     "Slot Choice",
     "NE Stick Nod",
-    "Crack Toss",
+    "Crack Toss Wk",
     "Slot Flood",
     "Z Snag",
     "PA Seam Shot",
@@ -743,7 +743,7 @@
    "menu": [
     "Z Snag",
     "Drive",
-    "Crack Toss",
+    "Crack Toss Wk",
     "X Slip Screen",
     "Slot Y Trail",
     "NE Stick Nod",
@@ -811,7 +811,7 @@
    "menu": [
     "NE Hitch Seam",
     "PA Stick Nod",
-    "Crack Toss",
+    "Crack Toss Wk",
     "X Choice Out",
     "Y Trail",
     "NE Stick Nod",
@@ -2273,7 +2273,7 @@
   {
    "play": "p044",
    "play_index": 83,
-   "name": "Crack Toss",
+   "name": "Crack Toss Wk",
    "concept": "Crack Toss",
    "family": "run",
    "header": "run_toss",
@@ -2285,7 +2285,7 @@
    "must": "",
    "routes": [],
    "deep": false,
-   "lane": 4,
+   "lane": 0,
    "formations": [
     "Gun Doubles",
     "Gun Trips TE",

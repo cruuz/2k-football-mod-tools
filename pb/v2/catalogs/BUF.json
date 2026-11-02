@@ -908,7 +908,7 @@
     "X Hitch Seam",
     "Slot Sail",
     "Slot Stick Nod",
-    "Zone Toss"
+    "Zone Toss Wk"
    ],
    "cpu_situation": [
     4,
@@ -4468,7 +4468,7 @@
   {
    "play": "p136",
    "play_index": 225,
-   "name": "Zone Toss",
+   "name": "Zone Toss Wk",
    "concept": "Zone Toss",
    "family": "run",
    "header": "run_toss",
@@ -4480,7 +4480,7 @@
    "must": "",
    "routes": [],
    "deep": false,
-   "lane": 0,
+   "lane": 4,
    "formations": [
     "Gun Split Backs"
    ]

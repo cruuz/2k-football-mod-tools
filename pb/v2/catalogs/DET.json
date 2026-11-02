@@ -167,7 +167,7 @@
    "menu": [
     "DET RB Screen",
     "PA Z Deep Post",
-    "Crack Toss",
+    "Crack Toss Wk",
     "DET Dagger",
     "Post Corner Shot",
     "Slot Drive",
@@ -246,7 +246,7 @@
     "Double Slants",
     "DET Dagger",
     "RB Counter",
-    "Crack Toss",
+    "Crack Toss Wk",
     "Z Quick Outs Snag",
     "Max Stick Nod",
     "Slot Cross Dig",
@@ -3555,7 +3555,7 @@
   {
    "play": "p091",
    "play_index": 146,
-   "name": "Crack Toss",
+   "name": "Crack Toss Wk",
    "concept": "Crack Toss",
    "family": "run",
    "header": "run_toss",
@@ -3567,7 +3567,7 @@
    "must": "",
    "routes": [],
    "deep": false,
-   "lane": 4,
+   "lane": 0,
    "formations": [
     "Gun Doubles",
     "Gun Bunch X Nasty"

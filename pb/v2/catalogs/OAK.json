@@ -439,7 +439,7 @@
     "Slot Levels",
     "Slot Bubble Screen",
     "Slot Choice Return",
-    "Zone Toss",
+    "Zone Toss Wk",
     "Slot Sail",
     "RB Scat Fade",
     "Slot Drive Return"
@@ -833,7 +833,7 @@
    "menu": [
     "RB Slip Screen",
     "Slot Sail",
-    "Zone Toss",
+    "Zone Toss Wk",
     "Slot Zig Flat Out",
     "Slot Drive Return",
     "Slot Choice Return",
@@ -2599,7 +2599,7 @@
   {
    "play": "p063",
    "play_index": 113,
-   "name": "Zone Toss",
+   "name": "Zone Toss Wk",
    "concept": "Zone Toss",
    "family": "run",
    "header": "run_toss",
@@ -2611,7 +2611,7 @@
    "must": "",
    "routes": [],
    "deep": false,
-   "lane": 4,
+   "lane": 0,
    "formations": [
     "Gun Spread",
     "Gun Trips Open"

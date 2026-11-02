@@ -193,7 +193,7 @@
     "PA Slot Deep Over",
     "Slot Flood Out",
     "Z Hitch Seam",
-    "RB Toss",
+    "RB Toss Wk",
     "Zig Flat",
     "Z Bench Levels",
     "Slot Stick Return",
@@ -494,7 +494,7 @@
    "menu": [
     "X China",
     "PA Z Zig Flat",
-    "RB Toss",
+    "RB Toss Wk",
     "X Curl Combo Whip",
     "Slot Drive",
     "STL Post Corner",
@@ -3593,7 +3593,7 @@
   {
    "play": "p091",
    "play_index": 91,
-   "name": "RB Toss",
+   "name": "RB Toss Wk",
    "concept": "HB Toss",
    "family": "run",
    "header": "run_toss",
@@ -3605,7 +3605,7 @@
    "must": "",
    "routes": [],
    "deep": false,
-   "lane": 0,
+   "lane": 4,
    "formations": [
     "Gun Wildcat",
     "Gun Bunch TE"
