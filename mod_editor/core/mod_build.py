@@ -555,6 +555,13 @@ class BuildPlan:
     # 6 punt} so scrimmage and field-goal pursuit is byte-for-byte retail. CPU defenders only; human defenders
     # keep the retail aim. On in the Advanced and Experimental presets (the SOFTDRINK recipe builds from Experimental).
     return_coverage: bool = False
+    # b780-cv4: CPU defenders cannot slide to the ball for a pick. The retail catch alignment (0x1A8940) adds a share of
+    # a planned correction of up to nearly a yard straight to a defender's position, outside his running speed (the
+    # pick "warp"). A late executable owner (nfl2k5_catch_snap_limit) hooks the catch selector's success exit (0x1E7B02):
+    # a CPU defender's forward-pass catch that would slide him more than half a yard is answered the way retail answers
+    # "no aligned catch from here" (nothing slides, the AI tasks take their no-catch exit). Receivers, human-controlled
+    # defenders, kicks and dive clips keep retail. EXPERIMENTAL and off in every preset until it has an emulator witness.
+    catch_snap_limit: bool = False
 
     # b778-st2: rookie stars and stars earned or lost over a career. The draft-class generator's 3..5 best prospects
     # (the draft-AI key) and 1..2 later-round gems (a top development archetype) get the Star tier; every offseason,
@@ -712,7 +719,7 @@ class BuildPlan:
                 or self.guardian_overlay or self.my_career or self.screen_hooks or self.coverage_trail or self.franchise_edit_player or self.cpu_money_downs != "retail" or self.accelerated_clock or self.coin_defer or self.decided_clock or self.cpu_scrambles == "modern" or self.weather_haze or self.number_kerning or self.modern_color or self.weekly_prep or self.weekly_prep_cpu or self.weekly_prep_remember or self.coach_ai or self.playbook_pair or self.deep_zone_facing or self.deep_zone_bail or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave or self.historic_teams_quick_game or self.espn25_more_moments or self.historic_stock_books or self.espn25_era_rules or self.k128_memory or self.team_ratings or self.play_art_routes or self.letter_grades or self.honors_page or self.sim_cb_tackles or self.sim_stats or self.option_defaults or self.sim_rb_injuries or self.sim_realism
                 or self.momentum_collisions or self.scorebug_runtime or self.indicator_names_style != "retail" or self.momentum > 0 or self.momentum_contact or self.defensive_try or self.zone_drop_cap or self.all_stadiums or self.music_shuffle or self.practice_squad_screen or self.abilities or self.qb_spy or self.calendar_engine or self.coverage_slider or self.scramble_tuning or self.flatter_deep_ball or self.chop_block_toggle or self.music_policy != "retail" or self.music_unlock or self.music_userlist
                 or bool(self.music_library and _music_library_document(self.music_library)["bank"] == "cribmusic")
-                or self.pass_protection or self.pass_rush_stats)  # b778-pr1, b779-st1
+                or self.pass_protection or self.pass_rush_stats or self.catch_snap_limit)  # b778-pr1, b779-st1, b780-cv4
 
     def to_recipe(self) -> dict[str, Any]:
         d = asdict(self)
@@ -964,6 +971,11 @@ for _preset in PRESETS.values():
     _preset["sim_realism"] = False
 PRESETS["softdrink_advanced"]["sim_realism"] = True
 PRESETS["softdrink_experimental"]["sim_realism"] = True
+del _preset
+# b780-cv4: the defender catch snap limit is opt-in everywhere: it has Unicorn proof of the game's own selector but no
+# emulator witness yet, so no preset turns it on (the report recommends Experimental once a witness passes).
+for _preset in PRESETS.values():
+    _preset["catch_snap_limit"] = False
 del _preset
 # b778-sim1: the simulated-game pace fix is a stat correction, not a taste option: on in the Advanced and Experimental
 # presets (the SOFTDRINK 2K28 recipe builds from Experimental). Basic keeps retail for purists.
@@ -1340,6 +1352,7 @@ _LATE_OWNER_OPTIONS = (
     ("nfl2k5_sim_realism", "Simulated season realism", lambda p: p.sim_realism),  # b779-sim2 r4
     ("nfl2k5_clock_led", "Modern clock digits", lambda p: p.modern_clock_led),  # b778-sd4
     ("nfl2k5_return_coverage", "Return coverage pursuit angles", lambda p: p.return_coverage),  # b778-kr1
+    ("nfl2k5_catch_snap_limit", "Defender catch snap limit", lambda p: p.catch_snap_limit),  # b780-cv4
     ("nfl2k5_preseason_warning", "2026 franchise economy", lambda p: p.franchise_economy),  # b779-rc1: the warned flag
 )
 _REBUILD_HINT = " Build from your unmodified retail dump instead."
@@ -1591,6 +1604,21 @@ def _sim_realism_preflight(source: Path, progress) -> None:
     if state not in ("retail", "applied"):
         raise ValueError("A scheduled-simulation site for season realism in this source is not retail. "
                          "Build from an unmodified retail dump.")
+
+
+def _catch_snap_limit_preflight(source: Path, progress) -> None:
+    """b780-cv4: refuse a source whose catch selector code is foreign, before any write."""
+    module = _core_module("nfl2k5_catch_snap_limit")
+    if module is None or _core_module("nfl2k5_xbe_space") is None:
+        raise ValueError("The defender catch snap limit is not available in this installation.")
+    progress("Checking the catch selector for the defender catch snap limit", 0, 0)
+    try:
+        payload = _xbe_bytes(source)
+    except (OSError, ValueError) as exc:
+        raise ValueError(f"The defender catch snap limit cannot read default.xbe: {exc}") from exc
+    if module.status(payload) == "foreign":
+        raise ValueError("The catch selector code in this source is not retail or the defender catch snap limit. "
+                         "Turn it off or build from your unmodified retail dump.")
 
 
 def _apply_practice_injuries(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
@@ -1878,6 +1906,23 @@ def _apply_sim_realism(plan: "BuildPlan", target: Path, receipt: dict, progress)
     receipt["result"]["sim_realism"] = "applied"
 
 
+def _apply_catch_snap_limit(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    """b780-cv4: CPU defenders cannot slide to the ball for a pick, the last late allocator owner."""
+    if not plan.catch_snap_limit:
+        return
+    module = _core_module("nfl2k5_catch_snap_limit")
+    if module is None:
+        raise RuntimeError("The defender catch snap limit needs nfl2k5_catch_snap_limit.")
+    progress("Defenders: catch snap limit", 0, 0)
+    payload, snap_receipt = module.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, payload)
+    final = _xbe_bytes(target)
+    if final != payload or module.status(final) != "applied":
+        raise RuntimeError("The defender catch snap limit: the output does not read back as applied")
+    receipt["steps"].append({"step": "catch_snap_limit", **{k: v for k, v in snap_receipt.items() if k != "reservations"}})
+    receipt["result"]["catch_snap_limit"] = "applied"
+
+
 def _sim_stats_preflight(source: Path, progress) -> None:
     """b778-sim1: refuse a source whose simulator initializer is foreign, before any write."""
     module = _core_module("nfl2k5_sim_stats")
@@ -2107,6 +2152,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
                                ("sim_cb_tackles", "nfl2k5_sim_cb_tackles"),  # b778-cb1
                                ("sim_rb_injuries", "nfl2k5_sim_rb_injuries"),  # b779-sim2
                                ("sim_realism", "nfl2k5_sim_realism"),  # b779-sim2 r4
+                               ("catch_snap_limit", "nfl2k5_catch_snap_limit"),  # b780-cv4
                                ("modern_clock_led", "nfl2k5_clock_led"),  # b778-sd4
                                ("letter_grades", "nfl2k5_letter_grades"),
                                ("honors_page", "nfl2k5_honors"), ("honors_history", "nfl2k5_honors_history"),
@@ -2364,6 +2410,8 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
     out["sim_rb_injuries"] = rb_injuries.status(_xbe_bytes(source)) if rb_injuries is not None else "unavailable"
     sim_realism = _core_module("nfl2k5_sim_realism")  # b779-sim2 r4
     out["sim_realism"] = sim_realism.status(_xbe_bytes(source)) if sim_realism is not None else "unavailable"
+    catch_snap = _core_module("nfl2k5_catch_snap_limit")  # b780-cv4
+    out["catch_snap_limit"] = catch_snap.status(_xbe_bytes(source)) if catch_snap is not None else "unavailable"
     sim_stats = _core_module("nfl2k5_sim_stats")  # b778-sim1
     out["sim_stats"] = sim_stats.status(_xbe_bytes(source)) if sim_stats is not None else "unavailable"
     option_defaults = _core_module("nfl2k5_option_defaults")  # b779-df1
@@ -4290,6 +4338,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("CPU ball carriers must be Off or On.")
     if type(plan.return_coverage) is not bool:  # b778-kr1
         raise ValueError("Return coverage pursuit angles must be Off or On.")
+    if type(plan.catch_snap_limit) is not bool:  # b780-cv4
+        raise ValueError("The defender catch snap limit must be Off or On.")
     if type(plan.sportscenter_lineup) is not bool:
         raise ValueError("SportsCenter highlight lineups must be Off or On.")
     if type(plan.franchise_draft_clock) is not bool:  # b778-dr1
@@ -5063,6 +5113,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         _sim_rb_injuries_preflight(source, progress)
     if plan.sim_realism:  # b779-sim2 r4: like pi1, before any write
         _sim_realism_preflight(source, progress)
+    if plan.catch_snap_limit:  # b780-cv4: before any write
+        _catch_snap_limit_preflight(source, progress)
     if plan.cpu_ball_carriers:  # b778-ai5: before any write
         _ball_carrier_preflight(source, progress)
     if plan.return_coverage:  # b778-kr1: before any write
@@ -5606,7 +5658,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         player_progress=bool(plan.player_progress or plan.player_progress_visible), contract_college_guard=plan.contract_college_guard,
         sim_cb_tackles=plan.sim_cb_tackles, modern_clock_led=plan.modern_clock_led,
         module_loader=plan.module_loader, classic_teams=plan.classic_teams,
-        sim_rb_injuries=plan.sim_rb_injuries, sim_realism=plan.sim_realism, preseason_warning=plan.franchise_economy)
+        sim_rb_injuries=plan.sim_rb_injuries, sim_realism=plan.sim_realism, preseason_warning=plan.franchise_economy,
+        catch_snap_limit=plan.catch_snap_limit)
     if plan.read_option_runtime or plan.qb_spy:
         resolver = _core_module("nfl2k5_play_intents")
         if resolver is None:
@@ -5647,7 +5700,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             or plan.reserves_16 or plan.created_teams_extra or plan.defensive_try or plan.zone_drop_cap or plan.all_stadiums or plan.coverage_slider or plan.scramble_tuning
             or plan.music_shuffle or plan.practice_squad_screen or plan.abilities or plan.qb_spy or plan.calendar_engine or plan.camera or plan.franchise_autosave
             or plan.historic_teams_quick_game or plan.espn25_more_moments or plan.historic_stock_books or plan.espn25_era_rules or r62.get("anniversary_kickoff") or r62.get("widescreen_menus") or r62.get("team_logo_swap") or r62.get("period_goalposts") or plan.k128_memory or plan.letter_grades or plan.honors_page
-            or plan.return_coverage or plan.pass_protection or plan.pass_rush_stats):
+            or plan.return_coverage or plan.pass_protection or plan.pass_rush_stats or plan.catch_snap_limit):
         progress("Adding experimental extra patch space", 0, 0)
         playlist_selection, playlist_preflight = None, None
         if plan.music_shuffle:
@@ -5682,6 +5735,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             sim_cb_tackles=plan.sim_cb_tackles, modern_clock_led=plan.modern_clock_led,
             module_loader=plan.module_loader, classic_teams=plan.classic_teams,
             sim_rb_injuries=plan.sim_rb_injuries, sim_realism=plan.sim_realism, preseason_warning=plan.franchise_economy,
+            catch_snap_limit=plan.catch_snap_limit,
             **{**r62, "read_option_intent_table": read_table, "modern_naming": False, "crib_reclaim": False})
         _write_xbe_bytes(target, patched)
         receipt["steps"].append({"step": "xbe_space", **space_receipt,
@@ -6784,6 +6838,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     _apply_sim_rb_injuries(plan, target, receipt, progress)
     # b779-sim2 r4: scheduled-sim season realism, after the RB injury owner (LATE_OWNERS order)
     _apply_sim_realism(plan, target, receipt, progress)
+    # b780-cv4: the defender catch snap limit, the last late allocator owner (nfl2k5_xbe_space.LATE_OWNERS order)
+    _apply_catch_snap_limit(plan, target, receipt, progress)
     # b778-pg2: the Player Progress screen and weekly snapshot (a late allocator owner after force_out)
     # b778-cb1: cornerback tackle credit, after force_out
     # b778-sd4: modern clock digits, after modern sideline catches
@@ -6866,6 +6922,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("the Player Contracts college guard did not survive the final passes")  # b778-cr1
     if plan.sim_rb_injuries and _core_module("nfl2k5_sim_rb_injuries").status(_xbe_bytes(target)) != "applied":
         raise ValueError("simulated RB short injuries did not survive the final passes")  # b779-sim2
+    if plan.catch_snap_limit and _core_module("nfl2k5_catch_snap_limit").status(_xbe_bytes(target)) != "applied":  # b780-cv4
+        raise RuntimeError("The defender catch snap limit is not in the built executable.")
     if plan.sim_realism and _core_module("nfl2k5_sim_realism").status(_xbe_bytes(target)) != "applied":
         raise ValueError("simulated season realism did not survive the final passes")  # b779-sim2 r4
     if plan.sim_cb_tackles and _core_module("nfl2k5_sim_cb_tackles").status(_xbe_bytes(target)) != "applied":  # b778-cb1
