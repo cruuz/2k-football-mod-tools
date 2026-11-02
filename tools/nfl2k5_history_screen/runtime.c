@@ -190,14 +190,50 @@ static void text_at(const u16 *text, float x, float y, u32 font, u32 align, u32 
     TEXT_DRAW(ctx, text);
 }
 
+/* The largest of the game's menu fonts (the standings font 4, then 3, then 8) whose width (the game's own measure)
+   fits `room` pixels; the narrowest when none does; font 4 when room is 0 (no limit). Absent fonts are skipped. */
+static const u8 fit_fonts[3] = {4, 3, 8};
+
+static u32 fit_font(const u16 *text, u32 room) {
+    u32 ctx[32], best = 4;
+    i32 narrow = 0x7FFFFFFF;
+    if (!room)
+        return 4;
+    for (u32 k = 0; k < 3; k++) {
+        u32 handle = FONT_GET(fit_fonts[k]);
+        if (!handle)
+            continue;
+        TEXT_INIT(ctx);
+        TEXT_FONT(ctx, handle);
+        i32 w = TEXT_WIDTH(ctx, text);
+        if (w <= (i32)room)
+            return fit_fonts[k];
+        if (w < narrow) {
+            narrow = w;
+            best = fit_fonts[k];
+        }
+    }
+    return best;
+}
+
+/* one table cell in row r at x, at most `room` pixels wide (0 = no limit) */
+static void cellw(u32 row, float x, u32 room, u32 align, const u16 *text, u32 colour) {
+    if (text && *text)
+        text_at(text, x, TEXT_Y(row), fit_font(text, room), align, colour);
+}
+
 static void cell(u32 row, float x, u32 align, const u16 *text, u32 colour) {
-    text_at(text, x, TEXT_Y(row), 4, align, colour);
+    cellw(row, x, 0, align, text, colour);
+}
+
+static void cellw_ascii(u32 row, float x, u32 room, u32 align, const char *text, u32 colour) {
+    u16 buffer[48];
+    put_ascii(buffer, text);
+    cellw(row, x, room, align, buffer, colour);
 }
 
 static void cell_ascii(u32 row, float x, u32 align, const char *text, u32 colour) {
-    u16 buffer[48];
-    put_ascii(buffer, text);
-    cell(row, x, align, buffer, colour);
+    cellw_ascii(row, x, 0, align, text, colour);
 }
 
 static void bars(u32 head) {
@@ -487,14 +523,14 @@ static void draw_season_line(u32 row, u32 year, u32 w, u32 l, u32 t, u32 place, 
     put_uint(text, year);
     cell(row, 60.0f, 1, text, colour);
     put_record(text, w, l, t);
-    cell(row, 190.0f, 2, text, colour);
+    cellw(row, 190.0f, 70, 2, text, colour);
     if (place >= 1 && place <= 8) {
         put_ordinal(text, place);
-        cell(row, 210.0f, 1, text, colour);
+        cellw(row, 210.0f, 50, 1, text, colour);
     }
-    cell_ascii(row, 265.0f, 1, playoff_text[playoff & 7], colour);
+    cellw_ascii(row, 265.0f, 174, 1, playoff_text[playoff & 7], colour);
     if (coach && coach[0])
-        cell(row, 445.0f, 1, coach, colour);
+        cellw(row, 445.0f, 156, 1, coach, colour);
 }
 
 static void page_seasons(u32 index) {
@@ -526,7 +562,7 @@ static void page_seasons(u32 index) {
     } else {
         put_ascii(out, "NO SEASONS PLAYED YET");
     }
-    cell(0, 60.0f, 1, text, YELLOW);
+    cellw(0, 60.0f, 540, 1, text, YELLOW);
     cell_ascii(1, 60.0f, 1, "YEAR", GREY);
     cell_ascii(1, 190.0f, 2, "W-L-T", GREY);
     cell_ascii(1, 210.0f, 1, "DIV", GREY);
@@ -630,32 +666,33 @@ static u32 club_record(u32 index, u32 category, u32 kind, Mark *m) {
     return have;
 }
 
+/* record row: CATEGORY (60) KIND (225) VALUE (right at 370) HOLDER (380) YEAR or "NEW 2028" (right at 600) */
 static void draw_mark(u32 row, u32 category, u32 kind, const Mark *m, u32 with_club) {
     u16 text[40], *out;
     u32 colour = m->fresh ? YELLOW : GREY;
-    cell_ascii(row, 60.0f, 1, category_name[category], GREY);
-    cell_ascii(row, 200.0f, 1, kind_name[kind], DIM);
+    cellw_ascii(row, 60.0f, 160, 1, category_name[category], GREY);
+    cellw_ascii(row, 225.0f, 70, 1, kind_name[kind], DIM);
     put_value(text, category, m->value);
-    cell(row, 335.0f, 2, text, colour);
+    cellw(row, 370.0f, 70, 2, text, colour);
     out = put_text(text, m->name, 20);
     if (with_club && m->club < 32) {
         out = put_ascii(out, " (");
         out = put_club_abbr(out, m->club);
         put_ascii(out, ")");
     }
-    cell(row, 350.0f, 1, text, colour);
-    if (m->year) {
-        put_uint(text, m->year);
-        cell(row, 600.0f, 2, text, colour);
-    }
+    cellw(row, 380.0f, 146, 1, text, colour);
+    out = text;
     if (m->fresh)
-        cell_ascii(row, 545.0f, 2, "NEW", YELLOW);
+        out = put_ascii(out, m->year ? "NEW " : "NEW");
+    if (m->year)
+        put_uint(out, m->year);
+    cellw(row, 600.0f, 70, 2, text, colour);
 }
 
 static void page_records(u32 index) {
     cell_ascii(0, 60.0f, 1, "CLUB RECORDS", GREY);
-    cell_ascii(0, 335.0f, 2, "VALUE", GREY);
-    cell_ascii(0, 350.0f, 1, "HOLDER", GREY);
+    cell_ascii(0, 370.0f, 2, "VALUE", GREY);
+    cell_ascii(0, 380.0f, 1, "HOLDER", GREY);
     cell_ascii(0, 600.0f, 2, "YEAR", GREY);
     u32 have[CATS * 2], count = 0;
     Mark m;
@@ -723,8 +760,8 @@ static u32 book_entry(u32 k, u32 *category, u32 *kind, Mark *m) {
 
 static void page_book(void) {
     cell_ascii(0, 60.0f, 1, "NFL RECORDS", GREY);
-    cell_ascii(0, 335.0f, 2, "VALUE", GREY);
-    cell_ascii(0, 350.0f, 1, "HOLDER", GREY);
+    cell_ascii(0, 370.0f, 2, "VALUE", GREY);
+    cell_ascii(0, 380.0f, 1, "HOLDER", GREY);
     cell_ascii(0, 600.0f, 2, "YEAR", GREY);
     List l;
     list_start(&l, ro_ok() ? RO_FIELD(RO_BOOK_COUNT) : 0, 1);
@@ -785,8 +822,8 @@ static u32 leader(u32 index, u32 k, Mark *m, u32 *category, u32 *rank) {
 
 static void page_leaders(u32 index) {
     cell_ascii(0, 60.0f, 1, "ALL-TIME LEADERS", GREY);
-    cell_ascii(0, 335.0f, 2, "TOTAL", GREY);
-    cell_ascii(0, 350.0f, 1, "PLAYER", GREY);
+    cell_ascii(0, 370.0f, 2, "TOTAL", GREY);
+    cell_ascii(0, 380.0f, 1, "PLAYER", GREY);
     u32 have[LEADER_CATS * 3], count = 0, category, rank;
     Mark m;
     for (u32 k = 0; k < LEADER_CATS * 3; k++)
@@ -803,13 +840,13 @@ static void page_leaders(u32 index) {
         leader(index, have[l.first + r], &m, &category, &rank);
         u32 row = l.top + r, colour = m.fresh ? YELLOW : GREY;
         if (!rank || !r)
-            cell_ascii(row, 60.0f, 1, category_name[leader_category[category]], GREY);
+            cellw_ascii(row, 60.0f, 160, 1, category_name[leader_category[category]], GREY);
         out = put_uint(text, rank + 1);
         put_ascii(out, ".");
-        cell(row, 215.0f, 2, text, DIM);
+        cell(row, 245.0f, 2, text, DIM);
         put_value(text, leader_category[category], m.value);
-        cell(row, 335.0f, 2, text, colour);
-        cell(row, 350.0f, 1, m.name, colour);
+        cellw(row, 370.0f, 100, 2, text, colour);
+        cellw(row, 380.0f, 170, 1, m.name, colour);
         if (m.fresh)
             cell_ascii(row, 600.0f, 2, "NEW", YELLOW);
     }
@@ -859,7 +896,7 @@ static void page_awards(u32 award) {
         }
         put_uint(text, year);
         cell(row, 60.0f, 1, text, colour);
-        cell(row, 140.0f, 1, name, colour);
+        cellw(row, 140.0f, 270, 1, name, colour);
         if (pos < 17 && award != 6) {
             put_position(text, pos);
             cell(row, 420.0f, 1, text, colour);
@@ -958,7 +995,7 @@ static void page_hof(u32 filter) {
         }
         put_uint(text, year);
         cell(row, 60.0f, 1, text, colour);
-        cell(row, 140.0f, 1, name, colour);
+        cellw(row, 140.0f, 270, 1, name, colour);
         if (pos < 17) {
             put_position(text, pos);
             cell(row, 420.0f, 1, text, colour);
@@ -1312,8 +1349,8 @@ void FC box_draw(u32 manager) {
     const u8 *e = x_box(row, slot);
     u32 top = 3, first = hist_state[S_BOX_SCROLL];
     if (!e) {
-        cell_ascii(4, 60.0f, 1, "FULL STATS ARE KEPT FOR YOUR TEAM'S GAMES", GREY);
-        cell_ascii(5, 60.0f, 1, "(GAMES PLAYED WITH THE HISTORY SAVE DATA ON)", DIM);
+        cellw_ascii(4, 60.0f, 540, 1, "FULL STATS ARE KEPT FOR YOUR TEAM'S GAMES", GREY);
+        cellw_ascii(5, 60.0f, 540, 1, "(GAMES PLAYED WITH THE HISTORY SAVE DATA ON)", DIM);
         legend("B: BACK");
         return;
     }
@@ -1339,7 +1376,7 @@ void FC box_draw(u32 manager) {
         }
         if (k <= STAT_ROWS) {
             const u8 *s = stat_row[k - 1];
-            cell_ascii(screen_row, 60.0f, 1, stat_name[k - 1], GREY);
+            cellw_ascii(screen_row, 60.0f, 300, 1, stat_name[k - 1], GREY);
             for (u32 side = 0; side < 2; side++) {
                 const u16 *v = side ? home_stats : away_stats;
                 out = put_uint(text, v[s[0]]);
@@ -1356,12 +1393,12 @@ void FC box_draw(u32 manager) {
             const u8 *line = e + 144 + 16 * k;
             u32 kind = line[3] <= K_KICK ? line[3] : 0;
             put_club_abbr(text, user);
-            cell(screen_row, 60.0f, 1, text, DIM);
-            cell_ascii(screen_row, 105.0f, 1, kind_label[kind], DIM);
+            cellw(screen_row, 60.0f, 42, 1, text, DIM);
+            cellw_ascii(screen_row, 105.0f, 100, 1, kind_label[kind], DIM);
             put_player(text, player_record(*(const u16 *)line));
-            cell(screen_row, 230.0f, 1, text, WHITE);
+            cellw(screen_row, 210.0f, 140, 1, text, WHITE);
             put_line_stats(text, kind, (const i16 *)(line + 4), 6);
-            cell(screen_row, 600.0f, 2, text, WHITE);
+            cellw(screen_row, 600.0f, 240, 2, text, WHITE);
             continue;
         }
         k -= lines;
@@ -1370,12 +1407,12 @@ void FC box_draw(u32 manager) {
             if (ld[7] < 1 || ld[7] > 4 || person_empty(ld) || seen++ != k)
                 continue;
             put_club_abbr(text, them);
-            cell(screen_row, 60.0f, 1, text, DIM);
-            cell_ascii(screen_row, 105.0f, 1, kind_label[ld[7]], DIM);
+            cellw(screen_row, 60.0f, 42, 1, text, DIM);
+            cellw_ascii(screen_row, 105.0f, 100, 1, kind_label[ld[7]], DIM);
             put_person(text, ld);
-            cell(screen_row, 230.0f, 1, text, GREY);
+            cellw(screen_row, 210.0f, 140, 1, text, GREY);
             put_line_stats(text, ld[7], (const i16 *)(ld + 8), 4);
-            cell(screen_row, 600.0f, 2, text, GREY);
+            cellw(screen_row, 600.0f, 240, 2, text, GREY);
             break;
         }
     }

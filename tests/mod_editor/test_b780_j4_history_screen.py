@@ -520,9 +520,9 @@ class NativeTests(unittest.TestCase):
         struct.pack_into("<BHBB", records, e + 7, 1, 5600, 2028 - 1900, 0)
         m = self.machine(j23_body({3: bytes(records)}))
         self.draw(m, page=3)
-        self.assertEqual(self.rows(m)[1], ["PASS YARDS", "SEASON", "5,600", "Z. ARM (BUF)", "NEW", "2028"])
+        self.assertEqual(self.rows(m)[1], ["PASS YARDS", "SEASON", "5,600", "Z. ARM (BUF)", "NEW 2028"])
         self.draw(m, page=1, club=0)
-        self.assertEqual(self.rows(m)[1], ["PASS YARDS", "SEASON", "5,600", "Z. ARM", "NEW", "2028"])
+        self.assertEqual(self.rows(m)[1], ["PASS YARDS", "SEASON", "5,600", "Z. ARM", "NEW 2028"])
 
     def test_leaders_page(self):
         m = self.machine()
