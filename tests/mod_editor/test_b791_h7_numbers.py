@@ -436,6 +436,30 @@ def fit(image, stored_size, mode="retail"):
                          stored_size=stored_size)
 
 
+STEP = {step.name: step for step in art._STEPS}
+
+
+def noisy_two_tone(digit, size=64):
+    """A flat white fill with a flat outline, plus stray pixels of unrelated colours that survive the cleanup.
+
+    The stray colours lie off the line between white and the outline, so the two-tone detector refuses the digit and
+    it keeps every stray colour (and all its blends). That is what a font sheet scaled down from 128 px did in
+    practice: resampling overshoot left colours the artist never drew, and the digit could not use the two-colour
+    palette floor.
+    """
+    image = rams_digit(digit, size, shaded=False, outline_colour=(2, 55, 150))
+    strays = [(60, 170, 70), (200, 60, 170), (230, 150, 20), (20, 200, 200)]
+    pixels = list(image.getdata())
+    seen = 0
+    for index, pixel in enumerate(pixels):
+        if pixel[3] == 255 and pixel[:3] in ((255, 255, 255), (2, 55, 150)):
+            seen += 1
+            if seen % 41 == 0:
+                pixels[index] = (*strays[(seen // 41) % len(strays)], 255)
+    image.putdata(pixels)
+    return image
+
+
 class SimplificationPartsTests(unittest.TestCase):
     def test_hard_edges_make_alpha_binary_and_leave_colours_alone(self):
         image = rams_digit(8)
@@ -487,19 +511,67 @@ class SimplificationPartsTests(unittest.TestCase):
         self.assertIsNotNone(flat)
         self.assertEqual(len({p[:3] for p in flat.getdata() if p[3] == 255}), 1)
 
+    def test_stray_in_between_colours_are_merged_into_the_digits_own_colours(self):
+        prepared, _ = art.prepare_digit(noisy_two_tone(8), retail_reference(), "retail")
+        stray = {p[:3] for p in prepared.getdata() if p[3] >= 240}
+        self.assertGreater(len(stray), 6, "the digit keeps its stray colours: the two-colour path did not take it")
+        shading = art._Shading(prepared)
+        self.assertTrue(shading.noisy and not shading.shaded, (shading.distinct, shading.regions))
+        self.assertEqual(shading.regions, 2)
+        clean = art.flatten_shading(prepared, 0, clean=True)
+        colours = {p[:3] for p in clean.getdata() if p[3] >= 240}
+        self.assertEqual(len(colours), 2, colours)
+        self.assertTrue(any(max(abs(c[k] - (2, 55, 150)[k]) for k in range(3)) <= 30 for c in colours), colours)
+        self.assertTrue(any(min(c) > 235 for c in colours), colours)
+        self.assertEqual(clean.getchannel("A").tobytes(), prepared.getchannel("A").tobytes())
+        self.assertIsNotNone(art._apply_step(prepared, STEP["clean_colours"]))
+        hard = art._apply_step(prepared, STEP["clean_hard"])
+        self.assertEqual(set(hard.getchannel("A").getdata()), {0, 255})
+
+    def test_cleaning_never_erases_a_colour_with_a_real_share(self):
+        # An outline miscounted as noise would be erased by a one-colour flatten. Force that miscount and check the guard.
+        prepared, _ = art.prepare_digit(noisy_two_tone(8), retail_reference(), "retail")
+        shading = art._Shading(prepared)
+        self.assertEqual(shading.regions, 2)
+        original = art._Shading.__init__
+
+        def one_region(self, image):
+            original(self, image)
+            self.rim, self.regions = None, 1
+
+        with unittest.mock.patch.object(art._Shading, "__init__", one_region):
+            self.assertIsNone(art.flatten_shading(prepared, 0, clean=True))
+
+    def test_clean_steps_leave_clean_art_shaded_art_and_pictures_alone(self):
+        # exact outline and fill: the cleanup's own two-tone path already leaves exactly two colours, so nothing is left to clean
+        exact = Image.new("RGBA", (64, 64))
+        exact.paste((0, 53, 148, 255), (14, 8, 50, 56))
+        exact.paste((255, 255, 255, 255), (19, 13, 45, 51))
+        prepared, _ = art.prepare_digit(exact, retail_reference(), "retail")
+        self.assertEqual(len({p[:3] for p in prepared.getdata() if p[3] >= 16}), 2)
+        self.assertIsNone(art._apply_step(prepared, STEP["clean_colours"]))
+        self.assertIsNone(art._apply_step(prepared, STEP["clean_hard"]))
+        self.assertIsNone(art.flatten_shading(art.hard_edges(rams_digit(8)), 0, clean=True), "a gradient is shading, not noise")
+        picture = Image.new("RGBA", (64, 64), (0, 0, 0, 0))
+        for index in range(64 * 64):
+            if 8 <= index % 64 < 56 and 8 <= index // 64 < 56:
+                picture.putpixel((index % 64, index // 64), ((index * 37) % 256, (index * 91) % 256, (index * 53) % 256, 255))
+        self.assertFalse(art._Shading(picture).noisy, "hundreds of colours are a picture, not flat regions with noise")
+        self.assertIsNone(art._apply_step(picture, STEP["clean_colours"]))
+
     def test_hard_edges_are_not_used_when_they_would_erase_thin_strokes(self):
         thin = Image.new("RGBA", (64, 64))
         for x in range(10, 54):
             thin.putpixel((x, 20), (255, 255, 255, 110))  # a hairline at 43 percent coverage
             thin.putpixel((x, 40), (255, 255, 255, 110))
         thin.paste((255, 255, 255, 255), (28, 22, 34, 38))
-        self.assertIsNone(art._apply_step(thin, art._STEPS[0]))
+        self.assertIsNone(art._apply_step(thin, STEP["hard_edges"]))
         solid = Image.new("RGBA", (64, 64))
         solid.paste((255, 255, 255, 255), (10, 10, 54, 54))
         for x in range(10, 54):
             solid.putpixel((x, 9), (255, 255, 255, 200))
             solid.putpixel((x, 54), (255, 255, 255, 60))
-        self.assertIsNotNone(art._apply_step(solid, art._STEPS[0]))  # an honest soft edge hardens by a rounding error
+        self.assertIsNotNone(art._apply_step(solid, STEP["hard_edges"]))  # an honest soft edge hardens by a rounding error
 
     def test_flat_regions_are_not_merged_and_flat_art_needs_no_step(self):
         flat = Image.new("RGBA", (64, 64))
@@ -511,7 +583,8 @@ class SimplificationPartsTests(unittest.TestCase):
         for step in art._STEPS:
             if step.colours is not None:
                 self.assertIsNone(art._apply_step(flat, step), step.name)  # three flat colours are regions, not shading
-        self.assertIsNone(art._apply_step(flat, art._STEPS[0]), "no soft edges, so hard edges change nothing")
+        self.assertIsNone(art._apply_step(flat, STEP["hard_edges"]), "no soft edges, so hard edges change nothing")
+        self.assertIsNone(art._apply_step(flat, STEP["clean_colours"]), "three clean flat colours have nothing to clean")
 
     def test_advice_names_the_numbers_and_the_text_everyone_shares_is_unchanged(self):
         self.assertEqual(art.kept_retail_reason(1088),
@@ -561,6 +634,26 @@ class LadderTests(unittest.TestCase):
             self.fail("the digit fitted in every slot down to 15 percent of its natural size")
         self.assertEqual(ranks, sorted(ranks), "steps only get stronger as the slot shrinks")
         self.assertGreater(max(ranks), 0, f"something was simplified before the digit gave up: {ranks}")
+
+    def test_noisy_two_tone_art_is_cleaned_before_anything_stronger_and_never_loses_a_region(self):
+        image = noisy_two_tone(8)
+        natural = len(fit(image, 20000)[0].compressed)
+        names = []
+        for percent in range(95, 14, -3):
+            stored = natural * percent // 100
+            try:
+                result, _levels, receipt = fit(image, stored)
+            except QualityBudgetError:
+                break
+            step = receipt["fit"].get("simplified", {}).get("name")
+            names.append(step)
+            used = {tuple(result.palette[i][:3]) for i in result.index_levels[0] if result.palette[i][3] == 255}
+            self.assertTrue(any(max(abs(c[k] - (2, 55, 150)[k]) for k in range(3)) <= 40 for c in used), (percent, used))
+            self.assertTrue(any(min(c) > 200 for c in used), (percent, used))
+        simplified = [name for name in names if name]
+        self.assertTrue(simplified, f"some slot size needed the cleanup: {names}")
+        self.assertTrue(all(name in ("clean_colours", "hard_edges", "clean_hard") for name in simplified), names)
+        self.assertEqual(simplified[0], "clean_colours", names)
 
     def test_as_authored_is_simplified_the_same_way_but_never_shrunk(self):
         image = rams_digit(8)
