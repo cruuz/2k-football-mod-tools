@@ -599,6 +599,53 @@ class BuildOffline(unittest.TestCase):
 
 
 @unittest.skipUnless(DATA.exists() and EVIDENCE.exists(), "franchise leaders data not built yet")
+def footer_module():
+    """the save footer's module (job j23-footer), or None while it is not in this tree"""
+    try:
+        from mod_editor.core import nfl2k5_franchise_extension
+    except ImportError:
+        return None
+    return nfl2k5_franchise_extension
+
+
+@unittest.skipIf(footer_module() is None, "the footer module (job j23-footer) is not in this tree yet")
+class FooterFit(unittest.TestCase):
+    """The shipped rows go through the footer's own encoders and come back the same (runs once j23-footer is merged)."""
+
+    def test_every_shipped_row_encodes_into_the_footer_and_decodes_back(self):
+        F = footer_module()
+        data = json.loads(DATA.read_text(encoding="utf-8"))
+        self.assertEqual(tuple(data["categories"]), F.LEADER_CATEGORIES)
+        leaders, records, want_leaders, want_records = {}, {}, 0, 0
+        for club in data["clubs"].values():
+            index = club["arena_index"]
+            for category, rows in club["career"].items():
+                entries = []
+                for r in rows:
+                    flags = F.LEADER_REAL | (F.LEADER_LINKED if r.get("link") else 0)
+                    entries.append(F.leader_entry(F.pack_person(r["first"], r["last"], r["position"]), r["value"], flags=flags,
+                                                  player=r["link"]["index"] if r.get("link") else F.NO_PLAYER))
+                leaders[(index, category)] = entries
+                want_leaders += len(entries)
+            for kind in ("game", "season"):
+                for category, rows in club[kind].items():
+                    r = rows[0]
+                    week_row = r["week"] - 1 if kind == "game" and r.get("week") else None
+                    records[(index, category, kind)] = F.record_entry(F.pack_person(r["first"], r["last"], r["position"]), index, r["value"],
+                                                                      r["season"], week_row)
+                    want_records += 1
+        seen = F.decode_leaders(F.encode_leaders(leaders))["clubs"]
+        self.assertEqual(sum(len(v) for v in seen.values()), want_leaders)
+        for (index, category), rows in seen.items():
+            club = next(c for c in data["clubs"].values() if c["arena_index"] == index)
+            self.assertEqual([x["value"] for x in rows], [r["value"] for r in club["career"][category]])
+        back = F.decode_records(F.encode_records(records))["clubs"]
+        self.assertEqual(len(back), want_records)
+        for (index, category, kind), view in back.items():
+            club = next(c for c in data["clubs"].values() if c["arena_index"] == index)
+            self.assertEqual((view["value"], view["year"]), (club[kind][category][0]["value"], club[kind][category][0]["season"]))
+
+
 class ShippedData(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
