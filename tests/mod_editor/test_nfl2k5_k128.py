@@ -18,8 +18,11 @@ from __future__ import annotations
 import hashlib
 import os
 from pathlib import Path
+import shutil
 import struct
+import subprocess
 import sys
+import tempfile
 import unittest
 
 REPO = Path(__file__).resolve().parents[2]
@@ -122,6 +125,21 @@ class ShapeTests(unittest.TestCase):
         head = k128.REQUIRE_CODE[:k128.REQUIRE_STARTUP_BYTES]
         self.assertEqual(hashlib.sha256(head).hexdigest(), "15e8007ca0ee56594ca9014627156763b0e48fa86a56825920b3a08ebe57fd30")
         self.assertEqual(head[-10:], bytes.fromhex("813d0c0210fd00000008"), "ends at cmp [NV_PFB_CSTATUS], 128 MB")
+
+    @unittest.skipUnless(sys.platform.startswith("linux") and shutil.which("as") and shutil.which("objcopy"),
+                         "GNU binutils (as, objcopy) on Linux assemble the stop-screen source")
+    def test_the_128_mb_entry_blob_is_the_assembled_source_of_record(self) -> None:
+        """tools/k128/require_guard.S is the source of the pinned REQUIRE_CODE bytes (the comment in the file says how)."""
+        source = REPO / "tools" / "k128" / "require_guard.S"
+        with tempfile.TemporaryDirectory() as tmp:
+            obj, binary = Path(tmp) / "g.o", Path(tmp) / "g.bin"
+            version = subprocess.run(["as", "--version"], capture_output=True, text=True)
+            if "GNU" not in version.stdout:
+                self.skipTest("as is not GNU as")
+            subprocess.run(["as", "--32", str(source), "-o", str(obj)], check=True, capture_output=True)
+            subprocess.run(["objcopy", "-O", "binary", "-j", ".text", str(obj), str(binary)], check=True,
+                           capture_output=True)
+            self.assertEqual(binary.read_bytes(), k128.REQUIRE_CODE)
 
     def test_the_ui_strings_carry_no_em_dash_and_claim_no_console_result(self) -> None:
         for text in (k128.UI_LABEL, k128.HELP_TEXT, k128.ROSTER_HEAP_LABEL, k128.ROSTER_HEAP_HELP, k128.EARLY_LABEL,
