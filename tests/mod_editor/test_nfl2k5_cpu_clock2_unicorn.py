@@ -269,6 +269,29 @@ class ClockReplays(unittest.TestCase):
         for state, result in cases.items():
             self.assertEqual(self.both(spike, *state), (result, result), state)
 
+    def test_native_dead_ball_quick_play_runs_the_spike_ball_play(self):
+        """0x189D10 (the CPU offense's dead-ball quick play): with 0:35 left, down 4, 1st down at midfield, no timeouts
+        and the clock running, it commits 0x189270 with the book's Spike Ball PLAY (selector +0x2C, stored by 0x204C80)
+        and the Clock formation (selector +0x44), before and after the owner."""
+        CUR_FORM, CLOCK_FORM, LAST = PLAYS + 0x800, PLAYS + 0x900, PLAYS + 0xA00
+        for r in (self.retail, self.clock):
+            m = r.m
+            r.prepare(dict(down=1, quarter=4, seconds=35, score_margin=-4, own_yard=50, distance=10, home=True,
+                           quarter_seconds=900))
+            m.u32(m.OFFMETA + 4, 0)                     # no timeouts left
+            r.books(NORMAL)
+            m.u32(SEL + 8, CUR_FORM)                    # current formation: an ordinary one
+            m.u32(CUR_FORM + 4, 0)
+            m.u32(SEL + 0x44, CLOCK_FORM)               # the Clock formation (Spike Ball / Take Knee)
+            m.u32(SEL + 4, LAST)                        # the last call's record: an ordinary category
+            m.u32(LAST + 4, 0)
+            m.u32(m.HOME + 0x30, 0)                     # CPU
+            m.u32(m.GAME + 0x500 + 0x18, 0)             # clock running
+            at = m.run(0x189D10, ecx=m.HOME, stop_at=0x189270, count=200000)
+            self.assertEqual(at, 0x189270)
+            self.assertEqual(m.uc.reg_read(x86.UC_X86_REG_ECX), SPIKE)
+            self.assertEqual(m.uc.reg_read(x86.UC_X86_REG_EDX), CLOCK_FORM)
+
     def test_overtime_window(self):
         """0x205FE0 itself: overtime counts as late only with the overtime choice, in franchise regular season
         (mode 7, period 5) or while the scores differ outside the playoffs; Q1-Q4 are unchanged."""
