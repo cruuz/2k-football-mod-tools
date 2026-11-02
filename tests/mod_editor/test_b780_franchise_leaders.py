@@ -270,6 +270,14 @@ class Assembly(unittest.TestCase):
         self.assertEqual(rows[0]["confirmed_by"], ["wikipedia"])
         self.assertEqual({e["name"]: e["reason"] for e in excluded}, {"B Two": "single", "C Three": "after a rank that is single"})
 
+    def test_a_printed_list_that_rises_is_cut_where_it_rises(self):
+        cands = [candidate("DEN", "career", "receiving_yards", 1, 0, "A One", 9000, wiki=9000),
+                 candidate("DEN", "career", "receiving_yards", 2, 1, "B Two", 6200, wiki=6200),
+                 candidate("DEN", "career", "receiving_yards", 3, 2, "C Three", 6357, wiki=6357)]      # the guide prints 6,200 above 6,357
+        data, excluded = B.assemble(self.evidence(cands))
+        self.assertEqual([r["name"] for r in data["clubs"]["DEN"]["career"]["receiving_yards"]], ["A One", "B Two"])
+        self.assertEqual([(e["name"], e["reason"]) for e in excluded], [("C Three", "out of order")])
+
     def test_a_conflict_cuts_the_run_and_is_listed(self):
         cands = [candidate("GB", "career", "passing_td", 1, 0, "A One", 50, wiki=50, nv=50, covered=True),
                  candidate("GB", "career", "passing_td", 2, 1, "B Two", 40, wiki=41)]
@@ -587,7 +595,7 @@ class ShippedData(unittest.TestCase):
         self.assertGreaterEqual(linked, 0)
 
     def test_excluded_rows_say_why(self):
-        reasons = {"single", "conflict", "review", "incomplete list", "not printed in the guide"}
+        reasons = {"single", "conflict", "review", "incomplete list", "out of order", "not printed in the guide"}
         for e in self.evidence["excluded"]:
             self.assertTrue(e["reason"] in reasons or e["reason"].startswith("after a rank that is "), e)
         shipped = sum(self.data["counts"]["shipped"].values())

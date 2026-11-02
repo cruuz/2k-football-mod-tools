@@ -33,9 +33,16 @@ trusted when an earlier one failed), and only when the completeness guard holds:
 guide's printed list has a total above the list's last printed value (for a stat the guide prints only as a column of
 another list, above the third-ranked value), and no nflverse single season or game beats the guide's record.
 
+The club files (S1) are ``data/nfl2k5_franchise_leaders_guides/<CLUB>.json``: one per club, {team, guide_ident, through_season, lists,
+missing, notes}.  A list is {scope career|season|game, category (pass_yds ... tackles), title, pdf_page, kind list|column, ranked_by,
+scope_note, complete_to, rows[{rank, tie, name, years, value, raw}]}: ``raw`` is the printed line, ``kind column`` means the guide prints
+the stat only as a column of a list ranked by another stat.  Every one of the 30 scope/category pairs is a list or a reason in ``missing``
+(``check_guide`` enforces it).  They were read from the page pictures of each guide (the Archive's OCR and Tesseract only as cross-checks).
+
 Usage
+  python3 tools/b780_franchise_leaders_build.py import-guides --src DIR      # validate transcribed files, write them to data/
   python3 tools/b780_franchise_leaders_build.py fetch-nflverse --cache DIR
-  python3 tools/b780_franchise_leaders_build.py build --guides DIR --nflverse DIR --wiki-cache DIR
+  python3 tools/b780_franchise_leaders_build.py build --guides data/nfl2k5_franchise_leaders_guides --nflverse DIR --wiki-cache DIR
   python3 tools/b780_franchise_leaders_build.py verify          # offline: evidence -> decisions -> data, must equal the shipped files
   python3 tools/b780_franchise_leaders_build.py summary         # coverage tables from the shipped files
 """
@@ -880,6 +887,8 @@ def evaluate_group(cat: str, rows: list, slots: int, guard) -> tuple:
         reason = None
         if incomplete:
             reason = "incomplete list"
+        elif stopped is None and d["decision"] == "ship" and taken and c["value"] > taken[-1][0]["value"] + 1e-9:
+            stopped = reason = "out of order"                   # a printed list that rises is misprinted or misread somewhere: stop there
         elif stopped is None and d["decision"] == "ship" and len(taken) < slots:
             taken.append((c, d))
             continue
@@ -1342,7 +1351,7 @@ def cmd_fetch_nflverse(args) -> int:
     dest = Path(args.cache)
     dest.mkdir(parents=True, exist_ok=True)
     names = [f"stats_player/stats_player_week_{y}.csv.gz" for y in range(NV_WINDOW[0], NV_WINDOW[1] + 1)]
-    names += ["rosters/roster_2026.csv", "players/players.csv"]
+    names += ["rosters/roster_2026.csv"]
     for n in names:
         target = dest / Path(n).name
         if target.exists() and target.stat().st_size:
@@ -1350,6 +1359,8 @@ def cmd_fetch_nflverse(args) -> int:
         with urllib.request.urlopen(urllib.request.Request(f"{NV_URL}/{n}", headers={"User-Agent": UA}), timeout=180) as r:     # nosec B310 - fixed https host
             target.write_bytes(r.read())
         print("fetched", target.name)
+    with open(dest / "FETCHED_AT.txt", "w", encoding="utf-8", newline="\n") as f:
+        f.write(time.strftime("%Y-%m-%d %H:%M UTC", time.gmtime()) + "\n")
     return 0
 
 
