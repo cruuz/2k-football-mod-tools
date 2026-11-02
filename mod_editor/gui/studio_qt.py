@@ -334,6 +334,22 @@ def _getting_started_document() -> Path | None:
     return None
 
 
+def _faq_document() -> Path | None:
+    """The packaged FAQ (same lookup as the Getting Started guide), or None when this build does not carry it."""
+
+    here = Path(__file__).resolve()
+    for candidate in (
+        here.parents[2] / "docs" / "mod_editor" / "2k5_mod_studio_faq.md",
+        here.parents[1] / "docs" / "2k5_mod_studio_faq.md",
+    ):
+        try:
+            if candidate.is_file():
+                return candidate
+        except OSError:
+            continue
+    return None
+
+
 def _plain_launch_blocker(text: str) -> str:
     """The facade's launch blocker in the words the footer uses (Set up xemu…, Make a disc)."""
 
@@ -1947,6 +1963,18 @@ class StudioMainWindow(QMainWindow):
             guide_action.triggered.connect(
                 lambda _checked=False, path=guide: QDesktopServices.openUrl(QUrl.fromLocalFile(str(path)))
             )
+        # b780-b13: the common first-run questions (.iso or .xiso, no disc drive, a sharper picture, a game that will not
+        # start) live in the FAQ; it was only reachable from the Getting Started guide's last page.
+        faq = _faq_document()
+        faq_action = help_menu.addAction("Questions and answers (FAQ)…")
+        if faq is None:
+            faq_action.setEnabled(False)
+            faq_action.setToolTip("The FAQ is not included in this build; see the website.")
+        else:
+            faq_action.setToolTip(str(faq))
+            faq_action.triggered.connect(
+                lambda _checked=False, path=faq: QDesktopServices.openUrl(QUrl.fromLocalFile(str(path)))
+            )
         help_menu.addSeparator()
         check_action = help_menu.addAction("Check for Updates…")
         check_action.triggered.connect(self._check_for_updates_now)
@@ -3327,7 +3355,8 @@ class StudioMainWindow(QMainWindow):
         # route stays enabled without a disc: a Finn user opens an Xbox save there.
         open_button = QPushButton("Open game disc…")
         open_button.setObjectName("primaryButton")
-        open_button.setToolTip("Open your ESPN NFL 2K5 USA Xbox disc file (.iso). The source file is kept unchanged.")
+        open_button.setToolTip("Open your ESPN NFL 2K5 USA Xbox disc image: a .iso or .xiso file (both work, they are the same kind "
+                               "of file). The source file is kept unchanged.")
         open_button.clicked.connect(self._choose_source)
         softdrink_button = QPushButton("Start SOFTDRINK Basic  \u2192")
         softdrink_button.setObjectName("secondaryButton")

@@ -84,7 +84,8 @@ SOFTDRINK's 2026 players and depth charts live on the disc, but a game or save y
 1. In the game, load the **disc roster** before you do anything else.
 2. Start a **fresh franchise** (or a Quick Game, which uses the disc roster).
 
-The Crib is now the **Trophy Room** only: bought items no longer open, and furniture you placed stays as decoration. In
+The Crib is now the **Trophy Room** only: bought items no longer open, and furniture you placed stays as decoration (to keep
+the whole Crib on a disc you build yourself, see [the FAQ](mod_editor/2k5_mod_studio_faq.md#can-i-keep-the-whole-crib-with-its-shops)). In
 Franchise, the Front Office **Player Progress** row shows your club's rating changes this season; an older save starts a
 fresh history the first time it loads.
 
@@ -167,6 +168,9 @@ disc...** (marked experimental).
   points you to **Install SOFTDRINK 2K28**), an output folder inside OneDrive on Windows (use a plain folder such as
   `C:\2K5`), too little free space (keep at least the source size plus 512 MiB free; about 8 GB in practice), and a source
   that is neither an untouched retail dump nor a SOFTDRINK disc (choose your clean, unmodified USA retail ISO).
+- The game will not start: go through the checklist in the FAQ,
+  [The game will not start. What should I check?](mod_editor/2k5_mod_studio_faq.md#the-game-will-not-start-what-should-i-check)
+  (memory, BIOS, the right disc, folders). Both `.iso` and `.xiso` files are fine; for xemu end the name in `.iso`.
 - Freeze or crash in the game: say what you were doing (mode, teams, stadium, play), your Studio version, the SOFTDRINK pack
   version, your xemu version and memory setting, and where it stopped. A screenshot or short clip helps most.
 - Check the [FAQ](mod_editor/2k5_mod_studio_faq.md) first; it covers installing, freezes and common questions.

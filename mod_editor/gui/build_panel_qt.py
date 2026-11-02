@@ -271,6 +271,11 @@ from mod_editor.core import nfl2k5_sim_realism as _sim_realism  # noqa: E402  b7
 from mod_editor.core import nfl2k5_sim_stats as _sim_stats  # noqa: E402
 from mod_editor.core import nfl2k5_option_defaults as _option_defaults  # noqa: E402  b779-df1
 from mod_editor.core import nfl2k5_clock_led as _clock_led  # noqa: E402
+# b780-b13 (Noah 10/28: "Crib stays trophy room, toggle later"): every preset ticks the Crib cut, and the Basic preset is
+# "2004 fixes", so say it where people choose a preset and name the one check box that undoes it (its caption comes from
+# the owner module, so the note cannot drift from the box).
+PRESET_CRIB_NOTE = ("All three presets also cut the Crib down to the Trophy Room (its shops are removed). To keep the whole "
+                    f"Crib, untick \"{_crib_trophy_room.BUILD_CAPTION}\" under Gameplay below before you make your disc.")
 BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                  ("team_ratings", "Modern team ratings",
                   "Displays current personnel ratings with slot receivers and nickel corners. Fullbacks are optional. "
@@ -546,6 +551,11 @@ class BuildPanel(QWidget):
         self.preset_scope_note.setWordWrap(True)
         self.preset_scope_note.setAccessibleName("What the presets do not include")
         pr.addWidget(self.preset_scope_note)
+        self.preset_crib_note = WrappedLabel(PRESET_CRIB_NOTE)
+        self.preset_crib_note.setObjectName("throwMuted")
+        self.preset_crib_note.setWordWrap(True)
+        self.preset_crib_note.setAccessibleName("The Crib in the presets")
+        pr.addWidget(self.preset_crib_note)
         root.addWidget(presets)
 
         # The disc, the copy and the button come BEFORE the long option list, so the one

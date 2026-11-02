@@ -57,6 +57,9 @@ including NumPy. An external interpreter remains your responsibility.
    These presets choose gameplay, franchise and presentation changes. They do not add the SOFTDRINK 2K28
    pack (its edited rosters, uniforms, stadium art and moments); for that disc use **Share → Install
    SOFTDRINK 2K28** ([steps](install_softdrink_2k28.md)).
+   All three presets also cut the Crib down to the Trophy Room (its shops are removed). To keep the whole Crib,
+   untick **The Crib: keep only the Trophy Room (removes the shops)** under **Gameplay** before you build
+   ([FAQ](2k5_mod_studio_faq.md#can-i-keep-the-whole-crib-with-its-shops)).
 3. In **Build**, check **Save disc copy as**, then click **Make my disc** and review the confirmation.
    If that button is unavailable, the sentence beside it explains what is missing.
 4. After **Disc ready**, use **Play latest disc in xemu**. Configure xemu first if prompted,

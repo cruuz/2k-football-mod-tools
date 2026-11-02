@@ -10,6 +10,77 @@ A successful offline check does not establish how every change plays in a game.
 **All-Pro Football 2K8** is the Xbox 360 game: use its separate studio and **Xenia**.
 Both studios need your own game dump. Neither includes a game or emulator.
 
+## Should my game file end in .iso or .xiso?
+
+Both are the same kind of file: an Xbox disc image of your own ESPN NFL 2K5 (USA) disc. The ending is only a label, but
+end the name in **.iso** for xemu, because xemu's Load Disc window looks for `.iso` files. A name like
+`SOFTDRINK 2K28.xiso.iso` is on purpose: the `.xiso` part says it is an xiso (the layout xemu needs) and the `.iso` at the end
+is what xemu looks for. The Studio opens `.iso`, `.xiso` and `.img` files and reads what is inside, not the ending. If xemu does
+not show a file that ends only in `.xiso`, rename it to end in `.iso`. Renaming changes nothing inside the file.
+
+These are not disc images, so they will not work: a folder of game files (Install SOFTDRINK 2K28 needs one image file, see
+[Start here](../START_HERE.md)), a zip or 7z file, a `.cue` and `.bin` pair, a shortcut or symbolic link, and compressed
+formats such as `.chd` (xemu cannot load them). A full dump of the whole disc (about 7 GB, with a video part in front of the
+game part, often called a redump image) installs SOFTDRINK 2K28 fine, but xemu cannot load that raw form itself. Always
+load the new disc the Studio saves in xemu, not your raw dump.
+
+## I have no disc drive. How do I get the game file?
+
+You need a way to read your own disc. Nobody in this project can send you a game file or a link to one, and neither the
+Studio nor xemu includes a game. A normal computer DVD drive usually cannot make a usable Xbox dump by itself. xemu's own
+guide, [Disc Images](https://xemu.app/docs/disc-images/), names two ways to back up a disc you own: copy the game files
+over your network from a real Xbox that runs a custom dashboard, or use a special reflashed DVD drive and the Redump dumping
+guide. If you have neither a drive nor a modified Xbox, you cannot make the file yourself. Once you have the files, the same
+guide shows how to turn them into one image file.
+
+## How do I make the picture sharper?
+
+That is an xemu setting, not a Studio option. In xemu choose **View**, then **Int. Resolution Scale**, then **2x**. Try
+**3x** if the game stays smooth, and go back down if it slows. Making the xemu window bigger does not make the game sharper:
+the window only stretches the same picture, while the scale makes xemu draw more pixels, so a higher scale needs a stronger
+graphics card. See [recommended xemu settings](recommended_xemu_settings.md) and xemu's own
+[FAQ](https://xemu.app/docs/faq/).
+
+## The game will not start. What should I check?
+
+Go through this list in order. Most start-up problems are an xemu setup problem, not the disc.
+
+1. **Does the original game start?** Load your untouched retail disc image in the same xemu. If that does not start either,
+   the problem is xemu's own setup, and nothing in the Studio will fix it. xemu needs its own boot ROM, BIOS and hard disk
+   image: see xemu's [required files](https://xemu.app/docs/required-files/).
+2. **Memory.** Set xemu's **System Memory** to **128 MiB** (Machine, then Settings, then the System tab). Quit xemu completely
+   and open it again, because xemu applies this only after a restart. The current SOFTDRINK 2K28 disc does not run at 64 MiB.
+3. **BIOS.** xemu needs a debug BIOS or a modified retail BIOS that can start unsigned games, and SOFTDRINK 2K28's start-up
+   patch needs the modified retail **COMPLEX 4627** one. Choose it under Machine, then Settings, then System, then Flash ROM
+   (BIOS). With any other BIOS the patch stays asleep and the game stops with a BIOS message. The Studio and this project do
+   not supply BIOS files.
+4. **The right disc.** In xemu choose **Machine**, then **Load Disc**, and pick the new disc the Studio saved, not your
+   original and not an older SOFTDRINK disc. It must be the whole image file, not a shortcut, a zip or a folder.
+5. **Paths and folders.** Keep the disc image and xemu's files (BIOS, boot ROM, hard disk image) in plain folders you can read
+   and write, such as `C:\2K5` on Windows, not in a folder that OneDrive or another service syncs. xemu remembers where each
+   file was when you chose it: if you moved or renamed one, choose it again. Keep at least 8 GB free where the new disc is
+   saved.
+6. **Stuck on the Xbox logo?** Quit xemu completely, not just the game, open it again and load the disc again.
+7. **Still stuck?** Ask in the Discord and say your Studio version, the SOFTDRINK pack version, your xemu version, the
+   memory setting, the BIOS name and exactly where it stops (Xbox logo, black screen, a message), with a screenshot. For a disc
+   you built yourself, also post **Copy Build summary**.
+
+## Can I play SOFTDRINK 2K28 on Android, in hakuX?
+
+No, it is not supported. SOFTDRINK 2K28 is built and tested only for xemu on a Windows, Linux or macOS computer, with 128 MiB
+of memory and the COMPLEX 4627 BIOS. hakuX is a separate Android emulator, not xemu, and by its own requirements it runs without
+an Xbox BIOS, so the disc's 4627 BIOS check is not expected to pass there. A black screen in hakuX is what to expect. We do not
+test hakuX and cannot fix it. xemu itself has no Android version (see xemu's [FAQ](https://xemu.app/docs/faq/)).
+
+## Can I keep the whole Crib, with its shops?
+
+Yes, when you build your own disc. All three Studio presets, and the SOFTDRINK 2K28 pack, cut the Crib down to the Trophy Room.
+In **Build & Share**, open the **Build** tab and untick **The Crib: keep only the Trophy Room (removes the shops)** under
+**Gameplay**, then **Make my disc**. If you start from **Share**, then **Customize SOFTDRINK 2K28**, the box is ticked there
+too: untick it before you build. Nothing in your save changes either way, and a disc built without the cut shows everything a
+profile bought again. The name is a separate option, **The Crib is now the Trophy Room**, under **Franchise**: untick it too
+if you want the old name back. The ready-made disc from **Install SOFTDRINK 2K28** cannot be changed afterwards.
+
 ## My studio will not open or update. How do I reinstall?
 
 GoldenTiger reported an installation arranged by an assistant that stopped opening after
