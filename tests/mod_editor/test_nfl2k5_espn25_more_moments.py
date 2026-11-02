@@ -726,10 +726,11 @@ class NativeMomentsTests(unittest.TestCase):
 
     def test_import_completes_every_record_byte_over_a_used_spare_record(self):
         """b780 (b3-moments, Ju3tin 10/31 and 11/01): the importer takes the first spare record (flags & 5 == 1) and
-        its clone never writes +0x0D..+0x0F or the +0x52 word, so a moment player kept the hair style, depth locks,
-        ability flags, tier and star of whoever used that record before. Fill every spare record with such bytes, open
-        a new moment (Falcons '98 at Vikings '98) through the game's own select handler, 2D17B0 and C1030, and require
-        each imported player to carry exactly his team file's bytes."""
+        its clone never writes +0x0D..+0x0F or the +0x52 word (the beta 76.3 tail copied only the star bit), so a moment
+        player kept the hair style, depth locks, ability flags and tier of whoever used that record before. Fill every
+        spare record with such bytes (the star bit too), open a new moment (Falcons '98 at Vikings '98) through the
+        game's own select handler, 2D17B0 and C1030, and require each imported player to carry exactly his team file's
+        bytes."""
         cpu = self.cpu
         root = cpu.r(0xB72918)
         count, array = cpu.r(root), cpu.r(root + 4)
