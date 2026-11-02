@@ -155,7 +155,7 @@ class InjuredReserveReleasedDiscTests(unittest.TestCase):
 
         def nowhere(data):
             doc = rr.RosterDocument(data, scheme="one_pool", reference_year=2026)
-            clubs = {o for t in doc.teams for o in t.slots}
+            clubs = {o for t in doc.teams if t.is_club for o in t.slots}   # the franchise clubs, not alias squads
             reserves = {doc.primary_table + i * rr.PLAYER_SIZE for ids in doc.reserves.values() for i in ids}
             return doc, {p.index for p in doc.by_pool("primary") if doc.body[p.offset + 8] & 0x1C == 4 and
                          p.offset not in clubs and p.offset not in reserves and p.offset not in doc.free_agents}
@@ -174,8 +174,9 @@ class InjuredReserveReleasedDiscTests(unittest.TestCase):
         self.assertEqual(len(after_doc.free_agents),
                          len(before_doc.free_agents) + receipt["injured_reserve"]["released_for_room"])
         # what stays on no list is the retail legends and celebrities (no 2026 identity)
-        self.assertEqual(len(after), 12)
+        self.assertEqual((len(before), len(after)), (93, 12))
         self.assertTrue(after <= before)
+        self.assertEqual(before - after, set(injured))
         self.assertEqual(refresh.apply_body(out, plan)[0], out)
 
 
