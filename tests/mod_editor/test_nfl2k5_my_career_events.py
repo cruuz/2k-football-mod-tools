@@ -242,8 +242,11 @@ class HostBudgetTests(unittest.TestCase):
             # Player Progress footer (34,320 B) on top of the career footer.
             # b779 rc1: mode_grown_member reads the capacity (0xB0000) arena's overflow row too, so MyCareer
             # creation no longer refuses "Roster is full." on v0.7 (test_b779_rc1_roster_capacity).
+            # b780 b8-mycareer: m3_draft_tick holds the AI's taken flag on MyPlayer when the club on the clock already has a
+            # starter-calibre player at his position (club_needs, m3_starters; test_nfl2k5_my_career_draft_need); the 26 Upgrades
+            # attribute names moved to the M3 ASCII pool and the text scratch buffer from m3+2700 to m3+3200.
             'tools/mycareer_mode/runtime.c':
-                '9d0f9925d0eedf97af2b28784dcc592d8778551ad02293f9bf9c9ce03ff4e32c',
+                'c82f908f643129606591c13cee309dbd8bc9f8afc97160d1bf1a574f71436209',
             'tools/mycareer_mode/runtime.S':
                 '768241d4390839629906e81678ca46cb7f2d2578ac791a72dd71df5a3cde0484',
             'mod_editor/core/nfl2k5_my_career_mode.py':
@@ -255,7 +258,7 @@ class HostBudgetTests(unittest.TestCase):
                 # mo2: guard view accepts the moment context hook over the pinned 0xCB240 span.
                 # b778 bd3: recognition views for the star-career class-loop hooks and the Player Progress
                 # screen chained over the inline footer hooks (runtime code unchanged).
-                'a0439aa3de1475112754a86e4485c8ce699b9593ef797322e70288af641a5c50',
+                'a9bbe136c6c4a9061d9c7c9b61adead166364e413d6b66f59584439cf73fc6ba',
             'mod_editor/core/nfl2k5_my_career_code.py':
                 '0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b',
             'mod_editor/core/nfl2k5_my_career_progression.py':

@@ -1148,7 +1148,7 @@ static NI u32 FC club_needs(const u8 *t,const u8 *me) {
     if(n>65) n=65;
     for(i=0;i<n;i++) {
         q=(const u8 *)W(t,4*i);
-        if(q!=me && q[0x35]==pos && CALL2(0x246d90,(u32)q,0)>=mine) ahead++;
+        if(q && q!=me && q[0x35]==pos && CALL2(0x246d90,(u32)q,0)>=mine) ahead++;
     }
     return ahead<m3_starters[pos];
 }
