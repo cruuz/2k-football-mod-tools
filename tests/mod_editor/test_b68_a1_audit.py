@@ -154,7 +154,9 @@ class CacheKeyTests(unittest.TestCase):
 
     def test_every_cached_selector_option_and_input_changes_the_production_key(self):
         tool = backend()
-        class StopLookup(Exception):
+        # b791 h6-cache: a BaseException, so that no stage on the way to the lookup (the saved-result check before the loop turns any
+        # Exception into "the saved results were not used", the phase wrapper turns it into a ProjectError) can swallow the stop.
+        class StopLookup(BaseException):
             pass
         class ObservedCache(CompileCache):
             def get(cache, key):
@@ -175,12 +177,11 @@ class CacheKeyTests(unittest.TestCase):
             observed = []
             def lookup(edit, *, index=pin, inventory=pin, reports=None):
                 project = tool.ProjectFile(root / 'project.json', b'{}', {'edits': [edit]}, (0, 0))
-                with patch.object(tool, 'CompileCache', ObservedCache), self.assertRaises(tool.ProjectError) as stopped:
+                with patch.object(tool, 'CompileCache', ObservedCache), self.assertRaises(StopLookup):
                     # b791 h6-cache: a key holds the compatibility report of the edit's own kind (another kind in the
                     # project must not change it), so the stand-in report is filed under the edit's kind.
                     tool.prepare_project(project, index, inventory, reports or {edit['kind']: report},
                                          root, -1, {}, parallelism=1)
-                self.assertIsInstance(stopped.exception.__cause__, StopLookup)
                 return observed[-1]
             cache = CompileCache(root / '.nfl2k5-compile-cache')
             # All fields admitted by the cached kinds, including every selector
