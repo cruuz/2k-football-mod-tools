@@ -2008,6 +2008,9 @@ mod_editor/core/nfl2k5_cpu_qb_reads.py
 mod_editor/core/nfl2k5_cpu_qb_reads_code.py
 mod_editor/core/nfl2k5_db_ball_play.py
 mod_editor/core/nfl2k5_db_ball_play_code.py
+# b780-cv3: defenders leap only for balls they can reach (late executable owner)
+mod_editor/core/nfl2k5_dive_window.py
+mod_editor/core/nfl2k5_dive_window_code.py
 mod_editor/core/nfl2k5_qb_accuracy.py
 mod_editor/core/nfl2k5_qb_accuracy_code.py
 mod_editor/core/nfl2k5_formation_art_spacing.py
@@ -3852,6 +3855,7 @@ tests/mod_editor/test_nfl2k5_sim_cb_tackles.py
 tests/mod_editor/test_nfl2k5_option_defaults.py
 tests/mod_editor/test_nfl2k5_sim_rb_injuries.py
 tests/mod_editor/test_nfl2k5_sim_realism.py
+tests/mod_editor/test_nfl2k5_dive_window.py
 tests/mod_editor/test_nfl2k5_sim_stats.py
 tests/mod_editor/test_b778_clock_led.py
 tests/mod_editor/test_b779_ce1_kit_fallback.py

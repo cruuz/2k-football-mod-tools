@@ -58,6 +58,7 @@ FEATURE_KEYS += ("kick_meter_2026",)  # b76-km: the kick meter in the 2026 ESPN 
 FEATURE_KEYS += ("modern_goalposts",)  # b77-v1: the uprights 35 ft above the crossbar (NFL since 2014)
 FEATURE_KEYS += ("modern_coaches",)  # b77-co1: the 2026 head coaches (sideline look, faces, DAL/WAS pictures)
 FEATURE_KEYS += ("cpu_qb_zone_windows", "cpu_qb_recheck", "cpu_qb_tiers", "db_ball_play")  # b776-ai2: CPU AI late executable owners, off in every preset
+FEATURE_KEYS += ("db_dive_window",)  # b780-cv3: defenders leap only for balls they can reach, the last late executable owner
 FEATURE_KEYS += ("hair_styles",)  # b775-hs1: added hair models chosen per player (roster +0x0D), late executable owner
 FEATURE_KEYS += ("play_art_routes",)  # b776-pa2: play art routes at their real length, late executable owner
 FEATURE_KEYS += ("run_blocking",)  # b777-ol1: run blocking, the last late executable owner

@@ -240,6 +240,9 @@ CPU_AI_OPTIONS = (
     ("cpu_qb_tiers", _cpu_qb_reads.BUILD_CAPTION_TIERS, _cpu_qb_reads.HELP_TIERS),  # b779-gp1
     ("db_ball_play", _db_ball_play.BUILD_CAPTION, _db_ball_play.HELP_TEXT),
 )
+# b780-cv3: defenders leap only for balls they can reach (off in every preset).
+from mod_editor.core import nfl2k5_dive_window as _dive_window  # noqa: E402
+CPU_AI_OPTIONS += (("db_dive_window", _dive_window.BUILD_CAPTION, _dive_window.HELP_TEXT),)
 # b777-qb3: QB accuracy on short and on-the-run throws (on in the experimental preset only).
 from mod_editor.core import nfl2k5_qb_accuracy as _qb_accuracy  # noqa: E402
 CPU_AI_OPTIONS += (("qb_accuracy", _qb_accuracy.BUILD_CAPTION, _qb_accuracy.HELP_TEXT),)

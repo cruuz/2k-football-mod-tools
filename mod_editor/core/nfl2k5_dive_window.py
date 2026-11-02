@@ -22,7 +22,10 @@ the perception filter that decides who reacts, catching and interceptions are un
 """
 from __future__ import annotations
 
+import argparse
 import hashlib
+import json
+from pathlib import Path
 import struct
 
 OWNER = "nfl2k5_dive_window"
@@ -169,4 +172,45 @@ def apply(payload):
                         reservations=[r for r in space.reservations(result) if r["owner"] == OWNER])
 
 
-__all__ = ["OWNER", "REQUESTS", "GUARDS", "HOOK", "apply", "status", "read_settings", "allocation", "code_for", "sites"]
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--xbe", required=True, type=Path)
+    parser.add_argument("--apply", action="store_true", help="write the owner to a new XBE")
+    parser.add_argument("--output", type=Path, help="new file only; never overwrite an existing path")
+    args = parser.parse_args(argv)
+    if args.apply != (args.output is not None):
+        parser.error("--apply and --output must be provided together")
+    try:
+        with args.xbe.open("rb") as stream:
+            payload = stream.read(16 * 1024**2 + 1)
+        if len(payload) > 16 * 1024**2:
+            raise ValueError("Expected a supported executable, not a disc or archive")
+        state = status(payload)
+        if state == "foreign":
+            raise ValueError("Foreign or mixed defender dive-window bytes")
+        if args.apply:
+            result, receipt = apply(payload)
+            created = False
+            try:
+                with args.output.open("xb") as stream:
+                    created = True
+                    stream.write(result)
+            except BaseException:
+                if created:
+                    args.output.unlink(missing_ok=True)
+                raise
+            print(json.dumps(receipt, indent=2))
+            return 0
+    except (OSError, ValueError) as exc:
+        parser.exit(2, f"{exc}\n")
+    print(json.dumps({"status": state, "experimental": True, "runtime_witnessed": False, "requests": REQUESTS,
+                      "hook": hex(HOOK[1])}, indent=2))
+    return 0
+
+
+__all__ = ["OWNER", "REQUESTS", "GUARDS", "HOOK", "apply", "status", "read_settings", "allocation", "code_for", "sites",
+           "main"]
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

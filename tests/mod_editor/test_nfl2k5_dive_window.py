@@ -88,6 +88,58 @@ class StaticTests(unittest.TestCase):
         for va, size, digest in dive.GUARDS:
             self.assertEqual(hashlib.sha256(image.read(va, size)).hexdigest(), digest, hex(va))
 
+    def test_only_the_hook_changes_in_retail_sections(self):
+        final, _ = dive.apply(self.retail)
+        a, b = XbeImage(self.retail), XbeImage(final)
+        changed = []
+        for s in a.sections:
+            if s.raw_size:
+                x, y = a.read(s.start, s.raw_size), b.read(s.start, s.raw_size)
+                changed += [s.start + i for i in range(len(x)) if x[i] != y[i]]
+        self.assertEqual(changed, list(range(0x1F56FF, 0x1F56FF + 21)))   # the replaced 21 bytes and nothing else
+
+
+class WiringTests(unittest.TestCase):
+    def test_presets_options_and_late_owner_order(self):
+        from mod_editor.core import mod_build, nfl2k5_build_settings as settings, nfl2k5_throw_tuning as tt
+        self.assertEqual(space.LATE_OWNERS[-1], dive.OWNER)                  # after every other late owner
+        self.assertLess(space.LATE_OWNERS.index(ball.OWNER), space.LATE_OWNERS.index(dive.OWNER))
+        self.assertIs(mod_build.BuildPlan(Path("source.iso"), Path("target.iso")).db_dive_window, False)
+        for name, preset in mod_build.PRESETS.items():
+            self.assertIs(preset["db_dive_window"], False, name)               # EXPERIMENTAL: off in every preset
+        self.assertIn("db_dive_window", settings.FEATURE_KEYS)
+        self.assertIn(("nfl2k5_dive_window", "Defenders leap only for balls they can reach"),
+                      [(owner, label) for owner, label, _ in mod_build._LATE_OWNER_OPTIONS])
+        self.assertIn(dive.REQUESTS[0], tt._selected_space_requests(db_dive_window=True))
+        self.assertNotIn(dive.REQUESTS[0], tt._selected_space_requests())
+        text = (ROOT / "mod_editor/core/nfl2k5_dive_window.py").read_text(encoding="utf-8")
+        self.assertNotIn("/home/", text)
+        self.assertNotIn("—", dive.HELP_TEXT + dive.BUILD_CAPTION)
+
+    def test_build_step_installs_after_the_other_late_owners_and_reads_back(self):
+        import tempfile
+        from mod_editor.core import mod_build
+        retail = retail_xbe()
+        plan = mod_build.BuildPlan(Path("source.xbe"), Path("target.xbe"), db_dive_window=True)
+        with tempfile.TemporaryDirectory() as tmp:
+            source = Path(tmp) / "default.xbe"
+            source.write_bytes(retail)
+            mod_build._dive_window_preflight(source, lambda *a: None)
+            receipt = {"steps": [], "result": {}}
+            mod_build._apply_dive_window(plan, source, receipt, lambda *a: None)
+            self.assertEqual(receipt["result"]["db_dive_window"], "applied")
+            self.assertEqual(dive.status(source.read_bytes()), "applied")
+            mod_build._dive_window_preflight(source, lambda *a: None)          # an installed owner is not foreign
+            foreign = Path(tmp) / "foreign.xbe"
+            foreign.write_bytes(repin_edit(retail, 0x1F56FF, b"\x90" * 21))
+            with self.assertRaises(ValueError):
+                mod_build._dive_window_preflight(foreign, lambda *a: None)
+            off = mod_build.BuildPlan(Path("source.xbe"), Path("target.xbe"))
+            untouched = Path(tmp) / "untouched.xbe"
+            untouched.write_bytes(retail)
+            mod_build._apply_dive_window(off, untouched, {"steps": [], "result": {}}, lambda *a: None)
+            self.assertEqual(untouched.read_bytes(), retail)
+
 
 @unittest.skipUnless(uc is not None, "Unicorn is required for bounded instruction replay")
 class CaveTests(unittest.TestCase):

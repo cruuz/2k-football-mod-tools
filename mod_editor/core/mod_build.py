@@ -490,6 +490,11 @@ class BuildPlan:
     # weak readers still throw at covered receivers). EXPERIMENTAL / UNWITNESSED: on in Advanced and Experimental.
     cpu_qb_tiers: bool = False
     db_ball_play: bool = False
+    # b780-cv3: nfl2k5_dive_window, a late executable owner in the ball-play decision 0x1F52C0 (its 3-yard swat test): a
+    # CPU defender reacting to a throw leaps or dives (action 0x61) only for a ball he can reach: beyond 1.5 yd he must be
+    # closing on it fast enough, and never at a ball the receiver catches first. Works with or without db_ball_play.
+    # EXPERIMENTAL / UNWITNESSED: off in every preset.
+    db_dive_window: bool = False
     # b777-qb3: nfl2k5_qb_accuracy, a late executable owner hooked where the pass accuracy routine stores the miss
     # distance: a miss on a throw under 40 yd shrinks with the passer's Pass Accuracy and falls behind the receiver as
     # often as ahead (short drags/outs/slants/digs on the run were always overthrown and ignored the rating).
@@ -826,6 +831,7 @@ for _preset in PRESETS.values():
     _preset["cpu_qb_recheck"] = False
     _preset["cpu_qb_tiers"] = False
     _preset["db_ball_play"] = False
+    _preset["db_dive_window"] = False  # b780-cv3: off in every preset (the report recommends the values)
 # b779-gp1: CPU QB skill tiers (elite readers wait for clear windows, weak readers force throws): Noah 10/28 "I want the CPU
 # to be more challenging ... Elite quarterbacks should be able to pick zones apart ... rookie quarterbacks are more likely to
 # throw picks". EXPERIMENTAL / UNWITNESSED: on in Advanced and Experimental, off in Basic.
@@ -1319,6 +1325,7 @@ _LATE_OWNER_OPTIONS = (
     ("nfl2k5_hair_styles", "Hair styles", lambda p: p.hair_styles),
     ("nfl2k5_cpu_qb_reads", "CPU QB reads", lambda p: p.cpu_qb_zone_windows or p.cpu_qb_recheck or p.cpu_qb_tiers),
     ("nfl2k5_db_ball_play", "Defender ball play", lambda p: p.db_ball_play),
+    ("nfl2k5_dive_window", "Defenders leap only for balls they can reach", lambda p: p.db_dive_window),  # b780-cv3
     ("nfl2k5_play_art_routes", "Play art: full-length routes", lambda p: p.play_art_routes),
     ("nfl2k5_team_number_scale", "Jersey number sizes", lambda p: bool(p.team_number_scale)),
     ("nfl2k5_run_blocking", "Run blocking", lambda p: p.run_blocking),
@@ -1579,6 +1586,21 @@ def _sim_rb_injuries_preflight(source: Path, progress) -> None:
     if state not in ("retail", "applied"):
         raise ValueError("The franchise week injury tick or the scheduled carrier site in this source is not "
                          "retail. Build from an unmodified retail dump.")
+
+
+def _dive_window_preflight(source: Path, progress) -> None:
+    """b780-cv3: refuse a source whose ball-play decision is foreign, before any write."""
+    module = _core_module("nfl2k5_dive_window")
+    if module is None or _core_module("nfl2k5_xbe_space") is None:
+        raise ValueError("Defenders leap only for balls they can reach is not available in this installation.")
+    progress("Checking the defenders' ball-play decision for the dive window", 0, 0)
+    try:
+        payload = _xbe_bytes(source)
+    except (OSError, ValueError) as exc:
+        raise ValueError(f"Defenders leap only for balls they can reach cannot read default.xbe: {exc}") from exc
+    if module.status(payload) == "foreign":
+        raise ValueError("The defenders' ball-play decision in this source is not retail or this option. Turn it off "
+                         "or build from your unmodified retail dump.")
 
 
 def _sim_realism_preflight(source: Path, progress) -> None:
@@ -1861,6 +1883,23 @@ def _apply_sim_rb_injuries(plan: "BuildPlan", target: Path, receipt: dict, progr
     receipt["result"]["sim_rb_injuries"] = "applied"
 
 
+def _apply_dive_window(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    """b780-cv3: defenders leap only for balls they can reach, after every other late owner (LATE_OWNERS order)."""
+    if not plan.db_dive_window:
+        return
+    module = _core_module("nfl2k5_dive_window")
+    if module is None:
+        raise RuntimeError("Defenders leap only for balls they can reach needs nfl2k5_dive_window.")
+    progress("CPU AI: defenders leap only for balls they can reach", 0, 0)
+    payload, dive_receipt = module.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, payload)
+    final = _xbe_bytes(target)
+    if final != payload or module.status(final) != "applied":
+        raise RuntimeError("Defenders leap only for balls they can reach: the output does not read back as applied")
+    receipt["steps"].append({"step": "db_dive_window", **{k: v for k, v in dive_receipt.items() if k != "reservations"}})
+    receipt["result"]["db_dive_window"] = "applied"
+
+
 def _apply_sim_realism(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
     """b779-sim2 r4: scheduled-sim season realism, after the RB injury owner (LATE_OWNERS order)."""
     if not plan.sim_realism:
@@ -2059,7 +2098,8 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
         **{key: _core_module(module) is not None and _core_module("nfl2k5_xbe_space") is not None
            for key, module in (("cpu_qb_zone_windows", "nfl2k5_cpu_qb_reads"), ("cpu_qb_recheck", "nfl2k5_cpu_qb_reads"),
                                ("cpu_qb_tiers", "nfl2k5_cpu_qb_reads"),
-                               ("db_ball_play", "nfl2k5_db_ball_play"), ("qb_accuracy", "nfl2k5_qb_accuracy"))},
+                               ("db_ball_play", "nfl2k5_db_ball_play"), ("qb_accuracy", "nfl2k5_qb_accuracy"),
+                               ("db_dive_window", "nfl2k5_dive_window"))},  # b780-cv3
         "team_number_scale": _core_module("nfl2k5_team_number_scale") is not None
                              and _core_module("nfl2k5_xbe_space") is not None,  # b776-ns1
         "modern_fans": _modern_fans_available(),  # b77-fr1
@@ -2872,14 +2912,16 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
             out["hair_styles"] = "unknown"
     # b776-ai2: the CPU AI owners (executable only, so a bare default.xbe reads too)
     reads, ball = _core_module("nfl2k5_cpu_qb_reads"), _core_module("nfl2k5_db_ball_play")
+    dive = _core_module("nfl2k5_dive_window")  # b780-cv3
     try:
-        xbe = _xbe_bytes(source) if reads is not None or ball is not None else b""
+        xbe = _xbe_bytes(source) if reads is not None or ball is not None or dive is not None else b""
     except (OSError, ValueError):
         xbe = None
     for key, module, read in (("cpu_qb_zone_windows", reads, lambda m, x: m.component_status(x, "zone_windows")),
                               ("cpu_qb_recheck", reads, lambda m, x: m.component_status(x, "recheck")),
                               ("cpu_qb_tiers", reads, lambda m, x: m.component_status(x, "tiers")),
-                              ("db_ball_play", ball, lambda m, x: m.status(x))):
+                              ("db_ball_play", ball, lambda m, x: m.status(x)),
+                              ("db_dive_window", dive, lambda m, x: m.status(x))):
         out[key] = "unavailable" if module is None else "unknown" if xbe is None else read(module, xbe)
     accuracy = _core_module("nfl2k5_qb_accuracy")  # b777-qb3
     if accuracy is None:
@@ -4318,6 +4360,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                        ("cpu_qb_recheck", "CPU QB re-checks his read before throwing"),
                        ("cpu_qb_tiers", "CPU QB skill tiers"),  # b779-gp1
                        ("db_ball_play", "Defenders break on the thrown ball"),
+                       ("db_dive_window", "Defenders leap only for balls they can reach"),  # b780-cv3
                        ("qb_accuracy", "Accurate short throws and throws on the run")):  # b777-qb3
         if type(getattr(plan, key)) is not bool:
             raise ValueError(f"{label} must be Off or On.")
@@ -5063,6 +5106,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         _sim_rb_injuries_preflight(source, progress)
     if plan.sim_realism:  # b779-sim2 r4: like pi1, before any write
         _sim_realism_preflight(source, progress)
+    if plan.db_dive_window:  # b780-cv3: like sim realism, before any write
+        _dive_window_preflight(source, progress)
     if plan.cpu_ball_carriers:  # b778-ai5: before any write
         _ball_carrier_preflight(source, progress)
     if plan.return_coverage:  # b778-kr1: before any write
@@ -5597,7 +5642,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         abilities=plan.abilities, qb_spy=plan.qb_spy, calendar_engine=plan.calendar_engine,
         **tt._r62_space_options(r62), camera=plan.camera,
         hair_styles=plan.hair_styles, cpu_qb_reads=bool(plan.cpu_qb_recheck),
-        db_ball_play=plan.db_ball_play, play_art_routes=plan.play_art_routes,
+        db_ball_play=plan.db_ball_play, db_dive_window=plan.db_dive_window, play_art_routes=plan.play_art_routes,
         team_number_scale=bool(plan.team_number_scale), run_blocking=plan.run_blocking, pass_protection=plan.pass_protection, pass_rush_stats=plan.pass_rush_stats, return_coverage=plan.return_coverage,
         qb_accuracy=plan.qb_accuracy, modern_force_out=plan.modern_force_out,
         practice_injuries=plan.practice_injuries, cpu_ball_carriers=plan.cpu_ball_carriers,
@@ -5672,7 +5717,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             calendar_engine=plan.calendar_engine, camera=plan.camera, season_cap=plan.season_cap, practice_squad=plan.practice_squad, franchise_practice=plan.franchise_practice,
             dynamic_kickoff_settings=plan.dynamic_kickoff_settings,
             hair_styles=plan.hair_styles, cpu_qb_reads=bool(plan.cpu_qb_recheck),
-            db_ball_play=plan.db_ball_play, play_art_routes=plan.play_art_routes,
+            db_ball_play=plan.db_ball_play, db_dive_window=plan.db_dive_window, play_art_routes=plan.play_art_routes,
             team_number_scale=bool(plan.team_number_scale), run_blocking=plan.run_blocking, pass_protection=plan.pass_protection, pass_rush_stats=plan.pass_rush_stats, return_coverage=plan.return_coverage,
             qb_accuracy=plan.qb_accuracy, modern_force_out=plan.modern_force_out,
             practice_injuries=plan.practice_injuries, cpu_ball_carriers=plan.cpu_ball_carriers,
@@ -6784,6 +6829,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     _apply_sim_rb_injuries(plan, target, receipt, progress)
     # b779-sim2 r4: scheduled-sim season realism, after the RB injury owner (LATE_OWNERS order)
     _apply_sim_realism(plan, target, receipt, progress)
+    # b780-cv3: defenders leap only for balls they can reach, the last late allocator owner (LATE_OWNERS order)
+    _apply_dive_window(plan, target, receipt, progress)
     # b778-pg2: the Player Progress screen and weekly snapshot (a late allocator owner after force_out)
     # b778-cb1: cornerback tackle credit, after force_out
     # b778-sd4: modern clock digits, after modern sideline catches
