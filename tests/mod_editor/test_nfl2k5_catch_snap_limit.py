@@ -25,7 +25,7 @@ from mod_editor.core import nfl2k5_build_settings as settings
 from mod_editor.core import nfl2k5_catch_snap_limit as cs
 from mod_editor.core import nfl2k5_xbe_space as space
 from mod_editor.core.nfl2k5_cave_oracle import XbeImage
-from tests.mod_editor.test_nfl2k5_owner_pairwise_composition import retail_xbe, repin_edit
+from tests.mod_editor.test_nfl2k5_owner_pairwise_composition import XBE, retail_xbe, repin_edit
 
 try:
     import unicorn as uc
@@ -83,9 +83,9 @@ class StaticTests(unittest.TestCase):
         self.assertIn("catch_snap_limit", settings.FEATURE_KEYS)
         self.assertIn(("nfl2k5_catch_snap_limit", "Defender catch snap limit"),
                       [(owner, label) for owner, label, _ in mod_build._LATE_OWNER_OPTIONS])
-        plan = mod_build.BuildPlan(Path("source.iso"), Path("target.iso"), catch_snap_limit=True)
-        self.assertTrue(plan.wants_xbe_patch())
-        self.assertFalse(mod_build.BuildPlan(Path("source.iso"), Path("target.iso")).wants_xbe_patch())
+        # like the other late owners it is not a copy-step option: a plan with only this option still builds (see
+        # WriterTests.test_a_real_xbe_only_build_applies_the_option_last)
+        self.assertFalse(mod_build.BuildPlan(Path("source.iso"), Path("target.iso"), catch_snap_limit=True).wants_xbe_patch())
 
     def test_text_is_plain_and_the_module_has_no_private_paths(self):
         text = (ROOT / "mod_editor/core/nfl2k5_catch_snap_limit.py").read_text(encoding="utf-8")
@@ -181,6 +181,23 @@ class WriterTests(unittest.TestCase):
         self.assertEqual(cs.status(changed), "retail")
         final, _ = cs.apply(changed)
         self.assertEqual(cs.status(final), "applied")
+
+    def test_a_real_xbe_only_build_applies_the_option_last(self):
+        # the whole Build path on the pinned retail default.xbe: the option alone, and with two other late owners
+        with tempfile.TemporaryDirectory(prefix="snap-build-") as raw:
+            for options, others in ((dict(), ()), (dict(cpu_ball_carriers=True, return_coverage=True), ("cpu_ball_carriers", "return_coverage"))):
+                out = Path(raw) / f"out{len(others)}.xbe"
+                receipt = mod_build.build(mod_build.BuildPlan(str(XBE), str(out), catch_snap_limit=True, **options))
+                built = out.read_bytes()
+                self.assertEqual(cs.status(built), "applied")
+                self.assertEqual(space.status(built), "applied")
+                steps = [row["step"] for row in receipt["steps"]]
+                self.assertEqual(steps[-1], "catch_snap_limit", steps)                # LATE_OWNERS order: after the others
+                self.assertEqual(receipt["result"]["catch_snap_limit"], "applied")
+                for name in others:
+                    self.assertIn(name, steps)
+                self.assertEqual(mod_build.inspect(out)["catch_snap_limit"], "applied")
+                self.assertEqual(mod_build.inspect(XBE)["catch_snap_limit"], "retail")
 
     def test_composes_with_another_late_owner(self):
         carriers, _ = bc.apply(self.retail)
