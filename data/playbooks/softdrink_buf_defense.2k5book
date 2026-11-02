@@ -9,7 +9,7 @@
   "notes": "DESIGN: Jim Leonhard (Pettine / Ryan and Joseph pressure); 2025 baseline DEN. Clean technique fronts (pb/v2/defense/design.py), retail 2K5 coverage scripts with native pre-snap alignment, situational formation ratings and CPU score bands fitted to the sourced 2025 coverage and blitz rates. Exact offense source required. Gameplay unwitnessed."
  },
  "base": {
-  "book_fingerprint": "ce699a0302e49e320c191e571004acfa7007e8e0a85912f003a15cc5b1b7216c",
+  "book_fingerprint": "7e44879c84d2973f336846d8652988a1c7ad6a4944d3cc173d07bfd9812e8261",
   "donor_formation_count": 50,
   "donor_play_count": 270,
   "donor_node_count": 2316

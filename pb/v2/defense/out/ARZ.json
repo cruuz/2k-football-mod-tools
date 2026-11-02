@@ -1979,13 +1979,13 @@
  "receipt": {
   "team": "ARZ",
   "offense_pack": "data/playbooks/softdrink_arz_modern.2k5book",
-  "offense_pack_sha256": "ac0207f0f127d3c2b872554e1b613ea801db7b7fcfd533bd8f9f7450af4947b0",
-  "source_fingerprint": "e35a40ccfcae63afefc29ede08355e61dd9003298dcecb12bc154c7cefe051df",
-  "replacement_sha256": "77d7b336d9fa8b2fadfa65815fa37d1738a18836bd80bbe20d5d480f4fcd7c64",
+  "offense_pack_sha256": "7ce7e42e284f58cb95c60ca4a026394f3160322c5dca9edfd06a5cc412ddd335",
+  "source_fingerprint": "fda72e13cc5a76d737be4b763997312072a859d5947f61b53b27aa98c50f4691",
+  "replacement_sha256": "9c273242264ffda7c8912e036e4634c6482233ccd78f940ae556bd4ec36fa99c",
   "semantic_sha256": "c218c6131e01eb9c6b43a2bf0eb0c1919e06f4a8958d0f92daa6afc337ae9d31",
   "plays": 64,
   "formations": 4,
-  "nodes": 2679,
+  "nodes": 2681,
   "node_capacity": 3500,
   "formation_count": 50,
   "play_count": 270,
@@ -1993,7 +1993,10 @@
   "band_loss": 0.08402,
   "spy_play": null,
   "native_scoring_faults": 0,
+  "name_pool_units": 5074,
+  "name_pool_capacity": 5088,
+  "name_mode": 0,
   "pack": "data/playbooks/softdrink_arz_defense.2k5book",
-  "pack_sha256": "088acdca9df005b31c17f3d2733bfda50a3771de3659c6935671c0aee5dfd100"
+  "pack_sha256": "01de76c216b518fda97e9bbee5d4fa02c5146e11dddc5d31bc48d5f5f47a2581"
  }
 }

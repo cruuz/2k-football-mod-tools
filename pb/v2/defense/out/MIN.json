@@ -2388,6 +2388,9 @@
   "band_loss": 0.21039,
   "spy_play": null,
   "native_scoring_faults": 0,
+  "name_pool_units": 5081,
+  "name_pool_capacity": 5088,
+  "name_mode": 0,
   "pack": "data/playbooks/softdrink_min_defense.2k5book",
   "pack_sha256": "2e7156dcdbc5ce8fd2c60df6dbfd5c5558804f2ac2c193da292e65e8731813db"
  }

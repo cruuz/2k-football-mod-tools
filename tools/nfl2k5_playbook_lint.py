@@ -9,6 +9,7 @@ Works on any book, whoever authored it:
 Checks (see mod_editor/core/nfl2k5_playbook_lint.py for the measured retail envelopes):
   HANDOFF_FAR / PITCH_FAR      handoff or pitch target too far from the giver at the snap (P1)
   HANDOFF_PLAN_FAR             native exchange plan beyond retail travel (needs --xbe, Unicorn)
+  TOSS_SIDE_CROSS              shotgun or pistol toss whose lane is on the other side of the QB from the back (B6)
   CHECKDOWN_BACKWARD           a back's route finishes level with or behind the QB's release (P3)
   BACKWARD_TARGET              the same for wide receivers and tight ends
   BACK_PRIMARY_SHARE           book-level: a back is the first read on more pass links than retail (P3)
