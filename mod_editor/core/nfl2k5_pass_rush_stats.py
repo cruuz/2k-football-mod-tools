@@ -26,7 +26,9 @@ rates driven by Pass Rush and Pass Blocking and the engine's own sacks. History 
 
 Player Card: TGT on the HB/FB and WR/TE sheets, PRS and QBH after SACK on the defensive sheet, and a new
 offensive-line sheet (Games, PA, HA, SA) by routing C/G/T to the defensive card definition and switching the
-sheet's column list at the card's own selector. The column lists are copies in the owner's read-only block; the
+sheet's column list at the card's own selector. b780 b5-sim: the six columns are text columns (prs_card_text, the game's
+own swprintf with its L"%d"), so a season from before the franchise began (imported nflverse or retail history, which
+never recorded these stats) shows blank instead of 0. The column lists are copies in the owner's read-only block; the
 retail lists (and the TEAM column's in-place edits) are untouched.
 
 League Leaders and the stats sheets (Noah 10/28: "new stats yes"): the blocked-kick columns (FBK field goal blocks, XBK extra
@@ -87,7 +89,7 @@ TARGETS_FIELD = 50
 STATE_COUNTERS_OFF = 0x24         # u8 cnt[136][5], index = play-log player code (0xBBAA0), order PRS QBH PA HA SA
 STATE_DIAGNOSTICS = ("live", "throws", "sacks", "sheds", "credits", "last_defenders", "last_min_mm", "commits", "rng")
 NCODE, NSTAT = 136, 5
-STATE_SIZE = 4 * len(STATE_DIAGNOSTICS) + NCODE * NSTAT + NCODE + 2 * NCODE
+STATE_SIZE = 4 * len(STATE_DIAGNOSTICS) + NCODE * NSTAT + NCODE + 2 * NCODE + 16   # + the card cell text (b780 b5-sim)
 
 # Tunables: (label, value). The template holds the same values; code_for() writes these.
 # Positions are in centimetres (91.44 a yard: 210 uses of 91.44 in the retail XBE; xemu RAM of prsA2/prsA3).
@@ -127,6 +129,7 @@ YR, GAMES, REC, SACK = 0x00535020, 0x005350D0, 0x00533CE0, 0x00534050
 TEAM_DESCRIPTOR = 0x00047370      # nfl2k5_team_column.DESCRIPTOR_VA (kept if present in a list)
 DESCRIPTOR_SIZE = 0xB0
 CARD_GETTER = 0x00320430
+CARD_TEXT_TYPE = 8                # b780 b5-sim: the card's new columns are text columns (the Yr column's type)
 # League Leaders / stats sheets (Noah 10/28: "new stats yes"): the blocked-kick columns give their slots to the new
 # stats in place. (slot VA, retail descriptor, new column). Lists: 0x547C2C, 0x548224, 0x548E6C (defense; FBK only) and
 # 0x548854 (defense with TEAM; FBK, XBK, PBK). Every other pointer of every list is unchanged.
@@ -352,10 +355,13 @@ def read_only_bytes(image, code_va, read_only_va, source_lists):
         put(lay["s_" + key], _utf16(abbr))
         put(lay["l_" + key], _utf16(long_name))
     template = image.read(REC, DESCRIPTOR_SIZE)
-    getter = labels(code_va)["prs_card_value"]
+    getter = labels(code_va)["prs_card_text"]
     for key, _abbr, _long, sid in COLUMNS:
-        put(lay["d_" + key], _descriptor(template, CARD_GETTER if key == "tgt" else getter,
-                                         lay["s_" + key], lay["l_" + key], sid))
+        # b780 b5-sim: text columns (type 8, the card's Yr / TEAM kind) through prs_card_text, so a season from before
+        # the franchise began shows blank instead of 0; same cookie 0x200B3 (row index, stat id)
+        d = bytearray(_descriptor(template, getter, lay["s_" + key], lay["l_" + key], sid))
+        struct.pack_into("<I", d, 0x00, CARD_TEXT_TYPE)
+        put(lay["d_" + key], bytes(d))
     lists = source_lists
     def_pointers = _list_pointers(lists["def"])
     for key in ("rb", "wr", "def"):

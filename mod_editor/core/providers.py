@@ -790,8 +790,8 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_run_blocking_code.py": "622c8683badbb73ad0997e96d68a9d116317c5916d92a70be2758b05914e244b",
         "mod_editor/core/nfl2k5_pass_protection.py": "8d85ca582b80d79ad341e8c0158a89094662dd77fbfe655d39d9005742176692",
         "mod_editor/core/nfl2k5_pass_protection_code.py": "a9d8e2bfb43cab4c95d2e5c909a47a5d84fbf3b927ce51f97da619728b49e8de",
-        "mod_editor/core/nfl2k5_pass_rush_stats.py": "7b7f3470de39b47c38a235751707b42f1419dbf2ea54382215529814fa78665d",
-        "mod_editor/core/nfl2k5_pass_rush_stats_code.py": "b32e9c68cf38eb6ac52ceab28822fbc087e7c03aaf726ebbdecfa64e233c3608",
+        "mod_editor/core/nfl2k5_pass_rush_stats.py": "619bfac1411be58a00e76eb9b48c428260db1b99cd98fca567e1784195240f03",
+        "mod_editor/core/nfl2k5_pass_rush_stats_code.py": "f9167ad770b03e615ee2a9893edf1f1788fff5daca4deb52ba2438c87c5847c1",
         "mod_editor/core/nfl2k5_lineman_rating.py": "e1c08c86e0a31c58fd86d5a155c56ad200cf5ef237771c95b39bfe29215261c1",
         "mod_editor/core/nfl2k5_match_coverage.py": "d9c1a93508a25a17d389b1dfa628ab8d0ac2da25d99bcc64a347b98f4447cfa2",
         "mod_editor/core/nfl2k5_model_project.py": "04371be3e1e86a9a6b3d2499dc0db203d6d5d9241c104c78879a2a414aa05488",
@@ -928,7 +928,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_contract_college_guard.py": "4bf8deeb95c3718380e8dc248ec2a2f0c81116f304d1a93723e277cc4bd32fe6",  # b778-cr1
         "mod_editor/core/nfl2k5_sim_cb_tackles.py": "81ae345a7c0323df48129b45f2aec022ce95627eabf5cbbd428e9d467fc26093",  # b778-cb1
         "mod_editor/core/nfl2k5_sim_rb_injuries.py": "2225d2891163cfb4164d0566c39cbbb7795273115ab15bd82299b034022dcc57",  # b779-sim2
-        "mod_editor/core/nfl2k5_sim_realism.py": "7d575cbcb5526b04fbd5990830a4a849a2f436c1b1d0691876aae7c04c61225e",  # b779-sim2 r6
+        "mod_editor/core/nfl2k5_sim_realism.py": "94e08145199d470bca3394f871518b3d1edbc1c792c00819f0311f97e6fe867e",  # b779-sim2 r6
         "mod_editor/core/nfl2k5_preseason_warning.py": "44647523c32291820e98b2dad0a9c44af27fe6bca13626104551dc3647bcc6f2",  # b779-int1: imported by throw_tuning for the build union (693fe63a0)
         "mod_editor/core/nfl2k5_sim_stats.py": "26af040eea115ef53bea9bbd38a329185e42ea27cea201866e6432cd71b3ef00",  # b778-sim1
         "mod_editor/core/nfl2k5_option_defaults.py": "42514e38dcffa46fcb46b19e11d2eda4dff454297b33033dc98864e940207e47",  # b779-df1

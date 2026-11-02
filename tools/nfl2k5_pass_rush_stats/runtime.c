@@ -72,6 +72,7 @@ typedef struct {
     u8 cnt[NCODE][NSTAT];
     u8 beaten[NCODE];
     u16 tag[NCODE];
+    u16 text[8];                         /* b780 b5-sim: the Player Card cell text (one cell, drawn before the next) */
 } State;
 
 extern volatile State prs_state;
@@ -409,10 +410,10 @@ void FC prs_on_commit(u32 team, u32 club, u32 side) {
 
 /* ---- read a field for a native stat bank: 8/9 career, 10/11 the current season, 12..26 that many seasons ago (the
    native bank numbering of 0xCB240; live-game banks 0..7 read 0, the counters are committed after the game) -------- */
-static float bank_value(u32 player, u32 field, u32 bank) {
+static i32 bank_int(u32 player, u32 field, u32 bank) {
     i32 v = 0;
-    if (!player || field < FIELD0 || field >= FIELD0 + NSTAT)
-        return 0.0f;
+    if (!player)
+        return 0;
     if (bank == 8 || bank == 9) {
         /* career: every live word of this field in the current class (the native search 0x14E800's filter) */
         const volatile u32 *w = (const volatile u32 *)G(player + 0x2C);
@@ -429,12 +430,33 @@ static float bank_value(u32 player, u32 field, u32 bank) {
         v = HIST_GET(player, field);
     else if (bank >= 12 && bank <= 26)
         v = HIST_AGO(player, field, bank - 11);
-    return (float)v;
+    return v;
 }
 
-/* the Player Card: column getter (descriptor cookie 0x200B3: ecx = row, edx = stat id = history field) */
-float FC prs_card_value(u32 row, u32 field) {
-    return bank_value(G(CARD_PLAYER), field, G(CARD_BANKS + 4 * row));
+static float bank_value(u32 player, u32 field, u32 bank) {
+    if (field < FIELD0 || field >= FIELD0 + NSTAT)
+        return 0.0f;
+    return (float)bank_int(player, field, bank);
+}
+
+/* the Player Card: column getter, as text (b780 b5-sim; b779 st1's float getter prs_card_value is gone: descriptor
+   type 8, cookie 0x200B3: the spreadsheet's argument resolver 0x172680
+   gives ecx = the row index, code 3, and edx = the column's stat id, code B; the string invoker 0x1728A0 reads eax).
+   A season from before the franchise began (more seasons ago than the franchise has played, [0xE576B8]) has no record
+   of these stats: an imported nflverse or retail row stays blank instead of showing 0. TGT is the retail selector 56,
+   history field 50. The number is printed by the game's own swprintf (0x4A400: ecx = buffer, edx = format, [esp+4] =
+   argument list, callee pops) with the retail format L"%d" the stats sheets use (0xE83A84). */
+#define SWPRINTF ((void (FC *)(volatile u16 *, u32, const i32 *))0x0004A400)
+#define FORMAT_D 0x00E83A84u
+static const u16 empty_text[1] = {0};
+const u16 *FC prs_card_text(u32 row, u32 field) {
+    u32 bank = G(CARD_BANKS + 4 * row);
+    u32 f = field == 0x38 ? 50 : field;
+    i32 v = (f == 50 || (f >= FIELD0 && f < FIELD0 + NSTAT)) ? bank_int(G(CARD_PLAYER), f, bank) : 0;
+    if (!v && bank >= 12 && bank <= 26 && bank - 11 > G(SEASONS))
+        return empty_text;
+    SWPRINTF(prs_state.text, FORMAT_D, &v);
+    return (const u16 *)prs_state.text;
 }
 
 /* League Leaders / stats sheets: column getter in place of 0x3216C0 (cookie 0x307BA: ecx = player record,

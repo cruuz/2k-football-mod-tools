@@ -77,11 +77,12 @@ REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "data", DATA_SIZE, 4))
 BUILD_CAPTION = "Simulated season realism (experimental)"
 HELP_TEXT = (
     "EXPERIMENTAL. In franchise games the CPU simulates (not games you play) the play mix moves toward "
-    "the modern NFL (about 33 passes and 27 runs a team), targets concentrate on the top receiver and "
-    "tight end, mobile quarterbacks run for NFL-sized totals, team interceptions move toward 12.8, and "
-    "tackle totals move toward the NFL leader and top-10 levels. Red-zone passes gain fewer yards so scoring "
-    "and the touchdown mix land near the modern NFL, and season rush yards get a post-game correction. Played "
-    "games, ratings and rosters are unchanged. The numbers are calibrated from nflverse 2021-2025 regular seasons."
+    "the modern NFL (about 33 passes and 27 runs a team), and better passers call more passes than weaker ones; "
+    "targets concentrate on the top receiver and tight end, more so for an elite receiver; mobile quarterbacks "
+    "run for NFL-sized totals, team interceptions move toward 12.8, and tackle totals move toward the NFL leader and "
+    "top-10 levels. Red-zone passes gain fewer yards so scoring and the touchdown mix land near the modern NFL, and "
+    "each team's lead back gets a small post-game rush-yard correction. Played games, ratings and rosters are "
+    "unchanged. The numbers are calibrated from nflverse 2021-2025 regular seasons on 17-game simulated seasons."
 )
 
 SIM_MODE = 0x00E5FF80                # game mode word: 4 = the franchise scheduled-game simulator

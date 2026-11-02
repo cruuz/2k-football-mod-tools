@@ -435,27 +435,42 @@ class CardTests(unittest.TestCase):
             self.assertEqual(struct.unpack_from("<I", desc, 0xA0)[0], sid)
             self.assertEqual(image.read(struct.unpack_from("<I", desc, 0x70)[0], 2 * len(abbr)).decode("utf-16-le"), abbr)
 
-    def test_card_value_reads_season_years_ago_and_total(self):
+    def test_card_text_reads_season_years_ago_and_total_and_blanks_imported_seasons(self):
+        # b780 b5-sim: the card's new columns are text columns; a season from before the franchise began is blank
         m = self.g.m
         p, _ = self.card(16)
-        trampoline = m.HEAP + 0x47000
-        m.uc.mem_write(trampoline, b"\xe8" + struct.pack("<i", self.g.at["prs_card_value"] - (trampoline + 5))
-                       + bytes.fromhex("d91d") + struct.pack("<I", m.HEAP + 0x47100) + b"\xc3")
+        trampoline, res = m.HEAP + 0x47000, m.HEAP + 0x47100
+        m.uc.mem_write(trampoline, b"\xe8" + struct.pack("<i", self.g.at["prs_card_text"] - (trampoline + 5))
+                       + b"\xa3" + struct.pack("<I", res) + b"\xc3")
 
-        def value(bank, field):
+        def text(bank, field, seasons=2):
             m.put(0x00C90254, bank)                    # row 0's bank
+            m.put(0x00E576B8, seasons)                 # franchise seasons played before this one
             m.call(trampoline, ecx=0, edx=field)
-            return m.float_at(m.HEAP + 0x47100)
+            return m.wide(m.get(res))
 
         # years pro 3: the current season is slot 3, one season ago slot 2, two seasons ago slot 1
-        self.assertEqual(value(11, 106), 0.0)
-        self.assertEqual(value(12, 106), 11.0)
-        self.assertEqual(value(13, 106), 7.0)
-        self.assertEqual(value(9, 106), 18.0)          # Total: 7 + 11
-        self.assertEqual(value(12, 110), 2.0)
-        self.assertEqual(value(9, 110), 2.0)
-        self.assertEqual(value(9, 50), 0.0)            # not one of this owner's fields
+        self.assertEqual(text(11, 106), "0")           # this season: nothing yet, a franchise season shows 0
+        self.assertEqual(text(12, 106), "11")
+        self.assertEqual(text(13, 106), "7")
+        self.assertEqual(text(9, 106), "18")           # Total: 7 + 11
+        self.assertEqual(text(12, 110), "2")
+        self.assertEqual(text(13, 110, seasons=2), "0")   # two seasons ago inside the franchise: a real 0
+        self.assertEqual(text(13, 110, seasons=1), "")    # two seasons ago, before the franchise began: blank
+        self.assertEqual(text(14, 106, seasons=0), "")
+        self.assertEqual(text(13, 106, seasons=0), "7")   # a value that exists always shows
+        self.assertEqual(text(12, prs.TARGETS_SELECTOR, seasons=0), "")   # TGT (field 50) of an imported season
+        self.assertEqual(text(9, prs.TARGETS_SELECTOR), "0")
+        self.assertEqual(text(12, 50 + 0x80, seasons=0), "")             # not a column of this owner: blank before
         del p
+
+    def test_card_columns_are_text_columns_through_the_owner(self):
+        image = XbeImage(self.data)
+        for key, *_rest in prs.COLUMNS:
+            d = image.read(self.lay["d_" + key], 0xB0)
+            self.assertEqual(struct.unpack_from("<I", d, 0x00)[0], prs.CARD_TEXT_TYPE, key)
+            self.assertEqual(struct.unpack_from("<I", d, 0x0C)[0], 0x200B3, key)
+            self.assertEqual(struct.unpack_from("<I", d, 0x08)[0], self.g.at["prs_card_text"], key)
 
 
 @unittest.skipUnless(HAVE_UC, "unicorn is needed")
