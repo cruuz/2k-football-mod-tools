@@ -1788,7 +1788,9 @@ def apply_to_image(target, *, retail_source, art_root=None, team_logo=False, pro
     out = dict(verify(target), bundles_written=len(results), colour=settings is not None, team_logo=bool(team_logo),
                shield=shield is not None)
     if notes:
-        out.update(user_notes=notes, kept=sorted(n for n, row in receipt["bundles"].items() if row.get("kept")))
+        from . import nfl2k5_modern_surfaces as ms
+        out.update(user_notes=ms.compact_notes(notes, "Modern practice facility"),
+                   kept=sorted(n for n, row in receipt["bundles"].items() if row.get("kept")))
     return out
 
 

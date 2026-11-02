@@ -1503,6 +1503,19 @@ def _custom_colour(colour_settings):
         return False
 
 
+#: The finished-disc message lists at most this many kept parts per option; the receipt names every one.
+NOTE_LIMIT = 8
+
+
+def compact_notes(notes, label="Modern surfaces"):
+    """The plain lines for the Build summary: every line up to NOTE_LIMIT + 1, else the first NOTE_LIMIT and a count."""
+    notes = list(dict.fromkeys(notes))
+    if len(notes) <= NOTE_LIMIT + 1:
+        return notes
+    return notes[:NOTE_LIMIT] + [f"{label}: {len(notes) - NOTE_LIMIT} more parts were kept as they were; the receipt "
+                                 "beside the disc names each one and why."]
+
+
 def kept_note(name, what, colour_settings=None, why=None):
     """One plain build-summary line for a part of a home bundle this option kept as it was (b791)."""
     cause = why or ("your colour settings leave no room in its fixed slot" if _custom_colour(colour_settings)
@@ -1948,7 +1961,7 @@ def apply_to_image(target, *, progress=None, workers=None, overrides=None, prese
                   reduced_patterns=sorted(n for n, r in receipt["bundles"].items() if (r.get("pattern_detail") or 2) < 2))
     if notes:
         result["kept"] = {n: [k["site"] for k in r["kept"]] for n, r in sorted(receipt["bundles"].items()) if r.get("kept")}
-        result["user_notes"] = notes
+        result["user_notes"] = compact_notes(notes)
     return result
 
 

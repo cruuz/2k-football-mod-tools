@@ -381,7 +381,7 @@ class SurfacesStep(unittest.TestCase):
             return real_report(source, deep=deep)
 
         def surface(data, name, *, indoor, colour_settings=None, overrides=None, **_options):
-            if name == failing:
+            if name == failing or (isinstance(failing, (set, frozenset)) and name in failing):
                 raise tx.TxtrError(BLANK)
             out = b"S" + bytes(data[1:])
             return out, dict(look="grass_bermuda", light="day", rig="day", normal="full", detail_strength=0.2,
@@ -426,6 +426,17 @@ class SurfacesStep(unittest.TestCase):
         row = ms.bundle_report(_Archive(changed), "s22nd.iff", _Entry(len(changed)), receipt)
         self.assertEqual(row["state"], "applied", row)
         self.assertIn("kept as it was", row["reason"])
+
+    def test_many_kept_bundles_give_a_short_summary_and_a_complete_receipt(self):
+        failing = set(ms.HOME_BUNDLES[:12])
+        _image, _bundles, target, result = self.run_step(failing)
+        self.assertEqual(sorted(result["kept"]), sorted(failing))
+        self.assertEqual(len(result["user_notes"]), ms.NOTE_LIMIT + 1)
+        self.assertIn("4 more parts were kept as they were; the receipt beside the disc names each one and why",
+                      result["user_notes"][-1])
+        receipt = ms.read_receipt(target)
+        self.assertEqual(sum(1 for row in receipt["bundles"].values() if row.get("kept")), 12)
+        self.assertEqual(ms.image_status(target), "applied")
 
     def test_the_worker_keeps_a_bundle_whatever_it_raised(self):
         with mock.patch.object(ms, "surface_bundle", side_effect=KeyError("material")):
@@ -619,6 +630,10 @@ class BuildNotes(unittest.TestCase):
                 apply_to_image=lambda target, **kw: {"state": "applied", "user_notes": [notes["surfaces"]]}),
             "nfl2k5_stadium_shadow": types.SimpleNamespace(
                 OPTION_VENUES={}, apply_to_image=lambda target, venues, progress=None: {"state": "applied"}),
+            # Broadcast greens follows Modern surfaces on every build; it needs real stadium packs, not this disc
+            "nfl2k5_broadcast_greens": types.SimpleNamespace(
+                receipt_path=lambda path: Path(str(path) + ".b791-greens.json"), save=lambda path, doc: None,
+                apply_to_image=lambda target, progress=None, anniversary_receipt=None: {"state": "applied"}),
         }
         return notes, modules
 
