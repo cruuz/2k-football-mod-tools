@@ -3380,10 +3380,13 @@ class StudioMainWindow(QMainWindow):
         start_layout.addLayout(start_buttons)
         outer.addWidget(start)
         discord = QLabel(
-            f'Stuck? <a href="{update_check.COMMUNITY_DISCORD}">Ask on the Discord</a> '
+            "Stuck? The FAQ (Help ▸ Questions and answers) covers the common first-run questions: .iso or .xiso, no disc "
+            "drive, a sharper picture, a game that will not start. Still stuck? "
+            f'<a href="{update_check.COMMUNITY_DISCORD}">Ask on the Discord</a> '
             "(also under Help ▸ Join the Discord…)."
         )
         discord.setObjectName("cardBody")
+        discord.setWordWrap(True)  # b780-b13: the longer sentence must wrap, not widen the page
         discord.setTextFormat(Qt.RichText)
         discord.setOpenExternalLinks(True)
         discord.setTextInteractionFlags(Qt.TextBrowserInteraction)

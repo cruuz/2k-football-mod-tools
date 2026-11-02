@@ -29,7 +29,7 @@ from mod_editor.gui.build_panel_qt import BuildPanel  # noqa: E402
 from tests.nfl2k5_my_career_fixture import XBE  # noqa: E402
 
 PRESETS = ("softdrink_basic", "softdrink_advanced", "softdrink_experimental")
-EM_DASH = "—"
+EM_DASH = "\u2014"
 
 
 def _disc_state(**overrides):
@@ -126,7 +126,7 @@ class CribOptionWords(unittest.TestCase):
             self.assertIn(needle, text)
         for words in (crib.BUILD_CAPTION, text, build_panel_qt.PRESET_CRIB_NOTE):
             self.assertNotIn(EM_DASH, words)
-            self.assertNotIn("–", words)
+            self.assertNotIn("\u2013", words)
         self.assertLessEqual(len(crib.BUILD_CAPTION), 70)   # a check box label, not a paragraph
 
     def test_the_caption_is_unique_so_the_note_and_the_faq_name_exactly_one_box(self):

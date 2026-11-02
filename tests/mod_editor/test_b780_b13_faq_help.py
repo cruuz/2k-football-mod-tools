@@ -65,7 +65,7 @@ class NewFaqAnswers(unittest.TestCase):
 
     def test_plain_words_no_dashes_no_names(self):
         block = _new_block()
-        for dash in ("—", "–"):
+        for dash in ("\u2014", "\u2013"):
             self.assertNotIn(dash, block)
         for name in NAMES:
             self.assertIsNone(re.search(r"(?<![\w])" + re.escape(name) + r"(?![\w])", block, re.I), name)
@@ -117,7 +117,7 @@ class NewFaqAnswers(unittest.TestCase):
     def test_the_getting_started_guide_says_the_presets_cut_the_crib(self):
         guide = (ROOT / "docs/mod_editor/2k5_mod_studio_getting_started.md").read_text(encoding="utf-8")
         self.assertIn("All three presets also cut the Crib down to the Trophy Room", guide)
-        self.assertNotIn("—", guide.split("All three presets also cut the Crib")[1][:400])
+        self.assertNotIn("\u2014", guide.split("All three presets also cut the Crib")[1][:400])
 
 
 class HelpMenuAndWelcomeText(unittest.TestCase):
@@ -155,14 +155,25 @@ class HelpMenuAndWelcomeText(unittest.TestCase):
             # CI and light checkouts have no private assets: read the packaged source instead of building the window
             source = (ROOT / "mod_editor/gui/studio_qt.py").read_text(encoding="utf-8")
             self.assertIn("a .iso or .xiso file (both work, they are the same kind", source)
+            self.assertIn("Stuck? The FAQ (Help ▸ Questions and answers) covers the common first-run questions", source)
+            self.assertIn("discord.setWordWrap(True)", source)
             return
+        from PyQt5.QtWidgets import QLabel
         from mod_editor.gui.studio_qt import BrowseOnlyFacade, StudioMainWindow
-        window = StudioMainWindow(eager_pages=True, facade=BrowseOnlyFacade(), offer_recovery=False)
+        window = StudioMainWindow(eager_pages=False, facade=BrowseOnlyFacade(), offer_recovery=False)
         self.addCleanup(window.deleteLater)
+        window.resize(1280, 720)
+        window.show()
+        self.app.processEvents()
         tip = window.welcome_open_button.toolTip()
         self.assertIn(".iso", tip)
         self.assertIn(".xiso", tip)
-        self.assertNotIn("—", tip)
+        self.assertNotIn("\u2014", tip)
+        label = next(w for w in window.findChildren(QLabel) if w.accessibleName() == "Community help link")
+        self.assertIn("Questions and answers", label.text())
+        self.assertIn("Ask on the Discord", label.text())
+        self.assertTrue(label.wordWrap())            # the longer sentence wraps instead of widening the page
+        self.assertNotIn("\u2014", label.text())
 
 
 if __name__ == "__main__":
