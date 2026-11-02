@@ -243,6 +243,10 @@ CPU_AI_OPTIONS = (
 # b777-qb3: QB accuracy on short and on-the-run throws (on in the experimental preset only).
 from mod_editor.core import nfl2k5_qb_accuracy as _qb_accuracy  # noqa: E402
 CPU_AI_OPTIONS += (("qb_accuracy", _qb_accuracy.BUILD_CAPTION, _qb_accuracy.HELP_TEXT),)
+# b780 b-clock: modern CPU clock management and its overtime window (on in the Advanced and Experimental presets).
+from mod_editor.core import nfl2k5_cpu_clock2 as _cpu_clock2  # noqa: E402
+CPU_AI_OPTIONS += (("cpu_clock2", _cpu_clock2.BUILD_CAPTION, _cpu_clock2.HELP_TEXT),
+                   ("cpu_clock2_overtime", _cpu_clock2.OT_CAPTION, _cpu_clock2.OT_HELP_TEXT))
 # b778-fo1: modern sideline catches (no force-out from the 2008 season; on in the Advanced and Experimental presets).
 from mod_editor.core import nfl2k5_force_out as _force_out  # noqa: E402
 from mod_editor.core import nfl2k5_module_loader as _module_loader  # noqa: E402  b778-xs1
@@ -323,6 +327,7 @@ ANNIVERSARY_DEPENDENCIES = {
     "espn25_era_rules": ("espn25_more_moments", "dynamic_kickoff", "defensive_try", "overtime"),
     "historic_rosters_2026": ("historic_teams_quick_game",),
     "classic_teams": ("historic_teams_quick_game",),  # b775-ct1
+    "cpu_clock2_overtime": ("cpu_clock2",),  # b780 b-clock: the overtime window extends the modern clock rules
 }
 
 
