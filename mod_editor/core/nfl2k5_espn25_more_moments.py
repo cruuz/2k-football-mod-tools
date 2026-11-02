@@ -150,7 +150,17 @@ COUNT_VA, COUNT_RETAIL = 0x20C340, "b819000000c3"
 # by field and never copies +0x52/+0x53, so a star tag (+0x53 bit 0) in a team file never reached the record the star
 # renderer reads (entity+0x3C). At the end of each player's copy (0xC1D6A: EBP = file record, EDI = new record; flags,
 # EAX and ECX are reloaded there) the owned code copies that one bit, replays the two retail instructions and resumes.
+#
+# b780 (b3-moments, Ju3tin's invisible and "blazing fast" moment players): the clone (0xC16CD..0xC1D6A, PROVED OFFLINE
+# under Unicorn on the retail and v0.8 executables) also never writes +0x0D (hair style), +0x0E, +0x0F and the rest of
+# the +0x52 word (depth locks, ability flags, ability tier, Guardian flag), so an imported moment player kept those bytes
+# from whatever player last owned the spare record (the importer takes the first record with flags & 5 == 1, BFF50).
+# The import now completes the record: the 11-byte site copies the dword +0x0C..+0x0F (the clone already wrote +0x0C
+# from the file, so only +0x0D..+0x0F change) and jumps to the owned code, which copies the whole +0x52 word, replays
+# the two retail instructions and resumes. Nothing else changes: +0x09 and +0x30..+0x33 are zero in every record any
+# writer makes, and +0x2C (the season history pointer) stays the record's own, as in retail.
 STAR_VA, STAR_RETAIL, STAR_RESUME = 0xC1D6A, "8b4424100fb68e1c010000", 0xC1D75
+IMPORT_SITE_HEAD = bytes.fromhex("8b4d0c" "894f0c")     # mov ecx,[ebp+0x0C] ; mov [edi+0x0C],ecx
 TEST_VA = 0x20C390
 TEST_RETAIL = "b801000000d3e02305cc18bf00f7d81bc0f7d8c3909090909090909090909090"
 ANNOUNCER_VA = 0x20C4A1
@@ -1038,11 +1048,34 @@ def code_for(code_va, data_va, entries, venue_texts=(), *, order=None, legacy=Fa
 
 
 def star_code(va):
-    """28 bytes: dest[0x53] ^= (dest[0x53] ^ src[0x53]) & 1; mov eax,[esp+0x10]; movzx ecx,byte [esi+0x11c]; jmp back."""
+    """28 bytes (b780): dest word +0x52 = file word +0x52 (depth locks, ability flags, star tag, ability tier, Guardian
+    flag); mov eax,[esp+0x10]; movzx ecx,byte [esi+0x11c]; jmp back; int3 padding. The site (``import_site``) has
+    already copied the dword +0x0C (hair style +0x0D, +0x0E, +0x0F)."""
+    code = bytes.fromhex("668b4d52" "66894f52") + bytes.fromhex(STAR_RETAIL)
+    code += b"\xe9" + struct.pack("<i", STAR_RESUME - (va + len(code) + 5))
+    code = code.ljust(TABLE_OFFSET - STAR_OFFSET, b"\xcc")
+    require(len(code) == TABLE_OFFSET - STAR_OFFSET, "star copy size drift")
+    return code
+
+
+def previous_star_code(va):
+    """The beta 76.3 .. beta 79 body at the same place (28 bytes): only the star bit, dest[0x53] ^= (dest[0x53] ^
+    src[0x53]) & 1, then the retail tail. Recognised so a disc built by those releases still reads as installed."""
     code = bytes.fromhex("8a4f53" "324d53" "80e101" "304f53") + bytes.fromhex(STAR_RETAIL)
     code += b"\xe9" + struct.pack("<i", STAR_RESUME - (va + len(code) + 5))
     require(len(code) == TABLE_OFFSET - STAR_OFFSET, "star copy size drift")
     return code
+
+
+def import_site(code_va):
+    """The 11 bytes at STAR_VA (b780): copy the dword +0x0C..+0x0F of the file record, then jump to the owned code."""
+    head = IMPORT_SITE_HEAD
+    return head + b"\xe9" + struct.pack("<i", code_va + STAR_OFFSET - (STAR_VA + len(head) + 5))
+
+
+def previous_import_site(code_va):
+    """The beta 76.3 .. beta 79 site: a jump to the owned code and six int3."""
+    return (b"\xe9" + struct.pack("<i", code_va + STAR_OFFSET - STAR_VA - 5)).ljust(len(STAR_RETAIL) // 2, b"\xcc")
 
 
 def test_code(data_va, code_va=None):
@@ -1070,8 +1103,7 @@ def sites(code_va, data_va, total, *, legacy=False, rows=True):
         after = (b"\xe9" if kind == "jmp" else b"\xe8") + struct.pack("<i", target - va - 5)
         out.append((label, va, before, after.ljust(len(before), b"\xcc")))
     out.append(("count", COUNT_VA, bytes.fromhex(COUNT_RETAIL), bytes((0xB8, total, 0, 0, 0, 0xC3))))
-    star = b"\xe9" + struct.pack("<i", code_va + STAR_OFFSET - STAR_VA - 5)
-    out.append(("star_copy", STAR_VA, bytes.fromhex(STAR_RETAIL), star.ljust(len(STAR_RETAIL) // 2, b"\xcc")))
+    out.append(("star_copy", STAR_VA, bytes.fromhex(STAR_RETAIL), import_site(code_va)))
     out.append(("mark_test", TEST_VA, bytes.fromhex(TEST_RETAIL), test_code(data_va, None if legacy else code_va)))
     out.append(("announcer", ANNOUNCER_VA, bytes.fromhex(ANNOUNCER_RETAIL), announcer_guard()))
     if not legacy:
@@ -1125,7 +1157,7 @@ def _recognize(payload, data, *, legacy=False):
     owned = allocations(payload) if any(a["owner"] == OWNER for a in layout["allocations"]) else None
     edits = sites(owned[0]["va"], owned[1]["va"], total, legacy=legacy) if owned else sites(0, 0, total, legacy=legacy)
     states = set()
-    expected = earlier = None
+    expected = earlier = previous = None
     if owned and data is not None:
         code, dat = owned
         body = image.read(code["va"], CODE_SIZE)
@@ -1133,6 +1165,9 @@ def _recognize(payload, data, *, legacy=False):
                             order=None if legacy else display_order(data), legacy=legacy)
         # beta 76.0-76.2 installed the same code without the star copy (int3 there) and left the C1030 site retail
         earlier = expected[:STAR_OFFSET] + b"\xcc" * (TABLE_OFFSET - STAR_OFFSET) + expected[TABLE_OFFSET:]
+        # beta 76.3 .. beta 79 copied the star bit only, from a plain jump at the site (b780 completes the import)
+        previous = (expected[:STAR_OFFSET] + previous_star_code(code["va"] + STAR_OFFSET)
+                    + expected[TABLE_OFFSET:])
     row_states = set()
     for label, va, before, after in edits:
         actual = image.read(va, len(before))
@@ -1141,11 +1176,16 @@ def _recognize(payload, data, *, legacy=False):
             # is valid. A new JMP paired with that body would jump into int3.
             states.add("applied" if actual == before else "foreign")
             continue
+        if label == "star_copy" and previous is not None and body == previous:
+            # The star-only body pairs with its own plain jump; the b780 site would copy +0x0C..+0x0F and then run a
+            # body that no longer completes the +0x52 word, so that mix is foreign.
+            states.add("applied" if actual == previous_import_site(owned[0]["va"]) else "foreign")
+            continue
         state = "retail" if actual == before else "applied" if owned and actual == after else "foreign"
         (row_states if label in ROW_LABELS else states).add(state)
     if owned:
         states.add("retail" if body == b"\xcc" * CODE_SIZE else
-                   "applied" if expected is not None and body in (expected, earlier) else "foreign")
+                   "applied" if expected is not None and body in (expected, earlier, previous) else "foreign")
     require(states in ({"retail"}, {"applied"}), "foreign/mixed 25 more moments hooks or owned code")
     # beta 77: the four row-draw hooks are all retail or all installed. A beta 76.5 install is applied without them;
     # apply() completes exactly those call sites (row_hooks_status tells the two apart).
@@ -1224,9 +1264,67 @@ def _complete_row_hooks(payload, data, common):
                                for name, va, before, after in edits])
 
 
+def import_status(payload, data=None):
+    """Which import tail an installed copy carries: 'current' (b780: the whole record, +0x0C..+0x0F and the +0x52
+    word), 'previous' (beta 76.3 .. beta 79: the star bit only), 'earlier' (beta 76.0-76.2: none), 'retail' (no moments
+    install) or 'foreign'."""
+    try:
+        data = Data.load() if data is None else data
+        state = _recognize(payload, data)
+        if state == "retail":
+            return "retail"
+        code, _dat = allocations(payload)
+        image = XbeImage(payload)
+        body = image.read(code["va"] + STAR_OFFSET, TABLE_OFFSET - STAR_OFFSET)
+        site = image.read(STAR_VA, len(STAR_RETAIL) // 2)
+        if body == star_code(code["va"] + STAR_OFFSET) and site == import_site(code["va"]):
+            return "current"
+        if body == previous_star_code(code["va"] + STAR_OFFSET) and site == previous_import_site(code["va"]):
+            return "previous"
+        if body == b"\xcc" * len(body) and site == bytes.fromhex(STAR_RETAIL):
+            return "earlier"
+        return "foreign"
+    except (ValueError, TypeError, KeyError, IndexError, struct.error, OverflowError, OSError):
+        return "foreign"
+
+
+def _complete_import(payload, data, common):
+    """A beta 76.3 .. beta 79 install: rewrite the owned import tail (28 bytes) and its 11-byte site, reseal the
+    allocator directory and the sections. Every other owned byte, hook and allocation stays as it is."""
+    code, _dat = allocations(payload)
+    image = XbeImage(payload)
+    buffer = bytearray(payload)
+    at_body = code["raw"] + STAR_OFFSET
+    require(bytes(buffer[at_body:at_body + TABLE_OFFSET - STAR_OFFSET]) == previous_star_code(code["va"] + STAR_OFFSET),
+            "the import tail is not the star-only body")
+    buffer[at_body:at_body + TABLE_OFFSET - STAR_OFFSET] = star_code(code["va"] + STAR_OFFSET)
+    at_site = image.offset(STAR_VA, len(STAR_RETAIL) // 2)
+    before_site = bytes(buffer[at_site:at_site + len(STAR_RETAIL) // 2])
+    require(before_site == previous_import_site(code["va"]), "the import site is not the star-only jump")
+    buffer[at_site:at_site + len(before_site)] = import_site(code["va"])
+    if space.is_scaleout(payload):
+        space._seal_scaleout(buffer, space._read_scale_directory(payload))
+    else:
+        requests = space._read_directory(payload)
+        buffer[space.DIRECTORY:space._directory_end(requests)] = space._directory(
+            requests, space._code_bytes(buffer, requests))
+    for section in _sections(buffer):
+        buffer[section.header_offset + 36:section.header_offset + 56] = section_digest(buffer, section)
+    result = bytes(buffer)
+    require(_recognize(result, data) == "applied" and import_status(result, data) == "current"
+            and space.status(result) == "applied", "import tail postcondition failed")
+    return result, dict(common, status="upgraded", upgraded_from="beta-76.3 star-only import tail",
+                        changed_bytes=sum(a != b for a, b in zip(payload, result)), file_growth=0,
+                        before_sha256=sha(payload), after_sha256=sha(result),
+                        edits=[dict(label="star_copy", va=hex(STAR_VA), size=len(before_site), before=before_site.hex(),
+                                    after=import_site(code["va"]).hex()),
+                               dict(label="owned_import_tail", va=hex(code["va"] + STAR_OFFSET),
+                                    size=TABLE_OFFSET - STAR_OFFSET)])
+
+
 def apply(payload, data=None, *, legacy_data=None):
-    """Install on a clean base, replay an installed copy unchanged, or complete the beta 77 row-draw hooks on a beta
-    76.5 install (four call sites; nothing else moves)."""
+    """Install on a clean base, replay an installed copy unchanged, complete the beta 77 row-draw hooks on a beta
+    76.5 install (four call sites; nothing else moves), or complete the import tail on a beta 76.3 .. 79 install."""
     data = Data.load() if data is None else data
     try:
         state = _recognize(payload, data)
@@ -1241,7 +1339,14 @@ def apply(payload, data=None, *, legacy_data=None):
                   display_order=list(display_order(data)), physical_order_preserved=True)
     if state == "applied":
         if row_hooks_status(payload, data) == "previous":
-            return _complete_row_hooks(payload, data, common)
+            payload, receipt = _complete_row_hooks(payload, data, common)
+            if import_status(payload, data) == "previous":
+                payload, more = _complete_import(payload, data, common)
+                receipt = dict(receipt, upgraded_from=receipt["upgraded_from"] + " + " + more["upgraded_from"],
+                               edits=receipt["edits"] + more["edits"], after_sha256=more["after_sha256"])
+            return payload, receipt
+        if import_status(payload, data) == "previous":
+            return _complete_import(payload, data, common)
         return payload, dict(common, status="already_applied", changed_bytes=0, edits=[])
     if space.status(payload) == "retail":
         allocated, receipt = space.apply(payload, REQUESTS)
