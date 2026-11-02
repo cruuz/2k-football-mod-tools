@@ -11,6 +11,7 @@ from __future__ import annotations
 import contextlib
 import csv
 import gzip
+import hashlib
 import io
 import json
 import re
@@ -600,6 +601,15 @@ class ShippedData(unittest.TestCase):
             self.assertTrue(e["reason"] in reasons or e["reason"].startswith("after a rank that is "), e)
         shipped = sum(self.data["counts"]["shipped"].values())
         self.assertEqual(self.data["counts"]["by_decision"].get("ship", 0) >= shipped, True)
+
+    def test_the_club_files_are_the_ones_the_evidence_pins(self):
+        folder = ROOT / self.evidence["guides_folder"]
+        for club, g in self.evidence["sources"]["guides"].items():
+            raw = (folder / f"{club}.json").read_bytes()
+            self.assertEqual(hashlib.sha256(raw).hexdigest(), g["file_sha256"], club)
+            self.assertEqual(B.check_guide(json.loads(raw.decode("utf-8")))[0], [], club)
+            self.assertEqual(json.loads(raw.decode("utf-8"))["guide_ident"], g["item"], club)
+        self.assertEqual(sorted(p.stem for p in folder.glob("*.json")), sorted(B.CLUBS))
 
     def test_sources_are_pinned_in_the_evidence(self):
         ev = self.evidence
