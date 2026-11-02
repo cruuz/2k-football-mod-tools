@@ -619,6 +619,13 @@ class BuildPlan:
     # b779-sim2 r4: scheduled-sim season realism (play mix, targets, QB runs, interceptions, tackles).
     # A late executable owner plus 16 bytes of hand-off state; EXPERIMENTAL and on in Advanced/Experimental.
     sim_realism: bool = False
+    # b780-j1: ESPN.com > Team Standings gains division and conference records, and home, road and streak columns.
+    # A late executable owner (nfl2k5_standings_records) hooks the screen's draw, legend and input: White and Black
+    # turn the columns W L T / DIV CONF / HOME ROAD STRK; the page opens on W L T and the realignment screen that
+    # shares the code is untouched. DIV and CONF are worked out from the season's schedule (regular season only), so
+    # nothing is saved. EXPERIMENTAL: on in the Advanced and Experimental presets (the SOFTDRINK 2K28 recipe builds
+    # from Experimental), off in Basic.
+    standings_records: bool = False
     # b778-sim1: the simulated franchise game's clock pace. The simulator's per-event clock decrement came from
     # sqrt(300 / (Sim. Quarter Length * 60)) * 0.03, so a 15-minute setting produced about 1.7x the plays, points and
     # yards of a 5-minute setting. One in-place patch at 0x10B89C fixes the decrement (nfl2k5_sim_stats), so a
@@ -712,7 +719,7 @@ class BuildPlan:
                 or self.guardian_overlay or self.my_career or self.screen_hooks or self.coverage_trail or self.franchise_edit_player or self.cpu_money_downs != "retail" or self.accelerated_clock or self.coin_defer or self.decided_clock or self.cpu_scrambles == "modern" or self.weather_haze or self.number_kerning or self.modern_color or self.weekly_prep or self.weekly_prep_cpu or self.weekly_prep_remember or self.coach_ai or self.playbook_pair or self.deep_zone_facing or self.deep_zone_bail or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave or self.historic_teams_quick_game or self.espn25_more_moments or self.historic_stock_books or self.espn25_era_rules or self.k128_memory or self.team_ratings or self.play_art_routes or self.letter_grades or self.honors_page or self.sim_cb_tackles or self.sim_stats or self.option_defaults or self.sim_rb_injuries or self.sim_realism
                 or self.momentum_collisions or self.scorebug_runtime or self.indicator_names_style != "retail" or self.momentum > 0 or self.momentum_contact or self.defensive_try or self.zone_drop_cap or self.all_stadiums or self.music_shuffle or self.practice_squad_screen or self.abilities or self.qb_spy or self.calendar_engine or self.coverage_slider or self.scramble_tuning or self.flatter_deep_ball or self.chop_block_toggle or self.music_policy != "retail" or self.music_unlock or self.music_userlist
                 or bool(self.music_library and _music_library_document(self.music_library)["bank"] == "cribmusic")
-                or self.pass_protection or self.pass_rush_stats)  # b778-pr1, b779-st1
+                or self.pass_protection or self.pass_rush_stats or self.standings_records)  # b778-pr1, b779-st1, b780-j1
 
     def to_recipe(self) -> dict[str, Any]:
         d = asdict(self)
@@ -964,6 +971,14 @@ for _preset in PRESETS.values():
     _preset["sim_realism"] = False
 PRESETS["softdrink_advanced"]["sim_realism"] = True
 PRESETS["softdrink_experimental"]["sim_realism"] = True
+del _preset
+# b780-j1: Team Standings DIV / CONF / HOME / ROAD / STRK views (White and Black on the page): a late executable owner
+# that changes nothing until the player presses a button, so Advanced and Experimental (the SOFTDRINK 2K28 recipe builds
+# from Experimental) turn it on; Basic keeps the retail page byte for byte.
+for _preset in PRESETS.values():
+    _preset["standings_records"] = False
+PRESETS["softdrink_advanced"]["standings_records"] = True
+PRESETS["softdrink_experimental"]["standings_records"] = True
 del _preset
 # b778-sim1: the simulated-game pace fix is a stat correction, not a taste option: on in the Advanced and Experimental
 # presets (the SOFTDRINK 2K28 recipe builds from Experimental). Basic keeps retail for purists.
@@ -1338,6 +1353,7 @@ _LATE_OWNER_OPTIONS = (
     ("nfl2k5_sim_cb_tackles", "Cornerback tackle credit", lambda p: p.sim_cb_tackles),  # b778-cb1
     ("nfl2k5_sim_rb_injuries", "Simulated RB short injuries", lambda p: p.sim_rb_injuries),  # b779-sim2
     ("nfl2k5_sim_realism", "Simulated season realism", lambda p: p.sim_realism),  # b779-sim2 r4
+    ("nfl2k5_standings_records", "Team Standings records", lambda p: p.standings_records),  # b780-j1
     ("nfl2k5_clock_led", "Modern clock digits", lambda p: p.modern_clock_led),  # b778-sd4
     ("nfl2k5_return_coverage", "Return coverage pursuit angles", lambda p: p.return_coverage),  # b778-kr1
     ("nfl2k5_preseason_warning", "2026 franchise economy", lambda p: p.franchise_economy),  # b779-rc1: the warned flag
@@ -1591,6 +1607,21 @@ def _sim_realism_preflight(source: Path, progress) -> None:
     if state not in ("retail", "applied"):
         raise ValueError("A scheduled-simulation site for season realism in this source is not retail. "
                          "Build from an unmodified retail dump.")
+
+
+def _standings_records_preflight(source: Path, progress) -> None:
+    """b780-j1: refuse a source whose Team Standings screen code is foreign, before any write."""
+    module = _core_module("nfl2k5_standings_records")
+    if module is None or _core_module("nfl2k5_xbe_space") is None:
+        raise ValueError("Team Standings records is not available in this installation.")
+    progress("Checking the Team Standings screen", 0, 0)
+    try:
+        payload = _xbe_bytes(source)
+    except (OSError, ValueError) as exc:
+        raise ValueError(f"Team Standings records cannot read default.xbe: {exc}") from exc
+    if module.status(payload) == "foreign":
+        raise ValueError("The Team Standings screen or a game routine it uses in this source is not retail or Team "
+                         "Standings records. Turn it off or build from your unmodified retail dump.")
 
 
 def _apply_practice_injuries(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
@@ -1878,6 +1909,23 @@ def _apply_sim_realism(plan: "BuildPlan", target: Path, receipt: dict, progress)
     receipt["result"]["sim_realism"] = "applied"
 
 
+def _apply_standings_records(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    """b780-j1: Team Standings division / conference / home / road records, the last late allocator owner."""
+    if not plan.standings_records:
+        return
+    module = _core_module("nfl2k5_standings_records")
+    if module is None:
+        raise RuntimeError("Team Standings records needs nfl2k5_standings_records.")
+    progress("ESPN.com: Team Standings records", 0, 0)
+    payload, records_receipt = module.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, payload)
+    final = _xbe_bytes(target)
+    if final != payload or module.status(final) != "applied":
+        raise RuntimeError("Team Standings records: the output does not read back as applied")
+    receipt["steps"].append({"step": "standings_records", **{k: v for k, v in records_receipt.items() if k != "reservations"}})
+    receipt["result"]["standings_records"] = "applied"
+
+
 def _sim_stats_preflight(source: Path, progress) -> None:
     """b778-sim1: refuse a source whose simulator initializer is foreign, before any write."""
     module = _core_module("nfl2k5_sim_stats")
@@ -2107,6 +2155,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
                                ("sim_cb_tackles", "nfl2k5_sim_cb_tackles"),  # b778-cb1
                                ("sim_rb_injuries", "nfl2k5_sim_rb_injuries"),  # b779-sim2
                                ("sim_realism", "nfl2k5_sim_realism"),  # b779-sim2 r4
+                               ("standings_records", "nfl2k5_standings_records"),  # b780-j1
                                ("modern_clock_led", "nfl2k5_clock_led"),  # b778-sd4
                                ("letter_grades", "nfl2k5_letter_grades"),
                                ("honors_page", "nfl2k5_honors"), ("honors_history", "nfl2k5_honors_history"),
@@ -2364,6 +2413,8 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
     out["sim_rb_injuries"] = rb_injuries.status(_xbe_bytes(source)) if rb_injuries is not None else "unavailable"
     sim_realism = _core_module("nfl2k5_sim_realism")  # b779-sim2 r4
     out["sim_realism"] = sim_realism.status(_xbe_bytes(source)) if sim_realism is not None else "unavailable"
+    standings_records = _core_module("nfl2k5_standings_records")  # b780-j1
+    out["standings_records"] = standings_records.status(_xbe_bytes(source)) if standings_records is not None else "unavailable"
     sim_stats = _core_module("nfl2k5_sim_stats")  # b778-sim1
     out["sim_stats"] = sim_stats.status(_xbe_bytes(source)) if sim_stats is not None else "unavailable"
     option_defaults = _core_module("nfl2k5_option_defaults")  # b779-df1
@@ -4311,6 +4362,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("Default Quarter Length must be 1 to 15 minutes and default Sim. Quarter Length 3 to 15 minutes.")
     if type(plan.modern_clock_led) is not bool:  # b778-sd4
         raise ValueError("Modern clock digits must be Off or On.")
+    if type(plan.standings_records) is not bool:  # b780-j1
+        raise ValueError("Team Standings records must be Off or On.")
     if plan.hair_styles and plan.guardian_overlay:  # b775-hs1
         raise ValueError("Hair styles and the Guardian cap overlay cannot be combined yet: both grow the player models "
                          "and the overlay pins their retail positions. Turn one of them off.")
@@ -5063,6 +5116,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         _sim_rb_injuries_preflight(source, progress)
     if plan.sim_realism:  # b779-sim2 r4: like pi1, before any write
         _sim_realism_preflight(source, progress)
+    if plan.standings_records:  # b780-j1: like pi1, before any write
+        _standings_records_preflight(source, progress)
     if plan.cpu_ball_carriers:  # b778-ai5: before any write
         _ball_carrier_preflight(source, progress)
     if plan.return_coverage:  # b778-kr1: before any write
@@ -5606,7 +5661,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         player_progress=bool(plan.player_progress or plan.player_progress_visible), contract_college_guard=plan.contract_college_guard,
         sim_cb_tackles=plan.sim_cb_tackles, modern_clock_led=plan.modern_clock_led,
         module_loader=plan.module_loader, classic_teams=plan.classic_teams,
-        sim_rb_injuries=plan.sim_rb_injuries, sim_realism=plan.sim_realism, preseason_warning=plan.franchise_economy)
+        sim_rb_injuries=plan.sim_rb_injuries, sim_realism=plan.sim_realism, preseason_warning=plan.franchise_economy,
+        standings_records=plan.standings_records)
     if plan.read_option_runtime or plan.qb_spy:
         resolver = _core_module("nfl2k5_play_intents")
         if resolver is None:
@@ -5682,6 +5738,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             sim_cb_tackles=plan.sim_cb_tackles, modern_clock_led=plan.modern_clock_led,
             module_loader=plan.module_loader, classic_teams=plan.classic_teams,
             sim_rb_injuries=plan.sim_rb_injuries, sim_realism=plan.sim_realism, preseason_warning=plan.franchise_economy,
+            standings_records=plan.standings_records,
             **{**r62, "read_option_intent_table": read_table, "modern_naming": False, "crib_reclaim": False})
         _write_xbe_bytes(target, patched)
         receipt["steps"].append({"step": "xbe_space", **space_receipt,
@@ -6784,6 +6841,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     _apply_sim_rb_injuries(plan, target, receipt, progress)
     # b779-sim2 r4: scheduled-sim season realism, after the RB injury owner (LATE_OWNERS order)
     _apply_sim_realism(plan, target, receipt, progress)
+    # b780-j1: Team Standings records, after the sim owners (LATE_OWNERS order: the last late allocator owner)
+    _apply_standings_records(plan, target, receipt, progress)
     # b778-pg2: the Player Progress screen and weekly snapshot (a late allocator owner after force_out)
     # b778-cb1: cornerback tackle credit, after force_out
     # b778-sd4: modern clock digits, after modern sideline catches
@@ -6868,6 +6927,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("simulated RB short injuries did not survive the final passes")  # b779-sim2
     if plan.sim_realism and _core_module("nfl2k5_sim_realism").status(_xbe_bytes(target)) != "applied":
         raise ValueError("simulated season realism did not survive the final passes")  # b779-sim2 r4
+    if plan.standings_records and _core_module("nfl2k5_standings_records").status(_xbe_bytes(target)) != "applied":
+        raise ValueError("Team Standings records did not survive the final passes")  # b780-j1
     if plan.sim_cb_tackles and _core_module("nfl2k5_sim_cb_tackles").status(_xbe_bytes(target)) != "applied":  # b778-cb1
         raise ValueError("cornerback tackle credit did not survive the final passes")
     if plan.sim_stats and _core_module("nfl2k5_sim_stats").status(_xbe_bytes(target)) != "applied":  # b778-sim1
