@@ -1,40 +1,44 @@
-"""Coaching carousel: CPU clubs fire and hire head coaches at Advance to offseason (job c6-carousel, beta 80).
-EXPERIMENTAL.
+"""Coaching carousel: CPU clubs part ways with head coaches and hire new ones at Advance to offseason (job c6-carousel,
+beta 80). EXPERIMENTAL.
 
 Players asked for it (clowncollegeprofessor1 10/10 and 10/13, BigTimeEmpire 9/11, LePromisedPrince 9/06: "Coaches and
 coaching carousel since it was absent"). Retail franchise never changes a head coach: its only "firing" is the Owner
 Firing option, which can end the user's time with a club. Design: ``b77_session/reports/b780_r2-coach_RESEARCH.md``
-section 3, Design B.
+section 3, Design B; the decision model, the owner table and the hiring pool are c5-owners' (``nfl2k5_coach_owners``,
+``data/nfl2k5_owners_2026.json``, ``data/nfl2k5_coach_pool_2026.json``).
 
 What the game does with this owner (``tools/nfl2k5_coach_carousel/runtime.c`` has the exact rules)
 --------------------------------------------------------------------------------------------------
 * Owner Firing (franchise options, saved with every franchise) gets three values: **Off**, **CPU Teams** (the retail
   "On" value and default: CPU clubs change coaches, the owner never fires you) and **All Teams** (CPU clubs change
   coaches and the owner can end your time with your club, as retail did).
-* At Advance to offseason, after the Super Bowl notice and the retail rollover, every CPU club may change its head
-  coach. The chance comes from real NFL history (nflverse games.csv, 1999-2025: 178 changes in 861 club seasons):
-  the club's regular-season record, the coach's seasons with the club (first and second seasons get more patience),
-  a flat 4.8% for a playoff club, times its owner's patience measured on the same history (Bengals 0.51, Ravens 0.73,
-  ... Raiders 1.37, Dolphins 1.45). At most 12 changes a year; about 6 to 7 on average.
-* The club hires from the hiring pool (real people: by default the 2026 defensive coordinators, with their real head
-  coaching records) or, now and then, a head coach another club let go that same offseason. The new coach's name,
-  picture, career numbers and ratings show on the Coach's Card, Coach Matchup and everywhere the game names coaches;
-  the announcers use the generic head coach line for him. The club keeps its sideline model (colours), its play-calling
-  tendencies and its playbook; its automatic 2026 CPU profile switches off because the coach changed (the game's own
-  tendencies call the plays), exactly as when a coach is changed in the Studio today.
-* One "COACHING CHANGES" notice for every three changes ("Raiders: Klint Kubiak out (3-14), Vic Fangio in").
+* At Advance to offseason, after the Super Bowl notice and the retail rollover, every CPU club may part ways with its
+  head coach. The chance is c5-owners' model of real NFL history (opening-day coaches 1999-2026, 861 decisions, 191
+  changes, about 7 an offseason): the club's regular-season record on a 17-game scale and the coach's seasons with the
+  club (first and second seasons get more patience), times the owner's measured patience (Bengals 0.80 ... Raiders
+  1.29). At most 12 changes in one offseason.
+* The club hires from the hiring pool (38 real people: the 2026 defensive coordinators and recent head coaches without
+  a head job, with their real head coaching records) or, now and then, a head coach another club parted ways with that
+  same offseason. The new coach's name, picture, career numbers and ratings show on the Coach's Card, Coach Matchup and
+  everywhere the game names coaches; the announcers use the generic head coach line for him. The club keeps its
+  sideline model (colours), its play-calling tendencies and its playbook; its automatic 2026 CPU profile switches off
+  because the coach changed (the game's own tendencies call the plays), exactly as when a coach is changed in the
+  Studio today.
+* One "COACHING CHANGES" notice for every three changes ("Raiders parted ways with Klint Kubiak (3-14), hired Vic
+  Fangio": retirements and resignations are inside the chance, so "parted ways" is true for every change).
 * A club a user controls never changes coach here.
 
 Where things live
 -----------------
-* Code: one late allocator owner (``nfl2k5_xbe_space.LATE_OWNERS``), 4,096 bytes, with the 176-byte model parameter
-  block inside (``PARAMS``). No writable memory, no heap: one Advance keeps its state on the stack.
+* Code: one late allocator owner (``nfl2k5_xbe_space.LATE_OWNERS``), 4,096 bytes, with the 184-byte parameter block
+  inside (``PARAMS``: an 8-byte header and c5's 176-byte native table). No writable memory, no heap: one Advance keeps
+  its state on the stack.
 * Sites: the rollover call at 0x248632 (free on beta-79), the owner goal check's warning mark (0x2BA675, 0x2BA6BC) and
   the Owner Firing row's three callbacks plus its layout callback (.rdata 0x500C40..0x500C4C).
 * The hiring pool: one checked block (magic "2K5CPOOL", ``POOL``) the Studio writes into the free tail of the roster's
-  coach string region (4,278 free bytes on SOFTDRINK v0.8), so it travels inside every franchise started from that
-  roster; Franchise > Upgrade writes it into an older save. A hire points the club's coach record at the pool strings;
-  nothing at runtime writes a string. Without a pool (an older save, a build without the roster step) nothing changes.
+  coach strings (4,278 free bytes on SOFTDRINK v0.8), so it travels inside every franchise started from that roster;
+  Franchise > Upgrade writes it into an older save. A hire points the club's coach record at the pool strings; nothing
+  at runtime writes a string. Without a pool (an older save, a build without the roster step) nothing changes.
 """
 
 from __future__ import annotations
@@ -46,6 +50,7 @@ from pathlib import Path
 from typing import Any, Mapping, Sequence
 
 from . import nfl2k5_coach_carousel_code as runtime
+from . import nfl2k5_coach_owners as owners_model
 from . import nfl2k5_rdata_sites as rdata
 from . import nfl2k5_xbe_space as space
 from .nfl2k5_cave_oracle import XbeImage
@@ -57,31 +62,29 @@ REQUESTS = ((OWNER, "code", CODE_SIZE, 16),)
 BUILD_CAPTION = "Coaching carousel (experimental)"
 UI_LABEL = BUILD_CAPTION
 HELP_TEXT = (
-    "EXPERIMENTAL. Franchise: at Advance to offseason, CPU clubs can fire their head coach and hire a new one, about "
-    "6 or 7 a year, from real NFL history since 1999 (a bad record, a third season or later, an impatient owner make "
-    "it likelier; a playoff club rarely changes). New coaches come from a pool of real people (the 2026 defensive "
-    "coordinators) or are coaches another club let go. A notice lists every change. The game's Owner Firing option "
+    "EXPERIMENTAL. Franchise: at Advance to offseason, CPU clubs can part ways with their head coach and hire a new "
+    "one, about 7 a year, as real NFL clubs have since 1999 (a bad record, a third season or later and an impatient "
+    "owner make it likelier). New coaches are real people (the 2026 defensive coordinators and recent head coaches "
+    "without a job) or coaches another club let go. A notice lists every change. The game's Owner Firing option "
     "chooses: Off, CPU Teams (your club is never fired, the default) or All Teams (the owner can also end your time "
     "with your club, as the retail game did). Your clubs never change coach. A franchise started on an older build "
     "needs Franchise > Upgrade first; without it nothing changes.")
 
 ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_DATA = ROOT / "data" / "nfl2k5_coach_carousel_2026.json"
-POOL_DATA = ROOT / "data" / "nfl2k5_coach_pool_2026.json"        # c5-owners (optional; replaces the fallback pool)
-SCHEMA = "nfl2k5_coach_carousel/v1"
+DEFAULT_DATA = ROOT / "data" / "nfl2k5_coach_carousel_2026.json"    # settings + the pool's Super Bowl counts
+SCHEMA = "nfl2k5_coach_carousel/v2"
 
 # the game's team order (alphabetical by nickname), nflverse abbreviations
 CLUBS = ("SF", "CHI", "CIN", "BUF", "DEN", "CLE", "TB", "ARI", "LAC", "KC", "IND", "DAL", "MIA", "PHI", "ATL", "NYG",
          "JAX", "NYJ", "DET", "GB", "CAR", "NE", "LV", "LAR", "BAL", "WAS", "NO", "SEA", "PIT", "HOU", "TEN", "MIN")
 
 # ---- the parameter block (runtime.c P_*) -------------------------------------------------------------------------
-PARAM_SIZE = 176
-PARAM_MAGIC = b"C6M1"
-P_VERSION, P_MAXC, P_REHIRE, P_PLAYOFF, P_CURVES, P_OWNER = 4, 5, 6, 8, 12, 138
-CURVE_POINTS = 21
-CURVE_KEYS = ("tenure_1", "tenure_2", "tenure_3_plus")
+PARAM_HEADER = 8
+PARAM_SIZE = PARAM_HEADER + owners_model.NATIVE_SIZE           # 184
+PARAM_MAGIC = b"C6M2"
+P_VERSION, P_MAXC, P_REHIRE = 4, 5, 6
 MAX_CHANGES = 12                                               # runtime.c MAXC
-OWNER_UNIT = 32
+Q8_LIMIT = 1024                                                # keeps base * owner * league inside 32 bits natively
 
 # ---- the hiring pool block ---------------------------------------------------------------------------------------
 POOL_MAGIC = b"2K5CPOOL"
@@ -101,7 +104,7 @@ RATINGS = ("overall", "offense", "rush_for", "pass_for", "defense", "pass_rush",
 DEFAULT_RATING = 50                                            # the retail created-coach records 32 and 33
 DEFAULT_PERSONALITY = 50
 NO_PHOTO = 8999
-KINDS = {"defensive coordinator": 1, "offensive coordinator": 2, "former head coach": 3, "assistant": 4}
+KINDS = {"coordinator": 1, "former_head_coach": 3}                # c5 pool "kind" (1 = coordinator, 3 = former head coach)
 
 OWNER_FIRING_VA = 0x00E60144
 OWNER_FIRING_VALUES = ("Off", "CPU Teams", "All Teams")
@@ -125,92 +128,66 @@ def load(path: Path | str | None = None) -> dict:
 
 def validate(data: Mapping) -> None:
     _require(data.get("schema") == SCHEMA, "not a coach carousel data file")
-    model = data.get("model") or {}
-    curves = model.get("curves") or {}
-    for key in CURVE_KEYS:
-        values = curves.get(key)
-        _require(isinstance(values, list) and len(values) == CURVE_POINTS
-                 and all(isinstance(v, (int, float)) and 0 <= v <= 1 for v in values), f"curve {key} is not 21 shares")
-    _require(isinstance(model.get("playoff_rate"), (int, float)) and 0 <= model["playoff_rate"] <= 1, "playoff rate")
-    clubs = model.get("clubs") or {}
-    _require(set(clubs) == set(CLUBS), "the owner table must name all 32 clubs")
-    for club, row in clubs.items():
-        _require(isinstance(row.get("owner_factor"), (int, float)) and 0.1 <= row["owner_factor"] <= 7.9,
-                 f"owner factor of {club}")
     settings = data.get("settings") or {}
     _require(isinstance(settings.get("max_changes"), int) and 1 <= settings["max_changes"] <= MAX_CHANGES, "max changes")
     _require(isinstance(settings.get("rehire_percent"), int) and 0 <= settings["rehire_percent"] <= 100, "rehire percent")
-    sources = data.get("sources") or []
-    _require(any(s.get("sha256") for s in sources), "the model data must pin its source")
+    _require(any(s.get("sha256") for s in data.get("sources") or []), "the carousel data must pin its source")
+    for key, row in (data.get("pool_extras") or {}).items():
+        for field in ("winning_seasons", "super_bowls", "super_bowl_wins", "super_bowl_losses"):
+            _require(isinstance(row.get(field), int) and 0 <= row[field] <= 60, f"pool extra {key}.{field}")
 
 
-def _share(value: float) -> int:
-    return max(0, min(65535, round(value * 65536)))
+def _owners(owners: Mapping | None) -> Mapping:
+    doc = owners if owners is not None else owners_model.load_owners()
+    owners_model.validate_owners(doc)
+    return doc
 
 
-def pack_params(data: Mapping) -> bytes:
-    """The 176-byte parameter block the native code reads (runtime.c P_*)."""
+def pack_params(data: Mapping | None = None, owners: Mapping | None = None) -> bytes:
+    """The 184-byte parameter block: "C6M2", version 2, max changes, rehire percent, a pad byte, then c5-owners'
+    176-byte native table (``nfl2k5_coach_owners.pack_native``)."""
 
+    data = data if data is not None else load()
     validate(data)
-    model, settings = data["model"], data["settings"]
-    out = bytearray(PARAM_SIZE)
-    out[0:4] = PARAM_MAGIC
-    out[P_VERSION] = 1
-    out[P_MAXC] = settings["max_changes"]
-    out[P_REHIRE] = settings["rehire_percent"]
-    struct.pack_into("<H", out, P_PLAYOFF, _share(model["playoff_rate"]))
-    for row, key in enumerate(CURVE_KEYS):
-        for k, value in enumerate(model["curves"][key]):
-            struct.pack_into("<H", out, P_CURVES + 42 * row + 2 * k, _share(value))
-    for index, club in enumerate(CLUBS):
-        out[P_OWNER + index] = max(1, min(255, round(model["clubs"][club]["owner_factor"] * OWNER_UNIT)))
-    return bytes(out)
+    doc = _owners(owners)
+    table = owners_model.pack_native(doc)
+    values = owners_model.unpack_native(table)
+    q8 = [values["model"]["league_q8"], *values["owner_q8_by_team_index"]]
+    _require(all(0 < v <= Q8_LIMIT for v in q8), "an owner or league factor is outside 1..1024")
+    _require(all(0 <= v <= 1000 for row in values["model"]["base_permille"] for v in row), "a base chance exceeds 1000")
+    settings = data["settings"]
+    return PARAM_MAGIC + bytes((2, settings["max_changes"], settings["rehire_percent"], 0)) + table
 
 
 def read_params(block: bytes) -> dict | None:
     """The parameter block as numbers, or None when it is not one (zero = not filled)."""
 
-    if len(block) != PARAM_SIZE or block[:4] != PARAM_MAGIC or block[P_VERSION] != 1 or not block[P_MAXC] \
+    if len(block) != PARAM_SIZE or block[:4] != PARAM_MAGIC or block[P_VERSION] != 2 or not block[P_MAXC] \
             or block[P_REHIRE] > 100:
         return None
-    return dict(max_changes=block[P_MAXC], rehire_percent=block[P_REHIRE],
-                playoff=struct.unpack_from("<H", block, P_PLAYOFF)[0],
-                curves=[list(struct.unpack_from("<21H", block, P_CURVES + 42 * row)) for row in range(3)],
-                owner=list(block[P_OWNER:P_OWNER + 32]))
+    try:
+        table = owners_model.unpack_native(block[PARAM_HEADER:])
+    except ValueError:
+        return None
+    return dict(max_changes=block[P_MAXC], rehire_percent=block[P_REHIRE], model=table["model"],
+                owner_q8=table["owner_q8_by_team_index"])
 
 
 def winning_share(wins: int, losses: int, ties: int) -> int:
-    """Regular-season winning share in 1/1000, ties half (runtime.c Club.pct)."""
+    """Regular-season winning share in 1/1000, ties half (runtime.c Club.pct, the vacancy order)."""
 
     games = wins + losses + ties
     return (2 * wins + ties) * 500 // games if games else 0
 
 
-def hazard(params: bytes, *, club: int, wins: int, losses: int, ties: int, playoffs: bool, tenure: int) -> int:
-    """The chance (in 1/65536) that the club changes coach: the native ``hazard`` on plain numbers. ``tenure`` is the
-    coach's seasons with the club after the rollover (record +0x1C)."""
+def hazard(params: bytes, *, club: int, wins: int, losses: int, ties: int, tenure: int) -> int:
+    """The chance in thousandths that the club parts ways with its coach: the native ``hazard`` on plain numbers, i.e.
+    ``nfl2k5_coach_owners.fire_permille`` with the packed table. ``tenure`` is the coach's seasons with the club after the
+    rollover (record +0x1C, the season just played included)."""
 
     p = read_params(params)
     _require(p is not None, "not a filled parameter block")
-    if playoffs:
-        base = p["playoff"]
-    else:
-        pct = winning_share(wins, losses, ties)
-        row = 0 if tenure <= 1 else 1 if tenure == 2 else 2
-        k, f = divmod(pct, 50)
-        a = p["curves"][row][k]
-        b = p["curves"][row][k + 1] if k < 20 else a
-        step = abs(b - a) * f // 50               # C division truncates toward zero
-        base = a + (step if b >= a else -step)
-    base = base * p["owner"][club] // OWNER_UNIT
-    return min(base, 65535)
-
-
-def expected_changes(params: bytes, seasons: Sequence[Mapping]) -> float:
-    """Sum of the native hazards over club seasons ({club, wins, losses, ties, playoffs, tenure})."""
-
-    return sum(hazard(params, **{k: s[k] for k in ("club", "wins", "losses", "ties", "playoffs", "tenure")}) / 65536
-               for s in seasons)
+    return owners_model.fire_permille(p["model"], p["owner_q8"][club], wins, losses, ties, tenure)
 
 
 # ================================================================================================= the hiring pool
@@ -220,26 +197,29 @@ def _clean(text: str) -> str:
     return text
 
 
-def load_pool(data: Mapping | None = None, pool_path: Path | str | None = None) -> list[dict]:
-    """The hiring pool: the c5-owners file when it is present (``POOL_DATA``), else the fallback in the model data.
-    Every entry is a real person with a source."""
+def load_pool(data: Mapping | None = None, pool_doc: Mapping | None = None) -> list[dict]:
+    """The hiring pool for the roster block: c5-owners' candidates (real people, every one with sources), their head
+    coaching records, and this job's Super Bowl and winning-season counts (``pool_extras``, from the same games.csv).
+    Ratings are the game's own created-coach default (50); no picture (8999)."""
 
-    path = Path(pool_path) if pool_path else POOL_DATA
-    if path.is_file():
-        raw = json.loads(path.read_text(encoding="utf-8"))
-        rows = raw.get("pool") or raw.get("candidates") or raw.get("entries") or []
-    else:
-        rows = (data or load()).get("pool") or []
+    data = data if data is not None else load()
+    doc = pool_doc if pool_doc is not None else owners_model.load_pool()
+    owners_model.validate_pool(doc)
+    extras = data.get("pool_extras") or {}
     pool = []
-    for row in rows:
-        first = row.get("first") or (row.get("name") or "").partition(" ")[0]
-        last = row.get("last") or (row.get("name") or "").partition(" ")[2]
-        _require(row.get("source") or row.get("sources"), f"pool entry {first} {last} has no source")
-        pool.append(dict(first=_clean(first), last=_clean(last), kind=str(row.get("kind") or row.get("role") or ""),
-                         weight=int(row.get("weight") or 10), photo=int(row.get("photo") or NO_PHOTO),
-                         personality=int(row.get("personality") or DEFAULT_PERSONALITY),
-                         career={k: int((row.get("career") or {}).get(k) or 0) for k in CAREER_FIELDS},
-                         ratings={k: int((row.get("ratings") or {}).get(k) or DEFAULT_RATING) for k in RATINGS}))
+    for c in doc["candidates"]:
+        _require(c.get("sources"), f"pool entry {c.get('id')} has no source")
+        record = c.get("head_coach_record") or {}
+        extra = extras.get(c["id"], {})
+        career = dict(seasons=record.get("seasons", 0), wins=record.get("wins", 0), losses=record.get("losses", 0),
+                      ties=record.get("ties", 0), winning_seasons=extra.get("winning_seasons", 0),
+                      super_bowls=extra.get("super_bowls", 0),
+                      # every postseason game, Super Bowls included, as the roster's own 2026 coaches carry them
+                      playoff_wins=record.get("playoff_wins", 0), playoff_losses=record.get("playoff_losses", 0),
+                      super_bowl_wins=extra.get("super_bowl_wins", 0), super_bowl_losses=extra.get("super_bowl_losses", 0))
+        pool.append(dict(id=c["id"], first=_clean(c["first"]), last=_clean(c["last"]), kind=c.get("kind", ""),
+                         weight=10 + min(int(career["seasons"]), 10), photo=NO_PHOTO, personality=DEFAULT_PERSONALITY,
+                         career=career, ratings={k: DEFAULT_RATING for k in RATINGS}))
     return pool
 
 
@@ -274,7 +254,7 @@ def pool_block(entries: Sequence[Mapping]) -> bytes:
         struct.pack_into("<5H", raw, 0, *offsets)
         struct.pack_into("<H", raw, 10, entry.get("photo", NO_PHOTO))
         raw[12] = max(1, min(255, int(entry.get("weight", 10))))
-        raw[13] = KINDS.get(str(entry.get("kind", "")).casefold(), 0)
+        raw[13] = KINDS.get(str(entry.get("kind", "")), 0)
         raw[14] = max(0, min(100, int(entry.get("personality", DEFAULT_PERSONALITY))))
         career = entry.get("career") or {}
         for k, field in enumerate(CAREER_FIELDS):
@@ -418,11 +398,11 @@ def coach_region(body: bytes, root: int = OBJ_OFF) -> dict:
 def apply_body(body: bytes, data: Mapping | None = None, *, pool: Sequence[Mapping] | None = None,
                root: int = OBJ_OFF) -> tuple[bytes, dict]:
     """Write (or replace) the hiring pool in the free tail of the coach string region of a ROST body. The tail must be
-    zero; the pool goes at the first 4-aligned offset after the used strings and leaves ``POOL_MARGIN`` bytes free."""
+    zero; the pool goes at the first 4-aligned offset after the used strings and leaves ``POOL_MARGIN`` bytes free.
+    When the tail is shorter than the whole pool (another writer used part of it), the coaches with the lowest weight
+    are left out until it fits (at least 8 stay, else nothing is written); the receipt names them."""
 
-    data = data if data is not None else load()
     entries = list(pool) if pool is not None else load_pool(data)
-    block = pool_block(entries)
     out = bytearray(body)
     found = find_pool(bytes(out), root)
     if found is not None:                                       # a rebuild: take the old block out first
@@ -431,14 +411,23 @@ def apply_body(body: bytes, data: Mapping | None = None, *, pool: Sequence[Mappi
     region = coach_region(bytes(out), root)
     _require(region["tail_is_zero"], "the free tail of the coach strings holds other bytes; the pool was not written")
     at = root + ((region["used_end"] - root + 3) & ~3)
-    _require(at + len(block) + POOL_MARGIN <= region["next_string"],
+    room = region["next_string"] - at - POOL_MARGIN
+    left_out = []
+    block = pool_block(entries)
+    while len(block) > room and len(entries) > 8:
+        weakest = min(range(len(entries)), key=lambda k: (entries[k].get("weight", 10), -k))
+        left_out.append(f"{entries[weakest]['first']} {entries[weakest]['last']}")
+        entries = entries[:weakest] + entries[weakest + 1:]
+        block = pool_block(entries)
+    _require(len(block) <= room,
              f"the coach string region has {region['free']} free bytes; the pool needs {len(block) + POOL_MARGIN}")
     out[at:at + len(block)] = block
     check = find_pool(bytes(out), root)
     _require(check is not None and check[0] == at and len(check[1]) == len(entries), "the pool does not read back")
     return bytes(out), dict(status="applied", pool_offset=hex(at), pool_bytes=len(block), pool_entries=len(entries),
-                            region_free_before=region["free"], region_free_after=region["next_string"] - at - len(block),
-                            replaced=found is not None, block_sha256=hashlib.sha256(block).hexdigest())
+                            left_out=left_out, region_free_before=region["free"],
+                            region_free_after=region["next_string"] - at - len(block), replaced=found is not None,
+                            block_sha256=hashlib.sha256(block).hexdigest())
 
 
 ROST_OUTER_INDEX = 5
@@ -531,7 +520,7 @@ def code_for(code_va: int, params: bytes) -> bytes:
     """The owned RX content: the template with its relocations applied and ``params`` in its parameter block, padded
     to CODE_SIZE with int3."""
 
-    _require(len(params) == PARAM_SIZE, "the parameter block is 176 bytes")
+    _require(len(params) == PARAM_SIZE, "the parameter block is 184 bytes")
     result = bytearray(runtime.CODE)
     for offset, kind, symbol, value in runtime.RELOCATIONS:
         _require(symbol == "code", "unexpected carousel relocation")

@@ -86,8 +86,8 @@ label_cpu:
 label_all:
     .short 'A', 'l', 'l', ' ', 'T', 'e', 'a', 'm', 's', 0
 
-/* The model parameters, 176 bytes (layout: PARAMS in nfl2k5_coach_carousel.py). Zero = not filled: the runtime then
+/* The model parameters, 184 bytes (layout: PARAMS in nfl2k5_coach_carousel.py). Zero = not filled: the runtime then
    changes nothing. */
     .p2align 4
 carousel_params:
-    .space 176, 0
+    .space 184, 0

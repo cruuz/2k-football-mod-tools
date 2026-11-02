@@ -50,105 +50,105 @@ def _v08_xbe():
 
 # --------------------------------------------------------------------------------------------------- model and data
 class ModelTests(unittest.TestCase):
+    """The decision is c5-owners' (nfl2k5_coach_owners); this job packs it for the native code and adds its settings."""
+
     @classmethod
     def setUpClass(cls):
+        from mod_editor.core import nfl2k5_coach_owners as co
+        cls.co = co
         cls.data = cc.load()
-        cls.params = cc.pack_params(cls.data)
+        cls.owners = co.load_owners()
+        cls.params = cc.pack_params(cls.data, cls.owners)
 
-    def test_the_model_data_is_sourced_and_complete(self):
+    def test_the_settings_and_extras_are_sourced(self):
         data = self.data
         cc.validate(data)
         games = next(s for s in data["sources"] if s["file"] == "games.csv")
         self.assertEqual(len(games["sha256"]), 64)
         self.assertIn("nflverse", games["url"])
-        model = data["model"]
-        self.assertEqual((model["team_seasons"], model["changes"]), (861, 178))
-        self.assertEqual(set(model["clubs"]), set(cc.CLUBS))
-        self.assertEqual(sum(c["changes"] for c in model["clubs"].values()), 178)
-        for key in cc.CURVE_KEYS:                       # every curve falls as the winning share rises
-            curve = model["curves"][key]
-            self.assertTrue(all(a > b for a, b in zip(curve, curve[1:])), key)
-        # first and second seasons get more patience than later ones, at every share
-        for k in range(21):
-            self.assertLess(model["curves"]["tenure_1"][k], model["curves"]["tenure_3_plus"][k])
-            self.assertLess(model["curves"]["tenure_2"][k], model["curves"]["tenure_3_plus"][k])
-        self.assertLess(model["playoff_rate"], 0.06)
-
-    def test_the_pool_is_real_people_with_sources(self):
-        pool = cc.load_pool(self.data, pool_path=Path("/nonexistent"))   # the fallback pool in the model data
-        self.assertGreaterEqual(len(pool), 24)
-        names = {(e["first"], e["last"]) for e in pool}
-        self.assertEqual(len(names), len(pool))
-        rows = self.data["pool"]
-        self.assertTrue(all(r["source"].startswith("https://") for r in rows))
-        heads = {json.loads(p.read_text(encoding="utf-8"))["roster"]["head_coach"]
-                 for p in (cc.ROOT / "data/nfl2k5_teams_2026").glob("*.json")}
-        self.assertFalse({f"{f} {l}" for f, l in names} & heads)      # nobody already a 2026 head coach
-        fangio = next(e for e in pool if e["last"] == "Fangio")
-        self.assertEqual((fangio["career"]["wins"], fangio["career"]["losses"]), (19, 30))   # Denver 2019-2021
-        self.assertTrue(all(set(e["ratings"].values()) == {cc.DEFAULT_RATING} for e in pool))
+        self.assertEqual(data["settings"]["max_changes"], cc.MAX_CHANGES)
+        tomlin = data["pool_extras"]["mike-tomlin"]
+        self.assertEqual((tomlin["super_bowl_wins"], tomlin["super_bowl_losses"], tomlin["winning_seasons"]), (1, 1, 16))
+        self.assertEqual(data["pool_extras"]["doug-pederson"]["super_bowl_wins"], 1)
 
     def test_parameter_block_round_trip(self):
         p = cc.read_params(self.params)
         self.assertEqual(len(self.params), cc.PARAM_SIZE)
         self.assertEqual((p["max_changes"], p["rehire_percent"]), (12, 12))
-        self.assertEqual(p["playoff"], round(self.data["model"]["playoff_rate"] * 65536))
-        self.assertEqual(p["owner"][cc.CLUBS.index("CIN")], round(self.data["model"]["clubs"]["CIN"]["owner_factor"] * 32))
+        self.assertEqual(self.params[cc.PARAM_HEADER:], self.co.pack_native(self.owners))
+        cincinnati = cc.CLUBS.index("CIN")
+        self.assertEqual(p["owner_q8"][cincinnati],
+                         next(c["fire_scale_q8"] for c in self.owners["clubs"] if c["team"] == "CIN"))
         self.assertIsNone(cc.read_params(bytes(cc.PARAM_SIZE)))
 
-    def test_hazard_examples(self):
-        h = lambda **kw: cc.hazard(self.params, **kw) / 65536
-        miami = cc.CLUBS.index("MIA")
-        cincinnati = cc.CLUBS.index("CIN")
-        bad = h(club=miami, wins=2, losses=15, ties=0, playoffs=False, tenure=5)
-        self.assertGreater(bad, 0.9)
-        self.assertLess(h(club=cincinnati, wins=2, losses=15, ties=0, playoffs=False, tenure=5), bad * 0.4)
-        self.assertLess(h(club=miami, wins=2, losses=15, ties=0, playoffs=False, tenure=1), bad)   # honeymoon
-        self.assertLess(h(club=miami, wins=13, losses=4, ties=0, playoffs=True, tenure=9), 0.08)
-        self.assertLess(h(club=cc.CLUBS.index("GB"), wins=11, losses=6, ties=0, playoffs=False, tenure=4), 0.15)
-        self.assertEqual(cc.winning_share(8, 8, 1), 500)
+    def test_the_club_order_is_the_roster_team_order(self):
+        index = {c["team"]: c["team_index"] for c in self.owners["clubs"]}
+        self.assertEqual([index[t] for t in cc.CLUBS], list(range(32)))
 
-    def test_twenty_simulated_seasons_land_on_the_nfl_rate(self):
-        """The research's acceptance (r2 section 2.6): about 6 to 8 changes an offseason, fired records near .350."""
+    def test_hazard_is_the_c5_decision(self):
+        import itertools
+        for club in (0, 2, 22, 31):
+            q8 = next(c["fire_scale_q8"] for c in self.owners["clubs"] if c["team_index"] == club)
+            for w, l, t, n in itertools.product(range(0, 18, 3), range(0, 18, 4), (0, 1), (1, 2, 3, 9)):
+                if w + l + t:
+                    self.assertEqual(cc.hazard(self.params, club=club, wins=w, losses=l, ties=t, tenure=n),
+                                     self.co.fire_permille(self.owners["model"], q8, w, l, t, n))
+        raiders, bengals = cc.CLUBS.index("LV"), cc.CLUBS.index("CIN")
+        bad = cc.hazard(self.params, club=raiders, wins=3, losses=14, ties=0, tenure=4)
+        self.assertGreater(bad, 600)
+        self.assertLess(cc.hazard(self.params, club=bengals, wins=3, losses=14, ties=0, tenure=4), bad)
+        self.assertLess(cc.hazard(self.params, club=raiders, wins=3, losses=14, ties=0, tenure=1), bad)    # patience
+        self.assertLess(cc.hazard(self.params, club=raiders, wins=13, losses=4, ties=0, tenure=4), 60)
+
+    def test_twenty_seasons_land_on_the_real_rate(self):
+        """c5's table on its own record replay gives about 7 changes an offseason; a coarse check through this job's
+        packed copy (binomial records, top 14 to the playoffs do not matter to the model)."""
         rnd = random.Random(2026)
         counts, fired = [], []
         tenure = [rnd.randint(1, 6) for _ in range(32)]
-        for _season in range(20):
-            wins = []
-            for _club in range(32):
-                strength = rnd.gauss(0.5, 0.17)
-                w = sum(rnd.random() < min(max(strength, 0.05), 0.95) for _ in range(17))
-                wins.append(w)
-            playoff = set(sorted(range(32), key=lambda i: -wins[i])[:14])
+        for _season in range(40):
             changes = 0
             for club in range(32):
-                p = cc.hazard(self.params, club=club, wins=wins[club], losses=17 - wins[club], ties=0,
-                              playoffs=club in playoff, tenure=tenure[club]) / 65536
-                if rnd.random() < p:
+                strength = min(max(rnd.gauss(0.5, 0.17), 0.05), 0.95)
+                w = sum(rnd.random() < strength for _ in range(17))
+                p = cc.hazard(self.params, club=club, wins=w, losses=17 - w, ties=0, tenure=tenure[club])
+                if rnd.randrange(1000) < p:
                     changes += 1
-                    fired.append(wins[club] / 17)
+                    fired.append(w / 17)
                     tenure[club] = 1
                 else:
                     tenure[club] += 1
             counts.append(changes)
         mean = sum(counts) / len(counts)
-        self.assertTrue(4.5 <= mean <= 9.0, counts)
-        self.assertLessEqual(max(counts), 14)
-        self.assertLess(sorted(fired)[len(fired) // 2], 0.42)
+        self.assertTrue(5.0 <= mean <= 9.5, counts)
+        self.assertLess(sorted(fired)[len(fired) // 2], 0.40)
 
 
 # ------------------------------------------------------------------------------------------------------- the pool
 class PoolBlockTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.pool = cc.load_pool(cc.load(), pool_path=Path("/nonexistent"))
+        cls.pool = cc.load_pool()
         cls.block = cc.pool_block(cls.pool)
+
+    def test_the_pool_is_c5s_real_people(self):
+        from mod_editor.core import nfl2k5_coach_owners as co
+        doc = co.load_pool()
+        self.assertEqual([(e["first"], e["last"]) for e in self.pool], [(c["first"], c["last"]) for c in doc["candidates"]])
+        self.assertTrue(all(c["sources"] for c in doc["candidates"]))
+        heads = {json.loads(p.read_text(encoding="utf-8"))["roster"]["head_coach"]
+                 for p in (cc.ROOT / "data/nfl2k5_teams_2026").glob("*.json")}
+        self.assertFalse({f"{e['first']} {e['last']}" for e in self.pool} & heads)    # nobody already a 2026 head coach
+        tomlin = next(e for e in self.pool if e["last"] == "Tomlin")
+        self.assertEqual((tomlin["career"]["wins"], tomlin["career"]["losses"], tomlin["career"]["playoff_wins"],
+                          tomlin["career"]["super_bowl_wins"]), (193, 114, 8, 1))
+        self.assertTrue(all(set(e["ratings"].values()) == {cc.DEFAULT_RATING} for e in self.pool))
 
     def test_block_reads_back_and_is_found_on_a_four_byte_step(self):
         entries = cc.read_pool_block(self.block)
         self.assertEqual([(e["first"], e["last"]) for e in entries], [(e["first"], e["last"]) for e in self.pool])
         self.assertEqual(len(self.block) % 4, 0)
-        self.assertLessEqual(len(self.block), 3100)
+        self.assertLessEqual(len(self.block), 3800)
         arena = bytes(0x400) + self.block + bytes(64)
         self.assertEqual(cc.find_pool(arena, 0)[0], 0x400)
         self.assertIsNone(cc.find_pool(bytes(2) + arena, 0))                  # not on the arena's 4-byte step
@@ -193,6 +193,21 @@ class RosterTests(unittest.TestCase):
         self.assertTrue(second["replaced"])
         self.assertEqual(cc.coach_region(out)["pool_offset"], at)
 
+    def test_a_short_tail_leaves_out_the_lowest_weights(self):
+        body = bytearray(V08_ROST.read_bytes())
+        region = cc.coach_region(bytes(body))
+        filler = region["next_string"] - region["used_end"] - 3000             # another writer took most of the tail
+        body[region["used_end"]:region["used_end"] + filler] = b"\x41\x00" * (filler // 2)
+        body[region["used_end"] + filler - 2:region["used_end"] + filler] = b"\0\0"
+        table = struct.unpack_from("<i", body, cc.OBJ_OFF + 0x34)[0] + cc.OBJ_OFF + 0x34 - 1
+        field = table + 34 * cc.COACH_STRIDE + 0x10                            # record 34's last line points at it
+        struct.pack_into("<i", body, field, region["used_end"] - field + 1)
+        out, receipt = cc.apply_body(bytes(body))
+        self.assertTrue(receipt["left_out"])
+        self.assertGreaterEqual(receipt["pool_entries"], 8)
+        kept = {(e["first"], e["last"]) for e in cc.find_pool(out, cc.OBJ_OFF)[1]}
+        self.assertIn(("Mike", "Tomlin"), kept)                               # the heaviest weights stay
+
     def test_a_full_region_refuses(self):
         body = bytearray(V08_ROST.read_bytes())
         region = cc.coach_region(bytes(body))
@@ -221,7 +236,7 @@ class ExecutableTests(unittest.TestCase):
         self.assertEqual(image.read(0x2BA6BC, 4), bytes.fromhex("49497505"))
         for label, at, _retail, entry in cc.ROW_SITES:
             self.assertEqual(struct.unpack("<I", image.read(at, 4))[0], labels[entry], label)
-        self.assertEqual(cc.installed_params(self.applied), cc.pack_params(cc.load()))
+        self.assertEqual(cc.installed_params(self.applied), cc.pack_params())
         self.assertEqual(cc.apply(self.applied)[0], self.applied)            # idempotent
 
     def test_other_parameters_on_an_installed_carousel_refuse(self):
@@ -427,7 +442,7 @@ class SeasonEndTests(unittest.TestCase):
         cls.pool_at = int(receipt["pool_offset"], 16)
         cls.block = pooled[cls.pool_at:cls.pool_at + receipt["pool_bytes"]]
         cls.entries = cc.read_pool_block(cls.block)
-        cls.params = cc.pack_params(cc.load())
+        cls.params = cc.pack_params()
         m = _load_state(cls.released, cls.released)
         cls.season = _season(m)
         m.call(0xC4D30, ecx=m.team_base, edx=1)                            # club 0 is the user's (as the sim did)
@@ -470,17 +485,18 @@ class SeasonEndTests(unittest.TestCase):
         self.assertEqual(m.notices, self.ref_notices)
 
     def test_the_native_decision_is_the_model(self):
-        """Every eligible club's fire draw is scripted one below or exactly at the Python hazard: a draw below fires,
-        one at it does not, so any difference between the native and the Python hazard shows up as a wrong club."""
+        """Every eligible club's draw is scripted one below or exactly at the c5 chance (draw >> 16 = p - 1 or p): a draw
+        below parts ways, one at it does not, so any difference between the native and the Python chance shows up as a
+        wrong club. More than the cap come up: the twelve highest chances survive."""
         eligible = [i for i in range(32) if i != 0]
         hazards = {i: cc.hazard(self.params, club=i, wins=self.season[i][0][0], losses=self.season[i][0][1],
-                                ties=self.season[i][0][2], playoffs=self.season[i][1], tenure=self.season[i][2])
-                   for i in eligible}
-        want = [i for k, i in enumerate(eligible) if k % 2 == 0 and hazards[i] > 0][:14]
-        script = [((hazards[i] - 1) << 16 if i in want else hazards[i] << 16) & 0xFFFFFFFF for i in eligible]
+                                ties=self.season[i][0][2], tenure=self.season[i][2]) for i in eligible}
+        want = [i for k, i in enumerate(eligible) if k % 2 == 0 and 0 < hazards[i] < 1000][:14]
+        script = [((hazards[i] - 1) << 16 if i in want else min(hazards[i], 999) << 16) for i in eligible]
+        never = [i for i in eligible if i not in want and hazards[i] >= 1000]  # a sure change cannot be scripted away
         m, before, after = self.run_advance(1, script=script)
         kept = []
-        for i in want:                                     # the native cap: the twelve highest hazards survive
+        for i in [i for i in eligible if i in want or i in never]:   # club order, as drawn; the cap keeps the highest
             if len(kept) < 12:
                 kept.append(i)
                 continue
@@ -490,6 +506,8 @@ class SeasonEndTests(unittest.TestCase):
         changed = sorted(i for i in range(32) if before[i][4:8] != after[i][4:8])
         self.assertEqual(changed, sorted(kept))
         self.assertEqual(len([n for n in m.notices if n.startswith("COACHING CHANGES")]), 4)
+        self.assertTrue(all(" parted ways with " in line and "), hired " in line
+                            for n in m.notices if n.startswith("COACHING CHANGES") for line in n.split("\n")[1:]))
 
     def test_rewritten_records_follow_the_rules(self):
         m, before, after = self.run_advance(1)

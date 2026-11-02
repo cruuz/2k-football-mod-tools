@@ -930,8 +930,8 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_sim_rb_injuries.py": "2225d2891163cfb4164d0566c39cbbb7795273115ab15bd82299b034022dcc57",  # b779-sim2
         "mod_editor/core/nfl2k5_sim_realism.py": "21d5a35911e78e865c3782ccd5ffb1f1280267918045c859cb8a58617b99c9ce",  # b779-sim2 r6
         "mod_editor/core/nfl2k5_preseason_warning.py": "44647523c32291820e98b2dad0a9c44af27fe6bca13626104551dc3647bcc6f2",  # b779-int1: imported by throw_tuning for the build union (693fe63a0)
-        "mod_editor/core/nfl2k5_coach_carousel.py": "f673a7dab496bec94195ebb0dfdd46dee3f5684ca703d6cd7552478c24f0c6db",  # b780-c6: the coaching carousel (late owner, imported by throw_tuning)
-        "mod_editor/core/nfl2k5_coach_carousel_code.py": "c6fe1ef25b2cc613efdd7717e8d2c4984c591aee8e88f8ed01e0ba6f72716630",  # b780-c6: its generated runtime template
+        "mod_editor/core/nfl2k5_coach_carousel.py": "d2c368adf7369d4a0c7b9247084c75e557795c430662af6c342d23838e9e25e8",  # b780-c6: the coaching carousel (late owner, imported by throw_tuning)
+        "mod_editor/core/nfl2k5_coach_carousel_code.py": "4d6336acb455b1bff459e0c20d12cba833315b7896cde62ea2a0f3c68802fcf6",  # b780-c6: its generated runtime template
         "mod_editor/core/nfl2k5_sim_stats.py": "26af040eea115ef53bea9bbd38a329185e42ea27cea201866e6432cd71b3ef00",  # b778-sim1
         "mod_editor/core/nfl2k5_option_defaults.py": "42514e38dcffa46fcb46b19e11d2eda4dff454297b33033dc98864e940207e47",  # b779-df1
         "mod_editor/core/nfl2k5_clock_led.py": "ab030b1fbed873b96e0ba6055fcc38ef53193c31f2df496128e2de581e7b01c2",  # b778-sd4

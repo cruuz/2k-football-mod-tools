@@ -6206,8 +6206,11 @@
         "mod_editor/core/nfl2k5_coach_carousel.py",
         "mod_editor/core/nfl2k5_coach_carousel_code.py",
         "tools/nfl2k5_coach_carousel/runtime.c",
-        "tools/nfl2k5_coach_carousel_calibrate.py",
+        "tools/nfl2k5_coach_carousel_data.py",
         "data/nfl2k5_coach_carousel_2026.json",
+        "mod_editor/core/nfl2k5_coach_owners.py",
+        "data/nfl2k5_owners_2026.json",
+        "data/nfl2k5_coach_pool_2026.json",
         "tests/mod_editor/test_b780_c6_coach_carousel.py"
       ],
       "game": "nfl2k5_xbox",
@@ -6219,10 +6222,10 @@
       },
       "id": "nfl2k5.franchise.coach_carousel",
       "input_constraints": [
-        "Pinned USA XBE or a verified composed input; a late allocator owner (nfl2k5_xbe_space.LATE_OWNERS, last) with 4,096 RX bytes holding its 176-byte model parameter block; no writable memory, no heap, no save field. Foreign or mixed bytes refuse.",
+        "Pinned USA XBE or a verified composed input; a late allocator owner (nfl2k5_xbe_space.LATE_OWNERS, last) with 4,096 RX bytes holding its 184-byte parameter block (an 8-byte header and c5-owners' 176-byte native table); no writable memory, no heap, no save field. Foreign or mixed bytes refuse.",
         "Sites: the stage-9 rollover call 0x248632 (Advance to offseason), the owner goal check's warning mark (0x2BA675, 0x2BA6BC: the owner fires a user only at All Teams) and the Owner Firing row callbacks (.rdata 0x500C40..0x500C4C: Off / CPU Teams / All Teams; the retail 'On' value and default reads CPU Teams).",
         "The hiring pool is a checked '2K5CPOOL' block the build writes into the free tail of the main roster's coach strings (after the last main-roster writer); a franchise keeps it in its roster copy and Franchise > Upgrade copies it into an older save. Without a pool nothing changes.",
-        "Model: nflverse games.csv 1999-2025 (861 club seasons, 178 coaching changes), pinned by SHA-256 in data/nfl2k5_coach_carousel_2026.json; at most 12 changes an offseason; user clubs never change coach."
+        "Model: c5-owners (nfl2k5_coach_owners.fire_permille, ported bit for bit): opening-day coaches 1999-2026 from the pinned nflverse games.csv (861 decisions, 191 changes), the record on a 17-game scale and the coach's seasons with the club, times each owner's measured patience (0.80 to 1.29); at most 12 changes an offseason; user clubs never change coach."
       ],
       "portme": [
         "Franchise: Owner Firing reads CPU Teams; sim a season and the playoffs, Advance to offseason after the Super Bowl notice: one COACHING CHANGES notice per three changes; the new coaches show by name and career; save, reload, keep playing."
@@ -6256,7 +6259,7 @@
         "resource": "XBE sites listed above, the owned late allocation, and the free tail of the ROST coach strings for the hiring pool.",
         "retail_file": "user-owned default.xbe and vc_53450030/0 in an NFL 2K5 USA disc"
       },
-      "summary": "Franchise coaching carousel: at Advance to offseason CPU clubs may fire their head coach and hire one from a pool of real people (the 2026 defensive coordinators with their real head coaching records) or a coach another club let go, about 6 or 7 a year as in the NFL since 1999 (record, the coach's seasons with the club, playoffs and each owner's measured patience decide). A notice lists the changes; the new coach's name, picture, career and ratings show everywhere the game names coaches; the club keeps its sideline model, tendencies and playbook. Owner Firing gets Off / CPU Teams / All Teams.",
+      "summary": "Franchise coaching carousel: at Advance to offseason CPU clubs may part ways with their head coach and hire one from a pool of 38 real people (the 2026 defensive coordinators and recent head coaches without a head job, with their real head coaching records) or a coach another club let go, about 7 a year as in the NFL since 1999 (the record, the coach's seasons with the club and each owner's measured patience decide). A notice lists the changes; the new coach's name, picture, career and ratings show everywhere the game names coaches; the club keeps its sideline model, tendencies and playbook. Owner Firing gets Off / CPU Teams / All Teams.",
       "surface": "schedules_franchise",
       "title": "Coaching carousel at Advance to offseason, Owner Firing Off / CPU Teams / All Teams (experimental)",
       "validation_command": "python3 -m tests.mod_editor.test_b780_c6_coach_carousel"

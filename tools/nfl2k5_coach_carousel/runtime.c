@@ -7,7 +7,7 @@
 
    WHEN. Advance to offseason (stage 9 of FUN_002480B0) ends with "call 0x247B40", the season rollover; the patch site
    at 0x248632 enters carousel_run instead (stubs.S), which
-     1. reads every club's season from the league grid (regular season, playoffs, Super Bowl) while it is still there,
+     1. reads every club's regular season from the league grid while it is still there,
      2. runs the retail rollover (so the owners hooked inside it still run: practice squad, economy, team column),
      3. decides which CPU clubs change head coach and whom they hire, rewrites those clubs' coach records, and shows
         one "COACHING CHANGES" notice for every three changes.
@@ -15,17 +15,20 @@
    1 CPU Teams, 2 All Teams (the retail owner check may also end the user's time; see carousel_user_gate). A club a
    user controls never changes coach here.
 
-   DECISION. Hazard by regular-season winning share, with three curves for the coach's seasons with the club (1, 2,
-   3 or more: the rollover's count +0x1C), a flat rate for a playoff club, times the club's owner factor (in 1/32).
-   One league random draw per eligible club, in club order (the top 16 bits of the native generator); at most
-   max_changes per offseason (the highest hazards win when more come up). Parameters: the 176-byte block at carousel_params (layout PARAMS in the Python module).
+   DECISION (the c5-owners model, nfl2k5_coach_owners.fire_permille, ported bit for bit). The regular-season record on a
+   17-game scale (idx = ((2W + T) * 17 + G) / 2G, 0..17) and the coach's seasons with the club after the rollover
+   (+0x1C: 1, 2, or 3 and more) pick a chance in thousandths from base_permille[3][18]; times the club's owner factor
+   and the league factor (Q8, 256 = 1.0, rounded); at most 1000. One league random draw per eligible club, in club
+   order: the club parts ways with its coach when (draw >> 16) % 1000 < p. At most max_changes per offseason (the
+   highest chances win when more come up). Parameters: the 184-byte block at carousel_params (layout PARAMS in the
+   Python module: an 8-byte header, then nfl2k5_coach_owners.pack_native's 176-byte table).
 
    HIRING. Vacancies are filled worst record first. Each first reserves a candidate from the hiring pool (a checked
    block the Studio writes into the coach string region of the roster, so it travels with every franchise save; magic
    "2K5CPOOL", layout POOL in the Python module): a weighted random pick among entries no club employs (employed =
    some club's coach record points at the entry's last-name string). A vacancy that gets no candidate is cancelled
    (that club keeps its coach). Then, with rehire_percent, a vacancy hires instead the most successful coach another
-   club let go this offseason. The record is rewritten in place (the club keeps pointing at its own record):
+   club parted ways with this offseason. The record is rewritten in place (the club keeps pointing at its own record):
      pool hire: names point at the pool strings; career, picture, ratings and personality come from the entry;
                 tendencies, body (sideline model) and +0x14/+0x16 stay with the club;
      rehire:    the whole record of the coach who left (read after the rollover), except the body;
@@ -65,21 +68,21 @@ typedef unsigned char u8;
 #define ENTRY 64u                   /* pool entry */
 #define MAX_POOL 48u
 
-/* parameter block (176 bytes) */
+/* parameter block (184 bytes): header, then the c5-owners native table */
 #define P_VERSION 4
 #define P_MAXC 5
 #define P_REHIRE 6
-#define P_PLAYOFF 8
-#define P_CURVES 12                 /* u16[3][21]: tenure 1, 2, 3+; winning share 0, .05, .. 1.0 */
-#define P_OWNER 138                 /* u8[32] in 1/32 */
+#define P_TABLE 8                   /* u16 version (1), u16 league_q8, u16 base_permille[3][18], u16 owner_q8[32] */
+#define P_LEAGUE (P_TABLE + 2)
+#define P_BASE (P_TABLE + 4)
+#define P_OWNER (P_TABLE + 4 + 2 * 54)
 
 extern const u8 carousel_params[];
 
 struct Club {
     u32 team, coach;
-    u8 w, l, t, playoffs;
-    u8 pw, pl, title, human;
-    u16 pct;                        /* regular-season winning share in 1/1000, ties count half */
+    u8 w, l, t, human;              /* the regular season just played */
+    u16 pct;                        /* its winning share in 1/1000, ties count half (vacancy order) */
     u8 eligible, index;
 };
 
@@ -97,8 +100,8 @@ static u32 p16(const u8 *p, u32 at) { return (u32)p[at] | ((u32)p[at + 1] << 8);
 
 static u32 params_ok(void) {
     const u8 *p = carousel_params;
-    return p[0] == 'C' && p[1] == '6' && p[2] == 'M' && p[3] == '1' && p[P_VERSION] == 1 && p[P_MAXC]
-           && p[P_REHIRE] <= 100;
+    return p[0] == 'C' && p[1] == '6' && p[2] == 'M' && p[3] == '2' && p[P_VERSION] == 2 && p[P_MAXC]
+           && p[P_REHIRE] <= 100 && p16(p, P_TABLE) == 1;
 }
 
 /* ---- the hiring pool ------------------------------------------------------------------------------------------ */
@@ -205,21 +208,16 @@ static void hire_back(u32 rec, const u8 *saved) {
 }
 
 /* ---- the decision ------------------------------------------------------------------------------------------------ */
+/* the chance in thousandths (nfl2k5_coach_owners.fire_permille): record on a 17-game scale, seasons with the club */
 static u32 hazard(const struct Club *c) {
     const u8 *p = carousel_params;
-    u32 base;
-    if (c->playoffs) {
-        base = p16(p, P_PLAYOFF);
-    } else {
-        u32 tenure = H(c->coach + 0x1C);
-        u32 row = tenure <= 1 ? 0 : tenure == 2 ? 1 : 2;
-        u32 k = c->pct / 50, f = c->pct % 50;
-        const u8 *curve = p + P_CURVES + 42 * row;
-        i32 a = (i32)p16(curve, 2 * k), b = k < 20 ? (i32)p16(curve, 2 * k + 2) : a;
-        base = (u32)(a + (b - a) * (i32)f / 50);
-    }
-    base = base * p[P_OWNER + c->index] / 32;
-    return base > 65535 ? 65535 : base;
+    u32 games = (u32)c->w + c->l + c->t, tenure = H(c->coach + 0x1C);
+    u32 idx = ((2 * (u32)c->w + c->t) * 17 + games) / (2 * games);
+    u32 row = tenure <= 1 ? 0 : tenure == 2 ? 1 : 2;
+    idx = idx > 17 ? 17 : idx;
+    u32 base = p16(p, P_BASE + 2 * (18 * row + idx));
+    u32 q = (base * p16(p, P_OWNER + 2 * c->index) * p16(p, P_LEAGUE) + 32768) >> 16;
+    return q > 1000 ? 1000 : q;
 }
 
 /* career success of a departed coach (for the rehire pick): wins - losses + 4 x playoff wins + 12 x titles */
@@ -259,13 +257,14 @@ static u16 *put_name(u16 *out, const u8 *rec) {
     return put_text(out, (const u16 *)(*(const u32 *)(rec + 4)), 24);
 }
 
-/* "Raiders: Klint Kubiak out (3-14), Vic Fangio in" */
+/* "Raiders parted ways with Klint Kubiak (3-14), hired Vic Fangio" (retirements and resignations are inside the
+   chance, so "parted ways" is true for every change) */
 static u16 *put_change(u16 *out, const struct Club *c, const u8 *before, u32 rec) {
     *out++ = '\n';
     out = put_text(out, (const u16 *)G(c->team + 0x104), 20);
-    out = put_ascii(out, ": ");
+    out = put_ascii(out, " parted ways with ");
     out = put_name(out, before);
-    out = put_ascii(out, " out (");
+    out = put_ascii(out, " (");
     out = put_uint(out, c->w);
     *out++ = '-';
     out = put_uint(out, c->l);
@@ -273,9 +272,8 @@ static u16 *put_change(u16 *out, const struct Club *c, const u8 *before, u32 rec
         *out++ = '-';
         out = put_uint(out, c->t);
     }
-    out = put_ascii(out, "), ");
-    out = put_name(out, (const u8 *)rec);
-    return put_ascii(out, " in");
+    out = put_ascii(out, "), hired ");
+    return put_name(out, (const u8 *)rec);
 }
 
 /* ---- the advance ----------------------------------------------------------------------------------------------- */
@@ -291,32 +289,20 @@ void FC carousel_run(u32 menu) {
     u32 regular = row_sb - 3;                        /* wild card, divisional and conference rows come before it */
     for (u32 i = 0; i < n; i++) {
         struct Club *c = &clubs[i];
-        u32 team = TEAM_AT(i), w = 0, l = 0, t = 0, pw = 0, pl = 0, title = 0;
+        u32 team = TEAM_AT(i), w = 0, l = 0, t = 0;
         c->team = team;
         c->coach = coach_of(team);
         c->index = (u8)i;
         c->human = (u8)(team && IS_HUMAN(team) ? 1 : 0);
         if (team && c->coach)
-            for (u32 r = 0; r <= row_sb; r++) {
-                u32 a = WIN_ROW(team, r), b = LOSS_ROW(team, r);
-                if (r < regular) {
-                    w += a;
-                    l += b;
-                    t += TIE_ROW(team, r);
-                } else {
-                    pw += a;
-                    pl += b;
-                    if (r == row_sb)
-                        title = a;
-                }
+            for (u32 r = 0; r < regular; r++) {
+                w += WIN_ROW(team, r);
+                l += LOSS_ROW(team, r);
+                t += TIE_ROW(team, r);
             }
         c->w = (u8)(w > 255 ? 255 : w);
         c->l = (u8)(l > 255 ? 255 : l);
         c->t = (u8)(t > 255 ? 255 : t);
-        c->pw = (u8)(pw > 15 ? 15 : pw);
-        c->pl = (u8)(pl > 15 ? 15 : pl);
-        c->playoffs = (u8)(pw + pl ? 1 : 0);
-        c->title = (u8)(title ? 1 : 0);
         u32 games = w + l + t;
         c->pct = (u16)(games ? (2 * w + t) * 500 / games : 0);
         c->eligible = (u8)(team && c->coach && games && !c->human);
@@ -330,11 +316,11 @@ void FC carousel_run(u32 menu) {
     u32 count = pool[9];
     struct Move moves[MAXC];
     u32 nm = 0, cap = carousel_params[P_MAXC] > MAXC ? MAXC : carousel_params[P_MAXC];
-    /* fire: one draw per eligible club, in club order; keep the highest hazards when more than the cap come up */
+    /* part ways: one draw per eligible club, in club order; keep the highest chances when more than the cap come up */
     for (u32 i = 0; i < n; i++) {
         if (!clubs[i].eligible)
             continue;
-        u32 h = hazard(&clubs[i]), roll = RAND() >> 16;
+        u32 h = hazard(&clubs[i]), roll = (RAND() >> 16) % 1000;
         if (roll >= h)
             continue;
         u32 at = nm;
