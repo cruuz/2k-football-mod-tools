@@ -666,8 +666,8 @@ class SimplificationPartsTests(unittest.TestCase):
         stray = {p[:3] for p in prepared.getdata() if p[3] >= 240}
         self.assertGreater(len(stray), 6, "the digit keeps its stray colours: the two-colour path did not take it")
         shading = art._Shading(prepared)
-        self.assertTrue(shading.noisy and not shading.shaded, (shading.distinct, shading.regions))
-        self.assertEqual(shading.regions, 2)
+        self.assertTrue(shading.noisy and not shading.shaded, (shading.distinct, len(shading.peaks)))
+        self.assertEqual(len(shading.peaks), 2)
         clean = art.flatten_shading(prepared, 0, clean=True)
         colours = {p[:3] for p in clean.getdata() if p[3] >= 240}
         self.assertEqual(len(colours), 2, colours)
@@ -678,19 +678,37 @@ class SimplificationPartsTests(unittest.TestCase):
         hard = art._apply_step(prepared, STEP["clean_hard"])
         self.assertEqual(set(hard.getchannel("A").getdata()), {0, 255})
 
-    def test_cleaning_never_erases_a_colour_with_a_real_share(self):
-        # An outline miscounted as noise would be erased by a one-colour flatten. Force that miscount and check the guard.
-        prepared, _ = art.prepare_digit(noisy_two_tone(8), retail_reference(), "retail")
-        shading = art._Shading(prepared)
-        self.assertEqual(shading.regions, 2)
-        original = art._Shading.__init__
+    def test_a_thin_third_colour_is_a_colour_of_the_digit_and_survives_cleaning(self):
+        # white fill, royal outline and a one pixel gold ring outside it, plus stray shades: three colours, not two
+        GOLD = (255, 209, 0)
+        size = 64
+        image = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+        draw = ImageDraw.Draw(image)
+        draw.rounded_rectangle((12, 4, 52, 60), radius=8, fill=(*GOLD, 255))
+        draw.rounded_rectangle((13, 5, 51, 59), radius=8, fill=(*ROYAL, 255))
+        draw.rounded_rectangle((16, 8, 48, 56), radius=6, fill=(*WHITE, 255))
+        draw.rounded_rectangle((26, 20, 38, 44), radius=3, fill=(0, 0, 0, 0))   # a counter
+        pixels = list(image.getdata())
+        for index in range(0, len(pixels), 37):       # stray shades off every line between the colours
+            if pixels[index][3] == 255:
+                pixels[index] = ((60 + index) % 90 + 100, (index * 7) % 60 + 150, (index * 3) % 50 + 40, 255)
+        image.putdata(pixels)
+        shading = art._Shading(image)
+        peaks = shading.peaks
+        for wanted in (GOLD, ROYAL, WHITE):
+            self.assertTrue(any(max(abs(c[k] - wanted[k]) for k in range(3)) <= 40 for c in peaks), (wanted, peaks))
+        clean = art.flatten_shading(image, 0, clean=True) if shading.noisy else image
+        colours = {p[:3] for p in clean.getdata() if p[3] >= 240}
+        for wanted in (GOLD, ROYAL, WHITE):
+            self.assertTrue(any(max(abs(c[k] - wanted[k]) for k in range(3)) <= 40 for c in colours), (wanted, colours))
+        self.assertLessEqual(len(colours), 5, colours)
 
-        def one_region(self, image):
-            original(self, image)
-            self.rim, self.regions = None, 1
-
-        with unittest.mock.patch.object(art._Shading, "__init__", one_region):
-            self.assertIsNone(art.flatten_shading(prepared, 0, clean=True))
+    def test_blends_between_two_colours_are_not_colours_of_their_own(self):
+        small = resize_cell(hard_digit(8, 128, ROYAL, WHITE), (64, 64))
+        shades = {p[:3] for p in small.getdata() if p[3] >= 240}
+        self.assertGreater(len(shades), 3, "the resized digit has blends between the two colours")
+        peaks = art._peaks(small)
+        self.assertEqual(sorted(peaks), sorted((ROYAL, WHITE)), peaks)
 
     def test_clean_steps_leave_clean_art_shaded_art_and_pictures_alone(self):
         # exact outline and fill: the cleanup's own two-tone path already leaves exactly two colours, so nothing is left to clean

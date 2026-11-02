@@ -63,9 +63,9 @@ A flat fill with one outline colour fits most slots, and one flat colour fits th
 
 - A gradient (for example the 2020 Rams numerals, gold at the top fading to white) fits the roomy slots as drawn.
 - In a slot that is too small, the Studio tries gentler versions of your digit before it gives up, and it
-  never drops the outline or the fill. In order: first, for a digit made of flat colours that picked up stray
-  in-between colours when the sheet was scaled down, those strays are merged back into its own fill and outline
-  colours; then hard edges at the largest size (the smaller views keep soft edges, like many original digits);
+  never drops the outline or the fill. In order: first, for a digit made of a few flat colours that picked up stray
+  in-between shades when the sheet was scaled down, those strays are merged back into the colours it is drawn in
+  (a thin ring or outline counts as a colour, so nothing the artist drew is merged away); then hard edges at the largest size (the smaller views keep soft edges, like many original digits);
   then, for a digit with real shading, the shading reduced to four, three and two flat colours, and, for a
   numeral that is nothing but shading with no outline, one flat colour. The notes for that digit say which one
   was used, for example "its shading was reduced to 3 flat colours, with hard edges".

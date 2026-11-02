@@ -275,11 +275,12 @@ class _Step:
 # From least to most visible. None of them drops the outline or the fill, and none is silent:
 # the receipt, the preview note and Check my images all say which one was used.
 _STEPS = (
-    # Resampling leaves in-between colours that the fill and outline never had. Merging them back into the
-    # digit's own colours changes nothing the artist drew, and a clean two-colour digit has a lower palette floor.
-    _Step("clean_colours", "stray in-between colours were merged into its own fill and outline colours", clean=True),
+    # Resampling leaves in-between shades that the fill and outline never had. Merging them back into the
+    # colours the digit is drawn in (thin ones too) changes nothing the artist drew, and a clean two-colour digit
+    # has a lower palette floor.
+    _Step("clean_colours", "stray in-between shades were merged into the flat colours it is drawn in", clean=True),
     _Step("hard_edges", "its edges were made hard at the largest size (the smaller views keep soft edges)", hard=True),
-    _Step("clean_hard", "stray in-between colours were merged and its edges made hard at the largest size",
+    _Step("clean_hard", "stray in-between shades were merged into its flat colours and its edges made hard at the largest size",
           hard=True, clean=True),
     _Step("bands_4", "its shading was reduced to 4 flat colours, with hard edges", colours=4, hard=True),
     _Step("bands_3", "its shading was reduced to 3 flat colours, with hard edges", colours=3, hard=True),
@@ -367,6 +368,44 @@ def _rim_colour(image: Image.Image) -> tuple[int, int, int] | None:
     return best if near * 2 >= total else None
 
 
+def _peaks(image: Image.Image) -> list[tuple[int, int, int]]:
+    """The flat colours a digit is drawn in: the commonest shade of each group of solid shades.
+
+    A shade joins a colour already found when it is within 40 per channel of it, and a blend that lies on the way
+    between two found colours (an anti-aliased seam) is not a colour of its own. Any other group of shades that holds at
+    least 1 percent of the visible pixels (and 8 of them) is a colour of the digit, however thin or small (a one pixel
+    ring of gold around a white digit with a royal outline is three colours, even when the ring is only the soft edge, and
+    so is a small flat patch of red). More than five colours means a picture, and the list is cut there.
+    """
+    solid = Counter(p[:3] for p in image.getdata() if p[3] >= ALPHA_LOW)
+    total = sum(solid.values())
+    peaks: list[tuple[int, int, int]] = []
+
+    def close(a, b):
+        return sum((a[k] - b[k]) ** 2 for k in range(3)) <= 40 * 40
+
+    def between(colour):
+        for i, a in enumerate(peaks):
+            for b in peaks[i + 1:]:
+                vector = tuple(b[k] - a[k] for k in range(3))
+                length = sum(v * v for v in vector)
+                if not length:
+                    continue
+                t = max(0.0, min(1.0, sum((colour[k] - a[k]) * vector[k] for k in range(3)) / length))
+                if sum((colour[k] - a[k] - t * vector[k]) ** 2 for k in range(3)) <= 40 * 40:
+                    return True
+        return False
+
+    for colour, _amount in sorted(solid.items(), key=lambda item: (-item[1], item[0])):
+        if any(close(colour, peak) for peak in peaks) or between(colour):
+            continue
+        if sum(n for other, n in solid.items() if close(other, colour)) >= max(8, 0.01 * total):
+            peaks.append(colour)
+            if len(peaks) > 5:
+                break
+    return peaks
+
+
 class _Shading:
     """What a digit is made of: an outline colour (or none), the fill, and how many separate regions.
 
@@ -406,52 +445,37 @@ class _Shading:
         self.shaded = steps >= _SHADED
         solid = [p[:3] for p in image.getdata() if p[3] >= ALPHA_HIGH]
         self.distinct = len(set(solid))
-        #: Flat regions with stray in-between colours (resampling overshoot): a few regions, many more colours than
-        #: regions, a real share of smooth pixels, and not so many colours that it is a picture.
-        self.noisy = (not self.shaded and 1 <= self.regions <= 4 and self.distinct >= self.regions + 3
+        #: Flat colours with stray in-between shades (resampling overshoot): a few colours, many more shades than
+        #: colours, a real share of smooth pixels, and not so many shades that it is a picture.
+        self.peaks = _peaks(image)
+        self.noisy = (not self.shaded and 1 <= len(self.peaks) <= 4 and self.distinct >= len(self.peaks) + 3
                       and self.distinct <= 64 and bool(solid) and sum(smooth.values()) >= 0.10 * len(solid))
 
 
 def flatten_shading(image: Image.Image, count: int, *, clean: bool = False) -> Image.Image | None:
-    """Merge a gradient into *count* flat colours in all, or (``clean``) merge stray colours into the digit's own.
+    """Merge a gradient into *count* flat colours in all, or (``clean``) merge stray shades into the digit's own colours.
 
     None when that would change nothing or lose a region. An outline keeps its own colour (one of the *count*), and
     the fill shades are grouped around the commonest shade and the shades farthest from it, so a flat patch of another
     colour keeps its own colour too. Edge blends are simply given to the nearest of the final colours. ``clean`` is for
-    flat regions with in-between colours (``noisy``): the result has exactly as many colours as the digit has regions.
+    flat colours with in-between shades (``noisy``): the result has exactly the colours the digit is drawn in (``_peaks``),
+    thin ones included, so no colour with a real share of the digit can be merged away.
     """
     shading = _Shading(image)
     if clean:
         if not shading.noisy:
             return None
-        count = shading.regions
-    elif not shading.shaded or count < shading.regions:
-        return None
-    fixed = [shading.rim] if shading.rim is not None else []
-    wanted = count - len(fixed)
-    if wanted > 0 and not shading.fill:
-        return None
-    centres = fixed + (_seed_colours(shading.fill, wanted) if wanted > 0 else [])
-    if not centres:
-        return None
-    if clean:
-        # Cleaning merges stray colours only. If a real share of the digit's solid pixels sits in a colour that would end
-        # up far from every kept colour, a region was miscounted and merging would erase it, so leave the digit alone.
-        # (In-between colours are spread along the way from one region to the next, and each group of them stays near
-        # 13 percent, while an outline of any weight is a quarter or more of the pixels.)
-        solid = Counter(p[:3] for p in image.getdata() if p[3] >= ALPHA_HIGH)
-        total = sum(solid.values())
-        groups: list[list] = []  # [seed colour, pixels within 40 of it]
-        for colour, amount in sorted(solid.items(), key=lambda item: (-item[1], item[0])):
-            for group in groups:
-                if sum((colour[k] - group[0][k]) ** 2 for k in range(3)) <= 40 * 40:
-                    group[1] += amount
-                    break
-            else:
-                groups.append([colour, amount])
-        for seed, amount in groups:
-            if amount >= 0.20 * total and min(sum((c[k] - seed[k]) ** 2 for k in range(3)) for c in centres) > 40 * 40:
-                return None
+        centres = list(shading.peaks)
+    else:
+        if not shading.shaded or count < shading.regions:
+            return None
+        fixed = [shading.rim] if shading.rim is not None else []
+        wanted = count - len(fixed)
+        if wanted > 0 and not shading.fill:
+            return None
+        centres = fixed + (_seed_colours(shading.fill, wanted) if wanted > 0 else [])
+        if not centres:
+            return None
     nearest: dict[tuple[int, int, int], tuple[int, int, int]] = {}
     out = []
     for p in image.getdata():
