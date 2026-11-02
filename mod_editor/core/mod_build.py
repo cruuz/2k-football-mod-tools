@@ -555,6 +555,12 @@ class BuildPlan:
     # 6 punt} so scrimmage and field-goal pursuit is byte-for-byte retail. CPU defenders only; human defenders
     # keep the retail aim. On in the Advanced and Experimental presets (the SOFTDRINK recipe builds from Experimental).
     return_coverage: bool = False
+    # b780-cv7: receivers and backs block for a quarterback who carries the ball past the line. A late executable owner
+    # (nfl2k5_scramble_blocking) hooks the AI tick 0x214FC0: once a QB holder is half a yard past the line on a play with
+    # no forward pass, his CPU tight ends, receivers and backs who are not blocking get the game's drive block (the way
+    # 0x23A010 converts a blocker mid-play), one blocker per man. Human and CPU quarterbacks alike. EXPERIMENTAL: off in
+    # every preset until Noah plays it (a feel test).
+    scramble_blocking: bool = False
 
     # b778-st2: rookie stars and stars earned or lost over a career. The draft-class generator's 3..5 best prospects
     # (the draft-AI key) and 1..2 later-round gems (a top development archetype) get the Star tier; every offseason,
@@ -712,7 +718,8 @@ class BuildPlan:
                 or self.guardian_overlay or self.my_career or self.screen_hooks or self.coverage_trail or self.franchise_edit_player or self.cpu_money_downs != "retail" or self.accelerated_clock or self.coin_defer or self.decided_clock or self.cpu_scrambles == "modern" or self.weather_haze or self.number_kerning or self.modern_color or self.weekly_prep or self.weekly_prep_cpu or self.weekly_prep_remember or self.coach_ai or self.playbook_pair or self.deep_zone_facing or self.deep_zone_bail or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave or self.historic_teams_quick_game or self.espn25_more_moments or self.historic_stock_books or self.espn25_era_rules or self.k128_memory or self.team_ratings or self.play_art_routes or self.letter_grades or self.honors_page or self.sim_cb_tackles or self.sim_stats or self.option_defaults or self.sim_rb_injuries or self.sim_realism
                 or self.momentum_collisions or self.scorebug_runtime or self.indicator_names_style != "retail" or self.momentum > 0 or self.momentum_contact or self.defensive_try or self.zone_drop_cap or self.all_stadiums or self.music_shuffle or self.practice_squad_screen or self.abilities or self.qb_spy or self.calendar_engine or self.coverage_slider or self.scramble_tuning or self.flatter_deep_ball or self.chop_block_toggle or self.music_policy != "retail" or self.music_unlock or self.music_userlist
                 or bool(self.music_library and _music_library_document(self.music_library)["bank"] == "cribmusic")
-                or self.pass_protection or self.pass_rush_stats)  # b778-pr1, b779-st1
+                or self.pass_protection or self.pass_rush_stats  # b778-pr1, b779-st1
+                or self.scramble_blocking)  # b780-cv7
 
     def to_recipe(self) -> dict[str, Any]:
         d = asdict(self)
@@ -915,6 +922,10 @@ for _preset in PRESETS.values():
     _preset["return_coverage"] = False
 PRESETS["softdrink_advanced"]["return_coverage"] = True
 PRESETS["softdrink_experimental"]["return_coverage"] = True
+del _preset
+# b780-cv7: receivers block for a scrambling QB: off in every preset until Noah plays it.
+for _preset in PRESETS.values():
+    _preset["scramble_blocking"] = False
 del _preset
 # b778-ee1: the alien prospect rides on rookie faces: the same preset.
 for _preset in PRESETS.values():
@@ -1341,6 +1352,7 @@ _LATE_OWNER_OPTIONS = (
     ("nfl2k5_clock_led", "Modern clock digits", lambda p: p.modern_clock_led),  # b778-sd4
     ("nfl2k5_return_coverage", "Return coverage pursuit angles", lambda p: p.return_coverage),  # b778-kr1
     ("nfl2k5_preseason_warning", "2026 franchise economy", lambda p: p.franchise_economy),  # b779-rc1: the warned flag
+    ("nfl2k5_scramble_blocking", "Receivers block for a scrambling QB", lambda p: p.scramble_blocking),  # b780-cv7
 )
 _REBUILD_HINT = " Build from your unmodified retail dump instead."
 
@@ -1374,6 +1386,21 @@ def _ball_carrier_preflight(source: Path, progress) -> None:
     if module.status(payload) == "foreign":
         raise ValueError("The ball-carrier AI code in this source is not retail or CPU ball carriers. Turn it off "
                          "or build from your unmodified retail dump.")
+
+
+def _scramble_blocking_preflight(source: Path, progress) -> None:
+    """b780-cv7: refuse a source whose AI tick or block installer code is foreign, before any write."""
+    module = _core_module("nfl2k5_scramble_blocking")
+    if module is None or _core_module("nfl2k5_xbe_space") is None:
+        raise ValueError("Receivers block for a scrambling QB is not available in this installation.")
+    progress("Checking the blocking AI for scramble blocking", 0, 0)
+    try:
+        payload = _xbe_bytes(source)
+    except (OSError, ValueError) as exc:
+        raise ValueError(f"Scramble blocking cannot read default.xbe: {exc}") from exc
+    if module.status(payload) == "foreign":
+        raise ValueError("The AI tick or the block installer in this source is not retail or scramble blocking. "
+                         "Turn it off or build from your unmodified retail dump.")
 
 
 def _return_coverage_preflight(source: Path, progress) -> None:
@@ -1878,6 +1905,24 @@ def _apply_sim_realism(plan: "BuildPlan", target: Path, receipt: dict, progress)
     receipt["result"]["sim_realism"] = "applied"
 
 
+def _apply_scramble_blocking(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    """b780-cv7: receivers block for a scrambling QB, the last late allocator owner (LATE_OWNERS order)."""
+    if not plan.scramble_blocking:
+        return
+    module = _core_module("nfl2k5_scramble_blocking")
+    if module is None:
+        raise RuntimeError("Receivers block for a scrambling QB needs nfl2k5_scramble_blocking.")
+    progress("CPU AI: receivers block for a scrambling QB", 0, 0)
+    payload, blocking_receipt = module.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, payload)
+    final = _xbe_bytes(target)
+    if final != payload or module.status(final) != "applied":
+        raise RuntimeError("Scramble blocking: the output does not read back as applied")
+    receipt["steps"].append({"step": "scramble_blocking",
+                             **{k: v for k, v in blocking_receipt.items() if k != "reservations"}})
+    receipt["result"]["scramble_blocking"] = "applied"
+
+
 def _sim_stats_preflight(source: Path, progress) -> None:
     """b778-sim1: refuse a source whose simulator initializer is foreign, before any write."""
     module = _core_module("nfl2k5_sim_stats")
@@ -2099,6 +2144,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
                                ("practice_injuries", "nfl2k5_practice_injuries"),  # b778-pi1
                                ("cpu_ball_carriers", "nfl2k5_ball_carrier_ai"),  # b778-ai5
                                ("return_coverage", "nfl2k5_return_coverage"),  # b778-kr1
+                               ("scramble_blocking", "nfl2k5_scramble_blocking"),  # b780-cv7
                                ("sportscenter_lineup", "nfl2k5_sportscenter_lineup"),
                                ("franchise_draft_clock", "nfl2k5_draft_clock"),  # b778-dr1
                                ("weekly_progression", "nfl2k5_weekly_progression"),  # b778-pg1
@@ -2364,6 +2410,9 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
     out["sim_rb_injuries"] = rb_injuries.status(_xbe_bytes(source)) if rb_injuries is not None else "unavailable"
     sim_realism = _core_module("nfl2k5_sim_realism")  # b779-sim2 r4
     out["sim_realism"] = sim_realism.status(_xbe_bytes(source)) if sim_realism is not None else "unavailable"
+    scramble_blocking = _core_module("nfl2k5_scramble_blocking")  # b780-cv7
+    out["scramble_blocking"] = (scramble_blocking.status(_xbe_bytes(source)) if scramble_blocking is not None
+                                else "unavailable")
     sim_stats = _core_module("nfl2k5_sim_stats")  # b778-sim1
     out["sim_stats"] = sim_stats.status(_xbe_bytes(source)) if sim_stats is not None else "unavailable"
     option_defaults = _core_module("nfl2k5_option_defaults")  # b779-df1
@@ -4290,6 +4339,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("CPU ball carriers must be Off or On.")
     if type(plan.return_coverage) is not bool:  # b778-kr1
         raise ValueError("Return coverage pursuit angles must be Off or On.")
+    if type(plan.scramble_blocking) is not bool:  # b780-cv7
+        raise ValueError("Receivers block for a scrambling QB must be Off or On.")
     if type(plan.sportscenter_lineup) is not bool:
         raise ValueError("SportsCenter highlight lineups must be Off or On.")
     if type(plan.franchise_draft_clock) is not bool:  # b778-dr1
@@ -5067,6 +5118,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         _ball_carrier_preflight(source, progress)
     if plan.return_coverage:  # b778-kr1: before any write
         _return_coverage_preflight(source, progress)
+    if plan.scramble_blocking:  # b780-cv7: before any write
+        _scramble_blocking_preflight(source, progress)
     if plan.sportscenter_lineup:
         _sportscenter_lineup_preflight(source, progress)
     if plan.franchise_draft_clock:  # b778-dr1: like fo1, before any write
@@ -5606,7 +5659,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         player_progress=bool(plan.player_progress or plan.player_progress_visible), contract_college_guard=plan.contract_college_guard,
         sim_cb_tackles=plan.sim_cb_tackles, modern_clock_led=plan.modern_clock_led,
         module_loader=plan.module_loader, classic_teams=plan.classic_teams,
-        sim_rb_injuries=plan.sim_rb_injuries, sim_realism=plan.sim_realism, preseason_warning=plan.franchise_economy)
+        sim_rb_injuries=plan.sim_rb_injuries, sim_realism=plan.sim_realism, preseason_warning=plan.franchise_economy,
+        scramble_blocking=plan.scramble_blocking)
     if plan.read_option_runtime or plan.qb_spy:
         resolver = _core_module("nfl2k5_play_intents")
         if resolver is None:
@@ -5682,6 +5736,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             sim_cb_tackles=plan.sim_cb_tackles, modern_clock_led=plan.modern_clock_led,
             module_loader=plan.module_loader, classic_teams=plan.classic_teams,
             sim_rb_injuries=plan.sim_rb_injuries, sim_realism=plan.sim_realism, preseason_warning=plan.franchise_economy,
+            scramble_blocking=plan.scramble_blocking,
             **{**r62, "read_option_intent_table": read_table, "modern_naming": False, "crib_reclaim": False})
         _write_xbe_bytes(target, patched)
         receipt["steps"].append({"step": "xbe_space", **space_receipt,
@@ -6784,6 +6839,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     _apply_sim_rb_injuries(plan, target, receipt, progress)
     # b779-sim2 r4: scheduled-sim season realism, after the RB injury owner (LATE_OWNERS order)
     _apply_sim_realism(plan, target, receipt, progress)
+    # b780-cv7: receivers block for a scrambling QB, the last late allocator owner (LATE_OWNERS order)
+    _apply_scramble_blocking(plan, target, receipt, progress)
     # b778-pg2: the Player Progress screen and weekly snapshot (a late allocator owner after force_out)
     # b778-cb1: cornerback tackle credit, after force_out
     # b778-sd4: modern clock digits, after modern sideline catches
@@ -6868,6 +6925,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("simulated RB short injuries did not survive the final passes")  # b779-sim2
     if plan.sim_realism and _core_module("nfl2k5_sim_realism").status(_xbe_bytes(target)) != "applied":
         raise ValueError("simulated season realism did not survive the final passes")  # b779-sim2 r4
+    if plan.scramble_blocking and _core_module("nfl2k5_scramble_blocking").status(_xbe_bytes(target)) != "applied":
+        raise ValueError("scramble blocking did not survive the final passes")  # b780-cv7
     if plan.sim_cb_tackles and _core_module("nfl2k5_sim_cb_tackles").status(_xbe_bytes(target)) != "applied":  # b778-cb1
         raise ValueError("cornerback tackle credit did not survive the final passes")
     if plan.sim_stats and _core_module("nfl2k5_sim_stats").status(_xbe_bytes(target)) != "applied":  # b778-sim1

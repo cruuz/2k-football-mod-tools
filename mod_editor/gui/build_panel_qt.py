@@ -254,6 +254,8 @@ from mod_editor.core import nfl2k5_practice_injuries as _practice_injuries  # no
 from mod_editor.core import nfl2k5_ball_carrier_ai as _ball_carrier_ai  # noqa: E402
 # b778-kr1: return coverage takes pursuit angles on kick and punt returns (on in the Advanced and Experimental presets).
 from mod_editor.core import nfl2k5_return_coverage as _return_coverage  # noqa: E402
+# b780-cv7: receivers block for a scrambling QB (off in every preset: a feel test for Noah).
+from mod_editor.core import nfl2k5_scramble_blocking as _scramble_blocking  # noqa: E402
 from mod_editor.core import nfl2k5_star_retention as _star_retention  # noqa: E402
 from mod_editor.core import nfl2k5_alien_prospect as _alien_prospect  # noqa: E402
 from mod_editor.core import nfl2k5_star_career as _star_career  # noqa: E402  b778-st2
@@ -294,6 +296,7 @@ BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                  ("cpu_ball_carriers", "CPU carriers in bounds; QBs slide past sticks (experimental)",
                   _ball_carrier_ai.HELP_TEXT),  # b778-ai5
                  ("return_coverage", _return_coverage.BUILD_CAPTION, _return_coverage.HELP_TEXT),  # b778-kr1
+                 ("scramble_blocking", _scramble_blocking.BUILD_CAPTION, _scramble_blocking.HELP_TEXT),  # b780-cv7
                  ("star_career", _star_career.BUILD_CAPTION, _star_career.HELP_TEXT),  # b778-st2
                  ("sportscenter_lineup", _sportscenter_lineup.BUILD_CAPTION, _sportscenter_lineup.HELP_TEXT),  # b778-sc2
                  ("inbox_standings", _inbox_standings.BUILD_CAPTION, _inbox_standings.HELP_TEXT),  # b778-pc3

@@ -200,5 +200,26 @@ def apply(payload):
                         reservations=[r for r in space.reservations(result) if r["owner"] == OWNER])
 
 
+def main(argv=None):
+    """``python3 -m mod_editor.core.nfl2k5_scramble_blocking source.xbe new-copy.xbe``: write a patched copy."""
+    import argparse
+    import json
+    from pathlib import Path
+    parser = argparse.ArgumentParser(description="Receivers block for a scrambling QB (experimental test).")
+    parser.add_argument("source", type=Path, help="a user-owned USA default.xbe (retail or a verified scale-out image)")
+    parser.add_argument("output", type=Path, help="the new copy to write (never the source)")
+    args = parser.parse_args(argv)
+    if args.output.resolve() == args.source.resolve():
+        parser.error("write a new copy; the source is never changed")
+    patched, receipt = apply(args.source.read_bytes())
+    args.output.write_bytes(patched)
+    print(json.dumps({k: v for k, v in receipt.items() if k != "reservations"}, indent=2))
+    return 0
+
+
 __all__ = ["OWNER", "REQUESTS", "CODE_SIZE", "DATA_SIZE", "HOOK", "GUARDS", "SYMBOLS", "CONVERTED_ROLES", "PAST_LINE_CM",
-           "BUILD_CAPTION", "HELP_TEXT", "code_for", "labels", "sites", "allocation", "status", "apply"]
+           "BUILD_CAPTION", "HELP_TEXT", "code_for", "labels", "sites", "allocation", "status", "apply", "main"]
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

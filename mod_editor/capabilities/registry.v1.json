@@ -8175,6 +8175,67 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_scramble_blocking <source.xbe> <new-copy.xbe>",
+        "module": "mod_editor/core/nfl2k5_scramble_blocking.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "mod_editor/core/nfl2k5_scramble_blocking.py",
+        "tools/nfl2k5_scramble_blocking.S",
+        "tests/mod_editor/test_nfl2k5_scramble_blocking.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL. Build-time option and a feel test for Noah: once a quarterback carrying the ball is half a yard past the line on a play with no forward pass, his CPU tight ends, receivers and backs who are not blocking get the game's drive block, one blocker per man; off in every preset."
+      },
+      "id": "nfl2k5.gameplay.scramble_blocking",
+      "input_constraints": [
+        "User-owned pinned USA default.xbe, or a verified scale-out image (the released SOFTDRINK v0.8 executable gains no file size); the AI tick 0x214FC0, the block installer 0x23F450, its refresh 0x23CD60, the engaged-pair test 0x231EE0, the block manager 0x23DBE0 and the block-task test 0x23ABA0 must be retail. Foreign or mixed bytes refuse.",
+        "One 5-byte call at the AI tick's first instruction (0x214FC0), an 816-byte late code owner and a 16-byte late state owner (nfl2k5_xbe_space.LATE_OWNERS, last). Installed images keep the rule; rebuild from a verified base to remove it."
+      ],
+      "portme": [
+        "Build a disc with this option, play Practice or Quick Game, tuck the ball and run past the line with the quarterback (and let a CPU quarterback scramble), and compare the receivers with a disc built without the option."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and instructions; never distribute generated XBEs or retail resources.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Bounded native Unicorn execution of the installed hook, the game's block installer, selector, refresh and drive-block tick on synthetic players (retail and the released v0.8 executable). Not witnessed by Noah; the feel is his call.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false | true; default false in Basic, Advanced and Experimental; explicit opt-in",
+            "name": "scramble_blocking",
+            "required": true
+          }
+        ],
+        "notes": "Build-time only; there is no in-game toggle. Human and CPU quarterbacks get the same rule."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "one five-byte call and named 816-byte code and 16-byte state allocations",
+        "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+      },
+      "summary": "Receivers and backs block downfield for a quarterback who runs past the line: the game's own drive block, one blocker per defender.",
+      "surface": "gameplay_tuning_sliders",
+      "title": "Receivers block for a scrambling QB (experimental test)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_scramble_blocking"
+    },
+    {
+      "backend": {
         "command": "python3 -m mod_editor.core.nfl2k5_scramble_tuning <source.xbe> <new-copy.xbe>",
         "module": "mod_editor/core/nfl2k5_scramble_tuning.py",
         "operation": "write"
