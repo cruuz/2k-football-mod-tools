@@ -105,8 +105,8 @@ class SwapMoveTests(unittest.TestCase):
     def test_a_swap_writes_two_entries_in_club_order_and_swapping_back_empties_the_document(self) -> None:
         staff = ui.swap_head_coaches(self.rows, ui.empty(), "LV", "KC")
         self.check(staff)
-        self.assertEqual([(e["team"], e["coach"], e["playbook"]) for e in staff["head_coaches"]],
-                         [("KC", self.names["OAK"], "club"), ("OAK", self.names["KC"], "club")])
+        self.assertEqual(staff["head_coaches"], [{"team": "KC", "coach": self.names["OAK"]},
+                                                 {"team": "OAK", "coach": self.names["KC"]}])    # the engine's own canonical form
         self.assertEqual(staff["created_coaches"], [])
         lines = ui.describe(self.rows, staff)
         self.assertEqual(lines, [f"KC head coach: {self.names['KC']} → {self.names['OAK']} (from LV)",
@@ -162,7 +162,7 @@ class NewCoachTests(unittest.TestCase):
                                               {"first": " Pat ", "last": "Shurmur", "bio": ["A fine mind", "", ""], "body": 21,
                                                "style": "SF", "ratings": {"overall": 70}, "playcalling_run": 40})
         self.assertEqual(new_id, "pat-shurmur")
-        self.assertEqual(staff["head_coaches"], [{"team": "NYG", "created": "pat-shurmur", "playbook": "club"}])
+        self.assertEqual(staff["head_coaches"], [{"team": "NYG", "created": "pat-shurmur"}])
         spec = staff["created_coaches"][0]
         self.assertEqual((spec["id"], spec["first"], spec["last"], spec["bio"], spec["body"], spec["photo"], spec["style"],
                           spec["ratings"], spec["playcalling_run"]),
@@ -173,7 +173,7 @@ class NewCoachTests(unittest.TestCase):
 
     def test_ids_are_unique_and_a_displaced_new_coach_leaves_the_document(self) -> None:
         staff, first = ui.hire_created_coach(self.rows, ui.empty(), "KC", {"first": "Pat", "last": "Shurmur"})
-        staff, second = ui.hire_created_coach(self.rows, staff, "DAL", {"first": "Pat", "last": "Shurmur"})
+        staff, second = ui.hire_created_coach(self.rows, staff, "DAL", {"first": "Pat", "last": "Shurmur."})   # same slug, other name
         self.assertEqual((first, second), ("pat-shurmur", "pat-shurmur-2"))
         self.assertEqual([c["id"] for c in staff["created_coaches"]], ["pat-shurmur", "pat-shurmur-2"])
         staff, third = ui.hire_created_coach(self.rows, staff, "KC", {"first": "Wes", "last": "Welker"})
@@ -209,6 +209,45 @@ class NewCoachTests(unittest.TestCase):
         self.assertNotIn(31, ui.COACH_BODIES)
 
 
+class NameRuleTests(unittest.TestCase):
+    """A staff plan tells coaches apart by name, so the page never builds an ambiguous one."""
+
+    def test_two_clubs_with_one_head_coach_name_cannot_be_moved_by_name(self) -> None:
+        rows = rows_2026()
+        twin = rows[8].name                                                    # SD gets the name KC already has
+        rows[8] = ui.HeadCoachRow(rows[8].club, "SD club", 8, *rows[9].name.split(" ", 1))
+        self.assertEqual(rows[8].name, rows[9].name)
+        for call in (lambda: ui.swap_head_coaches(rows, ui.empty(), "KC", "DAL"),
+                     lambda: ui.swap_head_coaches(rows, ui.empty(), "DAL", "SD"),
+                     lambda: ui.move_head_coach(rows, ui.empty(), rows[9].name, "DAL")):
+            with self.assertRaisesRegex(ui.StaffUiError, "more than one club on this roster"):
+                call()
+        self.assertNotEqual(twin, rows[8].name)
+        # clubs that do not involve the twins still work
+        self.assertEqual(ui.problems(rows, ui.swap_head_coaches(rows, ui.empty(), "DAL", "PHI")), [])
+
+    def test_a_new_coach_cannot_take_a_name_the_plan_already_has(self) -> None:
+        rows = rows_2026()
+        with self.assertRaisesRegex(ui.StaffUiError, "already a head coach's name"):
+            ui.hire_created_coach(rows, ui.empty(), "NYG", {"first": rows[9].name.split(" ", 1)[0], "last": rows[9].name.split(" ", 1)[1]})
+        staff, _id = ui.hire_created_coach(rows, ui.empty(), "NYG", {"first": "Pat", "last": "Shurmur"})
+        with self.assertRaisesRegex(ui.StaffUiError, "already a head coach's name"):
+            ui.hire_created_coach(rows, staff, "DAL", {"first": "pat", "last": "SHURMUR"})
+
+    def test_a_new_coach_brings_a_playbook_only_with_a_play_calling_style(self) -> None:
+        rows = rows_2026()
+        plain, _id = ui.hire_created_coach(rows, ui.empty(), "NYG", {"first": "Pat", "last": "Shurmur"})
+        with self.assertRaisesRegex(ui.StaffUiError, "calls plays like another coach"):
+            ui.set_playbook(rows, plain, "NYG", "coach")
+        styled, _id = ui.hire_created_coach(rows, ui.empty(), "NYG", {"first": "Pat", "last": "Shurmur", "style": "SF"})
+        brought = ui.set_playbook(rows, styled, "NYG", "coach")
+        self.assertEqual(brought["head_coaches"], [{"team": "NYG", "created": "pat-shurmur", "playbook": "coach"}])
+        self.assertEqual(ui.problems(rows, brought), [])
+        broken = json.loads(json.dumps(brought))
+        del broken["created_coaches"][0]["style"]
+        self.assertTrue(any("calls plays like another coach" in line for line in ui.problems(rows, broken)))
+
+
 class CoordinatorAndPlaybookTests(unittest.TestCase):
     def setUp(self) -> None:
         self.rows = rows_2026()
@@ -237,14 +276,14 @@ class CoordinatorAndPlaybookTests(unittest.TestCase):
             ui.set_playbook(self.rows, ui.empty(), "KC", "coach")
         staff = ui.swap_head_coaches(self.rows, ui.empty(), "KC", "DAL")
         staff = ui.set_playbook(self.rows, staff, "KC", "coach")
-        self.assertEqual({e["team"]: e["playbook"] for e in staff["head_coaches"]}, {"KC": "coach", "DAL": "club"})
+        self.assertEqual({e["team"]: e.get("playbook", "club") for e in staff["head_coaches"]}, {"KC": "coach", "DAL": "club"})
         self.assertIn("brings his playbook", ui.describe(self.rows, staff)[0])
         self.assertEqual(ui.problems(self.rows, staff), [])
         with self.assertRaisesRegex(ui.StaffUiError, "playbook must be"):
             ui.set_playbook(self.rows, staff, "KC", "both")
         # a new arrival resets the choice, and swapping the pair back empties the document
         staff = ui.swap_head_coaches(self.rows, staff, "KC", "PHI")
-        self.assertEqual({e["team"]: e["playbook"] for e in staff["head_coaches"]}.get("KC"), "club")
+        self.assertEqual({e["team"]: e.get("playbook", "club") for e in staff["head_coaches"]}.get("KC"), "club")
         self.assertTrue(ui.is_empty(ui.reset(staff)))
 
 
@@ -321,24 +360,43 @@ class EngineContractTests(unittest.TestCase):
         self.assertIsNone(ui.engine())
         rows = rows_2026()
         staff = ui.swap_head_coaches(rows, ui.empty(), "KC", "DAL")
-        self.assertEqual(ui.engine_plan(staff, b""), ([], []))
+        self.assertEqual(ui.engine_plan(staff, b""), ui.EnginePlan())
         self.assertEqual(ui.engine_normalized(staff), staff)
 
-    @unittest.skipUnless(ui.engine() is not None, "nfl2k5_coach_staff (job b780-c2-staff) is not in this tree")
-    def test_the_documented_api_exists_and_accepts_the_pages_documents(self) -> None:
+    @unittest.skipUnless(ui.engine() is not None and DISC.is_file(),
+                         "needs nfl2k5_coach_staff (job b780-c2-staff) and the released disc")
+    def test_the_engine_accepts_the_pages_documents_and_makes_the_same_ones(self) -> None:
         engine = ui.engine()
-        for name in ("CLUBS", "club", "head_coach_directory", "coordinator_directory", "empty", "normalize", "validate",
-                     "move_head_coach", "swap_head_coaches", "hire_created_coach", "fire_head_coach",
-                     "set_defensive_coordinator", "set_playbook", "reset", "read_roster", "plan", "apply_to_body"):
-            self.assertTrue(hasattr(engine, name), name)
-        rows = rows_2026()
+        document = rr.load_image(DISC)
+        rows = ui.read_head_coaches(document)
+        body = document.to_body()
         staff = ui.swap_head_coaches(rows, ui.empty(), "KC", "DAL")
-        staff, _id = ui.hire_created_coach(rows, staff, "NYG", {"first": "Pat", "last": "Shurmur", "body": 21, "style": "SF",
-                                                                 "ratings": {"overall": 70}})
+        staff, new_id = ui.hire_created_coach(rows, staff, "NYG", {"first": "Pat", "last": "Shurmur", "body": 21, "style": "SF",
+                                                                    "ratings": {"overall": 70}, "bio": ["A patient play caller."]})
         staff = ui.set_coordinator(rows, staff, "KC", "PHI")
         staff = ui.set_playbook(rows, staff, "KC", "coach")
-        self.assertEqual(engine.validate(engine.normalize(staff)), [])
-        self.assertEqual(engine.validate(staff), [])
+        staff = ui.set_playbook(rows, staff, "NYG", "coach")
+        normal = engine.normalize(staff)                          # raises StaffError when the engine disagrees
+        self.assertEqual(normal["head_coaches"], staff["head_coaches"])
+        self.assertEqual(normal["defensive_coordinators"], staff["defensive_coordinators"])
+        self.assertEqual([c["id"] for c in normal["created_coaches"]], [new_id])
+        plan = engine.plan(staff, body)
+        self.assertEqual(list(plan.errors), [])
+        answer = ui.engine_plan(staff, body)
+        self.assertEqual((answer.errors, len(answer.clubs)), ((), 32))
+        for key in ("team", "playbook_from", "profile", "native_reason"):
+            self.assertIn(key, answer.clubs["KC"])
+        self.assertEqual(answer.clubs["KC"]["playbook_from"], "DAL")
+        # the engine's own editing helpers write the documents the page writes
+        self.assertEqual(engine.swap_head_coaches(engine.empty(), "KC", "DAL", body), ui.swap_head_coaches(rows, ui.empty(), "KC", "DAL"))
+        self.assertEqual(engine.set_defensive_coordinator(engine.empty(), "KC", "PHI"), ui.set_coordinator(rows, ui.empty(), "KC", "PHI"))
+        self.assertEqual(engine.move_head_coach(engine.empty(), rows[11].name, "KC", body), ui.move_head_coach(rows, ui.empty(), rows[11].name, "KC"))
+        self.assertEqual(engine.hire_created_coach(engine.empty(), "NYG", ui.created_coaches(staff)[new_id])["head_coaches"],
+                         [{"team": "NYG", "created": new_id}])
+        # and refuses what the page refuses
+        for bad in (dict(ui.empty(), head_coaches=[{"team": "KC", "coach": rows[11].name}]),):
+            self.assertTrue(engine.plan(bad, body).errors)
+            self.assertTrue(ui.problems(rows, bad))
 
 
 @unittest.skipUnless(DISC.is_file(), f"the released SOFTDRINK disc is not at {DISC}")

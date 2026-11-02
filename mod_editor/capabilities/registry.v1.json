@@ -10601,6 +10601,73 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_staff_ui",
+        "module": "mod_editor/core/nfl2k5_staff_ui.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/mod_editor/nfl2k5_staff_ui.md",
+        "tests/mod_editor/test_b780_c4_coaches_panel_qt.py",
+        "tests/mod_editor/test_b780_c4_staff_ui_model.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. The Rosters > Coaches tab edits the staff section of the roster edits; the build-time writer is nfl2k5_coach_staff. Nothing is built from it unless the roster edits are exported and included in Build."
+      },
+      "id": "nfl2k5.rosters.coach_staff",
+      "input_constraints": [
+        "A game disc roster (version 17 or 18) with the 32 club head coach records. A roster read from an Xbox save is refused: use the Franchise page.",
+        "One head coach and one defensive coordinator per club, nobody in two seats, nobody lost without being replaced; every document the page writes keeps those rules and problems() names what is wrong with a hand-written one.",
+        "A new coach has a first and last name of 24 characters at most, up to three biography lines of 52, one of the game's coach models and an overall rating 0 to 99.",
+        "Head coaches are matched by the full name the loaded roster holds; coordinators come from the Studio's 2026 data (data/vip/defense_identity_2026.json).",
+        "A staff plan cannot travel inside a complete roster with faces file yet."
+      ],
+      "portme": [
+        "Merge with the build-time writer nfl2k5_coach_staff (job c2-staff); play a build with a moved coach and report what the announcer, the Coach Matchup screen and the CPU's play calling do."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and recipes; never distribute the generated game executable, a disc or a save.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "EXPERIMENTAL / UNWITNESSED. Offline only: the page and its document run against synthetic rosters and the released SOFTDRINK v0.8 disc's roster (read only). No disc has been built from a plan and no moved coach has been played.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "roster edits .json; the staff section is written beside the player edits",
+            "name": "roster_edits",
+            "required": false
+          },
+          {
+            "allowed": "staff file .json (schema nfl2k5_coach_staff/v1)",
+            "name": "staff_file",
+            "required": false
+          }
+        ],
+        "notes": "The plan rides inside the roster edits (BuildPlan.roster_edits); there is no separate Build option."
+      },
+      "source_container": {
+        "format": "Xbox disc ROST (coach table and team coach pointers)",
+        "hash_pins": [],
+        "resource": "35 coach records of 0xA8 bytes at root +0x30/+0x34; team +0x14C points at a record",
+        "retail_file": "user-owned NFL 2K5 USA disc"
+      },
+      "summary": "Plan the coaching staff of a build on the Rosters page: swap or hire head coaches, create a coach, change a defensive coordinator, choose whether a moved coach brings his playbook, and keep a plan as a file.",
+      "surface": "players_rosters",
+      "title": "Coaching staff plan (experimental, unwitnessed)",
+      "validation_command": "python3 -m tests.mod_editor.test_b780_c4_staff_ui_model"
+    },
+    {
+      "backend": {
         "command": "python3 -m mod_editor.core.nfl2k5_espn25_rosters build source.iso historic.iso --receipt historic-receipt.json",
         "module": "mod_editor/core/nfl2k5_espn25_rosters.py",
         "operation": "write"
@@ -10952,6 +11019,73 @@
       "surface": "saves",
       "title": "NFL 2K5 save-container and slider inventory",
       "validation_command": "bash tools/validate_nfl2k5_xbox_save_inventory.sh"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_franchise_save swap SAVE_FOLDER NEW_FOLDER DET SF",
+        "module": "mod_editor/core/nfl2k5_franchise_save.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/mod_editor/franchise_save.md",
+        "tests/mod_editor/test_b780_c4_staff_franchise_panel.py",
+        "tests/mod_editor/test_b780_c4_staff_save.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Franchise page > Coaches: Swap with another club, Fire and hire, Hire for a club. Each is one journaled edit written into a re-signed copy."
+      },
+      "id": "nfl2k5.saves.franchise_coach_moves",
+      "input_constraints": [
+        "A signature-verified franchise SAVEGAME.DAT (720,044 bytes, or the grown capacity arena); the source is never changed, the copy is written to a new folder.",
+        "Only the 32 league clubs employ coaches; exhibition squads keep the coach record they borrow.",
+        "A new coach's name needs the save's coach text to be one back-to-back region that nothing else points at (SOFTDRINK and Franchise1 are; Finn's 2004 save is not) and to fit the game's 5,506-byte region; swaps and hiring a coach already in the save always work.",
+        "Names are 24 characters at most, biography lines 52, plain printable ASCII.",
+        "The game's empty coach placeholders cannot be hired; a coach who already leads a club is swapped, not hired."
+      ],
+      "portme": [
+        "Load a copy in the game and report the Coach's Card, the Coach Matchup screen, the announcer and the sideline for a swapped club."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and recipes; never distribute the generated game executable, a disc or a save.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "EXPERIMENTAL / UNWITNESSED. Offline replay and byte-exact signed round trips on a synthetic arena and on the Franchise1 and Finn fixtures. The game has not loaded a save with a moved coach.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "franchise save folder, SAVEGAME.DAT or zip",
+            "name": "save",
+            "required": true
+          },
+          {
+            "allowed": "an empty folder for the new signed copy",
+            "name": "output",
+            "required": true
+          }
+        ],
+        "notes": "swap SAVE OUT TEAM TEAM | hire SAVE OUT TEAM COACH | replace SAVE OUT TEAM FIRST LAST [BIO...]; coaches SAVE lists the clubs' head coaches and the coaches no club employs."
+      },
+      "source_container": {
+        "format": "Xbox franchise save arena (ROST version 0 or 1)",
+        "hash_pins": [],
+        "resource": "team +0x14C coach pointer, coach record +0x1C/+0x26/+0x28/+0x2A counters, +0x1A flags, +0x40 photo, the 175 coach strings",
+        "retail_file": "user-owned franchise save"
+      },
+      "summary": "Swap two clubs' head coaches, fire a head coach and hire a coach already in the save, or fire him and hire a new person, inside a franchise save, with a re-signed copy and a plain reason for every refusal.",
+      "surface": "saves",
+      "title": "Franchise save head coach moves (experimental, unwitnessed)",
+      "validation_command": "python3 -m tests.mod_editor.test_b780_c4_staff_save"
     },
     {
       "backend": {

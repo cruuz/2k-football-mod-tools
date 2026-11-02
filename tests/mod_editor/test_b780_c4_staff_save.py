@@ -8,6 +8,8 @@ that the coach text writer keeps every other coach's text, and that a signed cop
 
 from __future__ import annotations
 
+import contextlib
+import io
 import struct
 import sys
 import tempfile
@@ -339,6 +341,53 @@ class RoundTripTests(unittest.TestCase):
             self.assertEqual((back.coach_for_team(1).name, back.coach_for_team(1).info[0]), ("Dan Quinn", "Defence first."))
             self.assertEqual(back.coach_for_team(0).name, "Mike Holmgren")
             self.assertEqual([c.name for c in back.unemployed_coaches()], ["Bill Belichick"])
+
+
+class CommandLineTests(unittest.TestCase):
+    """``python3 -m mod_editor.core.nfl2k5_franchise_save``: the same moves from a terminal, always into a new folder."""
+
+    def run_cli(self, *argv: str) -> tuple[int, str]:
+        text = io.StringIO()
+        with contextlib.redirect_stdout(text):
+            code = fs.main(list(argv))
+        return code, text.getvalue()
+
+    def test_list_swap_hire_and_replace_write_signed_copies_and_never_the_source(self) -> None:
+        payload = synthetic_staff_franchise()
+        with tempfile.TemporaryDirectory() as td:
+            source = write_container(Path(td) / "source", payload)
+            code, text = self.run_cli("coaches", str(source))
+            self.assertEqual(code, 0)
+            self.assertIn(" 0 IND  Bill Belichick", text)
+            self.assertIn("no club  #3  Mike Holmgren", text)
+            code, text = self.run_cli("swap", str(source), str(Path(td) / "a"), "IND", "sf")
+            self.assertEqual((code, "swap_head_coaches: done" in text), (0, True))
+            back = fs.FranchiseSave.load(Path(td) / "a")
+            self.assertEqual((back.coach_for_team(0).name, back.coach_for_team(2).name), ("Kyle Shanahan", "Bill Belichick"))
+            code, _text = self.run_cli("hire", str(source), str(Path(td) / "b"), "1", "3")
+            self.assertEqual(code, 0)
+            self.assertEqual(fs.FranchiseSave.load(Path(td) / "b").coach_for_team(1).name, "Mike Holmgren")
+            code, _text = self.run_cli("replace", str(source), str(Path(td) / "c"), "SF", "Dan", "Quinn", "A defensive mind.")
+            self.assertEqual(code, 0)
+            self.assertEqual(fs.FranchiseSave.load(Path(td) / "c").coach_for_team(2).info[0], "A defensive mind.")
+            self.assertEqual((source / "53450030" / "0001" / "SAVEGAME.DAT").read_bytes(), payload)
+
+    def test_refusals_print_a_reason_and_return_one(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            source = write_container(Path(td) / "source", synthetic_staff_franchise())
+            for argv, message in ((("swap", str(source), str(Path(td) / "x"), "IND", "XYZ"), "not a club in this save"),
+                                  (("swap", str(source), str(Path(td) / "x"), "IND"), "swap needs two clubs"),
+                                  (("hire", str(source), str(Path(td) / "x"), "IND", "4"), "empty placeholder"),
+                                  (("replace", str(source), str(Path(td) / "x"), "IND", "Dan"), "replace needs a club"),
+                                  (("swap", str(source)), "give the folder")):
+                code, text = self.run_cli(*argv)
+                self.assertEqual(code, 1, argv)
+                self.assertIn(message, text)
+            self.assertFalse((Path(td) / "x").exists())
+            first, _ = self.run_cli("swap", str(source), str(Path(td) / "once"), "IND", "SF")
+            again, text = self.run_cli("swap", str(source), str(Path(td) / "once"), "IND", "SF")
+            self.assertEqual((first, again), (0, 1))
+            self.assertIn("exists", text)
 
 
 @unittest.skipUnless(FRANCHISE1.is_file(), f"private Franchise1 fixture missing under {FIXTURES}")

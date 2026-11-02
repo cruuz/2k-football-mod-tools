@@ -121,7 +121,7 @@ class PagePlanTests(_Case):
         self.assertEqual(label, f"LV and KC swap head coaches: {self.names['LV']} goes to KC, {self.names['KC']} goes to LV")
         self.assertEqual((before, after), (ui.empty(), page.staff()))
         self.assertTrue(page.has_changes())
-        self.assertEqual(page.export_staff()["head_coaches"][0], {"team": "KC", "coach": self.names["LV"], "playbook": "club"})
+        self.assertEqual(page.export_staff()["head_coaches"][0], {"team": "KC", "coach": self.names["LV"]})
         self.assertEqual(page.change_count(), 2)
 
     def test_the_swap_button_asks_for_the_other_club(self) -> None:
@@ -192,7 +192,7 @@ class PagePlanTests(_Case):
         self.assertEqual(seen["bodies"], len(ui.COACH_BODIES))
         self.assertIn("Model c21", seen["body_text"])
         staff = page.staff()
-        self.assertEqual(staff["head_coaches"], [{"team": "NYG", "created": "pat-shurmur", "playbook": "club"}])
+        self.assertEqual(staff["head_coaches"], [{"team": "NYG", "created": "pat-shurmur"}])
         spec = staff["created_coaches"][0]
         self.assertEqual((spec["first"], spec["last"], spec["body"], spec["style"], spec["ratings"], spec["bio"][0]),
                          ("Pat", "Shurmur", 21, "SF", {"overall": 72}, "A patient play caller."))
@@ -248,12 +248,12 @@ class PagePlanTests(_Case):
         self.assertTrue(page.playbook_check.isEnabled())
         self.assertFalse(page.playbook_check.isChecked())
         page.playbook_check.setChecked(True)
-        entries = {e["team"]: e["playbook"] for e in page.staff()["head_coaches"]}
+        entries = {e["team"]: e.get("playbook", "club") for e in page.staff()["head_coaches"]}
         self.assertEqual(entries, {"KC": "coach", "DAL": "club"})
         self.assertEqual(self.edits[-1][0], "KC: the new coach brings his playbook")
         self.assertIn("brings his playbook", page.changes_text.toPlainText())
         page.playbook_check.setChecked(False)
-        self.assertEqual({e["team"]: e["playbook"] for e in page.staff()["head_coaches"]}["KC"], "club")
+        self.assertEqual({e["team"]: e.get("playbook", "club") for e in page.staff()["head_coaches"]}["KC"], "club")
         self.assertFalse(page.set_playbook("PHI", "coach"))
         self.assertIn("only a coach who arrives", page.state_label.text())
 
@@ -337,6 +337,84 @@ class PagePlanTests(_Case):
         self.assertEqual(face_pixmap(None, "Pat Shurmur").toImage(), tile.toImage())
         self.assertEqual(face_pixmap("ZZZ", "Pat Shurmur").toImage(), tile.toImage())
         self.assertEqual(ui.face_path("ZZZ"), None)
+
+
+class _FakeClubPlan:
+    def __init__(self, **data) -> None:
+        self.data = data
+
+    def as_dict(self) -> dict:
+        return dict(self.data)
+
+
+class _FakeEngine:
+    """The slice of nfl2k5_coach_staff the page talks to: plan() and normalize()."""
+
+    def __init__(self) -> None:
+        self.seen: list[tuple[dict, bytes]] = []
+
+    def plan(self, staff, body):
+        self.seen.append((dict(staff), bytes(body)))
+        return type("Plan", (), {
+            "errors": ["Dallas: nothing is wrong, this is a test"], "notes": ["Kansas City: head coach from Dallas"],
+            "clubs": [_FakeClubPlan(team="KC", playbook_from="DAL", profile="DAL", native_reason=None),
+                      _FakeClubPlan(team="DAL", playbook_from="DAL", profile=None,
+                                    native_reason="Andy Reid has no 2026 CPU coach profile on this roster")]})()
+
+    def normalize(self, staff):
+        return dict(staff, note="normalized by the engine")
+
+
+class EngineWordsTests(_Case):
+    def setUp(self) -> None:
+        self.page = CoachesPanel()
+        self.rows = rows_2026()
+        self.page.set_rows(self.rows)
+        self.page.body_provider = lambda: b"roster body"
+        self.engine = _FakeEngine()
+
+    def tearDown(self) -> None:
+        self.page.deleteLater()
+        self.pump()
+
+    def test_the_engines_answer_for_each_club_is_on_the_page(self) -> None:
+        with mock.patch.object(ui, "engine", return_value=self.engine):
+            self.assertTrue(self.page.swap_clubs("KC", "DAL"))
+            self.assertEqual(self.engine.seen[-1][1], b"roster body")
+            names = {code: name for name, code in ui.head_coach_homes().items()}
+            self.page.select_club("KC")
+            self.assertEqual(self.page.coach_engine.text(),
+                             f"Plays the Cowboys playbook. Automatic 2026 play calling: on, the way {names['DAL']} calls plays.")
+            self.page.select_club("DAL")
+            self.assertEqual(self.page.coach_engine.text(),
+                             "Automatic 2026 play calling: off. Andy Reid has no 2026 CPU coach profile on this roster.")
+            notes = self.page.notes_text.text()
+            self.assertIn("Dallas: nothing is wrong, this is a test", notes)
+            self.assertIn("Kansas City: head coach from Dallas", notes)
+            self.assertNotIn("no build-time staff engine yet", notes)
+            self.page.select_club("PHI")
+            self.assertEqual(self.page.coach_engine.text(), "")                           # a club the plan does not name
+            self.assertEqual(self.page.export_staff()["note"], "normalized by the engine")
+
+    def test_nothing_is_asked_of_the_engine_until_there_is_a_change(self) -> None:
+        with mock.patch.object(ui, "engine", return_value=self.engine):
+            self.page.select_club("KC")
+            self.assertEqual(self.engine.seen, [])
+            self.assertEqual(self.page.coach_engine.text(), "")
+            self.page.swap_clubs("KC", "DAL")
+            self.page.reset_all()
+            self.assertEqual(self.page.coach_engine.text(), "")
+            self.assertEqual(len(self.engine.seen), 1)
+
+    def test_an_engine_that_raises_does_not_break_the_page(self) -> None:
+        class Broken:
+            def plan(self, staff, body):
+                raise RuntimeError("the engine fell over")
+
+        with mock.patch.object(ui, "engine", return_value=Broken()):
+            self.assertTrue(self.page.swap_clubs("KC", "DAL"))
+            self.assertIn("the engine fell over", self.page.notes_text.text())
+            self.assertEqual(self.page.table.item(0, 0).text(), "SF 49ers")
 
 
 class InsideRostersTests(_Case):

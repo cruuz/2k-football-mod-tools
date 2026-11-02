@@ -1524,6 +1524,65 @@ def is_franchise_save(payload: bytes) -> bool:
     return True
 
 
+def _team_argument(save: FranchiseSave, text: str) -> int:
+    """A club given as its index or its abbreviation (SF, KC, LV...)."""
+
+    if text.isdigit():
+        return int(text)
+    for team in range(save.league_team_count):
+        if save.team_abbreviation(team).casefold() == text.strip().casefold():
+            return team
+    raise FranchiseSaveError(f"{text!r} is not a club in this save")
+
+
+def main(argv: Sequence[str] | None = None) -> int:
+    """``python3 -m mod_editor.core.nfl2k5_franchise_save coaches|swap|hire|replace SAVE [OUT ...]``.
+
+    ``coaches`` lists every club's head coach and the coaches no club employs.  The others write a new re-signed copy
+    into the folder OUT (which must not exist): ``swap SAVE OUT TEAM TEAM``, ``hire SAVE OUT TEAM COACH_INDEX`` (a coach
+    from ``coaches``) and ``replace SAVE OUT TEAM FIRST LAST [BIO ...]``.  The source save is never changed.
+    """
+
+    import argparse
+
+    parser = argparse.ArgumentParser(prog="nfl2k5_franchise_save", description=main.__doc__.split("\n\n")[0])
+    parser.add_argument("command", choices=("coaches", "swap", "hire", "replace"))
+    parser.add_argument("save", help="a franchise save folder, SAVEGAME.DAT or zip")
+    parser.add_argument("rest", nargs="*", help="OUT and the arguments of the command")
+    args = parser.parse_args(argv)
+    try:
+        save = FranchiseSave.load(args.save)
+        if args.command == "coaches":
+            by_index = {c.index: c for c in save.coaches()}
+            for team, index in save.head_coaches().items():
+                coach = by_index.get(index) if index is not None else None
+                print(f"{team:2d} {save.team_abbreviation(team):4} {coach.name if coach else '(none)'}")
+            for coach in save.unemployed_coaches():
+                print(f"   no club  #{coach.index}  {coach.name}")
+            return 0
+        _require(len(args.rest) >= 1, "give the folder to write the new copy into")
+        out, rest = Path(args.rest[0]), args.rest[1:]
+        if args.command == "swap":
+            _require(len(rest) == 2, "swap needs two clubs")
+            receipt = save.swap_head_coaches(_team_argument(save, rest[0]), _team_argument(save, rest[1]))
+        elif args.command == "hire":
+            _require(len(rest) == 2 and rest[1].isdigit(), "hire needs a club and a coach number from `coaches`")
+            receipt = save.hire_head_coach(_team_argument(save, rest[0]), int(rest[1]))
+        else:
+            _require(len(rest) >= 3, "replace needs a club, a first name and a last name")
+            receipt = save.replace_head_coach(_team_argument(save, rest[0]), rest[1], rest[2], rest[3:])
+        written = save.write(out)
+    except (FranchiseSaveError, OSError, ValueError) as exc:
+        print(f"refused: {exc}")
+        return 1
+    print(f"{receipt['operation']}: done; signed copy written to {written.get('target', out)}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
+
+
 __all__ = ["FranchiseSave", "FranchiseSaveError", "SeasonHeader", "Game", "Coach", "TeamSeason",
            "InjuredReserveEntry", "Region", "REGIONS", "regions_cover_file", "load_franchise", "is_franchise_save",
            "FRANCHISE_SAVE_SIZE", "SEASON_BLOCK", "FRONT_OFFICE_BLOCK", "TEAM_STAT_FIELDS", "TEAM_STAT_NAMES",

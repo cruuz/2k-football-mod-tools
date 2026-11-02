@@ -56,6 +56,9 @@ SOURCE_NOTE = {
     "save": ("This roster came from an Xbox save. Plan staff changes for a build on a game disc. "
              "To change the coaches inside a franchise save, use the Franchise tab, Coaches."),
 }
+PLAYBOOK_TIP = ("Off: the club keeps its own playbook and only the coach's play calling style arrives. On: the club's "
+                "playbook becomes a copy of the playbook of the club he came from (a new coach borrows the playbook of the "
+                "coach he plays like).")
 FACE_SIZE = QSize(96, 72)
 _FACES: dict[tuple[str, int, int], QPixmap] = {}
 
@@ -270,6 +273,7 @@ class CoachesPanel(QWidget):
         self._state = "none"                           # none | save | disc
         self._quiet = False
         self.body_provider: Callable[[], bytes] | None = None
+        self._engine = ui.EnginePlan()
         self._build()
         self._refresh()
 
@@ -338,16 +342,16 @@ class CoachesPanel(QWidget):
         self.coach_career = WrappedLabel("")
         self.coach_style = WrappedLabel("")
         self.coach_ratings = WrappedLabel("")
-        for label in (self.coach_name, self.coach_origin, self.coach_career, self.coach_style, self.coach_ratings):
+        self.coach_engine = WrappedLabel("")
+        self.coach_engine.setAccessibleName("What the build will do for this club")
+        for label in (self.coach_name, self.coach_origin, self.coach_career, self.coach_style, self.coach_ratings,
+                      self.coach_engine):
             text.addWidget(label)
         text.addStretch(1)
         head_row.addLayout(text, 1)
         right_box.addWidget(head)
         self.playbook_check = QCheckBox("He brings his old club's playbook")
-        self.playbook_check.setToolTip(
-            "Off: the club keeps its own playbook and only the coach's play calling style arrives. On: the club's "
-            "playbook becomes a copy of the playbook of the club he came from (a new coach borrows the playbook of the "
-            "coach he plays like).")
+        self.playbook_check.setToolTip(PLAYBOOK_TIP)
         self.playbook_check.toggled.connect(self._playbook_toggled)
         right_box.addWidget(self.playbook_check)
         defense = QGroupBox("Defensive coordinator")
@@ -547,8 +551,17 @@ class CoachesPanel(QWidget):
     def _set_state_text(self, text: str) -> None:
         self.state_label.setText(text)
 
+    def _ask_engine(self) -> ui.EnginePlan:
+        if self._state != "disc" or not self.has_changes() or self.body_provider is None or ui.engine() is None:
+            return ui.EnginePlan()                              # serializing the roster is not free: only with an engine
+        try:
+            return ui.engine_plan(self._staff, self.body_provider())
+        except Exception as exc:                               # noqa: BLE001 - the page keeps working without the engine's words
+            return ui.EnginePlan(errors=(plain_error(exc),))
+
     def _refresh(self, *, select: int | None = None) -> None:
         keep = self.selected_club().index if (select is None and self.selected_club() is not None) else select
+        self._engine = self._ask_engine()
         enabled = self._state == "disc"
         for widget in (self.table, self.filter, self.reset_button, self.load_button):
             widget.setEnabled(enabled)
@@ -636,6 +649,7 @@ class CoachesPanel(QWidget):
             overall = (spec.get("ratings") or {}).get("overall")
             self.coach_ratings.setText(f"Overall {overall}" if overall is not None else "")
             self.face.setPixmap(monogram(name))
+            style_ok = bool(style)
         else:
             row = by_name.get(value) or base
             self.coach_name.setText(value)
@@ -647,11 +661,16 @@ class CoachesPanel(QWidget):
             self.coach_style.setText(self._style_line(row))
             self.coach_ratings.setText(self._ratings_line(row))
             self.face.setPixmap(face_pixmap(homes.get(value), value))
+            style_ok = True
+        self.coach_engine.setText(self._engine_line(club_))
         arrives = occupant != ("coach", base.name if base else "")
         entry = next((e for e in self._staff.get("head_coaches", []) if ui.club(e.get("team")).book == club_.book), {})
         self.playbook_check.blockSignals(True)
-        self.playbook_check.setEnabled(arrives)
+        self.playbook_check.setEnabled(arrives and style_ok)
         self.playbook_check.setChecked(entry.get("playbook") == "coach")
+        self.playbook_check.setToolTip(PLAYBOOK_TIP if style_ok else
+                                       "A new coach can bring a playbook only when he calls plays like another coach: "
+                                       "give him a play calling style when you create him.")
         self.playbook_check.blockSignals(False)
         people = ui.coordinators()
         home = ui.dc_seats(self._staff).get(club_.book, club_.book)
@@ -663,6 +682,22 @@ class CoachesPanel(QWidget):
             self.dc_name.setText(dc.name + ("" if home == club_.book else f"  (from {ui.club(home).code})"))
             bits = [dc.family, f"{dc.front} front" if dc.front else "", ", ".join(dc.package)]
             self.dc_detail.setText(" · ".join(bit for bit in bits if bit))
+
+    def _engine_line(self, club_: ui.Club) -> str:
+        """What the build-time engine will do for this club (empty when there is no engine or nothing changed)."""
+
+        info = self._engine.clubs.get(club_.book)
+        if not info:
+            return ""
+        parts = []
+        if info.get("playbook_from") not in (None, club_.book):
+            parts.append(f"Plays the {ui.club(info['playbook_from']).nickname} playbook.")
+        if info.get("profile"):
+            names = {code: name for name, code in ui.head_coach_homes().items()}
+            parts.append(f"Automatic 2026 play calling: on, the way {names.get(info['profile'], info['profile'])} calls plays.")
+        elif info.get("native_reason"):
+            parts.append(f"Automatic 2026 play calling: off. {info['native_reason']}.")
+        return " ".join(parts)
 
     @staticmethod
     def _career_line(row: ui.HeadCoachRow | None) -> str:
@@ -698,13 +733,7 @@ class CoachesPanel(QWidget):
         found = ui.problems(self._rows, self._staff) if self._state == "disc" else []
         notes = list(found)
         if self.has_changes() and self._state == "disc":
-            errors, extra = [], []
-            if self.body_provider is not None:
-                try:
-                    errors, extra = ui.engine_plan(self._staff, self.body_provider())
-                except Exception as exc:                       # noqa: BLE001 - the page keeps working without the engine's words
-                    errors = [plain_error(exc)]
-            notes += errors + extra
+            notes += list(self._engine.errors) + list(self._engine.notes)
             if ui.engine() is None:
                 notes.append("This version has no build-time staff engine yet, so a build ignores these changes until it does.")
         self.notes_text.setText("\n".join(notes))

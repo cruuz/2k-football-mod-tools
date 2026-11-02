@@ -286,7 +286,8 @@ def _tidy(rows: Sequence[HeadCoachRow], staff: Mapping[str, Any], seats: Mapping
         kind, value = occupant
         item: dict[str, Any] = {"team": entry.book}
         item["created" if kind == "created" else "coach"] = value
-        item["playbook"] = playbooks.get(entry.book, "club") if playbooks.get(entry.book) in PLAYBOOKS else "club"
+        if playbooks.get(entry.book) == "coach":
+            item["playbook"] = "coach"
         heads.append(item)
         if kind == "created":
             used.add(value)
@@ -302,12 +303,23 @@ def _state(rows: Sequence[HeadCoachRow], staff: Mapping[str, Any]):
     return head_seats(rows, staff), dc_seats(staff), playbooks, created_coaches(staff)
 
 
+def _name_once(rows: Sequence[HeadCoachRow], name: str) -> None:
+    """The plan names coaches by name, so two head coaches with one name cannot be told apart (retail's two Schottenheimers)."""
+
+    clubs_with = [row.club.code for row in rows if row.name.casefold() == name.casefold()]
+    _require(len(clubs_with) <= 1, f"{name} is the head coach of more than one club on this roster ({', '.join(clubs_with)}), "
+                                   "and a staff plan tells coaches apart by name")
+
+
 def swap_head_coaches(rows: Sequence[HeadCoachRow], staff: Mapping[str, Any], club_a: Any, club_b: Any) -> dict[str, Any]:
     """Two clubs exchange head coaches; each arriving coach plays from his new club's playbook until told otherwise."""
 
     a, b = club(club_a).book, club(club_b).book
     _require(a != b, "pick two different clubs to swap")
     seats, dcs, playbooks, created = _state(rows, staff)
+    for occupant in (seats[a], seats[b]):
+        if occupant[0] == "coach":
+            _name_once(rows, occupant[1])
     seats[a], seats[b] = seats[b], seats[a]
     playbooks.pop(a, None)
     playbooks.pop(b, None)
@@ -320,6 +332,7 @@ def move_head_coach(rows: Sequence[HeadCoachRow], staff: Mapping[str, Any], coac
 
     target = club(to_club).book
     seats, _dcs, _playbooks, _created = _state(rows, staff)
+    _name_once(rows, coach_name)
     holder = next((book for book, (kind, value) in seats.items() if kind == "coach" and value == coach_name), None)
     if holder is None:
         return hire_head_coach(rows, staff, target, ("coach", coach_name))
@@ -335,6 +348,7 @@ def hire_head_coach(rows: Sequence[HeadCoachRow], staff: Mapping[str, Any], club
     kind, value = occupant
     if kind == "coach":
         _require(any(row.name == value for row in rows), f"{value} is not a head coach on this roster")
+        _name_once(rows, value)
     else:
         _require(value in created, f"there is no new coach {value!r} in this plan")
     _require(occupant not in seats.values(), f"{occupant_name(occupant, staff)} already coaches a club; swap the two clubs instead")
@@ -399,6 +413,10 @@ def hire_created_coach(rows: Sequence[HeadCoachRow], staff: Mapping[str, Any], c
     checked = new_coach_spec(spec.get("first", ""), spec.get("last", ""), bio=spec.get("bio", ()),
                              body=int(spec.get("body", DEFAULT_BODY)), style=spec.get("style"),
                              overall=(spec.get("ratings") or {}).get("overall"), playcalling_run=spec.get("playcalling_run"))
+    full = f"{checked['first']} {checked['last']}".casefold()
+    taken = {row.name.casefold() for row in rows} | {f"{c.get('first', '')} {c.get('last', '')}".casefold() for c in created.values()}
+    _require(full not in taken, f"{checked['first']} {checked['last']} is already a head coach's name in this plan; "
+                                "give the new coach another name (a staff plan tells coaches apart by name)")
     new_id = coach_id(checked["first"], checked["last"], created)
     created = dict(created)
     created[new_id] = {"id": new_id, **checked}
@@ -435,6 +453,9 @@ def set_playbook(rows: Sequence[HeadCoachRow], staff: Mapping[str, Any], club_: 
     seats, dcs, playbooks, created = _state(rows, staff)
     base = {row.club.book: ("coach", row.name) for row in rows}
     _require(seats.get(book) != base.get(book), "only a coach who arrives at a club can bring his playbook")
+    seat = seats[book]
+    _require(which == "club" or seat[0] != "created" or created.get(seat[1], {}).get("style"),
+             "a new coach brings a playbook only when he calls plays like another coach (the playbook of that coach's club)")
     playbooks[book] = which
     return _tidy(rows, staff, seats, dcs, playbooks, created)
 
@@ -516,6 +537,8 @@ def problems(rows: Sequence[HeadCoachRow], staff: Mapping[str, Any]) -> list[str
         people_seen[occupant] = book
         if item.get("playbook", "club") not in PLAYBOOKS:
             out.append(f"{label}: the playbook choice must be club or coach")
+        elif item.get("playbook") == "coach" and occupant[0] == "created" and not created.get(occupant[1], {}).get("style"):
+            out.append(f"{label}: a new coach brings a playbook only when he calls plays like another coach")
     arrived = {value: book for (kind, value), book in people_seen.items() if kind == "coach"}
     for row in rows:
         if row.club.book not in entries and arrived.get(row.name, row.club.book) != row.club.book:
@@ -547,17 +570,37 @@ def engine() -> Any | None:
     return module
 
 
-def engine_plan(staff: Mapping[str, Any], roster_body: bytes) -> tuple[list[str], list[str]]:
-    """What the build-time engine says about this document on this roster: (errors, notes), both plain words."""
+@dataclass(frozen=True)
+class EnginePlan:
+    """What the build-time engine says about a staff document on a roster: plain-words problems and notes, and per club
+    (book code) its own answer: who coaches, where his playbook comes from, and whether the automatic 2026 play calling
+    binds to him and why not."""
+
+    errors: tuple[str, ...] = ()
+    notes: tuple[str, ...] = ()
+    clubs: Mapping[str, Mapping[str, Any]] = field(default_factory=dict)
+
+
+def engine_plan(staff: Mapping[str, Any], roster_body: bytes) -> EnginePlan:
+    """Ask the build-time engine to plan ``staff`` on ``roster_body``; an empty answer when there is no engine."""
 
     module = engine()
     if module is None or is_empty(staff):
-        return [], []
+        return EnginePlan()
     try:
         plan = module.plan(staff, roster_body)
     except Exception as exc:                               # noqa: BLE001 - the engine's own words are the answer
-        return [str(exc)], []
-    return [str(line) for line in getattr(plan, "errors", ())], [str(line) for line in getattr(plan, "notes", ())]
+        return EnginePlan(errors=(str(exc),))
+    clubs: dict[str, Mapping[str, Any]] = {}
+    for row in getattr(plan, "clubs", ()):
+        try:
+            data = row.as_dict() if hasattr(row, "as_dict") else dict(row)
+        except (TypeError, ValueError):
+            continue
+        if data.get("team"):
+            clubs[str(data["team"])] = data
+    return EnginePlan(tuple(str(line) for line in getattr(plan, "errors", ())),
+                      tuple(str(line) for line in getattr(plan, "notes", ())), clubs)
 
 
 def engine_normalized(staff: Mapping[str, Any]) -> dict[str, Any]:

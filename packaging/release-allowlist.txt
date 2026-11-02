@@ -19,6 +19,7 @@ docs/mod_editor/2k5_mod_studio_getting_started.md
 docs/mod_editor/career_stats.md
 docs/mod_editor/depth_roles.md
 docs/mod_editor/franchise_save.md
+docs/mod_editor/nfl2k5_staff_ui.md
 docs/mod_editor/high_resolution_texture_authoring.md
 docs/mod_editor/nfl2k3_nfl2k4_source_compatibility_boundary.md
 docs/nfl2k5_ratings_and_styles.md
@@ -53,6 +54,7 @@ mod_editor/core/nfl2k5_depth_locks.py
 mod_editor/core/nfl2k5_depth_roles.py
 mod_editor/core/nfl2k5_dynamic_kickoff.py
 mod_editor/core/nfl2k5_franchise_save.py
+mod_editor/core/nfl2k5_staff_ui.py
 mod_editor/core/nfl2k5_playoff_picture.py
 mod_editor/core/nfl2k5_trade_deadline.py
 mod_editor/core/nfl2k5_practice_squad.py
@@ -409,6 +411,7 @@ mod_editor/gui/crash_report.py
 mod_editor/gui/create_play_wizard_qt.py
 mod_editor/gui/crib_panel_qt.py
 mod_editor/gui/franchise_panel_qt.py
+mod_editor/gui/coaches_panel_qt.py
 mod_editor/gui/franchise_upgrade_dialog_qt.py
 mod_editor/core/nfl2k5_franchise_upgrade.py
 mod_editor/core/nfl2k5_inbox_standings.py
