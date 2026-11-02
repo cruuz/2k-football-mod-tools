@@ -887,21 +887,30 @@ def _save_prerequisites_ok(image: XbeImage) -> bool:
 # economy (revision 3, AFTER_STAGE) redirects the stage getter call at the head of the next-season routine, five
 # bytes before this owner's own stage_next_season site. It is accepted only as that owner's exact call into its own
 # installed code, with the franchise economy reading back applied; the retail bytes restore the guarded digest.
-CO_OWNER_SITES = ((0x00248628, bytes.fromhex("e873f4ffff")),)   # call 0x247AA0, the retail stage getter
+CO_OWNER_SITES = ((0x00248628, bytes.fromhex("e873f4ffff")),   # call 0x247AA0, the retail stage getter
+                  (0x00248632, bytes.fromhex("e809f5ffff")))   # b780-c6: call 0x247B40, the coaching carousel's site
 
 
 def _co_owner_restore(image: XbeImage, va: int, size: int, content: bytearray) -> None:
+    """Put back the retail bytes of another owner's site inside a guarded span when that owner is installed and the bytes
+    are exactly its own: the franchise economy's stage getter call (0x248628) and, b780-c6, the coaching carousel's
+    rollover call (0x248632)."""
     hooked = [(at, retail) for at, retail in CO_OWNER_SITES if va <= at and at + len(retail) <= va + size
               and bytes(content[at - va:at - va + len(retail)]) != retail]
     if not hooked:
         return
+    payload = bytes(image.data)
+    patched: dict[int, bytes] = {}
     from . import nfl2k5_franchise_economy as economy
-    if economy.status(bytes(image.data)) != "applied":
-        return
-    sites = {site.va: site for site in economy.sites()}
+    if economy.status(payload) == "applied":
+        patched.update({site.va: site.patched for site in economy.sites()})
+    if any(at == 0x00248632 for at, _retail in hooked):
+        from . import nfl2k5_coach_carousel as carousel
+        if carousel.status(payload) == "applied":
+            code = carousel.allocations(payload)["code"]["va"]
+            patched.update({at: after for _label, at, _before, after in carousel.sites(code)})
     for at, retail in hooked:
-        site = sites.get(at)
-        if site is not None and bytes(content[at - va:at - va + len(retail)]) == site.patched:
+        if patched.get(at) == bytes(content[at - va:at - va + len(retail)]):
             content[at - va:at - va + len(retail)] = retail
 
 

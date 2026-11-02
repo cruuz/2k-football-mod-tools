@@ -4,7 +4,7 @@
     .intel_syntax noprefix
     .text
     .globl carousel_advance, carousel_user_gate, carousel_toggle_left, carousel_toggle_right
-    .globl carousel_value_text, carousel_widest, carousel_params
+    .globl carousel_value_text, carousel_widest, carousel_defaults, carousel_params
 
 /* 0x248632, the stage-9 tail of FUN_002480B0: "call 0x247B40" (the season rollover), 5 bytes. ebx is the league menu
    object of the caller. carousel_run (fastcall, ecx = menu) calls the rollover itself, between the record snapshot
@@ -74,6 +74,14 @@ carousel_widest:
     xor edx, edx
     mov eax, 0x000771A0
     call eax
+    ret
+
+/* The MyNFL Options screen's defaults callback (.rdata 0x500A2C, retail 0x148C60, which stores 0 = Off in Owner Firing):
+   run the retail reset, then make CPU Teams the default. MyCareer calls 0x148C60 itself, so a career keeps Off. */
+carousel_defaults:
+    mov eax, 0x00148C60
+    call eax
+    mov dword ptr [0x00E60144], 1
     ret
 
     .p2align 2

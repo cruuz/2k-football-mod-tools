@@ -20,7 +20,7 @@ FLAGS = ["-m32", "-Os", "-ffreestanding", "-fno-builtin", "-fno-strict-aliasing"
          "-fno-stack-protector", "-fno-asynchronous-unwind-tables", "-fno-unwind-tables", "-fomit-frame-pointer",
          "-fno-jump-tables", "-mpreferred-stack-boundary=2", "-mno-sse", "-mno-mmx", "-Wall", "-Wextra", "-Werror"]
 ENTRIES = ("carousel_advance", "carousel_user_gate", "carousel_toggle_left", "carousel_toggle_right",
-           "carousel_value_text", "carousel_widest", "carousel_params", "carousel_run")
+           "carousel_value_text", "carousel_widest", "carousel_defaults", "carousel_params", "carousel_run")
 
 
 def generate(source: Path = SOURCE) -> str:

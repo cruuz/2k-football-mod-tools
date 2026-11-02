@@ -479,11 +479,22 @@ SITE_STAGE = 0x00248632
 SITE_GATE = 0x002BA675
 SITE_MARK = 0x002BA6BC
 ROW_SITES = (                                    # (label, VA, retail callback, entry)
-    ("owner_firing_left", 0x00500C40, 0x001486B0, "carousel_toggle_left"),
-    ("owner_firing_right", 0x00500C44, 0x001486D0, "carousel_toggle_right"),
+    # the row's +0x18 runs on RIGHT (the value goes up: the game's own list rows at 0x500C90 increment there) and +0x1C on
+    # LEFT (emulator, run C6A: RIGHT on the first build stepped 0 -> 2 -> 1 -> 0 with these two the other way round)
+    ("owner_firing_right", 0x00500C40, 0x001486B0, "carousel_toggle_right"),
+    ("owner_firing_left", 0x00500C44, 0x001486D0, "carousel_toggle_left"),
     ("owner_firing_text", 0x00500C48, 0x00148A40, "carousel_value_text"),
     ("owner_firing_width", 0x00500C4C, 0x00148730, "carousel_widest"),
 )
+# The MyNFL Options screen draws a type-5 row as an Off | On switch, so three values need the list-row type 7 (a box with
+# the value's text, as Draft Players and the rows below it use; the same callback layout).
+SITE_ROW_TYPE = 0x00500C28
+RETAIL_ROW_TYPE, PATCHED_ROW_TYPE = struct.pack("<I", 5), struct.pack("<I", 7)
+# The MyNFL Options screen's defaults callback (.rdata 0x500A2C) is the retail reset 0x148C60, which stores 0 (Off) in
+# Owner Firing. MyCareer pins that function (nfl2k5_my_career_mode) and calls it itself, so the function stays retail: the
+# screen's pointer goes to carousel_defaults instead (retail reset, then Owner Firing = 1, CPU Teams). A career keeps Off.
+SITE_DEFAULTS = 0x00500A2C
+RETAIL_DEFAULTS = struct.pack("<I", 0x00148C60)
 RETAIL_STAGE = bytes.fromhex("e809f5ffff")       # call 0x247B40
 RETAIL_GATE = bytes.fromhex("8b06a804743b")      # mov eax,[esi]; test al,4; je 0x2BA6B6
 RETAIL_MARK = bytes.fromhex("85c97405")          # test ecx,ecx; je 0x2BA6C5
@@ -494,6 +505,8 @@ GUARDS = (
     ("rollover coach loop", 0x00247CA8, 0x50, "279a7629d2b8f9bf1cb7f6116be3b4989ea1a395cead2640aef7c0c892764691"),
     ("owner goal check", 0x002BA670, 0x5B, "c9f0c4c9d4ec88c8f5d32674ac0d63380e0c0c81b2bfd051abcdd7f9efaf3267"),
     ("Owner Firing row", 0x00500C28, 0x34, "f9d5c2cd7d8974a5e3ee22577d4b2c0c8978535dae4fc45928ca891cc217f2ea"),
+    ("MyNFL options screen", 0x00500A00, 0x34, "af2efe54544235dd62fa9934570e1ccae7dc7af804c6064a91bc5703f47e136c"),
+    ("MyNFL options reset", 0x00148C60, 0x48, "b233044a3be782a8d148715a3b37eb9790532430dec08f2d182937f8a90f119e"),
     ("team count", 0x000C4BE0, 0x20, "a8dcd5f93c040f380e85bf8c5d13cebbeb19636178895aa7267b0abfdef9185e"),
     ("team by index", 0x000C4C50, 0x2E, "f421059ce4ea9ac33e94e9e1541b8fcbbd4c7b28da07038136d5586a526b1dcf"),
     ("user club flag tail", 0x000C4D55, 0x12, "dd4c2e1f26a2e8a313985c3247a82c965942c1f0001c7ddf606ba8483f417460"),   # its first 5 bytes are MyCareer's cpu_management hook
@@ -541,7 +554,9 @@ def sites(code_va: int) -> list[tuple[str, int, bytes, bytes]]:
     at = labels(code_va)
     out = [("stage9_rollover", SITE_STAGE, RETAIL_STAGE, b"\xe8" + _rel32(SITE_STAGE + 5, at["carousel_advance"])),
            ("owner_user_gate", SITE_GATE, RETAIL_GATE, b"\xe8" + _rel32(SITE_GATE + 5, at["carousel_user_gate"]) + b"\x90"),
-           ("owner_warning_mark", SITE_MARK, RETAIL_MARK, PATCHED_MARK)]
+           ("owner_warning_mark", SITE_MARK, RETAIL_MARK, PATCHED_MARK),
+           ("owner_firing_row_type", SITE_ROW_TYPE, RETAIL_ROW_TYPE, PATCHED_ROW_TYPE),
+           ("owner_firing_default", SITE_DEFAULTS, RETAIL_DEFAULTS, struct.pack("<I", at["carousel_defaults"]))]
     out += [(label, va, struct.pack("<I", retail), struct.pack("<I", at[entry])) for label, va, retail, entry in ROW_SITES]
     return out
 

@@ -269,6 +269,18 @@ class ExecutableTests(unittest.TestCase):
         field = next(f for f in dataclasses.fields(mod_build.BuildPlan) if f.name == "coach_carousel")
         self.assertIs(field.default, False)
 
+    def test_the_player_progress_screen_accepts_the_carousel_site(self):
+        """Player Progress guards 0x248628..0x24864F, which holds the carousel's rollover call; it must read applied with
+        the carousel installed (it already accepted the economy's site at 0x248628 the same way)."""
+        from mod_editor.core import nfl2k5_player_progress_screen as pp
+        payload = pp.apply(self.retail)[0]
+        payload = cc.apply(payload)[0]
+        self.assertEqual((pp.status(payload), cc.status(payload)), ("applied", "applied"))
+        if _have(V08_XBE):
+            released = _v08_xbe()
+            self.assertEqual(pp.status(released), "applied")
+            self.assertEqual(pp.status(cc.apply(released)[0]), "applied")
+
     def test_the_build_union_reserves_it_with_the_other_late_owners(self):
         """The Studio plans the whole late-owner union up front (b779-int1); the carousel is reserved there and installs
         after the owners before it, in LATE_OWNERS order."""
@@ -322,7 +334,8 @@ class NativeRowAndGateTests(unittest.TestCase):
 
     def test_owner_firing_has_three_values(self):
         m = self.machine()
-        left, right, text = (m.get(0x500C40), m.get(0x500C44), m.get(0x500C48))
+        right, left, text = (m.get(0x500C40), m.get(0x500C44), m.get(0x500C48))   # +0x18 runs on RIGHT, +0x1C on LEFT
+        self.assertEqual(m.get(0x500C28), 7)                                # a list row (a box with the value's text)
         m.put(0xE60144, 1)                                                  # the retail default ("On") reads CPU Teams
         self.assertEqual(self._text(m, m.call(text)), "CPU Teams")
         seen = []
@@ -340,6 +353,17 @@ class NativeRowAndGateTests(unittest.TestCase):
         m.call(right)
         self.assertEqual(m.get(0xE60144), 1)
         self.assertEqual(m.get(0x500C3C), 0x148700)                         # the getter stays retail
+
+    def test_a_new_franchise_starts_at_cpu_teams_and_a_career_keeps_off(self):
+        m = self.machine()
+        for va in range(0xE6011C, 0xE60148, 4):
+            m.put(va, 0x5A)
+        m.call(m.get(0x500A2C))                                             # the MyNFL Options screen's defaults
+        self.assertEqual(m.get(0xE60144), 1)
+        self.assertEqual((m.get(0xE6011C), m.get(0xE60124), m.get(0xE60140)), (1, 1, 0))   # the rest as retail
+        m.put(0xE60144, 0x5A)
+        m.call(0x148C60)                                                    # MyCareer calls the retail reset itself
+        self.assertEqual(m.get(0xE60144), 0)
 
     def test_the_owner_never_fires_a_user_unless_all_teams(self):
         """The patched check site: with the retail "last warning" bit set, the retail code takes the firing path
