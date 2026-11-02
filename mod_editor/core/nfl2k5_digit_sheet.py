@@ -49,11 +49,11 @@ SHEET_LAYOUTS = (
 SHEET_LAYOUT_CHOICES = (("Detect layout from image (recommended)", "auto"), *SHEET_LAYOUTS)
 SHEET_HELP = (
     "Use a PNG with a transparent background and the ten digits in order: one row (0 to 9), one column, "
-    "or two rows with 0-4 above 5-9. With 64x64 cells that is 640x64, 64x640, 320x128 or 128x320, "
-    "and larger equal cells work too. The Studio finds the layout itself, including sheets with "
-    "gaps, margins or tall cells, as long as the digits do not touch each other. "
-    "A flat fill with one outline colour fits every slot. Gradients, glows and shadows are "
-    "simplified when a slot is too small, and the preview shows what the game will get. "
+    "or two rows with 0-4 above 5-9. With 64x64 cells that is 640x64, 64x640, 320x128 or 128x320; "
+    "larger cells work too. The layout is found from the sheet, including gaps, margins and tall cells, "
+    "as long as the digits do not touch. One fill colour with one outline colour fits most slots and one "
+    "flat colour fits the smallest; gradients and shadows are simplified when a slot is too small, and the "
+    "preview shows the result. "
     "Match retail size fits each glyph into its original game box. As authored keeps your placement. "
     "See docs/mod_editor/number_sheets.md for examples."
 )
@@ -319,7 +319,7 @@ def _find_groups(mask: Image.Image, columns: int, rows: int):
     row_bands = _merge_to(_runs(y_profile), rows, _MAX_JOIN_ROWS)
     if row_bands is None:
         found = len(_runs(y_profile))
-        return None, None, f"I found {found} row{'s' if found != 1 else ''} of shapes and needed {rows}"
+        return None, None, f"it has {found} row{'s' if found != 1 else ''} of shapes and needs {rows}"
     per_band = []
     for band, (top, bottom) in enumerate(row_bands):
         x_profile, _y = mask.crop((0, top, mask.width, bottom)).getprojection()
@@ -327,7 +327,7 @@ def _find_groups(mask: Image.Image, columns: int, rows: int):
         if groups is None:
             found = len(_runs(x_profile))
             where = f" in row {band + 1}" if rows > 1 else ""
-            return None, None, f"I found {found} shape{'s' if found != 1 else ''}{where} and needed {columns}"
+            return None, None, f"it has {found} shape{'s' if found != 1 else ''}{where} and needs {columns}"
         per_band.append(groups)
     return row_bands, per_band, None
 
@@ -414,9 +414,9 @@ def _shape_summary(ink: Image.Image) -> str:
         x_profile, _y = ink.crop((0, top, ink.width, bottom)).getprojection()
         counts.append(len(_runs(x_profile)))
     if len(bands) == 1:
-        return f"I can see {counts[0]} separate shape{'s' if counts[0] != 1 else ''} in one row."
+        return f"The sheet has {counts[0]} separate shape{'s' if counts[0] != 1 else ''} in one row."
     more = ", and more" if len(bands) > 10 else ""
-    return f"I can see {len(bands)} rows of shapes, with {', '.join(str(c) for c in counts)} shapes{more}."
+    return f"The sheet has {len(bands)} rows of shapes, with {', '.join(str(c) for c in counts)} shapes{more}."
 
 
 def _rounded_note(width: int, height: int, layout: str) -> str:
@@ -535,10 +535,13 @@ def _plan_auto(image: Image.Image, masks: tuple[Image.Image, Image.Image]) -> _P
     elif max(image.size) >= 5 * min(image.size):
         # A blank strip keeps the original rule, so a wrong size is still reported precisely.
         return _plan_explicit(image, masks, "horizontal" if width >= height else "vertical")
+    covered = ink.histogram()[255] / (width * height)
+    background = (f"{covered:.0%} of the sheet is visible, which looks like a background behind the digits; "
+                  "remove it so only the digits remain. " if covered > 0.8 else "")
     raise ValidationError(
         f"Cannot infer the layout of a {width}x{height} sheet. "
         "Choose its row, column or grid layout explicitly. "
-        f"{_shape_summary(ink)} "
+        f"{_shape_summary(ink)} {background}"
         "A digit sheet needs the ten digits in order (0 to 9), with a clear transparent gap between them, as one row, "
         "one column, five columns by two rows (0-4 above 5-9), or two columns by five rows. "
         f"{_size_table()} "

@@ -189,6 +189,33 @@ def render_digit_sheet_preview(
     return output.getvalue()
 
 
+def _one_colour_slot_hint(retail: DecodedDigitTexture, preparation: dict | None) -> str:
+    """When the slot was sized for a one-colour original and the new digit has an outline, say so."""
+
+    base = retail.levels[0]
+    solid = {base.rgba[i:i + 3] for i in range(0, len(base.rgba), 4) if base.rgba[i + 3] == 255}
+    colours = ((preparation or {}).get("cleanup") or {}).get("final_visible_rgb") or 0
+    if len(solid) == 1 and colours >= 2:
+        return ("The original digit in this slot is one flat colour and the slot is sized for it, so a digit "
+                "with an outline needs more room than it has. Try one flat colour for this uniform, or use "
+                "a style with bigger slots.")
+    return ""
+
+
+def _refuse_flat_sheet(images: tuple[DigitSheetPng, ...]) -> None:
+    """A sheet with no transparency at all would import as ten solid blocks, so say so before encoding."""
+
+    for output in images:
+        with Image.open(BytesIO(output.png)) as opened:
+            if opened.convert("RGBA").getchannel("A").getextrema()[0] < 255:
+                return
+    raise ValidationError(
+        f"This sheet has no transparent pixels, so every digit would import as a solid {images[0].width}x{images[0].height} "
+        "block. Export the sheet as a PNG with a transparent background (JPEG pictures and flattened images cannot "
+        "carry transparency) and try again. A painted background around the digits has to be removed in your image editor."
+    )
+
+
 def preview_digit_sheet(
     index: Path, assets: Iterable[object], outputs: Iterable[DigitSheetPng],
     progress: Callable[[str, int, int], None] | None = None,
@@ -214,7 +241,10 @@ def preview_digit_sheet(
         for digit, (target, output) in enumerate(zip(targets, images))
     ):
         raise ValidationError("Preview images do not match the selected ten digit slots.")
+    _refuse_flat_sheet(images)
     rows, retail_rows, receipts, notes = [], [], [], []
+    if images[0].layout_note:
+        notes.append(images[0].layout_note)
     archive = None
     with tempfile.TemporaryDirectory(prefix="2k5-digit-preview-") as temporary:
         root = Path(temporary).resolve(strict=True)
@@ -242,7 +272,9 @@ def preview_digit_sheet(
                 # that same outcome: the retail texture in this row, and a
                 # note that names the slot and its allocation.
                 span = retail_span
-                reason = kept_retail_reason(slot.stored_size)
+                reason = " ".join(part for part in (
+                    kept_retail_reason(slot.stored_size), getattr(exc, "advice", ""),
+                    _one_colour_slot_hint(retail_rows[-1][1], getattr(exc, "preparation", None))) if part)
                 receipt = {
                     "kept_retail": True,
                     "target": {"selector": slot.selector, "stored_size": slot.stored_size},
@@ -253,7 +285,7 @@ def preview_digit_sheet(
                     "quantization": {},
                 }
                 notes.append(f"Digit {output.digit}: {reason}")
-            except ValueError as exc:
+            except (ValueError, ValidationError) as exc:
                 raise ValidationError(f"Digit {output.digit}: {exc} {output.mapping_note}") from exc
             texture = decode_digit_texture(span)
             rows.append((output.digit, texture))
@@ -271,6 +303,10 @@ def preview_digit_sheet(
                              "to fit the fixed texture slot; inspect the encoded preview.")
             if receipt["quantization"].get("approximated_opaque_colours", 0):
                 notes.append(f"Digit {output.digit}: many solid colours; some were approximated.")
+    used = [f"{digit}: {r['rebuild']['recompressed_bytes']:,} of {r['target']['stored_size']:,}"
+            for digit, r in enumerate(receipts) if not r.get("kept_retail") and "rebuild" in r and "target" in r]
+    if used:
+        notes.append("Space used in each slot (bytes used of bytes available): " + ", ".join(used) + ".")
     notes.extend((
         "P8: one shared palette, 8-bit alpha; all stored mip levels regenerated.",
         "Use straight-alpha PNG. Already darkened (premultiplied) RGB is not automatically repaired.",

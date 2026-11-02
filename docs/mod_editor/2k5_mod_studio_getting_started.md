@@ -1640,17 +1640,24 @@ that.
 
 ## Number sheets and encoded preview
 
-Use a 640x64 transparent PNG with ten 64x64 cells in digit order. A 64x640
-column, 320x128 grid or 128x320 grid also works. Use one flat fill and one
-outline colour. Keep a margin inside each cell. Leave out noise, gradients,
-guides and labels. AI output needs the cleanup the tool now applies.
+Use a transparent PNG with the ten digits in order: one row (0 to 9), one
+column, or two rows with 0-4 above 5-9. With 64x64 cells that is 640x64,
+64x640, 320x128 or 128x320, and larger cells work too. Detect layout finds
+the layout itself, including sheets with margins, gaps or tall cells and
+canvases such as 1024x512, as long as the digits do not touch; the preview
+says how the sheet was cut. A sheet that cannot be read says what it saw and
+how to fix it. A flat fill with one outline colour fits most slots and one flat
+colour fits the smallest; gradients and shadows fit roomy slots as drawn and
+are simplified, never the outline, when a slot is too small. Leave out labels
+and guides.
 
 Choose the uniform, digit family, layout and Match retail size. Each glyph
 is fitted inside the original digit's box without changing its aspect.
 As authored keeps your placement for expert work. The encoded preview shows
 what the build will write above the retail comparison at every level, plus
 a 57 pair at an estimated small size. KEPT RETAIL badges and the Import
-button count any digits that cannot fit. Check my images predicts the same
+button count any digits that cannot fit, and the notes say why and by how
+many bytes. Check my images predicts the same
 outcome when the game source is loaded. Save the project and inspect front,
 back and shoulder numbers in play. Camera lighting and appearance remain
 unwitnessed until played. See [the number sheet guide](number_sheets.md).

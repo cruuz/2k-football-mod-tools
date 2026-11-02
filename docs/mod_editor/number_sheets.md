@@ -49,23 +49,27 @@ A single empty cell among the ten, or a digit with no transparent pixels, is fla
 
 Every digit has its own small compressed slot, and the slots differ a lot. Across the 634 uniform sets
 a jersey digit's slot holds between 544 and 3,312 bytes, and about a third of the sets average under 1,200.
-Current and recent alternate styles are the roomiest. Many throwback styles are the tightest: the Rams
-1965-1999 home and away sets hold 640 to 1,280 bytes per digit, the current and 2000-2004 Rams sets 1,088 to 2,320.
+Tight and roomy slots are mixed through every kind of set (about 2 in 10 alternates, 3 in 10 current
+uniforms and 4 in 10 throwbacks average under 1,200 bytes), so the preview for the set you import into
+is the guide. Example, the Rams: the 1965-1999 home and away sets hold 640 to 1,280 bytes per digit,
+the current and 2000-2004 sets 1,088 to 2,320. In the tight sets checked (the Rams 1998-1999 and the
+Steelers 1968-1976), the original digit is one flat colour, so the slot is sized for a one-colour number.
 
-A flat fill with one outline colour fits almost everywhere. Shading costs space:
+A flat fill with one outline colour fits most slots, and one flat colour fits the smallest. Shading costs space:
 
 - A gradient (for example the 2020 Rams numerals, gold at the top fading to white) fits the roomy slots as drawn.
 - In a slot that is too small, the Studio tries gentler versions of your digit before it gives up, and it
   never drops the outline or the fill. In order: hard edges at the largest size (the smaller views keep soft
-  edges, like many original digits), then the shading reduced to four, three and finally one flat fill
-  colour beside the outline. The notes for that digit say which one was used, for example
+  edges, like many original digits), then the shading reduced to four, three and two flat colours, and, for a
+  numeral that is nothing but shading with no outline, one flat colour. The notes for that digit say which one was used, for example
   "its shading was reduced to 3 flat colours, with hard edges".
+- Trying these versions takes a few seconds per digit, so a sheet with many tight slots can take a minute to preview.
 - If even the simplest version does not fit, that digit keeps the original number, the preview marks it
   KEPT RETAIL, and the note gives the numbers: how many bytes the simplest version needs, how many the
   slot holds, and how many colours the digit used. The notes also list the space each digit used.
 
-To get a shaded numeral into every slot of a throwback set, use a flat fill with one outline colour there,
-or put the shaded numerals in a Current or Alternate style.
+To get a shaded or outlined numeral into a tight set, use one flat colour there, or import it into a set
+whose slots are bigger.
 
 Use ordinary straight-alpha PNG. Do not darken RGB by multiplying it by
 alpha yourself. That error is indistinguishable from intentionally dark
