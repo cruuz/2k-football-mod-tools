@@ -42,10 +42,19 @@ wrong with one that was written by hand. This is the form `nfl2k5_coach_staff.no
 `tendencies` and `fields` it adds to a new coach.
 
 The build-time writer is `nfl2k5_coach_staff` (b780 job c2-staff). When that module is in the Studio, the page asks it
-about the plan a moment after the last change (one question per burst of changes, only while the page is shown) and shows
-what it says: its notes and problems, and for the selected club where his playbook comes from and whether the automatic
-2026 play calling binds to the new coach and why not. The exported section is the engine's own canonical form. Until
-the module is there the page says so, and a build ignores the section.
+about the plan a moment after the last change (only while the page is shown) and shows what it says: its notes and
+problems, and for the selected club where his playbook comes from and whether the automatic 2026 play calling binds to
+the new coach and why not. The exported section is the engine's own canonical form. Until the module is there the page
+says so, and a build ignores the section.
+
+The engine never holds up the page. The question runs on a background worker (the Studio's `QRunnable` pattern), with a
+private copy of the staff document and a snapshot of the roster bytes (a few hundred microseconds; serializing the whole
+roster took seconds and the engine only reads the coach table). A small "Checking this plan with the build..." badge and
+a "Checking what the build will do for this club..." line show while it works, and every control stays usable. Only the
+latest plan is asked: a change while a question is running queues one more question for the newest plan, and the answer
+in flight, which is for an older plan, is dropped (so are answers for a plan that was put back, and answers that arrive
+after the page is gone). On the real v0.8 disc with the real engine the question took 1.75 s on the worker and the GUI
+thread's 10 ms timer never stalled more than 49 ms (14 ms with nothing running).
 
 ```
 python3 -m mod_editor.core.nfl2k5_staff_ui                         # the 32 clubs and their coordinators

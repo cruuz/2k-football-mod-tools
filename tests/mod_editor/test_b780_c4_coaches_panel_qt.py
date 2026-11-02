@@ -11,6 +11,8 @@ import json
 import os
 import sys
 import tempfile
+import threading
+import time
 import unittest
 from pathlib import Path
 from unittest import mock
@@ -22,6 +24,7 @@ for entry in (ROOT, ROOT / "tests", ROOT / "tests" / "mod_editor"):
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
+from PyQt5.QtCore import QThreadPool, QTimer  # noqa: E402
 from PyQt5.QtWidgets import QApplication, QDialog  # noqa: E402
 
 from mod_editor.core import nfl2k5_roster_records as rr  # noqa: E402
@@ -364,7 +367,9 @@ class _FakeEngine:
         return dict(staff, note="normalized by the engine")
 
 
-class EngineWordsTests(_Case):
+class _EngineCase(_Case):
+    """A page with the 32 clubs and a fake engine; the pool is drained after every test so no worker outlives it."""
+
     def setUp(self) -> None:
         self.page = CoachesPanel()
         self.rows = rows_2026()
@@ -373,16 +378,30 @@ class EngineWordsTests(_Case):
         self.engine = _FakeEngine()
 
     def tearDown(self) -> None:
+        gate = getattr(self.engine, "gate", None)
+        if gate is not None:
+            gate.set()
+        self.page.wait_for_engine(5000)
+        QThreadPool.globalInstance().waitForDone(5000)
         self.page.deleteLater()
         self.pump()
+
+
+class EngineWordsTests(_EngineCase):
+    def settle(self) -> None:
+        self.assertTrue(self.page.wait_for_engine(10000))
 
     def test_the_engines_answer_for_each_club_is_on_the_page(self) -> None:
         with mock.patch.object(ui, "engine", return_value=self.engine):
             self.assertTrue(self.page.swap_clubs("KC", "DAL"))
             self.assertEqual(self.engine.seen, [])                                       # not asked per click
-            self.assertIn("Checking this plan with the build engine", self.page.notes_text.text())
-            self.page.flush_engine()
+            self.assertEqual(self.page.engine_label.text(), "Checking this plan with the build...")
+            self.assertTrue(self.page.engine_label.isVisibleTo(self.page))
+            self.assertEqual(self.page.coach_engine.text(), "Checking what the build will do for this club...")
+            self.settle()
             self.assertEqual(self.engine.seen[-1][1], b"roster body")
+            self.assertEqual(self.page.engine_label.text(), "")
+            self.assertFalse(self.page.engine_label.isVisibleTo(self.page))
             names = {code: name for name, code in ui.head_coach_homes().items()}
             self.page.select_club("KC")
             self.assertEqual(self.page.coach_engine.text(),
@@ -398,31 +417,44 @@ class EngineWordsTests(_Case):
             self.assertEqual(self.page.coach_engine.text(), "")                           # a club the plan does not name
             self.assertEqual(self.page.export_staff()["note"], "normalized by the engine")
 
+    def test_the_selected_club_says_it_is_checking_until_the_answer_arrives(self) -> None:
+        with mock.patch.object(ui, "engine", return_value=self.engine):
+            self.page.select_club("KC")
+            self.page.swap_clubs("KC", "DAL")
+            self.assertEqual(self.page.coach_engine.text(), "Checking what the build will do for this club...")
+            self.settle()
+            self.assertIn("Plays the Cowboys playbook.", self.page.coach_engine.text())
+
     def test_nothing_is_asked_of_the_engine_until_there_is_a_change(self) -> None:
         with mock.patch.object(ui, "engine", return_value=self.engine):
             self.page.select_club("KC")
             self.assertEqual(self.engine.seen, [])
             self.assertEqual(self.page.coach_engine.text(), "")
+            self.assertFalse(self.page.engine_busy())
             self.page.swap_clubs("KC", "DAL")
             self.page.set_defense("KC", "PHI")                                          # a burst of changes...
-            self.page.flush_engine()
+            self.settle()
             self.assertEqual(len(self.engine.seen), 1)                                  # ...is one question
             self.page.flush_engine()
+            self.settle()
             self.assertEqual(len(self.engine.seen), 1)                                  # and nothing is asked twice
             self.page.reset_all()
-            self.page.flush_engine()
+            self.settle()
             self.assertEqual(self.page.coach_engine.text(), "")
             self.assertEqual(len(self.engine.seen), 1)
+            self.assertEqual(self.page.engine_label.text(), "")
 
     def test_a_shown_page_asks_by_itself_and_a_hidden_one_waits(self) -> None:
         with mock.patch.object(ui, "engine", return_value=self.engine):
             self.page.swap_clubs("KC", "DAL")
             self.page._engine_due()                                                   # hidden: not asked
             self.assertEqual(self.engine.seen, [])
+            self.assertTrue(self.page.engine_busy())
             self.page.show()
             self.page._engine_due()
+            self.settle()
             self.assertEqual(len(self.engine.seen), 1)
-            self.assertNotIn("Checking this plan", self.page.notes_text.text())
+            self.assertEqual(self.page.engine_label.text(), "")
             self.page.hide()
 
     def test_an_engine_that_raises_does_not_break_the_page(self) -> None:
@@ -432,9 +464,201 @@ class EngineWordsTests(_Case):
 
         with mock.patch.object(ui, "engine", return_value=Broken()):
             self.assertTrue(self.page.swap_clubs("KC", "DAL"))
-            self.page.flush_engine()
+            self.settle()
             self.assertIn("the engine fell over", self.page.notes_text.text())
             self.assertEqual(self.page.table.item(0, 0).text(), "SF 49ers")
+            self.assertEqual(self.page.engine_label.text(), "")
+
+    def test_a_roster_snapshot_that_cannot_be_taken_is_a_note_not_a_crash(self) -> None:
+        def broken() -> bytes:
+            raise OSError("the roster is not readable")
+
+        self.page.body_provider = broken
+        with mock.patch.object(ui, "engine", return_value=self.engine):
+            self.assertTrue(self.page.swap_clubs("KC", "DAL"))
+            self.settle()
+            self.assertIn("the roster is not readable", self.page.notes_text.text())
+            self.assertEqual(self.engine.seen, [])
+            self.assertFalse(self.page.engine_busy())
+
+
+class _GatedEngine:
+    """A slow build-time engine: plan() blocks until the test opens the gate (or ten seconds pass)."""
+
+    def __init__(self) -> None:
+        self.gate = threading.Event()
+        self.started = threading.Event()
+        self.calls: list[tuple[threading.Thread, int, int]] = []
+
+    def plan(self, staff, body):
+        self.calls.append((threading.current_thread(), len(staff.get("head_coaches", ())),
+                           len(staff.get("defensive_coordinators", ()))))
+        self.started.set()
+        self.gate.wait(10)
+        heads = len(staff.get("head_coaches", ()))
+        return type("Plan", (), {"errors": [], "notes": [f"answer for {heads} head coach entries"], "clubs": []})()
+
+    def normalize(self, staff):
+        return dict(staff)
+
+
+class _BusyEngine:
+    """A slow engine that computes in Python (it holds the GIL, which a sleep does not): it works until the GUI thread proves
+    it is alive by running a timer, and gives up after eight seconds."""
+
+    def __init__(self) -> None:
+        self.alive = threading.Event()
+        self.finished_by = ""
+        self.thread = None
+
+    def plan(self, staff, body):
+        self.thread = threading.current_thread()
+        deadline = time.monotonic() + 8
+        spins = 0
+        while not self.alive.is_set() and time.monotonic() < deadline:
+            spins += 1
+        self.finished_by = "gui thread" if self.alive.is_set() else "time limit"
+        return type("Plan", (), {"errors": [], "notes": [f"worked {spins > 0}"], "clubs": []})()
+
+    def normalize(self, staff):
+        return dict(staff)
+
+
+class EngineStaysOffTheGuiThreadTests(_EngineCase):
+    """The page never waits for the build-time engine: it runs on a worker, only the latest plan is asked, stale answers
+    are dropped, and every control keeps working meanwhile.  Nothing here measures wall-clock time: a regression that
+    waited for the engine on the GUI thread would sit on the gate until the safety timer opens it, and the checks that the
+    gate was still closed would fail."""
+
+    def setUp(self) -> None:
+        super().setUp()
+        self.engine = _GatedEngine()
+        self.guard = threading.Timer(8.0, self.engine.gate.set)                          # a stuck page must fail, not hang
+        self.guard.start()
+
+    def tearDown(self) -> None:
+        self.guard.cancel()
+        super().tearDown()
+
+    def spin_gui(self, ticks_wanted: int = 6, limit: float = 5.0) -> int:
+        """Run the GUI thread's own event loop until a 10 ms timer has ticked ``ticks_wanted`` times."""
+
+        ticks: list[float] = []
+        timer = QTimer()
+        timer.timeout.connect(lambda: ticks.append(time.monotonic()))
+        timer.start(10)
+        deadline = time.monotonic() + limit
+        while len(ticks) < ticks_wanted and time.monotonic() < deadline:
+            self.application.processEvents()
+            time.sleep(0.002)
+        timer.stop()
+        return len(ticks)
+
+    def test_a_slow_engine_never_holds_up_the_page(self) -> None:
+        page, engine = self.page, self.engine
+        with mock.patch.object(ui, "engine", return_value=engine):
+            self.assertTrue(page.swap_clubs("KC", "DAL"))
+            page.flush_engine()                                                         # ask now: it must come straight back
+            self.assertFalse(engine.gate.is_set())                                       # ...with the engine still thinking
+            self.assertTrue(engine.started.wait(5))
+            self.assertIsNot(engine.calls[0][0], threading.main_thread())                # it runs on a worker thread
+            self.assertTrue(page.engine_busy())
+            self.assertEqual(page.engine_label.text(), "Checking this plan with the build...")
+            # the GUI thread keeps running its own event loop and timers
+            self.assertGreaterEqual(self.spin_gui(), 6)
+            self.assertFalse(engine.gate.is_set())
+            # every control keeps working: look at clubs, type in the filter, make more changes, undo-able signals, export
+            seen_edits: list[str] = []
+            page.edit_made.connect(lambda label, _before, _after: seen_edits.append(label))
+            self.assertTrue(all(b.isEnabled() for b in (page.swap_button, page.hire_button, page.dc_button, page.reset_button)))
+            page.select_club("NYG")
+            self.assertEqual((page.selected_club().code, page.coach_name.text()), ("NYG", self.rows[15].name))
+            page.filter.setText("Eagles")
+            page.filter.setText("")
+            self.assertTrue(page.swap_clubs("PHI", "ATL"))
+            self.assertTrue(page.set_defense("KC", "PHI"))
+            page.flush_engine()                                                         # asked again: queued behind the running one
+            self.assertEqual(len(seen_edits), 2)
+            self.assertEqual(len(page.export_staff()["head_coaches"]), 4)
+            self.assertEqual(page.engine_label.text(), "Checking this plan with the build...")
+            self.assertFalse(engine.gate.is_set())
+            self.assertEqual(len(engine.calls), 1)                                       # still just the first question
+            # the engine finishes: its answer is for an older plan and is dropped; the latest plan is asked, once
+            engine.gate.set()
+            self.assertTrue(page.wait_for_engine(10000))
+            self.assertEqual([(heads, dcs) for _thread, heads, dcs in engine.calls], [(2, 0), (4, 2)])
+            notes = page.notes_text.text()
+            self.assertIn("answer for 4 head coach entries", notes)
+            self.assertNotIn("answer for 2 head coach entries", notes)
+            self.assertEqual(page.engine_label.text(), "")
+            self.assertFalse(page.engine_busy())
+
+    def test_a_cpu_bound_engine_does_not_starve_the_gui_thread_either(self) -> None:
+        engine = _BusyEngine()
+        with mock.patch.object(ui, "engine", return_value=engine):
+            self.assertTrue(self.page.swap_clubs("KC", "DAL"))
+            self.page.flush_engine()
+            QTimer.singleShot(50, engine.alive.set)                                      # only a live GUI thread can run this
+            self.assertTrue(self.page.wait_for_engine(12000))
+        self.assertEqual(engine.finished_by, "gui thread")
+        self.assertIsNot(engine.thread, threading.main_thread())
+        self.assertIn("worked True", self.page.notes_text.text())
+
+    def test_an_answer_for_an_older_plan_is_dropped(self) -> None:
+        page = self.page
+        with mock.patch.object(ui, "engine", return_value=self.engine):
+            page.swap_clubs("KC", "DAL")
+            old = page._engine_generation
+            page.swap_clubs("PHI", "ATL")
+            self.assertEqual(page._engine_generation, old + 1)
+            page._engine_done(old, ui.EnginePlan(notes=("a stale note",)))
+            self.assertNotIn("a stale note", page.notes_text.text())
+            self.assertTrue(page.engine_busy())
+            self.assertEqual(page.engine_label.text(), "Checking this plan with the build...")
+            page._engine_done(page._engine_generation, ui.EnginePlan(notes=("a fresh note",)))
+            self.assertIn("a fresh note", page.notes_text.text())
+            self.assertEqual(page.engine_label.text(), "")
+            self.engine.gate.set()
+
+    def test_putting_every_coach_back_drops_the_answer_in_flight(self) -> None:
+        page, engine = self.page, self.engine
+        with mock.patch.object(ui, "engine", return_value=engine):
+            page.swap_clubs("KC", "DAL")
+            page.flush_engine()
+            self.assertTrue(engine.started.wait(5))
+            self.assertTrue(page.reset_all())                                           # nothing left to ask about
+            self.assertFalse(page.engine_busy() and page._engine_pending)
+            self.assertEqual(page.engine_label.text(), "")
+            engine.gate.set()
+            self.assertTrue(page.wait_for_engine(10000))
+            self.assertEqual(len(engine.calls), 1)                                       # the stale question was the only one
+            self.assertNotIn("answer for", page.notes_text.text())
+            self.assertEqual(page.engine_label.text(), "")
+
+    def test_a_page_deleted_while_the_engine_thinks_is_safe(self) -> None:
+        from PyQt5 import sip
+        from PyQt5.QtCore import QEvent
+        from mod_editor.gui import coaches_panel_qt as module
+        engine = self.engine
+        page = CoachesPanel()
+        page.set_rows(self.rows)
+        page.body_provider = lambda: b"roster body"
+        with mock.patch.object(ui, "engine", return_value=engine):
+            page.swap_clubs("KC", "DAL")
+            page.flush_engine()
+            self.assertTrue(engine.started.wait(5))
+            self.assertEqual(len(module._ENGINE_TASKS), 1)
+            page.deleteLater()
+            QApplication.sendPostedEvents(None, QEvent.DeferredDelete)
+            self.pump()
+            self.assertTrue(sip.isdeleted(page))
+            engine.gate.set()                                                           # the engine answers a page that is gone
+            QThreadPool.globalInstance().waitForDone(10000)
+            deadline = time.monotonic() + 5
+            while module._ENGINE_TASKS and time.monotonic() < deadline:
+                self.application.processEvents()
+                time.sleep(0.005)
+            self.assertEqual(module._ENGINE_TASKS, set())                                # the task was forgotten, nothing crashed
 
 
 class InsideRostersTests(_Case):
@@ -472,6 +696,22 @@ class InsideRostersTests(_Case):
         self.assertEqual(self.panel.coaches_panel.table.rowCount(), 0)
         self.assertEqual(pages.tabText(1), "Franchise")
         self.assertTrue(pages.isTabVisible(1))
+
+    def test_the_engine_gets_a_cheap_snapshot_of_the_roster_bytes(self) -> None:
+        self.assertEqual(self.panel._staff_roster_body(), b"")                           # no roster loaded
+        self.load_disc_like()
+        panel = self.panel
+        seen: list[bytes] = []
+        panel.coaches_panel.body_provider = lambda: seen.append(panel._staff_roster_body()) or seen[-1]
+        snapshot = panel._staff_roster_body()
+        self.assertIsInstance(snapshot, bytes)
+        self.assertEqual(snapshot, bytes(panel.document.body))
+        # a player edit does not change the coach table the engine reads
+        before = ui.read_head_coaches(panel.document)
+        player = panel.document.players[0]
+        panel.set_field(player, "speed", 77)
+        self.assertEqual([r.name for r in ui.read_head_coaches(panel.document)], [r.name for r in before])
+        self.assertEqual(len(panel._staff_roster_body()), len(snapshot))
 
     def test_a_roster_without_coach_records_has_no_staff_to_plan(self) -> None:
         from test_nfl2k5_roster_records import synthetic_body

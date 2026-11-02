@@ -16,10 +16,12 @@ EXPERIMENTAL / UNWITNESSED: the game has not been played with a moved coach yet.
 
 from __future__ import annotations
 
+import copy
+import time
 from pathlib import Path
 from typing import Any, Callable, Mapping, Sequence
 
-from PyQt5.QtCore import QRect, QSize, Qt, QTimer, pyqtSignal
+from PyQt5.QtCore import QCoreApplication, QEventLoop, QObject, QRect, QRunnable, QSize, Qt, QThreadPool, QTimer, pyqtSignal
 from PyQt5.QtGui import QBrush, QColor, QFont, QImage, QPainter, QPixmap
 from PyQt5.QtWidgets import (
     QAbstractItemView,
@@ -260,6 +262,39 @@ class NewCoachDialog(QDialog):
         self.accept()
 
 
+# --------------------------------------------------------------------------------------------- the build-time engine, off the GUI thread
+class _EngineSignals(QObject):
+    done = pyqtSignal(int, object)                  # generation, the engine's answer (a ui.EnginePlan)
+
+
+class _EngineTask(QRunnable):
+    """Ask the build-time engine about one staff document without touching the GUI thread.
+
+    The Studio's background-task pattern (``studio_qt._BackgroundTask``): a QRunnable that is never auto-deleted and reports
+    through a signal object made on the GUI thread, so the answer is delivered on the GUI thread.  The input is a private
+    copy (the staff document and a snapshot of the roster bytes); nothing the page owns is read from here."""
+
+    def __init__(self, generation: int, staff: dict[str, Any], body: bytes) -> None:
+        super().__init__()
+        self.signals = _EngineSignals()
+        self.generation, self.staff, self.body = generation, staff, body
+        self.setAutoDelete(False)
+
+    def run(self) -> None:
+        try:
+            answer = ui.engine_plan(self.staff, self.body)
+        except BaseException as exc:                # noqa: BLE001 - Qt must receive failures, never lose them
+            answer = ui.EnginePlan(errors=(plain_error(exc),))
+        try:
+            self.signals.done.emit(self.generation, answer)
+        except RuntimeError:
+            pass                                    # the page was deleted while the engine was thinking
+
+
+#: Tasks that are queued or running.  A page deleted mid-question must not free a task under its thread.
+_ENGINE_TASKS: set[_EngineTask] = set()
+
+
 # --------------------------------------------------------------------------------------------- the page
 class CoachesPanel(QWidget):
     """The Coaches page of ★ Rosters."""
@@ -274,8 +309,11 @@ class CoachesPanel(QWidget):
         self._state = "none"                           # none | save | disc
         self._quiet = False
         self.body_provider: Callable[[], bytes] | None = None
-        self._engine = ui.EnginePlan()
-        self._engine_pending = False
+        self._engine = ui.EnginePlan()                 # the build-time engine's answer for the current plan
+        self._engine_generation = 0                    # bumped by every change of the plan: an older answer is stale
+        self._engine_pending = False                   # the answer for the current plan has not arrived yet
+        self._engine_running = False                   # one question at a time is with the engine
+        self._engine_queued = False                    # the plan changed while it ran: ask again when it is done
         self._engine_timer = QTimer(self)
         self._engine_timer.setSingleShot(True)
         self._engine_timer.setInterval(300)
@@ -417,6 +455,11 @@ class CoachesPanel(QWidget):
         for button in (self.reset_button, self.save_button, self.load_button):
             row.addWidget(button)
         row.addStretch(1)
+        self.engine_label = QLabel("")
+        self.engine_label.setObjectName("optionBadge")
+        self.engine_label.setAccessibleName("Build engine state")
+        self.engine_label.setVisible(False)
+        row.addWidget(self.engine_label)
         self.count_label = QLabel("")
         row.addWidget(self.count_label)
         changes_box.addLayout(row)
@@ -567,21 +610,19 @@ class CoachesPanel(QWidget):
     def _set_state_text(self, text: str) -> None:
         self.state_label.setText(text)
 
-    def _ask_engine(self) -> ui.EnginePlan:
-        try:
-            return ui.engine_plan(self._staff, self.body_provider())
-        except Exception as exc:                               # noqa: BLE001 - the page keeps working without the engine's words
-            return ui.EnginePlan(errors=(plain_error(exc),))
-
     def _schedule_engine(self) -> None:
-        """Ask the build-time engine about the plan a moment after the last change, not on every click: serializing the
-        roster and planning take seconds, and a burst of changes needs one answer."""
+        """The plan changed: an answer in flight is now stale, and a new question is due a moment after the last change.
 
+        Nothing here waits for the engine: the question runs on a worker thread and the answer is applied on the GUI
+        thread when it arrives (``_engine_done``), so the page stays usable while the engine thinks."""
+
+        self._engine_generation += 1
+        self._engine = ui.EnginePlan()
         if self._state != "disc" or not self.has_changes() or self.body_provider is None or ui.engine() is None:
-            self._engine, self._engine_pending = ui.EnginePlan(), False
+            self._engine_pending = self._engine_queued = False
             self._engine_timer.stop()
             return
-        self._engine, self._engine_pending = ui.EnginePlan(), True
+        self._engine_pending = True
         self._engine_timer.start()
 
     def _engine_due(self) -> None:
@@ -589,15 +630,63 @@ class CoachesPanel(QWidget):
             self.flush_engine()                                 # a hidden page asks when it is shown again
 
     def flush_engine(self) -> None:
-        """Ask the engine now when an answer is due (the timer, showing the page and the tests all come here)."""
+        """Ask the engine now if an answer is due.  Never waits: the answer arrives later, on the GUI thread.
+
+        One question at a time. When one is running, the latest plan is asked as soon as it is done (the answer in
+        flight is for an older plan and is dropped), so a burst of changes costs one running question and one more."""
 
         if not self._engine_pending:
             return
-        self._engine_pending = False
         self._engine_timer.stop()
-        self._engine = self._ask_engine()
-        self._show_club()
-        self._refresh_changes()
+        if self._engine_running:
+            self._engine_queued = True
+            return
+        self._start_engine()
+
+    def _start_engine(self) -> None:
+        try:
+            body = self.body_provider() if self.body_provider is not None else b""
+        except Exception as exc:                                # noqa: BLE001 - the page keeps working without the engine's words
+            self._engine, self._engine_pending = ui.EnginePlan(errors=(plain_error(exc),)), False
+            self._show_club()
+            self._refresh_changes()
+            return
+        task = _EngineTask(self._engine_generation, copy.deepcopy(self._staff), bytes(body))
+        task.signals.done.connect(self._engine_done)
+        task.signals.done.connect(lambda _generation, _answer, _task=task: _ENGINE_TASKS.discard(_task))
+        _ENGINE_TASKS.add(task)
+        self._engine_running, self._engine_queued = True, False
+        QThreadPool.globalInstance().start(task)
+
+    def _engine_done(self, generation: int, answer: object) -> None:
+        """The engine answered (GUI thread): show it if it is for the plan on screen, else drop it."""
+
+        self._engine_running = False
+        if generation == self._engine_generation and self._engine_pending:
+            self._engine_pending = False
+            self._engine = answer if isinstance(answer, ui.EnginePlan) else ui.EnginePlan()
+            self._show_club()
+            self._refresh_changes()
+        elif self._engine_pending and self._engine_queued:
+            self._start_engine()                                # the plan changed while it thought: ask about the latest
+
+    def engine_busy(self) -> bool:
+        """Whether a question is waiting to be asked or with the engine."""
+
+        return self._engine_pending or self._engine_running
+
+    def wait_for_engine(self, timeout_ms: int = 10000) -> bool:
+        """Let the engine's answer arrive, keeping the event loop running (tests and scripts; the page never waits).
+
+        Returns True when nothing is waiting any more."""
+
+        deadline = time.monotonic() + timeout_ms / 1000.0
+        self.flush_engine()
+        while self.engine_busy() and time.monotonic() < deadline:
+            QCoreApplication.processEvents(QEventLoop.AllEvents, 20)
+            time.sleep(0.005)
+            self.flush_engine()
+        return not self.engine_busy()
 
     def showEvent(self, event) -> None:  # noqa: N802 - Qt naming
         super().showEvent(event)
@@ -707,7 +796,8 @@ class CoachesPanel(QWidget):
             self.coach_ratings.setText(self._ratings_line(row))
             self.face.setPixmap(face_pixmap(homes.get(value), value))
             style_ok = True
-        self.coach_engine.setText(self._engine_line(club_))
+        self.coach_engine.setText("Checking what the build will do for this club..." if self._engine_pending
+                                  else self._engine_line(club_))
         arrives = occupant != ("coach", base.name if base else "")
         entry = next((e for e in self._staff.get("head_coaches", []) if ui.club(e.get("team")).book == club_.book), {})
         self.playbook_check.blockSignals(True)
@@ -779,12 +869,12 @@ class CoachesPanel(QWidget):
         notes = list(found)
         if self.has_changes() and self._state == "disc":
             notes += list(self._engine.errors) + list(self._engine.notes)
-            if self._engine_pending:
-                notes.append("Checking this plan with the build engine...")
             if ui.engine() is None:
                 notes.append("This version has no build-time staff engine yet, so a build ignores these changes until it does.")
         self.notes_text.setText("\n".join(notes))
         count = len(lines)
+        self.engine_label.setText("Checking this plan with the build..." if self._engine_pending else "")
+        self.engine_label.setVisible(self._engine_pending)
         self.count_label.setText(f"{count} change{'s' if count != 1 else ''}" if count else "")
         self.reset_button.setEnabled(self._state == "disc" and self.has_changes())
         self.save_button.setEnabled(self._state == "disc" and self.has_changes())

@@ -1886,9 +1886,12 @@ class RosterEditorPanel(QWidget):
             "disc": "Swap head coaches, hire a coach or change a defensive coordinator for your build."}[state])
 
     def _staff_roster_body(self) -> bytes:
-        """The roster as it will be at build time (every roster edit applied): what the staff engine judges a plan against."""
+        """A snapshot of the roster's bytes: what the staff engine judges a plan against.
 
-        return b"" if self.document is None else self.document.to_body()
+        The coach table and the clubs' coach pointers are what it reads, and nothing on this page edits them, so the live
+        bytes are enough; they are identical to ``to_body()`` on the released disc, which takes seconds to produce."""
+
+        return b"" if self.document is None else bytes(self.document.body)
 
     def _staff_edited(self, label: str, before: Any, after: Any) -> None:
         """A staff change joins the roster page's Undo stack, so the toolbar's Undo and Redo cover it."""
