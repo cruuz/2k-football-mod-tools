@@ -50,6 +50,7 @@ extern volatile u32 sr_state[4];
 #define DIVS    0x00E576D4u   /* u32 per league club index: its division */
 #define CONFS   0x004F0FE0u   /* u32 per division: its conference */
 #define WEEKS   0x005151C4u   /* regular-season rows: 17 retail, 18 with the season-length patch */
+#define STANDINGS_FLAG 0x00AE9EE8u /* 1 while the retail code draws the W L T columns (ESPN.com's page), 0 on the realignment screen */
 #define MENU_MOVE 0x00EB3C54u /* the retail conference switch's cursor sound name */
 #define CLUBS 32u
 #define DIVISIONS 8u
@@ -88,8 +89,16 @@ static const u16 *const legend_text[VIEWS][4] = {{l_div, l_conf, l_regular, l_ke
 static const u32 retail_legend[4] = {0x00EB3C9Cu, 0x00EB3CD4u, 0x00EB3D0Cu, 0x00EB3D48u};
 static const float header_x[3] = {210.0f, 250.0f, 280.0f};     /* the retail header labels (left aligned) */
 static const float value_x[3] = {220.0f, 250.0f, 280.0f};      /* the retail number columns (centered) */
-/* where each view's column is centered, as a shift from the retail column; DIV and CONF take the outer columns */
-static const float shift[VIEWS][3] = {{-5.0f, 0.0f, 5.0f}, {-18.0f, 1.0f, 20.0f}};
+/* View 1 (DIV, a blank, CONF) centers its two columns at fixed places (a cell is up to six characters, "11-5-1"). */
+static const float view1_center[3] = {215.0f, 250.0f, 285.0f};
+/* View 2 (HOME ROAD STRK) spreads its three labels over the room between the club names (they end near 165) and the
+   next division block (324), with the gap between labels between 3 and 8 units, whatever the font measures. The
+   fallback places them when a label cannot be measured. All numbers are for the left block; the right one is 280 on. */
+#define ROOM_LEFT 170.0f
+#define ROOM_WIDTH 152.0f
+#define GAP_MIN 3.0f
+#define GAP_MAX 8.0f
+static const float view2_fallback[3] = {196.0f, 248.0f, 300.0f};
 
 /* ---- records ---------------------------------------------------------------------------------------------------- */
 
@@ -187,6 +196,47 @@ static void put_streak(u16 *p, u32 team) {
     *p = 0;
 }
 
+/* The view a stub shows: 0 (the retail screen) unless this is ESPN.com's page and the view is a known one. */
+static u32 current_view(void) {
+    u32 v = sr_state[0];
+    return (G(STANDINGS_FLAG) == 1 && v >= 1 && v <= VIEWS) ? v : 0;
+}
+
+/* ---- layout ------------------------------------------------------------------------------------------------------ */
+
+/* The center of each column of the view in the left division block, and the measured width of each label (0 when the
+   game could not measure it), using the font ctx has now (the game's name font, 0). */
+static void layout(u32 view, void *ctx, float *center, i32 *width) {
+    float sum = 0.0f;
+    u32 measured = 1;
+    for (u32 k = 0; k < 3; k++) {
+        width[k] = TEXT_WIDTH(ctx, header_text[view - 1][k]);
+        sum += (float)width[k];
+        if (width[k] <= 0)
+            measured = 0;
+    }
+    if (view == 1) {
+        for (u32 k = 0; k < 3; k++)
+            center[k] = view1_center[k];
+        return;
+    }
+    if (!measured) {
+        for (u32 k = 0; k < 3; k++)
+            center[k] = view2_fallback[k];
+        return;
+    }
+    float gap = (ROOM_WIDTH - sum) / 2.0f;
+    if (gap > GAP_MAX)
+        gap = GAP_MAX;
+    if (gap < GAP_MIN)
+        gap = GAP_MIN;
+    float x = ROOM_LEFT + (ROOM_WIDTH - (sum + 2.0f * gap)) / 2.0f;
+    for (u32 k = 0; k < 3; k++) {
+        center[k] = x + (float)width[k] / 2.0f;
+        x += (float)width[k] + gap;
+    }
+}
+
 /* ---- entries (stubs.S calls these; every one answers "retail" when the view is 0 or damaged) ---------------------- */
 
 /* Black (pad bit 0x1000) turns the columns forward, White (0x2000) back, as on the Player Card pages; the retail cursor
@@ -203,24 +253,29 @@ void FC sr_buttons(u32 pressed) {
 /* The header label of column col (the retail "mov edx, W/L/T"): retail pointer in view 0, else the view's label
    re-centered over its column (pos = the caller's x, y, z; ctx = its text context). */
 const u16 *FC sr_header(u32 col, float *pos, void *ctx) {
-    u32 v = sr_state[0];
-    if (v == 0 || v > VIEWS || col > 2)
+    u32 v = current_view();
+    if (v == 0 || col > 2)
         return (const u16 *)(0x00EB3C88u + 4 * (col > 2 ? 0 : col));
-    const u16 *text = header_text[v - 1][col];
     TEXT_FONT(ctx, FONT_GET(0));
-    i32 width = TEXT_WIDTH(ctx, text);
+    float center[3];
+    i32 width[3];
+    layout(v, ctx, center, width);
     float block = pos[0] - header_x[col];                   /* 0 for the left division block, 280 for the right one */
-    TEXT_POS(ctx, block + value_x[col] + shift[v - 1][col] - (float)(width / 2), pos[1], pos[2]);
-    return text;
+    TEXT_POS(ctx, block + center[col] - (float)(width[col] / 2), pos[1], pos[2]);
+    return header_text[v - 1][col];
 }
 
 /* The cell of column col for the club record in edi (the retail "call 0x4A400" that formats one count into buf): 1 when
-   handled here (the text is in buf and the caller's x position is moved), 0 to run the retail formatter. */
-u32 FC sr_cell_text(u32 col, u16 *buf, float *pos, u32 team) {
-    u32 v = sr_state[0];
-    if (v == 0 || v > VIEWS || col > 2)
+   handled here (the text is in buf and the caller's x position is moved), 0 to run the retail formatter. ctx is the
+   caller's text context (its font is the name font the layout was measured in). */
+u32 FC sr_cell_text(u32 col, u16 *buf, float *pos, u32 team, void *ctx) {
+    u32 v = current_view();
+    if (v == 0 || col > 2)
         return 0;
-    pos[0] += shift[v - 1][col];
+    float center[3];
+    i32 width[3];
+    layout(v, ctx, center, width);
+    pos[0] = (pos[0] - value_x[col]) + center[col];         /* keep the block (0 or 280), move to the view's column */
     buf[0] = 0;
     if (v == 1) {
         if (col != 1) {
@@ -240,10 +295,10 @@ u32 FC sr_cell_text(u32 col, u16 *buf, float *pos, u32 team) {
 
 /* The legend line (the retail "mov edx, clinch string"). */
 const u16 *FC sr_legend(u32 line) {
-    u32 v = sr_state[0];
+    u32 v = current_view();
     if (line > 3)
         line = 0;
-    if (v == 0 || v > VIEWS)
+    if (v == 0)
         return (const u16 *)retail_legend[line];
     return legend_text[v - 1][line];
 }

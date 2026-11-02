@@ -46,8 +46,9 @@ sr_hdr_common:
     ret
 
 /* 0x355B1E / 0x355B68 / 0x355BB2, FUN_003554B0 cells: "call 0x4A400" (the formatter: ecx = buffer, edx = format, one
-   stack argument it pops) became "call sr_cellN". The club record is in edi. A handled cell leaves its text in the
-   buffer and returns like the formatter; otherwise the retail formatter runs with everything as it was. */
+   stack argument it pops) became "call sr_cellN". The club record is in edi; the caller's text position vector is at
+   this stub's esp+0x28 and its text context at esp+0x68 (see the frame facts above). A handled cell leaves its text
+   in the buffer and returns like the formatter; otherwise the retail formatter runs with everything as it was. */
 sr_cell0:
     xor eax, eax
     jmp sr_cell_common
@@ -59,8 +60,10 @@ sr_cell2:
 sr_cell_common:
     push edx
     push ecx
+    lea edx, [esp+0x70]
+    push edx
     push edi
-    lea edx, [esp+0x34]
+    lea edx, [esp+0x38]
     push edx
     mov edx, ecx
     mov ecx, eax

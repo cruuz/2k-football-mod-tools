@@ -162,6 +162,22 @@ def real_week_one():
     return bytes(grid), bytes(scores)
 
 
+FIXTURE = ROOT / "tests" / "fixtures" / "nfl2k5_standings_real_seasons.json"
+
+
+def real_season(name):
+    """(grid, scores, divisions, weeks byte) of a season the game's own simulator played (the fixture's provenance)."""
+    import base64
+    import json
+    import zlib
+    data = json.loads(FIXTURE.read_text(encoding="utf-8"))["seasons"][name]
+    return (zlib.decompress(base64.b64decode(data["grid"])), zlib.decompress(base64.b64decode(data["scores"])),
+            data["divisions"], data["weeks"])
+
+
+REAL_SEASONS = ("v08_week5", "v08_week6", "v08_full_season")
+
+
 # ---- static tests ----------------------------------------------------------------------------------------------------
 
 
@@ -170,7 +186,7 @@ class StaticTests(unittest.TestCase):
 
     def test_template_fits_and_relocations_are_owned(self):
         self.assertLessEqual(len(runtime.CODE), sr.CODE_SIZE)
-        self.assertEqual(sr.REQUESTS, (("nfl2k5_standings_records", "code", 2048, 16), ("nfl2k5_standings_records", "data", 16, 16)))
+        self.assertEqual(sr.REQUESTS, (("nfl2k5_standings_records", "code", 2304, 16), ("nfl2k5_standings_records", "data", 16, 16)))
         for offset, kind, symbol, value in runtime.RELOCATIONS:
             self.assertIn(kind, (1, 2))
             self.assertIn(symbol, ("code", "state"))
@@ -357,6 +373,23 @@ class ModelTests(unittest.TestCase):
         self.assertEqual(sr.format_record(rec[a]["div"]), "1-1-1")
         self.assertEqual(sr.format_record([4, 2, 0]), "4-2")
 
+    @unittest.skipUnless(FIXTURE.is_file(), "the real-season fixture is not in this tree")
+    def test_a_complete_real_schedule_gives_every_club_six_division_and_twelve_conference_games(self):
+        grid, scores, divisions, weeks = real_season("v08_full_season")
+        self.assertEqual(weeks, 18)
+        model = sr.division_conference_records(grid, scores, divisions, weeks=weeks)
+        self.assertEqual({sum(r["div"]) for r in model}, {6})          # three rivals twice
+        self.assertEqual({sum(r["conf"]) for r in model}, {12})        # the division games plus six more
+        home_road = sr.home_road_records(grid, scores, rows=weeks)
+        self.assertEqual({sum(r["home"]) + sum(r["road"]) for r in home_road}, {17})
+        self.assertTrue({sum(r["home"]) for r in home_road} <= {8, 9})
+        with_playoffs = sr.division_conference_records(grid, scores, divisions, weeks=22)
+        self.assertNotEqual(with_playoffs, model)                       # the 13 playoff games would change 14 clubs
+        self.assertEqual(sum(1 for a, b in zip(model, with_playoffs) if a != b), 14)
+        # the regular season has 272 games, the playoffs 13: rows 18 to 21 on an 18-week season
+        games = list(sr._cell_games(grid, scores, 22))
+        self.assertEqual((len(games), len([g for g in games if g[0] < 18])), (285, 272))
+
     def test_format_and_streak(self):
         self.assertEqual(sr.format_record([10, 5, 1]), "10-5-1")
         self.assertEqual(sr.format_streak(3, 0), "W3")
@@ -531,9 +564,10 @@ class Standings(Machine):
     SCREEN = Machine.HEAP + 0x60000
 
     def __init__(self, payload, grid, scores, *, view=0, conference=0, standings=True, weeks=17, user=0,
-                 divisions=REAL_DIVISIONS, state_va=None, retail_counts=True, state=None):
+                 divisions=REAL_DIVISIONS, state_va=None, retail_counts=True, state=None, char_width=9):
         super().__init__(payload)
         self.state_va = state_va
+        self.char_width = char_width                  # what the text width call answers for each character
         self.text, self.contexts, self.sound = [], {}, []
         for index in range(34):
             record = self.CLUBS_AT + index * 0x1F4
@@ -597,7 +631,7 @@ class Standings(Machine):
         self.hook(TEXT["shadow"], lambda m: None)
         self.hook(TEXT["pos"], pos, pop=12)
         self.hook(TEXT["posvec"], posvec)
-        self.hook(TEXT["width"], lambda m: 9 * len(m.wide(m.reg("EDX"))))        # nine units a character
+        self.hook(TEXT["width"], lambda m: self.char_width * len(m.wide(m.reg("EDX"))))   # nine units a character by default
         self.hook(TEXT["draw"], draw)
 
     # ---- running the screen ----
@@ -882,14 +916,17 @@ class NativeTests(unittest.TestCase):
     def test_cells_keep_their_rows_and_stay_inside_their_blocks(self):
         grid, scores = season(4)
         base_blocks, base_clubs = parse(self.game(grid, scores, view=0, conference=1).draw())
-        for view, shifts in ((1, (-5, 0, 5)), (2, (-18, 1, 20))):
+        label_widths = {1: [9 * len(text) for text in ("DIV", " ", "CONF")], 2: [9 * 4] * 3}       # nine units a character
+        for view in (1, 2):
+            centers = sr.column_centers(view, label_widths[view])
             blocks, clubs = parse(self.game(grid, scores, view=view, conference=1, retail_counts=False).draw())
             self.assertEqual(sorted(clubs), sorted(base_clubs))
             for club, cells in clubs.items():
                 for column in range(3):
                     pos, base = cells[column][1], base_clubs[club][column][1]
-                    self.assertEqual(pos, (base[0] + shifts[column], base[1], base[2]))     # same row and depth, shifted
                     block = 280 if base[0] > 400 else 0                                    # the left or the right division block
+                    self.assertAlmostEqual(pos[0], block + centers[column], places=2)
+                    self.assertEqual(pos[1:], base[1:])                                    # the same row and depth
                     self.assertTrue(170 + block <= pos[0] <= 322 + block, (view, club, pos))
             self.assertEqual([b["name"] for b in blocks], [b["name"] for b in base_blocks])
             for block, base in zip(blocks, base_blocks):
@@ -897,15 +934,41 @@ class NativeTests(unittest.TestCase):
 
     def test_header_labels_are_centered_over_their_columns(self):
         grid, scores = season(4)
-        for view, texts, shifts in ((1, ("DIV", " ", "CONF"), (-5, 0, 5)), (2, ("HOME", "ROAD", "STRK"), (-18, 1, 20))):
+        for view, texts in ((1, ("DIV", " ", "CONF")), (2, ("HOME", "ROAD", "STRK"))):
+            widths = [9 * len(text) for text in texts]                              # the test's text width: nine units a character
+            centers = sr.column_centers(view, widths)
             blocks, _clubs = parse(self.game(grid, scores, view=view, conference=0, retail_counts=False).draw())
             for block_index, block in enumerate(blocks):
                 offset = 280 if block["labels"][0][1][0] > 400 else 0
-                for (label, pos), text, column, shift in zip(block["labels"], texts, (220, 250, 280), shifts):
+                for (label, pos), text, center, width in zip(block["labels"], texts, centers, widths):
                     self.assertEqual(label, text)
-                    width = 9 * len(text)                                          # the test's text width: nine units a character
-                    self.assertEqual(pos[0], offset + column + shift - width // 2, (view, block_index, label))
+                    self.assertAlmostEqual(pos[0], offset + center - width // 2, places=2)
                 self.assertIn(block["name"], ("NORTH", "SOUTH", "EAST", "WEST"))
+
+    def test_view_two_labels_share_the_room_whatever_the_font_measures(self):
+        grid, scores = season(6)
+        for char_width in (0, 5, 9, 12, 14):
+            with self.subTest(char_width=char_width):
+                widths = [char_width * 4] * 3
+                centers = sr.column_centers(2, widths)
+                if char_width == 0:
+                    self.assertEqual(centers, sr.VIEW2_FALLBACK)                    # unmeasurable: the fixed places
+                blocks, clubs = parse(self.game(grid, scores, view=2, conference=0, retail_counts=False,
+                                                char_width=char_width).draw())
+                xs = [[pos[0] for _t, pos in block["labels"]] for block in blocks]
+                for block, row in zip(blocks, xs):
+                    offset = 280 if row[0] > 400 else 0
+                    for column in range(3):
+                        self.assertAlmostEqual(row[column], offset + centers[column] - widths[column] // 2, places=2)
+                    for column in range(2):                                        # the labels never run together
+                        self.assertGreaterEqual(row[column + 1] - (row[column] + widths[column]), sr.VIEW2_GAP_MIN - 1)
+                for club, cells in clubs.items():                                  # and the cells sit under their labels
+                    for column in range(3):
+                        block = 280 if cells[column][1][0] > 400 else 0
+                        self.assertAlmostEqual(cells[column][1][0], block + centers[column], places=2)
+        self.assertEqual(sr.column_centers(2, [36, 36, 36]), (202.0, 246.0, 290.0))
+        self.assertEqual(sr.column_centers(2, [46, 44, 41]), (195.5, 248.5, 299.0))   # a plausible measure of the game's own font
+        self.assertEqual(sr.column_centers(1, [27, 9, 36]), sr.VIEW1_CENTERS)
 
     def test_legend_follows_the_view(self):
         retail = self.game(patched=False).legend()
@@ -1022,21 +1085,23 @@ class NativeTests(unittest.TestCase):
     def test_cell_stub_handles_a_cell_and_leaves_the_registers_alone(self):
         grid, scores = real_week_one()
         sf = ABBR.index("SF")                              # lost at LAR in week 1: DIV 0-1, CONF 0-1, no home game, ROAD 0-1
-        for view, col, expected, shift in ((1, 0, "0-1", -5), (1, 2, "0-1", 5), (1, 1, "", 0), (2, 0, "0-0", -18),
-                                           (2, 1, "0-1", 1), (2, 2, "L1", 20)):
+        centers = {1: sr.column_centers(1, [27, 9, 36]), 2: sr.column_centers(2, [36, 36, 36])}      # nine units a character
+        for view, col, expected in ((1, 0, "0-1"), (1, 2, "0-1"), (1, 1, ""), (2, 0, "0-0"), (2, 1, "0-1"), (2, 2, "L1")):
             with self.subTest(view=view, column=col):
                 game = self.game(grid, scores, view=view)
                 buf = game.HEAP + 0x70000
                 game.uc.mem_write(buf, b"\xaa" * 64)
                 esp_entry = game.SP - 4 - 4                # the return address and the retail formatter's one stack argument
                 pos_va = esp_entry + 0x28                  # the caller's text position vector, [esp+0x20] of its frame
-                game.uc.mem_write(pos_va, struct.pack("<3f", 220.0, 118.0, 21.0))
+                game.uc.mem_write(pos_va, struct.pack("<3f", sr.RETAIL_VALUE_X[col] + 280.0, 118.0, 21.0))   # the right block
                 regs = {"EDI": game.club(sf), "EBX": 0x11111111, "ESI": 0x22222222, "EBP": 0x33333333}
                 game.call(self.at["sr_cell%d" % col], ecx=buf, edx=0x1234, stack=(game.HEAP + 0x71000,), regs=regs)
                 for name, value in (("EBX", 0x11111111), ("ESI", 0x22222222), ("EBP", 0x33333333), ("EDI", game.club(sf))):
                     self.assertEqual(game.reg(name), value, name)
                 self.assertEqual(game.wide(buf), expected)
-                self.assertEqual(struct.unpack("<3f", bytes(game.uc.mem_read(pos_va, 12))), (220.0 + shift, 118.0, 21.0))
+                x, y, z = struct.unpack("<3f", bytes(game.uc.mem_read(pos_va, 12)))
+                self.assertAlmostEqual(x, 280.0 + centers[view][col], places=2)       # the block offset is kept
+                self.assertEqual((y, z), (118.0, 21.0))
                 self.assertEqual(game.reg("ESP"), game.SP)  # "ret 4": past the return address and the argument, as the formatter
 
     def test_cell_stub_in_view_zero_jumps_to_the_retail_formatter_unchanged(self):
@@ -1049,6 +1114,26 @@ class NativeTests(unittest.TestCase):
             game.call(self.at["sr_cell%d" % col], ecx=0x9000 + col, edx=0xEB3C94, stack=(0x7000 + col,), regs={"EDI": 0x5555})
         self.assertEqual(seen, [(0x9000, 0xEB3C94, 0x7000), (0x9001, 0xEB3C94, 0x7001), (0x9002, 0xEB3C94, 0x7002)])
         self.assertEqual(struct.unpack("<3f", bytes(game.uc.mem_read(pos_va, 12))), (220.0, 118.0, 21.0))
+
+    def test_every_stub_is_inert_off_the_standings_page(self):
+        """A stale view can never show on another screen that runs the same draw code: with [0xAE9EE8] not 1 (the
+        realignment screen) every stub answers as the retail code does, whatever the view says."""
+        for view in (1, 2):
+            game = self.game(view=view, standings=False)
+            seen = []
+            game.hook(0x4A400, lambda m: seen.append((m.reg("ECX"), m.reg("EDX"))), pop=4)
+            game.uc.mem_write(game.SP - 8 + 0x28, struct.pack("<3f", 220.0, 118.0, 21.0))
+            for col in range(3):
+                game.call(self.at["sr_hdr%d" % col])
+                self.assertEqual(game.reg("EDX"), 0xEB3C88 + 4 * col)                  # the retail "W", "L", "T" strings
+                game.call(self.at["sr_cell%d" % col], ecx=0x9000 + col, edx=0xEB3C94, stack=(0x7000,), regs={"EDI": 0x5555})
+            self.assertEqual(seen, [(0x9000, 0xEB3C94), (0x9001, 0xEB3C94), (0x9002, 0xEB3C94)])
+            self.assertEqual(struct.unpack("<3f", bytes(game.uc.mem_read(game.SP - 8 + 0x28, 12))), (220.0, 118.0, 21.0))
+            retail_legend = (0xEB3C9C, 0xEB3CD4, 0xEB3D0C, 0xEB3D48)
+            for line in range(4):
+                game.call(self.at["sr_leg%d" % line])
+                self.assertEqual(game.reg("EDX"), retail_legend[line])
+            self.assertEqual(game.get(self.state), view)                                # and the stale view is left alone
 
     def test_header_stub_returns_the_label_and_keeps_the_registers(self):
         for view, col, label in ((0, 0, 0xEB3C88), (0, 1, 0xEB3C8C), (0, 2, 0xEB3C90)):
@@ -1075,6 +1160,49 @@ class NativeTests(unittest.TestCase):
             self.assertEqual(bool(game.reg("EFLAGS") & 0x40), zero, hex(pressed))       # ZF from "test ah, 0xC0"
             self.assertEqual(game.reg("EAX") & 0xFFFF, pressed & 0xFFFF)
 
+    @unittest.skipUnless(FIXTURE.is_file(), "the real-season fixture is not in this tree")
+    def test_real_simulated_seasons_on_screen_equal_the_model(self):
+        for name in REAL_SEASONS:
+            grid, scores, divisions, weeks = real_season(name)
+            model = sr.division_conference_records(grid, scores, divisions, weeks=weeks)
+            home_road = sr.home_road_records(grid, scores)
+            streak = sr.streaks(grid, scores)
+            shown = {}
+            for conference in (0, 1):
+                with self.subTest(season=name, conference=conference):
+                    _b, clubs = parse(self.game(grid, scores, view=1, conference=conference, weeks=weeks,
+                                                divisions=divisions, retail_counts=False).draw())
+                    self.assertEqual(sorted(clubs), conference_clubs(conference, divisions))
+                    for club, cells in clubs.items():
+                        shown[club] = (cells[0][0], cells[2][0])
+                        self.assertEqual(shown[club], (sr.format_record(model[club]["div"]), sr.format_record(model[club]["conf"])),
+                                         f"{name} DIV CONF of {ABBR[club]}")
+                    _b, clubs = parse(self.game(grid, scores, view=2, conference=conference, weeks=weeks,
+                                                divisions=divisions, retail_counts=False).draw())
+                    for club, cells in clubs.items():
+                        self.assertEqual([c[0] for c in cells],
+                                         [sr.format_record(home_road[club]["home"]), sr.format_record(home_road[club]["road"]),
+                                          sr.format_streak(*streak[club])], f"{name} HOME ROAD STRK of {ABBR[club]}")
+            self.assertEqual(sorted(shown), list(range(32)), name)
+
+    @unittest.skipUnless(FIXTURE.is_file(), "the real-season fixture is not in this tree")
+    def test_the_real_full_season_keeps_the_playoffs_out_of_div_and_conf_but_not_out_of_the_retail_counts(self):
+        grid, scores, divisions, weeks = real_season("v08_full_season")
+        regular = sr.division_conference_records(grid, scores, divisions, weeks=weeks)
+        everything = sr.division_conference_records(grid, scores, divisions, weeks=22)
+        for conference in (0, 1):
+            _b, retail_view = parse(self.game(grid, scores, view=0, conference=conference, weeks=weeks, divisions=divisions).draw())
+            _b, records_view = parse(self.game(grid, scores, view=1, conference=conference, weeks=weeks, divisions=divisions,
+                                               retail_counts=False).draw())
+            for club, cells in records_view.items():
+                self.assertEqual(cells[0][0], sr.format_record(regular[club]["div"]))
+                self.assertEqual(cells[2][0], sr.format_record(regular[club]["conf"]))
+            # retail W L T add up all 22 rows, so a club that won a playoff game shows that win (the retail quirk)
+            wins = {c: sum(1 for _r, _s, h, a, hp, ap in sr._cell_games(grid, scores, 22) if (h == c and hp > ap) or (a == c and ap > hp))
+                    for c in retail_view}
+            self.assertEqual({c: int(cells[0][0]) for c, cells in retail_view.items()}, wins)
+        self.assertTrue(any(regular[c] != everything[c] for c in range(32)))
+
     # --- fuzz: the real draw against the model on many random seasons ------------------------------------------------
     def test_random_seasons_all_32_clubs(self):
         for seed in range(100, 108):
@@ -1090,6 +1218,58 @@ class NativeTests(unittest.TestCase):
             for club in range(32):
                 self.assertEqual(shown[club], (sr.format_record(model[club]["div"]), sr.format_record(model[club]["conf"])),
                                  f"seed {seed} club {club} ({ABBR[club]})")
+
+
+V08_XBE = os.environ.get("NFL2K5_V08_XBE", "")
+V08_SHA256 = "5f987568bc88122f566e30cb5bb8a574acde4549b915b6f2514beab37ab3e9f3"
+
+
+@unittest.skipUnless(V08_XBE and Path(V08_XBE).is_file() and HAVE_UC,
+                     "set NFL2K5_V08_XBE to the released SOFTDRINK 2K28 v0.8 default.xbe (sha256 5f987568...) and install unicorn")
+class ReleasedExecutableTests(unittest.TestCase):
+    """The owner on top of every owner the released v0.8 disc carries: nothing moves, the screen still draws as designed."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.v08 = Path(V08_XBE).read_bytes()
+        if hashlib.sha256(cls.v08).hexdigest() != V08_SHA256:
+            raise unittest.SkipTest("NFL2K5_V08_XBE is not the released v0.8 executable")
+        cls.patched, cls.receipt = sr.apply(cls.v08)
+        found = sr.allocations(cls.patched)
+        cls.state = found["data"]["va"]
+
+    def test_applies_without_moving_any_owner_and_reads_back(self):
+        self.assertEqual(sr.status(self.v08), "retail")
+        self.assertEqual(sr.status(self.patched), "applied")
+        before = {(r["owner"], r["kind"]): r["va"] for r in space.layout(self.v08)["allocations"]}
+        after = {(r["owner"], r["kind"]): r["va"] for r in space.layout(self.patched)["allocations"]}
+        self.assertEqual({k: v for k, v in after.items() if k in before}, before)
+        self.assertEqual({k for k in after if k not in before}, {(sr.OWNER, "code"), (sr.OWNER, "data")})
+        self.assertEqual(sr.apply(self.patched)[0], self.patched)                 # idempotent
+
+    def test_screen_on_the_v08_executable(self):
+        names = ("v08_week6", "v08_full_season") if FIXTURE.is_file() else ()
+        seasons = [real_season(name) for name in names] or [(*season(2), REAL_DIVISIONS, 17)]
+        for grid, scores, divisions, weeks in seasons:
+            model = sr.division_conference_records(grid, scores, divisions, weeks=weeks)
+            home_road = sr.home_road_records(grid, scores)
+            streak = sr.streaks(grid, scores)
+            for conference in (0, 1):
+                retail = Standings(self.v08, grid, scores, conference=conference, weeks=weeks, divisions=divisions).draw()
+                zero = Standings(self.patched, grid, scores, state_va=self.state, view=0, conference=conference, weeks=weeks,
+                                 divisions=divisions).draw()
+                self.assertEqual(zero, retail)                                    # view 0 is the v0.8 screen call for call
+                _b, clubs = parse(Standings(self.patched, grid, scores, state_va=self.state, view=1, conference=conference,
+                                            weeks=weeks, divisions=divisions, retail_counts=False).draw())
+                for club, cells in clubs.items():
+                    self.assertEqual((cells[0][0], cells[2][0]),
+                                     (sr.format_record(model[club]["div"]), sr.format_record(model[club]["conf"])))
+                _b, clubs = parse(Standings(self.patched, grid, scores, state_va=self.state, view=2, conference=conference,
+                                            weeks=weeks, divisions=divisions, retail_counts=False).draw())
+                for club, cells in clubs.items():
+                    self.assertEqual([c[0] for c in cells], [sr.format_record(home_road[club]["home"]),
+                                                              sr.format_record(home_road[club]["road"]),
+                                                              sr.format_streak(*streak[club])])
 
 
 if __name__ == "__main__":

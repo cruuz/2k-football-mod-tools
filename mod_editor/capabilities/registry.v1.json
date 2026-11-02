@@ -6417,7 +6417,7 @@
       "id": "nfl2k5.franchise.standings_records",
       "input_constraints": [
         "Pinned USA XBE or verified composed input; the owner is a late allocator owner placed after every other late owner (or appended to an installed sealed image by nfl2k5_xbe_space.extend_scaleout). Foreign or mixed bytes refuse, as does a changed game routine it relies on (26 retail spans are pinned by SHA-256).",
-        "Owned 2,048 RX bytes (the stubs, the record counting, the label and legend text) and a 16-byte RW block (the view). Edits: the pressed-mask test at 0x35543F in the Team Standings input, the three header labels (0x355903, 0x35592A, 0x355951) and three cell formatters (0x355B1E, 0x355B68, 0x355BB2) of its draw, the four legend lines (0x355D39, 0x355D5F, 0x355D85, 0x355DAB) and the enter callback pointer at 0x54CDB4.",
+        "Owned 2,304 RX bytes (the stubs, the record counting, the label and legend text) and a 16-byte RW block (the view). Edits: the pressed-mask test at 0x35543F in the Team Standings input, the three header labels (0x355903, 0x35592A, 0x355951) and three cell formatters (0x355B1E, 0x355B68, 0x355BB2) of its draw, the four legend lines (0x355D39, 0x355D5F, 0x355D85, 0x355DAB) and the enter callback pointer at 0x54CDB4.",
         "ESPN.com > Team Standings in Franchise: White and Black turn the columns W L T (retail), DIV CONF, HOME ROAD STRK. DIV and CONF count the regular-season rows of the season's schedule grid only (the byte at 0x5151C4: 17, or 18 with the season-length patch), division games count for both, nothing is saved. HOME, ROAD and STRK are the game's own values. With the view at W L T every stub falls through to the retail routine; the realignment screen that shares the draw and input code is never touched.",
         "Rebuild from a verified base to remove it."
       ],
@@ -6450,7 +6450,7 @@
         "hash_pins": [
           "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
         ],
-        "resource": "XBE .text sites listed above and one .rdata pointer; owned 2,048 RX and 16 RW bytes in the allocator's late region. No save field.",
+        "resource": "XBE .text sites listed above and one .rdata pointer; owned 2,304 RX and 16 RW bytes in the allocator's late region. No save field.",
         "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
       },
       "summary": "Adds division and conference records to ESPN.com's Team Standings page, with home, road and streak columns: White and Black turn the columns, the headers and the legend say which view is showing, and the page opens on the retail W L T. The records are worked out from the season's schedule (regular season only), so nothing is stored in the save.",

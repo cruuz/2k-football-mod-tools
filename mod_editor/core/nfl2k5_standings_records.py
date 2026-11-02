@@ -9,8 +9,9 @@ What the retail game has (static RE of the USA ``default.xbe``, job b780 r4-reco
   0x3550F0, legend 0x355CD0. Per conference it draws four division blocks; each club row has its name and the W, L and
   T counts (0xC7720 / 0xC7750 / 0xC7780 formatted by 0x4A400). L and R switch AFC and NFC; no other button is used.
 * The same code also draws the realignment screen (enter 0x3550D0): the standings case is ``[0xAE9EE8] == 1``.
-* The game keeps home and road records and the current streak for its inbox tables (0xC6B70, 0xC6C30, 0xC8200) but
-  computes no division or conference record for display. Every score of the season is in the schedule grid (0xE57C40,
+* The game keeps home and road records and the current streak for its inbox tables (0xC6B70, 0xC6C30, 0xC8200; this
+  owner calls the first two and the win and loss streak counters 0xC78D0 / 0xC7960 under the third) but computes no
+  division or conference record for display. Every score of the season is in the schedule grid (0xE57C40,
   22 rows of 17 cells, 8 bytes each; quarter scores 0xE587F0, 10 bytes a cell), so no save field is needed.
 * Retail W, L and T add up every row of the grid, so after the playoffs they include playoff games (a retail quirk,
   left alone). DIV and CONF count only the rows before the playoffs: the byte at 0x5151C4 (17 retail, 18 with the
@@ -24,10 +25,12 @@ What this owner adds
   "5-1-1"); a division game is also a conference game. Counted from the grid every frame, nothing is stored.
 * HOME, ROAD and STRK are the game's own values (its inbox standings tables use them): home and road records over the
   same rows the retail W L T use, and the streak as "W3" or "L2" ("--" after a tie or with none).
-* Header labels, the legend lines below the tables and the cell positions follow the view. Every visit to the screen
-  opens on W L T. The realignment screen and every other screen are untouched.
+* Header labels, the legend lines below the tables and the cell positions follow the view (the three HOME ROAD STRK
+  labels share the room beside the club names evenly, measured with the game's own text widths, so they never run
+  together). Every visit to the screen opens on W L T. The realignment screen and every other screen are untouched:
+  every stub is inert unless ESPN.com's page is the one drawing (``[0xAE9EE8] == 1``), so a view can never show elsewhere.
 
-Allocation: a late owner (``nfl2k5_xbe_space.LATE_OWNERS``, last): 2,048 code bytes and 16 RW bytes (the view).
+Allocation: a late owner (``nfl2k5_xbe_space.LATE_OWNERS``, last): 2,304 code bytes and 16 RW bytes (the view).
 Edits: input 0x35543F, three header labels, three cell formatters, four legend lines (all in 0x3551A0 / 0x3554B0 /
 0x355CD0) and the enter pointer at 0x54CDB4. With the view at 0 every stub falls through to the retail routine.
 
@@ -48,7 +51,7 @@ from .nfl2k5_cave_oracle import XbeImage
 
 OWNER = "nfl2k5_standings_records"
 EVIDENCE = "EXPERIMENTAL"
-CODE_SIZE = 2048
+CODE_SIZE = 2304
 DATA_SIZE = 16
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "data", DATA_SIZE, 16))
 
@@ -58,16 +61,48 @@ HELP_TEXT = (
     "White and Black (LB and RB on a modern pad in xemu) turn the columns: W L T (as before), then DIV and CONF "
     "(your record against your own division "
     "and against your conference, regular season only), then HOME, ROAD and STRK (home record, road record and the "
-    "current streak). The headers and the legend under the tables say which one you are looking at, and the page "
-    "always opens on W L T. L and R still switch AFC and NFC. Nothing is saved: the numbers are worked out from the "
-    "season's schedule every time the page draws. Off, the page is the retail page byte for byte.")
+    "current streak, counted the way the game counts them, so playoff games are included once played). The "
+    "headers and the legend under the tables say which one you are looking at, and the page always opens on W L T. "
+    "L and R still switch AFC and NFC. Nothing is saved: the numbers are worked out from the season's schedule "
+    "every time the page draws. Off, the page is the retail page.")
 
 # the views, and the retail pad bits (the Player Card pages use the same ones: Black 0x1000, White 0x2000)
 VIEWS = ("W L T", "DIV CONF", "HOME ROAD STRK")
 BLACK, WHITE = 0x1000, 0x2000
 STATE_VIEW_OFFSET = 0
 
-# (label, VA, retail bytes, entry label, kind): "call" = call rel32, "callnop" = call rel32 plus NOP padding
+# The column layout the runtime draws (virtual 640 x 480 units, left division block; the right block is 280 further
+# right). View 1 has fixed centers; view 2 spreads the measured HOME ROAD STRK label widths evenly over the room between
+# the club names and the next block, with a gap between labels of 3 to 8 units; an unmeasurable label uses the fallback.
+RETAIL_VALUE_X = (220.0, 250.0, 280.0)        # the retail W L T number columns (centered)
+RETAIL_HEADER_X = (210.0, 250.0, 280.0)       # the retail W L T header labels (left aligned)
+VIEW1_CENTERS = (215.0, 250.0, 285.0)
+VIEW2_ROOM_LEFT, VIEW2_ROOM_WIDTH = 170.0, 152.0
+VIEW2_GAP_MIN, VIEW2_GAP_MAX = 3.0, 8.0
+VIEW2_FALLBACK = (196.0, 248.0, 300.0)
+
+
+def column_centers(view: int, widths: Sequence[int]) -> tuple[float, float, float]:
+    """The center of each column of ``view`` (1 or 2) for the measured width of each header label (0 = unmeasurable)."""
+
+    if view == 1:
+        return VIEW1_CENTERS
+    if view != 2:
+        raise ValueError("view must be 1 or 2")
+    if len(widths) != 3 or any(w <= 0 for w in widths):
+        return VIEW2_FALLBACK
+    total = float(sum(widths))
+    gap = min(max((VIEW2_ROOM_WIDTH - total) / 2.0, VIEW2_GAP_MIN), VIEW2_GAP_MAX)
+    x = VIEW2_ROOM_LEFT + (VIEW2_ROOM_WIDTH - (total + 2.0 * gap)) / 2.0
+    centers = []
+    for w in widths:
+        centers.append(x + w / 2.0)
+        x += w + gap
+    return tuple(centers)
+
+
+# (label, VA, retail bytes, entry label, kind): every site becomes "call rel32 to the entry" and, where the retail
+# instructions were longer than five bytes (the input test is seven), NOP padding
 SITE_TABLE = (
     ("input", 0x0035543F, bytes.fromhex("8b442414f6c4c0"), "sr_input", "call"),
     ("header_w", 0x00355903, bytes.fromhex("ba883ceb00"), "sr_hdr0", "call"),
@@ -444,7 +479,7 @@ def main(argv=None) -> int:
 __all__ = ["OWNER", "REQUESTS", "BUILD_CAPTION", "HELP_TEXT", "VIEWS", "SITE_TABLE", "GUARDS", "StandingsRecordsError",
            "code_for", "labels", "sites", "data_edits", "allocations", "apply", "status", "read_settings", "reservations",
            "guard_digests", "division_conference_records", "home_road_records", "streaks", "format_record",
-           "format_streak"]
+           "format_streak", "column_centers"]
 
 
 if __name__ == "__main__":

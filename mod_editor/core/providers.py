@@ -929,8 +929,8 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_sim_cb_tackles.py": "81ae345a7c0323df48129b45f2aec022ce95627eabf5cbbd428e9d467fc26093",  # b778-cb1
         "mod_editor/core/nfl2k5_sim_rb_injuries.py": "2225d2891163cfb4164d0566c39cbbb7795273115ab15bd82299b034022dcc57",  # b779-sim2
         "mod_editor/core/nfl2k5_sim_realism.py": "21d5a35911e78e865c3782ccd5ffb1f1280267918045c859cb8a58617b99c9ce",  # b779-sim2 r6
-        "mod_editor/core/nfl2k5_standings_records.py": "df45d38d55f9076f24426e9c15d9fde5071ba346885cbeaea6bb172be9a90bec",  # b780-j1
-        "mod_editor/core/nfl2k5_standings_records_code.py": "ae410f3f6f6be6703759a9b75c986d0b5f7626b1f1c8f1875a1082a71abcba8e",  # b780-j1
+        "mod_editor/core/nfl2k5_standings_records.py": "81542a12ebdfcf5db77434f63665d2ec703e4e37ee5ecfb4ae024a72b2ff4f81",  # b780-j1
+        "mod_editor/core/nfl2k5_standings_records_code.py": "9b22e2aa16efb0821655ee647db084f4ec489098cdd7282c098081d44a3b3a53",  # b780-j1
         "mod_editor/core/nfl2k5_preseason_warning.py": "44647523c32291820e98b2dad0a9c44af27fe6bca13626104551dc3647bcc6f2",  # b779-int1: imported by throw_tuning for the build union (693fe63a0)
         "mod_editor/core/nfl2k5_sim_stats.py": "26af040eea115ef53bea9bbd38a329185e42ea27cea201866e6432cd71b3ef00",  # b778-sim1
         "mod_editor/core/nfl2k5_option_defaults.py": "42514e38dcffa46fcb46b19e11d2eda4dff454297b33033dc98864e940207e47",  # b779-df1
@@ -998,7 +998,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_weekly_prep_save.py": "aedb0576c3a19a3a6574362729f83d3dfac5bc4aae7eb203388403c721a83720",
         "mod_editor/core/nfl2k5_widescreen.py": "98e3fd35f5c45a35143e678055872fe405447a735b211cd2897119d3ed801b4c",
         "mod_editor/core/nfl2k5_widescreen_menus.py": "a72a4d2387e023c0552c9bfb6c5b3330a689bbe00ed5619853260a7c13012701",
-        "mod_editor/core/nfl2k5_xbe_space.py": "636d220b79feb3adb06442af3fffaeb4aafc17161b9b2a401856680c86595b91",
+        "mod_editor/core/nfl2k5_xbe_space.py": "918de4e504defbb46291c032916d6405875e2e20e7483ab163dbe71889d332b8",
         "mod_editor/core/nfl2k5_zone_drop.py": "96b915ac40cfbcb61b9bfa88a584a18841635e061947a7e1644ea193f83a94f0",
         "mod_editor/core/nfl_audio.py": "31193529647bd5fc35a2c25d38bccb83d20b16d46358169c26ced120c6c8e05c",
         "mod_editor/core/platform_compat.py": "d9471c3c5aeff847b4bb777574bb123f3172f4f863e985b19303e8bd58567779",
