@@ -387,6 +387,15 @@ class EditsDocumentTests(unittest.TestCase):
     def expected(club: str) -> dict:
         return cd.record_entry(cd.load_data(), club)
 
+    def test_the_roster_generator_merges_a_clubs_entry_only_for_the_same_coach(self) -> None:
+        import nfl2k5_team_2026_roster as generator
+        entry = generator.coach_records_for("KC", "Andy Reid")
+        self.assertEqual(set(entry), {"ratings", "tendencies", "announcer"})
+        self.assertEqual(entry, self.expected("KC"))
+        self.assertIsNone(generator.coach_records_for("KC", "Somebody New"), "a new head coach must not inherit Reid's ratings")
+        self.assertIsNone(generator.coach_records_for("", "Andy Reid"))
+        self.assertIsNone(generator.coach_records_for("XXX", "Andy Reid"))
+
 
 @unittest.skipUnless(_XISO.is_file(), "private retail NFL 2K5 disc absent (set NFL2K5_RETAIL_XISO)")
 class RetailRosterTests(unittest.TestCase):
