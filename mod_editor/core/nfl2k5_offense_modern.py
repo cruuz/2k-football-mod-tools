@@ -1024,9 +1024,35 @@ def _other_legs(tpl: dict, p: oc.Player, d: int):
     return None
 
 
+#: b780 b6-plays: a back this close to the QB's x counts as "directly behind" him (retail: 0.0; the offset backs stand 2.7 yd out)
+TOSS_BEHIND_DEADBAND_YD = 0.4
+
+
+def toss_own_side(ctx: oc.FormationContext, carrier: int) -> int | None:
+    """The side a shotgun or pistol toss to ``carrier`` has to go: his own (+1 right, -1 left), or None when he stands
+    directly behind the QB or the QB is under centre.
+
+    b780 b6-plays (SWeaR 11/01: "the Crack Toss under Gun Spread ... your player starts to go outside then cuts
+    immediately back into the middle"): the generator tossed to the formation's strong side even when the back stood on
+    the other side of the QB, so the back had to run 8.3 yd across behind the QB to the lane while the QB pitched.
+    Retail never does that out of the gun (82 of 83 shotgun tosses in the 37 retail books go to the back's own side);
+    its backs cross behind the QB only from under-centre split-back sets."""
+    if not ctx.gun:
+        return None
+    dx = ctx.player(carrier).x - ctx.qb.x
+    if abs(dx) <= TOSS_BEHIND_DEADBAND_YD:
+        return None
+    return 1 if dx > 0 else -1
+
+
 def run_design(ctx: oc.FormationContext, scheme: str, *, weak: bool = False, carrier: str = "B",
-               codes=None) -> PlayDesign:
-    """A retail-template run re-aimed for this formation (raises ConceptUnavailable)."""
+               codes=None, direction: int | None = None, own_side_only: bool = True) -> PlayDesign:
+    """A retail-template run re-aimed for this formation (raises ConceptUnavailable).
+
+    ``direction`` (+1 right, -1 left) fixes the run side outright (``weak`` is then derived from the formation's
+    strength); without it the side is the formation's run strength, flipped by ``weak``.  A shotgun or pistol toss
+    always goes to the back's own side (``toss_own_side``): the opposite option is unavailable unless
+    ``own_side_only`` is False (the playbook linter rebuilds an old, crossing toss to recognise it)."""
     rs = RUN_SCHEMES[scheme]
     tpl = RUN_TEMPLATES[rs.template]
     if "GUN" in rs.needs and not ctx.gun:
@@ -1035,7 +1061,15 @@ def run_design(ctx: oc.FormationContext, scheme: str, *, weak: bool = False, car
         raise ConceptUnavailable("needs the QB under centre")
     if "B2" in rs.needs and ctx.slot("B2") is None:
         raise ConceptUnavailable("needs a lead back")
-    d = ctx.run_strong * (-1 if weak else 1)
+    if direction is None:
+        d = ctx.run_strong * (-1 if weak else 1)
+    else:
+        d = 1 if direction > 0 else -1
+        weak = d != ctx.run_strong
+    if rs.header == "run_toss" and own_side_only:
+        own = toss_own_side(ctx, ctx.slot(carrier)) if ctx.slot(carrier) is not None else None
+        if own is not None and d != own:
+            raise ConceptUnavailable("a shotgun toss goes to the back's own side")
     roles = _role_slots(ctx, d)
     out: list = [None] * 11
     wing = None
@@ -1282,6 +1316,11 @@ def _register_concepts() -> None:
             continue
 
         def build(ctx, _n=name):
+            if RUN_SCHEMES[_n].header == "run_toss":      # b6-plays: out of the gun the toss goes to the back's own side
+                car = ctx.slot("B")
+                own = toss_own_side(ctx, car) if car is not None else None
+                if own is not None:
+                    return run_design(ctx, _n, direction=own)
             return run_design(ctx, _n)
         oc.CONCEPTS[name] = oc.ConceptDef(name, "run", build, f"retail-template run ({RUN_TEMPLATES[rs.template]['source']})",
                                           rs.tags, 2 if "gadget" in rs.tags else 1)

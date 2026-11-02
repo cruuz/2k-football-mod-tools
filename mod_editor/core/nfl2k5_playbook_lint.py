@@ -71,9 +71,11 @@ MUG_DEPTH_YD = 1.5
 STANCE_STANDING = 1
 RETAIL_BACK_FIRST_READ_SHARE = 0.29         # retail team books: a back is the QB's first read on 10-29% of pass links
 
+TOSS_BEHIND_DEADBAND_YD = 0.4               # a back this close to the QB's x stands "directly behind" him (retail 0.0; offset backs 2.7)
+
 SEVERITY = {
     "PLAYCALL_UI": "error",
-    "HANDOFF_FAR": "error", "HANDOFF_PLAN_FAR": "error", "PITCH_FAR": "error",
+    "HANDOFF_FAR": "error", "HANDOFF_PLAN_FAR": "error", "PITCH_FAR": "error", "TOSS_SIDE_CROSS": "error",
     "CHECKDOWN_BACKWARD": "error", "BACKWARD_TARGET": "warning",
     "SCREEN_DEPTH_MARGIN": "error", "SCREEN_SIDE_CROSS": "warning",
     "SCREEN_NO_RELEASE": "warning",
@@ -83,7 +85,7 @@ SEVERITY = {
 }
 GOAL_IDS = {
     "PLAYCALL_UI": "V1A",
-    "HANDOFF_FAR": "P1", "HANDOFF_PLAN_FAR": "P1", "PITCH_FAR": "P1",
+    "HANDOFF_FAR": "P1", "HANDOFF_PLAN_FAR": "P1", "PITCH_FAR": "P1", "TOSS_SIDE_CROSS": "B6",
     "CHECKDOWN_BACKWARD": "P3", "BACKWARD_TARGET": "P3",
     "SCREEN_DEPTH_MARGIN": "P2", "SCREEN_SIDE_CROSS": "P2", "SCREEN_NO_RELEASE": "P2",
     "FORMATION_OVERLAP": "P5", "FORMATION_ILLEGAL": "P5", "DEF_STACK": "P5", "DEF_MIDDLE_MUG": "P5",
@@ -91,7 +93,7 @@ GOAL_IDS = {
     "CATEGORY_EMPTY": "P5",
 }
 # Play-level execution defects the Studio repair rules remove (BACK_PRIMARY_SHARE is a book-level design warning).
-EXECUTION_CODES = ("HANDOFF_FAR", "HANDOFF_PLAN_FAR", "PITCH_FAR", "CHECKDOWN_BACKWARD", "BACKWARD_TARGET",
+EXECUTION_CODES = ("HANDOFF_FAR", "HANDOFF_PLAN_FAR", "PITCH_FAR", "TOSS_SIDE_CROSS", "CHECKDOWN_BACKWARD", "BACKWARD_TARGET",
                    "SCREEN_DEPTH_MARGIN", "SCREEN_SIDE_CROSS", "SCREEN_NO_RELEASE")
 DL_KINDS = frozenset({lib.DE, lib.DT})
 RECEIVER_KINDS = frozenset({lib.WR, lib.TE, lib.HB, lib.FB})
@@ -356,6 +358,19 @@ def check_handoffs(view: PlayView, native_plan: NativePlan | None = None) -> lis
                 f"{codec.position_label(view.codes[target])} (slot {target}) {sep:.1f} yd away at the snap; "
                 f"retail never authors more than {limit:.1f} yd, so the exchange can fire before the runner arrives",
                 target, **data))
+        if k == 1 and gk == lib.QB and tk in lib.BACK_KINDS and view.positions[giver][1] <= codec.SHOTGUN_DEPTH_THRESHOLD_CM:
+            # b780 b6-plays: out of the gun a toss goes to the back's own side (retail: 82 of 83 shotgun tosses)
+            offset = (view.positions[target][0] - view.positions[giver][0]) / YD
+            lane = codec.HANDOFF_HOLE_CM[hole] / YD if 0 <= hole < len(codec.HANDOFF_HOLE_CM) else 0.0
+            if abs(offset) > TOSS_BEHIND_DEADBAND_YD and offset * lane < 0:
+                out.append(_finding(
+                    view, "TOSS_SIDE_CROSS",
+                    f"toss from the gun: "
+                    f"{codec.position_label(view.codes[target])} (slot {target}) stands {abs(offset):.1f} yd to the "
+                    f"{'right' if offset > 0 else 'left'} of the QB but the toss lane is {abs(lane):.1f} yd to the "
+                    f"{'left' if offset > 0 else 'right'}, so he has to cross behind the QB while it is pitched; retail "
+                    f"tosses out of the gun go to the back's own side", target,
+                    **data, offset_yd=round(offset, 2), lane_yd=round(lane, 2)))
         if native_plan is not None:
             plan = native_plan(view, giver, target)
             if plan:
@@ -743,6 +758,88 @@ def fix_back_routes(positions, codes, chains) -> tuple[list[Chain] | None, dict 
     return out, dict(rule="back_routes", status="depth_first", slots=changed)
 
 
+TOSS_FAMILY = (("Zone Toss",), ("HB Toss", "Crack Toss"))      # schemes that share one blocking line
+TOSS_CORE_SLOTS = (0, 1, 2, 3, 4, 5)                           # QB and the five linemen; the carrier is checked on top
+
+
+def _toss_old_side(chains_bytes, codes):
+    """(carrier slot, old side) of a SOFTDRINK toss: QB Start / Ball / Handoff To kind 1, carrier Start / Take Handoff /
+    Run Path (mode 0) with a lateral aim of +/- 10 yd, or None."""
+    kinds = [c & 31 for c in codes]
+    if kinds[0] != lib.QB or [b[0] for b in chains_bytes[0]] != [0x01, 0x03, 0x13]:
+        return None
+    give = codec.Node.from_bytes(chains_bytes[0][2])
+    if int(give.operands[1]) != 1:
+        return None
+    car = int(give.operands[0])
+    if not 1 <= car <= 10 or kinds[car] not in lib.BACK_KINDS or [b[0] for b in chains_bytes[car]] != [0x01, 0x16, 0x15]:
+        return None
+    run = codec.Node.from_bytes(chains_bytes[car][2])
+    if int(run.operands[0]) != 0 or abs(abs(run.operands[1]) - 10 * YD) > 1.0:
+        return None
+    return car, (1 if run.operands[1] > 0 else -1)
+
+
+def _crack_receivers(chains_bytes, codes) -> bool:
+    """A Crack Toss sends its play-side receivers inside: Block Leg kind 0, 3 yd lateral (+/- 274.32 cm), 1 yd deep."""
+    for s, chain in enumerate(chains_bytes):
+        if (codes[s] & 31) != lib.WR:
+            continue
+        for b in chain:
+            n = codec.Node.from_bytes(b)
+            if n.op == 0x11 and int(n.operands[0]) == 0 and abs(abs(n.operands[5]) - 3 * 3 * 30.48) < 1.0 \
+                    and abs(n.operands[6] - 91.44) < 1.0:
+                return True
+    return False
+
+
+def fix_toss_side(positions, codes, chains) -> tuple[list[Chain] | None, dict | None]:
+    """A shotgun or pistol toss goes to the back's own side (b780 b6-plays).
+
+    The generator tossed to the formation's strong side whatever side the back stood on, so in a gun set with the back
+    beside the QB the back had to run behind the QB to the lane while the QB pitched (SWeaR 11/01: "the Crack toss under
+    Gun Spread: your player starts to go outside then cuts immediately back into the middle").  A toss that matches the
+    SOFTDRINK template (QB, linemen and carrier byte for byte) is rebuilt for the back's own side; the receivers follow
+    the new side.  Plays that do not match are never rewritten.
+    """
+    from . import nfl2k5_offense_concepts as oc
+    from . import nfl2k5_offense_modern as om
+    chains_bytes = _as_bytes(chains)
+    found = _toss_old_side(chains_bytes, codes)
+    if found is None:
+        return None, None
+    car, old = found
+    ctx = oc.FormationContext.build(positions, codes)
+    own = om.toss_own_side(ctx, car)
+    if own is None or own == old:
+        return None, None
+    label = next((lab for lab in ("B", "B2") if ctx.slot(lab) == car), None)
+    if label is None:
+        return None, None
+    matched = None
+    for family in TOSS_FAMILY:
+        for scheme in family:
+            try:
+                design = om.run_design(ctx, scheme, direction=old, carrier=label, codes=codes, own_side_only=False)
+            except oc.ConceptUnavailable:
+                continue
+            oc.fill_unassigned(ctx, design)
+            template = _as_bytes(design.chains)
+            if all(template[s] == chains_bytes[s] for s in (*TOSS_CORE_SLOTS, car)):
+                matched = family
+                break
+        if matched:
+            break
+    if matched is None:
+        return None, None
+    scheme = "Zone Toss" if matched == TOSS_FAMILY[0] else ("Crack Toss" if _crack_receivers(chains_bytes, codes) else "HB Toss")
+    fixed = om.run_design(ctx, scheme, direction=own, carrier=label, codes=codes)
+    oc.fill_unassigned(ctx, fixed)
+    offset = (positions[car][0] - positions[0][0]) / YD
+    return fixed.chains, dict(rule="toss_side", status="rebuilt", scheme=scheme, carrier=car, old_side=old, new_side=own,
+                              back_offset_yd=round(offset, 2))
+
+
 def _authored(chains) -> list[Chain]:
     """Exact (opcode, operands) pairs; byte identity is checked by the callers."""
     out = []
@@ -759,7 +856,7 @@ def normalize_offense_play(positions, codes, chains) -> tuple[list[Chain] | None
     """
     receipts: list[dict] = []
     current, changed = chains, False
-    for rule in (fix_end_around, fix_rb_screen, fix_back_routes):
+    for rule in (fix_end_around, fix_rb_screen, fix_back_routes, fix_toss_side):
         fixed, receipt = rule(positions, codes, current)
         if receipt is not None:
             receipts.append(receipt)
@@ -775,7 +872,7 @@ def changed_slots(old_chains, new_chains) -> list[int]:
 
 __all__ = [
     "Finding", "LintReport", "PlayView", "as_built", "EXECUTION_CODES", "SCHEMA", "FIX_SCHEMA", "SEVERITY", "GOAL_IDS",
-    "defense_findings", "end_around_template", "screen_drop_yd", "fix_back_routes", "fix_end_around", "fix_rb_screen",
+    "defense_findings", "end_around_template", "screen_drop_yd", "fix_back_routes", "fix_end_around", "fix_rb_screen", "fix_toss_side",
     "lint_pack", "lint_resource", "lint_views", "pack_defense_findings", "normalize_offense_play", "pack_views", "rb_screen_template",
     "resource_views", "changed_slots",
 ]
