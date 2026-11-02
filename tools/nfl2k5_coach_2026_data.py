@@ -877,7 +877,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     try:
         return args.func(args)
-    except CoachDataError as exc:
+    except (CoachDataError, RuntimeError, OSError) as exc:      # RuntimeError: parquet without pyarrow; OSError: a missing input
         print(f"coach data refused: {exc}", file=sys.stderr)
         return 2
 
