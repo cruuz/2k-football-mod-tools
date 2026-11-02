@@ -83,12 +83,12 @@ verification of every feature. The original game disc is not changed.
 
 ## My build failed. Should I clear the cache, delete the sessions folder or reinstall?
 
-No. A failed build leaves your project, your artwork and the cache as they were, and the cache is
-what makes the next try fast: the textures it already compiled are reused, so a retry costs
-minutes where the first build cost hours. Clearing it only makes the next build slow again.
-Reinstalling does not help either; it is for a studio that will not open or update (the first
-question above). Post **Copy Build summary**, the first error and the build log instead, so the
-cause can be found.
+No. A failed build leaves your project and your artwork alone, and everything it had already
+compiled stays in the cache. The cache is what makes the next try fast: those textures are reused,
+so a retry skips the compile work, which is most of the time of a big project. Clearing it only
+makes the next build slow again. Reinstalling does not help either; it is for a studio that will
+not open or update (the first question above). Post **Copy Build summary**, the first error and
+the build log instead, so the cause can be found.
 
 What the cache is and what deleting it costs: the compiled textures sit in a folder called
 `project-stage`, next to the private game cache (Windows `%LOCALAPPDATA%\2k5-mod-studio\cache\project-stage`,
@@ -100,7 +100,7 @@ encoded. Deleting the folder yourself is safe, but it costs one slow build, beca
 compiled again (hours for thousands of textures).
 Your projects, your artwork and your original disc are not stored there. The working sessions
 under `sessions` hold copies of the artwork you opened and clean themselves up after two weeks;
-the build no longer keeps anything in them.
+the build no longer keeps its compiled textures in them.
 
 ## Can I find out what will stop a long build before I start it?
 

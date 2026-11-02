@@ -343,7 +343,7 @@ class UnitCacheTests(unittest.TestCase):
         helper = self.root / "tools/nfl2k5_equipment_optimal"
         helper.parent.mkdir()
         helper.write_bytes(b"one")
-        (self.root / "code/loaded.py").write_text('HELPER = "tools/nfl2k5_equipment_optimal"\n')
+        (self.root / "code/loaded.py").write_text('HELPER = "tools/nfl2k5_equipment_optimal"\n', encoding="utf-8", newline="\n")
         stranger = self.root / "tools/apf_h7a_optimal"
         stranger.write_bytes(b"one")
         with self.harness.patched():

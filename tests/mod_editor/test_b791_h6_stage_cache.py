@@ -402,22 +402,22 @@ class UnitCacheContracts(unittest.TestCase):
     def test_a_release_that_leaves_the_encoders_alone_keeps_every_result(self):
         with self.harness.patched():
             self.harness.run(self.cache)
-            (self.base / "one/code/unrelated.py").write_text("UNRELATED = 'a release changed this'\n")
-            (self.base / "one/code/version.py").write_text("__version__ = 'rc115'\n")
+            (self.base / "one/code/unrelated.py").write_text("UNRELATED = 'a release changed this'\n", encoding="utf-8", newline="\n")
+            (self.base / "one/code/version.py").write_text("__version__ = 'rc115'\n", encoding="utf-8", newline="\n")
             units, _ = self.harness.run(self.cache)
         self.assertEqual((units.hits, units.misses), (6, 0))
 
     def test_an_encoder_change_replaces_exactly_the_kinds_it_can_change(self):
         card = self.second_session("cards", count=6, kind="team_select")
         table = {"live_face": ("code/loaded.py",), "team_select": ("code/card.py",)}
-        (self.base / "cards/code/card.py").write_text("CARD = 1\n")
-        (self.base / "one/code/card.py").write_text("CARD = 1\n")
+        (self.base / "cards/code/card.py").write_text("CARD = 1\n", encoding="utf-8", newline="\n")
+        (self.base / "one/code/card.py").write_text("CARD = 1\n", encoding="utf-8", newline="\n")
         with self.harness.patched(table), card.patched(table):
             self.harness.run(self.cache)
             card.run(self.cache)
             self.assertEqual((self.harness.run(self.cache)[0].hits, card.run(self.cache)[0].hits), (6, 6))
-            (self.base / "cards/code/card.py").write_text("CARD = 2\n")
-            (self.base / "one/code/card.py").write_text("CARD = 2\n")
+            (self.base / "cards/code/card.py").write_text("CARD = 2\n", encoding="utf-8", newline="\n")
+            (self.base / "one/code/card.py").write_text("CARD = 2\n", encoding="utf-8", newline="\n")
             faces, _ = self.harness.run(self.cache)
             cards, _ = card.run(self.cache)
         self.assertEqual((faces.hits, faces.misses), (6, 0), "the face encoder did not change")
@@ -435,7 +435,7 @@ class UnitCacheContracts(unittest.TestCase):
     def test_why_a_result_was_compiled_again_is_counted(self):
         with self.harness.patched():
             cold, _ = self.harness.run(self.cache)
-            (self.base / "one/code/loaded.py").write_text("LOADED = 2\n")
+            (self.base / "one/code/loaded.py").write_text("LOADED = 2\n", encoding="utf-8", newline="\n")
             changed, _ = self.harness.run(self.cache)
             first = next((self.base / "cache").glob("*.json"))
             first.write_bytes(b"damaged")
@@ -448,6 +448,14 @@ class UnitCacheContracts(unittest.TestCase):
         self.assertEqual(changed.plain_summary(), ["Compiled 6 textures: 6 because the studio's encoder changed (loaded.py)"])
         self.assertEqual(damaged.plain_summary(), ["Reused 5 of 6 compiled textures from earlier builds",
                                                    "Compiled 1 texture: 1 new or changed artwork"])
+        # The files a change is named by are plain words in the build log, never a bracketed internal token.
+        changed.changed_code.clear()
+        changed.changed_code.update({"(dispatch)": 4, "(python)": 1, "(unknown)": 1})
+        self.assertEqual(changed.plain_summary(), [
+            "Compiled 6 textures: 6 because the studio's encoder changed "
+            "(the project builder, the Python version, an older saved format)"])
+        changed.changed_code.clear()
+        changed.changed_code.update({"code/loaded.py": 6})
         summary = changed.summary()
         self.assertEqual(summary["misses_by_kind"], {"live_face": 6})
         self.assertGreater(summary["stored_bytes_by_kind"]["live_face"], 0)

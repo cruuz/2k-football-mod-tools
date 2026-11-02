@@ -4043,7 +4043,8 @@ class IndependentUnits:
             if fresh:
                 parts.append(f"{fresh:,} new or changed artwork")
             if changed:
-                files = ", ".join(Path(name).name for name in list(self.changed_code)[:3])
+                said = {"(dispatch)": "the project builder", "(python)": "the Python version", "(unknown)": "an older saved format"}
+                files = ", ".join(said.get(name, Path(name).name) for name in list(self.changed_code)[:3])
                 parts.append(f"{changed:,} because the studio's encoder changed ({files})")
             if damaged:
                 parts.append(f"{damaged:,} saved results were damaged")
