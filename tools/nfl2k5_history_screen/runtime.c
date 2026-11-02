@@ -915,6 +915,14 @@ static void page_awards(u32 award) {
 #define HALL_SIZE 4624u
 #define HALL_SLOTS 192u
 
+static u32 seed_inductees(u32 filter_seed) {
+    u32 base = RO_FIELD(RO_HOF), count = RO_FIELD(RO_HOF_COUNT), n = 0;
+    for (u32 i = 0; base && i < count && i < 1024 && base + 6 * (i + 1) <= RO_FIELD(RO_SIZE); i++)
+        if (filter_seed == 0xFF || RO_U8(base + 6 * i + 5) == filter_seed)
+            n++;
+    return n;
+}
+
 static u32 seed_inductee(u32 k, u32 filter_seed, u32 *at_out) {
     u32 base = RO_FIELD(RO_HOF), count = RO_FIELD(RO_HOF_COUNT), n = 0;
     if (!base)
@@ -956,8 +964,8 @@ static void page_hof(u32 filter) {
         if (filter_seed == 0xFF)
             filter_seed = 0xFE;                         /* a club without seed shows no seeded members */
     }
-    while (seed_count < 1024 && ro_ok() && seed_inductee(seed_count, filter_seed, &at))
-        seed_count++;
+    if (ro_ok())
+        seed_count = seed_inductees(filter_seed);
     if (ro_ok() && RO_FIELD(RO_HOF) && RO_FIELD(RO_HOF_COUNT))
         newest = RO_U16(RO_FIELD(RO_HOF));               /* the seed lists the newest class first */
     const u8 *b = x_block(X_HALL, HALL_SIZE);
@@ -1475,27 +1483,39 @@ static u32 player_index(u32 player) {
     return (player - base) / 0x54;
 }
 
-/* k-th game-log line of the player (oldest week first): sets the game and the line, returns 1 */
-static u32 log_line(u32 player, u32 k, const u8 **game, const u8 **line) {
+/* The player's lines in this season's kept games, oldest week first, in one pass: up to `max` (game, line) pairs. */
+#define LOG_MAX 32u
+
+static u32 log_lines(u32 player, const u8 **games, const u8 **lines, u32 max) {
     const u8 *b = x_boxes();
     u32 link = player_index(player), n = 0;
     if (!b || link == 0xFFFF)
         return 0;
-    for (u32 row = 0; row < 22; row++)
-        for (u32 g = 0; g < b[2]; g++) {
-            const u8 *e = b + 16 + BOX_ENTRY * g;
-            if (!(e[7] & 1) || e[0] != row || e[8] > BOX_LINES)
-                continue;
-            for (u32 i = 0; i < e[8]; i++) {
-                const u8 *l = e + 144 + 16 * i;
-                if (*(const u16 *)l == link && n++ == k) {
-                    *game = e;
-                    *line = l;
-                    return 1;
-                }
+    u8 order[BOX_GAMES];
+    u32 count = 0;
+    for (u32 g = 0; g < b[2] && g < BOX_GAMES; g++) {              /* the kept games by week (insertion sort) */
+        const u8 *e = b + 16 + BOX_ENTRY * g;
+        if (!(e[7] & 1) || e[8] > BOX_LINES)
+            continue;
+        u32 at = count++;
+        while (at && b[16 + BOX_ENTRY * order[at - 1]] > e[0]) {
+            order[at] = order[at - 1];
+            at--;
+        }
+        order[at] = (u8)g;
+    }
+    for (u32 k = 0; k < count && n < max; k++) {
+        const u8 *e = b + 16 + BOX_ENTRY * order[k];
+        for (u32 i = 0; i < e[8] && n < max; i++) {
+            const u8 *l = e + 144 + 16 * i;
+            if (*(const u16 *)l == link) {
+                games[n] = e;
+                lines[n] = l;
+                n++;
             }
         }
-    return 0;
+    }
+    return n;
 }
 
 #define LOG_ROWS 6u
@@ -1554,13 +1574,11 @@ u32 FC hist_card_flip(u32 buttons, volatile u32 *state) {
 
 /* The game log in the card's table area (state = the honors owner's state, the view's first row in state[1]). */
 void FC hist_card_rows(volatile u32 *state) {
-    u32 player = G(CARD_PLAYER), count = 0;
-    const u8 *game, *line;
+    const u8 *games[LOG_MAX], *lines[LOG_MAX];
     u16 text[96], *out;
     card_table(state, 1);
     hist_state[S_CARD_FRAME] = 1;
-    while (count < 64 && log_line(player, count, &game, &line))
-        count++;
+    u32 count = log_lines(G(CARD_PLAYER), games, lines, LOG_MAX);
     u32 first = state[1] & ~LOG;
     if (first + LOG_ROWS > count)
         first = count > LOG_ROWS ? count - LOG_ROWS : 0;
@@ -1571,7 +1589,7 @@ void FC hist_card_rows(volatile u32 *state) {
         return;
     }
     for (u32 r = 0; r < LOG_ROWS && first + r < count; r++) {
-        log_line(player, first + r, &game, &line);
+        const u8 *game = games[first + r], *line = lines[first + r];
         u32 side = game[6] & 1, theirs = side ? game[2] : game[3], weeks = B(WEEKS_BYTE);
         u32 us = side ? game[5] : game[4], them = side ? game[4] : game[5];
         out = put_ascii(text, game[0] < weeks ? "WK " : "PO ");
