@@ -34,10 +34,12 @@ from mod_editor.core import nfl2k5_classic_art  # noqa: E402,F401
 RETAIL = Path(os.environ.get("NFL2K5_RETAIL_XISO", "/media/noah/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso"))
 FIXTURE = Path(os.environ.get("B775_EK1_DISC",
                               "/media/noah/Storage/2K5 Discs/SOFTDRINK 2K28 v0.6.1 i4 test (2026-10-17).xiso.iso"))
+V08 = Path(os.environ.get("B791_V08_DISC", "/media/noah/Storage/2K5 Discs/SOFTDRINK 2K28 v0.8 (2026-10-31).xiso.iso"))
 
 SPAN = 10
 VIDEO, SYSTEM = 100, 7
 MARKS = 1                      # a chunk-3 span whose flag byte is 1 carries "the 2026 maker marks"
+OWN = 5                        # a span the user made: not the stock piece, and the drawing step would still change it
 
 
 def span(video=VIDEO, system=SYSTEM, flag=0, kind=b"T"):
@@ -62,7 +64,7 @@ def parse(raw, allow_trailing=False):
 def fake_compile_texture(chunk_span, row, donors=None, *, fixed=True):
     """The real compiler's contract for K1's step: a sleeve that carries the marks is repainted, one that does not has
     nothing to change and says so with the typed signal."""
-    if chunk_span[9] != MARKS:
+    if chunk_span[9] not in (MARKS, OWN):
         raise fixes.NothingToChange("2026 kit fixes: the art changed no texel")
     return chunk_span[:9] + b"\x00", {}
 
@@ -87,6 +89,15 @@ def k2():
     return {"id": "K2", "team": "DAL", "code": "07", "style": 10, "label": [1977, 1981],
             "sides": {"H": {"base": "07H3"}, "A": {"base": "07A2"}},
             "cards": {"H": "07H3", "A": "07A2", "logo": "07H3"}, "moments": [[6, "home"]]}
+
+
+def drawing_k1():
+    """K1 as shipped: its one art step is a white polygon over the two 2026 maker marks (a drawing step)."""
+    kit = k1()
+    kit["sides"]["A"]["art"][0]["ops"] = [
+        {"op": "poly", "color": "#FFFFFF", "points": [[56, 0], [87, 0], [87, 17], [56, 17]]},
+        {"op": "poly", "color": "#FFFFFF", "points": [[42, 63], [72, 63], [72, 81], [42, 81]]}]
+    return kit
 
 
 GIANTS_2007, GIANTS_2011, COWBOYS_1977 = ("h-18-2007-giants-9.iff", "h-18-2011-giants-9.iff", "h-07-1977-cowboys-3.iff")
@@ -302,6 +313,218 @@ class NoOpArtStep(Synthetic):
         out = mk.compose(doc, self.donors(), self.retail_stub(), [], skipped)
         self.assertEqual(sorted(out), ["18a9.iff", "18h9.iff"])
         self.assertEqual(skipped, {})
+
+
+class StockPieceRule(Synthetic):
+    """Part 3 (the coordinator's 11-02 15:20 addition: Coach Edwards' own Giants sleeve got two flat white boxes from K1's
+    step, his swoosh stayed): a step that draws flat colour runs only on the stock piece it was made for, the retail piece or
+    the shipped SOFTDRINK one; on a piece of the user's own art it is skipped, the pixels stay and the receipt says so."""
+
+    side = drawing_k1()["sides"]["A"]
+    LABEL = "K1 (NYG, away)"
+
+    def marked_retail(self):
+        """A retail whose Giants road sleeve carries the marks the step removes (so the step changes it)."""
+        retail = mk.RetailPackages("unused")
+        retail.update({**self.retail, "18A0": package(c3=span(flag=MARKS))})
+        return retail
+
+    def compose(self, donors, retail, user_pieces=None):
+        report, nothing, kept = [], [], []
+        out = mk.compose_side(self.side, donors, retail, report, self.LABEL, nothing, kept, user_pieces)
+        return out, report, nothing, kept
+
+    def test_a_donor_equal_to_the_retail_piece_still_gets_the_step_byte_for_byte(self):
+        retail = self.marked_retail()
+        donors = dict(retail)
+        out, report, nothing, kept = self.compose(donors, retail)
+        self.assertEqual(out, mk.compose_side(self.side, donors))              # what the shipped-donor path makes
+        self.assertEqual(out[3 * SPAN:4 * SPAN], span(flag=0))                 # painted
+        self.assertEqual((report, nothing, kept), ([], [], []))
+
+    def test_a_shipped_softdrink_piece_gets_the_step_too(self):
+        softdrink = span(flag=MARKS, video=VIDEO - 3)                           # not the retail sleeve, the shipped one
+        donors = {**self.retail, "18A0": package(c3=softdrink)}
+        table = {"18A0": {"3": mk.sha(softdrink)}}
+        with mock.patch.object(mk, "_stock_table", return_value=table):
+            out, report, nothing, kept = self.compose(donors, self.retail_stub())
+        self.assertEqual(out[3 * SPAN:4 * SPAN], span(video=VIDEO - 3, flag=0))
+        self.assertEqual(out, mk.compose_side(self.side, donors))
+        self.assertEqual(kept, [])
+
+    def test_the_users_own_art_gets_no_paint_and_a_note(self):
+        own = span(flag=OWN)                                                    # his sleeve: not retail, not shipped
+        donors = {**self.retail, "18A0": package(c3=own)}
+        with mock.patch.object(mk, "_stock_table", return_value={"18A0": {"3": mk.sha(span(flag=MARKS, video=VIDEO - 3))}}):
+            out, report, nothing, kept = self.compose(donors, self.retail_stub())
+        self.assertEqual(out[3 * SPAN:4 * SPAN], own)                           # the pixels stay
+        self.assertEqual(mk.compose_side(self.side, donors)[3 * SPAN:4 * SPAN], span(flag=0))      # the shipped path paints
+        self.assertEqual((report, nothing), ([], []))
+        self.assertEqual([(r["side"], r["chunk"], r["texture"], r["art"], r["donor"]) for r in kept],
+                         [(self.LABEL, 3, "sleeve00", "tset", "18A0")])
+        self.assertIn("2026 maker marks", kept[0]["step"])
+        notes = mk.user_notes(dict(kept_art=kept))
+        self.assertEqual(len(notes), 1)
+        self.assertIn("the new kit K1 (NYG, away) kept your own sleeves untouched (chunk 3, sleeve00)", notes[0])
+        self.assertIn("was made for the stock piece, so it did not paint over your art", notes[0])
+
+    def test_pieces_the_project_replaces_are_kept_off_even_when_the_donor_bytes_are_still_stock(self):
+        # a dry run whose donors do not have the project's artwork compiled in
+        retail = self.marked_retail()
+        out, _r, _n, kept = self.compose(dict(retail), retail, {("18a0", 3)})
+        self.assertEqual(out[3 * SPAN:4 * SPAN], span(flag=MARKS))
+        self.assertEqual(len(kept), 1)
+        other, _r, _n, kept = self.compose(dict(retail), retail, {("18A0", 4)})       # another chunk: no effect
+        self.assertEqual((other[3 * SPAN:4 * SPAN], kept), (span(flag=0), []))
+
+    def test_a_chunk_swapped_to_retail_is_stock_even_when_the_project_replaces_it(self):
+        retail = self.marked_retail()
+        stock = mk._Stock(retail, {("18A0", 3)}, table={})
+        self.assertFalse(stock.is_stock("18A0", 3, span(flag=MARKS)))
+        self.assertTrue(stock.is_stock("18A0", 3, span(flag=MARKS), swapped=True))
+        self.assertTrue(mk._Stock(retail, table={}).is_stock("18A0", 3, span(flag=MARKS)))
+        self.assertFalse(mk._Stock(retail, table={}).is_stock("18A0", 3, span(flag=MARKS, video=VIDEO - 1)))
+
+    def test_a_historic_spare_the_retail_disc_lacks_stands_for_its_franchises_style_0_kit(self):
+        retail = mk.RetailPackages("unused")
+        retail.update({"18A0": package(c3=span(flag=MARKS))})                    # no 18A8 on the retail disc
+        stock = mk._Stock(retail, table={})
+        self.assertTrue(stock.is_stock("18A8", 3, span(flag=MARKS)))
+        self.assertFalse(stock.is_stock("18A8", 3, span(flag=2)))
+        self.assertFalse(mk._Stock(retail, table={}).is_stock("29H2", 3, span(flag=MARKS)))   # nothing to compare with
+
+    def test_colour_swaps_and_recolour_only_rows_still_run_on_the_users_art(self):
+        own = package(c3=span(flag=2), c4=span(flag=OWN))
+        donors = {**self.retail, "18A0": own}
+        swap = {"base": "18A8", "chunks": {"3": "18A0"}, "art": [{"chunk": 3, "kind": "palette_map", "map": []}]}
+        out = mk.compose_side(swap, donors, self.retail_stub(), [], self.LABEL, [], kept := [])
+        self.assertEqual(out[3 * SPAN:4 * SPAN], span(flag=7))                    # recoloured: the kit's design
+        self.assertEqual(kept, [])
+        recolour = {"base": "18A8", "chunks": {"4": "18A0"}, "art": [
+            {"chunk": 4, "kind": "tset", "texture": "socks00", "size": [64, 64, 4], "ops": [{"op": "recolor", "from": "#FFFFFF",
+                                                                                          "color": "#C60C30", "box": [0, 0, 64, 64]}]}]}
+        out = mk.compose_side(recolour, donors, self.retail_stub(), [], self.LABEL, [], kept)
+        self.assertEqual(out[4 * SPAN:5 * SPAN], span(flag=0))                    # the step ran on his piece
+        self.assertEqual(kept, [])
+
+    def test_a_row_with_a_drawing_step_among_recolours_is_kept_off_the_users_art_as_a_whole(self):
+        mixed = {"chunk": 3, "kind": "tset", "texture": "sleeve00", "size": [128, 128, 5],
+                 "ops": [{"op": "recolor"}, {"op": "ring"}]}
+        self.assertTrue(mk.row_paints(mixed))
+        self.assertFalse(mk.row_paints(dict(mixed, ops=[{"op": "recolor"}, {"op": "retint"}])))
+        self.assertFalse(mk.row_paints({"chunk": 3, "kind": "palette_map", "map": []}))
+        self.assertFalse(mk.row_paints({"chunk": 3, "kind": "tset", "texture": "x"}))
+        self.assertTrue(mk.row_paints(dict(mixed, ops=[{"op": "a-step-nobody-has-seen"}])))      # unknown steps draw
+        self.assertTrue(mk.atlas_paints({"ops": [{"op": "remap"}, {"op": "poly"}]}))
+        self.assertFalse(mk.atlas_paints({"ops": [{"op": "remap"}]}))
+        self.assertFalse(mk.atlas_paints({}))
+
+    def test_the_shipped_donor_path_never_asks_whether_a_piece_is_stock(self):
+        donors = {**self.retail, "18A0": package(c3=span(flag=OWN))}
+        with mock.patch.object(mk, "_Stock", side_effect=AssertionError("asked")):
+            out = mk.compose_side(self.side, donors)
+        self.assertEqual(out[3 * SPAN:4 * SPAN], span(flag=0))
+
+    def test_a_sleeve_the_kit_had_to_take_from_retail_for_its_allocation_gets_the_step(self):
+        # his sleeve is also over the allocation limit: the kit takes the retail sleeve (named), which is stock
+        big = span(flag=MARKS, video=VIDEO + 500)
+        donors = {**self.retail, "18A0": package(c3=big)}
+        retail = self.marked_retail()
+        out, report, nothing, kept = self.compose(donors, retail)
+        self.assertEqual(out[3 * SPAN:4 * SPAN], span(flag=0))                    # the retail sleeve, painted
+        self.assertEqual([(r["chunks"], r["from_kits"]) for r in report], [([3], ["18A0"])])
+        self.assertEqual(kept, [])
+
+    def test_a_kept_chunk_is_not_swapped_to_retail_just_to_make_the_step_work(self):
+        own = span(flag=OWN)
+        donors = {**self.retail, "18A0": package(c3=own, c4=span(video=VIDEO + 500))}
+        side = dict(self.side, chunks={"3": "18A0", "4": "18A0"})
+        report, kept = [], []
+        out = mk.compose_side(side, donors, self.marked_retail(), report, self.LABEL, [], kept)
+        self.assertEqual([r["chunks"] for r in report], [[4]])                    # only the grown chunk is swapped
+        self.assertEqual(out[3 * SPAN:4 * SPAN], own)                             # his sleeve stays his
+        self.assertEqual(len(kept), 1)
+
+    def test_what_a_kit_left_out_kept_is_not_recorded(self):
+        kit = dict(drawing_k1(), sides={"A": drawing_k1()["sides"]["A"], "H": k1()["sides"]["H"]})
+        donors = {**self.retail, "18A0": package(c3=span(flag=OWN)),
+                  "18H8": package(c0=span(kind=b"T"))}                            # the home side cannot be made at all
+        kept, skipped = [], {}
+        out = mk.compose(dict(document(), kits=[kit]), donors, self.marked_retail(), [], skipped, [], kept)
+        self.assertEqual((out, sorted(skipped), kept), ({}, ["K1"], []))
+
+    def test_the_far_player_sheet_edit_is_kept_off_a_users_sheet_and_everything_else_still_runs(self):
+        from mod_editor.core import nfl2k5_classic_kit_art as classic_art
+        from mod_editor.core import nfl2k5_era_kits as era
+        calls = []
+        atlas = {"format": "A8R8G8B8", "overlays": [{"donor": "18A0", "boxes": ["pants"]}],
+                 "ops": [{"op": "remap"}, {"op": "poly", "color": "#FFFFFF", "points": [[0, 0], [1, 0], [1, 1]]}]}
+        side = {"base": "18A8", "atlas": atlas}
+        stock_sheet, own_sheet = package(c51=span(flag=3)), package(c51=span(flag=4, video=VIDEO - 9))
+        retail = mk.RetailPackages("unused")
+        retail.update({**self.retail, "18A8": stock_sheet, "18A0": stock_sheet})
+        patches = (mock.patch.object(nfl_txtr, "decode_chunk", lambda raw, chunk: (b"decoded", None)),
+                   mock.patch.object(era, "_native_atlas", lambda decoded, chunk, overlays, fmt: calls.append(("mix", len(overlays))) or b"mixed"),
+                   mock.patch.object(classic_art, "atlas_edit", lambda mixed, chunk, ops: calls.append(("draw", len(ops))) or b"edited"),
+                   mock.patch.object(era, "_encoded_span", lambda span_, mixed, video: span_))
+        for patch in patches:
+            patch.start()
+            self.addCleanup(patch.stop)
+        kept = []
+        mk.compose_side(side, dict(retail), retail, [], self.LABEL, [], kept)           # both sheets are stock
+        self.assertEqual((calls, kept), ([("mix", 1), ("draw", 2)], []))
+        calls.clear()
+        donors = {**self.retail, "18A8": stock_sheet, "18A0": own_sheet}                # the overlay donor's sheet is his
+        mk.compose_side(side, donors, retail, [], self.LABEL, [], kept)
+        self.assertEqual(calls, [("mix", 1)])                                           # the mixing ran, the drawing did not
+        self.assertEqual([(r["chunk"], r["art"], r["donor"]) for r in kept], [(51, "atlas", "18A0")])
+        notes = mk.user_notes(dict(kept_art=kept))
+        self.assertIn("kept your own far-player sheet untouched (chunk 51, far-player atlas)", notes[0])
+
+    def test_dry_run_returns_the_kept_rows_and_takes_the_projects_replaced_pieces(self):
+        retail = self.marked_retail()
+        doc = dict(document(), kits=[drawing_k1()])
+        receipt = mk.dry_run(doc, dict(retail), retail)
+        self.assertEqual((receipt["kept_art"], receipt["skipped_kits"]), ([], {}))
+        receipt = mk.dry_run(doc, dict(retail), retail, user_pieces={("18A0", 3)})
+        self.assertEqual([(r["side"], r["chunk"]) for r in receipt["kept_art"]], [(self.LABEL, 3)])
+        self.assertEqual(len(mk.user_notes(receipt)), 1)
+        with self.assertRaises(ValueError):                  # the shipped donors: nothing is forgiven or kept off
+            mk.dry_run(doc, {**self.retail}, None)
+
+    def test_expected_leaves_the_kept_rows_in_the_inputs_and_the_receipt(self):
+        own = package(c3=span(flag=OWN))
+        doc = dict(document(), kits=[drawing_k1(), k2()], selections=document()["selections"],
+                   classic_defaults=document()["classic_defaults"])
+        inputs = StageOnSyntheticInputs.inputs(self, {**self.retail, "18A0": own})
+        with mock.patch.object(mk, "_stock_table", return_value={}):
+            StageOnSyntheticInputs.expected(self, inputs, doc)
+        self.assertEqual([(r["side"], r["chunk"]) for r in inputs["kept"]], [(self.LABEL, 3)])
+        self.assertEqual(inputs["unchanged"], [])
+        self.assertEqual(inputs["skipped"], {})
+
+    def test_every_art_step_of_both_documents_is_judged_with_its_reason(self):
+        from mod_editor.core import nfl2k5_classic_teams as ct
+        for doc in (mk.document(), ct.authored_kits()):
+            rows = mk.judged_rows(doc)
+            expected = []
+            for kit in doc["kits"]:
+                for letter, side in sorted(kit["sides"].items()):
+                    expected += [(kit["id"], letter, row["chunk"], not mk.row_paints(row)) for row in side.get("art", ())]
+                    if side.get("atlas"):
+                        expected.append((kit["id"], letter, 51, not mk.atlas_paints(side["atlas"])))
+                    if side.get("unif_colours") or side.get("unif"):
+                        expected.append((kit["id"], letter, 0, True))
+            self.assertEqual([(r["kit"], r["side"], r["chunk"], r["runs_on_user_art"]) for r in rows], expected)
+            self.assertTrue(all(r["reason"] for r in rows))
+        moment = mk.judged_rows(mk.document())
+        k1_row = next(r for r in moment if r["kit"] == "K1")
+        self.assertEqual((k1_row["chunk"], k1_row["runs_on_user_art"], k1_row["donor"]), (3, False, "18A0"))
+        self.assertTrue(all(r["runs_on_user_art"] for r in moment if r["kit"] == "K8"))        # a pure recolour kit
+        self.assertTrue(any(r["kind"] == "palette_map" and r["runs_on_user_art"] for r in moment))
+
+    def test_no_message_of_the_new_rule_has_an_em_dash(self):
+        self.assertNotIn("\u2014", "".join(r["reason"] for r in mk.judged_rows()))
 
 
 class DroppedKitTakesItsDefaults(unittest.TestCase):
@@ -549,11 +772,43 @@ class Wiring(unittest.TestCase):
         self.assertIn('for note in kits_receipt.get("user_notes", ()):', text)
         self.assertIn('for note in (classic_receipt.get("authored_kits") or {}).get("user_notes", ()):', text)
 
-    def test_the_shipped_documents_and_pins_are_not_touched_by_this_job(self):
+    def test_the_shipped_documents_and_composed_package_pins_are_not_touched_by_this_job(self):
         pins = mk.pins()                      # raises when the data changed after the pins
         self.assertEqual(len(pins["packages"]), 26)
         doc = mk.document()
         self.assertEqual((len(doc["kits"]), len(doc["selections"]), len(doc["classic_defaults"])), (13, 16, 28))
+
+
+class StockTable(unittest.TestCase):
+    """The SOFTDRINK pieces the drawing steps are made for, as hashes in the pins file."""
+
+    def test_every_drawing_step_has_its_stock_hashes(self):
+        from mod_editor.core import nfl2k5_classic_teams as ct
+        pins = mk.pins()
+        need = {}
+        for doc in (mk.document(), ct.authored_kits()):
+            for selector, chunks in mk.stock_needs(doc).items():
+                need.setdefault(selector, set()).update(chunks)
+        table = pins["stock_chunks"]
+        self.assertEqual({s: sorted(int(c) for c in chunks) for s, chunks in table.items()},
+                         {s: sorted(chunks) for s, chunks in need.items()})
+        for hashes in table.values():
+            for value in hashes.values():
+                self.assertRegex(value, "^[0-9a-f]{64}$")
+        self.assertIn("stock_chunks_about", pins)
+
+    def test_the_table_is_read_from_the_pins_and_a_broken_pins_file_means_no_stock_piece_at_all(self):
+        self.assertEqual(mk._stock_table(), mk.pins()["stock_chunks"])
+        with mock.patch.object(mk, "pins", side_effect=ValueError("moment kit data changed after the pins")):
+            self.assertEqual(mk._stock_table(), {})
+
+    @unittest.skipUnless(FIXTURE.is_file() and V08.is_file(), "fixture or v0.8 disc absent")
+    def test_the_table_is_what_the_discs_give(self):
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("h2_stock_pieces", ROOT / "tools/b77/h2_stock_pieces.py")
+        tool = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(tool)
+        self.assertEqual(tool.derive_table(FIXTURE, V08), mk.pins()["stock_chunks"])
 
 
 # ------------------------------------------------------------------------------------------------ real discs
@@ -610,11 +865,11 @@ class RetailDonors(unittest.TestCase):
         self.assertFalse(mk._donors_pinned(self.packages))
 
     def test_every_kit_side_composes_and_only_k1_has_a_step_with_nothing_to_change(self):
-        report, nothing, skipped = [], [], {}
+        report, nothing, skipped, kept = [], [], {}, []
         made = {}
         for _name, doc in self.docs:
-            made.update(mk.compose(doc, self.packages, self.retail, report, skipped, nothing))
-        self.assertEqual(skipped, {})
+            made.update(mk.compose(doc, self.packages, self.retail, report, skipped, nothing, kept))
+        self.assertEqual((skipped, kept), ({}, []))         # the retail pieces are the stock pieces the steps were made for
         self.assertEqual(len(made), 2 * (13 + 1))
         self.assertEqual([(r["side"], r["chunk"], r["texture"]) for r in nothing], [("K1 (NYG, away)", 3, "sleeve00")])
         self.assertEqual(report, [])
@@ -670,13 +925,14 @@ class StageOnTheFixtureDisc(unittest.TestCase):
         self.assertEqual(len(packages), 2 * 13)
         self.assertEqual(inputs["skipped"], {})
         self.assertEqual([(r["side"], r["chunk"]) for r in inputs["unchanged"]], [("K1 (NYG, away)", 3)])
-        self.assertEqual(inputs["dropped_defaults"], [])
+        self.assertEqual((inputs["dropped_defaults"], inputs["kept"]), ([], []))
         for name in (GIANTS_2007, GIANTS_2011):
             self.assertEqual(pair_of(files[name], 9), (2007, 2011))
             self.assertEqual(default_of(files[name]), 9)
         sides = {(row + 1, side): kit for row, side, _s, _y, kit, _f in hs.situ_sides(situ)}
         self.assertEqual((sides[(27, "away")], sides[(29, "away")]), (9, 9))
         edits, appended, receipt = mk.compile_edits(overlay, self.doc, inputs)      # the receipt the build keeps
+        self.assertEqual(receipt["kept_art"], [])
         self.assertEqual(len(receipt["unchanged_art"]), 1)
         self.assertEqual(receipt["skipped_kits"], {})
         notes = mk.user_notes(receipt)
@@ -724,14 +980,51 @@ class StageOnTheFixtureDisc(unittest.TestCase):
         self.assertEqual(sorted(after["skipped"]), ["K1"])
 
     def test_the_softdrink_donors_compose_the_same_bytes_strictly_and_in_the_forgiving_mode(self):
-        # the b775 disc predates sw1 and vk2, which rewrite three donors each before this stage in a real build
-        # (test_b775_ek1_moment_kits runs those passes); the forgiving mode must not change any package it can make
+        # the b775 disc predates sw1 and vk2, which rewrite three donors each before this stage in a real build: the same
+        # passes as test_b775_ek1_moment_kits gives the donors the build holds, which equal the pins. The forgiving mode is
+        # what a SOFTDRINK build with one edit of its own elsewhere runs (its donors are then not all the pinned ones): every
+        # drawing step must still run on the shipped pieces, so it must not change, keep or note anything
+        from tests.mod_editor.test_b775_ek1_moment_kits import _after_sw1, _after_vk2
         donors = {s: self.src.get(mk.selector_name(s)) for s in mk.donors(self.doc)}
+        donors = _after_vk2(_after_sw1(self.src, donors))
         strict = mk.compose(self.doc, donors)
-        report, nothing, skipped = [], [], {}
-        lenient = mk.compose(self.doc, donors, mk.RetailPackages(RETAIL), report, skipped, nothing)
+        report, nothing, skipped, kept = [], [], {}, []
+        lenient = mk.compose(self.doc, donors, mk.RetailPackages(RETAIL), report, skipped, nothing, kept)
         self.assertEqual(lenient, strict)
-        self.assertEqual((report, nothing, skipped), ([], [], {}))
+        self.assertEqual({name: mk.sha(data) for name, data in lenient.items()}, mk.pins()["packages"])
+        self.assertEqual((report, nothing, skipped, kept), ([], [], {}, []))
+        # and one piece of his own among them is the only thing that changes: another sleeve for the same kit
+        own = dict(donors, **{"18A0": flip_last_byte(donors["18A0"], 3)})
+        kept = []
+        made = mk.compose(self.doc, own, mk.RetailPackages(RETAIL), [], {}, [], kept)
+        self.assertEqual([(r["side"], r["chunk"], r["donor"]) for r in kept], [("K1 (NYG, away)", 3, "18A0")])
+        self.assertEqual(sorted(n for n in made if made[n] != strict[n]), ["18a9.iff"])
+
+
+@unittest.skipUnless(V08.is_file() and RETAIL.is_file(), "v0.8 or retail disc absent")
+class OfficialClassicKit(unittest.TestCase):
+    """The official recipe composes the classic Seamen kit in the forgiving mode (its donors 14H0 and 14A0 are not in the moment
+    pins): its drawing steps must keep running on the SOFTDRINK Dolphins pieces, byte for byte what v0.8 shipped."""
+
+    def test_the_seamen_kit_is_the_shipped_bytes_in_the_forgiving_mode(self):
+        from mod_editor.core import nfl2k5_classic_teams as ct
+        doc = ct.authored_kits()
+        with hs.Source(V08) as source:
+            donors = {s: source.get(mk.selector_name(s)) for s in mk.donors(doc)}
+            shipped = {name: source.get(name) for name in ("14h14.iff", "14a14.iff")}
+        report, nothing, kept = [], [], []
+        made = mk.compose(doc, donors, mk.RetailPackages(RETAIL), report, {}, nothing, kept)
+        self.assertEqual(made, shipped)
+        self.assertEqual((report, nothing, kept), ([], [], []))
+
+
+def flip_last_byte(package, index):
+    """The package with one bit of chunk ``index`` changed: a piece that is no longer the stock one."""
+    from nfl_txtr import parse_chunks
+    chunk = parse_chunks(package)[index]
+    data = bytearray(package)
+    data[chunk.end_offset - 1] ^= 1
+    return bytes(data)
 
 
 def package_of_wrong_kind(raw):
