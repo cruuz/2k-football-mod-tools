@@ -7386,6 +7386,7 @@ class StudioMainWindow(QMainWindow):
         note = QLabel(
             "Each row shows the build result above the retail digit at the same size. "
             "A KEPT RETAIL badge means that slot will use its original number. "
+            "The notes below say how the sheet was cut, which digits were simplified to fit, and why any stayed retail. "
             "The 57 comparison uses the jersey base colour at an estimated screen size. "
             "The game adds lighting and camera-dependent detail. In-game appearance is unwitnessed.", dialog,
         )
@@ -7403,10 +7404,17 @@ class StudioMainWindow(QMainWindow):
         details = QPlainTextEdit(dialog)
         details.setReadOnly(True)
         details.setPlainText(preview.details)
-        details.setMaximumHeight(160)
+        details.setMaximumHeight(210)
         layout.addWidget(details)
         buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel, dialog)
         buttons.button(QDialogButtonBox.Ok).setText(preview.import_button_text)
+        if getattr(preview, "receipts", ()) and preview.import_count == 0:
+            # Every digit would stay retail: nothing would change, so do not offer an import that does nothing.
+            buttons.button(QDialogButtonBox.Ok).setEnabled(False)
+            buttons.button(QDialogButtonBox.Ok).setToolTip(
+                "None of the ten digits fits its slot, so nothing would be imported. "
+                "The notes above say why. Simplify the sheet and try again."
+            )
         buttons.accepted.connect(dialog.accept)
         buttons.rejected.connect(dialog.reject)
         layout.addWidget(buttons)
@@ -7465,7 +7473,7 @@ class StudioMainWindow(QMainWindow):
         registration = dict(REGISTRATION_CHOICES)[str(registration_label)]
         filename, _ = QFileDialog.getOpenFileName(
             self,
-            f"Choose the {label.lower()} 0-9 sheet (ten equal cells)",
+            f"Choose the {label.lower()} 0-9 sheet (the ten digits in order)",
             str(Path.home()),
             IMAGE_IMPORT_FILTER,
         )
