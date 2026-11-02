@@ -1281,6 +1281,15 @@ class FranchiseSave:
         return {"slots": slots, "start": start, "strings_end": strings_end, "writable_end": writable_end,
                 "allocation": allocation}
 
+    def coach_text_problem(self) -> str:
+        """Why the Studio cannot write a new coach's name into this save, or an empty string when it can."""
+
+        try:
+            self._coach_text_layout()
+        except FranchiseSaveError as exc:
+            return str(exc)
+        return ""
+
     def _rewrite_coach_text(self, wanted: dict[int, dict[int, str]]) -> dict[str, Any]:
         """Put ``wanted`` (record -> field offset -> text) in place of the old coach strings.
 

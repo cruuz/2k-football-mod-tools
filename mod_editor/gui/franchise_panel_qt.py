@@ -33,7 +33,7 @@ from mod_editor.gui.ux_text import plain_error
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Sequence
+from typing import Any, Callable, Sequence
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
@@ -48,10 +48,12 @@ from PyQt5.QtWidgets import (
     QGroupBox,
     QHBoxLayout,
     QLabel,
+    QLineEdit,
     QListWidget,
     QListWidgetItem,
     QPlainTextEdit,
     QPushButton,
+    QRadioButton,
     QScrollArea,
     QSpinBox,
     QSplitter,
@@ -89,7 +91,9 @@ EDITABLE_HERE = (
     ("Salary cap", "PROVED", "DAT_00e3c278 in $1000 units; Finn 0x9ACCC"),
     ("Schedule cells", "PROVED", "the 22 x 17 grid; a played cell is refused unless you allow it; "
                                  "quarter-score side order is a HYPOTHESIS and stays read-only"),
-    ("Coach record", "PROVED", "Finn's map, career numbers re-checked on real coaches; names are pooled strings and stay read-only"),
+    ("Coach record", "PROVED", "Finn's map, career numbers re-checked on real coaches; a name changes only through Fire and hire"),
+    ("Head coach moves: swap, fire and hire", "HYPOTHESIS",
+     "two club pointers (+0x14C) and the coach text; the game's Create Team routine makes the same pointer change, unwitnessed in game"),
     ("Injured reserve: place", "PROVED", "Finn's 17-byte move reproduced byte for byte"),
     ("Injured reserve: activate", "HYPOTHESIS", "the inverse move, unwitnessed in game"),
 )
@@ -130,6 +134,14 @@ class FranchiseEdit:
                           **{k: int(v) for k, v in dict(a["fields"]).items()})
         elif self.kind == "coach":
             save.set_coach_field(int(a["coach"]), str(a["name"]), int(a["value"]))
+        elif self.kind == "coach_swap":
+            save.swap_head_coaches(int(a["a"]), int(a["b"]), restart=bool(a.get("restart", True)),
+                                   announcer_generic=bool(a.get("announcer", True)))
+        elif self.kind == "coach_hire":
+            save.hire_head_coach(int(a["team"]), int(a["coach"]), restart=bool(a.get("restart", True)),
+                                 announcer_generic=bool(a.get("announcer", True)))
+        elif self.kind == "coach_replace":
+            save.replace_head_coach(int(a["team"]), str(a["first"]), str(a["last"]), [str(x) for x in a.get("bio", ())])
         elif self.kind == "ir_place":
             save.place_on_injured_reserve(int(a["team"]), int(a["player"]))
         elif self.kind == "promote_reserve":
@@ -171,6 +183,165 @@ class IrPickerDialog(QDialog):
     def chosen(self) -> int | None:
         item = self.list.currentItem()
         return None if item is None else int(item.data(Qt.UserRole))
+
+
+class ClubPickerDialog(QDialog):
+    """Pick one club for a head coach move, with the new-job options and a plain sentence for what will happen."""
+
+    def __init__(self, title: str, intro: str, rows: Sequence[tuple[int, str]], describe: Callable[[int], str],
+                 parent: QWidget | None = None) -> None:
+        super().__init__(parent)
+        self.setWindowTitle(title)
+        self._describe = describe
+        layout = QVBoxLayout(self)
+        hint = QLabel(intro)
+        hint.setWordWrap(True)
+        layout.addWidget(hint)
+        self.list = QListWidget()
+        self.list.setAccessibleName("Clubs")
+        for team, text in rows:
+            item = QListWidgetItem(text)
+            item.setData(Qt.UserRole, team)
+            self.list.addItem(item)
+        self.list.currentRowChanged.connect(self._row_changed)
+        self.list.itemDoubleClicked.connect(lambda _item: self.accept())
+        layout.addWidget(self.list, 1)
+        self.summary = QLabel("Choose a club.")
+        self.summary.setWordWrap(True)
+        self.summary.setAccessibleName("What will happen")
+        layout.addWidget(self.summary)
+        self.restart_check = QCheckBox("Start the new job at year 1 (career totals, ratings and play calling stay)")
+        self.restart_check.setChecked(True)
+        self.restart_check.setToolTip("Seasons with the club and this season's record go back to zero. "
+                                      "Untick to keep them as they are.")
+        self.announcer_check = QCheckBox('Announcers say "the head coach" instead of a name')
+        self.announcer_check.setChecked(True)
+        self.announcer_check.setToolTip("The announcer picks a coach's name from the club, so after a move it would say "
+                                        "the old coach's name. This marks the record 'no recorded name'. "
+                                        "Not yet tested in the game.")
+        layout.addWidget(self.restart_check)
+        layout.addWidget(self.announcer_check)
+        buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        self.ok_button = buttons.button(QDialogButtonBox.Ok)
+        self.ok_button.setEnabled(False)
+        buttons.accepted.connect(self.accept)
+        buttons.rejected.connect(self.reject)
+        layout.addWidget(buttons)
+        self.resize(460, 560)
+
+    def _row_changed(self, row: int) -> None:
+        team = self.chosen()
+        self.ok_button.setEnabled(team is not None)
+        self.summary.setText(self._describe(team) if team is not None else "Choose a club.")
+
+    def chosen(self) -> int | None:
+        item = self.list.currentItem()
+        return None if item is None else int(item.data(Qt.UserRole))
+
+    def options(self) -> dict[str, bool]:
+        return {"restart": self.restart_check.isChecked(), "announcer": self.announcer_check.isChecked()}
+
+
+class FireHireDialog(QDialog):
+    """Fire a club's head coach and hire a coach already in the save, or a new person who takes his record."""
+
+    def __init__(self, team_label: str, coach_name: str, on_file: Sequence[tuple[int, str]], name_problem: str,
+                 parent: QWidget | None = None) -> None:
+        super().__init__(parent)
+        self.setWindowTitle(f"Fire and hire: {team_label}")
+        layout = QVBoxLayout(self)
+        intro = QLabel(f"{coach_name} is fired as head coach of {team_label}. Who takes over?")
+        intro.setWordWrap(True)
+        layout.addWidget(intro)
+        self.file_radio = QRadioButton("A coach already in this save")
+        self.file_combo = QComboBox()
+        self.file_combo.setAccessibleName("Coach already in this save")
+        for index, text in on_file:
+            self.file_combo.addItem(text, index)
+        self.file_note = QLabel("")
+        self.file_note.setWordWrap(True)
+        layout.addWidget(self.file_radio)
+        layout.addWidget(self.file_combo)
+        layout.addWidget(self.file_note)
+        self.new_radio = QRadioButton("A new coach")
+        layout.addWidget(self.new_radio)
+        names = QHBoxLayout()
+        self.first_field = QLineEdit()
+        self.first_field.setPlaceholderText("First name")
+        self.first_field.setAccessibleName("New coach first name")
+        self.first_field.setMaxLength(fs.COACH_NAME_MAX)
+        self.last_field = QLineEdit()
+        self.last_field.setPlaceholderText("Last name")
+        self.last_field.setAccessibleName("New coach last name")
+        self.last_field.setMaxLength(fs.COACH_NAME_MAX)
+        names.addWidget(self.first_field)
+        names.addWidget(self.last_field)
+        layout.addLayout(names)
+        self.bio_fields: list[QLineEdit] = []
+        for number in range(1, 4):
+            field = QLineEdit()
+            field.setPlaceholderText(f"Biography line {number} (optional)")
+            field.setAccessibleName(f"New coach biography line {number}")
+            field.setMaxLength(fs.COACH_BIO_MAX)
+            self.bio_fields.append(field)
+            layout.addWidget(field)
+        self.new_note = QLabel(
+            f"He takes over {coach_name}'s record: the ratings, play calling and sideline body stay, the name and "
+            f"biography are new, his career starts at zero and he has no picture. {coach_name} is removed from this save.")
+        self.new_note.setWordWrap(True)
+        layout.addWidget(self.new_note)
+        self.restart_check = QCheckBox("Start the hired coach's time at year 1 (career totals, ratings and play calling stay)")
+        self.restart_check.setChecked(True)
+        self.announcer_check = QCheckBox('Announcers say "the head coach" instead of a name')
+        self.announcer_check.setChecked(True)
+        layout.addWidget(self.restart_check)
+        layout.addWidget(self.announcer_check)
+        self._name_problem = name_problem
+        buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        self.ok_button = buttons.button(QDialogButtonBox.Ok)
+        buttons.accepted.connect(self.accept)
+        buttons.rejected.connect(self.reject)
+        layout.addWidget(buttons)
+        self.file_radio.toggled.connect(self._mode_changed)
+        self.new_radio.toggled.connect(self._mode_changed)
+        self.first_field.textChanged.connect(self._mode_changed)
+        self.last_field.textChanged.connect(self._mode_changed)
+        has_file = bool(on_file)
+        self.file_radio.setEnabled(has_file)
+        self.file_note.setText(f"{coach_name} stays on file and can be hired again." if has_file else
+                               "No unemployed coaches are on file yet. Fire a coach and hire a new one, or swap two clubs.")
+        if name_problem:
+            self.new_radio.setEnabled(False)
+            self.new_note.setText(name_problem)
+        (self.file_radio if has_file else self.new_radio).setChecked(True)
+        self._mode_changed()
+        self.resize(480, 520)
+
+    def _mode_changed(self, *_args: object) -> None:
+        existing = self.file_radio.isChecked()
+        self.file_combo.setEnabled(existing and self.file_radio.isEnabled())
+        for widget in (self.first_field, self.last_field, *self.bio_fields):
+            widget.setEnabled(not existing and self.new_radio.isEnabled())
+        self.restart_check.setEnabled(existing)
+        self.announcer_check.setEnabled(existing)
+        if existing and self.file_radio.isEnabled():
+            ready = self.file_combo.currentData() is not None
+        else:
+            ready = (self.new_radio.isEnabled() and self.new_radio.isChecked()
+                     and bool(self.first_field.text().strip()) and bool(self.last_field.text().strip()))
+        self.ok_button.setEnabled(ready)
+
+    def choice(self) -> dict[str, Any] | None:
+        if self.file_radio.isChecked() and self.file_radio.isEnabled():
+            data = self.file_combo.currentData()
+            if data is None:
+                return None
+            return {"kind": "file", "coach": int(data), "restart": self.restart_check.isChecked(),
+                    "announcer": self.announcer_check.isChecked()}
+        if self.new_radio.isChecked() and self.new_radio.isEnabled():
+            return {"kind": "new", "first": self.first_field.text(), "last": self.last_field.text(),
+                    "bio": [field.text() for field in self.bio_fields]}
+        return None
 
 
 # --------------------------------------------------------------------------------------------- the page
@@ -442,9 +613,39 @@ class FranchisePanel(QWidget):
         area.setWidgetResizable(True)
         host = QWidget()
         box = QVBoxLayout(host)
-        coach_note = QLabel("Coach edits: not yet tested in-game. Names and info lines are read-only (pooled text).")
+        coach_note = QLabel("Coach edits: not yet tested in-game. Names and info lines are read-only here (pooled text); "
+                            "Fire and hire gives a club a new name.")
         coach_note.setWordWrap(True)
         box.addWidget(coach_note)
+        moves = QGroupBox("Staff moves")
+        moves_box = QVBoxLayout(moves)
+        moves_note = QLabel(
+            "Swap two clubs' head coaches, fire a head coach and hire another, or hire a coach who has no club. "
+            "A coach keeps his career totals, ratings and play calling; his time with the new club starts at year 1. "
+            "The Studio's automatic 2026 play calling stays with each club's original coach, so it is off for a club "
+            "whose head coach changed. Not yet tested in the game.")
+        moves_note.setWordWrap(True)
+        moves_box.addWidget(moves_note)
+        moves_row = QHBoxLayout()
+        self.coach_swap_button = QPushButton("Swap with another club…")
+        self.coach_swap_button.setToolTip("Exchange this head coach with another club's head coach. Nobody loses a job.")
+        self.coach_swap_button.clicked.connect(self._coach_swap_clicked)
+        self.coach_fire_button = QPushButton("Fire and hire…")
+        self.coach_fire_button.setToolTip("Fire this head coach and hire a coach already in the save, or a new person.")
+        self.coach_fire_button.clicked.connect(self._coach_fire_clicked)
+        self.coach_hire_button = QPushButton("Hire for a club…")
+        self.coach_hire_button.setToolTip("Give this coach, who has no club, a club's head coach job. "
+                                          "The club's current head coach is fired and stays on file.")
+        self.coach_hire_button.clicked.connect(self._coach_hire_clicked)
+        for button in (self.coach_swap_button, self.coach_fire_button, self.coach_hire_button):
+            moves_row.addWidget(button)
+        moves_row.addStretch(1)
+        moves_box.addLayout(moves_row)
+        self.coach_move_label = QLabel("")
+        self.coach_move_label.setWordWrap(True)
+        self.coach_move_label.setAccessibleName("Staff moves note")
+        moves_box.addWidget(self.coach_move_label)
+        box.addWidget(moves)
         self.coach_name_label = QLabel("")
         font = self.coach_name_label.font()
         font.setPointSizeF(font.pointSizeF() + 3)
@@ -790,17 +991,7 @@ class FranchisePanel(QWidget):
             self.ir_team_combo.clear()
             for team in range(self._save.league_team_count):
                 self.ir_team_combo.addItem(self._team_label(team), team)
-            self.coach_list.clear()
-            self._coach_rows = []
-            coaches = self._save.coaches()
-            attached = [c for c in coaches if c.teams]
-            attached.sort(key=lambda c: min(c.teams))
-            for coach in attached + [c for c in coaches if not c.teams]:
-                teams = ", ".join(self._team_short(t) for t in coach.teams) or "no team"
-                self.coach_list.addItem(f"{coach.name or f'coach {coach.index}'} — {teams}")
-                self._coach_rows.append(coach.index)
-            if self._coach_rows:
-                self.coach_list.setCurrentRow(0)
+            self._fill_coach_list(select=None, first_row=True)
             for row in range(fs.GRID_ROWS):
                 self.week_combo.setItemText(row, self._save.schedule_row_name(row).title())
             self.allow_played_check.setChecked(False)
@@ -819,6 +1010,7 @@ class FranchisePanel(QWidget):
         self._refresh_header()
         self._refresh_overview()
         self._refresh_schedule()
+        self._fill_coach_list()
         self._refresh_coach()
         self._refresh_injured_reserve()
         if force_checks or self.tabs.currentIndex() == 4:
@@ -1001,12 +1193,14 @@ class FranchisePanel(QWidget):
                 self.coach_name_label.setText("No coach selected." if self._save is not None else "")
                 self.coach_info_label.setText("")
                 self.coach_teams_label.setText("")
+                self._refresh_coach_buttons(None)
                 return
             self.coach_name_label.setText(coach.name or f"coach {coach.index}")
             self.coach_info_label.setText(" / ".join(line for line in coach.info if line) or "(no info lines)")
             teams = ", ".join(self._team_label(t) for t in coach.teams) or "not attached to a team"
             self.coach_teams_label.setText(f"Coach record {coach.index} · {teams} · names and info lines are pooled "
                                            f"strings and stay read-only")
+            self._refresh_coach_buttons(coach)
             for name, spin in self._coach_spins.items():
                 spin.setValue(coach.fields[name])
             for name, card in self._coach_cards.items():
@@ -1250,6 +1444,167 @@ class FranchisePanel(QWidget):
         if coach is not None:
             self.set_coach_value(coach.index, name, int(value))
 
+    # ------------------------------------------------------------------ head coach moves: swap, fire, hire
+    def _fill_coach_list(self, select: int | None = None, *, first_row: bool = False) -> None:
+        """The coach list: every league club's head coach in club order, then the coaches no club employs."""
+
+        keep = select
+        if keep is None and not first_row:
+            row = self.coach_list.currentRow()
+            keep = self._coach_rows[row] if 0 <= row < len(self._coach_rows) else None
+        self.coach_list.blockSignals(True)
+        try:
+            self.coach_list.clear()
+            self._coach_rows = []
+            if self._save is not None:
+                coaches = self._save.coaches()
+                attached = sorted((c for c in coaches if c.teams), key=lambda c: min(c.teams))
+                for coach in attached + [c for c in coaches if not c.teams]:
+                    teams = ", ".join(self._team_short(t) for t in coach.teams) or "no team"
+                    self.coach_list.addItem(f"{coach.name or f'coach {coach.index}'} — {teams}")
+                    self._coach_rows.append(coach.index)
+            if self._coach_rows:
+                self.coach_list.setCurrentRow(self._coach_rows.index(keep) if keep in self._coach_rows else 0)
+        finally:
+            self.coach_list.blockSignals(False)
+
+    def _coaches_by_team(self) -> dict[int, fs.Coach]:
+        """The head coach of every league club (one decode of the coach table)."""
+
+        if self._save is None:
+            return {}
+        try:
+            by_index = {c.index: c for c in self._save.coaches()}
+            heads = self._save.head_coaches()
+        except fs.FranchiseSaveError:
+            return {}
+        return {team: by_index[index] for team, index in heads.items() if index is not None and index in by_index}
+
+    def _refresh_coach_buttons(self, coach: fs.Coach | None) -> None:
+        employed = coach is not None and len(coach.teams) == 1
+        free = coach is not None and not coach.teams and not coach.placeholder
+        self.coach_swap_button.setEnabled(employed)
+        self.coach_fire_button.setEnabled(employed)
+        self.coach_hire_button.setEnabled(free)
+        if coach is None:
+            note = ""
+        elif len(coach.teams) > 1:
+            note = f"{coach.name} leads more than one club in this save, so his record cannot be moved from here."
+        elif coach.placeholder:
+            note = "This is one of the game's empty coach records. Use Fire and hire on a club to put a new name in a record."
+        elif not coach.teams:
+            note = f"{coach.name} has no club. Hire him for a club to put him back to work."
+        else:
+            note = ""
+            if coach.other_teams and self._save is not None:
+                names = ", ".join(self._team_short(t) for t in coach.other_teams)
+                note = f"Exhibition squads ({names}) also use this coach record and keep it when he moves."
+        self.coach_move_label.setText(note)
+
+    def _move_labels(self, team: int) -> tuple[str, str]:
+        coach = self._coaches_by_team().get(team)
+        return self._team_short(team), (coach.name if coach is not None and coach.name else f"the {self._team_short(team)} coach")
+
+    def swap_head_coaches(self, team_a: int, team_b: int, *, restart: bool = True, announcer: bool = True) -> bool:
+        """Two clubs exchange head coaches (journaled; a refusal says why and changes nothing)."""
+
+        if self._save is None:
+            return False
+        if not self.sync_from_roster():
+            return False
+        try:
+            name_a, coach_a = self._move_labels(team_a)
+            name_b, coach_b = self._move_labels(team_b)
+        except fs.FranchiseSaveError as exc:
+            self._set_status(f"Refused: {exc}")
+            return False
+        label = f"{name_a} and {name_b} swap head coaches: {coach_a} goes to {name_b}, {coach_b} goes to {name_a}"
+        return self.push(FranchiseEdit("coach_swap", label, {"a": team_a, "b": team_b, "restart": restart,
+                                                             "announcer": announcer}))
+
+    def fire_and_hire(self, team: int, coach_index: int, *, restart: bool = True, announcer: bool = True) -> bool:
+        """Fire a club's head coach and hire a coach the save already holds who has no club (he stays on file)."""
+
+        if self._save is None:
+            return False
+        if not self.sync_from_roster():
+            return False
+        by_index = {c.index: c for c in self._save.coaches()}
+        hired = by_index.get(coach_index)
+        if hired is None:
+            self._set_status(f"Refused: no coach {coach_index}")
+            return False
+        name, fired = self._move_labels(team)
+        label = f"{name}: {fired} fired, {hired.name or f'coach {coach_index}'} hired"
+        return self.push(FranchiseEdit("coach_hire", label, {"team": team, "coach": coach_index, "restart": restart,
+                                                              "announcer": announcer}))
+
+    def fire_and_replace(self, team: int, first: str, last: str, bio: Sequence[str] = ()) -> bool:
+        """Fire a club's head coach and hire a new person into the same coach record (a named, first-year coach)."""
+
+        if self._save is None:
+            return False
+        if not self.sync_from_roster():
+            return False
+        name, fired = self._move_labels(team)
+        label = f"{name}: {fired} fired, {' '.join(str(first).split())} {' '.join(str(last).split())} hired (new coach)"
+        return self.push(FranchiseEdit("coach_replace", label, {"team": team, "first": str(first), "last": str(last),
+                                                                "bio": [str(line) for line in bio]}))
+
+    def _coach_swap_clicked(self) -> None:
+        coach = self._current_coach()
+        if self._save is None or coach is None or len(coach.teams) != 1:
+            return
+        team = coach.teams[0]
+        mine = self._team_short(team)
+        by_team = self._coaches_by_team()
+        rows = [(t, f"{self._team_label(t)} · {c.name}") for t, c in by_team.items() if t != team]
+
+        def describe(other: int) -> str:
+            theirs = by_team[other].name
+            return (f"{coach.name} goes to {self._team_short(other)} and {theirs} goes to {mine}. "
+                    "Nobody loses a job.")
+
+        dialog = ClubPickerDialog(f"Swap head coaches: {mine}",
+                                  f"Swap {coach.name} ({mine}) with another club's head coach.", rows, describe, self)
+        if dialog.exec_() == QDialog.Accepted and dialog.chosen() is not None:
+            options = dialog.options()
+            self.swap_head_coaches(team, int(dialog.chosen()), restart=options["restart"], announcer=options["announcer"])
+
+    def _coach_fire_clicked(self) -> None:
+        coach = self._current_coach()
+        if self._save is None or coach is None or len(coach.teams) != 1:
+            return
+        team = coach.teams[0]
+        on_file = [(c.index, f"{c.name} (on file, no club)") for c in self._save.unemployed_coaches()]
+        dialog = FireHireDialog(self._team_label(team), coach.name, on_file, self._save.coach_text_problem(), self)
+        if dialog.exec_() != QDialog.Accepted:
+            return
+        choice = dialog.choice()
+        if choice is None:
+            return
+        if choice["kind"] == "file":
+            self.fire_and_hire(team, int(choice["coach"]), restart=choice["restart"], announcer=choice["announcer"])
+        else:
+            self.fire_and_replace(team, choice["first"], choice["last"], choice["bio"])
+
+    def _coach_hire_clicked(self) -> None:
+        coach = self._current_coach()
+        if self._save is None or coach is None or coach.teams or coach.placeholder:
+            return
+        by_team = self._coaches_by_team()
+        rows = [(t, f"{self._team_label(t)} · {c.name}") for t, c in by_team.items()]
+
+        def describe(team: int) -> str:
+            return (f"{by_team[team].name} is fired and stays on file. {coach.name} becomes head coach of "
+                    f"{self._team_short(team)}.")
+
+        dialog = ClubPickerDialog(f"Hire {coach.name}", f"Which club hires {coach.name}? Its head coach is fired.",
+                                  rows, describe, self)
+        if dialog.exec_() == QDialog.Accepted and dialog.chosen() is not None:
+            options = dialog.options()
+            self.fire_and_hire(int(dialog.chosen()), coach.index, restart=options["restart"], announcer=options["announcer"])
+
     # ------------------------------------------------------------------ injured reserve
     def place_on_ir(self, team: int, player_index: int) -> bool:
         """Finn's *Place on IR* for one rostered player; his refusals first, then the core's."""
@@ -1319,4 +1674,5 @@ class FranchisePanel(QWidget):
         return self._last_error
 
 
-__all__ = ["COACH_STATS", "EDITABLE_HERE", "FranchiseEdit", "FranchisePanel", "IrPickerDialog", "money"]
+__all__ = ["COACH_STATS", "ClubPickerDialog", "EDITABLE_HERE", "FireHireDialog", "FranchiseEdit", "FranchisePanel",
+           "IrPickerDialog", "money"]
