@@ -720,9 +720,14 @@ def _player_progress_view(payload, edits):
     handlers recorded in its trailer, and its admission check (which accepts the MyCareer footer size) replaces
     MyCareer's. Show MyCareer's own bytes at those sites only for that owner's exact complete install whose recorded
     targets are this install's handlers; anything else is left for the checks below to refuse."""
+    # b780 j23: the franchise footer host chains MyCareer's size/save/load hooks and replaces its admission (exactly as
+    # the full Player Progress owner did); read its five sites as the bytes they displaced first. With the host, Player
+    # Progress is installed hosted: no footer site of its own, but the same main hooks inside MyCareer's guards.
+    from . import nfl2k5_franchise_footer as footer
+    payload = footer.underlying_view(payload)
     from . import nfl2k5_player_progress_screen as progress
     chained = progress.chained_footer_sites(payload)
-    if not chained:
+    if not chained and not progress.installed_main_sites(payload):
         return payload
     image = XbeImage(payload)
     view = bytearray(payload)
@@ -754,7 +759,10 @@ def _player_progress_view(payload, edits):
 
 def player_progress_view(payload):
     """The payload as MyCareer sees it beside the Player Progress screen (_player_progress_view), for owners whose
-    guards hash MyCareer's footer hooks (franchise Auto Save). Unchanged without that exact composition."""
+    guards hash MyCareer's footer hooks (franchise Auto Save). Unchanged without that exact composition. b780 j23: the
+    franchise footer host's sites read as the bytes they displaced, with or without MyCareer."""
+    from . import nfl2k5_franchise_footer as footer
+    payload = footer.underlying_view(payload)
     try:
         found = any(a["owner"] == OWNER for a in space.layout(payload)["allocations"])
         if not found:

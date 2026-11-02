@@ -205,7 +205,11 @@ def _recognize(payload):
     if image.read(0xC7B47, 5) != bytes.fromhex("e8d4d6ffff"):
         require(weekly_prep.status(payload) == "applied", "foreign weekly prep simulation companion")
         companion_edits.extend(weekly_prep.sites(weekly_prep.allocation(payload)["va"]))
-    if any(image.read(va, len(bytes.fromhex(pin))) != bytes.fromhex(pin)
+    # b780 j23: the franchise footer host holds four of MyCareer's save sites (chained to MyCareer's handlers or to the
+    # retail calls); read them as the bytes they displaced before deciding whether MyCareer is a companion.
+    from . import nfl2k5_franchise_footer as footer
+    beneath = XbeImage(footer.underlying_view(payload))
+    if any(beneath.read(va, len(bytes.fromhex(pin))) != bytes.fromhex(pin)
            for _, va, pin, _ in (*career.SAVE_HOOKS, career.MODE_HOOKS[0])):
         require(career._recognize(payload) == "applied",
                 "foreign MyCareer completion/save companion")

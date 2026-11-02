@@ -317,13 +317,14 @@ def _write_header(buf: bytearray, *, flags: int, saves: int = 0, year: int = 0, 
                      DIRECTORY_SLOTS, SLOT_SIZE, 0, flags, saves, year, stage, week, stamp)
 
 
-def empty_body(*, seeds: Mapping[int, bytes] | None = None, pp_follows: bool = False) -> bytes:
-    """A fresh, sealed body: every block present with its seed image (or zero)."""
+def empty_body(*, seeds: Mapping[int, bytes] | None = None, pp_follows: bool = False, stamp: int = 0) -> bytes:
+    """A fresh, sealed body: every block present with its seed image (or zero). ``stamp``: the host build stamp the
+    native host writes (``nfl2k5_franchise_footer.STAMP``); 0 for a Studio-made body."""
 
     seeds = dict(seeds or {})
     _require(set(seeds) <= set(BLOCK_BY_ID), "a seed names an unknown block")
     buf = bytearray(BODY_SIZE)
-    _write_header(buf, flags=FLAG_PP_FOLLOWS if pp_follows else 0)
+    _write_header(buf, flags=FLAG_PP_FOLLOWS if pp_follows else 0, stamp=stamp)
     for block in BLOCKS:
         content = seeds.get(block.id, bytes(block.size))
         _require(len(content) == block.size, f"the {block.name} seed has the wrong size")
@@ -404,11 +405,17 @@ def seal(body: bytes | bytearray, *, seeds: Mapping[int, bytes] | None = None) -
 
 
 def with_block(body: bytes | bytearray, name_or_id, content: bytes) -> bytes:
+    """The body with one block's content replaced, its entry and the header resealed (other blocks untouched)."""
+
     block = BLOCK_BY_NAME[name_or_id] if isinstance(name_or_id, str) else BLOCK_BY_ID[name_or_id]
     _require(len(content) == block.size, f"the {block.name} block is {block.size} bytes")
+    _require(read_body(body)["header_ok"], "the body header does not read back; start from empty_body()")
     buf = bytearray(body)
     buf[block.offset:block.offset + block.size] = content
-    return seal(bytes(buf))
+    struct.pack_into("<HBBIII", buf, _slot_at(block.id - 1), block.id, block.version, ENTRY_PRESENT, block.offset,
+                     block.size, adler32(content))
+    struct.pack_into("<I", buf, CHECKSUM_AT, _header_sum(buf))
+    return bytes(buf)
 
 
 def with_header(body: bytes, *, pp_follows: bool | None = None, saves: int | None = None) -> bytes:
