@@ -123,12 +123,16 @@ SPECIAL_EDGE = 0.30           # a K/P this far above his own class mean is a his
 SPECIAL_ROUND_CAP = 1         # at most one K and one P per round in rounds 5-7
 # b780 b1-draft (SharkMagick 11/01: "kickers getting drafted in R3 again", "6 by my count", "even punters"): the
 # early outlier had no per-draft limit, so when several K/P prospects clear SPECIAL_EDGE every club without a
-# specialist may take one before round 5 (the worst case in tests/mod_editor/test_b780_draft_class.py). Before
-# display round 5 at most EARLY_SPECIALIST_CAP specialists (K or P, CPU or user) go per draft: the class-sum loop
-# counts this draft's drafted specialists (flags 0x30 at position 1 or 2) into a zeroed frame dword, and the early
-# outlier is allowed only while that count is below the cap.
+# specialist may take one before round 5 (the worst case in tests/mod_editor/test_b780_draft_class.py). Now at most
+# EARLY_SPECIALIST_CAP (one) specialist goes before display round 5 in a draft: the early branch first looks for a K
+# or P already taken in this draft and allows no outlier when it finds one. A taken player is recognised on the club
+# rosters: at the pick the game clears his prospect flag (0x325C16 / 0x325C1C) and signs a CPU pick onto the roster
+# (0x325B50), and he is the only rostered player with one year pro (+0x25 bits 0-4): the rollover gives the class its
+# first year before the draft, and every other rostered player has two or more by then (measured at every draft start
+# of the b780 three-draft runs). The mock draft (0x35C670) marks its picks 0x20 without rostering them, so the cap
+# does not apply to that preview.
 EARLY_SPECIALIST_CAP = 1
-SPECIALIST_COUNT_OFF = 0xE0   # frame dword (zeroed by the prologue loop, unused before b780)
+YEARS_PRO_OFF = 0x25          # player +0x25 bits 0-4: years pro
 PICK_CONST_OFF = 264            # the two floats sit in the last 8 bytes of the 275-byte function (aligned)
 PICK_TAIL_VA = BODY_VA + 5      # the scan half of the pick routine, after the jump into the wish cave
 RETAIL_PICK_FN = bytes.fromhex(
@@ -263,7 +267,7 @@ def body_patch() -> bytes:
     return jump + tail + b"\xcc" * (BODY_SIZE - len(jump) - len(tail))
 
 
-SPECIAL_HEAD_OFFSET = 0x84    # b780 b1-draft: was 0x80; the class-sum loop now also counts drafted specialists
+SPECIAL_HEAD_OFFSET = 0x70    # b780 b1-draft: was 0x80; the special block grew by the early-specialist scan
 SPECIAL_HEAD_VA = PICK_FN_VA + SPECIAL_HEAD_OFFSET
 # The b778 dr2 pick head (beta-78 and beta-79 / SOFTDRINK v0.7 and v0.8 discs). Every other draft-AI site is
 # unchanged since then, so an image with this head reads "legacy" and apply() rewrites the head in place.
@@ -307,12 +311,6 @@ def _prefix_bytes() -> bytes:
     a.b("d80484")                                      # fadd dword [esp+eax*4]
     a.b("d91c84")                                      # fstp dword [esp+eax*4]
     a.b("ff448444")                                    # inc dword [esp+eax*4+0x44]
-    a.b("f6460820")                                    # test byte [esi+8],0x20   ; drafted in this draft?
-    a.j8("74", "sum_next")                             # jz sum_next
-    a.b("48")                                          # dec eax                  ; K -> 0, P -> 1
-    a.b("83f801")                                      # cmp eax,1
-    a.j8("77", "sum_next")                             # ja sum_next              ; not a specialist
-    a.b("ff8424" + struct.pack("<I", SPECIALIST_COUNT_OFF).hex())  # inc dword [esp+0xe0] ; specialists drafted
     a.label("sum_next")
     a.b("83c654")                                      # add esi,0x54
     a.b("4b")                                          # dec ebx
@@ -329,8 +327,8 @@ def _special_bytes() -> bytes:
 
     Early rounds: a needed K/P is allowed only when its edge over the class mean is at least
     SPECIAL_EDGE (the tail checks the edge) and, since b780 b1-draft, only while no specialist
-    has gone in this draft (the class-sum loop's count at SPECIALIST_COUNT_OFF), so at most one
-    specialist goes before display round 5.  Rounds 5-7: one late slot per round, pick 31 for
+    has gone in this draft (no rostered K/P with one year pro), so at most one specialist goes
+    before display round 5.  Rounds 5-7: one late slot per round, pick 31 for
     a kicker and pick 30 for a punter, and only when the club has none.  No private state.
     """
 
@@ -354,9 +352,32 @@ def _special_bytes() -> bytes:
     a.b("b801000000")                                  # mov eax,1          ; normal bit
     a.j8("eb", "elig_store")
     a.label("elig_early")
-    a.b("83bc24" + struct.pack("<I", SPECIALIST_COUNT_OFF).hex()
-        + struct.pack("<B", EARLY_SPECIALIST_CAP).hex())  # cmp dword [esp+0xe0],EARLY_SPECIALIST_CAP
-    a.j8("73", "elig_next")                            # jae: the early specialist already went; no outlier
+    _require(EARLY_SPECIALIST_CAP == 1, "the early-specialist scan stops at the first taken specialist (cap 1)")
+    a.b("56")                                          # push esi           ; K/P loop position
+    a.b("8b35" + imm(POOL_PTR))                        # mov esi,[POOL_PTR]
+    a.b("8b761c")                                      # mov esi,[esi+0x1c] ; the 32 club blocks (500 bytes each)
+    a.b("6a205b")                                      # push 32 ; pop ebx
+    a.label("club_loop")
+    a.b("0fb68e1c010000")                              # movzx ecx, byte [esi+0x11c] ; roster count
+    a.label("member_loop")
+    a.b("49")                                          # dec ecx
+    a.j8("78", "club_next")                            # js club_next
+    a.b("8b048e")                                      # mov eax,[esi+ecx*4]
+    a.b("8a5035")                                      # mov dl,[eax+0x35]  ; position
+    a.b("feca")                                        # dec dl             ; K -> 0, P -> 1
+    a.b("80fa01")                                      # cmp dl,1
+    a.j8("77", "member_loop")                          # ja member_loop     ; not a specialist
+    a.b("8a50" + struct.pack("<B", YEARS_PRO_OFF).hex())  # mov dl,[eax+0x25]
+    a.b("80e21f")                                      # and dl,0x1f        ; years pro
+    a.b("feca")                                        # dec dl
+    a.j8("75", "member_loop")                          # jnz member_loop    ; not taken in this draft
+    a.b("5e")                                          # pop esi
+    a.j8("eb", "elig_next")                            # a specialist already went before round 5: no outlier
+    a.label("club_next")
+    a.b("81c6f4010000")                                # add esi,500
+    a.b("4b")                                          # dec ebx
+    a.j8("75", "club_loop")                            # jnz club_loop
+    a.b("5e")                                          # pop esi
     a.b("b802000000")                                  # mov eax,2          ; early: edge-only outlier
     a.label("elig_store")
     a.b("8984b4d4000000")                              # mov [esp+esi*4+0xd4],eax ; K at 0xd8, P at 0xdc

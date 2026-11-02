@@ -129,18 +129,22 @@ class DraftAiHeadTests(unittest.TestCase):
         cls.retail = retail_bytes()
         cls.applied = ai.apply(cls.retail)[0]
 
-    def test_the_class_sums_count_this_drafts_specialists_and_the_outlier_checks_it(self):
+    def test_the_early_branch_looks_for_a_specialist_already_taken_in_this_draft(self):
         head, tail = ai.pick_fn_bytes()
         self.assertEqual(len(head), ai.PICK_FN_SIZE)
         self.assertLessEqual(5 + len(tail), ai.BODY_SIZE)
-        prefix = head[:ai.SPECIAL_HEAD_OFFSET]
-        count_slot = struct.pack("<I", ai.SPECIALIST_COUNT_OFF)
-        self.assertIn(bytes.fromhex("f6460820"), prefix)                         # test byte [esi+8],0x20
-        self.assertIn(b"\xff\x84\x24" + count_slot, prefix)                       # inc dword [esp+0xe0]
-        self.assertLess(ai.SPECIALIST_COUNT_OFF, 59 * 4)                           # inside the zeroed frame
+        # The class sums are the b778 dr2 ones (only the jump to the moved special block differs).
+        self.assertEqual(head[:105], PREVIOUS_HEAD[:105])
         special = head[ai.SPECIAL_HEAD_OFFSET:ai.PICK_CONST_OFF]
-        self.assertIn(b"\x83\xbc\x24" + count_slot + bytes((ai.EARLY_SPECIALIST_CAP,)) + b"\x73", special)
+        for pattern in ("8b351829b700" "8b761c",          # the roster root's 32 club blocks
+                        "6a205b",                          # 32 clubs
+                        "0fb68e1c010000",                  # each club's roster count
+                        "8a5025" "80e21f" "feca" "75",     # a member with exactly one year pro ...
+                        "5eeb",                            # ... means a specialist already went: no outlier
+                        "81c6f4010000"):                   # next club (500 bytes)
+            self.assertIn(bytes.fromhex(pattern), special, pattern)
         self.assertEqual(ai.EARLY_SPECIALIST_CAP, 1)
+        self.assertEqual(ai.YEARS_PRO_OFF, 0x25)
         self.assertGreaterEqual(ai.SPECIAL_EDGE, 0.30)
 
     def test_a_beta79_head_reads_legacy_and_upgrades_in_place(self):
@@ -200,10 +204,47 @@ class BuildPathTests(unittest.TestCase):
                                                        "reason": "the draft class sites hold other bytes"})
 
 
+def _class_turnover(payload, body, class_size=380):
+    """A fresh native franchise (0x13EE10 makes the first class from the disc's window), then one league year's record
+    turnover: the retirement pass 0x2BDB00, the Combine cleanup 0x2BDA90 and the class generator 0x2BE940(class_size).
+    As b779 rc1's _turnover, without its top-up probes (on plain retail no top-up runs). Returns (create vacancies
+    before, after, the positions handed to the generator, the positions it wrote)."""
+    from tests.nfl2k5_supersim_draft_fixture import Machine
+    m = Machine(payload, trace_writes=False)
+    size = len(body) - 0x40
+    m.uc.mem_write(m.ARENA + 0x300, body)
+    m.put(0xB72804, m.ARENA + 0x300)
+    m.put(0xB72808, size if size > 0x91000 else 0x91000)
+    m.put(0xB7280C, size)
+    m.fixup_roster(m.ARENA + 0x340)
+    m.seed(12345)
+    for address, value in ((0xE5FF80, 4), (0xE60120, 0), (0xE6000C, 5), (0xE60010, 5)):
+        m.put(address, value)
+    m.leaf(0x177990, lambda: m.ret(pop=4), reason="progress renderer only")
+    m.leaf(0x14E520, lambda: m.ret(), reason="informational dialog only")
+    generated = []   # code hooks must exist before the generator's blocks are first translated
+    m.uc.hook_add(m.u.UC_HOOK_CODE, lambda *_: generated.append((m.reg("ECX"), m.reg("EDX") & 0xFF)),
+                  begin=0x2BE6F0, end=0x2BE6F0)
+    m.call(0x13EE10, budget=2_000_000_000)
+    n, base = m.get(m.root), m.get(m.root + 4)
+
+    def vacancies():
+        raw = bytes(m.uc.mem_read(base, 84 * n))
+        return sum(1 for i in range(n) if raw[84 * i + 8] & 5 == 1)
+
+    before = vacancies()
+    m.call(0x2BDB00, budget=4_000_000_000)
+    m.call(0x2BDA90, budget=2_000_000_000)
+    generated.clear()
+    m.call(0x2BE940, ecx=class_size, budget=4_000_000_000)
+    written = [m.uc.mem_read(record + 0x35, 1)[0] for record, _ in generated]
+    return before, vacancies(), [p for _, p in generated], written
+
+
 @unittest.skipUnless(HAVE_UC, "Unicorn is not installed")
 class NativeClassTurnoverTests(unittest.TestCase):
-    """One native league year on the retail roster without the economy (b779 rc1's _turnover): the retirement
-    pass 0x2BDB00, the Combine cleanup 0x2BDA90 and the class generator 0x2BE940(380)."""
+    """One native league year on the retail roster without the economy (_class_turnover): the retirement pass
+    0x2BDB00, the Combine cleanup 0x2BDA90 and the class generator 0x2BE940(380)."""
 
     @classmethod
     def setUpClass(cls):
@@ -215,8 +256,7 @@ class NativeClassTurnoverTests(unittest.TestCase):
         # A fresh retail franchise's first turnover frees fewer than 380 records besides the 155 Create Player
         # vacancies (all unsigned free agents retire, so the retail top-up has nobody else to retire): the class is
         # cut short instead of spending the vacancies, still more than a 224-pick draft, every prospect on the walk.
-        from tests.mod_editor.test_b779_rc1_roster_capacity import _turnover
-        before, after, positions, written, _ = _turnover(self.fixed, self.body)
+        before, after, positions, written = _class_turnover(self.fixed, self.body)
         self.assertGreater(before, 100)
         self.assertEqual(after, before)              # Create Player, MyCareer and imports keep their records
         self.assertGreater(len(positions), 224)
@@ -225,8 +265,7 @@ class NativeClassTurnoverTests(unittest.TestCase):
         self.assertEqual(written, positions)          # the generator wrote each prospect at that position
 
     def test_negative_control_retail_spends_the_vacancies_and_copies_the_leavers_positions(self):
-        from tests.mod_editor.test_b779_rc1_roster_capacity import _turnover
-        before, after, positions, _, _ = _turnover(self.retail, self.body)
+        before, after, positions, _ = _class_turnover(self.retail, self.body)
         self.assertEqual(len(positions), 380)        # filled by spending Create Player vacancies
         self.assertLess(after, before)
         self.assertNotEqual(dict(collections.Counter(POSITIONS[p] for p in positions)), _walk(380, 380))
