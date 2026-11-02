@@ -117,6 +117,18 @@ and `monday_afternoon`; `--watermark` selects the policy. These states populate
 bounded synthetic schedule records and execute the real weekday site. The GUI
 shows the final display image, after native contraction and viewport expansion.
 
+Beta 80 play-call screen. While the play-call screen keeps the bar up, the down text is followed by the ball spot
+("1st & 10  NYJ 35", or "50" at midfield), read from the retail "Ball on" formatter at `0xFBEB0` (the bar's build already turns
+its line break into a space). The scene has no spare quad (the five atlas materials hold 44 of 44), so the spot reuses the down
+field's own eight quads: spaces and other zero-size glyphs no longer take a slot, a team is one word cell (token U+0001 plus its
+abbreviation, one per abbreviation in the game data) and the yard line is two small digit cells (U+0010 to U+0019, the narrow
+space is U+001A). The author step is `reports/b780_p2/author_ball_spot.py`; a team whose abbreviation has no cell, a kick attempt
+label, the "Inches" distance and every other phase simply show the down text alone. The line may squeeze by at most 23 percent
+inside the down field's box (232 layout pixels), never more. The interim "2nd Down" label is skipped on the play-call screen, which shows the
+distance. Preview accepts `"playcall": true` and `"ball_yards": 1..99` (yards from the offense's own goal line).
+The same build also fits the play menu's page boxes: from six pages the strip moves 45 units left and tightens so a 30-link
+formation no longer covers the formation name.
+
 Run the measurement tool with your read-only broadcast reference directory:
 
 ```sh

@@ -50,7 +50,7 @@ class PlannerTests(unittest.TestCase):
         stable = lambda a: a['owner'] in space.LEGACY_OWNERS and not (a['owner'] == 'nfl2k5_scorebug_runtime' and a['kind'] == 'code')
         self.assertEqual([a for a in report['allocations'] if stable(a)], [a for a in before if stable(a)])
         sprite = next(a for a in report['allocations'] if a['owner'] == 'nfl2k5_scorebug_runtime' and a['kind'] == 'code')
-        self.assertEqual(sprite['size'], 5376)  # beta 76 s15: the sprite owner grew by 512 for records and the arrow; b76-sb: 768 more for the broadcast states
+        self.assertEqual(sprite['size'], 5920)  # b780 p2: +544 for the ball spot and the page strip fit; was 5376 - beta 76 s15: the sprite owner grew by 512 for records and the arrow; b76-sb: 768 more for the broadcast states
         self.assertGreater(sprite['va'], max(a['va'] for a in before))
         self.assertEqual([report['capacity'][k]['capacity_bytes'] for k in ('code', 'data', 'read_only')],
                          [109024, 86016, 17952])  # 2528 directory bytes hold code; 464 hold the read-only rating table.

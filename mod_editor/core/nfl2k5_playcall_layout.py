@@ -10,10 +10,13 @@ See PC_REPORT.md and tools/nfl2k5_playcall_projection.py for bounded proofs.
 
 b780 p2-playcall, page strip: the strip of page boxes (FUN_000AAFD0) is left-anchored at the page text node (HUD x 42 + 65)
 and draws one 10x14 box every 15 units. A 30-link formation has ten pages, so the strip ran 145 units and covered the
-left of a long formation name ("SINGLEBACK BUNCH" starts at about x 190). From six pages up the call below moves the strip
-45 units left (the 77 units between the arrow icon and the strip start are empty) and tightens the pitch so the whole
-strip is at most about 116 units (pitch = the largest of 15 down to 4 with pitch * pages <= 116, box width = pitch - 4 kept
-between 6 and 10). Five pages and fewer are exactly retail. Only the one `call 0x6D170` of the box loop is replaced.
+left of a long formation name ("SINGLEBACK H BACK" starts near x 175, "SINGLEBACK DOUBLES TIGHT", the longest in the Seahawks
+book, near 166). From six pages up the call below moves the strip 50 units left (the arrow icon ends near x 27, so the strip
+starts at 57) and tightens the pitch so the whole strip is at most about 104 units (pitch = the largest of 15 down to 4 with
+pitch * pages <= 104, box width = pitch - 4 kept between 6 and 10): ten pages end at x 153 instead of 252, twelve at 151.
+Five pages and fewer are exactly retail. The function also draws the formation page's own strip ("PAGE n" and its boxes, which
+nothing follows), so a second hook at its prologue keeps its second argument (0 = play page) for the box call, which is the one
+`call 0x6D170` of the box loop; the formation page's strip stays retail.
 """
 from __future__ import annotations
 
@@ -28,10 +31,16 @@ HOOK_NAME = "playcall_layout_init"
 HOOK = (0xAC40C, bytes.fromhex("e8fff5f7ff"))  # final view setter in ABF60
 STRIP_HOOK_NAME = "playcall_strip_fit"
 STRIP_HOOK = (0xAB0C5, bytes.fromhex("e8a620fcff"))  # the page box draw (call 0x6D170) in FUN_000AAFD0's loop
+# FUN_000AAFD0 draws two strips: with its second argument 0 the play page's boxes (they sit before the formation name),
+# with 1 the formation page's "PAGE n" text and boxes (nothing follows them). Only the first is fitted, so the prologue
+# keeps that argument in the owner's data page, where the box cave reads it.
+STRIP_ENTRY_HOOK_NAME = "playcall_strip_entry"
+STRIP_ENTRY_HOOK = (0xAAFD4, bytes.fromhex("578b7c242c"))  # push edi; mov edi,[esp+0x2c] in the prologue
+STRIP_FLAG_OFFSET = 124   # bytes into the owner's 128-byte data page (the engine's State uses 0..119)
 # Page strip fit (b780 p2): retail pitch 15 and width 10 are kept up to FIT_FROM pages.
 FIT_FROM = 6          # pages (last index + 1) from which the strip is fitted
-STRIP_SHIFT = 45      # units the fitted strip moves left of its retail start
-STRIP_TOTAL = 116     # pitch * pages never exceeds this; the strip ends about 170 units from the left edge
+STRIP_SHIFT = 50      # units the fitted strip moves left of its retail start
+STRIP_TOTAL = 104     # pitch * pages never exceeds this; the strip ends about 155 units from the left edge
 PITCH_MIN, PITCH_RETAIL = 4, 15
 WIDTH_MIN, WIDTH_MAX, WIDTH_GAP = 6, 10, 4
 # Global descriptor, exact retail node count, settled node root y before shift.
@@ -82,6 +91,7 @@ def valid(payload, *, applied, strip=True):
     normal = [(HOOK[0], HOOK[1])] + [(va, old) for va, old, _, _ in rows]
     if strip:
         normal.append((STRIP_HOOK[0], STRIP_HOOK[1]))
+        normal.append((STRIP_ENTRY_HOOK[0], STRIP_ENTRY_HOOK[1]))
     for start, size, digest, _ in GUARDS:
         buf = bytearray(image.read(start, size))
         for va, old in normal:
@@ -133,21 +143,38 @@ def fit(pages):
     return STRIP_SHIFT, pitch, min(WIDTH_MAX, max(WIDTH_MIN, pitch - WIDTH_GAP))
 
 
-def strip_code_for(va):
+def strip_entry_code_for(va, data_va):
+    """Replaces the prologue's `push edi; mov edi,[esp+0x2c]` of FUN_000AAFD0 and keeps its second argument.
+
+    Called with the return address on the stack: ECX (dead at that point: the function loads it itself next) takes the
+    address, the two replaced instructions run with the stack as the function expects it, the argument ([esp+0x30]) is
+    copied into the owner's data page through the stack (no register changes besides ECX), and the jump returns.
+    """
+    a = _Asm(va)
+    a.b("59 57 8b7c242c")                                      # pop ecx; push edi; mov edi,[esp+0x2c]
+    a.b("ff742430 8f05" + struct.pack("<I", data_va + STRIP_FLAG_OFFSET).hex())   # push [esp+0x30]; pop [flag]
+    a.b("ffe1")                                                # jmp ecx
+    return a.assemble()
+
+
+def strip_code_for(va, data_va):
     """Replaces the page box draw's `call 0x6D170`; position x and width are rewritten, everything else is the native call.
 
     At entry: [esp] the return into the loop, [esp+4] x, +8 y, +12 z, +16 width, +20 height (floats), EBX the last page
-    index, EDI the box index, ECX/EDX the two colours (kept). Pages below FIT_FROM go straight to the native box. For
-    more, x moves left by STRIP_SHIFT + index * (15 - pitch) and the width becomes the fitted one. Integer EAX/ECX/EDX
-    are saved; the native call keeps its stack and registers, and the tail jump leaves its RET to the loop.
+    index, EDI the box index, ECX/EDX the two colours (kept). The formation page's strip (second argument 1, kept by the
+    entry cave) and pages below FIT_FROM go straight to the native box. For more, x moves left by STRIP_SHIFT + index *
+    (15 - pitch) and the width becomes the fitted one. Integer EAX/ECX/EDX are saved; the native call keeps its stack and
+    registers, and the tail jump leaves its RET to the loop.
     """
     a = _Asm(va)
+    a.b("833d" + struct.pack("<I", data_va + STRIP_FLAG_OFFSET).hex() + "00")    # cmp dword ptr [flag],0
+    a.j8("75", "native")                                  # jne: the formation page's strip is retail
     a.b("8d4301 83f8" + f"{FIT_FROM - 1:02x}")          # lea eax,[ebx+1]; cmp eax,5
     a.j8("76", "native")                                  # jbe: five pages or fewer are retail
     a.b("51 52")                                          # push ecx; push edx
     a.b("b9" + struct.pack("<I", PITCH_RETAIL).hex())     # mov ecx,15
     a.label("again")
-    a.b("89ca 0faf d0 83fa" + f"{STRIP_TOTAL:02x}")      # mov edx,ecx; imul edx,eax; cmp edx,116
+    a.b("89ca 0faf d0 83fa" + f"{STRIP_TOTAL:02x}")      # mov edx,ecx; imul edx,eax; cmp edx,STRIP_TOTAL
     a.j8("76", "fitted")                                  # jbe
     a.b("83f9" + f"{PITCH_MIN:02x}")                      # cmp ecx,4
     a.j8("76", "fitted")                                  # jbe: never tighter than 4
@@ -164,7 +191,7 @@ def strip_code_for(va):
     a.b("ba" + struct.pack("<I", WIDTH_MIN).hex())
     a.label("width")                                      # EDX = width
     a.b("b8" + struct.pack("<I", PITCH_RETAIL).hex() + "29c8 0faf c7 83c0" + f"{STRIP_SHIFT:02x}")
-    #   mov eax,15; sub eax,ecx; imul eax,edi; add eax,45     (the left shift of this box)
+    #   mov eax,15; sub eax,ecx; imul eax,edi; add eax,STRIP_SHIFT     (the left shift of this box: STRIP_SHIFT + index * (15 - pitch))
     a.b("50 d9442410 da2424 d95c2410 58")                 # push eax; fld [x]; fisub [esp]; fstp [x]; pop eax
     a.b("52 db0424 d95c241c 5a")                          # push edx; fild [esp]; fstp [width]; pop edx
     a.b("5a 59")                                          # pop edx; pop ecx

@@ -176,8 +176,9 @@ def build(layout, template, font_path=DEFAULT_FONT):
     for field in layout['fields']:
         if field['name'] == 'down':
             # The plate's vertical sides are 246 apart; the box is the room the text may use before the field squeezes
-            # it (the widest down text, "3rd & Inches", needs 207, so no existing line changes). Same centre, 961.
-            field['box'] = [839, field['box'][1], 1083, field['box'][3]]
+            # it: 232 leaves 7 px at each side (the widest down text, "3rd & Inches", needs 207, so no existing line
+            # changes). Same centre, 961.
+            field['box'] = [845, field['box'][1], 1077, field['box'][3]]
     layout['provenance']['b780_p2_ball_spot'] = {
         'job': 'b780 p2-playcall 2026-11-02',
         'request': 'nwostar 10/24 (#2k5-ideas): "Add down distance and field position to play call screen." '

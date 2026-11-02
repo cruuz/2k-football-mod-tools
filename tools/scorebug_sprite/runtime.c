@@ -145,6 +145,7 @@ static u32 playcall_keep(void);
  * space) and the spot. */
 NOINLINE static void spot(u16 *out) {
  u16 *raw=out+16,*to=out+2;u32 c,digits;
+ if(!V(0xe60280) || !V(0xe60284))return;               /* FBEB0 reads both teams; a game between plays has neither */
  raw[0]=0;((Formatter)0xfbeb0)(raw);
  if(raw[0]!='B' || !raw[8])return;
  digits=raw[5]=='a';
@@ -290,10 +291,10 @@ NOINLINE static void field(u8 *b,struct State *s,struct Field *f) {
  count=glyphs_for(b,f,buffer,tokens,0,&drawn,&total);
  if(!count)return;
  /* b780 p2: the ball spot rides the same line when every one of its characters has a glyph, the quads it needs are left
-  * over and the line needs at most an 18 % squeeze; otherwise the down text stands alone, as before. */
+  * over and the line needs at most a 23 % squeeze (the widest real line, "2nd & GOAL  WAS 10", needs 21 %); otherwise the down text stands alone, as before. */
  extra=total;spare=drawn;
  if(buffer[40] && (more=glyphs_for(b,f,buffer+40,tokens,count,&spare,&extra))
-    && (extra-(tokens[more-1]->advance-tokens[more-1]->width))*100<=f->width*122){count=more;total=extra;}
+    && (extra-(tokens[more-1]->advance-tokens[more-1]->width))*100<=f->width*130){count=more;total=extra;}
  total-=tokens[count-1]->advance-tokens[count-1]->width;
  if(total<=0)return;
  int width=total<f->width?total:f->width;

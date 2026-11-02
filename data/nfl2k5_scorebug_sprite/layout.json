@@ -3392,9 +3392,9 @@
    "name": "down",
    "source": "down and distance",
    "box": [
-    839,
+    845,
     955,
-    1083,
+    1077,
     979
    ],
    "glyph_set": "label",

@@ -51,8 +51,13 @@ class PatchTests(unittest.TestCase):
         strip = b'\xe8'+struct.pack('<i',labels[pc.STRIP_HOOK_NAME]-pc.STRIP_HOOK[0]-5)
         self.assertEqual(image.read(pc.STRIP_HOOK[0],5),strip)
         self.assertEqual(XbeImage(self.retail).read(pc.STRIP_HOOK[0],5),pc.STRIP_HOOK[1])
-        self.assertEqual(image.read(labels[pc.STRIP_HOOK_NAME],len(pc.strip_code_for(labels[pc.STRIP_HOOK_NAME]))),
-                         pc.strip_code_for(labels[pc.STRIP_HOOK_NAME]))
+        entry = b'\xe8'+struct.pack('<i',labels[pc.STRIP_ENTRY_HOOK_NAME]-pc.STRIP_ENTRY_HOOK[0]-5)
+        self.assertEqual(image.read(pc.STRIP_ENTRY_HOOK[0],5),entry)
+        self.assertEqual(XbeImage(self.retail).read(pc.STRIP_ENTRY_HOOK[0],5),pc.STRIP_ENTRY_HOOK[1])
+        cave = pc.strip_entry_code_for(labels[pc.STRIP_ENTRY_HOOK_NAME],data['va'])
+        self.assertEqual(image.read(labels[pc.STRIP_ENTRY_HOOK_NAME],len(cave)),cave)
+        cave = pc.strip_code_for(labels[pc.STRIP_HOOK_NAME],data['va'])
+        self.assertEqual(image.read(labels[pc.STRIP_HOOK_NAME],len(cave)),cave)
         for va,old,new,_ in pc.edits():
             self.assertEqual(XbeImage(self.retail).read(va,4),old)
             self.assertEqual(image.read(va,4),new)
@@ -77,6 +82,9 @@ class PatchTests(unittest.TestCase):
                 self.assertEqual(owner.status(replace_at(self.patched,va,old)),'foreign')
         self.assertEqual(owner.status(replace_at(self.patched,*pc.HOOK)),'foreign')
         self.assertEqual(owner.status(replace_at(self.patched,*pc.STRIP_HOOK)),'foreign')
+        self.assertEqual(owner.status(replace_at(self.patched,*pc.STRIP_ENTRY_HOOK)),'foreign')
+        applied = XbeImage(self.patched).read(pc.STRIP_ENTRY_HOOK[0],5)
+        self.assertEqual(owner.status(replace_at(self.retail,pc.STRIP_ENTRY_HOOK[0],applied)),'foreign')
         applied = XbeImage(self.patched).read(pc.STRIP_HOOK[0],5)
         self.assertEqual(owner.status(replace_at(self.retail,pc.STRIP_HOOK[0],applied)),'foreign')
 
@@ -101,7 +109,9 @@ class PatchTests(unittest.TestCase):
             image = XbeImage(result)
             self.assertEqual(image.read(pc.HOOK[0],5),pc.HOOK[1])
             self.assertEqual(image.read(pc.STRIP_HOOK[0],5),pc.STRIP_HOOK[1])
+            self.assertEqual(image.read(pc.STRIP_ENTRY_HOOK[0],5),pc.STRIP_ENTRY_HOOK[1])
             self.assertNotIn(pc.STRIP_HOOK_NAME,owner.hooks())
+            self.assertNotIn(pc.STRIP_ENTRY_HOOK_NAME,owner.hooks())
             for va,old,_,_ in pc.edits(): self.assertEqual(image.read(va,4),old)
             self.assertEqual(owner.status(self.patched),'foreign')
         self.assertEqual(owner.status(result),'foreign')
@@ -109,15 +119,16 @@ class PatchTests(unittest.TestCase):
     def test_code_budget_and_full_manifest_site_reservations(self):
         from mod_editor.core.nfl2k5_cave_manifest import Recorder
         code,_ = owner.code_for(0x5100000,0x5200000)
-        self.assertEqual((owner.CODE_SIZE,owner.DATA_SIZE,owner.REVISION),(5888,128,15))  # b780 p2: RX 5376 -> 5888 (+512), revision 15
-        # b773-hd1: +10 bytes; b778 sb2: engine 3583 -> 3613 B; b780 p2: engine 3613 -> 4082 B (+469: the ball spot and slot-free
-        # spaces) and the page strip fit (+98), 5327 -> 5849 of the 5888 allocated.
-        self.assertEqual(len(code.rstrip(b'\xcc')),5849)
+        self.assertEqual((owner.CODE_SIZE,owner.DATA_SIZE,owner.REVISION),(5920,128,15))  # b780 p2: RX 5376 -> 5920 (+544), revision 15
+        # b773-hd1: +10 bytes; b778 sb2: engine 3583 -> 3613 B; b780 p2: engine 3613 -> 4065 B (+452: the ball spot and slot-free
+        # spaces) and the page strip fit (+125: box cave 107, prologue cave 18), 5327 -> 5904 of the 5920 allocated.
+        self.assertEqual(len(code.rstrip(b'\xcc')),5904)
         self.assertEqual(len(pc.code_for(0x5100000)),129)
-        self.assertEqual(len(pc.strip_code_for(0x5100000)),98)
+        self.assertEqual(len(pc.strip_code_for(0x5100000,0x5200000)),107)
+        self.assertEqual(len(pc.strip_entry_code_for(0x5100000,0x5200000)),18)
         rec = Recorder(self.retail)
         rec.observe(owner,'apply',self.retail,self.patched,self.receipt)
-        for va,size in [(pc.HOOK[0],5),(pc.STRIP_HOOK[0],5)]+[(va,4) for va,*_ in pc.edits()]:
+        for va,size in [(pc.HOOK[0],5),(pc.STRIP_HOOK[0],5),(pc.STRIP_ENTRY_HOOK[0],5)]+[(va,4) for va,*_ in pc.edits()]:
             self.assertTrue(any(int(r['start'],0)==va and r['size']==size and r['owner']==owner.OWNER
                                 for r in rec.spans),hex(va))
 
@@ -189,11 +200,13 @@ class PatchTests(unittest.TestCase):
 
 
 
-def _page_boxes(payload, last_index, *, current=0, node_x=42.0, flag=0):
+def _page_boxes(payload, last_index, *, current=0, node_x=42.0, flag=0, before=()):
     """Replay FUN_000AAFD0's page box loop in Unicorn and return the calls the native box draw (6D170) received.
 
     The node table, the two index helpers (23710, 21970) and the box primitive are replaced by fixtures; the loop, the
-    colour decision and (patched payload) the strip fit run from the real bytes. Returns (calls, registers after).
+    colour decision and (patched payload) the strip fit run from the real bytes. ``before`` lists second arguments of
+    calls made first on the same machine (the flag the prologue keeps must follow the call, not the machine).
+    Returns (calls of the last call, registers after it).
     """
     import unicorn
     from nfl2k5_scorebug_projection import StaticMachine
@@ -205,7 +218,9 @@ def _page_boxes(payload, last_index, *, current=0, node_x=42.0, flag=0):
         m.put(obj + 0x68, other); m.put(obj + 0x6c, other + 0x20)
         m.float(node + 0x30, node_x); m.float(node + 0x34, -319.0); m.float(node + 0x38, 22.0)
         stubs = {0x23710: bytes.fromhex('31c0c3'), 0x21970: bytes.fromhex('b8') + struct.pack('<I', node) + bytes.fromhex('c3'),
-                 0x6d170: bytes.fromhex('c21400')}
+                 0x6d170: bytes.fromhex('c21400'),
+                 0x4a400: bytes.fromhex('c20400'),            # the "PAGE %d" printf thunk (flag 1 only): stdcall, 1 argument
+                 0xa9f20: bytes.fromhex('c20c00')}            # the text setter after it: 3 arguments
         for va, code in stubs.items():
             m.uc.mem_write(va, code); m.uc.ctl_remove_cache(va, va + len(code))
         calls = []
@@ -215,6 +230,9 @@ def _page_boxes(payload, last_index, *, current=0, node_x=42.0, flag=0):
             x, y, z, w, h = struct.unpack('<5f', bytes(uc.mem_read(esp + 4, 20)))
             calls.append((x, y, z, w, h, uc.reg_read(m.x.UC_X86_REG_ECX), uc.reg_read(m.x.UC_X86_REG_EDX)))
         hook = m.uc.hook_add(unicorn.UC_HOOK_CODE, on_box, begin=0x6d170, end=0x6d170)
+        for earlier in before:
+            m.run(0xaafd0, (obj, earlier), eax=ctx, limit=200000)
+        calls.clear()
         m.run(0xaafd0, (obj, flag), eax=ctx, limit=200000, esi=0x11111111, edi=0x22222222, ebx=0x33333333, ebp=0x44444444)
         m.uc.hook_del(hook)
         return calls, {n: m.uc.reg_read(getattr(m.x, 'UC_X86_REG_' + n.upper())) for n in ('esi', 'edi', 'ebx', 'ebp')}
@@ -234,15 +252,33 @@ class PageStripTests(unittest.TestCase):
 
     def test_fit_model_matches_the_numbers_in_the_docstring(self):
         self.assertEqual([pc.fit(n) for n in (1, 5)], [(0, 15, 10)] * 2)
-        self.assertEqual(pc.fit(6), (45, 15, 10))
-        self.assertEqual(pc.fit(10), (45, 11, 7))
-        self.assertEqual(pc.fit(12), (45, 9, 6))
-        self.assertEqual(pc.fit(36), (45, 4, 6))
-        for n in range(6, 30):
+        self.assertEqual(pc.fit(6), (50, 15, 10))
+        self.assertEqual(pc.fit(10), (50, 10, 6))
+        self.assertEqual(pc.fit(12), (50, 8, 6))
+        self.assertEqual(pc.fit(36), (50, 4, 6))
+        for n in range(6, 27):                           # the 4-unit pitch floor holds 26 pages
             _shift, pitch, width = pc.fit(n)
             self.assertLessEqual(pitch * n, pc.STRIP_TOTAL)
             self.assertTrue(pc.WIDTH_MIN <= width <= pc.WIDTH_MAX)
-        self.assertEqual(pc.fit(12), (45, 9, 6))        # the most a formation can have: 36 links, 12 pages
+        self.assertEqual(pc.fit(12), (50, 8, 6))        # the most a formation can have: 36 links, 12 pages
+
+    def test_the_formation_pages_strip_is_retail_at_every_page_count(self):
+        # FUN_000AAFD0's second argument 1 draws "PAGE n" and its boxes on the formation page, where nothing follows them
+        # (the 50 formations of a book are 17 pages). The prologue cave keeps the argument; the box cave leaves that strip alone.
+        for pages in (1, 2, 5, 6, 10, 12, 17):
+            with self.subTest(pages=pages):
+                retail, regs_retail = _page_boxes(self.retail, pages - 1, current=pages // 2, flag=1)
+                fitted, regs_fitted = _page_boxes(self.patched, pages - 1, current=pages // 2, flag=1)
+                self.assertEqual(len(retail), pages if pages > 1 else 0)
+                self.assertEqual(fitted, retail)
+                self.assertEqual(regs_fitted, regs_retail)
+        # The argument is read on every call: after a formation page strip the play page strip is fitted again, and the
+        # formation page strip is retail again after a play page strip.
+        retail_play, _ = _page_boxes(self.retail, 9, flag=0)
+        retail_form, _ = _page_boxes(self.retail, 9, flag=1)
+        self.assertEqual(_page_boxes(self.patched, 9, flag=0, before=(1,))[0], _page_boxes(self.patched, 9, flag=0)[0])
+        self.assertNotEqual(_page_boxes(self.patched, 9, flag=0, before=(1,))[0], retail_play)
+        self.assertEqual(_page_boxes(self.patched, 9, flag=1, before=(0,))[0], retail_form)
 
     def test_five_pages_and_fewer_are_exactly_retail(self):
         for pages in range(1, 6):
@@ -255,8 +291,8 @@ class PageStripTests(unittest.TestCase):
                     self.assertEqual(regs_fitted, regs_retail)
 
     def test_longer_menus_move_left_and_tighten_and_change_nothing_else(self):
-        # The playcall UI allows 36 links per formation: 12 pages. Up to 19 pages the boxes keep clear of each other.
-        for pages in list(range(6, 20)) + [36]:
+        # The playcall UI allows 36 links per formation: 12 pages. Up to 17 pages the boxes keep clear of each other.
+        for pages in list(range(6, 18)) + [36]:
             with self.subTest(pages=pages):
                 retail, regs_retail = _page_boxes(self.retail, pages - 1, current=pages // 2)
                 fitted, regs_fitted = _page_boxes(self.patched, pages - 1, current=pages // 2)
@@ -271,16 +307,17 @@ class PageStripTests(unittest.TestCase):
                     self.assertEqual(before[0], 107.0 + 15 * i)
                     self.assertEqual(after[0], 107.0 - shift + pitch * i)
                 self.assertEqual([b[6] for b in fitted].count(0xffffffff), 1)
-                if pages <= 19:
+                if pages <= 17:
                     # The strip ends within STRIP_TOTAL units of its new start, and the boxes never overlap (a pitch of
-                    # 6 holds the 6-unit minimum width at 19 pages; the 4-unit pitch floor only matters past 29).
+                    # 6 holds the 6-unit minimum width at 17 pages; the 4-unit pitch floor only matters past 26).
                     self.assertLessEqual(fitted[-1][0] + fitted[-1][3] - fitted[0][0], pc.STRIP_TOTAL)
                     for a, b in zip(fitted, fitted[1:]):
-                        self.assertGreaterEqual(b[0] - (a[0] + a[3]), 2.0 if pages <= 14 else 0.0)
-        # The 30-link menus of the shipped books (ten pages) end 84 units sooner than retail's 252, left of "SINGLEBACK BUNCH".
+                        self.assertGreaterEqual(b[0] - (a[0] + a[3]), 2.0 if pages <= 13 else 0.0)
+        # The 30-link menus of the shipped books (ten pages) end 99 units sooner than retail's 252, clear of the longest name
+        # ("SINGLEBACK DOUBLES TIGHT", which starts near 166).
         retail, _ = _page_boxes(self.retail, 9)
         fitted, _ = _page_boxes(self.patched, 9)
-        self.assertEqual((retail[-1][0] + 10.0, fitted[-1][0] + fitted[-1][3]), (252.0, 168.0))
+        self.assertEqual((retail[-1][0] + 10.0, fitted[-1][0] + fitted[-1][3]), (252.0, 153.0))
 
     def test_the_second_strip_and_node_position_use_the_same_fit(self):
         # The strip is anchored at its text node; a different node x moves every box by the same amount.

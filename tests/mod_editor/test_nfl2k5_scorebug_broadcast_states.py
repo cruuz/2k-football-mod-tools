@@ -81,9 +81,9 @@ class LayoutTests(unittest.TestCase):
         self.assertEqual(sum(used[k] for k in sprite.ATLAS_MATERIALS), 44)
         for k, n in used.items():
             self.assertLessEqual(n, capacity[k], k)
-        self.assertEqual(sprite.probe_sizes(), (34, 327264, 327680))    # sb4 drops 20 unreachable small-set tokens (-640 B)
+        self.assertEqual(sprite.probe_sizes(), (34, 329184, 329728))    # sb4 drops 20 unreachable small-set tokens (-640 B); b780 p2: +47 label tokens (+1,880 B) and 46 ball-spot cells (+40 B of palette), 2,048 B more pack
         code, _ = owner.code_for(CODE_VA, DATA_VA)
-        self.assertEqual((owner.CODE_SIZE, owner.REVISION), (5376, 14))
+        self.assertEqual((owner.CODE_SIZE, owner.REVISION), (5920, 15))    # b780 p2: RX 5376 -> 5920, revision 15
         self.assertLess(len(code.rstrip(b'\xcc')), owner.CODE_SIZE - 8)
 
     def test_tokens_and_metrics(self):

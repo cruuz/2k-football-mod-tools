@@ -26,7 +26,8 @@ from mod_editor.core import nfl2k5_scorebug_ingame as scene
 
 HAVE_IMAGES = all(importlib.util.find_spec(n) for n in ('PIL', 'numpy'))
 RETAIL = ROOT / 'extracted/ESPN NFL 2K5 (USA)/default.xbe'
-NATIVE = RETAIL.is_file() and importlib.util.find_spec('unicorn') is not None and HAVE_IMAGES
+PACK = RETAIL.parent / 'vc_53450030/0'
+NATIVE = RETAIL.is_file() and PACK.is_file() and importlib.util.find_spec('unicorn') is not None and HAVE_IMAGES
 AUTHOR = ROOT / 'reports/b780_p2/author_ball_spot.py'
 WORD_MARK, DIGIT_BASE, SPACE = chr(1), 16, chr(26)
 DT = struct.unpack('<I', struct.pack('<f', 1 / 60))[0]
@@ -160,7 +161,7 @@ class ArtAndLayoutTests(unittest.TestCase):
             self.assertEqual(len(compiled.quads), 50, wide)
             self.assertEqual(sum(1 for q in compiled.quads if q['name'].startswith('down:')), 8, wide)
         self.assertEqual(self.field['slots'], 8)
-        self.assertEqual(self.field['box'], [839, 955, 1083, 979])
+        self.assertEqual(self.field['box'], [845, 955, 1077, 979])
         self.assertEqual((self.field['box'][0] + self.field['box'][2]) / 2, self.field['anchor'][0])
         self.assertLess(sprite.probe_sizes()[1], 400 * 1024)
         self.assertLessEqual(len(self.label), 128)
@@ -190,10 +191,11 @@ class ArtAndLayoutTests(unittest.TestCase):
                         if distance != 'Inches':
                             if not (distance == 'GOAL' and yards > 10):          # goal to go is inside the 10
                                 worst = max(worst, width(tokens) / room)
-        self.assertLessEqual(worst, 1.22, 'the widest real line needs at most the 18 percent squeeze the engine allows')
-        # "Inches" is the one down text too wide for a spot; the engine then keeps the down text alone.
+        self.assertLessEqual(worst, 1.30, 'the widest real line needs at most the 23 percent squeeze the engine allows')
+        self.assertGreater(worst, 1.2)                   # "2nd & GOAL  WAS 10" is that widest line (about 21 percent)
+        # "Inches" is the down text too wide for most spots; the engine then keeps the down text alone.
         wide = label_tokens('3rd & Inches', label) + label_tokens(spot_text('NYJ', 35), label)
-        self.assertGreater(width(wide) / room, 1.22)
+        self.assertGreater(width(wide) / room, 1.30)
 
 
 def decode_quads(mode, capture):
@@ -299,7 +301,7 @@ class EngineTests(unittest.TestCase):
         self.assertEqual(len(self.bar(False)), 8)
 
     def test_a_line_too_wide_for_the_plate_drops_the_spot_not_the_down_text(self):
-        # distance 0 prints "Inches": 3rd & INCHES plus any spot needs more than the 18 percent squeeze.
+        # distance 0 prints "Inches": 3rd & INCHES plus a team and yard line needs more than the 23 percent squeeze.
         self.assertEqual([r[0] for r in self.bar(False, down=3, distance=0)], ['3', 'rd', '&', 'Inch', 'es'])
         self.assertEqual(len(self.bar(False)), 8)
 
@@ -351,6 +353,23 @@ class EngineTests(unittest.TestCase):
         self.assertNotEqual([before[v] for v in range(first, last)], [after[v] for v in range(first, last)])
         self.assertEqual([before[v] for v in range(count) if not first <= v < last],
                          [after[v] for v in range(count) if not first <= v < last])
+    def test_the_engine_leaves_the_strip_flag_word_of_its_data_page_alone(self):
+        # The page strip fit keeps FUN_000AAFD0's second argument in the owner's data page at +124 (nfl2k5_playcall_layout.
+        # STRIP_FLAG_OFFSET); the engine's State is 120 bytes, so setup, update and every spot case must not touch it.
+        from mod_editor.core import nfl2k5_playcall_layout as pc
+        patched = owner.apply(self.preview.payload)[0]
+        _code, data = owner.sites(patched)
+        self.assertGreaterEqual(owner.DATA_SIZE, pc.STRIP_FLAG_OFFSET + 4)
+        mode, capture = self.bars[False]
+        m = capture['machine']
+        at = data['va'] + pc.STRIP_FLAG_OFFSET
+        m.put(at, 0xdeadbeef)
+        for kwargs in (dict(), dict(possession='home', yards=65), dict(playcall=False), dict(phase=2), dict(down=3, distance=0)):
+            self.bar(False, **kwargs)
+        self.assertEqual(m.get(at), 0xdeadbeef)
+        m.put(at, 0)
+        self.bar(False)
+
 
 if __name__ == '__main__':
     unittest.main()
