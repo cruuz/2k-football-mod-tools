@@ -611,7 +611,8 @@ class ProgressionRetailTests(unittest.TestCase):
         self.assertEqual(progression.status(patched), "applied")
         self.assertEqual([e["label"] for e in receipt["edits"]],
                          ["retirement_base_years", "form_routine_and_aging_tables", "aging_curve_hook",
-                          "form_mini_curve_hook", "aging_curves", "archetype_weights"])
+                          "form_mini_curve_hook", "retirement_decision",   # b780 b4-economy: the rewritten decision
+                          "aging_curves", "archetype_weights"])
         with self.assertRaises(progression.ProgressionError):
             progression.apply(patched)
         before = progression.decode_curves(progression.retail_curves())
