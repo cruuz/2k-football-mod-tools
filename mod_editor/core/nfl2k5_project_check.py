@@ -1109,6 +1109,23 @@ def _poly_paint_changes(png: bytes, art) -> bool | None:
         return None
 
 
+def _pieces(names) -> str:
+    """'jersey (torso), pants and jersey digits 0-9' from piece names (digits folded into ranges)."""
+    plain, digits = [], {}
+    for name in dict.fromkeys(names):
+        match = re.fullmatch(r"(jersey|helmet|arm) digit ([0-9])", name)
+        if match:
+            digits.setdefault(match.group(1), []).append(int(match.group(2)))
+        else:
+            plain.append(name)
+    for family, values in digits.items():
+        values = sorted(values)
+        span = f"{values[0]}-{values[-1]}" if values == list(range(values[0], values[-1] + 1)) and len(values) > 2 \
+            else ", ".join(str(v) for v in values)
+        plain.append(f"{family} digit{'s' if len(values) > 1 else ''} {span}")
+    return ", ".join(plain[:-1]) + " and " + plain[-1] if len(plain) > 1 else (plain[0] if plain else "pieces")
+
+
 def kit_dependencies(plan, retail, inputs: "ProjectInputs | None" = None, *, progress=None) -> dict:
     """What happens to each new Anniversary and classic kit on this project's donors, as far as it can be told before
     Build, and which classic team files would lose the kit their classic uniform needs.
@@ -1119,11 +1136,12 @@ def kit_dependencies(plan, retail, inputs: "ProjectInputs | None" = None, *, pro
     check can tell only for solid-colour paint steps (it reads the PNG). Studio beta 79 then stops at a classic team
     whose default uniform is a left-out kit ("classic default N has no year pair in its team file").
 
-    {"left_out": {kit: reason}, "uncertain": {kit: why}, "paints_your_art": [{kit, side, piece, selector, changes}],
-     "repaired_first": [kit], "orphans": [{file, style, kit, sure}], "documents": [feature]}"""
+    {"left_out": {kit: reason}, "uncertain": {kit: why}, "made_from_your_art": [kit (left out on retail art, made
+     on the user's)], "paints_your_art": [{kit, side, piece, selector, changes}], "repaired_first": [kit],
+     "orphans": [{file, style, kit, sure}], "documents": [feature]}"""
     from . import nfl2k5_moment_kits as kits
     documents = _feature_documents(plan)
-    out = dict(left_out={}, uncertain={}, paints_your_art=[], repaired_first=[], orphans=[],
+    out = dict(left_out={}, uncertain={}, made_from_your_art=[], paints_your_art=[], repaired_first=[], orphans=[],
                documents=[f for f, _d in documents])
     if not documents or not retail:
         return out
@@ -1155,9 +1173,9 @@ def kit_dependencies(plan, retail, inputs: "ProjectInputs | None" = None, *, pro
                 s for side in kit["sides"].values() for s in kits._expand(side.get("chunks", {})).values()}
             if any(_repairs_change(s, plain.get(s) or retail_packages[s]) for s in donors if s in plain):
                 out["repaired_first"].append(kit["id"])
-            elif on_user_art and any(c is True for c in on_user_art):
-                out["uncertain"][kit["id"]] = ("its art step paints over your own art, so Build composes it from "
-                                               "your art (it would be left out on the retail art)")
+            elif on_user_art and all(c is True for c in on_user_art):
+                # every art step that left it out on the retail donor changes the user's pixels: Build makes it
+                out["made_from_your_art"].append(kit["id"])
             elif on_user_art and any(c is None for c in on_user_art):
                 out["uncertain"][kit["id"]] = "its art step works on your own art; only Build can tell"
             else:
@@ -1326,11 +1344,24 @@ def doctor(project, source, settings=None, *, progress: Callable[..., None] | No
                                                "had.", code="kits.left_out"))
             for kit_id, why in sorted(found["uncertain"].items()):
                 lines.append(f"- {kit_id}: {why}.")
+            for kit_id in found["made_from_your_art"]:
+                lines.append(f"- {kit_id}: left out on the retail art, but its art step changes your own art, so Build "
+                             "makes it from your art.")
+            groups = {}
             for row in found["paints_your_art"]:
-                state = ("paints over it" if row["changes"] is True else "changes nothing on it" if row["changes"] is False
-                         else "cannot be tried before Build")
-                lines.append(f"- {row['kit']} ({'away' if row['side'] == 'A' else 'home'}) takes your {row['selector']} "
-                             f"{row['piece']} ({row['asset_id']}): its art step ({row['note'] or 'paint'}) {state}.")
+                key = (row["kit"], "away" if row["side"] == "A" else "home", row["selector"])
+                groups.setdefault(key, {"painted": [], "nothing": [], "unknown": []})[
+                    "painted" if row["changes"] is True else "nothing" if row["changes"] is False else "unknown"
+                ].append(row["piece"])
+            for (kit_id, side, selector), parts in sorted(groups.items()):
+                words = []
+                if parts["painted"]:
+                    words.append("paints over your " + _pieces(parts["painted"]))
+                if parts["nothing"]:
+                    words.append("changes nothing on your " + _pieces(parts["nothing"]))
+                if parts["unknown"]:
+                    words.append("works on your " + _pieces(parts["unknown"]) + " (only Build can judge those steps)")
+                lines.append(f"- {kit_id} ({side}) is made from your {selector}: its art " + "; ".join(words) + ".")
             painted = [r for r in found["paints_your_art"] if r["changes"] is True]
             if painted:
                 report.findings.append(Finding(
@@ -1388,6 +1419,7 @@ def doctor(project, source, settings=None, *, progress: Callable[..., None] | No
                         "(named in the build log).", code="kits.allocation"))
             section.data["lines"] = lines
             section.summary = (f"{len(found['left_out'])} new kit{'s' if len(found['left_out']) != 1 else ''} left out, "
+                               f"{len(found['made_from_your_art'])} made from your own art instead, "
                                f"{len(found['uncertain'])} depending on your art, {len(painted)} pieces painted over "
                                f"your art, {len(sure)} classic default{'s' if len(sure) != 1 else ''} without a kit"
                                + (f", {len(found['repaired_first'])} checked only during Build (the 2026 repairs change "

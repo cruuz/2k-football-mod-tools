@@ -607,9 +607,14 @@ class Kits(unittest.TestCase):
             inputs.png = lambda asset_id: png(16, 16)
             mine = pc.kit_dependencies(plan, "retail.iso", inputs)
             self.assertEqual(mine["left_out"], {})
-            self.assertIn("K1", mine["uncertain"])
+            self.assertEqual(mine["made_from_your_art"], ["K1"])     # the paint changes his pixels: Build makes K1
             self.assertEqual([r["changes"] for r in mine["paints_your_art"]], [True])
-            self.assertEqual([o["sure"] for o in mine["orphans"]], [False])
+            self.assertEqual(mine["orphans"], [])
+            # an art step only Build can judge (not a solid paint) leaves it uncertain, and the default with it
+            doc["kits"][0]["sides"]["A"]["art"] = [dict(self.ART, ops=[{"op": "recolor"}])]
+            unsure = pc.kit_dependencies(plan, "retail.iso", inputs)
+            self.assertIn("K1", unsure["uncertain"])
+            self.assertEqual([o["sure"] for o in unsure["orphans"]], [False, ])
 
 
 # ----------------------------------------------------------------------------------------------- edit survival
