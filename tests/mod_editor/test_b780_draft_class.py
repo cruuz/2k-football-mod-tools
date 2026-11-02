@@ -33,10 +33,11 @@ PREVIOUS_HEAD = bytes.fromhex(
     "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc0ad7233c8fc27539cccccc")
 
 
-def _walk(size):
-    """The class window's slot walk (runtime.c economy_class_position) for a class of `size` prospects."""
+def _walk(size, made=None):
+    """The class window's slot walk (runtime.c economy_class_position) for a class asked for `size` prospects, of
+    which the first `made` were made (the generator stops when no free record is left): k = size .. size - made + 1."""
     counts, out = list(MIX.values()), collections.Counter()
-    for k in range(size, 0, -1):
+    for k in range(size, size - (size if made is None else made), -1):
         slot, pos = (k - 1) * 151 % 450, 0
         while pos < 16 and slot >= counts[pos]:
             slot -= counts[pos]
@@ -211,20 +212,24 @@ class NativeClassTurnoverTests(unittest.TestCase):
         cls.fixed = draft_class.apply(ai.apply(cls.retail)[0])[0]
 
     def test_the_class_takes_the_mix_and_keeps_every_create_vacancy(self):
+        # A fresh retail franchise's first turnover frees fewer than 380 records besides the 155 Create Player
+        # vacancies (all unsigned free agents retire, so the retail top-up has nobody else to retire): the class is
+        # cut short instead of spending the vacancies, still more than a 224-pick draft, every prospect on the walk.
         from tests.mod_editor.test_b779_rc1_roster_capacity import _turnover
         before, after, positions, written, _ = _turnover(self.fixed, self.body)
         self.assertGreater(before, 100)
         self.assertEqual(after, before)              # Create Player, MyCareer and imports keep their records
-        self.assertEqual(len(positions), 380)
-        self.assertEqual(dict(collections.Counter(POSITIONS[p] for p in positions)), MIX_380)
+        self.assertGreater(len(positions), 224)
+        self.assertLessEqual(len(positions), 380)
+        self.assertEqual(dict(collections.Counter(POSITIONS[p] for p in positions)), _walk(380, len(positions)))
         self.assertEqual(written, positions)          # the generator wrote each prospect at that position
 
-    def test_negative_control_retail_copies_the_leavers_positions(self):
+    def test_negative_control_retail_spends_the_vacancies_and_copies_the_leavers_positions(self):
         from tests.mod_editor.test_b779_rc1_roster_capacity import _turnover
         before, after, positions, _, _ = _turnover(self.retail, self.body)
-        self.assertEqual(len(positions), 380)
-        self.assertNotEqual(dict(collections.Counter(POSITIONS[p] for p in positions)), MIX_380)
-        self.assertLessEqual(after, before)
+        self.assertEqual(len(positions), 380)        # filled by spending Create Player vacancies
+        self.assertLess(after, before)
+        self.assertNotEqual(dict(collections.Counter(POSITIONS[p] for p in positions)), _walk(380, 380))
 
 
 def _worst_case_draft(payload, seed=1, stars=5):
