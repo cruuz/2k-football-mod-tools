@@ -75,6 +75,28 @@ class NumbersTests(unittest.TestCase):
         self.assertEqual(cd.to_rating(9.0, 83), 99)
         self.assertEqual(cd.to_rating(1.0, 78), 87)
 
+    def test_personnel_codes_follow_the_playbook_categories(self) -> None:
+        for personnel, formation, long, expect in (
+                ("1 RB, 1 TE, 3 WR", "SHOTGUN", False, 6), ("1 RB, 1 TE, 3 WR", "UNDER CENTER", False, 6),
+                ("1 RB, 1 TE, 3 WR", "PISTOL", False, 5), ("1 RB, 1 TE, 3 WR", "SHOTGUN", True, 9),
+                ("1 RB, 2 TE, 2 WR", "SHOTGUN", False, 3), ("2 RB, 1 TE, 2 WR", "UNDER CENTER", False, 4),
+                ("2 RB, 2 TE, 1 WR", "UNDER CENTER", False, 2), ("1 RB, 3 TE, 1 WR", "UNDER CENTER", False, 1),
+                ("2 RB, 3 TE, 0 WR", "UNDER CENTER", False, 0), ("1 RB, 0 TE, 4 WR", "SHOTGUN", False, 9),
+                ("0 RB, 0 TE, 5 WR", "SHOTGUN", False, 10), ("2 RB, 0 TE, 3 WR", "SHOTGUN", False, 7),
+                ("6 OL, 1 RB, 2 TE, 1 WR", "UNDER CENTER", False, 1), ("1 RB, 1 TE", None, False, None), (None, None, False, None)):
+            self.assertEqual(cd.personnel_code(personnel, formation, long), expect, (personnel, formation, long))
+
+    def test_long_yardage_is_where_the_light_groups_start(self) -> None:
+        for down, to_go, expect in ((1, 10, False), (2, 8, False), (2, 9, True), (3, 5, False), (3, 6, True), (4, 12, True), (None, 10, False)):
+            self.assertEqual(cd.long_yardage({"down": down, "ydstogo": to_go}), expect, (down, to_go))
+
+    def test_the_personnel_floor_keeps_every_window_populated_and_code_eight_empty(self) -> None:
+        out = cd.floor_personnel([0, 14, 0, 32, 4, 0, 40, 0, 4, 5, 1])
+        self.assertEqual(sum(out), 100)
+        self.assertEqual(out[8], 0)
+        self.assertTrue(all(v >= 1 for i, v in enumerate(out) if i != 8), out)
+        self.assertEqual(cd.floor_personnel(out), out, "flooring is idempotent")
+
     def test_formation_classes_follow_the_games_five_classes(self) -> None:
         for formation, personnel, expect in (("SHOTGUN", "1 RB, 1 TE, 3 WR", 1), ("PISTOL", "1 RB, 1 TE, 3 WR", 1),
                                               ("EMPTY", "0 RB, 1 TE, 4 WR", 1), ("UNDER CENTER", "2 RB, 1 TE, 2 WR", 3),
@@ -217,6 +239,12 @@ class TendencyTests(unittest.TestCase):
         self.assertEqual(basis["formation_run"]["source"], "league")
         self.assertEqual(basis["formation_pass"]["classes"], {"1": 180, "2": 0, "3": 0, "4": 30, "5": 0})
 
+    def test_eleven_personnel_on_a_long_yardage_down_counts_for_kings_long(self) -> None:
+        state = cd.collect_pbp([play("g1", 1, "AAA", "BBB", 0.2, down=3.0, ydstogo=10.0),
+                                play("g1", 2, "AAA", "BBB", 0.2, down=1.0, ydstogo=10.0)], PlayByPlayTests.COACHES, {})
+        rows = [dict(nflverse_game_id="g1", play_id=n, offense_formation="SHOTGUN", offense_personnel="1 RB, 1 TE, 3 WR") for n in (1.0, 2.0)]
+        self.assertEqual(dict(cd.collect_formations(rows, state)["AAA"]["personnel_pass"]), {9: 1, 6: 1})
+
     def test_participation_rows_join_the_plays_the_pass_remembered(self) -> None:
         coaches = PlayByPlayTests.COACHES
         state = cd.collect_pbp([play("g1", 1, "AAA", "BBB", 0.2), play("g1", 2, "AAA", "BBB", 0.1, play_type="run", qb_dropback=0.0,
@@ -229,8 +257,11 @@ class TendencyTests(unittest.TestCase):
         mine = cd.collect_formations(rows, state)
         self.assertEqual(dict(mine["AAA"]["pass_"]), {1: 1})
         self.assertEqual(dict(mine["AAA"]["run"]), {3: 1})
+        self.assertEqual(dict(mine["AAA"]["personnel_pass"]), {6: 1}, "11 personnel on a first down is Kings")
+        self.assertEqual(dict(mine["AAA"]["personnel_run"]), {4: 1}, "two backs, a tight end and two receivers is Pro")
         league = cd.collect_league_formations(rows, state)
         self.assertEqual((dict(league["pass_"]), dict(league["run"])), ({1: 2}, {3: 1}))
+        self.assertEqual(dict(league["personnel_pass"]), {6: 2})
 
 
 class RatingModelTests(unittest.TestCase):
@@ -283,6 +314,10 @@ class CommittedDataTests(unittest.TestCase):
             self.assertTrue(all(60 <= v <= 99 for v in entry["ratings"].values()), club)
             self.assertIn("formation_run", entry["tendencies"], club)
             self.assertIn("formation_pass", entry["tendencies"], club)
+            for name in ("personnel_run", "personnel_pass"):
+                shares = entry["tendencies"][name]
+                self.assertEqual(shares[8], 0, f"{club} {name}: code 8 has no category in the released books")
+                self.assertTrue(all(v >= cd.PERSONNEL_FLOOR for i, v in enumerate(shares) if i != 8), (club, name, shares))
 
     def test_the_ratings_spread_like_the_retail_scale(self) -> None:
         for name in rr.COACH_RATING_NAMES:
@@ -401,11 +436,12 @@ def check_thirty_two(test: unittest.TestCase, base: bytes) -> None:
         test.assertEqual(new[record + 0x59], entry["tendencies"]["run_share"])
         test.assertEqual(list(new[record + 0x83: record + 0x8D]), entry["tendencies"]["formation_run"] + entry["tendencies"]["formation_pass"])
         test.assertEqual(list(new[record + 0x7E: record + 0x83]), entry["tendencies"]["run_lane"])
+        test.assertEqual(list(new[record + 0x8D: record + 0xA3]),
+                         entry["tendencies"]["personnel_run"] + entry["tendencies"]["personnel_pass"])
         test.assertTrue(new[record + 0x1A] & 2)
         test.assertFalse(new[record + 0x1A] & 1)
-        # what the data does not author keeps its bytes (pass target zones, category weights, motion, defence flags)
+        # what the data does not author keeps its bytes (pass target zones, motion, defence flags)
         test.assertEqual(new[record + 0x71: record + 0x7E], base[record + 0x71: record + 0x7E])
-        test.assertEqual(new[record + 0x8D: record + 0xA5], base[record + 0x8D: record + 0xA5])
         test.assertEqual(new[record + 0xA3: record + 0xA5], base[record + 0xA3: record + 0xA5])
         test.assertEqual(new[record + 0xA6: record + 0xA8], base[record + 0xA6: record + 0xA8])
 

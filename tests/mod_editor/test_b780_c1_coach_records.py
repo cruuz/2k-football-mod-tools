@@ -22,7 +22,8 @@ _V08 = Path(os.environ.get("NFL2K5_V08_XISO", "/media/noah/Storage/2K5 Discs/SOF
 RATINGS = {name: 60 + index for index, name in enumerate(rr.COACH_RATING_NAMES)}
 TENDENCIES = {"run_share": 34, "run_by_score": [30, 31, 32, 33, 34, 35], "run_redzone": 41,
               "run_by_down_distance": list(range(40, 56)), "run_lane": [20, 25, 30, 15, 10],
-              "formation_run": [5, 0, 10, 80, 5], "formation_pass": [82, 0, 3, 15, 0], "no_huddle": 3}
+              "formation_run": [5, 0, 10, 80, 5], "formation_pass": [82, 0, 3, 15, 0], "no_huddle": 3,
+              "personnel_run": [1, 14, 3, 32, 4, 3, 36, 1, 0, 5, 1], "personnel_pass": [1, 7, 1, 29, 1, 1, 35, 1, 0, 23, 1]}
 FULL = {"ratings": RATINGS, "tendencies": TENDENCIES, "announcer": "generic", "height_in": 74, "weight_lb": 225}
 
 
@@ -51,6 +52,8 @@ class PlanTests(unittest.TestCase):
         self.assertEqual(writes[0x61], bytes(range(40, 56)))
         self.assertEqual(writes[0x83], bytes((5, 0, 10, 80, 5)))
         self.assertEqual(writes[0xA5], bytes((3,)))
+        self.assertEqual(writes[0x8D], bytes(TENDENCIES["personnel_run"]))
+        self.assertEqual(writes[0x98], bytes(TENDENCIES["personnel_pass"]))
         self.assertEqual(rr.plan_coach_record({"announcer": "named"})[1], False)
         self.assertEqual(rr.plan_coach_record({"team": "KC", "first": "Andy"}), ({}, None))
 
@@ -114,9 +117,10 @@ class RetailRosterTests(unittest.TestCase):
         self.assertEqual(list(new[record + 0x5A: record + 0x60]), [30, 31, 32, 33, 34, 35])
         self.assertEqual(list(new[record + 0x83: record + 0x8D]), [5, 0, 10, 80, 5, 82, 0, 3, 15, 0])
         self.assertEqual(new[record + 0xA5], 3)
-        # what the plan leaves alone keeps the 2004 bytes: pass target zones, categories, motion, defense flags
+        self.assertEqual(list(new[record + 0x8D: record + 0xA3]), TENDENCIES["personnel_run"] + TENDENCIES["personnel_pass"])
+        # what the plan leaves alone keeps the 2004 bytes: pass target zones, motion, defense flags
         self.assertEqual(new[record + 0x71: record + 0x7E], self.base[record + 0x71: record + 0x7E])
-        self.assertEqual(new[record + 0x8D: record + 0xA5], self.base[record + 0x8D: record + 0xA5])
+        self.assertEqual(new[record + 0xA3: record + 0xA5], self.base[record + 0xA3: record + 0xA5])
         self.assertEqual(new[record + 0xA6: record + 0xA8], self.base[record + 0xA6: record + 0xA8])
         # the roster still parses and every other coach record is byte-identical
         rr.RosterDocument(new)

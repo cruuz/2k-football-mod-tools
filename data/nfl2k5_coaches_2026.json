@@ -3,7 +3,7 @@
  "model_version": 1,
  "builder": "tools/nfl2k5_coach_2026_data.py",
  "license": "Derived from nflverse data (CC-BY-4.0); formulas and thresholds in the builder",
- "description": "Sourced 2026 head-coach records for the SOFTDRINK 2K28 roster: ratings, play-calling tendencies, announcer flag.\n\nJob b780 c1-coachdata (design: b77_session/reports/b780_r2-coach_RESEARCH.md, design A0).  The 32 club coach records of\nthe v0.8 roster carry 2026 names and career numbers, but the 23 ratings, the tendency block and the flags are still the\n2004 coach of that franchise (Andy Reid plays with Dick Vermeil's ratings).  This tool derives the 2026 values from\npublic data and writes ``data/nfl2k5_coaches_2026.json``; ``tools/nfl2k5_team_2026_roster.py`` merges a club's entry into\nits roster-edits ``coaches`` entry, and ``nfl2k5_roster_records.apply_coach_records`` writes it.\n\nNothing here is a scouting opinion.  Every number is computed from named data with the formula in this file, the inputs\nare pinned by SHA-256 in the output, and each coach's raw metrics and sample sizes are kept next to his ratings\n(\"basis\"), so a rating can be re-derived and argued with.  Where a coach has no evidence for a rating (a first-time head\ncoach has no head-coach games, a coach who never ran a special-teams unit has no kicking evidence) the rating is the\nleague baseline, never a guess.\n\nInputs (all public nflverse data, CC-BY-4.0, plus files already in this repository)\n  games.csv                      every game 1999-2025 with scores, head coaches, spread line      (--nflverse)\n  roster_YYYY.csv                gsis_id -> position, to split rushing and receiving by RB / WR / TE  (--nflverse)\n  pbp_YYYY.parquet 2020-2025     play by play: EPA, success, sacks, hits, penalties, special teams     (--pbp-dir)\n  pbp_participation_YYYY.parquet 2022-2025  offense formation and personnel per play                  (--participation-dir)\n  data/vip/coach_sources_2026.json  which team and seasons each coach was head coach / coordinator (HC, OC, DC)\n  data/vip/coaches/<CLUB>.json   the observed play-calling tendencies (nfl2k5_coach_tendencies)\n  data/nfl2k5_teams_2026/<CLUB>.json  the head coach's name (and the spelling games.csv uses)\nReading parquet needs pyarrow; the committed JSON is what builds and tests use, so only a rebuild needs it.\n\nRatings (60-99 like the retail scale; football ratings centre on 78, character ratings on 83, 9 points per standard\ndeviation across the 32 coaches; a metric is first shrunk toward the league mean by n / (n + n0) so one short stint\ncannot make an extreme rating):\n  offense, pass_for, rush_for        team EPA per play / per dropback / per designed rush in the coach's HC and OC seasons\n  defense, pass_coverage             team EPA allowed per play / per pass attempt in his HC and DC seasons\n  pass_rush                          sack rate and QB-hit rate of that defense\n  qb, wr, te, rb                     EPA and CPOE per attempt; EPA per target to WRs and TEs; EPA per carry of RBs\n  ol, dl, lb, db                     sacks and hits allowed / run success; sacks, hits, run EPA allowed; run stuffs; coverage\n  special_teams                      kicking and return EPA per game in his head-coach games\n  professionalism, discipline        pre-snap (false start, delay of game, offside ...) and personal-conduct fouls per game\n  preparation                        EPA per play over his offense's first 15 plays of a game\n  conditioning                       fourth-quarter EPA margin per game\n  motivation                         win rate right after a loss, and against the betting spread\n  leadership                         win rate in one-score games, and playoff win rate\n  respect                            career win rate, playoff wins per season, years as head coach\n  overall                            career win rate, recent point margin, playoff win rate, and his offense and defense\nTendencies (play-calling block of the coach record, nfl2k5_roster_records.COACH_TENDENCY_GROUPS)\n  run share and the situational run shares   observed rates (data/vip/coaches), cells shrunk toward his own run share\n  run lane                                   observed run-lane shares\n  formation shares                           participation data: shotgun / pistol / empty = class 1, under center with two or\n                                             more backs = I form (class 3), one back = class 4, no back = class 5\n  no huddle                                  observed rate turned into the game's per-snap roll (nfl2k5_vip.build_coach)\nEverything else in the block (pass target zones, receiver roles, category weights, motion, defensive flag shares) has no\npublic per-zone source and is left as the record has it.",
+ "description": "Sourced 2026 head-coach records for the SOFTDRINK 2K28 roster: ratings, play-calling tendencies, announcer flag.\n\nJob b780 c1-coachdata (design: b77_session/reports/b780_r2-coach_RESEARCH.md, design A0).  The 32 club coach records of\nthe v0.8 roster carry 2026 names and career numbers, but the 23 ratings, the tendency block and the flags are still the\n2004 coach of that franchise (Andy Reid plays with Dick Vermeil's ratings).  This tool derives the 2026 values from\npublic data and writes ``data/nfl2k5_coaches_2026.json``; ``tools/nfl2k5_team_2026_roster.py`` merges a club's entry into\nits roster-edits ``coaches`` entry, and ``nfl2k5_roster_records.apply_coach_records`` writes it.\n\nNothing here is a scouting opinion.  Every number is computed from named data with the formula in this file, the inputs\nare pinned by SHA-256 in the output, and each coach's raw metrics and sample sizes are kept next to his ratings\n(\"basis\"), so a rating can be re-derived and argued with.  Where a coach has no evidence for a rating (a first-time head\ncoach has no head-coach games, a coach who never ran a special-teams unit has no kicking evidence) the rating is the\nleague baseline, never a guess.\n\nInputs (all public nflverse data, CC-BY-4.0, plus files already in this repository)\n  games.csv                      every game 1999-2025 with scores, head coaches, spread line      (--nflverse)\n  roster_YYYY.csv                gsis_id -> position, to split rushing and receiving by RB / WR / TE  (--nflverse)\n  pbp_YYYY.parquet 2020-2025     play by play: EPA, success, sacks, hits, penalties, special teams     (--pbp-dir)\n  pbp_participation_YYYY.parquet 2022-2025  offense formation and personnel per play                  (--participation-dir)\n  data/vip/coach_sources_2026.json  which team and seasons each coach was head coach / coordinator (HC, OC, DC)\n  data/vip/coaches/<CLUB>.json   the observed play-calling tendencies (nfl2k5_coach_tendencies)\n  data/nfl2k5_teams_2026/<CLUB>.json  the head coach's name (and the spelling games.csv uses)\nReading parquet needs pyarrow; the committed JSON is what builds and tests use, so only a rebuild needs it.\n\nRatings (60-99 like the retail scale; football ratings centre on 78, character ratings on 83, 9 points per standard\ndeviation across the 32 coaches; a metric is first shrunk toward the league mean by n / (n + n0) so one short stint\ncannot make an extreme rating):\n  offense, pass_for, rush_for        team EPA per play / per dropback / per designed rush in the coach's HC and OC seasons\n  defense, pass_coverage             team EPA allowed per play / per pass attempt in his HC and DC seasons\n  pass_rush                          sack rate and QB-hit rate of that defense\n  qb, wr, te, rb                     EPA and CPOE per attempt; EPA per target to WRs and TEs; EPA per carry of RBs\n  ol, dl, lb, db                     sacks and hits allowed / run success; sacks, hits, run EPA allowed; run stuffs; coverage\n  special_teams                      kicking and return EPA per game in his head-coach games\n  professionalism, discipline        pre-snap (false start, delay of game, offside ...) and personal-conduct fouls per game\n  preparation                        EPA per play over his offense's first 15 plays of a game\n  conditioning                       fourth-quarter EPA margin per game\n  motivation                         win rate right after a loss, and against the betting spread\n  leadership                         win rate in one-score games, and playoff win rate\n  respect                            career win rate, playoff wins per season, years as head coach\n  overall                            career win rate, recent point margin, playoff win rate, and his offense and defense\nTendencies (play-calling block of the coach record, nfl2k5_roster_records.COACH_TENDENCY_GROUPS)\n  run share and the situational run shares   observed rates (data/vip/coaches), cells shrunk toward his own run share\n  run lane                                   observed run-lane shares\n  formation shares                           participation data: shotgun / pistol / empty = class 1, under center with two or\n                                             more backs = I form (class 3), one back = class 4, no back = class 5\n  personnel shares                           participation data: backs, tight ends and receivers on the field mapped to the\n                                             playbook's personnel categories (Ace = 1 RB 2 TE 2 WR, Kings = 1 RB 1 TE 3 WR ...)\n  no huddle                                  observed rate turned into the game's per-snap roll (nfl2k5_vip.build_coach)\nEverything else in the block (pass target zones, receiver roles, motion, defensive flag shares) has no public per-zone\nsource and is left as the record has it.",
  "window": {
   "play_by_play": [
    2020,
@@ -220,6 +220,32 @@
      0,
      25,
      0
+    ],
+    "personnel_run": [
+     1,
+     13,
+     1,
+     18,
+     1,
+     6,
+     49,
+     1,
+     0,
+     9,
+     1
+    ],
+    "personnel_pass": [
+     1,
+     6,
+     1,
+     9,
+     1,
+     3,
+     46,
+     1,
+     0,
+     31,
+     1
     ]
    },
    "announcer": "generic",
@@ -350,6 +376,40 @@
        "4": 645,
        "5": 0
       }
+     },
+     "personnel_run": {
+      "source": "coach",
+      "calls": 1689,
+      "classes": {
+       "0": 0,
+       "1": 217,
+       "2": 12,
+       "3": 302,
+       "4": 21,
+       "5": 103,
+       "6": 873,
+       "7": 0,
+       "8": 0,
+       "9": 161,
+       "10": 0
+      }
+     },
+     "personnel_pass": {
+      "source": "coach",
+      "calls": 2546,
+      "classes": {
+       "0": 0,
+       "1": 139,
+       "2": 3,
+       "3": 232,
+       "4": 18,
+       "5": 86,
+       "6": 1259,
+       "7": 0,
+       "8": 0,
+       "9": 796,
+       "10": 13
+      }
      }
     }
    }
@@ -431,6 +491,32 @@
      0,
      16,
      0
+    ],
+    "personnel_run": [
+     1,
+     14,
+     1,
+     21,
+     8,
+     4,
+     39,
+     1,
+     0,
+     10,
+     1
+    ],
+    "personnel_pass": [
+     1,
+     5,
+     1,
+     21,
+     3,
+     1,
+     33,
+     1,
+     0,
+     32,
+     2
     ]
    },
    "announcer": "generic",
@@ -561,6 +647,40 @@
        "4": 437,
        "5": 0
       }
+     },
+     "personnel_run": {
+      "source": "coach",
+      "calls": 1647,
+      "classes": {
+       "0": 0,
+       "1": 235,
+       "2": 20,
+       "3": 350,
+       "4": 130,
+       "5": 56,
+       "6": 674,
+       "7": 2,
+       "8": 0,
+       "9": 169,
+       "10": 11
+      }
+     },
+     "personnel_pass": {
+      "source": "coach",
+      "calls": 2708,
+      "classes": {
+       "0": 0,
+       "1": 129,
+       "2": 11,
+       "3": 558,
+       "4": 80,
+       "5": 14,
+       "6": 992,
+       "7": 2,
+       "8": 0,
+       "9": 857,
+       "10": 65
+      }
      }
     }
    }
@@ -642,6 +762,32 @@
      1,
      14,
      0
+    ],
+    "personnel_run": [
+     1,
+     12,
+     2,
+     26,
+     12,
+     4,
+     34,
+     1,
+     0,
+     7,
+     1
+    ],
+    "personnel_pass": [
+     1,
+     4,
+     1,
+     17,
+     6,
+     1,
+     39,
+     1,
+     0,
+     29,
+     1
     ]
    },
    "announcer": "generic",
@@ -772,6 +918,40 @@
        "4": 11680,
        "5": 2
       }
+     },
+     "personnel_run": {
+      "source": "league",
+      "calls": 52331,
+      "classes": {
+       "0": 64,
+       "1": 5992,
+       "2": 1036,
+       "3": 13568,
+       "4": 6257,
+       "5": 1995,
+       "6": 19318,
+       "7": 74,
+       "8": 0,
+       "9": 3894,
+       "10": 133
+      }
+     },
+     "personnel_pass": {
+      "source": "league",
+      "calls": 80937,
+      "classes": {
+       "0": 17,
+       "1": 2977,
+       "2": 412,
+       "3": 14038,
+       "4": 4794,
+       "5": 593,
+       "6": 34052,
+       "7": 163,
+       "8": 0,
+       "9": 23126,
+       "10": 765
+      }
      }
     }
    }
@@ -853,6 +1033,32 @@
      0,
      18,
      0
+    ],
+    "personnel_run": [
+     1,
+     17,
+     1,
+     16,
+     17,
+     2,
+     41,
+     1,
+     0,
+     3,
+     1
+    ],
+    "personnel_pass": [
+     1,
+     6,
+     1,
+     11,
+     6,
+     1,
+     40,
+     1,
+     0,
+     31,
+     2
     ]
    },
    "announcer": "generic",
@@ -983,6 +1189,40 @@
        "4": 255,
        "5": 0
       }
+     },
+     "personnel_run": {
+      "source": "coach",
+      "calls": 1086,
+      "classes": {
+       "0": 0,
+       "1": 187,
+       "2": 6,
+       "3": 174,
+       "4": 184,
+       "5": 17,
+       "6": 478,
+       "7": 0,
+       "8": 0,
+       "9": 37,
+       "10": 3
+      }
+     },
+     "personnel_pass": {
+      "source": "coach",
+      "calls": 1428,
+      "classes": {
+       "0": 0,
+       "1": 82,
+       "2": 3,
+       "3": 149,
+       "4": 90,
+       "5": 7,
+       "6": 620,
+       "7": 0,
+       "8": 0,
+       "9": 444,
+       "10": 33
+      }
      }
     }
    }
@@ -1064,6 +1304,32 @@
      0,
      14,
      0
+    ],
+    "personnel_run": [
+     1,
+     11,
+     1,
+     24,
+     9,
+     8,
+     36,
+     1,
+     0,
+     8,
+     1
+    ],
+    "personnel_pass": [
+     1,
+     2,
+     1,
+     13,
+     2,
+     2,
+     46,
+     1,
+     0,
+     31,
+     1
     ]
    },
    "announcer": "generic",
@@ -1194,6 +1460,40 @@
        "4": 164,
        "5": 0
       }
+     },
+     "personnel_run": {
+      "source": "coach",
+      "calls": 770,
+      "classes": {
+       "0": 0,
+       "1": 86,
+       "2": 7,
+       "3": 188,
+       "4": 65,
+       "5": 61,
+       "6": 301,
+       "7": 2,
+       "8": 0,
+       "9": 59,
+       "10": 1
+      }
+     },
+     "personnel_pass": {
+      "source": "coach",
+      "calls": 1211,
+      "classes": {
+       "0": 0,
+       "1": 24,
+       "2": 7,
+       "3": 162,
+       "4": 25,
+       "5": 23,
+       "6": 585,
+       "7": 5,
+       "8": 0,
+       "9": 372,
+       "10": 8
+      }
      }
     }
    }
@@ -1275,6 +1575,32 @@
      0,
      29,
      0
+    ],
+    "personnel_run": [
+     1,
+     16,
+     1,
+     33,
+     2,
+     1,
+     33,
+     1,
+     0,
+     10,
+     2
+    ],
+    "personnel_pass": [
+     1,
+     8,
+     1,
+     29,
+     1,
+     1,
+     29,
+     1,
+     0,
+     26,
+     3
     ]
    },
    "announcer": "generic",
@@ -1405,6 +1731,40 @@
        "4": 188,
        "5": 0
       }
+     },
+     "personnel_run": {
+      "source": "coach",
+      "calls": 452,
+      "classes": {
+       "0": 0,
+       "1": 72,
+       "2": 0,
+       "3": 163,
+       "4": 8,
+       "5": 2,
+       "6": 153,
+       "7": 0,
+       "8": 0,
+       "9": 44,
+       "10": 10
+      }
+     },
+     "personnel_pass": {
+      "source": "coach",
+      "calls": 644,
+      "classes": {
+       "0": 0,
+       "1": 52,
+       "2": 0,
+       "3": 194,
+       "4": 5,
+       "5": 0,
+       "6": 209,
+       "7": 0,
+       "8": 0,
+       "9": 165,
+       "10": 19
+      }
      }
     }
    }
@@ -1486,6 +1846,32 @@
      0,
      6,
      0
+    ],
+    "personnel_run": [
+     1,
+     11,
+     1,
+     25,
+     2,
+     2,
+     48,
+     1,
+     0,
+     8,
+     1
+    ],
+    "personnel_pass": [
+     1,
+     1,
+     1,
+     17,
+     1,
+     1,
+     48,
+     1,
+     0,
+     25,
+     4
     ]
    },
    "announcer": "generic",
@@ -1616,6 +2002,40 @@
        "4": 175,
        "5": 0
       }
+     },
+     "personnel_run": {
+      "source": "coach",
+      "calls": 1385,
+      "classes": {
+       "0": 0,
+       "1": 153,
+       "2": 6,
+       "3": 348,
+       "4": 21,
+       "5": 28,
+       "6": 722,
+       "7": 0,
+       "8": 0,
+       "9": 107,
+       "10": 0
+      }
+     },
+     "personnel_pass": {
+      "source": "coach",
+      "calls": 2790,
+      "classes": {
+       "0": 0,
+       "1": 35,
+       "2": 0,
+       "3": 478,
+       "4": 22,
+       "5": 10,
+       "6": 1436,
+       "7": 5,
+       "8": 0,
+       "9": 684,
+       "10": 120
+      }
      }
     }
    }
@@ -1697,6 +2117,32 @@
      0,
      11,
      0
+    ],
+    "personnel_run": [
+     1,
+     18,
+     1,
+     23,
+     27,
+     3,
+     22,
+     1,
+     0,
+     3,
+     1
+    ],
+    "personnel_pass": [
+     1,
+     4,
+     1,
+     26,
+     15,
+     1,
+     27,
+     1,
+     0,
+     23,
+     1
     ]
    },
    "announcer": "generic",
@@ -1827,6 +2273,40 @@
        "4": 187,
        "5": 0
       }
+     },
+     "personnel_run": {
+      "source": "coach",
+      "calls": 1355,
+      "classes": {
+       "0": 0,
+       "1": 248,
+       "2": 10,
+       "3": 306,
+       "4": 413,
+       "5": 36,
+       "6": 299,
+       "7": 0,
+       "8": 0,
+       "9": 43,
+       "10": 0
+      }
+     },
+     "personnel_pass": {
+      "source": "coach",
+      "calls": 1650,
+      "classes": {
+       "0": 0,
+       "1": 69,
+       "2": 1,
+       "3": 477,
+       "4": 240,
+       "5": 1,
+       "6": 476,
+       "7": 0,
+       "8": 0,
+       "9": 384,
+       "10": 2
+      }
      }
     }
    }
@@ -1908,6 +2388,32 @@
      0,
      20,
      0
+    ],
+    "personnel_run": [
+     1,
+     9,
+     1,
+     23,
+     13,
+     1,
+     42,
+     1,
+     0,
+     8,
+     1
+    ],
+    "personnel_pass": [
+     1,
+     3,
+     1,
+     14,
+     6,
+     1,
+     52,
+     1,
+     0,
+     20,
+     1
     ]
    },
    "announcer": "generic",
@@ -2038,6 +2544,40 @@
        "4": 139,
        "5": 0
       }
+     },
+     "personnel_run": {
+      "source": "coach",
+      "calls": 417,
+      "classes": {
+       "0": 0,
+       "1": 38,
+       "2": 0,
+       "3": 96,
+       "4": 53,
+       "5": 2,
+       "6": 189,
+       "7": 0,
+       "8": 0,
+       "9": 35,
+       "10": 4
+      }
+     },
+     "personnel_pass": {
+      "source": "coach",
+      "calls": 684,
+      "classes": {
+       "0": 0,
+       "1": 21,
+       "2": 0,
+       "3": 94,
+       "4": 39,
+       "5": 2,
+       "6": 383,
+       "7": 0,
+       "8": 0,
+       "9": 138,
+       "10": 7
+      }
      }
     }
    }
@@ -2119,6 +2659,32 @@
      0,
      16,
      0
+    ],
+    "personnel_run": [
+     1,
+     20,
+     1,
+     20,
+     13,
+     2,
+     33,
+     1,
+     0,
+     8,
+     1
+    ],
+    "personnel_pass": [
+     1,
+     5,
+     1,
+     12,
+     6,
+     1,
+     43,
+     1,
+     0,
+     26,
+     4
     ]
    },
    "announcer": "generic",
@@ -2249,6 +2815,40 @@
        "4": 308,
        "5": 0
       }
+     },
+     "personnel_run": {
+      "source": "coach",
+      "calls": 1133,
+      "classes": {
+       "0": 0,
+       "1": 227,
+       "2": 0,
+       "3": 226,
+       "4": 148,
+       "5": 26,
+       "6": 409,
+       "7": 1,
+       "8": 0,
+       "9": 85,
+       "10": 11
+      }
+     },
+     "personnel_pass": {
+      "source": "coach",
+      "calls": 1913,
+      "classes": {
+       "0": 0,
+       "1": 98,
+       "2": 0,
+       "3": 233,
+       "4": 124,
+       "5": 13,
+       "6": 882,
+       "7": 4,
+       "8": 0,
+       "9": 489,
+       "10": 70
+      }
      }
     }
    }
@@ -2330,6 +2930,32 @@
      2,
      27,
      0
+    ],
+    "personnel_run": [
+     1,
+     13,
+     1,
+     29,
+     8,
+     1,
+     36,
+     1,
+     0,
+     9,
+     1
+    ],
+    "personnel_pass": [
+     1,
+     5,
+     1,
+     17,
+     6,
+     1,
+     38,
+     1,
+     0,
+     29,
+     1
     ]
    },
    "announcer": "generic",
@@ -2460,6 +3086,40 @@
        "4": 681,
        "5": 0
       }
+     },
+     "personnel_run": {
+      "source": "coach",
+      "calls": 1841,
+      "classes": {
+       "0": 0,
+       "1": 232,
+       "2": 21,
+       "3": 537,
+       "4": 142,
+       "5": 16,
+       "6": 716,
+       "7": 2,
+       "8": 0,
+       "9": 173,
+       "10": 2
+      }
+     },
+     "personnel_pass": {
+      "source": "coach",
+      "calls": 2487,
+      "classes": {
+       "0": 0,
+       "1": 111,
+       "2": 9,
+       "3": 424,
+       "4": 145,
+       "5": 4,
+       "6": 1029,
+       "7": 25,
+       "8": 0,
+       "9": 724,
+       "10": 16
+      }
      }
     }
    }
@@ -2541,6 +3201,32 @@
      0,
      19,
      0
+    ],
+    "personnel_run": [
+     1,
+     3,
+     1,
+     37,
+     10,
+     3,
+     37,
+     1,
+     0,
+     6,
+     1
+    ],
+    "personnel_pass": [
+     1,
+     1,
+     1,
+     22,
+     6,
+     1,
+     39,
+     1,
+     0,
+     27,
+     1
     ]
    },
    "announcer": "generic",
@@ -2671,6 +3357,40 @@
        "4": 435,
        "5": 0
       }
+     },
+     "personnel_run": {
+      "source": "coach",
+      "calls": 1764,
+      "classes": {
+       "0": 0,
+       "1": 54,
+       "2": 0,
+       "3": 694,
+       "4": 181,
+       "5": 52,
+       "6": 677,
+       "7": 3,
+       "8": 0,
+       "9": 103,
+       "10": 0
+      }
+     },
+     "personnel_pass": {
+      "source": "coach",
+      "calls": 2321,
+      "classes": {
+       "0": 0,
+       "1": 26,
+       "2": 1,
+       "3": 510,
+       "4": 145,
+       "5": 13,
+       "6": 987,
+       "7": 2,
+       "8": 0,
+       "9": 633,
+       "10": 4
+      }
      }
     }
    }
@@ -2752,6 +3472,32 @@
      0,
      19,
      0
+    ],
+    "personnel_run": [
+     1,
+     9,
+     1,
+     23,
+     18,
+     1,
+     37,
+     1,
+     0,
+     8,
+     1
+    ],
+    "personnel_pass": [
+     1,
+     2,
+     1,
+     13,
+     8,
+     1,
+     38,
+     1,
+     0,
+     34,
+     1
     ]
    },
    "announcer": "generic",
@@ -2882,6 +3628,40 @@
        "4": 374,
        "5": 0
       }
+     },
+     "personnel_run": {
+      "source": "coach",
+      "calls": 1197,
+      "classes": {
+       "0": 0,
+       "1": 108,
+       "2": 13,
+       "3": 271,
+       "4": 213,
+       "5": 11,
+       "6": 478,
+       "7": 0,
+       "8": 0,
+       "9": 103,
+       "10": 0
+      }
+     },
+     "personnel_pass": {
+      "source": "coach",
+      "calls": 1964,
+      "classes": {
+       "0": 0,
+       "1": 33,
+       "2": 0,
+       "3": 266,
+       "4": 153,
+       "5": 4,
+       "6": 844,
+       "7": 1,
+       "8": 0,
+       "9": 662,
+       "10": 1
+      }
      }
     }
    }
@@ -2963,6 +3743,32 @@
      0,
      8,
      0
+    ],
+    "personnel_run": [
+     1,
+     7,
+     1,
+     28,
+     1,
+     12,
+     42,
+     1,
+     0,
+     6,
+     1
+    ],
+    "personnel_pass": [
+     1,
+     3,
+     1,
+     20,
+     1,
+     1,
+     38,
+     1,
+     0,
+     33,
+     1
     ]
    },
    "announcer": "generic",
@@ -3093,6 +3899,40 @@
        "4": 138,
        "5": 0
       }
+     },
+     "personnel_run": {
+      "source": "coach",
+      "calls": 1309,
+      "classes": {
+       "0": 0,
+       "1": 88,
+       "2": 1,
+       "3": 360,
+       "4": 18,
+       "5": 153,
+       "6": 605,
+       "7": 0,
+       "8": 0,
+       "9": 83,
+       "10": 1
+      }
+     },
+     "personnel_pass": {
+      "source": "coach",
+      "calls": 1819,
+      "classes": {
+       "0": 0,
+       "1": 55,
+       "2": 0,
+       "3": 370,
+       "4": 5,
+       "5": 13,
+       "6": 765,
+       "7": 0,
+       "8": 0,
+       "9": 599,
+       "10": 12
+      }
      }
     }
    }
@@ -3174,6 +4014,32 @@
      1,
      17,
      0
+    ],
+    "personnel_run": [
+     1,
+     10,
+     1,
+     27,
+     14,
+     2,
+     34,
+     1,
+     0,
+     9,
+     1
+    ],
+    "personnel_pass": [
+     1,
+     1,
+     1,
+     14,
+     5,
+     1,
+     39,
+     1,
+     0,
+     36,
+     1
     ]
    },
    "announcer": "generic",
@@ -3304,6 +4170,40 @@
        "4": 109,
        "5": 0
       }
+     },
+     "personnel_run": {
+      "source": "coach",
+      "calls": 428,
+      "classes": {
+       "0": 0,
+       "1": 42,
+       "2": 0,
+       "3": 114,
+       "4": 62,
+       "5": 8,
+       "6": 162,
+       "7": 0,
+       "8": 0,
+       "9": 40,
+       "10": 0
+      }
+     },
+     "personnel_pass": {
+      "source": "coach",
+      "calls": 646,
+      "classes": {
+       "0": 0,
+       "1": 9,
+       "2": 2,
+       "3": 89,
+       "4": 29,
+       "5": 2,
+       "6": 285,
+       "7": 0,
+       "8": 0,
+       "9": 229,
+       "10": 1
+      }
      }
     }
    }
@@ -3385,6 +4285,32 @@
      1,
      8,
      0
+    ],
+    "personnel_run": [
+     1,
+     14,
+     3,
+     32,
+     4,
+     3,
+     36,
+     1,
+     0,
+     5,
+     1
+    ],
+    "personnel_pass": [
+     1,
+     7,
+     1,
+     29,
+     1,
+     1,
+     35,
+     1,
+     0,
+     23,
+     1
     ]
    },
    "announcer": "generic",
@@ -3515,6 +4441,40 @@
        "4": 231,
        "5": 0
       }
+     },
+     "personnel_run": {
+      "source": "coach",
+      "calls": 1436,
+      "classes": {
+       "0": 3,
+       "1": 202,
+       "2": 42,
+       "3": 456,
+       "4": 63,
+       "5": 35,
+       "6": 560,
+       "7": 0,
+       "8": 0,
+       "9": 71,
+       "10": 4
+      }
+     },
+     "personnel_pass": {
+      "source": "coach",
+      "calls": 2807,
+      "classes": {
+       "0": 1,
+       "1": 190,
+       "2": 13,
+       "3": 803,
+       "4": 34,
+       "5": 9,
+       "6": 1097,
+       "7": 1,
+       "8": 0,
+       "9": 639,
+       "10": 20
+      }
      }
     }
    }
@@ -3596,6 +4556,32 @@
      0,
      16,
      0
+    ],
+    "personnel_run": [
+     1,
+     20,
+     1,
+     6,
+     23,
+     5,
+     35,
+     1,
+     0,
+     7,
+     1
+    ],
+    "personnel_pass": [
+     1,
+     4,
+     1,
+     6,
+     10,
+     1,
+     40,
+     1,
+     0,
+     34,
+     2
     ]
    },
    "announcer": "generic",
@@ -3726,6 +4712,40 @@
        "4": 209,
        "5": 0
       }
+     },
+     "personnel_run": {
+      "source": "coach",
+      "calls": 742,
+      "classes": {
+       "0": 0,
+       "1": 148,
+       "2": 8,
+       "3": 43,
+       "4": 171,
+       "5": 38,
+       "6": 280,
+       "7": 0,
+       "8": 0,
+       "9": 53,
+       "10": 1
+      }
+     },
+     "personnel_pass": {
+      "source": "coach",
+      "calls": 1258,
+      "classes": {
+       "0": 0,
+       "1": 52,
+       "2": 0,
+       "3": 80,
+       "4": 119,
+       "5": 11,
+       "6": 541,
+       "7": 0,
+       "8": 0,
+       "9": 432,
+       "10": 23
+      }
      }
     }
    }
@@ -3807,6 +4827,32 @@
      0,
      29,
      0
+    ],
+    "personnel_run": [
+     1,
+     12,
+     1,
+     13,
+     1,
+     6,
+     53,
+     1,
+     0,
+     11,
+     1
+    ],
+    "personnel_pass": [
+     1,
+     5,
+     1,
+     6,
+     1,
+     3,
+     50,
+     1,
+     0,
+     31,
+     1
     ]
    },
    "announcer": "generic",
@@ -3937,6 +4983,40 @@
        "4": 713,
        "5": 0
       }
+     },
+     "personnel_run": {
+      "source": "coach",
+      "calls": 1690,
+      "classes": {
+       "0": 0,
+       "1": 205,
+       "2": 0,
+       "3": 217,
+       "4": 2,
+       "5": 104,
+       "6": 978,
+       "7": 0,
+       "8": 0,
+       "9": 184,
+       "10": 0
+      }
+     },
+     "personnel_pass": {
+      "source": "coach",
+      "calls": 2469,
+      "classes": {
+       "0": 0,
+       "1": 134,
+       "2": 0,
+       "3": 139,
+       "4": 0,
+       "5": 86,
+       "6": 1354,
+       "7": 0,
+       "8": 0,
+       "9": 754,
+       "10": 2
+      }
      }
     }
    }
@@ -4018,6 +5098,32 @@
      1,
      25,
      0
+    ],
+    "personnel_run": [
+     1,
+     21,
+     2,
+     27,
+     22,
+     1,
+     16,
+     1,
+     0,
+     8,
+     1
+    ],
+    "personnel_pass": [
+     1,
+     8,
+     1,
+     27,
+     10,
+     1,
+     26,
+     1,
+     0,
+     22,
+     3
     ]
    },
    "announcer": "generic",
@@ -4148,6 +5254,40 @@
        "4": 286,
        "5": 0
       }
+     },
+     "personnel_run": {
+      "source": "coach",
+      "calls": 863,
+      "classes": {
+       "0": 0,
+       "1": 178,
+       "2": 19,
+       "3": 258,
+       "4": 189,
+       "5": 10,
+       "6": 136,
+       "7": 0,
+       "8": 0,
+       "9": 69,
+       "10": 4
+      }
+     },
+     "personnel_pass": {
+      "source": "coach",
+      "calls": 1129,
+      "classes": {
+       "0": 0,
+       "1": 84,
+       "2": 4,
+       "3": 347,
+       "4": 117,
+       "5": 2,
+       "6": 294,
+       "7": 0,
+       "8": 0,
+       "9": 251,
+       "10": 30
+      }
      }
     }
    }
@@ -4229,6 +5369,32 @@
      1,
      14,
      0
+    ],
+    "personnel_run": [
+     1,
+     12,
+     2,
+     26,
+     12,
+     4,
+     34,
+     1,
+     0,
+     7,
+     1
+    ],
+    "personnel_pass": [
+     1,
+     4,
+     1,
+     17,
+     6,
+     1,
+     39,
+     1,
+     0,
+     29,
+     1
     ]
    },
    "announcer": "generic",
@@ -4359,6 +5525,40 @@
        "4": 11680,
        "5": 2
       }
+     },
+     "personnel_run": {
+      "source": "league",
+      "calls": 52331,
+      "classes": {
+       "0": 64,
+       "1": 5992,
+       "2": 1036,
+       "3": 13568,
+       "4": 6257,
+       "5": 1995,
+       "6": 19318,
+       "7": 74,
+       "8": 0,
+       "9": 3894,
+       "10": 133
+      }
+     },
+     "personnel_pass": {
+      "source": "league",
+      "calls": 80937,
+      "classes": {
+       "0": 17,
+       "1": 2977,
+       "2": 412,
+       "3": 14038,
+       "4": 4794,
+       "5": 593,
+       "6": 34052,
+       "7": 163,
+       "8": 0,
+       "9": 23126,
+       "10": 765
+      }
      }
     }
    }
@@ -4440,6 +5640,32 @@
      2,
      25,
      0
+    ],
+    "personnel_run": [
+     1,
+     8,
+     3,
+     29,
+     14,
+     1,
+     35,
+     1,
+     0,
+     7,
+     1
+    ],
+    "personnel_pass": [
+     1,
+     2,
+     1,
+     14,
+     6,
+     1,
+     48,
+     1,
+     0,
+     25,
+     1
     ]
    },
    "announcer": "generic",
@@ -4570,6 +5796,40 @@
        "4": 659,
        "5": 0
       }
+     },
+     "personnel_run": {
+      "source": "coach",
+      "calls": 1502,
+      "classes": {
+       "0": 0,
+       "1": 116,
+       "2": 41,
+       "3": 440,
+       "4": 205,
+       "5": 16,
+       "6": 572,
+       "7": 0,
+       "8": 0,
+       "9": 112,
+       "10": 0
+      }
+     },
+     "personnel_pass": {
+      "source": "coach",
+      "calls": 2644,
+      "classes": {
+       "0": 0,
+       "1": 52,
+       "2": 20,
+       "3": 372,
+       "4": 168,
+       "5": 2,
+       "6": 1360,
+       "7": 0,
+       "8": 0,
+       "9": 670,
+       "10": 0
+      }
      }
     }
    }
@@ -4651,6 +5911,32 @@
      2,
      19,
      0
+    ],
+    "personnel_run": [
+     1,
+     13,
+     2,
+     28,
+     15,
+     2,
+     29,
+     1,
+     0,
+     8,
+     1
+    ],
+    "personnel_pass": [
+     1,
+     4,
+     1,
+     20,
+     9,
+     1,
+     34,
+     1,
+     0,
+     28,
+     1
     ]
    },
    "announcer": "generic",
@@ -4781,6 +6067,40 @@
        "4": 333,
        "5": 0
       }
+     },
+     "personnel_run": {
+      "source": "coach",
+      "calls": 1206,
+      "classes": {
+       "0": 3,
+       "1": 151,
+       "2": 27,
+       "3": 364,
+       "4": 181,
+       "5": 24,
+       "6": 363,
+       "7": 0,
+       "8": 0,
+       "9": 91,
+       "10": 2
+      }
+     },
+     "personnel_pass": {
+      "source": "coach",
+      "calls": 1712,
+      "classes": {
+       "0": 1,
+       "1": 74,
+       "2": 13,
+       "3": 336,
+       "4": 149,
+       "5": 8,
+       "6": 635,
+       "7": 1,
+       "8": 0,
+       "9": 481,
+       "10": 14
+      }
      }
     }
    }
@@ -4862,6 +6182,32 @@
      0,
      8,
      0
+    ],
+    "personnel_run": [
+     1,
+     21,
+     1,
+     21,
+     7,
+     2,
+     41,
+     1,
+     0,
+     4,
+     1
+    ],
+    "personnel_pass": [
+     1,
+     5,
+     1,
+     8,
+     8,
+     1,
+     42,
+     1,
+     0,
+     32,
+     1
     ]
    },
    "announcer": "generic",
@@ -4992,6 +6338,40 @@
        "4": 52,
        "5": 0
       }
+     },
+     "personnel_run": {
+      "source": "coach",
+      "calls": 387,
+      "classes": {
+       "0": 0,
+       "1": 82,
+       "2": 3,
+       "3": 79,
+       "4": 28,
+       "5": 8,
+       "6": 170,
+       "7": 1,
+       "8": 0,
+       "9": 16,
+       "10": 0
+      }
+     },
+     "personnel_pass": {
+      "source": "coach",
+      "calls": 670,
+      "classes": {
+       "0": 0,
+       "1": 32,
+       "2": 1,
+       "3": 51,
+       "4": 54,
+       "5": 2,
+       "6": 317,
+       "7": 0,
+       "8": 0,
+       "9": 213,
+       "10": 0
+      }
      }
     }
    }
@@ -5073,6 +6453,32 @@
      2,
      8,
      0
+    ],
+    "personnel_run": [
+     1,
+     14,
+     14,
+     19,
+     28,
+     2,
+     17,
+     1,
+     0,
+     3,
+     1
+    ],
+    "personnel_pass": [
+     1,
+     4,
+     5,
+     27,
+     16,
+     1,
+     24,
+     1,
+     0,
+     20,
+     1
     ]
    },
    "announcer": "generic",
@@ -5203,6 +6609,40 @@
        "4": 189,
        "5": 0
       }
+     },
+     "personnel_run": {
+      "source": "coach",
+      "calls": 1822,
+      "classes": {
+       "0": 6,
+       "1": 256,
+       "2": 253,
+       "3": 349,
+       "4": 553,
+       "5": 40,
+       "6": 311,
+       "7": 4,
+       "8": 0,
+       "9": 49,
+       "10": 1
+      }
+     },
+     "personnel_pass": {
+      "source": "coach",
+      "calls": 2213,
+      "classes": {
+       "0": 2,
+       "1": 89,
+       "2": 105,
+       "3": 673,
+       "4": 359,
+       "5": 3,
+       "6": 519,
+       "7": 3,
+       "8": 0,
+       "9": 443,
+       "10": 17
+      }
      }
     }
    }
@@ -5284,6 +6724,32 @@
      0,
      15,
      0
+    ],
+    "personnel_run": [
+     1,
+     10,
+     1,
+     24,
+     10,
+     3,
+     36,
+     1,
+     0,
+     13,
+     1
+    ],
+    "personnel_pass": [
+     1,
+     2,
+     1,
+     15,
+     5,
+     1,
+     37,
+     1,
+     0,
+     36,
+     1
     ]
    },
    "announcer": "generic",
@@ -5414,6 +6880,40 @@
        "4": 92,
        "5": 0
       }
+     },
+     "personnel_run": {
+      "source": "coach",
+      "calls": 373,
+      "classes": {
+       "0": 0,
+       "1": 38,
+       "2": 2,
+       "3": 88,
+       "4": 37,
+       "5": 13,
+       "6": 148,
+       "7": 0,
+       "8": 0,
+       "9": 47,
+       "10": 0
+      }
+     },
+     "personnel_pass": {
+      "source": "coach",
+      "calls": 605,
+      "classes": {
+       "0": 0,
+       "1": 13,
+       "2": 2,
+       "3": 87,
+       "4": 30,
+       "5": 7,
+       "6": 246,
+       "7": 0,
+       "8": 0,
+       "9": 220,
+       "10": 0
+      }
      }
     }
    }
@@ -5495,6 +6995,32 @@
      0,
      4,
      0
+    ],
+    "personnel_run": [
+     1,
+     10,
+     1,
+     34,
+     3,
+     6,
+     35,
+     1,
+     0,
+     8,
+     1
+    ],
+    "personnel_pass": [
+     1,
+     2,
+     1,
+     17,
+     2,
+     1,
+     41,
+     1,
+     0,
+     33,
+     1
     ]
    },
    "announcer": "generic",
@@ -5625,6 +7151,40 @@
        "4": 104,
        "5": 0
       }
+     },
+     "personnel_run": {
+      "source": "coach",
+      "calls": 1908,
+      "classes": {
+       "0": 1,
+       "1": 185,
+       "2": 3,
+       "3": 668,
+       "4": 59,
+       "5": 103,
+       "6": 727,
+       "7": 0,
+       "8": 0,
+       "9": 160,
+       "10": 2
+      }
+     },
+     "personnel_pass": {
+      "source": "coach",
+      "calls": 2387,
+      "classes": {
+       "0": 0,
+       "1": 55,
+       "2": 1,
+       "3": 394,
+       "4": 38,
+       "5": 27,
+       "6": 1077,
+       "7": 0,
+       "8": 0,
+       "9": 788,
+       "10": 7
+      }
      }
     }
    }
@@ -5706,6 +7266,32 @@
      2,
      16,
      0
+    ],
+    "personnel_run": [
+     1,
+     10,
+     3,
+     23,
+     9,
+     2,
+     40,
+     1,
+     0,
+     10,
+     1
+    ],
+    "personnel_pass": [
+     1,
+     3,
+     1,
+     12,
+     4,
+     1,
+     47,
+     1,
+     0,
+     27,
+     3
     ]
    },
    "announcer": "generic",
@@ -5836,6 +7422,40 @@
        "4": 306,
        "5": 2
       }
+     },
+     "personnel_run": {
+      "source": "coach",
+      "calls": 1326,
+      "classes": {
+       "0": 10,
+       "1": 134,
+       "2": 44,
+       "3": 304,
+       "4": 120,
+       "5": 32,
+       "6": 525,
+       "7": 9,
+       "8": 0,
+       "9": 132,
+       "10": 16
+      }
+     },
+     "personnel_pass": {
+      "source": "coach",
+      "calls": 1968,
+      "classes": {
+       "0": 3,
+       "1": 56,
+       "2": 11,
+       "3": 240,
+       "4": 79,
+       "5": 8,
+       "6": 985,
+       "7": 7,
+       "8": 0,
+       "9": 528,
+       "10": 51
+      }
      }
     }
    }
@@ -5917,6 +7537,32 @@
      1,
      18,
      0
+    ],
+    "personnel_run": [
+     1,
+     13,
+     3,
+     28,
+     12,
+     2,
+     29,
+     1,
+     0,
+     10,
+     1
+    ],
+    "personnel_pass": [
+     1,
+     2,
+     1,
+     17,
+     4,
+     1,
+     42,
+     1,
+     0,
+     28,
+     3
     ]
    },
    "announcer": "generic",
@@ -6047,6 +7693,40 @@
        "4": 218,
        "5": 0
       }
+     },
+     "personnel_run": {
+      "source": "coach",
+      "calls": 810,
+      "classes": {
+       "0": 1,
+       "1": 102,
+       "2": 22,
+       "3": 240,
+       "4": 100,
+       "5": 19,
+       "6": 241,
+       "7": 0,
+       "8": 0,
+       "9": 83,
+       "10": 2
+      }
+     },
+     "personnel_pass": {
+      "source": "coach",
+      "calls": 1186,
+      "classes": {
+       "0": 0,
+       "1": 24,
+       "2": 5,
+       "3": 204,
+       "4": 52,
+       "5": 3,
+       "6": 533,
+       "7": 0,
+       "8": 0,
+       "9": 336,
+       "10": 29
+      }
      }
     }
    }
@@ -6128,6 +7808,32 @@
      2,
      18,
      0
+    ],
+    "personnel_run": [
+     1,
+     9,
+     3,
+     17,
+     41,
+     1,
+     21,
+     1,
+     0,
+     5,
+     1
+    ],
+    "personnel_pass": [
+     1,
+     3,
+     1,
+     9,
+     29,
+     1,
+     30,
+     1,
+     0,
+     24,
+     1
     ]
    },
    "announcer": "generic",
@@ -6258,6 +7964,40 @@
        "4": 409,
        "5": 0
       }
+     },
+     "personnel_run": {
+      "source": "coach",
+      "calls": 1766,
+      "classes": {
+       "0": 6,
+       "1": 154,
+       "2": 54,
+       "3": 296,
+       "4": 767,
+       "5": 17,
+       "6": 373,
+       "7": 0,
+       "8": 0,
+       "9": 91,
+       "10": 8
+      }
+     },
+     "personnel_pass": {
+      "source": "coach",
+      "calls": 2335,
+      "classes": {
+       "0": 1,
+       "1": 84,
+       "2": 17,
+       "3": 203,
+       "4": 702,
+       "5": 7,
+       "6": 745,
+       "7": 0,
+       "8": 0,
+       "9": 556,
+       "10": 20
+      }
      }
     }
    }
@@ -6339,6 +8079,32 @@
      0,
      14,
      0
+    ],
+    "personnel_run": [
+     1,
+     7,
+     1,
+     32,
+     6,
+     5,
+     39,
+     1,
+     0,
+     7,
+     1
+    ],
+    "personnel_pass": [
+     1,
+     1,
+     1,
+     13,
+     2,
+     1,
+     46,
+     1,
+     0,
+     33,
+     1
     ]
    },
    "announcer": "generic",
@@ -6469,6 +8235,40 @@
        "4": 370,
        "5": 0
       }
+     },
+     "personnel_run": {
+      "source": "coach",
+      "calls": 1597,
+      "classes": {
+       "0": 0,
+       "1": 116,
+       "2": 3,
+       "3": 506,
+       "4": 91,
+       "5": 80,
+       "6": 679,
+       "7": 7,
+       "8": 0,
+       "9": 115,
+       "10": 0
+      }
+     },
+     "personnel_pass": {
+      "source": "coach",
+      "calls": 2720,
+      "classes": {
+       "0": 0,
+       "1": 39,
+       "2": 1,
+       "3": 344,
+       "4": 60,
+       "5": 19,
+       "6": 1316,
+       "7": 17,
+       "8": 0,
+       "9": 909,
+       "10": 15
+      }
      }
     }
    }
@@ -6550,6 +8350,32 @@
      0,
      17,
      0
+    ],
+    "personnel_run": [
+     1,
+     9,
+     2,
+     33,
+     8,
+     2,
+     34,
+     1,
+     0,
+     9,
+     1
+    ],
+    "personnel_pass": [
+     1,
+     2,
+     1,
+     15,
+     4,
+     1,
+     39,
+     1,
+     0,
+     35,
+     1
     ]
    },
    "announcer": "generic",
@@ -6680,6 +8506,40 @@
        "4": 268,
        "5": 0
       }
+     },
+     "personnel_run": {
+      "source": "coach",
+      "calls": 825,
+      "classes": {
+       "0": 0,
+       "1": 76,
+       "2": 14,
+       "3": 275,
+       "4": 64,
+       "5": 14,
+       "6": 309,
+       "7": 0,
+       "8": 0,
+       "9": 73,
+       "10": 0
+      }
+     },
+     "personnel_pass": {
+      "source": "coach",
+      "calls": 1592,
+      "classes": {
+       "0": 0,
+       "1": 41,
+       "2": 3,
+       "3": 236,
+       "4": 66,
+       "5": 1,
+       "6": 681,
+       "7": 0,
+       "8": 0,
+       "9": 551,
+       "10": 13
+      }
      }
     }
    }
@@ -6761,6 +8621,32 @@
      0,
      4,
      0
+    ],
+    "personnel_run": [
+     1,
+     17,
+     2,
+     28,
+     6,
+     9,
+     29,
+     1,
+     0,
+     6,
+     1
+    ],
+    "personnel_pass": [
+     1,
+     5,
+     1,
+     20,
+     4,
+     2,
+     37,
+     1,
+     0,
+     28,
+     1
     ]
    },
    "announcer": "generic",
@@ -6890,6 +8776,40 @@
        "3": 1,
        "4": 43,
        "5": 0
+      }
+     },
+     "personnel_run": {
+      "source": "coach",
+      "calls": 849,
+      "classes": {
+       "0": 0,
+       "1": 144,
+       "2": 14,
+       "3": 239,
+       "4": 52,
+       "5": 80,
+       "6": 264,
+       "7": 6,
+       "8": 0,
+       "9": 47,
+       "10": 3
+      }
+     },
+     "personnel_pass": {
+      "source": "coach",
+      "calls": 1220,
+      "classes": {
+       "0": 0,
+       "1": 59,
+       "2": 6,
+       "3": 246,
+       "4": 52,
+       "5": 21,
+       "6": 466,
+       "7": 7,
+       "8": 0,
+       "9": 346,
+       "10": 17
       }
      }
     }

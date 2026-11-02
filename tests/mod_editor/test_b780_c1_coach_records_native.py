@@ -98,7 +98,8 @@ class SeedRoutineTests(unittest.TestCase):
     def test_the_authored_groups_reach_the_statistics(self) -> None:
         tendencies = {"run_share": 34, "run_by_score": [30, 31, 32, 33, 34, 35], "run_redzone": 41,
                       "run_by_down_distance": list(range(40, 56)), "run_lane": [20, 25, 30, 15, 10],
-                      "formation_run": [5, 0, 10, 80, 5], "formation_pass": [82, 0, 3, 15, 0], "no_huddle": 3}
+                      "formation_run": [5, 0, 10, 80, 5], "formation_pass": [82, 0, 3, 15, 0], "no_huddle": 3,
+                      "personnel_run": [1, 14, 3, 32, 4, 3, 36, 1, 0, 5, 1], "personnel_pass": [1, 7, 1, 29, 1, 1, 35, 1, 0, 23, 1]}
         new, receipt = rr.apply_body(self.base, {"schema": rr.EDITS_SCHEMA, "edits": [],
                                                   "coaches": [{"team": "KC", "tendencies": tendencies}]})
         self.assertEqual(receipt["log"], [])
@@ -113,6 +114,8 @@ class SeedRoutineTests(unittest.TestCase):
         self.assertEqual(words(0x88, 5), (5, 0, 10, 80, 5), "run formation shares: gun, split, I, one back, empty")
         self.assertEqual(words(0x94, 5), (82, 0, 3, 15, 0), "pass formation shares")
         self.assertEqual(words(0xCE, 3), (100, 3, 100))
+        self.assertEqual(words(0x9E, 11), tuple(tendencies["personnel_run"]), "personnel package weights of run calls")
+        self.assertEqual(words(0xB4, 11), tuple(tendencies["personnel_pass"]), "personnel package weights of pass calls")
         # a coach record the plan does not mention keeps the bytes the old coach had
         old = self.base[kc.coach_offset + 0x71: kc.coach_offset + 0x7E]
         self.assertEqual(new[kc.coach_offset + 0x71: kc.coach_offset + 0x7E], old)

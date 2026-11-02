@@ -3488,6 +3488,10 @@ COACH_TENDENCY_GROUPS: dict[str, tuple[int, int, str]] = {
     "run_lane": (0x7E, 5, "share"),                    # run lanes: left outside, left inside, middle, right inside, right outside
     "formation_run": (0x83, 5, "share"),               # formation class of a run call: gun, split backs, I form, one back, empty
     "formation_pass": (0x88, 5, "share"),              # formation class of a pass call (same five classes)
+    "personnel_run": (0x8D, 11, "share"),              # personnel package of a run call, by playbook category code 0..10
+    "personnel_pass": (0x98, 11, "share"),             # personnel package of a pass call (codes: 0 Jacks 2RB 3TE, 1 Jumbo 1RB 3TE 1WR,
+                                                       # 2 Jokers 2RB 2TE 1WR, 3 Ace 1RB 2TE 2WR, 4 Pro 2RB 1TE 2WR, 5 Pistol 11p,
+                                                       # 6 Kings 1RB 1TE 3WR, 7 Queens 2RB 3WR, 9 Flush 1RB 4WR, 10 5 Wide; 8 unused)
     "no_huddle": (0xA5, 1, "percent"),                 # hurry-up roll, percent of eligible snaps (a run of 3 to 5 follows)
 }
 COACH_RECORD_KEYS = ("ratings", "tendencies", "announcer", "height_in", "weight_lb")

@@ -44,9 +44,11 @@ Tendencies (play-calling block of the coach record, nfl2k5_roster_records.COACH_
   run lane                                   observed run-lane shares
   formation shares                           participation data: shotgun / pistol / empty = class 1, under center with two or
                                              more backs = I form (class 3), one back = class 4, no back = class 5
+  personnel shares                           participation data: backs, tight ends and receivers on the field mapped to the
+                                             playbook's personnel categories (Ace = 1 RB 2 TE 2 WR, Kings = 1 RB 1 TE 3 WR ...)
   no huddle                                  observed rate turned into the game's per-snap roll (nfl2k5_vip.build_coach)
-Everything else in the block (pass target zones, receiver roles, category weights, motion, defensive flag shares) has no
-public per-zone source and is left as the record has it.
+Everything else in the block (pass target zones, receiver roles, motion, defensive flag shares) has no public per-zone
+source and is left as the record has it.
 
 Usage
   python3 tools/nfl2k5_coach_2026_data.py build --nflverse DIR --pbp-dir DIR --participation-dir DIR [--out FILE]
@@ -285,7 +287,8 @@ class Totals(collections.defaultdict):
         super().__init__(float)
 
 
-PBP_COLUMNS = ("game_id", "play_id", "season", "season_type", "game_date", "posteam", "defteam", "qtr", "play_type", "epa",
+PBP_COLUMNS = ("game_id", "play_id", "season", "season_type", "game_date", "posteam", "defteam", "qtr", "down", "ydstogo",
+               "play_type", "epa",
                "success", "qb_dropback", "qb_scramble", "qb_kneel", "qb_spike", "pass_attempt", "rush_attempt", "sack",
                "qb_hit", "interception", "tackled_for_loss", "cpoe", "penalty", "penalty_team", "penalty_type",
                "rusher_player_id", "receiver_player_id", "special_teams_play")
@@ -300,6 +303,13 @@ def read_positions(nflverse: Path) -> dict[tuple[int, str], str]:
             if row.get("gsis_id") and row.get("position"):
                 out[season, row["gsis_id"]] = row["position"]
     return out
+
+
+def long_yardage(row: Mapping[str, Any]) -> bool:
+    """A long-yardage down: third or fourth and 6 or more, second and 9 or more (where the game's personnel window moves to
+    the light groups, codes 8 to 10)."""
+    down, to_go = num(row.get("down")), num(row.get("ydstogo"))
+    return down is not None and to_go is not None and ((down >= 3 and to_go >= 6) or (down == 2 and to_go >= 9))
 
 
 def collect_pbp(rows: Iterable[Mapping[str, Any]], coaches: list[dict[str, Any]], positions: Mapping[tuple[int, str], str],
@@ -331,7 +341,8 @@ def collect_pbp(rows: Iterable[Mapping[str, Any]], coaches: list[dict[str, Any]]
         if scrimmage:
             league["plays"] += 1
             league["epa"] += epa
-            state["league_plays"][row["game_id"], int(num(row.get("play_id")) or 0)] = "pass" if dropback or attempt else "run"
+            state["league_plays"][row["game_id"], int(num(row.get("play_id")) or 0)] = (
+                "pass" if dropback or attempt else "run", long_yardage(row))
             if dropback:
                 league["dropbacks"] += 1
                 league["dropback_epa"] += epa
@@ -380,7 +391,8 @@ def collect_pbp(rows: Iterable[Mapping[str, Any]], coaches: list[dict[str, Any]]
                         t["rb_carries"] += 1
                         t["rb_epa"] += epa
                 key = (row["game_id"], int(num(row.get("play_id")) or 0))
-                state["plays"][key] = state["plays"].get(key, ()) + ((coach, "pass" if dropback or attempt else "run"),)
+                state["plays"][key] = state["plays"].get(key, ()) + (
+                    (coach, "pass" if dropback or attempt else "run", long_yardage(row)),)
         for coach in state["defense"].who(opp, season, date):
             t = dfn[coach]
             if scrimmage:
@@ -417,6 +429,44 @@ def collect_pbp(rows: Iterable[Mapping[str, Any]], coaches: list[dict[str, Any]]
     return state
 
 
+#: personnel (RB, TE, WR on the field) -> the playbook category code the game's personnel weights are indexed by (every book
+#: keeps one category per code with exactly this mix: 0 Jacks, 1 Jumbo, 2 Jokers, 3 Ace, 4 Pro, 5 Pistol, 6 Kings, 7 Queens,
+#: 9 Flush, 10 5 Wide; read from the categories of the released books with nfl2k5_play_library.category_positions)
+PERSONNEL_CODES = {(2, 3, 0): 0, (1, 3, 1): 1, (2, 2, 1): 2, (1, 2, 2): 3, (2, 1, 2): 4, (1, 1, 3): 6, (2, 0, 3): 7,
+                   (1, 0, 4): 9, (0, 0, 5): 10, (0, 1, 4): 10, (0, 2, 3): 10}
+
+
+def personnel_code(personnel: str | None, formation: str | None = None, long: bool = False) -> int | None:
+    """The game's personnel category code (0..10) of an ``offense_personnel`` string such as "1 RB, 1 TE, 3 WR".
+
+    The game picks a personnel group by weights inside a window of +-2 codes around a situation centre that runs from
+    heavy (short yardage, 0 to 2) to light (long yardage, 8 to 10), and the SOFTDRINK books keep their modern 11 personnel
+    long-yardage formations in the code 9 group ("Kings Long").  So 11 personnel on a long-yardage down counts for code 9,
+    on any other down for code 6 (Kings), or 5 for a pistol formation."""
+    if not personnel:
+        return None
+    have = {"RB": 0, "TE": 0, "WR": 0}
+    for part in str(personnel).split(","):
+        words = part.split()
+        if len(words) == 2 and words[1] in have:
+            have[words[1]] += int(words[0])
+    rb, te, wr = have["RB"], have["TE"], have["WR"]
+    if rb + te + wr < 4:
+        return None
+    if (rb, te, wr) == (1, 1, 3):
+        return 9 if long else 5 if str(formation or "").upper() == "PISTOL" else 6
+    code = PERSONNEL_CODES.get((rb, te, wr))
+    if code is not None:
+        return code
+    if wr >= 4:
+        return 9 if rb >= 1 else 10
+    if wr == 3:
+        return 7 if rb >= 2 else 6
+    if wr == 2:
+        return 3 if te >= 2 else 4
+    return 2 if rb >= 2 else 1
+
+
 def formation_class(formation: str | None, personnel: str | None) -> int | None:
     """The game's formation class (1 gun ... 5 empty, nfl2k5 table 0xAC9EE0) of a participation row."""
     if not formation:
@@ -440,31 +490,46 @@ def collect_formations(rows: Iterable[Mapping[str, Any]], state: dict[str, Any],
                        counts: dict[str, dict[str, collections.Counter]] | None = None) -> dict[str, dict[str, collections.Counter]]:
     """Participation rows joined to the offense plays the pbp pass remembered (by game_id, play_id)."""
     if counts is None:
-        counts = collections.defaultdict(lambda: dict(run=collections.Counter(), pass_=collections.Counter()))
+        counts = collections.defaultdict(new_counts)
     for row in rows:
         play = num(row.get("play_id"))
         owners = state["plays"].get((row.get("nflverse_game_id"), int(play))) if play is not None else None
         if not owners:
             continue
         cls = formation_class(row.get("offense_formation"), row.get("offense_personnel"))
-        if cls is None:
-            continue
-        for coach, kind in owners:
-            counts[coach]["pass_" if kind == "pass" else "run"][cls] += 1
+        for coach, kind, long in owners:
+            key = "pass_" if kind == "pass" else "run"
+            if cls is not None:
+                counts[coach][key][cls] += 1
+            code = personnel_code(row.get("offense_personnel"), row.get("offense_formation"), long)
+            if code is not None:
+                counts[coach]["personnel_" + key.rstrip("_")][code] += 1
     return counts
+
+
+def new_counts() -> dict[str, collections.Counter]:
+    return dict(run=collections.Counter(), pass_=collections.Counter(),
+                personnel_run=collections.Counter(), personnel_pass=collections.Counter())
 
 
 def collect_league_formations(rows: Iterable[Mapping[str, Any]], state: dict[str, Any],
                               counts: dict[str, collections.Counter] | None = None) -> dict[str, collections.Counter]:
     """The same join for every offense play in the league: the baseline a coach without offense evidence starts from."""
     if counts is None:
-        counts = dict(run=collections.Counter(), pass_=collections.Counter())
+        counts = new_counts()
     for row in rows:
         play = num(row.get("play_id"))
-        kind = state["league_plays"].get((row.get("nflverse_game_id"), int(play))) if play is not None else None
-        cls = formation_class(row.get("offense_formation"), row.get("offense_personnel")) if kind else None
+        found = state["league_plays"].get((row.get("nflverse_game_id"), int(play))) if play is not None else None
+        if not found:
+            continue
+        kind, long = found
+        key = "pass_" if kind == "pass" else "run"
+        cls = formation_class(row.get("offense_formation"), row.get("offense_personnel"))
+        code = personnel_code(row.get("offense_personnel"), row.get("offense_formation"), long)
         if cls is not None:
-            counts["pass_" if kind == "pass" else "run"][cls] += 1
+            counts[key][cls] += 1
+        if code is not None:
+            counts["personnel_" + key.rstrip("_")][code] += 1
     return counts
 
 
@@ -574,6 +639,25 @@ def ratings_from_metrics(metrics: Mapping[str, Mapping[str, Any]]) -> tuple[dict
 
 
 # ------------------------------------------------------------------------------------------- tendencies
+PERSONNEL_FLOOR = 1                          # every reachable personnel code keeps this much weight, so no window of +-2 is empty
+PERSONNEL_NEVER = (8,)                       # code 8 has no category in the released books: weight 0 (a pick of it finds nothing)
+
+
+def floor_personnel(shares: list[int]) -> list[int]:
+    """Personnel shares with a floor on every code a book has a group for (taken from the largest codes), code 8 at 0."""
+    out = list(shares)
+    for code in PERSONNEL_NEVER:
+        out[code] = 0
+    for code in range(len(out)):
+        while code not in PERSONNEL_NEVER and out[code] < PERSONNEL_FLOOR:
+            donor = max(range(len(out)), key=lambda i: out[i])
+            out[donor] -= 1
+            out[code] += 1
+    if sum(out) != 100:                                   # code 8 held weight in the data: give it to the largest
+        out[max(range(len(out)), key=lambda i: out[i])] += 100 - sum(out)
+    return out
+
+
 FORMATION_MIN_CALLS = 200                    # classified calls needed before a coach's own formation shares are used
 CELL_PRIOR_CALLS = 20.0                      # a situational run cell counts this many calls of the coach's own overall share
 LANE_PRIOR_RUNS = 40.0                       # a coach's lane shares count this many runs of the league lane shares
@@ -619,14 +703,16 @@ def tendencies_for(vip: Mapping[str, Any], formations: Mapping[str, collections.
     projection = vip.get("native_decision_projections", {}).get("no_huddle", {}).get("rate")
     if projection is not None:
         out["no_huddle"] = int(round(100 * projection / (4 - 3 * projection)))        # nfl2k5_vip.build_coach: roll r = p / (4 - 3p)
-    for name, key in (("formation_run", "run"), ("formation_pass", "pass_")):
-        own = formations[key] if formations else collections.Counter()
-        base = league_formations[key] if league_formations else collections.Counter()
+    for name, key, codes in (("formation_run", "run", (1, 2, 3, 4, 5)), ("formation_pass", "pass_", (1, 2, 3, 4, 5)),
+                             ("personnel_run", "personnel_run", tuple(range(11))),
+                             ("personnel_pass", "personnel_pass", tuple(range(11)))):
+        own = formations.get(key, collections.Counter()) if formations else collections.Counter()
+        base = league_formations.get(key, collections.Counter()) if league_formations else collections.Counter()
         source, counts = ("coach", own) if sum(own.values()) >= FORMATION_MIN_CALLS else ("league", base)
         if sum(counts.values()) >= FORMATION_MIN_CALLS:
-            out[name] = largest_remainder([counts[c] for c in (1, 2, 3, 4, 5)])
-            basis[name] = dict(source=source, calls=sum(counts.values()),
-                               classes={str(c): counts[c] for c in (1, 2, 3, 4, 5)})
+            shares = largest_remainder([counts[c] for c in codes])
+            out[name] = floor_personnel(shares) if key.startswith("personnel") else shares
+            basis[name] = dict(source=source, calls=sum(counts.values()), classes={str(c): counts[c] for c in codes})
     return out, basis
 
 
