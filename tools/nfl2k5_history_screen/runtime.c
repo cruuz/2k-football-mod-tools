@@ -779,26 +779,34 @@ static void page_book(void) {
 
 /* ---- LEADERS: the club's all-time top three per category --------------------------------------------------- */
 /* Footer (block 4): club entry ((club*10 + category)*3 + rank) at +16, 16 B: person (7), u8 flags (1 valid, 2 real,
-   4 linked, 8 franchise era), u32 value, u16 player, u16 check. When the footer keeps a club's table (seeded at the
-   franchise start, then counted), it is the live one; otherwise the seed's (RO: per club {u16 first, u16 count} x 32,
-   then 10-byte entries {u8 category (0..9), u8 rank, u16 name, u32 value, u8 pos, u8 flags}). */
-static u32 leader(u32 index, u32 k, Mark *m, u32 *category, u32 *rank) {
-    *category = k / 3;
-    *rank = k % 3;
-    const u8 *b = x_block(X_LEADERS, LEADERS_SIZE);
-    if (b && index < 32) {
-        const u8 *e = b + 16 + 16 * (3 * (LEADER_CATS * index + *category) + *rank);
-        if ((e[7] & 1) && !person_empty(e)) {
-            m->value = *(const u32 *)(e + 8);
-            m->fresh = (e[7] & 8) != 0;
-            m->pos = person_pos(e);
-            m->year = 0;
-            m->club = index;
-            put_person(m->name, e);
-            return 1;
-        }
+   4 linked, 8 franchise era), u32 value, u16 player, u16 check. Seed (RO): per club {u16 first, u16 count} x 32, then
+   10-byte entries {u8 category (0..9), u8 rank, u16 name, u32 value, u8 pos, u8 flags}.
+   A category whose footer table carries real (seeded) entries is the live one as it stands. Without them (a footer
+   that was never seeded keeps franchise-era entries only) the footer's and the seed's lines are merged by value, a
+   player in both counted once with his larger total, so the real all-time leaders stay on the page. */
+static const u8 *x_leader(const u8 *b, u32 index, u32 category, u32 rank) {
+    if (!b || index >= 32)
+        return 0;
+    const u8 *e = b + 16 + 16 * (3 * (LEADER_CATS * index + category) + rank);
+    return (e[7] & 1) && !person_empty(e) ? e : 0;
+}
+
+/* candidate s of a category: 0..2 the footer's ranks, 3..5 the seed's (seed = the club's seed index, seed_of) */
+static u32 leader_line(const u8 *b, u32 index, u32 seed, u32 category, u32 s, Mark *m) {
+    m->year = 0;
+    m->club = index;
+    m->name[0] = 0;
+    if (s < 3) {
+        const u8 *e = x_leader(b, index, category, s);
+        if (!e)
+            return 0;
+        m->value = *(const u32 *)(e + 8);
+        m->fresh = (e[7] & 8) != 0;
+        m->pos = person_pos(e);
+        put_person(m->name, e);
+        return 1;
     }
-    u32 base = RO_FIELD(RO_LEADERS), seed = seed_of(index);
+    u32 base = ro_ok() ? RO_FIELD(RO_LEADERS) : 0;
     if (!base || seed >= 32)
         return 0;
     u32 first = RO_U16(base + 4 * seed), count = RO_U16(base + 4 * seed + 2);
@@ -806,13 +814,10 @@ static u32 leader(u32 index, u32 k, Mark *m, u32 *category, u32 *rank) {
         u32 at = base + 128 + 10 * (first + i);
         if (at + 10 > RO_FIELD(RO_SIZE))
             return 0;
-        if (RO_U8(at) == *category && RO_U8(at + 1) == *rank) {
+        if (RO_U8(at) == category && RO_U8(at + 1) == s - 3) {
             m->value = RO_U32(at + 4);
             m->fresh = 0;
             m->pos = RO_U8(at + 8);
-            m->year = 0;
-            m->club = index;
-            m->name[0] = 0;
             put_seed_name(m->name, RO_U16(at + 2));
             return 1;
         }
@@ -820,15 +825,71 @@ static u32 leader(u32 index, u32 k, Mark *m, u32 *category, u32 *rank) {
     return 0;
 }
 
+/* a footer name ("R. GRONKOWSK", nine letters at most) against a seed name ("R. GRONKOWSKI", "O. BECKHAM JR.") */
+static u32 same_name(const u16 *f, const u16 *s) {
+    u32 i = 0;
+    while (f[i] && f[i] == s[i])
+        i++;
+    return i && !f[i] && (!s[i] || s[i] == ' ' || i >= 12);
+}
+
+/* the category's top three as candidate numbers (see leader_line); returns how many */
+static u32 leaders_of(const u8 *b, u32 index, u32 seed, u32 category, u8 *pick) {
+    Mark a, c;
+    u32 n = 0, real = 0, value[6];
+    u8 cand[6];
+    for (u32 r = 0; r < 3; r++) {
+        const u8 *e = x_leader(b, index, category, r);
+        if (e && (e[7] & 2))
+            real = 1;
+    }
+    for (u32 s = 0; s < (real ? 3u : 6u); s++) {
+        if (!leader_line(b, index, seed, category, s, &a))
+            continue;
+        u32 dup = 0;
+        for (u32 i = 0; i < n && s >= 3 && !dup; i++)
+            if (cand[i] < 3 && leader_line(b, index, seed, category, cand[i], &c) && same_name(c.name, a.name)) {
+                dup = 1;
+                if (a.value >= value[i]) {
+                    cand[i] = (u8)s;
+                    value[i] = a.value;
+                }
+            }
+        if (!dup) {
+            cand[n] = (u8)s;
+            value[n++] = a.value;
+        }
+    }
+    for (u32 i = 1; i < n; i++)                         /* larger first; equal values keep the seed's line first */
+        for (u32 j = i; j > 0 && (value[j] > value[j - 1] || (value[j] == value[j - 1] && cand[j] >= 3 &&
+                                                               cand[j - 1] < 3)); j--) {
+            u32 v = value[j];
+            u8 k = cand[j];
+            value[j] = value[j - 1];
+            cand[j] = cand[j - 1];
+            value[j - 1] = v;
+            cand[j - 1] = k;
+        }
+    if (n > 3)
+        n = 3;
+    for (u32 i = 0; i < n; i++)
+        pick[i] = cand[i];
+    return n;
+}
+
 static void page_leaders(u32 index) {
     cell_ascii(0, 60.0f, 1, "ALL-TIME LEADERS", GREY);
     cell_ascii(0, 370.0f, 2, "TOTAL", GREY);
     cell_ascii(0, 380.0f, 1, "PLAYER", GREY);
-    u32 have[LEADER_CATS * 3], count = 0, category, rank;
-    Mark m;
-    for (u32 k = 0; k < LEADER_CATS * 3; k++)
-        if (leader(index, k, &m, &category, &rank))
-            have[count++] = k;
+    const u8 *b = x_block(X_LEADERS, LEADERS_SIZE);
+    u8 pick[LEADER_CATS * 3], line[LEADER_CATS * 3];
+    u32 count = 0, seed = seed_of(index);
+    for (u32 c = 0; c < LEADER_CATS; c++) {
+        u32 n = leaders_of(b, index, seed, c, pick + count);
+        for (u32 r = 0; r < n; r++)
+            line[count + r] = (u8)(c << 2 | r);
+        count += n;
+    }
     List l;
     list_start(&l, count, 1);
     if (!count) {
@@ -837,8 +898,11 @@ static void page_leaders(u32 index) {
     }
     for (u32 r = 0; r < l.rows && l.first + r < count; r++) {
         u16 text[40], *out;
-        leader(index, have[l.first + r], &m, &category, &rank);
-        u32 row = l.top + r, colour = m.fresh ? YELLOW : GREY;
+        Mark m;
+        u32 k = l.first + r, category = line[k] >> 2, rank = line[k] & 3, row = l.top + r;
+        if (!leader_line(b, index, seed, category, pick[k], &m))
+            continue;
+        u32 colour = m.fresh ? YELLOW : GREY;
         if (!rank || !r)
             cellw_ascii(row, 60.0f, 160, 1, category_name[leader_category[category]], GREY);
         out = put_uint(text, rank + 1);

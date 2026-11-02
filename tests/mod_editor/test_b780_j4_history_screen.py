@@ -18,8 +18,10 @@ proven by the emulator stills in the job report, not here.
 """
 from __future__ import annotations
 
+import json
 import struct
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -131,7 +133,7 @@ class StaticTests(unittest.TestCase):
         self.assertLessEqual(len(runtime.CODE), hist.CODE_SIZE)
         self.assertEqual(hist.REQUESTS, (("nfl2k5_history_screen", "code", 16384, 16),
                                          ("nfl2k5_history_screen", "data", 64, 16),
-                                         ("nfl2k5_history_screen", "read_only", 0x6000, 16)))
+                                         ("nfl2k5_history_screen", "read_only", 0x9000, 16)))
         for offset, kind, symbol, _value in runtime.RELOCATIONS:
             self.assertIn(kind, (1, 2))
             self.assertIn(symbol, ("code", "state", "ro", "xtnd_ptr"))
@@ -300,6 +302,46 @@ class StaticTests(unittest.TestCase):
         self.assertEqual((book[0]["value"], book[0]["year"], book[0]["name"], book[0]["club"]),
                          (45, 2001, "Michael Strahan", "NYG"))
         self.assertEqual((hof[0]["year"], hof[0]["name"], hof[0]["pos"]), (2026, "Drew Brees", 0))
+
+    def test_j5b_leaders_document(self):
+        """j5b-leaders' document (nfl2k5_franchise_leaders/v1): career top three, the season and game record holders,
+        values already in the footer's units (half sacks), clubs by today's code (LAR = the Rams); its lists replace the
+        seed's own."""
+        doc = {"schema": "nfl2k5_franchise_leaders/v1", "clubs": {
+            "NYG": {"career": {"sacks_half": [{"rank": 1, "name": "Pass Rusher", "position": "DE", "value": 283}],
+                               "passing_yards": [{"rank": r, "name": f"Passer {r}", "position": "QB", "value": 9000 - r}
+                                                 for r in (1, 2, 3, 4)]},
+                    "season": {"sacks_half": [{"rank": 1, "name": "Pass Rusher", "position": "DE", "season": 2001,
+                                               "value": 45}]},
+                    "game": {"rushing_yards": [{"rank": 1, "name": "Game Runner", "position": "HB", "season": 2006,
+                                                "week": 17, "value": 234}]}},
+            "LAR": {"career": {"receptions": [{"rank": 1, "name": "Rams Catcher", "position": "WR", "value": 942}]},
+                    "season": {}, "game": {}}}}
+        merged = hist.with_leaders(seed_document(), doc)
+        _s, _a, _b, _h, records, leaders = hist._seed_tables(merged)
+        sacks = hist.LEADER_CATEGORIES.index("sacks_half")
+        self.assertIn(dict(category=sacks, rank=0, name="Pass Rusher", value=283, pos=16), leaders["NYG"])
+        self.assertEqual([r["value"] for r in leaders["NYG"] if r["category"] == 0], [8999, 8998, 8997])
+        self.assertEqual([(r["name"], r["value"], r["year"], r["kind"]) for r in records["NYG"]],
+                         [("Pass Rusher", 45, 2001, 1), ("Game Runner", 234, 2006, 0)])
+        self.assertEqual([r["name"] for r in leaders["LA"]], ["Rams Catcher"])
+        self.assertIsNone(hist.with_leaders(None, None))
+        self.assertEqual(hist.with_leaders(None, doc)["club_leaders"][0]["club"], "LAR")
+        with self.assertRaises(hist.HistoryScreenError):
+            hist.with_leaders(seed_document(), {"schema": "other", "clubs": {}})
+        # the files: either one alone still gives a document; neither gives None
+        with tempfile.TemporaryDirectory() as tmp:
+            leaders_file, seed_file = Path(tmp) / "leaders.json", Path(tmp) / "seed.json"
+            leaders_file.write_text(json.dumps(doc), encoding="utf-8")
+            seed_file.write_text(json.dumps(seed_document()), encoding="utf-8")
+            self.assertIsNone(hist.load_seed(Path(tmp) / "none.json", Path(tmp) / "none2.json"))
+            self.assertEqual(len(hist.load_seed(Path(tmp) / "none.json", leaders_file)["club_leaders"]), 5)
+            self.assertEqual(len(hist.load_seed(seed_file, Path(tmp) / "none2.json")["club_leaders"]), 2)
+            both = hist.load_seed(seed_file, leaders_file)
+            self.assertEqual(len(both["club_leaders"]), 5)
+            self.assertEqual(len(both["seasons"]), 5)
+            content, dropped = hist.build_ro_fitting(0x1800000, 0x1600000, bytes(624), both)
+            self.assertEqual(dropped, [])
 
     def test_help_text_is_plain(self):
         for text in (hist.HELP_TEXT, hist.UI_LABEL):
@@ -555,6 +597,58 @@ class NativeTests(unittest.TestCase):
         rows = self.rows(m)
         self.assertEqual(rows[1], ["PASS YARDS", "1.", "57,400", "G. PASSER"])
         self.assertEqual(rows[2], ["2.", "41,000", "N. ROOKIE", "NEW"])
+
+    def test_leaders_merge_a_footer_that_was_never_seeded(self):
+        """A footer table without real (seeded) entries keeps franchise-era players only: merged with the seed's by
+        value, a player in both counted once (his larger total), equal values keep the seed's line first."""
+        leaders = bytearray(16176)
+
+        def put(category, rank, who, value, flags):
+            e = 16 + 16 * ((0 * 10 + category) * 3 + rank)
+            leaders[e:e + 7] = who
+            struct.pack_into("<BIHH", leaders, e + 7, flags, value, 0xFFFF, 0)
+        put(0, 0, person("N", "ROOKIE", "QB"), 41000, 1 | 8)
+        put(0, 1, person("G", "PASSER", "QB"), 20000, 1 | 8)          # the seed's leader, counted since the start only
+        put(1, 0, person("T", "THROWER", "QB"), 30, 1 | 8)            # a category the seed has no lines for
+        m = self.machine(j23_body({4: bytes(leaders)}))
+        self.draw(m, page=2, club=0)
+        rows = self.rows(m)
+        self.assertEqual(rows[1], ["PASS YARDS", "1.", "57,023", "G. PASSER"])
+        self.assertEqual(rows[2], ["2.", "41,000", "N. ROOKIE", "NEW"])
+        self.assertEqual(rows[3], ["3.", "33,462", "O. PASSER"])
+        self.assertEqual(rows[4], ["PASS TD", "1.", "30", "T. THROWER", "NEW"])
+        # the same player ahead of his seeded total in the footer: his footer line, once
+        put(0, 1, person("G", "PASSER", "QB"), 60000, 1 | 8)
+        m = self.machine(j23_body({4: bytes(leaders)}))
+        self.draw(m, page=2, club=0)
+        rows = self.rows(m)
+        self.assertEqual(rows[1], ["PASS YARDS", "1.", "60,000", "G. PASSER", "NEW"])
+        self.assertEqual(rows[2], ["2.", "41,000", "N. ROOKIE", "NEW"])
+        self.assertEqual(rows[3], ["3.", "33,462", "O. PASSER"])
+        # another club's table stays its own
+        self.draw(m, page=2, club=3)
+        self.assertEqual(self.rows(m)[1], ["NO ALL-TIME LEADERS IN THIS BUILD YET"])
+
+    def test_real_leaders_spot_checks(self):
+        """j5b-leaders' pinned data (data/nfl2k5_franchise_leaders_2026.json) when this tree carries it."""
+        seed = hist.load_seed()
+        if seed is None or not hist.LEADERS_PATH.is_file():
+            self.skipTest("no franchise leaders data in this tree")
+        payload, receipt = hist.install(self.retail, seed=seed, xtnd_ptr_va=self.WORDS)
+        self.assertEqual(receipt["seed_parts_left_out"], [])
+        saved = self.payload
+        try:
+            type(self).payload = payload
+            m = self.machine()
+            self.draw(m, page=2, club=0)                  # the Giants
+            lines = list(self.rows(m).values())
+            self.assertIn(["PASS YARDS", "1.", "57,023", "E. MANNING"], lines)
+            self.draw(m, page=2, club=0, scroll=40)
+            self.assertIn(["SACKS", "1.", "141.5", "M. STRAHAN"], list(self.rows(m).values()))
+            self.draw(m, page=1, club=0)
+            self.assertIn(["PASS YARDS", "SEASON", "4,933", "E. MANNING", "2011"], list(self.rows(m).values()))
+        finally:
+            type(self).payload = saved
 
     def press(self, m, pressed=0, repeat=0):
         m.put(PADS, 1)

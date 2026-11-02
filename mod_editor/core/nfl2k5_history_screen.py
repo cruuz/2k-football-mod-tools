@@ -35,9 +35,12 @@ What the player sees
 Where the data comes from
 -------------------------
 * Real history (seasons, awards, the NFL record book, the Hall of Fame, the club records and leaders where they are
-  checked) is a read-only block this owner carries, built at install time from the Studio's pinned seed document
-  (``data/nfl2k5_history_2026.json``, job j5-seed; ``build_ro``). Clubs are matched by their abbreviation, so the game's
-  club order and the relocated clubs (STL, SD, OAK, JAC) need nothing.
+  checked) is a read-only block this owner carries, built at install time from the Studio's pinned seed documents
+  (``data/nfl2k5_history_2026.json``, job j5-seed, and ``data/nfl2k5_franchise_leaders_2026.json``, job j5b-leaders,
+  when the tree carries it; ``load_seed``, ``with_leaders``, ``build_ro``). Clubs are matched by their abbreviation, so
+  the game's club order and the relocated clubs (STL, SD, OAK, JAC) need nothing.
+* LEADERS: a footer table seeded with real leaders (flag "real") is the live one; a footer table without them (never
+  seeded: franchise-era entries only) is merged with the read-only leaders by value, a player in both counted once.
 * Franchise history (seasons with their awards and head coaches, totals, records, leaders, Hall of Fame classes, box
   scores) is kept by the franchise extension footer (job j23-footer: ``nfl2k5_franchise_extension``, capture at the
   game commit and the season close). This screen only reads it, through one word of the footer host
@@ -48,7 +51,7 @@ Where the data comes from
   owner sets at 0x525674), so neither owner links to the other and either can be installed first.
 
 Allocation: one late owner (``nfl2k5_xbe_space.LATE_OWNERS``), code (``CODE_SIZE``), 64 RW bytes (page, club, scroll,
-the selected box score) and a read-only block (``RO_SIZE``, 24 KiB: descriptors, the cloned ESPN.com rows, the seed tables).
+the selected box score) and a read-only block (``RO_SIZE``, 36 KiB: descriptors, the cloned ESPN.com rows, the seed tables).
 Two retail sites: the ESPN.com descriptor's row-table pointer (0x525674, .rdata, a 4-byte pointer edit: the cloned table
 has the retail rows plus TEAM HISTORY) and the Schedule input (0x24D2E5, a 6-byte call). Nobody else patches either.
 """
@@ -70,7 +73,7 @@ OWNER = "nfl2k5_history_screen"
 EVIDENCE = "EXPERIMENTAL"
 CODE_SIZE = 16384
 DATA_SIZE = 64
-RO_SIZE = 0x6000                         # 24 KiB: j5's seed uses 20,426 bytes (resident, so kept small)
+RO_SIZE = 0x9000          # 36 KiB, resident: j5's seed takes 20,426 bytes, with j5b's club leaders and records 35,4xx
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "data", DATA_SIZE, 16), (OWNER, "read_only", RO_SIZE, 16))
 
 UI_LABEL = "Franchise History screen, box scores and game logs"
@@ -86,6 +89,8 @@ HELP_TEXT = (
     "saves); without it the real history and the scores by quarter still show.")
 
 SEED_PATH = Path(__file__).resolve().parents[2] / "data" / "nfl2k5_history_2026.json"
+LEADERS_PATH = Path(__file__).resolve().parents[2] / "data" / "nfl2k5_franchise_leaders_2026.json"
+LEADERS_SCHEMA = "nfl2k5_franchise_leaders/v1"
 
 # ---- retail anchors ------------------------------------------------------------------------------------------------
 ESPN_DESCRIPTOR = 0x00525664
@@ -255,6 +260,45 @@ def _year(value) -> int:
         return 0
 
 
+def _row_value(row: Mapping, category: str) -> int:
+    """A row's value in the footer's units: rows from j5b-leaders carry them already (``units: footer``, half sacks)."""
+
+    if row.get("units") == "footer":
+        return int(row.get("value") or 0)
+    return category_value(category, row.get("value", 0))
+
+
+def with_leaders(seed: Mapping | None, leaders: Mapping | None) -> dict | None:
+    """The seed document with j5b-leaders' document (``nfl2k5_franchise_leaders/v1``) as its ``club_records`` (the
+    club's season and game record holders) and ``club_leaders`` (career top three); j5b's checked lists replace any the
+    seed carries. j5b's values are already in the footer's units (sacks in half sacks), so its rows are marked
+    ``units: footer``. Either document may be None."""
+
+    if not leaders:
+        return dict(seed) if seed is not None else None
+    _require(isinstance(leaders, Mapping) and leaders.get("schema") == LEADERS_SCHEMA and
+             isinstance(leaders.get("clubs"), Mapping), f"not a {LEADERS_SCHEMA} document")
+    out = dict(seed or {})
+    records, career = [], []
+    for code, club in sorted(leaders["clubs"].items()):
+        if not isinstance(club, Mapping):
+            continue
+        for kind in ("season", "game"):
+            for category, rows in sorted((club.get(kind) or {}).items()):
+                for row in (rows or ())[:1]:
+                    records.append({"club": code, "category": category, "kind": kind, "name": row.get("name", ""),
+                                    "value": row.get("value", 0), "year": row.get("season"),
+                                    "position": row.get("position"), "units": "footer"})
+        for category, rows in sorted((club.get("career") or {}).items()):
+            for row in rows or ():
+                if 1 <= int(row.get("rank") or 0) <= 3:
+                    career.append({"club": code, "category": category, "rank": int(row["rank"]),
+                                   "name": row.get("name", ""), "value": row.get("value", 0),
+                                   "position": row.get("position"), "units": "footer"})
+    out["club_records"], out["club_leaders"] = records, career
+    return out
+
+
 def _seed_tables(seed: Mapping | None):
     """The seed document (j5-seed ``nfl2k5_history_seed/v1``) as plain lists for the block.
 
@@ -319,7 +363,7 @@ def _seed_tables(seed: Mapping | None):
         if key in club_records and category in CATEGORIES and kind in ("game", "season"):
             holder = _holder(row)
             club_records[key].append(dict(category=CATEGORIES.index(category), kind=KINDS.index(kind),
-                                          name=holder.get("name", ""), value=category_value(category, row.get("value", 0)),
+                                          name=holder.get("name", ""), value=_row_value(row, category),
                                           year=_year(holder.get("season") or holder.get("year") or row.get("year")),
                                           pos=position_code(holder.get("position") or row.get("position"))))
     leaders = {key: [] for key in CLUBS_2026}
@@ -328,18 +372,19 @@ def _seed_tables(seed: Mapping | None):
         category = category_key(row.get("category"))
         if key in leaders and category in LEADER_CATEGORIES and 1 <= int(row.get("rank", 0)) <= 3:
             leaders[key].append(dict(category=LEADER_CATEGORIES.index(category), rank=int(row["rank"]) - 1,
-                                     name=row.get("name", ""), value=category_value(category, row.get("value", 0)),
+                                     name=row.get("name", ""), value=_row_value(row, category),
                                      pos=position_code(row.get("position"))))
     return seasons_by_club, awards, book, hof, club_records, leaders
 
 
-def load_seed(path: Path | str | None = None):
-    """The pinned seed document, or None when this build carries none."""
+def load_seed(path: Path | str | None = None, leaders_path: Path | str | None = None):
+    """The pinned seed documents as one (j5-seed's history, plus j5b-leaders' club leaders and records when the tree
+    carries them: ``with_leaders``), or None when this build carries neither."""
 
-    path = Path(path) if path else SEED_PATH
-    if not path.is_file():
-        return None
-    return json.loads(path.read_text(encoding="utf-8"))
+    path, leaders_path = Path(path) if path else SEED_PATH, Path(leaders_path) if leaders_path else LEADERS_PATH
+    seed = json.loads(path.read_text(encoding="utf-8")) if path.is_file() else None
+    leaders = json.loads(leaders_path.read_text(encoding="utf-8")) if leaders_path.is_file() else None
+    return with_leaders(seed, leaders) if seed is not None or leaders is not None else None
 
 
 def _utf16(text: str) -> bytes:
@@ -734,7 +779,7 @@ GUARD_PINS: dict[str, str] = {
 
 __all__ = ["OWNER", "REQUESTS", "UI_LABEL", "HELP_TEXT", "BUILD_CAPTION", "HistoryScreenError", "build_ro", "code_for",
            "sites", "labels", "allocations", "install", "status", "reservations", "guard_digests", "owned_state",
-           "FOOTER_BLOCKS", "footer_pointer_va", "load_seed", "short_name"]
+           "FOOTER_BLOCKS", "footer_pointer_va", "load_seed", "with_leaders", "short_name"]
 
 
 if __name__ == "__main__":
