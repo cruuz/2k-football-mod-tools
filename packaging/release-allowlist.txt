@@ -580,6 +580,7 @@ mod_editor/core/nfl2k5_player_progress_screen.py
 mod_editor/core/nfl2k5_contract_college_guard.py
 mod_editor/core/nfl2k5_sim_cb_tackles.py
 mod_editor/core/nfl2k5_option_defaults.py
+mod_editor/core/nfl2k5_profile_defaults.py
 mod_editor/core/nfl2k5_sim_rb_injuries.py
 mod_editor/core/nfl2k5_sim_realism.py
 mod_editor/core/nfl2k5_sim_stats.py
@@ -3872,3 +3873,6 @@ tests/mod_editor/test_b779_rc1_roster_capacity.py
 # b779 ag1: capacity arena 0xCA000 (4,096 player records), one layout helper, beta-78 saves migrate
 tests/mod_editor/test_b779_ag1_capacity_arena.py
 tests/mod_editor/test_b779_up2_zero_footer.py
+tests/mod_editor/test_b780_b10_profile_defaults.py
+tests/mod_editor/test_b780_b10_upgrade_gaps.py
+tests/mod_editor/test_b780_b10_profile_unicorn.py

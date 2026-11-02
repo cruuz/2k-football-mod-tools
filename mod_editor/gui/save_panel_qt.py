@@ -6,6 +6,12 @@ gameplay sliders, optionally advance the franchise year, and write a COPY of
 the save plus a fresh 20-byte EXTRA signature derived from a user-owned
 default.xbe.  The source save is never touched, and saves whose stored EXTRA
 does not verify are refused upstream by the write-back route.
+
+b780 b10-profile: the "Game defaults" block takes the chosen default.xbe's new
+default Quarter Length, Sim. Quarter Length and Chop Block into the same copy,
+for the settings that still hold the old retail value (a saved profile and every
+franchise keep the settings they were saved with, so new defaults never reach
+them by themselves).
 """
 
 from __future__ import annotations
@@ -19,6 +25,7 @@ from typing import Any
 from PyQt5.QtCore import QObject, QRunnable, Qt, QThreadPool, pyqtSignal
 from PyQt5.QtWidgets import (
     QAbstractItemView,
+    QCheckBox,
     QComboBox,
     QDoubleSpinBox,
     QFileDialog,
@@ -38,6 +45,7 @@ from PyQt5.QtWidgets import (
 )
 
 from mod_editor.gui.task_delivery import bound
+from mod_editor.core import nfl2k5_profile_defaults as profile_defaults
 from mod_editor.core.nfl2k5_save_writer import (
     FRANCHISE_DISPLAY_YEAR_BASE,
     SLIDER_LABELS,
@@ -96,6 +104,9 @@ class SavePanel(QWidget):
         self._pool = QThreadPool(self)
         self._save_info: dict[str, object] | None = None
         self._slider_spins: dict[str, QDoubleSpinBox] = {}
+        self._targets: dict[str, object] | None = None       # the chosen default.xbe's defaults (b780 b10-profile)
+        self._default_report: dict[str, object] | None = None
+        self._default_checks: dict[str, QCheckBox] = {}
         self.setObjectName("savePanel")
         self._build_ui()
         self._connect()
@@ -162,6 +173,37 @@ class SavePanel(QWidget):
         header.setSectionResizeMode(0, QHeaderView.Stretch)
         table_layout.addWidget(self.slider_table, 1)
         root.addWidget(table_card, 1)
+
+        defaults_card = QFrame()
+        defaults_card.setObjectName("bumpCard")
+        defaults_layout = QVBoxLayout(defaults_card)
+        defaults_layout.setContentsMargins(12, 10, 12, 10)
+        defaults_title = QLabel("Game defaults: Quarter Length, Sim. Quarter Length and Chop Block")
+        defaults_title.setObjectName("bumpTitle")
+        defaults_layout.addWidget(defaults_title)
+        defaults_note = QLabel(profile_defaults.HELP_TEXT)
+        defaults_note.setObjectName("bumpMuted")
+        defaults_note.setWordWrap(True)
+        defaults_layout.addWidget(defaults_note)
+        self.defaults_table = QTableWidget(0, 4)
+        self.defaults_table.setObjectName("gameDefaultsTable")
+        self.defaults_table.setAccessibleName("Game defaults in this save")
+        self.defaults_table.setHorizontalHeaderLabels(
+            ("Setting", "In this save", "This build starts at", "Use the build's")
+        )
+        self.defaults_table.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.defaults_table.setSelectionMode(QAbstractItemView.NoSelection)
+        self.defaults_table.verticalHeader().setVisible(False)
+        defaults_header = self.defaults_table.horizontalHeader()
+        defaults_header.setSectionResizeMode(QHeaderView.ResizeToContents)
+        defaults_header.setSectionResizeMode(0, QHeaderView.Stretch)
+        self.defaults_table.setMaximumHeight(150)
+        defaults_layout.addWidget(self.defaults_table)
+        self.defaults_status = QLabel("Choose a default.xbe and a save to compare their game settings.")
+        self.defaults_status.setObjectName("bumpMuted")
+        self.defaults_status.setWordWrap(True)
+        defaults_layout.addWidget(self.defaults_status)
+        root.addWidget(defaults_card)
 
         options_row = QHBoxLayout()
         options_row.addWidget(QLabel("Slider copies to update (advanced)"))
@@ -301,6 +343,80 @@ class SavePanel(QWidget):
         if chosen:
             self.xbe_field.setText(chosen)
             self._refresh_controls()
+            self._read_build_defaults(Path(chosen))
+
+    def _read_build_defaults(self, xbe_path: Path) -> None:
+        """b780 b10-profile: what the chosen default.xbe starts a fresh profile with."""
+
+        def done(result: object) -> None:
+            assert isinstance(result, dict)
+            self._targets = result
+            self._refresh_defaults()
+
+        self._run(lambda progress: profile_defaults.build_targets(xbe_path.read_bytes()), done)
+
+    def _refresh_defaults(self) -> None:
+        """Fill the Game defaults table from the chosen save and the chosen default.xbe (both needed)."""
+        self._default_checks.clear()
+        self._default_report = None
+        self.defaults_table.setRowCount(0)
+        if self._save_info is None or self._targets is None:
+            self.defaults_status.setText("Choose a default.xbe and a save to compare their game settings.")
+            return
+        state = self._targets.get("state")
+        if state not in ("applied", "retail"):
+            self.defaults_status.setText(
+                "This default.xbe is not a build the tool recognises, so its default game settings are unknown. "
+                "Sliders and the franchise year still work."
+            )
+            return
+        try:
+            report = profile_defaults.plan(Path(str(self._save_info["path"])).read_bytes(), self._targets)
+        except (OSError, ValueError) as exc:
+            self.defaults_status.setText(f"Could not read this save's game settings: {exc}")
+            return
+        self._default_report = report
+        self.defaults_table.setRowCount(len(report["rows"]))
+        for row, entry in enumerate(report["rows"]):
+            self.defaults_table.setItem(row, 0, QTableWidgetItem(f"{entry['label']} ({entry['where']})"))
+            self.defaults_table.setItem(row, 1, QTableWidgetItem(entry["current_text"]))
+            self.defaults_table.setItem(row, 2, QTableWidgetItem(entry["target_text"] or "unknown"))
+            box = QCheckBox("change" if entry["action"] == "change" else "already" if entry["action"] == "same"
+                            else "change anyway")
+            box.setChecked(entry["action"] == "change")
+            box.setEnabled(entry["action"] != "same" and entry["target"] is not None)
+            box.setToolTip(entry["note"])
+            box.setAccessibleName(f"Use the build's {entry['label']}")
+            self._default_checks[entry["key"]] = box
+            self.defaults_table.setCellWidget(row, 3, box)
+        changing = [entry for entry in report["rows"] if entry["action"] == "change"]
+        kept = [entry for entry in report["rows"] if entry["action"] == "kept"]
+        if changing:
+            self.defaults_status.setText(
+                "This save still has the old defaults for " + ", ".join(entry["label"] for entry in changing)
+                + ". They are ticked: write a signed copy to take this build's."
+                + (" Settings you changed yourself (" + ", ".join(entry["label"] for entry in kept) + ") are left alone."
+                   if kept else "")
+            )
+        elif kept:
+            self.defaults_status.setText(
+                "Nothing to take: the settings differing from this build were set by you ("
+                + ", ".join(entry["label"] for entry in kept) + "). Tick one to replace it."
+            )
+        else:
+            self.defaults_status.setText("This save already has this build's default game settings.")
+
+    def _collect_option_edits(self) -> dict[str, int]:
+        """The ticked Game defaults rows, as the values to write."""
+        if self._default_report is None:
+            return {}
+        edits: dict[str, int] = {}
+        for entry in self._default_report["rows"]:
+            box = self._default_checks.get(entry["key"])
+            if box is not None and box.isChecked() and box.isEnabled() and entry["target"] is not None \
+                    and entry["target"] != entry["current"]:
+                edits[entry["key"]] = int(entry["target"])
+        return edits
 
     def _choose_save(self) -> None:
         chosen, _filter = QFileDialog.getOpenFileName(
@@ -335,6 +451,7 @@ class SavePanel(QWidget):
                 f"{kind} save loaded: {len(result.get('sliders') or {})} "
                 "sliders available."
             )
+            self._refresh_defaults()
 
         self._run(lambda progress: read_save(path), done)
 
@@ -398,6 +515,7 @@ class SavePanel(QWidget):
         xbe_path = Path(self.xbe_field.text())
         out_path = Path(self.out_field.text())
         edits = self._collect_slider_edits()
+        option_edits = self._collect_option_edits()
         franchise = self._save_info.get("kind") == "franchise"
         year: int | None = None
         if franchise:
@@ -408,16 +526,20 @@ class SavePanel(QWidget):
             )
             if self.year_spin.value() != original_year:
                 year = self.year_spin.value()
-        if not edits and year is None:
+        if not edits and year is None and not option_edits:
             QMessageBox.information(
                 self, "Saves & sliders",
-                "Nothing changed yet — adjust a slider or the franchise "
-                "year first.",
+                "Nothing changed yet — adjust a slider, tick a game default "
+                "or change the franchise year first.",
             )
             return
         extra_path = out_path.with_name("EXTRA")
         overwrite = out_path.exists() or extra_path.exists()
         summary_bits = [f"{len(edits)} slider edit(s)"]
+        if option_edits:
+            summary_bits.append("game defaults: " + ", ".join(
+                f"{profile_defaults.BY_KEY[key].label} -> {profile_defaults.BY_KEY[key].show(value)}"
+                for key, value in option_edits.items()))
         if year is not None:
             summary_bits.append(f"franchise year -> {year}")
         confirmation = QMessageBox.question(
@@ -442,7 +564,7 @@ class SavePanel(QWidget):
             return edit_save_file(
                 save_path, out_path, extra_path, xbe_path=xbe_path,
                 sliders=edits, slider_mode=mode, franchise_year=year,
-                overwrite=overwrite,
+                overwrite=overwrite, options=option_edits,
             )
 
         def done(result: object) -> None:
@@ -452,6 +574,9 @@ class SavePanel(QWidget):
             lines = [
                 f"Slider writes: {len(changes)} (mode: {mode})",
             ]
+            for change in result.get("option_changes") or []:
+                option = profile_defaults.BY_KEY[change["key"]]
+                lines.append(f"{option.label}: {option.show(change['before'])} -> {option.show(change['after'])}")
             if year_change:
                 lines.append(
                     "Franchise year: "

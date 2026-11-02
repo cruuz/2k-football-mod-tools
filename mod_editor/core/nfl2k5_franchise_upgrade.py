@@ -1125,6 +1125,23 @@ def sync_free_agents(payload: bytes, disc_body: bytes, *, keep: int = SAVE_KEEP_
                       "file_growth": len(migrated) - len(payload), "migration": migration}
             payload = migrated
             save, roster = franchise(payload)
+    elif (capacity_request and arena.is_capacity_size(roster.layout.arena_size)
+          and roster.layout.arena_size == disc_layout.arena_size):
+        # b780 b10 ("Upgrade before the first save" trap): the v0.8 game moves a v0.7 save to this arena the first time
+        # it saves it but adds none of the draft-class records. They go into the arena's own spare bytes; the file
+        # keeps its size. A save that already has them, or has no free class record to copy, is left as it is.
+        filled, migration = arena.fill_class_records(payload)
+        if migration.get("already_applied"):
+            growth_state = ("already the disc's arena size" if not migration.get("reason") else
+                            "already the disc's arena size; no records added: " + migration["reason"])
+        else:
+            growth_state = "filled in place"
+            growth = {"arena_size_before": roster.layout.arena_size, "arena_size_after": disc_layout.arena_size,
+                      "records": migration["capacity_records"], "vacancy_records": 0,
+                      "class_records": migration.get("class_records"), "file_growth": len(filled) - len(payload),
+                      "in_place": True, "migration": migration}
+            payload = filled
+            save, roster = franchise(payload)
     document = rr.RosterDocument(payload, base=roster.layout.preamble, scheme="one_pool", base_year=BASE_YEAR)
     require(document.free_agent_list is not None, "the franchise has no free-agent list")
     base_payload = payload
@@ -1243,3 +1260,106 @@ def sync_rookie_templates(payload: bytes, disc_body: bytes) -> tuple[bytes, dict
     return result, {"operation": "rookie_templates", "before_sha256": sha(payload), "after_sha256": sha(result),
                     "disc_roster_sha256": sha(disc_body), "templates": 68,
                     "templates_changed": len({c["template"] for c in changes}), "changes": changes, **scope}
+
+
+# --- b780-b10: the champions history of an upgraded franchise -----------------------------------------------------
+#: hn1 (beta 79) keeps the last 22 Super Bowls in 270 spare bytes right after the arena's reserve block, so a franchise
+#: started on the v0.8 disc shows who won the real Super Bowls before it began. A franchise saved by an earlier game has
+#: no block ("CHAMPIONS: NONE YET" until its next Super Bowl). The seeds come from the chosen disc, so a pack with other
+#: data seeds its own; what the game recorded itself is never replaced.
+FIRST_SUPER_BOWL_YEAR = 1966       # Super Bowl n is played in the year n + 1966 (the season n + 1965)
+
+
+def sync_champions(payload: bytes, disc_body: bytes) -> tuple[bytes, dict]:
+    """Copy the disc roster's Super Bowl history (the Player Card champions page) into the franchise's own arena.
+
+    Writes only the 270-byte history block in the 306 spare bytes behind the arena's reserve block. A save that
+    never recorded a Super Bowl takes the disc's block as it is (limited to Super Bowls that were played before this
+    franchise's current season); a save the game already added seasons to keeps them and gains the older disc seasons
+    that still fit the 22-season ring and whose slot is empty. A save with no reserve block (no room), a disc without
+    the history, spare bytes that hold anything else, or an auxiliary tail longer than the game's own 366 bytes is
+    returned unchanged with the reason in the receipt.
+    """
+    from . import nfl2k5_champions_history as hist
+    save, roster = franchise(payload)
+    block_at = save.arena_end - hist.FROM_END
+    gap_at = block_at + hist.RESERVE_BLOCK
+    newest_allowed = save.header.display_year - FIRST_SUPER_BOWL_YEAR
+    base = {"operation": "champions", "before_sha256": sha(payload), "after_sha256": sha(payload),
+            "disc_roster_sha256": sha(disc_body), "offset": gap_at, "spare_bytes": hist.FREE,
+            "franchise_season": save.header.display_year, "newest_super_bowl_played": newest_allowed,
+            "added": [], "kept": [], "skipped": [], "seeded": False, "changes": [],
+            "outside_declared_fields_identical": True, "changed_bytes": 0, "reason": ""}
+
+    def unchanged(reason: str) -> tuple[bytes, dict]:
+        return payload, {**base, "reason": reason}
+
+    if not hist.has_room(disc_body):
+        return unchanged("the disc's roster has no room for a champions history (it keeps the game's own roster size)")
+    seed = disc_body[hist.gap_offset(disc_body):hist.gap_offset(disc_body) + hist.USED]
+    if not hist.block_ok(seed) or not hist.read_block(seed):
+        return unchanged("the disc's champions history is empty")
+    if payload[block_at:block_at + 8] != hist.RESERVE_MAGIC:
+        return unchanged("this save's roster file has no room for a champions history (no reserve block)")
+    auxiliary = struct.unpack_from("<I", payload, fs.ARENA_WRAPPER + 8)[0]
+    if auxiliary > hist.AUX_TAIL:
+        return unchanged(f"the save's auxiliary tail is {auxiliary} bytes, longer than the {hist.AUX_TAIL} the history leaves")
+    spare = payload[gap_at:gap_at + hist.FREE]
+    if any(spare[hist.USED:]):
+        return unchanged("the spare bytes behind the champions history hold something else")
+    own = spare[:hist.USED]
+    try:
+        merged, info = hist.merge_blocks(own if any(own) else None, seed, newest_allowed)
+    except hist.ChampionsHistoryError as exc:
+        return unchanged(str(exc))
+    base.update({"added": info["added"], "kept": info["kept"], "skipped": [list(row) for row in info["skipped"]],
+                 "seeded": info["seeded"]})
+    if merged == own:
+        return unchanged("the save already holds these seasons" if info["kept"] else "nothing to add")
+    out = bytearray(payload)
+    out[gap_at:gap_at + hist.USED] = merged
+    masks = {offset: 255 for offset in range(gap_at, gap_at + hist.USED)}
+    result = bytes(out)
+    scope = prove_scope(payload, result, masks)
+    check = hist.read_block(result[gap_at:gap_at + hist.USED])
+    require([row["super_bowl"] for row in check] == sorted(set(info["added"]) | set(info["kept"]), reverse=True)[:hist.RING],
+            "the champions history does not read back as written")
+    sr.decode(result, base_year=BASE_YEAR)
+    rows = {row["super_bowl"]: row for row in check}
+    changes = [{"field": "champions.season", "super_bowl": n, "season": n + 1965, "champion": rows[n]["champion"],
+                "runner_up": rows[n]["runner_up"], "champion_points": rows[n]["champion_points"],
+                "runner_up_points": rows[n]["runner_up_points"]} for n in info["added"] if n in rows]
+    return result, {**base, "after_sha256": sha(result), "reason": "", "changes": changes,
+                    "seasons_in_history": len(check), "newest_super_bowl": check[0]["super_bowl"] if check else None,
+                    "storage_spans": [{"field": "champions_history", "offset": gap_at, "size": hist.USED}], **scope}
+
+
+# --- b780-b10: the new build's default game settings in the franchise's own copy of the options -------------------
+def sync_game_settings(payload: bytes, targets: Mapping | None) -> tuple[bytes, dict]:
+    """Set Quarter Length, Sim. Quarter Length and Chop Block to what the chosen disc starts new profiles with.
+
+    A franchise keeps its own copy of the game options (the first 0x2E0 bytes of the save) and the game copies all of it
+    over the live options when it loads the franchise, so the disc's new defaults never reach a franchise saved earlier.
+    Only an option that still holds the old retail value is changed; a value the player set is kept (and listed). Nothing
+    outside those dwords changes. ``targets`` is ``nfl2k5_profile_defaults.build_targets`` of the disc's default.xbe.
+    """
+    from . import nfl2k5_profile_defaults as profile
+    franchise(payload)
+    state = (targets or {}).get("state", "unreadable")
+    base = {"operation": "game_settings", "build_state": state, "before_sha256": sha(payload),
+            "after_sha256": sha(payload), "rows": [], "changes": [], "kept": [], "reason": "",
+            "outside_declared_fields_identical": True, "changed_bytes": 0}
+    if state not in ("applied", "retail"):
+        why = (targets or {}).get("error") or "its default.xbe is not a build this tool recognises"
+        return payload, {**base, "reason": f"the disc's default game settings could not be read ({why}); nothing was changed"}
+    report = profile.plan(payload, targets)
+    base.update(rows=report["rows"], kept=report["kept"])
+    values = profile.values_from_plan(report)
+    if not values:
+        return payload, {**base, "reason": ("this disc starts new profiles with the retail settings" if state == "retail"
+                                            else "the franchise already has this disc's settings or its own choices")}
+    result, rows = profile.edit(payload, values)
+    masks = {int(row["offset"], 16) + i: 255 for row in rows for i in range(4)}
+    scope = prove_scope(payload, result, masks)
+    sr.decode(result, base_year=BASE_YEAR)
+    return result, {**base, "after_sha256": sha(result), "changes": rows, **scope}

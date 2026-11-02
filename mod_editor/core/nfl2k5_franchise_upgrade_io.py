@@ -8,6 +8,7 @@ import json
 from pathlib import Path, PurePosixPath
 import shutil
 import os
+import struct
 import tempfile
 import zipfile
 import zlib
@@ -20,7 +21,7 @@ from . import nfl2k5_save_rost as sr
 #: played-clubs uses the same verified club repair as Upgrade; undated candidates stay in the receipt;
 #: b778-fa3: free-agents adds the disc's 2026-10-22 free-agent depth players the franchise lacks.
 COMMANDS = ("upgrade", "coach-sync", "team-history", "hair-styles", "honors", "played-clubs", "free-agents",
-            "rookie-templates")
+            "rookie-templates", "champions", "game-settings")
 DEFAULT_COHORT = Path(__file__).resolve().parents[2] / "mod_editor/data/f12_cohort.json"
 
 
@@ -125,11 +126,29 @@ class UpgradePlan:
     receipt: dict
 
 
+def load_disc_defaults(path: Path) -> dict:
+    """b780 b10-profile: the default game settings of the disc's default.xbe (what a fresh profile starts with).
+
+    -> ``nfl2k5_profile_defaults.build_targets``; a disc whose executable cannot be read gives state "unreadable"."""
+    from . import nfl2k5_espn25_rosters as disc_files
+    from . import nfl2k5_profile_defaults as profile
+    try:
+        return profile.build_targets(disc_files.read_xbe(Path(path)))
+    except (ValueError, OSError, EOFError, KeyError, IndexError, struct.error) as exc:
+        return {"state": "unreadable", "values": {}, "error": str(exc) or exc.__class__.__name__}
+
+
 def plan_upgrade(source: Path, disc: Path, *, command: str = "upgrade",
-                 cohort_path: Path = DEFAULT_COHORT, team_history_path: Path | None = None) -> UpgradePlan:
-    """Read, validate and preview every change, without creating any files."""
+                 cohort_path: Path = DEFAULT_COHORT, team_history_path: Path | None = None,
+                 game_defaults: bool = True) -> UpgradePlan:
+    """Read, validate and preview every change, without creating any files.
+
+    ``game_defaults`` (b780 b10-profile): Upgrade also takes the disc's new default game settings into the franchise's own
+    copy of the options (Quarter Length, Sim. Quarter Length, Chop Block), for the options that still hold the old
+    retail value. The ``game-settings`` command does only that."""
     upgrade.require(command in COMMANDS, "unknown upgrade command")
-    upgrade.require(team_history_path is None or command not in ("coach-sync", "hair-styles", "honors", "rookie-templates"),
+    upgrade.require(team_history_path is None or command not in ("coach-sync", "hair-styles", "honors", "rookie-templates",
+                                                                  "champions", "game-settings"),
                     "TEAM evidence requires upgrade, team-history, played-clubs or free-agents")
     container = load_container(source)
     before_validation = upgrade.validate_save(container.savegame)
@@ -170,6 +189,16 @@ def plan_upgrade(source: Path, disc: Path, *, command: str = "upgrade",
         # b778-fa3: the free-agent depth fills vacant records of the save itself; free-agents alone refuses without room
         payload, step = upgrade.sync_free_agents(payload, body, strict=command == "free-agents")
         steps.append(step)
+    if command in ("upgrade", "champions"):
+        # b780-b10: the disc's Super Bowl history, after the roster arena has grown (the block sits at its end)
+        payload, step = upgrade.sync_champions(payload, body)
+        steps.append(step)
+    disc_defaults = None
+    if command == "game-settings" or (command == "upgrade" and game_defaults):
+        # b780-b10: the franchise's own copy of the options takes the disc's new defaults where it still has the old ones
+        disc_defaults = load_disc_defaults(disc)
+        payload, step = upgrade.sync_game_settings(payload, disc_defaults)
+        steps.append(step)
     after_validation = upgrade.validate_save(payload)
     receipt = {"schema": upgrade.SCHEMA, "command": command, "dry_run": True,
                "input": str(source.resolve()), "disc": str(disc.resolve()),
@@ -180,6 +209,8 @@ def plan_upgrade(source: Path, disc: Path, *, command: str = "upgrade",
                "output_extra_sha256": upgrade.sha(rr.sign_save(payload)),
                "changed_fields": sum(len(s["changes"]) for s in steps), "steps": steps,
                "validation": {"before": before_validation, "after": after_validation}}
+    if disc_defaults is not None:
+        receipt["disc_default_settings"] = disc_defaults
     if command == "upgrade":
         receipt["cohort_sha256"] = hash_file(cohort_path)
     if team_history_path:

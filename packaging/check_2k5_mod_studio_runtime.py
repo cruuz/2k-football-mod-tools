@@ -2054,6 +2054,7 @@ def main() -> int:
         "mod_editor.core.nfl2k5_sim_realism",                     # b779-sim2 r4
         "mod_editor.core.nfl2k5_sim_stats",                      # b778-sim1, in-place
         "mod_editor.core.nfl2k5_option_defaults",                # b779-df1, in-place
+        "mod_editor.core.nfl2k5_profile_defaults",               # b780-b10 (saved profiles take the new defaults)
         "mod_editor.core.nfl2k5_clock_led",                       # b778-sd4
         "mod_editor.core.nfl2k5_project_check",                   # b779-ce1 Check my project
         "mod_editor.core.nfl2k5_kickoff_blocking",                # b76-vb3 E1
