@@ -23,7 +23,7 @@ TAG = b"MC-INLINE-M003\0\0\0"
 TAG_OFFSET = CODE_SIZE - len(TAG)
 POOLED = frozenset(("m3_progress_note", "m3_draft_note", "m3_settings_note", "m3_unsigned_text", "m3_bench_text"))
 # mc2: a second pool in M3 RW past its menus (<= 256 + 1900) and before the text scratch buffer. b780 b8: the
-# scratch buffer moved from +2700 to +3200 and the 26 Upgrades attribute names joined this pool (one RX byte per
+# scratch buffer moved from +2700 to +3200 and the 25 Upgrades attribute names joined this pool (one RX byte per
 # character instead of two), which paid for the draft need gate (club_needs, m3_starters in runtime.c).
 POOLED2 = frozenset(("m3_prep_note", "m3_prospect_error", "m3_sign_cut_text", "m3_unavailable_text",
                      "m3_confirm_text", "m3_drafted_format"))
