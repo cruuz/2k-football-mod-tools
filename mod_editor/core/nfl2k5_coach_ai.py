@@ -5,6 +5,7 @@ retail resources. The reserved tail stays inside the original resource span.
 """
 from __future__ import annotations
 
+import functools
 import hashlib
 import json
 import os
@@ -67,12 +68,18 @@ VACANT_NAME = b"\xff\xff" * 13
 _ROW = struct.Struct("<IIHHHH26sH")
 
 
-def default_table():
-    """The shipped rows: every club's own 2026 head coach (data/vip/coach_portraits_2026.json)."""
+@functools.lru_cache(maxsize=1)
+def _default_rows():
     rows = sorted(portrait_rows(), key=lambda r: r["book_index"])
-    return [dict(identity=r["identity"], legacy_identity=r["legacy_identity"], book_index=r["book_index"],
-                 asset=r["asset"], portrait=r["portrait"], alternate_portrait=r.get("alternate_portrait", 0),
-                 name=r["name"]) for r in rows]
+    return tuple(tuple(sorted(dict(identity=r["identity"], legacy_identity=r["legacy_identity"],
+                                   book_index=r["book_index"], asset=r["asset"], portrait=r["portrait"],
+                                   alternate_portrait=r.get("alternate_portrait", 0), name=r["name"]).items()))
+                 for r in rows)
+
+
+def default_table():
+    """The shipped rows: every club's own 2026 head coach (data/vip/coach_portraits_2026.json). A fresh list."""
+    return [dict(row) for row in _default_rows()]
 
 
 def vacant_row(index):
@@ -156,6 +163,7 @@ def table_offset(variant="b778"):
     return at
 
 
+@functools.lru_cache(maxsize=1)
 def _default_table_bytes():
     return b"".join(_encode_row(r) for r in default_table())
 

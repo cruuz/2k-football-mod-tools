@@ -840,7 +840,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_screen_authored_pins.py": "867b58de8ef5afcfe6ab980c589caef39f68b7f2b04df2fec10f3fca5af6503b",
         "mod_editor/core/nfl2k5_playbook_inspector.py": "296b94fe2565486665c6e820658fd149d22b3ddaeec42cc87b606325f5f7167f",
         "mod_editor/core/nfl2k5_playbook_pack.py": "55aae169736610d2e878f15771036dedf7c0e7d6468f595308d6b8674f690fdf",
-        "mod_editor/core/nfl2k5_coach_ai.py": "d52b931e5721a07d9768b6aaacdf640ab409e7f6ae5112d882e439da60762dc5",
+        "mod_editor/core/nfl2k5_coach_ai.py": "0619d59108f07601ceb055d45f6feaccb70ceb6263cbbbc309636f97ddc34352",
         "mod_editor/core/nfl2k5_coach_ai_code.py": "5f42221d20454018f74430fa2fff8c1987143536549ce7dd52b55f00b0975afa",
         "mod_editor/core/nfl2k5_coach_staff.py": "71fa2df13ebe0addd715b452a4c1975a8fc7ae3620abab45377258e9e4a0dcfe",
         "mod_editor/core/nfl2k5_vip.py": "7760c4c3c07a00b081db7f742c314fb23ba02d97568ec39e1106f0d8e9af3b51",
