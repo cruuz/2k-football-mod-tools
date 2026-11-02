@@ -161,6 +161,8 @@ docs/mod_editor/nfl2k5_scorebug_template_capability.json
 mod_editor/core/nfl2k5_scorebug_author.py
 mod_editor/core/build_feedback.py
 mod_editor/core/build_io.py
+mod_editor/core/build_report.py
+mod_editor/core/build_steps.py
 mod_editor/core/xdvdfs_compact.py
 tools/xdvdfs_compact.py
 mod_editor/core/equipment_palette.py

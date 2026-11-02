@@ -39,6 +39,7 @@ import numpy as np
 
 from . import nfl2k5_bump_texture_writer as bump
 from . import nfl2k5_kit_fixes_2026 as kit
+from . import build_steps  # b791-h3: a failed compile names its kit
 from nfl_txtr import TxtrError, decode_chunk, parse_chunks, parse_texture, swizzle_2d, unswizzle_2d
 from nfl_vc_lz_fill import rebuild_fixed_span_filled
 
@@ -585,7 +586,8 @@ def apply_to_image(path, *, strict=False, document=None):
             require(len(entries) == 1, selector + " kit package absent or duplicated")
             entry = entries[0]
             raw = image.read_segments(index.sub_extents(entry, 0, entry.size))
-            replacements, receipt = compile_resource(selector, raw, strict=strict, document=document, cache=cache)
+            with build_steps.resource(selector + ".IFF"):
+                replacements, receipt = compile_resource(selector, raw, strict=strict, document=document, cache=cache)
             plans.append((entry, replacements, receipt))
         if {p[2]["state"] for p in plans} == {"other_uniform"}:
             return dict(state="other_uniform", written_spans=0, written_bytes=0, changed_bytes=0, kits=[])

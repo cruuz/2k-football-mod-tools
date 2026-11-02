@@ -47,8 +47,20 @@ from mod_editor.core.errors import ModEditorError
 from mod_editor.gui.playbook_pack_dialog_qt import BOOK_SET_EXPLAINER, BookSetTeamsDialog, book_set_status_text
 from mod_editor.gui.ux_text import (
     NOT_TESTED, STUDIO_THEMES, XEMU_LINE, Details, WrappedLabel, WrappingCheckBox, build_panel_stylesheet,
-    plain_failure, show_operation_error, source_captions, suggest_copy_name, tab_title,
+    build_summary_lines, plain_failure, show_build_failure, show_operation_error, source_captions, suggest_copy_name,
+    tab_title,
 )
+
+
+def _studio_log_directory():
+    """The Studio's log folder (errors.log, builds/), or None outside the running Studio (b791-h3)."""
+    try:
+        from mod_editor.gui import crash_report
+        if not crash_report.reports_enabled("2K5 Mod Studio"):
+            return None
+        return crash_report.log_directory("2K5 Mod Studio")
+    except Exception:  # noqa: BLE001
+        return None
 
 
 #: The narrowest a combo box on the Build page asks to be (see BuildPanel.__init__).
@@ -340,6 +352,7 @@ class _Task(QRunnable):
         self._operation = operation
         self.cancelled = threading.Event()
         self.latest_progress = "Preparing the build"
+        self.failure: BaseException | None = None
         self.started = time.monotonic()
         self.last_update = self.started
         self._last_emit = 0.0
@@ -376,6 +389,9 @@ class _Task(QRunnable):
             progress.cancelled = self.cancelled
             result = self._operation(progress)
         except BaseException as exc:  # worker failures must always reach Qt
+            # b791-h3: the exception itself (its step, resource and the files written for it) stays readable for
+            # the failure dialog and Copy summary; the signal still carries the plain sentence.
+            self.failure = exc
             self.signals.failed.emit(plain_error(exc))
         else:
             self.signals.finished.emit(result)
@@ -397,6 +413,8 @@ class BuildPanel(QWidget):
         self._facade = facade
         self._theme = theme if theme in STUDIO_THEMES else "dark"
         self.operation_guard = None
+        # b791-h3: the main window says which project the doctor reads after a failed build (saved .2k5mod or session)
+        self.doctor_project = None
         self._pool = QThreadPool(self)
         self._task: _Task | None = None
         self._heartbeat_timer = QTimer(self)
@@ -4500,6 +4518,95 @@ class BuildPanel(QWidget):
                     and getattr(self._facade, "modified_count", 0))
 
     def _build_operation(self, plan, progress, include_session=False, softdrink_project=None):
+        """The worker side of Make my disc (b791-h3: tracked, logged, and reported when it stops).
+
+        Every build runs inside ``build_steps.track``: each step, every progress line, the notes and any left-out
+        step are recorded. A finished build writes its build log beside the disc (and a copy in the Studio's log
+        folder). A build that stops writes, here on the worker and before the dialog opens, the full errors.log entry,
+        the build log and the diagnostic .zip with the project doctor's report; the exception carries where they are.
+        """
+        from mod_editor.core import build_report, build_steps
+        labels = list(getattr(self, "_requested_build_labels", ()) or ())
+        tracked = build_steps.track(progress)
+        try:
+            with tracked:
+                receipt = self._run_build(plan, tracked.progress, include_session, softdrink_project)
+        except BaseException as exc:
+            self._record_failed_build(tracked.tracker, exc, plan, labels, progress, include_session, softdrink_project)
+            raise
+        try:
+            record = build_report.record_end(tracked.tracker, plan=plan, labels=labels, receipt=receipt,
+                                             log_directory=_studio_log_directory())
+            if record.build_log:
+                receipt["build_log"] = record.build_log
+        except Exception:  # noqa: BLE001 - a log that cannot be written never fails a finished build
+            pass
+        # Some resource passes follow the receipt's earlier inspection. Keep
+        # the existing final source-state refresh, on this worker rather than
+        # in the completion dialog's GUI callback. A courtesy refresh failure
+        # does not turn an already verified/published build into a failed build.
+        progress.published = True
+        progress("Reading the finished disc's settings", 0, 0)
+        receipt["_build_panel_state"] = None
+        try:
+            from mod_editor.core.studio_inspection import inspect_source
+            receipt["_build_panel_state"] = inspect_source(Path(receipt["target"]), marks_pack=plan.official_marks_pack)
+        except Exception:
+            pass
+        return receipt
+
+    def _doctor_project(self, include_session, softdrink_project):
+        """What the project doctor should read after a failed build: the main window's saved project when it has one
+        (``doctor_project``), else the SOFTDRINK source project, else the open session, else None (options only)."""
+        chooser = getattr(self, "doctor_project", None)
+        if callable(chooser):
+            try:
+                chosen = chooser()
+                if chosen is not None:
+                    return chosen
+            except Exception:  # noqa: BLE001
+                pass
+        if softdrink_project:
+            return Path(softdrink_project)
+        if include_session:
+            return getattr(self._facade, "_session", None)
+        return None
+
+    def _record_failed_build(self, tracker, exc, plan, labels, progress, include_session, softdrink_project):
+        """Write the build log, the errors.log entry and the diagnostic .zip of a build that stopped (never raises)."""
+        from mod_editor.core import build_report, build_steps
+        try:
+            if not isinstance(exc, Exception) or build_steps.is_cancel(exc):
+                # A cancel is not a fault: the build log says where it was; no errors.log entry and no report.
+                build_report.record_end(tracker, plan=plan, labels=labels, log_directory=_studio_log_directory())
+                return
+
+            def say(message, done=0, total=0):
+                try:
+                    progress(message, done, total)
+                except Exception:  # noqa: BLE001 - a Cancel here only skips the doctor, never the report
+                    pass
+
+            def doctor():
+                project = self._doctor_project(include_session, softdrink_project)
+
+                def doctor_progress(message, done=0, total=0):
+                    progress(f"Diagnostic report, project doctor: {message}", done, total)  # Cancel stops the doctor
+
+                return build_report.run_doctor(project, plan.source, plan, progress=doctor_progress,
+                                               workers=build_report.default_workers())
+
+            from mod_editor.gui import crash_report
+            append = ((lambda text: crash_report.write_report(text, "2K5 Mod Studio"))
+                      if crash_report.reports_enabled("2K5 Mod Studio") else None)
+            record = build_report.record_failure(
+                tracker, exc, plan=plan, labels=labels, log_directory=_studio_log_directory(),
+                append_errors_log=append, doctor=doctor, progress=say)
+            exc.studio_build_record = record.as_dict()
+        except Exception:  # noqa: BLE001 - reporting must never hide the build's own error
+            pass
+
+    def _run_build(self, plan, progress, include_session=False, softdrink_project=None):
         if plan.modern_naming and getattr(self._facade, "source_ready", False):
             tt.modern_naming_patch.catalog_overrides(self._facade.text_catalog_snapshot(progress), enabled=True,
                                                     value_lookup=self._facade.text_value)
@@ -4524,18 +4631,6 @@ class BuildPanel(QWidget):
                     raise ValueError("Choose the open project's source disc to include its staged edits")
             receipt = mod_build.build_with_project(plan, facade.build_service, cache, session, progress,
                                                        require_change=True)
-        # Some resource passes follow the receipt's earlier inspection. Keep
-        # the existing final source-state refresh, on this worker rather than
-        # in the completion dialog's GUI callback. A courtesy refresh failure
-        # does not turn an already verified/published build into a failed build.
-        progress.published = True
-        progress("Reading the finished disc's settings", 0, 0)
-        receipt["_build_panel_state"] = None
-        try:
-            from mod_editor.core.studio_inspection import inspect_source
-            receipt["_build_panel_state"] = inspect_source(Path(receipt["target"]), marks_pack=plan.official_marks_pack)
-        except Exception:
-            pass
         return receipt
 
     def _heartbeat(self):
@@ -4674,7 +4769,8 @@ class BuildPanel(QWidget):
             names.update({"xbe": "gameplay and game settings", "position_pool_filters": "position lists",
                           "visual_project": "project artwork", "project": "project edits"})
             labels = list(dict.fromkeys(names.get(str(step.get("step")), "other selected project changes")
-                        for step in receipt.get("steps", ()) if isinstance(step, dict)))
+                        for step in receipt.get("steps", ())
+                        if isinstance(step, dict) and step.get("status") != "left_out"))  # b791-h3: not built
         contents = "Build selection: " + (", ".join(labels) if labels else "no recorded changes") + "."
         from mod_editor.gui.ux_text import disc_next_steps
         next_step = disc_next_steps(target)
@@ -4684,8 +4780,13 @@ class BuildPanel(QWidget):
         timing = timing_summary(receipt.get("stage_seconds"))
         if timing:
             contents += "\n" + timing
+        # b791-h3: a visual step that could not be made was left out (restored exactly); name each one.
+        left = [row.get("label", row.get("step", "")) for row in receipt.get("left_out", ()) or ()]
+        if left:
+            contents += "\nLeft out (see the notes above): " + ", ".join(left) + "."
         body = f"{target}\n\n{message}\n\n{contents}\n\nYour original game disc was not changed.\n\n{next_step}"
-        self._last_build_summary = (self._requested_build_summary or f"2K5 Mod Studio {BUILD_RELEASE_TAG}") + f"\n\n{title}\n{body}"
+        extra = f"\n\nBuild log: {receipt['build_log']}" if receipt.get("build_log") else ""
+        self._last_build_summary = (self._requested_build_summary or f"2K5 Mod Studio {BUILD_RELEASE_TAG}") + f"\n\n{title}\n{body}{extra}"
         self.copy_summary_button.setEnabled(True)
         self.status_label.setText(f"{title}: {target}. {message}")
         self.built.emit(dict(receipt))
@@ -4742,15 +4843,26 @@ class BuildPanel(QWidget):
 
     def _failed(self, message: str) -> None:
         message = plain_error(message)
-        self._last_build_summary = (self._requested_build_summary or f"2K5 Mod Studio {BUILD_RELEASE_TAG}") + f"\n\nFirst error: {message}"
+        # b791-h3: the worker wrote errors.log, the build log and the diagnostic .zip; its exception says where.
+        failure = getattr(self._task, "failure", None)
+        record = getattr(failure, "studio_build_record", None) if failure is not None else None
+        summary = "\n".join(build_summary_lines(record, message)) if record else f"First error: {message}"
+        self._last_build_summary = (self._requested_build_summary or f"2K5 Mod Studio {BUILD_RELEASE_TAG}") + f"\n\n{summary}"
         self.copy_summary_button.setEnabled(True)
         self._heartbeat_timer.stop()
         self._task = None
         self.operation_state_changed.emit(False)
         self.progress_bar.hide()
         self.progress_label.setText("")
-        self.status_label.setText(plain_failure("make the disc", message))
-        show_operation_error(self, "make the disc", message)
+        if record:
+            where = record.get("label") or "the build"
+            if record.get("resource"):
+                where += f" ({record['resource']})"
+            self.status_label.setText(f"Couldn't make the disc. It stopped during {where}: {record.get('reason')}.")
+            show_build_failure(self, record, message)
+        else:
+            self.status_label.setText(plain_failure("make the disc", message))
+            show_operation_error(self, "make the disc", message)
         self._refresh()
 
 

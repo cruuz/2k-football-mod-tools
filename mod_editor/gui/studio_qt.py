@@ -26,6 +26,7 @@ from pathlib import Path
 import tempfile
 import time
 import threading
+import traceback
 from typing import Any, Callable, Iterable, Mapping, Protocol, Sequence, runtime_checkable
 from uuid import uuid4
 import weakref
@@ -268,7 +269,7 @@ _FIX_HINTS: tuple[tuple[str, str], ...] = (
 )
 
 
-def _record_failed_operation(label: str, message: str) -> None:
+def _record_failed_operation(label: str, message: str, details: str | None = None) -> None:
     """Append a failed background operation to errors.log, never raising.
 
     Beta 74. A build or import that fails is caught and shown in the
@@ -281,7 +282,11 @@ def _record_failed_operation(label: str, message: str) -> None:
 
     try:
         from mod_editor.gui import crash_report
-        crash_report.record_operation(label, message, "2K5 Mod Studio")
+        if details:
+            # b791-h3: the traceback says where it happened, not only what it said
+            crash_report.record_operation(label, message, "2K5 Mod Studio", details=details)
+        else:
+            crash_report.record_operation(label, message, "2K5 Mod Studio")
     except Exception:  # noqa: BLE001 - logging must never block the dialog
         pass
 
@@ -1495,6 +1500,7 @@ class _BackgroundTask(QRunnable):
         self.operation = operation
         self.signals = _TaskSignals()
         self.cancelled = threading.Event()
+        self.traceback_text = ""
         self.setAutoDelete(False)
 
     def run(self) -> None:
@@ -1510,6 +1516,8 @@ class _BackgroundTask(QRunnable):
             result = self.operation(progress)
         except BaseException as exc:  # Qt must receive failures, never lose them.
             message = plain_error(exc)
+            # b791-h3: errors.log keeps the whole traceback (the dialog keeps the plain sentence)
+            self.traceback_text = "".join(traceback.format_exception(type(exc), exc, exc.__traceback__))
             self.signals.error.emit(message)
         else:
             self.signals.result.emit(result)
@@ -8179,7 +8187,7 @@ class StudioMainWindow(QMainWindow):
             )
 
         def error(message: str) -> None:
-            _record_failed_operation(label, message)
+            _record_failed_operation(label, message, getattr(worker, "traceback_text", "") or None)
             if on_error is not None:
                 on_error(message)
             self._set_status(f"Could not finish: {message}")
@@ -9231,6 +9239,7 @@ class StudioMainWindow(QMainWindow):
         self._build_panel.modern_naming_check.toggled.connect(self._refresh_team_names_preview)
         self._build_panel.source_field.textChanged.connect(self._refresh_team_names_preview)
         self._build_panel.operation_guard = self._build_operation_guard
+        self._build_panel.doctor_project = self._doctor_project_for_build  # b791-h3
         self._build_panel.operation_state_changed.connect(self._build_operation_state_changed)
         self._build_panel.progress_text_changed.connect(self.operation_status.setText)
         self._build_panel.music_shuffle_check.toggled.connect(self._build_music_shuffle_changed)
@@ -9357,6 +9366,15 @@ class StudioMainWindow(QMainWindow):
         panel = getattr(self, "_roster_editor_panel", None)
         if panel is not None:
             panel.show_espn25()
+
+    def _doctor_project_for_build(self):
+        """b791-h3: the project the doctor reads after a failed build: the saved .2k5mod when nothing changed since
+        it was saved, else the open session (its unsaved edits are what was built), else None."""
+        path = getattr(self, "_active_project_path", None)
+        if path is not None and not getattr(self, "_workspace_dirty", False):
+            return Path(path)
+        session = getattr(self.facade, "_session", None)
+        return session if session is not None and getattr(self.facade, "modified_count", 0) else None
 
     def _build_operation_guard(self) -> str | None:
         denial = self._embedded_operation_denial("Build")
