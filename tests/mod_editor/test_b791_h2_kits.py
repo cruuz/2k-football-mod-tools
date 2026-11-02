@@ -941,6 +941,25 @@ class StageOnTheFixtureDisc(unittest.TestCase):
         json.dumps(receipt)                                                  # the build writes the receipt as JSON
         self.assertTrue(appended)
 
+    def test_a_users_own_sleeve_is_kept_off_the_step_and_named_in_the_receipt(self):
+        # Coach Edwards' Giants sleeve: not the retail piece, so K1's white boxes are not painted on it
+        from nfl_txtr import parse_chunks
+        own = flip_last_byte(self.retail_packages["18A0"], 3)
+        overlay = self.overlay(**{"18A0": own})
+        inputs = self.inputs(overlay)
+        packages, _members, _files, _situ = mk.expected(self.doc, inputs)
+        self.assertEqual([(r["side"], r["chunk"], r["donor"]) for r in inputs["kept"]], [("K1 (NYG, away)", 3, "18A0")])
+        self.assertEqual((inputs["unchanged"], inputs["skipped"]), ([], {}))      # the step did not run: not a no-op either
+        made = parse_chunks(packages["18a9.iff"])[3]
+        have = parse_chunks(own)[3]
+        self.assertEqual(packages["18a9.iff"][made.offset:made.end_offset], own[have.offset:have.end_offset])  # his bytes
+        edits, appended, receipt = mk.compile_edits(overlay, self.doc, inputs)
+        self.assertEqual([r["chunk"] for r in receipt["kept_art"]], [3])
+        notes = mk.user_notes(receipt)
+        self.assertEqual(len(notes), 1)
+        self.assertIn("the new kit K1 (NYG, away) kept your own sleeves untouched (chunk 3, sleeve00)", notes[0])
+        json.dumps(receipt)
+
     def test_a_kit_left_out_on_the_real_files_leaves_the_giants_files_alone(self):
         broken = package_of_wrong_kind(self.retail_packages["18A8"])
         overlay = self.overlay(**{"18A8": broken})
