@@ -149,6 +149,9 @@ def plan_upgrade(source: Path, disc: Path, *, command: str = "upgrade",
     if command in ("upgrade", "coach-sync"):
         payload, step = upgrade.sync_coaches(payload, body)
         steps.append(step)
+        # b780-c6: an older franchise gets the disc's coaching carousel hiring pool (nothing when the disc has none)
+        payload, step = upgrade.sync_coach_pool(payload, body)
+        steps.append(step)
     if command in ("upgrade", "hair-styles"):
         # b778-hr3: a franchise started before the disc had hair styles keeps style 0 for everyone
         payload, step = upgrade.sync_hair_styles(payload, body)

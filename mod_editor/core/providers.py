@@ -596,7 +596,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/image_use.py": "29e1d3d721c36fd199ed29fd900fbe8582bc7530e2060afcacb1054159b174bb",
         "mod_editor/core/json_stream.py": "5933752561dd8b519a301c18ec1d14f13a457f58e6ae337984f543ab2b0838b0",
         "mod_editor/core/metadata_cache.py": "49874cc7f12cc0d36d15b9355dbca64ffe95590ba7582b460738b05aabcd9024",
-        "mod_editor/core/mod_build.py": "aee2293824a141ebf80587d12ccebf36850ac62ffe2412dc5e6d6899edc220ed",
+        "mod_editor/core/mod_build.py": "cb74e1b490f0e0c3db84ee50e5b9134f2b042b7f429091875af03e3c56470ded",
         "mod_editor/core/model.py": "292f0c5444e32f5cea000fd3cabd6963d7d805a5434dcbc364a36ca2c0f0d228",
         "mod_editor/core/modpack.py": "158926f7b25e66143b13318bd0767491c2cabd8ebdedadf3927cd720d23820c6",
         "mod_editor/core/modpack_files.py": "2245452a10635012bb46ca5a5f5e36b748e1b2bf270eb822edcd54954abb45d8",
@@ -628,7 +628,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_ausb_fixed_slots.py": "56a39ad842d3552dd26e2089d3c859cba8b59fd61701e63f2f9265db20422d4a",
         "mod_editor/core/nfl2k5_boot_logo.py": "9ee25b1fb49859951ba4780ec2b4a3d71773f7199d5a308338acf51f84bdb257",
         "mod_editor/core/nfl2k5_build_service.py": "e22d670a851ddc493d913d741818a9cc567f5bc827ef3c44da12d48b12439438",
-        "mod_editor/core/nfl2k5_build_settings.py": "8351e0cf659e6e9115f13e08a6c2c971ab7cb11f7182d2438610d55e5bdfa510",
+        "mod_editor/core/nfl2k5_build_settings.py": "39fe6675d27f8c531074373362a5aa610adf43cc51c223ab9e8e7f189d7cf825",
         "mod_editor/core/nfl2k5_build_service.py": "e22d670a851ddc493d913d741818a9cc567f5bc827ef3c44da12d48b12439438",
         "mod_editor/core/nfl2k5_midfield_art.py": "da5ff3541f2d7a7674cd3fc715c831379ecbe17c307951ce547ecaf8d3b4ab89",
         "mod_editor/core/nfl2k5_split_endzone_art.py": "c135625db5663efa13f3f446f98e7cfe8d071148f7b892ea378d18a05d845957",
@@ -930,6 +930,8 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_sim_rb_injuries.py": "2225d2891163cfb4164d0566c39cbbb7795273115ab15bd82299b034022dcc57",  # b779-sim2
         "mod_editor/core/nfl2k5_sim_realism.py": "21d5a35911e78e865c3782ccd5ffb1f1280267918045c859cb8a58617b99c9ce",  # b779-sim2 r6
         "mod_editor/core/nfl2k5_preseason_warning.py": "44647523c32291820e98b2dad0a9c44af27fe6bca13626104551dc3647bcc6f2",  # b779-int1: imported by throw_tuning for the build union (693fe63a0)
+        "mod_editor/core/nfl2k5_coach_carousel.py": "f673a7dab496bec94195ebb0dfdd46dee3f5684ca703d6cd7552478c24f0c6db",  # b780-c6: the coaching carousel (late owner, imported by throw_tuning)
+        "mod_editor/core/nfl2k5_coach_carousel_code.py": "c6fe1ef25b2cc613efdd7717e8d2c4984c591aee8e88f8ed01e0ba6f72716630",  # b780-c6: its generated runtime template
         "mod_editor/core/nfl2k5_sim_stats.py": "26af040eea115ef53bea9bbd38a329185e42ea27cea201866e6432cd71b3ef00",  # b778-sim1
         "mod_editor/core/nfl2k5_option_defaults.py": "42514e38dcffa46fcb46b19e11d2eda4dff454297b33033dc98864e940207e47",  # b779-df1
         "mod_editor/core/nfl2k5_clock_led.py": "ab030b1fbed873b96e0ba6055fcc38ef53193c31f2df496128e2de581e7b01c2",  # b778-sd4
@@ -984,7 +986,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_team_logo_swap.py": "d4e46ff301b3449fc78a145548be2bcbc6104caad80563e1d940ef564fd73c12",
         "mod_editor/core/nfl2k5_text_catalog.py": "514706a38b28a4c7189f49e7601813cd55e16f1b9e81c9c8aa3e92c072e962c9",
         "mod_editor/core/nfl2k5_throw_arc.py": "0fbf33d12fe27a0f940fb7e13f375390b88701c4ccb7e89a1de895d8f66b9c3c",
-        "mod_editor/core/nfl2k5_throw_tuning.py": "7ae5e968498c707f7dfc8977074e5b0df6db5817ef59d9aa9362bf23c0637d55",
+        "mod_editor/core/nfl2k5_throw_tuning.py": "fa5d3d1dfb2bbdb5837367824916e3b36c5e0f4df9bd1398c02b7b094712149f",
         "mod_editor/core/nfl2k5_trade_deadline.py": "29368ef42707c11202674d9055fdf5aa412d4992c7e7f2a7ae83154a2b7377b3",
         "mod_editor/core/nfl2k5_unif_color_writer.py": "5e950cc404e25c1fbeff7ee5aa2a3fad235115aeddd743e95be6862677a88324",
         "mod_editor/core/nfl2k5_uniform_catalog.py": "e297a2431241c8cc5b0fa38b42ae6ee77771094fafda28f44c98ad47dafe10b5",
@@ -996,7 +998,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_weekly_prep_save.py": "aedb0576c3a19a3a6574362729f83d3dfac5bc4aae7eb203388403c721a83720",
         "mod_editor/core/nfl2k5_widescreen.py": "98e3fd35f5c45a35143e678055872fe405447a735b211cd2897119d3ed801b4c",
         "mod_editor/core/nfl2k5_widescreen_menus.py": "a72a4d2387e023c0552c9bfb6c5b3330a689bbe00ed5619853260a7c13012701",
-        "mod_editor/core/nfl2k5_xbe_space.py": "e9e15e279cfb6ccf9e79a664d388e0637f03a3ae00aa81f7a3b8403de6727195",
+        "mod_editor/core/nfl2k5_xbe_space.py": "7f2311ad531ffd12a0d48dab9a0c0fcf2ffc75df91c78382d3f491a5684dd503",
         "mod_editor/core/nfl2k5_zone_drop.py": "96b915ac40cfbcb61b9bfa88a584a18841635e061947a7e1644ea193f83a94f0",
         "mod_editor/core/nfl_audio.py": "31193529647bd5fc35a2c25d38bccb83d20b16d46358169c26ced120c6c8e05c",
         "mod_editor/core/platform_compat.py": "d9471c3c5aeff847b4bb777574bb123f3172f4f863e985b19303e8bd58567779",

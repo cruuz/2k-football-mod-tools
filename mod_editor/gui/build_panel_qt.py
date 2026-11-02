@@ -268,6 +268,7 @@ from mod_editor.core import nfl2k5_contract_college_guard as _contract_guard  # 
 from mod_editor.core import nfl2k5_sim_cb_tackles as _sim_cb_tackles  # noqa: E402
 from mod_editor.core import nfl2k5_sim_rb_injuries as _sim_rb_injuries  # noqa: E402  b779-sim2
 from mod_editor.core import nfl2k5_sim_realism as _sim_realism  # noqa: E402  b779-sim2 r4
+from mod_editor.core import nfl2k5_coach_carousel as _coach_carousel  # noqa: E402  b780-c6
 from mod_editor.core import nfl2k5_sim_stats as _sim_stats  # noqa: E402
 from mod_editor.core import nfl2k5_option_defaults as _option_defaults  # noqa: E402  b779-df1
 from mod_editor.core import nfl2k5_clock_led as _clock_led  # noqa: E402
@@ -308,6 +309,7 @@ BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                  ("sim_cb_tackles", _sim_cb_tackles.BUILD_CAPTION, _sim_cb_tackles.HELP_TEXT),  # b778-cb1
                  ("sim_rb_injuries", _sim_rb_injuries.BUILD_CAPTION, _sim_rb_injuries.HELP_TEXT),  # b779-sim2
                  ("sim_realism", _sim_realism.BUILD_CAPTION, _sim_realism.HELP_TEXT),  # b779-sim2 r4
+                 ("coach_carousel", _coach_carousel.BUILD_CAPTION, _coach_carousel.HELP_TEXT),  # b780-c6
                  ("sim_stats", _sim_stats.BUILD_CAPTION, _sim_stats.HELP_TEXT),  # b778-sim1
                  ("option_defaults", _option_defaults.BUILD_CAPTION, _option_defaults.HELP_TEXT),  # b779-df1
                  ("modern_clock_led", _clock_led.BUILD_CAPTION, _clock_led.HELP_TEXT))  # b778-sd4

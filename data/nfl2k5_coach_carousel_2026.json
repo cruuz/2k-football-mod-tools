@@ -1,0 +1,985 @@
+{
+ "schema": "nfl2k5_coach_carousel/v1",
+ "generator": "tools/nfl2k5_coach_carousel_calibrate.py",
+ "sources": [
+  {
+   "file": "games.csv",
+   "url": "https://github.com/nflverse/nfldata/raw/master/data/games.csv",
+   "sha256": "a5181ec4974309828d1d58e6f881eb1d106ee85c15c038a51b6bdca7b7ee6cf5",
+   "rows": 7548
+  },
+  {
+   "file": "data/vip/defense_identity_2026.json",
+   "note": "2026 defensive coordinators, team-site sources"
+  }
+ ],
+ "settings": {
+  "max_changes": 12,
+  "rehire_percent": 12
+ },
+ "model": {
+  "definition": "change = a different head coach in the club's first regular-season game of the next season",
+  "seasons": "1999-2025 regular seasons",
+  "team_seasons": 861,
+  "changes": 178,
+  "changes_per_offseason": {
+   "1999": 7,
+   "2000": 6,
+   "2001": 6,
+   "2002": 5,
+   "2003": 7,
+   "2004": 3,
+   "2005": 10,
+   "2006": 7,
+   "2007": 4,
+   "2008": 9,
+   "2009": 3,
+   "2010": 6,
+   "2011": 7,
+   "2012": 9,
+   "2013": 7,
+   "2014": 7,
+   "2015": 7,
+   "2016": 5,
+   "2017": 7,
+   "2018": 8,
+   "2019": 5,
+   "2020": 7,
+   "2021": 10,
+   "2022": 5,
+   "2023": 7,
+   "2024": 7,
+   "2025": 7
+  },
+  "median_changed_share": 0.312,
+  "logistic": {
+   "intercept": 1.7675,
+   "share": -5.9572,
+   "first_season": -0.674,
+   "second_season": -0.8725
+  },
+  "playoff_rate": 0.0476,
+  "playoff_clubs": 336,
+  "playoff_changes": 16,
+  "curves": {
+   "tenure_1": [
+    0.7491,
+    0.6891,
+    0.622,
+    0.5498,
+    0.4755,
+    0.4023,
+    0.3332,
+    0.2706,
+    0.216,
+    0.1698,
+    0.1318,
+    0.1013,
+    0.0772,
+    0.0585,
+    0.0441,
+    0.0331,
+    0.0248,
+    0.0185,
+    0.0138,
+    0.0103,
+    0.0077
+   ],
+   "tenure_2": [
+    0.7099,
+    0.645,
+    0.5743,
+    0.5004,
+    0.4264,
+    0.3557,
+    0.2907,
+    0.2333,
+    0.1842,
+    0.1436,
+    0.1107,
+    0.0846,
+    0.0642,
+    0.0485,
+    0.0364,
+    0.0273,
+    0.0204,
+    0.0152,
+    0.0114,
+    0.0085,
+    0.0063
+   ],
+   "tenure_3_plus": [
+    0.8542,
+    0.813,
+    0.7635,
+    0.7056,
+    0.6402,
+    0.5691,
+    0.4951,
+    0.4213,
+    0.3508,
+    0.2863,
+    0.2295,
+    0.1811,
+    0.141,
+    0.1086,
+    0.083,
+    0.063,
+    0.0475,
+    0.0357,
+    0.0268,
+    0.02,
+    0.0149
+   ]
+  },
+  "shrinkage": 3.0,
+  "clubs": {
+   "SF": {
+    "seasons": 27,
+    "changes": 6,
+    "expected": 5.91,
+    "owner_factor": 1.011
+   },
+   "CHI": {
+    "seasons": 27,
+    "changes": 6,
+    "expected": 6.46,
+    "owner_factor": 0.952
+   },
+   "CIN": {
+    "seasons": 27,
+    "changes": 2,
+    "expected": 6.79,
+    "owner_factor": 0.511
+   },
+   "BUF": {
+    "seasons": 27,
+    "changes": 7,
+    "expected": 4.62,
+    "owner_factor": 1.313
+   },
+   "DEN": {
+    "seasons": 27,
+    "changes": 7,
+    "expected": 4.3,
+    "owner_factor": 1.371
+   },
+   "CLE": {
+    "seasons": 27,
+    "changes": 10,
+    "expected": 9.25,
+    "owner_factor": 1.062
+   },
+   "TB": {
+    "seasons": 27,
+    "changes": 7,
+    "expected": 5.64,
+    "owner_factor": 1.159
+   },
+   "ARI": {
+    "seasons": 27,
+    "changes": 6,
+    "expected": 7.75,
+    "owner_factor": 0.838
+   },
+   "LAC": {
+    "seasons": 27,
+    "changes": 6,
+    "expected": 5.53,
+    "owner_factor": 1.056
+   },
+   "KC": {
+    "seasons": 27,
+    "changes": 4,
+    "expected": 4.4,
+    "owner_factor": 0.946
+   },
+   "IND": {
+    "seasons": 27,
+    "changes": 5,
+    "expected": 4.15,
+    "owner_factor": 1.119
+   },
+   "DAL": {
+    "seasons": 27,
+    "changes": 5,
+    "expected": 4.6,
+    "owner_factor": 1.054
+   },
+   "MIA": {
+    "seasons": 27,
+    "changes": 9,
+    "expected": 5.3,
+    "owner_factor": 1.447
+   },
+   "PHI": {
+    "seasons": 27,
+    "changes": 3,
+    "expected": 3.53,
+    "owner_factor": 0.919
+   },
+   "ATL": {
+    "seasons": 27,
+    "changes": 6,
+    "expected": 5.66,
+    "owner_factor": 1.04
+   },
+   "NYG": {
+    "seasons": 27,
+    "changes": 6,
+    "expected": 6.6,
+    "owner_factor": 0.938
+   },
+   "JAX": {
+    "seasons": 27,
+    "changes": 6,
+    "expected": 8.43,
+    "owner_factor": 0.788
+   },
+   "NYJ": {
+    "seasons": 27,
+    "changes": 8,
+    "expected": 7.47,
+    "owner_factor": 1.052
+   },
+   "DET": {
+    "seasons": 27,
+    "changes": 7,
+    "expected": 7.47,
+    "owner_factor": 0.956
+   },
+   "GB": {
+    "seasons": 27,
+    "changes": 3,
+    "expected": 2.99,
+    "owner_factor": 1.002
+   },
+   "CAR": {
+    "seasons": 27,
+    "changes": 5,
+    "expected": 6.77,
+    "owner_factor": 0.82
+   },
+   "NE": {
+    "seasons": 27,
+    "changes": 3,
+    "expected": 3.19,
+    "owner_factor": 0.969
+   },
+   "LV": {
+    "seasons": 27,
+    "changes": 11,
+    "expected": 7.26,
+    "owner_factor": 1.366
+   },
+   "LAR": {
+    "seasons": 27,
+    "changes": 5,
+    "expected": 6.08,
+    "owner_factor": 0.882
+   },
+   "BAL": {
+    "seasons": 27,
+    "changes": 2,
+    "expected": 3.86,
+    "owner_factor": 0.729
+   },
+   "WAS": {
+    "seasons": 27,
+    "changes": 8,
+    "expected": 6.43,
+    "owner_factor": 1.167
+   },
+   "NO": {
+    "seasons": 27,
+    "changes": 6,
+    "expected": 5.0,
+    "owner_factor": 1.126
+   },
+   "SEA": {
+    "seasons": 27,
+    "changes": 3,
+    "expected": 3.32,
+    "owner_factor": 0.95
+   },
+   "PIT": {
+    "seasons": 27,
+    "changes": 2,
+    "expected": 2.96,
+    "owner_factor": 0.84
+   },
+   "HOU": {
+    "seasons": 24,
+    "changes": 5,
+    "expected": 5.83,
+    "owner_factor": 0.907
+   },
+   "TEN": {
+    "seasons": 27,
+    "changes": 6,
+    "expected": 6.22,
+    "owner_factor": 0.977
+   },
+   "MIN": {
+    "seasons": 27,
+    "changes": 3,
+    "expected": 4.42,
+    "owner_factor": 0.81
+   }
+  }
+ },
+ "pool_note": "fallback pool: the 2026 defensive coordinators (real people, team-site sources) with their head coaching careers from games.csv; ratings are the game's own created-coach default (50)",
+ "pool": [
+  {
+   "first": "Nick",
+   "last": "Rallis",
+   "kind": "defensive coordinator",
+   "club_2026": "ARI",
+   "source": "https://www.azcardinals.com/team/coaches-roster/nick-rallis",
+   "career": {
+    "seasons": 0,
+    "wins": 0,
+    "losses": 0,
+    "ties": 0,
+    "winning_seasons": 0,
+    "super_bowls": 0,
+    "playoff_wins": 0,
+    "playoff_losses": 0,
+    "super_bowl_wins": 0,
+    "super_bowl_losses": 0
+   },
+   "weight": 10,
+   "career_source": null
+  },
+  {
+   "first": "Jeff",
+   "last": "Ulbrich",
+   "kind": "defensive coordinator",
+   "club_2026": "ATL",
+   "source": "https://www.atlantafalcons.com/team/coaches-roster/jeff-ulbrich",
+   "career": {
+    "seasons": 0,
+    "wins": 0,
+    "losses": 0,
+    "ties": 0,
+    "winning_seasons": 0,
+    "super_bowls": 0,
+    "playoff_wins": 0,
+    "playoff_losses": 0,
+    "super_bowl_wins": 0,
+    "super_bowl_losses": 0
+   },
+   "weight": 10,
+   "career_source": null
+  },
+  {
+   "first": "Anthony",
+   "last": "Weaver",
+   "kind": "defensive coordinator",
+   "club_2026": "BAL",
+   "source": "https://www.baltimoreravens.com/team/coaches-roster/anthony-weaver",
+   "career": {
+    "seasons": 0,
+    "wins": 0,
+    "losses": 0,
+    "ties": 0,
+    "winning_seasons": 0,
+    "super_bowls": 0,
+    "playoff_wins": 0,
+    "playoff_losses": 0,
+    "super_bowl_wins": 0,
+    "super_bowl_losses": 0
+   },
+   "weight": 10,
+   "career_source": null
+  },
+  {
+   "first": "Jim",
+   "last": "Leonhard",
+   "kind": "defensive coordinator",
+   "club_2026": "BUF",
+   "source": "https://www.buffalobills.com/team/coaches-roster/jim-leonhard",
+   "career": {
+    "seasons": 0,
+    "wins": 0,
+    "losses": 0,
+    "ties": 0,
+    "winning_seasons": 0,
+    "super_bowls": 0,
+    "playoff_wins": 0,
+    "playoff_losses": 0,
+    "super_bowl_wins": 0,
+    "super_bowl_losses": 0
+   },
+   "weight": 10,
+   "career_source": null
+  },
+  {
+   "first": "Ejiro",
+   "last": "Evero",
+   "kind": "defensive coordinator",
+   "club_2026": "CAR",
+   "source": "https://www.panthers.com/team/coaches-roster/ejiro-evero",
+   "career": {
+    "seasons": 0,
+    "wins": 0,
+    "losses": 0,
+    "ties": 0,
+    "winning_seasons": 0,
+    "super_bowls": 0,
+    "playoff_wins": 0,
+    "playoff_losses": 0,
+    "super_bowl_wins": 0,
+    "super_bowl_losses": 0
+   },
+   "weight": 10,
+   "career_source": null
+  },
+  {
+   "first": "Dennis",
+   "last": "Allen",
+   "kind": "defensive coordinator",
+   "club_2026": "CHI",
+   "source": "https://www.chicagobears.com/team/coaches/dennis-allen",
+   "career": {
+    "seasons": 6,
+    "wins": 29,
+    "losses": 58,
+    "ties": 0,
+    "winning_seasons": 1,
+    "super_bowls": 0,
+    "playoff_wins": 0,
+    "playoff_losses": 0,
+    "super_bowl_wins": 0,
+    "super_bowl_losses": 0
+   },
+   "weight": 16,
+   "career_source": "nflverse games.csv 1999-2025 head coach games"
+  },
+  {
+   "first": "Al",
+   "last": "Golden",
+   "kind": "defensive coordinator",
+   "club_2026": "CIN",
+   "source": "https://www.bengals.com/team/coaches-roster/al-golden",
+   "career": {
+    "seasons": 0,
+    "wins": 0,
+    "losses": 0,
+    "ties": 0,
+    "winning_seasons": 0,
+    "super_bowls": 0,
+    "playoff_wins": 0,
+    "playoff_losses": 0,
+    "super_bowl_wins": 0,
+    "super_bowl_losses": 0
+   },
+   "weight": 10,
+   "career_source": null
+  },
+  {
+   "first": "Mike",
+   "last": "Rutenberg",
+   "kind": "defensive coordinator",
+   "club_2026": "CLE",
+   "source": "https://www.clevelandbrowns.com/team/coaches-roster/mike-rutenberg",
+   "career": {
+    "seasons": 0,
+    "wins": 0,
+    "losses": 0,
+    "ties": 0,
+    "winning_seasons": 0,
+    "super_bowls": 0,
+    "playoff_wins": 0,
+    "playoff_losses": 0,
+    "super_bowl_wins": 0,
+    "super_bowl_losses": 0
+   },
+   "weight": 10,
+   "career_source": null
+  },
+  {
+   "first": "Christian",
+   "last": "Parker",
+   "kind": "defensive coordinator",
+   "club_2026": "DAL",
+   "source": "https://www.dallascowboys.com/team/coaches-roster/christian-parker",
+   "career": {
+    "seasons": 0,
+    "wins": 0,
+    "losses": 0,
+    "ties": 0,
+    "winning_seasons": 0,
+    "super_bowls": 0,
+    "playoff_wins": 0,
+    "playoff_losses": 0,
+    "super_bowl_wins": 0,
+    "super_bowl_losses": 0
+   },
+   "weight": 10,
+   "career_source": null
+  },
+  {
+   "first": "Vance",
+   "last": "Joseph",
+   "kind": "defensive coordinator",
+   "club_2026": "DEN",
+   "source": "https://www.denverbroncos.com/team/coaches-roster/vance-joseph",
+   "career": {
+    "seasons": 2,
+    "wins": 11,
+    "losses": 21,
+    "ties": 0,
+    "winning_seasons": 0,
+    "super_bowls": 0,
+    "playoff_wins": 0,
+    "playoff_losses": 0,
+    "super_bowl_wins": 0,
+    "super_bowl_losses": 0
+   },
+   "weight": 12,
+   "career_source": "nflverse games.csv 1999-2025 head coach games"
+  },
+  {
+   "first": "Kelvin",
+   "last": "Sheppard",
+   "kind": "defensive coordinator",
+   "club_2026": "DET",
+   "source": "https://www.detroitlions.com/team/coaches-roster/kelvin-sheppard",
+   "career": {
+    "seasons": 0,
+    "wins": 0,
+    "losses": 0,
+    "ties": 0,
+    "winning_seasons": 0,
+    "super_bowls": 0,
+    "playoff_wins": 0,
+    "playoff_losses": 0,
+    "super_bowl_wins": 0,
+    "super_bowl_losses": 0
+   },
+   "weight": 10,
+   "career_source": null
+  },
+  {
+   "first": "Jonathan",
+   "last": "Gannon",
+   "kind": "defensive coordinator",
+   "club_2026": "GB",
+   "source": "https://www.packers.com/team/coaches-roster/jonathan-gannon",
+   "career": {
+    "seasons": 3,
+    "wins": 15,
+    "losses": 36,
+    "ties": 0,
+    "winning_seasons": 0,
+    "super_bowls": 0,
+    "playoff_wins": 0,
+    "playoff_losses": 0,
+    "super_bowl_wins": 0,
+    "super_bowl_losses": 0
+   },
+   "weight": 13,
+   "career_source": "nflverse games.csv 1999-2025 head coach games"
+  },
+  {
+   "first": "Matt",
+   "last": "Burke",
+   "kind": "defensive coordinator",
+   "club_2026": "HOU",
+   "source": "https://www.houstontexans.com/team/coaches-roster/matt-burke",
+   "career": {
+    "seasons": 0,
+    "wins": 0,
+    "losses": 0,
+    "ties": 0,
+    "winning_seasons": 0,
+    "super_bowls": 0,
+    "playoff_wins": 0,
+    "playoff_losses": 0,
+    "super_bowl_wins": 0,
+    "super_bowl_losses": 0
+   },
+   "weight": 10,
+   "career_source": null
+  },
+  {
+   "first": "Lou",
+   "last": "Anarumo",
+   "kind": "defensive coordinator",
+   "club_2026": "IND",
+   "source": "https://www.colts.com/team/coaches-roster/lou-anarumo",
+   "career": {
+    "seasons": 0,
+    "wins": 0,
+    "losses": 0,
+    "ties": 0,
+    "winning_seasons": 0,
+    "super_bowls": 0,
+    "playoff_wins": 0,
+    "playoff_losses": 0,
+    "super_bowl_wins": 0,
+    "super_bowl_losses": 0
+   },
+   "weight": 10,
+   "career_source": null
+  },
+  {
+   "first": "Anthony",
+   "last": "Campanile",
+   "kind": "defensive coordinator",
+   "club_2026": "JAX",
+   "source": "https://www.jaguars.com/team/coaches-roster/anthony-campanile",
+   "career": {
+    "seasons": 0,
+    "wins": 0,
+    "losses": 0,
+    "ties": 0,
+    "winning_seasons": 0,
+    "super_bowls": 0,
+    "playoff_wins": 0,
+    "playoff_losses": 0,
+    "super_bowl_wins": 0,
+    "super_bowl_losses": 0
+   },
+   "weight": 10,
+   "career_source": null
+  },
+  {
+   "first": "Steve",
+   "last": "Spagnuolo",
+   "kind": "defensive coordinator",
+   "club_2026": "KC",
+   "source": "https://www.chiefs.com/team/coaches-roster/steve-spagnuolo",
+   "career": {
+    "seasons": 4,
+    "wins": 11,
+    "losses": 41,
+    "ties": 0,
+    "winning_seasons": 0,
+    "super_bowls": 0,
+    "playoff_wins": 0,
+    "playoff_losses": 0,
+    "super_bowl_wins": 0,
+    "super_bowl_losses": 0
+   },
+   "weight": 14,
+   "career_source": "nflverse games.csv 1999-2025 head coach games"
+  },
+  {
+   "first": "Sean",
+   "last": "Duggan",
+   "kind": "defensive coordinator",
+   "club_2026": "MIA",
+   "source": "https://www.miamidolphins.com/team/coaches-roster/sean-duggan",
+   "career": {
+    "seasons": 0,
+    "wins": 0,
+    "losses": 0,
+    "ties": 0,
+    "winning_seasons": 0,
+    "super_bowls": 0,
+    "playoff_wins": 0,
+    "playoff_losses": 0,
+    "super_bowl_wins": 0,
+    "super_bowl_losses": 0
+   },
+   "weight": 10,
+   "career_source": null
+  },
+  {
+   "first": "Brian",
+   "last": "Flores",
+   "kind": "defensive coordinator",
+   "club_2026": "MIN",
+   "source": "https://www.vikings.com/team/coaches-roster/brian-flores",
+   "career": {
+    "seasons": 3,
+    "wins": 24,
+    "losses": 25,
+    "ties": 0,
+    "winning_seasons": 2,
+    "super_bowls": 0,
+    "playoff_wins": 0,
+    "playoff_losses": 0,
+    "super_bowl_wins": 0,
+    "super_bowl_losses": 0
+   },
+   "weight": 13,
+   "career_source": "nflverse games.csv 1999-2025 head coach games"
+  },
+  {
+   "first": "Zak",
+   "last": "Kuhr",
+   "kind": "defensive coordinator",
+   "club_2026": "NE",
+   "source": "https://www.patriots.com/team/coaches-roster/zak-kuhr",
+   "career": {
+    "seasons": 0,
+    "wins": 0,
+    "losses": 0,
+    "ties": 0,
+    "winning_seasons": 0,
+    "super_bowls": 0,
+    "playoff_wins": 0,
+    "playoff_losses": 0,
+    "super_bowl_wins": 0,
+    "super_bowl_losses": 0
+   },
+   "weight": 10,
+   "career_source": null
+  },
+  {
+   "first": "Brandon",
+   "last": "Staley",
+   "kind": "defensive coordinator",
+   "club_2026": "NO",
+   "source": "https://www.neworleanssaints.com/team/coaches-roster/brandon-staley",
+   "career": {
+    "seasons": 3,
+    "wins": 24,
+    "losses": 24,
+    "ties": 0,
+    "winning_seasons": 2,
+    "super_bowls": 0,
+    "playoff_wins": 0,
+    "playoff_losses": 1,
+    "super_bowl_wins": 0,
+    "super_bowl_losses": 0
+   },
+   "weight": 13,
+   "career_source": "nflverse games.csv 1999-2025 head coach games"
+  },
+  {
+   "first": "Dennard",
+   "last": "Wilson",
+   "kind": "defensive coordinator",
+   "club_2026": "NYG",
+   "source": "https://www.giants.com/team/coaches-roster/dennard-wilson",
+   "career": {
+    "seasons": 0,
+    "wins": 0,
+    "losses": 0,
+    "ties": 0,
+    "winning_seasons": 0,
+    "super_bowls": 0,
+    "playoff_wins": 0,
+    "playoff_losses": 0,
+    "super_bowl_wins": 0,
+    "super_bowl_losses": 0
+   },
+   "weight": 10,
+   "career_source": null
+  },
+  {
+   "first": "Brian",
+   "last": "Duker",
+   "kind": "defensive coordinator",
+   "club_2026": "NYJ",
+   "source": "https://www.newyorkjets.com/team/coaches-roster/brian-duker",
+   "career": {
+    "seasons": 0,
+    "wins": 0,
+    "losses": 0,
+    "ties": 0,
+    "winning_seasons": 0,
+    "super_bowls": 0,
+    "playoff_wins": 0,
+    "playoff_losses": 0,
+    "super_bowl_wins": 0,
+    "super_bowl_losses": 0
+   },
+   "weight": 10,
+   "career_source": null
+  },
+  {
+   "first": "Rob",
+   "last": "Leonard",
+   "kind": "defensive coordinator",
+   "club_2026": "LV",
+   "source": "https://www.raiders.com/team/coaches-roster/rob-leonard",
+   "career": {
+    "seasons": 0,
+    "wins": 0,
+    "losses": 0,
+    "ties": 0,
+    "winning_seasons": 0,
+    "super_bowls": 0,
+    "playoff_wins": 0,
+    "playoff_losses": 0,
+    "super_bowl_wins": 0,
+    "super_bowl_losses": 0
+   },
+   "weight": 10,
+   "career_source": null
+  },
+  {
+   "first": "Vic",
+   "last": "Fangio",
+   "kind": "defensive coordinator",
+   "club_2026": "PHI",
+   "source": "https://www.philadelphiaeagles.com/team/coaches/vic-fangio",
+   "career": {
+    "seasons": 3,
+    "wins": 19,
+    "losses": 30,
+    "ties": 0,
+    "winning_seasons": 0,
+    "super_bowls": 0,
+    "playoff_wins": 0,
+    "playoff_losses": 0,
+    "super_bowl_wins": 0,
+    "super_bowl_losses": 0
+   },
+   "weight": 13,
+   "career_source": "nflverse games.csv 1999-2025 head coach games"
+  },
+  {
+   "first": "Patrick",
+   "last": "Graham",
+   "kind": "defensive coordinator",
+   "club_2026": "PIT",
+   "source": "https://www.steelers.com/team/coaches-roster/patrick-graham",
+   "career": {
+    "seasons": 0,
+    "wins": 0,
+    "losses": 0,
+    "ties": 0,
+    "winning_seasons": 0,
+    "super_bowls": 0,
+    "playoff_wins": 0,
+    "playoff_losses": 0,
+    "super_bowl_wins": 0,
+    "super_bowl_losses": 0
+   },
+   "weight": 10,
+   "career_source": null
+  },
+  {
+   "first": "Chris",
+   "last": "O'Leary",
+   "kind": "defensive coordinator",
+   "club_2026": "LAC",
+   "source": "https://www.chargers.com/team/coaches-roster/chris-o-leary",
+   "career": {
+    "seasons": 0,
+    "wins": 0,
+    "losses": 0,
+    "ties": 0,
+    "winning_seasons": 0,
+    "super_bowls": 0,
+    "playoff_wins": 0,
+    "playoff_losses": 0,
+    "super_bowl_wins": 0,
+    "super_bowl_losses": 0
+   },
+   "weight": 10,
+   "career_source": null
+  },
+  {
+   "first": "Aden",
+   "last": "Durde",
+   "kind": "defensive coordinator",
+   "club_2026": "SEA",
+   "source": "https://www.seahawks.com/team/coaches-roster/aden-durde",
+   "career": {
+    "seasons": 0,
+    "wins": 0,
+    "losses": 0,
+    "ties": 0,
+    "winning_seasons": 0,
+    "super_bowls": 0,
+    "playoff_wins": 0,
+    "playoff_losses": 0,
+    "super_bowl_wins": 0,
+    "super_bowl_losses": 0
+   },
+   "weight": 10,
+   "career_source": null
+  },
+  {
+   "first": "Raheem",
+   "last": "Morris",
+   "kind": "defensive coordinator",
+   "club_2026": "SF",
+   "source": "https://www.49ers.com/team/coaches-roster/raheem-morris",
+   "career": {
+    "seasons": 6,
+    "wins": 37,
+    "losses": 56,
+    "ties": 0,
+    "winning_seasons": 1,
+    "super_bowls": 0,
+    "playoff_wins": 0,
+    "playoff_losses": 0,
+    "super_bowl_wins": 0,
+    "super_bowl_losses": 0
+   },
+   "weight": 16,
+   "career_source": "nflverse games.csv 1999-2025 head coach games"
+  },
+  {
+   "first": "Chris",
+   "last": "Shula",
+   "kind": "defensive coordinator",
+   "club_2026": "LAR",
+   "source": "https://www.therams.com/team/coaches-roster/chris-shula",
+   "career": {
+    "seasons": 0,
+    "wins": 0,
+    "losses": 0,
+    "ties": 0,
+    "winning_seasons": 0,
+    "super_bowls": 0,
+    "playoff_wins": 0,
+    "playoff_losses": 0,
+    "super_bowl_wins": 0,
+    "super_bowl_losses": 0
+   },
+   "weight": 10,
+   "career_source": null
+  },
+  {
+   "first": "Gus",
+   "last": "Bradley",
+   "kind": "defensive coordinator",
+   "club_2026": "TEN",
+   "source": "https://www.tennesseetitans.com/team/coaches-roster/gus-bradley",
+   "career": {
+    "seasons": 4,
+    "wins": 14,
+    "losses": 48,
+    "ties": 0,
+    "winning_seasons": 0,
+    "super_bowls": 0,
+    "playoff_wins": 0,
+    "playoff_losses": 0,
+    "super_bowl_wins": 0,
+    "super_bowl_losses": 0
+   },
+   "weight": 14,
+   "career_source": "nflverse games.csv 1999-2025 head coach games"
+  },
+  {
+   "first": "Daronte",
+   "last": "Jones",
+   "kind": "defensive coordinator",
+   "club_2026": "WAS",
+   "source": "https://www.commanders.com/team/coaches-roster/daronte-jones",
+   "career": {
+    "seasons": 0,
+    "wins": 0,
+    "losses": 0,
+    "ties": 0,
+    "winning_seasons": 0,
+    "super_bowls": 0,
+    "playoff_wins": 0,
+    "playoff_losses": 0,
+    "super_bowl_wins": 0,
+    "super_bowl_losses": 0
+   },
+   "weight": 10,
+   "career_source": null
+  }
+ ]
+}

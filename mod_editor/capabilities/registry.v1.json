@@ -6197,6 +6197,72 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_coach_carousel apply source.xbe new-carousel.xbe",
+        "module": "mod_editor/core/nfl2k5_coach_carousel.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "mod_editor/core/nfl2k5_coach_carousel.py",
+        "mod_editor/core/nfl2k5_coach_carousel_code.py",
+        "tools/nfl2k5_coach_carousel/runtime.c",
+        "tools/nfl2k5_coach_carousel_calibrate.py",
+        "data/nfl2k5_coach_carousel_2026.json",
+        "tests/mod_editor/test_b780_c6_coach_carousel.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL. Players asked for a coaching carousel (b780 r2 research). Off in every preset until its emulator gate passes; the c6 report recommends the preset values."
+      },
+      "id": "nfl2k5.franchise.coach_carousel",
+      "input_constraints": [
+        "Pinned USA XBE or a verified composed input; a late allocator owner (nfl2k5_xbe_space.LATE_OWNERS, last) with 4,096 RX bytes holding its 176-byte model parameter block; no writable memory, no heap, no save field. Foreign or mixed bytes refuse.",
+        "Sites: the stage-9 rollover call 0x248632 (Advance to offseason), the owner goal check's warning mark (0x2BA675, 0x2BA6BC: the owner fires a user only at All Teams) and the Owner Firing row callbacks (.rdata 0x500C40..0x500C4C: Off / CPU Teams / All Teams; the retail 'On' value and default reads CPU Teams).",
+        "The hiring pool is a checked '2K5CPOOL' block the build writes into the free tail of the main roster's coach strings (after the last main-roster writer); a franchise keeps it in its roster copy and Franchise > Upgrade copies it into an older save. Without a pool nothing changes.",
+        "Model: nflverse games.csv 1999-2025 (861 club seasons, 178 coaching changes), pinned by SHA-256 in data/nfl2k5_coach_carousel_2026.json; at most 12 changes an offseason; user clubs never change coach."
+      ],
+      "portme": [
+        "Franchise: Owner Firing reads CPU Teams; sim a season and the playoffs, Advance to offseason after the Super Bowl notice: one COACHING CHANGES notice per three changes; the new coaches show by name and career; save, reload, keep playing."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source, the sourced model and pool data; never distribute generated XBEs or retail resources.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Advance to offseason replayed under Unicorn with every native routine real on a league at the end of a simulated v0.8 season (Owner Firing Off = the released advance byte for byte; CPU Teams with the pool: every rewritten record checked, native hazard equal to the Python model at the draw boundary, the game's own roster save/reload keeps every coach pointer). Emulator gate: see the c6 report.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false | true; false in every preset (experimental)",
+            "name": "coach_carousel",
+            "required": true
+          }
+        ],
+        "notes": "Build-time option; in game the Owner Firing franchise option chooses Off, CPU Teams or All Teams."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS and the main ROST resource (pack 0, outer entry 5)",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "XBE sites listed above, the owned late allocation, and the free tail of the ROST coach strings for the hiring pool.",
+        "retail_file": "user-owned default.xbe and vc_53450030/0 in an NFL 2K5 USA disc"
+      },
+      "summary": "Franchise coaching carousel: at Advance to offseason CPU clubs may fire their head coach and hire one from a pool of real people (the 2026 defensive coordinators with their real head coaching records) or a coach another club let go, about 6 or 7 a year as in the NFL since 1999 (record, the coach's seasons with the club, playoffs and each owner's measured patience decide). A notice lists the changes; the new coach's name, picture, career and ratings show everywhere the game names coaches; the club keeps its sideline model, tendencies and playbook. Owner Firing gets Off / CPU Teams / All Teams.",
+      "surface": "schedules_franchise",
+      "title": "Coaching carousel at Advance to offseason, Owner Firing Off / CPU Teams / All Teams (experimental)",
+      "validation_command": "python3 -m tests.mod_editor.test_b780_c6_coach_carousel"
+    },
+    {
+      "backend": {
         "command": "python3 -m mod_editor.core.nfl2k5_franchise_economy <source.xbe> <new-copy.xbe>",
         "module": "mod_editor/core/nfl2k5_franchise_economy.py",
         "operation": "write"

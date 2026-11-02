@@ -123,7 +123,8 @@ class TemplateTests(unittest.TestCase):
         # owner follows them (b775-int1: both merged), then b776-ai2's two CPU AI owners, b776-pa2's play art routes and
         # b776-ns1's jersey number sizes (int2 order), then b777-ol1's run blocking and b777-qb3's QB accuracy (int7).
         # b778-fo1/pi1/ai5/fa1/st2/ai6/dr1/pg1/pg2/cr1/cb1/sd4/ai8/kr1/pr1 append the rest; xs1's module loader is last.
-        self.assertEqual(late[-33:], (
+        # b780-c6: anchored at the team ratings owner, so owners appended after the b779 tail keep this check exact
+        self.assertEqual(late[late.index("nfl2k5_team_ratings"):][:33], (
             "nfl2k5_team_ratings", "nfl2k5_team_ratings_display", "nfl2k5_classic_teams", "nfl2k5_hair_styles",
             "nfl2k5_cpu_qb_reads", "nfl2k5_db_ball_play", "nfl2k5_play_art_routes", "nfl2k5_team_number_scale",
             "nfl2k5_run_blocking", "nfl2k5_qb_accuracy", "nfl2k5_formation_art_spacing", "nfl2k5_force_out",
