@@ -654,11 +654,13 @@ def build_pool(games: Games, teams: dict[str, dict], pool_input: dict, defense: 
         change = pool_input["dc_changes"].get(club, {})
         sources = change.get("sources") or [{"url": row["source"], "expect": ["defensive coordinator"],
                                              "what": "club coaches page names him as the 2026 defensive coordinator"}]
-        candidates.append(pool_entry(
-            games, exits, first, last, side="defense", kind="coordinator", status=change.get("status", "employed"),
-            role_2026=change.get("role_2026", "Defensive coordinator"),
-            team_2026=change["team_2026"] if "team_2026" in change else club,
-            defense_identity_team=key, note=change.get("note", row["baseline_role"]), sources=sources))
+        fields = dict(side="defense", kind="coordinator", status=change.get("status", "employed"),
+                      role_2026=change.get("role_2026", "Defensive coordinator"),
+                      team_2026=change["team_2026"] if "team_2026" in change else club,
+                      defense_identity_team=key, defense_identity_note=row["baseline_role"], sources=sources)
+        if "note" in change:
+            fields["note"] = change["note"]
+        candidates.append(pool_entry(games, exits, first, last, **fields))
     for extra in pool_input["extra_candidates"]:
         extra = dict(extra)
         first, last = extra.pop("first"), extra.pop("last")

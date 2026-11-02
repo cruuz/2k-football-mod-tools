@@ -6,6 +6,7 @@
   "status": "employed = on a 2026 NFL staff, so a club hiring him leaves a vacancy; available = no NFL staff job in 2026 as of the date above.",
   "side": "The side of the ball he comes from (his coordinator background), not his current title.",
   "kind": "Why he is listed: coordinator = one of the 31 defensive coordinators of the repo's 2026 defense identity file; former_head_coach = added because he lost a head coach job in the 2024 or 2025 season and is not on that list. Whether he has been a head coach is head_coach_record, not kind (several coordinators are former head coaches).",
+  "defense_identity_note": "Copied from the baseline_role of that coordinator's row in data/vip/defense_identity_2026.json: a developer note about which 2025 defense his numbers come from, not display text.",
   "names": "ASCII first and last names as they would be written into a coach record; together at most 24 letters.",
   "head_coach_record": "Derived from nflverse games.csv (regular season and playoff games 1999-2025 that he coached, interim spells included where the file lists them); null when he has none in that window. The file lists no interim coaches for 2024 and 2025, so a coach fired during one of those seasons is cut at his firing date (in_season_exits: Allen, Eberflus, Callahan, Daboll; each with its source). Earlier careers are not counted.",
   "as_of": "A snapshot: NFL staffs change during the season (the Evero change is the example). Rebuild with tools/nfl2k5_coach_owners_build.py to refresh."

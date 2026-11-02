@@ -9,6 +9,7 @@
   "status": "employed = on a 2026 NFL staff, so a club hiring him leaves a vacancy; available = no NFL staff job in 2026 as of the date above.",
   "side": "The side of the ball he comes from (his coordinator background), not his current title.",
   "kind": "Why he is listed: coordinator = one of the 31 defensive coordinators of the repo's 2026 defense identity file; former_head_coach = added because he lost a head coach job in the 2024 or 2025 season and is not on that list. Whether he has been a head coach is head_coach_record, not kind (several coordinators are former head coaches).",
+  "defense_identity_note": "Copied from the baseline_role of that coordinator's row in data/vip/defense_identity_2026.json: a developer note about which 2025 defense his numbers come from, not display text.",
   "names": "ASCII first and last names as they would be written into a coach record; together at most 24 letters.",
   "head_coach_record": "Derived from nflverse games.csv (regular season and playoff games 1999-2025 that he coached, interim spells included where the file lists them); null when he has none in that window. The file lists no interim coaches for 2024 and 2025, so a coach fired during one of those seasons is cut at his firing date (in_season_exits: Allen, Eberflus, Callahan, Daboll; each with its source). Earlier careers are not counted.",
   "as_of": "A snapshot: NFL staffs change during the season (the Evero change is the example). Rebuild with tools/nfl2k5_coach_owners_build.py to refresh."
@@ -53,7 +54,7 @@
    "role_2026": "Defensive coordinator",
    "team_2026": "CHI",
    "defense_identity_team": "CHI",
-   "note": "incumbent DC",
+   "defense_identity_note": "incumbent DC",
    "head_coach_record": {
     "seasons": 6,
     "wins": 26,
@@ -92,7 +93,7 @@
    "role_2026": "Defensive coordinator",
    "team_2026": "IND",
    "defense_identity_team": "IND",
-   "note": "incumbent DC",
+   "defense_identity_note": "incumbent DC",
    "head_coach_record": null,
    "sources": [
     {
@@ -111,7 +112,7 @@
    "role_2026": "Defensive coordinator",
    "team_2026": "TEN",
    "defense_identity_team": "TEN",
-   "note": "new DC; 49ers assistant head coach, Saleh called defense",
+   "defense_identity_note": "new DC; 49ers assistant head coach, Saleh called defense",
    "head_coach_record": {
     "seasons": 4,
     "wins": 14,
@@ -142,7 +143,7 @@
    "role_2026": "Defensive coordinator",
    "team_2026": "HOU",
    "defense_identity_team": "HOU",
-   "note": "incumbent DC alongside Ryans",
+   "defense_identity_note": "incumbent DC alongside Ryans",
    "head_coach_record": null,
    "sources": [
     {
@@ -199,7 +200,7 @@
    "role_2026": "Defensive coordinator",
    "team_2026": "JAX",
    "defense_identity_team": "JAX",
-   "note": "incumbent DC",
+   "defense_identity_note": "incumbent DC",
    "head_coach_record": null,
    "sources": [
     {
@@ -256,7 +257,7 @@
    "role_2026": "Defensive coordinator",
    "team_2026": "MIA",
    "defense_identity_team": "MIA",
-   "note": "new DC; Green Bay LB assistant, Hafley called defense",
+   "defense_identity_note": "new DC; Green Bay LB assistant, Hafley called defense",
    "head_coach_record": null,
    "sources": [
     {
@@ -275,7 +276,7 @@
    "role_2026": "Defensive coordinator",
    "team_2026": "NYJ",
    "defense_identity_team": "NYJ",
-   "note": "new DC; Miami pass-game assistant; Glenn calls 2026 defense",
+   "defense_identity_note": "new DC; Miami pass-game assistant; Glenn calls 2026 defense",
    "head_coach_record": null,
    "sources": [
     {
@@ -294,7 +295,7 @@
    "role_2026": "Defensive coordinator",
    "team_2026": "SEA",
    "defense_identity_team": "SEA",
-   "note": "incumbent DC; Macdonald calls defense",
+   "defense_identity_note": "incumbent DC; Macdonald calls defense",
    "head_coach_record": null,
    "sources": [
     {
@@ -351,6 +352,7 @@
    "role_2026": "Defensive coordinator of the Panthers until he was fired on 2026-10-30",
    "team_2026": null,
    "defense_identity_team": "CAR",
+   "defense_identity_note": "incumbent DC",
    "note": "The Panthers' own page for him is gone and lists Todd Wash as interim defensive coordinator.",
    "head_coach_record": null,
    "sources": [
@@ -374,7 +376,7 @@
    "role_2026": "Defensive coordinator",
    "team_2026": "PHI",
    "defense_identity_team": "PHI",
-   "note": "incumbent DC",
+   "defense_identity_note": "incumbent DC",
    "head_coach_record": {
     "seasons": 3,
     "wins": 19,
@@ -405,7 +407,7 @@
    "role_2026": "Defensive coordinator",
    "team_2026": "MIN",
    "defense_identity_team": "MIN",
-   "note": "incumbent DC",
+   "defense_identity_note": "incumbent DC",
    "head_coach_record": {
     "seasons": 3,
     "wins": 24,
@@ -436,7 +438,7 @@
    "role_2026": "Defensive coordinator",
    "team_2026": "GB",
    "defense_identity_team": "GB",
-   "note": "new DC; Arizona HC, Rallis coordinated defense",
+   "defense_identity_note": "new DC; Arizona HC, Rallis coordinated defense",
    "head_coach_record": {
     "seasons": 3,
     "wins": 15,
@@ -467,7 +469,7 @@
    "role_2026": "Defensive coordinator",
    "team_2026": "CIN",
    "defense_identity_team": "CIN",
-   "note": "incumbent DC",
+   "defense_identity_note": "incumbent DC",
    "head_coach_record": null,
    "sources": [
     {
@@ -486,7 +488,7 @@
    "role_2026": "Defensive coordinator",
    "team_2026": "PIT",
    "defense_identity_team": "PIT",
-   "note": "new DC; Raiders DC in 2025",
+   "defense_identity_note": "new DC; Raiders DC in 2025",
    "head_coach_record": null,
    "sources": [
     {
@@ -505,7 +507,7 @@
    "role_2026": "Defensive coordinator",
    "team_2026": "WAS",
    "defense_identity_team": "WAS",
-   "note": "new DC; Minnesota pass-game assistant, Flores called defense",
+   "defense_identity_note": "new DC; Minnesota pass-game assistant, Flores called defense",
    "head_coach_record": null,
    "sources": [
     {
@@ -524,7 +526,7 @@
    "role_2026": "Defensive coordinator",
    "team_2026": "DEN",
    "defense_identity_team": "DEN",
-   "note": "incumbent DC",
+   "defense_identity_note": "incumbent DC",
    "head_coach_record": {
     "seasons": 2,
     "wins": 11,
@@ -555,7 +557,7 @@
    "role_2026": "Defensive coordinator",
    "team_2026": "NE",
    "defense_identity_team": "NE",
-   "note": "new title; 2025 interim playcaller on Vrabel staff",
+   "defense_identity_note": "new title; 2025 interim playcaller on Vrabel staff",
    "head_coach_record": null,
    "sources": [
     {
@@ -574,7 +576,7 @@
    "role_2026": "Defensive coordinator",
    "team_2026": "LV",
    "defense_identity_team": "OAK",
-   "note": "new DC; Raiders DL and run-game assistant under Graham",
+   "defense_identity_note": "new DC; Raiders DL and run-game assistant under Graham",
    "head_coach_record": null,
    "sources": [
     {
@@ -593,7 +595,7 @@
    "role_2026": "Defensive coordinator",
    "team_2026": "BUF",
    "defense_identity_team": "BUF",
-   "note": "new DC; Denver pass-game assistant, Joseph called defense",
+   "defense_identity_note": "new DC; Denver pass-game assistant, Joseph called defense",
    "head_coach_record": null,
    "sources": [
     {
@@ -674,7 +676,7 @@
    "role_2026": "Defensive coordinator",
    "team_2026": "SF",
    "defense_identity_team": "SF",
-   "note": "new DC; Atlanta HC, Ulbrich called 2025 defense",
+   "defense_identity_note": "new DC; Atlanta HC, Ulbrich called 2025 defense",
    "head_coach_record": {
     "seasons": 6,
     "wins": 37,
@@ -706,7 +708,7 @@
    "role_2026": "Defensive coordinator",
    "team_2026": "LAC",
    "defense_identity_team": "SD",
-   "note": "new DC; Western Michigan DC in 2025; requested rates unavailable",
+   "defense_identity_note": "new DC; Western Michigan DC in 2025; requested rates unavailable",
    "head_coach_record": null,
    "sources": [
     {
@@ -725,7 +727,7 @@
    "role_2026": "Defensive coordinator",
    "team_2026": "DAL",
    "defense_identity_team": "DAL",
-   "note": "new DC; Philadelphia pass-game assistant, Fangio called defense",
+   "defense_identity_note": "new DC; Philadelphia pass-game assistant, Fangio called defense",
    "head_coach_record": null,
    "sources": [
     {
@@ -776,7 +778,7 @@
    "role_2026": "Defensive coordinator",
    "team_2026": "ARI",
    "defense_identity_team": "ARZ",
-   "note": "incumbent DC",
+   "defense_identity_note": "incumbent DC",
    "head_coach_record": null,
    "sources": [
     {
@@ -795,7 +797,7 @@
    "role_2026": "Defensive coordinator",
    "team_2026": "CLE",
    "defense_identity_team": "CLE",
-   "note": "new DC; Atlanta pass-game assistant, Ulbrich called defense",
+   "defense_identity_note": "new DC; Atlanta pass-game assistant, Ulbrich called defense",
    "head_coach_record": null,
    "sources": [
     {
@@ -814,7 +816,7 @@
    "role_2026": "Defensive coordinator",
    "team_2026": "DET",
    "defense_identity_team": "DET",
-   "note": "incumbent DC",
+   "defense_identity_note": "incumbent DC",
    "head_coach_record": null,
    "sources": [
     {
@@ -833,7 +835,7 @@
    "role_2026": "Defensive coordinator",
    "team_2026": "LAR",
    "defense_identity_team": "STL",
-   "note": "incumbent DC",
+   "defense_identity_note": "incumbent DC",
    "head_coach_record": null,
    "sources": [
     {
@@ -852,7 +854,7 @@
    "role_2026": "Defensive coordinator",
    "team_2026": "KC",
    "defense_identity_team": "KC",
-   "note": "incumbent DC",
+   "defense_identity_note": "incumbent DC",
    "head_coach_record": {
     "seasons": 4,
     "wins": 11,
@@ -884,7 +886,7 @@
    "role_2026": "Defensive coordinator",
    "team_2026": "NO",
    "defense_identity_team": "NO",
-   "note": "incumbent DC",
+   "defense_identity_note": "incumbent DC",
    "head_coach_record": {
     "seasons": 3,
     "wins": 24,
@@ -946,7 +948,7 @@
    "role_2026": "Defensive coordinator",
    "team_2026": "ATL",
    "defense_identity_team": "ATL",
-   "note": "incumbent DC",
+   "defense_identity_note": "incumbent DC",
    "head_coach_record": null,
    "sources": [
     {
@@ -965,7 +967,7 @@
    "role_2026": "Defensive coordinator",
    "team_2026": "BAL",
    "defense_identity_team": "BAL",
-   "note": "new DC; 2025 Miami DC; Minter influence is not measured here",
+   "defense_identity_note": "new DC; 2025 Miami DC; Minter influence is not measured here",
    "head_coach_record": null,
    "sources": [
     {
@@ -984,7 +986,7 @@
    "role_2026": "Defensive coordinator",
    "team_2026": "NYG",
    "defense_identity_team": "NYG",
-   "note": "new DC; Tennessee DC in 2025",
+   "defense_identity_note": "new DC; Tennessee DC in 2025",
    "head_coach_record": null,
    "sources": [
     {
