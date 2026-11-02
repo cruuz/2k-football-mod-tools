@@ -225,6 +225,19 @@ class CrashReportTests(unittest.TestCase):
             self.assertTrue(crash_report.reports_enabled("2K5 Mod Studio"))
             self.assertEqual(build_panel_qt._studio_log_directory(), crash_report.log_directory("2K5 Mod Studio"))
 
+    def test_the_main_window_tells_the_doctor_which_project(self):
+        from mod_editor.gui import studio_qt
+        pick = studio_qt.StudioMainWindow._doctor_project_for_build
+        owner = SimpleNamespace(_active_project_path=Path("Coach.2k5mod"), _workspace_dirty=False,
+                                facade=SimpleNamespace(_session="session", modified_count=3))
+        self.assertEqual(pick(owner), Path("Coach.2k5mod"))           # saved and unchanged: the file
+        owner._workspace_dirty = True
+        self.assertEqual(pick(owner), "session")                       # unsaved edits: what was built
+        owner._active_project_path, owner.facade.modified_count = None, 0
+        self.assertIsNone(pick(owner))                                 # no project: options only
+        source = (ROOT / "mod_editor" / "gui" / "studio_qt.py").read_text(encoding="utf-8")
+        self.assertIn("self._build_panel.doctor_project = self._doctor_project_for_build", source)
+
     def test_the_main_window_records_a_task_traceback(self):
         from mod_editor.gui import studio_qt
         with mock.patch.object(crash_report, "record_operation") as recorded:
