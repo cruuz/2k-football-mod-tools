@@ -423,6 +423,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
     from . import nfl2k5_letter_grades_progress as letter_grades_progress  # b77-f4b
     from . import nfl2k5_period_goalposts as period  # b77-v1b: the late allocator owner of the period uprights
     from . import nfl2k5_honors as honors  # b772-i3: in the union so the later coach AI owner lands where builds put it
+    from . import nfl2k5_champions as champions  # b780-b13: installed inside honors.apply, observed as its own step below
     from . import nfl2k5_team_names_2026 as team_names
     from . import nfl2k5_kick_meter_2026 as kick_meter  # b76-km: the wind digits' font lookup
     from . import nfl2k5_modern_goalposts as goalposts  # b77-v1: the upright lines and collision top
@@ -498,6 +499,12 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
                     function = getattr(module, name, None)
                     if inspect.isfunction(function) and function.__module__ == module.__name__:
                         stack.enter_context(patch.object(module, name, recorder.wrapper(module, name)))
+            # b780-b13 (b779 R2 MINOR 6): the Super Bowl champions owner is installed INSIDE honors.apply (honors.apply calls
+            # champions.install), so the honors step alone attributed its bytes to honors and left its two live call sites
+            # (0x2485FA stage advance, 0x116E55 season awards) without a span of their own: the retail E8 opcode byte of each
+            # call never changes, so the byte diff cannot see it. Observe the install as its own step: its declared edits
+            # reserve both complete 5-byte sites for nfl2k5_champions and its byte diff the two rewritten call operands.
+            stack.enter_context(patch.object(champions, "install", recorder.wrapper(champions, "install")))
             receipt = build.build(plan, progress=lambda message, *_: progress(message))
             preset_xbe = build._xbe_bytes(target)
             # The dormant-owner probe needs an XBE WITHOUT an allocator directory: an installed request
