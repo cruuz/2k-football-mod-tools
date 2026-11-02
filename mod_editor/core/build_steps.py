@@ -748,6 +748,15 @@ def scoped(step_id: str, label: str | None = None):
     return decorate
 
 
+def name_failure(exc: BaseException, name: Any) -> None:
+    """Give ``exc`` the resource ``name`` unless it already has one (what :class:`resource` does on the way out).
+
+    For hot loops such as the shared pool runners: ``except BaseException as exc: name_failure(exc, task[0]); raise``
+    reaches this module only when a task fails, so a traced run that succeeds executes nothing here
+    (nfl2k5_late_steps.STEP_CODE lists the code a step runs)."""
+    _stamp(exc, "_studio_resource", str(name))
+
+
 class resource:
     """``with build_steps.resource("s13ad.iff"):`` names what a step is working on; an error leaving it carries it."""
 

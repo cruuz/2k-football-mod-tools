@@ -113,12 +113,13 @@ def _run_task(function, task, marks_root):
     return official.run_with_pack(function, task, marks_root)
 
 
-def _named(task):
-    """b791-h3: an error from a task whose first item is its name (a bundle file, ...) carries that name."""
-    from contextlib import nullcontext
-    from . import build_steps
+def _name_failure(exc, task):
+    """b791-h3: an error from a task whose first item is its name (a bundle file, ...) carries that name. Called only
+    for a failing task, so a step that succeeds runs no new code (STEP_CODE stays what a traced run uses)."""
     first = task[0] if isinstance(task, (tuple, list)) and task else None
-    return build_steps.resource(first) if isinstance(first, str) and 0 < len(first) <= 120 else nullcontext()
+    if isinstance(first, str) and 0 < len(first) <= 120:
+        from . import build_steps
+        build_steps.name_failure(exc, first)
 
 
 def ordered_map(function, tasks, workers: int, *, initializer=None, initargs=(), cost=None):
@@ -137,8 +138,11 @@ def ordered_map(function, tasks, workers: int, *, initializer=None, initargs=(),
         if initializer is not None and tasks:
             initializer(*initargs)
         for task in tasks:
-            with _named(task):
+            try:
                 result = function(task)
+            except BaseException as exc:
+                _name_failure(exc, task)
+                raise
             yield result
         return
     from collections import deque
@@ -152,8 +156,11 @@ def ordered_map(function, tasks, workers: int, *, initializer=None, initargs=(),
         if initializer is not None:
             initializer(*initargs)
         for task in tasks:
-            with _named(task):
+            try:
                 result = function(task)
+            except BaseException as exc:
+                _name_failure(exc, task)
+                raise
             yield result
         return
     window = max(2, 2 * min(workers, len(tasks)))
@@ -182,17 +189,22 @@ def ordered_map(function, tasks, workers: int, *, initializer=None, initargs=(),
                 broken = True
             if not broken:
                 try:
-                    with _named(tasks[delivered]):
-                        result = (futures.pop(delivered) if cost is not None else pending.popleft()).result()
+                    result = (futures.pop(delivered) if cost is not None else pending.popleft()).result()
                 except BrokenProcessPool:
                     broken = True
+                except BaseException as exc:
+                    _name_failure(exc, tasks[delivered])
+                    raise
             if broken:
                 pool.shutdown(wait=True, cancel_futures=True)
                 if initializer is not None:
                     initializer(*initargs)
                 for task in tasks[delivered:]:
-                    with _named(task):
+                    try:
                         result = function(task)
+                    except BaseException as exc:
+                        _name_failure(exc, task)
+                        raise
                     yield result
                 return
             delivered += 1

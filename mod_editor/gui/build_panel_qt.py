@@ -4594,7 +4594,8 @@ class BuildPanel(QWidget):
                     progress(f"Diagnostic report, project doctor: {message}", done, total)  # Cancel stops the doctor
 
                 return build_report.run_doctor(project, plan.source, plan, progress=doctor_progress,
-                                               workers=build_report.default_workers())
+                                               workers=build_report.default_workers(),
+                                               labels=getattr(self, "_requested_option_words", None))
 
             from mod_editor.gui import crash_report
             append = ((lambda text: crash_report.write_report(text, "2K5 Mod Studio"))
@@ -4672,6 +4673,8 @@ class BuildPanel(QWidget):
             return
         self._requested_build_summary = f"2K5 Mod Studio {BUILD_RELEASE_TAG}\n" + self.confirmation_text(plan)
         self._requested_build_labels = self.selected_labels()
+        # b791-h3: every option's Build tab words, read here on the GUI thread, for a failed build's project doctor
+        self._requested_option_words = {key: box.text().replace("&&", "&") for key, box in self._boxes().items()}
         # What this build starts from, kept so a renamed or moved copy never
         # costs the next build its source (see _recover_missing_source). A
         # chain keeps the file it began at, not the copy before last.

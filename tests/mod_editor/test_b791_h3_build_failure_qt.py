@@ -140,9 +140,10 @@ class BuildPanelTests(unittest.TestCase):
             def as_dict(self):
                 return {"findings": [{"severity": "note", "area": "Modern surfaces"}]}
 
-        def doctor(project, source, settings, *, progress=None, workers=None):
-            doctor_calls.append((project, source, settings, workers))
-            progress("dry run 1 of 2", 1, 2)
+        def doctor(project, source, settings=None, *, progress=None, workers=None, checks=None, stadium_models=False,
+                   labels=None, use_cache=True):   # h4's keywords; Build passes only the ones a doctor takes
+            doctor_calls.append((project, source, settings, workers, checks, labels))
+            progress("kit tries 1 of 2", 1, 2)
             return Report()
 
         def failing_build(plan, progress, require_change=False):
@@ -153,8 +154,12 @@ class BuildPanelTests(unittest.TestCase):
                 raise ValueError("cannot keep the retail scratch word:")
 
         progress, lines = self._progress()
+        quick = ("options", "kits", "untested", "inventory")
+        words = {"modern_surfaces": "Modern playing surfaces", "modern_color": "Modern colour and lighting"}
+        self.panel._requested_option_words = dict(words)       # read on the GUI thread when Make my disc is pressed
         with mock.patch.object(mod_build, "build", side_effect=failing_build), \
-             mock.patch("mod_editor.core.nfl2k5_project_check.doctor", create=True, side_effect=doctor):
+             mock.patch("mod_editor.core.nfl2k5_project_check.doctor", doctor, create=True), \
+             mock.patch("mod_editor.core.nfl2k5_project_check.QUICK_CHECKS", quick, create=True):
             with self.assertRaises(ValueError) as caught:
                 self.panel._build_operation(self.plan, progress)
         exc = caught.exception
@@ -164,7 +169,9 @@ class BuildPanelTests(unittest.TestCase):
         self.assertEqual(doctor_calls[0][0], None)                       # no project in this build
         self.assertEqual(Path(doctor_calls[0][1]), self.source)
         self.assertIs(doctor_calls[0][2], self.plan)
-        self.assertIn("Diagnostic report, project doctor: dry run 1 of 2", lines)
+        self.assertEqual(doctor_calls[0][4], quick)                      # the quick checks, never the hour-long dive
+        self.assertEqual(doctor_calls[0][5], words)                      # the Build tab's own words
+        self.assertIn("Diagnostic report, project doctor: kit tries 1 of 2", lines)
         errors = (self.folder / "logs" / "2k5-mod-studio" / "errors.log").read_bytes().decode("utf-8")
         self.assertNotIn("\r\n", errors)
         self.assertIn("step: Modern playing surfaces (modern_surfaces)", errors)

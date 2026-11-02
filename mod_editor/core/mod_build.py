@@ -39,6 +39,26 @@ ProgressSink = Callable[[str, int, int], None]
 _step = build_steps.begin
 _core_step = build_steps.scoped
 _optional = build_steps.optional
+#: The receipt step names ``_build`` wraps with ``_optional(receipt, target, progress, "<name>")``: when one fails,
+#: Build restores what it wrote, names it in the summary and keeps going (the project doctor reads this to call such
+#: a failure a note, not a stop). test_b791_h3_build_steps checks it against the call sites, both ways.
+OPTIONAL_STEPS = frozenset({
+    # uniforms, kits and their menu pictures
+    "era_kits", "unc_bowl_uniforms", "nyg_shoulder_numbers", "kit_fixes_2026", "kit_fixes_2026_alts",
+    "kit_fixes_2026_uf3", "kit_fixes_2026_sea1", "kit_fixes_2026_ov1", "glyph_fixes_2026", "menu_icon_uf3",
+    "menu_helmet_w2026", "menu_chiefs_2026", "pants_hem_2026", "kit_fixes_2026_ku1", "kit_fixes_2026_sw1",
+    "kit_fixes_2026_names", "sideline_2026", "moment_kits", "nameplate_fixes_2026", "team_sleeves",
+    # stadiums, fields and their colour
+    "modern_color_bundles", "modern_arrowhead", "modern_metlife", "modern_venues_2026", "modern_metlife_model",
+    "modern_sofi", "modern_highmark", "modern_att", "modern_levis", "modern_allegiant", "modern_mercedes_benz",
+    "modern_usbank", "modern_lucas_oil", "modern_state_farm", "modern_hard_rock", "modern_gillette",
+    "modern_lambeau", "modern_everbank", "modern_board_kit", "modern_practice_field", "stadium_shadows",
+    "modern_surfaces", "missing_midfield",
+    # broadcast art, people on the field, late visual passes
+    "espn_marks_2026", "espn_wipes_boards_2026", "kick_meter_2026", "modern_goalposts", "modern_coaches",
+    "modern_fans", "modern_officials", "modern_helmets", "menu_icon_orientation", "espn25_fields", "era_ball",
+    "broadcast_greens", "super_bowl_hosts",
+})
 ROOT = Path(__file__).resolve().parents[2]
 PACK0_SIZE = 193_710_080   # vc_53450030/0 (retail); the schedule template lives in its ROST resource
 

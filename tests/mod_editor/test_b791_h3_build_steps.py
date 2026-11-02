@@ -187,6 +187,59 @@ class StepContextTests(unittest.TestCase):
         self.assertIn("target must not be the source", str(caught.exception))
 
 
+class OptionalStepListTests(unittest.TestCase):
+    """``mod_build.OPTIONAL_STEPS`` is what the project doctor reads (h4: a stadium refit that fails with your values
+    is a note, not a stop, only when Build would leave that step out), so it must name exactly the steps mod_build.py
+    wraps with ``_optional(receipt, target, progress, "<name>")``."""
+
+    @staticmethod
+    def _call_sites():
+        tree = ast.parse((ROOT / "mod_editor" / "core" / "mod_build.py").read_text(encoding="utf-8"))
+        names, unnamed, direct = [], [], []
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.Call):
+                continue
+            if isinstance(node.func, ast.Name) and node.func.id == "_optional":
+                last = node.args[3] if len(node.args) == 4 and not node.keywords else None
+                if isinstance(last, ast.Constant) and isinstance(last.value, str):
+                    names.append(last.value)
+                else:
+                    unnamed.append(f"line {node.lineno}: {ast.unparse(node)}")
+            elif isinstance(node.func, ast.Attribute) and node.func.attr == "optional" \
+                    and isinstance(node.func.value, ast.Name) and node.func.value.id == "build_steps":
+                direct.append(f"line {node.lineno}: {ast.unparse(node)}")
+        return names, unnamed, direct
+
+    def test_the_list_matches_the_call_sites_both_ways(self):
+        names, unnamed, direct = self._call_sites()
+        self.assertEqual(unnamed, [], "every _optional(...) names its step with a plain string")
+        self.assertEqual(direct, [], "mod_build wraps optional steps through _optional only")
+        self.assertEqual(len(names), len(set(names)), sorted(n for n in names if names.count(n) > 1))
+        self.assertIsInstance(mod_build.OPTIONAL_STEPS, frozenset)
+        self.assertEqual(sorted(set(names) - mod_build.OPTIONAL_STEPS), [], "wrapped but missing from OPTIONAL_STEPS")
+        self.assertEqual(sorted(mod_build.OPTIONAL_STEPS - set(names)), [], "listed but never wrapped")
+        self.assertEqual(len(mod_build.OPTIONAL_STEPS), 56)
+        for name in mod_build.OPTIONAL_STEPS:
+            self.assertIn(name, build_steps.STEP_LABELS, name)
+
+    def test_core_steps_are_never_listed(self):
+        source = (ROOT / "mod_editor" / "core" / "mod_build.py").read_text(encoding="utf-8")
+        import re
+        core = set(re.findall(r'@_core_step\("([a-z0-9_]+)"\)', source))
+        core |= {"preflight", "copy", "hash", "publish", "project_check", "artwork_recipe"}
+        self.assertEqual(sorted(core & mod_build.OPTIONAL_STEPS), [])
+
+    def test_the_doctor_reads_the_same_list(self):
+        from mod_editor.core import nfl2k5_project_check as project_check
+        reader = getattr(project_check, "optional_build_steps", None)
+        if reader is None:
+            self.skipTest("this tree has no project doctor (h4) yet")
+        self.assertEqual(set(reader()), set(mod_build.OPTIONAL_STEPS))
+        # the doctor's stadium names are receipt step names Build leaves out, so a failing refit reads as a note
+        names = getattr(project_check, "BUILD_STEP_NAMES", {})
+        self.assertEqual(sorted(set(names.values()) - mod_build.OPTIONAL_STEPS), [])
+
+
 class SyntheticImage:
     """A synthetic XDVDFS image with a vc_53450030 outer archive (tests/nfl2k5_xiso_fixture), plus sidecars."""
 
@@ -445,6 +498,23 @@ class PoolRunnerResourceTests(unittest.TestCase):
                 metlife.run_jobs(_fail_for_bundle, jobs, workers=1, label="Lambeau Field")
         self.assertTrue(str(caught.exception).startswith("During Lambeau Field (s13ad.iff): cannot keep the retail"))
 
+    def test_a_task_that_succeeds_runs_no_build_steps_code(self):
+        """The late steps' cache keys hash the code a traced run executes (nfl2k5_late_steps.STEP_CODE, checked by
+        test_b775_fast2_late_steps on real inputs): naming a failed task must not add build_steps.py to them."""
+        from mod_editor.core import nfl2k5_late_steps as late
+        from mod_editor.core import nfl2k5_modern_metlife as metlife
+        sys.path.insert(0, str(ROOT / "tools" / "b77"))
+        self.addCleanup(sys.path.remove, str(ROOT / "tools" / "b77"))
+        import late_step_trace
+        tasks = [("s12ad.iff", 1), ("s14ad.iff", 3)]
+        result, traced = late_step_trace.trace(lambda: list(late.ordered_map(_fail_for_bundle, tasks, 1)))
+        self.assertEqual(result, ["s12ad.iff", "s14ad.iff"])
+        self.assertIn("mod_editor/core/nfl2k5_late_steps.py", traced["code"])
+        self.assertNotIn("mod_editor/core/build_steps.py", traced["code"])
+        result, traced = late_step_trace.trace(metlife.run_jobs, _fail_for_bundle, tasks, workers=1)
+        self.assertEqual(len(result), 2)
+        self.assertNotIn("mod_editor/core/build_steps.py", traced["code"])
+
 
 def _child_writes(path):
     fd = os.open(path, os.O_RDWR | getattr(os, "O_BINARY", 0))
@@ -648,6 +718,49 @@ class ReportTests(unittest.TestCase):
         with zipfile.ZipFile(record.zip) as bundle:
             self.assertIn("project-doctor-not-run.txt", bundle.namelist())
             self.assertIn("doctor broke", bundle.read("project-doctor-not-run.txt").decode("utf-8"))
+
+    def test_the_doctor_gets_the_quick_checks_and_option_words_its_signature_takes(self):
+        from mod_editor.core import nfl2k5_project_check as project_check
+        quick = ("options", "kits", "untested", "inventory")
+        words = {"modern_surfaces": "Modern playing surfaces"}
+        calls = []
+
+        class Report:
+            def text(self):
+                return "Project doctor: quick checks.\n"
+
+            def as_dict(self):
+                return {"checks": list(quick)}
+
+        def h4_doctor(project, source, settings=None, *, progress=None, workers=None, checks=None,
+                      stadium_models=False, source_index=None, labels=None, use_cache=True):
+            calls.append(dict(project=project, workers=workers, checks=checks, labels=labels))
+            return Report()
+
+        def older_doctor(project, source, settings, *, progress=None, workers=None):   # TypeError on checks=
+            calls.append(dict(project=project, workers=workers))
+            return Report()
+
+        def open_doctor(project, source, settings, **keywords):
+            calls.append(dict(project=project, **keywords))
+            return Report()
+
+        with mock.patch.object(project_check, "QUICK_CHECKS", quick, create=True):
+            for doctor in (h4_doctor, older_doctor, open_doctor):
+                with mock.patch.object(project_check, "doctor", doctor, create=True):
+                    status, text, data = build_report.run_doctor("edwards.2k5mod", self.source, self.plan, workers=3,
+                                                                 labels=words)
+                self.assertEqual((status, text, data), ("ok", "Project doctor: quick checks.\n", {"checks": list(quick)}))
+        self.assertEqual(calls[0], dict(project="edwards.2k5mod", workers=3, checks=quick, labels=words))
+        self.assertEqual(calls[1], dict(project="edwards.2k5mod", workers=3))      # one call each: no retry on errors
+        self.assertEqual(calls[2], dict(project="edwards.2k5mod", workers=3, checks=quick, labels=words))
+        self.assertEqual(len(calls), 3)
+        # words only as a mapping; a list of ticked labels (the build log's) is not the doctor's labels
+        self.assertNotIn("labels", build_report.doctor_keywords(h4_doctor, project_check, labels=["Modern surfaces"]))
+        # no QUICK_CHECKS (an older project check): no checks keyword, the doctor's own default
+        self.assertNotIn("checks", build_report.doctor_keywords(h4_doctor, object()))
+        with mock.patch.object(build_report.inspect, "signature", side_effect=ValueError("no signature found")):
+            self.assertEqual(build_report.doctor_keywords(h4_doctor, project_check), {})   # nothing to read: none
 
     def test_a_refusal_before_the_long_work_does_not_run_the_doctor(self):
         with self.assertRaises(ValueError) as caught:

@@ -17,8 +17,10 @@ All files are UTF-8 with "\\n" line ends. Nothing here may stop a build or hide 
 """
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from datetime import datetime
+import inspect
 import json
 import os
 from pathlib import Path
@@ -371,12 +373,44 @@ def write_zip(path: Path, members: dict[str, str]) -> Path:
 # The project doctor (job h4's nfl2k5_project_check.doctor)
 # ------------------------------------------------------------------------------------------------------------------
 
-def run_doctor(project, source, settings, *, progress=None, workers=None) -> tuple[str, str, Any]:
+def doctor_keywords(doctor, project_check=None, *, progress=None, workers=None,
+                    labels: Mapping[str, str] | None = None) -> dict[str, Any]:
+    """The keywords to give this Studio's doctor, read from its signature (never found by trying a call and catching
+    the TypeError): ``progress``, ``workers``, ``checks`` (the module's ``QUICK_CHECKS``: options, kit tries, untested
+    options and inventory, about a minute on Coach Edwards' project, where the whole dive with the disc preflight and
+    the stadium dry run takes most of an hour) and ``labels`` ({option key: the Build tab's words})."""
+    try:
+        parameters = inspect.signature(doctor).parameters
+    except (TypeError, ValueError):
+        return {}
+    open_ended = any(p.kind is inspect.Parameter.VAR_KEYWORD for p in parameters.values())
+
+    def takes(name: str) -> bool:
+        p = parameters.get(name)
+        return open_ended or (p is not None and p.kind in (inspect.Parameter.POSITIONAL_OR_KEYWORD,
+                                                           inspect.Parameter.KEYWORD_ONLY))
+
+    out: dict[str, Any] = {}
+    if progress is not None and takes("progress"):
+        out["progress"] = progress
+    if workers is not None and takes("workers"):
+        out["workers"] = workers
+    quick = getattr(project_check, "QUICK_CHECKS", None) if project_check is not None else None
+    if quick and takes("checks"):
+        out["checks"] = tuple(quick)
+    if isinstance(labels, Mapping) and labels and takes("labels"):
+        out["labels"] = {str(key): str(words) for key, words in labels.items()}
+    return out
+
+
+def run_doctor(project, source, settings, *, progress=None, workers=None,
+               labels: Mapping[str, str] | None = None) -> tuple[str, str, Any]:
     """(status, text, json-able data) of the project doctor; never raises. status: ok, unavailable, failed, cancelled.
 
-    The call agreed with h4: ``doctor(project, source, settings, progress=..., workers=...)`` returning a Report with
-    ``text()`` and ``as_dict()``. ``project`` is the saved .2k5mod path, the open session, or None for a build with
-    no project; ``settings`` is the BuildPlan.
+    The call agreed with h4: ``doctor(project, source, settings, progress=, workers=, checks=QUICK_CHECKS, labels=)``
+    returning a DoctorReport with ``text()`` and ``as_dict()``; each keyword goes only to a doctor whose signature
+    takes it (:func:`doctor_keywords`). ``project`` is the saved .2k5mod path, the open session, or None for a build
+    with no project; ``settings`` is the BuildPlan; ``labels`` maps option keys to the Build tab's words.
     """
     try:
         from . import nfl2k5_project_check as project_check
@@ -386,7 +420,8 @@ def run_doctor(project, source, settings, *, progress=None, workers=None) -> tup
     if not callable(doctor):
         return "unavailable", "This Studio has no project doctor (nfl2k5_project_check.doctor).", None
     try:
-        report = doctor(project, source, settings, progress=progress, workers=workers)
+        report = doctor(project, source, settings, **doctor_keywords(doctor, project_check, progress=progress,
+                                                                     workers=workers, labels=labels))
     except Exception as exc:  # noqa: BLE001 - the doctor's own failure goes in the zip, never over the build's
         if build_steps.is_cancel(exc):
             return "cancelled", "The project doctor was cancelled (Cancel was pressed).", None
@@ -445,7 +480,8 @@ If you need help, send this .zip to {discord}. It holds text only:
   build-log.txt          every step and progress line of the build, the options and the full error
   errors-log-entry.txt   the entry the Studio added to its errors.log for this build
   build-options.json     your Build options and Modern colour values (no textures)
-  project-doctor.txt     the project doctor's deep check of your project and options (when it could run)
+  project-doctor.txt     the project doctor's quick check of your project and options: options, kits, options
+                         no release build tried, size limits (when it could run)
 It never holds your textures, your project's images or any game data.
 """
 
@@ -554,12 +590,14 @@ def record_end(tracker, *, plan=None, labels=None, receipt: dict | None = None,
 
 
 def run_logged(build: Callable[[Callable[..., Any]], dict], plan, progress=None, *, labels=None,
-               log_directory: Path | None = None, project=None, doctor: bool = False):
+               log_directory: Path | None = None, project=None, doctor: bool = False,
+               option_words: Mapping[str, str] | None = None):
     """A command-line build with the Build tab's logs: ``run_logged(lambda p: mod_build.build(plan, p), plan, say)``.
 
     Writes the build log beside the output (and in ``log_directory``/builds when given); on a failure also the
-    diagnostic zip (with the project doctor when ``doctor`` is true) and re-raises the "During ..." error, whose
-    ``studio_build_record`` attribute says where the files are. Returns the receipt (with ``build_log``)."""
+    diagnostic zip (with the project doctor's quick checks when ``doctor`` is true; ``option_words``: {option key:
+    words} for its report) and re-raises the "During ..." error, whose ``studio_build_record`` attribute says where the
+    files are. Returns the receipt (with ``build_log``)."""
     session = build_steps.track(progress)
     try:
         with session:
@@ -568,7 +606,7 @@ def run_logged(build: Callable[[Callable[..., Any]], dict], plan, progress=None,
         try:
             if isinstance(exc, Exception) and not build_steps.is_cancel(exc):
                 runner = (lambda: run_doctor(project, getattr(plan, "source", ""), plan, progress=progress,
-                                             workers=default_workers())) if doctor else None
+                                             workers=default_workers(), labels=option_words)) if doctor else None
                 record = record_failure(session.tracker, exc, plan=plan, labels=labels, log_directory=log_directory,
                                         doctor=runner, operation="make the disc (command line)")
             else:
@@ -588,4 +626,4 @@ def run_logged(build: Callable[[Callable[..., Any]], dict], plan, progress=None,
 
 __all__ = ["BuildRecord", "build_log_text", "errors_entry_text", "record_failure", "record_end", "run_doctor",
            "run_logged", "write_build_log", "write_zip", "safe_name", "colour_values", "option_lines",
-           "source_identity", "default_workers", "NO_DOCTOR_STEPS"]
+           "source_identity", "default_workers", "doctor_keywords", "NO_DOCTOR_STEPS"]
