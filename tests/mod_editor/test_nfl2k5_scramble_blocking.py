@@ -320,21 +320,28 @@ class NativeTests(unittest.TestCase):
         self.assert_converted(m, [wr1])
 
     def test_one_blocker_per_man_at_install_and_on_refresh(self):
-        # Field flipped: the game's selector sends the left receiver and the tight end to the same linebacker.
+        # Control: the game's own conversion alone (0x23A010's call, made directly, so the owner never runs) with the
+        # field flipped sends the left receiver and the tight end to the same linebacker.
+        m = self.machine(direction=-1)
+        native = []
+        for who in m.receivers:
+            heading = 0x8000 if m.readf(m.get(m.get(m.get(who + 0x38) + 8) + 0xC) + 4) <= 0 else 0
+            m.run(0x23F450, ecx=who, edx=0, args=(0, 0, 1, 0, 0x4336E148, heading, 0x7F800000), budget=3_000_000)
+            native.append(m.get(m.task(who) + 0x40))
+        self.assertLess(len(set(native)), len(native), "the fixture no longer shows the game's double team")
+        # The owner on the same scene: distinct men.
         m = self.machine(direction=-1)
         m.tick()
         targets = self.assert_converted(m)
-        native = []
-        for who in m.receivers:                                          # the game's own refresh alone
-            task = m.task(who)
-            m.run(0x23CD60, ecx=who, budget=2_000_000)
-            native.append(m.get(task + 0x40))
-        self.assertLess(len(set(native)), len(native), "the fixture no longer shows the game's double team")
-        for who, target in zip(m.receivers, targets):                    # restore, then the owner's refresh
-            m.put(m.task(who) + 0x40, target)
-        for who in m.receivers:
+        # A refresh can never leave two of them on one man: force the second receiver onto the first one's man.
+        first, second = m.receivers[0], m.receivers[1]
+        m.put(m.task(second) + 0x40, targets[0])
+        m.refresh(second)
+        self.assert_converted(m)
+        for who in m.receivers:                                          # and a full refresh round stays distinct
             m.refresh(who)
         self.assert_converted(m)
+        self.assertIsNot(first, second)
         # one defender only: nobody else is free, so the game's choice stands (a shared man beats no block)
         m = self.machine(defenders=((14, 0, 6),), receivers=((9, -3, 7), (9, 3, 7)))
         m.tick()

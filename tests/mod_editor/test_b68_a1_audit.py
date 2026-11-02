@@ -39,7 +39,7 @@ class IntegrationTests(unittest.TestCase):
         registry = CapabilityRegistryLoader().load(allow_sample_fallback=False, check_files=False)
         catalog = build_nfl2k5_product_catalog(registry)
         self.assertEqual(len(registry.capabilities), 212)  # b780-cv7: + scramble blocking; b77-f5: + Player Card honors page; b77-v1: + modern goalposts; b76: + custom intro video, ESPN presentation marks (2026), b76-p2 wipes and boards, b76-h1, b76-u2 MetLife, b76-m1 25 more moments, b76-k1 128 MB memory, b76-vb3 kickoff return blocking, b76-u5 MetLife model, b76-u6 SoFi Stadium, b76-st Highmark Stadium, b76-tf modern surfaces, b76-km: + kick meter, b76-hm modern helmets, b76-st2 AT&T, Levi's, Allegiant and Mercedes-Benz, b76-st4 Hard Rock, Gillette, Lambeau and EverBank, b76-st5: + modern_board_kit, b77-f4: + letter grades in Franchise
-        self.assertEqual(len(catalog.capabilities), 136)
+        self.assertEqual(len(catalog.capabilities), 137)  # b780-cv7: + scramble blocking
         path = ROOT / 'packaging/check_2k5_mod_studio_runtime.py'
         source = path.read_text()
         # Execute the production assertions against the actual registry, without
