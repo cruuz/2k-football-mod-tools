@@ -42,7 +42,7 @@ Body (``BODY_SIZE`` bytes, little endian)
              +0 u16 block id (0 = slot unused), +2 u8 block version, +3 u8 flags (bit 0 present),
              +4 u32 offset (from the body start), +8 u32 size, +12 u32 Adler-32 of the block bytes
     +0x0140  host info (192 B, not checksummed; diagnostics the host writes at load/save, see INFO_FIELDS)
-    +0x0200  blocks (BLOCKS below), each at a fixed offset; 0xF4A0..BODY_SIZE (35,664 B) is free for later blocks
+    +0x0200  blocks (BLOCKS below), each at a fixed offset; 0x114B0..BODY_SIZE (27,456 B) is free for later blocks
 
 The envelope (header, directory, slot meaning, sizes) never changes; blocks evolve by id and version. Readers keep a
 block whose (id, version, offset, size, checksum) all match what they know and rebuild only that block otherwise; a
@@ -76,6 +76,8 @@ id      name        offset   size    content
 4       leaders     0x7350   16,176  all-time club leaders (top 3 x 10) and league career leaders (top 5 x 10)
 5       hall        0xB280   4,624   Hall of Fame inductees (192) and pending candidates (64)
 6       boxscores   0xC490   12,304  this season's games of the user's club (24 x 512 B)
+7       (reserved)                   coaching history, later (r2 / c6; not used in b780)
+8       playoffs    0xF4A0   8,208   per player: Super Bowls lost and playoff wins (the Hall of Fame rule reads them)
 ======  ==========  =======  ======  =================================================================================
 
 Studio API (stable; j4-history, j5-seed, j6-hof, c1-coachdata build on it)
@@ -166,11 +168,12 @@ BLOCKS: tuple[Block, ...] = (
     Block(4, "leaders", 1, 0x7350, 16176, "all-time club leaders and league career leaders"),
     Block(5, "hall", 1, 0xB280, 4624, "Hall of Fame inductees and pending candidates"),
     Block(6, "boxscores", 1, 0xC490, 12304, "this season's games of the user's club"),
+    Block(8, "playoffs", 1, 0xF4A0, 8208, "per player: Super Bowls lost and playoff wins"),
 )
 BLOCK_BY_ID = {block.id: block for block in BLOCKS}
 BLOCK_BY_NAME = {block.name: block for block in BLOCKS}
-FREE_OFFSET = max(block.offset + block.size for block in BLOCKS)          # 0xF4A0
-FREE_BYTES = BODY_SIZE - FREE_OFFSET                                     # 35,664
+FREE_OFFSET = max(block.offset + block.size for block in BLOCKS)          # 0x114B0
+FREE_BYTES = BODY_SIZE - FREE_OFFSET                                     # 27,456
 RESERVED_IDS = {7: "coaching (r2 carousel history, later)"}
 
 
@@ -180,7 +183,8 @@ def _check_static_layout() -> None:
         assert block.offset == at and block.offset % 16 == 0 and block.size % 16 == 0, block
         assert 1 <= block.id <= DIRECTORY_SLOTS
         at += block.size
-    assert FREE_OFFSET == 0xF4A0 and FREE_BYTES == 35664 and BODY_SIZE == 98288
+    assert FREE_OFFSET == 0x114B0 and FREE_BYTES == 27456 and BODY_SIZE == 98288
+    assert not set(RESERVED_IDS) & set(BLOCK_BY_ID)
     for arena_a in NATIVE_SIZES:
         for arena_b in NATIVE_SIZES:
             for career_a in CAREER_SIZES:
@@ -750,10 +754,13 @@ INDUCTEE_ENTRY, CANDIDATE_ENTRY = 16, 24
 CANDIDATES_AT = 16 + HALL_INDUCTEES * INDUCTEE_ENTRY            # 3,088
 HALL_VALID, HALL_REAL, HALL_NEW = 1, 2, 4
 HALL_LAYOUT = """
-hall block (4,624 B): +0 u8 inductees (0..192), +1 u8 candidates (0..64), +2 u16 last class year, +4..+15 reserved;
-  +16 inductees 192 x 16 B in induction order: person (7), u8 main club+1, u16 induction year, u16 retirement year,
+hall block (4,624 B): +0 u8 inductees (0..192), +1 u8 candidate slots in use (the high-water mark, 0..64), +2 u16 the
+  last class (its year), +4..+15 reserved;
+  +16 inductees 192 x 16 B in induction order: person (7), u8 main club+1, u16 class year (the season closed + 1:
+      "Class of 2027" after the 2026 season, job j6-hof's convention), u16 retirement year,
       u8 flags (1 valid, 2 real history, 4 franchise era), u8 seasons, u16 score
-  +3,088 candidates 64 x 24 B: person (7), u8 main club+1, u16 retirement year, u16 score, u8 seasons,
+  +3,088 candidates 64 slots x 24 B (job j6-hof's table: a slot keeps its place, an empty slot has flags 0 and a new
+      candidate takes the first empty slot): person (7), u8 main club+1, u16 retirement year, u16 score, u8 seasons,
       u8 flags (1 valid, 2 real history), u16 x 3 key career numbers (by position, see HALL_KEYS), u8 honors
       (MVP + player of the year + All-Pro + Pro Bowl seasons), u8 Super Bowl wins, u16 reserved
 """
@@ -803,7 +810,7 @@ def decode_hall(block: bytes) -> dict:
         raw = block[CANDIDATES_AT + i * CANDIDATE_ENTRY:CANDIDATES_AT + (i + 1) * CANDIDATE_ENTRY]
         club, retired, score, seasons, flags, k1, k2, k3, honors, sb, _r = struct.unpack_from("<BHHBBHHHBBH", raw, 7)
         if flags & HALL_VALID:
-            candidates.append({"person": unpack_person(raw[:7]), "club": club - 1 if club else None,
+            candidates.append({"slot": i, "person": unpack_person(raw[:7]), "club": club - 1 if club else None,
                                "retired": retired, "score": score, "seasons": seasons,
                                "real": bool(flags & HALL_REAL), "keys": (k1, k2, k3), "honors": honors,
                                "sb_wins": sb})
@@ -864,6 +871,65 @@ def decode_boxscores(block: bytes) -> dict:
     return {"year": year, "user_club": user - 1 if user else None, "games": rows}
 
 
+# ------------------------------------------------------------------------------------------------ block 8: playoffs
+PLAYOFF_SLOTS = 4096                      # by player record index (nfl2k5_roster_arena.CAPACITY_PRIMARY_LIMIT)
+PLAYOFFS_LAYOUT = """
+playoffs block (8,208 B), two counters the game itself never keeps, for the Hall of Fame rule (job j6-hof's optional
+Super Bowl lost and playoff win terms; the native rule adds them to a retiree's career):
+  +0 u16 season of the counted-games mask, +2 u16 season whose Super Bowl loss was counted, +4..+7 reserved,
+  +8 8 B counted postseason games of that season: bit (round - 1) * 16 + slot (round 1 wild card .. 4 Super Bowl),
+  +16 4,096 x 2 B by player record index: u8 identity (1..255, playoff_identity of the packed name; 0 = empty;
+      another name in the slot means a new player there, whose counters start at 0), u8 counters: bits 0-3 Super
+      Bowls lost (every player of the losing club, counted at the season close), bits 4-7 playoff wins (the player
+      with the most pass attempts on the winning club of a postseason game, counted at the game's commit); each
+      stops at 15
+"""
+
+
+def playoff_identity(person: bytes) -> int:
+    """The identity byte of a player's counters (1..255): the packed person (``pack_person``) without its position."""
+
+    _require(len(person) == 7, "bad person")
+    return 1 + (sum(person[:6]) + (person[6] & 3)) % 255
+
+
+def encode_playoffs(players: Mapping[int, tuple] | None = None, *, games_year: int = 0, games: Iterable = (),
+                    loss_year: int = 0) -> bytes:
+    """``players``: record index -> (person, super_bowls_lost, playoff_wins); ``games``: counted (round, slot)."""
+
+    out = bytearray(BLOCK_BY_NAME["playoffs"].size)
+    struct.pack_into("<HH", out, 0, games_year, loss_year)
+    for round_, slot in games:
+        _require(1 <= round_ <= 4 and 0 <= slot < 16, "bad postseason game")
+        bit = (round_ - 1) * 16 + slot
+        out[8 + bit // 8] |= 1 << (bit % 8)
+    for index, (person, lost, wins) in dict(players or {}).items():
+        _require(0 <= index < PLAYOFF_SLOTS and 0 <= lost <= 15 and 0 <= wins <= 15, "bad playoff counters")
+        out[16 + 2 * index] = playoff_identity(person)
+        out[17 + 2 * index] = lost | wins << 4
+    return bytes(out)
+
+
+def decode_playoffs(block: bytes) -> dict:
+    games_year, loss_year = struct.unpack_from("<HH", block, 0)
+    games = [(bit // 16 + 1, bit % 16) for bit in range(64) if block[8 + bit // 8] >> (bit % 8) & 1]
+    players = {}
+    for index in range(PLAYOFF_SLOTS):
+        identity, counters = block[16 + 2 * index], block[17 + 2 * index]
+        if identity:
+            players[index] = {"identity": identity, "super_bowls_lost": counters & 15, "playoff_wins": counters >> 4}
+    return {"games_year": games_year, "loss_year": loss_year, "counted_games": games, "players": players}
+
+
+def playoff_counts(block: bytes, index: int, person: bytes) -> tuple[int, int]:
+    """(Super Bowls lost, playoff wins) of the player at record ``index`` named ``person`` (0, 0 for another name)."""
+
+    if not 0 <= index < PLAYOFF_SLOTS or block[16 + 2 * index] != playoff_identity(person):
+        return 0, 0
+    counters = block[17 + 2 * index]
+    return counters & 15, counters >> 4
+
+
 # ------------------------------------------------------------------------------------------------ a whole save
 def describe(payload: bytes | bytearray) -> dict:
     """Plain summary of the footers of a franchise save (Studio, project doctor, reports)."""
@@ -892,6 +958,7 @@ assert PP_SIZE == __import__("mod_editor.core.nfl2k5_player_progression", fromli
 __all__ = ["BLOCKS", "BLOCK_BY_ID", "BLOCK_BY_NAME", "BODY_SIZE", "Block", "CAREER_SIZE", "CAREER_SIZES",
            "ExtensionError", "FOOTER_SIZES", "FREE_BYTES", "FREE_OFFSET", "Layout", "MAGIC", "PP_SIZE", "SCHEMA",
            "admitted_sizes", "block_of", "body_of", "candidate_entry", "decode_boxscores", "decode_hall",
+           "decode_playoffs", "encode_playoffs", "playoff_counts", "playoff_identity",
            "decode_leaders", "decode_records", "decode_seasons", "decode_totals", "describe", "empty_body",
            "encode_hall", "encode_leaders", "encode_records", "encode_seasons", "encode_totals", "franchise_sizes",
            "inductee_entry", "layout", "leader_entry", "native_length", "pack_person", "pp_footer_of", "read_body",

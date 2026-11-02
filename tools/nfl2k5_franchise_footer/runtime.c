@@ -70,11 +70,11 @@ struct config {
 extern const struct config xt_config;
 
 /* the blocks this host knows (the format's BLOCKS): id, version, offset, size */
-static const u32 blocks[6][4] = {
+static const u32 blocks[7][4] = {
     {1, 1, 0x0200, 18960}, {2, 1, 0x4C10, 528}, {3, 1, 0x4E20, 9520},
-    {4, 1, 0x7350, 16176}, {5, 1, 0xB280, 4624}, {6, 1, 0xC490, 12304},
+    {4, 1, 0x7350, 16176}, {5, 1, 0xB280, 4624}, {6, 1, 0xC490, 12304}, {8, 1, 0xF4A0, 8208},
 };
-#define NBLOCKS 6u
+#define NBLOCKS 7u
 
 /* state (64 bytes, zero at boot) */
 #define S_MAGIC 0u

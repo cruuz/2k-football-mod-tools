@@ -26,11 +26,17 @@ What this owner adds (three sites; code only, no memory of its own)
   result, head coach; the champion and score; the awards), the franchise totals, single-season records, all-time club
   and league leaders (a linked leader adds the season to his own total; anyone else enters from his unfolded seasons
   with the club), the Hall of Fame candidates (retirees) and this year's class. Then the displaced call runs.
+* The Hall of Fame is job j6-hof's rule (``nfl2k5_hof_rules``), compiled in unchanged from its ``c_reference()``: at the
+  close of season Y the class of Y + 1 (up to 5 with 100 points, at least 2 from 80), then the candidates past their
+  window leave, then this season's retirees with 80 points join (a full table drops its weakest). Two counters the
+  game never keeps are added to a retiree's career from block 8 (``playoffs``): Super Bowls lost (every player of the
+  losing club, counted at the close) and playoff wins (the player with the most pass attempts on the winning club of
+  each postseason game, counted at the game's commit).
 
 It only reads the game's state through getters (no random number draw, no allocation) and writes only inside the body.
 Every loop is bounded and every pointer checked; when the body is absent (xemu at 64 MB on a K128 build) nothing runs.
 
-Allocation: code 10,240 B, late owner after ``nfl2k5_franchise_footer`` (it calls that owner's ``xt_body``).
+Allocation: code 12,288 B, late owner after ``nfl2k5_franchise_footer`` (it calls that owner's ``xt_body``).
 """
 
 from __future__ import annotations
@@ -41,13 +47,14 @@ from typing import Mapping
 
 from . import nfl2k5_franchise_extension as ext
 from . import nfl2k5_history_code as runtime
+from . import nfl2k5_hof_rules as hof_rules
 from . import nfl2k5_xbe_space as space
 from .nfl2k5_bump_strength import _sections, section_digest
 from .nfl2k5_cave_oracle import XbeImage
 
 OWNER = "nfl2k5_history"
 EVIDENCE = "EXPERIMENTAL"
-CODE_SIZE = 10240
+CODE_SIZE = 12288
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16),)
 CONFIG_AT = runtime.LABELS["hst_config"]
 CONFIG_MAGIC, CONFIG_VERSION = 0x43545348, 1           # "HSTC"
@@ -56,13 +63,11 @@ CONFIG_FIELDS = ("magic", "version", "body_fn", "chain_close", "hall_bar", "hall
 FLAG_RECORDS, FLAG_BOXSCORES, FLAG_LEADERS, FLAG_HALL = 1, 2, 4, 8
 ALL_PARTS = FLAG_RECORDS | FLAG_BOXSCORES | FLAG_LEADERS | FLAG_HALL
 
-# Hall of Fame rule (job j6-hof calibrates these; the score formula is in tools/nfl2k5_history/runtime.c hall_score)
-HALL_RULE = {"bar": 260, "wait": 5, "window": 15, "class_size": 5,
-             "score": "40 per major honor (MVP, player of the year, rookie of the year, Super Bowl MVP, Pro Bowl, "
-                      "All-Pro), 15 per Super Bowl win, 6 per season played, plus position production: QB passing TD/2 "
-                      "+ passing yards/400; HB/FB rushing yards/120 + 2 per rushing TD; WR/TE receptions/10 + receiving "
-                      "yards/150 + 2 per receiving TD; front seven sacks (half) /2 + tackles/12 + 3 per interception; "
-                      "secondary 5 per interception + tackles/15; others 6 more per season"}
+# Hall of Fame rule: job j6-hof's (nfl2k5_hof_rules); the native code is its c_reference(), compiled in. These values
+# fill the config table for status only (the code uses the compiled constants).
+HALL_RULE = {"bar": hof_rules.BAR, "floor": hof_rules.FLOOR, "wait": hof_rules.WAIT_SEASONS,
+             "window": hof_rules.WINDOW_SEASONS, "class_size": hof_rules.MAX_CLASS, "min_class": hof_rules.MIN_CLASS,
+             "class_year": "the season closed + 1", "score": hof_rules.RULE_HELP}
 
 # (label, VA, retail bytes, entry label, opcode, length)
 SITE_TABLE = (

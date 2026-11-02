@@ -6,6 +6,11 @@ model of the published format: the season record of every club (W-L-T, points, d
 coach), the champion, awards, franchise totals, single-game and single-season records, all-time leaders (a linked
 leader adds the season), Hall of Fame candidates and the class, the box score of the user's games; and that the
 capture writes nothing outside the footer body and its own stack.
+
+The Hall of Fame is job j6-hof's rule compiled in (``nfl2k5_hof_rules.c_reference``): the native score is checked on
+j6's golden vectors and on fuzzed careers, a retiree's candidate entry against ``rules.score`` of his stream
+(``career_from_words``) plus the two playoff counters of block 8, and ten seeded season closes against j6's Python
+``close_season`` (classes named for the next year).
 """
 
 from __future__ import annotations
@@ -22,6 +27,7 @@ sys.path.insert(0, str(ROOT))
 from mod_editor.core import nfl2k5_franchise_extension as ext  # noqa: E402
 from mod_editor.core import nfl2k5_franchise_footer as footer  # noqa: E402
 from mod_editor.core import nfl2k5_history as history  # noqa: E402
+from mod_editor.core import nfl2k5_hof_rules as rules  # noqa: E402
 
 try:
     import unicorn as uc
@@ -42,6 +48,32 @@ STAT_FIELDS = (8, 9, 7, 2, 3, 12, 13, 14, 19, 20, 18, 21, 10, 0)
 
 def _wide(text):
     return text.encode("utf-16-le") + b"\0\0"
+
+
+def _sym5(c):
+    c = c.upper()
+    if "A" <= c <= "Z":
+        return ord(c) - 64
+    return {"-": 27, ".": 28, "'": 29, " ": 30}.get(c, 31)
+
+
+def native_person(first, last, position):
+    """What the runtime's pack_name writes (initial, nine letters, position code)."""
+    bits = _sym5(first[0]) if first else 0
+    for i in range(9):
+        bits |= (_sym5(last[i]) if i < len(last) else 0) << (5 + 5 * i)
+    bits |= (position & 31) << 50
+    return bits.to_bytes(7, "little")
+
+
+HOF_FIELDS = ("group", "games", "mvp", "opoy", "dpoy", "oroy", "droy", "super_bowl", "super_bowl_mvp", "all_pro",
+              "rushing_title", "passing_touchdowns", "rushing_touchdowns", "rushing_yards", "receptions",
+              "receiving_yards", "receiving_touchdowns", "sacks_half", "interceptions", "field_goals_made",
+              "super_bowl_loss", "playoff_wins")                 # j6's HofCareer, 22 ints
+
+
+def career_struct(career):
+    return struct.pack("<22i", *(getattr(career, name) for name in HOF_FIELDS))
 
 
 @unittest.skipIf(uc is None, "Unicorn is required")
@@ -111,8 +143,10 @@ class CaptureTests(unittest.TestCase):
                 season[2] = rng.randint(200, 1500) if pos == 7 else rng.randint(0, 60)
                 season[13] = rng.randint(300, 1500) if pos in (3, 9) else 0
                 season[19] = rng.randint(0, 30) if pos == 16 else 0
-                retired = t in (1, 2) and k == 0
-                self.players[p] = dict(team=t, pos=pos, season=season, retired=retired, index=t * 6 + k)
+                retired = t in (1, 4) and k == 0
+                self.players[p] = dict(team=t, pos=pos, season=season, retired=retired, index=t * 6 + k,
+                                       person=native_person("P", f"Last{chr(65 + t // 26)}{chr(65 + t % 26)}{chr(65 + k)}",
+                                                            pos))
                 m.mem_write(p + 8, bytes([8 if retired else 0]))
                 # history stream: three older seasons with this club, one with another club, the end word
                 words = []
@@ -121,7 +155,8 @@ class CaptureTests(unittest.TestCase):
                     words.append(slot << 23 | 87 << 16 | (club + 1))
                     words.append(slot << 23 | 0 << 16 | 16)            # games
                     for f, v in ((8, season[8] // 2), (2, season[2] // 2), (13, season[13] // 2), (19, season[19]),
-                                 (9, 20 if pos == 0 else 0), (96, 1 if retired and slot == 2 else 0)):
+                                 (9, 20 if pos == 0 else 0), (96, 1 if retired and slot == 2 else 0),
+                                 (104, 2 if retired and slot in (2, 3) else 0)):
                         if v:
                             words.append(slot << 23 | f << 16 | (v & 0xFFFF))
                 for f in (8, 2, 13, 19, 9):                              # the current season (slot 4)
@@ -358,10 +393,24 @@ class CaptureTests(unittest.TestCase):
         # the league career leaders count every season, the other club's included: the model's top five
         careers = sorted((x["season"][2] // 2 * 4 + x["season"][2] for x in self.players.values()), reverse=True)
         self.assertEqual([r["value"] for r in leaders["league"]["rushing_yards"]], careers[:5])
-        # Hall of Fame: the two retirees are candidates (retired 2027, wait 1 season)
+        # Hall of Fame: the two retirees are candidates with j6's score of their streams plus the playoff counters
         hall = ext.decode_hall(view["blocks"][5])
-        self.assertEqual(sorted(c["club"] for c in hall["candidates"]), [1, 2])
+        self.assertEqual(sorted(c["club"] for c in hall["candidates"]), [1, 4])
         self.assertEqual(hall["inductees"], [])
+        for c in hall["candidates"]:
+            p = self.roster[c["club"]][0]
+            d = self.players[p]
+            career = rules.career_from_words(rules.GROUP_OF_POSITION[d["pos"]], d["stream"])
+            self.assertEqual((career.super_bowl_loss, career.playoff_wins), (0, 0))       # the game writes neither
+            import dataclasses
+            if c["club"] == 1:
+                career = dataclasses.replace(career, playoff_wins=1)                    # won its wild card game
+            else:
+                career = dataclasses.replace(career, super_bowl_loss=1)                 # lost the Super Bowl
+            self.assertEqual(c["score"], rules.score(career), c)
+            self.assertGreaterEqual(c["score"], rules.FLOOR)
+            self.assertEqual((c["retired"], c["honors"], c["seasons"]), (2027, rules.honors_count(career), 5))
+            self.assertEqual(c["slot"], hall["candidates"].index(c))
         self.assertEqual(self.writes, [])
 
     def test_box_scores_follow_the_users_games(self):
@@ -402,16 +451,127 @@ class CaptureTests(unittest.TestCase):
         seasons = ext.decode_seasons(view["blocks"][1])
         self.assertEqual([s["year"] for s in seasons], [2028, 2027])
         hall = ext.decode_hall(view["blocks"][5])
-        # retired 2027, wait one season: eligible for the 2028 class if the score clears the test's bar of 100
-        eligible = [c for c in ext.decode_hall(first["blocks"][5])["candidates"] if c["score"] >= 100]
-        self.assertEqual(len(hall["inductees"]), min(2, len(eligible)))
-        for inductee in hall["inductees"]:
-            self.assertEqual(inductee["inducted"], 2028)
-            self.assertTrue(inductee["new"])
+        # retired 2027: eligible from the 2032 close (five seasons), so no class yet; the two stay candidates, once
+        # (still flagged at this close: the same man is not admitted again)
+        self.assertEqual(hall["inductees"], [])
+        self.assertEqual(hall["last_class"], 2029)
+        self.assertEqual(ext.decode_hall(first["blocks"][5])["candidates"], hall["candidates"])
         totals = ext.decode_totals(view["blocks"][2])
         self.assertEqual(totals["seasons"], 2)
         box = ext.decode_boxscores(view["blocks"][6])
         self.assertEqual(box["year"], 2028)                      # last season's box scores were replaced
+
+    def test_playoff_counters(self):
+        games = self.run_season()
+        block = ext.read_body(self.body())["blocks"][8]
+        got = ext.decode_playoffs(block)
+        # playoff wins: the winning club's player with the most attempts (each club's QB, 30 attempts in play())
+        wins = {}
+        for row, slot, home, away, hp, ap in games:
+            if row >= WEEKS:
+                winner = home if hp > ap else away
+                wins[winner] = wins.get(winner, 0) + 1
+        self.assertEqual(wins, {0: 3, 1: 1, 8: 2})
+        want = {}
+        for club, n in wins.items():
+            want[self.players[self.roster[club][0]]["index"]] = (0, n)
+        for p in self.roster[4]:                                   # the Super Bowl loser: every player once
+            index = self.players[p]["index"]
+            lost, won = want.get(index, (0, 0))
+            want[index] = (lost + 1, won)
+        self.assertEqual({i: (v["super_bowls_lost"], v["playoff_wins"]) for i, v in got["players"].items()}, want)
+        for index in want:
+            p = next(q for q, d in self.players.items() if d["index"] == index)
+            self.assertEqual(got["players"][index]["identity"], ext.playoff_identity(self.players[p]["person"]))
+            self.assertEqual(ext.playoff_counts(block, index, self.players[p]["person"]), want[index])
+        self.assertEqual((got["games_year"], got["loss_year"]), (2027, 2027))
+        self.assertEqual(sorted(got["counted_games"]), [(1, 0), (1, 1), (2, 0), (2, 1), (3, 0), (4, 0)])
+        # a game committed again (a replay) and a second close of the season count nothing more
+        self.put(0xE576A4, 9)
+        self.play(SB, 0, 0, 4, 30, 29)
+        self.call("history_season_close")
+        self.assertEqual(ext.read_body(self.body())["blocks"][8], block)
+        # another man in a record slot (a new player in the old index) starts from zero
+        qb = self.roster[0][0]
+        self.put(qb + 0x14, self.text("Rookie"))
+        self.put(0xE576B8, 2)
+        self.m.mem_write(0xE57C40, bytes(374 * 8))
+        self.put(0xE576A4, 8)
+        self.play(WEEKS, 0, 0, 1, 20, 10)
+        after = ext.decode_playoffs(ext.read_body(self.body())["blocks"][8])
+        index = self.players[qb]["index"]
+        self.assertEqual((after["players"][index]["super_bowls_lost"], after["players"][index]["playoff_wins"]), (0, 1))
+        self.assertEqual(after["games_year"], 2028)
+        self.assertEqual(self.writes, [])
+
+    def call_cdecl(self, label, *args):
+        sp = STACK + 0x8000
+        self.m.mem_write(sp, struct.pack(f"<{1 + len(args)}I", SENTINEL, *args))
+        self.m.reg_write(x86.UC_X86_REG_ESP, sp)
+        self.m.emu_start(HCODE + history.runtime.LABELS[label], SENTINEL, count=1_000_000)
+        return self.m.reg_read(x86.UC_X86_REG_EAX)
+
+    def test_native_score_is_j6s_rule(self):
+        at = SCRATCH + 0x400
+        vectors = rules.golden_vectors()
+        self.assertGreaterEqual(len(vectors), 70)
+        for v in vectors:
+            career = rules.Career.from_position(v["position"], **v["fields"])
+            self.m.mem_write(at, career_struct(career))
+            self.assertEqual(self.call_cdecl("hof_score", at), v["score"], v)
+        rng = random.Random(20261102)
+        for _ in range(400):
+            fields = {name: rng.choice((0, rng.randint(0, 40), rng.randint(0, 600), rng.randint(-200, 32767)))
+                      for name in HOF_FIELDS[1:]}
+            career = rules.Career.from_position(rng.randrange(17), **fields)
+            self.m.mem_write(at, career_struct(career))
+            self.assertEqual(self.call_cdecl("hof_score", at), rules.score(career), fields)
+
+    def test_seeded_classes_follow_j6s_process(self):
+        import json
+        seeds = json.loads((ROOT / "data/nfl2k5_hof_candidates_2026.json").read_text(encoding="utf-8"))["candidates"]
+        self.assertEqual(len(seeds), 25)
+        for d in self.players.values():                              # no retirees in this league
+            d["retired"] = False
+        for p in self.players:
+            self.m.mem_write(p + 8, b"\0")
+        self.put(0xE576B8, 0)                                        # the 2026 season
+        self.play(0, 0, 9, 10, 21, 3)                                # the body exists from the first capture
+        pointer = self.get(FDATA + 4)
+        entries = [bytes.fromhex(s["candidate_hex"]) for s in seeds]
+        self.m.mem_write(pointer + ext.BLOCK_BY_NAME["hall"].offset, ext.encode_hall(candidates=entries))
+        table = rules.empty_table()
+        for k, raw in enumerate(entries):
+            table[k] = rules.candidate_from_bytes(raw)
+        classes = {}
+        for season in range(2026, 2037):
+            self.put(0xE576B8, season - 2026)
+            self.m.mem_write(0xE57C40, bytes(374 * 8))
+            self.put(0xE576A4, 9)
+            self.call("history_season_close")
+            result = rules.close_season(table, season)
+            hall = ext.decode_hall(ext.read_body(self.body())["blocks"][5])
+            new = [i for i in hall["inductees"] if i["inducted"] == season + 1]
+            want = [rules.inductee_to_bytes(i) for i in result.inductees]
+            got_raw = ext.read_body(self.body())["blocks"][5]
+            first = len(hall["inductees"]) - len(new)
+            self.assertEqual([got_raw[16 + 16 * k:32 + 16 * k] for k in range(first, len(hall["inductees"]))], want,
+                             season)
+            self.assertEqual(hall["last_class"], season + 1)
+            slots = {c["slot"]: c for c in hall["candidates"]}
+            self.assertEqual(sorted(slots), [k for k, c in enumerate(table) if c is not None], season)
+            for k, c in slots.items():
+                self.assertEqual(got_raw[ext.CANDIDATES_AT + 24 * k:ext.CANDIDATES_AT + 24 * (k + 1)],
+                                 rules.candidate_to_bytes(table[k]))
+            classes[season + 1] = [i["person"]["last"] for i in new]
+        # job j6-hof's report, section 3.6: the first franchise classes from the 25 seeds
+        self.assertEqual(classes[2027], ["PETERSON", "GRONKOWSK", "BROWN", "NEWTON", "SHERMAN"])
+        self.assertEqual(classes[2028], ["BRADY", "WATT", "SUH", "RYAN", "ROETHLISB"])
+        self.assertEqual(classes[2029], ["KELCE", "PETERSON", "LEONARD"])
+        self.assertEqual(classes[2030], ["MARTIN", "PATTERSON", "MATHIEU", "GILMORE"])
+        self.assertEqual([len(classes[y]) for y in range(2031, 2036)], [2, 2, 2, 2, 0])
+        self.assertTrue(all(i["real"] and i["new"] for i in hall["inductees"]))
+        self.assertEqual(self.writes, [])
 
     def test_preseason_pro_bowl_and_outside_franchise_record_nothing(self):
         self.put(0xE576A4, 7)                                    # preseason

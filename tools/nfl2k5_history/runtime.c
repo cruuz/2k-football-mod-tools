@@ -14,6 +14,12 @@
      ring shift 0x13ED70 and the rollover): the season line of every club (regular-season W-L-T, PF, PA, division
      place, playoff result, head coach), the season's awards, franchise totals, single-season records, all-time leaders
      and Hall of Fame candidates (retirees) and the class.
+   The Hall of Fame rule is job j6-hof's, compiled in unchanged: tools/nfl2k5_history_build.py writes
+   nfl2k5_hof_rules.c_reference() (its constants header and C body, fuzzed against the Python rule in j6's tests) into
+   hof_rules.inc, included below. The class is named for the year after the season closed (j6: "Class of 2027" after
+   the 2026 season). Two counters the game itself never keeps feed it, per player in block 8: Super Bowls lost (every
+   player of the losing club, at the close) and playoff wins (the player with the most pass attempts on the winning
+   club of each postseason game, at the game's commit).
    It reads the game's state only (getters, the grid, the stat readers). It never calls the random number generator,
    allocates nothing and writes only inside the body. Every loop is bounded; every pointer it follows is checked first;
    a part that finds anything unexpected is skipped (its code goes to the host info area) and the retail call runs. */
@@ -74,16 +80,20 @@ typedef unsigned char u8;
 #define BOX_ENTRY 512u
 #define BOX_GAMES 24u
 #define BOX_LINES 23u
+#define PLAYOFFS_AT 0xF4A0u
+#define PLAYOFF_SLOTS 4096u        /* the player record index (CAPACITY_PRIMARY_LIMIT) */
+
+#include "hof_rules.inc"           /* job j6-hof's rule: nfl2k5_hof_rules.c_reference(), generated at build time */
 
 struct config {
     u32 magic;          /* "HSTC" */
     u32 version;        /* 1 */
     u32 body_fn;        /* the footer host's xt_body (fastcall, ecx = allocate) */
     u32 chain_close;    /* the displaced season-close call target (0x13ED70 on retail bytes) */
-    u32 hall_bar;       /* Hall of Fame: the score a candidate needs (j6 tunes it) */
-    u32 hall_wait;      /* seasons after retirement before a candidate is eligible (5) */
-    u32 hall_window;    /* seasons a candidate stays eligible (15) */
-    u32 hall_class;     /* most inductees per class (5) */
+    u32 hall_bar;       /* Hall of Fame (informational: the compiled rule's HOF_BAR, HOF_WAIT, HOF_WINDOW, */
+    u32 hall_wait;      /* HOF_MAX_CLASS from nfl2k5_hof_rules; the code uses the compiled constants) */
+    u32 hall_window;
+    u32 hall_class;
     u32 flags;          /* bit 0 records, 1 box scores, 2 leaders, 3 hall of fame */
     u32 reserved[7];
 };
@@ -352,6 +362,77 @@ static void box_capture(u8 *b, u32 played, u32 row, u32 slot, u32 home, u32 away
     h[3] = (u8)((user_side ? away : home) + 1);
 }
 
+/* ---- per-player playoff counters (block 8) ------------------------------------------------------------------ */
+/* +0 u16 season of the counted-games mask, +2 u16 season whose Super Bowl loss was counted, +8 8 B counted postseason
+   games (bit (round - 1) * 16 + slot), +16 4,096 x 2 B by player record index: u8 identity (1..255 from the packed
+   name, position left out; 0 empty), u8 bits 0-3 Super Bowls lost, bits 4-7 playoff wins (both stop at 15). */
+static u32 identity(u32 p) {
+    u8 person[7];
+    pack_player(person, p);
+    u32 sum = person[6] & 3;
+    for (u32 j = 0; j < 6; j++)
+        sum += person[j];
+    return 1 + sum % 255;
+}
+
+/* the counters byte of a player (claim: take over a slot another name holds), or 0 */
+static u8 *counters(u8 *b, u32 p, u32 claim) {
+    u32 index = player_index(p);
+    if (index >= PLAYOFF_SLOTS)
+        return 0;
+    u8 *e = b + PLAYOFFS_AT + 16 + index * 2;
+    u32 id = identity(p);
+    if (e[0] != id) {
+        if (!claim)
+            return 0;
+        e[0] = (u8)id;
+        e[1] = 0;
+    }
+    return e + 1;
+}
+
+static void count_up(u8 *b, u32 p, u32 shift) {                /* shift 0: a Super Bowl lost, 4: a playoff win */
+    u8 *c = counters(b, p, 1);
+    if (c && ((*c >> shift) & 15) < 15)
+        *c = (u8)(*c + (1u << shift));
+}
+
+/* a postseason game: the winning club's player with the most pass attempts gets a playoff win (once per game) */
+static void count_playoff_win(u8 *b, u32 row, u32 slot, u32 sb, u32 year) {
+    u32 round = row + 4 - sb;
+    if (round < 1 || round > 4 || slot >= 16)
+        return;
+    const u8 *score = (const u8 *)(SCORES + (row * 17 + slot) * 10);
+    u32 hp = 0, ap = 0;
+    for (u32 q = 0; q < 5; q++) {
+        hp += score[q];
+        ap += score[5 + q];
+    }
+    if (hp == ap)
+        return;
+    u8 *h = b + PLAYOFFS_AT;
+    if (rd16(h) != year) {
+        wr16(h, year);
+        zero(h + 8, 8);
+    }
+    u32 bit = (round - 1) * 16 + slot;
+    if (h[8 + (bit >> 3)] & (1u << (bit & 7)))
+        return;                                                /* this game was counted already */
+    h[8 + (bit >> 3)] |= (u8)(1u << (bit & 7));
+    u32 side = ap > hp, obj = side ? CLUB1 : CLUB0, base = side ? NODES1 : NODES0, count = B(obj + 0x11C), best = 0;
+    i32 most = 0;
+    for (u32 k = 1; k <= count && k <= 70; k++) {
+        u32 node = base + k * 0x54, p = ROSTER_OF(node);
+        i32 att = to_int(PLAYER_READ(node, 35, 0));
+        if (good_player(p) && att > most) {
+            most = att;
+            best = p;
+        }
+    }
+    if (best)
+        count_up(b, best, 4);
+}
+
 /* kind: 2 played by a user, 4 simulated */
 void FC history_game(u32 kind) {
     if (G(LEAGUE_MODE) != 2)
@@ -387,6 +468,8 @@ void FC history_game(u32 kind) {
         if (user == home || user == away)
             box_capture(b, kind == 2, row, slot, home, away, user == away, year);
     }
+    if (hst_config.flags & 8)
+        count_playoff_win(b, row, slot, sb, year);
     info_add(b, 0x1C);
 }
 
@@ -699,23 +782,129 @@ static void leader_update(u8 *table, u32 depth, u32 p, i32 computed, i32 season,
     leader_insert(table, depth, p, value, index, check, e && (e[7] & 2) ? 2 : 8);
 }
 
-/* Hall of Fame score (j6 tunes the constants in nfl2k5_history.HALL_RULE; keep the two in step) */
-static u32 hall_score(u32 position, const Career *c) {
-    i32 v = (i32)c->honors * 40 + (i32)c->sb * 15 + (i32)c->seasons * 6;
-    switch (position) {
-    case 0:  v += c->career[1] / 2 + c->career[0] / 400; break;                     /* QB: TD, yards */
-    case 7: case 8: v += c->career[2] / 120 + c->career[3] * 2; break;              /* HB, FB */
-    case 3: case 9: v += c->career[4] / 10 + c->career[5] / 150 + c->career[6] * 2; break; /* WR, TE */
-    case 10: case 11: case 15: case 16: v += c->career[7] / 2 + c->career[9] / 12 + c->career[8] * 3; break;
-    case 4: case 5: case 6: v += c->career[8] * 5 + c->career[9] / 15; break;       /* CB, FS, SS */
-    default: v += (i32)c->seasons * 6; break;                                        /* the line, kickers */
+/* ---- the Hall of Fame (job j6-hof's rule, hof_rules.inc) ------------------------------------------------------ */
+/* history field -> HofCareer member (as int index: 0 is the group); field 103 (Pro Bowl) only feeds the honors byte */
+static const u8 hof_field[24][2] = {
+    {0, 1}, {96, 2}, {97, 3}, {98, 4}, {99, 5}, {100, 6}, {101, 7}, {102, 8}, {104, 9}, {105, 10}, {9, 11}, {3, 12},
+    {2, 13}, {12, 14}, {13, 15}, {14, 16}, {19, 17}, {20, 18}, {61, 19}, {63, 19}, {65, 19}, {67, 19}, {120, 20},
+    {121, 21}};
+typedef char hof_career_is_22_ints[sizeof(HofCareer) == 22 * sizeof(int) ? 1 : -1];
+
+/* j6's career_from_words over the player's stream: live regular-season words (folded rows included, deleted and
+   postseason words skipped); fields 2 and 13 are signed. Returns the Pro Bowl sum. */
+static i32 hof_fill(u32 p, HofCareer *h) {
+    i32 *v = (i32 *)h, pro_bowl = 0;
+    zero((u8 *)h, sizeof(HofCareer));
+    h->group = hof_group_of(B(p + 0x35));
+    const volatile u32 *w = (const volatile u32 *)G(p + 0x2C);
+    if ((u32)w < 0x10000 || (u32)w >= 0x08000000)
+        return 0;
+    for (u32 n = 0; n < 4096; n++) {
+        u32 word = w[n], field = (word >> 16) & 0x7F;
+        if (!(word & 0x30000000)) {
+            i32 value = field == 2 || field == 13 ? (i32)(i16)(word & 0xFFFF) : (i32)(word & 0xFFFF);
+            if (field == 103)
+                pro_bowl += value;
+            for (u32 k = 0; k < 24; k++)
+                if (hof_field[k][0] == field)
+                    v[hof_field[k][1]] += value;
+        }
+        if (word & 0x80000000)
+            break;
     }
-    return v > 0 ? (u32)v : 0;
+    return pro_bowl;
+}
+
+static u32 positive(i32 v) { return v > 0 ? (u32)v : 0; }
+
+static u8 *candidate(u8 *hall, u32 k) { return hall + CANDIDATES_AT + k * 24; }
+
+/* the footer's 64 candidate slots as j6's table (slots at or past the high-water mark hall[1] are empty) */
+static void hall_slots(u8 *hall, HofSlot *t) {
+    u32 used = hall[1] > 64 ? 64 : hall[1];
+    for (u32 k = 0; k < 64; k++) {
+        const u8 *e = candidate(hall, k);
+        t[k].valid = k < used && (e[13] & 1);
+        t[k].score = rd16(e + 10);
+        t[k].honors = e[20];
+        t[k].seasons = e[12];
+        t[k].retired = rd16(e + 8);
+    }
+}
+
+static void hall_top(u8 *hall, const HofSlot *t) {             /* the high-water mark; empty slots past it zeroed */
+    u32 top = 0;
+    for (u32 k = 0; k < 64; k++)
+        if (t[k].valid)
+            top = k + 1;
+    for (u32 k = top; k < 64; k++)
+        zero(candidate(hall, k), 24);
+    hall[1] = (u8)top;
+}
+
+/* a retiree of this season: scored once (j6's hof_score, plus the playoff counters) and put on the table (hof_admit) */
+static void admit_retiree(u8 *b, u32 p, const Career *career, u32 year) {
+    HofCareer h;
+    i32 pro_bowl = hof_fill(p, &h);
+    if (h.group > 9)
+        return;
+    const u8 *c = counters(b, p, 0);
+    if (c) {
+        h.super_bowl_loss += *c & 15;
+        h.playoff_wins += *c >> 4;
+    }
+    u32 score = hof_score(&h), honors = positive(h.mvp) + positive(h.opoy) + positive(h.dpoy) + positive(h.all_pro) +
+                                        positive(pro_bowl);
+    if (score < HOF_FLOOR)
+        return;
+    u8 *hall = b + HALL_AT, person[7];
+    HofSlot t[64], s;
+    hall_slots(hall, t);
+    pack_player(person, p);
+    for (u32 k = 0; k < 64; k++) {                             /* the same man, flagged at this or the last close */
+        const u8 *e = candidate(hall, k);
+        u32 same = t[k].valid && t[k].retired + 1 >= year;
+        for (u32 j = 0; j < 7; j++)
+            same &= e[j] == person[j];
+        if (same)
+            return;
+    }
+    s.valid = 1;
+    s.score = score;
+    s.honors = honors > 255 ? 255 : honors;
+    s.seasons = career->seasons > 255 ? 255 : career->seasons;
+    s.retired = year;
+    if (!hof_admit(t, &s))
+        return;
+    for (u32 k = 0; k < 64; k++)
+        if (t[k].valid && t[k].score == s.score && t[k].honors == s.honors && t[k].seasons == s.seasons &&
+            t[k].retired == s.retired) {                       /* hof_admit refuses a second slot with these numbers */
+            u8 *e = candidate(hall, k);
+            zero(e, 24);
+            pack_player(e, p);
+            e[7] = (u8)(career->main_club + 1);
+            wr16(e + 8, year);
+            wr16(e + 10, score);
+            e[12] = (u8)s.seasons;
+            e[13] = 1;
+            u32 pos = B(p + 0x35), k1, k2, k3 = 0;
+            if (pos == 0) { k1 = (u32)career->career[1]; k2 = (u32)career->career[0] / 1000; }
+            else if (pos == 7 || pos == 8) { k1 = (u32)career->career[2]; k2 = (u32)career->career[3]; k3 = (u32)career->career[4]; }
+            else if (pos == 3 || pos == 9) { k1 = (u32)career->career[4]; k2 = (u32)career->career[5]; k3 = (u32)career->career[6]; }
+            else { k1 = (u32)career->career[9]; k2 = (u32)career->career[7]; k3 = (u32)career->career[8]; }
+            wr16(e + 14, k1 > 0xFFFF ? 0xFFFF : k1);
+            wr16(e + 16, k2 > 0xFFFF ? 0xFFFF : k2);
+            wr16(e + 18, k3 > 0xFFFF ? 0xFFFF : k3);
+            e[20] = (u8)s.honors;
+            e[21] = (u8)(positive(h.super_bowl) > 255 ? 255 : positive(h.super_bowl));
+            if (k + 1 > hall[1])
+                hall[1] = (u8)(k + 1);
+            return;
+        }
 }
 
 static void close_players(u8 *b, u32 year) {
     u32 saved = G(CLASS), teams = TEAM_COUNT();
-    u8 *hall = b + HALL_AT;
     CLASS_SET(0);
     if (teams > 32)
         teams = 32;
@@ -743,93 +932,62 @@ static void close_players(u8 *b, u32 year) {
                     leader_update(b + LEADERS_AT + LEAGUE_LEADERS + k * 5 * 16, 5, p, career.career[k], season,
                                   index, check);
                 }
-            /* a retiree becomes a Hall of Fame candidate */
-            if ((hst_config.flags & 8) && (B(p + 8) & 8) && hall[1] < 64) {
-                u32 score = hall_score(B(p + 0x35), &career);
-                u8 *e = hall + CANDIDATES_AT + hall[1] * 24;
-                u32 dup = 0;
-                for (u32 k = 0; k < hall[1]; k++) {
-                    u8 *o = hall + CANDIDATES_AT + k * 24;
-                    u8 name[7];
-                    pack_player(name, p);
-                    u32 same = 1;
-                    for (u32 j = 0; j < 7; j++)
-                        same &= o[j] == name[j];
-                    if (same && rd16(o + 8) + 1 >= year)
-                        dup = 1;                               /* the same man retiring again this or last season */
-                }
-                if (!dup && score) {
-                    zero(e, 24);
-                    pack_player(e, p);
-                    e[7] = (u8)(career.main_club + 1);
-                    wr16(e + 8, year);
-                    wr16(e + 10, score > 0xFFFF ? 0xFFFF : score);
-                    e[12] = (u8)(career.seasons > 255 ? 255 : career.seasons);
-                    e[13] = 1;
-                    u32 pos = B(p + 0x35), k1 = 0, k2 = 0, k3 = 0;
-                    if (pos == 0) { k1 = (u32)career.career[1]; k2 = (u32)career.career[0] / 1000; }
-                    else if (pos == 7 || pos == 8) { k1 = (u32)career.career[2]; k2 = (u32)career.career[3]; k3 = (u32)career.career[4]; }
-                    else if (pos == 3 || pos == 9) { k1 = (u32)career.career[4]; k2 = (u32)career.career[5]; k3 = (u32)career.career[6]; }
-                    else { k1 = (u32)career.career[9]; k2 = (u32)career.career[7]; k3 = (u32)career.career[8]; }
-                    wr16(e + 14, k1 > 0xFFFF ? 0xFFFF : k1);
-                    wr16(e + 16, k2 > 0xFFFF ? 0xFFFF : k2);
-                    wr16(e + 18, k3 > 0xFFFF ? 0xFFFF : k3);
-                    e[20] = (u8)(career.honors > 255 ? 255 : career.honors);
-                    e[21] = (u8)(career.sb > 255 ? 255 : career.sb);
-                    hall[1]++;
-                }
-            }
+            /* a retiree becomes a Hall of Fame candidate (after this season's class: j6's order) */
+            if ((hst_config.flags & 8) && (B(p + 8) & 8))
+                admit_retiree(b, p, &career, year);
         }
     }
     CLASS_SET(saved);
 }
 
-/* this year's class: eligible candidates (retired at least hall_wait seasons ago) at or over the bar, best first */
+/* the class of season `year` (named year + 1): j6's hof_select, inducted in its order; then the candidates past their
+   window leave. This season's retirees join after it (close_players). */
 static void close_hall(u8 *b, u32 year) {
     u8 *hall = b + HALL_AT;
-    u32 inducted = 0, wait = hst_config.hall_wait, window = hst_config.hall_window, bar = hst_config.hall_bar;
-    u32 most = hst_config.hall_class;
-    if (rd16(hall + 2) == year)
-        return;                                                /* this year's class is already in */
-    while (inducted < most && hall[0] < 192) {
-        u32 pick = 0xFF, best = 0;
-        for (u32 k = 0; k < hall[1] && k < 64; k++) {
-            u8 *e = hall + CANDIDATES_AT + k * 24;
-            u32 retired = rd16(e + 8), score = rd16(e + 10);
-            if ((e[13] & 1) && retired + wait <= year && score >= bar && score > best) {
-                best = score;
-                pick = k;
-            }
+    u32 klass = year + 1;
+    if (rd16(hall + 2) == klass)
+        return;                                                /* this season's class is already in */
+    HofSlot t[64];
+    int chosen[HOF_MAX_CLASS > HOF_MIN_CLASS ? HOF_MAX_CLASS : HOF_MIN_CLASS];
+    hall_slots(hall, t);
+    int n = hof_select(t, year, chosen);
+    for (int i = 0; i < n; i++) {
+        u8 *e = candidate(hall, (u32)chosen[i]);
+        if (hall[0] < 192) {
+            u8 *in = hall + 16 + hall[0] * 16;
+            zero(in, 16);
+            copy(in, e, 8);                                    /* person + main club */
+            wr16(in + 8, klass);
+            wr16(in + 10, rd16(e + 8));
+            in[12] = (u8)(1 | (e[13] & 2) | 4);
+            in[13] = e[12];
+            wr16(in + 14, rd16(e + 10));
+            hall[0]++;
         }
-        if (pick == 0xFF)
-            break;
-        u8 *e = hall + CANDIDATES_AT + pick * 24, *in = hall + 16 + hall[0] * 16;
-        zero(in, 16);
-        copy(in, e, 8);                                        /* person + main club */
-        wr16(in + 8, year);
-        wr16(in + 10, rd16(e + 8));
-        in[12] = (u8)(1 | (e[13] & 2) | 4);
-        in[13] = e[12];
-        wr16(in + 14, rd16(e + 10));
-        hall[0]++;
-        e[13] = 0;                                              /* inducted: no longer a candidate */
-        inducted++;
+        zero(e, 24);
+        t[chosen[i]].valid = 0;
     }
-    /* drop inducted candidates and those past their window; keep the list packed */
-    u32 keep = 0;
-    for (u32 k = 0; k < hall[1] && k < 64; k++) {
-        u8 *e = hall + CANDIDATES_AT + k * 24;
-        u32 retired = rd16(e + 8);
-        if (!(e[13] & 1) || retired + wait + window < year)
-            continue;
-        if (keep != k)
-            copy(hall + CANDIDATES_AT + keep * 24, e, 24);
-        keep++;
+    for (u32 k = 0; k < 64; k++)
+        if (t[k].valid && year >= t[k].retired + HOF_WAIT + HOF_WINDOW) {
+            zero(candidate(hall, k), 24);
+            t[k].valid = 0;
+        }
+    hall_top(hall, t);
+    wr16(hall + 2, klass);
+}
+
+/* every player of the club that lost the Super Bowl: one more Super Bowl lost (once per season) */
+static void count_super_bowl_loss(u8 *b, const Line *lines, u32 year) {
+    u8 *h = b + PLAYOFFS_AT;
+    if (rd16(h + 2) == year)
+        return;
+    for (u32 c = 0; c < 32; c++) {
+        u32 team = lines[c].result == 4 ? TEAM_AT(c) : 0, guard = 0;
+        for (u32 p = team ? TEAM_FIRST(team) : 0; p && guard < 128; p = TEAM_NEXT(team, p), guard++)
+            if (good_player(p))
+                count_up(b, p, 0);
     }
-    for (u32 k = keep; k < hall[1] && k < 64; k++)
-        zero(hall + CANDIDATES_AT + k * 24, 24);
-    hall[1] = (u8)keep;
-    wr16(hall + 2, year);
+    wr16(h + 2, year);
 }
 
 void FC history_season_close(void) {
@@ -850,8 +1008,10 @@ void FC history_season_close(void) {
     tally_season(lines, weeks, sb);
     close_seasons(b, lines, year, weeks, sb);
     close_totals(b, lines, year);
-    close_players(b, year);
-    if (hst_config.flags & 8)
+    if (hst_config.flags & 8) {
+        count_super_bowl_loss(b, lines, year);
         close_hall(b, year);
+    }
+    close_players(b, year);
     info_add(b, 0x20);
 }
