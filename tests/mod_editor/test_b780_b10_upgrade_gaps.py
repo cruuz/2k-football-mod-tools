@@ -319,6 +319,105 @@ class InPlaceFillTests(unittest.TestCase):
         self.assertEqual(doc.string(doc.tables["primary"].offset + 5 * 84 + 0x10), "Zed")
 
 
+class DialogSettingsCheckboxTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        from PyQt5.QtWidgets import QApplication
+        cls.app = QApplication.instance() or QApplication([])
+
+    def test_the_checkbox_decides_whether_the_preview_takes_the_discs_game_settings(self):
+        import time
+        from unittest.mock import patch
+        from PyQt5.QtTest import QTest
+        from mod_editor.core import nfl2k5_franchise_upgrade_io as service
+        from mod_editor.gui.franchise_upgrade_dialog_qt import FranchiseUpgradeDialog
+        receipt = {"steps": [], "changed_fields": 0, "validation": {"after": {"findings": []}}}
+        plan = service.UpgradePlan(None, Path("synthetic.iso"), b"", receipt)
+        dialog = FranchiseUpgradeDialog(Path("source"))
+        self.addCleanup(dialog.deleteLater)
+        self.assertTrue(dialog.settings_check.isChecked())
+
+        def finish():
+            deadline = time.monotonic() + 5
+            while dialog.worker.isRunning() and time.monotonic() < deadline:
+                QTest.qWait(5)
+            self.app.processEvents()
+        with patch.object(service, "plan_upgrade", return_value=plan) as preview:
+            dialog.disc_edit.setText("synthetic.iso")
+            dialog.preview_button.click()
+            finish()
+            self.assertIs(preview.call_args.kwargs["game_defaults"], True)
+            self.assertTrue(dialog.write_button.isEnabled())
+            dialog.settings_check.setChecked(False)                      # changing the choice invalidates the preview
+            self.assertFalse(dialog.write_button.isEnabled())
+            dialog.preview_button.click()
+            finish()
+            self.assertIs(preview.call_args.kwargs["game_defaults"], False)
+
+
+class DialogTextTests(unittest.TestCase):
+    """The preview the Upgrade dialog shows says what the new steps did, in plain words."""
+
+    @staticmethod
+    def preview(*steps):
+        from mod_editor.gui.franchise_upgrade_dialog_qt import preview_text
+        from mod_editor.core.nfl2k5_franchise_upgrade_io import UpgradePlan
+        receipt = {"steps": list(steps), "changed_fields": 0, "validation": {"after": {"findings": []}}}
+        return preview_text(UpgradePlan(None, Path("disc.iso"), b"", receipt))
+
+    def champions(self, **kw):
+        step = {"operation": "champions", "added": list(range(39, 61)), "kept": [], "skipped": [], "reason": "", "changes": []}
+        step.update(kw)
+        return step
+
+    def test_the_champions_line_names_the_super_bowls_the_way_the_game_does(self):
+        self.assertIn("Super Bowl history from the disc: 22 seasons added (Super Bowl XXXIX to LX).", self.preview(self.champions()))
+        self.assertIn("(Super Bowl XL to LX); the season the game recorded in this franchise is kept.",
+                      self.preview(self.champions(added=list(range(40, 61)), kept=[61])))
+        self.assertIn("the 2 seasons the game recorded in this franchise are kept",
+                      self.preview(self.champions(added=[40], kept=[61, 62])))
+        self.assertIn("Super Bowl history: not changed (the save already holds these seasons).",
+                      self.preview(self.champions(added=[], reason="the save already holds these seasons")))
+
+    def test_the_game_settings_lines_list_each_change_and_each_kept_value(self):
+        rows = [{"label": "Quarter Length", "current_text": "5 minutes", "target_text": "7 minutes", "action": "change", "note": ""},
+                {"label": "Sim. Quarter Length", "current_text": "12 minutes", "target_text": "15 minutes", "action": "kept",
+                 "note": "set to 12 minutes by the player; left alone"},
+                {"label": "Chop Block penalty", "current_text": "On", "target_text": "On", "action": "same", "note": ""}]
+        text = self.preview({"operation": "game_settings", "rows": rows, "reason": "", "changes": []})
+        self.assertIn("Game settings taken from the disc (this franchise had the old defaults):", text)
+        self.assertIn("  Quarter Length: 5 minutes -> 7 minutes", text)
+        self.assertIn("  Sim. Quarter Length: kept at 12 minutes (set to 12 minutes by the player; left alone)", text)
+        none = self.preview({"operation": "game_settings", "rows": [], "changes": [],
+                             "reason": "this disc starts new profiles with the retail settings"})
+        self.assertIn("Game settings: not changed (this disc starts new profiles with the retail settings).", none)
+
+    def free_agents(self, **kw):
+        step = {"operation": "free_agents", "changes": [], "vacant_records_after": 144, "no_room": [],
+                "save_arena_growth": None, "arena_growth": "grown"}
+        step.update(kw)
+        return step
+
+    def test_the_draft_class_records_line_says_what_happened_to_the_save(self):
+        in_place = {"arena_size_before": 827392, "arena_size_after": 827392, "class_records": 865, "file_growth": 0,
+                    "in_place": True}
+        text = self.preview(self.free_agents(save_arena_growth=in_place, arena_growth="filled in place"))
+        self.assertIn("Draft-class player records added: 865. The new game had already moved this save to the bigger "
+                      "roster file, so the file keeps its size.", text)
+        self.assertNotIn("Roster arena grown", text)
+        grown = {"arena_size_before": 720896, "arena_size_after": 827392, "class_records": 865, "file_growth": 106496}
+        self.assertIn("Roster arena grown: 720,896 to 827,392 bytes, 865 more draft-class player records",
+                      self.preview(self.free_agents(save_arena_growth=grown)))
+        none = self.preview(self.free_agents(
+            arena_growth="already the disc's arena size; no records added: no free draft-class record in the save to copy"))
+        self.assertIn("Draft-class player records: none added (no free draft-class record in the save to copy).", none)
+        self.assertNotIn("Draft-class player records", self.preview(self.free_agents(arena_growth="already the disc's arena size")))
+
+    def test_the_text_has_no_em_dashes(self):
+        text = self.preview(self.champions(), {"operation": "game_settings", "rows": [], "reason": "x", "changes": []})
+        self.assertNotIn("\u2014", text)
+
+
 @unittest.skipUnless(REAL_V07.is_file() and REAL_RESAVED.is_file(),
                      "real game-written saves are not named in B780_B10_V07 and B780_B10_RESAVED")
 class RealSaveTests(unittest.TestCase):

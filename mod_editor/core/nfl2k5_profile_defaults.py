@@ -11,6 +11,15 @@ save: it reads what the save holds, compares it with the defaults the chosen ``d
 (``nfl2k5_option_defaults``), changes only the settings that still hold the old retail value, leaves everything the player
 set himself alone unless he ticks it, and reports every byte it wrote.  Nothing outside the three option dwords changes.
 
+Command line (the Studio's Gameplay > Saves & Sliders page and Franchise > Upgrade use the same code)::
+
+    python3 -m mod_editor.core.nfl2k5_profile_defaults show  SAVEGAME.DAT --xbe default.xbe
+    python3 -m mod_editor.core.nfl2k5_profile_defaults apply SAVEGAME.DAT --xbe default.xbe \\
+        --out-dat NEW_SAVEGAME.DAT --out-extra NEW_EXTRA [--also quarter_minutes]
+
+``show`` writes nothing.  ``apply`` writes a signed copy (the source is never written) and only the settings that still
+hold the old value, plus any named with ``--also``.  Put both new files back into the save's folder together.
+
 Where the three options live.  The block is an image of RAM 0xE5FF80..0xE6025F, so a Settings save (736 bytes) and the first
 0x2E0 bytes of a franchise save hold the same dwords at ``va - 0xE5FF80``: Quarter Length 0xE6000C (+0x8C, 1..15), Sim.
 Quarter Length 0xE60010 (+0x90, 3..15) and the Chop Block switch 0xE60064 (+0xE4, 0 or 1).

@@ -33,10 +33,15 @@ def champions_lines(step):
     """b780-b10: the Super Bowl history step in plain words."""
     if not step["added"]:
         return [f"Super Bowl history: not changed ({step['reason']})."]
+    from mod_editor.core.nfl2k5_champions_history import roman
     first, last = min(step["added"]), max(step["added"])
-    text = f"Super Bowl history from the disc: {len(step['added'])} seasons added (Super Bowl {first} to {last})"
+    text = (f"Super Bowl history from the disc: {len(step['added'])} seasons added "
+            f"(Super Bowl {roman(first)} to {roman(last)})" if first != last else
+            f"Super Bowl history from the disc: Super Bowl {roman(first)} added")
     if step["kept"]:
-        text += f"; the {len(step['kept'])} seasons the game recorded in this franchise are kept"
+        count = len(step["kept"])
+        text += (f"; the {count} seasons the game recorded in this franchise are kept" if count != 1 else
+                 "; the season the game recorded in this franchise is kept")
     return [text + "."]
 
 
@@ -128,7 +133,9 @@ def preview_text(plan):
     lines += [f"Structural checks passed; {warnings} existing notices retained in the receipt.",
               f"Total changed fields: {receipt['changed_fields']}", "",
               "Write a signed copy to keep these changes. A JSON receipt beside the output folder records every field and both hashes.",
-              "Your season progress, generated players, contracts and existing statistics are preserved."]
+              "Your season progress, generated players, contracts and existing statistics are preserved.",
+              "Players already in the save keep their years pro, season history and photos; a new franchise gets the "
+              "corrected ones."]
     return "\n".join(lines)
 
 

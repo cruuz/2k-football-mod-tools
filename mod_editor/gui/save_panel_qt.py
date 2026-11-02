@@ -197,7 +197,7 @@ class SavePanel(QWidget):
         defaults_header = self.defaults_table.horizontalHeader()
         defaults_header.setSectionResizeMode(QHeaderView.ResizeToContents)
         defaults_header.setSectionResizeMode(0, QHeaderView.Stretch)
-        self.defaults_table.setMaximumHeight(150)
+        self.defaults_table.setMaximumHeight(124)
         defaults_layout.addWidget(self.defaults_table)
         self.defaults_status = QLabel("Choose a default.xbe and a save to compare their game settings.")
         self.defaults_status.setObjectName("bumpMuted")
@@ -529,7 +529,7 @@ class SavePanel(QWidget):
         if not edits and year is None and not option_edits:
             QMessageBox.information(
                 self, "Saves & sliders",
-                "Nothing changed yet — adjust a slider, tick a game default "
+                "Nothing changed yet. Adjust a slider, tick a game default "
                 "or change the franchise year first.",
             )
             return

@@ -198,5 +198,82 @@ class ChampionsPageTests(unittest.TestCase):
         self.assertFalse([t for t in text if t[0].startswith("20")])
 
 
+RETAIL_XBE = Path(os.environ.get("NFL2K5_RETAIL_EXTRACTION", "")) / "ESPN NFL 2K5 (USA)" / "default.xbe"
+
+
+@unittest.skipUnless(HAVE_UC and REAL_FRANCHISE.is_file() and RETAIL_XBE.is_file(),
+                     "the retail executable, the retail ROST pack and a real v0.7 franchise (B780_B10_V07) are required")
+class GameResaveTests(unittest.TestCase):
+    """The game's own load and save of a real v0.7 franchise, then Franchise > Upgrade's in-place fill.
+
+    The arena runtime (``arena_load``, tools/roster_arena/lifecycle.h) runs unmodified under Unicorn: it moves the
+    old 0x410-byte tail to the end of the 0xCA000 arena, clears the old tail and the gap, adds no record, and the native
+    writer saves the arena again.  The fill must then give what Studio's growth of the original save gives."""
+
+    @classmethod
+    def setUpClass(cls):
+        from mod_editor.core import nfl2k5_roster_arena as arena
+        from mod_editor.core import nfl2k5_roster_arena_growth as growth
+        from mod_editor.core import nfl2k5_team_history as team_history
+        from tests.mod_editor import test_nfl2k5_roster_arena_growth as growth_tests
+        from tests.nfl2k5_retail_fixtures import require_nfl_retail_packs
+        if not (RETAIL_XBE.parent / "vc_53450030/0").is_file():
+            raise unittest.SkipTest("the preserved ROST pack is absent")
+        require_nfl_retail_packs(RETAIL_XBE.parent)
+        cls.arena, cls.growth_tests = arena, growth_tests
+        retail = RETAIL_XBE.read_bytes()
+        cls.xbe, _ = growth.apply(retail, reserves_16=False, capacity=True)
+        with team_history._outer_image()(RETAIL_XBE.parent) as archive:
+            entry = team_history._entry(archive)
+            retail_rost = archive.read(entry.virtual_offset, entry.size)
+        cls.rost, _ = arena.migrate(retail_rost, reserves_16=False, capacity_records=612)
+        cls.body = cls.rost[0x20:]
+
+    def resave(self, source: bytes) -> bytes:
+        """The v0.8 game loads ``source`` (a 0xB0000-arena franchise) and saves it again; -> the file as written."""
+        import unicorn as uni
+        from unicorn.x86_const import UC_X86_REG_EIP, UC_X86_REG_ESP
+        from mod_editor.core import nfl2k5_franchise_save as fs
+        arena = self.arena
+        base = self.growth_tests.NativeTests("test_native_old_save_load_migrates_auxiliary_tail")
+        base.patched, base.body = self.xbe, self.body
+        base.setUp()
+        base.put(0xB72808, arena.CAPACITY_ARENA_SIZE)
+        base.put(0xB7280C, arena.CAPACITY_ARENA_SIZE)
+        refresh = (0x77AE0, 0x77B20, 0x77A90, 0x77AB0, 0x77B00, 0x77470)       # UI and cache refreshes outside the storage proof
+
+        def service(uc, _address, _size, _data):
+            esp = uc.reg_read(UC_X86_REG_ESP)
+            uc.reg_write(UC_X86_REG_EIP, base.word(esp))
+            uc.reg_write(UC_X86_REG_ESP, esp + 4)
+        hook = base.uc.hook_add(uni.UC_HOOK_CODE, service, begin=min(refresh), end=max(refresh))
+        try:
+            end = fs.ARENA_END + arena.LEGACY_CAPACITY_ARENA_SIZE - arena.RETAIL_SIZE
+            base.uc.mem_write(base.OUT, source[fs.ARENA_WRAPPER:end])
+            base.call(0xC2040, ecx=base.OUT, budget=12000000)                 # the native franchise load
+            self.assertEqual(base.word(0xB72808), arena.CAPACITY_ARENA_SIZE)
+            base.call(0xC1F90, ecx=base.OUT, budget=12000000)                 # the native franchise save
+            resaved = bytes(base.uc.mem_read(base.OUT, 0x20 + 0x20 + arena.CAPACITY_ARENA_SIZE))
+        finally:
+            base.uc.hook_del(hook)
+        return source[:fs.ARENA_WRAPPER] + resaved + source[end:]
+
+    def test_the_fill_completes_what_the_games_own_resave_leaves(self):
+        from mod_editor.core import nfl2k5_roster_arena as arena
+        from mod_editor.core import nfl2k5_save_rost as sr
+        original = REAL_FRANCHISE.read_bytes()
+        native = original[:-34320] if not any(original[-34320:]) else original
+        resaved = self.resave(native)
+        document = sr.decode(resaved)
+        self.assertEqual((document.layout.arena_size, document.tables["primary"].count), (arena.CAPACITY_ARENA_SIZE, 3231))
+        self.assertEqual(arena.capacity_descriptor(resaved, document.layout)[0], 612)
+        stale = 0x320 + arena.LEGACY_CAPACITY_ARENA_SIZE - 0x410
+        self.assertEqual(resaved[stale:stale + 0x410], bytes(0x410))           # the released loader clears the old tail
+        filled, receipt = arena.fill_class_records(resaved)
+        self.assertEqual((receipt["class_records"], receipt["primary_after"], receipt["file_growth"]), (865, 4096, 0))
+        grown, _ = arena.migrate(native, reserves_16=False, capacity_records=612)
+        self.assertEqual(filled, grown)                                          # byte for byte, arena and everything after it
+
+
 if __name__ == "__main__":
     unittest.main()

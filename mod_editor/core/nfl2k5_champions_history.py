@@ -188,6 +188,18 @@ def read_block(raw: bytes) -> list[dict]:
     return sorted(rows, key=lambda r: -r["super_bowl"])
 
 
+def roman(n: int) -> str:
+    """Super Bowl numerals as the game prints them: 39 -> XXXIX, 60 -> LX."""
+
+    out = ""
+    for value, text in ((1000, "M"), (900, "CM"), (500, "D"), (400, "CD"), (100, "C"), (90, "XC"), (50, "L"), (40, "XL"),
+                        (10, "X"), (9, "IX"), (5, "V"), (4, "IV"), (1, "I")):
+        while n >= value:
+            out += text
+            n -= value
+    return out
+
+
 def _slot(raw: bytes, i: int) -> bytes:
     return raw[ENTRIES_AT + i * ENTRY:ENTRIES_AT + (i + 1) * ENTRY]
 
@@ -404,7 +416,7 @@ def apply_image(path, data: Mapping | None = None) -> dict:
 
 
 __all__ = ["SCHEMA", "DEFAULT_DATA", "RING", "ENTRY", "ChampionsHistoryError", "CLUBS", "pack_person", "unpack_person",
-           "block_ok", "merge_blocks",
+           "block_ok", "merge_blocks", "roman",
            "club_index", "entry_bytes", "mvp_slot", "newest_mvp", "seeded_block", "block_bytes", "read_block", "checksum", "load", "validate", "entries_for",
            "gap_offset", "apply_body", "read_body", "has_room", "image_has_room", "read_image", "apply_image",
            "NO_ROOM_NOTE"]
