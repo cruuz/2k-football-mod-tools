@@ -510,7 +510,11 @@ class SeasonEndTests(unittest.TestCase):
                             for n in m.notices if n.startswith("COACHING CHANGES") for line in n.split("\n")[1:]))
 
     def test_rewritten_records_follow_the_rules(self):
+        m0 = _load_state(self.carousel, self.released)
+        strings_before = {m0.get(m0.get(m0.team_base + 500 * i + 0x14C) + 4 * k) for i in range(32) for k in range(5)}
+        teams_before = [m0.get(m0.team_base + 500 * i + 0x14C) for i in range(34)]
         m, before, after = self.run_advance(1)
+        self.assertEqual([m.get(m.team_base + 500 * i + 0x14C) for i in range(34)], teams_before)   # no team pointer moves
         pool_ram = Machine.ARENA + 0x300 + self.pool_at
         root, size = m.get(0xB72918), m.get(0xB72808)
         lasts = [struct.unpack_from("<I", r, 4)[0] for r in after]
@@ -529,6 +533,8 @@ class SeasonEndTests(unittest.TestCase):
                 self.assertEqual(x[field:field + 2], b"\0\0")
             pointers = struct.unpack_from("<5I", x, 0)
             self.assertTrue(all(root <= p < root + size for p in pointers))
+            # every string is a coach string the roster already had or one of the pool block's
+            self.assertTrue(all(p in strings_before or pool_ram <= p < pool_ram + len(self.block) for p in pointers))
             if pool_ram <= pointers[1] < pool_ram + len(self.block):
                 entry = next(e for e in self.entries if pool_ram + e["offsets"][1] == pointers[1])
                 self.assertEqual(list(pointers), [pool_ram + o for o in entry["offsets"]])
