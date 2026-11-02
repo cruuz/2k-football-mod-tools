@@ -1152,6 +1152,150 @@
    "revision_time": "2026-01-05T00:18:27Z",
    "sha256": "bbbf30c727f62ded9b69ee6e76b5a655bd7879503295f3f6e18b276ced2e5e3a"
   },
+  "wiki_allpro_2002": {
+   "title": "2002 All-Pro Team",
+   "revision": 1360478942,
+   "revision_time": "2026-06-21T18:41:26Z",
+   "sha256": "e814953ba16741b034725d37ec49f4ddaca6cb961246d1dc53308f5c622a373f"
+  },
+  "wiki_allpro_2003": {
+   "title": "2003 All-Pro Team",
+   "revision": 1355745347,
+   "revision_time": "2026-05-23T17:55:19Z",
+   "sha256": "6ec69141de5413f6df6168f9f56ff4298b1a6067f2a997d2b1ab224f44f54056"
+  },
+  "wiki_allpro_2004": {
+   "title": "2004 All-Pro Team",
+   "revision": 1356243996,
+   "revision_time": "2026-05-26T15:47:46Z",
+   "sha256": "913e72ef34f2fb192e484289a3b9ea2a1492e3c17553cd364f4034aebae21f1c"
+  },
+  "wiki_allpro_2005": {
+   "title": "2005 All-Pro Team",
+   "revision": 1365801931,
+   "revision_time": "2026-07-24T13:50:01Z",
+   "sha256": "e53cfec498f2ca83f8e1e973ca76c5f6003825ce21ce70411866318908f49d24"
+  },
+  "wiki_allpro_2006": {
+   "title": "2006 All-Pro Team",
+   "revision": 1355753615,
+   "revision_time": "2026-05-23T18:51:30Z",
+   "sha256": "a51d130b0752690efa55a3c612a1cfbbe2c166cdf8ffe8f14901ca69fff528ca"
+  },
+  "wiki_allpro_2007": {
+   "title": "2007 All-Pro Team",
+   "revision": 1365833129,
+   "revision_time": "2026-07-24T18:05:11Z",
+   "sha256": "b04dc8d8d6e3cf88f661122b27772576b02ad81412ea4b8580557781357fed86"
+  },
+  "wiki_allpro_2008": {
+   "title": "2008 All-Pro Team",
+   "revision": 1355763536,
+   "revision_time": "2026-05-23T19:55:04Z",
+   "sha256": "3ed4013ec9d5a9e27df79255868fa3fcd725b6f597a139d43421b955713b08c0"
+  },
+  "wiki_allpro_2009": {
+   "title": "2009 All-Pro Team",
+   "revision": 1355770994,
+   "revision_time": "2026-05-23T20:47:20Z",
+   "sha256": "153968625f9f27181c5ab27ec8f1ea39b01d7ca98193b5a1f7a7e25542dfe36c"
+  },
+  "wiki_allpro_2010": {
+   "title": "2010 All-Pro Team",
+   "revision": 1365852029,
+   "revision_time": "2026-07-24T20:37:15Z",
+   "sha256": "48ea6fab2011bfe9ef00e57bbcac4c1513699e49ae06d0301db36f945e30436c"
+  },
+  "wiki_allpro_2011": {
+   "title": "2011 All-Pro Team",
+   "revision": 1355782233,
+   "revision_time": "2026-05-23T22:16:23Z",
+   "sha256": "698b894217acfe9c65b3c3babd28a3fcda86c37aa3aa22339f5645482b1eeb58"
+  },
+  "wiki_allpro_2012": {
+   "title": "2012 All-Pro Team",
+   "revision": 1365868396,
+   "revision_time": "2026-07-24T22:30:51Z",
+   "sha256": "6117017c48585c16601b4807892bc4b872723f63bcbe904aaf82d8042649fdeb"
+  },
+  "wiki_allpro_2013": {
+   "title": "2013 All-Pro Team",
+   "revision": 1365872775,
+   "revision_time": "2026-07-24T23:04:13Z",
+   "sha256": "7ad6bfc713f1fe15fbafddaf7f286ed45c6fa214e490f8ab00530513bd75e6a2"
+  },
+  "wiki_allpro_2014": {
+   "title": "2014 All-Pro Team",
+   "revision": 1365880786,
+   "revision_time": "2026-07-25T00:10:44Z",
+   "sha256": "3fd8d6846b6ace2dae0718b08c91747fca733f7c54188e1b85b9d7c0b3e01430"
+  },
+  "wiki_allpro_2015": {
+   "title": "2015 All-Pro Team",
+   "revision": 1365882548,
+   "revision_time": "2026-07-25T00:23:50Z",
+   "sha256": "f2c61a01b3e4ac2ea3b72f070cd32be80f8131014ef556cb47a73051fc67e810"
+  },
+  "wiki_allpro_2016": {
+   "title": "2016 All-Pro Team",
+   "revision": 1365896928,
+   "revision_time": "2026-07-25T01:55:14Z",
+   "sha256": "ff69524c5a873ba796b73935522ed0d11c2afc75e9b5069886b6497112799532"
+  },
+  "wiki_allpro_2017": {
+   "title": "2017 All-Pro Team",
+   "revision": 1355877219,
+   "revision_time": "2026-05-24T12:23:49Z",
+   "sha256": "c35a9e2253c30a6c0ae8679986657ea51c9dbd19b820b4590703132892b2acd6"
+  },
+  "wiki_allpro_2018": {
+   "title": "2018 All-Pro Team",
+   "revision": 1378101433,
+   "revision_time": "2026-10-02T23:57:03Z",
+   "sha256": "f0b82718118d2cb9866773181386bc4c69c8b549311a2d86602daa2826a91978"
+  },
+  "wiki_allpro_2019": {
+   "title": "2019 All-Pro Team",
+   "revision": 1355881242,
+   "revision_time": "2026-05-24T13:01:31Z",
+   "sha256": "17bee4a1b361d1620d1aac069cd376a1cdd8425ffffe9794b721a5613d9009df"
+  },
+  "wiki_allpro_2020": {
+   "title": "2020 All-Pro Team",
+   "revision": 1365947817,
+   "revision_time": "2026-07-25T10:31:32Z",
+   "sha256": "70d9293a8ee6347616dfb38c2574e88b8d6ffda3dbc6cf5746e3d1163dcdf6d3"
+  },
+  "wiki_allpro_2021": {
+   "title": "2021 All-Pro Team",
+   "revision": 1358493784,
+   "revision_time": "2026-06-09T01:36:20Z",
+   "sha256": "0288302dcb0171fc7da5d42ddead01092849e2bfdb842d3ffb82fc09c49c3716"
+  },
+  "wiki_allpro_2022": {
+   "title": "2022 All-Pro Team",
+   "revision": 1355887133,
+   "revision_time": "2026-05-24T13:54:18Z",
+   "sha256": "5daa81613aa60666ab2f6a166e92c5fe376f0159c232fbb259f1f784923c57ca"
+  },
+  "wiki_allpro_2023": {
+   "title": "2023 All-Pro Team",
+   "revision": 1355889686,
+   "revision_time": "2026-05-24T14:15:07Z",
+   "sha256": "7705d4cc26c60f16709dcb9cca3a602995805357aaff6618afbc29592578e116"
+  },
+  "wiki_allpro_2024": {
+   "title": "2024 All-Pro Team",
+   "revision": 1358523027,
+   "revision_time": "2026-06-09T06:14:20Z",
+   "sha256": "86297cc899f673ae9d804e76a09d1e9c40926b2c39159cecacd13925600d2363"
+  },
+  "wiki_allpro_2025": {
+   "title": "2025 All-Pro Team",
+   "revision": 1378101534,
+   "revision_time": "2026-10-02T23:57:35Z",
+   "sha256": "8a7d975b686c8b6eb5ef8548fecdba0fdb8707c71ca735d250400d60b6badfb4"
+  },
   "wiki_annual_interceptions": {
    "title": "List of NFL annual interceptions leaders",
    "revision": 1346791749,
@@ -1320,6 +1464,150 @@
    "revision_time": "2026-05-05T16:12:19Z",
    "sha256": "9787e2846d3b869b2653b0f0e99f0913fe33cc55321984766db0a180992f83cc"
   },
+  "wiki_probowl_2002": {
+   "title": "2003 Pro Bowl",
+   "revision": 1341513270,
+   "revision_time": "2026-03-03T16:31:26Z",
+   "sha256": "3dba1e620e0479a983ae62d45b5efda1c6adf81e1d667d86372235871c46dbdc"
+  },
+  "wiki_probowl_2003": {
+   "title": "2004 Pro Bowl",
+   "revision": 1378765408,
+   "revision_time": "2026-10-06T02:04:52Z",
+   "sha256": "ea8899273b7a1df0584eda8e4780ef3b58625cb5d29b1e7570a4584c8208e07b"
+  },
+  "wiki_probowl_2004": {
+   "title": "2005 Pro Bowl",
+   "revision": 1368422392,
+   "revision_time": "2026-08-08T23:44:46Z",
+   "sha256": "a2136684130e93cb8421c0fa7e605bd818db9005709556ed53cbdd410b88640a"
+  },
+  "wiki_probowl_2005": {
+   "title": "2006 Pro Bowl",
+   "revision": 1378291603,
+   "revision_time": "2026-10-03T21:07:57Z",
+   "sha256": "66bda1d899bb39c21d263e6902570ddd007b87d8f7bd2e9d9280ff390a401123"
+  },
+  "wiki_probowl_2006": {
+   "title": "2007 Pro Bowl",
+   "revision": 1341513366,
+   "revision_time": "2026-03-03T16:32:12Z",
+   "sha256": "abfbae4b2378fc7ee0258a180f7eefee451199fed7738a56bc92098cff313d4c"
+  },
+  "wiki_probowl_2007": {
+   "title": "2008 Pro Bowl",
+   "revision": 1341513400,
+   "revision_time": "2026-03-03T16:32:25Z",
+   "sha256": "9536dd2f3b82b1a78945c40449ff6f4b048a8c36fdf3fcdb73206c3079f6176e"
+  },
+  "wiki_probowl_2008": {
+   "title": "2009 Pro Bowl",
+   "revision": 1318540744,
+   "revision_time": "2025-10-24T13:59:53Z",
+   "sha256": "1301a37ca1dc34ab1e8271c6cea6c38c5f24ac8bf8223997424f57ba918e5ae3"
+  },
+  "wiki_probowl_2009": {
+   "title": "2010 Pro Bowl",
+   "revision": 1358256779,
+   "revision_time": "2026-06-07T16:07:54Z",
+   "sha256": "22a9da83c2768298e7f4fe0372df111ace38460517d314ed519292f854810071"
+  },
+  "wiki_probowl_2010": {
+   "title": "2011 Pro Bowl",
+   "revision": 1369248723,
+   "revision_time": "2026-08-13T20:17:00Z",
+   "sha256": "4a99cb6ed55277d116998d5e21acefda448728fdc518f9a3adbc75029267b27b"
+  },
+  "wiki_probowl_2011": {
+   "title": "2012 Pro Bowl",
+   "revision": 1341513654,
+   "revision_time": "2026-03-03T16:34:30Z",
+   "sha256": "d66353974fba8f7edd882ae68e33ebd5f837d7c5bb893f099a00816d3cd3d836"
+  },
+  "wiki_probowl_2012": {
+   "title": "2013 Pro Bowl",
+   "revision": 1341513685,
+   "revision_time": "16:34, 3 March 2026",
+   "sha256": "ff472fc301477af2e9a132dc9fa127e7274915c8960b0bfc984058a127f70f6c"
+  },
+  "wiki_probowl_2013": {
+   "title": "2014 Pro Bowl",
+   "revision": 1341682180,
+   "revision_time": "2026-03-04T13:00:51Z",
+   "sha256": "ff6ab02bec238158387a15e4451e7617c5987dd75c4f383417468d9cc4d3ddc6"
+  },
+  "wiki_probowl_2014": {
+   "title": "2015 Pro Bowl",
+   "revision": 1375436577,
+   "revision_time": "2026-09-17T19:38:06Z",
+   "sha256": "6f63314884b5004fd78f938ce73c7e76147fb7443139567f01c188e738ac8754"
+  },
+  "wiki_probowl_2015": {
+   "title": "2016 Pro Bowl",
+   "revision": 1371677922,
+   "revision_time": "20:39, 27 August 2026",
+   "sha256": "6ed7d4d0eb52857caa8bf125179dcb4614d7a2491aa0ce4ff4e5038297ab8a42"
+  },
+  "wiki_probowl_2016": {
+   "title": "2017 Pro Bowl",
+   "revision": 1341513758,
+   "revision_time": "2026-03-03T16:35:27Z",
+   "sha256": "b05a1c865d3d18ef6fe5c3da27e675c9e0b59fc428477cd52f12eb4ace5b53b2"
+  },
+  "wiki_probowl_2017": {
+   "title": "2018 Pro Bowl",
+   "revision": 1341513779,
+   "revision_time": "2026-03-03T16:35:40Z",
+   "sha256": "616f53c68f06f9a63b7dae6219f0e2cccfc398a8e23a94ce12b0c6de2d739936"
+  },
+  "wiki_probowl_2018": {
+   "title": "2019 Pro Bowl",
+   "revision": 1378101475,
+   "revision_time": "2026-10-02T23:57:16Z",
+   "sha256": "a017aacd42b2c0b577dd2be646f1f1e3ad8fb02d50c05cf760a40e78b5d4567d"
+  },
+  "wiki_probowl_2019": {
+   "title": "2020 Pro Bowl",
+   "revision": 1341513816,
+   "revision_time": "2026-03-03T16:36:00Z",
+   "sha256": "86614585fa950861727048c9bc32c82f774c6b9fa654eb4483518945e352cdc6"
+  },
+  "wiki_probowl_2020": {
+   "title": "2021 Pro Bowl",
+   "revision": 1374788640,
+   "revision_time": "2026-09-14T02:47:31Z",
+   "sha256": "66567dd280369824f94a432d52c1f763fb3226ec5703ce816344f5d56de6eff0"
+  },
+  "wiki_probowl_2021": {
+   "title": "2022 Pro Bowl",
+   "revision": 1341513858,
+   "revision_time": "2026-03-03T16:36:20Z",
+   "sha256": "28000225fa5d86351e86a62bec742bbce09658daa723df958485e00b6f316c1d"
+  },
+  "wiki_probowl_2022": {
+   "title": "2023 Pro Bowl Games",
+   "revision": 1371725902,
+   "revision_time": "2026-08-28T02:54:47Z",
+   "sha256": "50f864726341f77591b1c5d171fdf3538b6f050081e02769cbc450e05708bc7d"
+  },
+  "wiki_probowl_2023": {
+   "title": "2024 Pro Bowl Games",
+   "revision": 1360066478,
+   "revision_time": "2026-06-19T01:07:03Z",
+   "sha256": "5c5eaa29030b3577edd3b6bd223eacd1e95cf138827a01bfd5ccb05ec16cb35f"
+  },
+  "wiki_probowl_2024": {
+   "title": "2025 Pro Bowl Games",
+   "revision": 1341513932,
+   "revision_time": "2026-03-03T16:36:55Z",
+   "sha256": "9ed4ca5bca299e3218e147bc2be10da297645eac32fdab8d2071fe0b3d6cf7f3"
+  },
+  "wiki_probowl_2025": {
+   "title": "2026 Pro Bowl Games",
+   "revision": 1378060126,
+   "revision_time": "2026-10-02T19:01:43Z",
+   "sha256": "b18deb8bc8943f70ccc2a0df592ea6af8c050a0a3bda1d5ec251a74252bf6f60"
+  },
   "wiki_qb_records": {
    "title": "List of NFL quarterback records",
    "revision": 1358068986,
@@ -1487,6 +1775,128 @@
     "url": "https://github.com/nflverse/nflverse-data/releases/download/players/players.csv",
     "sha256": "dd4e38586b4d9982098760b823d87367824a1a58c80a1fb77f00273b73ee33e5",
     "bytes": 7306070
+   }
+  },
+  "rosters": {
+   "roster_2002.csv": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2002.csv",
+    "sha256": "a08b5d5fe070c0819bc27ac15ca3d47c7b2dd504fbd6c62d34e00c16a082021a",
+    "bytes": 520088
+   },
+   "roster_2003.csv": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2003.csv",
+    "sha256": "6d9f530bcbacbf9de2d2a220987d3beb55419155f8661355b1fbe405ab6722ca",
+    "bytes": 522453
+   },
+   "roster_2004.csv": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2004.csv",
+    "sha256": "4d9c9041c1b1cca9eb757baa6c2d59a19c3c428a3ea094832231df37e219e078",
+    "bytes": 531465
+   },
+   "roster_2005.csv": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2005.csv",
+    "sha256": "c88034255064b5f1ec1aa76175ca6b69ad7857904d08e13eb77c23eef592ced2",
+    "bytes": 530445
+   },
+   "roster_2006.csv": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2006.csv",
+    "sha256": "4ec3ed1331da5046fb4a3136720374a93d98ea502950c1c010e1d0535952b2d1",
+    "bytes": 537777
+   },
+   "roster_2007.csv": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2007.csv",
+    "sha256": "1aa1dd25da3616e5ddf31de3b18d4731edb5032ea14c1803b35cc3413186d5dd",
+    "bytes": 545618
+   },
+   "roster_2008.csv": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2008.csv",
+    "sha256": "6c7f2c475012defda7f260addabde03e90a9ae288ed2fc4aef53ea40ab76eeb9",
+    "bytes": 552257
+   },
+   "roster_2009.csv": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2009.csv",
+    "sha256": "d3f9373f22db37a2bb962ae3dc3d15c65f51c2b240f13d241b4fd292aff9721e",
+    "bytes": 565709
+   },
+   "roster_2010.csv": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2010.csv",
+    "sha256": "0c9dfde110e6c989bbecd830602b2562124b89388e1aac39b5287376f2370dd1",
+    "bytes": 587908
+   },
+   "roster_2011.csv": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2011.csv",
+    "sha256": "6acc11a2b5f692db03e1945e0329da93f6b5debed3f99feed39eca470ab4cee5",
+    "bytes": 585051
+   },
+   "roster_2012.csv": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2012.csv",
+    "sha256": "90628fcdadd9f2dde083bc77d41139cedc9fefd1fcc09f2ce8675823de23291b",
+    "bytes": 604547
+   },
+   "roster_2013.csv": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2013.csv",
+    "sha256": "abf73c2b1ef10914af78f6b7397338508bd0c9f0372d2f0667a630e06a4484ed",
+    "bytes": 622434
+   },
+   "roster_2014.csv": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2014.csv",
+    "sha256": "f3c3e9cced60d99ebdcb410b76ffeda72b207b7045983b7a63f677ad9a34814f",
+    "bytes": 643337
+   },
+   "roster_2015.csv": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2015.csv",
+    "sha256": "63807a50226a94f6724b3694198b41661c76211707115b2d52975237ebc4ecb6",
+    "bytes": 673221
+   },
+   "roster_2016.csv": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2016.csv",
+    "sha256": "c7a57a4816d05ef651f4c56b8209c38b98e3d60582ddd60cb8048ef657472ca1",
+    "bytes": 875173
+   },
+   "roster_2017.csv": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2017.csv",
+    "sha256": "22584ad80445611edff6dcbc6dce9ab596bdc484430d8aac298725da15697fd4",
+    "bytes": 958517
+   },
+   "roster_2018.csv": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2018.csv",
+    "sha256": "60c7f1dabb508acc800ef81b4f69892511b1f78246bdb2cca6115a506c523b0a",
+    "bytes": 997735
+   },
+   "roster_2019.csv": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2019.csv",
+    "sha256": "b00259cfddf2146512569423275dc17e142d31ddb13bfba6b0b826c9d3d810da",
+    "bytes": 1001234
+   },
+   "roster_2020.csv": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2020.csv",
+    "sha256": "dcf25143db7b54ac488d042b6c24142340effced1d6c8599b2084a9f412b3ed2",
+    "bytes": 988000
+   },
+   "roster_2021.csv": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2021.csv",
+    "sha256": "a95e57ebe1df25224a4d19ed43aaffc5c2097a8b369954178b8592537ff77d34",
+    "bytes": 953822
+   },
+   "roster_2022.csv": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2022.csv",
+    "sha256": "864719595d14909c73bd14110adcdcfc304c6621de9ba34feafb83666fac43c9",
+    "bytes": 980115
+   },
+   "roster_2023.csv": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2023.csv",
+    "sha256": "f98283e6ef420babc597092b5483109a4570f9b5f63b7bfcce69643290960b6c",
+    "bytes": 967354
+   },
+   "roster_2024.csv": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2024.csv",
+    "sha256": "97721aa9092edb15c1357f2dac359dba72f63c81cc0e69408c65c229c91f50c1",
+    "bytes": 1005701
+   },
+   "roster_2025.csv": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2025.csv",
+    "sha256": "531ee5de386037bb17de3e3e3d50f7b4ed08789526bbaae9876fdd3dfb4d04ad",
+    "bytes": 1010039
    }
   }
  }

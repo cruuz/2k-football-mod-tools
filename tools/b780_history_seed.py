@@ -126,16 +126,15 @@ class WikiSources:
     def text(self, key: str) -> str:
         title, revision, digest = self.pins[key]
         path = self.cache / f"{key}.wiki" if self.cache else None
-        if path is not None and path.is_file():
-            raw = path.read_bytes()
-        else:
+        raw = path.read_bytes() if path is not None and path.is_file() else None
+        if raw is None or sha256_hex(raw) != digest:          # a missing or damaged cache file is fetched again, once
             raw = http_get(wiki_url(title, revision) + "&action=raw")
+            got = sha256_hex(raw)
+            if got != digest:
+                raise SystemExit(f"{key} ({title}, revision {revision}): the text read has digest {got}, the pin is {digest}")
             if path is not None:
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_bytes(raw)
-        got = sha256_hex(raw)
-        if got != digest:
-            raise SystemExit(f"{key} ({title}, revision {revision}): the text read has digest {got}, the pin is {digest}")
         self.used.add(key)
         return raw.decode("utf-8")
 
@@ -439,6 +438,8 @@ def club_name(club: str, season: int) -> str:
 assert set(CLUB_NAMES_ALL) == set(CLUB_TABLE) and len(CLUB_IDS) == 32
 
 PLAYOFF_CODES = ("missed", "lost_wild_card", "lost_divisional", "lost_conference", "lost_super_bowl", "champion")
+# rounds a club with this result played (counting a bye as a round it did not play): the champion played four
+ROUND_CODE_PLAYED = {"lost_wild_card": 1, "lost_divisional": 2, "lost_conference": 3, "lost_super_bowl": 4, "champion": 4}
 ROUND_CODE = {"WC": 1, "DIV": 2, "CON": 3, "SB": 4}
 SUPER_BOWL_NUMERALS = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV", "XVI",
                        "XVII", "XVIII", "XIX", "XX", "XXI", "XXII", "XXIII", "XXIV", "XXV", "XXVI", "XXVII", "XXVIII",
@@ -618,13 +619,15 @@ class SeasonTable:
         return remaining, "unresolved"
 
     def order(self, tied: list[str]) -> list[tuple[str, str]]:
-        """``tied`` ranked best first as (club, step that placed it)."""
+        """``tied`` ranked best first as (club, step that placed it); the last club carries the step that ranked it below the
+        club above it."""
 
         left = sorted(tied)
         out: list[tuple[str, str]] = []
+        step = "none"
         while left:
             if len(left) == 1:
-                out.append((left[0], "none"))
+                out.append((left[0], step))
                 break
             top, step = self.best_of(left)
             if len(top) > 1:                              # an unbroken tie: net touchdowns / coin toss in the real rules
@@ -668,10 +671,13 @@ def build_seasons(games: list[Game]) -> tuple[list[dict], dict[str, dict]]:
                     sb_game = g
         assert sb_game is not None, season
         coaches: dict[str, collections.Counter] = collections.defaultdict(collections.Counter)
+        first_game: dict[tuple[str, str], str] = {}
         labels: dict[str, str] = {}
         for g in table.games:
             coaches[g.home][g.home_coach] += 1
             coaches[g.away][g.away_coach] += 1
+            for club, coach in ((g.home, g.home_coach), (g.away, g.away_coach)):
+                first_game[(club, coach)] = min(first_game.get((club, coach), g.date), g.date)
             labels[g.home], labels[g.away] = g.home_label, g.away_label
         rows = []
         for club in CLUB_IDS:
@@ -687,7 +693,7 @@ def build_seasons(games: list[Game]) -> tuple[list[dict], dict[str, dict]]:
                 if won and last_kind != "SB":
                     raise SystemExit(f"{season} {club}: won a {last_kind} game and has no later game")
                 bye = rounds[0][0] == "DIV"
-            ordered = sorted(coaches[club].items(), key=lambda kv: (-kv[1], kv[0]))
+            ordered = sorted(coaches[club].items(), key=lambda kv: (-kv[1], first_game[(club, kv[0])], kv[0]))
             row = {"club": club, "label": DISPLAY_LABEL.get(labels[club], labels[club]), "name": club_name(club, season),
                    "w": w, "l": l, "t": t, "pf": table.pf[club], "pa": table.pa[club],
                    "div": [dw, dl, dt], "conf": [cw, cl, ct], "place": stands[club]["place"],
@@ -714,16 +720,37 @@ def build_seasons(games: list[Game]) -> tuple[list[dict], dict[str, dict]]:
     return seasons, club_totals(seasons)
 
 
+def with_seed(row: dict, seed: int | None) -> dict:
+    """The team row with the playoff seed (from Wikipedia's final standings) placed after its playoff fields."""
+
+    if seed is None:
+        return row
+    out: dict[str, Any] = {}
+    for key, value in row.items():
+        out[key] = value
+        if key == ("bye" if "bye" in row else "playoffs"):
+            out["seed"] = seed
+    return out
+
+
 def club_totals(seasons: list[dict]) -> dict[str, dict]:
     """Per club over 2002..2025: record, points, playoff trips, titles (derived from the season rows, nothing else)."""
 
-    totals = {c: dict(w=0, l=0, t=0, pf=0, pa=0, playoff_trips=0, division_titles=0, conference_titles=0, super_bowl_wins=0,
-                      super_bowl_losses=0) for c in CLUB_IDS}
+    totals = {c: dict(seasons=0, w=0, l=0, t=0, pf=0, pa=0, winning_seasons=0, playoff_trips=0, playoff_w=0, playoff_l=0,
+                      division_titles=0, conference_titles=0, super_bowl_wins=0, super_bowl_losses=0) for c in CLUB_IDS}
     for season in seasons:
         for row in season["teams"]:
             x = totals[row["club"]]
+            x["seasons"] += 1
+            x["winning_seasons"] += row["w"] > row["l"]
             for key in ("w", "l", "t", "pf", "pa"):
                 x[key] += row[key]
+            # a club's playoff games: one per round it played; it lost the last one unless it won the Super Bowl
+            if row["playoffs"] != "missed":
+                games = ROUND_CODE_PLAYED[row["playoffs"]] - (1 if row.get("bye") else 0)
+                lost = 0 if row["playoffs"] == "champion" else 1
+                x["playoff_w"] += games - lost
+                x["playoff_l"] += lost
             x["playoff_trips"] += row["playoffs"] != "missed"
             x["division_titles"] += row["place"] == 1
             x["conference_titles"] += row["playoffs"] in ("lost_super_bowl", "champion")
@@ -764,7 +791,7 @@ def verify_standings(seasons: list[dict], wiki: "WikiSources") -> dict[str, Any]
     records, the order of the four clubs in each division, the playoff seeds (who made the playoffs, who had the bye, who
     won the division). Returns {compared, problems}; a problem is {season, club, field, ours, wikipedia}."""
 
-    problems, compared = [], 0
+    problems, compared, seeds = [], 0, {}
 
     def problem(season, club, field, ours, theirs):
         problems.append({"season": season, "club": club, "field": field, "ours": ours, "wikipedia": theirs})
@@ -791,6 +818,8 @@ def verify_standings(seasons: list[dict], wiki: "WikiSources") -> dict[str, Any]
                 if mine["place"] != place:
                     problem(year, ref["name"], "place", mine["place"], place)
                 made = mine["playoffs"] != "missed"
+                if ref["seed"] is not None:
+                    seeds[(year, mine["club"])] = ref["seed"]
                 if (ref["seed"] is not None) != made:
                     problem(year, ref["name"], "playoffs", mine["playoffs"], f"seed {ref['seed']}")
                 elif ref["seed"] is not None:
@@ -799,7 +828,7 @@ def verify_standings(seasons: list[dict], wiki: "WikiSources") -> dict[str, Any]
                         problem(year, ref["name"], "bye", bool(mine.get("bye")), ref["seed"] <= byes)
                     if (ref["seed"] <= 4) != (mine["place"] == 1):
                         problem(year, ref["name"], "division_winner", mine["place"] == 1, ref["seed"] <= 4)
-    return {"compared": compared, "problems": problems}
+    return {"compared": compared, "problems": problems, "seeds": seeds}
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -814,7 +843,7 @@ AWARDS = (
     ("droy", "AP NFL Defensive Rookie of the Year", "wiki_roy", "Defensive"),
     ("cpoy", "AP NFL Comeback Player of the Year", "wiki_cpoy", None),
     ("coy", "AP NFL Coach of the Year", "wiki_coy", None),
-    ("super_bowl_mvp", "Super Bowl Most Valuable Player (the game that ends the season)", "wiki_sbmvp", None),
+    ("sb_mvp", "Super Bowl Most Valuable Player (the game that ends the season)", "wiki_sbmvp", None),
 )
 POSITIONS = ("QB", "K", "P", "WR", "CB", "FS", "SS", "HB", "FB", "TE", "OLB", "ILB", "C", "G", "T", "DT", "DE")
 POSITION_WORDS = {
@@ -930,7 +959,7 @@ def build_awards(wiki: WikiSources) -> list[dict]:
         header = [c.text for c in table[0]]
         for row in table[1:]:
             season = season_of(row[0])               # the link target, so Super Bowl XXXVII (played 2003) is season 2002
-            if award == "super_bowl_mvp":
+            if award == "sb_mvp":
                 number = re.search(r"\{\{\s*sort\s*\|\s*(\d+)\s*\|", row[1].raw)
                 if season is not None and (not number or int(number.group(1)) != season - 1965):
                     raise SystemExit(f"Super Bowl MVP row {row[0].raw!r} {row[1].raw!r}: game number does not match the season")
@@ -980,32 +1009,40 @@ RECORD_SPECS: dict[str, tuple[str, list[tuple[str, str, str, str]]]] = {
     "passing_yards": ("yards", [("career", "wiki_qb_records", "Passing yards", "Most passing yards, career"),
                                 ("season", "wiki_qb_records", "Passing yards", "Most passing yards, season"),
                                 ("game", "wiki_qb_records", "Passing yards", "Most passing yards, game")]),
-    "passing_tds": ("touchdowns", [("career", "wiki_qb_records", "Passing touchdowns", "Most passing touchdowns, career"),
-                                   ("season", "wiki_qb_records", "Passing touchdowns", "Most passing touchdowns, season"),
-                                   ("game", "wiki_qb_records", "Passing touchdowns", "Most passing touchdowns, game")]),
+    "passing_td": ("touchdowns", [("career", "wiki_qb_records", "Passing touchdowns", "Most passing touchdowns, career"),
+                                  ("season", "wiki_qb_records", "Passing touchdowns", "Most passing touchdowns, season"),
+                                  ("game", "wiki_qb_records", "Passing touchdowns", "Most passing touchdowns, game")]),
+    "completions": ("completions", [("career", "wiki_qb_records", "Pass completions", "Most pass completions, career"),
+                                    ("season", "wiki_qb_records", "Pass completions", "Most pass completions, season"),
+                                    ("game", "wiki_qb_records", "Pass completions",
+                                     "Most pass completions, regulation game, regular season")]),
     "rushing_yards": ("yards", [("career", "wiki_records", "Rushing yards", "Most yards gained, career"),
                                 ("season", "wiki_records", "Rushing yards", "Most yards gained, season"),
                                 ("game", "wiki_records", "Rushing yards", "Most yards gained, game")]),
-    "rushing_tds": ("touchdowns", [("career", "wiki_records", "Rushing touchdowns", "Most touchdowns, career"),
-                                   ("season", "wiki_records", "Rushing touchdowns", "Most rushing touchdowns, season"),
-                                   ("game", "wiki_records", "Rushing touchdowns", "Most rushing touchdowns, game")]),
+    "rushing_td": ("touchdowns", [("career", "wiki_records", "Rushing touchdowns", "Most touchdowns, career"),
+                                  ("season", "wiki_records", "Rushing touchdowns", "Most rushing touchdowns, season"),
+                                  ("game", "wiki_records", "Rushing touchdowns", "Most rushing touchdowns, game")]),
     "receptions": ("catches", [("career", "wiki_records", "Receptions", "Most pass receptions, career"),
                                ("season", "wiki_records", "Receptions", "Most pass receptions, season"),
                                ("game", "wiki_records", "Receptions", "Most pass receptions, game")]),
     "receiving_yards": ("yards", [("career", "wiki_records", "Yards receiving", "Most receiving yards, career"),
                                   ("season", "wiki_records", "Yards receiving", "Most receiving yards, season"),
                                   ("game", "wiki_records", "Yards receiving", "Most receiving yards, game")]),
-    "receiving_tds": ("touchdowns", [("career", "wiki_records", "Receiving touchdowns", "Most touchdowns, career"),
-                                     ("season", "wiki_records", "Receiving touchdowns", "Most touchdowns, season"),
-                                     ("game", "wiki_records", "Receiving touchdowns", "Most touchdowns, game")]),
-    "sacks": ("sacks", [("career", "wiki_records", "Sacks", "Most sacks, career"), ("season", "wiki_records", "Sacks", "Most sacks, season"),
-                        ("game", "wiki_records", "Sacks", "Most sacks, game")]),
+    "receiving_td": ("touchdowns", [("career", "wiki_records", "Receiving touchdowns", "Most touchdowns, career"),
+                                    ("season", "wiki_records", "Receiving touchdowns", "Most touchdowns, season"),
+                                    ("game", "wiki_records", "Receiving touchdowns", "Most touchdowns, game")]),
+    "sacks_half": ("half sacks", [("career", "wiki_records", "Sacks", "Most sacks, career"),
+                                  ("season", "wiki_records", "Sacks", "Most sacks, season"),
+                                  ("game", "wiki_records", "Sacks", "Most sacks, game")]),
     "interceptions": ("interceptions", [("career", "wiki_records", "Interceptions", "Most interceptions, career"),
                                         ("season", "wiki_records", "Interceptions", "Most interceptions, season"),
                                         ("game", "wiki_records", "Interceptions", "Most interceptions, game")]),
     "tackles": ("tackles", [("career", "wiki_records", "Tackles", "Most combined tackles, career"),
                             ("season", "wiki_records", "Tackles", "Most combined tackles, season"),
                             ("game", "wiki_records", "Tackles", "Most combined tackles, game")]),
+    "forced_fumbles": ("forced fumbles", [("career", "wiki_records", "Fumbles forced", "Most fumbles forced, career"),
+                                          ("season", "wiki_records", "Fumbles forced", "Most fumbles forced, season"),
+                                          ("game", "wiki_records", "Fumbles forced", "Most fumbles forced, game")]),
     "points": ("points", [("career", "wiki_records", "Scoring", "Most points scored, career"),
                           ("season", "wiki_records", "Scoring", "Most points scored, season"),
                           ("game", "wiki_records", "Scoring", "Most points scored, game")]),
@@ -1013,11 +1050,20 @@ RECORD_SPECS: dict[str, tuple[str, list[tuple[str, str, str, str]]]] = {
                                     ("season", "wiki_records", "Field goals", "Most field goals made, season"),
                                     ("game", "wiki_records", "Field goals", "Most field goals made, game")]),
 }
+# the twelve record categories of the extension footer, in its order (nfl2k5_franchise_extension.RECORD_CATEGORIES)
+FOOTER_RECORD_CATEGORIES = ("passing_yards", "passing_td", "completions", "rushing_yards", "rushing_td", "receptions",
+                            "receiving_yards", "receiving_td", "sacks_half", "interceptions", "tackles", "forced_fumbles")
+# the ten leader categories of the footer (LEADER_CATEGORIES)
+FOOTER_LEADER_CATEGORIES = ("passing_yards", "passing_td", "rushing_yards", "rushing_td", "receptions", "receiving_yards",
+                            "receiving_td", "sacks_half", "interceptions", "tackles")
+# values the page prints in whole sacks are kept in half sacks, the unit of the game and of the footer
+HALF_UNITS = {"sacks_half": 2}
 CATEGORY_LABELS = {
-    "passing_yards": "Passing yards", "passing_tds": "Passing touchdowns", "rushing_yards": "Rushing yards",
-    "rushing_tds": "Rushing touchdowns", "receptions": "Receptions", "receiving_yards": "Receiving yards",
-    "receiving_tds": "Receiving touchdowns", "sacks": "Sacks", "interceptions": "Interceptions", "tackles": "Tackles",
-    "points": "Points", "field_goals": "Field goals made",
+    "passing_yards": "Passing yards", "passing_td": "Passing touchdowns", "completions": "Pass completions",
+    "rushing_yards": "Rushing yards", "rushing_td": "Rushing touchdowns", "receptions": "Receptions",
+    "receiving_yards": "Receiving yards", "receiving_td": "Receiving touchdowns", "sacks_half": "Sacks (half sacks)",
+    "interceptions": "Interceptions", "tackles": "Tackles", "forced_fumbles": "Forced fumbles", "points": "Points",
+    "field_goals": "Field goals made",
 }
 # Team names (including defunct and renamed clubs) -> the club that exists today, or None for clubs that no longer exist.
 HISTORIC_TEAMS = {
@@ -1056,7 +1102,7 @@ def bullet_for(section: str, label: str) -> str:
 
     for line in section.split("\n"):
         m = re.match(r"^\*\s*'''(.*?)'''\s*:?\s*(.*)$", line)
-        if m and strip_markup(m.group(1)).strip() == label:
+        if m and strip_markup(m.group(1)).strip().rstrip(":").strip() == label:
             return m.group(2).rstrip()
     raise SystemExit(f"bullet {label!r} not found")
 
@@ -1129,6 +1175,7 @@ def build_records(wiki: WikiSources) -> list[dict]:
         for scope, page, heading, label in specs:
             rest = bullet_for(section_of(pages[page], heading), label)
             value, holders, many = parse_record_holders(rest)
+            value = int(round(value * HALF_UNITS.get(category, 1))) if category in HALF_UNITS else value
             if not holders:
                 raise SystemExit(f"{category} {scope}: no holder in {rest[:80]!r}")
             if scope == "career":                            # a career is a span of seasons, not one season
@@ -1148,13 +1195,13 @@ def build_records(wiki: WikiSources) -> list[dict]:
 # category -> (page key, player column, value column, team columns, position column)
 LEADER_SPECS = {
     "passing_yards": ("wiki_career_passing_yards", 1, 2, (5, 6), None),
-    "passing_tds": ("wiki_career_passing_tds", 1, 2, (4, 5), None),
+    "passing_td": ("wiki_career_passing_tds", 1, 2, (4, 5), None),
     "rushing_yards": ("wiki_career_rushing_yards", 1, 4, (2,), None),
-    "rushing_tds": ("wiki_career_rushing_tds", 1, 3, (2,), None),
+    "rushing_td": ("wiki_career_rushing_tds", 1, 3, (2,), None),
     "receptions": ("wiki_career_receptions", 1, 3, (2,), None),
     "receiving_yards": ("wiki_career_receiving_yards", 1, 5, (3,), 2),
-    "receiving_tds": ("wiki_career_receiving_tds", 1, 3, (2,), None),
-    "sacks": ("wiki_career_sacks", 2, 4, (3,), 1),
+    "receiving_td": ("wiki_career_receiving_tds", 1, 3, (2,), None),
+    "sacks_half": ("wiki_career_sacks", 2, 4, (3,), 1),
     "interceptions": ("wiki_career_interceptions", 1, 4, (3,), 2),
     "tackles": ("wiki_career_tackles", 2, 3, (4,), 1),
     "points": ("wiki_career_points", 1, 3, (), 2),
@@ -1203,6 +1250,8 @@ def build_leaders(wiki: WikiSources) -> dict[str, list[dict]]:
             name = clean_name(name)
             entry = rows.setdefault(int(rank_text), {"name": name, "value": None, "raw_teams": [], "texts": [], "position": None})
             entry["value"] = number_of(re.sub(r"[^\d.,]", "", row[value_col].text) or "0")
+            if category in HALF_UNITS:
+                entry["value"] = int(round(entry["value"] * HALF_UNITS[category]))
             for col in team_cols:
                 entry["raw_teams"].append(row[col].raw)
                 entry["texts"].append(row[col].text)
@@ -1250,6 +1299,18 @@ def hof_position_code(text: str) -> str | None:
     return HOF_POSITION_EXTRA.get(first) or POSITION_WORDS.get(first)
 
 
+def normalize_years(text: str) -> str:
+    """Stint years as ranges and single years joined by comma and space: "1929-1933, 1935-1936" (a "35-36" gets its century)."""
+
+    parts = []
+    for m in re.finditer(r"(\d{4})(?:\s*[\u2013\u2014-]\s*(\d{2,4}|present))?", text, flags=re.I):
+        start, end = m.group(1), m.group(2)
+        if end and end.isdigit() and len(end) == 2:
+            end = start[:2] + end
+        parts.append(f"{start}-{end}" if end else start)
+    return ", ".join(parts) if parts else re.sub(r"\s+", "", text)
+
+
 def span_years(text: str) -> tuple[int, int] | None:
     years = [int(y) for y in re.findall(r"\b(19[0-9]{2}|20[0-2][0-9])\b", text)]
     return (min(years), max(years)) if years else None
@@ -1280,7 +1341,7 @@ def build_hall_of_fame(wiki: WikiSources) -> dict[str, Any]:
         for row in group:
             club = clubs_in(row[3].raw)[0]
             team = re.sub(r"\s*/\s*", " / ", row[3].text.replace("/ /", "/")).strip()
-            years = re.sub(r"\s+", "", row[4].text).replace("–", "-").replace("—", "-")
+            years = normalize_years(row[4].text)
             stints.append({"team": team, "club": club[0] if club else None, "years": years})
         weights: dict[str, int] = collections.Counter()
         for stint in stints:
@@ -1307,34 +1368,49 @@ def build_hall_of_fame(wiki: WikiSources) -> dict[str, Any]:
 STATS_FIRST, STATS_LAST = 1999, 2025
 NFLVERSE_STATS_URL = "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_%d.csv.gz"
 NFLVERSE_PLAYERS_URL = "https://github.com/nflverse/nflverse-data/releases/download/players/players.csv"
-METRICS = ("passing_yards", "passing_tds", "rushing_yards", "rushing_tds", "receptions", "receiving_yards", "receiving_tds",
-           "def_sacks", "def_interceptions", "def_tackles_solo", "def_tackle_assists", "fg_made", "pat_made",
-           "special_teams_tds", "def_tds", "passing_2pt_conversions", "rushing_2pt_conversions", "receiving_2pt_conversions",
-           "def_safeties")
+NFLVERSE_ROSTER_URL = "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_%d.csv"
+METRICS = ("completions", "passing_yards", "passing_tds", "rushing_yards", "rushing_tds", "receptions", "receiving_yards",
+           "receiving_tds", "def_sacks", "def_interceptions", "def_tackles_solo", "def_tackle_assists", "def_fumbles_forced",
+           "fg_made", "pat_made", "special_teams_tds", "def_tds", "passing_2pt_conversions", "rushing_2pt_conversions",
+           "receiving_2pt_conversions", "def_safeties")
+# footer category -> nflverse column (the sacks are doubled into half sacks)
+CATEGORY_COLUMN = {"passing_yards": "passing_yards", "passing_td": "passing_tds", "completions": "completions",
+                   "rushing_yards": "rushing_yards", "rushing_td": "rushing_tds", "receptions": "receptions",
+                   "receiving_yards": "receiving_yards", "receiving_td": "receiving_tds", "interceptions": "def_interceptions",
+                   "forced_fumbles": "def_fumbles_forced", "field_goals": "fg_made"}
 NFLVERSE_TEAM = {"LA": "LAR", "STL": "LAR", "SD": "LAC", "OAK": "LV", "LAC": "LAC", "LV": "LV", "LAR": "LAR", "ARZ": "ARI",
                  "BLT": "BAL", "CLV": "CLE", "HST": "HOU", "SL": "LAR"}
 
 
 def nflverse_file(directory: Path, name: str, url: str, digest: str | None) -> bytes:
+    """A pinned nflverse file from ``directory``, downloaded when it is missing or damaged; never kept unless it matches."""
+
     path = Path(directory) / name
-    if path.is_file():
-        raw = path.read_bytes()
-    else:
+    raw = path.read_bytes() if path.is_file() else None
+    if raw is None or (digest is not None and sha256_hex(raw) != digest):
         raw = http_get(url)
+        if digest is not None and sha256_hex(raw) != digest:
+            raise SystemExit(f"{name}: SHA-256 {sha256_hex(raw)} is not the pinned {digest}")
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(raw)
-    if digest is not None and sha256_hex(raw) != digest:
-        raise SystemExit(f"{name}: SHA-256 {sha256_hex(raw)} is not the pinned {digest}")
     return raw
 
 
 def same_person(a: str, b: str) -> bool:
-    """True when two spellings name one person: equal after normalising, or one is the other plus a nickname/middle name."""
+    """True when two spellings name one person: equal after normalising, one is the other plus a nickname or middle name,
+    or the first names are the same up to a short form (Pat, Patrick) with the same last name."""
 
     x, y = norm_name(a).split(), norm_name(b).split()
     if not x or not y:
         return False
-    return x == y or (x[-1] == y[-1] and (set(x) <= set(y) or set(y) <= set(x)))
+    if x == y:
+        return True
+    if x[-1] != y[-1]:
+        return False
+    if set(x) <= set(y) or set(y) <= set(x):
+        return True
+    short, long_ = sorted((x[0], y[0]), key=len)
+    return len(short) >= 3 and long_.startswith(short)
 
 
 def norm_name(text: str) -> str:
@@ -1383,15 +1459,18 @@ class Stats:
 
     # --- derived metrics -----------------------------------------------------------------------------------------
     def value(self, metrics: tuple, metric: str) -> float:
+        """One category's value of a weekly line (``metrics`` is the tuple of METRICS)."""
+
         g = lambda m: metrics[self._ix[m]]
         if metric == "tackles":
             return g("def_tackles_solo") + g("def_tackle_assists")
+        if metric == "sacks_half":
+            return g("def_sacks") * 2
         if metric == "points":
             return (6 * (g("rushing_tds") + g("receiving_tds") + g("special_teams_tds") + g("def_tds")) + g("pat_made")
-                    + 3 * g("fg_made") + 2 * (g("passing_2pt_conversions") * 0 + g("rushing_2pt_conversions")
-                                              + g("receiving_2pt_conversions")) + 2 * g("def_safeties"))
-        key = {"sacks": "def_sacks", "interceptions": "def_interceptions", "field_goals": "fg_made"}.get(metric, metric)
-        return g(key)
+                    + 3 * g("fg_made") + 2 * (g("rushing_2pt_conversions") + g("receiving_2pt_conversions"))
+                    + 2 * g("def_safeties"))
+        return g(CATEGORY_COLUMN[metric])
 
     def season_totals(self, metric: str) -> dict[tuple[str, int], float]:
         out: dict[tuple[str, int], float] = collections.defaultdict(float)
@@ -1410,24 +1489,25 @@ class Stats:
         return counts.most_common(1)[0][0] if counts else None
 
 
-YARD_METRICS = {"passing_yards", "rushing_yards", "receiving_yards"}
+YARD_METRICS = {"passing_yards", "rushing_yards", "receiving_yards", "completions"}      # big running totals: a play or two
+UNOFFICIAL_CATEGORIES = {"tackles", "forced_fumbles"}       # the NFL never counted them officially
 # category -> (annual leaders page key, regular expression for the value column's header)
 ANNUAL_SPECS = {
-    "passing_yards": ("wiki_annual_passing_yards", r"yards"), "passing_tds": ("wiki_annual_passing_tds", r"touchdown"),
-    "rushing_yards": ("wiki_annual_rushing_yards", r"yards"), "rushing_tds": ("wiki_annual_rushing_tds", r"touchdown"),
+    "passing_yards": ("wiki_annual_passing_yards", r"yards"), "passing_td": ("wiki_annual_passing_tds", r"touchdown"),
+    "rushing_yards": ("wiki_annual_rushing_yards", r"yards"), "rushing_td": ("wiki_annual_rushing_tds", r"touchdown"),
     "receptions": ("wiki_annual_receptions", r"receptions"), "receiving_yards": ("wiki_annual_receiving_yards", r"yards"),
-    "receiving_tds": ("wiki_annual_receiving_tds", r"touchdown"), "sacks": ("wiki_annual_sacks", r"sacks"),
+    "receiving_td": ("wiki_annual_receiving_tds", r"touchdown"), "sacks_half": ("wiki_annual_sacks", r"sacks"),
     "interceptions": ("wiki_annual_interceptions", r"^interceptions$"), "points": ("wiki_annual_points", r"points"),
 }
 
 
 def close_enough(category: str, mine: float, theirs: float) -> bool:
-    """Counts must agree exactly; nflverse yardage sums play-by-play and may differ a little from the official figure."""
+    """Counts must agree exactly; nflverse yardage and completions sum play-by-play and may differ by a play or two."""
 
     if category in YARD_METRICS:
         return abs(mine - theirs) <= max(2.0, 0.0015 * theirs)
-    if category == "sacks":                                    # nflverse counts some half sacks differently
-        return abs(mine - theirs) <= 1.0
+    if category == "sacks_half":                               # nflverse counts some half sacks differently
+        return abs(mine - theirs) <= 2.0
     return abs(mine - theirs) < 1e-9
 
 
@@ -1450,8 +1530,10 @@ def annual_leaders(wiki: WikiSources, category: str) -> list[dict[str, Any]]:
             if not m or not num:
                 continue
             clubs = clubs_in(row[team_col].raw)[0]
+            value = number_of(num.group(0))
             out.append({"season": int(m.group(1)), "name": clean_name(strip_markup(row[1].raw)), "team": row[team_col].text,
-                        "club": clubs[0] if clubs else None, "value": number_of(num.group(0))})
+                        "club": clubs[0] if clubs else None,
+                        "value": int(round(value * HALF_UNITS[category])) if category in HALF_UNITS else value})
         if out:
             break
     return out
@@ -1489,7 +1571,7 @@ def verify_records(records: list[dict], stats: "Stats", games_date: dict[str, st
                             holder.setdefault("club", row["club"])
             else:
                 status, detail = "mismatch", f"annual list best {best} {sorted(got)} vs record {value} {sorted(want)}"
-        if rec["category"] != "tackles":
+        if rec["category"] not in UNOFFICIAL_CATEGORIES:
             if scope == "season":
                 totals = season_cache.setdefault(category, stats.season_totals(category))
                 best = max(totals.values())
@@ -1559,7 +1641,7 @@ def verify_records(records: list[dict], stats: "Stats", games_date: dict[str, st
                         status = "partial" if v <= value else "mismatch"
                     detail = f"nflverse {STATS_FIRST}+ total {v:g} (career began {first_year})"
         elif scope != "season":
-            status, detail = "single_source", "tackles are not complete in nflverse; record page only"
+            status, detail = "single_source", "not an official NFL statistic; the record page only"
         results.append({"id": rec["id"], "status": status, "detail": detail, **extra})
     return results
 
@@ -1573,11 +1655,11 @@ def verify_leaders(leaders: dict[str, list[dict]], records: list[dict], stats: "
         if rows and category in record_value and rows[0]["value"] != record_value[category]:
             results.append({"id": f"{category}.rank1", "status": "mismatch",
                             "detail": f"leader list {rows[0]['value']} vs record page {record_value[category]}"})
-        totals = stats.career_totals(category) if category != "tackles" else {}
+        totals = stats.career_totals(category) if category not in UNOFFICIAL_CATEGORIES else {}
         for row in rows:
             ident = f"{category}.rank{row['rank']}"
-            if category == "tackles":
-                results.append({"id": ident, "status": "single_source", "detail": "tackles are not complete in nflverse"})
+            if category in UNOFFICIAL_CATEGORIES:
+                results.append({"id": ident, "status": "single_source", "detail": "not an official NFL statistic"})
                 continue
             name = norm_name(row["name"])
             first_year = int((row.get("years") or "0-0").split("-")[0])
@@ -1598,6 +1680,238 @@ def verify_leaders(leaders: dict[str, list[dict]], records: list[dict], stats: "
 
 
 # ---------------------------------------------------------------------------------------------------------------------
+# Pending Hall of Fame candidates: real players who retired 2011..2025 and are not inducted
+# ---------------------------------------------------------------------------------------------------------------------
+CANDIDATE_FIRST_LAST_SEASON, CANDIDATE_LAST_LAST_SEASON = 2011, 2025
+ELIGIBLE_AFTER = 6                     # a player is on the ballot six seasons after his last (five seasons retired)
+HONOR_IDS = ("mvp", "opoy", "dpoy", "oroy", "droy", "cpoy", "super_bowl_mvp", "super_bowl", "rushing_title", "all_pro", "pro_bowl")
+HONOR_ALIASES = {"chad ochocinco": "chad johnson"}
+# A retired player enters the list when he reaches any of these (the rule is data, so the tests and J6 can read it)
+CANDIDATE_BAR = {
+    "all_pro": 3, "pro_bowl": 7, "awards_mvp_opoy_dpoy": 1, "super_bowl_mvp": 1,
+    "passing_yards": 45000, "passing_td": 300, "rushing_yards": 10000, "receiving_yards": 10000, "receptions": 800,
+    "sacks_half": 200, "interceptions": 40, "field_goals": 400}
+PRODUCTION = ("games", "passing_yards", "passing_td", "rushing_yards", "rushing_td", "receptions", "receiving_yards",
+              "receiving_td", "sacks_half", "interceptions", "tackles", "field_goals")
+# the key career numbers the footer's candidate entry takes by position group (nfl2k5_franchise_extension.HALL_KEYS)
+KEY_GROUP = {"QB": "QB", "HB": "HB", "WR": "WR", "TE": "TE", "DE": "defense", "DT": "defense", "OLB": "defense",
+             "ILB": "defense", "CB": "defense", "FS": "defense", "SS": "defense", "T": "line", "G": "line", "C": "line"}
+NFLVERSE_POSITION = {"RB": "HB", "HB": "HB", "FB": "FB", "WR": "WR", "TE": "TE", "QB": "QB", "T": "T", "OT": "T", "G": "G", "OG": "G",
+                     "C": "C", "OL": "T", "DE": "DE", "DT": "DT", "NT": "DT", "DL": "DE", "OLB": "OLB", "LB": "OLB", "ILB": "ILB",
+                     "MLB": "ILB", "CB": "CB", "DB": "CB", "FS": "FS", "SS": "SS", "S": "SS", "SAF": "SS", "K": "K", "P": "P",
+                     "LS": "C", "EDGE": "DE"}
+
+
+def team_club(team: str | None) -> str | None:
+    """Club id for the team text of a Pro Bowl or All-Pro row ("Oakland Raiders", "Washington")."""
+
+    return HISTORIC_TEAMS.get((team or "").lower()) or NAME_INDEX.get((team or "").lower())
+
+
+def load_f5() -> Any:
+    """The F5 honors tool's All-Pro and Pro Bowl page readers (tools/b77/f5_honors_sources.py), loaded by path."""
+
+    import importlib.util
+    path = Path(__file__).resolve().parent / "b77" / "f5_honors_sources.py"
+    spec = importlib.util.spec_from_file_location("b780_f5_honors_sources", path)
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+def honor_page_keys() -> list[str]:
+    return [f"wiki_{kind}_{season}" for season in range(FIRST_SEASON, LAST_SEASON + 1) for kind in ("allpro", "probowl")]
+
+
+def career_keys(group: str | None, honors: dict, c: collections.Counter, qb_wins: int) -> dict[str, Any] | None:
+    """The three key career numbers of a position group, named as the footer's HALL_KEYS (None = not in nflverse)."""
+
+    if group == "QB":
+        return {"passing_td": int(c["passing_td"]), "passing_yards_k": int(c["passing_yards"] // 1000), "wins": qb_wins}
+    if group == "HB":
+        return {"rushing_yards": int(c["rushing_yards"]), "rushing_td": int(c["rushing_td"]), "receptions": int(c["receptions"])}
+    if group in ("WR", "TE"):
+        return {"receptions": int(c["receptions"]), "receiving_yards": int(c["receiving_yards"]),
+                "receiving_td": int(c["receiving_td"])}
+    if group == "defense":
+        return {"tackles": int(c["tackles"]), "sacks_half": int(c["sacks_half"]), "interceptions": int(c["interceptions"])}
+    if group == "line":
+        return {"seasons_started": None, "pro_bowls": honors.get("pro_bowl", 0), "all_pro": honors.get("all_pro", 0)}
+    return None
+
+
+def super_bowl_champions(directory: Path, pins: dict, seasons: list[dict]) -> dict[str, set[int]]:
+    """{gsis id: seasons} of the Super Bowl-week 53-man roster (status ACT or INA) of every champion, 2002..2025 (the rule
+    of ``data/nfl2k5_honors_2026.json``: injured reserve and the practice squad are not counted)."""
+
+    wins: dict[str, set[int]] = collections.defaultdict(set)
+    for block in seasons:
+        name = f"roster_{block['season']}.csv"
+        raw = nflverse_file(directory, name, NFLVERSE_ROSTER_URL % block["season"], pins["rosters"][name]["sha256"])
+        for row in csv.DictReader(io.StringIO(raw.decode("utf-8"), newline="")):
+            if (row["game_type"] == "SB" and row["status"] in ("ACT", "INA") and row["gsis_id"]
+                    and NFLVERSE_TEAM.get(row["team"], row["team"]) == block["champion"]):
+                wins[row["gsis_id"]].add(block["season"])
+    return dict(wins)
+
+
+def quarterback_wins(rows: list[dict[str, str]]) -> dict[str, int]:
+    """Regular-season wins as the starting quarterback (nflverse games file: the starters' ids), 1999..2025."""
+
+    wins: dict[str, int] = collections.defaultdict(int)
+    for r in rows:
+        if r["game_type"] != "REG" or not (1999 <= int(r["season"]) <= 2025) or r["home_score"] in ("", "NA"):
+            continue
+        home, away = int(r["home_score"]), int(r["away_score"])
+        if home != away:
+            wins[r["home_qb_id"] if home > away else r["away_qb_id"]] += 1
+    return dict(wins)
+
+
+def identify_leaders(leaders: dict[str, list[dict]], stats: Stats) -> None:
+    """Add the nflverse identity (gsis id, birth date) and `active` to every leader who has one, so a build can link the
+    active players to roster records. A pre-1999 player with no id stays as listed."""
+
+    by_name: dict[str, list[dict]] = collections.defaultdict(list)
+    for p in stats.players.values():
+        if re.fullmatch(r"00-\d{7}", p["gsis_id"]):
+            by_name[norm_name(p["display_name"])].append(p)
+    for rows in leaders.values():
+        for row in rows:
+            first = int((row.get("years") or "0-0").split("-")[0])
+            found = [p for p in by_name.get(norm_name(row["name"]), [])
+                     if p["rookie_season"] and abs(int(p["rookie_season"]) - first) <= 1]
+            if len(found) == 1:
+                p = found[0]
+                row["gsis_id"], row["birth_date"] = p["gsis_id"], p["birth_date"]
+                if int(p["last_season"] or 0) >= 2026:
+                    row["active"] = True
+
+
+def build_pending_candidates(wiki: WikiSources, stats: Stats, awards: list[dict], annual_rushing: list[dict],
+                             hof: dict, qb_wins: dict[str, int], champions: dict[str, set[int]]) -> dict[str, Any]:
+    f5 = load_f5()
+    by_name: dict[str, list[dict]] = collections.defaultdict(list)
+    for p in stats.players.values():
+        for variant in {p["display_name"], f"{p['football_name'] or p['first_name']} {p['last_name']}",
+                        f"{p['first_name']} {p['last_name']}"}:
+            by_name[norm_name(variant)].append(p)
+    team_games: dict[tuple[str, int], collections.Counter] = collections.defaultdict(collections.Counter)
+    career: dict[str, collections.Counter] = collections.defaultdict(collections.Counter)
+    club_games: dict[str, collections.Counter] = collections.defaultdict(collections.Counter)
+    seasons_seen: dict[str, set[int]] = collections.defaultdict(set)
+    for pid, season, _w, _g, team, _n, _pos, m in stats.lines:
+        team_games[(pid, season)][team] += 1
+        club_games[pid][team] += 1
+        seasons_seen[pid].add(season)
+        c = career[pid]
+        c["games"] += 1
+        for metric in PRODUCTION[1:]:
+            c[metric] += stats.value(m, metric)
+
+    honors: dict[str, collections.Counter] = collections.defaultdict(collections.Counter)
+    honor_clubs: dict[str, collections.Counter] = collections.defaultdict(collections.Counter)
+    unresolved: list[dict] = []
+    ambiguous = 0
+
+    def resolve(name: str, season: int, club: str | None) -> str | None:
+        nonlocal ambiguous
+        key = norm_name(HONOR_ALIASES.get(norm_name(name), name))
+        found = {p["gsis_id"] for p in by_name.get(key, []) if p["rookie_season"] and p["last_season"]
+                 and int(p["rookie_season"]) <= season <= int(p["last_season"])}
+        if len(found) > 1 and club:
+            found = {g for g in found if team_games.get((g, season)) and team_games[(g, season)].most_common(1)[0][0] == club} or found
+        if len(found) > 1:
+            ambiguous += 1
+        return next(iter(found)) if len(found) == 1 else None
+
+    def add(honor: str, season: int, name: str, club: str | None) -> None:
+        gsis = resolve(name, season, club)
+        if gsis is None:
+            unresolved.append({"honor": honor, "season": season, "name": name})
+            return
+        honors[gsis][honor] += 1
+        if club:
+            honor_clubs[gsis][club] += 1
+
+    for entry in awards:
+        if entry["award"] == "coy":
+            continue
+        for w in entry["winners"]:
+            add("super_bowl_mvp" if entry["award"] == "sb_mvp" else entry["award"], entry["season"], w["name"], w["club"])
+    for row in annual_rushing:
+        if FIRST_SEASON <= row["season"] <= LAST_SEASON:
+            add("rushing_title", row["season"], row["name"], row["club"])
+    for season in range(FIRST_SEASON, LAST_SEASON + 1):
+        for r in f5.allpro(wiki.text(f"wiki_allpro_{season}"), season):
+            add("all_pro", season, r["name"], team_club(r.get("team")))
+        for r in f5.probowl(wiki.text(f"wiki_probowl_{season}"), season):
+            add("pro_bowl", season, r["name"], team_club(r.get("team")))
+
+    members = [m for m in hof["members"] if m["category"] == "player"]
+
+    def inducted(p: dict) -> bool:
+        for m in members:
+            if same_person(m["name"], p["display_name"]):
+                years = [int(y) for s in m["stints"] for y in re.findall(r"\d{4}", s["years"])]
+                if years and min(years) <= int(p["last_season"] or 0) and max(years) >= int(p["rookie_season"] or 9999):
+                    return True
+        return False
+
+    out = []
+    for gsis, h in honors.items():
+        p = stats.players[gsis]
+        last = int(p["last_season"] or 0)
+        if not CANDIDATE_FIRST_LAST_SEASON <= last <= CANDIDATE_LAST_LAST_SEASON:
+            continue
+        c = career.get(gsis, collections.Counter())
+        h["super_bowl"] = len(champions.get(gsis, ()))
+        major = h["mvp"] + h["opoy"] + h["dpoy"]
+        reached = [k for k, ok in (
+            ("all_pro", h["all_pro"] >= CANDIDATE_BAR["all_pro"]), ("pro_bowl", h["pro_bowl"] >= CANDIDATE_BAR["pro_bowl"]),
+            ("major_award", major >= CANDIDATE_BAR["awards_mvp_opoy_dpoy"]),
+            ("super_bowl_mvp", h["super_bowl_mvp"] >= CANDIDATE_BAR["super_bowl_mvp"]),
+            *((m, c[m] >= CANDIDATE_BAR[m]) for m in ("passing_yards", "passing_td", "rushing_yards", "receiving_yards", "receptions",
+                                                      "sacks_half", "interceptions", "field_goals"))) if ok]
+        if not reached or inducted(p):
+            continue
+        clubs = [t for t, _n in club_games[gsis].most_common()] or [k for k, _n in honor_clubs[gsis].most_common()]
+        clubs = [k for k in dict.fromkeys(clubs) if k in CLUB_TABLE]
+        position = NFLVERSE_POSITION.get(p["position"])
+        honors_row = {k: h[k] for k in HONOR_IDS if h[k]}
+        group = KEY_GROUP.get(position)
+        row = {"name": p["display_name"], "gsis_id": gsis, "birth_date": p["birth_date"],
+               "position": position, "nflverse_position": p["position"],
+               "club": clubs[0] if clubs else None, "clubs": clubs[:4],
+               "first_season": int(p["rookie_season"]), "last_season": last, "first_eligible_class": last + ELIGIBLE_AFTER,
+               # linemen have no statistics in nflverse: their seasons are the span and they carry no production line
+               "seasons_played": (last - int(p["rookie_season"]) + 1) if group == "line" else
+               (len(seasons_seen[gsis]) or last - int(p["rookie_season"]) + 1),
+               "honors": honors_row}
+        if group != "line":
+            row["production_1999_2025"] = {k: (int(v) if float(v).is_integer() else v) for k, v in c.items()
+                                           if k in PRODUCTION and v}
+        row.update({"key_group": group, "keys": career_keys(group, honors_row, c, qb_wins.get(gsis, 0)), "why": reached})
+        if last == LAST_SEASON and p.get("status") != "RET":
+            row["retirement"] = "no 2026 roster; retirement not confirmed"
+        out.append(row)
+    out.sort(key=lambda r: (-r["honors"].get("all_pro", 0), -r["honors"].get("pro_bowl", 0), r["name"]))
+    return {"rule": "retired players (last season 2011..2025 in the nflverse players table), not in the Hall of Fame list above, "
+                    "who reach any bar in `bar`; `honors` count the pinned AP award lists, the AP first-team All-Pro, the Pro "
+                    "Bowl rosters and the champions' Super Bowl-week rosters of seasons 2002..2025; `first_eligible_class` is the last season plus six (five full seasons "
+                    "retired); `retirement` is set when the last season was 2025 and no retirement is on file",
+            "bar": CANDIDATE_BAR, "key_groups": {"QB": ["passing_td", "passing_yards_k", "wins"],
+                                                 "HB": ["rushing_yards", "rushing_td", "receptions"],
+                                                 "WR": ["receptions", "receiving_yards", "receiving_td"],
+                                                 "TE": ["receptions", "receiving_yards", "receiving_td"],
+                                                 "defense": ["tackles", "sacks_half", "interceptions"],
+                                                 "line": ["seasons_started", "pro_bowls", "all_pro"]},
+            "window": [CANDIDATE_FIRST_LAST_SEASON, CANDIDATE_LAST_LAST_SEASON], "honors_unmatched": len(unresolved),
+            "honors_ambiguous": ambiguous, "unmatched": unresolved, "players": out}
+
+
+# ---------------------------------------------------------------------------------------------------------------------
 # Pins and assembly
 # ---------------------------------------------------------------------------------------------------------------------
 PINS_PATH = Path(__file__).resolve().with_name("b780_history_seed_pins.json")
@@ -1611,14 +1925,19 @@ def wiki_pins(pins: dict) -> dict[str, tuple[str, int, str]]:
     return {k: (v["title"], v["revision"], v["sha256"]) for k, v in pins["wikipedia"].items()}
 
 
-def standings_manifest(pins: dict) -> dict[str, Any]:
-    keys = sorted(k for k in pins["wikipedia"] if k.startswith("standings_"))
+def pages_manifest(pins: dict, prefixes: tuple[str, ...], pattern: str, note: str) -> dict[str, Any]:
+    """Count and digest of a family of pinned pages that the output does not list one by one."""
+
+    keys = sorted(k for k in pins["wikipedia"] if k.startswith(prefixes))
     lines = [f"{k}\t{pins['wikipedia'][k]['title']}\t{pins['wikipedia'][k]['revision']}\t{pins['wikipedia'][k]['sha256']}"
              for k in keys]
-    return {"pages": len(keys), "seasons": f"{FIRST_SEASON}-{LAST_SEASON}",
-            "manifest_sha256": sha256_hex("\n".join(lines).encode("utf-8")),
-            "manifest": "tools/b780_history_seed_pins.json, keys standings_<season>_<division>",
-            "title_pattern": "Template:<season> <division> standings"}
+    return {"pages": len(keys), "manifest_sha256": sha256_hex("\n".join(lines).encode("utf-8")),
+            "manifest": "tools/b780_history_seed_pins.json, keys " + pattern, "note": note}
+
+
+def standings_manifest(pins: dict) -> dict[str, Any]:
+    return {**pages_manifest(pins, ("standings_",), "standings_<season>_<division>", "Template:<season> <division> standings"),
+            "seasons": f"{FIRST_SEASON}-{LAST_SEASON}"}
 
 
 SOURCE_NOTES = {
@@ -1648,8 +1967,14 @@ RULES = {
     "playoffs": "the last playoff round a club played: lost_wild_card, lost_divisional, lost_conference, lost_super_bowl or "
                 "champion; `bye` is set when its first game was the divisional round",
     "head_coach": "the coach with the most regular-season games; a tie goes to the coach whose game came first",
-    "club_ids": "the NFL's abbreviations today (LAR, LAC, LV, WAS); `label` is what the NFL printed that season (STL, SD, OAK)",
-    "awards": "every winner of the AP award that season, in the page's order (`winners[0]` when one name is needed); position "
+    "club_ids": "the NFL's abbreviations today (LAR, LAC, LV, WAS); `label` is what the NFL printed that season (STL, SD, OAK); "
+                "`arena_index` is the club's index in the game's team table (the order of nfl2k5_champions_history.CLUBS)",
+    "footer_ids": "category and award ids are the ones of the franchise extension footer (nfl2k5_franchise_extension: "
+                  "RECORD_CATEGORIES, LEADER_CATEGORIES, SEASON_AWARDS); sacks are kept in half sacks (`sacks_half`), the game's "
+                  "own unit; the extra categories points and field_goals have no footer slot",
+    "seed": "the playoff seed from Wikipedia's final standings tables; it is only set for clubs that made the playoffs and has "
+            "been checked against the computed playoff field, byes and division winners",
+    "awards": "every winner of the award that season, in the page's order (`winners[0]` when one name is needed); position "
               "codes are the 17 codes of the champions block, HC for a coach; `position_overrides` lists the linebackers and "
               "safeties whose side the pages do not name",
     "position_overrides": POSITION_OVERRIDE,
@@ -1658,7 +1983,7 @@ RULES = {
                    "second source (nflverse, the annual leaders lists) says about each",
     "check_status": {
         "exact": "the second source gives the same value and holder",
-        "within_stat_correction": "nflverse yardage within 0.15 percent (it sums play-by-play, not official figures)",
+        "within_stat_correction": "nflverse yardage or completions within 0.15 percent (it sums play-by-play, not official figures)",
         "official_differs": "nflverse sums more yards for another player; the annual leaders list agrees with the record",
         "not_exceeded": "the record is older than the data and nothing since 1998 beats it",
         "partial": "a career that began before 1999: nflverse is no more than the record",
@@ -1692,6 +2017,9 @@ def build(games_path: Path, nflverse_dir: Path, cache: Path | None, pins: dict) 
     explained, unexplained = split_known(standings["problems"])
     if unexplained:
         raise SystemExit("standings differ from Wikipedia:\n  " + "\n  ".join(json.dumps(p) for p in unexplained))
+    seeds = standings["seeds"]
+    for block in seasons:
+        block["teams"] = [with_seed(row, seeds.get((block["season"], row["club"]))) for row in block["teams"]]
     awards = build_awards(wiki)
     records = build_records(wiki)
     leaders = build_leaders(wiki)
@@ -1701,6 +2029,7 @@ def build(games_path: Path, nflverse_dir: Path, cache: Path | None, pins: dict) 
     annual = {c: annual_leaders(wiki, c) for c in ANNUAL_SPECS}
     record_checks = verify_records(records, stats, game_dates, annual)
     leader_checks = verify_leaders(leaders, records, stats)
+    identify_leaders(leaders, stats)
     bad = [c for c in record_checks + leader_checks if c["status"] == "mismatch"]
     if bad:
         raise SystemExit("second-source mismatches:\n  " + "\n  ".join(f"{c['id']}: {c['detail']}" for c in bad))
@@ -1708,12 +2037,25 @@ def build(games_path: Path, nflverse_dir: Path, cache: Path | None, pins: dict) 
         **NFLVERSE_GAMES, "used_rows": f"seasons {FIRST_SEASON}..{LAST_SEASON}",
         "used_rows_sha256": games_subset_digest(rows, USED_FIELDS), "used_fields": list(USED_FIELDS)}}
     described = wiki.describe()
-    for key in sorted(k for k in wiki.used if not k.startswith("standings_")):
+    for key in sorted(k for k in wiki.used if not k.startswith(("standings_", "wiki_allpro_", "wiki_probowl_"))):
         sources[key] = {**described[key], **({"note": SOURCE_NOTES[key]} if key in SOURCE_NOTES else {})}
+    annual_rush = annual["rushing_yards"]
+    qb_wins = quarterback_wins(rows)
+    champions = super_bowl_champions(nflverse_dir, pins["nflverse"], seasons)
+    candidates = build_pending_candidates(wiki, stats, awards, annual_rush, hof, qb_wins, champions)
+    used_honor_pages = {k for k in wiki.used if k.startswith(("wiki_allpro_", "wiki_probowl_"))}
+    assert used_honor_pages == set(honor_page_keys()), "every honor page is read"
+    sources["wiki_honor_pages"] = {**pages_manifest(pins, ("wiki_allpro_", "wiki_probowl_"), "wiki_allpro_<season>, wiki_probowl_<season>",
+                                                    "<season> All-Pro Team and the Pro Bowl played after the season, 2002..2025"),
+                                   "publisher": "Wikipedia"}
     sources["nflverse_stats"] = {
         "title": "nflverse weekly player statistics 1999..2025 and the players table", "publisher": "nflverse",
         "license": "CC-BY-4.0", "repository": "https://github.com/nflverse/nflverse-data",
         "downloaded": pins["nflverse"]["downloaded"], "files": pins["nflverse"]["files"]}
+    sources["nflverse_rosters"] = {
+        "title": "nflverse annual rosters 2002..2025 (the Super Bowl-week rows give the champions' 53-man rosters)",
+        "publisher": "nflverse", "license": "CC-BY-4.0", "repository": "https://github.com/nflverse/nflverse-data",
+        "downloaded": pins["nflverse"]["downloaded"], "files": pins["nflverse"]["rosters"]}
     clubs = []
     for club in CLUB_IDS:
         nickname, division = CLUB_TABLE[club]
@@ -1725,7 +2067,7 @@ def build(games_path: Path, nflverse_dir: Path, cache: Path | None, pins: dict) 
         "schema": SCHEMA, "base_year": BASE_YEAR, "first_season": FIRST_SEASON, "last_season": LAST_SEASON,
         "rules": RULES, "sources": sources, "clubs": clubs, "playoff_codes": list(PLAYOFF_CODES), "seasons": seasons,
         "awards": {"kinds": [{"id": a, "label": label, "source": key} for a, label, key, _h in AWARDS], "winners": awards},
-        "nfl_records": records, "nfl_career_leaders": leaders, "hall_of_fame": hof,
+        "nfl_records": records, "nfl_career_leaders": leaders, "hall_of_fame": hof, "pending_candidates": candidates,
         "checks": {"standings": {**standings_manifest(pins), "compared_club_seasons": standings["compared"],
                                  "differences": explained},
                    "records": record_checks, "career_leaders": leader_checks}}

@@ -678,6 +678,7 @@ mod_editor/core/nfl2k5_honors.py
 mod_editor/core/nfl2k5_honors_code.py
 mod_editor/core/nfl2k5_honors_history.py
 data/nfl2k5_honors_2026.json
+data/nfl2k5_history_2026.json
 mod_editor/core/nfl2k5_kickoff_blocking.py
 mod_editor/core/nfl2k5_widescreen_menus.py
 mod_editor/core/nfl2k5_team_logo_swap.py
