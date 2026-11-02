@@ -715,7 +715,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_digit_texture.py": "38112506a194aae7b0e229cdb0d40d0fbbba52bf7ac5e3e81c7a67743352e79c",
         "mod_editor/core/nfl2k5_disc_identity.py": "000ec3164d1da4a9e0fb4a4bd48deb55e4241cff90d7ee4762dd1caa446eff3e",
         "mod_editor/core/nfl2k5_display_list_stability.py": "34649b364e65566cc798df8e0ad60410609f7178973358e95ee3691b2f6e6031",
-        "mod_editor/core/nfl2k5_draft_ai.py": "2c7138a596d7f135ea4569061a1d3678c4fae76d79bf2f06b28b0e7c2009e901",
+        "mod_editor/core/nfl2k5_draft_ai.py": "a072ccb14918ee4213183247a5156f4e8eb8da1cb38197b0d128ce53d126d49a",
         "mod_editor/core/nfl2k5_draft_class.py": "01c112faec0bc4f3c10142bc8e84ae1c23d156daa553f76fbb8b0f847c4d3307",  # b780 b1-draft: imported by throw_tuning (the draft fixes)
         "mod_editor/core/nfl2k5_dynamic_kickoff.py": "5ed5a2914bd857d734f285f68af3b2b4b41712939e9d8aa42cf88103b11f6b16",
         "mod_editor/core/nfl2k5_dynamic_kickoff_relocated.py": "65965dcc61ca1ebe85b4532be99a6ae64e504bad13f0d438223c9e5193d6261e",

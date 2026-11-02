@@ -22,8 +22,9 @@ Two retail routines are replaced.
    real-NFL first-round positional value (QB, T, DE, WR, CB high; RB, S, LB lower), need tilts
    the order the way front offices do, and the jitter keeps two teams from reading the board identically.
    b778 dr2: K/P carry VALUE 1.0 but a separate policy keeps them out of display rounds 1-4 (except a
-   0.30-edge historic outlier), requires an empty specialist slot, and uses one late slot per round
-   (pick 31 for a kicker, pick 30 for a punter) so at most one K and one P can go in a round.  The
+   0.30-edge historic outlier, since b780 at most one per draft), requires an empty specialist slot, and uses
+   one late slot per round (pick 31 for a kicker, pick 30 for a punter) so at most one K and one P can go in a
+   round.  The
    Rookie Report key keeps a fixed 0.30 scale for K/P, so they stay out of that top-25 list.
 
 2. Free-agent wishes (the earlier "draft AI" cave, which in fact targets free agency).  The offseason
@@ -121,10 +122,11 @@ SPECIAL_FIRST_ROUND = 4       # 0-based: kickers and punters only from display r
 SPECIAL_EDGE = 0.30           # a K/P this far above his own class mean is a historic outlier (rare exception)
 SPECIAL_ROUND_CAP = 1         # at most one K and one P per round in rounds 5-7
 # b780 b1-draft (SharkMagick 11/01: "kickers getting drafted in R3 again", "6 by my count", "even punters"): the
-# early outlier was not capped, so on a class with many specialists every club without one could take an outlier
-# in display round 3, where the retail need table lifts K and P. Before display round 5 at most one specialist
-# (K or P, CPU or user) goes per draft: the class-sum loop counts this draft's drafted specialists (flags 0x30 at
-# position 1 or 2) into a zeroed frame dword, and the early outlier is allowed only while that count is 0.
+# early outlier had no per-draft limit, so when several K/P prospects clear SPECIAL_EDGE every club without a
+# specialist may take one before round 5 (the worst case in tests/mod_editor/test_b780_draft_class.py). Before
+# display round 5 at most EARLY_SPECIALIST_CAP specialists (K or P, CPU or user) go per draft: the class-sum loop
+# counts this draft's drafted specialists (flags 0x30 at position 1 or 2) into a zeroed frame dword, and the early
+# outlier is allowed only while that count is below the cap.
 EARLY_SPECIALIST_CAP = 1
 SPECIALIST_COUNT_OFF = 0xE0   # frame dword (zeroed by the prologue loop, unused before b780)
 PICK_CONST_OFF = 264            # the two floats sit in the last 8 bytes of the 275-byte function (aligned)
