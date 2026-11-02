@@ -121,6 +121,20 @@ class RetailRosterTests(unittest.TestCase):
         # the roster still parses and every other coach record is byte-identical
         rr.RosterDocument(new)
 
+    def test_a_bare_disc_body_finds_its_own_roster_object(self) -> None:
+        """c2-staff calls the writer the way apply_coach_names is called: (body, teams, entries, log), no object base."""
+        body = bytearray(self.base)
+        log: list[str] = []
+        self.assertEqual(rr.apply_coach_records(body, self.document.teams, [dict(FULL, team="KC")], log), 1)
+        self.assertEqual(log, [])
+        self.assertEqual(bytes(body), self.apply([dict(FULL, team="KC")])[0])
+        broken = bytearray(self.base)
+        broken[0x14:0x18] = bytes(4)                         # a null roster root pointer
+        log = []
+        self.assertEqual(rr.apply_coach_records(broken, self.document.teams, [dict(FULL, team="KC")], log), 0)
+        self.assertTrue(log, "an unreadable roster object is logged, not guessed")
+        self.assertEqual(bytes(broken[0x18:]), self.base[0x18:])
+
     def test_names_and_records_in_one_entry_both_land(self) -> None:
         entry = dict(FULL, team="NYG", first="John", last="Harbaugh", fields={"wins": 180})
         new, receipt = self.apply([entry])
@@ -236,7 +250,7 @@ class FranchiseArenaTests(unittest.TestCase):
         entries = [{"team": t.abbreviation, "ratings": {"overall": 60 + t.index}, "announcer": "generic",
                     "tendencies": {"run_share": 40 + t.index % 10}} for t in clubs]
         log: list[str] = []
-        self.assertEqual(rr.apply_coach_records(document, entries, log), 32)
+        self.assertEqual(rr.apply_coach_records(document.body, document.teams, entries, log, obj_base=document.obj_base), 32)
         self.assertEqual(log, [])
         new = bytes(document.body)
         records = {t.coach_offset for t in clubs}

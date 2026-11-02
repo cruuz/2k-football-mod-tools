@@ -3231,7 +3231,7 @@ def apply_body(body: bytes, source: Path | str | Mapping[str, Any], *,
             selected.append(player.offset)
         roster.free_agents = selected
     coaches = apply_coach_names(roster.body, roster.teams, doc.get("coaches") or [], log)
-    coach_records = apply_coach_records(roster, doc.get("coaches") or [], log)
+    coach_records = apply_coach_records(roster.body, roster.teams, doc.get("coaches") or [], log, obj_base=roster.obj_base)
     uniform_years = apply_team_uniform_years(roster.body, roster.teams, doc.get("teams") or [], log)
     # A dated refresh validates its final club chains after membership changes.
     # Alumni aliases cannot own independent locks, including on a replay after
@@ -3538,10 +3538,13 @@ def plan_coach_record(entry: Mapping[str, Any]) -> tuple[dict[int, bytes], bool 
     return writes, generic
 
 
-def apply_coach_records(roster: "RosterDocument", entries: Sequence[Mapping[str, Any]], log: list[str]) -> int:
-    """Write the record fields of a roster-edits document's ``coaches`` entries into ``roster.body``: ``ratings``
-    {name: 0..99}, ``tendencies`` {group: number(s)} (COACH_TENDENCY_GROUPS), ``announcer`` "generic" | "named",
-    ``height_in`` and ``weight_lb``.  Returns the coach records written.
+def apply_coach_records(body: bytearray, teams: Sequence[TeamRecord], entries: Sequence[Mapping[str, Any]],
+                        log: list[str], *, obj_base: int | None = None) -> int:
+    """Write the record fields of a roster-edits document's ``coaches`` entries into ``body`` (the same shape as
+    ``apply_coach_names``, which it follows): ``ratings`` {name: 0..99}, ``tendencies`` {group: number(s)}
+    (COACH_TENDENCY_GROUPS), ``announcer`` "generic" | "named", ``height_in`` and ``weight_lb``.  Returns the coach
+    records written.  ``obj_base`` is the roster object's virtual base (``RosterDocument.obj_base``); a disc body has it
+    at 0 and finds it itself, a save arena passes it.
 
     Fixed-span writes only: every byte it may touch is named by the plan, the coach table is located through the
     roster object (retail, grown and save-arena rosters alike) and checked (35 records of 0xA8 bytes inside the body,
@@ -3552,10 +3555,17 @@ def apply_coach_records(roster: "RosterDocument", entries: Sequence[Mapping[str,
     wanted = [entry for entry in entries if any(key in entry for key in COACH_RECORD_KEYS)]
     if not wanted:
         return 0
-    body = roster.body
-    ob = roster.obj_base
-    count = roster.u32(ob + OBJ_OFF + 0x30)
-    table = roster.rel(ob + OBJ_OFF + 0x34)
+    try:
+        if obj_base is None:
+            root = 0x14 + struct.unpack_from("<i", body, 0x14)[0] - 1
+            obj_base = root - OBJ_OFF
+        field = obj_base + OBJ_OFF + 0x34
+        pointer = struct.unpack_from("<i", body, field)[0]
+        table = None if pointer == 0 else field + pointer - 1
+        count = struct.unpack_from("<I", body, obj_base + OBJ_OFF + 0x30)[0]
+    except struct.error:
+        log.append("coach records: the roster object cannot be read; coach ratings, tendencies and flags left as they are")
+        return 0
     if table is None or count != COACH_TABLE_COUNT or table + count * COACH_RECORD_SIZE > len(body):
         log.append(f"coach records: the coach table is not the supported {COACH_TABLE_COUNT} records of "
                    f"0x{COACH_RECORD_SIZE:X} bytes (count {count}); coach ratings, tendencies and flags left as they are")
@@ -3564,7 +3574,7 @@ def apply_coach_records(roster: "RosterDocument", entries: Sequence[Mapping[str,
     plans: dict[int, tuple[dict[int, bytes], bool | None, str]] = {}
     for entry in wanted:
         label = str(entry.get("team", "") or "").strip()
-        team = next((t for t in roster.teams if t.abbreviation.casefold() == label.casefold()), None)
+        team = next((t for t in teams if t.abbreviation.casefold() == label.casefold()), None)
         if team is None or team.coach_offset is None:
             log.append(f"coach records of {label!r}: no such team, or the team has no coach record; skipped")
             continue
