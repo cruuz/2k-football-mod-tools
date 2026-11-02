@@ -30,8 +30,8 @@ The two-source rule (``decide``)
   single    only S1 exists (not shipped, listed).
 A (club, scope, category) ships the longest run of consecutive ranks from rank 1 whose rows all ship (a later rank cannot be
 trusted when an earlier one failed), and only when the completeness guard holds: no nflverse player who is not on the
-guide's printed list has a total above the list's last printed value (for a stat the guide prints only as a column of
-another list, above the third-ranked value), and no nflverse single season or game beats the guide's record.
+guide's printed list has a total above the lowest value that can ship (the third-ranked row's; for a stat the guide prints only as a
+column of another list, the third highest printed value), and no nflverse single season or game beats the guide's record.
 
 The club files (S1) are ``data/nfl2k5_franchise_leaders_guides/<CLUB>.json``: one per club, {team, guide_ident, through_season, lists,
 missing, notes}.  A list is {scope career|season|game, category (pass_yds ... tackles), title, pdf_page, kind list|column, ranked_by,
@@ -888,6 +888,15 @@ def guard_violated(cat: str, guard) -> bool:
     return guard["other_value"] > guard["bar"] + tolerance(cat, guard["bar"])
 
 
+def guard_bar(lst: dict, chosen, k: int = 1):
+    """the value a player the guide does not print must stay below for the list to be complete where it matters: the lowest value that can
+    ship (the third-ranked row, ties included).  A stat the guide prints only as a column of another list uses the third highest printed value."""
+    if lst["kind"] == "column":
+        ranked = [r for _, r in rank_rows(lst)]
+        return ranked[min(2, len(ranked) - 1)]["value"] * k
+    return min(r["value"] for _, r in chosen) * k
+
+
 def rank_rows(lst: dict):
     """[(rank, row)] ; a list ranked by this stat keeps its printed order, a column of another list is re-ranked by value"""
     rows = lst["rows"]
@@ -1336,11 +1345,7 @@ def cmd_build(args) -> int:
                 continue
             printed = {norm(r["name"]) for r in lst["rows"]}
             if scope == "career":
-                if lst["kind"] == "column":
-                    ranked = [r for _, r in rank_rows(lst)]
-                    bar = ranked[min(2, len(ranked) - 1)]["value"] * k
-                else:
-                    bar = min(r["value"] for r in lst["rows"]) * k
+                bar = guard_bar(lst, chosen, k)
                 best = None
                 for pid_, tot in nv.club_players(club):
                     if tot.get(cat) and (best is None or tot[cat] > best[0]) and not nv.same_person(pid_, printed):

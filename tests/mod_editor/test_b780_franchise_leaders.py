@@ -288,6 +288,17 @@ class NflverseTotals(unittest.TestCase):
 
 
 class TheRule(unittest.TestCase):
+    def test_the_guard_bar_is_the_lowest_value_that_can_ship(self):
+        lst = {"kind": "list", "rows": [{"rank": r, "value": v} for r, v in ((1, 900), (2, 800), (3, 700), (4, 300), (5, 200))]}
+        self.assertEqual(B.guard_bar(lst, B.select_rows(lst, "career")), 700)           # a player at 386 would rank 4th: the top 3 are safe
+        self.assertEqual(B.guard_bar(lst, B.select_rows(lst, "career"), 2), 1400)
+        tie = {"kind": "list", "rows": [{"rank": 1, "value": 900}, {"rank": 2, "value": 800}, {"rank": 3, "value": 700}, {"rank": 3, "value": 700}, {"rank": 5, "value": 100}]}
+        self.assertEqual(B.guard_bar(tie, B.select_rows(tie, "career")), 700)
+        col = {"kind": "column", "rows": [{"rank": 1, "value": 50}, {"rank": 2, "value": 90}, {"rank": 3, "value": 70}, {"rank": 4, "value": 60}]}
+        self.assertEqual(B.guard_bar(col, B.select_rows(col, "career")), 60)            # re-ranked by the column: 90, 70, 60, 50
+        self.assertTrue(B.guard_violated("receptions", {"bar": 700, "other_value": 750}))
+        self.assertFalse(B.guard_violated("receptions", {"bar": 700, "other_value": 386}))
+
     def test_decide(self):
         d = B.decide("rushing_yards", 8602, 8602, 8595, True)         # Forte: Wikipedia agrees, nflverse close
         self.assertEqual((d["decision"], d["confirmed_by"], d["nflverse"]), ("ship", ["wikipedia"], "close"))

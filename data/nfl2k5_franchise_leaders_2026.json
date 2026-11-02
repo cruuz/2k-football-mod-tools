@@ -59,16 +59,15 @@
  },
  "counts": {
   "shipped": {
-   "career": 690,
+   "career": 693,
    "season": 265,
    "game": 145
   },
   "excluded": {
    "conflict": 56,
    "after a rank that is conflict": 26,
-   "single": 459,
-   "after a rank that is single": 112,
-   "incomplete list": 6,
+   "single": 460,
+   "after a rank that is single": 114,
    "not printed in the guide": 76
   },
   "by_decision": {
@@ -11658,6 +11657,60 @@
       ],
       "guide_page": 466,
       "tie": true
+     }
+    ],
+    "receptions": [
+     {
+      "rank": 1,
+      "name": "Isaac Bruce",
+      "first": "Isaac",
+      "last": "Bruce",
+      "position": "WR",
+      "years": "1994-07",
+      "span": [
+       1994,
+       2007
+      ],
+      "value": 942,
+      "confirmed_by": [
+       "wikipedia"
+      ],
+      "guide_page": 445
+     },
+     {
+      "rank": 2,
+      "name": "Torry Holt",
+      "first": "Torry",
+      "last": "Holt",
+      "position": "WR",
+      "years": "1999-08",
+      "span": [
+       1999,
+       2008
+      ],
+      "value": 869,
+      "confirmed_by": [
+       "wikipedia"
+      ],
+      "guide_page": 445
+     },
+     {
+      "rank": 3,
+      "name": "Cooper Kupp",
+      "first": "Cooper",
+      "last": "Kupp",
+      "position": "WR",
+      "years": "2017-24",
+      "span": [
+       2017,
+       2024
+      ],
+      "value": 634,
+      "confirmed_by": [
+       "wikipedia",
+       "nflverse"
+      ],
+      "guide_page": 445
      }
     ],
     "receiving_yards": [
