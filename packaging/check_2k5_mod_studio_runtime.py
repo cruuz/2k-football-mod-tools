@@ -2048,6 +2048,9 @@ def main() -> int:
         "mod_editor.core.nfl2k5_draft_clock",                     # b778-dr1
         "mod_editor.core.nfl2k5_weekly_progression",              # b778-pg1
         "mod_editor.core.nfl2k5_player_progress_screen",          # b778-pg2
+        "mod_editor.core.nfl2k5_franchise_extension",             # b780 j23
+        "mod_editor.core.nfl2k5_franchise_footer",                # b780 j23
+        "mod_editor.core.nfl2k5_history",                         # b780 j23
         "mod_editor.core.nfl2k5_contract_college_guard",          # b778-cr1
         "mod_editor.core.nfl2k5_sim_cb_tackles",                  # b778-cb1
         "mod_editor.core.nfl2k5_sim_rb_injuries",                 # b779-sim2

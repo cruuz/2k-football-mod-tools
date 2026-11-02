@@ -55,7 +55,13 @@ from .nfl2k5_cave_oracle import XbeImage
 
 OWNER = "nfl2k5_franchise_footer"
 EVIDENCE = "EXPERIMENTAL"
-CAPTION = "Franchise: history and records footer (save data)"
+BUILD_CAPTION = "Franchise: team history, records and box scores (experimental)"
+HELP_TEXT = (
+    "EXPERIMENTAL. Your franchise remembers what happened: every season's standings, playoff results and awards, "
+    "club and league records, all-time leaders, Hall of Fame classes and the box scores of your team's games this "
+    "season. It is kept in the franchise save itself (about 98 KB more per save; old saves load and start an empty "
+    "history). With the 128 MB memory option it uses the extra memory; at 64 MB that build pauses the history. "
+    "Saves made with it also load on builds without it (the history is then left out of the next save).")
 CODE_SIZE = 4096
 STATE_SIZE = 64
 DATA_SIZE_EXTRA = STATE_SIZE

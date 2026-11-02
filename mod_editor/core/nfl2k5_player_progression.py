@@ -143,8 +143,12 @@ def is_empty_footer(payload: bytes) -> bool:
     save ends in 34,320 zero bytes. That means "no weekly history yet". It is only recognised at a total
     length that is a known native container (optionally with the 128-byte MyCareer block) plus the footer.
     """
-    return (len(payload) in PPG_SAVE_SIZES + PPG_CAREER_SAVE_SIZES
-            and not any(payload[len(payload) - FOOTER_SIZE:]))
+    if len(payload) in PPG_SAVE_SIZES + PPG_CAREER_SAVE_SIZES:
+        return not any(payload[len(payload) - FOOTER_SIZE:])
+    # b780 j23: after the franchise extension body the Player Progress footer is still the last 34,320 bytes
+    from . import nfl2k5_franchise_extension as ext
+    found = ext.layout(payload)
+    return bool(found is not None and found.pp_offset is not None and not any(payload[found.pp_offset:]))
 
 
 def footer_start(payload: bytes) -> int | None:

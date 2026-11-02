@@ -248,7 +248,11 @@ def apply_slider_edits(
 # ---------------------------------------------------------------------------
 
 def _native_length(payload) -> int:
-    """Save length without a trailing Player Progress footer (stamped, or the v0.7 game's all-zero one)."""
+    """Save length without its franchise footers (b780 j23: the extension body, the Player Progress footer (stamped,
+    or the v0.7 game's all-zero one) or both); the MyCareer block stays."""
+    from . import nfl2k5_franchise_extension as ext
+    if ext.layout(payload) is not None:
+        return ext.native_length(payload)
     from .nfl2k5_player_progression import footer_start
     at = footer_start(bytes(payload))
     return len(payload) if at is None else at

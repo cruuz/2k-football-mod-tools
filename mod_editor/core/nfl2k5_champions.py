@@ -292,6 +292,13 @@ def allocations(payload: bytes) -> dict[str, dict]:
     return {"code": rows[0]}
 
 
+def _companion_sites(payload: bytes) -> list:
+    """b780 j23: the franchise history capture's exact season-close hook (0x248601, ``call 0x13ED70``) sits inside
+    this owner's stage-9 guard; read it as the retail call only for that owner's exact install."""
+    from . import nfl2k5_history as history
+    return [site for site in history.installed_sites(payload) if site[0] == "season_close"]
+
+
 def owned_state(payload: bytes):
     """-> ("retail" | "applied", allocations | None); anything else raises."""
 
@@ -301,19 +308,19 @@ def owned_state(payload: bytes):
     if not found:
         retail_sites = sites(0x14DA000)  # the retail bytes do not depend on the pages
         _require(rdata.status(payload, retail_sites) == "retail", "champions sites changed without an allocation")
-        _check_guards(image, retail_sites)
+        _check_guards(image, retail_sites + _companion_sites(payload))
         return "retail", None
     code_va = found["code"]["va"]
     code = image.read(code_va, CODE_SIZE)
     if code == b"\xcc" * CODE_SIZE:
         edits = sites(code_va)
         _require(rdata.status(payload, edits) == "retail", "champions sites changed with an empty allocation")
-        _check_guards(image, edits)
+        _check_guards(image, edits + _companion_sites(payload))
         return "retail", found
     _require(code == code_for(code_va), "foreign champions code")
     edits = sites(code_va)
     _require(rdata.status(payload, edits) == "applied", "mixed champions sites")
-    _check_guards(image, edits)
+    _check_guards(image, edits + _companion_sites(payload))
     return "applied", found
 
 

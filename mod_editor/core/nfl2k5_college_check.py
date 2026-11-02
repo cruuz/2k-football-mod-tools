@@ -277,7 +277,7 @@ def _point_at(data: bytes, report: Scan, findings, college: College) -> tuple[by
             # b778 ci2: only a save that carries the MyCareer footer has an
             # identity to re-check; a plain or Player-Progress-only franchise
             # must still repair.
-            if len(fixed) in career.SIZES + career.PPG_CAREER_SIZES and report.layout.preamble == 0x300:
+            if career.has_block(fixed) and report.layout.preamble == 0x300:
                 career.read(fixed)
         except (codec.SaveRostError, career.CareerSaveError) as exc:
             raise CollegeCheckError(f'candidate fails unchanged roster/identity validation: {exc}') from exc

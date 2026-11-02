@@ -348,9 +348,15 @@ class FranchiseSave:
         data = bytes(payload)
         from . import nfl2k5_my_career_save as career
         from . import nfl2k5_player_progression as progress
+        from . import nfl2k5_franchise_extension as ext
         self.career_offset = None
         self.ppg_offset = progress.footer_start(data)
-        native_view = data[:self.ppg_offset] if self.ppg_offset is not None else data
+        # b780 j23: the franchise footers (extension body, Player Progress or both) follow the native save and the
+        # MyCareer block; the native view ends before them.
+        found = ext.layout(data)
+        self.extension_offset = found.body_offset if found is not None else None
+        native_view = (data[:ext.native_length(data)] if found is not None else
+                       data[:self.ppg_offset] if self.ppg_offset is not None else data)
         native_size = len(native_view)
         if len(native_view) in career.SIZES:
             try:
@@ -360,8 +366,8 @@ class FranchiseSave:
                 raise FranchiseSaveError(str(exc)) from exc
         elif len(native_view) in career.BASE_SIZES:
             pass
-        elif self.ppg_offset is not None:
-            raise FranchiseSaveError("unsupported franchise container length before the Player Progress footer")
+        elif len(native_view) != len(data):
+            raise FranchiseSaveError("unsupported franchise container length before the franchise footers")
         from . import nfl2k5_roster_arena as arena
         _require(native_size in (FRANCHISE_SAVE_SIZE, FRANCHISE_SAVE_SIZE + 0x1000) + arena.CAPACITY_SAVE_SIZES,
                  f"unsupported franchise container length: {len(data):,}; expected a 720,044-byte "
@@ -1079,6 +1085,14 @@ class FranchiseSave:
         if self.career_offset is not None:
             regions.append(Region(self.career_offset, 128, "MyCareer version 1", "PROVED",
                                   "inline identity and progression; native signature covers the full container"))
+        if getattr(self, "extension_offset", None) is not None:
+            from . import nfl2k5_franchise_extension as ext
+            regions.append(Region(self.extension_offset, ext.BODY_SIZE, "franchise extension footer 2K5XTND1",
+                                  "PROVED", "history and records blocks (nfl2k5_franchise_extension)"))
+        if self.ppg_offset is not None:
+            from . import nfl2k5_player_progression as progress
+            regions.append(Region(self.ppg_offset, progress.FOOTER_SIZE, "Player Progress footer PPGF0001", "PROVED",
+                                  "weekly rating ring (nfl2k5_player_progression)"))
         return regions
 
 

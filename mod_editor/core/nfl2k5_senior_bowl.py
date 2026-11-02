@@ -282,7 +282,7 @@ def read_franchise(path, *, scheme="retail"):
     signature = _read_exact(source.with_name("EXTRA"), 20)
     _require(rr.verify_extra(payload, signature), "EXTRA does not match SAVEGAME.DAT")
     from . import nfl2k5_player_progression as progress
-    block = career.read(payload) if size in career.SIZES + career.PPG_CAREER_SIZES else None
+    block = career.read(payload) if career.has_block(payload) else None
     payload = payload[:career.native_size(payload)]
     document = rr.RosterDocument(payload, base=rr.SAVE_BLOCK_OFFSET, scheme=scheme, source=str(source))
     document.mycareer = block

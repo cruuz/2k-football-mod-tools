@@ -134,7 +134,7 @@ def save_ownership_assessment(payload):
     native = career.native_size(payload)
     save = FranchiseSave(payload)
     squads = save._validate_ownership()
-    if native != len(payload):
+    if career.has_block(payload):
         career.read(payload)  # Include identity, not only the footer checksum.
     document = decode(payload)
     auxiliary = struct.unpack_from("<I", payload, 0x2e8)[0]
@@ -767,7 +767,7 @@ def main():
         from pathlib import Path
         from . import nfl2k5_my_career_save as career
         with Path(args.assess_save).open("rb") as reader:
-            payload = reader.read(max(career.SIZES) + 1)
+            payload = reader.read(max(career.CONTAINER_SIZES) + 1)
         print(json.dumps(save_ownership_assessment(payload), indent=2))
         return
     if args.assess_xbe:

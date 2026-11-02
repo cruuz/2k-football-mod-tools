@@ -600,6 +600,13 @@ class BuildPlan:
     # available in every regular-season and playoff week (retail showed it only in the offseason); no
     # snapshot, no save growth and no roster-arena tail. This can ship without nfl2k5_player_progress.
     player_progress_visible: bool = False
+    # b780 j23: franchise history and records. One versioned franchise footer (2K5XTND1, nfl2k5_franchise_extension)
+    # after the native save, written and read by the game's own save transaction through a late executable owner
+    # (nfl2k5_franchise_footer, which also owns the one save-list check for every franchise footer and hosts the
+    # Player Progress footer), and the history capture at the game commit and the season close (nfl2k5_history,
+    # J3). On a build with the 128 MB roster heap the history lives in the extra memory; otherwise in the
+    # executable's own memory (98 KB). EXPERIMENTAL: off in every preset until its emulator gates pass.
+    franchise_history: bool = False
     # b778-cr1: the Player Contracts panel reads the player's college word without a null check (0x6E11F). One late
     # executable owner (nfl2k5_contract_college_guard) hooks it and uses the panel's own N/A fallback, so an existing
     # franchise with a null college opens without a roster repair. On in every SOFTDRINK preset (a crash fix).
@@ -941,6 +948,11 @@ for _preset in PRESETS.values():
     _preset["player_progress_visible"] = False
 PRESETS["softdrink_advanced"]["player_progress_visible"] = True
 PRESETS["softdrink_experimental"]["player_progress_visible"] = True
+del _preset
+# b780 j23: franchise history and records (the extension footer): off in every preset until its emulator gates pass;
+# the job report recommends the values (SOFTDRINK recipe: on, with the 128 MB roster heap).
+for _preset in PRESETS.values():
+    _preset["franchise_history"] = False
 del _preset
 # b778-cr1: the Player Contracts null-college crash guard is a safety fix, not a taste option: on in every preset.
 for _preset in PRESETS.values():
@@ -1341,6 +1353,8 @@ _LATE_OWNER_OPTIONS = (
     ("nfl2k5_clock_led", "Modern clock digits", lambda p: p.modern_clock_led),  # b778-sd4
     ("nfl2k5_return_coverage", "Return coverage pursuit angles", lambda p: p.return_coverage),  # b778-kr1
     ("nfl2k5_preseason_warning", "2026 franchise economy", lambda p: p.franchise_economy),  # b779-rc1: the warned flag
+    ("nfl2k5_franchise_footer", "Franchise history and records", lambda p: p.franchise_history),  # b780 j23
+    ("nfl2k5_history", "Franchise history and records", lambda p: p.franchise_history),  # b780 j23
 )
 _REBUILD_HINT = " Build from your unmodified retail dump instead."
 
@@ -1794,19 +1808,73 @@ def _player_progress_preflight(source: Path, progress) -> None:
                          "or build from your unmodified retail dump.")
 
 
+def _franchise_history_preflight(source: Path, progress) -> None:
+    """b780 j23: refuse a source whose franchise save path bytes are foreign, before any write."""
+    module = _core_module("nfl2k5_franchise_footer")
+    if module is None or _core_module("nfl2k5_xbe_space") is None:
+        raise ValueError("Franchise history and records is not available in this installation.")
+    progress("Checking the franchise save code for history and records", 0, 0)
+    try:
+        payload = _xbe_bytes(source)
+    except (OSError, ValueError) as exc:
+        raise ValueError(f"Franchise history and records cannot read default.xbe: {exc}") from exc
+    if module.status(payload) == "foreign":
+        raise ValueError("The franchise save code in this source is not retail or this release's history footer. "
+                         "Turn Franchise history and records off or build from your unmodified retail dump.")
+
+
+def _player_progress_hosted(plan: "BuildPlan") -> bool:
+    """b780 j23: with franchise history on, the full Player Progress screen is installed hosted (the history footer
+    host saves and loads its footer as the last 34,320 bytes of the save, exactly where v0.8 kept it)."""
+    return bool(plan.player_progress and plan.franchise_history)
+
+
+def _apply_franchise_history(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    """b780 j23: the franchise extension footer host (after Player Progress and every other save-path owner)."""
+    if not plan.franchise_history:
+        return
+    module = _core_module("nfl2k5_franchise_footer")
+    if module is None:
+        raise RuntimeError("Franchise history and records needs nfl2k5_franchise_footer.")
+    progress("Franchise: history and records footer", 0, 0)
+    # K128 with the roster heap: the body comes from the extra memory above 64 MB; otherwise it is owned memory
+    static_body = not (plan.k128_memory and plan.k128_roster_heap)
+    payload, footer_receipt = module.apply(_xbe_bytes(target), static_body=static_body)
+    _write_xbe_bytes(target, payload)
+    final = _xbe_bytes(target)
+    if final != payload or module.status(final) != "applied":
+        raise RuntimeError("Franchise history and records: the output does not read back as applied")
+    receipt["steps"].append({"step": "franchise_history_footer", **{k: v for k, v in footer_receipt.items()
+                                                                     if k not in ("allocation", "code_install")}})
+    history = _core_module("nfl2k5_history")
+    if history is None:
+        raise RuntimeError("Franchise history and records needs nfl2k5_history.")
+    progress("Franchise: history and records capture", 0, 0)
+    payload, history_receipt = history.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, payload)
+    final = _xbe_bytes(target)
+    if final != payload or history.status(final) != "applied" or module.status(final) != "applied":
+        raise RuntimeError("Franchise history and records: the capture does not read back as applied")
+    receipt["steps"].append({"step": "franchise_history_capture", **{k: v for k, v in history_receipt.items()
+                                                                      if k not in ("allocation", "code_install")}})
+    receipt["result"]["franchise_history"] = "applied"
+
+
 def _apply_player_progress(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
-    """b778-pg2/pg3: install the Player Progress owner (full snapshot or visibility-only)."""
+    """b778-pg2/pg3: install the Player Progress owner (full snapshot or visibility-only; b780 j23: hosted when
+    franchise history is on)."""
     if not (plan.player_progress or plan.player_progress_visible):
         return
     module = _core_module("nfl2k5_player_progress_screen")
     if module is None:
         raise RuntimeError("The Player Progress screen needs nfl2k5_player_progress_screen.")
     visible_only = not plan.player_progress
+    hosted = _player_progress_hosted(plan)
     progress("Franchise: Player Progress row" if visible_only else "Franchise: Player Progress screen", 0, 0)
-    payload, progress_receipt = module.apply(_xbe_bytes(target), visible_only=visible_only)
+    payload, progress_receipt = module.apply(_xbe_bytes(target), visible_only=visible_only, hosted=hosted)
     _write_xbe_bytes(target, payload)
     final = _xbe_bytes(target)
-    expected = "visible" if visible_only else "applied"
+    expected = "visible" if visible_only else "hosted" if hosted else "applied"
     if final != payload or module.status(final) != expected:
         raise RuntimeError(f"The Player Progress screen: the output does not read back as {expected}")
     receipt["steps"].append({"step": "player_progress", **{k: v for k, v in progress_receipt.items()
@@ -2356,6 +2424,9 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
     player_progress = _core_module("nfl2k5_player_progress_screen")  # b778-pg2/pg3
     out["player_progress"] = player_progress.status(_xbe_bytes(source)) if player_progress is not None else "unavailable"
     out["player_progress_visible"] = out["player_progress"]
+    franchise_footer = _core_module("nfl2k5_franchise_footer")  # b780 j23
+    out["franchise_history"] = (franchise_footer.status(_xbe_bytes(source)) if franchise_footer is not None
+                                else "unavailable")
     college_guard = _core_module("nfl2k5_contract_college_guard")  # b778-cr1
     out["contract_college_guard"] = college_guard.status(_xbe_bytes(source)) if college_guard is not None else "unavailable"
     cb_tackles = _core_module("nfl2k5_sim_cb_tackles")  # b778-cb1
@@ -4298,6 +4369,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("The Player Progress screen must be Off or On.")
     if type(plan.player_progress_visible) is not bool:  # b778-pg3
         raise ValueError("The Player Progress row must be Off or On.")
+    if type(plan.franchise_history) is not bool:  # b780 j23
+        raise ValueError("Franchise history and records must be Off or On.")
     if type(plan.contract_college_guard) is not bool:  # b778-cr1
         raise ValueError("The Player Contracts college guard must be Off or On.")
     if type(plan.sim_cb_tackles) is not bool:  # b778-cb1
@@ -5075,6 +5148,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         _weekly_progression_preflight(source, progress)
     if plan.player_progress or plan.player_progress_visible:  # b778-pg2/pg3: like qb3, before any write
         _player_progress_preflight(source, progress)
+    if plan.franchise_history:  # b780 j23: before any write
+        _franchise_history_preflight(source, progress)
     if plan.sim_stats:  # b778-sim1: like qb3, before any write
         _sim_stats_preflight(source, progress)
     if plan.option_defaults:  # b779-df1: like sim1, before any write
@@ -6784,6 +6859,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     _apply_sim_rb_injuries(plan, target, receipt, progress)
     # b779-sim2 r4: scheduled-sim season realism, after the RB injury owner (LATE_OWNERS order)
     _apply_sim_realism(plan, target, receipt, progress)
+    # b780 j23: the franchise history footer host, after every other save-path owner (MyCareer, Player Progress)
+    _apply_franchise_history(plan, target, receipt, progress)
     # b778-pg2: the Player Progress screen and weekly snapshot (a late allocator owner after force_out)
     # b778-cb1: cornerback tackle credit, after force_out
     # b778-sd4: modern clock digits, after modern sideline catches
@@ -6860,8 +6937,12 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("the franchise draft clock did not survive the final passes")  # b778-dr1
     if plan.weekly_progression and _core_module("nfl2k5_weekly_progression").status(_xbe_bytes(target)) != "applied":
         raise ValueError("weekly player progression did not survive the final passes")  # b778-pg1
-    if plan.player_progress and _core_module("nfl2k5_player_progress_screen").status(_xbe_bytes(target)) != "applied":  # b778-pg2
+    if plan.player_progress and _core_module("nfl2k5_player_progress_screen").status(_xbe_bytes(target)) != (
+            "hosted" if _player_progress_hosted(plan) else "applied"):  # b778-pg2, b780 j23
         raise ValueError("the Player Progress screen did not survive the final passes")
+    if plan.franchise_history and (_core_module("nfl2k5_franchise_footer").status(_xbe_bytes(target)) != "applied"
+                                   or _core_module("nfl2k5_history").status(_xbe_bytes(target)) != "applied"):
+        raise ValueError("franchise history and records did not survive the final passes")  # b780 j23
     if plan.contract_college_guard and _core_module("nfl2k5_contract_college_guard").status(_xbe_bytes(target)) != "applied":
         raise ValueError("the Player Contracts college guard did not survive the final passes")  # b778-cr1
     if plan.sim_rb_injuries and _core_module("nfl2k5_sim_rb_injuries").status(_xbe_bytes(target)) != "applied":

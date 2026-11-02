@@ -577,6 +577,12 @@ mod_editor/core/nfl2k5_sportscenter_lineup.py
 mod_editor/core/nfl2k5_draft_clock.py
 mod_editor/core/nfl2k5_weekly_progression.py
 mod_editor/core/nfl2k5_player_progress_screen.py
+# b780 j23: franchise extension footer (2K5XTND1 format + its native host)
+mod_editor/core/nfl2k5_franchise_extension.py
+mod_editor/core/nfl2k5_franchise_footer.py
+mod_editor/core/nfl2k5_franchise_footer_code.py
+mod_editor/core/nfl2k5_history.py
+mod_editor/core/nfl2k5_history_code.py
 mod_editor/core/nfl2k5_contract_college_guard.py
 mod_editor/core/nfl2k5_sim_cb_tackles.py
 mod_editor/core/nfl2k5_option_defaults.py
@@ -3872,3 +3878,5 @@ tests/mod_editor/test_b779_rc1_roster_capacity.py
 # b779 ag1: capacity arena 0xCA000 (4,096 player records), one layout helper, beta-78 saves migrate
 tests/mod_editor/test_b779_ag1_capacity_arena.py
 tests/mod_editor/test_b779_up2_zero_footer.py
+# b780 j23: franchise extension footer host and format
+tests/mod_editor/test_nfl2k5_franchise_footer.py
