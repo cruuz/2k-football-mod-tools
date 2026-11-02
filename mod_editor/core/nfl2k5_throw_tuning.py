@@ -1331,6 +1331,8 @@ R62_RUNTIME_KEYS += ("my_career_home",)
 # b778 fa4: reserve the existing arena-growth owner for the capacity-grown roster without enabling reserves.
 R62_SPACE_KEYS += ("roster_capacity",)
 R62_RUNTIME_KEYS += ("roster_capacity",)
+# b780 cv1: coverage_trail's moving arrival brake (the man-coverage spin fix) reuses that owner's reservation: no space key.
+R62_RUNTIME_KEYS += ("coverage_hitch_brake",)
 
 def _r62_options(values):
     return {key: (values.get('roster_capacity', False) if key == 'roster_capacity' else values[key])
@@ -1399,15 +1401,18 @@ def _deferred_r62_options(values, defer):
     return {**values, **{key: False for key in R62_SPACE_KEYS if key != "created_teams_extra"},
             "cpu_scrambles": "retail",
             "momentum_collision_level": 0, "created_teams_extra": 0, "cpu_money_downs": "retail", "weekly_prep_cpu": False, "weekly_prep_remember": False,
-            "read_option_intent_table": None, "my_career_setup": None, "kickoff_return_blocking": False}
+            "read_option_intent_table": None, "my_career_setup": None, "kickoff_return_blocking": False,
+            "coverage_hitch_brake": False}
 
 
-def _validate_r62_options(*, momentum_collisions=False, momentum_collision_level=0, read_option_runtime=False, franchise_2026_rules=False, senior_bowl=False, guardian_overlay=False, my_career=False, screen_hooks=False, coverage_trail=False, franchise_edit_player=False, cpu_money_downs="retail", accelerated_clock=False, accelerated_clock_minimum_seconds=20, coin_defer=False, decided_clock=False, decided_clock_margin=17, decided_clock_seconds=60, cpu_scrambles="retail", weekly_prep=False, weekly_prep_cpu=False, weekly_prep_remember=False, coach_ai=False, playbook_pair=False, deep_zone_facing=False, deep_zone_bail=False, reserves_16=False, created_teams_extra=0, read_option_intent_table=None, guardian_everyone_practice=True, my_career_setup=None, crib_reclaim=False, modern_naming=False, franchise_autosave=False, historic_teams_quick_game=False, espn25_more_moments=False, espn25_named_previews=False, historic_stock_books=False, espn25_era_rules=False, anniversary_kickoff=None, anniversary_kickoff_tables=None, widescreen_menus=None, team_logo_swap=None, period_goalposts=None, k128_memory=False, k128_roster_heap=False, k128_early=False, letter_grades=False, honors_page=False, kickoff_return_blocking=False, my_career_home=False, roster_capacity=False):
+def _validate_r62_options(*, momentum_collisions=False, momentum_collision_level=0, read_option_runtime=False, franchise_2026_rules=False, senior_bowl=False, guardian_overlay=False, my_career=False, screen_hooks=False, coverage_trail=False, coverage_hitch_brake=False, franchise_edit_player=False, cpu_money_downs="retail", accelerated_clock=False, accelerated_clock_minimum_seconds=20, coin_defer=False, decided_clock=False, decided_clock_margin=17, decided_clock_seconds=60, cpu_scrambles="retail", weekly_prep=False, weekly_prep_cpu=False, weekly_prep_remember=False, coach_ai=False, playbook_pair=False, deep_zone_facing=False, deep_zone_bail=False, reserves_16=False, created_teams_extra=0, read_option_intent_table=None, guardian_everyone_practice=True, my_career_setup=None, crib_reclaim=False, modern_naming=False, franchise_autosave=False, historic_teams_quick_game=False, espn25_more_moments=False, espn25_named_previews=False, historic_stock_books=False, espn25_era_rules=False, anniversary_kickoff=None, anniversary_kickoff_tables=None, widescreen_menus=None, team_logo_swap=None, period_goalposts=None, k128_memory=False, k128_roster_heap=False, k128_early=False, letter_grades=False, honors_page=False, kickoff_return_blocking=False, my_career_home=False, roster_capacity=False):
     _validate_lever_flags(momentum_collisions, read_option_runtime, franchise_2026_rules,
                           senior_bowl, guardian_overlay, guardian_everyone_practice,
                           my_career, crib_reclaim, screen_hooks, modern_naming, reserves_16, franchise_autosave, coverage_trail, franchise_edit_player,
                           weekly_prep, weekly_prep_cpu, weekly_prep_remember, coach_ai, playbook_pair,
-                          deep_zone_facing, deep_zone_bail)
+                          deep_zone_facing, deep_zone_bail, coverage_hitch_brake)
+    _require(not coverage_hitch_brake or coverage_trail,
+             "Stop man-coverage spins needs Close pursuit recovery: turn both on, or both off")
     momentum_patch._settings(0, False, momentum_collisions, momentum_collision_level)
     accelerated_clock_patch.encode_options(enabled=accelerated_clock, minimum_seconds=accelerated_clock_minimum_seconds)
     _validate_lever_flags(coin_defer, decided_clock, historic_teams_quick_game, espn25_more_moments, espn25_named_previews, historic_stock_books, espn25_era_rules)
@@ -1706,6 +1711,17 @@ class _deep_zone_adapter:
         return deep_zone_patch.apply(payload, **self.settings)
 
 
+class _coverage_trail_adapter:
+    """b780 cv1: Close pursuit recovery with or without its moving arrival brake (one owner, one reservation)."""
+    status = staticmethod(coverage_trail_patch.status)
+
+    def __init__(self, moving_arrival_brake):
+        self.moving_arrival_brake = moving_arrival_brake
+
+    def apply(self, payload):
+        return coverage_trail_patch.apply(payload, moving_arrival_brake=self.moving_arrival_brake)
+
+
 class _weekly_prep_adapter:
     status = staticmethod(weekly_prep_patch.status)
 
@@ -1820,6 +1836,7 @@ def _flat_distance_curves(payload, wanted, arc_table=False):
 
 
 def _grown_status_fields(payload):
+    trail_settings = coverage_trail_patch.read_settings(payload)  # b780 cv1: one recognition for both templates
     prep = weekly_prep_patch.read_settings(payload)
     deep_zone_state = deep_zone_patch.status(payload)
     deep_zone_settings = ({"status": "foreign"} if deep_zone_state == "foreign" else
@@ -1851,7 +1868,9 @@ def _grown_status_fields(payload):
             "read_option_runtime_settings": read_option_patch.read_settings(payload),
             "screen_hooks": screen_hooks_patch.status(payload),
             "screen_hooks_settings": screen_hooks_patch.read_settings(payload),
-            "coverage_trail": coverage_trail_patch.status(payload),
+            "coverage_trail": trail_settings["status"],
+            "coverage_hitch_brake": ("foreign" if trail_settings["status"] == "foreign" else
+                                     "applied" if trail_settings["moving_arrival_brake"] else "retail"),
             "franchise_edit_player": franchise_edit_player_patch.status(payload),
             "cpu_money_downs": cpu_money_downs_patch.status(payload),
             "cpu_money_downs_settings": cpu_money_downs_patch.read_settings(payload),
@@ -1946,6 +1965,10 @@ def _check_installed_runtime_settings(payload, options):
     An intermediate pass does not express removal. Public/final application
     still rejects changing or disabling any already installed runtime setting.
     """
+    trail_settings = coverage_trail_patch.read_settings(payload)
+    if trail_settings.get("moving_arrival_brake"):  # b780 cv1
+        _require(options.get("coverage_trail") and options.get("coverage_hitch_brake"),
+                 "Stop man-coverage spins is already installed on this executable; rebuild from a verified base to turn it off")
     accelerated_clock = options["accelerated_clock"]
     accelerated_clock_minimum_seconds = options["accelerated_clock_minimum_seconds"]
     coin_defer = options["coin_defer"]
@@ -2052,7 +2075,7 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
     senior_bowl=False,
     guardian_overlay=False,
     my_career=False,
-    screen_hooks=False, coverage_trail=False, franchise_edit_player=False, cpu_money_downs="retail", accelerated_clock=False, accelerated_clock_minimum_seconds=20, coin_defer=False, decided_clock=False, decided_clock_margin=17, decided_clock_seconds=60, cpu_scrambles="retail", weekly_prep=False, weekly_prep_cpu=False, weekly_prep_remember=False, coach_ai=False, playbook_pair=False, deep_zone_facing=False, deep_zone_bail=False,
+    screen_hooks=False, coverage_trail=False, coverage_hitch_brake=False, franchise_edit_player=False, cpu_money_downs="retail", accelerated_clock=False, accelerated_clock_minimum_seconds=20, coin_defer=False, decided_clock=False, decided_clock_margin=17, decided_clock_seconds=60, cpu_scrambles="retail", weekly_prep=False, weekly_prep_cpu=False, weekly_prep_remember=False, coach_ai=False, playbook_pair=False, deep_zone_facing=False, deep_zone_bail=False,
     reserves_16=False,
     created_teams_extra=0,
     franchise_autosave=False,
@@ -2344,7 +2367,7 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
         (momentum_on, _momentum_adapter(momentum, momentum_contact, momentum_collisions, momentum_collision_level), "momentum_patch", "experimental player momentum"),
         (read_option_runtime, _read_option_adapter(read_option_intent_table), "read_option_runtime_patch", "read option mesh controls (experimental)"),
         (screen_hooks, screen_hooks_patch, "screen_hooks_patch", "screen pass timing hooks (second experiment)"),
-        (coverage_trail, coverage_trail_patch, "coverage_trail_patch", "Close pursuit recovery (experimental)"),
+        (coverage_trail, _coverage_trail_adapter(coverage_hitch_brake), "coverage_trail_patch", "Close pursuit recovery (experimental)"),
         (franchise_edit_player, franchise_edit_player_patch, "franchise_edit_player_patch", "Franchise Edit Player (experimental)"),
         (cpu_money_downs != "retail", _cpu_money_downs_adapter(cpu_money_downs), "cpu_money_downs_patch", cpu_money_downs_patch.BUILD_CAPTION),
         (accelerated_clock, _accelerated_clock_adapter(accelerated_clock_minimum_seconds), "accelerated_clock_patch", accelerated_clock_patch.BUILD_CAPTION),
@@ -2477,7 +2500,7 @@ def write_xbe_copy(
     senior_bowl=False,
     guardian_overlay=False,
     my_career=False,
-    screen_hooks=False, coverage_trail=False, franchise_edit_player=False, cpu_money_downs="retail", accelerated_clock=False, accelerated_clock_minimum_seconds=20, coin_defer=False, decided_clock=False, decided_clock_margin=17, decided_clock_seconds=60, cpu_scrambles="retail", weekly_prep=False, weekly_prep_cpu=False, weekly_prep_remember=False, coach_ai=False, playbook_pair=False, deep_zone_facing=False, deep_zone_bail=False,
+    screen_hooks=False, coverage_trail=False, coverage_hitch_brake=False, franchise_edit_player=False, cpu_money_downs="retail", accelerated_clock=False, accelerated_clock_minimum_seconds=20, coin_defer=False, decided_clock=False, decided_clock_margin=17, decided_clock_seconds=60, cpu_scrambles="retail", weekly_prep=False, weekly_prep_cpu=False, weekly_prep_remember=False, coach_ai=False, playbook_pair=False, deep_zone_facing=False, deep_zone_bail=False,
     reserves_16=False,
     created_teams_extra=0,
     franchise_autosave=False,
@@ -2722,7 +2745,7 @@ def write_image_copy(
     senior_bowl=False,
     guardian_overlay=False,
     my_career=False,
-    screen_hooks=False, coverage_trail=False, franchise_edit_player=False, cpu_money_downs="retail", accelerated_clock=False, accelerated_clock_minimum_seconds=20, coin_defer=False, decided_clock=False, decided_clock_margin=17, decided_clock_seconds=60, cpu_scrambles="retail", weekly_prep=False, weekly_prep_cpu=False, weekly_prep_remember=False, coach_ai=False, playbook_pair=False, deep_zone_facing=False, deep_zone_bail=False,
+    screen_hooks=False, coverage_trail=False, coverage_hitch_brake=False, franchise_edit_player=False, cpu_money_downs="retail", accelerated_clock=False, accelerated_clock_minimum_seconds=20, coin_defer=False, decided_clock=False, decided_clock_margin=17, decided_clock_seconds=60, cpu_scrambles="retail", weekly_prep=False, weekly_prep_cpu=False, weekly_prep_remember=False, coach_ai=False, playbook_pair=False, deep_zone_facing=False, deep_zone_bail=False,
     reserves_16=False,
     created_teams_extra=0,
     franchise_autosave=False,

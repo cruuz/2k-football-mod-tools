@@ -211,6 +211,7 @@ class BuildPlan:
     crib_reclaim: bool = False
     screen_hooks: bool = False
     coverage_trail: bool = False
+    coverage_hitch_brake: bool = False   # b780 cv1: man-coverage spin brake inside coverage_trail's reservation (needs coverage_trail); on wherever the presets turn coverage_trail on
     weekly_prep: bool = False             # Weekly Preparation: safeties in DB drills; owner for the two suboptions; experimental, off in every preset
     weekly_prep_cpu: bool = False         # CPU teams run weekly prep before their games (needs weekly_prep)
     weekly_prep_remember: bool = False    # keep and reapply the human plan (needs weekly_prep)
@@ -831,6 +832,11 @@ for _preset in PRESETS.values():
 # throw picks". EXPERIMENTAL / UNWITNESSED: on in Advanced and Experimental, off in Basic.
 PRESETS["softdrink_advanced"]["cpu_qb_tiers"] = True
 PRESETS["softdrink_experimental"]["cpu_qb_tiers"] = True
+# b780 cv1: the man-coverage spin brake (coverage_trail's moving arrival brake) is on wherever Close pursuit recovery is
+# on: Advanced and Experimental, the SOFTDRINK recipe's base (r5 research default; the spins are coverage_trail's own).
+for _preset in PRESETS.values():
+    _preset["coverage_hitch_brake"] = bool(_preset["coverage_trail"])
+del _preset
 # b777-qb3: QB accuracy is experimental and unwitnessed: on only in the experimental preset, the one the SOFTDRINK 2K28
 # recipe builds from (Noah 10/20 asked for it in the next build).
 for _preset in PRESETS.values():
@@ -2074,6 +2080,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
                                ("franchise_autosave", "nfl2k5_franchise_autosave"),
                                ("screen_hooks", "nfl2k5_screen_hooks"),
                                ("coverage_trail", "nfl2k5_coverage_trail"),
+                               ("coverage_hitch_brake", "nfl2k5_coverage_trail"),  # b780 cv1: same owner
                                ("franchise_edit_player", "nfl2k5_franchise_edit_player"),
                                ("cpu_money_downs", "nfl2k5_cpu_money_downs"),
                                ("accelerated_clock", "nfl2k5_accelerated_clock"),
@@ -2285,7 +2292,7 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
         "modern_practice_field_team_logo": report.get("team_logo_swap", "unknown"),  # b76-pf P1: the executable's table
         **{key: report.get(key, "unknown") for key in
            ("momentum", "momentum_contact", "momentum_collisions", "momentum_settings",
-            "read_option_runtime", "read_option_runtime_settings", "screen_hooks", "screen_hooks_settings", "coverage_trail", "franchise_edit_player", "cpu_money_downs", "cpu_money_downs_settings", "accelerated_clock", "accelerated_clock_settings", "coin_defer", "coin_defer_settings", "decided_clock", "decided_clock_settings", "cpu_scrambles", "cpu_scrambles_settings", "weekly_prep", "weekly_prep_cpu", "weekly_prep_remember", "weekly_prep_settings", "coach_ai", "playbook_pair", "deep_zone_facing", "deep_zone_bail", "deep_zone_settings",
+            "read_option_runtime", "read_option_runtime_settings", "screen_hooks", "screen_hooks_settings", "coverage_trail", "coverage_hitch_brake", "franchise_edit_player", "cpu_money_downs", "cpu_money_downs_settings", "accelerated_clock", "accelerated_clock_settings", "coin_defer", "coin_defer_settings", "decided_clock", "decided_clock_settings", "cpu_scrambles", "cpu_scrambles_settings", "weekly_prep", "weekly_prep_cpu", "weekly_prep_remember", "weekly_prep_settings", "coach_ai", "playbook_pair", "deep_zone_facing", "deep_zone_bail", "deep_zone_settings",
             "guardian_overlay", "guardian_overlay_settings", "guardian_overlay_resources",
             "franchise_2026_rules", "franchise_2026_kernel", "franchise_2026_runtime_enforced",
             "senior_bowl", "senior_bowl_native_available", "my_career", "crib_reclaim", "franchise_autosave",

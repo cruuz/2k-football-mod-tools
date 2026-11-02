@@ -130,10 +130,19 @@ target:
     ja pivot
     mov eax, [edi+0x40]
     shl eax, 1 /* either signed zero is stationary */
+.ifdef HITCH_BRAKE
+    jnz moving_man_arrival
+.else
     jnz pivot
+.endif
     mov eax, [edi+0x48]
     shl eax, 1
+.ifdef HITCH_BRAKE
+    jnz moving_man_arrival
+.else
     jnz pivot
+.endif
+arrival:
     mov eax, [ecx+0x0c]
     mov dword ptr [eax+0x10], 0
     jmp restore
@@ -160,3 +169,30 @@ constants:
     .float 75251.4624 /* (3 * 91.44)^2; immutable, owned RX */
     .float 1024.256016 /* 32.004^2; native ordinary arrival distance */
 code_end:
+.ifdef HITCH_BRAKE
+/* Optional extension within the existing 640-byte reservation. Default code
+ * above remains byte-identical to v0.6.1. A moving man target inside arrival
+ * can cross the defender each tick: unlimited pivots alternate by 180 degrees.
+ * Brake for this tick instead. The next native planner can resume immediately.
+ * Pursuit/zone callbacks retain their moving-target rule. No persistent state.
+ */
+moving_man_arrival:
+    mov eax, [edi+0x40]
+    and eax, 0x7fffffff
+    cmp eax, 0x7f800000
+    jae pivot
+    mov eax, [edi+0x48]
+    and eax, 0x7fffffff
+    cmp eax, 0x7f800000
+    jae pivot
+    mov eax, [ecx+0x20]
+    mov eax, [eax+0x310]
+    mov eax, [eax]
+    cmp eax, 0x1A4830
+    je arrival
+    cmp eax, 0x1A4CF0
+    je arrival
+    cmp eax, 0x1A4DD0
+    je arrival
+    jmp pivot
+.endif

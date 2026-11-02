@@ -520,7 +520,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
                                     defensive_try=False, zone_drop_cap=False, all_stadiums=False, coverage_slider=False,
                                     scramble_tuning=False, music_shuffle=False, music_shuffle_selection=None,
                                     practice_squad_screen=False, abilities=False, abilities_off_week=None, qb_spy=False,
-                                    franchise_autosave=False, coverage_trail=False, franchise_edit_player=False,
+                                    franchise_autosave=False, coverage_trail=False, coverage_hitch_brake=False, franchise_edit_player=False,
                                     historic_teams_quick_game=False, espn25_more_moments=False, k128_memory=False, k128_roster_heap=False, letter_grades=False, honors_page=False, coach_ai=False, team_ratings=False,
                                     # b77-i2: p9 made Advanced/Experimental select Modern 2; the money-downs owner is an allocator
                                     # owner like the others here, so the probe build leaves it off and the union below installs it.
@@ -580,7 +580,8 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
             final, _ = seven.apply(final)
             final, _ = espn25.apply_xbe(final)
             final, _ = autosave.apply(final)
-            final, _ = coverage_trail.apply(final)
+            # b780 cv1: observe the template the preset selects (the moving arrival brake shares the reservation).
+            final, _ = coverage_trail.apply(final, moving_arrival_brake=bool(plan.coverage_hitch_brake))
             final, _ = deep_zone.apply(final)
             final, _ = playbook_pair.apply(final)
             final, _ = weekly_prep.apply(final)

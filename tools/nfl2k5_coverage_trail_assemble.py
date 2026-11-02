@@ -15,10 +15,11 @@ ROOT = Path(__file__).resolve().parents[1]
 TARGET = ROOT / "mod_editor/core/nfl2k5_coverage_trail_code.py"
 
 
-def generate() -> str:
+def generate(*, moving_arrival_brake=False) -> str:
     with tempfile.TemporaryDirectory(prefix="coverage_trail-") as directory:
         obj = Path(directory).resolve() / "coverage_trail.o"
-        subprocess.run(["as", "--32", "-o", str(obj), str(ROOT / "tools/nfl2k5_coverage_trail.S")], check=True)
+        flags = ["--defsym", "HITCH_BRAKE=1"] if moving_arrival_brake else []
+        subprocess.run(["as", "--32", *flags, "-o", str(obj), str(ROOT / "tools/nfl2k5_coverage_trail.S")], check=True)
         data = obj.read_bytes()
     if data[:6] != b"\x7fELF\x01\x01":
         raise ValueError("expected little-endian ELF32")
@@ -72,12 +73,13 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args()
-    result = generate()
-    if args.check:
-        if TARGET.read_text() != result:
-            raise SystemExit("Coverage trail byte template is stale")
-    else:
-        TARGET.write_text(result)
+    for enabled, target in ((False, TARGET), (True, TARGET.with_name("nfl2k5_coverage_hitch_code.py"))):
+        result = generate(moving_arrival_brake=enabled)
+        if args.check:
+            if target.read_text() != result:
+                raise SystemExit(f"Coverage trail byte template is stale: {target.name}")
+        else:
+            target.write_text(result)
     print("Coverage trail template verified" if args.check else "Coverage trail template generated")
 
 

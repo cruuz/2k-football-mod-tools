@@ -56,6 +56,8 @@ OPTIONS = (
     ("read_option_runtime", "Read option mesh controls (experimental)", tt.read_option_patch.HELP_TEXT),
     ("screen_hooks", "Screen pass timing hooks (second experiment)", tt.screen_hooks_patch.HELP_TEXT),
     ("coverage_trail", "Close pursuit recovery (experimental)", tt.coverage_trail_patch.HELP_TEXT),
+    # b780 cv1: the man-coverage spin brake, a child of Close pursuit recovery (same owner and reservation).
+    ("coverage_hitch_brake", tt.coverage_trail_patch.HITCH_CAPTION, tt.coverage_trail_patch.HITCH_HELP),
     ("franchise_edit_player", "Franchise Edit Player (experimental)", tt.franchise_edit_player_patch.HELP_TEXT),
     ("cpu_money_downs", tt.cpu_money_downs_patch.BUILD_CAPTION, tt.cpu_money_downs_patch.HELP_TEXT),
     ("accelerated_clock", tt.accelerated_clock_patch.BUILD_CAPTION, tt.accelerated_clock_patch.HELP_TEXT),
@@ -128,7 +130,7 @@ OPTIONS += (
 KEYS = tuple(row[0] for row in OPTIONS)
 # String-valued option rows: the checkbox means "not retail"; the adjacent combo picks the level.
 # Parent option -> child options: unchecking the parent clears the children; checking a child checks the parent.
-CHILDREN = {"weekly_prep": ("weekly_prep_cpu", "weekly_prep_remember"), "k128_memory": ("k128_roster_heap", "k128_early")}
+CHILDREN = {"coverage_trail": ("coverage_hitch_brake",), "weekly_prep": ("weekly_prep_cpu", "weekly_prep_remember"), "k128_memory": ("k128_roster_heap", "k128_early")}
 LEVELS = {"cpu_money_downs": (("Retail", "retail"), ("Modern", "modern"), ("Aggressive", "aggressive"), ("Modern 2", "modern2"))}
 UNAVAILABLE = {"franchise_2026_rules": FRANCHISE_HELP, "senior_bowl": tt.senior_bowl_patch.NATIVE_BLOCKER}
 HIRES_FAMILIES = (
