@@ -336,6 +336,72 @@ class Assembly(unittest.TestCase):
         self.assertEqual(sorted(data["clubs"]), sorted(B.CLUBS))
 
 
+def full_guide():
+    """a transcription file that covers every (scope, category) pair with one trivial row"""
+    lists = [{"scope": s, "category": c, "title": "T", "pdf_page": 5, "kind": "list", "ranked_by": "x", "scope_note": "regular season", "complete_to": 1,
+              "rows": [{"rank": 1, "tie": False, "name": "A One", "years": "2000", "value": 10, "raw": "1. A One 2000 10"}]}
+             for s in B.SCOPES for c in B.GUIDE_CATEGORY]
+    return {"team": "CHI", "guide_ident": "x-media-guide", "through_season": 2025, "lists": lists, "missing": [], "notes": []}
+
+
+class GuideFiles(unittest.TestCase):
+    def test_a_complete_file_is_accepted(self):
+        self.assertEqual(B.check_guide(full_guide()), ([], []))
+
+    def test_every_pair_needs_a_list_or_a_reason(self):
+        d = full_guide()
+        gone = d["lists"].pop()
+        errs, _ = B.check_guide(d)
+        self.assertEqual(len(errs), 1)
+        self.assertIn(f"{gone['scope']}/{gone['category']}", errs[0])
+        d["missing"].append({"scope": gone["scope"], "category": gone["category"], "why": "the guide prints none"})
+        self.assertEqual(B.check_guide(d)[0], [])
+
+    def test_a_number_must_be_on_its_printed_line_and_a_ranked_list_must_not_rise(self):
+        d = full_guide()
+        d["lists"][0]["rows"][0]["raw"] = "1. A One 2000 11"
+        errs, _ = B.check_guide(d)
+        self.assertTrue(any("not in the printed line" in e for e in errs))
+        d = full_guide()
+        d["lists"][0]["rows"] += [{"rank": 2, "tie": False, "name": "B Two", "years": "2001", "value": 12, "raw": "2. B Two 2001 12"}]
+        errs, warns = B.check_guide(d)
+        self.assertEqual(errs, [])
+        self.assertEqual(len(warns), 1)
+
+    def test_sacks_with_halves_and_commas_in_the_printed_line(self):
+        d = full_guide()
+        row = {"rank": 1, "tie": False, "name": "A One", "years": "1983-93", "value": 124.5, "raw": "1. A One 1983-93 124.5"}
+        d["lists"][0]["rows"] = [row, dict(row, rank=2, name="B Two", value=16726, raw="2. B Two 1975-87 3,838 16,726 4.4")]
+        d["lists"][0]["kind"] = "column"
+        self.assertEqual(B.check_guide(d)[0], [])
+
+    def test_unknown_names_are_refused(self):
+        d = full_guide()
+        d["team"] = "XXX"
+        d["lists"][0]["category"] = "fumbles"
+        errs, _ = B.check_guide(d)
+        self.assertTrue(any("unknown club" in e for e in errs) and any("bad category" in e for e in errs))
+
+    def test_import_writes_normalised_copies_and_refuses_broken_files(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            src, dest = Path(tmp) / "src", Path(tmp) / "dest"
+            src.mkdir()
+            good = full_guide()
+            good["notes"] = ["a \u2014 b"]
+            (src / "CHI.json").write_text(json.dumps(good), encoding="utf-8")
+            broken = full_guide()
+            broken["team"] = "ATL"
+            broken["lists"].pop()
+            (src / "ATL.json").write_text(json.dumps(broken), encoding="utf-8")
+            with contextlib.redirect_stdout(io.StringIO()):
+                rc = B.main(["import-guides", "--src", str(src), "--dest", str(dest)])
+            self.assertEqual(rc, 1)
+            self.assertEqual(sorted(p.name for p in dest.iterdir()), ["CHI.json"])
+            text = (dest / "CHI.json").read_text(encoding="utf-8")
+            self.assertNotIn("\u2014", text)
+            self.assertEqual(json.loads(text)["notes"], ["a - b"])
+
+
 class BuildOffline(unittest.TestCase):
     """The whole ``build`` command on synthetic inputs: a guide file, nflverse weekly files, a pre-filled Wikipedia cache."""
 

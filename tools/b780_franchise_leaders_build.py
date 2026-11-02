@@ -1043,6 +1043,82 @@ def resolve_wikipedia(wiki: Wiki, need: dict, cache_file: Path) -> dict:
     return resolved
 
 
+def check_guide(d: dict):
+    """Validate one transcribed club guide file -> (errors, warnings).  Every (scope, category) pair must be a list, a column or a
+    justified 'missing'; each row needs a number whose digits appear in its printed line; a ranked list must not rise."""
+    errs, warns = [], []
+    for k in ("team", "guide_ident", "through_season", "lists", "missing", "notes"):
+        if k not in d:
+            errs.append(f"missing top-level key {k}")
+    if errs:
+        return errs, warns
+    if d["team"] not in CLUBS:
+        errs.append(f"unknown club {d['team']}")
+    seen = {}
+    for li, lst in enumerate(d["lists"]):
+        tag = f"list[{li}] {lst.get('scope')}/{lst.get('category')}"
+        if lst.get("scope") not in SCOPES:
+            errs.append(f"{tag}: bad scope")
+        if lst.get("category") not in GUIDE_CATEGORY:
+            errs.append(f"{tag}: bad category")
+        if lst.get("kind") not in ("list", "column"):
+            errs.append(f"{tag}: kind must be list or column")
+        if not isinstance(lst.get("pdf_page"), int) or lst["pdf_page"] < 1:
+            errs.append(f"{tag}: bad pdf_page")
+        for k in ("title", "ranked_by", "scope_note"):
+            if not isinstance(lst.get(k), str) or not lst[k]:
+                errs.append(f"{tag}: missing {k}")
+        rows = lst.get("rows")
+        if not isinstance(rows, list) or not rows:
+            errs.append(f"{tag}: no rows")
+            continue
+        prev = None
+        for ri, r in enumerate(rows):
+            rt = f"{tag} row {ri + 1}"
+            for k in ("name", "years", "raw"):
+                if not isinstance(r.get(k), str) or not r[k]:
+                    errs.append(f"{rt}: missing {k}")
+            v = r.get("value")
+            if not isinstance(v, (int, float)) or isinstance(v, bool):
+                errs.append(f"{rt}: value must be a number")
+                continue
+            shown = str(int(v)) if float(v).is_integer() else f"{v:.1f}"
+            if isinstance(r.get("raw"), str) and shown not in r["raw"].replace(",", "") and shown.replace(".0", "") not in r["raw"].replace(",", ""):
+                errs.append(f"{rt}: value {v} is not in the printed line {r['raw']!r}")
+            if lst.get("kind") == "list" and prev is not None and v > prev + 1e-9:
+                warns.append(f"{rt}: value {v} above the previous row {prev}")
+            prev = v
+        seen.setdefault((lst.get("scope"), lst.get("category")), []).append(lst.get("kind"))
+    missing = {(m.get("scope"), m.get("category")) for m in d["missing"]}
+    for scope in SCOPES:
+        for cat in GUIDE_CATEGORY:
+            if (scope, cat) not in seen and (scope, cat) not in missing:
+                errs.append(f"{scope}/{cat}: neither a list nor a 'missing' entry")
+    return errs, warns
+
+
+def cmd_import_guides(args) -> int:
+    """validate the helper files of a folder and write them (one list per line) to the folder the build reads"""
+    dest = Path(args.dest)
+    dest.mkdir(parents=True, exist_ok=True)
+    bad = 0
+    for p in sorted(Path(args.src).glob("*.json")):
+        if p.name.startswith("_"):
+            continue
+        d = json.loads(p.read_text(encoding="utf-8"))
+        errs, warns = check_guide(d)
+        for e in errs:
+            print(f"{p.name}: ERROR {e}")
+        for w in warns[:5]:
+            print(f"{p.name}: warning {w}")
+        bad += bool(errs)
+        if not errs:
+            d["notes"] = [n.replace("\u2014", "-").replace("\u2013", "-") for n in d["notes"]]
+            with open(dest / p.name, "w", encoding="utf-8", newline="\n") as f:
+                f.write(dumps_by_line(d))
+    return 1 if bad else 0
+
+
 def dumps_by_line(obj: dict) -> str:
     """compact JSON with every element of a top-level list of objects on its own line (diffable, still plain JSON)"""
     out = ["{"]
@@ -1104,7 +1180,7 @@ def cmd_build(args) -> int:
                     info["years"].update(parse_years(r["years"]))
     resolved = resolve_wikipedia(wiki, need, Path(args.wiki_cache) / "resolved.json")
 
-    cands, lists, missing, guards = [], [], [], []
+    cands, missing, guards = [], [], []
     for club, g in sorted(guides.items()):
         through = int(g["through_season"])
         for m in g.get("missing", []):
@@ -1114,9 +1190,6 @@ def cmd_build(args) -> int:
             scope, cat = lst["scope"], GUIDE_CATEGORY[lst["category"]]
             k = SCALE.get(cat, 1)
             variant = seen_variant[(scope, cat)] = seen_variant.get((scope, cat), -1) + 1
-            lists.append({"club": club, "scope": scope, "category": cat, "variant": variant, "title": lst["title"], "page": lst["pdf_page"],
-                          "kind": lst["kind"], "ranked_by": lst["ranked_by"], "scope_note": lst["scope_note"], "complete_to": lst.get("complete_to"),
-                          "rows": [[r.get("rank"), r["name"], r["years"], clean_number(r["value"] * k)] for r in lst["rows"]]})
             chosen = select_rows(lst, scope)
             for order, (rk, r) in enumerate(chosen):
                 v1 = clean_number(r["value"] * k)
@@ -1222,14 +1295,13 @@ def cmd_build(args) -> int:
         m = ia.get(g["guide_ident"], {})
         guide_sources[club] = {"item": g["guide_ident"], "url": f"https://archive.org/details/{g['guide_ident']}", "title": m.get("title"),
                                "date": m.get("date"), "retrieved": m.get("retrieved"), "text_sha256": m.get("sha256"), "pdf_sha256": m.get("pdf_sha256"),
-                               "through_season": g["through_season"],
-                               "notes": [n.replace("\u2014", "-").replace("\u2013", "-") for n in g.get("notes", [])]}
+                               "through_season": g["through_season"], "file_sha256": hashlib.sha256((Path(args.guides) / f"{club}.json").read_bytes()).hexdigest()}
     evidence = {
         "schema": EVIDENCE_SCHEMA, "through_season": THROUGH, "retrieved": time.strftime("%Y-%m-%d", time.gmtime()),
         "rules": RULES, "public_sources": PUBLIC_SOURCES,
         "sources": {"nflverse_files": nv.hashes, "nflverse_url": NV_URL + "/stats_player/stats_player_week_<season>.csv.gz",
                     "nflverse_retrieved": fetched.read_text().strip() if fetched.exists() else None, "guides": guide_sources},
-        "lists": lists, "missing": missing, "guards": guards, "candidates": cands,
+        "guides_folder": "data/nfl2k5_franchise_leaders_guides", "missing": missing, "guards": guards, "candidates": cands,
     }
     data, excluded = assemble(evidence)
     evidence["excluded"] = excluded
@@ -1297,6 +1369,10 @@ def main(argv=None) -> int:
     b.add_argument("--out", default=str(DATA))
     b.add_argument("--evidence", default=str(EVIDENCE))
     b.set_defaults(fn=cmd_build)
+    g = sub.add_parser("import-guides")
+    g.add_argument("--src", required=True, help="folder with the transcribed <CLUB>.json files")
+    g.add_argument("--dest", default=str(DATA.parent / "nfl2k5_franchise_leaders_guides"))
+    g.set_defaults(fn=cmd_import_guides)
     v = sub.add_parser("verify")
     v.add_argument("--out", default=str(DATA))
     v.add_argument("--evidence", default=str(EVIDENCE))
