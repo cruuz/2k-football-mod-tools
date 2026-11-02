@@ -75,9 +75,10 @@ class StaticTests(unittest.TestCase):
         self.assertLessEqual(len(used), cs.CODE_SIZE)
 
     def test_presets_options_and_late_owner_order(self):
-        self.assertEqual(space.LATE_OWNERS[-1], cs.OWNER)                     # last: it never moves another owner
-        self.assertEqual(space.LATE_OWNERS[-2], "nfl2k5_sim_realism_state")
         self.assertEqual(space.LATE_OWNERS.count(cs.OWNER), 1)
+        # appended after sim realism's state (the b779 tail), so it moves no earlier owner; owners other b780 jobs append
+        # after it do not change that
+        self.assertEqual(space.LATE_OWNERS.index(cs.OWNER), space.LATE_OWNERS.index("nfl2k5_sim_realism_state") + 1)
         self.assertIs(mod_build.BuildPlan(Path("source.iso"), Path("target.iso")).catch_snap_limit, False)
         for name, preset in mod_build.PRESETS.items():
             self.assertIs(preset["catch_snap_limit"], False, name)            # opt-in everywhere until an emulator witness

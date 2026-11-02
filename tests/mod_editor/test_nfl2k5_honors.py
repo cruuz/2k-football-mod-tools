@@ -123,7 +123,7 @@ class TemplateTests(unittest.TestCase):
         # owner follows them (b775-int1: both merged), then b776-ai2's two CPU AI owners, b776-pa2's play art routes and
         # b776-ns1's jersey number sizes (int2 order), then b777-ol1's run blocking and b777-qb3's QB accuracy (int7).
         # b778-fo1/pi1/ai5/fa1/st2/ai6/dr1/pg1/pg2/cr1/cb1/sd4/ai8/kr1/pr1 append the rest; xs1's module loader is last.
-        self.assertEqual(late[-34:-1], (  # b780-cv4: the catch snap limit is appended after sim realism's state
+        self.assertEqual(late[:late.index("nfl2k5_sim_realism_state") + 1][-33:], (  # b780-cv4: anchored on sim realism's state, so owners appended after it do not move this window
             "nfl2k5_team_ratings", "nfl2k5_team_ratings_display", "nfl2k5_classic_teams", "nfl2k5_hair_styles",
             "nfl2k5_cpu_qb_reads", "nfl2k5_db_ball_play", "nfl2k5_play_art_routes", "nfl2k5_team_number_scale",
             "nfl2k5_run_blocking", "nfl2k5_qb_accuracy", "nfl2k5_formation_art_spacing", "nfl2k5_force_out",
