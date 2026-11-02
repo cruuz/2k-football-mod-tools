@@ -60,6 +60,13 @@ points, 8-10 backs and 28-33 receivers over 1,000 yards.  ``PASS_SCALE`` 0.92 (s
 22.78/22.42/22.49 points, pass TD 1.57/1.55/1.60, rush TD 0.97/0.95/0.87, 18/18/12 backs and 24/22/26
 receivers over 1,000 yards.
 
+b780 b5-sim, calibrated on the released v0.8 executable itself (a 17-game regular season; the earlier rounds ran the
+retail 16-game harness, which understated season totals): the season rush correction goes to each team's lead back
+only (HB, depth rank 0) at 8 percent; the play mix bias moves with the QB1's Pass Accuracy (0.4 a point around 87), the
+redirect share with the WR1's Catching (0.08 + 0.015 a point around 90); the stat-space pass scale is 0.86 because every
+simulated QB1 plays all 17 games (19 and 13 passers over 4,000 yards at 0.92 against the NFL's 8.2); the tackle
+correction uses its constant (10 percent; the code had a hard-coded 21).
+
 Every site is recognised by its pinned retail bytes; the module refuses a foreign executable.  The
 data reservation (16 bytes) holds the temporary merge and run-outcome hand-offs and nothing else.
 The played-game path (game mode other than 4 at the merge gate), the live playbook calls and every
@@ -127,7 +134,7 @@ QB_MOBILE_SUM = 150                  # mobile family: scramble + agility > 150
 QB_BONUS_YARDS = 3.0
 QB_BONUS_RZ_LINE = 20.0              # inside the opponent 20 is the red zone for both yard scales
 INTERCEPT_SCALE = 1.35
-PASS_SCALE = 0.92
+PASS_SCALE = 0.86                    # b780 b5-sim: 17-game v0.8 seasons (every QB1 plays all 17 games); b779-int1 0.92
 RUN_RZ_SCALE = 0.94              # red-zone run yardage (round 6: near-retail, small trim)
 RZ_PASS_SCALE = 0.64             # red-zone pass yardage before the native conversion (scoring lever)
 RUSH_BONUS_PCT = 8               # post-game season rush-yard correction, lead backs only (b780 b5-sim: was 20, every non-QB)
@@ -428,7 +435,7 @@ def _assemble(code_va, data_va):
     a.j32("0f84", "tackle_done")
     # b780 b5-sim: the season rush correction goes to the lead back only (HB, depth rank 0); every other runner keeps the
     # engine's line, so team rushing is not inflated by backups, fullbacks and receivers
-    a.b("80783507")                                       # cmp byte [eax+0x35],7  a halfback
+    a.b("807835" + bytes([LEAD_BACK_POSITION]).hex())      # cmp byte [eax+0x35],7  a halfback
     a.j8("75", "rush_done")
     a.b("f74028001c0000")                                 # test dword [eax+0x28],0x1C00  depth rank 0
     a.j8("75", "rush_done")

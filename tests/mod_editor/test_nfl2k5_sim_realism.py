@@ -24,14 +24,16 @@ class ConstantTests(unittest.TestCase):
 
     def test_calibration_constants(self):
         self.assertEqual(r.MIX_BIAS, 8.5)
-        self.assertEqual(r.TARGET_RATE, 0.14)
+        self.assertEqual((r.MIX_QB_PIVOT, r.MIX_QB_SLOPE), (87, 0.4))      # b780 b5-sim: QB1-scaled play mix
+        self.assertEqual(r.TARGET_RATE, 0.08)                               # b780 b5-sim: was 0.14
+        self.assertEqual((r.TARGET_PIVOT, r.TARGET_SLOPE), (90, 0.015))      # b780 b5-sim: WR1-scaled redirect
         self.assertEqual(r.TARGET_WR1_SHARE, 0.75)
         self.assertEqual(r.QB_BONUS_YARDS, 3.0)
         self.assertEqual(r.QB_BONUS_RZ_LINE, 20.0)
-        self.assertEqual(r.PASS_SCALE, 0.92)  # b779-int1 rebalance
+        self.assertEqual(r.PASS_SCALE, 0.86)  # b780 b5-sim (17-game v0.8 seasons; b779-int1 0.92)
         self.assertEqual(r.RUN_RZ_SCALE, 0.94)
         self.assertEqual(r.RZ_PASS_SCALE, 0.64)  # b779-int1 rebalance
-        self.assertEqual(r.RUSH_BONUS_PCT, 20)  # b779-int1 rebalance
+        self.assertEqual(r.RUSH_BONUS_PCT, 8)  # b780 b5-sim: lead backs only (b779-int1: 20, every non-QB)
         self.assertEqual(r.INTERCEPT_SCALE, 1.35)
         self.assertEqual(r.TACKLE_BONUS_PCT, 10)
         self.assertEqual(r.SKIP_TACKLE_POSITION, 4)
@@ -43,14 +45,14 @@ class ConstantTests(unittest.TestCase):
         self.assertEqual(r.tackle_bonus(169), 17)          # 16.9 -> 17
         self.assertEqual(r.tackle_bonus(171), 17)          # 17.1 -> 17
 
-    def test_rush_bonus_is_rounded_20_percent(self):
-        # b779-int1 rebalance: 13 -> 20 percent (with every sim owner installed, 13 left 8-10 backs over 1,000 yards)
+    def test_rush_bonus_is_rounded_8_percent(self):
+        # b780 b5-sim: the correction goes to the lead back only, 8 percent (b779-int1: 20 percent to every non-QB)
         self.assertEqual(r.rush_bonus(0), 0)
         self.assertEqual(r.rush_bonus(-3), 0)
         self.assertEqual([r.rush_bonus(n) for n in (1, 4, 10, 50, 100)],
-                         [0, 1, 2, 10, 20])
-        self.assertEqual(r.rush_bonus(152), 30)            # 30.4 -> 30
-        self.assertEqual(r.rush_bonus(153), 31)            # 30.6 -> 31
+                         [0, 0, 1, 4, 8])
+        self.assertEqual(r.rush_bonus(56), 4)            # 4.48 -> 4
+        self.assertEqual(r.rush_bonus(57), 5)            # 4.56 -> 5
 
     def test_red_zone_scales_split_run_and_pass(self):
         self.assertEqual([r.run_rz_scale(s) for s in (None, 1, 20, 21, 80)],
@@ -118,12 +120,14 @@ class CodeTests(unittest.TestCase):
         # the float pool carries the calibrated constants
         import struct as _s
         self.assertAlmostEqual(_s.unpack_from("<f", code, r.MIX_BIAS_OFF)[0], 8.5, places=6)
-        self.assertAlmostEqual(_s.unpack_from("<f", code, r.TARGET_RATE_OFF)[0], 0.14, places=6)
+        self.assertAlmostEqual(_s.unpack_from("<f", code, r.TARGET_RATE_OFF)[0], 0.08, places=6)
+        self.assertAlmostEqual(_s.unpack_from("<f", code, r.MIX_QB_SLOPE_OFF)[0], 0.4, places=6)
+        self.assertAlmostEqual(_s.unpack_from("<f", code, r.TARGET_SLOPE_OFF)[0], 0.015, places=6)
         self.assertAlmostEqual(_s.unpack_from("<f", code, r.INTERCEPT_SCALE_OFF)[0], 1.35, places=6)
-        self.assertAlmostEqual(_s.unpack_from("<f", code, r.PASS_SCALE_OFF)[0], 0.92, places=6)
+        self.assertAlmostEqual(_s.unpack_from("<f", code, r.PASS_SCALE_OFF)[0], 0.86, places=6)
         self.assertAlmostEqual(_s.unpack_from("<f", code, r.RUN_RZ_SCALE_OFF)[0], 0.94, places=6)
         self.assertAlmostEqual(_s.unpack_from("<f", code, r.RZ_PASS_SCALE_OFF)[0], 0.64, places=6)
-        self.assertAlmostEqual(_s.unpack_from("<f", code, r.RUSH_BONUS_PCT_OFF)[0], 20.0, places=6)
+        self.assertAlmostEqual(_s.unpack_from("<f", code, r.RUSH_BONUS_PCT_OFF)[0], 8.0, places=6)
 
     def test_code_has_no_self_reference_shortcut(self):
         # A different data VA must move every scratch reference.
