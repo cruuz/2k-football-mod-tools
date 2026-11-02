@@ -263,8 +263,14 @@ def fit_hazard(rows: list[dict]) -> dict:
     ll_null = sum(y) * math.log(null) + (len(y) - sum(y)) * math.log(1 - null)
     for d, xi in zip(rows, x):
         d["p"] = 1 / (1 + math.exp(-sum(b * v for b, v in zip(beta, xi))))
+    # do the playoffs add anything once the record is known? (two more columns: made them, won a playoff game)
+    x_playoffs = [xi + [1.0 if d["made"] else 0.0, 1.0 if d["pwins"] > 0 else 0.0] for xi, d in zip(x, rows)]
+    _beta2, _se2, ll_playoffs = logistic(x_playoffs, y)
+    lr = 2 * (ll_playoffs - ll)
     return {"alpha_unknown_tenure": beta[0], "alpha": beta[1:4], "slope_per_win_pct": beta[4], "se": se,
-            "log_likelihood": ll, "log_likelihood_null": ll_null, "decisions": len(y), "changes": sum(y)}
+            "log_likelihood": ll, "log_likelihood_null": ll_null, "decisions": len(y), "changes": sum(y),
+            "playoff_terms": {"extra_columns": ["made the playoffs", "won a playoff game"], "likelihood_ratio": round(lr, 2),
+                              "df": 2, "p_value": round(math.exp(-lr / 2), 3)}}
 
 
 def base_table(fit: dict) -> list[list[int]]:
@@ -351,7 +357,7 @@ def departures(season_wikitext: str, raw: dict) -> dict[str, dict]:
             raise SystemExit(f"{club}: the pinned '{SEASON_TITLE}' page does not say {entry['wikipedia_phrase']!r}")
         last = entry["wikipedia_phrase"].split()[0]
         out[club] = {"reason": entry["reason"], "date": entry["date"], "in_season": entry["in_season"],
-                     "source": cite(entry["source"], last), "also": "wikipedia_2026_season"}
+                     "source": cite(entry["source"], last, *entry["expect"]), "also": "wikipedia_2026_season"}
     return out
 
 
@@ -516,8 +522,8 @@ def build_owners(games: Games, teams: dict[str, dict], owners_wikitext: str, sea
             "average_tenure_started_in_window": round(sum(exact) / len(exact), 2) if exact else None,
             "short_tenures_le2": sum(1 for r in done if r["seasons"] <= 2 and not r["opened_window"]),
             "current": {"name": teams[c]["head_coach"], "since": runs[-1]["first"],
-                        "source": cite(teams[c]["sources"][0], last_name),
-                        "also": [cite(u, last_name) for u in teams[c]["sources"][1:]]},
+                        "source": cite(teams[c]["sources"][0], last_name, "head coach"),
+                        "also": [cite(u, last_name, "head coach") for u in teams[c]["sources"][1:]]},
             "changes_log": log,
         }
         o = owners[c]
@@ -569,8 +575,9 @@ def build_owners(games: Games, teams: dict[str, dict], owners_wikitext: str, sea
                 "slope_per_win_pct": round(fit["slope_per_win_pct"], 4),
                 "standard_errors": [round(s, 4) for s in fit["se"]],
                 "log_likelihood": round(fit["log_likelihood"], 2), "log_likelihood_null": round(fit["log_likelihood_null"], 2),
-                "playoffs": "made-the-playoffs and won-a-playoff-game add nothing once the win percentage is known "
-                            "(2 df likelihood ratio 2.4); the model does not use them",
+                "playoff_terms": dict(fit["playoff_terms"], used=False,
+                                      verdict="made-the-playoffs and won-a-playoff-game add nothing significant once the win "
+                                              "percentage is known, so the model does not use them"),
                 "frailty": shape,
             },
         },
@@ -625,7 +632,7 @@ def slug(name: str) -> str:
 
 
 def pool_entry(games: Games, exits: list[dict], first: str, last: str, **fields) -> dict:
-    sources = [{"url": cite(s["url"], last), "what": s["what"]} for s in fields.pop("sources")]
+    sources = [{"url": cite(s["url"], last, *s.get("expect", [])), "what": s["what"]} for s in fields.pop("sources")]
     entry = {"id": slug(f"{first} {last}"), "first": first, "last": last}
     entry.update(fields)
     entry["head_coach_record"] = head_coach_record(games, f"{first} {last}", exits)
@@ -645,7 +652,8 @@ def build_pool(games: Games, teams: dict[str, dict], pool_input: dict, defense: 
         if row["dc"] in heads:
             continue                                            # Tampa Bay: the head coach is also the defensive coordinator
         change = pool_input["dc_changes"].get(club, {})
-        sources = change.get("sources") or [{"url": row["source"], "what": "club coaches page names him as the 2026 defensive coordinator"}]
+        sources = change.get("sources") or [{"url": row["source"], "expect": ["defensive coordinator"],
+                                             "what": "club coaches page names him as the 2026 defensive coordinator"}]
         candidates.append(pool_entry(
             games, exits, first, last, side="defense", kind="coordinator", status=change.get("status", "employed"),
             role_2026=change.get("role_2026", "Defensive coordinator"),
@@ -666,7 +674,7 @@ def build_pool(games: Games, teams: dict[str, dict], pool_input: dict, defense: 
     for item in pool_input["left_out"]:
         item = dict(item)
         if item.get("source"):
-            item["source"] = cite(item["source"], item["name"].split()[-1])
+            item["source"] = cite(item["source"], item["name"].split()[-1], *item.pop("expect", []))
         left_out.append(item)
     sources = {k: v for k, v in sources_block().items() if k in ("nflverse_games", "teams_2026")}
     sources["defense_identity_2026"] = {

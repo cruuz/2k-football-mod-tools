@@ -24,6 +24,11 @@ The decision (integers only, so the native port can match it bit for bit)::
     p   = min(p, 1000)
     fire = (draw % 1000) < p                               # draw = any uniform 32-bit random number
 
+Reading ``n``: the game's coach record counts seasons with the club (+0x1C) and the retail season rollover adds the season just
+played (r2 report 2.2), so ``n`` is that counter read AFTER the rollover (before it, add one); a coach hired this offseason is 1
+at his first decision. ``wins/losses/ties`` are the club's season record, which the carousel must read before the rollover
+clears the coach's this-season counters (+0x26/+0x28/+0x2A).
+
 Changes counted are changes of the OPENING-DAY head coach from one season to the next (a coach fired in week 12 and the
 interim who finishes the year count as one change, taken against the full season's record), because that is what a game
 that fires only at Advance to offseason can reproduce. The older "coach at the end of the season" count of the r2 research
@@ -307,6 +312,10 @@ def validate_owners(doc: Mapping) -> None:
         _require(club.get("sources") and all(s in doc["sources"] for s in club["sources"]), f"{team}: sources must be listed")
         _require(history["changes"] == len(history.get("changes_log", [])), f"{team}: changes_log must list every change")
     _require(indexes == set(range(32)), "team_index must be a permutation of 0..31")
+    records = doc.get("calibration", {}).get("records", {})
+    _require(sorted(records) == sorted(CLUBS), "the calibration needs the real records of all 32 clubs")
+    for club, line in records.items():
+        _require(len(parse_records(line)) == (24 if club == "HOU" else SEASON_LAST - SEASON_FIRST + 1), f"{club}: records")
     _check_urls(doc)
 
 

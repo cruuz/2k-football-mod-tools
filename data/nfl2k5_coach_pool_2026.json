@@ -8,6 +8,7 @@
   "not_here": "The 32 sitting head coaches (they cannot be hired by another club); offensive coordinators who were never head coaches (offensive coordinators come in a later release); anyone whose 2026 situation could not be confirmed; anyone who left football (see left_out).",
   "status": "employed = on a 2026 NFL staff, so a club hiring him leaves a vacancy; available = no NFL staff job in 2026 as of the date above.",
   "side": "The side of the ball he comes from (his coordinator background), not his current title.",
+  "kind": "Why he is listed: coordinator = one of the 31 defensive coordinators of the repo's 2026 defense identity file; former_head_coach = added because he lost a head coach job in the 2024 or 2025 season and is not on that list. Whether he has been a head coach is head_coach_record, not kind (several coordinators are former head coaches).",
   "names": "ASCII first and last names as they would be written into a coach record; together at most 24 letters.",
   "head_coach_record": "Derived from nflverse games.csv (regular season and playoff games 1999-2025 that he coached, interim spells included where the file lists them); null when he has none in that window. The file lists no interim coaches for 2024 and 2025, so a coach fired during one of those seasons is cut at his firing date (in_season_exits: Allen, Eberflus, Callahan, Daboll; each with its source). Earlier careers are not counted.",
   "as_of": "A snapshot: NFL staffs change during the season (the Evero change is the example). Rebuild with tools/nfl2k5_coach_owners_build.py to refresh."
@@ -1050,6 +1051,7 @@
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
+    "Athletes in Control",
     "Pierce"
    ]
   },
@@ -1057,48 +1059,55 @@
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Eberflus"
+    "Eberflus",
+    "assistant head coach"
    ]
   },
   "https://www.49ers.com/team/coaches-roster/raheem-morris": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Morris"
+    "Morris",
+    "defensive coordinator"
    ]
   },
   "https://www.atlantafalcons.com/team/coaches-roster/jeff-ulbrich": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Ulbrich"
+    "Ulbrich",
+    "defensive coordinator"
    ]
   },
   "https://www.azcardinals.com/team/coaches-roster/nick-rallis": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Rallis"
+    "Rallis",
+    "defensive coordinator"
    ]
   },
   "https://www.baltimoreravens.com/team/coaches-roster/anthony-weaver": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Weaver"
+    "Weaver",
+    "defensive coordinator"
    ]
   },
   "https://www.bengals.com/team/coaches-roster/al-golden": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Golden"
+    "Golden",
+    "defensive coordinator"
    ]
   },
   "https://www.bostonglobe.com/2026/05/29/sports/jerod-mayo-new-job-patriots/": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
+    "Fifth Down",
     "Mayo"
    ]
   },
@@ -1106,104 +1115,120 @@
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Leonhard"
+    "Leonhard",
+    "defensive coordinator"
    ]
   },
   "https://www.chargers.com/team/coaches-roster/chris-o-leary": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "O'Leary"
+    "O'Leary",
+    "defensive coordinator"
    ]
   },
   "https://www.chargers.com/team/coaches-roster/mike-mcdaniel": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "McDaniel"
+    "McDaniel",
+    "offensive coordinator"
    ]
   },
   "https://www.chicagobears.com/team/coaches/dennis-allen": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Allen"
+    "Allen",
+    "defensive coordinator"
    ]
   },
   "https://www.chiefs.com/team/coaches-roster/steve-spagnuolo": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Spagnuolo"
+    "Spagnuolo",
+    "defensive coordinator"
    ]
   },
   "https://www.clevelandbrowns.com/team/coaches-roster/mike-rutenberg": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Rutenberg"
+    "Rutenberg",
+    "defensive coordinator"
    ]
   },
   "https://www.colts.com/team/coaches-roster/lou-anarumo": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Anarumo"
+    "Anarumo",
+    "defensive coordinator"
    ]
   },
   "https://www.commanders.com/team/coaches-roster/daronte-jones": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Jones"
+    "Jones",
+    "defensive coordinator"
    ]
   },
   "https://www.dallascowboys.com/team/coaches-roster/christian-parker": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Parker"
+    "Parker",
+    "defensive coordinator"
    ]
   },
   "https://www.denverbroncos.com/team/coaches-roster/vance-joseph": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Joseph"
+    "Joseph",
+    "defensive coordinator"
    ]
   },
   "https://www.detroitlions.com/team/coaches-roster/kelvin-sheppard": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Sheppard"
+    "Sheppard",
+    "defensive coordinator"
    ]
   },
   "https://www.giants.com/team/coaches-roster/brian-callahan": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Callahan"
+    "Callahan",
+    "passing game coordinator",
+    "quarterbacks coach"
    ]
   },
   "https://www.giants.com/team/coaches-roster/dennard-wilson": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Wilson"
+    "Wilson",
+    "defensive coordinator"
    ]
   },
   "https://www.houstontexans.com/team/coaches-roster/matt-burke": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Burke"
+    "Burke",
+    "defensive coordinator"
    ]
   },
   "https://www.inquirer.com/college-sports/cbs-doug-pederson-college-football-tv-eagles-20260728.html": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
+    "CBS",
     "Pederson"
    ]
   },
@@ -1211,34 +1236,40 @@
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Campanile"
+    "Campanile",
+    "defensive coordinator"
    ]
   },
   "https://www.ksl.com/article/51642551/panthers-fire-defensive-coordinator-ejiro-evero-following-27-19-loss-to-the-packers": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Evero"
+    "Evero",
+    "Wash",
+    "defensive coordinator"
    ]
   },
   "https://www.miamidolphins.com/team/coaches-roster/sean-duggan": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Duggan"
+    "Duggan",
+    "defensive coordinator"
    ]
   },
   "https://www.nbcsports.com/fantasy/football/player-news/2026-07-31/report-mcdermott-begins-learning-tour-with-rams": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "McDermott"
+    "McDermott",
+    "Rams"
    ]
   },
   "https://www.nbcsports.com/pressbox/press-releases/mike-tomlin-joins-nbc-sports-football-night-in-america": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
+    "Football Night in America",
     "Tomlin"
    ]
   },
@@ -1246,21 +1277,25 @@
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Staley"
+    "Staley",
+    "defensive coordinator"
    ]
   },
   "https://www.news4jax.com/sports/2026/10/30/panthers-fire-defensive-coordinator-ejiro-evero-following-27-19-loss-to-the-packers/": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Evero"
+    "Evero",
+    "Wash",
+    "defensive coordinator"
    ]
   },
   "https://www.newyorkjets.com/team/coaches-roster/brian-duker": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Duker"
+    "Duker",
+    "defensive coordinator"
    ]
   },
   "https://www.nfl.com/news/bears-firing-head-coach-matt-eberflus-following-sixth-straight-loss-4-8-start-to-season": {
@@ -1274,14 +1309,16 @@
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Callahan"
+    "Callahan",
+    "fire"
    ]
   },
   "https://www.nfl.com/news/giants-fire-head-coach-brian-daboll-after-2-8-start": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Daboll"
+    "Daboll",
+    "fire"
    ]
   },
   "https://www.nfl.com/news/saints-fire-head-coach-dennis-allen-after-loss-to-panthers-2-7-start-to-season": {
@@ -1295,77 +1332,88 @@
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Gannon"
+    "Gannon",
+    "defensive coordinator"
    ]
   },
   "https://www.panthers.com/team/coaches-roster/todd-wash": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Wash"
+    "Wash",
+    "interim"
    ]
   },
   "https://www.patriots.com/team/coaches-roster/zak-kuhr": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Kuhr"
+    "Kuhr",
+    "defensive coordinator"
    ]
   },
   "https://www.philadelphiaeagles.com/team/coaches/vic-fangio": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Fangio"
+    "Fangio",
+    "defensive coordinator"
    ]
   },
   "https://www.raiders.com/team/coaches-roster/rob-leonard": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Leonard"
+    "Leonard",
+    "defensive coordinator"
    ]
   },
   "https://www.seahawks.com/team/coaches-roster/aden-durde": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Durde"
+    "Durde",
+    "defensive coordinator"
    ]
   },
   "https://www.steelers.com/team/coaches-roster/patrick-graham": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Graham"
+    "Graham",
+    "defensive coordinator"
    ]
   },
   "https://www.tennesseetitans.com/team/coaches-roster/brian-daboll": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Daboll"
+    "Daboll",
+    "offensive coordinator"
    ]
   },
   "https://www.tennesseetitans.com/team/coaches-roster/gus-bradley": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Bradley"
+    "Bradley",
+    "defensive coordinator"
    ]
   },
   "https://www.therams.com/team/coaches-roster/chris-shula": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Shula"
+    "Shula",
+    "defensive coordinator"
    ]
   },
   "https://www.vikings.com/team/coaches-roster/brian-flores": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Flores"
+    "Flores",
+    "defensive coordinator"
    ]
   }
  }

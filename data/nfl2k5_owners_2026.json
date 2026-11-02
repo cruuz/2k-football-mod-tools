@@ -75,7 +75,17 @@
    "standard_errors": [0.2435, 0.2791, 0.2402, 0.137, 0.6397],
    "log_likelihood": -349.13,
    "log_likelihood_null": -455.66,
-   "playoffs": "made-the-playoffs and won-a-playoff-game add nothing once the win percentage is known (2 df likelihood ratio 2.4); the model does not use them",
+   "playoff_terms": {
+    "extra_columns": [
+     "made the playoffs",
+     "won a playoff game"
+    ],
+    "likelihood_ratio": 2.56,
+    "df": 2,
+    "p_value": 0.278,
+    "used": false,
+    "verdict": "made-the-playoffs and won-a-playoff-game add nothing significant once the win percentage is known, so the model does not use them"
+   },
    "frailty": {
     "shape": 16.0,
     "rule": "no spread between clubs beyond records and tenure: smallest shape not rejected at 95%",
@@ -5234,308 +5244,352 @@
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Shanahan"
+    "Shanahan",
+    "head coach"
    ]
   },
   "https://www.atlantafalcons.com/news/atlanta-falcons-name-kevin-stefanski-head-coach": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Stefanski"
+    "Stefanski",
+    "head coach"
    ]
   },
   "https://www.azcardinals.com/news/cardinals-choose-mike-lafleur-as-new-head-coach-2026": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "LaFleur"
+    "LaFleur",
+    "head coach"
    ]
   },
   "https://www.baltimoreravens.com/news/jesse-minter-hired-ravens-head-coach-chargers-defensive-coordinator": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Minter"
+    "Minter",
+    "head coach"
    ]
   },
   "https://www.bengals.com/news/zac-taylor-named-10th-bengals-head-coach": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Taylor"
+    "Taylor",
+    "head coach"
    ]
   },
   "https://www.buccaneers.com/news/bucs-bruce-arians-new-role-todd-bowles-named-head-coach": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Bowles"
+    "Bowles",
+    "head coach"
    ]
   },
   "https://www.buffalobills.com/news/buffalo-bills-announce-sean-mcdermott-has-been-relieved-of-his-duties-as-head-coach": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "McDermott"
+    "McDermott",
+    "relieved"
    ]
   },
   "https://www.buffalobills.com/news/joe-brady-agrees-to-terms-to-be-the-next-buffalo-bills-head-coach": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Brady"
+    "Brady",
+    "head coach"
    ]
   },
   "https://www.chargers.com/news/chargers-name-jim-harbaugh-michigan-head-coach": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Harbaugh"
+    "Harbaugh",
+    "head coach"
    ]
   },
   "https://www.chicagobears.com/news/bears-hire-ben-johnson-as-head-coach-2025": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Johnson"
+    "Johnson",
+    "head coach"
    ]
   },
   "https://www.clevelandbrowns.com/news/todd-monken-named-browns-head-coach": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Monken"
+    "Monken",
+    "head coach"
    ]
   },
   "https://www.colts.com/news/shane-steichen-head-coach-eagles-offensive-coordinator-jalen-hurts-philip-rivers": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Steichen"
+    "Steichen",
+    "head coach"
    ]
   },
   "https://www.commanders.com/news/dan-quinn-named-washington-commanders-31st-head-coach": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Quinn"
+    "Quinn",
+    "head coach"
    ]
   },
   "https://www.dallascowboys.com/news/brian-schottenheimer-officially-named-newest-cowboys-head-coach": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Schottenheimer"
+    "Schottenheimer",
+    "head coach"
    ]
   },
   "https://www.denverbroncos.com/news/broncos-name-sean-payton-as-head-coach": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Payton"
+    "Payton",
+    "head coach"
    ]
   },
   "https://www.detroitlions.com/news/lions-agree-to-terms-with-dan-campbell-to-become-team-s-new-head-coach": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Campbell"
+    "Campbell",
+    "head coach"
    ]
   },
   "https://www.giants.com/news/john-harbaugh-hired-head-coach-new-york-giants-nfl": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Harbaugh"
+    "Harbaugh",
+    "head coach"
    ]
   },
   "https://www.houstontexans.com/news/houston-texans-hire-demeco-ryans-as-head-coach": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Ryans"
+    "Ryans",
+    "head coach"
    ]
   },
   "https://www.jaguars.com/news/k000151-jacksonville-jaguars-agree-to-terms-with-liam-coen-to-become-head-coach": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Coen"
+    "Coen",
+    "head coach"
    ]
   },
   "https://www.miamidolphins.com/news/miami-dolphins-agree-to-terms-with-jeff-hafley-as-head-coach": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Hafley"
+    "Hafley",
+    "head coach"
    ]
   },
   "https://www.nbcnews.com/sports/football/new-york-giants-hire-john-harbaugh-coach-baltimore-ravens-firing-rcna254610": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Harbaugh"
+    "Harbaugh",
+    "head coach"
    ]
   },
   "https://www.neworleanssaints.com/news/kellen-moore-new-orleans-saints-head-coach-search-philadelphia-eagles-offensive-coordinator": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Moore"
+    "Moore",
+    "head coach"
    ]
   },
   "https://www.newyorkjets.com/news/jets-hire-aaron-glenn-head-coach-01-22-2025": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Glenn"
+    "Glenn",
+    "head coach"
    ]
   },
   "https://www.nfl.com/news/brian-callahan-titans-fire-head-coach": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Callahan"
+    "Callahan",
+    "fire"
    ]
   },
   "https://www.nfl.com/news/browns-fire-head-coach-kevin-stefanski-following-six-seasons-in-cleveland": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Stefanski"
+    "Stefanski",
+    "fire"
    ]
   },
   "https://www.nfl.com/news/cardinals-fire-hc-jonathan-gannon-following-three-seasons": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Gannon"
+    "Gannon",
+    "fire"
    ]
   },
   "https://www.nfl.com/news/dolphins-fire-head-coach-mike-mcdaniel-after-four-seasons": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "McDaniel"
+    "McDaniel",
+    "fire"
    ]
   },
   "https://www.nfl.com/news/falcons-firing-hc-raheem-morris-following-two-seasons-with-team": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Morris"
+    "Morris",
+    "fire"
    ]
   },
   "https://www.nfl.com/news/giants-fire-head-coach-brian-daboll-after-2-8-start": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Daboll"
+    "Daboll",
+    "fire"
    ]
   },
   "https://www.nfl.com/news/klint-kubiak-confirms-he-s-headed-to-raiders-as-hc-after-seahawks-super-bowl-win": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Kubiak"
+    "Kubiak",
+    "head coach"
    ]
   },
   "https://www.nfl.com/news/mike-tomlin-stepping-down-as-head-coach-of-steelers-after-19-seasons": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Tomlin"
+    "Tomlin",
+    "stepping down"
    ]
   },
   "https://www.nfl.com/news/raiders-fire-hc-pete-carroll-following-his-first-season-in-las-vegas": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Carroll"
+    "Carroll",
+    "fire"
    ]
   },
   "https://www.nfl.com/news/ravens-fire-hc-john-harbaugh-after-his-18th-season-ends-with-missing-playoffs": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Harbaugh"
+    "Harbaugh",
+    "fire"
    ]
   },
   "https://www.nfl.com/news/story/0ap1000000121923/article/andy-reid-kansas-city-chiefs-make-it-official": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Reid"
+    "Reid",
+    "head coach"
    ]
   },
   "https://www.nfl.com/news/story/0ap3000000773406/article/los-angeles-rams-name-sean-mcvay-new-head-coach": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "McVay"
+    "McVay",
+    "head coach"
    ]
   },
   "https://www.packers.com/news/matt-lafleur-named-green-bay-s-15th-head-coach": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "LaFleur"
+    "LaFleur",
+    "head coach"
    ]
   },
   "https://www.panthers.com/news/panthers-agree-to-terms-with-dave-canales-to-become-head-coach": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Canales"
+    "Canales",
+    "head coach"
    ]
   },
   "https://www.patriots.com/news/patriots-hall-of-famer-mike-vrabel-returns-to-new-england-as-our-16th-head-coach": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Vrabel"
+    "Vrabel",
+    "head coach"
    ]
   },
   "https://www.philadelphiaeagles.com/news/eagles-announce-nick-sirianni-as-head-coach": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Sirianni"
+    "Sirianni",
+    "head coach"
    ]
   },
   "https://www.seahawks.com/news/mike-macdonald-named-head-coach-of-the-seattle-seahawks": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Macdonald"
+    "Macdonald",
+    "head coach"
    ]
   },
   "https://www.steelers.com/news/labriola-on-why-it-was-mike-mccarthy": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "McCarthy"
+    "McCarthy",
+    "head coach"
    ]
   },
   "https://www.tennesseetitans.com/news/it-s-official-titans-hire-robert-saleh-as-team-s-new-head-coach": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Saleh"
+    "Saleh",
+    "head coach"
    ]
   },
   "https://www.vikings.com/news/kevin-oconnell-head-coach-announcement": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "O'Connell"
+    "O'Connell",
+    "head coach"
    ]
   },
   "https://www.wect.com/2026/01/18/atlanta-falcons-hire-kevin-stefanski-new-head-coach": {
    "http": 200,
    "checked": "2026-11-02",
    "page_contains": [
-    "Stefanski"
+    "Stefanski",
+    "head coach"
    ]
   }
  }

@@ -5,6 +5,7 @@
   "not_here": "The 32 sitting head coaches (they cannot be hired by another club); offensive coordinators who were never head coaches (offensive coordinators come in a later release); anyone whose 2026 situation could not be confirmed; anyone who left football (see left_out).",
   "status": "employed = on a 2026 NFL staff, so a club hiring him leaves a vacancy; available = no NFL staff job in 2026 as of the date above.",
   "side": "The side of the ball he comes from (his coordinator background), not his current title.",
+  "kind": "Why he is listed: coordinator = one of the 31 defensive coordinators of the repo's 2026 defense identity file; former_head_coach = added because he lost a head coach job in the 2024 or 2025 season and is not on that list. Whether he has been a head coach is head_coach_record, not kind (several coordinators are former head coaches).",
   "names": "ASCII first and last names as they would be written into a coach record; together at most 24 letters.",
   "head_coach_record": "Derived from nflverse games.csv (regular season and playoff games 1999-2025 that he coached, interim spells included where the file lists them); null when he has none in that window. The file lists no interim coaches for 2024 and 2025, so a coach fired during one of those seasons is cut at his firing date (in_season_exits: Allen, Eberflus, Callahan, Daboll; each with its source). Earlier careers are not counted.",
   "as_of": "A snapshot: NFL staffs change during the season (the Evero change is the example). Rebuild with tools/nfl2k5_coach_owners_build.py to refresh."
@@ -16,9 +17,9 @@
    "role_2026": "Defensive coordinator of the Panthers until he was fired on 2026-10-30",
    "note": "The Panthers' own page for him is gone and lists Todd Wash as interim defensive coordinator.",
    "sources": [
-    {"url": "https://www.news4jax.com/sports/2026/10/30/panthers-fire-defensive-coordinator-ejiro-evero-following-27-19-loss-to-the-packers/",
+    {"expect": ["defensive coordinator", "Wash"], "url": "https://www.news4jax.com/sports/2026/10/30/panthers-fire-defensive-coordinator-ejiro-evero-following-27-19-loss-to-the-packers/",
      "what": "AP: the Panthers fired defensive coordinator Ejiro Evero after the 27-19 loss at Green Bay; Todd Wash is interim"},
-    {"url": "https://www.ksl.com/article/51642551/panthers-fire-defensive-coordinator-ejiro-evero-following-27-19-loss-to-the-packers",
+    {"expect": ["defensive coordinator", "Wash"], "url": "https://www.ksl.com/article/51642551/panthers-fire-defensive-coordinator-ejiro-evero-following-27-19-loss-to-the-packers",
      "what": "AP, second outlet carrying the same report"}
    ]
   }
@@ -29,7 +30,7 @@
    "role_2026": "Studio analyst on NBC's Football Night in America", "team_2026": null,
    "note": "Stepped down as Steelers head coach on 2026-01-13 after 19 seasons; has said he is not closing the door on coaching.",
    "sources": [
-    {"url": "https://www.nbcsports.com/pressbox/press-releases/mike-tomlin-joins-nbc-sports-football-night-in-america",
+    {"expect": ["Football Night in America"], "url": "https://www.nbcsports.com/pressbox/press-releases/mike-tomlin-joins-nbc-sports-football-night-in-america",
      "what": "NBC Sports press release: Tomlin joins Football Night in America as a studio analyst"}
    ]
   },
@@ -38,7 +39,7 @@
    "role_2026": "No NFL staff job in 2026; visited the Rams on a learning tour in July 2026", "team_2026": null,
    "note": "Fired as Bills head coach on 2026-01-19 after nine seasons.",
    "sources": [
-    {"url": "https://www.nbcsports.com/fantasy/football/player-news/2026-07-31/report-mcdermott-begins-learning-tour-with-rams",
+    {"expect": ["Rams"], "url": "https://www.nbcsports.com/fantasy/football/player-news/2026-07-31/report-mcdermott-begins-learning-tour-with-rams",
      "what": "NBC Sports: the former Bills coach is visiting the Rams on a learning tour"}
    ]
   },
@@ -47,7 +48,7 @@
    "role_2026": "Broadcaster at CBS; no coaching job in 2026", "team_2026": null,
    "note": "Head coach of the Eagles 2016-2020 and the Jaguars 2022-2024.",
    "sources": [
-    {"url": "https://www.inquirer.com/college-sports/cbs-doug-pederson-college-football-tv-eagles-20260728.html",
+    {"expect": ["CBS"], "url": "https://www.inquirer.com/college-sports/cbs-doug-pederson-college-football-tv-eagles-20260728.html",
      "what": "The Philadelphia Inquirer: Pederson joins CBS because he had no coaching job lined up for 2026 and eyes an NFL comeback"}
    ]
   },
@@ -56,7 +57,7 @@
    "role_2026": "Offensive coordinator", "team_2026": "LAC",
    "note": "Fired as Dolphins head coach on 2026-01-08.",
    "sources": [
-    {"url": "https://www.chargers.com/team/coaches-roster/mike-mcdaniel",
+    {"expect": ["offensive coordinator"], "url": "https://www.chargers.com/team/coaches-roster/mike-mcdaniel",
      "what": "Chargers coaches page: enters his first season as offensive coordinator in 2026"}
    ]
   },
@@ -65,7 +66,7 @@
    "role_2026": "Offensive coordinator", "team_2026": "TEN",
    "note": "Fired as Giants head coach on 2025-11-10.",
    "sources": [
-    {"url": "https://www.tennesseetitans.com/team/coaches-roster/brian-daboll",
+    {"expect": ["offensive coordinator"], "url": "https://www.tennesseetitans.com/team/coaches-roster/brian-daboll",
      "what": "Titans coaches page: hired as offensive coordinator on 2026-01-27"}
    ]
   },
@@ -74,7 +75,7 @@
    "role_2026": "Passing game coordinator and quarterbacks coach", "team_2026": "NYG",
    "note": "Fired as Titans head coach on 2025-10-13.",
    "sources": [
-    {"url": "https://www.giants.com/team/coaches-roster/brian-callahan",
+    {"expect": ["passing game coordinator", "quarterbacks coach"], "url": "https://www.giants.com/team/coaches-roster/brian-callahan",
      "what": "Giants coaches page: in his first season as passing game coordinator and quarterbacks coach"}
    ]
   },
@@ -83,18 +84,18 @@
    "role_2026": "Assistant head coach, defense", "team_2026": "SF",
    "note": "Bears head coach 2022-2024, then Cowboys defensive coordinator for 2025 (let go on 2026-01-06).",
    "sources": [
-    {"url": "https://www.49ers.com/team/coaches-roster/matt-eberflus",
+    {"expect": ["assistant head coach"], "url": "https://www.49ers.com/team/coaches-roster/matt-eberflus",
      "what": "49ers coaches page: joins the 49ers for his first season as assistant head coach, defense"}
    ]
   }
  ],
  "left_out": [
-  {"name": "Antonio Pierce", "reason": "left coaching: chief strategy adviser at Athletes in Control (2025)",
+  {"name": "Antonio Pierce", "expect": ["Athletes in Control"], "reason": "left coaching: chief strategy adviser at Athletes in Control (2025)",
    "source": "https://bernews.com/2025/08/antonio-pierce-set-new-adviser-role/"},
-  {"name": "Jerod Mayo", "reason": "left football: managing director at the investment firm Fifth Down (2026)",
+  {"name": "Jerod Mayo", "expect": ["Fifth Down"], "reason": "left football: managing director at the investment firm Fifth Down (2026)",
    "source": "https://www.bostonglobe.com/2026/05/29/sports/jerod-mayo-new-job-patriots/"},
   {"name": "Pete Carroll", "reason": "fired by the Raiders on 2026-01-05; no 2026 role was found in the sources checked", "source": null},
-  {"name": "Todd Wash", "reason": "interim Panthers defensive coordinator since 2026-10-30, not a permanent coordinator",
+  {"name": "Todd Wash", "expect": ["interim"], "reason": "interim Panthers defensive coordinator since 2026-10-30, not a permanent coordinator",
    "source": "https://www.panthers.com/team/coaches-roster/todd-wash"}
  ]
 }

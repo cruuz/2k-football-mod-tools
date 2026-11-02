@@ -202,6 +202,67 @@ class SpotFactTests(unittest.TestCase):
         self.assertEqual(frailty["shape"], 16.0)
 
 
+class ValidatorTests(unittest.TestCase):
+    """The validators fail closed: a broken copy of the shipped documents is refused."""
+
+    def refuses(self, validate, doc):
+        with self.assertRaises(co.CoachOwnersError):
+            validate(doc)
+
+    def test_owners(self):
+        import copy
+        bad = copy.deepcopy(OWNERS)
+        bad["model"]["base_permille"][0][3] = 999                          # a better record must never raise the chance
+        self.refuses(co.validate_owners, bad)
+        bad = copy.deepcopy(OWNERS)
+        bad["clubs"].pop()
+        self.refuses(co.validate_owners, bad)
+        bad = copy.deepcopy(OWNERS)
+        bad["clubs"][0]["fire_scale_q8"] = 5
+        self.refuses(co.validate_owners, bad)
+        bad = copy.deepcopy(OWNERS)
+        bad["clubs"][3]["team_index"] = bad["clubs"][4]["team_index"]
+        self.refuses(co.validate_owners, bad)
+        bad = copy.deepcopy(OWNERS)
+        bad["clubs"][0]["history"]["current"]["source"] = "https://example.invalid/never-fetched"      # cited but not checked
+        self.refuses(co.validate_owners, bad)
+        bad = copy.deepcopy(OWNERS)
+        bad["sources"]["nflverse_games"]["sha256"] = "x" * 64
+        self.refuses(co.validate_owners, bad)
+        bad = copy.deepcopy(OWNERS)
+        del bad["calibration"]["records"]["BAL"]
+        self.refuses(co.validate_owners, bad)
+        bad = copy.deepcopy(OWNERS)
+        bad["clubs"][5]["history"]["changes_log"].pop()
+        self.refuses(co.validate_owners, bad)
+
+    def test_pool(self):
+        import copy
+        bad = copy.deepcopy(POOL)
+        bad["candidates"][1]["id"] = bad["candidates"][0]["id"]
+        self.refuses(co.validate_pool, bad)
+        bad = copy.deepcopy(POOL)
+        bad["candidates"][0]["last"] = "Mu\u00f1oz"                          # the game's strings are plain letters
+        self.refuses(co.validate_pool, bad)
+        bad = copy.deepcopy(POOL)
+        bad["candidates"][0]["sources"] = []
+        self.refuses(co.validate_pool, bad)
+        bad = copy.deepcopy(POOL)
+        bad["candidates"][0]["sources"][0]["url"] = "https://example.invalid/never-fetched"
+        self.refuses(co.validate_pool, bad)
+        bad = copy.deepcopy(POOL)
+        bad["candidates"][0]["status"] = "maybe"
+        self.refuses(co.validate_pool, bad)
+
+    def test_model_statistics_are_stored_not_asserted(self):
+        fit = OWNERS["model"]["fit"]
+        self.assertFalse(fit["playoff_terms"]["used"])
+        self.assertGreater(fit["playoff_terms"]["p_value"], 0.05)               # the playoffs add nothing once the record is known
+        self.assertLess(fit["slope_per_win_pct"], -5)                           # about 0.44 log-odds per win on 17 games
+        self.assertGreater(fit["log_likelihood"], fit["log_likelihood_null"] + 90)
+        self.assertEqual(fit["intercepts"], sorted(fit["intercepts"]))          # a longer tenure never lowers the base hazard
+
+
 class DecisionTests(unittest.TestCase):
     def test_record_index_rounds_half_up_on_a_17_game_scale(self):
         self.assertEqual([co.record_index(*r) for r in ((17, 0, 0), (0, 17, 0), (8, 9, 0), (9, 8, 0), (8, 8, 1), (4, 12, 0), (12, 4, 0), (8, 8, 0))],
