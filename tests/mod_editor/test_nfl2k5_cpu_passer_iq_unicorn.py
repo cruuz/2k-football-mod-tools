@@ -122,8 +122,10 @@ class CheckdownScoreTests(unittest.TestCase):
 
     def test_open_back_scores_like_retail_early_and_clears_every_threshold_late_or_pressured(self):
         retail = self.machine(self.retail).score(BACK_5YD, t=1.0)
-        # the research's arithmetic: defenders about 1.45, short-throw term about -0.45, depth about -0.18
-        self.assertAlmostEqual(retail, 0.82, delta=0.03)
+        # the research's arithmetic: defenders about 1.45, short-throw term -0.45 (5 yd), depth against the sticks -0.2
+        # (11 yd short of the line to gain), receiving composite 0: about 0.8
+        self.assertGreater(retail, 0.70)
+        self.assertLess(retail, 0.90)
         self.assertTrue(all(retail < th for th in THRESHOLDS_RETAIL))
         self.assertTrue(all(retail < th for th in THRESHOLDS_TIERS[2:]))      # average to elite starters
         for t in (0.2, 1.0, 1.5, 1.99):

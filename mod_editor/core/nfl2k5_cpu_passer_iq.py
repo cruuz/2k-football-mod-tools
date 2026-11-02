@@ -21,10 +21,11 @@ The wait comes from the CPU passer task 0x19BB60 and its read grid. Three things
   set to now + 1.5 at 0x19BFCF and 0x19C1C0; the throw press 0x19BAE0 and the forced throw 0x19C313 wait for it),
   whoever came open. The two adds now read the retail .rdata float 0.6 at 0x4EFE14 (81 readers, no writer) instead of
   the shared 1.5 at 0x4E6D0C, and the per-tick pump roll under heavy pressure is 1 in 60 instead of 1 in 20 (0x19C194).
-* **Faster reads** (data, the read dwell curve 0x50C548 of Pass Read Coverage, read by 0x199100 and by the CPU QB reads
-  owner's read window): 0 -> 1.0 s, 0.3 -> 0.8, 0.5 -> 0.6, 0.9 -> 0.35, 1.0 -> 0.25 (retail 2.0 / 1.0 / 0.5 / 0.4 /
-  0.2). Weak readers no longer stare at one receiver for up to 2 s; every QB has time for about three reads inside
-  the NFL's 2.4 s average pocket time.
+* **Faster reads for weak readers** (data, the read dwell curve 0x50C548 of Pass Read Coverage, read by 0x199100 and by
+  the CPU QB reads owner's read window): 0 -> 1.0 s, 0.3 -> 0.8, 0.5 -> 0.6, 0.9 -> 0.35, 1.0 -> 0.25 (retail 2.0 / 1.0
+  / 0.5 / 0.4 / 0.2). Weak readers no longer stare at one receiver for up to 2 s; starters keep about the same pace
+  (0.05-0.1 s slower per read between 0.43 and 0.77 and above 0.95, faster between 0.77 and 0.95), so every QB has
+  time for about three reads inside the NFL's 2.4 s average pocket time.
 
 Human passing, ball flight, catching and the defense are not changed. The owner is a late allocator owner (256 RX bytes,
 16 RW bytes of per-play state) and composes with the CPU QB reads and CPU scrambles owners, whose verified hooks in the
@@ -44,8 +45,9 @@ HELP_TEXT = ("EXPERIMENTAL / UNWITNESSED. CPU quarterbacks only. Early in a play
              "downfield; once he has been through his reads, after about two seconds, or as soon as the pocket "
              "collapses, an open back or tight end underneath becomes a real option, so he checks the ball down "
              "instead of holding it and taking the sack. A pump fake now stops him from throwing for 0.6 seconds "
-             "instead of 1.5, he pump fakes less often under pressure, and every quarterback moves from one receiver "
-             "to the next faster (weak readers the most). Downfield reads, the defense and human play are unchanged.")
+             "instead of 1.5 and he pump fakes less often under pressure. Weak readers move from one receiver to the "
+             "next much faster (up to twice as fast); for starters the pace stays about the same. Downfield reads, the "
+             "defense and human play are unchanged.")
 
 # Tuning. The template holds the same values; code_for() writes these.
 FADE_START = 2.0     # seconds after the snap; sooner when the first read cycle completed

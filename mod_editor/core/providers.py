@@ -792,7 +792,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_pass_protection_code.py": "a9d8e2bfb43cab4c95d2e5c909a47a5d84fbf3b927ce51f97da619728b49e8de",
         "mod_editor/core/nfl2k5_pass_rush_stats.py": "5f0dc654c8ff24dc0a2bd2f412c9954d3ee63c0d72a3648ae6448373dfa6eab0",
         "mod_editor/core/nfl2k5_pass_rush_stats_code.py": "91d7bacf8770e5ced1a1aceb2507bf2c791c5c9f4353b0f5c740d638ec78353c",
-        "mod_editor/core/nfl2k5_cpu_passer_iq.py": "c76e0d77be935edf907755204a86e5f2e3a2f67bc11c59b8dd193a0bea27ae78",  # b780 a-passer
+        "mod_editor/core/nfl2k5_cpu_passer_iq.py": "b20345c8645b637e4fa619d811e50786bca501259ba16a6fa7a5b7c48b195b27",  # b780 a-passer
         "mod_editor/core/nfl2k5_cpu_passer_iq_code.py": "8f9e07127306df30acb5e5f65cb2c299da1cc8b0fb06e29f1459e3b7d9d209bc",  # b780 a-passer
         "mod_editor/core/nfl2k5_lineman_rating.py": "e1c08c86e0a31c58fd86d5a155c56ad200cf5ef237771c95b39bfe29215261c1",
         "mod_editor/core/nfl2k5_match_coverage.py": "d9c1a93508a25a17d389b1dfa628ab8d0ac2da25d99bcc64a347b98f4447cfa2",
