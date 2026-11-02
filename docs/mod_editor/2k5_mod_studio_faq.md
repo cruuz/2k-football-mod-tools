@@ -79,8 +79,8 @@ In **Build & Share**, open the **Build** tab and untick **The Crib: keep only th
 **Gameplay**, then **Make my disc**. If you start from **Share**, then **Customize SOFTDRINK 2K28**, the box is ticked there
 too: untick it before you build. Nothing in your save changes either way, and a disc built without the cut shows everything a
 profile bought again. The name is a separate option, **The Crib is now the Trophy Room**, under **Franchise**: untick it too
-if you want the old name back. The ready-made disc from **Install SOFTDRINK 2K28** cannot be changed afterwards. The sidebar page **The Crib** repeats
-this note at the top.
+if you want the old name back. The ready-made disc from **Install SOFTDRINK 2K28** cannot be changed afterwards. The
+sidebar page **The Crib** repeats this note at the top.
 
 ## My studio will not open or update. How do I reinstall?
 
