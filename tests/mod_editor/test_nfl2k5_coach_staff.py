@@ -398,3 +398,162 @@ class ProfilesOnFinalBooks(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+_XBE = os.environ.get("NFL2K5_COACH_AI_XBE")
+_V061 = os.environ.get("NFL2K5_V061_XBE")
+
+
+def _swapped_rows():
+    rows = ai.default_table()
+    kc, lv = rows[9], rows[22]
+    rows[9] = dict(lv, book_index=9, asset=kc["asset"])
+    rows[22] = dict(kc, book_index=22, asset=lv["asset"])
+    rows[21] = ai.vacant_row(21)
+    return rows
+
+
+@unittest.skipUnless(_XBE, "Set NFL2K5_COACH_AI_XBE to an executable with (or ready for) the coach AI kernel")
+class InstalledKernelTable(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        payload = Path(_XBE).read_bytes()
+        if ai.status(payload) != "applied":
+            payload = ai.apply(payload)[0]
+        cls.payload = payload
+
+    def test_an_assigned_table_installs_reseals_and_reads_back(self):
+        from mod_editor.core import nfl2k5_xbe_space as space
+        rows = _swapped_rows()
+        result, receipt = ai.install_table(self.payload, rows)
+        self.assertEqual(len(result), len(self.payload))
+        self.assertEqual((ai.status(result), space.status(result)), ("applied", "applied"))
+        self.assertEqual(ai.installed_table(result), rows)
+        self.assertEqual(receipt["vacant_rows"], 1)
+        self.assertEqual([r["book_index"] for r in receipt["assigned"]], [9, 21, 22])
+        again, second = ai.install_table(result, rows)
+        self.assertEqual((again, second["status"], second["changed_bytes"]), (result, "already_applied", 0))
+        back, _ = ai.install_table(result, ai.default_table())
+        self.assertEqual(ai.installed_table(back), ai.default_table())
+        self.assertEqual(ai.apply(result)[0], result)              # an installed kernel is not reinstalled
+        self.assertEqual(ai.normalized_sites(result), ai.normalized_sites(self.payload))
+
+    def test_junk_in_the_table_is_foreign(self):
+        from mod_editor.core import nfl2k5_xbe_space as space
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage
+        from mod_editor.core.nfl2k5_bump_strength import _sections, section_digest
+        rows = ai.default_table()
+        rows[4] = dict(rows[4], identity=rows[3]["identity"])     # one coach in two rows
+        at = ai.allocations(self.payload)["code"]["va"] + ai.table_offset()
+        buf = bytearray(self.payload)
+        offset = XbeImage(self.payload).offset(at, ai.TABLE_SIZE)
+        buf[offset:offset + ai.TABLE_SIZE] = b"".join(ai._encode_row(r) for r in rows)
+        space._seal_scaleout(buf, space._read_scale_directory(self.payload))
+        for section in _sections(buf):
+            buf[section.header_offset + 36:section.header_offset + 56] = section_digest(buf, section)
+        self.assertEqual(space.status(bytes(buf)), "applied")
+        self.assertEqual(ai.status(bytes(buf)), "foreign")
+        with self.assertRaises(ai.CoachAIError):
+            ai.apply(bytes(buf))
+        with self.assertRaises(ai.CoachAIError):
+            ai.install_table(self.payload, rows)
+
+
+@unittest.skipUnless(_V061, "Set NFL2K5_V061_XBE to the beta-77.1 (v0.6.1) executable")
+class UpgradeCarriesTheTable(unittest.TestCase):
+    def test_the_upgrade_keeps_an_assigned_table(self):
+        payload = Path(_V061).read_bytes()
+        self.assertEqual(ai.installed_variant(payload), "v061")
+        rows = _swapped_rows()
+        assigned, _ = ai.install_table(payload, rows)
+        self.assertEqual(ai.installed_variant(assigned), "v061")
+        upgraded, receipt = ai.upgrade(assigned)
+        self.assertEqual(receipt["status"], "upgraded")
+        self.assertEqual((ai.status(upgraded), ai.installed_variant(upgraded)), ("applied", "b778"))
+        self.assertEqual(ai.installed_table(upgraded), rows)
+        plain, _ = ai.upgrade(payload)
+        self.assertEqual(ai.installed_table(plain), ai.default_table())
+
+
+class PlaybookCopies(unittest.TestCase):
+    """Bring his playbook: one snapshot, so a swap where both coaches bring their books is exact; shapes must match."""
+
+    def test_copies_come_from_one_snapshot_and_clear_the_profile_tail(self):
+        from mod_editor.core import nfl2k5_playbook_pack as packs
+        module = packs._outer_image()
+        size = ai.BODY_SIZE + 32
+        def book(fill):
+            raw = bytearray(size)
+            raw[32 + 12:32 + 16] = b"PLAY"
+            raw[32 + 0x40:32 + 0x8000] = bytes([fill]) * (0x8000 - 0x40)
+            return bytes(raw)
+        store = {index: book(n) for n, index in enumerate(module.BOOK_ENTRIES[c.book] for c in st.clubs())}
+        writes = []
+
+        class Entry:
+            def __init__(self, index):
+                self.virtual_offset = index * 0x100000
+
+        class Archive:
+            def __init__(self, *_args, **_kw):
+                self.entries = {i: Entry(i) for i in store}
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *exc):
+                return False
+
+            def read_entry(self, index):
+                return store[index]
+
+            def write(self, offset, data):
+                index = offset // 0x100000
+                writes.append(index)
+                base = offset - index * 0x100000
+                store[index] = store[index][:base] + data + store[index][base + len(data):]
+
+        kc, lv = module.BOOK_ENTRIES["KC"], module.BOOK_ENTRIES["OAK"]
+        before = dict(store)
+        plan = st.StaffPlan(staff=st.empty())
+        for c in st.clubs():
+            source = {9: st.club("OAK"), 22: st.club("KC")}.get(c.index, c)
+            plan.clubs.append(st.ClubPlan(c, "x", source, None, c.index in (9, 22), c.book, "y", source, None,
+                                          None, None))
+        with patch.object(module, "OuterImage", Archive):
+            receipt = st.apply_playbooks_to_image("unused.iso", plan)
+        self.assertEqual(store[kc], before[lv])
+        self.assertEqual(store[lv], before[kc])
+        self.assertEqual(sorted(writes), sorted([kc, lv]))
+        self.assertEqual({r["team"]: r["book_from"] for r in receipt["copies"]}, {"KC": "OAK", "OAK": "KC"})
+        bad = dict(store)
+        store[kc] = store[kc][:31] + b"\x01" + store[kc][32:]
+        with patch.object(module, "OuterImage", Archive), self.assertRaises(st.StaffError):
+            st.apply_playbooks_to_image("unused.iso", plan)
+        store.update(bad)
+
+
+@unittest.skipUnless(_XISO.is_file(), "private retail NFL 2K5 disc absent (set NFL2K5_RETAIL_XISO)")
+class BuildPreflight(unittest.TestCase):
+    def test_a_staff_with_a_vacancy_stops_the_build_before_any_write(self):
+        import tempfile
+        from mod_editor.core import mod_build, nfl2k5_roster_records as rr
+        document = {"schema": rr.EDITS_SCHEMA, "edits": [], "coaches": directory_coaches(),
+                    "staff": {"head_coaches": [{"team": "OAK", "coach": "Andy Reid"}]}}
+        with tempfile.TemporaryDirectory(prefix="c2-staff-") as raw:
+            path = Path(raw) / "roster-edits.json"
+            path.write_text(json.dumps(document), encoding="utf-8", newline="\n")
+            plan = mod_build.BuildPlan(str(_XISO), str(Path(raw) / "out.xiso.iso"), roster_edits=str(path))
+            with self.assertRaisesRegex(ValueError, r"Coaching staff \(Rosters > Coaches\): Kansas City has no head"):
+                mod_build._coach_staff_plan(plan, _XISO)
+            document["staff"]["head_coaches"].append({"team": "KC", "coach": "Klint Kubiak", "playbook": "coach"})
+            path.write_text(json.dumps(document), encoding="utf-8", newline="\n")
+            result = mod_build._coach_staff_plan(plan, _XISO)
+            self.assertTrue(result.ok)
+            self.assertEqual([(h.book, d.book) for h, d in st.playbook_copies(result)], [("KC", "OAK")])
+            self.assertIsNotNone(mod_build._coach_staff_document(plan))
+            plan = mod_build.BuildPlan(str(_XISO), str(Path(raw) / "out.xiso.iso"), coach_ai=True,
+                                       roster_edits=str(path))
+            out, step = mod_build._coach_ai_decision(plan)
+            self.assertTrue(out.coach_ai)
+            self.assertIsNone(step)                       # every club has its 2026 coach (two of them moved)

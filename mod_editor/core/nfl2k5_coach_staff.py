@@ -746,33 +746,51 @@ def hire_record(raw: bytes) -> bytes:
     return bytes(out[CONTENT_START:])
 
 
-def _rewrite_strings(body: bytearray, table, wanted: dict[int, list[str]]) -> int:
-    """Rewrite the coach string region (as ``nfl2k5_roster_records.apply_coach_names`` does) with ``wanted``
-    (record index -> five texts); StaffError when the region is not the game's one back-to-back region or the text does
-    not fit. Returns the region's byte size."""
+def coach_text_region(body) -> dict[str, int]:
+    """The roster's coach text region (retail-size main ROST): {"start", "used_end", "end"}: the 175 coach strings
+    sit back to back from ``start`` to ``used_end``; ``used_end``..``end`` is zeroed and referenced by nothing (free:
+    on SOFTDRINK rosters the cleared 2004 biographies, about 4,278 bytes). StaffError when the region is not the game's
+    one back-to-back region of singly referenced strings (a grown or foreign roster)."""
     cw = _coach_tool()
     snapshot = bytes(body)
     tables = cw.parse_roster_body(snapshot)
     references = cw.known_string_pointer_references(snapshot, tables)
-    slots = []
+    table = tables["coaches"]
+    targets = []
     for index in range(table["count"]):
         record = table["offset"] + index * RECORD_SIZE
         for at in STRING_FIELDS:
             target = cw.relative_target(snapshot, record + at, f"coach {index} +0x{at:x}")
-            require(target is not None, f"coach record {index} +0x{at:x} has no text; the staff cannot be written")
-            slots.append((record + at, target, cw.utf16z(snapshot, target, f"coach {index} +0x{at:x}")))
-    ordered = sorted(slots, key=lambda s: s[1])
-    start = cursor = ordered[0][1]
-    for _field, target, text in ordered:
+            require(target is not None, f"coach record {index} +0x{at:x} has no text")
+            targets.append((target, cw.utf16z(snapshot, target, f"coach {index} +0x{at:x}")))
+    targets.sort()
+    start = cursor = targets[0][0]
+    for target, text in targets:
         require(target == cursor and references.get(target, 0) == 1,
-                "the coach names are not the game's single back-to-back text region (a grown or foreign roster); "
-                "the staff cannot be written")
+                "the coach names are not the game's single back-to-back text region (a grown or foreign roster)")
         cursor += (len(text) + 1) * 2
     # The region runs to the next string anything else in the roster points at (the label strings on retail): a
     # rewrite (``apply_coach_names`` clears the 2004 biographies) leaves zeroed, unreferenced bytes there, which are
     # free. Anything that is not zero stays outside.
     following = min((t for t in references if t >= cursor), default=cursor)
     end = following if following > cursor and not any(snapshot[cursor:following]) else cursor
+    return {"start": start, "used_end": cursor, "end": end}
+
+
+def _rewrite_strings(body: bytearray, table, wanted: dict[int, list[str]]) -> int:
+    """Rewrite the coach string region (as ``nfl2k5_roster_records.apply_coach_names`` does) with ``wanted``
+    (record index -> five texts); StaffError when the region is not the game's one back-to-back region or the text does
+    not fit. Returns the region's byte size."""
+    cw = _coach_tool()
+    snapshot = bytes(body)
+    region = coach_text_region(snapshot)
+    start, end = region["start"], region["end"]
+    slots = []
+    for index in range(table["count"]):
+        record = table["offset"] + index * RECORD_SIZE
+        for at in STRING_FIELDS:
+            target = cw.relative_target(snapshot, record + at, f"coach {index} +0x{at:x}")
+            slots.append((record + at, target, cw.utf16z(snapshot, target, f"coach {index} +0x{at:x}")))
     layout = bytearray()
     pointers = []
     for position, (field_offset, _target, text) in enumerate(slots):
@@ -1152,11 +1170,37 @@ def summary(staff_plan: StaffPlan) -> str:
     return "Coaching staff: " + ", ".join(parts) + "."
 
 
+def main(argv=None) -> int:
+    """Read-only CLI: the 32 head coaches of a disc, or the staff a roster-edits document gives on it."""
+    import argparse
+    parser = argparse.ArgumentParser(description="Coaching staff (read only): the head coaches of a disc image, or "
+                                                 "the plan of a roster-edits document's staff on it")
+    parser.add_argument("operation", choices=("roster", "plan"))
+    parser.add_argument("image", type=Path)
+    parser.add_argument("roster_edits", type=Path, nargs="?")
+    args = parser.parse_args(argv)
+    try:
+        if args.operation == "roster":
+            print(json.dumps([c.as_dict() for c in read_image(args.image)], indent=1))
+            return 0
+        require(args.roster_edits is not None, "plan needs a roster-edits document")
+        result = source_plan(args.image, args.roster_edits)
+        print(json.dumps(result.as_dict(), indent=1))
+        print(summary(result))
+        return 0 if result.ok else 2
+    except (ValueError, OSError) as exc:
+        parser.exit(2, f"Coaching staff refused: {exc}\n")
+
+
 __all__ = ["SCHEMA", "StaffError", "Club", "CLUB_COUNT", "BOOK_CODES", "KNOWN_BODIES", "NO_PHOTO", "CREATED_BODY",
            "RECORD_SIZE", "STRING_FIELDS", "CONTENT_START", "WITH_TEAM_FIELDS", "FLAG_FREE", "FLAG_GENERIC_NAME",
            "clubs", "club", "head_coach_directory", "directory_coach", "coordinator_directory", "coordinator",
            "empty", "normalize", "is_empty", "HeadCoach", "coach_records", "read_roster", "read_image",
-           "locate_directory_coach", "ClubPlan", "StaffPlan", "plan", "plan_document", "created_record", "hire_record",
+           "locate_directory_coach", "coach_text_region", "ClubPlan", "StaffPlan", "plan", "plan_document", "created_record", "hire_record",
            "apply_to_body", "source_plan", "playbook_copies", "apply_playbooks_to_image", "Binding",
            "created_profile_name", "profile_bindings", "final_assignment", "from_assignment", "move_head_coach", "swap_head_coaches",
            "hire_created_coach", "fire_head_coach", "set_defensive_coordinator", "set_playbook", "reset", "summary"]
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

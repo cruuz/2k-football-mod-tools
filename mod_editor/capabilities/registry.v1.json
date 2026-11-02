@@ -6786,7 +6786,9 @@
       "classification": "runtime-proved",
       "evidence": [
         "docs/mod_editor/nfl2k5_coach_ai.md",
-        "tests/mod_editor/test_nfl2k5_coach_ai.py"
+        "tests/mod_editor/test_b772_coach_ai_roster_gate.py",
+        "tests/mod_editor/test_nfl2k5_coach_ai.py",
+        "tests/mod_editor/test_nfl2k5_coach_staff.py"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
@@ -6797,10 +6799,11 @@
       },
       "id": "nfl2k5.gameplay.coach_ai",
       "input_constraints": [
-        "A supported USA disc and exact final compiled NFL playbooks, with roster kind, team asset and coach portrait identities matching the 2026 directory. Rebuild after book edits; stale or foreign profile tails refuse.",
+        "A supported USA disc and exact final compiled NFL playbooks. Per club (b780): a club gets the profile of the 2026 head coach it employs (name and picture), fitted to its own final book with its defensive coordinator's rings; a club without one plays native, and only that club. Rebuild after book edits; stale or foreign profile tails refuse.",
         "Includes VIP-aware Modern 2. Modes 4..7 only; humans, active MyCareer, special/scenario routes and non-current teams retain native behavior. Paired playbooks retain native replay suppression.",
         "Uses 896 existing tail bytes per NFL PLAY resource, 5120 RX bytes and 128 RW bytes, plus at most two 8608-byte heap contexts. No USR slots or save-format changes.",
-        "Portrait textures are separate input art. Missing textures retain the native fallback."
+        "Portrait textures are separate input art. Missing textures retain the native fallback.",
+        "The kernel's 32-row coach table (1,408 bytes, no relocations) is written per build for the club assignment; the recognizer accepts any valid table and refuses junk."
       ],
       "portme": [
         "Broaden live coverage beyond the witnessed DAL/WAS Play Now and IND/TEN/DEN franchise routes; all 32 teams and modes 4..7 have component checks."
@@ -6840,6 +6843,67 @@
       "surface": "gameplay_tuning_sliders",
       "title": "Automatic 2026 CPU coach profiles (experimental)",
       "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_coach_ai"
+    },
+    {
+      "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_coach_staff plan <source.iso> <roster-edits.json>",
+        "module": "mod_editor/core/nfl2k5_coach_staff.py",
+        "operation": "inspect"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "docs/mod_editor/nfl2k5_coach_ai.md",
+        "tests/mod_editor/test_nfl2k5_coach_staff.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL. Edited on Rosters > Coaches (roster-edits staff section); Build applies it. Nothing changes unless a staff is set."
+      },
+      "id": "nfl2k5.rosters.coaching_staff",
+      "input_constraints": [
+        "A roster-edits staff section (nfl2k5_coach_staff/v1): head coaches by club (a coach on the roster by full name, or a created coach), optional 'bring his playbook', and one of the 32 2026 defensive coordinators per club.",
+        "Moves are record content moves (names, body, picture, ratings, tendencies, career); team pointers never change. Seasons with the team and this season's record start at zero; the announcer uses the generic head-coach line.",
+        "Every club keeps one head coach and one coordinator: a vacancy, an unknown name or a person at two clubs refuses before any write, in plain words.",
+        "Created coaches need the pre-growth roster (build from the retail disc); a swap or rotation also works on a grown roster.",
+        "Bring his playbook copies the final book of the coach's source club over the host's (fixed span); labels stay the host's."
+      ],
+      "portme": [
+        "Emulator gate: Play Now against a club with a moved coach; witness the play call screen, a quarter without a crash, and the sideline coach."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and recipes; never distribute the generated game executable or disc.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Offline writer, read-back and Unicorn replay of the native profile binding; the emulator gate is reported in the b780 c2-staff report.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "roster-edits staff section, schema nfl2k5_coach_staff/v1",
+            "name": "staff",
+            "required": false
+          }
+        ],
+        "notes": "Read by BuildPlan.roster_edits; nfl2k5_coach_ai binds the profiles per club."
+      },
+      "source_container": {
+        "format": "Xbox disc ROST, PLAY resources and the coach AI kernel table",
+        "hash_pins": [],
+        "resource": "main outer 5: the 32 club coach records (0xA8) and their text region; 32 PLAY resources (bring his playbook); 1,408 table bytes in the coach AI kernel",
+        "retail_file": "User-owned NFL 2K5 USA disc"
+      },
+      "summary": "Move, swap or create head coaches before a season and give every club a real 2026 defensive coordinator; each club's CPU uses its own coach's 2026 profile.",
+      "surface": "players_rosters",
+      "title": "Coaching staff (move, swap, create head coaches; coordinators)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_coach_staff"
     },
     {
       "backend": {

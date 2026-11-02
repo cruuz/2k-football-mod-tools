@@ -26,7 +26,9 @@ BUILD_CAPTION = "Automatic 2026 CPU coach profiles (experimental)"
 HELP_TEXT = ("Retail: CPU teams use their native coach tendencies. Patch: use automatic 2026 coach "
              "profiles for current NFL CPU teams in Play Now, Season, Franchise and playoffs. "
              "Explicit Coach Matchup choices win. Rebuilds profiles for the final playbooks and "
-             "includes VIP-aware Modern 2. Enabled in the SOFTDRINK experimental preset; "
+             "includes VIP-aware Modern 2. Each club uses the profile of the 2026 head coach it has, "
+             "also after a coaching staff change; a club whose coach has no 2026 profile keeps its "
+             "native tendencies. Enabled in the SOFTDRINK experimental preset; "
              "turn this setting off to keep native coach tendencies.")
 
 
@@ -678,7 +680,8 @@ def plan_profiles(image, *, tendencies=None, progress=None, staff=None):
             receipt["team"] = clubs[i].team
             receipt["staff"] = dict(club=clubs[i].team, coach=binding.coach, play_calling=binding.tendency,
                                     defensive_coordinator=binding.defense, profile_name=binding.profile_name,
-                                    moved=binding.tendency != clubs[i].team or binding.defense != clubs[i].book)
+                                    changed=binding.table_row() != default_table()[i]
+                                    or binding.defense != clubs[i].book)
             prepared.append((index, original, result, receipt))
             if progress:
                 progress(f"Compiled {clubs[i].team} coach profile against its final playbook")
@@ -773,8 +776,9 @@ def install_table(payload, rows):
         buf[section.header_offset + 36:section.header_offset + 56] = section_digest(buf, section)
     result = bytes(buf)
     require(len(result) == len(payload), "Coach AI table install must be fixed-span")
-    require(status(result) == "applied" and installed_variant(result) == variant and installed_table(result) == [
+    require(installed_variant(result) == variant and installed_table(result) == [
         dict(r, alternate_portrait=r.get("alternate_portrait") or 0) for r in rows], "Coach AI table postcondition failed")
+    require(space.status(result) == "applied", "Coach AI table install broke the owner seals")
     return result, dict(receipt, status="applied", changed_bytes=sum(a != b for a, b in zip(payload, result)),
                         before_sha256=hashlib.sha256(payload).hexdigest(), after_sha256=hashlib.sha256(result).hexdigest())
 
