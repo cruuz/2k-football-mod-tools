@@ -263,7 +263,8 @@ def save_kind(payload: bytes) -> str:
         return "settings"
     if len(payload) == FRANCHISE_SAVE_SIZE:
         return "franchise"
-    if _native_length(payload) in ((FRANCHISE_SAVE_SIZE + 0x1000, FRANCHISE_SAVE_SIZE + 128,
+    # b780 j23: a retail-arena save followed by a franchise footer has the retail native length
+    if _native_length(payload) in ((FRANCHISE_SAVE_SIZE, FRANCHISE_SAVE_SIZE + 0x1000, FRANCHISE_SAVE_SIZE + 128,
                          FRANCHISE_SAVE_SIZE + 0x1000 + 128) + CAPACITY_SAVE_SIZES
                         + tuple(n + 128 for n in CAPACITY_SAVE_SIZES)):
         from .nfl2k5_franchise_save import is_franchise_save
@@ -275,7 +276,7 @@ def save_kind(payload: bytes) -> str:
 def _franchise_shift(payload) -> int:
     if len(payload) == FRANCHISE_SAVE_SIZE:
         return 0
-    _require(_native_length(payload) in (FRANCHISE_SAVE_SIZE + 0x1000, FRANCHISE_SAVE_SIZE + 128,
+    _require(_native_length(payload) in (FRANCHISE_SAVE_SIZE, FRANCHISE_SAVE_SIZE + 0x1000, FRANCHISE_SAVE_SIZE + 128,
                                          FRANCHISE_SAVE_SIZE + 0x1000 + 128) + CAPACITY_SAVE_SIZES
              + tuple(n + 128 for n in CAPACITY_SAVE_SIZES), "unsupported franchise container length")
     from .nfl2k5_franchise_save import FranchiseSave

@@ -80,7 +80,8 @@ id      name        offset   size    content
 
 Studio API (stable; j4-history, j5-seed, j6-hof, c1-coachdata build on it)
 --------------------------------------------------------------------------
-``layout(payload)``, ``body_of(payload)``, ``read_body(body)``, ``empty_body()``, ``seal(body)``,
+``layout(payload)``, ``body_of(payload)``, ``read_body(body)``, ``empty_body()``, ``seal(body)`` (the native
+save), ``repair(body)`` (the native load),
 ``with_block(body, id, content)``, ``with_body(payload, body)``, ``admitted_sizes(arena_size)``,
 ``franchise_sizes()``, ``native_length(payload)``, the block codecs ``decode_seasons`` .. ``decode_boxscores`` and their
 ``encode_*`` / ``*_entry`` builders, ``BLOCKS``, ``BLOCK_BY_NAME``, ``BODY_SIZE``, ``PP_SIZE``, ``CAREER_SIZE``.
@@ -382,26 +383,39 @@ def block_of(body: bytes | bytearray, name_or_id) -> bytes | None:
     return read_body(body)["blocks"].get(block.id)
 
 
-def seal(body: bytes | bytearray, *, seeds: Mapping[int, bytes] | None = None) -> bytes:
-    """Recompute every known block's entry and checksum and the header checksum (what the host does at a save).
+def seal(body: bytes | bytearray) -> bytes:
+    """What the native host does at a save: every known block's entry (id, version, flags, offset, size) rewritten
+    and its checksum recomputed from the block's current bytes, then the header checksum. Unknown slots are kept byte
+    for byte. (An in-RAM body's checksums are only current right after a load or a save; seal it before reading.)"""
 
-    A known block whose entry is wrong is rebuilt from its seed (or zero), as the native load does; unknown slots are
-    kept byte for byte."""
-
-    _require(len(body) == BODY_SIZE, "wrong body size")
-    view = read_body(body)
-    _require(view["header_ok"], "the body header does not read back; start from empty_body()")
+    _require(len(body) == BODY_SIZE and bytes(body[:8]) == MAGIC, "not a franchise extension body")
     buf = bytearray(body)
-    seeds = dict(seeds or {})
     for block in BLOCKS:
-        at = _slot_at(block.id - 1)
-        if block.id in view["bad"]:
-            buf[block.offset:block.offset + block.size] = seeds.get(block.id, bytes(block.size))
         content = bytes(buf[block.offset:block.offset + block.size])
-        struct.pack_into("<HBBIII", buf, at, block.id, block.version, ENTRY_PRESENT, block.offset, block.size,
-                         adler32(content))
+        struct.pack_into("<HBBIII", buf, _slot_at(block.id - 1), block.id, block.version, ENTRY_PRESENT,
+                         block.offset, block.size, adler32(content))
     struct.pack_into("<I", buf, CHECKSUM_AT, _header_sum(buf))
     return bytes(buf)
+
+
+def repair(body: bytes | bytearray, *, seeds: Mapping[int, bytes] | None = None) -> tuple[bytes, list[int]]:
+    """What the native host does at a load: a body whose header fails is replaced by a fresh one; a known block whose
+    entry fails (id, version, offset, size, present, checksum) is rebuilt from its seed (or zero). Returns the body and
+    the rebuilt block ids (every id for a fresh body)."""
+
+    view = read_body(body)
+    if not view["header_ok"]:
+        return empty_body(seeds=seeds), [block.id for block in BLOCKS]
+    buf = bytearray(body)
+    seeds = dict(seeds or {})
+    for block_id in view["bad"]:
+        block = BLOCK_BY_ID[block_id]
+        content = seeds.get(block_id, bytes(block.size))
+        buf[block.offset:block.offset + block.size] = content
+        struct.pack_into("<HBBIII", buf, _slot_at(block_id - 1), block_id, block.version, ENTRY_PRESENT,
+                         block.offset, block.size, adler32(content))
+    struct.pack_into("<I", buf, CHECKSUM_AT, _header_sum(buf))
+    return bytes(buf), list(view["bad"])
 
 
 def with_block(body: bytes | bytearray, name_or_id, content: bytes) -> bytes:
@@ -881,5 +895,6 @@ __all__ = ["BLOCKS", "BLOCK_BY_ID", "BLOCK_BY_NAME", "BODY_SIZE", "Block", "CARE
            "decode_leaders", "decode_records", "decode_seasons", "decode_totals", "describe", "empty_body",
            "encode_hall", "encode_leaders", "encode_records", "encode_seasons", "encode_totals", "franchise_sizes",
            "inductee_entry", "layout", "leader_entry", "native_length", "pack_person", "pp_footer_of", "read_body",
-           "record_entry", "season_club_line", "season_record", "seal", "unpack_person", "with_block", "with_body",
+           "record_entry", "repair", "season_club_line", "season_record", "seal", "unpack_person", "with_block",
+           "with_body",
            "with_header"]
