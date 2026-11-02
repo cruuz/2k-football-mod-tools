@@ -1010,7 +1010,7 @@ class BuildPanel(QWidget):
                     "contract roster. Imported cap schedules are approximations, and original APY and guarantees "
                     "are not reproduced exactly. Keep this off for existing saves.")
         self.team_column_check = self._option(f, "team_column", "Show each season's team on the Player Card",
-                                              "Adds a TEAM column next to Yr. On the original 2004 rosters it also fills every past season with the real team.",
+                                              "Adds a TEAM column next to Yr. On the original 2004 rosters it also fills every past season with the real team, in franchises started from this disc.",
                                               details="This one option does both jobs on the original rosters: it adds the TEAM column and writes the real "
                                                       "team of every past season the roster already has stats for (built-in nflverse data, CC-BY-4.0). "
                                                       "Seasons that data does not cover show the player's own 2004 team, and the few 2004 free agents "
