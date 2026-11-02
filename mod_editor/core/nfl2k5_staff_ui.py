@@ -306,6 +306,7 @@ def _state(rows: Sequence[HeadCoachRow], staff: Mapping[str, Any]):
 def _name_once(rows: Sequence[HeadCoachRow], name: str) -> None:
     """The plan names coaches by name, so two head coaches with one name cannot be told apart (retail's two Schottenheimers)."""
 
+    _require(bool(name.strip()), "a club on this roster has no head coach record")
     clubs_with = [row.club.code for row in rows if row.name.casefold() == name.casefold()]
     _require(len(clubs_with) <= 1, f"{name} is the head coach of more than one club on this roster ({', '.join(clubs_with)}), "
                                    "and a staff plan tells coaches apart by name")

@@ -164,8 +164,10 @@ TEAM_STAT_FIELDS: dict[int, int] = {
 TEAM_STAT_NAMES = {0x4C: "passing_yards", 0x50: "rushing_yards", 0x62: "total_yards", 0x42: "turnovers"}
 
 COACH_SIZE = 0xA8
+# "body" is the model number (c%02d.iff of the low 16 bits; Finn's map reads a dword, whose upper half is the flag byte at
+# +0x1A and an unused byte, so the editor reads and writes only the model number)
 COACH_FIELDS: dict[str, tuple[int, str]] = {           # Finn's map; W/L/SB/playoff numbers re-checked on real coaches
-    "body": (0x18, "<I"), "seasons_with_team": (0x1C, "<H"), "total_seasons": (0x1E, "<H"),
+    "body": (0x18, "<H"), "seasons_with_team": (0x1C, "<H"), "total_seasons": (0x1E, "<H"),
     "wins": (0x20, "<H"), "losses": (0x22, "<H"), "ties": (0x24, "<H"),
     "season_wins": (0x26, "<H"), "season_losses": (0x28, "<H"), "season_ties": (0x2A, "<H"),
     "unknown_2c": (0x2C, "<H"), "unknown_2e": (0x2E, "<H"),

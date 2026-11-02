@@ -380,6 +380,9 @@ class EngineWordsTests(_Case):
     def test_the_engines_answer_for_each_club_is_on_the_page(self) -> None:
         with mock.patch.object(ui, "engine", return_value=self.engine):
             self.assertTrue(self.page.swap_clubs("KC", "DAL"))
+            self.assertEqual(self.engine.seen, [])                                       # not asked per click
+            self.assertIn("Checking this plan with the build engine", self.page.notes_text.text())
+            self.page.flush_engine()
             self.assertEqual(self.engine.seen[-1][1], b"roster body")
             names = {code: name for name, code in ui.head_coach_homes().items()}
             self.page.select_club("KC")
@@ -402,9 +405,26 @@ class EngineWordsTests(_Case):
             self.assertEqual(self.engine.seen, [])
             self.assertEqual(self.page.coach_engine.text(), "")
             self.page.swap_clubs("KC", "DAL")
+            self.page.set_defense("KC", "PHI")                                          # a burst of changes...
+            self.page.flush_engine()
+            self.assertEqual(len(self.engine.seen), 1)                                  # ...is one question
+            self.page.flush_engine()
+            self.assertEqual(len(self.engine.seen), 1)                                  # and nothing is asked twice
             self.page.reset_all()
+            self.page.flush_engine()
             self.assertEqual(self.page.coach_engine.text(), "")
             self.assertEqual(len(self.engine.seen), 1)
+
+    def test_a_shown_page_asks_by_itself_and_a_hidden_one_waits(self) -> None:
+        with mock.patch.object(ui, "engine", return_value=self.engine):
+            self.page.swap_clubs("KC", "DAL")
+            self.page._engine_due()                                                   # hidden: not asked
+            self.assertEqual(self.engine.seen, [])
+            self.page.show()
+            self.page._engine_due()
+            self.assertEqual(len(self.engine.seen), 1)
+            self.assertNotIn("Checking this plan", self.page.notes_text.text())
+            self.page.hide()
 
     def test_an_engine_that_raises_does_not_break_the_page(self) -> None:
         class Broken:
@@ -413,6 +433,7 @@ class EngineWordsTests(_Case):
 
         with mock.patch.object(ui, "engine", return_value=Broken()):
             self.assertTrue(self.page.swap_clubs("KC", "DAL"))
+            self.page.flush_engine()
             self.assertIn("the engine fell over", self.page.notes_text.text())
             self.assertEqual(self.page.table.item(0, 0).text(), "SF 49ers")
 
@@ -452,6 +473,23 @@ class InsideRostersTests(_Case):
         self.assertEqual(self.panel.coaches_panel.table.rowCount(), 0)
         self.assertEqual(pages.tabText(1), "Franchise")
         self.assertTrue(pages.isTabVisible(1))
+
+    def test_a_roster_without_coach_records_has_no_staff_to_plan(self) -> None:
+        from test_nfl2k5_roster_records import synthetic_body
+        self.panel.load_document(rr.load_body(synthetic_body()), label="no coaches")
+        pages, page = self.panel.pages, self.panel.coaches_panel
+        index = pages.indexOf(page)
+        self.assertEqual(page.state, "empty")
+        self.assertFalse(pages.isTabEnabled(index))
+        self.assertIn("no head coach records", pages.tabToolTip(index))
+        self.assertIn("no head coach records", page.state_label.text())
+        self.assertEqual(page.table.rowCount(), 0)
+        self.assertFalse(page.swap_clubs("KC", "DAL"))
+        self.assertEqual(self.panel.edits_document()["edits"], [])
+        self.assertNotIn("staff", self.panel.edits_document())
+        rows = [ui.HeadCoachRow(c, "", None) for c in ui.CLUBS[:2]]
+        with self.assertRaisesRegex(ui.StaffUiError, "has no head coach record"):
+            ui.swap_head_coaches(rows, ui.empty(), "SF", "CHI")
 
     def test_a_staff_change_is_a_roster_edit_with_undo_redo_and_an_export(self) -> None:
         self.load_disc_like()

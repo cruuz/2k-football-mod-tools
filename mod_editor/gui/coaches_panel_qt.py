@@ -19,7 +19,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any, Callable, Mapping, Sequence
 
-from PyQt5.QtCore import QRect, QSize, Qt, pyqtSignal
+from PyQt5.QtCore import QRect, QSize, Qt, QTimer, pyqtSignal
 from PyQt5.QtGui import QBrush, QColor, QFont, QImage, QPainter, QPixmap
 from PyQt5.QtWidgets import (
     QAbstractItemView,
@@ -53,6 +53,7 @@ HEADERS = ("Club", "Head coach", "Defensive coordinator", "Change")
 CHANGED_BRUSH = QColor(240, 180, 41, 60)
 SOURCE_NOTE = {
     "none": "Open a game disc (top right of the Studio, or Open disc roster on the Roster tab) to plan staff changes.",
+    "empty": "This roster has no head coach records, so there is no staff to plan.",
     "save": ("This roster came from an Xbox save. Plan staff changes for a build on a game disc. "
              "To change the coaches inside a franchise save, use the Franchise tab, Coaches."),
 }
@@ -274,6 +275,11 @@ class CoachesPanel(QWidget):
         self._quiet = False
         self.body_provider: Callable[[], bytes] | None = None
         self._engine = ui.EnginePlan()
+        self._engine_pending = False
+        self._engine_timer = QTimer(self)
+        self._engine_timer.setSingleShot(True)
+        self._engine_timer.setInterval(300)
+        self._engine_timer.timeout.connect(self._engine_due)
         self._build()
         self._refresh()
 
@@ -384,6 +390,8 @@ class CoachesPanel(QWidget):
         splitter.addWidget(right)
         splitter.setStretchFactor(0, 3)
         splitter.setStretchFactor(1, 2)
+        splitter.setSizes([620, 400])
+        splitter.setChildrenCollapsible(False)
         layout.addWidget(splitter, 1)
 
         changes = QGroupBox("Staff changes")
@@ -425,8 +433,16 @@ class CoachesPanel(QWidget):
             self._rows, self._state = [], "save"
         else:
             self._rows, self._state = ui.read_head_coaches(document), "disc"
+            if not any(row.name for row in self._rows):
+                self._rows, self._state = [], "empty"
         self._refresh(select=0 if self._rows else None)
         self.staff_replaced.emit()
+
+    @property
+    def state(self) -> str:
+        """``disc`` when there is a roster to plan on, else why not: ``none``, ``save`` or ``empty``."""
+
+        return self._state
 
     def set_rows(self, rows: Sequence[ui.HeadCoachRow]) -> None:
         """Adopt head coaches read elsewhere (the tests and the screenshot tool use this)."""
@@ -552,16 +568,45 @@ class CoachesPanel(QWidget):
         self.state_label.setText(text)
 
     def _ask_engine(self) -> ui.EnginePlan:
-        if self._state != "disc" or not self.has_changes() or self.body_provider is None or ui.engine() is None:
-            return ui.EnginePlan()                              # serializing the roster is not free: only with an engine
         try:
             return ui.engine_plan(self._staff, self.body_provider())
         except Exception as exc:                               # noqa: BLE001 - the page keeps working without the engine's words
             return ui.EnginePlan(errors=(plain_error(exc),))
 
+    def _schedule_engine(self) -> None:
+        """Ask the build-time engine about the plan a moment after the last change, not on every click: serializing the
+        roster and planning take seconds, and a burst of changes needs one answer."""
+
+        if self._state != "disc" or not self.has_changes() or self.body_provider is None or ui.engine() is None:
+            self._engine, self._engine_pending = ui.EnginePlan(), False
+            self._engine_timer.stop()
+            return
+        self._engine, self._engine_pending = ui.EnginePlan(), True
+        self._engine_timer.start()
+
+    def _engine_due(self) -> None:
+        if self.isVisible():
+            self.flush_engine()                                 # a hidden page asks when it is shown again
+
+    def flush_engine(self) -> None:
+        """Ask the engine now when an answer is due (the timer, showing the page and the tests all come here)."""
+
+        if not self._engine_pending:
+            return
+        self._engine_pending = False
+        self._engine_timer.stop()
+        self._engine = self._ask_engine()
+        self._show_club()
+        self._refresh_changes()
+
+    def showEvent(self, event) -> None:  # noqa: N802 - Qt naming
+        super().showEvent(event)
+        if self._engine_pending:
+            self._engine_timer.start()
+
     def _refresh(self, *, select: int | None = None) -> None:
         keep = self.selected_club().index if (select is None and self.selected_club() is not None) else select
-        self._engine = self._ask_engine()
+        self._schedule_engine()
         enabled = self._state == "disc"
         for widget in (self.table, self.filter, self.reset_button, self.load_button):
             widget.setEnabled(enabled)
@@ -734,6 +779,8 @@ class CoachesPanel(QWidget):
         notes = list(found)
         if self.has_changes() and self._state == "disc":
             notes += list(self._engine.errors) + list(self._engine.notes)
+            if self._engine_pending:
+                notes.append("Checking this plan with the build engine...")
             if ui.engine() is None:
                 notes.append("This version has no build-time staff engine yet, so a build ignores these changes until it does.")
         self.notes_text.setText("\n".join(notes))

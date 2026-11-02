@@ -81,7 +81,7 @@ def synthetic_staff_franchise(*, year_field: int = 7, user_team: int = 0, contig
             if not contiguous and index == 2 and field == 0x00:
                 data[cursor] = 0x41                          # a stray byte between two coach strings
                 cursor += 2
-        struct.pack_into("<I", data, record + fs.COACH_FIELDS["body"][0], body)
+        struct.pack_into("<H", data, record + fs.COACH_FIELDS["body"][0], body)
         data[record + fs.COACH_FLAGS] = flags
         struct.pack_into("<H", data, record + fs.COACH_FIELDS["photo"][0], photo)
         for name, value in career.items():
@@ -131,7 +131,7 @@ def synthetic_staff_body() -> bytes:
         record = BODY_COACH_AT + index * fs.COACH_SIZE
         for field, text in zip(fs.COACH_STRING_FIELDS, (first, last, *bio)):
             _rel(data, record + field, put(text))
-        struct.pack_into("<I", data, record + fs.COACH_FIELDS["body"][0], body)
+        struct.pack_into("<H", data, record + fs.COACH_FIELDS["body"][0], body)
         data[record + fs.COACH_FLAGS] = flags
         struct.pack_into("<H", data, record + fs.COACH_FIELDS["photo"][0], photo)
         for name, value in career.items():

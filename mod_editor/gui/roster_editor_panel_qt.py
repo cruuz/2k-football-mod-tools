@@ -1877,6 +1877,7 @@ class RosterEditorPanel(QWidget):
         self.pages.setTabToolTip(self._coaches_index, {
             "none": "Open a game disc to plan staff changes: swap head coaches, hire a coach, change a coordinator.",
             "save": "Staff plans are for building a disc. To change the coaches inside a franchise save, use the Franchise tab.",
+            "empty": "This roster has no head coach records, so there is no staff to plan.",
             "disc": "Swap head coaches, hire a coach or change a defensive coordinator for your build."}[state])
 
     def _staff_roster_body(self) -> bytes:
@@ -2151,7 +2152,7 @@ class RosterEditorPanel(QWidget):
         self._show_franchise(None)
         self.franchise_panel.clear()
         self.coaches_panel.set_roster(document, kind=kind or "disc")
-        self._show_coaches_tab(kind in ("", "disc"), "disc" if kind in ("", "disc") else "save")
+        self._show_coaches_tab(self.coaches_panel.state == "disc", self.coaches_panel.state)
         # an explicit load replaces the Anniversary catalog too (a routine refresh never reaches here)
         self._reload_espn25(source if kind == "disc" else None)
         self._dirty.clear()

@@ -132,7 +132,7 @@ in-game save/load observation. No save format or serializer changes are made.
 ## Franchise fields inside the arena
 
 * **Coach record** (`0xA8` bytes; table at root `+0x30/+0x34`, 35 on retail; team `+0x14C` points at
-  one): `+0x00/+0x04` first/last name, `+0x08/+0x0C/+0x10` three info lines, `+0x18` body (u32),
+  one): `+0x00/+0x04` first/last name, `+0x08/+0x0C/+0x10` three info lines, `+0x18` body (u16: the model `c%02d.iff`; the flag byte is at `+0x1A`),
   `+0x1C` seasons with team, `+0x1E` total seasons, `+0x20/+0x22/+0x24` career W/L/T, `+0x26/+0x28/+0x2A`
   season W/L/T (promoted at rollover by `FUN_00247b40`), `+0x30` winning seasons, `+0x32` Super Bowls,
   `+0x34/+0x36` playoff W/L, `+0x38/+0x3A` Super Bowl W/L, `+0x40` photo id, `+0x42..+0x58` the 23

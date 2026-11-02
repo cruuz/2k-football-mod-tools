@@ -194,8 +194,8 @@ class ReplaceTests(unittest.TestCase):
         self.assertTrue(coach.flags & fs.COACH_FLAG_NO_NAME)
         # he keeps the seat's ratings, play-calling and sideline body
         old = fs.FranchiseSave(self.payload).coaches()[2]
-        self.assertEqual((coach.ratings, coach.tendencies, coach.fields["body"] & 0xFFFF, coach.fields["playcalling_run"]),
-                         (old.ratings, old.tendencies, old.fields["body"] & 0xFFFF, old.fields["playcalling_run"]))
+        self.assertEqual((coach.ratings, coach.tendencies, coach.fields["body"], coach.fields["playcalling_run"]),
+                         (old.ratings, old.tendencies, old.fields["body"], old.fields["playcalling_run"]))
         # nobody else's text changed
         after = texts(save)
         self.assertEqual([t for i, t in enumerate(after) if i != 2], [t for i, t in enumerate(before_texts) if i != 2])

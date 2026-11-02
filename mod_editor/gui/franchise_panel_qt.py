@@ -82,6 +82,7 @@ _CAPTIONS = {
     "qb": "QB", "rb": "RB", "te": "TE", "wr": "WR", "ol": "OL", "dl": "DL", "lb": "LB", "db": "DB",
     "rush_for": "Rush For", "pass_for": "Pass For", "i_form_run": "I Form: run", "i_form_pass": "I Form: pass",
 }
+CHECKS_RANGE_LINES = 60                    # the Checks page lists this many changed byte ranges, then says how many more
 YEAR_MIN, YEAR_MAX = fs.DISPLAY_YEAR_BASE, fs.DISPLAY_YEAR_BASE + fs.FRANCHISE_MAX_YEAR_INDEX
 CAP_MAX_MILLIONS = 0x7FFFFFFF / 1000
 GRID_ROW_TITLES = tuple(fs.ROW_NAMES.get(row, f"week {row + 1}").title() for row in range(fs.GRID_ROWS))
@@ -698,6 +699,7 @@ class FranchisePanel(QWidget):
         page.addWidget(area)
         page.setStretchFactor(0, 1)
         page.setStretchFactor(1, 3)
+        page.setSizes([250, 750])                 # a coach's name and club fit in the list
         return page
 
     def _build_injured_reserve(self) -> QWidget:
@@ -1285,10 +1287,12 @@ class FranchisePanel(QWidget):
         lines.append("")
         lines.append(f"Bytes that differ from the loaded save with the roster edits applied: {len(ranges)} "
                      f"range{'s' if len(ranges) != 1 else ''}, {total:,} byte{'s' if total != 1 else ''}")
-        for start, end in ranges:
+        for start, end in ranges[:CHECKS_RANGE_LINES]:
             region = next((r for r in fs.REGIONS if r.offset <= start < r.end), None)
             where = f"{region.label} [{region.status}]" if region else "outside the map"
             lines.append(f"  0x{start:06X}..0x{end:06X} ({end - start} B) — {where}")
+        if len(ranges) > CHECKS_RANGE_LINES:
+            lines.append(f"  ... and {len(ranges) - CHECKS_RANGE_LINES} more ranges (a coach's new name rewrites the coach text)")
         return "\n".join(lines)
 
     def _refresh_checks(self, *, force: bool = False) -> None:
