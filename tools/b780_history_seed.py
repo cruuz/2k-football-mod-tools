@@ -140,7 +140,7 @@ class WikiSources:
 
     def describe(self, publisher: str = "Wikipedia") -> dict[str, dict]:
         return {k: {"title": self.pins[k][0], "url": wiki_url(self.pins[k][0], self.pins[k][1]), "revision": self.pins[k][1],
-                    "sha256": self.pins[k][2], "publisher": publisher} for k in sorted(self.used)}
+                    "sha256": self.pins[k][2], "publisher": publisher, "license": "CC BY-SA 4.0"} for k in sorted(self.used)}
 
 
 def _skip_balanced(text: str, start: int, open_: str, close: str) -> int:
@@ -1993,8 +1993,25 @@ RULES = {
                       "unofficial (the NFL did not count tackles); `years` is first-last season, `present` while active",
     "hall_of_fame": "all inductees through the Class of 2026 as the pinned page lists them; `club` is the club (today's "
                     "franchise) with the most seasons among the member's stints, null for defunct clubs; `position` is the "
-                    "first listed position as one of the 17 codes, null for coaches and contributors",
+                    "first listed position as one of the 17 codes, null for coaches and contributors; `flags` are the page's own "
+                    "markers (its introduction counts first-year inductees older than its table does, so only the charter "
+                    "and centennial counts, 17 and 15, are relied on); `years` are the stint years, comma separated",
     "data_through": "the end of the 2025 season (Super Bowl LX, February 8, 2026)",
+    "footer_mapping": {
+        "note": "read-only tables for the History screen come from this file; only the pending candidates and the league career "
+                "leaders are footer seeds (nfl2k5_franchise_extension: encode_hall, encode_leaders), as j23-footer's report says",
+        "seasons": "season_club_line(wins, losses, ties, playoff=index of playoff_codes, division_champion=place==1, bye, "
+                   "place, points_for, points_against, coach=pack_person(first, last, 31), seed); season_record(year, ..., "
+                   "champion=arena index of `champion`, runner_up, champion_points, runner_points, awards=winners[0] of the "
+                   "eight kinds in SEASON_AWARDS order)",
+        "records": "record_entry(person, club arena index, value, year, week_row); value in the unit of the record "
+                   "(sacks_half in half sacks); `date` gives the game, forced_fumbles.game has no season on its page",
+        "leaders": "leader_entry(person, value, flags=LEADER_REAL | LEADER_LINKED when `active`, player=roster index found "
+                   "from `gsis_id`/`birth_date`, check); the footer takes the ten categories of LEADER_CATEGORIES, rank 1..5",
+        "pending_candidates": "candidate_entry(person, club arena index, retired=last_season, score=J6's rule, "
+                              "seasons=seasons_played, flags=HALL_REAL, keys=the `keys` in key_groups order, "
+                              "honors=sum of the honors counts the score uses, sb_wins=honors.super_bowl)",
+    },
 }
 
 
@@ -2047,7 +2064,7 @@ def build(games_path: Path, nflverse_dir: Path, cache: Path | None, pins: dict) 
     assert used_honor_pages == set(honor_page_keys()), "every honor page is read"
     sources["wiki_honor_pages"] = {**pages_manifest(pins, ("wiki_allpro_", "wiki_probowl_"), "wiki_allpro_<season>, wiki_probowl_<season>",
                                                     "<season> All-Pro Team and the Pro Bowl played after the season, 2002..2025"),
-                                   "publisher": "Wikipedia"}
+                                   "publisher": "Wikipedia", "license": "CC BY-SA 4.0"}
     sources["nflverse_stats"] = {
         "title": "nflverse weekly player statistics 1999..2025 and the players table", "publisher": "nflverse",
         "license": "CC-BY-4.0", "repository": "https://github.com/nflverse/nflverse-data",
@@ -2065,6 +2082,8 @@ def build(games_path: Path, nflverse_dir: Path, cache: Path | None, pins: dict) 
                       "totals_2002_2025": totals[club]})
     return {
         "schema": SCHEMA, "base_year": BASE_YEAR, "first_season": FIRST_SEASON, "last_season": LAST_SEASON,
+        "credits": ["Wikipedia contributors, pages pinned by revision (CC BY-SA 4.0): facts only",
+                    "nflverse (https://github.com/nflverse), games, player statistics, players and rosters (CC BY 4.0)"],
         "rules": RULES, "sources": sources, "clubs": clubs, "playoff_codes": list(PLAYOFF_CODES), "seasons": seasons,
         "awards": {"kinds": [{"id": a, "label": label, "source": key} for a, label, key, _h in AWARDS], "winners": awards},
         "nfl_records": records, "nfl_career_leaders": leaders, "hall_of_fame": hof, "pending_candidates": candidates,

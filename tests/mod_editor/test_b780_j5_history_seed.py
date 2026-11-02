@@ -80,7 +80,7 @@ class SchemaTests(unittest.TestCase):
     def test_header_and_top_level_keys(self):
         self.assertEqual(DATA["schema"], "nfl2k5_history_seed/v1")
         self.assertEqual((DATA["base_year"], DATA["first_season"], DATA["last_season"]), (2026, 2002, 2025))
-        self.assertEqual(set(DATA), {"schema", "base_year", "first_season", "last_season", "rules", "sources", "clubs",
+        self.assertEqual(set(DATA), {"schema", "base_year", "first_season", "last_season", "credits", "rules", "sources", "clubs",
                                      "playoff_codes", "seasons", "awards", "nfl_records", "nfl_career_leaders", "hall_of_fame",
                                      "pending_candidates", "checks"})
         self.assertEqual(DATA["playoff_codes"], ["missed", "lost_wild_card", "lost_divisional", "lost_conference",
@@ -238,6 +238,13 @@ class SeasonTests(unittest.TestCase):
         self.assertEqual((carolina["place"], tampa["place"]), (1, 2))              # the three-way tie of 2025 (CAR, TB, ATL)
         self.assertEqual(carolina["tiebreak"], "head_to_head")
         self.assertEqual(team(2025, "ATL")["place"], 3)
+
+    def test_the_footer_mapping_is_written_into_the_data(self):
+        mapping = DATA["rules"]["footer_mapping"]
+        self.assertEqual(set(mapping), {"note", "seasons", "records", "leaders", "pending_candidates"})
+        self.assertIn("SEASON_AWARDS", mapping["seasons"])
+        self.assertEqual([k["id"] for k in DATA["awards"]["kinds"]],
+                         ["mvp", "opoy", "dpoy", "oroy", "droy", "cpoy", "coy", "sb_mvp"])        # the footer's SEASON_AWARDS order
 
     def test_playoff_seeds_follow_the_field_the_byes_and_the_division_winners(self):
         divisions = {c["id"]: c["division"] for c in DATA["clubs"]}
@@ -602,7 +609,7 @@ class CandidateTests(unittest.TestCase):
         self.assertEqual(manifest, tool.pages_manifest(PINS, ("wiki_allpro_", "wiki_probowl_"),
                                                        "wiki_allpro_<season>, wiki_probowl_<season>",
                                                        "<season> All-Pro Team and the Pro Bowl played after the season, 2002..2025")
-                         | {"publisher": "Wikipedia"})
+                         | {"publisher": "Wikipedia", "license": "CC BY-SA 4.0"})
 
 
 class SourceTests(unittest.TestCase):
@@ -630,6 +637,11 @@ class SourceTests(unittest.TestCase):
             self.assertTrue(pin["url"].startswith("https://en.wikipedia.org/w/index.php?title="), key)
             self.assertIn(f"oldid={pin['revision']}", pin["url"], key)
             self.assertEqual(pin["publisher"], "Wikipedia")
+            self.assertEqual(pin["license"], "CC BY-SA 4.0")
+        self.assertEqual(len(DATA["credits"]), 2)
+        self.assertIn("CC BY 4.0", DATA["credits"][1])
+        for key in ("nflverse_games", "nflverse_stats", "nflverse_rosters"):
+            self.assertEqual(sources[key]["license"], "CC-BY-4.0")
 
     def test_the_games_pin_is_the_tools_constant(self):
         pin = DATA["sources"]["nflverse_games"]

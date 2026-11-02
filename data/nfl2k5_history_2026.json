@@ -3,6 +3,7 @@
  "base_year": 2026,
  "first_season": 2002,
  "last_season": 2025,
+ "credits": ["Wikipedia contributors, pages pinned by revision (CC BY-SA 4.0): facts only", "nflverse (https://github.com/nflverse), games, player statistics, players and rosters (CC BY 4.0)"],
  "rules": {
   "regular_season": "W-L-T and points from regular-season rows of the nflverse games file only; playoff games never count",
   "division_place": "1 to 4 inside the club's division by win percentage, then the NFL's written tie-break procedure applied to the game scores: head-to-head, division record, common games (at least four), conference record, strength of victory, strength of schedule, the two points rankings, net points in common games, net points in all games; one list for two clubs and for three or more, and when a step leaves two of three or more clubs the procedure restarts for those two; a club's `tiebreak` field names the step that placed it",
@@ -24,8 +25,15 @@
    "single_source": "only the pinned Wikipedia page speaks (a career before 1999, or tackles, which were never official)"
   },
   "career_leaders": "regular-season career top five per category from the pinned Wikipedia leader lists; the tackle list is unofficial (the NFL did not count tackles); `years` is first-last season, `present` while active",
-  "hall_of_fame": "all inductees through the Class of 2026 as the pinned page lists them; `club` is the club (today's franchise) with the most seasons among the member's stints, null for defunct clubs; `position` is the first listed position as one of the 17 codes, null for coaches and contributors",
-  "data_through": "the end of the 2025 season (Super Bowl LX, February 8, 2026)"
+  "hall_of_fame": "all inductees through the Class of 2026 as the pinned page lists them; `club` is the club (today's franchise) with the most seasons among the member's stints, null for defunct clubs; `position` is the first listed position as one of the 17 codes, null for coaches and contributors; `flags` are the page's own markers (its introduction counts first-year inductees older than its table does, so only the charter and centennial counts, 17 and 15, are relied on); `years` are the stint years, comma separated",
+  "data_through": "the end of the 2025 season (Super Bowl LX, February 8, 2026)",
+  "footer_mapping": {
+   "note": "read-only tables for the History screen come from this file; only the pending candidates and the league career leaders are footer seeds (nfl2k5_franchise_extension: encode_hall, encode_leaders), as j23-footer's report says",
+   "seasons": "season_club_line(wins, losses, ties, playoff=index of playoff_codes, division_champion=place==1, bye, place, points_for, points_against, coach=pack_person(first, last, 31), seed); season_record(year, ..., champion=arena index of `champion`, runner_up, champion_points, runner_points, awards=winners[0] of the eight kinds in SEASON_AWARDS order)",
+   "records": "record_entry(person, club arena index, value, year, week_row); value in the unit of the record (sacks_half in half sacks); `date` gives the game, forced_fumbles.game has no season on its page",
+   "leaders": "leader_entry(person, value, flags=LEADER_REAL | LEADER_LINKED when `active`, player=roster index found from `gsis_id`/`birth_date`, check); the footer takes the ten categories of LEADER_CATEGORIES, rank 1..5",
+   "pending_candidates": "candidate_entry(person, club arena index, retired=last_season, score=J6's rule, seasons=seasons_played, flags=HALL_REAL, keys=the `keys` in key_groups order, honors=sum of the honors counts the score uses, sb_wins=honors.super_bowl)"
+  }
  },
  "sources": {
   "nflverse_games": {
@@ -42,77 +50,198 @@
    "used_rows_sha256": "e80699cf6b0becf30f692f58983190681cf7630a005bcceb6f3eeee5241be90e",
    "used_fields": ["game_id", "season", "game_type", "week", "gameday", "away_team", "away_score", "home_team", "home_score", "overtime", "away_coach", "home_coach"]
   },
-  "wiki_annual_interceptions": {"title": "List of NFL annual interceptions leaders", "url": "https://en.wikipedia.org/w/index.php?title=List_of_NFL_annual_interceptions_leaders&oldid=1346791749", "revision": 1346791749, "sha256": "3fa920d358755ec952833b8b957e7d117ee17d564e60a8b613611e06e23817d8", "publisher": "Wikipedia"},
+  "wiki_annual_interceptions": {
+   "title": "List of NFL annual interceptions leaders",
+   "url": "https://en.wikipedia.org/w/index.php?title=List_of_NFL_annual_interceptions_leaders&oldid=1346791749",
+   "revision": 1346791749,
+   "sha256": "3fa920d358755ec952833b8b957e7d117ee17d564e60a8b613611e06e23817d8",
+   "publisher": "Wikipedia",
+   "license": "CC BY-SA 4.0"
+  },
   "wiki_annual_passing_tds": {
    "title": "List of NFL annual passing touchdowns leaders",
    "url": "https://en.wikipedia.org/w/index.php?title=List_of_NFL_annual_passing_touchdowns_leaders&oldid=1357999503",
    "revision": 1357999503,
    "sha256": "0eb3063ac4b34ed4808031f590b30122d04f21c04aedba98526ed97c3eaec3c0",
-   "publisher": "Wikipedia"
+   "publisher": "Wikipedia",
+   "license": "CC BY-SA 4.0"
   },
-  "wiki_annual_passing_yards": {"title": "List of NFL annual passing yards leaders", "url": "https://en.wikipedia.org/w/index.php?title=List_of_NFL_annual_passing_yards_leaders&oldid=1351752496", "revision": 1351752496, "sha256": "c644d832c4f3c549fec20df8844e66af678fe2b9f39e3fa0e21774f51340f3b9", "publisher": "Wikipedia"},
-  "wiki_annual_points": {"title": "List of NFL annual scoring leaders", "url": "https://en.wikipedia.org/w/index.php?title=List_of_NFL_annual_scoring_leaders&oldid=1336866333", "revision": 1336866333, "sha256": "d07211bd1516fc7d4ae6536e347913d03ecd23b2399f5a7627c03518acd59fe3", "publisher": "Wikipedia"},
+  "wiki_annual_passing_yards": {
+   "title": "List of NFL annual passing yards leaders",
+   "url": "https://en.wikipedia.org/w/index.php?title=List_of_NFL_annual_passing_yards_leaders&oldid=1351752496",
+   "revision": 1351752496,
+   "sha256": "c644d832c4f3c549fec20df8844e66af678fe2b9f39e3fa0e21774f51340f3b9",
+   "publisher": "Wikipedia",
+   "license": "CC BY-SA 4.0"
+  },
+  "wiki_annual_points": {
+   "title": "List of NFL annual scoring leaders",
+   "url": "https://en.wikipedia.org/w/index.php?title=List_of_NFL_annual_scoring_leaders&oldid=1336866333",
+   "revision": 1336866333,
+   "sha256": "d07211bd1516fc7d4ae6536e347913d03ecd23b2399f5a7627c03518acd59fe3",
+   "publisher": "Wikipedia",
+   "license": "CC BY-SA 4.0"
+  },
   "wiki_annual_receiving_tds": {
    "title": "List of NFL annual receiving touchdowns leaders",
    "url": "https://en.wikipedia.org/w/index.php?title=List_of_NFL_annual_receiving_touchdowns_leaders&oldid=1372185715",
    "revision": 1372185715,
    "sha256": "78df71bda835dae00161312b635756e23172d0b5a9adc030394ecfb1ccc0e995",
-   "publisher": "Wikipedia"
+   "publisher": "Wikipedia",
+   "license": "CC BY-SA 4.0"
   },
-  "wiki_annual_receiving_yards": {"title": "List of NFL annual receiving yards leaders", "url": "https://en.wikipedia.org/w/index.php?title=List_of_NFL_annual_receiving_yards_leaders&oldid=1338013870", "revision": 1338013870, "sha256": "d063fab2c04aa782e927787a04a0692ec0a8eb6421d23bd29e39d441a765e4fc", "publisher": "Wikipedia"},
-  "wiki_annual_receptions": {"title": "List of NFL annual receptions leaders", "url": "https://en.wikipedia.org/w/index.php?title=List_of_NFL_annual_receptions_leaders&oldid=1372197508", "revision": 1372197508, "sha256": "d30ea9b0e8664e1172e3eae5f097898ecc5ddc557c1209dc2d40db7be1d31182", "publisher": "Wikipedia"},
+  "wiki_annual_receiving_yards": {
+   "title": "List of NFL annual receiving yards leaders",
+   "url": "https://en.wikipedia.org/w/index.php?title=List_of_NFL_annual_receiving_yards_leaders&oldid=1338013870",
+   "revision": 1338013870,
+   "sha256": "d063fab2c04aa782e927787a04a0692ec0a8eb6421d23bd29e39d441a765e4fc",
+   "publisher": "Wikipedia",
+   "license": "CC BY-SA 4.0"
+  },
+  "wiki_annual_receptions": {
+   "title": "List of NFL annual receptions leaders",
+   "url": "https://en.wikipedia.org/w/index.php?title=List_of_NFL_annual_receptions_leaders&oldid=1372197508",
+   "revision": 1372197508,
+   "sha256": "d30ea9b0e8664e1172e3eae5f097898ecc5ddc557c1209dc2d40db7be1d31182",
+   "publisher": "Wikipedia",
+   "license": "CC BY-SA 4.0"
+  },
   "wiki_annual_rushing_tds": {
    "title": "List of NFL annual rushing touchdowns leaders",
    "url": "https://en.wikipedia.org/w/index.php?title=List_of_NFL_annual_rushing_touchdowns_leaders&oldid=1337280879",
    "revision": 1337280879,
    "sha256": "2bc4b523ae32dc31da83331b377931cdcbeb0907f677107b8c31ed500c60b7d2",
-   "publisher": "Wikipedia"
+   "publisher": "Wikipedia",
+   "license": "CC BY-SA 4.0"
   },
-  "wiki_annual_rushing_yards": {"title": "List of NFL annual rushing yards leaders", "url": "https://en.wikipedia.org/w/index.php?title=List_of_NFL_annual_rushing_yards_leaders&oldid=1337282463", "revision": 1337282463, "sha256": "a3185d215c8acf5da9e527dad9ef53bb0293c64780b3c5ba95c7aff3d3f083bf", "publisher": "Wikipedia"},
-  "wiki_annual_sacks": {"title": "List of NFL annual sacks leaders", "url": "https://en.wikipedia.org/w/index.php?title=List_of_NFL_annual_sacks_leaders&oldid=1372191569", "revision": 1372191569, "sha256": "fd48cdf01fd77c5587c858616409e5dc35f186e87ee9aac62a0397e5920df2d7", "publisher": "Wikipedia"},
+  "wiki_annual_rushing_yards": {
+   "title": "List of NFL annual rushing yards leaders",
+   "url": "https://en.wikipedia.org/w/index.php?title=List_of_NFL_annual_rushing_yards_leaders&oldid=1337282463",
+   "revision": 1337282463,
+   "sha256": "a3185d215c8acf5da9e527dad9ef53bb0293c64780b3c5ba95c7aff3d3f083bf",
+   "publisher": "Wikipedia",
+   "license": "CC BY-SA 4.0"
+  },
+  "wiki_annual_sacks": {
+   "title": "List of NFL annual sacks leaders",
+   "url": "https://en.wikipedia.org/w/index.php?title=List_of_NFL_annual_sacks_leaders&oldid=1372191569",
+   "revision": 1372191569,
+   "sha256": "fd48cdf01fd77c5587c858616409e5dc35f186e87ee9aac62a0397e5920df2d7",
+   "publisher": "Wikipedia",
+   "license": "CC BY-SA 4.0"
+  },
   "wiki_career_field_goals": {
    "title": "List of most career field goals in NFL history",
    "url": "https://en.wikipedia.org/w/index.php?title=List_of_most_career_field_goals_in_NFL_history&oldid=1345696050",
    "revision": 1345696050,
    "sha256": "c8aae1848ab28946d9be38990ba7d8a9b636b18d15da21154a71fd8fd100d581",
-   "publisher": "Wikipedia"
+   "publisher": "Wikipedia",
+   "license": "CC BY-SA 4.0"
   },
-  "wiki_career_interceptions": {"title": "List of NFL career interceptions leaders", "url": "https://en.wikipedia.org/w/index.php?title=List_of_NFL_career_interceptions_leaders&oldid=1333842537", "revision": 1333842537, "sha256": "1698e090b7bd17287a8ecfdc6151014a890fc4ff0fefc5392871250c8ad281b9", "publisher": "Wikipedia"},
+  "wiki_career_interceptions": {
+   "title": "List of NFL career interceptions leaders",
+   "url": "https://en.wikipedia.org/w/index.php?title=List_of_NFL_career_interceptions_leaders&oldid=1333842537",
+   "revision": 1333842537,
+   "sha256": "1698e090b7bd17287a8ecfdc6151014a890fc4ff0fefc5392871250c8ad281b9",
+   "publisher": "Wikipedia",
+   "license": "CC BY-SA 4.0"
+  },
   "wiki_career_passing_tds": {
    "title": "List of NFL career passing touchdowns leaders",
    "url": "https://en.wikipedia.org/w/index.php?title=List_of_NFL_career_passing_touchdowns_leaders&oldid=1372042019",
    "revision": 1372042019,
    "sha256": "c3c0c6bd1107c2989a71e8cd19f60b7317f7d4e1a3d70a91d50e40808005c7cb",
-   "publisher": "Wikipedia"
+   "publisher": "Wikipedia",
+   "license": "CC BY-SA 4.0"
   },
-  "wiki_career_passing_yards": {"title": "List of NFL career passing yards leaders", "url": "https://en.wikipedia.org/w/index.php?title=List_of_NFL_career_passing_yards_leaders&oldid=1372384773", "revision": 1372384773, "sha256": "05e31394421cabeb7a1cda0ef450e97943c2c492ecb628759f529016b0f62dd8", "publisher": "Wikipedia"},
-  "wiki_career_points": {"title": "List of NFL career scoring leaders", "url": "https://en.wikipedia.org/w/index.php?title=List_of_NFL_career_scoring_leaders&oldid=1336866089", "revision": 1336866089, "sha256": "859f7d34994b62f7a6cea1ac53282e2bc442e9bfede66e9d09ff8c14df8b956e", "publisher": "Wikipedia"},
+  "wiki_career_passing_yards": {
+   "title": "List of NFL career passing yards leaders",
+   "url": "https://en.wikipedia.org/w/index.php?title=List_of_NFL_career_passing_yards_leaders&oldid=1372384773",
+   "revision": 1372384773,
+   "sha256": "05e31394421cabeb7a1cda0ef450e97943c2c492ecb628759f529016b0f62dd8",
+   "publisher": "Wikipedia",
+   "license": "CC BY-SA 4.0"
+  },
+  "wiki_career_points": {
+   "title": "List of NFL career scoring leaders",
+   "url": "https://en.wikipedia.org/w/index.php?title=List_of_NFL_career_scoring_leaders&oldid=1336866089",
+   "revision": 1336866089,
+   "sha256": "859f7d34994b62f7a6cea1ac53282e2bc442e9bfede66e9d09ff8c14df8b956e",
+   "publisher": "Wikipedia",
+   "license": "CC BY-SA 4.0"
+  },
   "wiki_career_receiving_tds": {
    "title": "List of NFL career receiving touchdowns leaders",
    "url": "https://en.wikipedia.org/w/index.php?title=List_of_NFL_career_receiving_touchdowns_leaders&oldid=1357804838",
    "revision": 1357804838,
    "sha256": "c76e07cfd1998b092211f3f3e75e9d19838679fa77bcbc3a6db341daacbd147f",
-   "publisher": "Wikipedia"
+   "publisher": "Wikipedia",
+   "license": "CC BY-SA 4.0"
   },
-  "wiki_career_receiving_yards": {"title": "List of NFL career receiving yards leaders", "url": "https://en.wikipedia.org/w/index.php?title=List_of_NFL_career_receiving_yards_leaders&oldid=1370176544", "revision": 1370176544, "sha256": "110e14093f81cb0a2449d51349e435f42e9e4eaf3f579cc8fd108bc32a5ea7a8", "publisher": "Wikipedia"},
-  "wiki_career_receptions": {"title": "List of NFL career receptions leaders", "url": "https://en.wikipedia.org/w/index.php?title=List_of_NFL_career_receptions_leaders&oldid=1369984639", "revision": 1369984639, "sha256": "e2edcb0e7a54a21c63991377aaf207f2f2fb9cce1ce9d84fb4474cbe91941ee6", "publisher": "Wikipedia"},
+  "wiki_career_receiving_yards": {
+   "title": "List of NFL career receiving yards leaders",
+   "url": "https://en.wikipedia.org/w/index.php?title=List_of_NFL_career_receiving_yards_leaders&oldid=1370176544",
+   "revision": 1370176544,
+   "sha256": "110e14093f81cb0a2449d51349e435f42e9e4eaf3f579cc8fd108bc32a5ea7a8",
+   "publisher": "Wikipedia",
+   "license": "CC BY-SA 4.0"
+  },
+  "wiki_career_receptions": {
+   "title": "List of NFL career receptions leaders",
+   "url": "https://en.wikipedia.org/w/index.php?title=List_of_NFL_career_receptions_leaders&oldid=1369984639",
+   "revision": 1369984639,
+   "sha256": "e2edcb0e7a54a21c63991377aaf207f2f2fb9cce1ce9d84fb4474cbe91941ee6",
+   "publisher": "Wikipedia",
+   "license": "CC BY-SA 4.0"
+  },
   "wiki_career_rushing_tds": {
    "title": "List of NFL career rushing touchdowns leaders",
    "url": "https://en.wikipedia.org/w/index.php?title=List_of_NFL_career_rushing_touchdowns_leaders&oldid=1337627272",
    "revision": 1337627272,
    "sha256": "bd95b47e12d9609217d70d05d94c4768807a145ef44c90f037f401afc6c937a9",
-   "publisher": "Wikipedia"
+   "publisher": "Wikipedia",
+   "license": "CC BY-SA 4.0"
   },
-  "wiki_career_rushing_yards": {"title": "List of NFL career rushing yards leaders", "url": "https://en.wikipedia.org/w/index.php?title=List_of_NFL_career_rushing_yards_leaders&oldid=1337627338", "revision": 1337627338, "sha256": "c0206d4471c59795e0a72c1619e4acd62b37cee3b2bce37ae63ec041a8acdf21", "publisher": "Wikipedia"},
-  "wiki_career_sacks": {"title": "List of NFL career sacks leaders", "url": "https://en.wikipedia.org/w/index.php?title=List_of_NFL_career_sacks_leaders&oldid=1372201849", "revision": 1372201849, "sha256": "ea8b5b0f96d3999f1529a78d7dd5efbb410dc2d9cb50c1cdb9e9548d2fe071f3", "publisher": "Wikipedia"},
-  "wiki_career_tackles": {"title": "List of NFL career tackles leaders", "url": "https://en.wikipedia.org/w/index.php?title=List_of_NFL_career_tackles_leaders&oldid=1371826541", "revision": 1371826541, "sha256": "7e722b42ac831ad211f039b8379eb664d716fc349c17a40e0b8cb3acec3be02b", "publisher": "Wikipedia"},
-  "wiki_coy": {"title": "AP NFL Coach of the Year", "url": "https://en.wikipedia.org/w/index.php?title=AP_NFL_Coach_of_the_Year&oldid=1379757227", "revision": 1379757227, "sha256": "008010e0e2c58cbe68b8b8f45d59d80f07a3867d64981727653b4a40f74c0e60", "publisher": "Wikipedia", "note": "AP NFL Coach of the Year"},
+  "wiki_career_rushing_yards": {
+   "title": "List of NFL career rushing yards leaders",
+   "url": "https://en.wikipedia.org/w/index.php?title=List_of_NFL_career_rushing_yards_leaders&oldid=1337627338",
+   "revision": 1337627338,
+   "sha256": "c0206d4471c59795e0a72c1619e4acd62b37cee3b2bce37ae63ec041a8acdf21",
+   "publisher": "Wikipedia",
+   "license": "CC BY-SA 4.0"
+  },
+  "wiki_career_sacks": {
+   "title": "List of NFL career sacks leaders",
+   "url": "https://en.wikipedia.org/w/index.php?title=List_of_NFL_career_sacks_leaders&oldid=1372201849",
+   "revision": 1372201849,
+   "sha256": "ea8b5b0f96d3999f1529a78d7dd5efbb410dc2d9cb50c1cdb9e9548d2fe071f3",
+   "publisher": "Wikipedia",
+   "license": "CC BY-SA 4.0"
+  },
+  "wiki_career_tackles": {
+   "title": "List of NFL career tackles leaders",
+   "url": "https://en.wikipedia.org/w/index.php?title=List_of_NFL_career_tackles_leaders&oldid=1371826541",
+   "revision": 1371826541,
+   "sha256": "7e722b42ac831ad211f039b8379eb664d716fc349c17a40e0b8cb3acec3be02b",
+   "publisher": "Wikipedia",
+   "license": "CC BY-SA 4.0"
+  },
+  "wiki_coy": {
+   "title": "AP NFL Coach of the Year",
+   "url": "https://en.wikipedia.org/w/index.php?title=AP_NFL_Coach_of_the_Year&oldid=1379757227",
+   "revision": 1379757227,
+   "sha256": "008010e0e2c58cbe68b8b8f45d59d80f07a3867d64981727653b4a40f74c0e60",
+   "publisher": "Wikipedia",
+   "license": "CC BY-SA 4.0",
+   "note": "AP NFL Coach of the Year"
+  },
   "wiki_cpoy": {
    "title": "AP NFL Comeback Player of the Year",
    "url": "https://en.wikipedia.org/w/index.php?title=AP_NFL_Comeback_Player_of_the_Year&oldid=1379756172",
    "revision": 1379756172,
    "sha256": "ab2ed7542a49312c8779b78d6234a7df4bdb65f0cc301acfb354553fd340a8b1",
    "publisher": "Wikipedia",
+   "license": "CC BY-SA 4.0",
    "note": "AP NFL Comeback Player of the Year (2005 was shared)"
   },
   "wiki_dpoy": {
@@ -121,6 +250,7 @@
    "revision": 1377718854,
    "sha256": "a8c8cd4a86dbf6ffe5075a8701f16fd43dcbac16cd949494c6b4c465df80f26d",
    "publisher": "Wikipedia",
+   "license": "CC BY-SA 4.0",
    "note": "AP NFL Defensive Player of the Year"
   },
   "wiki_hof": {
@@ -129,6 +259,7 @@
    "revision": 1373268870,
    "sha256": "fa4239c662c72d4e90ae2295bf8921f051661ce740329afca4cc88a31ebee303",
    "publisher": "Wikipedia",
+   "license": "CC BY-SA 4.0",
    "note": "Pro Football Hall of Fame inductees, complete through the Class of 2026"
   },
   "wiki_mvp": {
@@ -137,6 +268,7 @@
    "revision": 1376867134,
    "sha256": "f4751b025145a585e9e7a195d8d42264561a53a24c58abc4aa72945618c67c2f",
    "publisher": "Wikipedia",
+   "license": "CC BY-SA 4.0",
    "note": "AP NFL Most Valuable Player (a shared award lists both players)"
   },
   "wiki_opoy": {
@@ -145,6 +277,7 @@
    "revision": 1352673809,
    "sha256": "9787e2846d3b869b2653b0f0e99f0913fe33cc55321984766db0a180992f83cc",
    "publisher": "Wikipedia",
+   "license": "CC BY-SA 4.0",
    "note": "AP NFL Offensive Player of the Year"
   },
   "wiki_qb_records": {
@@ -153,6 +286,7 @@
    "revision": 1358068986,
    "sha256": "a07ee5acd5d3f24311b419d1f31ef8a50d89bd7bb35692673c5774f67f0ff9b8",
    "publisher": "Wikipedia",
+   "license": "CC BY-SA 4.0",
    "note": "NFL quarterback records (passing), regular season"
   },
   "wiki_records": {
@@ -161,6 +295,7 @@
    "revision": 1357802558,
    "sha256": "4f708eb8042ebeb0206d18ab83e679a8a4a9de57a4f2ccf0a8513ecfdfc73810",
    "publisher": "Wikipedia",
+   "license": "CC BY-SA 4.0",
    "note": "NFL individual records (rushing, receiving, defense, scoring), regular season"
   },
   "wiki_roy": {
@@ -169,6 +304,7 @@
    "revision": 1370823405,
    "sha256": "73fa8c2b85abc093fac0b600b341387acb21a236642765875062e132582554ee",
    "publisher": "Wikipedia",
+   "license": "CC BY-SA 4.0",
    "note": "AP NFL Rookie of the Year, offensive and defensive tables"
   },
   "wiki_sbmvp": {
@@ -177,6 +313,7 @@
    "revision": 1370881027,
    "sha256": "1c48f3ae996e3ba4569eeb2a2c1833add144687a9d3af6c3a0d3191ac839bc6c",
    "publisher": "Wikipedia",
+   "license": "CC BY-SA 4.0",
    "note": "Super Bowl Most Valuable Player (each game keeps its season: Super Bowl XXXVII closes season 2002)"
   },
   "wiki_honor_pages": {
@@ -184,7 +321,8 @@
    "manifest_sha256": "ecdcfaeb28d14aa956e05387dbaaa9f2ea0cca56a697891da4087d7297f2fabc",
    "manifest": "tools/b780_history_seed_pins.json, keys wiki_allpro_<season>, wiki_probowl_<season>",
    "note": "<season> All-Pro Team and the Pro Bowl played after the season, 2002..2025",
-   "publisher": "Wikipedia"
+   "publisher": "Wikipedia",
+   "license": "CC BY-SA 4.0"
   },
   "nflverse_stats": {
    "title": "nflverse weekly player statistics 1999..2025 and the players table",
