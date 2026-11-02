@@ -621,6 +621,32 @@ def install(payload: bytes, seed: Mapping | None = None, xtnd_ptr_va: int = 0) -
                               for label, va, b, _after in sites(code_va, ro_va, ro_rows_offset(ro))]}
 
 
+def main(argv=None) -> int:
+    """python3 -m mod_editor.core.nfl2k5_history_screen {status,apply} source.xbe [output.xbe] [--seed seed.json]"""
+
+    import argparse
+
+    parser = argparse.ArgumentParser(description=UI_LABEL)
+    sub = parser.add_subparsers(dest="command", required=True)
+    for command in ("status", "apply"):
+        p = sub.add_parser(command)
+        p.add_argument("source", type=Path)
+        if command == "apply":
+            p.add_argument("output", type=Path)
+            p.add_argument("--seed", type=Path, default=None, help="real-history seed JSON (default: the built-in one)")
+    args = parser.parse_args(argv)
+    _require(args.source.stat().st_size <= 16 * 1024 * 1024, "choose default.xbe, at most 16 MiB")
+    payload = args.source.read_bytes()
+    if args.command == "apply":
+        result, receipt = install(payload, seed=load_seed(args.seed), xtnd_ptr_va=footer_pointer_va(payload))
+        with args.output.open("xb") as stream:
+            stream.write(result)
+    else:
+        receipt = {"status": status(payload), "owner": OWNER, "experimental": True}
+    print(json.dumps(receipt, indent=2, default=str))
+    return 0
+
+
 # pinned from the retail executable (sha 73105b17) by guard_digests(); see tests/mod_editor/test_b780_j4_history_screen.py
 GUARD_PINS: dict[str, str] = {
     "espn descriptor": "ff6dc94b81971151535e1e8835786604906c8477b696d8e175f3a54536fb1b27",
@@ -655,3 +681,7 @@ GUARD_PINS: dict[str, str] = {
 __all__ = ["OWNER", "REQUESTS", "UI_LABEL", "HELP_TEXT", "BUILD_CAPTION", "HistoryScreenError", "build_ro", "code_for",
            "sites", "labels", "allocations", "install", "status", "reservations", "guard_digests", "owned_state",
            "FOOTER_BLOCKS", "footer_pointer_va", "load_seed", "short_name"]
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -6263,6 +6263,71 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_history_screen apply source.xbe new-history.xbe",
+        "module": "mod_editor/core/nfl2k5_history_screen.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "mod_editor/core/nfl2k5_history_screen.py",
+        "mod_editor/core/nfl2k5_history_screen_code.py",
+        "tools/nfl2k5_history_screen/runtime.c",
+        "tests/mod_editor/test_b780_j4_history_screen.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. b780-j4 (Discord #2k5-ideas: a Team History tab, past seasons, records, award history, Hall of Fame classes, box scores of played games, game logs). Off in Basic, on in Advanced and Experimental."
+      },
+      "id": "nfl2k5.franchise.history_screen",
+      "input_constraints": [
+        "Pinned USA XBE or verified composed input; a late allocator owner placed after every b779 late owner (or appended to an installed sealed image by nfl2k5_xbe_space.extend_scaleout). Foreign or mixed bytes refuse.",
+        "Owned 16,384 RX bytes (the screens), 64 RW bytes (page, club, scroll, the selected box score) and a 48 KiB read-only block (two menu descriptors cloned from Team Standings, the ESPN.com rows plus TEAM HISTORY, the seeded real history). Edits: the ESPN.com descriptor's row-table pointer (0x525674, 4 bytes) and the Schedule input (0x24D2E5, 6 bytes).",
+        "Franchise history is read from the franchise extension footer (b780 j23-footer, 2K5XTND1 envelope 1) through the footer host's body word when that owner is installed; without it the franchise parts read empty.",
+        "The Player Card's game log page needs the honors option (the champions owner finds this owner through its ESPN.com rows).",
+        "Rebuild from a verified base to remove it."
+      ],
+      "portme": [
+        "Franchise: Coach's Desk > ESPN.com > TEAM HISTORY (last row): SEASONS (the franchise record, then every season newest first), RECORDS, LEADERS, RECORD BOOK, AWARDS (L/R change the award), HALL OF FAME (L/R filter by club). Black/White change the page, L/R the team, Up/Down scroll, B goes back. Schedule: highlight a played game, X (the legend says for Box Score): the score by quarter, and for your team's games the team stats and player lines. Player Card (with the honors option): Black/R past the champions page shows the player's game log this season."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and instructions; never distribute generated XBEs or retail resources.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Every page's text, the input, the box score, the Schedule hook, the game log and the four-page Player Card cycle (with the honors owner installed) run under Unicorn on the retail executable (python3 -m tests.mod_editor.test_b780_j4_history_screen); emulator stills are in the job report.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false | true; default false in Basic, true in Advanced and Experimental",
+            "name": "history_screen",
+            "required": true
+          }
+        ],
+        "notes": "Build-time only. Off skips the writer and its allocation; there is no in-game toggle."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "XBE .rdata pointer 0x525674 and .text site 0x24D2E5; owned RX, RW and read-only bytes in the allocator's late region.",
+        "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+      },
+      "summary": "Adds a TEAM HISTORY row to the Franchise ESPN.com menu: every club's seasons (real 2002 to 2025 history, then the seasons of your franchise), club records, all-time leaders, the NFL record book, the season awards and the Hall of Fame, with franchise-made entries marked NEW. On the Schedule, X opens the box score of a played game, and the Player Card gets a game log page.",
+      "surface": "gameplay_tuning_sliders",
+      "title": "Franchise History screen, box scores from the Schedule and Player Card game log (experimental, unwitnessed)",
+      "validation_command": "python3 -m tests.mod_editor.test_b780_j4_history_screen"
+    },
+    {
+      "backend": {
         "command": "python3 -m mod_editor.core.nfl2k5_patch_cli practice_squad_screen <source.xbe> <new-copy.xbe>",
         "module": "mod_editor/core/nfl2k5_patch_cli.py",
         "operation": "write"
