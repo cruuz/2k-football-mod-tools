@@ -44,7 +44,7 @@ def _retail_inputs():
 
 class Design(unittest.TestCase):
     def test_owner_request_and_late_order(self):
-        self.assertEqual(al.REQUESTS, ((al.OWNER, "code", 1024, 16),))
+        self.assertEqual(al.REQUESTS, ((al.OWNER, "code", 1280, 16),))
         self.assertEqual(space.LATE_OWNERS[-1], al.OWNER)            # b780-p3: appended after the b779 tail
         self.assertEqual(space.LATE_OWNERS[-2], "nfl2k5_sim_realism_state")
 
@@ -104,7 +104,19 @@ class Design(unittest.TestCase):
         for table in rows.values():
             cells = [(r[0], r[1]) for r in table]
             self.assertEqual(len(cells), len(set(cells)), "two items in one cell")
-        self.assertNotIn("—", al.HELP_TEXT + al.BUILD_CAPTION)       # no em dash in user text
+        self.assertNotIn("\u2014", al.HELP_TEXT + al.BUILD_CAPTION)       # no em dash in user text
+
+    def test_slide_call_indicator_needs_the_slide_row(self):
+        lit = al.tables(slide=True, indicator=True)["offense"][-1]
+        self.assertEqual(lit, (3, 1, al.SLIDE, al.COND_SLIDE))
+        self.assertEqual(al.tables(slide=True)["offense"][-1][3], al.COND_ALWAYS)
+        content, labels = al.code_for(0x14DA000, lift=True, legend=True, slide=True, slide_state=0x14F2000)
+        self.assertEqual(len(content), al.CODE_SIZE)
+        self.assertIn(struct.pack("<I", 0x14F2008), content)              # reads the call byte at state+8
+        self.assertIn(struct.pack("<I", al.PLAY_LOG), content)
+        self.assertIn("|L1| SLIDE LEFT\0".encode("utf-16le"), content)
+        with self.assertRaises(al.AudibleLegendError):
+            al.code_for(0x14DA000, slide=False, slide_state=0x14F2000)
 
 
 @unittest.skipUnless(HAVE_UC, "unicorn required")
@@ -124,11 +136,27 @@ class Native(unittest.TestCase):
         self.assertEqual(al.status(self.retail), "retail")
         self.assertTrue(al.guards_valid(self.retail))
         self.assertEqual(al.read_settings(self.patched), {"status": "applied", "audible_panel_lift": True,
-                                                          "audible_legend": True, "audible_legend_slide": False})
+                                                          "audible_legend": True, "audible_legend_slide": False,
+                                                          "slide_call_shown": False})
         self.assertEqual(al.read_settings(self.patched_slide)["audible_legend_slide"], True)
         self.assertEqual(al.read_settings(self.legend_only)["audible_panel_lift"], False)
         self.assertEqual(al.read_settings(self.lift_only)["audible_legend"], False)
         self.assertEqual(al.status(self.lift_only), "applied")
+
+    def test_static_slide_row_stays_recognized_when_the_call_state_appears_later(self):
+        """A slide row built without the slide-call owner's state is still a whole install if that owner is placed
+        later by hand; one built with the state reads lit. Both keep their recognized choice."""
+        from unittest import mock
+        self.assertFalse(al.read_settings(self.patched_slide)["slide_call_shown"])
+        with mock.patch.object(al, "slide_state_va", return_value=0x14F2000):
+            settings = al.read_settings(self.patched_slide)
+            self.assertEqual((settings["status"], settings["audible_legend_slide"], settings["slide_call_shown"]),
+                             ("applied", True, False))
+            again, receipt = al.apply(self.patched_slide, lift=True, legend=True, slide=True)
+            self.assertEqual(again, self.patched_slide)
+            self.assertTrue(receipt["already_applied"])
+            lit, _ = al.apply(self.retail, lift=True, legend=True, slide=True)
+            self.assertEqual(al.read_settings(lit)["slide_call_shown"], True)
 
     def test_replay_is_idempotent_and_other_choices_refused(self):
         again, receipt = al.apply(self.patched, lift=True, legend=True, slide=False)
@@ -234,8 +262,12 @@ class Native(unittest.TestCase):
 
     # ---- the legend, run from its hooked call --------------------------------------------------------------------
     def _legend(self, payload, *, record=0, controller=0, param=0, mode=4, offense=True, formation_type=0,
-                play_side=0, play_flags=0, other_flags=None, header=(120.5, 247.5)):
+                play_side=0, play_flags=0, other_flags=None, header=(120.5, 247.5), code=None, setup=None):
         m = self._machine(payload)
+        if code is not None:                       # a different build of this owner, written over its allocation
+            m.uc.mem_write(al.allocation(payload)["va"], code)
+        if setup is not None:
+            setup(m)
         team, other, ctx, formation, play, otherplay = (0x2400400, 0x2400500, 0x2400600, 0x2400700, 0x2400780,
                                                         0x24007C0)
         m.uc.mem_write(team, bytes(0x100)); m.uc.mem_write(ctx, bytes(0x100))
@@ -296,6 +328,34 @@ class Native(unittest.TestCase):
         self.assertEqual(self._texts(self._legend(self.patched_slide))[-1], "|L1||R1| SLIDE")
         self.assertEqual(self._texts(self._legend(self.patched_slide, record=1, offense=False, play_side=1))[-1],
                          "|L2| LAST PLAY")                               # slide is an offense row only
+
+    def test_active_slide_call_lights_its_item(self):
+        """With the slide-call owner's state, the slide item names the active call in yellow, else the static row."""
+        va = al.allocation(self.patched_slide)["va"]
+        state = 0x2400900
+        code, labels = al.code_for(va, lift=True, legend=True, slide=True, slide_state=state)
+        self.assertEqual(al.sites(labels, lift=True, legend=True),
+                         al.sites(al.code_for(va, lift=True, legend=True, slide=True)[1], lift=True, legend=True))
+        team = 0x2400400
+
+        def call(value, team_word=team, log=7, now=7):
+            def setup(m):
+                m.uc.mem_write(state, struct.pack("<II", team_word, log) + bytes([value]) + bytes(7))
+                m.put(al.PLAY_LOG, now)
+            return setup
+
+        cases = (("left", call(1), "|L1| SLIDE LEFT", al.HIGHLIGHT),
+                 ("right", call(2), "|R1| SLIDE RIGHT", al.HIGHLIGHT),
+                 ("no call", call(0), "|L1||R1| SLIDE", al.COLOUR),
+                 ("an older play", call(1, now=8), "|L1||R1| SLIDE", al.COLOUR),
+                 ("the other offense", call(2, team_word=0x2400500), "|L1||R1| SLIDE", al.COLOUR))
+        for name, setup, text, colour in cases:
+            with self.subTest(case=name):
+                draws = self._legend(self.patched_slide, code=code, setup=setup)
+                last = draws[-1]
+                self.assertEqual((last["text"], last["colour"]), (text, colour))
+                self.assertTrue(all(d["colour"] == al.COLOUR for d in draws[1:-1]))  # every other row stays grey
+                self.assertLess(max(v[1] for v in last["verts"]), 247.5)
 
     def test_rows_sit_above_the_panel_inside_the_screen_without_overlap(self):
         for side, header in (("left", (120.5, 247.5 - al.LIFT)), ("right", (519.5, 247.5 - al.LIFT))):

@@ -11216,6 +11216,69 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_audible_legend status <source>",
+        "module": "mod_editor/core/nfl2k5_audible_legend.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "mod_editor/core/nfl2k5_audible_legend.py",
+        "tests/mod_editor/test_b780_p3_audible_legend.py",
+        "tests/mod_editor/test_b779_au2_audible_panel.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL. Build tab checkbox; Off in Basic and Advanced, On in Experimental (the SOFTDRINK 2K28 recipe). The panel lift is automatic whenever the build has the bottom score bar; there is no in-game toggle."
+      },
+      "id": "nfl2k5.scorebug_presentation.audible_legend",
+      "input_constraints": [
+        "Pinned USA XBE or a verified composed input; a late allocator owner (1,280 RX bytes: two entry points, row tables and UTF-16 strings; no RW state), appended to an installed sealed image by nfl2k5_xbe_space.extend_scaleout or reserved with the build's request union. Foreign or mixed bytes refuse.",
+        "Edits: two call sites. 0x648C5 (the in-game HUD setup's call to the audible panel setup 0xFF130): after the native setup, each pane root (records 0xBA3178 + 0x14 / + 0x60) whose y word is exactly 240.0 moves to 186.0 (54 units up, the play-call screen's lift above the same bar). 0xFF60B (the panel draw's header text call): the native header is drawn unchanged, then up to three rows of button legend with the same text object (font slot 3, line height 14, the game's own button icons).",
+        "Rows follow the native button gates: Browse and Back always; Black (flip play / flip) and R3 (flip routes) only outside Basic Training, the NO HUDDLE panel and kicking formations, on an offensive or defensive play, R3 also off when the play's route flip is off; White (last play) outside Basic Training; the L/R slide row only with the slide-call owner (nfl2k5_protection_calls), lit with the active call. A panel opened by the computer gets no legend.",
+        "The lift is applied whenever the build has the bottom score bar (scorebug or scorebug_runtime), with or without the legend. Rebuild from a verified base to remove it."
+      ],
+      "portme": [
+        "Play a game with the 2026 score bar. At the line on offense press Y: the panel sits above the bar (its play name and the bottom of the diagram are no longer covered) and the legend rows show above it. Press Black (the play flips), R3 (the routes flip), White (the huddle play comes back) and left/right (browse). On defense press Y at the line: the defense's rows. In Basic Training only Browse and Back."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and instructions; never distribute generated XBEs or retail resources.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Both hooked call sites run under Unicorn on the retail executable with the owner installed and the nine retail fonts: the native header draws unchanged, every panel state draws exactly its rows in place (no overlap, inside the screen, above the panel), registers and the x87 stack are preserved; the lift moves only a settled root. Installing on the released v0.8 executable moves no other allocation.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false | true; false in Basic and Advanced, true in Experimental",
+            "name": "audible_legend",
+            "required": true
+          }
+        ],
+        "notes": "Build-time only. The lift follows the bottom score bar; the legend is this option."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "XBE .text call sites 0x648C5 and 0xFF60B; owned 1,280 RX bytes in the allocator's late region.",
+        "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+      },
+      "summary": "The audible panel at the line shows what its other buttons do, in the game's own lettering and button icons: browse, back, flip play, flip routes, last play, and the line slide when protection calls are on (the active call lit). Only buttons that work at that moment are listed. With the 2026 score bar, the panel also sits 54 units higher so the bar no longer covers its play name and the bottom of the diagram.",
+      "surface": "scorebug_presentation",
+      "title": "Audible panel button legend and lift clear of the score bar (experimental)",
+      "validation_command": "python3 -m tests.mod_editor.test_b780_p3_audible_legend"
+    },
+    {
+      "backend": {
         "command": "python3 -m mod_editor.core.nfl2k5_espn_marks status <source>",
         "module": "mod_editor/core/nfl2k5_espn_marks.py",
         "operation": "write"

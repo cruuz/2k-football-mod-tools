@@ -619,6 +619,11 @@ class BuildPlan:
     # b779-sim2 r4: scheduled-sim season realism (play mix, targets, QB runs, interceptions, tackles).
     # A late executable owner plus 16 bytes of hand-off state; EXPERIMENTAL and on in Advanced/Experimental.
     sim_realism: bool = False
+    # b780-p3: the at-line audible panel shows what its other buttons do (browse, back, flip play, flip routes, last
+    # play, and the line slide with protection calls), drawn with the game's own text and button icons; rows follow
+    # the native button gates. One late executable owner (nfl2k5_audible_legend). The same owner also lifts the panel
+    # 54 units clear of the bottom score bar whenever a build has the bar (scorebug / scorebug_runtime), legend or not.
+    audible_legend: bool = False
     # b778-sim1: the simulated franchise game's clock pace. The simulator's per-event clock decrement came from
     # sqrt(300 / (Sim. Quarter Length * 60)) * 0.03, so a 15-minute setting produced about 1.7x the plays, points and
     # yards of a 5-minute setting. One in-place patch at 0x10B89C fixes the decrement (nfl2k5_sim_stats), so a
@@ -712,7 +717,8 @@ class BuildPlan:
                 or self.guardian_overlay or self.my_career or self.screen_hooks or self.coverage_trail or self.franchise_edit_player or self.cpu_money_downs != "retail" or self.accelerated_clock or self.coin_defer or self.decided_clock or self.cpu_scrambles == "modern" or self.weather_haze or self.number_kerning or self.modern_color or self.weekly_prep or self.weekly_prep_cpu or self.weekly_prep_remember or self.coach_ai or self.playbook_pair or self.deep_zone_facing or self.deep_zone_bail or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave or self.historic_teams_quick_game or self.espn25_more_moments or self.historic_stock_books or self.espn25_era_rules or self.k128_memory or self.team_ratings or self.play_art_routes or self.letter_grades or self.honors_page or self.sim_cb_tackles or self.sim_stats or self.option_defaults or self.sim_rb_injuries or self.sim_realism
                 or self.momentum_collisions or self.scorebug_runtime or self.indicator_names_style != "retail" or self.momentum > 0 or self.momentum_contact or self.defensive_try or self.zone_drop_cap or self.all_stadiums or self.music_shuffle or self.practice_squad_screen or self.abilities or self.qb_spy or self.calendar_engine or self.coverage_slider or self.scramble_tuning or self.flatter_deep_ball or self.chop_block_toggle or self.music_policy != "retail" or self.music_unlock or self.music_userlist
                 or bool(self.music_library and _music_library_document(self.music_library)["bank"] == "cribmusic")
-                or self.pass_protection or self.pass_rush_stats)  # b778-pr1, b779-st1
+                or self.pass_protection or self.pass_rush_stats  # b778-pr1, b779-st1
+                or self.audible_legend)  # b780-p3
 
     def to_recipe(self) -> dict[str, Any]:
         d = asdict(self)
@@ -964,6 +970,11 @@ for _preset in PRESETS.values():
     _preset["sim_realism"] = False
 PRESETS["softdrink_advanced"]["sim_realism"] = True
 PRESETS["softdrink_experimental"]["sim_realism"] = True
+del _preset
+# b780-p3: the audible panel button legend: off in Basic and Advanced, on in Experimental (the SOFTDRINK recipe).
+for _preset in PRESETS.values():
+    _preset["audible_legend"] = False
+PRESETS["softdrink_experimental"]["audible_legend"] = True
 del _preset
 # b778-sim1: the simulated-game pace fix is a stat correction, not a taste option: on in the Advanced and Experimental
 # presets (the SOFTDRINK 2K28 recipe builds from Experimental). Basic keeps retail for purists.
@@ -1338,6 +1349,7 @@ _LATE_OWNER_OPTIONS = (
     ("nfl2k5_sim_cb_tackles", "Cornerback tackle credit", lambda p: p.sim_cb_tackles),  # b778-cb1
     ("nfl2k5_sim_rb_injuries", "Simulated RB short injuries", lambda p: p.sim_rb_injuries),  # b779-sim2
     ("nfl2k5_sim_realism", "Simulated season realism", lambda p: p.sim_realism),  # b779-sim2 r4
+    ("nfl2k5_audible_legend", "Audible panel legend", lambda p: _audible_panel_choice(p) is not None),  # b780-p3
     ("nfl2k5_clock_led", "Modern clock digits", lambda p: p.modern_clock_led),  # b778-sd4
     ("nfl2k5_return_coverage", "Return coverage pursuit angles", lambda p: p.return_coverage),  # b778-kr1
     ("nfl2k5_preseason_warning", "2026 franchise economy", lambda p: p.franchise_economy),  # b779-rc1: the warned flag
@@ -1878,6 +1890,39 @@ def _apply_sim_realism(plan: "BuildPlan", target: Path, receipt: dict, progress)
     receipt["result"]["sim_realism"] = "applied"
 
 
+def _audible_panel_choice(plan: "BuildPlan"):
+    """b780-p3: (lift, legend, slide) for nfl2k5_audible_legend, or None when the build needs neither part.
+
+    The lift follows the bottom score bar (it exists to clear it); the legend is its own option; the slide row is shown
+    only when the slide-call owner (b780 p1-slide, plan field ``protection_calls``) is in the same build."""
+    lift = bool(plan.scorebug_runtime or plan.scorebug)
+    legend = bool(plan.audible_legend)
+    if not (lift or legend):
+        return None
+    return lift, legend, bool(legend and getattr(plan, "protection_calls", False))
+
+
+def _apply_audible_legend(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    """b780-p3: the audible panel lift and/or button legend, the last late allocator owner (LATE_OWNERS order)."""
+    choice = _audible_panel_choice(plan)
+    if choice is None:
+        return
+    module = _core_module("nfl2k5_audible_legend")
+    if module is None:
+        raise RuntimeError("The audible panel legend needs nfl2k5_audible_legend.")
+    lift, legend, slide = choice
+    progress("Pre-play: audible panel " + ("legend" if legend else "position"), 0, 0)
+    payload, legend_receipt = module.apply(_xbe_bytes(target), lift=lift, legend=legend, slide=slide)
+    _write_xbe_bytes(target, payload)
+    final = _xbe_bytes(target)
+    settings = module.read_settings(final)
+    if final != payload or (settings["status"], settings["audible_panel_lift"], settings["audible_legend"],
+                            settings["audible_legend_slide"]) != ("applied", lift, legend, slide):
+        raise RuntimeError("The audible panel legend: the output does not read back as applied")
+    receipt["steps"].append({"step": "audible_legend", **{k: v for k, v in legend_receipt.items() if k != "reservations"}})
+    receipt["result"]["audible_legend"] = "applied"
+
+
 def _sim_stats_preflight(source: Path, progress) -> None:
     """b778-sim1: refuse a source whose simulator initializer is foreign, before any write."""
     module = _core_module("nfl2k5_sim_stats")
@@ -2107,6 +2152,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
                                ("sim_cb_tackles", "nfl2k5_sim_cb_tackles"),  # b778-cb1
                                ("sim_rb_injuries", "nfl2k5_sim_rb_injuries"),  # b779-sim2
                                ("sim_realism", "nfl2k5_sim_realism"),  # b779-sim2 r4
+                               ("audible_legend", "nfl2k5_audible_legend"),  # b780-p3
                                ("modern_clock_led", "nfl2k5_clock_led"),  # b778-sd4
                                ("letter_grades", "nfl2k5_letter_grades"),
                                ("honors_page", "nfl2k5_honors"), ("honors_history", "nfl2k5_honors_history"),
@@ -2364,6 +2410,8 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
     out["sim_rb_injuries"] = rb_injuries.status(_xbe_bytes(source)) if rb_injuries is not None else "unavailable"
     sim_realism = _core_module("nfl2k5_sim_realism")  # b779-sim2 r4
     out["sim_realism"] = sim_realism.status(_xbe_bytes(source)) if sim_realism is not None else "unavailable"
+    audible_legend = _core_module("nfl2k5_audible_legend")  # b780-p3
+    out["audible_legend"] = audible_legend.status(_xbe_bytes(source)) if audible_legend is not None else "unavailable"
     sim_stats = _core_module("nfl2k5_sim_stats")  # b778-sim1
     out["sim_stats"] = sim_stats.status(_xbe_bytes(source)) if sim_stats is not None else "unavailable"
     option_defaults = _core_module("nfl2k5_option_defaults")  # b779-df1
@@ -4264,6 +4312,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("Run blocking must be Off or On.")
     if type(plan.pass_protection) is not bool:  # b778-pr1
         raise ValueError("Pass protection must be Off or On.")
+    if type(plan.audible_legend) is not bool:  # b780-p3
+        raise ValueError("The audible panel legend must be Off or On.")
     if type(plan.pass_rush_stats) is not bool:  # b779-st1
         raise ValueError("Pass rush stats must be Off or On.")
     if type(plan.weekly_progression) is not bool:  # b778-pg1
@@ -5606,7 +5656,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         player_progress=bool(plan.player_progress or plan.player_progress_visible), contract_college_guard=plan.contract_college_guard,
         sim_cb_tackles=plan.sim_cb_tackles, modern_clock_led=plan.modern_clock_led,
         module_loader=plan.module_loader, classic_teams=plan.classic_teams,
-        sim_rb_injuries=plan.sim_rb_injuries, sim_realism=plan.sim_realism, preseason_warning=plan.franchise_economy)
+        sim_rb_injuries=plan.sim_rb_injuries, sim_realism=plan.sim_realism, preseason_warning=plan.franchise_economy,
+        audible_legend=_audible_panel_choice(plan) is not None)  # b780-p3
     if plan.read_option_runtime or plan.qb_spy:
         resolver = _core_module("nfl2k5_play_intents")
         if resolver is None:
@@ -5647,7 +5698,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             or plan.reserves_16 or plan.created_teams_extra or plan.defensive_try or plan.zone_drop_cap or plan.all_stadiums or plan.coverage_slider or plan.scramble_tuning
             or plan.music_shuffle or plan.practice_squad_screen or plan.abilities or plan.qb_spy or plan.calendar_engine or plan.camera or plan.franchise_autosave
             or plan.historic_teams_quick_game or plan.espn25_more_moments or plan.historic_stock_books or plan.espn25_era_rules or r62.get("anniversary_kickoff") or r62.get("widescreen_menus") or r62.get("team_logo_swap") or r62.get("period_goalposts") or plan.k128_memory or plan.letter_grades or plan.honors_page
-            or plan.return_coverage or plan.pass_protection or plan.pass_rush_stats):
+            or plan.return_coverage or plan.pass_protection or plan.pass_rush_stats
+            or plan.audible_legend):  # b780-p3 (the lift alone rides with the bar's own space step)
         progress("Adding experimental extra patch space", 0, 0)
         playlist_selection, playlist_preflight = None, None
         if plan.music_shuffle:
@@ -5682,6 +5734,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             sim_cb_tackles=plan.sim_cb_tackles, modern_clock_led=plan.modern_clock_led,
             module_loader=plan.module_loader, classic_teams=plan.classic_teams,
             sim_rb_injuries=plan.sim_rb_injuries, sim_realism=plan.sim_realism, preseason_warning=plan.franchise_economy,
+            audible_legend=_audible_panel_choice(plan) is not None,  # b780-p3
             **{**r62, "read_option_intent_table": read_table, "modern_naming": False, "crib_reclaim": False})
         _write_xbe_bytes(target, patched)
         receipt["steps"].append({"step": "xbe_space", **space_receipt,
@@ -6784,6 +6837,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     _apply_sim_rb_injuries(plan, target, receipt, progress)
     # b779-sim2 r4: scheduled-sim season realism, after the RB injury owner (LATE_OWNERS order)
     _apply_sim_realism(plan, target, receipt, progress)
+    # b780-p3: the audible panel lift / button legend, the last late allocator owner (LATE_OWNERS order)
+    _apply_audible_legend(plan, target, receipt, progress)
     # b778-pg2: the Player Progress screen and weekly snapshot (a late allocator owner after force_out)
     # b778-cb1: cornerback tackle credit, after force_out
     # b778-sd4: modern clock digits, after modern sideline catches
@@ -6866,6 +6921,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("the Player Contracts college guard did not survive the final passes")  # b778-cr1
     if plan.sim_rb_injuries and _core_module("nfl2k5_sim_rb_injuries").status(_xbe_bytes(target)) != "applied":
         raise ValueError("simulated RB short injuries did not survive the final passes")  # b779-sim2
+    if _audible_panel_choice(plan) is not None and _core_module("nfl2k5_audible_legend").status(_xbe_bytes(target)) != "applied":
+        raise ValueError("the audible panel legend did not survive the final passes")  # b780-p3
     if plan.sim_realism and _core_module("nfl2k5_sim_realism").status(_xbe_bytes(target)) != "applied":
         raise ValueError("simulated season realism did not survive the final passes")  # b779-sim2 r4
     if plan.sim_cb_tackles and _core_module("nfl2k5_sim_cb_tackles").status(_xbe_bytes(target)) != "applied":  # b778-cb1

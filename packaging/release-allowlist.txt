@@ -582,6 +582,7 @@ mod_editor/core/nfl2k5_sim_cb_tackles.py
 mod_editor/core/nfl2k5_option_defaults.py
 mod_editor/core/nfl2k5_sim_rb_injuries.py
 mod_editor/core/nfl2k5_sim_realism.py
+mod_editor/core/nfl2k5_audible_legend.py
 mod_editor/core/nfl2k5_sim_stats.py
 mod_editor/core/nfl2k5_clock_led.py
 mod_editor/core/nfl2k5_project_check.py
@@ -3852,6 +3853,7 @@ tests/mod_editor/test_nfl2k5_sim_cb_tackles.py
 tests/mod_editor/test_nfl2k5_option_defaults.py
 tests/mod_editor/test_nfl2k5_sim_rb_injuries.py
 tests/mod_editor/test_nfl2k5_sim_realism.py
+tests/mod_editor/test_b780_p3_audible_legend.py
 tests/mod_editor/test_nfl2k5_sim_stats.py
 tests/mod_editor/test_b778_clock_led.py
 tests/mod_editor/test_b779_ce1_kit_fallback.py
