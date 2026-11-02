@@ -1,0 +1,1422 @@
+{
+ "schema": "nfl2k5_coach_pool/v1",
+ "base_year": 2026,
+ "as_of": "2026-11-02",
+ "status": "SOURCED people and roles; derived head coach records; nobody here has been hired by anything yet",
+ "rules": {
+  "who": "Real people only. (1) The defensive coordinators of the 2026 season, as the repo already sources them in data/vip/defense_identity_2026.json (the club's coaches page names each one), with one change since that file was checked: the Panthers fired Ejiro Evero on 2026-10-30, so he is listed as available. (2) Recent head coaches who are not head coaches in 2026: those who opened the 2024 or 2025 season as a head coach and lost the job, and whose 2026 role could be confirmed from a club page or a news report.",
+  "not_here": "The 32 sitting head coaches (they cannot be hired by another club); offensive coordinators who were never head coaches (offensive coordinators come in a later release); anyone whose 2026 situation could not be confirmed; anyone who left football (see left_out).",
+  "status": "employed = on a 2026 NFL staff, so a club hiring him leaves a vacancy; available = no NFL staff job in 2026 as of the date above.",
+  "side": "The side of the ball he comes from (his coordinator background), not his current title.",
+  "kind": "Why he is listed: coordinator = one of the 31 defensive coordinators of the repo's 2026 defense identity file; former_head_coach = added because he lost a head coach job in the 2024 or 2025 season and is not on that list. Whether he has been a head coach is head_coach_record, not kind (several coordinators are former head coaches).",
+  "defense_identity_note": "Copied from the baseline_role of that coordinator's row in data/vip/defense_identity_2026.json: a developer note about which 2025 defense his numbers come from, not display text.",
+  "names": "ASCII first and last names as they would be written into a coach record; together at most 24 letters.",
+  "head_coach_record": "Derived from nflverse games.csv (regular season and playoff games 1999-2025 that he coached, interim spells included where the file lists them); null when he has none in that window. The file lists no interim coaches for 2024 and 2025, so a coach fired during one of those seasons is cut at his firing date (in_season_exits: Allen, Eberflus, Callahan, Daboll; each with its source). Earlier careers are not counted.",
+  "as_of": "A snapshot: NFL staffs change during the season (the Evero change is the example). Rebuild with tools/nfl2k5_coach_owners_build.py to refresh."
+ },
+ "sources": {
+  "nflverse_games": {
+   "title": "nflverse nfldata games.csv",
+   "url": "https://raw.githubusercontent.com/nflverse/nfldata/e28cf00d4fdffa262603191a0b339901d4a7efd0/data/games.csv",
+   "commit": "e28cf00d4fdffa262603191a0b339901d4a7efd0",
+   "bytes": 2185207,
+   "sha256": "a5181ec4974309828d1d58e6f881eb1d106ee85c15c038a51b6bdca7b7ee6cf5",
+   "publisher": "nflverse / Lee Sharpe",
+   "use": "head coach of every club's games and the season records, 1999-2025 only",
+   "licence": "no licence declared in the repository; only facts (dates, scores, coach names) are used"
+  },
+  "teams_2026": {
+   "title": "the repo's sourced 2026 head coaches",
+   "url": "https://github.com/cruuz/2k-football-mod-tools/tree/main/data/nfl2k5_teams_2026",
+   "files": [
+    "data/nfl2k5_teams_2026/*.json (roster.head_coach)",
+    "data/vip/coach_sources_2026.json (hire announcements)"
+   ],
+   "use": "the 2026 opening-day head coach of each club; the announcement URL of each is in history.current"
+  },
+  "defense_identity_2026": {
+   "title": "the repo's sourced 2026 defensive coordinators",
+   "url": "https://github.com/cruuz/2k-football-mod-tools/blob/main/data/vip/defense_identity_2026.json",
+   "files": [
+    "data/vip/defense_identity_2026.json"
+   ],
+   "use": "the 31 defensive coordinators (Tampa Bay's head coach is its own coordinator) and each one's club page"
+  }
+ },
+ "candidates": [
+  {
+   "id": "dennis-allen",
+   "first": "Dennis",
+   "last": "Allen",
+   "side": "defense",
+   "kind": "coordinator",
+   "status": "employed",
+   "role_2026": "Defensive coordinator",
+   "team_2026": "CHI",
+   "defense_identity_team": "CHI",
+   "defense_identity_note": "incumbent DC",
+   "head_coach_record": {
+    "seasons": 6,
+    "wins": 26,
+    "losses": 53,
+    "ties": 0,
+    "playoff_wins": 0,
+    "playoff_losses": 0,
+    "last_season": 2024,
+    "last_club": "NO",
+    "clubs": [
+     "LV",
+     "NO"
+    ],
+    "cut_at_firing": [
+     {
+      "club": "NO",
+      "season": 2024,
+      "fired": "2024-11-04"
+     }
+    ]
+   },
+   "sources": [
+    {
+     "url": "https://www.chicagobears.com/team/coaches/dennis-allen",
+     "what": "club coaches page names him as the 2026 defensive coordinator"
+    }
+   ]
+  },
+  {
+   "id": "lou-anarumo",
+   "first": "Lou",
+   "last": "Anarumo",
+   "side": "defense",
+   "kind": "coordinator",
+   "status": "employed",
+   "role_2026": "Defensive coordinator",
+   "team_2026": "IND",
+   "defense_identity_team": "IND",
+   "defense_identity_note": "incumbent DC",
+   "head_coach_record": null,
+   "sources": [
+    {
+     "url": "https://www.colts.com/team/coaches-roster/lou-anarumo",
+     "what": "club coaches page names him as the 2026 defensive coordinator"
+    }
+   ]
+  },
+  {
+   "id": "gus-bradley",
+   "first": "Gus",
+   "last": "Bradley",
+   "side": "defense",
+   "kind": "coordinator",
+   "status": "employed",
+   "role_2026": "Defensive coordinator",
+   "team_2026": "TEN",
+   "defense_identity_team": "TEN",
+   "defense_identity_note": "new DC; 49ers assistant head coach, Saleh called defense",
+   "head_coach_record": {
+    "seasons": 4,
+    "wins": 14,
+    "losses": 48,
+    "ties": 0,
+    "playoff_wins": 0,
+    "playoff_losses": 0,
+    "last_season": 2016,
+    "last_club": "JAX",
+    "clubs": [
+     "JAX"
+    ]
+   },
+   "sources": [
+    {
+     "url": "https://www.tennesseetitans.com/team/coaches-roster/gus-bradley",
+     "what": "club coaches page names him as the 2026 defensive coordinator"
+    }
+   ]
+  },
+  {
+   "id": "matt-burke",
+   "first": "Matt",
+   "last": "Burke",
+   "side": "defense",
+   "kind": "coordinator",
+   "status": "employed",
+   "role_2026": "Defensive coordinator",
+   "team_2026": "HOU",
+   "defense_identity_team": "HOU",
+   "defense_identity_note": "incumbent DC alongside Ryans",
+   "head_coach_record": null,
+   "sources": [
+    {
+     "url": "https://www.houstontexans.com/team/coaches-roster/matt-burke",
+     "what": "club coaches page names him as the 2026 defensive coordinator"
+    }
+   ]
+  },
+  {
+   "id": "brian-callahan",
+   "first": "Brian",
+   "last": "Callahan",
+   "side": "offense",
+   "kind": "former_head_coach",
+   "status": "employed",
+   "role_2026": "Passing game coordinator and quarterbacks coach",
+   "team_2026": "NYG",
+   "note": "Fired as Titans head coach on 2025-10-13.",
+   "defense_identity_team": null,
+   "head_coach_record": {
+    "seasons": 2,
+    "wins": 4,
+    "losses": 19,
+    "ties": 0,
+    "playoff_wins": 0,
+    "playoff_losses": 0,
+    "last_season": 2025,
+    "last_club": "TEN",
+    "clubs": [
+     "TEN"
+    ],
+    "cut_at_firing": [
+     {
+      "club": "TEN",
+      "season": 2025,
+      "fired": "2025-10-13"
+     }
+    ]
+   },
+   "sources": [
+    {
+     "url": "https://www.giants.com/team/coaches-roster/brian-callahan",
+     "what": "Giants coaches page: in his first season as passing game coordinator and quarterbacks coach"
+    }
+   ]
+  },
+  {
+   "id": "anthony-campanile",
+   "first": "Anthony",
+   "last": "Campanile",
+   "side": "defense",
+   "kind": "coordinator",
+   "status": "employed",
+   "role_2026": "Defensive coordinator",
+   "team_2026": "JAX",
+   "defense_identity_team": "JAX",
+   "defense_identity_note": "incumbent DC",
+   "head_coach_record": null,
+   "sources": [
+    {
+     "url": "https://www.jaguars.com/team/coaches-roster/anthony-campanile",
+     "what": "club coaches page names him as the 2026 defensive coordinator"
+    }
+   ]
+  },
+  {
+   "id": "brian-daboll",
+   "first": "Brian",
+   "last": "Daboll",
+   "side": "offense",
+   "kind": "former_head_coach",
+   "status": "employed",
+   "role_2026": "Offensive coordinator",
+   "team_2026": "TEN",
+   "note": "Fired as Giants head coach on 2025-11-10.",
+   "defense_identity_team": null,
+   "head_coach_record": {
+    "seasons": 4,
+    "wins": 20,
+    "losses": 40,
+    "ties": 1,
+    "playoff_wins": 1,
+    "playoff_losses": 1,
+    "last_season": 2025,
+    "last_club": "NYG",
+    "clubs": [
+     "NYG"
+    ],
+    "cut_at_firing": [
+     {
+      "club": "NYG",
+      "season": 2025,
+      "fired": "2025-11-10"
+     }
+    ]
+   },
+   "sources": [
+    {
+     "url": "https://www.tennesseetitans.com/team/coaches-roster/brian-daboll",
+     "what": "Titans coaches page: hired as offensive coordinator on 2026-01-27"
+    }
+   ]
+  },
+  {
+   "id": "sean-duggan",
+   "first": "Sean",
+   "last": "Duggan",
+   "side": "defense",
+   "kind": "coordinator",
+   "status": "employed",
+   "role_2026": "Defensive coordinator",
+   "team_2026": "MIA",
+   "defense_identity_team": "MIA",
+   "defense_identity_note": "new DC; Green Bay LB assistant, Hafley called defense",
+   "head_coach_record": null,
+   "sources": [
+    {
+     "url": "https://www.miamidolphins.com/team/coaches-roster/sean-duggan",
+     "what": "club coaches page names him as the 2026 defensive coordinator"
+    }
+   ]
+  },
+  {
+   "id": "brian-duker",
+   "first": "Brian",
+   "last": "Duker",
+   "side": "defense",
+   "kind": "coordinator",
+   "status": "employed",
+   "role_2026": "Defensive coordinator",
+   "team_2026": "NYJ",
+   "defense_identity_team": "NYJ",
+   "defense_identity_note": "new DC; Miami pass-game assistant; Glenn calls 2026 defense",
+   "head_coach_record": null,
+   "sources": [
+    {
+     "url": "https://www.newyorkjets.com/team/coaches-roster/brian-duker",
+     "what": "club coaches page names him as the 2026 defensive coordinator"
+    }
+   ]
+  },
+  {
+   "id": "aden-durde",
+   "first": "Aden",
+   "last": "Durde",
+   "side": "defense",
+   "kind": "coordinator",
+   "status": "employed",
+   "role_2026": "Defensive coordinator",
+   "team_2026": "SEA",
+   "defense_identity_team": "SEA",
+   "defense_identity_note": "incumbent DC; Macdonald calls defense",
+   "head_coach_record": null,
+   "sources": [
+    {
+     "url": "https://www.seahawks.com/team/coaches-roster/aden-durde",
+     "what": "club coaches page names him as the 2026 defensive coordinator"
+    }
+   ]
+  },
+  {
+   "id": "matt-eberflus",
+   "first": "Matt",
+   "last": "Eberflus",
+   "side": "defense",
+   "kind": "former_head_coach",
+   "status": "employed",
+   "role_2026": "Assistant head coach, defense",
+   "team_2026": "SF",
+   "note": "Bears head coach 2022-2024, then Cowboys defensive coordinator for 2025 (let go on 2026-01-06).",
+   "defense_identity_team": null,
+   "head_coach_record": {
+    "seasons": 3,
+    "wins": 14,
+    "losses": 32,
+    "ties": 0,
+    "playoff_wins": 0,
+    "playoff_losses": 0,
+    "last_season": 2024,
+    "last_club": "CHI",
+    "clubs": [
+     "CHI"
+    ],
+    "cut_at_firing": [
+     {
+      "club": "CHI",
+      "season": 2024,
+      "fired": "2024-11-29"
+     }
+    ]
+   },
+   "sources": [
+    {
+     "url": "https://www.49ers.com/team/coaches-roster/matt-eberflus",
+     "what": "49ers coaches page: joins the 49ers for his first season as assistant head coach, defense"
+    }
+   ]
+  },
+  {
+   "id": "ejiro-evero",
+   "first": "Ejiro",
+   "last": "Evero",
+   "side": "defense",
+   "kind": "coordinator",
+   "status": "available",
+   "role_2026": "Defensive coordinator of the Panthers until he was fired on 2026-10-30",
+   "team_2026": null,
+   "defense_identity_team": "CAR",
+   "defense_identity_note": "incumbent DC",
+   "note": "The Panthers' own page for him is gone and lists Todd Wash as interim defensive coordinator.",
+   "head_coach_record": null,
+   "sources": [
+    {
+     "url": "https://www.news4jax.com/sports/2026/10/30/panthers-fire-defensive-coordinator-ejiro-evero-following-27-19-loss-to-the-packers/",
+     "what": "AP: the Panthers fired defensive coordinator Ejiro Evero after the 27-19 loss at Green Bay; Todd Wash is interim"
+    },
+    {
+     "url": "https://www.ksl.com/article/51642551/panthers-fire-defensive-coordinator-ejiro-evero-following-27-19-loss-to-the-packers",
+     "what": "AP, second outlet carrying the same report"
+    }
+   ]
+  },
+  {
+   "id": "vic-fangio",
+   "first": "Vic",
+   "last": "Fangio",
+   "side": "defense",
+   "kind": "coordinator",
+   "status": "employed",
+   "role_2026": "Defensive coordinator",
+   "team_2026": "PHI",
+   "defense_identity_team": "PHI",
+   "defense_identity_note": "incumbent DC",
+   "head_coach_record": {
+    "seasons": 3,
+    "wins": 19,
+    "losses": 30,
+    "ties": 0,
+    "playoff_wins": 0,
+    "playoff_losses": 0,
+    "last_season": 2021,
+    "last_club": "DEN",
+    "clubs": [
+     "DEN"
+    ]
+   },
+   "sources": [
+    {
+     "url": "https://www.philadelphiaeagles.com/team/coaches/vic-fangio",
+     "what": "club coaches page names him as the 2026 defensive coordinator"
+    }
+   ]
+  },
+  {
+   "id": "brian-flores",
+   "first": "Brian",
+   "last": "Flores",
+   "side": "defense",
+   "kind": "coordinator",
+   "status": "employed",
+   "role_2026": "Defensive coordinator",
+   "team_2026": "MIN",
+   "defense_identity_team": "MIN",
+   "defense_identity_note": "incumbent DC",
+   "head_coach_record": {
+    "seasons": 3,
+    "wins": 24,
+    "losses": 25,
+    "ties": 0,
+    "playoff_wins": 0,
+    "playoff_losses": 0,
+    "last_season": 2021,
+    "last_club": "MIA",
+    "clubs": [
+     "MIA"
+    ]
+   },
+   "sources": [
+    {
+     "url": "https://www.vikings.com/team/coaches-roster/brian-flores",
+     "what": "club coaches page names him as the 2026 defensive coordinator"
+    }
+   ]
+  },
+  {
+   "id": "jonathan-gannon",
+   "first": "Jonathan",
+   "last": "Gannon",
+   "side": "defense",
+   "kind": "coordinator",
+   "status": "employed",
+   "role_2026": "Defensive coordinator",
+   "team_2026": "GB",
+   "defense_identity_team": "GB",
+   "defense_identity_note": "new DC; Arizona HC, Rallis coordinated defense",
+   "head_coach_record": {
+    "seasons": 3,
+    "wins": 15,
+    "losses": 36,
+    "ties": 0,
+    "playoff_wins": 0,
+    "playoff_losses": 0,
+    "last_season": 2025,
+    "last_club": "ARI",
+    "clubs": [
+     "ARI"
+    ]
+   },
+   "sources": [
+    {
+     "url": "https://www.packers.com/team/coaches-roster/jonathan-gannon",
+     "what": "club coaches page names him as the 2026 defensive coordinator"
+    }
+   ]
+  },
+  {
+   "id": "al-golden",
+   "first": "Al",
+   "last": "Golden",
+   "side": "defense",
+   "kind": "coordinator",
+   "status": "employed",
+   "role_2026": "Defensive coordinator",
+   "team_2026": "CIN",
+   "defense_identity_team": "CIN",
+   "defense_identity_note": "incumbent DC",
+   "head_coach_record": null,
+   "sources": [
+    {
+     "url": "https://www.bengals.com/team/coaches-roster/al-golden",
+     "what": "club coaches page names him as the 2026 defensive coordinator"
+    }
+   ]
+  },
+  {
+   "id": "patrick-graham",
+   "first": "Patrick",
+   "last": "Graham",
+   "side": "defense",
+   "kind": "coordinator",
+   "status": "employed",
+   "role_2026": "Defensive coordinator",
+   "team_2026": "PIT",
+   "defense_identity_team": "PIT",
+   "defense_identity_note": "new DC; Raiders DC in 2025",
+   "head_coach_record": null,
+   "sources": [
+    {
+     "url": "https://www.steelers.com/team/coaches-roster/patrick-graham",
+     "what": "club coaches page names him as the 2026 defensive coordinator"
+    }
+   ]
+  },
+  {
+   "id": "daronte-jones",
+   "first": "Daronte",
+   "last": "Jones",
+   "side": "defense",
+   "kind": "coordinator",
+   "status": "employed",
+   "role_2026": "Defensive coordinator",
+   "team_2026": "WAS",
+   "defense_identity_team": "WAS",
+   "defense_identity_note": "new DC; Minnesota pass-game assistant, Flores called defense",
+   "head_coach_record": null,
+   "sources": [
+    {
+     "url": "https://www.commanders.com/team/coaches-roster/daronte-jones",
+     "what": "club coaches page names him as the 2026 defensive coordinator"
+    }
+   ]
+  },
+  {
+   "id": "vance-joseph",
+   "first": "Vance",
+   "last": "Joseph",
+   "side": "defense",
+   "kind": "coordinator",
+   "status": "employed",
+   "role_2026": "Defensive coordinator",
+   "team_2026": "DEN",
+   "defense_identity_team": "DEN",
+   "defense_identity_note": "incumbent DC",
+   "head_coach_record": {
+    "seasons": 2,
+    "wins": 11,
+    "losses": 21,
+    "ties": 0,
+    "playoff_wins": 0,
+    "playoff_losses": 0,
+    "last_season": 2018,
+    "last_club": "DEN",
+    "clubs": [
+     "DEN"
+    ]
+   },
+   "sources": [
+    {
+     "url": "https://www.denverbroncos.com/team/coaches-roster/vance-joseph",
+     "what": "club coaches page names him as the 2026 defensive coordinator"
+    }
+   ]
+  },
+  {
+   "id": "zak-kuhr",
+   "first": "Zak",
+   "last": "Kuhr",
+   "side": "defense",
+   "kind": "coordinator",
+   "status": "employed",
+   "role_2026": "Defensive coordinator",
+   "team_2026": "NE",
+   "defense_identity_team": "NE",
+   "defense_identity_note": "new title; 2025 interim playcaller on Vrabel staff",
+   "head_coach_record": null,
+   "sources": [
+    {
+     "url": "https://www.patriots.com/team/coaches-roster/zak-kuhr",
+     "what": "club coaches page names him as the 2026 defensive coordinator"
+    }
+   ]
+  },
+  {
+   "id": "rob-leonard",
+   "first": "Rob",
+   "last": "Leonard",
+   "side": "defense",
+   "kind": "coordinator",
+   "status": "employed",
+   "role_2026": "Defensive coordinator",
+   "team_2026": "LV",
+   "defense_identity_team": "OAK",
+   "defense_identity_note": "new DC; Raiders DL and run-game assistant under Graham",
+   "head_coach_record": null,
+   "sources": [
+    {
+     "url": "https://www.raiders.com/team/coaches-roster/rob-leonard",
+     "what": "club coaches page names him as the 2026 defensive coordinator"
+    }
+   ]
+  },
+  {
+   "id": "jim-leonhard",
+   "first": "Jim",
+   "last": "Leonhard",
+   "side": "defense",
+   "kind": "coordinator",
+   "status": "employed",
+   "role_2026": "Defensive coordinator",
+   "team_2026": "BUF",
+   "defense_identity_team": "BUF",
+   "defense_identity_note": "new DC; Denver pass-game assistant, Joseph called defense",
+   "head_coach_record": null,
+   "sources": [
+    {
+     "url": "https://www.buffalobills.com/team/coaches-roster/jim-leonhard",
+     "what": "club coaches page names him as the 2026 defensive coordinator"
+    }
+   ]
+  },
+  {
+   "id": "mike-mcdaniel",
+   "first": "Mike",
+   "last": "McDaniel",
+   "side": "offense",
+   "kind": "former_head_coach",
+   "status": "employed",
+   "role_2026": "Offensive coordinator",
+   "team_2026": "LAC",
+   "note": "Fired as Dolphins head coach on 2026-01-08.",
+   "defense_identity_team": null,
+   "head_coach_record": {
+    "seasons": 4,
+    "wins": 35,
+    "losses": 33,
+    "ties": 0,
+    "playoff_wins": 0,
+    "playoff_losses": 2,
+    "last_season": 2025,
+    "last_club": "MIA",
+    "clubs": [
+     "MIA"
+    ]
+   },
+   "sources": [
+    {
+     "url": "https://www.chargers.com/team/coaches-roster/mike-mcdaniel",
+     "what": "Chargers coaches page: enters his first season as offensive coordinator in 2026"
+    }
+   ]
+  },
+  {
+   "id": "sean-mcdermott",
+   "first": "Sean",
+   "last": "McDermott",
+   "side": "defense",
+   "kind": "former_head_coach",
+   "status": "available",
+   "role_2026": "No NFL staff job in 2026; visited the Rams on a learning tour in July 2026",
+   "team_2026": null,
+   "note": "Fired as Bills head coach on 2026-01-19 after nine seasons.",
+   "defense_identity_team": null,
+   "head_coach_record": {
+    "seasons": 9,
+    "wins": 98,
+    "losses": 50,
+    "ties": 0,
+    "playoff_wins": 8,
+    "playoff_losses": 8,
+    "last_season": 2025,
+    "last_club": "BUF",
+    "clubs": [
+     "BUF"
+    ]
+   },
+   "sources": [
+    {
+     "url": "https://www.nbcsports.com/fantasy/football/player-news/2026-07-31/report-mcdermott-begins-learning-tour-with-rams",
+     "what": "NBC Sports: the former Bills coach is visiting the Rams on a learning tour"
+    }
+   ]
+  },
+  {
+   "id": "raheem-morris",
+   "first": "Raheem",
+   "last": "Morris",
+   "side": "defense",
+   "kind": "coordinator",
+   "status": "employed",
+   "role_2026": "Defensive coordinator",
+   "team_2026": "SF",
+   "defense_identity_team": "SF",
+   "defense_identity_note": "new DC; Atlanta HC, Ulbrich called 2025 defense",
+   "head_coach_record": {
+    "seasons": 6,
+    "wins": 37,
+    "losses": 56,
+    "ties": 0,
+    "playoff_wins": 0,
+    "playoff_losses": 0,
+    "last_season": 2025,
+    "last_club": "ATL",
+    "clubs": [
+     "ATL",
+     "TB"
+    ]
+   },
+   "sources": [
+    {
+     "url": "https://www.49ers.com/team/coaches-roster/raheem-morris",
+     "what": "club coaches page names him as the 2026 defensive coordinator"
+    }
+   ]
+  },
+  {
+   "id": "chris-o-leary",
+   "first": "Chris",
+   "last": "O'Leary",
+   "side": "defense",
+   "kind": "coordinator",
+   "status": "employed",
+   "role_2026": "Defensive coordinator",
+   "team_2026": "LAC",
+   "defense_identity_team": "SD",
+   "defense_identity_note": "new DC; Western Michigan DC in 2025; requested rates unavailable",
+   "head_coach_record": null,
+   "sources": [
+    {
+     "url": "https://www.chargers.com/team/coaches-roster/chris-o-leary",
+     "what": "club coaches page names him as the 2026 defensive coordinator"
+    }
+   ]
+  },
+  {
+   "id": "christian-parker",
+   "first": "Christian",
+   "last": "Parker",
+   "side": "defense",
+   "kind": "coordinator",
+   "status": "employed",
+   "role_2026": "Defensive coordinator",
+   "team_2026": "DAL",
+   "defense_identity_team": "DAL",
+   "defense_identity_note": "new DC; Philadelphia pass-game assistant, Fangio called defense",
+   "head_coach_record": null,
+   "sources": [
+    {
+     "url": "https://www.dallascowboys.com/team/coaches-roster/christian-parker",
+     "what": "club coaches page names him as the 2026 defensive coordinator"
+    }
+   ]
+  },
+  {
+   "id": "doug-pederson",
+   "first": "Doug",
+   "last": "Pederson",
+   "side": "offense",
+   "kind": "former_head_coach",
+   "status": "available",
+   "role_2026": "Broadcaster at CBS; no coaching job in 2026",
+   "team_2026": null,
+   "note": "Head coach of the Eagles 2016-2020 and the Jaguars 2022-2024.",
+   "defense_identity_team": null,
+   "head_coach_record": {
+    "seasons": 8,
+    "wins": 64,
+    "losses": 66,
+    "ties": 1,
+    "playoff_wins": 5,
+    "playoff_losses": 3,
+    "last_season": 2024,
+    "last_club": "JAX",
+    "clubs": [
+     "JAX",
+     "PHI"
+    ]
+   },
+   "sources": [
+    {
+     "url": "https://www.inquirer.com/college-sports/cbs-doug-pederson-college-football-tv-eagles-20260728.html",
+     "what": "The Philadelphia Inquirer: Pederson joins CBS because he had no coaching job lined up for 2026 and eyes an NFL comeback"
+    }
+   ]
+  },
+  {
+   "id": "nick-rallis",
+   "first": "Nick",
+   "last": "Rallis",
+   "side": "defense",
+   "kind": "coordinator",
+   "status": "employed",
+   "role_2026": "Defensive coordinator",
+   "team_2026": "ARI",
+   "defense_identity_team": "ARZ",
+   "defense_identity_note": "incumbent DC",
+   "head_coach_record": null,
+   "sources": [
+    {
+     "url": "https://www.azcardinals.com/team/coaches-roster/nick-rallis",
+     "what": "club coaches page names him as the 2026 defensive coordinator"
+    }
+   ]
+  },
+  {
+   "id": "mike-rutenberg",
+   "first": "Mike",
+   "last": "Rutenberg",
+   "side": "defense",
+   "kind": "coordinator",
+   "status": "employed",
+   "role_2026": "Defensive coordinator",
+   "team_2026": "CLE",
+   "defense_identity_team": "CLE",
+   "defense_identity_note": "new DC; Atlanta pass-game assistant, Ulbrich called defense",
+   "head_coach_record": null,
+   "sources": [
+    {
+     "url": "https://www.clevelandbrowns.com/team/coaches-roster/mike-rutenberg",
+     "what": "club coaches page names him as the 2026 defensive coordinator"
+    }
+   ]
+  },
+  {
+   "id": "kelvin-sheppard",
+   "first": "Kelvin",
+   "last": "Sheppard",
+   "side": "defense",
+   "kind": "coordinator",
+   "status": "employed",
+   "role_2026": "Defensive coordinator",
+   "team_2026": "DET",
+   "defense_identity_team": "DET",
+   "defense_identity_note": "incumbent DC",
+   "head_coach_record": null,
+   "sources": [
+    {
+     "url": "https://www.detroitlions.com/team/coaches-roster/kelvin-sheppard",
+     "what": "club coaches page names him as the 2026 defensive coordinator"
+    }
+   ]
+  },
+  {
+   "id": "chris-shula",
+   "first": "Chris",
+   "last": "Shula",
+   "side": "defense",
+   "kind": "coordinator",
+   "status": "employed",
+   "role_2026": "Defensive coordinator",
+   "team_2026": "LAR",
+   "defense_identity_team": "STL",
+   "defense_identity_note": "incumbent DC",
+   "head_coach_record": null,
+   "sources": [
+    {
+     "url": "https://www.therams.com/team/coaches-roster/chris-shula",
+     "what": "club coaches page names him as the 2026 defensive coordinator"
+    }
+   ]
+  },
+  {
+   "id": "steve-spagnuolo",
+   "first": "Steve",
+   "last": "Spagnuolo",
+   "side": "defense",
+   "kind": "coordinator",
+   "status": "employed",
+   "role_2026": "Defensive coordinator",
+   "team_2026": "KC",
+   "defense_identity_team": "KC",
+   "defense_identity_note": "incumbent DC",
+   "head_coach_record": {
+    "seasons": 4,
+    "wins": 11,
+    "losses": 41,
+    "ties": 0,
+    "playoff_wins": 0,
+    "playoff_losses": 0,
+    "last_season": 2017,
+    "last_club": "NYG",
+    "clubs": [
+     "LAR",
+     "NYG"
+    ]
+   },
+   "sources": [
+    {
+     "url": "https://www.chiefs.com/team/coaches-roster/steve-spagnuolo",
+     "what": "club coaches page names him as the 2026 defensive coordinator"
+    }
+   ]
+  },
+  {
+   "id": "brandon-staley",
+   "first": "Brandon",
+   "last": "Staley",
+   "side": "defense",
+   "kind": "coordinator",
+   "status": "employed",
+   "role_2026": "Defensive coordinator",
+   "team_2026": "NO",
+   "defense_identity_team": "NO",
+   "defense_identity_note": "incumbent DC",
+   "head_coach_record": {
+    "seasons": 3,
+    "wins": 24,
+    "losses": 24,
+    "ties": 0,
+    "playoff_wins": 0,
+    "playoff_losses": 1,
+    "last_season": 2023,
+    "last_club": "LAC",
+    "clubs": [
+     "LAC"
+    ]
+   },
+   "sources": [
+    {
+     "url": "https://www.neworleanssaints.com/team/coaches-roster/brandon-staley",
+     "what": "club coaches page names him as the 2026 defensive coordinator"
+    }
+   ]
+  },
+  {
+   "id": "mike-tomlin",
+   "first": "Mike",
+   "last": "Tomlin",
+   "side": "defense",
+   "kind": "former_head_coach",
+   "status": "available",
+   "role_2026": "Studio analyst on NBC's Football Night in America",
+   "team_2026": null,
+   "note": "Stepped down as Steelers head coach on 2026-01-13 after 19 seasons; has said he is not closing the door on coaching.",
+   "defense_identity_team": null,
+   "head_coach_record": {
+    "seasons": 19,
+    "wins": 193,
+    "losses": 114,
+    "ties": 2,
+    "playoff_wins": 8,
+    "playoff_losses": 12,
+    "last_season": 2025,
+    "last_club": "PIT",
+    "clubs": [
+     "PIT"
+    ]
+   },
+   "sources": [
+    {
+     "url": "https://www.nbcsports.com/pressbox/press-releases/mike-tomlin-joins-nbc-sports-football-night-in-america",
+     "what": "NBC Sports press release: Tomlin joins Football Night in America as a studio analyst"
+    }
+   ]
+  },
+  {
+   "id": "jeff-ulbrich",
+   "first": "Jeff",
+   "last": "Ulbrich",
+   "side": "defense",
+   "kind": "coordinator",
+   "status": "employed",
+   "role_2026": "Defensive coordinator",
+   "team_2026": "ATL",
+   "defense_identity_team": "ATL",
+   "defense_identity_note": "incumbent DC",
+   "head_coach_record": null,
+   "sources": [
+    {
+     "url": "https://www.atlantafalcons.com/team/coaches-roster/jeff-ulbrich",
+     "what": "club coaches page names him as the 2026 defensive coordinator"
+    }
+   ]
+  },
+  {
+   "id": "anthony-weaver",
+   "first": "Anthony",
+   "last": "Weaver",
+   "side": "defense",
+   "kind": "coordinator",
+   "status": "employed",
+   "role_2026": "Defensive coordinator",
+   "team_2026": "BAL",
+   "defense_identity_team": "BAL",
+   "defense_identity_note": "new DC; 2025 Miami DC; Minter influence is not measured here",
+   "head_coach_record": null,
+   "sources": [
+    {
+     "url": "https://www.baltimoreravens.com/team/coaches-roster/anthony-weaver",
+     "what": "club coaches page names him as the 2026 defensive coordinator"
+    }
+   ]
+  },
+  {
+   "id": "dennard-wilson",
+   "first": "Dennard",
+   "last": "Wilson",
+   "side": "defense",
+   "kind": "coordinator",
+   "status": "employed",
+   "role_2026": "Defensive coordinator",
+   "team_2026": "NYG",
+   "defense_identity_team": "NYG",
+   "defense_identity_note": "new DC; Tennessee DC in 2025",
+   "head_coach_record": null,
+   "sources": [
+    {
+     "url": "https://www.giants.com/team/coaches-roster/dennard-wilson",
+     "what": "club coaches page names him as the 2026 defensive coordinator"
+    }
+   ]
+  }
+ ],
+ "left_out": [
+  {
+   "name": "Antonio Pierce",
+   "reason": "left coaching: chief strategy adviser at Athletes in Control (2025)",
+   "source": "https://bernews.com/2025/08/antonio-pierce-set-new-adviser-role/"
+  },
+  {
+   "name": "Jerod Mayo",
+   "reason": "left football: managing director at the investment firm Fifth Down (2026)",
+   "source": "https://www.bostonglobe.com/2026/05/29/sports/jerod-mayo-new-job-patriots/"
+  },
+  {
+   "name": "Pete Carroll",
+   "reason": "fired by the Raiders on 2026-01-05; no 2026 role was found in the sources checked",
+   "source": null
+  },
+  {
+   "name": "Todd Wash",
+   "reason": "interim Panthers defensive coordinator since 2026-10-30, not a permanent coordinator",
+   "source": "https://www.panthers.com/team/coaches-roster/todd-wash"
+  }
+ ],
+ "in_season_exits": [
+  {
+   "coach": "Dennis Allen",
+   "club": "NO",
+   "season": 2024,
+   "fired": "2024-11-04",
+   "source": "https://www.nfl.com/news/saints-fire-head-coach-dennis-allen-after-loss-to-panthers-2-7-start-to-season"
+  },
+  {
+   "coach": "Matt Eberflus",
+   "club": "CHI",
+   "season": 2024,
+   "fired": "2024-11-29",
+   "source": "https://www.nfl.com/news/bears-firing-head-coach-matt-eberflus-following-sixth-straight-loss-4-8-start-to-season"
+  },
+  {
+   "coach": "Brian Callahan",
+   "club": "TEN",
+   "season": 2025,
+   "fired": "2025-10-13",
+   "source": "https://www.nfl.com/news/brian-callahan-titans-fire-head-coach"
+  },
+  {
+   "coach": "Brian Daboll",
+   "club": "NYG",
+   "season": 2025,
+   "fired": "2025-11-10",
+   "source": "https://www.nfl.com/news/giants-fire-head-coach-brian-daboll-after-2-8-start"
+  }
+ ],
+ "url_checks": {
+  "https://bernews.com/2025/08/antonio-pierce-set-new-adviser-role/": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Athletes in Control",
+    "Pierce"
+   ]
+  },
+  "https://www.49ers.com/team/coaches-roster/matt-eberflus": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Eberflus",
+    "assistant head coach"
+   ]
+  },
+  "https://www.49ers.com/team/coaches-roster/raheem-morris": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Morris",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.atlantafalcons.com/team/coaches-roster/jeff-ulbrich": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Ulbrich",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.azcardinals.com/team/coaches-roster/nick-rallis": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Rallis",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.baltimoreravens.com/team/coaches-roster/anthony-weaver": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Weaver",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.bengals.com/team/coaches-roster/al-golden": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Golden",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.bostonglobe.com/2026/05/29/sports/jerod-mayo-new-job-patriots/": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Fifth Down",
+    "Mayo"
+   ]
+  },
+  "https://www.buffalobills.com/team/coaches-roster/jim-leonhard": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Leonhard",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.chargers.com/team/coaches-roster/chris-o-leary": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "O'Leary",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.chargers.com/team/coaches-roster/mike-mcdaniel": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "McDaniel",
+    "offensive coordinator"
+   ]
+  },
+  "https://www.chicagobears.com/team/coaches/dennis-allen": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Allen",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.chiefs.com/team/coaches-roster/steve-spagnuolo": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Spagnuolo",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.clevelandbrowns.com/team/coaches-roster/mike-rutenberg": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Rutenberg",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.colts.com/team/coaches-roster/lou-anarumo": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Anarumo",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.commanders.com/team/coaches-roster/daronte-jones": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Jones",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.dallascowboys.com/team/coaches-roster/christian-parker": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Parker",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.denverbroncos.com/team/coaches-roster/vance-joseph": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Joseph",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.detroitlions.com/team/coaches-roster/kelvin-sheppard": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Sheppard",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.giants.com/team/coaches-roster/brian-callahan": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Callahan",
+    "passing game coordinator",
+    "quarterbacks coach"
+   ]
+  },
+  "https://www.giants.com/team/coaches-roster/dennard-wilson": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Wilson",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.houstontexans.com/team/coaches-roster/matt-burke": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Burke",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.inquirer.com/college-sports/cbs-doug-pederson-college-football-tv-eagles-20260728.html": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "CBS",
+    "Pederson"
+   ]
+  },
+  "https://www.jaguars.com/team/coaches-roster/anthony-campanile": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Campanile",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.ksl.com/article/51642551/panthers-fire-defensive-coordinator-ejiro-evero-following-27-19-loss-to-the-packers": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Evero",
+    "Wash",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.miamidolphins.com/team/coaches-roster/sean-duggan": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Duggan",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.nbcsports.com/fantasy/football/player-news/2026-07-31/report-mcdermott-begins-learning-tour-with-rams": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "McDermott",
+    "Rams"
+   ]
+  },
+  "https://www.nbcsports.com/pressbox/press-releases/mike-tomlin-joins-nbc-sports-football-night-in-america": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Football Night in America",
+    "Tomlin"
+   ]
+  },
+  "https://www.neworleanssaints.com/team/coaches-roster/brandon-staley": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Staley",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.news4jax.com/sports/2026/10/30/panthers-fire-defensive-coordinator-ejiro-evero-following-27-19-loss-to-the-packers/": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Evero",
+    "Wash",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.newyorkjets.com/team/coaches-roster/brian-duker": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Duker",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.nfl.com/news/bears-firing-head-coach-matt-eberflus-following-sixth-straight-loss-4-8-start-to-season": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Eberflus"
+   ]
+  },
+  "https://www.nfl.com/news/brian-callahan-titans-fire-head-coach": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Callahan",
+    "fire"
+   ]
+  },
+  "https://www.nfl.com/news/giants-fire-head-coach-brian-daboll-after-2-8-start": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Daboll",
+    "fire"
+   ]
+  },
+  "https://www.nfl.com/news/saints-fire-head-coach-dennis-allen-after-loss-to-panthers-2-7-start-to-season": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Allen"
+   ]
+  },
+  "https://www.packers.com/team/coaches-roster/jonathan-gannon": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Gannon",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.panthers.com/team/coaches-roster/todd-wash": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Wash",
+    "interim"
+   ]
+  },
+  "https://www.patriots.com/team/coaches-roster/zak-kuhr": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Kuhr",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.philadelphiaeagles.com/team/coaches/vic-fangio": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Fangio",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.raiders.com/team/coaches-roster/rob-leonard": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Leonard",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.seahawks.com/team/coaches-roster/aden-durde": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Durde",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.steelers.com/team/coaches-roster/patrick-graham": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Graham",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.tennesseetitans.com/team/coaches-roster/brian-daboll": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Daboll",
+    "offensive coordinator"
+   ]
+  },
+  "https://www.tennesseetitans.com/team/coaches-roster/gus-bradley": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Bradley",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.therams.com/team/coaches-roster/chris-shula": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Shula",
+    "defensive coordinator"
+   ]
+  },
+  "https://www.vikings.com/team/coaches-roster/brian-flores": {
+   "http": 200,
+   "checked": "2026-11-02",
+   "page_contains": [
+    "Flores",
+    "defensive coordinator"
+   ]
+  }
+ }
+}
