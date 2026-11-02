@@ -554,6 +554,20 @@ class RealSaveTests(unittest.TestCase):
         self.assertEqual(arena.capacity_descriptor(filled, document.layout), (1477, 593792))
 
 
+    @unittest.skipUnless(REAL_DISC_ROST.is_file(), "the released disc's roster is not named in B780_B10_DISC_ROST")
+    def test_the_upgrade_step_itself_fills_the_resave_in_place_and_a_second_run_finds_nothing(self):
+        body = REAL_DISC_ROST.read_bytes()
+        out, step = up.sync_free_agents(self.resaved, body)
+        self.assertEqual(step["arena_growth"], "filled in place")
+        growth = step["save_arena_growth"]
+        self.assertEqual((growth["in_place"], growth["class_records"], growth["file_growth"]), (True, 865, 0))
+        self.assertEqual((growth["arena_size_before"], growth["arena_size_after"]), (arena.CAPACITY_ARENA_SIZE,) * 2)
+        self.assertEqual(len(out), len(self.resaved))
+        self.assertEqual(sr.decode(out).tables["primary"].count, 4096)
+        again, second = up.sync_free_agents(out, body)
+        self.assertEqual((again, second["arena_growth"], second["save_arena_growth"]), (out, "already the disc's arena size", None))
+
+
 @unittest.skipUnless(REAL_V07.is_file() and REAL_DISC_ROST.is_file(),
                      "a real save and the released disc's roster are not named in B780_B10_V07 and B780_B10_DISC_ROST")
 class RealChampionsTests(unittest.TestCase):
