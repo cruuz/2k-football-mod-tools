@@ -1,0 +1,375 @@
+"""Job j5b-leaders (b780): the franchise leaders data and the builder that makes it.
+
+Offline and quick.  The helper tests run the builder's pure pieces on synthetic input (the two-source rule, the Wikipedia table
+reader, the nflverse totals, the evidence-to-data assembly).  The data tests check the shipped
+``data/nfl2k5_franchise_leaders_2026.json`` and its evidence file: the data must equal what the evidence says (the builder's
+``verify``), every shipped row must carry a second source, ranks and values must be ordered, the printed guide line must contain
+the number, and the roster links must resolve.
+"""
+from __future__ import annotations
+
+import csv
+import gzip
+import json
+import re
+import sys
+import tempfile
+import unittest
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+if str(ROOT / "tools") not in sys.path:
+    sys.path.insert(0, str(ROOT / "tools"))
+
+import b780_franchise_leaders_build as B  # noqa: E402
+
+DATA = ROOT / "data" / "nfl2k5_franchise_leaders_2026.json"
+EVIDENCE = ROOT / "data" / "nfl2k5_franchise_leaders_evidence_2026.json"
+COHORT = ROOT / "tools" / "b77" / "f12_cohort.json"
+
+
+def table(rows, header):
+    def tr(cells, tag="td"):
+        return "<tr>" + "".join(f"<{tag}>{c}</{tag}>" for c in cells) + "</tr>"
+    return "<table>" + "".join(tr(h, "th") for h in header) + "".join(tr(r) for r in rows) + "</table>"
+
+
+class Helpers(unittest.TestCase):
+    def test_years(self):
+        self.assertEqual(B.parse_years("1975-87"), set(range(1975, 1988)))
+        self.assertEqual(B.parse_years("1940-41; 45-50"), {1940, 1941} | set(range(1945, 1951)))
+        self.assertEqual(B.parse_years("2008-16; '25"), set(range(2008, 2017)) | {2025})
+        self.assertEqual(B.parse_years("2017, 20-present"), {2017} | set(range(2020, 2026)))
+        self.assertEqual(B.parse_years("1998-2001"), {1998, 1999, 2000, 2001})
+        self.assertEqual(B.parse_years("2019"), {2019})
+
+    def test_game_dates_january_games_belong_to_the_previous_season(self):
+        self.assertEqual(B.game_date("1/2/2022 vs. Kansas City"), ("2022-01-02", 2021))
+        self.assertEqual(B.game_date("12/13/2015"), ("2015-12-13", 2015))
+        self.assertEqual(B.game_date("12/3/00 at N.Y."), ("2000-12-03", 2000))
+        self.assertEqual(B.game_date("11/20/77")[1], 1977)
+        self.assertEqual(B.game_date("1998"), (None, 1998))
+
+    def test_names(self):
+        self.assertEqual(B.split_name("Walter Payton"), ("Walter", "Payton", ""))
+        self.assertEqual(B.split_name("Odell Beckham Jr."), ("Odell", "Beckham", "Jr."))
+        self.assertEqual(B.split_name("Allen Robinson II"), ("Allen", "Robinson", "II"))
+        self.assertEqual(B.split_name("Portis"), ("", "Portis", ""))
+        self.assertEqual(B.norm("Matt Forté"), B.norm("Matt Forte"))
+        self.assertEqual(B.norm("Ja'Marr Chase"), "jamarr chase")
+
+    def test_team_cells_follow_the_franchise_across_eras(self):
+        self.assertEqual(B.club_of_cell("BAL", 1970), "IND")           # Baltimore Colts
+        self.assertEqual(B.club_of_cell("BAL", 2005), "BAL")           # Ravens
+        self.assertEqual(B.club_of_cell("HOU", 1990), "TEN")           # Oilers
+        self.assertEqual(B.club_of_cell("HOU", 2010), "HOU")
+        self.assertEqual(B.club_of_cell("STL", 1980), "ARI")           # football Cardinals
+        self.assertEqual(B.club_of_cell("STL", 2005), "LAR")
+        self.assertEqual(B.club_of_cell("OAK", 2001), "LV")
+        self.assertEqual(B.club_of_cell("SD", 2010), "LAC")
+        self.assertEqual(B.club_of_cell("LA", 1990), "AMBIG")          # Rams or Raiders
+        self.assertEqual(B.club_of_cell("2TM", 2012), None)
+        self.assertEqual(B.club_of_cell("Chicago Bears", 1990), "CHI")
+        self.assertEqual(B.club_of_cell("Tulane", 2005), None)
+
+    def test_positions(self):
+        self.assertEqual(B.position_code("Running back"), "HB")
+        self.assertEqual(B.position_code("Wide receiver / Kick returner"), "WR")
+        self.assertEqual(B.position_code("Tight end"), "TE")
+        self.assertEqual(B.position_code("Defensive end"), "DE")
+        self.assertEqual(B.position_code("Middle linebacker"), "ILB")
+        self.assertEqual(B.position_code("Linebacker"), "OLB")
+        self.assertEqual(B.position_code("Placekicker"), "K")
+        self.assertIsNone(B.position_code("Head coach"))
+        for code in B.POSITION_OVERRIDE.values():
+            self.assertIn(code, B.POSITIONS)
+
+    def test_rank_rows_keep_printed_order_and_rerank_columns(self):
+        printed = {"kind": "list", "rows": [{"rank": 1, "value": 9}, {"rank": 2, "value": 7}, {"rank": 2, "value": 7}, {"rank": 4, "value": 5}]}
+        self.assertEqual([rk for rk, _ in B.rank_rows(printed)], [1, 2, 2, 4])
+        column = {"kind": "column", "rows": [{"rank": 1, "value": 5}, {"rank": 2, "value": 9}, {"rank": 3, "value": 9}, {"rank": 4, "value": 1}]}
+        self.assertEqual([(rk, r["value"]) for rk, r in B.rank_rows(column)], [(1, 9), (1, 9), (3, 5), (4, 1)])
+
+
+class WikipediaTables(unittest.TestCase):
+    def test_offense_rows_sum_over_the_club_only_and_skip_postseason_and_college(self):
+        # a header with a group row, written by hand (table() writes one flat header row)
+        html = ("<h2>Regular season</h2><table><tr><th rowspan=2>Year</th><th rowspan=2>Team</th><th colspan=3>Rushing</th></tr>"
+                "<tr><th>Att</th><th>Yds</th><th>TD</th></tr>"
+                "<tr><td>2008</td><td>CHI</td><td>316</td><td>1,238</td><td>8</td></tr>"
+                "<tr><td>2009</td><td>CHI</td><td>258</td><td>929</td><td>4</td></tr>"
+                "<tr><td>2010</td><td>2TM</td><td>10</td><td>50</td><td>0</td></tr>"
+                "<tr><td>2011</td><td>NYJ</td><td>99</td><td>400</td><td>1</td></tr>"
+                "<tr><td>2026</td><td>CHI</td><td>5</td><td>20</td><td>0</td></tr></table>"
+                "<h2>Postseason</h2><table><tr><th rowspan=2>Year</th><th rowspan=2>Team</th><th colspan=3>Rushing</th></tr>"
+                "<tr><th>Att</th><th>Yds</th><th>TD</th></tr><tr><td>2010</td><td>CHI</td><td>20</td><td>100</td><td>1</td></tr>"
+                "<tr><td>2011</td><td>CHI</td><td>1</td><td>2</td><td>0</td></tr></table>")
+        r = B.club_sums(html, "CHI")
+        self.assertEqual(r["sums"]["rushing_yards"], 1238 + 929)
+        self.assertEqual(r["sums"]["rushing_td"], 12)
+        self.assertEqual(r["years"], [2008, 2009])          # 2026 is after the cut-off, the playoff table is skipped, 2TM is no club
+        self.assertEqual(r["seasons"]["rushing_yards"], {"2008": 1238.0, "2009": 929.0})
+
+    def test_a_quarterbacks_sacks_are_not_defensive_sacks_and_defense_sacks_are_half_sacks(self):
+        qb = ("<table><tr><th rowspan=2>Year</th><th rowspan=2>Team</th><th colspan=2>Passing</th><th colspan=2>Sacks</th></tr>"
+              "<tr><th>Yds</th><th>TD</th><th>Sck</th><th>Yds</th></tr><tr><td>2010</td><td>CHI</td><td>3,274</td><td>23</td><td>35</td><td>200</td></tr>"
+              "<tr><td>2011</td><td>CHI</td><td>1,812</td><td>13</td><td>20</td><td>120</td></tr></table>")
+        r = B.club_sums(qb, "CHI")
+        self.assertEqual(r["sums"]["passing_yards"], 5086)
+        self.assertNotIn("sacks_half", r["sums"])
+        d = ("<table><tr><th rowspan=2>Year</th><th rowspan=2>Team</th><th colspan=3>Tackles</th><th colspan=1>Interceptions</th></tr>"
+             "<tr><th>Cmb</th><th>Solo</th><th>Sck</th><th>Int</th></tr><tr><td>2000</td><td>CHI</td><td>124</td><td>98</td><td>8.0</td><td>2</td></tr>"
+             "<tr><td>2001</td><td>CHI</td><td>100</td><td>80</td><td>5.5</td><td>3</td></tr></table>")
+        r = B.club_sums(d, "CHI")
+        self.assertEqual(r["sums"]["sacks_half"], 27.0)           # 13.5 sacks = 27 half sacks
+        self.assertEqual(r["sums"]["tackles"], 224)
+        self.assertEqual(r["sums"]["interceptions"], 5)
+
+    def test_flat_header_without_group_names(self):
+        html = table([["1981", "SD", "14", "109", "525", "4.8", "28", "3", "46", "329", "7.2", "29", "3"],
+                      ["1982", "SD", "9", "87", "430", "4.9", "48", "6", "13", "66", "5.1", "12", "0"],
+                      ["1984", "CIN", "16", "103", "490", "4.8", "40", "4", "28", "300", "10.7", "40", "1"]],
+                     [["Year", "Team", "GP", "Att", "Yds", "Avg", "Lng", "TD", "Rec", "Yds", "Avg", "Lng", "TD"]])
+        r = B.club_sums(html, "LAC")
+        self.assertEqual(r["sums"]["rushing_yards"], 955)
+        self.assertEqual(r["sums"]["receiving_yards"], 395)
+        self.assertEqual(r["sums"]["receptions"], 59)
+
+    def test_infobox_position(self):
+        html = '<table class="infobox"><tr><th colspan=2>Name</th></tr><tr><th>Position:</th><td>Running back</td></tr></table>'
+        self.assertEqual(B.infobox_position(html), "Running back")
+
+
+class NflverseTotals(unittest.TestCase):
+    def test_weekly_rows_are_summed_per_club_for_the_regular_season_only(self):
+        cols = ["season_type", "team", "player_id", "player_display_name", "position", "week", "passing_yards", "passing_tds", "rushing_yards",
+                "rushing_tds", "receptions", "receiving_yards", "receiving_tds", "def_sacks", "def_interceptions", "def_tackles_solo", "def_tackle_assists"]
+        rows = [
+            ["REG", "LA", "p1", "Pat Passer", "QB", "1", "300", "3", "10", "0", "0", "0", "0", "0", "0", "0", "0"],
+            ["REG", "LA", "p1", "Pat Passer", "QB", "2", "250", "1", "0", "0", "0", "0", "0", "0", "0", "0", "0"],
+            ["POST", "LA", "p1", "Pat Passer", "QB", "20", "999", "9", "0", "0", "0", "0", "0", "0", "0", "0", "0"],
+            ["REG", "CHI", "p2", "Dee Fender", "DE", "1", "0", "0", "0", "0", "0", "0", "0", "1.5", "1", "4", "2"],
+        ]
+        with tempfile.TemporaryDirectory() as folder:
+            for yr in range(B.NV_WINDOW[0], B.NV_WINDOW[1] + 1):
+                with gzip.open(Path(folder) / f"stats_player_week_{yr}.csv.gz", "wt", encoding="utf-8", newline="") as f:
+                    w = csv.writer(f, lineterminator="\n")
+                    w.writerow(cols)
+                    if yr == 2010:
+                        w.writerows(rows)
+            nv = B.NFLverse(folder).load()
+        self.assertEqual(nv.career[("LAR", "p1")]["passing_yards"], 550)          # nflverse "LA" is the Rams franchise; the playoff row is skipped
+        self.assertEqual(nv.season[("LAR", "p1", 2010)]["passing_td"], 4)
+        self.assertEqual(nv.career[("CHI", "p2")]["sacks_half"], 3.0)             # 1.5 sacks in half sacks
+        self.assertEqual(nv.career[("CHI", "p2")]["tackles"], 6)
+        self.assertEqual(sorted(x[0] for x in nv.game[("LAR", "passing_yards")]), [250, 300])
+        self.assertEqual(nv.find("LAR", "Pat Passer", {2010}), "p1")
+        self.assertIsNone(nv.find("CHI", "Pat Passer", {2010}))
+
+
+class TheRule(unittest.TestCase):
+    def test_decide(self):
+        d = B.decide("rushing_yards", 8602, 8602, 8595, True)         # Forte: Wikipedia agrees, nflverse close
+        self.assertEqual((d["decision"], d["confirmed_by"], d["nflverse"]), ("ship", ["wikipedia"], "close"))
+        d = B.decide("passing_yards", 23443, None, 23443, True)       # nflverse alone, exact, whole career
+        self.assertEqual((d["decision"], d["confirmed_by"]), ("ship", ["nflverse"]))
+        d = B.decide("passing_yards", 23443, 23443, 23443, True)
+        self.assertEqual(d["confirmed_by"], ["wikipedia", "nflverse"])
+        self.assertEqual(B.decide("rushing_td", 46, 47, None, False)["decision"], "conflict")          # sources differ
+        self.assertEqual(B.decide("rushing_yards", 8602, 8602, 9500, True)["decision"], "review")       # nflverse far off
+        self.assertEqual(B.decide("rushing_yards", 8602, None, None, False)["decision"], "single")
+        # nflverse sees only 1999+: its total may not exceed the guide's, and an equal partial total proves nothing
+        self.assertEqual(B.decide("rushing_yards", 8000, None, 8000, False)["decision"], "single")
+        self.assertEqual(B.decide("rushing_yards", 8000, 8000, 9000, False)["decision"], "review")
+        # tackles are never compared with nflverse
+        self.assertEqual(B.decide("tackles", 1488, 1488, 900, True)["decision"], "ship")
+        self.assertEqual(B.decide("tackles", 1488, None, 1488, True)["decision"], "single")
+
+    def test_tolerances(self):
+        self.assertEqual(B.nv_status("rushing_yards", 8602, 8595, True), "close")
+        self.assertEqual(B.nv_status("rushing_yards", 8602, 8500, True), "off")
+        self.assertEqual(B.nv_status("sacks_half", 249, 245, True), "close")
+        self.assertEqual(B.nv_status("receptions", 500, 500, True), "exact")
+        self.assertEqual(B.nv_status("passing_td", 100, 130, False), "conflict")
+
+    def test_guard(self):
+        self.assertTrue(B.guard_violated("rushing_yards", {"bar": 3000, "other_value": 3500}))
+        self.assertFalse(B.guard_violated("rushing_yards", {"bar": 3000, "other_value": 3010}))
+        self.assertFalse(B.guard_violated("tackles", {"bar": 100, "other_value": 900}))
+        self.assertFalse(B.guard_violated("rushing_yards", {"bar": 3000, "other_value": None}))
+
+
+def candidate(club, scope, cat, rank, order, name, value, wiki=None, nv=None, covered=False, kind="list", **extra):
+    c = {"club": club, "scope": scope, "category": cat, "rank": rank, "order": order, "name": name, "years": "2000-05", "span": [2000, 2005],
+         "value": value, "kind": kind, "position": "HB", "guide": {"page": 1, "title": "T", "raw": f"{rank}. {name} {value}"}}
+    if wiki is not None:
+        c["wikipedia"] = {"title": name, "revid": 1, "retrieved": "2026-11-02", "value": wiki, "years": [2000, 2005]}
+    if nv is not None:
+        c["nflverse"] = {"value": nv, "covered": covered, "player": name}
+    c.update(extra)
+    return c
+
+
+class Assembly(unittest.TestCase):
+    def evidence(self, cands, guards=(), missing=()):
+        return {"through_season": 2025, "rules": {}, "public_sources": {}, "candidates": list(cands), "guards": list(guards), "missing": list(missing)}
+
+    def test_longest_verified_run_from_rank_one(self):
+        cands = [candidate("CHI", "career", "rushing_yards", 1, 0, "A One", 100, wiki=100),
+                 candidate("CHI", "career", "rushing_yards", 2, 1, "B Two", 90),                        # single source
+                 candidate("CHI", "career", "rushing_yards", 3, 2, "C Three", 80, wiki=80)]            # fine but behind a failed rank
+        data, excluded = B.assemble(self.evidence(cands))
+        rows = data["clubs"]["CHI"]["career"]["rushing_yards"]
+        self.assertEqual([r["name"] for r in rows], ["A One"])
+        self.assertEqual(rows[0]["confirmed_by"], ["wikipedia"])
+        self.assertEqual({e["name"]: e["reason"] for e in excluded}, {"B Two": "single", "C Three": "after a rank that is single"})
+
+    def test_a_conflict_cuts_the_run_and_is_listed(self):
+        cands = [candidate("GB", "career", "passing_td", 1, 0, "A One", 50, wiki=50, nv=50, covered=True),
+                 candidate("GB", "career", "passing_td", 2, 1, "B Two", 40, wiki=41)]
+        data, excluded = B.assemble(self.evidence(cands))
+        self.assertEqual(len(data["clubs"]["GB"]["career"]["passing_td"]), 1)
+        self.assertEqual(excluded[0]["reason"], "conflict")
+        self.assertEqual((excluded[0]["guide"], excluded[0]["wikipedia"]), (40, 41))
+        self.assertEqual(data["counts"]["shipped"]["career"], 1)
+
+    def test_slots_and_ties(self):
+        cands = [candidate("DAL", "career", "receptions", i + 1, i, f"P{i}", 100 - i, wiki=100 - i) for i in range(4)]
+        data, excluded = B.assemble(self.evidence(cands))
+        self.assertEqual(len(data["clubs"]["DAL"]["career"]["receptions"]), 3)       # three leaders; the fourth is simply beyond the slots
+        self.assertEqual(excluded, [])
+        cands = [candidate("DAL", "season", "rushing_yards", 1, 0, "Tie A", 2000, wiki=2000, season=1995),
+                 candidate("DAL", "season", "rushing_yards", 1, 1, "Tie B", 2000, wiki=2000, season=1996)]
+        data, _ = B.assemble(self.evidence(cands))
+        self.assertEqual(len(data["clubs"]["DAL"]["season"]["rushing_yards"]), 1)      # one record slot
+
+    def test_a_failed_completeness_guard_withholds_the_group(self):
+        cands = [candidate("NE", "career", "passing_yards", 1, 0, "A One", 5000, wiki=5000)]
+        guard = {"club": "NE", "scope": "career", "category": "passing_yards", "bar": 3000, "other_value": 9000, "other_player": "Someone"}
+        data, excluded = B.assemble(self.evidence(cands, guards=[guard]))
+        self.assertEqual(data["clubs"]["NE"]["career"], {})
+        self.assertEqual(excluded[0]["reason"], "incomplete list")
+
+    def test_rows_carry_person_fields_and_scope_specific_fields(self):
+        cands = [candidate("CHI", "game", "rushing_yards", 1, 0, "Walter Payton", 275, nv=275, covered=True, season=1977, date="1977-11-20", week=None),
+                 candidate("CHI", "season", "rushing_yards", 1, 0, "Walter Payton Jr.", 1852, wiki=1852, season=1977)]
+        data, _ = B.assemble(self.evidence(cands))
+        game = data["clubs"]["CHI"]["game"]["rushing_yards"][0]
+        self.assertEqual((game["first"], game["last"], game["position"], game["season"], game["date"]), ("Walter", "Payton", "HB", 1977, "1977-11-20"))
+        season = data["clubs"]["CHI"]["season"]["rushing_yards"][0]
+        self.assertEqual((season["suffix"], "date" in season), ("Jr.", False))
+
+    def test_missing_lists_are_listed(self):
+        data, excluded = B.assemble(self.evidence([], missing=[{"club": "ATL", "scope": "career", "category": "tackles", "why": "no list"}]))
+        self.assertEqual(excluded[0]["reason"], "not printed in the guide")
+        self.assertEqual(data["clubs"]["ATL"]["name"], "Atlanta Falcons")
+        self.assertEqual(sorted(data["clubs"]), sorted(B.CLUBS))
+
+
+@unittest.skipUnless(DATA.exists() and EVIDENCE.exists(), "franchise leaders data not built yet")
+class ShippedData(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.data = json.loads(DATA.read_text(encoding="utf-8"))
+        cls.evidence = json.loads(EVIDENCE.read_text(encoding="utf-8"))
+
+    def test_schema_and_clubs(self):
+        d = self.data
+        self.assertEqual((d["schema"], d["base_year"], d["through_season"]), (B.SCHEMA, 2026, 2025))
+        self.assertEqual(sorted(d["clubs"]), sorted(B.CLUBS))
+        self.assertEqual(list(d["categories"]), list(B.CATEGORIES))
+        self.assertEqual(sorted(c["arena_index"] for c in d["clubs"].values()), list(range(32)))
+        for code, c in d["clubs"].items():
+            self.assertEqual(c["name"], B.CLUBS[code][0])
+
+    def test_data_is_exactly_what_the_evidence_says(self):
+        data, excluded = B.assemble(self.evidence)
+        self.assertEqual(data, self.data)
+        self.assertEqual(excluded, self.evidence["excluded"])
+
+    def test_every_shipped_row_has_a_second_source_and_ordered_values(self):
+        total = 0
+        for code, club in self.data["clubs"].items():
+            for scope in B.SCOPES:
+                for cat, rows in club[scope].items():
+                    self.assertIn(cat, B.CATEGORIES)
+                    self.assertLessEqual(len(rows), B.SLOTS[scope], (code, scope, cat))
+                    prev = None
+                    for i, r in enumerate(rows):
+                        total += 1
+                        self.assertTrue(r["confirmed_by"], (code, scope, cat, r["name"]))
+                        self.assertTrue(set(r["confirmed_by"]) <= {"wikipedia", "nflverse"})
+                        self.assertTrue(r["last"], (code, r["name"]))
+                        self.assertIn(r["position"], B.POSITIONS, (code, scope, cat, r["name"]))
+                        self.assertGreater(r["value"], 0)
+                        if scope == "career" and prev is not None:
+                            self.assertLessEqual(r["value"], prev, (code, cat, r["name"]))
+                        prev = r["value"]
+                    self.assertEqual(len({r["name"] for r in rows}), len(rows), (code, scope, cat))
+        self.assertGreater(total, 0)
+        self.assertEqual(total, sum(self.data["counts"]["shipped"].values()))
+
+    def test_the_guide_line_contains_the_number_and_the_other_sources_agree(self):
+        by_key = {}
+        for c in self.evidence["candidates"]:
+            by_key[(c["club"], c["scope"], c["category"], c["name"], c["rank"])] = c
+        checked = 0
+        for code, club in self.data["clubs"].items():
+            for scope in B.SCOPES:
+                for cat, rows in club[scope].items():
+                    for r in rows:
+                        c = by_key[(code, scope, cat, r["name"], r["rank"])]
+                        self.assertEqual(c["value"], r["value"])
+                        raw = c["guide"]["raw"].replace(",", "")
+                        unit = r["value"] / B.SCALE.get(cat, 1)
+                        shown = str(int(unit)) if float(unit).is_integer() else f"{unit:.1f}"
+                        if c.get("adjusted"):
+                            unit = c["adjusted"]["guide_value"] / B.SCALE.get(cat, 1)
+                            shown = str(int(unit)) if float(unit).is_integer() else f"{unit:.1f}"
+                        self.assertIn(shown, raw, (code, scope, cat, r["name"], c["guide"]["raw"]))
+                        if "wikipedia" in r["confirmed_by"]:
+                            self.assertEqual(c["wikipedia"]["value"], r["value"])
+                            self.assertTrue(c["wikipedia"]["revid"], (code, r["name"]))
+                        if "nflverse" in r["confirmed_by"]:
+                            self.assertEqual(c["nflverse"]["value"], r["value"])
+                            self.assertTrue(c["nflverse"]["covered"])
+                        checked += 1
+        self.assertEqual(checked, sum(self.data["counts"]["shipped"].values()))
+
+    def test_links_resolve_to_roster_identities(self):
+        cohort = {r[0]: r for r in json.loads(COHORT.read_text(encoding="utf-8"))["records"]}
+        linked = 0
+        for club in self.data["clubs"].values():
+            for rows in club["career"].values():
+                for r in rows:
+                    link = r.get("link")
+                    if not link:
+                        continue
+                    linked += 1
+                    rec = cohort[link["index"]]
+                    self.assertEqual((rec[1], rec[2], rec[3]), (link["first"], link["last"], link["birth_date"]))
+        self.assertGreaterEqual(linked, 0)
+
+    def test_excluded_rows_say_why(self):
+        reasons = {"single", "conflict", "review", "incomplete list", "not printed in the guide"}
+        for e in self.evidence["excluded"]:
+            self.assertTrue(e["reason"] in reasons or e["reason"].startswith("after a rank that is "), e)
+        shipped = sum(self.data["counts"]["shipped"].values())
+        self.assertEqual(self.data["counts"]["by_decision"].get("ship", 0) >= shipped, True)
+
+    def test_sources_are_pinned_in_the_evidence(self):
+        ev = self.evidence
+        self.assertEqual(len(ev["sources"]["nflverse_files"]), 27)
+        for sha in ev["sources"]["nflverse_files"].values():
+            self.assertRegex(sha, r"^[0-9a-f]{64}$")
+        self.assertEqual(sorted(ev["sources"]["guides"]), sorted(B.CLUBS))
+        for club, g in ev["sources"]["guides"].items():
+            self.assertTrue(g["item"], club)
+        text = json.dumps(self.data, ensure_ascii=False)
+        self.assertNotIn("—", text)                  # no em dashes in public text
+
+
+if __name__ == "__main__":
+    unittest.main()

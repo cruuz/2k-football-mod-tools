@@ -6,16 +6,19 @@ What is built
   * career: the club's top 3 in ten categories (passing yards and touchdowns, rushing yards and touchdowns, receptions,
     receiving yards and touchdowns, sacks, interceptions, tackles), regular season, through the 2025 season;
   * season and game: the club's record holder in the same ten categories.
+Category ids and the half-sack unit are the ones of the franchise extension footer (``nfl2k5_franchise_extension``
+LEADER_CATEGORIES / RECORD_CATEGORIES); club ids are the history seed's (``data/nfl2k5_history_2026.json``).
 Nothing here is invented or recalled from memory; every number is read from a source and checked against another.
 
-Sources (all read-only, retrieval dates and pins in the evidence file)
-  S1  the club's own 2026 media guide (Internet Archive, collection nfl-media-guides; image-only PDFs read through the Archive's OCR,
-      Tesseract at 300 dpi and the page pictures).  The Steelers' 2026 guide is not online, so the 2025 edition is used (through 2024).
-  S2  Wikipedia: the player's NFL career statistics table (regular season rows), summed over the club's rows (CC BY-SA 4.0).
+Sources (read-only; retrieval dates and pins are in the evidence file)
+  S1  the club's own 2026 media guide (Internet Archive, collection nfl-media-guides; image-only PDFs read through the Archive's
+      OCR, Tesseract at 300 dpi and the page pictures, transcribed by helper agents into one JSON file per club).  The
+      Steelers' 2026 guide is not online, so their 2025 edition (through 2024) is used and the 2025 season is added from nflverse.
+  S2  Wikipedia: the player's NFL career statistics table, regular-season rows summed over the club (CC BY-SA 4.0).
   S3  nflverse weekly player stats 1999-2025 (CC-BY-4.0), regular season, summed per club.  Play-by-play derived, so yards and
       sacks can differ from the official numbers by a few units (Matt Forte, Bears: 8,595 against the official 8,602) and
-      tackles are not comparable at all; S3 therefore counts as a second source only on an exact match and otherwise only guards
-      against gross conflicts (tolerances below).
+      tackles are not comparable at all.  S3 therefore counts as a second source only on an exact match where it sees the
+      whole career, and otherwise only guards against gross conflicts (``tolerance``).
 Not used on purpose: Pro-Football-Reference and FootballDB (bot-blocked, HTTP 403) and StatMuse (its terms forbid automated and
 manual data mining).
 
@@ -26,13 +29,15 @@ The two-source rule (``decide``)
   conflict  S1 and S2 differ (not shipped, listed);
   single    only S1 exists (not shipped, listed).
 A (club, scope, category) ships the longest run of consecutive ranks from rank 1 whose rows all ship (a later rank cannot be
-trusted when an earlier one failed).  Touchdown categories that the guide only prints as a column of a yards-ranked list are
-marked ``basis: column``: the order is exact only for the printed rows.
+trusted when an earlier one failed), and only when the completeness guard holds: no nflverse player who is not on the
+guide's printed list has a total above the list's last printed value (for a stat the guide prints only as a column of
+another list, above the third-ranked value), and no nflverse single season or game beats the guide's record.
 
 Usage
   python3 tools/b780_franchise_leaders_build.py fetch-nflverse --cache DIR
   python3 tools/b780_franchise_leaders_build.py build --guides DIR --nflverse DIR --wiki-cache DIR
   python3 tools/b780_franchise_leaders_build.py verify          # offline: evidence -> decisions -> data, must equal the shipped files
+  python3 tools/b780_franchise_leaders_build.py summary         # coverage tables from the shipped files
 """
 from __future__ import annotations
 
@@ -41,7 +46,6 @@ import csv
 import gzip
 import hashlib
 import json
-import os
 import re
 import sys
 import time
@@ -62,13 +66,27 @@ UA = "2k5-mod-studio-research/1.0 (hobby open-source NFL mod; repo cruuz/2k-foot
 THROUGH = 2025
 NV_WINDOW = (1999, THROUGH)
 
+# category ids are the footer's; sacks are kept in half sacks, the game's own unit
 CATEGORIES = {
-    "pass_yds": "Passing yards", "pass_td": "Passing touchdowns", "rush_yds": "Rushing yards", "rush_td": "Rushing touchdowns",
-    "rec": "Receptions", "rec_yds": "Receiving yards", "rec_td": "Receiving touchdowns", "sacks": "Sacks",
-    "int": "Interceptions", "tackles": "Tackles",
+    "passing_yards": "Passing yards", "passing_td": "Passing touchdowns", "rushing_yards": "Rushing yards",
+    "rushing_td": "Rushing touchdowns", "receptions": "Receptions", "receiving_yards": "Receiving yards",
+    "receiving_td": "Receiving touchdowns", "sacks_half": "Sacks (half sacks)", "interceptions": "Interceptions", "tackles": "Tackles",
 }
+GUIDE_CATEGORY = {   # the short names the transcribed guide files use -> footer ids
+    "pass_yds": "passing_yards", "pass_td": "passing_td", "rush_yds": "rushing_yards", "rush_td": "rushing_td", "rec": "receptions",
+    "rec_yds": "receiving_yards", "rec_td": "receiving_td", "sacks": "sacks_half", "int": "interceptions", "tackles": "tackles",
+}
+SCALE = {"sacks_half": 2}          # stored units per source unit
 SCOPES = ("career", "season", "game")
 SLOTS = {"career": 3, "season": 1, "game": 1}
+POSITIONS = ("QB", "K", "P", "WR", "CB", "FS", "SS", "HB", "FB", "TE", "OLB", "ILB", "C", "G", "T", "DT", "DE")   # footer person codes
+POSITION_OVERRIDE = {"Dexter Jackson": "FS", "Ed Reed": "FS", "Bob Sanders": "SS", "Troy Polamalu": "SS", "Ray Lewis": "ILB",
+                     "Brian Urlacher": "ILB", "Patrick Willis": "ILB", "DeMeco Ryans": "ILB", "Luke Kuechly": "ILB",
+                     "Darius Leonard": "ILB", "Jerod Mayo": "ILB", "Brian Cushing": "ILB"}   # the table the champions and history seeds use
+DEFAULT_POSITION = {"passing_yards": "QB", "passing_td": "QB", "rushing_yards": "HB", "rushing_td": "HB", "receptions": "WR", "receiving_yards": "WR",
+                    "receiving_td": "WR", "sacks_half": "DE", "interceptions": "CB", "tackles": "OLB"}   # only when no source names the position
+ARENA_ORDER = ("SF", "CHI", "CIN", "BUF", "DEN", "CLE", "TB", "ARI", "LAC", "KC", "IND", "DAL", "MIA", "PHI", "ATL", "NYG", "JAX", "NYJ",
+               "DET", "GB", "CAR", "NE", "LV", "LAR", "BAL", "WAS", "NO", "SEA", "PIT", "HOU", "TEN", "MIN")
 
 # code -> (name, nflverse team code)
 CLUBS = {
@@ -88,12 +106,26 @@ NV2CLUB = {nv: code for code, (_, nv) in CLUBS.items()}
 
 
 # ------------------------------------------------------------------------------------------------ names and years
+SUFFIXES = {"jr", "sr", "ii", "iii", "iv", "v"}
+
+
 def norm(s: str) -> str:
     s = unicodedata.normalize("NFKD", s or "")
     s = "".join(c for c in s if not unicodedata.combining(c)).lower()
     s = re.sub(r"[.'’`]", "", s)
     s = re.sub(r"[^a-z0-9 ]", " ", s)
-    return " ".join(t for t in s.split() if t not in ("jr", "sr", "ii", "iii", "iv", "v"))
+    return " ".join(t for t in s.split() if t not in SUFFIXES)
+
+
+def split_name(name: str):
+    """'Odell Beckham Jr.' -> ('Odell', 'Beckham', 'Jr.');  'Portis' -> ('', 'Portis', '')"""
+    toks = re.sub(r"\s+", " ", (name or "").replace(",", " ")).strip().split()
+    suffix = ""
+    if len(toks) > 1 and toks[-1].lower().strip(".") in SUFFIXES:
+        suffix = toks.pop()
+    if len(toks) == 1:
+        return "", toks[0], suffix
+    return toks[0], " ".join(toks[1:]), suffix
 
 
 def parse_years(s: str, through: int = THROUGH) -> set[int]:
@@ -122,15 +154,19 @@ def parse_years(s: str, through: int = THROUGH) -> set[int]:
     return out
 
 
-def year_of(s: str):
+def game_date(s: str):
+    """(iso date or None, season) for a game record's date text; January and February games belong to the previous season."""
+    m = re.search(r"\b(\d{1,2})/(\d{1,2})/(\d{4}|\d{2})\b", s or "")
+    if m:
+        mo, da, y = int(m.group(1)), int(m.group(2)), m.group(3)
+        y = int(y) if len(y) == 4 else (1900 + int(y) if int(y) > 30 else 2000 + int(y))
+        return f"{y:04d}-{mo:02d}-{da:02d}", (y - 1 if mo <= 2 else y)
     m = re.search(r"((?:19|20)\d{2})", s or "")
-    if m:
-        return int(m.group(1))
-    m = re.search(r"\b\d{1,2}/\d{1,2}/(\d{2})\b", s or "")
-    if m:
-        y = int(m.group(1))
-        return 1900 + y if y > 30 else 2000 + y
-    return None
+    return None, (int(m.group(1)) if m else None)
+
+
+def clean_number(v):
+    return int(v) if float(v).is_integer() else round(float(v), 1)
 
 
 # ------------------------------------------------------------------------------------------------ Wikipedia tables (stdlib)
@@ -300,7 +336,7 @@ def num(s):
 
 
 def column_map(heads):
-    """canonical stat -> column index for a flattened Wikipedia NFL stat-table header ('Group Column')."""
+    """footer category id -> column index for a flattened Wikipedia NFL stat-table header ('Group Column')."""
     m = {}
     for i, h in enumerate(heads):
         c = re.sub(r"\s+", " ", h.lower()).strip()
@@ -309,30 +345,50 @@ def column_map(heads):
         elif c == "team" or c.endswith(" team"):
             m.setdefault("team", i)
         elif "passing" in c and c.endswith(" yds"):
-            m.setdefault("pass_yds", i)
+            m.setdefault("passing_yards", i)
         elif "passing" in c and c.endswith(" td"):
-            m.setdefault("pass_td", i)
+            m.setdefault("passing_td", i)
         elif "rushing" in c and (c.endswith(" yds") or c.endswith(" yards")):
-            m.setdefault("rush_yds", i)
+            m.setdefault("rushing_yards", i)
         elif "rushing" in c and c.endswith(" td"):
-            m.setdefault("rush_td", i)
+            m.setdefault("rushing_td", i)
         elif "receiving" in c and c.endswith(" rec"):
-            m.setdefault("rec", i)
+            m.setdefault("receptions", i)
         elif "receiving" in c and (c.endswith(" yds") or c.endswith(" yards")):
-            m.setdefault("rec_yds", i)
+            m.setdefault("receiving_yards", i)
         elif "receiving" in c and c.endswith(" td"):
-            m.setdefault("rec_td", i)
+            m.setdefault("receiving_td", i)
         elif "sacked" not in c and ("sck" in c.split() or "sacks" in c.split() or c.endswith(" sack") or c in ("sacks", "sck")):
-            m.setdefault("sacks", i)
+            m.setdefault("sacks_half", i)
         elif "tackles" in c and (c.endswith(" cmb") or c.endswith(" comb") or c.endswith(" total") or c.endswith(" tot")):
             m.setdefault("tackles", i)
         elif c in ("tackles", "tkl", "tot tackles", "total tackles", "tackles tkl", "combined tackles"):
             m.setdefault("tackles", i)
         elif "interceptions" in c and c.endswith(" int"):
-            m.setdefault("int", i)
+            m.setdefault("interceptions", i)
         elif c in ("int", "ints", "interceptions"):
-            m.setdefault("int", i)
+            m.setdefault("interceptions", i)
     return m
+
+
+def flat_groups(heads):
+    """A header row without group names ('Att Yds Avg Lng TD Rec Yds Avg Lng TD') gets them by position: a block that starts with
+    Cmp is passing, an Att block is rushing, a Rec block is receiving."""
+    out, group = [], None
+    for h in heads:
+        c = h.strip().lower()
+        if c == "cmp":
+            group = "Passing"
+        elif c == "att" and group != "Passing":
+            group = "Rushing"
+        elif c == "rec":
+            group = "Receiving"
+        elif c in ("rtg", "rate"):
+            out.append("Passing " + h)
+            group = "Rushing"
+            continue
+        out.append(f"{group} {h}" if group and c in ("att", "cmp", "yds", "avg", "lng", "td", "rec", "int", "pct", "y/a") else h)
+    return out
 
 
 def player_tables(html: str):
@@ -360,6 +416,8 @@ def player_tables(html: str):
                 if ci < len(r) and r[ci] and (not parts or parts[-1] != r[ci]):
                     parts.append(r[ci])
             heads.append(" ".join(parts))
+        if len(hdr) == 1 and not any(w in " ".join(heads).lower() for w in ("passing", "rushing", "receiving", "tackles", "interceptions")):
+            heads = flat_groups(heads)
         cm = column_map(heads)
         if "team" not in cm or "year" not in cm:
             continue
@@ -368,7 +426,7 @@ def player_tables(html: str):
         defensive = ("tackles" in low or "interceptions" in low or "defense" in low or "defensive" in low
                      or (not offense and re.search(r"\bint\b", low) is not None))
         if not defensive:
-            for k in ("sacks", "tackles", "int"):
+            for k in ("sacks_half", "tackles", "interceptions"):
                 cm.pop(k, None)
         heading = (t["heading"] + " " + t["caption"]).lower()
         post = bool(re.search(r"post ?season|playoff|super bowl", heading)) or "opp" in low.split()
@@ -378,7 +436,8 @@ def player_tables(html: str):
 
 
 def club_sums(html: str, club: str, through: int = THROUGH):
-    """Regular-season stat rows of a player article that belong to `club` -> sums, per-season values, seasons seen."""
+    """Regular-season stat rows of a player article that belong to `club` -> sums, per-season values, seasons seen
+    (sacks are returned in half sacks)."""
     rows, years, amb = {}, set(), 0
     for t in player_tables(html):
         if t["post"]:
@@ -402,9 +461,37 @@ def club_sums(html: str, club: str, through: int = THROUGH):
                 if cat in cm and cm[cat] < len(r):
                     v = num(r[cm[cat]])
                     if v is not None:
-                        rows.setdefault(cat, {}).setdefault(yr, v)      # a season repeated in a second table counts once
-    return {"sums": {c: sum(by.values()) for c, by in rows.items()}, "seasons": {c: dict(by) for c, by in rows.items()},
+                        rows.setdefault(cat, {}).setdefault(yr, v * SCALE.get(cat, 1))     # a season repeated in a second table counts once
+    return {"sums": {c: sum(by.values()) for c, by in rows.items()}, "seasons": {c: {str(y): v for y, v in by.items()} for c, by in rows.items()},
             "years": sorted(years), "ambiguous": amb}
+
+
+POSITION_WORDS = [("middle linebacker", "ILB"), ("inside linebacker", "ILB"), ("outside linebacker", "OLB"), ("linebacker", "OLB"),
+                  ("quarterback", "QB"), ("running back", "HB"), ("halfback", "HB"), ("tailback", "HB"), ("fullback", "FB"),
+                  ("wide receiver", "WR"), ("wingback", "WR"), ("flanker", "WR"), ("split end", "WR"), ("tight end", "TE"),
+                  ("defensive end", "DE"), ("defensive tackle", "DT"), ("nose tackle", "DT"), ("defensive lineman", "DE"),
+                  ("cornerback", "CB"), ("free safety", "FS"), ("strong safety", "SS"), ("safety", "SS"), ("defensive back", "CB"),
+                  ("placekicker", "K"), ("kicker", "K"), ("punter", "P"), ("offensive tackle", "T"), ("guard", "G"), ("center", "C"),
+                  ("kick returner", "WR"), ("return specialist", "WR"), ("end", "WR")]
+
+
+def position_code(text: str):
+    """footer position code for an infobox 'Position' text (the first position named), or None"""
+    t = (text or "").lower()
+    best = None
+    for word, code in POSITION_WORDS:
+        for m in re.finditer(r"\b" + re.escape(word) + r"\b", t):
+            if best is None or m.start() < best[0] or (m.start() == best[0] and len(word) > best[1]):
+                best = (m.start(), len(word), code)
+    return best[2] if best else None
+
+
+def infobox_position(html: str):
+    for t in html_tables(html)[:4]:
+        for r in t["grid"]:
+            if len(r) >= 2 and r[0].strip().lower().rstrip(":") in ("position", "positions", "position(s)"):
+                return r[1]
+    return None
 
 
 class Wiki:
@@ -455,10 +542,35 @@ class Wiki:
         p.write_text(json.dumps(out), encoding="utf-8")
         return out
 
+    def exists(self, titles, cache_file) -> dict:
+        """title -> True when an article (not a disambiguation page) exists, by batched API calls (50 titles a call); cached"""
+        cache = json.loads(Path(cache_file).read_text(encoding="utf-8")) if Path(cache_file).exists() else {}
+        todo = [t for t in dict.fromkeys(titles) if t not in cache]
+        for i in range(0, len(todo), 50):
+            chunk = todo[i:i + 50]
+            q = "https://en.wikipedia.org/w/api.php?" + urllib.parse.urlencode(
+                {"action": "query", "titles": "|".join(chunk), "redirects": 1, "prop": "pageprops", "ppprop": "disambiguation", "format": "json"})
+            _, body = self._get(q)
+            d = json.loads(body).get("query", {})
+            nm = {n["from"]: n["to"] for n in d.get("normalized", [])}
+            rd = {r["from"]: r["to"] for r in d.get("redirects", [])}
+            pages = {pg["title"]: pg for pg in d.get("pages", {}).values()}
+            for t in chunk:
+                x = nm.get(t, t)
+                x = rd.get(x, x)
+                pg = pages.get(x)
+                cache[t] = bool(pg and "missing" not in pg and "invalid" not in pg and "pageprops" not in pg)
+            Path(cache_file).write_text(json.dumps(cache), encoding="utf-8")
+        return cache
+
     def fill_revids(self, titles) -> None:
         """batched revision-id lookup (<=50 titles a call) for cached pages; adds revid, canonical title, timestamp to the cache"""
-        todo = [t for t in titles if self.path(t).exists() and json.loads(self.path(t).read_text(encoding="utf-8")).get("revid") is None
-                and not json.loads(self.path(t).read_text(encoding="utf-8")).get("missing")]
+        todo = []
+        for t in titles:
+            if self.path(t).exists():
+                obj = json.loads(self.path(t).read_text(encoding="utf-8"))
+                if not obj.get("missing") and obj.get("revid") is None:
+                    todo.append(t)
         for i in range(0, len(todo), 50):
             chunk = todo[i:i + 50]
             q = "https://en.wikipedia.org/w/api.php?" + urllib.parse.urlencode(
@@ -504,10 +616,13 @@ def years_overlap_ok(seen, guide) -> bool:
 
 # ------------------------------------------------------------------------------------------------ nflverse
 NV_COLS = {
-    "pass_yds": ("passing_yards",), "pass_td": ("passing_tds",), "rush_yds": ("rushing_yards",), "rush_td": ("rushing_tds",),
-    "rec": ("receptions",), "rec_yds": ("receiving_yards",), "rec_td": ("receiving_tds",), "sacks": ("def_sacks",),
-    "int": ("def_interceptions",), "tackles": ("def_tackles_solo", "def_tackle_assists"),
+    "passing_yards": ("passing_yards",), "passing_td": ("passing_tds",), "rushing_yards": ("rushing_yards",), "rushing_td": ("rushing_tds",),
+    "receptions": ("receptions",), "receiving_yards": ("receiving_yards",), "receiving_td": ("receiving_tds",), "sacks_half": ("def_sacks",),
+    "interceptions": ("def_interceptions",), "tackles": ("def_tackles_solo", "def_tackle_assists"),
 }
+NV_POSITION = {"QB": "QB", "RB": "HB", "HB": "HB", "FB": "FB", "WR": "WR", "TE": "TE", "DE": "DE", "DT": "DT", "NT": "DT", "DL": "DE", "LB": "OLB",
+               "OLB": "OLB", "ILB": "ILB", "MLB": "ILB", "CB": "CB", "DB": "CB", "S": "SS", "SS": "SS", "FS": "FS", "K": "K", "P": "P",
+               "T": "T", "OT": "T", "G": "G", "OG": "G", "C": "C"}
 NV_URL = "https://github.com/nflverse/nflverse-data/releases/download"
 
 
@@ -519,11 +634,11 @@ def _f(x):
 
 
 class NFLverse:
-    """Regular-season weekly player stats 1999..2025 summed per club (franchise), per season and per game."""
+    """Regular-season weekly player stats 1999..2025 summed per club (franchise), per season and per game (sacks in half sacks)."""
 
     def __init__(self, folder):
         self.folder = Path(folder)
-        self.career, self.season, self.game, self.names = {}, {}, {}, {}
+        self.career, self.season, self.game, self.names, self.pos = {}, {}, {}, {}, {}
         self.hashes = {}
 
     def load(self):
@@ -538,8 +653,9 @@ class NFLverse:
                     if not club or not pid:
                         continue
                     self.names[pid] = r["player_display_name"]
+                    self.pos[pid] = r["position"]
                     for cat, cols in NV_COLS.items():
-                        v = sum(_f(r[c]) for c in cols)
+                        v = sum(_f(r[c]) for c in cols) * SCALE.get(cat, 1)
                         if v:
                             c1 = self.career.setdefault((club, pid), {})
                             c1[cat] = c1.get(cat, 0.0) + v
@@ -547,6 +663,24 @@ class NFLverse:
                             c2[cat] = c2.get(cat, 0.0) + v
                             self.game.setdefault((club, cat), []).append((v, pid, yr, int(r["week"] or 0)))
         return self
+
+    def save(self, path) -> None:
+        """dev cache of the aggregates (JSON) so a rerun does not re-read 27 weekly files"""
+        obj = {"career": {f"{c}|{p}": v for (c, p), v in self.career.items()},
+               "season": {f"{c}|{p}|{y}": v for (c, p, y), v in self.season.items()},
+               "game": {f"{c}|{cat}": v for (c, cat), v in self.game.items()},
+               "names": self.names, "pos": self.pos, "hashes": self.hashes}
+        Path(path).write_text(json.dumps(obj), encoding="utf-8")
+
+    @classmethod
+    def from_cache(cls, folder, path):
+        obj = json.loads(Path(path).read_text(encoding="utf-8"))
+        nv = cls(folder)
+        nv.career = {tuple(k.split("|", 1)): v for k, v in obj["career"].items()}
+        nv.season = {(k.split("|")[0], k.split("|")[1], int(k.split("|")[2])): v for k, v in obj["season"].items()}
+        nv.game = {tuple(k.split("|", 1)): [tuple(x) for x in v] for k, v in obj["game"].items()}
+        nv.names, nv.pos, nv.hashes = obj["names"], obj["pos"], obj["hashes"]
+        return nv
 
     def find(self, club, name, years):
         """player id of a guide row (same club, same name, seasons overlapping the guide's years), or None"""
@@ -570,14 +704,23 @@ class NFLverse:
                 best = ((sc, ov), pid)
         return best[1] if best else None
 
+    def same_person(self, pid, printed_names):
+        """does an nflverse player match any name printed on the guide's list (same last name and first initial)?"""
+        have = norm(self.names.get(pid, "")).split()
+        for nm in printed_names:
+            w = nm.split()
+            if have and w and have[-1] == w[-1] and have[0][:1] == w[0][:1]:
+                return True
+        return False
+
 
 # ------------------------------------------------------------------------------------------------ the decision
 def tolerance(cat: str, v: float) -> float:
     """how far play-by-play derived nflverse totals may sit from the official number before they count as contradicting it"""
-    if cat in ("pass_yds", "rush_yds", "rec_yds"):
+    if cat in ("passing_yards", "rushing_yards", "receiving_yards"):
         return max(25.0, 0.006 * v)
-    if cat == "sacks":
-        return max(2.5, 0.03 * v)
+    if cat == "sacks_half":
+        return max(5.0, 0.03 * v)
     return max(2.0, 0.01 * v)
 
 
@@ -608,6 +751,13 @@ def decide(cat: str, v1: float, wiki_value, nv_value, nv_covered: bool) -> dict:
     return {"decision": decision, "confirmed_by": confirmed, "against": against, "wikipedia": w, "nflverse": n}
 
 
+def guard_violated(cat: str, guard) -> bool:
+    """completeness guard of a group: an nflverse total above the bar means the guide's list misses someone or is stale"""
+    if not guard or cat == "tackles" or guard.get("other_value") is None:
+        return False
+    return guard["other_value"] > guard["bar"] + tolerance(cat, guard["bar"])
+
+
 def rank_rows(lst: dict):
     """[(rank, row)] ; a list ranked by this stat keeps its printed order, a column of another list is re-ranked by value"""
     rows = lst["rows"]
@@ -628,71 +778,105 @@ def rank_rows(lst: dict):
 
 
 # ------------------------------------------------------------------------------------------------ evidence -> data (pure)
-def clean_number(v):
-    return int(v) if float(v).is_integer() else round(float(v), 1)
+def person_fields(c: dict) -> dict:
+    first, last, suffix = split_name(c["name"])
+    out = {"first": first, "last": last}
+    if suffix:
+        out["suffix"] = suffix
+    out["position"] = c.get("position")
+    return out
 
 
-def assemble(evidence: dict) -> dict:
-    """The shipped data, derived only from the evidence file (so ``verify`` can re-derive it offline)."""
-    cands = evidence["candidates"]
+def assemble(evidence: dict):
+    """The shipped data and the excluded list, derived only from the evidence file (so ``verify`` can re-derive them offline)."""
     groups: dict = {}
-    for c in cands:
+    for c in evidence["candidates"]:
         groups.setdefault((c["club"], c["scope"], c["category"]), []).append(c)
-    clubs = {code: {"name": name, "career": {}, "season": {}, "game": {}} for code, (name, _) in CLUBS.items()}
+    guards = {(g["club"], g["scope"], g["category"]): g for g in evidence.get("guards", [])}
+    clubs = {code: {"name": name, "arena_index": ARENA_ORDER.index(code), "career": {}, "season": {}, "game": {}} for code, (name, _) in CLUBS.items()}
     excluded = []
     counts = {"shipped": {s: 0 for s in SCOPES}, "excluded": {}, "by_decision": {}}
     for (club, scope, cat), rows in sorted(groups.items(), key=lambda kv: (kv[0][0], SCOPES.index(kv[0][1]), list(CATEGORIES).index(kv[0][2]))):
         rows = sorted(rows, key=lambda c: (c["rank"], c["order"]))
         slots = SLOTS[scope]
+        incomplete = guard_violated(cat, guards.get((club, scope, cat)))
         taken, stopped = [], None
         for c in rows:
             d = decide(cat, c["value"], (c.get("wikipedia") or {}).get("value"), (c.get("nflverse") or {}).get("value"),
                        bool((c.get("nflverse") or {}).get("covered")))
             counts["by_decision"][d["decision"]] = counts["by_decision"].get(d["decision"], 0) + 1
-            if stopped is None and d["decision"] == "ship" and len(taken) < slots:
+            reason = None
+            if incomplete:
+                reason = "incomplete list"
+            elif stopped is None and d["decision"] == "ship" and len(taken) < slots:
                 taken.append((c, d))
                 continue
-            if stopped is None and d["decision"] != "ship":
+            elif stopped is None and d["decision"] != "ship":
                 stopped = d["decision"]
-            reason = d["decision"] if d["decision"] != "ship" else ("beyond the slots" if len(taken) >= slots else "after a failed rank")
-            if d["decision"] == "ship" and stopped:
+                reason = d["decision"]
+            elif d["decision"] == "ship" and stopped:
                 reason = f"after a rank that is {stopped}"
-            if reason == "beyond the slots":
-                continue
+            elif d["decision"] == "ship":
+                continue                                    # a fourth row that is simply beyond the slots
+            else:
+                reason = d["decision"]
             excluded.append({"club": club, "scope": scope, "category": cat, "rank": c["rank"], "name": c["name"], "years": c["years"],
                              "reason": reason, "guide": c["value"], "wikipedia": (c.get("wikipedia") or {}).get("value"),
                              "nflverse": (c.get("nflverse") or {}).get("value"), "detail": d["wikipedia"] + "/" + d["nflverse"]})
         if taken:
             out = []
             for c, d in taken:
-                row = {"rank": c["rank"], "name": c["name"], "years": c["years"], "value": clean_number(c["value"]),
-                       "confirmed_by": d["confirmed_by"]}
+                row = {"rank": c["rank"], "name": c["name"], **person_fields(c)}
+                if scope == "career":
+                    row["years"] = c["years"]
+                    row["span"] = c["span"]
+                else:
+                    row["season"] = c["season"]
+                    if scope == "game":
+                        row["date"] = c.get("date")
+                        row["week"] = c.get("week")
+                row["value"] = c["value"]
+                row["confirmed_by"] = d["confirmed_by"]
                 if scope == "career" and c.get("link") is not None:
                     row["link"] = c["link"]
                 if c["kind"] == "column":
                     row["basis"] = "column"
+                if c.get("adjusted"):
+                    row["adjusted"] = c["adjusted"]
                 out.append(row)
             clubs[club][scope][cat] = out
             counts["shipped"][scope] += len(out)
     for e in excluded:
         counts["excluded"][e["reason"]] = counts["excluded"].get(e["reason"], 0) + 1
-    # lists the guide does not print at all
     for m in evidence.get("missing", []):
         excluded.append({"club": m["club"], "scope": m["scope"], "category": m["category"], "rank": None, "name": None, "years": None,
                          "reason": "not printed in the guide", "guide": None, "wikipedia": None, "nflverse": None, "detail": m.get("why", "")})
         counts["excluded"]["not printed in the guide"] = counts["excluded"].get("not printed in the guide", 0) + 1
     data = {
         "schema": SCHEMA, "base_year": 2026, "through_season": evidence["through_season"],
-        "categories": CATEGORIES,
-        "rules": evidence["rules"],
-        "sources": evidence["public_sources"],
-        "counts": counts,
-        "clubs": clubs,
+        "categories": CATEGORIES, "positions": list(POSITIONS),
+        "rules": evidence["rules"], "sources": evidence["public_sources"],
+        "counts": counts, "clubs": clubs,
     }
     return data, excluded
 
 
 # ------------------------------------------------------------------------------------------------ build
+RULES = {
+    "career": "Regular-season totals with the club since the franchise began, through the 2025 season. Sacks are in half sacks (124.5 sacks = 249) and follow what each club's own list says (official sacks only where the list says since 1982 or later). Tackles follow the club's own list; nflverse tackle counts are not comparable and are never used.",
+    "season": "The club's best regular season in the category, through 2025. season is the NFL season.",
+    "game": "The club's best regular-season game in the category, through 2025. season is the NFL season (January games belong to the season before); date is the game date when the guide prints it; week is the regular-season week when nflverse identifies the game.",
+    "shipping": "A value ships only when the club's own 2026 media guide and a second, independent source agree: the player's Wikipedia season table summed over the club, or nflverse play-by-play totals where they cover the whole career. A disagreement, a single source, a failed earlier rank or a failed completeness check keeps the row out; every candidate with its sources is in the evidence file.",
+    "ranks": "A club's list ships its longest run of verified ranks from rank 1. basis column: the guide prints the stat only as a column of a list ranked by another stat, so the order holds for the printed rows only (and for 1999-2025 careers nflverse confirms nobody is missing).",
+    "links": "link is the roster identity (primary pool index, name, birth date) of a player who is on the club's 2026 roster, so his total keeps counting; null otherwise.",
+}
+PUBLIC_SOURCES = {
+    "club_guides": "Each club's own 2026 media guide (Internet Archive collection nfl-media-guides); the Steelers' 2026 guide is not online, so their 2025 edition is used and the 2025 season is added from nflverse.",
+    "wikipedia": "Wikipedia player articles, NFL career statistics tables (CC BY-SA 4.0), regular-season rows summed per club.",
+    "nflverse": "nflverse weekly player stats 1999-2025 (CC-BY-4.0), regular season, summed per club.",
+}
+
+
 def load_guides(folder: Path, clubs=None) -> dict:
     out = {}
     for p in sorted(Path(folder).glob("*.json")):
@@ -702,31 +886,61 @@ def load_guides(folder: Path, clubs=None) -> dict:
     return out
 
 
+def primary_lists(lists: list) -> dict:
+    """one list per (scope, category): a list ranked by exactly that stat beats a column of another list, then the longer one"""
+    out: dict = {}
+    for lst in lists:
+        key = (lst["scope"], lst["category"])
+        rank = (lst["kind"] != "list", -(lst.get("complete_to") or len(lst["rows"])))
+        if key not in out or rank < (out[key]["kind"] != "list", -(out[key].get("complete_to") or len(out[key]["rows"]))):
+            out[key] = lst
+    return out
+
+
 def select_rows(lst: dict, scope: str):
-    limit = SLOTS[scope] if scope != "career" else 3
-    return [(rk, r) for rk, r in rank_rows(lst) if rk <= limit]
+    return [(rk, r) for rk, r in rank_rows(lst) if rk <= SLOTS[scope]]
 
 
-RULES = {
-    "career": "Regular-season totals with the club since the franchise began, through the 2025 season. Sacks follow what each club's own list says (official sacks only where the list says since 1982 or later).",
-    "season": "The club's best regular season in the category, through 2025.",
-    "game": "The club's best regular-season game in the category, through 2025.",
-    "shipping": "A value ships only when the club's own 2026 media guide and a second, independent source agree: the player's Wikipedia season table summed over the club, or nflverse play-by-play totals where they cover the whole career. A disagreement, a single source or a failed earlier rank keeps the row out (see the evidence file).",
-    "ranks": "A club's list ships its longest run of verified ranks from rank 1. basis column: the guide prints the stat only as a column of a list ranked by another stat, so the order holds for the printed rows only.",
-}
-PUBLIC_SOURCES = {
-    "club_guides": "Each club's own 2026 media guide (Internet Archive collection nfl-media-guides); the Steelers' 2026 guide is not online, so their 2025 edition is used with the 2025 season added from nflverse where checked.",
-    "wikipedia": "Wikipedia player articles, NFL career statistics tables (CC BY-SA 4.0), regular-season rows summed per club.",
-    "nflverse": "nflverse weekly player stats 1999-2025 (CC-BY-4.0), regular season, summed per club.",
-}
+def resolve_wikipedia(wiki: Wiki, need: dict, cache_file: Path) -> dict:
+    resolved = json.loads(cache_file.read_text(encoding="utf-8")) if cache_file.exists() else {}
+    todo = [(club, name, ys) for (club, name), ys in sorted(need.items()) if f"{club}|{name}" not in resolved]
+    exists = wiki.exists([t for _, name, _ in todo for t in title_candidates(name)], Path(cache_file).with_name("exists.json"))
+    for club, name, ys in todo:
+        key = f"{club}|{name}"
+        found = None
+        for cand in title_candidates(name):
+            if not exists.get(cand):
+                continue
+            pg = wiki.page(cand)
+            if pg.get("missing"):
+                continue
+            r = club_sums(pg["html"], club)
+            if years_overlap_ok(r["years"], ys):
+                found = {"title": cand, "retrieved": pg["retrieved"], "sums": r["sums"], "seasons": r["seasons"], "years": r["years"],
+                         "ambiguous": r["ambiguous"], "position_text": infobox_position(pg["html"])}
+                break
+        resolved[key] = found
+        cache_file.write_text(json.dumps(resolved), encoding="utf-8")
+    wiki.fill_revids(sorted({v["title"] for v in resolved.values() if v}))
+    for v in resolved.values():
+        if v:
+            pg = json.loads(wiki.path(v["title"]).read_text(encoding="utf-8"))
+            v["revid"], v["canonical_title"] = pg.get("revid"), pg.get("canonical_title", v["title"])
+    return resolved
 
 
 def cmd_build(args) -> int:
     guides = load_guides(Path(args.guides), set(args.clubs.split(",")) if args.clubs else None)
     wiki = Wiki(args.wiki_cache)
-    nv = NFLverse(args.nflverse).load()
+    if args.nv_cache and Path(args.nv_cache).exists():
+        nv = NFLverse.from_cache(args.nflverse, args.nv_cache)
+    else:
+        nv = NFLverse(args.nflverse).load()
+        if args.nv_cache:
+            nv.save(args.nv_cache)
     cohort = json.loads(COHORT.read_text(encoding="utf-8"))
     cohort_full = {(norm(r[1]), norm(r[2]), r[3]): r[0] for r in cohort["records"]}
+    cohort_by_index = {r[0]: r for r in cohort["records"]}
     cohort_lb: dict = {}
     for r in cohort["records"]:
         cohort_lb.setdefault((norm(r[2]), r[3]), []).append(r[0])
@@ -745,87 +959,137 @@ def cmd_build(args) -> int:
         if idx is None:
             c = cohort_lb.get((norm(r["last_name"]), r["birth_date"]), [])
             idx = c[0] if len(c) == 1 else None
-        return {"pool": "primary", "index": idx, "first": r["first_name"], "last": r["last_name"], "birth_date": r["birth_date"]} if idx is not None else None
+        if idx is None:
+            return None
+        rec = cohort_by_index[idx]
+        return {"pool": "primary", "index": idx, "first": rec[1], "last": rec[2], "birth_date": rec[3]}
 
-    # --- which (club, player) pairs need a Wikipedia page
     need: dict = {}
     for club, g in guides.items():
-        for lst in g["lists"]:
+        for lst in primary_lists(g["lists"]).values():
             for rk, r in select_rows(lst, lst["scope"]):
-                ys = parse_years(r["years"]) if lst["scope"] == "career" else set()
-                need.setdefault((club, r["name"]), set()).update(ys)
-    resolved = {}
-    cache_file = Path(args.wiki_cache) / "resolved.json"
-    if cache_file.exists():
-        resolved = json.loads(cache_file.read_text(encoding="utf-8"))
-    for (club, name), ys in sorted(need.items()):
-        key = f"{club}|{name}"
-        if key in resolved:
-            continue
-        found = None
-        for cand in title_candidates(name):
-            pg = wiki.page(cand)
-            if pg.get("missing"):
-                continue
-            r = club_sums(pg["html"], club)
-            if years_overlap_ok(r["years"], ys):
-                found = {"title": cand, "retrieved": pg["retrieved"], "sums": r["sums"], "seasons": r["seasons"], "years": r["years"],
-                         "ambiguous": r["ambiguous"]}
-                break
-        resolved[key] = found
-        cache_file.write_text(json.dumps(resolved), encoding="utf-8")
-    wiki.fill_revids(sorted({v["title"] for v in resolved.values() if v}))
-    for v in resolved.values():
-        if v:
-            pg = json.loads(wiki.path(v["title"]).read_text(encoding="utf-8"))
-            v["revid"], v["canonical_title"] = pg.get("revid"), pg.get("canonical_title", v["title"])
-    # --- candidates
-    cands, lists, missing = [], [], []
+                need.setdefault((club, r["name"]), set()).update(parse_years(r["years"]) if lst["scope"] == "career" else set())
+    resolved = resolve_wikipedia(wiki, need, Path(args.wiki_cache) / "resolved.json")
+
+    cands, lists, missing, guards = [], [], [], []
     for club, g in sorted(guides.items()):
+        through = int(g["through_season"])
         for m in g.get("missing", []):
-            missing.append({"club": club, "scope": m["scope"], "category": m["category"], "why": m.get("why", "")})
+            missing.append({"club": club, "scope": m["scope"], "category": GUIDE_CATEGORY[m["category"]], "why": m.get("why", "")})
+        primary = primary_lists(g["lists"])
         for lst in g["lists"]:
-            scope, cat = lst["scope"], lst["category"]
+            scope, cat = lst["scope"], GUIDE_CATEGORY[lst["category"]]
+            k = SCALE.get(cat, 1)
             lists.append({"club": club, "scope": scope, "category": cat, "title": lst["title"], "page": lst["pdf_page"], "kind": lst["kind"],
                           "ranked_by": lst["ranked_by"], "scope_note": lst["scope_note"], "complete_to": lst.get("complete_to"),
-                          "rows": [[r.get("rank"), r["name"], r["years"], r["value"]] for r in lst["rows"]]})
-            for order, (rk, r) in enumerate(select_rows(lst, scope)):
-                v1 = clean_number(r["value"])
-                ys = parse_years(r["years"]) if scope == "career" else ({year_of(r["years"])} - {None})
+                          "primary": lst is primary[(lst["scope"], lst["category"])],
+                          "rows": [[r.get("rank"), r["name"], r["years"], clean_number(r["value"] * k)] for r in lst["rows"]]})
+            if lst is not primary[(lst["scope"], lst["category"])]:
+                continue
+            chosen = select_rows(lst, scope)
+            for order, (rk, r) in enumerate(chosen):
+                v1 = clean_number(r["value"] * k)
+                if scope == "career":
+                    ys = parse_years(r["years"])
+                    season, date = None, None
+                else:
+                    date, season = game_date(r["years"])
+                    ys = {season} if season else set()
                 res = resolved.get(f"{club}|{r['name']}")
+                pid = nv.find(club, r["name"], ys) if cat != "tackles" else None
                 c = {"club": club, "scope": scope, "category": cat, "rank": rk, "order": order, "name": r["name"], "years": r["years"],
                      "value": v1, "kind": lst["kind"], "guide": {"page": lst["pdf_page"], "title": lst["title"], "raw": r["raw"]}}
+                if scope == "career":
+                    c["span"] = [min(ys), max(ys)] if ys else []
+                else:
+                    c["season"] = season
+                    if scope == "game":
+                        c["date"] = date
+                # ---- positions
+                pos = POSITION_OVERRIDE.get(r["name"])
+                src = "override" if pos else None
+                if not pos and res and res.get("position_text"):
+                    pos, src = position_code(res["position_text"]), "wikipedia infobox"
+                if not pos and pid is not None:
+                    pos, src = NV_POSITION.get(nv.pos.get(pid, "")), "nflverse"
+                if not pos:
+                    pos, src = DEFAULT_POSITION[cat], "category default"
+                c["position"], c["position_source"] = pos, src
+                # ---- Steelers 2025 guide etc.: add the seasons after the guide's last one from nflverse
+                if scope == "career" and through < THROUGH and ys and max(ys) >= through and pid is not None and cat != "tackles":
+                    extra = sum(nv.season.get((club, pid, y), {}).get(cat, 0.0) for y in range(through + 1, THROUGH + 1))
+                    if extra:
+                        c["adjusted"] = {"guide_value": v1, "added": clean_number(extra), "seasons": list(range(through + 1, THROUGH + 1)), "from": "nflverse"}
+                        c["value"] = v1 = clean_number(v1 + extra)
+                # ---- source 2
                 if res:
                     if scope == "career":
                         wv = res["sums"].get(cat)
+                    elif scope == "season":
+                        wv = res["seasons"].get(cat, {}).get(str(season)) if season else None
                     else:
-                        yr = next(iter(ys)) if ys else None
-                        wv = res["seasons"].get(cat, {}).get(str(yr)) if scope == "season" and yr else None
-                    c["wikipedia"] = {"title": res["canonical_title"] if res.get("canonical_title") else res["title"], "revid": res.get("revid"),
-                                      "retrieved": res["retrieved"], "value": None if wv is None else clean_number(wv), "years": [res["years"][0], res["years"][-1]] if res["years"] else []}
-                pid = nv.find(club, r["name"], ys) if cat != "tackles" else None
+                        wv = None
+                    c["wikipedia"] = {"title": res.get("canonical_title") or res["title"], "revid": res.get("revid"), "retrieved": res["retrieved"],
+                                      "value": None if wv is None else clean_number(wv), "years": [res["years"][0], res["years"][-1]] if res["years"] else []}
+                # ---- source 3
                 if pid is not None:
                     if scope == "career":
                         have = nv.career.get((club, pid), {}).get(cat, 0.0)
                         covered = bool(ys) and all(NV_WINDOW[0] <= y <= NV_WINDOW[1] for y in ys)
                         c["nflverse"] = {"value": clean_number(have), "covered": covered, "player": nv.names[pid]}
-                    else:
-                        yr = next(iter(ys)) if ys else None
-                        if yr and NV_WINDOW[0] <= yr <= NV_WINDOW[1]:
-                            if scope == "season":
-                                have = nv.season.get((club, pid, yr), {}).get(cat, 0.0)
-                            else:
-                                have = max((x[0] for x in nv.game.get((club, cat), []) if x[1] == pid and x[2] == yr), default=0.0)
-                            c["nflverse"] = {"value": clean_number(have), "covered": True, "player": nv.names[pid]}
+                    elif season and NV_WINDOW[0] <= season <= NV_WINDOW[1]:
+                        if scope == "season":
+                            have = nv.season.get((club, pid, season), {}).get(cat, 0.0)
+                        else:
+                            games = [x for x in nv.game.get((club, cat), []) if x[1] == pid and x[2] == season]
+                            have = max((x[0] for x in games), default=0.0)
+                            top = [x for x in games if x[0] == have]
+                            if len(top) == 1 and have:
+                                c["week"] = top[0][3]
+                        c["nflverse"] = {"value": clean_number(have), "covered": True, "player": nv.names[pid]}
                 if scope == "career":
                     c["link"] = link_of(club, r["name"])
                 cands.append(c)
+            # ---- completeness guard
+            if cat == "tackles" or not chosen:
+                continue
+            printed = {norm(r["name"]) for r in lst["rows"]}
+            if scope == "career":
+                if lst["kind"] == "column":
+                    ranked = [r for _, r in rank_rows(lst)]
+                    bar = ranked[min(2, len(ranked) - 1)]["value"] * k
+                else:
+                    bar = min(r["value"] for r in lst["rows"]) * k
+                best = None
+                for (c_, pid_), tot in nv.career.items():
+                    if c_ == club and tot.get(cat) and not nv.same_person(pid_, printed) and (best is None or tot[cat] > best[0]):
+                        best = (tot[cat], nv.names[pid_])
+                guards.append({"club": club, "scope": scope, "category": cat, "bar": clean_number(bar),
+                               "other_value": clean_number(best[0]) if best else None, "other_player": best[1] if best else None})
+            else:
+                bar = chosen[0][1]["value"] * k
+                if scope == "season":
+                    best = max(((v.get(cat, 0.0), pid_, y) for (c_, pid_, y), v in nv.season.items() if c_ == club), default=None)
+                else:
+                    best = max(((x[0], x[1], x[2]) for x in nv.game.get((club, cat), [])), default=None)
+                guards.append({"club": club, "scope": scope, "category": cat, "bar": clean_number(bar),
+                               "other_value": clean_number(best[0]) if best else None, "other_player": nv.names[best[1]] if best else None,
+                               "other_season": best[2] if best else None})
+    ia = json.loads(Path(args.ia_manifest).read_text(encoding="utf-8")) if args.ia_manifest else {}
+    fetched = Path(args.nflverse) / "FETCHED_AT.txt"
+    guide_sources = {}
+    for club, g in sorted(guides.items()):
+        m = ia.get(g["guide_ident"], {})
+        guide_sources[club] = {"item": g["guide_ident"], "url": f"https://archive.org/details/{g['guide_ident']}", "title": m.get("title"),
+                               "date": m.get("date"), "retrieved": m.get("retrieved"), "text_sha256": m.get("sha256"), "pdf_sha256": m.get("pdf_sha256"),
+                               "through_season": g["through_season"],
+                               "notes": [n.replace("\u2014", "-").replace("\u2013", "-") for n in g.get("notes", [])]}
     evidence = {
         "schema": EVIDENCE_SCHEMA, "through_season": THROUGH, "retrieved": time.strftime("%Y-%m-%d", time.gmtime()),
         "rules": RULES, "public_sources": PUBLIC_SOURCES,
-        "sources": {"nflverse_files": nv.hashes, "guides": {club: {"item": g["guide_ident"], "through_season": g["through_season"], "notes": g.get("notes", [])}
-                                                              for club, g in sorted(guides.items())}},
-        "lists": lists, "missing": missing, "candidates": cands,
+        "sources": {"nflverse_files": nv.hashes, "nflverse_url": NV_URL + "/stats_player/stats_player_week_<season>.csv.gz",
+                    "nflverse_retrieved": fetched.read_text().strip() if fetched.exists() else None, "guides": guide_sources},
+        "lists": lists, "missing": missing, "guards": guards, "candidates": cands,
     }
     data, excluded = assemble(evidence)
     evidence["excluded"] = excluded
@@ -848,6 +1112,16 @@ def cmd_verify(args) -> int:
         print("PROBLEM:", p)
     print("ok" if not problems else "FAILED", json.dumps(data["counts"]["shipped"]))
     return 1 if problems else 0
+
+
+def cmd_summary(args) -> int:
+    data = json.loads(Path(args.out).read_text(encoding="utf-8"))
+    print("club  career(3 x 10)  season(10)  game(10)")
+    for code in ARENA_ORDER:
+        c = data["clubs"][code]
+        print(f"{code:<5} {sum(len(v) for v in c['career'].values()):>8}      {len(c['season']):>6}     {len(c['game']):>6}")
+    print(json.dumps(data["counts"]))
+    return 0
 
 
 def cmd_fetch_nflverse(args) -> int:
@@ -876,6 +1150,8 @@ def main(argv=None) -> int:
     b.add_argument("--nflverse", required=True)
     b.add_argument("--wiki-cache", required=True)
     b.add_argument("--clubs", default="", help="comma separated club codes (default: every guide file)")
+    b.add_argument("--ia-manifest", default="", help="the Internet Archive manifest written by the guide fetch (item titles, dates, digests)")
+    b.add_argument("--nv-cache", default="", help="optional JSON cache of the nflverse aggregates (dev convenience)")
     b.add_argument("--out", default=str(DATA))
     b.add_argument("--evidence", default=str(EVIDENCE))
     b.set_defaults(fn=cmd_build)
@@ -883,6 +1159,9 @@ def main(argv=None) -> int:
     v.add_argument("--out", default=str(DATA))
     v.add_argument("--evidence", default=str(EVIDENCE))
     v.set_defaults(fn=cmd_verify)
+    s = sub.add_parser("summary")
+    s.add_argument("--out", default=str(DATA))
+    s.set_defaults(fn=cmd_summary)
     args = ap.parse_args(argv)
     return args.fn(args)
 
