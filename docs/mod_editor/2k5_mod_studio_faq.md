@@ -69,10 +69,11 @@ build compiles is kept in a private cache beside the game files the studio read 
 and it is keyed by your artwork and by the studio's own encoder code, never by where a file or a
 project happens to be. So the next build reuses every texture whose artwork did not change: after
 a failed build, after closing and reopening the studio or the project, and after a studio update
-that does not touch the encoders. Only new or changed artwork is compiled again. The build log
-says how many textures were reused and, for any compiled again, why. The final check uses the
-build receipt instead of compiling that artwork again. Shared texture spans can require several
-related edits to be prepared together. Copying and comparing a whole disc still take time.
+that does not touch the encoders. Only new or changed artwork is compiled again. When that step
+ends, the progress line says how many textures were reused and, for any compiled again, why. The
+final check uses the build receipt instead of compiling that artwork again. Shared texture spans
+can require several related edits to be prepared together. Copying and comparing a whole disc
+still take time.
 
 Coach Edwards and maumau78 reported builds of about five minutes after earlier long waits.
 That is their experience, not a timing promise for your project or computer. If a build fails,
@@ -87,8 +88,8 @@ No. A failed build leaves your project and your artwork alone, and everything it
 compiled stays in the cache. The cache is what makes the next try fast: those textures are reused,
 so a retry skips the compile work, which is most of the time of a big project. Clearing it only
 makes the next build slow again. Reinstalling does not help either; it is for a studio that will
-not open or update (the first question above). Post **Copy Build summary**, the first error and
-the build log instead, so the cause can be found.
+not open or update (the first question above). Post **Copy Build summary** and the first error
+instead, so the cause can be found.
 
 What the cache is and what deleting it costs: the compiled textures sit in a folder called
 `project-stage`, next to the private game cache (Windows `%LOCALAPPDATA%\2k5-mod-studio\cache\project-stage`,

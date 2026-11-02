@@ -3991,8 +3991,18 @@ class IndependentUnits:
         shows it. For each kind, up to ``per_kind`` units that have a cached result (taken across the project) are compiled
         again here, and the receipt the build would write from each must equal the cached one byte for byte. One difference and
         nothing cached is used for the rest of this build; the differing entries are replaced by the fresh results.
+        A check that cannot run at all (any exception) costs the saved results of this build, never the build: the serial loop
+        then compiles everything and raises the real, named error if the project itself is at fault.
         """
-        per_kind = _UNIT_CANARIES_PER_KIND if per_kind is None else per_kind
+        try:
+            return self._canary(_UNIT_CANARIES_PER_KIND if per_kind is None else per_kind)
+        except Exception as exc:  # noqa: BLE001 - see above
+            self.trusted = False
+            self.canary_report["error"] = f"{type(exc).__name__}: {exc}"
+            self.reasons["the check of saved results could not run"] += 1
+            return self.canary_report
+
+    def _canary(self, per_kind: int) -> dict[str, Any]:
         if self.cache.root is None or per_kind <= 0 or not self._indices:
             return self.canary_report
         by_kind: dict[str, list[int]] = {}
@@ -4035,7 +4045,7 @@ class IndependentUnits:
         lines = []
         if self.hits:
             lines.append(f"Reused {self.hits:,} of {total:,} compiled texture{'' if total == 1 else 's'} from earlier builds")
-        if self.misses and (self.hits or self.reasons.get("compiler code changed")):
+        if self.misses and (self.hits or self.reasons.get("compiler code changed") or not self.trusted):
             fresh = self.reasons.get("no usable earlier result", 0)
             changed = self.reasons.get("compiler code changed", 0)
             damaged = self.reasons.get("damaged or from another format", 0)
@@ -4050,6 +4060,8 @@ class IndependentUnits:
                 parts.append(f"{damaged:,} saved results were damaged")
             if self.reasons.get("a cached result differed from a fresh compile"):
                 parts.append("a saved result differed from a fresh compile, so none were trusted")
+            if self.reasons.get("the check of saved results could not run"):
+                parts.append("the check of the saved results could not run, so none were used")
             lines.append(f"Compiled {self.misses:,} texture{'' if self.misses == 1 else 's'}: "
                          + "; ".join(parts or ["no saved result"]))
         return lines
@@ -4633,12 +4645,12 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
                 [n for n, row in enumerate(project.value["edits"]) if row["kind"] in UNIT_KINDS],
                 _UNIT_EDIT_ORDER_KINDS if workers > 1 and len(legacy) >= 4 else ())
             # Before any cached result is used, a few are compiled again and compared (see IndependentUnits.canary).
-            try:
-                canary = units.canary()
-            except Exception as exc:  # noqa: BLE001 - named, like every other failure of this stage
-                raise ProjectError(f"Checking the saved compile results before using them: {exc}") from exc
+            canary = units.canary()
             if canary["mismatched"]:
                 _item_progress("A saved result differed from a fresh compile (" + ", ".join(canary["mismatched"][:3])
+                               + "); every texture of this build is compiled again", 0, len(project.value["edits"]))
+            elif canary.get("error"):
+                _item_progress("The check of the saved results could not run (" + canary["error"]
                                + "); every texture of this build is compiled again", 0, len(project.value["edits"]))
         model_edits = [e for e in project.value["edits"] if e["kind"] == model_project.KIND]
         # Where the time of this step goes, for the build log: waiting for the compilers (the cache and the workers), writing the

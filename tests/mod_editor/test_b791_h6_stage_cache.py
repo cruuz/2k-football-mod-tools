@@ -547,6 +547,23 @@ class CanaryTests(unittest.TestCase):
         self.assertTrue(units.trusted)
         self.assertEqual(len(self.harness.calls), calls + 2, "the canary compiles exactly the units it checks")
 
+    def test_a_check_that_cannot_run_costs_the_saved_results_never_the_build(self):
+        with self.harness.patched():
+            self.harness.run(self.cache)
+            units = self.harness.units(self.cache)
+            try:
+                with patch.object(units, "_task", side_effect=RuntimeError("boom")):
+                    report = units.canary()                      # does not raise
+                self.assertFalse(units.trusted)
+                self.assertEqual(report, {"checked": 1, "mismatched": [], "error": "RuntimeError: boom"})
+                self.assertIsNone(units._recall(units.key(0), "live_face"), "nothing saved is used for the rest of this build")
+                self.assertEqual(dict(units.reasons), {"the check of saved results could not run": 1})
+                units.misses = 3
+                self.assertEqual(units.plain_summary(), [
+                    "Compiled 3 textures: the check of the saved results could not run, so none were used"])
+            finally:
+                units.close()
+
     def test_nothing_is_checked_on_a_cold_cache_or_without_a_cache(self):
         with self.harness.patched():
             for cache in (self.cache, CompileCache(None)):
