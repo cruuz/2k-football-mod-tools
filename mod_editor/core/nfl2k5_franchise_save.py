@@ -39,6 +39,7 @@ untouched save is byte-identical to the input.  Unwitnessed in game except where
 from __future__ import annotations
 
 import struct
+from contextlib import contextmanager
 from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any, Sequence
@@ -181,6 +182,21 @@ COACH_TENDENCIES_OFFSET, COACH_TENDENCY_COUNT = 0x83, 10                # 5 form
 COACH_TENDENCIES = ("shotgun_run", "shotgun_pass", "split_back_run", "split_back_pass", "i_form_run",
                     "i_form_pass", "lone_back_run", "lone_back_pass", "empty_run", "empty_pass")
 
+# head coach moves (c4-staffui): Fire / Hire / Swap.  A coach is a record the teams point at (team +0x14C), so a move is
+# a pointer change; the game's own Create Team routine does the same (``team +0x14C = find_free_coach()``).
+COACH_FLAGS = 0x1A                    # u8: bit 0x01 = a free record Create Team may hand out, bit 0x02 = "no recorded
+COACH_FLAG_FREE = 0x01                #     name": the announcer uses its generic coach line instead of 9200 + the
+COACH_FLAG_NO_NAME = 0x02             #     club's speech id (PROVED static at 0x5A390..0x5A41C; the line itself INFERRED)
+COACH_NO_PHOTO = 8999                 # the photo id the game's own created-team coaches carry
+COACH_STRING_FIELDS = (0x00, 0x04, 0x08, 0x0C, 0x10)       # first name, last name, three biography lines
+COACH_STRING_REGION = 5506            # bytes of the game's coach text region on the retail and SOFTDRINK ROST
+COACH_NAME_MAX, COACH_BIO_MAX = 24, 52                      # the longest the game's own records hold (24 for the placeholders)
+#: What a coach carries from job to job (ratings, play-calling and career totals) and what starts again with a club.
+COACH_WITH_TEAM = ("seasons_with_team", "season_wins", "season_losses", "season_ties")
+COACH_CAREER = ("seasons_with_team", "total_seasons", "wins", "losses", "ties", "season_wins", "season_losses",
+                "season_ties", "winning_seasons", "super_bowls", "playoff_wins", "playoff_losses",
+                "super_bowl_wins", "super_bowl_losses")
+
 STAGE_WEEKS = (1, 1, 1, 1, 1, 1, 1, 5, 17, 5)                           # .rdata stage table 0x515140, byte +4
 STAGE_NAMES = {7: "preseason", 8: "regular season", 9: "postseason"}
 DISPLAY_YEAR_BASE = 2004
@@ -290,10 +306,19 @@ class Coach:
     ratings: dict[str, int]
     tendencies: dict[str, int]
     teams: tuple[int, ...]         # team indices whose +0x14C points here
+    flags: int = 0                 # record +0x1A (COACH_FLAG_FREE / COACH_FLAG_NO_NAME)
+    other_teams: tuple[int, ...] = ()   # the rest of the team table (created, historic, all-time, Pro Bowl) pointing here
 
     @property
     def name(self) -> str:
         return f"{self.first} {self.last}".strip()
+
+    @property
+    def placeholder(self) -> bool:
+        """The game's empty coach records ('xxxxxxxxxx xxxxxxxxxx', '************************ ...')."""
+
+        letters = set((self.first + self.last).replace(" ", "").lower())
+        return not letters or letters <= {"x", "*"}
 
 
 @dataclass(frozen=True)
@@ -983,6 +1008,24 @@ class FranchiseSave:
             return 0, 0
         return count, table
 
+    def _other_team_coach_pointers(self) -> dict[int, list[int]]:
+        """Coach record offset -> the table's non-league teams that point at it (created, historic, all-time, Pro Bowl).
+
+        Real saves hold 52 teams: the 32 clubs, two created-team slots and eighteen exhibition squads that borrow a
+        club's coach record.  They never count as employment, but a coach record they share is shared with them.
+        """
+
+        count, _table = self.team_table
+        found: dict[int, list[int]] = {}
+        for team in range(self.league_team_count, count):
+            try:
+                pointer = self.rel(self.team_offset(team) + rr.TEAM_COACH)
+            except FranchiseSaveError:
+                continue                  # an exhibition squad with a stray pointer: not ours to judge here
+            if pointer is not None:
+                found.setdefault(pointer, []).append(team)
+        return found
+
     def coaches(self) -> list[Coach]:
         count, table = self.coach_table
         by_offset: dict[int, list[int]] = {}
@@ -990,6 +1033,7 @@ class FranchiseSave:
             pointer = self.rel(self.team_offset(team) + rr.TEAM_COACH)
             if pointer is not None:
                 by_offset.setdefault(pointer, []).append(team)
+        others = self._other_team_coach_pointers()
         out = []
         for index in range(count):
             offset = table + index * COACH_SIZE
@@ -998,7 +1042,8 @@ class FranchiseSave:
             tendencies = {name: self.buffer[offset + COACH_TENDENCIES_OFFSET + k] for k, name in enumerate(COACH_TENDENCIES)}
             out.append(Coach(index, offset, self.wstr(offset), self.wstr(offset + 4),
                              (self.wstr(offset + 8), self.wstr(offset + 0xC), self.wstr(offset + 0x10)),
-                             fields, ratings, tendencies, tuple(by_offset.get(offset, ()))))
+                             fields, ratings, tendencies, tuple(by_offset.get(offset, ())),
+                             self.buffer[offset + COACH_FLAGS], tuple(others.get(offset, ()))))
         return out
 
     def coach_for_team(self, team: int) -> Coach | None:
@@ -1024,6 +1069,297 @@ class FranchiseSave:
                       label=f"coach {name}", high=100)
         else:
             raise FranchiseSaveError(f"unknown coach field {name!r}")
+
+    # ------------------------------------------------------------------ head coaches: Fire / Hire / Swap (arena)
+    @contextmanager
+    def _transaction(self):
+        """Edit a private copy of the bytes; any refusal puts the original back untouched."""
+
+        saved = self.buffer
+        self.buffer = bytearray(saved)
+        try:
+            yield
+        except BaseException:
+            self.buffer = saved
+            raise
+        finally:
+            self._roster = None
+
+    def _league_team(self, team: int) -> int:
+        _require(type(team) is int and 0 <= team < self.league_team_count,
+                 f"team {team!r} is not one of the {self.league_team_count} league clubs in this save")
+        return team
+
+    def _coach_offset(self, index: int) -> int:
+        count, table = self.coach_table
+        _require(type(index) is int and 0 <= index < count, f"coach {index!r} is outside 0..{count - 1}")
+        return table + index * COACH_SIZE
+
+    def head_coach_index(self, team: int) -> int | None:
+        """The coach record a team points at (``+0x14C``), as an index into the coach table; any team in the table."""
+
+        count, table = self.coach_table
+        pointer = self.rel(self.team_offset(team) + rr.TEAM_COACH)
+        if pointer is None or count == 0:
+            return None
+        index, remainder = divmod(pointer - table, COACH_SIZE)
+        _require(remainder == 0 and 0 <= index < count,
+                 f"{self.team_abbreviation(team)}'s coach pointer does not point at a coach record")
+        return index
+
+    def head_coaches(self) -> dict[int, int | None]:
+        """Coach record index of every league club's head coach."""
+
+        return {team: self.head_coach_index(team) for team in range(self.league_team_count)}
+
+    def unemployed_coaches(self) -> list[Coach]:
+        """Named coach records no league club employs: who a club can hire without anyone else losing a job."""
+
+        return [coach for coach in self.coaches() if not coach.teams and not coach.placeholder]
+
+    def _coach_brief(self, index: int) -> dict[str, Any]:
+        return {"coach": index, "name": self.coaches()[index].name or f"coach {index}"}
+
+    def _point_team_at_coach(self, team: int, coach_index: int) -> None:
+        field = self.team_offset(team) + rr.TEAM_COACH
+        struct.pack_into("<i", self.buffer, field, self._coach_offset(coach_index) - field + 1)
+
+    def _restart_with_team(self, coach_index: int) -> list[str]:
+        """A new job starts at year 1: seasons with the team and this season's record go back to zero."""
+
+        offset = self._coach_offset(coach_index)
+        changed = []
+        for name in COACH_WITH_TEAM:
+            rel, fmt = COACH_FIELDS[name]
+            if struct.unpack_from(fmt, self.buffer, offset + rel)[0]:
+                struct.pack_into(fmt, self.buffer, offset + rel, 0)
+                changed.append(name)
+        return changed
+
+    def _flag_no_recorded_name(self, coach_index: int) -> bool:
+        offset = self._coach_offset(coach_index) + COACH_FLAGS
+        if self.buffer[offset] & COACH_FLAG_NO_NAME:
+            return False
+        self.buffer[offset] |= COACH_FLAG_NO_NAME
+        return True
+
+    def _verify_head_coaches(self, expected: dict[int, int]) -> None:
+        for team, coach_index in expected.items():
+            _require(self.head_coach_index(team) == coach_index,
+                     f"{self.team_abbreviation(team)} did not end up with coach {coach_index}; nothing was changed")
+
+    def swap_head_coaches(self, team_a: int, team_b: int, *, restart: bool = True,
+                          announcer_generic: bool = True) -> dict[str, Any]:
+        """Two clubs exchange head coaches: two pointers change, nobody is lost.
+
+        ``restart`` starts each coach's time with his new club at year 1 (his career totals, ratings and play-calling
+        travel with him).  ``announcer_generic`` marks both records "no recorded name" so the announcer says the
+        generic coach line instead of the name the club's speech id would pick (UNWITNESSED in game).  Exhibition
+        squads that borrow a coach record keep pointing at the same record.
+        """
+
+        team_a, team_b = self._league_team(team_a), self._league_team(team_b)
+        _require(team_a != team_b, "pick two different clubs to swap")
+        name_a, name_b = self.team_abbreviation(team_a), self.team_abbreviation(team_b)
+        index_a, index_b = self.head_coach_index(team_a), self.head_coach_index(team_b)
+        _require(index_a is not None and index_b is not None, f"{name_a} or {name_b} has no head coach record")
+        _require(index_a != index_b, f"{name_a} and {name_b} share one coach record, so there is nobody to swap")
+        assert index_a is not None and index_b is not None
+        before = {index_a: self._coach_brief(index_a), index_b: self._coach_brief(index_b)}
+        restarted: dict[str, list[str]] = {}
+        flagged: list[int] = []
+        with self._transaction():
+            self._point_team_at_coach(team_a, index_b)
+            self._point_team_at_coach(team_b, index_a)
+            for coach_index in (index_a, index_b):
+                if restart:
+                    restarted[str(coach_index)] = self._restart_with_team(coach_index)
+                if announcer_generic and self._flag_no_recorded_name(coach_index):
+                    flagged.append(coach_index)
+            self._verify_head_coaches({team_a: index_b, team_b: index_a})
+        return {"operation": "swap_head_coaches",
+                "teams": [{"team": team_a, "abbreviation": name_a, "before": before[index_a], "after": before[index_b]},
+                          {"team": team_b, "abbreviation": name_b, "before": before[index_b], "after": before[index_a]}],
+                "restarted": restarted, "announcer_flagged": flagged}
+
+    def hire_head_coach(self, team: int, coach_index: int, *, restart: bool = True,
+                        announcer_generic: bool = True) -> dict[str, Any]:
+        """Fire a club's head coach and hire a coach the save already holds who coaches no league club.
+
+        The fired coach stays on file (he can be hired again); only the club's pointer changes.  Placeholder records
+        and coaches who already lead another club are refused (swap those clubs instead).
+        """
+
+        team = self._league_team(team)
+        label = self.team_abbreviation(team)
+        count, _table = self.coach_table
+        _require(type(coach_index) is int and 0 <= coach_index < count, f"coach {coach_index!r} is outside 0..{count - 1}")
+        fired = self.head_coach_index(team)
+        _require(fired is not None, f"{label} has no head coach record to replace")
+        _require(coach_index != fired, f"{self.coaches()[coach_index].name} already coaches {label}")
+        hired = self.coaches()[coach_index]
+        _require(not hired.placeholder, "that coach record is an empty placeholder; use Replace with a new coach to name somebody")
+        _require(not hired.teams, f"{hired.name} already coaches {', '.join(self.team_abbreviation(t) for t in hired.teams)}; "
+                                  "swap the two clubs' coaches instead")
+        assert fired is not None
+        before = self._coach_brief(fired)
+        restarted: dict[str, list[str]] = {}
+        flagged: list[int] = []
+        with self._transaction():
+            self._point_team_at_coach(team, coach_index)
+            if restart:
+                restarted[str(coach_index)] = self._restart_with_team(coach_index)
+            if announcer_generic and self._flag_no_recorded_name(coach_index):
+                flagged.append(coach_index)
+            self._verify_head_coaches({team: coach_index})
+        return {"operation": "hire_head_coach", "team": team, "abbreviation": label, "fired": before,
+                "hired": {"coach": coach_index, "name": hired.name}, "restarted": restarted, "announcer_flagged": flagged}
+
+    @staticmethod
+    def _coach_text_value(value: object, limit: int, label: str, *, required: bool) -> str:
+        text = " ".join(str(value or "").split())
+        _require(bool(text) or not required, f"type the coach's {label}")
+        _require(len(text) <= limit, f"the coach's {label} is longer than {limit} characters")
+        _require(all(32 <= ord(ch) < 127 for ch in text),
+                 f"the coach's {label} uses a character the game cannot show; use letters, numbers and plain punctuation")
+        return text
+
+    def _coach_text_layout(self) -> dict[str, Any]:
+        """Where the 175 coach strings sit (35 records x first, last, three biography lines), or why they cannot move.
+
+        The writer needs the game's own shape: every string pointed at by exactly one coach pointer, laid out in one
+        region with nothing but zero padding between them (retail and SOFTDRINK rosters are; a hand-edited save may
+        not be).  The bytes after the last string count as free only when the rest of the game's 5,506-byte region is
+        all zero.  ``allocation`` is each string's room: the gap to the next string (the last one runs to the free end).
+        """
+
+        count, table = self.coach_table
+        _require(count > 0, "this save has no coach table")
+        slots: list[tuple[int, int, str]] = []
+        for index in range(count):
+            for field in COACH_STRING_FIELDS:
+                at = table + index * COACH_SIZE + field
+                target = self.rel(at)
+                _require(target is not None and target % 2 == 0, f"coach {index} has no readable text at +0x{field:02X}")
+                assert target is not None
+                end = target
+                while end + 2 <= self.arena_end and self.buffer[end:end + 2] != b"\0\0":
+                    end += 2
+                _require(end + 2 <= self.arena_end, f"coach {index}'s text does not end inside the save")
+                try:
+                    text = bytes(self.buffer[target:end]).decode("utf-16-le")
+                except UnicodeDecodeError as exc:
+                    raise FranchiseSaveError(f"coach {index}'s text is not readable") from exc
+                slots.append((at, target, text))
+        ordered = sorted(slots, key=lambda slot: slot[1])
+        start = ordered[0][1]
+        cursor = start
+        for _at, target, text in ordered:
+            _require(target >= cursor and not any(self.buffer[cursor:target]),
+                     "this save keeps its coach names in more than one place, so the Studio cannot rename coaches in it "
+                     "(swapping, and hiring a coach the save already holds, still work)")
+            cursor = target + 2 * len(text) + 2
+        strings_end = cursor
+        targets = {target for _at, target, _text in slots}
+        words = (self.arena_end - ARENA_ROOT) // 4
+        values = struct.unpack_from(f"<{words}i", self.buffer, ARENA_ROOT)
+        hits: dict[int, int] = {}
+        for k, value in enumerate(values):
+            if value:
+                field = ARENA_ROOT + 4 * k
+                if start <= field < strings_end:
+                    continue                      # text bytes, not a pointer field
+                target = field + value - 1
+                if target in targets:
+                    hits[target] = hits.get(target, 0) + 1
+        _require(all(hits.get(target, 0) == 1 for target in targets),
+                 "some coach text is also used by another record, so the Studio cannot rewrite it safely")
+        cap = start + COACH_STRING_REGION
+        writable_end = cap if (strings_end < cap <= self.arena_end and not any(self.buffer[strings_end:cap])) else strings_end
+        starts = [target for _at, target, _text in ordered] + [writable_end]
+        allocation = {target: starts[k + 1] - target for k, (_at, target, _text) in enumerate(ordered)}
+        return {"slots": slots, "start": start, "strings_end": strings_end, "writable_end": writable_end,
+                "allocation": allocation}
+
+    def _rewrite_coach_text(self, wanted: dict[int, dict[int, str]]) -> dict[str, Any]:
+        """Put ``wanted`` (record -> field offset -> text) in place of the old coach strings.
+
+        When every new text fits the room its old text had, only those strings change and no pointer moves.
+        Otherwise the whole region is laid end to end again in record order (the unused tail zeroed, every
+        pointer aimed at its string); it never grows past the game's region.  Either way the result is read back.
+        """
+
+        layout = self._coach_text_layout()
+        slots, start, writable_end, allocation = (layout["slots"], layout["start"], layout["writable_end"],
+                                                  layout["allocation"])
+        expected: list[str] = []
+        changes: list[tuple[int, int, str]] = []
+        for position, (_at, target, text) in enumerate(slots):
+            index, field_position = divmod(position, len(COACH_STRING_FIELDS))
+            new = wanted.get(index, {}).get(COACH_STRING_FIELDS[field_position], text)
+            expected.append(new)
+            if new != text:
+                changes.append((target, allocation[target], new))
+        if all(2 * len(new) + 2 <= room for _target, room, new in changes):
+            for target, room, new in changes:
+                raw = new.encode("utf-16-le") + b"\0\0"
+                self.buffer[target:target + room] = raw + bytes(room - len(raw))
+            outcome = {"mode": "in place", "strings": len(changes)}
+        else:
+            packed = bytearray()
+            pointers: list[tuple[int, int]] = []
+            for (at, _target, _text), text in zip(slots, expected):
+                pointers.append((at, start + len(packed)))
+                packed += text.encode("utf-16-le") + b"\0\0"
+            room = writable_end - start
+            _require(len(packed) <= room,
+                     f"the new coach text needs {len(packed):,} bytes and this save has room for {room:,}; "
+                     "use shorter names or biography lines")
+            self.buffer[start:writable_end] = bytes(packed) + bytes(room - len(packed))
+            for at, target in pointers:
+                struct.pack_into("<i", self.buffer, at, target - at + 1)
+            outcome = {"mode": "region rewritten", "strings": len(slots), "used": len(packed), "room": room}
+        for (at, _target, _text), text in zip(slots, expected):
+            _require(self.wstr(at) == text, "the coach text read back differently than it was written; nothing was changed")
+        return outcome
+
+    def replace_head_coach(self, team: int, first: str, last: str, bio: Sequence[str] = ()) -> dict[str, Any]:
+        """Fire a club's head coach and hire a new person into the same record.
+
+        The record gets the new name and biography, a first-year career (every total back to zero), no photo and the
+        "no recorded name" flag; it keeps the old coach's ratings, play-calling and sideline body.  The fired coach is
+        gone from this save.  Exhibition squads that borrow the record show the new person too.
+        """
+
+        team = self._league_team(team)
+        label = self.team_abbreviation(team)
+        first = self._coach_text_value(first, COACH_NAME_MAX, "first name", required=True)
+        last = self._coach_text_value(last, COACH_NAME_MAX, "last name", required=True)
+        lines = [self._coach_text_value(line, COACH_BIO_MAX, "biography line", required=False) for line in list(bio)[:3]]
+        lines += [""] * (3 - len(lines))
+        fired = self.head_coach_index(team)
+        _require(fired is not None, f"{label} has no head coach record to replace")
+        assert fired is not None
+        before = self.coaches()[fired]
+        _require(not before.placeholder, f"{label}'s coach record is an empty placeholder; nobody is being fired")
+        _require(len(before.teams) == 1,
+                 f"{', '.join(self.team_abbreviation(t) for t in before.teams)} lead with the same coach record, "
+                 "so a new name would change both; give one of them a different coach first")
+        with self._transaction():
+            text = self._rewrite_coach_text({fired: {0x00: first, 0x04: last, 0x08: lines[0], 0x0C: lines[1],
+                                                     0x10: lines[2]}})
+            offset = self._coach_offset(fired)
+            for name in COACH_CAREER:
+                rel, fmt = COACH_FIELDS[name]
+                struct.pack_into(fmt, self.buffer, offset + rel, 0)
+            struct.pack_into("<H", self.buffer, offset + COACH_FIELDS["photo"][0], COACH_NO_PHOTO)
+            self._flag_no_recorded_name(fired)
+            now = self.coaches()[fired]
+            _require((now.first, now.last, now.info) == (first, last, tuple(lines)), "the new coach did not read back; nothing was changed")
+            self._verify_head_coaches({team: fired})
+        return {"operation": "replace_head_coach", "team": team, "abbreviation": label,
+                "fired": {"coach": fired, "name": before.name}, "hired": {"coach": fired, "name": f"{first} {last}"},
+                "text": text, "shared_with": [self.team_abbreviation(t) for t in before.other_teams]}
 
     # ------------------------------------------------------------------ team season state (arena)
     def team_season(self, team: int) -> TeamSeason:
@@ -1182,4 +1518,5 @@ def is_franchise_save(payload: bytes) -> bool:
 __all__ = ["FranchiseSave", "FranchiseSaveError", "SeasonHeader", "Game", "Coach", "TeamSeason",
            "InjuredReserveEntry", "Region", "REGIONS", "regions_cover_file", "load_franchise", "is_franchise_save",
            "FRANCHISE_SAVE_SIZE", "SEASON_BLOCK", "FRONT_OFFICE_BLOCK", "TEAM_STAT_FIELDS", "TEAM_STAT_NAMES",
-           "COACH_FIELDS", "COACH_RATINGS", "COACH_TENDENCIES", "STAGE_NAMES", "DISPLAY_YEAR_BASE"]
+           "COACH_FIELDS", "COACH_RATINGS", "COACH_TENDENCIES", "STAGE_NAMES", "DISPLAY_YEAR_BASE",
+           "COACH_FLAG_NO_NAME", "COACH_NAME_MAX", "COACH_BIO_MAX", "COACH_NO_PHOTO", "COACH_CAREER", "COACH_WITH_TEAM"]
