@@ -47,6 +47,9 @@ class Helpers(unittest.TestCase):
         self.assertEqual(B.parse_years("2017, 20-present"), {2017} | set(range(2020, 2026)))
         self.assertEqual(B.parse_years("1998-2001"), {1998, 1999, 2000, 2001})
         self.assertEqual(B.parse_years("2019"), {2019})
+        self.assertEqual(B.parse_years("2020-"), set(range(2020, 2026)))              # an open end runs to the last season of the guide
+        self.assertEqual(B.parse_years("(2020-)"), set(range(2020, 2026)))
+        self.assertEqual(B.parse_years("2021-Pres."), set(range(2021, 2026)))
         self.assertEqual(B.parse_years("2014-18, 26"), set(range(2014, 2019)))      # a 2026 roster note is no career season
 
     def test_game_dates_january_games_belong_to_the_previous_season(self):
@@ -83,6 +86,13 @@ class Helpers(unittest.TestCase):
         self.assertEqual(B.club_of_cell("OAK", 2001), "LV")
         self.assertEqual(B.club_of_cell("SD", 2010), "LAC")
         self.assertEqual(B.club_of_cell("LA", 1990), "AMBIG")          # Rams or Raiders
+        self.assertEqual(B.club_of_cell("LAR", 1990), "AMBIG")         # some articles write LAR for the Los Angeles Raiders
+        self.assertEqual(B.club_of_cell("LAR", 2020), "LAR")
+        self.assertEqual(B.club_of_cell("DAT", 1961), "KC")            # the Dallas Texans are the Chiefs franchise
+        self.assertEqual(B.club_of_cell("CLE", 1945), "LAR")           # the Cleveland Rams; the Browns began in 1946
+        self.assertEqual(B.club_of_cell("CLE", 1950), "CLE")
+        self.assertEqual(B.club_of_cell("BOS", 1962), "NE")
+        self.assertIsNone(B.club_of_cell("BOS", 1946))                 # the Boston Yanks are no current club
         self.assertEqual(B.club_of_cell("2TM", 2012), None)
         self.assertEqual(B.club_of_cell("Chicago Bears", 1990), "CHI")
         self.assertEqual(B.club_of_cell("Tulane", 2005), None)
@@ -116,6 +126,7 @@ class Plumbing(unittest.TestCase):
         self.assertLessEqual(len(c), 24)
         self.assertIn("Chris Godwin", B.title_candidates("Chris Godwin Jr.", {"receiving_td"}))
         self.assertIn("James Wilder Sr.", B.title_candidates("James Wilder", {"rushing_yards"}))
+        self.assertIn("Clay Matthews III", B.title_candidates("Clay Matthews", {"sacks_half"}))
 
     def test_years_overlap_identifies_the_right_player(self):
         self.assertTrue(B.years_overlap_ok({2008, 2009, 2010}, {2008, 2009, 2010, 2011}))
@@ -199,6 +210,39 @@ class WikipediaTables(unittest.TestCase):
                 'American politician</li></ul>')
         self.assertEqual(B.football_links(html), ["Mark Clayton (wide receiver, born 1961)"])
 
+    def test_a_title_with_quote_marks_is_found_on_a_disambiguation_page(self):
+        html = ("<ul><li><a rel=\"mw:WikiLink\" href='https://en.wikipedia.org/wiki/James_\"Little_Man\"_Stewart' title='James \"Little Man\" Stewart'>James "
+                "\"Little Man\" Stewart</a> (born 1971), American football running back for the Jacksonville Jaguars</li></ul>")
+        self.assertEqual(B.football_links(html), ['James "Little Man" Stewart'])
+
+    def test_passing_yards_written_as_yards_and_other_header_spellings(self):
+        qb = ("<table><tr><th rowspan=2>Year</th><th rowspan=2>Team</th><th colspan=3>Passing</th></tr>"
+              "<tr><th>Comp</th><th>Yards</th><th>TD</th></tr><tr><td>2001</td><td>STL</td><td>DNP</td><td>DNP</td><td>DNP</td></tr>"
+              "<tr><td>2002</td><td>STL</td><td>5</td><td>1,500</td><td>8</td></tr></table>")
+        r = B.club_sums(qb, "LAR")
+        self.assertEqual((r["sums"]["passing_yards"], r["sums"]["passing_td"]), (1500, 8))
+        sk = table([["1985", "IND", "16", "141", "6.0", "1"], ["1986", "IND", "16", "120", "3.5", "0"]],
+                   [["Year", "Team", "GP", "Tackles Tot", "Tackles Sk", "Interceptions Int"]])
+        r = B.club_sums(sk, "IND")
+        self.assertEqual((r["sums"]["sacks_half"], r["sums"]["tackles"], r["sums"]["interceptions"]), (19.0, 261, 1))
+        scks = table([["1992", "DET", "16", "21", "1.0", "0"], ["1993", "DET", "16", "30", "4.0", "0"]], [["Year", "Team", "GP", "Cmb", "Scks", "Int"]])
+        self.assertEqual(B.club_sums(scks, "DET")["sums"]["sacks_half"], 10.0)
+        ttkl = table([["2003", "GB", "16", "100", "0.0", "1"], ["2004", "GB", "16", "90", "1.0", "0"]], [["Year", "Team", "G", "TTkl", "Sacks", "Int"]])
+        self.assertEqual(B.club_sums(ttkl, "GB")["sums"]["tackles"], 190)
+
+    def test_flat_header_with_carries_and_touchdowns(self):
+        html = table([["1995", "ATL", "16", "39", "161", "4.1", "13", "1"], ["1998", "ATL", "16", "410", "1,846", "4.5", "62", "14"]],
+                     [["Year", "Team", "Games", "Carries", "Yards", "Yards per carry", "Longest carry", "Touchdowns"]])
+        r = B.club_sums(html, "ATL")
+        self.assertEqual((r["sums"]["rushing_yards"], r["sums"]["rushing_td"]), (2007, 15))
+        self.assertEqual(r["seasons"]["rushing_yards"]["1998"], 1846.0)
+
+    def test_flat_header_that_says_yards(self):
+        html = table([["1996", "TB", "16", "16", "96", "377", "3.9", "39", "3"], ["1997", "TB", "15", "15", "176", "665", "3.8", "47", "7"]],
+                     [["Year", "Team", "GP", "GS", "Att", "Yards", "Avg", "Lng", "TD"]])
+        r = B.club_sums(html, "TB")
+        self.assertEqual((r["sums"]["rushing_yards"], r["sums"]["rushing_td"]), (1042, 10))
+
     def test_flat_header_without_group_names(self):
         html = table([["1981", "SD", "14", "109", "525", "4.8", "28", "3", "46", "329", "7.2", "29", "3"],
                       ["1982", "SD", "9", "87", "430", "4.9", "48", "6", "13", "66", "5.1", "12", "0"],
@@ -223,6 +267,7 @@ class NflverseTotals(unittest.TestCase):
             ["REG", "LA", "p1", "Pat Passer", "QB", "2", "250", "1", "0", "0", "0", "0", "0", "0", "0", "0", "0"],
             ["POST", "LA", "p1", "Pat Passer", "QB", "20", "999", "9", "0", "0", "0", "0", "0", "0", "0", "0", "0"],
             ["REG", "CHI", "p2", "Dee Fender", "DE", "1", "0", "0", "0", "0", "0", "0", "0", "1.5", "1", "4", "2"],
+            ["REG", "ARI", "p3", "Chris Wells", "RB", "1", "0", "0", "120", "1", "0", "0", "0", "0", "0", "0", "0"],
         ]
         with tempfile.TemporaryDirectory() as folder:
             for yr in range(B.NV_WINDOW[0], B.NV_WINDOW[1] + 1):
@@ -239,6 +284,7 @@ class NflverseTotals(unittest.TestCase):
         self.assertEqual(sorted(x[0] for x in nv.game[("LAR", "passing_yards")]), [250, 300])
         self.assertEqual(nv.find("LAR", "Pat Passer", {2010}), "p1")
         self.assertIsNone(nv.find("CHI", "Pat Passer", {2010}))
+        self.assertEqual(nv.find("ARI", "Beanie Wells", {2010}), "p3")              # the guide prints the nickname, nflverse the legal first name
 
 
 class TheRule(unittest.TestCase):

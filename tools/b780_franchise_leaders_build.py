@@ -138,7 +138,7 @@ def split_name(name: str):
 
 
 def parse_years(s: str, through: int = THROUGH) -> set[int]:
-    """'1975-87' -> 1975..1987; '1940-41; 45-50'; "2008-16; '25"; '2017, 20-present'; '2019'."""
+    """'1975-87' -> 1975..1987; '1940-41; 45-50'; "2008-16; '25"; '2017, 20-present'; '2019'; an open end ('2020-') runs to the last season."""
     out: set[int] = set()
     century = None
     for part in re.split(r"[;,]", (s or "").replace("–", "-").replace("—", "-")):
@@ -151,9 +151,9 @@ def parse_years(s: str, through: int = THROUGH) -> set[int]:
         if a is None:
             continue
         century = (a // 100) * 100
-        if not b:
+        if b is None:
             out.add(a)
-        elif b.lower().startswith("pres"):
+        elif b == "" or b.lower().startswith("pres"):             # "2020-" and "2017-present": still on the club's list at the end of 2025
             out.update(range(a, through + 1))
         elif b.isdigit():
             e = int(b) if len(b) == 4 else century + int(b)
@@ -188,20 +188,22 @@ ABBR = {
     "ARI": [_a("ARI")], "ARZ": [_a("ARI")], "PHX": [_a("ARI")], "PHO": [_a("ARI")], "CRD": [_a("ARI")], "CHC": [_a("ARI")],
     "STL": [_a("ARI", 1960, 1987), _a("LAR", 1995, 2015)], "ATL": [_a("ATL")],
     "BAL": [_a("IND", 1953, 1983), _a("BAL", 1996)], "BLC": [_a("IND")], "BLT": [_a("BAL")], "RAV": [_a("BAL")],
-    "BUF": [_a("BUF")], "CAR": [_a("CAR")], "CHI": [_a("CHI")], "CIN": [_a("CIN")], "CLE": [_a("CLE")], "CLV": [_a("CLE")],
-    "DAL": [(None, 1960, 1962), _a("DAL", 1963)], "DTX": [_a("KC")], "DEN": [_a("DEN")], "DET": [_a("DET")], "GB": [_a("GB")], "GNB": [_a("GB")],
+    "BUF": [_a("BUF")], "CAR": [_a("CAR")], "CHI": [_a("CHI")], "CIN": [_a("CIN")], "CLE": [_a("LAR", 1936, 1945), _a("CLE", 1946)], "CLV": [_a("CLE")],
+    "DAL": [(None, 1960, 1962), _a("DAL", 1963)], "DTX": [_a("KC")], "DAT": [_a("KC")], "DEN": [_a("DEN")], "DET": [_a("DET")], "GB": [_a("GB")], "GNB": [_a("GB")],
     "HOU": [_a("TEN", 1960, 1996), _a("HOU", 2002)], "HST": [_a("HOU")], "IND": [_a("IND", 1984)], "TEN": [_a("TEN", 1997)],
     "OTI": [_a("TEN", 1997)], "HOI": [_a("TEN")], "JAX": [_a("JAX")], "JAC": [_a("JAX")],
     "KC": [_a("KC")], "KAN": [_a("KC")], "DLT": [_a("KC")],
     "LV": [_a("LV")], "OAK": [_a("LV")], "RAI": [_a("LV")], "LVR": [_a("LV")],
-    "LAC": [_a("LAC")], "SD": [_a("LAC")], "SDG": [_a("LAC")], "LAR": [_a("LAR")], "RAM": [_a("LAR")],
+    "LAC": [_a("LAC")], "SD": [_a("LAC")], "SDG": [_a("LAC")], "RAM": [_a("LAR")],
+    "LAR": [_a("LAR", 1946, 1981), (None, 1982, 1994), _a("LAR", 1995)],       # some articles write LAR for the Los Angeles Raiders too
     "LA": [_a("LAR", 1946, 1981), (None, 1982, 1994), _a("LAR", 2016)],
-    "MIA": [_a("MIA")], "MIN": [_a("MIN")], "NE": [_a("NE")], "NWE": [_a("NE")], "BOS": [_a("NE")], "NO": [_a("NO")], "NOR": [_a("NO")],
+    "MIA": [_a("MIA")], "MIN": [_a("MIN")], "NE": [_a("NE")], "NWE": [_a("NE")], "BOS": [_a("NE", 1960, 1970)], "NO": [_a("NO")], "NOR": [_a("NO")],
     "NYG": [_a("NYG")], "NYJ": [_a("NYJ")], "NYT": [_a("NYJ")], "PHI": [_a("PHI")], "PIT": [_a("PIT")],
     "SF": [_a("SF")], "SFO": [_a("SF")], "SEA": [_a("SEA")], "TB": [_a("TB")], "TAM": [_a("TB")],
     "WAS": [_a("WAS")], "WSH": [_a("WAS")],
 }
-AMBIGUOUS_SETS = {"LA": {"LAR", "LV"}, "DAL": {"DAL", "KC"}}      # who an ambiguous cell may be (the Rams or the Raiders, 1982-94; the Cowboys or the Texans, 1960-62)
+# CLE before 1946 is the Cleveland Rams (the Browns began in 1946); BOS is the Boston Patriots 1960-70; DAT is the Dallas Texans (the Chiefs franchise)
+AMBIGUOUS_SETS = {"LA": {"LAR", "LV"}, "LAR": {"LAR", "LV"}, "DAL": {"DAL", "KC"}}      # who an ambiguous cell may be (the Rams or the Raiders, 1982-94; the Cowboys or the Texans, 1960-62)
 NICK = {
     "cardinals": "ARI", "falcons": "ATL", "ravens": "BAL", "bills": "BUF", "panthers": "CAR", "bears": "CHI", "bengals": "CIN",
     "browns": "CLE", "cowboys": "DAL", "broncos": "DEN", "lions": "DET", "packers": "GB", "texans": "HOU", "colts": "IND",
@@ -385,6 +387,10 @@ def num(s):
         return None
 
 
+TD_ENDINGS = (" td", " tds", " touchdowns")
+SACK_WORDS = {"sck", "scks", "sacks", "sk", "sack"}
+
+
 def column_map(heads):
     """footer category id -> column index for a flattened Wikipedia NFL stat-table header ('Group Column')."""
     m = {}
@@ -394,25 +400,25 @@ def column_map(heads):
             m.setdefault("year", i)
         elif c == "team" or c.endswith(" team"):
             m.setdefault("team", i)
-        elif "passing" in c and c.endswith(" yds"):
+        elif "passing" in c and (c.endswith(" yds") or c.endswith(" yards")):
             m.setdefault("passing_yards", i)
-        elif "passing" in c and c.endswith(" td"):
+        elif "passing" in c and c.endswith(TD_ENDINGS):
             m.setdefault("passing_td", i)
         elif "rushing" in c and (c.endswith(" yds") or c.endswith(" yards")):
             m.setdefault("rushing_yards", i)
-        elif "rushing" in c and c.endswith(" td"):
+        elif "rushing" in c and c.endswith(TD_ENDINGS):
             m.setdefault("rushing_td", i)
         elif "receiving" in c and c.endswith(" rec"):
             m.setdefault("receptions", i)
         elif "receiving" in c and (c.endswith(" yds") or c.endswith(" yards")):
             m.setdefault("receiving_yards", i)
-        elif "receiving" in c and c.endswith(" td"):
+        elif "receiving" in c and c.endswith(TD_ENDINGS):
             m.setdefault("receiving_td", i)
-        elif "sacked" not in c and ("sck" in c.split() or "sacks" in c.split() or c.endswith(" sack") or c in ("sacks", "sck")):
+        elif "sacked" not in c and (set(c.split()) & SACK_WORDS or c.endswith(" sack")):
             m.setdefault("sacks_half", i)
         elif "tackles" in c and (c.endswith(" cmb") or c.endswith(" comb") or c.endswith(" total") or c.endswith(" tot")):
             m.setdefault("tackles", i)
-        elif c in ("tackles", "tkl", "tot tackles", "total tackles", "tackles tkl", "combined tackles"):
+        elif c in ("tackles", "tkl", "tot tackles", "total tackles", "tackles tkl", "combined tackles", "ttkl", "comb", "cmb"):
             m.setdefault("tackles", i)
         elif "interceptions" in c and c.endswith(" int"):
             m.setdefault("interceptions", i)
@@ -427,23 +433,23 @@ def flat_groups(heads):
     out, group = [], None
     for h in heads:
         c = h.strip().lower()
-        if c == "cmp":
+        if c in ("cmp", "comp"):
             group = "Passing"
-        elif c == "att" and group != "Passing":
+        elif c in ("att", "carries") and group != "Passing":
             group = "Rushing"
-        elif c == "rec":
+        elif c in ("rec", "receptions"):
             group = "Receiving"
         elif c in ("rtg", "rate"):
             out.append("Passing " + h)
             group = "Rushing"
             continue
-        out.append(f"{group} {h}" if group and c in ("att", "cmp", "yds", "avg", "lng", "td", "rec", "int", "pct", "y/a") else h)
+        out.append(f"{group} {h}" if group and c in ("att", "cmp", "comp", "yds", "yards", "avg", "lng", "td", "tds", "touchdowns", "rec", "int", "pct", "y/a") else h)
     return out
 
 
 def player_tables(source):
     """NFL career stat tables of a player article (HTML text or the tables ``html_tables`` made of it):
-    {'heads', 'cmap', 'rows', 'heading', 'post'} (offense columns are only mapped for offense tables and defense columns only for
+    {'heads', 'cmap', 'rows', 'heading', 'post', 'total'} (total is the table's own Total or Career row; offense columns are only mapped for offense tables and defense columns only for
     defense tables, so a quarterback's 'Sacks' are not defensive sacks)."""
     out = []
     for t in (html_tables(source) if isinstance(source, str) else source):
@@ -482,7 +488,8 @@ def player_tables(source):
         heading = (t["heading"] + " " + t["caption"]).lower()
         post = bool(re.search(r"post ?season|playoff|super bowl", heading)) or "opp" in low.split()
         rows = [r for r in g[len(hdr):] if r and re.match(r"^(19|20)\d{2}", r[0])]
-        out.append({"heads": heads, "cmap": cm, "rows": rows, "heading": t["heading"], "post": post})
+        total = next((r for r in reversed(g[len(hdr):]) if r and r[0].strip().lower() in ("career", "total", "totals")), None)
+        out.append({"heads": heads, "cmap": cm, "rows": rows, "heading": t["heading"], "post": post, "total": total})
     return out
 
 
@@ -561,15 +568,19 @@ def infobox_position(source):
     return None
 
 
+LINKS_VERSION = 2            # bumped when football_links learned titles with quote marks; cached disambiguation pages of an older version are fetched again
+
+
 def football_links(html: str):
     """titles the entries of a disambiguation page link to, for the entries that say football"""
     out = []
     for li in re.findall(r"<li\b[^>]*>(.*?)</li>", html, re.S | re.I):
         if "football" not in li.lower():
             continue
-        m = re.search(r'<a\b[^>]*\btitle="([^"]+)"', li)
-        if m and m.group(1) not in out:
-            out.append(m.group(1).replace("&amp;", "&").replace("&#39;", "'"))
+        m = re.search(r"""<a\b[^>]*\btitle=(?:"([^"]+)"|'([^']+)')""", li)         # a title with quote marks inside is written with single quotes
+        title = (m.group(1) or m.group(2)).replace("&amp;", "&").replace("&#39;", "'").replace("&quot;", '"') if m else None
+        if title and title not in out:
+            out.append(title)
     return out[:8]
 
 
@@ -623,7 +634,7 @@ class Wiki:
             if "html" in out:                                   # an older cache entry: keep the tables, drop the page text
                 out["tables"] = html_tables(out.pop("html"))
                 p.write_text(json.dumps(out), encoding="utf-8")
-            if not (out.get("disambiguation") and "football_links" not in out):      # an older disambiguation entry is fetched again for its links
+            if not (out.get("disambiguation") and out.get("links_v") != LINKS_VERSION):      # an older disambiguation entry is fetched again for its links
                 return out
         url = "https://en.wikipedia.org/w/index.php?" + urllib.parse.urlencode({"title": title.replace(" ", "_"), "action": "render"})
         status, html = self._get(url)
@@ -631,7 +642,7 @@ class Wiki:
         if status == 404 or not html:
             out = {"title": title, "missing": True, "retrieved": today}
         elif 'id="disambigbox"' in html or "dmbox-disambig" in html:
-            out = {"title": title, "missing": True, "disambiguation": True, "retrieved": today, "football_links": football_links(html)}
+            out = {"title": title, "missing": True, "disambiguation": True, "retrieved": today, "football_links": football_links(html), "links_v": LINKS_VERSION}
         else:
             out = {"title": title, "revid": None, "tables": html_tables(html), "retrieved": today}
         p.write_text(json.dumps(out), encoding="utf-8")
@@ -686,11 +697,12 @@ def title_candidates(name: str, cats=()):
     if stripped != plain:
         bases.append(stripped)                                           # "Chris Godwin Jr." is the article "Chris Godwin"
     else:
-        bases += [plain + " Sr.", plain + " Jr."]                       # "James Wilder" is the article "James Wilder Sr."
+        bases += [plain + " Sr.", plain + " Jr.", plain + " III"]       # "James Wilder" is the article "James Wilder Sr.", "Clay Matthews" is "Clay Matthews III"
+    suffixed = (plain + " Sr.", plain + " Jr.", plain + " III")
     out = []
     for b in dict.fromkeys(bases):
         out.append(b)
-        if b in (plain + " Sr.", plain + " Jr."):
+        if b in suffixed:
             continue
         out += [f"{b} ({x})" for x in dict.fromkeys(suffixes)]
     return list(dict.fromkeys(out))
@@ -722,6 +734,9 @@ def _f(x):
         return float(x) if x not in ("", None) else 0.0
     except ValueError:
         return 0.0
+
+
+NFLVERSE_NAME = {"Beanie Wells": "Chris Wells"}            # the guide prints the nickname, nflverse the legal first name (Cardinals running back 2009-12)
 
 
 class NFLverse:
@@ -775,7 +790,7 @@ class NFLverse:
 
     def find(self, club, name, years):
         """player id of a guide row (same club, same name, seasons overlapping the guide's years), or None"""
-        want = norm(name).split()
+        want = norm(NFLVERSE_NAME.get(name, name)).split()
         if not want:
             return None
         if not hasattr(self, "_index"):
@@ -1008,6 +1023,12 @@ RULES = {
     "shipping": "A value ships only when the club's own 2026 media guide and a second, independent source agree: the player's Wikipedia season table summed over the club, or nflverse play-by-play totals where they cover the whole career. A disagreement, a single source, a failed earlier rank or a failed completeness check keeps the row out; every candidate with its sources is in the evidence file.",
     "ranks": "A club's list ships its longest run of verified ranks from rank 1. basis column: the guide prints the stat only as a column of a list ranked by another stat, so the order holds for the printed rows only (and for 1999-2025 careers nflverse confirms nobody is missing).",
     "links": "link is the roster identity (primary pool index, name, birth date) of a player who is on the club's 2026 roster, so his total keeps counting; null otherwise.",
+    "footer_mapping": {
+        "note": "the ids are the footer's (nfl2k5_franchise_extension, j23-footer) and the history seed's; the club index is clubs[CODE].arena_index",
+        "leaders": "career.<category>[rank 1..3] -> leader_entry(person=pack_person(first, last, position), value, flags=LEADER_REAL, plus LEADER_LINKED and player=link.index when link is set); sacks_half is already in half sacks",
+        "records": "season.<category>[0] and game.<category>[0] -> record_entry(person, club arena index, value, year=season, week_row=week - 1 when week is set, else none); a record with tie is shared and the named holder is one of them",
+        "not_covered": "the records block's completions and forced_fumbles slots, and the league-wide leaders and records (the history seed has those)",
+    },
 }
 CREDITS = {
     "club_guides": "Record lists: each club's own 2026 media guide (the Steelers' 2025 guide), read from the copies in the Internet Archive collection nfl-media-guides. Facts only (names, years, numbers).",
@@ -1038,8 +1059,6 @@ def resolve_wikipedia(wiki: Wiki, need: dict, cache_file: Path) -> dict:
     """{'CLUB|Name': Wikipedia result or None}.  Every name is resolved afresh from the page cache (a cached article costs
     milliseconds), so a change in the table reader is never hidden by an old answer; only articles not yet cached touch the network."""
     resolved: dict = {}
-    known_file = Path(cache_file).with_name("exists.json")
-    known = json.loads(known_file.read_text(encoding="utf-8")) if known_file.exists() else {}
     todo = [(club, name, info) for (club, name), info in sorted(need.items())]
 
     def one(item):
@@ -1049,7 +1068,7 @@ def resolve_wikipedia(wiki: Wiki, need: dict, cache_file: Path) -> dict:
             seen = set()
             while queue:
                 cand = queue.pop(0)
-                if cand in seen or known.get(cand) is False:
+                if cand in seen:
                     continue
                 seen.add(cand)
                 pg = wiki.page(cand)

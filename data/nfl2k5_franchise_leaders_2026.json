@@ -39,7 +39,13 @@
   "game": "The club's best regular-season game in the category, through 2025. season is the NFL season (January games belong to the season before); date is the game date when the guide prints it; week is the regular-season week when nflverse identifies the game.",
   "shipping": "A value ships only when the club's own 2026 media guide and a second, independent source agree: the player's Wikipedia season table summed over the club, or nflverse play-by-play totals where they cover the whole career. A disagreement, a single source, a failed earlier rank or a failed completeness check keeps the row out; every candidate with its sources is in the evidence file.",
   "ranks": "A club's list ships its longest run of verified ranks from rank 1. basis column: the guide prints the stat only as a column of a list ranked by another stat, so the order holds for the printed rows only (and for 1999-2025 careers nflverse confirms nobody is missing).",
-  "links": "link is the roster identity (primary pool index, name, birth date) of a player who is on the club's 2026 roster, so his total keeps counting; null otherwise."
+  "links": "link is the roster identity (primary pool index, name, birth date) of a player who is on the club's 2026 roster, so his total keeps counting; null otherwise.",
+  "footer_mapping": {
+   "note": "the ids are the footer's (nfl2k5_franchise_extension, j23-footer) and the history seed's; the club index is clubs[CODE].arena_index",
+   "leaders": "career.<category>[rank 1..3] -> leader_entry(person=pack_person(first, last, position), value, flags=LEADER_REAL, plus LEADER_LINKED and player=link.index when link is set); sacks_half is already in half sacks",
+   "records": "season.<category>[0] and game.<category>[0] -> record_entry(person, club arena index, value, year=season, week_row=week - 1 when week is set, else none); a record with tie is shared and the named holder is one of them",
+   "not_covered": "the records block's completions and forced_fumbles slots, and the league-wide leaders and records (the history seed has those)"
+  }
  },
  "sources": {
   "club_guides": "Each club's own 2026 media guide (Internet Archive collection nfl-media-guides); the Steelers' 2026 guide is not online, so their 2025 edition is used and the 2025 season is added from nflverse.",
@@ -53,25 +59,22 @@
  },
  "counts": {
   "shipped": {
-   "career": 661,
-   "season": 263,
-   "game": 144
+   "career": 690,
+   "season": 265,
+   "game": 145
   },
   "excluded": {
    "conflict": 56,
-   "after a rank that is conflict": 24,
-   "single": 481,
-   "after a rank that is single": 123,
+   "after a rank that is conflict": 26,
+   "single": 459,
+   "after a rank that is single": 112,
    "incomplete list": 6,
-   "review": 2,
-   "after a rank that is review": 1,
    "not printed in the guide": 76
   },
   "by_decision": {
-   "ship": 1314,
+   "ship": 1338,
    "conflict": 56,
-   "single": 482,
-   "review": 2
+   "single": 460
   }
  },
  "clubs": {
@@ -587,6 +590,23 @@
     ]
    },
    "game": {
+    "rushing_yards": [
+     {
+      "rank": 1,
+      "name": "Beanie Wells",
+      "first": "Beanie",
+      "last": "Wells",
+      "position": "HB",
+      "season": 2011,
+      "date": "2011-11-27",
+      "week": 12,
+      "value": 228,
+      "confirmed_by": [
+       "nflverse"
+      ],
+      "guide_page": 220
+     }
+    ],
     "sacks_half": [
      {
       "rank": 1,
@@ -814,6 +834,23 @@
        "wikipedia"
       ],
       "guide_page": 230
+     },
+     {
+      "rank": 3,
+      "name": "Jamal Anderson",
+      "first": "Jamal",
+      "last": "Anderson",
+      "position": "HB",
+      "years": "1994-2001",
+      "span": [
+       1994,
+       2001
+      ],
+      "value": 34,
+      "confirmed_by": [
+       "wikipedia"
+      ],
+      "guide_page": 230
      }
     ],
     "receptions": [
@@ -1013,6 +1050,21 @@
        "nflverse"
       ],
       "guide_page": 231
+     }
+    ],
+    "rushing_yards": [
+     {
+      "rank": 1,
+      "name": "Jamal Anderson",
+      "first": "Jamal",
+      "last": "Anderson",
+      "position": "HB",
+      "season": 1998,
+      "value": 1846,
+      "confirmed_by": [
+       "wikipedia"
+      ],
+      "guide_page": 229
      }
     ],
     "rushing_td": [
@@ -3616,6 +3668,61 @@
       "guide_page": 189
      }
     ],
+    "rushing_td": [
+     {
+      "rank": 1,
+      "name": "Pete Johnson",
+      "first": "Pete",
+      "last": "Johnson",
+      "position": "FB",
+      "years": "1977-83",
+      "span": [
+       1977,
+       1983
+      ],
+      "value": 64,
+      "confirmed_by": [
+       "wikipedia"
+      ],
+      "guide_page": 189
+     },
+     {
+      "rank": 2,
+      "name": "Joe Mixon",
+      "first": "Joe",
+      "last": "Mixon",
+      "position": "HB",
+      "years": "2017-23",
+      "span": [
+       2017,
+       2023
+      ],
+      "value": 49,
+      "confirmed_by": [
+       "wikipedia",
+       "nflverse"
+      ],
+      "guide_page": 189
+     },
+     {
+      "rank": 3,
+      "name": "Rudi Johnson",
+      "first": "Rudi",
+      "last": "Johnson",
+      "position": "HB",
+      "years": "2001-07",
+      "span": [
+       2001,
+       2007
+      ],
+      "value": 48,
+      "confirmed_by": [
+       "wikipedia",
+       "nflverse"
+      ],
+      "guide_page": 189
+     }
+    ],
     "receptions": [
      {
       "rank": 1,
@@ -5350,6 +5457,23 @@
        "nflverse"
       ],
       "guide_page": 806
+     },
+     {
+      "rank": 3,
+      "name": "Craig Morton",
+      "first": "Craig",
+      "last": "Morton",
+      "position": "QB",
+      "years": "1977-82",
+      "span": [
+       1977,
+       1982
+      ],
+      "value": 11895,
+      "confirmed_by": [
+       "wikipedia"
+      ],
+      "guide_page": 806
      }
     ],
     "passing_td": [
@@ -6018,10 +6142,11 @@
       "years": "2021-",
       "span": [
        2021,
-       2021
+       2025
       ],
       "value": 21451,
       "confirmed_by": [
+       "wikipedia",
        "nflverse"
       ],
       "guide_page": 327,
@@ -6080,10 +6205,11 @@
       "years": "2021-",
       "span": [
        2021,
-       2021
+       2025
       ],
       "value": 149,
       "confirmed_by": [
+       "wikipedia",
        "nflverse"
       ],
       "guide_page": 327,
@@ -6211,7 +6337,7 @@
       "years": "2023-",
       "span": [
        2023,
-       2023
+       2025
       ],
       "value": 39,
       "confirmed_by": [
@@ -6273,10 +6399,11 @@
       "years": "2021-",
       "span": [
        2021,
-       2021
+       2025
       ],
       "value": 547,
       "confirmed_by": [
+       "wikipedia",
        "nflverse"
       ],
       "guide_page": 326,
@@ -6388,10 +6515,11 @@
       "years": "2021-",
       "span": [
        2021,
-       2021
+       2025
       ],
       "value": 44,
       "confirmed_by": [
+       "wikipedia",
        "nflverse"
       ],
       "guide_page": 326,
@@ -6403,6 +6531,25 @@
        "birth_date": "1999-10-24",
        "gsis_id": "00-0036963"
       }
+     }
+    ],
+    "sacks_half": [
+     {
+      "rank": 1,
+      "name": "Robert Porcher",
+      "first": "Robert",
+      "last": "Porcher",
+      "position": "DE",
+      "years": "1992-2003",
+      "span": [
+       1992,
+       2003
+      ],
+      "value": 191,
+      "confirmed_by": [
+       "wikipedia"
+      ],
+      "guide_page": 333
      }
     ],
     "tackles": [
@@ -6545,6 +6692,7 @@
       "season": 1999,
       "value": 30,
       "confirmed_by": [
+       "wikipedia",
        "nflverse"
       ],
       "guide_page": 333
@@ -6603,6 +6751,7 @@
     ]
    },
    "notes": {
+    "career.sacks_half": "regular season, Lions only (the guide's INDIVIDUAL RECORDS section; postseason records are a separate section); official sacks since 1982 (the heading says so); all 8 printed rows",
     "career.tackles": "regular season, Lions only (the guide's INDIVIDUAL RECORDS section; postseason records are a separate section); the guide's note: 'Unofficial statistic compiled since 1973'; TT = total tackles (ST solo, AT assisted; a ...",
     "season.sacks_half": "regular season, Lions only (the guide's INDIVIDUAL RECORDS section; postseason records are a separate section); official sacks since 1982 (the heading says so); all 5 printed rows",
     "season.tackles": "regular season, Lions only (the guide's INDIVIDUAL RECORDS section; postseason records are a separate section); the guide's note: 'Unofficial statistic compiled since 1973'; TT = total tackles (ST solo, AT assisted; a ..."
@@ -6714,6 +6863,7 @@
       ],
       "value": 8322,
       "confirmed_by": [
+       "wikipedia",
        "nflverse"
       ],
       "guide_page": 321
@@ -6942,6 +7092,59 @@
       ],
       "guide_page": 327
      }
+    ],
+    "sacks_half": [
+     {
+      "rank": 1,
+      "name": "Clay Matthews",
+      "first": "Clay",
+      "last": "Matthews",
+      "position": "OLB",
+      "years": "2009-18",
+      "span": [
+       2009,
+       2018
+      ],
+      "value": 167,
+      "confirmed_by": [
+       "wikipedia"
+      ],
+      "guide_page": 332
+     },
+     {
+      "rank": 2,
+      "name": "Kabeer Gbaja-Biamila",
+      "first": "Kabeer",
+      "last": "Gbaja-Biamila",
+      "position": "DE",
+      "years": "2000-08",
+      "span": [
+       2000,
+       2008
+      ],
+      "value": 149,
+      "confirmed_by": [
+       "wikipedia"
+      ],
+      "guide_page": 332
+     },
+     {
+      "rank": 3,
+      "name": "Reggie White",
+      "first": "Reggie",
+      "last": "White",
+      "position": "DE",
+      "years": "1993-98",
+      "span": [
+       1993,
+       1998
+      ],
+      "value": 137,
+      "confirmed_by": [
+       "wikipedia"
+      ],
+      "guide_page": 332
+     }
     ]
    },
    "season": {
@@ -6986,6 +7189,7 @@
       "season": 2003,
       "value": 1883,
       "confirmed_by": [
+       "wikipedia",
        "nflverse"
       ],
       "guide_page": 321
@@ -7128,6 +7332,7 @@
     ]
    },
    "notes": {
+    "career.sacks_half": "regular season ('Regular-Season Games Only' per the guide's records section), Packers service only; official sacks since 1982 (the guide: 'Became an official NFL individual statistic in 1982'; the heading says ...",
     "game.sacks_half": "regular season ('Regular-Season Games Only' per the guide's records section), Packers service only; official sacks since 1982 (the guide: 'Became an official NFL individual statistic in 1982'; the heading says ..."
    }
   },
@@ -7236,7 +7441,7 @@
       "years": "2023-",
       "span": [
        2023,
-       2023
+       2025
       ],
       "value": 62,
       "confirmed_by": [
@@ -7634,10 +7839,11 @@
       "years": "2022-",
       "span": [
        2022,
-       2022
+       2025
       ],
       "value": 15,
       "confirmed_by": [
+       "wikipedia",
        "nflverse"
       ],
       "guide_page": 564,
@@ -8418,6 +8624,23 @@
        "wikipedia"
       ],
       "guide_page": 595
+     },
+     {
+      "rank": 3,
+      "name": "Duane Bickett",
+      "first": "Duane",
+      "last": "Bickett",
+      "position": "OLB",
+      "years": "1985-93",
+      "span": [
+       1985,
+       1993
+      ],
+      "value": 100,
+      "confirmed_by": [
+       "wikipedia"
+      ],
+      "guide_page": 595
      }
     ],
     "interceptions": [
@@ -8809,6 +9032,23 @@
        2008
       ],
       "value": 62,
+      "confirmed_by": [
+       "wikipedia"
+      ],
+      "guide_page": 419
+     },
+     {
+      "rank": 3,
+      "name": "James Stewart",
+      "first": "James",
+      "last": "Stewart",
+      "position": "HB",
+      "years": "1995-99",
+      "span": [
+       1995,
+       1999
+      ],
+      "value": 33,
       "confirmed_by": [
        "wikipedia"
       ],
@@ -10142,6 +10382,114 @@
       "guide_page": 362
      }
     ],
+    "rushing_yards": [
+     {
+      "rank": 1,
+      "name": "Marcus Allen",
+      "first": "Marcus",
+      "last": "Allen",
+      "position": "HB",
+      "years": "1982-92",
+      "span": [
+       1982,
+       1992
+      ],
+      "value": 8545,
+      "confirmed_by": [
+       "wikipedia"
+      ],
+      "guide_page": 358
+     },
+     {
+      "rank": 2,
+      "name": "Mark van Eeghen",
+      "first": "Mark",
+      "last": "van Eeghen",
+      "position": "HB",
+      "years": "1974-81",
+      "span": [
+       1974,
+       1981
+      ],
+      "value": 5907,
+      "confirmed_by": [
+       "wikipedia"
+      ],
+      "guide_page": 358
+     },
+     {
+      "rank": 3,
+      "name": "Josh Jacobs",
+      "first": "Josh",
+      "last": "Jacobs",
+      "position": "HB",
+      "years": "2019-23",
+      "span": [
+       2019,
+       2023
+      ],
+      "value": 5545,
+      "confirmed_by": [
+       "wikipedia",
+       "nflverse"
+      ],
+      "guide_page": 358
+     }
+    ],
+    "rushing_td": [
+     {
+      "rank": 1,
+      "name": "Marcus Allen",
+      "first": "Marcus",
+      "last": "Allen",
+      "position": "HB",
+      "years": "1982-92",
+      "span": [
+       1982,
+       1992
+      ],
+      "value": 79,
+      "confirmed_by": [
+       "wikipedia"
+      ],
+      "guide_page": 359
+     },
+     {
+      "rank": 2,
+      "name": "Pete Banaszak",
+      "first": "Pete",
+      "last": "Banaszak",
+      "position": "HB",
+      "years": "1966-78",
+      "span": [
+       1966,
+       1978
+      ],
+      "value": 47,
+      "confirmed_by": [
+       "wikipedia"
+      ],
+      "guide_page": 359
+     },
+     {
+      "rank": 3,
+      "name": "Josh Jacobs",
+      "first": "Josh",
+      "last": "Jacobs",
+      "position": "HB",
+      "years": "2019-23",
+      "span": [
+       2019,
+       2023
+      ],
+      "value": 46,
+      "confirmed_by": [
+       "wikipedia",
+       "nflverse"
+      ],
+      "guide_page": 359
+     }
+    ],
     "receptions": [
      {
       "rank": 1,
@@ -10352,6 +10700,21 @@
        "wikipedia"
       ],
       "guide_page": 362
+     }
+    ],
+    "rushing_yards": [
+     {
+      "rank": 1,
+      "name": "Marcus Allen",
+      "first": "Marcus",
+      "last": "Allen",
+      "position": "HB",
+      "season": 1985,
+      "value": 1759,
+      "confirmed_by": [
+       "wikipedia"
+      ],
+      "guide_page": 358
      }
     ],
     "rushing_td": [
@@ -11137,6 +11500,40 @@
        "wikipedia"
       ],
       "guide_page": 445
+     },
+     {
+      "rank": 2,
+      "name": "Marc Bulger",
+      "first": "Marc",
+      "last": "Bulger",
+      "position": "QB",
+      "years": "2001-09",
+      "span": [
+       2001,
+       2009
+      ],
+      "value": 22814,
+      "confirmed_by": [
+       "wikipedia"
+      ],
+      "guide_page": 445
+     },
+     {
+      "rank": 3,
+      "name": "Roman Gabriel",
+      "first": "Roman",
+      "last": "Gabriel",
+      "position": "QB",
+      "years": "1962-72",
+      "span": [
+       1962,
+       1972
+      ],
+      "value": 22223,
+      "confirmed_by": [
+       "wikipedia"
+      ],
+      "guide_page": 445
      }
     ],
     "passing_td": [
@@ -11240,6 +11637,24 @@
       "confirmed_by": [
        "wikipedia",
        "nflverse"
+      ],
+      "guide_page": 466,
+      "tie": true
+     },
+     {
+      "rank": 3,
+      "name": "Eric Dickerson",
+      "first": "Eric",
+      "last": "Dickerson",
+      "position": "HB",
+      "years": "1983-87",
+      "span": [
+       1983,
+       1987
+      ],
+      "value": 56,
+      "confirmed_by": [
+       "wikipedia"
       ],
       "guide_page": 466,
       "tie": true
@@ -11654,6 +12069,23 @@
        "nflverse"
       ],
       "guide_page": 254
+     },
+     {
+      "rank": 3,
+      "name": "Ronnie Brown",
+      "first": "Ronnie",
+      "last": "Brown",
+      "position": "HB",
+      "years": "2005-10",
+      "span": [
+       2005,
+       2010
+      ],
+      "value": 4815,
+      "confirmed_by": [
+       "wikipedia"
+      ],
+      "guide_page": 254
      }
     ],
     "rushing_td": [
@@ -11705,6 +12137,7 @@
       ],
       "value": 36,
       "confirmed_by": [
+       "wikipedia",
        "nflverse"
       ],
       "guide_page": 232
@@ -12445,10 +12878,11 @@
       "years": "2020-",
       "span": [
        2020,
-       2020
+       2025
       ],
       "value": 579,
       "confirmed_by": [
+       "wikipedia",
        "nflverse"
       ],
       "guide_page": 468,
@@ -12460,6 +12894,71 @@
        "birth_date": "1999-06-16",
        "gsis_id": "00-0036322"
       }
+     }
+    ],
+    "receiving_yards": [
+     {
+      "rank": 1,
+      "name": "Cris Carter",
+      "first": "Cris",
+      "last": "Carter",
+      "position": "WR",
+      "years": "1990-01",
+      "span": [
+       1990,
+       2001
+      ],
+      "value": 12383,
+      "confirmed_by": [
+       "wikipedia"
+      ],
+      "guide_page": 468,
+      "basis": "column"
+     },
+     {
+      "rank": 2,
+      "name": "Randy Moss",
+      "first": "Randy",
+      "last": "Moss",
+      "position": "WR",
+      "years": "1998-04, '10",
+      "span": [
+       1910,
+       2004
+      ],
+      "value": 9316,
+      "confirmed_by": [
+       "wikipedia"
+      ],
+      "guide_page": 468,
+      "basis": "column"
+     },
+     {
+      "rank": 3,
+      "name": "Justin Jefferson",
+      "first": "Justin",
+      "last": "Jefferson",
+      "position": "WR",
+      "years": "2020-",
+      "span": [
+       2020,
+       2025
+      ],
+      "value": 8480,
+      "confirmed_by": [
+       "wikipedia",
+       "nflverse"
+      ],
+      "guide_page": 468,
+      "link": {
+       "pool": "primary",
+       "index": 841,
+       "first": "Justin",
+       "last": "Jefferson",
+       "birth_date": "1999-06-16",
+       "gsis_id": "00-0036322"
+      },
+      "basis": "column"
      }
     ],
     "receiving_td": [
@@ -12611,6 +13110,7 @@
       "season": 2022,
       "value": 128,
       "confirmed_by": [
+       "wikipedia",
        "nflverse"
       ],
       "guide_page": 469
@@ -12626,6 +13126,7 @@
       "season": 2022,
       "value": 1809,
       "confirmed_by": [
+       "wikipedia",
        "nflverse"
       ],
       "guide_page": 469
@@ -15407,10 +15908,11 @@
       "years": "2020-",
       "span": [
        2020,
-       2020
+       2025
       ],
       "value": 63,
       "confirmed_by": [
+       "wikipedia",
        "nflverse"
       ],
       "guide_page": 217,
@@ -16257,6 +16759,93 @@
       "guide_page": 671
      }
     ],
+    "sacks_half": [
+     {
+      "rank": 1,
+      "name": "T.J. Watt",
+      "first": "T.J.",
+      "last": "Watt",
+      "position": "OLB",
+      "years": "2017-",
+      "span": [
+       2017,
+       2024
+      ],
+      "value": 230,
+      "confirmed_by": [
+       "wikipedia",
+       "nflverse"
+      ],
+      "guide_page": 674,
+      "link": {
+       "pool": "primary",
+       "index": 1172,
+       "first": "T.J.",
+       "last": "Watt",
+       "birth_date": "1994-10-11",
+       "gsis_id": "00-0033886"
+      },
+      "adjusted": {
+       "guide_value": 216,
+       "added": 14,
+       "seasons": [
+        2025
+       ],
+       "from": "nflverse"
+      }
+     },
+     {
+      "rank": 2,
+      "name": "Cameron Heyward",
+      "first": "Cameron",
+      "last": "Heyward",
+      "position": "DT",
+      "years": "2011-",
+      "span": [
+       2011,
+       2024
+      ],
+      "value": 184,
+      "confirmed_by": [
+       "wikipedia",
+       "nflverse"
+      ],
+      "guide_page": 674,
+      "link": {
+       "pool": "primary",
+       "index": 1174,
+       "first": "Cameron",
+       "last": "Heyward",
+       "birth_date": "1989-05-06",
+       "gsis_id": "00-0027969"
+      },
+      "adjusted": {
+       "guide_value": 177,
+       "added": 7,
+       "seasons": [
+        2025
+       ],
+       "from": "nflverse"
+      }
+     },
+     {
+      "rank": 3,
+      "name": "James Harrison",
+      "first": "James",
+      "last": "Harrison",
+      "position": "OLB",
+      "years": "2002, 2004-12, 2014-17",
+      "span": [
+       2002,
+       2017
+      ],
+      "value": 161,
+      "confirmed_by": [
+       "wikipedia"
+      ],
+      "guide_page": 674
+     }
+    ],
     "interceptions": [
      {
       "rank": 1,
@@ -16398,6 +16987,7 @@
       "season": 2021,
       "value": 45,
       "confirmed_by": [
+       "wikipedia",
        "nflverse"
       ],
       "guide_page": 674
@@ -16526,6 +17116,7 @@
     ]
    },
    "notes": {
+    "career.sacks_half": "taken as regular season: 'Steelers All-Time' lists in the RECORD BOOK ('STEELERS RECORDS' section); the headings say neither regular season nor postseason and no row carries a playoff marker (see notes); the heading is ...",
     "season.sacks_half": "taken as regular season: 'Steelers All-Time' lists in the RECORD BOOK ('STEELERS RECORDS' section); the headings say neither regular season nor postseason and no row carries a playoff marker (see notes); the heading is ..."
    }
   },
@@ -17781,6 +18372,40 @@
        1989
       ],
       "value": 5957,
+      "confirmed_by": [
+       "wikipedia"
+      ],
+      "guide_page": 505
+     },
+     {
+      "rank": 2,
+      "name": "Mike Alstott",
+      "first": "Mike",
+      "last": "Alstott",
+      "position": "FB",
+      "years": "1996-2007",
+      "span": [
+       1996,
+       2007
+      ],
+      "value": 5088,
+      "confirmed_by": [
+       "wikipedia"
+      ],
+      "guide_page": 505
+     },
+     {
+      "rank": 3,
+      "name": "Warrick Dunn",
+      "first": "Warrick",
+      "last": "Dunn",
+      "position": "HB",
+      "years": "1997-01, 2008",
+      "span": [
+       1997,
+       2008
+      ],
+      "value": 4986,
       "confirmed_by": [
        "wikipedia"
       ],
