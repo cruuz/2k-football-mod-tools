@@ -243,11 +243,11 @@ class HostBudgetTests(unittest.TestCase):
             # b779 rc1: mode_grown_member reads the capacity (0xB0000) arena's overflow row too, so MyCareer
             # creation no longer refuses "Roster is full." on v0.7 (test_b779_rc1_roster_capacity).
             # b780 b8-mycareer: m3_draft_tick holds the AI's taken flag on MyPlayer when the club on the clock already has
-            # starters at his position who beat him by 3 points per round gone (club_needs, m3_starters;
+            # starters at his position who are rated 9 + 3 points per round gone above him (club_needs, m3_starters;
             # test_nfl2k5_my_career_draft_need); the 25 Upgrades attribute names moved to the M3 ASCII pool and the text
             # scratch buffer from m3+2700 to m3+3200.
             'tools/mycareer_mode/runtime.c':
-                '7bd05af58026791242967e913cbebdd204d41aa2c4530f4bf7737f2d0db238d2',
+                'ed8b79947f73a07bd723fd54f081db763a0bbdcf7be17a01d32c3aa6fd310d27',
             'tools/mycareer_mode/runtime.S':
                 '768241d4390839629906e81678ca46cb7f2d2578ac791a72dd71df5a3cde0484',
             'mod_editor/core/nfl2k5_my_career_mode.py':

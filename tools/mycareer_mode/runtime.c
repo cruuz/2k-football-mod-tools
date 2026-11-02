@@ -1135,19 +1135,22 @@ static NI void drafted(u32 manager) {
  * AI weighs a club's need only by head count and, in round 1, not at all (0x31DEA0 uses one fixed table per position
  * there), so a quarterback went to whichever club's turn came first. A club now takes MyPlayer only if he would win
  * a starting job there: fewer than m3_starters[position] of its players at his position have a native overall
- * (0x246D90, the number on the Player Card) that beats his by M3_LEAD_PER_ROUND points for every round already
- * gone (round 1: at least as high as his, round 2: 3 points higher, round 3: 6 higher ... a club's patience grows
- * as the draft goes on, so no prospect is shut out). While a club has no need the draft AI's own "already taken"
- * flag (0x20) is held on his record for that one pick, so no native routine and no other prospect changes.
- * M(76) counts the vetoes (read by the emulator proof). Retail formation starters:
+ * (0x246D90, the number on the Player Card) of at least his own plus M3_PROSPECT_GROWTH plus M3_LEAD_PER_ROUND for every
+ * round already gone. A prospect is judged as the player he will be in about three seasons (the game develops a
+ * first-round pick about 12 points in four), and a club's patience grows as the draft goes on, so the clubs with the
+ * weakest starters get first call and no prospect is shut out: on the released v0.8 league a 74 quarterback is open to the
+ * 5 weakest-starter clubs in round 1, 10 by round 3 and all 32 by round 7. While a club has no need the draft AI's own
+ * "already taken" flag (0x20) is held on his record for that one pick, so no native routine and no other prospect
+ * changes. M(76) counts the vetoes (read by the emulator proof). Retail formation starters:
  * QB K P WR CB FS SS RB FB TE OLB ILB C G T DT DE. */
+#define M3_PROSPECT_GROWTH 9
 #define M3_LEAD_PER_ROUND 3
 static const u8 m3_starters[17]={1,1,1,3,2,1,1,1,1,1,2,2,1,2,2,2,2};
 static NI u32 FC club_needs(const u8 *t,const u8 *me) {
-    u32 mine=CALL2(0x246d90,(u32)me,0),pos=me[0x35],ahead=0,i,n=t[0x11c];
+    u32 pos=me[0x35],mine,ahead=0,i,n=t[0x11c];
     const u8 *q;
-    if(!mine || pos>=17) return 1;
-    mine+=M3_LEAD_PER_ROUND*G(0xE3C0A8);
+    if(pos>=17 || !(mine=CALL2(0x246d90,(u32)me,0))) return 1;
+    mine+=M3_PROSPECT_GROWTH+M3_LEAD_PER_ROUND*G(0xE3C0A8);
     if(n>65) n=65;
     for(i=0;i<n;i++) {
         q=(const u8 *)W(t,4*i);
