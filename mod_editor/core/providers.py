@@ -931,6 +931,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_sim_realism.py": "21d5a35911e78e865c3782ccd5ffb1f1280267918045c859cb8a58617b99c9ce",  # b779-sim2 r6
         "mod_editor/core/nfl2k5_preseason_warning.py": "44647523c32291820e98b2dad0a9c44af27fe6bca13626104551dc3647bcc6f2",  # b779-int1: imported by throw_tuning for the build union (693fe63a0)
         "mod_editor/core/nfl2k5_sim_stats.py": "26af040eea115ef53bea9bbd38a329185e42ea27cea201866e6432cd71b3ef00",  # b778-sim1
+        "mod_editor/core/nfl2k5_quick_long_release.py": "0000000000000000000000000000000000000000000000000000000000000000",  # b780-c-release
         "mod_editor/core/nfl2k5_option_defaults.py": "42514e38dcffa46fcb46b19e11d2eda4dff454297b33033dc98864e940207e47",  # b779-df1
         "mod_editor/core/nfl2k5_clock_led.py": "ab030b1fbed873b96e0ba6055fcc38ef53193c31f2df496128e2de581e7b01c2",  # b778-sd4
         "mod_editor/core/nfl2k5_module_loader.py": "8ed99bf2572f30a5affc2b82adc0171a62c14369156b888cefb1809e908b8c48",

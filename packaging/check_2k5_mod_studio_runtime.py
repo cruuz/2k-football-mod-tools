@@ -2053,6 +2053,7 @@ def main() -> int:
         "mod_editor.core.nfl2k5_sim_rb_injuries",                 # b779-sim2
         "mod_editor.core.nfl2k5_sim_realism",                     # b779-sim2 r4
         "mod_editor.core.nfl2k5_sim_stats",                      # b778-sim1, in-place
+        "mod_editor.core.nfl2k5_quick_long_release",             # b780-c-release, in-place
         "mod_editor.core.nfl2k5_option_defaults",                # b779-df1, in-place
         "mod_editor.core.nfl2k5_clock_led",                       # b778-sd4
         "mod_editor.core.nfl2k5_project_check",                   # b779-ce1 Check my project
