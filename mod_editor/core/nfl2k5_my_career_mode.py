@@ -546,7 +546,7 @@ def check_context(payload, edits, *, installed=False):
                        "foreign MyPlayer HUD position label")
 
     from . import nfl2k5_draft_ai as draft_ai
-    legacy.require(draft_ai.status(payload) in ("retail", "applied"), "foreign draft AI owner")
+    legacy.require(draft_ai.status(payload) in ("retail", "applied", "legacy"), "foreign draft AI owner")  # b780 b1-draft: beta-78/79 head
     camera_edits = [(s.label, s.va, s.retail, s.patched) for s in _season_birth_date_sites(payload)]
     # PROVED OFFLINE: the economy changes only the initial cap immediate in
     # this native franchise initializer. Accept its exact instruction only

@@ -988,7 +988,10 @@ class BuildPanel(QWidget):
         self.draft_check = self._option(f, "draft_ai", "Smarter Franchise drafts & free agency",
                                         "Changes CPU decisions; Fantasy Draft is separate.",
                                         details="The pick is the prospect with the best edge over his own position's class average, times real "
-                                                "positional value, plus the team's need order and a little noise; CPU free-agent targets are scored the same way.")
+                                                "positional value, plus the team's need order and a little noise; CPU free-agent targets are scored the same way. "
+                                                "Kickers and punters go from round 5 on (at most one rare standout earlier in a draft). Every draft class "
+                                                "gets a real position mix (21 QBs, 9 kickers and 9 punters in a 380-player class) instead of the positions of the "
+                                                "players who left, and draft classes no longer use up the records Create Player needs.")
         self.returner_check = self._option(f, "returner_fix", "Fix CPU kick & punt returners",
                                            "Changes automatic depth-chart selection.",
                                            details="The original stores a punt-return score as the roster slot, so the punt returner is whoever sits in "

@@ -62,6 +62,7 @@ Pattern-checked, ``.text`` and ``.data`` digests recomputed.  Unverified at runt
 
 from __future__ import annotations
 
+import hashlib
 import struct
 from typing import Mapping
 
@@ -119,6 +120,13 @@ PICK_JITTER = 0.06            # random 0..0.06 added to every CPU evaluation (ab
 SPECIAL_FIRST_ROUND = 4       # 0-based: kickers and punters only from display round 5 (index 4) on
 SPECIAL_EDGE = 0.30           # a K/P this far above his own class mean is a historic outlier (rare exception)
 SPECIAL_ROUND_CAP = 1         # at most one K and one P per round in rounds 5-7
+# b780 b1-draft (SharkMagick 11/01: "kickers getting drafted in R3 again", "6 by my count", "even punters"): the
+# early outlier was not capped, so on a class with many specialists every club without one could take an outlier
+# in display round 3, where the retail need table lifts K and P. Before display round 5 at most one specialist
+# (K or P, CPU or user) goes per draft: the class-sum loop counts this draft's drafted specialists (flags 0x30 at
+# position 1 or 2) into a zeroed frame dword, and the early outlier is allowed only while that count is 0.
+EARLY_SPECIALIST_CAP = 1
+SPECIALIST_COUNT_OFF = 0xE0   # frame dword (zeroed by the prologue loop, unused before b780)
 PICK_CONST_OFF = 264            # the two floats sit in the last 8 bytes of the 275-byte function (aligned)
 PICK_TAIL_VA = BODY_VA + 5      # the scan half of the pick routine, after the jump into the wish cave
 RETAIL_PICK_FN = bytes.fromhex(
@@ -253,8 +261,11 @@ def body_patch() -> bytes:
     return jump + tail + b"\xcc" * (BODY_SIZE - len(jump) - len(tail))
 
 
-SPECIAL_HEAD_OFFSET = 0x80
+SPECIAL_HEAD_OFFSET = 0x84    # b780 b1-draft: was 0x80; the class-sum loop now also counts drafted specialists
 SPECIAL_HEAD_VA = PICK_FN_VA + SPECIAL_HEAD_OFFSET
+# The b778 dr2 pick head (beta-78 and beta-79 / SOFTDRINK v0.7 and v0.8 discs). Every other draft-AI site is
+# unchanged since then, so an image with this head reads "legacy" and apply() rewrites the head in place.
+PREVIOUS_HEAD_SHA256 = "0da4a8bdbe5d3941023c1926a5e1e79487bcfb9aedfded44db03170879bdb146"
 
 
 def _prefix_bytes() -> bytes:
@@ -294,12 +305,18 @@ def _prefix_bytes() -> bytes:
     a.b("d80484")                                      # fadd dword [esp+eax*4]
     a.b("d91c84")                                      # fstp dword [esp+eax*4]
     a.b("ff448444")                                    # inc dword [esp+eax*4+0x44]
+    a.b("f6460820")                                    # test byte [esi+8],0x20   ; drafted in this draft?
+    a.j8("74", "sum_next")                             # jz sum_next
+    a.b("48")                                          # dec eax                  ; K -> 0, P -> 1
+    a.b("83f801")                                      # cmp eax,1
+    a.j8("77", "sum_next")                             # ja sum_next              ; not a specialist
+    a.b("ff8424" + struct.pack("<I", SPECIALIST_COUNT_OFF).hex())  # inc dword [esp+0xe0] ; specialists drafted
     a.label("sum_next")
     a.b("83c654")                                      # add esi,0x54
     a.b("4b")                                          # dec ebx
     a.j8("7f", "sum_loop")                             # jg sum_loop
     a.label("sum_done")
-    a.jmp_abs(SPECIAL_HEAD_VA)                         # the specialist policy at +0x80
+    a.jmp_abs(SPECIAL_HEAD_VA)                         # the specialist policy at +SPECIAL_HEAD_OFFSET
     code = a.assemble()
     _require(len(code) <= SPECIAL_HEAD_OFFSET, f"draft pick prefix is {len(code)} bytes, over {SPECIAL_HEAD_OFFSET}")
     return code + b"\xcc" * (SPECIAL_HEAD_OFFSET - len(code))
@@ -309,7 +326,9 @@ def _special_bytes() -> bytes:
     """The b778 dr2 specialist policy, at SPECIAL_HEAD_VA.
 
     Early rounds: a needed K/P is allowed only when its edge over the class mean is at least
-    SPECIAL_EDGE (the tail checks the edge).  Rounds 5-7: one late slot per round, pick 31 for
+    SPECIAL_EDGE (the tail checks the edge) and, since b780 b1-draft, only while no specialist
+    has gone in this draft (the class-sum loop's count at SPECIALIST_COUNT_OFF), so at most one
+    specialist goes before display round 5.  Rounds 5-7: one late slot per round, pick 31 for
     a kicker and pick 30 for a punter, and only when the club has none.  No private state.
     """
 
@@ -333,6 +352,9 @@ def _special_bytes() -> bytes:
     a.b("b801000000")                                  # mov eax,1          ; normal bit
     a.j8("eb", "elig_store")
     a.label("elig_early")
+    a.b("83bc24" + struct.pack("<I", SPECIALIST_COUNT_OFF).hex()
+        + struct.pack("<B", EARLY_SPECIALIST_CAP).hex())  # cmp dword [esp+0xe0],EARLY_SPECIALIST_CAP
+    a.j8("73", "elig_next")                            # jae: the early specialist already went; no outlier
     a.b("b802000000")                                  # mov eax,2          ; early: edge-only outlier
     a.label("elig_store")
     a.b("8984b4d4000000")                              # mov [esp+esi*4+0xd4],eax ; K at 0xd8, P at 0xdc
@@ -639,24 +661,32 @@ def rookie_key_tables(payload: bytes) -> dict[str, dict[str, object]]:
 
 
 def status(payload: bytes) -> str:
+    """retail | applied | legacy (the b778 dr2 pick head, every other site applied) | foreign."""
     try:
         sites = _sites(payload)
     except (DraftAiError, ValueError, struct.error):
         return "foreign"
-    states = set()
-    for _label, off, before, after in sites:
+    states = {}
+    for label, off, before, after in sites:
         got = payload[off: off + len(before)]
-        states.add("retail" if got == before else "applied" if got == after else "foreign")
-    if states == {"retail"}:
+        states[label] = "retail" if got == before else "applied" if got == after else "foreign"
+    unique = set(states.values())
+    if unique == {"retail"}:
         return "retail"
-    if states == {"applied"}:
+    if unique == {"applied"}:
         return "applied"
+    if states["draft_pick_head"] == "foreign" and \
+            {state for label, state in states.items() if label != "draft_pick_head"} == {"applied"}:
+        off = next(off for label, off, _before, _after in sites if label == "draft_pick_head")
+        if hashlib.sha256(payload[off: off + PICK_FN_SIZE]).hexdigest() == PREVIOUS_HEAD_SHA256:
+            return "legacy"
     return "foreign"
 
 
 def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
+    """Install on a retail executable, or upgrade a legacy (b778 dr2) one in place: only its head changes."""
     state = status(payload)
-    _require(state == "retail", f"draft-AI sites are {state}, not retail")
+    _require(state in ("retail", "legacy"), f"draft-AI sites are {state}, not retail")
     buf = bytearray(payload)
     sections = _sections(payload)
     header = _header_size(payload)
@@ -678,7 +708,9 @@ def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
                      "code_bytes": len(cave_bytes()) + PICK_CONST_OFF - pick_fn_bytes()[0][:PICK_CONST_OFF].count(b"\xcc") + len(pick_fn_bytes()[1]),
                      "values": dict(zip(POSITIONS, (VALUE[p] for p in POSITIONS))),
                      "need_step": NEED_STEP, "pick_jitter": PICK_JITTER,
-                     "rookie_key_scale": dict(ROOKIE_KEY_SCALE)}
+                     "rookie_key_scale": dict(ROOKIE_KEY_SCALE),
+                     "early_specialist_cap": EARLY_SPECIALIST_CAP,
+                     **({"upgraded_from": "legacy"} if state == "legacy" else {})}
 
 
 __all__ = ["DraftAiError", "BODY_VA", "CAVE_VA", "PICK_FN_VA", "PICK_FN_SIZE", "RETAIL_PICK_FN", "VALUE_VA", "VALUE",

@@ -56,6 +56,7 @@ from . import platform_compat
 from . import nfl2k5_catch_slider as catch_slider_patch
 from . import nfl2k5_accel_ramp as accel_ramp_patch
 from . import nfl2k5_draft_ai as draft_ai_patch
+from . import nfl2k5_draft_class as draft_class_patch  # b780 b1-draft: the class half of the draft fixes
 from . import nfl2k5_edge_rename as edge_rename_patch
 from . import nfl2k5_returner_fix as returner_fix_patch
 from . import nfl2k5_progression as progression_patch
@@ -864,6 +865,7 @@ def read_xbe(xbe_path: Path | str) -> dict[str, object]:
         "catch_slider": catch_slider_patch.status(payload),
         "accel_ramp": accel_ramp_patch.status(payload),
         "draft_ai": draft_ai_patch.status(payload),
+        "draft_class": draft_class_patch.status(payload),
         "edge_rename": edge_rename_patch.status(payload),
         "returner_fix": returner_fix_patch.status(payload),
         "franchise_economy": franchise_economy_patch.status(payload),
@@ -999,6 +1001,7 @@ def read_image(image_path: Path | str) -> dict[str, object]:
         "catch_slider": catch_slider_patch.status(payload),
         "accel_ramp": accel_ramp_patch.status(payload),
         "draft_ai": draft_ai_patch.status(payload),
+        "draft_class": draft_class_patch.status(payload),
         "edge_rename": edge_rename_patch.status(payload),
         "edge_rename_disc": disc_status,
         "returner_fix": returner_fix_patch.status(payload),
@@ -2157,7 +2160,7 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
             receipt = {**receipt, "accel_ramp_patch": {"already_applied": True}}
     if draft_ai:
         state = draft_ai_patch.status(patched)
-        if state == "retail":
+        if state in ("retail", "legacy"):   # b780 b1-draft: a beta-78/79 head is upgraded in place
             patched, draft_receipt = draft_ai_patch.apply(patched)
             receipt = {**receipt, "draft_ai_patch": draft_receipt,
                        "changed_byte_count": int(receipt.get("changed_byte_count", 0)) + int(draft_receipt["changed_bytes"])}
@@ -2195,6 +2198,7 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
     for flag, module, key, label in ((returner_fix, returner_fix_patch, "returner_fix_patch", "returner"),
                                      (progression, progression_patch, "progression_patch", "progression"),
                                      (franchise_economy, franchise_economy_patch, "franchise_economy_patch", franchise_economy_patch.BUILD_CAPTION),
+                                     (draft_ai, draft_class_patch, "draft_class_patch", draft_class_patch.BUILD_CAPTION),  # b780 b1-draft
                                      (scheme_labels, scheme_labels_patch, "scheme_labels_patch", "scheme-label"),
                                      (widescreen, widescreen_patch, "widescreen_patch", "widescreen"),
                                      (modern_naming, modern_naming_patch, "modern_naming_patch", "modern 2K mode names"),
@@ -2563,6 +2567,7 @@ def write_xbe_copy(
         "catch_slider": catch_slider_patch.status(result),
         "accel_ramp": accel_ramp_patch.status(result),
         "draft_ai": draft_ai_patch.status(result),
+        "draft_class": draft_class_patch.status(result),
         "edge_rename": edge_rename_patch.status(result),
         "returner_fix": returner_fix_patch.status(result),
         "progression": progression_patch.status(result),
@@ -2975,6 +2980,7 @@ def write_image_copy(
         "catch_slider": catch_slider_patch.status(after),
         "accel_ramp": accel_ramp_patch.status(after),
         "draft_ai": draft_ai_patch.status(after),
+        "draft_class": draft_class_patch.status(after),
         "edge_rename": edge_rename_patch.status(after),
         "edge_rename_disc": disc_receipt["after"] if disc_receipt is not None else disc_before or None,
         "returner_fix": returner_fix_patch.status(after),
