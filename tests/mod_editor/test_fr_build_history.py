@@ -43,12 +43,14 @@ class ImpliedTeamHistoryTests(unittest.TestCase):
     """b780 b2 (SharkMagick, "Team Card still empty"): the TEAM column on an original roster brings its past seasons."""
 
     def run_stage(self, *, team_column=True, team_history='', roster_edits='', embedded=None, season=False,
-                  status='retail', disc=True, history_present=True, rows_error=None, apply_raises=None):
+                  status='retail', disc=True, history_present=True, rows_error=None, apply_raises=None, status_after=None):
         calls, notes = [], []
         receipt={'steps':[]}
+        state = {'after_apply': False}
         def apply(*a, **kw):
             calls.append((a, kw))
             if apply_raises:
+                state['after_apply'] = True
                 raise apply_raises
             return {'status': 'applied', 'seasons_with_a_team': 5746, 'log': ['x']}
         def load_rows(source):
@@ -58,7 +60,7 @@ class ImpliedTeamHistoryTests(unittest.TestCase):
         def read_status(path):
             if isinstance(status, Exception):
                 raise status
-            return status
+            return status_after if (status_after and state['after_apply']) else status
         history = SimpleNamespace(status=read_status, apply=apply, load_rows=load_rows)
         def module(name):
             if name == 'nfl2k5_team_history':
@@ -151,6 +153,14 @@ class ImpliedTeamHistoryTests(unittest.TestCase):
     def test_a_real_write_error_after_the_checks_still_stops_the_build(self):
         with self.assertRaisesRegex(OSError, 'disk'):
             self.run_stage(apply_raises=OSError('disk full'))
+
+    def test_a_refusal_before_anything_was_written_is_a_note_and_one_after_a_write_is_not(self):
+        calls, steps, notes = self.run_stage(apply_raises=ValueError('pool would hold 50001 dwords'))
+        self.assertEqual(steps[0]['status'], 'skipped')
+        self.assertIn('could not be written (pool would hold 50001 dwords)', steps[0]['reason'])
+        self.assertTrue(steps[0]['user_notes'] and notes)
+        with self.assertRaisesRegex(ValueError, 'read-back'):
+            self.run_stage(apply_raises=ValueError('read-back of the roster resource differs'), status_after='applied')
 
 
 if __name__ == "__main__":

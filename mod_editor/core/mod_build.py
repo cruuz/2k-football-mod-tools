@@ -3853,7 +3853,13 @@ def _apply_implied_team_history(target, receipt, progress):
         return skipped(f"the built-in team history could not be read ({str(exc)[:160]})",
                        "the built-in team history file could not be read, so past seasons read \"--\".")
     progress("Writing the real past teams for the TEAM column", 0, 0)
-    result = history.apply(target, "retail", base_year=RETAIL_ROSTER_EPOCH, progress=lambda msg: progress(msg, 0, 0))
+    try:
+        result = history.apply(target, "retail", base_year=RETAIL_ROSTER_EPOCH, progress=lambda msg: progress(msg, 0, 0))
+    except ValueError as exc:       # the writer's own refusals (TeamHistoryError); every one of them comes before its write
+        if history.status(target) != "retail":
+            raise                   # something was written: that is not a cosmetic note
+        return skipped(f"the history could not be written ({str(exc)[:160]})",
+                       "the roster would not take it, so past seasons read \"--\".")
     receipt["steps"].append({**step, **{k: v for k, v in result.items() if k != "log"},
                              "log_lines": len(result.get("log", []))})
 
