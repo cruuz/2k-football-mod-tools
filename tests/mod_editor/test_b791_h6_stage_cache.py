@@ -148,6 +148,23 @@ class CodeIdentityTests(Repo):
         self.assertEqual(digest(), base, "the __main__ block is not import-time")
         self.assertIsNone(stage_cache.CodeIdentity(self.root).dispatch_digest("tools/tool.py", ["not_there"]))
 
+    def test_helpers_that_only_word_a_failure_can_be_left_out(self):
+        tool = ('def describe(x):\n    return f"edit {x}"\n\n'
+                'def helper(x):\n    return x + 1\n\n'
+                'def unit(x):\n    try:\n        return helper(x)\n    except ValueError as exc:\n'
+                '        raise RuntimeError(describe(x)) from exc\n')
+        write_tree(self.root, {"tools/tool.py": tool})
+
+        def digest(ignore=()):
+            return stage_cache.CodeIdentity(self.root).dispatch_digest("tools/tool.py", ["unit"], ignore)
+        everything, quiet = digest(), digest(["describe"])
+        self.assertNotEqual(everything, quiet)
+        write_tree(self.root, {"tools/tool.py": tool.replace('f"edit {x}"', 'f"edit number {x}"')})
+        self.assertNotEqual(digest(), everything, "counted when not ignored")
+        self.assertEqual(digest(["describe"]), quiet, "a better message keeps every saved result")
+        write_tree(self.root, {"tools/tool.py": tool.replace("x + 1", "x + 2")})
+        self.assertNotEqual(digest(["describe"]), quiet, "the code that decides the result still counts")
+
     def test_statements_that_run_when_the_tool_is_imported_always_count(self):
         tool = 'import sys\nsys.path.insert(0, "x")\nREADY = []\n\ndef unit():\n    return 1\n'
         write_tree(self.root, {"tools/tool.py": tool})
@@ -173,7 +190,7 @@ class RealRepositoryTests(unittest.TestCase):
 
     def identity(self, kind):
         return self.index.identity(self.tool._UNIT_CODE_ROOTS[kind], tool=self.tool._UNIT_DISPATCH[0],
-                                   entry_points=self.tool._UNIT_DISPATCH[1])
+                                   entry_points=self.tool._UNIT_DISPATCH[1], ignore=self.tool._UNIT_DISPATCH_WORDING)
 
     def test_every_unit_kind_has_an_identity_that_ignores_what_every_release_changes(self):
         self.assertEqual(set(self.tool._UNIT_CODE_ROOTS), set(self.tool.UNIT_KINDS))
@@ -410,6 +427,10 @@ class UnitCacheContracts(unittest.TestCase):
         self.assertEqual(dict(changed.reasons), {"compiler code changed": 6})
         self.assertEqual(dict(changed.changed_code), {"code/loaded.py": 6})
         self.assertEqual(dict(damaged.reasons), {"no usable earlier result": 1})   # the envelope check cannot tell absent from damaged
+        self.assertEqual(cold.plain_summary(), [])      # a first build has nothing to say about reuse
+        self.assertEqual(changed.plain_summary(), ["Compiled 6 textures: 6 because the studio's encoder changed (loaded.py)"])
+        self.assertEqual(damaged.plain_summary(), ["Reused 5 of 6 compiled textures from earlier builds",
+                                                   "Compiled 1 texture: 1 new or changed artwork"])
         summary = changed.summary()
         self.assertEqual(summary["misses_by_kind"], {"live_face": 6})
         self.assertGreater(summary["stored_bytes_by_kind"]["live_face"], 0)
@@ -426,7 +447,8 @@ class UnitCacheContracts(unittest.TestCase):
                 units._remember(key, "ok", value, "live_face", imported=("code/surprise.py",))
                 self.assertEqual(list((self.base / "cache").glob("*.json")), [])
                 self.assertEqual(dict(units.reasons), {"not remembered: imports its identity does not list": 1})
-                self.assertEqual(dict(units.changed_code), {"code/surprise.py": 1})
+                self.assertEqual(dict(units.unlisted), {"code/surprise.py": 1})
+                self.assertEqual(dict(units.changed_code), {})
                 # What the identity lists, and a package __init__ (it only re-exports), are not a surprise.
                 units._remember(key, "ok", value, "live_face", imported=("code/loaded.py", "code/__init__.py"))
                 self.assertEqual(len(list((self.base / "cache").glob("*.json"))), 1)
@@ -441,6 +463,40 @@ class UnitCacheContracts(unittest.TestCase):
             outcome, value, imported, console = self.tool._unit_worker(
                 ("live_face", 0, {"kind": "live_face"}, None, {}, {}, Path(folder), Path(folder), Path(folder)))
         self.assertEqual((outcome, imported), ("ok", ("tools/late.py",)))
+
+
+class GroupResultTests(unittest.TestCase):
+    """A saved result of a grouped compile (equipment, stadium, crib) names the files of the session that made it."""
+
+    def setUp(self):
+        self.tool = backend()
+
+    def test_the_saved_effective_edit_is_pointed_at_this_projects_own_files(self):
+        saved = ("built", {"kind": "uniform_equipment_texture", "tset": "t:1:2",
+                           "edits": [{"target": "a", "png": "/old/session/a.png"}, {"target": "b", "png": "/old/session/b.png"}]},
+                 {"a": "1" * 64}, "uniform_equipment_texture", ["/old/session/a.png", "/old/session/b.png"])
+        built, effective, hashes, kind = self.tool._repathed(saved, ["/new/s/a.png", "/new/s/b.png"])
+        self.assertEqual((built, hashes, kind), ("built", {"a": "1" * 64}, "uniform_equipment_texture"))
+        self.assertEqual(effective["edits"], [{"target": "a", "png": "/new/s/a.png"}, {"target": "b", "png": "/new/s/b.png"}])
+        self.assertEqual(effective["tset"], "t:1:2")
+
+    def test_a_record_that_cannot_say_which_files_it_used_or_would_be_ambiguous_is_not_used(self):
+        edit = {"kind": "k", "edits": [{"png": "/old/a.png"}]}
+        self.assertIsNone(self.tool._repathed(("built", edit, {}, "k"), ["/new/a.png"]))                    # the older record shape
+        self.assertIsNone(self.tool._repathed(("built", edit, {}, "k", ["/old/a.png"]), []))                # a different group
+        self.assertIsNone(self.tool._repathed(("built", edit, {}, "k", ["/old/a.png", "/old/a.png"]),
+                                              ["/new/a.png", "/new/b.png"]))                               # one name, two files
+        self.assertIsNone(self.tool._repathed(None, ["/new/a.png"]))
+        # The same file used twice maps to the same file twice: fine.
+        self.assertIsNotNone(self.tool._repathed(("built", edit, {}, "k", ["/old/a.png", "/old/a.png"]),
+                                                 ["/new/a.png", "/new/a.png"]))
+
+    def test_group_paths_follow_the_order_the_key_reads_them(self):
+        project = SimpleNamespace(value={"edits": [
+            {"kind": "torso", "clean_png": "c0", "mud_png": None, "png": None},
+            {"kind": "stadium_geometry", "recipe": "r1"},
+            {"kind": "x", "png": "p2", "recipe": "r2"}]})
+        self.assertEqual(self.tool._group_paths(project, [0, 1, 2]), ["c0", "r1", "p2", "r2"])
 
 
 class CanaryTests(unittest.TestCase):
@@ -675,7 +731,7 @@ class RealBytesTests(unittest.TestCase):
             result, traced = late_step_trace.trace(self.compile_one, tool, edit)
             self.assertIn(result[0], {"ok", "kept"}, kind)
             identity = index.identity(tool._UNIT_CODE_ROOTS[kind], tool=tool._UNIT_DISPATCH[0],
-                                      entry_points=tool._UNIT_DISPATCH[1])
+                                      entry_points=tool._UNIT_DISPATCH[1], ignore=tool._UNIT_DISPATCH_WORDING)
             outside = sorted(name for name in traced["code"]
                              if name not in identity["modules"] and name != "tools/nfl2k5_visual_mod_project.py")
             self.assertEqual(outside, [], f"{kind}: executed code outside the identity")

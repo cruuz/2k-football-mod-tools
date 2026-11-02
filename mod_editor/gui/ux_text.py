@@ -559,10 +559,14 @@ _FIX_HINTS: tuple[tuple[str, str], ...] = (
     # Windows ERROR_DISK_FULL). They name no drive, so say which one to look at.
     ("No space left on device",
      "Fix: a drive is full. Free up room on the drive you are writing to, and on the drive that holds your user profile "
-     "(C: on Windows), where the Studio keeps its private game copy, then try again."),
+     "(C: on Windows), where the Studio keeps its private game copy and the textures it has already compiled (the "
+     "project-stage folder beside it; deleting that folder is safe and only makes the next build compile them again), "
+     "then try again."),
     ("not enough space on the disk",
      "Fix: a drive is full. Free up room on the drive you are writing to, and on the drive that holds your user profile "
-     "(C: on Windows), where the Studio keeps its private game copy, then try again."),
+     "(C: on Windows), where the Studio keeps its private game copy and the textures it has already compiled (the "
+     "project-stage folder beside it; deleting that folder is safe and only makes the next build compile them again), "
+     "then try again."),
     ("inside OneDrive", "Fix: choose a folder OneDrive does not sync, such as a new folder directly on your C: drive."),
     # The Studio's own .studio-build-* folder is named for the user by what the
     # file in it was for, never by its random temporary path, so the hint is

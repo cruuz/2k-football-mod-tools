@@ -4,14 +4,17 @@ The project stage compiles every edit of a project (a league project has more th
 compiled results lived inside the working-session folder (a new folder every time a project is opened), under keys that contained
 the session's own file paths, and an entry was valid only while every Python file the compile process had loaded was unchanged (every
 release changes at least ``mod_editor/__init__.py`` and ``providers.py``). So a retry in a new session, or after any Studio update,
-compiled everything again. This module holds the three parts that fix that without ever serving a stale result:
+compiled everything again. This module holds the parts that fix that without ever serving a stale result:
 
 * :func:`stage_cache_root` - one cache next to the private source cache (``<cache root>/project-stage``), never in a session or a project;
 * :class:`CodeIdentity` - the digest of the source an edit's compile can execute: the importers of its kind and everything they import
   (read from the source, never from what happened to be loaded), plus the project tool's own dispatch functions. Comments, docstrings
   and whitespace do not count; any other change to any of those files does. A Studio update that touches none of them keeps every
   result, an update that touches one of them replaces the results that depend on it, and a file it cannot read means no caching;
-* :func:`input_digest` - an input is its bytes and pixels, never its file name or folder.
+* :func:`edit_shape` - an edit is its parameters and the bytes of its inputs, never a file name or folder.
+
+The entry format, the key and the check that runs before any saved result is trusted live with the compile loop
+(``tools/nfl2k5_visual_mod_project.py``, ``IndependentUnits``); the eviction rule lives in ``nfl2k5_compile_cache``.
 
 Nothing here executes project content or loads code from the cache; entries are JSON with a digest (``nfl2k5_compile_cache``).
 """
@@ -31,7 +34,7 @@ DATA_PREFIXES = ("mod_editor/data/", "mod_editor/assets/", "tools/")
 #: Edit fields that name a file. A cache key holds the file's content digest instead.
 PATH_FIELDS = ("png", "clean_png", "mud_png", "wav", "recipe")
 #: Default size cap of the stage cache. A build never evicts what it is using, so a bigger project simply keeps what it needs.
-STAGE_CACHE_MAX_BYTES = 6 * 1024 ** 3
+STAGE_CACHE_MAX_BYTES = 3 * 1024 ** 3
 
 
 def stage_cache_root(source_cache=None, environ=None) -> Path | None:
@@ -56,10 +59,6 @@ def edit_shape(edit: dict) -> dict:
     return {name: value for name, value in edit.items() if name not in PATH_FIELDS}
 
 
-def input_digest(payload: bytes) -> str:
-    return hashlib.sha256(payload).hexdigest()
-
-
 def _strip_docstrings(tree: ast.AST) -> None:
     for node in ast.walk(tree):
         if isinstance(node, (ast.Module, ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
@@ -71,16 +70,6 @@ def _strip_docstrings(tree: ast.AST) -> None:
 
 def _dump(node: ast.AST) -> str:
     return ast.dump(node, annotate_fields=True, include_attributes=False)
-
-
-def source_digest(text: str) -> str | None:
-    """Digest of the program a Python source describes: comments, whitespace and docstrings do not count."""
-    try:
-        tree = ast.parse(text)
-    except (SyntaxError, ValueError, RecursionError):
-        return None
-    _strip_docstrings(tree)
-    return hashlib.sha256(_dump(tree).encode("utf-8")).hexdigest()
 
 
 class CodeIdentity:
@@ -108,7 +97,7 @@ class CodeIdentity:
         if relative not in self._trees:
             tree = None
             try:
-                tree = ast.parse((self.root / relative).read_text(encoding="utf-8"))
+                tree = ast.parse((self.root / relative).read_text(encoding="utf-8-sig"))
                 _strip_docstrings(tree)
             except (OSError, UnicodeError, SyntaxError, ValueError, RecursionError):
                 tree = None
@@ -222,19 +211,21 @@ class CodeIdentity:
         return result
 
     # -- the tool's own dispatch ----------------------------------------
-    def dispatch_digest(self, tool: str, entry_points: Iterable[str]) -> str | None:
+    def dispatch_digest(self, tool: str, entry_points: Iterable[str], ignore: Iterable[str] = ()) -> str | None:
         """Digest of the functions, classes and constants of ``tool`` that the entry points can reach by name.
 
         Everything else in the file (the other build steps, the command line, the audio and stadium kinds) does not count, so a change
         to it keeps the compiled results. Module-level statements that run on import (calls, ``if`` blocks) always count.
+        ``ignore`` names helpers that only word a failure (they cannot change what a successful compile produces, and only successful
+        compiles are cached): they are left out, so a better error message never discards a day of compiled textures.
         """
-        key = (tool, tuple(sorted(entry_points)))
+        key = (tool, tuple(sorted(entry_points)), tuple(sorted(ignore)))
         if key in self._dispatch:
             return self._dispatch[key]
         tree = self._tree(tool)
         digest = None
         if tree is not None:
-            digest = self._reach(tree, key[1])
+            digest = self._reach(tree, key[1], frozenset(key[2]))
         self._dispatch[key] = digest
         return digest
 
@@ -258,7 +249,7 @@ class CodeIdentity:
         return (isinstance(test, ast.Compare) and isinstance(test.left, ast.Name) and test.left.id == "__name__"
                 and any(isinstance(c, ast.Constant) and c.value == "__main__" for c in test.comparators))
 
-    def _reach(self, tree: ast.Module, entry_points: tuple[str, ...]) -> str | None:
+    def _reach(self, tree: ast.Module, entry_points: tuple[str, ...], ignore: frozenset[str] = frozenset()) -> str | None:
         defined: dict[str, list[ast.stmt]] = {}
         always: list[ast.stmt] = []
         for node in tree.body:
@@ -282,7 +273,7 @@ class CodeIdentity:
             picked[id(stmt)] = stmt
         while stack:
             name = stack.pop()
-            if name in needed or name not in defined:
+            if name in needed or name not in defined or name in ignore:
                 continue
             needed.add(name)
             for stmt in defined[name]:
@@ -294,7 +285,8 @@ class CodeIdentity:
         return hashlib.sha256("\n".join(_dump(stmt) for stmt in ordered).encode("utf-8")).hexdigest()
 
     # -- the identity of one kind of compile ----------------------------
-    def identity(self, roots: Iterable[str], *, tool: str | None = None, entry_points: Iterable[str] = ()) -> dict | None:
+    def identity(self, roots: Iterable[str], *, tool: str | None = None, entry_points: Iterable[str] = (),
+                 ignore: Iterable[str] = ()) -> dict | None:
         """``{"python": ..., "modules": {file: digest}, "data": {file: digest}, "dispatch": digest}`` or None (cache nothing)."""
         closed = self.closure(roots)
         if closed is None:
@@ -312,7 +304,7 @@ class CodeIdentity:
                 return None
             record["data"][relative] = digest
         if tool is not None:
-            dispatch = self.dispatch_digest(tool, entry_points)
+            dispatch = self.dispatch_digest(tool, entry_points, ignore)
             if dispatch is None:
                 return None
             record["dispatch"] = dispatch

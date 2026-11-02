@@ -3481,13 +3481,17 @@ def _parallel_uniform_imports(edits, project, pins, reports, index, inventory, p
 # results in project order.  The loop alone writes spans, receipts and
 # previews, so every byte it writes is the byte the serial path wrote.
 #
-# Receipt file names carry an order number.  The first set has been compiled
-# with its project edit index wherever the previous parallel path ran (several
-# encode workers, four or more such edits); everything else uses the span
-# order, which is only known when the serial loop reaches the edit.  Those
-# compile under a placeholder order, and the loop substitutes the real one; a
+# Receipt file names carry an order number.  The first set is numbered by its
+# project edit index wherever the previous parallel path ran (several encode
+# workers, four or more such edits); everything else by its span order, which
+# is only known when the serial loop reaches the edit.  Every unit compiles
+# under a placeholder order, and the loop substitutes the real number; a
 # result that names the placeholder anywhere else is discarded and compiled
-# serially instead.
+# serially instead.  (b791: the first set used to compile under its edit index
+# directly, which tied every saved result to its position in the project: one
+# texture added early moved the index of everything after it and made all of
+# those results miss.  The placeholder makes a saved result position-free; the
+# bytes a build writes are the same, which the receipts' names prove.)
 
 _UNIT_EDIT_ORDER_KINDS = frozenset({"torso", "sleeve", "pants", "live_helmet", "team_select"})
 _UNIT_SPAN_ORDER_KINDS = frozenset({"live_number_nameplate", "live_face", "player_portrait",
@@ -3534,6 +3538,8 @@ def _unit_code_roots() -> dict[str, tuple[str, ...]]:
 _UNIT_CODE_ROOTS: dict[str, tuple[str, ...]] = _unit_code_roots()
 #: The project tool's own dispatch: only the functions the entry points reach by name count, not the other build steps.
 _UNIT_DISPATCH: tuple[str, tuple[str, ...]] | None = ("tools/nfl2k5_visual_mod_project.py", ("_unit_compile",))
+#: Helpers of that dispatch that only word a failure; only successful compiles are saved, so improving a message keeps every result.
+_UNIT_DISPATCH_WORDING = ("_naming_the_failing_edit", "describe_edit", "project_edit_label")
 #: How many cached results of each kind are recompiled and compared before any is trusted.
 _UNIT_CANARIES_PER_KIND = 2
 
@@ -3694,10 +3700,13 @@ def _unit_worker(task):
 
 def _unit_toolchain() -> dict[str, Any]:
     import platform
+    import zlib
+    # The interpreter by its minor version (a patch release does not change what pure Python computes), and the one native
+    # library whose output a compile writes into its previews: zlib. Pillow and numpy are named below.
     toolchain: dict[str, Any] = {
-        "python": sys.version, "implementation": sys.implementation.name,
+        "python": f"{sys.version_info[0]}.{sys.version_info[1]}", "implementation": sys.implementation.name,
         "platform": sys.platform, "machine": platform.machine(),
-        "byteorder": sys.byteorder,
+        "byteorder": sys.byteorder, "zlib": getattr(zlib, "ZLIB_RUNTIME_VERSION", zlib.ZLIB_VERSION),
         "environment": {name: value for name, value in sorted(os.environ.items())
                         if name.startswith("NFL2K5_") and name not in _UNIT_ENV_NOT_IN_KEY},
     }
@@ -3747,9 +3756,25 @@ def unit_assign_order(value, order: int | None, edit: dict[str, Any], kind: str)
             leftovers.append(text)
         return text
     for _, previews, report, selector, target in value:
-        _unit_walk_strings([normalized_import_report(report, edit, kind),
-                            [name for name, _ in previews], selector, target], check)
+        normalized = normalized_import_report(report, edit, kind)
+        _unit_walk_strings([normalized, [name for name, _ in previews], selector, target], check)
+        # The order as a number would be as wrong as the order in a name (b791: the kit layers now compile under the
+        # placeholder too, so a report that wrote its order as an integer would otherwise slip through unchanged).
+        if order is not None and _unit_has_number([normalized, selector, target], _UNIT_PLACEHOLDER_ORDER):
+            leftovers.append(f"the number {_UNIT_PLACEHOLDER_ORDER}")
     return None if leftovers else value
+
+
+def _unit_has_number(value, number: int) -> bool:
+    if isinstance(value, bool):
+        return False
+    if isinstance(value, int):
+        return value == number
+    if isinstance(value, (list, tuple)):
+        return any(_unit_has_number(item, number) for item in value)
+    if isinstance(value, dict):
+        return any(_unit_has_number(item, number) for item in value.values())
+    return False
 
 
 class IndependentUnits:
@@ -3786,6 +3811,7 @@ class IndependentUnits:
         #: Why results were compiled again, what they cost, and how each kind fared (the build log shows them).
         self.reasons: Counter[str] = Counter()
         self.changed_code: Counter[str] = Counter()
+        self.unlisted: Counter[str] = Counter()
         self.hits_by_kind: Counter[str] = Counter()
         self.misses_by_kind: Counter[str] = Counter()
         self.bytes_by_kind: Counter[str] = Counter()
@@ -3834,11 +3860,11 @@ class IndependentUnits:
         inputs = {field_name: (None if edit.get(field_name) is None else
                                resolve_asset(self.project, edit[field_name], self.input_pins).sha256)
                   for field_name in self.input_fields(kind)}
-        order = index if kind in self.edit_order_kinds else None
         context = {name: value for name, value in self._context.items() if name != "reports"}
         context["report"] = self._context["reports"].get(kind)
-        return digest(canonical_json({**context, "kind": kind, "edit": stage_cache.edit_shape(edit),
-                                      "order": order, "inputs": inputs}))
+        # No position either: every unit compiles under the placeholder order and gets its real number when it is used, so a
+        # result survives a project that gains or loses other edits (the edit indices after the change all move by one).
+        return digest(canonical_json({**context, "kind": kind, "edit": stage_cache.edit_shape(edit), "inputs": inputs}))
 
     def code_identity(self, kind: str) -> dict | None:
         """The source this kind of compile can execute, by digest; None when it cannot be known (nothing is cached)."""
@@ -3850,7 +3876,7 @@ class IndependentUnits:
                     self._code_index = stage_cache.CodeIdentity(ROOT)
                 identity = self._code_index.identity(
                     roots, tool=_UNIT_DISPATCH[0] if _UNIT_DISPATCH else None,
-                    entry_points=_UNIT_DISPATCH[1] if _UNIT_DISPATCH else ())
+                    entry_points=_UNIT_DISPATCH[1] if _UNIT_DISPATCH else (), ignore=_UNIT_DISPATCH_WORDING)
             self._identities[kind] = identity
         return self._identities[kind]
 
@@ -3880,7 +3906,7 @@ class IndependentUnits:
         unlisted = self._unlisted(kind, imported)
         if unlisted:
             self.reasons["not remembered: imports its identity does not list"] += 1
-            self.changed_code.update(unlisted)
+            self.unlisted.update(unlisted)
             return
         from mod_editor.core.nfl2k5_compile_cache import _decode, _encode
         spans, previews = self._digests(outcome, value)
@@ -3948,7 +3974,7 @@ class IndependentUnits:
         edit = self.project.value["edits"][index]
         if outcome != "ok":
             return outcome, value
-        placed = unit_assign_order(value, None if edit["kind"] in self.edit_order_kinds else 0, edit, edit["kind"])
+        placed = unit_assign_order(value, 0, edit, edit["kind"])
         if placed is None:
             return "unproven", None
         return outcome, [(span, previews, canonical_json(normalized_import_report(report, edit, edit["kind"])),
@@ -3999,9 +4025,34 @@ class IndependentUnits:
             self.reasons["a cached result differed from a fresh compile"] += 1
         return self.canary_report
 
+    def plain_summary(self) -> list[str]:
+        """Plain words for the build log: how much was reused and why the rest was compiled."""
+        total = self.hits + self.misses
+        lines = []
+        if self.hits:
+            lines.append(f"Reused {self.hits:,} of {total:,} compiled texture{'' if total == 1 else 's'} from earlier builds")
+        if self.misses and (self.hits or self.reasons.get("compiler code changed")):
+            fresh = self.reasons.get("no usable earlier result", 0)
+            changed = self.reasons.get("compiler code changed", 0)
+            damaged = self.reasons.get("damaged or from another format", 0)
+            parts = []
+            if fresh:
+                parts.append(f"{fresh:,} new or changed artwork")
+            if changed:
+                files = ", ".join(Path(name).name for name in list(self.changed_code)[:3])
+                parts.append(f"{changed:,} because the studio's encoder changed ({files})")
+            if damaged:
+                parts.append(f"{damaged:,} saved results were damaged")
+            if self.reasons.get("a cached result differed from a fresh compile"):
+                parts.append("a saved result differed from a fresh compile, so none were trusted")
+            lines.append(f"Compiled {self.misses:,} texture{'' if self.misses == 1 else 's'}: "
+                         + "; ".join(parts or ["no saved result"]))
+        return lines
+
     def summary(self) -> dict[str, Any]:
         return {"hits": self.hits, "misses": self.misses, "serial_fallbacks": self.fallbacks,
                 "why_compiled": dict(self.reasons), "changed_code": dict(self.changed_code.most_common(12)),
+                "unlisted_imports": dict(self.unlisted.most_common(12)),
                 "hits_by_kind": dict(self.hits_by_kind), "misses_by_kind": dict(self.misses_by_kind),
                 "stored_bytes_by_kind": dict(self.bytes_by_kind), "canary": self.canary_report}
 
@@ -4009,7 +4060,7 @@ class IndependentUnits:
     def _task(self, index: int):
         edit = self.project.value["edits"][index]
         kind = edit["kind"]
-        order = index if kind in self.edit_order_kinds else _UNIT_PLACEHOLDER_ORDER
+        order = _UNIT_PLACEHOLDER_ORDER
         project = replace(self.project, payload=b"", value={
             "schema": self.project.value["schema"], "purpose": self.project.value["purpose"],
             "edits": [edit]}, equipment_compile_cache=None)
@@ -4069,8 +4120,10 @@ class IndependentUnits:
             outcome, value, code_files, console = answer
         result = value
         if outcome == "ok":
+            # The kit layers and helmets are numbered by their project edit index where the old parallel path ran, every other
+            # unit (and every unit on a small machine) by its span order: the number is applied here, never stored.
             result = unit_assign_order(
-                value, None if edit["kind"] in self.edit_order_kinds else span_order,
+                value, index if edit["kind"] in self.edit_order_kinds else span_order,
                 edit, edit["kind"])
             if result is None:
                 self.fallbacks += 1
@@ -4304,6 +4357,32 @@ def project_edit_indices(edits):
     return indices
 
 
+def _group_paths(project: ProjectFile, dependencies: list[int]) -> list[str]:
+    """The file names of one compile group, in the order its cache key reads them."""
+    return [project.value["edits"][n][name] for n in dependencies
+            for name in ("png", "clean_png", "mud_png", "recipe") if project.value["edits"][n].get(name) is not None]
+
+
+def _repathed(cached: Any, new_paths: list[str]):
+    """A saved group result with this project's own file names: (built, effective edit, input hashes, kind), or None.
+
+    The saved effective edit names the files of the session that made it, and the receipts name them (a session folder is new
+    every time a project is opened). The key proves the group has the same edits and the same bytes, so the n-th file name
+    of the saved result stands for the n-th file name of this project. A record that cannot say which names it used, or a
+    mapping that would be ambiguous, is not used: the group compiles again.
+    """
+    if not (isinstance(cached, tuple) and len(cached) == 5 and isinstance(cached[4], list)):
+        return None
+    built, effective_edit, hashes, kind, old_paths = cached
+    if len(old_paths) != len(new_paths):
+        return None
+    mapping: dict[str, str] = {}
+    for old, new in zip(old_paths, new_paths):
+        if mapping.setdefault(old, new) != new:
+            return None
+    return built, _unit_walk_strings(effective_edit, lambda text: mapping.get(text, text)), hashes, kind
+
+
 def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
                     inventory_pin: ownership.PinnedLargeFile,
                     report_pins: dict[str, InputPin],
@@ -4335,8 +4414,8 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
         compiler_hash.update(code.name.encode())
         compiler_hash.update(code.read_bytes())
     cache_context = {"compiler": compiler_hash.hexdigest(),
-                     "index": index_pin.sha256, "inventory": inventory_pin.sha256,
-                     "reports": {kind: pin.sha256 for kind, pin in report_pins.items()}}
+                     "index": index_pin.sha256, "inventory": inventory_pin.sha256}
+    report_digests = {kind: pin.sha256 for kind, pin in report_pins.items()}
     def key_for(order, dependencies):
         # Raw hashes also bind import-receipt provenance. Pixel hashes
         # explicitly include alpha and dimensions; metadata never hides
@@ -4364,7 +4443,10 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
                         except Exception:  # noqa: BLE001 - decode failures are reported downstream
                             row["pixels"] = None
                     inputs[f"{position}:{name}"] = row
-        return digest(canonical_json({**cache_context, "order": order,
+        # Only the compatibility reports of the kinds being compiled: another kind in the project must not change this key.
+        reports = {kind: report_digests[kind] for kind in sorted({project.value["edits"][n]["kind"] for n in dependencies})
+                   if kind in report_digests}
+        return digest(canonical_json({**cache_context, "reports": reports, "order": order,
             "edits": [stage_cache.edit_shape(project.value["edits"][n]) for n in dependencies], "inputs": inputs}))
     cached_handled = set()
     temporary = Path(tempfile.mkdtemp(
@@ -4546,7 +4628,10 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
                 [n for n, row in enumerate(project.value["edits"]) if row["kind"] in UNIT_KINDS],
                 _UNIT_EDIT_ORDER_KINDS if workers > 1 and len(legacy) >= 4 else ())
             # Before any cached result is used, a few are compiled again and compared (see IndependentUnits.canary).
-            canary = units.canary()
+            try:
+                canary = units.canary()
+            except Exception as exc:  # noqa: BLE001 - named, like every other failure of this stage
+                raise ProjectError(f"Checking the saved compile results before using them: {exc}") from exc
             if canary["mismatched"]:
                 _item_progress("A saved result differed from a fresh compile (" + ", ".join(canary["mismatched"][:3])
                                + "); every texture of this build is compiled again", 0, len(project.value["edits"]))
@@ -4572,11 +4657,14 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
                 cached = None
                 if dependencies and cache.root is not None and not (units is not None and units.handles(edit_index)):
                     cache_key = key_for(edit_index, dependencies)
-                    cached = cache.get(cache_key)
+                    # A canary that disagreed means the saved results of this build are not to be trusted at all.
+                    cached = cache.get(cache_key) if units is None or units.trusted else None
                 if isinstance(cached, dict) and set(cached) == {"kept_retail"}:
                     kept_retail.append(cached["kept_retail"])
                     cached_handled.update(dependencies)
                     continue
+                if cached is not None:
+                    cached = _repathed(cached, _group_paths(project, dependencies))
                 if cached is not None:
                     built, effective_edit, effective_input_hashes, kind = cached
                 else:
@@ -5044,7 +5132,8 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
                                 cache.put(cache_key, {"kept_retail": kept})
                             continue
                     if cache_key is not None:
-                        cache.put(cache_key, (built, effective_edit, effective_input_hashes, kind))
+                        cache.put(cache_key, (built, effective_edit, effective_input_hashes, kind,
+                                              _group_paths(project, dependencies)))
                 if dependencies:
                     cached_handled.update(dependencies)
                 for replacement, previews, report, selector, target in built:
@@ -5135,9 +5224,8 @@ def prepare_project(project: ProjectFile, index_pin: ownership.PinnedLargeFile,
                   f"misses={units.misses} serial_fallbacks={units.fallbacks}", flush=True)
             # Why anything was compiled again, in plain words for the build log and the project doctor.
             print("NFL2K5_STAGE_CACHE " + json.dumps(units.summary(), sort_keys=True), flush=True)
-            if units.hits:
-                _item_progress(f"Reused {units.hits:,} of {units.hits + units.misses:,} compiled textures from earlier builds",
-                               len(project.value["edits"]), len(project.value["edits"]))
+            for line in units.plain_summary():
+                _item_progress(line, len(project.value["edits"]), len(project.value["edits"]))
         print(f"NFL2K5_COMPILE_CACHE hits={cache.hits} misses={cache.misses}", flush=True)
         return PreparedProject(prepared, temp_root, temp_files, input_pins,
                                report_pins, kept_retail)

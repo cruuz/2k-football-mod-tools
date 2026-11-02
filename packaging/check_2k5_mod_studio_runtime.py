@@ -140,6 +140,7 @@ REQUIRED_UNIFIED_PROVIDER_CLOSURE = frozenset(
         "mod_editor/core/nfl2k5_equipment_import_intent.py",
         "mod_editor/core/nfl2k5_equipment_lz.py",
         "mod_editor/core/nfl2k5_compile_cache.py",
+        "mod_editor/core/nfl2k5_stage_cache.py",
         "mod_editor/core/nfl2k5_music_conform.py",
         "mod_editor/core/nfl2k5_audio_containment_fingerprints.py",
         "mod_editor/core/nfl2k5_audio_origin_authorization.py",
@@ -1815,6 +1816,7 @@ def main() -> int:
         "mod_editor.core.nfl2k5_extended_visual_io",
         "mod_editor.core.nfl2k5_build_service",
         "mod_editor.core.nfl2k5_compile_cache",
+        "mod_editor.core.nfl2k5_stage_cache",                     # b791-h6 project-stage cache
         "mod_editor.core.nfl2k5_late_steps",
         "mod_editor.core.nfl2k5_text_catalog",
         "mod_editor.core.nfl2k5_safe_text_banks",
