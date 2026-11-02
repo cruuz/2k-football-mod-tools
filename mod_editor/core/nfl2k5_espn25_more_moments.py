@@ -841,12 +841,13 @@ TEAM_CITY_ABBREVIATION = 0x13C
 # Characters the spare teams' (32 and 33) own text buffers hold: the retail USER1/USER2 strings, which C1030 copies over.
 SLOT_TEXT_CAPACITY = {rr.TEAM_NICKNAME: 16, rr.TEAM_ABBREVIATION: 5, rr.TEAM_CITY: 16, TEAM_CITY_ABBREVIATION: 4}
 # (asset code, first season, last season, code) where a franchise's code changed with a move; outside these the
-# team-season's own "abbreviation" (2K5's identity code of the franchise) stands.
+# team-season's own "abbreviation" (2K5's identity code of the franchise) stands. The current city's era uses the
+# 2026 code (LAR, LV, LAC, ARI: nfl2k5_team_names_2026), so a moment team prints what its 2026 club prints.
 SEASON_CODES = (
     ("23", 1946, 1994, "LA"), ("23", 1995, 2015, "STL"), ("23", 2016, 2100, "LAR"),          # Rams
     ("20", 1960, 1981, "OAK"), ("20", 1982, 1994, "LA"), ("20", 1995, 2019, "OAK"), ("20", 2020, 2100, "LV"),
     ("24", 1961, 2016, "SD"), ("24", 2017, 2100, "LAC"),                                       # Chargers
-    ("00", 1960, 1987, "STL"), ("00", 1988, 1993, "PHO"),                                     # Cardinals
+    ("00", 1960, 1987, "STL"), ("00", 1988, 1993, "PHO"), ("00", 1994, 2100, "ARI"),         # Cardinals
     ("11", 1953, 1983, "BAL"), ("11", 1984, 2100, "IND"),                                     # Colts
     ("28", 1960, 1996, "HOU"), ("28", 1997, 2100, "TEN"),                                     # Oilers / Titans
 )

@@ -943,7 +943,7 @@ class AnniversaryQcTests(unittest.TestCase):
     def test_season_codes_follow_the_moves(self):
         cases = {("23", 2021): "LAR", ("23", 1999): "STL", ("23", 1951): "LA", ("20", 2001): "OAK", ("20", 1983): "LA",
                  ("20", 2020): "LV", ("20", 1976): "OAK", ("24", 2006): "SD", ("24", 2017): "LAC", ("11", 2009): "IND",
-                 ("11", 1970): "BAL", ("00", 2008): "ARZ", ("00", 1975): "STL", ("00", 1990): "PHO",
+                 ("11", 1970): "BAL", ("00", 2008): "ARI", ("00", 1975): "STL", ("00", 1990): "PHO",
                  ("28", 1999): "TEN", ("28", 1988): "HOU", ("16", 2016): "NE", ("14", 2006): "SEA"}
         base = {"23": "STL", "20": "OAK", "24": "SD", "11": "IND", "00": "ARZ", "28": "TEN", "16": "NE", "14": "SEA"}
         for (code, season), want in cases.items():
@@ -1194,7 +1194,8 @@ class ShippedMomentLooksRetailTests(unittest.TestCase):
         importer copies fits the spare team's buffer."""
         expected = {key: mm.display_abbreviation(team) for key, team in self.data.teams.items()}
         self.assertEqual(expected["rams_2021"], "LAR")
-        for key in ("raiders_2001", "colts_2009", "colts_2022", "cardinals_2008"):
+        self.assertEqual(expected["cardinals_2008"], "ARI")    # the 2026 Cardinals' code (retail and the data: ARZ)
+        for key in ("raiders_2001", "colts_2009", "colts_2022"):
             self.assertEqual(expected[key], self.data.teams[key]["abbreviation"], key)
         by_file = {name: key for key, name, *_ in mm.table_entries(self.data)}
         seen = set()
