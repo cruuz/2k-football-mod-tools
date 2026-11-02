@@ -536,6 +536,11 @@ class Kits(unittest.TestCase):
     ART = {"chunk": 3, "kind": "tset", "texture": "sleeve00", "size": [16, 16, 1],
            "ops": [{"op": "poly", "color": "#FFFFFF", "points": [[2, 2], [6, 2], [6, 6], [2, 6]]}]}
 
+    def test_kit_allocation_sums_the_chunks_like_the_largest_kit_rule(self):
+        rows = [types.SimpleNamespace(system_bytes=7, video_bytes=100), types.SimpleNamespace(system_bytes=3, video_bytes=50)]
+        with mock.patch("nfl_txtr.parse_chunks", return_value=rows):
+            self.assertEqual(pc.kit_allocation(b"x"), (10, 150))
+
     def test_solid_paint_on_the_users_art_is_judged_from_the_png(self):
         self.assertTrue(pc._poly_paint_changes(png(16, 16), self.ART))
         self.assertFalse(pc._poly_paint_changes(png(16, 16, box=(0, 0, 9, 9)), self.ART))

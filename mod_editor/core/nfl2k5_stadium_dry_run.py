@@ -296,8 +296,13 @@ def chain(job) -> dict:
     name, retail, outer, settings = job["name"], job["retail"], job["outer"], job["settings"]
     rows, digests = [], {}
 
+    clock = [time.process_time()]
+
     def record(step, status, part="bundle", reason="", **extra):
-        rows.append(dict(bundle=name, step=step, status=status, part=part, reason=reason, **extra))
+        now = time.process_time()
+        rows.append(dict(bundle=name, step=step, status=status, part=part, reason=reason,
+                         cpu=round(now - clock[0], 2), **extra))
+        clock[0] = now
 
     def failed(step, exc, part="bundle"):
         record(step, "failed", part, _reason(exc), error=type(exc).__name__,

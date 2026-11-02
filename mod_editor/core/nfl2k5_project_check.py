@@ -250,7 +250,14 @@ def donors_with_edits(documents, chunks: dict, asset_paths: dict, index, retail,
     return donors
 
 
-def kit_dry_run(plan, chunks: dict, asset_paths: dict, index, retail, progress=None) -> list:
+def kit_allocation(package: bytes) -> tuple:
+    """(system bytes, video bytes) of one kit package once loaded: what the game's largest kit is measured by."""
+    from nfl_txtr import parse_chunks
+    parsed = parse_chunks(bytes(package), allow_trailing=True)
+    return sum(c.system_bytes for c in parsed), sum(c.video_bytes for c in parsed)
+
+
+def kit_dry_run(plan, chunks: dict, asset_paths: dict, index, retail, progress=None, details: dict | None = None) -> list:
     """Compose the new Anniversary / classic kits from the user's edited donors exactly as Build will (retail chunks
     where an edited one cannot be used), and report each swap and each left-out kit by name.
 
@@ -265,6 +272,12 @@ def kit_dry_run(plan, chunks: dict, asset_paths: dict, index, retail, progress=N
     plain = donors_with_edits(documents, {}, {}, index, retail)
     retail_packages = kits.RetailPackages(retail)
     findings, unchecked = [], []
+    if details is not None:
+        edited = {selector for selector, _chunk in chunks}
+        details["donor_allocations"] = {selector: dict(zip(("system", "video", "retail_system", "retail_video"),
+                                                          kit_allocation(data) + kit_allocation(plain[selector])))
+                                        for selector, data in sorted(donors.items()) if selector in edited}
+        details["largest_kit"] = dict(system=kits.MAX_SYSTEM_BYTES, video=kits.MAX_VIDEO_BYTES)
     for feature, doc in documents:
         receipt, baseline = compose_receipt(doc, donors, retail_packages), compose_receipt(doc, plain, retail_packages)
         skipped = dict(receipt["skipped_kits"])
@@ -305,7 +318,7 @@ def compose_receipt(doc, packages, retail_packages) -> dict:
 
 def check(plan, *, asset_ids: Iterable[str] = (), document: dict | None = None, fit_rows: Iterable[dict] = (),
           progress: Callable[..., None] | None = None, run_preflight: bool = True,
-          asset_paths: dict | None = None, source_index=None) -> Report:
+          asset_paths: dict | None = None, source_index=None, details: dict | None = None) -> Report:
     """Run every quick check for ``plan`` and the project's replacements; never writes anything.
 
     ``asset_ids``: the replaced asset ids of the project. ``document``: its artwork recipe (``{"edits": [{"kind",
@@ -352,7 +365,8 @@ def check(plan, *, asset_ids: Iterable[str] = (), document: dict | None = None, 
     documents = _feature_documents(plan)
     if asset_paths and source_index is not None and plan.source and documents and chunks:
         try:
-            report.findings.extend(kit_dry_run(plan, chunks, asset_paths, source_index, plan.source, progress))
+            report.findings.extend(kit_dry_run(plan, chunks, asset_paths, source_index, plan.source, progress,
+                                               details=details))
             _step(report, "new kits composed from your edited kits", started)
         except (ValueError, OSError) as exc:
             report.findings.append(Finding(NOTE, "Kit check", "The new kits could not be tried on your edited kits.",
@@ -1221,6 +1235,8 @@ def doctor(project, source, settings=None, *, progress: Callable[..., None] | No
         index = source_index
         paths = None
 
+        kit_details = {}
+
         def options(section):
             nonlocal index, paths
             chunks, _packages = edited_kit_chunks(inputs.asset_ids)
@@ -1240,7 +1256,8 @@ def doctor(project, source, settings=None, *, progress: Callable[..., None] | No
                 paths = inputs.stage(needed, folder)
             quick = check(plan, asset_ids=inputs.asset_ids, document=inputs.document, fit_rows=inputs.fit_rows,
                           progress=progress, run_preflight=("preflight" in wanted and have_source),
-                          asset_paths=paths if do_compile else None, source_index=index if do_compile else None)
+                          asset_paths=paths if do_compile else None, source_index=index if do_compile else None,
+                          details=kit_details)
             for finding in quick.findings:
                 finding.code = finding.code or f"check.{re.sub(r'[^a-z0-9]+', '_', finding.area.lower()).strip('_')}"
             report.findings.extend(quick.findings)
@@ -1319,6 +1336,23 @@ def doctor(project, source, settings=None, *, progress: Callable[..., None] | No
                     + _named(sorted({o["file"] for o in unsure})) + ".",
                     "Studio beta 79.1 fixes this. With beta 79, untick 25 more Anniversary moments if the build stops "
                     "with \"classic default ... has no year pair\".", code="kits.orphan_maybe"))
+            allocations = kit_details.get("donor_allocations") or {}
+            if allocations:
+                largest = kit_details["largest_kit"]
+                section.data["donor_allocations"] = allocations
+                ranked = sorted(allocations.items(), key=lambda kv: -kv[1]["video"])
+                lines.append("Your kits the new kits read, after your sock, glove and shoe edits (video bytes, the game's "
+                             f"largest kit is {largest['video']:,}): " + ", ".join(
+                                 f"{s} {a['video']:,} (retail {a['retail_video']:,})" for s, a in ranked[:12])
+                             + (f" and {len(ranked) - 12} more" if len(ranked) > 12 else "") + ".")
+                over = [s for s, a in ranked if a["video"] > largest["video"] or a["system"] > largest["system"]]
+                if over:
+                    report.findings.append(Finding(
+                        NOTE, "Anniversary moment kits",
+                        f"{len(over)} of your edited kits need more memory than the game's largest kit: {_named(over)}.",
+                        "Your own sock, glove or shoe art in its own texture grows the kit. Those kits still work as your "
+                        "own kits; a new Anniversary or classic kit made from them takes the retail piece instead "
+                        "(named in the build log).", code="kits.allocation"))
             section.data["lines"] = lines
             section.summary = (f"{len(found['left_out'])} new kit{'s' if len(found['left_out']) != 1 else ''} left out, "
                                f"{len(found['uncertain'])} depending on your art, {len(painted)} pieces painted over "
@@ -1337,8 +1371,11 @@ def doctor(project, source, settings=None, *, progress: Callable[..., None] | No
                 section.status = "skipped"
                 section.summary = "the disc is not there, so the stadium refits could not be tried."
                 return
-            result = dry.run(plan, source, progress=progress, workers=workers, stadium_models=stadium_models,
-                             use_cache=use_cache)
+            if early_stadiums is not None:
+                result = early_stadiums.result()
+            else:
+                result = dry.run(plan, source, progress=progress, workers=workers, stadium_models=stadium_models,
+                                 use_cache=use_cache)
             section.data.update(result.as_dict())
             optional = optional_build_steps()
             counts = result.counts()
@@ -1465,11 +1502,24 @@ def doctor(project, source, settings=None, *, progress: Callable[..., None] | No
                       stadiums=("stadiums", "Stadium and colour dry run", stadium_section),
                       untested=("untested", "Options no release build tried", untested_section),
                       inventory=("inventory", "Your project in numbers", inventory_section))
-        if "options" in wanted or "preflight" in wanted:
-            run(*bodies["options"])
-        for key in ("kits", "stadiums", "untested", "inventory"):
-            if key in wanted:
-                run(*bodies[key])
+        # The stadium dry run is processes: it starts first and runs while this thread compiles the kits and runs
+        # the disc preflights (single-threaded minutes), so a full check takes about as long as its slowest part.
+        from . import nfl2k5_stadium_dry_run as dry
+        early_stadiums, pool = None, None
+        if "stadiums" in wanted and have_source and dry.selected_steps(plan):
+            from concurrent.futures import ThreadPoolExecutor
+            pool = ThreadPoolExecutor(max_workers=1, thread_name_prefix="project-check-stadiums")
+            early_stadiums = pool.submit(dry.run, plan, source, progress=progress, workers=workers,
+                                         stadium_models=stadium_models, use_cache=use_cache)
+        try:
+            if "options" in wanted or "preflight" in wanted:
+                run(*bodies["options"])
+            for key in ("kits", "stadiums", "untested", "inventory"):
+                if key in wanted:
+                    run(*bodies[key])
+        finally:
+            if pool is not None:
+                pool.shutdown(wait=True)       # a cancelled check stops its dry run before returning
     report.seconds = time.monotonic() - started
     return report
 
