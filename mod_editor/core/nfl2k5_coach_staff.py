@@ -414,8 +414,8 @@ def _strings(body, record) -> list[str]:
     cw = _coach_tool()
     out = []
     for at in STRING_FIELDS:
-        target = cw.relative_target(bytes(body), record + at, f"coach +0x{at:x}")
-        out.append(cw.utf16z(bytes(body), target, f"coach +0x{at:x}") if target is not None else "")
+        target = cw.relative_target(body, record + at, f"coach +0x{at:x}")
+        out.append(cw.utf16z(body, target, f"coach +0x{at:x}") if target is not None else "")
     return out
 
 
