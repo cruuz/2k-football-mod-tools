@@ -772,7 +772,7 @@ STANDARD_STATE = dict(away='DEN', home='KC', away_score=7, home_score=7,
                       clock=273, play_clock=4, down=3, distance=10,
                       possession='home', event='standard', goal_to_go=False, broadcast='play_now',
                       home_record=None, away_record=None, season='regular', phase=4,
-                      previous_down=None, timeout_called=None)
+                      previous_down=None, timeout_called=None, playcall=False, ball_yards=50)
 SEASONS = ('regular', 'playoffs', 'preseason', 'quick_game', 'tournament')
 PHASES = {0: 'pregame, coin toss or the half', 1: 'safety kick', 2: 'kickoff', 3: 'point after', 4: 'scrimmage'}
 
@@ -799,6 +799,9 @@ def normalize_state(state=None):
     # Beta 76 sb: a previous down one lower shows the interim label; a timeout called by one side shows its tab.
     require(state['previous_down'] is None or (type(state['previous_down'])==int and 1<=state['previous_down']<=4),'The previous down is null or 1 to 4.')
     require(state['timeout_called'] in (None,'home','away'),'A timeout is called by home, away or nobody.')
+    # b780 p2: the play-call screen adds the ball spot after the down and distance; the yard line counts from the offense's own goal.
+    require(type(state['playcall'])==bool,'The play-call screen is on or off.')
+    require(type(state['ball_yards'])==int and 1<=state['ball_yards']<=99,'The ball is 1 to 99 yards from the offense\'s own goal line.')
     require(state['timeout_called'] is None or state[state['timeout_called']+'_timeouts']<3,'The side that called a timeout has fewer than three left.')
     return state
 
@@ -880,6 +883,7 @@ class NativePreview:
             game_seconds=s['clock'],play_seconds=s['play_clock'],down=s['down'],distance_yards=s['distance'],goal_to_go=s['goal_to_go'],
             broadcast=s['broadcast'],possession=s['possession'],visible_elements=events[s['event']],visibility_state=visibility,
             records=(None if s['home_record'] is None and s['away_record'] is None else dict(home=s['home_record'],away=s['away_record'])),
+            ball_yards=s['ball_yards'],playcall=s['playcall'],
             season=s['season'],phase=s['phase'],trace=capture.setdefault('trace',{}),previous_down=s['previous_down'],
             previous_timeouts=None if s['timeout_called'] is None else (s['home_timeouts']+(s['timeout_called']=='home'),s['away_timeouts']+(s['timeout_called']=='away')))
         # Retail text remains only for event overlays; the bar callbacks are blank.
