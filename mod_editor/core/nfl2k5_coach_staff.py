@@ -58,13 +58,30 @@ STRING_FIELDS = (0x00, 0x04, 0x08, 0x0C, 0x10)       # first name, last name, th
 CONTENT_START = 0x14                                 # every byte from here to the end of the record is plain data
 HEIGHT, WEIGHT = 0x14, 0x16                          # u16 (inches, pounds; INFERRED, no reader found)
 BODY, FLAGS = 0x18, 0x1A                             # u16 model number (c%02d.iff), u8 flags
-FLAG_FREE, FLAG_GENERIC_NAME = 0x01, 0x02            # free record (Create Team hands it out), "no recorded name"
+FLAG_FREE, FLAG_GENERIC = 0x01, 0x02                 # free record (Create Team hands it out), "no recorded name"
+FLAG_GENERIC_NAME = FLAG_GENERIC                     # (the name the first c2 API used)
 PHOTO = 0x40                                         # u16 picture id (7000 + asset on the 32 clubs)
 WITH_TEAM_FIELDS = (0x1C, 0x26, 0x28, 0x2A)          # seasons with the team; this season's wins, losses, ties
 RATINGS = 0x42                                       # 23 bytes, nfl2k5_franchise_save.COACH_RATINGS order
 PLAYCALLING_RUN = 0x59                               # u8 run share; the native tendency block runs to the record's end
 TENDENCY_BLOCK = (0x59, RECORD_SIZE)
-NAMED_TENDENCIES = 0x83                              # 10 bytes, nfl2k5_franchise_save.COACH_TENDENCIES order
+#: The play-calling tendency block as c1-coachdata mapped it from FUN_002818D0 and the statistics readers (proved with the
+#: game's own code: b780_c1-coachdata_REPORT.md section 3; the same map as nfl2k5_roster_records.COACH_TENDENCY_GROUPS
+#: there). name -> (record offset, values, kind); "percent" values are 0..100 each, a "share" is a distribution that
+#: adds up to 100. +0x83..+0x87 / +0x88..+0x8C are the formation classes of RUN / PASS calls (gun, split backs, I form,
+#: one back, no back), not alternating run and pass pairs.
+TENDENCY_GROUPS: dict[str, tuple[int, int, str]] = {
+    "run_share": (0x59, 1, "percent"),
+    "run_by_score": (0x5A, 6, "percent"),
+    "run_redzone": (0x60, 1, "percent"),
+    "run_by_down_distance": (0x61, 16, "percent"),
+    "run_lane": (0x7E, 5, "share"),
+    "formation_run": (0x83, 5, "share"),
+    "formation_pass": (0x88, 5, "share"),
+    "personnel_run": (0x8D, 11, "share"),
+    "personnel_pass": (0x98, 11, "share"),
+    "no_huddle": (0xA5, 1, "percent"),
+}
 NO_PHOTO = 8999                                      # the picture id of the game's own created-team coaches
 CREATED_BODY = 50                                    # c50.iff, the created-team coach model
 #: The coach models (c%02d.iff) a retail USA disc carries; a record's body must name one of them.
@@ -245,8 +262,6 @@ def coordinator(value) -> dict:
 _RATING_NAMES = ("overall", "offense", "rush_for", "pass_for", "defense", "pass_rush", "pass_coverage",
                  "qb", "rb", "te", "wr", "ol", "dl", "lb", "db", "special_teams", "professionalism",
                  "preparation", "conditioning", "motivation", "leadership", "discipline", "respect")
-_TENDENCY_NAMES = ("shotgun_run", "shotgun_pass", "split_back_run", "split_back_pass", "i_form_run",
-                   "i_form_pass", "lone_back_run", "lone_back_pass", "empty_run", "empty_pass")
 _CAREER_FIELDS = {"seasons_with_team": 0x1C, "total_seasons": 0x1E, "wins": 0x20, "losses": 0x22, "ties": 0x24,
                   "winning_seasons": 0x30, "super_bowls": 0x32, "playoff_wins": 0x34, "playoff_losses": 0x36,
                   "super_bowl_wins": 0x38, "super_bowl_losses": 0x3A}
@@ -289,13 +304,27 @@ def _normalize_created(spec) -> dict:
     out["photo"] = _number(spec.get("photo", NO_PHOTO), f"{who}: photo", 0, 0xFFFF)
     if spec.get("style") not in (None, ""):
         out["style"] = directory_coach(spec["style"])["id"]
-    for key, names, high in (("ratings", _RATING_NAMES, 99), ("tendencies", _TENDENCY_NAMES, 100),
-                             ("fields", tuple(_CAREER_FIELDS), 0xFFFF)):
+    for key, names, high in (("ratings", _RATING_NAMES, 99), ("fields", tuple(_CAREER_FIELDS), 0xFFFF)):
         values = spec.get(key) or {}
         require(isinstance(values, Mapping), f"{who}: {key} must be an object")
         bad = sorted(set(values) - set(names))
         require(not bad, f"{who}: unknown {key} {', '.join(bad)}")
         out[key] = {name: _number(values[name], f"{who}: {key} {name}", 0, high) for name in names if name in values}
+    values = spec.get("tendencies") or {}
+    require(isinstance(values, Mapping), f"{who}: tendencies must be an object of group name -> number(s)")
+    bad = sorted(set(values) - set(TENDENCY_GROUPS))
+    require(not bad, f"{who}: unknown tendency groups {', '.join(bad)}; known: {', '.join(TENDENCY_GROUPS)}")
+    out["tendencies"] = {}
+    for name, (_at, count, kind) in TENDENCY_GROUPS.items():
+        if name not in values:
+            continue
+        value = values[name]
+        numbers = [value] if count == 1 and type(value) is int else value
+        require(isinstance(numbers, (list, tuple)) and len(numbers) == count
+                and all(type(v) is int and 0 <= v <= 100 for v in numbers),
+                f"{who}: tendency {name} needs {count} whole number(s) from 0 to 100")
+        require(kind != "share" or sum(numbers) == 100, f"{who}: tendency {name} must add up to 100")
+        out["tendencies"][name] = numbers[0] if count == 1 else list(numbers)
     if "playcalling_run" in spec:
         out["playcalling_run"] = _number(spec["playcalling_run"], f"{who}: run share", 0, 100)
     if "height_in" in spec:
@@ -391,7 +420,7 @@ class HeadCoach:
     flags: int
     fields: dict[str, int]
     ratings: dict[str, int]
-    tendencies: dict[str, int]
+    tendencies: dict[str, Any]       # TENDENCY_GROUPS: group -> number (one value) or list of numbers
     playcalling_run: int
     directory_id: str | None          # the 2026 head coach this record is (name and picture), or None
 
@@ -468,7 +497,8 @@ def _read(body, team_index, record_index, offset) -> HeadCoach:
                      bio=tuple(bio), photo=photo, body=struct.unpack_from("<H", raw, BODY)[0], flags=raw[FLAGS],
                      fields={k: struct.unpack_from("<H", raw, at)[0] for k, at in _CAREER_FIELDS.items()},
                      ratings={k: raw[RATINGS + i] for i, k in enumerate(_RATING_NAMES)},
-                     tendencies={k: raw[NAMED_TENDENCIES + i] for i, k in enumerate(_TENDENCY_NAMES)},
+                     tendencies={k: (raw[at] if n == 1 else list(raw[at:at + n]))
+                                 for k, (at, n, _kind) in TENDENCY_GROUPS.items()},
                      playcalling_run=raw[PLAYCALLING_RUN], directory_id=_directory_match(name, photo))
 
 
@@ -711,7 +741,7 @@ def created_record(spec: Mapping, template: bytes, style_record: bytes | None) -
     """The non-string bytes (``CONTENT_START``..end) of a created coach's record: the game's created-team coach as the
     base, the style coach's native tendency block when a style is given, then the spec's own values."""
     raw = bytearray(template)
-    raw[FLAGS] = (raw[FLAGS] & ~FLAG_FREE & 0xFF) | FLAG_GENERIC_NAME
+    raw[FLAGS] = (raw[FLAGS] & ~FLAG_FREE & 0xFF) | FLAG_GENERIC
     struct.pack_into("<H", raw, BODY, spec.get("body", CREATED_BODY))
     struct.pack_into("<H", raw, PHOTO, spec.get("photo", NO_PHOTO))
     for at in _CAREER_FIELDS.values():
@@ -725,7 +755,8 @@ def created_record(spec: Mapping, template: bytes, style_record: bytes | None) -
     for name, value in (spec.get("ratings") or {}).items():
         raw[RATINGS + _RATING_NAMES.index(name)] = value
     for name, value in (spec.get("tendencies") or {}).items():
-        raw[NAMED_TENDENCIES + _TENDENCY_NAMES.index(name)] = value
+        at, count, _kind = TENDENCY_GROUPS[name]
+        raw[at:at + count] = bytes([value] if count == 1 else value)
     if "playcalling_run" in spec:
         raw[PLAYCALLING_RUN] = spec["playcalling_run"]
     if "height_in" in spec:
@@ -742,7 +773,7 @@ def hire_record(raw: bytes) -> bytes:
     out = bytearray(raw)
     for at in WITH_TEAM_FIELDS:
         struct.pack_into("<H", out, at, 0)
-    out[FLAGS] = (out[FLAGS] & ~FLAG_FREE & 0xFF) | FLAG_GENERIC_NAME
+    out[FLAGS] = (out[FLAGS] & ~FLAG_FREE & 0xFF) | FLAG_GENERIC
     return bytes(out[CONTENT_START:])
 
 
@@ -1195,7 +1226,8 @@ def main(argv=None) -> int:
 
 
 __all__ = ["SCHEMA", "StaffError", "Club", "CLUB_COUNT", "BOOK_CODES", "KNOWN_BODIES", "NO_PHOTO", "CREATED_BODY",
-           "RECORD_SIZE", "STRING_FIELDS", "CONTENT_START", "WITH_TEAM_FIELDS", "FLAG_FREE", "FLAG_GENERIC_NAME",
+           "RECORD_SIZE", "STRING_FIELDS", "CONTENT_START", "WITH_TEAM_FIELDS", "FLAG_FREE", "FLAG_GENERIC",
+           "FLAG_GENERIC_NAME", "TENDENCY_GROUPS",
            "clubs", "club", "head_coach_directory", "directory_coach", "coordinator_directory", "coordinator",
            "empty", "normalize", "is_empty", "HeadCoach", "coach_records", "read_roster", "read_image",
            "locate_directory_coach", "coach_text_region", "ClubPlan", "StaffPlan", "plan", "plan_document", "created_record", "hire_record",

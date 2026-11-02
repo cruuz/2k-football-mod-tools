@@ -3290,7 +3290,8 @@ def apply_body(body: bytes, source: Path | str | Mapping[str, Any], *,
     return out, {"roster_refresh": refresh_receipt, "modern_free_agents": fa_receipt, "franchise_history": history_receipt,
                  "created_history": created_receipt, "edits": len(doc["edits"]), "players_changed": applied,
                  "fields_written": fields_written, "moves": len(doc.get("moves") or []),
-                 "players_moved": moved, "coach_names_written": coaches, "coach_staff": coach_edits["coach_staff"],
+                 "players_moved": moved, "coach_names_written": coaches,
+                 "coach_records_written": coach_edits["coach_records_written"], "coach_staff": coach_edits["coach_staff"],
                  "team_uniform_years_written": uniform_years,
                  "special_team_slots_written": special_count, "log": log}
 
@@ -3474,11 +3475,18 @@ def apply_coach_edits(body: bytearray, teams: Sequence[TeamRecord], document: Ma
     ``nfl2k5_coach_ai.roster_readiness`` both call this, so the readiness check sees the roster the build writes."""
 
     names = apply_coach_names(body, teams, document.get("coaches") or [], log)
+    records = None
+    # c1-coachdata (b780): the per-club ratings, tendencies and announcer flag of the same ``coaches`` entries. Looked up
+    # here so that, once that job's writer is in this module, it runs BEFORE the staff and a moved coach carries it;
+    # apply_body must not call it a second time after this function (it would write the old club's data onto him).
+    records_writer = globals().get("apply_coach_records")
+    if records_writer is not None and document.get("coaches"):
+        records = records_writer(body, teams, document["coaches"], log, obj_base=obj_base)
     staff = None
     if document.get("staff"):
         from . import nfl2k5_coach_staff
         staff = nfl2k5_coach_staff.apply_to_body(body, teams, document["staff"], log)
-    return {"coach_names_written": names, "coach_staff": staff}
+    return {"coach_names_written": names, "coach_records_written": records, "coach_staff": staff}
 
 
 def _resolve_team(roster: RosterDocument, entry: Mapping[str, Any]) -> int | None:

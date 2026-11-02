@@ -83,7 +83,8 @@ class Document(unittest.TestCase):
 
     def test_created_coach_spec_checks(self):
         good = {"id": "pat", "first": "Pat", "last": "Shurmur", "style": "Giants", "ratings": {"overall": 70},
-                "tendencies": {"shotgun_pass": 30}, "fields": {"wins": 20}, "playcalling_run": 40,
+                "tendencies": {"formation_pass": [60, 10, 10, 15, 5], "run_redzone": 55}, "fields": {"wins": 20},
+                "playcalling_run": 40,
                 "height_in": 72, "weight_lb": 200, "bio": ["Former Giants head coach"]}
         value = st.normalize({"created_coaches": [good], "head_coaches": [{"team": "NYG", "created": "pat",
                                                                             "playbook": "coach"}]})
@@ -91,7 +92,9 @@ class Document(unittest.TestCase):
         self.assertEqual((spec["style"], spec["body"], spec["photo"]), ("NYG", st.CREATED_BODY, st.NO_PHOTO))
         for change in ({"body": 31}, {"body": "50"}, {"photo": 70000}, {"first": ""}, {"first": "x" * 25},
                        {"last": "A\nB"}, {"ratings": {"overall": 100}}, {"ratings": {"speed": 50}},
-                       {"tendencies": {"shotgun_pass": 101}}, {"style": "Nobody"}, {"bio": ["a", "b", "c", "d"]},
+                       {"tendencies": {"shotgun_pass": 30}}, {"tendencies": {"formation_run": [50, 50, 0, 0, 1]}},
+                       {"tendencies": {"formation_run": [50, 50, 0, 0]}}, {"tendencies": {"run_share": 101}},
+                       {"style": "Nobody"}, {"bio": ["a", "b", "c", "d"]},
                        {"height_in": 20}, {"weight_lb": 1000}, {"colour": "red"}):
             with self.assertRaises(st.StaffError, msg=change):
                 st.normalize({"created_coaches": [dict(good, **change)]})
@@ -111,7 +114,9 @@ class Document(unittest.TestCase):
         style = bytearray(st.RECORD_SIZE)
         style[st.TENDENCY_BLOCK[0]:] = b"\x07" * (st.RECORD_SIZE - 0x59)
         spec = st.normalize({"created_coaches": [{"id": "a", "first": "A", "last": "B", "ratings": {"respect": 80},
-                                                  "fields": {"wins": 9}, "playcalling_run": 44}]})["created_coaches"][0]
+                                                  "fields": {"wins": 9}, "playcalling_run": 44,
+                                                  "tendencies": {"formation_run": [10, 20, 30, 25, 15],
+                                                                 "no_huddle": 12}}]})["created_coaches"][0]
         out = bytes(st.CONTENT_START) + st.created_record(spec, bytes(template), bytes(style))
         self.assertEqual(out[st.FLAGS], st.FLAG_GENERIC_NAME)
         self.assertEqual(struct.unpack_from("<H", out, st.BODY)[0], st.CREATED_BODY)
@@ -120,8 +125,28 @@ class Document(unittest.TestCase):
         self.assertEqual(out[st.RATINGS + 22], 80)
         self.assertEqual(out[st.RATINGS], 50)
         self.assertEqual(out[st.PLAYCALLING_RUN], 44)
-        self.assertEqual(out[0x5A:st.RECORD_SIZE], b"\x07" * (st.RECORD_SIZE - 0x5A))
+        self.assertEqual(out[0x83:0x88], bytes([10, 20, 30, 25, 15]))       # RUN-call formation classes
+        self.assertEqual(out[0xA5], 12)                                       # no-huddle roll
+        keep = [i for i in range(0x5A, st.RECORD_SIZE) if not 0x83 <= i < 0x88 and i != 0xA5]
+        self.assertEqual(bytes(out[i] for i in keep), b"\x07" * len(keep))   # the rest is the style coach's block
         self.assertEqual(struct.unpack_from("<HH", out, st.HEIGHT), (74, 210))
+
+    def test_the_tendency_map_is_c1s_proved_byte_map(self):
+        """b780 c1-coachdata proved the block with the game's own code: +0x83..+0x87 / +0x88..+0x8C are the formation
+        classes (gun, split backs, I form, one back, no back) of RUN / PASS calls, not alternating run and pass pairs."""
+        groups = st.TENDENCY_GROUPS
+        self.assertEqual(groups["run_share"], (0x59, 1, "percent"))
+        self.assertEqual(groups["formation_run"], (0x83, 5, "share"))
+        self.assertEqual(groups["formation_pass"], (0x88, 5, "share"))
+        self.assertEqual(groups["personnel_run"], (0x8D, 11, "share"))
+        self.assertEqual(groups["personnel_pass"], (0x98, 11, "share"))
+        self.assertEqual(groups["no_huddle"], (0xA5, 1, "percent"))
+        spans = sorted((at, at + n) for at, n, _ in groups.values())
+        self.assertTrue(all(a[1] <= b[0] for a, b in zip(spans, spans[1:])))   # no overlap
+        self.assertTrue(spans[0][0] >= st.TENDENCY_BLOCK[0] and spans[-1][1] <= st.TENDENCY_BLOCK[1])
+        from mod_editor.core import nfl2k5_roster_records as rr
+        if hasattr(rr, "COACH_TENDENCY_GROUPS"):                              # once c1-coachdata is merged
+            self.assertEqual(dict(rr.COACH_TENDENCY_GROUPS), groups)
 
     def test_hire_record_resets_only_the_with_team_counters(self):
         raw = bytearray(range(st.RECORD_SIZE))
@@ -333,6 +358,24 @@ class RetailRoster(unittest.TestCase):
         self.assertEqual((names["OAK"], names["KC"], names["NYG"]), ("Andy Reid", "Klint Kubiak", "Pat Shurmur"))
         with self.assertRaises(self.rr.RosterRecordError):
             self.rr.read_edits(dict(document, staff={"head_coaches": [{"team": "Nowhere", "coach": "A B"}]}))
+
+    def test_a_moved_coach_carries_c1s_record_data(self):
+        """c1-coachdata's per-club ratings, tendencies and announcer flag are written BEFORE the staff (inside
+        apply_coach_edits), so they travel with the coach. Runs once that job's writer is in this tree."""
+        if not hasattr(self.rr, "apply_coach_records"):
+            self.skipTest("c1-coachdata's apply_coach_records is not in this tree yet")
+        entries = [dict(e) for e in self.coaches_list]
+        for entry in entries:
+            if entry["team"] in ("KC", "OAK"):
+                entry["ratings"] = {"overall": 95 if entry["team"] == "KC" else 61}
+                entry["announcer"] = "generic"
+        document = {"schema": self.rr.EDITS_SCHEMA, "edits": [], "coaches": entries, "staff": self.STAFF}
+        out, receipt = self.rr.apply_body(self.retail, document)
+        coaches = {c.club.book: c for c in st.read_roster(out, self.teams)}
+        self.assertEqual((coaches["OAK"].name, coaches["OAK"].ratings["overall"]), ("Andy Reid", 95))
+        self.assertEqual((coaches["KC"].name, coaches["KC"].ratings["overall"]), ("Klint Kubiak", 61))
+        self.assertTrue(coaches["OAK"].flags & st.FLAG_GENERIC)
+        self.assertEqual(receipt["coach_staff"]["head_coaches_changed"], 3)
 
     def test_locate_directory_coach_finds_him_where_he_heads_a_club(self):
         body = self.body()
