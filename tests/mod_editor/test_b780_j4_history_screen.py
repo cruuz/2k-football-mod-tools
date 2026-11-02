@@ -269,6 +269,27 @@ class StaticTests(unittest.TestCase):
                          "#define LEAGUE_RECORDS_AT 9232u", "#define LEAGUE_LEADERS_AT 15376u"):
             self.assertIn(fragment, source)
 
+    def test_seed_schema_shapes_of_j5(self):
+        """j5-seed's document: awards under winners, records with holders and scope, members under hall_of_fame."""
+        doc = {"seasons": [{"season": 2025, "teams": [{"club": "SEA", "w": 14, "l": 3, "t": 0, "place": 1,
+                                                        "playoffs": "champion", "coach": "Mike Macdonald"}]}],
+               "awards": {"kinds": [], "winners": [{"season": 2025, "award": "sb_mvp",
+                                                    "winners": [{"name": "Kenneth Walker", "club": "SEA",
+                                                                 "position": "HB"}]}]},
+               "nfl_records": [{"category": "sacks_half", "scope": "season", "value": 22.5,
+                                "holders": [{"name": "Michael Strahan", "season": 2001, "club": "NYG"},
+                                            {"name": "T. J. Watt", "season": 2021, "club": "PIT"}]},
+                               {"category": "points", "scope": "career", "value": 2673, "holders": [{"name": "X"}]}],
+               "hall_of_fame": {"through_class": 2026, "members": [{"name": "Drew Brees", "class": 2026,
+                                                                    "position": "QB", "club": "NO"}]}}
+        seasons, awards, book, hof, _records, _leaders = hist._seed_tables(doc)
+        self.assertEqual(seasons["SEA"][0]["playoff"], 5)
+        self.assertEqual(awards["sbmvp"][0]["name"], "Kenneth Walker")
+        self.assertEqual(len(book), 1)                   # points have no footer category
+        self.assertEqual((book[0]["value"], book[0]["year"], book[0]["name"], book[0]["club"]),
+                         (45, 2001, "Michael Strahan", "NYG"))
+        self.assertEqual((hof[0]["year"], hof[0]["name"], hof[0]["pos"]), (2026, "Drew Brees", 0))
+
     def test_help_text_is_plain(self):
         for text in (hist.HELP_TEXT, hist.UI_LABEL):
             self.assertNotIn("—", text)
@@ -747,6 +768,28 @@ class NativeTests(unittest.TestCase):
         m.uc.mem_write(card, struct.pack("<4I", 2, 0x80000000, 0, 0))
         m.put(CARD_PLAYER, m.PLAYERS + 40 * 0x54)
         m.call(self.at["hist_card_rows"], ecx=card)
+
+    def test_real_seed_spot_checks(self):
+        """The pinned real-history seed (j5-seed's data/nfl2k5_history_2026.json) when this tree carries it."""
+        seed = hist.load_seed()
+        if seed is None:
+            self.skipTest("no real-history seed in this tree")
+        payload, _ = hist.install(self.retail, seed=seed, xtnd_ptr_va=self.WORDS)
+        saved = self.payload
+        try:
+            type(self).payload = payload
+            m = self.machine()
+            self.draw(m, page=0, club=0, scroll=14)       # the Giants, 2011 at the top after 14 newer seasons
+            rows = self.rows(m)
+            self.assertEqual(rows[2], ["2011", "9-7", "1ST", "WON SUPER BOWL", "T. COUGHLIN"])
+            self.assertEqual(rows[6], ["2007", "10-6", "2ND", "WON SUPER BOWL", "T. COUGHLIN"])
+            self.draw(m, page=3)
+            book = self.rows(m)
+            self.assertIn(["PASS YARDS", "SEASON", "5,477", "P. MANNING (DEN)", "2013"], list(book.values()))
+            self.draw(m, page=5)
+            self.assertTrue(any(r[:2] == ["2026", "D. BREES"] for r in self.rows(m).values()))
+        finally:
+            type(self).payload = saved
 
     def test_card_cycle_through_the_champions_owner(self):
         """Honors (with champions) and this owner on one image: the card cycles card, honors, champions, game log."""

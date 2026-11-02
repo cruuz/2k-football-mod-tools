@@ -159,7 +159,7 @@ CATEGORY_ALIASES = {"pass_yds": "passing_yards", "pass_td": "passing_td", "rush_
                     "passing_yds": "passing_yards", "rushing_yds": "rushing_yards", "receiving_yds": "receiving_yards"}
 KINDS = ("game", "season", "career")
 PLAYOFFS = {"": 0, "missed": 0, "none": 0, "lost_wild_card": 1, "lost_divisional": 2, "lost_conference": 3,
-            "lost_super_bowl": 4, "won_super_bowl": 5}
+            "lost_super_bowl": 4, "won_super_bowl": 5, "champion": 5}
 POSITIONS = ("QB", "K", "P", "WR", "CB", "FS", "SS", "HB", "FB", "TE", "OLB", "ILB", "C", "G", "T", "DT", "DE")
 POSITION_ALIASES = {"RB": "HB", "LB": "OLB", "MLB": "ILB", "S": "SS", "SAF": "SS", "DB": "CB", "OT": "T", "OG": "G",
                     "OL": "G", "NT": "DT", "DL": "DT", "EDGE": "DE", "PK": "K", "KR": "WR", "PR": "WR", "WB": "HB",
@@ -241,8 +241,27 @@ class _Names:
         return self.at[text]
 
 
+def _holder(row: Mapping) -> Mapping:
+    """The first listed holder of a seed record (ties list every holder; the screen names the first)."""
+    holders = row.get("holders") or ()
+    return holders[0] if holders and isinstance(holders[0], Mapping) else row
+
+
+def _year(value) -> int:
+    try:
+        return int(str(value)[:4]) if value not in (None, "") else 0
+    except ValueError:
+        return 0
+
+
 def _seed_tables(seed: Mapping | None):
-    """The seed document (j5-seed schema nfl2k5_history_seed/v1, tolerant) as plain lists for the block."""
+    """The seed document (j5-seed ``nfl2k5_history_seed/v1``) as plain lists for the block.
+
+    Seasons: ``seasons[].teams[]`` (club = today's abbreviation, playoffs one of ``playoff_codes``); awards:
+    ``awards.winners[]`` (or a plain list); NFL records: ``nfl_records[]`` (category, scope game/season/career, holders);
+    Hall of Fame: ``hall_of_fame.members[]`` (or a plain list); club records and leaders (j5b-leaders): ``club_records[]``
+    and ``club_leaders[]`` when the document carries them. Categories outside the footer's (points, field goals) are
+    skipped: the screen shows what the franchise also keeps."""
 
     seed = seed or {}
     seasons_by_club = {key: [] for key in CLUBS_2026}
@@ -260,8 +279,11 @@ def _seed_tables(seed: Mapping | None):
     for rows in seasons_by_club.values():
         rows.sort(key=lambda r: -r["year"])
     awards = {a: [] for a in AWARDS}
-    for row in seed.get("awards", ()) or ():
-        award = str(row.get("award", "")).lower()
+    award_rows = seed.get("awards", ())
+    if isinstance(award_rows, Mapping):
+        award_rows = award_rows.get("winners", ())
+    for row in award_rows or ():
+        award = str(row.get("award", "")).lower().replace("sb_mvp", "sbmvp")
         if award not in awards:
             continue
         for winner in (row.get("winners") or ())[:1]:      # shared awards: the first listed winner
@@ -271,24 +293,34 @@ def _seed_tables(seed: Mapping | None):
         rows.sort(key=lambda r: -r["year"])
     book = []
     for row in seed.get("nfl_records", ()) or ():
-        category, kind = category_key(row.get("category")), row.get("kind")
-        if category in CATEGORIES and kind in KINDS:
-            book.append(dict(category=CATEGORIES.index(category), kind=KINDS.index(kind), name=row.get("name", ""),
-                             value=category_value(category, row.get("value", 0)), year=int(row.get("year", 0) or 0),
-                             club=club_key(row.get("club")), pos=position_code(row.get("position"))))
+        category, kind = category_key(row.get("category")), row.get("kind") or row.get("scope")
+        if category not in CATEGORIES or kind not in KINDS:
+            continue
+        holder = _holder(row)
+        year = 0 if kind == "career" else _year(holder.get("season") or holder.get("year") or row.get("year"))
+        book.append(dict(category=CATEGORIES.index(category), kind=KINDS.index(kind), name=holder.get("name", ""),
+                         value=category_value(category, row.get("value", 0)), year=year,
+                         club=club_key(holder.get("club") or row.get("club")),
+                         pos=position_code(holder.get("position") or row.get("position"))))
+    book.sort(key=lambda r: (r["category"], r["kind"]))
     hof = []
-    for row in seed.get("hall_of_fame", ()) or ():
+    members = seed.get("hall_of_fame", ())
+    if isinstance(members, Mapping):
+        members = members.get("members", ())
+    for row in members or ():
         hof.append(dict(year=int(row.get("year", row.get("class", 0)) or 0), name=row.get("name", ""),
                         pos=position_code(row.get("position")), club=club_key(row.get("club") or row.get("team"))))
     hof.sort(key=lambda r: -r["year"])
     club_records = {key: [] for key in CLUBS_2026}
     for row in seed.get("club_records", ()) or ():
         key = club_key(row.get("club"))
-        category = category_key(row.get("category"))
-        if key in club_records and category in CATEGORIES and row.get("kind") in ("game", "season"):
-            club_records[key].append(dict(category=CATEGORIES.index(category), kind=KINDS.index(row["kind"]),
-                                          name=row.get("name", ""), value=category_value(category, row.get("value", 0)),
-                                          year=int(row.get("year", 0) or 0), pos=position_code(row.get("position"))))
+        category, kind = category_key(row.get("category")), row.get("kind") or row.get("scope")
+        if key in club_records and category in CATEGORIES and kind in ("game", "season"):
+            holder = _holder(row)
+            club_records[key].append(dict(category=CATEGORIES.index(category), kind=KINDS.index(kind),
+                                          name=holder.get("name", ""), value=category_value(category, row.get("value", 0)),
+                                          year=_year(holder.get("season") or holder.get("year") or row.get("year")),
+                                          pos=position_code(holder.get("position") or row.get("position"))))
     leaders = {key: [] for key in CLUBS_2026}
     for row in seed.get("club_leaders", ()) or ():
         key = club_key(row.get("club"))
