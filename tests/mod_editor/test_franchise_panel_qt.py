@@ -368,21 +368,21 @@ class CoachTests(_PanelCase):
         overall = page._coach_cards["overall"]
         self.assertIsInstance(overall.bar, ValueBar)                        # the player cards' bar, reused
         self.assertEqual(overall.value(), 60)
-        self.assertEqual(page._coach_cards["shotgun_pass"].value(), 45)
+        self.assertEqual(page._coach_cards["pass_gun"].value(), 65)
         page._coach_spins["wins"].setValue(76)
         overall.spin.setValue(99)
-        page._coach_cards["shotgun_pass"].bar.setValue(70)               # a bar drag routes through the spin
+        page._coach_cards["pass_gun"].bar.setValue(70)                   # a bar drag routes through the spin
         page._coach_spins["playcalling_run"].setValue(55)
         self.application.processEvents()
         assert page.save is not None
         coach = page.save.coach_for_team(0)
         assert coach is not None
-        self.assertEqual((coach.fields["wins"], coach.ratings["overall"], coach.tendencies["shotgun_pass"],
+        self.assertEqual((coach.fields["wins"], coach.ratings["overall"], coach.tendencies["pass_gun"],
                           coach.fields["playcalling_run"]), (76, 99, 70, 55))
         self.assertEqual(page.edit_labels(), [
             "Bill Belichick: Wins 75 → 76",
             "Bill Belichick: Overall 60 → 99",
-            "Bill Belichick: Shotgun Pass 45 → 70",
+            "Bill Belichick: Pass calls: shotgun / pistol / empty 65 → 70",
             "Bill Belichick: Playcalling: run % 45 → 55",
         ])
         self.assertEqual(page.undo(), "Bill Belichick: Playcalling: run % 45 → 55")
@@ -392,7 +392,7 @@ class CoachTests(_PanelCase):
         expected = fs.FranchiseSave(self.payload)
         expected.set_coach_field(0, "wins", 76)
         expected.set_coach_field(0, "overall", 99)
-        expected.set_coach_field(0, "shotgun_pass", 70)
+        expected.set_coach_field(0, "pass_gun", 70)
         expected.set_coach_field(0, "playcalling_run", 55)
         self.assertEqual(written, expected.to_bytes())
         self.assertTrue(self.panel.load_save(self.root / "copy"))

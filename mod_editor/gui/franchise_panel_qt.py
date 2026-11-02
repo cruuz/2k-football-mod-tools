@@ -23,7 +23,7 @@ edits land in one copy, in that order.
 
 Finn's screens this covers (``FLYING_FINN_EDITOR_RE_2026-09-04.md`` §12): the year / user-control /
 salary-cap dialogs, the schedule tab with its Edit Game and Swap Home/Away, the coach editor's
-statistics, Back Field and Rating pages, and *Place on IR*.  Unwitnessed in game except where the core
+statistics, formation-mix (Finn's "Back Field") and rating pages, and *Place on IR*.  Unwitnessed in game except where the core
 module says otherwise (the year rule, the IR move); the activation is the unlabelled inverse.
 """
 
@@ -78,9 +78,18 @@ COACH_STATS: tuple[tuple[str, str], ...] = (
     ("season_ties", "This season: ties"),
     ("photo", "Photo id"), ("body", "Body"), ("playcalling_run", "Playcalling: run %"),
 )
+# The ten formation bytes are two five-class distributions (see nfl2k5_franchise_save.COACH_FORMATION_CLASSES): the formation
+# a coach's CPU RUN calls come from, then the same five classes for his PASS calls.
+FORMATION_WORDS = {"gun": "shotgun / pistol / empty", "split_backs": "split backs", "i_form": "I form",
+                   "one_back": "one back", "no_back": "no back"}
+assert tuple(FORMATION_WORDS) == fs.COACH_FORMATION_CLASSES
+CALL_WORDS = {"run": "Run calls", "pass": "Pass calls"}
+TENDENCY_CAPTIONS = {f"{call}_{formation}": f"{words}: {formation_words}"
+                     for call, words in CALL_WORDS.items() for formation, formation_words in FORMATION_WORDS.items()}
+assert tuple(TENDENCY_CAPTIONS) == fs.COACH_TENDENCIES
 _CAPTIONS = {
     "qb": "QB", "rb": "RB", "te": "TE", "wr": "WR", "ol": "OL", "dl": "DL", "lb": "LB", "db": "DB",
-    "rush_for": "Rush For", "pass_for": "Pass For", "i_form_run": "I Form: run", "i_form_pass": "I Form: pass",
+    "rush_for": "Rush For", "pass_for": "Pass For", **TENDENCY_CAPTIONS,
 }
 CHECKS_RANGE_LINES = 60                    # the Checks page lists this many changed byte ranges, then says how many more
 YEAR_MIN, YEAR_MAX = fs.DISPLAY_YEAR_BASE, fs.DISPLAY_YEAR_BASE + fs.FRANCHISE_MAX_YEAR_INDEX
@@ -363,6 +372,7 @@ class FranchisePanel(QWidget):
         self._players: dict[int, rr.Player] = {}
         self._coach_rows: list[int] = []
         self._coach_cards: dict[str, Any] = {}
+        self._coach_sum_labels: dict[str, QLabel] = {}
         self._coach_spins: dict[str, QSpinBox] = {}
         self._host: QTabWidget | None = None
         self._host_index = -1
@@ -685,15 +695,24 @@ class FranchisePanel(QWidget):
             ratings_grid.addWidget(card, row, column)
         box.addWidget(ratings)
 
-        tendencies = QGroupBox("Back Field (run / pass tendency per formation, %)")
-        tendencies_grid = QGridLayout(tendencies)
-        for position, name in enumerate(fs.COACH_TENDENCIES):
-            card = AttributeCard(name, caption_for(name), 0, 100)
-            card.changed.connect(self._coach_value_changed)
-            self._coach_cards[name] = card
-            row, column = divmod(position, 4)
-            tendencies_grid.addWidget(card, row, column)
-        box.addWidget(tendencies)
+        for call, words in CALL_WORDS.items():
+            group = QGroupBox(f"{words} by formation (share of his {call} calls, %)")
+            group.setToolTip(f"Where his CPU {call} calls come from: five formation types, each a share of all his {call} "
+                             "calls. The five numbers are one distribution and add up to 100 in every coach the game ships.")
+            grid = QGridLayout(group)
+            for position, formation in enumerate(fs.COACH_FORMATION_CLASSES):
+                name = f"{call}_{formation}"
+                card = AttributeCard(name, caption_for(name), 0, 100)
+                card.changed.connect(self._coach_value_changed)
+                self._coach_cards[name] = card
+                row, column = divmod(position, 3)
+                grid.addWidget(card, row, column)
+            total = QLabel("")
+            total.setWordWrap(True)
+            total.setAccessibleName(f"{words} formation total")
+            self._coach_sum_labels[call] = total
+            grid.addWidget(total, 2, 0, 1, 3)
+            box.addWidget(group)
         box.addStretch(1)
         area.setWidget(host)
         page.addWidget(area)
@@ -1196,6 +1215,7 @@ class FranchisePanel(QWidget):
                 self.coach_info_label.setText("")
                 self.coach_teams_label.setText("")
                 self._refresh_coach_buttons(None)
+                self._refresh_formation_totals(None)
                 return
             self.coach_name_label.setText(coach.name or f"coach {coach.index}")
             self.coach_info_label.setText(" / ".join(line for line in coach.info if line) or "(no info lines)")
@@ -1207,8 +1227,20 @@ class FranchisePanel(QWidget):
                 spin.setValue(coach.fields[name])
             for name, card in self._coach_cards.items():
                 card.set_value(coach.ratings[name] if name in coach.ratings else coach.tendencies[name])
+            self._refresh_formation_totals(coach)
         finally:
             self._quiet = False
+
+    def _refresh_formation_totals(self, coach: fs.Coach | None) -> None:
+        """Each set of five formation shares is one distribution; say what this coach's five add up to."""
+
+        for call, label in self._coach_sum_labels.items():
+            if coach is None:
+                label.setText("")
+                continue
+            total = sum(coach.tendencies[f"{call}_{formation}"] for formation in fs.COACH_FORMATION_CLASSES)
+            label.setText(f"Adds up to {total}." if total == 100 else
+                          f"Adds up to {total}. The game's own coaches add up to 100.")
 
     def _current_coach(self) -> fs.Coach | None:
         if self._save is None:

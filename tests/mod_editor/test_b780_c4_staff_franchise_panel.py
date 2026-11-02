@@ -20,11 +20,12 @@ for entry in (ROOT, ROOT / "tests", ROOT / "tests" / "mod_editor"):
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
-from PyQt5.QtWidgets import QDialog  # noqa: E402
+from PyQt5.QtWidgets import QDialog, QGroupBox  # noqa: E402
 
 from mod_editor.core import nfl2k5_franchise_save as fs  # noqa: E402
-from mod_editor.gui.franchise_panel_qt import ClubPickerDialog, FireHireDialog, FranchiseEdit  # noqa: E402
-from b780_staff_fixture import synthetic_staff_franchise  # noqa: E402
+from mod_editor.gui.franchise_panel_qt import (ClubPickerDialog, FireHireDialog, FranchiseEdit,  # noqa: E402
+                                               TENDENCY_CAPTIONS)
+from b780_staff_fixture import COACH_AT, PASS_MIX, RUN_MIX, synthetic_staff_franchise  # noqa: E402
 from test_franchise_panel_qt import _PanelCase  # noqa: E402
 from test_nfl2k5_franchise_save import FIXTURES, FRANCHISE1  # noqa: E402
 
@@ -276,6 +277,73 @@ class StaffMoveTests(_PanelCase):
         FranchiseEdit("coach_hire", "x", {"team": 2, "coach": 3, "restart": False}).apply(save)
         FranchiseEdit("coach_replace", "x", {"team": 0, "first": "Dan", "last": "Quinn", "bio": ["Hi"]}).apply(save)
         self.assertEqual([save.coach_for_team(t).name for t in range(3)], ["Dan Quinn", "Bill Belichick", "Mike Holmgren"])
+
+
+#: The page's words for the ten formation bytes, as the coordinator asked for them (job c1-coachdata proved the layout).
+FORMATION_CARDS = {
+    "run_gun": ("Run calls: shotgun / pistol / empty", 0x83), "run_split_backs": ("Run calls: split backs", 0x84),
+    "run_i_form": ("Run calls: I form", 0x85), "run_one_back": ("Run calls: one back", 0x86),
+    "run_no_back": ("Run calls: no back", 0x87),
+    "pass_gun": ("Pass calls: shotgun / pistol / empty", 0x88), "pass_split_backs": ("Pass calls: split backs", 0x89),
+    "pass_i_form": ("Pass calls: I form", 0x8A), "pass_one_back": ("Pass calls: one back", 0x8B),
+    "pass_no_back": ("Pass calls: no back", 0x8C),
+}
+
+
+class FormationMixTests(_PanelCase):
+    """The ten bytes at +0x83..+0x8C are two five-class distributions; the page shows them that way, in plain words."""
+
+    def setUp(self) -> None:
+        super().setUp()
+        self.payload = synthetic_staff_franchise(year_field=7, user_team=0)
+        self.load(self.payload)
+        self.page.tabs.setCurrentIndex(2)
+
+    def test_the_cards_use_the_true_names_and_plain_captions(self) -> None:
+        page = self.page
+        self.assertEqual({name: caption for name, (caption, _offset) in FORMATION_CARDS.items()}, TENDENCY_CAPTIONS)
+        self.assertEqual(tuple(FORMATION_CARDS), fs.COACH_TENDENCIES)                     # same ten, same order
+        self.assertTrue(set(FORMATION_CARDS) <= set(page._coach_cards))                  # every one has a card
+        for old in ("shotgun_run", "shotgun_pass", "split_back_run", "split_back_pass", "i_form_run", "i_form_pass",
+                    "lone_back_run", "lone_back_pass", "empty_run", "empty_pass"):
+            self.assertNotIn(old, page._coach_cards)
+        for name, (caption, offset) in FORMATION_CARDS.items():
+            card = page._coach_cards[name]
+            self.assertEqual(card.caption.text(), caption)
+            self.assertEqual(card.spin.accessibleName(), caption)
+            self.assertEqual(card.value(), page.save.u8(COACH_AT + offset), name)         # each card shows its own byte
+        # two groups, one per kind of call, and Finn's mislabelled "Back Field" group is gone
+        titles = [group.title() for group in page.findChildren(QGroupBox)]
+        self.assertIn("Run calls by formation (share of his run calls, %)", titles)
+        self.assertIn("Pass calls by formation (share of his pass calls, %)", titles)
+        self.assertFalse([t for t in titles if "Back Field" in t])
+
+    def test_the_totals_say_what_each_set_of_five_adds_up_to(self) -> None:
+        page = self.page
+        self.assertEqual((sum(RUN_MIX), sum(PASS_MIX)), (100, 100))
+        self.assertEqual(page._coach_sum_labels["run"].text(), "Adds up to 100.")
+        self.assertEqual(page._coach_sum_labels["pass"].text(), "Adds up to 100.")
+        self.assertTrue(page.set_coach_value(0, "run_i_form", page._coach_cards["run_i_form"].value() + 5))
+        self.assertEqual(page._coach_sum_labels["run"].text(), "Adds up to 105. The game's own coaches add up to 100.")
+        self.assertEqual(page._coach_sum_labels["pass"].text(), "Adds up to 100.")           # the other set is its own
+        self.panel.undo()
+        self.assertEqual(page._coach_sum_labels["run"].text(), "Adds up to 100.")
+
+    def test_editing_a_card_writes_only_its_byte_and_the_journal_says_it_in_words(self) -> None:
+        page = self.page
+        before = page.save.to_bytes()
+        card = page._coach_cards["pass_one_back"]
+        was = card.value()
+        card.spin.setValue(42)
+        self.application.processEvents()
+        after = page.save.to_bytes()
+        changed = {i for i, (a, b) in enumerate(zip(before, after)) if a != b}
+        self.assertEqual(changed, {COACH_AT + 0x8B})
+        self.assertEqual(page.edit_labels(), [f"Bill Belichick: Pass calls: one back {was} → 42"])
+        receipt, written = self.write()
+        expected = fs.FranchiseSave(self.payload)
+        expected.set_coach_field(0, "pass_one_back", 42)
+        self.assertEqual(written, expected.to_bytes())
 
 
 @unittest.skipUnless(FRANCHISE1.is_file(), f"private Franchise1 fixture missing under {FIXTURES}")

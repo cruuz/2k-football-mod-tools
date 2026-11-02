@@ -24,7 +24,7 @@ for entry in (ROOT, ROOT / "tests", ROOT / "tests" / "mod_editor"):
 from mod_editor.core import nfl2k5_franchise_save as fs  # noqa: E402
 from mod_editor.core import nfl2k5_practice_squad as ps  # noqa: E402
 from mod_editor.core import nfl2k5_roster_records as rr  # noqa: E402
-from b780_staff_fixture import COACH_AT, STAFF, STRINGS_AT, synthetic_staff_franchise  # noqa: E402
+from b780_staff_fixture import COACH_AT, PASS_MIX, RUN_MIX, STAFF, STRINGS_AT, synthetic_staff_franchise  # noqa: E402
 from test_nfl2k5_franchise_save import F0, FIXTURES, FRANCHISE1  # noqa: E402
 from test_roster_editor_panel_franchise import write_container  # noqa: E402
 
@@ -341,6 +341,88 @@ class RoundTripTests(unittest.TestCase):
             self.assertEqual((back.coach_for_team(1).name, back.coach_for_team(1).info[0]), ("Dan Quinn", "Defence first."))
             self.assertEqual(back.coach_for_team(0).name, "Mike Holmgren")
             self.assertEqual([c.name for c in back.unemployed_coaches()], ["Bill Belichick"])
+
+
+#: Every name of the ten formation bytes and the record offset it reads and writes (c1-coachdata proved the layout with the
+#: game's own routine: +0x83..+0x87 are the formation shares of RUN calls, +0x88..+0x8C of PASS calls, five classes each).
+FORMATION_BYTES = {
+    "run_gun": 0x83, "run_split_backs": 0x84, "run_i_form": 0x85, "run_one_back": 0x86, "run_no_back": 0x87,
+    "pass_gun": 0x88, "pass_split_backs": 0x89, "pass_i_form": 0x8A, "pass_one_back": 0x8B, "pass_no_back": 0x8C,
+}
+OLD_NAMES = ("shotgun_run", "shotgun_pass", "split_back_run", "split_back_pass", "i_form_run", "i_form_pass",
+             "lone_back_run", "lone_back_pass", "empty_run", "empty_pass")
+
+
+class FormationBytesTests(unittest.TestCase):
+    """The ten bytes at +0x83..+0x8C are two five-class distributions, run then pass, not run / pass pairs."""
+
+    def test_each_name_is_pinned_to_its_byte(self) -> None:
+        self.assertEqual(fs.COACH_TENDENCIES, tuple(FORMATION_BYTES))
+        self.assertEqual((fs.COACH_TENDENCIES_OFFSET, fs.COACH_TENDENCY_COUNT), (0x83, 10))
+        self.assertEqual(fs.COACH_FORMATION_CLASSES, ("gun", "split_backs", "i_form", "one_back", "no_back"))
+        self.assertEqual(fs.COACH_FORMATION_GROUPS, {"formation_run": 0x83, "formation_pass": 0x88})
+        for index, (name, offset) in enumerate(FORMATION_BYTES.items()):
+            self.assertEqual(fs.COACH_TENDENCIES_OFFSET + index, offset, name)
+        self.assertEqual(sorted(FORMATION_BYTES.values()), list(range(0x83, 0x8D)))
+        for old in OLD_NAMES:                                        # Finn's alternating labels are gone
+            self.assertNotIn(old, fs.COACH_TENDENCIES)
+
+    def test_the_reader_puts_each_byte_under_its_name(self) -> None:
+        payload = bytearray(synthetic_staff_franchise())
+        for offset in FORMATION_BYTES.values():                      # ten different bytes in coach 0
+            payload[coach_record(0) + offset] = offset - 0x40
+        coach = fs.FranchiseSave(bytes(payload)).coaches()[0]
+        self.assertEqual(coach.tendencies, {name: offset - 0x40 for name, offset in FORMATION_BYTES.items()})
+        self.assertEqual(coach.tendencies["run_gun"], 0x43)
+        self.assertEqual(coach.tendencies["pass_no_back"], 0x4C)
+
+    def test_the_writer_changes_exactly_the_named_byte(self) -> None:
+        for name, offset in FORMATION_BYTES.items():
+            save = fs.FranchiseSave(synthetic_staff_franchise())
+            before = save.to_bytes()
+            current = save.coaches()[1].tendencies[name]
+            save.set_coach_field(1, name, 77 if current != 77 else 78)
+            changed = changed_bytes(before, save.to_bytes())
+            self.assertEqual(changed, {coach_record(1) + offset}, name)
+            self.assertEqual(save.buffer[coach_record(1) + offset], 77 if current != 77 else 78)
+            with self.assertRaisesRegex(fs.FranchiseSaveError, "outside 0..100"):
+                save.set_coach_field(1, name, 101)
+            self.assertEqual(save.buffer[coach_record(1) + offset], 77 if current != 77 else 78)
+
+    def test_the_old_names_are_not_fields_any_more(self) -> None:
+        save = fs.FranchiseSave(synthetic_staff_franchise())
+        before = save.to_bytes()
+        for old in OLD_NAMES:
+            with self.assertRaisesRegex(fs.FranchiseSaveError, "unknown coach field"):
+                save.set_coach_field(0, old, 50)
+        self.assertEqual(save.to_bytes(), before)
+
+    def test_the_synthetic_coaches_hold_two_distributions_that_add_up_to_100(self) -> None:
+        for coach in fs.FranchiseSave(synthetic_staff_franchise()).coaches()[:4]:
+            self.assertEqual(sum(coach.tendencies[f"run_{c}"] for c in fs.COACH_FORMATION_CLASSES), sum(RUN_MIX))
+            self.assertEqual(sum(coach.tendencies[f"pass_{c}"] for c in fs.COACH_FORMATION_CLASSES), sum(PASS_MIX))
+        self.assertEqual((sum(RUN_MIX), sum(PASS_MIX)), (100, 100))
+
+    def test_the_roster_editors_group_names_and_offsets_agree_when_c1_is_merged(self) -> None:
+        groups = getattr(rr, "COACH_TENDENCY_GROUPS", None)
+        if groups is None:
+            self.skipTest("nfl2k5_roster_records.COACH_TENDENCY_GROUPS (job b780-c1-coachdata) is not in this tree")
+        for name, offset in fs.COACH_FORMATION_GROUPS.items():
+            self.assertEqual(groups[name][:2], (offset, 5), name)
+
+    @unittest.skipUnless(FRANCHISE1.is_file() and F0.is_file(), f"private save fixtures missing under {FIXTURES}")
+    def test_every_coach_the_game_ships_adds_up_to_100_in_each_set_of_five(self) -> None:
+        """The evidence for the layout in the game's own data: the 32 club coaches of each of two saves."""
+
+        for path in (F0.parents[3], FRANCHISE1.parents[3]):
+            checked = 0
+            for coach in fs.FranchiseSave.load(path).coaches():
+                if coach.placeholder:
+                    continue
+                self.assertEqual(sum(coach.tendencies[f"run_{c}"] for c in fs.COACH_FORMATION_CLASSES), 100, coach.name)
+                self.assertEqual(sum(coach.tendencies[f"pass_{c}"] for c in fs.COACH_FORMATION_CLASSES), 100, coach.name)
+                checked += 1
+            self.assertEqual(checked, 32, path)
 
 
 class CommandLineTests(unittest.TestCase):

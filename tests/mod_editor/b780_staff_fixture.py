@@ -26,6 +26,7 @@ from test_nfl2k5_roster_records import synthetic_body  # noqa: E402
 COACH_AT = 0x85000                      # a zero stretch of the synthetic arena (file offset)
 STRINGS_AT = 0x86000
 NONE = None
+RUN_MIX, PASS_MIX = (15, 25, 20, 35, 5), (5, 25, 10, 50, 10)           # formation shares of run calls and of pass calls
 
 #: first, last, biography lines, photo, body, flags, career numbers, the club that employs him
 STAFF = (
@@ -90,8 +91,9 @@ def synthetic_staff_franchise(*, year_field: int = 7, user_team: int = 0, contig
         data[record + fs.COACH_FIELDS["playcalling_run"][0]] = 40 + index
         for k in range(len(fs.COACH_RATINGS)):
             data[record + fs.COACH_RATINGS_OFFSET + k] = 50 + 3 * index + (k % 7)
-        for k in range(fs.COACH_TENDENCY_COUNT):
-            data[record + fs.COACH_TENDENCIES_OFFSET + k] = 30 + 4 * k + index
+        for k in range(5):                      # two distributions that add up to 100, rotated per coach
+            data[record + fs.COACH_TENDENCIES_OFFSET + k] = RUN_MIX[(k + index) % 5]
+            data[record + fs.COACH_TENDENCIES_OFFSET + 5 + k] = PASS_MIX[(k + index) % 5]
     if not free_tail:
         data[STRINGS_AT + fs.COACH_STRING_REGION - 2] = 0x5A     # something else lives at the end of the region
     struct.pack_into("<I", data, fs.ARENA_ROOT + 0x30, len(STAFF))

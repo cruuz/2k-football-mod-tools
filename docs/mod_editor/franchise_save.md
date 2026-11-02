@@ -136,7 +136,13 @@ in-game save/load observation. No save format or serializer changes are made.
   `+0x1C` seasons with team, `+0x1E` total seasons, `+0x20/+0x22/+0x24` career W/L/T, `+0x26/+0x28/+0x2A`
   season W/L/T (promoted at rollover by `FUN_00247b40`), `+0x30` winning seasons, `+0x32` Super Bowls,
   `+0x34/+0x36` playoff W/L, `+0x38/+0x3A` Super Bowl W/L, `+0x40` photo id, `+0x42..+0x58` the 23
-  ratings, `+0x59` play-calling run %, `+0x83..+0x8C` formation run/pass tendencies.  Finn's map,
+  ratings, `+0x59` play-calling run %, `+0x83..+0x87` the share of his RUN calls from each of five formation
+  classes (shotgun / pistol / empty, split backs, I form, one back, no back) and `+0x88..+0x8C` the same five
+  classes for his PASS calls (`COACH_TENDENCIES`: `run_gun` .. `run_no_back`, `pass_gun` .. `pass_no_back`).
+  Finn's alternating run / pass labels for these ten bytes were wrong: the game's own code (`FUN_002818D0`
+  copies the block into the CPU's decision statistics, then the formation choice reads it) treats them as two
+  distributions (job c1-coachdata, run under Unicorn), and every real coach in both reference saves adds up
+  to 100 in each set.  Finn's map,
   re-checked: Belichick reads 75–69, 2 Super Bowls, 7–1 in the playoffs entering 2004 — his real
   numbers.  PROVED.
 * **Team salary** `team+0x124` (u32, $1000): recomputed by `FUN_000c3f00` = Σ contract values of players

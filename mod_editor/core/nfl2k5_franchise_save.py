@@ -180,9 +180,18 @@ COACH_RATINGS = ("overall", "offense", "rush_for", "pass_for", "defense", "pass_
                  "qb", "rb", "te", "wr", "ol", "dl", "lb", "db", "special_teams", "professionalism",
                  "preparation", "conditioning", "motivation", "leadership", "discipline", "respect")
 COACH_RATINGS_OFFSET = 0x42                                            # 23 bytes 0x42..0x58
-COACH_TENDENCIES_OFFSET, COACH_TENDENCY_COUNT = 0x83, 10                # 5 formations x run / pass
-COACH_TENDENCIES = ("shotgun_run", "shotgun_pass", "split_back_run", "split_back_pass", "i_form_run",
-                    "i_form_pass", "lone_back_run", "lone_back_pass", "empty_run", "empty_pass")
+# The ten bytes at +0x83..+0x8C are NOT run / pass pairs per formation (Finn's old labels shotgun_run, shotgun_pass,
+# split_back_run ... alternated them and were wrong).  They are two five-class distributions of the formation a CPU call
+# comes from: +0x83..+0x87 weigh the formation of RUN calls, +0x88..+0x8C the same five classes for PASS calls.  b780
+# c1-coachdata proved it by running the game's own code in Unicorn (FUN_002818D0 copies a coach's tendency block into the
+# CPU's decision statistics; a record with all run weight on class 4 and all pass weight on class 1 made 482 of 482 run
+# calls come from class 4 and 319 of about 600 pass calls from class 1), and the game's real coach records agree: in
+# Finn's save and in Franchise1 every coach's five run weights add up to exactly 100 and so do his five pass weights.
+# Classes 1..5: gun (shotgun, pistol, empty from the gun), split backs, I form, one back, no back.
+COACH_TENDENCIES_OFFSET, COACH_TENDENCY_COUNT = 0x83, 10
+COACH_FORMATION_CLASSES = ("gun", "split_backs", "i_form", "one_back", "no_back")
+COACH_FORMATION_GROUPS = {"formation_run": 0x83, "formation_pass": 0x88}       # c1-coachdata's group names, record offsets
+COACH_TENDENCIES = tuple(f"{call}_{formation}" for call in ("run", "pass") for formation in COACH_FORMATION_CLASSES)
 
 # head coach moves (c4-staffui): Fire / Hire / Swap.  A coach is a record the teams point at (team +0x14C), so a move is
 # a pointer change; the game's own Create Team routine does the same (``team +0x14C = find_free_coach()``).
@@ -1589,4 +1598,5 @@ __all__ = ["FranchiseSave", "FranchiseSaveError", "SeasonHeader", "Game", "Coach
            "InjuredReserveEntry", "Region", "REGIONS", "regions_cover_file", "load_franchise", "is_franchise_save",
            "FRANCHISE_SAVE_SIZE", "SEASON_BLOCK", "FRONT_OFFICE_BLOCK", "TEAM_STAT_FIELDS", "TEAM_STAT_NAMES",
            "COACH_FIELDS", "COACH_RATINGS", "COACH_TENDENCIES", "STAGE_NAMES", "DISPLAY_YEAR_BASE",
-           "COACH_FLAG_NO_NAME", "COACH_NAME_MAX", "COACH_BIO_MAX", "COACH_NO_PHOTO", "COACH_CAREER", "COACH_WITH_TEAM"]
+           "COACH_FLAG_NO_NAME", "COACH_NAME_MAX", "COACH_BIO_MAX", "COACH_NO_PHOTO", "COACH_CAREER", "COACH_WITH_TEAM",
+           "COACH_FORMATION_CLASSES", "COACH_FORMATION_GROUPS", "COACH_TENDENCIES_OFFSET", "COACH_TENDENCY_COUNT"]

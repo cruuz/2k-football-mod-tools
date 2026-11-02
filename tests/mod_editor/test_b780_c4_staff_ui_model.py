@@ -22,7 +22,7 @@ for entry in (ROOT, ROOT / "tests", ROOT / "tests" / "mod_editor"):
 
 from mod_editor.core import nfl2k5_roster_records as rr  # noqa: E402
 from mod_editor.core import nfl2k5_staff_ui as ui  # noqa: E402
-from b780_staff_fixture import synthetic_staff_franchise  # noqa: E402
+from b780_staff_fixture import PASS_MIX, RUN_MIX, synthetic_staff_franchise  # noqa: E402
 from test_roster_editor_panel_franchise import write_container  # noqa: E402
 
 DISC = Path(os.environ.get("NFL2K5_SOFTDRINK_DISC", "/media/noah/Storage/2K5 Discs/SOFTDRINK 2K28 v0.8 (2026-10-31).xiso.iso"))
@@ -83,6 +83,24 @@ class ReadTests(unittest.TestCase):
         self.assertEqual(belichick.ratings["overall"], 50)
         self.assertEqual(belichick.run_share, 40)
         self.assertEqual(rows[2].run_share, 42)
+
+    def test_the_ten_formation_bytes_are_read_under_their_true_names(self) -> None:
+        """Shares of his run calls by formation, then shares of his pass calls (job c1-coachdata); never run / pass pairs."""
+
+        with tempfile.TemporaryDirectory() as td:
+            source = write_container(Path(td) / "save", synthetic_staff_franchise())
+            rows = ui.read_head_coaches(rr.SaveContainer.load(source).document())
+        classes = ("gun", "split_backs", "i_form", "one_back", "no_back")
+        run_names, pass_names = [f"run_{c}" for c in classes], [f"pass_{c}" for c in classes]
+        belichick, reid = rows[0], rows[1]
+        self.assertEqual(list(belichick.tendencies), run_names + pass_names)
+        self.assertEqual([belichick.tendencies[n] for n in run_names], list(RUN_MIX))
+        self.assertEqual([belichick.tendencies[n] for n in pass_names], list(PASS_MIX))
+        for row in rows:                                         # each set of five is its own distribution of 100
+            self.assertEqual(sum(row.tendencies[n] for n in run_names), 100, row.name)
+            self.assertEqual(sum(row.tendencies[n] for n in pass_names), 100, row.name)
+        # the fixture rotates both sets by one class per coach: Reid's first byte is Belichick's second
+        self.assertEqual((reid.tendencies["run_gun"], reid.tendencies["pass_gun"]), (RUN_MIX[1], PASS_MIX[1]))
 
 
 class SwapMoveTests(unittest.TestCase):
