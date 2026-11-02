@@ -304,19 +304,26 @@ def write_text(path: Path, text: str) -> Path | None:
         return None
 
 
-def _output_folder(target: Any) -> Path | None:
+def _output_folder(target: Any, *, require_file: bool = False) -> Path | None:
+    """The folder of the output disc, when it is a real place to write beside (an absolute path whose folder exists;
+    with ``require_file``, the disc itself must exist: a finished build). Never the current directory by accident."""
     if not target:
         return None
-    folder = Path(str(target)).parent
+    path = Path(str(target))
+    if not path.is_absolute() or (require_file and not path.is_file()):
+        return None
+    folder = path.parent
     return folder if folder.is_dir() else None
 
 
 def write_build_log(text: str, target: Any, *, log_directory: Path | None = None,
-                    stamp: str | None = None) -> dict[str, str]:
-    """``<disc>.build-log.txt`` beside the output and a copy in ``<log folder>/builds/``. {"build_log", "log_copy"}."""
+                    stamp: str | None = None, finished: bool = False) -> dict[str, str]:
+    """``<disc>.build-log.txt`` beside the output and a copy in ``<log folder>/builds/``. {"build_log", "log_copy"}.
+
+    ``finished``: the build published its disc, so the log goes beside it only if that disc is really there."""
     out: dict[str, str] = {}
     stamp = stamp or datetime.now().strftime("%Y%m%d-%H%M%S")
-    folder = _output_folder(target)
+    folder = _output_folder(target, require_file=finished)
     if folder is not None:
         beside = write_text(folder / safe_name(Path(str(target)).name + LOG_SUFFIX), text)
         if beside is not None:
@@ -539,7 +546,7 @@ def record_end(tracker, *, plan=None, labels=None, receipt: dict | None = None,
                          colour=", ".join(colour_values(plan)))
     try:
         paths = write_build_log(build_log_text(tracker, plan=plan, labels=labels, receipt=receipt), target,
-                                log_directory=log_directory)
+                                log_directory=log_directory, finished=tracker.result == "ok")
         record.build_log, record.log_copy = paths.get("build_log", ""), paths.get("log_copy", "")
     except Exception:  # noqa: BLE001
         pass

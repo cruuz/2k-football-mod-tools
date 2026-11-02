@@ -1099,16 +1099,19 @@ def run_jobs(function, jobs, *, workers=None, progress=None, label="Modern MetLi
     say = progress or (lambda message, done, total: None)
     count = _workers(workers)
     results = []
+    from . import build_steps  # b791-h3: a job's error names its bundle (job[0])
     if count == 1 or len(jobs) == 1:
         for index, job in enumerate(jobs):
             say(f"{label}: {job[0]} ({index + 1} of {len(jobs)})", index, len(jobs))
-            results.append(function(job))
+            with build_steps.resource(job[0]):
+                results.append(function(job))
         return results
     from concurrent.futures import ProcessPoolExecutor, as_completed
     with ProcessPoolExecutor(max_workers=count) as pool:
-        futures = [pool.submit(official.run_with_pack, function, job, official.selected_root()) for job in jobs]
+        futures = {pool.submit(official.run_with_pack, function, job, official.selected_root()): job for job in jobs}
         for index, future in enumerate(as_completed(futures)):
-            results.append(future.result())
+            with build_steps.resource(futures[future][0]):
+                results.append(future.result())
             say(f"{label}: {results[-1][0]} ({index + 1} of {len(jobs)})", index + 1, len(jobs))
     return results
 

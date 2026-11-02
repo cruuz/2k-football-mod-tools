@@ -113,6 +113,14 @@ def _run_task(function, task, marks_root):
     return official.run_with_pack(function, task, marks_root)
 
 
+def _named(task):
+    """b791-h3: an error from a task whose first item is its name (a bundle file, ...) carries that name."""
+    from contextlib import nullcontext
+    from . import build_steps
+    first = task[0] if isinstance(task, (tuple, list)) and task else None
+    return build_steps.resource(first) if isinstance(first, str) and 0 < len(first) <= 120 else nullcontext()
+
+
 def ordered_map(function, tasks, workers: int, *, initializer=None, initargs=(), cost=None):
     """Yield ``function(task)`` for each task, in task order.
 
@@ -129,7 +137,9 @@ def ordered_map(function, tasks, workers: int, *, initializer=None, initargs=(),
         if initializer is not None and tasks:
             initializer(*initargs)
         for task in tasks:
-            yield function(task)
+            with _named(task):
+                result = function(task)
+            yield result
         return
     from collections import deque
     from concurrent.futures import ProcessPoolExecutor
@@ -142,7 +152,9 @@ def ordered_map(function, tasks, workers: int, *, initializer=None, initargs=(),
         if initializer is not None:
             initializer(*initargs)
         for task in tasks:
-            yield function(task)
+            with _named(task):
+                result = function(task)
+            yield result
         return
     window = max(2, 2 * min(workers, len(tasks)))
     pending: deque = deque()
@@ -170,7 +182,8 @@ def ordered_map(function, tasks, workers: int, *, initializer=None, initargs=(),
                 broken = True
             if not broken:
                 try:
-                    result = (futures.pop(delivered) if cost is not None else pending.popleft()).result()
+                    with _named(tasks[delivered]):
+                        result = (futures.pop(delivered) if cost is not None else pending.popleft()).result()
                 except BrokenProcessPool:
                     broken = True
             if broken:
@@ -178,7 +191,9 @@ def ordered_map(function, tasks, workers: int, *, initializer=None, initargs=(),
                 if initializer is not None:
                     initializer(*initargs)
                 for task in tasks[delivered:]:
-                    yield function(task)
+                    with _named(task):
+                        result = function(task)
+                    yield result
                 return
             delivered += 1
             if delivered == len(tasks):

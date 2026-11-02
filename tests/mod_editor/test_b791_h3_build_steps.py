@@ -343,6 +343,27 @@ class JournalTests(unittest.TestCase):
         self.assertNotIn("left_out", self.receipt)
         self.assertFalse(build_steps.hooks_installed())
 
+    def test_a_wrapper_kept_by_code_imported_during_a_step_still_writes_afterwards(self):
+        # multiprocessing.connection binds os.write when it is first imported; if that happens inside an optional
+        # step it keeps the journaled wrapper after the step. That wrapper must still write (it once raised KeyError).
+        with build_steps.optional(self.receipt, self.image.path, None, "modern_fans"):
+            kept_write, kept_pwrite = os.write, getattr(os, "pwrite", None)
+        self.assertFalse(build_steps.hooks_installed())
+        self.assertIsNot(os.write, kept_write)
+        read, write = os.pipe()
+        try:
+            self.assertEqual(kept_write(write, b"ok"), 2)
+            self.assertEqual(os.read(read, 2), b"ok")
+        finally:
+            os.close(read)
+            os.close(write)
+        if kept_pwrite is not None:
+            fd = os.open(self.image.path, os.O_RDWR | getattr(os, "O_BINARY", 0))
+            try:
+                self.assertEqual(kept_pwrite(fd, b"\x01", 0x9000), 1)
+            finally:
+                os.close(fd)
+
     def test_a_named_resource_goes_into_the_note(self):
         with build_steps.optional(self.receipt, self.image.path, None, "sideline_2026"):
             with build_steps.resource("14H9.IFF splayer"):
@@ -377,6 +398,52 @@ class JournalTests(unittest.TestCase):
                     os.close(fd)
                 raise ValueError("grade failed")
         self._assert_restored()
+
+
+def _fail_for_bundle(task):
+    if task[0] == "s13ad.iff":
+        raise ValueError("cannot keep the retail scratch word: padding 9, needs 12, retail 8")
+    return task[0]
+
+
+class PoolRunnerResourceTests(unittest.TestCase):
+    """The two pool runners name the bundle a failed task was working on (the task's first item)."""
+
+    def test_ordered_map_names_the_failing_task_and_never_the_consumer(self):
+        from mod_editor.core import nfl2k5_late_steps as late
+        tasks = [("s12ad.iff", 1), ("s13ad.iff", 2), ("s14ad.iff", 3)]
+        with self.assertRaises(ValueError) as caught:
+            list(late.ordered_map(_fail_for_bundle, tasks, 1))
+        self.assertEqual(caught.exception._studio_resource, "s13ad.iff")
+        results = late.ordered_map(_fail_for_bundle, [("s12ad.iff", 1)], 1)
+        with self.assertRaises(KeyError) as caught:
+            for _result in results:
+                raise KeyError("the consumer's own error")
+        self.assertIsNone(getattr(caught.exception, "_studio_resource", None))
+        with self.assertRaises(ZeroDivisionError) as caught:      # an unnamed task carries no resource
+            list(late.ordered_map(lambda task: 1 / 0, [(1, 2)], 1))
+        self.assertIsNone(getattr(caught.exception, "_studio_resource", None))
+
+    @unittest.skipUnless(multiprocessing.get_start_method(allow_none=True) in (None, "fork")
+                         and "fork" in multiprocessing.get_all_start_methods(), "pooled path needs fork-start workers")
+    def test_ordered_map_pool_names_the_failing_task(self):
+        from mod_editor.core import nfl2k5_late_steps as late
+        tasks = [(f"s{index:02d}dd.iff", index) for index in range(8)] + [("s13ad.iff", 99)]
+        with self.assertRaises(ValueError) as caught:
+            list(late.ordered_map(_fail_for_bundle, tasks, 3))
+        self.assertEqual(caught.exception._studio_resource, "s13ad.iff")
+
+    def test_run_jobs_names_the_failing_bundle(self):
+        from mod_editor.core import nfl2k5_modern_metlife as metlife
+        jobs = [("s12ad.iff", b""), ("s13ad.iff", b"")]
+        with self.assertRaises(ValueError) as caught:
+            metlife.run_jobs(_fail_for_bundle, jobs, workers=1)
+        self.assertEqual(caught.exception._studio_resource, "s13ad.iff")
+        with self.assertRaises(ValueError) as caught:
+            with build_steps.track():
+                build_steps.begin("modern_lambeau")
+                metlife.run_jobs(_fail_for_bundle, jobs, workers=1, label="Lambeau Field")
+        self.assertTrue(str(caught.exception).startswith("During Lambeau Field (s13ad.iff): cannot keep the retail"))
 
 
 def _child_writes(path):
@@ -628,6 +695,7 @@ class ReportTests(unittest.TestCase):
         self.assertIn("During 2026 head coaches: coach scene does not fit", str(caught.exception))
 
     def test_a_finished_build_writes_its_log_beside_the_disc(self):
+        self.output.write_bytes(b"the published disc")
         with build_steps.track() as session:
             build_steps.fact("plan", self.plan)
             build_steps.fact("target", str(self.output))
@@ -635,10 +703,23 @@ class ReportTests(unittest.TestCase):
         record = build_report.record_end(session.tracker, plan=self.plan,
                                          receipt={"target": str(self.output), "user_notes": ["a note"]},
                                          log_directory=self.folder / "logs")
+        self.assertEqual(Path(record.build_log).parent, self.output.parent)
         log = Path(record.build_log).read_text(encoding="utf-8")
         self.assertIn("Result: OK (the disc was made)", log)
         self.assertIn("- a note", log)
         self.assertEqual(build_report.safe_name("a:b/c\\d?.txt"), "a_b_c_d_.txt")
+
+    def test_a_relative_or_missing_output_never_puts_a_log_in_the_current_folder(self):
+        with build_steps.track() as session:
+            session.progress("x", 0, 0)
+        here = set(os.listdir("."))
+        record = build_report.record_end(session.tracker, receipt={"target": "output.iso"})
+        self.assertEqual(record.build_log, "")
+        self.assertEqual(set(os.listdir(".")), here)
+        missing = self.folder / "out" / "never-published.iso"
+        record = build_report.record_end(session.tracker, receipt={"target": str(missing)},
+                                         log_directory=self.folder / "logs")
+        self.assertEqual(Path(record.build_log).parent, self.folder / "logs" / "builds")
 
 
 if __name__ == "__main__":

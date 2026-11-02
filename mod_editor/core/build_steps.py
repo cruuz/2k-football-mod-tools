@@ -359,6 +359,43 @@ def is_cancel(exc: BaseException) -> bool:
     return any(cls.__name__ == "BuildCancelled" for cls in type(exc).__mro__)
 
 
+def _chain_attr(exc: BaseException, attribute: str) -> Any:
+    """The first ``attribute`` along ``exc``'s cause/context chain: a step stamp survives an error that was reworded
+    into a new exception on its way out (``raise ValueError(words) from exc``)."""
+    seen, current = 0, exc
+    while current is not None and seen < 12:
+        value = getattr(current, attribute, None)
+        if value is not None:
+            return value
+        current = current.__cause__ or current.__context__
+        seen += 1
+    return None
+
+
+def stage_words(exc: BaseException, target: Path | None) -> str | None:
+    """Plain words for an error about one of the build's own private files (its .studio-build-* folder), or None."""
+    if not isinstance(exc, OSError) or target is None:
+        return None
+    try:
+        from . import mod_build
+    except Exception:  # noqa: BLE001  # pragma: no cover
+        return None
+    stage = Path(target).parent
+    for name in (getattr(exc, "filename", None), getattr(exc, "filename2", None)):
+        if not name:
+            continue
+        path = Path(str(name))
+        role = mod_build._private_stage_role(path)
+        try:
+            inside = path.is_relative_to(stage) or path.resolve().is_relative_to(stage.resolve())
+        except (OSError, ValueError):
+            inside = False
+        if role and inside:
+            return (f"{role} could not be read ({exc.strerror or 'missing'}); this is a fault inside the Studio's own "
+                    "build folder, not in the files you chose")
+    return None
+
+
 def _stamp(exc: BaseException, attribute: str, value: Any) -> None:
     if getattr(exc, attribute, None) is None:
         try:
@@ -640,7 +677,7 @@ def contextualize(exc: BaseException, tracker: Tracker | None) -> BaseException:
     if isinstance(exc, StepFailure):
         failure = exc
     else:
-        stamped = getattr(exc, "_studio_step", None)
+        stamped = _chain_attr(exc, "_studio_step")
         current = tracker.current() if tracker is not None else None
         if stamped is not None:
             step_id, label = stamped
@@ -648,14 +685,14 @@ def contextualize(exc: BaseException, tracker: Tracker | None) -> BaseException:
             step_id, label = current["id"], current["label"]
         else:
             step_id, label = "build", label_of("build")
-        resource = getattr(exc, "_studio_resource", None)
+        resource = _chain_attr(exc, "_studio_resource")
         entry = None
         if tracker is not None:
             entry = next((s for s in reversed(tracker.steps) if s["id"] == step_id), None)
         step_lines = tracker.step_lines(entry) if tracker is not None else []
         last = step_lines[-1] if step_lines else (tracker.last_line() if tracker is not None else "")
         failure = wrap(exc, step_id, label, resource, last_progress=last,
-                       undo=getattr(exc, "_studio_undo", "") or "")
+                       undo=_chain_attr(exc, "_studio_undo") or "")
     if tracker is not None and tracker.failure is None:
         original = getattr(failure, "original", None) or exc
         # The wrapper is not raised yet, so the traceback is the original's own chain (the wrapper adds one line).
@@ -740,6 +777,11 @@ _READ_CHUNK = 8 * 1024 * 1024
 _HOOK_LOCK = threading.RLock()
 _JOURNALS: list["_Journal"] = []
 _ORIGINALS: dict[str, Callable[..., Any]] = {}
+#: The real functions, taken when this module is first imported. The journaled wrappers always call these: code that
+#: was imported while a step was journaled (multiprocessing.connection binds ``os.write`` at import) keeps a wrapper
+#: after the wrappers are taken off ``os``, and that wrapper must still write.
+_REAL_WRITE = os.write
+_REAL_PWRITE = getattr(os, "pwrite", None)
 _AUDIT_INSTALLED = False
 _STDLIB_OPENERS = frozenset({"pathlib", "io", "_pyio", "codecs", "os", "tempfile", "contextlib", "shutil", "gzip",
                              "zipfile", "builtins"})
@@ -992,13 +1034,13 @@ def _capture(fd: int, offset: int | None, data: Any) -> None:
 def _hooked_pwrite(fd, data, offset):
     if _JOURNALS:
         _capture(fd, offset, data)
-    return _ORIGINALS["pwrite"](fd, data, offset)
+    return _REAL_PWRITE(fd, data, offset)
 
 
 def _hooked_write(fd, data):
     if _JOURNALS:
         _capture(fd, None, data)
-    return _ORIGINALS["write"](fd, data)
+    return _REAL_WRITE(fd, data)
 
 
 def _flag_vector_write(name):
@@ -1115,7 +1157,7 @@ def _install_hooks() -> None:
             _AUDIT_INSTALLED = True
         if _ORIGINALS:
             return
-        if hasattr(os, "pwrite"):
+        if _REAL_PWRITE is not None:
             _ORIGINALS["pwrite"] = os.pwrite
             os.pwrite = _hooked_pwrite
         _ORIGINALS["write"] = os.write
@@ -1285,7 +1327,7 @@ class optional:
                 self.outcome = "failed"
                 _stamp(exc, "_studio_undo", f"it could not be left out safely: {why}")
                 return False
-            reason = plain_reason(exc)
+            reason = stage_words(exc, self.target) or plain_reason(exc)
             where = getattr(exc, "_studio_resource", None)
             if where and where not in reason:
                 reason = f"{where}: {reason}"
