@@ -5,6 +5,8 @@
   the new values, on the retail executable and on one carrying the new defaults.
 * The champions page (the honors owner's third Player Card page, ``tools/nfl2k5_champions/runtime.c``) draws the seasons that
   Franchise > Upgrade merged into a save's history block, and the game's own Super Bowl recorder extends that block.
+* The game's own arena load and save on a real v0.7 franchise, then Upgrade's in-place fill (the "Upgrade before the first
+  save" trap), and the game's own MyCareer staging (``inline_stage``) on the block Upgrade writes after an arena change.
 
 Boundaries: Unicorn runs the real routines on synthetic RAM (no boot, renderer or save device), so these are not in-game
 results.  The tests skip without the private pinned retail ``default.xbe``.  Run them through the machine-wide test slot.
@@ -269,6 +271,78 @@ class GameResaveTests(unittest.TestCase):
         self.assertEqual((receipt["class_records"], receipt["primary_after"], receipt["file_growth"]), (865, 4096, 0))
         grown, _ = arena.migrate(native, reserves_16=False, capacity_records=612)
         self.assertEqual(filled, grown)                                          # byte for byte, arena and everything after it
+
+
+CAREER_OLD = Path(os.environ.get("B780_B10_CAREER_OLD", ""))
+CAREER_NEW = Path(os.environ.get("B780_B10_CAREER_NEW", ""))
+
+
+@unittest.skipUnless(HAVE_UC and RETAIL_XBE.is_file(), "the retail executable and unicorn are required")
+class CareerStageTests(unittest.TestCase):
+    """The game's own MyCareer staging accepts the block Upgrade writes and refuses the one it used to write.
+
+    ``inline_stage`` (tools/mycareer_mode/runtime.c) runs unmodified on a whole save file: it follows the file's own
+    pointers to the MyPlayer record and returns 0 when the career block's three string offsets differ from the record's."""
+
+    @classmethod
+    def setUpClass(cls):
+        import hashlib
+        from mod_editor.core import nfl2k5_my_career_mode as mode
+        from mod_editor.core.nfl2k5_cave_oracle import RETAIL_SHA256
+        retail = RETAIL_XBE.read_bytes()
+        if hashlib.sha256(retail).hexdigest() != RETAIL_SHA256:
+            raise unittest.SkipTest("USA retail XBE pin differs")
+        cls.payload, _ = mode.apply(retail)
+
+    def stage(self, file: bytes, arena_size: int) -> int:
+        from tests.nfl2k5_my_career_mode_fixture import Machine
+        with Machine(self.payload) as m:
+            m.uc.mem_write(m.SAVE, file)
+            m.put(0xB72808, arena_size)
+            return m.call("inline_stage", ecx=m.SAVE, edx=len(file), budget=4_000_000)
+
+    def test_a_grown_career_save_stages_only_with_the_rebased_block(self):
+        from mod_editor.core import nfl2k5_franchise_upgrade as up
+        from mod_editor.core import nfl2k5_roster_arena as arena
+        from tests.mod_editor.test_b780_b10_upgrade_gaps import capacity_fixture, with_career, with_class_template
+        legacy = with_career(with_class_template(capacity_fixture()[0]))
+        self.assertEqual(self.stage(legacy, arena.LEGACY_CAPACITY_ARENA_SIZE), 1)          # the v0.7-shaped career save loads
+        grown, _ = arena.migrate(legacy, reserves_16=False, capacity_records=612)
+        self.assertEqual(self.stage(grown, arena.CAPACITY_ARENA_SIZE), 0)                   # what Upgrade used to write
+        fixed, receipt = up.rebase_career_block(legacy, grown)
+        self.assertTrue(receipt["rebased"])
+        self.assertEqual(self.stage(fixed, arena.CAPACITY_ARENA_SIZE), 1)                   # what it writes now
+
+    def test_the_in_place_fill_of_a_game_resaved_career_stages_only_with_the_rebased_block(self):
+        from mod_editor.core import nfl2k5_franchise_upgrade as up
+        from mod_editor.core import nfl2k5_roster_arena as arena
+        from tests.mod_editor.test_b780_b10_upgrade_gaps import capacity_fixture, game_moves_tail, with_career, with_class_template
+        moved = game_moves_tail(with_career(with_class_template(capacity_fixture()[0])))
+        self.assertEqual(self.stage(moved, arena.CAPACITY_ARENA_SIZE), 1)                   # the game's resave still stages
+        filled, receipt = arena.fill_class_records(moved)
+        self.assertGreater(receipt["class_records"], 0)
+        self.assertEqual(self.stage(filled, arena.CAPACITY_ARENA_SIZE), 0)
+        fixed, _ = up.rebase_career_block(moved, filled)
+        self.assertEqual(self.stage(fixed, arena.CAPACITY_ARENA_SIZE), 1)
+
+    @unittest.skipUnless(CAREER_OLD.is_file() and CAREER_NEW.is_file(),
+                         "a real career save and its Upgrade output are not named in B780_B10_CAREER_OLD / B780_B10_CAREER_NEW")
+    def test_a_real_career_save_before_and_after_upgrade(self):
+        import struct
+        from mod_editor.core import nfl2k5_my_career_save as career
+        from mod_editor.core import nfl2k5_franchise_upgrade as up
+        from mod_editor.core import nfl2k5_roster_arena as arena
+        old, new = CAREER_OLD.read_bytes(), CAREER_NEW.read_bytes()
+        self.assertEqual(self.stage(old, 0x91000), 1)
+        self.assertEqual(self.stage(new, arena.CAPACITY_ARENA_SIZE), 1)
+        # the save as the old Upgrade wrote it: the same arena change, the career block still holding the old offsets
+        at_old, at_new = up.career_block_at(old), up.career_block_at(new)
+        stale = bytearray(new)
+        for stored in (44, 48, 52):
+            struct.pack_into("<I", stale, at_new + stored, career.word(old, at_old + stored))
+        stale[at_new:at_new + 128] = career.seal(bytes(stale[at_new:at_new + 128]))
+        self.assertNotEqual(bytes(stale), new)
+        self.assertEqual(self.stage(bytes(stale), arena.CAPACITY_ARENA_SIZE), 0)
 
 
 if __name__ == "__main__":
