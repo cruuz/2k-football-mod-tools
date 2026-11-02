@@ -8029,6 +8029,69 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_protection_calls apply source.xbe --output new-protection-calls.xbe",
+        "module": "mod_editor/core/nfl2k5_protection_calls.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "tests/mod_editor/test_nfl2k5_protection_calls.py",
+        "tests/mod_editor/test_nfl2k5_protection_calls_unicorn.py",
+        "tools/nfl2k5_protection_calls.S"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL. On in the Experimental preset (the SOFTDRINK 2K28 recipe) so it is played on the test disc first; Basic and Advanced keep the game's automatic slide."
+      },
+      "id": "nfl2k5.gameplay.protection_calls",
+      "input_constraints": [
+        "Pinned USA XBE, or a sealed scale-out image: a late allocator owner, appended after every other late owner without moving one.",
+        "The two hook sites (0x23BC4F, 0x18FE65) and their guarded neighbours (0x23BC40 slide call, 0x23B6E0 ret 4, the 0x18FBE0 case, its switch slot and index bytes) must be retail; anything else is refused before any write.",
+        "Acts only on the offense's three-audible menu (record 0 open, count 3, the offense's own controller); five-play menus keep L and R as audibles."
+      ],
+      "portme": [
+        "Show the active call in the audible menu legend (b780 p3-legend can read the 16-byte call state: team, play log counter, call, used).",
+        "Regenerate data/nfl2k5_cave_reservations.json from an observed build after integration (the recorder observes this owner on its late-owner probe copy)."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and recipes; never distribute generated game executable or disc bytes.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Unicorn replays of the retail slide call, automatic read, pass set and at-line case prove the call value, its lifetime and the button routing; the in-game emulator gate is pending.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false in Basic and Advanced; true in Experimental",
+            "name": "protection_calls",
+            "required": true
+          }
+        ],
+        "notes": "Retail: the game slides the line by itself from the box count (0xC16BAC, up to 3 yd); L and R on the three-audible menu find no play and close it. Patch: L / R set SLIDE LEFT / RIGHT (3 yd) for the next snap, the same button again clears; CPU offenses keep the automatic slide."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "two live jumps of 5 and 10 bytes; one 256-byte RX owner; one 16-byte RW call state",
+        "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+      },
+      "summary": "At the line, L and R in the offense's audible menu slide the whole pass protection 3 yards left or right for the next snap; the computer's offense keeps the game's automatic slide.",
+      "surface": "gameplay_tuning_sliders",
+      "title": "Protection calls: slide the line with L / R at the line (experimental)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_protection_calls"
+    },
+    {
+      "backend": {
         "command": "python3 -m mod_editor.core.nfl2k5_qb_spy_runtime source.xbe new-spy.xbe",
         "module": "mod_editor/core/nfl2k5_qb_spy_runtime.py",
         "operation": "write"

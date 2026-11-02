@@ -1,13 +1,15 @@
 /* Protection calls (b780 p1-slide): the user's slide call at the line replaces the game's automatic slide.
  *
- * Retail: every tick of the hike (play state 0xD) and of a live pass play (state 0xE, play kind 5), 0x23DBE0 calls
- * 0x23BC40 = `mov [0xC16BAC], 0; call 0x23B5B0; jmp 0x23B6E0` (argument 0 at the hike, 1 live; 0x23B6E0 returns with
+ * Retail: every tick of the set phase at the line (play state 0xD, entered from 0xC when the players are set; the
+ * snap moves it to 0xE, 0xB6F30) and of a live pass play (state 0xE, play kind 5), 0x23DBE0 calls
+ * 0x23BC40 = `mov [0xC16BAC], 0; call 0x23B5B0; jmp 0x23B6E0` (argument 0 when set, 1 live; 0x23B6E0 returns with
  * ret 4). 0x23B6E0 counts the defenders in the box on each side of the ball and stores the slide, a world-x offset of
  * up to +-274.32 cm (3 yd) that every pass-set point and the first target pick (0x2FA9C0) use.
  *
  * snap_slide (jmp from 0x23BC4F): the retail read runs first, unchanged; then, when the offense has a call for this
  * play, the slide becomes +-274.32 cm toward the called side.  The call is the offense team's and this play's (play
- * log counter 0xE53804); it holds for every tick of the snap it was made for and is dropped at the next hike.
+ * log counter 0xE53804); it holds for every tick of the snap it was made for and is dropped when the next play is
+ * set at the line.
  *
  * line_button (jmp from 0x18FE65, the at-line case for events 0x37..0x3B in 0x18FBE0): L (0x3A) and R (0x3B) on the
  * offense's three-audible panel (record 0 count 3), which retail ignores (0xFEFA0 returns no play, then the panel
@@ -46,7 +48,7 @@ snap_slide:
     mov edx, dword ptr [0xB71D10]            /* game tick */
     sub edx, dword ptr [state+12]
     js 7f                                    /* the call is from an earlier game */
-    cmp dword ptr [esp+0x28], 0              /* the argument: 0 = hike, 1 = live */
+    cmp dword ptr [esp+0x28], 0              /* the argument: 0 = set at the line, 1 = live */
     jne 2f
     cmp byte ptr [state+9], 0
     jne 7f                                   /* used on an earlier snap */

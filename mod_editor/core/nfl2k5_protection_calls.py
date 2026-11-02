@@ -4,8 +4,9 @@ Players asked for it (Discord #2k5-ideas: maffy_mafferson 9/05 "A way to slide t
 9/22, 7ET 9/23 "LOS Protection Calls ... The QB (User) can then adjust the protection", X_Ray 10/22 "L1 ... R1 ... ain't
 doing shit" in the audible menu). Research: b77_session/reports/b780_r3-presnap_RESEARCH.md (P1); build: b780 p1-slide.
 
-What retail does. NFL 2K5 already slides its pass protection by itself. Every tick of the hike (play state 0xD) and of
-a live pass play (state 0xE, play kind 5) the block AI 0x23DBE0 calls 0x23BC40 = ``mov [0xC16BAC], 0; call 0x23B5B0;
+What retail does. NFL 2K5 already slides its pass protection by itself. Every tick of the set phase at the line (play
+state 0xD; the snap moves it to 0xE, 0xB6F30) and of a live pass play (state 0xE, play kind 5) the block AI 0x23DBE0
+calls 0x23BC40 = ``mov [0xC16BAC], 0; call 0x23B5B0;
 jmp 0x23B6E0``. 0x23B6E0 counts the defenders in the box on each side of the ball and, with more than three, stores
 ``(count on the -x side - count on the +x side) * 137.16 cm``, clamped to +-274.32 cm (3 yd), in 0xC16BAC. Every
 pass-set point (0x23ABB0 adds it to the set point's world x), the per-tick re-target 0x23D610, 0x23E550, 0x23F450 and
@@ -23,7 +24,7 @@ What this owner adds (two hooks, 288 bytes of code, a 16-byte RW state block; no
 * ``snap_slide`` replaces 0x23BC40's tail jump: the retail automatic read runs first, unchanged, then, when the offense
   has a call for this play, 0xC16BAC becomes 274.32 cm toward the called side. The call belongs to the offense team that
   made it and to the play it was made on (the play log counter 0xE53804, which moves when a play ends), holds for every
-  tick of that snap, and is dropped at the next hike. A call left over from a game that was quit before the snap is
+  tick of that snap, and is dropped when the next play is set at the line. A call left over from a game that was quit before the snap is
   dropped too: the game tick 0xB71D10 restarts at 0 in every game (0x11A540), so the new game's tick is behind the
   call's. CPU offenses never make a call, so they keep the automatic read.
 

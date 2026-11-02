@@ -163,11 +163,14 @@ class CompositionTests(unittest.TestCase):
         cls.retail = retail_xbe()
 
     def _late_pair(self, other):
-        a, _ = pc.apply(self.retail)
-        a, _ = other.apply(a)
-        b, _ = other.apply(self.retail)
-        b, _ = pc.apply(b)
-        for payload in (a, b):
+        # A build reserves every selected owner's space in one union first (nfl2k5_throw_tuning._selected_space_requests),
+        # then the owners install in any order. Appending to an installed image goes in LATE_OWNERS order only.
+        union, _ = space.apply(self.retail, other.REQUESTS + pc.REQUESTS, scaleout=True)
+        a, _ = pc.apply(union); a, _ = other.apply(a)
+        b, _ = other.apply(union); b, _ = pc.apply(b)
+        self.assertEqual(a, b)
+        appended, _ = other.apply(self.retail); appended, _ = pc.apply(appended)     # LATE_OWNERS order on an installed image
+        for payload in (a, appended):
             self.assertEqual(pc.status(payload), "applied")
             self.assertEqual(other.status(payload), "applied")
             self.assertEqual(space.status(payload), "applied")

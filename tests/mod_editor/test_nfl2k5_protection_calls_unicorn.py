@@ -303,11 +303,11 @@ class SnapSlideTests(unittest.TestCase):
         auto = self.auto(+1, -1)
         w.f32(w.CLOCK + 0x10, 1.5)
         w.set_call(pc.CALL_LEFT)
-        self.assertAlmostEqual(w.slide_call(0)[0], -SLIDE_MAX, places=2)       # hike
+        self.assertAlmostEqual(w.slide_call(0)[0], -SLIDE_MAX, places=2)       # set at the line (state 0xD)
         self.assertAlmostEqual(w.slide_call(1)[0], -SLIDE_MAX, places=2)       # live: marks the call used
         self.assertAlmostEqual(w.slide_call(1)[0], -SLIDE_MAX, places=2)       # every tick of that snap
         self.assertEqual(w.state()["used"], 1)
-        self.assertEqual(w.slide_call(0)[0], auto)                              # the next hike: dropped
+        self.assertEqual(w.slide_call(0)[0], auto)                              # the next play set: dropped
         self.assertEqual(w.state()["call"], 0)
         # a call from an earlier play (the play log moved), another team, or a game that was quit before its snap (the
         # game tick restarts at 0 in every game, so the new game's tick is behind the call's) is dropped at once
@@ -399,6 +399,63 @@ class LineButtonTests(unittest.TestCase):
         for event in (pc.EVENT_L, pc.EVENT_R):
             self.assertEqual(self.press(w, event, World.OFF), self.RESUME)
             self.assertEqual(w.uc.reg_read(x86.UC_X86_REG_EAX), 0)     # retail then closes the menu (0xFEF30)
+
+
+def _shipped_xbe():
+    """NFL2K5_SHIPPED_XBE: an extracted default.xbe of a built disc (any SOFTDRINK build, with or without this owner)."""
+    import os
+    path = os.environ.get("NFL2K5_SHIPPED_XBE")
+    if not path or not Path(path).is_file():
+        raise unittest.SkipTest("NFL2K5_SHIPPED_XBE (a built disc's default.xbe) is not set")
+    return Path(path).read_bytes()
+
+
+@unittest.skipUnless(uc is not None, "Unicorn is required for bounded instruction replay")
+class ShippedExecutableTests(unittest.TestCase):
+    """The same replays on a real built executable, where every other SOFTDRINK owner is installed around these sites
+    (b780 p1-slide ran it on the released v0.8 default.xbe, sha256 5f987568...)."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.before = _shipped_xbe()
+        cls.patched = cls.before if pc.status(cls.before) == "applied" else pc.apply(cls.before)[0]
+        cls.state_va = pc.allocations(cls.patched)["data"]["va"]
+
+    def world(self, payload, attack=+1, overload=-1):
+        w = World(payload, attack=attack)
+        w.state_va = self.state_va
+        w.four_three(overload)
+        return w
+
+    def test_automatic_read_unchanged_and_calls_on_the_built_executable(self):
+        for attack in (+1, -1):
+            for overload in (-1, +1):
+                with self.subTest(attack=attack, overload=overload):
+                    if pc.status(self.before) != "applied":
+                        self.assertEqual(self.world(self.patched, attack, overload).slide_call(0)[0],
+                                         self.world(self.before, attack, overload).slide_call(0)[0])
+                    for call in (pc.CALL_LEFT, pc.CALL_RIGHT):
+                        w = self.world(self.patched, attack, overload)
+                        w.f32(w.CLOCK + 0x10, 1.5)
+                        w.set_call(call)
+                        for argument in (0, 1):
+                            self.assertAlmostEqual(w.slide_call(argument)[0], pc.world_slide(call, 4572.0 * attack), places=2)
+        w = self.world(self.patched)
+        w.set_call(pc.CALL_RIGHT)
+        value, _ = w.slide_call(0)
+        base = [round(w.rf32(RECORDS + 0x20 * i + 0x14), 2) for i in range(5)]
+        self.assertEqual(w.pass_sets()[:5], [round(f32(b + value), 2) for b in base])
+
+    def test_buttons_on_the_built_executable(self):
+        w = World(self.patched)
+        w.state_va = self.state_va
+        w.u32(PANEL, 1)
+        w.uc.mem_write(PANEL + 4, bytes([0, 0, 3]))
+        stops = (0x18FE6F, 0x18FF1C)
+        self.assertEqual(w.run(0x18FE65, regs=dict(ecx=pc.EVENT_R, esi=World.OFF, ebx=0), stops=stops)[0], 0x18FF1C)
+        self.assertEqual(w.state()["call"], pc.CALL_RIGHT)
+        self.assertEqual(w.run(0x18FE65, regs=dict(ecx=0x38, esi=World.OFF, ebx=0), stops=stops)[0], 0x18FE6F)
+        self.assertEqual(w.uc.reg_read(x86.UC_X86_REG_EAX), World.BRAIN_OFF + 0x74 + 12)
 
 
 if __name__ == "__main__":

@@ -63,6 +63,7 @@ FEATURE_KEYS += ("play_art_routes",)  # b776-pa2: play art routes at their real 
 FEATURE_KEYS += ("run_blocking",)  # b777-ol1: run blocking, the last late executable owner
 FEATURE_KEYS += ("pass_protection",)  # b778-pr1: pass protection, a late executable owner
 FEATURE_KEYS += ("pass_rush_stats",)  # b779-st1: pressures / QB hits / allowed stats, a late executable owner (b779-int1: key was missing)
+FEATURE_KEYS += ("protection_calls",)  # b780 p1-slide: the user's slide call at the line (L / R in the audible menu), late executable owner
 FEATURE_KEYS += ("team_number_scale",)  # b776-ns1: per-kit jersey number size {kit: scale}, late executable owner
 FEATURE_KEYS += ("qb_accuracy",)  # b777-qb3: accurate short and on-the-run throws by Pass Accuracy, late executable owner
 FEATURE_KEYS += ("star_retention",)  # b778-fa1: CPU clubs keep their stars (veteran cap cut), late executable owner
