@@ -117,11 +117,12 @@ class Replay:
         self.m.u32(self.m.GAME + 0x500 + 0x18, 0)
         return self.flag(0x206F10)
 
-    def runoff(self, *, quarter, seconds, down, defense_timeouts, play=KNEEL, state=18, running=True):
+    def runoff(self, *, quarter, seconds, down, defense_timeouts, play=KNEEL, state=18, running=True, warned=True):
         m = self.m
         m.configure(down=down, quarter=quarter, seconds=seconds, score_margin=7, own_yard=40, distance=10, home=True,
                     quarter_seconds=900, timeouts=defense_timeouts)
         self.books(play)
+        m.u32(0xE602FC, 0x20 if warned else 0)    # two-minute warning given
         m.u32(0xA83A18, 3)
         m.u32(0xE602B8, state)
         m.f32(0xE602AC, 40)
@@ -252,6 +253,8 @@ class ClockReplays(unittest.TestCase):
             result = self.clock.runoff(quarter=4, seconds=30, down=1, defense_timeouts=0, **kwargs)
             self.assertEqual(result[0], 30.0, kwargs)
         self.assertEqual(self.clock.runoff(quarter=3, seconds=30, down=1, defense_timeouts=0), (30.0, 0))
+        # a two-minute warning still to come stops the clock once more: no runoff before it
+        self.assertEqual(self.clock.runoff(quarter=4, seconds=115, down=1, defense_timeouts=0, warned=False), (115.0, 0))
 
     def test_native_spike_rule_is_kept(self):
         """The retail spike predicate 0x207310 (used by 0x189D10 to run the book's Spike Ball) is unchanged."""

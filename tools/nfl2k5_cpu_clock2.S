@@ -323,7 +323,14 @@ kneel_runoff:
     jle 9f                            /* positive finite seconds only */
     cmp eax, 0x7f800000
     jae 9f
-    mov edx, dword ptr [0xe602ec]
+    fld dword ptr [0xe602b0]          /* a two-minute warning still to come stops the clock once more: */
+    fcomp dword ptr [c120]            /* no runoff before it (quarters longer than 2:00 and the warning */
+    fnstsw ax                         /* not yet given, flag 0x20 of 0xE602FC, as the clock tick 0x157D40 */
+    test ah, 0x41                     /* gives it) */
+    jnz 3f
+    test byte ptr [0xe602fc], 0x20
+    jz 9f
+3:  mov edx, dword ptr [0xe602ec]
     test edx, edx
     jz 9f
     mov ebx, 4

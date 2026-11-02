@@ -7063,7 +7063,7 @@
       },
       "id": "nfl2k5.gameplay.cpu_clock2",
       "input_constraints": [
-        "Pinned USA XBE or a verified composed input; the owner is the last late allocator owner (one 1,024-byte RX allocation, no writable data). Foreign or mixed bytes at any of the ten hook sites or inside any of the seventeen guarded routines refuse.",
+        "Pinned USA XBE or a verified composed input; the owner is the last late allocator owner (one 1,152-byte RX allocation, no writable data). Foreign or mixed bytes at any of the ten hook sites or inside any of the seventeen guarded routines refuse.",
         "Booleans cpu_clock2 and cpu_clock2_overtime (overtime needs cpu_clock2). A different overtime choice needs a rebuild from a clean base.",
         "Hooks: 0x20A79B, 0x207A36, 0x18C0E8, 0x206ED9 (calls), 0x2D33D8, 0x2D340C, 0x188614, 0x206F10, 0x189080 (jumps) and, with overtime, 0x205FE0."
       ],
@@ -7104,7 +7104,7 @@
         "hash_pins": [
           "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
         ],
-        "resource": "Nine pinned live hooks (ten with overtime) in the native CPU clock routines; one owned 1,024-byte RX allocation.",
+        "resource": "Nine pinned live hooks (ten with overtime) in the native CPU clock routines; one owned 1,152-byte RX allocation.",
         "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
       },
       "summary": "CPU teams manage the clock like modern NFL teams: two-score hurry from 10:00 of Q4, four-minute offense, early defensive timeouts, end-of-half kneel, kneel runoff, and optional overtime clock logic where the end of overtime decides the game.",

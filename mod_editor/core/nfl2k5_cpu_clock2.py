@@ -18,8 +18,8 @@ the CPU never kneels before halftime, and overtime counts as early in every rout
 * end-of-half kneel: in Q2 a CPU offense on its own side (50 to 92 yards out), down 1 to 3, with 60 s or less left,
   that its native estimate does not send to score, kneels when the native kneel formula says the half runs out;
 * kneel runoff: after a Take Knee PLAY (any team, human or CPU) in Q2 or Q4, when the downs left can kneel out the
-  whole clock even if the defense uses every timeout, the clock goes to 0:00 and stops, exactly as when time runs out
-  during a play, and the native clock tick ends the half or the game;
+  whole clock even if the defense uses every timeout (and no two-minute warning is still to come), the clock goes to
+  0:00 and stops, exactly as when time runs out during a play, and the native clock tick ends the half or the game;
 * overtime (a separate build choice, off unless selected): overtime counts as the late window only where the end of
   the period can end the game, i.e. franchise pre/regular season (mode 7, period 5, a tie) and any non-playoff mode
   while the scores differ (modern overtime); playoffs (modes 5 and 6) play another period, so they stay native.
@@ -30,7 +30,7 @@ down when less than half the needed time is left) matches the NFL 2022-2025 spik
 second spike path (overtime makes the native one available there).
 
 Everything is a pinned five-to-ten-byte hook at a retail instruction boundary, the displaced instructions are
-re-executed, and the routines hooked or called are guarded by hash. One late allocation, no writable data.
+re-executed, and the routines hooked or called are guarded by hash. One late allocation (1,152 bytes), no writable data.
 """
 from __future__ import annotations
 
@@ -40,7 +40,7 @@ import struct
 from . import nfl2k5_cpu_clock2_code as assembly
 
 OWNER = "nfl2k5_cpu_clock2"
-CODE_SIZE = 1024
+CODE_SIZE = 1152
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16),)
 BUILD_CAPTION = "Modern CPU clock management (experimental)"
 HELP_TEXT = (

@@ -792,8 +792,8 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_pass_protection_code.py": "a9d8e2bfb43cab4c95d2e5c909a47a5d84fbf3b927ce51f97da619728b49e8de",
         "mod_editor/core/nfl2k5_pass_rush_stats.py": "5f0dc654c8ff24dc0a2bd2f412c9954d3ee63c0d72a3648ae6448373dfa6eab0",
         "mod_editor/core/nfl2k5_pass_rush_stats_code.py": "91d7bacf8770e5ced1a1aceb2507bf2c791c5c9f4353b0f5c740d638ec78353c",
-        "mod_editor/core/nfl2k5_cpu_clock2.py": "6eed063ade60ff9b5fbeb78149369f267e3446bb7272cab00bb31dcadc07bd50",  # b780 b-clock
-        "mod_editor/core/nfl2k5_cpu_clock2_code.py": "60f6c676b0b157479de63e81e0b2fa0015bc5f1771d77ee8ce7f0c76606d2331",  # b780 b-clock
+        "mod_editor/core/nfl2k5_cpu_clock2.py": "8614c26e5e487a5f9f89c805b757429ba647aae64e279cfbfd7478068737b8be",  # b780 b-clock
+        "mod_editor/core/nfl2k5_cpu_clock2_code.py": "7e0c606d14185cf48542a8bc81d2b99d219203cdd89951abb438f135752d65cf",  # b780 b-clock
         "mod_editor/core/nfl2k5_lineman_rating.py": "e1c08c86e0a31c58fd86d5a155c56ad200cf5ef237771c95b39bfe29215261c1",
         "mod_editor/core/nfl2k5_match_coverage.py": "d9c1a93508a25a17d389b1dfa628ab8d0ac2da25d99bcc64a347b98f4447cfa2",
         "mod_editor/core/nfl2k5_model_project.py": "04371be3e1e86a9a6b3d2499dc0db203d6d5d9241c104c78879a2a414aa05488",
