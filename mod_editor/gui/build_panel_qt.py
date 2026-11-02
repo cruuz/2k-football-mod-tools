@@ -584,8 +584,12 @@ class BuildPanel(QWidget):
         self.build_button.clicked.connect(self._build)
         actions.addWidget(self.build_button)
         self.check_button = QPushButton("Check my project")
-        self.check_button.setToolTip("Finds in minutes what Make my disc would refuse or change in your project and "
-                                     "options, and says what to untick. Nothing is written.")
+        self.check_button.setToolTip("A whole check of your project and options before a long build: what Make my disc "
+                                     "would refuse or change, every stadium and colour refit tried with your values, the "
+                                     "new kits on your own kits, options no release build tried, and your project against "
+                                     "every size limit. A few minutes for most projects; up to about half an hour with "
+                                     "every stadium option on (the stadium refits are most of it). Save report keeps "
+                                     "it all. Nothing is written to your project or disc.")
         self.check_button.setAccessibleDescription(self.check_button.toolTip())
         self.check_button.clicked.connect(self._check_project)
         actions.addWidget(self.check_button)
@@ -595,6 +599,7 @@ class BuildPanel(QWidget):
         actions.addWidget(self.cancel_button)
         actions.addStretch(1)
         self._last_build_summary = ""
+        self._last_check_report = None  # b791 h4: the last Check my project report (Save report writes it)
         self._requested_build_summary = ""
         self._requested_build_labels = []
         self.copy_summary_button = QPushButton("Copy Build summary")
@@ -4601,28 +4606,32 @@ class BuildPanel(QWidget):
         self._pool.start(task)
 
     def _check_project(self) -> None:
-        """Check my project (b779-ce1): the quick checks of nfl2k5_project_check, off the GUI thread, nothing written."""
+        """Check my project (b779-ce1; b791 h4 v2: the whole dive of nfl2k5_project_check.doctor), off the GUI thread,
+        nothing written to the project or the disc."""
         if self.blocker():
             return
         plan = self.plan()
         include_session = self._include_session_project()
         facade = self._facade
+        labels = {key: box.text().replace("&&", "&") for key, box in self._boxes().items()}
 
         def operation(progress):
             from mod_editor.core import nfl2k5_project_check as project_check
-            asset_ids, document, fit_rows, paths, index = [], None, [], None, None
+            project, document, fit_rows, index = None, None, None, None
             if include_session:
                 from mod_editor.core.equipment_staging import cached_equipment_fit_rows
                 with facade._lock:
                     session = facade._session
-                    asset_ids = project_check.assets_from_session(session)
-                    paths = project_check.paths_from_session(session)
-                    fit_rows = list(cached_equipment_fit_rows(session))
+                    project = project_check.ProjectInputs(
+                        name=str(getattr(session, "name", "") or "open project"),
+                        asset_ids=project_check.assets_from_session(session),
+                        paths=project_check.paths_from_session(session),
+                        fit_rows=list(cached_equipment_fit_rows(session)))
                     cache = facade._cache
                     index = cache.pack0 if cache is not None else None
-                document = facade.build_service.preflight_project(session)
-            return project_check.check(plan, asset_ids=asset_ids, document=document, fit_rows=fit_rows,
-                                       progress=progress, asset_paths=paths, source_index=index)
+                project.document = facade.build_service.preflight_project(session)
+            return project_check.doctor(project, plan.source, plan, progress=progress, source_index=index,
+                                        labels=labels)
 
         task = _Task(operation)
         task.signals.progress.connect(self.progress_label.setText)
@@ -4643,12 +4652,43 @@ class BuildPanel(QWidget):
         self.operation_state_changed.emit(False)
         self.progress_bar.hide()
         self.progress_label.setText("")
-        text = report.text()
-        self._last_build_summary = f"2K5 Mod Studio {BUILD_RELEASE_TAG}\nCheck my project\n\n{text}"
+        summary = report.summary() if callable(getattr(report, "summary", None)) else report.text()
+        self._last_check_report = report
+        self._last_build_summary = f"2K5 Mod Studio {BUILD_RELEASE_TAG}\nCheck my project\n\n{summary}"
         self.copy_summary_button.setEnabled(True)
-        self.status_label.setText(text)
-        QMessageBox.information(self, "Check my project", text)
+        self.status_label.setText(summary)
+        self._show_check_report(report, summary)
         self._refresh()
+
+    def _show_check_report(self, report: object, summary: str) -> None:
+        """The summary with the whole report behind Show Details, and Save report... to keep it (text, JSON and the
+        summary, for a help request)."""
+        box = QMessageBox(self)
+        box.setIcon(QMessageBox.Information if getattr(report, "ok", True) else QMessageBox.Warning)
+        box.setWindowTitle("Check my project")
+        box.setText(summary)
+        full = report.text()
+        if full != summary:
+            box.setDetailedText(full)
+        save = box.addButton("Save report\u2026", QMessageBox.ActionRole) if callable(getattr(report, "write", None)) else None
+        box.addButton(QMessageBox.Ok)
+        box.exec_()
+        if save is not None and box.clickedButton() is save:
+            self._save_check_report(report)
+
+    def _save_check_report(self, report: object, folder: str | None = None) -> list:
+        """Write the report's three files into a folder the person picks; returns the paths written."""
+        if folder is None:
+            folder = QFileDialog.getExistingDirectory(self, "Save the project check report in")
+        if not folder:
+            return []
+        try:
+            written = list(report.write(folder).values())
+        except OSError as exc:
+            QMessageBox.warning(self, "Could not save the report", plain_error(exc))
+            return []
+        self.status_label.setText("Project check report saved: " + ", ".join(str(p) for p in written))
+        return written
 
     def _progress_counts(self, done, total):
         self.progress_bar.setRange(0, total if total > 0 else 0)
@@ -4729,6 +4769,8 @@ class BuildPanel(QWidget):
     def _check_failed(self, message: str) -> None:
         """Check my project could not finish: say "check", and do not borrow the last build's summary."""
         message = plain_error(message)
+        if message.startswith("Build cancelled"):
+            message = "The check was cancelled. Nothing was written."
         self._last_build_summary = f"2K5 Mod Studio {BUILD_RELEASE_TAG}\nCheck my project\n\nFirst error: {message}"
         self.copy_summary_button.setEnabled(True)
         self._heartbeat_timer.stop()

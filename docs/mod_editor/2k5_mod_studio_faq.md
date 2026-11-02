@@ -77,12 +77,25 @@ verification of every feature. The original game disc is not changed.
 
 ## Can I find out what will stop a long build before I start it?
 
-Yes. On the Build tab press **Check my project**. It runs in minutes, writes nothing, and lists
-exactly what to untick or change (an option that cannot be combined with another, stadium
-edits that conflict with the Modern stadium boards, a disc problem the build would find at the
-start) and, separately, what Build will do with your work. The same list can be made from a
-saved project without opening Studio:
-`python -m mod_editor.core.nfl2k5_project_check MyProject.2k5mod --source "ESPN NFL 2K5 (USA).xiso.iso"`.
+Yes. On the Build tab press **Check my project**. It writes nothing to your project or your
+disc, and lists exactly what to untick or change (an option that cannot be combined with
+another, stadium edits that conflict with a stadium option, a disc problem the build would find
+at the start, a new Anniversary kit a classic team needs that cannot be made from your kits)
+and, separately, what Build will do with your work. Since beta 79.1 it also tries the long
+build's risky steps on your own options and art (a few minutes for most projects, up to about half an hour
+with every stadium option on): every
+stadium field, bump map and divot layer that Modern colour, the modern stadiums, the practice
+facility, Modern surfaces and Broadcast greens refit, with your own Modern colour values; the
+new kits on your own kits; the options and settings no release build ever tried; and your
+project against every size limit. Press **Save report** to keep the whole report (a text file,
+a JSON file and a short summary) and send it with a help request. The same report can be made
+from a saved project without opening Studio:
+`python -m mod_editor.core.nfl2k5_project_check MyProject.2k5mod --source "ESPN NFL 2K5 (USA).xiso.iso" --report MyReport`
+(add `--quick` for the checks that take seconds).
+
+After every build of a project, the Build summary also says whether every kit and stadium piece
+you edited is on the finished disc exactly as the texture stage wrote it, and names any that is
+not.
 
 The built-in Anniversary and classic kits are composed from kits already on the disc, which
 may be kits you edited. If one of your edited sock, glove or shoe chunks cannot be used in

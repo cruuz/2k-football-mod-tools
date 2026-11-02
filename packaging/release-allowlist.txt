@@ -585,6 +585,8 @@ mod_editor/core/nfl2k5_sim_realism.py
 mod_editor/core/nfl2k5_sim_stats.py
 mod_editor/core/nfl2k5_clock_led.py
 mod_editor/core/nfl2k5_project_check.py
+mod_editor/core/nfl2k5_stadium_dry_run.py
+mod_editor/core/nfl2k5_edit_survival.py
 mod_editor/core/nfl2k5_disc_extents.py
 mod_editor/core/nfl2k5_preseason.py
 mod_editor/core/nfl2k5_progression.py
@@ -632,6 +634,7 @@ mod_editor/core/nfl2k5_moment_scans.py
 data/nfl2k5_moment_scans.json
 data/nfl2k5_moment_kits.json
 data/nfl2k5_moment_kits_pins.json
+data/nfl2k5_release_gates.json
 data/nfl2k5_moment_era_kits.json
 mod_editor/core/nfl2k5_unc_bowl_uniforms.py
 data/nfl2k5_unc_bowl_uniforms_pins.json
@@ -3856,6 +3859,7 @@ tests/mod_editor/test_nfl2k5_sim_stats.py
 tests/mod_editor/test_b778_clock_led.py
 tests/mod_editor/test_b779_ce1_kit_fallback.py
 tests/mod_editor/test_b779_ce1_project_check.py
+tests/mod_editor/test_b791_h4_project_doctor.py
 tests/mod_editor/test_b778_tr1_trade_deadline.py
 tests/mod_editor/test_b778_tr2_trade_guard.py
 tests/mod_editor/test_trophy_room_logo.py

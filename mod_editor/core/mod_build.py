@@ -3629,11 +3629,40 @@ def build_with_project(plan, service, cache, session, progress=None, *, require_
     def project_progress(event):
         report(event.message, event.completed, event.total)
     project_progress.cancelled = getattr(progress, 'cancelled', None)
-    receipt = build(plan, progress, _project_builder=lambda output: service.build(
-        cache, session, output, project_progress), require_change=require_change)
+    # b791 h4: "never silently drop a user edit": the digests of every edited kit piece right after the texture
+    # stage, compared with the finished disc once it is published (nfl2k5_edit_survival; Build summary notes).
+    survival = {}
+
+    def project_builder(output):
+        result = service.build(cache, session, output, project_progress)
+        survival["snapshot"] = _edit_survival_snapshot(output, session, plan, report)
+        return result
+    receipt = build(plan, progress, _project_builder=project_builder, require_change=require_change)
     if models:
         receipt["project_models"] = models
+    if survival.get("snapshot") is not None:
+        from . import nfl2k5_edit_survival as edit_survival
+        report("Checking that every edit is on the finished disc", 0, 0)
+        receipt.setdefault("steps", []).append(edit_survival.audit_step(
+            survival["snapshot"], receipt.get("target") or plan.target, progress=report))
     return receipt
+
+
+def _edit_survival_snapshot(output, session, plan, progress):
+    """The edit-survival snapshot of the texture stage's private copy, or None (a snapshot never fails a build;
+    cancelling still cancels)."""
+    from .nfl2k5_project_fit import BuildCancelled
+    try:
+        from . import nfl2k5_edit_survival as edit_survival
+        ids = [edit.asset_id for edit in session.iter_project_png_edits()]
+        if not ids:
+            return None
+        progress("Recording your edits for the end-of-build check", 0, 0)
+        return edit_survival.snapshot(output, ids, source=plan.source, progress=progress)
+    except BuildCancelled:
+        raise
+    except Exception:  # noqa: BLE001 - the audit is a report, never a reason to stop a build
+        return None
 
 
 def _preview_play_intents(source, paths, progress=None):
