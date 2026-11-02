@@ -764,8 +764,9 @@ def career_code(dd: Mapping[tuple[str, str], tuple[int, ...]]) -> tuple[bytes, d
 # them players who played 8+ games or started, before their position's age).
 # The rewrite, in the routine's own bytes, same callers and arguments:
 # * age in place of years pro: over = his age in the coming season (the economy top-up's age rule) - (base + 24), the
-#   position's age (QB/K/P 38, HB 30, FB/CB 31, WR/S/LB 32, TE/DT/DE 33, G/T 34, C 35); delta = over + 2 keeps the
-#   retail scale (a rookie is about 22 with years pro 1);
+#   position's age (QB/K/P 38, HB 30, FB/CB 31, WR/S/LB 32, TE/DT/DE 33, G/T 34, C 35); delta = over + RETIRE_AGE_OFFSET
+#   keeps the retail scale on average (at the pass a player's coming-season age is most often years pro + 23: one
+#   simulated v0.8 season, 923 of 2,561 players; mean years pro + 23.0);
 # * a contributor, a club player who starts at his position (record depth row below RETIRE_STARTERS) or played
 #   RETIRE_GAMES regular-season games this season (field 0 of this season, 0x14EF00), never retires before his
 #   position's age, and past it his delta is RETIRE_PRODUCING_STEP lower, so idle veterans go before producing ones;
@@ -778,6 +779,7 @@ RETAIL_RETIRE_SHA256 = "e9e7517b9d1516b6e877bac8018edf7db613708de7ba88241eb49261
 RETIRE_STARTERS = (1, 1, 1, 3, 3, 1, 1, 1, 1, 1, 2, 3, 1, 2, 2, 2, 2)
 RETIRE_GAMES = 8
 RETIRE_PRODUCING_STEP = 2
+RETIRE_AGE_OFFSET = 1          # delta = over + this (see above)
 RETIRE_OVERALL_EDGES = (0.9, 0.8, 0.7, 0.6, 0.5)      # the retail .rdata constants, as float32
 RETIRE_OVERALL_STEP = (-5, -4, -2, 1, 2, 3)
 RETIRE_P = (0.0, 0.02, 0.05, 0.1, 0.15, 0.3, 0.4, 0.5, 0.6, 0.7, 1.0)   # retail 0xACEDB0, delta -5..5
@@ -818,7 +820,7 @@ def retirement_code() -> tuple[bytes, dict[str, int]]:
     a("85f6"); a.j32("0f88", "no2")        # a contributor before his position's age: never
     a("b3%02x" % RETIRE_PRODUCING_STEP)
     a.label("rated")
-    a("2bf3" "83c602")                     # delta = over - producing step + 2
+    a("2bf3" "83c6%02x" % RETIRE_AGE_OFFSET)   # delta = over - producing step + RETIRE_AGE_OFFSET
     a("ba01000000" "8bcf"); a.call(FN_RATING)   # st0 = overall (boosted), as retail
     a("33c9")
     a.label("edge")
@@ -876,7 +878,7 @@ def retirement_chance(*, position: int, age: int, overall: float, year: int, clu
         if over < 0:
             return 0.0
         step = RETIRE_PRODUCING_STEP
-    delta = over + 2 - step
+    delta = over + RETIRE_AGE_OFFSET - step
     edges = struct.unpack("<5f", struct.pack("<5f", *RETIRE_OVERALL_EDGES))
     k = next((i for i, edge in enumerate(edges) if overall > edge), 5)
     delta = max(-5, min(5, delta + RETIRE_OVERALL_STEP[k]))
@@ -1020,7 +1022,7 @@ def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
                      "retirement_rule": {"by": "age", "position_age": dict(zip(POSITIONS, (b + 24 for b in NFL_RETIRE_BASE))),
                                          "contributor_starting_rows": dict(zip(POSITIONS, RETIRE_STARTERS)),
                                          "contributor_games": RETIRE_GAMES,
-                                         "producing_step": RETIRE_PRODUCING_STEP,
+                                         "producing_step": RETIRE_PRODUCING_STEP, "age_offset": RETIRE_AGE_OFFSET,
                                          "code_bytes": retirement_code()[1]["used"], "code_capacity": RETIRE_SIZE},
                      "form_code_bytes": labels["used"], "form_code_capacity": PERF_SIZE,
                      "decline_tables": {f"{c}/{g}": list(v[DD_FIRST_YEAR:]) for (c, g), v in sorted(dd.items())},
@@ -1032,6 +1034,6 @@ def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
 __all__ = ["ProgressionError", "CURVES_VA", "CURVES_SIZE", "WEIGHTS_VA", "WEIGHTS_SIZE", "PROFILES_VA", "TABLES",
            "SHAPE", "SPREAD", "PERF_VA", "PERF_SIZE", "AGING_CALL_VA", "MINI_LOAD_VA", "RETIRE_BASE_VA",
            "RETAIL_RETIRE_BASE", "NFL_RETIRE_BASE", "PERF_RULES", "D_TARGET", "CLASSES", "GROUPS", "QB_MINI",
-           "RETIRE_VA", "RETIRE_SIZE", "RETIRE_STARTERS", "RETIRE_GAMES", "RETIRE_PRODUCING_STEP",
+           "RETIRE_VA", "RETIRE_SIZE", "RETIRE_STARTERS", "RETIRE_GAMES", "RETIRE_PRODUCING_STEP", "RETIRE_AGE_OFFSET",
            "apply", "career_code", "retirement_code", "retirement_chance", "career_layout", "decline_tables", "decode_curves", "decode_weights",
            "patched_tables", "reshape_curve", "retail_curves", "retail_weights", "spread_weights", "status"]
