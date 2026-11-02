@@ -50,9 +50,10 @@ REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "data", DATA_SIZE, 16))
 BUILD_CAPTION = "Protection calls: slide the line with L / R (audible menu)"
 HELP_TEXT = ("EXPERIMENTAL. At the line, press Y to open the audible menu as usual, then press L to slide your pass "
              "protection to the left or R to slide it to the right. Press the same button again to go back to the "
-             "game's own read. The call is for the next snap only: on a pass play the whole line sets up to 3 yards "
-             "toward the side you called. Run plays are not changed. The computer's offense keeps the game's "
-             "automatic slide, and L and R keep their audibles in the defense, No Huddle and kick menus.")
+             "game's own read. The call is for the next snap only: on a pass play the whole line slides its pass set "
+             "3 yards (the game's largest slide) toward the side you called. Run plays are not changed. The "
+             "computer's offense keeps the game's automatic slide, and L and R keep their audibles in the defense, "
+             "No Huddle and kick menus.")
 SYMBOLS = dict(slide_auto=0x0023B6E0, select_play=0x000FEFA0, case_resume=0x0018FE6F, case_done=0x0018FF1C)
 SLIDE_CM = 274.32                   # the game's own maximum (retail constants 0x4EDD28 / 0x50A514)
 RIGHT_IS_LOCAL_PLUS_X = True        # authored +x is the offense's right; see the module docstring
