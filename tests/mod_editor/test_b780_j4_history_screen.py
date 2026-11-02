@@ -738,6 +738,13 @@ class NativeTests(unittest.TestCase):
         self.assertEqual(rows[1], ["PHI", "0", "10", "0", "7", "17"])
         self.assertEqual(rows[2], ["NYG", "7", "3", "7", "7", "24"])
         self.assertEqual(rows[4], ["FULL STATS ARE KEPT FOR YOUR TEAM'S GAMES"])
+        # overtime: the OT column for both clubs when either scored in it
+        self.game(m, quarters=((7, 3, 7, 7, 0), (0, 10, 0, 14, 3)))
+        self.box(m)
+        rows = self.rows(m)
+        self.assertEqual(rows[0], ["FINAL", "Q1", "Q2", "Q3", "Q4", "OT", "T"])
+        self.assertEqual(rows[1], ["PHI", "0", "10", "0", "14", "3", "27"])
+        self.assertEqual(rows[2], ["NYG", "7", "3", "7", "7", "0", "24"])
         # an unplayed cell draws nothing
         m.uc.mem_write(GRID + 8 * (17 * 2 + 3), bytes((1,)))
         self.assertEqual(self.box(m), [])

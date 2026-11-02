@@ -1362,12 +1362,12 @@ void FC box_input(u32 manager) {
         CURSOR_SOUND();
 }
 
-static void line_score_row(u32 row, u32 index, const u8 *quarters, u32 total, u32 colour) {
+static void line_score_row(u32 row, u32 index, const u8 *quarters, u32 total, u32 colour, u32 ot) {
     u16 text[24];
     put_club_abbr(text, index);
     cell(row, 60.0f, 1, text, colour);
     for (u32 q = 0; q < 5; q++) {
-        if (q == 4 && !quarters[4])
+        if (q == 4 && !ot)                              /* the OT column when either club scored in overtime */
             continue;
         put_uint(text, quarters[q]);
         cell(row, 260.0f + 50.0f * (float)q, 2, text, colour);
@@ -1416,8 +1416,8 @@ void FC box_draw(u32 manager) {
     if (q[4] || q[9])
         cell_ascii(0, 460.0f, 2, "OT", GREY);
     cell_ascii(0, 560.0f, 2, "T", GREY);
-    line_score_row(1, c[2], q + 5, (u32)away, away > home ? WHITE : GREY);
-    line_score_row(2, c[1], q, (u32)home, home > away ? WHITE : GREY);
+    line_score_row(1, c[2], q + 5, (u32)away, away > home ? WHITE : GREY, q[4] || q[9]);
+    line_score_row(2, c[1], q, (u32)home, home > away ? WHITE : GREY, q[4] || q[9]);
     const u8 *e = x_box(row, slot);
     u32 top = 3, first = hist_state[S_BOX_SCROLL];
     if (!e) {
