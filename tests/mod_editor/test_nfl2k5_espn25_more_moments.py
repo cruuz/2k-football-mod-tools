@@ -940,6 +940,18 @@ class AnniversaryQcTests(unittest.TestCase):
                                 x86.UC_X86_REG_EBX, x86.UC_X86_REG_EDX):
                         self.assertEqual(uc.reg_read(reg), regs[reg])
 
+    def test_season_codes_follow_the_moves(self):
+        cases = {("23", 2021): "LAR", ("23", 1999): "STL", ("23", 1951): "LA", ("20", 2001): "OAK", ("20", 1983): "LA",
+                 ("20", 2020): "LV", ("20", 1976): "OAK", ("24", 2006): "SD", ("24", 2017): "LAC", ("11", 2009): "IND",
+                 ("11", 1970): "BAL", ("00", 2008): "ARZ", ("00", 1975): "STL", ("00", 1990): "PHO",
+                 ("28", 1999): "TEN", ("28", 1988): "HOU", ("16", 2016): "NE", ("14", 2006): "SEA"}
+        base = {"23": "STL", "20": "OAK", "24": "SD", "11": "IND", "00": "ARZ", "28": "TEN", "16": "NE", "14": "SEA"}
+        for (code, season), want in cases.items():
+            with self.subTest(code=code, season=season):
+                team = {"asset_code": code, "season": season, "abbreviation": base[code]}
+                self.assertEqual(mm.display_abbreviation(team), want)
+                self.assertLessEqual(len(want), mm.SLOT_TEXT_CAPACITY[mm.TEAM_CITY_ABBREVIATION])
+
     def test_previous_star_only_tail_still_moves_one_bit(self):
         """The beta 76.3 .. beta 79 body (kept for recognition) copies only the star bit."""
         try:
@@ -1173,6 +1185,37 @@ class ShippedMomentLooksRetailTests(unittest.TestCase):
                 self.assertLessEqual(v["face_mask"], 26, who)
                 self.assertLessEqual(p.record.skin & 7, 5, who)
                 self.assertLessEqual(v["face"] & 7, 6, who)
+
+    def test_every_moment_team_prints_its_own_seasons_code(self):
+        """b780 (v0.8 known issue: "the 2021 Rams show STL in the Super Bowl LVI moment"): the screens print the team's
+        city abbreviation (+0x13C; the details screen's NOW box reads it at 2C5D40 / 2C5D90). Every shipped moment
+        team file carries the code its club used that season, not its retail template's (the 1999 St. Louis Rams,
+        1983 Los Angeles Raiders, 1970 Baltimore Colts and 1975 St. Louis Cardinals templates), and every text the
+        importer copies fits the spare team's buffer."""
+        expected = {key: mm.display_abbreviation(team) for key, team in self.data.teams.items()}
+        self.assertEqual(expected["rams_2021"], "LAR")
+        for key in ("raiders_2001", "colts_2009", "colts_2022", "cardinals_2008"):
+            self.assertEqual(expected[key], self.data.teams[key]["abbreviation"], key)
+        by_file = {name: key for key, name, *_ in mm.table_entries(self.data)}
+        seen = set()
+        for filename, raw in self.files.items():
+            body = raw[32:]
+            t = rr.RosterDocument(body).teams[0].offset
+            def text(field):
+                at = t + field + struct.unpack_from("<i", body, t + field)[0] - 1
+                end = at
+                while body[end:end + 2] != b"\0\0":
+                    end += 2
+                return body[at:end].decode("utf-16le")
+            key = by_file[filename]
+            with self.subTest(team=key):
+                self.assertEqual(text(mm.TEAM_CITY_ABBREVIATION), expected[key])
+                for field, capacity in mm.SLOT_TEXT_CAPACITY.items():
+                    self.assertLessEqual(len(text(field)), capacity)
+            seen.add(key)
+        self.assertEqual(seen, set(self.data.teams))
+        rams = {name: key for name, key in by_file.items() if key == "rams_2021"}
+        self.assertEqual(len(rams), 1)
 
     def test_the_templates_are_inside_the_same_envelope(self):
         """The compiled records keep the donors' gear (helmet shell, facemask, sleeves); the donors are retail

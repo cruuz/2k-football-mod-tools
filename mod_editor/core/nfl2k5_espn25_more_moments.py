@@ -810,7 +810,12 @@ def compile_team(template_raw, team, rows, colleges, identity, people=None, *, a
     short = f"{season % 100:02d}"
     for field, text in ((rr.TEAM_NICKNAME, f"{team['nickname']} '{short}"),
                         (rr.TEAM_ABBREVIATION, f"{team['abbreviation']}{short}"),
-                        (rr.TEAM_CITY, team["city"])):
+                        (rr.TEAM_CITY, team["city"]),
+                        (TEAM_CITY_ABBREVIATION, display_abbreviation(team))):
+        # C1030 copies each text into the spare team's own buffer (wcscpy, 0x30AB0); the retail USER1/USER2 strings
+        # size those buffers, so a longer text would run into the next one.
+        require(len(text) <= SLOT_TEXT_CAPACITY[field], f"{team.get('team_key', '?')}: {text!r} exceeds the "
+                f"{SLOT_TEXT_CAPACITY[field]}-character spare-team buffer")
         _set_rel(body, t + field, _append_text(body, text))
     struct.pack_into("<H", body, t + 0x118, identity)
     body.extend(bytes(-len(body) % 16))
@@ -822,6 +827,37 @@ def compile_team(template_raw, team, rows, colleges, identity, people=None, *, a
             and [p.first for p in sorted(check.players, key=lambda p: p.index)] == [r["first"] for r in rows],
             f"{team['team_key']}: team file read-back differs")
     return result
+
+
+# b780 (b3-moments, the v0.8 known issue "the 2021 Rams show STL in the Super Bowl LVI moment"): the team's city
+# abbreviation (+0x13C) is the abbreviation the screens print: the moment details screen's NOW box (2C5D40 home,
+# 2C5D90 away: `call 77B00/77B40; mov eax,[eax+0x13C]`), its ball spot (2C5CC4, 2C5D00) and the in-game pages. The team
+# files took it from their retail template (the 1999 St. Louis Rams for the 2021 Rams, the 1983 Los Angeles Raiders for
+# the 2001 Raiders, the 1970 Baltimore Colts for the 2009 and 2022 Colts, the 1975 St. Louis Cardinals for the 2008
+# Cardinals). It is written now from the team-season, with the club's code of that season. Display text only: the
+# engine's keys stay as they are (the asset code +0x10C, the label at +0x110 whose abbreviation names the playbook
+# file, and the identity abbreviation +0x108, nfl2k5_team_names_2026).
+TEAM_CITY_ABBREVIATION = 0x13C
+# Characters the spare teams' (32 and 33) own text buffers hold: the retail USER1/USER2 strings, which C1030 copies over.
+SLOT_TEXT_CAPACITY = {rr.TEAM_NICKNAME: 16, rr.TEAM_ABBREVIATION: 5, rr.TEAM_CITY: 16, TEAM_CITY_ABBREVIATION: 4}
+# (asset code, first season, last season, code) where a franchise's code changed with a move; outside these the
+# team-season's own "abbreviation" (2K5's identity code of the franchise) stands.
+SEASON_CODES = (
+    ("23", 1946, 1994, "LA"), ("23", 1995, 2015, "STL"), ("23", 2016, 2100, "LAR"),          # Rams
+    ("20", 1960, 1981, "OAK"), ("20", 1982, 1994, "LA"), ("20", 1995, 2019, "OAK"), ("20", 2020, 2100, "LV"),
+    ("24", 1961, 2016, "SD"), ("24", 2017, 2100, "LAC"),                                       # Chargers
+    ("00", 1960, 1987, "STL"), ("00", 1988, 1993, "PHO"),                                     # Cardinals
+    ("11", 1953, 1983, "BAL"), ("11", 1984, 2100, "IND"),                                     # Colts
+    ("28", 1960, 1996, "HOU"), ("28", 1997, 2100, "TEN"),                                     # Oilers / Titans
+)
+
+
+def display_abbreviation(team):
+    """The code the club used in the team-season's year (the city abbreviation the screens print)."""
+    for code, first, last, text in SEASON_CODES:
+        if team.get("asset_code") == code and first <= int(team["season"]) <= last:
+            return text
+    return team["abbreviation"]
 
 
 def names_bytes(teams):
