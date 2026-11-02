@@ -248,6 +248,18 @@ class StaticTests(unittest.TestCase):
         self.assertEqual(space.LATE_OWNERS[-3:], ("nfl2k5_sim_realism", "nfl2k5_sim_realism_state", sr.OWNER))
         self.assertEqual(space.LATE_OWNERS.count(sr.OWNER), 1)
 
+    def test_allocates_in_the_complete_owner_union_without_moving_any_owner(self):
+        union = list(space.dormant_union())
+        before = {(r["owner"], r["kind"]): (r["va"], r["size"]) for r in space._scale_allocations(union)}
+        after_rows = space._scale_allocations(union + list(sr.REQUESTS))
+        after = {(r["owner"], r["kind"]): (r["va"], r["size"]) for r in after_rows}
+        self.assertEqual({k: v for k, v in after.items() if k in before}, before)           # nothing moved
+        mine = {k: v for k, v in after.items() if k[0] == sr.OWNER}
+        self.assertEqual({k[1]: v[1] for k, v in mine.items()}, {"code": sr.CODE_SIZE, "data": sr.DATA_SIZE})
+        self.assertTrue(all(va % 16 == 0 for va, _size in mine.values()))
+        plan = space.plan(union + list(sr.REQUESTS), scaleout=True)                       # the allocator accepts the set
+        self.assertGreater(plan["capacity"]["pool"]["max_pages"], plan["capacity"]["pool"]["pages"])
+
     def test_template_is_fresh_when_the_pinned_toolchain_is_here(self):
         import shutil
         import subprocess
@@ -701,6 +713,35 @@ class InstallTests(unittest.TestCase):
                 self.assertEqual(sr.status(tampered), "foreign")
                 with self.assertRaises(sr.StandingsRecordsError):
                     sr.apply(tampered)
+
+    def test_build_step_installs_reads_back_and_is_skipped_when_off(self):
+        import tempfile
+        from mod_editor.core import mod_build
+        progress = lambda *args: None  # noqa: E731
+        self.assertTrue(mod_build.availability()["standings_records"])
+        with tempfile.TemporaryDirectory() as folder:
+            target = Path(folder) / "default.xbe"
+            target.write_bytes(self.retail)
+            self.assertEqual(mod_build.inspect(target)["standings_records"], "retail")
+            receipt = {"steps": [], "result": {}}
+            mod_build._apply_standings_records(mod_build.BuildPlan(Path("source.xbe"), target), target, receipt, progress)
+            self.assertEqual(target.read_bytes(), self.retail)                       # off: nothing is written
+            self.assertEqual(receipt["steps"], [])
+            plan = mod_build.BuildPlan(Path("source.xbe"), target, standings_records=True)
+            mod_build._standings_records_preflight(target, progress)                 # a retail source passes
+            mod_build._apply_standings_records(plan, target, receipt, progress)
+            self.assertEqual(sr.status(target.read_bytes()), "applied")
+            self.assertEqual(mod_build.inspect(target)["standings_records"], "applied")
+            self.assertEqual(receipt["result"]["standings_records"], "applied")
+            self.assertEqual([step["step"] for step in receipt["steps"]], ["standings_records"])
+            self.assertNotIn("reservations", receipt["steps"][0])
+            mod_build._standings_records_preflight(target, progress)                 # an installed one passes too
+            buf = bytearray(self.retail)
+            buf[rdata.offset_of(self.retail, 0xC6B70)] ^= 0xFF                       # the game's home record routine, changed
+            target.write_bytes(reseal(buf))
+            with self.assertRaises(ValueError):
+                mod_build._standings_records_preflight(target, progress)             # refused before any write
+            self.assertEqual(mod_build.inspect(target)["standings_records"], "foreign")
 
     def test_the_regular_season_row_count_must_be_17_or_18(self):
         def with_weeks(value):

@@ -189,7 +189,8 @@ static void put_streak(u16 *p, u32 team) {
 
 /* ---- entries (stubs.S calls these; every one answers "retail" when the view is 0 or damaged) ---------------------- */
 
-/* White (Black is the retail pad bit 0x1000) turns the columns back, Black forward; the cursor sound plays. */
+/* Black (pad bit 0x1000) turns the columns forward, White (0x2000) back, as on the Player Card pages; the retail cursor
+   sound plays. Both at once: Black wins. A damaged view starts over from the retail columns. */
 void FC sr_buttons(u32 pressed) {
     u32 v = sr_state[0];
     if (v > VIEWS)
@@ -213,8 +214,8 @@ const u16 *FC sr_header(u32 col, float *pos, void *ctx) {
     return text;
 }
 
-/* The number of column col for the club in edi (the retail "call 0x4A400" that formats one count into buf): 1 when
-   handled here (the text is in buf, the caller's x is moved), 0 for the retail routine. */
+/* The cell of column col for the club record in edi (the retail "call 0x4A400" that formats one count into buf): 1 when
+   handled here (the text is in buf and the caller's x position is moved), 0 to run the retail formatter. */
 u32 FC sr_cell_text(u32 col, u16 *buf, float *pos, u32 team) {
     u32 v = sr_state[0];
     if (v == 0 || v > VIEWS || col > 2)

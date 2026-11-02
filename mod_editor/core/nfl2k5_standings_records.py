@@ -41,7 +41,6 @@ import hashlib
 import struct
 from typing import Mapping, Sequence
 
-from . import nfl2k5_rdata_sites as rdata
 from . import nfl2k5_standings_records_code as runtime
 from . import nfl2k5_xbe_space as space
 from .nfl2k5_bump_strength import _sections, section_digest
@@ -56,7 +55,8 @@ REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "data", DATA_SIZE, 16))
 BUILD_CAPTION = "Team Standings: division, conference, home, road records"
 HELP_TEXT = (
     "EXPERIMENTAL. Adds the records the retail Team Standings page never showed. On ESPN.com > Team Standings, "
-    "White and Black turn the columns: W L T (as before), then DIV and CONF (your record against your own division "
+    "White and Black (LB and RB on a modern pad in xemu) turn the columns: W L T (as before), then DIV and CONF "
+    "(your record against your own division "
     "and against your conference, regular season only), then HOME, ROAD and STRK (home record, road record and the "
     "current streak). The headers and the legend under the tables say which one you are looking at, and the page "
     "always opens on W L T. L and R still switch AFC and NFC. Nothing is saved: the numbers are worked out from the "
