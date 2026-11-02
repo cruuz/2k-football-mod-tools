@@ -73,7 +73,7 @@ OWNER = "nfl2k5_history_screen"
 EVIDENCE = "EXPERIMENTAL"
 CODE_SIZE = 16384
 DATA_SIZE = 64
-RO_SIZE = 0x9000          # 36 KiB, resident: j5's seed takes 20,426 bytes, with j5b's club leaders and records 35,4xx
+RO_SIZE = 0x9000          # 36 KiB, resident: j5's seed takes 20,426 bytes, with j5b's leaders and records 32,883
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "data", DATA_SIZE, 16), (OWNER, "read_only", RO_SIZE, 16))
 
 UI_LABEL = "Franchise History screen, box scores and game logs"
@@ -478,21 +478,25 @@ def build_ro(ro_va: int, code_va: int, item_rows: bytes, seed: Mapping | None = 
     book_rows = b"".join(struct.pack("<BBHIHBB", r["category"], r["kind"], names.add(r["name"]), r["value"], r["year"],
                                      club_byte(r["club"]), r["pos"]) for r in book)
     fields["book"], fields["book_count"] = put(book_rows), len(book)
-    # club records: 32 x {u16 first, u16 count} (128 bytes), then 12-byte entries (the book's shape, club = the club)
+    # club records: 32 x {u16 first, u16 count} (128 bytes), then 8-byte entries {u8 category << 1 | kind (0 game,
+    # 1 season), u8 pos, u16 name, u16 value, u16 year}
     head, body = bytearray(), bytearray()
-    for i, key in enumerate(CLUBS_2026):
+    for key in CLUBS_2026:
         rows_of = club_records[key]
-        head += struct.pack("<HH", len(body) // 12, len(rows_of))
+        head += struct.pack("<HH", len(body) // 8, len(rows_of))
         for r in rows_of:
-            body += struct.pack("<BBHIHBB", r["category"], r["kind"], names.add(r["name"]), r["value"], r["year"], i,
-                                r["pos"])
+            _require(0 <= r["value"] <= 0xFFFF and r["kind"] in (0, 1), f"club record out of range: {r}")
+            body += struct.pack("<BBHHH", r["category"] << 1 | r["kind"], r["pos"], names.add(r["name"]), r["value"],
+                                r["year"])
     fields["club_records"] = put(bytes(head) + bytes(body)) if any(club_records.values()) else 0
+    # club leaders: 32 x {u16 first, u16 count} (128 bytes), then 8-byte entries {u8 category << 2 | rank, u8 pos,
+    # u16 name, u32 value}
     head, body = bytearray(), bytearray()
     for key in CLUBS_2026:
         rows_of = leaders[key]
-        head += struct.pack("<HH", len(body) // 10, len(rows_of))
+        head += struct.pack("<HH", len(body) // 8, len(rows_of))
         for r in rows_of:
-            body += struct.pack("<BBHIBB", r["category"], r["rank"], names.add(r["name"]), r["value"], r["pos"], 0)
+            body += struct.pack("<BBHI", r["category"] << 2 | r["rank"], r["pos"], names.add(r["name"]), r["value"])
     fields["leaders"] = put(bytes(head) + bytes(body)) if any(leaders.values()) else 0
     fields["names"] = put(bytes(names.data))
     fields["names_size"] = len(names.data)

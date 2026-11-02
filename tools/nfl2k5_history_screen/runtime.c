@@ -600,7 +600,9 @@ static void page_seasons(u32 index) {
 }
 
 /* ---- RECORDS and RECORD BOOK -------------------------------------------------------------------------------- */
-/* Seed entry (RO): {u8 category, u8 kind (0 game, 1 season, 2 career), u16 name, u32 value, u16 year, u8 club, u8 pos}.
+/* Book entry (RO): {u8 category, u8 kind (0 game, 1 season, 2 career), u16 name, u32 value, u16 year, u8 club, u8 pos};
+   club record entry (RO, per club {u16 first, u16 count} x 32, then): {u8 category << 1 | kind, u8 pos, u16 name,
+   u16 value, u16 year}.
    Footer records (block 3): club entry ((club*12 + category)*2 + kind) at +16 and league entry (category*2 + kind) at
    +9232, 12 B each: person (7), u8 club+1, u16 value, u8 year - 1900 (0 = empty), u8 week row + 1. */
 static const char *const kind_name[3] = {"GAME", "SEASON", "CAREER"};
@@ -618,14 +620,14 @@ static u32 seed_club_record(u32 seed, u32 category, u32 kind, Mark *m) {
         return 0;
     u32 first = RO_U16(base + 4 * seed), count = RO_U16(base + 4 * seed + 2), entries = base + 128;
     for (u32 i = 0; i < count && i < 64; i++) {
-        u32 at = entries + 12 * (first + i);
-        if (at + 12 > RO_FIELD(RO_SIZE))
+        u32 at = entries + 8 * (first + i);
+        if (at + 8 > RO_FIELD(RO_SIZE))
             return 0;
-        if (RO_U8(at) == category && RO_U8(at + 1) == kind) {
-            m->value = RO_U32(at + 4);
-            m->year = RO_U16(at + 8);
+        if (RO_U8(at) == (category << 1 | kind)) {
+            m->value = RO_U16(at + 4);
+            m->year = RO_U16(at + 6);
             m->club = game_club_of_seed(seed);
-            m->pos = RO_U8(at + 11);
+            m->pos = RO_U8(at + 1);
             m->fresh = 0;
             m->name[0] = 0;
             put_seed_name(m->name, RO_U16(at + 2));
@@ -780,7 +782,7 @@ static void page_book(void) {
 /* ---- LEADERS: the club's all-time top three per category --------------------------------------------------- */
 /* Footer (block 4): club entry ((club*10 + category)*3 + rank) at +16, 16 B: person (7), u8 flags (1 valid, 2 real,
    4 linked, 8 franchise era), u32 value, u16 player, u16 check. Seed (RO): per club {u16 first, u16 count} x 32, then
-   10-byte entries {u8 category (0..9), u8 rank, u16 name, u32 value, u8 pos, u8 flags}.
+   8-byte entries {u8 category (0..9) << 2 | rank, u8 pos, u16 name, u32 value}.
    A category whose footer table carries real (seeded) entries is the live one as it stands. Without them (a footer
    that was never seeded keeps franchise-era entries only) the footer's and the seed's lines are merged by value, a
    player in both counted once with his larger total, so the real all-time leaders stay on the page. */
@@ -811,13 +813,13 @@ static u32 leader_line(const u8 *b, u32 index, u32 seed, u32 category, u32 s, Ma
         return 0;
     u32 first = RO_U16(base + 4 * seed), count = RO_U16(base + 4 * seed + 2);
     for (u32 i = 0; i < count && i < LEADER_CATS * 3; i++) {
-        u32 at = base + 128 + 10 * (first + i);
-        if (at + 10 > RO_FIELD(RO_SIZE))
+        u32 at = base + 128 + 8 * (first + i);
+        if (at + 8 > RO_FIELD(RO_SIZE))
             return 0;
-        if (RO_U8(at) == category && RO_U8(at + 1) == s - 3) {
+        if (RO_U8(at) == (category << 2 | (s - 3))) {
             m->value = RO_U32(at + 4);
             m->fresh = 0;
-            m->pos = RO_U8(at + 8);
+            m->pos = RO_U8(at + 1);
             put_seed_name(m->name, RO_U16(at + 2));
             return 1;
         }
