@@ -291,6 +291,27 @@ class PresetPlanEqualsPresetTests(unittest.TestCase):
             panel.deleteLater()
             self.app.processEvents()
 
+    def test_beta79_catch_slider_and_cornerback_credit_are_upgrades_not_disabled_boxes(self) -> None:
+        """b780 rev1: on a v0.8 disc both read "previous" and the build upgrades them in place, but their boxes were
+        disabled with no badge or listing (the depth-locks case above)."""
+        panel = BuildPanel()
+        try:
+            state = {key: "retail" for key in panel._boxes()}
+            state.update(path="v08.iso", container="xiso", throw=None, catch_slider="previous", sim_cb_tackles="previous")
+            panel.apply_state(state)
+            for key, box, name in (("catch_slider", panel.catch_check, "catching slider"),
+                                   ("sim_cb_tackles", panel.sim_cb_tackles_check, "cornerback tackle credit")):
+                with self.subTest(key=key):
+                    self.assertTrue(box.isEnabled())
+                    self.assertFalse(box.isChecked())
+                    self.assertEqual(panel._badges[key].text(), "Needs update")
+                    self.assertIn(f"{name}: older revision (needs update)", panel.source_status.text())
+                    box.setChecked(True)
+                    self.assertTrue(getattr(panel.plan(), key))
+        finally:
+            panel.deleteLater()
+            self.app.processEvents()
+
     def test_preset_hands_the_rosters_page_its_lock_values(self) -> None:
         panel = BuildPanel()
         try:

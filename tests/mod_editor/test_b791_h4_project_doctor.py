@@ -723,6 +723,65 @@ class EditSurvival(unittest.TestCase):
             with self.assertRaises(BuildCancelled):
                 mod_build._edit_survival_snapshot("/s.iso", session, types.SimpleNamespace(source="r"), lambda *a: None)
 
+    def test_a_cancel_after_the_disc_is_published_never_turns_it_into_a_cancelled_build(self):
+        """b780 rev1: Cancel pressed while the finished disc was published (Windows holds a new image for up to a minute)
+        or during the edit check raised BuildCancelled after publish_image, and the Build tab said "Build cancelled; no
+        output was published" about a finished disc."""
+        import threading
+        from mod_editor.core.nfl2k5_project_fit import BuildCancelled
+        edit = types.SimpleNamespace(asset_id=sock_id("14H8"), replacement_path="/never/a.png")
+        session = types.SimpleNamespace(iter_project_png_edits=lambda: [edit])
+        service = types.SimpleNamespace(preflight_project=lambda s: {"edits": [{"kind": "texture", "target": "a"}]},
+                                        build=lambda cache, s, output, progress: "stage-result")
+        plan = mod_build.BuildPlan("/never/read.iso", "/never/written.iso")
+        snap = dict(schema=survival.SCHEMA, seconds=1.0, pieces=dict(kits={"21A9": {1: ["a"]}}, stadiums={}, other=[]),
+                    stage=dict(kits={"21A9": ["h0", "MINE1"]}, stadiums={}), source=dict(kits={"21A9": ["h0", "r1"]},
+                                                                                         stadiums={}))
+        for when in ("during the publish", "during the check"):
+            cancelled, published = threading.Event(), []
+
+            def gui_progress(message, done=0, total=0):    # build_panel_qt._Task's worker progress, before published
+                if cancelled.is_set():
+                    raise BuildCancelled("Build cancelled; no output was published. Your project is unchanged.")
+            gui_progress.cancelled = cancelled
+
+            def fake_build(plan, progress, _project_builder=None, require_change=False):
+                _project_builder("/stage/source.iso")
+                progress("Publishing the verified disc", 0, 0)
+                if when == "during the publish":
+                    cancelled.set()
+                published.append("/final.iso")
+                return {"steps": [], "target": "/final.iso"}
+
+            def final_read(image, pieces, progress=None, label=""):
+                if when == "during the check":
+                    cancelled.set()
+                    progress("Checking your edits on the finished disc (100 of 634 kit files)", 100, 634)
+                return dict(kits={"21A9": ["h0", "MINE1"]}, stadiums={})
+            with self.subTest(when=when), mock.patch.object(mod_build, "build", fake_build), \
+                    mock.patch("mod_editor.core.nfl2k5_model_project.validate_build_plan"), \
+                    mock.patch("mod_editor.core.nfl2k5_model_project.plan_rows", return_value=[]), \
+                    mock.patch.object(survival, "snapshot", return_value=snap), \
+                    mock.patch.object(survival, "_read", side_effect=final_read):
+                receipt = mod_build.build_with_project(plan, service, None, session, gui_progress)
+                self.assertEqual((published, receipt["target"]), (["/final.iso"], "/final.iso"))
+                step = receipt["steps"][-1]
+                self.assertEqual((step["step"], step["state"]), ("edit_survival", "not_checked"))
+                self.assertIn("after the disc was published", step["user_notes"][0])
+
+        def cancelled_build(plan, progress, _project_builder=None, require_change=False):
+            _project_builder("/stage/source.iso")
+            cancelled.set()
+            progress("Hashing the verified disc", 0, 0)     # before the publish: Cancel still cancels the build
+            return {"steps": [], "target": "/final.iso"}
+        with mock.patch.object(mod_build, "build", cancelled_build), \
+                mock.patch("mod_editor.core.nfl2k5_model_project.validate_build_plan"), \
+                mock.patch("mod_editor.core.nfl2k5_model_project.plan_rows", return_value=[]), \
+                mock.patch.object(survival, "snapshot", return_value=snap):
+            cancelled.clear()
+            with self.assertRaises(BuildCancelled):
+                mod_build.build_with_project(plan, service, None, session, gui_progress)
+
 
 # ----------------------------------------------------------------------------------------------- the Build tab
 
