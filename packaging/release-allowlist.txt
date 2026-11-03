@@ -604,6 +604,7 @@ mod_editor/core/nfl2k5_standings_records.py
 mod_editor/core/nfl2k5_standings_records_code.py
 mod_editor/core/nfl2k5_scramble_blocking.py
 mod_editor/core/nfl2k5_scramble_blocking_code.py
+mod_editor/core/nfl2k5_audible_legend.py
 mod_editor/core/nfl2k5_sim_stats.py
 mod_editor/core/nfl2k5_quick_long_release.py
 mod_editor/core/nfl2k5_clock_led.py
@@ -3919,6 +3920,7 @@ tests/mod_editor/test_nfl2k5_standings_records.py
 tests/mod_editor/test_nfl2k5_dive_window.py
 tests/mod_editor/test_nfl2k5_dive_window_flights.py
 tests/mod_editor/test_nfl2k5_scramble_blocking.py
+tests/mod_editor/test_b780_p3_audible_legend.py
 tests/mod_editor/test_nfl2k5_sim_stats.py
 tests/mod_editor/test_nfl2k5_quick_long_release.py
 tests/mod_editor/test_nfl2k5_quick_long_release_unicorn.py

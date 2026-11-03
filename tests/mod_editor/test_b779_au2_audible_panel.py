@@ -184,10 +184,24 @@ class AudiblePanelNative(unittest.TestCase):
     @unittest.skipUnless(HAVE_BUILT, "SOFTDRINK image unavailable")
     def test_built_executable_keeps_the_retail_panel_code(self):
         from mod_editor.core.nfl2k5_cave_oracle import XbeImage
-        retail, built = XbeImage(self.xbe), XbeImage(built_xbe(BUILT))
+        from mod_editor.core import nfl2k5_audible_legend as legend
+        raw = built_xbe(BUILT)
+        retail, built = XbeImage(self.xbe), XbeImage(raw)
+        # b780-p3 (knowing update): the audible legend owner, when a build installs it, owns exactly one call inside
+        # the panel draw (0xFF60B, the header draw). That call must read as the owner's applied state (its code and
+        # sites recognized whole); every other byte of these spans must still be retail.
+        owned = {}
+        settings = legend.read_settings(raw)
+        if settings["audible_legend"]:
+            self.assertEqual(settings["status"], "applied")
+            owned[legend.LEGEND_SITE[1]] = legend.LEGEND_SITE[2]
         for va, size, label in PANEL_CODE:
             with self.subTest(span=label):
-                self.assertEqual(hashlib.sha256(built.read(va, size)).hexdigest(),
+                have = bytearray(built.read(va, size))
+                for site, before in owned.items():
+                    if va <= site and site + len(before) <= va + size:
+                        have[site - va:site - va + len(before)] = before
+                self.assertEqual(hashlib.sha256(bytes(have)).hexdigest(),
                                  hashlib.sha256(retail.read(va, size)).hexdigest(), f"{label} at {va:#x} changed")
 
 
