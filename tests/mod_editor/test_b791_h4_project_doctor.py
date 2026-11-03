@@ -423,9 +423,19 @@ class Doctor(unittest.TestCase):
         path = archive(self.folder, {"modern_color": True, "modern_surfaces": True})
         source = self.folder / "retail.iso"
         source.write_bytes(b"not a real disc")
-        with mock.patch.object(dry, "run", return_value=self.dry_result()) as run:
+        # On a Build without an optional-step list (beta 79) a failing refit stops the build: a STOP.
+        with mock.patch.object(dry, "run", return_value=self.dry_result()) as run, \
+                mock.patch.object(pc, "optional_build_steps", return_value=set()):
             report = pc.doctor(path, source, checks=["stadiums"])
         run.assert_called_once()
+        # b791 int: with h3's mod_build.OPTIONAL_STEPS, Build leaves the step out and continues: the same finding is a NOTE
+        with mock.patch.object(dry, "run", return_value=self.dry_result()):
+            optional_report = pc.doctor(path, source, checks=["stadiums"])
+        self.assertIn("modern_surfaces", pc.optional_build_steps())
+        self.assertFalse([f for f in optional_report.stops if f.area == "Stadiums and colour"])
+        left_out = [f for f in optional_report.notes if f.code == "stadiums.failed.surfaces"]
+        self.assertEqual(len(left_out), 1)
+        self.assertIn("leaves that step out of your disc", left_out[0].detail)
         stops = [f for f in report.stops if f.area == "Stadiums and colour"]
         self.assertEqual(len(stops), 1)
         self.assertIn("Modern playing surfaces cannot refit 1 stadium bundle", stops[0].title)
