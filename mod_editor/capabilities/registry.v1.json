@@ -7951,7 +7951,7 @@
     },
     {
       "backend": {
-        "command": "python3 -m mod_editor.core.mod_build (Build option franchise_history)",
+        "command": "python3 -m mod_editor.core.nfl2k5_franchise_footer (installed by the Build option franchise_history)",
         "module": "mod_editor/core/nfl2k5_franchise_footer.py",
         "operation": "write"
       },

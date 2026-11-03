@@ -1092,9 +1092,34 @@ def installed_main_sites(payload: bytes) -> list[tuple[str, int, bytes, bytes]]:
     composed image)."""
     found = _exact_full_install(payload)
     if found is None:
-        hosted = hosted_addresses(payload)
-        return [] if hosted is None else _sites(allocation(payload)[0]["va"])
+        hosted_va = _exact_hosted_install(payload)
+        return [] if hosted_va is None else _sites(hosted_va)
     return _sites(found[0])
+
+
+def _exact_hosted_install(payload: bytes) -> int | None:
+    """b780-int: the code VA of this owner's exact hosted install (trailer variant 3, the hosted code blob and every
+    main hook as apply() writes them), else None. Structural only, like _exact_full_install: it never asks the
+    franchise save routine's other owners (MyCareer asks this owner from inside its own recognizer, and the full
+    _recognize checks the save routine through MyCareer and Auto Save, which looped forever when a pool reserved this
+    owner's allocation before its install)."""
+    try:
+        found = allocation(payload)
+        if not found:
+            return None
+        image = XbeImage(payload)
+        code_va, data_va = found[0]["va"], found[1]["va"]
+        trailer = _trailer_at(image, code_va)
+        if trailer is None or trailer[0] != VARIANT_HOSTED or tuple(trailer[1:]) != (0, 0, 0, False):
+            return None
+        if image.read(code_va, CODE_SIZE) != hosted_code_for(code_va, data_va):
+            return None
+        for _label, va, _before, after in _sites(code_va):
+            if image.read(va, len(after)) != after:
+                return None
+        return code_va
+    except _ERRORS:
+        return None
 
 
 def _displaced_targets(image: XbeImage) -> tuple[int, int, int]:

@@ -944,7 +944,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_sportscenter_lineup.py": "d7901a39e3d80149441eb2b88ce71d49b5cdf6a47a27397ae3947d40f7c29023",  # b778-sc2
         "mod_editor/core/nfl2k5_draft_clock.py": "306e873a85e3c2aaf63815b424faa092a454a15cfd7a6fd334947686262cf4c6",  # b778-dr1
         "mod_editor/core/nfl2k5_weekly_progression.py": "7a5591e33c51891dae37cf5332fb3d6c46983285feaaaa8eade3e93ccafb61fb",  # b778-pg1
-        "mod_editor/core/nfl2k5_player_progress_screen.py": "d21833577beb94dd03389c008a26a3255cecfbdde0addb87b58605ee109e80c3",  # b778-pg2
+        "mod_editor/core/nfl2k5_player_progress_screen.py": "b71ae7f7ee798de41d693bf451edd2d3d269dfd433a6a289b1042e45ed7eac31",  # b778-pg2
         "mod_editor/core/nfl2k5_player_progression.py": "83b48e765dbce3139edfe7c2cf7b16d84d81d9cea4b60956bf455e85ef1998c2",  # b778-pg2
         "mod_editor/core/nfl2k5_franchise_extension.py": "f7ec35994cbbd7f48015a4e478167796db88788d77370fb46ae465e800c9663a",  # b780 j23
         "mod_editor/core/nfl2k5_franchise_footer.py": "b12c4c79602f832948fd14fdd368138e2b07ec8e45dd46ca9e5f3ea941fad6c1",  # b780 j23
