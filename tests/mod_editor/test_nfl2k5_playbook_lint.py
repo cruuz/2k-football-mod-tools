@@ -383,7 +383,7 @@ class TossPackTool(unittest.TestCase):
         self.assertEqual(play["custom_name"], "Crack Toss Wk")
 
 
-IMAGE = Path(os.environ.get("NFL2K5_RETAIL_IMAGE", "/media/noah/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso"))
+IMAGE = Path(os.environ.get("NFL2K5_RETAIL_IMAGE", ""))
 
 
 @unittest.skipUnless(IMAGE.is_file(), "needs the retail image")

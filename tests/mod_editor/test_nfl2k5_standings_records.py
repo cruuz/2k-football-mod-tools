@@ -41,8 +41,8 @@ from mod_editor.core import nfl2k5_xbe_space as space  # noqa: E402
 from mod_editor.core.nfl2k5_bump_strength import _sections, section_digest  # noqa: E402
 from mod_editor.core.nfl2k5_cave_oracle import RETAIL_SHA256, XbeImage  # noqa: E402
 
-XBE = Path(os.environ.get("NFL2K5_RETAIL_EXTRACTION",
-                          "/media/noah/Storage/for codex 1.0/extracted")) / "ESPN NFL 2K5 (USA)" / "default.xbe"
+_EXTRACTION = os.environ.get("NFL2K5_RETAIL_EXTRACTION", "")
+XBE = (Path(_EXTRACTION) / "ESPN NFL 2K5 (USA)" / "default.xbe") if _EXTRACTION else Path("")
 HAVE_UC = importlib.util.find_spec("unicorn") is not None
 
 GRID, SCORES, DIVISIONS, LEAGUE_TEAMS = 0xE57C40, 0xE587F0, 0xE576D4, 0xE5786C

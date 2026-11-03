@@ -31,10 +31,9 @@ from mod_editor.core import nfl2k5_era_kits  # noqa: E402,F401
 from mod_editor.core import nfl2k5_classic_kit_art  # noqa: E402,F401
 from mod_editor.core import nfl2k5_classic_art  # noqa: E402,F401
 
-RETAIL = Path(os.environ.get("NFL2K5_RETAIL_XISO", "/media/noah/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso"))
-FIXTURE = Path(os.environ.get("B775_EK1_DISC",
-                              "/media/noah/Storage/2K5 Discs/SOFTDRINK 2K28 v0.6.1 i4 test (2026-10-17).xiso.iso"))
-V08 = Path(os.environ.get("B791_V08_DISC", "/media/noah/Storage/2K5 Discs/SOFTDRINK 2K28 v0.8 (2026-10-31).xiso.iso"))
+RETAIL = Path(os.environ.get("NFL2K5_RETAIL_XISO", ""))
+FIXTURE = Path(os.environ.get("B775_EK1_DISC", ""))
+V08 = Path(os.environ.get("B791_V08_DISC", ""))
 
 SPAN = 10
 VIDEO, SYSTEM = 100, 7
