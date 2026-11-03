@@ -3823,6 +3823,7 @@ tests/mod_editor/test_nfl2k5_pass_rush_stats.py
 mod_editor/core/nfl2k5_history_screen.py
 mod_editor/core/nfl2k5_history_screen_code.py
 tests/mod_editor/test_b780_j4_history_screen.py
+tests/mod_editor/test_b780_n8_coach_table_order.py
 tests/mod_editor/test_b780_n8_history_compose.py
 mod_editor/core/nfl2k5_cpu_passer_iq.py
 mod_editor/core/nfl2k5_cpu_passer_iq_code.py

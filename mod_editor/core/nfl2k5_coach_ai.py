@@ -809,9 +809,23 @@ def _image_xbe(image, write=None):
         os.close(fd)
 
 
-def write_profiles(image, prepared, table=None):
+def install_table_to_image(image, rows):
+    """``install_table`` on the executable inside the disc ``image`` (written back only when it changes)."""
+    xbe = _image_xbe(image)
+    patched, receipt = install_table(xbe, rows)
+    if patched != xbe:
+        _image_xbe(image, write=patched)
+    return receipt
+
+
+def write_profiles(image, prepared, table=None, *, defer_table=False):
     """Fixed-span writes/readback after a complete read-only preflight; then, with ``table`` (b780 c2-staff), the
-    kernel's club assignment in the image's executable."""
+    kernel's club assignment in the image's executable.
+
+    ``defer_table`` (b780 n8): the Studio build writes these PLAY resources before its patch space step installs the
+    kernel, so it takes the rows (``result["kernel_table_rows"]``) and installs them with ``install_table_to_image``
+    once the kernel is in. Without it a build from the retail disc stopped here ("Coach AI table needs the installed
+    kernel")."""
     from . import nfl2k5_playbook_pack as packs
     archive_module = packs._outer_image()
     lo = 32 + PROFILE_OFFSET
@@ -848,18 +862,21 @@ def write_profiles(image, prepared, table=None):
                   all_preflighted=True, readback_verified=True,
                   clubs_with_profiles=sum(r.get("status") != "native" for r in rows),
                   native_clubs=[dict(team=r["team"], reason=r["reason"]) for r in rows if r.get("status") == "native"])
-    if table is not None:
-        xbe = _image_xbe(image)
-        patched, table_receipt = install_table(xbe, table)
-        if patched != xbe:
-            _image_xbe(image, write=patched)
+    if table is not None and defer_table:
+        check_table(list(table))
+        result["kernel_table"] = dict(owner=OWNER, kind="table", status="deferred",
+                                      reason="installed after the kernel (the build's patch space step)")
+        result["kernel_table_rows"] = list(table)
+    elif table is not None:
+        table_receipt = install_table_to_image(image, table)
         result["kernel_table"] = table_receipt
         result["changed_bytes"] += table_receipt["changed_bytes"]
     return result
 
 
-def apply_profiles_to_image(image, *, tendencies=None, progress=None, staff=None):
-    return write_profiles(image, plan_profiles(image, tendencies=tendencies, progress=progress, staff=staff))
+def apply_profiles_to_image(image, *, tendencies=None, progress=None, staff=None, defer_table=False):
+    return write_profiles(image, plan_profiles(image, tendencies=tendencies, progress=progress, staff=staff),
+                          defer_table=defer_table)
 
 
 def main(argv=None):

@@ -41,7 +41,7 @@ from mod_editor.core.nfl2k5_cave_oracle import XbeImage  # noqa: E402
 from tests.nfl2k5_my_career_fixture import HAVE_UC  # noqa: E402
 from tests.mod_editor.test_nfl2k5_owner_pairwise_composition import retail_xbe, repin_edit  # noqa: E402
 
-BUILD_ORDER = ("my_career", "playlist", "career_home", "player_progress", "module_loader", "footer", "capture",
+BUILD_ORDER = ("my_career", "playlist", "honors", "career_home", "player_progress", "module_loader", "footer", "capture",
                "history")
 _CACHE: dict = {}
 
@@ -50,8 +50,8 @@ def _modules():
     from mod_editor.core import (nfl2k5_my_career_mode as mode, nfl2k5_music_playlist as playlist,
                                  nfl2k5_my_career_home as home, nfl2k5_player_progress_screen as progress,
                                  nfl2k5_module_loader as loader, nfl2k5_franchise_footer as footer,
-                                 nfl2k5_history as capture)
-    return dict(my_career=mode, playlist=playlist, career_home=home, player_progress=progress,
+                                 nfl2k5_history as capture, nfl2k5_honors as honors)
+    return dict(my_career=mode, playlist=playlist, honors=honors, career_home=home, player_progress=progress,
                 module_loader=loader, footer=footer, capture=capture, history=hist)
 
 
@@ -66,7 +66,7 @@ def compose(order=BUILD_ORDER, *, reserve_history=None) -> bytes:
     flags = dict(music_shuffle="playlist" in order, my_career="my_career" in order, my_career_home="career_home" in order,
                  module_loader="module_loader" in order, player_progress="player_progress" in order,
                  history_screen=("history" in order) if reserve_history is None else reserve_history,
-                 franchise_history="footer" in order, franchise_history_static_body=True)
+                 franchise_history="footer" in order, franchise_history_static_body=True, honors_page="honors" in order)
     payload = space.apply(retail_xbe(), tt._selected_space_requests(**flags), scaleout=True)[0]
     for name in order:
         if name == "player_progress":
@@ -338,6 +338,29 @@ class NativeTests(unittest.TestCase):
         m.select(0)
         self.assertEqual(m.top(), 0x515660)
         self.assertEqual(m.get(mode.EXTRA_VA), 0)
+
+
+def _j4():
+    from tests.mod_editor import test_b780_j4_history_screen as j4
+    return j4
+
+
+class HistoryScreenInTheComposedExecutable(_j4().NativeTests):
+    """j4's Unicorn tests of every History page, the input, the box score, the footer reads and the Player Card's
+    four-page cycle through the champions owner, run with the History screen installed on the composed executable
+    (MyCareer, the playlist, honors, Career Home, Player Progress, the loader and the footer installed first)."""
+
+    @classmethod
+    def setUpClass(cls):
+        j4 = _j4()
+        cls.retail = compose(BUILD_ORDER[:-1], reserve_history=True)    # the composed base the j4 tests install on
+        cls.payload, cls.receipt = hist.install(cls.retail, seed=j4.seed_document(), xtnd_ptr_va=cls.WORDS)
+        cls.at = hist.labels(int(cls.receipt["code_va"], 16))
+        cls.ro = int(cls.receipt["ro_va"], 16)
+        cls.state = int(cls.receipt["data_va"], 16)
+        cls.content = XbeImage(cls.payload).read(cls.ro, hist.RO_SIZE)
+        assert [label for label, *_ in hist.companion_sites(cls.payload)] == [
+            "mycareer_screen_push", "module_loader_screen_push", "playlist_screen_event"]
 
 
 def _playlist_routes():

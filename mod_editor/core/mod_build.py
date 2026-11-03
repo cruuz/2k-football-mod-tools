@@ -4416,6 +4416,18 @@ def _coach_ai_decision(plan, progress=None):
     return replace(plan, coach_ai=False), step
 
 
+def _install_coach_table(target, rows, receipt, progress) -> None:
+    """b780 n8: c2-staff's club table (each club's head coach) into the coach AI kernel, right after the patch space
+    step installed that kernel. The PLAY resources were written (and checked against these rows) at the coach profile
+    step; the table could not go in there, before the kernel existed."""
+    _step("coach_ai_resources", "the CPU coaches' club table")
+    progress("Writing the CPU coaches' club table into the executable", 0, 0)
+    table_receipt = tt.coach_ai_patch.install_table_to_image(target, rows)
+    step = next(s for s in reversed(receipt["steps"]) if s.get("step") == "coach_ai_resources")
+    step["kernel_table"] = table_receipt
+    step["changed_bytes"] = step.get("changed_bytes", 0) + table_receipt["changed_bytes"]
+
+
 def _coach_staff_document(plan):
     """b780 c2-staff: the roster edits' coaching staff (``nfl2k5_coach_staff``), or None."""
     if not plan.roster_edits:
@@ -6721,11 +6733,16 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             os.replace(destination, target)
         receipt["steps"].append({"step": "music_project", "project": plan.music_project, **rec})
 
+    coach_table_rows = None
     if plan.coach_ai:
         _step("coach_ai_resources")
         progress("Compiling automatic CPU coach profiles for the final playbooks", 0, 0)
+        # b780 n8: the PLAY resources go in here; the kernel's club table (c2-staff) waits for the kernel itself, which
+        # the patch space step below installs (_install_coach_table)
         coach_receipt = tt.coach_ai_patch.apply_profiles_to_image(
-            target, progress=lambda message: progress(message, 0, 0), staff=_coach_staff_document(plan))
+            target, progress=lambda message: progress(message, 0, 0), staff=_coach_staff_document(plan),
+            defer_table=True)
+        coach_table_rows = coach_receipt.pop("kernel_table_rows", None)
         receipt["steps"].append({"step": "coach_ai_resources", **coach_receipt})
 
     _step("xbe_space")
@@ -6852,6 +6869,9 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                                  "xbe_space": tt.xbe_space_patch.status(patched),
                                  "kickoff_relocated": tt.kickoff_relocated_patch.status(patched),
                                  "kickoff_relocated_settings": tt.kickoff_relocated_patch.read_settings(patched)})
+
+    if coach_table_rows is not None:
+        _install_coach_table(target, coach_table_rows, receipt, progress)
 
     if plan.music_library:
         _step("music_library")
