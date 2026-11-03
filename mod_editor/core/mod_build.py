@@ -6399,6 +6399,9 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             bundle_receipt = modern.apply_to_image(target, progress=progress, settings=plan.modern_color_settings,
                                                    source_receipt=modern.read_image_receipt(source), exclude=excluded)
             receipt["steps"].append({"step": "modern_color_bundles", **{k: v for k, v in bundle_receipt.items() if k != "edits"}})
+            for note in bundle_receipt.get("user_notes", ()):    # b791: textures kept retail are said, not only receipted
+                progress(note, 0, 0)
+                receipt.setdefault("user_notes", []).append(note)
             receipt["result"]["modern_color"] = bundle_receipt["state"]
             receipt["result"]["modern_color_settings"] = bundle_receipt["settings"]
     if plan.modern_arrowhead:
@@ -6417,6 +6420,9 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             retail = require_step_source(source if _retail_source is None else _retail_source, "Modern Arrowhead")
             arrowhead_receipt = arrowhead.apply_to_image(target, progress=progress, retail_source=retail)
             receipt["steps"].append({"step": "modern_arrowhead", **{k: v for k, v in arrowhead_receipt.items() if k != "edits"}})
+            for note in arrowhead_receipt.get("user_notes", ()):    # b791: a field kept by the fallback is said, not a stop
+                progress(note, 0, 0)
+                receipt.setdefault("user_notes", []).append(note)
             receipt["result"]["modern_arrowhead"] = "applied"
     if plan.modern_metlife:
         with _optional(receipt, target, progress, "modern_metlife"):
@@ -6657,6 +6663,9 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                                                        art_root=plan.modern_venues_2026 or None,
                                                        team_logo=plan.modern_practice_field_team_logo)
             receipt["steps"].append({"step": "modern_practice_field", **practice_receipt})
+            for note in practice_receipt.get("user_notes", ()):    # b791: kept divots are said, not a stop
+                progress(note, 0, 0)
+                receipt.setdefault("user_notes", []).append(note)
             receipt["result"]["modern_practice_field"] = "applied"
     stadium_shadow = _core_module("nfl2k5_stadium_shadow")
     # b791-h3: a stadium that was left out keeps its retail bundles, so it gets no modern stadium's shadow either.
@@ -6696,6 +6705,9 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                     surface_options["tiled_normal_prefixes"] = midfield_loans
             surfaces_receipt = surfaces.apply_to_image(target, progress=progress, **surface_options)
             receipt["steps"].append({"step": "modern_surfaces", **surfaces_receipt})
+            for note in surfaces_receipt.get("user_notes", ()):    # b791: a kept divot layer or bundle is said, not a stop
+                progress(note, 0, 0)
+                receipt.setdefault("user_notes", []).append(note)
             receipt["result"]["modern_surfaces"] = surfaces_receipt["state"]
     if plan.modern_venues_2026:
         with _optional(receipt, target, progress, "missing_midfield") as optional_step:

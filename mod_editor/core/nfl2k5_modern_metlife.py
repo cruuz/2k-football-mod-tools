@@ -650,14 +650,16 @@ def _peak_aware_fit(span, decoded):
             rebuilt = span[:HEADER.size] + filled + bytes(padding)
             try:
                 tx.check_vc_lz_native(rebuilt[HEADER.size:], stored, scratch, bytes(decoded))
-            except tx.TxtrError:
+            except tx.TxtrError as exc:   # b791: a refusal is named, never an empty list
+                attempts.append(f"{name}/full fill: padding {padding}, needs {alias}, retail {scratch}, "
+                                f"refused by the decoder check: {exc}")
                 continue
             back, info = tx.decompress_vc_lz(rebuilt[HEADER.size:], len(decoded))
             require(back == decoded and info.consumed_bytes == len(filled), "full-fill refit failed its decode check")
             return rebuilt, dict(encoder=name, fill="trailing-full", padding_bytes=padding, alias_scratch=alias,
                                  scratch_bytes=scratch)
         attempts.append(f"{name}/full fill: padding {padding}, needs {alias}, retail {scratch}")
-    raise ModernMetLifeError("; ".join(attempts))
+    raise ModernMetLifeError("; ".join(attempts) or "no encoder produced a stream")
 
 
 def fit_span(span, decoded):

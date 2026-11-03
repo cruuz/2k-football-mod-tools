@@ -3881,3 +3881,5 @@ tests/mod_editor/test_b779_ag1_capacity_arena.py
 tests/mod_editor/test_b779_up2_zero_footer.py
 # b791 h2-kits: Anniversary moment kits never stop a build (K1 no-op art step, left-out kits take their classic defaults)
 tests/mod_editor/test_b791_h2_kits.py
+# b791 h1: stadium refits never stop a build (fitter reasons, rescue candidates, kept spans named)
+tests/mod_editor/test_b791_stadium_refits.py
