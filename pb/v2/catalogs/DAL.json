@@ -892,7 +892,7 @@
    "menu": [
     "X Hitch Seam",
     "PA Y Levels",
-    "RB Toss Wk",
+    "RB Toss",
     "U Bench Seams",
     "Steep In Seam",
     "Deep Post",
@@ -4319,7 +4319,7 @@
   {
    "play": "p125",
    "play_index": 184,
-   "name": "RB Toss Wk",
+   "name": "RB Toss",
    "concept": "HB Toss",
    "family": "run",
    "header": "run_toss",
@@ -4331,7 +4331,7 @@
    "must": "",
    "routes": [],
    "deep": false,
-   "lane": 0,
+   "lane": 4,
    "formations": [
     "Gun Ace Flex"
    ]

@@ -1985,6 +1985,9 @@
   "band_loss": 0.0925,
   "spy_play": null,
   "native_scoring_faults": 0,
+  "name_pool_units": 5070,
+  "name_pool_capacity": 5088,
+  "name_mode": 0,
   "pack": "data/playbooks/softdrink_nyg_defense.2k5book",
   "pack_sha256": "9ad9aa49dd8e8daa305afc95a470e3c4a4cf1eec184164462ee58a4b03fc13f6"
  }

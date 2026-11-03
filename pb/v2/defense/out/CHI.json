@@ -1966,6 +1966,9 @@
   "band_loss": 0.05598,
   "spy_play": null,
   "native_scoring_faults": 0,
+  "name_pool_units": 5055,
+  "name_pool_capacity": 5088,
+  "name_mode": 0,
   "pack": "data/playbooks/softdrink_chi_defense.2k5book",
   "pack_sha256": "19a52f0220d2126afc23f79815f6c7c09fd776e7e2367919a3a96d92dfc3742e"
  }

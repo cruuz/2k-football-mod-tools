@@ -854,7 +854,7 @@
    "menu": [
     "X Slot Fade Outs",
     "PA X Y Trail",
-    "Crack Toss",
+    "Crack Toss Wk",
     "Y Deep Over",
     "U Return Flood",
     "U Zig Flat",
@@ -910,7 +910,7 @@
    "menu": [
     "RB Slot Fade",
     "X Double Move Whip",
-    "Crack Toss",
+    "Crack Toss Wk",
     "Z Slant Flat",
     "PA X Y Trail",
     "X Curl Flat",
@@ -3397,7 +3397,7 @@
   {
    "play": "p082",
    "play_index": 139,
-   "name": "Crack Toss",
+   "name": "Crack Toss Wk",
    "concept": "Crack Toss",
    "family": "run",
    "header": "run_toss",
@@ -3409,7 +3409,7 @@
    "must": "",
    "routes": [],
    "deep": false,
-   "lane": 4,
+   "lane": 0,
    "formations": [
     "Gun Y Trips",
     "Gun Ace"

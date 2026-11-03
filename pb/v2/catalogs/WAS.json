@@ -445,7 +445,7 @@
     "Slot Smash Snag",
     "RB Slip Screen",
     "Slot Sail Out",
-    "Zone Toss",
+    "Zone Toss Wk",
     "Slot Levels",
     "Max Slot Scissors",
     "RB Switch Post Dig"
@@ -3501,7 +3501,7 @@
   {
    "play": "p100",
    "play_index": 159,
-   "name": "Zone Toss",
+   "name": "Zone Toss Wk",
    "concept": "Zone Toss",
    "family": "run",
    "header": "run_toss",
@@ -3513,7 +3513,7 @@
    "must": "",
    "routes": [],
    "deep": false,
-   "lane": 4,
+   "lane": 0,
    "formations": [
     "Gun Spread"
    ]

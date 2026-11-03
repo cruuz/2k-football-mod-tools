@@ -174,7 +174,7 @@
     "Comeback Seam",
     "Z Deep Post",
     "Slot Hitch Seam",
-    "Crack Toss Wk",
+    "Crack Toss",
     "Slot Drive Return",
     "Y Slot Fade Bench",
     "PA Return Flood",
@@ -207,7 +207,7 @@
    "menu": [
     "Slot Scat",
     "PA Slot Y Trail",
-    "Crack Toss Wk",
+    "Crack Toss",
     "RB Smash",
     "Slot Drive Return",
     "Slot Deep Flood",
@@ -240,7 +240,7 @@
     "PA X Curl Combo",
     "Slot Drive Return",
     "Slot Hitch Seam",
-    "Crack Toss Wk",
+    "Crack Toss",
     "PHI Post Wheel",
     "Sprint Slot Sail",
     "Z Deep Post",
@@ -769,7 +769,7 @@
    "menu": [
     "Slot Scat",
     "PA Seam Shot",
-    "Crack Toss Wk",
+    "Crack Toss",
     "X Smash",
     "RB Texas",
     "X Deep Post",
@@ -2495,7 +2495,7 @@
   {
    "play": "p053",
    "play_index": 110,
-   "name": "Crack Toss Wk",
+   "name": "Crack Toss",
    "concept": "Crack Toss",
    "family": "run",
    "header": "run_toss",
@@ -2507,7 +2507,7 @@
    "must": "",
    "routes": [],
    "deep": false,
-   "lane": 4,
+   "lane": 0,
    "formations": [
     "Gun Doubles",
     "Gun Trips TE",

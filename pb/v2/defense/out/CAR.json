@@ -1893,9 +1893,9 @@
  "receipt": {
   "team": "CAR",
   "offense_pack": "data/playbooks/softdrink_car_modern.2k5book",
-  "offense_pack_sha256": "8558d04ddfd9ca39348076ee4e14ad0be7c2682c27ec005fd9f388425d83d962",
-  "source_fingerprint": "79fe1043de461ba25999bfe14876b0a653572f56deb586628d03a312cc52b719",
-  "replacement_sha256": "c536c6bf214c2ee8b6f26b235c8b474cf3bf5ca8c4db0fbfb5c5f522ebb4074c",
+  "offense_pack_sha256": "e7d14f75cc0239923c0e218ee50e64b19ffc065f16665cb383143899e7578ca6",
+  "source_fingerprint": "cedf04325a85fe1599022c900647b4f0d5dc7d33857faca35935de70a93fee21",
+  "replacement_sha256": "7a9292b65159d1c46290cd59a350468280131e0655f40c4aaeddf7e5a8d9646b",
   "semantic_sha256": "b5852f6d039789d72f0f666ed93a8028414e77e08115b1569d330c0c21efbd1c",
   "plays": 62,
   "formations": 4,
@@ -1907,7 +1907,10 @@
   "band_loss": 0.07885,
   "spy_play": null,
   "native_scoring_faults": 0,
+  "name_pool_units": 5076,
+  "name_pool_capacity": 5088,
+  "name_mode": 0,
   "pack": "data/playbooks/softdrink_car_defense.2k5book",
-  "pack_sha256": "fb8ec7ee4ef1fffc1efeaabdd74de51fe62c6f4667bf75390703ad795b0e5e24"
+  "pack_sha256": "d8d635ac6727ee9334c21aae3f0fb31e8b6690159b3c71d6711e06e441c8db83"
  }
 }

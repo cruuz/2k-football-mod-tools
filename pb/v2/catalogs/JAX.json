@@ -469,7 +469,7 @@
     "RB Slip Screen",
     "Slot Verticals",
     "X China Return",
-    "Crack Toss",
+    "Crack Toss Wk",
     "Z Slant Flat",
     "Slot Sail Out",
     "Z Double Move"
@@ -4136,7 +4136,7 @@
   {
    "play": "p111",
    "play_index": 164,
-   "name": "Crack Toss",
+   "name": "Crack Toss Wk",
    "concept": "Crack Toss",
    "family": "run",
    "header": "run_toss",
@@ -4148,7 +4148,7 @@
    "must": "",
    "routes": [],
    "deep": false,
-   "lane": 4,
+   "lane": 0,
    "formations": [
     "Gun Spread"
    ]

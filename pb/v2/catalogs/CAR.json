@@ -462,7 +462,7 @@
     "Slot Post Wheel",
     "Slot Bang Hitch",
     "Z Steep In Seam",
-    "Crack Toss",
+    "Crack Toss Wk",
     "Z Post Go Seams"
    ],
    "cpu_situation": [
@@ -4673,7 +4673,7 @@
   {
    "play": "p143",
    "play_index": 223,
-   "name": "Crack Toss",
+   "name": "Crack Toss Wk",
    "concept": "Crack Toss",
    "family": "run",
    "header": "run_toss",
@@ -4685,7 +4685,7 @@
    "must": "",
    "routes": [],
    "deep": false,
-   "lane": 4,
+   "lane": 0,
    "formations": [
     "Gun Spread"
    ]
