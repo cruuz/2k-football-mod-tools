@@ -212,6 +212,36 @@ class CompositionTests(unittest.TestCase):
         self.assertIsNone(hist.refusal(self.retail))
 
 
+class CarouselCareerFixTests(unittest.TestCase):
+    """b780 n8 (found by the same real build): the coaching carousel pinned the rollover coach loop, where the coach
+    career counter fix (on in every preset) turns one instruction into a no-op, so the carousel stopped the build."""
+
+    @classmethod
+    def setUpClass(cls):
+        from mod_editor.core import nfl2k5_coach_carousel as carousel, nfl2k5_coach_career_fix as fix
+        cls.carousel, cls.fix = carousel, fix
+        cls.retail = retail_xbe()
+
+    def test_either_order_composes(self):
+        fix, carousel = self.fix, self.carousel
+        first = carousel.apply(fix.apply(self.retail)[0])[0]
+        self.assertEqual((fix.status(first), carousel.status(first)), ("applied", "applied"))
+        self.assertEqual(carousel.status(fix.apply(self.retail)[0]), "retail")
+        second = carousel.apply(self.retail)[0]
+        second = fix.apply(second)[0]
+        self.assertEqual((fix.status(second), carousel.status(second)), ("applied", "applied"))
+        self.assertEqual(first, second)
+
+    def test_any_other_change_there_is_still_foreign(self):
+        fix, carousel = self.fix, self.carousel
+        installed = carousel.apply(self.retail)[0]
+        label, va, before, after = fix.SITES[0]
+        for bad in (after[:4] + b"\x90\x90\x90\x90", bytes([before[0] ^ 1]) + before[1:]):
+            changed = repin_edit(installed, va, bad)
+            self.assertEqual(fix.status(changed), "foreign")
+            self.assertEqual(carousel.status(changed), "foreign")
+
+
 @unittest.skipUnless(HAVE_UC, "Unicorn absent")
 class NativeTests(unittest.TestCase):
     """The composed executable under Unicorn: the History screen, MyCareer and playlist entry points."""

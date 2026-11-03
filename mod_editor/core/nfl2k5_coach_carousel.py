@@ -577,6 +577,22 @@ def guard_digests(payload: bytes) -> dict[str, str]:
     return {name: _guard_digest(image, va, size, sites(0x14DA000)) for name, va, size, _d in GUARDS}
 
 
+def _career_fix_sites(payload: bytes, image: XbeImage) -> list:
+    """b780 n8: the coach career counter fix (c1, on in every preset) turns one instruction of the rollover coach loop
+    (0x247CDA, inside the "rollover coach loop" guard) into a no-op, so a winning season no longer adds a Super Bowl trip.
+    The loop this owner relies on is otherwise unchanged. Accept exactly that owner's complete install, nothing else."""
+    from . import nfl2k5_coach_career_fix as career_fix
+    out = []
+    for label, va, before, after in career_fix.SITES:
+        got = image.read(va, len(before))
+        if got == before:
+            continue
+        _require(got == after and career_fix.status(payload) == "applied",
+                 f"foreign carousel dependency: {label} ({va:#x})")
+        out.append((label, va, before, after))
+    return out
+
+
 def _check_guards(image: XbeImage, checked_sites) -> None:
     for name, va, size, digest in GUARDS:
         _require(_guard_digest(image, va, size, checked_sites) == digest, f"foreign carousel dependency: {name} ({va:#x})")
@@ -613,20 +629,20 @@ def owned_state(payload: bytes):
     if not found:
         retail_sites = sites(0x14DA000)
         _require(rdata.status(payload, retail_sites) == "retail", "carousel sites changed without an allocation")
-        _check_guards(image, retail_sites)
+        _check_guards(image, retail_sites + _career_fix_sites(payload, image))
         return "retail", None
     code_va = found["code"]["va"]
     code = image.read(code_va, CODE_SIZE)
     edits = sites(code_va)
     if code == b"\xcc" * CODE_SIZE:
         _require(rdata.status(payload, edits) == "retail", "carousel sites changed with an empty allocation")
-        _check_guards(image, edits)
+        _check_guards(image, edits + _career_fix_sites(payload, image))
         return "retail", found
     params = installed_params(payload)
     _require(read_params(params) is not None, "foreign carousel parameter block")
     _require(code == code_for(code_va, params), "foreign carousel code")
     _require(rdata.status(payload, edits) == "applied", "mixed carousel sites")
-    _check_guards(image, edits)
+    _check_guards(image, edits + _career_fix_sites(payload, image))
     return "applied", found
 
 
