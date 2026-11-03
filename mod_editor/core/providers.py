@@ -596,7 +596,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/image_use.py": "29e1d3d721c36fd199ed29fd900fbe8582bc7530e2060afcacb1054159b174bb",
         "mod_editor/core/json_stream.py": "5933752561dd8b519a301c18ec1d14f13a457f58e6ae337984f543ab2b0838b0",
         "mod_editor/core/metadata_cache.py": "49874cc7f12cc0d36d15b9355dbca64ffe95590ba7582b460738b05aabcd9024",
-        "mod_editor/core/mod_build.py": "02483ff55b21d37bbd56a0d1c97556771a33bf4ff5a3ceda872612bf5cf12bd6",
+        "mod_editor/core/mod_build.py": "0549e32d6ac10fdd12d2266038d0c942b2268951edc67b870e591a252581e5a5",
         "mod_editor/core/build_steps.py": "a2044fc326dde29f3a561a41909955704f0c6d69e83e998d54ecf2ccd53821d0",  # b791-h3: step context and optional steps
         "mod_editor/core/model.py": "292f0c5444e32f5cea000fd3cabd6963d7d805a5434dcbc364a36ca2c0f0d228",
         "mod_editor/core/modpack.py": "461107a7f9096a5c1d867a6a1f4fa69af769302c0569ad98a5b8171541cde287",
@@ -949,6 +949,8 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_franchise_extension.py": "f7ec35994cbbd7f48015a4e478167796db88788d77370fb46ae465e800c9663a",  # b780 j23
         "mod_editor/core/nfl2k5_franchise_footer.py": "b12c4c79602f832948fd14fdd368138e2b07ec8e45dd46ca9e5f3ea941fad6c1",  # b780 j23
         "mod_editor/core/nfl2k5_franchise_footer_code.py": "af47806e13bb5e64eb3d6bc2feee0cc1369304f060f32f24c12b655c19a8c787",  # b780 j23
+        "mod_editor/core/nfl2k5_history_screen.py": "2833b65206c22473e5f212bcc3b0c640ec250b19446a9884e2339f4534b938bb",  # b780-int: j4, now reserved by the first space pass (imported by throw_tuning)
+        "mod_editor/core/nfl2k5_history_screen_code.py": "5ad7278c0ef14c6273566a4f38fd2e0e82b9f5bf82d278b2c8309845abee7c08",  # b780-int: its generated runtime
         "mod_editor/core/nfl2k5_history.py": "31629561cefcd12f0badcc3c85201f110c7c8924c7d3267b500eb4ff0421534f",  # b780 j23
         "mod_editor/core/nfl2k5_hof_rules.py": "6d9f044659f19a8c6af2502963a98322716713235fe3544ebe703a50b5921ce5",  # b780-int: j6's Hall of Fame rule, imported by the j23 history capture and footer format
         "mod_editor/core/nfl2k5_champions_history.py": "0276d86325c2f6dd6a85909052d1af62e774b104a1614e03c505bcf5c5cac146",  # b780-int: the champions history the j23 footer format and champions owner now import
@@ -1022,7 +1024,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_team_logo_swap.py": "d4e46ff301b3449fc78a145548be2bcbc6104caad80563e1d940ef564fd73c12",
         "mod_editor/core/nfl2k5_text_catalog.py": "514706a38b28a4c7189f49e7601813cd55e16f1b9e81c9c8aa3e92c072e962c9",
         "mod_editor/core/nfl2k5_throw_arc.py": "0fbf33d12fe27a0f940fb7e13f375390b88701c4ccb7e89a1de895d8f66b9c3c",
-        "mod_editor/core/nfl2k5_throw_tuning.py": "7d2938f9f8c97954ad7e2553dec7d14f2bd40c3f2d01a590c7da4a72c173708d",
+        "mod_editor/core/nfl2k5_throw_tuning.py": "b6fefa93f16834edbb49c7f0130b21746aabfab7826f917d882872d89f206387",
         "mod_editor/core/nfl2k5_trade_deadline.py": "29368ef42707c11202674d9055fdf5aa412d4992c7e7f2a7ae83154a2b7377b3",
         "mod_editor/core/nfl2k5_unif_color_writer.py": "5e950cc404e25c1fbeff7ee5aa2a3fad235115aeddd743e95be6862677a88324",
         "mod_editor/core/nfl2k5_uniform_catalog.py": "e297a2431241c8cc5b0fa38b42ae6ee77771094fafda28f44c98ad47dafe10b5",

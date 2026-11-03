@@ -6745,7 +6745,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         module_loader=plan.module_loader, classic_teams=plan.classic_teams,
         sim_rb_injuries=plan.sim_rb_injuries, sim_realism=plan.sim_realism, preseason_warning=plan.franchise_economy,
         coach_carousel=plan.coach_carousel,
-        standings_records=plan.standings_records,
+        standings_records=plan.standings_records, history_screen=plan.history_screen, franchise_history=plan.franchise_history, franchise_history_static_body=not (plan.k128_memory and plan.k128_roster_heap), speed_threshold=plan.speed_threshold,
         cpu_passer_iq=plan.cpu_passer_iq,
         cpu_clock2=plan.cpu_clock2,
         catch_snap_limit=plan.catch_snap_limit,
@@ -6794,7 +6794,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             or plan.reserves_16 or plan.created_teams_extra or plan.defensive_try or plan.zone_drop_cap or plan.all_stadiums or plan.coverage_slider or plan.scramble_tuning
             or plan.music_shuffle or plan.practice_squad_screen or plan.abilities or plan.qb_spy or plan.calendar_engine or plan.camera or plan.franchise_autosave
             or plan.historic_teams_quick_game or plan.espn25_more_moments or plan.historic_stock_books or plan.espn25_era_rules or r62.get("anniversary_kickoff") or r62.get("widescreen_menus") or r62.get("team_logo_swap") or r62.get("period_goalposts") or plan.k128_memory or plan.letter_grades or plan.honors_page
-            or plan.return_coverage or plan.pass_protection or plan.pass_rush_stats or plan.cpu_passer_iq or plan.catch_snap_limit or plan.protection_calls or plan.audible_legend):
+            or plan.return_coverage or plan.pass_protection or plan.pass_rush_stats or plan.cpu_passer_iq or plan.catch_snap_limit or plan.protection_calls or plan.audible_legend
+            or plan.history_screen or plan.franchise_history or bool(plan.speed_threshold)):  # b780-int: reserved up front too
         _step("xbe_space")
         progress("Adding experimental extra patch space", 0, 0)
         playlist_selection, playlist_preflight = None, None
@@ -6832,7 +6833,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             module_loader=plan.module_loader, classic_teams=plan.classic_teams,
             sim_rb_injuries=plan.sim_rb_injuries, sim_realism=plan.sim_realism, preseason_warning=plan.franchise_economy,
             coach_carousel=plan.coach_carousel,
-            standings_records=plan.standings_records,
+            standings_records=plan.standings_records, history_screen=plan.history_screen, franchise_history=plan.franchise_history, franchise_history_static_body=not (plan.k128_memory and plan.k128_roster_heap), speed_threshold=plan.speed_threshold,
             cpu_passer_iq=plan.cpu_passer_iq,
             cpu_clock2=plan.cpu_clock2,
             catch_snap_limit=plan.catch_snap_limit,
