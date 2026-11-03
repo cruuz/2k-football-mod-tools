@@ -544,6 +544,13 @@ class BuildPlan:
     # threshold follows his Pass Read Coverage the other way round from retail (elite readers wait for a clear window,
     # weak readers still throw at covered receivers). EXPERIMENTAL / UNWITNESSED: on in Advanced and Experimental.
     cpu_qb_tiers: bool = False
+    # b780 a-passer: cpu_passer_iq (nfl2k5_cpu_passer_iq, a late executable owner): the CPU QB's short-throw penalty
+    # (0x50C494) fades once he has been through his reads or two seconds after the snap, and drops at once under pocket
+    # pressure, so an open back or tight end underneath becomes a target; a pump fake blocks his throw 0.6 s instead of
+    # 1.5 s and comes 1 in 60 QB ticks under pressure instead of 1 in 20; every QB reads receivers faster (dwell curve
+    # 0x50C548). Targets 15 yd or more from the QB and human play are unchanged. EXPERIMENTAL / UNWITNESSED: on in the
+    # Advanced and Experimental presets, off in Basic.
+    cpu_passer_iq: bool = False
     db_ball_play: bool = False
     # b777-qb3: nfl2k5_qb_accuracy, a late executable owner hooked where the pass accuracy routine stores the miss
     # distance: a miss on a throw under 40 yd shrinks with the passer's Pass Accuracy and falls behind the receiver as
@@ -797,7 +804,7 @@ class BuildPlan:
                 or self.guardian_overlay or self.my_career or self.screen_hooks or self.coverage_trail or self.franchise_edit_player or self.cpu_money_downs != "retail" or self.accelerated_clock or self.coin_defer or self.decided_clock or self.cpu_scrambles == "modern" or self.weather_haze or self.number_kerning or self.modern_color or self.weekly_prep or self.weekly_prep_cpu or self.weekly_prep_remember or self.coach_ai or self.playbook_pair or self.deep_zone_facing or self.deep_zone_bail or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave or self.historic_teams_quick_game or self.espn25_more_moments or self.historic_stock_books or self.espn25_era_rules or self.k128_memory or self.team_ratings or self.play_art_routes or self.letter_grades or self.honors_page or self.sim_cb_tackles or self.sim_stats or self.option_defaults or self.sim_rb_injuries or self.sim_realism or self.coach_carousel or self.history_screen
                 or self.momentum_collisions or self.scorebug_runtime or self.indicator_names_style != "retail" or self.momentum > 0 or self.momentum_contact or self.defensive_try or self.zone_drop_cap or self.all_stadiums or self.music_shuffle or self.practice_squad_screen or self.abilities or self.qb_spy or self.calendar_engine or self.coverage_slider or self.scramble_tuning or self.flatter_deep_ball or self.chop_block_toggle or self.music_policy != "retail" or self.music_unlock or self.music_userlist
                 or bool(self.music_library and _music_library_document(self.music_library)["bank"] == "cribmusic")
-                or self.pass_protection or self.pass_rush_stats or self.standings_records)  # b778-pr1, b779-st1, b780-j1
+                or self.pass_protection or self.pass_rush_stats or self.standings_records or self.cpu_passer_iq)  # b778-pr1, b779-st1, b780-j1
 
     def to_recipe(self) -> dict[str, Any]:
         d = asdict(self)
@@ -916,6 +923,13 @@ for _preset in PRESETS.values():
 # throw picks". EXPERIMENTAL / UNWITNESSED: on in Advanced and Experimental, off in Basic.
 PRESETS["softdrink_advanced"]["cpu_qb_tiers"] = True
 PRESETS["softdrink_experimental"]["cpu_qb_tiers"] = True
+# b780 a-passer: CPU quarterbacks throw on time and check down (Ju3tinYT 10/14 and 10/29, PGaither84 9/04: backs in the
+# flat, quicker CPU decisions, fewer coverage sacks). EXPERIMENTAL / UNWITNESSED: on in Advanced and Experimental (r1-cpu
+# research recommendation), off in Basic.
+for _preset in PRESETS.values():
+    _preset["cpu_passer_iq"] = False
+PRESETS["softdrink_advanced"]["cpu_passer_iq"] = True
+PRESETS["softdrink_experimental"]["cpu_passer_iq"] = True
 # b777-qb3: QB accuracy is experimental and unwitnessed: on only in the experimental preset, the one the SOFTDRINK 2K28
 # recipe builds from (Noah 10/20 asked for it in the next build).
 for _preset in PRESETS.values():
@@ -1363,6 +1377,21 @@ def _pass_protection_preflight(source: Path, progress) -> None:
                          "build from your unmodified retail dump.")
 
 
+def _cpu_passer_iq_preflight(source: Path, progress) -> None:
+    """b780 a-passer: refuse a source whose CPU passer code is foreign, before any write."""
+    module = _core_module("nfl2k5_cpu_passer_iq")
+    if module is None or _core_module("nfl2k5_xbe_space") is None:
+        raise ValueError("CPU quarterbacks throw on time is not available in this installation.")
+    progress("Checking the CPU passing code for CPU quarterbacks throw on time", 0, 0)
+    try:
+        payload = _xbe_bytes(source)
+    except (OSError, ValueError) as exc:
+        raise ValueError(f"CPU quarterbacks throw on time cannot read default.xbe: {exc}") from exc
+    if module.status(payload) == "foreign":
+        raise ValueError("The CPU passing code in this source is not retail or CPU quarterbacks throw on time. Turn it "
+                         "off or build from your unmodified retail dump.")
+
+
 def _pass_rush_stats_preflight(source: Path, progress) -> None:
     """b779-st1: refuse a source whose pass rush, sack log, commit or Player Card sites are foreign, before any write."""
     module = _core_module("nfl2k5_pass_rush_stats")
@@ -1462,6 +1491,7 @@ _LATE_OWNER_OPTIONS = (
     ("nfl2k5_preseason_warning", "2026 franchise economy", lambda p: p.franchise_economy),  # b779-rc1: the warned flag
     ("nfl2k5_franchise_footer", "Franchise history and records", lambda p: p.franchise_history),  # b780 j23
     ("nfl2k5_history", "Franchise history and records", lambda p: p.franchise_history),  # b780 j23
+    ("nfl2k5_cpu_passer_iq", "CPU quarterbacks throw on time", lambda p: p.cpu_passer_iq),  # b780 a-passer
 )
 _REBUILD_HINT = " Build from your unmodified retail dump instead."
 
@@ -2192,6 +2222,21 @@ def _apply_standings_records(plan: "BuildPlan", target: Path, receipt: dict, pro
         raise RuntimeError("Team Standings records: the output does not read back as applied")
     receipt["steps"].append({"step": "standings_records", **{k: v for k, v in records_receipt.items() if k != "reservations"}})
     receipt["result"]["standings_records"] = "applied"
+def _apply_cpu_passer_iq(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    """b780 a-passer: the CPU passer's checkdown factor, pump holdoff and read dwell, the last late allocator owner."""
+    if not plan.cpu_passer_iq:
+        return
+    module = _core_module("nfl2k5_cpu_passer_iq")
+    if module is None:
+        raise RuntimeError("CPU quarterbacks throw on time needs nfl2k5_cpu_passer_iq.")
+    progress("CPU quarterbacks: throw on time and check down", 0, 0)
+    payload, passer_receipt = module.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, payload)
+    final = _xbe_bytes(target)
+    if final != payload or module.status(final) != "applied":
+        raise RuntimeError("CPU quarterbacks throw on time: the output does not read back as applied")
+    receipt["steps"].append({"step": "cpu_passer_iq", **{k: v for k, v in passer_receipt.items() if k != "reservations"}})
+    receipt["result"]["cpu_passer_iq"] = "applied"
 
 
 def _sim_stats_preflight(source: Path, progress) -> None:
@@ -2440,6 +2485,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
                                ("run_blocking", "nfl2k5_run_blocking"),  # b777-ol1
                                ("pass_protection", "nfl2k5_pass_protection"),  # b778-pr1
                                ("pass_rush_stats", "nfl2k5_pass_rush_stats"),  # b779-st1
+                               ("cpu_passer_iq", "nfl2k5_cpu_passer_iq"),  # b780 a-passer
                                ("modern_force_out", "nfl2k5_force_out"),  # b778-fo1
                                ("module_loader", "nfl2k5_module_loader"),  # b778-xs1
                                ("crib_trophy_room", "nfl2k5_crib_trophy_room"),  # b778-xs1
@@ -2682,6 +2728,8 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
     out["pass_protection"] = pass_protection.status(_xbe_bytes(source)) if pass_protection is not None else "unavailable"
     pass_rush_stats = _core_module("nfl2k5_pass_rush_stats")  # b779-st1
     out["pass_rush_stats"] = pass_rush_stats.status(_xbe_bytes(source)) if pass_rush_stats is not None else "unavailable"
+    passer_iq = _core_module("nfl2k5_cpu_passer_iq")  # b780 a-passer
+    out["cpu_passer_iq"] = passer_iq.status(_xbe_bytes(source)) if passer_iq is not None else "unavailable"
     force_out = _core_module("nfl2k5_force_out")  # b778-fo1
     out["modern_force_out"] = force_out.status(_xbe_bytes(source)) if force_out is not None else "unavailable"
     inbox = _core_module("nfl2k5_inbox_standings")
@@ -4824,6 +4872,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("Pass rush stats must be Off or On.")
     if type(plan.history_screen) is not bool:  # b780-j4
         raise ValueError("The franchise History screen must be Off or On.")
+    if type(plan.cpu_passer_iq) is not bool:  # b780 a-passer
+        raise ValueError("CPU quarterbacks throw on time must be Off or On.")
     if type(plan.weekly_progression) is not bool:  # b778-pg1
         raise ValueError("Weekly player progression must be Off or On.")
     if type(plan.modern_force_out) is not bool:  # b778-fo1
@@ -5608,6 +5658,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         _pass_protection_preflight(source, progress)
     if plan.pass_rush_stats:  # b779-st1: before any write
         _pass_rush_stats_preflight(source, progress)
+    if plan.cpu_passer_iq:  # b780 a-passer: before any write
+        _cpu_passer_iq_preflight(source, progress)
     if plan.modern_force_out:  # b778-fo1: like qb3, before any write
         _force_out_preflight(source, progress)
     if plan.inbox_standings:
@@ -6227,7 +6279,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         module_loader=plan.module_loader, classic_teams=plan.classic_teams,
         sim_rb_injuries=plan.sim_rb_injuries, sim_realism=plan.sim_realism, preseason_warning=plan.franchise_economy,
         coach_carousel=plan.coach_carousel,
-        standings_records=plan.standings_records)
+        standings_records=plan.standings_records,
+        cpu_passer_iq=plan.cpu_passer_iq)
     if plan.read_option_runtime or plan.qb_spy:
         _step("play_intents")
         resolver = _core_module("nfl2k5_play_intents")
@@ -6271,7 +6324,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             or plan.reserves_16 or plan.created_teams_extra or plan.defensive_try or plan.zone_drop_cap or plan.all_stadiums or plan.coverage_slider or plan.scramble_tuning
             or plan.music_shuffle or plan.practice_squad_screen or plan.abilities or plan.qb_spy or plan.calendar_engine or plan.camera or plan.franchise_autosave
             or plan.historic_teams_quick_game or plan.espn25_more_moments or plan.historic_stock_books or plan.espn25_era_rules or r62.get("anniversary_kickoff") or r62.get("widescreen_menus") or r62.get("team_logo_swap") or r62.get("period_goalposts") or plan.k128_memory or plan.letter_grades or plan.honors_page
-            or plan.return_coverage or plan.pass_protection or plan.pass_rush_stats):
+            or plan.return_coverage or plan.pass_protection or plan.pass_rush_stats or plan.cpu_passer_iq):
         _step("xbe_space")
         progress("Adding experimental extra patch space", 0, 0)
         playlist_selection, playlist_preflight = None, None
@@ -6309,6 +6362,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             sim_rb_injuries=plan.sim_rb_injuries, sim_realism=plan.sim_realism, preseason_warning=plan.franchise_economy,
             coach_carousel=plan.coach_carousel,
             standings_records=plan.standings_records,
+            cpu_passer_iq=plan.cpu_passer_iq,
             **{**r62, "read_option_intent_table": read_table, "modern_naming": False, "crib_reclaim": False})
         _write_xbe_bytes(target, patched)
         receipt["steps"].append({"step": "xbe_space", **space_receipt,
@@ -7530,6 +7584,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     _apply_history_screen(plan, target, receipt, progress)
     # b780-j1: Team Standings records, after the sim owners (LATE_OWNERS order: the last late allocator owner)
     _apply_standings_records(plan, target, receipt, progress)
+    # b780 a-passer: CPU quarterbacks throw on time, the last late allocator owner (LATE_OWNERS order)
+    _apply_cpu_passer_iq(plan, target, receipt, progress)
     # b778-pg2: the Player Progress screen and weekly snapshot (a late allocator owner after force_out)
     # b778-cb1: cornerback tackle credit, after force_out
     # b778-sd4: modern clock digits, after modern sideline catches
@@ -7577,6 +7633,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise RuntimeError("Pass protection: the output does not read back as applied")
     if plan.pass_rush_stats and _core_module("nfl2k5_pass_rush_stats").status(_xbe_bytes(target)) != "applied":  # b779-st1
         raise RuntimeError("Pass rush stats: the output does not read back as applied")
+    if plan.cpu_passer_iq and _core_module("nfl2k5_cpu_passer_iq").status(_xbe_bytes(target)) != "applied":  # b780 a-passer
+        raise RuntimeError("CPU quarterbacks throw on time: the output does not read back as applied")
     if plan.run_blocking and _core_module("nfl2k5_run_blocking").status(_xbe_bytes(target)) != "applied":  # b777-ol1
         raise ValueError("run blocking did not survive the final passes")
     if plan.qb_accuracy and _core_module("nfl2k5_qb_accuracy").status(_xbe_bytes(target)) != "applied":  # b777-qb3

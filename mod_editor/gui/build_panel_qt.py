@@ -247,10 +247,12 @@ from mod_editor.core import nfl2k5_run_blocking as _run_blocking  # noqa: E402  
 from mod_editor.core import nfl2k5_pass_protection as _pass_protection  # noqa: E402  b778-pr1
 from mod_editor.core import nfl2k5_pass_rush_stats as _pass_rush_stats  # noqa: E402  b779-st1
 from mod_editor.core import nfl2k5_history_screen as _history_screen  # noqa: E402  b780-j4
+from mod_editor.core import nfl2k5_cpu_passer_iq as _cpu_passer_iq  # noqa: E402  b780 a-passer
 CPU_AI_OPTIONS = (
     ("cpu_qb_zone_windows", _cpu_qb_reads.BUILD_CAPTION_ZONE, _cpu_qb_reads.HELP_ZONE),
     ("cpu_qb_recheck", _cpu_qb_reads.BUILD_CAPTION_RECHECK, _cpu_qb_reads.HELP_RECHECK),
     ("cpu_qb_tiers", _cpu_qb_reads.BUILD_CAPTION_TIERS, _cpu_qb_reads.HELP_TIERS),  # b779-gp1
+    ("cpu_passer_iq", _cpu_passer_iq.BUILD_CAPTION, _cpu_passer_iq.HELP_TEXT),  # b780 a-passer
     ("db_ball_play", _db_ball_play.BUILD_CAPTION, _db_ball_play.HELP_TEXT),
 )
 # b777-qb3: QB accuracy on short and on-the-run throws (on in the experimental preset only).
