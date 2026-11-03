@@ -50,13 +50,10 @@ def _xdvdfs():
 
 
 def _read_exact(fd: int, offset: int, length: int) -> bytes:
+    from .platform_compat import pread  # b780-int: os.pread is POSIX-only; the shared helper falls back on Windows
     out = bytearray()
     while len(out) < length:
-        if hasattr(os, "pread"):
-            part = os.pread(fd, length - len(out), offset + len(out))
-        else:  # Windows
-            os.lseek(fd, offset + len(out), os.SEEK_SET)
-            part = os.read(fd, length - len(out))
+        part = pread(fd, length - len(out), offset + len(out))
         if not part:
             break
         out += part
