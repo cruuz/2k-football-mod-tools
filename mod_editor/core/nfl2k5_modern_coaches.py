@@ -704,22 +704,40 @@ ROSTER_ABBREVIATIONS = {"WAS": ("WAS", "WSH"), "ARI": ("ARI", "ARZ"), "LAC": ("L
                         "LV": ("LV", "OAK")}
 
 
-def _coach_field_site(archive, team: str, field: int) -> tuple[int, int]:
-    """(virtual offset of the u16 at the club's coach record + ``field``, its value)."""
+def _coach_field_site(archive, team: str, field: int) -> tuple[int | None, int | None]:
+    """(virtual offset of the u16 at + ``field`` of the record of ``team``'s 2026 head coach, its value).
+
+    b780 c2-staff: a coaching staff can move a coach to another club (his record content moves there, and his body and
+    picture with it), so the record is the one that holds HIM, found by his name (``nfl2k5_coach_staff``): a moved coach
+    keeps wearing his own 2026 model. A roster without the 2026 names keeps the club's own record (as before). A 2026
+    coach no club employs any more (the staff let him go) has no record: (None, None), and nothing is written for him."""
+    from . import nfl2k5_coach_staff as staff
     base, doc = _roster(archive)
     want = ROSTER_ABBREVIATIONS.get(team, (team,))
     clubs = [t for t in doc.teams if t.index < 32 and t.abbreviation in want and t.coach_offset is not None]
     require(len(clubs) == 1, f"the roster has no single {team} club with a coach record")
-    at = clubs[0].coach_offset + field
+    record = clubs[0].coach_offset
+    located: dict[str, list[int]] = {}
+    try:
+        for coach in staff.coach_records(doc.body, doc.teams).values():
+            if coach.directory_id is not None:
+                located.setdefault(coach.directory_id, []).append(coach.record_offset)
+    except (staff.StaffError, ValueError):
+        located = {}
+    if len(located.get(team, ())) == 1:
+        record = located[team][0]
+    elif located:
+        return None, None
+    at = record + field
     return base + at, struct.unpack_from("<H", doc.body, at)[0]
 
 
-def _coach_photo_site(archive, team: str) -> tuple[int, int]:
+def _coach_photo_site(archive, team: str) -> tuple[int | None, int | None]:
     """(virtual offset of the u16 at the club's coach record +0x40, its value)."""
     return _coach_field_site(archive, team, 0x40)
 
 
-def _coach_body_site(archive, team: str) -> tuple[int, int]:
+def _coach_body_site(archive, team: str) -> tuple[int | None, int | None]:
     """(virtual offset of the u16 at the club's coach record +0x18, its value): the coach model number."""
     return _coach_field_site(archive, team, BODY_FIELD)
 
@@ -739,7 +757,8 @@ def _parts(archive, document: dict) -> list[dict]:
         out.append(dict(kind="coach", team=row["team"], at=at, size=row["span_size"], state=state, row=row))
         if row["body_code"] != row["team_code"]:
             site, value = _coach_body_site(archive, row["team"])
-            state = ("retail" if value == int(row["team_code"]) else "applied" if value == int(row["body_code"])
+            state = ("kept" if site is None else "retail" if value == int(row["team_code"])
+                     else "applied" if value == int(row["body_code"])
                      else "previous" if value in {int(c) for c in row.get("superseded_body_codes", ())}
                      else "kept")
             out.append(dict(kind="body_id", team=row["team"], at=site, size=2, state=state, row=row, value=value))
@@ -768,8 +787,8 @@ def _parts(archive, document: dict) -> list[dict]:
         state = portrait_state(span, row)
         out.append(dict(kind="portrait", team=row["team"], at=at, size=row["span_size"], state=state, row=row))
         site, value = _coach_photo_site(archive, row["team"])
-        state = ("retail" if value == row["retail_photo_id"] else "applied" if value == int(row["portrait_id"])
-                 else "kept")
+        state = ("kept" if site is None else "retail" if value == row["retail_photo_id"]
+                 else "applied" if value == int(row["portrait_id"]) else "kept")
         out.append(dict(kind="photo_id", team=row["team"], at=site, size=2, state=state, row=row, value=value))
     return out
 

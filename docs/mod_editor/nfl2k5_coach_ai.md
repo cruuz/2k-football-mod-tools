@@ -121,8 +121,50 @@ missing, invalid or unallocatable profiles fall back to ordinary coach AI.
 
 The Studio compiles profiles after final book/roster edits. The book's visible
 name is insufficient: rebuild after any book edit. Existing tagged resources
-must still match their pins before regeneration. Custom-team and changed-coach
-inputs outside the authored directory refuse instead of receiving a guess.
+must still match their pins before regeneration. A club whose head coach is not
+one of the authored 2026 coaches (by name and picture) gets no profile instead
+of a guess; since b780 that is decided per club (next section).
+
+## Coaching staff and per-club profiles (b780 c2-staff)
+
+A roster-edits document's `staff` section (`nfl2k5_coach_staff`, schema
+`nfl2k5_coach_staff/v1`) moves, swaps and creates head coaches and gives each
+club one of the 32 real 2026 defensive coordinators. A move is a record
+content move: every club keeps its own coach record (team `+0x14C` never
+changes; the historic, all-time and Pro Bowl teams share the club records), and
+the record receives the moved coach's name, biography, body, picture, ratings,
+native tendencies and career. His seasons with the team and this season's
+record start at zero and the announcer flag (`+0x1A` bit 0x02) selects the
+generic head-coach line. Moves are written by name, so the same staff applied
+twice changes nothing.
+
+The profiles are per club. Each club's book carries the profile of the coach it
+employs: his own 2026 play-calling fitted to the club's final book (the offense
+pools fit another club's book as well as their own: r2-coach prototype), with
+the defensive rings of the club's coordinator. A club whose coach has no 2026
+profile (a 2004 coach, a created coach without a play-calling style) plays with
+its coach record's tendencies, and only that club; one plain line in the build
+log and summary names those clubs. Only a roster with no 2026 head coach at all
+skips the option as before.
+
+The kernel's 32-row table (`struct Portrait portraits[32]`: identity, legacy
+identity, book, team asset, picture, alias picture, profile name; 44 bytes a row,
+1,408 bytes, no relocation inside) is written per build into the installed
+kernel (`install_table`, owner seal and section digests resealed) after the
+profiles compile. Recompiling the kernel with other rows changes only those
+bytes (`.b77-scratch/b780/c2-staff/tablecheck`), so no kernel code changes. The
+recognizer accepts the kernel with any valid table (32 rows in book order, each
+a coach on that club's own asset or exactly vacant, no coach twice) and still
+refuses junk; `upgrade` carries an installed table to the current kernel. A
+vacant row (identity 0, asset `0xFFFF`, name 13 x U+FFFF) matches no profile tag
+and no VIP portrait. `coach_prepare` is unchanged: a moved coach binds because
+the row for the host's book names him (asset = host, picture = his).
+
+"Bring his playbook" (`"playbook": "coach"` on a head coach entry) makes the
+host club's PLAY resource a byte copy of the final book of the club the coach
+heads on the source roster (fixed span: all 32 PLAY resources have one size),
+after the last playbook writer and before the profiles compile. The host keeps
+its label, franchise key and play-call screen name.
 
 Defensive pools also require native VIP menu reachability. The menu visits
 only the first formation in a personnel category, so a callable secondary

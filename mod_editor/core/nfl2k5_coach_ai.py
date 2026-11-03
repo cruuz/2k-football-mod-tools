@@ -5,8 +5,10 @@ retail resources. The reserved tail stays inside the original resource span.
 """
 from __future__ import annotations
 
+import functools
 import hashlib
 import json
+import os
 from pathlib import Path
 import struct
 
@@ -25,7 +27,9 @@ BUILD_CAPTION = "Automatic 2026 CPU coach profiles (experimental)"
 HELP_TEXT = ("Retail: CPU teams use their native coach tendencies. Patch: use automatic 2026 coach "
              "profiles for current NFL CPU teams in Play Now, Season, Franchise and playoffs. "
              "Explicit Coach Matchup choices win. Rebuilds profiles for the final playbooks and "
-             "includes VIP-aware Modern 2. Enabled in the SOFTDRINK experimental preset; "
+             "includes VIP-aware Modern 2. Each club uses the profile of the 2026 head coach it has, "
+             "also after a coaching staff change; a club whose coach has no 2026 profile keeps its "
+             "native tendencies. Enabled in the SOFTDRINK experimental preset; "
              "turn this setting off to keep native coach tendencies.")
 
 
@@ -51,6 +55,119 @@ def portrait_rows():
     return json.loads((ROOT / "data/vip/coach_portraits_2026.json").read_text(encoding="utf-8"))
 
 
+# b780 c2-staff: the kernel's 32-row table (``struct Portrait portraits[32]`` in tools/nfl2k5_coach_ai.c) says, per
+# club book, which coach's profile that book may carry: identity, legacy identity, book, team asset, picture, alias
+# picture and profile name. It is one contiguous block in the kernel's read-only data with no relocation inside
+# (recompiling the kernel with other rows changes only these bytes: .b77-scratch/b780/c2-staff/tablecheck), so a build
+# whose clubs employ other coaches writes other rows into the same kernel code. A club without a 2026 profile gets a
+# vacant row (identity 0, asset 0xFFFF, name 13 x U+FFFF): no profile tag and no VIP portrait can match it.
+TABLE_ROWS, TABLE_ROW_SIZE = 32, 44
+TABLE_SIZE = TABLE_ROWS * TABLE_ROW_SIZE
+VACANT_ASSET = 0xFFFF
+VACANT_NAME = b"\xff\xff" * 13
+_ROW = struct.Struct("<IIHHHH26sH")
+
+
+@functools.lru_cache(maxsize=1)
+def _default_rows():
+    rows = sorted(portrait_rows(), key=lambda r: r["book_index"])
+    return tuple(tuple(sorted(dict(identity=r["identity"], legacy_identity=r["legacy_identity"],
+                                   book_index=r["book_index"], asset=r["asset"], portrait=r["portrait"],
+                                   alternate_portrait=r.get("alternate_portrait", 0), name=r["name"]).items()))
+                 for r in rows)
+
+
+def default_table():
+    """The shipped rows: every club's own 2026 head coach (data/vip/coach_portraits_2026.json). A fresh list."""
+    return [dict(row) for row in _default_rows()]
+
+
+def vacant_row(index):
+    return dict(identity=0, legacy_identity=0, book_index=index, asset=VACANT_ASSET, portrait=0,
+                alternate_portrait=0, name=None)
+
+
+def _encode_row(row):
+    if row["name"] is None:
+        name = VACANT_NAME
+    else:
+        name = row["name"].encode("utf-16le").ljust(26, b"\0")
+    return _ROW.pack(row["identity"], row["legacy_identity"], row["book_index"], row["asset"], row["portrait"],
+                     row.get("alternate_portrait") or 0, name, 0)
+
+
+def encode_table(rows):
+    check_table(rows)
+    return b"".join(_encode_row(r) for r in rows)
+
+
+def decode_table(raw):
+    require(len(raw) == TABLE_SIZE, "Coach AI table has the wrong size")
+    rows = []
+    for index in range(TABLE_ROWS):
+        identity, legacy, book, asset, photo, alternate, name, pad = _ROW.unpack_from(raw, index * TABLE_ROW_SIZE)
+        require(pad == 0, "Coach AI table padding is not zero")
+        if name == VACANT_NAME:
+            text = None
+        else:
+            units = struct.unpack("<13H", name)
+            require(0 in units, "Coach AI table name is unterminated")
+            end = units.index(0)
+            require(all(u == 0 for u in units[end:]), "Coach AI table name has bytes after its end")
+            text = name[:end * 2].decode("utf-16le")
+        rows.append(dict(identity=identity, legacy_identity=legacy, book_index=book, asset=asset, portrait=photo,
+                         alternate_portrait=alternate, name=text))
+    check_table(rows)
+    return rows
+
+
+def check_table(rows):
+    """Refuse junk: 32 rows in book order; a row is vacant (exactly) or names a coach on that club's book (the club's
+    own team asset, a picture, a 1..12-unit name, a nonzero identity), and no coach appears in two rows."""
+    require(isinstance(rows, (list, tuple)) and len(rows) == TABLE_ROWS, "Coach AI table needs 32 rows")
+    assets = [r["asset"] for r in default_table()]
+    identities = set()
+    for index, row in enumerate(rows):
+        require(set(row) >= {"identity", "legacy_identity", "book_index", "asset", "portrait", "name"},
+                f"Coach AI table row {index} is incomplete")
+        require(row["book_index"] == index, f"Coach AI table row {index} names book {row['book_index']}")
+        if row["name"] is None:
+            require((row["identity"], row["legacy_identity"], row["asset"], row["portrait"],
+                     row.get("alternate_portrait") or 0) == (0, 0, VACANT_ASSET, 0, 0),
+                    f"Coach AI table row {index} is neither a coach nor vacant")
+            continue
+        name = row["name"]
+        require(isinstance(name, str) and name and "\0" not in name and "\uffff" not in name
+                and len(name.encode("utf-16le")) <= 24, f"Coach AI table row {index} has an invalid name")
+        require(row["asset"] == assets[index], f"Coach AI table row {index} is not that club's team asset")
+        for key in ("identity", "legacy_identity"):
+            require(type(row[key]) is int and 0 < row[key] <= 0xFFFFFFFF, f"Coach AI table row {index}: bad {key}")
+        for key in ("portrait", "alternate_portrait"):
+            require(type(row.get(key) or 0) is int and 0 <= (row.get(key) or 0) <= 0xFFFF,
+                    f"Coach AI table row {index}: bad {key}")
+        require(row["portrait"] != 0, f"Coach AI table row {index} has no picture")
+        require(row["identity"] not in identities, f"Coach AI table row {index} repeats a coach")
+        identities.add(row["identity"])
+
+
+def table_offset(variant="b778"):
+    """Byte offset of the table inside the kernel template, found by its symbol and checked by content."""
+    code, relocations, labels = _template(variant)
+    at = labels.get("portraits")
+    if at is None:
+        at = code.find(_default_table_bytes())
+    require(at is not None and at >= 0 and code[at:at + TABLE_SIZE] == _default_table_bytes(),
+            f"Coach AI {variant} kernel table not found")
+    require(not any(at - 4 < off < at + TABLE_SIZE for off, _, _, _ in relocations),
+            "Coach AI table overlaps a relocation")
+    return at
+
+
+@functools.lru_cache(maxsize=1)
+def _default_table_bytes():
+    return b"".join(_encode_row(r) for r in default_table())
+
+
 def fnv(data):
     value = 2166136261
     for byte in data:
@@ -72,7 +189,9 @@ def _shape(resource):
     require(0x10840 + used * 2 <= PROFILE_OFFSET, "Declared PLAY strings overlap coach profile storage")
 
 
-def inspect_profile(resource):
+def _tag_header(resource):
+    """The parsed, self-consistent tag of an exact compiled book (magic, version, checksum, exact-book digest and
+    raw fingerprint, terminated name); CoachAIError for missing, foreign or stale tails."""
     _shape(resource)
     lo = 32 + PROFILE_OFFSET
     tag = resource[lo:lo + PROFILE_SIZE]
@@ -88,12 +207,40 @@ def inspect_profile(resource):
     units = struct.unpack_from("<13H", tag, 64)
     require(0 in units, "Coach profile name is unterminated")
     name = tag[64:64 + units.index(0) * 2].decode("utf-16le")
-    row = next((r for r in portrait_rows() if r["book_index"] == book), None)
-    require(row and (asset, photo, identity, name) == (row["asset"], row["portrait"], row["identity"], row["name"]),
+    return dict(book=book, asset=asset, photo=photo, identity=identity, name=name, digest=digest,
+                fingerprint=fingerprint, tag=tag)
+
+
+def _table_row(table, book):
+    if table is None:
+        return default_table()[book]
+    if isinstance(table, dict):
+        return table.get(book) or vacant_row(book)
+    return table[book]
+
+
+def inspect_profile(resource, table=None):
+    """The tag of an exact compiled book, checked against the kernel table rows ``table`` (the shipped rows when
+    None; a list of 32 rows or {book: row})."""
+    header = _tag_header(resource)
+    book = header["book"]
+    row = _table_row(table, book)
+    require(row["name"] is not None and (header["asset"], header["photo"], header["identity"], header["name"])
+            == (row["asset"], row["portrait"], row["identity"], row["name"]),
             "Coach profile identity does not match the current NFL directory")
-    return dict(team=row["team"], book_index=book, asset=asset, portrait=photo, identity=identity,
-                name=name, book_sha256=digest.hex(), raw_fingerprint=fingerprint,
-                profile_sha256=hashlib.sha256(tag).hexdigest())
+    team = next(r["team"] for r in portrait_rows() if r["book_index"] == book)
+    return dict(team=team, book_index=book, asset=header["asset"], portrait=header["photo"],
+                identity=header["identity"], name=header["name"], book_sha256=header["digest"].hex(),
+                raw_fingerprint=header["fingerprint"], profile_sha256=hashlib.sha256(header["tag"]).hexdigest())
+
+
+def _studio_identity(header):
+    """A tag the Studio writes: a 2026 head coach's identity (on any club's book, b780 staff moves) or a created
+    coach's (nfl2k5_coach_staff)."""
+    from . import nfl2k5_coach_staff as staff
+    if any((r["identity"], r["name"]) == (header["identity"], header["name"]) for r in portrait_rows()):
+        return True
+    return header["identity"] == vip.coach_identity(staff.CREATED_IDENTITY_TEAM, header["name"])
 
 
 def strip_profile(resource):
@@ -101,16 +248,18 @@ def strip_profile(resource):
     lo = 32 + PROFILE_OFFSET
     tag = resource[lo:lo + PROFILE_SIZE]
     if tag != bytes(PROFILE_SIZE):
-        inspect_profile(resource)  # Refuse stale/foreign data; never erase blindly.
+        # Refuse stale/foreign data; never erase blindly. A b780 staff build moves coaches between books, so a valid
+        # Studio tag is any exact-book tag with a Studio coach identity, not only the book's shipped row.
+        require(_studio_identity(_tag_header(resource)), "Coach profile identity does not match the current NFL directory")
     return resource[:lo] + bytes(PROFILE_SIZE) + resource[lo + PROFILE_SIZE:]
 
 
-def expand_profile(resource):
-    """Reference expansion for byte comparison with the actual native kernel.
+def expand_profile(resource, table=None):
+    """Reference expansion for byte comparison with the actual native kernel (``table``: as ``inspect_profile``).
 
     Unmapped statistics are zero here; runtime seeds them with native 2818D0.
     """
-    info = inspect_profile(resource)
+    info = inspect_profile(resource, table)
     p = resource[32 + PROFILE_OFFSET + HEADER_SIZE:32 + PROFILE_OFFSET + PROFILE_SIZE]
     out = bytearray(CONTEXT_SIZE)
     struct.pack_into("<i", out, 0x34, info["book_index"])
@@ -136,18 +285,29 @@ def expand_profile(resource):
     return bytes(out)
 
 
-def build_profile(resource, tendency, *, varied=True):
+def build_profile(resource, tendency, *, varied=True, row=None, defense=None):
+    """Compile ``tendency`` against the exact book ``resource``. ``row`` (a kernel table row; b780 c2-staff) binds the
+    profile to that book's club and coach (a moved or created coach); the default is the coach's own 2026 club.
+    ``defense``: book code of the defensive coordinator whose rings are fitted (default: the coach's 2026 club)."""
     original = strip_profile(resource)
-    row = next((r for r in portrait_rows() if r["team"] == tendency["team"]), None)
-    require(row is not None, "No current NFL coach identity for team")
     spec = tendency["provenance"]
-    require((spec["native_book_index"], spec["profile_name"]) == (row["book_index"], row["name"]),
-            "Coach tendency directory and portrait identity disagree")
+    if row is None:
+        own = next((r for r in portrait_rows() if r["team"] == tendency["team"]), None)
+        require(own is not None, "No current NFL coach identity for team")
+        require((spec["native_book_index"], spec["profile_name"]) == (own["book_index"], own["name"]),
+                "Coach tendency directory and portrait identity disagree")
+        row = default_table()[own["book_index"]]
+    else:
+        require(row.get("name") is not None, "A vacant table row has no profile")
+        check = [vacant_row(i) for i in range(TABLE_ROWS)]
+        check[row["book_index"]] = row
+        check_table(check)
+    book_index = row["book_index"]
     # A clean context, not a person's USR record or preferences.
     empty = bytearray(vip.SIZE)
     struct.pack_into("<I", empty, 0, 1)
     save, receipt = vip.build_coach(vip.VipSave.decode(bytes(empty)), original, tendency,
-                                   row["name"], row["book_index"], varied=varied)
+                                   row["name"], book_index, varied=varied, defense_team=defense)
     ctx = bytearray(save.payload[vip.CONTEXT:vip.CONTEXT + CONTEXT_SIZE])
     passes, runs = struct.unpack_from("<HH", ctx, 0x20B8)
     # Native game-start 281A90 decays pass and run totals independently at
@@ -179,7 +339,7 @@ def build_profile(resource, tendency, *, varied=True):
                 for p in receipt["defense_pools"] for c in p["choices"]), "Defensive recorded index out of bounds")
     tag = bytearray(HEADER_SIZE) + packed
     tag[:8] = MAGIC
-    struct.pack_into("<4H", tag, 8, 1, row["book_index"], row["asset"], row["portrait"])
+    struct.pack_into("<4H", tag, 8, 1, book_index, row["asset"], row["portrait"])
     struct.pack_into("<4I", tag, 16, fnv(original[32 + 0x30:32 + PROFILE_OFFSET]), 0, row["identity"], 0)
     tag[32:64] = hashlib.sha256(original).digest()
     name = row["name"].encode("utf-16le")
@@ -189,7 +349,7 @@ def build_profile(resource, tendency, *, varied=True):
     struct.pack_into("<I", tag, 20, tag_checksum(tag))
     lo = 32 + PROFILE_OFFSET
     result = original[:lo] + tag + original[lo + PROFILE_SIZE:]
-    info = inspect_profile(result)
+    info = inspect_profile(result, {book_index: row})
     receipt.update(automatic_profile=info, resource_sha256=hashlib.sha256(result).hexdigest(),
                    profile_offset=lo, profile_size=PROFILE_SIZE,
                    context_offense_hex=ctx[0x3C:0xA3C].hex(), context_defense_hex=ctx[0xA3C:0xDDE].hex(),
@@ -255,7 +415,8 @@ def _template(variant):
             getattr(assembly, "LABELS" + suffix))
 
 
-def code_for(code_va, data_va, career_va=0, variant="b778"):
+def code_for(code_va, data_va, career_va=0, variant="b778", table=None):
+    """The kernel bytes for an allocation; ``table`` (1,408 bytes or rows) replaces the shipped 32-row table."""
     code, relocations, _ = _template(variant)
     symbols = dict(SYMBOLS, code=code_va, state=data_va, career_state=career_va)
     out = bytearray(code)
@@ -264,6 +425,11 @@ def code_for(code_va, data_va, career_va=0, variant="b778"):
         if kind == 2:
             target -= code_va + off
         struct.pack_into("<I", out, off, target & 0xFFFFFFFF)
+    if table is not None:
+        raw = table if isinstance(table, (bytes, bytearray)) else encode_table(table)
+        require(len(raw) == TABLE_SIZE, "Coach AI table has the wrong size")
+        at = table_offset(variant)
+        out[at:at + TABLE_SIZE] = raw
     require(len(out) <= CODE_SIZE, "Coach AI exceeds its RX allocation")
     return bytes(out).ljust(CODE_SIZE, b"\xcc")
 
@@ -294,8 +460,19 @@ def _owned(payload, variant="b778"):
         c, d = owned["code"]["va"], owned["data"]["va"]
         require(image.read(d, DATA_SIZE) == bytes(DATA_SIZE), "Foreign initialized coach AI state")
         raw = image.read(c, CODE_SIZE)
-        states.add("retail" if raw == b"\xcc" * CODE_SIZE else
-                   "applied" if raw == code_for(c, d, career_state_va(payload), variant) else "foreign")
+        if raw == b"\xcc" * CODE_SIZE:
+            states.add("retail")
+        else:
+            # b780 c2-staff: the code must be exactly the kernel, with a valid 32-row table (shipped or assigned).
+            at = table_offset(variant)
+            table = raw[at:at + TABLE_SIZE]
+            try:
+                decode_table(table)
+                valid = True
+            except CoachAIError:
+                valid = False
+            states.add("applied" if valid and raw == code_for(c, d, career_state_va(payload), variant, table=table)
+                       else "foreign")
     require(states in ({"retail"}, {"applied"}), "Foreign or mixed coach AI hooks/code")
     return next(iter(states)), edits
 
@@ -370,7 +547,10 @@ def upgrade(payload):
     image = XbeImage(payload)
     buf = bytearray(payload)
     code_off = image.offset(c, CODE_SIZE)
-    buf[code_off:code_off + CODE_SIZE] = code_for(c, d, career_state_va(payload))
+    # b780 c2-staff: the club assignment the old kernel carries comes along unchanged
+    old_at = table_offset("v061")
+    table = image.read(c, CODE_SIZE)[old_at:old_at + TABLE_SIZE]
+    buf[code_off:code_off + CODE_SIZE] = code_for(c, d, career_state_va(payload), table=table)
     for (_, va, _, old), (_, _, _, new) in zip(sites(c, "v061"), sites(c)):
         off = image.offset(va, len(old))
         require(bytes(buf[off:off + len(old)]) == old, "Coach AI upgrade: foreign hook bytes")
@@ -457,40 +637,63 @@ GUARDS = (
 )
 
 
-def plan_profiles(image, *, tendencies=None, progress=None):
-    """Read-only preflight of all 32 exact books and the current coach roster.
+class PreparedProfiles(list):
+    """``plan_profiles``' result: (entry, before, after, receipt) for every club book, in club order, plus the
+    kernel table rows this build writes (``table``) and the plain reasons of the clubs that play native (``native``)."""
+    table: list
+    native: list
+    bindings: list
 
-    Returns complete before/after resources; callers publish only after every
-    book has compiled. Unknown/stale existing tags are never silently removed.
-    """
-    from . import nfl2k5_playbook_pack as packs, nfl2k5_roster_records as rr
+
+def _final_roster(archive):
+    from . import nfl2k5_roster_records as rr
+    return rr.RosterDocument(archive.read_entry(5)[32:])
+
+
+def plan_profiles(image, *, tendencies=None, progress=None, staff=None):
+    """Read-only preflight of the 32 exact books and the image's FINAL coach roster.
+
+    b780 c2-staff: per club. Each club gets the profile of the head coach it employs (his 2026 play-calling fitted to
+    the club's own final book, the defensive rings of the club's coordinator from ``staff``); a club whose coach has
+    no 2026 profile gets none (its book's tail is cleared and its table row is vacant), and only that club plays
+    native. Returns complete before/after resources; callers publish only after every book has compiled. Unknown or
+    stale existing tags are never silently removed. Refuses when no club at all can have a profile."""
+    from . import nfl2k5_playbook_pack as packs, nfl2k5_coach_staff as staff_module
     archive_module = packs._outer_image()
     directory_path = Path(tendencies) if tendencies else ROOT / "data/vip/coaches"
-    prepared = []
+    prepared = PreparedProfiles()
     with archive_module.OuterImage(image) as archive:
-        roster = rr.RosterDocument(archive.read_entry(5)[32:])
-        for row in portrait_rows():
-            team = roster.teams[row["book_index"]]
-            photo = struct.unpack_from("<H", roster.body, team.coach_offset + 0x40)[0] if team.coach_offset else None
-            require((team.kind, team.asset_id) == (0, row["asset"])
-                    and photo in (row["portrait"], row.get("alternate_portrait", row["portrait"])),
-                    f"{row['team']}: automatic coach AI needs the matching 2026 NFL coach roster/portrait identity")
-            value = json.loads((directory_path / (row["team"] + ".json")).read_text(encoding="utf-8"))
-            names = rr._coach_tool()
-            parts = []
-            for field in (0, 4):
-                at = names.relative_target(roster.body, team.coach_offset + field, "coach name")
-                require(at is not None, f"{row['team']}: missing roster coach name")
-                parts.append(names.utf16z(roster.body, at, "coach name"))
-            require(" ".join(parts) == value["coach"],
-                    f"{row['team']}: roster coach {' '.join(parts)!r} differs from profile coach {value['coach']!r}")
-            index = archive_module.BOOK_ENTRIES[value["provenance"]["archive_book"]]
+        roster = _final_roster(archive)
+        bindings, reasons = staff_module.profile_bindings(roster.body, roster.teams, staff)
+        require(any(bindings), "Automatic coach AI needs at least one 2026 NFL head coach on the roster: "
+                + "; ".join(reasons[:3]))
+        rows = [b.table_row() if b else vacant_row(i) for i, b in enumerate(bindings)]
+        check_table(rows)
+        clubs = staff_module.clubs()
+        for i, binding in enumerate(bindings):
+            index = archive_module.BOOK_ENTRIES[clubs[i].book]
             original = archive.read_entry(index)
-            result, receipt = build_profile(original, value)
-            receipt["roster_portrait"] = photo
+            if binding is None:
+                reason = next((r for r in reasons if r.startswith(clubs[i].place + ":")), "no 2026 profile")
+                prepared.append((index, original, strip_profile(original),
+                                 dict(team=clubs[i].team, book_index=i, status="native", reason=reason)))
+                continue
+            value = json.loads((directory_path / (binding.tendency + ".json")).read_text(encoding="utf-8"))
+            if binding.profile_name == next(r["name"] for r in portrait_rows() if r["team"] == binding.tendency):
+                require(value["coach"] == binding.coach,
+                        f"{clubs[i].team}: roster coach {binding.coach!r} differs from profile coach {value['coach']!r}")
+            result, receipt = build_profile(original, value, row=binding.table_row(), defense=binding.defense)
+            team = roster.teams[i]
+            receipt["roster_portrait"] = struct.unpack_from("<H", roster.body, team.coach_offset + 0x40)[0]
+            receipt["team"] = clubs[i].team
+            receipt["staff"] = dict(club=clubs[i].team, coach=binding.coach, play_calling=binding.tendency,
+                                    defensive_coordinator=binding.defense, profile_name=binding.profile_name,
+                                    changed=binding.table_row() != default_table()[i]
+                                    or binding.defense != clubs[i].book)
             prepared.append((index, original, result, receipt))
             if progress:
-                progress(f"Compiled {row['team']} coach profile against its final playbook")
+                progress(f"Compiled {clubs[i].team} coach profile against its final playbook")
+    prepared.table, prepared.native, prepared.bindings = rows, reasons, bindings
     return prepared
 
 
@@ -498,80 +701,165 @@ SKIP_MESSAGE = ("2026 CPU coach profiles skipped: this disc's rosters do not hav
                 "Install the SOFTDRINK 2K28 pack to use them.")
 
 
-def roster_readiness(image, *, roster_edits=None, tendencies=None):
-    """Read-only, before a build writes anything: will the roster this build ends with carry the 32 2026 head coaches
-    that ``plan_profiles`` requires (team identity, portrait and coach name for every profile)?
+def partial_message(native_reasons, ready_count):
+    """One plain line for a build where some clubs play native (b780 c2-staff: per club, no longer all or nothing)."""
+    shown = "; ".join(native_reasons[:4]) + (f"; and {len(native_reasons) - 4} more" if len(native_reasons) > 4 else "")
+    return (f"2026 CPU coach profiles: {ready_count} of 32 clubs. These clubs play with their head coach's own "
+            f"tendencies instead: {shown}.")
 
-    The roster is the source image's main roster with the build's roster-edits ``coaches`` applied in memory by the
-    same writer the build uses (``apply_coach_names``, the only build step that writes coach names; it never moves a
-    coach record's portrait or team). Returns {"ready": bool, "checked": n, "mismatches": [plain lines]}; a roster that
-    cannot be read is not ready (its reason is the first mismatch)."""
-    from . import nfl2k5_playbook_pack as packs, nfl2k5_roster_records as rr
+
+def roster_readiness(image, *, roster_edits=None, tendencies=None):
+    """Read-only, before a build writes anything: which clubs of the roster this build ends with get a 2026 profile.
+
+    The roster is the source image's main roster with the build's roster-edits coach edits applied in memory by the
+    same writers the build uses (``nfl2k5_roster_records.apply_coach_edits``: the ``coaches`` names and careers, then
+    the coaching ``staff``). Returns {"ready": at least one club, "all_ready": all 32, "checked": 32,
+    "ready_clubs": [...], "native_clubs": [...], "mismatches": [plain lines for the clubs that play native]}. A roster
+    that cannot be read is not ready (its reason is the first mismatch)."""
+    from . import nfl2k5_playbook_pack as packs, nfl2k5_roster_records as rr, nfl2k5_coach_staff as staff_module
     directory_path = Path(tendencies) if tendencies else ROOT / "data/vip/coaches"
-    mismatches, checked = [], 0
+    mismatches, ready_clubs, native_clubs, checked = [], [], [], 0
     try:
         with packs._outer_image().OuterImage(image) as archive:
             roster = rr.RosterDocument(archive.read_entry(5)[32:])
         body = bytearray(roster.body)
+        document = {}
         if roster_edits:
             document = roster_edits if isinstance(roster_edits, dict) else rr.read_edits(Path(roster_edits))
-            entries = document.get("coaches") or []
-            if entries:
-                rr.apply_coach_names(body, roster.teams, entries, [])
-        names = rr._coach_tool()
-        for row in portrait_rows():
-            checked += 1
-            team = roster.teams[row["book_index"]]
-            if (team.kind, team.asset_id) != (0, row["asset"]) or not team.coach_offset:
-                mismatches.append(f"{row['team']}: the roster's club {row['book_index']} is not the 2026 club")
+            rr.apply_coach_edits(body, roster.teams, document, [])
+        bindings, reasons = staff_module.profile_bindings(body, roster.teams, document.get("staff"))
+        checked = len(bindings)
+        for club, binding in zip(staff_module.clubs(), bindings):
+            if binding is None:
+                native_clubs.append(club.team)
                 continue
-            photo = struct.unpack_from("<H", body, team.coach_offset + 0x40)[0]
-            if photo not in (row["portrait"], row.get("alternate_portrait", row["portrait"])):
-                mismatches.append(f"{row['team']}: coach portrait {photo} is not the 2026 head coach's")
+            if not (directory_path / (binding.tendency + ".json")).is_file():
+                native_clubs.append(club.team)
+                reasons.append(f"{club.place}: no 2026 tendency file for {binding.tendency}")
                 continue
-            parts = []
-            for field in (0, 4):
-                at = names.relative_target(bytes(body), team.coach_offset + field, "coach name")
-                parts.append(names.utf16z(bytes(body), at, "coach name") if at is not None else "")
-            want = json.loads((directory_path / (row["team"] + ".json")).read_text(encoding="utf-8"))["coach"]
-            if " ".join(parts) != want:
-                mismatches.append(f"{row['team']}: roster coach {' '.join(parts)!r} is not {want!r}")
+            ready_clubs.append(club.team)
+        mismatches.extend(reasons)
+    except staff_module.StaffError:
+        raise                       # a coaching staff that cannot be written stops the build in its own words
     except (OSError, ValueError, IndexError, KeyError, struct.error) as exc:
         mismatches.insert(0, f"the roster could not be read: {exc}")
-    return dict(ready=not mismatches, checked=checked, mismatches=mismatches)
+        ready_clubs = []
+    return dict(ready=bool(ready_clubs), all_ready=len(ready_clubs) == 32, checked=checked,
+                ready_clubs=ready_clubs, native_clubs=native_clubs, mismatches=mismatches)
 
 
-def write_profiles(image, prepared):
-    """Fixed-span writes/readback after a complete read-only preflight."""
+def installed_table(payload):
+    """The 32 rows of the kernel installed in ``payload`` (shipped or assigned)."""
+    from .nfl2k5_cave_oracle import XbeImage
+    variant = installed_variant(payload)
+    require(variant is not None, "Coach AI is not installed")
+    at = table_offset(variant)
+    return decode_table(XbeImage(payload).read(allocations(payload)["code"]["va"], CODE_SIZE)[at:at + TABLE_SIZE])
+
+
+def install_table(payload, rows):
+    """b780 c2-staff: write the club assignment ``rows`` into the installed kernel (1,408 bytes inside its own code
+    allocation; owner seals and section digests resealed). Idempotent. Returns (payload, receipt)."""
+    from .nfl2k5_bump_strength import _sections, section_digest
+    from .nfl2k5_cave_oracle import XbeImage
+    from . import nfl2k5_xbe_space as space
+    raw = encode_table(rows)
+    variant = installed_variant(payload)
+    require(variant is not None, "Coach AI table needs the installed kernel")
+    owned = allocations(payload)
+    image = XbeImage(payload)
+    va = owned["code"]["va"] + table_offset(variant)
+    offset = image.offset(va, TABLE_SIZE)
+    before = bytes(payload[offset:offset + TABLE_SIZE])
+    receipt = dict(owner=OWNER, kind="table", variant=variant, va=hex(va), size=TABLE_SIZE,
+                   vacant_rows=sum(r["name"] is None for r in rows),
+                   assigned=[dict(book_index=r["book_index"], name=r["name"], portrait=r["portrait"])
+                             for r, d in zip(rows, default_table()) if r != d])
+    if before == raw:
+        return payload, dict(receipt, status="already_applied", changed_bytes=0)
+    buf = bytearray(payload)
+    buf[offset:offset + TABLE_SIZE] = raw
+    space._seal_scaleout(buf, space._read_scale_directory(payload))
+    for section in _sections(buf):
+        buf[section.header_offset + 36:section.header_offset + 56] = section_digest(buf, section)
+    result = bytes(buf)
+    require(len(result) == len(payload), "Coach AI table install must be fixed-span")
+    require(installed_variant(result) == variant and installed_table(result) == [
+        dict(r, alternate_portrait=r.get("alternate_portrait") or 0) for r in rows], "Coach AI table postcondition failed")
+    require(space.status(result) == "applied", "Coach AI table install broke the owner seals")
+    return result, dict(receipt, status="applied", changed_bytes=sum(a != b for a, b in zip(payload, result)),
+                        before_sha256=hashlib.sha256(payload).hexdigest(), after_sha256=hashlib.sha256(result).hexdigest())
+
+
+def _image_xbe(image, write=None):
+    from . import nfl2k5_throw_tuning as tt
+    from . import platform_compat
+    flags = (os.O_RDWR if write is not None else os.O_RDONLY) | getattr(os, "O_BINARY", 0)
+    fd = os.open(image, flags)
+    try:
+        offset, length = tt.image_xbe_extent(fd, os.fstat(fd).st_size)
+        if write is None:
+            return platform_compat.pread(fd, length, offset)
+        require(len(write) == length, "Coach AI table install changed the executable size")
+        platform_compat.pwrite(fd, write, offset)
+        os.fsync(fd)
+        require(platform_compat.pread(fd, length, offset) == write, "Coach AI executable readback mismatch")
+        return write
+    finally:
+        os.close(fd)
+
+
+def write_profiles(image, prepared, table=None):
+    """Fixed-span writes/readback after a complete read-only preflight; then, with ``table`` (b780 c2-staff), the
+    kernel's club assignment in the image's executable."""
     from . import nfl2k5_playbook_pack as packs
     archive_module = packs._outer_image()
     lo = 32 + PROFILE_OFFSET
     rows = []
+    table = getattr(prepared, "table", None) if table is None else table
+    lookup = {i: r for i, r in enumerate(table)} if table is not None else None
     with archive_module.OuterImage(image, writable=True) as archive:
         # Check every input again before the first mutation.
         for index, before, after, receipt in prepared:
             require(archive.read_entry(index) == before, "PLAY changed after coach profile preflight")
             require(len(after) == len(before) and before[:lo] == after[:lo]
                     and before[lo + PROFILE_SIZE:] == after[lo + PROFILE_SIZE:], "Coach edit escaped fixed tail span")
-            inspect_profile(after)
+            if receipt.get("status") == "native":
+                require(after[lo:lo + PROFILE_SIZE] == bytes(PROFILE_SIZE), "A native club's book keeps a profile")
+            else:
+                inspect_profile(after, lookup)
         for index, before, after, receipt in prepared:
             changed = sum(a != b for a, b in zip(before, after))
             offset = archive.entries[index].virtual_offset + lo
             if changed:
                 archive.write(offset, after[lo:lo + PROFILE_SIZE])
             require(archive.read_entry(index) == after, "Coach PLAY readback mismatch")
-            rows.append(dict(team=receipt["team"], entry=index, profile=receipt["automatic_profile"],
-                             resource_before_sha256=hashlib.sha256(before).hexdigest(),
-                             resource_after_sha256=hashlib.sha256(after).hexdigest(),
-                             virtual_offset=offset, profile_size=PROFILE_SIZE, changed_bytes=changed,
-                             readback_verified=True))
-    return dict(schema="nfl2k5_automatic_coach_resources/v1", profiles=rows,
-                changed_bytes=sum(r["changed_bytes"] for r in rows), resource_growth=0,
-                all_preflighted=True, readback_verified=True)
+            row = dict(team=receipt["team"], entry=index, resource_before_sha256=hashlib.sha256(before).hexdigest(),
+                       resource_after_sha256=hashlib.sha256(after).hexdigest(),
+                       virtual_offset=offset, profile_size=PROFILE_SIZE, changed_bytes=changed,
+                       readback_verified=True)
+            if receipt.get("status") == "native":
+                row.update(status="native", reason=receipt["reason"])
+            else:
+                row.update(profile=receipt["automatic_profile"], staff=receipt.get("staff"))
+            rows.append(row)
+    result = dict(schema="nfl2k5_automatic_coach_resources/v1", profiles=rows,
+                  changed_bytes=sum(r["changed_bytes"] for r in rows), resource_growth=0,
+                  all_preflighted=True, readback_verified=True,
+                  clubs_with_profiles=sum(r.get("status") != "native" for r in rows),
+                  native_clubs=[dict(team=r["team"], reason=r["reason"]) for r in rows if r.get("status") == "native"])
+    if table is not None:
+        xbe = _image_xbe(image)
+        patched, table_receipt = install_table(xbe, table)
+        if patched != xbe:
+            _image_xbe(image, write=patched)
+        result["kernel_table"] = table_receipt
+        result["changed_bytes"] += table_receipt["changed_bytes"]
+    return result
 
 
-def apply_profiles_to_image(image, *, tendencies=None, progress=None):
-    return write_profiles(image, plan_profiles(image, tendencies=tendencies, progress=progress))
+def apply_profiles_to_image(image, *, tendencies=None, progress=None, staff=None):
+    return write_profiles(image, plan_profiles(image, tendencies=tendencies, progress=progress, staff=staff))
 
 
 def main(argv=None):

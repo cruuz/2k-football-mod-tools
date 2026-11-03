@@ -3496,7 +3496,8 @@ def _build_and_publish(plan: BuildPlan, progress: ProgressSink | None = None, *,
                 receipt["source"] = str(source)
             if coach_ai_skip is not None:
                 receipt["steps"].append(coach_ai_skip)
-                receipt["coach_ai_skipped"] = coach_ai_skip["user_notes"][0]
+                receipt["coach_ai_clubs" if coach_ai_skip.get("status") == "partial"
+                        else "coach_ai_skipped"] = coach_ai_skip["user_notes"][0]
             if plan.music_shuffle or plan.music_library:
                 _step("music_check")
                 library = _core_module("nfl2k5_music_banks")
@@ -3600,23 +3601,34 @@ def preflight_plan(plan: BuildPlan, progress: ProgressSink | None = None):
     receipt = _build(plan, progress, _preflight_only=True)
     if coach_ai_skip is not None and isinstance(receipt, dict):
         receipt.setdefault("steps", []).append(coach_ai_skip)
-        receipt["coach_ai_skipped"] = coach_ai_skip["user_notes"][0]
+        receipt["coach_ai_clubs" if coach_ai_skip.get("status") == "partial"
+                else "coach_ai_skipped"] = coach_ai_skip["user_notes"][0]
     return receipt
 
 
 def _coach_ai_decision(plan, progress=None):
-    """b77 co3: decide, before any write, whether the automatic coach AI can run on the rosters this build ends with.
+    """b77 co3 / b780 c2-staff: decide, before any write, which clubs of the rosters this build ends with get a 2026
+    CPU coach profile.
 
-    Its profiles need the 32 2026 head coaches (team, portrait and name; ``nfl2k5_coach_ai.plan_profiles``), which only
-    a disc or a roster-edits document that carries them has (the SOFTDRINK 2K28 pack does; a plain retail dump does
-    not). Without them the whole option is skipped, executable kernel and profiles alike (as if it were off; nothing
-    partial), and one plain line says so in the build log, the receipt's user notes and the Build summary. Returns
-    (plan, the receipt step for the skip or None)."""
+    A profile needs a 2026 head coach (his name and picture; ``nfl2k5_coach_ai.roster_readiness``, which applies the
+    roster edits' coach names and coaching staff in memory). Since b780 this is per club: a club whose coach has no
+    profile (a 2004 coach, a created coach without a play-calling style) plays with its coach's own tendencies and the
+    other clubs keep theirs; one plain line names those clubs in the build log, the receipt's user notes and the Build
+    summary. Only when no club has a 2026 head coach (a plain retail dump) is the whole option skipped, executable
+    kernel and profiles alike (as if it were off; nothing partial). Returns (plan, the receipt step or None)."""
     if not plan.coach_ai or not tt.is_disc_image(plan.source):
         return plan, None
     readiness = tt.coach_ai_patch.roster_readiness(plan.source, roster_edits=plan.roster_edits or None)
-    if readiness["ready"]:
+    if readiness.get("all_ready", readiness["ready"]):
         return plan, None
+    if readiness["ready"]:
+        message = tt.coach_ai_patch.partial_message(readiness["mismatches"], len(readiness["ready_clubs"]))
+        if progress is not None:
+            progress(message, 0, 0)
+        return plan, {"step": "coach_ai_clubs", "status": "partial", "requested": True, "applied": True,
+                      "decided": "before any write", "checked": readiness["checked"],
+                      "ready_clubs": readiness["ready_clubs"], "native_clubs": readiness["native_clubs"],
+                      "mismatches": readiness["mismatches"], "user_notes": [message]}
     message = tt.coach_ai_patch.SKIP_MESSAGE
     if progress is not None:
         progress(message, 0, 0)
@@ -3624,6 +3636,32 @@ def _coach_ai_decision(plan, progress=None):
             "decided": "before any write", "checked": readiness["checked"],
             "mismatches": readiness["mismatches"], "user_notes": [message]}
     return replace(plan, coach_ai=False), step
+
+
+def _coach_staff_document(plan):
+    """b780 c2-staff: the roster edits' coaching staff (``nfl2k5_coach_staff``), or None."""
+    if not plan.roster_edits:
+        return None
+    records = _core_module("nfl2k5_roster_records")
+    staff = _core_module("nfl2k5_coach_staff")
+    if records is None or staff is None:
+        return None
+    value = records.read_edits(Path(plan.roster_edits)).get("staff")
+    return None if not value or staff.is_empty(value) else value
+
+
+def _coach_staff_plan(plan, source):
+    """b780 c2-staff: check the coaching staff on the SOURCE roster (with the roster edits' coach names) before any
+    write, so a vacancy or an unknown name stops the build at its first second, in plain words. Returns the plan
+    (``nfl2k5_coach_staff.StaffPlan``) or None when the roster edits change no coach."""
+    if _coach_staff_document(plan) is None:
+        return None
+    staff = _core_module("nfl2k5_coach_staff")
+    records = _core_module("nfl2k5_roster_records")
+    result = staff.source_plan(source, records.read_edits(Path(plan.roster_edits)))
+    if not result.ok:
+        raise ValueError("Coaching staff (Rosters > Coaches): " + " ".join(result.errors))
+    return result
 
 
 def _board_kit_options(plan):
@@ -4859,6 +4897,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         records = _core_module("nfl2k5_roster_records")
         if records is not None and "roster_refresh" in records.read_edits(Path(plan.roster_edits)):
             raise ValueError("Dated roster refresh requires modern position pools")
+    staff_plan = _coach_staff_plan(plan, source) if plan.roster_edits and is_image else None
     loaded_espn25_plan = None
     if plan.espn25_plan:
         espn = _core_module("nfl2k5_espn25_scenarios")
@@ -5777,6 +5816,12 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         receipt["steps"].append({"step": "player_tags", **{k: v for k, v in tags_receipt.items() if k != "log"},
                                  "log_lines": len(tags_receipt.get("log", []))})
     _apply_roster_history(plan, target, receipt, progress)
+    if staff_plan is not None and _core_module("nfl2k5_coach_staff").playbook_copies(staff_plan):
+        # b780 c2-staff: "bring his playbook": after the last playbook writer, before the 2026 profiles compile
+        progress("Coaching staff: copying the playbooks the new head coaches bring", 0, 0)
+        books = _core_module("nfl2k5_coach_staff").apply_playbooks_to_image(
+            target, staff_plan, progress=lambda message: progress(message, 0, 0))
+        receipt["steps"].append({"step": "coach_staff_playbooks", **books})
     if plan.team_names_2026:
         _step("team_names_2026")
         module = _core_module("nfl2k5_team_names_2026")
@@ -5823,7 +5868,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         _step("coach_ai_resources")
         progress("Compiling automatic CPU coach profiles for the final playbooks", 0, 0)
         coach_receipt = tt.coach_ai_patch.apply_profiles_to_image(
-            target, progress=lambda message: progress(message, 0, 0))
+            target, progress=lambda message: progress(message, 0, 0), staff=_coach_staff_document(plan))
         receipt["steps"].append({"step": "coach_ai_resources", **coach_receipt})
 
     _step("xbe_space")

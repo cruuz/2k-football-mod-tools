@@ -3691,6 +3691,9 @@ mod_editor/core/nfl2k5_spare_capacity.py
 # Automatic 2026 CPU coach profiles (b77 vp2); derive/repair tools remain development sources.
 mod_editor/core/nfl2k5_coach_ai.py
 mod_editor/core/nfl2k5_coach_ai_code.py
+# b780 c2-staff: coaching staff (head coach moves, created coaches, a DC per club, per-club 2026 profiles).
+mod_editor/core/nfl2k5_coach_staff.py
+tests/mod_editor/test_nfl2k5_coach_staff.py
 mod_editor/core/nfl2k5_vip.py
 # b776 pb2: CPU coach play-ring variety and the formation menu page check (nfl2k5_vip imports the first).
 mod_editor/core/nfl2k5_coach_diversity.py

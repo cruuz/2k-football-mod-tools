@@ -1,9 +1,10 @@
 """b77 co3: the automatic coach AI is decided before any write.
 
-On a disc whose rosters (with the build's roster edits) do not carry the 32 2026 head coaches, the whole option is
+On a disc whose rosters (with the build's roster edits) carry none of the 2026 head coaches, the whole option is
 skipped (executable kernel and profiles: the build runs as if it were off) and one plain line says so in the build
 log, the receipt's user notes, the completion notice and the Build summary. A roster that carries them (the SOFTDRINK
-2K28 pack's roster edits, or a SOFTDRINK disc) keeps the option unchanged.
+2K28 pack's roster edits, or a SOFTDRINK disc) keeps the option unchanged. b780 c2-staff: the decision is per club
+now; a roster that carries some of them gives those clubs their profiles and one plain line names the others.
 
 The always-on tests use no disc. The retail checks read the user's own retail USA image and skip without it
 (point NFL2K5_RETAIL_XISO at it); nothing is written to it.
@@ -163,13 +164,15 @@ class RetailRosters(unittest.TestCase):
         self.assertFalse(result["ready"])
         self.assertEqual(result["checked"], 32)
         self.assertEqual(len(result["mismatches"]), 32)
-        self.assertIn("SF: roster coach 'Dennis Erickson' is not 'Kyle Shanahan'", result["mismatches"])
+        self.assertIn("San Francisco: Dennis Erickson is not one of the 32 2026 head coaches (name and picture)",
+                      result["mismatches"])
 
     def test_roster_edits_with_the_2026_coaches_make_it_ready(self):
         """The pack path: the build's roster edits name every 2026 head coach, so the profiles apply."""
         document = _coaches_document(RETAIL)
-        self.assertEqual(ai.roster_readiness(RETAIL, roster_edits=document),
-                         dict(ready=True, checked=32, mismatches=[]))
+        result = ai.roster_readiness(RETAIL, roster_edits=document)
+        self.assertEqual({k: result[k] for k in ("ready", "all_ready", "checked", "mismatches", "native_clubs")},
+                         dict(ready=True, all_ready=True, checked=32, mismatches=[], native_clubs=[]))
         with tempfile.TemporaryDirectory(prefix="coach-ai-edits-") as raw:
             path = Path(raw) / "roster-edits.json"
             path.write_text(json.dumps(document), encoding="utf-8", newline="\n")
@@ -178,12 +181,25 @@ class RetailRosters(unittest.TestCase):
                                        roster_edits=str(path))
             self.assertEqual(mod_build._coach_ai_decision(plan), (plan, None))
 
-    def test_one_missing_coach_skips_the_whole_option(self):
+    def test_one_missing_coach_leaves_only_that_club_native(self):
+        """b780 c2-staff: per club, no longer all or nothing (the 31 other clubs keep their profiles)."""
         document = _coaches_document(RETAIL, leave_out=("NYG",))
         result = ai.roster_readiness(RETAIL, roster_edits=document)
-        self.assertFalse(result["ready"])
+        self.assertTrue(result["ready"])
+        self.assertFalse(result["all_ready"])
+        self.assertEqual(result["native_clubs"], ["NYG"])
+        self.assertEqual(len(result["ready_clubs"]), 31)
         self.assertEqual(len(result["mismatches"]), 1)
-        self.assertTrue(result["mismatches"][0].startswith("NYG: roster coach "))
+        self.assertTrue(result["mismatches"][0].startswith("New York Giants: Tom Coughlin is not one of"))
+        with tempfile.TemporaryDirectory(prefix="coach-ai-edits-") as raw:
+            path = Path(raw) / "roster-edits.json"
+            path.write_text(json.dumps(document), encoding="utf-8", newline="\n")
+            plan = mod_build.BuildPlan(str(RETAIL), "out.xiso.iso", coach_ai=True, roster_edits=str(path))
+            out, step = mod_build._coach_ai_decision(plan)
+        self.assertIs(out.coach_ai, True)
+        self.assertEqual((step["step"], step["status"], step["applied"]), ("coach_ai_clubs", "partial", True))
+        self.assertEqual(step["user_notes"], [ai.partial_message(result["mismatches"], 31)])
+        self.assertTrue(step["user_notes"][0].startswith("2026 CPU coach profiles: 31 of 32 clubs."))
         plan = mod_build.BuildPlan(str(RETAIL), "out.xiso.iso", coach_ai=True)
         out, step = mod_build._coach_ai_decision(plan)
         self.assertIs(out.coach_ai, False)
