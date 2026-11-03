@@ -352,11 +352,12 @@ u32 FC mode_ff_ready(u32 manager) {
              * Coach policy keeps the selected call and live player control. */
             body=W((u8 *)body,0x38);
             /* b780 n2: never at a punt or field goal (play kind E602BC 6 or
-             * 3). The kicking unit's roles have already started the kick
-             * meter; the play-call screen's camera (state 6) cancels it
-             * (BAFA0 -> BACF0 clears B72694) and the CPU kicker (2ED020)
-             * then waits for it forever: the punt never snaps. MyPlayer
-             * plays the CPU's call with his own controller instead. */
+             * 3). The kicking team's call and roles are already set up: the
+             * play-call camera (state 6) cancels their kick meter (BAFA0 ->
+             * BACF0 clears B72694) and the loop below retires their arrival
+             * bits, but only this side re-selects. On the released disc the
+             * CPU punter then never snapped. MyPlayer plays the CPU's call
+             * with his own controller instead. */
             if(G(0xE602BC)!=6 && G(0xE602BC)!=3 && mode_human((u8 *)body)) {
                 S(2740)=body;
                 /* The completed CPU call leaves every offensive actor's
