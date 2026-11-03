@@ -7245,6 +7245,78 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_cpu_clock2 apply source.xbe --output new-clock.xbe --overtime",
+        "module": "mod_editor/core/nfl2k5_cpu_clock2.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "mod_editor/core/nfl2k5_cpu_clock2_code.py",
+        "tests/mod_editor/test_nfl2k5_cpu_clock2.py",
+        "tests/mod_editor/test_nfl2k5_cpu_clock2_unicorn.py",
+        "tools/nfl2k5_cpu_clock2.S",
+        "tools/nfl2k5_cpu_clock2_assemble.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "Advanced gameplay option: Off in Basic, on in the Advanced and Experimental presets. The overtime window is a second checkbox that needs the first. In-game play is UNWITNESSED beyond the job report's emulator gates."
+      },
+      "id": "nfl2k5.gameplay.cpu_clock2",
+      "input_constraints": [
+        "Pinned USA XBE or a verified composed input; the owner is the last late allocator owner (one 1,152-byte RX allocation, no writable data). Foreign or mixed bytes at any of the ten hook sites or inside any of the seventeen guarded routines refuse.",
+        "Booleans cpu_clock2 and cpu_clock2_overtime (overtime needs cpu_clock2). A different overtime choice needs a rebuild from a clean base.",
+        "Hooks: 0x20A79B, 0x207A36, 0x18C0E8, 0x206ED9 (calls), 0x2D33D8, 0x2D340C, 0x188614, 0x206F10, 0x189080 (jumps) and, with overtime, 0x205FE0."
+      ],
+      "portme": [
+        "Integrate BuildPlan, presets, build settings, the Build tab checkboxes, packaging pins and the allocator union; regenerate the protected production cave manifest with the owner last in LATE_OWNERS.",
+        "Witness in game: a CPU defense trailing in Q4 calls a timeout before the two-minute warning; a leading CPU offense lets the play clock run down from 5:00; a CPU team down two scores hurries before 5:00; a first-half kneel; the clock running out after a final kneel; overtime clock decisions in Franchise."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and instructions; never distribute generated XBEs or retail resources.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [
+          "tests/mod_editor/test_nfl2k5_cpu_clock2_unicorn.py"
+        ],
+        "scope": "The game's own clock routines (time needed, urgency, hurry, onside, snap delay, timeout poll, kneel, late window and its callers) replayed in Unicorn on supplied game state before and after the owner. Full games are UNWITNESSED beyond the emulator gates named in the job report.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false | true; Off in Basic, On in Advanced and Experimental",
+            "name": "cpu_clock2",
+            "required": true
+          },
+          {
+            "allowed": "false | true; needs cpu_clock2; Off in Basic, On in Advanced and Experimental",
+            "name": "cpu_clock2_overtime",
+            "required": true
+          }
+        ],
+        "notes": "Build-time settings. Off skips the writer in the Studio."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "Nine pinned live hooks (ten with overtime) in the native CPU clock routines; one owned 1,152-byte RX allocation.",
+        "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+      },
+      "summary": "CPU teams manage the clock like modern NFL teams: two-score hurry from 10:00 of Q4, four-minute offense, early defensive timeouts, end-of-half kneel, kneel runoff, and optional overtime clock logic where the end of overtime decides the game.",
+      "surface": "gameplay_tuning_sliders",
+      "title": "Modern CPU clock management",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_cpu_clock2"
+    },
+    {
+      "backend": {
         "command": "python3 -m mod_editor.core.nfl2k5_cpu_money_downs --xbe source.xbe --apply --level modern2 --output new-money-downs.xbe",
         "module": "mod_editor/core/nfl2k5_cpu_money_downs.py",
         "operation": "write"

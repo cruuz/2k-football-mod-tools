@@ -710,6 +710,14 @@ class BuildPlan:
     # nothing is saved. EXPERIMENTAL: on in the Advanced and Experimental presets (the SOFTDRINK 2K28 recipe builds
     # from Experimental), off in Basic.
     standings_records: bool = False
+    # b780 b-clock: modern CPU clock management (nfl2k5_cpu_clock2, a late executable owner): a team down two scores
+    # (9+) hurries from 10:00 of Q4, a leading CPU offense runs the play clock down from 5:00 (four-minute offense), a
+    # trailing CPU defense calls timeouts before the two-minute warning when it needs the ball back, the CPU kneels at
+    # the end of the first half when backed up, and any Take Knee runs the clock out when the remaining kneels would.
+    # cpu_clock2_overtime also makes the end of overtime count as late where it can end the game (needs cpu_clock2).
+    # EXPERIMENTAL: on in the Advanced and Experimental presets (r1-cpu research, Noah 11/02 ideas).
+    cpu_clock2: bool = False
+    cpu_clock2_overtime: bool = False
     # b778-sim1: the simulated franchise game's clock pace. The simulator's per-event clock decrement came from
     # sqrt(300 / (Sim. Quarter Length * 60)) * 0.03, so a 15-minute setting produced about 1.7x the plays, points and
     # yards of a 5-minute setting. One in-place patch at 0x10B89C fixes the decrement (nfl2k5_sim_stats), so a
@@ -804,7 +812,7 @@ class BuildPlan:
                 or self.guardian_overlay or self.my_career or self.screen_hooks or self.coverage_trail or self.franchise_edit_player or self.cpu_money_downs != "retail" or self.accelerated_clock or self.coin_defer or self.decided_clock or self.cpu_scrambles == "modern" or self.weather_haze or self.number_kerning or self.modern_color or self.weekly_prep or self.weekly_prep_cpu or self.weekly_prep_remember or self.coach_ai or self.playbook_pair or self.deep_zone_facing or self.deep_zone_bail or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave or self.historic_teams_quick_game or self.espn25_more_moments or self.historic_stock_books or self.espn25_era_rules or self.k128_memory or self.team_ratings or self.play_art_routes or self.letter_grades or self.honors_page or self.sim_cb_tackles or self.sim_stats or self.option_defaults or self.sim_rb_injuries or self.sim_realism or self.coach_carousel or self.history_screen
                 or self.momentum_collisions or self.scorebug_runtime or self.indicator_names_style != "retail" or self.momentum > 0 or self.momentum_contact or self.defensive_try or self.zone_drop_cap or self.all_stadiums or self.music_shuffle or self.practice_squad_screen or self.abilities or self.qb_spy or self.calendar_engine or self.coverage_slider or self.scramble_tuning or self.flatter_deep_ball or self.chop_block_toggle or self.music_policy != "retail" or self.music_unlock or self.music_userlist
                 or bool(self.music_library and _music_library_document(self.music_library)["bank"] == "cribmusic")
-                or self.pass_protection or self.pass_rush_stats or self.standings_records or self.cpu_passer_iq)  # b778-pr1, b779-st1, b780-j1
+                or self.pass_protection or self.pass_rush_stats or self.standings_records or self.cpu_passer_iq or self.cpu_clock2)  # b778-pr1, b779-st1, b780-j1
 
     def to_recipe(self) -> dict[str, Any]:
         d = asdict(self)
@@ -1086,6 +1094,17 @@ for _preset in PRESETS.values():
 PRESETS["softdrink_advanced"]["standings_records"] = True
 PRESETS["softdrink_experimental"]["standings_records"] = True
 del _preset
+# b780 b-clock: modern CPU clock management and its overtime window: on in the Advanced and Experimental presets (the
+# SOFTDRINK 2K28 recipe builds from Experimental); Basic keeps the retail clock decisions.
+for _preset in PRESETS.values():
+    _preset["cpu_clock2"] = False
+    _preset["cpu_clock2_overtime"] = False
+for _name in ("softdrink_advanced", "softdrink_experimental"):
+    PRESETS[_name]["cpu_clock2"] = True
+    # b780-int (coordinator's call for Noah): the overtime piece is censused and Unicorn-probed but never witnessed in
+    # game, so it stays off in every preset until its emulator gate; the option itself is available in the Build tab.
+    PRESETS[_name]["cpu_clock2_overtime"] = False
+del _preset, _name
 # b778-sim1: the simulated-game pace fix is a stat correction, not a taste option: on in the Advanced and Experimental
 # presets (the SOFTDRINK 2K28 recipe builds from Experimental). Basic keeps retail for purists.
 for _preset in PRESETS.values():
@@ -1486,6 +1505,7 @@ _LATE_OWNER_OPTIONS = (
     ("nfl2k5_coach_carousel", "Coaching carousel", lambda p: p.coach_carousel),  # b780-c6
     ("nfl2k5_history_screen", "Franchise History screen", lambda p: p.history_screen),  # b780-j4
     ("nfl2k5_standings_records", "Team Standings records", lambda p: p.standings_records),  # b780-j1
+    ("nfl2k5_cpu_clock2", "Modern CPU clock management", lambda p: p.cpu_clock2),  # b780 b-clock
     ("nfl2k5_clock_led", "Modern clock digits", lambda p: p.modern_clock_led),  # b778-sd4
     ("nfl2k5_return_coverage", "Return coverage pursuit angles", lambda p: p.return_coverage),  # b778-kr1
     ("nfl2k5_preseason_warning", "2026 franchise economy", lambda p: p.franchise_economy),  # b779-rc1: the warned flag
@@ -1775,6 +1795,35 @@ def _standings_records_preflight(source: Path, progress) -> None:
 
 
 @_core_step("practice_injuries")
+def _cpu_clock2_preflight(source: Path, progress) -> None:
+    """b780 b-clock: refuse a source whose CPU clock routines are foreign, before any write."""
+    module = _core_module("nfl2k5_cpu_clock2")
+    if module is None:
+        raise ValueError("Modern CPU clock management is not available in this installation.")
+    progress("Checking the CPU clock decisions for modern clock management", 0, 0)
+    state = module.status(_xbe_bytes(source))
+    if state not in ("retail", "applied"):
+        raise ValueError("A CPU clock routine (time needed, urgency, timeouts, snap timing, kneel or the late window) "
+                         "in this source is not retail. Build from an unmodified retail dump.")
+
+
+def _apply_cpu_clock2(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    """b780 b-clock: modern CPU clock management, after every b779 late owner (LATE_OWNERS order)."""
+    if not plan.cpu_clock2:
+        return
+    module = _core_module("nfl2k5_cpu_clock2")
+    if module is None:
+        raise RuntimeError("Modern CPU clock management needs nfl2k5_cpu_clock2.")
+    progress("CPU clock management: modern clock rules", 0, 0)
+    payload, clock_receipt = module.apply(_xbe_bytes(target), overtime=bool(plan.cpu_clock2_overtime))
+    _write_xbe_bytes(target, payload)
+    final = _xbe_bytes(target)
+    if final != payload or module.read_settings(final) != {"overtime": bool(plan.cpu_clock2_overtime)}:
+        raise RuntimeError("Modern CPU clock management: the output does not read back as applied")
+    receipt["steps"].append({"step": "cpu_clock2", **{k: v for k, v in clock_receipt.items() if k != "reservations"}})
+    receipt["result"]["cpu_clock2"] = "applied"
+
+
 def _apply_practice_injuries(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
     """b778-pi1: franchise practice keeps injuries, the last late allocator owner."""
     if not plan.practice_injuries:
@@ -2505,6 +2554,8 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
                                ("coach_carousel", "nfl2k5_coach_carousel"),  # b780-c6
                                ("history_screen", "nfl2k5_history_screen"),  # b780-j4
                                ("standings_records", "nfl2k5_standings_records"),  # b780-j1
+                               ("cpu_clock2", "nfl2k5_cpu_clock2"),  # b780 b-clock
+                               ("cpu_clock2_overtime", "nfl2k5_cpu_clock2"),  # b780 b-clock
                                ("modern_clock_led", "nfl2k5_clock_led"),  # b778-sd4
                                ("letter_grades", "nfl2k5_letter_grades"),
                                ("honors_page", "nfl2k5_honors"), ("honors_history", "nfl2k5_honors_history"),
@@ -2775,6 +2826,9 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
     out["history_screen"] = history_screen.status(_xbe_bytes(source)) if history_screen is not None else "unavailable"
     standings_records = _core_module("nfl2k5_standings_records")  # b780-j1
     out["standings_records"] = standings_records.status(_xbe_bytes(source)) if standings_records is not None else "unavailable"
+    cpu_clock2 = _core_module("nfl2k5_cpu_clock2")  # b780 b-clock
+    out["cpu_clock2"] = cpu_clock2.status(_xbe_bytes(source)) if cpu_clock2 is not None else "unavailable"
+    out["cpu_clock2_overtime"] = out["cpu_clock2"]
     sim_stats = _core_module("nfl2k5_sim_stats")  # b778-sim1
     out["sim_stats"] = sim_stats.status(_xbe_bytes(source)) if sim_stats is not None else "unavailable"
     quick_release = _core_module("nfl2k5_quick_long_release")  # b780-c-release
@@ -3592,6 +3646,9 @@ def validate_plan(plan: BuildPlan) -> list[str]:
     # b76-pf P1: the eighth field swap pair only reaches the practice facility's field (its midfield named teamlogo).
     if plan.modern_practice_field_team_logo is True and plan.modern_practice_field is not True:
         return ["The practicing team's logo at midfield needs the Modern practice facility: turn it on too."]
+    # b780 b-clock: the overtime window extends the modern clock rules, so it needs them.
+    if plan.cpu_clock2_overtime is True and plan.cpu_clock2 is not True:
+        return ["Modern CPU clock management in overtime needs Modern CPU clock management: turn it on too."]
     return []
 
 
@@ -4874,6 +4931,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("The franchise History screen must be Off or On.")
     if type(plan.cpu_passer_iq) is not bool:  # b780 a-passer
         raise ValueError("CPU quarterbacks throw on time must be Off or On.")
+    if type(plan.cpu_clock2) is not bool or type(plan.cpu_clock2_overtime) is not bool:  # b780 b-clock
+        raise ValueError("Modern CPU clock management and its overtime choice must be Off or On.")
     if type(plan.weekly_progression) is not bool:  # b778-pg1
         raise ValueError("Weekly player progression must be Off or On.")
     if type(plan.modern_force_out) is not bool:  # b778-fo1
@@ -5686,6 +5745,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         _history_screen_preflight(source, progress)
     if plan.standings_records:  # b780-j1: like pi1, before any write
         _standings_records_preflight(source, progress)
+    if plan.cpu_clock2:  # b780 b-clock: before any write
+        _cpu_clock2_preflight(source, progress)
     if plan.cpu_ball_carriers:  # b778-ai5: before any write
         _ball_carrier_preflight(source, progress)
     if plan.return_coverage:  # b778-kr1: before any write
@@ -6280,7 +6341,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         sim_rb_injuries=plan.sim_rb_injuries, sim_realism=plan.sim_realism, preseason_warning=plan.franchise_economy,
         coach_carousel=plan.coach_carousel,
         standings_records=plan.standings_records,
-        cpu_passer_iq=plan.cpu_passer_iq)
+        cpu_passer_iq=plan.cpu_passer_iq,
+        cpu_clock2=plan.cpu_clock2)
     if plan.read_option_runtime or plan.qb_spy:
         _step("play_intents")
         resolver = _core_module("nfl2k5_play_intents")
@@ -6363,6 +6425,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             coach_carousel=plan.coach_carousel,
             standings_records=plan.standings_records,
             cpu_passer_iq=plan.cpu_passer_iq,
+            cpu_clock2=plan.cpu_clock2,
             **{**r62, "read_option_intent_table": read_table, "modern_naming": False, "crib_reclaim": False})
         _write_xbe_bytes(target, patched)
         receipt["steps"].append({"step": "xbe_space", **space_receipt,
@@ -7586,6 +7649,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     _apply_standings_records(plan, target, receipt, progress)
     # b780 a-passer: CPU quarterbacks throw on time, the last late allocator owner (LATE_OWNERS order)
     _apply_cpu_passer_iq(plan, target, receipt, progress)
+    # b780 b-clock: modern CPU clock management, after every b779 late owner (LATE_OWNERS order)
+    _apply_cpu_clock2(plan, target, receipt, progress)
     # b778-pg2: the Player Progress screen and weekly snapshot (a late allocator owner after force_out)
     # b778-cb1: cornerback tackle credit, after force_out
     # b778-sd4: modern clock digits, after modern sideline catches
@@ -7685,6 +7750,9 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("the coaching carousel did not survive the final passes")  # b780-c6
     if plan.standings_records and _core_module("nfl2k5_standings_records").status(_xbe_bytes(target)) != "applied":
         raise ValueError("Team Standings records did not survive the final passes")  # b780-j1
+    if plan.cpu_clock2 and _core_module("nfl2k5_cpu_clock2").read_settings(_xbe_bytes(target)) != {  # b780 b-clock
+            "overtime": bool(plan.cpu_clock2_overtime)}:
+        raise ValueError("modern CPU clock management did not survive the final passes")
     if plan.sim_cb_tackles and _core_module("nfl2k5_sim_cb_tackles").status(_xbe_bytes(target)) != "applied":  # b778-cb1
         raise ValueError("cornerback tackle credit did not survive the final passes")
     if plan.sim_stats and _core_module("nfl2k5_sim_stats").status(_xbe_bytes(target)) != "applied":  # b778-sim1
