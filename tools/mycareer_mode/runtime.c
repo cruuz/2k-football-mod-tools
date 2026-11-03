@@ -315,8 +315,11 @@ static NI u32 mode_ff_settled(void) {
 u32 mode_ff_hold_snap(void) {
     /* Both native CPU snap decision entries stop before event 28 is posted.
      * This also covers a two-minute/no-huddle immediate-snap decision on
-     * the very frame the personnel becomes ready. No task is rewritten. */
-    return S(2716) && S(2708) && G(0xE602B8)==13 && mode_unit_present();
+     * the very frame the personnel becomes ready. No task is rewritten.
+     * b780 n2: never into the last 3 s of the play clock (0x40400000), so a
+     * pre-snap that does not settle can no longer stop the game. */
+    return S(2716) && S(2708) && G(0xE602B8)==13 &&
+           (int)W((u8 *)G(0xE60294),16)>0x40400000 && mode_unit_present();
 }
 /* Stable ECX ABI is also used by the bounded cadence probe. */
 u32 FC mode_ff_ready(u32 manager) {
@@ -359,7 +362,14 @@ u32 FC mode_ff_ready(u32 manager) {
              * side's selection and enter the same native screen as A143A.
              * Coach policy keeps the selected call and live player control. */
             body=W((u8 *)body,0x38);
-            if(mode_human((u8 *)body)) {
+            /* b780 n2: never at a punt or field goal (play kind E602BC 6 or
+             * 3). The kicking team's call and roles are already set up: the
+             * play-call camera (state 6) cancels their kick meter (BAFA0 ->
+             * BACF0 clears B72694) and the loop below retires their arrival
+             * bits, but only this side re-selects. On the released disc the
+             * CPU punter then never snapped. MyPlayer plays the CPU's call
+             * with his own controller instead. */
+            if(G(0xE602BC)!=6 && G(0xE602BC)!=3 && mode_human((u8 *)body)) {
                 S(2740)=body;
                 /* The completed CPU call leaves every offensive actor's
                  * "arrived at line" bit set. Native reselection only clears
@@ -711,8 +721,8 @@ void FC mode_draw(u32 manager) {
     if(d==m3_settings_menu) text(m3_settings_note,0,320,404,0);
     if(d==m3_draft_menu) {
         u32 args[2]={G(0xE3C0A8)+1,G(0xE3C0A4)+1};
-        ((void (FC *)(u8 *,u32,const u16 *,u32 *))0x49f00)(m3+3200,190,m3_pick_format,args);
-        text((const u16 *)(m3+3200),0,320,380,0);
+        ((void (FC *)(u8 *,u32,const u16 *,u32 *))0x49f00)(m3+3248,176,m3_pick_format,args);
+        text((const u16 *)(m3+3248),0,320,380,0);
         text(m3_draft_note,0,320,432,0);
     }
     if(d==m3_upgrade_menu) m3_draw_upgrade(manager);
@@ -722,8 +732,8 @@ void FC mode_draw(u32 manager) {
         if(slot<374) {
             args[0]=slot/17+1; args[1]=p[3]; args[2]=p[4];
             args[3]=2000+(u32)p[5]; args[4]=p[6]; args[5]=p[7];
-            ((void (FC *)(u8 *,u32,const u16 *,u32 *))0x49f00)(m3+3200,190,m3_calendar_format,args);
-            text((const u16 *)(m3+3200),0,320,404,0);
+            ((void (FC *)(u8 *,u32,const u16 *,u32 *))0x49f00)(m3+3248,176,m3_calendar_format,args);
+            text((const u16 *)(m3+3248),0,320,404,0);
         }
     }
 }
@@ -1249,8 +1259,8 @@ void FC m3_draw_upgrade(u32 manager) {
     v=p[m3_fields[i]];
     args[0]=(u32)m3_rating_names[i]; args[1]=v; args[2]=m3_caps[state[149]][i];
     args[3]=v<args[2]?m3_cost(v):0; args[4]=S(64);
-    ((void (FC *)(u8 *,u32,const u16 *,u32 *))0x49f00)(m3+3200,190,m3_upgrade_format,args);
-    text((const u16 *)(m3+3200),0,320,380,0);
+    ((void (FC *)(u8 *,u32,const u16 *,u32 *))0x49f00)(m3+3248,176,m3_upgrade_format,args);
+    text((const u16 *)(m3+3248),0,320,380,0);
 }
 
 /* One invocation at 74790's presentation tail (74879); no inner-tick hook.

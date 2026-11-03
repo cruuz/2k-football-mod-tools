@@ -70,10 +70,13 @@ class SourceTests(unittest.TestCase):
     def test_the_text_scratch_buffer_is_clear_of_both_pools_and_the_league_menu(self):
         source = (ROOT / 'tools/mycareer_mode/runtime.c').read_text(encoding='utf-8')
         self.assertNotIn('m3+2700', source)
-        self.assertEqual(source.count('m3+3200'), 6)
-        # 190 characters (380 bytes) from +3200 end before the +3600 league menu
-        self.assertEqual(source.count('m3+3200,190'), 3)
-        self.assertLessEqual(3200 + 2 * 190, 3600)
+        # b780-int: b8's and n2's pool strings together reach +3248, so the buffer starts there and holds 176 characters
+        # (352 bytes), ending exactly at the +3600 league menu
+        self.assertNotIn('m3+3200', source)
+        self.assertEqual(source.count('m3+3248'), 6)
+        self.assertEqual(source.count('m3+3248,176'), 3)
+        self.assertEqual(mode.POOL2_END, 3248)
+        self.assertLessEqual(3248 + 2 * 176, 3600)
 
 
 @unittest.skipUnless(HAVE_UC and XBE.is_file(), 'pinned USA XBE, ROST, signed f0 and Unicorn required')

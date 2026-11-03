@@ -246,8 +246,11 @@ class HostBudgetTests(unittest.TestCase):
             # starters at his position who are rated 9 + 3 points per round gone above him (club_needs, m3_starters;
             # test_nfl2k5_my_career_draft_need); the 25 Upgrades attribute names moved to the M3 ASCII pool and the text
             # scratch buffer from m3+2700 to m3+3200.
+            # b780 n2: at a punt or field goal the Supersim hand-back keeps the CPU's call instead of reopening the
+            # play-call screen (on the released disc the CPU punter then never snapped), and
+            # mode_ff_hold_snap never holds a CPU snap into the last 3 s of the play clock (test_nfl2k5_my_career_punt_settle).
             'tools/mycareer_mode/runtime.c':
-                'b0467fe9191825c642c8a24d6c277af0236635ec5d87de9c9fa6bf4145f6538c',  # b780-int: b8's draft need + j23's footer hooks, merged
+                '4310a36e9d85141611cd22351a22953ab0aefa6adf0dd23379e20ebc49168ea5',  # b780-int: b8 + j23 + n2, merged (scratch buffer at m3+3248)
             'tools/mycareer_mode/runtime.S':
                 # b780 n1: mode_camera_dir (the defensive camera read) and five byte-identical size rewrites.
                 'd7ae0a793c1b9cb52a8de0dcd2964f37b3b2546a8d34522c6cceadba38ab0f56',
@@ -260,7 +263,7 @@ class HostBudgetTests(unittest.TestCase):
                 # mo2: guard view accepts the moment context hook over the pinned 0xCB240 span.
                 # b778 bd3: recognition views for the star-career class-loop hooks and the Player Progress
                 # screen chained over the inline footer hooks (runtime code unchanged).
-                '57f2d48c2fa633210c614ed24ebf7d3038eafca09c7f502170c6e39d83f61842',  # b780-int: b8 + j23 + n1 (defensive camera read and its five byte-identical rewrites)
+                '4907bc36ea4d0dccec9f5d7b1dfdc3ca52813a29cba8c1019953c120b7aa5abc',  # b780-int: b8 + j23 + n1 (defensive camera read and its five byte-identical rewrites)
             'mod_editor/core/nfl2k5_my_career_code.py':
                 '0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b',
             'mod_editor/core/nfl2k5_my_career_progression.py':

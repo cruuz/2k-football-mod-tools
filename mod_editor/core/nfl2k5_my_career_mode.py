@@ -26,8 +26,13 @@ POOLED = frozenset(("m3_progress_note", "m3_draft_note", "m3_settings_note", "m3
 # scratch buffer moved from +2700 to +3200 and the 25 Upgrades attribute names joined this pool (one RX byte per
 # character instead of two), which paid for the draft need gate (club_needs, m3_starters in runtime.c).
 POOLED2 = frozenset(("m3_prep_note", "m3_prospect_error", "m3_sign_cut_text", "m3_unavailable_text",
-                     "m3_confirm_text", "m3_drafted_format"))
-POOL2_END = 3200
+                     "m3_confirm_text", "m3_drafted_format",
+                     # b780 n2: the Supersim ticker's wait line is drawn only in a game, long after init_menus.
+                     "m3_ff_wait_text"))
+# b780-int: b8 (the 25 Upgrades names) and n2 (the ticker's wait line) together need 1,088 bytes of this pool (to
+# +3248): the scratch buffer moved from +3200 to +3248 and its formatted line is capped at 176 characters (it ends at
+# +3600, where LEAGUE_MENU starts); every format it holds is one on-screen line, far shorter.
+POOL2_END = 3248
 COMMON = frozenset(("attach", "copy", "reset", "assign", "automatic", "team_reset", "manual", "transfer",
                     "slot_generation", "sim", "navigation", "cpu_management", "camera", "camera_focus"))
 SAVE_HOOKS = (
@@ -358,7 +363,7 @@ def code_for(code_va, data_va, *, letter_grades=False, grade_bands=None, home=No
     at = reserve("text_template", len(text_pool), align=2)
     out[at:at + len(text_pool)] = text_pool
     labels["text_bytes"] = len(text_pool)
-    legacy.require(2160 + 2 * len(text_pool2) <= POOL2_END, "MyCareer M3 text RW exceeds 2160..3199")
+    legacy.require(2160 + 2 * len(text_pool2) <= POOL2_END, "MyCareer M3 text RW exceeds 2160..3247")
     at = reserve("text2_template", len(text_pool2), align=2)
     out[at:at + len(text_pool2)] = text_pool2
     labels["text2_bytes"] = len(text_pool2)
