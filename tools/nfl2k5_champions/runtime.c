@@ -406,6 +406,22 @@ static u32 entry_runner_up(const u8 *e) { return (((u32)e[1] + ((u32)e[2] << 8) 
 static u32 entry_champion_points(const u8 *e) { return (((u32)e[1] + ((u32)e[2] << 8) + ((u32)e[3] << 16)) >> 12) & 63; }
 static u32 entry_runner_points(const u8 *e) { return (((u32)e[1] + ((u32)e[2] << 8) + ((u32)e[3] << 16)) >> 18) & 63; }
 
+/* b780 j4-history: a fourth card page, the franchise History screen owner's game log. That owner repoints the ESPN.com row
+   table (0x525674) at its read-only block and keeps {magic "HSX1", flip, rows, bio} in the 16 bytes before its rows;
+   without it (or with anything else there) the card keeps its three pages. The game log is page 2 with LOG set in
+   state[1] (so the honors owner's page tests do not change); while the owner is there its flip turns every page and
+   hides or restores the card's table exactly as champions_table does, and its bio entry draws (returning 1) only in a
+   frame whose rows it drew. */
+#define ESPN_ROWS 0x00525674u
+#define LOG 0x80000000u
+typedef struct { u32 magic, flip, rows, bio; } LogPage;
+
+static __attribute__((noinline)) const LogPage *log_page(void) {
+    u32 rows = G(ESPN_ROWS);   /* the game reads the rows there, so their page is mapped (the retail rows: no magic) */
+    const LogPage *x = (const LogPage *)(rows - 16);
+    return (rows & 0xFF0) && x->magic == 0x31585348u ? x : 0;
+}
+
 /* The stats table of page 1 is the card screen's only element (its header, row bars and rows are all that element's
    draw): the screen's element count (screen + 0x10C = the context, count at +0x658) is zero while this page shows, so the
    draw loop (0x27CA90) skips it, and the saved count (state[3]) is put back on every other page and when the card
@@ -428,6 +444,9 @@ void FC champions_table(volatile u32 *state, u32 hide) {
 /* Page turns for the card (called from the honors owner's pad hook): Black and R forward, White and L back through
    card, honors, champions; Up and Down scroll the list on the champions page. Returns 1 when the cursor sound is due. */
 u32 FC champions_flip(u32 buttons, volatile u32 *state) {
+    const LogPage *x = log_page();
+    if (x)
+        return ((u32 (FC *)(u32, volatile u32 *))x->flip)(buttons, state);
     u32 page = state[0];
     if (buttons & 0x3000000) {
         if (page != 2)
@@ -466,6 +485,11 @@ void FC champions_enter(volatile u32 *state) {
 
 /* Table area: "YEAR ABBR pts-pts ABBR  NAME, POS" one season per row, then a position line under the table. */
 void FC champions_ratings(volatile u32 *state) {
+    const LogPage *x = state[1] & LOG ? log_page() : 0;
+    if (x) {                                          /* the owner hides the card's table itself */
+        ((void (FC *)(volatile u32 *))x->rows)(state);
+        return;
+    }
     const u8 *g = history_block();
     u32 ctx[32], newest = newest_season(g), count = 0, seasons[RING];
     u16 text[64];
@@ -514,18 +538,27 @@ void FC champions_ratings(volatile u32 *state) {
 }
 
 /* Bio lines: the newest Super Bowl in words, its MVP and the season MVP. */
+/* one bio line in the card's bio font and first column (line n of three) */
+static __attribute__((noinline)) void bio_line(const u16 *text, u32 n) {
+    u32 ctx[32];
+    text_start(ctx, 8, 1);
+    TEXT_POS(ctx, 198.0f, line_y[n], 20.0f);
+    TEXT_DRAW(ctx, text);
+}
+
 void champions_bio(void) {
+    const LogPage *x = log_page();
+    if (x && ((u32 (*)(void))x->bio)())
+        return;
     const u8 *g = history_block();
-    u32 ctx[32], newest = newest_season(g);
+    u32 newest = newest_season(g);
     u16 text[96], *out;
     const u8 *e = newest ? entry_at(g, newest) : 0;
     u32 lines = 0;
     if (!e) {
         out = put_ascii(text, "CHAMPIONS: NONE YET");
         *out = 0;
-        text_start(ctx, 8, 1);
-        TEXT_POS(ctx, 198.0f, line_y[0], 20.0f);
-        TEXT_DRAW(ctx, text);
+        bio_line(text, 0);
         return;
     }
     out = put_ascii(text, "SUPER BOWL ");
@@ -539,16 +572,12 @@ void champions_bio(void) {
     *out++ = ' ';
     out = put_abbr(out, entry_runner_up(e));
     *out = 0;
-    text_start(ctx, 8, 1);
-    TEXT_POS(ctx, 198.0f, line_y[lines++], 20.0f);
-    TEXT_DRAW(ctx, text);
+    bio_line(text, lines++);
     if (get_bits(e + 4, 0, 5) | get_bits(e + 4, 5, 5)) {
         out = put_ascii(text, "SB MVP: ");
         out = put_person(out, e + 4);
         *out = 0;
-        text_start(ctx, 8, 1);
-        TEXT_POS(ctx, 198.0f, line_y[lines++], 20.0f);
-        TEXT_DRAW(ctx, text);
+        bio_line(text, lines++);
     }
     const u8 *m = g + MVP_AT;
     if (m[0] == newest && (get_bits(m + 1, 0, 5) | get_bits(m + 1, 5, 5))) {
@@ -560,9 +589,7 @@ void champions_bio(void) {
             *out++ = ')';
         }
         *out = 0;
-        text_start(ctx, 8, 1);
-        TEXT_POS(ctx, 198.0f, line_y[lines++], 20.0f);
-        TEXT_DRAW(ctx, text);
+        bio_line(text, lines++);
     }
 }
 

@@ -6332,6 +6332,71 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_history_screen apply source.xbe new-history.xbe",
+        "module": "mod_editor/core/nfl2k5_history_screen.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "mod_editor/core/nfl2k5_history_screen.py",
+        "mod_editor/core/nfl2k5_history_screen_code.py",
+        "tools/nfl2k5_history_screen/runtime.c",
+        "tests/mod_editor/test_b780_j4_history_screen.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. b780-j4 (Discord #2k5-ideas: a Team History tab, past seasons, records, award history, Hall of Fame classes, box scores of played games, game logs). Off in Basic, on in Advanced and Experimental."
+      },
+      "id": "nfl2k5.franchise.history_screen",
+      "input_constraints": [
+        "Pinned USA XBE or verified composed input; a late allocator owner placed after every b779 late owner (or appended to an installed sealed image by nfl2k5_xbe_space.extend_scaleout). Foreign or mixed bytes refuse.",
+        "Owned 16,384 RX bytes (the screens), 64 RW bytes (page, club, scroll, the selected box score) and a 24 KiB read-only block (two menu descriptors cloned from Team Standings, the ESPN.com rows plus TEAM HISTORY, the seeded real history). Edits: the ESPN.com descriptor's row-table pointer (0x525674, 4 bytes) and the Schedule input (0x24D2E5, 6 bytes).",
+        "Franchise history is read from the franchise extension footer (b780 j23-footer, 2K5XTND1 envelope 1) through the footer host's body word when that owner is installed; without it the franchise parts read empty.",
+        "The Player Card's game log page needs the honors option (the champions owner finds this owner through its ESPN.com rows).",
+        "Rebuild from a verified base to remove it."
+      ],
+      "portme": [
+        "Franchise: Coach's Desk > ESPN.com > TEAM HISTORY (last row): SEASONS (the franchise record, then every season newest first), RECORDS, LEADERS, RECORD BOOK, AWARDS (L/R change the award), HALL OF FAME (L/R filter by club). Black/White change the page, L/R the team, Up/Down scroll, B goes back. Schedule: highlight a played game, X (the legend says for Box Score): the score by quarter, and for your team's games the team stats and player lines. Player Card (with the honors option): Black/R past the champions page shows the player's game log this season."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and instructions; never distribute generated XBEs or retail resources.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Every page's text, the input, the box score, the Schedule hook, the game log and the four-page Player Card cycle (with the honors owner installed) run under Unicorn on the retail executable (python3 -m tests.mod_editor.test_b780_j4_history_screen); emulator stills are in the job report.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false | true; default false in Basic, true in Advanced and Experimental",
+            "name": "history_screen",
+            "required": true
+          }
+        ],
+        "notes": "Build-time only. Off skips the writer and its allocation; there is no in-game toggle."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "XBE .rdata pointer 0x525674 and .text site 0x24D2E5; owned RX, RW and read-only bytes in the allocator's late region.",
+        "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+      },
+      "summary": "Adds a TEAM HISTORY row to the Franchise ESPN.com menu: every club's seasons (real 2002 to 2025 history, then the seasons of your franchise), club records, all-time leaders, the NFL record book, the season awards and the Hall of Fame, with franchise-made entries marked NEW. On the Schedule, X opens the box score of a played game, and the Player Card gets a game log page.",
+      "surface": "gameplay_tuning_sliders",
+      "title": "Franchise History screen, box scores from the Schedule and Player Card game log (experimental, unwitnessed)",
+      "validation_command": "python3 -m tests.mod_editor.test_b780_j4_history_screen"
+    },
+    {
+      "backend": {
         "command": "python3 -m mod_editor.core.nfl2k5_patch_cli practice_squad_screen <source.xbe> <new-copy.xbe>",
         "module": "mod_editor/core/nfl2k5_patch_cli.py",
         "operation": "write"
@@ -6912,67 +6977,6 @@
       "surface": "gameplay_tuning_sliders",
       "title": "Automatic 2026 CPU coach profiles (experimental)",
       "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_coach_ai"
-    },
-    {
-      "backend": {
-        "command": "python3 -m mod_editor.core.nfl2k5_coach_staff plan <source.iso> <roster-edits.json>",
-        "module": "mod_editor/core/nfl2k5_coach_staff.py",
-        "operation": "inspect"
-      },
-      "classification": "offline-writer-proved",
-      "evidence": [
-        "docs/mod_editor/nfl2k5_coach_ai.md",
-        "tests/mod_editor/test_nfl2k5_coach_staff.py"
-      ],
-      "game": "nfl2k5_xbox",
-      "gui": {
-        "default_enabled": false,
-        "expose": true,
-        "mode": "edit",
-        "reason": "EXPERIMENTAL. Edited on Rosters > Coaches (roster-edits staff section); Build applies it. Nothing changes unless a staff is set."
-      },
-      "id": "nfl2k5.rosters.coaching_staff",
-      "input_constraints": [
-        "A roster-edits staff section (nfl2k5_coach_staff/v1): head coaches by club (a coach on the roster by full name, or a created coach), optional 'bring his playbook', and one of the 32 2026 defensive coordinators per club.",
-        "Moves are record content moves (names, body, picture, ratings, tendencies, career); team pointers never change. Seasons with the team and this season's record start at zero; the announcer uses the generic head-coach line.",
-        "Every club keeps one head coach and one coordinator: a vacancy, an unknown name or a person at two clubs refuses before any write, in plain words.",
-        "Created coaches need the pre-growth roster (build from the retail disc); a swap or rotation also works on a grown roster.",
-        "Bring his playbook copies the final book of the coach's source club over the host's (fixed span); labels stay the host's."
-      ],
-      "portme": [
-        "Emulator gate: Play Now against a club with a moved coach; witness the play call screen, a quarter without a crash, and the sideline coach."
-      ],
-      "public_distribution": {
-        "game_data": "never-bundle-retail-data",
-        "mod_payload": "user-authored-inputs-and-recipes",
-        "rule": "Ship source and recipes; never distribute the generated game executable or disc.",
-        "tooling": "source-and-schemas-only"
-      },
-      "runtime": {
-        "evidence": [],
-        "scope": "Offline writer, read-back and Unicorn replay of the native profile binding; the emulator gate is reported in the b780 c2-staff report.",
-        "status": "not-tested"
-      },
-      "selectors": {
-        "fields": [
-          {
-            "allowed": "roster-edits staff section, schema nfl2k5_coach_staff/v1",
-            "name": "staff",
-            "required": false
-          }
-        ],
-        "notes": "Read by BuildPlan.roster_edits; nfl2k5_coach_ai binds the profiles per club."
-      },
-      "source_container": {
-        "format": "Xbox disc ROST, PLAY resources and the coach AI kernel table",
-        "hash_pins": [],
-        "resource": "main outer 5: the 32 club coach records (0xA8) and their text region; 32 PLAY resources (bring his playbook); 1,408 table bytes in the coach AI kernel",
-        "retail_file": "User-owned NFL 2K5 USA disc"
-      },
-      "summary": "Move, swap or create head coaches before a season and give every club a real 2026 defensive coordinator; each club's CPU uses its own coach's 2026 profile.",
-      "surface": "players_rosters",
-      "title": "Coaching staff (move, swap, create head coaches; coordinators)",
-      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_coach_staff"
     },
     {
       "backend": {
@@ -7675,6 +7679,74 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.core.mod_build (Build option franchise_history)",
+        "module": "mod_editor/core/nfl2k5_franchise_footer.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "mod_editor/core/nfl2k5_franchise_extension.py",
+        "mod_editor/core/nfl2k5_franchise_footer.py",
+        "mod_editor/core/nfl2k5_history.py",
+        "tools/nfl2k5_franchise_footer/runtime.c",
+        "tools/nfl2k5_history/runtime.c",
+        "tests/mod_editor/test_nfl2k5_franchise_footer.py",
+        "tests/mod_editor/test_nfl2k5_history.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. b780 j23 (players' #2k5-ideas asks for a team history, records, the Hall of Fame and past box scores): one versioned franchise save footer and the native capture at the game commit and the season close. Off in every preset until its emulator gates pass."
+      },
+      "id": "nfl2k5.gameplay.franchise_history",
+      "input_constraints": [
+        "Pinned USA XBE or verified composed input; two late allocator owners placed after the Player Progress screen: nfl2k5_franchise_footer (4,096 RX; 64 RW with the 128 MB roster heap, else 98,352 RW holding the footer body) and nfl2k5_history (10,240 RX, code only). Foreign or mixed bytes refuse.",
+        "Footer host edits: 0x16AA26 (franchise total size), 0x16E50D (save, after the front office and the MyCareer block), 0x16E815 (load end), 0x16ABB5 (the franchise save-list admission, replacing MyCareer's), 0x13EF21 (a new franchise). The size, save and load calls chain to the bytes they displaced (retail or the generic MyCareer owner). With the full Player Progress screen on, that owner is installed hosted (its footer becomes the last 34,320 bytes of the save, as in v0.8).",
+        "History edits: 0x1356C8 and 0x1356FF (the played and simulated commit tails, jmp 0x73770) and 0x248601 (stage 9, call 0x13ED70). It reads the game state through getters only and writes only inside the footer body.",
+        "Save format: native save | MyCareer 128 (optional) | extension body 98,288 (2K5XTND1, optional) | Player Progress footer 34,320 (optional, last). Old saves load and start an empty history; v0.8 saves keep their Player Progress.",
+        "Rebuild from a verified base to remove it."
+      ],
+      "portme": [
+        "Franchise: play or simulate games; your club's games keep a box score; at Advance to offseason the season, the champion, the awards, records, all-time leaders and Hall of Fame candidates are recorded in the franchise save. Save, cold boot, load: the history is still there (the History screen that shows it is job j4-history)."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and instructions; never distribute generated XBEs or retail resources.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Every hook of both owners runs under Unicorn on the retail executable (the footer host's size, save, load, admission and new-franchise paths with the published size family; the capture on a synthetic league against a Python model of the format). No game boot yet.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false | true; default false in every preset",
+            "name": "franchise_history",
+            "required": true
+          }
+        ],
+        "notes": "Build-time only. Off skips both writers and their allocations; there is no in-game toggle."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "XBE .text sites listed above; owned code and memory in the allocator's late region.",
+        "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+      },
+      "summary": "Franchise history and records: every season's standings and playoff results, the awards, club and league records, all-time leaders, Hall of Fame classes and the box scores of your team's games, kept in one versioned block footer in the franchise save (about 98 KB; on the 128 MB build it uses the extra memory).",
+      "surface": "schedules_franchise",
+      "title": "Franchise history and records footer and capture (experimental, unwitnessed)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_franchise_footer"
+    },
+    {
+      "backend": {
         "command": "python3 -m mod_editor.core.nfl2k5_honors apply source.xbe new-honors.xbe",
         "module": "mod_editor/core/nfl2k5_honors.py",
         "operation": "write"
@@ -7745,74 +7817,6 @@
       "surface": "gameplay_tuning_sliders",
       "title": "Player Card honors page, award history, Super Bowl champions notice and history, modern award voting (experimental, unwitnessed)",
       "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_honors"
-    },
-    {
-      "backend": {
-        "command": "python3 -m mod_editor.core.mod_build (Build option franchise_history)",
-        "module": "mod_editor/core/nfl2k5_franchise_footer.py",
-        "operation": "write"
-      },
-      "classification": "offline-writer-proved",
-      "evidence": [
-        "mod_editor/core/nfl2k5_franchise_extension.py",
-        "mod_editor/core/nfl2k5_franchise_footer.py",
-        "mod_editor/core/nfl2k5_history.py",
-        "tools/nfl2k5_franchise_footer/runtime.c",
-        "tools/nfl2k5_history/runtime.c",
-        "tests/mod_editor/test_nfl2k5_franchise_footer.py",
-        "tests/mod_editor/test_nfl2k5_history.py"
-      ],
-      "game": "nfl2k5_xbox",
-      "gui": {
-        "default_enabled": false,
-        "expose": true,
-        "mode": "edit",
-        "reason": "EXPERIMENTAL / UNWITNESSED. b780 j23 (players' #2k5-ideas asks for a team history, records, the Hall of Fame and past box scores): one versioned franchise save footer and the native capture at the game commit and the season close. Off in every preset until its emulator gates pass."
-      },
-      "id": "nfl2k5.gameplay.franchise_history",
-      "input_constraints": [
-        "Pinned USA XBE or verified composed input; two late allocator owners placed after the Player Progress screen: nfl2k5_franchise_footer (4,096 RX; 64 RW with the 128 MB roster heap, else 98,352 RW holding the footer body) and nfl2k5_history (10,240 RX, code only). Foreign or mixed bytes refuse.",
-        "Footer host edits: 0x16AA26 (franchise total size), 0x16E50D (save, after the front office and the MyCareer block), 0x16E815 (load end), 0x16ABB5 (the franchise save-list admission, replacing MyCareer's), 0x13EF21 (a new franchise). The size, save and load calls chain to the bytes they displaced (retail or the generic MyCareer owner). With the full Player Progress screen on, that owner is installed hosted (its footer becomes the last 34,320 bytes of the save, as in v0.8).",
-        "History edits: 0x1356C8 and 0x1356FF (the played and simulated commit tails, jmp 0x73770) and 0x248601 (stage 9, call 0x13ED70). It reads the game state through getters only and writes only inside the footer body.",
-        "Save format: native save | MyCareer 128 (optional) | extension body 98,288 (2K5XTND1, optional) | Player Progress footer 34,320 (optional, last). Old saves load and start an empty history; v0.8 saves keep their Player Progress.",
-        "Rebuild from a verified base to remove it."
-      ],
-      "portme": [
-        "Franchise: play or simulate games; your club's games keep a box score; at Advance to offseason the season, the champion, the awards, records, all-time leaders and Hall of Fame candidates are recorded in the franchise save. Save, cold boot, load: the history is still there (the History screen that shows it is job j4-history)."
-      ],
-      "public_distribution": {
-        "game_data": "never-bundle-retail-data",
-        "mod_payload": "user-authored-inputs-and-recipes",
-        "rule": "Ship source and instructions; never distribute generated XBEs or retail resources.",
-        "tooling": "source-and-schemas-only"
-      },
-      "runtime": {
-        "evidence": [],
-        "scope": "Every hook of both owners runs under Unicorn on the retail executable (the footer host's size, save, load, admission and new-franchise paths with the published size family; the capture on a synthetic league against a Python model of the format). No game boot yet.",
-        "status": "not-tested"
-      },
-      "selectors": {
-        "fields": [
-          {
-            "allowed": "false | true; default false in every preset",
-            "name": "franchise_history",
-            "required": true
-          }
-        ],
-        "notes": "Build-time only. Off skips both writers and their allocations; there is no in-game toggle."
-      },
-      "source_container": {
-        "format": "XBE in XDVDFS",
-        "hash_pins": [
-          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
-        ],
-        "resource": "XBE .text sites listed above; owned code and memory in the allocator's late region.",
-        "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
-      },
-      "summary": "Franchise history and records: every season's standings and playoff results, the awards, club and league records, all-time leaders, Hall of Fame classes and the box scores of your team's games, kept in one versioned block footer in the franchise save (about 98 KB; on the 128 MB build it uses the extra memory).",
-      "surface": "schedules_franchise",
-      "title": "Franchise history and records footer and capture (experimental, unwitnessed)",
-      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_franchise_footer"
     },
     {
       "backend": {

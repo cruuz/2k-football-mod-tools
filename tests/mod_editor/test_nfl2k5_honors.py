@@ -132,7 +132,8 @@ class TemplateTests(unittest.TestCase):
             "nfl2k5_cpu_money_downs_late", "nfl2k5_cpu_money_downs_late_state", "nfl2k5_draft_clock",
             "nfl2k5_weekly_progression", "nfl2k5_player_progress_screen", "nfl2k5_contract_college_guard",
             "nfl2k5_sim_cb_tackles", "nfl2k5_clock_led", "nfl2k5_cpu_third_down", "nfl2k5_return_coverage",
-            "nfl2k5_pass_protection", "nfl2k5_pass_rush_stats", "nfl2k5_module_loader", "nfl2k5_preseason_warning", "nfl2k5_sim_rb_injuries", "nfl2k5_sim_realism", "nfl2k5_sim_realism_state"))  # b778 ai8/kr1/pr1/xs1, b779 st1 + rc1 + sim2 tail
+            "nfl2k5_pass_protection", "nfl2k5_pass_rush_stats", "nfl2k5_module_loader", "nfl2k5_preseason_warning", "nfl2k5_sim_rb_injuries", "nfl2k5_sim_realism", "nfl2k5_sim_realism_state",
+            "nfl2k5_history_screen"))  # b778 ai8/kr1/pr1/xs1, b779 st1 + rc1 + sim2 tail, b780 j4-history
         self.assertLess(late.index("nfl2k5_letter_grades"), late.index("nfl2k5_honors"))
         # without a promoted MyCareer there is no gap: the code is appended after the other late owners, whatever
         # order the requests arrive in
