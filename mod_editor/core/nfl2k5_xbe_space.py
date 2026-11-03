@@ -773,7 +773,8 @@ LATE_OWNERS = (LATE_OWNER, "nfl2k5_letter_grades", "nfl2k5_letter_grades_progres
                "nfl2k5_cpu_passer_iq",  # b780 a-passer: the CPU passer's checkdown factor and its per-play state
                "nfl2k5_cpu_clock2",  # b780 b-clock: modern CPU clock management, after every b779 owner
                "nfl2k5_runner_vision",  # b780 cv2-runner: CPU carriers read where defenders go (after ball_carrier_ai)
-               "nfl2k5_dive_window")  # b780-cv3: defenders leap only for balls they can reach (after every b779 owner)
+               "nfl2k5_dive_window",  # b780-cv3: defenders leap only for balls they can reach (after every b779 owner)
+               "nfl2k5_catch_snap_limit")  # b780-cv4: defender catch snap limit, last (it never moves another owner)
 # b77-i1 (coordinator-approved fix of the all-owner union overflow): late owners whose code is placed top-down in the
 # reserved legacy RX page tails (0x14D9000 first, then 0x14BA000) instead of the full scale-out run. Static, so the
 # placement does not depend on which other owners are present.
