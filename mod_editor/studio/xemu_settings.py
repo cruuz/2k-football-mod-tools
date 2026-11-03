@@ -123,6 +123,11 @@ def grant_build_folder(command, folder: Path, *, runner=None) -> str:
 # not the combination the 128 MB startup patch was built and tested on, so Studio only warns (never edits).
 KNOWN_4627_FLASHROM = ((1_048_576, "34f1c8ded59116436065783f8ad2ef0939df3cbfc76277ec9e5c41bf9ccb93cd"),)
 
+# b780-b11: that 1 MiB file is one 256 KiB BIOS written four times, and xemu fills a 1 MiB flash by repeating a 256 KiB or
+# 512 KiB image, so the same BIOS saved at 256 KiB, 512 KiB or 1 MiB is the same BIOS. This pins the 256 KiB unit.
+FLASH_UNIT = 262_144
+KNOWN_4627_UNITS = ((FLASH_UNIT, "e8fe407247db42f715df7640f25a91634710e8c592bb8da6eea87bb064c17f12"),)
+
 
 def _sha256(path: Path) -> str:
     digest = hashlib.sha256()
@@ -130,6 +135,27 @@ def _sha256(path: Path) -> str:
         for block in iter(lambda: stream.read(1 << 20), b""):
             digest.update(block)
     return digest.hexdigest()
+
+
+FLASH_SIZES = (FLASH_UNIT, 2 * FLASH_UNIT, 4 * FLASH_UNIT)      # the sizes xemu fills its 1 MiB flash from
+
+
+def flash_unit_fingerprint(path: Path):
+    """(unit size, sha256) of a Flash ROM image with a mirrored 256 KiB unit folded away, or None if the file is not 256 KiB,
+    512 KiB or 1 MiB (or cannot be read). A 512 KiB or 1 MiB file that is its first 256 KiB repeated gives the same answer as
+    that 256 KiB file; an image whose parts differ is hashed whole."""
+
+    try:
+        size = Path(path).stat().st_size
+        if size not in FLASH_SIZES:
+            return None
+        raw = Path(path).read_bytes()
+    except OSError:
+        return None
+    unit = raw[:FLASH_UNIT]
+    if len(raw) > FLASH_UNIT and raw == unit * (len(raw) // FLASH_UNIT):
+        raw = unit
+    return len(raw), hashlib.sha256(raw).hexdigest()
 
 
 def play_problems(config: Path, *, hash_file=None) -> tuple[str, ...]:
@@ -157,7 +183,8 @@ def play_problems(config: Path, *, hash_file=None) -> tuple[str, ...]:
     memory = system.get("mem_limit")
     if str(memory).strip().strip("'\"") != "128":
         problems.append("System Memory is " + (repr(memory) if memory is not None else "not set")
-                        + "; set it to 128 MiB (xemu.toml [sys] mem_limit = '128').")
+                        + "; set it to 128 MiB (xemu.toml [sys] mem_limit = '128'), then close xemu completely and "
+                        "open it again, because xemu only reads this setting when it starts.")
     flash = files.get("flashrom_path")
     if not isinstance(flash, str) or not flash.strip():
         problems.append("Flash ROM (BIOS) is not set; choose the Complex 4627 image in xemu's System settings.")
@@ -170,13 +197,26 @@ def play_problems(config: Path, *, hash_file=None) -> tuple[str, ...]:
                             "image in xemu's System settings.")
         else:
             known = [digest for known_size, digest in KNOWN_4627_FLASHROM if size == known_size]
-            if not known or hasher(bios) not in known:
-                # b779 rv1: the game only needs a 4627 kernel, and that kernel is compressed inside the flash
-                # image, so the version cannot be read from the file cheaply or reliably. Only the one image
-                # the project tested is recognised; any other is "not confirmed", never "wrong".
-                problems.append("Flash ROM (BIOS) " + os.fspath(bios) + " could not be confirmed as a 4627 BIOS "
-                                "(only the tested Complex 4627 image is recognised here). 128 MB builds need a 4627 "
-                                "kernel; if this one is 4627, you can ignore this note.")
+            unit = None
+            if known and hasher(bios) in known:
+                pass
+            elif (unit := flash_unit_fingerprint(bios)) is not None and unit in KNOWN_4627_UNITS:
+                pass                    # the tested BIOS saved at another size (256 KiB, 512 KiB or 1 MiB)
+            else:
+                # b779 rv1 / b780-b11: the game only needs a 4627 kernel, and a BIOS file keeps that kernel packed: in the
+                # tested image everything between the boot table and the boot loader is uniformly random bytes (no
+                # cabinet-LZX stream starts anywhere in it, and the image's own boot code runs an RC4-style decrypt), so
+                # the number cannot be read from the file without the console's secret boot keys, which Studio must not
+                # carry. Only the one image the project tested is recognised by its bytes; any other is "not confirmed",
+                # never "wrong". The game itself checks the kernel when it starts and, if it is not 4627, stops with a
+                # screen that prints the number it found and which check failed (nfl2k5_k128, tools/k128/require_guard.S).
+                fingerprint = (unit[1] if unit is not None else "")[:12]
+                problems.append("Flash ROM (BIOS) " + os.fspath(bios) + " was not recognised as the Complex 4627 image this "
+                                "build was tested with" + (" (its SHA-256 starts " + fingerprint + ")" if fingerprint else "")
+                                + ", and Studio cannot read a BIOS file's kernel number, so it cannot say whether this "
+                                "one is fine. If the game starts, ignore this note. If it stops at startup with "
+                                "'THIS BUILD NEEDS THE 4627 XBOX BIOS', that screen prints the kernel number it found: "
+                                "choose the Complex 4627 image in xemu's Machine > Settings > System > Flash ROM (BIOS).")
     return tuple(problems)
 
 

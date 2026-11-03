@@ -1,4 +1,5 @@
 """Persistent disc paths and permissions, without starting an emulator."""
+import hashlib
 import json
 from pathlib import Path
 import sys
@@ -112,6 +113,10 @@ class PlayCheckTests(unittest.TestCase):
     def test_the_project_bios_pin_is_the_one_megabyte_complex_4627_hash(self):
         self.assertEqual(x.KNOWN_4627_FLASHROM,
                          ((1_048_576, "34f1c8ded59116436065783f8ad2ef0939df3cbfc76277ec9e5c41bf9ccb93cd"),))
+        # b780-b11: the same BIOS as one 256 KiB unit (the 1 MiB file is that unit four times)
+        self.assertEqual(x.KNOWN_4627_UNITS,
+                         ((262_144, "e8fe407247db42f715df7640f25a91634710e8c592bb8da6eea87bb064c17f12"),))
+        self.assertEqual(x.FLASH_UNIT, 262_144)
 
     def test_matching_settings_produce_no_warning_and_leave_the_file_alone(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -133,6 +138,7 @@ class PlayCheckTests(unittest.TestCase):
                                          hash_file=lambda _path: self.HASH)
             self.assertIn("System Memory", warning)
             self.assertIn("mem_limit = '128'", warning)
+            self.assertIn("close xemu completely and open it again", warning)
 
     def test_a_missing_memory_value_is_named(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -148,10 +154,13 @@ class PlayCheckTests(unittest.TestCase):
             with patch.object(x, "KNOWN_4627_FLASHROM", ((1_048_576, self.HASH),)):
                 warning = x.play_warning(self._config(root, bios=self._bios(root)),
                                          hash_file=lambda _path: "00" * 32)
-            self.assertIn("could not be confirmed as a 4627 BIOS", warning)
-            self.assertIn("you can ignore this note", warning)
-            self.assertNotIn("not the tested", warning)
+            self.assertIn("was not recognised as the Complex 4627 image this build was tested with", warning)
+            self.assertIn("ignore this note", warning)
+            self.assertIn("THIS BUILD NEEDS THE 4627 XBOX BIOS", warning)
+            self.assertIn("kernel number", warning)
             self.assertIn("Flash ROM (BIOS)", warning)
+            self.assertNotIn("is wrong", warning)
+            self.assertNotIn("—", warning)
 
     def test_a_missing_or_unset_bios_is_named(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -171,6 +180,72 @@ class PlayCheckTests(unittest.TestCase):
             broken = root / "broken.toml"
             broken.write_text("[broken", encoding="utf-8", newline="\n")
             self.assertIn("could not be read", x.play_warning(broken))
+
+    @staticmethod
+    def _unit_bytes() -> bytes:
+        """A deterministic stand-in BIOS unit of 256 KiB (never a real BIOS)."""
+        blocks, state = [], b"b780-b11"
+        while len(blocks) * 32 < x.FLASH_UNIT:
+            state = hashlib.sha256(state).digest()
+            blocks.append(state)
+        return b"".join(blocks)
+
+    def test_the_same_bios_saved_at_256k_512k_or_1m_is_recognised(self):
+        unit = self._unit_bytes()
+        digest = hashlib.sha256(unit).hexdigest()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp).resolve()
+            for copies in (1, 2, 4):
+                bios = root / f"bios{copies}.bin"
+                bios.write_bytes(unit * copies)
+                with self.subTest(size=len(unit) * copies):
+                    self.assertEqual(x.flash_unit_fingerprint(bios), (x.FLASH_UNIT, digest))
+                    with patch.object(x, "KNOWN_4627_UNITS", ((x.FLASH_UNIT, digest),)), \
+                            patch.object(x, "KNOWN_4627_FLASHROM", ()):
+                        self.assertEqual(x.play_warning(self._config(root, bios=bios)), "")
+
+    def test_a_different_bios_is_not_recognised_at_any_size_and_its_note_carries_a_fingerprint(self):
+        unit = self._unit_bytes()
+        other = bytes(b ^ 0x5A for b in unit)
+        digest = hashlib.sha256(unit).hexdigest()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp).resolve()
+            cases = {"other256": other, "other1m": other * 4, "half_and_half": unit + other,
+                     "first_quarter_only": unit + other + other + other}
+            for name, body in cases.items():
+                bios = root / (name + ".bin")
+                bios.write_bytes(body)
+                with self.subTest(name), patch.object(x, "KNOWN_4627_UNITS", ((x.FLASH_UNIT, digest),)), \
+                        patch.object(x, "KNOWN_4627_FLASHROM", ()):
+                    warning = x.play_warning(self._config(root, bios=bios))
+                    self.assertIn("was not recognised as the Complex 4627 image this build was tested with", warning)
+                    seen = x.flash_unit_fingerprint(bios)
+                    self.assertIn("SHA-256 starts " + seen[1][:12], warning)
+                    self.assertNotEqual(seen[1], digest)
+
+    def test_a_mirror_check_is_exact_and_odd_sizes_have_no_unit_fingerprint(self):
+        unit = self._unit_bytes()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp).resolve()
+            nearly = bytearray(unit * 2)
+            nearly[-1] ^= 1                                        # one byte off in the second copy: not a mirror
+            for name, body, want_size in (("nearly.bin", bytes(nearly), 2 * x.FLASH_UNIT),
+                                          ("odd.bin", unit[:-1], None), ("small.bin", unit[:1000], None), ("three.bin", unit * 3, None),
+                                          ("huge.bin", unit * 5, None), ("empty.bin", b"", None)):
+                bios = root / name
+                bios.write_bytes(body)
+                with self.subTest(name):
+                    got = x.flash_unit_fingerprint(bios)
+                    self.assertEqual(None if got is None else got[0], want_size)
+            self.assertIsNone(x.flash_unit_fingerprint(root / "missing.bin"))
+
+    def test_the_known_whole_file_hash_still_recognises_the_tested_image_at_one_megabyte(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp).resolve()
+            bios = self._bios(root)
+            with patch.object(x, "KNOWN_4627_FLASHROM", ((1_048_576, self.HASH),)), \
+                    patch.object(x, "KNOWN_4627_UNITS", ()):
+                self.assertEqual(x.play_warning(self._config(root, bios=bios), hash_file=lambda _p: self.HASH), "")
 
     def test_launch_emits_the_warning_before_starting_xemu(self):
         with tempfile.TemporaryDirectory() as tmp:

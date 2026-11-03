@@ -67,10 +67,12 @@ Go through this list in order. Most start-up problems are an xemu setup problem,
 
 ## Can I play SOFTDRINK 2K28 on Android, in hakuX?
 
-No, it is not supported. SOFTDRINK 2K28 is built and tested only for xemu on a Windows, Linux or macOS computer, with 128 MiB
-of memory and the COMPLEX 4627 BIOS. hakuX is a separate Android emulator, not xemu, and by its own requirements it runs without
-an Xbox BIOS, so the disc's 4627 BIOS check is not expected to pass there. A black screen in hakuX is what to expect. We do not
-test hakuX and cannot fix it. xemu itself has no Android version (see xemu's [FAQ](https://xemu.app/docs/faq/)).
+No, it is not supported. SOFTDRINK 2K28 is built and tested only for xemu on a Windows, Linux or macOS computer (and the
+Steam Deck), with 128 MiB of memory and the COMPLEX 4627 BIOS. hakuX is a separate Android emulator, not xemu, and by its own
+requirements it runs without an Xbox BIOS: it reimplements the Xbox kernel instead of running the real one. SOFTDRINK's start-up
+check reads the real 4627 kernel and the 128 MiB memory setting, so it is not expected to pass there, and a black screen without
+the message is what to expect. We do not test hakuX and cannot fix it. xemu itself has no Android version (see xemu's
+[FAQ](https://xemu.app/docs/faq/)).
 
 ## Can I keep the whole Crib, with its shops?
 
@@ -355,6 +357,66 @@ Existing match-coverage and deep-zone experiments expose specific supported chan
 not establish unrestricted per-play zone logic or arbitrary custom AI. Read the selected tool's
 scope. Community opinions about contact feel and conversion videos are reports about those
 players' content, not proof of a new studio feature.
+
+## The game stops on a black screen and says it needs 128 MB or the 4627 BIOS. I set both.
+
+SOFTDRINK checks two things when it starts. xemu's **System Memory** must be 128 MiB, and the
+**Flash ROM (BIOS)** must have the 4627 kernel (the **Complex 4627** image is the one it was
+tested with). If either is wrong it stops on a black screen with white letters and names the one
+to fix. It does this on purpose, because the game would otherwise fail later at the pregame
+intro.
+
+- **"THIS BUILD NEEDS 128 MB ... THEN CLOSE XEMU AND OPEN IT AGAIN":** xemu is running with 64 MiB
+  right now, whatever its settings window says. xemu reads the memory setting only when it
+  starts. Set **Machine, Settings, System, System Memory** to 128 MiB, close xemu completely,
+  open it again, check that it still says 128 MiB, then load the disc again. If it keeps going
+  back to 64, you are editing a different settings file from the one this xemu reads. The file
+  is `xemu.toml` and needs `mem_limit = '128'` under `[sys]`. Windows: next to `xemu.exe` if
+  there is an `xemu.toml` there, otherwise `%APPDATA%\xemu\xemu\xemu.toml`. Linux:
+  `~/.local/share/xemu/xemu/xemu.toml`. Flatpak, EmuDeck and Steam Deck:
+  `~/.var/app/app.xemu.xemu/data/xemu/xemu/xemu.toml`. macOS:
+  `~/Library/Application Support/xemu/xemu/xemu.toml`.
+- **"THIS BUILD NEEDS THE 4627 XBOX BIOS" and a line `KERNEL 5849 CODE 1`:** the memory is right
+  but the BIOS is not. The line prints the kernel number the game found and which check failed
+  first. `4627` is the kernel the patch was made for. CODE 1 means the kernel is not 4627:
+  choose the Complex 4627 image under **Machine, Settings, System, Flash ROM (BIOS)**. CODE 2,
+  3 or 4 with `KERNEL 4627` means the kernel says 4627 but is laid out differently from the
+  tested one (2: the memory tables are already in use, 3: a kernel routine the patch needs is
+  not where it expects, 4: the memory page count is unusual). If you see that, post a photo of
+  the screen and the MD5 hash that xemu shows under **Flash ROM (BIOS)** (Machine, Settings,
+  System), or the SHA-256 start that Studio's note showed, in the Discord bugs channel, so we can
+  tell which BIOS it is.
+
+## Does Studio check my xemu settings and BIOS?
+
+Only when you start xemu from Studio (**Play latest disc in xemu**). It reads `xemu.toml` and
+shows a note if System Memory is not 128 MiB or the Flash ROM is not set. The check only reads:
+it never changes your BIOS or your memory setting and never stops the launch (the one thing
+Studio writes to `xemu.toml` is the path of your new disc, so xemu remembers it). It recognises
+the tested Complex 4627 image by its contents, so the same BIOS saved as a 256 KB, 512 KB or
+1 MB file counts as the same. For any other BIOS file it shows a short note with a SHA-256 fingerprint instead of an error. A
+BIOS file keeps its kernel scrambled, so Studio cannot read the kernel number from the file.
+The game itself checks the kernel when it starts, which is what the screen above is. If your
+BIOS is not the tested one and the game starts at 128 MiB, nothing is wrong and you can ignore
+the note. If you run xemu yourself (Steam Deck, another PC), Studio does not see it, and the
+game's own screen is the check.
+
+## Steam Deck: how do I set it up, and why did Free Agents freeze?
+
+Run Studio in **Desktop Mode** (the Linux and Steam Deck steps are in [Start here](../START_HERE.md)).
+EmuDeck installs xemu as a Flatpak, so its settings are in
+`~/.var/app/app.xemu.xemu/data/xemu/xemu/xemu.toml`. Set System Memory to 128 MiB and the Complex
+4627 BIOS in Desktop Mode, close xemu normally, then start it again, from Desktop Mode or Game
+Mode, and check the memory still says 128 MiB before you load the disc.
+
+A freeze while scrolling Contracts or Free Agents has one known cause: players with no college
+on the screen's info panel. Franchises saved on SOFTDRINK 0.6.1 can still hold such players, and
+SOFTDRINK 0.7 and later make that panel show N/A for them instead of stopping. A new franchise
+from the current disc has none. A freeze on a Deck with a newer disc is not that bug, and we have
+not been able to reproduce one. If your Deck freezes, please post: xemu version, renderer
+(**Machine, Settings, Display**), the System Memory setting, whether the franchise is new or older,
+which list and position filter you were on and for how long you scrolled, and a photo of the
+frozen screen.
 
 ## xemu is choppy or grainy. Which studio option fixes it?
 
