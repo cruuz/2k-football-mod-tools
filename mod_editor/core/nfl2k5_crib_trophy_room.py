@@ -37,9 +37,15 @@ import struct
 OWNER = "nfl2k5_crib_trophy_room"
 EVIDENCE = "EXPERIMENTAL"
 REQUESTS = ()
-BUILD_CAPTION = "The Crib: Trophy Room only (shop cut)"
-HELP_TEXT = ("EXPERIMENTAL. The Crib keeps the room, your trophies, User Card and Milestone Info. The catalog popup and the "
-             "Catalogs and Crib Items shops are removed. Items a profile already bought stay.")
+BUILD_CAPTION = "The Crib: keep only the Trophy Room (removes the shops)"
+# b780-b13 (Noah 10/28 "Crib stays trophy room, toggle later"): plain words about what this option does, that all three
+# presets tick it, and how to get the whole Crib back (untick it and build; the save itself is never changed).
+HELP_TEXT = ("EXPERIMENTAL. Ticked, the Crib keeps only the room, your trophies, User Card and Milestone Info. The catalog "
+             "popup, the Catalogs and Crib Items shops, the arcade games, bobbleheads, celebrity phone, movies and scrolling "
+             "sign no longer open, even for items a profile already bought. Your save is not changed, and teams, stadiums "
+             "and cheats bought earlier stay unlocked. All three presets tick this. Untick it to keep the whole Crib: a disc "
+             "built without it shows everything the profile bought again. The name is a separate option, The Crib is now "
+             "the Trophy Room.")
 ROW = 0x34
 OPTIONS = 0x00524CA0                 # User Card, Catalogs, Crib Items, Milestone Info, Exit, end
 RETAIL_OPTIONS_SHA256 = "84676015b6b79fab7f54ec158c0de81ee2ce73f54d79b2848d2057451f1d05ab"   # 6 rows
