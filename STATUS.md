@@ -1,4 +1,4 @@
-# 2K5 Mod Studio: v1.0 RC114 Release Status
+# 2K5 Mod Studio: v1.0 RC115 Release Status
 
 ## Beta 79 (RC114 / APF alpha.110, 2026-11-01)
 
