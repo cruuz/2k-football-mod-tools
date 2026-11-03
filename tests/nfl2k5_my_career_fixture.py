@@ -41,7 +41,12 @@ class Machine:
         self.u, self.x = u, x
         self.uc = u.Uc(u.UC_ARCH_X86, u.UC_MODE_32)
         im = XbeImage(payload)
-        self.uc.mem_map(0x10000, 0x1510000 - 0x10000)
+        # b780-int: map through the last section a composed build adds (j23's static franchise footer body ends past
+        # 0x1510000 when the scale-out pool already reaches it), never into the save/bodies scratch at 0x2000000
+        end = max([0x1510000] + [(sec.start + max(sec.raw_size, 1) + 0xFFFF) & ~0xFFFF for sec in im.sections])
+        if end > self.SAVE:
+            raise ValueError('composed XBE sections reach the fixture scratch at 0x2000000')
+        self.uc.mem_map(0x10000, end - 0x10000)
         # The existing draft-AI owner stores immutable constants and its
         # free-agent routine in the owned header logo span. A section-only
         # mapping silently zeroed the constants and omitted that code.
