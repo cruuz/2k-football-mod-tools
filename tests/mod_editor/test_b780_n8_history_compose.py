@@ -435,6 +435,12 @@ class BuiltPlaylistRoutes(_playlist_routes()):
     def setUpClass(cls):
         cls.patched = built_xbe()
 
+    @unittest.skip("its context matrix pins the retail Franchise desk table (0x522190), which Franchise Practice "
+                   "repoints in every SOFTDRINK build (event list 0x522194, rows 0x5221A0); the 24 routes run on the "
+                   "composed executable in PlaylistRoutesInTheComposedExecutable")
+    def test_each_named_policy_transition(self):
+        pass
+
 
 if __name__ == "__main__":
     unittest.main()
