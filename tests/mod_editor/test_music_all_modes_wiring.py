@@ -49,7 +49,7 @@ class PublicationHandoffTests(unittest.TestCase):
     def test_final_private_image_checked_before_replace_and_failure_preserves_target(self):
         source = proposed_sources()['mod_editor/core/mod_build.py']
         namespace = dict(vars(mod_build))
-        exec(functions(source, {'build'}), namespace)
+        exec(functions(source, {'build', '_build_and_publish'}), namespace)  # b791-h3: build() is the tracked wrapper
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder).resolve()
             original, target = root/'source.iso', root/'result.iso'

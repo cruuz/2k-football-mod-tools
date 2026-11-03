@@ -29,7 +29,7 @@ import unittest
 from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[2]
-sys.path[:0] = [str(ROOT), str(ROOT / "tests")]
+sys.path[:0] = [str(ROOT), str(ROOT / "tests"), str(ROOT / "tests" / "mod_editor")]  # b791-h3: test_mod_build_performance under plain unittest
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 from nfl2k5_xiso_fixture import dir_node  # noqa: E402

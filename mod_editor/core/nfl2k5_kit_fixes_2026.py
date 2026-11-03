@@ -59,6 +59,7 @@ import struct
 import numpy as np
 
 from . import nfl2k5_bump_texture_writer as bump
+from . import build_steps  # b791-h3: a failed compile names its kit
 from nfl_txtr import decode_chunk, parse_chunks, parse_texture, swizzle_2d, texture_to_rgba, unswizzle_2d
 from nfl_vc_lz_fill import rebuild_fixed_span_filled
 
@@ -1547,7 +1548,8 @@ def apply_to_image(path, *, strict=False, document=None):
             require(len(entries) == 1, selector + " kit package absent or duplicated")
             entry = entries[0]
             raw = image.read_segments(index.sub_extents(entry, 0, entry.size))
-            replacements, receipt = compile_resource(selector, raw, strict=strict, document=document, kits=donors)
+            with build_steps.resource(selector + ".IFF"):
+                replacements, receipt = compile_resource(selector, raw, strict=strict, document=document, kits=donors)
             plans.append((entry, replacements, receipt))
         states = {p[2]["state"] for p in plans}
         if states == {"other_uniform"}:
@@ -2334,7 +2336,8 @@ def _sideline_measured_plan(row, entry, raw, chunks, splayer, alt, package):
         alt, {part: donor_atlas[d] for part, d in donors.items() if d and part != "pants"}, field, row, textures)
     if not any(changed.values()):
         return (entry, [], dict(selector=selector, state="unchanged", changed_texels=changed))
-    new_span, fit = _sideline_compile(splayer, repaired)
+    with build_steps.resource(selector + ".IFF splayer"):
+        new_span, fit = _sideline_compile(splayer, repaired)
     check = _sideline_rgba(new_span, "txtr", "splayer")
     for part in row["parts"]:
         now = _sideline_part_colour(check, part)
@@ -2437,7 +2440,8 @@ def apply_sideline(path, *, strict=False, document=None):
             if not any(changed.values()):
                 plans.append((entry, [], dict(selector=selector, state="unchanged", changed_texels=changed)))
                 continue
-            new_span, fit = _sideline_compile(splayer, repaired)
+            with build_steps.resource(selector + ".IFF splayer"):
+                new_span, fit = _sideline_compile(splayer, repaired)
             check = _sideline_rgba(new_span, "txtr", "splayer")
             # the repaired fabrics must now read as the field colours (palette quantisation allows a few levels)
             if "pants" in row["parts"]:

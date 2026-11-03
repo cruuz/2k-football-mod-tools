@@ -1094,6 +1094,13 @@ def _workers(requested=None):
     return max(1, min(len(VARIANTS), (os.cpu_count() or 2) // 2))
 
 
+def _name_failure(exc, job):
+    """b791-h3: a failed job's error names its bundle (``job[0]``); only a failing job reaches build_steps."""
+    if isinstance(job, (tuple, list)) and job and isinstance(job[0], str):
+        from . import build_steps
+        build_steps.name_failure(exc, job[0])
+
+
 def run_jobs(function, jobs, *, workers=None, progress=None, label="Modern MetLife"):
     """Map ``function`` over ``jobs`` in worker processes (in order of completion), reporting progress."""
     say = progress or (lambda message, done, total: None)
@@ -1102,13 +1109,21 @@ def run_jobs(function, jobs, *, workers=None, progress=None, label="Modern MetLi
     if count == 1 or len(jobs) == 1:
         for index, job in enumerate(jobs):
             say(f"{label}: {job[0]} ({index + 1} of {len(jobs)})", index, len(jobs))
-            results.append(function(job))
+            try:
+                results.append(function(job))
+            except BaseException as exc:
+                _name_failure(exc, job)
+                raise
         return results
     from concurrent.futures import ProcessPoolExecutor, as_completed
     with ProcessPoolExecutor(max_workers=count) as pool:
-        futures = [pool.submit(official.run_with_pack, function, job, official.selected_root()) for job in jobs]
+        futures = {pool.submit(official.run_with_pack, function, job, official.selected_root()): job for job in jobs}
         for index, future in enumerate(as_completed(futures)):
-            results.append(future.result())
+            try:
+                results.append(future.result())
+            except BaseException as exc:
+                _name_failure(exc, futures[future])
+                raise
             say(f"{label}: {results[-1][0]} ({index + 1} of {len(jobs)})", index + 1, len(jobs))
     return results
 

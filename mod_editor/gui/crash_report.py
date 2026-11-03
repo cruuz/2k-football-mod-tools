@@ -34,6 +34,9 @@ _DIALOG_TRACEBACK_LIMIT = 4000
 #: Faults already shown to the user, so a repeating one does not stack dialogs.
 _ALREADY_SHOWN: set[str] = set()
 
+#: Apps whose crash hook is installed (the running Studio). See :func:`reports_enabled`.
+_INSTALLED: set[str] = set()
+
 
 def signature(exc_type, tb) -> str:
     """What makes two reports "the same fault" for dialog purposes.
@@ -53,10 +56,17 @@ def signature(exc_type, tb) -> str:
     return f"{getattr(exc_type, '__name__', exc_type)}:{code.co_filename}:{frame.tb_lineno}"
 
 
+#: Environment override for the report folder (tests and portable installs); empty means the platform default.
+LOG_DIRECTORY_ENV = "MOD_STUDIO_LOG_DIR"
+
+
 def log_directory(app_name: str) -> Path:
-    """Where reports are written, following each platform's convention."""
+    """Where reports are written, following each platform's convention (``MOD_STUDIO_LOG_DIR`` overrides it)."""
 
     slug = app_name.lower().replace(" ", "-")
+    override = os.environ.get(LOG_DIRECTORY_ENV, "").strip()
+    if override:
+        return Path(override) / slug
     if sys.platform == "win32":
         base = Path(os.environ.get("LOCALAPPDATA") or Path.home() / "AppData" / "Local")
     elif sys.platform == "darwin":
@@ -97,7 +107,7 @@ def format_report(exc_type, exc, tb, app_name: str, *, when: str | None = None) 
 
 
 def record_operation(operation: str, message: str, app_name: str, *,
-                     directory: Path | None = None, when: str | None = None) -> Path | None:
+                     directory: Path | None = None, when: str | None = None, details: str = "") -> Path | None:
     """Append a caught, user-facing failure to errors.log with the version.
 
     Build and import failures are caught and shown in a dialog, so the crash
@@ -105,6 +115,9 @@ def record_operation(operation: str, message: str, app_name: str, *,
     people report. Coach Edwards' "texture receipt is missing" (2026-09-20)
     existed only as a phone photo for that reason. Every "Couldn't ..." dialog
     now leaves an entry here, so "share the error" can mean sharing a file.
+
+    ``details`` (b791-h3): the full traceback of the failure, kept below the
+    message so the entry says where it happened, not only what it said.
     """
 
     stamp = when or datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -116,6 +129,8 @@ def record_operation(operation: str, message: str, app_name: str, *,
         f"operation: {operation}\n"
         f"\n{text}\n"
     )
+    if str(details or "").strip():
+        report += f"\n{str(details).rstrip()}\n"
     return write_report(report, app_name, directory=directory)
 
 
@@ -125,7 +140,8 @@ def write_report(report: str, app_name: str, *, directory: Path | None = None) -
     target = (directory or log_directory(app_name)) / "errors.log"
     try:
         target.parent.mkdir(parents=True, exist_ok=True)
-        with target.open("a", encoding="utf-8") as handle:
+        # "\n" on every platform (b791-h3): one entry reads the same in any viewer and diff.
+        with target.open("a", encoding="utf-8", newline="\n") as handle:
             handle.write(report)
             handle.write("\n" + "-" * 60 + "\n")
         return target
@@ -259,10 +275,23 @@ def install(app_name: str, *, directory: Path | None = None) -> Callable:
         handle(exc_type, exc, tb, app_name=app_name, directory=directory)
 
     sys.excepthook = hook
+    _INSTALLED.add(app_name)
     return previous
 
 
+def reports_enabled(app_name: str) -> bool:
+    """Whether build reports go to the user's log folder (b791-h3).
+
+    True in the running Studio (its crash hook is installed) and whenever
+    ``MOD_STUDIO_LOG_DIR`` names a folder; a test that builds a panel on its
+    own writes nothing into the real log folder or errors.log.
+    """
+
+    return bool(os.environ.get(LOG_DIRECTORY_ENV, "").strip()) or app_name in _INSTALLED
+
+
 __all__ = [
+    "reports_enabled",
     "format_report",
     "handle",
     "install",

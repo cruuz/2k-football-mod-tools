@@ -113,6 +113,15 @@ def _run_task(function, task, marks_root):
     return official.run_with_pack(function, task, marks_root)
 
 
+def _name_failure(exc, task):
+    """b791-h3: an error from a task whose first item is its name (a bundle file, ...) carries that name. Called only
+    for a failing task, so a step that succeeds runs no new code (STEP_CODE stays what a traced run uses)."""
+    first = task[0] if isinstance(task, (tuple, list)) and task else None
+    if isinstance(first, str) and 0 < len(first) <= 120:
+        from . import build_steps
+        build_steps.name_failure(exc, first)
+
+
 def ordered_map(function, tasks, workers: int, *, initializer=None, initargs=(), cost=None):
     """Yield ``function(task)`` for each task, in task order.
 
@@ -129,7 +138,12 @@ def ordered_map(function, tasks, workers: int, *, initializer=None, initargs=(),
         if initializer is not None and tasks:
             initializer(*initargs)
         for task in tasks:
-            yield function(task)
+            try:
+                result = function(task)
+            except BaseException as exc:
+                _name_failure(exc, task)
+                raise
+            yield result
         return
     from collections import deque
     from concurrent.futures import ProcessPoolExecutor
@@ -142,7 +156,12 @@ def ordered_map(function, tasks, workers: int, *, initializer=None, initargs=(),
         if initializer is not None:
             initializer(*initargs)
         for task in tasks:
-            yield function(task)
+            try:
+                result = function(task)
+            except BaseException as exc:
+                _name_failure(exc, task)
+                raise
+            yield result
         return
     window = max(2, 2 * min(workers, len(tasks)))
     pending: deque = deque()
@@ -173,12 +192,20 @@ def ordered_map(function, tasks, workers: int, *, initializer=None, initargs=(),
                     result = (futures.pop(delivered) if cost is not None else pending.popleft()).result()
                 except BrokenProcessPool:
                     broken = True
+                except BaseException as exc:
+                    _name_failure(exc, tasks[delivered])
+                    raise
             if broken:
                 pool.shutdown(wait=True, cancel_futures=True)
                 if initializer is not None:
                     initializer(*initargs)
                 for task in tasks[delivered:]:
-                    yield function(task)
+                    try:
+                        result = function(task)
+                    except BaseException as exc:
+                        _name_failure(exc, task)
+                        raise
+                    yield result
                 return
             delivered += 1
             if delivered == len(tasks):

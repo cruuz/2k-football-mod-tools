@@ -635,17 +635,20 @@ def plain_failure(operation: str, message: str) -> str:
 
 
 def show_operation_error(parent: QWidget | None, operation: str, message: str,
-                         *, source_unchanged: bool = True) -> None:
-    """One error dialog shape for every page: plain title, real cause, next step, full text."""
+                         *, source_unchanged: bool = True, record: bool = True) -> None:
+    """One error dialog shape for every page: plain title, real cause, next step, full text.
+
+    ``record=False`` when the caller has already written a fuller errors.log entry (a failed build, b791-h3)."""
 
     # Every caught failure the user sees also lands in errors.log with the
     # Studio version, so a report can be a file rather than a phone photo.
     # Logging must never be the reason a dialog fails to appear.
-    try:
-        from mod_editor.gui import crash_report
-        crash_report.record_operation(operation, message, "2K5 Mod Studio")
-    except Exception:  # noqa: BLE001
-        pass
+    if record:
+        try:
+            from mod_editor.gui import crash_report
+            crash_report.record_operation(operation, message, "2K5 Mod Studio")
+        except Exception:  # noqa: BLE001
+            pass
     hint = fix_hint(message)
     lines = [f"Couldn't {operation}."]
     detail = plain_error(message)
@@ -662,6 +665,95 @@ def show_operation_error(parent: QWidget | None, operation: str, message: str,
     box.setText("\n\n".join(lines))
     if detail:
         box.setDetailedText(detail)
+    box.setStandardButtons(QMessageBox.Ok)
+    box.exec_()
+
+
+#: Where a failed build's diagnostic report should go (b791-h3).
+DIAGNOSTIC_DESTINATION = "the SOFTDRINK Discord"
+
+
+def build_failure_texts(record: dict, message: str = "") -> tuple[str, str]:
+    """(dialog text, details) for a build that stopped, from ``build_report.BuildRecord.as_dict()``.
+
+    "Couldn't make the disc. It stopped during <step> (<resource>): <reason>." Then the fix when one is known, where
+    the build log and the diagnostic report are, and "send that .zip to the SOFTDRINK Discord"."""
+
+    label = str(record.get("label") or "the build")
+    where = label + (f" ({record['resource']})" if record.get("resource") else "")
+    reason = str(record.get("reason") or plain_error(message) or "it stopped without saying why").strip().rstrip(".")
+    full = str(record.get("message") or message or "")
+    lines = [f"Couldn't make the disc. It stopped during {where}: {reason}."]
+    hint = fix_hint(full) or fix_hint(reason)
+    lines.append(hint or "The build log and the diagnostic report below say exactly what the build was doing when it "
+                         "stopped.")
+    if record.get("build_log"):
+        lines.append(f"The build log is here:\n{record['build_log']}")
+    if record.get("zip"):
+        lines.append(f"The diagnostic report is here:\n{record['zip']}\n"
+                     f"If you need help, send that .zip to {DIAGNOSTIC_DESTINATION}.")
+    elif record.get("build_log"):
+        lines.append(f"If you need help, send that build log to {DIAGNOSTIC_DESTINATION}.")
+    else:
+        lines.append(f"If you need help, copy the Build summary and share it on {DIAGNOSTIC_DESTINATION}.")
+    lines.append("Your original game disc was not changed.")
+    details = [plain_error(full) if full else reason]
+    if record.get("last_progress"):
+        details.append(f"Last progress line in that step: {record['last_progress']}")
+    if record.get("undo"):
+        details.append(f"This step could not be left out: {record['undo']}")
+    if record.get("left_out"):
+        details.append("Left out earlier in this build:\n" + "\n".join(f"- {note}" for note in record["left_out"]))
+    if record.get("colour"):
+        details.append(f"Modern colour values: {record['colour']}")
+    if record.get("errors_log"):
+        details.append(f"errors.log: {record['errors_log']}")
+    if record.get("log_copy") and record.get("log_copy") != record.get("build_log"):
+        details.append(f"A copy of the build log: {record['log_copy']}")
+    doctor = record.get("doctor")
+    if doctor == "ok":
+        details.append("The project doctor's report is in the diagnostic .zip.")
+    elif doctor in ("failed", "unavailable", "cancelled"):
+        details.append(f"The project doctor did not finish ({doctor}); the .zip says why.")
+    return "\n\n".join(lines), "\n\n".join(details)
+
+
+def build_summary_lines(record: dict, message: str = "") -> list[str]:
+    """The lines a failed build adds to Copy Build summary: the error, step, resource, colour values, file paths."""
+
+    out = [f"First error: {record.get('message') or plain_error(message)}"]
+    if record.get("label"):
+        out.append(f"Step: {record['label']} ({record.get('step', '')})")
+    if record.get("resource"):
+        out.append(f"Resource: {record['resource']}")
+    if record.get("last_progress"):
+        out.append(f"Last progress line in that step: {record['last_progress']}")
+    if record.get("undo"):
+        out.append(f"Could not be left out: {record['undo']}")
+    for note in record.get("left_out") or ():
+        out.append(f"Left out: {note}")
+    if record.get("colour"):
+        out.append(f"Modern colour values: {record['colour']}")
+    if record.get("build_log"):
+        out.append(f"Build log: {record['build_log']}")
+    if record.get("zip"):
+        out.append(f"Diagnostic report: {record['zip']} (send it to {DIAGNOSTIC_DESTINATION})")
+    if record.get("errors_log"):
+        out.append(f"errors.log: {record['errors_log']}")
+    return out
+
+
+def show_build_failure(parent: QWidget | None, record: dict, message: str = "") -> None:
+    """The dialog of a build that stopped: step, resource, reason, fix, where the log and the report are."""
+
+    text, details = build_failure_texts(record, message)
+    box = QMessageBox(parent)
+    box.setIcon(QMessageBox.Critical)
+    box.setWindowTitle("Couldn't make the disc")
+    box.setText(text)
+    box.setTextInteractionFlags(Qt.TextSelectableByMouse)
+    if details:
+        box.setDetailedText(details)
     box.setStandardButtons(QMessageBox.Ok)
     box.exec_()
 
@@ -691,4 +783,5 @@ def suggest_copy_name(source: str | Path, *, suffix: str = "modded") -> str:
 __all__ = [
     "DISCORD_HINT", "Details", "NOT_TESTED", "XEMU_LINE", "fix_hint", "plain_failure",
     "plain_error", "failure_body", "show_operation_error", "source_captions", "suggest_copy_name", "tab_title", "write_caption", "disc_next_steps",
+    "build_failure_texts", "build_summary_lines", "show_build_failure", "DIAGNOSTIC_DESTINATION",
 ]
