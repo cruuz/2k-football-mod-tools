@@ -79,7 +79,10 @@ PATCHES = (
      "overall is compared across positions, so the positions whose rookies roll the highest overalls (HB, DE, "
      "T, QB) fill round 1 and the 11th-best HB goes as soon as HB is a top-three need. Patch: the pick is the "
      "prospect with the best edge over his own position's class average, times real positional value, plus "
-     "the team's need order and a little noise; CPU free-agent targets are scored the same way."),
+     "the team's need order and a little noise; CPU free-agent targets are scored the same way. Kickers and "
+     "punters go from round 5 on (at most one rare standout earlier in a draft), and every draft class gets a real "
+     "position mix instead of the positions of the players who left, so later classes keep their quarterbacks and "
+     "Create Player keeps its records."),
     ("returner_fix", "Real kick and punt returners on CPU depth charts",
      "Retail: the franchise auto depth chart never records which player had the best punt-return score; it "
      "stores the score itself as the roster slot, so the punt returner is whoever sits in slot 0 (often a QB), "

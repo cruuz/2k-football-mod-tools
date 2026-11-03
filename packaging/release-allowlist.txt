@@ -561,6 +561,7 @@ mod_editor/core/nfl2k5_camera.py
 mod_editor/core/nfl2k5_catch_slider.py
 mod_editor/core/nfl2k5_disc_identity.py
 mod_editor/core/nfl2k5_draft_ai.py
+mod_editor/core/nfl2k5_draft_class.py
 mod_editor/core/nfl2k5_edge_rename.py
 mod_editor/core/nfl2k5_equipment_import.py
 mod_editor/core/nfl2k5_equipment_import_intent.py
@@ -3881,6 +3882,8 @@ tests/mod_editor/test_b778_bd3_build_blockers.py
 tests/mod_editor/test_b779_rc1_roster_capacity.py
 # b779 ag1: capacity arena 0xCA000 (4,096 player records), one layout helper, beta-78 saves migrate
 tests/mod_editor/test_b779_ag1_capacity_arena.py
+# b780 b1-draft: draft class position mix on every build with the draft fixes; one K/P before round 5 per draft
+tests/mod_editor/test_b780_draft_class.py
 tests/mod_editor/test_b779_up2_zero_footer.py
 # b791 h2-kits: Anniversary moment kits never stop a build (K1 no-op art step, left-out kits take their classic defaults)
 tests/mod_editor/test_b791_h2_kits.py

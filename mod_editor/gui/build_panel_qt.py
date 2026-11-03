@@ -1021,7 +1021,10 @@ class BuildPanel(QWidget):
         self.draft_check = self._option(f, "draft_ai", "Smarter Franchise drafts & free agency",
                                         "Changes CPU decisions; Fantasy Draft is separate.",
                                         details="The pick is the prospect with the best edge over his own position's class average, times real "
-                                                "positional value, plus the team's need order and a little noise; CPU free-agent targets are scored the same way.")
+                                                "positional value, plus the team's need order and a little noise; CPU free-agent targets are scored the same way. "
+                                                "Kickers and punters go from round 5 on (at most one rare standout earlier in a draft). Every draft class "
+                                                "gets a real position mix (21 QBs, 9 kickers and 9 punters in a 380-player class) instead of the positions of the "
+                                                "players who left, and draft classes no longer use up the records Create Player needs.")
         self.returner_check = self._option(f, "returner_fix", "Fix CPU kick & punt returners",
                                            "Changes automatic depth-chart selection.",
                                            details="The original stores a punt-return score as the roster slot, so the punt returner is whoever sits in "
@@ -2129,6 +2132,8 @@ class BuildPanel(QWidget):
             if state.get(key) == "applied"]
         if state.get("depth_locks") == "legacy":   # fx1 (review pr68 #4): an older revision, upgraded in place
             applied.append("depth locks: older revision (needs update)")
+        if state.get("draft_ai") == "legacy":      # b780 b1-draft: the beta-78/79 draft AI, upgraded in place
+            applied.append("draft AI: older revision (needs update)")
         foreign = [key.replace("_", " ") for key in mod_build.BuildPlan.__dataclass_fields__
                    if state.get(key) == "foreign"]
         settings = state.get("throw")
@@ -2150,7 +2155,10 @@ class BuildPanel(QWidget):
             # fx1 (review pr68 #4): revision 1/2 depth locks (b775/b776 discs) read "legacy"; the build upgrades them
             # in place (_apply_all accepts it), so the box is an upgrade like the position pools repair.
             locks_upgrade = key == "depth_locks" and value == "legacy"
-            box.setEnabled(available and (value == "retail" or upgrade or locks_upgrade) and (is_image or not needs_image))
+            # b780 b1-draft: the beta-78/79 draft AI head reads "legacy"; the build upgrades it in place too.
+            draft_upgrade = key == "draft_ai" and value == "legacy"
+            box.setEnabled(available and (value == "retail" or upgrade or locks_upgrade or draft_upgrade)
+                           and (is_image or not needs_image))
             box.setChecked(False)
             if not available:
                 box.setToolTip("Not available in this release.")
@@ -2158,6 +2166,11 @@ class BuildPanel(QWidget):
             elif locks_upgrade:
                 box.setToolTip("Depth chart locks from an older build are installed. Select to update them to this "
                                "release's revision (in place).")
+                self._set_badge(key, "Needs update")
+            elif draft_upgrade:
+                box.setToolTip("Smarter Franchise drafts from an older build are installed. Select to update them to this "
+                               "release's revision (in place): kickers and punters from round 5 and real draft class "
+                               "position mixes.")
                 self._set_badge(key, "Needs update")
             elif upgrade:
                 box.setToolTip("Position pools are installed, but the CPU lineup exhaustion repair is missing. Select to upgrade.")

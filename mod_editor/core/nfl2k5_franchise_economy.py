@@ -194,6 +194,14 @@ REVISION_4_SITES = frozenset({0x382200, 0x41E2A0, 0x3A5F20, 0x3BAB20, 0x3E2310, 
                               CLASS_POSITION, PRESEASON_GATE, CLASS_COUNT, CLASS_TARGET_CMP, CLASS_TARGET_NEED,
                               CLASS_TOPUP, TXN_YEARS})  # b779 vs1: the transaction-years call
 REVISION = 4
+# b780 b1-draft (row B1; SharkMagick 11/01 on the original rosters: "kickers getting drafted in R3 again", "only one
+# qb"): the class half of revision 4 (create vacancies kept, every class from the position mix) is a bug fix that
+# every franchise draft needs, not an economy preference. The draft class owner (nfl2k5_draft_class) installs these
+# four sites without the economy. They are the economy's own bytes: window "roster_f" is self-contained (it reads
+# only the roster root 0xB72918, the class countdown 0xE41CDC and its own mix) and the three call sites reach only
+# it. An image that carries only these four reads "retail" here, and the economy installs over them unchanged.
+CLASS_WINDOW = 0x382200
+CLASS_SITES = frozenset({CLASS_WINDOW, CLASS_ALLOCATOR_TEST, CLASS_FREE_COUNT, CLASS_POSITION})
 
 
 class EconomyError(ValueError):
@@ -273,6 +281,12 @@ def _standalone_status(payload: bytes) -> str:
         unique = set(states.values())
         if len(unique) == 1 and unique <= {"applied", "retail"}:
             return next(iter(unique))
+        if {states[va] for va in CLASS_SITES} == {"applied"}:
+            # b780 b1-draft: the draft class owner's four sites (the class half of revision 4) without the economy
+            # read as no economy; on a revision-3 image they read as its retail class sites, which still upgrades.
+            if {state for va, state in states.items() if va not in CLASS_SITES} == {"retail"}:
+                return "retail"
+            states = {**states, **{va: "retail" for va in CLASS_SITES}}
         # b779 rc1: a revision-3 image (beta-78 / v0.7) upgrades in place to revision 4. b779 vs1: its picks
         # window is the revision-3 one (no transaction-years stub yet), which reads "previous".
         if {states[va] for va in REVISION_4_SITES} == {"retail"} and states[PICKS_WINDOW] in ("applied", "previous") and \
