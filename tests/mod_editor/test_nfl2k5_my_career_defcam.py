@@ -47,7 +47,7 @@ class DefensiveCameraStaticTests(unittest.TestCase):
         self.assertEqual(guards[GETTER][0], 0x1D)
 
     def test_runtime_source_negates_only_the_read_for_a_defensive_body(self):
-        source = (ROOT / 'tools/mycareer_mode/runtime.S').read_text()
+        source = (ROOT / 'tools/mycareer_mode/runtime.S').read_text(encoding='utf-8')
         body = source[source.index('mode_camera_dir:'):source.index('mode_art_input:')]
         code = [line.split('/*')[0].strip() for line in body.splitlines()]
         code = [line for line in code if line and not line.startswith('*')]

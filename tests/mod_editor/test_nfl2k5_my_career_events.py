@@ -245,7 +245,8 @@ class HostBudgetTests(unittest.TestCase):
             'tools/mycareer_mode/runtime.c':
                 '9d0f9925d0eedf97af2b28784dcc592d8778551ad02293f9bf9c9ce03ff4e32c',
             'tools/mycareer_mode/runtime.S':
-                '768241d4390839629906e81678ca46cb7f2d2578ac791a72dd71df5a3cde0484',
+                # b780 n1: mode_camera_dir (the defensive camera read) and five byte-identical size rewrites.
+                'd7ae0a793c1b9cb52a8de0dcd2964f37b3b2546a8d34522c6cceadba38ab0f56',
             'mod_editor/core/nfl2k5_my_career_mode.py':
                 # Integrated era/context and CP companion validation. CP2 only
                 # refreshes this host pin. v1h also repairs the reviewed native C
