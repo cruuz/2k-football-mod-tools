@@ -132,11 +132,17 @@ in-game save/load observation. No save format or serializer changes are made.
 ## Franchise fields inside the arena
 
 * **Coach record** (`0xA8` bytes; table at root `+0x30/+0x34`, 35 on retail; team `+0x14C` points at
-  one): `+0x00/+0x04` first/last name, `+0x08/+0x0C/+0x10` three info lines, `+0x18` body (u32),
+  one): `+0x00/+0x04` first/last name, `+0x08/+0x0C/+0x10` three info lines, `+0x18` body (u16: the model `c%02d.iff`; the flag byte is at `+0x1A`),
   `+0x1C` seasons with team, `+0x1E` total seasons, `+0x20/+0x22/+0x24` career W/L/T, `+0x26/+0x28/+0x2A`
   season W/L/T (promoted at rollover by `FUN_00247b40`), `+0x30` winning seasons, `+0x32` Super Bowls,
   `+0x34/+0x36` playoff W/L, `+0x38/+0x3A` Super Bowl W/L, `+0x40` photo id, `+0x42..+0x58` the 23
-  ratings, `+0x59` play-calling run %, `+0x83..+0x8C` formation run/pass tendencies.  Finn's map,
+  ratings, `+0x59` play-calling run %, `+0x83..+0x87` the share of his RUN calls from each of five formation
+  classes (shotgun / pistol / empty, split backs, I form, one back, no back) and `+0x88..+0x8C` the same five
+  classes for his PASS calls (`COACH_TENDENCIES`: `run_gun` .. `run_no_back`, `pass_gun` .. `pass_no_back`).
+  Finn's alternating run / pass labels for these ten bytes were wrong: the game's own code (`FUN_002818D0`
+  copies the block into the CPU's decision statistics, then the formation choice reads it) treats them as two
+  distributions (job c1-coachdata, run under Unicorn), and every real coach in both reference saves adds up
+  to 100 in each set.  Finn's map,
   re-checked: Belichick reads 75–69, 2 Super Bowls, 7–1 in the playoffs entering 2004 — his real
   numbers.  PROVED.
 * **Team salary** `team+0x124` (u32, $1000): recomputed by `FUN_000c3f00` = Σ contract values of players
@@ -161,7 +167,50 @@ in-game save/load observation. No save format or serializer changes are made.
 | `place_on_injured_reserve(team, player)` | team pointer list compacted, team `+0x11C` −1, player `+0x28` = `0xEE`, IR slot | reproduces Finn's move byte for byte; his moves load in game |
 | `activate_from_injured_reserve` | the inverse (player re-added at the end of the list) | unwitnessed |
 | `set_coach_field` | one coach field / rating / tendency | unwitnessed |
+| `swap_head_coaches(a, b)` | two club pointers (`team + 0x14C`), each moved coach's seasons with the club and this season's record back to 0, flag `0x02` on his record | unwitnessed; the game's Create Team routine makes the same pointer change |
+| `hire_head_coach(team, coach)` | one club pointer, the hired coach's counters and flag; the fired coach stays on file | unwitnessed |
+| `replace_head_coach(team, first, last, bio)` | the club's coach record (names, three info lines, career totals to 0, photo `8999`, flag `0x02`) and the coach text region | unwitnessed; text writer refuses a save whose coach text is split or shared |
 | `set_team_record_ring` | one u16 | unwitnessed |
+
+## Head coach moves: swap, fire and hire (EXPERIMENTAL / UNWITNESSED)
+
+A head coach is a record the clubs point at (team `+0x14C`), so moving one is a pointer change, not a copy.
+The Franchise page's Coaches tab (**Swap with another club**, **Fire and hire**, **Hire for a club**) and
+`FranchiseSave` do three things, each in one transaction that either lands whole or leaves the bytes untouched:
+
+* **Swap two clubs' head coaches.** Two pointers change. Each moved coach keeps his career totals, ratings and
+  play calling; his seasons with the club and this season's record restart at 0 (optional), and his record gets
+  the "no recorded name" flag `0x02` so the announcer says its generic coach line instead of the name the club's
+  speech id would pick (optional; the flag handler at `0x5A390` is read, the line itself is inferred).
+* **Hire a coach the save already holds.** A club's pointer is aimed at a named record no league club uses; the fired
+  coach stays on file and can be hired again. The game's empty placeholder records (`xxxxxxxxxx`, `****`) are refused.
+* **Replace a head coach with a new person.** The club's own record is rewritten: new first and last name (24
+  characters at most) and up to three biography lines (52 each), every career total 0, no photo (`8999`) and the
+  flag `0x02`; ratings, play calling and the sideline body stay. The old coach is gone from the save.
+
+Rules the writers keep:
+
+* Only the 32 league clubs count as employers. A real save holds 52 teams (two created-team slots and eighteen
+  exhibition squads: historic, all-time and Pro Bowl) and the squads borrow a club's coach record; they keep
+  pointing at the record they had, so a moved coach is still the record's coach on those squads, and replacing a
+  record changes its name on them too (the receipt names them in `shared_with`).
+* The coach text is 175 strings (35 records x first, last, three info lines) in one region of the arena. The
+  writer first tries to write each new string in the room its old string had (no pointer moves); if one does not
+  fit it lays the whole region out again in record order. It refuses, in plain words, when the strings are not
+  one back-to-back region, when anything else points at one of them, or when the new text would not fit the
+  game's 5,506-byte region. Franchise1 is back to back; Finn's 2004 save is not (swaps and hires work, renames
+  are refused).
+* A refusal changes nothing, and every result is read back before it is accepted.
+
+Not claimed: no one has played a save with a moved coach yet. A moved coach plays with the play calling stored in
+his record; the Studio's automatic 2026 CPU profiles belong to each club's original coach (the game checks the
+coach's picture), so they are off for a club whose head coach changed.
+
+```
+python3 -m mod_editor.core.nfl2k5_franchise_save coaches SAVE_FOLDER
+python3 -m mod_editor.core.nfl2k5_franchise_save swap SAVE_FOLDER NEW_FOLDER DET SF
+python3 -m mod_editor.core.nfl2k5_franchise_save replace SAVE_FOLDER NEW_FOLDER CIN Dan Quinn "A defensive mind."
+```
 
 ## Postseason schedule editing (EXPERIMENTAL / UNWITNESSED)
 

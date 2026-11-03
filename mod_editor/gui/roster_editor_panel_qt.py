@@ -49,6 +49,11 @@ source row says what was detected and why, and lets you override it.  The **rati
 they are keyed by the position code the way the game keys them, so a one-pool LB is scored on the
 linebacker card set and a one-pool EDGE on the defensive-end one.
 
+**Coaches** (beside Franchise and ESPN Anniversary) plans the coaching staff of a build: swap or hire head coaches,
+create a coach, change a defensive coordinator.  The plan is the ``staff`` section of the roster edits, its changes share
+this page's Undo and Redo, and it is off for an Xbox save (a franchise save changes its coaches on the Franchise page).
+See ``mod_editor/gui/coaches_panel_qt.py``.
+
 Field credit: Flying Finn (Glen Leskinen) and Bad_AL, re-verified against the retail disc.  See
 ``mod_editor/core/nfl2k5_roster_records.py``.
 """
@@ -106,6 +111,7 @@ from mod_editor.core import nfl2k5_roster_records as rr
 from mod_editor.core import nfl2k5_abilities_editor as abilities_editor
 from mod_editor.core import nfl2k5_college_check as college_check
 from mod_editor.gui.abilities_panel_qt import AbilitiesPanel
+from mod_editor.gui.coaches_panel_qt import CoachesPanel
 from mod_editor.gui.espn25_panel_qt import Espn25Panel
 from mod_editor.gui.franchise_panel_qt import FranchisePanel
 from mod_editor.gui.ux_text import Details, show_operation_error, suggest_copy_name
@@ -1472,6 +1478,13 @@ class RosterEditorPanel(QWidget):
         self._espn25_index = self.pages.addTab(self.espn25_panel, "ESPN Anniversary")
         self.pages.setTabEnabled(self._espn25_index, False)
         self.pages.setTabToolTip(self._espn25_index, "Open a game disc (.iso) to edit the Anniversary moments.")
+        # Coaches: the staff plan for a build (swap and hire head coaches, change coordinators); a franchise save edits its
+        # coaches on the Franchise page
+        self.coaches_panel = CoachesPanel()
+        self.coaches_panel.edit_made.connect(self._staff_edited)
+        self.coaches_panel.body_provider = self._staff_roster_body
+        self._coaches_index = self.pages.addTab(self.coaches_panel, "Coaches")
+        self._show_coaches_tab(False, "none")
         self._show_page_tabs()
         layout.addWidget(self.pages, 1)
 
@@ -1864,6 +1877,28 @@ class RosterEditorPanel(QWidget):
         self.franchise_panel._set_status(edit.label)
         return True
 
+    def _show_coaches_tab(self, enabled: bool, state: str) -> None:
+        self.pages.setTabEnabled(self._coaches_index, enabled)
+        self.pages.setTabToolTip(self._coaches_index, {
+            "none": "Open a game disc to plan staff changes: swap head coaches, hire a coach, change a coordinator.",
+            "save": "Staff plans are for building a disc. To change the coaches inside a franchise save, use the Franchise tab.",
+            "empty": "This roster has no head coach records, so there is no staff to plan.",
+            "disc": "Swap head coaches, hire a coach or change a defensive coordinator for your build."}[state])
+
+    def _staff_roster_body(self) -> bytes:
+        """A snapshot of the roster's bytes: what the staff engine judges a plan against.
+
+        The coach table and the clubs' coach pointers are what it reads, and nothing on this page edits them, so the live
+        bytes are enough; they are identical to ``to_body()`` on the released disc, which takes seconds to produce."""
+
+        return b"" if self.document is None else bytes(self.document.body)
+
+    def _staff_edited(self, label: str, before: Any, after: Any) -> None:
+        """A staff change joins the roster page's Undo stack, so the toolbar's Undo and Redo cover it."""
+
+        panel = self.coaches_panel
+        self.undo_stack.push(UndoEntry(label, lambda: panel.set_staff(before), lambda: panel.set_staff(after)))
+
     def reserve_selected(self, promote: bool) -> bool:
         player = self.selected_player()
         if self.document is None or player is None:
@@ -2124,6 +2159,8 @@ class RosterEditorPanel(QWidget):
         self.write_button.setText("Save Xbox save copy…" if kind == "save" else "Save disc copy…")
         self._show_franchise(None)
         self.franchise_panel.clear()
+        self.coaches_panel.set_roster(document, kind=kind or "disc")
+        self._show_coaches_tab(self.coaches_panel.state == "disc", self.coaches_panel.state)
         # an explicit load replaces the Anniversary catalog too (a routine refresh never reaches here)
         self._reload_espn25(source if kind == "disc" else None)
         self._dirty.clear()
@@ -2439,7 +2476,11 @@ class RosterEditorPanel(QWidget):
         box.setWindowTitle("Replace the edited roster?")
         anniversary = ("\nUnsaved ESPN Anniversary edits would be lost too: Save build edits on that tab first."
                        if self.espn25_dirty() else "")
-        box.setText(f"{len(self._dirty)} player{'s' if len(self._dirty) != 1 else ''} edited here would be lost."
+        staff = self.coaches_panel.change_count()
+        lost = (f"{len(self._dirty)} player{'s' if len(self._dirty) != 1 else ''} edited here" if self._dirty else "")
+        if staff:
+            lost += (" and " if lost else "") + f"{staff} staff change{'s' if staff != 1 else ''}"
+        box.setText(f"{lost or 'Your edits'} would be lost."
                     f"{anniversary}\n\n"
                     "Export roster edits (.json)… or Save disc copy… first to keep them.")
         keep = box.addButton("Keep editing", QMessageBox.RejectRole)
@@ -3856,6 +3897,19 @@ class RosterEditorPanel(QWidget):
     def edits_document(self) -> dict[str, Any]:
         if self.document is None:
             return {}
+        try:
+            staff = self.coaches_panel.export_staff()
+        except ValueError as exc:
+            raise rr.RosterRecordError(plain_error(exc)) from exc
+        if staff and self._appearance_bundle is not None:
+            raise rr.RosterRecordError("Staff changes cannot be exported together with a complete roster with faces yet. "
+                                       "Put every coach back on the Coaches tab, or load the roster without the faces file.")
+        document = self._edits_document_players()
+        if staff:
+            document["staff"] = staff
+        return document
+
+    def _edits_document_players(self) -> dict[str, Any]:
         if self._appearance_bundle is not None:
             from mod_editor.core import nfl2k5_roster_snapshot as snapshot
             document = snapshot.document(self.document, name="Imported roster with faces")
@@ -4110,9 +4164,11 @@ class RosterEditorPanel(QWidget):
                                  "Export roster edits again to include the latest changes.")
         if hasattr(self, "edited_label"):
             edited = len(self._dirty)
-            self.edited_label.setText(
-                (f"{edited} player{'s' if edited != 1 else ''} edited here" if edited else "No roster edits yet")
-                + (f" · last export: {self._edits_path.name}" if self._edits_path is not None else ""))
+            staff = self.coaches_panel.change_count() if hasattr(self, "coaches_panel") else 0
+            text = f"{edited} player{'s' if edited != 1 else ''} edited here" if edited else ("" if staff else "No roster edits yet")
+            if staff:
+                text += (" · " if text else "") + f"{staff} staff change{'s' if staff != 1 else ''}"
+            self.edited_label.setText(text + (f" · last export: {self._edits_path.name}" if self._edits_path is not None else ""))
         self.undo_button.setEnabled(self.undo_stack.can_undo())
         self.redo_button.setEnabled(self.undo_stack.can_redo())
         for widget in (self.global_button, self.passes_button, self.csv_button,

@@ -1359,8 +1359,10 @@ refused with the reason unless you tick **Allow editing played games**; its scor
 because which side the quarter bytes belong to is still a hypothesis. **Coaches** lists every coach
 record with his team: seasons, wins / losses / ties, winning seasons, Super Bowls, playoff and Super
 Bowl records, the photo and body ids, the run % playcalling split, then the 23 ratings and the ten
-Back Field tendencies on the same bars as the player cards; names and the three info lines are pooled
-strings and stay read-only. **Injured Reserve** shows each team's five slots; **Place on IR…** picks
+formation shares on the same bars as the player cards (two sets of five: how often his run calls and his
+pass calls come from shotgun / pistol / empty, split backs, I form, one back or no back; each set adds up to
+100 for the game's own coaches, and the page says what yours adds up to); names and the three info lines
+are pooled strings and stay read-only. **Injured Reserve** shows each team's five slots; **Place on IR…** picks
 one of the team's rostered players and does exactly Finn's move (his own save is reproduced byte for
 byte), and **Activate** is the inverse, labelled unwitnessed because nobody has watched the game accept
 it; a free agent or a draft prospect is refused in Finn's words. **Checks** prints the file map by
