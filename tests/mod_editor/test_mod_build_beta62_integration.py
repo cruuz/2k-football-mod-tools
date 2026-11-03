@@ -217,9 +217,13 @@ class ExecutableTests(unittest.TestCase):
             requested = tuple(runtime.REQUESTS) + tuple(extra_requests) + (tuple(kickoff.REQUESTS) if with_kickoff else ())
             from mod_editor.core import nfl2k5_calendar_engine as calendar
             from mod_editor.core import nfl2k5_audible_legend as legend
-            # the calendar needs the 2026 templates, absent on a synthetic disc; the runtime score bar brings the
-            # audible panel lift (b780-p3), so its owner is reserved in this first space pass too
-            self.assertEqual(set(requested), (set(REQUESTS) - set(calendar.REQUESTS)) | set(legend.REQUESTS))
+            # the calendar needs the 2026 templates, absent on a synthetic disc
+            expected = set(REQUESTS) - set(calendar.REQUESTS)
+            if writer == 'build':
+                # the Build tab's runtime score bar brings the audible panel lift (b780-p3), so its owner is reserved
+                # in this first space pass too; the tuning dispatcher has no late owners and never adds it
+                expected |= set(legend.REQUESTS)
+            self.assertEqual(set(requested), expected)
             grown, rec = space.apply(before, requested)
             grown, _ = runtime.apply(grown)
             if with_kickoff:
