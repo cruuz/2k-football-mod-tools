@@ -40,6 +40,7 @@ import tempfile
 from dataclasses import replace, asdict
 
 from mod_editor.gui import beta62_options as r62_ui
+from mod_editor.gui import speed_threshold_ui  # b780-cv5: the Speed separation strength row
 from mod_editor.core import mod_build, platform_compat
 from mod_editor.core import nfl2k5_player_star as player_star
 from mod_editor.core import nfl2k5_throw_tuning as tt
@@ -871,6 +872,7 @@ class BuildPanel(QWidget):
         for key, caption, help_text in BUILD_OPTIONS:
             setattr(self, key + "_check", self._option(g, key, caption, help_text,
                     badge="EXPERIMENTAL / UNWITNESSED", needs_image=True))
+        self.speed_threshold_spin = speed_threshold_ui.add_control(g, self._refresh)  # b780-cv5
         self.cpu_money_downs_level = QComboBox()
         for caption, value in r62_ui.LEVELS["cpu_money_downs"]:
             self.cpu_money_downs_level.addItem(caption, value)
@@ -2089,6 +2091,7 @@ class BuildPanel(QWidget):
         boxes = self._boxes()
         toggles = set(self._toggle_boxes())
         checked_before = {key: box.isChecked() for key, box in boxes.items() if box in toggles}
+        speed_before = self.speed_threshold_spin.value()  # b780-cv5
         previous_path = str((self._state or {}).get("path") or "")
         incoming_path = str(state.get("path") or "")
         same_disc = (bool(previous_path) and bool(incoming_path)
@@ -2109,6 +2112,9 @@ class BuildPanel(QWidget):
         # throw option (and its plan) into the new build (b778-bd2).
         for box in self._toggle_boxes():
             box.setChecked(False)
+        self.speed_threshold_spin.blockSignals(True)  # b780-cv5: a new disc starts at 0, like the check boxes
+        self.speed_threshold_spin.setValue(0)
+        self.speed_threshold_spin.blockSignals(False)
         # The two throw sub-options are not feature toggles; a new disc starts at their defaults.
         self.realistic_check.setChecked(True)
         self.arc_by_distance_check.setChecked(False)
@@ -2657,6 +2663,12 @@ class BuildPanel(QWidget):
         gate(self.widescreen_check, "widescreen")
         self.throw_check.setEnabled(True)
         dropped = []
+        speed_threshold_ui.refresh(self.speed_threshold_spin, state, self._available.get("speed_threshold", True))  # b780-cv5
+        if keep_selection and speed_before:
+            if self.speed_threshold_spin.isEnabled():
+                self.speed_threshold_spin.setValue(speed_before)
+            elif state.get("speed_threshold") != "applied":
+                dropped.append("speed_threshold")
         if keep_selection:
             for key, was_checked in checked_before.items():
                 if not was_checked:
@@ -2696,7 +2708,7 @@ class BuildPanel(QWidget):
         if self._state is None:
             self.pending_preset = name
             return False
-        if any(box.isChecked() for box in self._toggle_boxes()):
+        if any(box.isChecked() for box in self._toggle_boxes()) or self.speed_threshold_spin.value():
             self.preset_note.setText("Your current choices were kept; press a preset button to replace them.")
             return False
         self.apply_preset(name)
@@ -2797,6 +2809,13 @@ class BuildPanel(QWidget):
                     applied.append(key)
         finally:
             self._preset_applying = False
+        wanted_speed = int(values.get("speed_threshold", 0))  # b780-cv5: the strength follows the preset where the disc can take it
+        if self.speed_threshold_spin.isEnabled():
+            self.speed_threshold_spin.setValue(wanted_speed)
+            if wanted_speed:
+                applied.append("speed_threshold")
+        elif wanted_speed:
+            skipped.append("speed_threshold")
         preset_money = str(values.get("cpu_money_downs", "retail"))
         if preset_money != "retail" and self.cpu_money_downs_check.isChecked() and self.cpu_money_downs_level.findData(preset_money) >= 0:
             self.cpu_money_downs_level.blockSignals(True)
@@ -2826,6 +2845,8 @@ class BuildPanel(QWidget):
                 "More inputs ▸ Modern books).")
 
     def _short_label(self, key: str) -> str:
+        if key == "speed_threshold":  # b780-cv5: a number row, not a check box
+            return speed_threshold_ui.CAPTION
         box = self._boxes().get(key)
         return box.text().replace("&&", "&") if box is not None else key
 
@@ -3061,6 +3082,8 @@ class BuildPanel(QWidget):
             name=self.name_field.text().strip(), author=self.author_field.text().strip(),
             notes=self.notes_field.toPlainText().strip(),
         )
+        if hasattr(self, "speed_threshold_spin"):  # b780-cv5: 0 when the control is off, the installed strength when locked
+            plan.speed_threshold = speed_threshold_ui.plan_value(self.speed_threshold_spin, self._state)
         if plan.depth_chart_rows:
             state = self._state or {}
             plan.position_pools = plan.position_pools or state.get("position_pools") != "applied"
@@ -3473,6 +3496,8 @@ class BuildPanel(QWidget):
                 "Choose a verified base disc to change CPU QB scrambles.")
         else:
             self.cpu_scrambles_level.setToolTip(tt.cpu_scrambles_patch.HELP_TEXT)
+        if hasattr(self, "speed_threshold_spin"):  # b780-cv5
+            speed_threshold_ui.refresh(self.speed_threshold_spin, self._state, self._available.get("speed_threshold", True))
         for key, reason in r62_ui.UNAVAILABLE.items():
             box = getattr(self, key + "_check")
             box.setEnabled(False)

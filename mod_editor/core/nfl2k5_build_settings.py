@@ -93,6 +93,7 @@ FEATURE_KEYS += ("sim_realism",)  # b779-sim2 r4: scheduled-sim season realism, 
 FEATURE_KEYS += ("coach_carousel",)  # b780-c6: the coaching carousel, late executable owner + roster pool
 FEATURE_KEYS += ("standings_records",)  # b780-j1: Team Standings division / conference / home / road records, late executable owner
 FEATURE_KEYS += ("catch_snap_limit",)  # b780-cv4: CPU defenders cannot slide to the ball for a pick, late executable owner
+FEATURE_KEYS += ("speed_threshold",)  # b780-cv5: speed separation strength 0..100 on deep routes, late executable owner (0 = off)
 FEATURE_KEYS += ("sim_stats",)  # b778-sim1: simulated franchise game pace (in place, no allocation)
 FEATURE_KEYS += ("quick_long_release",)  # b780-c-release: quicker deep and rollout throws (constants only, in place, no allocation)
 FEATURE_KEYS += ("option_defaults", "default_quarter_minutes", "default_sim_quarter_minutes")  # b779-df1: fresh-profile default options (in place, no allocation)
@@ -154,6 +155,7 @@ def build_settings(value):
     for key in ("music_project", "music_library", "my_career_setup"):
         tt._require(choices[key] is None or type(choices[key]) is str, f"{key} must be a path or None")
     tt._require(choices["screen_timing"] in (None, "A", "B", "C", "D"), "Screen timing must be A, B, C, D or None")
+    tt._require(0 <= choices["speed_threshold"] <= 100, "Speed separation must be a whole number from 0 to 100")  # b780-cv5
     week = choices["abilities_off_week"]
     tt._require(week is None or type(week) is int and 0 <= week <= 17, "Abilities off week must be 0..17 or None")
     for key in ("player_tags", "playbook_packs"):

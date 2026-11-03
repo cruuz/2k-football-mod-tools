@@ -245,7 +245,8 @@ class PresetPlanEqualsPresetTests(unittest.TestCase):
                 panel = BuildPanel()
                 try:
                     state = {key: "retail" for key in panel._boxes()}
-                    state.update(path="retail.iso", container="xiso", throw=None)
+                    state.update(path="retail.iso", container="xiso", throw=None,
+                                 speed_threshold="retail")  # b780-cv5: a number row, not a check box, so not in _boxes()
                     panel.apply_state(state)
                     panel.historic_teams_quick_game_check.setChecked(True)   # a leftover choice the preset must clear
                     panel.apply_preset(name)

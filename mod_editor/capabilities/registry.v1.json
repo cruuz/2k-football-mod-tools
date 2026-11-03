@@ -8846,6 +8846,71 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_speed_threshold source.xbe --value 35 --output new-speed-separation.xbe",
+        "module": "mod_editor/core/nfl2k5_speed_threshold.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "mod_editor/core/nfl2k5_speed_threshold.py",
+        "mod_editor/core/nfl2k5_speed_threshold_code.py",
+        "tests/mod_editor/test_nfl2k5_speed_threshold.py",
+        "tests/mod_editor/test_nfl2k5_speed_threshold_unicorn.py",
+        "tests/nfl2k5_speed_threshold_frame.py",
+        "tools/nfl2k5_speed_threshold.S"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Optional number 0 to 100 on the Build page (0 installs nothing). Players asked for more separation between fast receivers and slower corners (X_Ray, Ju3tin, THE1WAM): in the stock game a 10-point Speed gap is only 0.3 yards a second. 35 in the Experimental preset (the SOFTDRINK 2K28 recipe builds from it); Basic and Advanced keep 0."
+      },
+      "id": "nfl2k5.gameplay.speed_separation",
+      "input_constraints": [
+        "Pinned USA XBE or a verified composed input whose speed mapper (0x238020), its seven-byte epilogue (0x2381B1) and the constants it reads are retail; the owner is a late allocator owner (1,024 RX bytes, no RW) placed after every other owner or appended to an installed sealed image. Mixed or foreign bytes refuse before mutation.",
+        "A CPU defender in the established man task, running straight downfield (body and requested headings within 22.5 degrees), covering a faster opposing receiver who is also running straight and fast downfield, eight to twelve yards past the line of scrimmage (ramp). Everything else returns the unpatched speed.",
+        "The strength is a whole number 0 to 100 and is fixed at build time: rebuild from the original disc to change it."
+      ],
+      "portme": [
+        "Practice or Quick Game, CPU man coverage against a go route with a receiver at least 10 Speed above the corner: check the corner falls about a yard further back by 40 yards at strength 35 (about two and three quarters at 100), with no change to turns, cuts, zone coverage, human defenders or the receiver."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and instructions; never distribute generated XBEs or retail resources.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "The real speed mapper, the hook and the cave run under Unicorn on the retail and the released v0.8 executables: strength scaling, the scope fallbacks, register and x87 preservation, and 60 Hz go-route replays of the real man planner and locomotion (WR 93 against CB 83: strength 35 adds about one yard of separation by 40 yards). No route scripts, contact or full game scheduler.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "whole number 0 to 100; default 0 in Basic and Advanced, 35 in Experimental",
+            "name": "speed_threshold",
+            "required": true
+          }
+        ],
+        "notes": "Build-time only. 0 skips the writer and its allocation. The strength is stored in one byte of the owned code."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "One 7-byte hook at 0x2381B1 (the speed mapper epilogue) and 1,024 owned RX bytes; no RW state.",
+        "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+      },
+      "summary": "A faster receiver pulls away from a slower CPU corner on a go route or other straight deep route in man coverage: the corner's straight running speed is reduced a little for each point of Speed he gives up, scaled by the chosen strength.",
+      "surface": "gameplay_tuning_sliders",
+      "title": "Speed separation on deep routes (experimental, unwitnessed)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_speed_threshold"
+    },
+    {
+      "backend": {
         "command": "python3 -m mod_editor.core.nfl2k5_patch_cli xbe_space <source.xbe> <new-copy.xbe>",
         "module": "mod_editor/core/nfl2k5_patch_cli.py",
         "operation": "write"

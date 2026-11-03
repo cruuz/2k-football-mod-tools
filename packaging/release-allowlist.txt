@@ -1081,6 +1081,7 @@ mod_editor/core/nfl2k5_screen_hooks_code.py
 mod_editor/core/nfl2k5_senior_bowl.py
 mod_editor/core/nfl2k5_senior_bowl_code.py
 mod_editor/gui/beta62_options.py
+mod_editor/gui/speed_threshold_ui.py
 mod_editor/gui/modern_naming_panel_qt.py
 mod_editor/gui/my_career_panel_qt.py
 mod_editor/gui/play_info_panel_qt.py
@@ -2114,6 +2115,8 @@ data/nfl2k5_rookie_faces/faces_16.png
 data/nfl2k5_rookie_faces/faces_16_pal.png
 mod_editor/core/nfl2k5_return_coverage.py
 mod_editor/core/nfl2k5_catch_snap_limit.py
+mod_editor/core/nfl2k5_speed_threshold.py
+mod_editor/core/nfl2k5_speed_threshold_code.py
 mod_editor/core/nfl2k5_cpu_third_down.py
 tools/nfl2k5_weather_editor.py
 tools/nfl2k5_weather_time_of_day.py
@@ -3841,6 +3844,7 @@ tests/mod_editor/test_nfl2k5_practice_injuries.py
 tests/mod_editor/test_nfl2k5_ball_carrier_ai.py
 tests/mod_editor/test_nfl2k5_return_coverage.py
 tests/mod_editor/test_nfl2k5_catch_snap_limit.py
+tests/mod_editor/test_nfl2k5_speed_threshold.py
 tests/mod_editor/test_b778_ai8_third_down.py
 tests/mod_editor/test_nfl2k5_star_career.py
 tools/b77/st2_star_career_assemble.py

@@ -115,16 +115,16 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
 B69_GAME_RUNTIME_PINS = {
     "mod_editor/core/nfl2k5_weather.py": "ec3d253e348ff0cf7fb1951b5dad2983d8aebc0802d5c6fca32c74dc80a6985b",
     "mod_editor/core/nfl2k5_weather_haze.py": "b8c58c592794312358eb1554b1d3be43a1ca41f7fdd8fd3cd498d4f345c641cc",
-    "mod_editor/gui/build_panel_qt.py": "3382db8114c427e326f59d8ccae1f825918079cc40b186ac2b0db24332113077",
+    "mod_editor/gui/build_panel_qt.py": "6196dac6d30be8b34479f1f1c26963ebcccf98a6fc8cc37a601535629bf8316f",
     "mod_editor/gui/gameplay_patches_panel_qt.py": "8ad54526f3d31ed6fa01207497e8aeff987057ce05032e394ce8b80779bba8a6",
     "mod_editor/gui/my_career_panel_qt.py": "cd39ce1685ed119288122e46b0f8c1c8ba586cea611f5d5feee096a71d7ea9ac",
-    "mod_editor/gui/gameplay_project_ui.py": "4927318677c5dbd1183b139d5b4d2c460136e38a3f9bf5d5b979ba62e1ed016e",
+    "mod_editor/gui/gameplay_project_ui.py": "b3460072c8e411aa5833324b4f686afa2a5b094ebd8d0db057cf6deeaf85447e",
     "mod_editor/gui/beta62_options.py": "b83754f77982d67c2be2bd8a6d7da2f30e386bc133328f9e3ec99e774383adba",
     "tools/nfl2k5_weather_editor.py": "39a2847b873bbdc567712ca87657d700fa95e226c3408983acce4d714b1031de",
-    "mod_editor/gui/build_panel_qt.py": "3382db8114c427e326f59d8ccae1f825918079cc40b186ac2b0db24332113077",
+    "mod_editor/gui/build_panel_qt.py": "6196dac6d30be8b34479f1f1c26963ebcccf98a6fc8cc37a601535629bf8316f",
     "mod_editor/gui/gameplay_patches_panel_qt.py": "8ad54526f3d31ed6fa01207497e8aeff987057ce05032e394ce8b80779bba8a6",
     "mod_editor/gui/my_career_panel_qt.py": "cd39ce1685ed119288122e46b0f8c1c8ba586cea611f5d5feee096a71d7ea9ac",
-    "mod_editor/gui/gameplay_project_ui.py": "4927318677c5dbd1183b139d5b4d2c460136e38a3f9bf5d5b979ba62e1ed016e",
+    "mod_editor/gui/gameplay_project_ui.py": "b3460072c8e411aa5833324b4f686afa2a5b094ebd8d0db057cf6deeaf85447e",
     "mod_editor/gui/beta62_options.py": "b83754f77982d67c2be2bd8a6d7da2f30e386bc133328f9e3ec99e774383adba",
     "tools/nfl2k5_weather_editor.py": "39a2847b873bbdc567712ca87657d700fa95e226c3408983acce4d714b1031de",
     "tools/nfl2k5_weather_time_of_day.py": "37b2bd10f686db9fa99ba9034f9a7f68daa00bff516250ac0f67678880b98b47",
@@ -2055,6 +2055,8 @@ def main() -> int:
         "mod_editor.core.nfl2k5_runner_vision",                   # b780 cv2-runner
         "mod_editor.core.nfl2k5_return_coverage",                  # b778-kr1
         "mod_editor.core.nfl2k5_catch_snap_limit",                 # b780-cv4
+        "mod_editor.core.nfl2k5_speed_threshold",                  # b780-cv5
+        "mod_editor.core.nfl2k5_speed_threshold_code",             # b780-cv5
         "mod_editor.core.nfl2k5_cpu_third_down",                   # b778-ai8
         "mod_editor.core.nfl2k5_alien_prospect",                  # b778-ee1
         "mod_editor.core.nfl2k5_sportscenter_lineup",             # b778-sc2, in-place
@@ -2327,11 +2329,11 @@ def main() -> int:
         check_files=False,
     )
     product_catalog = product_catalog_module.build_nfl2k5_product_catalog(registry)
-    require(len(registry.capabilities) == 221,  # b780-int: + coach_carousel (c6), franchise_history (j23), history_screen (j4); c2's duplicate rosters.coaching_staff row dropped (c4's rosters.coach_staff covers the Coaches tab); b77-f5: + Player Card honors page; b77-v1: + modern goalposts; b76: + custom intro video, ESPN presentation marks (2026), b76-p2 wipes and boards, b76-h1 historic teams in Quick Game, b76-u2 MetLife, b76-m1 25 more moments, b76-k1 128 MB memory, b76-vb3 kickoff return blocking, b76-u4 venues 2026, b76-u5, b76-u6, b76-st, b76-tf, b76-km: + kick meter, b76-hm, b76-st3: + modern_usbank, b76-pf: + the practice facility, b76-st4: + modern_hard_rock, modern_gillette, modern_lambeau, modern_everbank, b76-st5: + modern_board_kit, b77-f4: + letter grades in Franchise
+    require(len(registry.capabilities) == 222,  # b780-int: + coach_carousel (c6), franchise_history (j23), history_screen (j4); c2's duplicate rosters.coaching_staff row dropped (c4's rosters.coach_staff covers the Coaches tab); b77-f5: + Player Card honors page; b77-v1: + modern goalposts; b76: + custom intro video, ESPN presentation marks (2026), b76-p2 wipes and boards, b76-h1 historic teams in Quick Game, b76-u2 MetLife, b76-m1 25 more moments, b76-k1 128 MB memory, b76-vb3 kickoff return blocking, b76-u4 venues 2026, b76-u5, b76-u6, b76-st, b76-tf, b76-km: + kick meter, b76-hm, b76-st3: + modern_usbank, b76-pf: + the practice facility, b76-st4: + modern_hard_rock, modern_gillette, modern_lambeau, modern_everbank, b76-st5: + modern_board_kit, b77-f4: + letter grades in Franchise
             "canonical capability registry row count changed")
     require(len(product_catalog.sections) == 12,
             "product sidebar category count changed")
-    require(len(product_catalog.capabilities) == 146,  # b780-int: + coach_carousel (c6), franchise_history (j23), history_screen (j4); c2's duplicate rosters.coaching_staff row dropped (c4's rosters.coach_staff covers the Coaches tab); b77-f5: + Player Card honors page; b77-v1: + modern goalposts; b76: + custom intro video, ESPN presentation marks (2026), b76-p2 wipes and boards, b76-h1, b76-u2, b76-m1, b76-k1, b76-vb3, b76-u4, b76-u5, b76-u6, b76-st, b76-tf, b76-km: + kick meter, b76-hm, b76-pf: + the practice facility, b76-st4: + Hard Rock, Gillette, Lambeau and EverBank, b76-st5: + the modern stadium boards, b77-f4: + letter grades in Franchise
+    require(len(product_catalog.capabilities) == 147,  # b780-int: + coach_carousel (c6), franchise_history (j23), history_screen (j4); c2's duplicate rosters.coaching_staff row dropped (c4's rosters.coach_staff covers the Coaches tab); b77-f5: + Player Card honors page; b77-v1: + modern goalposts; b76: + custom intro video, ESPN presentation marks (2026), b76-p2 wipes and boards, b76-h1, b76-u2, b76-m1, b76-k1, b76-vb3, b76-u4, b76-u5, b76-u6, b76-st, b76-tf, b76-km: + kick meter, b76-hm, b76-pf: + the practice facility, b76-st4: + Hard Rock, Gillette, Lambeau and EverBank, b76-st5: + the modern stadium boards, b77-f4: + letter grades in Franchise
             "NFL 2K5 product capability count changed")
     _exercise_default_provider_controller(
         modules["mod_editor.core.controller"],
@@ -2734,7 +2736,7 @@ def main() -> int:
     print(
         "2K5_MOD_STUDIO_RUNTIME_CLOSURE_PASS "
         f"product_modules={len(product_modules)} tool_modules={len(tool_modules)} "
-        "registry=221 sections=12 nfl2k5_capabilities=146 "
+        "registry=222 sections=12 nfl2k5_capabilities=147 "
         "reports=16 reviewed_metadata=25 sets=634 visuals=71963 "
         "team_kit_sets=634 team_kit_assets_per_set=39 "
         "text_banks=716 text_strings=23346 text_editable=20074 "

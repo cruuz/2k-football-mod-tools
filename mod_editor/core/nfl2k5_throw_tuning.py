@@ -173,6 +173,7 @@ from . import nfl2k5_standings_records as standings_records_patch  # noqa: F401 
 from . import nfl2k5_runner_vision as runner_vision_patch  # noqa: F401  b780 cv2-runner: CPU ball carrier vision (late owner); imported so the cave manifest recorder observes it
 from . import nfl2k5_dive_window as dive_window_patch  # noqa: F401  b780-cv3: defenders leap only for balls they can reach (late owner)
 from . import nfl2k5_catch_snap_limit as catch_snap_limit_patch  # noqa: F401  b780-cv4: defender catch snap limit (late owner); imported so the cave manifest recorder observes it
+from . import nfl2k5_speed_threshold as speed_threshold_patch  # noqa: F401  b780-cv5: late owner (speed separation); imported so the cave manifest recorder observes it and the presets read its SOFTDRINK strength
 from . import nfl2k5_preseason_warning as preseason_warning_patch  # noqa: F401  b779-int1: rc1's warned flag joins the union (LATE_OWNERS before the sim owners)
 from . import nfl2k5_cpu_passer_iq as cpu_passer_iq_patch  # noqa: F401  b780 a-passer: late owner (CPU quarterbacks throw on time); imported so the cave manifest recorder observes it
 from . import nfl2k5_cpu_clock2 as cpu_clock2_patch  # noqa: F401  b780 b-clock: late owner (modern CPU clock management)
