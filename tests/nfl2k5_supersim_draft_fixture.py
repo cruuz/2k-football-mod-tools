@@ -101,8 +101,14 @@ class Machine:
         from unicorn import x86_const as x
         self.u, self.x = u, x
         self.uc = u.Uc(u.UC_ARCH_X86, u.UC_MODE_32)
-        self.uc.mem_map(0x10000, 0x1510000 - 0x10000)
         im = XbeImage(payload)
+        # b780 sl1: map what the image occupies. A composed beta-80 build grows the scale-out v4 pool (0x150B000, a
+        # page per appended owner) past the retail-era 0x1510000, and loading its sections then failed here with
+        # UC_ERR_WRITE_UNMAPPED. Images within 0x1510000 get exactly the old mapping; the arena stays separate.
+        end = max([0x1510000] + [(s.start + max(s.size, s.raw_size) + 0xFFF) & ~0xFFF for s in im.sections])
+        if end > self.ARENA:
+            raise ValueError("XBE sections reach the fixture arena at 0x2000000")
+        self.uc.mem_map(0x10000, end - 0x10000)
         for section in im.sections:
             if section.raw_size:
                 self.uc.mem_write(section.start, im.read(section.start, section.raw_size))
