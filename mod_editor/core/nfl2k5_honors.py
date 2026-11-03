@@ -67,6 +67,7 @@ from . import nfl2k5_xbe_space as space
 from .nfl2k5_cave_oracle import XbeImage
 
 OWNER = "nfl2k5_honors"
+UPGRADES_PREVIOUS = True   # b780 n6: status() may read "previous" (the beta-79 install); apply() upgrades it
 EVIDENCE = "EXPERIMENTAL"
 CODE_SIZE = 2560
 DATA_SIZE = 16

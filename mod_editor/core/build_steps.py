@@ -1179,7 +1179,7 @@ def _install_hooks() -> None:
         live_pwrite = getattr(os, "pwrite", None)
         if live_pwrite is not None:
             _ORIGINALS["pwrite"] = live_pwrite
-            os.pwrite = _hooked_pwrite
+            setattr(os, "pwrite", _hooked_pwrite)  # only reached where os.pwrite exists (checked above)
         _ORIGINALS["write"] = os.write
         os.write = _hooked_write
         for name in ("writev", "pwritev"):

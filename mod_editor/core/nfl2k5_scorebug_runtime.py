@@ -490,7 +490,26 @@ def _abi_valid(payload):
     return True
 
 
+# b780 n6: beta-79 / SOFTDRINK 2K28 v0.8 carries the 5,376-byte revision (no ball spot, no page strip fit). Its exact
+# install, as e8c1de3a8's recognizer reads it (frozen in nfl2k5_scorebug_runtime_b779 with its play-call layout and sprite
+# engine), reads "previous"; this release's code does not fit that allocation, so apply() refuses to update it in place.
+PREVIOUS_REVISION = "beta-79"
+PREVIOUS_REFUSAL = ("The scorebug effects on this disc are the beta 79 revision. This release's version is larger than "
+                    "the room the earlier build gave it, so it cannot be updated in place. Rebuild from your retail game.")
+
+
 def status(payload):
+    state = _status(payload)
+    if state != "foreign":
+        return state
+    try:
+        from . import nfl2k5_scorebug_runtime_b779 as previous
+        return "previous" if previous.status(payload) == "applied" else "foreign"
+    except (ValueError, KeyError, IndexError, struct.error, SystemExit, ImportError):
+        return "foreign"
+
+
+def _status(payload):
     try:
         ss = space.status(payload)
         if ss == "foreign" or scene.xbe_status(payload) == "foreign" or not _abi_valid(payload):
@@ -538,6 +557,7 @@ def status(payload):
 def apply(payload):
     before = status(payload)
     space._require(before != "foreign", "foreign/mixed scorebug runtime; rebuild from supported base")
+    space._require(before != "previous", PREVIOUS_REFUSAL)   # b780 n6
     if before == "applied":
         return payload, {"status": "already_applied", "changed_bytes": 0,
                          "experimental": True, "runtime_witnessed": False}

@@ -561,7 +561,13 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
                                     # gp1's skill tiers); keep it off here so the probe copy below installs one complete set.
                                     cpu_qb_zone_windows=False, cpu_qb_recheck=False, cpu_qb_tiers=False,
                                     # b780 a-passer: CPU quarterbacks throw on time (on in Experimental), observed on the copy too.
-                                    cpu_passer_iq=False),
+                                    cpu_passer_iq=False,
+                                    # b780-int: the wave's other late allocator owners the Experimental preset selects (the
+                                    # History screen, Team Standings records, the audible legend) or the first space pass
+                                    # now reserves; the preset build above observed them, so the probe image stays
+                                    # allocator-free ("allocation requests differ" otherwise).
+                                    history_screen=False, standings_records=False, audible_legend=False,
+                                    franchise_history=False, scramble_blocking=False),
                             progress=lambda message, *_: progress(message))
             owner_base = build._xbe_bytes(target)
             # All current owners, even the hidden opt-in patch, reserve their space.

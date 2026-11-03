@@ -476,7 +476,7 @@ def _pins_are_retail(payload: bytes) -> bool:
             # call. Authorize that exact five-byte delegation only after its
             # complete template, allocator, hooks and context checks pass.
             from . import nfl2k5_my_career_mode as career_mode
-            if career_mode.status(payload) != "applied":
+            if career_mode.status(payload) not in ("applied", "previous"):   # b780 n6: the beta-79 MyCareer too
                 return False
             actual = actual[:2] + expected[2:7] + actual[7:]
         if va == SCREEN_PUSH_VA and actual != expected:
@@ -490,7 +490,7 @@ def _pins_are_retail(payload: bytes) -> bool:
             # MyCareer owns only the ten-byte PUSH prologue. Validate its full
             # sealed installation and retain the complete native tail pin.
             from . import nfl2k5_my_career as career
-            if career.status(payload) != "applied":
+            if career.status(payload) not in ("applied", "previous"):   # b780 n6: the beta-79 MyCareer too
                 return False
             actual = expected[:10] + actual[10:]
         if actual != expected:

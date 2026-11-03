@@ -187,9 +187,10 @@ class CompleteOwnerTests(unittest.TestCase):
         self.assertEqual(pooled(v3), ["nfl2k5_k128", "nfl2k5_champions", "nfl2k5_cpu_third_down"])  # b780 p2: third down falls to the pool
         self.assertEqual(pooled(space.plan(REQUESTS + (("extra", "code", 32, 16),))), pooled(v3))
         self.assertEqual(pooled(space.plan(REQUESTS + (("extra", "code", free, 16),))), pooled(v3))    # fills the run exactly
-        # one aligned step more pushes the last late code owner of the run, cpu_third_down, whole into the pool
+        # one aligned step more pushes the last late code owner of the run whole into the pool (b780 p2: third down is
+        # already there, so the next one is letter_grades_progress)
         self.assertEqual(pooled(space.plan(REQUESTS + (("extra", "code", free + 16, 16),))),
-                         ["nfl2k5_k128", "nfl2k5_champions", "nfl2k5_cpu_third_down"])
+                         ["nfl2k5_k128", "nfl2k5_letter_grades_progress", "nfl2k5_champions", "nfl2k5_cpu_third_down"])
         v4 = space.plan(REQUESTS + (("extra", "code", 98305, 16),))
         extra = next(a for a in v4["allocations"] if a["owner"] == "extra")
         self.assertEqual((v4["version"], extra["va"], extra["size"]), (4, space.POOL_VA + space.PAGE, 98305))

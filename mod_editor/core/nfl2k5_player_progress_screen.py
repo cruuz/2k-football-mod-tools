@@ -992,7 +992,8 @@ def _co_owner_restore(image: XbeImage, va: int, size: int, content: bytearray) -
     payload = bytes(image.data)
     patched: dict[int, bytes] = {}
     from . import nfl2k5_franchise_economy as economy
-    if economy.status(payload) == "applied":
+    # b780 n6: a beta-79 economy reads "legacy" (b4: upgraded in place); its stage getter call is the same bytes
+    if economy.status(payload) in ("applied", "legacy"):
         patched.update({site.va: site.patched for site in economy.sites()})
     if any(at == 0x00248632 for at, _retail in hooked):
         from . import nfl2k5_coach_carousel as carousel
@@ -1035,9 +1036,32 @@ def _footer_prerequisite_ok(image: XbeImage, site) -> bool:
     return raw[0] == 0xE8
 
 
+# b780 n6: beta-79 / SOFTDRINK 2K28 v0.8 carries the previous revision (frozen generator nfl2k5_player_progress_screen_b779:
+# the old event slot 0xF4268 and the older cave). It reads "previous"; MyCareer and the franchise owners see its exact
+# hooks through the functions below; apply() refuses to update it in place (MyCareer's beta-79 handlers are its chain
+# targets), so the update is a rebuild from the retail game.
+PREVIOUS_REVISION = "beta-79"
+PREVIOUS_REFUSAL = ("The Player Progress screen on this disc is the beta 79 revision, chained to the beta 79 MyCareer, so "
+                    "this release cannot update it in place. Rebuild from your retail game to get this release's screen.")
+
+
+def _previous_module():
+    from . import nfl2k5_player_progress_screen_b779 as previous
+    return previous
+
+
+def _revision(previous: bool):
+    """(code_for, _sites, _footer_sites) of this release or of the beta-79 revision."""
+    if previous:
+        old = _previous_module()
+        return old.code_for, old._sites, old._footer_sites
+    return code_for, _sites, _footer_sites
+
+
 def _exact_full_install(payload: bytes):
-    """(code_va, displaced targets) of this owner's complete full install without the native admission (its code
-    blob, trailer and every main and footer hook exactly as apply() writes them), else None (b778 bd3)."""
+    """(code_va, displaced targets, previous) of this owner's complete full install without the native admission (its
+    code blob, trailer and every main and footer hook exactly as apply() writes them; b780 n6: or exactly as beta-79
+    wrote them, previous=True), else None (b778 bd3)."""
     try:
         found = allocation(payload)
         if not found:
@@ -1048,12 +1072,16 @@ def _exact_full_install(payload: bytes):
         if trailer is None or trailer[0] != VARIANT_FULL or trailer[4]:
             return None
         targets = trailer[1:4]
-        if image.read(code_va, CODE_SIZE) != code_for(code_va, data_va, targets, use_native_admission=False):
+        raw = image.read(code_va, CODE_SIZE)
+        for previous in (False, True):
+            make_code, make_sites, make_footer = _revision(previous)
+            if raw != make_code(code_va, data_va, targets, use_native_admission=False):
+                continue
+            if all(image.read(va, len(after)) == after
+                   for _label, va, _before, after in make_sites(code_va) + make_footer(code_va, include_admission=True)):
+                return code_va, targets, previous
             return None
-        for _label, va, _before, after in _sites(code_va) + _footer_sites(code_va, include_admission=True):
-            if image.read(va, len(after)) != after:
-                return None
-        return code_va, targets
+        return None
     except _ERRORS:
         return None
 
@@ -1067,10 +1095,10 @@ def chained_footer_sites(payload: bytes) -> dict[int, tuple[bytes, int | None]]:
     found = _exact_full_install(payload)
     if found is None:
         return {}
-    code_va, targets = found
+    code_va, targets, previous = found
     displaced = dict(zip(("total_size", "save_front_office", "load_end"), targets))
     return {va: (after, displaced.get(label))
-            for label, va, _before, after in _footer_sites(code_va, include_admission=True)}
+            for label, va, _before, after in _revision(previous)[2](code_va, include_admission=True)}
 
 
 def hosted_addresses(payload: bytes) -> tuple[int, int] | None:
@@ -1094,7 +1122,7 @@ def installed_main_sites(payload: bytes) -> list[tuple[str, int, bytes, bytes]]:
     if found is None:
         hosted_va = _exact_hosted_install(payload)
         return [] if hosted_va is None else _sites(hosted_va)
-    return _sites(found[0])
+    return _revision(found[2])[1](found[0])
 
 
 def _exact_hosted_install(payload: bytes) -> int | None:
@@ -1178,16 +1206,23 @@ def _recognize(payload: bytes) -> str:
         _require(raw == expected, "foreign visibility-only code")
         _require(_guards_ok(image, visible), "foreign Player Progress prerequisite")
         return "visible" if states == {"applied"} else "retail"
+    raw = image.read(code_va, CODE_SIZE)
+    targets = (size_target, save_target, load_target)
+    previous = raw != code_for(code_va, data_va, targets, use_native_admission=native_admission)
+    if previous:   # b780 n6: the exact beta-79 full install (code, nine sites and footer hooks) reads "previous"
+        old = _previous_module()
+        _require(raw == old.code_for(code_va, data_va, targets, use_native_admission=native_admission),
+                 "foreign Player Progress code")
+        full_sites = old._sites(code_va) + old._footer_sites(code_va, include_admission=not native_admission)
     states = _site_states(image, full_sites)
     _require(states in ({"retail"}, {"applied"}), "mixed Player Progress sites")
     if native_admission:
         _require(image.read(SITE_ADMISSION[0], 1) == b"\xe9",
                  "the native admission hook this build chains to is gone")
-    raw = image.read(code_va, CODE_SIZE)
-    expected = code_for(code_va, data_va, (size_target, save_target, load_target),
-                        use_native_admission=native_admission)
-    _require(raw == expected, "foreign Player Progress code")
     _require(_guards_ok(image, full_sites), "foreign Player Progress prerequisite")
+    if previous:
+        _require(states == {"applied"}, "a beta-79 Player Progress cave without its hooks")
+        return "previous"
     return "applied" if states == {"applied"} else "retail"
 
 
@@ -1232,6 +1267,7 @@ def apply(payload: bytes, *, visible_only: bool = False, hosted: bool = False) -
         return payload, {**common, "status": "already_applied", "changed_bytes": 0, "edits": []}
     if state == "applied" and not visible_only and not hosted:
         return payload, {**common, "status": "already_applied", "changed_bytes": 0, "edits": []}
+    _require(state != "previous", PREVIOUS_REFUSAL)   # b780 n6
     _require(state in ("retail", "visible") and not (hosted and state == "visible"), "foreign Player Progress installation")
     before = payload
     if allocation(payload) is None:

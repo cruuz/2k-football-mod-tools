@@ -401,7 +401,7 @@ def _inspect(payload):
     neighbors = [(va, bytes.fromhex(pin)) for name, va, pin, _, _ in my_career.HOOKS
                  if name == "screen_dispatch"]
     if any(image.read(va, len(retail)) != retail for va, retail in neighbors):
-        _require(my_career.status(payload) == "applied", "Foreign MyCareer screen-push hook")
+        _require(my_career.status(payload) in ("applied", "previous"), "Foreign MyCareer screen-push hook")  # b780 n6
     collection_instructions = ()
     if space.has_music(payload):
         # policy.status above validated the complete sealed collection owner.

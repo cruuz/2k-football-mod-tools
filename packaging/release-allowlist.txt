@@ -589,6 +589,7 @@ mod_editor/core/nfl2k5_sportscenter_lineup.py
 mod_editor/core/nfl2k5_draft_clock.py
 mod_editor/core/nfl2k5_weekly_progression.py
 mod_editor/core/nfl2k5_player_progress_screen.py
+mod_editor/core/nfl2k5_player_progress_screen_b779.py
 # b780 j23: franchise extension footer (2K5XTND1 format + its native host)
 mod_editor/core/nfl2k5_franchise_extension.py
 mod_editor/core/nfl2k5_franchise_footer.py
@@ -598,10 +599,12 @@ mod_editor/core/nfl2k5_history_code.py
 mod_editor/core/nfl2k5_contract_college_guard.py
 mod_editor/core/nfl2k5_coach_career_fix.py
 mod_editor/core/nfl2k5_sim_cb_tackles.py
+mod_editor/core/nfl2k5_sim_cb_tackles_b779.py
 mod_editor/core/nfl2k5_option_defaults.py
 mod_editor/core/nfl2k5_profile_defaults.py
 mod_editor/core/nfl2k5_sim_rb_injuries.py
 mod_editor/core/nfl2k5_sim_realism.py
+mod_editor/core/nfl2k5_sim_realism_b779.py
 mod_editor/core/nfl2k5_coach_carousel.py
 mod_editor/core/nfl2k5_coach_carousel_code.py
 data/nfl2k5_coach_carousel_2026.json
@@ -934,7 +937,9 @@ data/playbooks/softdrink_modern_defense.2k5book
 mod_editor/core/nfl2k5_cave_oracle.py
 # Integrated experimental music and scorebug tools; authored inputs stay local.
 mod_editor/core/nfl2k5_scorebug_runtime.py
+mod_editor/core/nfl2k5_scorebug_runtime_b779.py
 mod_editor/core/nfl2k5_playcall_layout.py
+mod_editor/core/nfl2k5_playcall_layout_b779.py
 mod_editor/core/nfl2k5_scorebug_resources.py
 mod_editor/core/nfl2k5_scorebug_ingame.py
 mod_editor/core/nfl2k5_music_policy.py
@@ -1068,6 +1073,7 @@ mod_editor/core/nfl2k5_my_career.py
 mod_editor/core/nfl2k5_my_career_code.py
 mod_editor/core/nfl2k5_my_career_mode.py
 mod_editor/core/nfl2k5_my_career_mode_code.py
+mod_editor/core/nfl2k5_my_career_mode_code_b779.py
 mod_editor/core/nfl2k5_my_career_home.py
 mod_editor/core/nfl2k5_my_career_home_code.py
 mod_editor/core/nfl2k5_my_career_save.py
@@ -2141,6 +2147,7 @@ data/nfl2k5_scorebug_mnf/painted_label_2x.png
 data/nfl2k5_scorebug_mnf/painted_label_2x.json
 mod_editor/core/nfl2k5_scorebug_sprite.py
 mod_editor/core/nfl2k5_scorebug_sprite_code.py
+mod_editor/core/nfl2k5_scorebug_sprite_code_b779.py
 mod_editor/gui/scorebug_sprite_preview_qt.py
 data/nfl2k5_scorebug_sprite/template.png
 data/nfl2k5_scorebug_sprite/layout.json
@@ -3818,13 +3825,16 @@ tests/mod_editor/test_nfl2k5_pass_protection.py
 tests/mod_editor/test_nfl2k5_pass_protection_unicorn.py
 mod_editor/core/nfl2k5_preseason_warning.py
 mod_editor/core/nfl2k5_pass_rush_stats.py
+mod_editor/core/nfl2k5_pass_rush_stats_b779.py
 mod_editor/core/nfl2k5_pass_rush_stats_code.py
+mod_editor/core/nfl2k5_pass_rush_stats_code_b779.py
 tests/mod_editor/test_nfl2k5_pass_rush_stats.py
 mod_editor/core/nfl2k5_history_screen.py
 mod_editor/core/nfl2k5_history_screen_code.py
 tests/mod_editor/test_b780_j4_history_screen.py
 tests/mod_editor/test_b780_n8_coach_table_order.py
 tests/mod_editor/test_b780_n8_history_compose.py
+tests/mod_editor/test_b780_n6_champions_previous.py
 mod_editor/core/nfl2k5_cpu_passer_iq.py
 mod_editor/core/nfl2k5_cpu_passer_iq_code.py
 tests/mod_editor/test_nfl2k5_cpu_passer_iq.py

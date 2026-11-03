@@ -569,8 +569,8 @@ def xbe_version(payload: bytes) -> str:
             return "retail"
         for version, specs in versions.items():
             expected = {**union, **{va: new for va, _old, new, _ in specs}}
-            if version == VERSION and runtime_identity_installed(payload):
-                from . import nfl2k5_scorebug_runtime as runtime
+            runtime = _installed_runtime(payload) if version == VERSION else None
+            if runtime is not None:
                 expected.update({va: new for va, _old, new, _ in runtime.override_edits() if va in expected})
             if have == expected:
                 return version
@@ -579,9 +579,7 @@ def xbe_version(payload: bytes) -> str:
     return "foreign"
 
 
-def runtime_identity_installed(payload):
-    """Recognize the complete existing owner without recursive status calls."""
-    from . import nfl2k5_scorebug_runtime as runtime
+def _runtime_identity(payload, runtime):
     try:
         code, data = runtime.sites(payload)
         content, labels = runtime.code_for(code["va"], data["va"])
@@ -591,6 +589,22 @@ def runtime_identity_installed(payload):
                     for name, (va, _old) in runtime.HOOKS.items()))
     except (ValueError, KeyError, IndexError, struct.error, SystemExit):
         return False
+
+
+def _installed_runtime(payload):
+    """The scorebug runtime module whose complete code and hooks this image carries: this release's, or (b780 n6) the
+    beta-79 one a v0.8 executable carries (nfl2k5_scorebug_runtime_b779, recognition only), else None."""
+    from . import nfl2k5_scorebug_runtime as runtime
+    if _runtime_identity(payload, runtime):
+        return runtime
+    from . import nfl2k5_scorebug_runtime_b779 as previous
+    return previous if _runtime_identity(payload, previous) else None
+
+
+def runtime_identity_installed(payload):
+    """Recognize the complete existing owner (this release's, or b780 n6 the beta-79 one) without recursive status
+    calls."""
+    return _installed_runtime(payload) is not None
 
 
 def xbe_status(payload: bytes, *, scorebug_folder=_AUTO) -> str:
@@ -646,8 +660,8 @@ def apply_xbe(payload: bytes, *, scorebug_folder=None) -> tuple[bytes, dict]:
     # The input payload is unchanged throughout this loop. Recognize and fully
     # validate its owner once, rather than rehashing the XBE for every field.
     overrides = {}
-    if scorebug_folder is None and runtime_identity_installed(payload):
-        from . import nfl2k5_scorebug_runtime as runtime
+    runtime = _installed_runtime(payload) if scorebug_folder is None else None
+    if runtime is not None:      # b780 n6: the installed revision's overrides (beta-79's on a v0.8 executable)
         overrides = {va: new for va, _old, new, _ in runtime.override_edits()}
     for va,old,new,label in xbe_specs(scorebug_folder=scorebug_folder):
         new = overrides.get(va, new)

@@ -214,7 +214,7 @@ def check_guards(payload):
     from . import nfl2k5_my_career as career
     from . import nfl2k5_my_career_mode as mode
     if mode.recognized(payload):
-        _require(career.status(payload) == "applied", "foreign MyCareer owner")
+        _require(career.status(payload) in ("applied", "previous"), "foreign MyCareer owner")   # b780 n6
 
 
 def status(payload):
