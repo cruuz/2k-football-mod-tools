@@ -256,9 +256,11 @@ class ReturnMachine(FrameMachine):
     separate stationary band and a 180 degree/second turning-rate input.
     No player is teleported to a target or supplied as a touching pair.
     """
-    # Unicorn's instruction counter serializes every instruction. A hard wall
-    # timeout bounds this long replay without that overhead; the exact native
-    # exit, stack balance and all 27 phases are still required on every frame.
+    # Unicorn's instruction counter serializes every instruction. A 2 s bound on
+    # each frame's CPU time (FrameMachine.frame; a frame costs about 0.1 s, and the
+    # wall clock stops only a runaway, at 60 s) bounds this long replay without that
+    # overhead; the exact native exit, stack balance and all 27 phases are still
+    # required on every frame.
     instruction_limit = 0
     frame_timeout_us = 2_000_000
 
