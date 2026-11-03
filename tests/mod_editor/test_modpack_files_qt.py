@@ -182,9 +182,17 @@ class FilePackQtTests(unittest.TestCase):
             plan = modpack_sources.build_plan(recipe)
             with mock.patch.object(modpack_sources, "build_project", return_value={"target": "stub.iso"}) as build, \
                  mock.patch("mod_editor.core.studio_inspection.inspect_source", return_value={}):
-                def progress(*args): pass
+                seen = []
+                def progress(*args): seen.append(args)
                 panel._build_operation(plan, progress, softdrink_project=recipe["project"])
-            build.assert_called_once_with(plan, recipe["project"], progress)
+            build.assert_called_once()
+            called_plan, called_project, called_progress = build.call_args.args
+            self.assertEqual(called_plan, plan)
+            self.assertEqual(called_project, recipe["project"])
+            # b791 h3: the Build tab hands the build its step tracker (for the build log and the failure report),
+            # which forwards every progress line to the caller's progress.
+            called_progress("Probe line", 1, 2)
+            self.assertIn(("Probe line", 1, 2), seen)
         finally:
             panel.deleteLater()
 

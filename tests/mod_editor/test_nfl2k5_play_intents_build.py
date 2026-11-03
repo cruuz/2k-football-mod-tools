@@ -43,6 +43,7 @@ OLD_PAIRING = '''    if plan.read_option_runtime or plan.qb_spy:
         raise ValueError("Read option mesh controls need at least one paired authored read recipe")
 '''
 NEW_PAIRING = '''    if plan.read_option_runtime or plan.qb_spy:
+        _step("play_intents")
         resolver = _core_module("nfl2k5_play_intents")
         if resolver is None:
             raise RuntimeError("The final playbook pairing module is not available in this build")
