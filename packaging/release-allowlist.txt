@@ -16,6 +16,7 @@ LICENSE
 NOTICE.md
 docs/mod_editor/2k5_mod_studio_changelog.md
 docs/mod_editor/2k5_mod_studio_getting_started.md
+docs/mod_editor/freeze_capture_and_disc_check.md
 docs/mod_editor/career_stats.md
 docs/mod_editor/depth_roles.md
 docs/mod_editor/franchise_save.md
@@ -126,6 +127,7 @@ tests/mod_editor/test_nfl2k5_scorebug_mnf.py
 data/nfl2k5_scorebug_mnf/espn_glyphs.png
 data/nfl2k5_scorebug_mnf/espn_glyphs.json
 data/nfl2k5_scorebug_mnf/espn_wordmark.png
+data/nfl2k5_released_discs.json
 data/nfl2k5_scorebug_mnf/logos/ari.png
 data/nfl2k5_scorebug_mnf/logos/atl.png
 data/nfl2k5_scorebug_mnf/logos/bal.png
@@ -565,6 +567,8 @@ mod_editor/core/nfl2k5_accel_ramp.py
 mod_editor/core/nfl2k5_camera.py
 mod_editor/core/nfl2k5_catch_slider.py
 mod_editor/core/nfl2k5_disc_identity.py
+mod_editor/core/nfl2k5_disc_check.py
+mod_editor/core/nfl2k5_freeze_capture.py
 mod_editor/core/nfl2k5_draft_ai.py
 mod_editor/core/nfl2k5_draft_class.py
 mod_editor/core/nfl2k5_edge_rename.py

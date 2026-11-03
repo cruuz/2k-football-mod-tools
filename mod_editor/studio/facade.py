@@ -3902,6 +3902,13 @@ class Nfl2k5StudioFacade:
             progress(settings_warning, 0, 1)
         progress("Starting xemu", 0, 1)
         argv = _xemu_launch_argv(command, result.output_xiso)
+        # b780 n4: the freeze capture debugger port, only when the player turned it on (never by default)
+        from mod_editor.core import nfl2k5_freeze_capture as freeze_capture
+        debug_port = freeze_capture.launch_port()
+        if debug_port:
+            argv = freeze_capture.with_debug_port(argv, debug_port)
+            progress(f"Freeze capture is on: xemu's debugger port is {debug_port} on this computer only. If the game "
+                     f"freezes, run: python3 -m mod_editor.core.nfl2k5_freeze_capture --port {debug_port}", 0, 1)
         if sys.platform == "win32":
             _validate_xemu_executable(Path(shutil.which(command[0]) or command[0]))
         permission_note = xemu_settings.grant_build_folder(command, result.output_xiso.parent)

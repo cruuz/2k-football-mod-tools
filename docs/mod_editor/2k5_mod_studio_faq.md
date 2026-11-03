@@ -125,6 +125,14 @@ For lt9608's missing-kickoff report, include the Build summary and whether **Dyn
 was selected. It must be included in the build to change the kickoff. Compare the same build
 with Scorebug effects off. Passing offline checks do not reproduce every boot or save.
 
+## The game froze and the commentators keep repeating. What should I post?
+
+That sound means the game has stopped while the sound card replays its last audio. First check your disc copy:
+`python -m mod_editor.core.nfl2k5_disc_check "SOFTDRINK 2K28 v0.8.xiso.iso"` says whether it matches the released
+disc or names the damaged file (a cut-short or damaged copy stops the game at the first failed read). If it
+matches, turn on freeze capture and post the capture file from the next freeze. Both steps, for Linux, Steam Deck,
+macOS and Windows, are in [When the game freezes](freeze_capture_and_disc_check.md).
+
 ## Which slider helps dropped interceptions?
 
 CER asked what to increase for dropped picks. Use the game's **Interceptions** slider.
