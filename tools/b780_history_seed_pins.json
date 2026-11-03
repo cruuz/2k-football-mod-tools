@@ -1,0 +1,1903 @@
+{
+ "wikipedia": {
+  "standings_2002_AFC_East": {
+   "title": "Template:2002 AFC East standings",
+   "revision": 1312824739,
+   "revision_time": "2025-09-22T20:35:16Z",
+   "sha256": "c6fb216d19fdff2856d586cdf15da0ca6faac4296e1b4954442521ff35ee43cf"
+  },
+  "standings_2002_AFC_North": {
+   "title": "Template:2002 AFC North standings",
+   "revision": 1312825186,
+   "revision_time": "2025-09-22T20:38:17Z",
+   "sha256": "8d3600d737e07387cbf13e5abd4d8fe972f32dcb36579e8e3cd699ffa0f12176"
+  },
+  "standings_2002_AFC_South": {
+   "title": "Template:2002 AFC South standings",
+   "revision": 1312825327,
+   "revision_time": "2025-09-22T20:39:14Z",
+   "sha256": "56866f5e774587afa78b9fd88853b1dda07bba41bdab078f7b7ce8bbc4019bbd"
+  },
+  "standings_2002_AFC_West": {
+   "title": "Template:2002 AFC West standings",
+   "revision": 1312825796,
+   "revision_time": "2025-09-22T20:42:09Z",
+   "sha256": "98955d0c530738528bb4cb2e03db0241c0eb4c3f56f6041e5d14256bbe510faa"
+  },
+  "standings_2002_NFC_East": {
+   "title": "Template:2002 NFC East standings",
+   "revision": 1312828551,
+   "revision_time": "2025-09-22T20:59:28Z",
+   "sha256": "0acc76c221deac565f41fc2318f6d5743a8d1afbed49a6dc25e9cead72e0412a"
+  },
+  "standings_2002_NFC_North": {
+   "title": "Template:2002 NFC North standings",
+   "revision": 1312826363,
+   "revision_time": "2025-09-22T20:45:43Z",
+   "sha256": "77c1d8f278fee1005928e3573a9565bad7cec634dce08806a436756694db485f"
+  },
+  "standings_2002_NFC_South": {
+   "title": "Template:2002 NFC South standings",
+   "revision": 1312825060,
+   "revision_time": "2025-09-22T20:37:27Z",
+   "sha256": "5291322bf3c1dd8892d707cadf8bb8c3be2e1a64ae7256d54ef65c5ac7226f0b"
+  },
+  "standings_2002_NFC_West": {
+   "title": "Template:2002 NFC West standings",
+   "revision": 1312826406,
+   "revision_time": "2025-09-22T20:46:02Z",
+   "sha256": "51411575321ea1bfc85e86ce4ff339ece9f573fff2a2f8672d89aaee5de64a36"
+  },
+  "standings_2003_AFC_East": {
+   "title": "Template:2003 AFC East standings",
+   "revision": 1312824616,
+   "revision_time": "2025-09-22T20:34:28Z",
+   "sha256": "b620458483dae8cd3f03341dccdbe649e61cfc04b5b6d5d26fbb54eed42c7c15"
+  },
+  "standings_2003_AFC_North": {
+   "title": "Template:2003 AFC North standings",
+   "revision": 1312825183,
+   "revision_time": "2025-09-22T20:38:16Z",
+   "sha256": "42dea75611327163de3f47357106c5e1de7eaf7013ffde3fcba3e5369b59c532"
+  },
+  "standings_2003_AFC_South": {
+   "title": "Template:2003 AFC South standings",
+   "revision": 1312825326,
+   "revision_time": "2025-09-22T20:39:13Z",
+   "sha256": "3a5a72d86e83fcf6de25a671b1514878e337d4fbcc6c6857d5b14885d027f725"
+  },
+  "standings_2003_AFC_West": {
+   "title": "Template:2003 AFC West standings",
+   "revision": 1312825793,
+   "revision_time": "2025-09-22T20:42:09Z",
+   "sha256": "997a8169df11aa1d46f3a944862e49ecd3c1325c1a9c5ec4867c8e41f203f6de"
+  },
+  "standings_2003_NFC_East": {
+   "title": "Template:2003 NFC East standings",
+   "revision": 1312828549,
+   "revision_time": "2025-09-22T20:59:27Z",
+   "sha256": "70d3fb3bb699bf0cb1d1e06cf04ff7f0e0513b62a0475365924a77464663ba56"
+  },
+  "standings_2003_NFC_North": {
+   "title": "Template:2003 NFC North standings",
+   "revision": 1312826362,
+   "revision_time": "2025-09-22T20:45:43Z",
+   "sha256": "dfdcefd479ea29d32d15837be15eba1f46e53968a984844a6ed4d93f99b099e1"
+  },
+  "standings_2003_NFC_South": {
+   "title": "Template:2003 NFC South standings",
+   "revision": 1312824602,
+   "revision_time": "2025-09-22T20:34:19Z",
+   "sha256": "dd2492b1f7a78240446688b113fc9171ffcfee3a1e338d1ab6f2bb830e44777a"
+  },
+  "standings_2003_NFC_West": {
+   "title": "Template:2003 NFC West standings",
+   "revision": 1312826510,
+   "revision_time": "2025-09-22T20:46:37Z",
+   "sha256": "6a27620eb7875430a682fa1e7911775a05befd2d400c62b4ecc144f15c4782c1"
+  },
+  "standings_2004_AFC_East": {
+   "title": "Template:2004 AFC East standings",
+   "revision": 1312821213,
+   "revision_time": "2025-09-22T20:12:12Z",
+   "sha256": "efd0898c9b90165baa4f9c9a343348e3502036eb41412d40de1382ecbb887e3d"
+  },
+  "standings_2004_AFC_North": {
+   "title": "Template:2004 AFC North standings",
+   "revision": 1312821221,
+   "revision_time": "2025-09-22T20:12:15Z",
+   "sha256": "6d14bb70cc117907d8e092e8ab28f1168919a16fbd51d59b755f8786776c54d8"
+  },
+  "standings_2004_AFC_South": {
+   "title": "Template:2004 AFC South standings",
+   "revision": 1312821234,
+   "revision_time": "2025-09-22T20:12:18Z",
+   "sha256": "74c253a9e9e999aa7f8ad3146cf86af45dc1663546f8cd404a056d78b68b4f5f"
+  },
+  "standings_2004_AFC_West": {
+   "title": "Template:2004 AFC West standings",
+   "revision": 1312821238,
+   "revision_time": "2025-09-22T20:12:20Z",
+   "sha256": "71498cb06ff294393d62e488080a302c692163da106dc8e7afdaa2cb3c7f450d"
+  },
+  "standings_2004_NFC_East": {
+   "title": "Template:2004 NFC East standings",
+   "revision": 1312821244,
+   "revision_time": "2025-09-22T20:12:23Z",
+   "sha256": "781e17f1c7eaf3c1fce881d7aaba18d17d52bdd693e3f9d7bbae721ab8d86d9b"
+  },
+  "standings_2004_NFC_North": {
+   "title": "Template:2004 NFC North standings",
+   "revision": 1312821248,
+   "revision_time": "2025-09-22T20:12:25Z",
+   "sha256": "0303270afd210718b4ef3129a7ec776863b27712224ed5dd0c15d5f35d7669ee"
+  },
+  "standings_2004_NFC_South": {
+   "title": "Template:2004 NFC South standings",
+   "revision": 1324244521,
+   "revision_time": "2025-11-26T13:18:28Z",
+   "sha256": "18e56a7a81f1f3e89d3a51775ede70c9a930f0f134df48f210d5d00fdff8084d"
+  },
+  "standings_2004_NFC_West": {
+   "title": "Template:2004 NFC West standings",
+   "revision": 1312821181,
+   "revision_time": "2025-09-22T20:11:57Z",
+   "sha256": "c9764a90bf571b241aca98d970944306339780ece3b59aaa470d2e5cd8b2d1cd"
+  },
+  "standings_2005_AFC_East": {
+   "title": "Template:2005 AFC East standings",
+   "revision": 1312824738,
+   "revision_time": "2025-09-22T20:35:16Z",
+   "sha256": "d292cd400295a00a5eeec3d60fb3e89b13ccfa80dee9090ce9b7f7e79a9a19e5"
+  },
+  "standings_2005_AFC_North": {
+   "title": "Template:2005 AFC North standings",
+   "revision": 1312825179,
+   "revision_time": "2025-09-22T20:38:16Z",
+   "sha256": "c83a1a899aea16f5ccc61386263d5efc9156f977e5d9f7c91788b30341dd75da"
+  },
+  "standings_2005_AFC_South": {
+   "title": "Template:2005 AFC South standings",
+   "revision": 1312825322,
+   "revision_time": "2025-09-22T20:39:13Z",
+   "sha256": "26632988a66f07dfb56c4bffe4f0b89c1803eb6fb96e9fd817980f0341463ad5"
+  },
+  "standings_2005_AFC_West": {
+   "title": "Template:2005 AFC West standings",
+   "revision": 1376256956,
+   "revision_time": "2026-09-23T02:08:21Z",
+   "sha256": "f684ddff8a9458c2f94fde267a13e082016f9dc45a8b75908727d92531f2998c"
+  },
+  "standings_2005_NFC_East": {
+   "title": "Template:2005 NFC East standings",
+   "revision": 1312828547,
+   "revision_time": "2025-09-22T20:59:27Z",
+   "sha256": "973df8c64121458d879bd9c9ae731bd12ff67d2bdfe3b5e3af20fb9743472cb9"
+  },
+  "standings_2005_NFC_North": {
+   "title": "Template:2005 NFC North standings",
+   "revision": 1312826360,
+   "revision_time": "2025-09-22T20:45:42Z",
+   "sha256": "0a69a468224e20c5e8ecbdef74a0010058d5e1bed60ccc84d63b041ee3fd21d0"
+  },
+  "standings_2005_NFC_South": {
+   "title": "Template:2005 NFC South standings",
+   "revision": 1312824600,
+   "revision_time": "2025-09-22T20:34:19Z",
+   "sha256": "b93540e900e40c57362513f686afa83799d2e7dbdc7338b876c7eba74c3a6abe"
+  },
+  "standings_2005_NFC_West": {
+   "title": "Template:2005 NFC West standings",
+   "revision": 1331002591,
+   "revision_time": "2026-01-03T22:11:10Z",
+   "sha256": "7d1d0f841c954553a46e202170d8edbf2c707e6066991e8c833258e0f17964fc"
+  },
+  "standings_2006_AFC_East": {
+   "title": "Template:2006 AFC East standings",
+   "revision": 1312824736,
+   "revision_time": "2025-09-22T20:35:15Z",
+   "sha256": "317fd6349e9080098d487ddb233d0cd11607b4e177e3d2a1488e3558fb36777d"
+  },
+  "standings_2006_AFC_North": {
+   "title": "Template:2006 AFC North standings",
+   "revision": 1312825177,
+   "revision_time": "2025-09-22T20:38:15Z",
+   "sha256": "7cd3895e019cf17babf5d610a8c082f82100f8d29031adcc3001fed61d6647e3"
+  },
+  "standings_2006_AFC_South": {
+   "title": "Template:2006 AFC South standings",
+   "revision": 1312825323,
+   "revision_time": "2025-09-22T20:39:13Z",
+   "sha256": "20419f3535377e7f4e4332ccffb11e16533f51e59c3dd9ec768bc3ac5a8a5fd0"
+  },
+  "standings_2006_AFC_West": {
+   "title": "Template:2006 AFC West standings",
+   "revision": 1312825788,
+   "revision_time": "2025-09-22T20:42:08Z",
+   "sha256": "6c5012200cf671a1c54e3972f0b43cd48f4eaef5879a694a97c5e97b93899703"
+  },
+  "standings_2006_NFC_East": {
+   "title": "Template:2006 NFC East standings",
+   "revision": 1312828545,
+   "revision_time": "2025-09-22T20:59:26Z",
+   "sha256": "aecee008ae53ff88265a3abf368d29a55a8dd054098f9bb622d3a8373828d006"
+  },
+  "standings_2006_NFC_North": {
+   "title": "Template:2006 NFC North standings",
+   "revision": 1381408972,
+   "revision_time": "2026-10-22T07:38:55Z",
+   "sha256": "d92d987cc4a608a9b0614c2111b0a5821ba40b759cc79ea11813b30f8a2e5acd"
+  },
+  "standings_2006_NFC_South": {
+   "title": "Template:2006 NFC South standings",
+   "revision": 1312824595,
+   "revision_time": "2025-09-22T20:34:18Z",
+   "sha256": "f4cd487b76f19070ecc1462ca90ef3e13ef987286ad69f33d1f8fbf2253d4beb"
+  },
+  "standings_2006_NFC_West": {
+   "title": "Template:2006 NFC West standings",
+   "revision": 1312826504,
+   "revision_time": "2025-09-22T20:46:37Z",
+   "sha256": "6cee0cbeab9581f08388f196d05ef4e65d713ac27fb0d5a03a4f72b1fec3591b"
+  },
+  "standings_2007_AFC_East": {
+   "title": "Template:2007 AFC East standings",
+   "revision": 1312824734,
+   "revision_time": "2025-09-22T20:35:15Z",
+   "sha256": "361a7300db3fadcbfc0dc03f3243c1fd221e0dd2d225283a59afae4c1cec21e4"
+  },
+  "standings_2007_AFC_North": {
+   "title": "Template:2007 AFC North standings",
+   "revision": 1312825175,
+   "revision_time": "2025-09-22T20:38:15Z",
+   "sha256": "e5e6fcd907fd981c37c2177a82ab9865925165415b08e55d89bcf13d5d5f24eb"
+  },
+  "standings_2007_AFC_South": {
+   "title": "Template:2007 AFC South standings",
+   "revision": 1312825317,
+   "revision_time": "2025-09-22T20:39:12Z",
+   "sha256": "4895df2f87e368a3ad2a3d8e19aa868d15f8ddce221bd9e0fbef3d7acb36c7b7"
+  },
+  "standings_2007_AFC_West": {
+   "title": "Template:2007 AFC West standings",
+   "revision": 1312825786,
+   "revision_time": "2025-09-22T20:42:08Z",
+   "sha256": "11b7fd155fecd3aece8f6a79fc295775bdcd0beda0aef651c4eb3fe3bf6bb1db"
+  },
+  "standings_2007_NFC_East": {
+   "title": "Template:2007 NFC East standings",
+   "revision": 1312828241,
+   "revision_time": "2025-09-22T20:57:32Z",
+   "sha256": "248c95fc53ecda36aa6295de7d7c236d63ef6bd843326b3726084f6dcd6e7744"
+  },
+  "standings_2007_NFC_North": {
+   "title": "Template:2007 NFC North standings",
+   "revision": 1312826355,
+   "revision_time": "2025-09-22T20:45:42Z",
+   "sha256": "bfe9925f09bf60b1622ea9137877e09bfdfe3010ac07219375ff09d5530567d1"
+  },
+  "standings_2007_NFC_South": {
+   "title": "Template:2007 NFC South standings",
+   "revision": 1312824593,
+   "revision_time": "2025-09-22T20:34:17Z",
+   "sha256": "f09b6c14b876569a420a30b24775f5d51117675cb3b982ad41449944dd2f1377"
+  },
+  "standings_2007_NFC_West": {
+   "title": "Template:2007 NFC West standings",
+   "revision": 1312826503,
+   "revision_time": "2025-09-22T20:46:36Z",
+   "sha256": "8edff74201aa36404476c73466e33ea0d8580da14ff082996e46df161e046c13"
+  },
+  "standings_2008_AFC_East": {
+   "title": "Template:2008 AFC East standings",
+   "revision": 1312824733,
+   "revision_time": "2025-09-22T20:35:14Z",
+   "sha256": "ef95cd00e476d9ef5755d136c529411963a35396d9e91909b1afad3df7e8586e"
+  },
+  "standings_2008_AFC_North": {
+   "title": "Template:2008 AFC North standings",
+   "revision": 1312825171,
+   "revision_time": "2025-09-22T20:38:14Z",
+   "sha256": "66e814d83807a910e13e1eac48db6eaf24f5ab2413244552dde0384c3176c08e"
+  },
+  "standings_2008_AFC_South": {
+   "title": "Template:2008 AFC South standings",
+   "revision": 1312825315,
+   "revision_time": "2025-09-22T20:39:12Z",
+   "sha256": "157a235530969cb039c685e1b5a6a2a5a0e9e6052ff6ddddc01605086c23e8c7"
+  },
+  "standings_2008_AFC_West": {
+   "title": "Template:2008 AFC West standings",
+   "revision": 1312825780,
+   "revision_time": "2025-09-22T20:42:07Z",
+   "sha256": "39c4c718a9c6d176b5bcb93b291e33959d3c34abf9874f0143696c22a71628fb"
+  },
+  "standings_2008_NFC_East": {
+   "title": "Template:2008 NFC East standings",
+   "revision": 1312828544,
+   "revision_time": "2025-09-22T20:59:26Z",
+   "sha256": "9f74a187109b33cf52869ec83a111ec08b61d5a3069f1edc3c11424be90d2002"
+  },
+  "standings_2008_NFC_North": {
+   "title": "Template:2008 NFC North standings",
+   "revision": 1312826356,
+   "revision_time": "2025-09-22T20:45:42Z",
+   "sha256": "4785cb15d1775d0aa4a48165a1fb9d839b12b1b8e953c35605ef1aaac677cab3"
+  },
+  "standings_2008_NFC_South": {
+   "title": "Template:2008 NFC South standings",
+   "revision": 1312824591,
+   "revision_time": "2025-09-22T20:34:17Z",
+   "sha256": "228005ba23bdbc109b80f352aed324302aae94e26c99a07bd6f9a1b3de6596bb"
+  },
+  "standings_2008_NFC_West": {
+   "title": "Template:2008 NFC West standings",
+   "revision": 1312826502,
+   "revision_time": "2025-09-22T20:46:36Z",
+   "sha256": "fc3aada78a392b735a221e361e03b2835e633de14bf3c6e05337bb9cce47f262"
+  },
+  "standings_2009_AFC_East": {
+   "title": "Template:2009 AFC East standings",
+   "revision": 1312819572,
+   "revision_time": "2025-09-22T20:00:33Z",
+   "sha256": "9e78e1a2d046237f91828561f30c959639e69e494213c46e46461aae9117739e"
+  },
+  "standings_2009_AFC_North": {
+   "title": "Template:2009 AFC North standings",
+   "revision": 1312819564,
+   "revision_time": "2025-09-22T20:00:31Z",
+   "sha256": "27356a1d7ca47cce3e8a8ca1f2312db0c29729b78134ef46abb0c0e6d721c3e7"
+  },
+  "standings_2009_AFC_South": {
+   "title": "Template:2009 AFC South standings",
+   "revision": 1312819568,
+   "revision_time": "2025-09-22T20:00:32Z",
+   "sha256": "45c4b69bf4e3209e2302d17bb51c3181e3174039c3bd6b303e793f3f33a7d699"
+  },
+  "standings_2009_AFC_West": {
+   "title": "Template:2009 AFC West standings",
+   "revision": 1312819570,
+   "revision_time": "2025-09-22T20:00:33Z",
+   "sha256": "beeb3521e6d902a3b3658c6c3695f2bda8f66ceb49e577554c9724feb29ec091"
+  },
+  "standings_2009_NFC_East": {
+   "title": "Template:2009 NFC East standings",
+   "revision": 1312819579,
+   "revision_time": "2025-09-22T20:00:34Z",
+   "sha256": "6e545b7114615e5ad2bd1b065e7cc03484fade0c45207cbb4cd15dc8202bb0b4"
+  },
+  "standings_2009_NFC_North": {
+   "title": "Template:2009 NFC North standings",
+   "revision": 1312819582,
+   "revision_time": "2025-09-22T20:00:35Z",
+   "sha256": "b691ea46768136d4c9617b8fcbe44977349b71c13290ca3aca1d9efc29446e76"
+  },
+  "standings_2009_NFC_South": {
+   "title": "Template:2009 NFC South standings",
+   "revision": 1312819584,
+   "revision_time": "2025-09-22T20:00:36Z",
+   "sha256": "9c2efd0f6fda61874488b98cf1b3b6fb71e0db38786ae6dc907f48aeeccbc0ad"
+  },
+  "standings_2009_NFC_West": {
+   "title": "Template:2009 NFC West standings",
+   "revision": 1312819517,
+   "revision_time": "2025-09-22T20:00:15Z",
+   "sha256": "7b69a833f9ad060324320447435b78f7c0e1f2877c4d0ba3f6f2b0f6a7748858"
+  },
+  "standings_2010_AFC_East": {
+   "title": "Template:2010 AFC East standings",
+   "revision": 1330384360,
+   "revision_time": "2025-12-31T02:47:32Z",
+   "sha256": "b798cc62e672f81a5d7b13d73f84063961f1af7fa33107bfcda18e541b3f525b"
+  },
+  "standings_2010_AFC_North": {
+   "title": "Template:2010 AFC North standings",
+   "revision": 1312825169,
+   "revision_time": "2025-09-22T20:38:13Z",
+   "sha256": "533dc0d8c2420c9f110694eec34159c53578c53d8c2d16de3baa8eb7e8abeac6"
+  },
+  "standings_2010_AFC_South": {
+   "title": "Template:2010 AFC South standings",
+   "revision": 1329665947,
+   "revision_time": "2025-12-27T09:20:27Z",
+   "sha256": "f0a45464c313c5047553e71a30cea75327ddd1cb06e9d3a0a27c9b14893f8de0"
+  },
+  "standings_2010_AFC_West": {
+   "title": "Template:2010 AFC West standings",
+   "revision": 1312825779,
+   "revision_time": "2025-09-22T20:42:06Z",
+   "sha256": "eda8bc4840895fe1f872a1ff2386c0ea042a50db37d72517f97440d2adf222cc"
+  },
+  "standings_2010_NFC_East": {
+   "title": "Template:2010 NFC East standings",
+   "revision": 1330384494,
+   "revision_time": "2025-12-31T02:48:24Z",
+   "sha256": "c5d3dfb9e8ec84138b7782aca8cb9b7292e281521681c8c5ed9878e095b11450"
+  },
+  "standings_2010_NFC_North": {
+   "title": "Template:2010 NFC North standings",
+   "revision": 1312826240,
+   "revision_time": "2025-09-22T20:44:56Z",
+   "sha256": "95b5eb4d89393aedc34b82c59342aa79f4530c6b8150fa63b6d93c67edadf3f1"
+  },
+  "standings_2010_NFC_South": {
+   "title": "Template:2010 NFC South standings",
+   "revision": 1381409962,
+   "revision_time": "2026-10-22T07:55:20Z",
+   "sha256": "206ae45b0a5815f8af499eee9f3028c96e29a3362b42096babea894baaf83f32"
+  },
+  "standings_2010_NFC_West": {
+   "title": "Template:2010 NFC West standings",
+   "revision": 1312826501,
+   "revision_time": "2025-09-22T20:46:36Z",
+   "sha256": "63a82b493af2e9eb86425ed2c07a333ea13c94ee1d4fa1005237329bfc7b7d80"
+  },
+  "standings_2011_AFC_East": {
+   "title": "Template:2011 AFC East standings",
+   "revision": 1330384194,
+   "revision_time": "2025-12-31T02:46:19Z",
+   "sha256": "0838ae71110dd22e74f280d3b6a58225887229da05ade80ad9093078ea2f477d"
+  },
+  "standings_2011_AFC_North": {
+   "title": "Template:2011 AFC North standings",
+   "revision": 1312825164,
+   "revision_time": "2025-09-22T20:38:13Z",
+   "sha256": "b487447bfb7865cb3d1efa8b3cdc79701070c272af56d4f76bc54e3ae1458e57"
+  },
+  "standings_2011_AFC_South": {
+   "title": "Template:2011 AFC South standings",
+   "revision": 1312825311,
+   "revision_time": "2025-09-22T20:39:11Z",
+   "sha256": "a0a69f02f54deacf7072f9dcb4746a06dd06fb0a48e09c3f2f6e192d2b4f4616"
+  },
+  "standings_2011_AFC_West": {
+   "title": "Template:2011 AFC West standings",
+   "revision": 1312825774,
+   "revision_time": "2025-09-22T20:42:06Z",
+   "sha256": "aa5aa757078674780cc1d8cc025e58748bfddf19b3f17335a36fdd456f81c235"
+  },
+  "standings_2011_NFC_East": {
+   "title": "Template:2011 NFC East standings",
+   "revision": 1317862386,
+   "revision_time": "2025-10-20T13:33:06Z",
+   "sha256": "4235abe25767a0d7d9110b16135866019b15b8d32e1317bd51a53c8f816df66e"
+  },
+  "standings_2011_NFC_North": {
+   "title": "Template:2011 NFC North standings",
+   "revision": 1312826237,
+   "revision_time": "2025-09-22T20:44:56Z",
+   "sha256": "e32ff7c693786f4b75164cb358fa681284947b43b537a031197ab6e7d3c70336"
+  },
+  "standings_2011_NFC_South": {
+   "title": "Template:2011 NFC South standings",
+   "revision": 1330383968,
+   "revision_time": "2025-12-31T02:44:30Z",
+   "sha256": "bda88a8a709d68c70642a27ea5656cf74b8fbe9585575ac79b99949ab0da20c3"
+  },
+  "standings_2011_NFC_West": {
+   "title": "Template:2011 NFC West standings",
+   "revision": 1312826498,
+   "revision_time": "2025-09-22T20:46:35Z",
+   "sha256": "ce01bd7407e3a0886594c31f3ef03fc6716454bb913004e0d723f01f435520b9"
+  },
+  "standings_2012_AFC_East": {
+   "title": "Template:2012 AFC East standings",
+   "revision": 1312824728,
+   "revision_time": "2025-09-22T20:35:12Z",
+   "sha256": "6510e34b6c0d7edb1c9172d8e6fe0de857fc22541f617ab6a75d5cacf06da711"
+  },
+  "standings_2012_AFC_North": {
+   "title": "Template:2012 AFC North standings",
+   "revision": 1312825159,
+   "revision_time": "2025-09-22T20:38:12Z",
+   "sha256": "48cb352c9bee561362a3beb31242c75d37523d787d44ba685f08717a3a1114f9"
+  },
+  "standings_2012_AFC_South": {
+   "title": "Template:2012 AFC South standings",
+   "revision": 1312825308,
+   "revision_time": "2025-09-22T20:39:11Z",
+   "sha256": "352e7dcdd3d50330f53b26d94411b76c99c44c3a6142a93a3f599b9779788d02"
+  },
+  "standings_2012_AFC_West": {
+   "title": "Template:2012 AFC West standings",
+   "revision": 1312825929,
+   "revision_time": "2025-09-22T20:43:07Z",
+   "sha256": "fc8a54af35bfaeadf26b0f3bc3875f336df4ac1b1e18272ebb509775bcddab93"
+  },
+  "standings_2012_NFC_East": {
+   "title": "Template:2012 NFC East standings",
+   "revision": 1312828539,
+   "revision_time": "2025-09-22T20:59:25Z",
+   "sha256": "eac3711c02928b1fbc3ca061f56e868d40f6dfea6e376a16f9dd45b2aca4ad19"
+  },
+  "standings_2012_NFC_North": {
+   "title": "Template:2012 NFC North standings",
+   "revision": 1312826234,
+   "revision_time": "2025-09-22T20:44:55Z",
+   "sha256": "cc1331d94cc7a68bd6ca40a89a795877e00b31cbcbd24ce43a65e778efb45fac"
+  },
+  "standings_2012_NFC_South": {
+   "title": "Template:2012 NFC South standings",
+   "revision": 1312824584,
+   "revision_time": "2025-09-22T20:34:15Z",
+   "sha256": "435ed01b8b67b2f8d99b4287844d14e65482b20eaa4968a49b0991bd48fd21c4"
+  },
+  "standings_2012_NFC_West": {
+   "title": "Template:2012 NFC West standings",
+   "revision": 1312826496,
+   "revision_time": "2025-09-22T20:46:35Z",
+   "sha256": "11f43cf6063c3fc85d83482a1c6a0f1815c7dd17628c1152ff658b89fbd295fd"
+  },
+  "standings_2013_AFC_East": {
+   "title": "Template:2013 AFC East standings",
+   "revision": 1312824724,
+   "revision_time": "2025-09-22T20:35:11Z",
+   "sha256": "55a46558a28a585d765a7f959252f7e4215d9052b8634d4246779cf106061649"
+  },
+  "standings_2013_AFC_North": {
+   "title": "Template:2013 AFC North standings",
+   "revision": 1312825158,
+   "revision_time": "2025-09-22T20:38:11Z",
+   "sha256": "e39c8aec7972485d50f4a9f9f2ea5ca622b3b5623c5bf5bd5d970b5ada05d2dd"
+  },
+  "standings_2013_AFC_South": {
+   "title": "Template:2013 AFC South standings",
+   "revision": 1312825309,
+   "revision_time": "2025-09-22T20:39:11Z",
+   "sha256": "bbc9b58258829faa115b7739db519a8041522d49c97ba5ca0d14671c9e35d77f"
+  },
+  "standings_2013_AFC_West": {
+   "title": "Template:2013 AFC West standings",
+   "revision": 1312825772,
+   "revision_time": "2025-09-22T20:42:05Z",
+   "sha256": "a6c408d97169b5b81406e0db7ae4030d94ee53b9f69c2e13b8432d777010ca37"
+  },
+  "standings_2013_NFC_East": {
+   "title": "Template:2013 NFC East standings",
+   "revision": 1312828537,
+   "revision_time": "2025-09-22T20:59:24Z",
+   "sha256": "f981472ca31f7364b80388f3d3da5f148fe6f8b28d415408f6be3f98eaf593a3"
+  },
+  "standings_2013_NFC_North": {
+   "title": "Template:2013 NFC North standings",
+   "revision": 1312826231,
+   "revision_time": "2025-09-22T20:44:54Z",
+   "sha256": "6d150ea7ae318820d05915b9ec37c93f74bb5dd02d62aa3c8fb083b13077061d"
+  },
+  "standings_2013_NFC_South": {
+   "title": "Template:2013 NFC South standings",
+   "revision": 1312824579,
+   "revision_time": "2025-09-22T20:34:15Z",
+   "sha256": "98d926e7ec10289dcbc5e29f51981691148a3b14ddf8c986a934ee2bf08325b4"
+  },
+  "standings_2013_NFC_West": {
+   "title": "Template:2013 NFC West standings",
+   "revision": 1312826490,
+   "revision_time": "2025-09-22T20:46:34Z",
+   "sha256": "a4e355c2fd58d838fa8107ba5fe7123389a5ca166934c21fc4ab748fd8bc878b"
+  },
+  "standings_2014_AFC_East": {
+   "title": "Template:2014 AFC East standings",
+   "revision": 1312824718,
+   "revision_time": "2025-09-22T20:35:10Z",
+   "sha256": "ad1f7b7b6092787f5d192efa208069fe07e6995f9d270ef6bea6effeae2aa7c0"
+  },
+  "standings_2014_AFC_North": {
+   "title": "Template:2014 AFC North standings",
+   "revision": 1312825094,
+   "revision_time": "2025-09-22T20:37:41Z",
+   "sha256": "e80acc1ce9e9ef155a615dcd426c16e925f26a004787b07e7508479e2d81407e"
+  },
+  "standings_2014_AFC_South": {
+   "title": "Template:2014 AFC South standings",
+   "revision": 1312825307,
+   "revision_time": "2025-09-22T20:39:10Z",
+   "sha256": "f44a91a5b91b035b721850293d01e6e22730ad3e416f2b4929aff6294a57a63f"
+  },
+  "standings_2014_AFC_West": {
+   "title": "Template:2014 AFC West standings",
+   "revision": 1312825770,
+   "revision_time": "2025-09-22T20:42:04Z",
+   "sha256": "0a60177edd937818661a64d30095f91b92f5260c449102f4fd35837907636800"
+  },
+  "standings_2014_NFC_East": {
+   "title": "Template:2014 NFC East standings",
+   "revision": 1312828535,
+   "revision_time": "2025-09-22T20:59:24Z",
+   "sha256": "4d06c97446d98f030acc8ca33551b6a6374f1647d5c16a2d2ea4845964b18548"
+  },
+  "standings_2014_NFC_North": {
+   "title": "Template:2014 NFC North standings",
+   "revision": 1312826186,
+   "revision_time": "2025-09-22T20:44:37Z",
+   "sha256": "99594e6c8bd5fd883b96e1aa8c3b6d921635e013c8c3f1dad1622e92ba8ff1af"
+  },
+  "standings_2014_NFC_South": {
+   "title": "Template:2014 NFC South standings",
+   "revision": 1312824576,
+   "revision_time": "2025-09-22T20:34:13Z",
+   "sha256": "4602b93bfbed1de82890a7e6ca3254b1dd45f738b2bf26755cac859db358ac07"
+  },
+  "standings_2014_NFC_West": {
+   "title": "Template:2014 NFC West standings",
+   "revision": 1312826487,
+   "revision_time": "2025-09-22T20:46:34Z",
+   "sha256": "7ce0d09a21c19f61255a84e12e2815e8037d5e861c22d37a0f6f3d3b11c5515b"
+  },
+  "standings_2015_AFC_East": {
+   "title": "Template:2015 AFC East standings",
+   "revision": 1312820766,
+   "revision_time": "2025-09-22T20:09:02Z",
+   "sha256": "9d2257eb9ac0524178212e2081d0ba124844f2f4da13dac8e6c04d5e4703befa"
+  },
+  "standings_2015_AFC_North": {
+   "title": "Template:2015 AFC North standings",
+   "revision": 1312820772,
+   "revision_time": "2025-09-22T20:09:03Z",
+   "sha256": "268ae8f29123d6723be6b30fa02215e36af3b6b2e7dda5b0d49d630b5d46af0f"
+  },
+  "standings_2015_AFC_South": {
+   "title": "Template:2015 AFC South standings",
+   "revision": 1312820770,
+   "revision_time": "2025-09-22T20:09:02Z",
+   "sha256": "23d37d8aebc28b28dd72003ccc1f15f4205a4e94a30bb5b8622ee5e0cd1c9d13"
+  },
+  "standings_2015_AFC_West": {
+   "title": "Template:2015 AFC West standings",
+   "revision": 1312820765,
+   "revision_time": "2025-09-22T20:09:01Z",
+   "sha256": "a947d316a25fe81a0090af0dc2e3e711be9989a24ead9a3edd37cdcc8565e81e"
+  },
+  "standings_2015_NFC_East": {
+   "title": "Template:2015 NFC East standings",
+   "revision": 1312820759,
+   "revision_time": "2025-09-22T20:08:59Z",
+   "sha256": "8372ab09bd33d35d6c10c15ddb6ee0b9a24cf97973f586af7db2ab5694c5fb00"
+  },
+  "standings_2015_NFC_North": {
+   "title": "Template:2015 NFC North standings",
+   "revision": 1312820764,
+   "revision_time": "2025-09-22T20:09:01Z",
+   "sha256": "ca2a90b664bde8da06992452b53469799dd7a5178fb3d103edeed4e4c2775a43"
+  },
+  "standings_2015_NFC_South": {
+   "title": "Template:2015 NFC South standings",
+   "revision": 1312820761,
+   "revision_time": "2025-09-22T20:09:00Z",
+   "sha256": "a2c14080699dcb1b57bc355b37adc791d82ac71755d117ae421efd355bfd5871"
+  },
+  "standings_2015_NFC_West": {
+   "title": "Template:2015 NFC West standings",
+   "revision": 1312820724,
+   "revision_time": "2025-09-22T20:08:42Z",
+   "sha256": "0c155a92b2e2621a087edae4af6940efdd26e5cafc5075795d87a95ed4a30565"
+  },
+  "standings_2016_AFC_East": {
+   "title": "Template:2016 AFC East standings",
+   "revision": 1312822461,
+   "revision_time": "2025-09-22T20:20:29Z",
+   "sha256": "91e22f5ae765f6c7733fe7c98714010a7e504e4052e9e7bbfb216324cacb11ba"
+  },
+  "standings_2016_AFC_North": {
+   "title": "Template:2016 AFC North standings",
+   "revision": 1312822456,
+   "revision_time": "2025-09-22T20:20:28Z",
+   "sha256": "496dd506cb65a5c6760494f9ec1934c3d8860f8054901dc73e3f9cb8663bac55"
+  },
+  "standings_2016_AFC_South": {
+   "title": "Template:2016 AFC South standings",
+   "revision": 1312822458,
+   "revision_time": "2025-09-22T20:20:28Z",
+   "sha256": "8fdfd5d0fca279f0033a43e7c59cb8503c82de86f06b866afbebf2f3387a98f9"
+  },
+  "standings_2016_AFC_West": {
+   "title": "Template:2016 AFC West standings",
+   "revision": 1312822072,
+   "revision_time": "2025-09-22T20:17:58Z",
+   "sha256": "99b305a8c899e8e8139505b5c05b48e59e21fadb804a03f751e116bfd8a2be8a"
+  },
+  "standings_2016_NFC_East": {
+   "title": "Template:2016 NFC East standings",
+   "revision": 1312822466,
+   "revision_time": "2025-09-22T20:20:30Z",
+   "sha256": "eaca3878b981d14b56c0c16ab9412e7f4ee584c3732856f893e6e68b27c49279"
+  },
+  "standings_2016_NFC_North": {
+   "title": "Template:2016 NFC North standings",
+   "revision": 1312822463,
+   "revision_time": "2025-09-22T20:20:29Z",
+   "sha256": "be7c2eac773959dcd57c90606728fcd5496e207b06ad506182b9a71dbc4f2c7b"
+  },
+  "standings_2016_NFC_South": {
+   "title": "Template:2016 NFC South standings",
+   "revision": 1312822464,
+   "revision_time": "2025-09-22T20:20:30Z",
+   "sha256": "c7cf02994bc0ea460fb341be6a9e8884786435ab48fba17491c7f0ee540436c9"
+  },
+  "standings_2016_NFC_West": {
+   "title": "Template:2016 NFC West standings",
+   "revision": 1312822420,
+   "revision_time": "2025-09-22T20:20:17Z",
+   "sha256": "1721dabb0a24ecf0b33d37a6379e08518b2870374b4654a89d4e59229ba174f0"
+  },
+  "standings_2017_AFC_East": {
+   "title": "Template:2017 AFC East standings",
+   "revision": 1313435187,
+   "revision_time": "2025-09-26T06:14:32Z",
+   "sha256": "9a8a4f592d047e02620d4b8f14283cf1b1a432daaa1b6897605a9c0cc5a9b593"
+  },
+  "standings_2017_AFC_North": {
+   "title": "Template:2017 AFC North standings",
+   "revision": 1313435198,
+   "revision_time": "2025-09-26T06:14:38Z",
+   "sha256": "f7a3390d7bf55511f0db1fc90b2c70245e72532d67f1444d712a190092924f99"
+  },
+  "standings_2017_AFC_South": {
+   "title": "Template:2017 AFC South standings",
+   "revision": 1313435188,
+   "revision_time": "2025-09-26T06:14:32Z",
+   "sha256": "95c136493851aa77ccb5182615f4c1262a17a86fc07346972fc354dbab7ddc56"
+  },
+  "standings_2017_AFC_West": {
+   "title": "Template:2017 AFC West standings",
+   "revision": 1313435189,
+   "revision_time": "2025-09-26T06:14:33Z",
+   "sha256": "caea5a16f6b01ddd93be50839c5e319b625095f42a8f1447350e14db21da7073"
+  },
+  "standings_2017_NFC_East": {
+   "title": "Template:2017 NFC East standings",
+   "revision": 1313435186,
+   "revision_time": "2025-09-26T06:14:31Z",
+   "sha256": "1f53d28dd01194f331496607c58eee73f43e38706887e6a610ed48c09dfdabeb"
+  },
+  "standings_2017_NFC_North": {
+   "title": "Template:2017 NFC North standings",
+   "revision": 1313435199,
+   "revision_time": "2025-09-26T06:14:39Z",
+   "sha256": "b8ed0e647b9ca94fc30a87b22b67b40eb43a9f20184baf4a87d3ef5724d74b87"
+  },
+  "standings_2017_NFC_South": {
+   "title": "Template:2017 NFC South standings",
+   "revision": 1313435191,
+   "revision_time": "2025-09-26T06:14:33Z",
+   "sha256": "f3cd1109665ba1796d3f0495f29259d66d619693527d183b66d8af769abaca67"
+  },
+  "standings_2017_NFC_West": {
+   "title": "Template:2017 NFC West standings",
+   "revision": 1313435190,
+   "revision_time": "2025-09-26T06:14:33Z",
+   "sha256": "836baec8e4c68cd70a4e623952b5e8155e9347dba48edf3458967edcb28029aa"
+  },
+  "standings_2018_AFC_East": {
+   "title": "Template:2018 AFC East standings",
+   "revision": 1312822377,
+   "revision_time": "2025-09-22T20:19:57Z",
+   "sha256": "7a7c253eaff9eb7e3cba30bb2b802ea76aa45d52b9ce716386a38e33746739bf"
+  },
+  "standings_2018_AFC_North": {
+   "title": "Template:2018 AFC North standings",
+   "revision": 1312822360,
+   "revision_time": "2025-09-22T20:19:48Z",
+   "sha256": "d6d7efba5ef650cfb1213fff83ed1a133c6a57a252b5fa24bbc7c15054cdaec1"
+  },
+  "standings_2018_AFC_South": {
+   "title": "Template:2018 AFC South standings",
+   "revision": 1312822372,
+   "revision_time": "2025-09-22T20:19:54Z",
+   "sha256": "42d3e7bd5be77948a2af38c4ae405d25506c9bc8420bbd4920aa5d9b1dd5f9c1"
+  },
+  "standings_2018_AFC_West": {
+   "title": "Template:2018 AFC West standings",
+   "revision": 1312822069,
+   "revision_time": "2025-09-22T20:17:57Z",
+   "sha256": "a5c159fa0624fbede11ea2706bf09fa5858d4bfad04cdbdf019a79a122540b24"
+  },
+  "standings_2018_NFC_East": {
+   "title": "Template:2018 NFC East standings",
+   "revision": 1312822393,
+   "revision_time": "2025-09-22T20:20:06Z",
+   "sha256": "10141f4580d03db2175c49e8ce36c3e3b744278947c679cd3141ed275638752f"
+  },
+  "standings_2018_NFC_North": {
+   "title": "Template:2018 NFC North standings",
+   "revision": 1312822382,
+   "revision_time": "2025-09-22T20:20:00Z",
+   "sha256": "1fa89cb3e20d0ecd8debc43ade12a83c57c92b0929d3130e5e7b098110ebd9bc"
+  },
+  "standings_2018_NFC_South": {
+   "title": "Template:2018 NFC South standings",
+   "revision": 1312822388,
+   "revision_time": "2025-09-22T20:20:04Z",
+   "sha256": "703472ee768bde730e5a006bcf2588e472eed2742c102fbe5f699ab1e7ed3190"
+  },
+  "standings_2018_NFC_West": {
+   "title": "Template:2018 NFC West standings",
+   "revision": 1312822328,
+   "revision_time": "2025-09-22T20:19:38Z",
+   "sha256": "a0f0986cf7a1150820ad1df14aa84d45ce76b81153704c6b1e702a322ddbfa32"
+  },
+  "standings_2019_AFC_East": {
+   "title": "Template:2019 AFC East standings",
+   "revision": 1312822145,
+   "revision_time": "2025-09-22T20:18:30Z",
+   "sha256": "49e96c16d25820d2541bd890d51f400085ea8b635fe4c7eb18554a1e09763eb6"
+  },
+  "standings_2019_AFC_North": {
+   "title": "Template:2019 AFC North standings",
+   "revision": 1312822142,
+   "revision_time": "2025-09-22T20:18:29Z",
+   "sha256": "e8c7257739f09c0eb345a332dc1d71253af92cdf443067ad49b1121c952bf3cc"
+  },
+  "standings_2019_AFC_South": {
+   "title": "Template:2019 AFC South standings",
+   "revision": 1312822143,
+   "revision_time": "2025-09-22T20:18:29Z",
+   "sha256": "04c2996b4de7b392c37e5f3cf4e809062ee6ba85e48e92fea1a23c75fee80981"
+  },
+  "standings_2019_AFC_West": {
+   "title": "Template:2019 AFC West standings",
+   "revision": 1312822065,
+   "revision_time": "2025-09-22T20:17:56Z",
+   "sha256": "fdf2356e25fce992f2c7461a0ed8ecbb4dd3f4002f0792d97ad926019b5623c4"
+  },
+  "standings_2019_NFC_East": {
+   "title": "Template:2019 NFC East standings",
+   "revision": 1312822150,
+   "revision_time": "2025-09-22T20:18:31Z",
+   "sha256": "8190bbd52d711c9d2ac2f91a411f7716006c2b0725ced959324090206e49816b"
+  },
+  "standings_2019_NFC_North": {
+   "title": "Template:2019 NFC North standings",
+   "revision": 1312822147,
+   "revision_time": "2025-09-22T20:18:30Z",
+   "sha256": "3be249970f4f003acb54f117fbaff8d1430ca7658ccb8c373bc9919d6b8dc400"
+  },
+  "standings_2019_NFC_South": {
+   "title": "Template:2019 NFC South standings",
+   "revision": 1312822148,
+   "revision_time": "2025-09-22T20:18:31Z",
+   "sha256": "4523a7399dc0b4a8c42e5000387238e6be5ea1d82ffee136a14643d6093494e5"
+  },
+  "standings_2019_NFC_West": {
+   "title": "Template:2019 NFC West standings",
+   "revision": 1312822116,
+   "revision_time": "2025-09-22T20:18:16Z",
+   "sha256": "5e1df1e686b14e47b826a18acf7cb2654cfbab87d8da59d952c379e0ef489230"
+  },
+  "standings_2020_AFC_East": {
+   "title": "Template:2020 AFC East standings",
+   "revision": 1312822022,
+   "revision_time": "2025-09-22T20:17:37Z",
+   "sha256": "f9baa88d1e30065edb5bc403f33100699500d9b4cd1916986d916064ba58205a"
+  },
+  "standings_2020_AFC_North": {
+   "title": "Template:2020 AFC North standings",
+   "revision": 1312821998,
+   "revision_time": "2025-09-22T20:17:26Z",
+   "sha256": "ae4e22a763d0b5a6f02f866fc9a4ee9efe5e721873e9de92fd651867344b393f"
+  },
+  "standings_2020_AFC_South": {
+   "title": "Template:2020 AFC South standings",
+   "revision": 1312822019,
+   "revision_time": "2025-09-22T20:17:37Z",
+   "sha256": "dcdbf518a5e997edc5d22f1e8e9b41eabdac9fe3edf35822bac6bace450b70c3"
+  },
+  "standings_2020_AFC_West": {
+   "title": "Template:2020 AFC West standings",
+   "revision": 1312822032,
+   "revision_time": "2025-09-22T20:17:42Z",
+   "sha256": "1e526f17e08b753f87812c9217ef77e00fb0d8aebfa7b324971cfd068e26abc4"
+  },
+  "standings_2020_NFC_East": {
+   "title": "Template:2020 NFC East standings",
+   "revision": 1312822087,
+   "revision_time": "2025-09-22T20:18:04Z",
+   "sha256": "9af6fdc3ffb036111fdcd0ba45f09777cf83115367efe1df011448c1acc9f607"
+  },
+  "standings_2020_NFC_North": {
+   "title": "Template:2020 NFC North standings",
+   "revision": 1312822079,
+   "revision_time": "2025-09-22T20:18:03Z",
+   "sha256": "e94b9b95671bbd7afd6b658ad60a160fb11629a9436e7198685735c24a6c843f"
+  },
+  "standings_2020_NFC_South": {
+   "title": "Template:2020 NFC South standings",
+   "revision": 1312822080,
+   "revision_time": "2025-09-22T20:18:03Z",
+   "sha256": "f0983ceae31521eea766d7bc4166360b9645e63a2cd45ddc98b6a827b7b9f4c1"
+  },
+  "standings_2020_NFC_West": {
+   "title": "Template:2020 NFC West standings",
+   "revision": 1312822088,
+   "revision_time": "2025-09-22T20:18:05Z",
+   "sha256": "ab917a1fa8dbae1d3c92fb9e382d6bc0c32f9e8bf77c759adac0a21cc3dabb1d"
+  },
+  "standings_2021_AFC_East": {
+   "title": "Template:2021 AFC East standings",
+   "revision": 1312821937,
+   "revision_time": "2025-09-22T20:17:04Z",
+   "sha256": "c3999f332cea977d17547600f48d4cc54640285d6a0e588c339d513b457227e0"
+  },
+  "standings_2021_AFC_North": {
+   "title": "Template:2021 AFC North standings",
+   "revision": 1312821909,
+   "revision_time": "2025-09-22T20:16:51Z",
+   "sha256": "3f93bc291f34ad427cced22dd098abfff1054aebadee2b9c7782c79e62b1da5d"
+  },
+  "standings_2021_AFC_South": {
+   "title": "Template:2021 AFC South standings",
+   "revision": 1312821932,
+   "revision_time": "2025-09-22T20:17:04Z",
+   "sha256": "4f952faf83f4cc8e44ce42f25b0449de67f2bfe8a5fcfa735f56a6de20b05741"
+  },
+  "standings_2021_AFC_West": {
+   "title": "Template:2021 AFC West standings",
+   "revision": 1312821960,
+   "revision_time": "2025-09-22T20:17:13Z",
+   "sha256": "f6d63bf665635a4a740d3701d37ed524de51f7d043c89d60c745f37f296373a8"
+  },
+  "standings_2021_NFC_East": {
+   "title": "Template:2021 NFC East standings",
+   "revision": 1312821968,
+   "revision_time": "2025-09-22T20:17:16Z",
+   "sha256": "556830828aa9251d45cf42cdec16b2ae8aa551bf58836eedf00be85c2cd0bd2d"
+  },
+  "standings_2021_NFC_North": {
+   "title": "Template:2021 NFC North standings",
+   "revision": 1312821962,
+   "revision_time": "2025-09-22T20:17:14Z",
+   "sha256": "9daa9e55d0479343a25510e0403dd326c5be01d6afdab016894337465067e86a"
+  },
+  "standings_2021_NFC_South": {
+   "title": "Template:2021 NFC South standings",
+   "revision": 1312821963,
+   "revision_time": "2025-09-22T20:17:14Z",
+   "sha256": "944feaf0ff83d95bc3592a652e72617710e7705068873b6e2c25277123510e35"
+  },
+  "standings_2021_NFC_West": {
+   "title": "Template:2021 NFC West standings",
+   "revision": 1312821971,
+   "revision_time": "2025-09-22T20:17:16Z",
+   "sha256": "655bcda787b5f51241b122c73cf6c6c78716254dcad401f29f954b8cb3443d2f"
+  },
+  "standings_2022_AFC_East": {
+   "title": "Template:2022 AFC East standings",
+   "revision": 1312821820,
+   "revision_time": "2025-09-22T20:16:18Z",
+   "sha256": "3d64df5f9790bc52381e29b331a918df072239922b89514ba3eaf40659eaebcf"
+  },
+  "standings_2022_AFC_North": {
+   "title": "Template:2022 AFC North standings",
+   "revision": 1312821754,
+   "revision_time": "2025-09-22T20:15:50Z",
+   "sha256": "22e483c95b1831428e745e6aac83df5b527fedc1749060b2d368fa1ca51cc368"
+  },
+  "standings_2022_AFC_South": {
+   "title": "Template:2022 AFC South standings",
+   "revision": 1312821818,
+   "revision_time": "2025-09-22T20:16:18Z",
+   "sha256": "2c89e3b18945f4e42a40dc40ad67b1b91c163be370d2b3a9803098687d8b0a58"
+  },
+  "standings_2022_AFC_West": {
+   "title": "Template:2022 AFC West standings",
+   "revision": 1312821822,
+   "revision_time": "2025-09-22T20:16:19Z",
+   "sha256": "170ead6a480cad23a9eec339f9ff35537be1118e8da0cca9c2eef3aa2c4e5a05"
+  },
+  "standings_2022_NFC_East": {
+   "title": "Template:2022 NFC East standings",
+   "revision": 1312821835,
+   "revision_time": "2025-09-22T20:16:23Z",
+   "sha256": "a6ce3ff7db7a435755c61f02043936b803299d84e7d89f5bfdc84f6e20a976ce"
+  },
+  "standings_2022_NFC_North": {
+   "title": "Template:2022 NFC North standings",
+   "revision": 1312821830,
+   "revision_time": "2025-09-22T20:16:21Z",
+   "sha256": "08b160bbec3c4143f8b4cbb798da55743a70db9c4091796866744fc15f1b7d36"
+  },
+  "standings_2022_NFC_South": {
+   "title": "Template:2022 NFC South standings",
+   "revision": 1312821832,
+   "revision_time": "2025-09-22T20:16:22Z",
+   "sha256": "69744b5dac7150d069abaa4adfbbe586cdcb34b668370bfd8b7eacf1e6ec265a"
+  },
+  "standings_2022_NFC_West": {
+   "title": "Template:2022 NFC West standings",
+   "revision": 1312821843,
+   "revision_time": "2025-09-22T20:16:24Z",
+   "sha256": "b4849c217bd40513395311ebaec53a6dab9bb2d48c6559b0bf58fcd28c20b7e7"
+  },
+  "standings_2023_AFC_East": {
+   "title": "Template:2023 AFC East standings",
+   "revision": 1312821704,
+   "revision_time": "2025-09-22T20:15:29Z",
+   "sha256": "0da0a68aab9ec284f8b623c9ed8a36297240dccc9c3d4026abb4db211afc51ec"
+  },
+  "standings_2023_AFC_North": {
+   "title": "Template:2023 AFC North standings",
+   "revision": 1312821700,
+   "revision_time": "2025-09-22T20:15:28Z",
+   "sha256": "5a5495c7307d3df99aaf1eac4293c75799e1b832533f305177bab1e713f85dae"
+  },
+  "standings_2023_AFC_South": {
+   "title": "Template:2023 AFC South standings",
+   "revision": 1312821702,
+   "revision_time": "2025-09-22T20:15:28Z",
+   "sha256": "8fb5dc5ad4fad1470612e3714d8a8f921871c5e1373d6a885f82d9a6580b9dec"
+  },
+  "standings_2023_AFC_West": {
+   "title": "Template:2023 AFC West standings",
+   "revision": 1312821705,
+   "revision_time": "2025-09-22T20:15:29Z",
+   "sha256": "0df856727bf1eec565b46b9313e36c2fb03a0c9e9204a0ab70e5e0d94817f2b0"
+  },
+  "standings_2023_NFC_East": {
+   "title": "Template:2023 NFC East standings",
+   "revision": 1312821713,
+   "revision_time": "2025-09-22T20:15:31Z",
+   "sha256": "c067a5c66142fafa119932fc1ace530d8eaad41991a48c2f71e976e0ae6bdd7b"
+  },
+  "standings_2023_NFC_North": {
+   "title": "Template:2023 NFC North standings",
+   "revision": 1312821706,
+   "revision_time": "2025-09-22T20:15:30Z",
+   "sha256": "cf5c6414a67c7dafeed55728faa80d81095dff6106d0b5583f0232812b06148c"
+  },
+  "standings_2023_NFC_South": {
+   "title": "Template:2023 NFC South standings",
+   "revision": 1312821709,
+   "revision_time": "2025-09-22T20:15:30Z",
+   "sha256": "38f6f75c4d4145895b72887c328d3eea12ce563b05818ac960efb1af32a01d6b"
+  },
+  "standings_2023_NFC_West": {
+   "title": "Template:2023 NFC West standings",
+   "revision": 1312821662,
+   "revision_time": "2025-09-22T20:15:13Z",
+   "sha256": "91fb5379433cc5141a76a4cd60f6a0cf0d6016a25eff2ce06c4330f0fbf4c10c"
+  },
+  "standings_2024_AFC_East": {
+   "title": "Template:2024 AFC East standings",
+   "revision": 1312821629,
+   "revision_time": "2025-09-22T20:14:59Z",
+   "sha256": "e20252cb98c52fe235bab791d5974ed777632f05b86f742fd50caa9d1a601abc"
+  },
+  "standings_2024_AFC_North": {
+   "title": "Template:2024 AFC North standings",
+   "revision": 1312821625,
+   "revision_time": "2025-09-22T20:14:58Z",
+   "sha256": "f6cd0f5d167acd6b90f269805c1a698a0ccfc08a3fc9c62b4374115e4a5e6220"
+  },
+  "standings_2024_AFC_South": {
+   "title": "Template:2024 AFC South standings",
+   "revision": 1312821627,
+   "revision_time": "2025-09-22T20:14:59Z",
+   "sha256": "f0f6c51a5b7ac47285c001f742e70b4b2e6509f32f42238722a7ffe335f35836"
+  },
+  "standings_2024_AFC_West": {
+   "title": "Template:2024 AFC West standings",
+   "revision": 1312821624,
+   "revision_time": "2025-09-22T20:14:57Z",
+   "sha256": "865ca6288b71ce34d71f34774194a81d7fe29f2de959a80d8e1cb266a1139b5b"
+  },
+  "standings_2024_NFC_East": {
+   "title": "Template:2024 NFC East standings",
+   "revision": 1312821634,
+   "revision_time": "2025-09-22T20:15:01Z",
+   "sha256": "9d966c70a7dba5bd4d254d33892376c3e5690f33689948bf1390f7f18434d33a"
+  },
+  "standings_2024_NFC_North": {
+   "title": "Template:2024 NFC North standings",
+   "revision": 1312821630,
+   "revision_time": "2025-09-22T20:15:00Z",
+   "sha256": "1a8a3476d1b5c61c28fae4e047b10a97df1c5ea8e144732d168d4f646446cf6a"
+  },
+  "standings_2024_NFC_South": {
+   "title": "Template:2024 NFC South standings",
+   "revision": 1312821632,
+   "revision_time": "2025-09-22T20:15:01Z",
+   "sha256": "687dc4eb4f2dfb8b1c64007cfb3efda418d2dac7fa46428af1cad7fc8392d7f4"
+  },
+  "standings_2024_NFC_West": {
+   "title": "Template:2024 NFC West standings",
+   "revision": 1312821638,
+   "revision_time": "2025-09-22T20:15:03Z",
+   "sha256": "8556d1ef9b723e9b0972c2602e751941b457ccab59a7178da8e63df04f8f1ff0"
+  },
+  "standings_2025_AFC_East": {
+   "title": "Template:2025 AFC East standings",
+   "revision": 1331177209,
+   "revision_time": "2026-01-05T00:35:33Z",
+   "sha256": "bb32df4cabbac2a8f06cb354715f3af283977a150aa474dfc1f955f641871800"
+  },
+  "standings_2025_AFC_North": {
+   "title": "Template:2025 AFC North standings",
+   "revision": 1331211951,
+   "revision_time": "2026-01-05T04:35:21Z",
+   "sha256": "0bd38d9b3e143b3026758ce32216e02de910a84dd0f0a9c7cc81d9edef943934"
+  },
+  "standings_2025_AFC_South": {
+   "title": "Template:2025 AFC South standings",
+   "revision": 1331177320,
+   "revision_time": "2026-01-05T00:36:21Z",
+   "sha256": "5171040376e0933057343a49c5eed9718d471479258685172db429692f624152"
+  },
+  "standings_2025_AFC_West": {
+   "title": "Template:2025 AFC West standings",
+   "revision": 1331177294,
+   "revision_time": "2026-01-05T00:36:10Z",
+   "sha256": "00444eef0937d7ae67282f5f929ccfb338455e3923e739b827bc3257c29b0e7d"
+  },
+  "standings_2025_NFC_East": {
+   "title": "Template:2025 NFC East standings",
+   "revision": 1331176058,
+   "revision_time": "2026-01-05T00:27:28Z",
+   "sha256": "a8ff0a516b1fd32d563e8c9b36abf00ccbddaac54f39830d79f66acaa213e805"
+  },
+  "standings_2025_NFC_North": {
+   "title": "Template:2025 NFC North standings",
+   "revision": 1331176063,
+   "revision_time": "2026-01-05T00:27:29Z",
+   "sha256": "763887dcd0bb88f9e9ed241eefb9014ab830a8f5dba11a325a71283ece07bcd6"
+  },
+  "standings_2025_NFC_South": {
+   "title": "Template:2025 NFC South standings",
+   "revision": 1331149392,
+   "revision_time": "2026-01-04T21:09:04Z",
+   "sha256": "2f35c975fad759e48172ba93d9344be23594150d6058b9112203854952babff4"
+  },
+  "standings_2025_NFC_West": {
+   "title": "Template:2025 NFC West standings",
+   "revision": 1331174690,
+   "revision_time": "2026-01-05T00:18:27Z",
+   "sha256": "bbbf30c727f62ded9b69ee6e76b5a655bd7879503295f3f6e18b276ced2e5e3a"
+  },
+  "wiki_allpro_2002": {
+   "title": "2002 All-Pro Team",
+   "revision": 1360478942,
+   "revision_time": "2026-06-21T18:41:26Z",
+   "sha256": "e814953ba16741b034725d37ec49f4ddaca6cb961246d1dc53308f5c622a373f"
+  },
+  "wiki_allpro_2003": {
+   "title": "2003 All-Pro Team",
+   "revision": 1355745347,
+   "revision_time": "2026-05-23T17:55:19Z",
+   "sha256": "6ec69141de5413f6df6168f9f56ff4298b1a6067f2a997d2b1ab224f44f54056"
+  },
+  "wiki_allpro_2004": {
+   "title": "2004 All-Pro Team",
+   "revision": 1356243996,
+   "revision_time": "2026-05-26T15:47:46Z",
+   "sha256": "913e72ef34f2fb192e484289a3b9ea2a1492e3c17553cd364f4034aebae21f1c"
+  },
+  "wiki_allpro_2005": {
+   "title": "2005 All-Pro Team",
+   "revision": 1365801931,
+   "revision_time": "2026-07-24T13:50:01Z",
+   "sha256": "e53cfec498f2ca83f8e1e973ca76c5f6003825ce21ce70411866318908f49d24"
+  },
+  "wiki_allpro_2006": {
+   "title": "2006 All-Pro Team",
+   "revision": 1355753615,
+   "revision_time": "2026-05-23T18:51:30Z",
+   "sha256": "a51d130b0752690efa55a3c612a1cfbbe2c166cdf8ffe8f14901ca69fff528ca"
+  },
+  "wiki_allpro_2007": {
+   "title": "2007 All-Pro Team",
+   "revision": 1365833129,
+   "revision_time": "2026-07-24T18:05:11Z",
+   "sha256": "b04dc8d8d6e3cf88f661122b27772576b02ad81412ea4b8580557781357fed86"
+  },
+  "wiki_allpro_2008": {
+   "title": "2008 All-Pro Team",
+   "revision": 1355763536,
+   "revision_time": "2026-05-23T19:55:04Z",
+   "sha256": "3ed4013ec9d5a9e27df79255868fa3fcd725b6f597a139d43421b955713b08c0"
+  },
+  "wiki_allpro_2009": {
+   "title": "2009 All-Pro Team",
+   "revision": 1355770994,
+   "revision_time": "2026-05-23T20:47:20Z",
+   "sha256": "153968625f9f27181c5ab27ec8f1ea39b01d7ca98193b5a1f7a7e25542dfe36c"
+  },
+  "wiki_allpro_2010": {
+   "title": "2010 All-Pro Team",
+   "revision": 1365852029,
+   "revision_time": "2026-07-24T20:37:15Z",
+   "sha256": "48ea6fab2011bfe9ef00e57bbcac4c1513699e49ae06d0301db36f945e30436c"
+  },
+  "wiki_allpro_2011": {
+   "title": "2011 All-Pro Team",
+   "revision": 1355782233,
+   "revision_time": "2026-05-23T22:16:23Z",
+   "sha256": "698b894217acfe9c65b3c3babd28a3fcda86c37aa3aa22339f5645482b1eeb58"
+  },
+  "wiki_allpro_2012": {
+   "title": "2012 All-Pro Team",
+   "revision": 1365868396,
+   "revision_time": "2026-07-24T22:30:51Z",
+   "sha256": "6117017c48585c16601b4807892bc4b872723f63bcbe904aaf82d8042649fdeb"
+  },
+  "wiki_allpro_2013": {
+   "title": "2013 All-Pro Team",
+   "revision": 1365872775,
+   "revision_time": "2026-07-24T23:04:13Z",
+   "sha256": "7ad6bfc713f1fe15fbafddaf7f286ed45c6fa214e490f8ab00530513bd75e6a2"
+  },
+  "wiki_allpro_2014": {
+   "title": "2014 All-Pro Team",
+   "revision": 1365880786,
+   "revision_time": "2026-07-25T00:10:44Z",
+   "sha256": "3fd8d6846b6ace2dae0718b08c91747fca733f7c54188e1b85b9d7c0b3e01430"
+  },
+  "wiki_allpro_2015": {
+   "title": "2015 All-Pro Team",
+   "revision": 1365882548,
+   "revision_time": "2026-07-25T00:23:50Z",
+   "sha256": "f2c61a01b3e4ac2ea3b72f070cd32be80f8131014ef556cb47a73051fc67e810"
+  },
+  "wiki_allpro_2016": {
+   "title": "2016 All-Pro Team",
+   "revision": 1365896928,
+   "revision_time": "2026-07-25T01:55:14Z",
+   "sha256": "ff69524c5a873ba796b73935522ed0d11c2afc75e9b5069886b6497112799532"
+  },
+  "wiki_allpro_2017": {
+   "title": "2017 All-Pro Team",
+   "revision": 1355877219,
+   "revision_time": "2026-05-24T12:23:49Z",
+   "sha256": "c35a9e2253c30a6c0ae8679986657ea51c9dbd19b820b4590703132892b2acd6"
+  },
+  "wiki_allpro_2018": {
+   "title": "2018 All-Pro Team",
+   "revision": 1378101433,
+   "revision_time": "2026-10-02T23:57:03Z",
+   "sha256": "f0b82718118d2cb9866773181386bc4c69c8b549311a2d86602daa2826a91978"
+  },
+  "wiki_allpro_2019": {
+   "title": "2019 All-Pro Team",
+   "revision": 1355881242,
+   "revision_time": "2026-05-24T13:01:31Z",
+   "sha256": "17bee4a1b361d1620d1aac069cd376a1cdd8425ffffe9794b721a5613d9009df"
+  },
+  "wiki_allpro_2020": {
+   "title": "2020 All-Pro Team",
+   "revision": 1365947817,
+   "revision_time": "2026-07-25T10:31:32Z",
+   "sha256": "70d9293a8ee6347616dfb38c2574e88b8d6ffda3dbc6cf5746e3d1163dcdf6d3"
+  },
+  "wiki_allpro_2021": {
+   "title": "2021 All-Pro Team",
+   "revision": 1358493784,
+   "revision_time": "2026-06-09T01:36:20Z",
+   "sha256": "0288302dcb0171fc7da5d42ddead01092849e2bfdb842d3ffb82fc09c49c3716"
+  },
+  "wiki_allpro_2022": {
+   "title": "2022 All-Pro Team",
+   "revision": 1355887133,
+   "revision_time": "2026-05-24T13:54:18Z",
+   "sha256": "5daa81613aa60666ab2f6a166e92c5fe376f0159c232fbb259f1f784923c57ca"
+  },
+  "wiki_allpro_2023": {
+   "title": "2023 All-Pro Team",
+   "revision": 1355889686,
+   "revision_time": "2026-05-24T14:15:07Z",
+   "sha256": "7705d4cc26c60f16709dcb9cca3a602995805357aaff6618afbc29592578e116"
+  },
+  "wiki_allpro_2024": {
+   "title": "2024 All-Pro Team",
+   "revision": 1358523027,
+   "revision_time": "2026-06-09T06:14:20Z",
+   "sha256": "86297cc899f673ae9d804e76a09d1e9c40926b2c39159cecacd13925600d2363"
+  },
+  "wiki_allpro_2025": {
+   "title": "2025 All-Pro Team",
+   "revision": 1378101534,
+   "revision_time": "2026-10-02T23:57:35Z",
+   "sha256": "8a7d975b686c8b6eb5ef8548fecdba0fdb8707c71ca735d250400d60b6badfb4"
+  },
+  "wiki_annual_interceptions": {
+   "title": "List of NFL annual interceptions leaders",
+   "revision": 1346791749,
+   "revision_time": "2026-04-02T23:10:42Z",
+   "sha256": "3fa920d358755ec952833b8b957e7d117ee17d564e60a8b613611e06e23817d8"
+  },
+  "wiki_annual_passing_tds": {
+   "title": "List of NFL annual passing touchdowns leaders",
+   "revision": 1357999503,
+   "revision_time": "2026-06-05T23:18:38Z",
+   "sha256": "0eb3063ac4b34ed4808031f590b30122d04f21c04aedba98526ed97c3eaec3c0"
+  },
+  "wiki_annual_passing_yards": {
+   "title": "List of NFL annual passing yards leaders",
+   "revision": 1351752496,
+   "revision_time": "2026-04-29T23:04:36Z",
+   "sha256": "c644d832c4f3c549fec20df8844e66af678fe2b9f39e3fa0e21774f51340f3b9"
+  },
+  "wiki_annual_points": {
+   "title": "List of NFL annual scoring leaders",
+   "revision": 1336866333,
+   "revision_time": "2026-02-06T04:45:29Z",
+   "sha256": "d07211bd1516fc7d4ae6536e347913d03ecd23b2399f5a7627c03518acd59fe3"
+  },
+  "wiki_annual_receiving_tds": {
+   "title": "List of NFL annual receiving touchdowns leaders",
+   "revision": 1372185715,
+   "revision_time": "2026-08-30T19:48:30Z",
+   "sha256": "78df71bda835dae00161312b635756e23172d0b5a9adc030394ecfb1ccc0e995"
+  },
+  "wiki_annual_receiving_yards": {
+   "title": "List of NFL annual receiving yards leaders",
+   "revision": 1338013870,
+   "revision_time": "2026-02-12T18:40:43Z",
+   "sha256": "d063fab2c04aa782e927787a04a0692ec0a8eb6421d23bd29e39d441a765e4fc"
+  },
+  "wiki_annual_receptions": {
+   "title": "List of NFL annual receptions leaders",
+   "revision": 1372197508,
+   "revision_time": "2026-08-30T20:50:27Z",
+   "sha256": "d30ea9b0e8664e1172e3eae5f097898ecc5ddc557c1209dc2d40db7be1d31182"
+  },
+  "wiki_annual_rushing_tds": {
+   "title": "List of NFL annual rushing touchdowns leaders",
+   "revision": 1337280879,
+   "revision_time": "2026-02-08T14:20:48Z",
+   "sha256": "2bc4b523ae32dc31da83331b377931cdcbeb0907f677107b8c31ed500c60b7d2"
+  },
+  "wiki_annual_rushing_yards": {
+   "title": "List of NFL annual rushing yards leaders",
+   "revision": 1337282463,
+   "revision_time": "2026-02-08T14:33:21Z",
+   "sha256": "a3185d215c8acf5da9e527dad9ef53bb0293c64780b3c5ba95c7aff3d3f083bf"
+  },
+  "wiki_annual_sacks": {
+   "title": "List of NFL annual sacks leaders",
+   "revision": 1372191569,
+   "revision_time": "2026-08-30T20:18:44Z",
+   "sha256": "fd48cdf01fd77c5587c858616409e5dc35f186e87ee9aac62a0397e5920df2d7"
+  },
+  "wiki_career_field_goals": {
+   "title": "List of most career field goals in NFL history",
+   "revision": 1345696050,
+   "revision_time": "2026-03-27T16:02:01Z",
+   "sha256": "c8aae1848ab28946d9be38990ba7d8a9b636b18d15da21154a71fd8fd100d581"
+  },
+  "wiki_career_interceptions": {
+   "title": "List of NFL career interceptions leaders",
+   "revision": 1333842537,
+   "revision_time": "2026-01-20T01:54:25Z",
+   "sha256": "1698e090b7bd17287a8ecfdc6151014a890fc4ff0fefc5392871250c8ad281b9"
+  },
+  "wiki_career_passing_tds": {
+   "title": "List of NFL career passing touchdowns leaders",
+   "revision": 1372042019,
+   "revision_time": "2026-08-30T00:39:17Z",
+   "sha256": "c3c0c6bd1107c2989a71e8cd19f60b7317f7d4e1a3d70a91d50e40808005c7cb"
+  },
+  "wiki_career_passing_yards": {
+   "title": "List of NFL career passing yards leaders",
+   "revision": 1372384773,
+   "revision_time": "2026-08-31T14:04:14Z",
+   "sha256": "05e31394421cabeb7a1cda0ef450e97943c2c492ecb628759f529016b0f62dd8"
+  },
+  "wiki_career_points": {
+   "title": "List of NFL career scoring leaders",
+   "revision": 1336866089,
+   "revision_time": "2026-02-06T04:43:35Z",
+   "sha256": "859f7d34994b62f7a6cea1ac53282e2bc442e9bfede66e9d09ff8c14df8b956e"
+  },
+  "wiki_career_receiving_tds": {
+   "title": "List of NFL career receiving touchdowns leaders",
+   "revision": 1357804838,
+   "revision_time": "2026-06-04T19:52:57Z",
+   "sha256": "c76e07cfd1998b092211f3f3e75e9d19838679fa77bcbc3a6db341daacbd147f"
+  },
+  "wiki_career_receiving_yards": {
+   "title": "List of NFL career receiving yards leaders",
+   "revision": 1370176544,
+   "revision_time": "2026-08-19T15:12:06Z",
+   "sha256": "110e14093f81cb0a2449d51349e435f42e9e4eaf3f579cc8fd108bc32a5ea7a8"
+  },
+  "wiki_career_receptions": {
+   "title": "List of NFL career receptions leaders",
+   "revision": 1369984639,
+   "revision_time": "2026-08-18T12:01:42Z",
+   "sha256": "e2edcb0e7a54a21c63991377aaf207f2f2fb9cce1ce9d84fb4474cbe91941ee6"
+  },
+  "wiki_career_rushing_tds": {
+   "title": "List of NFL career rushing touchdowns leaders",
+   "revision": 1337627272,
+   "revision_time": "2026-02-10T15:49:29Z",
+   "sha256": "bd95b47e12d9609217d70d05d94c4768807a145ef44c90f037f401afc6c937a9"
+  },
+  "wiki_career_rushing_yards": {
+   "title": "List of NFL career rushing yards leaders",
+   "revision": 1337627338,
+   "revision_time": "2026-02-10T15:49:48Z",
+   "sha256": "c0206d4471c59795e0a72c1619e4acd62b37cee3b2bce37ae63ec041a8acdf21"
+  },
+  "wiki_career_sacks": {
+   "title": "List of NFL career sacks leaders",
+   "revision": 1372201849,
+   "revision_time": "2026-08-30T21:15:50Z",
+   "sha256": "ea8b5b0f96d3999f1529a78d7dd5efbb410dc2d9cb50c1cdb9e9548d2fe071f3"
+  },
+  "wiki_career_tackles": {
+   "title": "List of NFL career tackles leaders",
+   "revision": 1371826541,
+   "revision_time": "2026-08-28T18:26:42Z",
+   "sha256": "7e722b42ac831ad211f039b8379eb664d716fc349c17a40e0b8cb3acec3be02b"
+  },
+  "wiki_coy": {
+   "title": "AP NFL Coach of the Year",
+   "revision": 1379757227,
+   "revision_time": "2026-10-11T19:54:16Z",
+   "sha256": "008010e0e2c58cbe68b8b8f45d59d80f07a3867d64981727653b4a40f74c0e60"
+  },
+  "wiki_cpoy": {
+   "title": "AP NFL Comeback Player of the Year",
+   "revision": 1379756172,
+   "revision_time": "2026-10-11T19:45:32Z",
+   "sha256": "ab2ed7542a49312c8779b78d6234a7df4bdb65f0cc301acfb354553fd340a8b1"
+  },
+  "wiki_dpoy": {
+   "title": "AP NFL Defensive Player of the Year",
+   "revision": 1377718854,
+   "revision_time": "2026-09-30T19:38:20Z",
+   "sha256": "a8c8cd4a86dbf6ffe5075a8701f16fd43dcbac16cd949494c6b4c465df80f26d"
+  },
+  "wiki_hof": {
+   "title": "List of Pro Football Hall of Fame inductees",
+   "revision": 1373268870,
+   "revision_time": "2026-09-05T00:07:22Z",
+   "sha256": "fa4239c662c72d4e90ae2295bf8921f051661ce740329afca4cc88a31ebee303"
+  },
+  "wiki_mvp": {
+   "title": "AP NFL Most Valuable Player",
+   "revision": 1376867134,
+   "revision_time": "2026-09-26T18:03:58Z",
+   "sha256": "f4751b025145a585e9e7a195d8d42264561a53a24c58abc4aa72945618c67c2f"
+  },
+  "wiki_opoy": {
+   "title": "AP NFL Offensive Player of the Year",
+   "revision": 1352673809,
+   "revision_time": "2026-05-05T16:12:19Z",
+   "sha256": "9787e2846d3b869b2653b0f0e99f0913fe33cc55321984766db0a180992f83cc"
+  },
+  "wiki_probowl_2002": {
+   "title": "2003 Pro Bowl",
+   "revision": 1341513270,
+   "revision_time": "2026-03-03T16:31:26Z",
+   "sha256": "3dba1e620e0479a983ae62d45b5efda1c6adf81e1d667d86372235871c46dbdc"
+  },
+  "wiki_probowl_2003": {
+   "title": "2004 Pro Bowl",
+   "revision": 1378765408,
+   "revision_time": "2026-10-06T02:04:52Z",
+   "sha256": "ea8899273b7a1df0584eda8e4780ef3b58625cb5d29b1e7570a4584c8208e07b"
+  },
+  "wiki_probowl_2004": {
+   "title": "2005 Pro Bowl",
+   "revision": 1368422392,
+   "revision_time": "2026-08-08T23:44:46Z",
+   "sha256": "a2136684130e93cb8421c0fa7e605bd818db9005709556ed53cbdd410b88640a"
+  },
+  "wiki_probowl_2005": {
+   "title": "2006 Pro Bowl",
+   "revision": 1378291603,
+   "revision_time": "2026-10-03T21:07:57Z",
+   "sha256": "66bda1d899bb39c21d263e6902570ddd007b87d8f7bd2e9d9280ff390a401123"
+  },
+  "wiki_probowl_2006": {
+   "title": "2007 Pro Bowl",
+   "revision": 1341513366,
+   "revision_time": "2026-03-03T16:32:12Z",
+   "sha256": "abfbae4b2378fc7ee0258a180f7eefee451199fed7738a56bc92098cff313d4c"
+  },
+  "wiki_probowl_2007": {
+   "title": "2008 Pro Bowl",
+   "revision": 1341513400,
+   "revision_time": "2026-03-03T16:32:25Z",
+   "sha256": "9536dd2f3b82b1a78945c40449ff6f4b048a8c36fdf3fcdb73206c3079f6176e"
+  },
+  "wiki_probowl_2008": {
+   "title": "2009 Pro Bowl",
+   "revision": 1318540744,
+   "revision_time": "2025-10-24T13:59:53Z",
+   "sha256": "1301a37ca1dc34ab1e8271c6cea6c38c5f24ac8bf8223997424f57ba918e5ae3"
+  },
+  "wiki_probowl_2009": {
+   "title": "2010 Pro Bowl",
+   "revision": 1358256779,
+   "revision_time": "2026-06-07T16:07:54Z",
+   "sha256": "22a9da83c2768298e7f4fe0372df111ace38460517d314ed519292f854810071"
+  },
+  "wiki_probowl_2010": {
+   "title": "2011 Pro Bowl",
+   "revision": 1369248723,
+   "revision_time": "2026-08-13T20:17:00Z",
+   "sha256": "4a99cb6ed55277d116998d5e21acefda448728fdc518f9a3adbc75029267b27b"
+  },
+  "wiki_probowl_2011": {
+   "title": "2012 Pro Bowl",
+   "revision": 1341513654,
+   "revision_time": "2026-03-03T16:34:30Z",
+   "sha256": "d66353974fba8f7edd882ae68e33ebd5f837d7c5bb893f099a00816d3cd3d836"
+  },
+  "wiki_probowl_2012": {
+   "title": "2013 Pro Bowl",
+   "revision": 1341513685,
+   "revision_time": "16:34, 3 March 2026",
+   "sha256": "ff472fc301477af2e9a132dc9fa127e7274915c8960b0bfc984058a127f70f6c"
+  },
+  "wiki_probowl_2013": {
+   "title": "2014 Pro Bowl",
+   "revision": 1341682180,
+   "revision_time": "2026-03-04T13:00:51Z",
+   "sha256": "ff6ab02bec238158387a15e4451e7617c5987dd75c4f383417468d9cc4d3ddc6"
+  },
+  "wiki_probowl_2014": {
+   "title": "2015 Pro Bowl",
+   "revision": 1375436577,
+   "revision_time": "2026-09-17T19:38:06Z",
+   "sha256": "6f63314884b5004fd78f938ce73c7e76147fb7443139567f01c188e738ac8754"
+  },
+  "wiki_probowl_2015": {
+   "title": "2016 Pro Bowl",
+   "revision": 1371677922,
+   "revision_time": "20:39, 27 August 2026",
+   "sha256": "6ed7d4d0eb52857caa8bf125179dcb4614d7a2491aa0ce4ff4e5038297ab8a42"
+  },
+  "wiki_probowl_2016": {
+   "title": "2017 Pro Bowl",
+   "revision": 1341513758,
+   "revision_time": "2026-03-03T16:35:27Z",
+   "sha256": "b05a1c865d3d18ef6fe5c3da27e675c9e0b59fc428477cd52f12eb4ace5b53b2"
+  },
+  "wiki_probowl_2017": {
+   "title": "2018 Pro Bowl",
+   "revision": 1341513779,
+   "revision_time": "2026-03-03T16:35:40Z",
+   "sha256": "616f53c68f06f9a63b7dae6219f0e2cccfc398a8e23a94ce12b0c6de2d739936"
+  },
+  "wiki_probowl_2018": {
+   "title": "2019 Pro Bowl",
+   "revision": 1378101475,
+   "revision_time": "2026-10-02T23:57:16Z",
+   "sha256": "a017aacd42b2c0b577dd2be646f1f1e3ad8fb02d50c05cf760a40e78b5d4567d"
+  },
+  "wiki_probowl_2019": {
+   "title": "2020 Pro Bowl",
+   "revision": 1341513816,
+   "revision_time": "2026-03-03T16:36:00Z",
+   "sha256": "86614585fa950861727048c9bc32c82f774c6b9fa654eb4483518945e352cdc6"
+  },
+  "wiki_probowl_2020": {
+   "title": "2021 Pro Bowl",
+   "revision": 1374788640,
+   "revision_time": "2026-09-14T02:47:31Z",
+   "sha256": "66567dd280369824f94a432d52c1f763fb3226ec5703ce816344f5d56de6eff0"
+  },
+  "wiki_probowl_2021": {
+   "title": "2022 Pro Bowl",
+   "revision": 1341513858,
+   "revision_time": "2026-03-03T16:36:20Z",
+   "sha256": "28000225fa5d86351e86a62bec742bbce09658daa723df958485e00b6f316c1d"
+  },
+  "wiki_probowl_2022": {
+   "title": "2023 Pro Bowl Games",
+   "revision": 1371725902,
+   "revision_time": "2026-08-28T02:54:47Z",
+   "sha256": "50f864726341f77591b1c5d171fdf3538b6f050081e02769cbc450e05708bc7d"
+  },
+  "wiki_probowl_2023": {
+   "title": "2024 Pro Bowl Games",
+   "revision": 1360066478,
+   "revision_time": "2026-06-19T01:07:03Z",
+   "sha256": "5c5eaa29030b3577edd3b6bd223eacd1e95cf138827a01bfd5ccb05ec16cb35f"
+  },
+  "wiki_probowl_2024": {
+   "title": "2025 Pro Bowl Games",
+   "revision": 1341513932,
+   "revision_time": "2026-03-03T16:36:55Z",
+   "sha256": "9ed4ca5bca299e3218e147bc2be10da297645eac32fdab8d2071fe0b3d6cf7f3"
+  },
+  "wiki_probowl_2025": {
+   "title": "2026 Pro Bowl Games",
+   "revision": 1378060126,
+   "revision_time": "2026-10-02T19:01:43Z",
+   "sha256": "b18deb8bc8943f70ccc2a0df592ea6af8c050a0a3bda1d5ec251a74252bf6f60"
+  },
+  "wiki_qb_records": {
+   "title": "List of NFL quarterback records",
+   "revision": 1358068986,
+   "revision_time": "2026-06-06T10:55:54Z",
+   "sha256": "a07ee5acd5d3f24311b419d1f31ef8a50d89bd7bb35692673c5774f67f0ff9b8"
+  },
+  "wiki_records": {
+   "title": "List of NFL individual records",
+   "revision": 1357802558,
+   "revision_time": "2026-06-04T19:38:12Z",
+   "sha256": "4f708eb8042ebeb0206d18ab83e679a8a4a9de57a4f2ccf0a8513ecfdfc73810"
+  },
+  "wiki_roy": {
+   "title": "AP NFL Rookie of the Year",
+   "revision": 1370823405,
+   "revision_time": "07:14, 23 August 2026",
+   "sha256": "73fa8c2b85abc093fac0b600b341387acb21a236642765875062e132582554ee"
+  },
+  "wiki_sbmvp": {
+   "title": "Super Bowl Most Valuable Player",
+   "revision": 1370881027,
+   "revision_time": "2026-08-23T15:30:13Z",
+   "sha256": "1c48f3ae996e3ba4569eeb2a2c1833add144687a9d3af6c3a0d3191ac839bc6c"
+  }
+ },
+ "nflverse": {
+  "downloaded": "2026-11-02",
+  "files": {
+   "stats_player_week_1999.csv.gz": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_1999.csv.gz",
+    "sha256": "3d05b6301ebcc98b22772714a08492f2d50917a38326559422d9734cac62eca6",
+    "bytes": 977531
+   },
+   "stats_player_week_2000.csv.gz": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_2000.csv.gz",
+    "sha256": "3902d90bae54eb36650a6d7f5f7f673eb7cce6223f37da136173c26444aa622c",
+    "bytes": 961957
+   },
+   "stats_player_week_2001.csv.gz": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_2001.csv.gz",
+    "sha256": "2da14bf9a30fb6462c859e6a48505d310a07bfdcf0082e1f6c74bdbf29b11a5d",
+    "bytes": 980369
+   },
+   "stats_player_week_2002.csv.gz": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_2002.csv.gz",
+    "sha256": "a43dcabc20191471a888092eac7d12808cdaccdba7abcb4767a88b5304c0cc0d",
+    "bytes": 1027002
+   },
+   "stats_player_week_2003.csv.gz": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_2003.csv.gz",
+    "sha256": "f6cb52da69f60bad7d2bcf1411eae8f1bac050004b4177689b2768be368c0cf4",
+    "bytes": 953926
+   },
+   "stats_player_week_2004.csv.gz": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_2004.csv.gz",
+    "sha256": "40529062f9c895084b25315f2f5d8c4d9a724743da1e628481399e239e767385",
+    "bytes": 956006
+   },
+   "stats_player_week_2005.csv.gz": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_2005.csv.gz",
+    "sha256": "e531aea0d5fda6a31a80a384f9de4d29c1408b106b7f2abfe45ba93e1a243271",
+    "bytes": 955992
+   },
+   "stats_player_week_2006.csv.gz": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_2006.csv.gz",
+    "sha256": "a43ff44843eea3e34ead237f2edf5668427f90da932c793172a458a15836ecc4",
+    "bytes": 978360
+   },
+   "stats_player_week_2007.csv.gz": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_2007.csv.gz",
+    "sha256": "3d2c3eabb5622712d9f6d4da2c8d458b629a1f25ccf389ac616609aeb3f4188a",
+    "bytes": 984218
+   },
+   "stats_player_week_2008.csv.gz": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_2008.csv.gz",
+    "sha256": "adc0fd67fe506fa6b769f9f1e8110f41bf6eb8546344a7e86b83e05c85d77319",
+    "bytes": 980111
+   },
+   "stats_player_week_2009.csv.gz": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_2009.csv.gz",
+    "sha256": "8a376ea6d2d68bd077e7b4c827cd3d7b939eeeaf24005540998bd84ff154c99d",
+    "bytes": 1148394
+   },
+   "stats_player_week_2010.csv.gz": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_2010.csv.gz",
+    "sha256": "1f94ea7c70d36bfeefa72874d5ed3203a7a63f9cb68787e48e9b717282dd54ed",
+    "bytes": 1145611
+   },
+   "stats_player_week_2011.csv.gz": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_2011.csv.gz",
+    "sha256": "f7ee409cb7eff41546c3942f32aa5c75d6f38351ef779a417db886cd34ce1334",
+    "bytes": 1141978
+   },
+   "stats_player_week_2012.csv.gz": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_2012.csv.gz",
+    "sha256": "8baed409dbc05eb5cf765247c13591706f90363cc1104573348c4910e636ff44",
+    "bytes": 1147163
+   },
+   "stats_player_week_2013.csv.gz": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_2013.csv.gz",
+    "sha256": "9ae71fa2c7c49bdd958130935151cbf2151c4232f56a4790f66bb063534a0b36",
+    "bytes": 1137393
+   },
+   "stats_player_week_2014.csv.gz": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_2014.csv.gz",
+    "sha256": "46d4fe1d5b7e63a612cee6cb6207a2eef718b9af4eee17fee91bdbf66a292374",
+    "bytes": 1160399
+   },
+   "stats_player_week_2015.csv.gz": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_2015.csv.gz",
+    "sha256": "28b8c4fa7eb58737608debde9e45e353837a6f667f08c41e83858912998c888b",
+    "bytes": 1164676
+   },
+   "stats_player_week_2016.csv.gz": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_2016.csv.gz",
+    "sha256": "f5e6e55db51969b6a9432c5e27c725c27c31d531729fb6f8bf6a227c0e282c56",
+    "bytes": 1162122
+   },
+   "stats_player_week_2017.csv.gz": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_2017.csv.gz",
+    "sha256": "d257f493a3689247f3081a779a7bc6a1e5c08e7e7684da3e92f07007eeb2371f",
+    "bytes": 1156929
+   },
+   "stats_player_week_2018.csv.gz": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_2018.csv.gz",
+    "sha256": "37f857a8ef540f35dd299fd2ebb3052ccf95a5639d2bbfa5b703fe9120e3af8a",
+    "bytes": 1155967
+   },
+   "stats_player_week_2019.csv.gz": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_2019.csv.gz",
+    "sha256": "bd5d2e99c0b9f34a9d6fea7ebccd1c207112374b801412be03b776e158c34826",
+    "bytes": 1155384
+   },
+   "stats_player_week_2020.csv.gz": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_2020.csv.gz",
+    "sha256": "c1206df91ca88c0c7ef37809bcef132267b75823c83f3620639d6510a4435411",
+    "bytes": 1176924
+   },
+   "stats_player_week_2021.csv.gz": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_2021.csv.gz",
+    "sha256": "1b6eff730fb10a61ad7681c293000d6653fb583259d771d40d8d025fe8fca36a",
+    "bytes": 1254611
+   },
+   "stats_player_week_2022.csv.gz": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_2022.csv.gz",
+    "sha256": "0f064dede2896107868d784ede7a92cbe239852f7274c12c4589bcfd5e129b4a",
+    "bytes": 1241515
+   },
+   "stats_player_week_2023.csv.gz": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_2023.csv.gz",
+    "sha256": "6c2258cf5d90cb918dfca093b20dba2e062b1eca54f5d2d348f15a0045d86113",
+    "bytes": 1237909
+   },
+   "stats_player_week_2024.csv.gz": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_2024.csv.gz",
+    "sha256": "61fc9a44706522218a4448001706e3fec65ebbb97c1d9c5746ceef364989125d",
+    "bytes": 1244175
+   },
+   "stats_player_week_2025.csv.gz": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_2025.csv.gz",
+    "sha256": "c7401e321bdb369443f3280b9acd74ba6e16d82e710383bf1c01acabfebeac0b",
+    "bytes": 1262421
+   },
+   "players.csv": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/players/players.csv",
+    "sha256": "dd4e38586b4d9982098760b823d87367824a1a58c80a1fb77f00273b73ee33e5",
+    "bytes": 7306070
+   }
+  },
+  "rosters": {
+   "roster_2002.csv": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2002.csv",
+    "sha256": "a08b5d5fe070c0819bc27ac15ca3d47c7b2dd504fbd6c62d34e00c16a082021a",
+    "bytes": 520088
+   },
+   "roster_2003.csv": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2003.csv",
+    "sha256": "6d9f530bcbacbf9de2d2a220987d3beb55419155f8661355b1fbe405ab6722ca",
+    "bytes": 522453
+   },
+   "roster_2004.csv": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2004.csv",
+    "sha256": "4d9c9041c1b1cca9eb757baa6c2d59a19c3c428a3ea094832231df37e219e078",
+    "bytes": 531465
+   },
+   "roster_2005.csv": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2005.csv",
+    "sha256": "c88034255064b5f1ec1aa76175ca6b69ad7857904d08e13eb77c23eef592ced2",
+    "bytes": 530445
+   },
+   "roster_2006.csv": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2006.csv",
+    "sha256": "4ec3ed1331da5046fb4a3136720374a93d98ea502950c1c010e1d0535952b2d1",
+    "bytes": 537777
+   },
+   "roster_2007.csv": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2007.csv",
+    "sha256": "1aa1dd25da3616e5ddf31de3b18d4731edb5032ea14c1803b35cc3413186d5dd",
+    "bytes": 545618
+   },
+   "roster_2008.csv": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2008.csv",
+    "sha256": "6c7f2c475012defda7f260addabde03e90a9ae288ed2fc4aef53ea40ab76eeb9",
+    "bytes": 552257
+   },
+   "roster_2009.csv": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2009.csv",
+    "sha256": "d3f9373f22db37a2bb962ae3dc3d15c65f51c2b240f13d241b4fd292aff9721e",
+    "bytes": 565709
+   },
+   "roster_2010.csv": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2010.csv",
+    "sha256": "0c9dfde110e6c989bbecd830602b2562124b89388e1aac39b5287376f2370dd1",
+    "bytes": 587908
+   },
+   "roster_2011.csv": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2011.csv",
+    "sha256": "6acc11a2b5f692db03e1945e0329da93f6b5debed3f99feed39eca470ab4cee5",
+    "bytes": 585051
+   },
+   "roster_2012.csv": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2012.csv",
+    "sha256": "90628fcdadd9f2dde083bc77d41139cedc9fefd1fcc09f2ce8675823de23291b",
+    "bytes": 604547
+   },
+   "roster_2013.csv": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2013.csv",
+    "sha256": "abf73c2b1ef10914af78f6b7397338508bd0c9f0372d2f0667a630e06a4484ed",
+    "bytes": 622434
+   },
+   "roster_2014.csv": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2014.csv",
+    "sha256": "f3c3e9cced60d99ebdcb410b76ffeda72b207b7045983b7a63f677ad9a34814f",
+    "bytes": 643337
+   },
+   "roster_2015.csv": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2015.csv",
+    "sha256": "63807a50226a94f6724b3694198b41661c76211707115b2d52975237ebc4ecb6",
+    "bytes": 673221
+   },
+   "roster_2016.csv": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2016.csv",
+    "sha256": "c7a57a4816d05ef651f4c56b8209c38b98e3d60582ddd60cb8048ef657472ca1",
+    "bytes": 875173
+   },
+   "roster_2017.csv": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2017.csv",
+    "sha256": "22584ad80445611edff6dcbc6dce9ab596bdc484430d8aac298725da15697fd4",
+    "bytes": 958517
+   },
+   "roster_2018.csv": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2018.csv",
+    "sha256": "60c7f1dabb508acc800ef81b4f69892511b1f78246bdb2cca6115a506c523b0a",
+    "bytes": 997735
+   },
+   "roster_2019.csv": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2019.csv",
+    "sha256": "b00259cfddf2146512569423275dc17e142d31ddb13bfba6b0b826c9d3d810da",
+    "bytes": 1001234
+   },
+   "roster_2020.csv": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2020.csv",
+    "sha256": "dcf25143db7b54ac488d042b6c24142340effced1d6c8599b2084a9f412b3ed2",
+    "bytes": 988000
+   },
+   "roster_2021.csv": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2021.csv",
+    "sha256": "a95e57ebe1df25224a4d19ed43aaffc5c2097a8b369954178b8592537ff77d34",
+    "bytes": 953822
+   },
+   "roster_2022.csv": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2022.csv",
+    "sha256": "864719595d14909c73bd14110adcdcfc304c6621de9ba34feafb83666fac43c9",
+    "bytes": 980115
+   },
+   "roster_2023.csv": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2023.csv",
+    "sha256": "f98283e6ef420babc597092b5483109a4570f9b5f63b7bfcce69643290960b6c",
+    "bytes": 967354
+   },
+   "roster_2024.csv": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2024.csv",
+    "sha256": "97721aa9092edb15c1357f2dac359dba72f63c81cc0e69408c65c229c91f50c1",
+    "bytes": 1005701
+   },
+   "roster_2025.csv": {
+    "url": "https://github.com/nflverse/nflverse-data/releases/download/rosters/roster_2025.csv",
+    "sha256": "531ee5de386037bb17de3e3e3d50f7b4ed08789526bbaae9876fdd3dfb4d04ad",
+    "bytes": 1010039
+   }
+  }
+ }
+}
