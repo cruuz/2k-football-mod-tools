@@ -308,6 +308,8 @@ SECTION(".roster_b") static unsigned restructure_best(u8 *team) {
     return best != 0;
 }
 
+unsigned FAST economy_camp_limit(void);   /* b780 b4-economy (D10): defined at the end of roster_m */
+
 /* DESIGN: replace the native CPU cap-cut routine with a bounded reconciliation
  * that also runs after the rollover returns IR players. Keep the native 54
  * player/cap gate intact; release through the real transaction and FA paths.
@@ -323,7 +325,7 @@ SECTION(".fill_room") static void trim(u8 *team, unsigned force) {
         n_recount(team);
         unsigned count = team[0x11c], least = economy_floor(0);
         int room = ROOM(team);
-        if (count <= 54 && room >= 0 && !force) return;
+        if (count <= economy_camp_limit() && room >= 0 && !force) return;
         if (room < 0 && CPU(team) && restructure_best(team)) continue;
         u8 *best = 0;
         float score = 2.0f;
@@ -403,7 +405,10 @@ SECTION(".roster_c") unsigned FAST economy_best_room(u8 *p, u8 **club) {
     int best = 0;
     for (unsigned t = 0; t < n_teams(); ++t) {
         u8 *team = n_team(t);
-        unsigned count = team[0x11c], better = 0, busy = 0, level;
+        /* b780 b4-economy (D10): the club that signs him (club != 0, the prove-it pass) needs an open spot below 53,
+         * so nobody is cut to make room (a full club reads busy); the ask (club == 0) still counts every club. Weeks 1-4
+         * of a simulated v0.8 season: every CPU club cut a player for one every week. */
+        unsigned count = team[0x11c], better = 0, busy = club && count >= 53, level;
         if (!CPU(team)) continue;
         for (unsigned j = 0; j < count; ++j) {
             u8 *q = ((u8 **)team)[j];
@@ -456,6 +461,7 @@ SECTION(".week") void FAST economy_week(void *menu, unsigned unused, float low, 
         if (!PROVE_IT_FREE_AGENT(p) || p[0x35] >= 17 || !(n_rating(p, 1) > PROVE_IT)) continue;
         unsigned ask = economy_value(p, 0, 0, 1, 1);
         if (economy_best_room(p, &club) < ask || !club) continue;
+        /* b780 b4-economy (D10): economy_best_room no longer offers a full club, so this cut never runs now. */
         if (club[0x11c] >= limit) n_cut_to(club, limit - 1);
         n_cpu_sign(club, p[0x35], ask + 1, menu);
     }
@@ -507,11 +513,11 @@ SECTION(".roster_e") __attribute__((naked)) void economy_fa_retire(void) {
             "movw $1, 10(%edi)\n1: push %eax\ncall 0x2bcf90\nmov %si, 10(%edi)\npop %esi\nret $4\n");
 }
 
-SECTION(".week") __attribute__((naked)) void economy_after(void) {
+SECTION(".week_tail") __attribute__((naked)) void economy_after(void) {
     __asm__("mov %ebx, %ecx\nxor %edx, %edx\ncall economy_clubs\njmp 0xc4bb0\n");
 }
 
-SECTION(".week") __attribute__((naked)) void economy_stage6(void) {
+SECTION(".week_tail") __attribute__((naked)) void economy_stage6(void) {
     __asm__("xor %ecx, %ecx\nmov $1, %edx\ncall economy_clubs\njmp 0x247fd7\n");
 }
 
@@ -662,6 +668,15 @@ SECTION(".roster_m") __attribute__((noinline)) static int oldest(u8 **list, unsi
         for (unsigned i = 0; i < n && need > keep; ++i)
             if (eligible(list[i], over)) { list[i][8] |= 8; --need; }
     return need;
+}
+
+/* b780 b4-economy (row D10; v0.8 known issue "CPU clubs still sign and cut fringe players in camp"): trim() held every
+ * CPU club at 54 after every stage action all year, so right after the draft each club released about six players,
+ * a third of them that day's picks (one simulated v0.8 offseason: 151 releases at the draft, 52 of them rookies).
+ * Retail lets a club carry 65 until the regular season (0x247AF0) and cuts it once at the season gate (0x2BFAA0,
+ * now the smart cut-down), so the camp limit is the native one before the season and 54 from the season on. */
+SECTION(".roster_m") __attribute__((noinline)) unsigned FAST economy_camp_limit(void) {
+    return maximum(n_roster_limit(), 54);
 }
 
 /* (a) past the position's age, oldest first; (b) within two years of it, lowest-rated first; (c) only when the

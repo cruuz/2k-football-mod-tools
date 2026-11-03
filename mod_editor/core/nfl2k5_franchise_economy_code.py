@@ -74,18 +74,18 @@ WINDOWS = {
             "e99145000031c0c210000f0b"
         ).ljust(198, b"\xcc")
     ),
-    0x2bfbe0: (  # reconcile: 362/370 bytes
+    0x2bfbe0: (  # reconcile: 368/370 bytes
         bytes.fromhex(
             "5589e56a0051e804000000585ac9c35589e557565383ec1cc745e0500000008b750889f1e8f742e0"
             "ff0fb6861c0100008945f06a00e842daffffba0100000089f189c731c0890424e8aadaffff2b8624"
-            "010000837df03689c3772c85c0782c837d0c000f84f9000000d90544d82b008d043fc1eb1f31ff89"
-            "7de831ff8945dc895dd8d95deceb5f85c079de89f1e8beefe7ff85c07409833d3c01e6000175ca56"
-            "e8fea30f005985c00f85a6000000ebb98b1486384a350f94c2400fb6d20155e48b55f039d072e9f6"
-            "d98b4de419c083c00239c8722beb02ddd8d945ec89fbff45e889dfd95dec8b4df0394de8734a8b45"
-            "e831d28955e48b1c8631c08a4b35ebb031c0f643240f740789d9e89166e2ff807dd800740485c074"
-            "c0837df03277078b55dc39d072b331d289d9e87170f8ffd945ecdff176a1eba685ff74266a0089fa"
-            "89f1e868d9ffff89fa89f16a016a01e8ccdbffff31c0ff4de089450c0f85c0feffff8d65f45b5e5f"
-            "5dc3"
+            "01000089c3e829c011008b55f039d0720e85db782c837d0c000f84f900000085db781ed90544d82b"
+            "008d043fc1eb1f31ff897de831ff8945dc895dd8d95deceb5b89f1e8b8efe7ff85c07409833d3c01"
+            "e6000175ce56e8f8a30f005985c00f85a6000000ebbd8b1486384a350f94c2400fb6d20155e48b55"
+            "f039d072e9f6d98b4de419c083c00239c8722beb02ddd8d945ec89fbff45e889dfd95dec8b55f039"
+            "55e8734a8b45e831d28955e48b1c8631c08a4b35ebb031c0f643240f740789d9e88b66e2ff807dd8"
+            "00740485c074c0837df03277078b4ddc39c872b331d289d9e86b70f8ffd945ecdff176a1eba685ff"
+            "74266a0089fa89f1e862d9ffff89fa89f16a016a01e8c6dbffff31c0ff4de089450c0f85bafeffff"
+            "8d65f45b5e5f5dc3"
         ).ljust(370, b"\xcc")
     ),
     0x323870: (  # week: 466/496 bytes
@@ -133,17 +133,17 @@ WINDOWS = {
             "feffff31c085f65a5b0f95c05e5f5dc3"
         ).ljust(400, b"\xcc")
     ),
-    0x3d2890: (  # roster_c: 333/352 bytes
+    0x3d2890: (  # roster_c: 350/352 bytes
         bytes.fromhex(
-            "5589e557565331db83ec280fb641358955d8894df08845e38945dc6a00e8aaadeeff598b4df0ba01"
-            "0000008945d4e8bd44e7ff895de8895df0895decd95dd0e80c23cfff3945e80f83f50000008b4de8"
-            "e86b23cfff89c18a981c01000089c7e83cc3d6ff85c0740d833d3c01e600010f85a000000031d20f"
-            "b6f331c031db8955e439f373358b0c9f31d28079253f0f97c209d08a55e33a5135751cba01000000"
-            "8945cce84844e7ffd945d08b45ccdff1ddd87703ff45e443ebc731db85c075228b4ddcbb02000000"
-            "e8b3aaeeff3945e472108b4ddc31dbe894aaeeff3945e40f92c36a00ba0100000089f9e857adeeff"
-            "2b872401000083e80a83fe31770fba3100000029f28b75d40fafd629d085db740485c07f088b45f0"
-            "8b5deceb17395dec720775f13945f07dec837dd80074058b75d8893eff45e88945f0895dece9fdfe"
-            "ffff8b45f08d65f45b5e5f5dc3"
+            "5589e5575689d65331db83ec280fb64135894df08845df8945d86a00e8abadeeff598b4df0ba0100"
+            "00008945d4e8be44e7ff895de8895df0895decd95dd0e80d23cfff3945e80f83070100008b4de8e8"
+            "6c23cfff89c18a981c01000089c7e83dc3d6ff85c0740d833d3c01e600010f85b70000000fb6c385"
+            "f60f95c28945e031c080fb340f97c031db21d031d28955e48b4de039cb73358b0c9f31d28079253f"
+            "0f97c209d08a55df3a5135751cba010000008945cce83644e7ffd945d08b45ccdff1ddd87703ff45"
+            "e443ebc431db85c075228b4dd8bb02000000e8a1aaeeff3945e472108b4dd831dbe882aaeeff3945"
+            "e40f92c36a00ba0100000089f9e845adeeff2b872401000083e80a837de03177128b4de0ba310000"
+            "0029ca8b4dd40fafd129d085db740485c07f088b45f08b5deceb12395dec720775f13945f07dec85"
+            "f67402893eff45e88945f0895dece9ebfeffff8b45f08d65f45b5e5f5dc3"
         ).ljust(352, b"\xcc")
     ),
     0x3ba4b0: (  # roster_d: 330/352 bytes
@@ -226,11 +226,11 @@ WINDOWS = {
             "0201010505020203000303020203030304"
         ).ljust(160, b"\xcc")
     ),
-    0x3dbc10: (  # roster_m: 83/160 bytes
+    0x3dbc10: (  # roster_m: 103/160 bytes
         bytes.fromhex(
             "5589e55756be0c00000053538b5d103b75147c353b5d187e3031ff3b7d0c73263b5d187e218b4508"
             "8b0cb85651894df0e8d72604005a5985c074088b4df04b8049080847ebd54eebc68d65f489d85b5e"
-            "5f5dc3"
+            "5f5dc35589e5e885bee6ffba360000005d39d00f42c2c3"
         ).ljust(160, b"\xcc")
     ),
 }
@@ -243,4 +243,4 @@ ROOKIE_TABLE = bytes.fromhex(
     "fc567100fd5671000000000000000000000000000000000000000000000000000000000000000000"
     "000000000000000000000000000000000000000000000000"
 )
-SYMBOLS = {'economy_pick': 2861856, 'economy_txn_years': 2861978, 'economy_value': 2872384, 'economy_floor': 2872924, 'economy_penalty': 2872975, 'economy_cap': 2873047, 'economy_offer_room': 2873174, 'economy_reconcile': 2882528, 'economy_money': 3270016, 'economy_fill_gate': 3270149, 'economy_contract': 3287200, 'economy_offer_gate': 3287364, 'economy_rookie': 3287424, 'economy_week': 3291248, 'economy_after': 3291679, 'economy_stage6': 3291695, 'economy_class_free': 3678720, 'economy_class_position': 3678801, 'economy_class_slot': 3678877, 'economy_renew_gate': 3765744, 'economy_expire': 3765821, 'economy_fa_retire': 3765897, 'economy_class_topup': 3825440, 'economy_floor_protected': 3825551, 'economy_restructure': 3907424, 'economy_fill_room': 3908784, 'economy_renew_room': 3908855, 'economy_clubs': 3908968, 'economy_best_room': 4008080, 'economy_smart_cut': 4071888, 'economy_preseason_gate': 4317856}
+SYMBOLS = {'economy_pick': 2861856, 'economy_txn_years': 2861978, 'economy_value': 2872384, 'economy_floor': 2872924, 'economy_penalty': 2872975, 'economy_cap': 2873047, 'economy_offer_room': 2873174, 'economy_reconcile': 2882528, 'economy_money': 3270016, 'economy_fill_gate': 3270149, 'economy_contract': 3287200, 'economy_offer_gate': 3287364, 'economy_rookie': 3287424, 'economy_week': 3291248, 'economy_after': 3291679, 'economy_stage6': 3291695, 'economy_class_free': 3678720, 'economy_class_position': 3678801, 'economy_class_slot': 3678877, 'economy_renew_gate': 3765744, 'economy_expire': 3765821, 'economy_fa_retire': 3765897, 'economy_class_topup': 3825440, 'economy_floor_protected': 3825551, 'economy_restructure': 3907424, 'economy_fill_room': 3908784, 'economy_renew_room': 3908855, 'economy_clubs': 3908968, 'economy_best_room': 4008080, 'economy_camp_limit': 4045923, 'economy_smart_cut': 4071888, 'economy_preseason_gate': 4317856}

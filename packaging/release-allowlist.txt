@@ -3893,3 +3893,5 @@ tests/mod_editor/test_b780_b10_profile_defaults.py
 tests/mod_editor/test_b780_b10_upgrade_gaps.py
 tests/mod_editor/test_b780_b10_profile_unicorn.py
 tests/mod_editor/test_b780_b10_coach_records.py
+# b780 b4-economy: retirement by age (never a starter before his position's age), camp limits, injured players rejoin clubs
+tests/mod_editor/test_b780_b4_economy.py
