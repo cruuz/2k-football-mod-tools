@@ -227,7 +227,10 @@ class DraftClassSupplyTests(unittest.TestCase):
         upgraded, receipt = economy.apply(self.previous)
         self.assertEqual(upgraded, self.current)
         self.assertEqual(receipt.get("upgraded_from"), "legacy")
-        self.assertEqual(sorted(int(e["va"], 16) for e in receipt["edits"]), sorted(economy.REVISION_4_SITES))
+        # b780-int: a revision-3 image upgrades straight to revision 5 (b4-economy): the revision-4 sites plus the two
+        # windows revision 5 rewrote, which revision 3 shares with revision 4
+        self.assertEqual(sorted(int(e["va"], 16) for e in receipt["edits"]),
+                         sorted(economy.REVISION_4_SITES | getattr(economy, "REVISION_5_SITES", frozenset())))
 
     def test_a_small_pool_still_gets_a_full_draft_and_keeps_the_vacancies(self):
         # The retail roster has only 241 free agents, mostly young: retiring by age alone frees far fewer than

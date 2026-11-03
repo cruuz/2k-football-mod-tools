@@ -39,6 +39,8 @@ SCOREBUG_RUNTIME_HELP = (
     "Draw the scorebug from one PNG and JSON design, with live scores, clocks, downs, "
     "timeout ticks and team colours. Preview it over a screenshot from Scorebar Studio. "
     "A scorebar folder selects a compatible sprite design. Requires Scorebug and a disc image. "
+    "On the play-call screen it also shows where the ball is beside the down and distance "
+    "(for example 1st & 10  NYJ 35), and keeps the page boxes of a long play menu clear of the formation name. "
     "EXPERIMENTAL / UNWITNESSED in a played game; rebuild from the supported base."
 )
 

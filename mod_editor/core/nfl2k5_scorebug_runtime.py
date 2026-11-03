@@ -29,7 +29,7 @@ from .nfl2k5_draft_ai import _Asm
 from .nfl2k5_bump_strength import _sections, section_digest
 
 OWNER = "nfl2k5_scorebug_runtime"
-CODE_SIZE, DATA_SIZE = 5376, 128  # beta 76 s15: +512 for records, tabs, arrow; sb: +768 for the broadcast states; the owner is placed last in the scale-out RX pool
+CODE_SIZE, DATA_SIZE = 5920, 128  # b780 p2: +544 for the ball spot and the page strip fit; beta 76 s15: +512 for records, tabs, arrow; sb: +768 for the broadcast states; the owner is placed last in the scale-out RX pool
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "data", DATA_SIZE, 16))
 HOOKS = {"setup": (0xFCE56, bytes.fromhex("e845f3ffff")),
          "update": (0xFCFA2, bytes.fromhex("e819faffff"))}
@@ -53,8 +53,10 @@ def hooks():
     if playcall():
         rows[PLAYCALL_HOOK[0]] = PLAYCALL_HOOK[1:]
         rows[playcall_layout.HOOK_NAME] = playcall_layout.HOOK
+        rows[playcall_layout.STRIP_HOOK_NAME] = playcall_layout.STRIP_HOOK  # b780 p2: the page strip fits long menus
+        rows[playcall_layout.STRIP_ENTRY_HOOK_NAME] = playcall_layout.STRIP_ENTRY_HOOK
     return rows
-REVISION = 14  # hd1: sprite camera retains full picture clip for the corner watermark
+REVISION = 15  # b780 p2: the ball spot (nwostar 10/24) and the page strip fit; was 14 (hd1: sprite camera retains full picture clip for the corner watermark)
 # State (128 bytes): scene, populated, two wing materials, the plate material,
 # two wing textures, two scores, two flash timers, down, possession, ball/line,
 # phase, red cell, wing colours and plate colours. All state stays in the owned RW page.
@@ -432,6 +434,10 @@ def code_for(code_va, data_va):
     if playcall():
         labels[playcall_layout.HOOK_NAME] = code_va + len(result)
         result += playcall_layout.code_for(code_va + len(result))
+        labels[playcall_layout.STRIP_ENTRY_HOOK_NAME] = code_va + len(result)
+        result += playcall_layout.strip_entry_code_for(code_va + len(result), data_va)
+        labels[playcall_layout.STRIP_HOOK_NAME] = code_va + len(result)
+        result += playcall_layout.strip_code_for(code_va + len(result), data_va)
     if len(result)>CODE_SIZE:
         raise ValueError('sprite owner exceeds its named RX allocation: '+str(len(result)))
     labels.update({name:start+offset for name,offset in a.labels.items()})
@@ -507,10 +513,10 @@ def status(payload):
         if not playcall_layout.valid(payload, applied=code_state == "applied" and playcall()):
             return "foreign"
         if not playcall():
-            va, old = playcall_layout.HOOK
-            off = scene.layout.sbpos.va_to_off(payload, va)
-            if payload[off:off + len(old)] != old:
-                return "foreign"
+            for va, old in (playcall_layout.HOOK, playcall_layout.STRIP_HOOK, playcall_layout.STRIP_ENTRY_HOOK):
+                off = scene.layout.sbpos.va_to_off(payload, va)
+                if payload[off:off + len(old)] != old:
+                    return "foreign"
         if code_state == "applied" and scene.xbe_status(payload, scorebug_folder=None) != "applied":
             return "foreign"
         if code_state == "applied":

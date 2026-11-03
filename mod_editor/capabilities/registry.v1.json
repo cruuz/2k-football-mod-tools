@@ -12479,9 +12479,11 @@
           "reports/b72_s1/native_sequence.json",
           "reports/b72_s1/watermark_native.json",
           "tests/mod_editor/test_nfl2k5_scorebug_sd.py",
-          "tests/mod_editor/test_nfl2k5_scorebug_watermark.py"
+          "tests/mod_editor/test_nfl2k5_scorebug_watermark.py",
+          "tests/mod_editor/test_nfl2k5_scorebug_ball_spot.py",
+          "tests/mod_editor/test_nfl2k5_playcall_layout.py"
         ],
-        "scope": "The sprite scorebug plates, interim labels, clock, watermark and play-call behaviour were seen in the lab. The later raised play-call position and Eagles/Bears fit remain offline only. TIMEOUT, HALFTIME and the red low play clock were not all captured in those runs; Xbox appearance remains unwitnessed.",
+        "scope": "The sprite scorebug plates, interim labels, clock, watermark and play-call behaviour were seen in the lab. The later raised play-call position and Eagles/Bears fit remain offline only, as do the play-call ball spot and the long-menu page boxes (b780 p2). TIMEOUT, HALFTIME and the red low play clock were not all captured in those runs; Xbox appearance remains unwitnessed.",
         "status": "partial"
       },
       "selectors": {

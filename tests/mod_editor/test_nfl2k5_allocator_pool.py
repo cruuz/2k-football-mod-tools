@@ -45,7 +45,10 @@ MORE = ("nfl2k5_xs1_probe_more", "code", 9000, 16)
 # either, so it is left out of the v3 fixture too and spills into the pool.
 # b779-int1 (km1 + hn1): km1's 1,536-byte K128 code no longer fits its legacy run and moves whole to the v4 pool, and the
 # legacy tail it frees takes ai8's third-down owner again, so the v3 half is the union without K128 and champions.
-POOLED = ("nfl2k5_champions", "nfl2k5_k128")
+# b780-p2: the scorebug owner's code request grew 5376 -> 5920 bytes (+544: the ball spot and the page strip fit), which takes
+# the last v3 tail slot ai8's 192-byte third-down owner had again; it spills into the v4 pool with the other two, so the v3
+# half is the union without all three.
+POOLED = ("nfl2k5_champions", "nfl2k5_cpu_third_down", "nfl2k5_k128")
 V3_REQUESTS = tuple(r for r in REQUESTS if r[0] not in POOLED)
 
 
