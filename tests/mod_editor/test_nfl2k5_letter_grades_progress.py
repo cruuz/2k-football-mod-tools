@@ -100,7 +100,11 @@ class AllocatorTests(unittest.TestCase):
                     self.assertEqual(new[key], dict(row, va=row["va"] + 16, raw=row["raw"] + 16), f"{key} moved by more than 16")
                     continue
             self.assertEqual(new[key], row, f"{key} moved")
-        self.assertEqual(sorted(shifted), [("nfl2k5_cpu_money_downs_late", "code"), ("nfl2k5_cpu_third_down", "code")])
+        # b780 (p2 and the beta-80 owners): cpu_money_downs_late and cpu_third_down now live whole in the v4 pool, so the
+        # progression row is the last code in the v3 run (0x14F1F60, after letter_grades) and moves nobody at all.
+        self.assertEqual(sorted(shifted), [])
+        for late in ("nfl2k5_cpu_money_downs_late", "nfl2k5_cpu_third_down"):
+            self.assertGreaterEqual(new[(late, "code")]["va"], space.POOL_VA, late)
         self.assertTrue(all(new[key]["va"] + new[key]["size"] <= RUN_END for key in shifted))   # still inside the v3 code run
         self.assertEqual(sorted(k for k in new if k not in old), [(progress.OWNER, "code")])
         mine, f4 = new[(progress.OWNER, "code")], new[(lg.OWNER, "code")]
