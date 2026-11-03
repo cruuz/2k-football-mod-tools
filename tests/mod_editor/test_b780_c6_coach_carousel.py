@@ -315,6 +315,28 @@ class ExecutableTests(unittest.TestCase):
         self.assertLess(body.index("_apply_sim_realism(plan, target"), body.index("_apply_coach_carousel(plan, target"))
         self.assertLess(pool, body.index("finish_private(target"))
 
+    def test_the_coach_career_fix_inside_the_guarded_loop_composes(self):
+        """b780 int (cave dry run #5): the coach career fix (on in every preset) rewrites 8 bytes inside the guarded
+        rollover coach loop; the carousel takes an executable carrying it, in either order, and still refuses other
+        bytes there."""
+        from mod_editor.core import nfl2k5_coach_career_fix as career_fix
+        fixed = career_fix.apply(self.retail)
+        fixed = fixed[0] if isinstance(fixed, tuple) else fixed
+        out, _ = cc.apply(fixed)
+        self.assertEqual(cc.status(out), "applied")
+        both = career_fix.apply(self.applied)
+        both = both[0] if isinstance(both, tuple) else both
+        self.assertEqual(cc.status(both), "applied")
+        _label, va, _before, _after = career_fix.SITES[0]
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage
+        image = XbeImage(self.retail)
+        at = image.offset(va) if hasattr(image, "offset") else None
+        if at is not None:
+            foreign = bytearray(self.retail)
+            foreign[at:at + 8] = bytes.fromhex("9090909090909090")
+            with self.assertRaises(Exception):
+                cc.apply(bytes(foreign))
+
     @unittest.skipUnless(_have(V08_XBE), "private v0.8 XBE absent")
     def test_the_released_v08_executable_takes_it(self):
         v08 = _v08_xbe()

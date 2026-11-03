@@ -578,6 +578,11 @@ def guard_digests(payload: bytes) -> dict[str, str]:
 
 
 def _check_guards(image: XbeImage, checked_sites) -> None:
+    # b780 int: the coach career fix (nfl2k5_coach_career_fix, on in every preset) rewrites 8 bytes inside the guarded
+    # rollover coach loop (0x247CD6). Exactly its patched bytes are read as their retail bytes; anything else still fails.
+    from . import nfl2k5_coach_career_fix as career_fix  # noqa: PLC0415
+    fixed = [s for s in career_fix.SITES if image.read(s[1], len(s[3])) == s[3]]
+    checked_sites = [*checked_sites, *fixed]
     for name, va, size, digest in GUARDS:
         _require(_guard_digest(image, va, size, checked_sites) == digest, f"foreign carousel dependency: {name} ({va:#x})")
     _require(image.read(SUPER_BOWL_ROW_VA, 1)[0] in SUPER_BOWL_ROWS, "foreign Super Bowl row predicate")
