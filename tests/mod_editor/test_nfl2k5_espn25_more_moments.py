@@ -637,7 +637,7 @@ class NativeMomentsTests(unittest.TestCase):
             templates = {k: archive.read(by_id[mm.name_id(t["template"])].virtual_offset,
                                          by_id[mm.name_id(t["template"])].size) for k, t in TEAMS.items()}
         collection = mm.compile_situ(situ, cls.data, main)
-        files = mm.compile_files(main, templates, cls.data)
+        cls.files = files = mm.compile_files(main, templates, cls.data)
         base, _ = tt._apply_all(e.read_xbe(RETAIL), None, catch_slider=False, scheme_labels=True,
                                 practice_squad=True, franchise_practice=True, depth_locks=True)
         payload = base
@@ -723,6 +723,50 @@ class NativeMomentsTests(unittest.TestCase):
                 else:
                     self.assertEqual(cpu.extra_loads[loads:], [])
         self.assertTrue(all(r["pointers_after"] == 0 for r in cpu.releases))
+
+    def test_import_completes_every_record_byte_over_a_used_spare_record(self):
+        """b780 (b3-moments, Ju3tin 10/31 and 11/01): the importer takes the first spare record (flags & 5 == 1) and
+        its clone never writes +0x0D..+0x0F or the +0x52 word (the beta 76.3 tail copied only the star bit), so a moment
+        player kept the hair style, depth locks, ability flags and tier of whoever used that record before. Fill every
+        spare record with such bytes (the star bit too), open a new moment (Falcons '98 at Vikings '98) through the
+        game's own select handler, 2D17B0 and C1030, and require each imported player to carry exactly his team file's
+        bytes."""
+        cpu = self.cpu
+        root = cpu.r(0xB72918)
+        count, array = cpu.r(root), cpu.r(root + 4)
+        spare = [array + 84 * i for i in range(count) if cpu.read(array + 84 * i + 8, 1)[0] & 5 == 1]
+        self.assertGreaterEqual(len(spare), 106)
+        saved = {at: cpu.read(at, 84) for at in spare}
+        stale = (0x07, 0x5A, 0xA5, 0xDFE3)                    # hair 7, two unknown bytes, X-Factor + every flag
+        try:
+            for at in spare:
+                cpu.write(at + 0x0D, bytes(stale[:3]))
+                cpu.write(at + 0x52, struct.pack("<H", stale[3]))
+            cpu.select(mm.display_order(self.data).index(25))
+            authored = {}
+            for name in ("h-01-1998-falcons-9.iff", "h-15-1998-vikings-9.iff"):
+                doc = rr.RosterDocument(self.files[name][32:])
+                for p in doc.players:
+                    raw = self.files[name][32 + p.offset:32 + p.offset + 84]
+                    authored[(name[2:4], p.first, p.last, p.record.values["jersey"])] = raw
+            checked = 0
+            for side, info in cpu.selected().items():
+                code = info["code"]
+                for k in range(info["active"]):
+                    pointer = cpu.r(info["team"] + 4 * k)
+                    person = cpu.person(pointer)
+                    raw = cpu.read(pointer, 84)
+                    src = authored[(code, person["first"], person["last"], person["jersey"])]
+                    with self.subTest(side=side, player=f"{person['first']} {person['last']}"):
+                        self.assertIn(pointer, saved)              # it did land in a used spare record
+                        self.assertEqual(raw[0x0C:0x10], src[0x0C:0x10])
+                        self.assertEqual(raw[0x52:0x54], src[0x52:0x54])
+                    checked += 1
+            self.assertEqual(checked, 106)
+            cpu.run(0x20C3C0)
+        finally:
+            for at, raw in saved.items():
+                cpu.write(at, raw)
 
     def test_retail_rows_keep_the_retail_search(self):
         """A retail row whose team-season is also a new one (A YARD TOO SHORT, Titans '99 at home) loads the retail
@@ -842,7 +886,10 @@ class AnniversaryQcTests(unittest.TestCase):
                 mm._load_appearance(path, data.rosters)
             self.assertIsNone(mm._load_appearance(Path(folder) / "absent.json", data.rosters))
 
-    def test_star_copy_moves_one_bit_and_replays_the_retail_tail(self):
+    def test_import_tail_completes_the_record_and_replays_the_retail_tail(self):
+        """b780 (b3-moments): the C1030 site copies the dword +0x0C..+0x0F of the file record and the owned tail copies
+        the whole +0x52 word, so an imported player keeps none of the spare record's earlier hair style, depth locks,
+        ability flags, ability tier, star tag or Guardian flag. Run under Unicorn from the site to the resume point."""
         try:
             from unicorn import Uc, UC_ARCH_X86, UC_MODE_32
             from unicorn import x86_const as x86
@@ -850,20 +897,29 @@ class AnniversaryQcTests(unittest.TestCase):
             self.skipTest("unicorn required")
         code_va = 0x14DA000
         stub = mm.star_code(code_va + mm.STAR_OFFSET)
+        site = mm.import_site(code_va)
         self.assertEqual(len(stub), mm.TABLE_OFFSET - mm.STAR_OFFSET)
-        resume = struct.unpack_from("<i", stub, len(stub) - 4)[0] + code_va + mm.STAR_OFFSET + len(stub)
+        self.assertEqual(len(site), len(bytes.fromhex(mm.STAR_RETAIL)))
+        jump = stub.index(b"\xe9")
+        resume = struct.unpack_from("<i", stub, jump + 1)[0] + code_va + mm.STAR_OFFSET + jump + 5
         self.assertEqual(resume, mm.STAR_RESUME)
-        for src_tag in (0, 1, 0x5F, 0xA0):
-            for dst_tag in (0x00, 0x01, 0xFE, 0xFF, 0x5A):
+        self.assertEqual(stub[jump + 5:], b"\xcc" * (len(stub) - jump - 5))
+        for src_word in (0x0000, 0x0100, 0xDFE3, 0x2000, 0xC01F):
+            for dst_word in (0x0000, 0xFFFF, 0xDDC3, 0x5A5A):
                 uc = Uc(UC_ARCH_X86, UC_MODE_32)
+                uc.mem_map(0xC1000, 0x1000)
                 uc.mem_map(0x14DA000, 0x1000)
                 uc.mem_map(0x200000, 0x10000)
+                uc.mem_write(mm.STAR_VA, site)
                 uc.mem_write(code_va + mm.STAR_OFFSET, stub)
                 src, dst, esi, stack = 0x200000, 0x201000, 0x202000, 0x208000
-                record = bytes(range(0x53)) + bytes([src_tag])
-                target = bytes(0x53) + bytes([dst_tag])
-                uc.mem_write(src, record)
-                uc.mem_write(dst, target)
+                record = bytearray(range(0x54))
+                struct.pack_into("<H", record, 0x52, src_word)
+                target = bytearray(b"\xee" * 0x54)
+                struct.pack_into("<H", target, 0x52, dst_word)
+                target[0x0C] = record[0x0C]                      # the clone has written +0x0C before the site
+                uc.mem_write(src, bytes(record))
+                uc.mem_write(dst, bytes(target))
                 uc.mem_write(esi + 0x11C, bytes([0x35]))
                 uc.mem_write(stack + 0x10, struct.pack("<I", 0x1234))
                 regs = {x86.UC_X86_REG_EBP: src, x86.UC_X86_REG_EDI: dst, x86.UC_X86_REG_ESI: esi,
@@ -871,16 +927,64 @@ class AnniversaryQcTests(unittest.TestCase):
                         x86.UC_X86_REG_EAX: 0xDEADBEEF, x86.UC_X86_REG_ECX: 0xCAFEBABE}
                 for reg, value in regs.items():
                     uc.reg_write(reg, value)
-                uc.emu_start(code_va + mm.STAR_OFFSET, mm.STAR_RESUME)
-                with self.subTest(src=src_tag, dst=dst_tag):
+                uc.emu_start(mm.STAR_VA, mm.STAR_RESUME)
+                expected = bytearray(target)
+                expected[0x0C:0x10] = record[0x0C:0x10]
+                expected[0x52:0x54] = record[0x52:0x54]
+                with self.subTest(src=hex(src_word), dst=hex(dst_word)):
                     self.assertEqual(uc.reg_read(x86.UC_X86_REG_EIP), mm.STAR_RESUME)
-                    self.assertEqual(bytes(uc.mem_read(dst, 0x54)), bytes(0x53) + bytes([(dst_tag & 0xFE) | (src_tag & 1)]))
-                    self.assertEqual(bytes(uc.mem_read(src, 0x54)), record)
+                    self.assertEqual(bytes(uc.mem_read(dst, 0x54)), bytes(expected))
+                    self.assertEqual(bytes(uc.mem_read(src, 0x54)), bytes(record))
                     self.assertEqual(uc.reg_read(x86.UC_X86_REG_EAX), 0x1234)        # mov eax,[esp+0x10]
                     self.assertEqual(uc.reg_read(x86.UC_X86_REG_ECX), 0x35)          # movzx ecx,byte [esi+0x11c]
                     for reg in (x86.UC_X86_REG_EBP, x86.UC_X86_REG_EDI, x86.UC_X86_REG_ESI, x86.UC_X86_REG_ESP,
                                 x86.UC_X86_REG_EBX, x86.UC_X86_REG_EDX):
                         self.assertEqual(uc.reg_read(reg), regs[reg])
+
+    def test_season_codes_follow_the_moves(self):
+        cases = {("23", 2021): "LAR", ("23", 1999): "STL", ("23", 1951): "LA", ("20", 2001): "OAK", ("20", 1983): "LA",
+                 ("20", 2020): "LV", ("20", 1976): "OAK", ("24", 2006): "SD", ("24", 2017): "LAC", ("11", 2009): "IND",
+                 ("11", 1970): "BAL", ("00", 2008): "ARI", ("00", 1975): "STL", ("00", 1990): "PHO",
+                 ("28", 1999): "TEN", ("28", 1988): "HOU", ("16", 2016): "NE", ("14", 2006): "SEA"}
+        base = {"23": "STL", "20": "OAK", "24": "SD", "11": "IND", "00": "ARZ", "28": "TEN", "16": "NE", "14": "SEA"}
+        for (code, season), want in cases.items():
+            with self.subTest(code=code, season=season):
+                team = {"asset_code": code, "season": season, "abbreviation": base[code]}
+                self.assertEqual(mm.display_abbreviation(team), want)
+                self.assertLessEqual(len(want), mm.SLOT_TEXT_CAPACITY[mm.TEAM_CITY_ABBREVIATION])
+
+    def test_previous_star_only_tail_still_moves_one_bit(self):
+        """The beta 76.3 .. beta 79 body (kept for recognition) copies only the star bit."""
+        try:
+            from unicorn import Uc, UC_ARCH_X86, UC_MODE_32
+            from unicorn import x86_const as x86
+        except ImportError:
+            self.skipTest("unicorn required")
+        code_va = 0x14DA000
+        stub = mm.previous_star_code(code_va + mm.STAR_OFFSET)
+        self.assertEqual(len(stub), mm.TABLE_OFFSET - mm.STAR_OFFSET)
+        resume = struct.unpack_from("<i", stub, len(stub) - 4)[0] + code_va + mm.STAR_OFFSET + len(stub)
+        self.assertEqual(resume, mm.STAR_RESUME)
+        site = mm.previous_import_site(code_va)
+        self.assertEqual(site[:5], b"\xe9" + struct.pack("<i", code_va + mm.STAR_OFFSET - mm.STAR_VA - 5))
+        self.assertEqual(site[5:], b"\xcc" * 6)
+        for src_tag in (0, 1, 0x5F, 0xA0):
+            for dst_tag in (0x00, 0x01, 0xFE, 0xFF):
+                uc = Uc(UC_ARCH_X86, UC_MODE_32)
+                uc.mem_map(0x14DA000, 0x1000)
+                uc.mem_map(0x200000, 0x10000)
+                uc.mem_write(code_va + mm.STAR_OFFSET, stub)
+                src, dst, esi, stack = 0x200000, 0x201000, 0x202000, 0x208000
+                uc.mem_write(src, bytes(range(0x53)) + bytes([src_tag]))
+                uc.mem_write(dst, bytes(0x53) + bytes([dst_tag]))
+                uc.mem_write(esi + 0x11C, bytes([0x35]))
+                uc.mem_write(stack + 0x10, struct.pack("<I", 0x1234))
+                for reg, value in {x86.UC_X86_REG_EBP: src, x86.UC_X86_REG_EDI: dst, x86.UC_X86_REG_ESI: esi,
+                                   x86.UC_X86_REG_ESP: stack}.items():
+                    uc.reg_write(reg, value)
+                uc.emu_start(code_va + mm.STAR_OFFSET, mm.STAR_RESUME)
+                with self.subTest(src=src_tag, dst=dst_tag):
+                    self.assertEqual(bytes(uc.mem_read(dst, 0x54)), bytes(0x53) + bytes([(dst_tag & 0xFE) | (src_tag & 1)]))
 
     def test_the_star_copy_sits_in_the_owned_code_before_the_table(self):
         entries = mm.table_entries(mm.Data.load())
@@ -890,8 +994,8 @@ class AnniversaryQcTests(unittest.TestCase):
         self.assertEqual(len(site), 1)
         _label, va, before, after = site[0]
         self.assertEqual((va, before.hex()), (mm.STAR_VA, mm.STAR_RETAIL))
-        self.assertEqual(after[:5], b"\xe9" + struct.pack("<i", 0x14DA000 + mm.STAR_OFFSET - mm.STAR_VA - 5))
-        self.assertEqual(after[5:], b"\xcc" * (len(before) - 5))
+        self.assertEqual(after[:6], mm.IMPORT_SITE_HEAD)
+        self.assertEqual(after[6:], b"\xe9" + struct.pack("<i", 0x14DA000 + mm.STAR_OFFSET - mm.STAR_VA - 11))
 
 
 @unittest.skipUnless(retail_available(), "user-owned USA disc folder absent")
@@ -949,6 +1053,81 @@ class AnniversaryQcRetailTests(unittest.TestCase):
         half = bytearray(earlier)                               # the site without its code is mixed, not applied
         half[site:site + 11] = patched[site:site + 11]
         self.assertEqual(mm.status(bytes(half), self.data), "foreign")
+
+    def test_a_star_only_install_reads_applied_and_upgrades(self):
+        """b780: a disc built by beta 76.3 .. beta 79 carries the star-only import tail and its plain jump. It reads
+        applied; apply() completes the import in place (the 28-byte tail and the 11-byte site, nothing else moves) and
+        a replay of the result changes nothing. Either half of the new tail with the other half of the old is foreign."""
+        from mod_editor.core.nfl2k5_bump_strength import _sections, section_digest
+        current, _ = mm.apply(self.retail, self.data)
+        self.assertEqual(mm.import_status(current, self.data), "current")
+        code, _dat = mm.allocations(current)
+        image = XbeImage(current)
+        tail_at = code["raw"] + mm.STAR_OFFSET
+        tail_size = mm.TABLE_OFFSET - mm.STAR_OFFSET
+        site_at = image.offset(mm.STAR_VA, 11)
+
+        def build(tail, site):
+            out = bytearray(current)
+            out[tail_at:tail_at + tail_size] = tail
+            out[site_at:site_at + 11] = site
+            if space.is_scaleout(current):
+                space._seal_scaleout(out, space._read_scale_directory(current))
+            else:
+                requests = space._read_directory(current)
+                out[space.DIRECTORY:space._directory_end(requests)] = space._directory(
+                    requests, space._code_bytes(out, requests))
+            for sec in _sections(out):
+                out[sec.header_offset + 36:sec.header_offset + 56] = section_digest(out, sec)
+            return bytes(out)
+
+        old_tail, old_site = mm.previous_star_code(code["va"] + mm.STAR_OFFSET), mm.previous_import_site(code["va"])
+        previous = build(old_tail, old_site)
+        self.assertEqual(mm.status(previous, self.data), "applied")
+        self.assertEqual(mm.import_status(previous, self.data), "previous")
+        upgraded, receipt = mm.apply(previous, self.data)
+        self.assertEqual(receipt["status"], "upgraded")
+        self.assertEqual(upgraded, current)
+        self.assertEqual(mm.apply(upgraded, self.data)[1]["status"], "already_applied")
+        for tail, site, why in ((old_tail, mm.import_site(code["va"]), "old tail, new site"),
+                                (mm.star_code(code["va"] + mm.STAR_OFFSET), old_site, "new tail, old site")):
+            with self.subTest(why):
+                mixed = build(tail, site)
+                self.assertEqual(mm.status(mixed, self.data), "foreign")
+                self.assertEqual(mm.import_status(mixed, self.data), "foreign")
+
+    def test_a_beta_765_install_gets_its_row_hooks_and_the_whole_import_in_one_pass(self):
+        """b780: a real beta 76.5 disc has neither the beta 77 row hooks nor the b780 import tail (it carries the
+        star-only tail and its plain jump). apply() completes both in one pass; the result equals a fresh install and
+        the receipt counts every changed byte."""
+        from mod_editor.core.nfl2k5_bump_strength import _sections, section_digest
+        current, _ = mm.apply(self.retail, self.data)
+        code, dat = mm.allocations(current)
+        image = XbeImage(current)
+        out = bytearray(current)
+        tail_at, site_at = code["raw"] + mm.STAR_OFFSET, image.offset(mm.STAR_VA, 11)
+        out[tail_at:tail_at + mm.TABLE_OFFSET - mm.STAR_OFFSET] = mm.previous_star_code(code["va"] + mm.STAR_OFFSET)
+        out[site_at:site_at + 11] = mm.previous_import_site(code["va"])
+        for label, va, before, _after in mm.sites(code["va"], dat["va"], mm.RETAIL_COUNT + len(self.data.moments)):
+            if label in mm.ROW_LABELS:
+                out[image.offset(va, len(before)):image.offset(va, len(before)) + len(before)] = before
+        if space.is_scaleout(current):
+            space._seal_scaleout(out, space._read_scale_directory(current))
+        else:
+            requests = space._read_directory(current)
+            out[space.DIRECTORY:space._directory_end(requests)] = space._directory(
+                requests, space._code_bytes(out, requests))
+        for sec in _sections(out):
+            out[sec.header_offset + 36:sec.header_offset + 56] = section_digest(out, sec)
+        beta765 = bytes(out)
+        self.assertEqual((mm.status(beta765, self.data), mm.row_hooks_status(beta765, self.data),
+                          mm.import_status(beta765, self.data)), ("applied", "previous", "previous"))
+        upgraded, receipt = mm.apply(beta765, self.data)
+        self.assertEqual((receipt["status"], receipt["rows_completed"]), ("upgraded", True))
+        self.assertIn("star-only import tail", receipt["upgraded_from"])
+        self.assertEqual(upgraded, current)
+        self.assertEqual(receipt["changed_bytes"], sum(a != b for a, b in zip(beta765, upgraded)))
+        self.assertEqual(mm.apply(upgraded, self.data)[1]["status"], "already_applied")
 
     def test_a_player_gets_his_own_art_or_none_and_his_tone(self):
         with outer_image() as archive:
@@ -1040,6 +1219,38 @@ class ShippedMomentLooksRetailTests(unittest.TestCase):
                 self.assertLessEqual(v["face_mask"], 26, who)
                 self.assertLessEqual(p.record.skin & 7, 5, who)
                 self.assertLessEqual(v["face"] & 7, 6, who)
+
+    def test_every_moment_team_prints_its_own_seasons_code(self):
+        """b780 (v0.8 known issue: "the 2021 Rams show STL in the Super Bowl LVI moment"): the screens print the team's
+        city abbreviation (+0x13C; the details screen's NOW box reads it at 2C5D40 / 2C5D90). Every shipped moment
+        team file carries the code its club used that season, not its retail template's (the 1999 St. Louis Rams,
+        1983 Los Angeles Raiders, 1970 Baltimore Colts and 1975 St. Louis Cardinals templates), and every text the
+        importer copies fits the spare team's buffer."""
+        expected = {key: mm.display_abbreviation(team) for key, team in self.data.teams.items()}
+        self.assertEqual(expected["rams_2021"], "LAR")
+        self.assertEqual(expected["cardinals_2008"], "ARI")    # the 2026 Cardinals' code (retail and the data: ARZ)
+        for key in ("raiders_2001", "colts_2009", "colts_2022"):
+            self.assertEqual(expected[key], self.data.teams[key]["abbreviation"], key)
+        by_file = {name: key for key, name, *_ in mm.table_entries(self.data)}
+        seen = set()
+        for filename, raw in self.files.items():
+            body = raw[32:]
+            t = rr.RosterDocument(body).teams[0].offset
+            def text(field):
+                at = t + field + struct.unpack_from("<i", body, t + field)[0] - 1
+                end = at
+                while body[end:end + 2] != b"\0\0":
+                    end += 2
+                return body[at:end].decode("utf-16le")
+            key = by_file[filename]
+            with self.subTest(team=key):
+                self.assertEqual(text(mm.TEAM_CITY_ABBREVIATION), expected[key])
+                for field, capacity in mm.SLOT_TEXT_CAPACITY.items():
+                    self.assertLessEqual(len(text(field)), capacity)
+            seen.add(key)
+        self.assertEqual(seen, set(self.data.teams))
+        rams = {name: key for name, key in by_file.items() if key == "rams_2021"}
+        self.assertEqual(len(rams), 1)
 
     def test_the_templates_are_inside_the_same_envelope(self):
         """The compiled records keep the donors' gear (helmet shell, facemask, sleeves); the donors are retail
