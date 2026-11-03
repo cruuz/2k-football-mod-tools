@@ -557,7 +557,13 @@ def recognized(payload):
         return False
 
 
-def check_context(payload, edits, *, installed=False):
+def check_context(payload, edits, *, installed=False, real=None):
+    # b780 n8: ``payload`` is MyCareer's own view (the franchise footer host's and Player Progress's chained sites read as
+    # MyCareer's bytes). Each companion owner's status is read on the real executable (``real``): in the view the
+    # footer host looks half installed, so its history capture, the champions owner, honors and defensive try (which
+    # tolerates the honors fold edit) all read foreign there, and MyCareer then refused itself whenever the franchise
+    # footer, honors and defensive try were selected with it.
+    companions = payload if real is None else real
     image = XbeImage(payload)
     legacy.check_context(image)
     # Shared enum abbreviations follow the installed EDGE/LB labels. Only
@@ -571,14 +577,14 @@ def check_context(payload, edits, *, installed=False):
         if i == 7 and image.read(actual, 6) == "RB\0".encode("utf-16le"): name = "RB"  # b777-rb2 in-place rename
         if i == 8 and actual != pointer:
             from . import nfl2k5_hback as hback
-            legacy.require(hback.status(payload) == "applied", "foreign H-back label companion")
+            legacy.require(hback.status(companions) == "applied", "foreign H-back label companion")
             pointer = hback.strings(hback.allocation(payload)["va"])[1]["abbr"]
             name = hback.TEXT["abbr"]
         legacy.require(actual == pointer and image.read(actual,2*(len(name)+1)) == (name+"\0").encode("utf-16le"),
                        "foreign MyPlayer HUD position label")
 
     from . import nfl2k5_draft_ai as draft_ai
-    legacy.require(draft_ai.status(payload) in ("retail", "applied", "legacy"), "foreign draft AI owner")  # b780 b1-draft: beta-78/79 head
+    legacy.require(draft_ai.status(companions) in ("retail", "applied", "legacy"), "foreign draft AI owner")  # b780 b1-draft: beta-78/79 head
     camera_edits = [(s.label, s.va, s.retail, s.patched) for s in _season_birth_date_sites(payload)]
     # PROVED OFFLINE: the economy changes only the initial cap immediate in
     # this native franchise initializer. Accept its exact instruction only
@@ -587,7 +593,7 @@ def check_context(payload, edits, *, installed=False):
     cap_va = 0x13EF17
     cap_before = bytes.fromhex("c70578c2e300743a0100")
     if image.read(cap_va, len(cap_before)) != cap_before:
-        legacy.require(economy.status(payload) in ("applied", "legacy"), "foreign initial-cap economy companion")
+        legacy.require(economy.status(companions) in ("applied", "legacy"), "foreign initial-cap economy companion")
         cap_after = next(s.patched for s in economy.sites() if s.va == cap_va)
         camera_edits.append(("economy_initial_cap", cap_va, cap_before, cap_after))
     # b779 ag1: economy revision 4 (rc1) jumps the native cut-down 0x2BF9A0, which MyCareer's signing room calls, to
@@ -595,7 +601,7 @@ def check_context(payload, edits, *, installed=False):
     # owner validates, then restore the retail first instruction in this hash view.
     cut_before = bytes.fromhex("83ec545556")
     if image.read(economy.SMART_CUT, len(cut_before)) != cut_before:
-        legacy.require(economy.status(payload) in ("applied", "legacy"), "foreign cut-down economy companion")
+        legacy.require(economy.status(companions) in ("applied", "legacy"), "foreign cut-down economy companion")
         cut_after = next(s.patched for s in economy.sites() if s.va == economy.SMART_CUT)
         camera_edits.append(("economy_smart_cut", economy.SMART_CUT, cut_before, cut_after))
     # The optional dated pick owner shares this initializer. Normalize only
@@ -603,7 +609,7 @@ def check_context(payload, edits, *, installed=False):
     # It does not call MyCareer validation, so this introduces no guard cycle.
     from . import nfl2k5_draft_picks as draft_picks
     if image.read(draft_picks.SITE, 5) != draft_picks.ORIGINAL:
-        legacy.require(draft_picks.status(payload) == "applied", "foreign draft-pick initializer companion")
+        legacy.require(draft_picks.status(companions) == "applied", "foreign draft-pick initializer companion")
         camera_edits.extend(draft_picks.sites(draft_picks.allocation(payload)["va"]))
     from . import nfl2k5_franchise_autosave as autosave
     # Practice and music already validate MyCareer. Avoid a dependency cycle
@@ -648,7 +654,7 @@ def check_context(payload, edits, *, installed=False):
         (kicks, kicks.PAT_STORE_SITE_VA, kicks.RETAIL_CALL_STORE, ("pat_store_hook", "pat_pick_hook")),
     ):
         if image.read(sentinel, len(pin)) != pin:
-            legacy.require(module.status(payload) == "applied", "foreign play-call companion owner")
+            legacy.require(module.status(companions) == "applied", "foreign play-call companion owner")
             if module is overtime:
                 candidates = [(label, off, before, after) for _, label, off, before, after in
                               module._sites(payload, 10, True, True, True)]
@@ -663,7 +669,7 @@ def check_context(payload, edits, *, installed=False):
     if image.read(0x16E7B1, 5) != bytes.fromhex("e86a46f7ff"):
         from . import nfl2k5_camera as camera
         # b780 n6: the beta-79 camera (v7, "previous") owns the same load-select hook bytes
-        legacy.require(camera.status(payload) in ("applied", "previous"), "foreign camera/load boundary")
+        legacy.require(camera.status(companions) in ("applied", "previous"), "foreign camera/load boundary")
         camera_edits += [(name, camera.HOOKS[name][0], before, after)
                         for name, _, before, after in camera._sites(payload, camera.DEFAULT_PRESET)
                         if name == "franchise_load_select"]
@@ -674,7 +680,7 @@ def check_context(payload, edits, *, installed=False):
     hook, before, _ = defensive_try.HOOKS["player_stat"]
     before = bytes.fromhex(before)
     if image.read(hook, len(before)) != before:
-        legacy.require(defensive_try.status(payload) == "applied", "foreign live-stat companion")
+        legacy.require(defensive_try.status(companions) == "applied", "foreign live-stat companion")
         after = defensive_try._hook_bytes("player_stat", defensive_try.assembled(payload)[3])
         camera_edits.append(("defensive_try_player_stat", hook, before, after))
     # b775 mo2: the Anniversary moment context wraps the live call at 0xCB295 (inside the pinned 0xCB240 span).
@@ -684,14 +690,14 @@ def check_context(payload, edits, *, installed=False):
         if name == "player_stat":
             camera_edits.append(("moment_context_player_stat", va, before, after))
     if image.read(0xCB295, 5) != bytes.fromhex("e8d6f1ffff"):
-        legacy.require(moment_context.status(payload) == "applied", "foreign live player-stat companion")
+        legacy.require(moment_context.status(companions) == "applied", "foreign live player-stat companion")
     # Dynamic kickoffs extends this same readiness predicate. Accept only
     # its complete verified legacy or relocated implementation, then restore
     # the exact entry hook in our private native-context hash view.
     from . import nfl2k5_dynamic_kickoff as dynamic
     ready_va, ready_pin = dynamic.HOOKS["ready"]
     if image.read(ready_va, len(ready_pin)) != ready_pin:
-        legacy.require(dynamic.status(payload) == "applied", "foreign kickoff readiness owner")
+        legacy.require(dynamic.status(companions) == "applied", "foreign kickoff readiness owner")
         if dynamic._legacy_status(payload) == "applied":
             _, ready_labels = dynamic._code(dynamic._decode_legacy_settings(payload))
         else:
@@ -709,7 +715,7 @@ def check_context(payload, edits, *, installed=False):
     try_va, try_hex, _ = defensive_try.HOOKS["try_text"]
     try_pin = bytes.fromhex(try_hex)
     if image.read(try_va, len(try_pin)) != try_pin:
-        legacy.require(defensive_try.status(payload) == "applied", "foreign try formatter owner")
+        legacy.require(defensive_try.status(companions) == "applied", "foreign try formatter owner")
         try_labels = defensive_try.assembled(payload)[3]
         camera_edits.append(("defensive_try_text", try_va, try_pin,
                              defensive_try._hook_bytes("try_text", try_labels)))
@@ -720,7 +726,7 @@ def check_context(payload, edits, *, installed=False):
     # tier sweep calls 0x246D90, so it targets the adjusted overall.
     from . import nfl2k5_lineman_rating as lineman
     if image.read(lineman.HOOK_VA, len(lineman.RETAIL_HOOK)) != lineman.RETAIL_HOOK:
-        legacy.require(lineman.status(payload) == "applied", "foreign overall-dispatch owner")
+        legacy.require(lineman.status(companions) == "applied", "foreign overall-dispatch owner")
         camera_edits.append(("lineman_overall_dispatch", lineman.HOOK_VA,
                              lineman.RETAIL_HOOK, lineman.PATCHED_HOOK))
     for va, size, digest in GUARDS:
@@ -855,6 +861,7 @@ def installed_sites(payload):
 
 def _recognize(payload, context=True):
     from . import nfl2k5_era_rules as era
+    original = payload
     payload = era.underlying_view(payload)
     found = any(a["owner"] == OWNER for a in space.layout(payload)["allocations"])
     code, data = legacy.allocations(payload) if found else ({"va": 0}, {"va": 0})
@@ -890,7 +897,7 @@ def _recognize(payload, context=True):
     legacy.require(rdata.status(payload, edits) == ("applied" if state == "previous" else state),
                    "mixed generic MyCareer hooks/code")
     if context:
-        check_context(payload, edits, installed=state in ("applied", "previous"))
+        check_context(payload, edits, installed=state in ("applied", "previous"), real=original)
     return state
 
 
