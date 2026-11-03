@@ -469,14 +469,17 @@ def apply(payload: bytes, requests=(), *, scaleout=False) -> tuple[bytes, dict]:
                     "reservations": reservations(result)}
 
 
-def install_code(payload: bytes, owner: str, code: bytes) -> tuple[bytes, dict]:
+def install_code(payload: bytes, owner: str, code: bytes, *, previous: bytes | None = None) -> tuple[bytes, dict]:
     """Fill only an established code allocation, then seal its bytes and digest.
 
     A filled allocation can only be replayed with identical bytes. Reconfiguration
     requires a clean rebuild, so mixed owner payloads cannot be silently repaired.
+    b780 n6: ``previous`` names the exact body an earlier release of this owner installed (same size); an allocation
+    holding exactly those bytes is upgraded in place to ``code``. Same allocation and address; nothing else moves.
     """
+    _require(previous is None or len(previous) == len(code), "an in-place upgrade keeps the owner's size")
     if is_scaleout(payload):
-        return _install_scaleout(payload, owner, code, "code")
+        return _install_scaleout(payload, owner, code, "code", previous=previous)
     grown, _, requests = _validate(payload)
     _require(grown, "code requires an established allocation")
     matches = [a for a in _allocations(requests) if a["owner"] == owner and a["kind"] == "code"]
@@ -484,7 +487,8 @@ def install_code(payload: bytes, owner: str, code: bytes) -> tuple[bytes, dict]:
     a = matches[0]
     _require(len(code) == a["size"], "code must fill its exact named allocation")
     old = payload[a["raw"]:a["raw"] + a["size"]]
-    _require(old in (b"\xcc" * a["size"], code), "foreign or differently configured owner code")
+    _require(old in (b"\xcc" * a["size"], code) or (previous is not None and old == previous),
+             "foreign or differently configured owner code")
     buf = bytearray(payload)
     buf[a["raw"]:a["raw"] + a["size"]] = code
     buf[DIRECTORY:_directory_end(requests)] = _directory(requests, _code_bytes(buf, requests))
@@ -494,7 +498,8 @@ def install_code(payload: bytes, owner: str, code: bytes) -> tuple[bytes, dict]:
     buf[s.header_offset + 36:s.header_offset + 56] = section_digest(buf, s)
     result = bytes(buf)
     _require(status(result) == "applied", "code install postcondition failed")
-    return result, {"status": "applied", "edits": [{"label": owner, "va": hex(a["va"]), "size": a["size"]}]}
+    return result, {"status": "applied", "edits": [{"label": owner, "va": hex(a["va"]), "size": a["size"]}],
+                    **({"upgraded_from_previous": True} if previous is not None and old == previous != code else {})}
 
 
 def extend_scaleout(payload: bytes, extra) -> tuple[bytes, dict]:
@@ -1516,14 +1521,15 @@ def _apply_scaleout(payload, requests):
         file_growth=len(result) - len(payload), allocations=allocations, reservations=reservations(result))
 
 
-def _install_scaleout(payload, owner, content, kind):
+def _install_scaleout(payload, owner, content, kind, *, previous=None):
     _, _, requests = _validate(payload)
     allocations = [a for a in _scale_allocations(requests) if a["owner"] == owner and a["kind"] == kind]
     _require(allocations and owner not in (LOGO_REQUEST[0], DIRECTORY_OWNER), "owner has no installable allocation")
     _require(len(content) == sum(a["size"] for a in allocations), "content must fill its exact named allocation")
     old = b"".join(payload[a["raw"]:a["raw"] + a["size"]] for a in allocations)
     padding = b"\xcc" if kind == "code" else b"\0"
-    _require(old in (padding * len(content), content), "foreign or differently configured owner content")
+    _require(old in (padding * len(content), content) or (previous is not None and old == previous),
+             "foreign or differently configured owner content")
     buf, at, edits = bytearray(payload), 0, []
     for a in allocations:
         buf[a["raw"]:a["raw"] + a["size"]] = content[at:at + a["size"]]
@@ -1533,7 +1539,8 @@ def _install_scaleout(payload, owner, content, kind):
     # The same production length-prefixed section digest scheme is used above.
     result = bytes(buf)
     _require(status(result) == "applied", "owner install postcondition failed")
-    return result, dict(status="already_applied" if old == content else "applied", edits=edits)
+    return result, dict(status="already_applied" if old == content else "applied", edits=edits,
+                        **({"upgraded_from_previous": True} if previous is not None and old == previous != content else {}))
 
 
 def install_read_only(payload: bytes, owner: str, content: bytes) -> tuple[bytes, dict]:

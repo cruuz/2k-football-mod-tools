@@ -53,6 +53,7 @@ import struct
 from typing import Mapping
 
 from . import nfl2k5_champions_code as runtime
+from . import nfl2k5_champions_code_b779 as runtime_b779
 from . import nfl2k5_rdata_sites as rdata
 from . import nfl2k5_xbe_space as space
 from .nfl2k5_cave_oracle import XbeImage
@@ -196,11 +197,25 @@ def _rel32(source_end: int, target: int) -> bytes:
     return struct.pack("<i", target - source_end)
 
 
-def code_for(code_va: int) -> bytes:
-    """The owned RX content with the template's relocations applied, padded to CODE_SIZE with int3."""
+# b780 n6: beta-80 changed this runtime (j4-history: the Player Card game log page goes through the champions page cycle),
+# so the beta-79 / SOFTDRINK 2K28 v0.8 executables carry the older code. ``previous=True`` builds that exact code (frozen
+# in ``nfl2k5_champions_code_b779``); such an install reads "previous" and ``install`` upgrades it in place (same
+# allocation, same CODE_SIZE, same two sites). Without this an incremental build or inspect on a v0.8 disc read the
+# champions owner, then the honors owner, defensive_try, the CPU scrambles and the QB reads as foreign.
+PREVIOUS_REVISION = "beta-79"
 
-    result = bytearray(runtime.CODE)
-    for offset, kind, symbol, value in runtime.RELOCATIONS:
+
+def _revision(previous: bool):
+    return runtime_b779 if previous else runtime
+
+
+def code_for(code_va: int, *, previous: bool = False) -> bytes:
+    """The owned RX content with the template's relocations applied, padded to CODE_SIZE with int3 (``previous``: the
+    beta-79 runtime)."""
+
+    revision = _revision(previous)
+    result = bytearray(revision.CODE)
+    for offset, kind, symbol, value in revision.RELOCATIONS:
         _require(symbol == "code", "unexpected champions relocation")
         target = code_va + value + struct.unpack_from("<i", result, offset)[0]
         if kind == 2:
@@ -210,14 +225,14 @@ def code_for(code_va: int) -> bytes:
     return bytes(result).ljust(CODE_SIZE, b"\xcc")
 
 
-def labels(code_va: int) -> dict[str, int]:
-    return {name: code_va + offset for name, offset in runtime.LABELS.items()}
+def labels(code_va: int, *, previous: bool = False) -> dict[str, int]:
+    return {name: code_va + offset for name, offset in _revision(previous).LABELS.items()}
 
 
-def sites(code_va: int) -> list[tuple[str, int, bytes, bytes]]:
+def sites(code_va: int, *, previous: bool = False) -> list[tuple[str, int, bytes, bytes]]:
     """Every executable edit as (label, VA, retail bytes, patched bytes)."""
 
-    at = labels(code_va)
+    at = labels(code_va, previous=previous)
     return [(label, va, before, bytes([opcode]) + _rel32(va + 5, at[entry]) + b"\x90" * (length - 5))
             for label, va, before, entry, opcode, length in SITE_TABLE]
 
@@ -300,7 +315,8 @@ def _companion_sites(payload: bytes) -> list:
 
 
 def owned_state(payload: bytes):
-    """-> ("retail" | "applied", allocations | None); anything else raises."""
+    """-> ("retail" | "applied" | "previous", allocations | None); anything else raises. "previous" is the exact beta-79
+    install (its code, its sites, every guard), which ``install`` upgrades in place."""
 
     _require(space.status(payload) != "foreign", "foreign XBE geometry, owner seal or section digest")
     image = XbeImage(payload)
@@ -317,11 +333,15 @@ def owned_state(payload: bytes):
         _require(rdata.status(payload, edits) == "retail", "champions sites changed with an empty allocation")
         _check_guards(image, edits + _companion_sites(payload))
         return "retail", found
-    _require(code == code_for(code_va), "foreign champions code")
-    edits = sites(code_va)
+    if code == code_for(code_va):
+        state = "applied"
+    else:
+        _require(code == code_for(code_va, previous=True), "foreign champions code")
+        state = "previous"
+    edits = sites(code_va, previous=state == "previous")
     _require(rdata.status(payload, edits) == "applied", "mixed champions sites")
     _check_guards(image, edits + _companion_sites(payload))
-    return "applied", found
+    return state, found
 
 
 def status(payload: bytes) -> str:
@@ -340,12 +360,25 @@ def reservations(payload: bytes) -> list[dict]:
 
 
 def install(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
-    """Fill the established allocation and patch the two sites. Idempotent. The allocation must exist."""
+    """Fill the established allocation and patch the two sites. Idempotent. The allocation must exist. A previous
+    (beta-79) install is upgraded in place: only the code allocation changes; the sites, the allocation and every other
+    owner's bytes stay."""
 
     state, found = owned_state(payload)
     common = {"owner": OWNER, "experimental": True, "code_bytes": len(runtime.CODE), "owner_bytes": CODE_SIZE}
     if state == "applied":
         return payload, {**common, "already_applied": True, "changed_bytes": 0}
+    if state == "previous":
+        code_va = found["code"]["va"]
+        # the two entries (champions_advance, champions_awards) kept their offsets, so the site bytes do not change
+        _require(sites(code_va, previous=True) == sites(code_va), "the beta-79 champions sites differ from this "
+                 "release's; rebuild from a verified base")
+        result, code_receipt = space.install_code(payload, OWNER, code_for(code_va),
+                                                  previous=code_for(code_va, previous=True))
+        _require(status(result) == "applied", "champions upgrade postcondition failed")
+        return result, {**common, "already_applied": False, "upgraded_from": PREVIOUS_REVISION,
+                        "code_install": code_receipt, "code_va": hex(code_va),
+                        "changed_bytes": sum(a != b for a, b in zip(payload, result)) + abs(len(result) - len(payload))}
     _require(bool(found), "reserve the champions allocation first")
     code_va = found["code"]["va"]
     installed, code_receipt = space.install_code(payload, OWNER, code_for(code_va))
@@ -357,4 +390,4 @@ def install(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
 
 
 __all__ = ["OWNER", "REQUESTS", "HELP_TEXT", "AWARD_RULE", "ChampionsError", "code_for", "sites", "labels", "allocations",
-           "install", "status", "reservations", "guard_digests", "owned_state"]
+           "install", "status", "reservations", "guard_digests", "owned_state", "PREVIOUS_REVISION"]
