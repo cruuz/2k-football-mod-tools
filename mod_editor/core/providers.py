@@ -837,7 +837,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_my_career_mode.py": "a811da9b8848f30a94ad81fa3bffc7e7bed6298fed3bf364e9eb4b1f2bc6bff6",
         "mod_editor/core/nfl2k5_my_career_mode_code.py": "9d9ddf2e663e3fb08cf9dae2db465e1c18408658c77723c151379920c84aeddf",
         "mod_editor/core/nfl2k5_my_career_mode_code_b779.py": "9774a72e254da1609e82a53d2d5b74701e1d2acec484b6588256fc9b256c0355",  # b780 n6: frozen beta-79 revision
-        "mod_editor/core/nfl2k5_my_career_home.py": "4d4755529f9f67b3a7a6d3d43b0f71cbee01ce1dc806c2079cf9a64a45644a86",
+        "mod_editor/core/nfl2k5_my_career_home.py": "e920e0003626def22a1a5dd755c2d128b7bab8e9934ae67e9a5a88d249c054ec",
         "mod_editor/core/nfl2k5_my_career_home_code.py": "c23c0177432f74ec2d8c51b99400bd47c9160fc6e563b8aca05eebd12d7ac485",
         "mod_editor/core/nfl2k5_my_career_progression.py": "77ee4d665dccc60862e162195e85d3cb3d39e6ad04ce9eee9cc87a99754d9cf5",
         "mod_editor/core/nfl2k5_my_career_save.py": "2f8b4c9e7fe6114539f20f069ae0c428bac63d2004b6f620909aed5b6f412361",

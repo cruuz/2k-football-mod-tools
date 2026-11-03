@@ -442,8 +442,8 @@ class PreviousRecognitionStaticTests(unittest.TestCase):
     def test_every_refusal_is_plain_and_names_the_way_out(self):
         from mod_editor.core import (nfl2k5_my_career_mode as mode, nfl2k5_player_progress_screen as pp,
                                      nfl2k5_pass_rush_stats as rush, nfl2k5_scorebug_runtime as scorebug,
-                                     nfl2k5_sim_realism as realism)
-        for module in (mode, pp, rush, scorebug, realism):
+                                     nfl2k5_sim_realism as realism, nfl2k5_my_career_home as home)
+        for module in (mode, pp, rush, scorebug, realism, home):
             text = module.PREVIOUS_REFUSAL
             self.assertIn("beta 79", text, module.__name__)
             self.assertIn("retail game", text, module.__name__)
@@ -483,7 +483,7 @@ class PreviousRecognitionReleaseTests(unittest.TestCase):
         from mod_editor.core import (nfl2k5_my_career_mode as mode, nfl2k5_my_career_home as home,
                                      nfl2k5_player_progress_screen as pp, nfl2k5_pass_rush_stats as rush,
                                      nfl2k5_scorebug_runtime as scorebug)
-        for module, text in ((mode, mode.PREVIOUS_REFUSAL), (home, mode.PREVIOUS_REFUSAL), (pp, pp.PREVIOUS_REFUSAL),
+        for module, text in ((mode, mode.PREVIOUS_REFUSAL), (home, home.PREVIOUS_REFUSAL), (pp, pp.PREVIOUS_REFUSAL),
                              (rush, rush.PREVIOUS_REFUSAL), (scorebug, scorebug.PREVIOUS_REFUSAL)):
             with self.subTest(owner=module.__name__):
                 with self.assertRaises(ValueError) as caught:

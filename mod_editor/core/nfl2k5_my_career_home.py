@@ -159,6 +159,11 @@ def _require(ok, message):
         raise ValueError(message)
 
 
+# b780 n6: beside the beta-79 MyCareer this section reads "previous" (it links to that runtime's labels)
+PREVIOUS_REFUSAL = ("Career Home on this disc belongs to the beta 79 MyCareer, so this release cannot update it in "
+                    "place. Rebuild from your retail game to get this release's MyCareer and Career Home.")
+
+
 def career_labels(payload):
     """MyCareer's label addresses for this image (independent of the Career Home variant), plus the image's regular
     season length for the schedule rows (``season_weeks``; not an address)."""
@@ -327,7 +332,7 @@ def apply(payload):
     from . import nfl2k5_my_career_mode as mode
     state = status(payload)
     _require(state != "foreign", "foreign/mixed Career Home; rebuild from the original")
-    _require(state != "previous", mode.PREVIOUS_REFUSAL)   # b780 n6: linked to the beta-79 MyCareer
+    _require(state != "previous", PREVIOUS_REFUSAL)   # b780 n6: linked to the beta-79 MyCareer
     if state == "applied":
         return payload, {"owner": OWNER, "already_applied": True, "changed_bytes": 0}
     _require(space.is_scaleout(payload), "Career Home needs the scale-out allocator")
