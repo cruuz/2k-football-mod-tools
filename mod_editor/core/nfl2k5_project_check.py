@@ -308,10 +308,11 @@ def compose_receipt(doc, packages, retail_packages) -> dict:
         receipt = kits.dry_run(doc, packages, retail_packages)
         return dict(substitutions=list(receipt.get("substitutions", ())), skipped_kits=dict(receipt.get("skipped_kits", {})),
                     unchanged_art=list(receipt.get("unchanged_art", ())),
-                    dropped_defaults=list(receipt.get("dropped_defaults", ())))
+                    dropped_defaults=list(receipt.get("dropped_defaults", ())),
+                    kept_art=list(receipt.get("kept_art", ())))
     report, skipped = [], {}
     kits.compose(doc, packages, retail_packages, report, skipped)
-    return dict(substitutions=report, skipped_kits=skipped, unchanged_art=[], dropped_defaults=[])
+    return dict(substitutions=report, skipped_kits=skipped, unchanged_art=[], dropped_defaults=[], kept_art=[])
 
 
 # ------------------------------------------------------------------------------------------------- the whole check
@@ -1199,7 +1200,9 @@ def kit_dependencies(plan, retail, inputs: "ProjectInputs | None" = None, *, pro
             if "kit" in selection:
                 provided.setdefault(selection["file"], set()).add(selection["style"])
         by_code_style = {(k["code"], k["style"]): k["id"] for k in doc["kits"] if k["id"] in dropped}
-        for default in kept.get("classic_defaults", ()):
+        # the ORIGINAL defaults: since b791 h2, without_kits also drops the defaults that need a left-out kit (the team
+        # file keeps its own default), and those are exactly the ones to tell the user about
+        for default in doc.get("classic_defaults", ()):
             kit_id = by_code_style.get((default["file"][2:4], default["style"]))
             if kit_id is not None and default["style"] not in provided.get(default["file"], set()):
                 out["orphans"].append(dict(file=default["file"], style=default["style"], kit=kit_id,
@@ -1359,6 +1362,8 @@ def doctor(project, source, settings=None, *, progress: Callable[..., None] | No
             for kit_id in found["made_from_your_art"]:
                 lines.append(f"- {kit_id}: left out on the retail art, but its art step changes your own art, so Build "
                              "makes it from your art.")
+            from . import nfl2k5_moment_kits as _kits
+            keeps_user_art = callable(getattr(_kits, "_stock_table", None))   # b791 h2: no flat paint over user art
             groups = {}
             for row in found["paints_your_art"]:
                 key = (row["kit"], "away" if row["side"] == "A" else "home", row["selector"])
@@ -1367,7 +1372,9 @@ def doctor(project, source, settings=None, *, progress: Callable[..., None] | No
                 ].append(row["piece"])
             for (kit_id, side, selector), parts in sorted(groups.items()):
                 words = []
-                if parts["painted"]:
+                if parts["painted"] and keeps_user_art:
+                    words.append("skips its flat paint on your " + _pieces(parts["painted"]) + ", which keep your art")
+                elif parts["painted"]:
                     words.append("paints over your " + _pieces(parts["painted"]))
                 if parts["nothing"]:
                     words.append("changes nothing on your " + _pieces(parts["nothing"]))
@@ -1375,7 +1382,14 @@ def doctor(project, source, settings=None, *, progress: Callable[..., None] | No
                     words.append("works on your " + _pieces(parts["unknown"]) + " (only Build can judge those steps)")
                 lines.append(f"- {kit_id} ({side}) is made from your {selector}: its art " + "; ".join(words) + ".")
             painted = [r for r in found["paints_your_art"] if r["changes"] is True]
-            if painted:
+            if painted and keeps_user_art:
+                report.findings.append(Finding(
+                    NOTE, "Anniversary moment kits",
+                    f"{len(painted)} new kit piece{'s are' if len(painted) != 1 else ' is'} made from your own art: "
+                    + _named(f"{r['kit']} {r['selector']} {r['piece']}" for r in painted) + ".",
+                    "Their flat-paint steps were drawn for the SOFTDRINK kits, so Build skips them on your art and keeps "
+                    "your pixels (colour swaps still apply); your own kits keep your art.", code="kits.keeps_your_art"))
+            elif painted:
                 report.findings.append(Finding(
                     NOTE, "Anniversary moment kits",
                     f"{len(painted)} new kit piece{'s are' if len(painted) != 1 else ' is'} made from your own art and "
