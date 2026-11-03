@@ -529,6 +529,10 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
                 stack.enter_context(patch.object(build, "_anniversary_kickoff_wanted", lambda _plan, _is_image: False))
                 stack.enter_context(patch.object(build, "_widescreen_menus_wanted", lambda _plan, _is_image: False))
                 stack.enter_context(patch.object(build, "_team_logo_swap_wanted", lambda _plan, _is_image: False))
+                # b780-int: p3's audible panel lift rides with the scorebug (the probe keeps the scorebug), not with
+                # the legend option; it is a late allocator owner the preset build above observed, so the
+                # allocator-free probe build leaves it out (it grew the XBE there: "patch resized the XBE")
+                stack.enter_context(patch.object(build, "_audible_panel_choice", lambda _plan: None))
                 build.build(replace(plan, camera=False, scorebug_runtime=False, xbe_space=False, kickoff_relocated=False,
                                     # The first build observed the private FONT. This probe has no sprite scene;
                                     # its executable name owner is observed separately below with the full union.
