@@ -140,7 +140,9 @@ class CompositionTests(unittest.TestCase):
 class WiringTests(unittest.TestCase):
     def test_presets_options_and_late_owner_order(self):
         from mod_editor.core import mod_build, nfl2k5_build_settings as settings, nfl2k5_throw_tuning as tt
-        self.assertEqual(space.LATE_OWNERS[-1], dive.OWNER)                  # after every other late owner
+        # b780-int: several wave owners append after the b779 tail; each must come after every owner v0.8 carries
+        self.assertEqual(space.LATE_OWNERS.count(dive.OWNER), 1)
+        self.assertGreater(space.LATE_OWNERS.index(dive.OWNER), space.LATE_OWNERS.index("nfl2k5_sim_realism_state"))
         self.assertLess(space.LATE_OWNERS.index(ball.OWNER), space.LATE_OWNERS.index(dive.OWNER))
         self.assertIs(mod_build.BuildPlan(Path("source.iso"), Path("target.iso")).db_dive_window, False)
         for name, preset in mod_build.PRESETS.items():

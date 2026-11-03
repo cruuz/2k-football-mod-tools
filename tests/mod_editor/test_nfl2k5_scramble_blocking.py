@@ -102,7 +102,9 @@ class TemplateTests(unittest.TestCase):
         self.assertIn("scramble_blocking", settings.FEATURE_KEYS)
         self.assertIn(("nfl2k5_scramble_blocking", "Receivers block for a scrambling QB"),
                       [(m, label) for m, label, _ in mod_build._LATE_OWNER_OPTIONS])
-        self.assertEqual(space.LATE_OWNERS[-1], sb.OWNER)
+        # b780-int: several wave owners append after the b779 tail; each must come after every owner v0.8 carries
+        self.assertEqual(space.LATE_OWNERS.count(sb.OWNER), 1)
+        self.assertGreater(space.LATE_OWNERS.index(sb.OWNER), space.LATE_OWNERS.index("nfl2k5_sim_realism_state"))
         self.assertEqual(tt._selected_space_requests(scramble_blocking=True)[-2:], sb.REQUESTS)
         self.assertNotIn(sb.REQUESTS[0], tt._selected_space_requests())
         panel = (ROOT / "mod_editor/gui/build_panel_qt.py").read_text(encoding="utf-8")
@@ -278,6 +280,10 @@ class NativeTests(unittest.TestCase):
                     m.carry(0.2)
                 for reg, value in regs.items():
                     m.uc.reg_write(reg, value)
+                # b780-int: start from an initialised x87 (every register empty, as after FNINIT). Unicorn's reset tag
+                # word (0x5555) is not one the game can have, and a balanced FLD/FSTP pair turns its tags to empty,
+                # so a correct hook failed the check; with every register empty a balanced hook leaves 0xFFFF.
+                m.uc.reg_write(x86.UC_X86_REG_FPTAG, 0xFFFF)
                 fpu = (m.uc.reg_read(x86.UC_X86_REG_FPSW) >> 11) & 7, m.uc.reg_read(x86.UC_X86_REG_FPTAG)
                 start = len(m.trace)
                 m.run(0x214FC0, stop=0x214FC5, esi=0x13572468, budget=4_000_000)
@@ -378,11 +384,20 @@ class NativeTests(unittest.TestCase):
         self.assert_converted(m)
         self.assertIsNot(first, second)
         # one defender only: nobody else is free, so the game's choice stands (a shared man beats no block)
-        m = self.machine(defenders=((14, 0, 6),), receivers=((9, -3, 7), (9, 3, 7)))
+        # b780-int: compared with the game's own conversion on the same scene (as the control above): the owner keeps
+        # whatever the game chose (the one defender, or the game's own empty target) and never invents a man
+        scene = dict(defenders=((14, 0, 6),), receivers=((9, -3, 7), (9, 3, 7)))
+        g = self.machine(**scene)
+        game = set()
+        for who in g.receivers:
+            heading = 0x8000 if g.readf(g.get(g.get(g.get(who + 0x38) + 8) + 0xC) + 4) <= 0 else 0
+            g.run(0x23F450, ecx=who, edx=0, args=(0, 0, 1, 0, 0x4336E148, heading, 0x7F800000), budget=3_000_000)
+            game.add(g.get(g.task(who) + 0x40))
+        m = self.machine(**scene)
         m.tick()
         tasks = [m.task(p) for p in m.receivers]
         self.assertEqual({m.get(t) for t in tasks}, {0x23CE70})
-        self.assertEqual({m.get(t + 0x40) for t in tasks} - {m.defenders[0], m.KICKER}, set())
+        self.assertEqual({m.get(t + 0x40) for t in tasks} - game - {m.defenders[0], m.KICKER}, set())
 
     def test_fallback_skips_defenders_far_behind_the_ball(self):
         # Two receivers, one free man in front, one far behind the quarterback: the second receiver whose game

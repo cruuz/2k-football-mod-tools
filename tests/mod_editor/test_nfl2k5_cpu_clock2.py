@@ -24,7 +24,9 @@ class TemplateTests(unittest.TestCase):
     def test_owner_is_the_last_late_owner_with_one_code_allocation(self):
         self.assertEqual(clock2.OWNER, "nfl2k5_cpu_clock2")
         self.assertEqual(clock2.REQUESTS, ((clock2.OWNER, "code", clock2.CODE_SIZE, 16),))
-        self.assertEqual(space.LATE_OWNERS[-1], clock2.OWNER)
+        # b780-int: several wave owners append after the b779 tail; each must come after every owner v0.8 carries
+        self.assertEqual(space.LATE_OWNERS.count(clock2.OWNER), 1)
+        self.assertGreater(space.LATE_OWNERS.index(clock2.OWNER), space.LATE_OWNERS.index("nfl2k5_sim_realism_state"))
         self.assertLessEqual(len(assembly.CODE), clock2.CODE_SIZE)
         self.assertEqual(clock2.CODE_SIZE % 16, 0)
 

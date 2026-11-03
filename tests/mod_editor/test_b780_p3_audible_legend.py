@@ -45,8 +45,9 @@ def _retail_inputs():
 class Design(unittest.TestCase):
     def test_owner_request_and_late_order(self):
         self.assertEqual(al.REQUESTS, ((al.OWNER, "code", 1280, 16),))
-        self.assertEqual(space.LATE_OWNERS[-1], al.OWNER)            # b780-p3: appended after the b779 tail
-        self.assertEqual(space.LATE_OWNERS[-2], "nfl2k5_sim_realism_state")
+        # b780-int: several wave owners append after the b779 tail; each must come after every owner v0.8 carries
+        self.assertEqual(space.LATE_OWNERS.count(al.OWNER), 1)
+        self.assertGreater(space.LATE_OWNERS.index(al.OWNER), space.LATE_OWNERS.index("nfl2k5_sim_realism_state"))
 
     def test_sites_are_the_two_retail_calls(self):
         self.assertEqual(al.LIFT_SITE, ("audible_panel_lift", 0x648C5, bytes.fromhex("e866a80900")))

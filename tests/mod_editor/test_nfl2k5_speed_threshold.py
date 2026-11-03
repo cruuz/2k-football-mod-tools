@@ -69,7 +69,9 @@ class StaticTests(unittest.TestCase):
     def test_request_and_late_owner_registration(self):
         self.assertEqual(patch.REQUESTS, (("nfl2k5_speed_threshold", "code", 1024, 16),))
         self.assertEqual(space.LATE_OWNERS.count(patch.OWNER), 1)
-        self.assertEqual(space.LATE_OWNERS[-1], patch.OWNER)  # after every other late owner: it never moves one
+        # b780-int: several wave owners append after the b779 tail; each must come after every owner v0.8 carries
+        self.assertEqual(space.LATE_OWNERS.count(patch.OWNER), 1)
+        self.assertGreater(space.LATE_OWNERS.index(patch.OWNER), space.LATE_OWNERS.index("nfl2k5_sim_realism_state"))
         self.assertIn(("nfl2k5_speed_threshold", "Speed separation"),
                       [(owner, label) for owner, label, _wanted in mod_build._LATE_OWNER_OPTIONS])
         wanted = {owner: wanted for owner, _label, wanted in mod_build._LATE_OWNER_OPTIONS}[patch.OWNER]

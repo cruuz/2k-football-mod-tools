@@ -55,7 +55,9 @@ class StaticTests(unittest.TestCase):
         self.assertEqual(rv.WEIGHT_SITE, (0x2E2530 - 0x2E2260, 0x2E2572 - 0x2E2260))
 
     def test_wiring_presets_and_late_owner_order(self):
-        self.assertEqual(space.LATE_OWNERS[-1], rv.OWNER)                         # appended: no other owner moves
+        # b780-int: several wave owners append after the b779 tail; each must come after every owner v0.8 carries
+        self.assertEqual(space.LATE_OWNERS.count(rv.OWNER), 1)
+        self.assertGreater(space.LATE_OWNERS.index(rv.OWNER), space.LATE_OWNERS.index("nfl2k5_sim_realism_state"))
         self.assertLess(space.LATE_OWNERS.index(bc.OWNER), space.LATE_OWNERS.index(rv.OWNER))
         self.assertIs(mod_build.BuildPlan(Path("source.iso"), Path("target.iso")).cpu_runner_vision, False)
         for name, preset in mod_build.PRESETS.items():
