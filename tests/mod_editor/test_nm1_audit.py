@@ -23,8 +23,12 @@ class TileCoverageTests(unittest.TestCase):
         self.assertFalse(report["samples"]["WILLIAMS"])
         self.assertTrue(report["samples"]["Inches"])
         self.assertNotIn("T", report["standalone_uppercase"])
-        self.assertIn("J", report["absent_even_if_text_tiles_split"])
-        self.assertIn("K", report["absent_even_if_text_tiles_split"])
+        # b780 p2-playcall: the ball-spot team abbreviations brought J and K inside whole-word tiles, so splitting
+        # tiles would now miss only Q; no letter stands alone and no sample name can be spelled.
+        self.assertEqual(report["standalone_uppercase"], "")
+        self.assertIn("Q", report["absent_even_if_text_tiles_split"])
+        self.assertFalse(report["samples"]["JONES"])
+        self.assertFalse(any(ok for name, ok in report["samples"].items() if name != "Inches"))
 
 
 if __name__ == "__main__":

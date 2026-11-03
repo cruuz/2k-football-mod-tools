@@ -431,7 +431,10 @@ class BuildWiringTests(unittest.TestCase):
             synthetic_disc(source)
             original = source.read_bytes()
             stand_ins = {"nfl2k5_espn_marks": marks_stand_in, "nfl2k5_scorebug_ingame": scene_stand_in}
-            with mock.patch.object(mod_build, "_core_module", side_effect=lambda name: stand_ins.get(name) or real(name)):
+            # b780-p3: the runtime score bar also brings the audible panel lift, a late executable step that needs a
+            # real executable; this wiring test's disc is synthetic and the lift has its own tests, so it stays out.
+            with mock.patch.object(mod_build, "_core_module", side_effect=lambda name: stand_ins.get(name) or real(name)), \
+                    mock.patch.object(mod_build, "_audible_panel_choice", return_value=None):
                 receipt = mod_build.build(mod_build.BuildPlan(str(source), str(root / "out.iso"), espn_marks_2026=True,
                                                               scorebug_runtime=True, scorebug=True,
                                                               scorebug_folder=layout))

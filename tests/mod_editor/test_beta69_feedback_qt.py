@@ -37,7 +37,8 @@ class FeedbackTests(unittest.TestCase):
         self.assertNotIn('Steps checked:', body)
         self.assertIn('Play latest disc in xemu', body)
         panel.copy_summary_button.click()
-        self.assertIn('beta-79', self.app.clipboard().text())
+        from mod_editor.core.update_check import BUILD_RELEASE_TAG  # the summary names this build's own release
+        self.assertIn(BUILD_RELEASE_TAG, self.app.clipboard().text())
         self.assertIn('Project artwork', self.app.clipboard().text())
         panel.deleteLater()
 
