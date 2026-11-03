@@ -597,6 +597,7 @@ mod_editor/core/nfl2k5_option_defaults.py
 mod_editor/core/nfl2k5_profile_defaults.py
 mod_editor/core/nfl2k5_sim_rb_injuries.py
 mod_editor/core/nfl2k5_sim_realism.py
+mod_editor/core/nfl2k5_sim_realism_b779.py
 mod_editor/core/nfl2k5_coach_carousel.py
 mod_editor/core/nfl2k5_coach_carousel_code.py
 data/nfl2k5_coach_carousel_2026.json
@@ -3818,6 +3819,7 @@ tests/mod_editor/test_nfl2k5_pass_rush_stats.py
 mod_editor/core/nfl2k5_history_screen.py
 mod_editor/core/nfl2k5_history_screen_code.py
 tests/mod_editor/test_b780_j4_history_screen.py
+tests/mod_editor/test_b780_n6_champions_previous.py
 mod_editor/core/nfl2k5_cpu_passer_iq.py
 mod_editor/core/nfl2k5_cpu_passer_iq_code.py
 tests/mod_editor/test_nfl2k5_cpu_passer_iq.py

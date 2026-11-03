@@ -533,12 +533,42 @@ def sites(code_va):
     return out
 
 
+# b780 n6: beta-79 / v0.8 carries the 832-byte revision (frozen in nfl2k5_sim_realism_b779). It reads "previous";
+# this release's 896 bytes do not fit its allocation, so apply() refuses to update it in place (rebuild from retail).
+PREVIOUS_REVISION = "beta-79"
+PREVIOUS_REFUSAL = ("Simulated season realism on this disc is the beta 79 revision. This release's version is larger "
+                    "than the room the earlier build gave it, so it cannot be updated in place. Rebuild from your "
+                    "retail game, or turn Simulated season realism off to keep the beta 79 version.")
+
+
+def _previous_module():
+    from . import nfl2k5_sim_realism_b779 as previous
+    return previous
+
+
+def _revision(payload):
+    """(code size, code_for, sites) of the revision whose allocation this image carries (this release by default)."""
+    from . import nfl2k5_xbe_space as space
+    rows = [r for r in space.layout(payload)["allocations"] if r["owner"] == OWNER and r["kind"] == "code"]
+    previous = _previous_module()
+    if len(rows) == 1 and rows[0]["size"] == previous.CODE_SIZE:
+        return previous.CODE_SIZE, previous.code_for, previous.sites, "previous"
+    return CODE_SIZE, code_for, sites, "applied"
+
+
+def installed_sites(payload):
+    """The installed revision's sites (this release's or the beta-79 one), [] without the owner's allocation. Owners
+    that restore this one's hooks before hashing a shared context (nfl2k5_sim_cb_tackles) use this."""
+    code, _data = _allocations(payload)
+    return _revision(payload)[2](code["va"])
+
+
 def _allocations(payload):
     from . import nfl2k5_xbe_space as space
     rows = [r for r in space.layout(payload)["allocations"] if r["owner"] == OWNER]
     code = [r for r in rows if r["kind"] == "code"]
     data = [r for r in rows if r["kind"] == "data"]
-    require(len(code) == 1 and (code[0]["size"], code[0]["align"]) == (CODE_SIZE, 16),
+    require(len(code) == 1 and (code[0]["size"], code[0]["align"]) in ((CODE_SIZE, 16), (_previous_module().CODE_SIZE, 16)),
             "Missing or foreign sim realism code allocation")
     require(len(data) == 1 and (data[0]["size"], data[0]["align"]) == (DATA_SIZE, 4),
             "Missing or foreign sim realism data allocation")
@@ -551,19 +581,25 @@ def _recognize(payload):
     image = XbeImage(payload)
     present = any(r["owner"] == OWNER for r in space.layout(payload)["allocations"])
     code = data = None
+    size, make_code, make_sites, installed = CODE_SIZE, code_for, sites, "applied"
     if present:
         code, data = _allocations(payload)
-    edits = sites(code["va"] if code else 0)
+        size, make_code, make_sites, installed = _revision(payload)
+    edits = make_sites(code["va"] if code else 0)
     states = set()
     for _label, va, before, after in edits:
         raw = image.read(va, len(before))
         states.add("retail" if raw == before else "applied" if code and raw == after else "foreign")
     if code:
-        raw = image.read(code["va"], CODE_SIZE)
-        expected = code_for(code["va"], data["va"])
-        states.add("retail" if raw == b"\xcc" * CODE_SIZE else "applied" if raw == expected else "foreign")
+        raw = image.read(code["va"], size)
+        expected = make_code(code["va"], data["va"])
+        states.add("retail" if raw == b"\xcc" * size else "applied" if raw == expected else "foreign")
     require(states in ({"retail"}, {"applied"}), "Foreign or mixed sim realism site/code")
-    return next(iter(states))
+    state = next(iter(states))
+    if state == "applied" and installed == "previous":
+        return "previous"
+    require(state == "applied" or size == CODE_SIZE, "an empty beta-79 sim realism allocation; rebuild from retail")
+    return state
 
 
 def apply(payload):
@@ -572,6 +608,7 @@ def apply(payload):
     from .nfl2k5_cave_oracle import XbeImage
     state = _recognize(payload)
     require(state != "foreign", "sim realism: foreign bytes")
+    require(state != "previous", PREVIOUS_REFUSAL)
     if state == "applied":
         code, data = _allocations(payload)
         return payload, {"owner": OWNER, "status": "already_applied", "code_va": hex(code["va"]),
@@ -622,4 +659,4 @@ __all__ = ["OWNER", "CODE_SIZE", "DATA_SIZE", "REQUESTS", "BUILD_CAPTION", "HELP
            "INTERCEPT_SCALE", "PASS_SCALE", "RUN_RZ_SCALE", "RZ_PASS_SCALE",
            "TACKLE_BONUS_PCT", "RUSH_BONUS_PCT", "tackle_bonus", "rush_bonus", "pass_rz_scale",
            "run_rz_scale", "qb_carry_rate", "code_for", "sites", "apply",
-           "status", "SimRealismError"]
+           "status", "SimRealismError", "installed_sites", "PREVIOUS_REVISION", "PREVIOUS_REFUSAL"]

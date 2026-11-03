@@ -260,5 +260,163 @@ class ReleaseV08Tests(unittest.TestCase):
             self.assertEqual(honors.status(final), honors.status(base))
 
 
+
+# ---------------------------------------------------------------------------------------------------------------
+# The same "previous" path for the other installed owners beta-80 changed in place: the camera (v7 -> v8, the punt
+# snap eye) and K128 (the 128 MB stop screen's text).
+
+class CameraAndK128RetailTests(unittest.TestCase):
+    """Retail installs of this release turned back into the beta-79 bytes, then upgraded again."""
+
+    @classmethod
+    def setUpClass(cls):
+        from mod_editor.core import nfl2k5_camera as camera, nfl2k5_k128 as k128
+        cls.camera, cls.k128 = camera, k128
+        cls.retail = _retail()
+        if cls.retail is None:
+            raise unittest.SkipTest("retail XBE pin differs")
+        cls.cam_now, _ = camera.apply(cls.retail)
+        va = camera.allocation(cls.cam_now)["va"]
+        cls.cam_then, _ = space.install_code(cls.cam_now, camera.OWNER, camera.code_for(va, camera.PREVIOUS_VERSION),
+                                             previous=camera.code_for(va))
+        cls.k_now, _ = k128.apply(cls.retail, roster_heap=True, require=True)
+        kva = k128.allocations(cls.k_now)["code"]["va"]
+        flags = k128.options_word(roster_heap=True, require=True)
+        cls.k_then, _ = space.install_code(cls.k_now, k128.OWNER, k128.code_for(kva, flags, previous=True),
+                                           previous=k128.code_for(kva, flags))
+        buf = bytearray(cls.k_then)
+        k128._repin(buf)
+        cls.k_then = bytes(buf)
+
+    def test_the_v7_camera_differs_only_in_the_punt_snap_eye(self):
+        camera = self.camera
+        now, then = camera.kick_sets(), camera.kick_sets(camera.PREVIOUS_VERSION)
+        size = camera.KICK_SET_SIZE
+        for index in range(4):
+            same = now[size * index:size * (index + 1)] == then[size * index:size * (index + 1)]
+            self.assertEqual(same, index != camera.KICK_PUNT_GROUND, index)
+        self.assertEqual(camera.kick_values(camera.PREVIOUS_VERSION)[camera.KICK_PUNT_GROUND][2], (0.0, 550.0, -3287.0))
+
+    def test_a_v7_camera_reads_previous_and_upgrades_to_a_fresh_install(self):
+        camera = self.camera
+        self.assertEqual(camera.status(self.cam_then), "previous")
+        self.assertEqual(camera.detect_preset(self.cam_then), camera.detect_preset(self.cam_now))
+        upgraded, receipt = camera.apply(self.cam_then)
+        self.assertEqual(upgraded, self.cam_now)
+        self.assertEqual(receipt["upgraded_from"], "v7")
+        changed = bytearray(self.cam_then)
+        changed[camera.allocation(self.cam_then)["raw"] + 100] ^= 1
+        self.assertEqual(camera.status(bytes(changed)), "foreign")
+
+    def test_the_previous_k128_stop_screen_reads_previous_and_upgrades_to_a_fresh_install(self):
+        k128 = self.k128
+        self.assertEqual(k128.PREVIOUS_REQUIRE_CODE[:k128.REQUIRE_STARTUP_BYTES], k128.REQUIRE_CODE[:k128.REQUIRE_STARTUP_BYTES])
+        self.assertEqual(k128.status(self.k_then), "previous")
+        settings = k128.read_settings(self.k_then)
+        self.assertEqual((settings["k128"], settings["roster_heap"], settings["require_128"]), (True, True, True))
+        upgraded, receipt = k128.apply(self.k_then, roster_heap=True, require=True)
+        self.assertEqual(upgraded, self.k_now)
+        self.assertEqual(receipt["upgraded_from"], "beta-79")
+        with self.assertRaises(ValueError):          # other options: still a rebuild
+            k128.apply(self.k_then, roster_heap=False, require=True)
+        # without the 128 MB stop both revisions are the same bytes, so "previous" needs it
+        kva = k128.allocations(self.k_now)["code"]["va"]
+        flags = k128.options_word(roster_heap=True)
+        self.assertEqual(k128.code_for(kva, flags), k128.code_for(kva, flags, previous=True))
+
+
+class CameraAndK128ReleaseTests(unittest.TestCase):
+    """The released v0.8 executable."""
+
+    @classmethod
+    def setUpClass(cls):
+        from mod_editor.core import nfl2k5_camera as camera, nfl2k5_k128 as k128
+        cls.camera, cls.k128 = camera, k128
+        cls.v08 = v08_xbe()
+
+    def test_the_release_camera_is_v7_and_upgrades_in_place(self):
+        camera = self.camera
+        self.assertEqual(camera.status(self.v08), "previous")
+        upgraded, receipt = camera.apply(self.v08)
+        self.assertEqual(camera.status(upgraded), "applied")
+        self.assertEqual(len(upgraded), len(self.v08))
+        self.assertEqual(space.layout(upgraded)["allocations"], space.layout(self.v08)["allocations"])
+        again, receipt = camera.apply(upgraded)
+        self.assertEqual((again, receipt["status"]), (upgraded, "already_applied"))
+
+    def test_the_release_k128_is_the_beta79_stop_and_upgrades_in_place(self):
+        k128 = self.k128
+        self.assertEqual(k128.status(self.v08), "previous")
+        settings = k128.read_settings(self.v08)
+        upgraded, _ = k128.apply(self.v08, roster_heap=settings["roster_heap"], early=settings["early"],
+                                 require=settings["require_128"])
+        self.assertEqual(k128.status(upgraded), "applied")
+        self.assertEqual(k128.read_settings(upgraded), {**settings, "status": "applied"})
+        self.assertEqual(space.layout(upgraded)["allocations"], space.layout(self.v08)["allocations"])
+        kva = k128.allocations(self.v08)["code"]["va"]
+        self.assertEqual(hashlib.sha256(XbeImage(self.v08).read(kva + k128.REQUIRE_OFFSET, len(k128.PREVIOUS_REQUIRE_CODE)))
+                         .hexdigest(), k128.PREVIOUS_REQUIRE_CODE_SHA256)
+
+
+
+# ---------------------------------------------------------------------------------------------------------------
+# Simulated season realism grew (832 -> 896 code bytes), so a beta-79 install cannot be upgraded in place: it reads
+# "previous" (not foreign), the build refuses it in plain words, and the cornerback tackle owner, whose merge-context
+# check restores this owner's installed hook, reads applied again on a v0.8 executable.
+
+def realism_b779_install(base: bytes, extra=()) -> bytes:
+    """The beta-79 install, made the way e8c1de3a8's apply() made it: its own request, code and ten sites (``extra``:
+    other owners' requests reserved in the same union)."""
+    from mod_editor.core import nfl2k5_sim_realism_b779 as old
+    from mod_editor.core.nfl2k5_bump_strength import _sections, section_digest
+    payload, _ = space.apply(base, tuple(extra) + old.REQUESTS, scaleout=True)
+    rows = {r["kind"]: r for r in space.layout(payload)["allocations"] if r["owner"] == old.OWNER}
+    payload, _ = space.install_code(payload, old.OWNER, old.code_for(rows["code"]["va"], rows["data"]["va"]))
+    image, buf = XbeImage(payload), bytearray(payload)
+    for _label, va, before, after in old.sites(rows["code"]["va"]):
+        at = image.offset(va, len(before))
+        assert bytes(buf[at:at + len(before)]) == before
+        buf[at:at + len(after)] = after
+    for section in _sections(buf):
+        buf[section.header_offset + 36:section.header_offset + 56] = section_digest(buf, section)
+    return bytes(buf)
+
+
+class SimRealismPreviousTests(unittest.TestCase):
+
+    def test_the_frozen_revision_is_the_smaller_one(self):
+        from mod_editor.core import nfl2k5_sim_realism as realism, nfl2k5_sim_realism_b779 as old
+        self.assertEqual((old.CODE_SIZE, realism.CODE_SIZE), (832, 896))
+        self.assertEqual(old.OWNER, realism.OWNER)
+        self.assertNotEqual(old.sites(0x1500000), realism.sites(0x1500000))
+        self.assertNotIn("\u2014", realism.PREVIOUS_REFUSAL)
+
+    def test_a_beta79_install_on_retail_reads_previous_and_is_refused_in_plain_words(self):
+        from mod_editor.core import nfl2k5_sim_realism as realism, nfl2k5_sim_cb_tackles as cb
+        retail = _retail()
+        if retail is None:
+            self.skipTest("retail XBE pin differs")
+        then = realism_b779_install(retail, cb.REQUESTS)
+        self.assertEqual(realism.status(then), "previous")
+        with self.assertRaisesRegex(ValueError, "beta 79 revision"):
+            realism.apply(then)
+        with_cb, _ = cb.apply(then)
+        self.assertEqual(cb.status(with_cb), "applied")
+        self.assertEqual(realism.status(with_cb), "previous")
+        # one changed byte of the beta-79 body is foreign, not previous
+        code = [r for r in space.layout(then)["allocations"] if r["owner"] == realism.OWNER and r["kind"] == "code"][0]
+        buf = bytearray(then)
+        buf[code["raw"] + 3] ^= 1
+        self.assertEqual(realism.status(bytes(buf)), "foreign")
+
+    def test_the_release_reads_previous_and_cornerback_tackles_applied(self):
+        from mod_editor.core import nfl2k5_sim_realism as realism, nfl2k5_sim_cb_tackles as cb
+        v08 = v08_xbe()
+        self.assertEqual(realism.status(v08), "previous")
+        self.assertEqual(cb.status(v08), "applied")
+        with self.assertRaisesRegex(ValueError, "cannot be updated in place"):
+            realism.apply(v08)
+
+
 if __name__ == "__main__":
     unittest.main()

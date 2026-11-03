@@ -1669,9 +1669,11 @@ class _k128_adapter:
     def __init__(self, roster_heap, early=False, require=False):
         self.roster_heap, self.early, self.require = bool(roster_heap), bool(early), bool(require)
 
+    UPGRADES_PREVIOUS = True   # b780 n6: the beta-79 128 MB entry reads "previous"; k128_patch.apply upgrades it
+
     def status(self, payload):
         state = k128_patch.status(payload)
-        if state == "applied":
+        if state in ("applied", "previous"):
             settings = k128_patch.read_settings(payload)
             _require((settings["roster_heap"], settings["early"], settings["require_128"])
                      == (self.roster_heap, self.early, self.require),
@@ -2032,13 +2034,13 @@ def _check_installed_runtime_settings(payload, options):
         state = module.status(payload)
         if selected:
             _require(state != "foreign", f"{module.BUILD_CAPTION}: foreign prerequisites")
-        # b780 n6: a beta-79 honors install reads "previous" (apply upgrades it in place); it is installed all the same
-        if state == "applied" or (module is honors_patch and state == "previous"):
+        # b780 n6: a beta-79 install reads "previous" (its apply upgrades it in place); it is installed all the same
+        if state == "applied" or (state == "previous" and getattr(module, "UPGRADES_PREVIOUS", False)):
             _require(selected, f"{module.BUILD_CAPTION} is installed; rebuild from a verified base to turn it off")
             if module is decided_clock_patch:
                 module.verify(payload, margin=decided_clock_margin,
                               seconds=decided_clock_seconds)
-            if module is k128_patch:
+            if module is k128_patch:   # applied or previous: the options are read the same way
                 installed = k128_patch.read_settings(payload)
                 _require((installed["roster_heap"], installed["early"], installed["require_128"])
                          == (bool(options.get("k128_roster_heap")), bool(options.get("k128_early")),
@@ -2463,8 +2465,8 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
             continue
         state = module.status(patched)
         accepted = ("retail", "applied", "needs_fix") if module is stock_books_patch else ("retail", "applied")
-        if module is honors_patch:
-            accepted += ("previous",)   # b780 n6: the beta-79 honors + champions install, upgraded in place by apply
+        if getattr(module, "UPGRADES_PREVIOUS", False):
+            accepted += ("previous",)   # b780 n6: a beta-79 install (honors + champions, camera v7, K128), upgraded in place
         _require(state in accepted, f"{label} is {state}; refusing")
         patched, sub_receipt = module.apply(patched)
         receipt[key] = sub_receipt

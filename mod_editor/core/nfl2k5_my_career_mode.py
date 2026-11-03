@@ -633,7 +633,8 @@ def check_context(payload, edits, *, installed=False):
     # installed bytes only after that owner's full template/seal validation.
     if image.read(0x16E7B1, 5) != bytes.fromhex("e86a46f7ff"):
         from . import nfl2k5_camera as camera
-        legacy.require(camera.status(payload) == "applied", "foreign camera/load boundary")
+        # b780 n6: the beta-79 camera (v7, "previous") owns the same load-select hook bytes
+        legacy.require(camera.status(payload) in ("applied", "previous"), "foreign camera/load boundary")
         camera_edits += [(name, camera.HOOKS[name][0], before, after)
                         for name, _, before, after in camera._sites(payload, camera.DEFAULT_PRESET)
                         if name == "franchise_load_select"]

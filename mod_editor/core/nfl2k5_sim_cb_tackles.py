@@ -246,7 +246,8 @@ def _recognize(payload):
     from . import nfl2k5_sim_realism as realism
     realism_rows = [r for r in space.layout(payload)["allocations"] if r["owner"] == realism.OWNER and r["kind"] == "code"]
     if realism_rows:
-        for _name, va, before, after in realism.sites(realism_rows[0]["va"]):
+        # b780 n6: the installed revision's hooks (a v0.8 executable carries the beta-79 one, at other code offsets)
+        for _name, va, before, after in realism.installed_sites(payload):
             if MERGE <= va and va + len(before) <= MERGE + MERGE_SIZE and bytes(content[va - MERGE:va - MERGE + len(after)]) == after:
                 content[va - MERGE:va - MERGE + len(before)] = before
     # b779-int1: the defensive try owner (era rules) jumps out of the merge at 0x1336B2 to its own code. The v0.6.1

@@ -59,6 +59,7 @@ from .nfl2k5_bump_strength import _sections, section_digest
 from .nfl2k5_cave_oracle import XbeImage
 
 OWNER = "nfl2k5_k128"
+UPGRADES_PREVIOUS = True   # b780 n6: status() may read "previous" (the beta-79 install); apply() upgrades it
 EVIDENCE = "EXPERIMENTAL"
 CODE_SIZE = 0x600   # b779-km1: 0x400 was full; the two failure messages need 651 bytes at +0x200
 # Code only: the RW pages are full in the complete owner union, and the roster heap needs no state of its
@@ -187,6 +188,28 @@ REQUIRE_HALT_OFFSET = REQUIRE_OFFSET + 0x4B      # the hlt of the stop loop
 assert len(REQUIRE_CODE) == 932 and hashlib.sha256(REQUIRE_CODE).hexdigest() == REQUIRE_CODE_SHA256
 assert hashlib.sha256(REQUIRE_CODE[:REQUIRE_STARTUP_BYTES]).hexdigest() == REQUIRE_STARTUP_SHA256
 assert REQUIRE_CODE[REQUIRE_HALT_OFFSET - REQUIRE_OFFSET:REQUIRE_HALT_OFFSET - REQUIRE_OFFSET + 3] == b"\xf4\xeb\xfd"
+# b780 n6: the 128 MB entry as beta-79 / SOFTDRINK 2K28 v0.8 shipped it (b779-km1, 651 bytes; frozen). Its first
+# REQUIRE_STARTUP_BYTES are this release's; only the stop screen's text differs. A v0.8 install with the 128 MB stop
+# reads "previous" and apply() rewrites the owned code in place (same allocation, entry, hooks and options).
+PREVIOUS_REQUIRE_CODE = bytes.fromhex(
+    "609ce8000000005de8a8feffff753fa1d4b203803d0040000074073d00800000752cc705d4b2038000800000f685f5030000"
+    "04740d9d61e8f2fdffff68d16b0100c39d6168d16b0100c3fbf4ebfd813dd4b2038000800000750c813d400830c067000004"
+    "74c66a046a0068ffffff016a006800008000ff15a43c4e0085c074ca89c625ffffff03a3000860fdbad41360fdc602010fb6"
+    "5a0143c1e30589d8c1e803c60213884201c1e80324e0c60219884201c60228804a01038a4206c642ec20bac4030cfdc60201"
+    "806201df89f7b90000200031c0f3ab813d0c0210fd000000088d952902000074068d95e20100000fb70285c00f8450ffffff"
+    "0fb74a020fafc301f08d3c880fb64a0483c2050fb602425156578db5560100008d048001c66a0559ac57516a0759d0e8731b"
+    "57515083c8ff6a0459890789470489470889470c01dfe2f158595f8d3c9fe2dc595f83c710e2cf5f5e5983c760e2b2eb9200"
+    "0000000001017f01017f0808087f00417f410046494949317f494949363f4040403f7f404040407f4141221c7f0408107f7f"
+    "494949417f021c027f631408146307087008073e4141413e7f0919294600427f4000426151494636494949361814127f103c"
+    "4a4949300171090503001c2241000041221c003e414141227f0909090641221408003e41494938b4002c0017010203040005"
+    "0603070800090a0a080400101112000b05e400380016040a01000c0a0b0600040d04010a0b000b0a0b0e0f0d1401d4000901"
+    "0e00101112000b050000b4001400190102030400050603070800090a0a08040001020a0013141115e4002000180c050e0c00"
+    "05030e040016180e0b19070a0c00131411151714011400190309000c0a0b0600040a010103091b04001a00040d04010a0b00"
+    "00"
+)
+PREVIOUS_REQUIRE_CODE_SHA256 = "5ae638250eb9579f224963e1af3b7557a703736726552d6d747b6d270d656976"
+assert len(PREVIOUS_REQUIRE_CODE) == 651 and hashlib.sha256(PREVIOUS_REQUIRE_CODE).hexdigest() == PREVIOUS_REQUIRE_CODE_SHA256
+assert PREVIOUS_REQUIRE_CODE[:REQUIRE_STARTUP_BYTES] == REQUIRE_CODE[:REQUIRE_STARTUP_BYTES]
 MM_PAGES = 0x8003B2D4                # MmNumberOfPhysicalPages (the STICKY section)
 
 UI_LABEL = "128 MB memory (K128, xemu set to 128 MB)"
@@ -367,7 +390,8 @@ def early_code(code_va: int) -> bytes:
     return bytes(body)
 
 
-def code_for(code_va: int, flags: int) -> bytes:
+def code_for(code_va: int, flags: int, *, previous: bool = False) -> bytes:
+    """The owned code for ``flags``; ``previous`` puts the beta-79 128 MB entry (PREVIOUS_REQUIRE_CODE) in place."""
     _require(flags & ~(OPT_K128 | OPT_ROSTER_HEAP | OPT_EARLY | OPT_REQUIRE) == 0 and flags & OPT_K128,
              "unknown K128 options")
     out = bytearray(b"\xcc" * CODE_SIZE)
@@ -385,8 +409,9 @@ def code_for(code_va: int, flags: int) -> bytes:
         _require(EARLY_OFFSET + len(early) <= OPTIONS_OFFSET, "early entry exceeds its allocation")
         out[EARLY_OFFSET:EARLY_OFFSET + len(early)] = early
     if flags & OPT_REQUIRE:
-        _require(REQUIRE_OFFSET + len(REQUIRE_CODE) <= OPTIONS_OFFSET, "the 128 MB entry exceeds its allocation")
-        out[REQUIRE_OFFSET:REQUIRE_OFFSET + len(REQUIRE_CODE)] = REQUIRE_CODE
+        require = PREVIOUS_REQUIRE_CODE if previous else REQUIRE_CODE
+        _require(REQUIRE_OFFSET + len(require) <= OPTIONS_OFFSET, "the 128 MB entry exceeds its allocation")
+        out[REQUIRE_OFFSET:REQUIRE_OFFSET + len(require)] = require
     struct.pack_into("<I", out, OPTIONS_OFFSET, flags)
     return bytes(out)
 
@@ -441,7 +466,12 @@ def _owned_state(payload: bytes):
         _require(image.read(CAP_SITE_VA, 9) == RETAIL_CAP_SITE, "in-game block site with an empty allocation")
         return "retail", found, None
     flags = struct.unpack_from("<I", blob, OPTIONS_OFFSET)[0]
-    _require(blob == code_for(code["va"], flags), "foreign K128 code or options")
+    state = "applied"
+    if blob != code_for(code["va"], flags):
+        # b780 n6: the beta-79 128 MB entry (only with the 128 MB stop; otherwise both revisions are the same bytes)
+        _require(bool(flags & OPT_REQUIRE) and blob == code_for(code["va"], flags, previous=True),
+                 "foreign K128 code or options")
+        state = "previous"
     _require(_entry_state(payload, code["va"], flags) == "applied", "K128 code without its entry hook")
     edits = sites(code["va"], flags)
     _require(not edits or rdata.status(payload, edits) == "applied", "mixed K128 hooks")
@@ -450,7 +480,7 @@ def _owned_state(payload: bytes):
     if not flags & OPT_ROSTER_HEAP:
         _require(image.read(ROSTER_SITE_VA, 5) == RETAIL_ROSTER_SITE, "roster site moved without the roster heap")
         _require(image.read(CAP_SITE_VA, 9) == RETAIL_CAP_SITE, "in-game block capped without the roster heap")
-    return "applied", found, flags
+    return state, found, flags
 
 
 def status(payload: bytes) -> str:
@@ -462,7 +492,7 @@ def status(payload: bytes) -> str:
 
 def read_settings(payload: bytes) -> dict:
     state = status(payload)
-    if state != "applied":
+    if state not in ("applied", "previous"):   # b780 n6: "previous" = the beta-79 128 MB stop text, same options
         return {"status": state, "k128": False, "roster_heap": False, "early": False, "require_128": False}
     flags = _owned_state(payload)[2]
     return {"status": state, "k128": True, "roster_heap": bool(flags & OPT_ROSTER_HEAP),
@@ -503,6 +533,20 @@ def apply(payload: bytes, *, roster_heap: bool = False, early: bool = False,
         _require(_owned_state(payload)[2] == flags, "K128 options differ; rebuild from the original")
         return payload, {**common, "already_applied": True, "changed_bytes": 0}
     before = payload
+    if state == "previous":
+        # b780 n6: beta-79 -> this release in place: the 128 MB entry's stop text; entry, hooks and options stay
+        _require(_owned_state(payload)[2] == flags, "K128 options differ; rebuild from the original")
+        code_va = allocations(payload)["code"]["va"]
+        result, code_receipt = space.install_code(payload, OWNER, code_for(code_va, flags),
+                                                  previous=code_for(code_va, flags, previous=True))
+        buf = bytearray(result)
+        _repin(buf)
+        result = bytes(buf)
+        _require(status(result) == "applied", "K128 upgrade postcondition failed")
+        return result, {**common, "already_applied": False, "upgraded_from": "beta-79", "code_install": code_receipt,
+                        "code_va": hex(code_va), "changed_bytes": sum(a != b for a, b in zip(before, result)),
+                        "before_sha256": hashlib.sha256(before).hexdigest(),
+                        "after_sha256": hashlib.sha256(result).hexdigest()}
     if space.status(payload) == "retail":
         payload, _ = space.apply(payload, REQUESTS, scaleout=True)
     found = allocations(payload)

@@ -48,7 +48,12 @@ from .nfl2k5_draft_ai import _Asm
 from .nfl2k5_bump_strength import _sections, _section_for_offset, section_digest
 
 OWNER = "nfl2k5_camera"
+UPGRADES_PREVIOUS = True   # b780 n6: status() may read "previous" (the beta-79 install); apply() upgrades it
 VERSION = 8
+# b780 n6: v7 is what beta-79 / SOFTDRINK 2K28 v0.8 shipped; it differs from v8 only in the punt snap eye (29 m behind the
+# punter instead of 12 m, PREVIOUS_PUNT_EYE_BEHIND). status() reads an exact v7 install as "previous" and apply() rewrites
+# the owned code in place (same allocation, same descriptors and hooks).
+PREVIOUS_VERSION = 7
 CODE_SIZE = 864
 READ_ONLY_SIZE = 320
 LEGACY54_CODE_SIZE = 208
@@ -216,6 +221,7 @@ FAR_RETAIL_VALUES: dict[int, Values] = {
 # (look-at xyz, lens word, camera offset xyz) in the offense-relative frame (z toward the opponent's goal), centimetres.
 # Native type 2: eye = focus + look-at + offset, so the eye relative to the ball is look-at + offset.
 PUNT_EYE_BEHIND = 1200.0            # v8: the punt snap eye is 12 m behind the punter (was 29 m, see the module notes)
+PREVIOUS_PUNT_EYE_BEHIND = 2900.0   # v7 (beta-79 / v0.8): -3287 cm = -(2900 + 387)
 KICK_VALUES: dict[int, Values] = {
     KICK_FG_GROUND: ((0.0, 100.0, 2844.0), 50.0, (0.0, 450.0, -5144.0)),
     KICK_PUNT_GROUND: ((0.0, 100.0, 387.0), 50.0, (0.0, 550.0, -(PUNT_EYE_BEHIND + 387.0))),
@@ -537,14 +543,23 @@ def code_for(va: int, revision: int = VERSION) -> bytes:
     constants_blob += struct.pack("<12f", -EYE_MAX_X, KICK_EYE_MIN_Y, -EYE_MAX_Z, -100000.,
                                   EYE_MAX_X, KICK_EYE_MAX_Y, EYE_MAX_Z, 100000., CORNER_START_Z, 0., 0., 0.)
     return (prefix + setup_code.ljust(SETUP_SLOT, b"\xcc") + clamp.ljust(CLAMP_SLOT, b"\xcc")
-            + constants_blob + kick_sets())
+            + constants_blob + kick_sets(revision))
 
 
-def kick_sets() -> bytes:
+def kick_values(revision: int = VERSION) -> dict[int, Values]:
+    """The kick constant sets of a revision (v7, beta-79: the punt snap eye 29 m behind the punter)."""
+    if revision != PREVIOUS_VERSION:
+        return KICK_VALUES
+    look, lens, _offset = KICK_VALUES[KICK_PUNT_GROUND]
+    return {**KICK_VALUES, KICK_PUNT_GROUND: (look, lens, (0.0, 550.0, -(PREVIOUS_PUNT_EYE_BEHIND + 387.0)))}
+
+
+def kick_sets(revision: int = VERSION) -> bytes:
     """The four 48-byte kick constant sets: the broadcast record's words from +0x10 (look-at) to +0x40 (offset), in order."""
+    values = kick_values(revision)
     out = b""
     for index in range(4):
-        out += descriptor_bytes(BROADCAST_RETAIL_DESCRIPTOR, KICK_VALUES[index])[FIELD_TARGET:FIELD_TARGET + KICK_SET_SIZE]
+        out += descriptor_bytes(BROADCAST_RETAIL_DESCRIPTOR, values[index])[FIELD_TARGET:FIELD_TARGET + KICK_SET_SIZE]
     return out
 
 
@@ -669,8 +684,11 @@ def _status(payload: bytes, preset: str, revision: int) -> str:
 
 
 def status(payload: bytes, preset: str = DEFAULT_PRESET) -> str:
-    """Exact retail/v6/v5.4 recognition; historical installs require a rebuild."""
+    """Exact retail/v8/v7/v5.4 recognition: "previous" is the exact v7 install (beta-79, upgraded in place by apply);
+    older historical installs require a rebuild."""
     result = _status(payload, preset, VERSION)
+    if result == "foreign" and _status(payload, preset, PREVIOUS_VERSION) == "applied":
+        return "previous"
     if result == "foreign" and _status(payload, preset, 54) == "applied":
         return "v5.4"
     return result
@@ -682,7 +700,7 @@ def detect_preset(payload: bytes) -> str | None:
     if status(payload, DEFAULT_PRESET) == "retail":
         return "retail"
     for name in PRESETS:
-        if status(payload, name) == "applied":
+        if status(payload, name) in ("applied", "previous"):
             return name
     return None
 
@@ -755,7 +773,7 @@ def reservations(payload: bytes) -> list[dict]:
 
 def apply(payload: bytes, preset: str = DEFAULT_PRESET) -> tuple[bytes, Mapping[str, object]]:
     state = status(payload, preset)
-    _require(state in ("retail", "applied"), "foreign/mixed camera bytes; rebuild from retail")
+    _require(state in ("retail", "applied", "previous"), "foreign/mixed camera bytes; rebuild from retail")
     common = dict(owner=OWNER, version=VERSION, preset=preset, experimental=True,
                   runtime_witnessed=False, selected_row=STANDARD_ROW, option_default="standard",
                   owned_code_bytes=CODE_SIZE, owned_read_only_bytes=READ_ONLY_SIZE,
@@ -764,6 +782,15 @@ def apply(payload: bytes, preset: str = DEFAULT_PRESET) -> tuple[bytes, Mapping[
                   coach_mode_changed=False, exact_coach_director_proved=False)
     if state == "applied":
         return payload, dict(common, status="already_applied", changed_bytes=0, edits=[])
+    if state == "previous":
+        # b780 n6: v7 -> v8 in place: only the owned code's punt kick set changes; descriptors and hooks stay
+        a = allocation(payload)
+        patched, _ = space.install_code(payload, OWNER, code_for(a["va"]), previous=code_for(a["va"], PREVIOUS_VERSION))
+        _require(status(patched, preset) == "applied", "camera upgrade verification failed")
+        return patched, dict(common, status="applied", upgraded_from=f"v{PREVIOUS_VERSION}", edits=[],
+                             changed_bytes=sum(x != y for x, y in zip(payload, patched)),
+                             before_sha256=hashlib.sha256(payload).hexdigest(),
+                             after_sha256=hashlib.sha256(patched).hexdigest())
     if space.status(payload) == "retail":
         allocated, allocation_receipt = space.apply(payload, REQUESTS, scaleout=True)
     else:

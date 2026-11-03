@@ -362,6 +362,8 @@ BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                  ("option_defaults", _option_defaults.BUILD_CAPTION, _option_defaults.HELP_TEXT),  # b779-df1
                  ("modern_clock_led", _clock_led.BUILD_CAPTION, _clock_led.HELP_TEXT))  # b778-sd4
 BUILD_KEYS = tuple(row[0] for row in BUILD_OPTIONS)
+# b780 n6: options whose beta-79 install reads "previous" in inspect(); the build upgrades it in place
+PREVIOUS_UPGRADE_KEYS = {"honors_page": "honors page", "camera": "camera", "k128_memory": "128 MB memory"}
 VENUE_BUILD_KEYS = (
     "modern_sofi", "modern_highmark", "modern_att", "modern_levis", "modern_allegiant",
     "modern_mercedes_benz", "modern_usbank", "modern_lucas_oil", "modern_state_farm",
@@ -2174,8 +2176,9 @@ class BuildPanel(QWidget):
             applied.append("depth locks: older revision (needs update)")
         if state.get("draft_ai") == "legacy":      # b780 b1-draft: the beta-78/79 draft AI, upgraded in place
             applied.append("draft AI: older revision (needs update)")
-        if state.get("honors_page") == "previous":  # b780 n6: the beta-79 honors + champions owners, upgraded in place
-            applied.append("honors page: older revision (needs update)")
+        for key, name in PREVIOUS_UPGRADE_KEYS.items():  # b780 n6: beta-79 installs, upgraded in place
+            if state.get(key) == "previous":
+                applied.append(f"{name}: older revision (needs update)")
         foreign = [key.replace("_", " ") for key in mod_build.BuildPlan.__dataclass_fields__
                    if state.get(key) == "foreign"]
         settings = state.get("throw")
@@ -2199,9 +2202,9 @@ class BuildPanel(QWidget):
             locks_upgrade = key == "depth_locks" and value == "legacy"
             # b780 b1-draft: the beta-78/79 draft AI head reads "legacy"; the build upgrades it in place too.
             draft_upgrade = key == "draft_ai" and value == "legacy"
-            # b780 n6: the beta-79 honors page and Super Bowl champions read "previous"; the build upgrades them in place.
-            honors_upgrade = key == "honors_page" and value == "previous"
-            box.setEnabled(available and (value == "retail" or upgrade or locks_upgrade or draft_upgrade or honors_upgrade)
+            # b780 n6: a beta-79 install (honors page, camera v7, K128) reads "previous"; the build upgrades it in place.
+            previous_upgrade = key in PREVIOUS_UPGRADE_KEYS and value == "previous"
+            box.setEnabled(available and (value == "retail" or upgrade or locks_upgrade or draft_upgrade or previous_upgrade)
                            and (is_image or not needs_image))
             box.setChecked(False)
             if not available:
@@ -2216,9 +2219,9 @@ class BuildPanel(QWidget):
                                "release's revision (in place): kickers and punters from round 5 and real draft class "
                                "position mixes.")
                 self._set_badge(key, "Needs update")
-            elif honors_upgrade:
-                box.setToolTip("The Player Card honors page and Super Bowl champions from an older build (beta 79) are "
-                               "installed. Select to update them to this release's revision (in place).")
+            elif previous_upgrade:
+                box.setToolTip(f"The {PREVIOUS_UPGRADE_KEYS[key]} from an older build (beta 79) is installed. Select to "
+                               "update it to this release's revision (in place).")
                 self._set_badge(key, "Needs update")
             elif upgrade:
                 box.setToolTip("Position pools are installed, but the CPU lineup exhaustion repair is missing. Select to upgrade.")
@@ -3481,8 +3484,8 @@ class BuildPanel(QWidget):
         else:
             combo.setEnabled(clock.isEnabled() and clock.isChecked())
         for key in ("coin_defer", "decided_clock", "historic_teams_quick_game", "kickoff_return_blocking", "espn25_more_moments", "espn25_named_previews", "historic_stock_books", "espn25_era_rules", "k128_memory", "k128_roster_heap", "k128_early", "letter_grades", "honors_page", "team_ratings", "play_art_routes"):
-            # b780 n6: a beta-79 honors install ("previous") is installed too: kept on, and the build upgrades it in place
-            if (self._state or {}).get(key) == "applied" or (key == "honors_page"
+            # b780 n6: a beta-79 install ("previous") is installed too: kept on, and the build upgrades it in place
+            if (self._state or {}).get(key) == "applied" or (key in PREVIOUS_UPGRADE_KEYS
                                                              and (self._state or {}).get(key) == "previous"):
                 box = getattr(self, key + "_check")
                 box.blockSignals(True)
