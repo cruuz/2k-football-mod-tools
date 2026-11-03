@@ -46,7 +46,7 @@ def our_tu_writes():
             out.setdefault(address, set()).add(owner)
     add("pass_fetch", pp.PlaycallPatch(profile, pp.assemble_cave(profile.hook), {}).words)
     add("fourth_down", fd.PatchDocument(profile).words)
-    for revision in sorted({1, 2, 3, ch.CURRENT_REVISION}):
+    for revision in sorted({1, 2, 3, 4, ch.CURRENT_REVISION}):
         add(f"charge_r{revision}", ch.PatchDocument(profile, False, revision).words)
     add("curves", cv.PatchDocument(profile, OFFENSE_CURVE, DEFENSE_CURVE).words)
     for mask_profile in sm.PROFILES:
@@ -71,10 +71,14 @@ class UpstreamFixtureTests(unittest.TestCase):
             self.assertEqual([(w["address"], w["value"]) for w in patch["be32"]], list(row.upstream_words))
 
     def test_upstream_caves_collide_with_charge_abilities(self):
-        """Why the Studio relocates: shipped as-is, two of them overwrite charge revision 4."""
+        """Why the Studio relocates: shipped as-is, two of them overwrite charge revisions 4 and 5.
+
+        Revision 5's line-move gate (0x84D0D600..0x84D0D6D3) lies inside the
+        upstream all-packages cave, raising its overlap from 62 to 103 words.
+        """
         ours = our_tu_writes()
         hits = {row.key: sum(a in ours for a, _ in row.upstream_words) for row in cp.load_definitions()}
-        self.assertEqual(hits, {"play_calling_by_package": 70, "all_packages_in_substitution": 62,
+        self.assertEqual(hits, {"play_calling_by_package": 70, "all_packages_in_substitution": 103,
                                 "hidden_formations_revealed": 0})
         ranges = cp.reservation_ranges()
         charge = next((s, e) for o, s, e in ranges if o == "apf2k8_charge_abilities_code")
