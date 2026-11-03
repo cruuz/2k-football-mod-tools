@@ -138,7 +138,15 @@
      "scratch_needed": 0,
      "scratch_retail": 96
     }
-   ]
+   ],
+   "scene_sha256": "dd4b4224183123ef64a28ed89bd5b6b644bb521967d99838c0e2abd61c0edf01",
+   "apparel_sha256": {
+    "256": "10a8a7c4be25f34f6d722c869b54cbfc96b407ba0105445090fed52448595889",
+    "192": "fd781203d77b998287c365e2aa2dccef136991aef1f31c1d8eeb17d6275e6786",
+    "128": "f66e192aabbdb0d8b2b1b4109505dbbf032f2c36bd447303d35834146cbfc1be",
+    "96": "a0f445b398e32d315524334c29bbac0cb924b15505af18c7299f69e090983316",
+    "64": "441d7e5daa72023345064e01b5426df0fc5d6894f23a649739e9e6fd12616df9"
+   }
   },
   {
    "team": "ATL",
@@ -278,7 +286,15 @@
      "scratch_needed": 0,
      "scratch_retail": 80
     }
-   ]
+   ],
+   "scene_sha256": "4a0ae95941dc2b8dfbae7b26e1bafb1c28ab742faccdda2dc3c0ad4e8745dd37",
+   "apparel_sha256": {
+    "256": "9ff861ad135d3d823148535165ef9b7a6762284a68a5a03d12489d8c05bf479a",
+    "192": "babbfc1eff1019ad060b3adf69e4dec943545de22d394d1edbc200c1141e962c",
+    "128": "cafa2d01b467e9424b12f8a4603f35ff26bd52232382ccafca85007e4acea649",
+    "96": "265974a784bb24e5666576f52ff56058a4b7f7bc29c8a2745628508b0bf57492",
+    "64": "88353d3e3a96756dd9f2f1535f6563e2750b4e8d0554757baa5b9b2514a483e5"
+   }
   },
   {
    "team": "BAL",
@@ -417,7 +433,15 @@
      "scratch_needed": 0,
      "scratch_retail": 128
     }
-   ]
+   ],
+   "scene_sha256": "140527ef8903f16299d10155d5f1795761ba8791911ff65a8da2899cfda90c2f",
+   "apparel_sha256": {
+    "256": "35b89a68e2c09e524aed91495804863743d21ea8af64e74e128d5f23e5fa0eec",
+    "192": "ceb76996a32579ea2e951c127a8f023e123de327d0c3d6aa4fcc3d984da35777",
+    "128": "bef609854025b122bdda35c7b0db63f56d1553f1c9b5c4c07db7a89b86679a24",
+    "96": "03e3c3a869761b67ef4d90b22d88734c04e3e90badcda51d0083b981b40c83b1",
+    "64": "db2150e35866adfa120c63ab3ab30c26a654da4c16c972c90427873dcc658ec4"
+   }
   },
   {
    "team": "BUF",
@@ -555,7 +579,15 @@
      "scratch_needed": 1,
      "scratch_retail": 128
     }
-   ]
+   ],
+   "scene_sha256": "bd0325ac6043799f8e09c7a676277d914b5c5ef6c11330be825128837a3b846e",
+   "apparel_sha256": {
+    "256": "6e46aca7dcbd9a3ee5f1563c34277bdd60698d59c40f19c3701863965532bb24",
+    "192": "8498855ad508225415dc3c5f0d93597ddfb271afb9b11ba92cf571cefffc47a8",
+    "128": "f7add891ef4862d3d18fc950789f0dc0653f602bb7315d3a78b9c0dcacfb27c7",
+    "96": "ecaff1a54712037dafdc80b9798c1121236f656cccc1748e84cb8d49eb86ce0b",
+    "64": "a145b6753d3998f8a875ade38989ef1b5092f0d9914b96df3c38f0abea6a7129"
+   }
   },
   {
    "team": "CAR",
@@ -695,7 +727,15 @@
      "scratch_needed": 0,
      "scratch_retail": 96
     }
-   ]
+   ],
+   "scene_sha256": "1358556965aaf46ecdc1c0c5b8b389d403a608742c838fa3972e270fef2dc2cc",
+   "apparel_sha256": {
+    "256": "b15cf45c114b513ba5d391a833726735e20a270489fd1aa6beaa4916c436c817",
+    "192": "ac3ac58ce92f9d8992e9ec72047d748582ac0b6bd356eabe6328ba01266181c8",
+    "128": "78a08ced20c117fcb9f4ae1ddb032d3038b0c30ccf583e174f3fbe6cae95d0aa",
+    "96": "2ca41cf380fad9236b63e0d57925c9bfddf1e168c746766602b48158f7347e81",
+    "64": "ca2a14e24a60ae021edcdd45c383c0bae33f2651d0e94c07d70ad7a946ad4348"
+   }
   },
   {
    "team": "CHI",
@@ -833,7 +873,15 @@
      "scratch_needed": 0,
      "scratch_retail": 128
     }
-   ]
+   ],
+   "scene_sha256": "4b594eccfb33c5942138beaf243846f82ae53b6f9e5e40f1f5f64b4c338d031c",
+   "apparel_sha256": {
+    "256": "5e394e4af1947876d3ba7ad95737e6e4fd7a21408f6b9643667e5bf9afe3eba0",
+    "192": "85dc87ab50b53009fde5d33f31f444d2c167be7fa7d5e6b94dc6f0dfd74f8467",
+    "128": "7d12340c1f35adbb363e3e9a1cda0fc834360754df8825f6e7ff147856e9df43",
+    "96": "beb5b6aaff03bfccae3ffcc9c46175ecff3ac72347ba61f80c6025fd2773cfc1",
+    "64": "6445c564efc95d6925bc7d01dc09d105e9f3502a9204dd5bf53fcdfe53abb2fc"
+   }
   },
   {
    "team": "CIN",
@@ -969,7 +1017,15 @@
      "scratch_needed": 0,
      "scratch_retail": 112
     }
-   ]
+   ],
+   "scene_sha256": "a8bdf98461e899bf38b9fa056bdb7e07347fe59c33d45cefbaa7d6c289a7f424",
+   "apparel_sha256": {
+    "256": "f6e56c8c7574518b894befad3ca3b22e9f8e4957c1f58592454e098472366701",
+    "192": "5ce25ce2f2e78caf24cdac890bc431a820b9a1f78a5d2063e4ef3c9fb02c3ca8",
+    "128": "1fffd834f24c4e1545d122b405fcca228b08767db174803c6f2f315f1dffedc5",
+    "96": "cc0ecae43b55504a7f9a8bbd071c05fab36d00341d627c4ba60c5738dc0cd847",
+    "64": "5b21e0c3ce02171216226ca59587accdfe999c07e89d465b8e240723475c1091"
+   }
   },
   {
    "team": "DAL",
@@ -1109,7 +1165,15 @@
      "scratch_needed": 1,
      "scratch_retail": 112
     }
-   ]
+   ],
+   "scene_sha256": "e81fc62b0641aeb5817c6466f1fc5ffcf99db010e45c12c47cf9110ef4df813a",
+   "apparel_sha256": {
+    "256": "4ed273e25ff73df8cb239f7a53821b7df300489a6f3bc3b28771e2cebb7c1698",
+    "192": "0081c969e3af810cf494725b6f6fb8fad378b713aad2bd14faeeab9645b7daee",
+    "128": "3f3e01de8e11b1882a9fcb7be4c0aa64992b668ebf8c557e1b76810421bcd808",
+    "96": "aeab903eb366620aa8e35f71bef7cbbe324f35d51c716271be990a50b63787cd",
+    "64": "82f327ee6de24ffa408991bce63369974856e3a63948eda06a3f7053bfe76f66"
+   }
   },
   {
    "team": "DEN",
@@ -1247,7 +1311,15 @@
      "scratch_needed": 3,
      "scratch_retail": 128
     }
-   ]
+   ],
+   "scene_sha256": "b7e1c2f6ba4347ed3325f53dd9c1e3d976623e570764930324d5c95ef5dc9621",
+   "apparel_sha256": {
+    "256": "9e60672bab6e443a7821d83b7c92b8df137056ae587ec5957e07e3f7004825eb",
+    "192": "7832b7e7db6352178478bfc791c65fdf8a9a96ef7745d6a0e28e4a23a0e77b13",
+    "128": "7bb7e8cf91c8ea3cf4c7e4fd4bc94eb18706f4b9bc9c06e4b268198324ae6d11",
+    "96": "eb82b3cbe2240e2e4613483b67a0c0ce0bf4d18757181465f685b7947cf18a78",
+    "64": "550d9bb7e56ed26de4111b271db25caa174c481eb17f2ce5f4e148801181750d"
+   }
   },
   {
    "team": "DET",
@@ -1388,7 +1460,15 @@
      "scratch_needed": 6,
      "scratch_retail": 128
     }
-   ]
+   ],
+   "scene_sha256": "463dc60978b96139067bce4b16bf903f062b657724fb83828b8ddd0c7aabd255",
+   "apparel_sha256": {
+    "256": "c97f8bd396aef093dd9db0f3d6ecd70bfa2fa36de7ee99cdd5fc003a8acf8f62",
+    "192": "e61d447311d6fd7f5a638a3ba331b8d1af7df11d2c165c621f275e7ce0940eff",
+    "128": "0a3baa18a4a39eb20443ec0035591fd8afd66e0cdd007aa526075ad730d3ce0c",
+    "96": "f6888bc040d71a5b78018801e5c96650e2985b3478c9f7ae2e8c2e1a974bb83e",
+    "64": "85ef2d3bd63e3f9102a18db3b6d145b8cb9d863e37fd312532444a11deb24400"
+   }
   },
   {
    "team": "GB",
@@ -1528,7 +1608,15 @@
      "scratch_needed": 0,
      "scratch_retail": 128
     }
-   ]
+   ],
+   "scene_sha256": "653f3af5903caecf45c3cd156a076fbf2d8eb6b6497e8e454dd39814f67ba67f",
+   "apparel_sha256": {
+    "256": "6aabd8a61c23c02ea60f9b8ebefb273f1665a8221ad0e81da5686183b1d3db82",
+    "192": "d4e6b18bd225883943a27c4d240de0396f9b12356db149325141eaefce8b7d29",
+    "128": "8103d5e04e05c157040f560a9c6a56399529a2bfaf55f650557d409f3d656c00",
+    "96": "47f2e6f211cf0a8ab91c044c334b09b659318f87d652a14fa05619501c61055d",
+    "64": "1844663ca68a313dcb831640a277425c1c4e830beda344d02f620544b663b20c"
+   }
   },
   {
    "team": "IND",
@@ -1664,7 +1752,15 @@
      "scratch_needed": 1,
      "scratch_retail": 96
     }
-   ]
+   ],
+   "scene_sha256": "b1f5c123a925b648268ce357f0c7853c2549078692c3beceddb64fb70f5f3aff",
+   "apparel_sha256": {
+    "256": "c33dc44dd438698ea403a8831e05e7ddaaef92ee87bcb59bfb245aaf4d7de2bb",
+    "192": "1fa80d52e4fdfbf0bf221dea5c143eafd0a3a70b783a461657d42a8c0e207658",
+    "128": "aee6aa39c2c99780ae103883ce21b80a92b9ee5f7f8f508490f585f8329dc6c3",
+    "96": "314bacf2e4c1265138b21296c00fe38a21080bee336bec1846bdfdb8d338a83d",
+    "64": "b3aaddd6d8b7276b166f4c8615c550c9a4fd85911451f28c029aff6a08d06ecd"
+   }
   },
   {
    "team": "JAX",
@@ -1806,7 +1902,15 @@
      "scratch_needed": 0,
      "scratch_retail": 64
     }
-   ]
+   ],
+   "scene_sha256": "946c9364b1916f088c50a642e40d13d25bf1b4ce5cdfe800fac96a98ee8f71d5",
+   "apparel_sha256": {
+    "256": "c4e6ad6bc45adc86ec8cf9988dcff73bfefd1fb0d641b78916fc7f6d4ea7b387",
+    "192": "8bee4acce4255b8debb9b8b7d80faa30debb411cd268b4baa8969c271975c8e7",
+    "128": "0ee517f0380d88bacaa5b2f8c92b9fbcee1f8c4a11ab87c9c1367b2134ae6152",
+    "96": "86cd956ba1698d7cab133bd4624e8b6c83b8656fcd80b29b39df4c6cb9104331",
+    "64": "9aacb6d4d15a3f1986d9ca4bad1361061eacea241df9ef383b452c2ba30dab5f"
+   }
   },
   {
    "team": "KC",
@@ -1943,7 +2047,15 @@
      "scratch_needed": 0,
      "scratch_retail": 32
     }
-   ]
+   ],
+   "scene_sha256": "28594b90affaae3888be418308c21afaeb11c24fae5ce7a53e5c843e7beed96d",
+   "apparel_sha256": {
+    "256": "bde6f1146603e9bcc234b150b29515329ea2c62fb999a73460440120f9443d8a",
+    "192": "79116ccb0522daf3d2dd37e7e1a4f39d5a2446e1de6761b0b56ab65d37727107",
+    "128": "ca0af494170f874981f897dcaf0874582db7f720f4f60698e3020e3024fc985c",
+    "96": "a876607476e10f653ff4b0fa927eb6681b4884fe88508708c855965cf7e8ba4a",
+    "64": "6ce0ee0e863578ccc78276c8eb7a802326f3f52d7cbb1729daefe381e9b4f940"
+   }
   },
   {
    "team": "MIA",
@@ -2083,7 +2195,15 @@
      "scratch_needed": 3,
      "scratch_retail": 96
     }
-   ]
+   ],
+   "scene_sha256": "1a59c91098c1b2ad72c73a0df94116a3d5d7f9897dc988c487a9281bc4f46884",
+   "apparel_sha256": {
+    "256": "81ecf4e7fbfe714eabb2efdadd79afafe937f3256a6004e57d24bf3605af1ce9",
+    "192": "e28e3c944e642f28c4a65171ab0cc542f871e5480c5be710074fc2dc180cfd80",
+    "128": "2fae043056c451d6e29ff7957f44397b7666b9b3d67923d5f6f4204abbc6d12c",
+    "96": "976d00374045478e3565f725eb191c0a20d9feb67b864cb3693e6f9dd220c5b6",
+    "64": "69c880ffda277ee7bbbd710c4c4f4f42bf69935ad7c3ab303ace8625ecc16973"
+   }
   },
   {
    "team": "MIN",
@@ -2223,7 +2343,15 @@
      "scratch_needed": 0,
      "scratch_retail": 112
     }
-   ]
+   ],
+   "scene_sha256": "94d4efd1f3ee6b85881017909d40c25e53a1a44eab241402100c8f42b5471e61",
+   "apparel_sha256": {
+    "256": "089ad1d16648688d9380a700f2620a6189f4ffb72f80fffd4c549364dca8458f",
+    "192": "d67354ab6b0a1e1a47d72a93574eaae1da0af970e4a7ef667d151d034a1330b2",
+    "128": "99562b04d5667094754ec32ed1343cbe7aae955c490cb00f54eb917911c795f3",
+    "96": "4ae4282e5330044b148c56034328bee5318703fe2ad1dbb522bc478746b27867",
+    "64": "6bd041552b1a6e60c7c7ae12fcf4e5e2d8391a2efbfe653e475c5d8663f9c283"
+   }
   },
   {
    "team": "NE",
@@ -2363,7 +2491,15 @@
      "scratch_needed": 3,
      "scratch_retail": 112
     }
-   ]
+   ],
+   "scene_sha256": "9cf183a568e1fba566ee0bfa2b76685a88cf4f7e4f28c4b1162f6bdce6039c4d",
+   "apparel_sha256": {
+    "256": "4e1bd66e9f6862bb345334e20d5e50b7e8311c45032fc874e3ebd899c8f75151",
+    "192": "c0f1814702f5564a582bd460d584bffea23b5d7264cd3ba74792a1bfcb69f08a",
+    "128": "f21d2dacbc4b28039aea00b726795148fb3a48ad0485638b7eb9849852060e94",
+    "96": "bb55d1009b84111b892e563ee0ff84989c71e273d081ffaaa467972f156ec4f3",
+    "64": "54e7ca1ee146d5d34d2fe9048f1e94bb7d8f147a3ad9225b312661dbc48f3db3"
+   }
   },
   {
    "team": "NO",
@@ -2501,7 +2637,15 @@
      "scratch_needed": 0,
      "scratch_retail": 96
     }
-   ]
+   ],
+   "scene_sha256": "ed1d86b21e31101bcd7c4ed29e58ac791e553f763f09999736e35337d969d169",
+   "apparel_sha256": {
+    "256": "b481e7020956a2d322e3454f37dca635fb4ee69b2f83984140815894d4137b1b",
+    "192": "229648b326d91576a75615c198666c2df59d45645dd0938290546d1ab2474df3",
+    "128": "a692483da7e5efc573d4a224fcd1a741abea0c73e4701b456bfddc1b50114891",
+    "96": "cc2639a708fe7e78cb09bd103b100bc6bf6226a10891387e4f1fc188ea929baf",
+    "64": "a67eedb527ddfc051bb8db8ba412a960680126e4e715e9bc0e369d07d8676c36"
+   }
   },
   {
    "team": "NYG",
@@ -2641,7 +2785,15 @@
      "scratch_needed": 0,
      "scratch_retail": 80
     }
-   ]
+   ],
+   "scene_sha256": "487caddc67d4a1a4d136c18e30171cdae8bbb8c4cdbf986da17bb2cbbbce7828",
+   "apparel_sha256": {
+    "256": "39d87cb78df3e335efd795b22397e8da495cedc17c963da573a7b4a336e164bc",
+    "192": "fee70dd00d099d76b729ff0c69cb7350e53b1ac33ba0054b88dbb48c94dfaa7f",
+    "128": "c6a1c3da2b0ce01d1d197ff54cfdb432a2454e2be665205a680e13f2905c5d15",
+    "96": "2dbb8e55e05707139e92abbb88cf7c036955c92588433f9cc38ab025ecd00dc5",
+    "64": "adb6a2a6b43a2a71faf1a33c766302431977f9a5c74e23e6b6258c2aa85a71ba"
+   }
   },
   {
    "team": "NYJ",
@@ -2781,7 +2933,15 @@
      "scratch_needed": 0,
      "scratch_retail": 128
     }
-   ]
+   ],
+   "scene_sha256": "37e45b6e38863cb21ce58a1f39f2bfa6fdcefc3cb1bcb2a427bdc543ebb1840d",
+   "apparel_sha256": {
+    "256": "49511923349023706d9d80651d4531f4dd17826b661185a11f39894902f7ebe2",
+    "192": "ca7d3e4d97207df9bbf2c1cac6f23a4ea0616ed2c0e0a9028a1e9ee451d6bdfe",
+    "128": "4aa279d99a2c88986551a7c2f968e28df930aa80703ff9e6811e0df52b40f63c",
+    "96": "cd3801a547b5c6dcae0f3095f844118389b8b789c49d2578354d2848968e9657",
+    "64": "8061b4ab05e078d72aa8113e84d38d33a25f1f2124b03e8ff238937ecc5758d7"
+   }
   },
   {
    "team": "LV",
@@ -2919,7 +3079,15 @@
      "scratch_needed": 0,
      "scratch_retail": 64
     }
-   ]
+   ],
+   "scene_sha256": "43555667d2c2aad5f30a6415ddfe0b15f7b511dd679ec15f0bc7cafba7571c18",
+   "apparel_sha256": {
+    "256": "08147517150546a7897a101cc99d6add998f46a65af37b4181b12a277bd9e39b",
+    "192": "d325c8c53d157d5c1a42baf384c0deb10816a5f896f1934ecf6bf2e6c817b918",
+    "128": "15972f95101cd6d761dfe1617b9f998b75f6a040d3e06fd1723080d3020c0b90",
+    "96": "4b943e66b53060963e2ceee907a44c4a8b59b3662019bc732577a09df40ddd4d",
+    "64": "5241d7a0f9d60404ea1808caceb5bf8f63979abb770b06d07e4850ee30a41888"
+   }
   },
   {
    "team": "PHI",
@@ -3057,7 +3225,15 @@
      "scratch_needed": 0,
      "scratch_retail": 112
     }
-   ]
+   ],
+   "scene_sha256": "f12c17486ad90d3db3562c54728eb0c50233c96b14c70cdd5c6205cd7d7b24c8",
+   "apparel_sha256": {
+    "256": "cfe1f9412ab9f0a85e0d0c18438e6445faabc575cd99d4ca26866fedfa247d49",
+    "192": "c5c0b49cee90ee588de94f432ab6afc93ce0cd227289355b101cefa842b9b802",
+    "128": "460b68e962d352c3e9e4d91840ae0c651b63ede39cd8d15dea7ac495040122a2",
+    "96": "ee79c70243fa4c12d6b6ae44bac502076091151135438465c05a9616109a5e6b",
+    "64": "8055d45ff8355935527374fd5d8a77ff8e4725ed2c758d5f879eb2f2721eb985"
+   }
   },
   {
    "team": "PIT",
@@ -3202,7 +3378,15 @@
    ],
    "superseded_body_codes": [
     "26"
-   ]
+   ],
+   "scene_sha256": "f48ad63b1146a0e2e2333e0d6307f423e7d7b1c0886106e2e619b69b649a9c17",
+   "apparel_sha256": {
+    "256": "3cc41beced4c03cc9035ef208d25f0eb6fbbc493855be79f2104a5e505260246",
+    "192": "acf05b4178e877de33cd3cfee1e052379f98826f21ec8e22a2ecac9bec756c8e",
+    "128": "07b09597a2eb92eed5901e00e8b629b263a70a8236c1fa7c1225a517cfe2c1c6",
+    "96": "befa91d8498b881376f4b188a72fbc0c6216dbfa50cfd14347475f2554aa9435",
+    "64": "6e88f33b89845f891cca38bf7702817b1de4b07c9ee73a66caf959897e8dee56"
+   }
   },
   {
    "team": "LAR",
@@ -3342,7 +3526,15 @@
      "scratch_needed": 16,
      "scratch_retail": 128
     }
-   ]
+   ],
+   "scene_sha256": "2f5378872e50a8016d66747867d8de31a1eb6fbdb68bd3cb5f06d41446d89824",
+   "apparel_sha256": {
+    "256": "0a8fd1b4959e69ccd67bd471152055a13d6d22b892fd4495b817c425d38e156d",
+    "192": "ed3f8ba6e9b691d546310675bf39ae4721797485a0648c54f9aba5330e100898",
+    "128": "eadace64f65e56bbbdcc690a858cbd48ea0c7746092c90b94d13cd2458e8ca7a",
+    "96": "5db0916b6ead2257076cf8916525ef87ebcc480774ed10f02627e49a880afe1e",
+    "64": "ce1cdb65e133e1cf891e4cec54bd30c0f70f315f6505aab80d776a5c9d9a0db3"
+   }
   },
   {
    "team": "LAC",
@@ -3480,7 +3672,15 @@
      "scratch_needed": 20,
      "scratch_retail": 128
     }
-   ]
+   ],
+   "scene_sha256": "bcb81b74a396488e70cafa00a7f7e2aed7855f36e5f0609c0b32b8392c9736c9",
+   "apparel_sha256": {
+    "256": "d1810be3b463f299eb205d372833bacd0b414faa4bf0f7beaee07663b9c441bb",
+    "192": "4578888c6f862f8591f48da4cb78e4b0189533ceb62871b5e48c2dc6b8f8a35c",
+    "128": "d64622706a3a0b4b69d19029040ceb7f84e99a30e23f91ba68f616730d5d051d",
+    "96": "8afc559cf4bb2cdb7eeccb7710b559951252683378ae2d4981621f36b287afba",
+    "64": "0b12c7d88a63a0316107e661600d614525226a660cbe00fd59602c665d944d66"
+   }
   },
   {
    "team": "SF",
@@ -3620,7 +3820,15 @@
      "scratch_needed": 1,
      "scratch_retail": 128
     }
-   ]
+   ],
+   "scene_sha256": "f472dbc565156da22cf657e1481017a8c421dfcc8de0ef125ce76ed7def7f25c",
+   "apparel_sha256": {
+    "256": "2eb463edc0a40efb452e43840fdfe9da3afd5efaa91ccf43f4b7c898d89c2785",
+    "192": "2d3e3f6da7790e3b2fab941921a2f59f5a0ce212bb1257e14278b61984545c3e",
+    "128": "565c2edf812a9fff62ecbb73569fefb34253d5a86a72784460079ac6945e0114",
+    "96": "2f1007f85d2d8a27e55604c7de7c50100daa135877115d080ffd5378d1482ef3",
+    "64": "657b66de11d46112eab675ecfecaf86e8786cffa81c926b2dcbf9d63953d3253"
+   }
   },
   {
    "team": "SEA",
@@ -3758,7 +3966,15 @@
      "scratch_needed": 1,
      "scratch_retail": 128
     }
-   ]
+   ],
+   "scene_sha256": "d5148fd2bbc8f380c145a7a3f614904439bdec2f3ed8ca56cdb3c8b0bb0c65d0",
+   "apparel_sha256": {
+    "256": "9d7fe4ede6eb5bb3bef2a4a168acf1e70c01cb0baba2831b5f859204e43cefc2",
+    "192": "9743f98b8016567c6f783e405a4fb99f5c2a75bb62fa01aebea6add157b13eeb",
+    "128": "085f8ddaafe1852494ee589e8f964cc3adcbf01f3795489c6b90a612a3f05753",
+    "96": "b650324d87be6ee824b656ec00fc3ce65680ef402edb5f0578fd6dfeee2dda53",
+    "64": "8f8cccc66a8a362f87f5d326ba4bcd180b9c265975719c8bf80b25f81a503b70"
+   }
   },
   {
    "team": "TB",
@@ -3900,7 +4116,15 @@
      "scratch_needed": 1,
      "scratch_retail": 96
     }
-   ]
+   ],
+   "scene_sha256": "803affbce294f2bd3518b5f136d2d2725ee7ff738399fb752ee7e9b8e435294d",
+   "apparel_sha256": {
+    "256": "d0caf979f18b12fb01a713edb17e79d1fc2b2f123bab7eb12e6154a896dcd5d9",
+    "192": "102c81b24ee7a9e1d3189d6cc682e89cfe6b36f2840af3a0ede25800481ddae3",
+    "128": "53427e1b9a2b32a3d48f267637d9170d69d84a5413816d940a28ae1cb208c93f",
+    "96": "a9050205acddbdabfaa681d77cc33dae936f1ae3b6cd3ddf4b0bd9221180ed98",
+    "64": "481cbbc2c93bdc3639d6a8484b1969bedd6b8ae460d949b5c583f44394b929ea"
+   }
   },
   {
    "team": "TEN",
@@ -4040,7 +4264,15 @@
      "scratch_needed": 0,
      "scratch_retail": 128
     }
-   ]
+   ],
+   "scene_sha256": "203e10f55fb1a8230ec8abc5be5da6840501e1c9f135340f5949ec11d2050ce1",
+   "apparel_sha256": {
+    "256": "a2d7b993e0ea5b9c6642e0600750be1b221ff0daf28c327bdc89c16fbc6a451c",
+    "192": "daae1fd06776d5af3a0c541e3646aff1812ac1fb9da58f47b1c3ae4701ee65ba",
+    "128": "21297db3d39cd7654287b80ca05594d6b4ed7905a981a840111eaef64280d417",
+    "96": "60c87c108e5b65e8cc8ca13d5a283616e21e65f88218aa2ee9a4b03897511a26",
+    "64": "bf2bba96f5dced908cf4caf27dc50a0606d0e47372e5b880c34c662def9f3187"
+   }
   },
   {
    "team": "WAS",
@@ -4180,7 +4412,15 @@
      "scratch_needed": 0,
      "scratch_retail": 112
     }
-   ]
+   ],
+   "scene_sha256": "7d9fdb87e563041c9ddb5679a8bcde61a43f10b2b203f20f7d64b4a4a118cd25",
+   "apparel_sha256": {
+    "256": "8fc842ecb31236dc490e04c8600414e8158dc0a3d573284493ffee05f383ffb9",
+    "192": "784f31c08a532ff4b906eb3c31c12a0402d0e98c918144aee363f30b1d2c89c2",
+    "128": "df14fbbf37a29493037958028328720301c7c34f3e169cd02184de33529cd8bf",
+    "96": "ad50eaecbad562ef2ac0327713f69b35d1bfa0fdbc75431c1510e3239046e7df",
+    "64": "9e58809c4964e4d00373a7779779ca33e779dd262e441f16a2568d95e478a327"
+   }
   },
   {
    "team": "CLE",
@@ -4322,7 +4562,15 @@
    ],
    "superseded_body_codes": [
     "00"
-   ]
+   ],
+   "scene_sha256": "08b4999defa5a39e4af9162d07e9a8d84e733df0ee9b45f7ea01de769845510f",
+   "apparel_sha256": {
+    "256": "e9d871ac4b56fd3eb1a9c59a9ebb8c4674375dd349fc00ed944adc937ce0f157",
+    "192": "70b2de7ba71ae03628e1c83918e094ce2a2063fd4d8ef7a7c11ed634035638dd",
+    "128": "0a3b27d1f46339e114f1c14cf114afedc696f0afc9aa4ee8fe8c02994429bf39",
+    "96": "76009e84827226db722ff1abf331d443b72a7c40bf2d8e41100fc7fb62e47980",
+    "64": "750ef783609de31611092c3a3b9f227d1f56b5653907ac18090d3315138629bc"
+   }
   },
   {
    "team": "HOU",
@@ -4460,7 +4708,15 @@
      "scratch_needed": 0,
      "scratch_retail": 128
     }
-   ]
+   ],
+   "scene_sha256": "ecb4df4bbf90f6706dee024a8a3c1be9428441b61bab448adfbeb1a756b6416d",
+   "apparel_sha256": {
+    "256": "13296c081613ff3ab87387793db78e5b612c0ca228e18b8f227a64893c3065b9",
+    "192": "d05d26914be57a2df178414f7c4ab04611672814f7818dd390c75d95e9e4eb85",
+    "128": "eb5594b16ff0c697d268459b32643b20b2a8412939461fdd147d6fddf16d9cec",
+    "96": "65e1328e0b2249adf1078206407406ee76efb5f4f465f2db5a4104028ee7b254",
+    "64": "415167212abcb7300e6218354946381977cf09af0a193318f671aaf3abb33173"
+   }
   }
  ],
  "portraits": [
@@ -4694,162 +4950,194 @@
   "ARI": {
    "body": "c12.iff",
    "why": "lean Mike LaFleur: lean body (c12) instead of the heavy-ish c00",
-   "skin": "light"
+   "skin": "light",
+   "coach": "Mike LaFleur"
   },
   "ATL": {
    "body": "c01.iff",
    "why": "lean-average Stefanski: his club's lean body",
-   "skin": "light"
+   "skin": "light",
+   "coach": "Kevin Stefanski"
   },
   "BAL": {
    "body": "c02.iff",
    "why": "average Minter: his club's average body",
-   "skin": "light"
+   "skin": "light",
+   "coach": "Jesse Minter"
   },
   "BUF": {
    "body": "c03.iff",
    "why": "lean Brady: his club's lean body",
-   "skin": "light"
+   "skin": "light",
+   "coach": "Joe Brady"
   },
   "CAR": {
    "body": "c09.iff",
    "why": "average Canales: average body (c09) instead of the heavy-ish c04",
-   "skin": "light"
+   "skin": "light",
+   "coach": "Dave Canales"
   },
   "CHI": {
    "body": "c37.iff",
    "why": "lean-average Ben Johnson: average body with a light-skinned head (c37); c05 goes to Ryans",
-   "skin": "light"
+   "skin": "light",
+   "coach": "Ben Johnson"
   },
   "CIN": {
    "body": "c36.iff",
    "why": "Zac Taylor, a white coach: c36 (a model no coach record uses) with c20's lean body, in place of the Black Marvin Lewis model c06 (b778 cm2)",
-   "skin": "light"
+   "skin": "light",
+   "coach": "Zac Taylor"
   },
   "CLE": {
    "body": "c26.iff",
    "why": "Todd Monken, a white coach: c26 (glasses hidden) with c13's average body, in place of the Black Dennis Green model c00 (b778 cm2)",
-   "skin": "light"
+   "skin": "light",
+   "coach": "Todd Monken"
   },
   "DAL": {
    "body": "c07.iff",
    "why": "average Schottenheimer: his club's average body",
-   "skin": "light"
+   "skin": "light",
+   "coach": "Brian Schottenheimer"
   },
   "DEN": {
    "body": "c08.iff",
    "why": "average Payton: his club's average body",
-   "skin": "light"
+   "skin": "light",
+   "coach": "Sean Payton"
   },
   "DET": {
    "body": "c04.iff",
    "why": "big, broad Campbell: heavy-ish body (c04)",
-   "skin": "light"
+   "skin": "light",
+   "coach": "Dan Campbell"
   },
   "GB": {
    "body": "c10.iff",
    "why": "average Matt LaFleur: his club's average body",
-   "skin": "light"
+   "skin": "light",
+   "coach": "Matt LaFleur"
   },
   "HOU": {
    "body": "c05.iff",
    "why": "athletic Ryans: lean body with a dark-skinned head (c05)",
-   "skin": "dark"
+   "skin": "dark",
+   "coach": "DeMeco Ryans"
   },
   "IND": {
    "body": "c33.iff",
    "why": "Shane Steichen, a white coach: c33 (a model no coach record uses) with c20's lean body, in place of the Black Tony Dungy model c11 (b778 cm2)",
-   "skin": "light"
+   "skin": "light",
+   "coach": "Shane Steichen"
   },
   "JAX": {
    "body": "c30.iff",
    "why": "average-build Coen: average body (c30); his club's lean c12 goes to Mike LaFleur",
-   "skin": "light"
+   "skin": "light",
+   "coach": "Liam Coen"
   },
   "KC": {
    "body": "c21.iff",
    "why": "Andy Reid: the retail 2004 Reid model (Philadelphia's c21), the heaviest body",
-   "skin": "light"
+   "skin": "light",
+   "coach": "Andy Reid"
   },
   "LAC": {
    "body": "c24.iff",
    "why": "lean, athletic Jim Harbaugh: his club's lean body, glasses kept",
-   "skin": "light"
+   "skin": "light",
+   "coach": "Jim Harbaugh"
   },
   "LAR": {
    "body": "c23.iff",
    "why": "lean McVay: his club's average body",
-   "skin": "light"
+   "skin": "light",
+   "coach": "Sean McVay"
   },
   "LV": {
    "body": "c20.iff",
    "why": "lean Kubiak: his club's lean body",
-   "skin": "light"
+   "skin": "light",
+   "coach": "Klint Kubiak"
   },
   "MIA": {
    "body": "c14.iff",
    "why": "lean Hafley: his club's average body",
-   "skin": "light"
+   "skin": "light",
+   "coach": "Jeff Hafley"
   },
   "MIN": {
    "body": "c28.iff",
    "why": "tall, lean O'Connell: average body with a full-hair 2004 head (c28); his club's c15 has a bald crown",
-   "skin": "light"
+   "skin": "light",
+   "coach": "Kevin O'Connell"
   },
   "NE": {
    "body": "c16.iff",
    "why": "stocky Vrabel: his club's heavy-ish body",
-   "skin": "light"
+   "skin": "light",
+   "coach": "Mike Vrabel"
   },
   "NO": {
    "body": "c17.iff",
    "why": "lean Kellen Moore: his club's average body",
-   "skin": "light"
+   "skin": "light",
+   "coach": "Kellen Moore"
   },
   "NYG": {
    "body": "c22.iff",
    "why": "average John Harbaugh: average capped body (c22) instead of the lean c18",
-   "skin": "light"
+   "skin": "light",
+   "coach": "John Harbaugh"
   },
   "NYJ": {
    "body": "c19.iff",
    "why": "lean Glenn: his club's average body with a dark-skinned head",
-   "skin": "dark"
+   "skin": "dark",
+   "coach": "Aaron Glenn"
   },
   "PHI": {
    "body": "c18.iff",
    "why": "lean Sirianni: lean capped body (c18) instead of the heaviest c21",
-   "skin": "light"
+   "skin": "light",
+   "coach": "Nick Sirianni"
   },
   "PIT": {
    "body": "c27.iff",
    "why": "Mike McCarthy in a cap (Noah 10/21): the capped c27, his heavy build carried over from c26 by position (b778 cm2)",
-   "skin": "light"
+   "skin": "light",
+   "coach": "Mike McCarthy"
   },
   "SEA": {
    "body": "c13.iff",
    "why": "average-build Macdonald: average body (c13, glasses hidden) instead of the heavy c26",
-   "skin": "light"
+   "skin": "light",
+   "coach": "Mike Macdonald"
   },
   "SF": {
    "body": "c25.iff",
    "why": "lean Shanahan: his club's average body",
-   "skin": "light"
+   "skin": "light",
+   "coach": "Kyle Shanahan"
   },
   "TB": {
    "body": "c00.iff",
    "why": "Todd Bowles, a Black coach: the 2004 Dennis Green model (c00), a Black coach's head, arms and hands and a broad build, in place of the 2004 Jon Gruden model (c27) with a darkened face (b778 cm2)",
-   "skin": "dark"
+   "skin": "dark",
+   "coach": "Todd Bowles"
   },
   "TEN": {
    "body": "c15.iff",
    "why": "shaved-head Saleh: average body (c15) whose 2004 head is bald on top",
-   "skin": "light"
+   "skin": "light",
+   "coach": "Robert Saleh"
   },
   "WAS": {
    "body": "c29.iff",
    "why": "lean, athletic Quinn: his club's lean body (glasses hidden)",
-   "skin": "light"
+   "skin": "light",
+   "coach": "Dan Quinn"
   }
  },
  "retired": [

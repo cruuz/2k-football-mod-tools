@@ -3,8 +3,12 @@ geometry (cm1: Quinn's bald head, seven lean bodies), the Build wiring, and, whe
 compile of coach scenes (Reid's derived head and the geometry included), the body ids and the two portrait slots
 against their pins.
 
+b780 c3-looks: a head coach the Studio moves to another club keeps his own model, face, glasses and geometry and wears
+the shirt, jacket and chest logo of the club he leads (the coaching staff, ``staff``); his reserved picture follows him.
+
 The always-on tests read only the repository. The retail checks read the user's own disc image and skip without it
-(point NFL2K5_RETAIL_XISO at the retail USA .xiso.iso).
+(point NFL2K5_RETAIL_XISO at the retail USA .xiso.iso; NFL2K5_V08_XISO at the released v0.8 disc for the moved looks
+compiled from a disc that already has the 2026 coaches).
 """
 from __future__ import annotations
 
@@ -29,6 +33,13 @@ HAVE_RETAIL = RETAIL.is_file()
 # b778 cm2: the SOFTDRINK 2K28 v0.6.1 disc (built with the cm1 coaches), read only, when present
 V061 = Path(os.environ.get("NFL2K5_V061_XISO", str(ROOT / "SOFTDRINK 2K28 v0.6.1.xiso.iso")))
 HAVE_V061 = V061.is_file()
+# b780 c3-looks: the released SOFTDRINK 2K28 v0.8 disc (the current 2026 coaches applied), read only, when present
+V08 = Path(os.environ.get("NFL2K5_V08_XISO", str(ROOT / "SOFTDRINK 2K28 v0.8.xiso.iso")))
+HAVE_V08 = V08.is_file()
+# b780 c3-looks: three moved head coaches the tests dress (coach's 2026 club -> the club he leads): Andy Reid (capped
+# c21) to the Raiders, DeMeco Ryans (c05, the jacket model with a few collar triangles fewer) to the 49ers' white top,
+# Dan Quinn (bald geometry, glasses hidden, reserved picture 7034) to the Cowboys
+MOVES = {"KC": "LV", "HOU": "SF", "WAS": "DAL"}
 TEAMS = {"ARI", "ATL", "BAL", "BUF", "CAR", "CHI", "CIN", "CLE", "DAL", "DEN", "DET", "GB", "HOU", "IND", "JAX", "KC",
          "LAC", "LAR", "LV", "MIA", "MIN", "NE", "NO", "NYG", "NYJ", "PHI", "PIT", "SEA", "SF", "TB", "TEN", "WAS"}
 SIZES = {"shirt": (128, 128), "jacket": (128, 128), "logo": (64, 64), "headset": (64, 64), "head": (256, 128),
@@ -329,6 +340,84 @@ class BuildWiring(unittest.TestCase):
             self.assertIn(needle, panel)
 
 
+class MovedCoaches(unittest.TestCase):
+    """b780 c3-looks: the coaching staff, its refusals and the moved-look pins (repository only)."""
+
+    def test_every_club_pins_its_coach_scene_and_its_apparel_at_every_palette_size(self):
+        pins = mc.pins()
+        self.assertEqual(mc.APPAREL, ("shirt", "jacket", "logo"))
+        self.assertTrue(set(mc.APPAREL) <= {name for name, _m in mc.TEXTURES})
+        scenes, apparel = set(), set()
+        for row in pins["teams"]:
+            self.assertEqual(len(row["scene_sha256"]), 64)
+            self.assertEqual(set(row["apparel_sha256"]), {str(size) for size in mc.PALETTE_LADDER})
+            scenes.add(row["scene_sha256"])
+            apparel.update(row["apparel_sha256"].values())
+            self.assertTrue(pins["bodies"][row["team"]]["coach"])
+        self.assertEqual(len(scenes), 32)                       # every coach's own look is his
+        self.assertEqual(len(apparel), 32 * len(mc.PALETTE_LADDER))   # every club's colours are its own
+        self.assertEqual(mc.coach_name("KC"), "Andy Reid")
+        good = json.loads(mc.PINS_PATH.read_text(encoding="utf-8"))
+        for key in ("scene_sha256", "apparel_sha256"):
+            bad = json.loads(json.dumps(good))
+            del bad["teams"][3][key]
+            with self.assertRaises(mc.ModernCoachesError):
+                mc._check_pins(bad)
+        bad = json.loads(json.dumps(good))
+        del bad["teams"][3]["apparel_sha256"]["96"]
+        with self.assertRaises(mc.ModernCoachesError):
+            mc._check_pins(bad)
+
+    def test_the_staff_maps_every_club_to_one_coach(self):
+        clubs = {r["team"] for r in mc.pins()["teams"]}
+        self.assertEqual(mc.assignment(None), {c: c for c in clubs})
+        swap = mc.assignment({"KC": "LV", "LV": "KC"})
+        self.assertEqual((swap["KC"], swap["LV"], swap["DAL"]), ("LV", "KC", "DAL"))
+        aliases = mc.assignment({"oak": "kc", "KC": "OAK", "STL": "SD", "SD": "STL"})   # roster abbreviations
+        self.assertEqual((aliases["LV"], aliases["KC"], aliases["LAR"], aliases["LAC"]), ("KC", "LV", "LAC", "LAR"))
+        created = mc.assignment({"LV": "KC", "KC": None})       # a coach who is not one of the 32 leads KC
+        self.assertEqual((created["LV"], created["KC"]), ("KC", None))
+
+    def test_a_coach_named_for_two_clubs_is_refused_in_plain_words(self):
+        with self.assertRaisesRegex(mc.ModernCoachesError, "Andy Reid \\(KC\\) is the head coach of two clubs, KC and LV"):
+            mc.assignment({"LV": "KC"})                          # KC keeps Reid too: give one of them another coach
+        with self.assertRaisesRegex(mc.ModernCoachesError, "not one of the 32 clubs"):
+            mc.assignment({"LONDON": "KC"})
+        with self.assertRaises(mc.ModernCoachesError):
+            mc.assignment(["KC", "LV"])
+
+    def test_the_staff_is_read_from_the_coach_records_the_clubs_point_at(self):
+        """b780 c2-staff moves a coach by moving his record content; ``nfl2k5_coach_staff.coach_records`` says which 2026
+        coach each club's record is (by name and picture). The build reads the staff there, after every roster writer."""
+        from types import ModuleType, SimpleNamespace
+        from unittest import mock
+        clubs = [r["team"] for r in mc.pins()["teams"]]
+
+        def stub(directory):
+            module = ModuleType("mod_editor.core.nfl2k5_coach_staff")
+            def coach_records(body, teams):
+                if directory == "raise":
+                    raise ValueError("not a main roster")
+                return {i: SimpleNamespace(club=SimpleNamespace(team=c), directory_id=directory.get(c, c))
+                        for i, c in enumerate(clubs)}
+            module.coach_records = coach_records
+            return module
+        roster = SimpleNamespace(body=b"", teams=[])
+        key = "mod_editor.core.nfl2k5_coach_staff"
+        with mock.patch.dict(sys.modules, {key: stub({})}):
+            self.assertEqual(mc.roster_staff(roster), {c: c for c in clubs})
+        with mock.patch.dict(sys.modules, {key: stub({"LV": "KC", "KC": "LV", "NYG": None})}):
+            staff = mc.roster_staff(roster)
+            self.assertEqual((staff["LV"], staff["KC"], staff["NYG"], staff["DAL"]), ("KC", "LV", None, "DAL"))
+            self.assertEqual(mc.assignment(staff)["NYG"], None)
+        with mock.patch.dict(sys.modules, {key: stub({c: None for c in clubs})}):
+            self.assertIsNone(mc.roster_staff(roster))          # a retail roster names none of them: per club as before
+        with mock.patch.dict(sys.modules, {key: stub("raise")}):
+            self.assertIsNone(mc.roster_staff(roster))
+        with mock.patch.dict(sys.modules, {key: None}):          # a Studio without the coaching staff module
+            self.assertIsNone(mc.roster_staff(roster))
+
+
 @unittest.skipUnless(HAVE_RETAIL, "retail USA image not present (NFL2K5_RETAIL_XISO)")
 class RetailCompile(unittest.TestCase):
     def test_retail_image_reads_retail(self):
@@ -514,6 +603,171 @@ class RetailCompile(unittest.TestCase):
         self.assertGreater(belly(rec, decoded), belly(rec27, dec27) + 4.0)
         self.assertAlmostEqual(belly(rec, decoded), belly(rec26, dec26), delta=1.0)
         self.assertIn("geometry", detail["textures"])
+
+
+@unittest.skipUnless(HAVE_RETAIL, "retail USA image not present (NFL2K5_RETAIL_XISO)")
+class RetailMovedCoaches(unittest.TestCase):
+    """b780 c3-looks on the user's retail disc (read only): three moved coaches compile to their own look in the new
+    club's apparel, the same bytes from the retail or the 2026 scene, recognised by their content."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.pins = mc.pins()
+        cls.rows = {r["team"]: r for r in cls.pins["teams"]}
+        cls.compiled = {}
+        with mc._outer_image()(RETAIL) as archive:
+            entries = {e.name_id: e for e in archive.entries}
+            for coach, host in MOVES.items():
+                row = cls.rows[coach]
+                entry = entries[mc.name_id(row["archive"])]
+                raw = archive.read(entry.virtual_offset, entry.size)
+                span = raw[row["span_offset"]:row["span_offset"] + row["span_size"]]
+                rec, base, _detail = mc.compose_scene(raw, row)
+                after, detail = mc.compile_moved(span, base, rec, row, cls.rows[host])
+                cls.compiled[coach] = dict(raw=raw, span=span, after=after, detail=detail, rec=rec, base=base)
+
+    def test_a_moved_coach_keeps_his_look_and_wears_the_new_club_apparel(self):
+        for coach, host in MOVES.items():
+            with self.subTest(coach=coach, host=host):
+                row, c = self.rows[coach], self.compiled[coach]
+                after = c["after"]
+                self.assertEqual(len(after), len(c["span"]))
+                self.assertEqual(after[:0x20], c["span"][:0x20])                  # wrapper identical
+                self.assertNotIn(mc.sha(after), (row["retail_sha256"], row["applied_sha256"]))
+                fit = c["detail"]["fit"]
+                self.assertLessEqual(fit["scratch_needed"], fit["scratch_retail"])
+                self.assertIn(c["detail"]["apparel_palette"], [s for s in mc.PALETTE_LADDER if s <= row["palette_max"]])
+                rec, decoded = mc.decode_span(after)
+                regions = mc.apparel_regions(rec)
+                self.assertEqual(mc.scene_digest(decoded, regions), row["scene_sha256"])     # his own look
+                self.assertEqual(mc.apparel_digest(decoded, regions),
+                                 self.rows[host]["apparel_sha256"][str(c["detail"]["apparel_palette"])])
+                self.assertEqual(mc.dressed_by(after, row, self.pins), host)
+                # only the three apparel allocations differ from his own 2026 scene
+                home = bytes(c["base"])
+                changed = [i for i, (a, b) in enumerate(zip(home, decoded)) if a != b]
+                self.assertTrue(changed)
+                self.assertTrue(all(any(lo <= i < hi for lo, hi in regions) for i in changed))
+
+    def test_the_states_of_a_moved_look(self):
+        coach, host = "KC", "LV"
+        row, c = self.rows[coach], self.compiled[coach]
+        dress, own = self.rows[host], self.rows[coach]
+        self.assertEqual(mc._coach_state(c["after"], row, dress, self.pins), "applied")
+        self.assertEqual(mc._coach_state(c["after"], row, self.rows["DAL"], self.pins), "moved")
+        self.assertEqual(mc._coach_state(c["after"], row, own, self.pins), "moved")         # back home: rewrite
+        self.assertEqual(mc._coach_state(c["span"], row, dress, self.pins), "retail")
+        compiled, _detail = mc.compile_archive(c["raw"], row)
+        home = compiled[row["span_offset"]:row["span_offset"] + row["span_size"]]
+        self.assertEqual(mc._coach_state(home, row, dress, self.pins), "home")
+        self.assertEqual(mc._coach_state(home, row, own, self.pins), "applied")
+        junk = bytearray(c["after"]); junk[0x40:0x80] = bytes(0x40)
+        self.assertEqual(mc._coach_state(bytes(junk), row, dress, self.pins), "foreign")
+        self.assertIsNone(mc.dressed_by(c["after"], self.rows["LV"], self.pins))          # not Kubiak's look
+
+    def test_the_moved_look_is_the_same_bytes_from_the_2026_scene_and_goes_home_to_its_pin(self):
+        coach, host = "WAS", "DAL"
+        row, c = self.rows[coach], self.compiled[coach]
+        compiled, _detail = mc.compile_archive(c["raw"], row)
+        home = compiled[row["span_offset"]:row["span_offset"] + row["span_size"]]
+        self.assertEqual(mc.sha(home), row["applied_sha256"])
+        rec, decoded = mc.decode_span(home)
+        again, detail = mc.compile_moved(home, decoded, rec, row, self.rows[host])
+        self.assertEqual(again, c["after"])
+        rec2, decoded2 = mc.decode_span(c["after"])
+        back, detail2 = mc.compile_moved(c["after"], decoded2, rec2, row, row)
+        self.assertEqual(mc.sha(back), row["applied_sha256"])
+        self.assertEqual(detail2["apparel_palette"], row["palette_max"])
+        with self.assertRaises(mc.ModernCoachesError):          # another coach's scene is refused
+            mc.compile_moved(home, decoded, rec, self.rows["DAL"], self.rows[host])
+
+    def test_the_staff_states_on_the_retail_disc(self):
+        staff = {"LV": "KC", "KC": "LV", "SF": "HOU", "HOU": "SF", "DAL": "WAS", "WAS": "DAL"}
+        with mc._outer_image()(RETAIL) as archive:
+            parts = mc._parts(archive, self.pins, staff)
+            base_parts = mc._parts(archive, self.pins)
+        coach = {p["team"]: p for p in parts if p["kind"] == "coach"}
+        for c_, h in staff.items():
+            self.assertEqual((coach[h]["host"], coach[h]["state"]), (c_, "retail"))
+        bodies = {p["team"]: (p["coach"], p["value"], p["state"], int(p["row"]["body_code"]))
+                  for p in parts if p["kind"] == "body_id"}
+        # the retail roster still names each club's own 2004 model: the club leading a moved coach gets his model
+        self.assertEqual(bodies["LV"], ("KC", 20, "retail", 21))
+        self.assertEqual(bodies["KC"], ("LV", 13, "retail", 20))
+        self.assertEqual(bodies["SF"], ("HOU", 25, "retail", 5))
+        self.assertEqual(bodies["HOU"], ("SF", 37, "retail", 25))
+        self.assertEqual(bodies["DAL"], ("WAS", 7, "retail", 29))
+        self.assertEqual(bodies["WAS"], ("DAL", 29, "retail", 7))
+        photos = {p["team"]: (p["coach"], p["value"], p["state"]) for p in parts if p["kind"] == "photo_id"}
+        # Schottenheimer's reserved picture goes to the club he leads; that record still holds Washington's retail
+        # picture on an unmoved roster, so it is left alone (the coaching staff step moves the record first)
+        self.assertEqual(photos, {"WAS": ("DAL", 7029, "kept"), "DAL": ("WAS", 7007, "kept")})
+        # nobody moved: the parts are those of the 2026 coaches as before (body ids of the 17 clubs on other models)
+        self.assertEqual({p["team"] for p in base_parts if p["kind"] == "body_id"}, set(MOVED))
+        self.assertEqual({(p["team"], p["coach"]) for p in base_parts if p["kind"] == "photo_id"},
+                         {("DAL", "DAL"), ("WAS", "WAS")})
+        self.assertEqual({p["state"] for p in base_parts if p["kind"] == "coach"}, {"retail"})
+
+
+    def test_the_tightest_of_the_992_moves_still_fits(self):
+        """b780 c3-looks swept every single move (32 coaches x 31 clubs) on the retail disc: all fit, and Liam Coen's c30
+        in the Ravens' purple is the only one that needs the ladder's last step (64 colours for the apparel). A change to
+        either art that makes it fail would refuse that move in a build: this test says so first."""
+        row, host = self.rows["JAX"], self.rows["BAL"]
+        with mc._outer_image()(RETAIL) as archive:
+            entry = {e.name_id: e for e in archive.entries}[mc.name_id(row["archive"])]
+            raw = archive.read(entry.virtual_offset, entry.size)
+        rec, base, _detail = mc.compose_scene(raw, row)
+        after, detail = mc.compile_moved(raw[row["span_offset"]:row["span_offset"] + row["span_size"]], base, rec, row, host)
+        self.assertIn(detail["apparel_palette"], mc.PALETTE_LADDER)    # 64 today: the last step
+        self.assertEqual(mc.dressed_by(after, row, self.pins), "BAL")
+
+    def test_a_created_coach_standing_on_a_2026_model_is_noted_not_written(self):
+        """A club led by a coach who is not one of the 32 keeps the model its record names; when that model is a 2026
+        coach's (here the retail Kansas City record still names c13, Mike Macdonald's), the receipt says so."""
+        with mc._outer_image()(RETAIL) as archive:
+            parts = mc._parts(archive, self.pins, {"LV": "KC", "KC": None})
+        shared = [(p["team"], p["coach"], p["value"], p["state"]) for p in parts if p["kind"] == "shared_model"]
+        self.assertEqual(shared, [("KC", "SEA", 13, "kept")])
+        self.assertNotIn("KC", {p["team"] for p in parts if p["kind"] == "body_id"})
+        self.assertEqual({p["team"]: p["host"] for p in parts if p["kind"] == "coach"}["KC"], "LV")
+
+
+@unittest.skipUnless(HAVE_RETAIL and HAVE_V08, "retail and v0.8 images not present (NFL2K5_V08_XISO)")
+class ReleasedV08MovedCoaches(unittest.TestCase):
+    """b780 c3-looks on the released v0.8 disc (read only): its coaches read applied with no staff; a staff asks the
+    moved models to be rebuilt from the 2026 scenes on the disc, without the retail image."""
+
+    def test_v08_reads_applied_and_a_swap_compiles_from_the_disc(self):
+        pins = mc.pins()
+        rows = {r["team"]: r for r in pins["teams"]}
+        states = mc.resource_states(V08)
+        self.assertEqual({v for k, v in states.items() if k.startswith("coach:")}, {"applied"})
+        self.assertEqual(states["photo_id:DAL"], "applied")
+        staff = {"LV": "KC", "KC": "LV"}
+        with mc._outer_image()(V08) as archive:
+            parts = mc._parts(archive, pins, staff)
+            entries = {e.name_id: e for e in archive.entries}
+            moved = [p for p in parts if p["kind"] == "coach" and p["host"] != p["team"]]
+            self.assertEqual(sorted((p["team"], p["host"], p["state"]) for p in moved),
+                             [("KC", "LV", "home"), ("LV", "KC", "home")])
+            for part in moved:
+                before, after, detail = mc._coach_plan(archive, entries, part, None)
+                self.assertEqual(mc.dressed_by(after, part["row"], pins), part["host"])
+                self.assertEqual(detail["source"], "home")
+        with mc._outer_image()(RETAIL) as archive:
+            entries = {e.name_id: e for e in archive.entries}
+            row = rows["KC"]
+            entry = entries[mc.name_id(row["archive"])]
+            raw = archive.read(entry.virtual_offset, entry.size)
+            rec, base, _detail = mc.compose_scene(raw, row)
+            from_retail, _d = mc.compile_moved(raw[row["span_offset"]:row["span_offset"] + row["span_size"]], base,
+                                               rec, row, rows["LV"])
+        kc = [p for p in moved if p["team"] == "KC"][0]
+        with mc._outer_image()(V08) as archive:
+            entries = {e.name_id: e for e in archive.entries}
+            _before, from_disc, _detail = mc._coach_plan(archive, entries, kc, None)
+        self.assertEqual(from_disc, from_retail)
 
 
 @unittest.skipUnless(HAVE_RETAIL and HAVE_V061, "retail and v0.6.1 images not present (NFL2K5_V061_XISO)")
