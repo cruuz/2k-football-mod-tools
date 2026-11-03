@@ -288,8 +288,15 @@ static NI u32 mode_ff_settled(void) {
     while(p && n--) {
         if(!W(p,0x48)) {
             task=(u8 *)W(p,0x20);
+            /* b780 n2: 1FF940 counts the 50F1BC stance as ready only for
+             * role byte 0, but set punt-return jammers (CB, roles 16 and 18)
+             * stand in it for the whole pre-snap. Same stance family as 50F1E4
+             * (native 1FFBC0), same settled test: no pending clip at +0x110.
+             * Without it a punt never settles, the snap stays held and the
+             * CPU never snaps when MyPlayer comes on for the punt. */
             if(!task || W(task,0x3e4)!=13 ||
-               !CALL1(0x1ff940,p)) return 0;
+               !(CALL1(0x1ff940,p) ||
+                 !((W(W(p,0x10),4)^0x50f1bc)|W(W(p,0x10),0x110)))) return 0;
             /* Readiness alone remains true while a CPU snap is queued.
              * Event 28 and the post-request QB task must both be absent. */
             for(i=0;i<8;i++) if(W(task,0x320+24*i) &&
@@ -304,8 +311,11 @@ static NI u32 mode_ff_settled(void) {
 u32 mode_ff_hold_snap(void) {
     /* Both native CPU snap decision entries stop before event 28 is posted.
      * This also covers a two-minute/no-huddle immediate-snap decision on
-     * the very frame the personnel becomes ready. No task is rewritten. */
-    return S(2716) && S(2708) && G(0xE602B8)==13 && mode_unit_present();
+     * the very frame the personnel becomes ready. No task is rewritten.
+     * b780 n2: never into the last 3 s of the play clock (0x40400000), so a
+     * pre-snap that does not settle can no longer stop the game. */
+    return S(2716) && S(2708) && G(0xE602B8)==13 &&
+           (int)W((u8 *)G(0xE60294),16)>0x40400000 && mode_unit_present();
 }
 /* Stable ECX ABI is also used by the bounded cadence probe. */
 u32 FC mode_ff_ready(u32 manager) {

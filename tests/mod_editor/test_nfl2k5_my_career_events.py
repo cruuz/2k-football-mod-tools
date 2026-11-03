@@ -242,8 +242,11 @@ class HostBudgetTests(unittest.TestCase):
             # Player Progress footer (34,320 B) on top of the career footer.
             # b779 rc1: mode_grown_member reads the capacity (0xB0000) arena's overflow row too, so MyCareer
             # creation no longer refuses "Roster is full." on v0.7 (test_b779_rc1_roster_capacity).
+            # b780 n2: mode_ff_settled settles the punt-return jammer's 0x50F1BC stance with no pending clip, and
+            # mode_ff_hold_snap never holds a CPU snap into the last 3 s of the play clock, so a punt where MyPlayer
+            # comes back on the field no longer hangs (test_nfl2k5_my_career_punt_settle).
             'tools/mycareer_mode/runtime.c':
-                '9d0f9925d0eedf97af2b28784dcc592d8778551ad02293f9bf9c9ce03ff4e32c',
+                '524029813f5145a9ac48ad2a8001d20ef872fa1e4d8b67a4766c6fe29e8bc94f',
             'tools/mycareer_mode/runtime.S':
                 '768241d4390839629906e81678ca46cb7f2d2578ac791a72dd71df5a3cde0484',
             'mod_editor/core/nfl2k5_my_career_mode.py':
@@ -255,7 +258,7 @@ class HostBudgetTests(unittest.TestCase):
                 # mo2: guard view accepts the moment context hook over the pinned 0xCB240 span.
                 # b778 bd3: recognition views for the star-career class-loop hooks and the Player Progress
                 # screen chained over the inline footer hooks (runtime code unchanged).
-                'a0439aa3de1475112754a86e4485c8ce699b9593ef797322e70288af641a5c50',
+                '3ae9f59b62ddee7438e866b8765b566642f6827706dd41afc66b9c31ce21a712',
             'mod_editor/core/nfl2k5_my_career_code.py':
                 '0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b',
             'mod_editor/core/nfl2k5_my_career_progression.py':

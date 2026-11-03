@@ -24,7 +24,9 @@ TAG_OFFSET = CODE_SIZE - len(TAG)
 POOLED = frozenset(("m3_progress_note", "m3_draft_note", "m3_settings_note", "m3_unsigned_text", "m3_bench_text"))
 # mc2: a second pool in M3 RW past its menus (<= 256 + 1900) and before +2700.
 POOLED2 = frozenset(("m3_prep_note", "m3_prospect_error", "m3_sign_cut_text", "m3_unavailable_text",
-                     "m3_confirm_text", "m3_drafted_format"))
+                     "m3_confirm_text", "m3_drafted_format",
+                     # b780 n2: the Supersim ticker's wait line is drawn only in a game, long after init_menus.
+                     "m3_ff_wait_text"))
 COMMON = frozenset(("attach", "copy", "reset", "assign", "automatic", "team_reset", "manual", "transfer",
                     "slot_generation", "sim", "navigation", "cpu_management", "camera", "camera_focus"))
 SAVE_HOOKS = (
