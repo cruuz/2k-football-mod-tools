@@ -25,6 +25,15 @@ What this module ships
   capacity growth that moves records cannot misdirect a face) and only when his record still holds the no-photo
   selector, so a portrait a user or another option gave him is never replaced.
 
+b780-b9 (D12, the v0.8 known issue "a free agent signed into a different record keeps that record's photo (often NO
+PHOTO)"): pt1 listed its targets from the free-agent list and the 90 refresh-created records, so a created real player
+who had left that list (signed, or unattached: the 69 orphans among them) stayed on the no-photo selector.  The v0.8
+roster holds 49 such real, named players (Andre James, Eric Kendricks, Jake Haener, Marte Mapu, Deuce Vaughn ...);
+they now ride the same pipeline (group ``created_player``, ids 30946..30994).  The assignment never looked at
+free-agent membership or the record's slot, only at name, birth month/day and a no-photo selector, so the manifest
+alone was missing.  Four named real players keep NO PHOTO because no official headshot exists for them (Ron Stone,
+D.J. Miller, Kyon Barrs, Tra Fluellen).
+
 Without the rookie-faces option the slots are not written and the cards stay on ``nophoto`` exactly as before.
 A rejected player (no photo, placeholder, obscured, wrong person) keeps the no-photo card rather than a wrong face.
 """

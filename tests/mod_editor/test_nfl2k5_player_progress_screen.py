@@ -49,6 +49,16 @@ class StaticTests(unittest.TestCase):
         if released.is_file():
             cls.released = released.read_bytes()
 
+    def test_the_view_button_is_black_on_the_measured_held_word(self):
+        """b780 b9 emulator measurement (v0.8 disc, pad block read from guest RAM): the held word of port 0, sub block 0
+        is 0 idle and 0x800 / 0x1000 / 0x2000 while Y / Black / White is held.  The wrapper reads exactly that word and the
+        Black bit, for every one of the eight pads, and the help text names the button."""
+        self.assertEqual((screen.VIEW_PAD_VA, screen.VIEW_PAD_MASK, screen.VIEW_BUTTON), (0xB37A88, 0x1000, "Black"))
+        self.assertEqual(screen.VIEW_PAD_VA, 0xB37A0C + 0x64 + 0x18, "port 0 block base + header + held word offset")
+        self.assertEqual((screen.PAD_COUNT, screen.PAD_STRIDE), (8, 0x244))
+        self.assertIn("Black", screen.HELP_TEXT)
+        self.assertNotIn("\u2014", screen.HELP_TEXT)
+
     def test_retail_and_released_are_retail(self):
         self.assertEqual(screen.status(self.retail), "retail")
         if self.released is not None:
@@ -123,7 +133,9 @@ class StaticTests(unittest.TestCase):
         self.assertEqual(sites["game_end"][1], bytes.fromhex("e8cff9ffff"))
         self.assertEqual(sites["game_end"][2][0], 0xE8)
         self.assertEqual(sites["value_getter"][0], 0x365B20)
-        self.assertEqual(sites["event_pointer"][0], 0xF4268)
+        self.assertEqual(sites["event_pointer"][0], 0x551808)          # the screen descriptor's own event pointer
+        self.assertEqual(sites["event_pointer"][1], struct.pack("<I", 0xF40F0))
+        self.assertEqual(sites["event_pointer"][2], struct.pack("<I", 0x14DA000 + screen.labels()["event"]))
         footer = {label: (va, before, after)
                   for label, va, before, after in screen._footer_sites(0x14DA000)}
         self.assertEqual(footer["total_size"][0], 0x16AA26)
@@ -162,7 +174,7 @@ class NativeTests(unittest.TestCase):
     def machine(self):
         m = uc.Uc(uc.UC_ARCH_X86, uc.UC_MODE_32)
         for base, size in ((ROSTER, 0x100000), (CODE, 0x2000), (DATA, 0x10000), (FILE, 0x100000),
-                           (META, 0xC00000), (TARGETS, 0x1000), (0xB72000, 0x1000),
+                           (META, 0xC00000), (TARGETS, 0x1000), (0xB72000, 0x1000), (0xB37000, 0x2000),
                            (0xE57000, 0x1000), (0xC4000, 0x4000), (0xF3000, 0x2000),
                            (0x170000, 0x2000), (0xE6000, 0x2000), (0x247000, 0x2000), (0x133000, 0x2000),
                            (0x14F000, 0x2000), (0x365000, 0x2000), (STACK, 0x10000)):
@@ -242,18 +254,38 @@ class NativeTests(unittest.TestCase):
     def toggle(self, m, view):
         m.mem_write(DATA, bytes([view]))
 
-    def retail_event(self, m):
-        # The retail event at 0xF4221 is entered with EDI and ESI already on the stack. The fixed
-        # handler is the retail no-op, so one call is one ignored-event frame.
+    PAD = screen.VIEW_PAD_VA
+    HANDLER = 0xF40F0
+
+    def pad(self, m, held):
+        m.mem_write(self.PAD, struct.pack("<I", held))
+
+    def event(self, m, edx, ecx=0xA84B18, esi=0x1111, edi=0x2222, ebx=0x3333, ebp=0x4444):
+        """Run the screen event wrapper once like the UI manager does (ECX = screen, EDX = event id). The retail list
+        screen handler is mocked at 0xF40F0 as `mov eax,0x77 ; ret`: reaching it proves the wrapper handed the event on
+        with its arguments untouched (the handler is entered by a jump, so it returns to the sentinel)."""
+        m.mem_write(self.HANDLER, b"\xb8\x77\x00\x00\x00\xc3")
         sp = STACK + 0x8000
-        m.mem_write(sp, struct.pack("<III", 0x1111, 0x2222, SENTINEL))
-        m.reg_write(x86.UC_X86_REG_ESP, sp)
-        m.reg_write(x86.UC_X86_REG_EDI, 0)
-        m.reg_write(x86.UC_X86_REG_ESI, 0)
-        m.emu_start(CODE + self.labels["toggle"], SENTINEL, count=10000, timeout=5_000_000)
+        m.mem_write(sp, struct.pack("<I", SENTINEL))
+        for reg, value in ((x86.UC_X86_REG_ESP, sp), (x86.UC_X86_REG_ECX, ecx), (x86.UC_X86_REG_EDX, edx),
+                           (x86.UC_X86_REG_ESI, esi), (x86.UC_X86_REG_EDI, edi), (x86.UC_X86_REG_EBX, ebx),
+                           (x86.UC_X86_REG_EBP, ebp), (x86.UC_X86_REG_EAX, 0x5555)):
+            m.reg_write(reg, value)
+        m.emu_start(CODE + self.labels["event"], SENTINEL, count=10000, timeout=5_000_000)
         self.assertEqual(m.reg_read(x86.UC_X86_REG_EIP), SENTINEL)
-        self.assertEqual(m.reg_read(x86.UC_X86_REG_EDI), 0x1111)
-        self.assertEqual(m.reg_read(x86.UC_X86_REG_ESI), 0x2222)
+        self.assertEqual(m.reg_read(x86.UC_X86_REG_EAX), 0x77, "the retail handler was not reached")
+        for reg, value in ((x86.UC_X86_REG_ECX, ecx), (x86.UC_X86_REG_EDX, edx), (x86.UC_X86_REG_ESI, esi),
+                           (x86.UC_X86_REG_EDI, edi), (x86.UC_X86_REG_EBX, ebx), (x86.UC_X86_REG_EBP, ebp)):
+            self.assertEqual(m.reg_read(reg), value)
+        self.assertEqual(m.reg_read(x86.UC_X86_REG_ESP), sp + 4)
+
+    def view(self, m):
+        return m.mem_read(DATA, 1)[0]
+
+    def text_at(self, m, va):
+        raw = bytes(m.mem_read(va, 24))
+        end = next(i for i in range(0, 24, 2) if raw[i:i + 2] == b"\0\0")
+        return raw[:end].decode("utf-16-le")
 
     def record_bytes(self, m):
         return bytes(m.mem_read(RECORD, record.RECORD_SIZE))
@@ -262,28 +294,132 @@ class NativeTests(unittest.TestCase):
         m.mem_write(RECORD, struct.pack("<IBBHB", screen.RECORD_MAGIC, 1, 3, 2027, 30)
                     + bytes([6, count, head]))
 
-    def test_row_label_stays_on_the_season_row(self):
+    def test_visibility_opens_the_screen_on_the_season_row(self):
         m = self.machine()
         for stage, hidden in ((0, 1), (1, 0), (2, 0), (3, 0), (4, 1), (5, 1), (6, 1), (7, 0), (8, 0), (9, 0)):
             m.mem_write(0xE576A4, struct.pack("<I", stage))
             m.mem_write(ROWPTR, struct.pack("<I", 1))
+            m.mem_write(DATA, bytes([5, 1]))
             self.call(m, "visibility", edx=ROWPTR)
             self.assertEqual(struct.unpack("<I", m.mem_read(ROWPTR + 8, 4))[0], hidden, stage)
-        self.assertEqual(self.call(m, "header")[1], 0xEB92D8)
-        # the per-frame ignored event is now the retail no-op: the view byte and label never move
-        for _ in range(12):
-            self.retail_event(m)
-        self.assertEqual(m.mem_read(DATA, 1), b"\x00")
-        self.assertEqual(self.call(m, "header")[1], 0xEB92D8)
-        # even a valid three-week record and a stale view byte keep the retail label
-        self.write_record_header(m, count=3, head=3)
+            self.assertEqual(m.mem_read(DATA, 2), b"\x00\x00", "building the row list resets the view and the press state")
+
+    def test_the_visibility_only_variant_never_touches_the_data_block(self):
+        blob = screen.visible_code_for(CODE)
+        self.assertNotIn(bytes.fromhex("66c705"), blob)
+
+    def test_header_names_the_week_the_numbers_show(self):
+        m = self.machine()
+        retail = 0xEB92D8
+        text_va = CODE + screen._TEXT_OFFSET
+        # no record, season view, a stale view byte: the retail label every time
+        self.assertEqual(self.call(m, "header")[1], retail)
         self.toggle(m, 3)
-        self.retail_event(m)
-        self.assertEqual(m.mem_read(DATA, 1), bytes([3]))
-        self.assertEqual(self.call(m, "header")[1], 0xEB92D8)
-        # view 0 is the season row the header now always names
+        self.assertEqual(self.call(m, "header")[1], retail)
+        self.write_record_header(m, count=3, head=3)
         self.toggle(m, 0)
-        self.assertEqual(self.call(m, "header")[1], 0xEB92D8)
+        self.assertEqual(self.call(m, "header")[1], retail)
+        expected = ("Last Week", "2 Wks Ago", "3 Wks Ago")
+        for view, text in enumerate(expected, start=1):
+            self.toggle(m, view)
+            edx = self.call(m, "header")[1]
+            self.assertEqual(edx, text_va + 24 * (view - 1))
+            self.assertEqual(self.text_at(m, edx), text)
+        # a stale byte beyond the stored weeks clamps to the last stored week, exactly like the value getter
+        self.toggle(m, 8)
+        self.assertEqual(self.text_at(m, self.call(m, "header")[1]), "3 Wks Ago")
+        # a record with no stored week keeps the season label
+        self.write_record_header(m, count=0, head=0)
+        self.toggle(m, 2)
+        self.assertEqual(self.call(m, "header")[1], retail)
+        for text in screen._TEXTS:
+            self.assertLessEqual(len(text), 11, "the label must fit the row label field")
+
+    def test_event_hands_every_other_event_to_the_retail_handler_untouched(self):
+        m = self.machine()
+        self.write_record_header(m, count=3, head=3)
+        self.pad(m, screen.VIEW_PAD_MASK)
+        for edx in (1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 17, 18, 23, 24, 27, 28, 29, 0x1234):
+            self.event(m, edx)
+        self.assertEqual(self.view(m), 0, "only the per-frame event may step the view")
+        self.assertEqual(m.mem_read(DATA + 1, 1), b"\x00", "other events do not even read the pad")
+
+    def test_a_new_press_steps_the_view_and_a_held_button_steps_once(self):
+        m = self.machine()
+        self.write_record_header(m, count=3, head=3)
+        self.pad(m, 0)
+        for _ in range(4):
+            self.event(m, 9)
+        self.assertEqual((self.view(m), m.mem_read(DATA + 1, 1)[0]), (0, 0), "no button, no step")
+        seen = []
+        for _press in range(5):
+            self.pad(m, screen.VIEW_PAD_MASK)
+            self.event(m, 9)
+            seen.append(self.view(m))
+            for _ in range(6):                        # held across frames: no second step
+                self.event(m, 9)
+            self.assertEqual(self.view(m), seen[-1])
+            self.pad(m, 0)
+            self.event(m, 9)
+            self.assertEqual(m.mem_read(DATA + 1, 1), b"\x00")
+        self.assertEqual(seen, [1, 2, 3, 0, 1], "season -> last week -> 2 -> 3 weeks ago -> season -> last week")
+        # other buttons in the same word never step it
+        self.toggle(m, 0)
+        self.pad(m, 0xFFFFFFFF & ~screen.VIEW_PAD_MASK)
+        for _ in range(3):
+            self.event(m, 9)
+        self.assertEqual(self.view(m), 0)
+
+    def test_any_of_the_eight_pads_can_step_the_view(self):
+        """Noah's controller is not necessarily port 1: the wrapper ORs the held word of all eight pad blocks."""
+        m = self.machine()
+        self.write_record_header(m, count=3, head=3)
+        for pad in range(screen.PAD_COUNT):
+            self.toggle(m, 0)
+            m.mem_write(DATA + 1, b"\x00")
+            m.mem_write(self.PAD + pad * screen.PAD_STRIDE, struct.pack("<I", screen.VIEW_PAD_MASK))
+            self.event(m, 9)
+            self.assertEqual(self.view(m), 1, pad)
+            m.mem_write(self.PAD + pad * screen.PAD_STRIDE, bytes(4))
+            self.event(m, 9)
+            self.assertEqual(m.mem_read(DATA + 1, 1), b"\x00")
+        # a word one block past the eighth pad is not read
+        self.toggle(m, 0)
+        m.mem_write(DATA + 1, b"\x00")
+        m.mem_write(self.PAD + screen.PAD_COUNT * screen.PAD_STRIDE, struct.pack("<I", screen.VIEW_PAD_MASK))
+        self.event(m, 9)
+        self.assertEqual(self.view(m), 0)
+
+    def test_the_view_never_goes_past_the_stored_weeks_or_eight(self):
+        m = self.machine()
+        for count, limit in ((0, 0), (1, 1), (8, 8), (12, 8), (17, 8)):
+            self.write_record_header(m, count=count, head=3)
+            self.toggle(m, 0)
+            m.mem_write(DATA + 1, b"\x00")
+            views = []
+            for _ in range(limit + 2):
+                self.pad(m, screen.VIEW_PAD_MASK); self.event(m, 9)
+                views.append(self.view(m))
+                self.pad(m, 0); self.event(m, 9)
+            self.assertEqual(views, [(i + 1) % (limit + 1) if limit else 0 for i in range(limit + 2)], count)
+            self.assertLessEqual(max(views), limit)
+
+    def test_no_valid_record_keeps_the_season_view(self):
+        m = self.machine()
+        for record_bytes in (bytes(8), struct.pack("<IBB", screen.RECORD_MAGIC, 2, 1), struct.pack("<IBB", screen.RECORD_MAGIC, 1, 0)):
+            m.mem_write(RECORD, bytes(16)); m.mem_write(RECORD, record_bytes + bytes(2) + bytes([6, 5, 5]))
+            self.toggle(m, 0)
+            m.mem_write(DATA + 1, b"\x00")
+            self.pad(m, screen.VIEW_PAD_MASK)
+            self.event(m, 9)
+            self.assertEqual(self.view(m), 0)
+        # and a stale non-zero byte falls back to the season row on the next press
+        self.write_record_header(m, count=2, head=2)
+        self.toggle(m, 2)
+        m.mem_write(DATA + 1, b"\x00")
+        self.pad(m, screen.VIEW_PAD_MASK)
+        self.event(m, 9)
+        self.assertEqual(self.view(m), 0)
 
     def test_baseline_season_and_week_history(self):
         m = self.machine()

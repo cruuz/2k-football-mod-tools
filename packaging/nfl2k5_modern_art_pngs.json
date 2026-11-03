@@ -3807,14 +3807,14 @@
     },
     "data/nfl2k5_real_portraits/faces_03.png": {
       "height": 2048,
-      "sha256": "edaaedd290919bc21fc058537b70d5ef56642971ed3bd0eb91d234ec04493ced",
-      "size": 1564462,
+      "sha256": "0e85cabd2977dfdbc696bee0553098337ac0e0ff523e16cd8d5e2a1384eef8c2",
+      "size": 1996022,
       "width": 2048
     },
     "data/nfl2k5_real_portraits/faces_03_pal.png": {
       "height": 256,
-      "sha256": "77a6f98119cbedabfbe1e991a86702cf478531308ff3b32c661a39c1cebed9c1",
-      "size": 156263,
+      "sha256": "7d9ef9ca37594f17c8e0f5a05d0031d91e94d2b1cca78be8880b74ecaf0ef5e5",
+      "size": 199457,
       "width": 256
     },
     "data/nfl2k5_rookie_faces/faces_00.png": {

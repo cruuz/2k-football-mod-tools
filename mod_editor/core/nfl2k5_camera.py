@@ -18,6 +18,17 @@ The setup callback of the owned descriptors swaps the camera's own target, lens 
 constant sets, and stores a matching eye box, when the camera state is a kick state. Kickoffs, returns and every
 scrimmage state keep the sideline eye. See ASTRA_CAMERA_V2_REPORT.md and reports/b779_cm2_REPORT.md.
 
+v8 (beta-80, v0.8 known issue "the view from behind the punter is wider when you are the receiving team than when you
+punt"): the punt snap eye sat 29 m behind the punter, but the final-eye clamp holds every kick eye to |z| <= 50 m, so a
+punt from inside his own 42 yard line (line of scrimmage) pulled the camera in (4 m behind the punter at the 15, 9 m at the
+20, 18 m at the 30) while a punt from the 42 out kept the full 29 m.  The same set therefore framed the punter 49 lines
+tall (of 480) from midfield and about 120 lines tall from the 20, and which one you saw depended on where the punt was,
+which reads as "wider when the other team punts".  The design distance is now 12 m (PUNT_EYE_BEHIND), reachable from the
+24 out: every punt from the 24 on, whoever kicks and whoever receives, is framed the same (native projection, lens 50,
+16:9 and 4:3: the punter 102 lines tall with his feet 14 lines above the scorebug, the line of scrimmage at line 122),
+which is the tight look the b779 punt zoom pass asked for.  A punter backed up inside the 24 still meets the clamp.
+See reports/b780_b9-presentation_REPORT.md.
+
 864 owned RX bytes and four immutable 80-byte descriptors, no RW or retail cave.
 Reserve REQUESTS with
 all other selected owners before apply. Rebuild historical descriptor-only
@@ -37,7 +48,7 @@ from .nfl2k5_draft_ai import _Asm
 from .nfl2k5_bump_strength import _sections, _section_for_offset, section_digest
 
 OWNER = "nfl2k5_camera"
-VERSION = 7
+VERSION = 8
 CODE_SIZE = 864
 READ_ONLY_SIZE = 320
 LEGACY54_CODE_SIZE = 208
@@ -204,9 +215,10 @@ FAR_RETAIL_VALUES: dict[int, Values] = {
 
 # (look-at xyz, lens word, camera offset xyz) in the offense-relative frame (z toward the opponent's goal), centimetres.
 # Native type 2: eye = focus + look-at + offset, so the eye relative to the ball is look-at + offset.
+PUNT_EYE_BEHIND = 1200.0            # v8: the punt snap eye is 12 m behind the punter (was 29 m, see the module notes)
 KICK_VALUES: dict[int, Values] = {
     KICK_FG_GROUND: ((0.0, 100.0, 2844.0), 50.0, (0.0, 450.0, -5144.0)),
-    KICK_PUNT_GROUND: ((0.0, 100.0, 387.0), 50.0, (0.0, 550.0, -3287.0)),
+    KICK_PUNT_GROUND: ((0.0, 100.0, 387.0), 50.0, (0.0, 550.0, -(PUNT_EYE_BEHIND + 387.0))),
     KICK_FG_AIR: ((0.0, 100.0, 2200.0), 48.0, (0.0, 350.0, -4100.0)),
     KICK_PUNT_AIR: ((0.0, 100.0, 2000.0), 44.0, (0.0, 450.0, -4600.0)),
 }
