@@ -601,6 +601,7 @@ data/nfl2k5_coach_carousel_2026.json
 mod_editor/core/nfl2k5_standings_records.py
 mod_editor/core/nfl2k5_standings_records_code.py
 mod_editor/core/nfl2k5_sim_stats.py
+mod_editor/core/nfl2k5_quick_long_release.py
 mod_editor/core/nfl2k5_clock_led.py
 mod_editor/core/nfl2k5_project_check.py
 mod_editor/core/nfl2k5_stadium_dry_run.py
@@ -3889,6 +3890,10 @@ tests/mod_editor/test_nfl2k5_sim_realism.py
 tests/mod_editor/test_b780_c6_coach_carousel.py
 tests/mod_editor/test_nfl2k5_standings_records.py
 tests/mod_editor/test_nfl2k5_sim_stats.py
+tests/mod_editor/test_nfl2k5_quick_long_release.py
+tests/mod_editor/test_nfl2k5_quick_long_release_unicorn.py
+# b780-int: a plan with only in-place or late executable owners copies, then patches (no "nothing requested")
+tests/mod_editor/test_b780_int_first_pass.py
 tests/mod_editor/test_b778_clock_led.py
 tests/mod_editor/test_b779_ce1_kit_fallback.py
 tests/mod_editor/test_b779_ce1_project_check.py

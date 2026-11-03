@@ -23,7 +23,7 @@ from mod_editor.core import platform_compat
 import shutil
 import sys
 import tempfile
-from collections.abc import Callable, Iterable
+from collections.abc import Callable, Iterable, Mapping
 from dataclasses import asdict, dataclass, field, replace
 from pathlib import Path
 from typing import Any
@@ -162,6 +162,29 @@ def _scorebug_art_available() -> bool:
 
 
 UNIFORM_CHOICE_MODES = ("", "rule", "choice")
+
+
+#: b780-int: the first-pass writer's own requests (``tt.write_copy`` keyword arguments that ask it for work). Every other
+#: key of the kwargs ``_build`` passes it is listed in ``_FIRST_PASS_PLUMBING``; test_b780_int_first_pass checks that
+#: the two lists together are exactly the keys ``_build`` passes, so a new first-pass option cannot be missed here.
+_FIRST_PASS_FLAGS = (
+    "catch_slider", "accel_ramp", "forward_pass_ruling", "draft_ai", "edge_rename", "returner_fix", "progression",
+    "franchise_economy", "scheme_labels", "camera", "kick_rules", "kick_power", "widescreen", "overtime", "team_column",
+    "seven_on_seven", "position_row", "probowl_order", "elbow_options", "the1wam_lineman_rating", "xemu_display_list_fix",
+    "resource_load_guard", "loader_wakeup_fix", "rb_rename", "trophy_room", "name_keyboard", "flatter_deep_ball",
+    "chop_block_toggle", "penalties", "uniform_choice", "kick_laces", "punter_holder", "franchise_practice",
+    "practice_squad", "depth_locks", "season_cap", "music_unlock", "music_userlist", "prospect_names", "player_star",
+    "modern_naming", "crib_reclaim", "dynamic_kickoff",
+)
+_FIRST_PASS_PLUMBING = ("overwrite", "progress", "_defer_image_resources", "dynamic_kickoff_settings", "music_policy",
+                        "settings")
+
+
+def _first_pass_requested(kwargs: Mapping[str, Any]) -> bool:
+    """True when the first-pass writer has something of its own to write (the throw curves, a non-retail music policy
+    or one of ``_FIRST_PASS_FLAGS``); False for a plan whose executable work is all in-place or late owners."""
+    return (kwargs.get("settings") is not None or kwargs.get("music_policy", "retail") != "retail"
+            or any(kwargs.get(name) for name in _FIRST_PASS_FLAGS))
 
 
 def uniform_choice_mode(value: object) -> str:
@@ -527,6 +550,13 @@ class BuildPlan:
     # often as ahead (short drags/outs/slants/digs on the run were always overthrown and ignored the rating).
     # EXPERIMENTAL / UNWITNESSED: on only in the experimental preset (the SOFTDRINK 2K28 recipe's preset)
     qb_accuracy: bool = False
+    # b780-c-release: quicker deep and rollout throws. Constants only, in place, no allocation (nfl2k5_quick_long_release):
+    # the throw start sets the clip playback rate from the clip's type. The two very long bomb clips start at 2.0 (retail
+    # 1.5), the rate cap of every throw on the run rises from 1.2 to 1.6, the restart rate goes 1.5 to 2.0 and a lob eases
+    # down to 1.5 instead of 1.0. A pocket throw keeps its exact 1/3 s release; ratings, ball flight and catching are
+    # untouched. Human and CPU passers share the routines. EXPERIMENTAL / UNWITNESSED: on in the Advanced and Experimental
+    # presets (the SOFTDRINK 2K28 recipe builds from Experimental); Basic keeps the retail rates.
+    quick_long_release: bool = False
     # b776-pa2: play art routes at their real length: the play-art filter no longer cuts a chain's last route segment
     # (go, drag, flat, out, post/corner break) to 10 ft; it is drawn at its authored length, kept inside the play-call
     # panel. Only how the art is drawn changes. A late executable owner. EXPERIMENTAL / UNWITNESSED in game
@@ -752,6 +782,7 @@ class BuildPlan:
 
     def wants_xbe_patch(self) -> bool:
         return (self.throw or self.catch_slider or self.accel_ramp or self.draft_ai or self.returner_fix
+                or self.quick_long_release  # b780-c-release: constants only, in place
                 or self.progression or self.franchise_economy or self.scheme_labels or self.camera or self.kick_rules or self.kick_power or self.position_pools or self.xbe_space or self.kickoff_relocated or self.dynamic_kickoff or self.depth_chart_rows or self.practice_squad or self.depth_locks
                 or self.season_cap or self.season_2026 or self.widescreen or self.overtime or self.team_column or self.seven_on_seven
                 or self.position_row or self.probowl_order or self.elbow_options or self.the1wam_lineman_rating or self.xemu_display_list_fix or self.resource_load_guard or self.loader_wakeup_fix or self.rb_rename or self.name_keyboard or bool(self.penalties) or bool(self.uniform_choice) or self.team_sleeves or self.helmet_finish == "matte"
@@ -1047,6 +1078,14 @@ for _preset in PRESETS.values():
     _preset["sim_stats"] = False
 PRESETS["softdrink_advanced"]["sim_stats"] = True
 PRESETS["softdrink_experimental"]["sim_stats"] = True
+del _preset
+# b780-c-release: quicker deep and rollout throws (a 10/29 player report: "Quicker QB release/throw time"; the short and
+# medium release is already 1/3 s, so only the bomb and throw-on-the-run clips are sped up): on in the Advanced and
+# Experimental presets (the SOFTDRINK 2K28 recipe builds from Experimental); Basic keeps the retail rates.
+for _preset in PRESETS.values():
+    _preset["quick_long_release"] = False
+PRESETS["softdrink_advanced"]["quick_long_release"] = True
+PRESETS["softdrink_experimental"]["quick_long_release"] = True
 del _preset
 # b779-df1: SOFTDRINK default options (7:00 quarters, 15:00 sim quarters, Chop Block on): Basic keeps the retail defaults.
 for _preset in PRESETS.values():
@@ -2186,6 +2225,36 @@ def _apply_sim_stats(plan: "BuildPlan", target: Path, receipt: dict, progress) -
                                                     if k not in ("reservations", "edits")},
                              "edits": sim_receipt.get("edits", [])})
     receipt["result"]["sim_stats"] = "applied"
+def _quick_long_release_preflight(source: Path, progress) -> None:
+    """b780-c-release: refuse a source whose throw routines are foreign, before any write."""
+    module = _core_module("nfl2k5_quick_long_release")
+    if module is None:
+        raise ValueError("Quicker deep and rollout throws are not available in this installation.")
+    progress("Checking the throw routines for quicker deep and rollout throws", 0, 0)
+    try:
+        payload = _xbe_bytes(source)
+    except (OSError, ValueError) as exc:
+        raise ValueError(f"Quicker deep and rollout throws cannot read default.xbe: {exc}") from exc
+    if module.status(payload) == "foreign":
+        raise ValueError("The quarterback throw routines in this source are not retail or the quicker deep and rollout "
+                         "throws. Turn it off or rebuild from a supported USA source.")
+def _apply_quick_long_release(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    """b780-c-release: faster bomb and throw-on-the-run clips (constants only, no allocator request)."""
+    if not plan.quick_long_release:
+        return
+    module = _core_module("nfl2k5_quick_long_release")
+    if module is None:
+        raise RuntimeError("Quicker deep and rollout throws needs nfl2k5_quick_long_release.")
+    progress("Throws: quicker deep and rollout releases", 0, 0)
+    payload, release_receipt = module.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, payload)
+    final = _xbe_bytes(target)
+    if final != payload or module.status(final) != "applied":
+        raise RuntimeError("Quicker deep and rollout throws: the output does not read back as applied")
+    receipt["steps"].append({"step": "quick_long_release", **{k: v for k, v in release_receipt.items()
+                                                             if k not in ("reservations", "edits")},
+                             "edits": release_receipt.get("edits", [])})
+    receipt["result"]["quick_long_release"] = "applied"
 def _option_defaults_preflight(source: Path, progress) -> None:
     """b779-df1: refuse a source whose options-defaults routine is foreign, before any write."""
     module = _core_module("nfl2k5_option_defaults")
@@ -2405,6 +2474,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
                                ("abilities", "nfl2k5_abilities_runtime"), ("qb_spy", "nfl2k5_qb_spy_runtime"),
                                ("calendar_engine", "nfl2k5_calendar_engine"))},
         "sim_stats": _core_module("nfl2k5_sim_stats") is not None,  # b778-sim1; in place, no allocator
+        "quick_long_release": _core_module("nfl2k5_quick_long_release") is not None,  # b780-c-release; in place, no allocator
         "option_defaults": _core_module("nfl2k5_option_defaults") is not None,  # b779-df1; in place, no allocator
         "franchise_2026_rules": bool(tt.franchise_2026_patch.RUNTIME_READY),
         "senior_bowl": bool(tt.senior_bowl_patch.NATIVE_EVENT_AVAILABLE),
@@ -2659,6 +2729,8 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
     out["standings_records"] = standings_records.status(_xbe_bytes(source)) if standings_records is not None else "unavailable"
     sim_stats = _core_module("nfl2k5_sim_stats")  # b778-sim1
     out["sim_stats"] = sim_stats.status(_xbe_bytes(source)) if sim_stats is not None else "unavailable"
+    quick_release = _core_module("nfl2k5_quick_long_release")  # b780-c-release
+    out["quick_long_release"] = quick_release.status(_xbe_bytes(source)) if quick_release is not None else "unavailable"
     option_defaults = _core_module("nfl2k5_option_defaults")  # b779-df1
     out["option_defaults"] = option_defaults.status(_xbe_bytes(source)) if option_defaults is not None else "unavailable"
     clock_led = _core_module("nfl2k5_clock_led")  # b778-sd4
@@ -4792,6 +4864,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("Cornerback tackle credit must be Off or On.")
     if type(plan.sim_stats) is not bool:  # b778-sim1
         raise ValueError("The franchise sim pace fix must be Off or On.")
+    if type(plan.quick_long_release) is not bool:  # b780-c-release
+        raise ValueError("Quicker deep and rollout throws must be Off or On.")
     if type(plan.option_defaults) is not bool:  # b779-df1
         raise ValueError("The SOFTDRINK default options must be Off or On.")
     if (type(plan.default_quarter_minutes) is not int or not 1 <= plan.default_quarter_minutes <= 15
@@ -5576,6 +5650,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         _franchise_history_preflight(source, progress)
     if plan.sim_stats:  # b778-sim1: like qb3, before any write
         _sim_stats_preflight(source, progress)
+    if plan.quick_long_release:  # b780-c-release: like sim1, before any write
+        _quick_long_release_preflight(source, progress)
     if plan.option_defaults:  # b779-df1: like sim1, before any write
         _option_defaults_preflight(source, progress)
     if plan.modern_clock_led:  # b778-sd4: like qb3, before any write
@@ -5721,13 +5797,13 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     #    including its disc text spans when the source is an image)
     # the rows run after the pools step below (their cave and stride depend on it), so they never ride the first pass
     # the 2026 season step patches the executable itself, so a season-only plan is copy-first too
+    first_pass_kwargs: dict[str, Any] | None = None
     if replace(plan, helmet_finish="glossy", weather_haze=False, depth_chart_rows=False, season_2026=False, xbe_space=False, kickoff_relocated=False, scorebug_runtime=False, indicator_names_folder="", indicator_names_style="retail", momentum=0, momentum_contact=False, defensive_try=False, zone_drop_cap=False, all_stadiums=False, coverage_slider=False, scramble_tuning=False, music_library=None,
                music_shuffle=False, music_shuffle_selection=None, practice_squad_screen=False, abilities=False, abilities_off_week=None, qb_spy=False, calendar_engine=False,
                momentum_collisions=False, momentum_collision_level=0, read_option_runtime=False,
                franchise_2026_rules=False, senior_bowl=False, guardian_overlay=False, my_career=False,
                my_career_setup=None, screen_hooks=False, coverage_trail=False, franchise_edit_player=False, cpu_money_downs="retail", accelerated_clock=False, coin_defer=False, decided_clock=False, cpu_scrambles="retail", weekly_prep=False, weekly_prep_cpu=False, weekly_prep_remember=False, coach_ai=False, playbook_pair=False, deep_zone_facing=False, deep_zone_bail=False, reserves_16=False, created_teams_extra=0, camera=False, franchise_autosave=False, historic_teams_quick_game=False, espn25_more_moments=False, historic_stock_books=False, espn25_era_rules=False, k128_memory=False, k128_roster_heap=False, k128_early=False, letter_grades=False, honors_page=False, sportscenter_lineup=False).wants_xbe_patch() or plan.edge_rename or complete_offense_packs or plan.contract_college_guard:
         _step("xbe")
-        progress("Copying and patching default.xbe", 0, 0)
         settings = tt.TuningSettings(plan.max_deep_yards, plan.arc, plan.realistic_flight, plan.arc_by_distance) if plan.throw else None
         kwargs: dict[str, Any] = {"overwrite": plan.overwrite, "progress": progress,
                                   "catch_slider": plan.catch_slider, "accel_ramp": plan.accel_ramp,
@@ -5754,6 +5830,15 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                                   "dynamic_kickoff": plan.dynamic_kickoff, "dynamic_kickoff_settings": plan.dynamic_kickoff_settings}
         if settings is not None:
             kwargs["settings"] = settings
+        # b780-int (c-release's open bug, reproduced with sim_stats): the first-pass writer runs only when it has work of
+        # its own. A plan whose only executable changes belong to in-place or late owners (quick_long_release,
+        # sim_stats, the contract college guard, the b779/b780 late owners) copies the image here and lets those steps
+        # patch the copy, instead of stopping in the first-pass writer with "nothing requested".
+        if _first_pass_requested(kwargs):
+            first_pass_kwargs = kwargs
+    if first_pass_kwargs is not None:
+        kwargs = first_pass_kwargs
+        progress("Copying and patching default.xbe", 0, 0)
         if _consume_source:
             kwargs["_consume_source"] = True
         step = tt.write_copy(source, target, **kwargs)
@@ -7418,6 +7503,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     _apply_sim_cb_tackles(plan, target, receipt, progress)
     # b778-sim1: the simulated-game pace fix is in place and touches no allocator owner
     _apply_sim_stats(plan, target, receipt, progress)
+    # b780-c-release: the quicker deep and rollout throws are constants in the throw routines, no allocator owner
+    _apply_quick_long_release(plan, target, receipt, progress)
     # b779-df1: the fresh-profile default options are in place and touch no allocator owner or load path
     _apply_option_defaults(plan, target, receipt, progress)
     # b778-sd4: the LED clock, after the cornerback tackle owner (LATE_OWNERS order)
@@ -7544,6 +7631,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("cornerback tackle credit did not survive the final passes")
     if plan.sim_stats and _core_module("nfl2k5_sim_stats").status(_xbe_bytes(target)) != "applied":  # b778-sim1
         raise ValueError("the franchise sim pace fix did not survive the final passes")
+    if plan.quick_long_release and _core_module("nfl2k5_quick_long_release").status(_xbe_bytes(target)) != "applied":
+        raise ValueError("quicker deep and rollout throws did not survive the final passes")  # b780-c-release
     if plan.option_defaults and _core_module("nfl2k5_option_defaults").settings(_xbe_bytes(target)) != {  # b779-df1
             "state": "applied", "quarter_minutes": _option_defaults_values(plan)["quarter_minutes"],
             "sim_minutes": _option_defaults_values(plan)["sim_minutes"], "chop_block": _option_defaults_values(plan)["chop_block"]}:
