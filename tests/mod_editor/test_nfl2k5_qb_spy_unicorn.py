@@ -129,9 +129,14 @@ class Machine:
         values.update({k.upper(): v for k, v in registers.items()})
         for name, value in values.items(): self.uc.reg_write(getattr(x86, 'UC_X86_REG_'+name), value)
         for i, arg in enumerate((self.STOP, *args)): self.u32(self.STACK+i*4, arg)
-        self.uc.emu_start(va, self.STOP, timeout=2_000_000, count=count)
+        # The instruction count is the budget. The wall clock is only a hang guard: every instruction runs a Python
+        # hook, so on a loaded machine a 2 s timeout stopped a run after 120,234 of its 1,000,000 instructions (b780
+        # sweep) and was reported as an exhausted budget.
+        self.uc.emu_start(va, self.STOP, timeout=300_000_000, count=count)
         at = self.uc.reg_read(x86.UC_X86_REG_EIP)
         if at not in (self.STOP, stop_at, 0x1A5796, 0x1A5096):
+            if len(self.hits) < count:
+                raise AssertionError(f'wall-clock guard stopped the run at {at:#x} after {len(self.hits)} of {count} instructions')
             raise AssertionError(f'instruction budget exhausted at {at:#x} after {len(self.hits)} instructions')
         if at == self.STOP and self.uc.reg_read(x86.UC_X86_REG_ESP) != self.STACK+4+len(args)*4:
             raise AssertionError('wrapper/retail ABI stack imbalance')
