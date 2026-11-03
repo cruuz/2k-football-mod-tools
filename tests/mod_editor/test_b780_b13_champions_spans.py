@@ -36,9 +36,10 @@ SITES = [(label, va, length) for label, va, _before, _entry, _opcode, length in 
 assert SITES == [("stage_advance", 0x2485FA, 5), ("season_awards", 0x116E55, 5)]
 
 
-def _retail(case: unittest.TestCase) -> bytes:
+def _retail() -> bytes:
+    """The pinned retail XBE, or a skip. Raised as SkipTest because setUpClass has no test instance to call skipTest on."""
     if not XBE.is_file():
-        case.skipTest(f"private USA retail default.xbe absent: {XBE}; set NFL2K5_RETAIL_EXTRACTION")
+        raise unittest.SkipTest(f"private USA retail default.xbe absent: {XBE}; set NFL2K5_RETAIL_EXTRACTION")
     data = XBE.read_bytes()
     assert hashlib.sha256(data).hexdigest() == RETAIL_SHA256, "private retail XBE has unexpected identity"
     return data
@@ -68,7 +69,7 @@ class RecorderOnRetail(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.retail = _retail(cls)
+        cls.retail = _retail()
 
     def _record(self, *, wrap_champions: bool):
         recorder = model.Recorder(self.retail)
@@ -153,7 +154,7 @@ class OracleSeesTheSites(unittest.TestCase):
             import capstone  # noqa: F401
         except ImportError as exc:
             raise unittest.SkipTest("cave analysis requires capstone; install tools/requirements-nfl2k5-cave-oracle.txt") from exc
-        cls.retail = _retail(cls)
+        cls.retail = _retail()
 
     def test_the_oracle_refuses_a_later_owner_that_reuses_either_live_site(self):
         manifest = ReservationManifest.load(MANIFEST, XbeImage(self.retail), source_root=ROOT)
