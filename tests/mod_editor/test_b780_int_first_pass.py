@@ -107,5 +107,40 @@ class InPlaceOnlyBuildTests(unittest.TestCase):
         self.assertEqual(receipt["result"]["quick_long_release"], "applied")
 
 
+class CoachCareerFixWiringTests(unittest.TestCase):
+    """b780-int wires c1-coachdata's nfl2k5_coach_career_fix (c1 report section 7): a Build option on in every
+    preset, validated, inspected, applied after the Contracts guard and read back after the final passes."""
+
+    def test_option_presets_settings_and_panel(self):
+        from mod_editor.core import nfl2k5_build_settings as settings
+        from mod_editor.core import nfl2k5_coach_career_fix as fix
+        self.assertIs(mod_build.BuildPlan("", "").coach_career_fix, False)
+        self.assertEqual({name: preset["coach_career_fix"] for name, preset in mod_build.PRESETS.items()},
+                         {name: True for name in mod_build.PRESETS})
+        self.assertIn("coach_career_fix", settings.FEATURE_KEYS)
+        self.assertIs(mod_build.BuildPlan("a.iso", "b.iso", coach_career_fix=True).wants_xbe_patch(), True)
+        self.assertIs(mod_build.availability()["coach_career_fix"], True)
+        source = (ROOT / "mod_editor/gui/build_panel_qt.py").read_text(encoding="utf-8")
+        self.assertIn('("coach_career_fix", _coach_career_fix.BUILD_CAPTION, _coach_career_fix.HELP_TEXT)', source)
+        self.assertNotIn("\u2014", fix.HELP_TEXT + fix.BUILD_CAPTION)
+        with self.assertRaises(ValueError):
+            mod_build.build(mod_build.BuildPlan("in.xbe", "out.xbe", coach_career_fix=1))
+
+    def test_a_retail_build_with_only_the_fix_applies_it(self):
+        retail = _retail_bytes()
+        if retail is None:
+            self.skipTest("the pinned USA retail default.xbe is not in the private fixtures")
+        from mod_editor.core import nfl2k5_coach_career_fix as fix
+        with tempfile.TemporaryDirectory() as temp:
+            source = Path(temp) / "default.xbe"
+            source.write_bytes(retail)
+            target = Path(temp) / "built.xbe"
+            receipt = mod_build.build(mod_build.BuildPlan(str(source), str(target), coach_career_fix=True))
+            self.assertEqual(receipt["result"]["coach_career_fix"], "applied")
+            self.assertEqual(target.read_bytes(), fix.apply(retail)[0])
+            self.assertEqual(mod_build.inspect(target)["coach_career_fix"], "applied")
+            self.assertEqual(mod_build.inspect(source)["coach_career_fix"], "retail")
+
+
 if __name__ == "__main__":
     unittest.main()

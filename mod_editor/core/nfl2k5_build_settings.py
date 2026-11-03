@@ -88,6 +88,7 @@ FEATURE_KEYS += ("trophy_room",)  # b778-pg2: the Crib display name
 FEATURE_KEYS += ("player_progress", "player_progress_visible")  # b778-pg2/pg3: Player Progress screen/row, late executable owner
 FEATURE_KEYS += ("franchise_history",)  # b780 j23: franchise history and records footer, late executable owner
 FEATURE_KEYS += ("contract_college_guard",)  # b778-cr1: Contracts null-college crash guard, late executable owner
+FEATURE_KEYS += ("coach_career_fix",)  # b780 c1 (wired at b780-int): coach Super Bowl trip counter fix, in-place site
 FEATURE_KEYS += ("sim_cb_tackles",)  # b778-cb1: cornerback tackle credit, late executable owner
 FEATURE_KEYS += ("sim_rb_injuries",)  # b779-sim2: weekly RB injury roll and simulated-game carry guard
 FEATURE_KEYS += ("sim_realism",)  # b779-sim2 r4: scheduled-sim season realism, late executable owner

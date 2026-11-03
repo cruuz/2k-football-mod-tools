@@ -67,7 +67,7 @@ CM_PER_YARD = 91.44
 LIMIT_CM = LIMIT_YARDS * CM_PER_YARD
 LIMIT_SQUARED = struct.unpack("<f", struct.pack("<f", LIMIT_CM * LIMIT_CM))[0]   # the float the selector stub compares against
 LIMIT_BITS = struct.unpack("<I", struct.pack("<f", LIMIT_CM))[0]                  # the cap the setup stub stores
-BUILD_CAPTION = "Limit CPU defender warping to the ball for picks (experimental)"
+BUILD_CAPTION = "Limit CPU defender warps to the ball on picks (experimental)"  # b780-int: 60-character caption rule
 HELP_TEXT = ("EXPERIMENTAL, off unless you turn it on. When a CPU defender goes up for a pass, the game slides him a "
              "short way sideways to line his hands up with the ball, outside his running speed, and that slide can be close "
              "to a full yard (the 'warp' on a pick). With this on, a CPU defender gets that help only up to half a yard. If "

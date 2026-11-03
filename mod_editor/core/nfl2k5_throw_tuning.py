@@ -183,6 +183,7 @@ from . import nfl2k5_protection_calls as protection_calls_patch  # noqa: F401  b
 from . import nfl2k5_clock_led as clock_led_patch  # noqa: F401  b778-sd4: late owner (modern LED clock digits); imported so the cave manifest recorder observes it
 from . import nfl2k5_team_number_scale as team_number_scale_patch  # noqa: F401  b776-ns1: its late owner is reserved with the first space pass
 from . import nfl2k5_contract_college_guard as contract_college_guard_patch  # noqa: F401  b778-cr1: late owner
+from . import nfl2k5_coach_career_fix as coach_career_fix_patch  # noqa: F401  b780 c1: in-place site; imported so the cave manifest recorder observes it
 from . import nfl2k5_module_loader as module_loader_patch  # noqa: F401  b778-xs1: late owner
 from . import nfl2k5_classic_teams as classic_teams_patch  # noqa: F401  b775-ct1: late owner
 from . import nfl2k5_lineman_rating as lineman_rating_patch

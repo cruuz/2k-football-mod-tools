@@ -193,6 +193,7 @@ STEP_LABELS: dict[str, str] = {
     "weekly_progression": "Weekly player progression",
     "player_progress": "the Player Progress screen",
     "contract_college_guard": "the Player Contracts college guard",
+    "coach_career_fix": "the coach career counter fix",
     "sim_cb_tackles": "Cornerback tackle credit",
     "sim_stats": "the franchise sim pace fix",
     "option_defaults": "the SOFTDRINK default options",

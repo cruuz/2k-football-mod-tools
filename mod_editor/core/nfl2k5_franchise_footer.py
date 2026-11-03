@@ -55,7 +55,7 @@ from .nfl2k5_cave_oracle import XbeImage
 
 OWNER = "nfl2k5_franchise_footer"
 EVIDENCE = "EXPERIMENTAL"
-BUILD_CAPTION = "Franchise: team history, records and box scores (experimental)"
+BUILD_CAPTION = "Franchise history, records and box scores (experimental)"  # b780-int: 60-character caption rule
 HELP_TEXT = (
     "EXPERIMENTAL. Your franchise remembers what happened: every season's standings, playoff results and awards, "
     "club and league records, all-time leaders, Hall of Fame classes and the box scores of your team's games this "

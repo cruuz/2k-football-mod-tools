@@ -592,6 +592,7 @@ mod_editor/core/nfl2k5_franchise_footer_code.py
 mod_editor/core/nfl2k5_history.py
 mod_editor/core/nfl2k5_history_code.py
 mod_editor/core/nfl2k5_contract_college_guard.py
+mod_editor/core/nfl2k5_coach_career_fix.py
 mod_editor/core/nfl2k5_sim_cb_tackles.py
 mod_editor/core/nfl2k5_option_defaults.py
 mod_editor/core/nfl2k5_profile_defaults.py

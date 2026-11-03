@@ -78,7 +78,8 @@ class StaticTests(unittest.TestCase):
         self.assertEqual(space.LATE_OWNERS.count(cs.OWNER), 1)
         # appended after sim realism's state (the b779 tail), so it moves no earlier owner; owners other b780 jobs append
         # after it do not change that
-        self.assertEqual(space.LATE_OWNERS.index(cs.OWNER), space.LATE_OWNERS.index("nfl2k5_sim_realism_state") + 1)
+        # b780-int: the wave appends several late owners after the b779 tail; this one must come after all of it
+        self.assertGreater(space.LATE_OWNERS.index(cs.OWNER), space.LATE_OWNERS.index("nfl2k5_sim_realism_state"))
         self.assertIs(mod_build.BuildPlan(Path("source.iso"), Path("target.iso")).catch_snap_limit, False)
         for name, preset in mod_build.PRESETS.items():
             self.assertIs(preset["catch_snap_limit"], False, name)            # opt-in everywhere until an emulator witness
