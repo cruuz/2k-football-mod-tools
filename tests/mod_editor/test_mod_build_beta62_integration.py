@@ -216,7 +216,10 @@ class ExecutableTests(unittest.TestCase):
                 self.assertEqual(tt._grown_status_fields(before)[key], 'retail')
             requested = tuple(runtime.REQUESTS) + tuple(extra_requests) + (tuple(kickoff.REQUESTS) if with_kickoff else ())
             from mod_editor.core import nfl2k5_calendar_engine as calendar
-            self.assertEqual(set(requested), set(REQUESTS) - set(calendar.REQUESTS))  # the calendar needs the 2026 templates, absent on a synthetic disc
+            from mod_editor.core import nfl2k5_audible_legend as legend
+            # the calendar needs the 2026 templates, absent on a synthetic disc; the runtime score bar brings the
+            # audible panel lift (b780-p3), so its owner is reserved in this first space pass too
+            self.assertEqual(set(requested), (set(REQUESTS) - set(calendar.REQUESTS)) | set(legend.REQUESTS))
             grown, rec = space.apply(before, requested)
             grown, _ = runtime.apply(grown)
             if with_kickoff:
