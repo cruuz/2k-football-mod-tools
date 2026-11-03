@@ -142,5 +142,38 @@ class CoachCareerFixWiringTests(unittest.TestCase):
             self.assertEqual(mod_build.inspect(source)["coach_career_fix"], "retail")
 
 
+class LateOwnerReservationTests(unittest.TestCase):
+    """b780-int: every b780 late owner a plan selects is reserved by the first space pass, in LATE_OWNERS order. An owner
+    that appended itself when applied (the History screen, the franchise footer and history capture, speed separation)
+    moved the later owners that pass had already placed, and the Experimental build stopped at the History screen with
+    "appending the owner would move an existing allocation"."""
+
+    WAVE = dict(coach_carousel=True, franchise_history=True, history_screen=True, standings_records=True,
+                cpu_passer_iq=True, cpu_clock2=True, cpu_runner_vision=True, db_dive_window=True, catch_snap_limit=True,
+                speed_threshold=35, scramble_blocking=True, protection_calls=True, audible_legend=True)
+
+    def test_the_first_pass_reserves_every_wave_owner(self):
+        from mod_editor.core import nfl2k5_throw_tuning as tt, nfl2k5_xbe_space as space
+        owners = {row[0] for row in tt._selected_space_requests(**self.WAVE)}
+        late = list(space.LATE_OWNERS)
+        wave = late[late.index("nfl2k5_sim_realism_state") + 1:]
+        self.assertEqual(sorted(set(wave) - owners), [])
+
+    def test_speed_after_a_later_owner_does_not_move_it(self):
+        retail = _retail_bytes()
+        if retail is None:
+            self.skipTest("the pinned USA retail default.xbe is not in the private fixtures")
+        from mod_editor.core import nfl2k5_throw_tuning as tt, nfl2k5_xbe_space as space
+        from mod_editor.core import nfl2k5_protection_calls as calls, nfl2k5_speed_threshold as speed
+        payload, _ = space.apply(retail, tt._selected_space_requests(protection_calls=True, speed_threshold=35),
+                                 scaleout=True)
+        payload = calls.apply(payload)[0]           # the build applies protection calls ...
+        placed = {r["owner"]: r["va"] for r in space.layout(payload)["allocations"]}
+        payload = speed.apply(payload, value=35)[0]  # ... and speed separation (earlier in LATE_OWNERS) after it
+        after = {r["owner"]: r["va"] for r in space.layout(payload)["allocations"]}
+        self.assertEqual({k: after[k] for k in placed}, placed)
+        self.assertEqual((calls.status(payload), speed.verify(payload, value=35)["value"]), ("applied", 35))
+
+
 if __name__ == "__main__":
     unittest.main()
