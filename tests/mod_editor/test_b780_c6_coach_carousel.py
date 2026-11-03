@@ -261,7 +261,11 @@ class ExecutableTests(unittest.TestCase):
 
     def test_the_owner_is_the_last_late_owner_and_wired_into_the_build(self):
         from mod_editor.core import mod_build, nfl2k5_build_settings as settings, nfl2k5_xbe_space as space
-        self.assertEqual(space.LATE_OWNERS[-1], cc.OWNER)
+        # b780-int: the carousel follows every owner v0.8 carries (after season realism's state); the wave's later late
+        # owners (j23's footer and history, j4's History screen, j1's standings records) are appended after it
+        late = list(space.LATE_OWNERS)
+        self.assertEqual(late[late.index("nfl2k5_sim_realism_state") + 1], cc.OWNER)
+        self.assertEqual(late.count(cc.OWNER), 1)
         self.assertIn("coach_carousel", settings.FEATURE_KEYS)
         self.assertTrue(all(preset["coach_carousel"] is False for preset in mod_build.PRESETS.values()))
         self.assertIn(cc.OWNER, [row[0] for row in mod_build._LATE_OWNER_OPTIONS])

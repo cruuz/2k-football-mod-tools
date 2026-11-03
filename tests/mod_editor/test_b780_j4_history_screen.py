@@ -271,6 +271,11 @@ class StaticTests(unittest.TestCase):
         self.assertTrue(view["header_ok"], view)
         self.assertEqual(sorted(view["blocks"]), [1, 2, 3, 4, 5, 6])
         for block in ext.BLOCKS:
+            if block.id not in J23_BLOCKS:
+                # b780-int: j23's later blocks (8: playoffs, the Hall of Fame counters) are not read by the screen; they
+                # must sit after every block it reads, so the screen's offsets stay the footer's
+                self.assertGreaterEqual(block.offset, max(off + size for off, size in J23_BLOCKS.values()), block.name)
+                continue
             self.assertEqual((block.offset, block.size), J23_BLOCKS[block.id])
             self.assertEqual(hist.FOOTER_BLOCKS[block.id], (block.name, block.size))
         self.assertEqual(ext.pack_person("T", "BRADY", "QB"), person("T", "BRADY", "QB"))
