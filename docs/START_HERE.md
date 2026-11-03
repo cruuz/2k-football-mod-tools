@@ -69,7 +69,7 @@ For every new SOFTDRINK version, start again from your original untouched image,
 ## 3. Point xemu at the disc
 
 1. In xemu, open the settings, set **System Memory** to **128 MiB** and choose the **Complex 4627** BIOS image as the Flash ROM
-   (BIOS), then restart xemu. This is required for SOFTDRINK 2K28 v0.8: the disc uses the bigger roster built for the 128 MiB
+   (BIOS), then restart xemu. This is required for SOFTDRINK 2K28 v0.9: the disc uses the bigger roster built for the 128 MiB
    layout, and its startup patch needs the 4627 BIOS. Do not run this disc at 64 MiB.
 2. In xemu choose **Machine, Load Disc** and select the new image. (Or click **Play latest disc in xemu** in the Studio.)
 3. If the picture looks grainy, try **View, Int. Resolution Scale, 2x**.

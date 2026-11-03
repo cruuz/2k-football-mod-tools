@@ -1,4 +1,4 @@
-# 2K5 Mod Studio FAQ, beta 79.1
+# 2K5 Mod Studio FAQ, beta 80
 
 Start with the [Getting Started guide](2k5_mod_studio_getting_started.md).
 These answers combine the previous release FAQ and the community reports for beta 71.1.
@@ -183,7 +183,7 @@ Yes. On the Build tab press **Check my project**. It writes nothing to your proj
 disc, and lists exactly what to untick or change (an option that cannot be combined with
 another, stadium edits that conflict with a stadium option, a disc problem the build would find
 at the start, a new Anniversary kit a classic team needs that cannot be made from your kits)
-and, separately, what Build will do with your work. Since beta 79.1 it also tries the long
+and, separately, what Build will do with your work. Since beta 80 it also tries the long
 build's risky steps on your own options and art (a few minutes for most projects, up to about half an hour
 with every stadium option on): every
 stadium field, bump map and divot layer that Modern colour, the modern stadiums, the practice

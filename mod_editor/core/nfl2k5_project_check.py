@@ -1416,15 +1416,15 @@ def doctor(project, source, settings=None, *, progress: Callable[..., None] | No
                     f"{'' if len(files) > 1 else 's'} the left-out kit {_named(sorted({o['kit'] for o in sure}))}: Studio "
                     f"beta 79 stops about 6 minutes into the build with \"classic default {sure[0]['style']} has no year "
                     "pair in its team file\".",
-                    "Studio beta 79.1 fixes this (a left-out kit takes its classic defaults with it).",
-                    "Untick 25 more Anniversary moments until you have beta 79.1.", code="kits.orphan_default"))
+                    "Studio beta 80 fixes this (a left-out kit takes its classic defaults with it).",
+                    "Untick 25 more Anniversary moments until you have beta 80.", code="kits.orphan_default"))
             if unsure:
                 report.findings.append(Finding(
                     NOTE, "Anniversary moment kits",
                     "Whether the new kit " + _named(sorted({o["kit"] for o in unsure})) + " is made depends on your own "
                     "art; if it is left out, Studio beta 79 stops at the classic team file "
                     + _named(sorted({o["file"] for o in unsure})) + ".",
-                    "Studio beta 79.1 fixes this. With beta 79, untick 25 more Anniversary moments if the build stops "
+                    "Studio beta 80 fixes this. With beta 79, untick 25 more Anniversary moments if the build stops "
                     "with \"classic default ... has no year pair\".", code="kits.orphan_maybe"))
             allocations = kit_details.get("donor_allocations") or {}
             if allocations:

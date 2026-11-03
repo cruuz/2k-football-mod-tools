@@ -1,6 +1,6 @@
 {
  "schema": "nfl2k5_release_gates/v1",
- "release": "Studio beta-79 (RC114) and SOFTDRINK 2K28 v0.8",
+ "release": "Studio beta-80 (RC115) and SOFTDRINK 2K28 v0.9",
  "about": "The full disc builds the release checks of this Studio version ran before it shipped, so Check my project can name the options and settings of a project that no release build ever tried. Update it with every release (the presets come from mod_build.PRESETS of this same code; the SOFTDRINK recipe's own values are below, with every file or folder option written as given).",
  "gates": [
   {
@@ -139,7 +139,7 @@
     "my_career_setup": null,
     "name": "SOFTDRINK 2K28",
     "name_keyboard": true,
-    "notes": "SOFTDRINK 2K28 v0.8 (Studio beta-79). Complete native install; source authoring limitations are recorded in source-build-blockers.json.",
+    "notes": "SOFTDRINK 2K28 v0.9 (Studio beta-80). Complete native install; source authoring limitations are recorded in source-build-blockers.json.",
     "number_kerning": true,
     "official_marks_pack": {
      "given": true

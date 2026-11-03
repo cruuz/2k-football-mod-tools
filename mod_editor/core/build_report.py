@@ -1,7 +1,7 @@
 """The build log, the errors.log entry and the diagnostic zip of one Studio build (b791-h3).
 
 Coach Edwards sent his 3 MB errors.log twice and it held 46 copies of an old GUI crash and one line per failed build.
-From beta 79.1 every build leaves:
+From beta 80 every build leaves:
 
 * ``<disc>.build-log.txt`` beside the output disc, and a copy in the Studio's log folder (``builds/``): the Studio
   version, the computer, the source disc (size, SHA-256 when the build measured it, what kind of image it is), the
