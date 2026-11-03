@@ -6528,6 +6528,72 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_standings_records apply source.xbe new-standings.xbe",
+        "module": "mod_editor/core/nfl2k5_standings_records.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "mod_editor/core/nfl2k5_standings_records.py",
+        "mod_editor/core/nfl2k5_standings_records_code.py",
+        "tests/mod_editor/test_nfl2k5_standings_records.py",
+        "tools/nfl2k5_standings_records/runtime.c",
+        "tools/nfl2k5_standings_records/stubs.S",
+        "tools/nfl2k5_standings_records_build.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. CER, 2026-10-07: a way to get division and conference records into the Team Standings page. Off in Basic, on in Advanced and Experimental; the page opens on the retail columns and changes only when a player presses White or Black."
+      },
+      "id": "nfl2k5.franchise.standings_records",
+      "input_constraints": [
+        "Pinned USA XBE or verified composed input; the owner is a late allocator owner placed after every other late owner (or appended to an installed sealed image by nfl2k5_xbe_space.extend_scaleout). Foreign or mixed bytes refuse, as does a changed game routine it relies on (26 retail spans are pinned by SHA-256).",
+        "Owned 2,304 RX bytes (the stubs, the record counting, the label and legend text) and a 16-byte RW block (the view). Edits: the pressed-mask test at 0x35543F in the Team Standings input, the three header labels (0x355903, 0x35592A, 0x355951) and three cell formatters (0x355B1E, 0x355B68, 0x355BB2) of its draw, the four legend lines (0x355D39, 0x355D5F, 0x355D85, 0x355DAB) and the enter callback pointer at 0x54CDB4.",
+        "ESPN.com > Team Standings in Franchise: White and Black turn the columns W L T (retail), DIV CONF, HOME ROAD STRK. DIV and CONF count the regular-season rows of the season's schedule grid only (the byte at 0x5151C4: 17, or 18 with the season-length patch), division games count for both, nothing is saved. HOME, ROAD and STRK are the game's own values. With the view at W L T every stub falls through to the retail routine; the realignment screen that shares the draw and input code is never touched.",
+        "Rebuild from a verified base to remove it."
+      ],
+      "portme": [
+        "Franchise: open ESPN.com > Team Standings mid-season; press White or Black: the W L T columns become DIV and CONF (the legend under the tables says so), again for HOME, ROAD and STRK, again for W L T; L and R still switch AFC and NFC; leaving and coming back opens on W L T. Check the numbers against the schedule for one club."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and instructions; never distribute generated XBEs or retail resources.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "The real Team Standings draw, input, enter and legend code run under Unicorn on the retail executable with the owner installed: view 0 is call for call the retail screen; views 1 and 2 show the Python model's DIV and CONF records and the game's own HOME, ROAD and streak for all 32 clubs over random seasons with ties, overtime, byes, playoff rows and 17 and 18 week seasons (python3 -m tests.mod_editor.test_nfl2k5_standings_records). No game boot, no gameplay witness.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false | true; default false in Basic, true in Advanced and Experimental",
+            "name": "standings_records",
+            "required": true
+          }
+        ],
+        "notes": "Build-time only. Off skips the writer and its allocation; there is no in-game toggle."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "XBE .text sites listed above and one .rdata pointer; owned 2,304 RX and 16 RW bytes in the allocator's late region. No save field.",
+        "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+      },
+      "summary": "Adds division and conference records to ESPN.com's Team Standings page, with home, road and streak columns: White and Black turn the columns, the headers and the legend say which view is showing, and the page opens on the retail W L T. The records are worked out from the season's schedule (regular season only), so nothing is stored in the save.",
+      "surface": "schedules_franchise",
+      "title": "Team Standings records: division, conference, home, road and streak (experimental, unwitnessed)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_standings_records"
+    },
+    {
+      "backend": {
         "command": "python3 -m mod_editor.core.nfl2k5_weekly_prep apply source.xbe new-weekly-prep.xbe --cpu on --remember on",
         "module": "mod_editor/core/nfl2k5_weekly_prep.py",
         "operation": "write"

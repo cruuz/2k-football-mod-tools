@@ -768,7 +768,8 @@ LATE_OWNERS = (LATE_OWNER, "nfl2k5_letter_grades", "nfl2k5_letter_grades_progres
                "nfl2k5_coach_carousel",  # b780-c6: the coaching carousel at Advance to offseason (code + parameters)
                "nfl2k5_franchise_footer",  # b780 j23: the franchise extension footer host (after Player Progress)
                "nfl2k5_history",  # b780 j23: the franchise history capture (after the footer host it reads)
-               "nfl2k5_history_screen")  # b780-j4: the History screen, box scores, game log (after every b779 owner)
+               "nfl2k5_history_screen",  # b780-j4: the History screen, box scores, game log (after every b779 owner)
+               "nfl2k5_standings_records")  # b780-j1: Team Standings records (2,304 code + 16 RW bytes), last
 # b77-i1 (coordinator-approved fix of the all-owner union overflow): late owners whose code is placed top-down in the
 # reserved legacy RX page tails (0x14D9000 first, then 0x14BA000) instead of the full scale-out run. Static, so the
 # placement does not depend on which other owners are present.
