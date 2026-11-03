@@ -754,6 +754,15 @@ def status(payload: bytes) -> str:
         return "foreign"
 
 
+def refusal(payload: bytes) -> str | None:
+    """b780 n8: why ``status`` reads foreign (the first failed check, in plain words), or None."""
+    try:
+        owned_state(payload)
+        return None
+    except (ValueError, IndexError, KeyError, TypeError, struct.error, OverflowError) as exc:
+        return str(exc) or type(exc).__name__
+
+
 def reservations(payload: bytes) -> list[dict]:
     rows = [r for r in space.reservations(payload) if r["owner"] == OWNER]
     edits = [(label, va, before, before) for label, va, before, _kind in SITE_TABLE]
@@ -860,7 +869,8 @@ GUARD_PINS: dict[str, str] = {
 
 __all__ = ["OWNER", "REQUESTS", "UI_LABEL", "HELP_TEXT", "BUILD_CAPTION", "HistoryScreenError", "build_ro", "code_for",
            "sites", "labels", "allocations", "install", "status", "reservations", "guard_digests", "owned_state",
-           "FOOTER_BLOCKS", "footer_pointer_va", "load_seed", "with_leaders", "short_name"]
+           "FOOTER_BLOCKS", "footer_pointer_va", "load_seed", "with_leaders", "short_name", "COMPANION_HOOKS",
+           "companion_sites", "refusal"]
 
 
 if __name__ == "__main__":

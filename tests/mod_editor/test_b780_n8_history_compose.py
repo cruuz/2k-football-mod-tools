@@ -204,8 +204,12 @@ class CompositionTests(unittest.TestCase):
             mod_build._history_screen_preflight(path, lambda *a: None)
             alone = compose(("history",))
             path.write_bytes(repin_edit(alone, 0x6E4E0, hist.companion_sites(self.full)[2][3]))
-            with self.assertRaisesRegex(ValueError, "not retail"):
+            # the refusal names the hook and its owner (b780 n8), before any write
+            with self.assertRaisesRegex(ValueError, r"not retail \(foreign history screen dependency: playlist_screen_event "
+                                                    r"\(0x6e4e0\): the music playlist hooks this screen entry"):
                 mod_build._history_screen_preflight(path, lambda *a: None)
+        self.assertIsNone(hist.refusal(self.full))
+        self.assertIsNone(hist.refusal(self.retail))
 
 
 @unittest.skipUnless(HAVE_UC, "Unicorn absent")

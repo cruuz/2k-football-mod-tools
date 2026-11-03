@@ -1921,9 +1921,13 @@ def _history_screen_preflight(source: Path, progress) -> None:
     if module is None:
         raise ValueError("The franchise History screen is not available in this installation.")
     progress("Checking ESPN.com and the Schedule for the History screen", 0, 0)
-    if module.status(_xbe_bytes(source)) not in ("retail", "applied"):
-        raise ValueError("The ESPN.com menu, the Schedule input or the menu code in this source is not retail. Turn the "
-                         "History screen off or build from your unmodified retail dump.")
+    payload = _xbe_bytes(source)
+    if module.status(payload) not in ("retail", "applied"):
+        # b780 n8: name the first check that failed (for example an older MyCareer whose hook sits on the screen push)
+        reason = module.refusal(payload) if hasattr(module, "refusal") else None
+        raise ValueError("The ESPN.com menu, the Schedule input or the menu code in this source is not retail"
+                         + (f" ({reason})" if reason else "") + ". Turn the History screen off or build from your "
+                         "unmodified retail dump.")
 
 
 def _dive_window_preflight(source: Path, progress) -> None:
