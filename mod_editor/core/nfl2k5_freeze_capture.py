@@ -40,7 +40,8 @@ REGS = ("eax", "ecx", "edx", "ebx", "esp", "ebp", "esi", "edi", "eip", "eflags")
 # ESPN NFL 2K5 (retail layout; the Studio keeps these addresses): the game's play-state block and counters.
 PLAY_BLOCK = 0xE60280         # +0 offense team, +4 defense team, +0x34 phase, +0x38 play state, +0x3C kind, +0x44 quarter,
                               # +0x6C situation (down at +4)
-PLAY_COUNTER = 0xE53800
+DRIVE_COUNTER = 0xE53800      # drive number; the play count follows it
+PLAY_COUNTER = 0xE53804
 GAME_MODE = 0xE5FF80
 PLAYCALL_OPTION = 0xE60018    # 0 By Package, 1 By Formation, 2 Let Coach Pick
 HOME_TEAM, AWAY_TEAM = 0xE5FC20, 0xE5FC60
@@ -255,7 +256,7 @@ def capture(host: str = "127.0.0.1", port: int = DEFAULT_PORT, *, samples: int =
                 state["down"] = _u32(remote.read(situation + 4, 4))
         mode = _u32(remote.read(GAME_MODE, 4))
         option = _u32(remote.read(PLAYCALL_OPTION, 4))
-        state.update(play_count=_u32(remote.read(PLAY_COUNTER, 4)), game_mode=mode,
+        state.update(play_count=_u32(remote.read(PLAY_COUNTER, 4)), drive=_u32(remote.read(DRIVE_COUNTER, 4)), game_mode=mode,
                      game_mode_name=MODES.get(mode, "other"), play_calling=PLAYCALL.get(option, option))
         result["game_state"] = state
         result["verdict"] = _verdict(eips)
@@ -299,7 +300,7 @@ def report_text(result: dict[str, Any]) -> str:
         "",
         f"Game: {s.get('game_mode_name')} (mode {s.get('game_mode')}), play calling: {s.get('play_calling')}",
         f"Play: phase {s.get('phase')}, play state {s.get('play_state')}, kind {s.get('kind')}, quarter {s.get('quarter')}, "
-        f"down {s.get('down')}, plays so far {s.get('play_count')}",
+        f"down {s.get('down')}, plays so far {s.get('play_count')}, drive {s.get('drive')}",
         f"Offense: {s.get('offense')}  Defense: {s.get('defense')}",
         "",
         "Please post this whole file with your report, plus what was on screen and which disc you play.",

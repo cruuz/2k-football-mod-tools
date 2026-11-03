@@ -116,7 +116,7 @@ def game_memory(stack_values: list[int]) -> tuple[dict[int, bytes], int]:
     code = bytearray(0x100)
     code[0x80 - 5] = 0xE8          # a call rel32 that ends at 0x20B880
     memory = {fc.PLAY_BLOCK: bytes(block), 0xB28080: bytes(situation), esp: bytes(stack),
-              fc.PLAY_COUNTER: struct.pack("<I", 7), fc.GAME_MODE: struct.pack("<I", 4),
+              fc.DRIVE_COUNTER: struct.pack("<II", 2, 7), fc.GAME_MODE: struct.pack("<I", 4),
               fc.PLAYCALL_OPTION: struct.pack("<I", 0), 0x20B800: bytes(code)}
     return memory, esp
 
@@ -136,7 +136,8 @@ class CaptureTests(unittest.TestCase):
         self.assertEqual(len(result["eip_samples"]), 4)
         state = result["game_state"]
         self.assertEqual((state["offense"], state["defense"]), ("home", "away"))
-        self.assertEqual((state["phase"], state["play_state"], state["down"], state["play_count"]), (4, 11, 3, 7))
+        self.assertEqual((state["phase"], state["play_state"], state["down"], state["play_count"], state["drive"]),
+                         (4, 11, 3, 7, 2))
         self.assertEqual(state["game_mode_name"], "Play Now")
         self.assertEqual(state["play_calling"], "By Package")
         self.assertEqual([r["address"] for r in result["return_addresses"]], ["0x20b880"])
