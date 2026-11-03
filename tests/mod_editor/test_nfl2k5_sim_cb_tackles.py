@@ -46,6 +46,44 @@ class CodeTests(unittest.TestCase):
             self.assertEqual(list(table), sorted(table))
             self.assertEqual(len(set(table)), len(table))
 
+    def test_tail_gates_on_the_regular_season_and_the_games_played_read_not_the_week(self):
+        # b780 n3: cmp dword [0xE576A4], 8 and the merge's own games-played read (push 0; push 99; pop edx;
+        # mov ecx, ebp; call 0xCB240); the week byte 0xE576B4 is no longer read
+        base = 0x14E0000
+        code = cb.code_for(base)[:cb.GUARD_OFFSET]
+        self.assertIn(bytes.fromhex("833d") + struct.pack("<I", 0xE576A4) + b"\x08", code)
+        call = bytes.fromhex("6a006a635a89e9e8")
+        at = code.find(call)
+        self.assertGreater(at, 0)
+        target = base + at + len(call) + 4 + struct.unpack_from("<i", code, at + len(call))[0]
+        self.assertEqual(target, 0x000CB240)
+        self.assertNotIn(struct.pack("<I", 0xE576B4), code)
+        self.assertEqual((cb.STAGE, cb.REGULAR_SEASON, cb.FN_GAME_STAT, cb.GAME_PLAYED), (0xE576A4, 8, 0xCB240, 99))
+
+    def test_games_played_is_the_stat_the_retail_merge_credits_to_games(self):
+        data = retail()
+        if data is None:
+            self.skipTest("pinned USA retail XBE is not available")
+        image = XbeImage(data)
+        # the merge's first field table (0x4FC528, pairs of career field / game stat) starts with games <- stat 99,
+        # tackles 18 <- 50, and its per-field helper 0x133400 reads bank 0 through 0xCB240, rounds half up
+        # (0.0 / 0.5 constants at 0x4E4180) and adds through 0x14F450
+        pairs = [struct.unpack_from("<II", image.read(0x4FC528, 0x238), i) for i in range(0, 0x238, 8)]
+        self.assertEqual(pairs[0], (0, cb.GAME_PLAYED))
+        self.assertIn((18, 50), pairs)
+        self.assertEqual(image.read(0x133400, 8), bytes.fromhex("516a00e8387ef9ff"))
+        self.assertEqual(struct.unpack("<ff", image.read(0x4E4180, 8)), (0.0, 0.5))
+        # stage 7 or 9 switches the merge to the postseason class after the hook site: 0x133634 call 0xC4BB0
+        # (mov eax, [0xE576A4]), cmp 9, cmp 7, mov ecx, 1, call 0x14EDB0
+        self.assertEqual(image.read(0x000C4BB0, 6), bytes.fromhex("a1a476e500c3"))
+        self.assertEqual(image.read(0x133639, 3), bytes.fromhex("83f809"))
+        self.assertEqual(image.read(0x133643, 3), bytes.fromhex("83f807"))
+        self.assertEqual(image.read(0x133648, 10), bytes.fromhex("b901000000e85eb70100"))
+        self.assertLess(cb.SITE, 0x133634)
+        # the stat-99 descriptor is a type-0 live stat whose getter is "record word nonzero"
+        self.assertEqual(struct.unpack("<II", image.read(0xA8A510 + 28 * 99, 8)), (0, 0xC96C0))
+        self.assertEqual(image.read(0xC96C0, 10), bytes.fromhex("8b0a33c085c90f95c0c3"))
+
     def test_site_is_the_merge_body_and_clear_of_the_pg1_call(self):
         name, va, before, after = cb.sites(0x14E0000)[0]
         self.assertEqual(name, "merge_body")
@@ -260,9 +298,23 @@ class DrawMachine:
         self.m.put(self.record, self.context)
         self.m.uc.mem_write(self.context, bytes(0x200))
         self.m.uc.mem_write(0xE576B4, bytes([self.WEEK]))
+        # b780 n3: the tail asks the game whether this corner played (game stat 99 through 0xCB240, whose bank-0 read
+        # goes through the record callback the game installs at 0xB72A60: [[live+0x30]], first dword nonzero)
+        self.m.put(0xB72A60, 0xC96B0)
+        self.stage(8)
+        self.played(True)
         self.m.uc.mem_map(self.CODE, 0x1000)
         self.m.uc.mem_write(self.CODE, cb.code_for(self.CODE))
         self.seed_rng()
+
+    def stage(self, stage):
+        self.m.put(cb.STAGE, stage)
+
+    def week(self, week):
+        self.m.uc.mem_write(0xE576B4, bytes([week]))
+
+    def played(self, played):
+        self.m.put(self.context, 1 if played else 0)
 
     def seed_rng(self, seed=0x12345678):
         state = 0xB12680
@@ -344,18 +396,53 @@ class DrawTests(unittest.TestCase):
 
     def test_non_starters_other_positions_and_missing_records_are_unchanged(self):
         self.d.role(0)
-        self.d.games(6)
-        self.assertEqual(self.d.draw(), 0)
-        self.d.position(11)
-        self.assertEqual(self.d.draw(), 0)
-        self.d.position(4)
-        self.d.games(self.d.WEEK)
-        self.assertGreaterEqual(self.d.draw(), 0)
         self.d.games(self.d.WEEK - 1)
-        history = self.d.m.get(self.d.player + 0x2C)
-        self.d.m.put(self.d.player + 0x2C, 0)
-        self.assertEqual(self.d.draw(), 0)
-        self.d.m.put(self.d.player + 0x2C, history)
+        self.d.played(False)                        # dressed, never on the field: the game credits no game
+        self.assertEqual([self.d.draw() for _ in range(40)], [0] * 40)
+        self.d.played(True)
+        self.d.position(11)
+        self.assertEqual([self.d.draw() for _ in range(40)], [0] * 40)
+        self.d.position(4)
+        # (a live player without a game record is not a case: the displaced retail `mov ebx, [eax]` reads it anyway)
+        self.assertGreater(sum(self.d.draw() for _ in range(40)), 0)
+
+    def test_preseason_playoff_and_other_stages_never_draw(self):
+        """b780 n3 (SWeaR, v0.8: the new season's row had Games 0 and TKL 4 before the first game): the merge writes
+        preseason (7) and playoff (9) games into the postseason class after this hook, so the tail must not credit
+        the regular-season row from them; the old games == week / week - 1 test matched preseason week 1 for every
+        corner (0 == 1 - 1), the Hall of Fame week (0 == 0) and the Wild Card week (17 == 18 - 1)."""
+        self.d.role(0)
+        try:
+            for stage, week, games in ((7, 1, 0), (7, 0, 0), (7, 2, 1), (9, 18, 17), (9, 19, 17), (9, 21, 17),
+                                       (0, 0, 0), (6, 0, 0), (10, 22, 17)):
+                with self.subTest(stage=stage, week=week, games=games):
+                    self.d.stage(stage)
+                    self.d.week(week)
+                    self.d.games(games)
+                    self.assertEqual([self.d.draw() for _ in range(40)], [0] * 40)
+        finally:
+            self.d.stage(8)
+            self.d.week(self.d.WEEK)
+
+    def test_only_a_corner_the_game_credits_with_the_game_draws(self):
+        """The bonus follows the game's own games-played value (game stat 99, what the merge adds to games), not the
+        week: a corner who sat (games == week, the old rule's yes) gets nothing; a corner back from a long injury
+        (games 3 in week 10, the old rule's no) gets his per-game draw."""
+        self.d.role(0)
+        try:
+            for games in (self.d.WEEK, self.d.WEEK - 1, 0):
+                with self.subTest(sat=games):
+                    self.d.games(games)
+                    self.d.played(False)
+                    self.assertEqual([self.d.draw() for _ in range(40)], [0] * 40)
+            self.d.week(10)
+            self.d.games(3)
+            self.d.played(True)
+            lines = [self.d.draw() for _ in range(300)]
+            self.assertTrue(1.7 <= sum(lines) / len(lines) <= 2.3, sum(lines) / len(lines))
+        finally:
+            self.d.played(True)
+            self.d.week(self.d.WEEK)
 
     def test_tail_replays_the_displaced_instructions(self):
         self.d.role(0)
@@ -491,6 +578,114 @@ class SimLineupBaseTests(unittest.TestCase):
 
 
 @unittest.skipUnless(HAVE_UC, "unicorn is needed")
+@unittest.skipUnless(HAVE_UC, "unicorn is needed")
+class SeasonRowTests(unittest.TestCase):
+    """b780 n3: the retail post-game merge (0x134E05 -> FUN_001334b0) with this owner installed, one corner, read back
+    through the game's own history getter in both classes. Report (SWeaR, v0.8, 11/02): "Players recording tackles
+    before the first game of the season is played" (the new season's Player Card row: Games 0, TKL 4)."""
+
+    SEEDS = (1, 2, 3, 4, 5, 6)
+
+    @classmethod
+    def setUpClass(cls):
+        data = retail()
+        if data is None:
+            raise unittest.SkipTest("pinned USA retail XBE is not available")
+        cls.payload, receipt = cb.apply(data)
+        assert receipt["status"] == "applied", receipt
+
+    def merge(self, *, stage, week, games, played, seed, tackles=0):
+        """One game through the merge; returns {class: (games, tackles)} of the current season after it."""
+        from tests.mod_editor.test_nfl2k5_honors import Machine, word
+        m = Machine(self.payload)
+        m.uc.mem_write(m.ROOT, bytes(0x200))
+        # a real stream has no zero-valued words (0x14F430 deletes a field set to 0), so a 0 is simply absent
+        words = [word(field, 4, value) for field, value in ((0, games), (18, tackles)) if value] or [word(2, 4, 1)]
+        player = m.roster([(4, words)])[0]
+        m.put8(player + 0x35, 4)
+        m.put(player + 0x28, (0 << 10) | (2 << 13))          # rank 0, the left-corner table
+        live = 0xB30C4C
+        m.uc.mem_write(live, bytes(m.uc.mem_read(player, 0x54)))
+        record, context = m.HEAP + 0x70000, m.HEAP + 0x71000
+        m.put(live + 0x30, record)
+        m.put(record, context)
+        m.uc.mem_write(context, bytes(0x200))
+        m.put(context, 1 if played else 0)
+        m.put(record + 4, 0)
+        m.put(0xB72A60, 0xC96B0)
+        for va, value in ((0xE576A0, 2), (cb.STAGE, stage), (0xE576B4, week), (0xBD7F98, 0)):
+            m.put(va, value)
+        state = 0xB12680
+        m.put(state, 54)
+        m.put(state + 4, 0)
+        x = seed
+        for k in range(55):
+            x = (x + 0x9E3779B97F4A7C15) & 0xFFFFFFFFFFFFFFFF
+            z = ((x ^ (x >> 30)) * 0xBF58476D1CE4E5B9) & 0xFFFFFFFFFFFFFFFF
+            z = ((z ^ (z >> 27)) * 0x94D049BB133111EB) & 0xFFFFFFFFFFFFFFFF
+            m.uc.mem_write(state + 8 + 8 * k, struct.pack("<Q", z ^ (z >> 31)))
+        m.call(0xCA7B0, stack=(0, 0))
+
+        def leave(uc, _address, _size, _data):
+            m.reg("EIP", m.STOP)
+
+        m.uc.hook_add(m.u.UC_HOOK_CODE, leave, begin=0x134E0A, end=0x134E0A)
+        sp = m.SP
+        m.put(sp, m.STOP)
+        sp -= 4
+        m.put(sp, 0)
+        sp -= 4
+        m.put(sp, live)
+        m.reg("ESP", sp)
+        m.reg("EAX", player)
+        for name in ("EBX", "ECX", "EDX", "ESI", "EDI", "EBP"):
+            m.reg(name, 0x0BADF00D)
+        m.uc.emu_start(0x134E05, m.STOP, count=60_000_000)
+        if m.reg("EIP") != m.STOP:
+            raise AssertionError(f"merge did not return: {m.reg('EIP'):#x}")
+        rows = {}
+        for history_class in (0, 1):
+            m.put(0xBD7F98, history_class)
+            rows[history_class] = tuple(m.call(0x14EE40, ecx=player, edx=field, stack=(), budget=100_000)
+                                        for field in (0, 18))
+        m.put(0xBD7F98, 0)
+        return rows
+
+    def test_preseason_games_leave_the_new_season_row_empty(self):
+        # SWeaR's case: preseason week 1 (every club plays) and the Hall of Fame week 0, before the first game
+        for week in (0, 1, 2, 3):
+            for seed in self.SEEDS:
+                with self.subTest(week=week, seed=seed):
+                    rows = self.merge(stage=7, week=week, games=0, played=True, seed=seed)
+                    self.assertEqual(rows[0], (0, 0), "the regular-season row must stay empty in the preseason")
+                    self.assertEqual(rows[1][0], 1, "retail credits the preseason game to the postseason class")
+
+    def test_playoff_games_leave_the_regular_season_row_alone(self):
+        for week in (18, 19, 20, 21):
+            for seed in self.SEEDS:
+                with self.subTest(week=week, seed=seed):
+                    rows = self.merge(stage=9, week=week, games=17, played=True, seed=seed, tackles=55)
+                    self.assertEqual(rows[0], (17, 55))
+                    self.assertEqual(rows[1][0], 1)
+
+    def test_regular_season_tackles_come_only_with_a_game(self):
+        drawn = []
+        for seed in self.SEEDS:
+            with self.subTest(seed=seed):
+                # sat the whole game (a dime corner the engine never used), at the week the old rule matched
+                for week, games in ((0, 0), (1, 0), (5, 5), (5, 4)):
+                    rows = self.merge(stage=8, week=week, games=games, played=False, seed=seed, tackles=9 if games else 0)
+                    self.assertEqual(rows[0], (games, 9 if games else 0), (week, games))
+                # played: games goes up by one and the bonus may come with it (also after a long injury)
+                for week, games in ((5, 5), (10, 3), (0, 0)):
+                    rows = self.merge(stage=8, week=week, games=games, played=True, seed=seed)
+                    self.assertEqual(rows[0][0], games + 1)
+                    self.assertEqual(rows[1], (0, 0))
+                    drawn.append(rows[0][1])
+        self.assertGreater(sum(drawn), 0)
+        self.assertGreater(len(set(drawn)), 2, drawn)
+
+
 class ChainTests(unittest.TestCase):
     """b778-pg1 also wraps 0x134e05; the cb1 hook is inside the merge instead, so both owners coexist."""
 
@@ -534,6 +729,8 @@ class ChainTests(unittest.TestCase):
         m.put(live + 0x30, record)
         m.put(record, context)
         m.uc.mem_write(context, bytes(0x200))
+        m.put(context, 1)                    # b780 n3: he played this game (game stat 99), so the merge credits games
+        m.put(0xB72A60, 0xC96B0)             # the game's record callback for live stat reads
         m.put(record + 4, 0)
         for va, value in ((0xE576A0, 2), (0xE576A4, 8)):
             m.uc.mem_write(va, struct.pack("<I", value))
@@ -608,8 +805,9 @@ class ChainTests(unittest.TestCase):
             self.assertEqual(result["events"], ["pg1", "cb", "merge"])
             self.assertEqual(result["layout"], first["layout"])
             self.assertGreater(result["final"], 0)
-            # pg1's pre-merge read sees the retail line, its post-merge read the credited line
-            self.assertEqual(result["reads"], [(18, 0), (20, 0), (0, 7), (18, result["final"]), (20, 0), (0, 7)])
+            # pg1's pre-merge read sees the retail line, its post-merge read the credited line (the game he played
+            # adds one to games through the merge; b780 n3: the bonus is drawn only when it does)
+            self.assertEqual(result["reads"], [(18, 0), (20, 0), (0, 7), (18, result["final"]), (20, 0), (0, 8)])
         self.assertEqual(first["final"], second["final"])
 
     def test_cb1_alone_leaves_the_pg1_call_retail(self):

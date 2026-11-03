@@ -24,6 +24,24 @@ rank 3 and deeper use dime.  Interceptions, forced fumbles, sacks and every othe
 unchanged.  The single-game box score keeps the engine's line; the franchise season stats (the
 reported symptom) get the bonus.  Played and simulated games use the same merge.
 
+Regular-season games only, and only a corner the game credits with a game (b780 n3).  Report (v0.8,
+SWeaR, Discord 11/02): ``Players recording tackles before the first game of the season is played``
+(Player Card: the new season's row with Games 0 and TKL 4, another with Games 0 and TKL 2).  The merge
+runs for preseason (stage 7) and playoff (stage 9) games too; retail writes those games into the
+postseason history class (``0x133634``: stage 7 or 9 -> ``FUN_0014edb0(1)``, back to 0 at ``0x1336b2``),
+so the regular-season row never sees them.  This hook runs before that switch, so its bonus always
+went into the regular-season row, and it decided "played this game" by ``games this season == week
+or week - 1`` instead of asking the game.  Preseason week 1 (week index 1, every club plays) matched
+``0 == week - 1`` for every corner on the roster: one bonus draw into the new season's row before
+any regular-season game (the Hall of Fame pair also matched at week 0).  The Wild Card week (week
+index 18 in the 18-week season) matched ``17 == week - 1`` for every corner who played all 17 games.
+In the regular season a deep corner the engine never puts on the field (games 0) matched at weeks 0
+and 1: the released v0.8 executable's simulated seasons had 51-57 players with tackles and 0 games,
+every one a cornerback.  The tail now requires the regular-season stage (``[0xE576A4] == 8``) and the
+game's own games-played value for this player (game stat 99 through ``0xCB240``, bank 0: the same
+read and the same rounding by which the merge credits career field 0), so the bonus lands only in a
+game the season row counts.  Existing rows keep what earlier versions wrote.
+
 The hook is inside the merge's prologue, after the merge saved EBP (the live player) and EDI (the
 roster player); the tail replays the two displaced instructions and returns to ``0x1334c8``.  The
 retail merge is not re-entered, so the hook cannot recurse, and the weekly-progression wrapper at
@@ -51,12 +69,13 @@ OWNER = "nfl2k5_sim_cb_tackles"
 CODE_SIZE = 256
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16),)
 BUILD_CAPTION = "Cornerback tackle credit and sim injuries (experimental)"
-HELP_TEXT = ("EXPERIMENTAL. In simulated and played games a starting cornerback's season tackle total gets a "
-             "per-game bonus drawn from the NFL distribution through the game's own RNG (about 3.4 a game in all, "
-             "with rare zero-tackle games); the nickel and dime corners use lower bonus tables. The single-game box "
-             "score keeps the engine's line. Interceptions, forced fumbles, sacks and every other position are "
-             "unchanged. Simulated franchise games also leave out any player whose injury report shows weeks out, "
-             "including a probable player or one whose status field was cleared.")
+HELP_TEXT = ("EXPERIMENTAL. In simulated and played regular-season games a starting cornerback's season tackle "
+             "total gets a per-game bonus drawn from the NFL distribution through the game's own RNG (about 3.4 a "
+             "game in all, with rare zero-tackle games); the nickel and dime corners use lower bonus tables. Only a "
+             "corner who played the game gets it, and preseason and playoff games never add to the season row. The "
+             "single-game box score keeps the engine's line. Interceptions, forced fumbles, sacks and every other "
+             "position are unchanged. Simulated franchise games also leave out any player whose injury report shows "
+             "weeks out, including a probable player or one whose status field was cleared.")
 
 # The hook is the first two instructions of the merge body (after the prologue saved EBP = live player and
 # EDI = roster player): `mov eax,[ebp+0x30] ; mov ebx,[eax]`.  It is inside FUN_001334b0, not at the
@@ -99,7 +118,13 @@ ROLE_OFFSETS = (0, len(LCB_CDF), len(LCB_CDF) + len(RCB_CDF),
 TABLE_OFF = 192                   # fixed offset in the 256-byte cave; the assembler refuses to cross it
 FN_RAND = 0x00048BC0              # () -> eax: the game's global subtract-with-borrow RNG
 FN_GAMES, FN_HISTORY_ADD = 0x0014EE40, 0x0014F450   # current-slot stat read; additive history write (ret 4)
-WEEK = 0x00E576B4
+WEEK = 0x00E576B4                 # kept for callers; the tail no longer reads the week (b780 n3)
+# b780 n3: the bonus is a regular-season credit for a corner who played this game.
+STAGE = 0x00E576A4                # league stage word (FUN_000c4bb0): 7 preseason, 8 regular season, 9 playoffs
+REGULAR_SEASON = 8                # the only stage whose games the merge writes into the regular-season class
+FN_GAME_STAT = 0x000CB240         # (ecx = live player, edx = game stat, push bank) -> st0, ret 4
+GAME_PLAYED = 99                  # game stat the merge credits to career field 0 (games) through 0x133400
+HALF = 0x3F000000                 # 0.5f: 0x133400 rounds half up, so a credit of 1 or more needs >= 0.5
 
 
 class SimCbTacklesError(ValueError):
@@ -116,11 +141,12 @@ def code_for(code_va):
 
     Entry (0x1334c3): EBP = live player, EDI = roster player; the merge prologue has run.  The tail
     runs under pushad, so it may use every register, and ends by replaying the two displaced
-    instructions and returning to 0x1334c8.  A cornerback whose current-season games count is this
-    game's week (before or after the games credit) played this game.  It draws a per-game bonus from
-    the role's cumulative table with the game's RNG and adds it to the native career field 18 (season
-    tackles); the engine's own game line is untouched, so a zero-bonus draw is a zero-tackle game
-    when the engine also credited none.
+    instructions and returning to 0x1334c8.  A cornerback gets the bonus only in a regular-season game
+    (stage 8: the merge writes preseason and playoff games into the postseason class after this hook)
+    that the game credits him with (game stat 99, bank 0, at least 0.5: exactly when the merge adds a
+    game to career field 0).  It draws a per-game bonus from the role's cumulative table with the
+    game's RNG and adds it to the native career field 18 (season tackles); the engine's own game line is
+    untouched, so a zero-bonus draw is a zero-tackle game when the engine also credited none.
     """
     from .nfl2k5_draft_ai import _Asm
     a = _Asm(code_va)
@@ -130,16 +156,19 @@ def code_for(code_va):
     a.j32("0f84", "done")
     a.b("807f3504")               # cmp byte [edi+0x35], 4   ; cornerback
     a.j32("0f85", "done")
-    a.b("33d2")                   # xor edx, edx
-    a.b("89f9")                   # mov ecx, edi
-    a.call(FN_GAMES)              # eax = games this season in the current slot
-    a.b("0fb60db476e500")         # movzx ecx, byte [WEEK]
-    a.b("49")                     # dec ecx                  ; week-1
-    a.b("39c8")                   # cmp eax, ecx             ; played this game?
-    a.j8("74", "addpath")
-    a.b("41")                     # inc ecx                  ; or week (after the games credit)
-    a.b("39c8")                   # cmp eax, ecx
+    # b780 n3: a regular-season game only (preseason 7 and playoffs 9 go to the postseason class at 0x133634)
+    a.b("833d" + struct.pack("<I", STAGE).hex() + "%02x" % REGULAR_SEASON)  # cmp dword [stage], 8
     a.j32("0f85", "done")
+    # b780 n3: only a corner this game credits with a game played (the merge's own read of game stat 99)
+    a.b("6a00")                   # push 0                   ; bank 0: this game's line
+    a.b("6a%02x5a" % GAME_PLAYED) # push 99 ; pop edx        ; games played in this game
+    a.b("89e9")                   # mov ecx, ebp             ; the live player
+    a.call(FN_GAME_STAT)          # st0 = 0.0 / 1.0 (ret 4 pops the bank)
+    a.b("50")                     # push eax                 ; scratch slot
+    a.b("d91c24")                 # fstp dword [esp]         ; keeps the x87 stack balanced
+    a.b("58")                     # pop eax                  ; the float's bits
+    a.b("3d" + struct.pack("<I", HALF).hex())  # cmp eax, 0.5f (signed: negative floats are below)
+    a.j8("7c", "done")            # jl done                  ; no game credited, no bonus
     a.label("addpath")
     a.b("8b4728")                 # mov eax, [edi+0x28]      ; depth rank/side word
     a.b("89c1")                   # mov ecx, eax
