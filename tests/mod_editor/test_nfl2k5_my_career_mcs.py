@@ -93,13 +93,13 @@ class ScheduleStaticTests(unittest.TestCase):
         b778 mc6 spends 4 of them on the identity fix (primary +2, inline_stage/inline_decode +2 after alignment).
         The spare bytes follow the generated MyCareer runtime: the beta-78 ship left them at 32 / 26 (the pin of
         9 / 3 was stale), and b779 ag1 (the 0xCA000 capacity arena and the 128-byte block reader, commits ddf823673 and
-        e957bda25) shrank the runtime by 12 bytes: 20 / 14 on this retail-length image. b780 n2 adds the punt-return jammer
-        stance to the Supersim settled check and the 3-second play-clock limit on the snap hold (40 bytes) and moves the
-        ticker's "Waiting for the next play" into the M3 ASCII pool (26 bytes back): 8 / 2."""
+        e957bda25) shrank the runtime by 12 bytes: 20 / 14 on this retail-length image. b780 n2 adds the kick check to the
+        Supersim hand-back and the 3-second play-clock limit on the snap hold (32 bytes) and moves the ticker's "Waiting
+        for the next play" into the M3 ASCII pool (26 bytes back): 16 / 10."""
         code, data = mode.legacy.allocations(self.career17)
         alone = mode.TAG_OFFSET - (mode.code_for(code['va'], data['va'])[1]['content_end'] - code['va'])
         with_home = home.check_static(self.p17)['mycareer_spare_bytes']
-        self.assertEqual((alone, with_home), (8, 2))
+        self.assertEqual((alone, with_home), (16, 10))
         self.assertEqual(alone - with_home, 6)       # Career Home's three addresses cost 6 bytes, as at ui1 and on the beta-78 base
         self.assertGreaterEqual(home.check_static(self.p18)['mycareer_spare_bytes'], 0)
 

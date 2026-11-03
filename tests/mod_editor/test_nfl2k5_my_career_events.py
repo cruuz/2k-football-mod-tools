@@ -242,11 +242,11 @@ class HostBudgetTests(unittest.TestCase):
             # Player Progress footer (34,320 B) on top of the career footer.
             # b779 rc1: mode_grown_member reads the capacity (0xB0000) arena's overflow row too, so MyCareer
             # creation no longer refuses "Roster is full." on v0.7 (test_b779_rc1_roster_capacity).
-            # b780 n2: mode_ff_settled settles the punt-return jammer's 0x50F1BC stance with no pending clip, and
-            # mode_ff_hold_snap never holds a CPU snap into the last 3 s of the play clock, so a punt where MyPlayer
-            # comes back on the field no longer hangs (test_nfl2k5_my_career_punt_settle).
+            # b780 n2: at a punt or field goal the Supersim hand-back keeps the CPU's call instead of reopening the
+            # play-call screen (its camera cancelled the kick meter and the CPU punter never snapped), and
+            # mode_ff_hold_snap never holds a CPU snap into the last 3 s of the play clock (test_nfl2k5_my_career_punt_settle).
             'tools/mycareer_mode/runtime.c':
-                '524029813f5145a9ac48ad2a8001d20ef872fa1e4d8b67a4766c6fe29e8bc94f',
+                'b1f0d0aa367009176033d4401f75e7feac00ce209d4a34a195d710eeeaba0352',
             'tools/mycareer_mode/runtime.S':
                 '768241d4390839629906e81678ca46cb7f2d2578ac791a72dd71df5a3cde0484',
             'mod_editor/core/nfl2k5_my_career_mode.py':

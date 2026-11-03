@@ -288,15 +288,8 @@ static NI u32 mode_ff_settled(void) {
     while(p && n--) {
         if(!W(p,0x48)) {
             task=(u8 *)W(p,0x20);
-            /* b780 n2: 1FF940 counts the 50F1BC stance as ready only for
-             * role byte 0, but set punt-return jammers (CB, roles 16 and 18)
-             * stand in it for the whole pre-snap. Same stance family as 50F1E4
-             * (native 1FFBC0), same settled test: no pending clip at +0x110.
-             * Without it a punt never settles, the snap stays held and the
-             * CPU never snaps when MyPlayer comes on for the punt. */
             if(!task || W(task,0x3e4)!=13 ||
-               !(CALL1(0x1ff940,p) ||
-                 !((W(W(p,0x10),4)^0x50f1bc)|W(W(p,0x10),0x110)))) return 0;
+               !CALL1(0x1ff940,p)) return 0;
             /* Readiness alone remains true while a CPU snap is queued.
              * Event 28 and the post-request QB task must both be absent. */
             for(i=0;i<8;i++) if(W(task,0x320+24*i) &&
@@ -358,7 +351,13 @@ u32 FC mode_ff_ready(u32 manager) {
              * side's selection and enter the same native screen as A143A.
              * Coach policy keeps the selected call and live player control. */
             body=W((u8 *)body,0x38);
-            if(mode_human((u8 *)body)) {
+            /* b780 n2: never at a punt or field goal (play kind E602BC 6 or
+             * 3). The kicking unit's roles have already started the kick
+             * meter; the play-call screen's camera (state 6) cancels it
+             * (BAFA0 -> BACF0 clears B72694) and the CPU kicker (2ED020)
+             * then waits for it forever: the punt never snaps. MyPlayer
+             * plays the CPU's call with his own controller instead. */
+            if(G(0xE602BC)!=6 && G(0xE602BC)!=3 && mode_human((u8 *)body)) {
                 S(2740)=body;
                 /* The completed CPU call leaves every offensive actor's
                  * "arrived at line" bit set. Native reselection only clears
