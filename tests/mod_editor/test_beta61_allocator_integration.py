@@ -195,11 +195,11 @@ class CompleteOwnerTests(unittest.TestCase):
         extra = next(a for a in v4["allocations"] if a["owner"] == "extra")
         self.assertEqual((v4["version"], extra["va"], extra["size"]), (4, space.POOL_VA + space.PAGE, 98305))
         # An ordinary owner is placed before the late ones, so it takes the pool's first slot and the pool's late
-        # owners (k128, champions) follow it: they keep their allocation (owner, kind, size, align) and only their
+        # owners (k128, champions, cpu_third_down) follow it: they keep their allocation (owner, kind, size, align) and only their
         # pool address moves. Every v3 row keeps its complete record.
         self.assertTrue(all(a in v4["allocations"] for a in v3["allocations"]
                             if a["owner"] != space.DIRECTORY_OWNER and a["va"] < space.POOL_VA))
-        self.assertEqual(pooled(v4), ["extra", "nfl2k5_k128", "nfl2k5_champions"])
+        self.assertEqual(pooled(v4), ["extra", "nfl2k5_k128", "nfl2k5_champions", "nfl2k5_cpu_third_down"])  # b780 p2: third down is a pool owner too
         for old_row in (a for a in v3["allocations"] if a["va"] >= space.POOL_VA and a["owner"] != space.DIRECTORY_OWNER):
             moved = next(a for a in v4["allocations"] if (a["owner"], a["kind"]) == (old_row["owner"], old_row["kind"]))
             self.assertEqual({k: v for k, v in moved.items() if k not in ("va", "raw")},
