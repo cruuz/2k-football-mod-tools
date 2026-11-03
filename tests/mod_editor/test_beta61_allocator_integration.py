@@ -84,7 +84,7 @@ class CompleteOwnerTests(unittest.TestCase):
         self.assertEqual([r["size"] for r in regions if r["kind"] == "code"], [4096, 4096, 24 * 4096])
         # Beta 76: era rules add 2048 RX, stock books 1536 RX, and moment
         # venue labels 2304 RX to the previous 91879-byte union.
-        self.assertEqual(sum(a["size"] for a in layout["allocations"] if a["kind"] == "code"), 115527)  # b778 ai8: + 192 cpu_third_down (the pin was stale on the beta-78 base: 109,031); b779: + 352 camera code (512 -> 864, cm2 grew the camera code owner), + 512 K128 (1,024 -> 1,536, km1), + 5,632 champions code (hn1) = 115,527. Earlier history: b773 i4: + 3,040 = 512 moment coaches code (mo1) and the four named directory code spills (tap burst 512, draft picks 544, H-back 1024, team ratings 448); b772-vt1: + 5,120 coach AI code; b77-f4: + the 160 RX bytes of the letter grades owner; b77-f4b: + 16 for the progression row; b77-v1b: + 176 period goalposts (legacy RX tail); b77-f5: + 2,560 honors code (MyCareer footprint gap)
+        self.assertEqual(sum(a["size"] for a in layout["allocations"] if a["kind"] == "code"), 116071)  # b780 p2-playcall: + 544 sprite scorebug code (5,376 -> 5,920: the ball spot and page boxes) = 116,071; b778 ai8: + 192 cpu_third_down (the pin was stale on the beta-78 base: 109,031); b779: + 352 camera code (512 -> 864, cm2 grew the camera code owner), + 512 K128 (1,024 -> 1,536, km1), + 5,632 champions code (hn1) = 115,527. Earlier history: b773 i4: + 3,040 = 512 moment coaches code (mo1) and the four named directory code spills (tap burst 512, draft picks 544, H-back 1024, team ratings 448); b772-vt1: + 5,120 coach AI code; b77-f4: + the 160 RX bytes of the letter grades owner; b77-f4b: + 16 for the progression row; b77-v1b: + 176 period goalposts (legacy RX tail); b77-f5: + 2,560 honors code (MyCareer footprint gap)
         # Era rules also add one 16-byte state allocation.
         self.assertEqual(sum(a["size"] for a in layout["allocations"] if a["kind"] == "data"), 85218)  # b775 mo2: + the 16-byte moment context state (legacy RW tail); b773 mo1: + the 512-byte moment coaches state; b772-vt1: + 128 coach AI state; b77-f5: + the 16-byte honors state block (legacy RW tail)
         image = XbeImage(self.full)
@@ -183,8 +183,8 @@ class CompleteOwnerTests(unittest.TestCase):
 
         free = run_end - max(a["va"] + a["size"] for a in v3["allocations"]
                              if a["kind"] == "code" and run["va"] <= a["va"] < run_end)
-        self.assertEqual(free, 496)
-        self.assertEqual(pooled(v3), ["nfl2k5_k128", "nfl2k5_champions"])
+        self.assertEqual(free, 144)  # b780 p2-playcall: the sprite scorebug grew 544 bytes and the third-down owner moved to the pool (496 -> 144)
+        self.assertEqual(pooled(v3), ["nfl2k5_k128", "nfl2k5_champions", "nfl2k5_cpu_third_down"])  # b780 p2: third down falls to the pool
         self.assertEqual(pooled(space.plan(REQUESTS + (("extra", "code", 32, 16),))), pooled(v3))
         self.assertEqual(pooled(space.plan(REQUESTS + (("extra", "code", free, 16),))), pooled(v3))    # fills the run exactly
         # one aligned step more pushes the last late code owner of the run, cpu_third_down, whole into the pool

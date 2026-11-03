@@ -37,9 +37,13 @@ class PlanningTests(unittest.TestCase):
         # K128 used to hold in the run, so cpu_money_downs_late and cpu_third_down (b778 spills) now fit the v3 run
         # and are no longer spills. In the budget union the star_career pair (code 2,080 + data 4,096) and the
         # money-downs state word still do not fit and also fall to the pool. Everything else keeps its v3 address.
+        # b780 p2-playcall (accepted at b780-int): the sprite scorebug's code grew 5,376 -> 5,920 bytes (the ball spot and
+        # the page boxes), so the third-down owner (and, in the budget union, the money-downs late code) no longer fits
+        # the v3 run and falls to the pool as well (fresh builds only; p2's report, allocator pins in the same commit).
         spills = {
-            'full': {('nfl2k5_k128', 'code', 0), ('nfl2k5_champions', 'code', 0)},
-            'budget': {('nfl2k5_k128', 'code', 0), ('nfl2k5_champions', 'code', 0),
+            'full': {('nfl2k5_k128', 'code', 0), ('nfl2k5_champions', 'code', 0), ('nfl2k5_cpu_third_down', 'code', 0)},
+            'budget': {('nfl2k5_k128', 'code', 0), ('nfl2k5_champions', 'code', 0), ('nfl2k5_cpu_third_down', 'code', 0),
+                       ('nfl2k5_cpu_money_downs_late', 'code', 0),
                        ('nfl2k5_star_career', 'code', 0), ('nfl2k5_star_career', 'data', 0),
                        ('nfl2k5_cpu_money_downs_late_state', 'data', 0),
                        # b779-fixD (4c89ebbb2): the beta62 budget fixture now also lists return coverage (code 192)
