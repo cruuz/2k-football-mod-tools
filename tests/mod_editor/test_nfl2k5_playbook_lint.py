@@ -1,5 +1,7 @@
 """Playbook execution linter and the Studio's compile-time repair rules (b77 job p13)."""
 from pathlib import Path
+import contextlib
+import io
 import json
 import math
 import os
@@ -225,6 +227,93 @@ class TossRules(unittest.TestCase):
         for weak_flag in (False, True):
             om.run_design(pistol, "Zone Toss", weak=weak_flag, codes=self.CODES)
 
+    # ---- b780 b6fix: the integration blockers from the review ----
+    UNBALANCED = [(0, -482), (302, 0), (-302, 0), (0, 0), (155, 0), (230, 0)] + WRS + [(-229, -482)]   # both guards on the plus-x side
+
+    def test_an_unbalanced_line_never_aborts_the_compile_rule(self):
+        # the generator cannot block this line (one lineman gets no chain): the toss stays as authored, no ValueError
+        chains = self.design(self.GUN_LEFT, "HB Toss", +1)
+        self.assertEqual([f.code for f in self.lint_codes(self.UNBALANCED, chains)], ["TOSS_SIDE_CROSS"])
+        self.assertEqual(lint.normalize_offense_play(self.UNBALANCED, self.CODES, chains), (None, []))
+        two_tackles = [(0, -482), (302, 0), (302, 0), (0, 0), (155, 0), (-155, 0)] + self.WRS + [(-229, -482)]
+        self.assertEqual(lint.normalize_offense_play(two_tackles, self.CODES, chains), (None, []))
+        self.assertIsNotNone(lint.normalize_shared_offense_play([(self.UNBALANCED, self.CODES), (self.GUN_LEFT, self.CODES)],
+                                                                chains)[0])                  # the balanced link still turns it
+
+    def test_a_toss_linked_to_opposite_side_formations_picks_one_side(self):
+        chains = self.design(self.GUN_LEFT, "Crack Toss", +1)               # authored once for a back-left set: lane plus x
+        both = [(self.GUN_LEFT, self.CODES), (self.GUN_RIGHT, self.CODES)]
+        # one link each: the play crosses in one of them either way, a tie keeps the play as authored and says so
+        fixed, receipts = lint.normalize_shared_offense_play(both, chains, labels=["left", "right"])
+        self.assertIsNone(fixed)
+        self.assertEqual([(r["rule"], r["status"], r["crossing_formations"]) for r in receipts],
+                         [("toss_side", "kept_mixed_links", ["left"])])
+        # two back-left links against one back-right link: the side that crosses less (his own) wins and the receipt names the rest
+        fixed, receipts = lint.normalize_shared_offense_play(both[:1] + both[:1] + both[1:], chains, labels=["l1", "l2", "r"])
+        self.assertIsNotNone(fixed)
+        self.assertEqual([(r["status"], r["new_side"], r["crossing_formations"]) for r in receipts],
+                         [("rebuilt_mixed_links", -1, ["r"])])
+        self.assertTrue(lint.toss_crosses(self.GUN_RIGHT, self.CODES, fixed))
+        self.assertFalse(lint.toss_crosses(self.GUN_LEFT, self.CODES, fixed))
+        self.assertIsNone(validate(self.FLAGS, fixed))
+        # two back-right links against one back-left link: the authored side already crosses less
+        fixed, receipts = lint.normalize_shared_offense_play(both[:1] + both[1:] + both[1:], chains, labels=["l", "r1", "r2"])
+        self.assertIsNone(fixed)
+        self.assertEqual(receipts[0]["crossing_formations"], ["l"])
+        # every link crossing: a plain rebuild with the ordinary receipt, same as one formation alone
+        fixed, receipts = lint.normalize_shared_offense_play(both[:1] + both[:1], chains)
+        self.assertEqual(lint._as_bytes(fixed), lint._as_bytes(lint.normalize_offense_play(self.GUN_LEFT, self.CODES, chains)[0]))
+        self.assertEqual([r["status"] for r in receipts], ["rebuilt"])
+        # nothing to turn (no link crosses, a pistol link never does): untouched
+        self.assertEqual(lint.normalize_shared_offense_play([(self.GUN_RIGHT, self.CODES), (self.PISTOL, self.CODES)], chains),
+                         (None, []))
+
+    def test_other_rules_must_still_agree_across_the_links_of_one_play(self):
+        # an end-around fixed in one link and not in the other is still a conflict, not a silent pick
+        flats = lint.end_around_template(GUN_WIDE, CODES_11, 9)
+        self.assertIsNotNone(lint.normalize_offense_play(GUN_WIDE, CODES_11, flats)[0])
+        self.assertIsNone(lint.normalize_offense_play(UC_SLOT, CODES_11, flats)[0])
+        with self.assertRaises(lint.SharedPlayConflict):
+            lint.normalize_shared_offense_play([(GUN_WIDE, CODES_11), (UC_SLOT, CODES_11)], flats)
+
+    def test_studio_rules_lint_judges_a_shared_toss_as_the_compiler_writes_it(self):
+        chains = self.design(self.GUN_LEFT, "Crack Toss", +1)
+
+        def play_view(formation, pos):
+            nodes = [list(codec.encode_chain(c)) for c in chains]
+            return lint.PlayView(formation, f"f{formation}", 7, "Crack Toss", self.FLAGS, [tuple(map(float, q)) for q in pos],
+                                 list(self.CODES), nodes)
+        views = [play_view(0, self.GUN_LEFT), play_view(1, self.GUN_LEFT), play_view(2, self.GUN_RIGHT)]
+        built = lint.as_built_views(views)
+        report = lint.lint_views(built, "mixed")
+        # the compiler turns the play to the minus-x side (two links) and leaves the lone back-right link crossing
+        self.assertEqual([(f.formation, f.code) for f in report.findings], [(2, "TOSS_SIDE_CROSS")])
+        self.assertEqual(built[0].chains, built[1].chains)
+        self.assertEqual(built[0].chains, built[2].chains)
+
+    def test_the_wizards_plain_toss_goes_to_the_backs_side_in_every_gun_formation(self):
+        from mod_editor.core import nfl2k5_offense_concepts as oc
+        checked = 0
+        for name, spec in oc.FORMATIONS.items():
+            ctx = spec.context()
+            try:
+                design = oc.design("Toss", ctx)
+                weak = oc.design("Toss", ctx, {"direction": "weak"})
+            except oc.ConceptUnavailable:
+                continue
+            car = ctx.slot("B")
+            own = oc.toss_own_side(ctx, car) if car is not None else None
+            if own is None:
+                continue
+            checked += 1
+            for d in (design, weak):
+                lane = codec.HANDOFF_HOLE_CM[int(next(n[1][2] for n in d.chains[car] if n[0] == 0x16))]
+                self.assertGreater(lane * own, 0, f"{name}: Toss crosses behind the QB")
+        self.assertGreaterEqual(checked, 30)                                  # 35 gun formations stand the back off to a side
+        # the engine constant and the linter's copy of it stay the same number
+        from mod_editor.core import nfl2k5_offense_modern as om
+        self.assertEqual((om.TOSS_BEHIND_DEADBAND_YD, om.toss_own_side), (lint.TOSS_BEHIND_DEADBAND_YD, oc.toss_own_side))
+
 
 class TossPackTool(unittest.TestCase):
     """b780 b6-plays: pb/v2/toss_side.py turns the shipped crossing shotgun tosses (the books written before the generator
@@ -266,6 +355,25 @@ class TossPackTool(unittest.TestCase):
         self.assertEqual(dict(again), {})                                     # a second pass changes nothing
         self.assertEqual(toss_side.new_name("Crack Toss Wk"), "Crack Toss")   # the " Wk" mark follows the side
 
+    def test_tool_resolves_the_packs_folder_and_refuses_an_empty_one(self):
+        # b780 b6fix: a relative --packs used to skip the catalogs and manifests, and a missing folder passed --check
+        from pb.v2 import toss_side
+        self.assertTrue(toss_side.is_shipped_folder(ROOT / "data" / "playbooks"))
+        try:
+            relative = os.path.relpath(ROOT / "data" / "playbooks")           # ValueError on Windows when cwd is on another drive
+        except ValueError:
+            relative = None
+        if relative is not None:
+            self.assertTrue(toss_side.is_shipped_folder(Path(relative)))
+            with contextlib.redirect_stdout(io.StringIO()):
+                self.assertEqual(toss_side.main(["--check", "--packs", relative]), 0)
+        self.assertTrue(toss_side.is_shipped_folder(ROOT / "data" / ".." / "data" / "playbooks"))
+        with tempfile.TemporaryDirectory() as tmp:
+            self.assertFalse(toss_side.is_shipped_folder(Path(tmp)))
+            with contextlib.redirect_stderr(io.StringIO()):
+                self.assertEqual(toss_side.main(["--check", "--packs", tmp]), 2)                   # no packs in the folder
+                self.assertEqual(toss_side.main(["--check", "--packs", os.path.join(tmp, "missing")]), 2)
+
     def test_shipped_packs_hold_the_own_side_toss(self):
         doc = self.jax()
         form = next(f for f in doc["formations"] if f["custom_name"] == "Gun Spread")
@@ -273,6 +381,51 @@ class TossPackTool(unittest.TestCase):
         play = next(p for p in doc["plays"] if p["id"] == "p111")
         self.assertEqual(play["assignments"][10][1][1][2], 8)                 # ... and the lane is on his side (hole 8, minus x)
         self.assertEqual(play["custom_name"], "Crack Toss Wk")
+
+
+IMAGE = Path(os.environ.get("NFL2K5_RETAIL_IMAGE", "/media/noah/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso"))
+
+
+@unittest.skipUnless(IMAGE.is_file(), "needs the retail image")
+class MixedLinksCompile(unittest.TestCase):
+    """b780 b6fix, real compile: a toss linked to a back-left and a back-right formation used to stop the compile
+    ("shared play has conflicting execution fixes"); now it compiles, the side with fewer crossings wins and the fix
+    receipt names the formations that still cross."""
+    raw = None
+
+    @classmethod
+    def setUpClass(cls):
+        from nfl2k5_playbook_position_recode import OuterImage, BOOK_ENTRIES
+        with OuterImage(IMAGE) as image:
+            cls.raw = image.read_entry(BOOK_ENTRIES["JAX"])
+
+    def pack_with(self, extra_menus):
+        """JAX with p111 (Crack Toss) as v0.8 authored it (crossing in Gun Spread f16, back minus x), also linked to
+        ``extra_menus`` formations; f17 and f26 stand the back on the plus x side, f05 on the minus x side."""
+        doc = json.loads((ROOT / "data/playbooks/softdrink_jax_modern.2k5book").read_text(encoding="utf-8"))
+        play = next(p for p in doc["plays"] if p["id"] == "p111")
+        play["assignments"], play["custom_name"] = json.loads(json.dumps(TossPackTool.V08_CRACK_TOSS)), "Crack Toss"
+        for fid in extra_menus:
+            doc["menus"][fid].append("p111")
+        return packs.pack_from_json(doc)
+
+    def compile(self, extra_menus):
+        from mod_editor.core import nfl2k5_complete_offense as full
+        compiled = full.compile_offense(self.raw, self.pack_with(extra_menus), asset_id="b6fix")
+        fixes = {r["play_id"]: r["rules"] for r in compiled.report["execution_fixes"]["plays"]}
+        crossing = sorted({f.formation_name for f in lint.lint_resource(compiled.replacement).findings
+                           if f.code == "TOSS_SIDE_CROSS"})
+        return fixes.get("p111", []), crossing
+
+    def test_one_link_each_side_keeps_the_play_and_names_the_crossing_link(self):
+        rules, crossing = self.compile(["f17"])
+        self.assertEqual([(r["rule"], r["status"], r["crossing_formations"]) for r in rules], [("toss_side", "kept_mixed_links", ["f16"])])
+        self.assertEqual(crossing, ["Gun Spread"])
+
+    def test_more_back_left_links_turn_the_play_and_name_the_back_right_link(self):
+        rules, crossing = self.compile(["f17", "f05"])                    # f16 + f05 back left, f17 back right
+        self.assertEqual([(r["status"], r["new_side"], r["crossing_formations"]) for r in rules], [("rebuilt_mixed_links", -1, ["f17"])])
+        self.assertEqual(crossing, ["Gun Doubles Clamp Stack"])
 
 
 class DefenseAndPacks(unittest.TestCase):

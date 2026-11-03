@@ -544,12 +544,39 @@ def as_built(view: PlayView) -> PlayView:
                     view.positions, view.codes, [list(codec.encode_chain(c)) for c in chains], view.formation_type)
 
 
+def as_built_views(views: Iterable[PlayView]) -> list[PlayView]:
+    """``as_built`` for every link of a pack: the links of one play get one shared repair, as the compiler decides it
+    (``normalize_shared_offense_play``), so a toss linked to opposite-side formations is judged the way it is written."""
+    views = list(views)
+    by_play: dict[int, list[int]] = {}
+    for i, v in enumerate(views):
+        by_play.setdefault(v.play, []).append(i)
+    out: list[PlayView | None] = [None] * len(views)
+    for idxs in by_play.values():
+        group = [views[i] for i in idxs]
+        flats = [lib.forward_back_flats(_authored(v.chains), v.positions, v.codes)[0] for v in group]
+        if len(group) > 1 and all(f == flats[0] for f in flats):
+            try:
+                fixed, _ = normalize_shared_offense_play([(v.positions, v.codes) for v in group], flats[0])
+            except SharedPlayConflict:
+                pass                                       # the compiler refuses this play; judge each link on its own
+            else:
+                chains = fixed if fixed is not None else flats[0]
+                for i, v in zip(idxs, group):
+                    out[i] = PlayView(v.formation, v.formation_name, v.play, v.play_name, v.play_flags, v.positions, v.codes,
+                                      [list(codec.encode_chain(c)) for c in chains], v.formation_type)
+                continue
+        for i, v in zip(idxs, group):
+            out[i] = as_built(v)
+    return out
+
+
 def lint_pack(pack, label: str | None = None, *, studio_rules: bool = False,
               native_plan: NativePlan | None = None) -> LintReport:
     """Lint a ``.2k5book``; ``studio_rules`` lints the plays as the Studio compiler will write them."""
     views = pack_views(pack)
     if studio_rules:
-        views = (as_built(v) for v in views)
+        views = as_built_views(views)
     report = lint_views(views, label or pack.book.name, native_plan)
     report.findings.extend(pack_defense_findings(pack))
     for kind, rows in (("formation", pack.formations), ("play", pack.plays)):
@@ -811,38 +838,55 @@ def fix_toss_side(positions, codes, chains) -> tuple[list[Chain] | None, dict | 
     if found is None:
         return None, None
     car, old = found
-    ctx = oc.FormationContext.build(positions, codes)
-    own = om.toss_own_side(ctx, car)
-    if own is None or own == old:
-        return None, None
-    label = next((lab for lab in ("B", "B2") if ctx.slot(lab) == car), None)
-    if label is None:
-        return None, None
-    matched = None
-    for family in TOSS_FAMILY:
-        for scheme in family:
-            try:
-                design = om.run_design(ctx, scheme, direction=old, carrier=label, codes=codes, own_side_only=False)
-            except oc.ConceptUnavailable:
-                continue
-            oc.fill_unassigned(ctx, design)
-            template = _as_bytes(design.chains)
-            if all(template[s] == chains_bytes[s] for s in (*TOSS_CORE_SLOTS, car)):
-                matched = family
-                break
-        if matched:
-            break
-    if matched is None:
-        return None, None
-    scheme = "Zone Toss" if matched == TOSS_FAMILY[0] else ("Crack Toss" if _crack_receivers(chains_bytes, codes) else "HB Toss")
-    fixed = om.run_design(ctx, scheme, direction=own, carrier=label, codes=codes)
-    oc.fill_unassigned(ctx, fixed)
     core = {*TOSS_CORE_SLOTS, car}
+    try:
+        ctx = oc.FormationContext.build(positions, codes)
+        own = om.toss_own_side(ctx, car)
+        if own is None or own == old:
+            return None, None
+        label = next((lab for lab in ("B", "B2") if ctx.slot(lab) == car), None)
+        if label is None:
+            return None, None
+        matched = None
+        for family in TOSS_FAMILY:
+            for scheme in family:
+                template = _toss_core_bytes(ctx, scheme, old, label, codes, core)
+                if template is not None and all(template[s] == chains_bytes[s] for s in core):
+                    matched = family
+                    break
+            if matched:
+                break
+        if matched is None:
+            return None, None
+        scheme = "Zone Toss" if matched == TOSS_FAMILY[0] else ("Crack Toss" if _crack_receivers(chains_bytes, codes) else "HB Toss")
+        fixed = om.run_design(ctx, scheme, direction=own, carrier=label, codes=codes)
+        oc.fill_unassigned(ctx, fixed)
+        if any(not fixed.chains[s] for s in core):
+            return None, None
+        for s in core:
+            _as_bytes([fixed.chains[s]])                  # the rebuilt chain must encode (1 to 15 nodes) or it is not used
+    except (oc.ConceptUnavailable, ValueError):
+        return None, None             # b780 b6fix: a line the generator cannot block is left as authored, never a compile error
     authored = _authored(chains_bytes)
     result = [fixed.chains[s] if s in core else authored[s] for s in range(11)]
     offset = (positions[car][0] - positions[0][0]) / YD
     return result, dict(rule="toss_side", status="rebuilt", scheme=scheme, carrier=car, old_side=old, new_side=own,
                         back_offset_yd=round(offset, 2))
+
+
+def _toss_core_bytes(ctx, scheme: str, side: int, label: str, codes, core) -> dict[int, list[bytes]] | None:
+    """The generator's toss for ``side`` as encoded bytes of the core slots, or None when it cannot author them
+    (the scheme is unavailable here, or the formation leaves a core slot without a chain)."""
+    from . import nfl2k5_offense_concepts as oc
+    from . import nfl2k5_offense_modern as om
+    try:
+        design = om.run_design(ctx, scheme, direction=side, carrier=label, codes=codes, own_side_only=False)
+        oc.fill_unassigned(ctx, design)
+    except oc.ConceptUnavailable:
+        return None
+    if any(not design.chains[s] for s in core):
+        return None
+    return {s: _as_bytes([design.chains[s]])[0] for s in core}
 
 
 def _authored(chains) -> list[Chain]:
@@ -853,15 +897,16 @@ def _authored(chains) -> list[Chain]:
     return out
 
 
-def normalize_offense_play(positions, codes, chains) -> tuple[list[Chain] | None, list[dict]]:
+def normalize_offense_play(positions, codes, chains, *, toss: bool = True) -> tuple[list[Chain] | None, list[dict]]:
     """Apply every repair rule in order; return (all eleven authored chains or None, receipts).
 
     Idempotent: a repaired play no longer matches any rule's trigger. Callers
     compare encoded bytes per slot and write only the slots that changed.
+    ``toss=False`` leaves the toss-side rule out (``normalize_shared_offense_play`` decides it for a whole play).
     """
     receipts: list[dict] = []
     current, changed = chains, False
-    for rule in (fix_end_around, fix_rb_screen, fix_back_routes, fix_toss_side):
+    for rule in (fix_end_around, fix_rb_screen, fix_back_routes) + ((fix_toss_side,) if toss else ()):
         fixed, receipt = rule(positions, codes, current)
         if receipt is not None:
             receipts.append(receipt)
@@ -870,14 +915,77 @@ def normalize_offense_play(positions, codes, chains) -> tuple[list[Chain] | None
     return (_authored(current) if changed else None), receipts
 
 
+def toss_crosses(positions, codes, chains) -> bool:
+    """True when ``chains`` is a recognised shotgun toss whose lane is on the far side of the QB from the back."""
+    from . import nfl2k5_offense_concepts as oc
+    from . import nfl2k5_offense_modern as om
+    try:
+        chains_bytes = _as_bytes(chains)
+        found = _toss_old_side(chains_bytes, codes)
+        if found is None:
+            return False
+        car, side = found
+        own = om.toss_own_side(oc.FormationContext.build(positions, codes), car)
+    except (oc.ConceptUnavailable, ValueError):
+        return False
+    return own is not None and own != side
+
+
+class SharedPlayConflict(ValueError):
+    """Formations that share one play disagree about a repair other than the toss side."""
+
+
+def normalize_shared_offense_play(formations: Sequence[tuple], chains, labels: Sequence | None = None) -> tuple[list[Chain] | None, list[dict]]:
+    """``normalize_offense_play`` for one play linked to several formations: ``formations`` is a list of ``(positions, codes)``.
+
+    The play is one set of chains for all its formations, so every rule must repair it the same way
+    (``SharedPlayConflict`` otherwise).  The toss side is the one rule whose answer legitimately differs between
+    formations: a toss linked to a back-left set and a back-right set crosses in one of them whichever way it goes.
+    Then the side with fewer crossing formations wins, a tie keeps the play as authored, and a receipt says which
+    formations still cross (``labels`` names them; their list positions otherwise).  A toss that only one kind of
+    formation carries is repaired exactly as ``normalize_offense_play`` does."""
+    forms = list(formations)
+    if not forms:
+        return None, []
+    base = [normalize_offense_play(pos, codes, chains, toss=False) for pos, codes in forms]
+    if any(b[0] != base[0][0] for b in base):
+        raise SharedPlayConflict("shared play has conflicting execution fixes")
+    fixed, receipts = base[0][0], list(base[0][1])
+    current = fixed if fixed is not None else chains
+    names = list(labels) if labels is not None else list(range(len(forms)))
+    options: list[tuple[list | None, dict | None]] = [(None, None)]
+    for pos, codes in forms:
+        toss_fixed, toss_receipt = fix_toss_side(pos, codes, current)
+        if toss_receipt is not None and all(_as_bytes(toss_fixed) != _as_bytes(o[0]) for o in options if o[0] is not None):
+            options.append((toss_fixed, toss_receipt))
+    if len(options) == 1:
+        return fixed, receipts
+    scored = [([names[i] for i, (pos, codes) in enumerate(forms) if toss_crosses(pos, codes, o[0] if o[0] is not None else current)], o)
+              for o in options]
+    crossing, (toss_fixed, toss_receipt) = min(scored, key=lambda item: len(item[0]))      # min() keeps the first (authored) on a tie
+    if toss_fixed is None:
+        receipts.append(dict(rule="toss_side", status="kept_mixed_links", crossing_formations=crossing,
+                             reason="the play is linked to formations whose back stands on opposite sides of the QB, "
+                                    "so it crosses in some of them whichever way the toss goes; it stays as authored"))
+        return fixed, receipts
+    receipt = dict(toss_receipt)
+    if crossing:
+        receipt.update(status="rebuilt_mixed_links", crossing_formations=crossing,
+                       reason="the play is linked to formations whose back stands on opposite sides of the QB; the side "
+                              "that crosses in fewer of them was chosen")
+    receipts.append(receipt)
+    return _authored(toss_fixed), receipts
+
+
 def changed_slots(old_chains, new_chains) -> list[int]:
     old_b, new_b = _as_bytes(old_chains), _as_bytes(new_chains)
     return [s for s in range(len(old_b)) if old_b[s] != new_b[s]]
 
 
 __all__ = [
-    "Finding", "LintReport", "PlayView", "as_built", "EXECUTION_CODES", "SCHEMA", "FIX_SCHEMA", "SEVERITY", "GOAL_IDS",
+    "Finding", "LintReport", "PlayView", "as_built", "as_built_views", "EXECUTION_CODES", "SCHEMA", "FIX_SCHEMA", "SEVERITY", "GOAL_IDS",
     "defense_findings", "end_around_template", "screen_drop_yd", "fix_back_routes", "fix_end_around", "fix_rb_screen", "fix_toss_side",
-    "lint_pack", "lint_resource", "lint_views", "pack_defense_findings", "normalize_offense_play", "pack_views", "rb_screen_template",
+    "lint_pack", "lint_resource", "lint_views", "pack_defense_findings", "normalize_offense_play", "normalize_shared_offense_play",
+    "SharedPlayConflict", "toss_crosses", "pack_views", "rb_screen_template",
     "resource_views", "changed_slots",
 ]

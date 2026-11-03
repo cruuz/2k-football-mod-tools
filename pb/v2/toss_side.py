@@ -137,12 +137,24 @@ def fix_catalog(cat: dict, changed: dict) -> int:
     return n
 
 
+def is_shipped_folder(path: Path) -> bool:
+    """True for ``data/playbooks`` however it is spelled (relative, with a symlink, with ``..``): only that folder has its
+    team catalogs and manifests refreshed."""
+    return Path(path).resolve() == (ROOT / "data/playbooks").resolve()
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--packs", type=Path, default=ROOT / "data/playbooks")
     ap.add_argument("--apply", action="store_true")
     ap.add_argument("--check", action="store_true")
     a = ap.parse_args(argv)
+    # b780 b6fix: compare resolved paths (a relative --packs used to skip the catalogs and manifests) and refuse an empty folder
+    a.packs = a.packs.resolve()
+    shipped = is_shipped_folder(a.packs)
+    if not a.packs.is_dir() or not books(a.packs):
+        print(f"toss_side: no softdrink_*_modern.2k5book packs in {a.packs}", file=sys.stderr)
+        return 2
     from pb.v2 import tush_push_spacing as tp
     total: Counter = Counter()
     manifest = json.loads((ROOT / "pb/v2/manifest.json").read_text(encoding="utf-8"))
@@ -159,13 +171,13 @@ def main(argv=None) -> int:
         if stats and a.apply:
             packs.save_pack(packs.pack_from_json(doc), path)
             touched.add(team)
-            if a.packs == ROOT / "data/playbooks" and catp.is_file():
+            if shipped and catp.is_file():
                 cat = json.loads(catp.read_text(encoding="utf-8"))
                 if fix_catalog(cat, changed):
                     catp.write_text(json.dumps(cat, indent=1) + "\n", encoding="utf-8", newline="\n")
         print(path.name, dict(stats))
         total.update(stats)
-    if a.apply and touched and a.packs == ROOT / "data/playbooks":
+    if a.apply and touched and shipped:
         tp.refresh_manifests(touched)
     print("TOTAL", dict(total))
     return 1 if (a.check and total) else 0

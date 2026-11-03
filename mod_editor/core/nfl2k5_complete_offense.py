@@ -427,11 +427,14 @@ def compile_offense(resource, pack, *, asset_id):
             # b77 p13: rebuild template plays whose geometry the runtime cannot
             # execute (far end-around runners, zero-margin RB screens, backs whose
             # routes finish level with the QB). Unrecognised plays pass unchanged.
-            fixes = [lint.normalize_offense_play(f.slot_positions, f.position_codes, authored)
-                     for f in play_formations[p.id]]
-            require(all(fx[0] == fixes[0][0] for fx in fixes),
-                    f'{p.id}: shared play has conflicting execution fixes')
-            fixed, fix_receipts = fixes[0]
+            # b780 b6fix: a toss linked to back-left and back-right formations crosses in one of them either way; the
+            # side with fewer crossings is chosen and the receipt names the rest (the other rules must still agree).
+            try:
+                fixed, fix_receipts = lint.normalize_shared_offense_play(
+                    [(f.slot_positions, f.position_codes) for f in play_formations[p.id]], authored,
+                    labels=[f.id for f in play_formations[p.id]])
+            except lint.SharedPlayConflict:
+                require(False, f'{p.id}: shared play has conflicting execution fixes')
             if fixed is not None:
                 authored = fixed
             if fix_receipts:

@@ -1024,26 +1024,9 @@ def _other_legs(tpl: dict, p: oc.Player, d: int):
     return None
 
 
-#: b780 b6-plays: a back this close to the QB's x counts as "directly behind" him (retail: 0.0; the offset backs stand 2.7 yd out)
-TOSS_BEHIND_DEADBAND_YD = 0.4
-
-
-def toss_own_side(ctx: oc.FormationContext, carrier: int) -> int | None:
-    """The side a shotgun or pistol toss to ``carrier`` has to go: his own (+1 toward +x, -1 toward -x; +x is the right of the
-    Studio's diagrams and the offense's LEFT on the TV, measured in xemu b780 b6-plays), or None when he stands directly
-    behind the QB or the QB is under centre.
-
-    b780 b6-plays (SWeaR 11/01: "the Crack Toss under Gun Spread ... your player starts to go outside then cuts
-    immediately back into the middle"): the generator tossed to the formation's strong side even when the back stood on
-    the other side of the QB, so the back had to run 8.3 yd across behind the QB to the lane while the QB pitched.
-    Retail never does that out of the gun (82 of 83 shotgun tosses in the 37 retail books go to the back's own side);
-    its backs cross behind the QB only from under-centre split-back sets."""
-    if not ctx.gun:
-        return None
-    dx = ctx.player(carrier).x - ctx.qb.x
-    if abs(dx) <= TOSS_BEHIND_DEADBAND_YD:
-        return None
-    return 1 if dx > 0 else -1
+#: b780 b6-plays: defined in the base engine (the wizard's plain Toss needs it too); re-exported here for the generator and the linter
+TOSS_BEHIND_DEADBAND_YD = oc.TOSS_BEHIND_DEADBAND_YD
+toss_own_side = oc.toss_own_side
 
 
 def run_design(ctx: oc.FormationContext, scheme: str, *, weak: bool = False, carrier: str = "B",

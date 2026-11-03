@@ -1297,6 +1297,28 @@ def _run_ol(ctx: FormationContext, scheme: str, d: int, puller: int | None = Non
     return out
 
 
+#: b780 b6-plays: a back this close to the QB's x counts as "directly behind" him (retail: 0.0; the offset backs stand 2.7 yd out)
+TOSS_BEHIND_DEADBAND_YD = 0.4
+
+
+def toss_own_side(ctx: FormationContext, carrier: int) -> int | None:
+    """The side a shotgun or pistol toss to ``carrier`` has to go: his own (+1 toward +x, -1 toward -x; +x is the right of the
+    Studio's diagrams and the offense's LEFT on the TV, measured in xemu b780 b6-plays), or None when he stands directly
+    behind the QB or the QB is under centre.
+
+    b780 b6-plays (SWeaR 11/01: "the Crack Toss under Gun Spread ... your player starts to go outside then cuts
+    immediately back into the middle"): the generator tossed to the formation's strong side even when the back stood on
+    the other side of the QB, so the back had to run 8.3 yd across behind the QB to the lane while the QB pitched.
+    Retail never does that out of the gun (82 of 83 shotgun tosses in the 37 retail books go to the back's own side);
+    its backs cross behind the QB only from under-centre split-back sets."""
+    if not ctx.gun:
+        return None
+    dx = ctx.player(carrier).x - ctx.qb.x
+    if abs(dx) <= TOSS_BEHIND_DEADBAND_YD:
+        return None
+    return 1 if dx > 0 else -1
+
+
 def _carrier(ctx: FormationContext) -> int:
     b = ctx.slot("B")
     if b is None:
@@ -1375,6 +1397,12 @@ def _trap(ctx):
 @concept("Toss", "run", "pitch to the back running to the edge, line reaches", ("base",), preference=2)
 def _toss(ctx):
     d = ctx.run_strong
+    b = ctx.slot("B")
+    own = toss_own_side(ctx, b) if b is not None else None
+    if own is not None:
+        # b780 b6fix: out of the gun the toss goes to the back's own side (not the formation's strong side), whatever a
+        # direction override says: _run flips d for a "weak" override, so hand it the side that flips to his own
+        d = -own if active_overrides().get("direction") == "weak" else own
     out_design = _run(ctx, "Toss", "Toss", "reach", d, 5.8, (0, 30, -3), handoff=1, header="run_toss")
     return out_design
 
