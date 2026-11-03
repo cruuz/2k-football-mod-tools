@@ -47,9 +47,17 @@ class Replay:
         m.run(STUB, count=10)
         return m.readf(SCRATCH)
 
+    def records(self):
+        """The home / away score records (the game points 0xE5FC28 / 0xE5FC68 at them at start-up, 0x55E9F); the
+        fixture's home-team copy in configure overwrites both, and the overtime window compares the two scores."""
+        m = self.m
+        m.u32(0xE5FC28, m.OFFMETA)
+        m.u32(0xE5FC68, m.DEF + 0x200)
+
     def estimate(self, team, state):
         m = self.m
         m.configure(**state)
+        self.records()
         m.run(0x20A4D0, args=(team,), count=20000)
         return self.st0()
 
@@ -57,7 +65,11 @@ class Replay:
         m = self.m
         m.u32(0xE5FF80, mode)
         m.u32(0xE60284, m.DEF)
-        offense, defense = self.estimate(m.HOME, state), self.estimate(m.DEF, state)
+        # As the native pre-snap store 0x20AC70 does: the offense's estimate is stored before the defense's is made
+        # (a tied defense's branch of 0x20A4D0 reads it), so no estimate depends on the previous replay's state.
+        offense = self.estimate(m.HOME, state)
+        m.f32(0xBF1240, offense)
+        defense = self.estimate(m.DEF, state)
         m.configure(**state)
         m.f32(0xBF1240, offense)
         m.f32(0xBF1480, defense)
@@ -71,8 +83,7 @@ class Replay:
         m.u32(m.DEF + 8, m.DEF + 0x200)
         m.u32(m.OFFMETA + 0x14, 1)
         m.u32(m.DEF + 0x200 + 0x14, 1)
-        m.u32(0xE5FC28, m.OFFMETA)                # the real home / away score records for the overtime window
-        m.u32(0xE5FC68, m.DEF + 0x200)
+        self.records()
         return offense, defense
 
     def flag(self, va, **registers):
@@ -145,16 +156,24 @@ class ClockReplays(unittest.TestCase):
         return fn(self.retail, *args, **kwargs), fn(self.clock, *args, **kwargs)
 
     def test_two_scores_down_gets_the_estimate_and_urgency_from_ten_minutes(self):
-        """Q4, own 25, 7-minute quarters: retail E is 0 until 5:00; a team down 9 or more now gets the native E from
-        10:00 (two scores: 75 yards x 1.875 s + 140.625 s), urgency rises before 5:00, one-score games are unchanged."""
-        def offense_estimate(r, seconds, margin):
+        """Q4, own 25: retail E is 0 until 5:00; a team down 9 or more now gets the native E from 10:00, urgency rises
+        before 5:00, one-score games are unchanged. The native E (0x20A4D0) counts 7-point scores: down 9 to 15 needs
+        two (75 yards x 1.875 s + 140.625 s = 281.25 s), down 16 or 17 three (two touchdowns leave it 2 or 3 behind,
+        so a field goal too: 75 x 1.875 + 2 x 140.625 = 421.875 s), and E never exceeds the quarter length (420 s
+        with 7-minute quarters, the SOFTDRINK default)."""
+        def offense_estimate(r, seconds, margin, quarter_seconds=420):
             return r.prepare(dict(down=1, quarter=4, seconds=seconds, score_margin=margin, own_yard=25, distance=10,
-                                  home=True, quarter_seconds=420))[0]
-        for margin in (-9, -14, -16):
+                                  home=True, quarter_seconds=quarter_seconds))[0]
+        for margin, native in ((-9, 281.25), (-14, 281.25), (-15, 281.25), (-16, 420.0), (-17, 420.0)):
             for seconds in (600, 420, 330):
-                self.assertEqual(self.both(offense_estimate, seconds, margin), (0.0, 281.25), (margin, seconds))
+                self.assertEqual(self.both(offense_estimate, seconds, margin), (0.0, native), (margin, seconds))
             self.assertEqual(self.both(offense_estimate, 660, margin), (0.0, 0.0), margin)
-            self.assertEqual(self.both(offense_estimate, 270, margin), (281.25, 281.25), margin)
+            self.assertEqual(self.both(offense_estimate, 270, margin), (native, native), margin)
+        # 15-minute quarters: the three-score estimate is not capped, and the window still opens at 10:00
+        for margin, native in ((-9, 281.25), (-16, 421.875)):
+            self.assertEqual(self.both(offense_estimate, 600, margin, 900), (0.0, native), margin)
+            self.assertEqual(self.both(offense_estimate, 660, margin, 900), (0.0, 0.0), margin)
+            self.assertEqual(self.both(offense_estimate, 270, margin, 900), (native, native), margin)
         for margin in (-8, -3, 0, 7):
             for seconds in (600, 420, 330):
                 self.assertEqual(self.both(offense_estimate, seconds, margin), (0.0, 0.0), (margin, seconds))
@@ -309,8 +328,9 @@ class ClockReplays(unittest.TestCase):
 
     def test_overtime_census_of_the_late_window_callers(self):
         """The decision routines that ask 0x205FE0, replayed on overtime states. Without the overtime choice nothing
-        changes; with it, playoffs and tied non-franchise games stay native, and franchise regular season gets the
-        end-of-game rules (examples pinned below)."""
+        changes; with it, playoffs and tied non-franchise games stay native, and where the end of overtime decides the
+        game (franchise regular season, or another non-playoff mode while one team leads) every routine gives exactly
+        the retail answer of the same state in the last 5:00 of Q4 (examples pinned below)."""
         def row(r, state, mode):
             out = {}
             offense, defense = r.prepare(state, mode=mode)
@@ -335,6 +355,8 @@ class ClockReplays(unittest.TestCase):
             self.assertEqual(clock, retail, (mode, state))
             if mode == 6 or (mode == 4 and margin == 0):
                 self.assertEqual(overtime, retail, (mode, state))
+            else:
+                self.assertEqual(overtime, row(self.retail, dict(state, quarter=4), mode), ("as in Q4", mode, state))
             if overtime != retail:
                 changed.append((mode, seconds, margin, own, down, retail, overtime))
         self.assertTrue(changed)
@@ -346,10 +368,19 @@ class ClockReplays(unittest.TestCase):
         # trailing by 7 on fourth down in field-goal range: retail kicks, the overtime rules do not
         retail, overtime = by_state[(7, 100, -7, 65, 4)]
         self.assertEqual((retail["fg"], overtime["fg"]), (1, 0))
-        # tied with 1:40 left: the offense hurries and the defense wants its timeouts, as in Q4
+        # tied with 1:40 left, 1st down at its own 30: the offense hurries (its estimate 65.62 s is now live), and the
+        # defense keeps its timeouts, as in Q4: a tied defense's native estimate asks for the ball back only when the
+        # offense will punt or is in field-goal range, so here it is 0 and the predicate 0x207050 (t < E) says no
         retail, overtime = by_state[(7, 100, 0, 30, 1)]
         self.assertEqual((retail["hurry"], overtime["hurry"]), (0, 1))
-        self.assertEqual((retail["defense_timeout"], overtime["defense_timeout"]), (False, True))
+        self.assertEqual(overtime["estimate"], (65.62, 0.0))
+        self.assertEqual((retail["defense_timeout"], overtime["defense_timeout"]), (False, False))
+        # tied on 4th down at its own 30 (the offense punts) or 1st down in field-goal range: the defense needs the
+        # ball back (E 140.625 + 35 s) and calls its timeouts, as in Q4
+        for key in ((7, 100, 0, 30, 4), (7, 100, 0, 65, 1)):
+            retail, overtime = by_state[key]
+            self.assertEqual(overtime["estimate"][1], 175.62, key)
+            self.assertEqual((retail["defense_timeout"], overtime["defense_timeout"]), (False, True), key)
 
 
 if __name__ == "__main__":
