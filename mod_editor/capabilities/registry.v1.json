@@ -1430,6 +1430,7 @@
         "docs/research/apf_b75_charge_abilities.md",
         "tests/mod_editor/test_apf_charge_abilities.py",
         "tests/mod_editor/test_apf_charge_abilities_native.py",
+        "tests/mod_editor/test_apf_charge_line_moves_native.py",
         "tests/mod_editor/test_apf_charge_abilities_qt.py"
       ],
       "game": "apf2k8_xbox360",
@@ -1443,7 +1444,8 @@
       "input_constraints": [
         "Pinned Xbox 360 BASE or TU 1.1; EXPERIMENTAL and off by default.",
         "Charged ability bits replace the Gold/passing-mode cap. The QB no-arm input gate is unchanged.",
-        "Code reservation 0x84D0D100..0x84D0D180 must stay disjoint from other patches."
+        "Code reservation 0x84D0D100..0x84D0D7FF must stay disjoint from other patches.",
+        "Defensive line moves (Swim, Club, Spin, Rip) each need their own ability for level 2 (revision 5)."
       ],
       "portme": [
         "Witness the level-2 halo and charged moves in Xenia for Silver/Bronze and Gold without abilities.",
@@ -1479,7 +1481,7 @@
         "resource": "Input charge-state cap and separate QB arm-ability gate",
         "retail_file": "User-owned APF Xbox 360 BASE or Title Update 1.1"
       },
-      "summary": "Charge level 2 follows charged abilities at any tier. Gold without a charged ability stops at 1; QB no-arm gate stays retail. Gameplay UNWITNESSED.",
+      "summary": "Charge level 2 follows charged abilities at any tier, and each move needs its own ability for a level 2 effect, defensive line moves included. Gold without a charged ability stops at 1; QB no-arm gate stays retail. Gameplay UNWITNESSED.",
       "surface": "scripts_config",
       "title": "Ability-based charging (EXPERIMENTAL)",
       "validation_command": "python3 -m tests.mod_editor.test_apf_charge_abilities"

@@ -1,5 +1,12 @@
 # APF 2K8 Mod Studio Changelog
 
+## 0.1.0-alpha.111: beta 80 (2026-11-03)
+
+- Charged abilities revision 5: each defensive line move now needs its own ability for a second-level charge. Swim, Club, Spin and Rip each count only for their own move. A defender keeps a first-level discharge, and first-level strength, on the line moves he lacks. Before this, any charged ability gave all four line moves the second level, both in the play and in the discharge effect.
+- Why it happened: when a full charge is spent on a line move, the game adds the same charge level to every move alike. It only checks the move's own ability for ball-carrier moves. Revision 5 applies the game's own first-level downgrade, the one it already uses for ball carriers, when the defender lacks the chosen line move's ability.
+- Bull Rush is the game's plain engagement push, which never spends a charge, and Head Slap is a special escape animation, not a charge ability. A defender whose only charged ability is Bull Rush still fills the second-level ring, but his four line moves stay at the first level.
+- Ball-carrier moves, the quarterback arm rule, medal stars and CPU players are unchanged. Offline checks on BASE and Title Update 1.1 run the game's own line-move chooser, charge use, line-move outcome check and discharge feedback. Results in Xenia are not yet witnessed. Export and install a revision 5 patch from Tools > Charged abilities and restart Xenia; the Studio recognizes an installed revision 4 patch and replaces it.
+
 ## 0.1.0-alpha.110: beta 79 (2026-11-01)
 
 - Version aligned with beta-79. APF 2K8 itself did not change in this release: the APF Studio, its tools and its docs are the same as in alpha.109 apart from the version number.

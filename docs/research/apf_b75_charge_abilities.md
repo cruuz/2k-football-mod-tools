@@ -239,3 +239,66 @@ new counts. `packaging/repin.py --apply` reports zero pin changes.
    original Barry/Sims/Gold-no-ability checks. Expected retail table: 2/1/2.
    Save/reload, repeated plays, animation correctness and match stability
    require this in-game witness; the offline proof establishes none of them.
+
+## Revision 5: defensive line moves (beta 80)
+
+Report (APF alpha.110, revision 4): a defensive lineman with at least one line
+move ability got a second-level discharge on all four line moves, for example
+Club and Bull Rush only, yet a second-level Spin.
+
+Static reading of the pinned BASE image (TU 1.1 addresses in brackets):
+
+- The engaged pass-rush entry `0x848B36D8` [+0xE48] spends the charge at
+  `0x848B3758` (the common consume `0x848C4D70`) for every request except 5,
+  then switches on the request. Its default case is the only builder of the
+  line-move selector `0x84DC0A04` = {chooser `0x848AE4D8`, moves
+  `0x84DC1950`}; nothing else references the chooser.
+- The chooser maps request `0x0A..0x11` to move `(ID - 0x0A) >> 1`, request
+  `0x12..0x15` to `ID - 0x12` (then picks a side), and any other request to a
+  random move. Both exits (`0x848AE56C`, `0x848AE5F4`) return the index in
+  r30/r3 with r29 the mover.
+- The four move animation tables require, besides plain animations, only the
+  move's own ability or Head Slap: index 0 Swim, 1 Club, 2 Spin, 3 Rip. The
+  move-mask table `0x84DC1940` and the ability-mask builder `0x848AD598`
+  (Swim 0x10000, Bull Rush 0x20000, Club 0x40000, Rip 0x80000, Spin 0x100000,
+  Head Slap 0x200000) agree. The retail help text says "Defender has a 2nd
+  level charge" for Swim, Bull Rush, Club, Rip and Spin. Head Slap is the
+  `BLOCK_DEACON_ESCAPE_HEADSLAP` animation family, not a charge.
+- Bull Rush animations live only in request 5, the plain engagement, which
+  does not consume charge. No engagement code reads the raw charge.
+- The line-move handler `0x848B0458` and its outcome gate `0x848B0000` add the
+  mover's consumed level minus the blocker's (`0x848C48C8`) to the move's
+  ability roll. A level 2 difference reaches the gate's early result 3/4
+  path on any of the four moves; nothing checks the move's own ability.
+  Ball-carrier moves differ: their native gates call the 4 -> 1 downgrade
+  `0x848C4D48` [+0xE38] when the move's ability is missing.
+- Revision 4's consume latch treats the engaged entry as an unclassified
+  consumer, so a full charge latched level 2 for every line move.
+
+Revision 5 hooks both chooser exits (`addi r1,r1,0x80`) with a branch to a
+212-byte gate at `0x84D0D600`, inside the existing `0x84D0D100..0x84D0D7FF`
+reservation. If the chosen move's own ability bit is clear it calls the native
+downgrade (which revision 4 already mirrors into the visual latch) and
+restores r3; if set and the consumed state is 4 it marks the existing latch
+entry for that state and roster as level 2. It then runs the displaced `addi`
+and branches to the shared restore tail `0x84BD6E38` [+0xFD0]. Only volatile
+r6..r11, CR6 and LR change before that tail reloads LR and r28..r31. No roster
+byte is written. The cap, the ring and the ball-carrier rules are unchanged; a
+defender whose only charged ability is Bull Rush still fills the second-level
+ring and plays all four line moves at level 1.
+
+Proof (`tests/mod_editor/test_apf_charge_line_moves_native.py`, owned BASE and
+TU): the engaged entry's own consume call, the native chooser for every
+request form, the native downgrade, the charge feedback, the charge
+difference and the real handler and outcome gate run under Unicorn. Only
+charge rate, notifications and the two random primitives are boundaries; the
+slider entry and gate globals are written explicitly. Revision 4 reproduces
+the report (all four moves at level 2); revision 5 plays a move the defender
+lacks exactly like a level 1 charge and his own move exactly like level 2.
+The retail-free oracle in `test_apf_charge_abilities.py` checks every roster
+bit, every consumed state and the register contract. Not witnessed in Xenia.
+
+Retest: a Club plus Bull Rush defender (for example Clyde Simmons), fully
+charged, should show a second-level discharge on Club only; Swim, Spin and Rip
+first level. A Spin-only defender: Spin only. Bull Rush only: all four first
+level. Also confirm the ball-carrier cases from revision 4 are unchanged.

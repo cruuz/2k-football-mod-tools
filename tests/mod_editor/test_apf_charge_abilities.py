@@ -202,7 +202,161 @@ def execute_move_leaf(document, check, record):
     return bool(regs[out])
 
 
+def execute_line_move_gate(document, index, record, consumed, *, latch=None, seed=780):
+    """Independent full-width oracle for the line-move gate at a chooser exit.
+
+    The native downgrade call is modelled by its retail contract (4 -> 1 only,
+    mirrored by revision 4's latch hook) and clobbers volatile r8..r11 and CR6
+    as a callee may. Returns (consumed state, latch level or None, calls).
+    """
+    rng = random.Random(seed)
+    mask32 = 0xFFFFFFFF
+    regs = [rng.getrandbits(64) for _ in range(32)]
+    player, roster, state = 0x100000, 0x200000, 0x300000
+    regs[29] = player
+    regs[30] = (rng.getrandbits(32) << 32) | (index & mask32)
+    regs[3] = regs[30]
+    before, cr, ctr = regs.copy(), 0x87654321, 0x13572468
+    initial_cr = cr
+    memory = {player + 0x44: roster, player + 0x14: state,
+              state + 0x1A8: (0x12345678 & ~0x01C00000) | consumed << 22}
+    table = dict(latch or {})  # entry address -> [state key, roster key, level]
+    words = dict(document.words)
+    tail = p.line_move_tail(document.profile)
+    downgrade = p.address(p.NATIVE_DOWNGRADE, document.profile)
+    calls, writes = [], []
+
+    def load(address, size):
+        address &= mask32
+        if p.LATCH_START <= address < p.LATCH_LIMIT:
+            entry = p.LATCH_START + (address - p.LATCH_START) // 12 * 12
+            assert size == 4 and (address - entry) % 4 == 0
+            return table.get(entry, [0, 0, 0])[(address - entry) // 4]
+        if roster <= address < roster + 0x150:
+            offset = address - roster
+            return int.from_bytes(record[offset:offset + size], "big")
+        assert size == 4, hex(address)
+        return memory[address]
+
+    pc, lr = p.LINE_MOVE_CAVE, None
+    for _ in range(2_000):  # a full 128-entry latch scan is ~900 instructions
+        if pc == tail:
+            break
+        w = words[pc]
+        op, rt, ra, rb = w >> 26, w >> 21 & 31, w >> 16 & 31, w >> 11 & 31
+        imm = w & 0xFFFF
+        simm = imm - 0x10000 if imm & 0x8000 else imm
+        nxt = pc + 4
+        if op == 18:
+            delta = w & 0x3FFFFFC
+            target = pc + (delta - (1 << 26) if delta & (1 << 25) else delta)
+            assert not w & 2
+            if w & 1:
+                assert target == downgrade and regs[3] & mask32 == player
+                calls.append(pc)
+                lr = pc + 4
+                if (memory[state + 0x1A8] >> 22) & 7 == 4:
+                    memory[state + 0x1A8] = memory[state + 0x1A8] & ~0x01C00000 | 1 << 22
+                    for entry, (key, owner, _) in table.items():
+                        if key == state and owner == roster:
+                            table[entry][2] = 0
+                for volatile in (8, 9, 10, 11):
+                    regs[volatile] = rng.getrandbits(64)
+                cr = (cr & ~0xF0) | (rng.getrandbits(4) << 4)
+                nxt = lr
+            else:
+                nxt = target
+        elif op == 10:
+            assert rt >> 2 == 6 and not rt & 1
+            left = regs[ra] & mask32
+            cr = (cr & ~0xF0) | ((8 if left < imm else 4 if left > imm else 2) << 4)
+        elif op == 16:
+            bo, bi = rt, ra
+            assert bo in (4, 12) and bi in (24, 25, 26)
+            bit = cr >> (31 - bi) & 1
+            if (bo == 12) == bool(bit):
+                nxt = pc + simm
+        elif op in (32, 34):
+            regs[rt] = load(regs[ra] + simm, 4 if op == 32 else 1)
+        elif op == 36:
+            address = (regs[ra] + simm) & mask32
+            assert p.LATCH_START <= address < p.LATCH_LIMIT and (address - p.LATCH_START) % 12 == 8
+            entry = address - 8
+            table[entry][2] = regs[rt] & mask32
+            writes.append(entry)
+        elif op == 14:
+            regs[rt] = ((regs[ra] if ra else 0) + simm) & ((1 << 64) - 1)
+        elif op == 15:
+            assert ra == 0
+            regs[rt] = (simm << 16) & ((1 << 64) - 1)
+        elif op == 21:
+            assert not w & 1  # CR0 preserved
+            shift, mb, me = rb, w >> 6 & 31, w >> 1 & 31
+            value = regs[rt] & mask32
+            rotated = ((value << shift) | (value >> ((32 - shift) % 32))) & mask32
+            regs[ra] = rotated & sum(1 << (31 - bit) for bit in range(mb, me + 1))
+        elif op == 31 and (w >> 1 & 1023) == 444 and rt == rb and not w & 1:
+            regs[ra] = regs[rt]
+        elif op == 31 and (w >> 1 & 1023) == 32 and not w & 1:
+            assert rt >> 2 == 6
+            left, right = regs[ra] & mask32, regs[rb] & mask32
+            cr = (cr & ~0xF0) | ((8 if left < right else 4 if left > right else 2) << 4)
+        else:
+            raise AssertionError(f"Unexpected line-move gate instruction {w:08X} at {pc:08X}")
+        pc = nxt
+    assert pc == tail
+    # Native frame popped by the displaced addi; r3 is the move index again.
+    assert regs[1] == (before[1] + 0x80) & ((1 << 64) - 1)
+    assert regs[3] == before[30]
+    assert all(regs[i] == before[i] for i in (0, 2, 4, 5, *range(12, 32)) if i != 1)
+    assert cr & ~0xF0 == initial_cr & ~0xF0 and ctr == 0x13572468
+    assert all(entry in table for entry in writes)
+    entry = next((e for e, (key, owner, _) in table.items() if key == state), None)
+    return (memory[state + 0x1A8] >> 22) & 7, None if entry is None else table[entry][2], len(calls)
+
+
 class ChargeTests(unittest.TestCase):
+    def test_line_move_gate_every_bit_level_and_abi(self):
+        for profile in p.PROFILES:
+            doc = p.PatchDocument(profile, True)
+            for index, (move, own_offset, own_bit) in enumerate(p.LINE_MOVES):
+                for offset in range(23, 45):
+                    for bit in (*range(8), None):
+                        if bit is None and offset != 23:
+                            continue
+                        record = bytearray(0x150)
+                        if bit is not None:
+                            record[offset] = 1 << bit
+                        qualified = (offset, bit) == (own_offset, own_bit)
+                        for consumed in (0, 1, 4):
+                            latch = {p.LATCH_START + 12: [0x300000, 0x200000, int(consumed == 4)]}
+                            state, level, calls = execute_line_move_gate(doc, index, record, consumed, latch=latch)
+                            self.assertEqual(calls, 0 if qualified else 1, (profile.name, move, offset, bit))
+                            self.assertEqual(state, consumed if qualified or consumed != 4 else 1)
+                            self.assertEqual(level, 1 if consumed == 4 and qualified else 0,
+                                             (profile.name, move, offset, bit, consumed))
+            # Full record with every other ability set still needs the move's own bit.
+            for index, (move, own_offset, own_bit) in enumerate(p.LINE_MOVES):
+                record = bytearray(b"\xff" * 0x150)
+                record[own_offset] &= ~(1 << own_bit)
+                state, level, calls = execute_line_move_gate(doc, index, record, 4,
+                                                             latch={p.LATCH_START: [0x300000, 0x200000, 1]})
+                self.assertEqual((state, level, calls), (1, 0, 1), move)
+                record[own_offset] |= 1 << own_bit
+                self.assertEqual(execute_line_move_gate(doc, index, record, 4,
+                                                        latch={p.LATCH_START: [0x300000, 0x200000, 0]}),
+                                 (4, 1, 0), move)
+            # Consume could not latch (saturated) or another roster owns the key: never borrowed.
+            record = bytearray(0x150)
+            record[43] = 0x10
+            self.assertEqual(execute_line_move_gate(doc, 2, record, 4), (4, None, 0))
+            self.assertEqual(execute_line_move_gate(doc, 2, record, 4, latch={
+                p.LATCH_START: [0x300000, 0x200004, 0]}), (4, 0, 0))
+            # Out-of-range indices keep the native level and call nothing.
+            for index in (4, 7, 0xFFFFFFFF):
+                self.assertEqual(execute_line_move_gate(doc, index, bytearray(0x150), 4,
+                                                        latch={p.LATCH_START: [0x300000, 0x200000, 1]}), (4, 1, 0))
+
     def test_move_leaf_ability_unions_all_bits_and_abi(self):
         specific_bits = (0, 3, 0, 3, 2, 1, 1, 2)
         for profile in p.PROFILES:
@@ -289,8 +443,19 @@ class ChargeTests(unittest.TestCase):
             doc = p.PatchDocument(profile)
             payload = doc.as_toml().encode()
             self.assertEqual(p.parse_payload(payload), doc)
-            self.assertEqual(len(doc.words), 717)
+            self.assertEqual(len(doc.words), 772)
             self.assertEqual(len(dict(doc.words)), len(doc.words))
+            gate = p.line_move_trampoline(profile)
+            self.assertEqual(len(gate), 212)
+            self.assertLessEqual(p.LATCH_CONSUME_CAVE + len(p.latch_consume_trampoline(profile)), p.LINE_MOVE_CAVE)
+            self.assertLessEqual(p.LINE_MOVE_CAVE + len(gate), p.LATCH_DOWNGRADE_CAVE)
+            hooks = {p.line_move_address(site, profile) for site in p.LINE_MOVE_EXITS}
+            self.assertEqual(hooks, {0x848AE56C, 0x848AE5F4} if profile == p.PROFILES[0] else {0x848AF3B4, 0x848AF43C})
+            self.assertEqual(p.line_move_tail(profile), 0x84BD6E38 if profile == p.PROFILES[0] else 0x84BD7E08)
+            self.assertEqual(p.address(p.NATIVE_DOWNGRADE, profile), 0x848C4D48 if profile == p.PROFILES[0] else 0x848C5B80)
+            self.assertTrue(hooks <= set(dict(doc.words)))
+            self.assertEqual({a for a, w in doc.original_words if a in hooks and w == p.LINE_MOVE_EXIT_WORD}, hooks)
+            self.assertEqual(doc.receipt["line_move_gate"]["moves"][2], {"index": 2, "move": "spin", "ability": [43, 4]})
             self.assertEqual(len(p.trampoline(profile)), 76)
             self.assertEqual(len(p.feedback_trampoline(profile)), 28)
             self.assertLessEqual(p.FEEDBACK_CAVE + len(p.feedback_trampoline(profile)), p.CAVE_LIMIT)
@@ -306,9 +471,9 @@ class ChargeTests(unittest.TestCase):
 
     def test_legacy_patch_remains_exactly_identifiable_for_upgrade_and_removal(self):
         for profile in p.PROFILES:
-            for revision, enabled in ((r, e) for r in (1, 2, 3) for e in (False, True)):
+            for revision, enabled in ((r, e) for r in (1, 2, 3, 4) for e in (False, True)):
                 legacy = p.PatchDocument(profile, enabled, revision=revision)
-                self.assertEqual(len(legacy.words), {1: 20, 2: 32, 3: 138}[revision])
+                self.assertEqual(len(legacy.words), {1: 20, 2: 32, 3: 138, 4: 717}[revision])
                 self.assertEqual(p.parse_payload(legacy.as_toml().encode()), legacy)
                 self.assertEqual(p.canonical_payload(legacy.as_toml().encode()), (profile, enabled))
                 self.assertNotEqual(legacy.as_toml(), p.PatchDocument(profile, enabled).as_toml())
@@ -363,7 +528,7 @@ class ChargeTests(unittest.TestCase):
             storage = root / "launch"
             (storage / "patches").mkdir(parents=True)
             for profile in p.PROFILES:
-                for revision in (1, 2, 3):
+                for revision in (1, 2, 3, 4):
                     legacy = p.PatchDocument(profile, True, revision).as_toml().encode()
                     output.write_bytes(legacy)
                     with self.assertRaisesRegex(ValueError, f"legacy revision {revision}"):
@@ -373,7 +538,8 @@ class ChargeTests(unittest.TestCase):
                     self.assertIn(f"revision {revision}", status)
                     self.assertIn("beta 75 feedback bug" if revision == 1 else
                                   "Finesse move qualification bug" if revision == 2 else
-                                  "discharge lost during native charge cleanup", status)
+                                  "discharge lost during native charge cleanup" if revision == 3 else
+                                  "every defensive line move used level 2", status)
                     (storage / "patches" / p.FILENAME).write_bytes(legacy)
                     p.write_patch(p.PatchDocument(profile, True), output)
                     launcher.install_pass_fetch_patch(output, kind="charge_abilities", consent=True)

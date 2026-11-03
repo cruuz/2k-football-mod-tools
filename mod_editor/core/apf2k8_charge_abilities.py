@@ -24,7 +24,7 @@ DEFAULT_ENABLED = False
 CLASSIFICATION = "EXPERIMENTAL"
 FILENAME = "54540807-studio-charge-abilities.patch.toml"
 NAME = "Ability-based charge cap (experimental, unwitnessed)"
-CURRENT_REVISION = 4
+CURRENT_REVISION = 5
 CAVE = 0x84D0D100
 LEGACY_CAVE_LIMIT = 0x84D0D180
 CAVE_LIMIT_REV3 = 0x84D0D320
@@ -33,11 +33,26 @@ FEEDBACK_CAVE = CAVE + 0x50
 MOVE_CAVE = LEGACY_CAVE_LIMIT
 LATCH_FEEDBACK_CAVE = CAVE_LIMIT_REV3
 LATCH_CONSUME_CAVE = 0x84D0D400
+LINE_MOVE_CAVE = 0x84D0D600
 LATCH_DOWNGRADE_CAVE = 0x84D0D700
 LATCH_START, LATCH_COUNT, LATCH_ENTRY_SIZE = 0x852D6800, 128, 12
 LATCH_LIMIT = LATCH_START + LATCH_COUNT * LATCH_ENTRY_SIZE
 CONSUME_HOOK, DOWNGRADE_HOOK = 0x848C4D74, 0x848C4D68
 SHARED_MOVE_RETURN = 0x848E7F14
+# Defensive line moves. The engaged pass-rush entry (0x848B36D8) consumes the
+# charge, then its only line-move selector calls this chooser, which returns the
+# move index in r30 (r29 is the mover) at both exits. The four native move
+# tables require these abilities for their own animations, matching the retail
+# help text "Defender has a 2nd level charge <move>". Retail then adds the
+# consumed level to every move alike (0x848B0000 / 0x848B0458 via 0x848C48C8).
+# Head Slap is a legend escape animation, not a charge; Bull Rush is the plain
+# engagement, which never consumes charge.
+LINE_MOVE_CHOOSER = 0x848AE4D8
+LINE_MOVE_EXITS = (0x848AE56C, 0x848AE5F4)  # addi r1,r1,0x80 then b LINE_MOVE_TAIL
+LINE_MOVE_EXIT_WORD = 0x38210080
+LINE_MOVE_TAIL = 0x84BD6E38  # shared restore of r28..r31 and LR, then blr
+NATIVE_DOWNGRADE = 0x848C4D48  # native 4 -> 1 move gate; revision 4 mirrors it
+LINE_MOVES = (("swim", 42, 0), ("club", 43, 6), ("spin", 43, 4), ("rip", 43, 5))
 ROUTINE = 0x848C51C0
 HOOK = 0x848C5288
 RESUME = 0x848C52AC
@@ -323,8 +338,82 @@ def latch_consume_trampoline(profile):
     asm.emit(_branch(LATCH_CONSUME_CAVE + len(asm.words) * 4,
                      address(CONSUME_HOOK + 4, profile)))
     code = asm.finish()
-    if LATCH_CONSUME_CAVE + len(code) > LATCH_DOWNGRADE_CAVE:
+    if LATCH_CONSUME_CAVE + len(code) > LINE_MOVE_CAVE:
         raise ValidationError("Charge consume latch exceeds its reservation")
+    return code
+
+
+def line_move_address(base, profile):
+    """Pass-rush chooser family; TU 1.1 places it at +0xE48 (not +0xE38)."""
+    address(ROUTINE, profile)
+    return base + (0xE48 if profile == PROFILES[1] else 0)
+
+
+def line_move_tail(profile):
+    address(ROUTINE, profile)
+    return LINE_MOVE_TAIL + (0xFD0 if profile == PROFILES[1] else 0)
+
+
+def line_move_trampoline(profile):
+    """Give each defensive line move its own second-level charge.
+
+    Runs at either chooser exit with the native frame still allocated: r29 is
+    the mover, r30 and r3 the chosen move. A mover lacking that move's ability
+    gets the native 4 -> 1 downgrade, which revision 4 mirrors into the visual
+    latch, so gameplay and discharge both use level 1. A qualified mover with a
+    full consumed charge has its existing latch entry marked level 2. Only
+    volatile r6..r11, CR6 and LR change before the native tail reloads LR and
+    r28..r31; r3 is returned as the move index. No roster byte is written.
+    """
+    asm = _Assembler(LINE_MOVE_CAVE)
+    asm.emit(0x2B1E0003)  # cmplwi cr6,r30,3
+    asm.jump("done", "gt")
+    asm.emit(_d(32, 11, 29, 0x44))  # lwz r11,0x44(r29) packed roster
+    for index, (_, offset, bit) in enumerate(LINE_MOVES):
+        asm.emit(0x2B1E0000 | index)  # cmplwi cr6,r30,index
+        asm.jump(f"skip{index}", "ne")
+        asm.emit(_d(34, 10, 11, offset))  # lbz r10,offset(r11)
+        asm.emit(_rl(10, 10, 0, 31 - bit, 31 - bit))
+        asm.jump("test")
+        asm.label(f"skip{index}")
+    asm.jump("done")
+    asm.label("test")
+    asm.emit(0x2B0A0000)  # cmplwi cr6,r10,0
+    asm.jump("qualified", "ne")
+    asm.emit(0x7FA3EB78)  # mr r3,r29
+    asm.emit(0)
+    call = len(asm.words) - 1
+    asm.emit(0x7FC3F378)  # mr r3,r30
+    asm.jump("done")
+    asm.label("qualified")
+    asm.emit(_d(32, 9, 29, 0x14))  # lwz r9,0x14(r29) state
+    asm.emit(_d(32, 10, 9, 0x1A8))
+    asm.emit(_rl(10, 10, 10, 29, 31))
+    asm.emit(0x2B0A0004)  # cmplwi cr6,r10,4 (full consumed charge)
+    asm.jump("done", "ne")
+    _load_address(asm, 7, LATCH_START)
+    _load_address(asm, 8, LATCH_LIMIT)
+    asm.label("scan")
+    asm.emit(_d(32, 6, 7, 0))
+    _compare(asm, 6, 9)
+    asm.jump("next", "ne")
+    asm.emit(_d(32, 6, 7, 4))
+    _compare(asm, 6, 11)
+    asm.jump("done", "ne")  # another identity's key is never borrowed
+    asm.emit(_d(14, 6, 0, 1))
+    asm.emit(_d(36, 6, 7, 8))
+    asm.jump("done")
+    asm.label("next")
+    asm.emit(_d(14, 7, 7, LATCH_ENTRY_SIZE))
+    _compare(asm, 7, 8)
+    asm.jump("scan", "lt")
+    asm.label("done")
+    asm.emit(LINE_MOVE_EXIT_WORD)  # displaced addi r1,r1,0x80
+    asm.emit(_branch(LINE_MOVE_CAVE + len(asm.words) * 4, line_move_tail(profile)))
+    asm.words[call] = _branch(LINE_MOVE_CAVE + call * 4, address(NATIVE_DOWNGRADE, profile)) | 1
+    code = asm.finish()
+    if LINE_MOVE_CAVE + len(code) > LATCH_DOWNGRADE_CAVE:
+        raise ValidationError("Line-move charge gate exceeds its reservation")
     return code
 
 
@@ -400,7 +489,7 @@ class PatchDocument:
 
     def __post_init__(self):
         if (self.profile not in PROFILES or type(self.enabled) is not bool
-                or type(self.revision) is not int or self.revision not in (1, 2, 3, CURRENT_REVISION)):
+                or type(self.revision) is not int or self.revision not in (1, 2, 3, 4, CURRENT_REVISION)):
             raise ValidationError("Choose a supported image and a boolean enable flag")
 
     @property
@@ -422,6 +511,9 @@ class PatchDocument:
             words += ((address(CONSUME_HOOK, self.profile), 0x9181FFF8),
                       (address(DOWNGRADE_HOOK, self.profile), 0x916A01A8))
             words += tuple((a, 0) for a in range(LATCH_START, LATCH_LIMIT, 4))
+        if self.revision >= 5:
+            words += tuple((line_move_address(site, self.profile), LINE_MOVE_EXIT_WORD)
+                           for site in LINE_MOVE_EXITS)
         return words
 
     @property
@@ -453,6 +545,13 @@ class PatchDocument:
                 words += ((hook, _branch(hook, cave)),) + tuple(
                     (cave + i, int.from_bytes(code[i:i + 4], "big")) for i in range(0, len(code), 4))
             words += tuple((a, 0) for a in range(LATCH_START, LATCH_LIMIT, 4))
+        if self.revision >= 5:
+            gate = line_move_trampoline(self.profile)
+            words += tuple((line_move_address(site, self.profile),
+                            _branch(line_move_address(site, self.profile), LINE_MOVE_CAVE))
+                           for site in LINE_MOVE_EXITS)
+            words += tuple((LINE_MOVE_CAVE + i, int.from_bytes(gate[i:i + 4], "big"))
+                           for i in range(0, len(gate), 4))
         return words
 
     @property
@@ -476,13 +575,26 @@ class PatchDocument:
                 "scope": ("Input charge state machine" + (" and charge feedback" if self.revision >= 2 else "")
                           + ("; Finesse/Finesse and Power qualify spin/juke; Power/Finesse and Power qualify stiff arm/shoulder charge" if self.revision >= 3 else "")
                           + ("; action-qualified visual latch survives native charge cleanup" if self.revision >= 4 else "")
+                          + ("; each defensive line move (swim, club, spin, rip) needs its own ability for level 2 in gameplay and discharge" if self.revision >= 5 else "")
                           + "; CPU bypass unchanged; gameplay UNWITNESSED.")}
         if self.revision >= 4:
             result["visual_latch"] = {"start": LATCH_START, "end": LATCH_LIMIT,
                                       "entries": LATCH_COUNT, "entry_size": LATCH_ENTRY_SIZE,
                                       "key": ["state pointer", "roster pointer"],
                                       "saturation": "new state keys show level-1 discharge",
-                                      "native_gameplay_state_preserved": True}
+                                      "native_gameplay_state_preserved": self.revision == 4}
+        if self.revision >= 5:
+            result["line_move_gate"] = {
+                "chooser": line_move_address(LINE_MOVE_CHOOSER, self.profile),
+                "hooks": [line_move_address(site, self.profile) for site in LINE_MOVE_EXITS],
+                "tail": line_move_tail(self.profile), "trampoline": LINE_MOVE_CAVE,
+                "native_downgrade": address(NATIVE_DOWNGRADE, self.profile),
+                "moves": [{"index": i, "move": name, "ability": [offset, bit]}
+                          for i, (name, offset, bit) in enumerate(LINE_MOVES)],
+                "unqualified": "native 4 -> 1 downgrade (gameplay and discharge level 1)",
+                "qualified": "native level kept; full charge marks the visual latch level 2",
+                "head_slap_and_bull_rush": "not line-move charges (legend escape animation; plain engagement never consumes)",
+            }
         return result
 
     def as_toml(self):
@@ -492,7 +604,9 @@ class PatchDocument:
                        if self.revision == 2 else
                        "Revision 3: Finesse or Finesse and Power qualify spin/juke; Power or Finesse and Power qualify stiff arm/shoulder charge. Charge and feedback follow abilities at any tier. QB no-arm gate preserved. Gameplay UNWITNESSED."
                        if self.revision == 3 else
-                       "Revision 4: discharge retains the executed move's qualified charge after native cleanup. Finesse qualifies spin/juke; Power qualifies stiff arm/shoulder. Other native charge consumers keep their level decision. QB no-arm gate preserved. Gameplay UNWITNESSED.")
+                       "Revision 4: discharge retains the executed move's qualified charge after native cleanup. Finesse qualifies spin/juke; Power qualifies stiff arm/shoulder. Other native charge consumers keep their level decision. QB no-arm gate preserved. Gameplay UNWITNESSED."
+                       if self.revision == 4 else
+                       "Revision 5: each defensive line move needs its own ability (Swim, Club, Spin, Rip) for a level 2 charge and discharge; other line moves stay level 1. Revision 4 ball-carrier rules unchanged. QB no-arm gate preserved. Gameplay UNWITNESSED.")
         lines = ['title_name = "All-Pro Football 2K8"', f'title_id = "{TITLE_ID}"',
                  f'hash = "{self.profile.module_hash}"', '', '[[patch]]', f'name = "{NAME}"',
                  f'desc = "{description}"',
@@ -507,7 +621,7 @@ def parse_payload(payload):
         parsed = tomllib.loads(payload.decode("utf-8"))
         profile = next(p for p in PROFILES if p.module_hash == parsed["hash"])
         row, = parsed["patch"]
-        for revision in (CURRENT_REVISION, 3, 2, 1):
+        for revision in (CURRENT_REVISION, 4, 3, 2, 1):
             doc = PatchDocument(profile, row["is_enabled"], revision)
             if parsed == tomllib.loads(doc.as_toml()):
                 return doc

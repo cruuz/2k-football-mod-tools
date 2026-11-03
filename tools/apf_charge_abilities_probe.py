@@ -23,6 +23,13 @@ from tools.apf_playcall_research_probe import Machine
 
 PLAYER, STATE, INPUT, ROSTER, GAME_STATE = 0x300000, 0x310000, 0x320000, 0x330000, 0x340000
 TEAM, AUTO = 0x360000, 0x370000
+# Engaged blocker for the defensive line-move chain (all synthetic objects).
+BLOCKER, BLOCKER_STATE, BLOCKER_ROSTER, BLOCKER_TEAM = 0x3A0000, 0x3A1000, 0x3A2000, 0x3A3000
+BLOCKER_INPUT, POSITION, BLOCKER_POSITION = 0x3A4000, 0x3A5000, 0x3A6000
+# Line-move request IDs read by the native chooser: (ID - 0x0A) >> 1 picks the
+# move with a side, ID - 0x12 picks it without one; other IDs roll a random move.
+LINE_MOVE_REQUESTS = {0: (0x0A, 0x0B, 0x12), 1: (0x0C, 0x0D, 0x13),
+                      2: (0x0E, 0x0F, 0x14), 3: (0x10, 0x11, 0x15)}
 
 
 def load_owned_image(path):
@@ -148,6 +155,91 @@ class ChargeMachine(Machine):
         delta = 0xE88 if self.updated else 0
         self.call(0x848E7EF4 + delta, PLAYER, stop=0x848E7FB8 + delta, bound=2_000)
         return (self.get(STATE + 0x1A8) >> 22) & 7
+
+    def line_site(self, base):
+        return patch.line_move_address(base, self.profile)
+
+    def _pair(self, high_site, low_site):
+        """Decode a lis + signed-displacement address pair from the image."""
+        high, low = self.get(high_site) & 0xFFFF, self.get(low_site) & 0xFFFF
+        return ((high << 16) + (low - 0x10000 if low & 0x8000 else low)) & 0xFFFFFFFF
+
+    def configure_blocker(self):
+        """A CPU blocker engaged with PLAYER, with no ability and no charge."""
+        for address, value in ((BLOCKER + 0x14, BLOCKER_STATE), (BLOCKER + 0x44, BLOCKER_ROSTER),
+                               (BLOCKER + 0x40, BLOCKER_TEAM), (BLOCKER + 0x10, BLOCKER_INPUT),
+                               (BLOCKER + 0x1C, BLOCKER_POSITION), (PLAYER + 0x1C, POSITION),
+                               (BLOCKER_INPUT, 0xFFFFFFFF), (BLOCKER_TEAM + 0x38, 0), (TEAM + 0x38, 0)):
+            self.put(address, value)
+        self.cpu.mem_write(BLOCKER_STATE, bytes(0x400))
+        self.cpu.mem_write(BLOCKER_ROSTER, bytes(0x150))
+        self.put(BLOCKER_STATE + 4, 0x350000)
+        self.putf(POSITION + 0x38, 1.)
+
+    def consume_line_move(self):
+        """Run the engaged pass-rush entry's own consume call (its real LR)."""
+        site = self.line_site(0x848B3758)
+        if branch_target(self.image, site) != self.site(0x848C4D70):
+            raise AssertionError("Engaged pass-rush consume call site moved")
+        self.call(site, PLAYER, stop=site + 4, bound=2_000)
+
+    def choose_line_move(self, request, roll=0):
+        """Execute the native line-move chooser (and any patched exit).
+
+        Only the random primitives are boundaries; random moves take roll & 3.
+        Returns (move index, rewritten request ID).
+        """
+        self.put(STATE, request)
+        saved = dict(self.boundaries)
+        self.random_boundaries(integer=roll, delta=0xFD0 if self.updated else 0)
+        try:
+            self.call(self.line_site(patch.LINE_MOVE_CHOOSER), BLOCKER, PLAYER, bound=5_000)
+        finally:
+            self.boundaries = saved
+        return self.reg(3), self.get(STATE)
+
+    def charge_difference(self):
+        """Real 0x848C48C8: the mover's consumed level minus the blocker's."""
+        self.call(self.site(0x848C48C8), PLAYER, BLOCKER, bound=500)
+        return self.fpr(1)
+
+    def line_move_outcome(self, index, *, slider=.5, roll=.9):
+        """Real line-move handler prefix and its outcome gate 0x848B0000.
+
+        The handler maps its move entry to the index, builds the real ability
+        mask (0x848AD598) and calls the gate, which calls the real charge
+        difference, slider leaf, flag leaf and random-range helper. Only the
+        two random primitives are boundaries. The pass-rush slider entry and
+        the game globals the gate reads are written explicitly. Returns the
+        gate's outcome grade 0..4 (2 = decided later by the rating contest).
+        """
+        handler = self.line_site(0x848B0458)
+        gate_call = self.line_site(0x848B0568)
+        gate = branch_target(self.image, gate_call)
+        entries = self._pair(self.line_site(0x848B0474), self.line_site(0x848B0484))
+        game = self._pair(self.line_site(0x848B0058), self.line_site(0x848B0060))
+        anchor = self._pair(self.line_site(0x848B0018), self.line_site(0x848B0028))
+        options = self._pair(self.line_site(0x848B02F0), self.line_site(0x848B02F4))
+        flag_leaf = branch_target(self.image, self.line_site(0x848B0054))
+        flag = self._pair(flag_leaf, flag_leaf + 4) + (self.get(flag_leaf + 8) & 0xFFFF)
+        slider_leaf = branch_target(self.image, self.line_site(0x848B0264))
+        table = (self._pair(slider_leaf, slider_leaf + 8) + (self.get(slider_leaf + 0x10) & 0xFFFF))
+        for address, value in ((game, 0), (game + 0x34, 0), (game + 0x3C, 0), (anchor, 0),
+                               (options + 0x2C4, 0), (options + 0x1EC, 0), (options, 0), (flag, 0)):
+            self.put(address, value)
+        for side in (0, 1):
+            self.putf(table + side * 0x28 + 4, slider)
+        saved = dict(self.boundaries)
+        self.random_boundaries(fraction=roll, integer=0, delta=0xFD0 if self.updated else 0)
+        try:
+            self.setfpr(1, 1.)
+            self.call(handler, BLOCKER, PLAYER, 0, 0, entries + 0xC * index,
+                      stop=gate_call + 4, bound=20_000)
+        finally:
+            self.boundaries = saved
+        if gate not in self.visited:
+            raise AssertionError("Line-move handler did not reach its outcome gate")
+        return self.reg(3)
 
     def move_bonus(self, category):
         """Run the complete scalar bonus helper, including its stop query."""
