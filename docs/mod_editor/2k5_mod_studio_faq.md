@@ -426,6 +426,21 @@ not been able to reproduce one. If your Deck freezes, please post: xemu version,
 which list and position filter you were on and for how long you scrolled, and a photo of the
 frozen screen.
 
+## Linux setup says the packages need Python 3.11 or 3.12, and I have 3.13
+
+The Studio's packages are pinned to versions that are proven to build the same disc on every system, and one of them
+(numpy 1.26) has no Python 3.13 build. You do not need to replace your system Python, and you do not need root, so this
+also works on a Steam Deck in Desktop Mode. Install uv (the one-line installer is on
+[docs.astral.sh/uv](https://docs.astral.sh/uv/)), then, in the extracted Studio folder, run:
+
+```
+uv python install 3.12
+MOD_STUDIO_PYTHON="$(uv python find 3.12)" ./2K5-Mod-Studio.sh --setup
+```
+
+After that, start the Studio with `./2K5-Mod-Studio.sh` as usual; it keeps using the Python 3.12 setup. uv's Python lives
+in your home folder and changes nothing else on the system.
+
 ## xemu is choppy or grainy. Which studio option fixes it?
 
 lt9608's performance question concerns **emulator settings**. Compare your original game in

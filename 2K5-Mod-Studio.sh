@@ -53,7 +53,10 @@ if [[ "${1:-}" == "--setup" ]]; then
     if ! supported_version "$base_version"; then
         printf '%s\n' \
             "Note: the Studio packages are pinned for Python 3.11 or 3.12 and this is $("$base_python" -V 2>&1)." \
-            "If the install below fails, install Python 3.11 or 3.12 and run: MOD_STUDIO_PYTHON=/path/to/python3 ./2K5-Mod-Studio.sh --setup" >&2
+            "If the install below fails, install Python 3.11 or 3.12 and run: MOD_STUDIO_PYTHON=/path/to/python3 ./2K5-Mod-Studio.sh --setup" \
+            "Without root (Steam Deck, or a system that only has Python 3.13 or newer): install uv from https://docs.astral.sh/uv/ and run" \
+            "  uv python install 3.12" \
+            "  MOD_STUDIO_PYTHON=\"\$(uv python find 3.12)\" ./2K5-Mod-Studio.sh --setup" >&2
     fi
     venv_dir="$release_root/.venv"
     if [[ -e "$venv_dir" || -L "$venv_dir" ]]; then
