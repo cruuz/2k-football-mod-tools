@@ -56,6 +56,7 @@ mod_editor/core/nfl2k5_dynamic_kickoff.py
 mod_editor/core/nfl2k5_franchise_save.py
 mod_editor/core/nfl2k5_staff_ui.py
 mod_editor/core/nfl2k5_playoff_picture.py
+mod_editor/core/nfl2k5_runner_vision.py
 mod_editor/core/nfl2k5_trade_deadline.py
 mod_editor/core/nfl2k5_practice_squad.py
 mod_editor/core/nfl2k5_practice_squad_runtime.py
@@ -120,6 +121,7 @@ mod_editor/core/nfl2k5_scorebar_v3.py
 mod_editor/core/nfl2k5_scorebug_exact.py
 mod_editor/core/nfl2k5_scorebug_fonts.py
 mod_editor/core/nfl2k5_scorebug_mnf_font.py
+tests/mod_editor/test_nfl2k5_runner_vision.py
 tests/mod_editor/test_nfl2k5_scorebug_mnf.py
 data/nfl2k5_scorebug_mnf/espn_glyphs.png
 data/nfl2k5_scorebug_mnf/espn_glyphs.json

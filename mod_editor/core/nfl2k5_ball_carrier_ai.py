@@ -33,6 +33,15 @@ human-controlled players are untouched):
   only when the top threat reaches the quarterback before he can reach the sticks
   (``distance * own speed <= yards short * threat speed``, speeds from the retail 0x237C70; the top threat is the one
   retail itself required for the slide); at or past the line to gain the retail slide stands.
+
+b780 cv2-runner: ``apply(payload, wide_sideline=True)`` installs the same caves with a wider outward taper for the
+runner retune (``nfl2k5_runner_vision``, which makes CPU carriers react to where defenders are going): the outward
+weight becomes ``(2346.96 - |x|) / (WIDE_BAND_YARDS * 91.44)``, full room only ``WIDE_BAND_YARDS + 1`` yards inside
+the sideline and none from 1 yard in, so a runner who reads pursuit from inside turns upfield instead of bending to
+the line. The float lives in the allocation's own padding (offset ``WIDE_BAND_OFFSET``); the request, the hooks and
+every other byte are the standard install's. The carrier-task guard tolerates the runner retune's verified call
+hook at 0x2E3072 (``nfl2k5_runner_vision.neighbor_edits``), as other owners do for a neighbour inside a pinned
+routine.
 """
 from __future__ import annotations
 
@@ -56,6 +65,8 @@ SLIDE_CHECK, SPEED, DISTANCE, SCORE_DIFF = 0x00291AE0, 0x00237C70, 0x002E1E30, 0
 GAME_STATE, THREAT_INDEX, THREATS = 0x00E602EC, 0x00C8F204, 0x00C8F1A0
 C_MARGIN, C_BAND, C_ONE, C_HALF = 0x00510428, 0x0050A528, 0x004E419C, 0x004E4184
 HALF_BITS = 0x3F000000              # 0.5f: a positive float above it compares greater as a signed integer
+WIDE_BAND_YARDS = 8.0               # b780 cv2-runner: with the runner retune, outward room fades from 9 yards in
+WIDE_BAND_OFFSET = 168              # the wide band's float, in the padding after the 165 bytes of code
 GUARDS = (
     (0x002E2780, 778, "ceff94910f98eeb5c7843c460bdf7ba84855d59ab110c1d977f2efc4bdb559ce"),   # sideline filter
     (0x002E2DA0, 2196, "3369e0cfea02df47bdf352b915a3eca1605a69bd396a5e8307223780d51e2a9b"),  # carrier task
@@ -82,9 +93,10 @@ def _imm(value):
     return struct.pack("<I", value).hex()
 
 
-def code_for(code_va):
+def code_for(code_va, wide_sideline=False):
     """Both caves in one allocation. Only EAX, ECX, EDX, the flags and the retail frame's w / lateral / forward slots
-    change; the x87 stack is left as found."""
+    change; the x87 stack is left as found. ``wide_sideline``: the outward taper reads the band float stored at
+    ``code_va + WIDE_BAND_OFFSET`` (1 / (WIDE_BAND_YARDS yards)) instead of the retail 1 / 3 yards."""
     from .nfl2k5_draft_ai import _Asm
     a = _Asm(code_va)
     a.label("retail")                                             # the two displaced retail instructions
@@ -96,7 +108,9 @@ def code_for(code_va):
     a.b("817c2420" + _imm(HALF_BITS)); a.j8("7f", "retail")       # clock urgency > 0.5: the retail clock logic
     a.b("8b4b188b413033442418"); a.j8("78", "retail")             # x xor lateral: signs differ = heading inward
     a.b("d94130d9e1d82d" + _imm(C_MARGIN))                        # d = 2346.96 - |x| (cm)
-    a.b("d80d" + _imm(C_BAND) + "d95c2410")                       # w = d / 3 yd: 1 four yards in, 0 one yard in
+    band = code_va + WIDE_BAND_OFFSET if wide_sideline else C_BAND
+    a.b("d80d" + _imm(band) + "d95c2410")                         # w = d / 3 yd: 1 four yards in, 0 one yard in
+    #                                                               (wide: d / 8 yd, 1 nine yards in)
     a.j8("eb", "retail")                                          # the retail test and tail: w >= 1 keeps the
     #                                                               heading, w < 0 counts as 0 (straight upfield)
     # ---- slide: called from 0x2E340E with ECX = EDI = the quarterback carrier, inside the carrier task's frame
@@ -116,8 +130,11 @@ def code_for(code_va):
     a.label("allow_popped"); a.b("6a0158")
     a.label("slide_out"); a.b("c3")
     body = a.assemble()
-    require(len(body) <= CODE_SIZE, f"ball-carrier caves exceed their allocation ({len(body)} > {CODE_SIZE})")
-    return body.ljust(CODE_SIZE, b"\xcc"), dict(a.labels)
+    require(len(body) <= WIDE_BAND_OFFSET, f"ball-carrier caves exceed their allocation ({len(body)} > {CODE_SIZE})")
+    out = bytearray(body.ljust(CODE_SIZE, b"\xcc"))
+    if wide_sideline:
+        out[WIDE_BAND_OFFSET:WIDE_BAND_OFFSET + 4] = struct.pack("<f", 1.0 / (WIDE_BAND_YARDS * 91.44))
+    return bytes(out), dict(a.labels)
 
 
 def sites(code_va=0):
@@ -139,31 +156,58 @@ def allocation(payload):
     return rows[0]
 
 
-def _recognize(payload):
+def _neighbor_edits(payload):
+    """b780 cv2-runner: the runner retune's call hook at 0x2E3072 inside the carrier task, as (va, retail bytes), only
+    while that owner validates as exactly applied (it never calls back into this module)."""
+    from . import nfl2k5_runner_vision as vision
+    return vision.neighbor_edits(payload)
+
+
+def _variant(payload):
+    """(state, wide_sideline): wide_sideline is None unless the caves are installed."""
     from . import nfl2k5_xbe_space as space
     from .nfl2k5_cave_oracle import XbeImage
     image = XbeImage(payload)
     present = any(r["owner"] == OWNER for r in space.layout(payload)["allocations"])
     owned = allocation(payload) if present else None
     edits = sites(owned["va"] if owned else 0)
-    states = set()
+    states, wide = set(), None
     for _name, va, before, after in edits:
         raw = image.read(va, len(before))
         states.add("retail" if raw == before else "applied" if owned and raw == after else "foreign")
     if owned:
         raw = image.read(owned["va"], CODE_SIZE)
-        states.add("retail" if raw == b"\xcc" * CODE_SIZE else "applied" if raw == code_for(owned["va"])[0] else "foreign")
+        if raw == b"\xcc" * CODE_SIZE:
+            states.add("retail")
+        elif raw in (code_for(owned["va"])[0], code_for(owned["va"], wide_sideline=True)[0]):
+            states.add("applied")
+            wide = raw == code_for(owned["va"], wide_sideline=True)[0]
+        else:
+            states.add("foreign")
     require(states in ({"retail"}, {"applied"}), "Foreign or mixed ball-carrier site/code")
+    neighbors = _neighbor_edits(payload)
     for va, size, digest in GUARDS:
         content = bytearray(image.read(va, size))
-        for _, at, before, _ in edits:
+        for at, before in [(at, before) for _, at, before, _ in edits] + list(neighbors):
             if va <= at and at + len(before) <= va + size:
                 content[at - va:at - va + len(before)] = before
         require(hashlib.sha256(content).hexdigest() == digest, f"Foreign ball-carrier prerequisite at {va:#x}")
     for va, value in CONSTANTS:
         require(abs(struct.unpack("<f", image.read(va, 4))[0] - value) < 1e-3 * max(1.0, abs(value)),
                 f"Foreign ball-carrier constant at {va:#x}")
-    return next(iter(states))
+    return next(iter(states)), wide
+
+
+def _recognize(payload):
+    return _variant(payload)[0]
+
+
+def wide_sideline(payload):
+    """True / False for an installed owner (which outward taper), None otherwise (retail or foreign)."""
+    try:
+        return _variant(payload)[1]
+    except _ERRORS:
+        return None
 
 
 def status(payload):
@@ -173,17 +217,20 @@ def status(payload):
         return "foreign"
 
 
-def apply(payload):
-    """Install, or replay an identical installation."""
+def apply(payload, wide_sideline=False):
+    """Install, or replay an identical installation (the same taper; the other taper is refused)."""
     from . import nfl2k5_xbe_space as space
     from .nfl2k5_bump_strength import _sections, section_digest
     from .nfl2k5_cave_oracle import XbeImage
+    wide_sideline = bool(wide_sideline)
     try:
-        state = _recognize(payload)
+        state, installed_wide = _variant(payload)
     except _ERRORS as exc:
         raise BallCarrierError(f"foreign/mixed ball-carrier input: {exc}") from exc
-    common = dict(owner=OWNER, experimental=True)
+    common = dict(owner=OWNER, experimental=True, wide_sideline=wide_sideline)
     if state == "applied":
+        require(installed_wide == wide_sideline, "CPU ball carriers is installed with the other sideline taper; "
+                                                 "build from your unmodified retail dump")
         return payload, dict(common, status="already_applied", changed_bytes=0, edits=[])
     before = payload
     allocation_receipt = {}
@@ -194,7 +241,7 @@ def apply(payload):
             require(space.is_scaleout(payload), "CPU ball carriers need the scale-out allocator")
             payload, allocation_receipt = space.extend_scaleout(payload, REQUESTS)
     code_va = allocation(payload)["va"]
-    payload, _ = space.install_code(payload, OWNER, code_for(code_va)[0])
+    payload, _ = space.install_code(payload, OWNER, code_for(code_va, wide_sideline)[0])
     edits = sites(code_va)
     image = XbeImage(payload)
     buf = bytearray(payload)
@@ -205,7 +252,8 @@ def apply(payload):
     for section in _sections(buf):
         buf[section.header_offset + 36:section.header_offset + 56] = section_digest(buf, section)
     result = bytes(buf)
-    require(_recognize(result) == "applied" and space.status(result) == "applied", "ball-carrier postcondition failed")
+    require(_variant(result) == ("applied", wide_sideline) and space.status(result) == "applied",
+            "ball-carrier postcondition failed")
     return result, dict(common, status="applied", code_va=hex(code_va),
                         before_sha256=hashlib.sha256(before).hexdigest(), after_sha256=hashlib.sha256(result).hexdigest(),
                         changed_bytes=space.count_differing_bytes(before, result), file_growth=len(result) - len(before),
@@ -214,5 +262,5 @@ def apply(payload):
                         reservations=[r for r in space.reservations(result) if r["owner"] == OWNER])
 
 
-__all__ = ["OWNER", "REQUESTS", "CODE_SIZE", "SIDELINE_HOOK", "SLIDE_HOOK", "GUARDS", "code_for", "sites", "allocation",
-           "status", "apply"]
+__all__ = ["OWNER", "REQUESTS", "CODE_SIZE", "SIDELINE_HOOK", "SLIDE_HOOK", "GUARDS", "WIDE_BAND_YARDS", "code_for",
+           "sites", "allocation", "status", "wide_sideline", "apply"]

@@ -271,6 +271,7 @@ from mod_editor.core import nfl2k5_rookie_faces as _rookie_faces  # noqa: E402
 # b778-pi1: franchise practice keeps injuries (on with the Coach's Desk Practice row in Advanced and Experimental).
 from mod_editor.core import nfl2k5_practice_injuries as _practice_injuries  # noqa: E402
 from mod_editor.core import nfl2k5_ball_carrier_ai as _ball_carrier_ai  # noqa: E402
+from mod_editor.core import nfl2k5_runner_vision as _runner_vision  # noqa: E402  b780 cv2-runner
 # b778-kr1: return coverage takes pursuit angles on kick and punt returns (on in the Advanced and Experimental presets).
 from mod_editor.core import nfl2k5_return_coverage as _return_coverage  # noqa: E402
 from mod_editor.core import nfl2k5_star_retention as _star_retention  # noqa: E402
@@ -322,6 +323,8 @@ BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                  # b778 ci2: the tab caption stays short; the full wording is the module help.
                  ("cpu_ball_carriers", "CPU carriers in bounds; QBs slide past sticks (experimental)",
                   _ball_carrier_ai.HELP_TEXT),  # b778-ai5
+                 ("cpu_runner_vision", "CPU carriers see where defenders go: cutbacks (experimental)",
+                  _runner_vision.HELP_TEXT),  # b780 cv2-runner: needs cpu_ball_carriers (ANNIVERSARY_DEPENDENCIES)
                  ("return_coverage", _return_coverage.BUILD_CAPTION, _return_coverage.HELP_TEXT),  # b778-kr1
                  ("star_career", _star_career.BUILD_CAPTION, _star_career.HELP_TEXT),  # b778-st2
                  ("sportscenter_lineup", _sportscenter_lineup.BUILD_CAPTION, _sportscenter_lineup.HELP_TEXT),  # b778-sc2
@@ -357,6 +360,7 @@ ANNIVERSARY_DEPENDENCIES = {
     "historic_rosters_2026": ("historic_teams_quick_game",),
     "classic_teams": ("historic_teams_quick_game",),  # b775-ct1
     "cpu_clock2_overtime": ("cpu_clock2",),  # b780 b-clock: the overtime window extends the modern clock rules
+    "cpu_runner_vision": ("cpu_ball_carriers",),  # b780 cv2-runner: its wider sideline limit is cpu_ball_carriers' taper
 }
 
 

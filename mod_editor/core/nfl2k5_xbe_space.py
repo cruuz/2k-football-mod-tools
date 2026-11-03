@@ -771,7 +771,8 @@ LATE_OWNERS = (LATE_OWNER, "nfl2k5_letter_grades", "nfl2k5_letter_grades_progres
                "nfl2k5_history_screen",  # b780-j4: the History screen, box scores, game log (after every b779 owner)
                "nfl2k5_standings_records",  # b780-j1: Team Standings records (2,304 code + 16 RW bytes), last
                "nfl2k5_cpu_passer_iq",  # b780 a-passer: the CPU passer's checkdown factor and its per-play state
-               "nfl2k5_cpu_clock2")  # b780 b-clock: modern CPU clock management, after every b779 owner
+               "nfl2k5_cpu_clock2",  # b780 b-clock: modern CPU clock management, after every b779 owner
+               "nfl2k5_runner_vision")  # b780 cv2-runner: CPU carriers read where defenders go (after ball_carrier_ai)
 # b77-i1 (coordinator-approved fix of the all-owner union overflow): late owners whose code is placed top-down in the
 # reserved legacy RX page tails (0x14D9000 first, then 0x14BA000) instead of the full scale-out run. Static, so the
 # placement does not depend on which other owners are present.
