@@ -7691,6 +7691,68 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.core.nfl2k5_dive_window --xbe source.xbe --apply --output new-dive-window.xbe",
+        "module": "mod_editor/core/nfl2k5_dive_window.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "tests/mod_editor/test_nfl2k5_dive_window.py",
+        "tests/mod_editor/test_nfl2k5_dive_window_flights.py",
+        "tools/nfl2k5_dive_window.S"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. Off in Basic, Advanced and Experimental until its emulator gate passes (b780 r5-coverage research, job CV3)."
+      },
+      "id": "nfl2k5.gameplay.dive_window",
+      "input_constraints": [
+        "Pinned USA XBE or verified composed input; composes with Defenders break on the thrown ball. Foreign or mixed bytes refuse before mutation.",
+        "CPU defenders reacting to a throw only: no leap or catch try at a ball more than 0.03 s of flight past the stored catch point while that point is still ahead of the ball and on its line (the receiver gets it first), and no leap from more than 1.5 yards beside the ball's path (retail 3 yards). Human-controlled defenders, tipped or overthrown balls, the close-contest branch and degenerate ball paths keep the retail decision.",
+        "A late allocator owner (352 RX bytes, no RW state), installed after every other late owner; rebuild from a clean base to turn it off."
+      ],
+      "portme": [
+        "Witness CPU defenders on deep balls, curls and outs in man and zone with the option on and off: fewer leaps from far away, no defender freezing, breakups within a yard unchanged."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and recipes; never distribute generated game executable or disc bytes.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Bounded native instruction replays of the ball-play decision 0x1F52C0 with the hook (crafted states) and of the cave at its ABI. Played games, leap outcomes and breakup rates are unwitnessed.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false in Basic, Advanced and Experimental; explicit opt-in",
+            "name": "db_dive_window",
+            "required": true
+          }
+        ],
+        "notes": "Build-time only. Off skips the writer and its allocation; there is no in-game toggle."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "One jump at 0x1F56CB (21 bytes: the native 1-yard test of 0x1F52C0, run unchanged by the owner's code before the catch roll and the 3-yard test); owned 352 RX bytes, immutable constants inside code.",
+        "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+      },
+      "summary": "A CPU defender who reacts to a pass leaps, dives or tries the catch only when he can reach the ball: not from more than a yard and a half beside its path, and not at a ball the receiver catches first.",
+      "surface": "gameplay_tuning_sliders",
+      "title": "Defenders leap only for balls they can reach (experimental)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_dive_window"
+    },
+    {
+      "backend": {
         "command": "python3 -m mod_editor.core.nfl2k5_throw_arc <source.xbe> <new-copy.xbe>",
         "module": "mod_editor/core/nfl2k5_throw_arc.py",
         "operation": "write"

@@ -115,13 +115,13 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
 B69_GAME_RUNTIME_PINS = {
     "mod_editor/core/nfl2k5_weather.py": "ec3d253e348ff0cf7fb1951b5dad2983d8aebc0802d5c6fca32c74dc80a6985b",
     "mod_editor/core/nfl2k5_weather_haze.py": "b8c58c592794312358eb1554b1d3be43a1ca41f7fdd8fd3cd498d4f345c641cc",
-    "mod_editor/gui/build_panel_qt.py": "f12f18248ce7d3e97e8ee5b2bab61df986da86f28470fd1c377a1bea112df9da",
+    "mod_editor/gui/build_panel_qt.py": "3885c1793fa8de69cf3fa4159f0076c18fa0369cca90934b160880eb0336206b",
     "mod_editor/gui/gameplay_patches_panel_qt.py": "8ad54526f3d31ed6fa01207497e8aeff987057ce05032e394ce8b80779bba8a6",
     "mod_editor/gui/my_career_panel_qt.py": "cd39ce1685ed119288122e46b0f8c1c8ba586cea611f5d5feee096a71d7ea9ac",
     "mod_editor/gui/gameplay_project_ui.py": "4927318677c5dbd1183b139d5b4d2c460136e38a3f9bf5d5b979ba62e1ed016e",
     "mod_editor/gui/beta62_options.py": "b83754f77982d67c2be2bd8a6d7da2f30e386bc133328f9e3ec99e774383adba",
     "tools/nfl2k5_weather_editor.py": "39a2847b873bbdc567712ca87657d700fa95e226c3408983acce4d714b1031de",
-    "mod_editor/gui/build_panel_qt.py": "f12f18248ce7d3e97e8ee5b2bab61df986da86f28470fd1c377a1bea112df9da",
+    "mod_editor/gui/build_panel_qt.py": "3885c1793fa8de69cf3fa4159f0076c18fa0369cca90934b160880eb0336206b",
     "mod_editor/gui/gameplay_patches_panel_qt.py": "8ad54526f3d31ed6fa01207497e8aeff987057ce05032e394ce8b80779bba8a6",
     "mod_editor/gui/my_career_panel_qt.py": "cd39ce1685ed119288122e46b0f8c1c8ba586cea611f5d5feee096a71d7ea9ac",
     "mod_editor/gui/gameplay_project_ui.py": "4927318677c5dbd1183b139d5b4d2c460136e38a3f9bf5d5b979ba62e1ed016e",
@@ -2031,6 +2031,8 @@ def main() -> int:
         "mod_editor.core.nfl2k5_cpu_qb_reads_code",               # b776-ai2
         "mod_editor.core.nfl2k5_db_ball_play",                    # b776-ai2
         "mod_editor.core.nfl2k5_db_ball_play_code",               # b776-ai2
+        "mod_editor.core.nfl2k5_dive_window",                     # b780-cv3
+        "mod_editor.core.nfl2k5_dive_window_code",                # b780-cv3
         "mod_editor.core.nfl2k5_run_blocking",                    # b777-ol1
         "mod_editor.core.nfl2k5_run_blocking_code",               # b777-ol1
         "mod_editor.core.nfl2k5_pass_protection",                 # b778-pr1
@@ -2324,11 +2326,11 @@ def main() -> int:
         check_files=False,
     )
     product_catalog = product_catalog_module.build_nfl2k5_product_catalog(registry)
-    require(len(registry.capabilities) == 220,  # b780-int: + coach_carousel (c6), franchise_history (j23), history_screen (j4); c2's duplicate rosters.coaching_staff row dropped (c4's rosters.coach_staff covers the Coaches tab); b77-f5: + Player Card honors page; b77-v1: + modern goalposts; b76: + custom intro video, ESPN presentation marks (2026), b76-p2 wipes and boards, b76-h1 historic teams in Quick Game, b76-u2 MetLife, b76-m1 25 more moments, b76-k1 128 MB memory, b76-vb3 kickoff return blocking, b76-u4 venues 2026, b76-u5, b76-u6, b76-st, b76-tf, b76-km: + kick meter, b76-hm, b76-st3: + modern_usbank, b76-pf: + the practice facility, b76-st4: + modern_hard_rock, modern_gillette, modern_lambeau, modern_everbank, b76-st5: + modern_board_kit, b77-f4: + letter grades in Franchise
+    require(len(registry.capabilities) == 221,  # b780-int: + coach_carousel (c6), franchise_history (j23), history_screen (j4); c2's duplicate rosters.coaching_staff row dropped (c4's rosters.coach_staff covers the Coaches tab); b77-f5: + Player Card honors page; b77-v1: + modern goalposts; b76: + custom intro video, ESPN presentation marks (2026), b76-p2 wipes and boards, b76-h1 historic teams in Quick Game, b76-u2 MetLife, b76-m1 25 more moments, b76-k1 128 MB memory, b76-vb3 kickoff return blocking, b76-u4 venues 2026, b76-u5, b76-u6, b76-st, b76-tf, b76-km: + kick meter, b76-hm, b76-st3: + modern_usbank, b76-pf: + the practice facility, b76-st4: + modern_hard_rock, modern_gillette, modern_lambeau, modern_everbank, b76-st5: + modern_board_kit, b77-f4: + letter grades in Franchise
             "canonical capability registry row count changed")
     require(len(product_catalog.sections) == 12,
             "product sidebar category count changed")
-    require(len(product_catalog.capabilities) == 145,  # b780-int: + coach_carousel (c6), franchise_history (j23), history_screen (j4); c2's duplicate rosters.coaching_staff row dropped (c4's rosters.coach_staff covers the Coaches tab); b77-f5: + Player Card honors page; b77-v1: + modern goalposts; b76: + custom intro video, ESPN presentation marks (2026), b76-p2 wipes and boards, b76-h1, b76-u2, b76-m1, b76-k1, b76-vb3, b76-u4, b76-u5, b76-u6, b76-st, b76-tf, b76-km: + kick meter, b76-hm, b76-pf: + the practice facility, b76-st4: + Hard Rock, Gillette, Lambeau and EverBank, b76-st5: + the modern stadium boards, b77-f4: + letter grades in Franchise
+    require(len(product_catalog.capabilities) == 146,  # b780-int: + coach_carousel (c6), franchise_history (j23), history_screen (j4); c2's duplicate rosters.coaching_staff row dropped (c4's rosters.coach_staff covers the Coaches tab); b77-f5: + Player Card honors page; b77-v1: + modern goalposts; b76: + custom intro video, ESPN presentation marks (2026), b76-p2 wipes and boards, b76-h1, b76-u2, b76-m1, b76-k1, b76-vb3, b76-u4, b76-u5, b76-u6, b76-st, b76-tf, b76-km: + kick meter, b76-hm, b76-pf: + the practice facility, b76-st4: + Hard Rock, Gillette, Lambeau and EverBank, b76-st5: + the modern stadium boards, b77-f4: + letter grades in Franchise
             "NFL 2K5 product capability count changed")
     _exercise_default_provider_controller(
         modules["mod_editor.core.controller"],
@@ -2731,7 +2733,7 @@ def main() -> int:
     print(
         "2K5_MOD_STUDIO_RUNTIME_CLOSURE_PASS "
         f"product_modules={len(product_modules)} tool_modules={len(tool_modules)} "
-        "registry=220 sections=12 nfl2k5_capabilities=145 "
+        "registry=221 sections=12 nfl2k5_capabilities=146 "
         "reports=16 reviewed_metadata=25 sets=634 visuals=71963 "
         "team_kit_sets=634 team_kit_assets_per_set=39 "
         "text_banks=716 text_strings=23346 text_editable=20074 "
