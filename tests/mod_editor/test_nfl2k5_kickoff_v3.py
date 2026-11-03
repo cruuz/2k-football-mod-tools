@@ -68,16 +68,18 @@ def fresh_collision_evidence(payload):
     return dict(radius=250, play_state=14, residual_seed=False, frames=frames)
 
 
-def patch_evidence(retail):
+def patch_evidence(retail, requests=REQUESTS):
+    # requests: the allocator owner union (default the live one); a receipt recorded under an earlier union is
+    # rebuilt under its own recorded union (b780 sl1, as v3's receipt test does).
     base = kr.apply(retail)[0]
     legacy, legacy_receipt = dk.apply(base)
-    allocated = space.apply(legacy, REQUESTS, scaleout=True)[0]
+    allocated = space.apply(legacy, requests, scaleout=True)[0]
     grown, grown_receipt = relocated.apply(allocated)
     result = dict(schema=1, experimental=True, runtime_witnessed=False,
                   retail_xbe_sha256=hashlib.sha256(retail).hexdigest(),
                   legacy_input_sha256=hashlib.sha256(base).hexdigest(),
                   legacy_output_sha256=hashlib.sha256(legacy).hexdigest(),
-                  union_requests=REQUESTS,
+                  union_requests=requests,
                   union_allocated_sha256=hashlib.sha256(allocated).hexdigest(),
                   relocated_output_sha256=hashlib.sha256(grown).hexdigest(),
                   code_bytes_used=len(dk._code(dk._settings())[0].rstrip(b'\xcc')),
