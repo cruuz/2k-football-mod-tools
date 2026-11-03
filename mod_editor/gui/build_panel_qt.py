@@ -249,6 +249,7 @@ from mod_editor.core import nfl2k5_pass_protection as _pass_protection  # noqa: 
 from mod_editor.core import nfl2k5_pass_rush_stats as _pass_rush_stats  # noqa: E402  b779-st1
 from mod_editor.core import nfl2k5_history_screen as _history_screen  # noqa: E402  b780-j4
 from mod_editor.core import nfl2k5_cpu_passer_iq as _cpu_passer_iq  # noqa: E402  b780 a-passer
+from mod_editor.core import nfl2k5_protection_calls as _protection_calls  # noqa: E402  b780 p1-slide
 CPU_AI_OPTIONS = (
     ("cpu_qb_zone_windows", _cpu_qb_reads.BUILD_CAPTION_ZONE, _cpu_qb_reads.HELP_ZONE),
     ("cpu_qb_recheck", _cpu_qb_reads.BUILD_CAPTION_RECHECK, _cpu_qb_reads.HELP_RECHECK),
@@ -321,6 +322,7 @@ BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                  ("pass_protection", _pass_protection.BUILD_CAPTION, _pass_protection.HELP_TEXT),
                  ("pass_rush_stats", _pass_rush_stats.BUILD_CAPTION, _pass_rush_stats.HELP_TEXT),
                  ("history_screen", _history_screen.BUILD_CAPTION, _history_screen.HELP_TEXT),  # b780-j4
+                 ("protection_calls", _protection_calls.BUILD_CAPTION, _protection_calls.HELP_TEXT),  # b780 p1-slide
                  ("modern_force_out", _force_out.BUILD_CAPTION, _force_out.HELP_TEXT),  # b778-fo1
                  ("module_loader", _module_loader.BUILD_CAPTION, _module_loader.HELP_TEXT),  # b778-xs1
                  ("crib_trophy_room", _crib_trophy_room.BUILD_CAPTION, _crib_trophy_room.HELP_TEXT),  # b778-xs1

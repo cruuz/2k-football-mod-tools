@@ -3825,6 +3825,10 @@ mod_editor/core/nfl2k5_cpu_clock2.py
 mod_editor/core/nfl2k5_cpu_clock2_code.py
 tests/mod_editor/test_nfl2k5_cpu_clock2.py
 tests/mod_editor/test_nfl2k5_cpu_clock2_unicorn.py
+mod_editor/core/nfl2k5_protection_calls.py
+mod_editor/core/nfl2k5_protection_calls_code.py
+tests/mod_editor/test_nfl2k5_protection_calls.py
+tests/mod_editor/test_nfl2k5_protection_calls_unicorn.py
 tests/mod_editor/test_nfl2k5_pass_protection_sim.py
 tests/mod_editor/test_nfl2k5_run_blocking.py
 tests/mod_editor/test_nfl2k5_team_sleeves.py

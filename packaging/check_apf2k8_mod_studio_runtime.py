@@ -1403,7 +1403,7 @@ def _check_static_product_contract(modules: dict[str, object]) -> int:
         check_files=False,
     )
     require(
-        len(registry.capabilities) == 223  # b780-int: + coach_carousel (c6), franchise_history (j23), history_screen (j4); c2's duplicate rosters.coaching_staff row dropped (c4's rosters.coach_staff covers the Coaches tab); b77-f5: shared Player Card honors capability
+        len(registry.capabilities) == 224  # b780-int: + coach_carousel (c6), franchise_history (j23), history_screen (j4); c2's duplicate rosters.coaching_staff row dropped (c4's rosters.coach_staff covers the Coaches tab); b77-f5: shared Player Card honors capability
         and len(registry.for_game(core_model.GameId.APF2K8)) == 74,
         "shared/APF capability registry counts changed",
     )

@@ -67,6 +67,7 @@ FEATURE_KEYS += ("pass_rush_stats",)  # b779-st1: pressures / QB hits / allowed 
 FEATURE_KEYS += ("history_screen",)  # b780-j4: franchise History screen, box scores and game log, a late executable owner
 FEATURE_KEYS += ("cpu_passer_iq",)  # b780 a-passer: CPU quarterbacks throw on time and check down, a late executable owner
 FEATURE_KEYS += ("cpu_clock2", "cpu_clock2_overtime")  # b780 b-clock: modern CPU clock management, a late executable owner
+FEATURE_KEYS += ("protection_calls",)  # b780 p1-slide: the user's slide call at the line (L / R in the audible menu), late executable owner
 FEATURE_KEYS += ("team_number_scale",)  # b776-ns1: per-kit jersey number size {kit: scale}, late executable owner
 FEATURE_KEYS += ("qb_accuracy",)  # b777-qb3: accurate short and on-the-run throws by Pass Accuracy, late executable owner
 FEATURE_KEYS += ("star_retention",)  # b778-fa1: CPU clubs keep their stars (veteran cap cut), late executable owner
