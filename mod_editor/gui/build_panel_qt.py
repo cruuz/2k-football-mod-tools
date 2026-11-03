@@ -280,6 +280,8 @@ from mod_editor.core import nfl2k5_runner_vision as _runner_vision  # noqa: E402
 from mod_editor.core import nfl2k5_return_coverage as _return_coverage  # noqa: E402
 # b780-cv4: CPU defenders cannot slide to the ball for a pick (opt-in, off in every preset).
 from mod_editor.core import nfl2k5_catch_snap_limit as _catch_snap_limit  # noqa: E402
+# b780-cv7: receivers block for a scrambling QB (off in every preset: a feel test for Noah).
+from mod_editor.core import nfl2k5_scramble_blocking as _scramble_blocking  # noqa: E402
 from mod_editor.core import nfl2k5_star_retention as _star_retention  # noqa: E402
 from mod_editor.core import nfl2k5_alien_prospect as _alien_prospect  # noqa: E402
 from mod_editor.core import nfl2k5_star_career as _star_career  # noqa: E402  b778-st2
@@ -333,6 +335,7 @@ BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                   _runner_vision.HELP_TEXT),  # b780 cv2-runner: needs cpu_ball_carriers (ANNIVERSARY_DEPENDENCIES)
                  ("return_coverage", _return_coverage.BUILD_CAPTION, _return_coverage.HELP_TEXT),  # b778-kr1
                  ("catch_snap_limit", _catch_snap_limit.BUILD_CAPTION, _catch_snap_limit.HELP_TEXT),  # b780-cv4
+                 ("scramble_blocking", _scramble_blocking.BUILD_CAPTION, _scramble_blocking.HELP_TEXT),  # b780-cv7
                  ("star_career", _star_career.BUILD_CAPTION, _star_career.HELP_TEXT),  # b778-st2
                  ("sportscenter_lineup", _sportscenter_lineup.BUILD_CAPTION, _sportscenter_lineup.HELP_TEXT),  # b778-sc2
                  ("inbox_standings", _inbox_standings.BUILD_CAPTION, _inbox_standings.HELP_TEXT),  # b778-pc3

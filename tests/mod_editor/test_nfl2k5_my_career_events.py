@@ -247,7 +247,7 @@ class HostBudgetTests(unittest.TestCase):
             # test_nfl2k5_my_career_draft_need); the 25 Upgrades attribute names moved to the M3 ASCII pool and the text
             # scratch buffer from m3+2700 to m3+3200.
             'tools/mycareer_mode/runtime.c':
-                'ed8b79947f73a07bd723fd54f081db763a0bbdcf7be17a01d32c3aa6fd310d27',
+                'b0467fe9191825c642c8a24d6c277af0236635ec5d87de9c9fa6bf4145f6538c',  # b780-int: b8's draft need + j23's footer hooks, merged
             'tools/mycareer_mode/runtime.S':
                 '768241d4390839629906e81678ca46cb7f2d2578ac791a72dd71df5a3cde0484',
             'mod_editor/core/nfl2k5_my_career_mode.py':

@@ -142,6 +142,13 @@ def _revision_three(current, retail):
         if site.va in economy.REVISION_4_SITES:
             offset = image.offset(site.va, len(site.patched))
             out[offset:offset + len(site.patched)] = source.read(site.va, len(site.patched))
+    # b780-int: revision 5 (b4-economy) rewrote the reconcile and roster_c windows, which revision 3 shares with
+    # revision 4; put their revision-4 bytes back so the image is the real revision 3 again (a v0.7 executable)
+    from tests.franchise_economy_revision4_windows import WINDOWS as REVISION_4_WINDOWS
+    for va, code in REVISION_4_WINDOWS.items():
+        if va not in economy.REVISION_4_SITES:
+            offset = image.offset(va, len(code))
+            out[offset:offset + len(code)] = code
     for section in _sections(bytes(out)):
         out[section.header_offset + 36:section.header_offset + 56] = section_digest(bytes(out), section)
     return bytes(out)

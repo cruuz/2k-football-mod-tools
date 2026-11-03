@@ -653,6 +653,12 @@ class BuildPlan:
     # 8 to 12 yards past the line (gap capped at 25 points). Strength is a whole number 0..100; 0 installs nothing.
     # EXPERIMENTAL: 35 in the Experimental preset (the SOFTDRINK 2K28 recipe builds from it); Basic and Advanced keep 0.
     speed_threshold: int = 0
+    # b780-cv7: receivers and backs block for a quarterback who carries the ball past the line. A late executable owner
+    # (nfl2k5_scramble_blocking) hooks the AI tick 0x214FC0: once a QB holder is half a yard past the line on a play with
+    # no forward pass, his CPU tight ends, receivers and backs who are not blocking get the game's drive block (the way
+    # 0x23A010 converts a blocker mid-play), one blocker per man. Human and CPU quarterbacks alike. EXPERIMENTAL: off in
+    # every preset until Noah plays it (a feel test).
+    scramble_blocking: bool = False
 
     # b778-st2: rookie stars and stars earned or lost over a career. The draft-class generator's 3..5 best prospects
     # (the draft-AI key) and 1..2 later-round gems (a top development archetype) get the Star tier; every offseason,
@@ -841,7 +847,7 @@ class BuildPlan:
                 or self.guardian_overlay or self.my_career or self.screen_hooks or self.coverage_trail or self.franchise_edit_player or self.cpu_money_downs != "retail" or self.accelerated_clock or self.coin_defer or self.decided_clock or self.cpu_scrambles == "modern" or self.weather_haze or self.number_kerning or self.modern_color or self.weekly_prep or self.weekly_prep_cpu or self.weekly_prep_remember or self.coach_ai or self.playbook_pair or self.deep_zone_facing or self.deep_zone_bail or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave or self.historic_teams_quick_game or self.espn25_more_moments or self.historic_stock_books or self.espn25_era_rules or self.k128_memory or self.team_ratings or self.play_art_routes or self.letter_grades or self.honors_page or self.sim_cb_tackles or self.sim_stats or self.option_defaults or self.sim_rb_injuries or self.sim_realism or self.coach_carousel or self.history_screen
                 or self.momentum_collisions or self.scorebug_runtime or self.indicator_names_style != "retail" or self.momentum > 0 or self.momentum_contact or self.defensive_try or self.zone_drop_cap or self.all_stadiums or self.music_shuffle or self.practice_squad_screen or self.abilities or self.qb_spy or self.calendar_engine or self.coverage_slider or self.scramble_tuning or self.flatter_deep_ball or self.chop_block_toggle or self.music_policy != "retail" or self.music_unlock or self.music_userlist
                 or bool(self.music_library and _music_library_document(self.music_library)["bank"] == "cribmusic")
-                or self.pass_protection or self.pass_rush_stats or self.standings_records or self.cpu_passer_iq or self.cpu_clock2)  # b778-pr1, b779-st1, b780-j1
+                or self.pass_protection or self.pass_rush_stats or self.standings_records or self.cpu_passer_iq or self.cpu_clock2 or self.scramble_blocking)  # b778-pr1, b779-st1, b780-j1
 
     def to_recipe(self) -> dict[str, Any]:
         d = asdict(self)
@@ -1067,6 +1073,9 @@ del _preset
 # stays in the Build tab, where 35 (``SOFTDRINK``, the strength the gate tests) is the suggested setting.
 for _preset in PRESETS.values():
     _preset["speed_threshold"] = 0
+# b780-cv7: receivers block for a scrambling QB: off in every preset until Noah plays it.
+for _preset in PRESETS.values():
+    _preset["scramble_blocking"] = False
 del _preset
 # b778-ee1: the alien prospect rides on rookie faces: the same preset.
 for _preset in PRESETS.values():
@@ -1566,6 +1575,7 @@ _LATE_OWNER_OPTIONS = (
     ("nfl2k5_cpu_passer_iq", "CPU quarterbacks throw on time", lambda p: p.cpu_passer_iq),  # b780 a-passer
     ("nfl2k5_runner_vision", "CPU ball carrier vision", lambda p: p.cpu_runner_vision),  # b780 cv2-runner
     ("nfl2k5_speed_threshold", "Speed separation", lambda p: bool(p.speed_threshold)),  # b780-cv5
+    ("nfl2k5_scramble_blocking", "Receivers block for a scrambling QB", lambda p: p.scramble_blocking),  # b780-cv7
 )
 _REBUILD_HINT = " Build from your unmodified retail dump instead."
 
@@ -1614,6 +1624,21 @@ def _runner_vision_preflight(source: Path, progress) -> None:
     if module.status(payload) == "foreign":
         raise ValueError("The ball-carrier steering code in this source is not retail or CPU ball carrier vision. Turn "
                          "it off or build from your unmodified retail dump.")
+
+
+def _scramble_blocking_preflight(source: Path, progress) -> None:
+    """b780-cv7: refuse a source whose AI tick or block installer code is foreign, before any write."""
+    module = _core_module("nfl2k5_scramble_blocking")
+    if module is None or _core_module("nfl2k5_xbe_space") is None:
+        raise ValueError("Receivers block for a scrambling QB is not available in this installation.")
+    progress("Checking the blocking AI for scramble blocking", 0, 0)
+    try:
+        payload = _xbe_bytes(source)
+    except (OSError, ValueError) as exc:
+        raise ValueError(f"Scramble blocking cannot read default.xbe: {exc}") from exc
+    if module.status(payload) == "foreign":
+        raise ValueError("The AI tick or the block installer in this source is not retail or scramble blocking. "
+                         "Turn it off or build from your unmodified retail dump.")
 
 
 def _return_coverage_preflight(source: Path, progress) -> None:
@@ -2479,6 +2504,24 @@ def _apply_speed_threshold(plan: "BuildPlan", target: Path, receipt: dict, progr
     receipt["result"]["speed_threshold_value"] = plan.speed_threshold
 
 
+def _apply_scramble_blocking(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    """b780-cv7: receivers block for a scrambling QB, the last late allocator owner (LATE_OWNERS order)."""
+    if not plan.scramble_blocking:
+        return
+    module = _core_module("nfl2k5_scramble_blocking")
+    if module is None:
+        raise RuntimeError("Receivers block for a scrambling QB needs nfl2k5_scramble_blocking.")
+    progress("CPU AI: receivers block for a scrambling QB", 0, 0)
+    payload, blocking_receipt = module.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, payload)
+    final = _xbe_bytes(target)
+    if final != payload or module.status(final) != "applied":
+        raise RuntimeError("Scramble blocking: the output does not read back as applied")
+    receipt["steps"].append({"step": "scramble_blocking",
+                             **{k: v for k, v in blocking_receipt.items() if k != "reservations"}})
+    receipt["result"]["scramble_blocking"] = "applied"
+
+
 def _sim_stats_preflight(source: Path, progress) -> None:
     """b778-sim1: refuse a source whose simulator initializer is foreign, before any write."""
     module = _core_module("nfl2k5_sim_stats")
@@ -2738,6 +2781,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
                                ("cpu_runner_vision", "nfl2k5_runner_vision"),  # b780 cv2-runner
                                ("return_coverage", "nfl2k5_return_coverage"),  # b778-kr1
                                ("speed_threshold", "nfl2k5_speed_threshold"),  # b780-cv5
+                               ("scramble_blocking", "nfl2k5_scramble_blocking"),  # b780-cv7
                                ("sportscenter_lineup", "nfl2k5_sportscenter_lineup"),
                                ("franchise_draft_clock", "nfl2k5_draft_clock"),  # b778-dr1
                                ("weekly_progression", "nfl2k5_weekly_progression"),  # b778-pg1
@@ -3033,6 +3077,9 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
     out["speed_threshold"] = speed_threshold.status(_xbe_bytes(source)) if speed_threshold is not None else "unavailable"
     out["speed_threshold_settings"] = (speed_threshold.verify(_xbe_bytes(source))
                                        if out["speed_threshold"] == "applied" else None)
+    scramble_blocking = _core_module("nfl2k5_scramble_blocking")  # b780-cv7
+    out["scramble_blocking"] = (scramble_blocking.status(_xbe_bytes(source)) if scramble_blocking is not None
+                                else "unavailable")
     sim_stats = _core_module("nfl2k5_sim_stats")  # b778-sim1
     out["sim_stats"] = sim_stats.status(_xbe_bytes(source)) if sim_stats is not None else "unavailable"
     quick_release = _core_module("nfl2k5_quick_long_release")  # b780-c-release
@@ -5173,6 +5220,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("The defender catch snap limit must be Off or On.")
     if type(plan.speed_threshold) is not int or not 0 <= plan.speed_threshold <= 100:  # b780-cv5
         raise ValueError("Speed separation must be a whole number from 0 to 100.")
+    if type(plan.scramble_blocking) is not bool:  # b780-cv7
+        raise ValueError("Receivers block for a scrambling QB must be Off or On.")
     if type(plan.sportscenter_lineup) is not bool:
         raise ValueError("SportsCenter highlight lineups must be Off or On.")
     if type(plan.franchise_draft_clock) is not bool:  # b778-dr1
@@ -5976,6 +6025,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         _return_coverage_preflight(source, progress)
     if plan.speed_threshold:  # b780-cv5: before any write
         _speed_threshold_preflight(plan, source, progress)
+    if plan.scramble_blocking:  # b780-cv7: before any write
+        _scramble_blocking_preflight(source, progress)
     if plan.sportscenter_lineup:
         _sportscenter_lineup_preflight(source, progress)
     if plan.franchise_draft_clock:  # b778-dr1: like fo1, before any write
@@ -6569,7 +6620,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         standings_records=plan.standings_records,
         cpu_passer_iq=plan.cpu_passer_iq,
         cpu_clock2=plan.cpu_clock2,
-        catch_snap_limit=plan.catch_snap_limit)
+        catch_snap_limit=plan.catch_snap_limit,
+        scramble_blocking=plan.scramble_blocking)
     if plan.read_option_runtime or plan.qb_spy:
         _step("play_intents")
         resolver = _core_module("nfl2k5_play_intents")
@@ -6655,6 +6707,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             cpu_passer_iq=plan.cpu_passer_iq,
             cpu_clock2=plan.cpu_clock2,
             catch_snap_limit=plan.catch_snap_limit,
+            scramble_blocking=plan.scramble_blocking,
             **{**r62, "read_option_intent_table": read_table, "modern_naming": False, "crib_reclaim": False})
         _write_xbe_bytes(target, patched)
         receipt["steps"].append({"step": "xbe_space", **space_receipt,
@@ -7888,6 +7941,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     _apply_catch_snap_limit(plan, target, receipt, progress)
     # b780-cv5: speed separation on deep routes, after the last other late owner (nfl2k5_xbe_space.LATE_OWNERS order)
     _apply_speed_threshold(plan, target, receipt, progress)
+    # b780-cv7: receivers block for a scrambling QB, the last late allocator owner (LATE_OWNERS order)
+    _apply_scramble_blocking(plan, target, receipt, progress)
     # b778-pg2: the Player Progress screen and weekly snapshot (a late allocator owner after force_out)
     # b778-cb1: cornerback tackle credit, after force_out
     # b778-sd4: modern clock digits, after modern sideline catches
@@ -7998,6 +8053,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         _speed = _core_module("nfl2k5_speed_threshold")
         if _speed.status(_xbe_bytes(target)) != "applied" or _speed.verify(_xbe_bytes(target))["value"] != plan.speed_threshold:
             raise ValueError("speed separation did not survive the final passes")
+    if plan.scramble_blocking and _core_module("nfl2k5_scramble_blocking").status(_xbe_bytes(target)) != "applied":
+        raise ValueError("scramble blocking did not survive the final passes")  # b780-cv7
     if plan.sim_cb_tackles and _core_module("nfl2k5_sim_cb_tackles").status(_xbe_bytes(target)) != "applied":  # b778-cb1
         raise ValueError("cornerback tackle credit did not survive the final passes")
     if plan.sim_stats and _core_module("nfl2k5_sim_stats").status(_xbe_bytes(target)) != "applied":  # b778-sim1

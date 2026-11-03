@@ -94,6 +94,7 @@ FEATURE_KEYS += ("coach_carousel",)  # b780-c6: the coaching carousel, late exec
 FEATURE_KEYS += ("standings_records",)  # b780-j1: Team Standings division / conference / home / road records, late executable owner
 FEATURE_KEYS += ("catch_snap_limit",)  # b780-cv4: CPU defenders cannot slide to the ball for a pick, late executable owner
 FEATURE_KEYS += ("speed_threshold",)  # b780-cv5: speed separation strength 0..100 on deep routes, late executable owner (0 = off)
+FEATURE_KEYS += ("scramble_blocking",)  # b780-cv7: receivers block for a scrambling QB, late executable owner (test)
 FEATURE_KEYS += ("sim_stats",)  # b778-sim1: simulated franchise game pace (in place, no allocation)
 FEATURE_KEYS += ("quick_long_release",)  # b780-c-release: quicker deep and rollout throws (constants only, in place, no allocation)
 FEATURE_KEYS += ("option_defaults", "default_quarter_minutes", "default_sim_quarter_minutes")  # b779-df1: fresh-profile default options (in place, no allocation)

@@ -778,6 +778,7 @@ LATE_OWNERS = (LATE_OWNER, "nfl2k5_letter_grades", "nfl2k5_letter_grades_progres
 # b780-cv5: the speed separation slider's 1,024-byte code owner goes after every other late owner (it hooks the speed
 # mapper epilogue and nothing else), so it never moves another owner's address. It is appended as its own statement.
 LATE_OWNERS += ("nfl2k5_speed_threshold",)
+LATE_OWNERS += ("nfl2k5_scramble_blocking",)  # b780-cv7: receivers block for a scrambling QB (after every other late owner)
 # b77-i1 (coordinator-approved fix of the all-owner union overflow): late owners whose code is placed top-down in the
 # reserved legacy RX page tails (0x14D9000 first, then 0x14BA000) instead of the full scale-out run. Static, so the
 # placement does not depend on which other owners are present.
