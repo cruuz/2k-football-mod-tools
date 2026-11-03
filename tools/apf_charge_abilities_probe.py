@@ -325,7 +325,30 @@ class ChargeMachine(Machine):
 
         outer = choose(0x84AA6934, (0x84AA6944, 0x84AA69F4)) == 0x84AA6944
         second_discharge = choose(0x84AA673C, (0x84AA67A4, 0x84AA67B4)) == 0x84AA67A4
-        return {"charge_channel": channel, "timer_channel": timer,
+        # Held rings: run the native draw test and the chosen ring's timeline
+        # selection (stopping before its animation calls). The renderer timer
+        # is 1.0, so a charged loop lands above 1 and a fill stays below 1.
+        render = 0x3B0000
+        self.cpu.mem_write(render, bytes(0x200))
+        self.putf(render + 0x118, 1.)
+        self.setreg(31, render)
+        self.setfpr(31, struct.unpack(">f", self.cpu.mem_read(0x820009A0, 4))[0])
+        if choose(0x84AA68D8, (0x84AA68E0, 0x84AA6BFC)) != 0x84AA68E0:
+            ring, position = "none", None
+        else:
+            start, stop, name = ((0x84AA6944, 0x84AA699C, "second") if outer else
+                                 (0x84AA69F4, 0x84AA6A34, "first"))
+            # A boundary, not a stop address: Unicorn can reuse a translated
+            # block that was cached without this stop.
+            captured = []
+            self.boundaries[va(stop)] = lambda m: (captured.append(m.fpr(29)), m.ret(0))
+            try:
+                self.call(va(start), bound=100)
+            finally:
+                del self.boundaries[va(stop)]
+            position, = captured
+            ring = f"{name} {'charged' if position > 1 else 'filling'}"
+        return {"charge_channel": channel, "timer_channel": timer, "ring": ring, "ring_position": position,
                 "packet_word": packet_word, "decoded_charge": decoded_charge,
                 "decoded_timer": decoded_timer,
                 "displayed_charge": displayed * 2, "outer_ring": outer,

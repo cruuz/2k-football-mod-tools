@@ -481,7 +481,7 @@ class XeniaLauncher:
         if kind == "charge_abilities":
             from mod_editor.core import apf2k8_charge_abilities
             return (apf2k8_charge_abilities.FILENAME, apf2k8_charge_abilities.canonical_payload,
-                    "Charge-abilities patch", " Revision 5 gives each defensive line move its own ability for level 2. EXPERIMENTAL. Gameplay UNWITNESSED.")
+                    "Charge-abilities patch", " Revision 5 gives each defensive line move its own ability for level 2 and shows the second ring only when level 2 is ready. EXPERIMENTAL. Gameplay UNWITNESSED.")
         if kind == "situations":
             from .situation_masks import FILENAME
             from mod_editor.core.apf2k8_situation_mask import canonical_payload
@@ -528,7 +528,7 @@ class XeniaLauncher:
                         defect = ("beta 75 feedback bug" if revision == 1 else
                                   "Finesse move qualification bug" if revision == 2 else
                                   "discharge lost during native charge cleanup" if revision == 3 else
-                                  "every defensive line move used level 2")
+                                  "every defensive line move used level 2; second ring before level 2")
                         detail += f" [{defect}; install a newly exported revision {CURRENT_REVISION} patch]"
                 if kind == "situations":
                     from mod_editor.core.apf2k8_situation_mask import parse_payload

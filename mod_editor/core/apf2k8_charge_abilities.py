@@ -32,6 +32,7 @@ CAVE_LIMIT = 0x84D0D800
 FEEDBACK_CAVE = CAVE + 0x50
 MOVE_CAVE = LEGACY_CAVE_LIMIT
 LATCH_FEEDBACK_CAVE = CAVE_LIMIT_REV3
+RING_CAVE = 0x84D0D3C0
 LATCH_CONSUME_CAVE = 0x84D0D400
 LINE_MOVE_CAVE = 0x84D0D600
 LATCH_DOWNGRADE_CAVE = 0x84D0D700
@@ -76,6 +77,53 @@ FEEDBACK_EDITS = (
     (0x84AA673C, 0x2F170001, 0xFF1DF000),  # fcmpu cr6,f29,f30 (full level-2 marker)
     (0x84AA6940, 0x419900B4, 0x60000000),  # outer ring follows charge, any tier
 )
+# Revision 5: the second ring appears only at the full level-2 charge. Natively
+# level 2 exists only at charge 2.0: consume needs 2.0, releasing below 2.0
+# falls back to 1.0 (state 5 -> 3), and the level-2 "charged" event fires at
+# 2.0. The renderer drew the second ring's fill from charge 1.0, so a held ring
+# promised a level 2 that a move would not spend. Below 2.0 the first ring now
+# keeps its charged loop. That threshold also keeps a level-1 charge out of the
+# second ring, so the retail rounding returns (the floor at 0x84AA6100 left a
+# full level-1 charge at 0.499 and its charged loop never showed).
+RING_EDITS = (
+    (0x84AA6934, 0xFF1DD000, 0xFF1DF000),  # fcmpu cr6,f29,f30 (1.0, was 0.5)
+    (0x84AA6938, 0x409900BC, 0x419800BC),  # blt: below full level 2 -> first ring
+)
+
+
+# Packet charge channel c = charge / 2, rounded to 511 steps. Rounding is exact
+# at the level-1 edge (q >= 256 iff c >= .5) but q = 511 starts at charge
+# 1.998, so below the full 2.0 the held channel is clamped to 510/511.
+RING_CHANNEL_HOOK = 0x84AA6060  # fmuls f30,f0,f31 (held: c = charge * .5)
+RING_CHANNEL_WORD = 0xEFC007F2
+LEVEL_TWO_EDGE = 0x3F7F7FC0  # float 510/511: rounds to 510, never 511
+
+
+def feedback_edits(revision):
+    return FEEDBACK_EDITS[1:] + RING_EDITS if revision >= 5 else FEEDBACK_EDITS
+
+
+def ring_channel_trampoline(profile):
+    """c = charge * .5, then c >= 1 ? c : min(c, 510/511).
+
+    Uses only f0, f12, f13, r11 and f30 (the output), all dead or rewritten
+    before their next native use; CR, LR, CTR and every other register stay.
+    """
+    asm = _Assembler(RING_CAVE)
+    data = RING_CAVE + 0x20
+    asm.emit(RING_CHANNEL_WORD)  # displaced fmuls f30,f0,f31
+    asm.emit(59 << 26 | 13 << 21 | 30 << 16 | 18 << 11 | 20 << 1)  # fsubs f13,f30,f18 (1.0)
+    asm.emit(_d(15, 11, 0, (data + 0x8000) >> 16))
+    asm.emit(_d(48, 0, 11, data))  # lfs f0,edge
+    asm.emit(59 << 26 | 12 << 21 | 30 << 16 | 0 << 11 | 20 << 1)  # fsubs f12,f30,f0
+    asm.emit(63 << 26 | 12 << 21 | 12 << 16 | 30 << 11 | 0 << 6 | 23 << 1)  # fsel f12,f12,f0,f30
+    asm.emit(63 << 26 | 30 << 21 | 13 << 16 | 12 << 11 | 30 << 6 | 23 << 1)  # fsel f30,f13,f30,f12
+    asm.emit(_branch(RING_CAVE + 0x1C, feedback_address(RING_CHANNEL_HOOK + 4, profile)))
+    asm.emit(LEVEL_TWO_EDGE)
+    code = asm.finish()
+    if RING_CAVE + len(code) > LATCH_CONSUME_CAVE:
+        raise ValidationError("Charge ring channel exceeds its reservation")
+    return code
 # Save Players coordinates, corroborated by the retail .string_ help text.
 # QB arms use the same cap after the unchanged no-arm input gate.
 CHARGED_ABILITIES = (
@@ -240,7 +288,7 @@ def latched_feedback_trampoline(profile):
     asm.emit(_branch(LATCH_FEEDBACK_CAVE + len(asm.words) * 4,
                      feedback_address(FEEDBACK_HOOK + 4, profile)))
     code = asm.finish()
-    if LATCH_FEEDBACK_CAVE + len(code) > LATCH_CONSUME_CAVE:
+    if LATCH_FEEDBACK_CAVE + len(code) > RING_CAVE:
         raise ValidationError("Charge latch feedback exceeds its reservation")
     return code
 
@@ -502,7 +550,7 @@ class PatchDocument:
         if self.revision == 1:
             return words
         words += ((feedback_address(FEEDBACK_HOOK, self.profile), 0xFFC0E090),) + tuple(
-            (feedback_address(a, self.profile), old) for a, old, _ in FEEDBACK_EDITS
+            (feedback_address(a, self.profile), old) for a, old, _ in feedback_edits(self.revision)
         )
         if self.revision >= 3:
             words += tuple((move_address(check, self.profile) + i * 4, word)
@@ -514,6 +562,7 @@ class PatchDocument:
         if self.revision >= 5:
             words += tuple((line_move_address(site, self.profile), LINE_MOVE_EXIT_WORD)
                            for site in LINE_MOVE_EXITS)
+            words += ((feedback_address(RING_CHANNEL_HOOK, self.profile), RING_CHANNEL_WORD),)
         return words
 
     @property
@@ -530,7 +579,7 @@ class PatchDocument:
             raise ValidationError("Charge feedback exceeds its reserved code space")
         hook = feedback_address(FEEDBACK_HOOK, self.profile)
         words += ((hook, _branch(hook, feedback_cave)),) + tuple(
-            (feedback_address(a, self.profile), new) for a, _, new in FEEDBACK_EDITS
+            (feedback_address(a, self.profile), new) for a, _, new in feedback_edits(self.revision)
         ) + tuple((feedback_cave + i, int.from_bytes(feedback[i:i + 4], "big"))
                   for i in range(0, len(feedback), 4))
         if self.revision >= 3:
@@ -552,6 +601,10 @@ class PatchDocument:
                            for site in LINE_MOVE_EXITS)
             words += tuple((LINE_MOVE_CAVE + i, int.from_bytes(gate[i:i + 4], "big"))
                            for i in range(0, len(gate), 4))
+            ring = ring_channel_trampoline(self.profile)
+            hook = feedback_address(RING_CHANNEL_HOOK, self.profile)
+            words += ((hook, _branch(hook, RING_CAVE)),) + tuple(
+                (RING_CAVE + i, int.from_bytes(ring[i:i + 4], "big")) for i in range(0, len(ring), 4))
         return words
 
     @property
@@ -559,6 +612,7 @@ class PatchDocument:
         result = {"schema": f"apf2k8_charge_abilities/v{self.revision}", "classification": CLASSIFICATION,
                 "revision": self.revision, "feedback_follows_charge": self.revision >= 2,
                 "move_ability_unions": self.revision >= 3,
+                "second_ring_at_spend_threshold": self.revision >= 5,
                 "profile": self.profile.name, "image_sha256": self.profile.sha256,
                 "module_hash": self.profile.module_hash, "enabled": self.enabled,
                 "routine": address(ROUTINE, self.profile), "hook": address(HOOK, self.profile),
@@ -575,7 +629,8 @@ class PatchDocument:
                 "scope": ("Input charge state machine" + (" and charge feedback" if self.revision >= 2 else "")
                           + ("; Finesse/Finesse and Power qualify spin/juke; Power/Finesse and Power qualify stiff arm/shoulder charge" if self.revision >= 3 else "")
                           + ("; action-qualified visual latch survives native charge cleanup" if self.revision >= 4 else "")
-                          + ("; each defensive line move (swim, club, spin, rip) needs its own ability for level 2 in gameplay and discharge" if self.revision >= 5 else "")
+                          + ("; each defensive line move (swim, club, spin, rip) needs its own ability for level 2 in gameplay and discharge"
+                             "; the second ring appears only at the full level-2 charge a move can spend" if self.revision >= 5 else "")
                           + "; CPU bypass unchanged; gameplay UNWITNESSED.")}
         if self.revision >= 4:
             result["visual_latch"] = {"start": LATCH_START, "end": LATCH_LIMIT,
@@ -606,7 +661,7 @@ class PatchDocument:
                        if self.revision == 3 else
                        "Revision 4: discharge retains the executed move's qualified charge after native cleanup. Finesse qualifies spin/juke; Power qualifies stiff arm/shoulder. Other native charge consumers keep their level decision. QB no-arm gate preserved. Gameplay UNWITNESSED."
                        if self.revision == 4 else
-                       "Revision 5: each defensive line move needs its own ability (Swim, Club, Spin, Rip) for a level 2 charge and discharge; other line moves stay level 1. Revision 4 ball-carrier rules unchanged. QB no-arm gate preserved. Gameplay UNWITNESSED.")
+                       "Revision 5: each defensive line move needs its own ability (Swim, Club, Spin, Rip) for a level 2 charge and discharge; other line moves stay level 1. The second ring appears only when the full level 2 charge is ready to spend. Revision 4 ball-carrier rules unchanged. QB no-arm gate preserved. Gameplay UNWITNESSED.")
         lines = ['title_name = "All-Pro Football 2K8"', f'title_id = "{TITLE_ID}"',
                  f'hash = "{self.profile.module_hash}"', '', '[[patch]]', f'name = "{NAME}"',
                  f'desc = "{description}"',

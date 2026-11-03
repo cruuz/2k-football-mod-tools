@@ -315,7 +315,75 @@ def execute_line_move_gate(document, index, record, consumed, *, latch=None, see
     return (memory[state + 0x1A8] >> 22) & 7, None if entry is None else table[entry][2], len(calls)
 
 
+def execute_ring_channel(document, charge, *, seed=81):
+    """Independent single-precision oracle for the held-ring channel clamp.
+
+    Returns the native packet's 9-bit charge value (retail rounding,
+    fmadds c * 511 + .5 then fctiwz) after the patched hook and cave.
+    """
+    f32 = lambda x: struct.unpack(">f", struct.pack(">f", x))[0]
+    rng = random.Random(seed)
+    fpr = [rng.random() for _ in range(32)]
+    fpr[0], fpr[31], fpr[18] = f32(charge), .5, 1.
+    gpr = [rng.getrandbits(64) for _ in range(32)]
+    before_f, before_g, cr = fpr.copy(), gpr.copy(), 0x87654321
+    words = dict(document.words)
+    hook = p.feedback_address(p.RING_CHANNEL_HOOK, document.profile)
+    pc = hook
+    for _ in range(20):
+        if pc == hook + 4:
+            break
+        w = words[pc]
+        op, d, a, b, c = w >> 26, w >> 21 & 31, w >> 16 & 31, w >> 11 & 31, w >> 6 & 31
+        imm = w & 0xFFFF
+        simm = imm - 0x10000 if imm & 0x8000 else imm
+        nxt = pc + 4
+        if op == 18:
+            assert not w & 3
+            delta = w & 0x3FFFFFC
+            nxt = pc + (delta - (1 << 26) if delta & (1 << 25) else delta)
+        elif op == 59 and (w >> 1 & 31) == 25 and b == 0:
+            fpr[d] = f32(fpr[a] * fpr[c])  # fmuls
+        elif op == 59 and (w >> 1 & 31) == 20 and c == 0:
+            fpr[d] = f32(fpr[a] - fpr[b])  # fsubs
+        elif op == 63 and (w >> 1 & 31) == 23:
+            fpr[d] = fpr[c] if fpr[a] >= 0 else fpr[b]  # fsel
+        elif op == 15 and a == 0:
+            gpr[d] = (simm << 16) & ((1 << 64) - 1)
+        elif op == 48:
+            address = (gpr[a] + simm) & 0xFFFFFFFF
+            assert p.RING_CAVE <= address < p.LATCH_CONSUME_CAVE
+            fpr[d] = struct.unpack(">f", words[address].to_bytes(4, "big"))[0]
+        else:
+            raise AssertionError(f"Unexpected ring instruction {w:08X} at {pc:08X}")
+        pc = nxt
+    assert pc == hook + 4
+    assert all(fpr[i] == before_f[i] for i in range(32) if i not in (0, 12, 13, 30))
+    assert all(gpr[i] == before_g[i] for i in range(32) if i != 11) and cr == 0x87654321
+    return int(f32(fpr[30] * 511. + .5))
+
+
 class ChargeTests(unittest.TestCase):
+    def test_ring_channel_reaches_each_ring_only_at_its_spend_level(self):
+        for profile in p.PROFILES:
+            doc = p.PatchDocument(profile, True)
+            self.assertEqual({a for a, _, _ in p.feedback_edits(5)}, {0x84AA66CC, 0x84AA673C, 0x84AA6940, 0x84AA6934, 0x84AA6938})
+            self.assertNotIn(p.feedback_address(0x84AA6100, profile), dict(doc.words))  # retail rounding again
+            for edit, (address, old, new) in zip(("fcmpu cr6,f29,f30", "blt cr6"), p.RING_EDITS):
+                self.assertEqual(dict(doc.words)[p.feedback_address(address, profile)], new, edit)
+                self.assertIn((p.feedback_address(address, profile), old), doc.original_words)
+            charges = sorted({i / 4000 for i in range(8001)} | {.99999994, 1.0000001, 1.998, 1.9980469,
+                                                                 1.9999999, 1.99999988})
+            for charge in charges:
+                q = execute_ring_channel(doc, charge)
+                # The renderer: the first ring is charged at q >= 256, the second at q = 511.
+                self.assertEqual(q >= 256, charge >= 1, charge)
+                self.assertEqual(q >= 511, charge >= 2, charge)
+                self.assertLessEqual(q, 511)
+            # Revision 4 shape (floor, ring at > .5): the reported disagreement.
+            old = p.PatchDocument(profile, True, revision=4)
+            self.assertNotIn(p.feedback_address(p.RING_CHANNEL_HOOK, profile), dict(old.words))
+
     def test_line_move_gate_every_bit_level_and_abi(self):
         for profile in p.PROFILES:
             doc = p.PatchDocument(profile, True)
@@ -443,7 +511,7 @@ class ChargeTests(unittest.TestCase):
             doc = p.PatchDocument(profile)
             payload = doc.as_toml().encode()
             self.assertEqual(p.parse_payload(payload), doc)
-            self.assertEqual(len(doc.words), 772)
+            self.assertEqual(len(doc.words), 783)
             self.assertEqual(len(dict(doc.words)), len(doc.words))
             gate = p.line_move_trampoline(profile)
             self.assertEqual(len(gate), 212)
@@ -539,7 +607,7 @@ class ChargeTests(unittest.TestCase):
                     self.assertIn("beta 75 feedback bug" if revision == 1 else
                                   "Finesse move qualification bug" if revision == 2 else
                                   "discharge lost during native charge cleanup" if revision == 3 else
-                                  "every defensive line move used level 2", status)
+                                  "every defensive line move used level 2; second ring before level 2", status)
                     (storage / "patches" / p.FILENAME).write_bytes(legacy)
                     p.write_patch(p.PatchDocument(profile, True), output)
                     launcher.install_pass_fetch_patch(output, kind="charge_abilities", consent=True)

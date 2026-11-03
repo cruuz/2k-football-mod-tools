@@ -302,3 +302,52 @@ Retest: a Club plus Bull Rush defender (for example Clyde Simmons), fully
 charged, should show a second-level discharge on Club only; Swim, Spin and Rip
 first level. A Spin-only defender: Spin only. Bull Rush only: all four first
 level. Also confirm the ball-carrier cases from revision 4 are unchanged.
+
+## Revision 5: the second ring appears when level 2 is ready (beta 80)
+
+Report (10/09, ball carriers): "the 2nd-level discharge effect requires holding
+A for far longer than it actually takes to reach the 2nd-level charge ... I
+only get a 2nd-lvl dis after the ring briefly disappears while holding A."
+
+Native design, read from the code (BASE; TU feedback family +0xFD0):
+
+- Charge routine `0x848C51C0`, state in `state+0x1A8` bits 7..9: 0 idle, 2
+  filling level 1; at charge 1.0 it moves to 3 (full level 1) or, when level 2
+  is allowed, 5 (filling level 2) and raises the charged event `0x84931C20`
+  with level flag 0. State 5 reaching 2.0 clamps to 2.0, moves to 6 and raises
+  the event with flag 1. Releasing in state 5 below 2.0 drops back to charge
+  1.0, state 3. Consume `0x848C4D70` spends level 2 only at charge >= 2.0.
+- Renderer: displayed d = min(charge / 2, 1) from a 9-bit packet channel. The
+  held branch draws the second ring whenever d > .5 (`0x84AA6934`): a fill
+  timeline 0.067 + 0.917 * (charge - 1) while charging, then the charged loop
+  from 0.8 at d = 1. The first ring fills 0..0.65, then loops from 0.683 at
+  d >= .5. The jump of the second ring from its fill (0.98) to its loop (0.8)
+  at the full charge is the likely "ring briefly disappears".
+
+So level 2 exists only at the full second charge; the second ring's fill made
+it look ready a full second early. Revision 5 keeps the game's spend rule and
+moves the ring instead: `0x84AA6934`/`0x84AA6938` now draw the second ring only
+at d >= 1 (`fcmpu cr6,f29,f30` with f30 = 1.0, `blt`), so below the full charge
+the first ring keeps its charged loop. Making level 2 trigger when the ring
+appears would have contradicted the release fallback, the consume threshold
+and the level-2 charged event.
+
+The packet rounding matters at both edges. Retail rounding (`fmadds c*511+.5`)
+is exact at level 1 (q >= 256 exactly when charge >= 1.0) but reaches q = 511 at
+charge 1.998. Revision 2's floor was exact at level 2 but left a full level-1
+charge at q = 255, below its charged loop. Revision 5 returns the retail
+rounding and hooks the held channel (`0x84AA6060`, cave `0x84D0D3C0`, 36 bytes):
+c = charge / 2, and below c = 1 it is clamped to 510/511, so q = 511 only at the
+full charge. Only f0, f12, f13, r11 and f30 change; all are dead or rewritten
+before their next native use. The ripple, latch and expiry branches are
+untouched.
+
+Proof: `test_held_rings_match_the_level_a_move_would_spend` charges through the
+real state machine in 0.05 s frames on BASE and TU and compares the native
+ring with the level the native consume would spend on that frame (revision 4:
+the second ring fills while a move spends level 1, and a level-1 player never
+reaches the charged loop; revision 5: equal on every frame and at the exact
+edges, float sums just below 1.0 and 2.0 included). The retail-free oracle in
+`test_apf_charge_abilities.py` checks the clamp over 8,000 charges. Not
+witnessed in Xenia: the look of the effect timelines is inferred from the
+code, not seen.

@@ -166,7 +166,10 @@ class ChargeNativeTests(unittest.TestCase):
                     m.configure_player(tier, ("finesse",))
                     m.putf(STATE + 0xFC, charge)
                     held = m.feedback(tier)
-                    self.assertEqual(held["outer_ring"], charge > 1)
+                    # Revision 5: the second ring only at the full charge a move spends as level 2.
+                    self.assertEqual(held["outer_ring"], charge >= 2)
+                    self.assertEqual(held["ring"], "second charged" if charge >= 2 else
+                                     "first charged" if charge >= 1 else "first filling")
                     self.assertAlmostEqual(held["displayed_charge"], charge, delta=.004)
                     spent = m.feedback(tier, discharge=True)
                     self.assertEqual(spent["second_level_discharge"], charge == 2)
@@ -198,6 +201,65 @@ class ChargeNativeTests(unittest.TestCase):
                         qualified = requested in abilities
                         self.assertEqual(visual["consumed_state"], 4 if qualified else 1)
                         self.assertEqual(visual["second_level_discharge"], qualified)
+
+    def test_held_rings_match_the_level_a_move_would_spend(self):
+        """Urianus 10/09: the second ring showed long before a level-2 discharge.
+
+        Every frame charges through the real state machine, asks the native
+        consume what level a move would spend right now (on a copy), then
+        draws the held ring with the native renderer branches.
+        """
+        # The level each held ring promises; a filling second ring promises none.
+        promised = {"none": 0, "first filling": 0, "first charged": 1, "second charged": 2}
+        for image, profile in zip(self.images, p.PROFILES):
+            for revision in (4, p.CURRENT_REVISION):
+                m = ChargeMachine(image, patched=True, revision=revision)
+                routine = m.site(p.ROUTINE)
+                dt = m._pair(routine + 0x190, routine + 0x198) + 0x1C  # [frame timing] + 0x1C
+                m.putf(dt, .05)
+                for tier, abilities in ((2, ("finesse",)), (6, ("ankle_breaker",)), (4, ())):
+                    m.configure_player(tier, abilities)
+                    frames = []
+                    for _ in range(46):
+                        m.call(routine, PLAYER, bound=2_000)
+                        charge = struct.unpack(">f", m.cpu.mem_read(STATE + 0xFC, 4))[0]
+                        state = bytes(m.cpu.mem_read(STATE, 0x400))
+                        latch = bytes(m.cpu.mem_read(p.LATCH_START, p.LATCH_LIMIT - p.LATCH_START))
+                        m.call(m.site(0x848C4D70), PLAYER, bound=2_000)
+                        spend = {0: 0, 1: 1, 4: 2}[(m.get(STATE + 0x1A8) >> 22) & 7]
+                        m.cpu.mem_write(STATE, state)
+                        m.cpu.mem_write(p.LATCH_START, latch)
+                        frames.append((round(charge, 3), spend, m.feedback(tier)["ring"]))
+                    cap = 2 if abilities else 1
+                    self.assertEqual(frames[-1][:2], (float(cap), cap))
+                    self.assertTrue(any(s == 1 for _, s, _ in frames))
+                    if revision >= 5:
+                        for charge, spend, ring in frames:
+                            self.assertEqual(promised.get(ring), spend, (profile.name, tier, abilities, charge, ring))
+                    else:
+                        # The reported bug: the second ring is up while a move spends level 1,
+                        # and a full level-1 charge never shows the first ring's charged loop.
+                        if cap == 2:
+                            self.assertTrue(any(r == "second filling" and s == 1 for _, s, r in frames))
+                        else:
+                            self.assertEqual(frames[-1][2], "first filling")
+                    if revision >= 5 and cap == 2:
+                        # Exact edges, including float sums just below each threshold.
+                        for charge in (0., .001, .998, .99999994, 1., 1.0000001, 1.5, 1.998, 1.9999999, 2.):
+                            m.configure_player(tier, abilities)
+                            m.putf(STATE + 0xFC, charge)
+                            state = bytes(m.cpu.mem_read(STATE, 0x400))
+                            m.call(m.site(0x848C4D70), PLAYER, bound=2_000)
+                            spend = {0: 0, 1: 1, 4: 2}[(m.get(STATE + 0x1A8) >> 22) & 7]
+                            m.cpu.mem_write(STATE, state)
+                            ring = m.feedback(tier)["ring"]
+                            self.assertEqual(promised.get(ring), spend, (profile.name, charge, ring))
+                            self.assertEqual(spend, 2 if charge >= 2 else 1 if charge >= 1 else 0)
+                    print("CHARGE_RING_TIMING", profile.name, revision, tier, abilities,
+                          json.dumps([f for i, f in enumerate(frames) if i % 4 == 0 or f[1] != frames[i - 1][1]]),
+                          flush=True)
+                del m
+                gc.collect()
 
     def test_rev2_regression_and_rev3_real_move_dispatch(self):
         fixtures = (

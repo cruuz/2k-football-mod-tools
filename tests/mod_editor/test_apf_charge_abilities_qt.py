@@ -37,7 +37,8 @@ class ChargeQtTests(unittest.TestCase):
             dialog = ChargeAbilitiesDialog(facade)
             text = " ".join(label.text() for label in dialog.findChildren(QLabel))
             for phrase in ("Revision 5", "Finesse", "spin and juke", "Power", "stiff arm and shoulder charge", "Medal stars", "executed move",
-                           "Defensive line moves", "Swim, Club, Spin and Rip", "revision 1, 2, 3 or 4"):
+                           "Defensive line moves", "Swim, Club, Spin and Rip", "revision 1, 2, 3 or 4",
+                           "second ring appears only when the full level 2 charge is ready"):
                 self.assertIn(phrase, text)
             self.assertFalse(dialog.build_enabled.isChecked())
             self.assertFalse(dialog.enabled.isChecked())
