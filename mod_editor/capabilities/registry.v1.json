@@ -7187,7 +7187,9 @@
         "tests/mod_editor/test_nfl2k5_coverage_trail_unicorn.py",
         "tests/nfl2k5_coverage_trail_frame.py",
         "docs/mod_editor/nfl2k5_coverage_trail_frames.json",
-        "tools/nfl2k5_coverage_trail.S"
+        "tools/nfl2k5_coverage_trail.S",
+        "tests/mod_editor/test_nfl2k5_hitch_brake.py",
+        "tools/replay_nfl2k5_hitch.py"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
@@ -7201,7 +7203,8 @@
         "Pinned USA XBE or verified composed input; reserve the complete owner union before installing bytes. Mixed or foreign owners refuse before mutation.",
         "CPU defender during a live play, ordinary locomotion, no queued special command, known man or pursuit task with a live opposing target.",
         "Opponent within three yards and requested turn at least 90 degrees; stationary arrival uses the native 0.35-yard radius.",
-        "No guarantee for strafe, animation transitions, contact or every man-coverage failure. Rebuild from base to opt out."
+        "No guarantee for strafe, animation transitions, contact or every man-coverage failure. Rebuild from base to opt out.",
+        "Brake (coverage_hitch_brake): man callbacks 0x1A4830/0x1A4CF0/0x1A4DD0 only, finite target velocity, the same 0.35-yard arrival distance; clears this tick's throttle only. Needs coverage_trail; rebuild from base to opt out."
       ],
       "portme": [
         "Wire the shared product controls and regenerate the production cave manifest as specified in WIRING.md.",
@@ -7217,18 +7220,23 @@
         "evidence": [
           "ASTRA_DEFENDER_CIRCLING_REPORT.md"
         ],
-        "scope": "Bounded native planner, ordinary locomotion, root sampler and transform traces with supplied target paths and one synthetic straight clip. Pursuit orbit and stationary recovery are proved in that fixture; a native lapse command and RNG survive. Full task scheduling, real animation transitions, contact, the reported man-coverage cause and gameplay remain unwitnessed.",
+        "scope": "Bounded native planner, ordinary locomotion, root sampler and transform traces with supplied target paths and one synthetic straight clip. Pursuit orbit and stationary recovery are proved in that fixture; a native lapse command and RNG survive. Full task scheduling, real animation transitions, contact, the reported man-coverage cause and gameplay remain unwitnessed. b780 cv1 brake: the same fixture on the released v0.8 executable (r5 matrix 6 yd/s and a 9 yd/s matrix, seven routes, both field directions) removes every stem pivot and leaves at most one turn back after a curl; pursuit controls are byte-for-byte unchanged.",
         "status": "not-tested"
       },
       "selectors": {
         "fields": [
           {
-            "allowed": "false in Basic, Advanced and Experimental; explicit opt-in",
+            "allowed": "false in Basic; true in Advanced and Experimental",
             "name": "coverage_trail",
             "required": true
+          },
+          {
+            "allowed": "true or false; needs coverage_trail; on in Advanced and Experimental (where coverage_trail is on), off in Basic",
+            "name": "coverage_hitch_brake",
+            "required": false
           }
         ],
-        "notes": "Retail: close full-throttle pursuit can circle. Patch: authorize a close turn and stop after stationary arrival. Keep the retail coverage pursuit is the inverse UI switch for the same Boolean."
+        "notes": "Retail: close full-throttle pursuit can circle. Patch: authorize a close turn and stop after stationary arrival. b780 cv1: coverage_hitch_brake (Stop man-coverage spins and run-ins) also holds a man defender for one tick inside the 0.35-yard arrival distance of a moving receiver instead of pivoting past him again; same owner, hook and 640-byte reservation. Keep the retail coverage pursuit is the inverse UI switch for coverage_trail; turning it off clears the brake too."
       },
       "source_container": {
         "format": "XBE in XDVDFS",
@@ -7238,7 +7246,7 @@
         "resource": "One pinned six-byte turn-integrator hook at 0x2FC9F0; 640-byte RX reservation, immutable constants inside code, no owner RW state.",
         "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
       },
-      "summary": "A nearby CPU defender in ordinary man coverage or pursuit can turn back and stop on reaching a stationary opponent.",
+      "summary": "A nearby CPU defender in ordinary man coverage or pursuit can turn back and stop on reaching a stationary opponent; with the optional brake, a man defender no longer pivots again and again around a moving receiver.",
       "surface": "gameplay_tuning_sliders",
       "title": "Close pursuit recovery (experimental, unwitnessed)",
       "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_coverage_trail"

@@ -965,6 +965,7 @@ mod_editor/core/nfl2k5_gameplay_lever.py
 mod_editor/core/nfl2k5_coverage_slider.py
 mod_editor/core/nfl2k5_coverage_trail.py
 mod_editor/core/nfl2k5_coverage_trail_code.py
+mod_editor/core/nfl2k5_coverage_hitch_code.py
 mod_editor/core/nfl2k5_scramble_tuning.py
 mod_editor/core/nfl2k5_throw_arc.py
 mod_editor/core/nfl2k5_hires_pack.py
