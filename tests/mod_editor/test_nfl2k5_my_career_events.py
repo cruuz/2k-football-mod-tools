@@ -249,7 +249,8 @@ class HostBudgetTests(unittest.TestCase):
             'tools/mycareer_mode/runtime.c':
                 'b0467fe9191825c642c8a24d6c277af0236635ec5d87de9c9fa6bf4145f6538c',  # b780-int: b8's draft need + j23's footer hooks, merged
             'tools/mycareer_mode/runtime.S':
-                '768241d4390839629906e81678ca46cb7f2d2578ac791a72dd71df5a3cde0484',
+                # b780 n1: mode_camera_dir (the defensive camera read) and five byte-identical size rewrites.
+                'd7ae0a793c1b9cb52a8de0dcd2964f37b3b2546a8d34522c6cceadba38ab0f56',
             'mod_editor/core/nfl2k5_my_career_mode.py':
                 # Integrated era/context and CP companion validation. CP2 only
                 # refreshes this host pin. v1h also repairs the reviewed native C
@@ -259,7 +260,7 @@ class HostBudgetTests(unittest.TestCase):
                 # mo2: guard view accepts the moment context hook over the pinned 0xCB240 span.
                 # b778 bd3: recognition views for the star-career class-loop hooks and the Player Progress
                 # screen chained over the inline footer hooks (runtime code unchanged).
-                '5f83fd64a348b90c4734b493855c62a290337f6cc52f2740bf71d446d77ffd3f',
+                '57f2d48c2fa633210c614ed24ebf7d3038eafca09c7f502170c6e39d83f61842',  # b780-int: b8 + j23 + n1 (defensive camera read and its five byte-identical rewrites)
             'mod_editor/core/nfl2k5_my_career_code.py':
                 '0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b',
             'mod_editor/core/nfl2k5_my_career_progression.py':

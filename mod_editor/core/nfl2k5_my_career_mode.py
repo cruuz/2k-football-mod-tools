@@ -51,6 +51,7 @@ MODE_HOOKS = (
     ("mode_skip_buttons", 0x13856, "e8b5d10500", 0xE8),
     ("mode_skip_buttons", 0x112DD9, "e832dcf5ff", 0xE8),
     ("mode_camera_pick", 0x8970B, "a150fce50085c0", 0xE9),
+    ("mode_camera_dir", 0x883FF, "d9056017b600", 0xE9),
     ("mode_art_input", 0x1212A5, "e876f7ffff", 0xE8),
     ("mode_result", 0xC5D60, "e80beef9ff", 0xE8),
     ("mode_result", 0xC5D69, "e802eef9ff", 0xE8),
@@ -125,6 +126,8 @@ GUARDS = (
     (0x1211E0, 0xD0, "cdf04ccd4ba54547e9f51089891248244ccbd893c2d15d6e694827f2f1c2137c"),
     (0xa88460, 0x50, "0ce3ab700261bc38b8597990ecfbc72eb8cc9dcfd007138dcebc2ddd0c04ec83"),
     (0x896e9, 0x8d, "33f20f68556e2ebb244f5e45ccb4cb5d7f62cd629a9547327a77dda4c15adf29"),
+    # b780 n1: the camera facing getter (states 5..27 -> B61760, else 1.0); mode_camera_dir replaces its read.
+    (0x883f0, 0x1d, "5dffaa7b82c48d43bf371875e5ad786405884149e2f4bf6a25bd06a8aad61f96"),
     (0xa4650, 0x17a, "637ec6cc6060f3e6873bc773a648918cdc66e3007b75d41b8e5e5de7d16726f3"),
     (0x6bc30, 0x23d, "f7ee67e89a1f031057d6ff3d7ee46ac59a76558bf0269862aaf0ecef4a53ee7e"),
     (0x46920, 0x90, "eb1885e56619b0b7e653fa72af949e5ada2e8452bf19b1867dcc8591b267e7d7"),
