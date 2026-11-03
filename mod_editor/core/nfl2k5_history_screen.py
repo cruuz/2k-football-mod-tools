@@ -54,11 +54,18 @@ Allocation: one late owner (``nfl2k5_xbe_space.LATE_OWNERS``), code (``CODE_SIZE
 the selected box score) and a read-only block (``RO_SIZE``, 36 KiB: descriptors, the cloned ESPN.com rows, the seed tables).
 Two retail sites: the ESPN.com descriptor's row-table pointer (0x525674, .rdata, a 4-byte pointer edit: the cloned table
 has the retail rows plus TEAM HISTORY) and the Schedule input (0x24D2E5, a 6-byte call). Nobody else patches either.
+
+Companions (b780 n8): MyCareer (0x6E390), the on-demand Career Home loader (0x6E39A) and the music playlist (0x6E4E0)
+hook the screen push and the menu dispatcher this owner relies on. ``COMPANION_HOOKS`` accepts exactly their complete
+installs (each owner's own status must read "applied") and nothing else; all three pass this screen's descriptors
+through. History, MyCareer, Career Home, Player Progress, the playlist and the footer apply in either order once the
+build has reserved them together (its first space pass).
 """
 
 from __future__ import annotations
 
 import hashlib
+import importlib
 import json
 import struct
 from pathlib import Path
@@ -146,6 +153,26 @@ GUARDS = (
 # bytes inside guarded spans that other patches legitimately change: (VA, size): the regular-season length byte read by
 # the schedule accessors is outside every span; none so far.
 VARIABLE_BYTES = ()
+
+# b780 n8: three other owners hook native entry points inside the "screen push" and "menu dispatcher" spans. Each hook is
+# accepted only as the exact bytes of a complete install that its own owner validates (status "applied"), and is read as
+# the retail bytes it displaced before the span is hashed; any other byte change there stays foreign. All three pass the
+# History screen's descriptors through unchanged (Unicorn: tests/mod_editor/test_b780_n8_history_compose.py):
+# * MyCareer (the generic owner, or the legacy prepared-save one): the push prologue 0x6E390 jumps to mode_dispatch,
+#   which reroutes only its own two targets (0x522190, 0x4E7EC0, and only while a career is active), replays the
+#   10 retail bytes and resumes at 0x6E39A.
+# * Module loader (on-demand Career Home): 0x6E39A jumps to its gate, which loads the Career Home section only for
+#   MyCareer and Career Home descriptors, replays push edi / mov edi, edx / jge and resumes at 0x6E39F (or 0x6E3F0).
+# * Music playlist: the dispatcher prologue 0x6E4E0 jumps to screen_event, which queues background music on events 1
+#   and 3 of every screen and then runs the complete retail dispatcher (0x6E4E5 on).
+COMPANION_HOOKS = (
+    # (label, VA, retail bytes, owner module)
+    ("mycareer_screen_push", 0x0006E390, bytes.fromhex("568bf183be0001000020"), "nfl2k5_my_career"),
+    ("module_loader_screen_push", 0x0006E39A, bytes.fromhex("578bfa7d51"), "nfl2k5_module_loader"),
+    ("playlist_screen_event", 0x0006E4E0, bytes.fromhex("5155578bf9"), "nfl2k5_music_playlist"),
+)
+COMPANION_NAMES = {"nfl2k5_my_career": "MyCareer", "nfl2k5_module_loader": "the on-demand Career Home loader",
+                   "nfl2k5_music_playlist": "the music playlist"}
 
 # ---- the read-only block --------------------------------------------------------------------------------------------
 RO_MAGIC = b"HSR1"
@@ -601,15 +628,58 @@ def sites(code_va: int, ro_va: int, rows_offset: int) -> list[tuple[str, int, by
     return out
 
 
-def _guard_digest(image: XbeImage, va: int, size: int, checked_sites) -> str:
+def _guard_digest(image: XbeImage, va: int, size: int, checked_sites, companions=()) -> str:
     content = bytearray(image.read(va, size))
     for _label, address, before, _after in checked_sites:
         if va <= address and address + len(before) <= va + size:
+            content[address - va:address - va + len(before)] = before
+    for label, address, before, after in companions:
+        if va <= address and address + len(before) <= va + size:
+            _require(bytes(content[address - va:address - va + len(before)]) == after,
+                     f"foreign history screen dependency: {label} ({address:#x})")
             content[address - va:address - va + len(before)] = before
     for address, length in VARIABLE_BYTES:
         if va <= address and address + length <= va + size:
             content[address - va:address - va + length] = bytes(length)
     return hashlib.sha256(content).hexdigest()
+
+
+def _companion_bytes(payload: bytes, label: str) -> bytes:
+    """The exact hook bytes the companion owner's current install writes at its site."""
+    if label == "mycareer_screen_push":
+        from . import nfl2k5_my_career as legacy, nfl2k5_my_career_mode as mode
+        code, data = legacy.allocations(payload)
+        edits = mode.sites(code["va"], data["va"]) if mode.recognized(payload) else legacy.sites(code["va"], data["va"])
+        va = COMPANION_HOOKS[0][1]
+    elif label == "module_loader_screen_push":
+        from . import nfl2k5_module_loader as loader
+        edits = loader.sites(loader.allocation(payload)[0]["va"])
+        va = COMPANION_HOOKS[1][1]
+    else:
+        from . import nfl2k5_music_playlist as playlist
+        code, data, ro = playlist.sites(payload)
+        edits = playlist.edits(playlist.code_for(code["va"], data["va"], ro["va"])[1])
+        va = COMPANION_HOOKS[2][1]
+    found = [after for _name, at, _before, after in edits if at == va]
+    _require(len(found) == 1, f"foreign history screen dependency: {label} ({va:#x})")
+    return found[0]
+
+
+def companion_sites(payload: bytes, image: XbeImage | None = None) -> list[tuple[str, int, bytes, bytes]]:
+    """(label, VA, retail bytes, installed bytes) of every companion hook present in ``payload`` (``COMPANION_HOOKS``).
+    A hook whose owner does not read as a complete current install refuses, naming that owner."""
+
+    image = image or XbeImage(payload)
+    out = []
+    for label, va, retail, owner in COMPANION_HOOKS:
+        if image.read(va, len(retail)) == retail:
+            continue
+        module = importlib.import_module(f"{__package__}.{owner}")
+        _require(module.status(payload) == "applied",
+                 f"foreign history screen dependency: {label} ({va:#x}): {COMPANION_NAMES[owner]} hooks this "
+                 "screen entry, but it is not this release's complete install. Rebuild from your retail game.")
+        out.append((label, va, retail, _companion_bytes(payload, label)))
+    return out
 
 
 _RETAIL_SITES = None
@@ -629,9 +699,10 @@ def guard_digests(payload: bytes) -> dict[str, str]:
     return {name: _guard_digest(image, va, size, _retail_sites()) for name, va, size in GUARDS}
 
 
-def _check_guards(image: XbeImage) -> None:
+def _check_guards(image: XbeImage, payload: bytes) -> None:
+    companions = companion_sites(payload, image)
     for name, va, size in GUARDS:
-        _require(_guard_digest(image, va, size, _retail_sites()) == GUARD_PINS[name],
+        _require(_guard_digest(image, va, size, _retail_sites(), companions) == GUARD_PINS[name],
                  f"foreign history screen dependency: {name} ({va:#x})")
 
 
@@ -656,7 +727,7 @@ def owned_state(payload: bytes):
     _require(space.status(payload) != "foreign", "foreign XBE geometry, owner seal or section digest")
     image = XbeImage(payload)
     found = allocations(payload)
-    _check_guards(image)
+    _check_guards(image, payload)
     if not found:
         _require(rdata.status(payload, _retail_sites()) == "retail", "history screen sites changed without an allocation")
         return "retail", None
@@ -700,6 +771,12 @@ def install(payload: bytes, seed: Mapping | None = None, xtnd_ptr_va: int = 0) -
         return payload, {**common, "already_applied": True, "changed_bytes": 0}
     before = payload
     if not found:
+        # b780 n8: appending a section moves the section headers, and the on-demand Career Home loader's gate names its
+        # header by address, so the loader would read foreign afterwards. The build reserves this owner in its first
+        # space pass (nfl2k5_throw_tuning._selected_space_requests), before the loader.
+        _require(not any(label == "module_loader_screen_push" for label, *_ in companion_sites(payload)),
+                 "The History screen's space was not reserved before the on-demand Career Home loader was installed. "
+                 "Build from your retail game with both options selected.")
         if space.status(payload) == "retail":
             payload, _ = space.apply(payload, REQUESTS, scaleout=True)
         else:
