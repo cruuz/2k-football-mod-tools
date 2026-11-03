@@ -686,6 +686,54 @@ class SeasonRowTests(unittest.TestCase):
         self.assertGreater(len(set(drawn)), 2, drawn)
 
 
+@unittest.skipUnless(HAVE_UC, "unicorn is needed")
+class PreseasonFranchiseTests(unittest.TestCase):
+    """b780 n3 on the game's own franchise flow: retail plus this owner, the retail roster, "Preseason Games" on
+    ([0xE60120] = 1), franchise start 0x13EE10 and the first two preseason weeks through 0x247D40 (the retail generator:
+    13 games a week). The released tail drew a bonus for every corner of every club that played in week 0 or 1
+    (games 0 == week or week - 1) into the regular-season row; the offline v0.8 run found 145-147 such corners at kickoff."""
+
+    def test_preseason_weeks_leave_every_regular_season_row_empty(self):
+        from tests.nfl2k5_supersim_draft_fixture import Machine, retail_bytes, retail_roster
+        payload, receipt = cb.apply(retail_bytes())
+        self.assertEqual(receipt["status"], "applied")
+        body = retail_roster()
+        m = Machine(payload, trace_writes=False)
+        size = len(body) - 0x40
+        m.uc.mem_write(m.ARENA + 0x300, body)
+        m.put(0xB72804, m.ARENA + 0x300)
+        m.put(0xB72808, size if size > 0x91000 else 0x91000)
+        m.put(0xB7280C, size)
+        m.fixup_roster(m.ARENA + 0x340)
+        m.seed(2501)
+        for va, value in ((0xE5FF80, 4), (0xE60120, 1), (0xE6000C, 5), (0xE60010, 5)):
+            m.put(va, value)
+        m.leaf(0x177990, lambda: m.ret(pop=4), reason="progress renderer only")
+        m.leaf(0x14E520, lambda: m.ret(), reason="informational dialog acknowledgement only")
+        m.call(0x13EE10, budget=2_000_000_000)
+        self.assertEqual((m.get(cb.STAGE), m.get(0xE576B4)), (7, 0))
+        menu = m.ARENA + 0x1A0000
+        for week in (0, 1):
+            m.call(0x247D40, ecx=menu, budget=int(2e10))
+            self.assertEqual((m.get(cb.STAGE), m.get(0xE576B4)), (7, week + 1))
+        rows = []
+        for team in range(32):
+            base = m.team_base + 500 * team
+            for slot in range(m.uc.mem_read(base + 0x11C, 1)[0]):
+                player = m.get(base + 4 * slot)
+                if not player:
+                    continue
+                line = [m.uc.mem_read(player + 0x35, 1)[0]]
+                for history_class in (0, 1):
+                    m.put(0xBD7F98, history_class)
+                    line += [m.call(0x14EE40, ecx=player, edx=field) & 0xFFFF for field in (0, 18)]
+                m.put(0xBD7F98, 0)
+                rows.append(tuple(line))
+        corners_played = [r for r in rows if r[0] == 4 and r[3] >= 1]
+        self.assertGreater(len(corners_played), 50, "the preseason games were played and credited to class 1")
+        self.assertEqual([r for r in rows if r[1] or r[2]], [], "a regular-season row was written in the preseason")
+
+
 class ChainTests(unittest.TestCase):
     """b778-pg1 also wraps 0x134e05; the cb1 hook is inside the merge instead, so both owners coexist."""
 
