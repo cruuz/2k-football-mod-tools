@@ -7748,6 +7748,74 @@
     },
     {
       "backend": {
+        "command": "python3 -m mod_editor.core.mod_build (Build option franchise_history)",
+        "module": "mod_editor/core/nfl2k5_franchise_footer.py",
+        "operation": "write"
+      },
+      "classification": "offline-writer-proved",
+      "evidence": [
+        "mod_editor/core/nfl2k5_franchise_extension.py",
+        "mod_editor/core/nfl2k5_franchise_footer.py",
+        "mod_editor/core/nfl2k5_history.py",
+        "tools/nfl2k5_franchise_footer/runtime.c",
+        "tools/nfl2k5_history/runtime.c",
+        "tests/mod_editor/test_nfl2k5_franchise_footer.py",
+        "tests/mod_editor/test_nfl2k5_history.py"
+      ],
+      "game": "nfl2k5_xbox",
+      "gui": {
+        "default_enabled": false,
+        "expose": true,
+        "mode": "edit",
+        "reason": "EXPERIMENTAL / UNWITNESSED. b780 j23 (players' #2k5-ideas asks for a team history, records, the Hall of Fame and past box scores): one versioned franchise save footer and the native capture at the game commit and the season close. Off in every preset until its emulator gates pass."
+      },
+      "id": "nfl2k5.gameplay.franchise_history",
+      "input_constraints": [
+        "Pinned USA XBE or verified composed input; two late allocator owners placed after the Player Progress screen: nfl2k5_franchise_footer (4,096 RX; 64 RW with the 128 MB roster heap, else 98,352 RW holding the footer body) and nfl2k5_history (10,240 RX, code only). Foreign or mixed bytes refuse.",
+        "Footer host edits: 0x16AA26 (franchise total size), 0x16E50D (save, after the front office and the MyCareer block), 0x16E815 (load end), 0x16ABB5 (the franchise save-list admission, replacing MyCareer's), 0x13EF21 (a new franchise). The size, save and load calls chain to the bytes they displaced (retail or the generic MyCareer owner). With the full Player Progress screen on, that owner is installed hosted (its footer becomes the last 34,320 bytes of the save, as in v0.8).",
+        "History edits: 0x1356C8 and 0x1356FF (the played and simulated commit tails, jmp 0x73770) and 0x248601 (stage 9, call 0x13ED70). It reads the game state through getters only and writes only inside the footer body.",
+        "Save format: native save | MyCareer 128 (optional) | extension body 98,288 (2K5XTND1, optional) | Player Progress footer 34,320 (optional, last). Old saves load and start an empty history; v0.8 saves keep their Player Progress.",
+        "Rebuild from a verified base to remove it."
+      ],
+      "portme": [
+        "Franchise: play or simulate games; your club's games keep a box score; at Advance to offseason the season, the champion, the awards, records, all-time leaders and Hall of Fame candidates are recorded in the franchise save. Save, cold boot, load: the history is still there (the History screen that shows it is job j4-history)."
+      ],
+      "public_distribution": {
+        "game_data": "never-bundle-retail-data",
+        "mod_payload": "user-authored-inputs-and-recipes",
+        "rule": "Ship source and instructions; never distribute generated XBEs or retail resources.",
+        "tooling": "source-and-schemas-only"
+      },
+      "runtime": {
+        "evidence": [],
+        "scope": "Every hook of both owners runs under Unicorn on the retail executable (the footer host's size, save, load, admission and new-franchise paths with the published size family; the capture on a synthetic league against a Python model of the format). No game boot yet.",
+        "status": "not-tested"
+      },
+      "selectors": {
+        "fields": [
+          {
+            "allowed": "false | true; default false in every preset",
+            "name": "franchise_history",
+            "required": true
+          }
+        ],
+        "notes": "Build-time only. Off skips both writers and their allocations; there is no in-game toggle."
+      },
+      "source_container": {
+        "format": "XBE in XDVDFS",
+        "hash_pins": [
+          "73105b17a3161c546fea792a1c84ce37f9966a67c416f474cdbfab74b911a4a9"
+        ],
+        "resource": "XBE .text sites listed above; owned code and memory in the allocator's late region.",
+        "retail_file": "user-owned default.xbe in an NFL 2K5 USA disc"
+      },
+      "summary": "Franchise history and records: every season's standings and playoff results, the awards, club and league records, all-time leaders, Hall of Fame classes and the box scores of your team's games, kept in one versioned block footer in the franchise save (about 98 KB; on the 128 MB build it uses the extra memory).",
+      "surface": "schedules_franchise",
+      "title": "Franchise history and records footer and capture (experimental, unwitnessed)",
+      "validation_command": "python3 -m tests.mod_editor.test_nfl2k5_franchise_footer"
+    },
+    {
+      "backend": {
         "command": "python3 -m mod_editor.core.nfl2k5_k128 apply source.xbe new-128mb.xbe [--roster-heap]",
         "module": "mod_editor/core/nfl2k5_k128.py",
         "operation": "write"

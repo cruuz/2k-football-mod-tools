@@ -583,6 +583,12 @@ mod_editor/core/nfl2k5_sportscenter_lineup.py
 mod_editor/core/nfl2k5_draft_clock.py
 mod_editor/core/nfl2k5_weekly_progression.py
 mod_editor/core/nfl2k5_player_progress_screen.py
+# b780 j23: franchise extension footer (2K5XTND1 format + its native host)
+mod_editor/core/nfl2k5_franchise_extension.py
+mod_editor/core/nfl2k5_franchise_footer.py
+mod_editor/core/nfl2k5_franchise_footer_code.py
+mod_editor/core/nfl2k5_history.py
+mod_editor/core/nfl2k5_history_code.py
 mod_editor/core/nfl2k5_contract_college_guard.py
 mod_editor/core/nfl2k5_sim_cb_tackles.py
 mod_editor/core/nfl2k5_option_defaults.py
@@ -694,6 +700,7 @@ mod_editor/core/nfl2k5_honors_history.py
 data/nfl2k5_honors_2026.json
 data/nfl2k5_history_2026.json
 mod_editor/core/nfl2k5_hof_rules.py
+data/nfl2k5_hof_candidates_2026.json
 mod_editor/core/nfl2k5_kickoff_blocking.py
 mod_editor/core/nfl2k5_widescreen_menus.py
 mod_editor/core/nfl2k5_team_logo_swap.py
@@ -3913,3 +3920,7 @@ tests/mod_editor/test_b780_b4_economy.py
 mod_editor/core/nfl2k5_coach_owners.py
 data/nfl2k5_owners_2026.json
 data/nfl2k5_coach_pool_2026.json
+# b780 j23: franchise extension footer host and format
+tests/mod_editor/test_nfl2k5_franchise_footer.py
+tests/mod_editor/test_nfl2k5_history.py
+tests/mod_editor/test_nfl2k5_franchise_footer_transaction.py

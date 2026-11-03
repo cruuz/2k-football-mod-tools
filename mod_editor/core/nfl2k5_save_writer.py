@@ -296,7 +296,11 @@ def apply_option_edits(payload: bytearray, options: dict[str, int] | None) -> li
 # ---------------------------------------------------------------------------
 
 def _native_length(payload) -> int:
-    """Save length without a trailing Player Progress footer (stamped, or the v0.7 game's all-zero one)."""
+    """Save length without its franchise footers (b780 j23: the extension body, the Player Progress footer (stamped,
+    or the v0.7 game's all-zero one) or both); the MyCareer block stays."""
+    from . import nfl2k5_franchise_extension as ext
+    if ext.layout(payload) is not None:
+        return ext.native_length(payload)
     from .nfl2k5_player_progression import footer_start
     at = footer_start(bytes(payload))
     return len(payload) if at is None else at
@@ -307,7 +311,8 @@ def save_kind(payload: bytes) -> str:
         return "settings"
     if len(payload) == FRANCHISE_SAVE_SIZE:
         return "franchise"
-    if _native_length(payload) in ((FRANCHISE_SAVE_SIZE + 0x1000, FRANCHISE_SAVE_SIZE + 128,
+    # b780 j23: a retail-arena save followed by a franchise footer has the retail native length
+    if _native_length(payload) in ((FRANCHISE_SAVE_SIZE, FRANCHISE_SAVE_SIZE + 0x1000, FRANCHISE_SAVE_SIZE + 128,
                          FRANCHISE_SAVE_SIZE + 0x1000 + 128) + CAPACITY_SAVE_SIZES
                         + tuple(n + 128 for n in CAPACITY_SAVE_SIZES)):
         from .nfl2k5_franchise_save import is_franchise_save
@@ -319,7 +324,7 @@ def save_kind(payload: bytes) -> str:
 def _franchise_shift(payload) -> int:
     if len(payload) == FRANCHISE_SAVE_SIZE:
         return 0
-    _require(_native_length(payload) in (FRANCHISE_SAVE_SIZE + 0x1000, FRANCHISE_SAVE_SIZE + 128,
+    _require(_native_length(payload) in (FRANCHISE_SAVE_SIZE, FRANCHISE_SAVE_SIZE + 0x1000, FRANCHISE_SAVE_SIZE + 128,
                                          FRANCHISE_SAVE_SIZE + 0x1000 + 128) + CAPACITY_SAVE_SIZES
              + tuple(n + 128 for n in CAPACITY_SAVE_SIZES), "unsupported franchise container length")
     from .nfl2k5_franchise_save import FranchiseSave

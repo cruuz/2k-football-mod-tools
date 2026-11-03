@@ -127,12 +127,21 @@ static NI u32 relative(const u8 *root,u32 arena,u32 field,u32 n) {
     u32 at=field+W(root,field)-1;
     return W(root,field) && at>=0x70 && at<arena && n<=arena-at?at:0;
 }
+/* b780 j23: size is native + 0 or 128 (the career block) + an exact franchise footer: the extension body (98,288 B),
+ * the Player Progress footer (34,320 B) or both (nfl2k5_franchise_extension.FOOTER_SIZES). The career block is present
+ * exactly when bit 7 of (rest + 16) is set (rest = 0 / 34,320 / 98,288 / 132,608 give 0, the same plus 128 give 128:
+ * pinned by nfl2k5_franchise_extension's tests); the compare is exact. */
+static NI u32 admit_one(u32 size,u32 native) {   /* 0 refused, else 1 + the career block's size (0 or 128) */
+    u32 rest=size-native, career=(rest+16)&128;
+    rest-=career;
+    return !rest || rest==34320 || rest==98288 || rest==132608 ? career+1 : 0;
+}
 /* Called ONLY after native signed read success, before any deserializer.
  * The complete metadata length is checked before following any file pointer.
  * +2660 is pending footer, +2664 records the SOURCE ROST extent for load.
  */
 u32 FC inline_stage(const u8 *file,u32 size) {
-    u32 base,growth,arena,pool,p,i,ref,declared,native;
+    u32 base,growth,arena,pool,p,i,ref,declared;
     const u8 *b,*r;
     S(2660)=0; S(2664)=0;
     /* b778 fa6: a capacity arena writes larger saves (beta-78's 0xB0000: 847,020, 847,148 with the MyCareer
@@ -141,13 +150,14 @@ u32 FC inline_stage(const u8 *file,u32 size) {
      * 0x92000, beta-78's 0xB0000, or this build's own arena ([0xB72808], b779 ag1), never a larger one. */
     declared=W(file,0x2e4);
     if(declared!=0x91020 && declared!=0x92020 && declared!=0xb0020 && declared!=G(0xB72808)+0x20) return 0;
-    native=declared+0x1ec8c;
-    if(size==native+34320 || size==native+128+34320) size-=34320;
-    if(size!=native && size!=native+128) return 0;
-    base=(size==native+128)?native:size;
+    /* b780 j23: the native size, then 0 or the 128-byte career block, then any franchise footer (admit_one: the exact
+     * family, so a native save with any other tail still refuses). growth = declared - 0x91020, so the declared
+     * wrapper always equals 0x91020 + growth. */
+    base=declared+0x1ec8c;
+    if(!(i=admit_one(size,base))) return 0;
+    size=base+i-1;
     growth=base-720044; arena=0x91000+growth;
-    if(W(file,0x2e4)!=0x91020+growth ||
-       W(file,0x30c)!=0x54534f52 || W(file,0x310)!=(growth!=0) ||
+    if(W(file,0x30c)!=0x54534f52 || W(file,0x310)!=(growth!=0) ||
        W(file,0x314)!=13 || B(file,0x91320+growth)!=2 || G(0xB72808)<arena) return 0;
     S(2664)=0x91040+growth;
     if(base==size) return S(2580)==0;
@@ -168,10 +178,11 @@ u32 FC inline_stage(const u8 *file,u32 size) {
 /* Metadata admission is independent of the currently loaded career. */
 u32 FC inline_admit(u32 size) {
     /* b779 ag1: this build's native size follows its arena (720,044 + arena - 0x91000: 724,140 for 0x92000);
-     * a larger capacity build also admits beta-78's 0xB0000 saves (847,020 / 847,148), which load and migrate. */
+     * a larger capacity build also admits beta-78's 0xB0000 saves (847,020 / 847,148), which load and migrate.
+     * b780 j23: each with any franchise footer (the same family as nfl2k5_franchise_extension.admitted_sizes). */
     u32 max=G(0xB72808), base=720044+max-0x91000;
-    if(max>0xB0000 && (size==847020 || size==847148)) return 1;
-    return size==720044 || size==720172 || size==base || size==base+128;
+    if(max>0xB0000 && admit_one(size,847020)) return 1;
+    return admit_one(size,720044) || admit_one(size,base);
 }
 
 

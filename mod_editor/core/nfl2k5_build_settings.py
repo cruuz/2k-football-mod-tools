@@ -80,6 +80,7 @@ FEATURE_KEYS += ("franchise_draft_clock",)  # b778-dr1: broadcast-paced franchis
 FEATURE_KEYS += ("weekly_progression",)  # b778-pg1: franchise weekly progression, late executable owner
 FEATURE_KEYS += ("trophy_room",)  # b778-pg2: the Crib display name
 FEATURE_KEYS += ("player_progress", "player_progress_visible")  # b778-pg2/pg3: Player Progress screen/row, late executable owner
+FEATURE_KEYS += ("franchise_history",)  # b780 j23: franchise history and records footer, late executable owner
 FEATURE_KEYS += ("contract_college_guard",)  # b778-cr1: Contracts null-college crash guard, late executable owner
 FEATURE_KEYS += ("sim_cb_tackles",)  # b778-cb1: cornerback tackle credit, late executable owner
 FEATURE_KEYS += ("sim_rb_injuries",)  # b779-sim2: weekly RB injury roll and simulated-game carry guard

@@ -115,13 +115,13 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
 B69_GAME_RUNTIME_PINS = {
     "mod_editor/core/nfl2k5_weather.py": "ec3d253e348ff0cf7fb1951b5dad2983d8aebc0802d5c6fca32c74dc80a6985b",
     "mod_editor/core/nfl2k5_weather_haze.py": "b8c58c592794312358eb1554b1d3be43a1ca41f7fdd8fd3cd498d4f345c641cc",
-    "mod_editor/gui/build_panel_qt.py": "6eaed807d4b1653a36a601d548e3275471f16b5c9cf0d68d27c1c6790771e04c",
+    "mod_editor/gui/build_panel_qt.py": "9d757c0837df90c2a7f6924cd0369418546e9d23cd9820ba652e99a140f50105",
     "mod_editor/gui/gameplay_patches_panel_qt.py": "8ad54526f3d31ed6fa01207497e8aeff987057ce05032e394ce8b80779bba8a6",
     "mod_editor/gui/my_career_panel_qt.py": "cd39ce1685ed119288122e46b0f8c1c8ba586cea611f5d5feee096a71d7ea9ac",
     "mod_editor/gui/gameplay_project_ui.py": "4927318677c5dbd1183b139d5b4d2c460136e38a3f9bf5d5b979ba62e1ed016e",
     "mod_editor/gui/beta62_options.py": "4b4152b4830092afc360230bf869df68c56b5ce9c668769fb28cde9f61cd3d3f",
     "tools/nfl2k5_weather_editor.py": "39a2847b873bbdc567712ca87657d700fa95e226c3408983acce4d714b1031de",
-    "mod_editor/gui/build_panel_qt.py": "6eaed807d4b1653a36a601d548e3275471f16b5c9cf0d68d27c1c6790771e04c",
+    "mod_editor/gui/build_panel_qt.py": "9d757c0837df90c2a7f6924cd0369418546e9d23cd9820ba652e99a140f50105",
     "mod_editor/gui/gameplay_patches_panel_qt.py": "8ad54526f3d31ed6fa01207497e8aeff987057ce05032e394ce8b80779bba8a6",
     "mod_editor/gui/my_career_panel_qt.py": "cd39ce1685ed119288122e46b0f8c1c8ba586cea611f5d5feee096a71d7ea9ac",
     "mod_editor/gui/gameplay_project_ui.py": "4927318677c5dbd1183b139d5b4d2c460136e38a3f9bf5d5b979ba62e1ed016e",
@@ -2054,6 +2054,9 @@ def main() -> int:
         "mod_editor.core.nfl2k5_draft_clock",                     # b778-dr1
         "mod_editor.core.nfl2k5_weekly_progression",              # b778-pg1
         "mod_editor.core.nfl2k5_player_progress_screen",          # b778-pg2
+        "mod_editor.core.nfl2k5_franchise_extension",             # b780 j23
+        "mod_editor.core.nfl2k5_franchise_footer",                # b780 j23
+        "mod_editor.core.nfl2k5_history",                         # b780 j23
         "mod_editor.core.nfl2k5_contract_college_guard",          # b778-cr1
         "mod_editor.core.nfl2k5_sim_cb_tackles",                  # b778-cb1
         "mod_editor.core.nfl2k5_sim_rb_injuries",                 # b779-sim2

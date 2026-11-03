@@ -276,6 +276,7 @@ from mod_editor.core import nfl2k5_draft_clock as _draft_clock  # noqa: E402
 # b778-pg1: franchise in-season weekly progression (off in every preset until the second scale-out).
 from mod_editor.core import nfl2k5_weekly_progression as _weekly_progression  # noqa: E402
 from mod_editor.core import nfl2k5_player_progress_screen as _player_progress  # noqa: E402
+from mod_editor.core import nfl2k5_franchise_footer as _franchise_footer  # noqa: E402  b780 j23
 from mod_editor.core import nfl2k5_contract_college_guard as _contract_guard  # noqa: E402
 from mod_editor.core import nfl2k5_sim_cb_tackles as _sim_cb_tackles  # noqa: E402
 from mod_editor.core import nfl2k5_sim_rb_injuries as _sim_rb_injuries  # noqa: E402  b779-sim2
@@ -322,6 +323,7 @@ BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                  ("player_progress", _player_progress.BUILD_CAPTION, _player_progress.HELP_TEXT),  # b778-pg2
                  ("player_progress_visible", _player_progress.VISIBLE_CAPTION,
                   _player_progress.VISIBLE_HELP_TEXT),  # b778-pg3
+                 ("franchise_history", _franchise_footer.BUILD_CAPTION, _franchise_footer.HELP_TEXT),  # b780 j23
                  ("contract_college_guard", _contract_guard.BUILD_CAPTION, _contract_guard.HELP_TEXT),  # b778-cr1
                  ("sim_cb_tackles", _sim_cb_tackles.BUILD_CAPTION, _sim_cb_tackles.HELP_TEXT),  # b778-cb1
                  ("sim_rb_injuries", _sim_rb_injuries.BUILD_CAPTION, _sim_rb_injuries.HELP_TEXT),  # b779-sim2

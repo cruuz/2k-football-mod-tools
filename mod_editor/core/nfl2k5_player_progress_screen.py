@@ -182,9 +182,16 @@ JGE = "0f8d"
 
 CODE_SIZE = 4096
 DATA_SIZE = 16 + FOOTER_SIZE
+# b780 j23: the footers a save may carry after its native size (nfl2k5_franchise_extension.FOOTER_SIZES x MyCareer).
+_EXTENSION_BODY = 0x18000 - 16
+_ADMITTED_EXTRAS = tuple(career + footer for footer in (0, FOOTER_SIZE, _EXTENSION_BODY, _EXTENSION_BODY + FOOTER_SIZE)
+                         for career in (0, record.MYCAREER_FOOTER_SIZE) if career + footer)
 TRAILER_SIZE = 24
 TRAILER_MAGIC = 0x47505056          # "VPPG"
-VARIANT_VISIBLE, VARIANT_FULL = 1, 2
+VARIANT_VISIBLE, VARIANT_FULL, VARIANT_HOSTED = 1, 2, 3
+# b780 j23: HOSTED = the full screen and capture, but the franchise footer host (nfl2k5_franchise_footer) saves
+# and loads the 34,320 bytes; this owner installs none of the four save-path sites.
+HOSTED_TARGETS = (0x002D0780, 0x002D0790, 0x002D0780)   # retail targets in the unreachable footer hook code
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "data", (DATA_SIZE + 15) & ~15, 16))
 
 
@@ -791,11 +798,13 @@ def _assemble(code_va: int, data_va: int, map_va: int, text_va: int,
     a.b("b801000000"); a.b("5e"); a.b("c3")     # mov eax,1 ; pop esi ; ret (damaged)
     a.label("adm_ok")
     a.b("31c0"); a.b("5e"); a.b("c3")
-    a.label("adm_family")                       # ZF: ecx is eax plus 0, the career, the progress or both footers
+    a.label("adm_family")                       # ZF: ecx is eax plus 0, the career block, then any footer
+    # b780 j23: one family for every footer (nfl2k5_franchise_extension.admitted_sizes): 0, the Player Progress
+    # footer, the extension body, or both, each with or without the MyCareer block.
     a.b("39c1"); a.j8("74", "adm_family_done")
-    a.b("8d90" + _imm(record.MYCAREER_FOOTER_SIZE)); a.b("39d1"); a.j8("74", "adm_family_done")
-    a.b("8d90" + _imm(FOOTER_SIZE)); a.b("39d1"); a.j8("74", "adm_family_done")
-    a.b("8d90" + _imm(record.MYCAREER_FOOTER_SIZE + FOOTER_SIZE)); a.b("39d1")
+    for extra in _ADMITTED_EXTRAS:
+        a.b("8d90" + _imm(extra)); a.b("39d1"); a.j8("74", "adm_family_done")
+    a.b("83f9ff")                               # cmp ecx,-1: a file size is never 0xFFFFFFFF, so ZF = 0 here
     a.label("adm_family_done")
     a.b("c3")
     return a.assemble(), dict(a.labels)
@@ -829,7 +838,7 @@ def labels() -> dict[str, int]:
 
 def _code(visible_only: bool, code_va: int, data_va: int,
           size_target: int, save_target: int, load_target: int,
-          use_native_admission: bool = True) -> bytes:
+          use_native_admission: bool = True, hosted: bool = False) -> bytes:
     if visible_only:
         first, labels_now = _assemble(code_va, data_va, 0, 0, 0, 0, 0, 0, 0, visible_only=True)
         _require(len(first) == len(_VISIBLE_TEMPLATE) and labels_now == _VISIBLE_LABELS,
@@ -844,6 +853,8 @@ def _code(visible_only: bool, code_va: int, data_va: int,
                             size_target, save_target, load_target)
     _require(len(code) == len(first) and again == labels_now, "cave assembly drifted")
     blob = code + MAP + LAST_WEEK_TEXT
+    if hosted:
+        return _finish(blob, VARIANT_HOSTED, 0, 0, 0, False)
     return _finish(blob, VARIANT_FULL, size_target, save_target, load_target, use_native_admission)
 
 
@@ -856,6 +867,11 @@ def code_for(code_va: int, data_va: int, targets: tuple[int, int, int] | None = 
 
 def visible_code_for(code_va: int) -> bytes:
     return _code(True, code_va, 0, 0, 0, 0)
+
+
+def hosted_code_for(code_va: int, data_va: int) -> bytes:
+    """b780 j23: the hosted variant's allocation: the full cave (its footer hooks unreachable), trailer variant 3."""
+    return _code(False, code_va, data_va, *HOSTED_TARGETS, use_native_admission=False, hosted=True)
 
 
 def _sites(code_va: int) -> list[tuple[str, int, bytes, bytes]]:
@@ -922,7 +938,7 @@ def allocation(payload: bytes) -> tuple[dict, dict] | None:
 def _trailer_at(image: XbeImage, code_va: int) -> tuple[int, int, int, int, bool] | None:
     raw = image.read(code_va + CODE_SIZE - TRAILER_SIZE, TRAILER_SIZE)
     magic, variant, size_target, save_target, load_target, native_admission = struct.unpack("<IIIIII", raw)
-    if magic != TRAILER_MAGIC or variant not in (VARIANT_VISIBLE, VARIANT_FULL) or native_admission > 1:
+    if magic != TRAILER_MAGIC or variant not in (VARIANT_VISIBLE, VARIANT_FULL, VARIANT_HOSTED) or native_admission > 1:
         return None
     return variant, size_target, save_target, load_target, bool(native_admission)
 
@@ -1057,11 +1073,28 @@ def chained_footer_sites(payload: bytes) -> dict[int, tuple[bytes, int | None]]:
             for label, va, _before, after in _footer_sites(code_va, include_admission=True)}
 
 
+def hosted_addresses(payload: bytes) -> tuple[int, int] | None:
+    """b780 j23: (RAM footer VA, capture_baseline VA) of this owner's exact hosted install, else None. The franchise
+    footer host saves and loads those 34,320 bytes and calls capture_baseline for a save without a valid footer."""
+    try:
+        found = allocation(payload)
+        if not found or _recognize(payload) != "hosted":
+            return None
+        code_va, data_va = found[0]["va"], found[1]["va"]
+        return data_va + 16, code_va + _LABELS["capture_baseline"]
+    except _ERRORS:
+        return None
+
+
 def installed_main_sites(payload: bytes) -> list[tuple[str, int, bytes, bytes]]:
     """(label, VA, retail bytes, installed bytes) of this owner's main hooks, for its exact complete full install
-    (_exact_full_install); empty otherwise (b778 bd3, for MyCareer's view of a composed image)."""
+    (_exact_full_install) or its exact hosted install (b780 j23); empty otherwise (b778 bd3, for MyCareer's view of a
+    composed image)."""
     found = _exact_full_install(payload)
-    return [] if found is None else _sites(found[0])
+    if found is None:
+        hosted = hosted_addresses(payload)
+        return [] if hosted is None else _sites(allocation(payload)[0]["va"])
+    return _sites(found[0])
 
 
 def _displaced_targets(image: XbeImage) -> tuple[int, int, int]:
@@ -1093,6 +1126,18 @@ def _recognize(payload: bytes) -> str:
         _require(_save_prerequisites_ok(image), "foreign franchise save routine")
         return "retail"
     variant, size_target, save_target, load_target, native_admission = trailer
+    if variant == VARIANT_HOSTED:
+        # b780 j23: the main sites are this owner's; the four save-path sites belong to the footer host (or are still
+        # retail/MyCareer before it installs). They must never be this owner's own footer hooks.
+        states = _site_states(image, _sites(code_va))
+        _require(states in ({"retail"}, {"applied"}), "mixed hosted Player Progress sites")
+        _require(_site_states(image, _footer_sites(code_va, include_admission=True)) <= {"retail", "foreign"},
+                 "a hosted Player Progress build carries its own footer hooks")
+        _require((size_target, save_target, load_target, native_admission) == (0, 0, 0, False),
+                 "foreign hosted Player Progress trailer")
+        _require(image.read(code_va, CODE_SIZE) == hosted_code_for(code_va, data_va), "foreign hosted Player Progress code")
+        _require(_guards_ok(image, _sites(code_va)), "foreign Player Progress prerequisite")
+        return "hosted" if states == {"applied"} else "retail"
     full_sites = _sites(code_va) + _footer_sites(code_va, include_admission=not native_admission)
     visible = _sites(code_va)[:1]
     if variant == VARIANT_VISIBLE:
@@ -1138,22 +1183,31 @@ def variant(payload: bytes) -> str | None:
             return None
         if trailer[0] == VARIANT_VISIBLE:
             return "visible" if _recognize(payload) == "visible" else None
+        if trailer[0] == VARIANT_HOSTED:
+            return "hosted" if _recognize(payload) == "hosted" else None
         return "full" if _recognize(payload) == "applied" else None
     except _ERRORS:
         return None
 
 
-def apply(payload: bytes, *, visible_only: bool = False) -> tuple[bytes, Mapping[str, object]]:
-    """Install (or replay) the owner.  Needs the growable pool (xs1)."""
+def apply(payload: bytes, *, visible_only: bool = False, hosted: bool = False) -> tuple[bytes, Mapping[str, object]]:
+    """Install (or replay) the owner.  Needs the growable pool (xs1).
+
+    b780 j23 ``hosted``: the full screen and capture without the four save-path hooks; install the franchise footer
+    host (``nfl2k5_franchise_footer``) afterwards, which saves and loads this owner's footer."""
+    _require(not (visible_only and hosted), "the hosted variant is the full screen; visible_only excludes it")
     state = _recognize(payload)
+    if state == "hosted" and hosted:
+        return payload, {"owner": OWNER, "experimental": True, "status": "already_applied", "changed_bytes": 0,
+                         "edits": [], "variant": "hosted", "footer_size": FOOTER_SIZE, "save_growth": FOOTER_SIZE}
     common = {"owner": OWNER, "experimental": True, "code_bytes": CODE_SIZE,
               "data_bytes": REQUESTS[1][2], "record_size": RECORD_SIZE,
               "footer_size": FOOTER_SIZE, "save_growth": 0 if visible_only else FOOTER_SIZE}
     if state == "visible" and visible_only:
         return payload, {**common, "status": "already_applied", "changed_bytes": 0, "edits": []}
-    if state == "applied" and not visible_only:
+    if state == "applied" and not visible_only and not hosted:
         return payload, {**common, "status": "already_applied", "changed_bytes": 0, "edits": []}
-    _require(state in ("retail", "visible"), "foreign Player Progress installation")
+    _require(state in ("retail", "visible") and not (hosted and state == "visible"), "foreign Player Progress installation")
     before = payload
     if allocation(payload) is None:
         if space.status(payload) == "retail":
@@ -1167,14 +1221,14 @@ def apply(payload: bytes, *, visible_only: bool = False) -> tuple[bytes, Mapping
     image = XbeImage(payload)
     targets = (0x002D0780, 0x002D0790, 0x002D0780)
     use_native_admission = False
-    if not visible_only:
+    if not visible_only and not hosted:
         targets = _displaced_targets(image)
-    blob = _code(visible_only, code["va"], data["va"], *targets,
-                 use_native_admission=use_native_admission)
+    blob = (hosted_code_for(code["va"], data["va"]) if hosted else
+            _code(visible_only, code["va"], data["va"], *targets, use_native_admission=use_native_admission))
     payload, _ = space.install_code(payload, OWNER, blob)
     buf = bytearray(payload)
     image = XbeImage(payload)
-    edits = (_sites(code["va"])[:1] if visible_only else
+    edits = (_sites(code["va"])[:1] if visible_only else _sites(code["va"]) if hosted else
              _sites(code["va"]) + _footer_sites(code["va"], include_admission=not use_native_admission))
     for label, va, old, new in edits:
         off = image.offset(va, len(old))
@@ -1192,10 +1246,10 @@ def apply(payload: bytes, *, visible_only: bool = False) -> tuple[bytes, Mapping
     for section in _sections(buf):
         buf[section.header_offset + 36:section.header_offset + 56] = section_digest(buf, section)
     result = bytes(buf)
-    final_state = "visible" if visible_only else "applied"
+    final_state = "visible" if visible_only else "hosted" if hosted else "applied"
     _require(_recognize(result) == final_state and space.status(result) == "applied",
              "Player Progress postcondition failed")
-    return result, {**common, "status": "applied", "variant": final_state,
+    return result, {**common, "status": "applied", "variant": final_state, "hosted": hosted,
                     "native_admission": use_native_admission,
                     "code_va": hex(code["va"]), "data_va": hex(data["va"]),
                     "before_sha256": hashlib.sha256(before).hexdigest(),
@@ -1218,4 +1272,4 @@ __all__ = ["OWNER", "BUILD_CAPTION", "HELP_TEXT", "VISIBLE_CAPTION", "VISIBLE_HE
            "SITE_VISIBILITY", "SITE_STAGE_NEW_SEASON", "SITE_STAGE_NEXT", "SITE_WEEK", "SITE_VALUE",
            "SITE_HEADER", "SITE_EVENT_POINTER", "SITE_TOTAL_SIZE", "SITE_SAVE_FRONT_OFFICE",
            "SITE_LOAD_END", "SITE_ADMISSION", "PlayerProgressScreenError", "allocation", "apply",
-           "code_for", "labels", "status", "variant", "visible_code_for"]
+           "code_for", "hosted_addresses", "hosted_code_for", "labels", "status", "variant", "visible_code_for"]

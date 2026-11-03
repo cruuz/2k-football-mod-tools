@@ -953,10 +953,14 @@ def franchise_reference_year(payload: bytes | bytearray, preamble: int,
     """
     from . import nfl2k5_save_writer as writer
     writer.validate_franchise_base_year(base_year)
-    from . import nfl2k5_player_progression as progress
-    at = progress.footer_start(payload)
-    if at is not None:
-        payload = payload[:at]
+    from . import nfl2k5_franchise_extension as ext
+    if ext.layout(payload) is not None:              # b780 j23: every franchise footer
+        payload = payload[:ext.native_length(payload)]
+    else:
+        from . import nfl2k5_player_progression as progress
+        at = progress.footer_start(payload)
+        if at is not None:
+            payload = payload[:at]
     native_size = len(payload)
     from . import nfl2k5_my_career_save as career
     if native_size in career.SIZES:
