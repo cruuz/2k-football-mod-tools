@@ -1051,7 +1051,7 @@ def _capture(fd: int, offset: int | None, data: Any) -> None:
 def _hooked_pwrite(fd, data, offset):
     if _JOURNALS:
         _capture(fd, offset, data)
-    return _REAL_PWRITE(fd, data, offset)
+    return (_REAL_PWRITE or _ORIGINALS["pwrite"])(fd, data, offset)
 
 
 def _hooked_write(fd, data):
@@ -1174,8 +1174,11 @@ def _install_hooks() -> None:
             _AUDIT_INSTALLED = True
         if _ORIGINALS:
             return
-        if _REAL_PWRITE is not None:
-            _ORIGINALS["pwrite"] = os.pwrite
+        # Read ``os`` as it is now, not as it was at import: Windows has no ``os.pwrite``, and a test that stands in
+        # for Windows removes it after this module was imported. Never add a ``pwrite`` that is not there.
+        live_pwrite = getattr(os, "pwrite", None)
+        if live_pwrite is not None:
+            _ORIGINALS["pwrite"] = live_pwrite
             os.pwrite = _hooked_pwrite
         _ORIGINALS["write"] = os.write
         os.write = _hooked_write
@@ -1194,7 +1197,11 @@ def _uninstall_hooks() -> None:
         if _JOURNALS or not _ORIGINALS:
             return
         for name, original in _ORIGINALS.items():
-            setattr(os, name, original)
+            current = getattr(os, name, None)
+            # Put back only our own wrappers: if something removed or replaced the name meanwhile (a Windows stand-in,
+            # a test patch), leave its choice alone.
+            if current is not None and getattr(current, "__module__", None) == __name__:
+                setattr(os, name, original)
         _ORIGINALS.clear()
 
 
