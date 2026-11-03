@@ -167,6 +167,14 @@ CODE_B = bytes.fromhex(
     "e81df7ffff0fb6c039f819ffe811f7ffffba9c4f4f0031c94131db85ff7408ba984f4f00b104433a02720543424975f7"
     "0fb6462a31d23c4a7606423c7d720142e964df4000")
 CODE_D = bytes.fromhex(
+    "895c24108b442414662b05a34f4f0083f803732f31c93c020f93c18a99514f4f00895c24108d59068b4e2a30e983e103"
+    "8d04816603059d4f4f008b4d548b0cc1894e108d3c5b01d78d3cbda84f4f006a185b0fb74f0280e501e80f17bfff80fb"
+    "18750c8d0489c1e80429c139ca7310895424140fb70701d0e81517bfff75034b75d0668946068b4e1881e17efcffff8b"
+    "442410c1e00709c10fb64703d1e839442414730141894e185f5e5d5b83c408c20400")
+# b780 (a player: "Wei Chen" in almost every class): the rare first name was pool[RFIRST0 + 4 * rare + (college & 3)],
+# and the college's low bits barely vary, so Chen was nearly always Wei; it now uses (weight ^ height) & 3 of the body
+# region A just rolled. Beta-79 / SOFTDRINK v0.8 executables carry the old region D: they read "previous".
+CODE_D_B779 = bytes.fromhex(
     "895c24108b442414662b05a34f4f0083f803732c31c93c020f93c18a99514f4f00895c24108d59068b0e83e1038d0481"
     "6603059d4f4f008b4d548b0cc1894e108d3c5b01d78d3cbda84f4f006a185b0fb74f0280e501e81217bfff80fb18750c"
     "8d0489c1e80429c139ca7310895424140fb70701d0e81817bfff75034b75d0668946068b4e1881e17efcffff8b442410"
@@ -481,7 +489,8 @@ def _retail_spans(payload: bytes) -> dict[int, bytes]:
 
 
 def xbe_status(payload: bytes) -> str:
-    """retail | applied | foreign (an applied image may carry any table bytes; code and string must match)."""
+    """retail | applied | previous | foreign (an applied image may carry any table bytes; code and string must match;
+    previous = the beta-79 / v0.8 region D, CODE_D_B779)."""
     try:
         current = _retail_spans(payload)
     except (RookieFacesError, struct.error):
@@ -493,6 +502,9 @@ def xbe_status(payload: bytes) -> str:
     if (a == spans[REGION_A] and b == spans[REGION_B] and c == spans[REGION_C] and s == spans[STRING_VA]
             and d[TABLE_DATA:] == spans[TABLE_VA][TABLE_DATA:]):
         return "applied"
+    if (a == spans[REGION_A] and b == spans[REGION_B] and c == spans[REGION_C] and s == spans[STRING_VA]
+            and d[TABLE_DATA:] == CODE_D_B779 + b"\xcc" * (TABLE_END - TABLE_VA - TABLE_DATA - len(CODE_D_B779))):
+        return "previous"   # beta-79 / v0.8: the rare first name drawn from the college's low bits
     return "foreign"
 
 

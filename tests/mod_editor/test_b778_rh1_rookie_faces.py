@@ -272,7 +272,8 @@ class Native(unittest.TestCase):
                 rare_b, k = divmod(r["photo"] - 2920, 10)
                 self.assertEqual(rare_b, 3 * g + build, "a rare surname takes his group's row for his build")
                 self.assertEqual(r["tone"], rf.RARE_TONES[g])
-                self.assertEqual(r["first"], 473 + 4 * (li - RARE_ROW) + (0xC0FFEE & 3))
+                # b780: the rare first name follows the body region A rolled ((weight - 150) ^ height), not the college
+                self.assertEqual(r["first"], 473 + 4 * (li - RARE_ROW) + (((wt - 150) ^ r["height"]) & 3))
                 self.assertEqual(r["dreads"], 0)
                 continue
             b, k = divmod(r["photo"] - 2200, 40)
@@ -386,6 +387,20 @@ class NativeRh2(unittest.TestCase):
             self.assertTrue(473 + 4 * g <= first < 477 + 4 * g, "one of the surname's own four first names")
             self.assertEqual(self.firsts[first], rf.RARE_FIRSTS[first - 473])
             self.assertLessEqual(r["face"], 6)
+
+    def test_rare_first_names_vary_within_a_surname(self):
+        """b780 (a player: "Wei Chen" in almost every class): the college's low bits barely vary, so a rare surname
+        kept one first name. With the body's bits every surname uses all four of its first names, close to evenly."""
+        table = rf.tables(self.firsts, self.lasts, toy_bank())
+        rng = random.Random(780)
+        pros = [(rng.randrange(400), RARE_ROW + g, rng.randrange(17), rng.randint(185, 320))
+                for g in range(3) for _ in range(160)]
+        res = run_class(table, pros, seed=780, keep_body=True)
+        for g in range(3):
+            firsts = [r["first"] for (_fi, li, _pos, _wt), r in zip(pros, res) if li == RARE_ROW + g]
+            counts = {f: firsts.count(f) for f in range(473 + 4 * g, 477 + 4 * g)}
+            self.assertEqual(sum(counts.values()), 160, "only the surname's own four first names")
+            self.assertTrue(all(20 <= c <= 70 for c in counts.values()), (rf.RARE_SURNAMES[g], counts))
 
     def test_rare_rate_in_a_class(self):
         """Uniform surname draws: about 3 rare prospects in 485, two East to one South."""

@@ -334,7 +334,8 @@ regionD:                            # ebx = tone, edx = build
     mov bl, [TONES+ecx]
     mov [esp+0x10], ebx
     lea ebx, [ecx+6]                # rows 18..23
-    mov ecx, [esi]                  # first name: pool[RFIRST0 + 4 * rare + (college & 3)]
+    mov ecx, [esi+0x2a]             # first name: pool[RFIRST0 + 4 * rare + ((weight ^ height) & 3)]: the body just rolled
+    xor cl, ch                      # (b780: the college's low bits barely vary, so one surname kept one first name)
     and ecx, 3
     lea eax, [ecx+eax*4]
     add ax, [RFIRST0]
