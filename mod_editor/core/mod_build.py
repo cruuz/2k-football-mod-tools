@@ -336,7 +336,9 @@ class BuildPlan:
     widescreen: bool = False
     overtime: bool = False        # 2025+ NFL overtime: both teams possess, 10-min regular season w/ ties, playoffs to a winner
     # TEAM column on the franchise Player Card's season-by-season stats (which team each season was played for;
-    # a UI fix, no gameplay change; past seasons of an older franchise save read "--" until their next rollover)
+    # a UI fix, no gameplay change; past seasons of an older franchise save read "--" until their next rollover).
+    # b780 b2: on the original 2004 roster this ONE option also writes the roster's past seasons (the shipped real team
+    # history below, applied for you when ``team_history`` is empty); the 2026 SOFTDRINK roster carries its own history.
     team_column: bool = False
     # 7-on-7 practice: a fifth Practice Type (Practice -> Scrimmage -> Practice Type -> 7-On-7) that plays as
     # Full Scrimmage with the practice book loaded for both teams, plus the 7-on-7 sets/plays written into
@@ -347,6 +349,9 @@ class BuildPlan:
     # CREATED from the copy; costs one pool dword per season row (the game folds the oldest seasons a bit earlier).
     # Seasons the CSV does not cover are filled with the player's own 2004 club (receipt: "seasons_inferred"), so
     # 5,746 of the 5,838 rows the card can show name a team; only the 2004 free agents still read "--".
+    # b780 b2: "" with ``team_column`` on is NOT off any more: the built-in data is applied to an original roster
+    # anyway (a TEAM column whose past seasons all read "--" was SharkMagick's "Team Card still empty"); a path here
+    # only swaps in your own CSV.  The history always maps against the roster's own 2004 epoch (see RETAIL_ROSTER_EPOCH).
     team_history: str = ""
     # real per-season career counters for the roster's past seasons (passing / rushing / receiving / defence /
     # kicking) from a user CSV (schema in docs/mod_editor/career_stats.md; export the roster's own counters first
@@ -3933,6 +3938,62 @@ def _validated_r62_plan_options(plan):
     return r62
 
 
+# The original roster's own current season: its players' season slots count back from it, whatever year the franchise
+# starts in (the 2026 option moves the calendar, not a retail player's seasons).
+RETAIL_ROSTER_EPOCH = 2004
+
+
+def _apply_implied_team_history(target, receipt, progress):
+    """b780 b2 (SharkMagick, "Team Card still empty"): the TEAM column, with its past seasons, on an original roster.
+
+    The column names a season's club only where the roster carries one, and the 2004 roster carries none: before this
+    step every past row read "--" unless a second option ("Past teams in Player Card stats") was also on, which Basic
+    never turned on.  Turning the column on now brings the built-in real history with it.  Never fatal: a roster that
+    is not the original one (the 2026 roster owns its history; an edited, imported or already patched roster has another
+    pool) keeps what it carries, and the build log, the receipt and the finished-disc notice say why nothing was written."""
+    step = {"step": "team_history", "implied_by": "team_column"}
+
+    def skipped(reason: str, why_for_the_player: str) -> None:
+        progress(f"Past teams for the TEAM column: skipped ({reason})", 0, 0)
+        receipt["steps"].append({**step, "status": "skipped", "reason": reason,
+                                 "user_notes": [f"The TEAM column was added, but its past seasons were not filled: {why_for_the_player}"]})
+
+    history = _core_module("nfl2k5_team_history")
+    if history is None:
+        return skipped("the team history module is not available in this build",
+                       "this build cannot write them, so past seasons read \"--\".")
+    if not tt.is_disc_image(target):
+        return skipped("needs a disc image",
+                       "the roster lives on the disc, so past seasons read \"--\" until you build a disc.")
+    try:
+        state = history.status(target)
+    except Exception as exc:  # noqa: BLE001 - a cosmetic column never stops a build
+        return skipped(f"the roster could not be read ({str(exc)[:160]})",
+                       "the roster could not be read, so past seasons read \"--\".")
+    if state in ("applied", "applied-custom"):
+        receipt["steps"].append({**step, "status": state, "already_applied": True})
+        return
+    if state != "retail":
+        return skipped(f"the roster's history is {state}, not the original 2004 roster's",
+                       "the roster on this disc is not the original 2004 roster (the 2026 roster brings its own history), "
+                       "so only seasons the game records from now on show a team.")
+    try:
+        history.load_rows("retail")         # the shipped CSV and its pin: a broken install is a note, not a dead build
+    except Exception as exc:  # noqa: BLE001
+        return skipped(f"the built-in team history could not be read ({str(exc)[:160]})",
+                       "the built-in team history file could not be read, so past seasons read \"--\".")
+    progress("Writing the real past teams for the TEAM column", 0, 0)
+    try:
+        result = history.apply(target, "retail", base_year=RETAIL_ROSTER_EPOCH, progress=lambda msg: progress(msg, 0, 0))
+    except ValueError as exc:       # the writer's own refusals (TeamHistoryError); every one of them comes before its write
+        if history.status(target) != "retail":
+            raise                   # something was written: that is not a cosmetic note
+        return skipped(f"the history could not be written ({str(exc)[:160]})",
+                       "the roster would not take it, so past seasons read \"--\".")
+    receipt["steps"].append({**step, **{k: v for k, v in result.items() if k != "log"},
+                             "log_lines": len(result.get("log", []))})
+
+
 @_core_step("roster_history")
 def _apply_roster_history(plan, target, receipt, progress):
     """Apply identities, counters, then TEAM, with one history owner."""
@@ -3981,13 +4042,18 @@ def _apply_roster_history(plan, target, receipt, progress):
         receipt["steps"].append({"step": "career_stats", **career_receipt})
     if plan.team_history and not modern_history:
         history = _core_module("nfl2k5_team_history")
-        history_receipt = history.apply(target, plan.team_history, base_year=epoch,
+        # b780 b2: the roster this writer accepts is the original one, whose season slots count back from ITS current
+        # season (2004) whatever year the franchise starts in; passing the franchise's 2026 here made every real row
+        # "outside the record" and left only the player's own club in every season (Advanced and Experimental)
+        history_receipt = history.apply(target, plan.team_history, base_year=RETAIL_ROSTER_EPOCH,
                                         progress=lambda msg: progress(msg, 0, 0))
         receipt["steps"].append({"step": "team_history", **{k: v for k, v in history_receipt.items() if k != "log"},
                                  "log_lines": len(history_receipt.get("log", []))})
     elif modern_history:
         receipt["steps"].append({"step": "team_history", "status": "owned_by_franchise_history",
                                  "base_year": epoch, "retail_fallback": False})
+    elif getattr(plan, "team_column", False):
+        _apply_implied_team_history(target, receipt, progress)
     if plan.honors_history:
         # b77-f5: sourced award history (the honors page reads it); last, after every history owner has written.
         honors_history = _core_module("nfl2k5_honors_history")

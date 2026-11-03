@@ -596,7 +596,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/image_use.py": "29e1d3d721c36fd199ed29fd900fbe8582bc7530e2060afcacb1054159b174bb",
         "mod_editor/core/json_stream.py": "5933752561dd8b519a301c18ec1d14f13a457f58e6ae337984f543ab2b0838b0",
         "mod_editor/core/metadata_cache.py": "49874cc7f12cc0d36d15b9355dbca64ffe95590ba7582b460738b05aabcd9024",
-        "mod_editor/core/mod_build.py": "119469979b1a0bd538c40e404c8f620327ccd0342267a05547084f2934c601b1",
+        "mod_editor/core/mod_build.py": "5eb927f779400bfee29ddd5470c4914e76bb2b444dca1d67df6ef41386b1516e",
         "mod_editor/core/build_steps.py": "0eb089ba3ab181683ceb4b8371f6f3c54999bb54ff6794f3676fa52babe78865",  # b791-h3: step context and optional steps
         "mod_editor/core/model.py": "292f0c5444e32f5cea000fd3cabd6963d7d805a5434dcbc364a36ca2c0f0d228",
         "mod_editor/core/modpack.py": "158926f7b25e66143b13318bd0767491c2cabd8ebdedadf3927cd720d23820c6",
@@ -985,7 +985,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_stadium_studio.py": "2b08e3e3c8b6e005b4772bfb1ff2ddd79604c8af36557af8e316ab0612fbe94f",
         "mod_editor/core/nfl2k5_stadium_texture_writer.py": "bf456928ad0565095805f9c39e270d50f49ee24f2aec1a8206937659f61cdc92",
         "mod_editor/core/nfl2k5_team_column.py": "beb4ef328d010fb4f22238ffe80a7e52afeb247cc55df37f5bafdfbd44931883",
-        "mod_editor/core/nfl2k5_team_history.py": "8e360ec57bada84bd505c399ee6fa5e7a05d50a316548f3bb8c6e45b7c9c4e5e",
+        "mod_editor/core/nfl2k5_team_history.py": "1cb61895afa12bedd10879f2394dc83d7b12d261d5e9fcf6c96a6017d054eb25",
         "mod_editor/core/nfl2k5_team_logo_swap.py": "d4e46ff301b3449fc78a145548be2bcbc6104caad80563e1d940ef564fd73c12",
         "mod_editor/core/nfl2k5_text_catalog.py": "514706a38b28a4c7189f49e7601813cd55e16f1b9e81c9c8aa3e92c072e962c9",
         "mod_editor/core/nfl2k5_throw_arc.py": "0fbf33d12fe27a0f940fb7e13f375390b88701c4ccb7e89a1de895d8f66b9c3c",

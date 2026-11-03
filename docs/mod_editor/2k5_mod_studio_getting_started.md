@@ -1490,9 +1490,14 @@ empty OLB group" below.) If you import a roster
 that still carries OLB players, they show up under "Outside Linebackers" with the OLB badge
 instead of hiding inside a second "Linebackers".
 
-**TEAM column on the Player Card** (Gameplay group, in both Basic and Advanced): the
+**TEAM column on the Player Card** (Gameplay group, in Basic, Advanced and Experimental; the Build tab calls it
+"Show each season's team on the Player Card"): the
 franchise Player Card's season-by-season stats gain a TEAM column next to Yr, showing
-which team each season was played for. The row for the season in progress shows the club
+which team each season was played for. **On the original 2004 rosters this one option also fills every past
+season** (the real team history described next), so the column is complete from the first day of a new franchise;
+before beta 80 a second option, "Past teams in Player Card stats", was needed and Basic left it off, which is why the
+column read "--" in every past row of a Basic build (reported as "Team Card still empty"). The 2026 SOFTDRINK roster
+carries its own history and needs nothing extra. The row for the season in progress shows the club
 the player is on right now, so a trade shows up there at once (a player on injured reserve
 or released shows the club he last played for). Every game he plays records his club in the
 season he is playing, so a completed season shows the club of the **last game he played in
@@ -1524,9 +1529,10 @@ band under the bar (the "Bottom Line" strip) keeps its retail art in a build —
 was hand painted and there is no way to regenerate it from your disc. If you want it, apply the
 published `SOFTDRINK patch advanced` `.2k5patch` from **Share** instead, which carries it.
 
-**Real team history** (Build tab, ADVANCED and EXPERIMENTAL; disc images only): the retail
+**Real team history** (part of the TEAM column above since beta 80; before that a separate Build tab option, on in
+ADVANCED and EXPERIMENTAL only; disc images only): the retail
 roster already carries season-by-season stats for 1,325 players back to 1982, and the TEAM
-column above can only learn teams from the seasons a patched disc plays. This toggle writes
+column above can only learn teams from the seasons a patched disc plays. This step writes
 the real club of those past seasons into the roster template from nflverse-data (CC-BY-4.0):
 1,148 of the 1,325 players match by name and birth date and the data places 5,042 season rows.
 **Every remaining row is filled with that player's own 2004 club** rather than left
@@ -1549,7 +1555,12 @@ code such as `RAI`, `RAM`, `PHX`, `HOU` for the Oilers up to 1996). One line per
 enough and a CSV row always wins over the 2004-club fill. Players are matched by name and birth
 date, then last name and birth date, then name and position; a season is only written when the
 roster has stats for it (the receipt lists every row that could not be used). In this cut
-relocated franchises show the 2004 abbreviation (a 1990 Oilers season reads TEN).
+relocated franchises show the 2004 abbreviation (a 1990 Oilers season reads TEN). The history always counts
+back from the original roster's own 2004 season, also in a build that starts the franchise in 2026: the
+2026 option moves the calendar, not a retail player's seasons (beta 79 and earlier passed 2026 here, so an
+Advanced or Experimental build kept none of the real rows and showed every player's 2004 club in every season).
+The step only runs on the original roster: when the roster was replaced (the 2026 SOFTDRINK roster) or changed
+so it no longer matches, the Build log and the receipt say why nothing was written and the build goes on.
 
 **Modern draft-prospect names** (Build tab and Gameplay Patches, ADVANCED and EXPERIMENTAL; disc
 images only): retail names every generated rookie and free agent from the 1990 US Census lists,
