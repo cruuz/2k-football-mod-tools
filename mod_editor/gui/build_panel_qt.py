@@ -2174,6 +2174,8 @@ class BuildPanel(QWidget):
             applied.append("depth locks: older revision (needs update)")
         if state.get("draft_ai") == "legacy":      # b780 b1-draft: the beta-78/79 draft AI, upgraded in place
             applied.append("draft AI: older revision (needs update)")
+        if state.get("honors_page") == "previous":  # b780 n6: the beta-79 honors + champions owners, upgraded in place
+            applied.append("honors page: older revision (needs update)")
         foreign = [key.replace("_", " ") for key in mod_build.BuildPlan.__dataclass_fields__
                    if state.get(key) == "foreign"]
         settings = state.get("throw")
@@ -2197,7 +2199,9 @@ class BuildPanel(QWidget):
             locks_upgrade = key == "depth_locks" and value == "legacy"
             # b780 b1-draft: the beta-78/79 draft AI head reads "legacy"; the build upgrades it in place too.
             draft_upgrade = key == "draft_ai" and value == "legacy"
-            box.setEnabled(available and (value == "retail" or upgrade or locks_upgrade or draft_upgrade)
+            # b780 n6: the beta-79 honors page and Super Bowl champions read "previous"; the build upgrades them in place.
+            honors_upgrade = key == "honors_page" and value == "previous"
+            box.setEnabled(available and (value == "retail" or upgrade or locks_upgrade or draft_upgrade or honors_upgrade)
                            and (is_image or not needs_image))
             box.setChecked(False)
             if not available:
@@ -2211,6 +2215,10 @@ class BuildPanel(QWidget):
                 box.setToolTip("Smarter Franchise drafts from an older build are installed. Select to update them to this "
                                "release's revision (in place): kickers and punters from round 5 and real draft class "
                                "position mixes.")
+                self._set_badge(key, "Needs update")
+            elif honors_upgrade:
+                box.setToolTip("The Player Card honors page and Super Bowl champions from an older build (beta 79) are "
+                               "installed. Select to update them to this release's revision (in place).")
                 self._set_badge(key, "Needs update")
             elif upgrade:
                 box.setToolTip("Position pools are installed, but the CPU lineup exhaustion repair is missing. Select to upgrade.")
@@ -3473,7 +3481,9 @@ class BuildPanel(QWidget):
         else:
             combo.setEnabled(clock.isEnabled() and clock.isChecked())
         for key in ("coin_defer", "decided_clock", "historic_teams_quick_game", "kickoff_return_blocking", "espn25_more_moments", "espn25_named_previews", "historic_stock_books", "espn25_era_rules", "k128_memory", "k128_roster_heap", "k128_early", "letter_grades", "honors_page", "team_ratings", "play_art_routes"):
-            if (self._state or {}).get(key) == "applied":
+            # b780 n6: a beta-79 honors install ("previous") is installed too: kept on, and the build upgrades it in place
+            if (self._state or {}).get(key) == "applied" or (key == "honors_page"
+                                                             and (self._state or {}).get(key) == "previous"):
                 box = getattr(self, key + "_check")
                 box.blockSignals(True)
                 box.setChecked(True)

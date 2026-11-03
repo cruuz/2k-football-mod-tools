@@ -699,6 +699,7 @@ mod_editor/core/nfl2k5_letter_grades_progress.py
 mod_editor/core/nfl2k5_period_goalposts.py
 mod_editor/core/nfl2k5_champions.py
 mod_editor/core/nfl2k5_champions_code.py
+mod_editor/core/nfl2k5_champions_code_b779.py
 mod_editor/core/nfl2k5_champions_history.py
 data/nfl2k5_champions_2026.json
 data/nfl2k5_franchise_leaders_2026.json

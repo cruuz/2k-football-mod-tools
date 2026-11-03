@@ -171,15 +171,17 @@ def _rel32(source_end: int, target: int) -> bytes:
     return struct.pack("<i", target - source_end)
 
 
-def code_for(code_va: int, data_va: int, champions_code_va: int = 0) -> bytes:
+def code_for(code_va: int, data_va: int, champions_code_va: int = 0, *, champions_previous: bool = False) -> bytes:
     """The owned RX content with the template's relocations applied, padded to CODE_SIZE with int3.
 
     ``champions_code_va`` is the champions owner's code page: the card's third page calls into it. 0 (no such owner)
-    links both calls to nothing and the card keeps its two pages."""
+    links both calls to nothing and the card keeps its two pages. ``champions_previous`` (b780 n6) links them to the
+    beta-79 champions runtime's labels instead: this owner's own runtime did not change, but beta-80 moved the four
+    champions entries, so a beta-79 / v0.8 install differs from this release's in those four links only."""
 
     symbols = {"code": code_va, "state": data_va, "champ_ratings": 0, "champ_bio": 0, "champ_flip": 0, "champ_enter": 0}
     if champions_code_va:
-        at = champions.labels(champions_code_va)
+        at = champions.labels(champions_code_va, previous=champions_previous)
         symbols["champ_ratings"] = at["champions_ratings"]
         symbols["champ_bio"] = at["champions_bio"]
         symbols["champ_flip"] = at["champions_flip"]
@@ -261,7 +263,9 @@ def _champions_va(payload: bytes, found) -> int:
 
 
 def _owned_state(payload: bytes):
-    """-> ("retail" | "applied", allocations | None); anything else raises. The champions owner must be in the same state."""
+    """-> ("retail" | "applied" | "previous", allocations | None); anything else raises. The champions owner must be in
+    the same state. "previous" (b780 n6) is the exact beta-79 install: this code linked to the beta-79 champions labels
+    while the champions owner itself reads previous; ``apply`` upgrades both in place."""
 
     _require(space.status(payload) != "foreign", "foreign XBE geometry, owner seal or section digest")
     image = XbeImage(payload)
@@ -282,12 +286,17 @@ def _owned_state(payload: bytes):
         _check_guards(image, edits)
         _require(champions_state == "retail", "honors and champions installations differ")
         return "retail", found
-    _require(code == code_for(code_va, data_va, champs_va), "foreign honors code")
+    if code == code_for(code_va, data_va, champs_va):
+        state = "applied"
+    else:
+        _require(bool(champs_va) and code == code_for(code_va, data_va, champs_va, champions_previous=True),
+                 "foreign honors code")
+        state = "previous"
     edits = sites(code_va)
     _require(rdata.status(payload, edits) == "applied", "mixed honors sites")
     _check_guards(image, edits)
-    _require(champions_state == "applied", "honors and champions installations differ")
-    return "applied", found
+    _require(champions_state == state, "honors and champions installations differ")
+    return state, found
 
 
 def status(payload: bytes) -> str:
@@ -298,7 +307,8 @@ def status(payload: bytes) -> str:
 
 
 def fold_site_edit(payload: bytes) -> list[tuple[int, bytes]]:
-    """[(VA, retail bytes)] of the history-fold edit while this owner is *exactly* applied, else [].
+    """[(VA, retail bytes)] of the history-fold edit while this owner is *exactly* applied (this release's install or
+    the exact beta-79 one, whose fold hook is the same code), else [].
 
     b77-f5b: ``nfl2k5_defensive_try`` pins the whole history engine (0x14E7E0, 3,216 bytes) because it writes field 59
     through the engine's writer. This owner's only edit inside that span is the 7-byte rule-table load of the fold
@@ -307,15 +317,17 @@ def fold_site_edit(payload: bytes) -> list[tuple[int, bytes]]:
     these retail bytes before it hashes its context, and only when the whole honors installation validates here.
     """
 
-    if status(payload) != "applied":
+    if status(payload) not in ("applied", "previous"):
         return []
     return [(va, before) for label, va, before, _after in sites(allocations(payload)["code"]["va"]) if label == "history_fold"]
 
 
 def read_settings(payload: bytes) -> dict:
     state = status(payload)
-    return {"status": state, "honors_page": state == "applied", "fields": dict(FIELDS) if state == "applied" else None,
-            "champions": state == "applied", "award_rule": champions.AWARD_RULE if state == "applied" else None}
+    installed = state in ("applied", "previous")   # b780 n6: "previous" = the beta-79 install (upgraded by apply)
+    return {"status": state, "honors_page": installed, "fields": dict(FIELDS) if installed else None,
+            "champions": installed, "award_rule": champions.AWARD_RULE if installed else None,
+            **({"revision": champions.PREVIOUS_REVISION, "needs_update": True} if state == "previous" else {})}
 
 
 def reservations(payload: bytes) -> list[dict]:
@@ -328,7 +340,9 @@ def reservations(payload: bytes) -> list[dict]:
 
 
 def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
-    """Install the owner and its seven sites, then the champions owner and its two. Idempotent."""
+    """Install the owner and its seven sites, then the champions owner and its two. Idempotent. A previous (beta-79)
+    install is upgraded in place: this owner's four champions links and the champions code change; the allocations,
+    the nine sites, the RW block and every other owner's bytes stay."""
 
     state, found = _owned_state(payload)
     common = {"owner": OWNER, "experimental": True, "code_bytes": len(runtime.CODE),
@@ -337,6 +351,20 @@ def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
     if state == "applied":
         return payload, {**common, "already_applied": True, "changed_bytes": 0}
     before = payload
+    if state == "previous":
+        code_va, data_va = found["code"]["va"], found["data"]["va"]
+        champs_va = _champions_va(payload, found)
+        relinked, code_receipt = space.install_code(
+            payload, OWNER, code_for(code_va, data_va, champs_va),
+            previous=code_for(code_va, data_va, champs_va, champions_previous=True))
+        result, champions_receipt = champions.install(relinked)
+        _require(status(result) == "applied", "honors upgrade postcondition failed")
+        return result, {**common, "already_applied": False, "upgraded_from": champions.PREVIOUS_REVISION,
+                        "code_install": code_receipt, "code_va": hex(code_va), "data_va": hex(data_va),
+                        "changed_bytes": sum(a != b for a, b in zip(before, result)) + abs(len(result) - len(before)),
+                        "champions": champions_receipt,
+                        "before_sha256": hashlib.sha256(before).hexdigest(),
+                        "after_sha256": hashlib.sha256(result).hexdigest()}
     if not found:
         if space.status(payload) == "retail":
             payload, _ = space.apply(payload, REQUESTS, scaleout=True)

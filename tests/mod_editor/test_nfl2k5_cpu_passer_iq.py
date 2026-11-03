@@ -49,7 +49,9 @@ class WriterTests(unittest.TestCase):
     def test_retail_reads_retail_and_the_option_is_one_late_owner(self):
         self.assertEqual(passer.status(self.retail), "retail")
         self.assertEqual(passer.read_settings(self.retail), {"status": "retail"})
-        self.assertEqual(space.LATE_OWNERS[-1], passer.OWNER)
+        # a late owner after every late owner beta-79 / v0.8 shipped (its last was nfl2k5_sim_realism_state), so adding
+        # it to a released executable moves nothing (ReleaseExecutableTests); later b780 owners may follow it (b780 n6)
+        self.assertGreater(space.LATE_OWNERS.index(passer.OWNER), space.LATE_OWNERS.index("nfl2k5_sim_realism_state"))
         self.assertEqual(passer.REQUESTS, ((passer.OWNER, "code", 256, 16), (passer.OWNER, "data", 16, 16)))
         self.assertNotIn("—", passer.HELP_TEXT + passer.BUILD_CAPTION)
 

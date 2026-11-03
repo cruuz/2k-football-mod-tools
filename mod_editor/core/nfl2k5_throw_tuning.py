@@ -2032,7 +2032,8 @@ def _check_installed_runtime_settings(payload, options):
         state = module.status(payload)
         if selected:
             _require(state != "foreign", f"{module.BUILD_CAPTION}: foreign prerequisites")
-        if state == "applied":
+        # b780 n6: a beta-79 honors install reads "previous" (apply upgrades it in place); it is installed all the same
+        if state == "applied" or (module is honors_patch and state == "previous"):
             _require(selected, f"{module.BUILD_CAPTION} is installed; rebuild from a verified base to turn it off")
             if module is decided_clock_patch:
                 module.verify(payload, margin=decided_clock_margin,
@@ -2462,6 +2463,8 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
             continue
         state = module.status(patched)
         accepted = ("retail", "applied", "needs_fix") if module is stock_books_patch else ("retail", "applied")
+        if module is honors_patch:
+            accepted += ("previous",)   # b780 n6: the beta-79 honors + champions install, upgraded in place by apply
         _require(state in accepted, f"{label} is {state}; refusing")
         patched, sub_receipt = module.apply(patched)
         receipt[key] = sub_receipt
