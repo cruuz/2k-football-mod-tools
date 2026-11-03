@@ -4577,10 +4577,42 @@ def _build_with_project(plan, service, cache, session, progress=None, *, require
         receipt["project_models"] = models
     if survival.get("snapshot") is not None:
         from . import nfl2k5_edit_survival as edit_survival
-        report("Checking that every edit is on the finished disc", 0, 0)
-        receipt.setdefault("steps", []).append(edit_survival.audit_step(
-            survival["snapshot"], receipt.get("target") or plan.target, progress=report))
+        # b780 rev1: the disc is published by now, so a Cancel (pressed while the publish waited for Windows to let go
+        # of the new image, or during this check) only skips the check; it used to raise here and the Build tab said
+        # "Build cancelled; no output was published" about a finished disc.
+        after_publish = _after_publish_progress(report)
+        try:
+            after_publish("Checking that every edit is on the finished disc", 0, 0)
+        except _CancelAfterPublish:
+            step = dict(step=edit_survival.STEP, state="not_checked", reason=LATE_CANCEL,
+                        user_notes=[f"Your edits: the check that every edit is on the finished disc did not run "
+                                    f"({LATE_CANCEL})."])
+        else:
+            step = edit_survival.audit_step(survival["snapshot"], receipt.get("target") or plan.target,
+                                            progress=after_publish)
+        receipt.setdefault("steps", []).append(step)
     return receipt
+
+
+#: What the end-of-build edit check says when Cancel came after the disc was published (b780 rev1).
+LATE_CANCEL = "Cancel was pressed after the disc was published"
+
+
+class _CancelAfterPublish(Exception):
+    """A Cancel that arrived once the disc was published: it stops only the report that was running (b780 rev1)."""
+
+
+def _after_publish_progress(report):
+    """``report`` for work that runs after the disc is published: a Cancel there cannot un-make the disc, so it raises
+    :class:`_CancelAfterPublish` (which the edit check turns into a "did not run" note) instead of ``BuildCancelled``."""
+    from .nfl2k5_project_fit import BuildCancelled
+
+    def after_publish(message, done=0, total=0):
+        try:
+            return report(message, done, total)
+        except BuildCancelled as exc:
+            raise _CancelAfterPublish(LATE_CANCEL) from exc
+    return after_publish
 
 
 def _edit_survival_snapshot(output, session, plan, progress):
