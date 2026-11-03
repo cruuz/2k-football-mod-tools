@@ -2142,7 +2142,7 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
             receipt = {**receipt, "arc_table_patch": {"already_applied": True}}
     if catch_slider:
         state = catch_slider_patch.status(patched)
-        if state == "retail":
+        if state in ("retail", "previous"):          # b780 b5-sim: "previous" = the beta-79 revision (K = 2.0)
             patched, catch_receipt = catch_slider_patch.apply(patched)
             receipt = {**receipt, "catch_slider_patch": catch_receipt,
                        "changed_byte_count": int(receipt.get("changed_byte_count", 0)) + int(catch_receipt["changed_bytes"])}

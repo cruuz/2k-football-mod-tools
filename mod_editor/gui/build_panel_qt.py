@@ -725,7 +725,7 @@ class BuildPanel(QWidget):
         g.addWidget(self.throw_details)
         self.catch_check = self._option(g, "catch_slider", "Fix Catching & Interception sliders",
                                         "Catching controls drops; Interception controls picks.",
-                                        details="The catch odds are multiplied by 2 x (Human Catching + CPU Catching), the same for both teams (the menu goes to 200), "
+                                        details="The catch odds are multiplied by 1.25 x (Human Catching + CPU Catching), the same for both teams (the menu goes to 200), "
                                                 "and a defender's roll is divided by twice the Interception slider (0 = no picks, 50 = original, 100 = double).")
         self.accel_check = self._option(g, "accel_ramp", "Legacy acceleration ramp",
             "Adds a rating-based speed envelope to controller-driven players.",

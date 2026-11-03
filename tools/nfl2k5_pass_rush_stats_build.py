@@ -21,8 +21,9 @@ FLAGS = ["-m32", "-Os", "-ffreestanding", "-fno-builtin", "-fno-strict-aliasing"
          "-fno-jump-tables", "-mpreferred-stack-boundary=2", "-mno-sse", "-mno-mmx", "-Wall", "-Wextra", "-Werror"]
 EXTERNAL = {"prs_state": "state"}
 ENTRIES = ("prs_shed", "prs_throw", "prs_sack1", "prs_sack2", "prs_commit", "prs_reset1", "prs_reset2",
-           "prs_card_def", "prs_card_wr", "prs_card_rb", "prs_card_value", "prs_leader_value", "prs_list_rb", "prs_list_wr", "prs_hurry_mm2", "prs_hit_mm2", "prs_rush_share", "prs_hit_share",
-           "prs_ol_per_game", "prs_ol_hit_share", "prs_ol_sack_share", "prs_list_def", "prs_list_ol")
+           "prs_card_def", "prs_card_wr", "prs_card_rb", "prs_leader_value", "prs_list_rb", "prs_list_wr", "prs_hurry_mm2", "prs_hit_mm2", "prs_rush_share", "prs_hit_share",
+           "prs_ol_per_game", "prs_ol_hit_share", "prs_ol_sack_share", "prs_list_def", "prs_list_ol",
+           "prs_leader_a", "prs_leader_c", "prs_card_text")
 
 
 def generate(source: Path = SOURCE) -> str:
