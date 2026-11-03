@@ -388,6 +388,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
     from . import nfl2k5_catch_snap_limit as catch_snap_limit  # b780-cv4: defender catch snap limit, the last late owner, observed on the same probe copy
     from . import nfl2k5_speed_threshold as speed_threshold  # b780-cv5: speed separation, the last late owner, observed on the same probe copy
     from . import nfl2k5_protection_calls as protection_calls  # b780 p1-slide: the last late owner, observed on the same probe copy
+    from . import nfl2k5_scramble_blocking as scramble_blocking  # b780-int: cv7 (off in every preset), observed on the probe copy
     from . import nfl2k5_qb_accuracy as qb_accuracy  # b777-qb3: observed on the same late-owner probe copy, last
     from . import nfl2k5_formation_art_spacing as art_spacing  # b777-tp1: observed on the same probe copy
     from . import nfl2k5_force_out as force_out  # b778-fo1: observed on the same probe copy
@@ -716,15 +717,16 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
                                           + contract_guard.REQUESTS + sim_cb_tackles.REQUESTS + clock_led.REQUESTS
                                           + return_coverage.REQUESTS + pass_protection.REQUESTS + pass_rush_stats.REQUESTS
                                           + preseason_warning.REQUESTS + sim_rb_injuries.REQUESTS + sim_realism.REQUESTS
-                                          + coach_carousel.REQUESTS,
-                                          + standings_records.REQUESTS,
-                                          + cpu_passer_iq.REQUESTS,
-                                          + cpu_clock2.REQUESTS,
-                                          + runner_vision.REQUESTS,  # b780 cv2-runner
-                                          + dive_window.REQUESTS,
-                                          + catch_snap_limit.REQUESTS,
-                                          + speed_threshold.REQUESTS,
-                                          + protection_calls.REQUESTS,
+                                          + coach_carousel.REQUESTS
+                                          + standings_records.REQUESTS
+                                          + cpu_passer_iq.REQUESTS
+                                          + cpu_clock2.REQUESTS
+                                          + runner_vision.REQUESTS  # b780 cv2-runner
+                                          + dive_window.REQUESTS
+                                          + catch_snap_limit.REQUESTS
+                                          + speed_threshold.REQUESTS
+                                          + protection_calls.REQUESTS
+                                          + scramble_blocking.REQUESTS,  # b780-int: cv7, a dormant late owner
                                           scaleout=True)
             # b779-int1: gp1's QB skill tiers (cpu_qb_tiers, on in Advanced/Experimental) ride on the zone-defender option;
             # the allocation base carries all three options, so observe the same set (apply refuses a different one).
@@ -761,6 +763,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
             cpu_ai_probe, _ = catch_snap_limit.apply(cpu_ai_probe)  # b780-cv4: the catch selector's success exit and owned code
             cpu_ai_probe, _ = speed_threshold.apply(cpu_ai_probe, value=speed_threshold.SOFTDRINK)  # b780-cv5: its speed mapper hook (0x2381B1) and owned code
             cpu_ai_probe, _ = protection_calls.apply(cpu_ai_probe)  # b780 p1-slide: its two jumps (0x23BC4F, 0x18FE65), owned code and call state
+            cpu_ai_probe, _ = scramble_blocking.apply(cpu_ai_probe)  # b780-int: cv7, its hook and owned code
             # The early form (k128_early) writes only inside these spans: the owned allocation (its entry at +0x1A0)
             # and the XBE entry field; it leaves 0x327D1 retail.
             # Flatter flight and the old relocated high-arc band are mutually
@@ -857,7 +860,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
                 "stack_image_size": XbeImage(final).image_size,
                 "model": "observed experimental disc build plus dormant seven-on-seven, grown kickoff, scorebug runtime music metadata, Momentum, defensive try and zone drop; exact diffs union owned pages and named allocations",
                 "preset": "softdrink_experimental", "preset_values": preset,
-                "extra_owners": ["nfl2k5_my_career_home", "nfl2k5_cpu_passer_iq", "nfl2k5_pass_protection", "nfl2k5_pass_rush_stats", "nfl2k5_protection_calls", "nfl2k5_preseason_warning", "nfl2k5_sim_rb_injuries", "nfl2k5_sim_realism", "nfl2k5_coach_carousel", "nfl2k5_standings_records", "nfl2k5_cpu_clock2", "nfl2k5_runner_vision", "nfl2k5_dive_window", "nfl2k5_catch_snap_limit", "nfl2k5_speed_threshold", "nfl2k5_audible_legend", "nfl2k5_module_loader", "nfl2k5_crib_trophy_room", "nfl2k5_play_art_routes", "nfl2k5_team_number_scale", "nfl2k5_run_blocking", "nfl2k5_qb_accuracy", "nfl2k5_formation_art_spacing", "nfl2k5_force_out", "nfl2k5_practice_injuries", "nfl2k5_ball_carrier_ai", "nfl2k5_star_retention", star_career.OWNER, sportscenter_lineup.OWNER, "nfl2k5_draft_clock", "nfl2k5_weekly_progression", "nfl2k5_player_progress_screen", "nfl2k5_franchise_footer", "nfl2k5_history", "nfl2k5_contract_college_guard", "nfl2k5_sim_cb_tackles", "nfl2k5_clock_led", "nfl2k5_cpu_qb_reads", "nfl2k5_db_ball_play", draft_picks.OWNER, hback.OWNER, team_ratings.OWNER, attributes.OWNER, "nfl2k5_indicator_names", "nfl2k5_seven_on_seven", "nfl2k5_seven_on_seven_book", space.OWNER, relocated.OWNER, runtime.OWNER, music.OWNER, momentum.OWNER, defensive_try.OWNER, zone_drop.OWNER, roster_storage.OWNER, coverage.OWNER, scramble.OWNER, flight.OWNER, playlist.OWNER, practice_screen.OWNER, abilities.OWNER, qb_spy.OWNER, calendar.OWNER, read_option.OWNER, franchise_2026.OWNER, senior_bowl.OWNER, animation_xbe.OWNER, guardian.OWNER, my_career.OWNER, my_career.EXTRA_OWNER, crib_reclaim.OWNER, screen_hooks.OWNER, arena_growth.OWNER, autosave.OWNER, espn25.OWNER, coverage_trail.OWNER, deep_zone.OWNER, coverage_trail.OWNER, playbook_pair.OWNER, weekly_prep.OWNER, money_downs.OWNER, money_downs.LATE_OWNER, money_downs.LATE_STATE_OWNER, coach_ai.OWNER, third_down.OWNER, edit_player.OWNER, accelerated_clock.OWNER, helmet_finish.OWNER, weather_haze.OWNER, number_kerning.OWNER, team_names.OWNER, modern_color.OWNER, coin_defer.OWNER, decided_clock.OWNER, cpu_scrambles.OWNER, historic_quick_game.OWNER, more_moments.OWNER, anniversary_kickoff.OWNER, widescreen_menus.OWNER, team_logo_swap.OWNER, k128.OWNER, letter_grades.OWNER, letter_grades.PROGRESS_OWNER, kick_meter.OWNER, goalposts.OWNER, period.OWNER, "nfl2k5_franchise_economy", "nfl2k5_roster_fill_composition", lineman.__name__.rsplit(".", 1)[-1], elbow.__name__.rsplit(".", 1)[-1],
+                "extra_owners": ["nfl2k5_my_career_home", "nfl2k5_cpu_passer_iq", "nfl2k5_pass_protection", "nfl2k5_pass_rush_stats", "nfl2k5_protection_calls", "nfl2k5_preseason_warning", "nfl2k5_sim_rb_injuries", "nfl2k5_sim_realism", "nfl2k5_coach_carousel", "nfl2k5_standings_records", "nfl2k5_cpu_clock2", "nfl2k5_runner_vision", "nfl2k5_dive_window", "nfl2k5_catch_snap_limit", "nfl2k5_speed_threshold", "nfl2k5_scramble_blocking", "nfl2k5_audible_legend", "nfl2k5_history_screen", "nfl2k5_module_loader", "nfl2k5_crib_trophy_room", "nfl2k5_play_art_routes", "nfl2k5_team_number_scale", "nfl2k5_run_blocking", "nfl2k5_qb_accuracy", "nfl2k5_formation_art_spacing", "nfl2k5_force_out", "nfl2k5_practice_injuries", "nfl2k5_ball_carrier_ai", "nfl2k5_star_retention", star_career.OWNER, sportscenter_lineup.OWNER, "nfl2k5_draft_clock", "nfl2k5_weekly_progression", "nfl2k5_player_progress_screen", "nfl2k5_franchise_footer", "nfl2k5_history", "nfl2k5_contract_college_guard", "nfl2k5_sim_cb_tackles", "nfl2k5_clock_led", "nfl2k5_cpu_qb_reads", "nfl2k5_db_ball_play", draft_picks.OWNER, hback.OWNER, team_ratings.OWNER, attributes.OWNER, "nfl2k5_indicator_names", "nfl2k5_seven_on_seven", "nfl2k5_seven_on_seven_book", space.OWNER, relocated.OWNER, runtime.OWNER, music.OWNER, momentum.OWNER, defensive_try.OWNER, zone_drop.OWNER, roster_storage.OWNER, coverage.OWNER, scramble.OWNER, flight.OWNER, playlist.OWNER, practice_screen.OWNER, abilities.OWNER, qb_spy.OWNER, calendar.OWNER, read_option.OWNER, franchise_2026.OWNER, senior_bowl.OWNER, animation_xbe.OWNER, guardian.OWNER, my_career.OWNER, my_career.EXTRA_OWNER, crib_reclaim.OWNER, screen_hooks.OWNER, arena_growth.OWNER, autosave.OWNER, espn25.OWNER, coverage_trail.OWNER, deep_zone.OWNER, coverage_trail.OWNER, playbook_pair.OWNER, weekly_prep.OWNER, money_downs.OWNER, money_downs.LATE_OWNER, money_downs.LATE_STATE_OWNER, coach_ai.OWNER, third_down.OWNER, edit_player.OWNER, accelerated_clock.OWNER, helmet_finish.OWNER, weather_haze.OWNER, number_kerning.OWNER, team_names.OWNER, modern_color.OWNER, coin_defer.OWNER, decided_clock.OWNER, cpu_scrambles.OWNER, historic_quick_game.OWNER, more_moments.OWNER, anniversary_kickoff.OWNER, widescreen_menus.OWNER, team_logo_swap.OWNER, k128.OWNER, letter_grades.OWNER, letter_grades.PROGRESS_OWNER, kick_meter.OWNER, goalposts.OWNER, period.OWNER, "nfl2k5_franchise_economy", "nfl2k5_roster_fill_composition", lineman.__name__.rsplit(".", 1)[-1], elbow.__name__.rsplit(".", 1)[-1],
                                  music_policy.__name__.rsplit(".", 1)[-1]],
                 "alternative_flight_probe": "flatter flight on retail; final stack keeps the selected existing flight mode",
                 "seven_on_seven_book": book_note,
