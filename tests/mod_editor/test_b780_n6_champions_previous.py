@@ -418,5 +418,83 @@ class SimRealismPreviousTests(unittest.TestCase):
             realism.apply(v08)
 
 
+
+# ---------------------------------------------------------------------------------------------------------------
+# Recognition only (b780-int, 11-03): MyCareer and its companions, Player Progress, pass rush stats and the scorebug
+# runtime changed in ways an in-place update cannot carry safely (linked labels, chain targets, bigger allocations).
+# On a v0.8 executable each reads "previous" and its apply() refuses in plain words; every owner that validates them
+# (Auto Save, Franchise Practice, Practice reserves, the star decal, Edit Player, the playlist, the attribute grades,
+# the module loader, the scorebug scene) reads applied again, as it did in beta-79.
+
+class PreviousRecognitionStaticTests(unittest.TestCase):
+
+    def test_the_frozen_mycareer_runtime_differs_and_builds_the_beta79_strings(self):
+        from mod_editor.core import nfl2k5_my_career_mode as mode, nfl2k5_my_career_mode_code_b779 as old
+        self.assertEqual(len(old.CODE), 16452)
+        self.assertNotEqual(old.CODE, mode.assembly.CODE)
+        now = mode.code_for(0x1600000, 0x1700000)[1]
+        then = mode.code_for(0x1600000, 0x1700000, previous=True)[1]
+        key = "m3_rating_" + mode_rating_key()
+        self.assertIn(now[key], range(mode.EXTRA_VA, mode.EXTRA_VA + 4096))              # the M3 RW pool now
+        self.assertIn(then[key], range(0x1600000, 0x1600000 + mode.CODE_SIZE))          # RX strings in beta-79
+        self.assertNotEqual(mode.sites(0x1600000, 0x1700000), mode.sites(0x1600000, 0x1700000, previous=True))
+
+    def test_every_refusal_is_plain_and_names_the_way_out(self):
+        from mod_editor.core import (nfl2k5_my_career_mode as mode, nfl2k5_player_progress_screen as pp,
+                                     nfl2k5_pass_rush_stats as rush, nfl2k5_scorebug_runtime as scorebug,
+                                     nfl2k5_sim_realism as realism)
+        for module in (mode, pp, rush, scorebug, realism):
+            text = module.PREVIOUS_REFUSAL
+            self.assertIn("beta 79", text, module.__name__)
+            self.assertIn("retail game", text, module.__name__)
+            self.assertNotIn("\u2014", text, module.__name__)
+
+
+def mode_rating_key():
+    from mod_editor.core import nfl2k5_my_career_progression as progression
+    return progression.FIELDS[0][1]
+
+
+class PreviousRecognitionReleaseTests(unittest.TestCase):
+    """The released v0.8 executable as beta-80 reads it."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.v08 = v08_xbe()
+
+    def test_the_changed_owners_read_previous(self):
+        import importlib
+        for name in ("nfl2k5_my_career_mode", "nfl2k5_my_career", "nfl2k5_my_career_home", "nfl2k5_player_progress_screen",
+                     "nfl2k5_pass_rush_stats", "nfl2k5_scorebug_runtime", "nfl2k5_sim_realism"):
+            with self.subTest(owner=name):
+                self.assertEqual(importlib.import_module("mod_editor.core." + name).status(self.v08), "previous")
+
+    def test_their_companions_read_applied_again(self):
+        import importlib
+        for name in ("nfl2k5_franchise_autosave", "nfl2k5_franchise_practice", "nfl2k5_practice_reserves",
+                     "nfl2k5_player_star", "nfl2k5_franchise_edit_player", "nfl2k5_music_playlist",
+                     "nfl2k5_letter_grades_attributes", "nfl2k5_module_loader", "nfl2k5_sim_cb_tackles"):
+            with self.subTest(owner=name):
+                self.assertEqual(importlib.import_module("mod_editor.core." + name).status(self.v08), "applied")
+        from mod_editor.core import nfl2k5_scorebug_ingame as scene
+        self.assertEqual(scene.xbe_status(self.v08), "applied")
+
+    def test_apply_refuses_each_in_plain_words(self):
+        from mod_editor.core import (nfl2k5_my_career_mode as mode, nfl2k5_my_career_home as home,
+                                     nfl2k5_player_progress_screen as pp, nfl2k5_pass_rush_stats as rush,
+                                     nfl2k5_scorebug_runtime as scorebug)
+        for module, text in ((mode, mode.PREVIOUS_REFUSAL), (home, mode.PREVIOUS_REFUSAL), (pp, pp.PREVIOUS_REFUSAL),
+                             (rush, rush.PREVIOUS_REFUSAL), (scorebug, scorebug.PREVIOUS_REFUSAL)):
+            with self.subTest(owner=module.__name__):
+                with self.assertRaises(ValueError) as caught:
+                    module.apply(self.v08)
+                self.assertEqual(str(caught.exception), text)
+
+    def test_the_franchise_footer_host_never_chains_to_the_beta79_mycareer(self):
+        from mod_editor.core import nfl2k5_franchise_footer as footer
+        self.assertIsNone(footer._my_career_handlers(self.v08))
+        self.assertNotEqual(footer.status(self.v08), "applied")
+
+
 if __name__ == "__main__":
     unittest.main()

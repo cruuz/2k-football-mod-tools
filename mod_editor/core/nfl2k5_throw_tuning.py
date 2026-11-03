@@ -1651,6 +1651,8 @@ class _my_career_adapter:
     prepared-save setup keeps the legacy route. The legacy status recognizes the generic tag and delegates
     complete validation, so one status covers both formats."""
 
+    PREVIOUS_REFUSAL = my_career_mode_patch.PREVIOUS_REFUSAL   # b780 n6: a beta-79 MyCareer is a rebuild from retail
+
     def __init__(self, setup):
         self.setup = None if setup is None else my_career_patch.read_setup(setup)
 
@@ -2467,7 +2469,9 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
         accepted = ("retail", "applied", "needs_fix") if module is stock_books_patch else ("retail", "applied")
         if getattr(module, "UPGRADES_PREVIOUS", False):
             accepted += ("previous",)   # b780 n6: a beta-79 install (honors + champions, camera v7, K128), upgraded in place
-        _require(state in accepted, f"{label} is {state}; refusing")
+        # b780 n6: a beta-79 install that cannot be updated in place says so in plain words
+        _require(state in accepted, getattr(module, "PREVIOUS_REFUSAL", None) if state == "previous"
+                 and getattr(module, "PREVIOUS_REFUSAL", None) else f"{label} is {state}; refusing")
         patched, sub_receipt = module.apply(patched)
         receipt[key] = sub_receipt
         receipt["changed_byte_count"] = int(receipt.get("changed_byte_count", 0)) + int(sub_receipt["changed_bytes"])

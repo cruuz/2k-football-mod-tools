@@ -179,9 +179,8 @@ def _recognize(payload):
                     (0x346D80, bytes.fromhex("e9cb76d2ff")))
     if any(image.read(va, len(pin)) != pin for va, pin in career_sites):
         from . import nfl2k5_my_career_mode as career
-        if career.status(payload) == "applied":
-            code, data = career.legacy.allocations(payload)
-            companions += career.sites(code["va"], data["va"])
+        if career.status(payload) in ("applied", "previous"):   # b780 n6: the beta-79 MyCareer, its own sites
+            companions += career.installed_sites(payload)
         else:
             require(career.legacy.status(payload) == "applied", "foreign MyCareer editor/stack companion")
             code, data = career.legacy.allocations(payload)

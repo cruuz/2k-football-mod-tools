@@ -364,6 +364,11 @@ BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
 BUILD_KEYS = tuple(row[0] for row in BUILD_OPTIONS)
 # b780 n6: options whose beta-79 install reads "previous" in inspect(); the build upgrades it in place
 PREVIOUS_UPGRADE_KEYS = {"honors_page": "honors page", "camera": "camera", "k128_memory": "128 MB memory"}
+# b780 n6: beta-79 installs this release reads ("previous") but cannot update in place (they grew, or MyCareer and its
+# companions are linked together); the option stays off and says to rebuild from the retail game
+PREVIOUS_REBUILD_KEYS = {"my_career": "MyCareer", "my_career_home": "Career Home", "player_progress": "Player Progress",
+                         "pass_rush_stats": "pass rush stats", "scorebug_runtime": "scorebug effects",
+                         "sim_realism": "simulated season realism"}
 VENUE_BUILD_KEYS = (
     "modern_sofi", "modern_highmark", "modern_att", "modern_levis", "modern_allegiant",
     "modern_mercedes_benz", "modern_usbank", "modern_lucas_oil", "modern_state_farm",
@@ -2179,6 +2184,9 @@ class BuildPanel(QWidget):
         for key, name in PREVIOUS_UPGRADE_KEYS.items():  # b780 n6: beta-79 installs, upgraded in place
             if state.get(key) == "previous":
                 applied.append(f"{name}: older revision (needs update)")
+        for key, name in PREVIOUS_REBUILD_KEYS.items():  # b780 n6: beta-79 installs a rebuild from retail updates
+            if state.get(key) == "previous":
+                applied.append(f"{name}: beta 79 revision (rebuild from retail to update)")
         foreign = [key.replace("_", " ") for key in mod_build.BuildPlan.__dataclass_fields__
                    if state.get(key) == "foreign"]
         settings = state.get("throw")
@@ -2229,6 +2237,10 @@ class BuildPanel(QWidget):
             elif value == "applied":
                 box.setToolTip("Already installed on this source.")
                 self._set_badge(key, "Already installed")
+            elif key in PREVIOUS_REBUILD_KEYS and value == "previous":
+                box.setToolTip(f"The beta 79 {PREVIOUS_REBUILD_KEYS[key]} is installed on this source. This release cannot "
+                               "update it in place; build from your retail game to get this release's version.")
+                self._set_badge(key, "Beta 79 version: rebuild from retail")
             elif value == "foreign":
                 box.setToolTip("Not recognised: the bytes at this change's sites are neither retail nor this patch "
                                "(changed by another tool), so it can't be added here.")
