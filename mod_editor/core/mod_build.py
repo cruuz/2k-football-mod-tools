@@ -1984,6 +1984,7 @@ def _cpu_clock2_preflight(source: Path, progress) -> None:
                          "in this source is not retail. Build from an unmodified retail dump.")
 
 
+@_core_step("cpu_clock2")
 def _apply_cpu_clock2(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
     """b780 b-clock: modern CPU clock management, after every b779 late owner (LATE_OWNERS order)."""
     if not plan.cpu_clock2:
@@ -2249,6 +2250,7 @@ def _player_progress_hosted(plan: "BuildPlan") -> bool:
     return bool(plan.player_progress and plan.franchise_history)
 
 
+@_core_step("franchise_history")
 def _apply_franchise_history(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
     """b780 j23: the franchise extension footer host (after Player Progress and every other save-path owner)."""
     if not plan.franchise_history:
@@ -2374,6 +2376,7 @@ def _apply_sim_rb_injuries(plan: "BuildPlan", target: Path, receipt: dict, progr
     receipt["result"]["sim_rb_injuries"] = "applied"
 
 
+@_core_step("db_dive_window")
 def _apply_dive_window(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
     """b780-cv3: defenders leap only for balls they can reach, after every other late owner (LATE_OWNERS order)."""
     if not plan.db_dive_window:
@@ -2420,6 +2423,7 @@ def _coach_carousel_preflight(source: Path, progress) -> None:
                          "retail. Build from an unmodified retail dump.")
 
 
+@_core_step("coach_carousel")
 def _apply_coach_carousel(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
     """b780-c6: the coaching carousel, after season realism (the last late allocator owner, LATE_OWNERS order)."""
     if not plan.coach_carousel:
@@ -2437,6 +2441,7 @@ def _apply_coach_carousel(plan: "BuildPlan", target: Path, receipt: dict, progre
     receipt["result"]["coach_carousel"] = "applied"
 
 
+@_core_step("coach_carousel_pool")
 def _apply_coach_carousel_pool(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
     """b780-c6: the hiring pool in the free tail of the roster's coach strings, after the last main-roster writer."""
     if not plan.coach_carousel:
@@ -2459,6 +2464,7 @@ def _apply_coach_carousel_pool(plan: "BuildPlan", target: Path, receipt: dict, p
     receipt["result"]["coach_carousel_pool"] = "applied"
 
 
+@_core_step("history_screen")
 def _apply_history_screen(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
     """b780-j4: the History screen owner, the last late allocator owner (LATE_OWNERS order): the seeded real history
     (data/nfl2k5_history_2026.json when the build carries it) and the franchise footer host's body word when that
@@ -2486,6 +2492,7 @@ def _apply_history_screen(plan: "BuildPlan", target: Path, receipt: dict, progre
             "makes (seasons, records and awards start empty).")
 
 
+@_core_step("standings_records")
 def _apply_standings_records(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
     """b780-j1: Team Standings division / conference / home / road records, the last late allocator owner."""
     if not plan.standings_records:
@@ -2501,6 +2508,9 @@ def _apply_standings_records(plan: "BuildPlan", target: Path, receipt: dict, pro
         raise RuntimeError("Team Standings records: the output does not read back as applied")
     receipt["steps"].append({"step": "standings_records", **{k: v for k, v in records_receipt.items() if k != "reservations"}})
     receipt["result"]["standings_records"] = "applied"
+
+
+@_core_step("cpu_passer_iq")
 def _apply_cpu_passer_iq(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
     """b780 a-passer: the CPU passer's checkdown factor, pump holdoff and read dwell, the last late allocator owner."""
     if not plan.cpu_passer_iq:
@@ -2516,6 +2526,9 @@ def _apply_cpu_passer_iq(plan: "BuildPlan", target: Path, receipt: dict, progres
         raise RuntimeError("CPU quarterbacks throw on time: the output does not read back as applied")
     receipt["steps"].append({"step": "cpu_passer_iq", **{k: v for k, v in passer_receipt.items() if k != "reservations"}})
     receipt["result"]["cpu_passer_iq"] = "applied"
+
+
+@_core_step("cpu_runner_vision")
 def _apply_runner_vision(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
     """b780 cv2-runner: CPU ball carrier vision, after the b779 late owners (LATE_OWNERS order)."""
     if not plan.cpu_runner_vision:
@@ -2533,6 +2546,7 @@ def _apply_runner_vision(plan: "BuildPlan", target: Path, receipt: dict, progres
     receipt["result"]["cpu_runner_vision"] = "applied"
 
 
+@_core_step("catch_snap_limit")
 def _apply_catch_snap_limit(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
     """b780-cv4: CPU defenders cannot slide to the ball for a pick, the last late allocator owner."""
     if not plan.catch_snap_limit:
@@ -2550,6 +2564,7 @@ def _apply_catch_snap_limit(plan: "BuildPlan", target: Path, receipt: dict, prog
     receipt["result"]["catch_snap_limit"] = "applied"
 
 
+@_core_step("speed_threshold")
 def _apply_speed_threshold(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
     """b780-cv5: speed separation on deep routes, the last late allocator owner (LATE_OWNERS order). Strength 0 does nothing."""
     if not plan.speed_threshold:
@@ -2569,6 +2584,7 @@ def _apply_speed_threshold(plan: "BuildPlan", target: Path, receipt: dict, progr
     receipt["result"]["speed_threshold_value"] = plan.speed_threshold
 
 
+@_core_step("scramble_blocking")
 def _apply_scramble_blocking(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
     """b780-cv7: receivers block for a scrambling QB, the last late allocator owner (LATE_OWNERS order)."""
     if not plan.scramble_blocking:
@@ -2599,6 +2615,7 @@ def _audible_panel_choice(plan: "BuildPlan"):
     return lift, legend, bool(legend and getattr(plan, "protection_calls", False))
 
 
+@_core_step("audible_legend")
 def _apply_audible_legend(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
     """b780-p3: the audible panel lift and/or button legend, the last late allocator owner (LATE_OWNERS order)."""
     choice = _audible_panel_choice(plan)
@@ -2664,6 +2681,9 @@ def _quick_long_release_preflight(source: Path, progress) -> None:
     if module.status(payload) == "foreign":
         raise ValueError("The quarterback throw routines in this source are not retail or the quicker deep and rollout "
                          "throws. Turn it off or rebuild from a supported USA source.")
+
+
+@_core_step("quick_long_release")
 def _apply_quick_long_release(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
     """b780-c-release: faster bomb and throw-on-the-run clips (constants only, no allocator request)."""
     if not plan.quick_long_release:
@@ -4454,6 +4474,17 @@ def _coach_staff_plan(plan, source):
     return result
 
 
+@_core_step("coach_staff_playbooks")
+def _apply_coach_staff_playbooks(staff_plan, target: Path, receipt: dict, progress) -> None:
+    """b780 c2-staff: "bring his playbook": after the last playbook writer, before the 2026 profiles compile."""
+    if staff_plan is None or not _core_module("nfl2k5_coach_staff").playbook_copies(staff_plan):
+        return
+    progress("Coaching staff: copying the playbooks the new head coaches bring", 0, 0)
+    books = _core_module("nfl2k5_coach_staff").apply_playbooks_to_image(
+        target, staff_plan, progress=lambda message: progress(message, 0, 0))
+    receipt["steps"].append({"step": "coach_staff_playbooks", **books})
+
+
 def _board_kit_options(plan):
     """What the modern stadium boards must know about the rest of the plan: the stadiums another selected option
     writes in this very build. Modern Arrowhead rewrites all nine Kansas City bundles, so the boards leave that one
@@ -5053,6 +5084,7 @@ def _apply_pass_rush_stats(plan, target, receipt, progress):
     receipt["result"]["pass_rush_stats"] = "applied"
 
 
+@_core_step("protection_calls")
 def _apply_protection_calls(plan, target, receipt, progress):
     """b780 p1-slide: the protection-calls owner, the last late allocator owner (nfl2k5_xbe_space.LATE_OWNERS order)."""
     if not plan.protection_calls:
@@ -6717,12 +6749,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         receipt["steps"].append({"step": "player_tags", **{k: v for k, v in tags_receipt.items() if k != "log"},
                                  "log_lines": len(tags_receipt.get("log", []))})
     _apply_roster_history(plan, target, receipt, progress)
-    if staff_plan is not None and _core_module("nfl2k5_coach_staff").playbook_copies(staff_plan):
-        # b780 c2-staff: "bring his playbook": after the last playbook writer, before the 2026 profiles compile
-        progress("Coaching staff: copying the playbooks the new head coaches bring", 0, 0)
-        books = _core_module("nfl2k5_coach_staff").apply_playbooks_to_image(
-            target, staff_plan, progress=lambda message: progress(message, 0, 0))
-        receipt["steps"].append({"step": "coach_staff_playbooks", **books})
+    _apply_coach_staff_playbooks(staff_plan, target, receipt, progress)
     if plan.team_names_2026:
         _step("team_names_2026")
         module = _core_module("nfl2k5_team_names_2026")

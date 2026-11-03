@@ -175,6 +175,39 @@ class StepContextTests(unittest.TestCase):
             self.assertNotIn("—", label)
             self.assertTrue(build_steps.KEPT.get(step_id, build_steps.DEFAULT_KEPT).startswith("Your "), step_id)
 
+    def test_every_helper_the_build_calls_is_a_named_step(self):
+        """b780 rev1: fifteen beta-80 late owners (CPU passer, clock, History screen, standings, ...) and the staff's
+        playbook copy marked no step, so a failure in one was reported under the step that ran before it."""
+        tree = ast.parse((ROOT / "mod_editor" / "core" / "mod_build.py").read_text(encoding="utf-8"))
+        functions = {node.name: node for node in tree.body if isinstance(node, ast.FunctionDef)}
+        called = {node.func.id for node in ast.walk(functions["_build"])
+                  if isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id.startswith("_apply_")}
+        self.assertGreater(len(called), 40)
+        unmarked = []
+        for name in sorted(called):
+            node = functions[name]
+            decorated = any(isinstance(d, ast.Call) and getattr(d.func, "id", "") == "_core_step"
+                            for d in node.decorator_list)
+            begins = any(isinstance(n, ast.Call) and getattr(n.func, "id", "") == "_step" for n in ast.walk(node))
+            if not (decorated or begins):
+                unmarked.append(name)
+        self.assertEqual(unmarked, [])
+
+    def test_a_late_owner_failure_names_its_own_step(self):
+        class Refuses:
+            def apply(self, payload, **_options):
+                raise ValueError("invalid SizeOfHeaders")
+        plan = mod_build.BuildPlan("/never/source.xbe", "/never/out.xbe", cpu_clock2=True)
+        with mock.patch.object(mod_build, "_core_module", return_value=Refuses()), \
+                mock.patch.object(mod_build, "_xbe_bytes", return_value=b"XBEH"):
+            with self.assertRaises(ValueError) as caught:
+                with build_steps.track(lambda *a: None) as session:
+                    build_steps.begin("rookie_faces")       # the step before the late owners in a full build
+                    mod_build._apply_cpu_clock2(plan, Path("/never/out.xbe"), {"steps": [], "result": {}},
+                                                session.progress)
+        self.assertEqual(caught.exception.step, "cpu_clock2")
+        self.assertEqual(str(caught.exception), "During Modern CPU clock management: invalid SizeOfHeaders")
+
     def test_the_build_entry_points_are_tracked(self):
         with tempfile.TemporaryDirectory() as folder:
             source = Path(folder, "same.xbe")
