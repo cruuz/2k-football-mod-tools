@@ -636,6 +636,17 @@ def games_coach_name(games_csv: Path, full: str, team: str, season: int, given: 
     return full
 
 
+def coach_records_for(team: str, full_name: str) -> dict | None:
+    """b780 c1-coachdata: the sourced 2026 ratings, play-calling tendencies and announcer flag of this club's head coach
+    (data/nfl2k5_coaches_2026.json, built by tools/nfl2k5_coach_2026_data.py), for the roster edits' ``coaches`` entry.
+    None when the file has no entry for this exact coach: a new head coach must never inherit another man's ratings, he
+    keeps the record's old values until the file is rebuilt for him."""
+    import nfl2k5_coach_2026_data as coach_data
+    if not team or not coach_data.DATA_PATH.is_file():
+        return None
+    return coach_data.record_entry(coach_data.load_data(), team, full_name)
+
+
 def coach_entry(roster_cfg: dict, abbreviation: str, disc: str, nfl: Path | None = None,
                 team: str = "", season: int = 2026) -> dict | None:
     """The head coach's name for the roster edits' ``coaches`` list. Coach names are written in place into their
@@ -657,6 +668,14 @@ def coach_entry(roster_cfg: dict, abbreviation: str, disc: str, nfl: Path | None
             print(f"  head coach: {candidate['first']} {candidate['last']}" +
                   ("" if candidate["first"] == first else f" (the retail span holds no '{first}')"))
             entry = dict(candidate, team=abbreviation, full_name=full)
+            records = coach_records_for(team, full)
+            if records:
+                entry.update(records)
+                print(f"  head coach records: {len(records['ratings'])} ratings, tendencies {', '.join(records['tendencies'])}, "
+                      f"announcer {records['announcer']}")
+            else:
+                print(f"  WARNING: no 2026 coach records for {full} ({team}) in data/nfl2k5_coaches_2026.json: the coach keeps "
+                      "the ratings, tendencies and announcer cue of the record's 2004 coach")
             games = (nfl / "games.csv") if nfl else None
             if games is not None and games.is_file():
                 lookup = games_coach_name(games, full, team, season, roster_cfg.get("head_coach_games_name"))

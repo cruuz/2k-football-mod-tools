@@ -3231,6 +3231,7 @@ def apply_body(body: bytes, source: Path | str | Mapping[str, Any], *,
             selected.append(player.offset)
         roster.free_agents = selected
     coaches = apply_coach_names(roster.body, roster.teams, doc.get("coaches") or [], log)
+    coach_records = apply_coach_records(roster.body, roster.teams, doc.get("coaches") or [], log, obj_base=roster.obj_base)
     uniform_years = apply_team_uniform_years(roster.body, roster.teams, doc.get("teams") or [], log)
     # A dated refresh validates its final club chains after membership changes.
     # Alumni aliases cannot own independent locks, including on a replay after
@@ -3282,7 +3283,7 @@ def apply_body(body: bytes, source: Path | str | Mapping[str, Any], *,
     return out, {"roster_refresh": refresh_receipt, "modern_free_agents": fa_receipt, "franchise_history": history_receipt,
                  "created_history": created_receipt, "edits": len(doc["edits"]), "players_changed": applied,
                  "fields_written": fields_written, "moves": len(doc.get("moves") or []),
-                 "players_moved": moved, "coach_names_written": coaches,
+                 "players_moved": moved, "coach_names_written": coaches, "coach_records_written": coach_records,
                  "team_uniform_years_written": uniform_years,
                  "special_team_slots_written": special_count, "log": log}
 
@@ -3368,8 +3369,13 @@ def apply_coach_names(body: bytearray, teams: Sequence[TeamRecord], entries: Seq
     in record order, the new names and biographies in place of the old ones (a replaced coach's retail biography
     describes the 2004 coach, so it is cleared unless the entry gives one), each pointer aimed at its string, and
     the unused tail zeroed. The region never grows; if the new text does not fit, nothing is written and the log
-    says so. Coach strings are outside the player name pool, so no player edit can reuse them."""
+    says so. Coach strings are outside the player name pool, so no player edit can reuse them.
 
+    An entry that carries none of ``first`` / ``last`` / ``bio`` / ``fields`` (only the record keys of
+    ``apply_coach_records``: ratings, tendencies, announcer, height_in, weight_lb) is not a name edit: it is skipped
+    here, so a record-only entry never clears the coach's biography or rewrites the string region."""
+
+    entries = [entry for entry in entries if any(key in entry for key in ("first", "last", "bio", "fields"))]
     if not entries:
         return 0
     cw = _coach_tool()
@@ -3455,6 +3461,176 @@ def apply_coach_names(body: bytearray, teams: Sequence[TeamRecord], entries: Seq
         got = cw.utf16z(check, cw.relative_target(check, field_offset, "coach"), "coach")
         _require(got == expect, f"coach {index} +0x{fields[field]:x} reads {got!r} after the rewrite")
     return len(wanted)
+
+
+# ---------------------------------------------------------------------------------- coach records (b780 c1-coachdata)
+# What a coach record holds besides his name and career numbers.  Byte map read from the retail default.xbe (the seeding
+# routine FUN_002818D0, the statistics readers 0x280D10 / 0x280F30 / 0x281D90 and the commentary handler at 0x5A37D) and
+# proved with the game's own code in Unicorn: tests/mod_editor/test_b780_c1_coach_records_native.py.
+COACH_RECORD_SIZE = 0xA8
+COACH_TABLE_COUNT = 35
+COACH_HEIGHT_AT, COACH_WEIGHT_AT = 0x14, 0x16                      # u16 each: inches, pounds (no reader found in the game)
+COACH_FLAGS_AT = 0x1A
+COACH_FLAG_FREE, COACH_FLAG_GENERIC = 0x01, 0x02                    # free record (Create Team) / "no recorded name"
+COACH_RATINGS_AT = 0x42                                             # 23 bytes, 0..99, in the order the Coach Matchup prints
+COACH_RATING_NAMES = ("overall", "offense", "rush_for", "pass_for", "defense", "pass_rush", "pass_coverage",
+                      "qb", "rb", "te", "wr", "ol", "dl", "lb", "db", "special_teams", "professionalism",
+                      "preparation", "conditioning", "motivation", "leadership", "discipline", "respect")
+#: The play-calling tendency block (+0x59..+0xA7).  FUN_002818D0 copies it into the CPU's 216-byte decision statistics when
+#: a game starts (and the coach_ai profile of a 2026 club then overwrites only the first 100 of those bytes), so it is
+#: the starting tendency of every side that has no 2026 profile.  name -> (record offset, values, kind): "percent" values
+#: are 0..100 each, "share" values are a distribution that sums to 100.
+COACH_TENDENCY_GROUPS: dict[str, tuple[int, int, str]] = {
+    "run_share": (0x59, 1, "percent"),                 # percent of calls that are runs (the rest are passes)
+    "run_by_score": (0x5A, 6, "percent"),              # run percent: lead 1-7, lead 8-14, lead 15+, trail 1-7, trail 8+, tied
+    "run_redzone": (0x60, 1, "percent"),               # run percent inside the opponent 20
+    "run_by_down_distance": (0x61, 16, "percent"),     # run percent: downs 1..4 (rows) x to-go <=2, 3-7, 8-10, 11+ (columns)
+    "run_lane": (0x7E, 5, "share"),                    # run lanes: left outside, left inside, middle, right inside, right outside
+    "formation_run": (0x83, 5, "share"),               # formation class of a run call: gun, split backs, I form, one back, empty
+    "formation_pass": (0x88, 5, "share"),              # formation class of a pass call (same five classes)
+    "personnel_run": (0x8D, 11, "share"),              # personnel package of a run call, by playbook category code 0..10
+    "personnel_pass": (0x98, 11, "share"),             # personnel package of a pass call (codes: 0 Jacks 2RB 3TE, 1 Jumbo 1RB 3TE 1WR,
+                                                       # 2 Jokers 2RB 2TE 1WR, 3 Ace 1RB 2TE 2WR, 4 Pro 2RB 1TE 2WR, 5 Pistol 11p,
+                                                       # 6 Kings 1RB 1TE 3WR, 7 Queens 2RB 3WR, 9 Flush 1RB 4WR, 10 5 Wide; 8 unused)
+    "no_huddle": (0xA5, 1, "percent"),                 # hurry-up roll, percent of eligible snaps (a run of 3 to 5 follows)
+}
+COACH_RECORD_KEYS = ("ratings", "tendencies", "announcer", "height_in", "weight_lb")
+COACH_ANNOUNCER = {"generic": True, "named": False}
+
+
+def plan_coach_record(entry: Mapping[str, Any]) -> tuple[dict[int, bytes], bool | None]:
+    """Validate one ``coaches`` entry's record fields and return ({record offset: bytes}, generic announcer or None).
+
+    Pure: nothing is read or written.  Every problem raises RosterRecordError naming the field, so a bad entry is
+    refused whole (never half-written)."""
+
+    writes: dict[int, bytes] = {}
+    ratings = entry.get("ratings")
+    if ratings is not None:
+        _require(isinstance(ratings, Mapping), "ratings must be an object of rating name -> number")
+        for name, value in ratings.items():
+            _require(name in COACH_RATING_NAMES, f"unknown coach rating {name!r}; known: {', '.join(COACH_RATING_NAMES)}")
+            _require(type(value) is int and 0 <= value <= 99, f"rating {name}={value!r} is not a whole number 0..99")
+            writes[COACH_RATINGS_AT + COACH_RATING_NAMES.index(name)] = bytes((value,))
+    tendencies = entry.get("tendencies")
+    if tendencies is not None:
+        _require(isinstance(tendencies, Mapping), "tendencies must be an object of group name -> numbers")
+        for name, value in tendencies.items():
+            _require(name in COACH_TENDENCY_GROUPS,
+                     f"unknown tendency group {name!r}; known: {', '.join(COACH_TENDENCY_GROUPS)}")
+            at, count, kind = COACH_TENDENCY_GROUPS[name]
+            values = [value] if count == 1 and type(value) is int else value
+            _require(isinstance(values, (list, tuple)) and len(values) == count,
+                     f"tendency {name} needs {count} number(s), got {value!r}")
+            _require(all(type(v) is int and 0 <= v <= 100 for v in values),
+                     f"tendency {name} values must be whole numbers 0..100, got {list(values)!r}")
+            if kind == "share":
+                _require(sum(values) == 100, f"tendency {name} is a distribution and must add up to 100, got {sum(values)}")
+            writes[at] = bytes(values)
+    height, weight = entry.get("height_in"), entry.get("weight_lb")
+    if height is not None:
+        _require(type(height) is int and 48 <= height <= 96, f"height_in {height!r} is not whole inches 48..96")
+        writes[COACH_HEIGHT_AT] = struct.pack("<H", height)
+    if weight is not None:
+        _require(type(weight) is int and 100 <= weight <= 450, f"weight_lb {weight!r} is not whole pounds 100..450")
+        writes[COACH_WEIGHT_AT] = struct.pack("<H", weight)
+    announcer = entry.get("announcer")
+    generic = None
+    if announcer is not None:
+        _require(announcer in COACH_ANNOUNCER, f"announcer {announcer!r} is not 'generic' or 'named'")
+        generic = COACH_ANNOUNCER[announcer]
+    return writes, generic
+
+
+def apply_coach_records(body: bytearray, teams: Sequence[TeamRecord], entries: Sequence[Mapping[str, Any]],
+                        log: list[str], *, obj_base: int | None = None) -> int:
+    """Write the record fields of a roster-edits document's ``coaches`` entries into ``body`` (the same shape as
+    ``apply_coach_names``, which it follows): ``ratings`` {name: 0..99}, ``tendencies`` {group: number(s)}
+    (COACH_TENDENCY_GROUPS), ``announcer`` "generic" | "named", ``height_in`` and ``weight_lb``.  Returns the coach
+    records written.  ``obj_base`` is the roster object's virtual base (``RosterDocument.obj_base``); a disc body has it
+    at 0 and finds it itself, a save arena passes it.
+
+    Fixed-span writes only: every byte it may touch is named by the plan, the coach table is located through the
+    roster object (retail, grown and save-arena rosters alike) and checked (35 records of 0xA8 bytes inside the body,
+    the team's coach pointer on a record boundary, the record not a free Create Team record), and after the write the
+    whole body is compared with its snapshot: a byte outside the planned spans is a bug and raises.  A bad entry is
+    logged with its team and reason and skipped whole; the other entries still land."""
+
+    wanted = [entry for entry in entries if any(key in entry for key in COACH_RECORD_KEYS)]
+    if not wanted:
+        return 0
+    try:
+        if obj_base is None:
+            root = 0x14 + struct.unpack_from("<i", body, 0x14)[0] - 1
+            obj_base = root - OBJ_OFF
+        field = obj_base + OBJ_OFF + 0x34
+        pointer = struct.unpack_from("<i", body, field)[0]
+        table = None if pointer == 0 else field + pointer - 1
+        count = struct.unpack_from("<I", body, obj_base + OBJ_OFF + 0x30)[0]
+    except struct.error:
+        log.append("coach records: the roster object cannot be read; coach ratings, tendencies and flags left as they are")
+        return 0
+    if table is None or count != COACH_TABLE_COUNT or table + count * COACH_RECORD_SIZE > len(body):
+        log.append(f"coach records: the coach table is not the supported {COACH_TABLE_COUNT} records of "
+                   f"0x{COACH_RECORD_SIZE:X} bytes (count {count}); coach ratings, tendencies and flags left as they are")
+        return 0
+    table_end = table + count * COACH_RECORD_SIZE
+    plans: dict[int, tuple[dict[int, bytes], bool | None, str]] = {}
+    for entry in wanted:
+        label = str(entry.get("team", "") or "").strip()
+        team = next((t for t in teams if t.abbreviation.casefold() == label.casefold()), None)
+        if team is None or team.coach_offset is None:
+            log.append(f"coach records of {label!r}: no such team, or the team has no coach record; skipped")
+            continue
+        at = team.coach_offset
+        if not (table <= at < table_end and (at - table) % COACH_RECORD_SIZE == 0):
+            log.append(f"coach records of {team.abbreviation}: the team's coach pointer is not a coach record; skipped")
+            continue
+        try:
+            writes, generic = plan_coach_record(entry)
+        except RosterRecordError as exc:
+            log.append(f"coach records of {team.abbreviation}: {exc}; skipped")
+            continue
+        if body[at + COACH_FLAGS_AT] & COACH_FLAG_FREE:
+            log.append(f"coach records of {team.abbreviation}: the record is a free Create Team record; skipped")
+            continue
+        index = (at - table) // COACH_RECORD_SIZE
+        if index in plans and plans[index][:2] != (writes, generic):
+            log.append(f"coach records of {team.abbreviation}: two entries give coach record {index} different values; "
+                       f"both skipped")
+            plans[index] = ({}, None, "conflict")
+            continue
+        plans.setdefault(index, (writes, generic, team.abbreviation))
+    plans = {index: plan for index, plan in plans.items() if plan[2] != "conflict"}
+    if not plans:
+        return 0
+    snapshot = bytes(body)
+    allowed: list[tuple[int, int]] = []
+    for index, (writes, generic, _label) in plans.items():
+        record = table + index * COACH_RECORD_SIZE
+        for rel, data in writes.items():
+            body[record + rel: record + rel + len(data)] = data
+            allowed.append((record + rel, record + rel + len(data)))
+        if generic is not None:
+            flags = body[record + COACH_FLAGS_AT]
+            body[record + COACH_FLAGS_AT] = (flags | COACH_FLAG_GENERIC) if generic else (flags & ~COACH_FLAG_GENERIC & 0xFF)
+            allowed.append((record + COACH_FLAGS_AT, record + COACH_FLAGS_AT + 1))
+    # nothing outside the planned spans may have moved: compare the whole body with its snapshot
+    cursor = 0
+    for start, end in sorted(allowed):
+        _require(body[cursor:start] == snapshot[cursor:start], "coach records: a byte outside the planned spans changed")
+        cursor = max(cursor, end)
+    _require(body[cursor:] == snapshot[cursor:], "coach records: a byte outside the planned spans changed")
+    # read back: every planned byte reads as planned, the free flag is still clear
+    for index, (writes, generic, label) in plans.items():
+        record = table + index * COACH_RECORD_SIZE
+        for rel, data in writes.items():
+            _require(bytes(body[record + rel: record + rel + len(data)]) == data,
+                     f"coach records of {label}: +0x{rel:X} reads back differently after the write")
+        flags = body[record + COACH_FLAGS_AT]
+        _require(not flags & COACH_FLAG_FREE and (generic is None or bool(flags & COACH_FLAG_GENERIC) == generic),
+                 f"coach records of {label}: the flags read back as 0x{flags:02X}")
+    return len(plans)
 
 
 def _resolve_team(roster: RosterDocument, entry: Mapping[str, Any]) -> int | None:
