@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """Upgrade an older SOFTDRINK 2026 franchise, or sync coach art, hair styles or award history from a disc
-(played-clubs restores verified club history and reports undated gaps).
+(played-clubs restores verified club history and reports undated gaps; champions seeds the Super Bowl history;
+coach-records takes the disc's coach ratings, play-calling habits and announcer line where the franchise still has
+the older discs' values; game-settings takes the disc's new default Quarter Length, Sim. Quarter Length and Chop Block
+into the franchise).
 
 Inputs are read only. Output is a new signed save directory; --dry-run writes
 only the requested receipt. The receipt includes input/output SHA-256 hashes
@@ -33,13 +36,15 @@ def main(argv=None) -> int:
     parser.add_argument("--receipt", required=True, type=Path, help="new JSON receipt including all field changes")
     parser.add_argument("--cohort", default=DEFAULT_COHORT, type=Path)
     parser.add_argument("--team-history", type=Path, help="optional counter-pinned evidence for completed franchise seasons")
+    parser.add_argument("--keep-game-settings", action="store_true",
+                        help="upgrade: leave the franchise's Quarter Length, Sim. Quarter Length and Chop Block as they are")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args(argv)
     try:
         upgrade.require(args.dry_run or args.output is not None, "--output is required unless --dry-run")
         check_paths(args.input, args.disc, args.output, args.receipt)
         plan = plan_upgrade(args.input, args.disc, command=args.command, cohort_path=args.cohort,
-                            team_history_path=args.team_history)
+                            team_history_path=args.team_history, game_defaults=not args.keep_game_settings)
         receipt = write_plan(plan, None if args.dry_run else args.output, args.receipt)
         print(json.dumps({k: v for k, v in receipt.items() if k not in ("steps", "write", "validation")}))
         return 0

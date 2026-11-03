@@ -49,7 +49,8 @@ OWNER = "nfl2k5_option_defaults"
 BUILD_CAPTION = "SOFTDRINK default options (7:00 / 15:00 quarters)"
 HELP_TEXT = ("A fresh profile (and Reset to defaults) starts with 7 minute quarters, 15 minute Sim. Quarter Length "
              "(when the franchise pace fix is on) and the Chop Block penalty on. Saved settings and saved franchises "
-             "keep what they stored; nothing here overwrites a value a player chose.")
+             "keep what they stored; nothing here overwrites a value a player chose. Gameplay > Saves & Sliders can "
+             "copy these defaults into a saved profile or franchise, and Franchise > Upgrade does it for a franchise.")
 REQUESTS = ()                     # in place: no executable cave, data or file growth
 
 DEFAULT_QUARTER_MINUTES = 7       # Game Options > Quarter Length (retail 5)

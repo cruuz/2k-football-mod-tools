@@ -582,6 +582,7 @@ mod_editor/core/nfl2k5_player_progress_screen.py
 mod_editor/core/nfl2k5_contract_college_guard.py
 mod_editor/core/nfl2k5_sim_cb_tackles.py
 mod_editor/core/nfl2k5_option_defaults.py
+mod_editor/core/nfl2k5_profile_defaults.py
 mod_editor/core/nfl2k5_sim_rb_injuries.py
 mod_editor/core/nfl2k5_sim_realism.py
 mod_editor/core/nfl2k5_sim_stats.py
@@ -3060,6 +3061,8 @@ mod_editor/data/nfl2k5_free_agents_2026.v1.json
 mod_editor/data/nfl2k5_free_agent_depth_2026.v1.json
 mod_editor/data/nfl2k5_created_history_2026.v1.json
 mod_editor/data/nfl2k5_entry_years_2026.v1.json
+# b780 b10-profile: the older discs' coach records, so Franchise > Upgrade changes only values a franchise still has
+mod_editor/data/nfl2k5_coach_records_old_disc.v1.json
 
 mod_editor/core/nfl2k5_anniversary_pack.py
 mod_editor/core/nfl2k5_espn25_fields.py
@@ -3883,3 +3886,7 @@ tests/mod_editor/test_b779_up2_zero_footer.py
 tests/mod_editor/test_b791_h2_kits.py
 # b791 h1: stadium refits never stop a build (fitter reasons, rescue candidates, kept spans named)
 tests/mod_editor/test_b791_stadium_refits.py
+tests/mod_editor/test_b780_b10_profile_defaults.py
+tests/mod_editor/test_b780_b10_upgrade_gaps.py
+tests/mod_editor/test_b780_b10_profile_unicorn.py
+tests/mod_editor/test_b780_b10_coach_records.py

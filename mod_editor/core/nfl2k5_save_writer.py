@@ -244,6 +244,54 @@ def apply_slider_edits(
 
 
 # ---------------------------------------------------------------------------
+# A1b: game options in the same block (b780 b10-profile)
+# ---------------------------------------------------------------------------
+
+OPTION_BLOCK_VA = 0xE5FF80
+#: name -> (RAM address, lowest, highest) of the three options a build can change the defaults of (b779 df1). The block
+#: is an image of RAM from OPTION_BLOCK_VA, so an option sits at ``address - OPTION_BLOCK_VA`` in a Settings save and in
+#: the first 0x2E0 bytes of a franchise save. ``nfl2k5_profile_defaults`` plans which of them a save should take.
+OPTION_FIELDS = {
+    "quarter_minutes": (0xE6000C, 1, 15),     # Options > Game Options > Quarter Length
+    "sim_minutes": (0xE60010, 3, 15),         # Franchise Settings > Sim. Quarter Length
+    "chop_block": (0xE60064, 0, 1),           # Options > Penalties > Chop Block (0 Off, 1 On)
+}
+
+
+def read_options(payload) -> dict[str, int]:
+    """{name: value} of the game options as the save stores them (unsigned 32-bit, not range checked)."""
+
+    _require(len(payload) >= SETTINGS_BLOCK_SIZE, "save is smaller than the 0x2E0 settings block")
+    return {name: struct.unpack_from("<I", payload, address - OPTION_BLOCK_VA)[0]
+            for name, (address, _low, _high) in OPTION_FIELDS.items()}
+
+
+def apply_option_edits(payload: bytearray, options: dict[str, int] | None) -> list[dict[str, object]]:
+    """Write game options into the settings block in place; -> one row per dword that really changed."""
+
+    if not options:
+        return []
+    _require(len(payload) >= SETTINGS_BLOCK_SIZE, "save is smaller than the 0x2E0 settings block")
+    for name, value in options.items():
+        _require(name in OPTION_FIELDS,
+                 f"unknown option {name!r}; expected one of {', '.join(OPTION_FIELDS)}")
+        _address, low, high = OPTION_FIELDS[name]
+        _require(type(value) is int and low <= value <= high,
+                 f"{name} must be a whole number from {low} to {high}")
+    rows: list[dict[str, object]] = []
+    for name, value in options.items():
+        address = OPTION_FIELDS[name][0]
+        offset = address - OPTION_BLOCK_VA
+        before = struct.unpack_from("<I", payload, offset)[0]
+        if before == value:
+            continue
+        struct.pack_into("<I", payload, offset, value)
+        rows.append({"key": name, "offset": f"0x{offset:x}", "va": f"0x{address:x}",
+                     "before": before, "after": value})
+    return rows
+
+
+# ---------------------------------------------------------------------------
 # A7: franchise fields
 # ---------------------------------------------------------------------------
 
@@ -344,6 +392,8 @@ def read_save(savegame_path: Path | str, *, base_year: int = FRANCHISE_DISPLAY_Y
         if len(payload) >= SETTINGS_BLOCK_SIZE
         else {},
     }
+    if len(payload) >= SETTINGS_BLOCK_SIZE:
+        result["options"] = read_options(payload)                    # b780 b10-profile: game options in the block
     if kind == "franchise":
         result["franchise"] = read_franchise_fields(payload, base_year=base_year)
     return result
@@ -360,8 +410,12 @@ def edit_save_file(
     franchise_year: int | None = None,
     base_year: int = FRANCHISE_DISPLAY_YEAR_BASE,
     overwrite: bool = False,
+    options: dict[str, int] | None = None,
 ) -> dict[str, object]:
     """Edit a loose SAVEGAME.DAT copy and emit a fresh 20-byte EXTRA.
+
+    ``options`` (b780 b10-profile) sets game options in the save's 0x2E0-byte block: quarter_minutes, sim_minutes and
+    chop_block (``nfl2k5_profile_defaults``).
 
     Targets must not exist unless ``overwrite=True``; a target that IS the
     source is always refused.
@@ -398,7 +452,8 @@ def edit_save_file(
     year_change = None
     if franchise_year is not None:
         year_change = apply_franchise_year(payload, franchise_year, base_year=base_year)
-    _require(bool(slider_changes) or year_change is not None,
+    option_changes = apply_option_edits(payload, options)
+    _require(bool(slider_changes) or year_change is not None or bool(option_changes),
              "no edits were requested")
 
     xbe_payload = Path(xbe_path).expanduser().resolve(strict=True).read_bytes()
@@ -420,6 +475,7 @@ def edit_save_file(
         "slider_mode": slider_mode,
         "slider_changes": slider_changes,
         "franchise_year_change": year_change,
+        "option_changes": option_changes,
         "signature": "HMAC-SHA1(SigKey16, SAVEGAME.DAT), title-static (A4)",
     }
 
@@ -584,6 +640,7 @@ def write_back_to_hdd(
     franchise_year: int | None = None,
     base_year: int = FRANCHISE_DISPLAY_YEAR_BASE,
     partition: str = "E",
+    options: dict[str, int] | None = None,
 ) -> dict[str, object]:
     """Edit a save inside a COPIED raw Xbox HDD image, extents-only."""
 
@@ -623,7 +680,8 @@ def write_back_to_hdd(
         year_change = None
         if franchise_year is not None:
             year_change = apply_franchise_year(payload, franchise_year, base_year=base_year)
-        _require(bool(slider_changes) or year_change is not None,
+        option_changes = apply_option_edits(payload, options)
+        _require(bool(slider_changes) or year_change is not None or bool(option_changes),
                  "no edits were requested")
         _require(len(payload) == save_entry.file_size,
                  "edit changed the save size; containers are fixed-size")
@@ -680,6 +738,7 @@ def write_back_to_hdd(
         "slider_mode": slider_mode,
         "slider_changes": slider_changes,
         "franchise_year_change": year_change,
+        "option_changes": option_changes,
         "post_write_readback_matches": True,
     }
 
@@ -714,6 +773,9 @@ def _argument_parser():
     )
     edit_parser.add_argument("--mode", choices=SLIDER_MODES,
                              default="consistent")
+    edit_parser.add_argument("--option", action="append", default=[], nargs=2,
+                             metavar=("NAME", "VALUE"),
+                             help="a game option: quarter_minutes, sim_minutes or chop_block (0 or 1)")
     edit_parser.add_argument("--franchise-year", type=int, default=None)
     edit_parser.add_argument("--overwrite", action="store_true",
                              help="replace existing output files")
@@ -734,6 +796,9 @@ def _argument_parser():
     )
     writeback_parser.add_argument("--mode", choices=SLIDER_MODES,
                                   default="consistent")
+    writeback_parser.add_argument("--option", action="append", default=[], nargs=2,
+                                  metavar=("NAME", "VALUE"),
+                                  help="a game option: quarter_minutes, sim_minutes or chop_block (0 or 1)")
     writeback_parser.add_argument("--franchise-year", type=int, default=None)
     return parser
 
@@ -746,12 +811,16 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps(read_save(args.savegame), indent=2, sort_keys=True))
         return 0
     sliders = {label: float(value) for label, value in args.slider}
+    try:
+        options = {name: int(value) for name, value in getattr(args, "option", [])}
+    except ValueError as exc:
+        raise SaveWriterError("an --option value must be a whole number") from exc
     if args.command == "edit":
         result = edit_save_file(
             args.savegame, args.out_dat, args.out_extra,
             xbe_path=args.xbe, sliders=sliders, slider_mode=args.mode,
             franchise_year=args.franchise_year,
-            overwrite=args.overwrite,
+            overwrite=args.overwrite, options=options,
         )
         print(json.dumps(result, indent=2, sort_keys=True))
         return 0
@@ -761,6 +830,7 @@ def main(argv: list[str] | None = None) -> int:
             container=tuple(args.container.split("/")),
             xbe_path=args.xbe, sliders=sliders, slider_mode=args.mode,
             franchise_year=args.franchise_year, partition=args.partition,
+            options=options,
         )
         print(json.dumps(result, indent=2, sort_keys=True))
         return 0
@@ -771,6 +841,8 @@ __all__ = [
     "EDIT_SCHEMA",
     "FRANCHISE_DISPLAY_YEAR_BASE",
     "FRANCHISE_SAVE_SIZE",
+    "OPTION_BLOCK_VA",
+    "OPTION_FIELDS",
     "READ_SCHEMA",
     "SETTINGS_SAVE_SIZE",
     "SLIDER_LABELS",
@@ -778,10 +850,12 @@ __all__ = [
     "SaveWriterError",
     "WRITEBACK_SCHEMA",
     "apply_franchise_year",
+    "apply_option_edits",
     "apply_slider_edits",
     "derive_sig_key",
     "edit_save_file",
     "read_franchise_fields",
+    "read_options",
     "read_save",
     "save_kind",
     "sign_save",

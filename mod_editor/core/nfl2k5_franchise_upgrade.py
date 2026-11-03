@@ -621,34 +621,45 @@ def sync_playbooks(payload: bytes, disc_body: bytes,
                     "split_book_choices": "per game only; no persistent franchise field"}
 
 
+#: The coach table's placeholder names: the two Create Team records and the unused one.
+UNNAMED_COACHES = (("xxxxxxxxxx", "xxxxxxxxxx"), ("************************", "************************"))
+
+
+def coach_rows(document) -> tuple[dict, list]:
+    """The named coaches of a decoded roster: {(first, last): (table index, record offset)}, and the unnamed indexes.
+
+    Full name is the identity (team and table order are not: a franchise may move coaches or add its own), so a repeated
+    name refuses."""
+    table = document.tables["coaches"]
+    rows: dict = {}
+    unnamed: list = []
+    for index in range(table.count):
+        at = table.offset + index * table.stride
+        key = document.string(at), document.string(at + 4)
+        if not all(key) or key in UNNAMED_COACHES:
+            unnamed.append(index)
+            continue
+        require(key not in rows, f"duplicate coach identity {' '.join(key)}")
+        rows[key] = (index, at)
+    return rows, unnamed
+
+
 def sync_coaches(payload: bytes, disc_body: bytes) -> tuple[bytes, dict]:
-    """Copy exactly coach+18 u32 body and coach+40 u16 portrait by full name.
+    """Copy exactly coach+18 u16 body id and coach+40 u16 portrait by full name.
 
     Team assignment and coach-table order are deliberately not identity keys:
     an ongoing franchise may move coaches or add its own. Unmatched coaches
     are retained and reported; duplicate named identities fail closed.
+
+    b780-b10: the body id is the low half of the word Finn's map calls ``body``; the byte after it (+0x1A) holds the
+    coach record's flags (announcer line, free Create Team record). Those belong to ``sync_coach_records``, which
+    replaces them only where the franchise still has the old disc's value, so this step never writes them.
     """
     _save, roster = franchise(payload)
     target = sr.decode(disc_body, preamble=0, reference_year=BASE_YEAR)
     require(target.layout.version in (17, 18), "coach source must be a disc ROST")
-
-    def coaches(document):
-        table = document.tables["coaches"]
-        rows = {}
-        unnamed = []
-        for index in range(table.count):
-            at = table.offset + index * table.stride
-            key = document.string(at), document.string(at + 4)
-            if not all(key) or key in (("xxxxxxxxxx", "xxxxxxxxxx"),
-                                      ("************************", "************************")):
-                unnamed.append(index)
-                continue
-            require(key not in rows, f"duplicate coach identity {' '.join(key)}")
-            rows[key] = (index, at)
-        return rows, unnamed
-
-    saved, unnamed = coaches(roster)
-    current, _ = coaches(target)
+    saved, unnamed = coach_rows(roster)
+    current, _ = coach_rows(target)
     out = bytearray(payload)
     masks: dict[int, int] = {}
     changes, matched, unmatched = [], [], []
@@ -658,7 +669,7 @@ def sync_coaches(payload: bytes, disc_body: bytes) -> tuple[bytes, dict]:
             continue
         source_index, source_at = current[key]
         matched.append({"index": index, "source_index": source_index, "coach": " ".join(key)})
-        for field, relative, fmt in (("body_id", 0x18, "<I"), ("portrait_id", 0x40, "<H")):
+        for field, relative, fmt in (("body_id", 0x18, "<H"), ("portrait_id", 0x40, "<H")):
             before = struct.unpack_from(fmt, payload, at + relative)[0]
             after = struct.unpack_from(fmt, disc_body, source_at + relative)[0]
             if before == after:
@@ -1049,6 +1060,76 @@ def infer_played_clubs(payload: bytes, disc_body: bytes, evidence: Mapping | Non
                     "before_sha256": sha(payload), "after_sha256": sha(result),
                     "disc_roster_sha256": sha(disc_body), "fold_depth": 0,
                     "folded_players": [], "shared_history_skipped": []}
+
+
+# --- b780-b10: a MyCareer save's inline block follows the strings it points at ----------------------------------------
+def career_block_at(payload: bytes) -> int | None:
+    """Offset of the 128-byte inline MyCareer block of a franchise save, or None when the save has none."""
+    from . import nfl2k5_my_career_save as career
+    from . import nfl2k5_player_progression as progress
+    try:
+        base = career.native_size(payload)
+    except (career.CareerSaveError, ValueError):
+        return None
+    footer = progress.footer_start(payload)
+    return base if (len(payload) if footer is None else footer) == base + career.SIZE else None
+
+
+def rebase_career_block(before: bytes, after: bytes) -> tuple[bytes, dict]:
+    """Re-point the MyCareer block of ``after`` at the strings its player's record now uses.
+
+    The block keeps three roster-arena offsets (the player's college, first name and last name) and the game refuses the
+    career when they differ from the record's own pointers (tools/mycareer_mode/runtime.c ``inline_stage``; Studio's
+    ``nfl2k5_my_career_save.read``).  The arena growth and the in-place fill insert records ahead of those strings, so every
+    offset past the primary table moves.  A block that read cleanly in ``before`` is rewritten with the record's new
+    offsets and re-sealed; one that did not read, or a save without a block, is returned as it is, with the reason.
+    """
+    from . import nfl2k5_my_career_save as career
+    receipt = {"career_block": False, "reason": "this save has no inline MyCareer block"}
+    at_before = career_block_at(before)
+    if at_before is None:
+        return after, receipt
+    try:
+        block = career.read(before)
+    except career.CareerSaveError as exc:
+        return after, {"career_block": True, "rebased": False, "reason": f"the block did not read before the upgrade: {exc}"}
+    at_after = career_block_at(after)
+    require(at_after is not None, "the MyCareer block was lost while the roster arena changed")
+    document = sr.decode(after, base_year=BASE_YEAR)
+    player = document.by_key.get(("primary", career.word(block, 32)))
+    require(player is not None, "the MyPlayer record is missing after the upgrade")
+    root = document.layout.root
+    fixed = bytearray(block)
+    moved = []
+    for field, stored in ((0, 44), (16, 48), (20, 52)):
+        target = document.rel(player.offset + field)
+        require(target is not None, "the MyPlayer record lost a name or college reference")
+        value = target - root
+        if value != career.word(block, stored):
+            moved.append({"offset": stored, "before": career.word(block, stored), "after": value})
+        struct.pack_into("<I", fixed, stored, value)
+    out = bytearray(after)
+    out[at_after:at_after + career.SIZE] = career.seal(bytes(fixed))
+    result = bytes(out)
+    career.read(result)                                        # identity included: the game's own test
+    return result, {"career_block": True, "rebased": bool(moved), "references": moved, "reason": ""}
+
+
+def check_career_block(before: bytes, after: bytes) -> None:
+    """A MyCareer block that read cleanly before the upgrade must still read cleanly after it."""
+    from . import nfl2k5_my_career_save as career
+    if career_block_at(before) is None:
+        return
+    try:
+        career.read(before)
+    except career.CareerSaveError:
+        return
+    try:
+        career.read(after)
+    except career.CareerSaveError as exc:
+        raise UpgradeRefused(f"the upgrade would leave the MyCareer block unreadable ({exc}); nothing was written") from exc
+
+
 # b778-fa3: the 2026-10-22 free-agent depth (Kaepernick and the other verified unsigned, unretired veterans the dated
 # refresh adds to the disc's free agents). A franchise keeps its own roster, so an existing franchise only gains them
 # here. Nothing grows: each one fills a vacant create-player record of the save, inside the save's own arena.
@@ -1123,7 +1204,26 @@ def sync_free_agents(payload: bytes, disc_body: bytes, *, keep: int = SAVE_KEEP_
                       "records": migration["capacity_records"], "vacancy_records": migration.get("vacancy_records"),
                       "class_records": migration.get("class_records"),
                       "file_growth": len(migrated) - len(payload), "migration": migration}
-            payload = migrated
+            payload, career_receipt = rebase_career_block(original_payload, migrated)
+            growth["career"] = career_receipt
+            save, roster = franchise(payload)
+    elif (capacity_request and arena.is_capacity_size(roster.layout.arena_size)
+          and roster.layout.arena_size == disc_layout.arena_size):
+        # b780 b10 ("Upgrade before the first save" trap): the v0.8 game moves a v0.7 save to this arena the first time
+        # it saves it but adds none of the draft-class records. They go into the arena's own spare bytes; the file
+        # keeps its size. A save that already has them, or has no free class record to copy, is left as it is.
+        filled, migration = arena.fill_class_records(payload)
+        if migration.get("already_applied"):
+            growth_state = ("already the disc's arena size" if not migration.get("reason") else
+                            "already the disc's arena size; no records added: " + migration["reason"])
+        else:
+            growth_state = "filled in place"
+            growth = {"arena_size_before": roster.layout.arena_size, "arena_size_after": disc_layout.arena_size,
+                      "records": migration["capacity_records"], "vacancy_records": 0,
+                      "class_records": migration.get("class_records"), "file_growth": len(filled) - len(payload),
+                      "in_place": True, "migration": migration}
+            payload, career_receipt = rebase_career_block(original_payload, filled)
+            growth["career"] = career_receipt
             save, roster = franchise(payload)
     document = rr.RosterDocument(payload, base=roster.layout.preamble, scheme="one_pool", base_year=BASE_YEAR)
     require(document.free_agent_list is not None, "the franchise has no free-agent list")
@@ -1243,3 +1343,298 @@ def sync_rookie_templates(payload: bytes, disc_body: bytes) -> tuple[bytes, dict
     return result, {"operation": "rookie_templates", "before_sha256": sha(payload), "after_sha256": sha(result),
                     "disc_roster_sha256": sha(disc_body), "templates": 68,
                     "templates_changed": len({c["template"] for c in changes}), "changes": changes, **scope}
+
+
+# --- b780-b10: the champions history of an upgraded franchise -----------------------------------------------------
+#: hn1 (beta 79) keeps the last 22 Super Bowls in 270 spare bytes right after the arena's reserve block, so a franchise
+#: started on the v0.8 disc shows who won the real Super Bowls before it began. A franchise saved by an earlier game has
+#: no block ("CHAMPIONS: NONE YET" until its next Super Bowl). The seeds come from the chosen disc, so a pack with other
+#: data seeds its own; what the game recorded itself is never replaced.
+FIRST_SUPER_BOWL_YEAR = 1966       # Super Bowl n is played in the year n + 1966 (the season n + 1965)
+
+
+def sync_champions(payload: bytes, disc_body: bytes) -> tuple[bytes, dict]:
+    """Copy the disc roster's Super Bowl history (the Player Card champions page) into the franchise's own arena.
+
+    Writes only the 270-byte history block in the 306 spare bytes behind the arena's reserve block. A save that
+    never recorded a Super Bowl takes the disc's block as it is (limited to Super Bowls that were played before this
+    franchise's current season); a save the game already added seasons to keeps them and gains the older disc seasons
+    that still fit the 22-season ring and whose slot is empty. A save with no reserve block (no room), a disc without
+    the history, spare bytes that hold anything else, or an auxiliary tail longer than the game's own 366 bytes is
+    returned unchanged with the reason in the receipt.
+    """
+    from . import nfl2k5_champions_history as hist
+    save, roster = franchise(payload)
+    block_at = save.arena_end - hist.FROM_END
+    gap_at = block_at + hist.RESERVE_BLOCK
+    newest_allowed = save.header.display_year - FIRST_SUPER_BOWL_YEAR
+    base = {"operation": "champions", "before_sha256": sha(payload), "after_sha256": sha(payload),
+            "disc_roster_sha256": sha(disc_body), "offset": gap_at, "spare_bytes": hist.FREE,
+            "franchise_season": save.header.display_year, "newest_super_bowl_played": newest_allowed,
+            "added": [], "kept": [], "skipped": [], "seeded": False, "changes": [],
+            "outside_declared_fields_identical": True, "changed_bytes": 0, "reason": ""}
+
+    def unchanged(reason: str) -> tuple[bytes, dict]:
+        return payload, {**base, "reason": reason}
+
+    if not hist.has_room(disc_body):
+        return unchanged("the disc's roster keeps the game's own roster size, which has no room for a champions history")
+    seed = disc_body[hist.gap_offset(disc_body):hist.gap_offset(disc_body) + hist.USED]
+    if not hist.block_ok(seed) or not hist.read_block(seed):
+        return unchanged("the disc's champions history is empty")
+    if payload[block_at:block_at + 8] != hist.RESERVE_MAGIC:
+        return unchanged("this save's roster file has no reserve block, so it has no room for a champions history")
+    auxiliary = struct.unpack_from("<I", payload, fs.ARENA_WRAPPER + 8)[0]
+    if auxiliary > hist.AUX_TAIL:
+        return unchanged(f"the save's auxiliary tail is {auxiliary} bytes, longer than the {hist.AUX_TAIL} the history leaves")
+    spare = payload[gap_at:gap_at + hist.FREE]
+    if any(spare[hist.USED:]):
+        return unchanged("the spare bytes behind the champions history hold something else")
+    own = spare[:hist.USED]
+    try:
+        merged, info = hist.merge_blocks(own if any(own) else None, seed, newest_allowed)
+    except hist.ChampionsHistoryError as exc:
+        return unchanged(str(exc))
+    base.update({"added": info["added"], "kept": info["kept"], "skipped": [list(row) for row in info["skipped"]],
+                 "seeded": info["seeded"]})
+    if merged == own:
+        return unchanged("the save already holds these seasons" if info["kept"] else "nothing to add")
+    out = bytearray(payload)
+    out[gap_at:gap_at + hist.USED] = merged
+    masks = {offset: 255 for offset in range(gap_at, gap_at + hist.USED)}
+    result = bytes(out)
+    scope = prove_scope(payload, result, masks)
+    check = hist.read_block(result[gap_at:gap_at + hist.USED])
+    require([row["super_bowl"] for row in check] == sorted(set(info["added"]) | set(info["kept"]), reverse=True)[:hist.RING],
+            "the champions history does not read back as written")
+    sr.decode(result, base_year=BASE_YEAR)
+    rows = {row["super_bowl"]: row for row in check}
+    changes = [{"field": "champions.season", "super_bowl": n, "season": n + 1965, "champion": rows[n]["champion"],
+                "runner_up": rows[n]["runner_up"], "champion_points": rows[n]["champion_points"],
+                "runner_up_points": rows[n]["runner_up_points"]} for n in info["added"] if n in rows]
+    return result, {**base, "after_sha256": sha(result), "reason": "", "changes": changes,
+                    "seasons_in_history": len(check), "newest_super_bowl": check[0]["super_bowl"] if check else None,
+                    "storage_spans": [{"field": "champions_history", "offset": gap_at, "size": hist.USED}], **scope}
+
+
+# --- b780-b10: the new build's default game settings in the franchise's own copy of the options -------------------
+def sync_game_settings(payload: bytes, targets: Mapping | None) -> tuple[bytes, dict]:
+    """Set Quarter Length, Sim. Quarter Length and Chop Block to what the chosen disc starts new profiles with.
+
+    A franchise keeps its own copy of the game options (the first 0x2E0 bytes of the save) and the game copies all of it
+    over the live options when it loads the franchise, so the disc's new defaults never reach a franchise saved earlier.
+    Only an option that still holds the old retail value is changed; a value the player set is kept (and listed). Nothing
+    outside those dwords changes. ``targets`` is ``nfl2k5_profile_defaults.build_targets`` of the disc's default.xbe.
+    """
+    from . import nfl2k5_profile_defaults as profile
+    franchise(payload)
+    state = (targets or {}).get("state", "unreadable")
+    base = {"operation": "game_settings", "build_state": state, "before_sha256": sha(payload),
+            "after_sha256": sha(payload), "rows": [], "changes": [], "kept": [], "reason": "",
+            "outside_declared_fields_identical": True, "changed_bytes": 0}
+    if state not in ("applied", "retail"):
+        why = (targets or {}).get("error") or "its default.xbe is not a build this tool recognises"
+        return payload, {**base, "reason": f"the disc's default game settings could not be read ({why}); nothing was changed"}
+    report = profile.plan(payload, targets)
+    base.update(rows=report["rows"], kept=report["kept"])
+    values = profile.values_from_plan(report)
+    if not values:
+        return payload, {**base, "reason": ("this disc starts new profiles with the retail settings" if state == "retail"
+                                            else "the franchise already has this disc's settings or its own choices")}
+    result, rows = profile.edit(payload, values)
+    masks = {int(row["offset"], 16) + i: 255 for row in rows for i in range(4)}
+    scope = prove_scope(payload, result, masks)
+    sr.decode(result, base_year=BASE_YEAR)
+    return result, {**base, "after_sha256": sha(result), "changes": rows, **scope}
+
+
+# --- b780-b10: the 2026 coach ratings, play-calling habits and announcer line in an upgraded franchise -----------------
+#: c1-coachdata gives every head coach his own ratings, play-calling tendencies and the generic announcer line in the
+#: disc's coach records. A franchise keeps its own copy of those records, so it would keep the old ones (a 2004 coach's
+#: numbers under a 2026 name). This step copies them by full name, field by field, and only where the franchise still
+#: holds the value the older discs had, so a value changed in the Studio or the game stays. The byte map is c1's, read from
+#: the retail default.xbe and run in Unicorn (COACH_* in nfl2k5_roster_records.py on job/b780-c1-coachdata):
+#: +0x1A bit 0x02 is the "no recorded name" announcer line, +0x42..+0x58 the 23 ratings, +0x59..+0xA5 the tendencies.
+#: +0x83..+0x87 are the formation class weights of RUN calls and +0x88..+0x8C those of PASS calls (Finn's labels alternate
+#: run and pass, which is wrong). Bytes c1 does not author (pass zones, motion, defense flag shares, height, weight) are
+#: never read or written here.
+COACH_FLAGS_AT, COACH_FLAG_GENERIC = 0x1A, 0x02
+COACH_RATINGS_AT = 0x42
+COACH_RATING_NAMES = ("overall", "offense", "rush_for", "pass_for", "defense", "pass_rush", "pass_coverage",
+                      "qb", "rb", "te", "wr", "ol", "dl", "lb", "db", "special_teams", "professionalism",
+                      "preparation", "conditioning", "motivation", "leadership", "discipline", "respect")
+#: group -> (record offset, byte count). A distribution (the lanes, formation classes and personnel shares add up to 100)
+#: is replaced whole or not at all, so a franchise never ends with half of one habit and half of another.
+COACH_TENDENCY_GROUPS: dict[str, tuple[int, int]] = {
+    "run_share": (0x59, 1), "run_by_score": (0x5A, 6), "run_redzone": (0x60, 1), "run_by_down_distance": (0x61, 16),
+    "run_lane": (0x7E, 5), "formation_run": (0x83, 5), "formation_pass": (0x88, 5), "personnel_run": (0x8D, 11),
+    "personnel_pass": (0x98, 11), "no_huddle": (0xA5, 1),
+}
+COACH_ANNOUNCER = ("named", "generic")
+#: What the 32 head coaches' records held on every disc before the 2026 coach data (v0.8 and earlier): the values a
+#: franchise started on those discs still has. Read from the released v0.8 disc's roster; its authored fields equal the
+#: v0.7 disc's and a real v0.7 franchise save's (tests/mod_editor/test_b780_b10_coach_records.py).
+COACH_RECORD_BASELINE = Path(__file__).resolve().parents[1] / "data" / "nfl2k5_coach_records_old_disc.v1.json"
+COACH_BASELINE_SCHEMA = "nfl2k5_coach_records_old_disc/v1"
+
+
+def coach_record_fields() -> list[tuple[str, int, int]]:
+    """(field, record offset, byte count) of everything the step copies except the announcer line."""
+    fields = [(f"ratings.{name}", COACH_RATINGS_AT + i, 1) for i, name in enumerate(COACH_RATING_NAMES)]
+    return fields + [(f"tendencies.{name}", at, count) for name, (at, count) in COACH_TENDENCY_GROUPS.items()]
+
+
+def _baseline_layout() -> dict:
+    return {"ratings": list(COACH_RATING_NAMES), "tendencies": {name: count for name, (_at, count) in COACH_TENDENCY_GROUPS.items()}}
+
+
+def coach_record_baseline(path=COACH_RECORD_BASELINE) -> dict:
+    """The older discs' coach records by full name: {"sha256", "coaches": {(first, last): {"announcer", "fields"}}}."""
+    raw = Path(path).read_bytes()
+    try:
+        data = json.loads(raw.decode("utf-8"))
+    except ValueError as exc:
+        raise UpgradeRefused(f"the coach record baseline cannot be read: {exc}") from exc
+    return parse_coach_record_baseline(data, sha(raw))
+
+
+def parse_coach_record_baseline(data, digest: str = "") -> dict:
+    """Check every shape of a baseline document and turn it into ``coach_record_baseline``'s form, so a damaged or foreign
+    data file refuses instead of making the step guess."""
+    require(isinstance(data, dict) and data.get("schema") == COACH_BASELINE_SCHEMA, "unknown coach record baseline data")
+    require(data.get("layout") == _baseline_layout(), "the coach record baseline is for another byte layout")
+    coaches: dict = {}
+    for entry in data.get("coaches") or []:
+        key = entry.get("first"), entry.get("last")
+        require(all(isinstance(part, str) and part for part in key) and key not in coaches,
+                f"coach record baseline: bad or repeated coach {key!r}")
+        name = " ".join(key)
+        require(entry.get("announcer") in COACH_ANNOUNCER, f"coach record baseline: {name} has an unknown announcer value")
+        fields: dict[str, bytes] = {}
+        ratings = entry.get("ratings")
+        require(isinstance(ratings, list) and len(ratings) == len(COACH_RATING_NAMES)
+                and all(type(v) is int and 0 <= v <= 255 for v in ratings), f"coach record baseline: {name} ratings are wrong")
+        for rating, value in zip(COACH_RATING_NAMES, ratings):
+            fields[f"ratings.{rating}"] = bytes((value,))
+        tendencies = entry.get("tendencies")
+        require(isinstance(tendencies, dict) and set(tendencies) == set(COACH_TENDENCY_GROUPS),
+                f"coach record baseline: {name} tendencies are wrong")
+        for group, (_at, count) in COACH_TENDENCY_GROUPS.items():
+            values = tendencies[group]
+            require(isinstance(values, list) and len(values) == count and all(type(v) is int and 0 <= v <= 255 for v in values),
+                    f"coach record baseline: {name} {group} is wrong")
+            fields[f"tendencies.{group}"] = bytes(values)
+        coaches[key] = {"announcer": entry["announcer"], "fields": fields}
+    require(bool(coaches), "the coach record baseline names no coaches")
+    return {"sha256": digest, "coaches": coaches}
+
+
+def coach_record_baseline_from_rost(disc_body: bytes) -> dict:
+    """The data file's content for a disc roster (the released v0.8 disc's, for the committed file)."""
+    target = sr.decode(disc_body, preamble=0, reference_year=BASE_YEAR)
+    require(target.layout.version in (17, 18), "the coach record baseline needs a disc ROST")
+    rows, _unnamed = coach_rows(target)
+    coaches = []
+    for (first, last), (_index, at) in sorted(rows.items(), key=lambda row: row[1][0]):
+        record = disc_body[at:at + target.tables["coaches"].stride]
+        fields = {name: list(record[rel:rel + size]) for name, rel, size in coach_record_fields()}
+        coaches.append({"first": first, "last": last,
+                        "announcer": "generic" if record[COACH_FLAGS_AT] & COACH_FLAG_GENERIC else "named",
+                        "ratings": [fields[f"ratings.{name}"][0] for name in COACH_RATING_NAMES],
+                        "tendencies": {name: fields[f"tendencies.{name}"] for name in COACH_TENDENCY_GROUPS}})
+    return {"schema": COACH_BASELINE_SCHEMA,
+            "about": ("The coach ratings, play-calling tendencies and announcer line the 32 head coaches' records held on "
+                      "every disc before the 2026 coach data. Franchise > Upgrade replaces one of these values with the "
+                      "new disc's only where a franchise still has exactly this value, so a change made in the Studio or "
+                      "the game stays. Rebuild with coach_record_baseline_text(coach_record_baseline_from_rost(roster)) "
+                      "from the roster of a disc built before the 2026 coach data."),
+            "source": {"disc_roster_sha256": sha(disc_body)},
+            "layout": _baseline_layout(), "coaches": coaches}
+
+
+def coach_record_baseline_text(data: dict) -> str:
+    """The committed file's exact text: a few header lines, then one coach per line."""
+    lines = ["{"] + [f" {json.dumps(key)}: {json.dumps(data[key])}," for key in ("schema", "about", "source", "layout")]
+    rows = [f"  {json.dumps(coach, separators=(', ', ': '))}" for coach in data["coaches"]]
+    return "\n".join(lines + [' "coaches": [', ",\n".join(rows), " ]", "}"]) + "\n"
+
+
+def sync_coach_records(payload: bytes, disc_body: bytes, baseline: Mapping | None = None) -> tuple[bytes, dict]:
+    """Copy the disc's coach ratings, play-calling tendencies and announcer line into the franchise's own coach records.
+
+    Coaches are matched by full name. Per rating, per tendency group and for the announcer line, the franchise's value is
+    replaced with the disc's only when the franchise still holds the value the older discs had (the baseline); a value
+    that is neither the old one nor the disc's was changed in this franchise and is kept and listed. A disc that has
+    nothing new, a coach without a baseline entry, an unmatched coach and every byte outside the declared fields stay as
+    they are. A second run changes nothing. ``baseline`` is ``coach_record_baseline()`` unless a test passes its own."""
+    _save, roster = franchise(payload)
+    target = sr.decode(disc_body, preamble=0, reference_year=BASE_YEAR)
+    require(target.layout.version in (17, 18), "coach source must be a disc ROST")
+    baseline = coach_record_baseline() if baseline is None else baseline
+    saved, unnamed = coach_rows(roster)
+    current, _ = coach_rows(target)
+    fields = coach_record_fields()
+    out = bytearray(payload)
+    masks: dict[int, int] = {}
+    changes, kept, matched, unmatched, no_baseline = [], [], [], [], []
+    disc_differs = already = 0
+    for key, (index, at) in saved.items():
+        who = " ".join(key)
+        if key not in current:
+            unmatched.append({"index": index, "coach": who})
+            continue
+        source_index, source_at = current[key]
+        matched.append({"index": index, "source_index": source_index, "coach": who})
+        old = baseline["coaches"].get(key)
+        if old is None:
+            no_baseline.append({"index": index, "coach": who})
+            continue
+        for field, rel, size in fields:
+            was = old["fields"][field]
+            now = bytes(payload[at + rel:at + rel + size])
+            new = bytes(disc_body[source_at + rel:source_at + rel + size])
+            if new == was:
+                continue                                # the disc has nothing new here
+            disc_differs += 1
+            if now == new:
+                already += 1
+                continue
+            row = {"coach": who, "index": index, "source_index": source_index, "field": field, "offset": at + rel}
+            if now == was:
+                out[at + rel:at + rel + size] = new
+                masks.update({at + rel + i: 0xFF for i in range(size)})
+                changes.append({**row, "before": list(now) if size > 1 else now[0], "after": list(new) if size > 1 else new[0]})
+            else:
+                kept.append({**row, "franchise": list(now), "older_discs": list(was), "disc": list(new)})
+        was_generic = old["announcer"] == "generic"
+        now_generic = bool(payload[at + COACH_FLAGS_AT] & COACH_FLAG_GENERIC)
+        new_generic = bool(disc_body[source_at + COACH_FLAGS_AT] & COACH_FLAG_GENERIC)
+        if new_generic != was_generic:
+            disc_differs += 1
+            if now_generic == new_generic:
+                already += 1
+            elif now_generic == was_generic:
+                out[at + COACH_FLAGS_AT] = (payload[at + COACH_FLAGS_AT] | COACH_FLAG_GENERIC if new_generic
+                                            else payload[at + COACH_FLAGS_AT] & ~COACH_FLAG_GENERIC & 0xFF)
+                masks[at + COACH_FLAGS_AT] = COACH_FLAG_GENERIC
+                changes.append({"coach": who, "index": index, "source_index": source_index, "field": "announcer",
+                                "offset": at + COACH_FLAGS_AT, "before": COACH_ANNOUNCER[now_generic],
+                                "after": COACH_ANNOUNCER[new_generic]})
+    require(bool(matched), "no matching coach identities")
+    if changes:
+        reason = ""
+    elif kept:
+        reason = "every value the disc would change differs from the older discs' defaults in this franchise, so all are kept"
+    elif disc_differs:
+        reason = "every coach already has this disc's values"
+    else:
+        reason = "this disc's coach records are the older discs' (it has no 2026 coach data)"
+    result = bytes(out)
+    scope = prove_scope(payload, result, masks)
+    sr.decode(result, base_year=BASE_YEAR)
+    return result, {"operation": "coach_records", "before_sha256": sha(payload), "after_sha256": sha(result),
+                    "disc_roster_sha256": sha(disc_body), "baseline_sha256": baseline.get("sha256", ""),
+                    "matched": matched, "unmatched_preserved": unmatched, "no_baseline_preserved": no_baseline,
+                    "unnamed_preserved": unnamed, "coaches_changed": len({c["coach"] for c in changes}),
+                    "fields_kept": len(kept), "already_current": already, "reason": reason,
+                    "changes": changes, "kept": kept, **scope}
