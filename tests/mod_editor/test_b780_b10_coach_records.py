@@ -407,7 +407,8 @@ class WiringTests(unittest.TestCase):
     other synthetic Upgrade tests do: the synthetic arena has no coaches)."""
 
     STEP_NAMES = {"upgrade_years": "years", "sync_playbooks": "playbooks", "upgrade_team_history": "team_history",
-                  "sync_coaches": "coach_sync", "sync_hair_styles": "hair_styles", "sync_honors": "honors",
+                  "sync_coaches": "coach_sync", "sync_coach_pool": "coach_pool", "sync_hair_styles": "hair_styles",
+                  "sync_honors": "honors",
                   "sync_rookie_templates": "rookie_templates", "sync_free_agents": "free_agents",
                   "sync_champions": "champions", "sync_game_settings": "game_settings"}
 
@@ -462,7 +463,9 @@ class WiringTests(unittest.TestCase):
         plan, _saved = self.plan("upgrade", game_defaults=False)
         operations = [s["operation"] for s in plan.receipt["steps"]]
         self.assertEqual(operations.count("coach_records"), 1)
-        self.assertEqual(operations[operations.index("coach_sync") + 1], "coach_records")
+        # b780-int: c6-carousel's hiring-pool copy runs inside the coach sync command, right after the body/portrait sync
+        self.assertEqual(operations[operations.index("coach_sync") + 1], "coach_pool")
+        self.assertEqual(operations[operations.index("coach_pool") + 1], "coach_records")
         self.assertEqual(operations[operations.index("coach_records") + 1], "hair_styles")
 
 

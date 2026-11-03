@@ -688,6 +688,50 @@ def sync_coaches(payload: bytes, disc_body: bytes) -> tuple[bytes, dict]:
                     "unnamed_preserved": unnamed, "changes": changes, **scope}
 
 
+def sync_coach_pool(payload: bytes, disc_body: bytes) -> tuple[bytes, dict]:
+    """b780-c6: give a franchise started before the coaching carousel the disc's hiring pool.
+
+    The carousel hires from a checked block in the free tail of the roster's coach strings
+    (``nfl2k5_coach_carousel``); a franchise keeps the roster it started with, so an older save has none and its CPU
+    clubs never change coach. This copies the disc's block, byte for byte, into the same tail of the save's roster.
+    A save that already has a pool keeps it (hired coaches point at its strings), and a disc without one changes
+    nothing. Only the block's bytes change.
+    """
+    from . import nfl2k5_coach_carousel as carousel
+
+    save_roster = franchise(payload)[1]
+    disc_pool = carousel.find_pool(disc_body, carousel.OBJ_OFF)
+    common = {"operation": "coach_pool", "before_sha256": sha(payload), "disc_roster_sha256": sha(disc_body)}
+    if disc_pool is None:
+        return payload, {**common, "after_sha256": sha(payload), "changes": [],
+                         "note": "the disc has no coaching carousel hiring pool"}
+    base, end = save_roster.layout.preamble, save_roster.layout.end
+    root = save_roster.layout.root - base                  # 0x20 in a franchise save's roster (version 0/1)
+    body = payload[base:end]
+    if carousel.find_pool(body, root) is not None:
+        return payload, {**common, "after_sha256": sha(payload), "changes": [],
+                         "note": "the franchise already has a hiring pool; kept (its hired coaches point at it)"}
+    at = disc_pool[0]
+    block = disc_body[at:at + struct.unpack_from("<H", disc_body, at + 10)[0]]
+    region = carousel.coach_region(body, root)
+    require(region["tail_is_zero"], "the free tail of the save's coach strings holds other bytes")
+    offset = root + ((region["used_end"] - root + 3) & ~3)
+    require(offset + len(block) + carousel.POOL_MARGIN <= region["next_string"],
+            f"the save's coach string region has {region['free']} free bytes; the pool needs {len(block)}")
+    out = bytearray(payload)
+    out[base + offset:base + offset + len(block)] = block
+    result = bytes(out)
+    found = carousel.find_pool(result[base:end], root)
+    require(found is not None and found[0] == offset and len(found[1]) == len(disc_pool[1]),
+            "the hiring pool does not read back from the save")
+    masks = {base + offset + i: 0xFF for i in range(len(block))}
+    scope = prove_scope(payload, result, masks)
+    sr.decode(result, base_year=BASE_YEAR)
+    return result, {**common, "after_sha256": sha(result), "pool_entries": len(disc_pool[1]),
+                    "changes": [{"field": "coach_pool", "offset": base + offset, "bytes": len(block),
+                                 "entries": len(disc_pool[1])}], **scope}
+
+
 #: b778-hr3: the hair style is the low nibble of player record +0x0D (nfl2k5_hair_styles; Studio field hair_style)
 HAIR_STYLE_OFFSET, HAIR_STYLE_MASK = 0x0D, 0x0F
 

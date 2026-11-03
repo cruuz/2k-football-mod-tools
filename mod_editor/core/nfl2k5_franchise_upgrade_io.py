@@ -170,6 +170,9 @@ def plan_upgrade(source: Path, disc: Path, *, command: str = "upgrade",
     if command in ("upgrade", "coach-sync"):
         payload, step = upgrade.sync_coaches(payload, body)
         steps.append(step)
+        # b780-c6: an older franchise gets the disc's coaching carousel hiring pool (nothing when the disc has none)
+        payload, step = upgrade.sync_coach_pool(payload, body)
+        steps.append(step)
     if command in ("upgrade", "coach-records"):
         # b780-b10: the disc's 2026 coach ratings, play-calling habits and announcer line, where the franchise still has the
         # older discs' values (after coach-sync, which writes the body id and portrait of the same records)

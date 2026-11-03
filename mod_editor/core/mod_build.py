@@ -651,6 +651,10 @@ class BuildPlan:
     # b779-sim2 r4: scheduled-sim season realism (play mix, targets, QB runs, interceptions, tackles).
     # A late executable owner plus 16 bytes of hand-off state; EXPERIMENTAL and on in Advanced/Experimental.
     sim_realism: bool = False
+    # b780-c6: the coaching carousel (EXPERIMENTAL): at Advance to offseason CPU clubs may fire their head coach and hire
+    # one from the hiring pool the build writes into the roster (real people) or a coach another club let go. The game's
+    # Owner Firing option becomes Off / CPU Teams / All Teams. A late executable owner plus the roster's pool block.
+    coach_carousel: bool = False
     # b778-sim1: the simulated franchise game's clock pace. The simulator's per-event clock decrement came from
     # sqrt(300 / (Sim. Quarter Length * 60)) * 0.03, so a 15-minute setting produced about 1.7x the plays, points and
     # yards of a 5-minute setting. One in-place patch at 0x10B89C fixes the decrement (nfl2k5_sim_stats), so a
@@ -741,7 +745,7 @@ class BuildPlan:
                 or self.guardian_overlay or self.my_career or self.screen_hooks or self.coverage_trail or self.franchise_edit_player or self.cpu_money_downs != "retail" or self.accelerated_clock or self.coin_defer or self.decided_clock or self.cpu_scrambles == "modern" or self.weather_haze or self.number_kerning or self.modern_color or self.weekly_prep or self.weekly_prep_cpu or self.weekly_prep_remember or self.coach_ai or self.playbook_pair or self.deep_zone_facing or self.deep_zone_bail or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave or self.historic_teams_quick_game or self.espn25_more_moments or self.historic_stock_books or self.espn25_era_rules or self.k128_memory or self.team_ratings or self.play_art_routes or self.letter_grades or self.honors_page
                 or self.sportscenter_lineup or self.momentum_collisions or self.scorebug_runtime or self.indicator_names_style != "retail" or self.momentum > 0 or self.momentum_contact or self.defensive_try or self.zone_drop_cap or self.all_stadiums or self.music_shuffle or self.practice_squad_screen or self.abilities or self.qb_spy or self.calendar_engine or self.coverage_slider or self.scramble_tuning or self.flatter_deep_ball or self.chop_block_toggle or self.music_policy != "retail" or self.music_unlock or self.music_userlist
                 or self.guardian_overlay or self.my_career or self.screen_hooks or self.coverage_trail or self.franchise_edit_player or self.cpu_money_downs != "retail" or self.accelerated_clock or self.coin_defer or self.decided_clock or self.cpu_scrambles == "modern" or self.weather_haze or self.number_kerning or self.modern_color or self.weekly_prep or self.weekly_prep_cpu or self.weekly_prep_remember or self.coach_ai or self.playbook_pair or self.deep_zone_facing or self.deep_zone_bail or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave or self.historic_teams_quick_game or self.espn25_more_moments or self.historic_stock_books or self.espn25_era_rules or self.k128_memory or self.team_ratings or self.play_art_routes or self.letter_grades or self.honors_page or self.contract_college_guard
-                or self.guardian_overlay or self.my_career or self.screen_hooks or self.coverage_trail or self.franchise_edit_player or self.cpu_money_downs != "retail" or self.accelerated_clock or self.coin_defer or self.decided_clock or self.cpu_scrambles == "modern" or self.weather_haze or self.number_kerning or self.modern_color or self.weekly_prep or self.weekly_prep_cpu or self.weekly_prep_remember or self.coach_ai or self.playbook_pair or self.deep_zone_facing or self.deep_zone_bail or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave or self.historic_teams_quick_game or self.espn25_more_moments or self.historic_stock_books or self.espn25_era_rules or self.k128_memory or self.team_ratings or self.play_art_routes or self.letter_grades or self.honors_page or self.sim_cb_tackles or self.sim_stats or self.option_defaults or self.sim_rb_injuries or self.sim_realism
+                or self.guardian_overlay or self.my_career or self.screen_hooks or self.coverage_trail or self.franchise_edit_player or self.cpu_money_downs != "retail" or self.accelerated_clock or self.coin_defer or self.decided_clock or self.cpu_scrambles == "modern" or self.weather_haze or self.number_kerning or self.modern_color or self.weekly_prep or self.weekly_prep_cpu or self.weekly_prep_remember or self.coach_ai or self.playbook_pair or self.deep_zone_facing or self.deep_zone_bail or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave or self.historic_teams_quick_game or self.espn25_more_moments or self.historic_stock_books or self.espn25_era_rules or self.k128_memory or self.team_ratings or self.play_art_routes or self.letter_grades or self.honors_page or self.sim_cb_tackles or self.sim_stats or self.option_defaults or self.sim_rb_injuries or self.sim_realism or self.coach_carousel
                 or self.momentum_collisions or self.scorebug_runtime or self.indicator_names_style != "retail" or self.momentum > 0 or self.momentum_contact or self.defensive_try or self.zone_drop_cap or self.all_stadiums or self.music_shuffle or self.practice_squad_screen or self.abilities or self.qb_spy or self.calendar_engine or self.coverage_slider or self.scramble_tuning or self.flatter_deep_ball or self.chop_block_toggle or self.music_policy != "retail" or self.music_unlock or self.music_userlist
                 or bool(self.music_library and _music_library_document(self.music_library)["bank"] == "cribmusic")
                 or self.pass_protection or self.pass_rush_stats)  # b778-pr1, b779-st1
@@ -996,6 +1000,10 @@ for _preset in PRESETS.values():
     _preset["sim_realism"] = False
 PRESETS["softdrink_advanced"]["sim_realism"] = True
 PRESETS["softdrink_experimental"]["sim_realism"] = True
+del _preset
+# b780-c6: the coaching carousel. EXPERIMENTAL: off in every preset until its emulator gate passes (see the c6 report).
+for _preset in PRESETS.values():
+    _preset["coach_carousel"] = False
 del _preset
 # b778-sim1: the simulated-game pace fix is a stat correction, not a taste option: on in the Advanced and Experimental
 # presets (the SOFTDRINK 2K28 recipe builds from Experimental). Basic keeps retail for purists.
@@ -1371,6 +1379,7 @@ _LATE_OWNER_OPTIONS = (
     ("nfl2k5_sim_cb_tackles", "Cornerback tackle credit", lambda p: p.sim_cb_tackles),  # b778-cb1
     ("nfl2k5_sim_rb_injuries", "Simulated RB short injuries", lambda p: p.sim_rb_injuries),  # b779-sim2
     ("nfl2k5_sim_realism", "Simulated season realism", lambda p: p.sim_realism),  # b779-sim2 r4
+    ("nfl2k5_coach_carousel", "Coaching carousel", lambda p: p.coach_carousel),  # b780-c6
     ("nfl2k5_clock_led", "Modern clock digits", lambda p: p.modern_clock_led),  # b778-sd4
     ("nfl2k5_return_coverage", "Return coverage pursuit angles", lambda p: p.return_coverage),  # b778-kr1
     ("nfl2k5_preseason_warning", "2026 franchise economy", lambda p: p.franchise_economy),  # b779-rc1: the warned flag
@@ -1930,6 +1939,56 @@ def _apply_sim_realism(plan: "BuildPlan", target: Path, receipt: dict, progress)
     receipt["result"]["sim_realism"] = "applied"
 
 
+def _coach_carousel_preflight(source: Path, progress) -> None:
+    """b780-c6: refuse a source whose Advance to offseason, owner check or Owner Firing row is foreign, before any write."""
+    module = _core_module("nfl2k5_coach_carousel")
+    if module is None:
+        raise ValueError("The coaching carousel is not available in this installation.")
+    progress("Checking Advance to offseason for the coaching carousel", 0, 0)
+    if module.status(_xbe_bytes(source)) not in ("retail", "applied"):
+        raise ValueError("Advance to offseason, the owner goal check or the Owner Firing option in this source is not "
+                         "retail. Build from an unmodified retail dump.")
+
+
+def _apply_coach_carousel(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    """b780-c6: the coaching carousel, after season realism (the last late allocator owner, LATE_OWNERS order)."""
+    if not plan.coach_carousel:
+        return
+    module = _core_module("nfl2k5_coach_carousel")
+    if module is None:
+        raise RuntimeError("The coaching carousel needs nfl2k5_coach_carousel.")
+    progress("Franchise: coaching carousel at Advance to offseason", 0, 0)
+    payload, carousel_receipt = module.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, payload)
+    final = _xbe_bytes(target)
+    if final != payload or module.status(final) != "applied":
+        raise RuntimeError("Coaching carousel: the output does not read back as applied")
+    receipt["steps"].append({"step": "coach_carousel", **{k: v for k, v in carousel_receipt.items() if k != "reservations"}})
+    receipt["result"]["coach_carousel"] = "applied"
+
+
+def _apply_coach_carousel_pool(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    """b780-c6: the hiring pool in the free tail of the roster's coach strings, after the last main-roster writer."""
+    if not plan.coach_carousel:
+        return
+    module = _core_module("nfl2k5_coach_carousel")
+    if not tt.is_disc_image(target):
+        note = ("Coaching carousel: this build writes no disc roster, so it has no hiring pool; franchises change "
+                "coaches only after Franchise > Upgrade gives them one.")
+        progress(note, 0, 0)
+        receipt["steps"].append({"step": "coach_carousel_pool", "status": "no_roster", "user_notes": [note]})
+        receipt["result"]["coach_carousel_pool"] = "no_roster"
+        return
+    progress("Coaching carousel: writing the hiring pool into the roster", 0, 0)
+    try:
+        pool_receipt = module.apply_image(target)
+    except (OSError, ValueError) as exc:
+        raise RuntimeError(f"Coaching carousel: the hiring pool could not be written into the roster ({exc}); "
+                           "the build stops here") from exc
+    receipt["steps"].append({"step": "coach_carousel_pool", **pool_receipt})
+    receipt["result"]["coach_carousel_pool"] = "applied"
+
+
 def _sim_stats_preflight(source: Path, progress) -> None:
     """b778-sim1: refuse a source whose simulator initializer is foreign, before any write."""
     module = _core_module("nfl2k5_sim_stats")
@@ -2162,6 +2221,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
                                ("sim_cb_tackles", "nfl2k5_sim_cb_tackles"),  # b778-cb1
                                ("sim_rb_injuries", "nfl2k5_sim_rb_injuries"),  # b779-sim2
                                ("sim_realism", "nfl2k5_sim_realism"),  # b779-sim2 r4
+                               ("coach_carousel", "nfl2k5_coach_carousel"),  # b780-c6
                                ("modern_clock_led", "nfl2k5_clock_led"),  # b778-sd4
                                ("letter_grades", "nfl2k5_letter_grades"),
                                ("honors_page", "nfl2k5_honors"), ("honors_history", "nfl2k5_honors_history"),
@@ -2420,6 +2480,8 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
     out["sim_rb_injuries"] = rb_injuries.status(_xbe_bytes(source)) if rb_injuries is not None else "unavailable"
     sim_realism = _core_module("nfl2k5_sim_realism")  # b779-sim2 r4
     out["sim_realism"] = sim_realism.status(_xbe_bytes(source)) if sim_realism is not None else "unavailable"
+    coach_carousel = _core_module("nfl2k5_coach_carousel")  # b780-c6
+    out["coach_carousel"] = coach_carousel.status(_xbe_bytes(source)) if coach_carousel is not None else "unavailable"
     sim_stats = _core_module("nfl2k5_sim_stats")  # b778-sim1
     out["sim_stats"] = sim_stats.status(_xbe_bytes(source)) if sim_stats is not None else "unavailable"
     option_defaults = _core_module("nfl2k5_option_defaults")  # b779-df1
@@ -5311,6 +5373,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         _sim_rb_injuries_preflight(source, progress)
     if plan.sim_realism:  # b779-sim2 r4: like pi1, before any write
         _sim_realism_preflight(source, progress)
+    if plan.coach_carousel:  # b780-c6: before any write
+        _coach_carousel_preflight(source, progress)
     if plan.cpu_ball_carriers:  # b778-ai5: before any write
         _ball_carrier_preflight(source, progress)
     if plan.return_coverage:  # b778-kr1: before any write
@@ -5889,7 +5953,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         player_progress=bool(plan.player_progress or plan.player_progress_visible), contract_college_guard=plan.contract_college_guard,
         sim_cb_tackles=plan.sim_cb_tackles, modern_clock_led=plan.modern_clock_led,
         module_loader=plan.module_loader, classic_teams=plan.classic_teams,
-        sim_rb_injuries=plan.sim_rb_injuries, sim_realism=plan.sim_realism, preseason_warning=plan.franchise_economy)
+        sim_rb_injuries=plan.sim_rb_injuries, sim_realism=plan.sim_realism, preseason_warning=plan.franchise_economy,
+        coach_carousel=plan.coach_carousel)
     if plan.read_option_runtime or plan.qb_spy:
         _step("play_intents")
         resolver = _core_module("nfl2k5_play_intents")
@@ -5969,6 +6034,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             sim_cb_tackles=plan.sim_cb_tackles, modern_clock_led=plan.modern_clock_led,
             module_loader=plan.module_loader, classic_teams=plan.classic_teams,
             sim_rb_injuries=plan.sim_rb_injuries, sim_realism=plan.sim_realism, preseason_warning=plan.franchise_economy,
+            coach_carousel=plan.coach_carousel,
             **{**r62, "read_option_intent_table": read_table, "modern_naming": False, "crib_reclaim": False})
         _write_xbe_bytes(target, patched)
         receipt["steps"].append({"step": "xbe_space", **space_receipt,
@@ -7180,6 +7246,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     _apply_sim_rb_injuries(plan, target, receipt, progress)
     # b779-sim2 r4: scheduled-sim season realism, after the RB injury owner (LATE_OWNERS order)
     _apply_sim_realism(plan, target, receipt, progress)
+    # b780-c6: the coaching carousel, after season realism (the last late allocator owner, LATE_OWNERS order)
+    _apply_coach_carousel(plan, target, receipt, progress)
     # b778-pg2: the Player Progress screen and weekly snapshot (a late allocator owner after force_out)
     # b778-cb1: cornerback tackle credit, after force_out
     # b778-sd4: modern clock digits, after modern sideline catches
@@ -7197,6 +7265,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     # b779 ch2 (review R2, BLOCKER 1): the champions history lives after the arena's reserve block, which the arena
     # growth wrote above; seeded here, after the last main-roster writer, so no later pass rewrites those bytes.
     _apply_champions_history(plan, target, receipt, progress, capacity_records)
+    # b780-c6: the carousel's hiring pool goes into the coach strings after every other main-roster writer
+    _apply_coach_carousel_pool(plan, target, receipt, progress)
     if tt.is_disc_image(target):
         _step("disc_compaction")
         # DESIGN: all growth writers have finished. Compact only this disposable
@@ -7267,6 +7337,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("simulated RB short injuries did not survive the final passes")  # b779-sim2
     if plan.sim_realism and _core_module("nfl2k5_sim_realism").status(_xbe_bytes(target)) != "applied":
         raise ValueError("simulated season realism did not survive the final passes")  # b779-sim2 r4
+    if plan.coach_carousel and _core_module("nfl2k5_coach_carousel").status(_xbe_bytes(target)) != "applied":
+        raise ValueError("the coaching carousel did not survive the final passes")  # b780-c6
     if plan.sim_cb_tackles and _core_module("nfl2k5_sim_cb_tackles").status(_xbe_bytes(target)) != "applied":  # b778-cb1
         raise ValueError("cornerback tackle credit did not survive the final passes")
     if plan.sim_stats and _core_module("nfl2k5_sim_stats").status(_xbe_bytes(target)) != "applied":  # b778-sim1
