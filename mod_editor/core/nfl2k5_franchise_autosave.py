@@ -211,10 +211,10 @@ def _recognize(payload):
     beneath = XbeImage(footer.underlying_view(payload))
     if any(beneath.read(va, len(bytes.fromhex(pin))) != bytes.fromhex(pin)
            for _, va, pin, _ in (*career.SAVE_HOOKS, career.MODE_HOOKS[0])):
-        require(career._recognize(payload) == "applied",
+        # b780 n6: the beta-79 MyCareer ("previous") with its own sites
+        require(career._recognize(payload) in ("applied", "previous"),
                 "foreign MyCareer completion/save companion")
-        code, data = career.legacy.allocations(payload)
-        companion_edits.extend(career.sites(code["va"], data["va"]))
+        companion_edits.extend(career.installed_sites(payload))
     # b778 bd3: beside the Player Progress screen, MyCareer's footer hooks read through MyCareer's own view of that
     # exact composition (my_career_mode.player_progress_view); anything else stays foreign below.
     guarded = XbeImage(career.player_progress_view(payload))

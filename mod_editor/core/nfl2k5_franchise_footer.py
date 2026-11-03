@@ -207,6 +207,8 @@ def _my_career_handlers(payload: bytes) -> dict[str, int] | None:
         if not found:
             return None
         code, _data = career.legacy.allocations(payload)
+        if career.installed_previous(payload):
+            return None      # b780 n6: the host chains only to this release's MyCareer, never to the beta-79 one
         labels = career.assembly.LABELS          # the template's fixed offsets (code_for adds code_va to them)
         return {"total_size": code["va"] + labels["inline_size"], "save": code["va"] + labels["inline_save"],
                 "load": code["va"] + labels["inline_load_end"], "admission": code["va"] + labels["inline_admission"]}

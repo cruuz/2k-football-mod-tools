@@ -281,9 +281,11 @@ class ExecutableTests(unittest.TestCase):
         payload = cc.apply(payload)[0]
         self.assertEqual((pp.status(payload), cc.status(payload)), ("applied", "applied"))
         if _have(V08_XBE):
+            # b780 n6: the v0.8 executable carries the beta-79 screen (b9 moved its event site since), which reads
+            # "previous"; it must keep reading so with the carousel's rollover call beside it
             released = _v08_xbe()
-            self.assertEqual(pp.status(released), "applied")
-            self.assertEqual(pp.status(cc.apply(released)[0]), "applied")
+            self.assertEqual(pp.status(released), "previous")
+            self.assertEqual(pp.status(cc.apply(released)[0]), "previous")
 
     def test_the_build_union_reserves_it_with_the_other_late_owners(self):
         """The Studio plans the whole late-owner union up front (b779-int1); the carousel is reserved there and installs

@@ -262,8 +262,11 @@ def _recognize(payload):
         states.add("retail" if raw == before else "applied" if owned and raw == after else "foreign")
     if owned:
         raw = image.read(owned["va"], CODE_SIZE)
-        states.add("retail" if raw == b"\xcc" * CODE_SIZE else "applied" if raw == code_for(owned["va"]) else "foreign")
-    require(states in ({"retail"}, {"applied"}), "Foreign or mixed cornerback tackle site/code")
+        states.add("retail" if raw == b"\xcc" * CODE_SIZE else "applied" if raw == code_for(owned["va"])
+                   else "previous" if raw == _previous_code_for(owned["va"]) else "foreign")
+    if states == {"applied", "previous"}:
+        states = {"previous"}   # b780-int: the same hooks with the beta-79 tail (a v0.8 executable)
+    require(states in ({"retail"}, {"applied"}, {"previous"}), "Foreign or mixed cornerback tackle site/code")
     context = image.read(MERGE, MERGE_SIZE)
     require(len(context) == MERGE_SIZE, "short retail merge context")
     content = bytearray(context)
@@ -275,7 +278,8 @@ def _recognize(payload):
     from . import nfl2k5_sim_realism as realism
     realism_rows = [r for r in space.layout(payload)["allocations"] if r["owner"] == realism.OWNER and r["kind"] == "code"]
     if realism_rows:
-        for _name, va, before, after in realism.sites(realism_rows[0]["va"]):
+        # b780 n6: the installed revision's hooks (a v0.8 executable carries the beta-79 one, at other code offsets)
+        for _name, va, before, after in realism.installed_sites(payload):
             if MERGE <= va and va + len(before) <= MERGE + MERGE_SIZE and bytes(content[va - MERGE:va - MERGE + len(after)]) == after:
                 content[va - MERGE:va - MERGE + len(before)] = before
     # b779-int1: the defensive try owner (era rules) jumps out of the merge at 0x1336B2 to its own code. The v0.6.1
@@ -298,6 +302,12 @@ def _recognize(payload):
         picker[hook_va - picker_va:hook_va - picker_va + len(retail)] = retail
     require(hashlib.sha256(picker).hexdigest() == picker_digest, "Foreign scheduled-sim lineup picker")
     return next(iter(states))
+
+
+def _previous_code_for(code_va):
+    """b780-int: the beta-79 / v0.8 tail (before n3's regular-season gate), from the frozen beta-79 module."""
+    from . import nfl2k5_sim_cb_tackles_b779 as b779
+    return b779.code_for(code_va)
 
 
 def allocation(payload):
@@ -326,6 +336,14 @@ def apply(payload):
     common = dict(owner=OWNER, experimental=True, runtime_witnessed=False)
     if state == "applied":
         return payload, dict(common, status="already_applied", changed_bytes=0, edits=[])
+    if state == "previous":
+        # b780-int: a beta-79 / v0.8 install (same cave, hooks and tables) is upgraded in place to the
+        # regular-season tail (b780 n3): only the owner's own code bytes change
+        code_va = allocation(payload)["va"]
+        result, _ = space.install_code(payload, OWNER, code_for(code_va), previous=_previous_code_for(code_va))
+        require(status(result) == "applied", "cornerback tackle credit upgrade postcondition failed")
+        return result, dict(common, status="applied", upgraded_from="previous",
+                            changed_bytes=space.count_differing_bytes(payload, result), edits=[])
     before = payload
     allocation_receipt = {}
     if not any(r["owner"] == OWNER for r in space.layout(payload)["allocations"]):

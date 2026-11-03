@@ -496,9 +496,23 @@ def _recognize(payload):
     return next(iter(states))
 
 
+# b780 n6: beta-79 / SOFTDRINK 2K28 v0.8 carries the smaller revision (read-only tables 2,816 bytes, no card cell text).
+# Its exact install (as e8c1de3a8's recognizer, frozen in nfl2k5_pass_rush_stats_b779, accepts it) reads "previous";
+# this release's tables do not fit its allocations, so apply() refuses to update it in place.
+PREVIOUS_REVISION = "beta-79"
+PREVIOUS_REFUSAL = ("Pass rush stats on this disc are the beta 79 revision. This release's version needs more room than "
+                    "the earlier build gave it, so it cannot be updated in place. Rebuild from your retail game, or turn "
+                    "Pass rush stats off to keep the beta 79 version.")
+
+
 def status(payload):
     try:
         return _recognize(payload)
+    except (ValueError, TypeError, KeyError, IndexError, struct.error, OverflowError, UnicodeError, OSError):
+        pass
+    try:
+        from . import nfl2k5_pass_rush_stats_b779 as previous
+        return "previous" if previous.status(payload) == "applied" else "foreign"
     except (ValueError, TypeError, KeyError, IndexError, struct.error, OverflowError, UnicodeError, OSError):
         return "foreign"
 
@@ -510,6 +524,7 @@ def apply(payload):
     from .nfl2k5_cave_oracle import XbeImage
     state = status(payload)
     _require(state != "foreign", "the source executable is not retail or pass rush stats")
+    _require(state != "previous", PREVIOUS_REFUSAL)   # b780 n6
     common = dict(owner=OWNER, experimental=True, runtime_witnessed=False, fields=dict(FIELDS),
                   targets_field=TARGETS_FIELD)
     if state == "applied":

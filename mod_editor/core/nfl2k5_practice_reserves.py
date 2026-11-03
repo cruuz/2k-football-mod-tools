@@ -94,7 +94,7 @@ def status(payload: bytes) -> str:
             # only with its complete sealed allocation and exact hook set.
             from . import nfl2k5_my_career as career
             if (actual[6:] != RETAIL_COPY_PLAYERS[6:] or
-                    career.status(payload) != "applied"):
+                    career.status(payload) not in ("applied", "previous")):   # b780 n6: the beta-79 MyCareer too
                 return "foreign"
         # the grown roster arena projects its overflow block away before the retail-site check
         state = rdata.status(normalized, sites())
