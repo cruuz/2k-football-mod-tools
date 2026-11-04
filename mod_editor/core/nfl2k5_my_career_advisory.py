@@ -60,7 +60,8 @@ def estimate(payload, *, player_index, expected_class, scheme='retail', xbe=None
     from . import nfl2k5_my_career as career, nfl2k5_franchise_save as fs
     scheme = roster.normalise_scheme(scheme)
     career.save_key(payload)
-    if payload[fs.SEASON_BLOCK + fs.S_MODE] != 2 or payload[fs.SEASON_BLOCK + fs.S_STAGE] != 5:
+    season = career.season_block(payload)   # b780 Q19: grown SOFTDRINK saves move the season block
+    if payload[season + fs.S_MODE] != 2 or payload[season + fs.S_STAGE] != 5:
         raise ValueError('Draft Advisory needs the prepared NFL Draft stage save.')
     document = roster.RosterDocument(payload, base=roster.find_block_base(payload), scheme=scheme)
     if scheme == 'one_pool' and any(p.pool == 'primary' and p.record.get('position') == 10 for p in document.players):

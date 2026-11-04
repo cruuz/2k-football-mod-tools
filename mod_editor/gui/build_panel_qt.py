@@ -5553,8 +5553,34 @@ class BuildPanel(QWidget):
         show_operation_error(self, "check your project", message)
         self._refresh()
 
+    def _build_was_cancelled(self, message: str) -> bool:
+        """b780 Q56: the build stopped because Cancel was pressed (the worker raises BuildCancelled)."""
+        failure = getattr(self._task, "failure", None)
+        try:
+            from mod_editor.core.nfl2k5_project_fit import BuildCancelled
+            if isinstance(failure, BuildCancelled):
+                return True
+        except ImportError:
+            pass
+        return message.startswith("Build cancelled")
+
     def _failed(self, message: str) -> None:
         message = plain_error(message)
+        if self._build_was_cancelled(message):
+            # b780 Q56: a Cancel the user pressed is not a failure: no red "Couldn't make the disc" box and no
+            # Discord hint, just what happened.
+            self._last_build_summary = ((self._requested_build_summary or f"2K5 Mod Studio {BUILD_RELEASE_TAG}")
+                                        + "\n\nBuild cancelled (Cancel was pressed). Nothing was written.")
+            self.copy_summary_button.setEnabled(True)
+            self._heartbeat_timer.stop()
+            self._task = None
+            self.operation_state_changed.emit(False)
+            self.progress_bar.hide()
+            self.progress_label.setText("")
+            self.status_label.setText("Build cancelled. Nothing was written; your project and your original disc "
+                                      "are unchanged.")
+            self._refresh()
+            return
         # b791-h3: the worker wrote errors.log, the build log and the diagnostic .zip; its exception says where.
         failure = getattr(self._task, "failure", None)
         record = getattr(failure, "studio_build_record", None) if failure is not None else None

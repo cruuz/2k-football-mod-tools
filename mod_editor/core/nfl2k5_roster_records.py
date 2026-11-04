@@ -3147,7 +3147,9 @@ def edits_between(base_body: bytes, patched_body: bytes, *, name: str = "") -> d
 
 def read_edits(source: Path | str | Mapping[str, Any]) -> dict[str, Any]:
     from .nfl2k5_roster_snapshot import SCHEMA as snapshot_schema
-    document = source if isinstance(source, Mapping) else json.loads(Path(source).read_text(encoding="utf-8"))
+    # utf-8-sig (b780 Q58): Windows Notepad saves a hand-edited file with a byte-order mark; plain utf-8 refused it
+    # with "Unexpected UTF-8 BOM". A file without the mark reads exactly as before.
+    document = source if isinstance(source, Mapping) else json.loads(Path(source).read_text(encoding="utf-8-sig"))
     _require(isinstance(document, Mapping), "a roster-edits file must be a JSON object")
     _require(str(document.get("schema")) in (EDITS_SCHEMA, snapshot_schema),
              f"unknown roster-edits schema {document.get('schema')!r}; expected {EDITS_SCHEMA}")
