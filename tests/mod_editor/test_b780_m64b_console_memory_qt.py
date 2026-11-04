@@ -260,6 +260,17 @@ class Budget(_Page):
             self.assertEqual(panel.blocker(), "")      # the 128 MB build never asks the 64 MB model
             self.assertFalse(panel.memory_budget_label.isVisibleTo(panel))
 
+    def test_a_model_that_cannot_estimate_says_so_and_does_not_refuse(self):
+        model = fake_model()
+        model.predict = lambda plan, target_mb=64: 1 / 0
+        with with_model(model):
+            panel = self.page()
+            panel.throw_check.setChecked(True)
+            panel.set_console_memory(64)
+            self.assertTrue(panel.wait_for_memory_budget())
+            self.assertEqual(panel.memory_budget_label.text(), cm.NO_ESTIMATE)
+            self.assertEqual(panel.blocker(), "")
+
     def test_no_model_says_so(self):
         with without_model():
             panel = self.page()

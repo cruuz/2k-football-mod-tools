@@ -58,6 +58,8 @@ NOTE_64 = (f"The 64 MB build is {STATUS_64}. Options that need 128 MB or the rea
            "the full experience use xemu at 128 MB.")
 RECOMMENDED_BUTTON = "Use the recommended 64 MB set"
 CHECKING = "Checking the 64 MB memory budget for this selection (the estimate takes a few seconds)."
+NO_ESTIMATE = ("The memory model could not estimate this selection, so the Studio cannot predict whether it fits in 64 MB. "
+               "For the full experience use xemu at 128 MB.")
 #: The warning of a selection that fits with the default uniforms only (coordinator's wording, 11/03).
 ALTERNATE_KIT_WARNING = ("A player-picked alternate kit at {stadium} may not fit ({short} KB short); if a game loops on the "
                          "stadium shots, use the default uniforms.")

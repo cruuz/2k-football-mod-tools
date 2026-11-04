@@ -3378,7 +3378,8 @@ class BuildPanel(QWidget):
         for key, label in self._memory_cost_labels.items():
             if key not in costs:
                 label.hide()
-        self.memory_budget_label.setText(console_memory.budget_line(prediction, labels=self._memory_label))
+        self.memory_budget_label.setText(console_memory.NO_ESTIMATE if prediction is None else
+                                         console_memory.budget_line(prediction, labels=self._memory_label))
 
     def _memory_plan(self):
         """The plan the memory model is asked about: the page's plan as a 64 MB build can have it."""
