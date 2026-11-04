@@ -261,6 +261,20 @@ One late allocator owner, applied with the SPECIAL rows. It hooks two 5-byte cal
   same reasons as the 3DRB). When he takes the spot, the receiver he replaced can fill a later receiver spot of the same
   set, and the last receiver picked sits.
 
+* **Rule 4, injured players on CPU depth charts** (MC1's finding). The weekly CPU auto-depth `0x2BDCF0` ranks by
+  rating and never tests the injury bit (player `+0x20` bit 31). Its three calls (`0x247D5C`, `0x248075`, `0x24853D`)
+  now run it, then on every league club it sorts list each position's healthy players ahead of its injured ones in
+  the rank chain and, for paired positions, the side chain. The league club test is team kind 0, never a
+  shared-player all-star, Pro Bowl or historic side. A user club is touched only with "CPU manages my depth chart".
+  An injured player moved down loses his rank and side locks, so a healed starter is seated by rating again and
+  depth locks' release rule frees a clearly worse locked backup. A changed paired position keeps its rank starter
+  out of side rows 0 and 1. Code: `nfl2k5_lineup_roles_injured.S`.
+  On RST2's final roster with modern IR, all 121 injured players have 4 or more weeks out (8 or 17), so they start
+  on IR and none is on a chart at the franchise start. Rule 4 covers in-season short injuries and builds without
+  modern IR. One native pass there leaves 32 injured rank starters and 18 injured side starters. Rule 4 leaves 1:
+  a club whose only fullback is hurt. Every healthy order is kept, and a user club is unchanged unless the CPU manages
+  its chart.
+
 Proof: the game's own builder and picker under Unicorn on the v0.9 executable and roster, all 37 club books.
 - 3rd and 8 versus 1st and 10 over 1,211 offensive formations: the 3DRB comes in only as the better receiver, on
   human and CPU clubs alike (see the SUB1 sweep log for the old-save, MyCareer and shipped-default rosters).
