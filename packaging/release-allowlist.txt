@@ -4000,3 +4000,5 @@ tests/mod_editor/test_b780_hunt3_prep_results.py
 tests/mod_editor/test_b780_roster1_depth_lint.py
 # b780 gc1: the franchise Gamecast's score panel (0x8C450) stays retail under the 2026 scorebug
 tests/mod_editor/test_b780_gc1_gamecast_scorepanel.py
+mod_editor/core/nfl2k5_third_down_back.py
+tests/mod_editor/test_b780_sub1_third_down_back.py
