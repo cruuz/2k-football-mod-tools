@@ -3991,3 +3991,5 @@ tests/mod_editor/test_nfl2k5_history.py
 tests/mod_editor/test_nfl2k5_franchise_footer_transaction.py
 # b780 hunt3: Weekly Prep Player Results keeps the retail getter under the Player Progress owner
 tests/mod_editor/test_b780_hunt3_prep_results.py
+# b780 roster1: the dated refresh leaves no depth-chart row empty after a release for room; wrong-face portraits; pack roster lint
+tests/mod_editor/test_b780_roster1_depth_lint.py

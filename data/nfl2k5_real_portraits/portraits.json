@@ -26923,5 +26923,41 @@
    "rows": 49,
    "note": "Created real players that the v0.8 roster holds with a no-photo selector but that were neither free agents nor refresh-created when b779-pt1 built its target list (signed or unattached players: the 69 orphans among them). Same pipeline as pt1: nflverse players.csv and roster_2026.csv (snapshot of 2026-10-28), identity by name, birth month/day and position or college; the eight rows with source_list 'espn' take the ESPN headshot of the same espn_id because nflverse lists no headshot for them."
   }
- ]
+ ],
+ "wrong_faces": [
+  {
+   "gsis_id": "00-0041498",
+   "first": "Kage",
+   "last": "Casey",
+   "birth_month": 10,
+   "birth_day": 10,
+   "club": "DEN",
+   "photo_id": 2661,
+   "shows": "DaVon Hamilton (JAX): the pack's headshot for 2661, which his record took over from retail Cooper Carlisle",
+   "headshot": "none listed (nflverse roster_2026 headshot_url empty)"
+  },
+  {
+   "gsis_id": "00-0041581",
+   "first": "Brett",
+   "last": "Thorson",
+   "birth_month": 1,
+   "birth_day": 6,
+   "club": "MIN",
+   "photo_id": 1488,
+   "shows": "Darren Bennett, the retail 2004 Vikings punter (no pack portrait for 1488)",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/rvlb3wcjdvjy6o5y9eji (not yet in the pack)"
+  },
+  {
+   "gsis_id": "00-0040889",
+   "first": "Hezekiah",
+   "last": "Masses",
+   "birth_month": 6,
+   "birth_day": 30,
+   "club": "LV",
+   "photo_id": 5316,
+   "shows": "Nnamdi Asomugha, the retail 2004 Raiders corner (no pack portrait for 5316)",
+   "headshot": "https://static.www.nfl.com/image/upload/f_auto,q_auto/league/ba2rfnspviherhdlsxml (not yet in the pack)"
+  }
+ ],
+ "wrong_faces_note": "b780 roster1: real players whose record still holds a stock portrait id that shows someone else (found on the v0.9 RC disc: a portrait id two listed players share, or a retail id the pack never re-pictured). The build gives them the no-photo card (7100), as the pack does for any player without an accurate headshot."
 }

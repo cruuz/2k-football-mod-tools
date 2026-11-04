@@ -90,6 +90,9 @@ def load_manifest(path: Path | None = None) -> dict[str, Any]:
     require(all(ID_BASE <= i < ID_LIMIT for i in ids), f"portrait ids must stay in {ID_BASE}..{ID_LIMIT - 1}")
     gsis = [r["gsis_id"] for r in rows]
     require(len(gsis) == len(set(gsis)), "a player has two portraits")
+    for row in doc.get("wrong_faces", ()):
+        require(0 < row["photo_id"] < ID_BASE and not _selector(row["photo_id"]) and row.get("shows")
+                and row["gsis_id"] not in gsis, "a wrong-face row must name a stock portrait and whose face it is")
     return doc
 
 
@@ -137,6 +140,15 @@ def plan_assignments(document, doc: Mapping[str, Any] | None = None) -> dict[str
         index.setdefault((_first_key(p.first), _key(p.last), int(rec.get("birth_month") or 0),
                           int(rec.get("birth_day") or 0)), []).append(p)
     writes, missing, ambiguous, kept = [], [], [], []
+    # b780 roster1: a real player who still holds the stock portrait of the record he took over shows another man's
+    # face (Kage Casey, DEN, wears 2661, DaVon Hamilton's headshot; Brett Thorson, MIN, Darren Bennett's 2004
+    # portrait). Such a record goes to the no-photo selector, matched by name, birth day AND that exact stock id,
+    # so a user's own league or a record a user re-pictured is never touched; a listed real portrait still wins.
+    resets = {}
+    for row in doc.get("wrong_faces", ()):
+        found = index.get((_first_key(row["first"]), _key(row["last"]), row["birth_month"], row["birth_day"]), [])
+        if len(found) == 1 and int(found[0].record.values["photo_id"]) == row["photo_id"]:
+            resets[found[0].offset] = f"{row['first']} {row['last']}"
     for row in doc["portraits"]:
         name = f"{row['first']} {row['last']}"
         found = index.get((_first_key(row["first"]), _key(row["last"]), row["birth_month"], row["birth_day"]), [])
@@ -146,14 +158,17 @@ def plan_assignments(document, doc: Mapping[str, Any] | None = None) -> dict[str
             ambiguous.append(name)
         else:
             player = found[0]
-            current = int(player.record.values["photo_id"])
+            current = NO_PHOTO_REFRESH if player.offset in resets else int(player.record.values["photo_id"])
             if current == row["id"]:
                 kept.append(name)
             elif not _selector(current):
                 kept.append(name)
             else:
+                resets.pop(player.offset, None)
                 writes.append((player.offset + PHOTO_FIELD, row["id"], name))
-    return {"writes": writes, "missing": missing, "ambiguous": ambiguous, "kept": kept, "listed": len(doc["portraits"])}
+    writes.extend((offset + PHOTO_FIELD, NO_PHOTO_REFRESH, name) for offset, name in resets.items())
+    return {"writes": writes, "missing": missing, "ambiguous": ambiguous, "kept": kept, "listed": len(doc["portraits"]),
+            "no_photo": sorted(resets.values())}
 
 
 def prepare(path: Path | str) -> list[tuple[int, tuple[bytes, bytes]]]:
@@ -188,7 +203,8 @@ def apply_assignments(path: Path | str) -> dict[str, Any]:
         changed = [i for i in range(len(after)) if after[i] != resource[i]]
         require(set(changed) <= allowed, "a portrait id write touched a byte other than record +0x06")
     return {"status": "applied", "written": len(plan["writes"]), "listed": plan["listed"],
-            "missing": len(plan["missing"]), "ambiguous": len(plan["ambiguous"]), "kept": len(plan["kept"])}
+            "missing": len(plan["missing"]), "ambiguous": len(plan["ambiguous"]), "kept": len(plan["kept"]),
+            "no_photo": plan["no_photo"]}
 
 
 def roster_status(resource: bytes, doc: Mapping[str, Any] | None = None) -> dict[str, Any]:
