@@ -122,6 +122,33 @@ class LegacyInstallsCanBeUpdatedTests(_PanelCase):
         self.assertNotEqual(panel._badges["franchise_economy"].text(), "Needs update")
 
 
+class V08DiscStatesTests(_PanelCase):
+    """What the released v0.8 disc reads (inspect of the real disc): every 'previous' option is either an update or a rebuild."""
+
+    PREVIOUS = ("camera", "catch_slider", "honors_page", "k128_memory", "my_career", "my_career_home", "pass_rush_stats",
+                "player_progress", "player_progress_visible", "rookie_faces", "scorebug_runtime", "sim_cb_tackles",
+                "sim_realism")
+
+    def test_no_previous_option_is_left_greyed_out_with_a_generic_badge(self) -> None:
+        panel = self.panel(**{key: "previous" for key in self.PREVIOUS})
+        for key in self.PREVIOUS:
+            box = getattr(panel, key + "_check", None)
+            if box is None:
+                continue                                            # my_career_home has no box of its own
+            self.assertIn(panel._badges[key].text(), ("Needs update", "Beta 79 version: rebuild from retail"), key)
+            if panel._badges[key].text() != "Needs update":
+                self.assertFalse(box.isEnabled(), key)
+                self.assertIn("build from your retail game", box.toolTip(), key)
+
+    def test_a_preset_says_why_a_beta_79_option_was_skipped(self) -> None:
+        panel = self.panel(**{key: "previous" for key in self.PREVIOUS})
+        result = panel.apply_preset("softdrink_experimental")
+        self.assertIn("rookie_faces", result["skipped"])
+        note = panel.preset_note.text()
+        self.assertIn("the beta 79 version is installed; rebuild from retail to update it", note)
+        self.assertNotIn("full disc required", note)
+
+
 class SpeedSeparationSurvivesAProjectSaveTests(_PanelCase):
     """The project is saved from the plan; a disabled row used to plan 0 even when no disc had been read yet."""
 

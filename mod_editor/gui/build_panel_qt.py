@@ -377,7 +377,11 @@ LEGACY_UPGRADE_KEYS = {"progression": "player growth, decline and retirement", "
 # companions are linked together); the option stays off and says to rebuild from the retail game
 PREVIOUS_REBUILD_KEYS = {"my_career": "MyCareer", "my_career_home": "Career Home", "player_progress": "Player Progress",
                          "pass_rush_stats": "pass rush stats", "scorebug_runtime": "scorebug effects",
-                         "sim_realism": "simulated season realism"}
+                         "sim_realism": "simulated season realism",
+                         # b780 studio1: the released v0.8 disc reads "previous" for these two as well. Rookie faces cannot
+                         # be written over the beta-79 generator bytes (xbe_apply wants retail or this release's), and the
+                         # Player Progress row belongs to the screen above; both were greyed out with a generic badge.
+                         "rookie_faces": "rookie faces and first names", "player_progress_visible": "Player Progress row"}
 VENUE_BUILD_KEYS = (
     "modern_sofi", "modern_highmark", "modern_att", "modern_levis", "modern_allegiant",
     "modern_mercedes_benz", "modern_usbank", "modern_lucas_oil", "modern_state_farm",
@@ -2906,6 +2910,8 @@ class BuildPanel(QWidget):
             return "already installed"
         if state == "foreign":
             return "unrecognized source data"
+        if state == "previous":                 # b780 studio1: it said "full disc required" about a full disc
+            return "the beta 79 version is installed; rebuild from retail to update it"
         return "full disc required"
 
     def _boxes(self) -> dict[str, QCheckBox]:
