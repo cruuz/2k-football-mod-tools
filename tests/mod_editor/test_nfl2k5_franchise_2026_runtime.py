@@ -294,6 +294,10 @@ class NativeBoundaryTests(unittest.TestCase):
                 m.uc.mem_write(self.state, bytes(session.state.raw))
                 teams = m.get(m.root + 28)
                 original = bytes(m.uc.mem_read(teams, 1000))
+                # b780 modes2 (Q27, 0a6570d1a): the staging now tests league 2 (Franchise) like the game does, so a
+                # Franchise save in a practice mode (0/1/2) stages active + reserves. A regular-week game is a game mode
+                # (4+; 3 is Basic Training); this test passed before Q27 only because the staging tested league 1.
+                m.put(pr.MODE_VA, 4)
                 m.call(pr.STAGE_VA, ecx=teams, edx=teams + 500, budget=1000000)
                 self.assertEqual(bytes(m.uc.mem_read(teams, 1000)), original)
                 self.assertEqual(m.uc.mem_read(pr.TEAM_COPIES[0] + 0x11c, 1), b'\x35')
