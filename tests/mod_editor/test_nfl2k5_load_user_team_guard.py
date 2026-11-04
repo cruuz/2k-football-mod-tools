@@ -84,6 +84,29 @@ class StaticTests(unittest.TestCase):
         bent[rdata.offset_of(guarded, guard.SITE_VA + 1)] ^= 0x40
         self.assertEqual(career.status(bytes(bent)), 'foreign')
 
+    @unittest.skipUnless(XBE.is_file(), 'pinned USA retail XBE required')
+    def test_mycareer_accepts_the_late_owners_that_hook_its_contexts(self):
+        # b780-int (ship10 replay): after the guard, two more late owners hook inside MyCareer's pinned contexts:
+        # IR1's injured reserve (save 0x2D09FD, load 0x2D0F70, start 0x13EEDA) and sub1's lineup roles (the third
+        # auto-depth call 0x24853D). Installed after MyCareer, each must leave MyCareer applied; a hook byte that is
+        # not the owner's exact install stays foreign.
+        from mod_editor.core import nfl2k5_injured_reserve as injured_reserve, nfl2k5_lineup_roles as lineup_roles
+        from mod_editor.core import nfl2k5_modern_positions as modern_positions, nfl2k5_my_career_mode as career
+        from mod_editor.core import nfl2k5_position_pools as pools, nfl2k5_rdata_sites as rdata
+        from tests.nfl2k5_supersim_draft_fixture import retail_bytes
+        mycareer, _ = career.apply(retail_bytes())
+        with_ir, _ = injured_reserve.apply(mycareer, "modern")
+        self.assertEqual((career.status(with_ir), injured_reserve.status(with_ir)), ('applied', 'applied'))
+        bent = bytearray(with_ir)
+        bent[rdata.offset_of(with_ir, 0x2D09FD + 1)] ^= 0x40
+        self.assertEqual(career.status(bytes(bent)), 'foreign')
+        pooled, _ = pools.apply(modern_positions.apply(mycareer)[0])
+        with_roles, _ = lineup_roles.apply(pooled)
+        self.assertEqual((career.status(with_roles), lineup_roles.status(with_roles)), ('applied', 'applied'))
+        bent = bytearray(with_roles)
+        bent[rdata.offset_of(with_roles, lineup_roles.AUTO_DEPTH_CALLS[2] + 1)] ^= 0x40
+        self.assertEqual(career.status(bytes(bent)), 'foreign')
+
 @unittest.skipUnless(HAVE_UC and XBE.is_file(), 'pinned USA XBE, the signed f0 Franchise and Unicorn required')
 class NativeLoadTests(unittest.TestCase):
     @classmethod
