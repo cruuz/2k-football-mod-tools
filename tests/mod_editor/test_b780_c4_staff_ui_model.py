@@ -398,10 +398,19 @@ class EngineContractTests(unittest.TestCase):
         self.assertEqual(normal["head_coaches"], staff["head_coaches"])
         self.assertEqual(normal["defensive_coordinators"], staff["defensive_coordinators"])
         self.assertEqual([c["id"] for c in normal["created_coaches"]], [new_id])
+        # the released disc's roster has grown (the capacity arena), where a created coach cannot be written: the plan says
+        # so, as apply_to_body does (b780 studio1; before, the plan passed it and the build stopped in its roster step)
+        grown = ("a created coach can be written only on a roster before its capacity growth (build from your retail disc); "
+                 "this roster has grown")
         plan = engine.plan(staff, body)
-        self.assertEqual(list(plan.errors), [])
+        self.assertEqual(list(plan.errors), [grown])
         answer = ui.engine_plan(staff, body)
-        self.assertEqual((answer.errors, len(answer.clubs)), ((), 32))
+        self.assertEqual((answer.errors, len(answer.clubs)), ((grown,), 32))
+        plain = ui.swap_head_coaches(rows, ui.empty(), "KC", "DAL")          # moves of the clubs' own coaches write on it
+        plain = ui.set_coordinator(rows, plain, "KC", "PHI")
+        plain = ui.set_playbook(rows, plain, "KC", "coach")
+        self.assertEqual(list(engine.plan(plain, body).errors), [])
+        self.assertEqual(ui.engine_plan(plain, body).errors, ())
         for key in ("team", "playbook_from", "profile", "native_reason"):
             self.assertIn(key, answer.clubs["KC"])
         self.assertEqual(answer.clubs["KC"]["playbook_from"], "DAL")
