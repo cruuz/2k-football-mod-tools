@@ -519,6 +519,8 @@ class GameplayPatchesPanel(QWidget):
                 head.addWidget(check)
             if key in r62_ui.CHILDREN:
                 check.toggled.connect(lambda on, p=key: self._parent_toggled(p, on))
+            if key in r62_ui.DEFAULT_ON_CHILDREN:   # b780-mem1: a user's tick brings the default children along
+                check.clicked.connect(lambda on, p=key: self._parent_clicked(p, on))
             for parent, children in r62_ui.CHILDREN.items():
                 if key in children:
                     check.toggled.connect(lambda on, p=parent: self._child_toggled(p, on))
@@ -817,6 +819,13 @@ class GameplayPatchesPanel(QWidget):
                 if child in self.checks:
                     self.checks[child].setChecked(False)
         self._refresh()
+
+    def _parent_clicked(self, parent, on):
+        if on:
+            for child in r62_ui.DEFAULT_ON_CHILDREN.get(parent, ()):
+                box = self.checks.get(child)
+                if box is not None and box.isEnabled():
+                    box.setChecked(True)
 
     def _child_toggled(self, parent, on):
         box = self.checks.get(parent)
