@@ -448,7 +448,7 @@ FITTED_64 = Path(os.environ.get("NFL2K5_B780_ROSTER_64MB",
 REFRESH_BASE = Path(os.environ.get("NFL2K5_B780_REFRESH_BASE",
                                    "/home/noah/2k-worktrees/.b77-scratch/i4/inputs/ro1/baseline.body"))
 RETAIL = Path(os.environ.get("NFL2K5_RETAIL_XISO", "/media/noah/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso"))
-FITTED_64_SHA256 = "b04bb7083590d794eff7f40acf8ab5eb8db31839325c2fbeb5defda7c5983a45"
+FITTED_64_SHA256 = "26522689b76cb8791cc2936058513a47f4c3c89fc58a1f47fc4a7622f3737c20"
 
 
 def _proof_inputs():
@@ -475,7 +475,7 @@ def users_dump_base(source: dict) -> bytes:
 
 
 @unittest.skipUnless(_proof_inputs(), "the 64 MB roster proof needs the release pack roster, its validated 64 MB file "
-                                      "(b04bb708) and the refresh's pinned base")
+                                      "(26522689) and the refresh's pinned base")
 class SoftdrinkRosterFitProof(unittest.TestCase):
     """Coordinator 11/03: the 64 MB build keeps the pack's 2026 rosters. The Studio's fit (nfl2k5_console_memory.
     fit_roster_edits, M64A's retail fit as a library) on the healthy pack roster equals M64A's validated 64 MB file."""

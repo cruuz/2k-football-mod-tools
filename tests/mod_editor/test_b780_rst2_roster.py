@@ -152,6 +152,41 @@ class InjuredReservePolicyTests(unittest.TestCase):
         with self.assertRaises(rr.RosterRecordError):
             refresh.long_injury_words(0, 0, 3)                               # under four weeks is not a long injury
 
+    def test_a_body_part_names_the_game_injury_type_and_nothing_else_changes(self):
+        """b780 rst2: the row's nflverse body part becomes the type in the +0x28 halfword; the weeks and status words, the
+        depth rank and side are the same as without it (the game's weekly advance only counts the weeks down)."""
+        import struct
+        plan, injured = self.full_club(weeks=8)
+        plan["room_policy"] = "ir"
+        plain, _r = refresh.apply_body(self.body, plan)
+        for part, name, key in (("Ankle", "broken ankle", (20, 23)), ("knee", "broken kneecap", (18, 23)),
+                                ("Hamstring", "torn hamstring", (17, 13))):
+            typed = copy.deepcopy(plan)
+            next(r for r in typed["players"] if r["index"] == injured)["ir_injury"] = part
+            out, receipt = refresh.apply_body(self.body, typed)
+            doc, player, words = self.words(out, injured)
+            _d, plain_player, plain_words = self.words(plain, injured)
+            self.assertEqual(words, plain_words)
+            (half,) = struct.unpack_from("<H", doc.body, player.offset + 0x28)
+            (plain_half,) = struct.unpack_from("<H", plain, plain_player.offset + 0x28)
+            self.assertEqual(half & 0x3FF, key[0] | (key[1] << 5))
+            self.assertEqual(half & 0xFC00, plain_half & 0xFC00)
+            mark = receipt["injured_reserve"]["marked_to_start_on_ir"][0]
+            self.assertEqual((mark["injury"], mark["type"], mark["weeks"]), (part, name, 8))
+            self.assertEqual(refresh.apply_body(out, typed)[0], out)               # stable on a second run
+
+    def test_a_part_the_game_has_no_type_for_leaves_the_record_as_before(self):
+        plan, injured = self.full_club(weeks=8)
+        plan["room_policy"] = "ir"
+        plain, _r = refresh.apply_body(self.body, plan)
+        for part in ("Concussion", "Groin", None):
+            typed = copy.deepcopy(plan)
+            if part:
+                next(r for r in typed["players"] if r["index"] == injured)["ir_injury"] = part
+            out, receipt = refresh.apply_body(self.body, typed)
+            self.assertEqual(out, plain)
+            self.assertNotIn("type", receipt["injured_reserve"]["marked_to_start_on_ir"][0])
+
     def test_the_default_policy_still_releases_for_room(self):
         plan, injured = self.full_club()
         out, receipt = refresh.apply_body(self.body, plan)

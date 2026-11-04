@@ -88,6 +88,131 @@ def long_injury_words(word20, word24, weeks):
             (word24 & ~STATUS_MASK & 0xFFFFFFFF) | STATUS_OUT)
 
 
+# b780 rst2 (coordinator 11/04, "injury type"): the game's own injury type for each marked injury. The halfword at player
+# +0x28 holds the type in its low ten bits: bits 0..4 the body part group, bits 5..9 the injury within that group (bits
+# 10..15 are the depth rank and side). The retail default.xbe keeps the 65 types in the table at 0x4F2D00 (16 bytes each:
+# the group/index/flag word, the name, two ability multipliers); the Injury Report names an injury through it (0x21DC30,
+# "injury" when the pair is not in the table) and the weekly advance (0x133BD0) only decrements the weeks, then sets the
+# status from the type (0x13E190: Out when the weeks outlast the type's normal duration, or always for the broken and torn
+# kinds, never for a player with no type). So the type never changes the weeks; it changes the label and keeps the
+# status honest. Each row below: (group, index, name, normal duration in weeks, the first week count from which every
+# position's status is Out (None: some position is never Out), the weeks above which the type ends a career (None:
+# never)). The last two columns were measured natively on the v0.9 executable and roster (tests/.../InjuryTypeNativeTests).
+INJURY_TYPES = (
+    (8, 12, 'pulled lower back muscle', 5, 1, None),
+    (8, 22, 'broken vertebrae', 8, 1, 26),
+    (8, 23, 'spinal injury', 16, 1, 26),
+    (9, 9, 'bruised shoulder', 8, None, None),
+    (9, 7, 'pinched shoulder nerve', 4, None, None),
+    (9, 14, 'hyperextended shoulder', 60, None, None),
+    (9, 15, 'shoulder tendinitis', 30, None, None),
+    (9, 17, 'dislocated shoulder', 30, None, None),
+    (9, 23, 'broken shoulder', 3, 4, None),
+    (10, 9, 'bruised bicep', 10, None, None),
+    (10, 12, 'pulled bicep', 1, 2, None),
+    (10, 13, 'torn bicep', 2, 3, None),
+    (10, 23, 'broken arm', 6, 1, None),
+    (11, 22, 'hairline arm fracture', 4, 5, None),
+    (11, 23, 'broken forearm', 6, 7, None),
+    (11, 24, 'fractured arm', 12, 13, None),
+    (12, 21, 'sprained wrist', 10, None, None),
+    (12, 23, 'broken wrist', 4, 5, None),
+    (13, 9, 'bruised elbow', 3, None, None),
+    (13, 7, 'pinched elbow nerve', 10, None, None),
+    (13, 21, 'sprained elbow', 15, None, None),
+    (13, 14, 'strained elbow ligaments', 10, None, None),
+    (13, 15, 'elbow tendinitis', 30, None, None),
+    (13, 16, 'hyperextended elbow', 1, 2, None),
+    (13, 17, 'dislocated elbow', 6, 7, None),
+    (13, 23, 'broken elbow', 4, 5, None),
+    (14, 9, 'bruised hand', 3, None, None),
+    (14, 22, 'broken hand', 15, None, None),
+    (14, 23, 'broken hand', 4, 5, None),
+    (15, 17, 'dislocated finger', 5, None, None),
+    (15, 22, 'hair-line finger fracture', 15, None, None),
+    (15, 23, 'broken finger', 2, None, None),
+    (16, 9, 'bruised hip', 10, None, None),
+    (16, 8, 'hip pointer', 3, None, None),
+    (16, 23, 'broken hip', 6, 1, 8),
+    (17, 9, 'deep thigh bruise', 3, None, None),
+    (17, 11, 'cramps', 8, None, None),
+    (17, 12, 'pulled hamstring', 4, 5, None),
+    (17, 13, 'torn hamstring', 6, 1, None),
+    (17, 23, 'broken thigh', 6, 1, None),
+    (18, 9, 'bruised knee', 15, None, None),
+    (18, 14, 'hyperextended knee', 1, 2, None),
+    (18, 18, 'twisted knee', 2, 3, None),
+    (18, 15, 'knee tendinitis', 2, 1, None),
+    (18, 19, 'torn ACL', 16, 1, 26),
+    (18, 20, 'torn MCL', 16, 1, None),
+    (18, 23, 'broken kneecap', 10, 1, None),
+    (19, 9, 'bruised calf', 15, None, None),
+    (19, 11, 'leg cramping', 5, None, None),
+    (19, 12, 'pulled calf muscle', 4, 5, None),
+    (19, 13, 'torn calf muscle', 6, 7, None),
+    (19, 22, 'lower leg stress fracture', 6, 7, None),
+    (19, 23, 'broken leg', 6, 1, None),
+    (19, 24, 'fractured leg', 16, 1, 26),
+    (20, 18, 'twisted ankle', 15, None, None),
+    (20, 23, 'broken ankle', 8, 1, None),
+    (20, 19, 'torn achilles', 8, 1, 16),
+    (20, 20, 'ruptured achilles', 16, 1, 26),
+    (20, 9, 'sore ankle', 5, None, None),
+    (20, 21, 'high ankle sprain', 30, None, None),
+    (21, 22, 'foot stress fracture', 6, 7, 10),
+    (21, 23, 'broken foot', 4, 1, None),
+    (22, 23, 'broken toe', 1, 2, None),
+    (22, 14, 'turf toe', 2, 3, None),
+    (22, 19, 'turf toe', 8, 9, 24),
+)
+_GROUP_OF = lambda *groups: tuple((g, i) for g, i, *_ in INJURY_TYPES if g in groups)
+_NAMED = lambda *pairs: tuple(pairs)
+# nflverse injury report body part (lower case) -> the game types that part can take. A part the game has no type for
+# (neck, head, concussion, chest, ribs, abdomen, glute, illness, ...) stays untyped, as before.
+INJURY_PARTS = {
+    "ankle": tuple(t for t in _GROUP_OF(20) if t[1] not in (19, 20)),
+    "achilles": _NAMED((20, 19), (20, 20)),
+    "foot": _GROUP_OF(21), "heel": _GROUP_OF(21), "toe": _GROUP_OF(22),
+    "knee": _GROUP_OF(18),
+    "hamstring": _NAMED((17, 12), (17, 13)),
+    "quadricep": _NAMED((17, 9), (17, 23)), "thigh": _NAMED((17, 9), (17, 23)),
+    "calf": _NAMED((19, 9), (19, 12), (19, 13)),
+    "shin": _NAMED((19, 22), (19, 23), (19, 24)), "fibula": _NAMED((19, 22), (19, 23), (19, 24)),
+    "hip": _GROUP_OF(16),
+    "shoulder": _GROUP_OF(9),
+    "biceps": _GROUP_OF(10), "triceps": _GROUP_OF(10),
+    "elbow": _GROUP_OF(13), "forearm": _GROUP_OF(11), "wrist": _GROUP_OF(12),
+    "hand": _GROUP_OF(14), "thumb": _GROUP_OF(14), "finger": _GROUP_OF(15),
+    "back": _GROUP_OF(8),
+}
+
+
+def injury_type(body_part, weeks):
+    """(group, index, name) of the game injury type for a nflverse body part and the weeks he is out, or None.
+
+    Among the types the part can take, those whose status is Out at that many weeks (the injury is not a nick he plays
+    through) and that do not end a career at that many weeks; the one whose normal duration is closest to the weeks wins
+    (a tie goes to the type listed first in the game's table)."""
+    allowed = INJURY_PARTS.get(str(body_part or "").strip().lower())
+    if not allowed:
+        return None
+    best = None
+    for order, (group, index, name, duration, out_from, career_above) in enumerate(INJURY_TYPES):
+        if (group, index) not in allowed or out_from is None or weeks < out_from:
+            continue
+        if career_above is not None and weeks > career_above:
+            continue
+        key = (abs(duration - weeks), order)
+        if best is None or key < best[0]:
+            best = (key, (group, index, name))
+    return None if best is None else best[1]
+
+
+def with_injury_type(halfword, group, index):
+    """The +0x28 halfword with the injury type set (the depth rank and side bits stay)."""
+    return (halfword & 0xFC00) | (group & 0x1F) | ((index & 0x1F) << 5)
+
+
 def _make_room(club, active, keep, position, minimums, ranks, big_deal, overall, limit):
     """Remove players from ``active`` (a list, changed in place) until it holds ``limit``; returns who left, in order.
 
@@ -548,7 +673,16 @@ def apply_body(body, plan):
             offset = by[index].offset + 0x20
             word20, word24 = struct.unpack_from("<II", buffer, offset)
             struct.pack_into("<II", buffer, offset, *long_injury_words(word20, word24, weeks))
-            ir_marked.append({"player": by[index].display, "club": weeks_of[index].get("team"), "weeks": weeks})
+            mark = {"player": by[index].display, "club": weeks_of[index].get("team"), "weeks": weeks}
+            part = weeks_of[index].get("ir_injury")
+            choice = injury_type(part, weeks)
+            if part:
+                mark["injury"] = part
+            if choice is not None:                    # b780 rst2: the type, so the Injury Report names the injury
+                (halfword,) = struct.unpack_from("<H", buffer, by[index].offset + 0x28)
+                struct.pack_into("<H", buffer, by[index].offset + 0x28, with_injury_type(halfword, choice[0], choice[1]))
+                mark["type"] = choice[2]
+            ir_marked.append(mark)
         result = bytes(buffer)
     # b780 sub1 (option (c), coordinator 11/03): the last step of the final roster, after every record the plan creates
     # exists. Each club's best receiving running back is its default SPECIAL third-down back (RB side row 1) and its
