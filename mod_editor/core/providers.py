@@ -803,8 +803,8 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_pass_rush_stats_code_b779.py": "1aaa9727867ef483c1bc53696ab98efefe1440381cdb1771cba1d05f31413c9d",  # b780 n6: frozen beta-79 revision
         "mod_editor/core/nfl2k5_cpu_passer_iq.py": "b20345c8645b637e4fa619d811e50786bca501259ba16a6fa7a5b7c48b195b27",  # b780 a-passer
         "mod_editor/core/nfl2k5_cpu_passer_iq_code.py": "8f9e07127306df30acb5e5f65cb2c299da1cc8b0fb06e29f1459e3b7d9d209bc",  # b780 a-passer
-        "mod_editor/core/nfl2k5_cpu_clock2.py": "8614c26e5e487a5f9f89c805b757429ba647aae64e279cfbfd7478068737b8be",  # b780 b-clock
-        "mod_editor/core/nfl2k5_cpu_clock2_code.py": "7e0c606d14185cf48542a8bc81d2b99d219203cdd89951abb438f135752d65cf",  # b780 b-clock
+        "mod_editor/core/nfl2k5_cpu_clock2.py": "0551a8641fe264a41b6b852fb02ea32982789d187835da5b73d58b8ada6affe2",  # b780 b-clock
+        "mod_editor/core/nfl2k5_cpu_clock2_code.py": "d93fc3d5bca3a4aa1fee50e62d919ef75f2f6fbf1cf15d6c749c8a3c9fb4790e",  # b780 b-clock
         "mod_editor/core/nfl2k5_protection_calls.py": "9ad8fbe2675e6287416f23029ee841383465655bf0eeec65350769ef6899a715",  # b780 p1-slide
         "mod_editor/core/nfl2k5_protection_calls_code.py": "381feb0430fdcbbb1550f75889e3ca556ebc18550813c8f0a740ee9d5179183c",  # b780 p1-slide
         "mod_editor/core/nfl2k5_lineman_rating.py": "e1c08c86e0a31c58fd86d5a155c56ad200cf5ef237771c95b39bfe29215261c1",
