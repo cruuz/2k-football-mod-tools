@@ -243,7 +243,8 @@ class RecordTests(unittest.TestCase):
                  ("remove", locks.REMOVE_VA, locks.PATCHED_REMOVE),
                  ("panel", locks.PANEL_VA, locks.PATCHED_PANEL),
                  ("human", locks.HUMAN_VA, locks.PATCHED_HUMAN),
-                 ("sort", locks.SORT_VA, locks.PATCHED_SORT))
+                 ("sort", locks.SORT_VA, locks.PATCHED_SORT),
+                 ("all_star", locks.ALL_STAR_VA, locks.PATCHED_ALL_STAR))
         with tempfile.TemporaryDirectory() as tmp:
             obj, elf = Path(tmp) / "depth.o", Path(tmp) / "depth.elf"
             subprocess.run(["as", "--32", str(ROOT / "docs/mod_editor/nfl2k5_depth_locks.S"), "-o", str(obj)], check=True, capture_output=True)
@@ -448,6 +449,19 @@ def _assert_starting_slots(case, rows):
             case.assertEqual(len(lead), 1)
             starters = (0, 1) if position in (11, 15) and len(group) > 2 else (0,)
             case.assertNotIn(lead[0][2], starters, (position, rows))
+
+
+@lru_cache(maxsize=1)
+def V4_PATCHED_XBE():
+    """A revision-4 install (beta-77 .. beta-79, the b777 dl4 release; b780 hunt6 added revision 5)."""
+    data = bytearray(locks.apply(returners.apply(XBE.read_bytes())[0])[0])
+    image = XbeImage(bytes(data))
+    for site in locks.sites("retail", 4):
+        off = image.offset(site.va, len(site.before))
+        data[off:off + len(site.after)] = site.after
+    for s in strength._sections(bytes(data)):
+        data[s.header_offset + 36:s.header_offset + 56] = strength.section_digest(bytes(data), s)
+    return bytes(data)
 
 
 @lru_cache(maxsize=1)
@@ -885,7 +899,7 @@ class ExecutionTests(unittest.TestCase):
         self.assertEqual(receipt["upgraded_from"], 1)
         self.assertEqual({e["label"] for e in receipt["edits"]},
                          {"compactor", "weekly_rank_stage", "screen_swap", "ratings_panel_guard",
-                          "user_club_compact", "weekly_sort_release"})
+                          "user_club_compact", "weekly_sort_release", "weekly_all_star_skip"})
         self.assertTrue(locks.apply(upgraded)[1]["already_applied"])
 
     def test_revision2_install_upgrades_in_place(self):
@@ -895,8 +909,9 @@ class ExecutionTests(unittest.TestCase):
         upgraded, receipt = locks.apply(v2)
         self.assertEqual(upgraded, self.patched)
         self.assertEqual(receipt["upgraded_from"], 2)
+        # b780 hunt6 (revision 5): every older install also gains the all-star skip (swap block + loop head call)
         self.assertEqual({e["label"] for e in receipt["edits"]},
-                         {"compactor", "weekly_rank_stage", "weekly_sort_release"})
+                         {"compactor", "weekly_rank_stage", "weekly_sort_release", "screen_swap", "weekly_all_star_skip"})
 
     def test_revision3_install_upgrades_in_place(self):
         v3 = V3_PATCHED_XBE()
@@ -904,7 +919,18 @@ class ExecutionTests(unittest.TestCase):
         upgraded, receipt = locks.apply(v3)
         self.assertEqual(upgraded, self.patched)
         self.assertEqual(receipt["upgraded_from"], 3)
-        self.assertEqual({e["label"] for e in receipt["edits"]}, {"compactor", "weekly_rank_stage"})
+        self.assertEqual({e["label"] for e in receipt["edits"]},
+                         {"compactor", "weekly_rank_stage", "screen_swap", "weekly_all_star_skip"})
+        self.assertTrue(locks.apply(upgraded)[1]["already_applied"])
+
+    def test_revision4_install_upgrades_in_place(self):
+        # b780 hunt6: the beta-77 .. beta-79 / SOFTDRINK v0.6 .. v0.8 install gains only the all-star skip
+        v4 = V4_PATCHED_XBE()
+        self.assertEqual((locks.read_any(v4)["status"], locks.read_any(v4)["revision"]), ("legacy", 4))
+        upgraded, receipt = locks.apply(v4)
+        self.assertEqual(upgraded, self.patched)
+        self.assertEqual(receipt["upgraded_from"], 4)
+        self.assertEqual({e["label"] for e in receipt["edits"]}, {"screen_swap", "weekly_all_star_skip"})
         self.assertTrue(locks.apply(upgraded)[1]["already_applied"])
 
     # b777 dl3 (Noah 10/20: a better free-agent signing must start on a CPU club).

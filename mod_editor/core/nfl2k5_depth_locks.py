@@ -79,6 +79,26 @@ writes each seat into its 3-bit field directly (the bytes come from a
 shorter side-priority mapping). Revision-3, -2 and -1 images report
 ``legacy`` and upgrade in place.
 
+Revision 5 (b780, job hunt6). The weekly auto-depth skips the all-star
+teams (team +0x128 kind 1: AFC, NFC, NFL and the all-time squads). The
+postseason schedule (0x2A8261..0x2A827E, retail) puts the AFC and NFC Pro
+Bowl teams in league slots 32 and 33 until the next rollover takes them out
+again (0x247B51..0x247B6A), so the weekly pass (TEAM_COUNT/TEAM_AT) sorted
+them after the 32 clubs, before every playoff game. Rank and side live in
+the player record (+0x28), which a Pro Bowler shares with his club, so each
+one took his Pro Bowl row on his own club's depth chart: an AFC QB2 became
+his club's QB2 next to the club's own backup (no QB1), a third Pro Bowl QB
+sat behind his club's backups, and with locks the clubs could not repair it
+for the rest of the postseason (the locks kept the Pro Bowl rows). A
+user's Pro Bowlers moved the same way (the Pro Bowl teams are not his). The
+loop head's call to the user-club test (0x2BDD1B, ``call 0x13EC30``) now
+calls a 17-byte check in the swap block's own spare bytes (0x242CFE): a
+kind-1 team leaves through revision 2's ``jmp 0x2BDFD4`` to the loop tail
+(no sort, no compactor, no returner pass); every other team goes to
+0x13EC30 as before. The Pro Bowl teams keep their members' club rows (the
+Play Now AFC and NFC teams play the same way). Revision-4, -3, -2 and -1
+images report ``legacy`` and upgrade in place.
+
 Conflicting imported locks are preserved (and reported by the roster API),
 not silently reassigned. Valid records have unique locked rows 0..6 per
 position/chain and at most one owner of each returner role per team. Row 7
@@ -261,10 +281,25 @@ PATCHED_RANK_STAGE = bytes.fromhex(
     "ff475cc6041ffe8b449d008b4f4c66d34828806028f808502866d3402843eba64683fe09729e31c089475c89476061c3"
 )
 
-PATCHED_SWAP = bytes.fromhex(
+V4_PATCHED_SWAP = bytes.fromhex(
     "5731ffa801ba001c0000b801000000740aba00e00000b8020000000841520846520fb7792866337e2821d766317e2866"
     "3179285fc2040085f675126a0158a3c474c100a3c874c100a3cc74c100e91e02000089f9e8970a0000e9d6b20700"
 )
+# Revision 5 (b780 hunt6): the all-star skip, right after revision 2's user-club stub (which ends with
+# ``jmp 0x2BDFD4`` at 0x242CF9), in the swap block's own spare bytes:
+#   0x242CFE  cmp dword ptr [ecx+0x128], 1   ; ecx = the team (loop head: mov ecx, edi)
+#   0x242D05  jne 0x242D0A
+#   0x242D07  pop eax                        ; drop the loop head's return address
+#   0x242D08  jmp 0x242CF9                   ; -> jmp 0x2BDFD4, the loop tail (next team)
+#   0x242D0A  jmp 0x13EC30                   ; the user-club test, unchanged
+ALL_STAR_SKIP_VA = 0x242CFE
+ALL_STAR_KIND = 1
+ALL_STAR_SKIP = bytes.fromhex("83b92801000001" "7503" "58" "ebef" "e921bfefff")
+PATCHED_SWAP = V4_PATCHED_SWAP + ALL_STAR_SKIP
+assert SWAP_VA + len(V4_PATCHED_SWAP) == ALL_STAR_SKIP_VA and len(PATCHED_SWAP) <= len(RETAIL_SWAP)
+ALL_STAR_VA = 0x2BDD1B  # the weekly loop head's user-club test, inside the pinned sort frame
+RETAIL_ALL_STAR = bytes.fromhex("e8100fe8ff")      # call 0x13EC30
+PATCHED_ALL_STAR = bytes.fromhex("e8de4ff8ff")     # call 0x242CFE
 
 PANEL_VA = 0x242E40  # FUN_00242E00's empty-row branch
 RETAIL_PANEL = bytes.fromhex("0f84ca000000")
@@ -372,7 +407,7 @@ class Site:
     after: bytes
 
 
-REVISION = 4
+REVISION = 5
 
 
 def sites(layout: str = "retail", revision: int = REVISION) -> tuple[Site, ...]:
@@ -382,14 +417,17 @@ def sites(layout: str = "retail", revision: int = REVISION) -> tuple[Site, ...]:
     rank stage and swap block in their same spans and adds the ratings-panel
     branch, which stays retail in a revision-1 image. Revision 3 (b777 dl3)
     adds the weekly sort with the release rule; it stays retail before.
-    Revision 4 (b777 dl4) rewrites the compactor and rank stage again."""
+    Revision 4 (b777 dl4) rewrites the compactor and rank stage again.
+    Revision 5 (b780 hunt6) adds the all-star skip to the swap block's spare
+    bytes and points the weekly loop head's user-club test at it; before it
+    the call is retail and those bytes are the swap block's 0x90 padding."""
     if layout not in ("retail", "special"):
         raise DepthLockError("unknown depth-chart layout")
-    if revision not in (1, 2, 3, 4):
+    if revision not in (1, 2, 3, 4, 5):
         raise DepthLockError("unknown depth-lock revision")
     v1 = revision == 1
     swap_before = bytearray(RETAIL_SWAP)
-    swap_after = bytearray(V1_PATCHED_SWAP if v1 else PATCHED_SWAP)
+    swap_after = bytearray(V1_PATCHED_SWAP if v1 else V4_PATCHED_SWAP if revision < 5 else PATCHED_SWAP)
     swap_before[3:5] = swap_after[3:5] = bytes.fromhex("85c0" if layout == "retail" else "a801")
     values = (
         ("compactor", COMPACT_VA, RETAIL_COMPACT, V1_PATCHED_COMPACT if v1 else
@@ -405,6 +443,8 @@ def sites(layout: str = "retail", revision: int = REVISION) -> tuple[Site, ...]:
         ("ratings_panel_guard", PANEL_VA, RETAIL_PANEL, RETAIL_PANEL if v1 else PATCHED_PANEL),
         ("user_club_compact", HUMAN_VA, RETAIL_HUMAN, RETAIL_HUMAN if v1 else PATCHED_HUMAN),
         ("weekly_sort_release", SORT_VA, RETAIL_SORT, PATCHED_SORT if revision >= 3 else RETAIL_SORT),
+        ("weekly_all_star_skip", ALL_STAR_VA, RETAIL_ALL_STAR,
+         PATCHED_ALL_STAR if revision >= 5 else RETAIL_ALL_STAR),
     )
     return tuple(Site(label, va, before, after + b"\x90" * (len(before) - len(after)))
                  for label, va, before, after in values)
@@ -427,6 +467,9 @@ def _context(payload: bytes) -> tuple[XbeImage, str]:
     at = SORT_VA - 0x2BDCF0
     if frame[at:at + len(PATCHED_SORT)] == PATCHED_SORT:
         frame[at:at + len(RETAIL_SORT)] = RETAIL_SORT  # revision 3 owns the sort body
+    at = ALL_STAR_VA - 0x2BDCF0
+    if frame[at:at + len(PATCHED_ALL_STAR)] == PATCHED_ALL_STAR:
+        frame[at:at + len(RETAIL_ALL_STAR)] = RETAIL_ALL_STAR  # revision 5 owns the loop head's user-club call
     if image.read(MARGIN_VA, 4) != struct.pack("<f", MARGIN):
         raise DepthLockError("unknown release margin constant")
     msec = image.section(MARGIN_VA, 4)
@@ -459,11 +502,12 @@ def read_any(payload: bytes) -> dict[str, object]:
         state = next(iter(unique)) if len(unique) == 1 else "foreign"
         legacy = None
         if state == "foreign":
-            for old in (3, 2, 1):
+            for old in (4, 3, 2, 1):
                 if all(image.read(site.va, len(site.after)) == site.after
                        for site in sites(layout, old)):
-                    # A complete revision-3/-2 (b777 release candidates) or
-                    # revision-1 (b775/b776 discs) install: upgrade in place.
+                    # A complete revision-4 (beta-77 .. beta-79 / SOFTDRINK v0.6 .. v0.8 discs),
+                    # revision-3/-2 (b777 release candidates) or revision-1
+                    # (b775/b776 discs) install: upgrade in place.
                     state, legacy = "legacy", old
                     break
         return {"status": state, "sites": states, "stride": modern.SLOTS_PER_UNIT,
