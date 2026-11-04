@@ -80,5 +80,27 @@ class SpeedSeparationIsCountedTests(_PanelCase):
         self.assertEqual([label for label in locked.selected_labels() if "Speed separation" in label], [])
 
 
+class StandaloneOptionsAreWorkTests(_PanelCase):
+    """Options mod_build builds on their own were refused as "Nothing is selected" when they were the only tick."""
+
+    def test_each_standalone_option_alone_is_a_change(self) -> None:
+        for key in ("espn25_rosters", "honors_history", "trophy_room"):
+            with self.subTest(option=key):
+                panel = self.panel()
+                box = panel._boxes()[key]
+                self.assertTrue(box.isEnabled(), key)
+                box.setChecked(True)
+                self.app.processEvents()
+                self.assertTrue(panel.has_work(), key)
+                self.assertNotIn("Nothing is selected", panel.blocker(), key)
+                self.assertTrue(panel.build_button.isEnabled(), panel.blocker())
+                self.assertIn(box.text(), panel.selected_labels())
+
+    def test_a_plain_copy_is_still_refused(self) -> None:
+        panel = self.panel()
+        self.assertFalse(panel.has_work())
+        self.assertIn("Nothing is selected", panel.blocker())
+
+
 if __name__ == "__main__":
     unittest.main()
