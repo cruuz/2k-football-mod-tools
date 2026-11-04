@@ -80,6 +80,23 @@ class SpeedSeparationIsCountedTests(_PanelCase):
         self.assertEqual([label for label in locked.selected_labels() if "Speed separation" in label], [])
 
 
+class NeedsUpdateWordingTests(_PanelCase):
+    """A beta-79 install that this build updates in place: the badge, the box and its tooltip must agree."""
+
+    def test_boxes_that_stay_ticked_do_not_tell_the_player_to_select_them(self) -> None:
+        panel = self.panel(honors_page="previous", k128_memory="previous", camera="previous")
+        for key in ("honors_page", "k128_memory"):
+            box = getattr(panel, key + "_check")
+            self.assertTrue(box.isChecked() and not box.isEnabled(), key)           # locked on: the build updates it
+            self.assertEqual(panel._badges[key].text(), "Needs update", key)
+            self.assertNotIn("Select to update", box.toolTip(), key)
+            self.assertIn("stays ticked", box.toolTip(), key)
+            self.assertTrue(panel.plan().__dict__[key], key)
+        camera = panel.camera_check                                                   # this one the player ticks
+        self.assertTrue(camera.isEnabled() and not camera.isChecked())
+        self.assertIn("Select to update", camera.toolTip())
+
+
 class SpeedSeparationSurvivesAProjectSaveTests(_PanelCase):
     """The project is saved from the plan; a disabled row used to plan 0 even when no disc had been read yet."""
 

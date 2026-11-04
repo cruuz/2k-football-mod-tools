@@ -3525,6 +3525,10 @@ class BuildPanel(QWidget):
                 box.setChecked(True)
                 box.blockSignals(False)
                 box.setEnabled(False)
+                if (self._state or {}).get(key) == "previous":
+                    # gate() worded this as a box to select; a locked, ticked box needs no selecting (b780 studio1)
+                    box.setToolTip(f"The {PREVIOUS_UPGRADE_KEYS[key]} from an older build (beta 79) is installed. This build "
+                                   "brings it up to this release's revision in place, so it stays ticked.")
         state = self._state or {}
         installed = state.get("decided_clock_settings") or {}
         cutoff = installed.get("settings") or {}
