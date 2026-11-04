@@ -843,40 +843,42 @@ SECTION(".roster_n") int FAST economy_vet_short(u8 *team) {
     return *(int *)(team + 0x124) + (int)(2 * economy_floor(0)) - economy_cap(team, 1, 0);
 }
 
-/* The retail veteran cap cut (0x2BFAF0, stage 6, every club, years pro >= 10, 210%) proposed a veteran while payroll +
- * 6000 >= cap. Release nobody while the club is not short of the line above. Otherwise, of every veteran the cut's own
- * test passes (years pro >= 10 under contract; salary over 2.1 x the value from the cut's own value call at 0x2BFB67,
- * which star retention may hook; dead money below salary x years left; never the club's last healthy K or P, as
- * revision 6), release the one whose charge clears the shortfall with the least value lost; when no single release
- * clears it, the most overpaid one (charge - value, the worst value per dollar first; the cut proposes again while
- * the club is short). A club $2M short no longer loses a $9M starter. */
+/* The retail veteran cap cut (0x2BFAF0, stage 6, every club, years pro >= 10, 210%) proposed an overpaid veteran while
+ * payroll + 6000 >= cap. Release nobody while the club is not short of the line above. Otherwise (coordinator 11/04: "A
+ * club $0.52M short shouldn't lose Mark Andrews. Choose from every player above the position minimums, cheapest value
+ * loss first, while still clearing the line, with charted starters last") the release comes from the whole club: every
+ * player under contract at a position above its smart-cut minimum (cut_rows row 2, OLB slots as LB in the one-pool
+ * scheme; never the club's last healthy K or P), valued by the cut's own value call at 0x2BFB67 (which star retention
+ * may hook). Of those whose charge clears the shortfall, the least value lost, a depth-chart starter (+0x28 rank 0)
+ * only when no backup clears it; when no single release clears it, the least value lost again, backups first (the cut
+ * proposes again while the club is short). The proposal itself only says the club has an overpaid veteran. */
 SECTION(".roster_n") u8 *FAST economy_vet_pick(u8 *team, u8 *proposed) {
-    int over = economy_vet_short(team), most = 0;
+    int over = economy_vet_short(team);
     unsigned (FAST *worth)(u8 *, unsigned, unsigned, unsigned, unsigned) =
         (unsigned (FAST *)(u8 *, unsigned, unsigned, unsigned, unsigned))(0x2BFB6C + *(int *)0x2BFB68);
-    u8 *best = 0, *any = 0;
-    unsigned least = 0;
+    unsigned olb = league_has_olb(), least = 0;
+    u8 *best = 0;
     (void)proposed;
     if (over <= 0) return 0;
     for (unsigned i = 0; i < team[0x11c]; ++i) {
         u8 *q = ((u8 **)team)[i];
-        unsigned left = q[0x24] & 15, j;
-        if ((q[0x25] & 31) < 10 || !left) continue;
-        unsigned salary = n_salary(q), value = worth(q, 0, 0, 1, left) & 0xffff;
-        if (salary <= value * 210 / 100) continue;
-        if (((unsigned (FAST *)(u8 *))0x13ed00)(q) >= salary * left) continue;
-        if (q[0x35] - 1u < 2u) {             /* K or P: another healthy one must stay */
+        unsigned pos = q[0x35], left = q[0x24] & 15, j, floor;
+        if (pos >= 17 || !left) continue;
+        floor = cut_rows[2][pos];
+        if (!olb && pos - 10u < 2u) floor = pos == 10 ? 0 : cut_rows[2][10] + cut_rows[2][11];
+        if (n_at_position(team, pos) <= floor) continue;
+        if (pos - 1u < 2u) {                 /* K or P: another healthy one must stay */
             for (j = 0; j < team[0x11c]; ++j) {
                 u8 *o = ((u8 **)team)[j];
-                if (o != q && o[0x35] == q[0x35] && !(o[0x23] & 0x80)) break;
+                if (o != q && o[0x35] == pos && !(o[0x23] & 0x80)) break;
             }
             if (j == team[0x11c]) continue;
         }
-        int charge = (int)(salary + n_prorated(*(u16 *)(q + 10), q[0x26] >> 4, q[0x27] & 15));
-        if (charge >= over && (!best || value < least)) { best = q; least = value; }
-        if (!any || charge - (int)value > most) { any = q; most = charge - (int)value; }
+        int charge = (int)(n_salary(q) + n_prorated(*(u16 *)(q + 10), q[0x26] >> 4, q[0x27] & 15));
+        unsigned key = (worth(q, 0, 0, 1, left) & 0xffff) | !((*(u16 *)(q + 0x28) >> 10) & 7) << 16 | (charge < over) << 17;
+        if (!best || key < least) { best = q; least = key; }
     }
-    return best ? best : any;
+    return best;
 }
 
 /* fill(): count minus the minimum (want 0) or the wanted depth (want 1), as 0x2BD880 / 0x2BD8C0 count (0xC3CB0, every
