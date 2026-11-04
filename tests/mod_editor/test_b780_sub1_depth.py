@@ -80,3 +80,71 @@ class ReleasedRosterPositionChangeTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+# ------------------------------------------------------------------------------------------------ Q64: the KR arm
+try:
+    import unicorn
+    from unicorn import x86_const as x86
+except ImportError:  # pragma: no cover
+    unicorn = None
+
+from mod_editor.core import nfl2k5_depth_locks as locks  # noqa: E402
+
+
+def run_kr_arm(code: bytes, roles: tuple[int, int], locks_bits: list[int], selected: int, count: int = 6):
+    """Run the confirmed KR selection arm (its own bytes at 0x244360, up to its exit 0x244499) on a synthetic team."""
+    uc = unicorn.Uc(unicorn.UC_ARCH_X86, unicorn.UC_MODE_32)
+    uc.mem_map(0x244000, 0x1000)
+    uc.mem_write(locks.KR_SET_VA, code)
+    team, players = 0x300000, 0x310000
+    uc.mem_map(team, 0x10000)
+    uc.mem_map(players, 0x10000)
+    record = bytearray(0x1F4)
+    for i in range(count):
+        record[i * 4:i * 4 + 4] = (players + i * 0x54).to_bytes(4, "little")
+        uc.mem_write(players + i * 0x54 + 0x52, bytes([locks_bits[i]]))
+    record[0x11C] = count
+    record[0x195], record[0x196] = roles
+    uc.mem_write(team, bytes(record))
+    uc.reg_write(x86.UC_X86_REG_EDI, team)
+    uc.reg_write(x86.UC_X86_REG_ESI, players + selected * 0x54)
+    uc.reg_write(x86.UC_X86_REG_ESP, 0x308000)
+    uc.emu_start(locks.KR_SET_VA, 0x244499, count=10000)
+    after = bytes(uc.mem_read(team, 0x1F4))
+    bits = [uc.mem_read(players + i * 0x54 + 0x52, 1)[0] for i in range(count)]
+    return (after[0x195], after[0x196]), bits
+
+
+@unittest.skipUnless(unicorn is not None, "Python unicorn required")
+class KickReturnerArmTests(unittest.TestCase):
+    # slot 1 is KR1 (lock 4), slot 3 is KR2 (lock 8); slot 2 carries an unrelated PR lock (16)
+    BITS = [0, 4, 16, 8, 0, 0]
+
+    def test_choosing_the_current_kr1_again_changes_nothing(self):
+        roles, bits = run_kr_arm(locks.PATCHED_KR_SET, (1, 3), list(self.BITS), selected=1)
+        self.assertEqual((roles, bits), ((1, 3), self.BITS))
+
+    def test_revision_5_lost_the_second_returner(self):
+        roles, bits = run_kr_arm(locks.V5_PATCHED_KR_SET, (1, 3), list(self.BITS), selected=1)
+        self.assertEqual(roles, (1, 1))                       # KR2 became KR1 too (the bug)
+        self.assertEqual(bits[3] & 0x0C, 0)
+
+    def test_a_new_kr1_moves_the_old_one_to_kr2(self):
+        for code in (locks.PATCHED_KR_SET, locks.V5_PATCHED_KR_SET):
+            roles, bits = run_kr_arm(code, (1, 3), list(self.BITS), selected=4)
+            self.assertEqual(roles, (4, 1))
+            self.assertEqual([b & 0x0C for b in bits], [0, 8, 0, 0, 4, 0])
+            self.assertEqual(bits[2] & 16, 16)                 # the punt returner keeps his lock
+
+    def test_no_kr1_yet(self):
+        for code in (locks.PATCHED_KR_SET, locks.V5_PATCHED_KR_SET):
+            roles, bits = run_kr_arm(code, (0xFF, 0xFF), [0] * 6, selected=2)
+            self.assertEqual((roles, [b & 0x0C for b in bits]), ((2, 0xFF), [0, 0, 4, 0, 0, 0]))
+
+    def test_the_arm_fits_its_retail_allocation_and_upgrades_revision_5(self):
+        self.assertLessEqual(len(locks.PATCHED_KR_SET), len(locks.RETAIL_KR_SET))
+        site = next(s for s in locks.sites("retail", 6) if s.label == "screen_kr")
+        old = next(s for s in locks.sites("retail", 5) if s.label == "screen_kr")
+        self.assertNotEqual(site.after, old.after)
+        self.assertEqual(locks.REVISION, 6)

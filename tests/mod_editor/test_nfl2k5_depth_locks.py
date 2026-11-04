@@ -899,7 +899,7 @@ class ExecutionTests(unittest.TestCase):
         self.assertEqual(receipt["upgraded_from"], 1)
         self.assertEqual({e["label"] for e in receipt["edits"]},
                          {"compactor", "weekly_rank_stage", "screen_swap", "ratings_panel_guard",
-                          "user_club_compact", "weekly_sort_release", "weekly_all_star_skip"})
+                          "user_club_compact", "weekly_sort_release", "weekly_all_star_skip", "screen_kr"})
         self.assertTrue(locks.apply(upgraded)[1]["already_applied"])
 
     def test_revision2_install_upgrades_in_place(self):
@@ -911,7 +911,8 @@ class ExecutionTests(unittest.TestCase):
         self.assertEqual(receipt["upgraded_from"], 2)
         # b780 hunt6 (revision 5): every older install also gains the all-star skip (swap block + loop head call)
         self.assertEqual({e["label"] for e in receipt["edits"]},
-                         {"compactor", "weekly_rank_stage", "weekly_sort_release", "screen_swap", "weekly_all_star_skip"})
+                         {"compactor", "weekly_rank_stage", "weekly_sort_release", "screen_swap", "weekly_all_star_skip",
+                          "screen_kr"})
 
     def test_revision3_install_upgrades_in_place(self):
         v3 = V3_PATCHED_XBE()
@@ -920,7 +921,7 @@ class ExecutionTests(unittest.TestCase):
         self.assertEqual(upgraded, self.patched)
         self.assertEqual(receipt["upgraded_from"], 3)
         self.assertEqual({e["label"] for e in receipt["edits"]},
-                         {"compactor", "weekly_rank_stage", "screen_swap", "weekly_all_star_skip"})
+                         {"compactor", "weekly_rank_stage", "screen_swap", "weekly_all_star_skip", "screen_kr"})
         self.assertTrue(locks.apply(upgraded)[1]["already_applied"])
 
     def test_revision4_install_upgrades_in_place(self):
@@ -930,7 +931,25 @@ class ExecutionTests(unittest.TestCase):
         upgraded, receipt = locks.apply(v4)
         self.assertEqual(upgraded, self.patched)
         self.assertEqual(receipt["upgraded_from"], 4)
-        self.assertEqual({e["label"] for e in receipt["edits"]}, {"screen_swap", "weekly_all_star_skip"})
+        # b780 sub1 (revision 6): every older install also gains the KR arm that keeps KR2 on a re-select
+        self.assertEqual({e["label"] for e in receipt["edits"]}, {"screen_swap", "weekly_all_star_skip", "screen_kr"})
+        self.assertTrue(locks.apply(upgraded)[1]["already_applied"])
+
+    def test_revision5_install_upgrades_in_place(self):
+        # b780 sub1: the b780 hunt6 install (revision 5) gains only the revision-6 KR arm
+        data = bytearray(self.patched)
+        image = XbeImage(bytes(data))
+        site = next(s for s in locks.sites("retail", 5) if s.label == "screen_kr")
+        off = image.offset(site.va, len(site.before))
+        data[off:off + len(site.after)] = site.after
+        for s in strength._sections(bytes(data)):
+            data[s.header_offset + 36:s.header_offset + 56] = strength.section_digest(bytes(data), s)
+        v5 = bytes(data)
+        self.assertEqual((locks.read_any(v5)["status"], locks.read_any(v5)["revision"]), ("legacy", 5))
+        upgraded, receipt = locks.apply(v5)
+        self.assertEqual(upgraded, self.patched)
+        self.assertEqual(receipt["upgraded_from"], 5)
+        self.assertEqual({e["label"] for e in receipt["edits"]}, {"screen_kr"})
         self.assertTrue(locks.apply(upgraded)[1]["already_applied"])
 
     # b777 dl3 (Noah 10/20: a better free-agent signing must start on a CPU club).
