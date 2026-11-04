@@ -2759,7 +2759,9 @@ def inspect_states(source: Path | str) -> dict[str, Any] | None:
 
     try:
         from . import mod_build                            # local: mod_build imports this module back
-        report = mod_build.inspect(Path(source))
+        # b780 studio1: not mod_build.inspect, the whole Build read (50 s on a retail disc, over 3 minutes on a SOFTDRINK one,
+        # on the Rosters page's own thread); the same four values, read from the executable once.
+        report = mod_build.inspect_scheme_states(Path(source))
     except Exception:                                       # noqa: BLE001 - detection is never fatal
         return None
     return {key: report.get(key) for key in

@@ -1114,6 +1114,31 @@ def read_any(path: Path | str) -> dict[str, object]:
     return read_image(path) if is_disc_image(path) else read_xbe(path)
 
 
+def read_scheme_states(path: Path | str) -> dict[str, object]:
+    """The container and the three executable-side states the Rosters page reads to name a disc's position scheme
+    (``edge_rename``, ``edge_rename_disc`` for an image, ``scheme_labels``), without ``read_any``'s other ~150 status functions.
+
+    ``read_any`` is the whole Build read: 50 s on a retail disc and over 3 minutes on a SOFTDRINK one, and the Rosters page ran it
+    on the window's own thread to learn these. The values are the ones ``read_xbe`` and ``read_image`` report (b780 studio1)."""
+
+    resolved = _resolve_source(path)
+    if not is_disc_image(resolved):
+        payload = resolved.read_bytes()
+        return {"container": "xbe", "edge_rename": edge_rename_patch.status(payload),
+                "scheme_labels": scheme_labels_patch.status(payload)}
+    descriptor = _open_binary(resolved, os.O_RDONLY)
+    try:
+        size = os.fstat(descriptor).st_size
+        offset, length = image_xbe_extent(descriptor, size)
+        payload = platform_compat.pread(descriptor, length, offset)
+        disc_status = _edge_disc_status(descriptor, size)
+    finally:
+        os.close(descriptor)
+    _require(len(payload) == length, "short read of default.xbe from the image")
+    return {"container": "xiso", "edge_rename": edge_rename_patch.status(payload),
+            "edge_rename_disc": disc_status, "scheme_labels": scheme_labels_patch.status(payload)}
+
+
 # --------------------------------------------------------------------------
 # Patching
 def plan_patch(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]]]) -> tuple[bytes, dict[str, object]]:

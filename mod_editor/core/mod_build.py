@@ -3060,6 +3060,30 @@ def inspect_screen_timing(source: Path | str, level: str = "D") -> dict[str, Any
         return {"status": "foreign", "level": level, "books": [], "reason": str(exc)}
 
 
+def inspect_scheme_states(source: Path | str) -> dict[str, Any]:
+    """``position_pools``, ``edge_rename``, ``edge_rename_disc`` and ``scheme_labels`` of ``source``, as ``inspect`` reports them.
+
+    These four are all the Rosters page needs to name a disc's position scheme, and ``inspect`` (about 150 status functions)
+    took 50 s on a retail disc and over 3 minutes on a SOFTDRINK one, on the window's own thread. This reads the executable
+    once and runs only these (b780 studio1). tests/mod_editor/test_b780_studio1_scheme_states.py holds it to ``inspect`` on a
+    real executable and a real disc image."""
+
+    source = Path(source)
+    report = tt.read_scheme_states(source)
+    out: dict[str, Any] = {
+        "position_pools": "n/a", "edge_rename": report.get("edge_rename", "unknown"),
+        "edge_rename_disc": report.get("edge_rename_disc"), "scheme_labels": report.get("scheme_labels", "unknown"),
+    }
+    if report.get("container") == "xiso":
+        pools = _core_module("nfl2k5_position_pools")
+        if pools is not None:
+            try:
+                out["position_pools"] = pools.status(_xbe_bytes(source))
+            except Exception:  # noqa: BLE001 - the same fallback inspect() takes
+                out["position_pools"] = "foreign"
+    return out
+
+
 def _inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str, Any]:
     """Current state of every patch in ``source`` (a default.xbe or a disc image)."""
 
