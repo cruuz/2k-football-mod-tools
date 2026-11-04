@@ -172,7 +172,7 @@ class NativeStageSixTests(unittest.TestCase):
         from tests.franchise_economy_legacy import no_restructure_room
         no_restructure_room(m, team, {p})
         m.call(0xC3F00, ecx=team)
-        m.put(0xE3C278, m.get(team + 0x124) + 1000)
+        m.put(0xE3C278, m.get(team + 0x124) + 100)   # b780 econ3 (revision 7): short of the cut's line
         m.put(0xE576A4, 6)
         m.put(0xE576B4, 0)
         released = []

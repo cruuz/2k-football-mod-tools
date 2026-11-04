@@ -151,6 +151,22 @@ def _revision_three(current, retail):
         money = revision_five_money()
         offset = image.offset(economy.MONEY_WINDOW, len(money))
         out[offset:offset + len(money)] = money
+    # b780 econ3: revision 7's new sites are retail in a revision-3 image, and the revision-3 windows revision 7 rewrote
+    # (contracts, week, roster_a, roster_c, roster_d) go back to their revision-6 bytes first (roster_c then gets its
+    # revision-4 bytes below)
+    if hasattr(economy, "REVISION_7_NEW"):
+        import json
+        from pathlib import Path
+        for site in economy.sites():
+            if site.va in economy.REVISION_7_NEW:
+                offset = image.offset(site.va, len(site.patched))
+                out[offset:offset + len(site.patched)] = source.read(site.va, len(site.patched))
+        fixture = Path(__file__).resolve().parent / "fixtures" / "econ3_revision6_windows.json"
+        for va_hex, code in json.loads(fixture.read_text())["windows"].items():
+            va, body = int(va_hex, 16), bytes.fromhex(code)
+            if va not in economy.REVISION_4_SITES:
+                offset = image.offset(va, len(body))
+                out[offset:offset + len(body)] = body
     # b780-int: revision 5 (b4-economy) rewrote the reconcile and roster_c windows, which revision 3 shares with
     # revision 4; put their revision-4 bytes back so the image is the real revision 3 again (a v0.7 executable)
     from tests.franchise_economy_revision4_windows import WINDOWS as REVISION_4_WINDOWS
@@ -231,7 +247,7 @@ class DraftClassSupplyTests(unittest.TestCase):
 
     def test_revision_three_reads_legacy_and_upgrades_in_place(self):
         from mod_editor.core import nfl2k5_franchise_economy as economy
-        self.assertIn(economy.REVISION, (4, 5, 6))   # b780 b4-economy revision 5 / hunt1 revision 6 keep every revision-4 site
+        self.assertIn(economy.REVISION, (4, 5, 6, 7))   # b780 b4-economy revision 5 / hunt1 revision 6 keep every revision-4 site
         self.assertEqual(economy.status(self.previous), "legacy")
         upgraded, receipt = economy.apply(self.previous)
         self.assertEqual(upgraded, self.current)
@@ -240,7 +256,8 @@ class DraftClassSupplyTests(unittest.TestCase):
         # windows revision 5 rewrote, which revision 3 shares with revision 4
         self.assertEqual(sorted(int(e["va"], 16) for e in receipt["edits"]),
                          sorted(economy.REVISION_4_SITES | getattr(economy, "REVISION_5_SITES", frozenset())
-                                | getattr(economy, "REVISION_6_SITES", frozenset())))
+                                | getattr(economy, "REVISION_6_SITES", frozenset())
+                                | getattr(economy, "REVISION_7_SITES", frozenset())))
 
     def test_a_small_pool_still_gets_a_full_draft_and_keeps_the_vacancies(self):
         # The retail roster has only 241 free agents, mostly young: retiring by age alone frees far fewer than
