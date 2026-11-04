@@ -73,5 +73,31 @@ class ExportRosterEditsTests(unittest.TestCase):
         self.assertEqual(len(document["staff"]["head_coaches"]), 2)
 
 
+class SaveStaffFileTests(unittest.TestCase):
+    """Save staff file… on the Coaches page: a folder that cannot be written is a sentence on the page, not an exception."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.app = QApplication.instance() or QApplication([])
+
+    def test_a_staff_file_that_cannot_be_written_says_so(self) -> None:
+        from mod_editor.gui.coaches_panel_qt import CoachesPanel
+        from test_b780_c4_staff_ui_model import rows_2026
+        with tempfile.TemporaryDirectory() as folder:
+            page = CoachesPanel()
+            self.addCleanup(page.deleteLater)
+            page.set_rows(rows_2026())
+            self.assertTrue(page.swap_clubs("KC", "DAL"))
+            gone = Path(folder) / "no such folder" / "staff.json"
+            with mock.patch.object(QFileDialog, "getSaveFileName", return_value=(str(gone), "")):
+                page._save_file()                                    # raised FileNotFoundError out of the click
+            self.assertTrue(page.state_label.text().startswith("Could not save the staff file"), page.state_label.text())
+            good = Path(folder) / "staff ü.json"
+            with mock.patch.object(QFileDialog, "getSaveFileName", return_value=(str(good), "")):
+                page._save_file()
+            self.assertEqual(page.state_label.text(), "Staff file saved: staff ü.json")
+            self.assertTrue(good.is_file())
+
+
 if __name__ == "__main__":
     unittest.main()
