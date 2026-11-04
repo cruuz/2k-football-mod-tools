@@ -78,6 +78,18 @@ class StaticTests(unittest.TestCase):
         head = image.read(ir.GUARD_VA, len(ir.GUARD))
         self.assertEqual((head[0], head[5:]), (0xE9, b"\x90" + ir.GUARD[6:]))   # the guard stays under the hook
 
+    def test_an_allocation_the_build_reserved_first_is_not_an_install(self):
+        """rehearsal1: the build's first space pass reserves this owner's allocation (0xCC code) before its step."""
+        from mod_editor.core import nfl2k5_xbe_space as space
+        reserved, _ = space.apply(self.retail, ir.REQUESTS, scaleout=True)
+        self.assertEqual(ir.status(reserved), "retail")
+        modern, _ = ir.apply(reserved, "modern")
+        self.assertEqual(ir.status(modern), "applied")
+        self.assertEqual(ir.allocations(modern)["code"]["va"], ir.allocations(reserved)["code"]["va"])
+        guarded, _ = ir.apply(reserved, "guard")
+        self.assertEqual(ir.status(guarded), "guard")
+        self.assertEqual(ir.status(ir.apply(guarded, "modern")[0]), "applied")
+
     def test_runtime_template_is_reproducible(self):
         if shutil.which("gcc") is None or shutil.which("ld") is None:
             self.skipTest("gcc/binutils are not installed")

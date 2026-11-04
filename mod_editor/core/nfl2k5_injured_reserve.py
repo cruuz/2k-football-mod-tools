@@ -146,13 +146,17 @@ def _recognize(payload: bytes) -> str:
     image = XbeImage(payload)
     guard = _guard_state(image)
     rows = allocations(payload)
-    if not rows:
+    if rows:
+        _require(set(rows) == {"code", "data"} and rows["code"]["size"] == CODE_SIZE
+                 and rows["data"]["size"] >= STORE_SIZE, "foreign injured reserve allocation")
+    # b780 IR1 (rehearsal1): the build's first space pass reserves every selected owner's allocation before any owner
+    # runs, so at this owner's step the allocation exists with its unwritten 0xCC code: that is not an install yet.
+    reserved = bool(rows) and image.read(rows["code"]["va"], CODE_SIZE) == b"\xcc" * CODE_SIZE
+    if not rows or reserved:
         others = {("retail" if image.read(va, len(before)) == before else "foreign")
                   for _l, va, before, _p in sites(0) if va != GUARD_VA}
         _require(others == {"retail"} and guard in ("retail", "guard"), "foreign or partial injured reserve sites")
         return guard
-    _require(set(rows) == {"code", "data"} and rows["code"]["size"] == CODE_SIZE and rows["data"]["size"] >= STORE_SIZE,
-             "foreign injured reserve allocation")
     code_va, store_va = rows["code"]["va"], rows["data"]["va"]
     _require(guard == "hooked", "the Pro Bowl guard is missing under the modern install")
     for _label, va, _before, patched in sites(code_va):
