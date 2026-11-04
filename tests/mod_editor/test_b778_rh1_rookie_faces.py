@@ -684,6 +684,37 @@ class NativeDraftNumbers(unittest.TestCase):
             self.assertLessEqual(max(collections.Counter(after).values()) / len(after), 0.35, position)
 
 
+
+@unittest.skipUnless(RETAIL_XBE and Path(RETAIL_XBE).is_file(), "set NFL2K5_RETAIL_XBE to the retail default.xbe")
+class MyCareerContext(unittest.TestCase):
+    """b780 (REV1): the draft number flag at 0x325B61 sits inside MyCareer's native draft-signing context pin
+    (0x325B50, 0x1AE). With Rookie faces and MyCareer both installed, MyCareer must still read applied; the flag
+    without a complete Rookie faces install, or any other byte there, is foreign."""
+
+    @staticmethod
+    def write(payload, writes):
+        import hashlib
+        buf = bytearray(payload)
+        for va, data in writes:
+            at = rf._offset(payload, va, len(data))
+            buf[at:at + len(data)] = data
+        for _va, raw, rsize, header in rf._section_map(payload):
+            buf[header + 36:header + 56] = hashlib.sha1(struct.pack("<I", rsize) + bytes(buf[raw:raw + rsize])).digest()  # nosec B324
+        return bytes(buf)
+
+    def test_mycareer_accepts_the_rookie_faces_draft_number(self):
+        from mod_editor.core import nfl2k5_my_career_mode as mcm
+        from mod_editor.core import nfl2k5_throw_tuning as tt
+        career, _ = tt._apply_all(Path(RETAIL_XBE).read_bytes(), None, catch_slider=False, xbe_space=True,
+                                  my_career=True)
+        self.assertEqual(mcm.status(career), "applied")
+        firsts, lasts = shipped_pool()
+        both, _ = rf.xbe_apply(career, rf.tables(firsts, lasts, toy_bank()))
+        self.assertEqual(rf.xbe_status(both), "applied")
+        self.assertEqual(mcm.status(both), "applied")
+        self.assertEqual(mcm.status(self.write(career, [(rf.NUMBER_VA, rf.NUMBER_PATCHED)])), "foreign")  # flag alone
+        self.assertEqual(mcm.status(self.write(both, [(rf.NUMBER_VA, b"\x6a\x02")])), "foreign")       # another byte
+
 class Portraits(unittest.TestCase):
     def test_face_pixels_roundtrip(self):
         rng = random.Random(1)
