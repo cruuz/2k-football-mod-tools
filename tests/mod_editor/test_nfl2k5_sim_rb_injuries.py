@@ -59,12 +59,14 @@ class ConstantTests(unittest.TestCase):
         # the roll embeds 4/5 weeks for the long bucket and 2/3 for the short one
         self.assertIn(bytes.fromhex("83c004"), code[:inj.SUB_OFFSET])
         self.assertIn(bytes.fromhex("83c002"), code[:inj.SUB_OFFSET])
-        # exactly one league-RNG call and one human-club test in the weekly entry (b780 hunt1)
+        # exactly one league-RNG call in the weekly entry, and the human test reads the native per-club array
+        # (b780 hunt1: no call to 0x13EC30, which MyCareer's cpu_management hook answers 0 to cave callers)
         targets = [0x14DA000 + i + 5 + struct.unpack_from("<i", code, i + 1)[0]
                    for i in range(inj.SUB_OFFSET - 5) if code[i] == 0xE8]
         self.assertEqual(targets.count(inj.FN_RAND), 1)
-        self.assertEqual(targets.count(inj.FN_HUMAN_CLUB), 1)
-        self.assertEqual(inj.FN_HUMAN_CLUB, 0x13EC30)
+        self.assertEqual(targets.count(inj.FN_HUMAN_CLUB), 0)
+        self.assertEqual(inj.HUMAN_FLAGS, 0xE5775C)
+        self.assertEqual(code[:inj.SUB_OFFSET].count(bytes.fromhex("833c9d5c77e50000")), 1)  # cmp dword [0xE5775C+ebx*4], 0
 
     def test_apply_is_read_back_and_idempotent(self):
         data = retail_bytes()
@@ -168,7 +170,7 @@ class RollTests(unittest.TestCase):
         patch_code(m, 0x000C3E70, b"\xb8" + struct.pack("<I", self.player) + b"\xc3")
         patch_code(m, 0x000C3E80, b"\x33\xc0\xc3")                          # no next player
         patch_code(m, 0x00048BC0, b"\xb8" + struct.pack("<I", draw) + b"\xc3")
-        patch_code(m, inj.FN_HUMAN_CLUB, b"\xb8" + struct.pack("<I", int(human)) + b"\xc3")
+        m.put(inj.HUMAN_FLAGS, int(human))                                  # club index 0's native human flag
         return m
 
     def roll(self, m):
@@ -388,6 +390,87 @@ class UserClubTests(unittest.TestCase):
         previous, _ = b779.apply(retail_bytes())
         human, computer = self.counts(previous)
         self.assertGreater(human, 0)
+        self.assertGreater(computer, 0)
+
+
+@unittest.skipUnless(HAVE_UC, "unicorn is needed")
+class MyCareerClubTests(unittest.TestCase):
+    """REV1 #1, the game's own code with MyCareer installed: retail + MyCareer mode + this owner, the retail roster,
+    the franchise start 0x13EE10 and the week's injury tick 0x133C50. MyCareer hooks the human getter 0xC4D50
+    (``cpu_management``): while a career is loaded it answers 0 to every caller outside the game launch and the menu
+    team enumerators, so the first revision's test (``call 0x13EC30``) saw the MyCareer club as a computer club and
+    rolled for it. The roll reads the native human array, which MyCareer's resolve sets for its club only."""
+
+    TICKS = 160
+
+    @classmethod
+    def setUpClass(cls):
+        from tests.nfl2k5_supersim_draft_fixture import retail_roster
+        from mod_editor.core import nfl2k5_my_career as career, nfl2k5_my_career_mode as mode
+        data = retail_bytes()
+        if data is None:
+            raise unittest.SkipTest("private USA retail XBE is absent")
+        cls.payload, _ = inj.apply(mode.apply(data)[0])
+        cls.state = career.allocations(cls.payload)[1]["va"]
+        cls.body = retail_roster()
+
+    def machine(self, loaded=True):
+        m = Machine(self.payload, trace_writes=False)
+        m.load_retail_roster(self.body)
+        m.seed(4242)
+        for address, value in ((0xE5FF80, 4), (0xE60120, 0), (0xE6000C, 15), (0xE60010, 15)):
+            m.put(address, value)
+        m.leaf(0x177990, lambda: m.ret(pop=4), reason="progress renderer only")
+        m.leaf(0x14E520, lambda: m.ret(), reason="informational dialog acknowledgement only")
+        m.call(0x13EE10, budget=2_000_000_000)
+        self.clubs = [m.team_base + 500 * t for t in (0, 1)]
+        # a loaded career whose club is club 0: the state MyCareer's enabled test reads (magic, version, the game
+        # mode 2 at 0xE576A0, a career stage 1..6), its club, and the native human array as its resolve leaves it
+        m.put(0xE576A0, 2)
+        if loaded:
+            for offset, value in ((0, 0x4251434D), (4, 0x31303030), (24, 3), (56, 0), (2588, self.clubs[0])):
+                m.put(self.state + offset, value)
+        for t in range(34):
+            m.put(inj.HUMAN_FLAGS + 4 * t, int(t == 0))
+        return m
+
+    def test_the_hook_tells_a_cave_caller_a_computer_owns_the_career_club(self):
+        m = self.machine(loaded=True)
+        self.assertEqual(m.call(inj.FN_HUMAN_CLUB, ecx=self.clubs[0]), 0)    # this harness's return address
+        self.assertEqual(m.get(inj.HUMAN_FLAGS), 1)                          # the native flag says human
+        m = self.machine(loaded=False)
+        self.assertEqual(m.call(inj.FN_HUMAN_CLUB, ecx=self.clubs[0]), 1)    # no career: the retail getter
+
+    def counts(self, m):
+        def first_healthy_back(club):
+            p = m.call(0xC3E70, ecx=club)
+            while p:
+                if m.uc.mem_read(p + 0x35, 1)[0] == 7 and not m.get(p + 0x20) & inj.INJURY_MASK:
+                    return p
+                p = m.call(0xC3E80, ecx=club, edx=p)
+            self.fail("no healthy halfback")
+        backs = [first_healthy_back(c) for c in self.clubs]
+        hits = [0, 0]
+        for _ in range(self.TICKS):
+            for p in backs:
+                m.put(p + 0x20, m.get(p + 0x20) & ~inj.INJURY_MASK & 0xFFFFFFFF)
+                m.put(p + 0x24, m.get(p + 0x24) & 0x8FFFFFFF)
+            m.call(0x133C50, budget=50_000_000)
+            for k, p in enumerate(backs):
+                hits[k] += bool(m.get(p + 0x20) & inj.INJURED)
+        return hits
+
+    def test_the_career_club_is_left_alone_with_the_hook_in_place(self):
+        career_club, computer = self.counts(self.machine(loaded=True))
+        self.assertEqual(career_club, 0)
+        self.assertTrue(5 <= computer <= 32, computer)     # 6516 / 65536 a tick, the game's own draws
+
+    def test_without_its_human_flag_the_career_club_would_roll(self):
+        # the control: the same machine with the career club's native flag cleared rolls for it like any club
+        m = self.machine(loaded=True)
+        m.put(inj.HUMAN_FLAGS, 0)
+        career_club, computer = self.counts(m)
+        self.assertGreater(career_club, 0)
         self.assertGreater(computer, 0)
 
 

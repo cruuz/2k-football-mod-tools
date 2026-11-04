@@ -20,8 +20,11 @@ same fields the game itself uses (``0xE6680`` clears them, ``0x13E3A0`` reads th
 invented and no roster record outside the injury fields changes. The roll is in the weekly advance only, so
 played games are never touched.
 
-b780 hunt1: the roll skips every club a person controls (the game's own human-club flag, ``0x13EC30``, the same
-test the weekly depth sort uses to leave user clubs alone). Before, the weekly advance rolled for all clubs, so the
+b780 hunt1: the roll skips every club a person controls (the game's own human flag per club index, ``0xE5775C``, the
+array the game's setter ``0xC4D30`` writes and the weekly depth sort reads to leave user clubs alone; MyCareer's resolve
+marks its club there too). The first version asked ``0x13EC30`` (-> ``0xC4D50``); MyCareer hooks that getter and answers
+0 to every caller outside the game launch and the menu team enumerators, so while a career was loaded the MyCareer club
+was still rolled (REV1). The roll now reads the array itself. Before, the weekly advance rolled for all clubs, so the
 halfback a player's own Franchise or MyCareer club lists first was put out for 2 to 5 weeks about 1.7 times a season
 (about one advance in ten, preseason and playoff weeks included) even when the player played every game and nobody
 got hurt on the field: those games already have the game's own injuries. Measured on the SOFTDRINK 2K28 v0.9 RC
@@ -113,6 +116,7 @@ CARRIER_BEFORE = bytes.fromhex("e861c6ffff")
 
 FN_RAND = 0x00048BC0              # mov ecx, 0xB12680; jmp 0x48B50: the league RNG, returns a dword in EAX
 FN_HUMAN_CLUB = 0x0013EC30        # ecx = club object -> eax = the club's human flag ([0xE5775C + 4 * index]); b780 hunt1
+HUMAN_FLAGS = 0x00E5775C          # the native human flag per club index (setter 0xC4D30; MyCareer's resolve sets its club)
 LEAGUE_ROOT = 0xB72918            # franchise root; +0x1C is the club array
 TEAM_COUNT = 32
 TEAM_STRIDE = 500
@@ -168,9 +172,11 @@ def _weekly(a):
     a.b("8bcb")                                        # mov ecx, ebx
     a.call(0x000C4C50)                                 # club object
     a.b("8bf8")                                        # mov edi, eax
-    a.b("8bcf")                                        # mov ecx, edi
-    a.call(FN_HUMAN_CLUB)                              # b780 hunt1: a club a person controls gets no roll
-    a.b("85c0")                                        # test eax, eax
+    # b780 hunt1: a club a person controls gets no roll. The test reads the native human array the game's setter
+    # 0xC4D30 writes (MyCareer's resolve marks its club there too), indexed by this loop's club index. Asking
+    # 0xC4D50 (through 0x13EC30) instead answered 0 for the MyCareer club: MyCareer's cpu_management hook there
+    # tells every caller outside the game launch and the menu enumerators that a CPU owns the career club (REV1 #1).
+    a.b("833c9d" + struct.pack("<I", HUMAN_FLAGS).hex() + "00")  # cmp dword [HUMAN_FLAGS + ebx*4], 0
     a.j32("0f85", "next_team")
     a.b("8bcf")                                        # mov ecx, edi
     a.call(0x000C3E70)                                 # first player
