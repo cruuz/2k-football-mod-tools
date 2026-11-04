@@ -920,7 +920,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_roster_arena_image.py": "bc438e13c6aed320ee3cbc45682210f7db36ab657d921dd2c79d6bb603ed9814",
         "mod_editor/core/nfl2k5_draft_picks.py": "3a2d018fa44df1100b512b01db97b2306ddc5d9ac585a596569b9a525268bdd5",
         "mod_editor/core/nfl2k5_hback.py": "7d82d304cfb2f39d4a435d522e9b536974a40ba7cb6b7a1ede57a2c1a7efb94d",
-        "mod_editor/core/nfl2k5_roster_refresh.py": "66fce8de0c47301a589f73fad259504f14442a0d0f1e9404beab988b6f859c43",
+        "mod_editor/core/nfl2k5_roster_refresh.py": "d28b99fd88477d5602743d29f1a510133c19b7eb655eab4753bea5c34df532e7",
         "mod_editor/core/nfl2k5_third_down_back.py": "316d3681d1b9952fa6851c4c31b091cb36f026b8b4ed572ab9735cba3b9befbd",
         "mod_editor/core/nfl2k5_equipment_fit.py": "245cc3ff765426fdad097475b5f181b1a6fed023528f950b362ff4a4c037ee11",
         "mod_editor/core/nfl2k5_created_appearance.py": "39ba94915df17b5cf869b005f6a772328cd59c69154a538665770db9049a30aa",

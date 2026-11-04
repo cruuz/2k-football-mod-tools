@@ -94,6 +94,21 @@ def last_injury_reports(path):
     return out
 
 
+def last_injury_parts(path):
+    """{gsis: the body part of his latest injury report that names one}: the report's primary injury, else the practice
+    report's. A resting player or a personal matter names no body part (b780 rst2: the writer maps the part to the game's
+    own injury type for the players it marks)."""
+    best = {}
+    for row in csv.DictReader(open(path, encoding="utf-8")):
+        part = (row.get("report_primary_injury") or row.get("practice_primary_injury") or "").strip()
+        if not part or part.lower().startswith("not injury related"):
+            continue
+        week = int(row["week"])
+        if row["gsis_id"] not in best or week >= best[row["gsis_id"]][0]:
+            best[row["gsis_id"]] = (week, part)
+    return {gsis: part for gsis, (week, part) in best.items()}
+
+
 def latest_charts(path):
     """({club: [entries]}, {club: dt}, {club: {dt: [entries]}}) from each club's newest chart and every snapshot."""
     newest, entries = {}, collections.defaultdict(list)
@@ -280,6 +295,7 @@ def update(document, roster_csv, charts_csv, as_of, body=None, injuries_csv=None
             club_week[club(n["team"])] = max(club_week[club(n["team"])], int(n["week"] or 0))
     stale = []
     last_report = last_injury_reports(injuries_csv) if injuries_csv else {}
+    injury_part = last_injury_parts(injuries_csv) if injuries_csv else {}
     # statuses and clubs
     for row in rows:
         n = fresh.get(row["gsis_id"])
@@ -300,8 +316,13 @@ def update(document, roster_csv, charts_csv, as_of, body=None, injuries_csv=None
             # weekly files then) or his last injury report (week 1 to 3: he went on injured reserve by week 4)
             long_term = int(n["week"] or 0) <= 4 or 0 < last_report.get(row["gsis_id"], 0) <= 3
             row["ir_weeks"] = 17 if long_term else 8                 # b780 rst2 / IR1
+            if injury_part.get(row["gsis_id"]):
+                row["ir_injury"] = injury_part[row["gsis_id"]]      # b780 rst2: the writer's game injury type
+            else:
+                row.pop("ir_injury", None)
         else:
             row.pop("ir_weeks", None)
+            row.pop("ir_injury", None)
         if status in CLUB_STATUSES + (RESERVE_STATUS, INJURED_STATUS) and n["jersey_number"].isdigit():
             row["fields"]["jersey"] = int(n["jersey_number"])
     # membership
