@@ -908,8 +908,9 @@ void FC mode_play(u32 manager) {
     start_player();
     /* b780 mc1: no club (released, or his contract ran out: start_player's resolve_team leaves S(56) at -1 and the
      * career at 4) used to return here without a word, so every Career Home row did nothing and the career could
-     * not go on. Go where a load of this career goes (mode_loaded: Choose team / Sign for career state 4). */
-    if(S(56)>=32) { CALL2(0x6e2e0,manager,mode_loaded(manager,0)); return; }
+     * not go on. Open what a load of this career opens (mode_loaded: Choose team / Sign for career state 4), on top
+     * of Career Home, so B comes back here instead of leaving MyCareer half open in Game Modes. */
+    if(S(56)>=32) { CALL2(0x6e390,manager,mode_loaded(manager,0)); return; }
     slot=mode_next_fixture();
     if(slot<374 && slot/17<=G(0xE576B4)) {
         if(!((u32 (FC *)(u32,u32,u32))0xC79F0)(slot/17,slot%17,S(32))) {

@@ -41,7 +41,7 @@ SRC = (ROOT / 'tools/mycareer_mode/runtime.c').read_text()
 class SourceTests(unittest.TestCase):
     def test_play_next_game_opens_the_club_choice_without_a_club(self):
         body = SRC[SRC.index('void FC mode_play(u32 manager) {'):SRC.index('void FC mode_sim_appearance')]
-        self.assertIn('if(S(56)>=32) { CALL2(0x6e2e0,manager,mode_loaded(manager,0)); return; }', body)
+        self.assertIn('if(S(56)>=32) { CALL2(0x6e390,manager,mode_loaded(manager,0)); return; }', body)
         self.assertNotIn('    if(S(56)>=32) return;\n', body)
 
     def test_only_a_prospect_resumes_the_draft_on_load(self):
@@ -102,6 +102,10 @@ class LongFlowTests(unittest.TestCase):
             self.assertEqual(m.top(), m.labels['team_menu'], 'the club choice opens instead of nothing')
             self.assertEqual(m.get(m.state + 2680), 2)
             self.assertEqual([m.get(va) for va in (STAGE, WEEK, YEAR)], before, 'no league step without a club')
+            m.frame(0x200, budget=100000000)         # B: back to Career Home, MyCareer stays open
+            self.assertEqual(m.top(), m.labels['apartment'])
+            m.select(0, budget=200000000)            # Play next game again
+            self.assertEqual(m.top(), m.labels['team_menu'])
             m.select(0, budget=200000000)            # Choose team
             m.select(3, budget=200000000)            # Buffalo
             self.assertEqual((m.top(), m.get(m.state + 2684)), (m.labels['team_menu'], 3))
