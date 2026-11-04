@@ -10,13 +10,14 @@ ordinal's depth list (0xE7530), skips a player already placed (0xE7580) or one i
 retail 0xE8340, injured or worn out), then falls back through other kinds (19 tiers, table 0x4F5A38).
 
 Rule 1, the third-down back (needs the SPECIAL rows, whose 3DRB row is the running back side order from its second
-place: list 15, row 1). When the slot asks for the lead back (RB, ordinal 0), the user did not substitute that slot,
+place: RB ordinal 3, read through the game's own ordinal decoder; one-pool positions pair the RB orders as lists 1 and
+15, and apply refuses an executable without that pairing). When the slot asks for the lead back (RB, ordinal 0), the user did not substitute that slot,
 the club has the ball ([0xE60280]+0x1C is this lineup's team) and it is an obvious passing down (3rd or 4th down with
 5 yards or more to go, or 2nd down with 10 or more: the down at [[0xE602EC]+4], the distance from the game's own
-0x207950), the 3DRB is asked first. He plays if he is not already on the field and passes the picker's own gate. On a
-CPU-run club ([0xE5775C + club*4] == 0; the MyCareer club counts as CPU) he must also be at least as good a receiver
-(catch + route running) as the starter, because the 3DRB row there is shipped data; on a human club the user's pick
-is honoured. In every other case, and whenever he cannot play, the native pick runs, so the starter keeps the slot.
+0x207950), the 3DRB is asked first. He plays if he is not already on the field, passes the picker's own gate and is at
+least as good a receiver (catch + route running) as the starter, on every club: MyCareer marks its club human and
+rewrites RB side = rank (so the row is RB2), and old franchise saves keep their own rosters. In every other case, and
+whenever he cannot play, the native pick runs, so the starter keeps the slot.
 
 Rule 2, the fullback fallback. With no fullback on the roster (thirteen 2026 clubs), the picker's next tier for an FB
 slot is the RB list, which retail reads from its end: the deepest back. That tier now reads forward from the second
@@ -30,8 +31,8 @@ Rule 3, the gadget player (needs the SPECIAL rows, whose GAD row is the WR side 
 ordinal 7). The lineup builder is handed the called play (its second argument, from 0x18AD10 via 0x18A5D0). When a WR
 slot of an offensive play takes a handoff in that play (the planner's own test: a 0x13 handoff node names the slot
 and the slot's chain has a 0x16 node), the GAD row is asked first for that slot. He plays if he is not already on the
-field and passes the picker's gate. A human club's pick is honoured. On a CPU-run club he must be at least as fast as
-the slot's own pick (the native picker with the same arguments), because the GAD row there is shipped data. Every
+field, passes the picker's gate and is at least as fast as the slot's own pick (the native picker with the same
+arguments), on every club, for the same reasons as the 3DRB. Every
 other play keeps its receivers: the planner no longer writes a gadget ordinal into shared personnel groups (Q61).
 
 Two sites, both 5-byte calls: the builder's call to the picker (0xE8B20) and the picker's list-length call at the top
@@ -52,11 +53,11 @@ CODE_SIZE = 1024
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16),)
 BUILD_CAPTION = "Third-down back on passing downs, gadget player on gadget plays; RB2 fills a missing fullback (experimental)"
 HELP_TEXT = ("EXPERIMENTAL. Your SPECIAL 3DRB comes in for the starting running back on obvious passing downs (3rd or 4th "
-             "down with 5 yards or more to go, 2nd down with 10 or more) when he can play; the starter keeps every other "
-             "snap. Your SPECIAL GAD comes in only on a play that hands the ball to a receiver (a reverse or an end "
-             "around), at that receiver's spot. A CPU club uses its 3DRB only when he is at least as good a receiver as "
-             "its starter, and its GAD only when he is at least as fast as the receiver he replaces. A club with no "
-             "fullback now puts its second running back at fullback instead of its deepest one.")
+             "down with 5 yards or more to go, 2nd down with 10 or more) when he's at least as good a receiver as your "
+             "starter; the starter keeps every other snap. Your SPECIAL GAD comes in only on a play that hands the "
+             "ball to a receiver (a reverse or an end around), at that receiver's spot, when he's at least as fast as "
+             "the receiver he replaces. A club with no fullback now puts its second "
+             "running back at fullback instead of its deepest one.")
 
 PICKER = 0x000E8790
 PICK_CALL = 0x000E8B20                      # in the lineup builder: call 0xE8790
@@ -66,9 +67,10 @@ BOUND = 0x000E7640                          # the picker's protection bound for 
 NEXT_TIER, PICKER_TAKE = 0x000E890A, 0x000E89AB   # next tier, success exit
 GATE_CALL = 0x000E8864                      # the forward loop's gate call (a later owner may point it at its own guard)
 LIST_LENGTH, LIST_READ, ALREADY_PLACED, ORDINAL = 0x000E75A0, 0x000E7810, 0x000E7580, 0x000E7530
-SITUATION, OFFENSE, HUMAN, ROSTER_ROOT = 0x00E602EC, 0x00E60280, 0x00E5775C, 0x00B72918
+SITUATION, OFFENSE = 0x00E602EC, 0x00E60280
 TO_GO = 0x00207950
-RB_KIND, FB_KIND, RB_RANK_LIST, RB_SIDE_LIST = 10, 11, 1, 15
+RB_KIND, FB_KIND, RB_RANK_LIST = 10, 11, 1
+LIST_TABLE = 0x004F5930                     # (rank list, side list) per kind; one-pool positions pair RB as (1, 15)
 YARD = 91.44
 FIVE_YARDS, TEN_YARDS = 5 * YARD, 10 * YARD
 CATCH, ROUTE, SPEED = 0x44, 0x3F, 0x36       # player record rating bytes
@@ -132,19 +134,21 @@ def assemble(code_va: int, gate: int, *, third_down: bool = True) -> tuple[bytes
     b("a1" + struct.pack("<I", OFFENSE).hex()); b("85c0"); j32("0f84", "restore")
     b("8b401c" "3b4500"); j32("0f85", "restore")     # the club with the ball is this lineup's team
     a.append(("calllabel", "passing_down")); b("85c0"); j32("0f84", "restore")
-    b("b90f000000" "8bd5"); a.append(("call", LIST_LENGTH))   # length of the RB side list (3DRB = its row 1)
-    b("83f801"); j32("0f8e", "restore")
-    b("8b4c2414" "6a01" "55" "b80f000000"); a.append(("call", LIST_READ))     # player at row 1
+    b("83ec04" "b80a000000" "ba03000000" "8bf4"); a.append(("call", ORDINAL))   # 3DRB = RB ordinal 3: list, [esp] row
+    b("8bf8" "8bc8" "8bd5"); a.append(("call", LIST_LENGTH))  # edi = list; eax = its length
+    b("5a" "3bc2"); j32("0f8e", "restore")           # edx = row; the row exists
+    b("8b4c2414" "52" "55" "8bc7"); a.append(("call", LIST_READ))     # the 3DRB
     b("85c0"); j32("0f84", "restore")
     b("8bd8")                                        # ebx = the 3DRB
     b("8b4c2430" "8b74242c" "8bd3"); a.append(("call", ALREADY_PLACED))
     b("85c0"); j8("75", "restore")
-    a.append(("calllabel", "is_human")); b("85c0"); j8("75", "gate")   # a human club's pick is honoured
+    # every club (coordinator 11/04): MyCareer marks its club human and rewrites RB side = rank, and old franchise
+    # saves keep their own rosters, so a human club's 3DRB row is not always the user's pick
     b("8b4c2414" "6a00" "55" "b801000000"); a.append(("call", LIST_READ))     # the starter: RB rank list row 0
     b("85c0"); j8("74", "gate")
     b("0fb64844" "0fb6503f" "03ca")                  # ecx = starter catch + route
     b("0fb64344" "0fb6533f" "03c2")                  # eax = 3DRB catch + route
-    b("3bc1"); j8("7c", "restore")                   # CPU club: the starter is the better receiver, keep him
+    b("3bc1"); j8("7c", "restore")                   # the starter is the better receiver: keep him
     label("gate")
     b("6a03" "ff74242c" "ff74242c" "8bcd" "8bd3")    # push 3, slot, a0; ecx = ctx, edx = player
     a.append(("call", gate)); b("85c0"); j8("74", "restore")
@@ -168,15 +172,6 @@ def assemble(code_va: int, gate: int, *, third_down: bool = True) -> tuple[bytes
     b("dfe0" "8be5" "5d" "f6c405"); j8("75", "no")   # below the line (or unordered): no
     b("b801000000c3")
     label("no")
-    b("33c0c3")
-    # ---------------------------------------------------------------- is_human: eax != 0 if the club is user-run
-    label("is_human")
-    b("a1" + struct.pack("<I", ROSTER_ROOT).hex()); b("85c0"); j8("74", "cpu")
-    b("8b401c" "8b4d00" "2bc8"); j8("72", "cpu")     # ecx = this team - team table
-    b("8bc1" "33d2" "b9f4010000" "f7f1" "85d2"); j8("75", "cpu")
-    b("83f820"); j8("73", "cpu")
-    b("8b0485" + struct.pack("<I", HUMAN).hex() + "c3")
-    label("cpu")
     b("33c0c3")
     # ---------------------------------------------------------------- gad_entry: rule 3, the gadget player
     # The builder's second argument is the called play ([esp+0xa0] here: 0x18AD10 -> 0x18A5D0 -> 0xE89F0). Its slot
@@ -214,8 +209,8 @@ def assemble(code_va: int, gate: int, *, third_down: bool = True) -> tuple[bytes
     b("85c0"); j32("0f85", "gad_restore")
     b("6a03" "ff74242c" "ff74242c" "8bcd" "8bd3"); a.append(("call", gate))
     b("85c0"); j32("0f84", "gad_restore")
-    a.append(("calllabel", "is_human")); b("85c0"); j8("75", "gad_take")   # a human club's GAD is honoured
-    # a CPU club (shipped data): the slot's own pick (the native picker, same arguments) unless the GAD is as fast
+    # every club (coordinator 11/04, as for the 3DRB: MyCareer marks its club human, old saves keep their rosters):
+    # the slot's own pick (the native picker, same arguments) unless the GAD is at least as fast
     b("8b542414" "8bcd" + "ff74243c" * 7); a.append(("call", PICKER))
     b("85c0"); j8("74", "gad_take")
     b("0fb64836" "0fb65336" "3bd1"); j8("7d", "gad_take")    # speed: GAD >= the slot's own pick
@@ -248,7 +243,8 @@ def assemble(code_va: int, gate: int, *, third_down: bool = True) -> tuple[bytes
     b("41" "83f90b"); j8("72", "fb_codes")
     j8("eb", "fb_start")
     label("fb_power")
-    b("8b4c2420" "6a00" "57" "b80f000000"); a.append(("call", LIST_READ))   # the power back: RB side list row 0
+    b("83ec04" "b80a000000" "ba01000000" "8bf4"); a.append(("call", ORDINAL))   # the power back: RB ordinal 1
+    b("5a" "8b4c2420" "52" "57"); a.append(("call", LIST_READ))
     b("8bd8")
     label("fb_start")
     b("53")                                          # push skip (picker frame offsets +4 while it is pushed)
@@ -393,9 +389,14 @@ def apply(payload: bytes, *, third_down: bool = True) -> tuple[bytes, dict[str, 
         _require(settings["third_down"] == third_down, "lineup roles are installed with other settings; rebuild "
                                                        "from the source executable to change them")
         return payload, dict(common, status="applied", already_applied=True, changed_bytes=0, edits=[])
+    rank_list, side_list = struct.unpack("<II", XbeImage(payload).read(LIST_TABLE + RB_KIND * 8, 8))
+    _require(rank_list != side_list, "lineup roles need the paired running back orders (one-pool positions)")
     before = payload
     gate = _gate_target(payload)
-    if space.status(payload) == "retail":
+    reserved = space.status(payload) != "retail" and any(r["owner"] == OWNER for r in space.layout(payload)["allocations"])
+    if reserved:                                     # the build's first space pass reserved it (LATE_OWNERS order)
+        allocation_receipt = {"reserved_by_first_pass": True}
+    elif space.status(payload) == "retail":
         payload, allocation_receipt = space.apply(payload, REQUESTS, scaleout=True)
     else:
         _require(space.is_scaleout(payload), "lineup roles need the scale-out allocator")

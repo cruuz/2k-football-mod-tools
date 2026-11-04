@@ -596,7 +596,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/image_use.py": "29e1d3d721c36fd199ed29fd900fbe8582bc7530e2060afcacb1054159b174bb",
         "mod_editor/core/json_stream.py": "5933752561dd8b519a301c18ec1d14f13a457f58e6ae337984f543ab2b0838b0",
         "mod_editor/core/metadata_cache.py": "49874cc7f12cc0d36d15b9355dbca64ffe95590ba7582b460738b05aabcd9024",
-        "mod_editor/core/mod_build.py": "5abed07fe509aaa1b181e7f7a772c1ddc5bc5841139eb0c444e66e46cd1fe992",
+        "mod_editor/core/mod_build.py": "416fe9940f798c785e7ccf16a1e43894a0286ef362955bfc12733b8685e6fdc8",
         "mod_editor/core/nfl2k5_console_memory.py": "50205d2e5dee5bcdc2b5a4b23f93a0807e6f6709a01ab3e9d779ba534c497457",  # b780-m64b: the 128 MB / 64 MB target (validate_plan)
         "mod_editor/core/build_steps.py": "a9c31ccea775127f2271ccb3c5357a83b7a47d92bda540c923cb67677524bf69",  # b791-h3: step context and optional steps
         "mod_editor/core/studio_inspection.py": "bbe1e2e9b3de63b13e8908d2b37f114ee79b6fb2fc88d26670a6eb1e6e341e1e",  # b780 studio1: mod_build.inspect runs inside its validation memo
@@ -712,7 +712,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_deep_zone.py": "59fb0d2b1f5be90d90692d7f143d00d8091ceac2d9ba1ee9bd40c0f9f626cbf7",
         "mod_editor/core/nfl2k5_deep_zone_code.py": "421d08aa91966fb43667cdcc44813ff8cd2d898b8c47191bfa9050930e9667cc",
         "mod_editor/core/nfl2k5_defensive_try.py": "9d08e2abd2cd7a51d7e83d410d21e3cf5944f71e67b490d207aeec555060535c",
-        "mod_editor/core/nfl2k5_depth_chart_rows.py": "bb3fc107c99844bdef09d16e02ccbb07483c98d2faf7205eed7df971ed42e63e",
+        "mod_editor/core/nfl2k5_depth_chart_rows.py": "4eca16345d03cd658d448e25f47d3182a651f5e4912024e874d544ce860682b5",
         "mod_editor/core/nfl2k5_depth_chart_storage.py": "c401fdcae11af49b17245bf6b430f2c078ad33cc4f1452f18d648b88d8c3d52a",
         "mod_editor/core/nfl2k5_depth_locks.py": "b687a300dd8a255b8b316855c4ead4f304a7d252dbf2a45b2b3c3a7b84dab13f",
         "mod_editor/core/nfl2k5_depth_roles.py": "92a11e038973a1c421fe7f3162064bb62a9fd8cefd6bfb4bd9cc5765d3f3a19d",
@@ -976,7 +976,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_scramble_blocking.py": "f3116c50b1c01913aab22fc3cc497d843afffee4ee47161e11ac5dc0bc3556f1",  # b780-cv7
         "mod_editor/core/nfl2k5_scramble_blocking_code.py": "658ec167085e6fc083ec3acde723db330280091624a413401c09fc3e73643611",  # b780-cv7
         "mod_editor/core/nfl2k5_audible_legend.py": "a441d13947fd09d7dcd82f79f80f66642e29148484b40fdab8525aee14161b20",  # b780-p3: imported by throw_tuning for the build union
-        "mod_editor/core/nfl2k5_lineup_roles.py": "d124d0d62cb3cec2aeecb3e79e14a612fe41f1de6c69e6895bb178ed73f872ec",  # b780 sub1: the SPECIAL third-down back + FB fallback (late owner)
+        "mod_editor/core/nfl2k5_lineup_roles.py": "687998e726482845e301cef41e2cf84703c6498cd1dd4cf0aff0f0b2080b8a0b",  # b780 sub1: the SPECIAL third-down back + FB fallback (late owner)
         "mod_editor/core/nfl2k5_intro_autoskip.py": "6a9abe26bfb6552a2dd127ac628c7dbf04061d7d983e0e8d941c4ee0e6042f7b",  # b780-mem1: imported by throw_tuning for the build union
         "mod_editor/core/nfl2k5_injured_reserve.py": "105d6ca6b73b6e3ab750999e5e038cbbc0171be2f5e4795c5ffd02b5e6451f09",  # b780 IR1: modern injured reserve (late owner, imported by throw_tuning)
         "mod_editor/core/nfl2k5_injured_reserve_code.py": "0435e068e930f74a937e075f0f235fc61d951ba7b12873ac2b6fdcfc17f3b78a",  # b780 IR1: its generated runtime template

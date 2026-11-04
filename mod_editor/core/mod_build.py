@@ -1660,7 +1660,7 @@ _LATE_OWNER_OPTIONS = (
     ("nfl2k5_standings_records", "Team Standings records", lambda p: p.standings_records),  # b780-j1
     ("nfl2k5_cpu_clock2", "Modern CPU clock management", lambda p: p.cpu_clock2),  # b780 b-clock
     ("nfl2k5_audible_legend", "Audible panel legend", lambda p: _audible_panel_choice(p) is not None),  # b780-p3
-    ("nfl2k5_lineup_roles", "SPECIAL third-down back", lambda p: p.depth_chart_rows),  # b780 sub1
+    ("nfl2k5_lineup_roles", "SPECIAL situational roles (3DRB, GAD, fullback)", lambda p: p.depth_chart_rows),  # b780 sub1
     ("nfl2k5_injured_reserve", "Modern injured reserve", lambda p: p.modern_injured_reserve or p.injured_reserve_guard),  # b780 IR1
     ("nfl2k5_clock_led", "Modern clock digits", lambda p: p.modern_clock_led),  # b778-sd4
     ("nfl2k5_return_coverage", "Return coverage pursuit angles", lambda p: p.return_coverage),  # b778-kr1
@@ -2727,8 +2727,8 @@ def _apply_lineup_roles(plan: "BuildPlan", target: Path, receipt: dict, progress
         return
     module = _core_module("nfl2k5_lineup_roles")
     if module is None:
-        raise RuntimeError("The SPECIAL third-down back needs nfl2k5_lineup_roles.")
-    progress("Depth chart: third-down back on passing downs", 0, 0)
+        raise RuntimeError("The SPECIAL situational roles need nfl2k5_lineup_roles.")
+    progress("Depth chart: third-down back, gadget player and fullback fallback", 0, 0)
     payload, roles_receipt = module.apply(_xbe_bytes(target), third_down=True)
     _write_xbe_bytes(target, payload)
     final = _xbe_bytes(target)
