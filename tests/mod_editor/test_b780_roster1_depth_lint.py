@@ -52,6 +52,12 @@ ELIGIBLE = {"h": {"P", "K", "QB"}, "k": {"K"}, "ls": {"C", "TE", "G", "T"},
             "pr": {"WR", "CB", "FS", "SS", "HB"}}
 # Left for a decision in this release (b780 roster1 report; BETA81_QUEUE.md), or fixed by another job.
 KNOWN = {
+    ("LAR", "jersey twice"): "nflverse 11/03 lists Brandon McManus and the injured Blake Grupe, both kickers, as #19",
+}
+# Findings of the plans before the 11/03 refresh (the b779 roster edits the v0.8 recipe loads, as_of 10/14). The release rosters
+# (128 and 64 MB) have none of them: the 11/03 refresh signs Karty and creates McManus (LAR kicker), creates Zach Wood (NO long
+# snapper), and the 11/03 charts list a second kick returner for CLE, DAL and SEA (b780 rst2 checked both release bodies).
+LEGACY_KNOWN = {
     ("LAR", "floor K"): "no kicker: the 10/14 refresh has Harrison Mevis CUT (the 11/03 refresh signs Joshua Karty)",
     ("LAR", "special k"): "same",
     ("LAR", "chart K"): "same",
@@ -59,8 +65,13 @@ KNOWN = {
     ("CLE", "special kr2"): "the dated chart lists one kick returner",
     ("DAL", "special kr2"): "the dated chart lists one kick returner",
     ("SEA", "special kr2"): "the dated chart lists one kick returner",
-    ("LAR", "jersey twice"): "nflverse 11/03 lists Brandon McManus and the injured Blake Grupe, both kickers, as #19",
 }
+
+
+def known_for(plan=None):
+    """The known findings of a plan: the older plans (as_of before 11/03) also carry the legacy ones."""
+    old = plan is not None and str(plan.get("as_of", "9999")) < "2026-11-03"
+    return {**KNOWN, **(LEGACY_KNOWN if old else {})}
 
 
 def starts_on_ir(doc, player):
@@ -153,8 +164,9 @@ def lint(doc, *, portraits=False):
     return found
 
 
-def unexpected(found):
-    return {k: v for k, v in found.items() if k not in KNOWN}
+def unexpected(found, plan=None):
+    known = known_for(plan)
+    return {k: v for k, v in found.items() if k not in known}
 
 
 # ------------------------------------------------------------------------------------------------ synthetic
@@ -408,10 +420,10 @@ class PackRosterLintTests(unittest.TestCase):
         cls.doc = rr.RosterDocument(cls.out, scheme="one_pool", reference_year=2026)
 
     def test_every_club_fields_its_formations_and_specialists(self):
-        self.assertEqual(unexpected(lint(self.doc)), {})
+        self.assertEqual(unexpected(lint(self.doc), self.plan), {})
 
     def test_no_depth_row_is_left_empty_by_the_release_for_room(self):
-        charts = {k: v for k, v in lint(self.doc).items() if k[1].startswith("chart") and k not in KNOWN}
+        charts = {k: v for k, v in lint(self.doc).items() if k[1].startswith("chart") and k not in known_for(self.plan)}
         self.assertEqual(charts, {})
         if self.plan.get("room_policy") != "ir":
             self.assertGreater(self.receipt["injured_reserve"]["released_for_room"], 0)
@@ -432,7 +444,7 @@ class PackRosterLintTests(unittest.TestCase):
         for team in self.plan["teams"]:
             for key, index in team["specialists"].items():
                 if index is None:
-                    self.assertIn((team["team"], f"special {key}"), KNOWN, team["team"])
+                    self.assertIn((team["team"], f"special {key}"), known_for(self.plan), team["team"])
                     continue
                 self.assertIn(index, team["active"], (team["team"], key))
                 self.assertIn(rows[index]["status"], ("ACT", "INA"), (team["team"], key))     # on the club's 53

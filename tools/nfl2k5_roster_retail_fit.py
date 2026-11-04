@@ -247,6 +247,9 @@ def split(refresh: dict) -> tuple[dict, list[dict]]:
 
 
 RETURNER_POSITIONS = ("HB", "WR", "CB", "FS", "SS", "FB")
+# record position codes (HB 7, WR 3, CB 4, FS 5, SS 6, FB 8; K 1, P 2, C 12, TE 9) that can fill each special-teams role
+ELIGIBLE_POSITIONS = {"k": {1}, "h": {2, 0, 1}, "ls": {12, 9, 13, 14}, "kr1": {7, 3, 4, 5, 6, 8}, "kr2": {7, 3, 4, 5, 6, 8},
+                      "pr": {7, 3, 4, 5, 6}}
 
 
 def _chains(team: dict, rows: dict) -> dict[int, list[int]]:
@@ -289,16 +292,23 @@ def drop_club_players(plan: dict, gone: set, lost: list[dict]) -> dict:
             spec["h"] = nth("P")
         if spec.get("ls") in gone:
             spec["ls"] = nth("C", 1) or (chains.get(code["TE"], [])[1:] or [None])[-1]
-        for role in ("kr1", "kr2", "pr"):
-            if spec.get(role) in gone:
-                spec[role] = None
+        # a returner role the dropped players held goes to the best remaining returner (kick returners: a back, receiver or
+        # defensive back; the punt returner never a fullback), so no club ends up with an empty returner slot the source
+        # filled (LAC 64 MB build 2: KR2 held by a dropped receiver read 255). A slot the source left empty stays empty:
+        # the dated chart listed one kick returner (CLE, DAL, SEA).
+        emptied = [role for role in ("kr1", "pr", "kr2") if spec.get(role) in gone]
+        for role in emptied:
+            spec[role] = None
         taken = {v for v in spec.values() if v is not None}
-        pool = sorted((i for position in RETURNER_POSITIONS for i in chains.get(code[position], []) if i not in taken),
-                      key=lambda i: (RETURNER_POSITIONS.index(names[rows[i]["fields"]["position"]]),
-                                     rows[i]["fields"].get("depth_rank", 7), i))
-        for role in ("kr1", "pr"):
-            if spec.get(role) is None and pool:
-                spec[role] = pool.pop(0)
+        punt_ok = tuple(n for n in RETURNER_POSITIONS if n != "FB")
+        for role in emptied:
+            allowed = punt_ok if role == "pr" else RETURNER_POSITIONS
+            pool = sorted((i for position in allowed for i in chains.get(code[position], []) if i not in taken),
+                          key=lambda i: (allowed.index(names[rows[i]["fields"]["position"]]),
+                                         rows[i]["fields"].get("depth_rank", 7), i))
+            if pool:
+                spec[role] = pool[0]
+                taken.add(pool[0])
     plan["contract_initializations"] = [c for c in plan.get("contract_initializations") or [] if c["index"] not in gone]
     plan["identity_guards"] = [g for g in plan.get("identity_guards") or [] if g[0] not in gone]
     plan["free_agents"] = [i for i in plan.get("free_agents") or [] if i not in gone]
@@ -512,14 +522,19 @@ def validate(variant: dict, source: dict, base: bytes, *, margin: int = fa3.DEFA
     lost_pinned = {r["index"] for r in left_all if r["index"] in pinned_set}
     again = lambda i: back.get(i, i)  # noqa: E731
     teams_ok = True
+    rows_v = {r["index"]: r for r in refresh["players"]}
     for tv, ts in zip(refresh["teams"], source_refresh["teams"]):
         teams_ok &= tv["active"] == [again(i) for i in ts["active"] if i not in lost_pinned]
         teams_ok &= tv["reserves"] == [again(i) for i in ts["reserves"] if i not in lost_pinned]
         teams_ok &= {k: v for k, v in tv.items() if k not in ("active", "reserves", "specialists")} == \
             {k: v for k, v in ts.items() if k not in ("active", "reserves", "specialists")}
         for role, holder in ts["specialists"].items():
-            teams_ok &= (tv["specialists"][role] == again(holder)) if holder not in lost_pinned else \
-                (tv["specialists"][role] is not None or role == "kr2")
+            if holder not in lost_pinned:
+                teams_ok &= tv["specialists"][role] == again(holder)
+            else:                  # a role a left-out player held is filled again, by a player who can fill it
+                new_holder = tv["specialists"][role]
+                position = rows_v.get(new_holder, {}).get("fields", {}).get("position")
+                teams_ok &= new_holder is not None and position in ELIGIBLE_POSITIONS[role]
     teams_ok &= refresh["contract_initializations"] == [dict(c, index=again(c["index"]))
                                                         for c in source_refresh["contract_initializations"]
                                                         if c["index"] not in lost_pinned]
