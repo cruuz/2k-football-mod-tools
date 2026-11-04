@@ -373,7 +373,10 @@ PREVIOUS_UPGRADE_KEYS = {"honors_page": "honors page", "camera": "camera", "k128
 # b780 studio1: older revisions that read "legacy" and that the build upgrades in place (progression.apply and
 # franchise_economy.apply both accept "retail" or "legacy"). A v0.8 disc reads legacy for both; the boxes were greyed out
 # with no badge and no line in the disc summary, so retirement by age and the economy revision could not be added.
-LEGACY_UPGRADE_KEYS = {"progression": "player growth, decline and retirement", "franchise_economy": "2026 franchise economy"}
+# "returner_fix" is dormant until b780 st1 (the KR/PR getter's slot check) is merged: only then does a beta-79 or older disc
+# read "legacy" for it, and nfl2k5_returner_fix.apply accepts "retail" or "legacy" the same way.
+LEGACY_UPGRADE_KEYS = {"progression": "player growth, decline and retirement", "franchise_economy": "2026 franchise economy",
+                       "returner_fix": "CPU kick and punt returner fix"}
 # b780 n6: beta-79 installs this release reads ("previous") but cannot update in place (they grew, or MyCareer and its
 # companions are linked together); the option stays off and says to rebuild from the retail game
 PREVIOUS_REBUILD_KEYS = {"my_career": "MyCareer", "my_career_home": "Career Home", "player_progress": "Player Progress",

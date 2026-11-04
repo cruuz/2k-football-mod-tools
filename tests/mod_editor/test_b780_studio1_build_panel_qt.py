@@ -98,12 +98,15 @@ class NeedsUpdateWordingTests(_PanelCase):
 
 
 class LegacyInstallsCanBeUpdatedTests(_PanelCase):
-    """A v0.8 disc reads 'legacy' for progression and the franchise economy, and the build upgrades both in place."""
+    """A v0.8 disc reads 'legacy' for progression and the franchise economy, and the build upgrades both in place. The CPU
+    returner fix reads 'legacy' on a beta-79 or older disc once b780 st1 is merged (its engine side accepts it the same way),
+    so the page treats it the same; before that merge the state never occurs and the entry is dormant."""
 
     def test_the_boxes_are_an_update_with_a_badge_and_a_line_in_the_disc_summary(self) -> None:
-        panel = self.panel(progression="legacy", franchise_economy="legacy")
-        for key, words in (("progression", "player growth, decline and retirement"), ("franchise_economy", "2026 franchise economy")):
-            box = getattr(panel, key + "_check")
+        panel = self.panel(progression="legacy", franchise_economy="legacy", returner_fix="legacy")
+        for key, words in (("progression", "player growth, decline and retirement"), ("franchise_economy", "2026 franchise economy"),
+                           ("returner_fix", "CPU kick and punt returner fix")):
+            box = panel._boxes()[key]
             self.assertTrue(box.isEnabled(), key)
             self.assertFalse(box.isChecked(), key)
             self.assertEqual(panel._badges[key].text(), "Needs update", key)
