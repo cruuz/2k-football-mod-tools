@@ -189,7 +189,7 @@ def _emulator(table, rand_seed=1):
 OBJ, TABLE, ENTRIES, STACK, SENT = 0x2000000, 0x2100000, 0x2300000, 0x2400000, 0x2500000
 
 
-def run_class(table, prospects, roster_photos=(), seed=1, keep_body=False, roster_names=()):
+def run_class(table, prospects, roster_photos=(), seed=1, keep_body=False, roster_names=(), hair=None):
     """Region A (b779-rf3: body draw + generic head shape), then region B..D, per prospect.  Unless keep_body, the
     prospect's given weight is written back after region A so the face tests choose the build.  roster_names: (first,
     last) pool rows of players already on the roster (b780 GEN1), after the roster_photos records."""
@@ -209,6 +209,9 @@ def run_class(table, prospects, roster_photos=(), seed=1, keep_body=False, roste
         mu.mem_write(TABLE + k * 0x54 + 6, struct.pack("<H", photo))
     for k, (fi, li) in enumerate(roster_names, len(roster_photos) - len(roster_names)):
         mu.mem_write(TABLE + k * 0x54 + 0x10, struct.pack("<II", 0x2200000 + 64 * fi, 0x2280000 + 64 * li))
+    if hair is not None:                 # b780 GEN1 Q81: (va, helper bytes) installed and HAIRPTR pointed at it
+        mu.mem_write(hair[0], hair[1])
+        mu.mem_write(rf.HAIRPTR_VA, struct.pack("<I", hair[0]))
     rng = random.Random(seed)
     out = []
     for j, (fi, li, pos, wt) in enumerate(prospects):
@@ -233,6 +236,7 @@ def run_class(table, prospects, roster_photos=(), seed=1, keep_body=False, roste
         d18, d20 = struct.unpack_from("<I", r, 0x18)[0], struct.unpack_from("<I", r, 0x20)[0]
         out.append(dict(photo=struct.unpack_from("<H", r, 6)[0], tone=(d18 >> 7) & 7, dreads=d18 & 1,
                         face=(d20 >> 17) & 7, weight=body[0] + 150, height=body[1], first=(struct.unpack_from("<I", r, 0x10)[0] - 0x2200000) // 64,
+                        b0d=r[0x0D],
                         changed={k for k in range(0x54) if r[k] != blob[k]}, college=struct.unpack_from("<I", r, 0)[0],
                         esp=mu.reg_read(UC_X86_REG_ESP) - sp,
                         regs=tuple(struct.unpack_from("<IIII", bytes(mu.mem_read(sp, 16))))))
@@ -816,6 +820,87 @@ class MyCareerContext(unittest.TestCase):
         self.assertEqual(mcm.status(both), "applied")
         self.assertEqual(mcm.status(self.write(career, [(rf.NUMBER_VA, rf.NUMBER_PATCHED)])), "foreign")  # flag alone
         self.assertEqual(mcm.status(self.write(both, [(rf.NUMBER_VA, b"\x6a\x02")])), "foreign")       # another byte
+
+class RookieHair(unittest.TestCase):
+    """b780 GEN1 Q81: every generated rookie had hair style 0 (the template's), so a face with braids, a bun, a mullet,
+    an afro or blond locs showed the retail dreads or no hair under the helmet. The bank faces carry a hair style
+    (data/nfl2k5_rookie_faces/hair.json); region D gives the drawn face's style to +0x0D through the rookie hair
+    helper, a late allocator owner installed only when Hair styles is on."""
+
+    def test_the_labels(self):
+        hair = rf.load_hair()
+        bank = rf.load_bank()
+        base, count = rf.hair_span(bank)
+        self.assertEqual(len(hair), 697)
+        self.assertTrue(all(base <= pid < base + count for pid in hair))
+        self.assertEqual(set(hair.values()), {2, 3, 5, 6, 7, 8, 9, 10, 11})
+        hanging = {row["start"] + k for row in bank["buckets"] for k in range(row["hanging"])}
+        self.assertTrue(all(hair.get(pid) in (2, 7, 11) for pid in hanging), "every hanging face has locs or braids")
+        table = rf.hair_table(bank, hair)
+        for k in range(count):
+            self.assertEqual((table[k >> 1] >> (4 * (k & 1))) & 15, hair.get(base + k, 0))
+        code = rf.hair_code(0x1520000, bank, hair)
+        self.assertEqual(len(code), rf.HAIR_SIZE)
+        self.assertEqual(code[rf.HAIR_TABLE_AT:rf.HAIR_TABLE_AT + len(table)], table)
+        self.assertEqual(rf.HAIRPTR_VA, rf.TABLE_END - 4)
+        self.assertEqual(dict(rf._spans(bytes(rf.TABLE_DATA)))[rf.TABLE_VA][-4:], bytes(4), "off by default")
+
+    def test_region_d_gives_each_face_its_hair(self):
+        try:
+            import unicorn  # noqa: F401
+        except ImportError:  # pragma: no cover
+            raise unittest.SkipTest("unicorn is not installed")
+        firsts, lasts = shipped_pool()
+        bank = toy_bank()
+        ids = rf.bank_ids(bank)
+        toy_hair = {pid: 1 + (pid % 12) for pid in ids if pid % 3}       # a style for two faces in three
+        table = rf.tables(firsts, lasts, bank)
+        va = 0x700000
+        rng = random.Random(81)
+        pros = [(rng.randrange(445), rng.randrange(445), rng.randrange(17), rng.randint(185, 320)) for _ in range(200)]
+        on = run_class(table, pros, seed=81, hair=(va, rf.hair_code(va, bank, toy_hair)), keep_body=True)
+        off = run_class(table, pros, seed=81, keep_body=True)
+        self.assertEqual([r["photo"] for r in on], [r["photo"] for r in off], "the helper draws nothing")
+        styled = 0
+        for r_on, r_off in zip(on, off):
+            self.assertEqual(r_on["changed"] - {0x0D}, r_off["changed"] - {0x0D})
+            self.assertEqual(r_on["b0d"] & 15, toy_hair.get(r_on["photo"], 0), "his face's style")
+            self.assertEqual(r_on["b0d"] & 0xF0, r_off["b0d"] & 0xF0, "the high nibble is kept")
+            styled += bool(toy_hair.get(r_on["photo"]))
+        self.assertGreater(styled, 100)
+
+    @unittest.skipUnless(os.environ.get("NFL2K5_B780_RC_XBE") and Path(os.environ["NFL2K5_B780_RC_XBE"]).is_file(),
+                         "the v0.9 RC executable (NFL2K5_B780_RC_XBE) carries Hair styles in the scale-out")
+    def test_install_on_an_executable_with_hair_styles(self):
+        import hashlib
+        from mod_editor.core import nfl2k5_xbe_space as space
+        rc = Path(os.environ["NFL2K5_B780_RC_XBE"]).read_bytes()
+        full = MyCareerContext.write(rc, rf._spans(rf.xbe_tables(rc)))
+        self.assertEqual((rf.xbe_status(full), rf.hair_status(full)), ("applied", "off"))
+        out, receipt = rf.apply_hair(full)
+        self.assertEqual((rf.xbe_status(out), rf.hair_status(out), space.status(out)), ("applied", "applied", "applied"))
+        self.assertEqual(rf.apply_hair(out)[0], out, "idempotent")
+        va = int(receipt["va"], 16)
+        self.assertEqual(struct.unpack("<I", out[rf._offset(out, rf.HAIRPTR_VA, 4):][:4])[0], va)
+        rows = [a for a in space.layout(out)["allocations"] if a["owner"] == rf.HAIR_OWNER]
+        self.assertEqual([(a["kind"], a["size"]) for a in rows], [("code", rf.HAIR_SIZE)])
+        before = [a for a in space.layout(full)["allocations"]]
+        after = [a for a in space.layout(out)["allocations"] if a["owner"] != rf.HAIR_OWNER]
+        self.assertEqual(sorted((a["owner"], a["kind"], a["va"]) for a in before),
+                         sorted((a["owner"], a["kind"], a["va"]) for a in after), "no other owner moves")
+        broken = bytearray(out)
+        broken[rf._offset(out, va + rf.HAIR_TABLE_AT, 1)] ^= 0x11
+        self.assertEqual(rf.xbe_status(bytes(broken)), "foreign")
+        stray = MyCareerContext.write(full, [(rf.HAIRPTR_VA, struct.pack("<I", 0x1520000))])
+        self.assertEqual(rf.xbe_status(stray), "foreign", "HAIRPTR without the installed helper")
+
+    @unittest.skipUnless(RETAIL_XBE and Path(RETAIL_XBE).is_file(), "set NFL2K5_RETAIL_XBE to the retail default.xbe")
+    def test_no_hair_without_the_scale_out(self):
+        firsts, lasts = shipped_pool()
+        out, _ = rf.xbe_apply(Path(RETAIL_XBE).read_bytes(), rf.tables(firsts, lasts, toy_bank()))
+        self.assertEqual(rf.hair_status(out), "off")
+        with self.assertRaises(rf.RookieFacesError):
+            rf.apply_hair(out)
 
 class Portraits(unittest.TestCase):
     def test_face_pixels_roundtrip(self):

@@ -2076,6 +2076,7 @@ mod_editor/core/nfl2k5_rookie_faces.py
 data/nfl2k5_rookie_faces/name_odds.json
 data/nfl2k5_rookie_faces/templates.json
 data/nfl2k5_rookie_faces/bank.json
+data/nfl2k5_rookie_faces/hair.json
 # b778-ee1: the alien prospect (code, art pins, portrait and face art)
 mod_editor/core/nfl2k5_alien_prospect.py
 data/nfl2k5_alien_prospect/code.json

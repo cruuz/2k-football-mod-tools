@@ -126,6 +126,13 @@ candidate's own class loop and CPU draft under Unicorn, 12 classes of 380 and on
      full name about once in three classes, and a prospect can share a full name with any generated player still in
      the league.  Region B calls namefix (nickfix, then while another player on the roster carries this full name,
      another ordinary first name, at most four redraws); rarefirst and namefix share the scan (taken).
+   * hair (Q81): every generated rookie kept the template's hair style 0, so a face with braids, a bun, a mullet, an afro
+     or blond locs showed the retail dreads or no hair under the helmet.  data/nfl2k5_rookie_faces/hair.json gives 697
+     bank faces a style (from the faces' own generation notes, and for the hanging faces without one, the face: long
+     locs 2, light locs 11, reviewed by eye); region D calls the rookie hair helper through HAIRPTR right after the
+     portrait pick, and the helper sets +0x0D's low nibble.  The helper and its 2,125-byte table are one late allocator
+     owner (HAIR_OWNER, 2,176 bytes), appended at the rookie faces image step only when the Hair styles owner is
+     installed, so 64 MB builds (Hair styles off) never take it; HAIRPTR stays 0 and region D skips the call.
    All of these are code, so old franchise saves get them for every later class and draft.
    * b780 Q10 (HUNT3): the Franchise Show's photo context (WRAPUP_PORTRAIT) named the retail record, so every bank face
      and every created real player's headshot was "nophoto" on the show's boards; it now names the new record too
@@ -161,7 +168,8 @@ HELP_TEXT = ("EXPERIMENTAL. Generated draft prospects get new fictional draft he
              "prospects get a nickname first name, and now and then an East Asian or South Asian prospect appears "
              "with a fitting name. Their height and weight follow real NFL combine measurements for the position, and "
              "now and then a blue-chip prospect rates in the 80s. Their colleges follow where today's NFL players come "
-             "from, and a drafted rookie keeps his own jersey number when his new club has it free. "
+             "from, and a drafted rookie keeps his own jersey number when his new club has it free. With Hair styles on, "
+             "his hair under the helmet matches his headshot. "
              "Disc images only. Not yet tested in a long franchise.")
 EVIDENCE = "EXPERIMENTAL"
 DATA_DIR = ROOT / "data" / "nfl2k5_rookie_faces"
@@ -221,8 +229,8 @@ CODE_B = bytes.fromhex(
 CODE_D = bytes.fromhex(
     "895c24108b442414662b05a34f4f0083f803731931c93c020f93c18a99514f4f00895c24108d5906e8961dbfff8d3c5b"
     "01d78d3cbda84f4f006a185b0fb74f0280e501e82517bfff80fb18750c8d0489c1e80429c139ca7310895424140fb707"
-    "01d0e82b17bfff75034b75d0668946068b4e1881e17efcffff8b442410c1e00709c10fb64703d1e83944241473014189"
-    "4e185f5e5d5b83c408c20400")
+    "01d0e82b17bfff75034b75d0668946068b0d34514f00e302ffd18b4e1881e17efcffff8b442410c1e00709c10fb64703"
+    "d1e839442414730141894e185f5e5d5b83c408c20400")
 # b780 (a player: "Wei Chen" in almost every class): the rare first name was pool[RFIRST0 + 4 * rare + (college & 3)],
 # and the college's low bits barely vary, so Chen was nearly always Wei; it now uses (weight ^ height) & 3 of the body
 # region A just rolled. Beta-79 / SOFTDRINK v0.8 executables carry the old region D: they read "previous".
@@ -302,6 +310,20 @@ def retail_college_odds(rows: int = COLLEGE_ROWS) -> list[float]:
             odds[i] += weight / (hi - lo + 1)
     return odds
 
+
+# b780 GEN1 Q81: the hair style from the drawn face (Noah 23:05). Region D calls the helper through HAIRPTR (the last
+# four bytes of the table span, 0 = not installed) right after it stores the portrait id. The helper and its table
+# (a 4-bit hair style per bank portrait id from HAIR_BASE, low nibble first; data/nfl2k5_rookie_faces/hair.json) live
+# in one late allocator owner, installed only when the Hair styles owner is on (so 64 MB builds, which turn Hair styles
+# off, never take it).
+HAIR_JSON = DATA_DIR / "hair.json"
+SCHEMA_HAIR = "nfl2k5_rookie_faces_hair/v1"
+HAIR_OWNER = "nfl2k5_rookie_faces_hair"
+HAIR_TABLE_AT = 0x30                                # the table's offset in the allocation (after the 42-byte helper)
+HAIR_SIZE = 0x880                                   # 2,176 bytes: helper + up to 2,128 table bytes
+HAIR_REQUESTS = ((HAIR_OWNER, "code", HAIR_SIZE, 16),)
+HAIRPTR_VA = 0x4F5134                               # TABLE_END - 4
+HAIR_STYLE_MAX = 13                                 # nfl2k5_hair_styles: 0 retail .. 12, 13 = no hair model
 
 # b780 GEN1 helper entry points inside region C (from the .S link map; tests run them on their own)
 HELPER_VA = dict(taken=0xE6E20, rarefirst=0xE6E45, namefix=0xE6E7F, dlwrap=0xE6EAD, gearsetup=0xE6EC7,
@@ -458,6 +480,56 @@ def load_bank(path: Path | None = None) -> dict[str, Any]:
     return doc
 
 
+def load_hair(path: Path | None = None) -> dict[int, int]:
+    """b780 GEN1 Q81: portrait id -> hair style (nfl2k5_hair_styles numbering) for the bank faces that show hair."""
+    doc = json.loads(Path(path or HAIR_JSON).read_text(encoding="utf-8"))
+    require(doc.get("schema") == SCHEMA_HAIR, "unknown rookie hair document")
+    out = {int(k): v for k, v in doc["styles"].items()}
+    require(all(type(v) is int and 0 < v <= HAIR_STYLE_MAX for v in out.values()), "a hair style outside 1..13")
+    return out
+
+
+def hair_span(bank: Mapping[str, Any]) -> tuple[int, int]:
+    """(HAIR_BASE, count): the drawn portrait ids, one contiguous run."""
+    ids = sorted(bank_ids(bank))
+    require(ids == list(range(ids[0], ids[0] + len(ids))), "the drawn portrait ids must be one contiguous run")
+    return ids[0], len(ids)
+
+
+def hair_table(bank: Mapping[str, Any] | None = None, hair: Mapping[int, int] | None = None) -> bytes:
+    bank = bank or load_bank()
+    hair = load_hair() if hair is None else hair
+    base, count = hair_span(bank)
+    require(all(base <= pid < base + count for pid in hair), "a hair style for a portrait id the rows never draw")
+    out = bytearray((count + 1) // 2)
+    for pid, style in hair.items():
+        k = pid - base
+        out[k >> 1] |= style << (4 * (k & 1))
+    require(HAIR_TABLE_AT + len(out) <= HAIR_SIZE, "the hair table outgrew its allocation")
+    return bytes(out)
+
+
+def hair_code(va: int, bank: Mapping[str, Any] | None = None, hair: Mapping[int, int] | None = None) -> bytes:
+    """The rookie hair owner's bytes at ``va``: eax = portrait id (ax) -> +0x0D low nibble = its hair style, ids
+    outside the run left alone; keeps ebx, esi, edi, ebp."""
+    bank = bank or load_bank()
+    base, count = hair_span(bank)
+    table = hair_table(bank, hair)
+    code = (bytes.fromhex("0fb7c0")                                   # movzx eax, ax
+            + b"\x2d" + struct.pack("<I", base)                       # sub eax, HAIR_BASE
+            + b"\x3d" + struct.pack("<I", count)                      # cmp eax, count
+            + bytes.fromhex("731a")                                   # jae done (the ret)
+            + bytes.fromhex("89c2d1ea")                               # mov edx, eax; shr edx, 1
+            + bytes.fromhex("0fb692") + struct.pack("<I", va + HAIR_TABLE_AT)   # movzx edx, byte [table + edx]
+            + bytes.fromhex("7303c1ea04")                             # jnc 1f; shr edx, 4
+            + bytes.fromhex("83e20f")                                 # 1: and edx, 15
+            + bytes.fromhex("80660df0")                               # and byte [esi+0x0D], 0xF0
+            + bytes.fromhex("08560d")                                 # or [esi+0x0D], dl
+            + b"\xc3")                                               # done: ret
+    require(len(code) <= HAIR_TABLE_AT, "the hair helper outgrew its slot")
+    return (code + b"\xcc" * (HAIR_TABLE_AT - len(code)) + table).ljust(HAIR_SIZE, b"\xcc")
+
+
 def bank_ids(bank: Mapping[str, Any]) -> list[int]:
     """The portrait ids the generator draws (the 24 rows)."""
     return [row["start"] + k for row in bank["buckets"] for k in range(row["count"])]
@@ -612,12 +684,12 @@ def _offset(payload: bytes, va: int, size: int = 1) -> int:
     raise RookieFacesError(f"0x{va:x} is not file-backed")
 
 
-def _spans(table: bytes) -> list[tuple[int, bytes]]:
+def _spans(table: bytes, hair_ptr: int = 0) -> list[tuple[int, bytes]]:
     pad = lambda code, size: code + b"\xcc" * (size - len(code))  # noqa: E731
     return [(REGION_A, pad(CODE_A, REGION_A_END - REGION_A)),
             (REGION_B, pad(CODE_B, REGION_B_END - REGION_B)),
             (REGION_C, pad(CODE_C, REGION_C_END - REGION_C)),
-            (TABLE_VA, table + pad(CODE_D, TABLE_END - TABLE_VA - TABLE_DATA)),
+            (TABLE_VA, table + pad(CODE_D, TABLE_END - TABLE_VA - TABLE_DATA - 4) + struct.pack("<I", hair_ptr)),
             (STRING_VA, RECORD_NAME.encode("utf-16-le")),
             (COLLEGE_VA, COLLEGE_CODE),                   # b780 GEN1 Q84: the college weight table and pick
             (NUMBER_VA, NUMBER_PATCHED),                  # b780 GEN1
@@ -656,8 +728,8 @@ def xbe_status(payload: bytes) -> str:
     spans = dict(_spans(bytes(TABLE_DATA)))
     d = current[TABLE_VA]
     if all(current[va] == data for va, data in spans.items() if va != TABLE_VA) and \
-            d[TABLE_DATA:] == spans[TABLE_VA][TABLE_DATA:]:
-        return "applied"
+            d[TABLE_DATA:-4] == spans[TABLE_VA][TABLE_DATA:-4]:
+        return "applied" if _hair_ok(payload, struct.unpack_from("<I", d, len(d) - 4)[0]) else "foreign"
     pad = lambda code, size: code + b"\xcc" * (size - len(code))  # noqa: E731
     tail = TABLE_END - TABLE_VA - TABLE_DATA
     previous = {REGION_A: spans[REGION_A], STRING_VA: spans[STRING_VA],
@@ -668,6 +740,70 @@ def xbe_status(payload: bytes) -> str:
             and d[TABLE_DATA:] in (pad(CODE_D_B779, tail), pad(CODE_D_B780RC, tail))):
         return "previous"   # beta-79 / v0.8 (rare first name from the college's low bits) or the v0.9 RC (GEN1)
     return "foreign"
+
+
+def _hair_allocation(payload: bytes) -> dict | None:
+    from . import nfl2k5_xbe_space as space  # noqa: PLC0415
+    try:
+        if not space.is_scaleout(payload):
+            return None
+        rows = [a for a in space.layout(payload)["allocations"] if a["owner"] == HAIR_OWNER]
+    except (ValueError, KeyError, TypeError, struct.error):
+        return None
+    return rows[0] if len(rows) == 1 else None
+
+
+def _hair_ok(payload: bytes, pointer: int) -> bool:
+    """HAIRPTR is 0 (no rookie hair helper) or the entry of the installed helper, byte for byte."""
+    if pointer == 0:
+        return True
+    found = _hair_allocation(payload)
+    if found is None:
+        return False
+    va = int(found["va"], 16) if isinstance(found["va"], str) else found["va"]
+    if pointer != va or found["size"] < HAIR_SIZE:
+        return False
+    try:
+        return payload[_offset(payload, va, HAIR_SIZE):_offset(payload, va, HAIR_SIZE) + HAIR_SIZE] == hair_code(va)
+    except (RookieFacesError, OSError, ValueError):
+        return False
+
+
+def hair_status(payload: bytes) -> str:
+    """off (HAIRPTR 0) | applied | foreign, for an executable whose rookie faces read applied."""
+    off = _offset(payload, HAIRPTR_VA, 4)
+    pointer = struct.unpack_from("<I", payload, off)[0]
+    if pointer == 0:
+        return "off"
+    return "applied" if _hair_ok(payload, pointer) else "foreign"
+
+
+def apply_hair(payload: bytes) -> tuple[bytes, dict[str, Any]]:
+    """b780 GEN1 Q81: reserve the rookie hair owner (a late allocator owner appended to the sealed scale-out image),
+    install the helper and table, and point HAIRPTR at it. Needs rookie faces applied; idempotent."""
+    from . import nfl2k5_xbe_space as space  # noqa: PLC0415
+    require(xbe_status(payload) == "applied", "rookie faces must be applied before the rookie hair helper")
+    if hair_status(payload) == "applied":
+        return payload, {"state": "applied", "already_applied": True, "changed_bytes": 0}
+    require(hair_status(payload) == "off", "HAIRPTR holds a foreign value")
+    before = payload
+    if _hair_allocation(payload) is None:
+        require(space.is_scaleout(payload), "the rookie hair helper needs the scale-out allocator (Hair styles)")
+        payload, _ = space.extend_scaleout(payload, HAIR_REQUESTS)
+    found = _hair_allocation(payload)
+    require(found is not None, "the rookie hair allocation is missing")
+    va = int(found["va"], 16) if isinstance(found["va"], str) else found["va"]
+    payload, install = space.install_code(payload, HAIR_OWNER, hair_code(va))
+    buf = bytearray(payload)
+    off = _offset(payload, HAIRPTR_VA, 4)
+    buf[off:off + 4] = struct.pack("<I", va)
+    for sva, raw, rsize, h in _section_map(payload):
+        if raw <= off < raw + rsize:
+            buf[h + 36:h + 56] = hashlib.sha1(struct.pack("<I", rsize) + bytes(buf[raw:raw + rsize])).digest()  # nosec B324
+    out = bytes(buf)
+    require(xbe_status(out) == "applied" and hair_status(out) == "applied", "rookie hair read-back failed")
+    return out, {"state": "applied", "owner": HAIR_OWNER, "va": hex(va), "bytes": HAIR_SIZE,
+                 "faces_with_a_style": len(load_hair()), "changed_bytes": space.count_differing_bytes(before, out)}
 
 
 def xbe_tables(payload: bytes) -> bytes:
@@ -1018,12 +1154,19 @@ def apply_to_image(path: Path | str, read_xbe: Callable[[Path], bytes], write_xb
     write_xbe(path, patched)
     say("Rookie faces: class-generator templates")
     templates_receipt = apply_templates(path)                      # b779-rf3
+    hair_receipt = {"state": "off", "reason": "Hair styles is off"}
+    from . import nfl2k5_hair_styles as hair_owner  # noqa: PLC0415 - b780 GEN1 Q81: the gate
+    payload = read_xbe(path)
+    if hair_owner.status(payload) == "applied":
+        say("Rookie faces: hair styles from the faces")
+        payload, hair_receipt = apply_hair(payload)
+        write_xbe(path, payload)
     state = image_status(path, read_xbe, bank=bank)
     require(state == "applied", f"rookie faces read-back: {state}")
     return {"state": state, "faces_added": p["added"], "record": RECORD_NAME, "aggregate": CDF_NAME,
             "record_bytes": len(p["record"]), "aggregate_bytes": len(p["cdf"]),
             "record_sha256": sha(p["record"]), "aggregate_sha256": sha(p["cdf"]), "nick0": p["pool_nick0"],
-            "table_sha256": sha(p["table"]), "xbe": xbe_receipt, "templates": templates_receipt,
+            "table_sha256": sha(p["table"]), "xbe": xbe_receipt, "templates": templates_receipt, "hair": hair_receipt,
             "archive": {k: v for k, v in disc.items() if k != "packs"}}
 
 
