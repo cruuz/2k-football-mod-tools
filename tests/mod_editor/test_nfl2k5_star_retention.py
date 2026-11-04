@@ -137,7 +137,9 @@ class NativeStageSixTests(unittest.TestCase):
         from tests.franchise_economy_legacy import no_restructure_room
         no_restructure_room(m, team, set(chosen.values()))   # b778 fa2: the retail cut alone, no restructures
         m.call(0xC3F00, ecx=team)
-        m.put(0xE3C278, m.get(team + 0x124) + 1000)       # within 6000 of the cap, not over it
+        # b780 econ3 (economy revision 7, Q45): the economy's cut acts only while the club cannot fit two
+        # league-minimum signings (was: within 6000 of the cap); the retail cut keeps its own 6000 gate.
+        m.put(0xE3C278, m.get(team + 0x124) + 100)
         m.put(0xE576A4, 6)
         m.put(0xE576B4, 0)
         m.put(0xE576B8, 1)
@@ -151,9 +153,10 @@ class NativeStageSixTests(unittest.TestCase):
         cuts = {p for p, caller in released if caller == 0x2BFBC2}
         return {label: p in cuts for label, p in chosen.items()}
 
-    def test_economy_alone_cuts_the_star_first(self):
-        # The cut walks the roster in order and stops once payroll + 6000 < cap: the star (first) clears it.
-        self.assertEqual(self.run_stage_six(economy.apply(retail_xbe())[0]), {"star": True, "qb": False, "depth": False})
+    def test_economy_alone_cuts_the_least_valuable_first(self):
+        # b780 econ3 (economy revision 7, Q45): every one of the three clears the club's shortfall, so the cut releases
+        # the one whose release loses the least value (the depth player), no longer the first in roster order (the star).
+        self.assertEqual(self.run_stage_six(economy.apply(retail_xbe())[0]), {"star": False, "qb": False, "depth": True})
 
     def test_star_retention_keeps_the_star_and_the_qb(self):
         payload = sr.apply(economy.apply(retail_xbe())[0])[0]

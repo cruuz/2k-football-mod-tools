@@ -151,9 +151,27 @@ def _revision_three(current, retail):
         money = revision_five_money()
         offset = image.offset(economy.MONEY_WINDOW, len(money))
         out[offset:offset + len(money)] = money
-        # b780 hunt1: and roster_a (the weekly upkeep) without the in-season K/P cover, as revisions 3 to 5 installed
-        # it (taken from a released v0.8 or v0.9 RC executable when one is here; otherwise it stays current)
-        upkeep = released_roster_a() if hasattr(economy, "ROSTER_A_WINDOW") else None
+    # b780 econ3: revision 7's new sites are retail in a revision-3 image, and the revision-3 windows revision 7 rewrote
+    # (contracts, week, roster_a, roster_c, roster_d) go back to their revision-6 bytes first (roster_c then gets its
+    # revision-4 bytes below)
+    if hasattr(economy, "REVISION_7_NEW"):
+        import json
+        from pathlib import Path
+        for site in economy.sites():
+            if site.va in economy.REVISION_7_NEW:
+                offset = image.offset(site.va, len(site.patched))
+                out[offset:offset + len(site.patched)] = source.read(site.va, len(site.patched))
+        fixture = Path(__file__).resolve().parent / "fixtures" / "econ3_revision6_windows.json"
+        for va_hex, code in json.loads(fixture.read_text())["windows"].items():
+            va, body = int(va_hex, 16), bytes.fromhex(code)
+            if va not in economy.REVISION_4_SITES:
+                offset = image.offset(va, len(body))
+                out[offset:offset + len(body)] = body
+    # b780 hunt1: and roster_a (the weekly upkeep) without the in-season K/P cover, as revisions 3 to 5 installed
+    # it (taken from a released v0.8 or v0.9 RC executable when one is here); after econ3's revision-6 restore above
+    if cut is not None and hasattr(economy, "ROSTER_A_WINDOW"):
+        from tests.mod_editor.test_b780_hunt1_specialist_cut import released_roster_a
+        upkeep = released_roster_a()
         if upkeep is not None:
             offset = image.offset(economy.ROSTER_A_WINDOW, len(upkeep))
             out[offset:offset + len(upkeep)] = upkeep
@@ -237,19 +255,17 @@ class DraftClassSupplyTests(unittest.TestCase):
 
     def test_revision_three_reads_legacy_and_upgrades_in_place(self):
         from mod_editor.core import nfl2k5_franchise_economy as economy
-        self.assertIn(economy.REVISION, (4, 5, 6))   # b780 b4-economy revision 5 / hunt1 revision 6 keep every revision-4 site
+        self.assertIn(economy.REVISION, (4, 5, 6, 7))   # b780 b4-economy revision 5 / hunt1 revision 6 keep every revision-4 site
         self.assertEqual(economy.status(self.previous), "legacy")
         upgraded, receipt = economy.apply(self.previous)
         self.assertEqual(upgraded, self.current)
         self.assertEqual(receipt.get("upgraded_from"), "legacy")
         # b780-int: a revision-3 image upgrades straight to revision 5 (b4-economy): the revision-4 sites plus the two
         # windows revision 5 rewrote, which revision 3 shares with revision 4
-        expected = set(economy.REVISION_4_SITES | getattr(economy, "REVISION_5_SITES", frozenset())
-                       | getattr(economy, "REVISION_6_SITES", frozenset()))
-        from tests.mod_editor.test_b780_hunt1_specialist_cut import released_roster_a
-        if hasattr(economy, "ROSTER_A_WINDOW") and released_roster_a() is None:
-            expected.discard(economy.ROSTER_A_WINDOW)     # b780 hunt1: no released upkeep bytes here to put back
-        self.assertEqual(sorted(int(e["va"], 16) for e in receipt["edits"]), sorted(expected))
+        self.assertEqual(sorted(int(e["va"], 16) for e in receipt["edits"]),
+                         sorted(economy.REVISION_4_SITES | getattr(economy, "REVISION_5_SITES", frozenset())
+                                | getattr(economy, "REVISION_6_SITES", frozenset())
+                                | getattr(economy, "REVISION_7_SITES", frozenset())))
 
     def test_a_small_pool_still_gets_a_full_draft_and_keeps_the_vacancies(self):
         # The retail roster has only 241 free agents, mostly young: retiring by age alone frees far fewer than
