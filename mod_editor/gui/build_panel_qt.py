@@ -399,14 +399,15 @@ def rebuild_only_reason(state: Mapping[str, object]) -> str:
     """Why this release cannot build on top of the disc the state describes, in plain words, or "" when it can try.
 
     b780 studio1 (Q69). A disc built by an older release (the released SOFTDRINK 2K28 discs) carries the Modern practice field's
-    team logo at midfield, a runtime table in the executable, while its practice facility reads foreign here, so the logo cannot
-    be kept (the engine keeps an installed option only with its parent in the plan) and it cannot be turned off in place. The
+    team logo at midfield, a runtime table in the executable, while its practice facility reads foreign here (or cannot be read: a
+    bare executable), so the logo cannot be kept (the engine keeps an installed option only with its parent in the plan) and it
+    cannot be turned off in place. A facility that reads retail or applied can be put in the plan with the logo. The
     engine then stops every build at its first check ("Practice field: team logo at midfield (experimental) is installed;
     rebuild from a verified base to turn it off"), and behind that check another waits (the v0.8 plan's next refusal is
     "128 MB memory options differ", the installed heap, early and 128 MB settings not being the page's plan). The page used to
     offer Needs update boxes on such a disc and then let the engine refuse. Both Build and Game Fixes ask this one function."""
 
-    if state.get("modern_practice_field_team_logo") == "applied" and state.get("modern_practice_field") != "applied":
+    if state.get("modern_practice_field_team_logo") == "applied" and state.get("modern_practice_field") not in ("applied", "retail"):
         what = "disc" if state.get("container") == "xiso" else "executable"
         return (f"This {what} already has the practice field's team logo at midfield, put there by an older build. This release "
                 f"can neither keep it nor update it in place, so it cannot build on top of this {what}. To change it, build "
@@ -436,14 +437,8 @@ VENUE_BUILD_KEYS = (
     "modern_hard_rock", "modern_gillette", "modern_lambeau", "modern_everbank",
     "modern_board_kit", "modern_practice_field", "modern_practice_field_team_logo", "modern_surfaces",
 )
-ANNIVERSARY_DEPENDENCIES = {
-    "espn25_named_previews": ("espn25_more_moments",),
-    "espn25_era_rules": ("espn25_more_moments", "dynamic_kickoff", "defensive_try", "overtime"),
-    "historic_rosters_2026": ("historic_teams_quick_game",),
-    "classic_teams": ("historic_teams_quick_game",),  # b775-ct1
-    "cpu_clock2_overtime": ("cpu_clock2",),  # b780 b-clock: the overtime window extends the modern clock rules
-    "cpu_runner_vision": ("cpu_ball_carriers",),  # b780 cv2-runner: its wider sideline limit is cpu_ball_carriers' taper
-}
+# b780 studio1 (Q60): the one table of "this box needs that box" rules, shared with Game Fixes (kept under its old name for callers)
+ANNIVERSARY_DEPENDENCIES = r62_ui.REQUIRES
 
 
 class _Signals(QObject):
@@ -514,6 +509,7 @@ class BuildPanel(QWidget):
     abilities_locks_changed = pyqtSignal(dict)  # rules v2 lock settings (runtime key names) for the Rosters page
     built = pyqtSignal(dict)   # the receipt of the copy just written (Share pre-fills from it)
     book_set_changed = pyqtSignal()   # modern/classic books or pack list edited here; the shell saves it and syncs Playbooks
+    memory_locks_changed = pyqtSignal()   # the 64 MB target locked or unlocked options (Game Fixes shows the same locks)
 
     def __init__(self, facade: object | None = None, parent: QWidget | None = None, *, available=None,
                  theme: str = "dark") -> None:
@@ -1056,12 +1052,6 @@ class BuildPanel(QWidget):
         g.addWidget(WrappedLabel(tt.cpu_scrambles_patch.BUILD_CAPTION))
         g.addWidget(self.cpu_scrambles_level)
         self.cpu_scrambles_level.currentIndexChanged.connect(lambda _index: self._refresh())
-        for parent, children in r62_ui.CHILDREN.items():
-            getattr(self, parent + "_check").toggled.connect(lambda on, p=parent: self._parent_toggled(p, on))
-            if parent in r62_ui.DEFAULT_ON_CHILDREN:   # b780-mem1: a user's tick brings the default children along
-                getattr(self, parent + "_check").clicked.connect(lambda on, p=parent: self._parent_clicked(p, on))
-            for child in children:
-                getattr(self, child + "_check").toggled.connect(lambda on, p=parent: self._child_toggled(p, on))
         self.momentum_collision_level = QComboBox()
         for caption, value in (("Retail (0)", 0), ("Light (25)", 25), ("Medium (50)", 50), ("Heavy (100)", 100)):
             self.momentum_collision_level.addItem(caption, value)
@@ -1978,12 +1968,8 @@ class BuildPanel(QWidget):
         self.career_stats_check.toggled.connect(self.career_row.setVisible)
         self.roster_edits_check.toggled.connect(self.edits_row.setVisible)
         self.roster_edits_check.toggled.connect(lambda on: self.roster_edits_status.setVisible(on and bool(self.roster_edits_status.text())))
-        for child, parents in ANNIVERSARY_DEPENDENCIES.items():
-            getattr(self, child + "_check").toggled.connect(
-                lambda on, key=child: self._anniversary_toggled(key, on))
-            for parent in parents:
-                getattr(self, parent + "_check").toggled.connect(
-                    lambda on, key=child: self._anniversary_parent_toggled(key, on))
+        r62_ui.connect_requirements(self._requirement_box, self._requirement_child_toggled, self._requirement_parent_toggled,
+                                   self._requirement_parent_clicked)
         self.historic_stock_books_check.toggled.connect(
             lambda on: self._exclusive_books("historic_stock_books", "playbook_pair", on))
         self.playbook_pair_check.toggled.connect(
@@ -3308,8 +3294,9 @@ class BuildPanel(QWidget):
         # ("Already installed", unticked), so the plan said hitch brake without close pursuit recovery and the settings
         # validator refused it: Save Project failed with "turn both on, or both off" about a box nobody could tick. The
         # build replays an installed parent as already applied and adds the child to it in place.
-        for parent, children in r62_ui.CHILDREN.items():
-            if not getattr(plan, parent, False) and self._installed(parent) and any(getattr(plan, child, False) for child in children):
+        for parent in r62_ui.VALIDATED_TOGETHER:
+            if not getattr(plan, parent, False) and self._installed(parent) and any(
+                    getattr(plan, child, False) for child in r62_ui.CHILDREN[parent]):
                 setattr(plan, parent, True)
         return plan
 
@@ -3456,6 +3443,7 @@ class BuildPanel(QWidget):
                         box.setChecked(True)
                 self._memory_ticks.clear()
             self._refresh_memory_display(target)
+            self.memory_locks_changed.emit()
         finally:
             self._memory_applying = False
 
@@ -4167,19 +4155,25 @@ class BuildPanel(QWidget):
         self._senior_bowl_options = copy.deepcopy(options)
         self._refresh()
 
-    def _anniversary_toggled(self, child, on):
+    def _requirement_box(self, key):
+        return getattr(self, key + "_check", None)
+
+    def _requirement_child_toggled(self, child, on):
+        """Q60: a ticked child ticks the parents it needs (a preset sets every box itself, so it is left alone)."""
         if on and not self._preset_applying:
-            for parent in ANNIVERSARY_DEPENDENCIES[child]:
-                box = getattr(self, parent + "_check")
-                if box.isEnabled():
-                    box.setChecked(True)
+            r62_ui.tick_parents(child, self._requirement_box)
         self._refresh()
 
-    def _anniversary_parent_toggled(self, child, on):
-        box = getattr(self, child + "_check")
-        if not on and box.isEnabled():
-            box.setChecked(False)
+    def _requirement_parent_toggled(self, parent, on):
+        """Q60: an unticked parent unticks the children that need it."""
+        if not on:
+            r62_ui.untick_children(parent, self._requirement_box)
         self._refresh()
+
+    def _requirement_parent_clicked(self, parent, on):
+        """b780-mem1: a parent the user ticked brings its default children along."""
+        if on:
+            r62_ui.tick_default_children(parent, self._requirement_box)
 
     def _exclusive_books(self, selected, other, on):
         box = getattr(self, other + "_check")
@@ -4295,25 +4289,6 @@ class BuildPanel(QWidget):
         self.official_marks_import_button.setEnabled(True)
         self._official_marks_pack_changed()
         QMessageBox.warning(self, "Could not save logos", message)
-
-    def _parent_toggled(self, parent, on):
-        if not on:
-            for child in r62_ui.CHILDREN[parent]:
-                getattr(self, child + "_check").setChecked(False)
-        self._refresh()
-
-    def _parent_clicked(self, parent, on):
-        if on:
-            for child in r62_ui.DEFAULT_ON_CHILDREN.get(parent, ()):
-                box = getattr(self, child + "_check")
-                if box.isEnabled():
-                    box.setChecked(True)
-
-    def _child_toggled(self, parent, on):
-        box = getattr(self, parent + "_check")
-        if on and not box.isChecked() and box.isEnabled():
-            box.setChecked(True)
-        self._refresh()
 
     def _money_downs_level(self) -> str:
         return str(self.cpu_money_downs_level.currentData() or "modern2")

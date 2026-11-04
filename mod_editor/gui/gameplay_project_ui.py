@@ -115,7 +115,20 @@ class GameplayBuildLink:
         for origin in (build, gameplay):
             origin.guardian_everyone_practice_check.toggled.connect(lambda _on, p=origin: self.copy_levels(p))
             origin.my_career_setup_field.textChanged.connect(lambda _text, p=origin: self.copy_levels(p))
+        # b780 studio1: Build's 64 MB target greys out the options a 64 MB build cannot carry; Game Fixes shows the same lock
+        # (and a click that still reaches a locked box is not copied, so nothing is recorded to come back at 128 MB)
+        if hasattr(gameplay, "memory_lock_for") and hasattr(build, "_memory_locks"):
+            gameplay.memory_lock_for = self.memory_lock
+        if hasattr(build, "memory_locks_changed") and hasattr(gameplay, "_apply_memory_locks"):
+            build.memory_locks_changed.connect(gameplay._apply_memory_locks)
         self.refresh_from_build()
+
+    def memory_lock(self, key):
+        """(tooltip, badge) while Build's 64 MB target holds this box locked, else None."""
+        if key in self.shared and key in getattr(self.build, "_memory_locks", {}):
+            badge = self.build._badges.get(key)
+            return (self.build._boxes()[key].toolTip(), badge.text() if badge is not None else "")
+        return None
 
     def refresh_from_build(self):
         with quiet(self.gameplay):
@@ -153,6 +166,12 @@ class GameplayBuildLink:
         self._copy(self.gameplay.checks[key], self.build._boxes()[key])
 
     def _copy(self, source, destination):
+        locked = self._key_of.get(id(destination))
+        if locked is not None and destination is self.build._boxes()[locked] and self.memory_lock(locked) is not None:
+            # a box Build's 64 MB target holds off takes no copy: it was recorded as a tick to bring back at 128 MB
+            if not self.busy and not self.suspended():
+                self.settle([locked])
+            return
         if self.busy or self.suspended():
             if self.busy and self._copying is not None and not (
                     (source, destination) == (self._copying[1], self._copying[0]) and source.isChecked() == self._copying[2]):

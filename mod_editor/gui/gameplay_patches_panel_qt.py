@@ -404,6 +404,9 @@ class GameplayPatchesPanel(QWidget):
         self._pool = QThreadPool(self)
         self._task: _Task | None = None
         self._state: dict[str, object] | None = None
+        # b780 studio1: the 64 MB target locks options on Build; the link hands this page the same lock (key -> tooltip, badge)
+        self.memory_lock_for = None
+        self._memory_mirror: dict[str, tuple] = {}
         self.checks: dict[str, QCheckBox] = {}
         self._patches = tuple(patches)
         self._title = title
@@ -518,13 +521,6 @@ class GameplayPatchesPanel(QWidget):
                 check.setToolTip(helper or label)
                 check.toggled.connect(lambda _c: self._refresh())
                 head.addWidget(check)
-            if key in r62_ui.CHILDREN:
-                check.toggled.connect(lambda on, p=key: self._parent_toggled(p, on))
-            if key in r62_ui.DEFAULT_ON_CHILDREN:   # b780-mem1: a user's tick brings the default children along
-                check.clicked.connect(lambda on, p=key: self._parent_clicked(p, on))
-            for parent, children in r62_ui.CHILDREN.items():
-                if key in children:
-                    check.toggled.connect(lambda on, p=parent: self._child_toggled(p, on))
             if key == "cpu_money_downs":
                 self.cpu_money_downs_level = QComboBox()
                 for text, value in r62_ui.LEVELS["cpu_money_downs"]:
@@ -631,6 +627,9 @@ class GameplayPatchesPanel(QWidget):
             self.badges[key] = badge_label
             self._static_badges[key] = badge
         root.addWidget(list_box)
+        # b780 studio1 (Q60): the same rule table Build reads (beta62_options.REQUIRES), for the boxes this page has
+        r62_ui.connect_requirements(self.checks.get, self._requirement_child_toggled, self._requirement_parent_toggled,
+                                   self._requirement_parent_clicked)
         out = QHBoxLayout()
         self.target_caption = QLabel("Save disc copy as")
         out.addWidget(self.target_caption)
@@ -837,25 +836,47 @@ class GameplayPatchesPanel(QWidget):
         if path:
             self.my_career_setup_field.setText(path)
 
-    def _parent_toggled(self, parent, on):
-        if not on:
-            for child in r62_ui.CHILDREN[parent]:
-                if child in self.checks:
-                    self.checks[child].setChecked(False)
-        self._refresh()
+    def _apply_memory_locks(self) -> None:
+        """Grey out here what Build's 64 MB target has greyed out, with Build's reason, and give it back at 128 MB exactly as it
+        was. Without it a click here was recorded on the locked Build box and came back on at 128 MB."""
+        provider = self.memory_lock_for
+        for key, box in self.checks.items():
+            info = provider(key) if provider is not None else None
+            badge = self.badges.get(key)
+            if info is not None:
+                if key not in self._memory_mirror:
+                    self._memory_mirror[key] = (box.isEnabled(), box.toolTip(),
+                                                badge.text() if badge is not None else None,
+                                                not badge.isHidden() if badge is not None else False)
+                box.setEnabled(False)
+                box.setToolTip(info[0])
+                if badge is not None:
+                    badge.setText(info[1])
+                    badge.setVisible(bool(info[1]))
+            elif key in self._memory_mirror:
+                enabled, tip, text, shown = self._memory_mirror.pop(key)
+                box.setEnabled(enabled)
+                box.setToolTip(tip)
+                if badge is not None and text is not None:
+                    badge.setText(text)
+                    badge.setVisible(shown)
 
-    def _parent_clicked(self, parent, on):
+    def _requirement_child_toggled(self, child, on):
+        """Q60: a ticked child ticks the parents it needs that this page has."""
         if on:
-            for child in r62_ui.DEFAULT_ON_CHILDREN.get(parent, ()):
-                box = self.checks.get(child)
-                if box is not None and box.isEnabled():
-                    box.setChecked(True)
-
-    def _child_toggled(self, parent, on):
-        box = self.checks.get(parent)
-        if box is not None and on and not box.isChecked() and box.isEnabled():
-            box.setChecked(True)
+            r62_ui.tick_parents(child, self.checks.get)
         self._refresh()
+
+    def _requirement_parent_toggled(self, parent, on):
+        """Q60: an unticked parent unticks the children that need it."""
+        if not on:
+            r62_ui.untick_children(parent, self.checks.get)
+        self._refresh()
+
+    def _requirement_parent_clicked(self, parent, on):
+        """b780-mem1: a parent the user ticked brings its default children along."""
+        if on:
+            r62_ui.tick_default_children(parent, self.checks.get)
 
     def _money_downs_changed(self):
         level = str(self.cpu_money_downs_level.currentData() or "retail")
@@ -1033,6 +1054,7 @@ class GameplayPatchesPanel(QWidget):
                                      and self._task is None and not self._reading
                                      and not self._playbook_blockers and not rebuild_only)
         self.write_button.setToolTip(rebuild_only or " ".join(self._playbook_blockers))
+        self._apply_memory_locks()
 
     def _choose_source(self) -> None:
         chosen, _f = QFileDialog.getOpenFileName(self, "Choose your game disc (.iso) or default.xbe", str(Path.home()), SOURCE_FILTER)
