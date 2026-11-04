@@ -166,7 +166,7 @@ class KernelTable(unittest.TestCase):
         raw = ai.encode_table(rows)
         self.assertEqual(len(raw), ai.TABLE_SIZE)
         self.assertEqual(ai.decode_table(raw), rows)
-        for variant, code in (("b778", assembly.CODE), ("v061", assembly.CODE_V061)):
+        for variant, code in (("b780", assembly.CODE), ("b778", assembly.CODE_B778), ("v061", assembly.CODE_V061)):
             at = ai.table_offset(variant)
             self.assertEqual(code[at:at + ai.TABLE_SIZE], raw)
             self.assertEqual(code.count(raw), 1)
@@ -516,7 +516,7 @@ class UpgradeCarriesTheTable(unittest.TestCase):
         self.assertEqual(ai.installed_variant(assigned), "v061")
         upgraded, receipt = ai.upgrade(assigned)
         self.assertEqual(receipt["status"], "upgraded")
-        self.assertEqual((ai.status(upgraded), ai.installed_variant(upgraded)), ("applied", "b778"))
+        self.assertEqual((ai.status(upgraded), ai.installed_variant(upgraded)), ("applied", ai.CURRENT))
         self.assertEqual(ai.installed_table(upgraded), rows)
         plain, _ = ai.upgrade(payload)
         self.assertEqual(ai.installed_table(plain), ai.default_table())

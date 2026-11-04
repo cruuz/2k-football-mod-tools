@@ -53,8 +53,8 @@ class TemplateTests(unittest.TestCase):
             else:
                 self.assertTrue(va <= value < va + len(assembly.CODE) or value == symbols[symbol], (offset, symbol))
         # the constants block at the end of the template
-        tail = struct.unpack("<8f", assembly.CODE[-32:])
-        self.assertEqual(tail[:6], (600.0, 300.0, 120.0, 60.0, 15.0, 0.0))
+        tail = struct.unpack("<9f", assembly.CODE[-36:])
+        self.assertEqual(tail[:7], (600.0, 300.0, 120.0, 60.0, 40.0, 15.0, 0.0))   # b780 modes2: + 40 s (Q22)
 
     def test_sites_are_jumps_or_calls_into_the_allocation(self):
         va = 0x14DA000

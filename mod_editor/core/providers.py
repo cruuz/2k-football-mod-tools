@@ -695,7 +695,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_coverage_trail.py": "2307dfcfc5419eec9e5b1286cb056d577939028a7a14ff532bfc0a67a24fa902",
         "mod_editor/core/nfl2k5_coverage_trail_code.py": "3c2cfd81b9210f4843bf4eb548987794991161c7ccf5f21ab197d83ac8b0943f",
         "mod_editor/core/nfl2k5_coverage_hitch_code.py": "a7be9dcd4cb6c66222e92cb1f3b49f2d82342cad43507c716f074300c026681b",
-        "mod_editor/core/nfl2k5_cpu_money_downs.py": "662b3f763825039562e857943cdcaada194eee833303f359a02bbdd1921017aa",
+        "mod_editor/core/nfl2k5_cpu_money_downs.py": "57471a6d13d3725df897d4f40db4164c81a463790e3a2c1ed2b647756e3a8433",
         "mod_editor/core/nfl2k5_cpu_money_downs_code.py": "f9bfb3a36ce4d28b3d3543441808ba36824cb791d816eebec996364419478119",
         "mod_editor/core/nfl2k5_cpu_third_down.py": "e4cf6e7a6cbedf651dff6b797018fdd23959cf2d2ed045482611c56a5aa76ee8",
         "mod_editor/core/nfl2k5_cpu_qb_reads.py": "d23312a9a21ac0ba3114b740be4a2ca315d0f9567b11d0f6a99891fc7f64e005",
@@ -810,10 +810,10 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_pass_rush_stats_code_b779.py": "1aaa9727867ef483c1bc53696ab98efefe1440381cdb1771cba1d05f31413c9d",  # b780 n6: frozen beta-79 revision
         "mod_editor/core/nfl2k5_cpu_passer_iq.py": "b20345c8645b637e4fa619d811e50786bca501259ba16a6fa7a5b7c48b195b27",  # b780 a-passer
         "mod_editor/core/nfl2k5_cpu_passer_iq_code.py": "8f9e07127306df30acb5e5f65cb2c299da1cc8b0fb06e29f1459e3b7d9d209bc",  # b780 a-passer
-        "mod_editor/core/nfl2k5_cpu_clock2.py": "0551a8641fe264a41b6b852fb02ea32982789d187835da5b73d58b8ada6affe2",  # b780 b-clock
-        "mod_editor/core/nfl2k5_cpu_clock2_code.py": "d93fc3d5bca3a4aa1fee50e62d919ef75f2f6fbf1cf15d6c749c8a3c9fb4790e",  # b780 b-clock
-        "mod_editor/core/nfl2k5_protection_calls.py": "9ad8fbe2675e6287416f23029ee841383465655bf0eeec65350769ef6899a715",  # b780 p1-slide
-        "mod_editor/core/nfl2k5_protection_calls_code.py": "381feb0430fdcbbb1550f75889e3ca556ebc18550813c8f0a740ee9d5179183c",  # b780 p1-slide
+        "mod_editor/core/nfl2k5_cpu_clock2.py": "7082094e3ecf14cea67addf4d3e0053077884d5167c01ec91a037983091ef937",  # b780 b-clock
+        "mod_editor/core/nfl2k5_cpu_clock2_code.py": "871886eb483f57e9f4f92b6ca43f4830be8badb9b16b00e5c681bb96f9a1e252",  # b780 b-clock
+        "mod_editor/core/nfl2k5_protection_calls.py": "3b22fb81f3d641e51fa849156910d39190d4a34a8f1ac36297c4e8c849fa5730",  # b780 p1-slide
+        "mod_editor/core/nfl2k5_protection_calls_code.py": "2b7d47b62cca789dea4a8da518eeeff36f337b267e1dd2f97eefcd1a6d8509b1",  # b780 p1-slide
         "mod_editor/core/nfl2k5_lineman_rating.py": "e1c08c86e0a31c58fd86d5a155c56ad200cf5ef237771c95b39bfe29215261c1",
         "mod_editor/core/nfl2k5_match_coverage.py": "d9c1a93508a25a17d389b1dfa628ab8d0ac2da25d99bcc64a347b98f4447cfa2",
         "mod_editor/core/nfl2k5_model_project.py": "04371be3e1e86a9a6b3d2499dc0db203d6d5d9241c104c78879a2a414aa05488",
@@ -864,8 +864,8 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_screen_authored_pins.py": "867b58de8ef5afcfe6ab980c589caef39f68b7f2b04df2fec10f3fca5af6503b",
         "mod_editor/core/nfl2k5_playbook_inspector.py": "296b94fe2565486665c6e820658fd149d22b3ddaeec42cc87b606325f5f7167f",
         "mod_editor/core/nfl2k5_playbook_pack.py": "55aae169736610d2e878f15771036dedf7c0e7d6468f595308d6b8674f690fdf",
-        "mod_editor/core/nfl2k5_coach_ai.py": "9baeb0cf0535e3a31087cb4c40bbfa0bb018a3f4a49b2194147d70bd29b44c6b",
-        "mod_editor/core/nfl2k5_coach_ai_code.py": "5f42221d20454018f74430fa2fff8c1987143536549ce7dd52b55f00b0975afa",
+        "mod_editor/core/nfl2k5_coach_ai.py": "bf3b35376abbf92567a10c62e6bc46a0a4375fa9acf5e3da6dd4de0f1a69b93f",
+        "mod_editor/core/nfl2k5_coach_ai_code.py": "2b284172bc2cae180eea7ef3ae11ce69fff3363399bc305a4504cef4fbf7cfdc",
         "mod_editor/core/nfl2k5_coach_staff.py": "4ddd9bf4541b5a68276168d8eae634ad493c189e7eb9069224696172a5d2f15a",
         "mod_editor/core/nfl2k5_vip.py": "7760c4c3c07a00b081db7f742c314fb23ba02d97568ec39e1106f0d8e9af3b51",
         "mod_editor/core/nfl2k5_coach_diversity.py": "a56f23767967090df58f4da16ebc9d5d66d713f12628da5da241a1f36104aa53",

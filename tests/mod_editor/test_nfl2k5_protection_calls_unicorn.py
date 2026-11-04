@@ -311,12 +311,38 @@ class SnapSlideTests(unittest.TestCase):
         self.assertEqual(w.state()["used"], 1)
         self.assertEqual(w.slide_call(0)[0], auto)                              # the next play set: dropped
         self.assertEqual(w.state()["call"], 0)
-        # a call from an earlier play (the play log moved), another team, or a game that was quit before its snap (the
-        # game tick restarts at 0 in every game, so the new game's tick is behind the call's) is dropped at once
-        for kw in (dict(stamp=40), dict(team=World.DEF), dict(tick=w.ru32(GAME_TICK) + 1)):
+        # a call from an earlier play (the play log moved) or another team is dropped at once (b780 modes2: a game quit
+        # before its snap is the game start's job now, test_b780_modes2_a_call_never_carries_into_the_next_game)
+        for kw in (dict(stamp=40), dict(team=World.DEF)):
             w.set_call(pc.CALL_RIGHT, **kw)
             self.assertEqual(w.slide_call(1)[0], auto, kw)
             self.assertEqual(w.state()["call"], 0, kw)
+
+    def test_b780_modes2_a_call_never_carries_into_the_next_game(self):
+        """Q4 (REV2's repro): game A calls SLIDE LEFT at play 41, frame 5000, and is quit before the snap; game B reaches
+        play 41 with the same team on offense at frame 7000. Game B starts through the game's own start call 0x648A8 (the
+        per-game reset 0x11A540, with this owner's clear first) and keeps the automatic read. Substituted boundary: the
+        reset itself returns at once (it needs the whole match world; its first object write is through a pointer the
+        fixture leaves 0). The game start's call instruction and this owner's entry run natively."""
+        auto = self.auto(+1, -1)
+        w = self.world()
+        w.f32(w.CLOCK + 0x10, 1.5)
+        w.set_call(pc.CALL_LEFT, stamp=41, tick=5000)
+        stale = self.world()                   # without game B's start (what the tick test alone let through)
+        stale.f32(stale.CLOCK + 0x10, 1.5)
+        stale.set_call(pc.CALL_LEFT, stamp=41, tick=5000)
+        stale.u32(PLAY_LOG, 41); stale.u32(GAME_TICK, 7000)
+        self.assertAlmostEqual(stale.slide_call(0)[0], -SLIDE_MAX, places=2)
+        w.uc.mem_write(0x11A540, b"\xc3")                                       # the reset: ret
+        end, _delta = w.run(0x648A8, stops=(0x648AD,), budget=2_000_000)
+        self.assertEqual(end, 0x648AD)                                          # the reset returned to the game start
+        self.assertEqual(w.state()["call"], 0)
+        w.u32(PLAY_LOG, 41); w.u32(GAME_TICK, 7000)
+        self.assertEqual(w.slide_call(0)[0], auto)
+        self.assertEqual(w.slide_call(1)[0], auto)
+        # within a game the call still holds for its own snap
+        w.set_call(pc.CALL_RIGHT)
+        self.assertAlmostEqual(abs(w.slide_call(0)[0]), SLIDE_MAX, places=2)
 
     def test_owner_code_preserves_registers_and_flags(self):
         w = self.world()
@@ -359,7 +385,8 @@ class LineButtonTests(unittest.TestCase):
         w = self.world()
         self.panel(w, 0, True, 3)
         self.assertEqual(self.press(w, pc.EVENT_L, World.OFF), self.DONE)
-        self.assertEqual(w.state(), dict(team=World.OFF, stamp=41, call=pc.CALL_LEFT, used=0, tick=5000))
+        self.assertEqual({k: v for k, v in w.state().items() if k != 'tick'},   # b780 modes2: no tick store
+                         dict(team=World.OFF, stamp=41, call=pc.CALL_LEFT, used=0))
         self.assertEqual(w.ru32(PANEL), 1)                                    # the menu stays open
         self.assertEqual(self.press(w, pc.EVENT_R, World.OFF), self.DONE)
         self.assertEqual(w.state()["call"], pc.CALL_RIGHT)
@@ -368,7 +395,8 @@ class LineButtonTests(unittest.TestCase):
         w.u32(PLAY_LOG, 42); w.u32(GAME_TICK, 6000)                           # a new play: a new call, not a toggle
         w.set_call(pc.CALL_LEFT, stamp=41)
         self.assertEqual(self.press(w, pc.EVENT_L, World.OFF), self.DONE)
-        self.assertEqual(w.state(), dict(team=World.OFF, stamp=42, call=pc.CALL_LEFT, used=0, tick=6000))
+        self.assertEqual({k: v for k, v in w.state().items() if k != 'tick'},   # b780 modes2: no tick store
+                         dict(team=World.OFF, stamp=42, call=pc.CALL_LEFT, used=0))
 
     def test_other_presses_and_other_menus_run_the_retail_lookup(self):
         """X/A/B on the offense's menu return the real audible entry (team brain +0x74 + 12 * index); L/R on a

@@ -224,6 +224,74 @@ class ClockReplays(unittest.TestCase):
             self.assertEqual(timeouts(self.clock, seconds, margin), result, (seconds, margin))
         self.assertEqual(self.both(timeouts, 150, 7, 2), ((False, False), (False, False)))      # first half: retail
 
+    def test_b780_modes2_no_hopeless_field_goal(self):
+        """Q22 (hunt7): the native field-goal test 0x20AF80 said kick on 4th down in Q4 down 9 with 5 s left (retail, v0.8
+        and the RC). Now it says no when the offense is down 4 or more with 2:00 or less left in Q4; down 1 to 3, more
+        time, other quarters and a lead keep the native answer."""
+        def fg(r, seconds, margin, quarter=4, down=4):
+            r.prepare(dict(down=down, quarter=quarter, seconds=seconds, score_margin=margin, own_yard=65, distance=10,
+                           home=True, quarter_seconds=420, timeouts=0))
+            return r.flag(0x20AF80)
+        self.assertEqual(self.both(fg, 5, -9), (1, 0))                     # hunt7's case
+        for seconds, margin in ((5, -4), (15, -8), (58, -9), (118, -17), (100, -4)):
+            retail, clock = self.both(fg, seconds, margin)
+            self.assertEqual(clock, 0, (seconds, margin))
+            self.assertIn(retail, (0, 1))
+        for seconds, margin, quarter in ((5, -3, 4), (15, -1, 4), (100, -3, 4), (125, -9, 4), (330, -4, 4),
+                                         (5, -9, 2), (5, 3, 4)):
+            self.assertEqual(*self.both(fg, seconds, margin, quarter=quarter), (seconds, margin, quarter))
+
+    def test_b780_modes2_the_fourth_down_chooser_goes_for_it_with_modern2(self):
+        """Q22: the in-game fourth-down category (0x20B180) with Modern 2 fourth downs. Modern 2's late rule hands the
+        down-9 case back to the native code when the native Hail Mary call takes over, and the native code then asked
+        the field-goal test first: category 0x13 (field goal) with 5 s left. With Modern CPU clock management it is a
+        play from the offense's book. Modern 2 still recognizes its own guarded routine with this owner's hook in it."""
+        from mod_editor.core import nfl2k5_cpu_money_downs as money, nfl2k5_xbe_space as space
+        retail = retail_xbe()
+        union, _ = space.apply(retail, money.REQUESTS + money.LATE_REQUESTS + clock2.REQUESTS, scaleout=True)
+        modern2 = money.apply(union, level="modern2")[0]
+        both = clock2.apply(modern2)[0]
+        self.assertEqual((money.status(both), clock2.status(both)), ("applied", "applied"))
+        def reaches(payload, seconds, margin, stop):
+            """Run the chooser to ``stop``: 0x20B2BA is its field-goal branch, 0x20B1B1 the next test after a no."""
+            m = Machine(payload)
+            m.supply_fg_range(45)
+            m.configure(down=4, own_yard=65, distance=10, score_margin=margin, quarter=4, seconds=seconds, timeouts=0)
+            m.u32(0xBF16FC, 0)
+            m.u32(0xBF1700, 0)
+            m.seed(1)
+            try:
+                return m.run(0x20B180, ecx=m.OFF, stop_at=stop, count=10000) == stop
+            except (AssertionError, x86_error):
+                return False        # past the kick test the go branch needs the whole book (the fixture has none)
+        from unicorn import UcError as x86_error  # noqa: N806
+        kick, no_kick = 0x20B2BA, 0x20B1B1
+        for seconds in (5, 10):
+            self.assertTrue(reaches(modern2, seconds, -9, kick))               # the shipped field goal
+            self.assertTrue(reaches(both, seconds, -9, no_kick))               # on to the punt and Hail Mary tests
+            self.assertFalse(reaches(both, seconds, -9, kick))
+        for payload in (modern2, both):                                       # down 3: Modern 2's tying kick stays
+            m = Machine(payload)
+            m.supply_fg_range(45)
+            self.assertEqual(m.category(down=4, own_yard=65, distance=10, score_margin=-3, quarter=4, seconds=10,
+                                        timeouts=0), 0x13)
+
+    def test_b780_modes2_a_leading_defense_keeps_its_timeouts_in_the_last_40_seconds(self):
+        """Q22 (hunt7): retail's leading CPU defense calls a timeout when the offense, down 1, is in field goal range,
+        with 15 s left too, where it only gives the offense more snaps. Now none with 40 s or less; earlier, retail
+        (time for its own answer). A trailing defense and the offense keep their rules."""
+        def defense(r, seconds, margin=-1):
+            r.prepare(dict(down=1, quarter=4, seconds=seconds, score_margin=margin, own_yard=65, distance=10,
+                           home=True, quarter_seconds=420, timeouts=3), warned=True)
+            return r.timeout(r.m.DEF)
+        for seconds in (15, 30, 40):
+            self.assertEqual(self.both(defense, seconds), (True, False), seconds)
+        for seconds in (45, 58, 75, 118):
+            self.assertEqual(self.both(defense, seconds), (True, True), seconds)
+        for seconds in (15, 58):
+            retail, clock = self.both(defense, seconds, 3)                  # the defense trails: unchanged here
+            self.assertEqual(retail, clock, seconds)
+
     def test_four_minute_offense_runs_the_play_clock_down(self):
         """Seconds the CPU waits before the snap (play clock 30): retail runs it down only for a kneel, the field-goal
         run-down or a field goal / punt PLAY in the last 2:00; a leading offense now does it on every PLAY from 5:00."""
