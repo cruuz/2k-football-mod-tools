@@ -618,7 +618,7 @@ def engine_normalized(staff: Mapping[str, Any]) -> dict[str, Any]:
 def read_file(path: Path | str) -> dict[str, Any]:
     """A saved staff file (the document alone, or a roster-edits file that carries one)."""
 
-    data = json.loads(Path(path).read_text(encoding="utf-8"))
+    data = json.loads(Path(path).read_text(encoding="utf-8-sig"))   # b780 Q58: a Notepad BOM is accepted
     _require(isinstance(data, Mapping), "a staff file is a JSON object")
     staff = data.get("staff", data) if "head_coaches" not in data else data
     _require(isinstance(staff, Mapping) and staff.get("schema") == SCHEMA,
