@@ -62,6 +62,7 @@ class _Session:
                                             edits=self.corpus.edits, destination=destination,
                                             replace=replace, allow_empty=allow_empty,
                                             build_settings=self.build_settings)
+        time.sleep(0.5)       # a slow disk: the hold always outlasts the reads, even on a fast CI machine
         self.write_seconds = time.perf_counter() - started
         self.written.set()
         return path

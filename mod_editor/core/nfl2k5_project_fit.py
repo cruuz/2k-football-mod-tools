@@ -220,6 +220,11 @@ def progress_text(stage, done, total, started):
         return stage
     elapsed = max(0, time.monotonic() - started)
     eta = f'about {max(0, round(elapsed * (total - done) / done))} s remaining' if done else 'estimating time remaining'
+    if total >= 64 * 1024 * 1024:
+        # b780-uxfix: a byte count (no count of files or edits comes near 64 Mi) reads as GB, the size Windows shows,
+        # not "591396864 of 6300499968"
+        gib = 1024 ** 3
+        return f'{stage} • {done / gib:.1f} of {total / gib:.1f} GB • {eta}'
     return f'{stage} • {done} of {total} • {eta}'
 
 

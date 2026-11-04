@@ -357,7 +357,7 @@ def roster_edits_summary(path) -> dict:
     if key not in _ROSTER_CACHE:
         got = dict(empty)
         try:
-            with open(path, encoding="utf-8") as handle:
+            with open(path, encoding="utf-8-sig") as handle:   # b780-uxfix: a Notepad BOM is fine
                 document = json.load(handle)
             if isinstance(document, dict):
                 request = document.get("free_agent_capacity")
@@ -747,7 +747,7 @@ def _main(argv=None) -> int:
     parser.add_argument("--target", type=int, default=64, choices=TARGETS)
     parser.add_argument("--profile", action="store_true", help="apply the recommended 64 MB profile first")
     args = parser.parse_args(argv)
-    plan = json.loads(open(args.recipe, encoding="utf-8").read()) if args.recipe else None
+    plan = json.loads(open(args.recipe, encoding="utf-8-sig").read()) if args.recipe else None
     if args.profile:
         plan = profile_64_plan(plan)
     got = predict(plan, args.target)

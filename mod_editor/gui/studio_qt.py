@@ -2514,6 +2514,8 @@ class StudioMainWindow(QMainWindow):
 
     def _refresh_recent_menus(self) -> None:
         state = self._workspace_state()
+        if hasattr(self, "welcome_continue_button"):
+            QTimer.singleShot(0, bound(self, self._refresh_welcome_state))   # b780-uxfix: Continue with <last file>
         if self._recent_source_menu is not None:
             self._recent_source_menu.clear()
             sources = tuple(getattr(state, "recent_sources", ()))
@@ -2594,8 +2596,8 @@ class StudioMainWindow(QMainWindow):
                 return False
             if panel.espn25_dirty():
                 return True
-            snapshot = getattr(panel, "_edits_snapshot", None)   # set when the roster edits were last exported
-            return snapshot is None or snapshot != (frozenset(panel._dirty), len(panel.undo_stack._done))
+            snapshot = getattr(panel, "_edits_snapshot", None)   # set when the edits were last exported or written
+            return snapshot is None or snapshot != panel.edits_key()
         except Exception:  # noqa: BLE001 - a guard question must never break closing
             return False
 
@@ -3569,10 +3571,17 @@ class StudioMainWindow(QMainWindow):
         rosters_button.setObjectName("secondaryButton")
         rosters_button.setToolTip("★ Rosters: players, ratings, equipment, contracts and depth order, from the open disc or an Xbox save.")
         rosters_button.clicked.connect(self._go_to_rosters)
+        # b780-uxfix (beginner review 9.1): after a restart the last game file was only under File > Recent discs
+        continue_button = QPushButton("")
+        continue_button.setObjectName("secondaryButton")
+        continue_button.hide()
+        continue_button.clicked.connect(self._continue_with_recent_source)
+        self.welcome_continue_button = continue_button
         self.welcome_install_button = install_button
         self.welcome_open_button = open_button
         self.welcome_task_buttons = (softdrink_button, rosters_button)
         start_buttons.addWidget(install_button)
+        start_buttons.addWidget(continue_button)
         start_buttons.addWidget(open_button)
         start_buttons.addWidget(softdrink_button)
         start_buttons.addWidget(rosters_button)
@@ -8698,7 +8707,7 @@ class StudioMainWindow(QMainWindow):
         if bool(getattr(self.facade, "source_ready", False)):
             display = str(getattr(self.facade, "source_display_name", "") or "your disc")
             ready_label.setText(f"Disc open: {display}")
-            sub_label.setText("Next: choose SOFTDRINK patches or edit rosters.")
+            sub_label.setText("Next: install SOFTDRINK 2K28 on this game file, make your own disc, or edit rosters.")
         else:
             ready_label.setText("Start here")
             sub_label.setText(
@@ -8706,6 +8715,31 @@ class StudioMainWindow(QMainWindow):
                 "SOFTDRINK 2K28 download (.2k5patch). To make your own changes, open your game file instead.")
         for button in getattr(self, "welcome_task_buttons", ()):
             button.setEnabled(True)
+        continue_button = getattr(self, "welcome_continue_button", None)
+        if continue_button is not None:
+            recent = None if bool(getattr(self.facade, "source_ready", False)) else self._recent_source()
+            continue_button.setVisible(recent is not None)
+            if recent is not None:
+                continue_button.setText(f"Continue with {recent.name}")
+                continue_button.setToolTip(f"Open the game file you used last time: {recent}")
+                continue_button.setProperty("recent_source", str(recent))
+
+    def _recent_source(self) -> Path | None:
+        """The most recent game file that still exists, or None."""
+        state = self._workspace_state()
+        for value in tuple(getattr(state, "recent_sources", ()) or ()):
+            path = Path(value)
+            try:
+                if path.is_file() and not path.is_symlink():
+                    return path
+            except OSError:
+                continue
+        return None
+
+    def _continue_with_recent_source(self) -> None:
+        value = self.welcome_continue_button.property("recent_source")
+        if value:
+            self._request_source_switch(Path(value))
 
     def _refresh_player_assets_hint(self) -> None:
         search = getattr(self, "player_asset_search", None)

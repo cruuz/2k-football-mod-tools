@@ -275,7 +275,7 @@ def read_setup(source):
     if isinstance(source, (str, Path)):
         path = Path(source).resolve()
         require(path.stat().st_size <= 16384, "MyCareer setup exceeds 16 KiB")
-        source = json.loads(path.read_text(encoding="utf-8"))
+        source = json.loads(path.read_text(encoding="utf-8-sig"))   # b780-uxfix: a Notepad BOM is fine
     require(isinstance(source, dict) and source.get("mode") == "MyCareer", "unsupported MyCareer setup")
     require(source.get("schema") != "nfl2k5_my_career/v1",
             "this MyCareer.json predates position choice; create MyPlayer again on the MyCareer page")
