@@ -700,6 +700,10 @@ PROFILE_64_PATCHES = ("contract_college_guard", "widescreen", "franchise_economy
 # trimmed beyond the space owners: the heavy disc resources and the SPECIAL rows' 80 KB .XTLID storage
 PROFILE_64_TRIM = ("scorebug", "scorebug_runtime", "hair_styles", "kick_meter_2026", "depth_chart_rows",
                    "my_career_home", "module_loader")
+# b780 hist1: in-place 2004 bug fixes the profile turns ON when a plan has them off (no allocation, no section: they
+# cost nothing at 64 MB). The career history pool fix keeps a long franchise's totals whole and its pool collecting in
+# 6,000-word chunks (nfl2k5_history_pool: six sites inside the history engine's own bytes).
+PROFILE_64_ON = ("history_pool",)
 PSEUDO_FIELDS = frozenset(("roster_capacity", "roster_draft_pick_ownership", "roster_hback_roles",
                            "cpu_money_downs_modern2"))
 PROFILE_64_ROSTER = ("roster edits at retail capacity without the draft_pick_ownership and hback_roles sections: "
@@ -708,7 +712,8 @@ PROFILE_64_ROSTER = ("roster edits at retail capacity without the draft_pick_own
 
 def recommended_64_profile(plan=None) -> dict:
     """{BuildPlan field: value} to set on the plan (None: the v0.9 pack) for the 64 MB profile: every REQUIRES_128
-    field off, the heavy disc resources off, every space owner off except PROFILE_64_PATCHES. In place features stay
+    field off, the heavy disc resources off, every space owner off except PROFILE_64_PATCHES, and the in-place 2004 fixes of
+    PROFILE_64_ON on. In place features stay
     (2026 rosters, names, ratings, faces, coaches, uniforms, helmets, fans, officials, ESPN marks and wipes, the
     stadium models and the 2026 venue art, rules, sim and AI edits that need no allocation). The roster edits must be
     the retail-capacity file without the two XBE sections (PROFILE_64_ROSTER); that is a file, not a field."""
@@ -720,6 +725,9 @@ def recommended_64_profile(plan=None) -> dict:
     for field in sorted(fields - keep - PSEUDO_FIELDS):
         if on(opts, field):
             out[field] = OFF_VALUES.get(field, False)
+    for field in PROFILE_64_ON:
+        if not on(opts, field):
+            out[field] = True
     return out
 
 

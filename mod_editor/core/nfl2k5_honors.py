@@ -61,6 +61,7 @@ import struct
 from typing import Mapping
 
 from . import nfl2k5_champions as champions
+from . import nfl2k5_history_pool as history_pool  # b780 hist1: its in-place sites lie inside two guarded spans
 from . import nfl2k5_honors_code as runtime
 from . import nfl2k5_rdata_sites as rdata
 from . import nfl2k5_xbe_space as space
@@ -233,7 +234,9 @@ def guard_digests(payload: bytes) -> dict[str, str]:
 
 def _check_guards(image: XbeImage, checked_sites) -> None:
     # b779-hn1: the champions owner's two sites (0x116E55 lies inside the 'season awards' span) are masked like our own
-    masked = list(checked_sites) + champions.sites(0x14DA000)
+    # b780 hist1: so are the history-pool owner's sites in the fold (0x14EFE0) and the writer (0x14F249), but only while
+    # that owner reads exactly applied (its fold calls the rule at 0x14F168, this owner's site, for every field below 87)
+    masked = list(checked_sites) + champions.sites(0x14DA000) + history_pool.applied_sites(image)
     for name, va, size, digest in GUARDS:
         _require(_guard_digest(image, va, size, masked) == digest, f"foreign honors dependency: {name} ({va:#x})")
     _require(image.read(0x00133A41, 1)[0] in SUPER_BOWL_ROWS, "foreign Super Bowl row predicate")

@@ -90,6 +90,7 @@ FEATURE_KEYS += ("player_progress", "player_progress_visible")  # b778-pg2/pg3: 
 FEATURE_KEYS += ("franchise_history",)  # b780 j23: franchise history and records footer, late executable owner
 FEATURE_KEYS += ("contract_college_guard",)  # b778-cr1: Contracts null-college crash guard, late executable owner
 FEATURE_KEYS += ("coach_career_fix",)  # b780 c1 (wired at b780-int): coach Super Bowl trip counter fix, in-place site
+FEATURE_KEYS += ("history_pool",)  # b780 hist1: career history pool (no wrapped totals, chunked collection), in-place sites
 FEATURE_KEYS += ("sim_cb_tackles",)  # b778-cb1: cornerback tackle credit, late executable owner
 FEATURE_KEYS += ("sim_rb_injuries",)  # b779-sim2: weekly RB injury roll and simulated-game carry guard
 FEATURE_KEYS += ("sim_realism",)  # b779-sim2 r4: scheduled-sim season realism, late executable owner
