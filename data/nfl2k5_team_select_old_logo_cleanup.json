@@ -1,0 +1,2248 @@
+{
+ "schema": "nfl2k5_team_select_old_logo_cleanup/v1",
+ "purpose": "b780 art1 (Noah 2026-11-03: 'any team helmet and logo on team select that shows the old logo still visible underneath the new logo, that needs cleaned up to match the background color of the helmet, so only the new logo shows'): the old 2004 logo pieces left around the new 2026 logo on the SOFTDRINK Team Select helmet cards, repainted with the helmet's own shell at the source PNGs by tools/b780_team_select_old_logo_cleanup.py.",
+ "source": "SOFTDRINK 2K28 v0.9 league project team_select edits (ship10/project/recipe_project_v09.json): the k2 cards v5 Blender renders of the 2026 helmet art; the pieces come from the retail decal left in those helmet textures",
+ "coordinates": "card pixels of the 256 x 256 cards, x right and y down; a pixel belongs to a region when its centre is inside the polygon; shell_box is [x0, y0, x1, y1), a box of clean shell to fit the shading from",
+ "derived_128": "the 128 helm cards follow their cleaned 256 cards (premultiplied 2 x 2 box), only in the blocks that changed",
+ "groups": [
+  {
+   "team": "ARI",
+   "code": "00",
+   "styles": [
+    0,
+    6,
+    7
+   ],
+   "card": "helm_h_256",
+   "regions": [
+    {
+     "note": "old cardinal crest tip beside the vent",
+     "mode": "all",
+     "poly": [
+      [
+       197,
+       45
+      ],
+      [
+       207,
+       50.5
+      ],
+      [
+       213,
+       54
+      ],
+      [
+       219,
+       57.5
+      ],
+      [
+       219,
+       72
+      ],
+      [
+       189,
+       74
+      ],
+      [
+       189,
+       58
+      ],
+      [
+       196,
+       52
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "team": "ARI",
+   "code": "00",
+   "styles": [
+    0,
+    6,
+    7
+   ],
+   "card": "helm_a_256",
+   "regions": [
+    {
+     "note": "old cardinal crest tip beside the vent",
+     "mode": "all",
+     "poly": [
+      [
+       36,
+       55
+      ],
+      [
+       42,
+       51.5
+      ],
+      [
+       48,
+       48
+      ],
+      [
+       56,
+       45
+      ],
+      [
+       60,
+       46
+      ],
+      [
+       62,
+       56
+      ],
+      [
+       62,
+       74
+      ],
+      [
+       36,
+       74
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "team": "ARI",
+   "code": "00",
+   "styles": [
+    0,
+    6,
+    7
+   ],
+   "card": "unif_h_256",
+   "regions": [
+    {
+     "note": "old cardinal crest tip beside the vent",
+     "mode": "all",
+     "poly": [
+      [
+       22,
+       176
+      ],
+      [
+       25,
+       174.6
+      ],
+      [
+       28,
+       173.2
+      ],
+      [
+       31,
+       172
+      ],
+      [
+       34,
+       170.6
+      ],
+      [
+       38,
+       169
+      ],
+      [
+       42,
+       170
+      ],
+      [
+       44,
+       178
+      ],
+      [
+       44,
+       192
+      ],
+      [
+       22,
+       192
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "team": "ARI",
+   "code": "00",
+   "styles": [
+    0,
+    6,
+    7
+   ],
+   "card": "unif_a_256",
+   "regions": [
+    {
+     "note": "old cardinal crest tip beside the vent",
+     "mode": "all",
+     "poly": [
+      [
+       22,
+       176
+      ],
+      [
+       25,
+       174.6
+      ],
+      [
+       28,
+       173.2
+      ],
+      [
+       31,
+       172
+      ],
+      [
+       34,
+       170.6
+      ],
+      [
+       38,
+       169
+      ],
+      [
+       42,
+       170
+      ],
+      [
+       44,
+       178
+      ],
+      [
+       44,
+       192
+      ],
+      [
+       22,
+       192
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "team": "BAL",
+   "code": "02",
+   "styles": [
+    0,
+    2,
+    3
+   ],
+   "card": "helm_h_256",
+   "regions": [
+    {
+     "note": "old raven outline tip above the new head",
+     "mode": "all",
+     "poly": [
+      [
+       131,
+       28
+      ],
+      [
+       170,
+       28
+      ],
+      [
+       170,
+       37
+      ],
+      [
+       131,
+       37
+      ]
+     ]
+    },
+    {
+     "note": "old raven outline hook in front of the new beak",
+     "mode": "all",
+     "poly": [
+      [
+       61,
+       47
+      ],
+      [
+       80,
+       47
+      ],
+      [
+       80,
+       55
+      ],
+      [
+       78.5,
+       60
+      ],
+      [
+       77.5,
+       64
+      ],
+      [
+       76,
+       67.5
+      ],
+      [
+       75.2,
+       70.5
+      ],
+      [
+       74.5,
+       73.5
+      ],
+      [
+       61,
+       73.5
+      ]
+     ]
+    },
+    {
+     "note": "old raven feather tips behind the new head",
+     "mode": "all",
+     "poly": [
+      [
+       202.5,
+       53
+      ],
+      [
+       212,
+       53
+      ],
+      [
+       221,
+       66
+      ],
+      [
+       226.5,
+       80
+      ],
+      [
+       227,
+       88
+      ],
+      [
+       214,
+       88
+      ],
+      [
+       202.5,
+       80
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "team": "BAL",
+   "code": "02",
+   "styles": [
+    0,
+    2,
+    3
+   ],
+   "card": "helm_a_256",
+   "regions": [
+    {
+     "note": "old raven outline tip above the new head",
+     "mode": "all",
+     "poly": [
+      [
+       87,
+       28
+      ],
+      [
+       121,
+       28
+      ],
+      [
+       121,
+       37
+      ],
+      [
+       87,
+       37
+      ]
+     ]
+    },
+    {
+     "note": "old raven feather tips behind the new head",
+     "mode": "all",
+     "poly": [
+      [
+       28,
+       50
+      ],
+      [
+       57,
+       50
+      ],
+      [
+       57,
+       62
+      ],
+      [
+       55,
+       66
+      ],
+      [
+       54,
+       69
+      ],
+      [
+       54,
+       77
+      ],
+      [
+       46,
+       82
+      ],
+      [
+       36,
+       90
+      ],
+      [
+       26,
+       90
+      ],
+      [
+       26,
+       70
+      ]
+     ]
+    },
+    {
+     "note": "old raven outline hook in front of the new beak",
+     "mode": "all",
+     "poly": [
+      [
+       175,
+       46
+      ],
+      [
+       192,
+       46
+      ],
+      [
+       192,
+       74
+      ],
+      [
+       182.5,
+       74
+      ],
+      [
+       181.5,
+       69
+      ],
+      [
+       179.5,
+       64
+      ],
+      [
+       177.5,
+       60
+      ],
+      [
+       175,
+       56
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "team": "BAL",
+   "code": "02",
+   "styles": [
+    0,
+    2,
+    3
+   ],
+   "card": "unif_h_256",
+   "regions": [
+    {
+     "note": "old raven outline tip above the new head",
+     "mode": "all",
+     "poly": [
+      [
+       53,
+       159
+      ],
+      [
+       76,
+       159
+      ],
+      [
+       76,
+       166.5
+      ],
+      [
+       53,
+       166.5
+      ]
+     ]
+    },
+    {
+     "note": "old raven feather tips behind the new head",
+     "mode": "all",
+     "poly": [
+      [
+       19,
+       171
+      ],
+      [
+       36.5,
+       171
+      ],
+      [
+       36.5,
+       182
+      ],
+      [
+       36,
+       184
+      ],
+      [
+       36,
+       191
+      ],
+      [
+       33,
+       195
+      ],
+      [
+       30,
+       200
+      ],
+      [
+       19,
+       200
+      ]
+     ]
+    },
+    {
+     "note": "old raven outline hook in front of the new beak",
+     "mode": "all",
+     "poly": [
+      [
+       106.5,
+       170
+      ],
+      [
+       114,
+       170
+      ],
+      [
+       115,
+       192
+      ],
+      [
+       110,
+       192
+      ],
+      [
+       109,
+       187
+      ],
+      [
+       107.5,
+       182
+      ],
+      [
+       106.5,
+       177
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "team": "BAL",
+   "code": "02",
+   "styles": [
+    0,
+    2,
+    3
+   ],
+   "card": "unif_a_256",
+   "regions": [
+    {
+     "note": "old raven outline tip above the new head",
+     "mode": "all",
+     "poly": [
+      [
+       53,
+       159
+      ],
+      [
+       76,
+       159
+      ],
+      [
+       76,
+       166.5
+      ],
+      [
+       53,
+       166.5
+      ]
+     ]
+    },
+    {
+     "note": "old raven feather tips behind the new head",
+     "mode": "all",
+     "poly": [
+      [
+       19,
+       171
+      ],
+      [
+       36.5,
+       171
+      ],
+      [
+       36.5,
+       182
+      ],
+      [
+       36,
+       184
+      ],
+      [
+       36,
+       191
+      ],
+      [
+       33,
+       195
+      ],
+      [
+       30,
+       200
+      ],
+      [
+       19,
+       200
+      ]
+     ]
+    },
+    {
+     "note": "old raven outline hook in front of the new beak",
+     "mode": "all",
+     "poly": [
+      [
+       106.5,
+       170
+      ],
+      [
+       114,
+       170
+      ],
+      [
+       115,
+       192
+      ],
+      [
+       110,
+       192
+      ],
+      [
+       109,
+       187
+      ],
+      [
+       107.5,
+       182
+      ],
+      [
+       106.5,
+       177
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "team": "DET",
+   "code": "09",
+   "styles": [
+    0,
+    2,
+    9
+   ],
+   "card": "helm_h_256",
+   "regions": [
+    {
+     "note": "old lion head and mane above the new head",
+     "mode": "all",
+     "poly": [
+      [
+       110,
+       24
+      ],
+      [
+       150,
+       24
+      ],
+      [
+       150,
+       62
+      ],
+      [
+       146,
+       62
+      ],
+      [
+       143,
+       59
+      ],
+      [
+       140,
+       55
+      ],
+      [
+       137,
+       52
+      ],
+      [
+       133,
+       48
+      ],
+      [
+       129,
+       45
+      ],
+      [
+       125,
+       42
+      ],
+      [
+       121,
+       41
+      ],
+      [
+       117,
+       41
+      ],
+      [
+       113,
+       42
+      ],
+      [
+       110,
+       44
+      ]
+     ]
+    },
+    {
+     "note": "old lion tail curl behind the new tail",
+     "mode": "all",
+     "poly": [
+      [
+       201,
+       72
+      ],
+      [
+       233,
+       72
+      ],
+      [
+       233,
+       100
+      ],
+      [
+       230,
+       104
+      ],
+      [
+       216,
+       104
+      ],
+      [
+       215,
+       117
+      ],
+      [
+       190,
+       117
+      ],
+      [
+       190,
+       96
+      ],
+      [
+       199,
+       92
+      ],
+      [
+       201,
+       90
+      ]
+     ]
+    },
+    {
+     "note": "old front leg beside the new paws",
+     "mode": "all",
+     "poly": [
+      [
+       67,
+       75
+      ],
+      [
+       76,
+       75
+      ],
+      [
+       76,
+       84
+      ],
+      [
+       78,
+       84.6
+      ],
+      [
+       86,
+       84.8
+      ],
+      [
+       86,
+       93.3
+      ],
+      [
+       78,
+       93.6
+      ],
+      [
+       75,
+       94.6
+      ],
+      [
+       74.4,
+       99
+      ],
+      [
+       67,
+       99
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "team": "DET",
+   "code": "09",
+   "styles": [
+    0,
+    2,
+    9
+   ],
+   "card": "helm_a_256",
+   "regions": [
+    {
+     "note": "old lion head and mane above and beside the new head",
+     "mode": "all",
+     "poly": [
+      [
+       106,
+       22
+      ],
+      [
+       146,
+       22
+      ],
+      [
+       146,
+       41
+      ],
+      [
+       140,
+       42.5
+      ],
+      [
+       135,
+       43
+      ],
+      [
+       131,
+       44.5
+      ],
+      [
+       127,
+       46.5
+      ],
+      [
+       123,
+       49
+      ],
+      [
+       120,
+       52
+      ],
+      [
+       118,
+       55
+      ],
+      [
+       115.5,
+       58
+      ],
+      [
+       114,
+       64
+      ],
+      [
+       106,
+       64
+      ]
+     ]
+    },
+    {
+     "note": "old lion tail curl behind the new tail",
+     "mode": "deviation",
+     "estimate": "local",
+     "threshold": 10,
+     "grow": 1,
+     "poly": [
+      [
+       23,
+       72
+      ],
+      [
+       54,
+       72
+      ],
+      [
+       55.5,
+       80
+      ],
+      [
+       55.5,
+       92
+      ],
+      [
+       55.5,
+       104
+      ],
+      [
+       57,
+       112
+      ],
+      [
+       44,
+       112
+      ],
+      [
+       36,
+       108
+      ],
+      [
+       32,
+       113
+      ],
+      [
+       24,
+       113
+      ],
+      [
+       23,
+       100
+      ]
+     ]
+    },
+    {
+     "note": "old front leg beside the new paws",
+     "mode": "all",
+     "poly": [
+      [
+       180.5,
+       76
+      ],
+      [
+       188,
+       76
+      ],
+      [
+       188,
+       99
+      ],
+      [
+       181.5,
+       99
+      ],
+      [
+       181,
+       95
+      ],
+      [
+       176,
+       94
+      ],
+      [
+       169,
+       93.3
+      ],
+      [
+       168,
+       92.5
+      ],
+      [
+       168,
+       85.5
+      ],
+      [
+       172,
+       85
+      ],
+      [
+       178,
+       84.5
+      ],
+      [
+       180.5,
+       83
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "team": "DET",
+   "code": "09",
+   "styles": [
+    0,
+    2,
+    9
+   ],
+   "card": "unif_h_256",
+   "regions": [
+    {
+     "note": "old lion tail curl behind the new tail",
+     "mode": "deviation",
+     "estimate": "local",
+     "threshold": 10,
+     "grow": 1,
+     "poly": [
+      [
+       11,
+       187
+      ],
+      [
+       38,
+       187
+      ],
+      [
+       38,
+       200
+      ],
+      [
+       40,
+       204
+      ],
+      [
+       40,
+       216
+      ],
+      [
+       28,
+       216
+      ],
+      [
+       12,
+       212
+      ],
+      [
+       11,
+       200
+      ]
+     ]
+    },
+    {
+     "note": "the old tail's dark tip",
+     "mode": "all",
+     "poly": [
+      [
+       30,
+       204
+      ],
+      [
+       41,
+       204
+      ],
+      [
+       41,
+       216
+      ],
+      [
+       30,
+       216
+      ]
+     ]
+    },
+    {
+     "note": "old lion head and mane above the new head",
+     "mode": "all",
+     "poly": [
+      [
+       62,
+       154
+      ],
+      [
+       84,
+       154
+      ],
+      [
+       93,
+       158
+      ],
+      [
+       93,
+       165
+      ],
+      [
+       89,
+       166
+      ],
+      [
+       86,
+       168.5
+      ],
+      [
+       82.5,
+       171.2
+      ],
+      [
+       79.5,
+       173.2
+      ],
+      [
+       77,
+       175.2
+      ],
+      [
+       75.2,
+       177.5
+      ],
+      [
+       75,
+       180
+      ],
+      [
+       62,
+       180
+      ]
+     ]
+    },
+    {
+     "note": "old front leg beside the new paws",
+     "mode": "all",
+     "poly": [
+      [
+       107,
+       184
+      ],
+      [
+       117,
+       184
+      ],
+      [
+       117,
+       206
+      ],
+      [
+       107,
+       206
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "team": "DET",
+   "code": "09",
+   "styles": [
+    0,
+    2,
+    9
+   ],
+   "card": "unif_a_256",
+   "regions": [
+    {
+     "note": "old lion tail curl behind the new tail",
+     "mode": "deviation",
+     "estimate": "local",
+     "threshold": 10,
+     "grow": 1,
+     "poly": [
+      [
+       11,
+       187
+      ],
+      [
+       38,
+       187
+      ],
+      [
+       38,
+       200
+      ],
+      [
+       40,
+       204
+      ],
+      [
+       40,
+       216
+      ],
+      [
+       28,
+       216
+      ],
+      [
+       12,
+       212
+      ],
+      [
+       11,
+       200
+      ]
+     ]
+    },
+    {
+     "note": "the old tail's dark tip",
+     "mode": "all",
+     "poly": [
+      [
+       30,
+       204
+      ],
+      [
+       41,
+       204
+      ],
+      [
+       41,
+       216
+      ],
+      [
+       30,
+       216
+      ]
+     ]
+    },
+    {
+     "note": "old lion head and mane above the new head",
+     "mode": "all",
+     "poly": [
+      [
+       62,
+       154
+      ],
+      [
+       84,
+       154
+      ],
+      [
+       93,
+       158
+      ],
+      [
+       93,
+       165
+      ],
+      [
+       89,
+       166
+      ],
+      [
+       86,
+       168.5
+      ],
+      [
+       82.5,
+       171.2
+      ],
+      [
+       79.5,
+       173.2
+      ],
+      [
+       77,
+       175.2
+      ],
+      [
+       75.2,
+       177.5
+      ],
+      [
+       75,
+       180
+      ],
+      [
+       62,
+       180
+      ]
+     ]
+    },
+    {
+     "note": "old front leg beside the new paws",
+     "mode": "all",
+     "poly": [
+      [
+       107,
+       184
+      ],
+      [
+       117,
+       184
+      ],
+      [
+       117,
+       206
+      ],
+      [
+       107,
+       206
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "team": "DET",
+   "code": "09",
+   "styles": [
+    2,
+    9
+   ],
+   "card": "helm_h_256",
+   "regions": [
+    {
+     "note": "old lion hind paw under the ear hole (grey on the blue helmets)",
+     "mode": "all",
+     "poly": [
+      [
+       169,
+       148.5
+      ],
+      [
+       191,
+       148.5
+      ],
+      [
+       191,
+       158
+      ],
+      [
+       169,
+       158
+      ]
+     ],
+     "shell_box": [
+      192,
+      147,
+      206,
+      157
+     ]
+    },
+    {
+     "note": "old lion second hind paw below the chin strap (grey on the blue helmets)",
+     "mode": "deviation",
+     "poly": [
+      [
+       108,
+       144.5
+      ],
+      [
+       122,
+       147.5
+      ],
+      [
+       132,
+       150
+      ],
+      [
+       140,
+       152
+      ],
+      [
+       148,
+       154.5
+      ],
+      [
+       154,
+       156.5
+      ],
+      [
+       158,
+       158
+      ],
+      [
+       108,
+       158
+      ]
+     ],
+     "estimate": "local",
+     "threshold": 14,
+     "grow": 1
+    }
+   ]
+  },
+  {
+   "team": "DET",
+   "code": "09",
+   "styles": [
+    2,
+    9
+   ],
+   "card": "helm_a_256",
+   "regions": [
+    {
+     "note": "old lion hind paw under the ear hole (grey on the blue helmets)",
+     "mode": "all",
+     "poly": [
+      [
+       68,
+       148.5
+      ],
+      [
+       98,
+       148.5
+      ],
+      [
+       97,
+       151
+      ],
+      [
+       92,
+       154
+      ],
+      [
+       88,
+       156.5
+      ],
+      [
+       86,
+       158
+      ],
+      [
+       68,
+       158
+      ]
+     ]
+    },
+    {
+     "note": "old lion second hind paw below the chin strap (grey on the blue helmets)",
+     "mode": "deviation",
+     "poly": [
+      [
+       97,
+       158
+      ],
+      [
+       104,
+       155.5
+      ],
+      [
+       112,
+       152.5
+      ],
+      [
+       120,
+       150
+      ],
+      [
+       130,
+       147.5
+      ],
+      [
+       140,
+       145.5
+      ],
+      [
+       150,
+       144
+      ],
+      [
+       162,
+       143
+      ],
+      [
+       162,
+       158
+      ]
+     ],
+     "estimate": "local",
+     "threshold": 14,
+     "grow": 1
+    }
+   ]
+  },
+  {
+   "team": "DET",
+   "code": "09",
+   "styles": [
+    2,
+    9
+   ],
+   "card": "unif_h_256",
+   "regions": [
+    {
+     "note": "old lion hind paw at the bottom of the helmet (grey on the blue helmets)",
+     "mode": "all",
+     "shell_box": [
+      36,
+      236,
+      44,
+      248
+     ],
+     "poly": [
+      [
+       44,
+       235.5
+      ],
+      [
+       58,
+       235.5
+      ],
+      [
+       59.5,
+       239
+      ],
+      [
+       57.5,
+       242.5
+      ],
+      [
+       55,
+       245.5
+      ],
+      [
+       53,
+       248.5
+      ],
+      [
+       44,
+       248.5
+      ]
+     ]
+    },
+    {
+     "note": "old lion hind leg at the bottom of the helmet (grey on the blue helmets)",
+     "mode": "all",
+     "shell_box": [
+      97,
+      234,
+      104,
+      248
+     ],
+     "poly": [
+      [
+       64,
+       237
+      ],
+      [
+       97,
+       237
+      ],
+      [
+       97,
+       247.5
+      ],
+      [
+       91,
+       247.5
+      ],
+      [
+       90,
+       243
+      ],
+      [
+       74,
+       242
+      ],
+      [
+       71,
+       243.5
+      ],
+      [
+       64,
+       243.5
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "team": "DET",
+   "code": "09",
+   "styles": [
+    2,
+    9
+   ],
+   "card": "unif_a_256",
+   "regions": [
+    {
+     "note": "old lion hind paw at the bottom of the helmet (grey on the blue helmets)",
+     "mode": "all",
+     "shell_box": [
+      36,
+      236,
+      44,
+      248
+     ],
+     "poly": [
+      [
+       44,
+       235.5
+      ],
+      [
+       58,
+       235.5
+      ],
+      [
+       59.5,
+       239
+      ],
+      [
+       57.5,
+       242.5
+      ],
+      [
+       55,
+       245.5
+      ],
+      [
+       53,
+       248.5
+      ],
+      [
+       44,
+       248.5
+      ]
+     ]
+    },
+    {
+     "note": "old lion hind leg at the bottom of the helmet (grey on the blue helmets)",
+     "mode": "all",
+     "shell_box": [
+      97,
+      234,
+      104,
+      248
+     ],
+     "poly": [
+      [
+       64,
+       237
+      ],
+      [
+       97,
+       237
+      ],
+      [
+       97,
+       247.5
+      ],
+      [
+       91,
+       247.5
+      ],
+      [
+       90,
+       243
+      ],
+      [
+       74,
+       242
+      ],
+      [
+       71,
+       243.5
+      ],
+      [
+       64,
+       243.5
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "team": "NYJ",
+   "code": "19",
+   "styles": [
+    7
+   ],
+   "card": "helm_h_256",
+   "regions": [
+    {
+     "note": "top of the old oval above the new JETS",
+     "mode": "all",
+     "poly": [
+      [
+       96,
+       30
+      ],
+      [
+       178,
+       30
+      ],
+      [
+       178,
+       61
+      ],
+      [
+       152,
+       61
+      ],
+      [
+       148,
+       61
+      ],
+      [
+       146,
+       59.8
+      ],
+      [
+       143,
+       58.4
+      ],
+      [
+       140,
+       56.6
+      ],
+      [
+       138,
+       55.4
+      ],
+      [
+       136.5,
+       55.6
+      ],
+      [
+       135.5,
+       57
+      ],
+      [
+       134,
+       58.5
+      ],
+      [
+       96,
+       58.5
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "team": "NYJ",
+   "code": "19",
+   "styles": [
+    7
+   ],
+   "card": "helm_a_256",
+   "regions": [
+    {
+     "note": "top of the old oval above the new JETS",
+     "mode": "all",
+     "poly": [
+      [
+       78,
+       30
+      ],
+      [
+       166,
+       30
+      ],
+      [
+       166,
+       60
+      ],
+      [
+       132,
+       60
+      ],
+      [
+       128,
+       61.8
+      ],
+      [
+       124,
+       59.8
+      ],
+      [
+       121.5,
+       58
+      ],
+      [
+       119.5,
+       57
+      ],
+      [
+       118,
+       57.3
+      ],
+      [
+       116.5,
+       59
+      ],
+      [
+       114,
+       61
+      ],
+      [
+       78,
+       61
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "team": "NYJ",
+   "code": "19",
+   "styles": [
+    7
+   ],
+   "card": "unif_h_256",
+   "regions": [
+    {
+     "note": "top of the old oval above the new JETS",
+     "mode": "all",
+     "poly": [
+      [
+       50,
+       160
+      ],
+      [
+       92,
+       160
+      ],
+      [
+       100,
+       166
+      ],
+      [
+       103.5,
+       168.5
+      ],
+      [
+       103.5,
+       182.5
+      ],
+      [
+       96,
+       183.6
+      ],
+      [
+       92,
+       182.8
+      ],
+      [
+       88,
+       181.8
+      ],
+      [
+       84,
+       180.4
+      ],
+      [
+       80.5,
+       178.8
+      ],
+      [
+       78.5,
+       178.4
+      ],
+      [
+       77.5,
+       179.5
+      ],
+      [
+       76,
+       181
+      ],
+      [
+       50,
+       181
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "team": "NYJ",
+   "code": "19",
+   "styles": [
+    7
+   ],
+   "card": "unif_a_256",
+   "regions": [
+    {
+     "note": "top of the old oval above the new JETS",
+     "mode": "all",
+     "poly": [
+      [
+       50,
+       160
+      ],
+      [
+       92,
+       160
+      ],
+      [
+       100,
+       166
+      ],
+      [
+       103.5,
+       168.5
+      ],
+      [
+       103.5,
+       182.5
+      ],
+      [
+       96,
+       183.6
+      ],
+      [
+       92,
+       182.8
+      ],
+      [
+       88,
+       181.8
+      ],
+      [
+       84,
+       180.4
+      ],
+      [
+       80.5,
+       178.8
+      ],
+      [
+       78.5,
+       178.4
+      ],
+      [
+       77.5,
+       179.5
+      ],
+      [
+       76,
+       181
+      ],
+      [
+       50,
+       181
+      ]
+     ]
+    }
+   ]
+  }
+ ],
+ "cards": {
+  "helm_a00_0_128": {
+   "source_rgba_sha256": "dbf0c7604efbf08e541968ab453ccc3a75349a8f7994337acdd066adc17f34b3",
+   "clean_rgba_sha256": "4afc5fa70aa89bb84adc907896cba22beadf3f180e7cc17dcaccc34fee9e3462",
+   "changed_pixels": 161
+  },
+  "helm_a00_0_256": {
+   "source_rgba_sha256": "be6b17883304fbf14b125d16d9b84325dcf62a6d9f0a0d9c142792e664352ec3",
+   "clean_rgba_sha256": "2c893aa1394afe834388631ce009c2aee6fb8f2abcb6aa41c3e32d2432e06d3b",
+   "changed_pixels": 632
+  },
+  "helm_a00_6_128": {
+   "source_rgba_sha256": "bfe679698a0ec89833f0494a9c47f53709c7d5ec45e4fc71c3e2365ffcb6e3fe",
+   "clean_rgba_sha256": "c08d85f9a0e2005541ba87990f258765c55d139cbe3043c889082163e769f702",
+   "changed_pixels": 115
+  },
+  "helm_a00_6_256": {
+   "source_rgba_sha256": "a113957874665ae4d644e413084ddce77f597fca63f6c84f63917f49ad34805d",
+   "clean_rgba_sha256": "7e6c405934e16f85ee802a15715f1eb895ff5b718ccd971e3e5f2ac128e7bd7d",
+   "changed_pixels": 513
+  },
+  "helm_a00_7_128": {
+   "source_rgba_sha256": "57fa20b0107224fe182ef4aeaedd3fee063a7bb90b5644821bca77ee7cab7c63",
+   "clean_rgba_sha256": "59b6244fa331e4a78483f0ebf0a5c566c3de5986d197a6b08f17e8158db2bcdc",
+   "changed_pixels": 166
+  },
+  "helm_a00_7_256": {
+   "source_rgba_sha256": "72a070491cec70a92ed36ded54aed4e9866c20923b0b73e8d9a056c723fb846c",
+   "clean_rgba_sha256": "1fad852fc954f19456b1e3c62e0bd7e948cdc39daac3e3a22f8556fe3d4f3197",
+   "changed_pixels": 635
+  },
+  "helm_a02_0_128": {
+   "source_rgba_sha256": "0c606cc224aa723e14c4392c5e9346d80eef4dbef3ad626431bb74bf4b96fd2b",
+   "clean_rgba_sha256": "958b12c3a4251d0d4d92dcc1f0e5838c603bd5090f5fd67780b917fbda86b865",
+   "changed_pixels": 414
+  },
+  "helm_a02_0_256": {
+   "source_rgba_sha256": "95ba554b2958e4988d0a83bdf7f0d6addb4f8c8557e7c87640241bb344674587",
+   "clean_rgba_sha256": "ab31897bf0e1cf00a053ebfb13fca8aae75462f1807685bb35eed11c81cb11c2",
+   "changed_pixels": 1627
+  },
+  "helm_a02_2_128": {
+   "source_rgba_sha256": "56252b200681947f91efac19a0332352552a8f2c778e1520a38f17fef3b33d3d",
+   "clean_rgba_sha256": "3e7b6296c1f1ac49db702004e7e9e4f91ac320e80f6c8a97a6bbcc72eb333677",
+   "changed_pixels": 425
+  },
+  "helm_a02_2_256": {
+   "source_rgba_sha256": "6de5233c9520e4125861cf80ca4dd60257cc2654ca33d1ae3de9020a132692cd",
+   "clean_rgba_sha256": "d0d3384576ea77718cd93e4120e8c374eb3d1614aa296bf4fa59bb7140e7d9a4",
+   "changed_pixels": 1655
+  },
+  "helm_a02_3_128": {
+   "source_rgba_sha256": "2cfef326bd8fb958d6f1e7ce01c60c1ca97b22f868c520ce81fb4c8ef5ea8966",
+   "clean_rgba_sha256": "b93eda14aa58eb97c6f89e960ebe56095b80402e42b3cc73f64aa2fda366e52a",
+   "changed_pixels": 426
+  },
+  "helm_a02_3_256": {
+   "source_rgba_sha256": "9a284af758547e1786ee35f83390fda819d32a1206f3e4b7d30ba9b938569a09",
+   "clean_rgba_sha256": "5ae3afc4241e07984611cd110f46304ce125360206c273165215596c76a54da5",
+   "changed_pixels": 1679
+  },
+  "helm_a09_0_128": {
+   "source_rgba_sha256": "2652eec65d8bfa9ecacafa46ef06b79b96c3c2cc93ac6d52b1439c425956d59f",
+   "clean_rgba_sha256": "78fccf3f5d0958e25b83cb58be1dc41baa73dedca0835121b9bbb8388eb32ed7",
+   "changed_pixels": 529
+  },
+  "helm_a09_0_256": {
+   "source_rgba_sha256": "bfe86a9fdf9f83f798667f60bce5862dcd762ce95121612730dc4aaf32780457",
+   "clean_rgba_sha256": "6573b0ee81ea41d28bcadc9a1f19cf2df5261b3ff475b4f0be17aa607f6ab47a",
+   "changed_pixels": 2037
+  },
+  "helm_a09_2_128": {
+   "source_rgba_sha256": "2d82d441c1a7f3172700a14d2ee1410fb5557c0bde478f9fcb11be868ff8a660",
+   "clean_rgba_sha256": "2e4743d0173bd18b7415ad772385682d55c991c18b246f1e735ac9a5e090ec67",
+   "changed_pixels": 700
+  },
+  "helm_a09_2_256": {
+   "source_rgba_sha256": "a224c5cf9cfcdb7d007308139d912df3edbb1d602eeab0e081dfdaefc7a72088",
+   "clean_rgba_sha256": "a3082f177e28f6622a8148dda8fbaeb0af19513c10092fc387b4094c209445a3",
+   "changed_pixels": 2587
+  },
+  "helm_a09_9_128": {
+   "source_rgba_sha256": "3e3bb9fff2dd9c4ff929848e3fb7a670bca1d9b5eccea2f46ea52aed96a358ca",
+   "clean_rgba_sha256": "e493e225b445ec88cc0e8fbfdef46a8a7e419eda2877103cfa51e8905054d18d",
+   "changed_pixels": 706
+  },
+  "helm_a09_9_256": {
+   "source_rgba_sha256": "90809760bc60cc90fe0790f7b614954adf53692899d09e6afad91a8f0412eee7",
+   "clean_rgba_sha256": "2b05fa13340544d5612b1c2f240e3e9ca49bcba36fcbc7090085435478c5db47",
+   "changed_pixels": 2605
+  },
+  "helm_a19_7_128": {
+   "source_rgba_sha256": "b46ad6f2968c23d26b92ba01e4d50cafb601528eddfd967e5a31e7f66953b5c4",
+   "clean_rgba_sha256": "2abc9984f9f37ad7c456cf4603293d5d204eb1311c6b22b6a79f6f27d6ae9d44",
+   "changed_pixels": 645
+  },
+  "helm_a19_7_256": {
+   "source_rgba_sha256": "c372f9fbc681859d9ce844df55cd93fdde701cb46b02e6d7daf83bea9cac1709",
+   "clean_rgba_sha256": "9f95eac30291b99ce6eade38a768cc48c202b80874646da82e02782cb524de5f",
+   "changed_pixels": 2578
+  },
+  "helm_h00_0_128": {
+   "source_rgba_sha256": "7a5af7d99959d3d12e40c9788aa84ab7cec336f2bc6dca1f99366ea8400f268b",
+   "clean_rgba_sha256": "ff1981d60b74d7ddb4f311de85c6a171a2e68027740fd8d39573a1c41e42020e",
+   "changed_pixels": 143
+  },
+  "helm_h00_0_256": {
+   "source_rgba_sha256": "d8e6061378b44c76ed893ba805ee4409ffe91026a77d19d137a22f3ebe4207a4",
+   "clean_rgba_sha256": "3f9ef9096b38e74ba8aead536c0c5832373427c10e8fe6de4c58ae81ab0e958b",
+   "changed_pixels": 564
+  },
+  "helm_h00_6_128": {
+   "source_rgba_sha256": "a2a5c00c4b829f99d022d2c913927e353c98caccb3c828e6e2e574a9e9171acc",
+   "clean_rgba_sha256": "5be96c411cb3b8d68713d5e2803b8bf4ded8d86baacb8642959cc4d2f4a9e9ba",
+   "changed_pixels": 86
+  },
+  "helm_h00_6_256": {
+   "source_rgba_sha256": "aea80320eb90c17dbfd48a5e97567680baa18b10d8a4e74963b2afcf42dc9e9e",
+   "clean_rgba_sha256": "d1dba0faad2f7dbfd5217b1b278318fe2fb6734b12e9d421c814b67d13c34f5e",
+   "changed_pixels": 452
+  },
+  "helm_h00_7_128": {
+   "source_rgba_sha256": "12638ac86a1c4c7e8d23030a1b931195686c52b05ca72031066cf676ef49be18",
+   "clean_rgba_sha256": "1c455e726ff8ca061c8822a7a4fdf3468057b63ee96ccdb34d01e0d2ce595ade",
+   "changed_pixels": 153
+  },
+  "helm_h00_7_256": {
+   "source_rgba_sha256": "6a88a5bcae155e276ba36d52ac07a546ebf777c64848bdc3f34b6cf3e8bb04e9",
+   "clean_rgba_sha256": "5deb31301bb1dc42adb20f729b2cc20e8bb192c696b0a3b46fef0c5873a6911f",
+   "changed_pixels": 599
+  },
+  "helm_h02_0_128": {
+   "source_rgba_sha256": "475a00beece5524add58f43c32e69209e0aec3ed4dba34ae3a661405831e3aaa",
+   "clean_rgba_sha256": "1c96b6566447e88b06821000308e557875e04091665b64c15002a981c78b285c",
+   "changed_pixels": 364
+  },
+  "helm_h02_0_256": {
+   "source_rgba_sha256": "d0e5be8d783208a6df27fa77c30e5c23ecd66c3ffff14d2b20945e7ea329f0b8",
+   "clean_rgba_sha256": "6b19b74bc421a6c10de7a17ed6a4cf4471116a1e44d826c4b8fd8aa6938584c4",
+   "changed_pixels": 1364
+  },
+  "helm_h02_2_128": {
+   "source_rgba_sha256": "c540f31b45adb62b19c685fc9fe623c78c834467312fcc5787628cdeca3a33be",
+   "clean_rgba_sha256": "34cd8e280dcfda5a6751a62f2b53ea918fb1768ceeb319fa301729d4e637e793",
+   "changed_pixels": 365
+  },
+  "helm_h02_2_256": {
+   "source_rgba_sha256": "e80fb0ca33b056759092887b6e30096b8581ddbfe7a0b5bea17e5c8639125a94",
+   "clean_rgba_sha256": "b33a9008db5c6296fb5b2c6732c330f8bd321b8972bf207cedbf9bbfa3ea4e2d",
+   "changed_pixels": 1400
+  },
+  "helm_h02_3_128": {
+   "source_rgba_sha256": "d0a9b82d0f81e5464ddc5dae771767c38c11c9a89653264b9949715f547b8095",
+   "clean_rgba_sha256": "01deb618c56592d6083d8c3786cc7962186071d930439828b1bb06d6c55d3b2e",
+   "changed_pixels": 338
+  },
+  "helm_h02_3_256": {
+   "source_rgba_sha256": "b7348e8d629ced30de810122b15f570dbfe4db28ace18b5a731b0aef59b5c5ca",
+   "clean_rgba_sha256": "e891d7840a13e1976ec624adfdd9f6e1b621e7f80111411e8c4b0819c6013aa2",
+   "changed_pixels": 1339
+  },
+  "helm_h09_0_128": {
+   "source_rgba_sha256": "783c5e3534fc2e567a65922585a7665bea843c5a08c91b144f61e51dee378568",
+   "clean_rgba_sha256": "04f29e95aa1d9fddcf6a94b4f37bbcc404794d53aba520b75fcfbef2cb726e94",
+   "changed_pixels": 630
+  },
+  "helm_h09_0_256": {
+   "source_rgba_sha256": "90d6facb0fb0abc5c7255db56377d6535ebc350c54f07ebe9142dbfa61b118ef",
+   "clean_rgba_sha256": "d7b7aa0ce673137029308d7da01974fcc835dc1bdef2f6f6fa2a25fb7c9f60fc",
+   "changed_pixels": 2499
+  },
+  "helm_h09_2_128": {
+   "source_rgba_sha256": "8a52042d413132700135c1ccba2c082ca353c1bbffb1fdb6babfa871f439a538",
+   "clean_rgba_sha256": "891cfe7aba37961e31fea4874b56f7193343fce8a3cbf18ab58e8bb865e2ead3",
+   "changed_pixels": 803
+  },
+  "helm_h09_2_256": {
+   "source_rgba_sha256": "6c0b91b9f4a363b6d1d5b766d1617e772c1e7265a101b381cc066005a99f25e0",
+   "clean_rgba_sha256": "31c7eb94e58c35760463ce7eddf89ed4f2e3f5763d0ba31f461e3a330d77584d",
+   "changed_pixels": 3042
+  },
+  "helm_h09_9_128": {
+   "source_rgba_sha256": "bd8cff1fc9cc7ee5ba4aa9b4de01f543ea570151010a8f9e79c8e79aedeab291",
+   "clean_rgba_sha256": "3c501a1a583c42d75bb82ffd87b7d46a9d765bc4ed6d106b8f3ac7985046436c",
+   "changed_pixels": 805
+  },
+  "helm_h09_9_256": {
+   "source_rgba_sha256": "6e6d29031bfb8380810acde1a4775ddf8dd417644f7ba3fc933ea2fb9c21d8d1",
+   "clean_rgba_sha256": "441b4e84a18dc58542280303ed664a39edc1975d53d9c7e30b6f33e15920be04",
+   "changed_pixels": 3052
+  },
+  "helm_h19_7_128": {
+   "source_rgba_sha256": "c22d3266abd709e3c487811062e67a667cc219d6b418cc11f4e37a613319d954",
+   "clean_rgba_sha256": "2e85ed939dac8a5d5331db7963e4a2dbf1ef6f40f7960147f5b2125cd55d8589",
+   "changed_pixels": 558
+  },
+  "helm_h19_7_256": {
+   "source_rgba_sha256": "80b9d4a739ac3528f1226481c01dec0d43d8230a4692fdd658aeec96e014675c",
+   "clean_rgba_sha256": "8ea762bdd6a1ac0c20222d5a762cf0888d4dc6818382d712f04e8dd283b090d6",
+   "changed_pixels": 2261
+  },
+  "unif_a00_0_256": {
+   "source_rgba_sha256": "b0b8854f1ff7679812144fbdab9932729b3b6d9ce2f374ebad23fffc81346e77",
+   "clean_rgba_sha256": "063c98ebeb881f08d19b80df247f827a14e812c131aaf58182bfa988ca28ea51",
+   "changed_pixels": 413
+  },
+  "unif_a00_6_256": {
+   "source_rgba_sha256": "2441fb6cfdd96393d842a40918e1843fc954cc2334edaf6bdd9585f5dc6e1067",
+   "clean_rgba_sha256": "09b3ee594bb7919aec08040f898ba3a2db3b4cd57d4c8c2a908a7591b56a4762",
+   "changed_pixels": 392
+  },
+  "unif_a00_7_256": {
+   "source_rgba_sha256": "1294270d5e254b583701088837b6da4fe6deb57e8f1fb629fd79032d648b659e",
+   "clean_rgba_sha256": "9fce569c34e29e84308c63df11506e05b060aa65f166207aa58be6a54b7909a8",
+   "changed_pixels": 424
+  },
+  "unif_a02_0_256": {
+   "source_rgba_sha256": "aa59628b278f6fbb0b4b8b55c64e7cdf4d537eeaa3069361dd3af9ac076dcc8d",
+   "clean_rgba_sha256": "e236ad8580cdb912efa12840a5eb17019d37005386eed9a8694e170c65fb73d8",
+   "changed_pixels": 729
+  },
+  "unif_a02_2_256": {
+   "source_rgba_sha256": "a4d383feb7060c6a03bbd068151a2b5aab8a1cbaab9fb04e85dbbe36370ce8b1",
+   "clean_rgba_sha256": "007f18c91a1dbcfe60722ebc78eb1c19aaafa802903456ac26b60f3a5ff10a0a",
+   "changed_pixels": 748
+  },
+  "unif_a02_3_256": {
+   "source_rgba_sha256": "9b6316cde322af4f8e8ff02e06fce2376fb2b087203d38560aa270f963823c0f",
+   "clean_rgba_sha256": "a39bf57de7288cfde1a9f603762e41af28341e2491c1aacf586f8129cfcc015c",
+   "changed_pixels": 736
+  },
+  "unif_a09_0_256": {
+   "source_rgba_sha256": "b628fd148472caec0d05aa9ec51c1b3509a4752dcebdb71b106080627785263b",
+   "clean_rgba_sha256": "dea9b162e7faa2a1535c3be29d43e1b373736c84fc677e0375d946b03c0e63c6",
+   "changed_pixels": 1247
+  },
+  "unif_a09_2_256": {
+   "source_rgba_sha256": "326b3fdde141ed16d0f565e170255580da63745c189054e63f70d6dbbc10a7e8",
+   "clean_rgba_sha256": "2ff2cc85841bc2958b188877fabad46127631a39b37595d866a55847ea0e01b8",
+   "changed_pixels": 1726
+  },
+  "unif_a09_9_256": {
+   "source_rgba_sha256": "5329367c0c3d7861c45833ff0490a9016eb47fb3e8e726905f11ad9dca72b13a",
+   "clean_rgba_sha256": "0108894239a0091e96da54e458e8676d8900520f68fdd9dddb13b5755969076c",
+   "changed_pixels": 1726
+  },
+  "unif_a19_7_256": {
+   "source_rgba_sha256": "9bc6cee26687f1ae377fae7ce1bf5651eb67bdf221e3b1e2c52f43fff3d2d97c",
+   "clean_rgba_sha256": "7695616939cfebd446dba3270052ea579081bf1ce8c3c9d89165ef34151d7178",
+   "changed_pixels": 1036
+  },
+  "unif_h00_0_256": {
+   "source_rgba_sha256": "db6362cd73d318861662cc1e45021ff2b1e4169b64b8cb7f9974338ea040d97c",
+   "clean_rgba_sha256": "fb63807b958008f335eddcdee554184acd3f20ef44f9aeea98baed998dbbdd3c",
+   "changed_pixels": 413
+  },
+  "unif_h00_6_256": {
+   "source_rgba_sha256": "2441fb6cfdd96393d842a40918e1843fc954cc2334edaf6bdd9585f5dc6e1067",
+   "clean_rgba_sha256": "09b3ee594bb7919aec08040f898ba3a2db3b4cd57d4c8c2a908a7591b56a4762",
+   "changed_pixels": 392
+  },
+  "unif_h00_7_256": {
+   "source_rgba_sha256": "1294270d5e254b583701088837b6da4fe6deb57e8f1fb629fd79032d648b659e",
+   "clean_rgba_sha256": "9fce569c34e29e84308c63df11506e05b060aa65f166207aa58be6a54b7909a8",
+   "changed_pixels": 424
+  },
+  "unif_h02_0_256": {
+   "source_rgba_sha256": "ffbc8adb16c6c0e107ee7008553dbbab43384a7de71ba1a0a0ef0aec6a6a088e",
+   "clean_rgba_sha256": "2929d547d0b12c3f3ef0e7d5555bedfb8f40681381d5936d0203adca8fee20fd",
+   "changed_pixels": 729
+  },
+  "unif_h02_2_256": {
+   "source_rgba_sha256": "7f0ffda2738d93f6ed1b72e632819d2295f652b83f5d6922284f4b075b6888da",
+   "clean_rgba_sha256": "131215e70e95b384cdb9c20c2b2f6a747ef4528ef2f78e6114039d730f272124",
+   "changed_pixels": 747
+  },
+  "unif_h02_3_256": {
+   "source_rgba_sha256": "9b6316cde322af4f8e8ff02e06fce2376fb2b087203d38560aa270f963823c0f",
+   "clean_rgba_sha256": "a39bf57de7288cfde1a9f603762e41af28341e2491c1aacf586f8129cfcc015c",
+   "changed_pixels": 736
+  },
+  "unif_h09_0_256": {
+   "source_rgba_sha256": "6bea878ae888279f265168c16e8a7be3a0640bac41d5a807085e020f2c0971d4",
+   "clean_rgba_sha256": "c14f371f1329f1d4df8cf47bc2f52814375d23b4607c730fccda65e7fecd1823",
+   "changed_pixels": 1247
+  },
+  "unif_h09_2_256": {
+   "source_rgba_sha256": "326b3fdde141ed16d0f565e170255580da63745c189054e63f70d6dbbc10a7e8",
+   "clean_rgba_sha256": "2ff2cc85841bc2958b188877fabad46127631a39b37595d866a55847ea0e01b8",
+   "changed_pixels": 1726
+  },
+  "unif_h09_9_256": {
+   "source_rgba_sha256": "5329367c0c3d7861c45833ff0490a9016eb47fb3e8e726905f11ad9dca72b13a",
+   "clean_rgba_sha256": "0108894239a0091e96da54e458e8676d8900520f68fdd9dddb13b5755969076c",
+   "changed_pixels": 1726
+  },
+  "unif_h19_7_256": {
+   "source_rgba_sha256": "9bc6cee26687f1ae377fae7ce1bf5651eb67bdf221e3b1e2c52f43fff3d2d97c",
+   "clean_rgba_sha256": "7695616939cfebd446dba3270052ea579081bf1ce8c3c9d89165ef34151d7178",
+   "changed_pixels": 1036
+  }
+ }
+}
