@@ -873,7 +873,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_playoffs14.py": "d8c490d6d37d118355db80de95c924db52f03ba897b4fbd85432d1840a14051d",
         "mod_editor/core/nfl2k5_lineup_iterator.py": "b8b0c21ca736d411fb1288a6f4cddd5c84929b1c57962c455756e51f1eae7c0c",
         "mod_editor/core/nfl2k5_disc_extents.py": "2a1c1fe06a67139bcac469fd2cbc3cced1f523bac96b226094a296793bce3625",
-        "mod_editor/core/nfl2k5_position_pools.py": "70e2c23e56ee73b5b38f081cfed4b58a88ded717d9e11529603f8363caa2c260",
+        "mod_editor/core/nfl2k5_position_pools.py": "78bd3ec83675d8f9e1f3aa307621ab2367157c3855b6bdb3924c640ce9fd7bd0",
         "mod_editor/core/nfl2k5_bump_texture_writer.py": "a6044fe22a734e44f9e4e997e7f8032806efdf0aea28bae12ca525768755efb9",
         "mod_editor/core/nfl2k5_era_kits.py": "56ba010687a680ae320f63a5b49ee341a876b4e10e9577dfeb5ce1168278b1f7",
         "mod_editor/core/nfl2k5_moment_kits.py": "b57a3ba64cebe7ec5bd6be8741dff8480bc2154318f036fb6e445750afcbcf96",
