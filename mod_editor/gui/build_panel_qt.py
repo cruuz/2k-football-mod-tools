@@ -3175,7 +3175,18 @@ class BuildPanel(QWidget):
                     or any(getattr(p, key) for key in BUILD_KEYS if key not in r62_ui.LEVELS) or p.cpu_money_downs != "retail" or p.scorebug_runtime or p.momentum > 0 or p.defensive_try or p.zone_drop_cap or p.all_stadiums or p.coverage_slider or p.scramble_tuning or p.flatter_deep_ball or p.chop_block_toggle or p.team_names_2026 or p.music_shuffle or p.practice_squad_screen or p.abilities or p.qb_spy or p.music_policy != "retail" or p.music_unlock or p.music_userlist or p.music_project or p.music_library or p.edge_rename or p.screen_timing is not None or p.hires_pack or p.guardian_cap or p.scorebug or p.scheme_labels or p.camera or p.kick_rules or p.kick_power or p.position_pools or p.depth_roles or p.depth_chart_rows
                     or p.kickoff_alignment or p.dynamic_kickoff or p.xbe_space or p.kickoff_relocated or p.season_cap or p.season_2026 or p.widescreen or p.overtime or p.team_column or p.seven_on_seven or p.team_history or p.career_stats or p.position_row or p.probowl_order or p.elbow_options or p.the1wam_lineman_rating or p.xemu_display_list_fix or p.resource_load_guard or p.loader_wakeup_fix or p.rb_rename or p.name_keyboard or p.penalties or p.uniform_choice or p.team_sleeves or p.kick_laces or p.punter_holder or p.franchise_practice or p.practice_squad or p.depth_locks or p.prospect_names or p.player_star or p.player_tags or p.roster_edits or p.espn25_plan
                     or p.commentary or p.playbook_packs or self._helmet_finish_changed()
-                    or p.weather_plan or self._weather_haze_changed() or self._number_kerning_changed() or self._modern_color_changed() or self._modern_arrowhead_changed() or self._modern_metlife_changed() or self._modern_metlife_model_changed() or self._modern_helmets_changed() or p.trim_intro_videos or p.cpu_scrambles == "modern")
+                    or p.weather_plan or self._weather_haze_changed() or self._number_kerning_changed() or self._modern_color_changed() or self._modern_arrowhead_changed() or self._modern_metlife_changed() or self._modern_metlife_model_changed() or self._modern_helmets_changed() or p.trim_intro_videos or p.cpu_scrambles == "modern"
+                    or bool(self._speed_separation_chosen()))
+
+    def _speed_separation_chosen(self) -> int:
+        """The Speed separation strength the player set (0 = off).
+
+        It is a number row, not a check box, so it has to be counted here by hand: without it a build with only this
+        row set was refused as "nothing is selected", and no summary (the Make my disc? dialog, the Build selection
+        line, Copy Build summary) named it. A locked row (the disc already carries it, or it cannot be changed on this
+        source) is not a change to make, so only an enabled row counts."""
+        spin = getattr(self, "speed_threshold_spin", None)
+        return int(spin.value()) if spin is not None and spin.isEnabled() else 0
 
     def _helmet_finish_changed(self) -> bool:
         """True when the chosen finish differs from what the source carries (a Glossy restoration counts)."""
@@ -3264,6 +3275,9 @@ class BuildPanel(QWidget):
             labels.append("Restore retail dry-weather haze response")
         if self._modern_color_changed() and not self.modern_color_check.isChecked():
             labels.append("Retail colour & lighting (choose the original retail source)")
+        strength = self._speed_separation_chosen()
+        if strength:
+            labels.append(f"{speed_threshold_ui.CAPTION} ({strength})")
         if self.cpu_scrambles_level.currentData() == "modern":
             labels.append(tt.cpu_scrambles_patch.BUILD_CAPTION + ": Modern")
         if self.star_players:
