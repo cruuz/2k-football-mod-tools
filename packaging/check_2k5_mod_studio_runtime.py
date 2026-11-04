@@ -99,7 +99,7 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
     "mod_editor/gui/audio_panel_qt.py":
         "dd3529836c4ebdc5ddf344de19edca38191f918ca341248953cb289b56c5e42e",
     "mod_editor/gui/studio_qt.py":
-        "99980a42e0ad613c24b0c6b3e3f2b6bcb10265ea86d0800f71d3dacf0a7032d1",
+        "c462ea644e7b99eb1da9c0c8a5c9a36d788d85e677350d558cb9db2249cff9a4",
     "mod_editor/studio/audio_annotations.py":
         "c45c94b011d703a24d063138f82477814495705c3b0055a9a867dbab453ba923",
     "mod_editor/studio/audio_replacement_pack.py":
