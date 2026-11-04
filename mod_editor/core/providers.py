@@ -599,7 +599,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/json_stream.py": "5933752561dd8b519a301c18ec1d14f13a457f58e6ae337984f543ab2b0838b0",
         "mod_editor/core/metadata_cache.py": "49874cc7f12cc0d36d15b9355dbca64ffe95590ba7582b460738b05aabcd9024",
         "mod_editor/core/mod_build.py": "4dfd092006bae6213c77cf2234a1df4dc3c947d4f664348fee12b28ab9769138",
-        "mod_editor/core/nfl2k5_console_memory.py": "50205d2e5dee5bcdc2b5a4b23f93a0807e6f6709a01ab3e9d779ba534c497457",  # b780-m64b: the 128 MB / 64 MB target (validate_plan)
+        "mod_editor/core/nfl2k5_console_memory.py": "5f36799fb3767e021d3fb0c7a5d983c533dd70f978b088bb6c94eb9ca1c41a29",  # b780-m64b: the 128 MB / 64 MB target (validate_plan)
         "mod_editor/core/build_steps.py": "840d24d69bfbbcc63f7a68e29a42a6364f667399611d10d77fbc4beacb83f0f3",  # b791-h3: step context and optional steps
         "mod_editor/core/studio_inspection.py": "bbe1e2e9b3de63b13e8908d2b37f114ee79b6fb2fc88d26670a6eb1e6e341e1e",  # b780 studio1: mod_build.inspect runs inside its validation memo
         "mod_editor/core/nfl2k5_disc_check.py": "5480c8516e109d5e7f963e1e4e0ee598ac0b4472953e116a34ed3f990406e008",  # b780 studio1: the disc identity names a released SOFTDRINK disc from its list
@@ -763,7 +763,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_glyph_fixes_2026.py": "8f5029e95467a866a1003bd2a029dd1be0f760368eb0c30ff2337043fe680861",
         "mod_editor/core/nfl2k5_nameplate_fixes_2026.py": "2c1b63d2a482e4c222c5e649659445138dc1b7592e5046a99c87bdfda96589f5",
         "mod_editor/core/nfl2k5_menu_chiefs_2026.py": "c60f4b3f79672c299fa19515ece7477de1d15b3bfcc38911e35590682f612f77",
-        "mod_editor/core/nfl2k5_menu_helmet_w2026.py": "0c6575ddaa3e5044b1233ac26d2f72ec19321992c51e918973ec19de24074b7e",
+        "mod_editor/core/nfl2k5_menu_helmet_w2026.py": "a01a8edc75729b354b56a32718c20e1059393b3fa6f69bbaa067c340b5480e71",
         "mod_editor/core/nfl2k5_historic_teams_quick_game.py": "ae5ec8f54426e7faebfec7506baad623ed5950b944146e8bcc7a5080a8614a38",
         "mod_editor/core/nfl2k5_historic_teams_quick_game_code.py": "de1f93902ea8d78c7484344a19118a7e2c23163ee6beac59e76a3d061b09b10c",
         "mod_editor/core/nfl2k5_historic_teams_quick_game_code_b778.py": "3476183ffa3faf91db310ea64fb095dc21437fd20cd77f28e4b0ae23985f5cb5",  # b780 modes2: frozen beta-78 .. v0.9 RC revision
@@ -1050,7 +1050,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_team_logo_swap.py": "d4e46ff301b3449fc78a145548be2bcbc6104caad80563e1d940ef564fd73c12",
         "mod_editor/core/nfl2k5_text_catalog.py": "514706a38b28a4c7189f49e7601813cd55e16f1b9e81c9c8aa3e92c072e962c9",
         "mod_editor/core/nfl2k5_throw_arc.py": "0fbf33d12fe27a0f940fb7e13f375390b88701c4ccb7e89a1de895d8f66b9c3c",
-        "mod_editor/core/nfl2k5_throw_tuning.py": "53b77fa472b8bc0de46ed79b33882581506da9389cbdf44d63bd05063ef1b1f0",
+        "mod_editor/core/nfl2k5_throw_tuning.py": "c47eeaba2e17d55f7833b53e0d97fc04c856f249d5b7d7082d55d5b8a9e6d13d",
         "mod_editor/core/nfl2k5_trade_deadline.py": "6d06124670e0c360c9c9600ee7010d8afd239df7cd6352e18dd3762fc72297f4",
         "mod_editor/core/nfl2k5_unif_color_writer.py": "5e950cc404e25c1fbeff7ee5aa2a3fad235115aeddd743e95be6862677a88324",
         "mod_editor/core/nfl2k5_uniform_catalog.py": "e297a2431241c8cc5b0fa38b42ae6ee77771094fafda28f44c98ad47dafe10b5",
