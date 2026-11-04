@@ -4003,3 +4003,5 @@ tests/mod_editor/test_b780_sub1_depth.py
 tests/mod_editor/test_b780_sub1_lineup_roles.py
 tests/mod_editor/test_b780_hunt5_specialist_slots.py
 tests/mod_editor/test_b780_hunt5_special_rows.py
+mod_editor/core/nfl2k5_third_down_back.py
+tests/mod_editor/test_b780_sub1_third_down_back.py
