@@ -331,6 +331,22 @@ class WithTheModel(_Page):
             self.assertIn("A player-picked alternate kit at ", panel.memory_budget_label.text())
 
 
+    def test_customize_softdrink_for_64_mb_starts_from_the_recommended_set(self):
+        panel = self.page()
+        project = Path(self.tmp.name) / "league.json"
+        project.write_text("{}")
+        panel.load_softdrink_sources({"preset": "softdrink_experimental", "project": str(project), "console_memory": 64,
+                                      "overrides": {"k128_memory": True, "k128_roster_heap": True}})
+        self.assertEqual(panel.console_memory(), 64)
+        self.assertTrue(panel.memory_action_label.text().startswith("Recommended 64 MB set applied: turned off "),
+                        panel.memory_action_label.text())
+        self.assertTrue(panel.wait_for_memory_budget())
+        self.assertFalse(cm.refuses(panel._memory_budget_result[0]), panel.memory_budget_label.text())
+        self.assertFalse(panel.blocker().startswith("The 64 MB build"), panel.blocker())
+        panel.set_console_memory(128)                       # the full pack build gives K128 back
+        self.assertTrue(panel.plan().k128_memory)
+
+
 class SavedAndShared(_Page):
     def test_project_settings_round_trip_and_old_projects_read_128(self):
         with without_model():

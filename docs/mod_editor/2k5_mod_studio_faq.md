@@ -78,8 +78,9 @@ expect.
 The Studio can make a disc for 64 MB machines, such as an original Xbox console and hakuX:
 
 1. In **Build & Share**, open the **Share** tab. Set **Build for** to **64 MB, original Xbox and Android hakuX
-   (experimental, estimated, not yet tested on a real Xbox or hakuX)**, then click **Customize SOFTDRINK 2K28…**. (To start
-   from your own selection instead, open the **Build** tab and set **Console memory** there.)
+   (experimental, estimated, not yet tested on a real Xbox or hakuX)**, then click **Customize SOFTDRINK 2K28…**. The **Build**
+   tab opens with the pack's art and options and the recommended 64 MB set already applied. (To start from your own
+   selection instead, open the **Build** tab and set **Console memory** there.)
 2. On the **Build** tab, **Console memory** now reads 64 MB. Every option that needs 128 MB or the real Xbox kernel is off
    and greyed out, with the reason beside it, for example the three 128 MB memory options, Guardian caps, 16 reserves, the
    two extra created teams and the Hi-res pack. The start-up checks for 128 MB and the 4627 BIOS are left out too.

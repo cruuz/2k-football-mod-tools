@@ -70,8 +70,8 @@ NEXT_STEPS_64 = (f"This is the 64 MB build for an original Xbox or the Android e
                  "128 MB target and play it in xemu at 128 MiB.")
 SHARE_NOTE = ("The ready-made SOFTDRINK 2K28 pack is the full 128 MB build for xemu (System Memory 128 MiB). For the "
               f"64 MB build (original Xbox, Android hakuX; {STATUS_64}): choose Customize SOFTDRINK 2K28 "
-              "with Build for: 64 MB, then make the disc on the Build tab. That route keeps the pack's art and the options "
-              "that fit; the pack's 2026 rosters need 128 MB for now.")
+              "with Build for: 64 MB, then make the disc on the Build tab, which starts from the recommended 64 MB set. That "
+              "route keeps the pack's art and the options that fit; the pack's 2026 rosters need 128 MB for now.")
 SHARE_CHOICE_CAPTION = "Build for"
 SHARE_CHOICE_HELP = ("Customize SOFTDRINK 2K28 loads the pack's sources into the Build tab. 64 MB sets the Build tab's "
                      "Console memory to the experimental 64 MB target and turns off what needs 128 MB.")
