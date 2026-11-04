@@ -2345,7 +2345,7 @@ def main() -> int:
             "canonical capability registry row count changed")
     require(len(product_catalog.sections) == 12,
             "product sidebar category count changed")
-    require(len(product_catalog.capabilities) == 150,  # b780-int: + coach_carousel (c6), franchise_history (j23), history_screen (j4); c2's duplicate rosters.coaching_staff row dropped (c4's rosters.coach_staff covers the Coaches tab); b77-f5: + Player Card honors page; b77-v1: + modern goalposts; b76: + custom intro video, ESPN presentation marks (2026), b76-p2 wipes and boards, b76-h1, b76-u2, b76-m1, b76-k1, b76-vb3, b76-u4, b76-u5, b76-u6, b76-st, b76-tf, b76-km: + kick meter, b76-hm, b76-pf: + the practice facility, b76-st4: + Hard Rock, Gillette, Lambeau and EverBank, b76-st5: + the modern stadium boards, b77-f4: + letter grades in Franchise
+    require(len(product_catalog.capabilities) == 151,  # b780-mem1 (3c20d2f36): + the intro auto-skip (the registry check above and the banner already say 226 / 151);  # b780-int: + coach_carousel (c6), franchise_history (j23), history_screen (j4); c2's duplicate rosters.coaching_staff row dropped (c4's rosters.coach_staff covers the Coaches tab); b77-f5: + Player Card honors page; b77-v1: + modern goalposts; b76: + custom intro video, ESPN presentation marks (2026), b76-p2 wipes and boards, b76-h1, b76-u2, b76-m1, b76-k1, b76-vb3, b76-u4, b76-u5, b76-u6, b76-st, b76-tf, b76-km: + kick meter, b76-hm, b76-pf: + the practice facility, b76-st4: + Hard Rock, Gillette, Lambeau and EverBank, b76-st5: + the modern stadium boards, b77-f4: + letter grades in Franchise
             "NFL 2K5 product capability count changed")
     _exercise_default_provider_controller(
         modules["mod_editor.core.controller"],
