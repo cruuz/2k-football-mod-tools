@@ -20,6 +20,27 @@ same fields the game itself uses (``0xE6680`` clears them, ``0x13E3A0`` reads th
 invented and no roster record outside the injury fields changes. The roll is in the weekly advance only, so
 played games are never touched.
 
+b780 hunt1: the roll skips every club a person controls (the game's own human-club flag, ``0x13EC30``, the same
+test the weekly depth sort uses to leave user clubs alone). Before, the weekly advance rolled for all clubs, so the
+halfback a player's own Franchise or MyCareer club lists first was put out for 2 to 5 weeks about 1.7 times a season
+(about one advance in ten, preseason and playoff weeks included) even when the player played every game and nobody
+got hurt on the field: those games already have the game's own injuries. Measured on the SOFTDRINK 2K28 v0.9 RC
+executable with the game's own franchise start and weekly tick (400 ticks): 33 injuries on the user club's first
+healthy back, 39 on a computer club's (the published 9.9 % a tick); with this revision 0 on the user club. Clubs
+the computer runs are unchanged.
+
+b780 hunt1, the carry guard's backup scan: beta-79 kept the club's player count in EBP and loaded each candidate
+into EBP, so after the first candidate the wrap test compared the index with a player pointer and the scan never
+wrapped: when no healthy halfback followed the selected one in the club's list (the last back, or the next ones hurt)
+it ran on past the list into the club record and loaded +0x35 through the words there. The count word at +0x11C
+(0x2E4D6441 on a 65-man preseason roster) is no pointer: the SOFTDRINK 2K28 v0.9 RC franchise (seed 2602, year 2,
+preseason) stopped there with a read of unmapped memory, which on the console is a freeze. The count now stays in
+EDI (same instruction lengths, same 350-byte guard), so the scan wraps to the backs ahead of the selected one and
+never reads past the club's list.
+
+A beta-79 / SOFTDRINK 2K28 v0.8 install (same cave, same hooks) reads ``previous`` and is upgraded in place
+(``nfl2k5_sim_rb_injuries_b779`` is that frozen revision).
+
 The scheduled-sim carry guard (``SUB_OFFSET``, ``CARRIER_SITE``) is the part that makes an injured back miss
 the simulated game. Retail's weekly tick clears the out status while the weeks run down, and the scheduled
 simulator's lineup picker then seats the player anyway (b779 inj1 patches that picker). The assist here hooks
@@ -51,8 +72,9 @@ BUILD_CAPTION = "Simulated RB short injuries"
 HELP_TEXT = ("EXPERIMENTAL. Simulated franchise games give running backs the short injuries the NFL sees: about 1.5 "
              "one-to-two-week injuries a team season and 0.2 of three weeks or longer. The injured back sits out "
              "the simulated game and the next healthy back takes his carries; the injury is stored in the "
-             "franchise roster and counted down by the game's own weekly tick. Played games and every rating are "
-             "unchanged.")
+             "franchise roster and counted down by the game's own weekly tick. Clubs you control (your Franchise "
+             "or MyCareer club) are left alone: their backs get hurt only on the field. Played games and every "
+             "rating are unchanged.")
 
 # The franchise week injury tick FUN_00133c50 ends with pop edi; pop esi; pop ebx; ret. It runs once per
 # advance and walks every club player, so its tail is the once-a-week point after the game's own clear.
@@ -63,6 +85,7 @@ CARRIER_SITE = 0x00106CFA
 CARRIER_BEFORE = bytes.fromhex("e861c6ffff")
 
 FN_RAND = 0x00048BC0              # mov ecx, 0xB12680; jmp 0x48B50: the league RNG, returns a dword in EAX
+FN_HUMAN_CLUB = 0x0013EC30        # ecx = club object -> eax = the club's human flag ([0xE5775C + 4 * index]); b780 hunt1
 LEAGUE_ROOT = 0xB72918            # franchise root; +0x1C is the club array
 TEAM_COUNT = 32
 TEAM_STRIDE = 500
@@ -111,6 +134,10 @@ def _weekly(a):
     a.b("8bcb")                                        # mov ecx, ebx
     a.call(0x000C4C50)                                 # club object
     a.b("8bf8")                                        # mov edi, eax
+    a.b("8bcf")                                        # mov ecx, edi
+    a.call(FN_HUMAN_CLUB)                              # b780 hunt1: a club a person controls gets no roll
+    a.b("85c0")                                        # test eax, eax
+    a.j32("0f85", "next_team")
     a.b("8bcf")                                        # mov ecx, edi
     a.call(0x000C3E70)                                 # first player
     a.b("8bf0")                                        # mov esi, eax
@@ -216,14 +243,18 @@ def _carrier(a):
     a.j32("0f8c", "team_loop")
     a.j32("e9", "done")
     a.label("found_team")
-    a.b("0fb6a8" + struct.pack("<I", PLAYER_COUNT).hex())  # movzx ebp, byte [eax+0x11c]
-    a.b("8bdf")                                        # mov ebx, edi
-    a.b("8bcd")                                        # mov ecx, ebp
+    # b780 hunt1: the club's player count stays in EDI for the whole scan. Beta-79 kept it in EBP, which the first
+    # candidate load overwrote, so from the second candidate on the wrap test compared the index with a pointer, never
+    # wrapped, and read past the club's list into the club record (+0x104 on); a count word there (+0x11C) is no
+    # pointer, and loading +0x35 through it stopped the game (the SOFTDRINK 2K28 v0.9 RC franchise, year 2 preseason).
+    a.b("8bdf")                                        # mov ebx, edi          injured index
+    a.b("0fb6b8" + struct.pack("<I", PLAYER_COUNT).hex())  # movzx edi, byte [eax+0x11c]   club count
+    a.b("8bcf")                                        # mov ecx, edi
     a.b("49")                                          # dec ecx
     a.j32("0f8e", "done")
     a.label("cand_loop")
     a.b("43")                                          # inc ebx
-    a.b("3bdd")                                        # cmp ebx, ebp
+    a.b("3bdf")                                        # cmp ebx, edi
     a.j32("0f82", "no_wrap")
     a.b("33db")                                        # xor ebx, ebx
     a.label("no_wrap")
@@ -305,9 +336,17 @@ def _recognize(payload):
     if owned:
         raw = image.read(owned["va"], CODE_SIZE)
         states.add("retail" if raw == b"\xcc" * CODE_SIZE else "applied" if raw == code_for(owned["va"])
-                   else "foreign")
-    require(states and states <= {"retail", "applied"}, "Foreign or mixed RB injury site/code")
+                   else "previous" if raw == _previous_code_for(owned["va"]) else "foreign")
+    if states == {"applied", "previous"}:
+        states = {"previous"}   # b780 hunt1: the same hooks with the beta-79 roll (a v0.8 executable)
+    require(states in ({"retail"}, {"applied"}, {"previous"}), "Foreign or mixed RB injury site/code")
     return next(iter(states))
+
+
+def _previous_code_for(code_va):
+    """b780 hunt1: the beta-79 / v0.8 cave (its weekly roll also hit clubs a person controls), from the frozen module."""
+    from . import nfl2k5_sim_rb_injuries_b779 as b779
+    return b779.code_for(code_va)
 
 
 def status(payload):
@@ -327,6 +366,14 @@ def apply(payload):
     common = dict(owner=OWNER, experimental=True, runtime_witnessed=False)
     if state == "applied":
         return payload, dict(common, status="already_applied", changed_bytes=0, edits=[])
+    if state == "previous":
+        # b780 hunt1: a beta-79 / v0.8 install (same cave and hooks) is upgraded in place to the roll that leaves
+        # clubs a person controls alone: only the owner's own code bytes change
+        code_va = allocation(payload)["va"]
+        result, _ = space.install_code(payload, OWNER, code_for(code_va), previous=_previous_code_for(code_va))
+        require(status(result) == "applied", "RB injury upgrade postcondition failed")
+        return result, dict(common, status="applied", upgraded_from="previous",
+                            changed_bytes=space.count_differing_bytes(payload, result), edits=[])
     before = payload
     receipt = {}
     if not any(r["owner"] == OWNER for r in space.layout(payload)["allocations"]):

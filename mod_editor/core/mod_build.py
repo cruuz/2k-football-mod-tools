@@ -1910,7 +1910,7 @@ def _sim_rb_injuries_preflight(source: Path, progress) -> None:
         raise ValueError("Simulated RB short injuries is not available in this installation.")
     progress("Checking the franchise week for simulated RB injuries", 0, 0)
     state = module.status(_xbe_bytes(source))
-    if state not in ("retail", "applied"):
+    if state not in ("retail", "applied", "previous"):  # b780 hunt1: a v0.8 install is upgraded in place
         raise ValueError("The franchise week injury tick or the scheduled carrier site in this source is not "
                          "retail. Build from an unmodified retail dump.")
 

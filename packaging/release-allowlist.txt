@@ -603,6 +603,7 @@ mod_editor/core/nfl2k5_sim_cb_tackles_b779.py
 mod_editor/core/nfl2k5_option_defaults.py
 mod_editor/core/nfl2k5_profile_defaults.py
 mod_editor/core/nfl2k5_sim_rb_injuries.py
+mod_editor/core/nfl2k5_sim_rb_injuries_b779.py
 mod_editor/core/nfl2k5_sim_realism.py
 mod_editor/core/nfl2k5_sim_realism_b779.py
 mod_editor/core/nfl2k5_coach_carousel.py
