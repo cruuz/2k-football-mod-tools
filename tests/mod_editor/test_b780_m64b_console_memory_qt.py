@@ -173,6 +173,30 @@ class ForcedOff(_Page):
             self.assertEqual(panel.blocker(), "")
 
 
+class RosterCapacity(_Page):
+    def test_roster_edits_that_grow_the_roster_file_are_refused_by_name_at_64(self):
+        with without_model():
+            panel = self.page()
+            grown = Path(self.tmp.name) / "softdrink-rosters.json"
+            grown.write_text(json.dumps({"schema": "x", "edits": [], "free_agent_capacity": {
+                "schema": "nfl2k5.free_agent_capacity.v1", "records": 612}}))
+            panel.throw_check.setChecked(True)
+            panel.roster_edits_check.setChecked(True)
+            panel.roster_edits_field.setText(str(grown))
+            before = panel.blocker()                   # 128 MB: the page says what it said before this option
+            panel.set_console_memory(64)
+            blocker = panel.blocker()
+            self.assertIn("The 64 MB build cannot use the roster edits softdrink-rosters.json (612 more records)", blocker)
+            self.assertIn("Untick Include exported \u2605 Rosters edits", blocker)
+            self.assertFalse(panel.build_button.isEnabled())
+            self.assertTrue(panel.roster_edits_check.isEnabled())   # still the user's to untick or change
+            panel.roster_edits_check.setChecked(False)
+            self.assertEqual(panel.blocker(), "")
+            panel.set_console_memory(128)
+            panel.roster_edits_check.setChecked(True)
+            self.assertEqual(panel.blocker(), before)
+
+
 class Budget(_Page):
     def test_each_remaining_option_shows_its_memory_cost_at_64_only(self):
         model = fake_model(costs={"hair_styles": 150 * 1024, "modern_coaches": 600, "k128_memory": 4096})

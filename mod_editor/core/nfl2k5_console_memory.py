@@ -101,7 +101,7 @@ _CAPTIONS = {
     "guardian_overlay": "Guardian caps (experimental)",
     "reserves_16": "16 reserves (experimental)",
     "created_teams_extra": "Two extra created teams (experimental)",
-    "roster_edits": "Include exported Rosters edits",
+    "roster_edits": "Include exported ★ Rosters edits",
 }
 
 Labeller = Callable[[str], str]
@@ -472,7 +472,7 @@ def problems(plan: object, labels=None, *, records: int | None = None, fit: bool
     if grown:
         name = Path(str(getattr(plan, "roster_edits", "") or "")).name or "the roster edits"
         out.append(f"The 64 MB build cannot use the roster edits {name} ({grown:,} more records): {capacity_reason()}. "
-                   "Untick Include exported Rosters edits, or choose roster edits that do not grow the roster file (the "
+                   "Untick Include exported ★ Rosters edits, or choose roster edits that do not grow the roster file (the "
                    "SOFTDRINK 2K28 2026 rosters need 128 MB for now).")
     if fit:
         prediction = predict(without_forced(plan))

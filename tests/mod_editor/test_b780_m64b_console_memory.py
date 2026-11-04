@@ -194,7 +194,7 @@ class Validation(unittest.TestCase):
                 self.assertEqual(len(problems), 1)
                 self.assertIn("softdrink-rosters.json", problems[0])
                 self.assertIn("612 more records", problems[0])
-                self.assertIn("Untick Include exported Rosters edits", problems[0])
+                self.assertIn("Untick Include exported \u2605 Rosters edits", problems[0])
                 self.assertEqual(cm.problems(mod_build.BuildPlan("s", "t", console_memory=64, roster_edits=str(plain))),
                                  [])
                 # 128 keeps its own rule (capacity growth needs K128), untouched by this option
