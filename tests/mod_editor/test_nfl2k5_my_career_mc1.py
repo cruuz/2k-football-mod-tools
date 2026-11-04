@@ -21,6 +21,11 @@ C. The career club's depth chart. A static reading (HUNT6) was that the weekly a
    club if 0x13EC30 ever answers human for it.
 D. An injured MyPlayer (+0x20 bit 31, the flag the weekly IR pass 0x2BE020 reads) was put at the top of the depth
    chart by start_player at every Play next game. He now keeps the game's own order until he is healthy.
+E. "MyPlayer star: On" against star_career's yearly evaluation (Advanced and Experimental). The preseason hook 0x24857A
+   clears +0x53 bit 0 for a player scoring under 85 after 8+ games, MyPlayer included (MC1's U8 run on the RC: an 83
+   OVR QB lost it entering season 2, and a reload gave it back). The setting now wins: Play next game re-applies it
+   before every game, as a load does. Off leaves the bit to the game, so MyPlayer earns or loses stardom like anyone
+   else (a load no longer clears an earned star); turning the setting Off clears it once.
 
 Unicorn, the pinned USA retail executable with the MyCareer and Career Home owners and the retail ROST: the game's own
 Create Player, signing, cut-down, Career Home rows, save (16E3F0) and load (16E540, 16DD30). Negative controls (MC1
@@ -248,6 +253,58 @@ class LongFlowTests(unittest.TestCase):
         self.assertEqual(played[mine][2:4], (0, 0), 'Play next game still starts MyPlayer')
         _, _, _, off_after, _, _, _ = self.weekly_depth(False)
         self.assertEqual(off_after, after, 'the same charts with the setting off: 0x13EC30 answers CPU for the club')
+
+@unittest.skipUnless(HAVE_UC and XBE.is_file(), 'pinned USA XBE, retail ROST and Unicorn required')
+class StarSettingTests(unittest.TestCase):
+    """E: the real star_career evaluation (its 0x24857A hook up to the aging loop 0x24857F) on a second-year MyPlayer
+    with a full season (the season stat getter 0x14EF20 answers 17: 17 games, no production bonus), then Play next
+    game."""
+
+    @classmethod
+    def setUpClass(cls):
+        from mod_editor.core import nfl2k5_star_career as star_career
+        from tests.nfl2k5_supersim_draft_fixture import retail_bytes
+        from tests.mod_editor.test_nfl2k5_my_career_frontend import retail_roster
+        cls.payload = star_career.apply(home.apply(mode.apply(retail_bytes())[0])[0])[0]
+        cls.roster = retail_roster()
+
+    def evaluated(self, setting):
+        from tests.nfl2k5_my_career_home_fixture import Machine
+        m = Machine(self.payload)
+        player = m.create(self.roster, club=15, position=0, preseason=False)
+        m.child_services()
+        star = lambda: m.uc.mem_read(player + 0x53, 1)[0] & 1  # noqa: E731
+        self.assertEqual((m.get(m.state + 2700), star()), (0, 1), 'a new career: star On, MyPlayer a star')
+        if setting:
+            m.select(5, budget=200000000)            # Settings + Save
+            m.select(0, budget=200000000)            # Settings
+            self.assertEqual(m.top(), m.labels['m3_settings_menu'])
+            m.select(2, budget=200000000)            # MyPlayer star: Off
+            self.assertEqual((m.get(m.state + 2700), star()), (1, 0), 'turning it Off clears the star once')
+            while m.top() != m.labels['apartment']:
+                m.frame(0x200, budget=100000000)     # B back to Career Home
+            m.uc.mem_write(player + 0x53, bytes((m.uc.mem_read(player + 0x53, 1)[0] | 1,)))  # an earned star
+        years = m.uc.mem_read(player + 0x25, 1)[0]
+        m.uc.mem_write(player + 0x25, bytes(((years & 0xE0) | 2,)))  # his second season
+        m.replace_stub(0x14EF20, lambda: m.ret(17, pop=4))
+        m.call(0x24857A, stop=0x24857F, budget=400000000)
+        m.replace_stub(0x14EF20, None)
+        self.assertEqual(star(), 0, 'the evaluation takes the star from an under-85 player after 8+ games')
+        self.assertEqual(m.top(), m.labels['apartment'])
+        m.select(0, budget=2000000000)               # Play next game
+        self.assertEqual(m.top(), TEAM_SELECT)
+        return m, star()
+
+    def test_star_on_wins_over_the_yearly_evaluation(self):
+        m, star = self.evaluated(0)
+        with m:
+            self.assertEqual(star, 1, 'Play next game: MyPlayer is a star again, as the setting says')
+
+    def test_star_off_earns_and_loses_like_anyone(self):
+        m, star = self.evaluated(1)
+        with m:
+            self.assertEqual(star, 0, 'Off: the evaluation decides')
+
 
 if __name__ == '__main__':
     unittest.main()

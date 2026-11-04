@@ -2177,7 +2177,7 @@
   ],
   "minimal_composition": {
     "edge_modern_pools_sha256": "fba54dc68b2cc31903e675c3880605c23fec077ffb9fe7eca8905530536b5b27",
-    "with_inline_mycareer_sha256": "1d77f06d850ba66324ef61474b9a80a9966089677fe60982e7fcc06903158553",
+    "with_inline_mycareer_sha256": "67ce7e3d231dd09406277314ddce97ff01ed0abe8dc219bf4d115ec8f62c3a4b",
     "pool_changed_bytes": 1916,
     "pool_sections_repinned": [
       0,
