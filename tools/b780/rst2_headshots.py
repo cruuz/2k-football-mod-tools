@@ -366,7 +366,7 @@ def main(argv=None):
             p.add_argument("--model", required=True, help="face_detection_yunet_2023mar.onnx")
         if name == "append":
             p.add_argument("--data", default=str(ROOT / "data/nfl2k5_real_portraits"))
-            p.add_argument("--group", default="created_player")
+            p.add_argument("--group", default="roster_player")
             p.add_argument("--job", default="b780-rst2")
             p.add_argument("--fetched", default=datetime.date.today().isoformat())
             p.add_argument("--note", default="Real players on 2026 club rosters that the pack had no record for, and two "

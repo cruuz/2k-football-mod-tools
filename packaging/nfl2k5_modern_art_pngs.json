@@ -3807,14 +3807,26 @@
     },
     "data/nfl2k5_real_portraits/faces_03.png": {
       "height": 2048,
-      "sha256": "0e85cabd2977dfdbc696bee0553098337ac0e0ff523e16cd8d5e2a1384eef8c2",
-      "size": 1996022,
+      "sha256": "a91895f20c14d79b4b046d0349593419bcdd88f198422da2ddb381daafe210b5",
+      "size": 2254712,
       "width": 2048
     },
     "data/nfl2k5_real_portraits/faces_03_pal.png": {
       "height": 256,
-      "sha256": "7d9ef9ca37594f17c8e0f5a05d0031d91e94d2b1cca78be8880b74ecaf0ef5e5",
-      "size": 199457,
+      "sha256": "6a0c15cb000ff27ff93699e6db9ae2729e6066eb29788261320cb84a54b91acf",
+      "size": 224520,
+      "width": 256
+    },
+    "data/nfl2k5_real_portraits/faces_04.png": {
+      "height": 2048,
+      "sha256": "db6ffb1534ac90f11b604ee005d759fbb279d6ae8c53d3151037fb81eadc8e1a",
+      "size": 823751,
+      "width": 2048
+    },
+    "data/nfl2k5_real_portraits/faces_04_pal.png": {
+      "height": 256,
+      "sha256": "ac11215c3ccf6afbf986614e45f64b04d29229961a0f952f257b2343e13f082b",
+      "size": 81376,
       "width": 256
     },
     "data/nfl2k5_rookie_faces/faces_00.png": {
