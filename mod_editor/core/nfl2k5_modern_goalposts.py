@@ -398,7 +398,8 @@ def xbe_status(payload: bytes) -> str:
 
     try:
         from . import nfl2k5_period_goalposts as period    # b77-v1b: the owner supersedes the three operands below
-        if period.allocations(payload) and period.status(payload) == "applied":
+        # (b780 hunt2: also its earlier install without the Situation test, which apply() upgrades in place)
+        if period.allocations(payload) and period.status(payload) in ("applied", "previous"):
             return "applied"
         offset = _xbe_offsets(payload)
         for va, value in XBE_GUARDS:
@@ -459,7 +460,7 @@ def apply_xbe(payload: bytes) -> tuple[bytes, dict[str, Any]]:
 
 def restore_xbe(payload: bytes) -> bytes:
     from . import nfl2k5_period_goalposts as period
-    require(not (period.allocations(payload) and period.status(payload) == "applied"),
+    require(not (period.allocations(payload) and period.status(payload) in ("applied", "previous")),
             "the period goalposts owner is installed in the executable's allocator; rebuild from a verified base to remove it")
     state = xbe_status(payload)
     require(state in ("retail", "applied"), "default.xbe's goalpost sites are not the retail or modern bytes")
@@ -492,7 +493,7 @@ def xbe_reservations(payload: bytes) -> list[dict[str, Any]]:
 
     require(xbe_status(payload) == "applied", "the goalpost executable sites are not modern")
     from . import nfl2k5_period_goalposts as period
-    if period.allocations(payload) and period.status(payload) == "applied":
+    if period.allocations(payload) and period.status(payload) in ("applied", "previous"):
         # b77-v1b: the three v1 operands are superseded by the owner's four in-place sites (its code and cell are its
         # own allocator rows)
         a = period.allocations(payload)
