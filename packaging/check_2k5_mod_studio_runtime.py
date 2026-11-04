@@ -115,13 +115,13 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
 B69_GAME_RUNTIME_PINS = {
     "mod_editor/core/nfl2k5_weather.py": "ec3d253e348ff0cf7fb1951b5dad2983d8aebc0802d5c6fca32c74dc80a6985b",
     "mod_editor/core/nfl2k5_weather_haze.py": "b8c58c592794312358eb1554b1d3be43a1ca41f7fdd8fd3cd498d4f345c641cc",
-    "mod_editor/gui/build_panel_qt.py": "be9c5bcf752e28c10def850621673a0f884ca1573e5856e1a2a434d2cc955a4f",
+    "mod_editor/gui/build_panel_qt.py": "823d0b25f14a52d5564ea01cc717abd44dc53810dba6eb79d6b4f2c1f01a681c",
     "mod_editor/gui/gameplay_patches_panel_qt.py": "dc6ec647fa71ff61dc5af369c3e1ea616c543b050101012a3bf830f112b27508",
     "mod_editor/gui/my_career_panel_qt.py": "cd39ce1685ed119288122e46b0f8c1c8ba586cea611f5d5feee096a71d7ea9ac",
     "mod_editor/gui/gameplay_project_ui.py": "e20425fe40e45ddef63e582892b302ddd0518c1320609060375abea1b3c19c4b",
     "mod_editor/gui/beta62_options.py": "009c389062334a451c15c8e9b312c02e5521b1516bc706c2a48b127ecbcfa858",
     "tools/nfl2k5_weather_editor.py": "39a2847b873bbdc567712ca87657d700fa95e226c3408983acce4d714b1031de",
-    "mod_editor/gui/build_panel_qt.py": "be9c5bcf752e28c10def850621673a0f884ca1573e5856e1a2a434d2cc955a4f",
+    "mod_editor/gui/build_panel_qt.py": "823d0b25f14a52d5564ea01cc717abd44dc53810dba6eb79d6b4f2c1f01a681c",
     "mod_editor/gui/gameplay_patches_panel_qt.py": "dc6ec647fa71ff61dc5af369c3e1ea616c543b050101012a3bf830f112b27508",
     "mod_editor/gui/my_career_panel_qt.py": "cd39ce1685ed119288122e46b0f8c1c8ba586cea611f5d5feee096a71d7ea9ac",
     "mod_editor/gui/gameplay_project_ui.py": "e20425fe40e45ddef63e582892b302ddd0518c1320609060375abea1b3c19c4b",
@@ -2073,6 +2073,7 @@ def main() -> int:
         "mod_editor.core.nfl2k5_history",                         # b780 j23
         "mod_editor.core.nfl2k5_contract_college_guard",          # b778-cr1
         "mod_editor.core.nfl2k5_load_user_team_guard",            # b780 mc1
+        "mod_editor.core.nfl2k5_save_list_type_guard",            # b780 mc1
         "mod_editor.core.nfl2k5_coach_career_fix",                # b780 c1 (wired at b780-int)
         "mod_editor.core.nfl2k5_sim_cb_tackles",                  # b778-cb1
         "mod_editor.core.nfl2k5_sim_rb_injuries",                 # b779-sim2
@@ -2344,7 +2345,7 @@ def main() -> int:
             "canonical capability registry row count changed")
     require(len(product_catalog.sections) == 12,
             "product sidebar category count changed")
-    require(len(product_catalog.capabilities) == 150,  # b780-int: + coach_carousel (c6), franchise_history (j23), history_screen (j4); c2's duplicate rosters.coaching_staff row dropped (c4's rosters.coach_staff covers the Coaches tab); b77-f5: + Player Card honors page; b77-v1: + modern goalposts; b76: + custom intro video, ESPN presentation marks (2026), b76-p2 wipes and boards, b76-h1, b76-u2, b76-m1, b76-k1, b76-vb3, b76-u4, b76-u5, b76-u6, b76-st, b76-tf, b76-km: + kick meter, b76-hm, b76-pf: + the practice facility, b76-st4: + Hard Rock, Gillette, Lambeau and EverBank, b76-st5: + the modern stadium boards, b77-f4: + letter grades in Franchise
+    require(len(product_catalog.capabilities) == 151,  # b780-mem1 (3c20d2f36): + the intro auto-skip (the registry check above and the banner already say 226 / 151);  # b780-int: + coach_carousel (c6), franchise_history (j23), history_screen (j4); c2's duplicate rosters.coaching_staff row dropped (c4's rosters.coach_staff covers the Coaches tab); b77-f5: + Player Card honors page; b77-v1: + modern goalposts; b76: + custom intro video, ESPN presentation marks (2026), b76-p2 wipes and boards, b76-h1, b76-u2, b76-m1, b76-k1, b76-vb3, b76-u4, b76-u5, b76-u6, b76-st, b76-tf, b76-km: + kick meter, b76-hm, b76-pf: + the practice facility, b76-st4: + Hard Rock, Gillette, Lambeau and EverBank, b76-st5: + the modern stadium boards, b77-f4: + letter grades in Franchise
             "NFL 2K5 product capability count changed")
     _exercise_default_provider_controller(
         modules["mod_editor.core.controller"],

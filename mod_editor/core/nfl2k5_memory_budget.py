@@ -712,7 +712,7 @@ PROFILE_64_TRIM = ("scorebug", "scorebug_runtime", "hair_styles", "kick_meter_20
 # cost nothing at 64 MB). The career history pool fix keeps a long franchise's totals whole and its pool collecting in
 # 6,000-word chunks (nfl2k5_history_pool: six sites inside the history engine's own bytes).
 # b780 mc1: the Franchise load user-team guard (three in-place sites, a retail crash path on a save with no human club).
-PROFILE_64_ON = ("history_pool", "load_user_team_guard")
+PROFILE_64_ON = ("history_pool", "load_user_team_guard", "save_list_type_guard")
 PSEUDO_FIELDS = frozenset(("roster_capacity", "roster_draft_pick_ownership", "roster_hback_roles",
                            "cpu_money_downs_modern2"))
 PROFILE_64_ROSTER = ("roster edits at retail capacity without the draft_pick_ownership and hback_roles sections: "
