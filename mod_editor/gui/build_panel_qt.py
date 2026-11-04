@@ -299,6 +299,7 @@ from mod_editor.core import nfl2k5_player_progress_screen as _player_progress  #
 from mod_editor.core import nfl2k5_franchise_footer as _franchise_footer  # noqa: E402  b780 j23
 from mod_editor.core import nfl2k5_contract_college_guard as _contract_guard  # noqa: E402
 from mod_editor.core import nfl2k5_coach_career_fix as _coach_career_fix  # noqa: E402  b780 c1 (wired at b780-int)
+from mod_editor.core import nfl2k5_history_pool as _history_pool  # noqa: E402  b780 hist1
 from mod_editor.core import nfl2k5_sim_cb_tackles as _sim_cb_tackles  # noqa: E402
 from mod_editor.core import nfl2k5_sim_rb_injuries as _sim_rb_injuries  # noqa: E402  b779-sim2
 from mod_editor.core import nfl2k5_sim_realism as _sim_realism  # noqa: E402  b779-sim2 r4
@@ -356,6 +357,7 @@ BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                  ("franchise_history", _franchise_footer.BUILD_CAPTION, _franchise_footer.HELP_TEXT),  # b780 j23
                  ("contract_college_guard", _contract_guard.BUILD_CAPTION, _contract_guard.HELP_TEXT),  # b778-cr1
                  ("coach_career_fix", _coach_career_fix.BUILD_CAPTION, _coach_career_fix.HELP_TEXT),  # b780 c1
+                 ("history_pool", _history_pool.BUILD_CAPTION, _history_pool.HELP_TEXT),  # b780 hist1
                  ("sim_cb_tackles", _sim_cb_tackles.BUILD_CAPTION, _sim_cb_tackles.HELP_TEXT),  # b778-cb1
                  ("sim_rb_injuries", _sim_rb_injuries.BUILD_CAPTION, _sim_rb_injuries.HELP_TEXT),  # b779-sim2
                  ("sim_realism", _sim_realism.BUILD_CAPTION, _sim_realism.HELP_TEXT),  # b779-sim2 r4

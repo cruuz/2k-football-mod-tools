@@ -115,13 +115,13 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
 B69_GAME_RUNTIME_PINS = {
     "mod_editor/core/nfl2k5_weather.py": "ec3d253e348ff0cf7fb1951b5dad2983d8aebc0802d5c6fca32c74dc80a6985b",
     "mod_editor/core/nfl2k5_weather_haze.py": "b8c58c592794312358eb1554b1d3be43a1ca41f7fdd8fd3cd498d4f345c641cc",
-    "mod_editor/gui/build_panel_qt.py": "70be039346d3fc39dd9ebdc53d033fe89cb4f4c3d8be1ffef328f12d5d63c4a2",
+    "mod_editor/gui/build_panel_qt.py": "650ea8ae5fd53f856691b20410abccb2048eff82bbb4738880b9c386de5d26b4",
     "mod_editor/gui/gameplay_patches_panel_qt.py": "c4b12ad6a1c0e4172505249ce056354c375eb90277a6c91573d52568ba3846d6",
     "mod_editor/gui/my_career_panel_qt.py": "cd39ce1685ed119288122e46b0f8c1c8ba586cea611f5d5feee096a71d7ea9ac",
     "mod_editor/gui/gameplay_project_ui.py": "64ffd51ed4ec115f12ae4509e6dfc1004d2a8864437630dca002ea51daa299d1",
     "mod_editor/gui/beta62_options.py": "5ce7517cd798e2c9ece0b464a077770e26670bba235e793e235b383fba6eca63",
     "tools/nfl2k5_weather_editor.py": "39a2847b873bbdc567712ca87657d700fa95e226c3408983acce4d714b1031de",
-    "mod_editor/gui/build_panel_qt.py": "70be039346d3fc39dd9ebdc53d033fe89cb4f4c3d8be1ffef328f12d5d63c4a2",
+    "mod_editor/gui/build_panel_qt.py": "650ea8ae5fd53f856691b20410abccb2048eff82bbb4738880b9c386de5d26b4",
     "mod_editor/gui/gameplay_patches_panel_qt.py": "c4b12ad6a1c0e4172505249ce056354c375eb90277a6c91573d52568ba3846d6",
     "mod_editor/gui/my_career_panel_qt.py": "cd39ce1685ed119288122e46b0f8c1c8ba586cea611f5d5feee096a71d7ea9ac",
     "mod_editor/gui/gameplay_project_ui.py": "64ffd51ed4ec115f12ae4509e6dfc1004d2a8864437630dca002ea51daa299d1",
@@ -2071,6 +2071,8 @@ def main() -> int:
         "mod_editor.core.nfl2k5_history",                         # b780 j23
         "mod_editor.core.nfl2k5_contract_college_guard",          # b778-cr1
         "mod_editor.core.nfl2k5_coach_career_fix",                # b780 c1 (wired at b780-int)
+        "mod_editor.core.nfl2k5_history_pool",                    # b780 hist1
+        "mod_editor.core.nfl2k5_history_pool_code",               # b780 hist1
         "mod_editor.core.nfl2k5_sim_cb_tackles",                  # b778-cb1
         "mod_editor.core.nfl2k5_sim_rb_injuries",                 # b779-sim2
         "mod_editor.core.nfl2k5_sim_realism",                     # b779-sim2 r4

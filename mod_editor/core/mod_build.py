@@ -725,6 +725,11 @@ class BuildPlan:
     # (+0x32) for every winning season. One in-place site (0x247CD6, inc -> nop) stops it so a coach's Super Bowl
     # count only changes when his own numbers do (nfl2k5_coach_career_fix). A pure bug fix: on in every preset.
     coach_career_fix: bool = False
+    # b780 hist1: the franchise career-history pool (a 2004 bug). When the 50,000-word pool fills, retail collects on
+    # every stat write and folds old seasons into one signed 16-bit cell with no overflow check (a long QB career's
+    # passing yards wrap). An in-place rewrite of the engine's collection (nfl2k5_history_pool): the fold never wraps
+    # and a full pool frees 6,000 words at a time. A pure bug fix: on in every preset and in the 64 MB profile.
+    history_pool: bool = False
     # b778-cb1: cornerback tackle credit in the post-game merge. A late executable owner draws a starting corner's
     # tackle line from the NFL per-game distribution through the game's own RNG, with lower nickel and dime
     # distributions, so simulated RCBs stop reading as low-tackle/high-INT outliers. Played games use the same
@@ -865,7 +870,7 @@ class BuildPlan:
                 or self.modern_naming or self.crib_reclaim or self.read_option_runtime or self.franchise_2026_rules or self.senior_bowl
                 or self.guardian_overlay or self.my_career or self.screen_hooks or self.coverage_trail or self.franchise_edit_player or self.cpu_money_downs != "retail" or self.accelerated_clock or self.coin_defer or self.decided_clock or self.cpu_scrambles == "modern" or self.weather_haze or self.number_kerning or self.modern_color or self.weekly_prep or self.weekly_prep_cpu or self.weekly_prep_remember or self.coach_ai or self.playbook_pair or self.deep_zone_facing or self.deep_zone_bail or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave or self.historic_teams_quick_game or self.espn25_more_moments or self.historic_stock_books or self.espn25_era_rules or self.k128_memory or self.team_ratings or self.play_art_routes or self.letter_grades or self.honors_page
                 or self.sportscenter_lineup or self.momentum_collisions or self.scorebug_runtime or self.indicator_names_style != "retail" or self.momentum > 0 or self.momentum_contact or self.defensive_try or self.zone_drop_cap or self.all_stadiums or self.music_shuffle or self.practice_squad_screen or self.abilities or self.qb_spy or self.calendar_engine or self.coverage_slider or self.scramble_tuning or self.flatter_deep_ball or self.chop_block_toggle or self.music_policy != "retail" or self.music_unlock or self.music_userlist
-                or self.guardian_overlay or self.my_career or self.screen_hooks or self.coverage_trail or self.franchise_edit_player or self.cpu_money_downs != "retail" or self.accelerated_clock or self.coin_defer or self.decided_clock or self.cpu_scrambles == "modern" or self.weather_haze or self.number_kerning or self.modern_color or self.weekly_prep or self.weekly_prep_cpu or self.weekly_prep_remember or self.coach_ai or self.playbook_pair or self.deep_zone_facing or self.deep_zone_bail or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave or self.historic_teams_quick_game or self.espn25_more_moments or self.historic_stock_books or self.espn25_era_rules or self.k128_memory or self.team_ratings or self.play_art_routes or self.letter_grades or self.honors_page or self.contract_college_guard or self.coach_career_fix
+                or self.guardian_overlay or self.my_career or self.screen_hooks or self.coverage_trail or self.franchise_edit_player or self.cpu_money_downs != "retail" or self.accelerated_clock or self.coin_defer or self.decided_clock or self.cpu_scrambles == "modern" or self.weather_haze or self.number_kerning or self.modern_color or self.weekly_prep or self.weekly_prep_cpu or self.weekly_prep_remember or self.coach_ai or self.playbook_pair or self.deep_zone_facing or self.deep_zone_bail or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave or self.historic_teams_quick_game or self.espn25_more_moments or self.historic_stock_books or self.espn25_era_rules or self.k128_memory or self.team_ratings or self.play_art_routes or self.letter_grades or self.honors_page or self.contract_college_guard or self.coach_career_fix or self.history_pool
                 or self.guardian_overlay or self.my_career or self.screen_hooks or self.coverage_trail or self.franchise_edit_player or self.cpu_money_downs != "retail" or self.accelerated_clock or self.coin_defer or self.decided_clock or self.cpu_scrambles == "modern" or self.weather_haze or self.number_kerning or self.modern_color or self.weekly_prep or self.weekly_prep_cpu or self.weekly_prep_remember or self.coach_ai or self.playbook_pair or self.deep_zone_facing or self.deep_zone_bail or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave or self.historic_teams_quick_game or self.espn25_more_moments or self.historic_stock_books or self.espn25_era_rules or self.k128_memory or self.team_ratings or self.play_art_routes or self.letter_grades or self.honors_page or self.sim_cb_tackles or self.sim_stats or self.option_defaults or self.sim_rb_injuries or self.sim_realism or self.coach_carousel or self.history_screen
                 or self.momentum_collisions or self.scorebug_runtime or self.indicator_names_style != "retail" or self.momentum > 0 or self.momentum_contact or self.defensive_try or self.zone_drop_cap or self.all_stadiums or self.music_shuffle or self.practice_squad_screen or self.abilities or self.qb_spy or self.calendar_engine or self.coverage_slider or self.scramble_tuning or self.flatter_deep_ball or self.chop_block_toggle or self.music_policy != "retail" or self.music_unlock or self.music_userlist
                 or bool(self.music_library and _music_library_document(self.music_library)["bank"] == "cribmusic")
@@ -1143,6 +1148,8 @@ for _preset in PRESETS.values():
     _preset["contract_college_guard"] = True
     # b780 c1 (wired at b780-int): the coach career counter fix is a records bug fix: on in every preset
     _preset["coach_career_fix"] = True
+    # b780 hist1: the history pool fix is a 2004 bug fix (wrapped career totals, a stalled full pool): on in every preset
+    _preset["history_pool"] = True
 del _preset
 # b778-cb1: cornerback tackle credit: on in the Advanced and Experimental presets (the SOFTDRINK 2K28 recipe builds
 # from Experimental); Basic keeps the retail merge byte for byte.
@@ -2349,6 +2356,26 @@ def _apply_coach_career_fix(plan: "BuildPlan", target: Path, receipt: dict, prog
     receipt["steps"].append({"step": "coach_career_fix", **{k: v for k, v in fix_receipt.items()
                                                             if k not in ("reservations", "log")}})
     receipt["result"]["coach_career_fix"] = "applied"
+
+
+@_core_step("history_pool")
+def _apply_history_pool(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    """b780 hist1: the career-history pool's collection rewritten in place (no wrapped career totals, no full-pool
+    collection on every write)."""
+    if not plan.history_pool:
+        return
+    module = _core_module("nfl2k5_history_pool")
+    if module is None:
+        raise RuntimeError("The career history pool fix needs nfl2k5_history_pool.")
+    progress("Franchise: career history keeps whole totals", 0, 0)
+    payload, fix_receipt = module.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, payload)
+    final = _xbe_bytes(target)
+    if final != payload or module.status(final) != "applied":
+        raise RuntimeError("The career history pool fix: the output does not read back as applied")
+    receipt["steps"].append({"step": "history_pool", **{k: v for k, v in fix_receipt.items()
+                                                        if k not in ("reservations", "log")}})
+    receipt["result"]["history_pool"] = "applied"
 @_core_step("sim_cb_tackles")
 def _apply_sim_cb_tackles(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
     """b778-cb1: the cornerback tackle credit owner, the last late allocator owner."""
@@ -2916,6 +2943,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
                                ("player_progress", "nfl2k5_player_progress_screen"),  # b778-pg2
                                ("contract_college_guard", "nfl2k5_contract_college_guard"),  # b778-cr1
                                ("coach_career_fix", "nfl2k5_coach_career_fix"),  # b780 c1 (wired at b780-int)
+                               ("history_pool", "nfl2k5_history_pool"),  # b780 hist1
                                ("sim_cb_tackles", "nfl2k5_sim_cb_tackles"),  # b778-cb1
                                ("sim_rb_injuries", "nfl2k5_sim_rb_injuries"),  # b779-sim2
                                ("sim_realism", "nfl2k5_sim_realism"),  # b779-sim2 r4
@@ -3190,6 +3218,8 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
     out["contract_college_guard"] = college_guard.status(_xbe_bytes(source)) if college_guard is not None else "unavailable"
     career_fix = _core_module("nfl2k5_coach_career_fix")  # b780 c1 (wired at b780-int)
     out["coach_career_fix"] = career_fix.status(_xbe_bytes(source)) if career_fix is not None else "unavailable"
+    history_pool = _core_module("nfl2k5_history_pool")  # b780 hist1
+    out["history_pool"] = history_pool.status(_xbe_bytes(source)) if history_pool is not None else "unavailable"
     cb_tackles = _core_module("nfl2k5_sim_cb_tackles")  # b778-cb1
     out["sim_cb_tackles"] = cb_tackles.status(_xbe_bytes(source)) if cb_tackles is not None else "unavailable"
     rb_injuries = _core_module("nfl2k5_sim_rb_injuries")  # b779-sim2
@@ -5459,6 +5489,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("The Player Contracts college guard must be Off or On.")
     if type(plan.coach_career_fix) is not bool:  # b780 c1 (wired at b780-int)
         raise ValueError("The coach career counter fix must be Off or On.")
+    if type(plan.history_pool) is not bool:  # b780 hist1
+        raise ValueError("The career history pool fix must be Off or On.")
     if type(plan.sim_cb_tackles) is not bool:  # b778-cb1
         raise ValueError("Cornerback tackle credit must be Off or On.")
     if type(plan.sim_stats) is not bool:  # b778-sim1
@@ -8133,6 +8165,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     _apply_contract_college_guard(plan, target, receipt, progress)  # b778-cr1: after the other late owners
     # b780 c1 (wired at b780-int): the coach career counter fix, one in-place site in the season rollover
     _apply_coach_career_fix(plan, target, receipt, progress)
+    # b780 hist1: the history pool fix, in place inside the history engine (honors and defensive_try accept it)
+    _apply_history_pool(plan, target, receipt, progress)
     # b778-cb1: cornerback tackle credit, after the Contracts guard (LATE_OWNERS order)
     _apply_sim_cb_tackles(plan, target, receipt, progress)
     # b778-sim1: the simulated-game pace fix is in place and touches no allocator owner
@@ -8279,6 +8313,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("the Player Contracts college guard did not survive the final passes")  # b778-cr1
     if plan.coach_career_fix and _core_module("nfl2k5_coach_career_fix").status(_xbe_bytes(target)) != "applied":
         raise ValueError("the coach career counter fix did not survive the final passes")  # b780 c1
+    if plan.history_pool and _core_module("nfl2k5_history_pool").status(_xbe_bytes(target)) != "applied":
+        raise ValueError("the career history pool fix did not survive the final passes")  # b780 hist1
     if plan.sim_rb_injuries and _core_module("nfl2k5_sim_rb_injuries").status(_xbe_bytes(target)) != "applied":
         raise ValueError("simulated RB short injuries did not survive the final passes")  # b779-sim2
     if plan.catch_snap_limit and _core_module("nfl2k5_catch_snap_limit").status(_xbe_bytes(target)) != "applied":  # b780-cv4
