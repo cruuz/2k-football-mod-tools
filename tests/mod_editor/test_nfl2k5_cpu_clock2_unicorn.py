@@ -275,6 +275,38 @@ class ClockReplays(unittest.TestCase):
         # a two-minute warning still to come stops the clock once more: no runoff before it
         self.assertEqual(self.clock.runoff(quarter=4, seconds=115, down=1, defense_timeouts=0, warned=False), (115.0, 0))
 
+    def test_human_kneel_runoff_needs_a_fourth_quarter_lead(self):
+        """b780 hunt7: a human offense that kneels in Q2, or tied or behind in Q4, may still call its own timeout and
+        kick (the kneel that sets up a walk-off field goal), so the runoff that ended such a tied game at 1:10 is gone;
+        a human kneel with a Q4 lead and every CPU kneel run off as before."""
+        def human(r, *, quarter, seconds, margin, offense_timeouts=2, cpu=False):
+            m = r.m
+            m.configure(down=1, quarter=quarter, seconds=seconds, score_margin=margin, own_yard=75, distance=10,
+                        home=True, quarter_seconds=420, timeouts=0, cpu=cpu)
+            m.u32(m.OFFMETA + 4, offense_timeouts)      # the kneeling team's own timeouts; the defense has none
+            m.u32(m.DEF + 0x204, 0)
+            self.assertEqual(m.get(m.HOME + 0x30), 0 if cpu else 1)
+            r.books(KNEEL)
+            m.u32(0xE602FC, 0x20)
+            m.u32(0xA83A18, 3)
+            m.u32(0xE602B8, 18)
+            m.f32(0xE602AC, 40)
+            m.u32(m.GAME + 0x500 + 0x18, 0)
+            m.u32(m.GAME + 0x500, 0)
+            m.run(0x189080, stop_at=0x189086, count=5000)
+            return m.readf(m.GAME + 0x510), m.get(m.GAME + 0x518) & 6
+        keeps = ((4, 70, 0), (4, 70, -2), (4, 30, -7), (2, 40, 0), (2, 40, 7), (2, 25, -3))
+        for quarter, seconds, margin in keeps:
+            self.assertEqual(human(self.retail, quarter=quarter, seconds=seconds, margin=margin), (float(seconds), 0))
+            self.assertEqual(human(self.clock, quarter=quarter, seconds=seconds, margin=margin), (float(seconds), 0),
+                             (quarter, seconds, margin))
+        for quarter, seconds, margin in ((4, 70, 3), (4, 30, 1), (4, 110, 14)):
+            self.assertEqual(human(self.clock, quarter=quarter, seconds=seconds, margin=margin), (0.0, 2),
+                             (quarter, seconds, margin))
+        for quarter, seconds, margin in ((2, 40, 0), (2, 40, -3), (4, 70, 3)):
+            self.assertEqual(human(self.clock, quarter=quarter, seconds=seconds, margin=margin, cpu=True), (0.0, 2),
+                             (quarter, seconds, margin, "cpu"))
+
     def test_native_spike_rule_is_kept(self):
         """The retail spike predicate 0x207310 (used by 0x189D10 to run the book's Spike Ball) is unchanged."""
         def spike(r, seconds, own, margin, down, tos):

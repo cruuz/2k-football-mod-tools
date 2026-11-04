@@ -17,9 +17,11 @@ the CPU never kneels before halftime, and overtime counts as early in every rout
   with time: t < its estimate, which gives about 2:55 when down 1 to 8 and 5:00 when down 9 or more);
 * end-of-half kneel: in Q2 a CPU offense on its own side (50 to 92 yards out), down 1 to 3, with 60 s or less left,
   that its native estimate does not send to score, kneels when the native kneel formula says the half runs out;
-* kneel runoff: after a Take Knee PLAY (any team, human or CPU) in Q2 or Q4, when the downs left can kneel out the
-  whole clock even if the defense uses every timeout (and no two-minute warning is still to come), the clock goes to
-  0:00 and stops, exactly as when time runs out during a play, and the native clock tick ends the half or the game;
+* kneel runoff: after a Take Knee PLAY by a CPU team, or by a human team that leads in Q4, in Q2 or Q4, when the downs
+  left can kneel out the whole clock even if the defense uses every timeout (and no two-minute warning is still to
+  come), the clock goes to 0:00 and stops, exactly as when time runs out during a play, and the native clock tick ends
+  the half or the game. b780 hunt7: a human kneel in Q2, or tied or behind in Q4, keeps the native clock, because that
+  team may still call its own timeout and kick (a kneel to set up the walk-off field goal ended a tied game at once);
 * overtime (a separate build choice, off unless selected): overtime counts as the late window only where the end of
   the period can end the game, i.e. franchise pre/regular season (mode 7, period 5, a tie) and any non-playoff mode
   while the scores differ (modern overtime); playoffs (modes 5 and 6) play another period, so they stay native.
@@ -49,7 +51,9 @@ HELP_TEXT = (
     "left in the fourth quarter, a leading CPU offense runs the play clock down from 5:00 (the four-minute "
     "offense), a trailing CPU defense calls its timeouts before the two-minute warning when it needs the ball "
     "back, the CPU kneels at the end of the first half when it is backed up and not trying to score, and after "
-    "any Take Knee the clock runs out at once when the remaining kneels would end the half or the game anyway. "
+    "a CPU Take Knee, or yours while you lead in the fourth quarter, the clock runs out at once when the remaining "
+    "kneels would end the half or the game anyway (your own kneel while tied or behind, or before halftime, keeps "
+    "the clock running normally, so you can still call a timeout and kick). "
     "The CPU spike was already in the game and is unchanged.")
 OT_CAPTION = "Modern CPU clock management in overtime (experimental)"
 OT_HELP_TEXT = (
