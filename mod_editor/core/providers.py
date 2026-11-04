@@ -597,7 +597,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/json_stream.py": "5933752561dd8b519a301c18ec1d14f13a457f58e6ae337984f543ab2b0838b0",
         "mod_editor/core/metadata_cache.py": "49874cc7f12cc0d36d15b9355dbca64ffe95590ba7582b460738b05aabcd9024",
         "mod_editor/core/mod_build.py": "30565ca257212fd8ffa7473b1f00a92d27ad6a2084d938dd73cc5b5de9b9947b",
-        "mod_editor/core/nfl2k5_console_memory.py": "50205d2e5dee5bcdc2b5a4b23f93a0807e6f6709a01ab3e9d779ba534c497457",  # b780-m64b: the 128 MB / 64 MB target (validate_plan)
+        "mod_editor/core/nfl2k5_console_memory.py": "5f36799fb3767e021d3fb0c7a5d983c533dd70f978b088bb6c94eb9ca1c41a29",  # b780-m64b: the 128 MB / 64 MB target (validate_plan)
         "mod_editor/core/build_steps.py": "448f9a08bf829ab7317fc32b0cec5c0a71f82dc1c1b9577e2bb68b4216920457",  # b791-h3: step context and optional steps
         "mod_editor/core/studio_inspection.py": "bbe1e2e9b3de63b13e8908d2b37f114ee79b6fb2fc88d26670a6eb1e6e341e1e",  # b780 studio1: mod_build.inspect runs inside its validation memo
         "mod_editor/core/nfl2k5_disc_check.py": "5480c8516e109d5e7f963e1e4e0ee598ac0b4472953e116a34ed3f990406e008",  # b780 studio1: the disc identity names a released SOFTDRINK disc from its list
@@ -729,7 +729,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_dynamic_kickoff_relocated.py": "65965dcc61ca1ebe85b4532be99a6ae64e504bad13f0d438223c9e5193d6261e",
         "mod_editor/core/nfl2k5_edge_rename.py": "8d07169164719fff6121c36b07f90ac8af0d350ea39cb2dcaee83a3ab4e3fc0d",
         "mod_editor/core/nfl2k5_elbow_options.py": "cd6921f1d7b2942f81c1415fab45eb18f3c4487e3e0aac1fda3a9dbd82760a1f",
-        "mod_editor/core/nfl2k5_espn25_scenarios.py": "6c5249eaef0aad438a1a8f698ca0f3d5a08435023bc11a4013481aece433e46d",
+        "mod_editor/core/nfl2k5_espn25_scenarios.py": "6a6d2c000f0f78a4e1330186250e80c030751338e0b568d63bc12042bc4e8e79",
         "mod_editor/core/nfl2k5_modern_coaches.py": "6611224f1c7f4853826d7d1530e2debd0f1bb03647e775a1a7e77014716dab27",
         "mod_editor/core/nfl2k5_moment_coaches.py": "13dc10ed4283be7dee3092c0012d26bd77a47bff649edb688532f3e71c464405",
         "mod_editor/core/nfl2k5_moment_context.py": "53c004fe1e5e12edc23e624bb2a117322c663f7683cfaabe9a14bb01184249e5",
@@ -833,7 +833,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_music_playlist_code.py": "565d8ad8b8e6435190dda20a137e7b8128c5716d72935ab30be5189efab48546",
         "mod_editor/core/nfl2k5_music_policy.py": "f1f21c182fa9f86844c6dcc0019f0463ef841799fd24a717131b4d762c8a99ec",
         "mod_editor/core/nfl2k5_music_storage.py": "a934b271e63c06da003936ddcca4175474e15b7a2ee00f7d09ddf0cb1daebbfc",
-        "mod_editor/core/nfl2k5_my_career.py": "09c1a2c7174478c779178e55eeee334466441ba7360a0d382ca697eaf56ede79",
+        "mod_editor/core/nfl2k5_my_career.py": "586de7e35df4da30e07fc013a93fae38063fc70628ded966ede0719e446651a8",
         "mod_editor/core/nfl2k5_my_career_advisory.py": "5d0a145c520f4d30f0ed07115f8211ef789374b7736c45973f08ee22838086e0",
         "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
         "mod_editor/core/nfl2k5_my_career_events.py": "228a0b59d43b9b9c52e10ac93cc72072e772e694cc864c8e2e037c5d7c772460",
