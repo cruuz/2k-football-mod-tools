@@ -138,11 +138,19 @@ def _revision_three(current, retail):
     from mod_editor.core.nfl2k5_bump_strength import _sections, section_digest
     from mod_editor.core.nfl2k5_cave_oracle import XbeImage
     image, source, out = XbeImage(current), XbeImage(retail), bytearray(current)
+    cut = getattr(economy, "VETERAN_CUT_RELEASE", None)
     for site in economy.sites():
         # b780 hunt1: revision 6's release guard call (the veteran cut) is retail in a revision-3 image too
-        if site.va in economy.REVISION_4_SITES | getattr(economy, "REVISION_6_SITES", frozenset()):
+        if site.va in economy.REVISION_4_SITES or site.va == cut:
             offset = image.offset(site.va, len(site.patched))
             out[offset:offset + len(site.patched)] = source.read(site.va, len(site.patched))
+    if cut is not None:
+        # b780 hunt1: revision 6 also rewrote the fill gate (the money window's tail); revisions 3 to 5 installed the
+        # same money window, the gate with only the count test
+        from tests.mod_editor.test_b780_hunt1_specialist_cut import revision_five_money
+        money = revision_five_money()
+        offset = image.offset(economy.MONEY_WINDOW, len(money))
+        out[offset:offset + len(money)] = money
     # b780-int: revision 5 (b4-economy) rewrote the reconcile and roster_c windows, which revision 3 shares with
     # revision 4; put their revision-4 bytes back so the image is the real revision 3 again (a v0.7 executable)
     from tests.franchise_economy_revision4_windows import WINDOWS as REVISION_4_WINDOWS
