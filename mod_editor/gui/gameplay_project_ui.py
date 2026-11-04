@@ -95,8 +95,13 @@ class GameplayBuildLink:
         self.build, self.gameplay, self.changed = build, gameplay, changed
         self.suspended = suspended
         self.busy = False
-        self._dropped = False
+        self._dropped: list[str] = []      # keys whose copy was dropped while another copy was in flight (see _copy)
+        self._copying = None               # (source, destination, value) of the copy in flight
         self.shared = set(build._boxes()) & set(gameplay.checks)
+        self._key_of = {}
+        for key in self.shared:
+            self._key_of[id(build._boxes()[key])] = key
+            self._key_of[id(gameplay.checks[key])] = key
         for key in self.shared:
             build._boxes()[key].toggled.connect(lambda _on, k=key: self.copy_from_build(k))
             gameplay.checks[key].toggled.connect(lambda _on, k=key: self.copy_from_gameplay(k))
@@ -146,24 +151,41 @@ class GameplayBuildLink:
 
     def _copy(self, source, destination):
         if self.busy or self.suspended():
-            if self.busy:
-                self._dropped = True          # a rule on the other page fired while a copy was in flight (see below)
+            if self.busy and self._copying is not None and not (
+                    (source, destination) == (self._copying[1], self._copying[0]) and source.isChecked() == self._copying[2]):
+                # Not the echo of the copy in flight (every effective copy toggles its destination, which asks for the copy
+                # back with the value just copied): a rule on the destination page ticked or cleared another box, or put
+                # this one back, while the copy ran.
+                key = self._key_of.get(id(source))
+                if key is not None and key not in self._dropped:
+                    self._dropped.append(key)
             return
         self.busy = True
-        self._dropped = False
+        self._copying = (source, destination, source.isChecked())
+        self._dropped = []
         try:
             destination.setChecked(source.isChecked())
         finally:
             self.busy = False
+            self._copying = None
         # While `busy` was set, the destination page's own rules (a child that needs its parents, a rival that must go
         # off) could tick or clear other boxes, and those toggles were dropped. Ticking ESPN scorebug effects on Game
         # Fixes left Build with the scorebug and extra patch space ticked while Game Fixes showed both unticked. The
-        # Build page owns the plan, so when anything was dropped settle the Game Fixes boxes back to it: the two pages
-        # never disagree. (A copy that dropped nothing costs nothing: a preset is a hundred copies.)
+        # Build page owns the plan, so mirror just those boxes from Build onto Game Fixes: the two pages never disagree.
+        # Only those boxes, and not a full refresh: this copy may be the first of several slots of one click (Game Fixes'
+        # own rule ticks a parent before the link copies the child), and a full refresh wiped the box the user had just
+        # ticked because its own copy had not been made yet (b780 studio1: Stop man-coverage spins on Game Fixes).
         if self._dropped:
-            self._dropped = False
-            self.refresh_from_build()
+            dropped, self._dropped = self._dropped, []
+            self.settle(dropped)
         self.changed()
+
+    def settle(self, keys):
+        """Make Game Fixes show what Build holds for these boxes (Build owns the plan)."""
+        with quiet(self.gameplay):
+            for key in keys:
+                self.gameplay.checks[key].setChecked(self.build._boxes()[key].isChecked())
+            self.gameplay._refresh()
 
 
 def observe_build_choices(panel, changed):

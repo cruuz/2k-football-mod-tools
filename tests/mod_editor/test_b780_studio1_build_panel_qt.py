@@ -504,6 +504,33 @@ class GameFixesFollowsBuildTests(unittest.TestCase):
         build_view, fixes_view = self.view(keys)
         self.assertEqual(fixes_view, build_view)
 
+    def test_ticking_a_dependent_option_on_game_fixes_keeps_the_option_and_ticks_its_parent(self) -> None:
+        """The settle used to refresh every Game Fixes box from Build in the middle of the user's own click: Game Fixes' rule
+        ticked the parent first, the link copied it, the settle then reset the child the user had just ticked (its own copy
+        was still to come), and the child ended unticked on both pages."""
+        pairs = (("coverage_hitch_brake", "coverage_trail"), ("weekly_prep_cpu", "weekly_prep"),
+                 ("weekly_prep_remember", "weekly_prep"), ("k128_roster_heap", "k128_memory"), ("k128_early", "k128_memory"))
+        for child, parent in pairs:
+            with self.subTest(child=child):
+                for box in self.build._boxes().values():
+                    box.setChecked(False)
+                self.app.processEvents()
+                self.fixes.checks[child].setChecked(True)
+                self.app.processEvents()
+                for key in (child, parent):
+                    self.assertEqual(self.view((key,)), ([True], [True]), key)
+                self.assertTrue(getattr(self.build.plan(), child))
+
+    def test_a_rule_that_puts_the_box_back_shows_on_both_pages(self) -> None:
+        """Unticking the extra patch space on Game Fixes while the scorebug effects need it: Build ticks it again, and Game
+        Fixes has to show that too (the copy of the unticking and Build's answer are different values of one box)."""
+        self.build._boxes()["scorebug_runtime"].setChecked(True)
+        self.app.processEvents()
+        self.assertEqual(self.view(("xbe_space",)), ([True], [True]))
+        self.fixes.checks["xbe_space"].setChecked(False)
+        self.app.processEvents()
+        self.assertEqual(self.view(("xbe_space",)), ([True], [True]))
+
     def test_random_ticks_on_either_page_never_leave_the_pages_apart(self) -> None:
         import random
         shared = sorted(set(self.build._boxes()) & set(self.fixes.checks))
