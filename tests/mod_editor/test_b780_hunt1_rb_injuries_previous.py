@@ -24,16 +24,20 @@ from mod_editor.core.nfl2k5_cave_oracle import XbeImage
 
 
 def expected_upgrade(payload: bytes) -> bytes:
-    """``payload`` with the owner's current code in its cave and its current hook bytes at its sites, then sealed."""
+    """``payload`` with the owner's current code in its cave and its current hook bytes at its sites, then the
+    allocator's seals and every section digest recomputed."""
+    from mod_editor.core.nfl2k5_bump_strength import _sections, section_digest
     row = inj.allocation(payload)
     image = XbeImage(payload)
     out = bytearray(payload)
     out[row["raw"]:row["raw"] + inj.CODE_SIZE] = inj.code_for(row["va"])
+    _, _, requests = space._validate(payload)
+    space._seal_scaleout(out, requests)
     for _name, va, _before, after in inj.sites(row["va"]):
         off = image.offset(va, len(after))
         out[off:off + len(after)] = after
-    _, _, requests = space._validate(payload)
-    space._seal_scaleout(out, requests)
+    for section in _sections(out):
+        out[section.header_offset + 36:section.header_offset + 56] = section_digest(out, section)
     return bytes(out)
 
 
