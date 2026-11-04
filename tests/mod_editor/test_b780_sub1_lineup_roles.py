@@ -363,4 +363,4 @@ class InjuredDepthTests(unittest.TestCase):
                 relocs = subprocess.run(["objdump", "-r", f"{tmp}/x.o"], capture_output=True, text=True).stdout
                 self.assertNotIn("R_386", relocs)
                 symbols = subprocess.run(["nm", f"{tmp}/x.o"], capture_output=True, text=True).stdout.split()
-                self.assertEqual(int(symbols[symbols.index("stage6_tail") - 2], 16), lr.STAGE6_ENTRY)
+                self.assertEqual(int(symbols[symbols.index("season_tail") - 2], 16), lr.SEASON_ENTRY)

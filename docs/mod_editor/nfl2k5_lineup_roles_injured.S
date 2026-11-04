@@ -76,6 +76,29 @@ pos_next:
  inc dword ptr [ebp+0x104]
  cmp dword ptr [ebp+0x104], 17
  jb pos_loop
+ # An empty long snapper slot (team +0x198, 0xFF) takes the SPECIAL LS: the second center in the rank order. Nothing
+ # in the game refills it after the offseason empties it (MC1's season-2 audit: 29 clubs).
+ cmp byte ptr [edi+0x198], 0xff
+ jne ls_done
+ mov dword ptr [ebp+0x104], 12
+ mov dword ptr [ebp+0x108], 10
+ call build
+ cmp ebx, 2
+ jb ls_done
+ mov edx, [ebp+4]
+ xor esi, esi
+ls_find:
+ movzx eax, byte ptr [edi+0x11c]
+ cmp esi, eax
+ jae ls_done
+ cmp [edi+esi*4], edx
+ je ls_set
+ inc esi
+ jmp ls_find
+ls_set:
+ mov eax, esi
+ mov [edi+0x198], al
+ls_done:
  add esp, 0x118
  pop ebx
  pop esi
@@ -246,14 +269,17 @@ keep_done:
  ret
 
 # b780 sub1 (MC1's season-2 finding): entering the regular season of every season after the first, depth charts were
-# stale league-wide (54 empty KR1/KR2/PR/K slots, MyCareer holes): the stage-6 advance ran the weekly auto-depth
-# (0x248075) before 0x27EB80 changed the rosters, and the week sim runs it again only after week 1's games. Its call
-# of 0x27EB80 (0x24807A) now comes here: 0x27EB80, then the pass again (with this rule) on the final 53 (ECON3's
-# cut-down runs before the stage-6 case). 0x27EB80's return value is kept.
-stage6_tail:
- mov eax, 0x27eb80
+# stale league-wide (54 empty KR1/KR2/PR/K slots, MyCareer holes). The stage advance's last roster change comes from its
+# common tail: 0x27EDF0 (0x248687) calls 0x27EB80 on entering stage 8, after the stage-6 case's pass (0x248075) and
+# the preseason weeks' passes, and the week sim runs the pass again only after week 1's games. The tail's next call,
+# 0x2BFDD0 (0x24868C, the call the week sim makes just before its own pass), now comes here: 0x2BFDD0, then, when the
+# advance has reached the regular season (stage [0xE576A4] == 8), the pass with this rule on the final 53. Season 1's
+# career starts at stage 8 with no stage advance before week 1, so it is unchanged.
+season_tail:
+ mov eax, 0x2bfdd0
  call eax
- push eax
+ cmp dword ptr ds:[0xe576a4], 8
+ jne season_done
  call weekly_entry
- pop eax
+season_done:
  ret
