@@ -1,35 +1,33 @@
-"""Boot save list: a saved game whose stored type string is absent no longer stops the game at the title (USA retail).
+"""Boot save list: a saved game whose stored name or type string is absent no longer stops the game at the title.
 
-Report (b780 EMU1 crash_boot, triage MC1, 2026-11-04): on the v0.9 final candidate, and identically on the released
-v0.8, the title screen stopped (bugcheck 0x1E, access violation at 0x30C40 with ECX = 0) while the boot save browser
-built its list. The save-type matcher 0x16A600 walks the 14 type names at 0xAA3398 and for each calls the wide-string
-compare 0x30C40 with ECX = the enumerated save's type string (``mov ecx,edi`` at 0x16A617). When that string pointer
-is 0 the compare dereferences address 0. The entry builder 0x16AC40 passes it as EDI from the enumerated slot; all six
-callers of 0x16A600 assume a non-NULL string.
+Report (b780 EMU1 crash_boot, triage MC1, corrected 2026-11-04): on the v0.9 final candidate, and identically on the
+released v0.8, the title screen stopped while the boot save browser built its list (bugcheck 0x1E). The trigger is a
+saved game whose stored name does not match its save folder id (the folder id is derived from the name). The save-list
+entry builder 0x16AC40 copies the enumerated record's fields and dereferences two of them:
 
-A real save reaches it. The crash needs a save with no human-controlled club ([0xE5775C + i*4] all 0) that also
-carries the modern injured-reserve extension (b780 IR1). resolve_team clears the whole 34-word human table and, for a
-free agent (career club S(56) = -1), skips the set, so a released MyPlayer's autosave has no human club; if he played
-any week under the pack's modern injured reserve the save already carries the IR extension. A MyPlayer cut mid-season,
-then autosaved on returning to Career Home, is exactly that save. Headless franchise tools produce the same state.
+* its type string, at 0x16A600 via the wide-string compare 0x30C40 (``mov ecx,edi`` at 0x16A617; faults with ECX = 0);
+* its name string, at the wide-string length 0x30A60 called from 0x16AD0D (``cmp word ptr [ecx], 0`` with ECX = 0).
+
+When the name and folder id disagree the resolve leaves one of those pointers NULL, and whichever the builder reaches
+first faults. All callers assume non-NULL strings.
+
+Reachability: the game derives the folder id from the save name, so a save the game writes always matches, including a
+cut free-agent MyCareer save, which does NOT crash. The mismatch comes from saves copied or renamed outside the game,
+or produced by save tools (the IR1 witness and GEN1 show saves are named out of step with their folders).
 
 What this owner changes (in place: no allocation, no section, nothing at 64 MB)
 -------------------------------------------------------------------------------
-0x16A600's first five bytes (``push esi; xor esi,esi; jmp 0x16A610``) jump to a 15-byte routine written into the
-retail alignment padding at 0x160771 (fifteen 0x90 bytes before the next function; nothing falls through or jumps into
-it). The routine returns 0 (no type match, the safe default the builder already handles) when the string is NULL, and
-otherwise runs the exact displaced instructions and continues into 0x16A610::
+Two call sites in the one builder are made NULL-safe, each through a routine in retail .text alignment padding
+(0x90 runs before the next function; nothing falls through or jumps into them):
 
-    160771  test edi, edi
-    160773  jz   160780
-    160775  push esi            ; the displaced retail prologue
-    160776  xor  esi, esi
-    160778  jmp  0x16A610       ; the matcher's own loop, unchanged
-    160780  xor  eax, eax       ; NULL type string: no match
-    160782  ret
+* 0x16A600's five-byte prologue (``push esi; xor esi,esi; jmp 0x16A610``) jumps to a 15-byte routine at 0x160771 that
+  returns 0 (no type match, the builder's own default) when the type string (EDI) is NULL, else runs the displaced
+  prologue and continues into 0x16A610.
+* 0x16AD0D's ``call 0x30A60`` (the name length) goes to a 12-byte routine at 0x160354 that returns 0 (empty name) when
+  the name string (ECX) is NULL, else tail-calls 0x30A60.
 
-Every save with a type string lists exactly as before (the routine runs the same bytes and reaches the same loop); a
-save whose type string is absent is listed untyped instead of stopping the game. This protects all six callers.
+Every save whose name and type resolve lists exactly as before (both routines run the same bytes and reach the same
+code); a save with a NULL name or type is listed untyped or unnamed instead of stopping the game.
 """
 from __future__ import annotations
 
@@ -41,14 +39,19 @@ OWNER = "nfl2k5_save_list_type_guard"
 REVISION = 1
 MATCH_FN = 0x0016A600            # the save-type matcher whose prologue is redirected
 MATCH_BODY = 0x0016A610          # where the matcher's loop continues after the prologue
-CAVE_VA = 0x00160771            # 15 bytes of retail .text alignment padding
+CAVE_VA = 0x00160771            # 15 bytes of retail .text alignment padding (type guard)
 RETAIL_PROLOGUE = bytes.fromhex("5633f6eb0b")   # push esi; xor esi,esi; jmp 0x16A610
 RETAIL_CAVE = b"\x90" * 15
-BUILD_CAPTION = "Boot save list: no freeze on a save with no type"
-HELP_TEXT = ("Fixes a freeze at the title screen while the game lists saved games, when a save has no stored type "
-             "(a franchise or MyCareer save made with no human-controlled club, from save tools or a MyPlayer who was "
-             "released). Such a save is now listed untyped instead of stopping the game; every other save lists as "
-             "before.")
+NAME_CALL = 0x0016AD0D           # the builder's `call 0x30A60` (name length) that is redirected
+NAME_FN = 0x00030A60             # the wide-string length helper (reads [ecx])
+CAVE2_VA = 0x00160354           # 12 bytes of retail .text alignment padding (name guard)
+RETAIL_NAME_CALL = bytes.fromhex("e84e5decff")  # call 0x30A60
+RETAIL_CAVE2 = b"\x90" * 12
+BUILD_CAPTION = "Boot save list: no freeze on a save with a bad name"
+HELP_TEXT = ("Fixes a freeze at the title screen while the game lists saved games, when a save's stored name or type "
+             "does not match its save folder (a save copied in or renamed outside the game, or made by save tools). "
+             "Such a save is now listed with an empty name or untyped instead of stopping the game; every other save "
+             "lists as before.")
 
 
 def _rel(at: int, target: int, size: int = 5) -> bytes:
@@ -67,8 +70,19 @@ def _build_sites():
     assert len(cave) == 15, len(cave)
     hook = b"\xe9" + _rel(MATCH_FN, CAVE_VA)           # jmp cave (5 bytes, over the retail prologue)
     assert len(hook) == len(RETAIL_PROLOGUE)
-    return (("save matcher prologue goes through the NULL guard", MATCH_FN, RETAIL_PROLOGUE, bytes(hook)),
-            ("NULL save-type guard in the matcher's alignment padding", CAVE_VA, RETAIL_CAVE, bytes(cave)))
+    cave2 = bytearray()
+    cave2 += bytes.fromhex("85c9")                     # test ecx,ecx
+    cave2 += bytes.fromhex("7405")                     # jz null (+5)
+    cave2 += b"\xe9" + _rel(CAVE2_VA + len(cave2), NAME_FN)   # jmp 0x30A60
+    cave2 += bytes.fromhex("31c0")                     # null: xor eax,eax
+    cave2 += b"\xc3"                                    # ret
+    assert len(cave2) == 12, len(cave2)
+    name_hook = b"\xe8" + _rel(NAME_CALL, CAVE2_VA)    # call cave2 (5 bytes, over the retail call)
+    assert len(name_hook) == len(RETAIL_NAME_CALL)
+    return (("save matcher prologue goes through the type NULL guard", MATCH_FN, RETAIL_PROLOGUE, bytes(hook)),
+            ("NULL save-type guard in the matcher's alignment padding", CAVE_VA, RETAIL_CAVE, bytes(cave)),
+            ("save name-length call goes through the name NULL guard", NAME_CALL, RETAIL_NAME_CALL, bytes(name_hook)),
+            ("NULL save-name guard in .text alignment padding", CAVE2_VA, RETAIL_CAVE2, bytes(cave2)))
 
 
 SITES = _build_sites()
@@ -99,5 +113,5 @@ def verify(payload: bytes) -> dict:
             "experimental": False, "runtime_witnessed": False}
 
 
-__all__ = ["OWNER", "REVISION", "SITES", "MATCH_FN", "MATCH_BODY", "CAVE_VA",
+__all__ = ["OWNER", "REVISION", "SITES", "MATCH_FN", "MATCH_BODY", "CAVE_VA", "NAME_CALL", "NAME_FN", "CAVE2_VA",
            "BUILD_CAPTION", "HELP_TEXT", "status", "read_settings", "apply", "verify"]
