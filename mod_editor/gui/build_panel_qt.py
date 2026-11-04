@@ -3505,13 +3505,16 @@ class BuildPanel(QWidget):
             text = ("Recommended 64 MB set: the memory model has no recommendation in this build, so only the options that "
                     "need 128 MB are off.")
         else:
+            def names(keys, limit=8):
+                shown = ", ".join(self._short_label(key) for key in keys[:limit])
+                return shown + (f" and {len(keys) - limit} more (unticked below)" if len(keys) > limit else "")
             parts = []
             if changed_off:
-                parts.append("turned off " + ", ".join(self._short_label(key) for key in changed_off))
+                parts.append(f"turned off {len(changed_off)}: " + names(changed_off))
             if changed_on:
-                parts.append("turned on " + ", ".join(self._short_label(key) for key in changed_on))
+                parts.append("turned on " + names(changed_on))
             if skipped:
-                parts.append("not available on this disc: " + ", ".join(self._short_label(key) for key in skipped))
+                parts.append("not available on this disc: " + names(skipped))
             text = ("Recommended 64 MB set applied: " + ("; ".join(parts) if parts else "your selection already matched it")
                     + ". Review the list below, then Make my disc.")
         self.memory_action_label.setText(text)
