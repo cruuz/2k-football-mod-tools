@@ -7396,9 +7396,6 @@ class StudioMainWindow(QMainWindow):
                         refresh_loaded_source
                     )
                     return
-                # b780-uxfix: the pages get the disc as on any open (Build's disc field, Game Fixes,
-                # Saves & Sliders, Share); without this Make my disc stayed disabled after Recover Edits.
-                self._defer_until_blocking_task_finished(refresh_loaded_source)
                 self._defer_until_blocking_task_finished(
                     lambda: self._load_project_path(
                         recovery.project_path, recovery=True
@@ -8036,6 +8033,12 @@ class StudioMainWindow(QMainWindow):
                 self._load_selected_unif_colors()
 
             self._defer_until_blocking_task_finished(refresh_loaded_project)
+            if recovery:
+                # b780-uxfix: a recovery opens its disc without the open-disc hook, so Build's disc field, Game
+                # Fixes, Saves & Sliders and Share stayed empty and Make my disc stayed off. Feed them the disc
+                # after the recovered project is in place (its Build choices are restored when the read finishes).
+                self._defer_until_blocking_task_finished(
+                    lambda: self._prefill_panels_from_source(self._active_source_path))
             self._refresh_build_includes(baseline=True)
 
         self._start_task(

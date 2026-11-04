@@ -570,17 +570,23 @@ class StudioWindowTests(unittest.TestCase):
         self.assertNotIn("*", window.windowTitle())
 
     def test_5_startup_recovery_gives_the_pages_the_disc(self):
+        from mod_editor.studio.project_archive import project_target_identity
         from mod_editor.studio.workspace_state import RecoveryCandidate
         window = self.window
         folder = Path(tempfile.mkdtemp(prefix="uxfix-recover-"))
         disc = folder / "game.iso"
         disc.write_bytes(b"x")
-        candidate = RecoveryCandidate(source_path=disc, source_sha256=None, project_path=folder / "recovery.2k5mod")
+        project = folder / "recovery.2k5mod"
+        project.write_bytes(b"retail-free recovery fixture")
+        candidate = RecoveryCandidate(source_path=disc, source_sha256=None, project_path=project)
         order = []
         facade = window.facade
+        identity = project_target_identity(project)
         with mock.patch.object(type(facade), "load_source", lambda self, source, progress: "Disc opened", create=True), \
-             mock.patch.object(window, "_prefill_panels_from_source", side_effect=lambda source: order.append("prefill")), \
-             mock.patch.object(window, "_load_project_path", side_effect=lambda path, **kw: order.append("project")), \
+             mock.patch.object(type(facade), "load_project",
+                               lambda self, path, progress: order.append("project") or SimpleNamespace(
+                                   message="recovered", project_identity=identity), create=True), \
+             mock.patch.object(window, "_prefill_panels_from_source", side_effect=lambda source: order.append(("prefill", source))), \
              mock.patch.object(window, "_refresh_specialized_panels"), \
              mock.patch.object(window, "_refresh_entered_page"), \
              mock.patch.object(window, "_load_selected_unif_colors"), \
@@ -590,7 +596,7 @@ class StudioWindowTests(unittest.TestCase):
             while len(order) < 2 and time.monotonic() < deadline:
                 self.app.processEvents()
                 time.sleep(0.01)
-        self.assertEqual(order, ["prefill", "project"])
+        self.assertEqual(order, ["project", ("prefill", disc.resolve())])   # the disc reaches the pages after recovery
 
     def test_6_opening_gameplay_at_1480x920_reports_no_error(self):
         from mod_editor.gui import crash_report
