@@ -194,9 +194,18 @@ SECTION(".roster_d") unsigned FAST economy_fill_room(u8 *team, unsigned budget) 
     return room > 0 ? minimum(budget, (unsigned)room) : 0;
 }
 
+/* b780 hunt1 (revision 6): the gate's room rule refuses a club of 54 or more (written when the trim held every camp at
+ * 54). With the native camp limit (revision 5) camps hold up to 65 from the draft to the season gate, so a club that
+ * lost its only kicker or punter in the offseason (an expiring contract, a retirement) could not sign one again before
+ * the gate's cut to 53, which cannot make one (v0.9 RC, seed 2602: Kansas City's kicker left in free agency and the club
+ * opened year 4 with none). A K or P signing (the native signing's second argument is 1 or 2) now skips that count test
+ * below the native 65 and keeps the cap-room rule: economy_fill_room + 9 is its body after the 9-byte count test
+ * (cmp byte [ecx+0x11C], 53; ja), with ECX and EDX as the body expects them. The fills only ask for a K or P where the
+ * club has none (the native minimum and wanted depth are 1). Every other signing keeps the gate as it was. */
 SECTION(".fill_gate") __attribute__((naked)) void economy_fill_gate(void) {
-    __asm__("mov 4(%esp), %ecx\nmov 12(%esp), %edx\n"
-            "call economy_fill_room\ntest %eax, %eax\njz 1f\n"
+    __asm__("mov 4(%esp), %ecx\nmov 12(%esp), %edx\nmov 8(%esp), %eax\ndec %eax\ncmp $1, %eax\nja 4f\n"
+            "cmpb $64, 0x11c(%ecx)\nja 4f\ncall economy_fill_room+9\njmp 5f\n4: call economy_fill_room\n"
+            "5: test %eax, %eax\njz 1f\n"
             "mov %eax, 12(%esp)\nsub $0x114, %esp\njmp 0x322bb6\n"
             "1: xor %eax, %eax\nret $16\n");
 }
@@ -678,6 +687,22 @@ SECTION(".roster_m") __attribute__((noinline)) static int oldest(u8 **list, unsi
 SECTION(".roster_m") __attribute__((noinline)) unsigned FAST economy_camp_limit(void) {
     return maximum(n_roster_limit(), 54);
 }
+
+/* b780 hunt1 (revision 6): the retail stage-6 veteran cap cut (0x2BFAF0, run for every club at 0x247FF5) releases an
+ * overpaid veteran whatever his position. With the native camp limit (revision 5) camp payrolls stay over the cap, so
+ * the stage-6 fill that follows could not sign a replacement: a club whose only kicker or punter was that veteran
+ * started the season without one (SOFTDRINK 2K28 v0.9 RC, seed 2602: CHI and KC with no K at kickoff while 30 kickers
+ * were free agents; v0.8, trimmed to 54, signed one in the same stage). The cut's own release call (0x2BFBBD) comes
+ * here: it never releases the club's last healthy K or P (the trim and the smart cut already keep one of every
+ * position) and otherwise jumps to the native release with the same registers and arguments, so the release keeps the
+ * cut's return address. In roster_m's spare bytes, after its own code: no other symbol moves. */
+SECTION(".roster_m") __attribute__((naked)) void economy_vet_release(void) {
+    __asm__("movzbl 0x35(%edx), %eax\ndec %eax\ncmp $1, %eax\nja 9f\ninc %eax\npush %esi\npush %edi\n"
+            "movzbl 0x11c(%ecx), %esi\n1: dec %esi\njs 3f\nmov (%ecx,%esi,4), %edi\ncmp %edx, %edi\nje 1b\n"
+            "cmpb %al, 0x35(%edi)\njne 1b\ntestb $0x80, 0x23(%edi)\njnz 1b\npop %edi\npop %esi\n"
+            "9: jmp 0x2bd900\n3: pop %edi\npop %esi\nret $8\n");
+}
+
 
 /* (a) past the position's age, oldest first; (b) within two years of it, lowest-rated first; (c) only when the
  * class would still have fewer than MIN_CLASS records, the oldest remaining free agents. The roster file has a

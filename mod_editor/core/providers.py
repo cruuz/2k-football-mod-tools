@@ -893,8 +893,8 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_preseason.py": "5e18c2bba83005798237cc3c85b0e10ee9f7dd8f4e179f52a430f46ed02c951b",
         "mod_editor/core/nfl2k5_probowl_order.py": "6e61b983f57f7e01695c7626b51854aea2242e1c7879049f8bb3a85a44b3cf9f",
         "mod_editor/core/nfl2k5_roster_fill_composition.py": "96547bdc1c66889f68f44deb147bd5f6095ee169d343d53aaa4f532d12ee53e8",
-        "mod_editor/core/nfl2k5_franchise_economy.py": "2372d330fd51169f965f54be12b8138d470ae8d55d738de839c6f807dd5eca7e",
-        "mod_editor/core/nfl2k5_franchise_economy_code.py": "d4457aeedd109687559b2a148ffe581614841c5b85708833b3f60dd993761669",
+        "mod_editor/core/nfl2k5_franchise_economy.py": "d7930abd4455290c51a0a962a0fd47a676296379bb0eb319e0e0d2a47dc83b4c",
+        "mod_editor/core/nfl2k5_franchise_economy_code.py": "3e535e33a63f7bec476e757d94c9559da32fcea996b24678617660afcd456cd8",
         "mod_editor/core/nfl2k5_progression.py": "5ff9ab5b8b5a9b38e6acba0526464838abee667c957596368673f26ff88eaf50",
         "mod_editor/core/nfl2k5_prospect_names.py": "6f48b67a3b00b72b8bc51ca35527037ceca27c4137b9bb0e1d4542f27c39e7ac",
         "mod_editor/core/nfl2k5_qb_spy_runtime.py": "094e1ed86847a0b78e9ead41b44aea476f6f2f313ff6c986b1db722940553a2c",
@@ -934,7 +934,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_loader_wakeup.py": "5472678b2d69adf05cafde4df80ae24fbba5d67397367f4195ec241e099aad6a",
         "mod_editor/core/nfl2k5_formation_art_spacing.py": "288fa57184b01a1980d706e66d099b8c7e95c77753d1c2d93d05b061f9571e99",
         "mod_editor/core/nfl2k5_force_out.py": "9498bc3bc5ecb8dc7bc40ddb0a821b1402b9162efb167a1d020a4fb9dc9ed574",
-        "mod_editor/core/nfl2k5_star_retention.py": "cdfaf54656a83c66f6bae0e3f9212eb510c6312b27d02cc3f05b73c953ea22b6",  # b778-fa1
+        "mod_editor/core/nfl2k5_star_retention.py": "1b3a3388797c44850c804485779eb45cbd79f0df85117ea04e87ca28a256142e",  # b778-fa1
         "mod_editor/core/nfl2k5_practice_injuries.py": "8b411bcd88201f1155319b140c7c6a9555e9bcf8751921c7264dd28f8955c518",  # b778-pi1
         "mod_editor/core/nfl2k5_ball_carrier_ai.py": "ddcb45a9a6cbea475fd44b0b040ba5bc9262f9732ff33747b0498cbe4f10ebd5",  # b778-ai5
         "mod_editor/core/nfl2k5_runner_vision.py": "f783174fb1c30ab04c6420432269b1457c270846ac375bcfb5c11fcb2da4f18d",  # b780 cv2-runner

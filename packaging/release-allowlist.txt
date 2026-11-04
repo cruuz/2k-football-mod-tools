@@ -3934,6 +3934,7 @@ tests/mod_editor/test_nfl2k5_contract_college_guard.py
 tests/mod_editor/test_nfl2k5_sim_cb_tackles.py
 tests/mod_editor/test_nfl2k5_option_defaults.py
 tests/mod_editor/test_nfl2k5_sim_rb_injuries.py
+tests/mod_editor/test_b780_hunt1_rb_injuries_previous.py
 tests/mod_editor/test_nfl2k5_sim_realism.py
 tests/mod_editor/test_b780_c6_coach_carousel.py
 tests/mod_editor/test_nfl2k5_standings_records.py
@@ -3978,6 +3979,7 @@ tests/mod_editor/test_b780_b10_profile_unicorn.py
 tests/mod_editor/test_b780_b10_coach_records.py
 # b780 b4-economy: retirement by age (never a starter before his position's age), camp limits, injured players rejoin clubs
 tests/mod_editor/test_b780_b4_economy.py
+tests/mod_editor/test_b780_hunt1_specialist_cut.py
 # b780 c5-owners: owner patience (sourced head coach history, owners, the firing hazard and its calibration) and the real-people
 # coach hiring pool, read by the coaching carousel
 mod_editor/core/nfl2k5_coach_owners.py
