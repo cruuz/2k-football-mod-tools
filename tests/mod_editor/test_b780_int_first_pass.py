@@ -150,7 +150,8 @@ class LateOwnerReservationTests(unittest.TestCase):
 
     WAVE = dict(coach_carousel=True, franchise_history=True, history_screen=True, standings_records=True,
                 cpu_passer_iq=True, cpu_clock2=True, cpu_runner_vision=True, db_dive_window=True, catch_snap_limit=True,
-                speed_threshold=35, scramble_blocking=True, protection_calls=True, audible_legend=True)
+                speed_threshold=35, scramble_blocking=True, protection_calls=True, audible_legend=True,
+                load_user_team_guard=True)  # b780 mc1
 
     def test_the_first_pass_reserves_every_wave_owner(self):
         from mod_editor.core import nfl2k5_throw_tuning as tt, nfl2k5_xbe_space as space
