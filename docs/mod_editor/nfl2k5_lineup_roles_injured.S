@@ -15,6 +15,7 @@
 .text
 .global inj_weekly
 inj_weekly:
+weekly_entry:                   # local alias: a call to a global symbol would leave a relocation
  mov eax, 0x2bdcf0
  call eax
  pushad
@@ -242,4 +243,17 @@ keep_write:
  inc esi
  jmp keep_write
 keep_done:
+ ret
+
+# b780 sub1 (MC1's season-2 finding): entering the regular season of every season after the first, depth charts were
+# stale league-wide (54 empty KR1/KR2/PR/K slots, MyCareer holes): the stage-6 advance ran the weekly auto-depth
+# (0x248075) before 0x27EB80 changed the rosters, and the week sim runs it again only after week 1's games. Its call
+# of 0x27EB80 (0x24807A) now comes here: 0x27EB80, then the pass again (with this rule) on the final 53 (ECON3's
+# cut-down runs before the stage-6 case). 0x27EB80's return value is kept.
+stage6_tail:
+ mov eax, 0x27eb80
+ call eax
+ push eax
+ call weekly_entry
+ pop eax
  ret

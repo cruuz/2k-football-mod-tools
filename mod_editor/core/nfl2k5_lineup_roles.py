@@ -45,6 +45,8 @@ rank chain and, for paired positions, the side chain, each group in its order. A
 rank and side locks, so when he is healthy the pass seats him by rating again (and depth locks' release rule frees a
 clearly worse locked backup). A changed paired position with three or more healthy players keeps its rank starter out
 of side rows 0 and 1 (depth locks revision 4's rule). Code: docs/mod_editor/nfl2k5_lineup_roles_injured.S.
+The stage-6 advance's call of 0x27EB80 (0x24807A) also runs the pass again afterwards (MC1's season-2 finding: its
+first pass came before 0x27EB80 changed the rosters, so week 1 of every later season was played on stale charts).
 
 Two sites of rules 1-3, both 5-byte calls (rule 4 adds the three auto-depth calls): the builder's call to the picker (0xE8B20) and the picker's list-length call at the top
 of each tier (0xE87E9), outside the picker span the scheduled-sim tackle owner pins (0xE87F0..0xE8900, whose gate
@@ -105,9 +107,11 @@ INJURED_CODE = bytes.fromhex(
     "1001000083bd100100000272bcc383f8077605b80700000051538b8d08010000bb07000000d3e3f7d366215a28d3e0660942285b59c3c785"
     "080100000a000000e8f6feffff85db746a8b5500f6422380756131c931f639de730e8b44b500f640238075014146ebee83f903724652c785"
     "080100000d000000e8befeffff5a31f683fe02732e3954b500740346ebf28b44b5048944b5004683fe0272f289550831f639de730e8b54b5"
-    "0089f0e85effffff46ebeec3")
+    "0089f0e85effffff46ebeec3b880eb2700ffd050e8b7fdffff58c3")
 AUTO_DEPTH = 0x002BDCF0
 AUTO_DEPTH_CALLS = (0x00247D5C, 0x00248075, 0x0024853D)
+STAGE6_ROSTERS, STAGE6_CALL = 0x0027EB80, 0x0024807A    # the stage-6 advance's call of 0x27EB80, after the first pass
+STAGE6_ENTRY = 0x23c                                  # stage6_tail inside INJURED_CODE (nm of the assembled source)
 
 # Pinned code the owner relies on (sha256 over the span; the gate call's rel32 is masked: another owner may own it).
 GUARDS = (
@@ -353,6 +357,8 @@ def sites(code_va: int, gate: int = 0x000E8340) -> tuple[tuple[str, int, bytes, 
     tier = b"\xe8" + struct.pack("<i", code_va + entry["fb_len"] - FB_SITE - 5)
     depth = tuple((f"injured_depth_{i}", va, b"\xe8" + struct.pack("<i", AUTO_DEPTH - va - 5),
                    b"\xe8" + struct.pack("<i", code_va + INJ_OFFSET - va - 5)) for i, va in enumerate(AUTO_DEPTH_CALLS))
+    depth += (("stage6_depth", STAGE6_CALL, b"\xe8" + struct.pack("<i", STAGE6_ROSTERS - STAGE6_CALL - 5),
+               b"\xe8" + struct.pack("<i", code_va + INJ_OFFSET + STAGE6_ENTRY - STAGE6_CALL - 5)),)
     return (("roles_pick", PICK_CALL, pick, hook), ("fb_len", FB_SITE, FB_RETAIL, tier)) + depth
 
 

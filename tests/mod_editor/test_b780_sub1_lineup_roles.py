@@ -359,3 +359,8 @@ class InjuredDepthTests(unittest.TestCase):
             subprocess.run(["as", "--32", "-o", f"{tmp}/x.o", str(source)], check=True)
             subprocess.run(["objcopy", "-O", "binary", "-j", ".text", f"{tmp}/x.o", f"{tmp}/x.bin"], check=True)
             self.assertEqual(Path(f"{tmp}/x.bin").read_bytes(), lr.INJURED_CODE)
+            if shutil.which("objdump") and shutil.which("nm"):          # position independent; the tail's entry
+                relocs = subprocess.run(["objdump", "-r", f"{tmp}/x.o"], capture_output=True, text=True).stdout
+                self.assertNotIn("R_386", relocs)
+                symbols = subprocess.run(["nm", f"{tmp}/x.o"], capture_output=True, text=True).stdout.split()
+                self.assertEqual(int(symbols[symbols.index("stage6_tail") - 2], 16), lr.STAGE6_ENTRY)
