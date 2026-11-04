@@ -979,7 +979,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_scramble_blocking_code.py": "658ec167085e6fc083ec3acde723db330280091624a413401c09fc3e73643611",  # b780-cv7
         "mod_editor/core/nfl2k5_audible_legend.py": "a441d13947fd09d7dcd82f79f80f66642e29148484b40fdab8525aee14161b20",  # b780-p3: imported by throw_tuning for the build union
         "mod_editor/core/nfl2k5_lineup_roles.py": "687998e726482845e301cef41e2cf84703c6498cd1dd4cf0aff0f0b2080b8a0b",  # b780 sub1: the SPECIAL third-down back + FB fallback (late owner)
-        "mod_editor/core/nfl2k5_intro_autoskip.py": "6a9abe26bfb6552a2dd127ac628c7dbf04061d7d983e0e8d941c4ee0e6042f7b",  # b780-mem1: imported by throw_tuning for the build union
+        "mod_editor/core/nfl2k5_intro_autoskip.py": "a836a0f77a6cdf1402a1d4ec0c66ebe0ac0b5d973c36dcc007b6434dce0b6d95",  # b780-mem1: imported by throw_tuning for the build union
         "mod_editor/core/nfl2k5_injured_reserve.py": "105d6ca6b73b6e3ab750999e5e038cbbc0171be2f5e4795c5ffd02b5e6451f09",  # b780 IR1: modern injured reserve (late owner, imported by throw_tuning)
         "mod_editor/core/nfl2k5_injured_reserve_code.py": "0435e068e930f74a937e075f0f235fc61d951ba7b12873ac2b6fdcfc17f3b78a",  # b780 IR1: its generated runtime template
         "mod_editor/core/nfl2k5_injured_reserve_save.py": "295134337920652431cc257b4394b1889f9bffcee548f8a656d6df929664bcb4",  # b780 IR1: the save extension codec (imported by nfl2k5_franchise_save)
