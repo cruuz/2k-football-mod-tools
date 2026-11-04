@@ -115,13 +115,13 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
 B69_GAME_RUNTIME_PINS = {
     "mod_editor/core/nfl2k5_weather.py": "ec3d253e348ff0cf7fb1951b5dad2983d8aebc0802d5c6fca32c74dc80a6985b",
     "mod_editor/core/nfl2k5_weather_haze.py": "b8c58c592794312358eb1554b1d3be43a1ca41f7fdd8fd3cd498d4f345c641cc",
-    "mod_editor/gui/build_panel_qt.py": "93807a9d74ba4d49ea54c516d7b3e539418b5f148ad7b5c06515aa80a8d383a1",
+    "mod_editor/gui/build_panel_qt.py": "fa1eb0233e9d6970c1c9065fe5cc8fcd844e65b46109436a6052c302d138964b",
     "mod_editor/gui/gameplay_patches_panel_qt.py": "52114589294125c83b7d454d5761d6def2565ff073edbb95b219368696d02a3e",
     "mod_editor/gui/my_career_panel_qt.py": "cd39ce1685ed119288122e46b0f8c1c8ba586cea611f5d5feee096a71d7ea9ac",
     "mod_editor/gui/gameplay_project_ui.py": "cb5db940034b070a8f49a04cfd4de5ad47fc4e642b963cded0daf1d592e6e41e",
     "mod_editor/gui/beta62_options.py": "ea710261741b8462cf9d5a3e0e8f72cbc667efe3488a738e0c1dde67630082ba",
     "tools/nfl2k5_weather_editor.py": "39a2847b873bbdc567712ca87657d700fa95e226c3408983acce4d714b1031de",
-    "mod_editor/gui/build_panel_qt.py": "93807a9d74ba4d49ea54c516d7b3e539418b5f148ad7b5c06515aa80a8d383a1",
+    "mod_editor/gui/build_panel_qt.py": "fa1eb0233e9d6970c1c9065fe5cc8fcd844e65b46109436a6052c302d138964b",
     "mod_editor/gui/gameplay_patches_panel_qt.py": "52114589294125c83b7d454d5761d6def2565ff073edbb95b219368696d02a3e",
     "mod_editor/gui/my_career_panel_qt.py": "cd39ce1685ed119288122e46b0f8c1c8ba586cea611f5d5feee096a71d7ea9ac",
     "mod_editor/gui/gameplay_project_ui.py": "cb5db940034b070a8f49a04cfd4de5ad47fc4e642b963cded0daf1d592e6e41e",
@@ -2075,6 +2075,9 @@ def main() -> int:
         "mod_editor.core.nfl2k5_coach_career_fix",                # b780 c1 (wired at b780-int)
         "mod_editor.core.nfl2k5_sim_cb_tackles",                  # b778-cb1
         "mod_editor.core.nfl2k5_sim_rb_injuries",                 # b779-sim2
+        "mod_editor.core.nfl2k5_injured_reserve",                 # b780 IR1
+        "mod_editor.core.nfl2k5_injured_reserve_code",            # b780 IR1
+        "mod_editor.core.nfl2k5_injured_reserve_save",            # b780 IR1
         "mod_editor.core.nfl2k5_sim_realism",                     # b779-sim2 r4
         "mod_editor.core.nfl2k5_coach_carousel",                  # b780-c6
         "mod_editor.core.nfl2k5_standings_records",               # b780-j1
