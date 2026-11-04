@@ -16,6 +16,7 @@ from pathlib import Path
 
 from PyQt5.QtCore import QTimer, QObject, QRunnable, Qt, QThreadPool, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
+    QApplication,
     QCheckBox,
     QComboBox,
     QFileDialog,
@@ -517,6 +518,16 @@ class BuildPanel(QWidget):
         self._memory_ticks: set[str] = set()
         self._memory_cost_labels: dict[str, QLabel] = {}
         self._memory_applying = False
+        # The memory model can take seconds per plan, so its answer is worked out off the page thread (like the Hi-res
+        # budget): the shown line and the refusal are for the plan identity below, never for an older selection.
+        self._memory_budget_identity: str | None = None
+        self._memory_budget_result = None     # (prediction or None, costs) for that identity
+        self._memory_budget_tasks = {}
+        self._memory_budget_serial = 0
+        self._memory_budget_timer = QTimer(self)
+        self._memory_budget_timer.setSingleShot(True)
+        self._memory_budget_timer.setInterval(250)
+        self._memory_budget_timer.timeout.connect(self._start_memory_budget)
         self._build_ui()
         self._marks_task = None
         self._marks_modules = dict(self._available)
@@ -3340,12 +3351,25 @@ class BuildPanel(QWidget):
         self.memory_recommended_button.setVisible(sixty_four)
         self.memory_recommended_button.setEnabled(sixty_four and self._task is None)
         if not sixty_four:
+            self._memory_budget_timer.stop()
             self.memory_action_label.hide()
             for label in self._memory_cost_labels.values():
                 label.hide()
             return
+        if console_memory.model() is None:
+            self.memory_budget_label.setText(console_memory.budget_line(None))
+            return
+        identity = self._memory_identity()
+        if identity != self._memory_budget_identity:
+            self._memory_budget_identity = identity
+            self._memory_budget_result = None
+            self._memory_budget_timer.start()
+        if self._memory_budget_result is None:
+            self.memory_budget_label.setText(console_memory.CHECKING)
+            return
+        prediction, costs = self._memory_budget_result
         rules = console_memory.requires_128()
-        costs = {key: size for key, size in console_memory.option_costs(None).items() if key not in rules}
+        costs = {key: size for key, size in costs.items() if key not in rules}
         for key, size in costs.items():
             label = self._memory_cost_label(key)
             if label is not None:
@@ -3354,8 +3378,60 @@ class BuildPanel(QWidget):
         for key, label in self._memory_cost_labels.items():
             if key not in costs:
                 label.hide()
-        prediction = console_memory.predict(console_memory.without_forced(self.plan()))
         self.memory_budget_label.setText(console_memory.budget_line(prediction, labels=self._memory_label))
+
+    def _memory_plan(self):
+        """The plan the memory model is asked about: the page's plan as a 64 MB build can have it."""
+        return console_memory.without_forced(self.plan())
+
+    def _memory_identity(self) -> str:
+        return console_memory.identity(self._memory_plan())
+
+    def _start_memory_budget(self) -> None:
+        if self.console_memory() != 64 or console_memory.model() is None:
+            return
+        plan = self._memory_plan()
+        identity = console_memory.identity(plan)
+        if identity != self._memory_budget_identity:
+            return   # the selection moved on; its own refresh scheduled the next check
+        if self._memory_budget_tasks:
+            return   # one estimate at a time: the reply starts the next one for whatever is selected then
+        self._memory_budget_serial += 1
+        token = self._memory_budget_serial
+
+        def work(_progress):
+            try:
+                return token, identity, console_memory.predict(plan), console_memory.option_costs(plan)
+            except Exception:  # noqa: BLE001 - a model that cannot answer gives no prediction, never a crash
+                return token, identity, None, {}
+        task = _Task(work)
+        self._memory_budget_tasks[token] = task
+        task.signals.finished.connect(self._memory_budget_reply)
+        self._pool.start(task)
+
+    @pyqtSlot(object)
+    def _memory_budget_reply(self, reply) -> None:
+        token, identity, prediction, costs = reply
+        self._memory_budget_tasks.pop(token, None)
+        if identity != self._memory_budget_identity:
+            if self._memory_budget_result is None and self.console_memory() == 64:
+                self._start_memory_budget()   # the selection changed while this one ran: ask about the current one
+            return
+        self._memory_budget_result = (prediction, costs)
+        self._refresh()
+
+    def wait_for_memory_budget(self, timeout_ms: int = 60000) -> bool:
+        """Finish the pending 64 MB estimate now (tests, and anything that must read the line at once)."""
+        if self._memory_budget_timer.isActive():
+            self._memory_budget_timer.stop()
+            self._start_memory_budget()
+        done = True
+        for _round in range(4):   # a reply may start one more estimate for a selection that changed meanwhile
+            done = self._pool.waitForDone(timeout_ms) and done
+            QApplication.processEvents()
+            if not self._memory_budget_tasks:
+                break
+        return done and not self._memory_budget_tasks
 
     def _memory_blocker(self) -> str:
         """Why a 64 MB Make my disc cannot run, or ""."""
@@ -3366,8 +3442,17 @@ class BuildPanel(QWidget):
             names = ", ".join(self._short_label(key) for key in installed)
             return (f"This disc already has {names}, which needs 128 MB, and a build cannot take it off. Make the 64 MB "
                     "disc from your unmodified game disc, or choose Console memory 128 MB.")
-        problems = console_memory.problems(self.plan(), labels=self._memory_label)
-        return " ".join(problems)
+        problems = console_memory.problems(self.plan(), labels=self._memory_label, fit=False)
+        if problems:
+            return " ".join(problems)
+        if console_memory.model() is None:
+            return ""
+        if self._memory_budget_result is None or self._memory_budget_identity != self._memory_identity():
+            return console_memory.CHECKING
+        prediction = self._memory_budget_result[0]
+        if prediction is not None and not prediction["fits"]:
+            return console_memory.refusal(prediction, labels=self._memory_label)
+        return ""
 
     def apply_recommended_64(self) -> dict[str, list[str]]:
         """Apply the memory model's recommended 64 MB set to the page (64 MB target; the boxes it turns off or on)."""

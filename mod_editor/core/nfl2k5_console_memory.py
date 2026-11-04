@@ -23,6 +23,7 @@ from __future__ import annotations
 import importlib
 import json
 import math
+import threading
 from dataclasses import MISSING, fields, replace
 from pathlib import Path
 from typing import Any, Callable, Mapping
@@ -48,6 +49,7 @@ NOTE_64 = ("EXPERIMENTAL: the 64 MB build is untested on a real Xbox and in haku
            "are left out too. The remaining options show what they cost in memory; pick what to drop until the line "
            "below says it fits. For the full experience use xemu at 128 MB.")
 RECOMMENDED_BUTTON = "Use the recommended 64 MB set"
+CHECKING = "Checking the 64 MB memory budget for this selection (the estimate takes a few seconds)."
 RECOMMENDED_HELP = ("Applies the recommended 64 MB selection from the memory model: it turns off the options that cost the "
                     "most memory and keeps the rest of your choices. Review the list before Make my disc.")
 #: The badge of an option the 64 MB target turns off ("Off at 64 MB: <reason>").
@@ -258,16 +260,56 @@ def without_forced(plan):
 
 
 # ------------------------------------------------------------------------------------------------ costs and the fit
+def identity(plan: object) -> str:
+    """One string per selection the model could answer differently (the recipe, and the roster edits file's stamp)."""
+
+    recipe = plan.to_recipe() if hasattr(plan, "to_recipe") else plan
+    path = str(getattr(plan, "roster_edits", "") or (recipe.get("roster_edits", "") if isinstance(recipe, Mapping) else ""))
+    try:
+        stat = Path(path).stat() if path else None
+        stamp = (stat.st_mtime_ns, stat.st_size) if stat else None
+    except OSError:
+        stamp = None
+    return json.dumps([recipe, stamp], sort_keys=True, default=str)
+
+
+_ANSWERS: dict[tuple, Any] = {}      # (model module, call, identity) -> answer; a few recent selections
+_ANSWERS_LOCK = threading.Lock()     # the Build tab asks from a worker thread
+
+
+def _remember(kind: str, plan: object, compute):
+    module = model()
+    if plan is None:
+        return compute()
+    key = (module, kind, identity(plan))
+    with _ANSWERS_LOCK:
+        if key in _ANSWERS:
+            _ANSWERS[key] = _ANSWERS.pop(key)       # most recent last
+            return _ANSWERS[key]
+    answer = compute()
+    with _ANSWERS_LOCK:
+        _ANSWERS[key] = answer
+        while len(_ANSWERS) > 16:
+            _ANSWERS.pop(next(iter(_ANSWERS)))
+    return answer
+
+
 def option_costs(plan: object = None) -> dict[str, int]:
-    """Option -> bytes at 64 MB from the model (every costed option with no plan; the options that are on with one)."""
+    """Option -> bytes at 64 MB from the model: what turning each option that is on would free (with no plan: the
+    model's own reference plan, the SOFTDRINK pack)."""
 
     found = getattr(model(), "option_costs", None)
     if not callable(found):
         return {}
+    return dict(_remember("costs", plan, lambda: _option_costs(found, plan)))
+
+
+def _option_costs(found, plan) -> dict[str, int]:
     try:
-        costs = found(plan, target_mb=64)
-    except TypeError:
-        costs = found(plan)
+        try:
+            costs = found(plan, target_mb=64)
+        except TypeError:
+            costs = found(plan)
     except Exception:  # noqa: BLE001
         return {}
     if not isinstance(costs, Mapping):
@@ -289,6 +331,11 @@ def predict(plan: object) -> dict[str, Any] | None:
     found = getattr(model(), "predict", None)
     if not callable(found):
         return None
+    answer = _remember("predict", plan, lambda: _predict(found, plan))
+    return dict(answer) if answer is not None else None
+
+
+def _predict(found, plan) -> dict[str, Any] | None:
     try:
         try:
             raw = found(plan, target_mb=64)
@@ -330,16 +377,29 @@ def cost_text(size: int) -> str:
     return f"Memory at 64 MB: {amount} ({EVIDENCE_WORD})"
 
 
-def _examples(prediction: Mapping[str, Any], labels=None, *, limit: int = 4) -> list[str]:
-    """The model's suggestions, enough of them to cover the shortfall (at most ``limit``)."""
+def _examples(prediction: Mapping[str, Any], labels=None, *, limit: int = 5) -> list[str]:
+    """The model's suggestions, enough of them to cover the shortfall (at most ``limit``). A suggestion of 0 bytes is
+    a sub-option that goes with the one before it ("Scorebug (391 KB, with Scorebug effects)")."""
 
     over = int(prediction.get("over_bytes", 0))
-    named, covered = [], 0
+    rows: list[list] = []
+    covered, more = 0, 0
     for key, size in prediction.get("suggestions", ()):
-        named.append(f"{label(key, labels)} ({kb_up(size):,} KB)")
-        covered += size
-        if covered >= over or len(named) >= limit:
+        if size <= 0:
+            if rows and not more:
+                rows[-1][2].append(label(key, labels))
+            continue
+        if covered >= over:
             break
+        if len(rows) >= limit:
+            more += 1
+            continue
+        rows.append([label(key, labels), size, []])
+        covered += size
+    named = [f"{name} ({kb_up(size):,} KB" + (", with " + ", ".join(extra) if extra else "") + ")"
+             for name, size, extra in rows]
+    if more:
+        named.append(f"and {more} more (Use the recommended 64 MB set)")
     return named
 
 
@@ -417,8 +477,14 @@ def problems(plan: object, labels=None, *, records: int | None = None, fit: bool
     if fit:
         prediction = predict(without_forced(plan))
         if prediction is not None and not prediction["fits"]:
-            out.append("The 64 MB build will not fit: " + budget_line(prediction, labels).removeprefix("Will not fit: "))
+            out.append(refusal(prediction, labels))
     return out
+
+
+def refusal(prediction: Mapping[str, Any], labels=None) -> str:
+    """The refusal of a selection the model says will not fit, naming what to turn off."""
+
+    return "The 64 MB build will not fit: " + budget_line(prediction, labels).removeprefix("Will not fit: ")
 
 
 # ------------------------------------------------------------------------------------------------ the recommended set

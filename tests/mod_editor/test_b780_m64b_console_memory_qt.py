@@ -178,8 +178,11 @@ class Budget(_Page):
         model = fake_model(costs={"hair_styles": 150 * 1024, "modern_coaches": 600, "k128_memory": 4096})
         with with_model(model):
             panel = self.page()
+            for key in ("hair_styles", "modern_coaches", "k128_memory"):
+                getattr(panel, key + "_check").setChecked(True)
             self.assertEqual(panel._memory_cost_labels, {})
             panel.set_console_memory(64)
+            self.assertTrue(panel.wait_for_memory_budget())
             hair = panel._memory_cost_labels["hair_styles"]
             self.assertTrue(hair.isVisibleTo(panel))
             self.assertEqual(hair.text(), "Memory at 64 MB: 150 KB (estimate)")
@@ -193,6 +196,11 @@ class Budget(_Page):
             panel = self.page()
             panel.throw_check.setChecked(True)
             panel.set_console_memory(64)
+            # the model answers off the page thread: until then the line says so and Make my disc waits
+            self.assertEqual(panel.memory_budget_label.text(), cm.CHECKING)
+            self.assertEqual(panel.blocker(), cm.CHECKING)
+            self.assertFalse(panel.build_button.isEnabled())
+            self.assertTrue(panel.wait_for_memory_budget())
             self.assertEqual(panel.memory_budget_label.text(),
                              "Predicted to fit with 412 KB to spare at the hardest stadium, Lambeau Field (s10). This is "
                              "an estimate from the memory model, not a measurement on a console.")
@@ -207,6 +215,7 @@ class Budget(_Page):
             panel.hair_styles_check.setChecked(True)
             panel.modern_coaches_check.setChecked(True)
             panel.set_console_memory(64)
+            self.assertTrue(panel.wait_for_memory_budget())
             line = panel.memory_budget_label.text()
             self.assertTrue(line.startswith("Will not fit: remove 300 KB (hardest stadium, Lambeau Field (s10)); for "
                                             "example turn off "), line)
@@ -217,8 +226,14 @@ class Budget(_Page):
             self.assertIn(panel.hair_styles_check.text(), blocker)
             self.assertFalse(panel.build_button.isEnabled())
             self.assertEqual(panel.blocker_label.text(), blocker)
+            # a changed selection is a new question: the old answer is never shown for it
+            panel.throw_check.setChecked(True)
+            self.assertEqual(panel.memory_budget_label.text(), cm.CHECKING)
+            self.assertTrue(panel.wait_for_memory_budget())
+            self.assertTrue(panel.memory_budget_label.text().startswith("Will not fit"))
             panel.set_console_memory(128)
             self.assertEqual(panel.blocker(), "")      # the 128 MB build never asks the 64 MB model
+            self.assertFalse(panel.memory_budget_label.isVisibleTo(panel))
 
     def test_no_model_says_so(self):
         with without_model():
