@@ -1,32 +1,31 @@
-"""mc1 (b780): two MyCareer long-flow faults found by the MC1 long runs (Noah 11/03: "MyCareer also needs some serious
+"""mc1 (b780): MyCareer long-flow faults found by the MC1 long runs (Noah 11/03: "MyCareer also needs some serious
 testing for bugs, because most people haven't played through that very far").
 
-A. MyPlayer without a club. When his club releases him (its cut-down 0x2BF9A0) or his contract runs out, start_player's
-   resolve_team leaves the club index S(56) at -1 and the career state S(24) at 4. mode_play returned at once, so
-   Play next game, Sim to next appearance and Start MyPlayer all did nothing, with no notice, and the league could not
-   advance: the career was stuck at Career Home. Only a Save and a reload got the player out, because mode_loaded sends
-   such a career to Choose team / Sign. Play next game now opens that same screen.
-   A loaded free-agent career opens Career Home too (it used to open Choose team in place of the load screen, and B
-   there left MyCareer half open: the owner word held, so the MyCareer row did nothing).
+A. MyPlayer without a club. When his club releases him (its cut-down 0x2BF9A0) or his contract runs out (an undrafted
+   MyPlayer signs for one year), start_player's resolve_team leaves the club index S(56) at -1 and the career state
+   S(24) at 4. mode_play returned at once, so Play next game, Sim to next appearance and Start MyPlayer all did
+   nothing, with no notice, and the league could not advance: the career was stuck at Career Home. Only a Save and a
+   reload got the player out. Play next game now opens Choose team / Sign on top of Career Home (B comes back), and a
+   loaded free-agent career opens Career Home (it used to open Choose team in place of the load screen, where B left
+   MyCareer half open: the owner word held, so the MyCareer row did nothing).
 B. A career saved on a later draft day. mode_loaded sent every career loaded at stage 5 to the MyCareer draft screen,
    which runs the league's draft pick by pick and then says "You were drafted by" MyPlayer's own club again. Only a
-   prospect (S(24) = 2) resumes his own draft now; a player already on a club loads into Career Home.
-
+   rookie in his own draft resumes the draft screen now, picked or not (years pro +0x25 below 2: draft prospects carry
+   1 and every year rollover adds one); a veteran loads into Career Home. A lost career's empty identity is never read.
+C. The career club's depth chart. A static reading (HUNT6) was that the weekly auto-depth 0x2BDCF0 never sorts the
+   MyCareer club, because MyCareer marks it human ([0xE5775C + club*4] = 1) and the sort skips a human club unless "CPU
+   manages my depth chart" [0xE60140] is on (the setup defaults 0x148C60 clear it). The sort asks 0x13EC30, which is
+   MyCareer's own hook of 0xC4D50 and answers CPU for the career club, so the club is sorted every week whatever
+   [0xE60140] holds: a clearly better bench player starts, and Play next game still starts MyPlayer. resolve_team now
+   also turns that setting on for the career club (new, resumed and loaded careers), so the sort keeps covering the
+   club if 0x13EC30 ever answers human for it.
 D. An injured MyPlayer (+0x20 bit 31, the flag the weekly IR pass 0x2BE020 reads) was put at the top of the depth
    chart by start_player at every Play next game. He now keeps the game's own order until he is healthy.
-C. The career club's depth chart. A static reading (HUNT6) was that the weekly auto-depth 0x2BDCF0
-   never sorts the MyCareer club, because MyCareer marks it human ([0xE5775C + club*4] = 1) and the sort skips a human
-   club unless "CPU manages my depth chart" [0xE60140] is on (the setup defaults 0x148C60 clear it). The sort asks
-   0x13EC30, which is MyCareer's own hook of 0xC4D50 and answers CPU for the career club, so the club is sorted every
-   week whatever [0xE60140] holds: a clearly better bench player starts, and Play next game still starts MyPlayer.
-   resolve_team now also turns that setting on for the career club (new, resumed and loaded careers), so the sort
-   keeps covering the club if 0x13EC30 ever answers human for it.
 
 Unicorn, the pinned USA retail executable with the MyCareer and Career Home owners and the retail ROST: the game's own
-Create Player, signing, cut-down, Career Home rows, save (16E3F0) and load (16E540, 16DD30). Negative control (MC1
-report): the A and B tests against the pre-fix runtime, installed by the same mode.apply, both fail (Play next game
-leaves the released career on Career Home; the stage-5 load opens the draft screen); the MC1 driver shows the same on
-the v0.9 RC executable. EXPERIMENTAL / UNWITNESSED in game.
+Create Player, signing, cut-down, Career Home rows, save (16E3F0) and load (16E540, 16DD30). Negative controls (MC1
+report): each behaviour test against the runtime before its fix, installed by the same mode.apply, fails; the MC1
+driver shows A and B on the v0.9 RC and v0.8 executables. EXPERIMENTAL / UNWITNESSED in game.
 """
 from pathlib import Path
 import struct
