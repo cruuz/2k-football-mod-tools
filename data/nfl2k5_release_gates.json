@@ -89,7 +89,7 @@
     "honors_history": "builtin",
     "honors_page": true,
     "inbox_standings": true,
-    "k128_early": false,
+    "k128_early": true,
     "k128_memory": true,
     "k128_roster_heap": true,
     "kick_meter_2026": true,
