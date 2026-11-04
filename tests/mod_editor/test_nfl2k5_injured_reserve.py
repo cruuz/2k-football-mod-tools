@@ -527,8 +527,6 @@ class ProBowlTests(unittest.TestCase):
             self.assertEqual((writes, after), ([], n))
 
 
-if __name__ == "__main__":
-    unittest.main()
 
 
 @unittest.skipUnless(HAVE_UC, "unicorn is needed")
@@ -589,3 +587,6 @@ class MyCareerTests(GameTests):
     for _name in [n for n in dir(GameTests) if n.startswith("test_")]:
         locals()[_name] = None
     del _name
+
+if __name__ == "__main__":
+    unittest.main()
