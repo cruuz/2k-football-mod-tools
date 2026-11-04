@@ -268,6 +268,11 @@ KITS_RC = {**KITS_RETAIL, "02h1": 2_859_648, "02a1": 2_859_648, "05h0": 2_740_73
            "05h4": 2_740_736, "05a4": 2_740_736, "29a0": 2_740_736, "30h0": 2_740_736, "30a0": 2_740_736,
            "30h4": 2_740_736, "30a4": 2_740_736}
 TEAMS = tuple(range(31)) + (37,)  # kit and venue numbers of the 32 clubs (s37 / 37: Houston)
+# b780 m64kits: BAL style 1 in the RC is the composed Anniversary era kit (nfl2k5_era_kits G3, 2008-2025). Its donor is
+# the Ravens' historic spare style, which the historic team styles step makes only with ESPN Anniversary more moments;
+# without it the step leaves the slot's retail package (ship10's 64 MB disc 9c85db35: 02H1/02A1 donor_absent, retail
+# size). The heavier charge counts only when the plan composes the kit.
+ERA_KIT_NEEDS = {"02h1": "espn25_more_moments", "02a1": "espn25_more_moments"}
 ANCHOR_VENUE_CHARGE = 2_806_016  # s02ad in the RC (the anchor's own bundle)
 
 # --- the SOFTDRINK 2K28 v0.9 pack plan the anchor was measured on (experimental preset + recipe_v09 overrides) ------
@@ -532,25 +537,34 @@ def venue_charge(opts: dict, venue: str) -> int:
     return rc if field is None or on(opts, field) else retail
 
 
-def _kit(code: str) -> int:
+def _era_kits(opts=None) -> frozenset:
+    """The era kit packages the plan composes (all of them for no plan: the RC)."""
+    return frozenset(c for c, field in ERA_KIT_NEEDS.items() if opts is None or on(opts, field))
+
+
+def _kit(code: str, composed: frozenset = None) -> int:
+    if code in ERA_KIT_NEEDS and composed is not None and code not in composed:
+        return KITS_RETAIL.get(code, KIT)
     return KITS_RC.get(code, KIT)
 
 
-def _club_kit(team: int, side: str, uniforms: str):
+def _club_kit(team: int, side: str, uniforms: str, composed: frozenset = None):
     styles = (0,) if uniforms == "primary" else range(6)
-    return max((_kit(f"{team:02d}{side}{s}"), -s, f"{team:02d}{side}{s}") for s in styles)[::2]   # ties: lowest style
+    return max((_kit(f"{team:02d}{side}{s}", composed), -s, f"{team:02d}{side}{s}")
+               for s in styles)[::2]   # ties: lowest style
 
 
 _KIT_TABLES: dict = {}
 
 
-def _kit_tables(uniforms: str):
-    """(best home kit per club, away kits best first): the kits do not depend on the plan."""
-    if uniforms not in _KIT_TABLES:
-        home = {t: _club_kit(t, "h", uniforms) for t in TEAMS}
-        away = sorted(((_club_kit(t, "a", uniforms), t) for t in TEAMS), key=lambda x: (-x[0][0], x[1]))
-        _KIT_TABLES[uniforms] = (home, away)
-    return _KIT_TABLES[uniforms]
+def _kit_tables(uniforms: str, composed: frozenset = None):
+    """(best home kit per club, away kits best first) for the era kits the plan composes."""
+    key = (uniforms, composed)
+    if key not in _KIT_TABLES:
+        home = {t: _club_kit(t, "h", uniforms, composed) for t in TEAMS}
+        away = sorted(((_club_kit(t, "a", uniforms, composed), t) for t in TEAMS), key=lambda x: (-x[0][0], x[1]))
+        _KIT_TABLES[key] = (home, away)
+    return _KIT_TABLES[key]
 
 
 def hardest_matchup(plan=None, uniforms: str = "any") -> dict:
@@ -559,7 +573,8 @@ def hardest_matchup(plan=None, uniforms: str = "any") -> dict:
     if uniforms not in ("any", "primary"):
         raise ValueError('uniforms must be "any" or "primary"')
     opts = options(plan) if not isinstance(plan, dict) or "overrides" in plan else plan
-    home_kits, away_kits = _kit_tables(uniforms)
+    composed = _era_kits(opts)
+    home_kits, away_kits = _kit_tables(uniforms, composed)
     best = None
     for venue in VENUES:
         charge = venue_charge(opts, venue)
@@ -572,7 +587,7 @@ def hardest_matchup(plan=None, uniforms: str = "any") -> dict:
                 best = (total, venue, home_kit[1], away_kit[1])
     total, venue, home_kit, away_kit = best
     return {"venue": venue, "name": VENUES[venue][0], "home_kit": home_kit, "away_kit": away_kit,
-            "venue_bytes": venue_charge(opts, venue), "kit_bytes": _kit(home_kit) + _kit(away_kit),
+            "venue_bytes": venue_charge(opts, venue), "kit_bytes": _kit(home_kit, composed) + _kit(away_kit, composed),
             "delta": total - (ANCHOR_VENUE_CHARGE + 2 * KIT)}
 
 

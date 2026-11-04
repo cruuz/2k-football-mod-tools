@@ -200,10 +200,13 @@ class TargetTests(unittest.TestCase):
         self.assertFalse(set(profile) & set(mb.PROFILE_64_PATCHES))
         got = mb.predict(mb.profile_64_plan(), 64)
         self.assertEqual(got["forced_off"], [])
-        self.assertEqual((got["room"], got["heap_b"], got["margin"]), (1_572_096, 82_048, 8_192))
-        self.assertFalse(got["fits"])                       # a player-picked BAL alternate at NRG: under the margin
-        self.assertEqual(got["over_bytes"], got["needed_room"] - got["room"])
-        self.assertLess(abs(got["over_bytes"] - (mb.SAFETY_MARGIN - 8_192)), mb.UNIT)
+        # b780 m64kits: the profile turns ESPN Anniversary more moments off, so the build never composes the Ravens era kit
+        # (its donor is a historic spare style): BAL style 1 keeps its retail size and every kit at every venue fits
+        # (it was 1,572,096 / 82,048 / 8,192 and 57,280 B over with the composed kit counted).
+        self.assertEqual((got["room"], got["heap_b"], got["margin"]), (1_661_056, 171_008, 97_152))
+        self.assertTrue(got["fits"])
+        self.assertEqual((got["over_bytes"], got["spare_bytes"]), (0, got["room"] - got["needed_room"]))
+        self.assertGreaterEqual(got["margin"], mb.SAFETY_MARGIN)
         primary = got["primary_uniforms"]
         self.assertEqual((primary["heap_b"], primary["margin"]), (200_960, 127_104))
         self.assertGreaterEqual(primary["margin"], mb.SAFETY_MARGIN)        # every game in style 0 kits fits
