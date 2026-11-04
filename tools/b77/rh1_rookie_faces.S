@@ -7,6 +7,9 @@
 # their three bytes (correlation 1/3); weight only: 1 prospect in 64 adds 384 to S (a heavy outlier, centred on +3 sd).
 # The generic head-shape draw moved here from region D, which now down-weights each row's last 5/16 (the review's
 # plainest/ugliest faces): a first draw that lands there is redrawn once.
+# b780 GEN1: a rare surname's first name comes from rarefirst (end of region C, called from region D), which skips a
+# full name a player on the roster already carries. The college bands and the draft number flag are retail code
+# immediates the Python module writes (COLLEGE_BANDS, NUMBER_VA); they are not assembled here.
 # Linked at 0xE67EA: as --32; ld -m elf_i386 -Ttext=0xE67EA; objcopy -O binary.
 .intel_syntax noprefix
 .set D, 0x4F4F40
@@ -230,6 +233,42 @@ qrand:                              # st0 = r, or (r + 1) / 2 for a blue-chip
 44: ret
 cofs:
     .byte 0x4E, 0x51, 0x50
+rarefirst:                          # b780 GEN1, called from region D: eax = rare surname 0..2 -> [esi+0x10] = one of its
+    push edx                        # four first names, (weight ^ height) & 3 first (the body region A rolled), then the
+    push ebx                        # next ones while a player on the roster already has that full name ("Raj Patel"
+    mov ecx, [esi+0x2a]             # twice in one class); the fourth try is taken as it is. Keeps ebx, edx, esi, ebp.
+    xor cl, ch
+    and ecx, 3
+    lea ebx, [eax*4]
+    push 4
+    pop edi
+50: lea eax, [ebx+ecx]
+    add ax, [RFIRST0]
+    mov edx, [ebp+0x54]
+    mov eax, [edx+eax*8]            # the candidate's pool string
+    dec edi
+    jz 53f
+    push ecx
+    mov ecx, [ebp]
+    mov edx, [ebp+4]
+51: cmp [edx+0x10], eax
+    jne 52f
+    push eax
+    mov eax, [edx+0x14]
+    cmp eax, [esi+0x14]             # same surname string too: that full name is taken
+    pop eax
+    je 54f
+52: add edx, 0x54
+    loop 51b
+    pop ecx
+53: mov [esi+0x10], eax
+    pop ebx
+    pop edx
+    ret
+54: pop ecx
+    inc ecx
+    and ecx, 3
+    jmp 50b
 regionC_end:
     .fill 0xE6F56 - 0xE6D51 - (regionC_end - regionC), 1, 0xCC
 29:
@@ -334,14 +373,8 @@ regionD:                            # ebx = tone, edx = build
     mov bl, [TONES+ecx]
     mov [esp+0x10], ebx
     lea ebx, [ecx+6]                # rows 18..23
-    mov ecx, [esi+0x2a]             # first name: pool[RFIRST0 + 4 * rare + ((weight ^ height) & 3)]: the body just rolled
-    xor cl, ch                      # (b780: the college's low bits barely vary, so one surname kept one first name)
-    and ecx, 3
-    lea eax, [ecx+eax*4]
-    add ax, [RFIRST0]
-    mov ecx, [ebp+0x54]
-    mov ecx, [ecx+eax*8]
-    mov [esi+0x10], ecx
+    call rarefirst                  # first name: pool[RFIRST0 + 4 * rare + ((weight ^ height) & 3)], the next free one
+                                    # (b780: was the college's low bits, which barely vary: one surname kept one name)
 20: lea edi, [ebx+ebx*2]
     add edi, edx
     lea edi, [BUCKETS+edi*4]
