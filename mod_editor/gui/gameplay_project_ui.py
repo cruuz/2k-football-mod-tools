@@ -43,6 +43,9 @@ def _combo(widget, value):
 def restore(panel, state):
     choices = {**saved.from_plan(saved.to_plan({}, "", "")), **saved.build_settings(state)}
     with quiet(panel):
+        if hasattr(panel, "set_console_memory"):
+            # b780-m64b: the target first, so the boxes below land under its rules; an older project reads 128 MB
+            panel.set_console_memory(choices.get("console_memory", 128), keep_ticks=False, refresh=False)
         for key, box in panel._boxes().items():
             value = choices[key]
             box.setChecked(value == "matte" if key == "helmet_finish"

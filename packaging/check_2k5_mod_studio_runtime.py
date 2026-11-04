@@ -2022,6 +2022,7 @@ def main() -> int:
         "mod_editor.core.nfl2k5_menu_helmet_w2026",              # b773-hu1: Washington menu helmets, 2026 W
         "mod_editor.core.nfl2k5_anniversary_kickoff",             # b76-vb3
         "mod_editor.core.nfl2k5_k128",                            # b76-k1
+        "mod_editor.core.nfl2k5_console_memory",                  # b780-m64b: the 128 MB / 64 MB build target
         "mod_editor.core.nfl2k5_letter_grades_attributes",          # b773-lg2
         "mod_editor.core.nfl2k5_letter_grades",                   # b77-f4
         "mod_editor.core.nfl2k5_letter_grades_code",              # b77-f4

@@ -844,6 +844,13 @@ class BuildPlan:
     name: str = ""
     author: str = ""
     notes: str = ""
+    # b780-m64b (Noah 11/03: "an option in the editor to limit a few things to allow the 64 MB option for Xbox and
+    # Android"): the console memory the disc is made for. 128 = xemu at 128 MB, the full SOFTDRINK build with every
+    # option (the default; old projects and recipes have no key and read 128). 64 = an original Xbox or the Android
+    # emulator hakuX, EXPERIMENTAL and untested on both: validate_plan refuses the options that need 128 MB or the real
+    # Xbox kernel and a selection the memory model says will not fit (nfl2k5_console_memory). A 128 plan's recipe has
+    # no console_memory key, so it is byte for byte what it was before the option existed.
+    console_memory: int = 128
 
     def wants_xbe_patch(self) -> bool:
         return (self.throw or self.catch_slider or self.accel_ramp or self.draft_ai or self.returner_fix
@@ -867,6 +874,8 @@ class BuildPlan:
     def to_recipe(self) -> dict[str, Any]:
         d = asdict(self)
         d.pop("source"); d.pop("target"); d.pop("overwrite")
+        if d.get("console_memory") == 128:  # b780-m64b: a 128 MB recipe stays exactly the recipe it always was
+            d.pop("console_memory")
         return d
 
 
@@ -4033,6 +4042,16 @@ def validate_plan(plan: BuildPlan) -> list[str]:
     if plan.cpu_runner_vision is True and plan.cpu_ball_carriers is not True:
         return ["CPU ball carrier vision needs \"CPU ball carriers stay in bounds\": turn that on too, or turn "
                 "CPU ball carrier vision off."]
+    # b780-m64b: the console memory target. 128 (every older plan) checks nothing more; 64 refuses what needs 128 MB or
+    # the real Xbox kernel, roster edits that grow the roster file, and a selection the memory model says will not fit.
+    memory = getattr(plan, "console_memory", 128)
+    if memory != 128:
+        from . import nfl2k5_console_memory as console_memory
+        try:
+            console_memory.normalize(memory)
+        except ValueError as exc:
+            return [str(exc)]
+        return console_memory.problems(plan, records=_roster_capacity_records(plan))
     return []
 
 
