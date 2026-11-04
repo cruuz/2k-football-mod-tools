@@ -3275,8 +3275,13 @@ class BuildPanel(QWidget):
                 locked = []
                 for key, reason in rules.items():
                     box = boxes.get(key)
-                    if box is None or str(state.get(key)) in self._INSTALLED:
-                        continue   # installed on the source: the page shows it installed and the blocker says why
+                    if box is None:
+                        continue
+                    if str(state.get(key)) in self._INSTALLED:
+                        # installed on the source: the disc read set the box (installed, kept on) and the blocker says
+                        # why; a lock from an earlier disc would hand back that disc's state at 128 MB
+                        self._memory_locks.pop(key, None)
+                        continue
                     badge = self._badges.get(key)
                     lock_badge = console_memory.lock_badge(reason, key)
                     tip = self._memory_lock_tip(key, reason)
@@ -3379,7 +3384,8 @@ class BuildPanel(QWidget):
         for key, label in self._memory_cost_labels.items():
             if key not in costs:
                 label.hide()
-        self.memory_budget_label.setText(console_memory.budget_line(prediction, labels=self._memory_label))
+        self.memory_budget_label.setText(console_memory.NO_ESTIMATE if prediction is None else
+                                         console_memory.budget_line(prediction, labels=self._memory_label))
 
     def _memory_plan(self):
         """The plan the memory model is asked about: the page's plan as a 64 MB build can have it."""
@@ -4624,9 +4630,13 @@ class BuildPanel(QWidget):
         self.softdrink_project_check.show()
         self.softdrink_project_field.show()
         self.softdrink_art_button.show()
-        # b780-m64b: Share > Customize SOFTDRINK 2K28 says which console memory to build for (128 when it says nothing)
-        self.set_console_memory(console_memory.of(recipe), refresh=False)
+        # b780-m64b: Share > Customize SOFTDRINK 2K28 says which console memory to build for (128 when it says nothing).
+        # Building the pack for 64 MB starts from the recommended 64 MB set; the page lists what it turned off.
+        memory = console_memory.of(recipe)
+        self.set_console_memory(memory, refresh=False)
         self._refresh()
+        if memory == 64:
+            self.apply_recommended_64()
 
     def _softdrink_build_settings(self):
         choices = self.project_build_settings()
