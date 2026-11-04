@@ -3993,3 +3993,5 @@ tests/mod_editor/test_nfl2k5_franchise_footer_transaction.py
 tests/mod_editor/test_b780_hunt3_prep_results.py
 # b780 roster1: the dated refresh leaves no depth-chart row empty after a release for room; wrong-face portraits; pack roster lint
 tests/mod_editor/test_b780_roster1_depth_lint.py
+# b780 gc1: the franchise Gamecast's score panel (0x8C450) stays retail under the 2026 scorebug
+tests/mod_editor/test_b780_gc1_gamecast_scorepanel.py

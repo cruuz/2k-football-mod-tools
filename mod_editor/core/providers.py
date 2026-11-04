@@ -1000,13 +1000,13 @@ class Nfl2k5UnifiedVisualProvider:
         'mod_editor/core/nfl2k5_scorebug_sprite.py': '52b4449e88b3beb14d749de7d31d7d5abcce642d37ebe819f9733fb02837a994',
         'mod_editor/core/nfl2k5_scorebug_teams.py': '95f27e3a4320488b98bc5dc6236b70b881299ee91813a588e7ff62ddedd1c09f',
         'tools/scorebug_sprite/xemu_model.py': '1b97da7ecdf4e0fe19d6a1d7ea41ff3110810f14777da88f3ca94e18e1f110b3',
-        'mod_editor/core/nfl2k5_scorebug_sprite_code.py': '4b046c710d54cffa206c415db656a383020c623a197c0213c7642f7387a84b47',
+        'mod_editor/core/nfl2k5_scorebug_sprite_code.py': '2bb317b9ce2c4b7ad95478144b98f4ebe6edd660054db40e81ddca3a7a8ed8af',
         'tools/nfl2k5_scorebug_exact.py': '8be2b18d28575b451d39bb15dab192546ee82dd0fa2be42bc649aa966ddb38dc',
         'tools/nfl2k5_scorebug_projection.py': '64390fd64e68607c090b05e57b410ca7ee26a4d5bc1e8e2a772d405b6650e510',
         'tools/nfl2k5_scorebug_template_proof.py': '6f21bd9fc54d472db03ad5e84d8344cfdb358c7e2e6c950134d80e5cf345bcc2',
         'tools/nfl_main_menu_font.py': '64ae881a6ccaede10d15dc3d68277d061c5ccb9f94ccdee5208095ca31316d60',
         'tools/nfl_normshort3_positions.py': '925147094fdf03d91ee0e0487b0dee3b632438c333fbb9f2b8ecb54a15cf19e3',
-        "mod_editor/core/nfl2k5_scorebug_runtime.py": "07f28c18b351d9953596aeeea13de42deb3893b89dcec533622cf4802199e1a5",
+        "mod_editor/core/nfl2k5_scorebug_runtime.py": "e3c607508897d18e6a9f7f3516c1423720566f587b1b94bcde0c41d581b9dae8",
         "mod_editor/core/nfl2k5_scorebug_runtime_b779.py": "11e77fcd5105353eeb89132f1fcbe73528cb503b46c4be13f7e9b45d8a7b29a5",  # b780 n6: frozen beta-79 revision
         "mod_editor/core/nfl2k5_scorebug_sprite_code_b779.py": "9bbfcb2bd87febab32a6545413f679d422d423b484958ec969150bdbf4c3aa9f",  # b780 n6: frozen beta-79 revision
         "mod_editor/core/nfl2k5_playcall_layout.py": "10a12aebd99cd40ebcabb085e940734607c28e3c265902eac76580ce4cd9a077",
