@@ -843,7 +843,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_my_career_events.py": "228a0b59d43b9b9c52e10ac93cc72072e772e694cc864c8e2e037c5d7c772460",
         "mod_editor/core/nfl2k5_my_career_mode.py": "df5c6afa055314d36edbc085ffb7c27d51c06b9b05a15fe5d660e214fc99180a",
         "mod_editor/core/nfl2k5_rookie_faces.py": "3b7461fe711d72ada7c2009f04e2736783157612d03c351843fadbce9576b3f9",  # b780-int (gen1mc): MyCareer's draft-signing context reads its draft-number byte
-        "mod_editor/core/nfl2k5_my_career_mode_code.py": "431741a42adf9e985497046995f7d69077d5b66d7b39f94886d07c2543dcbf89",
+        "mod_editor/core/nfl2k5_my_career_mode_code.py": "e29173a94e1dd4cea73149f9f0ebfe945c7fb6ebef386e2f3ddf89ec77932ee6",
         "mod_editor/core/nfl2k5_my_career_home.py": "e920e0003626def22a1a5dd755c2d128b7bab8e9934ae67e9a5a88d249c054ec",
         "mod_editor/core/nfl2k5_my_career_mode_code_b779.py": "9774a72e254da1609e82a53d2d5b74701e1d2acec484b6588256fc9b256c0355",  # b780 n6: frozen beta-79 revision
         "mod_editor/core/nfl2k5_my_career_home_code.py": "c23c0177432f74ec2d8c51b99400bd47c9160fc6e563b8aca05eebd12d7ac485",

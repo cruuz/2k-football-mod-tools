@@ -253,7 +253,7 @@ class HostBudgetTests(unittest.TestCase):
             # free-agent career opens Career Home, and mode_loaded resumes the draft screen only for a rookie in his
             # own draft (test_nfl2k5_my_career_mc1).
             'tools/mycareer_mode/runtime.c':
-                '22d635eafa12e0740c417e793cfa37c4a968c474c64e6ccc1e352dd027e5fc77',  # b780 mc1 on b780-int (b8 + j23 + n2)
+                'a117be3bcfce2c6cc6920abd344da36bca0605845c2860b416fdcad85763c725',  # b780 mc1 on b780-int (b8 + j23 + n2)
             'tools/mycareer_mode/runtime.S':
                 # b780 n1: mode_camera_dir (the defensive camera read) and five byte-identical size rewrites.
                 # b780 mc1: start_player leaves an injured MyPlayer (+0x20 bit 31) where the game's order has him.
