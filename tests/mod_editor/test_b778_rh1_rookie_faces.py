@@ -479,8 +479,12 @@ class RetailXbe(unittest.TestCase):
         headers = [h + 36 for _va, _raw, _rs, h in rf._section_map(payload)]
         for i in diff:
             self.assertTrue(any(o <= i < o + n for o, n in spans) or any(h <= i < h + 20 for h in headers), hex(i))
-        # b779-rf3: + the rating loop (region C); b780 GEN1: + the college bands and the draft number flag
-        self.assertEqual(len(receipt["edits"]), 7)
+        # b779-rf3: + the rating loop (region C); b780 GEN1: + the college bands and the draft number flag; b780 Q10:
+        # + the Franchise Show's record name
+        self.assertEqual(len(receipt["edits"]), 8)
+        at = rf._offset(out, rf.WRAPUP_STRING_VA, len(rf.WRAPUP_PATCHED))
+        self.assertEqual((payload[at:at + 24], out[at:at + 24]), (rf.WRAPUP_RETAIL, rf.WRAPUP_PATCHED))
+        self.assertEqual(payload[at + 24:at + 26], b"\0\0", "the name stays terminated, same length")
         at = rf._offset(out, rf.COLLEGE_VA, len(rf.COLLEGE_RETAIL))
         self.assertEqual(payload[at:at + len(rf.COLLEGE_RETAIL)], rf.COLLEGE_RETAIL)
         self.assertEqual(out[at:at + len(rf.COLLEGE_RETAIL)], rf.college_span())
@@ -502,6 +506,7 @@ class RetailXbe(unittest.TestCase):
         tail = rf.TABLE_END - rf.TABLE_VA - rf.TABLE_DATA
         old_c = rf.CODE_C_RF3 + b"\xcc" * (rf.REGION_C_END - rf.REGION_C - len(rf.CODE_C_RF3))
         rc = put(put(out, rf.COLLEGE_VA, rf.COLLEGE_RETAIL), rf.NUMBER_VA, rf.NUMBER_RETAIL)
+        rc = put(rc, rf.WRAPUP_STRING_VA, rf.WRAPUP_RETAIL)
         rc = put(put(rc, rf.REGION_C, old_c), rf.TABLE_VA + rf.TABLE_DATA,
                  rf.CODE_D_B780RC + b"\xcc" * (tail - len(rf.CODE_D_B780RC)))
         self.assertEqual(rf.xbe_status(rc), "previous")
@@ -511,6 +516,22 @@ class RetailXbe(unittest.TestCase):
         self.assertEqual(rf.xbe_status(put(out, rf.NUMBER_VA, rf.NUMBER_RETAIL)), "foreign")
         self.assertEqual(rf.xbe_status(put(out, rf.COLLEGE_VA, rf.COLLEGE_RETAIL)), "foreign")
         self.assertEqual(rf.xbe_status(put(out, rf.REGION_C, old_c)), "foreign")
+        self.assertEqual(rf.xbe_status(put(out, rf.WRAPUP_STRING_VA, rf.WRAPUP_RETAIL)), "foreign")
+
+    def test_the_franchise_show_reads_the_new_portrait_record(self):
+        """b780 Q10 (HUNT3): the show's WRAPUP_PORTRAIT context (registered at 0x28FBFB, edx = the record name) read
+        the retail record, so bank faces and created real players were "nophoto" on its boards."""
+        payload = Path(RETAIL_XBE).read_bytes()
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage
+        image = XbeImage(payload)
+        self.assertEqual(image.read(0x28FC0A, 5), b"\xba" + struct.pack("<I", rf.WRAPUP_STRING_VA))   # mov edx, name
+        self.assertEqual(image.read(0xE714E, 5), b"\xba" + struct.pack("<I", rf.STRING_VA))          # PORTRAIT's
+        firsts, lasts = shipped_pool()
+        out = XbeImage(rf.xbe_apply(payload, rf.tables(firsts, lasts, toy_bank()))[0])
+        show, card = (out.read(va, 24).decode("utf-16-le") for va in (rf.WRAPUP_STRING_VA, rf.STRING_VA))
+        self.assertEqual((show, card), ("portrai2.iff", rf.RECORD_NAME))
+        self.assertEqual(rf.name_id(show), rf.name_id(rf.RECORD_NAME), "names are looked up upper case")
+        self.assertNotEqual(rf.name_id(show), rf.name_id(rf.RETAIL_RECORD_NAME))
 
 
 # ------------------------------------------------------------------------------------------- b780 GEN1

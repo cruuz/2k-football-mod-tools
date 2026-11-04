@@ -114,6 +114,10 @@ candidate's own class loop and CPU draft under Unicorn, 12 classes of 380 and on
      rarefirst (in region C's spare bytes): the (weight ^ height) & 3 name first, then the next of the four while a
      player on the roster already carries that full name; with all four taken the fourth try stands.
    All three are code, so old franchise saves get them for every later class and draft.
+   * b780 Q10 (HUNT3): the Franchise Show's photo context (WRAPUP_PORTRAIT) named the retail record, so every bank face
+     and every created real player's headshot was "nophoto" on the show's boards; it now names the new record too
+     (WRAPUP_STRING_VA).  The show's record is then 55,128 bytes instead of 19,872 on the main game heap while the show
+     runs (it frees the frontend's copy of the same record first).
 
 Saves: the code reads the pool, the roster and the position from the live roster, so an old franchise save gets the
 new faces for every class it generates after the update (its own name pool may lack the nicknames; nothing else
@@ -267,6 +271,15 @@ def college_odds(bands: Sequence[tuple[int, int]] = COLLEGE_BANDS, rows: int = C
 # 0x2BD260 (lowest free number of the position's range); keep = 1 starts the same walk at his own number.
 NUMBER_VA = 0x325B61
 NUMBER_RETAIL, NUMBER_PATCHED = bytes.fromhex("6a00"), bytes.fromhex("6a01")
+
+# b780 (HUNT3, Q10): the Franchise Show (MyNFL's weekly show, franchise_show.iff) binds its player photos through its own
+# context WRAPUP_PORTRAIT, registered at 0x28FBFB with the UTF-16 record name at 0xE92FA4 (its only reference,
+# 0x28FC0B).  Pointed at the retail record, every bank face and every created real player's headshot was "nophoto" on
+# the show's boards while the Player Card showed it.  The same record as the PORTRAIT context now (names are hashed
+# upper case, so "portrai2.iff" is RECORD_NAME); the show's record grows 19,872 -> 55,128 bytes on the main game heap
+# while the show runs (the show frees the frontend's PORTRAIT copy of the same record first and reloads it at exit).
+WRAPUP_STRING_VA = 0xE92FA4
+WRAPUP_RETAIL, WRAPUP_PATCHED = "portrait.iff".encode("utf-16-le"), "portrai2.iff".encode("utf-16-le")
 
 # table layout (offsets from TABLE_VA)
 T_POS, T_TONES, T_FIRST, T_LASTCODE, T_SIG = 0x00, 0x11, 0x14, 0x34, 0x38
@@ -561,7 +574,8 @@ def _spans(table: bytes) -> list[tuple[int, bytes]]:
             (TABLE_VA, table + pad(CODE_D, TABLE_END - TABLE_VA - TABLE_DATA)),
             (STRING_VA, RECORD_NAME.encode("utf-16-le")),
             (COLLEGE_VA, college_span()),                 # b780 GEN1
-            (NUMBER_VA, NUMBER_PATCHED)]                  # b780 GEN1
+            (NUMBER_VA, NUMBER_PATCHED),                  # b780 GEN1
+            (WRAPUP_STRING_VA, WRAPUP_PATCHED)]           # b780 Q10: the Franchise Show's photos
 
 
 RETAIL_SPAN_SHA256 = {       # retail and every released SOFTDRINK image (v0.6.1 checked) carry these bytes
@@ -572,6 +586,7 @@ RETAIL_SPAN_SHA256 = {       # retail and every released SOFTDRINK image (v0.6.1
     STRING_VA: "8d322c825fff63a505e786350f7fe8da17d68dd292769f9f5146c2605ea14ae2",
     COLLEGE_VA: "5ac25422917dd126cc63ff89a17aa8bd7051e0cfdc7c96942ad4e1fcff0e4bb0",   # = sha(COLLEGE_RETAIL)
     NUMBER_VA: "91046df2aa008410555df240b14243aa348b37cd16582c9d8a80ca305afccab2",    # = sha(NUMBER_RETAIL)
+    WRAPUP_STRING_VA: "eae8f8e3f40785244228018d0f2014f4d9eeb8cd9777feb997154565aafb7a1f",  # = sha(WRAPUP_RETAIL)
 }
 
 
@@ -583,7 +598,7 @@ def _retail_spans(payload: bytes) -> dict[int, bytes]:
 def xbe_status(payload: bytes) -> str:
     """retail | applied | previous | foreign (an applied image may carry any table bytes; code and string must match;
     previous = the beta-79 / v0.8 region D (CODE_D_B779) or the first v0.9 release candidate's (CODE_D_B780RC), both
-    with the b779-rf3 region C (CODE_C_RF3), the retail college bands and draft numbers)."""
+    with the b779-rf3 region C (CODE_C_RF3), the retail college bands, draft numbers and Franchise Show record name)."""
     try:
         current = _retail_spans(payload)
     except (RookieFacesError, struct.error):
@@ -594,12 +609,14 @@ def xbe_status(payload: bytes) -> str:
     a, b, c, d, s = (current[REGION_A], current[REGION_B], current[REGION_C], current[TABLE_VA], current[STRING_VA])
     core = a == spans[REGION_A] and b == spans[REGION_B] and s == spans[STRING_VA]
     if (core and c == spans[REGION_C] and d[TABLE_DATA:] == spans[TABLE_VA][TABLE_DATA:]
-            and current[COLLEGE_VA] == spans[COLLEGE_VA] and current[NUMBER_VA] == NUMBER_PATCHED):
+            and current[COLLEGE_VA] == spans[COLLEGE_VA] and current[NUMBER_VA] == NUMBER_PATCHED
+            and current[WRAPUP_STRING_VA] == WRAPUP_PATCHED):
         return "applied"
     tail = TABLE_END - TABLE_VA - TABLE_DATA
     region_d = (CODE_D_B779 + b"\xcc" * (tail - len(CODE_D_B779)), CODE_D_B780RC + b"\xcc" * (tail - len(CODE_D_B780RC)))
     if (core and c == CODE_C_RF3 + b"\xcc" * (REGION_C_END - REGION_C - len(CODE_C_RF3)) and d[TABLE_DATA:] in region_d
-            and current[COLLEGE_VA] == COLLEGE_RETAIL and current[NUMBER_VA] == NUMBER_RETAIL):
+            and current[COLLEGE_VA] == COLLEGE_RETAIL and current[NUMBER_VA] == NUMBER_RETAIL
+            and current[WRAPUP_STRING_VA] == WRAPUP_RETAIL):
         return "previous"   # beta-79 / v0.8 (rare first name from the college's low bits) or the v0.9 RC (GEN1)
     return "foreign"
 
@@ -636,7 +653,8 @@ def xbe_apply(payload: bytes, table: bytes) -> tuple[bytes, dict[str, Any]]:
 SPAN_LABELS = ("class generator skin/face draw and weight/height roll -> body table + helpers", "class generator portrait pick",
                "class generator rating loop -> blue-chip draw + compact capped rolls",
                "rookie-face tables + code (retail generic range table)", "PORTRAIT record file name",
-               "class generator college bands (8 immediates)", "draft pick keeps the rookie's own jersey number")
+               "class generator college bands (8 immediates)", "draft pick keeps the rookie's own jersey number",
+               "Franchise Show portrait record file name")
 
 
 def reservations(payload: bytes) -> list[dict[str, Any]]:
