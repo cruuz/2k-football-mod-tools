@@ -965,7 +965,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_sim_cb_tackles.py": "00003fa0c6e523376ad57748504b1abb4a70cba0158ff1188c6436d2a6e1f306",  # b778-cb1
         "mod_editor/core/nfl2k5_sim_rb_injuries.py": "93b73c7f1399d2bdfe9b56aca636517b730af27bc63e607f37d7dcb006ef0763",  # b779-sim2
         "mod_editor/core/nfl2k5_sim_rb_injuries_b779.py": "87b8403aaba06c2fe1879de873188e465383abc636f7cd9f69ed51f8a6100a00",  # b780 hunt1: frozen beta-79 roll for the previous state
-        "mod_editor/core/nfl2k5_sim_realism.py": "b0abb09f6282852639b10b51c1ed94220c845fab297f21f34d24da2353dd55e7",  # b779-sim2 r6
+        "mod_editor/core/nfl2k5_sim_realism.py": "5a23275c96c3c6b69c49d6006c0a364c6ae48548799d27467da554b438dbe002",  # b779-sim2 r6
         "mod_editor/core/nfl2k5_sim_realism_b779.py": "687a35375780ce07948ba555a8c189167586393c5de6f48d954c2902a71010ad",  # b780 n6: frozen beta-79 revision
         "mod_editor/core/nfl2k5_standings_records.py": "81542a12ebdfcf5db77434f63665d2ec703e4e37ee5ecfb4ae024a72b2ff4f81",  # b780-j1
         "mod_editor/core/nfl2k5_standings_records_code.py": "9b22e2aa16efb0821655ee647db084f4ec489098cdd7282c098081d44a3b3a53",  # b780-j1
