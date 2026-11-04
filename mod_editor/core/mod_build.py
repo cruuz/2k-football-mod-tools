@@ -730,6 +730,12 @@ class BuildPlan:
     # sites (nfl2k5_load_user_team_guard: the call and a 17-byte routine in the user-team accessors' alignment padding)
     # fall back to club 0 there. A retail crash path: on in every preset and in the 64 MB profile (no allocation).
     load_user_team_guard: bool = False
+    # b780 mc1 (EMU1 crash_boot): a saved game whose stored type string is absent stops the game at the title while the
+    # boot save browser lists saves (the type matcher 0x16A600 hands 0x30C40 a NULL string). A real save reaches it: a
+    # released MyPlayer after a week under modern injured reserve. Two in-place sites (nfl2k5_save_list_type_guard: the
+    # matcher prologue and a 15-byte routine in retail .text padding) return no match for a NULL string. A retail crash
+    # path shared with v0.8: on in every preset and in the 64 MB profile (no allocation).
+    save_list_type_guard: bool = False
     # b780 c1-coachdata (wired at b780-int): the season rollover adds one Super Bowl trip to a head coach's record
     # (+0x32) for every winning season. One in-place site (0x247CD6, inc -> nop) stops it so a coach's Super Bowl
     # count only changes when his own numbers do (nfl2k5_coach_career_fix). A pure bug fix: on in every preset.
@@ -892,7 +898,7 @@ class BuildPlan:
                 or self.guardian_overlay or self.my_career or self.screen_hooks or self.coverage_trail or self.franchise_edit_player or self.cpu_money_downs != "retail" or self.accelerated_clock or self.coin_defer or self.decided_clock or self.cpu_scrambles == "modern" or self.weather_haze or self.number_kerning or self.modern_color or self.weekly_prep or self.weekly_prep_cpu or self.weekly_prep_remember or self.coach_ai or self.playbook_pair or self.deep_zone_facing or self.deep_zone_bail or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave or self.historic_teams_quick_game or self.espn25_more_moments or self.historic_stock_books or self.espn25_era_rules or self.k128_memory or self.team_ratings or self.play_art_routes or self.letter_grades or self.honors_page or self.sim_cb_tackles or self.sim_stats or self.option_defaults or self.sim_rb_injuries or self.sim_realism or self.coach_carousel or self.history_screen
                 or self.momentum_collisions or self.scorebug_runtime or self.indicator_names_style != "retail" or self.momentum > 0 or self.momentum_contact or self.defensive_try or self.zone_drop_cap or self.all_stadiums or self.music_shuffle or self.practice_squad_screen or self.abilities or self.qb_spy or self.calendar_engine or self.coverage_slider or self.scramble_tuning or self.flatter_deep_ball or self.chop_block_toggle or self.music_policy != "retail" or self.music_unlock or self.music_userlist
                 or bool(self.music_library and _music_library_document(self.music_library)["bank"] == "cribmusic")
-                or self.pass_protection or self.pass_rush_stats or self.standings_records or self.cpu_passer_iq or self.cpu_clock2 or self.scramble_blocking or self.protection_calls or self.audible_legend or self.intro_autoskip or self.modern_injured_reserve or self.load_user_team_guard)  # b778-pr1, b779-st1, b780-j1, b780 mc1
+                or self.pass_protection or self.pass_rush_stats or self.standings_records or self.cpu_passer_iq or self.cpu_clock2 or self.scramble_blocking or self.protection_calls or self.audible_legend or self.intro_autoskip or self.modern_injured_reserve or self.load_user_team_guard or self.save_list_type_guard)  # b778-pr1, b779-st1, b780-j1, b780 mc1
 
     def to_recipe(self) -> dict[str, Any]:
         d = asdict(self)
@@ -1169,6 +1175,7 @@ del _preset
 for _preset in PRESETS.values():
     _preset["contract_college_guard"] = True
     _preset["load_user_team_guard"] = True  # b780 mc1: Franchise load with no human club (a retail crash path)
+    _preset["save_list_type_guard"] = True  # b780 mc1: boot save list with a NULL save type (a retail crash path)
     # b780 c1 (wired at b780-int): the coach career counter fix is a records bug fix: on in every preset
     _preset["coach_career_fix"] = True
     # b780 hist1: the history pool fix is a 2004 bug fix (wrapped career totals, a stalled full pool): on in every preset
@@ -2802,6 +2809,23 @@ def _apply_load_user_team_guard(plan: "BuildPlan", target: Path, receipt: dict, 
     receipt["steps"].append({"step": "load_user_team_guard", **{k: v for k, v in guard_receipt.items() if k != "reservations"}})
     receipt["result"]["load_user_team_guard"] = "applied"
 
+@_core_step("save_list_type_guard")
+def _apply_save_list_type_guard(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    """b780 mc1: the boot save-list type guard (two in-place sites, no allocation)."""
+    if not plan.save_list_type_guard:
+        return
+    module = _core_module("nfl2k5_save_list_type_guard")
+    if module is None:
+        raise RuntimeError("The boot save-list guard needs nfl2k5_save_list_type_guard.")
+    progress("Boot: save-list type guard", 0, 0)
+    payload, guard_receipt = module.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, payload)
+    final = _xbe_bytes(target)
+    if final != payload or module.status(final) != "applied":
+        raise RuntimeError("The boot save-list guard: the output does not read back as applied")
+    receipt["steps"].append({"step": "save_list_type_guard", **guard_receipt})
+    receipt["result"]["save_list_type_guard"] = "applied"
+
 @_core_step("sim_stats")
 def _apply_sim_stats(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
     """b778-sim1: normalise the simulated game's clock pace (in place, no allocator request)."""
@@ -3074,6 +3098,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
                                ("lineup_roles", "nfl2k5_lineup_roles"),  # b780 sub1
                                ("modern_injured_reserve", "nfl2k5_injured_reserve"), ("injured_reserve_guard", "nfl2k5_injured_reserve"),  # b780 IR1
                                ("load_user_team_guard", "nfl2k5_load_user_team_guard"),  # b780 mc1
+                               ("save_list_type_guard", "nfl2k5_save_list_type_guard"),  # b780 mc1
                                ("modern_clock_led", "nfl2k5_clock_led"),  # b778-sd4
                                ("letter_grades", "nfl2k5_letter_grades"),
                                ("honors_page", "nfl2k5_honors"), ("honors_history", "nfl2k5_honors_history"),
@@ -3401,6 +3426,8 @@ def _inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[st
     out["modern_injured_reserve"] = {"guard": "retail"}.get(out["injured_reserve"], out["injured_reserve"])
     load_guard = _core_module("nfl2k5_load_user_team_guard")  # b780 mc1
     out["load_user_team_guard"] = load_guard.status(_xbe_bytes(source)) if load_guard is not None else "unavailable"
+    save_list_guard = _core_module("nfl2k5_save_list_type_guard")  # b780 mc1
+    out["save_list_type_guard"] = save_list_guard.status(_xbe_bytes(source)) if save_list_guard is not None else "unavailable"
     sim_stats = _core_module("nfl2k5_sim_stats")  # b778-sim1
     out["sim_stats"] = sim_stats.status(_xbe_bytes(source)) if sim_stats is not None else "unavailable"
     quick_release = _core_module("nfl2k5_quick_long_release")  # b780-c-release
@@ -5718,6 +5745,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("The career history pool fix must be Off or On.")
     if type(plan.load_user_team_guard) is not bool:  # b780 mc1
         raise ValueError("The Franchise load user-team guard must be Off or On.")
+    if type(plan.save_list_type_guard) is not bool:  # b780 mc1
+        raise ValueError("The boot save-list type guard must be Off or On.")
     if type(plan.sim_cb_tackles) is not bool:  # b778-cb1
         raise ValueError("Cornerback tackle credit must be Off or On.")
     if type(plan.sim_stats) is not bool:  # b778-sim1
@@ -8413,6 +8442,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     _apply_history_pool(plan, target, receipt, progress)
     # b780 mc1: the Franchise load user-team guard, in place (the deserializer call and the accessors' padding)
     _apply_load_user_team_guard(plan, target, receipt, progress)
+    # b780 mc1: the boot save-list type guard, in place (the matcher prologue and its .text padding)
+    _apply_save_list_type_guard(plan, target, receipt, progress)
     # b778-cb1: cornerback tackle credit, after the Contracts guard (LATE_OWNERS order)
     _apply_sim_cb_tackles(plan, target, receipt, progress)
     # b778-sim1: the simulated-game pace fix is in place and touches no allocator owner
@@ -8571,6 +8602,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("the career history pool fix did not survive the final passes")  # b780 hist1
     if plan.load_user_team_guard and _core_module("nfl2k5_load_user_team_guard").status(_xbe_bytes(target)) != "applied":
         raise ValueError("the Franchise load user-team guard did not survive the final passes")  # b780 mc1
+    if plan.save_list_type_guard and _core_module("nfl2k5_save_list_type_guard").status(_xbe_bytes(target)) != "applied":
+        raise ValueError("the boot save-list type guard did not survive the final passes")  # b780 mc1
     if plan.sim_rb_injuries and _core_module("nfl2k5_sim_rb_injuries").status(_xbe_bytes(target)) != "applied":
         raise ValueError("simulated RB short injuries did not survive the final passes")  # b779-sim2
     if plan.catch_snap_limit and _core_module("nfl2k5_catch_snap_limit").status(_xbe_bytes(target)) != "applied":  # b780-cv4

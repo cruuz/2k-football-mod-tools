@@ -34,6 +34,15 @@ class StaticTests(unittest.TestCase):
                                 (0x160775, 'push', 'esi'), (0x160776, 'xor', 'esi, esi'),
                                 (0x160778, 'jmp', '0x16a610'), (0x16077d, 'xor', 'eax, eax'), (0x16077f, 'ret', '')])
 
+    def test_in_place_on_in_every_preset_and_at_64_mb(self):
+        from mod_editor.core import mod_build, nfl2k5_memory_budget as mb, nfl2k5_xbe_space as space
+        self.assertNotIn(guard.OWNER, space.LATE_OWNERS)
+        self.assertFalse(hasattr(guard, "REQUESTS"))
+        for name in ("softdrink_basic", "softdrink_advanced", "softdrink_experimental"):
+            self.assertIs(mod_build.PRESETS[name]["save_list_type_guard"], True, name)
+        self.assertIn("save_list_type_guard", mb.PROFILE_64_ON)
+        self.assertIs(mb.profile_64_plan(None).get("save_list_type_guard"), True)
+
     @unittest.skipUnless(XBE.is_file(), 'pinned USA retail XBE required')
     def test_apply_status_and_replay(self):
         from tests.nfl2k5_supersim_draft_fixture import retail_bytes
