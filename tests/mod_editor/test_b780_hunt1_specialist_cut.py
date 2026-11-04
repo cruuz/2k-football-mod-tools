@@ -40,6 +40,32 @@ def with_native_release(payload: bytes) -> bytes:
     return bytes(out)
 
 
+def revision_five_money() -> bytes:
+    """The money window as revisions 3 to 5 installed it: the fill gate with only the count test (rebuilt here from
+    the same gate and the same targets; its digest is the owner's PREVIOUS_REVISION_5 entry)."""
+    from mod_editor.core.nfl2k5_franchise_economy_code import SYMBOLS, WINDOWS
+    gate, room = SYMBOLS["economy_fill_gate"], SYMBOLS["economy_fill_room"]
+    window = WINDOWS[economy.MONEY_WINDOW]
+    stub = bytearray(bytes.fromhex("8b4c24048b54240c"))
+    stub += b"\xe8" + struct.pack("<i", room - (gate + len(stub) + 5))
+    stub += bytes.fromhex("85c0740f8944240c81ec14010000")
+    stub += b"\xe9" + struct.pack("<i", 0x322BB6 - (gate + len(stub) + 5))
+    stub += bytes.fromhex("31c0c210000f0b")
+    return (window[:gate - economy.MONEY_WINDOW] + bytes(stub)).ljust(len(window), b"\xcc")
+
+
+def with_revision_five_gate(payload: bytes) -> bytes:
+    """``payload`` with the fill gate of revision 5 (a club of 54 or more signs nobody)."""
+    from mod_editor.core.nfl2k5_bump_strength import _sections, section_digest
+    image = XbeImage(payload)
+    out = bytearray(payload)
+    at = image.offset(economy.MONEY_WINDOW, 198)
+    out[at:at + 198] = revision_five_money()
+    for section in _sections(bytes(out)):
+        out[section.header_offset + 36:section.header_offset + 56] = section_digest(bytes(out), section)
+    return bytes(out)
+
+
 class SiteTests(unittest.TestCase):
     def test_the_release_guard_is_revision_six_and_reads_back(self):
         self.assertEqual(economy.REVISION, 6)
@@ -65,6 +91,8 @@ class SiteTests(unittest.TestCase):
         window = image.offset(economy.ROSTER_M_WINDOW, 160)
         guard = economy.SYMBOLS["economy_vet_release"] - economy.ROSTER_M_WINDOW
         before[window + guard:window + 160] = b"\xcc" * (160 - guard)
+        money = image.offset(economy.MONEY_WINDOW, 198)
+        before[money:money + 198] = revision_five_money()
         from mod_editor.core.nfl2k5_bump_strength import _sections, section_digest
         for section in _sections(bytes(before)):
             before[section.header_offset + 36:section.header_offset + 56] = section_digest(bytes(before), section)
@@ -73,6 +101,26 @@ class SiteTests(unittest.TestCase):
         upgraded, receipt = economy.apply(revision_five)
         self.assertEqual(receipt.get("upgraded_from"), "legacy")
         self.assertEqual(upgraded, applied)
+
+    def test_the_revision_five_money_window_is_the_one_the_owner_recognises(self):
+        import hashlib
+        self.assertEqual(hashlib.sha256(revision_five_money()).hexdigest(),
+                         economy.PREVIOUS_REVISION_5[economy.MONEY_WINDOW])
+
+    def test_the_gate_skips_into_the_room_rule_after_its_count_test(self):
+        # economy_fill_room + 9 is its body after "cmp byte [ecx+0x11C], 53; ja": the specialist path enters there
+        from mod_editor.core.nfl2k5_franchise_economy_code import SYMBOLS, WINDOWS
+        room = SYMBOLS["economy_fill_room"]
+        window = next(va for va in WINDOWS if va <= room < va + len(WINDOWS[va]))
+        head = WINDOWS[window][room - window:room - window + 10]
+        self.assertEqual(head[:7], bytes.fromhex("80b91c01000035"))
+        self.assertEqual(head[7], 0x77)                        # ja (the refusal)
+        self.assertEqual(head[9], 0x55)                        # push ebp: the body
+        gate = SYMBOLS["economy_fill_gate"]
+        code = WINDOWS[economy.MONEY_WINDOW][gate - economy.MONEY_WINDOW:]
+        calls = [gate + i + 5 + struct.unpack_from("<i", code, i + 1)[0] for i in range(len(code) - 5) if code[i] == 0xE8]
+        self.assertIn(room + 9, calls)
+        self.assertIn(room, calls)
 
     def test_star_retention_still_recognises_the_cut(self):
         applied, _ = economy.apply(retail_bytes())
@@ -157,6 +205,66 @@ class NativeStageSixTests(unittest.TestCase):
         p, cut, members = self.run_stage_six(self.after, K, extra="injured")
         self.assertNotIn(p, cut)
         self.assertIn(p, members)
+
+
+
+@unittest.skipUnless(HAVE_UC, "Unicorn is not installed")
+class CampSigningTests(unittest.TestCase):
+    """The native CPU signing 0x322BB0 (through the economy's fill gate) for club 0 in camp (stage 6, the native
+    65-man limit), grown to 58 with one-year free agents and with no kicker, with cap room."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.after, _ = economy.apply(retail_bytes())
+        cls.before = with_revision_five_gate(cls.after)
+        cls.body = retail_roster()
+
+    def sign(self, payload, position, *, remove_kicker=True, size=58):
+        from tools.franchise_economy.probe import start
+        m = start(self.body, payload)
+        m.leaf(0x177990, lambda: m.ret(pop=4), reason="progress renderer only")
+        m.leaf(0x14E520, lambda: m.ret(), reason="informational dialog only")
+        team, lst = m.team_base, m.root + 0x38
+        members = lambda: [m.get(team + 4 * i) for i in range(m.uc.mem_read(team + 0x11C, 1)[0])]
+        if remove_kicker:
+            for p in members():
+                if m.uc.mem_read(p + 0x35, 1)[0] == K:
+                    m.uc.mem_write(p + 0x35, bytes([3]))        # the club's kicker is listed as a receiver: no K
+        m.put(0xE576A4, 5)
+        free = [m.call(0x242500, ecx=lst, edx=i) for i in range(m.call(0x2424F0, ecx=lst))]
+        for p in free:
+            if m.uc.mem_read(team + 0x11C, 1)[0] >= size:
+                break
+            raw = bytearray(m.uc.mem_read(p, 84))
+            if raw[0x35] in (K, P) or raw[0x35] >= 17:
+                continue
+            m.call(0x2425C0, ecx=lst, edx=p)
+            raw[0x27] = (raw[0x27] & 0xF0) | 1; raw[0x24] = (raw[0x24] & 0xF0) | 1
+            struct.pack_into("<H", raw, 10, 30)
+            m.uc.mem_write(p, bytes(raw))
+            self.assertTrue(m.call(0xC3EE0, ecx=team, edx=p))
+        self.assertEqual(m.uc.mem_read(team + 0x11C, 1)[0], size)
+        m.put(0xE576A4, 6)
+        m.call(0xC3F00, ecx=team)
+        m.put(0xE3C278, m.get(team + 0x124) + 40000)         # room for a kicker
+        ok = m.call(0x322BB0, args=(team, position, 0xFFFF, m.ARENA + 0x1A0000), budget=200_000_000)
+        at = [p for p in members() if m.uc.mem_read(p + 0x35, 1)[0] == position]
+        return ok, at, m.uc.mem_read(team + 0x11C, 1)[0]
+
+    def test_a_camp_of_58_with_no_kicker_signs_one(self):
+        ok, kickers, count = self.sign(self.after, K)
+        self.assertTrue(ok)
+        self.assertEqual((len(kickers), count), (1, 59))
+
+    def test_before_the_rule_the_same_camp_signed_nobody(self):
+        ok, kickers, count = self.sign(self.before, K)
+        self.assertFalse(ok)
+        self.assertEqual((len(kickers), count), (0, 58))
+
+    def test_any_other_position_keeps_the_count_test(self):
+        ok, receivers, count = self.sign(self.after, 3, remove_kicker=False)
+        self.assertFalse(ok)
+        self.assertEqual(count, 58)
 
 
 if __name__ == "__main__":

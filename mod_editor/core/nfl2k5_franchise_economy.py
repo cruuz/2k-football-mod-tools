@@ -225,12 +225,23 @@ CLASS_SITES = frozenset({CLASS_WINDOW, CLASS_ALLOCATOR_TEST, CLASS_FREE_COUNT, C
 # otherwise jumps to the native release 0x2BD900 with the same registers, arguments and return address. Every other
 # release of the cut, and every other position, is unchanged. A revision-5 image (beta-80 RC) and a revision-4 image
 # (beta-79 / v0.8: roster_m and these sites as revision 4 had them) read "legacy" and upgrade in place.
+#
+# The same revision lets a club with no K or P sign one in camp: the fill gate (economy_fill_gate, the money window's
+# tail) refused every CPU fill signing for a club of 54 or more (a rule from the 54-man camps of revisions 3 and 4);
+# with revision 5's native camp of up to 65 a club that lost its only kicker or punter to an expiring contract or a
+# retirement could not sign one again before the season gate (seed 2602, year 4: Kansas City's Butker was not
+# re-signed and the club opened the season with no kicker). A K or P signing now skips the count test below the
+# native 65 and keeps the cap-room rule (economy_fill_room + 9, its body after the count test); every other signing
+# keeps the gate as it was.
 VETERAN_CUT_RELEASE = 0x2BFBBD      # call 0x2BD900 (the native release) inside the retail veteran cap cut 0x2BFAF0
 PINS[VETERAN_CUT_RELEASE] = "3d18b8832025dceab76a172af5a2e1082b4c45ca0d57b922dae19d762e4e2414"
 ROSTER_M_WINDOW = 0x3DBC10
-REVISION_6_SITES = frozenset({VETERAN_CUT_RELEASE, ROSTER_M_WINDOW})
-PREVIOUS_REVISION_5 = {
+MONEY_WINDOW = 0x31E580
+REVISION_6_WINDOWS = frozenset({ROSTER_M_WINDOW, MONEY_WINDOW})
+REVISION_6_SITES = frozenset({VETERAN_CUT_RELEASE}) | REVISION_6_WINDOWS
+PREVIOUS_REVISION_5 = {             # the windows as revision 5 (and, for money, revisions 3 and 4) installed them
     ROSTER_M_WINDOW: "8598a66655239f218e2976ca5265172b449bdeb5d7598e38288e03d4c216c934",   # roster_m before the release guard
+    MONEY_WINDOW: "89f77f74f246f1457c67a46019e43d3715acd906e87c78f240852a8cb057aafe",      # the gate with the count test only
 }
 REVISION = 6
 
@@ -315,24 +326,29 @@ def _standalone_status(payload: bytes) -> str:
                     hashlib.sha256(image.read(site.va, len(site.patched))).hexdigest() == PREVIOUS_REVISION_4[site.va]:
                 state = "revision4"
             states[site.va] = state
-        # b780 hunt1 (revision 6): an image from before the release guard has the cut's native release call and roster_m
-        # as revision 5 (or revision 4) left it. Read them as the revision they came with; the image is then "legacy".
-        before_6 = states[VETERAN_CUT_RELEASE] == "retail" and states[ROSTER_M_WINDOW] != "retail"
-        if before_6:
-            roster_m = hashlib.sha256(image.read(ROSTER_M_WINDOW, len(WINDOWS[ROSTER_M_WINDOW]))).hexdigest()
-            if roster_m == PREVIOUS_REVISION_5[ROSTER_M_WINDOW]:
-                states[ROSTER_M_WINDOW] = "applied"
-            elif roster_m != PREVIOUS_REVISION_4[ROSTER_M_WINDOW]:
-                return "foreign"
+        # b780 hunt1 (revision 6): an image from before revision 6 has the cut's native release call, and roster_m and
+        # money as the revision it came with (revision 5, 4 or 3: money's bytes are the same in all three; roster_m is
+        # retail before revision 4). Read those windows as that revision; the image is then "legacy".
+        before_6 = False
+        if states[VETERAN_CUT_RELEASE] == "retail":
             del states[VETERAN_CUT_RELEASE]
-        elif states[VETERAN_CUT_RELEASE] == "retail":
-            del states[VETERAN_CUT_RELEASE]          # every revision-3 site retail, so roster_m is too: an older image
+            for va in REVISION_6_WINDOWS:
+                if states[va] in ("applied", "retail"):
+                    continue
+                digest = hashlib.sha256(image.read(va, len(WINDOWS[va]))).hexdigest()
+                if digest == PREVIOUS_REVISION_5[va]:
+                    states[va] = "applied"
+                    before_6 = True
+                elif states[va] not in ("revision4", "previous"):
+                    return "foreign"
+                else:
+                    before_6 = True
         unique = set(states.values())
         if len(unique) == 1 and unique <= {"applied", "retail"}:
             if before_6:
                 return "legacy" if unique == {"applied"} else "foreign"
-            if unique == {"retail"} and VETERAN_CUT_RELEASE not in states:
-                return "retail"
+            if unique == {"applied"} and VETERAN_CUT_RELEASE not in states:
+                return "foreign"     # the windows of revision 6 without its cut call
             return next(iter(unique))
         if "revision4" in unique:
             # b780 b4-economy: a revision-4 image (beta-79 / v0.8) upgrades in place to revision 5. A revision-3

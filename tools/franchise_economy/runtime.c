@@ -194,9 +194,18 @@ SECTION(".roster_d") unsigned FAST economy_fill_room(u8 *team, unsigned budget) 
     return room > 0 ? minimum(budget, (unsigned)room) : 0;
 }
 
+/* b780 hunt1 (revision 6): the gate's room rule refuses a club of 54 or more (written when the trim held every camp at
+ * 54). With the native camp limit (revision 5) camps hold up to 65 from the draft to the season gate, so a club that
+ * lost its only kicker or punter in the offseason (an expiring contract, a retirement) could not sign one again before
+ * the gate's cut to 53, which cannot make one (v0.9 RC, seed 2602: Kansas City's kicker left in free agency and the club
+ * opened year 4 with none). A K or P signing (the native signing's second argument is 1 or 2) now skips that count test
+ * below the native 65 and keeps the cap-room rule: economy_fill_room + 9 is its body after the 9-byte count test
+ * (cmp byte [ecx+0x11C], 53; ja), with ECX and EDX as the body expects them. The fills only ask for a K or P where the
+ * club has none (the native minimum and wanted depth are 1). Every other signing keeps the gate as it was. */
 SECTION(".fill_gate") __attribute__((naked)) void economy_fill_gate(void) {
-    __asm__("mov 4(%esp), %ecx\nmov 12(%esp), %edx\n"
-            "call economy_fill_room\ntest %eax, %eax\njz 1f\n"
+    __asm__("mov 4(%esp), %ecx\nmov 12(%esp), %edx\nmov 8(%esp), %eax\ndec %eax\ncmp $1, %eax\nja 4f\n"
+            "cmpb $64, 0x11c(%ecx)\nja 4f\ncall economy_fill_room+9\njmp 5f\n4: call economy_fill_room\n"
+            "5: test %eax, %eax\njz 1f\n"
             "mov %eax, 12(%esp)\nsub $0x114, %esp\njmp 0x322bb6\n"
             "1: xor %eax, %eax\nret $16\n");
 }
