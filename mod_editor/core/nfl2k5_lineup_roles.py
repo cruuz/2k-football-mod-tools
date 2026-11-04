@@ -45,6 +45,11 @@ rank chain and, for paired positions, the side chain, each group in its order. A
 rank and side locks, so when he is healthy the pass seats him by rating again (and depth locks' release rule frees a
 clearly worse locked backup). A changed paired position with three or more healthy players keeps its rank starter out
 of side rows 0 and 1 (depth locks revision 4's rule). Code: docs/mod_editor/nfl2k5_lineup_roles_injured.S.
+A stage advance that reaches the regular season also runs the pass at its end (MC1's season-2 finding). The tail's
+0x27EDF0 calls 0x27EB80 after every earlier pass, so week 1 of every later season was played on stale charts. Its next
+call, 0x2BFDD0 (0x24868C), now goes to season_tail: 0x2BFDD0, then the pass when stage [0xE576A4] is 8. The pass
+also fills an empty long snapper slot (team +0x198) with the SPECIAL LS, the second center by rank: nothing in the game
+refills it once the offseason empties it.
 
 Two sites of rules 1-3, both 5-byte calls (rule 4 adds the three auto-depth calls): the builder's call to the picker (0xE8B20) and the picker's list-length call at the top
 of each tier (0xE87E9), outside the picker span the scheduled-sim tackle owner pins (0xE87F0..0xE8900, whose gate
@@ -97,17 +102,20 @@ TEAM_SIZE = 0x1F4
 INJURED_CODE = bytes.fromhex(
     "b8f0dc2b00ffd060b8e04b0c00ffd089c531f639ee7d3689f1b8504c0c00ffd089c785ff742483bf2801000000751b89f9b830ec1300ffd0"
     "85c07409833d4001e600007405e80500000046ebc661c355565381ec1801000089e5c7850401000000000000c7850c01000000000000c785"
-    "080100000a000000e893000000b898ec01008b8d040100000fa3c8731dc785080100000d000000e87400000083bd0c010000007405e81401"
-    "0000ff850401000083bd040100001172ab81c4180100005b5e5dc331db31c931f60fb6871c01000039c673358b14b785d2742b0fb642353b"
-    "8504010000751f0fb74228518b8d08010000d3e85983e00739c8750a83fb41730589549d004346ebc04183f90872b8c3e8aeffffff31f631"
-    "c939de73158b54b500f64223807404b101eb0484c9750446ebe7c3c7850c01000001000000c7851401000000000000c78510010000000000"
-    "0031f639de732f8b54b5000fb64223c1e8073b8510010000751985c07404806252fc8b8514010000e819000000ff851401000046ebcdff85"
-    "1001000083bd100100000272bcc383f8077605b80700000051538b8d08010000bb07000000d3e3f7d366215a28d3e0660942285b59c3c785"
-    "080100000a000000e8f6feffff85db746a8b5500f6422380756131c931f639de730e8b44b500f640238075014146ebee83f903724652c785"
-    "080100000d000000e8befeffff5a31f683fe02732e3954b500740346ebf28b44b5048944b5004683fe0272f289550831f639de730e8b54b5"
-    "0089f0e85effffff46ebeec3")
+    "080100000a000000e8da000000b898ec01008b8d040100000fa3c8731dc785080100000d000000e8bb00000083bd0c010000007405e85b01"
+    "0000ff850401000083bd040100001172ab80bf98010000ff753ec785040100000c000000c785080100000a000000e82f00000083fb027220"
+    "8b550431f60fb6871c01000039c673103914b7740346ebed89f088879801000081c4180100005b5e5dc331db31c931f60fb6871c01000039"
+    "c673358b14b785d2742b0fb642353b8504010000751f0fb74228518b8d08010000d3e85983e00739c8750a83fb41730589549d004346ebc0"
+    "4183f90872b8c3e8aeffffff31f631c939de73158b54b500f64223807404b101eb0484c9750446ebe7c3c7850c01000001000000c7851401"
+    "000000000000c785100100000000000031f639de732f8b54b5000fb64223c1e8073b8510010000751985c07404806252fc8b8514010000e8"
+    "19000000ff851401000046ebcdff851001000083bd100100000272bcc383f8077605b80700000051538b8d08010000bb07000000d3e3f7d3"
+    "66215a28d3e0660942285b59c3c785080100000a000000e8f6feffff85db746a8b5500f6422380756131c931f639de730e8b44b500f64023"
+    "8075014146ebee83f903724652c785080100000d000000e8befeffff5a31f683fe02732e3954b500740346ebf28b44b5048944b5004683fe"
+    "0272f289550831f639de730e8b54b50089f0e85effffff46ebeec3b8d0fd2b00ffd0833da476e500087505e868fdffffc3")
 AUTO_DEPTH = 0x002BDCF0
 AUTO_DEPTH_CALLS = (0x00247D5C, 0x00248075, 0x0024853D)
+SEASON_TARGET, SEASON_CALL = 0x002BFDD0, 0x0024868C    # the stage advance tail's call after 0x27EDF0 (its 0x27EB80)
+SEASON_ENTRY = 0x283                                  # season_tail inside INJURED_CODE (nm of the assembled source)
 
 # Pinned code the owner relies on (sha256 over the span; the gate call's rel32 is masked: another owner may own it).
 GUARDS = (
@@ -353,6 +361,8 @@ def sites(code_va: int, gate: int = 0x000E8340) -> tuple[tuple[str, int, bytes, 
     tier = b"\xe8" + struct.pack("<i", code_va + entry["fb_len"] - FB_SITE - 5)
     depth = tuple((f"injured_depth_{i}", va, b"\xe8" + struct.pack("<i", AUTO_DEPTH - va - 5),
                    b"\xe8" + struct.pack("<i", code_va + INJ_OFFSET - va - 5)) for i, va in enumerate(AUTO_DEPTH_CALLS))
+    depth += (("season_depth", SEASON_CALL, b"\xe8" + struct.pack("<i", SEASON_TARGET - SEASON_CALL - 5),
+               b"\xe8" + struct.pack("<i", code_va + INJ_OFFSET + SEASON_ENTRY - SEASON_CALL - 5)),)
     return (("roles_pick", PICK_CALL, pick, hook), ("fb_len", FB_SITE, FB_RETAIL, tier)) + depth
 
 
