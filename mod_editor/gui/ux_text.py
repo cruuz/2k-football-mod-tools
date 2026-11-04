@@ -483,7 +483,8 @@ def disc_next_steps(target: str | Path, console_memory: int = 128) -> str:
             "An existing franchise keeps its saved roster. For SOFTDRINK, set xemu System Memory to 128 MiB.")
     if console_memory == 64:
         from mod_editor.core.nfl2k5_console_memory import NEXT_STEPS_64
-        text = (f"Next: copy {target} to your original Xbox or hakuX, or in xemu choose Machine > Load Disc.\n"
+        text = (f"Next: load {target} on your original Xbox or in hakuX the way you load other disc images there, or in "
+                "xemu choose Machine > Load Disc.\n"
                 "In the game, load the disc roster, then start a fresh franchise. "
                 "An existing franchise keeps its saved roster.\n" + NEXT_STEPS_64)
     return text

@@ -2945,7 +2945,7 @@ class BuildPanel(QWidget):
             return "not available in this release"
         reason = self.memory_forced_reason(key)  # b780-m64b
         if reason and state not in self._INSTALLED:
-            return "off at 64 MB: " + console_memory.lock_badge(reason).removeprefix(console_memory.LOCK_PREFIX)
+            return "off at 64 MB: " + console_memory.badge_reason(reason, key)
         if state == "applied":
             return "already installed"
         if state == "foreign":
@@ -3266,7 +3266,7 @@ class BuildPanel(QWidget):
                     if box is None or str(state.get(key)) in self._INSTALLED:
                         continue   # installed on the source: the page shows it installed and the blocker says why
                     badge = self._badges.get(key)
-                    lock_badge = console_memory.lock_badge(reason)
+                    lock_badge = console_memory.lock_badge(reason, key)
                     tip = self._memory_lock_tip(key, reason)
                     if key not in self._memory_locks or box.isEnabled() or (badge is not None and badge.text() != lock_badge):
                         badge_text = badge.text() if badge is not None else None
@@ -3354,7 +3354,7 @@ class BuildPanel(QWidget):
         for key, label in self._memory_cost_labels.items():
             if key not in costs:
                 label.hide()
-        prediction = console_memory.predict(self.plan())
+        prediction = console_memory.predict(console_memory.without_forced(self.plan()))
         self.memory_budget_label.setText(console_memory.budget_line(prediction, labels=self._memory_label))
 
     def _memory_blocker(self) -> str:

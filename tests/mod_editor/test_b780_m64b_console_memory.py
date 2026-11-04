@@ -245,6 +245,10 @@ class Model(unittest.TestCase):
             self.assertNotIn("roster_capacity", rules)
             self.assertIn("k128_memory", rules)   # the built-in rules stay
             self.assertEqual(cm.capacity_reason(), "the bigger roster needs 128 MB")
+            # the badge keeps a few words; the model's whole reason is the tooltip's
+            self.assertEqual(cm.lock_badge(rules["guardian_overlay"], "guardian_overlay"), "Off at 64 MB: needs 128 MB")
+            self.assertEqual(cm.lock_badge("It loads a section. Then more.", "module_loader"),
+                             "Off at 64 MB: loads a section")
 
     def test_budget_lines(self):
         with with_model(fake_model(fits=True, spare=412 * 1024 + 1023)):

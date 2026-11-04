@@ -115,7 +115,7 @@ class ForcedOff(_Page):
             self.assertEqual(panel._badges["k128_memory"].text(),
                              "Off at 64 MB: needs xemu at 128 MB and the real Xbox kernel")
             self.assertEqual(panel._badges["guardian_overlay"].text(), "Off at 64 MB: needs 128 MB")
-            self.assertEqual(panel._badges["k128_roster_heap"].text(), "Off at 64 MB: needs the 128 MB memory option")
+            self.assertEqual(panel._badges["k128_roster_heap"].text(), "Off at 64 MB: needs the memory above 64 MB")
             self.assertEqual(mod_build.validate_plan(plan), [])
             # everything else the preset ticked is still ticked
             for key in ("throw", "catch_slider", "hair_styles", "modern_coaches", "scorebug"):

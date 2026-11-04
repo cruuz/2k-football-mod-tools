@@ -78,6 +78,16 @@ OWN_REQUIRES_128 = {
     "reserves_16": _PREGAME_REASON,
     "created_teams_extra": _PREGAME_REASON,
 }
+#: The badge's few words for the options this module knows (the model's fuller reason goes in the tooltip).
+BADGE_REASONS = {
+    "k128_memory": "needs xemu at 128 MB and the real Xbox kernel",
+    "k128_roster_heap": "needs the memory above 64 MB",
+    "k128_early": "needs xemu at 128 MB",
+    "guardian_overlay": "needs 128 MB",
+    "reserves_16": "needs 128 MB",
+    "created_teams_extra": "needs 128 MB",
+    "hires_pack": "needs 128 MB (2x textures)",
+}
 #: Requirement keys that are not one switch: the roster edits' free-agent capacity growth (the bigger roster file).
 CAPACITY_KEYS = ("roster_capacity", "free_agent_capacity")
 CAPACITY_REASON = ("they grow the roster file (the bigger free-agent pool), which needs the 128 MB build: at 64 MB a disc "
@@ -194,14 +204,22 @@ def _reason_text(reason: object) -> str:
     return text[:1].lower() + text[1:] if text[:2] != text[:2].upper() else text
 
 
-def lock_badge(reason: str) -> str:
-    return LOCK_PREFIX + _short_reason(reason)
+def lock_badge(reason: str, key: str | None = None) -> str:
+    """'Off at 64 MB: needs 128 MB': the badge of an option the 64 MB target turned off."""
+
+    return LOCK_PREFIX + badge_reason(reason, key)
+
+
+def badge_reason(reason: str, key: str | None = None) -> str:
+    """The badge's few words (this module's for the options it knows, else the reason's first clause)."""
+
+    return BADGE_REASONS.get(key or "") or _short_reason(reason)
 
 
 def _short_reason(reason: str) -> str:
-    """The badge's few words; the whole reason goes in the tooltip."""
+    """The reason's first clause; the whole reason goes in the tooltip."""
 
-    text = reason.removeprefix("it ")
+    text = _reason_text(reason).split(". ", 1)[0].removeprefix("it ")
     for stop in (":", ";", " ("):
         if stop in text:
             text = text.split(stop, 1)[0]
@@ -228,11 +246,14 @@ def forced_off(plan: object) -> list[tuple[str, str]]:
 
 
 def without_forced(plan):
-    """A copy of the plan with every 64 MB forced-off option turned off (a 128 plan comes back unchanged)."""
+    """The plan as a 64 MB build can have it: every forced-off option off, and no roster edits that grow the roster
+    file (both are refused by name on their own); a 128 plan comes back unchanged."""
 
     if of(plan) != 64:
         return plan
     changes = {key: off_value(key) for key, _ in forced_off(plan)}
+    if capacity_records(plan):
+        changes["roster_edits"] = ""
     return replace(plan, **changes) if changes else plan
 
 
@@ -384,15 +405,15 @@ def problems(plan: object, labels=None, *, records: int | None = None, fit: bool
     blocked = forced_off(plan)
     if blocked:
         out.append("The 64 MB build cannot include "
-                   + "; ".join(f"{label(key, labels)} ({_short_reason(reason)})" for key, reason in blocked)
+                   + "; ".join(f"{label(key, labels)} ({badge_reason(reason, key)})" for key, reason in blocked)
                    + ". Turn " + ("it" if len(blocked) == 1 else "them") + " off, or choose Console memory 128 MB "
                    "(xemu, full SOFTDRINK).")
     grown = capacity_records(plan) if records is None else records
     if grown:
         name = Path(str(getattr(plan, "roster_edits", "") or "")).name or "the roster edits"
-        out.append(f"The 64 MB build cannot use the roster edits {name}: {capacity_reason()} ({grown:,} more "
-                   "records). Untick Include exported Rosters edits, or choose roster edits that do not grow the roster "
-                   "file (the SOFTDRINK 2K28 2026 rosters need 128 MB for now).")
+        out.append(f"The 64 MB build cannot use the roster edits {name} ({grown:,} more records): {capacity_reason()}. "
+                   "Untick Include exported Rosters edits, or choose roster edits that do not grow the roster file (the "
+                   "SOFTDRINK 2K28 2026 rosters need 128 MB for now).")
     if fit:
         prediction = predict(without_forced(plan))
         if prediction is not None and not prediction["fits"]:
