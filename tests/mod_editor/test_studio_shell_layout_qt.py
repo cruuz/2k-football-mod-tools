@@ -127,7 +127,7 @@ class StudioShellLayoutTests(unittest.TestCase):
         page = self.window._build_share_page
         self.assertIsInstance(page, QTabWidget)
         assert isinstance(page, QTabWidget)
-        self.assertEqual(_tab_titles(page), ["Build", "Share"])
+        self.assertEqual(_tab_titles(page), ["Build", "Install & Share"])   # b780-uxfix: the tab installs first
         self.assertIs(page.widget(0), self.window._build_panel)
         self.assertIs(page.widget(1), self.window._share_panel)
         self.assertEqual(self.window.page_title.text(), "Build & Share")
