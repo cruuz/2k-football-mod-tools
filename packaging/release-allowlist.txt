@@ -3986,3 +3986,5 @@ data/nfl2k5_coach_pool_2026.json
 tests/mod_editor/test_nfl2k5_franchise_footer.py
 tests/mod_editor/test_nfl2k5_history.py
 tests/mod_editor/test_nfl2k5_franchise_footer_transaction.py
+# b780 hunt3: Weekly Prep Player Results keeps the retail getter under the Player Progress owner
+tests/mod_editor/test_b780_hunt3_prep_results.py
