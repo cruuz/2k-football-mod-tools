@@ -1059,6 +1059,7 @@ mod_editor/core/nfl2k5_animation_bones.py
 mod_editor/core/nfl2k5_animation_import.py
 mod_editor/core/nfl2k5_animation_xbe.py
 mod_editor/core/nfl2k5_build_settings.py
+mod_editor/core/nfl2k5_console_memory.py
 mod_editor/core/nfl2k5_crib_reclaim.py
 mod_editor/core/nfl2k5_franchise_2026.py
 mod_editor/core/nfl2k5_franchise_2026_code.py
