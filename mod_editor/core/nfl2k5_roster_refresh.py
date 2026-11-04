@@ -178,6 +178,27 @@ def _reseat_chains(by, planned, active, rejoined, slots):
     return moved
 
 
+def _seat_lone_rejoined(by, active, rejoined):
+    """b780 roster1: an injured player who rejoins as his club's only player at his position (NE's fullback Reggie
+    Gilliam, LAC's Alec Ingold) takes that position's first rows, unlocked, instead of the overflow row, so the
+    position's row 0 is not empty until the first weekly sort. Returns the indices seated."""
+    positions = {}
+    for index in active:
+        record = by[index].record
+        positions.setdefault(record.get("position"), []).append(index)
+    seated = []
+    for members in positions.values():
+        if any(i not in rejoined for i in members):
+            continue                                   # the club has a player of its own there: the sort decides
+        lone = sorted(members)
+        for order, index in enumerate(lone):
+            rank, side = native_depth_pair(order)
+            by[index].record.set("depth_rank", rank)
+            by[index].record.set("depth_side", side)
+            seated.append(index)
+    return seated
+
+
 def _repair_create_buffers(doc):
     """Keep each unused CAP name pair exclusive and adjacent for native creation.
 
@@ -365,7 +386,7 @@ def apply_body(body, plan):
     owned = (owned - set(released)) | rejoined
     rr._require(all(by[i].record.get("contract_length") >= 1 for i in owned),
                 "Owned unsigned player needs a native contract initializer")
-    reseated, slots = [], depth_slots(rows)
+    reseated, seated, slots = [], [], depth_slots(rows)
     for team, row in zip(doc.teams, teams):
         active = actives[row["index"]]
         team.slots = [by[i].offset for i in active]
@@ -389,6 +410,7 @@ def apply_body(body, plan):
                 rec.set_depth_lock(role, row["specialists"][role] == index)
         # b780 roster1: a player released for room above held a locked row; close his chart (see _reseat_chains)
         reseated.extend(_reseat_chains(by, row["active"], active, rejoined, slots))
+        seated.extend(_seat_lone_rejoined(by, active, rejoined))
         for key, identity in row["specialists"].items():
             doc.body[team.offset + rr.SPECIAL_TEAM_OFFSETS[key]] = (
                 255 if identity is None else active.index(identity))
@@ -426,5 +448,7 @@ def apply_body(body, plan):
                                         "rejoined_players": sorted(by[i].display for i in rejoined),
                                         "released_players": [by[i].display for i in released],
                                         "free_agent_players": [by[i].display for i in injured_free],
-                                        # b780 roster1: rows moved up to close the chains the releases opened
-                                        "reseated_rows": len(reseated)}}
+                                        # b780 roster1: rows moved up to close the chains the releases opened,
+                                        # and injured players seated as their club's only player at a position
+                                        "reseated_rows": len(reseated),
+                                        "lone_rejoined_seated": sorted(by[i].display for i in seated)}}

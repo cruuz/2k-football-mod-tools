@@ -6,12 +6,12 @@ v0.9 RC disc that left 38 position charts on 24 clubs with a row no player holds
 GB right guard and right defensive tackle, LAC right defensive tackle, LV right corner ...); v0.8 had none.
 nfl2k5_roster_refresh now gives the released player's place to the next player the dated chart lists at his slot.
 
-The lint reads a whole roster the way the game's formations need it: 53 active players and at most 12 reserves per
-club, the position floors, every position's chart in the refresh's native rank/side pairs (no empty row, no player in
-two starting rows), the special-teams bytes on rostered players at a position that can fill them, no player on two
-lists, no jersey number twice on a club, every club player signed and with a college, and (on a disc image) no two
-players sharing a portrait id. KNOWN lists the problems this release leaves for a decision; anything else fails, and
-a KNOWN item that has been fixed is fine.
+The lint reads a whole roster the way the game's formations need it: 42 to 53 active players and at most 12 reserves
+per club, the position floors, every position's chart in the refresh's native rank/side pairs (no empty row, no player
+in two starting rows) and row 0 of every position the club carries held, the special-teams bytes on rostered players
+at a position that can fill them, no player on two lists, no jersey number twice on a club, every club player signed
+and with a college, and (on a disc image) no two players sharing a portrait id. KNOWN lists the problems this release
+leaves for a decision; anything else fails, and a KNOWN item that has been fixed is fine.
 
 Private data (skipped without it): NFL2K5_V08_ROST_BODY + NFL2K5_V08_ROSTER_EDITS (the released v0.8 disc roster and
 the roster-edits document the v0.8 and v0.9 recipes load; the refresh is replayed on it as the build runs it), and
@@ -49,7 +49,7 @@ ELIGIBLE = {"h": {"P", "K", "QB"}, "k": {"K"}, "ls": {"C", "TE", "G", "T"},
             "pr": {"WR", "CB", "FS", "SS", "HB"}}
 # Left for a decision in this release (b780 roster1 report; BETA81_QUEUE.md), or fixed by another job.
 KNOWN = {
-    ("LAR", "floor K"): "no kicker: the dated refresh has Harrison Mevis CUT (job HUNT1 fixes it from the sourced data)",
+    ("LAR", "floor K"): "no kicker: the 10/14 refresh has Harrison Mevis CUT (the 11/03 refresh signs Joshua Karty)",
     ("LAR", "special k"): "same",
     ("LAR", "chart K"): "same",
     ("NO", "special ls"): "no long snapper: Zach Wood on injured reserve with no record, Cal Adomitis CUT (10/14)",
@@ -90,11 +90,14 @@ def lint(doc, *, portraits=False):
             values = player.record.values
             if values["depth_rank"] < refresh.OVERFLOW_DEPTH_ROW:
                 charts[POSITIONS[values["position"]]].append((values["depth_rank"], values["depth_side"]))
-        # a position held only by unlocked overflow players (an injured player who rejoined) has no chart yet: the
-        # compactor seats him at the first depth-chart visit or weekly pass
+        # the locked chart of every position in the native pairs, and row 0 of every position the club carries held
+        # (an injured player who rejoined as the club's only fullback takes it, unlocked)
         for position, pairs in charts.items():
             if sorted(pairs) != [refresh.native_depth_pair(n) for n in range(len(pairs))]:
                 found[(club, f"chart {position}")] = sorted(pairs)
+        for position in set(names) - {"OLB"}:
+            if not any(n == position and p.record.get("depth_rank") == 0 for n, p in zip(names, roster)):
+                found[(club, f"row 0 {position}")] = [p.display for n, p in zip(names, roster) if n == position]
         for key, offset in rr.SPECIAL_TEAM_OFFSETS.items():
             slot = doc.body[team.offset + offset]
             if slot >= len(roster):
@@ -211,6 +214,25 @@ class ReleasedStarterTests(unittest.TestCase):
         doc, chart = self._chart(out, guards)
         self.assertNotIn(0, {rank for rank, _side, _r, _s in chart.values()})
         self.assertIn(("T0", "chart G"), lint(doc))
+
+    def test_an_injured_player_who_is_his_clubs_only_fullback_holds_row_0(self):
+        """NE 11/03: Reggie Gilliam, the only fullback, rejoins from injured reserve; the FB row 0 is his (unlocked),
+        while an injured receiver joining receivers stays at the overflow row for the weekly sort."""
+        plan = copy.deepcopy(self.plan)
+        fullback, receiver = plan["free_agents"][0], plan["free_agents"][1]
+        for index in (fullback, receiver):
+            plan["free_agents"].remove(index)
+            next(r for r in plan["players"] if r["index"] == index).update(status="RES", team="T5")
+        next(r for r in plan["players"] if r["index"] == fullback)["fields"] = {"position": 8}
+        out, receipt = refresh.apply_body(self.body, plan)
+        doc = rr.RosterDocument(out, scheme="one_pool", reference_year=2026)
+        fb, wr = doc.by_pool("primary")[fullback], doc.by_pool("primary")[receiver]
+        self.assertEqual((fb.record.get("depth_rank"), fb.record.get("depth_side")), refresh.native_depth_pair(0))
+        self.assertEqual((wr.record.get("depth_rank"), wr.record.get("depth_side")), (7, 7))
+        self.assertFalse(any(fb.record.depth_locks.values()))
+        self.assertEqual(receipt["injured_reserve"]["lone_rejoined_seated"], [fb.display])
+        self.assertNotIn(("T5", "row 0 FB"), lint(doc))
+        self.assertEqual(refresh.apply_body(out, plan)[0], out)
 
     def test_a_chart_that_lost_no_one_does_not_move(self):
         body, plan, guards, injured = self._club([("LG", 1), ("RG", 1), ("LG", 2), ("RG", 2)])
