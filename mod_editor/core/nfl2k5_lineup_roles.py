@@ -14,10 +14,10 @@ place: RB ordinal 3, read through the game's own ordinal decoder; one-pool posit
 15, and apply refuses an executable without that pairing). When the slot asks for the lead back (RB, ordinal 0), the user did not substitute that slot,
 the club has the ball ([0xE60280]+0x1C is this lineup's team) and it is an obvious passing down (3rd or 4th down with
 5 yards or more to go, or 2nd down with 10 or more: the down at [[0xE602EC]+4], the distance from the game's own
-0x207950), the 3DRB is asked first. He plays if he is not already on the field and passes the picker's own gate. On a
-CPU-run club ([0xE5775C + club*4] == 0; the MyCareer club counts as CPU) he must also be at least as good a receiver
-(catch + route running) as the starter, because the 3DRB row there is shipped data; on a human club the user's pick
-is honoured. In every other case, and whenever he cannot play, the native pick runs, so the starter keeps the slot.
+0x207950), the 3DRB is asked first. He plays if he is not already on the field, passes the picker's own gate and is at
+least as good a receiver (catch + route running) as the starter, on every club: MyCareer marks its club human and
+rewrites RB side = rank (so the row is RB2), and old franchise saves keep their own rosters. In every other case, and
+whenever he cannot play, the native pick runs, so the starter keeps the slot.
 
 Rule 2, the fullback fallback. With no fullback on the roster (thirteen 2026 clubs), the picker's next tier for an FB
 slot is the RB list, which retail reads from its end: the deepest back. That tier now reads forward from the second
@@ -53,11 +53,11 @@ CODE_SIZE = 1024
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16),)
 BUILD_CAPTION = "Third-down back on passing downs, gadget player on gadget plays; RB2 fills a missing fullback (experimental)"
 HELP_TEXT = ("EXPERIMENTAL. Your SPECIAL 3DRB comes in for the starting running back on obvious passing downs (3rd or 4th "
-             "down with 5 yards or more to go, 2nd down with 10 or more) when he can play; the starter keeps every other "
-             "snap. Your SPECIAL GAD comes in only on a play that hands the ball to a receiver (a reverse or an end "
-             "around), at that receiver's spot. A CPU club uses its 3DRB only when he is at least as good a receiver as "
-             "its starter, and its GAD only when he is at least as fast as the receiver he replaces. A club with no "
-             "fullback now puts its second running back at fullback instead of its deepest one.")
+             "down with 5 yards or more to go, 2nd down with 10 or more) when he's at least as good a receiver as your "
+             "starter; the starter keeps every other snap. Your SPECIAL GAD comes in only on a play that hands the "
+             "ball to a receiver (a reverse or an end around), at that receiver's spot; a CPU club uses its GAD only "
+             "when he is at least as fast as the receiver he replaces. A club with no fullback now puts its second "
+             "running back at fullback instead of its deepest one.")
 
 PICKER = 0x000E8790
 PICK_CALL = 0x000E8B20                      # in the lineup builder: call 0xE8790
@@ -142,12 +142,13 @@ def assemble(code_va: int, gate: int, *, third_down: bool = True) -> tuple[bytes
     b("8bd8")                                        # ebx = the 3DRB
     b("8b4c2430" "8b74242c" "8bd3"); a.append(("call", ALREADY_PLACED))
     b("85c0"); j8("75", "restore")
-    a.append(("calllabel", "is_human")); b("85c0"); j8("75", "gate")   # a human club's pick is honoured
+    # every club (coordinator 11/04): MyCareer marks its club human and rewrites RB side = rank, and old franchise
+    # saves keep their own rosters, so a human club's 3DRB row is not always the user's pick
     b("8b4c2414" "6a00" "55" "b801000000"); a.append(("call", LIST_READ))     # the starter: RB rank list row 0
     b("85c0"); j8("74", "gate")
     b("0fb64844" "0fb6503f" "03ca")                  # ecx = starter catch + route
     b("0fb64344" "0fb6533f" "03c2")                  # eax = 3DRB catch + route
-    b("3bc1"); j8("7c", "restore")                   # CPU club: the starter is the better receiver, keep him
+    b("3bc1"); j8("7c", "restore")                   # the starter is the better receiver: keep him
     label("gate")
     b("6a03" "ff74242c" "ff74242c" "8bcd" "8bd3")    # push 3, slot, a0; ecx = ctx, edx = player
     a.append(("call", gate)); b("85c0"); j8("74", "restore")
@@ -401,7 +402,10 @@ def apply(payload: bytes, *, third_down: bool = True) -> tuple[bytes, dict[str, 
     _require(rank_list != side_list, "lineup roles need the paired running back orders (one-pool positions)")
     before = payload
     gate = _gate_target(payload)
-    if space.status(payload) == "retail":
+    reserved = space.status(payload) != "retail" and any(r["owner"] == OWNER for r in space.layout(payload)["allocations"])
+    if reserved:                                     # the build's first space pass reserved it (LATE_OWNERS order)
+        allocation_receipt = {"reserved_by_first_pass": True}
+    elif space.status(payload) == "retail":
         payload, allocation_receipt = space.apply(payload, REQUESTS, scaleout=True)
     else:
         _require(space.is_scaleout(payload), "lineup roles need the scale-out allocator")

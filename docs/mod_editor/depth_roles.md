@@ -245,9 +245,10 @@ One late allocator owner, applied with the SPECIAL rows. It hooks two 5-byte cal
 
 * **Rule 1, 3DRB.** On an obvious passing down (3rd or 4th and 5 or more, 2nd and 10 or more: the down at
   `[[0xE602EC]+4]`, the distance from the game's own `0x207950`), a lead-back slot (RB ordinal 0, not a user
-  substitution, the club with the ball) asks for the 3DRB first. He plays if he is not on the field and passes the
-  picker's gate. A CPU-run club (`[0xE5775C + club*4] == 0`; the MyCareer club counts as CPU) takes him only when he
-  is at least as good a receiver (catch + route running) as its starter.
+  substitution, the club with the ball) asks for the 3DRB first. He plays if he is not on the field, passes the
+  picker's gate and is at least as good a receiver (catch + route running) as the starter, on every club. MyCareer
+  marks its club human and rewrites RB side = rank, so its 3DRB row is RB2, and old franchise saves keep their own
+  rosters, so the check runs for human clubs too (coordinator 11/04).
 * **Rule 2, fullback fallback.** With no fullback, the RB fallback tier of an FB slot on the field reads forward from
   RB2 (from the picker's own bound, never the starter). Retail read it from the end, which put in the deepest back.
   When the formation also asks for the power back (an RB ordinal-1 slot), he keeps his own slot and the next back
@@ -261,9 +262,8 @@ One late allocator owner, applied with the SPECIAL rows. It hooks two 5-byte cal
   set, and the last receiver picked sits.
 
 Proof: the game's own builder and picker under Unicorn on the v0.9 executable and roster, all 37 club books.
-- 3rd and 8 versus 1st and 10 over 1,211 offensive formations. Human club: the 3DRB took 703 lead-back slots; in 250
-  the club's 3DRB is the starter himself (two-back clubs). CPU club: the 3DRB came in on 26 slots, always the better
-  receiver.
+- 3rd and 8 versus 1st and 10 over 1,211 offensive formations: the 3DRB comes in only as the better receiver, on
+  human and CPU clubs alike (see the SUB1 sweep log for the old-save, MyCareer and shipped-default rosters).
 - Rule 2 changed the FB slot of 84 formations. In two ATL goal-line sets a TE plays FB, because the only other back
   is the power back, who keeps his slot.
 - Rule 3 changed none of the 1,281 non-gadget plays. On the 111 gadget plays a human club's GAD took the carrier

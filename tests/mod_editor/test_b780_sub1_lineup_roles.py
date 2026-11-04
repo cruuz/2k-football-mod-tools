@@ -4,8 +4,8 @@ The released v0.9 executable (with and without the owner) and its roster run und
 NFL2K5_V09_ROST_BODY; one-pool positions pair the running back orders, which the owner needs). One club's backs and
 receivers get chosen depth rows and ratings in memory, then the native ctx builder (0xE80D0) and lineup builder
 (0xE89F0) fill real formation personnel:
-- Rule 1: the SPECIAL 3DRB (RB side row 1) plays the lead back on obvious passing downs. A human club's pick is
-  honoured; a CPU club needs the better receiver.
+- Rule 1: the SPECIAL 3DRB (RB side row 1) plays the lead back on obvious passing downs when he is at least as good
+  a receiver as the starter, on every club (MyCareer and old saves included).
 - Rule 2: with no fullback, RB2 plays fullback, and the power back keeps his own slot.
 - Rule 3: the SPECIAL GAD (WR side row 3) takes the carrier spot of a play that hands a receiver the ball. A CPU club
   needs the faster man.
@@ -117,20 +117,38 @@ class LineupRolesTests(unittest.TestCase):
         return self.lineup(self.native, cat, **kw), self.lineup(self.owner, cat, **kw)
 
     # ------------------------------------------------------------------------------------------------ rule 1
-    def test_a_human_club_gets_its_weaker_receiving_3drb_on_3rd_and_8(self):
-        native, owner = self.both(I_FORM, down=3, togo=8)
-        self.assertEqual((native[10], owner[10]), (self.A, self.T))
-        self.assertEqual(owner[:10], native[:10])                  # every other slot as native
+    def receiver(self, p, value):
+        for m in (self.native, self.owner):
+            m.uc.mem_write(p + 0x44, bytes([value]))
+            m.uc.mem_write(p + 0x3F, bytes([value]))
 
-    def test_a_cpu_club_keeps_the_better_receiving_starter(self):
-        native, owner = self.both(I_FORM, down=3, togo=8, human=False)
-        self.assertEqual((native[10], owner[10]), (self.A, self.A))
-        for m in (self.native, self.owner):                        # a better receiver is used
-            m.uc.mem_write(self.T + 0x44, bytes([95]))
-            m.uc.mem_write(self.T + 0x3F, bytes([95]))
-        self.assertEqual(self.lineup(self.owner, I_FORM, down=3, togo=8, human=False)[10], self.T)
+    def test_a_weaker_receiving_3drb_stays_out_on_every_club(self):
+        # the 2026 / old-save layout: RB3 (T) at side row 1, a weaker receiver than the starter
+        for human in (True, False):
+            with self.subTest(human=human):
+                native, owner = self.both(I_FORM, down=3, togo=8, human=human)
+                self.assertEqual((native[10], owner[10]), (self.A, self.A))
+                self.assertEqual(owner, native)
+
+    def test_a_better_receiving_3drb_plays_3rd_and_8(self):
+        self.receiver(self.T, 95)
+        for human in (True, False):
+            with self.subTest(human=human):
+                native, owner = self.both(I_FORM, down=3, togo=8, human=human)
+                self.assertEqual((native[10], owner[10]), (self.A, self.T))
+                self.assertEqual(owner[:10], native[:10])          # every other slot as native
+
+    def test_mycareer_keeps_its_starting_back(self):
+        # MyCareer marks its club human and rewrites RB side = rank, so the 3DRB row is RB2 (P)
+        for m in (self.native, self.owner):
+            for rank, p in enumerate(self.backs):
+                self.depth(m, p, HB, rank, rank)
+        self.assertEqual(self.lineup(self.owner, I_FORM, down=3, togo=8)[10], self.A)   # P is the weaker receiver
+        self.receiver(self.P, 95)
+        self.assertEqual(self.lineup(self.owner, I_FORM, down=3, togo=8)[10], self.P)
 
     def test_only_obvious_passing_downs(self):
+        self.receiver(self.T, 95)
         for down, togo, third in ((1, 10, False), (2, 9, False), (2, 10, True), (3, 4, False), (3, 5, True),
                                   (4, 5, True), (4, 2, False)):
             with self.subTest(down=down, togo=togo):
@@ -142,6 +160,9 @@ class LineupRolesTests(unittest.TestCase):
         off = machine(payload, self.body)
         self.assertEqual(lr.read_settings(payload)["third_down"], False)
         self.setUp_on(off)
+        for p in (self.T,):
+            off.uc.mem_write(p + 0x44, bytes([95]))
+            off.uc.mem_write(p + 0x3F, bytes([95]))
         self.assertEqual(self.lineup(off, I_FORM, down=3, togo=8)[10], self.A)
 
     def setUp_on(self, m):
