@@ -115,5 +115,38 @@ class NativeTests(unittest.TestCase):
         self.assertEqual(self._matcher(self.guarded, 0), 0)
 
 
+@unittest.skipUnless(HAVE_UC and XBE.is_file(), 'pinned USA XBE, retail ROST and Unicorn required')
+class RealFlowTests(unittest.TestCase):
+    """b780 mc1 (crash_boot step 4): a cut free-agent MyPlayer, on the exe wired with modern injured reserve and the
+    save-list guard, has no human-controlled club (resolve_team clears the table for a free agent); the game's own
+    save writes it and a cold load opens Career Home without a fault."""
+
+    def test_cut_free_agent_save_loads_into_career_home(self):
+        from mod_editor.core import nfl2k5_my_career_mode as mode, nfl2k5_my_career_home as home
+        from mod_editor.core import nfl2k5_injured_reserve as ir
+        from tests.nfl2k5_supersim_draft_fixture import retail_bytes
+        from tests.mod_editor.test_nfl2k5_my_career_frontend import retail_roster
+        from tests.mod_editor.test_nfl2k5_my_career_mc1 import release
+        from tests.nfl2k5_my_career_home_fixture import Machine as Home
+        from tests.nfl2k5_my_career_played_fixture import Machine as Played
+        payload = guard.apply(ir.apply(home.apply(mode.apply(retail_bytes())[0])[0])[0])[0]
+        self.assertEqual((mode.status(payload), home.status(payload), ir.status(payload), guard.status(payload)),
+                         ('applied',) * 4)
+        roster = retail_roster()
+        m = Home(payload)
+        p = m.create(roster, club=15, position=0, preseason=False)
+        m.child_services()
+        release(m, p, 15)
+        self.assertEqual(m.get(m.state + 24), 4)
+        self.assertEqual([i for i in range(34) if m.get(0xE5775C + 4 * i)], [], 'a free agent has no human club')
+        saved = m.native_save(budget=1000000000)
+        m.close()
+        c = Played(payload)
+        c.cold(roster, saved)
+        self.assertEqual(c.top(), c.labels['apartment'], 'the cut free-agent save opens Career Home')
+        self.assertEqual(c.get(c.state + 24), 4)
+        c.close()
+
+
 if __name__ == '__main__':
     unittest.main()
