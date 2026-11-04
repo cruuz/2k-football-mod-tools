@@ -709,7 +709,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_deep_zone.py": "59fb0d2b1f5be90d90692d7f143d00d8091ceac2d9ba1ee9bd40c0f9f626cbf7",
         "mod_editor/core/nfl2k5_deep_zone_code.py": "421d08aa91966fb43667cdcc44813ff8cd2d898b8c47191bfa9050930e9667cc",
         "mod_editor/core/nfl2k5_defensive_try.py": "9d08e2abd2cd7a51d7e83d410d21e3cf5944f71e67b490d207aeec555060535c",
-        "mod_editor/core/nfl2k5_depth_chart_rows.py": "e28a433ba692816229144bd6ee4699adca638433c8a210bab9e6ce50a6daa946",
+        "mod_editor/core/nfl2k5_depth_chart_rows.py": "598421ec1e5e2af31de4d73d7169538ebe9a441ea8530723b99c546a0a1ccb68",
         "mod_editor/core/nfl2k5_depth_chart_storage.py": "acb37c1fbb13e327880574df1142d6cb1262e97b307bfd182a167647d0892a1e",
         "mod_editor/core/nfl2k5_depth_locks.py": "2a8d81dad13de921efc3b660eacd18f57e9d07bd0667de5af56ee5894102637f",
         "mod_editor/core/nfl2k5_depth_roles.py": "92a11e038973a1c421fe7f3162064bb62a9fd8cefd6bfb4bd9cc5765d3f3a19d",
