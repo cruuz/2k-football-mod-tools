@@ -100,11 +100,16 @@ class AllocatorTests(unittest.TestCase):
                     self.assertEqual(new[key], dict(row, va=row["va"] + 16, raw=row["raw"] + 16), f"{key} moved by more than 16")
                     continue
             self.assertEqual(new[key], row, f"{key} moved")
-        # b780 (p2 and the beta-80 owners): cpu_money_downs_late and cpu_third_down now live whole in the v4 pool, so the
-        # progression row is the last code in the v3 run (0x14F1F60, after letter_grades) and moves nobody at all.
-        self.assertEqual(sorted(shifted), [])
+        # b780 pres2 (Q51, 9b9d86f38): the 6,336-byte sprite scorebug no longer fits the v3 run, so the planner spills it
+        # whole to the v4 pool; cpu_money_downs_late and cpu_third_down (in the pool since p2) pack back into the run.
+        # The progression row sits at 0x14F0E40 after letter_grades, and the five later late owners in the run behind it
+        # follow it by exactly its 16-byte slot (checked above), as before p2.
+        self.assertEqual(sorted(shifted), [("nfl2k5_cpu_money_downs_late", "code"), ("nfl2k5_cpu_third_down", "code"),
+                                           ("nfl2k5_module_loader", "code"), ("nfl2k5_return_coverage", "code"),
+                                           ("nfl2k5_star_career", "code")])
         for late in ("nfl2k5_cpu_money_downs_late", "nfl2k5_cpu_third_down"):
-            self.assertGreaterEqual(new[(late, "code")]["va"], space.POOL_VA, late)
+            self.assertLess(new[(late, "code")]["va"], RUN_END, late)
+        self.assertGreaterEqual(new[("nfl2k5_scorebug_runtime", "code")]["va"], space.POOL_VA)
         self.assertTrue(all(new[key]["va"] + new[key]["size"] <= RUN_END for key in shifted))   # still inside the v3 code run
         self.assertEqual(sorted(k for k in new if k not in old), [(progress.OWNER, "code")])
         mine, f4 = new[(progress.OWNER, "code")], new[(lg.OWNER, "code")]
