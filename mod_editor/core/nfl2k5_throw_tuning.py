@@ -74,6 +74,7 @@ from . import nfl2k5_practice_squad_screen as practice_squad_screen_patch
 from . import nfl2k5_abilities_runtime as abilities_patch
 from . import nfl2k5_qb_spy_runtime as qb_spy_patch
 from . import nfl2k5_calendar_engine as calendar_engine_patch
+from . import nfl2k5_later_schedule as later_schedule_patch  # b780-season1: later seasons keep the template's weekdays, kickoffs and Thanksgiving hosts (with the calendar)
 from . import nfl2k5_read_option_runtime as read_option_patch
 from . import nfl2k5_franchise_2026 as franchise_2026_patch
 from . import nfl2k5_senior_bowl as senior_bowl_patch
@@ -1975,6 +1976,7 @@ def _grown_status_fields(payload):
             "abilities_settings": abilities_patch.read_settings(payload),
             "qb_spy": qb_spy_patch.status(payload),
             "calendar_engine": calendar_engine_patch.status(payload),
+            "later_schedule": later_schedule_patch.status(payload),
             "zone_drop_settings": zone_drop_patch.read_settings(payload)}
 
 
@@ -2409,6 +2411,8 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
         (scramble_tuning, scramble_tuning_patch, "scramble_tuning_patch", "experimental slow-QB acceleration"),
         (all_stadiums, roster_storage_patch, "all_stadiums_patch", "all 82 Create a Team stadiums (experimental)"),
         (calendar_engine, calendar_engine_patch, "calendar_engine_patch", "128-season calendar (experimental)"),
+        # b780-season1: rides with the calendar (its date helpers); no allocation, the code sits in four helpers only the old tail called
+        (calendar_engine, later_schedule_patch, "later_schedule_patch", later_schedule_patch.BUILD_CAPTION),
         (abilities, _abilities_adapter(abilities_off_week, abilities_lock_right_stick, abilities_lock_special_moves, abilities_lock_speedster,
                             abilities_right_stick_stars_only, abilities_button_moves_stars_only,
                             abilities_charge_stars_only, abilities_star_access),
