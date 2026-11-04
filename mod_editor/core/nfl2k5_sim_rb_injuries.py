@@ -52,7 +52,10 @@ again for the same team (up to ``FULLBACK_REDRAWS`` times), so the other candida
 weights, and a halfback drawn this way takes the halfback path above (an injured back passes it to the next healthy
 one). If the lottery returns the fullback every time (a club whose first two backs are hurt, so weak backs fill the
 HB slots), the HB1 lineup slot takes the carry. A halfback the depth chart puts in the FB slot keeps the retail carries;
-only the position-8 fullback is thinned. (A first version gave every such carry to HB1: lead backs 1,075 yards and 20
+only the position-8 fullback is thinned. Two v0.8-executable seasons with beta-80's sim owners and this guard (seeds
+2502/2501, against the same seeds without it): fullbacks 46.7/44.9 -> 3.3/3.1 carries a team-season (9.9/9.6% -> 0.7%),
+top fullback 167/741/5 and 172/682/6 -> 19/72/0 and 12/52/0, no fullback game of 100 yards or 2 TDs; lead backs 234/237
+carries and 949/972 yards (NFL 218 and 958), 15/15 backs over 1,000 (NFL 13.4). (A first version gave every such carry to HB1: lead backs 1,075 yards and 20
 backs over 1,000 against the NFL's 958 and 13.4. A second kept the fullback after three fullback draws: 4.1-4.2
 carries a team-season, but on hunt1's guard one club with its first two backs out gave its fullback 12-14 carries in
 three games, 64 for the season.) The guard grew from 350 to 427 bytes, so it moved from offset 256 to 208 (hunt1's
