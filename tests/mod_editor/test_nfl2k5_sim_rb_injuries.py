@@ -17,7 +17,8 @@ class ConstantTests(unittest.TestCase):
         self.assertAlmostEqual(inj.LONG_THRESHOLD / 65536 * 17, 0.2101, places=3)
         self.assertAlmostEqual((inj.SHORT_END - inj.LONG_THRESHOLD) / 65536 * 17, 1.4804, places=3)
         self.assertEqual(inj.INJURY_MASK, 0xBFC00000)
-        self.assertEqual(inj.ROTATION_THRESHOLD, 1311)          # 2% of a healthy HB selection goes to the next back (b779-int1)
+        self.assertEqual(inj.ROTATION_THRESHOLD, 1311)          # 2% of a lead back's selections go to HB2 (b779-int1, b780 hunt1)
+        self.assertEqual((inj.LEAD_BACK_SLOT, inj.SECOND_BACK_SLOT), (0x0C, 0x14))
 
     def test_owner_and_allocation_request(self):
         self.assertEqual(inj.OWNER, "nfl2k5_sim_rb_injuries")
@@ -67,6 +68,11 @@ class ConstantTests(unittest.TestCase):
         self.assertEqual(targets.count(inj.FN_HUMAN_CLUB), 0)
         self.assertEqual(inj.HUMAN_FLAGS, 0xE5775C)
         self.assertEqual(code[:inj.SUB_OFFSET].count(bytes.fromhex("833c9d5c77e50000")), 1)  # cmp dword [0xE5775C+ebx*4], 0
+        # the guard reads the lineup's HB1 and HB2 slots and no longer walks the clubs (no franchise root load)
+        guard = code[inj.SUB_OFFSET:]
+        self.assertIn(bytes.fromhex("8b480c"), guard)                  # mov ecx, [eax+0xc]
+        self.assertIn(bytes.fromhex("8b4814"), guard)                  # mov ecx, [eax+0x14]
+        self.assertNotIn(struct.pack("<I", inj.LEAGUE_ROOT), guard)
 
     def test_apply_is_read_back_and_idempotent(self):
         data = retail_bytes()
@@ -213,6 +219,13 @@ class RollTests(unittest.TestCase):
 
 @unittest.skipUnless(HAVE_UC, "unicorn is needed")
 class CarrierGuardTests(unittest.TestCase):
+    """The assembled guard on a constructed sim team: its lineup slots +8 QB1, +0xC HB1, +0x10 FB1 (empty here) and
+    +0x14 HB2, for a club whose roster list is HB1, HB2, WR, HB3, QB. HB3 is on the club but not in this game's lineup
+    (the deep back the beta-79 list scan handed carries to: rushing yards with 0 games). The retail lottery 0x103360
+    is stubbed to the selection and the league draw to a fixed value."""
+
+    ROLES = (("hb1", 7), ("hb2", 7), ("wr", 3), ("hb3", 7), ("qb", 0))
+
     @classmethod
     def setUpClass(cls):
         data = retail_bytes()
@@ -220,70 +233,95 @@ class CarrierGuardTests(unittest.TestCase):
             raise unittest.SkipTest("private USA retail XBE is absent")
         cls.payload = data
 
-    def machine(self, selected_kind="injured", backup=True, draw=65535):
+    def machine(self, selected="hb1", injured=(), draw=65535, code_for=None, lineup=("qb", "hb1", None, "hb2")):
         m = Machine(self.payload, trace_writes=False)
-        root = m.ARENA + 0x1000
-        teams = m.ARENA + 0x2000
-        roster = m.ARENA + 0x3000
-        match = m.ARENA + 0x180000
+        root, clubs, roster, match, team = (m.ARENA + 0x1000, m.ARENA + 0x2000, m.ARENA + 0x3000,
+                                            m.ARENA + 0x180000, m.ARENA + 0x4000)
         self.code = 0x300F000
-        m.uc.mem_write(self.code, inj.code_for(self.code))
+        m.uc.mem_write(self.code, (code_for or inj.code_for)(self.code))
         m.uc.mem_protect(self.code & ~0xFFF, 0x1000, m.u.UC_PROT_READ | m.u.UC_PROT_WRITE | m.u.UC_PROT_EXEC)
-        # one club with two halfbacks: roster[0] injured, roster[1] healthy
-        for i in range(2):
-            m.uc.mem_write(roster + i * 0x54, bytes(0x54))
-            m.put(roster + i * 0x54, 0xA000 + i)                 # identity word
-            m.put(roster + i * 0x54 + 0x10, 0x9000 + i)          # name pointer
-            m.uc.mem_write(roster + i * 0x54 + 0x35, b"\x07")
-        m.put(teams + 0x11C, 0 + 2)
-        m.put(teams, roster)
-        m.put(teams + 4, roster + 0x54)
+        self.copies = {}
+        for i, (role, pos) in enumerate(self.ROLES):
+            rec, copy = roster + i * 0x54, match + i * 0x200
+            for at in (rec, copy):
+                m.uc.mem_write(at, bytes(0x54))
+                m.put(at, 0xA000 + i)                          # identity word
+                m.put(at + 0x10, 0x9000 + i)                   # name pointer
+                m.uc.mem_write(at + 0x35, bytes([pos]))
+                if role in injured:
+                    m.put(at + 0x20, 0x80000000 | (2 << 22))
+            m.put(clubs + 4 * i, rec)
+            self.copies[role] = copy
+        m.uc.mem_write(clubs + 0x11C, bytes([len(self.ROLES)]))
         m.put(0xB72918, root)
-        m.put(root + 0x1C, teams)
-        # selected match copy: a byte-identical identity to roster[0], injured
-        sel = match
-        m.uc.mem_write(sel, bytes(0x54))
-        m.put(sel, 0xA000)
-        m.put(sel + 0x10, 0x9000)
-        m.uc.mem_write(sel + 0x35, b"\x07")
-        m.put(sel + 0x20, 0x80000000 | (2 << 22))
-        if selected_kind == "healthy":
-            m.put(sel + 0x20, 0)
-        elif selected_kind == "receiver":
-            m.uc.mem_write(sel + 0x35, b"\x03")              # a wide receiver (b780 db2: 8 is the fullback rule)
-        if backup:
-            copy = match + 0x200
-            m.uc.mem_write(copy, bytes(0x54))
-            m.put(copy, 0xA001)
-            m.put(copy + 0x10, 0x9001)
-            m.uc.mem_write(copy + 0x35, b"\x07")
-            self.backup = copy
-        patch_code(m, 0x00103360, b"\xb8" + struct.pack("<I", sel) + b"\xc3")
-        patch_code(m, 0x00048BC0, b"\xb8" + struct.pack("<I", draw) + b"\xc3")
-        return m, sel
+        m.put(root + 0x1C, clubs)
+        for slot, role in enumerate(lineup):
+            m.put(team + 8 + 4 * slot, self.copies[role] if role else 0)
+        self.team = team
+        patch_code(m, 0x00103360, b"\xb8" + struct.pack("<I", self.copies[selected]) + b"\xc3")
+        self.draws = 0
 
-    def call(self, m):
-        stack = 0x300F800
-        m.uc.mem_write(stack, struct.pack("<I", m.STOP))
-        m.reg("ESP", stack)
-        m.uc.emu_start(self.code + inj.SUB_OFFSET, m.STOP, count=2000000)
-        return m.reg("EAX")
+        def league_draw():
+            self.draws += 1
+            m.ret(draw)
+        m.leaf(0x00048BC0, league_draw, reason="the league RNG, a fixed draw")
+        return m
 
-    def test_injured_halfback_returns_the_next_healthy_match_copy(self):
-        m, sel = self.machine()
-        self.assertEqual(self.call(m), self.backup)
-        self.assertNotEqual(self.backup, sel)
+    def call(self, m, offset=None):
+        got = m.call(self.code + (inj.SUB_OFFSET if offset is None else offset), esi=self.team, budget=2000000)
+        return {v: k for k, v in self.copies.items()}.get(got, hex(got))
 
-    def test_healthy_selection_rotates_on_its_draw(self):
-        m, sel = self.machine("healthy", True, draw=0)
-        self.assertEqual(self.call(m), self.backup)
-        m, sel = self.machine("healthy", True, draw=65535)
-        self.assertEqual(self.call(m), sel)
+    def test_an_injured_pick_passes_the_carry_to_the_lineups_other_halfback(self):
+        self.assertEqual(self.call(self.machine("hb1", injured=("hb1",))), "hb2")
+        # b780 hunt1: an injured HB2 hands it to HB1, never to HB3 (on the club, not dressed)
+        self.assertEqual(self.call(self.machine("hb2", injured=("hb2",))), "hb1")
+
+    def test_only_the_lead_back_rotates_and_every_healthy_pick_draws_once(self):
+        for selected, draw, expected in (("hb1", 0, "hb2"), ("hb1", 1310, "hb2"), ("hb1", 1311, "hb1"),
+                                         ("hb1", 65535, "hb1"), ("hb2", 0, "hb2"), ("hb2", 65535, "hb2")):
+            with self.subTest(selected=selected, draw=draw):
+                m = self.machine(selected, draw=draw)
+                self.assertEqual(self.call(m), expected)
+                self.assertEqual(self.draws, 1)              # the league RNG is drawn as before: once a healthy pick
+        m = self.machine("hb1", injured=("hb1",), draw=0)
+        self.assertEqual((self.call(m), self.draws), ("hb2", 0))   # an injured pick draws nothing, as before
+
+    def test_no_healthy_other_back_keeps_the_pick(self):
+        for selected, injured, lineup in (("hb1", ("hb1", "hb2"), ("qb", "hb1", None, "hb2")),
+                                          ("hb2", ("hb2",), ("qb", None, None, "hb2")),
+                                          ("hb1", ("hb1",), ("qb", "hb1", None, None)),
+                                          ("hb1", ("hb1",), ("qb", "hb1", None, "wr")),
+                                          ("hb1", ("hb1",), ("qb", "hb1", None, "hb1"))):
+            with self.subTest(selected=selected, injured=injured, lineup=lineup):
+                self.assertEqual(self.call(self.machine(selected, injured=injured, draw=0, lineup=lineup)), selected)
+
+    def test_other_positions_keep_retail(self):
+        for selected, draw in (("wr", 0), ("wr", 65535), ("qb", 0), ("qb", 65535)):
+            with self.subTest(selected=selected, draw=draw):
+                m = self.machine(selected, draw=draw)
+                self.assertEqual((self.call(m), self.draws), (selected, 0))
+
+    def test_the_guard_never_reads_the_club_list(self):
+        # the franchise root and the club list are poisoned: the answers come from the lineup slots alone
+        for selected, injured, draw, expected in (("hb1", ("hb1",), 65535, "hb2"), ("hb2", ("hb2",), 65535, "hb1"),
+                                                  ("hb1", (), 0, "hb2")):
+            with self.subTest(selected=selected):
+                m = self.machine(selected, injured=injured, draw=draw)
+                m.put(0xB72918, 0x24)
+                self.assertEqual(self.call(m), expected)
+
+    def test_beta79_gave_the_carry_to_a_back_outside_the_lineup(self):
+        # the shipped beta-79 / v0.8 guard (the list scan): an injured HB2 and a healthy HB2's rotation went to HB3
+        from mod_editor.core import nfl2k5_sim_rb_injuries_b779 as b779
+        for draw, injured in ((65535, ("hb2",)), (0, ())):
+            with self.subTest(draw=draw, injured=injured):
+                m = self.machine("hb2", injured=injured, draw=draw, code_for=b779.code_for)
+                self.assertEqual(self.call(m, b779.SUB_OFFSET), "hb3")
 
     def wrap_machine(self, code_for):
         """b780 hunt1: the club list is [healthy HB, WR, selected injured HB, WR] and the word after it is no pointer
         (in the club record the count word +0x11C follows the 65 slots). The next healthy back is BEFORE the
-        selected one, so the scan must wrap at the club count."""
+        selected one, so the beta-79 scan had to wrap at the club count."""
         m = Machine(self.payload, trace_writes=False)
         root, teams, roster, match = m.ARENA + 0x1000, m.ARENA + 0x2000, m.ARENA + 0x3000, m.ARENA + 0x180000
         self.code = 0x300F000
@@ -312,22 +350,15 @@ class CarrierGuardTests(unittest.TestCase):
         patch_code(m, 0x00048BC0, b"\xb8" + struct.pack("<I", 65535) + b"\xc3")
         return m, sel, backup
 
-    def test_the_scan_wraps_at_the_club_count_and_never_reads_past_the_list(self):
-        m, sel, backup = self.wrap_machine(inj.code_for)
-        self.assertEqual(self.call(m), backup)
-
     def test_beta79_read_past_the_list(self):
         from unicorn import UcError
         from mod_editor.core import nfl2k5_sim_rb_injuries_b779 as b779
         m, sel, backup = self.wrap_machine(b779.code_for)
+        stack = 0x300F800
+        m.uc.mem_write(stack, struct.pack("<I", m.STOP))
+        m.reg("ESP", stack)
         with self.assertRaises(UcError):                        # +0x35 through the word 0x24: address 0x59
-            self.call(m)
-
-    def test_receiver_and_no_backup_keep_retail(self):
-        for kind, backup, draw in (("receiver", True, 0), ("receiver", True, 65535), ("injured", False, 0)):
-            with self.subTest(kind=kind, backup=backup, draw=draw):
-                m, sel = self.machine(kind, backup, draw=draw)
-                self.assertEqual(self.call(m), sel)
+            m.uc.emu_start(self.code + b779.SUB_OFFSET, m.STOP, count=2000000)
 
 
 @unittest.skipUnless(HAVE_UC, "unicorn is needed")
