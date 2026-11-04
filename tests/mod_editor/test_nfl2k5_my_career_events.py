@@ -249,8 +249,10 @@ class HostBudgetTests(unittest.TestCase):
             # b780 n2: at a punt or field goal the Supersim hand-back keeps the CPU's call instead of reopening the
             # play-call screen (on the released disc the CPU punter then never snapped), and
             # mode_ff_hold_snap never holds a CPU snap into the last 3 s of the play clock (test_nfl2k5_my_career_punt_settle).
+            # b780 mc1: mode_play opens Choose team / Sign over Career Home for a MyPlayer without a club (by
+            # mode_loaded's route), and mode_loaded resumes the draft only for a prospect (test_nfl2k5_my_career_mc1).
             'tools/mycareer_mode/runtime.c':
-                '4310a36e9d85141611cd22351a22953ab0aefa6adf0dd23379e20ebc49168ea5',  # b780-int: b8 + j23 + n2, merged (scratch buffer at m3+3248)
+                'af754184ae80f4ae6db5118796e281c6f296a925e0141eaf0fba2ee79c1a3ee3',  # b780 mc1 on b780-int (b8 + j23 + n2)
             'tools/mycareer_mode/runtime.S':
                 # b780 n1: mode_camera_dir (the defensive camera read) and five byte-identical size rewrites.
                 'd7ae0a793c1b9cb52a8de0dcd2964f37b3b2546a8d34522c6cceadba38ab0f56',
