@@ -100,6 +100,74 @@ class FreeAgentContractTests(unittest.TestCase):
         self.assertEqual(refresh.apply_body(out, plan)[0], out)
 
 
+class InjuredReservePolicyTests(unittest.TestCase):
+    """b780 IR1 (room_policy "ir"): the injured stay on the club's list marked as the game's own long injury."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.body, cls.plan = _sample()
+
+    def full_club(self, weeks=None):
+        plan = copy.deepcopy(self.plan)
+        extra = plan["free_agents"][:11]
+        for index in extra:
+            plan["free_agents"].remove(index)
+        plan["teams"][0]["active"] += extra                       # 53
+        injured = plan["free_agents"].pop(0)
+        row = next(r for r in plan["players"] if r["index"] == injured)
+        row.update(status="RES", team="T0")
+        if weeks is not None:
+            row["ir_weeks"] = weeks
+        return plan, injured
+
+    def words(self, out, index):
+        import struct
+        doc = rr.RosterDocument(out, scheme="one_pool", reference_year=2026)
+        player = doc.by_pool("primary")[index]
+        return doc, player, struct.unpack_from("<II", doc.body, player.offset + 0x20)
+
+    def test_the_policy_keeps_him_marks_him_and_releases_nobody(self):
+        plan, injured = self.full_club(weeks=17)
+        plan["room_policy"] = "ir"
+        out, receipt = refresh.apply_body(self.body, plan)
+        doc, player, (w20, w24) = self.words(out, injured)
+        self.assertEqual(doc.club_of(player), 0)
+        self.assertEqual(len(doc.teams[0].slots), 54)                         # the 53 and one injured player
+        self.assertEqual(receipt["injured_reserve"]["released_for_room"], 0)
+        self.assertTrue(w20 & 0x80000000)
+        self.assertEqual((w20 >> 22) & 0xFF, 17)
+        self.assertEqual((w24 >> 28) & 7, 4)
+        self.assertEqual(receipt["injured_reserve"]["marked_to_start_on_ir"][0]["weeks"], 17)
+        self.assertEqual(refresh.apply_body(out, plan)[0], out)
+
+    def test_eight_weeks_by_default_and_only_the_marker_bits_change(self):
+        plan, injured = self.full_club()
+        plan["room_policy"] = "ir"
+        release = copy.deepcopy(plan)
+        release["room_policy"] = "release"
+        out, _r = refresh.apply_body(self.body, plan)
+        _doc, _p, (w20, _w24) = self.words(out, injured)
+        self.assertEqual((w20 >> 22) & 0xFF, 8)
+        self.assertEqual(refresh.long_injury_words(0, 0, 8), (0x80000000 | (8 << 22), 0x40000000))
+        with self.assertRaises(rr.RosterRecordError):
+            refresh.long_injury_words(0, 0, 3)                               # under four weeks is not a long injury
+
+    def test_the_default_policy_still_releases_for_room(self):
+        plan, injured = self.full_club()
+        out, receipt = refresh.apply_body(self.body, plan)
+        self.assertEqual(receipt["injured_reserve"]["released_for_room"], 1)
+        self.assertEqual(receipt["injured_reserve"]["policy"], "release")
+
+    def test_a_list_past_65_with_the_reserves_still_releases(self):
+        plan, injured = self.full_club()
+        plan["room_policy"] = "ir"
+        plan["teams"][0]["reserves"] = [plan["free_agents"].pop(0) for _ in range(12)]
+        plan["teams"][0]["active"] += [plan["free_agents"].pop(0) for _ in range(0)]
+        out, receipt = refresh.apply_body(self.body, plan)
+        doc = rr.RosterDocument(out, scheme="one_pool", reference_year=2026)
+        self.assertLessEqual(len(doc.teams[0].slots) + len(doc.reserves[0]), 65)
+
+
 class BirthCorrectionTests(unittest.TestCase):
     """Q48: a sourced birth-date correction (Logan Jones CHI C, 2001-10-29 in the plan's guard, 2001-10-19 in nflverse)."""
 

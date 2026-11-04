@@ -379,6 +379,9 @@ def retail_variant(document: dict, base: bytes, *, margin: int = fa3.DEFAULT_MAR
     count, vacant, body, floor = fit(base, stripped, rows, margin, progress, pinned)
     out = copy.deepcopy(document)
     out["roster_refresh"] = plan_with(stripped, rows, vacant, count, pinned)
+    # b780 IR1: modern injured reserve is forced off at 64 MB, so an injured player cannot start on the club's IR there:
+    # the variant releases players for room (charted starters protected) as the pre-IR plans did
+    out["roster_refresh"]["room_policy"] = "release"
     out.pop("free_agent_capacity", None)
     old = document.get("fa3_free_agent_depth") or {}
     kept_rows, left_rows = rows[:count], rows[count:]
@@ -525,7 +528,8 @@ def validate(variant: dict, source: dict, base: bytes, *, margin: int = fa3.DEFA
     teams_ok &= len(refresh.get("unrepresented") or []) == len(source_refresh.get("unrepresented") or []) + len(lost_pinned)
     teams_ok &= all(refresh.get(k) == source_refresh.get(k) for k in set(refresh) | set(source_refresh)
                     if k not in ("players", "free_agents", "teams", "contract_initializations", "identity_guards",
-                                 "unrepresented"))
+                                 "unrepresented", "room_policy"))
+    teams_ok &= refresh.get("room_policy", "release") == "release"
     check("refresh teams, guards, contracts and corrections unchanged (signed depth free agents re-addressed)", teams_ok,
           f"{len(lost_pinned)} club players removed from their clubs")
     from mod_editor.core import mod_build
@@ -569,11 +573,13 @@ def validate(variant: dict, source: dict, base: bytes, *, margin: int = fa3.DEFA
     if source.get("free_agent_capacity"):
         from tools.b77 import b778_fa4_capacity as fa4
         grown, _ = fa4.grow(base, source["free_agent_capacity"]["records"])
-        cbody, _cfloor, _cheal, chistory = _writers(grown, source_refresh, source.get("created_history"))
+        # the capacity route is the source's plan under the variant's own room policy (release at 64 MB)
+        route_plan = dict(source_refresh, room_policy=refresh.get("room_policy", "release"))
+        cbody, _cfloor, _cheal, chistory = _writers(grown, route_plan, source.get("created_history"))
         cdoc, cclubs, cfree = _clubs(cbody)
         out_keys = {f"{r['last']},{r['first']},{r['birth_date']}" for r in left_all if r["index"] in pinned_set}
         cfree_set = set(cfree)
-        differ, extra_total = [], 0
+        differ, extra_total, extra_keys = [], 0, set()
         for t in range(32):
             route, here = cclubs.get(t, []), clubs.get(t, [])
             extra = [k for k in here if k not in route]
@@ -584,13 +590,17 @@ def validate(variant: dict, source: dict, base: bytes, *, margin: int = fa3.DEFA
                     or len(extra) > freed:
                 differ.append(t)
             extra_total += len(extra)
+            extra_keys |= set(extra)
         check("every club identical to the source's capacity route (membership and depth order)", not differ,
               f"differing clubs {differ}; {len(out_keys)} club players left out for capacity, {extra_total} players the "
               "route released for room stay")
-        gone = set(cfree) - set(free)
+        gone = cfree_set - set(free)
+        left_keys = {f"{r['last']},{r['first']},{r['birth_date']}" for r in left_all}
+        # a free agent the capacity route has and the variant lacks is a row left out (a depth free agent, or a created
+        # player the route released for room) or a player the route released that a club now keeps
         check("free agents: the capacity route's minus the dropped depth rows",
-              set(free) <= set(cfree) and len(gone) == len([r for r in left_all if r["index"] not in pinned_set]) + extra_total,
-              f"{len(free)} vs {len(cfree)}")
+              set(free) <= cfree_set and gone == (left_keys & cfree_set) | extra_keys,
+              f"{len(free)} vs {len(cfree)}: {len(gone)} fewer")
         summary["capacity_route"] = {"primary_records": len(cdoc.by_pool("primary")), "free_agents": len(cdoc.free_agents),
                                      "body_bytes": len(cbody)}
     if compare_rost is not None:

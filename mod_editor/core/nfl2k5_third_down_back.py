@@ -35,6 +35,12 @@ def _speed(player: rr.Player) -> int:
     return int(player.record.values["speed"])
 
 
+def _locked(slots, position):
+    """The club's players at ``position`` who hold a locked chart row. b780 rst2: an injured player the refresh put back on
+    the club is unlocked at the overflow row (rank 7); he is out, so he is never a default third-down back or gadget."""
+    return [p for p in slots if p.record.values["position"] == position and p.record.values["depth_rank"] < rr.DEPTH_ROW_CAP]
+
+
 def _orders(slots, players):
     side = sorted(players, key=lambda p: (p.record.values["depth_side"], slots.index(p)))
     rank = sorted(players, key=lambda p: (p.record.values["depth_rank"], slots.index(p)))
@@ -55,7 +61,7 @@ def _third_down(doc: rr.RosterDocument) -> list[dict[str, Any]]:
     changes: list[dict[str, Any]] = []
     for club in range(min(len(CLUBS), len(doc.teams))):
         slots = doc.team_players(club)
-        backs = [p for p in slots if p.record.values["position"] == HB]
+        backs = _locked(slots, HB)
         if len(backs) < 2:
             continue
         side, rank = _orders(slots, backs)
@@ -79,7 +85,7 @@ def _gadgets(doc: rr.RosterDocument) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     for club in range(min(len(CLUBS), len(doc.teams))):
         slots = doc.team_players(club)
-        wrs = [p for p in slots if p.record.values["position"] == WR]
+        wrs = _locked(slots, WR)
         if len(wrs) < 4:
             rows.append({"club": club, "gad_rank": None, "reason": "fewer than four receivers", "changed": False})
             continue

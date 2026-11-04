@@ -361,7 +361,9 @@ def finalize(args):
             row["birth_date"] = node["birth_date"]
     plan["birth_corrections"] = sorted(corrections.values(), key=lambda c: c["index"])
     report["contract_corrected"] = traded_contracts(plan, fresh)
-    plan["third_down_backs"] = True            # b780 sub1: the writer's last step (nfl2k5_third_down_back)
+    plan.pop("third_down_backs", None)
+    plan["room_policy"] = "ir"                 # b780 IR1 / coordinator 11/04: injured players start on injured reserve
+    plan["special_row_defaults"] = True        # b780 sub1: the writer's last step (3DRB and GAD, nfl2k5_third_down_back)
     report["birth_corrected"] = [f"{c['first']} {c['last']} {c['was']} -> {c['birth_date']}" for c in plan["birth_corrections"]]
     report["other_birth_date_differences_not_changed"] = [m for m in mismatches if not any(
         m.startswith(f"{c['first']} {c['last']} ") for c in plan["birth_corrections"])]

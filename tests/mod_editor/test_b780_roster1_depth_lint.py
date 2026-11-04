@@ -24,6 +24,7 @@ import copy
 import hashlib
 import json
 import os
+import struct
 import sys
 import unittest
 from pathlib import Path
@@ -60,6 +61,13 @@ KNOWN = {
 }
 
 
+def starts_on_ir(doc, player):
+    """b780 IR1: the player's record says he is injured four or more weeks (+0x20 bit 31, weeks in bits 22..29, +0x24 status
+    Out): a modern-IR franchise start puts him on his club's injured reserve, off the 53."""
+    word20, word24 = struct.unpack_from("<II", doc.body, player.offset + 0x20)
+    return bool(word20 & 0x80000000) and ((word20 >> 22) & 0xFF) >= 4 and (word24 >> 28) & 7 == 4
+
+
 def lint(doc, *, portraits=False):
     """{(club, check): detail} for the 32 clubs of a one-pool roster document."""
     found = {}
@@ -78,11 +86,17 @@ def lint(doc, *, portraits=False):
         club = team.abbreviation
         roster = [doc.by_offset[o] for o in team.slots]
         names = [POSITIONS[p.record.get("position")] for p in roster]
-        if not rr.TEAM_MIN_PLAYERS <= len(roster) <= 53:          # the game's 42 and the 53-man active limit
-            found[(club, "active count")] = len(roster)
+        # b780 IR1: players who start the franchise on injured reserve are off the 53; the club's list holds the 53, them and
+        # the practice squad within 65
+        healthy = [p for p in roster if not starts_on_ir(doc, p)]
+        if not rr.TEAM_MIN_PLAYERS <= len(healthy) <= 53:         # the game's 42 and the 53-man active limit
+            found[(club, "active count")] = len(healthy)
+        if len(roster) + len(doc.reserves.get(team.index, ())) > 65:
+            found[(club, "list count")] = len(roster) + len(doc.reserves.get(team.index, ()))
         if len(doc.reserves.get(team.index, ())) > 12:
             found[(club, "reserves count")] = len(doc.reserves[team.index])
-        have = collections.Counter("FS/SS" if n in ("FS", "SS") else n for n in names)
+        have = collections.Counter("FS/SS" if n in ("FS", "SS") else n
+                                   for n, p in zip(names, roster) if not starts_on_ir(doc, p))
         for key, need in FLOORS.items():
             if have[need[0]] < len(need):
                 found[(club, f"floor {key}")] = have[need[0]]
@@ -95,8 +109,9 @@ def lint(doc, *, portraits=False):
         # (an injured player who rejoined as the club's only fullback takes it, unlocked)
         for position, pairs in charts.items():
             native = [refresh.native_depth_pair(n) for n in range(len(pairs))]
-            if position == "HB":
-                # b780 sub1: the default third-down back takes side row 1, so the side rows are a permutation of the native ones
+            if position in ("HB", "WR"):
+                # b780 sub1: the default third-down back (RB side row 1) and gadget (WR side row 3) reorder the side rows,
+                # so they are a permutation of the native ones
                 ok = [r for r, _s in sorted(pairs)] == [r for r, _s in native] and \
                     sorted(side for _r, side in pairs) == sorted(side for _r, side in native)
             else:
@@ -362,7 +377,8 @@ class PackRosterLintTests(unittest.TestCase):
     def test_no_depth_row_is_left_empty_by_the_release_for_room(self):
         charts = {k: v for k, v in lint(self.doc).items() if k[1].startswith("chart") and k not in KNOWN}
         self.assertEqual(charts, {})
-        self.assertGreater(self.receipt["injured_reserve"]["released_for_room"], 0)
+        if self.plan.get("room_policy") != "ir":
+            self.assertGreater(self.receipt["injured_reserve"]["released_for_room"], 0)
 
     def test_the_release_for_room_never_takes_a_charted_starter(self):
         """b780 rst2 (Q43): Aiden Fisher HOU WLB1, Corey Bullock CAR LG1, Travis Glover GB RG1, Hezekiah Masses LV RCB1,
@@ -384,6 +400,23 @@ class PackRosterLintTests(unittest.TestCase):
                     continue
                 self.assertIn(index, team["active"], (team["team"], key))
                 self.assertIn(rows[index]["status"], ("ACT", "INA"), (team["team"], key))     # on the club's 53
+
+    def test_every_injured_player_the_plan_keeps_starts_on_injured_reserve(self):
+        """b780 IR1 (room_policy "ir"): the plan's injured players stay on their clubs, marked out 8 weeks (17 when out
+        since week 4), and nobody is released for room."""
+        self.assertEqual(self.plan.get("room_policy"), "ir")
+        injured = {r["index"]: r for r in self.plan["players"] if r["status"] == "RES" and r["team"]}
+        self.assertEqual(self.receipt["injured_reserve"]["released_for_room"], 0)
+        marked = [self.doc.by_pool("primary")[i] for i in injured if self.doc.club_of(self.doc.by_pool("primary")[i]) is not None]
+        self.assertEqual(len(marked), self.receipt["injured_reserve"]["rejoined"])
+        for player in marked:
+            self.assertTrue(starts_on_ir(self.doc, player), player.display)
+            weeks = (struct.unpack_from("<I", self.doc.body, player.offset + 0x20)[0] >> 22) & 0xFF
+            self.assertIn(weeks, (8, 17), player.display)
+        for team in self.doc.teams[:32]:
+            on_ir = [p for p in self.doc.team_players(team.index) if starts_on_ir(self.doc, p)]
+            self.assertLessEqual(len(self.doc.team_players(team.index)) + len(self.doc.reserves.get(team.index, ())), 65)
+            self.assertLessEqual(len(self.doc.team_players(team.index)) - len(on_ir), 53)
 
     def test_no_free_agent_carries_a_contract(self):
         """b780 rst2 (Q44): unsigned contracts are zero, as retail's free agents."""

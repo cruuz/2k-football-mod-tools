@@ -86,6 +86,14 @@ def recent_practice_squad(path):
     return out
 
 
+def last_injury_reports(path):
+    """{gsis: the last week he is on a club's injury report}."""
+    out = collections.defaultdict(int)
+    for row in csv.DictReader(open(path, encoding="utf-8")):
+        out[row["gsis_id"]] = max(out[row["gsis_id"]], int(row["week"]))
+    return out
+
+
 def latest_charts(path):
     """({club: [entries]}, {club: dt}, {club: {dt: [entries]}}) from each club's newest chart and every snapshot."""
     newest, entries = {}, collections.defaultdict(list)
@@ -271,6 +279,7 @@ def update(document, roster_csv, charts_csv, as_of, body=None, injuries_csv=None
         if n["status"] in CLUB_STATUSES:
             club_week[club(n["team"])] = max(club_week[club(n["team"])], int(n["week"] or 0))
     stale = []
+    last_report = last_injury_reports(injuries_csv) if injuries_csv else {}
     # statuses and clubs
     for row in rows:
         n = fresh.get(row["gsis_id"])
@@ -285,6 +294,14 @@ def update(document, roster_csv, charts_csv, as_of, body=None, injuries_csv=None
         if status not in CLUB_STATUSES + (RESERVE_STATUS, INJURED_STATUS):
             team = team if status == "CUT" else row["team"]
         row.update(status=status, team=team, source=ROSTER_URL, source_as_of=as_of, source_week=n["week"])
+        if status == INJURED_STATUS:
+            # nflverse keeps one roster row per player and the charts keep listing injured players, so "on injured reserve
+            # since week 4 or earlier" (IR1: 17 weeks, else 8) is read from his roster row (a week 1 to 4 row: he left the
+            # weekly files then) or his last injury report (week 1 to 3: he went on injured reserve by week 4)
+            long_term = int(n["week"] or 0) <= 4 or 0 < last_report.get(row["gsis_id"], 0) <= 3
+            row["ir_weeks"] = 17 if long_term else 8                 # b780 rst2 / IR1
+        else:
+            row.pop("ir_weeks", None)
         if status in CLUB_STATUSES + (RESERVE_STATUS, INJURED_STATUS) and n["jersey_number"].isdigit():
             row["fields"]["jersey"] = int(n["jersey_number"])
     # membership

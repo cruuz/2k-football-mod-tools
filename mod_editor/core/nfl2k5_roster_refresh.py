@@ -68,6 +68,24 @@ def charted_ranks(rows):
 # would go on the club's injured reserve list and nobody would be released, so only _rejoin_injured's placement block and
 # the caller's release bookkeeping change; _make_room is the one function the release policy lives in.
 ROOM_POLICY = "release"
+# b780 rst2 + IR1 (Noah: modern injured reserve in beta-80). plan["room_policy"] = "ir" keeps every injured player on his club's
+# pointer list instead of releasing a healthy player for room, and marks him with the fields the game's own injuries use
+# (player +0x20 bit 31 injured, bits 22..29 weeks out, +0x24 bits 28..30 status 4 = Out): a modern-IR franchise start puts
+# a player who is injured four or more weeks on his club's injured reserve (off the 53, his salary still counted). A club's
+# list (healthy players, injured players and practice-squad reserves) holds at most 65. Weeks: the row's ``ir_weeks``
+# (17 for a player on injured reserve since week 4, else 8). Builds without modern IR keep the "release" policy.
+IR_LIST_LIMIT = 65
+IR_LONG_WEEKS, IR_DEFAULT_WEEKS = 4, 8
+INJURED_BIT, STATUS_OUT, STATUS_MASK, WEEKS_SHIFT = 0x80000000, 0x40000000, 0x70000000, 22
+
+
+def long_injury_words(word20, word24, weeks):
+    """Player +0x20 / +0x24 for a player a franchise start puts on injured reserve (IR1's nfl2k5_injured_reserve_save
+    long_injury_words, bit for bit)."""
+    from . import nfl2k5_roster_records as rr
+    rr._require(IR_LONG_WEEKS <= weeks <= 255, "a player who starts on injured reserve is out 4..255 weeks")
+    return ((word20 & ~(0xFF << WEEKS_SHIFT) & 0xFFFFFFFF) | INJURED_BIT | (weeks << WEEKS_SHIFT),
+            (word24 & ~STATUS_MASK & 0xFFFFFFFF) | STATUS_OUT)
 
 
 def _make_room(club, active, keep, position, minimums, ranks, big_deal, overall, limit):
@@ -98,14 +116,14 @@ def _make_room(club, active, keep, position, minimums, ranks, big_deal, overall,
     return left
 
 
-def _rejoin_injured(by, rows, teams, assigned):
+def _rejoin_injured(by, rows, teams, assigned, policy=ROOM_POLICY):
     """The membership after the injured players rejoin: (active list by club index, rejoined, released, to FA).
     Called after the rows and the contract initializers are written, so it reads the final records."""
     from . import nfl2k5_practice_squad as ps
     from . import nfl2k5_roster_records as rr
     from .nfl2k5_my_career_prospects import native_overall
 
-    rr._require(ROOM_POLICY == "release", f"unknown room policy {ROOM_POLICY!r}: only 'release' is wired")
+    rr._require(policy in ("release", "ir"), f"unknown room policy {policy!r}")
     position = {i: p.record.values["position"] for i, p in by.items()}
     for row in rows:
         if "position" in row["fields"]:
@@ -142,8 +160,9 @@ def _rejoin_injured(by, rows, teams, assigned):
     for team in teams:
         active = list(team["active"]) + placed.get(team["index"], [])
         keep = set(placed.get(team["index"], ())) | {v for v in team["specialists"].values() if v is not None}
-        released.extend(_make_room(team["team"], active, keep, position, minimums, ranks, big_deal, overall,
-                                   ps.ACTIVE_LIMIT))
+        # "ir": the injured stay and only a list past 65 with the reserves makes room; "release": the 53 plus nobody
+        limit = IR_LIST_LIMIT - len(team["reserves"]) if policy == "ir" else ps.ACTIVE_LIMIT
+        released.extend(_make_room(team["team"], active, keep, position, minimums, ranks, big_deal, overall, limit))
         actives[team["index"]] = active
     rejoined = {i for ids in placed.values() for i in ids}
     return actives, rejoined, released, to_free
@@ -453,7 +472,8 @@ def apply_body(body, plan):
     # b780 b4-economy (D6): the injured players rejoin their clubs (see INJURED_STATUSES), chosen on the records as
     # this refresh leaves them (new players created, positions and modeled contracts written), so a replay on the
     # output makes the same choices.
-    actives, rejoined, released, injured_free = _rejoin_injured(by, rows, teams, assigned)
+    room_policy = plan.get("room_policy", ROOM_POLICY)
+    actives, rejoined, released, injured_free = _rejoin_injured(by, rows, teams, assigned, room_policy)
     free_agents = list(plan["free_agents"]) + released + injured_free
     rr._require(len(free_agents) == len(set(free_agents)), "Refresh has duplicate or absent membership")
     rr._require(len(free_agents) <= doc.free_agent_capacity, "Free-agent list is full")
@@ -514,12 +534,25 @@ def apply_body(body, plan):
                 "Refresh creates conflicting club depth locks")
     create_buffers_repaired = _repair_create_buffers(doc)
     result = doc.to_body()
-    # b780 sub1 (option (c), coordinator 11/03): the last step of the final roster. Each club's best receiving running back
-    # is its default SPECIAL third-down back (side row 1), after every record the plan creates exists. Opt-in per plan.
-    third_down_backs = []
-    if plan.get("third_down_backs") is True:
-        from .nfl2k5_third_down_back import default_third_down_backs
-        result, third_down_backs = default_third_down_backs(result)
+    ir_marked = []
+    if room_policy == "ir":
+        import struct
+        buffer = bytearray(result)
+        weeks_of = {r["index"]: r for r in rows}
+        for index in sorted(rejoined & {i for ids in actives.values() for i in ids}):
+            weeks = max(IR_LONG_WEEKS, min(255, int(weeks_of[index].get("ir_weeks") or IR_DEFAULT_WEEKS)))
+            offset = by[index].offset + 0x20
+            word20, word24 = struct.unpack_from("<II", buffer, offset)
+            struct.pack_into("<II", buffer, offset, *long_injury_words(word20, word24, weeks))
+            ir_marked.append({"player": by[index].display, "club": weeks_of[index].get("team"), "weeks": weeks})
+        result = bytes(buffer)
+    # b780 sub1 (option (c), coordinator 11/03): the last step of the final roster, after every record the plan creates
+    # exists. Each club's best receiving running back is its default SPECIAL third-down back (RB side row 1) and its
+    # fastest receiver its default gadget (WR side row 3). Opt-in per plan.
+    special_rows = {"third_down_backs": [], "gadgets": []}
+    if plan.get("special_row_defaults") is True:
+        from .nfl2k5_third_down_back import default_special_rows
+        result, special_rows = default_special_rows(result)
     checked = rr.RosterDocument(result, scheme="one_pool", reference_year=2026)
     errors = [r for r in rr.validate_membership(checked) if r["level"] == "error"]
     rr._require(not errors, f"Refreshed membership failed validation: {errors}")
@@ -534,14 +567,15 @@ def apply_body(body, plan):
                     "changed_bytes": sum(a != b for a, b in zip(body, result)),
                     "unrepresented": len(plan.get("unrepresented", [])),
                     # b780 rst2 (Q44): free agents whose stale contract block was zeroed
-                    "third_down_backs": third_down_backs,
+                    "third_down_backs": special_rows["third_down_backs"], "gadgets": special_rows["gadgets"],
                     "contracts_corrected": sorted(by[c["index"]].display for c in plan.get("contract_corrections", ())),
                     "birth_dates_corrected": sorted(f"{by[i].display} {c['was']} -> {c['birth_date']}"
                                                      for i, c in corrections.items()),
                     "free_agent_contracts_cleared": len(cleared),
                     "free_agent_contracts_cleared_players": sorted(by[i].display for i in cleared),
                     # b780 b4-economy (D6)
-                    "injured_reserve": {"rejoined": len(rejoined), "released_for_room": len(released),
+                    "injured_reserve": {"policy": room_policy, "marked_to_start_on_ir": ir_marked,
+                                        "rejoined": len(rejoined), "released_for_room": len(released),
                                         "to_free_agents": len(injured_free),
                                         "rejoined_players": sorted(by[i].display for i in rejoined),
                                         "released_players": [by[i].display for i in released],
