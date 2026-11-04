@@ -596,7 +596,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/image_use.py": "29e1d3d721c36fd199ed29fd900fbe8582bc7530e2060afcacb1054159b174bb",
         "mod_editor/core/json_stream.py": "5933752561dd8b519a301c18ec1d14f13a457f58e6ae337984f543ab2b0838b0",
         "mod_editor/core/metadata_cache.py": "49874cc7f12cc0d36d15b9355dbca64ffe95590ba7582b460738b05aabcd9024",
-        "mod_editor/core/mod_build.py": "d6cfa5761b674f42502ba1609fad199f6e4fbb3f4453b976ef46e4c7fd7fed8a",
+        "mod_editor/core/mod_build.py": "de03c78bbe6eeba8cda032465115faf8f772e9ff4efc50331384b1646d448423",
         "mod_editor/core/build_steps.py": "eb5c4a66df85fc05ea0cbac14488f27fff8b07ae22cfa8df1af7899ca9715b4d",  # b791-h3: step context and optional steps
         "mod_editor/core/model.py": "292f0c5444e32f5cea000fd3cabd6963d7d805a5434dcbc364a36ca2c0f0d228",
         "mod_editor/core/modpack.py": "461107a7f9096a5c1d867a6a1f4fa69af769302c0569ad98a5b8171541cde287",
