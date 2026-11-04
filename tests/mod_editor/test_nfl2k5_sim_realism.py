@@ -33,7 +33,7 @@ class ConstantTests(unittest.TestCase):
         self.assertEqual(r.PASS_SCALE, 0.86)  # b780 b5-sim (17-game v0.8 seasons; b779-int1 0.92)
         self.assertEqual(r.RUN_RZ_SCALE, 0.94)
         self.assertEqual(r.RZ_PASS_SCALE, 0.64)  # b779-int1 rebalance
-        self.assertEqual(r.RUSH_BONUS_PCT, 8)  # b780 b5-sim: lead backs only (b779-int1: 20, every non-QB)
+        self.assertEqual(r.RUSH_BONUS_PCT, 0)  # b780 db2: 0 with the fullback rule (b5-sim 8 lead backs; b779-int1 20)
         self.assertEqual(r.INTERCEPT_SCALE, 1.35)
         self.assertEqual(r.TACKLE_BONUS_PCT, 10)
         self.assertEqual(r.SKIP_TACKLE_POSITION, 4)
@@ -45,14 +45,15 @@ class ConstantTests(unittest.TestCase):
         self.assertEqual(r.tackle_bonus(169), 17)          # 16.9 -> 17
         self.assertEqual(r.tackle_bonus(171), 17)          # 17.1 -> 17
 
-    def test_rush_bonus_is_rounded_8_percent(self):
-        # b780 b5-sim: the correction goes to the lead back only, 8 percent (b779-int1: 20 percent to every non-QB)
-        self.assertEqual(r.rush_bonus(0), 0)
-        self.assertEqual(r.rush_bonus(-3), 0)
-        self.assertEqual([r.rush_bonus(n) for n in (1, 4, 10, 50, 100)],
-                         [0, 0, 1, 4, 8])
-        self.assertEqual(r.rush_bonus(56), 4)            # 4.48 -> 4
-        self.assertEqual(r.rush_bonus(57), 5)            # 4.56 -> 5
+    def test_rush_bonus_is_off_and_its_rounding_kept(self):
+        # b780 db2: the shipped correction is 0 (the fullback rule hands the lead backs their carries back)
+        self.assertEqual([r.rush_bonus(n) for n in (-3, 0, 1, 10, 57, 200)], [0] * 6)
+        # the rounding the code implements, at b5's 8 percent (b779-int1: 20 percent to every non-QB)
+        from unittest import mock
+        with mock.patch.object(r, "RUSH_BONUS_PCT", 8):
+            self.assertEqual([r.rush_bonus(n) for n in (1, 4, 10, 50, 100)], [0, 0, 1, 4, 8])
+            self.assertEqual(r.rush_bonus(56), 4)        # 4.48 -> 4
+            self.assertEqual(r.rush_bonus(57), 5)        # 4.56 -> 5
 
     def test_red_zone_scales_split_run_and_pass(self):
         self.assertEqual([r.run_rz_scale(s) for s in (None, 1, 20, 21, 80)],
@@ -127,7 +128,7 @@ class CodeTests(unittest.TestCase):
         self.assertAlmostEqual(_s.unpack_from("<f", code, r.PASS_SCALE_OFF)[0], 0.86, places=6)
         self.assertAlmostEqual(_s.unpack_from("<f", code, r.RUN_RZ_SCALE_OFF)[0], 0.94, places=6)
         self.assertAlmostEqual(_s.unpack_from("<f", code, r.RZ_PASS_SCALE_OFF)[0], 0.64, places=6)
-        self.assertAlmostEqual(_s.unpack_from("<f", code, r.RUSH_BONUS_PCT_OFF)[0], 8.0, places=6)
+        self.assertAlmostEqual(_s.unpack_from("<f", code, r.RUSH_BONUS_PCT_OFF)[0], 0.0, places=6)
 
     def test_code_has_no_self_reference_shortcut(self):
         # A different data VA must move every scratch reference.
@@ -214,21 +215,28 @@ class NativeTests(unittest.TestCase):
         return Machine(self.patched)
 
     def test_rush_correction_goes_to_the_lead_back_only(self):
-        from tests.mod_editor.test_nfl2k5_honors import word
+        # b780 db2: the shipped constant is 0, so no runner gets a correction; the lead-back gate is checked on code
+        # assembled at b5's 8 percent
+        from unittest import mock
+        from tests.mod_editor.test_nfl2k5_honors import Machine, word
         game_yards = 120
-        for position, rank, expected in ((7, 0, r.rush_bonus(game_yards)), (7, 1, 0), (8, 0, 0), (3, 0, 0), (0, 0, 0)):
-            m = self.machine()
-            p = m.roster([(3, [word(2, 3, 400 + game_yards), word(18, 3, 10)])])[0]
-            m.put8(p + 0x35, position)
-            m.put(p + 0x28, (rank & 7) << 10)
-            m.put(self.data_va, p)                   # [state]: the player the merge just wrote
-            m.put(self.data_va + 4, 10)              # tackles before the merge (no new tackles)
-            m.put(self.data_va + 8, 400)             # rush yards before the merge
-            m.call(self.code_va + r.label_offsets()["tackle_return"], stack=(0, 0))
-            got = m.call(0x14EE40, ecx=p, edx=2) & 0xFFFF
-            self.assertEqual(got, 400 + game_yards + expected, (position, rank))
-            self.assertEqual(m.get(self.data_va), 0, "the hand-off is cleared")
-        self.assertGreater(r.rush_bonus(game_yards), 0)
+        with mock.patch.object(r, "RUSH_BONUS_PCT", 8):
+            at_eight = r.apply(retail_bytes())[0]
+            eight = r.rush_bonus(game_yards)
+        self.assertGreater(eight, 0)
+        for payload, lead in ((self.patched, 0), (at_eight, eight)):
+            for position, rank, expected in ((7, 0, lead), (7, 1, 0), (8, 0, 0), (3, 0, 0), (0, 0, 0)):
+                m = Machine(payload)
+                p = m.roster([(3, [word(2, 3, 400 + game_yards), word(18, 3, 10)])])[0]
+                m.put8(p + 0x35, position)
+                m.put(p + 0x28, (rank & 7) << 10)
+                m.put(self.data_va, p)                   # [state]: the player the merge just wrote
+                m.put(self.data_va + 4, 10)              # tackles before the merge (no new tackles)
+                m.put(self.data_va + 8, 400)             # rush yards before the merge
+                m.call(self.code_va + r.label_offsets()["tackle_return"], stack=(0, 0))
+                got = m.call(0x14EE40, ecx=p, edx=2) & 0xFFFF
+                self.assertEqual(got, 400 + game_yards + expected, (position, rank, lead))
+                self.assertEqual(m.get(self.data_va), 0, "the hand-off is cleared")
 
     def test_tackle_correction_uses_the_constant(self):
         from tests.mod_editor.test_nfl2k5_honors import word

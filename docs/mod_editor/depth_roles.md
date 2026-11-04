@@ -161,9 +161,10 @@ return personnel for offense.
 
 * **3DB:** one HB, plus shotgun flag bit 19 corroborated by QB depth; or at
   least three WRs; or three WR/TE receiving positions with the HB split at
-  least five yards wide and no deeper than three yards. Assign HB ordinal 1.
+  least five yards wide and no deeper than three yards. Assign HB ordinal 0
+  (RC109: the lead back; personnel belongs to a formation, not a down).
 * **PWR:** goal-line/jumbo categories or names, or at least two TEs plus FB
-  (the precise I-heavy definition). Assign HB ordinal 2. Ordinary I Pro with
+  (the precise I-heavy definition). Assign HB ordinal 1 (the HB side order, PWRB). Ordinary I Pro with
   one TE remains base. Clock inherits its heavy personnel group's PWR choice.
 * **Base:** retain/use HB ordinal 0. Empty sets without an HB get no HB edit.
 * Refuse multiple HBs, contradictory shotgun geometry/flag, simultaneous
@@ -212,15 +213,22 @@ SPECIAL has **13 rows**, scrolling only on SPECIAL:
 | Row | Abbreviation / long name | Position, chain | List start | Book kind, ordinal |
 |---:|---|---|---|---|
 | 0–3 | KR, PR, K, P | Retail | Retail | Retail |
-| 4 | SLOT / SLOT RECEIVER | 3, 2 | WR rank 1 | 9, 2 |
-| 5 | NCB / NICKEL CORNER | 4, 2 | CB rank 1 | 18, 2 |
-| 6 | DCB / DIME CORNER | 4, 3 | CB side 1 | 18, 3 |
-| 7 | GDGT / GADGET | 3, 4 | WR rank 2 | 9, 4 |
-| 8 | GUN / LEFT GUNNER | 3, 3 | WR side 1 | 9, 3 |
-| 9 | GUNR / RIGHT GUNNER | 4, 3 | CB side 1 | 18, 3 |
-| 10 | LS / LONG SNAPPER | 12, 2 | C rank 1 | 6, 1 |
-| 11 | 3DB / 3RD DOWN BACK | 7, 2 | HB rank 1 | 10, 1 |
-| 12 | PWR / POWER BACK | 7, 4 | HB rank 2 | 10, 2 |
+| 4 | LS / LONG SNAPPER | 12, 2 | C rank 1 | 6, 1 |
+| 5 | LGUN / LEFT GUNNER | 3, 3 | WR side 1 | 9, 3 |
+| 6 | RGUN / RIGHT GUNNER | 4, 3 | CB side 1 | 18, 3 |
+| 7 | NCB / NICKEL CORNER | 4, 2 | CB rank 1 | 18, 2 |
+| 8 | DCB / DIME CORNER | 4, 3 | CB side 1 | 18, 3 |
+| 9 | SLWR / SLOT RECEIVER | 3, 2 | WR rank 1 | 9, 2 |
+| 10 | GAD / GADGET | 3, 4 | WR rank 2 | 9, 4 |
+| 11 | 3DRB / THIRD DOWN BACK | 7, 0 | HB rank 0 (the Offense HB order itself) | 10, 0 |
+| 12 | PWRB / POWER BACK | 7, 1 | HB side 0 (its own order) | 10, 1 |
+
+b780 db2: this table follows `ROLE_ROWS` (RC109 moved 3DRB to the HB rank chain and PWRB to the HB side chain).
+3DRB is therefore the Offense HB row shown again: a swap on it reorders the Offense HB row, and no rule puts a
+different back in on third down (`ThirdDownBackMirrorTests` runs the game's own lookup and swap). Only PWRB is an
+independent back order. A 3DRB that holds its own order would need a third per-player chain (no free 3-bit field
+remains in `+0x28`: bits 0-7 injured reserve, 8-9 unaudited, 10-12 rank, 13-15 side) kept by every native depth
+chart routine, and a down-aware rule in the 11-man lineup builder `FUN_000E89F0` at its picker call `0xE8B20`.
 
 All indices remain `unit * 11 + slot`: units 0–2 occupy records 0–32 and
 SPECIAL records 33–45. No multiplication uses 13. The count callback at

@@ -368,7 +368,9 @@ BUILD_KEYS = tuple(row[0] for row in BUILD_OPTIONS)
 PREVIOUS_UPGRADE_KEYS = {"honors_page": "honors page", "camera": "camera", "k128_memory": "128 MB memory",
                          # b780 rev1: these two read "previous" on a v0.8 disc too, and the build upgrades them in
                          # place (catch_slider_patch.apply, nfl2k5_sim_cb_tackles.apply); their boxes were greyed out
-                         "catch_slider": "catching slider", "sim_cb_tackles": "cornerback tackle credit"}
+                         "catch_slider": "catching slider", "sim_cb_tackles": "cornerback tackle credit",
+                         # b780 db2: the beta-79 RB injury guard (no fullback rule) is upgraded in place as well
+                         "sim_rb_injuries": "simulated RB injuries"}
 # b780 n6: beta-79 installs this release reads ("previous") but cannot update in place (they grew, or MyCareer and its
 # companions are linked together); the option stays off and says to rebuild from the retail game
 PREVIOUS_REBUILD_KEYS = {"my_career": "MyCareer", "my_career_home": "Career Home", "player_progress": "Player Progress",
@@ -1247,7 +1249,7 @@ class BuildPanel(QWidget):
         self.depth_chart_rows_check = self._option(
             r, "depth_chart_rows", "SPECIAL: 13 rows and complete player names (experimental)",
             "All 13 SPECIAL roles on one screen, with complete player names; offense and defense keep eleven rows.", badge=NOT_TESTED, needs_image=True,
-            details="Retail: special teams has four depth-chart rows. Patch: SPECIAL shows KR, PR, K, P, LS, LGUN, RGUN, NCB, DCB, SLWR, GAD, 3DRB and PWRB together, with names beside all available player numbers. Offense and defense keep eleven rows and show X / Z receiver labels. Row spacing is three pixels tighter on all depth-chart tabs; the font stays the same. Role labels have more room. These roles share player lists, so changing one can change another. Requires one-pool positions and the playbook roles. EXPERIMENTAL/UNWITNESSED.")
+            details="Retail: special teams has four depth-chart rows. Patch: SPECIAL shows KR, PR, K, P, LS, LGUN, RGUN, NCB, DCB, SLWR, GAD, 3DRB and PWRB together, with names beside all available player numbers. Offense and defense keep eleven rows and show X / Z receiver labels. Row spacing is three pixels tighter on all depth-chart tabs; the font stays the same. Role labels have more room. These roles share player lists, so changing one can change another: 3DRB is the Offense HB order itself (moving a back there moves him on Offense too, and there is no third-down substitution), and RGUN and DCB are one list. PWRB keeps its own order and plays in goal-line and short-yardage sets. Requires one-pool positions and the playbook roles. EXPERIMENTAL/UNWITNESSED.")
         self.roster_edits_check = self._option(r, "roster_edits", "Include exported ★ Rosters edits",
                                                "Export roster edits on ★ Rosters, then choose that JSON file here.", needs_image=True,
                                                details="Applies a roster-edits snapshot written by ★ Rosters. It runs last of the roster passes and writes only "
