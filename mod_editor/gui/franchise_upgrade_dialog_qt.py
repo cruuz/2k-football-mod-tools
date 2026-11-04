@@ -162,6 +162,19 @@ def preview_text(plan):
     return "\n".join(lines)
 
 
+def upgraded_folder_name(source: Path) -> str:
+    """The proposed new save folder: the save's whole name plus -upgraded.
+
+    b780 Q59: Path.stem cut a save folder named with dots ("Franchise 2.0" became "Franchise 2-upgraded"). Only a
+    .zip archive's own extension is dropped.
+    """
+    source = Path(source)
+    name = source.name
+    if source.suffix.casefold() == ".zip" and not source.is_dir():
+        name = name[: -len(source.suffix)]
+    return name + "-upgraded"
+
+
 class FranchiseUpgradeDialog(QDialog):
     def __init__(self, source: Path, parent=None):
         super().__init__(parent)
@@ -190,7 +203,7 @@ class FranchiseUpgradeDialog(QDialog):
         row.addWidget(self.disc_edit, 1)
         row.addWidget(self.disc_button)
         form.addRow("Current disc", row)
-        self.output_edit = QLineEdit(str(self.source.with_name(self.source.stem + "-upgraded")))
+        self.output_edit = QLineEdit(str(self.source.with_name(upgraded_folder_name(self.source))))
         self.output_edit.setAccessibleName("New signed save folder")
         form.addRow("New save folder", self.output_edit)
         layout.addLayout(form)
