@@ -52,6 +52,19 @@ void FAST coach_presentation(u8 *team) { U(team,0x38)=!automatic(team); }
  * target is 33 percent and the shipped rings call runs 40.6 percent of the time. The native selector carries the
  * real down/distance and the third-down run preference owner lowers its run weight on 3rd and 7+. Third and 1-2
  * stays here, where the short-yardage rings hold the QB sneaks. */
+#ifdef B780
+extern int FAST margin_native(u8 *);
+/* b780 modes2 (Q7): the fourth quarter's two-score window of Modern CPU clock management (nfl2k5_cpu_clock2): 10:00
+ * or less left and a margin of 9 or more either way. There the game's own caller gets the native estimate and urgency
+ * (the trailing team hurries, throws and uses the sideline; the leader gets the matching negative urgency and runs),
+ * so the play choice on every down belongs to it, as in the native late window. The playback pools know no clock. */
+static int two_score_native(u8 *team) {
+    int m;
+    if (U(0xe602c4,0)!=4 || half_bits_native()>0x44160000u) return 0;   /* 600.0f: positive floats order as integers */
+    m=margin_native(team);
+    return m<=-9 || m>=9;
+}
+#endif
 static int third_native(void) {
     u8 *s=PTR(0xe602ec,0);
     float a, b, d;
@@ -83,7 +96,11 @@ u32 FAST coach_choose(u8 *team, u32 *out) {
 #ifdef B778
     if (offense && (U(PTR(0xe602ec,0),4)==4 || late_native()
                     || (U(0xe602c4,0)==2 && half_bits_native()<=0x42f00000u)
-                    || third_native())) return 0;
+                    || third_native()
+#ifdef B780
+                    || two_score_native(team)
+#endif
+                    )) return 0;
 #endif
     state.selecting=1;
     flag=U(team,0x38);
