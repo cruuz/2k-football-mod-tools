@@ -45,6 +45,57 @@ CUT_MINIMUMS = (2, 1, 1, 5, 5, 2, 2, 3, 0, 3, 3, 2, 2, 3, 3, 3, 4)
 SMALL_DEAL_PER_YEAR = 60
 OVERFLOW_DEPTH_ROW = 7
 LOCK_ROLES = ("rank", "side", "kr1", "kr2", "pr")
+# b780 rst2 (Q43, Noah 11/03: "release the lowest-ranked non-starters first"): the injured-reserve pass never releases a
+# player the dated chart lists as a starter (rank 1 at his own slot) while another player can go, and among the rest it
+# releases the deepest chart rank first (a player the chart does not list at all is the deepest).
+STARTER_CHART_RANK = 1
+UNLISTED_CHART_RANK = 99
+
+
+def charted_ranks(rows):
+    """{index: his chart rank at his own slot} from the refresh rows' dated depth chart (``depth_source``)."""
+    ranks = {}
+    for row in rows:
+        source = row.get("depth_source") or {}
+        if str(source.get("pos_rank", "")).isdigit():
+            ranks[row["index"]] = int(source["pos_rank"])
+    return ranks
+
+
+# b780 rst2 (coordinator 11/03: Noah asked for a full modern injured reserve in beta-80 and IR1 builds it): how a club that
+# is over the 53-man limit because its injured players rejoined makes room. "release" is this release's policy: the
+# lowest-ranked non-starters go to the free agents (_make_room). "ir" is reserved for IR1's format: the injured players
+# would go on the club's injured reserve list and nobody would be released, so only _rejoin_injured's placement block and
+# the caller's release bookkeeping change; _make_room is the one function the release policy lives in.
+ROOM_POLICY = "release"
+
+
+def _make_room(club, active, keep, position, minimums, ranks, big_deal, overall, limit):
+    """Remove players from ``active`` (a list, changed in place) until it holds ``limit``; returns who left, in order.
+
+    The release-for-room policy (Q43, Noah 11/03: "release the lowest-ranked non-starters first"). A charted starter
+    (rank 1 at his own slot) goes last, after every position floor has been tried without him; among the rest the
+    deepest chart rank goes first (a player the chart does not list is the deepest), then the pre-rst2 order: a player
+    on a small deal, then the lowest rated. A player in ``keep`` (the injured who rejoined and the specialists) stays."""
+    from . import nfl2k5_roster_records as rr
+
+    left = []
+    while len(active) > limit:
+        counts = {}
+        for index in active:
+            counts[position[index]] = counts.get(position[index], 0) + 1
+        victim = None
+        for protect, floor in ((True, False), (True, True), (False, False), (False, True)):
+            pool = [i for i in active if i not in keep and position[i] < 17 and
+                    counts[position[i]] > (1 if floor else minimums[position[i]]) and
+                    not (protect and ranks.get(i, UNLISTED_CHART_RANK) == STARTER_CHART_RANK)]
+            if pool:
+                victim = min(pool, key=lambda i: (-ranks.get(i, UNLISTED_CHART_RANK), big_deal(i), overall(i), i))
+                break
+        rr._require(victim is not None, f"{club}: no player can make room for an injured player")
+        active.remove(victim)
+        left.append(victim)
+    return left
 
 
 def _rejoin_injured(by, rows, teams, assigned):
@@ -54,6 +105,7 @@ def _rejoin_injured(by, rows, teams, assigned):
     from . import nfl2k5_roster_records as rr
     from .nfl2k5_my_career_prospects import native_overall
 
+    rr._require(ROOM_POLICY == "release", f"unknown room policy {ROOM_POLICY!r}: only 'release' is wired")
     position = {i: p.record.values["position"] for i, p in by.items()}
     for row in rows:
         if "position" in row["fields"]:
@@ -68,6 +120,7 @@ def _rejoin_injured(by, rows, teams, assigned):
         record = by[index].record
         return record.get("contract_value") > SMALL_DEAL_PER_YEAR * max(1, record.get("contract_length"))
 
+    ranks = charted_ranks(rows)
     placed, to_free = {}, []
     by_team = {t["team"]: t for t in teams}
     taken = set(assigned)
@@ -89,20 +142,8 @@ def _rejoin_injured(by, rows, teams, assigned):
     for team in teams:
         active = list(team["active"]) + placed.get(team["index"], [])
         keep = set(placed.get(team["index"], ())) | {v for v in team["specialists"].values() if v is not None}
-        while len(active) > ps.ACTIVE_LIMIT:
-            counts = {}
-            for index in active:
-                counts[position[index]] = counts.get(position[index], 0) + 1
-            victim = None
-            for floor in (False, True):
-                pool = [i for i in active if i not in keep and position[i] < 17 and
-                        counts[position[i]] > (1 if floor else minimums[position[i]])]
-                if pool:
-                    victim = min(pool, key=lambda i: (big_deal(i), overall(i), i))
-                    break
-            rr._require(victim is not None, f"{team['team']}: no player can make room for an injured player")
-            active.remove(victim)
-            released.append(victim)
+        released.extend(_make_room(team["team"], active, keep, position, minimums, ranks, big_deal, overall,
+                                   ps.ACTIVE_LIMIT))
         actives[team["index"]] = active
     rejoined = {i for ids in placed.values() for i in ids}
     return actives, rejoined, released, to_free
@@ -421,6 +462,17 @@ def apply_body(body, plan):
             rec.set(key, 0)
         for role in LOCK_ROLES:
             rec.set_depth_lock(role, False)
+    # b780 rst2 (Q44, the held b778 fd1 fix): the pack's policy is "unsigned contracts zero" (retail free agents carry a
+    # zero contract block). The 10/14 plan's one-year placeholders landed on 11 players who were free agents again by
+    # 11/03 (Andy Dalton, Harrison Mevis, Chris Moore, Blake Grupe ...), and a player the dated plan moves to the free
+    # agents kept his old contract block. Every free agent on the final list has all five contract fields zero.
+    cleared = []
+    for index in free_agents:
+        rec = by[index].record
+        if any(rec.get(key) for key in CONTRACT_FIELDS):
+            cleared.append(index)
+            for key in CONTRACT_FIELDS:
+                rec.set(key, 0)
     doc.free_agents = [by[i].offset for i in free_agents]
     doc._reindex_membership()
     # Celebrity/alumni squads alias the same records and cannot have independent
@@ -442,6 +494,9 @@ def apply_body(body, plan):
                     "reserves": sum(len(t["reserves"]) for t in teams),
                     "changed_bytes": sum(a != b for a, b in zip(body, result)),
                     "unrepresented": len(plan.get("unrepresented", [])),
+                    # b780 rst2 (Q44): free agents whose stale contract block was zeroed
+                    "free_agent_contracts_cleared": len(cleared),
+                    "free_agent_contracts_cleared_players": sorted(by[i].display for i in cleared),
                     # b780 b4-economy (D6)
                     "injured_reserve": {"rejoined": len(rejoined), "released_for_room": len(released),
                                         "to_free_agents": len(injured_free),
