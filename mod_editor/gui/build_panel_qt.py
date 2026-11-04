@@ -383,14 +383,15 @@ def rebuild_only_reason(state: Mapping[str, object]) -> str:
     """Why this release cannot build on top of the disc the state describes, in plain words, or "" when it can try.
 
     b780 studio1 (Q69). A disc built by an older release (the released SOFTDRINK 2K28 discs) carries the Modern practice field's
-    team logo at midfield, a runtime table in the executable, while its practice facility reads foreign here, so the logo cannot
-    be kept (the engine keeps an installed option only with its parent in the plan) and it cannot be turned off in place. The
+    team logo at midfield, a runtime table in the executable, while its practice facility reads foreign here (or cannot be read: a
+    bare executable), so the logo cannot be kept (the engine keeps an installed option only with its parent in the plan) and it
+    cannot be turned off in place. A facility that reads retail or applied can be put in the plan with the logo. The
     engine then stops every build at its first check ("Practice field: team logo at midfield (experimental) is installed;
     rebuild from a verified base to turn it off"), and behind that check another waits (the v0.8 plan's next refusal is
     "128 MB memory options differ", the installed heap, early and 128 MB settings not being the page's plan). The page used to
     offer Needs update boxes on such a disc and then let the engine refuse. Both Build and Game Fixes ask this one function."""
 
-    if state.get("modern_practice_field_team_logo") == "applied" and state.get("modern_practice_field") != "applied":
+    if state.get("modern_practice_field_team_logo") == "applied" and state.get("modern_practice_field") not in ("applied", "retail"):
         what = "disc" if state.get("container") == "xiso" else "executable"
         return (f"This {what} already has the practice field's team logo at midfield, put there by an older build. This release "
                 f"can neither keep it nor update it in place, so it cannot build on top of this {what}. To change it, build "

@@ -256,6 +256,10 @@ class RebuildOnlyDiscTests(_PanelCase):
         self.assertEqual(rebuild_only_reason(dict(modern_practice_field_team_logo="retail")), "")
         # a disc this release built has both, and the build keeps them together
         self.assertEqual(rebuild_only_reason(dict(modern_practice_field_team_logo="applied", modern_practice_field="applied")), "")
+        # a facility that can still be put in the plan beside the logo is not a reason; one that cannot be read is
+        self.assertEqual(rebuild_only_reason(dict(modern_practice_field_team_logo="applied", modern_practice_field="retail")), "")
+        for unreadable in ("n/a", "requires image", "partial", None):
+            self.assertNotEqual(rebuild_only_reason(dict(modern_practice_field_team_logo="applied", modern_practice_field=unreadable)), "", unreadable)
         disc = rebuild_only_reason(dict(self.LOGO, container="xiso"))
         self.assertIn("practice field's team logo at midfield", disc)
         self.assertIn("build again from a dump of your own retail disc", disc)
