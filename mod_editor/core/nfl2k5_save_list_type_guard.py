@@ -44,7 +44,7 @@ MATCH_BODY = 0x0016A610          # where the matcher's loop continues after the 
 CAVE_VA = 0x00160771            # 15 bytes of retail .text alignment padding
 RETAIL_PROLOGUE = bytes.fromhex("5633f6eb0b")   # push esi; xor esi,esi; jmp 0x16A610
 RETAIL_CAVE = b"\x90" * 15
-BUILD_CAPTION = "Boot save list: a save with no type string no longer freezes the title"
+BUILD_CAPTION = "Boot save list: no freeze on a save with no type"
 HELP_TEXT = ("Fixes a freeze at the title screen while the game lists saved games, when a save has no stored type "
              "(a franchise or MyCareer save made with no human-controlled club, from save tools or a MyPlayer who was "
              "released). Such a save is now listed untyped instead of stopping the game; every other save lists as "
