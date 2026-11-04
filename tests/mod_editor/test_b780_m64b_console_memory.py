@@ -232,6 +232,22 @@ class Validation(unittest.TestCase):
             self.assertIn("The 64 MB build cannot include Guardian caps (experimental)", str(caught.exception))
             self.assertEqual(sorted(p.name for p in Path(folder).iterdir()), [])
 
+    def test_build_refuses_a_selection_that_will_not_fit_before_any_disc_work(self):
+        model = fake_model(fits=False, spare=0, over=64 * 1024, suggestions=[("hair_styles", 84_736)])
+        with with_model(model), tempfile.TemporaryDirectory() as folder:
+            plan = mod_build.BuildPlan(str(Path(folder) / "missing.iso"), str(Path(folder) / "out.iso"),
+                                       console_memory=64, hair_styles=True)
+            with self.assertRaises(ValueError) as caught:
+                mod_build.build(plan)
+            text = str(caught.exception)
+            self.assertIn("The 64 MB build will not fit: remove 64 KB", text)
+            self.assertIn("Hair styles (83 KB)", text)
+            self.assertEqual(sorted(p.name for p in Path(folder).iterdir()), [])
+            # the same selection at 128 MB is not asked about and reaches the usual source check
+            with self.assertRaises(ValueError) as caught:
+                mod_build.build(mod_build.BuildPlan(plan.source, plan.target, hair_styles=True))
+            self.assertNotIn("64 MB", str(caught.exception))
+
 
 class Model(unittest.TestCase):
     def test_the_model_adds_rules_and_its_wording_wins(self):
