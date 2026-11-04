@@ -10,7 +10,8 @@ ordinal's depth list (0xE7530), skips a player already placed (0xE7580) or one i
 retail 0xE8340, injured or worn out), then falls back through other kinds (19 tiers, table 0x4F5A38).
 
 Rule 1, the third-down back (needs the SPECIAL rows, whose 3DRB row is the running back side order from its second
-place: list 15, row 1). When the slot asks for the lead back (RB, ordinal 0), the user did not substitute that slot,
+place: RB ordinal 3, read through the game's own ordinal decoder; one-pool positions pair the RB orders as lists 1 and
+15, and apply refuses an executable without that pairing). When the slot asks for the lead back (RB, ordinal 0), the user did not substitute that slot,
 the club has the ball ([0xE60280]+0x1C is this lineup's team) and it is an obvious passing down (3rd or 4th down with
 5 yards or more to go, or 2nd down with 10 or more: the down at [[0xE602EC]+4], the distance from the game's own
 0x207950), the 3DRB is asked first. He plays if he is not already on the field and passes the picker's own gate. On a
@@ -68,7 +69,8 @@ GATE_CALL = 0x000E8864                      # the forward loop's gate call (a la
 LIST_LENGTH, LIST_READ, ALREADY_PLACED, ORDINAL = 0x000E75A0, 0x000E7810, 0x000E7580, 0x000E7530
 SITUATION, OFFENSE, HUMAN, ROSTER_ROOT = 0x00E602EC, 0x00E60280, 0x00E5775C, 0x00B72918
 TO_GO = 0x00207950
-RB_KIND, FB_KIND, RB_RANK_LIST, RB_SIDE_LIST = 10, 11, 1, 15
+RB_KIND, FB_KIND, RB_RANK_LIST = 10, 11, 1
+LIST_TABLE = 0x004F5930                     # (rank list, side list) per kind; one-pool positions pair RB as (1, 15)
 YARD = 91.44
 FIVE_YARDS, TEN_YARDS = 5 * YARD, 10 * YARD
 CATCH, ROUTE, SPEED = 0x44, 0x3F, 0x36       # player record rating bytes
@@ -132,9 +134,10 @@ def assemble(code_va: int, gate: int, *, third_down: bool = True) -> tuple[bytes
     b("a1" + struct.pack("<I", OFFENSE).hex()); b("85c0"); j32("0f84", "restore")
     b("8b401c" "3b4500"); j32("0f85", "restore")     # the club with the ball is this lineup's team
     a.append(("calllabel", "passing_down")); b("85c0"); j32("0f84", "restore")
-    b("b90f000000" "8bd5"); a.append(("call", LIST_LENGTH))   # length of the RB side list (3DRB = its row 1)
-    b("83f801"); j32("0f8e", "restore")
-    b("8b4c2414" "6a01" "55" "b80f000000"); a.append(("call", LIST_READ))     # player at row 1
+    b("83ec04" "b80a000000" "ba03000000" "8bf4"); a.append(("call", ORDINAL))   # 3DRB = RB ordinal 3: list, [esp] row
+    b("8bf8" "8bc8" "8bd5"); a.append(("call", LIST_LENGTH))  # edi = list; eax = its length
+    b("5a" "3bc2"); j32("0f8e", "restore")           # edx = row; the row exists
+    b("8b4c2414" "52" "55" "8bc7"); a.append(("call", LIST_READ))     # the 3DRB
     b("85c0"); j32("0f84", "restore")
     b("8bd8")                                        # ebx = the 3DRB
     b("8b4c2430" "8b74242c" "8bd3"); a.append(("call", ALREADY_PLACED))
@@ -248,7 +251,8 @@ def assemble(code_va: int, gate: int, *, third_down: bool = True) -> tuple[bytes
     b("41" "83f90b"); j8("72", "fb_codes")
     j8("eb", "fb_start")
     label("fb_power")
-    b("8b4c2420" "6a00" "57" "b80f000000"); a.append(("call", LIST_READ))   # the power back: RB side list row 0
+    b("83ec04" "b80a000000" "ba01000000" "8bf4"); a.append(("call", ORDINAL))   # the power back: RB ordinal 1
+    b("5a" "8b4c2420" "52" "57"); a.append(("call", LIST_READ))
     b("8bd8")
     label("fb_start")
     b("53")                                          # push skip (picker frame offsets +4 while it is pushed)
@@ -393,6 +397,8 @@ def apply(payload: bytes, *, third_down: bool = True) -> tuple[bytes, dict[str, 
         _require(settings["third_down"] == third_down, "lineup roles are installed with other settings; rebuild "
                                                        "from the source executable to change them")
         return payload, dict(common, status="applied", already_applied=True, changed_bytes=0, edits=[])
+    rank_list, side_list = struct.unpack("<II", XbeImage(payload).read(LIST_TABLE + RB_KIND * 8, 8))
+    _require(rank_list != side_list, "lineup roles need the paired running back orders (one-pool positions)")
     before = payload
     gate = _gate_target(payload)
     if space.status(payload) == "retail":
