@@ -19,6 +19,14 @@ The code needs 176 bytes of new executable space and 32 of read-only tables, so 
 (``nfl2k5_period_goalposts``), placed after every other owner like K128. It fits the allocator's worst case (every owner
 installed at once leaves 192 code bytes and no data page, so the owner asks for neither more code nor any writable data).
 The data file is ``data/nfl2k5_moment_goalposts.json``.
+
+b780 hunt2: the plain Situation mode is game mode 8 too (Situation flag 0xE6014C = 1) and its moment row word still holds
+0 or the last moment played (b777-sm2), so the beta-79 / v0.8 / v0.9-RC period test gave every Situation game the 30 ft
+uprights and the 30 ft collision top (row 0 is a 1970s moment) or whatever the last moment played had. The period test now
+asks ``(mode ^ 8) | flag``, the test ``nfl2k5_moment_venues`` uses: only a real moment (flag 0) can be a period game. Every
+other input gives exactly the earlier answer. The five bytes come out of the scene patcher's own encodings (``xchg``,
+16-bit word loads, a two-pass counter), so the line and collision stubs keep their offsets and the four executable sites
+keep their bytes; an earlier install reads "previous" and ``apply`` rewrites only the owned code in place.
 """
 from __future__ import annotations
 
@@ -45,6 +53,8 @@ ROWS = 51
 LOAD_CALL_VA, LOAD_CALLEE_VA = 0x00099B16, 0x00097B50       # `call 0x97B50` in the stadium loader, then goal setup
 FIND_VA = 0x000449E0                                         # (ecx=0, edx='SCNE', [name]) -> scene or 0, callee pops
 MODE_VA, ROW_VA = 0x00E5FF80, 0x00BF1858                     # game mode (8 = Anniversary), physical moment row
+SITUATION_FLAG_VA = 0x00E6014C                               # 1 in the plain Situation mode (also game mode 8), 0 in a moment
+UPGRADES_PREVIOUS = True   # b780 hunt2: status() may read "previous" (the install without the Situation test); apply() upgrades it
 NAME_POST_VA, NAME_SHADOW_VA = 0x00E661CC, 0x00E662A8        # L"goalpost", L"goalpost_shadow"
 LINE_LEFT_VA, LINE_RIGHT_VA = 0x000986AA, 0x000986FB         # push <top of the upright line>
 COLLISION_VA = 0x001C6A2C                                    # fadd dword ptr [top]
@@ -138,16 +148,25 @@ def tables() -> bytes:
 TABLE_MASK, TABLE_TOPS, TABLE_POST, TABLE_SHADOW = 0, 8, 16, 22      # offsets in tables()
 
 
-def code_for(code_va: int, ro_va: int) -> bytes:
+def code_for(code_va: int, ro_va: int, *, situation: bool = True) -> bytes:
     """The owner's 176 code bytes: the stadium-load stub (period test, scene patcher), the period test, and the three
-    site stubs. The only game state it reads is the game mode, the moment row and the scenes; it keeps no state of its own."""
+    site stubs. The only game state it reads is the game mode, the Situation flag, the moment row and the scenes; it keeps
+    no state of its own. ``situation=False`` is the beta-79 .. v0.9-RC body (no Situation test), kept only so an earlier
+    install is recognised and upgraded in place; both bodies put ``line`` and ``coll`` at the same offsets."""
 
+    require(type(situation) is bool, "situation must be a bool")
     a = _Asm(code_va)
     a.label("stub")
     a.call(LOAD_CALLEE_VA)                                   # the displaced call
     a.b("60")                                                # pushad
     a.j32("e8", "calc")                                      # eax = 1 for a period moment
-    a.b("89c3" "be" + _h(ro_va + TABLE_POST))                # mov ebx,eax ; mov esi,desc_post
+    if situation:
+        # b780 hunt2: five bytes for the Situation test come from here: xchg (eax is the lookup's result below anyway),
+        # 16-bit word loads (only ax/dx are compared and stored) and a two-pass counter in ebp (the lookup keeps ebp,
+        # pushad saved it) instead of the end-address compare. Same scenes, same passes, same writes.
+        a.b("93" "be" + _h(ro_va + TABLE_POST) + "6a025d")    # xchg ebx,eax ; mov esi,desc_post ; push 2 ; pop ebp
+    else:
+        a.b("89c3" "be" + _h(ro_va + TABLE_POST))            # mov ebx,eax ; mov esi,desc_post
     a.label("next")                                          # esi = descriptor {name va, vertex count}, ebx = period
     a.b("ff36" "ba" + _h(0x454E4353) + "31c9")               # push [esi] ; mov edx,'SCNE' ; xor ecx,ecx
     a.call(FIND_VA)                                          # eax = scene or 0
@@ -156,7 +175,10 @@ def code_for(code_va: int, ro_va: int) -> bytes:
     a.b("8b4830" "0fb77e04" "6639794c")                      # mov ecx,[eax+0x30] ; movzx edi,[esi+4] ; cmp [ecx+0x4c],di
     a.j8("75", "skip")
     a.b("8b89d4000000")                                      # mov ecx,[ecx+0xd4]   (the position stream)
-    a.b("b8" + _h(WORD_PERIOD) + "ba" + _h(WORD_MODERN) + "85db")   # eax=q30, edx=q35, test ebx,ebx
+    if situation:
+        a.b("66b8" + struct.pack("<H", WORD_PERIOD).hex() + "66ba" + struct.pack("<H", WORD_MODERN).hex() + "85db")
+    else:
+        a.b("b8" + _h(WORD_PERIOD) + "ba" + _h(WORD_MODERN) + "85db")   # eax=q30, edx=q35, test ebx,ebx
     a.j8("74", "go")
     a.b("92")                                                # xchg eax,edx         (period: from q35 to q30)
     a.label("go")
@@ -169,12 +191,22 @@ def code_for(code_va: int, ro_va: int) -> bytes:
     a.b("83c106" "4f")                                       # add ecx,6 ; dec edi
     a.j8("75", "loop")
     a.label("skip")
-    a.b("83c606" "81fe" + _h(ro_va + TABLE_SHADOW + 6))      # add esi,6 ; cmp esi,end
-    a.j8("72", "next")
+    if situation:
+        a.b("83c606" "4d")                                   # add esi,6 ; dec ebp  (the two descriptors)
+        a.j8("75", "next")
+    else:
+        a.b("83c606" "81fe" + _h(ro_va + TABLE_SHADOW + 6))  # add esi,6 ; cmp esi,end
+        a.j8("72", "next")
     a.b("61c3")                                              # popad ; ret
     a.label("calc")                                          # eax = 1 when mode 8 and the moment row is before 2014
-    a.b("31c0" "833d" + _h(MODE_VA) + "08")                  # xor eax,eax ; cmp [mode],8
-    a.j8("75", "ret")
+    if situation:
+        # b780 hunt2: (mode ^ 8) | Situation flag is zero only in an Anniversary moment (moment_venues' test); the plain
+        # Situation mode (mode 8, flag 1) is modern play and keeps the 35 ft posts like every other game.
+        a.b("a1" + _h(MODE_VA) + "83f008" "0b05" + _h(SITUATION_FLAG_VA))   # mov eax,[mode] ; xor eax,8 ; or eax,[flag]
+        a.j8("75", "zero")
+    else:
+        a.b("31c0" "833d" + _h(MODE_VA) + "08")              # xor eax,eax ; cmp [mode],8
+        a.j8("75", "ret")
     a.b("a1" + _h(ROW_VA) + "83f833")                        # mov eax,[row] ; cmp eax,51
     a.j8("73", "zero")
     a.b("0f a3 05".replace(" ", "") + _h(ro_va + TABLE_MASK) + "19c0" "f7d8")   # bt [mask],eax ; sbb eax,eax ; neg eax
@@ -250,20 +282,23 @@ def _planned(payload: bytes):
 
 
 def status(payload: bytes) -> str:
-    """retail | modern (v1 bytes) | applied | foreign, over the four executable sites and the owner's code."""
+    """retail | modern (v1 bytes) | applied | previous | foreign, over the four executable sites and the owner's code.
+    b780 hunt2: "previous" is the earlier install (no Situation test), same allocation, tables and sites."""
 
     try:
         have = allocations(payload)
         code = have["code"] if have else None
         ro = have["read_only"] if have else None
-        installed = bool(have) and payload[code["raw"]:code["raw"] + CODE_SIZE] == code_for(code["va"], ro["va"]) \
-            and payload[ro["raw"]:ro["raw"] + RO_SIZE] == tables()
-        if have and installed:
+        owned = payload[code["raw"]:code["raw"] + CODE_SIZE] if have else b""
+        tables_ok = bool(have) and payload[ro["raw"]:ro["raw"] + RO_SIZE] == tables()
+        state = ("applied" if tables_ok and owned == code_for(code["va"], ro["va"])
+                 else "previous" if tables_ok and owned == code_for(code["va"], ro["va"], situation=False) else None)
+        if have and state:
             for _label, va, _accepted, after in sites(code["va"], ro["va"]):
                 at = _offset(payload, va, len(after))
                 if payload[at:at + len(after)] != after:
                     return "foreign"
-            return "applied"
+            return state
         if have and payload[code["raw"]:code["raw"] + CODE_SIZE] != b"\xcc" * CODE_SIZE:
             return "foreign"                                # the allocation holds something else
         states = set()
@@ -285,14 +320,18 @@ def apply(payload: bytes) -> tuple[bytes, dict[str, Any]]:
     from .nfl2k5_bump_strength import _sections, section_digest
     require(space.is_scaleout(payload) and space.status(payload) == "applied", "needs the sealed scale-out allocator")
     code, ro, extended = _planned(payload)
-    if not extended and status(payload) == "applied":
+    before_state = status(payload)
+    if not extended and before_state == "applied":
         return payload, dict(status="already_applied", changed_bytes=0, edits=[])
     buf = bytearray(payload)
     requests = list(space._read_scale_directory(payload))
     if extended:
         requests = requests + list(REQUESTS)
+    # b780 hunt2: an earlier install (no Situation test, same allocation, tables and four sites) is rewritten in place
     require(bytes(buf[code["raw"]:code["raw"] + CODE_SIZE]) == b"\xcc" * CODE_SIZE
-            or bytes(buf[code["raw"]:code["raw"] + CODE_SIZE]) == code_for(code["va"], ro["va"]),
+            or bytes(buf[code["raw"]:code["raw"] + CODE_SIZE]) == code_for(code["va"], ro["va"])
+            or (before_state == "previous"
+                and bytes(buf[code["raw"]:code["raw"] + CODE_SIZE]) == code_for(code["va"], ro["va"], situation=False)),
             "the owner's code allocation holds foreign bytes")
     require(bytes(buf[ro["raw"]:ro["raw"] + RO_SIZE]) in (bytes(RO_SIZE), tables()), "the owner's read-only allocation holds foreign bytes")
     buf[code["raw"]:code["raw"] + CODE_SIZE] = code_for(code["va"], ro["va"])
@@ -313,6 +352,7 @@ def apply(payload: bytes) -> tuple[bytes, dict[str, Any]]:
     result = bytes(buf)
     require(space.status(result) == "applied" and status(result) == "applied", "period goalposts postcondition failed")
     return result, dict(status="applied", edits=edits, directory_extended=extended,
+                        upgraded_from_previous=before_state == "previous",
                         changed_bytes=sum(x != y for x, y in zip(payload, result)),
                         code_va=hex(code["va"]), read_only_va=hex(ro["va"]))
 

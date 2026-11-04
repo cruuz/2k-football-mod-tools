@@ -844,6 +844,13 @@ class BuildPlan:
     name: str = ""
     author: str = ""
     notes: str = ""
+    # b780-m64b (Noah 11/03: "an option in the editor to limit a few things to allow the 64 MB option for Xbox and
+    # Android"): the console memory the disc is made for. 128 = xemu at 128 MB, the full SOFTDRINK build with every
+    # option (the default; old projects and recipes have no key and read 128). 64 = an original Xbox or the Android
+    # emulator hakuX, EXPERIMENTAL and untested on both: validate_plan refuses the options that need 128 MB or the real
+    # Xbox kernel and a selection the memory model says will not fit (nfl2k5_console_memory). A 128 plan's recipe has
+    # no console_memory key, so it is byte for byte what it was before the option existed.
+    console_memory: int = 128
 
     def wants_xbe_patch(self) -> bool:
         return (self.throw or self.catch_slider or self.accel_ramp or self.draft_ai or self.returner_fix
@@ -867,6 +874,8 @@ class BuildPlan:
     def to_recipe(self) -> dict[str, Any]:
         d = asdict(self)
         d.pop("source"); d.pop("target"); d.pop("overwrite")
+        if d.get("console_memory") == 128:  # b780-m64b: a 128 MB recipe stays exactly the recipe it always was
+            d.pop("console_memory")
         return d
 
 
@@ -1910,7 +1919,7 @@ def _sim_rb_injuries_preflight(source: Path, progress) -> None:
         raise ValueError("Simulated RB short injuries is not available in this installation.")
     progress("Checking the franchise week for simulated RB injuries", 0, 0)
     state = module.status(_xbe_bytes(source))
-    if state not in ("retail", "applied"):
+    if state not in ("retail", "applied", "previous"):  # b780 hunt1: a v0.8 install is upgraded in place
         raise ValueError("The franchise week injury tick or the scheduled carrier site in this source is not "
                          "retail. Build from an unmodified retail dump.")
 
@@ -3060,7 +3069,7 @@ def inspect_screen_timing(source: Path | str, level: str = "D") -> dict[str, Any
         return {"status": "foreign", "level": level, "books": [], "reason": str(exc)}
 
 
-def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str, Any]:
+def _inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str, Any]:
     """Current state of every patch in ``source`` (a default.xbe or a disc image)."""
 
     source = Path(source)
@@ -3795,6 +3804,17 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
     return out
 
 
+def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str, Any]:
+    """Current state of every patch in ``source`` (a default.xbe or a disc image).
+
+    The read asks ~150 status functions about one executable, and each re-ran its scale-out structure checks; they run
+    once per executable inside the memo (``studio_inspection.memoised_validation``), which is dropped when this returns."""
+
+    from .studio_inspection import memoised_validation
+    with memoised_validation():
+        return _inspect(source, screen_timing=screen_timing)
+
+
 def _check_playbook_menus(target: Path, progress: Callable[..., Any]) -> dict[str, Any] | None:
     """Refuse unsafe labels or formation menus in every PLAY book on the image.
 
@@ -4033,6 +4053,16 @@ def validate_plan(plan: BuildPlan) -> list[str]:
     if plan.cpu_runner_vision is True and plan.cpu_ball_carriers is not True:
         return ["CPU ball carrier vision needs \"CPU ball carriers stay in bounds\": turn that on too, or turn "
                 "CPU ball carrier vision off."]
+    # b780-m64b: the console memory target. 128 (every older plan) checks nothing more; 64 refuses what needs 128 MB or
+    # the real Xbox kernel, roster edits that grow the roster file, and a selection the memory model says will not fit.
+    memory = getattr(plan, "console_memory", 128)
+    if memory != 128:
+        from . import nfl2k5_console_memory as console_memory
+        try:
+            console_memory.normalize(memory)
+        except ValueError as exc:
+            return [str(exc)]
+        return console_memory.problems(plan, records=_roster_capacity_records(plan))
     return []
 
 
@@ -6641,7 +6671,13 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             xbe, deadline_receipt = deadline.apply(xbe)
             _write_xbe_bytes(target, xbe)
         elif deadline_state == "applied":
-            deadline_receipt = {"already_applied": True}
+            # b780-season1: the pending-trade purge and the deadline inbox story still read the retail week on
+            # images moved by a two-site version (v0.7 to v0.9); move both to Week 9 as well (idempotent)
+            xbe, followups = deadline.repair_followups(xbe)
+            deadline_receipt = {"already_applied": True,
+                                "followups": {k: v for k, v in followups.items() if k != "edits"}}
+            if not followups["already_applied"]:
+                _write_xbe_bytes(target, xbe)
         else:
             raise ValueError(f"trade-deadline sites are {deadline_state}; refusing")
         season_receipt = {**season_receipt,

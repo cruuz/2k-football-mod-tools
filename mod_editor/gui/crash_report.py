@@ -37,6 +37,22 @@ _ALREADY_SHOWN: set[str] = set()
 #: Apps whose crash hook is installed (the running Studio). See :func:`reports_enabled`.
 _INSTALLED: set[str] = set()
 
+#: errors.log is capped (b780-uxfix). One fault in a resize handler wrote 215 reports, about 51 MB,
+#: on every visit to a page, and nothing ever trimmed the file. Past this size the log moves to
+#: errors.log.1 (replacing the older copy) and a new one starts, so the folder holds at most about
+#: twice this much.
+LOG_LIMIT_BYTES = 2 * 1024 * 1024
+
+#: A single report longer than this keeps its start and its end, where a traceback names what failed.
+REPORT_LIMIT_CHARS = 64 * 1024
+
+#: A fault that repeats is written in full this many times per session; after that each repeat is
+#: one short entry (time and the error line), so it is still counted without filling the disk.
+FULL_REPEATS = 3
+
+#: How many times each fault (see :func:`signature`) has been logged in this session.
+_LOGGED: dict[str, int] = {}
+
 
 def signature(exc_type, tb) -> str:
     """What makes two reports "the same fault" for dialog purposes.
@@ -139,7 +155,9 @@ def write_report(report: str, app_name: str, *, directory: Path | None = None) -
 
     target = (directory or log_directory(app_name)) / "errors.log"
     try:
+        report = _shorten(str(report))
         target.parent.mkdir(parents=True, exist_ok=True)
+        _rotate(target, len(report.encode("utf-8", "replace")))
         # "\n" on every platform (b791-h3): one entry reads the same in any viewer and diff.
         with target.open("a", encoding="utf-8", newline="\n") as handle:
             handle.write(report)
@@ -149,6 +167,47 @@ def write_report(report: str, app_name: str, *, directory: Path | None = None) -
         # A read-only or missing home directory is not a reason to lose the
         # message; the caller still shows it on screen.
         return None
+
+
+def _shorten(report: str) -> str:
+    """Keep a very long report readable: its first quarter and its end, with the cut said in place."""
+
+    if len(report) <= REPORT_LIMIT_CHARS:
+        return report
+    head = REPORT_LIMIT_CHARS // 4
+    tail = REPORT_LIMIT_CHARS - head
+    cut = len(report) - head - tail
+    return (report[:head] + f"\n[... {cut} characters cut here to keep errors.log small ...]\n"
+            + report[-tail:])
+
+
+def _rotate(target: Path, incoming: int) -> None:
+    """Start a new errors.log when this entry would take it past :data:`LOG_LIMIT_BYTES`."""
+
+    try:
+        size = target.stat().st_size
+    except OSError:
+        return
+    if size == 0 or size + incoming <= LOG_LIMIT_BYTES:
+        return
+    try:
+        os.replace(target, target.with_name(target.name + ".1"))
+    except OSError:
+        # A locked or read-only file is not a reason to lose the report; it is still appended.
+        pass
+
+
+def _repeat_report(exc_type, exc, app_name: str, count: int) -> str:
+    """The short entry for a fault already written in full :data:`FULL_REPEATS` times."""
+
+    stamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    line = "".join(traceback.format_exception_only(exc_type, exc)).strip()
+    return (
+        f"{app_name} {app_version(app_name)}\n"
+        f"time: {stamp}\n"
+        f"repeat {count} of an error already saved in full above (full details are kept for the first "
+        f"{FULL_REPEATS}):\n{line}\n"
+    )
 
 
 def summary_lines(app_name: str, saved_to: Path | None) -> tuple[str, str, str]:
@@ -245,7 +304,10 @@ def handle(exc_type, exc, tb, *, app_name: str, directory: Path | None = None,
         sys.__excepthook__(exc_type, exc, tb)
         return
     try:
-        report = format_report(exc_type, exc, tb, app_name)
+        key = signature(exc_type, tb)
+        count = _LOGGED[key] = _LOGGED.get(key, 0) + 1
+        report = (format_report(exc_type, exc, tb, app_name) if count <= FULL_REPEATS
+                  else _repeat_report(exc_type, exc, app_name, count))
     except Exception:  # noqa: BLE001
         sys.__excepthook__(exc_type, exc, tb)
         return
@@ -259,7 +321,6 @@ def handle(exc_type, exc, tb, *, app_name: str, directory: Path | None = None,
         pass
     if not show_dialog:
         return
-    key = signature(exc_type, tb)
     if key in _ALREADY_SHOWN:
         return
     _ALREADY_SHOWN.add(key)

@@ -50,6 +50,7 @@ Go through this list in order. Most start-up problems are an xemu setup problem,
    image: see xemu's [required files](https://xemu.app/docs/required-files/).
 2. **Memory.** Set xemu's **System Memory** to **128 MiB** (Machine, then Settings, then the System tab). Quit xemu completely
    and open it again, because xemu applies this only after a restart. The current SOFTDRINK 2K28 disc does not run at 64 MiB.
+   (A disc you built yourself with **Console memory** set to 64 MB is the one exception; see the next question.)
 3. **BIOS.** xemu needs a debug BIOS or a modified retail BIOS that can start unsigned games, and SOFTDRINK 2K28's start-up
    patch needs the modified retail **COMPLEX 4627** one. Choose it under Machine, then Settings, then System, then Flash ROM
    (BIOS). With any other BIOS the patch stays asleep and the game stops with a BIOS message. The Studio and this project do
@@ -67,12 +68,35 @@ Go through this list in order. Most start-up problems are an xemu setup problem,
 
 ## Can I play SOFTDRINK 2K28 on Android, in hakuX?
 
-No, it is not supported. SOFTDRINK 2K28 is built and tested only for xemu on a Windows, Linux or macOS computer (and the
-Steam Deck), with 128 MiB of memory and the COMPLEX 4627 BIOS. hakuX is a separate Android emulator, not xemu, and by its own
-requirements it runs without an Xbox BIOS: it reimplements the Xbox kernel instead of running the real one. SOFTDRINK's start-up
-check reads the real 4627 kernel and the 128 MiB memory setting, so it is not expected to pass there, and a black screen without
-the message is what to expect. We do not test hakuX and cannot fix it. xemu itself has no Android version (see xemu's
-[FAQ](https://xemu.app/docs/faq/)).
+Not the ready-made pack, but you can try a **64 MB build** (experimental, estimated, not yet tested on a real Xbox or
+hakuX). The SOFTDRINK 2K28 pack that **Install SOFTDRINK 2K28** puts on your disc is the full build for xemu on a Windows,
+Linux or macOS computer (and the Steam Deck), with 128 MiB of memory and the COMPLEX 4627 BIOS. hakuX is a separate Android emulator, not xemu: by its own requirements it runs without
+an Xbox BIOS, because it reimplements the Xbox kernel instead of running the real one. The pack's start-up check needs the
+real 4627 kernel and 128 MiB, so the pack is not expected to start there, and a black screen without the message is what to
+expect.
+
+The Studio can make a disc for 64 MB machines, such as an original Xbox console and hakuX:
+
+1. In **Build & Share**, open the **Share** tab. Set **Build for** to **64 MB, original Xbox and Android hakuX
+   (experimental, estimated, not yet tested on a real Xbox or hakuX)**, then click **Customize SOFTDRINK 2K28…**. The **Build**
+   tab opens with the pack's art and options and the recommended 64 MB set already applied. (To start from your own
+   selection instead, open the **Build** tab and set **Console memory** there.)
+2. On the **Build** tab, **Console memory** now reads 64 MB. Every option that needs 128 MB or the real Xbox kernel is off
+   and greyed out, with the reason beside it, for example the three 128 MB memory options, Guardian caps, 16 reserves, the
+   two extra created teams and the Hi-res pack. The start-up checks for 128 MB and the 4627 BIOS are left out too.
+3. Each remaining option shows what it costs in memory at 64 MB. The line under **Console memory** says whether your
+   selection is predicted to fit at the hardest stadium, or how much to remove and what to turn off. Untick what you can
+   do without, or click **Use the recommended 64 MB set**. **Make my disc** refuses a selection that is predicted not to fit
+   and names what to turn off. When the line says the selection fits with the default uniforms but a player-picked
+   alternate kit at the heaviest stadium may not fit, the disc is made with that warning: if a game loops on the stadium
+   shots, use the default uniforms.
+4. The pack's 2026 rosters make the roster file bigger, which needs 128 MB, so untick **Include exported ★ Rosters edits**
+   for now. This route keeps the pack's art and the options that fit.
+
+The 64 MB build is experimental, estimated, not yet tested on a real Xbox or hakuX: its memory numbers come from a model,
+not a measurement on a console. We cannot fix hakuX itself. For the full SOFTDRINK experience, use xemu at 128 MiB.
+To try a 64 MB disc in xemu the way a console runs it, set xemu's **System Memory** to **64 MiB**. xemu itself has no
+Android version (see xemu's [FAQ](https://xemu.app/docs/faq/)).
 
 ## Can I keep the whole Crib, with its shops?
 

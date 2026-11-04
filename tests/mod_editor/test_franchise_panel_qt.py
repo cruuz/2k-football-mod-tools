@@ -560,7 +560,11 @@ class ChecksTests(_PanelCase):
 
 @unittest.skipUnless(F0.is_file() and F1.is_file(), f"private 8007Fran fixtures missing under {FIXTURES}")
 class RealFinnFixturePanelTests(_PanelCase):
-    def test_finns_ir_move_through_the_page_reproduces_f1_byte_for_byte(self) -> None:
+    def test_finns_ir_move_through_the_page_reproduces_f1_but_keeps_the_punt_returner(self) -> None:
+        # b780 hunt5: the page keeps the six specialist slot bytes on their players (the game's removal rule
+        # 0xC3A90). Finn's editor left them alone, so his file names the next man down as punt returner (slot 50
+        # after removing slot 44); the page writes 49 and otherwise Finn's exact move. Byte-for-byte Finn parity is
+        # the core API's finn_roles mode (test_nfl2k5_franchise_save).
         self.assertTrue(self.panel.load_save(F0.parents[3]))
         page = self.page
         self.assertTrue(page.active)
@@ -573,8 +577,11 @@ class RealFinnFixturePanelTests(_PanelCase):
         receipt = self.panel.write_copy_to(self.root / "copy")
         self.assertTrue(receipt["signed"])
         copy = self.root / "copy"
-        self.assertEqual(next(copy.rglob("SAVEGAME.DAT")).read_bytes(), F1.read_bytes())
-        self.assertEqual(next(copy.rglob("EXTRA")).read_bytes(), F1.with_name("EXTRA").read_bytes())
+        written, finn = next(copy.rglob("SAVEGAME.DAT")).read_bytes(), F1.read_bytes()
+        pr = fs.FranchiseSave(finn).team_offset(0) + rr.SPECIAL_TEAM_OFFSETS["pr"]
+        self.assertEqual([i for i, (a, b) in enumerate(zip(written, finn)) if a != b], [pr])
+        self.assertEqual((len(written), finn[pr], written[pr]), (len(finn), 50, 49))
+        self.assertTrue(rr.verify_extra(written, next(copy.rglob("EXTRA")).read_bytes()))
         self.assertEqual(F0.read_bytes(), fs.FranchiseSave.load(F0.parents[3]).original)    # source untouched
 
 

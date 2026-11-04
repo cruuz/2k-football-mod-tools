@@ -282,6 +282,8 @@ half_kneel:
  * knee bits 0x408000) in Q2 or Q4, with the clock running, when the downs left can kneel the whole clock out
  * ((4 - down - defense timeouts) x play clock >= clock), set the game timer to 0:00 and stop it, the state the clock
  * tick 0x157D40 leaves when time runs out during a play; its native dispatcher 0xA2970 then ends the half or the game.
+ * b780 hunt7: only for a CPU offense, or a human offense that leads in Q4. A human who kneels in Q2, or tied or behind
+ * in Q4, may still call its own timeout and kick (the walk-off field goal), so its kneel keeps the native clock.
  * Displaced: push ecx; mov eax,[0xe60280]. Resumes at 0x189086. */
 kneel_runoff:
     pushfd
@@ -313,7 +315,15 @@ kneel_runoff:
     and eax, 0x4081c0                 /* knee bits and the special-teams family */
     cmp eax, 0x408000
     jne 9f
-    mov ecx, dword ptr [0xe6028c]
+    cmp dword ptr [esi+0x30], 0       /* b780 hunt7: a human offense (its controller word, read as the CPU timeout */
+    je 4f                             /* poll 0x1885F0 reads it) may still stop the clock itself and kick, so its */
+    cmp dword ptr [0xe602c4], 4       /* kneel runs off only with a fourth-quarter lead; a CPU kneel always means */
+    jne 9f                            /* it wants the period over (Q2 end-of-half kneel, Q4 only when leading) */
+    mov ecx, esi
+    call margin_fn                    /* EAX = the offense's margin, EDX clobbered (pushad keeps both) */
+    test eax, eax
+    jle 9f
+4:  mov ecx, dword ptr [0xe6028c]
     test ecx, ecx
     jz 9f
     test byte ptr [ecx+0x18], 0xe     /* stopped, paused or counting up: no */

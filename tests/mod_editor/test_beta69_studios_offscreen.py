@@ -108,7 +108,7 @@ def replay():
                 if name == '2K5':
                     with patch.object(QFileDialog, 'getOpenFileName', return_value=('', '')) as choose:
                         window.open_source_button.click(); app.processEvents(); assert choose.called
-                    start = next(b for b in window.findChildren(QPushButton) if b.text().startswith('Start SOFTDRINK Basic'))
+                    start = next(b for b in window.findChildren(QPushButton) if b.text().startswith('Make my own disc (fixes only)'))  # b780-uxfix: renamed
                     start.click(); app.processEvents()
                     assert window.page_title.text() == 'Build & Share'
                     assert window._build_panel.blocker()

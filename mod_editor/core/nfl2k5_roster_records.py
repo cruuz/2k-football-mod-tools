@@ -127,6 +127,50 @@ TEAM_SIZE = 0x1F4
 SPECIAL_TEAM_OFFSETS = {"h": 0x194, "kr1": 0x195, "kr2": 0x196,
                         "k": 0x197, "ls": 0x198, "pr": 0x199}
 TEAM_SLOTS = 65
+
+
+# b780 hunt5: the six specialist bytes above are slot indexes into the team's pointer list (0xFF = nobody), and the
+# depth-chart builder 0xE7C50 fields KR1, KR2 and PR (and the holder at 0xE8009) straight from them. The game keeps them
+# on their players when it changes a list: its removal handler 0xC3A90 clears a role on the removed slot and moves the
+# roles on later slots up one place (signed bytes, so 0xFF stays 0xFF). The Studio's list edits follow the same rule, so
+# a release, trade, signing into a slot or an arrow move never leaves a tackle returning punts.
+def specialists_after_removal(values: Sequence[int], slot: int) -> list[int]:
+    """The six bytes as the game's removal handler 0xC3A90 leaves them after it takes ``slot`` out of the list."""
+
+    out = []
+    for value in values:
+        if value == slot:
+            value = 0xFF
+        elif slot < value < 0x80:
+            value -= 1
+        out.append(value)
+    return out
+
+
+def specialists_after_insert(values: Sequence[int], slot: int) -> list[int]:
+    """An insert at ``slot`` moves every later player down one place; each role moves with its player."""
+
+    return [value + 1 if slot <= value < 0x80 else value for value in values]
+
+
+def specialists_after_exchange(values: Sequence[int], first: int, second: int) -> list[int]:
+    """Two slots trade players (the arrows, a swap inside one team); each role stays with its player."""
+
+    return [second if value == first else first if value == second else value for value in values]
+
+
+def _kept_specialist_slot(loaded: int, loaded_list: Sequence[int], now_list: Sequence[int]) -> int | None:
+    """Where a role the loaded roster put on slot ``loaded`` sits after membership edits that keep roles on their
+    players: that player's slot now, 0xFF if he left the list, ``None`` if the loaded byte named no listed player."""
+
+    if loaded == 0xFF:
+        return 0xFF
+    if loaded >= len(loaded_list):
+        return None
+    player = loaded_list[loaded]
+    return list(now_list).index(player) if player in now_list else 0xFF
+
+
 COLLEGE_SIZE = 8
 POOLS = ("primary", "secondary")
 POOL_FIELDS = {"primary": (OBJ_OFF + 0x00, OBJ_OFF + 0x04), "secondary": (OBJ_OFF + 0x08, OBJ_OFF + 0x0C)}
@@ -1872,14 +1916,40 @@ class RosterDocument:
         player.college = self.colleges[index]
 
     def move_in_depth(self, team_index: int, slot: int, delta: int) -> bool:
-        """Move one player up or down his team's pointer list -- Finn's ↑↓ arrows."""
+        """Move one player up or down his team's pointer list -- Finn's ↑↓ arrows.
+
+        The holder, returner, kicker and snapper slot bytes stay with their players (b780 hunt5)."""
 
         team = self.teams[team_index]
         target = slot + delta
         if not (0 <= slot < len(team.slots) and 0 <= target < len(team.slots)):
             return False
         team.slots[slot], team.slots[target] = team.slots[target], team.slots[slot]
+        self._set_specialists(team, specialists_after_exchange(self._specialists(team), slot, target))
         return True
+
+    def _specialists(self, team: TeamRecord) -> list[int]:
+        """The team's six specialist slot bytes (holder, KR1, KR2, K, LS, PR) as this document holds them now."""
+
+        return [self.body[team.offset + offset] for offset in SPECIAL_TEAM_OFFSETS.values()]
+
+    def _set_specialists(self, team: TeamRecord, values: Sequence[int]) -> None:
+        for offset, value in zip(SPECIAL_TEAM_OFFSETS.values(), values):
+            self.body[team.offset + offset] = value
+
+    def specialist_snapshot(self) -> dict[int, tuple[list[int], list[int]]]:
+        """Every team's list and its six specialist bytes, for ``keep_specialists_on_players``."""
+
+        return {team.index: (list(team.slots), self._specialists(team)) for team in self.teams}
+
+    def keep_specialists_on_players(self, before: Mapping[int, tuple[Sequence[int], Sequence[int]]]) -> None:
+        """After lists were rebuilt wholesale: each role ends on the player who held it in ``before`` (0xFF if he
+        left that list, the game's removal rule 0xC3A90); a byte that named nobody on the list stays as it was."""
+
+        for team in self.teams:
+            slots_before, values = before[team.index]
+            kept = [_kept_specialist_slot(v, slots_before, team.slots) for v in values]
+            self._set_specialists(team, [v if k is None else k for v, k in zip(values, kept)])
 
     def set_depth_lock(self, player: Player, role: str, enabled: bool = True,
                        *, team_index: int | None = None) -> None:
@@ -2148,6 +2218,8 @@ class RosterDocument:
         team = self.teams[team_index]
         slot = team.slots.index(player.offset)
         del team.slots[slot]
+        # the game's removal handler 0xC3A90: his roles are cleared, the roles below him move up with their players
+        self._set_specialists(team, specialists_after_removal(self._specialists(team), slot))
         player.teams.remove(team_index)
         player.record.values["unknown_52"] &= ~0x1F
         return slot
@@ -2156,6 +2228,8 @@ class RosterDocument:
         team = self.teams[team_index]
         at = len(team.slots) if slot is None else max(0, min(int(slot), len(team.slots)))
         team.slots.insert(at, player.offset)
+        # an insert above the end moves the later players (and their roles) down one place; an append moves nobody
+        self._set_specialists(team, specialists_after_insert(self._specialists(team), at))
         player.teams.append(team_index)
         player.teams.sort()
         return at
@@ -2258,7 +2332,8 @@ class RosterDocument:
     def swap(self, first: Player, second: Player) -> dict[str, Any]:
         """Exchange two rostered players' slots: each takes the other's team and list position, and
         each is re-ranked at the end of his position's chain on the new team.  Counts do not move,
-        so the 42 / 54 limits cannot be crossed."""
+        so the 42 / 54 limits cannot be crossed.  Two players of one team only trade list places (b780
+        hunt5): their ranks, sides and locks stay, so a swap never benches a starter."""
 
         self.check_operation(first, "swap")
         self.check_operation(second, "swap")
@@ -2273,6 +2348,13 @@ class RosterDocument:
             _require(first.offset not in b.slots, f"{first.display} is already on {b.display}")
         slot_a, slot_b = a.slots.index(first.offset), b.slots.index(second.offset)
         a.slots[slot_a], b.slots[slot_b] = second.offset, first.offset
+        if team_a == team_b:
+            self._set_specialists(a, specialists_after_exchange(self._specialists(a), slot_a, slot_b))
+        else:
+            # each player leaves his club the way 0xC3A90 takes him out (his roles cleared) and the newcomer fills
+            # the same slot, so nobody else moves and every other role keeps its player
+            self._set_specialists(a, [0xFF if v == slot_a else v for v in self._specialists(a)])
+            self._set_specialists(b, [0xFF if v == slot_b else v for v in self._specialists(b)])
         if team_a != team_b:
             first.teams.remove(team_a)
             first.teams.append(team_b)
@@ -2280,7 +2362,8 @@ class RosterDocument:
             second.teams.remove(team_b)
             second.teams.append(team_a)
             second.teams.sort()
-        depth = {first.display: self._rerank(first, team_b), second.display: self._rerank(second, team_a)}
+        depth = ({first.display: self._rerank(first, team_b), second.display: self._rerank(second, team_a)}
+                 if team_a != team_b else {})
         return {"operation": "swap", "players": (first.display, second.display),
                 "first": {"pool": first.pool, "index": first.index, "from": a.abbreviation,
                           "to": b.abbreviation, "slot": slot_b},
@@ -3004,11 +3087,19 @@ def edits_document(document: RosterDocument, *, name: str = "", author: str = ""
     if moves:
         document_out["moves"] = moves
     specials = []
+    loaded_lists, _loaded_free = document._read_lists(document.original, document.teams, document.obj_base,
+                                                      document.by_offset)
     for team in document.teams:
         roles = {}
         for role, offset in SPECIAL_TEAM_OFFSETS.items():
             slot = document.body[team.offset + offset]
             if slot == document.original[team.offset + offset]:
+                continue
+            # b780 hunt5: a membership edit keeps each role on its player the way the game's removal handler does,
+            # and the replay of the same moves does that again on any roster; only a role somebody chose is recorded
+            kept = _kept_specialist_slot(document.original[team.offset + offset],
+                                         loaded_lists.get(team.index, []), team.slots)
+            if slot == kept or (kept is None and slot != 255 and slot >= len(team.slots)):
                 continue
             if slot == 255:
                 roles[role] = None
@@ -3694,6 +3785,8 @@ def replay_moves(roster: RosterDocument, moves: Sequence[Mapping[str, Any]], log
     if not moves:
         return 0
     snapshot = roster.membership_snapshot()
+    # b780 hunt5: who holds each specialist role before the transaction (see the end of phase 2)
+    roles_before = roster.specialist_snapshot()
     by_key = {(p.pool, p.index): p for p in roster.players}
     movers: list[tuple[Player, Mapping[str, Any]]] = []
     for entry in moves:
@@ -3748,6 +3841,11 @@ def replay_moves(roster: RosterDocument, moves: Sequence[Mapping[str, Any]], log
         roster._attach(player, team_index, slot)
         roster._rerank(player, team_index)
     roster._reindex_membership()
+    # Phase 1 takes each mover off every list he is on and phase 2 puts him back where the document says, so a
+    # player who stays on a team (an all-star squad beside his new club) is detached and attached again there.
+    # Each role ends on the player who held it before the transaction (0xFF if he left that list): the game's
+    # removal rule 0xC3A90 for a departure, and no change for a player who only went out and back in.
+    roster.keep_specialists_on_players(roles_before)
     # phase 3: the end state must obey the rules the editor enforced when the document was made --
     # relative to what the target roster already had, so a club that was under 42 before the moves
     # is only a problem if the moves took it lower. The current codec owns the active/reserve cap.

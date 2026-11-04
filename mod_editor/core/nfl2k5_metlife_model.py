@@ -1794,7 +1794,12 @@ def image_status(source):
         return "skin"
     if "other" in states:
         # a bundle that is neither the skin nor the model: retail when the skin has not run, else foreign
-        return "retail" if ml.image_status(source) == "retail" and crowd_states == {"retail"} else "foreign"
+        # ml.image_status() asks THIS function when the skin reads foreign or mixed and the roster is applied, so calling it
+        # here looped without end on any disc whose bundles are neither the skin nor the model (every disc that carries
+        # Modern colour over the skin, the SOFTDRINK pack included): each turn re-read the disc until RecursionError, and
+        # Build never finished reading the options. It only ever returns "retail" when the skin itself reads retail, so
+        # ask for that directly.
+        return "retail" if ml._skin_status(source) == "retail" and crowd_states == {"retail"} else "foreign"
     return "mixed"
 
 

@@ -26,6 +26,20 @@ The patch rewrites those 352 bytes in place (same frame, same registers, same he
   whole roster is scanned; the game's own category-10 score is the ranking key.
 
 Pattern-checked against the retail bytes, ``.text`` digest recomputed.  Unverified at runtime.
+
+b780 st1 (second site, the returner getter).  Every depth-chart view of the kick and punt returners and
+the re-rank ``FUN_00243790`` read the team's returner bytes through ``FUN_00242a60`` (0x242A60, called
+only by the row getter ``FUN_00242ae0`` for position codes 0xFE KR and 0xFD PR):
+``mov eax,[team + slot*4]`` with no check.  An empty byte (0xFF, written natively by the roster-removal
+handler 0xC3A90 when the KR1/KR2/PR player is cut or traded, and shipped in the pack rosters for three
+clubs' KR2) reads the dword in front of the team record: the previous club's +0x1F0.  Retail rosters
+keep that dword 0, so the getter said "no player" and the re-rank fell back to the next returner.  The
+practice-squad metadata (+0x1F2 count, +0x1F3 marker 0xA5, every club since the practice squad) makes
+it 0xA5NN0000, a pointer to nowhere: the Special Teams KR list's photo row (0x242D10 -> 0xE7170) and
+the KR/PR rows dereference it (a page fault, the game freezes) and the re-rank stores roster slot 0.
+The getter is rewritten in place (98 of its 128 bytes, int3 after): the same results for every valid
+byte, and a byte that is not a roster slot of the team (0x80..0xFF or at least the player count)
+reads as no player, as retail rosters always did.
 """
 
 from __future__ import annotations
@@ -57,6 +71,21 @@ RETAIL_SITE = bytes.fromhex(
     "f6c441750e8b4c241051e847eaffff895c2418d9442414d85c2424dfe0f6c44175088b542414895424240fb6871c01000043"
     "483bd80f8cf5feffff8b4424248a4c241c8a54241850888f95010000889796010000e8fde9ffff8bcf888799010000e8c057"
     "f8ff"
+)
+
+
+# b780 st1: the returner getter FUN_00242a60 (eax = 0xFE KR / 0xFD PR, ecx = list row, edx = team) and the two
+# padding nops after it, up to the row getter FUN_00242ae0.  Retail bytes = v0.8 = v0.9 RC bytes.
+GETTER_VA = 0x00242A60
+GETTER_SIZE = 0x80
+FN_NTH_RETURNER = 0x002429D0    # stdcall(row, exclusions, position table, count; ebx = team, esi = exclusions) -> eax
+NTH_POSITIONS = 0x00514D38      # its retail table of the six kick-return positions
+TEAM_COUNT = 0x11C
+TEAM_KR1, TEAM_PR = 0x195, 0x199
+RETAIL_GETTER = bytes.fromhex(
+    "83ec08535633f63dfe0000008bda75343bce0fbe83950100000fbe93960100008b04838b1493894424088954240c744883f9"
+    "0175085e8bc25b83c408c3be02000000eb223dfd000000751b3bce0fbe83990100008b0483894424088974240c7417be0100"
+    "00006a0668384d51008d5424105251e8f8feffff5e5b83c408c39090"
 )
 
 
@@ -198,6 +227,68 @@ def site_bytes() -> bytes:
     return body + b"\xcc" * (SITE_SIZE - len(body))
 
 
+def _getter_code() -> bytes:
+    """FUN_00242a60 with a slot check.  in: eax = 0xFE (KR) / 0xFD (PR), ecx = list row, edx = team.
+    out: eax = player or 0.  The named slots (KR1, KR2 or PR) go into a zeroed two-dword exclusion list,
+    each only when its byte is a roster slot of the team (unsigned byte below the player count); a row
+    below the named count returns that entry, any other row is the retail FUN_002429d0 call with the same
+    arguments (row, list, the six kick-return positions, 6; ebx = team, esi = named count).  ebx, esi, edi
+    are kept; the only caller, FUN_00242ae0, keeps the rest."""
+
+    a = _Asm(GETTER_VA)
+    a.b("53")                                  # push ebx
+    a.b("56")                                  # push esi
+    a.b("57")                                  # push edi
+    a.b("6a00")                                # push 0            ; list[1]
+    a.b("6a00")                                # push 0            ; list[0]  (list at [esp])
+    a.b("8bda")                                # mov ebx,edx       ; team
+    a.b("33f6")                                # xor esi,esi       ; named slots
+    a.b("8dbb" + struct.pack("<I", TEAM_PR).hex())   # lea edi,[ebx+0x199]  ; PR byte
+    a.b("3dfd000000")                          # cmp eax,0xfd
+    a.j8("74", "one_more")                     # je  -> 1 named slot
+    a.b("3dfe000000")                          # cmp eax,0xfe
+    a.j8("75", "nth")                          # jne -> no named slot (retail: never called so)
+    a.b("8dbb" + struct.pack("<I", TEAM_KR1).hex())  # lea edi,[ebx+0x195]  ; KR1 byte, KR2 follows
+    a.b("46")                                  # inc esi
+    a.label("one_more")
+    a.b("46")                                  # inc esi           ; 1 PR, 2 KR
+    a.b("33d2")                                # xor edx,edx
+    a.label("fill")
+    a.b("0fbe0417")                            # movsx eax, byte [edi+edx]
+    a.b("3a83" + struct.pack("<I", TEAM_COUNT).hex())  # cmp al, byte [ebx+0x11c]
+    a.j8("73", "skip")                         # jae skip          ; 0xFF (empty) or past the roster
+    a.b("8b0483")                              # mov eax,[ebx+eax*4]
+    a.b("890494")                              # mov [esp+edx*4],eax
+    a.label("skip")
+    a.b("42")                                  # inc edx
+    a.b("3bd6")                                # cmp edx,esi
+    a.j8("72", "fill")                         # jb fill
+    a.b("3bce")                                # cmp ecx,esi
+    a.j8("73", "nth")                          # jae nth
+    a.b("8b048c")                              # mov eax,[esp+ecx*4]
+    a.j8("eb", "done")                         # jmp done
+    a.label("nth")
+    a.b("6a06")                                # push 6
+    a.b("68" + struct.pack("<I", NTH_POSITIONS).hex())  # push 0x514d38
+    a.b("8d542408")                            # lea edx,[esp+8]   ; the list
+    a.b("52")                                  # push edx
+    a.b("51")                                  # push ecx          ; row
+    a.call(FN_NTH_RETURNER)                    # ret 0x10
+    a.label("done")
+    a.b("83c408")                              # add esp,8
+    a.b("5f")                                  # pop edi
+    a.b("5e")                                  # pop esi
+    a.b("5b")                                  # pop ebx
+    a.b("c3")                                  # ret
+    return a.assemble()
+
+
+def getter_bytes() -> bytes:
+    code = _getter_code()
+    _require(len(code) <= GETTER_SIZE, f"returner getter is {len(code)} bytes, over {GETTER_SIZE}")
+    return code + b"\xcc" * (GETTER_SIZE - len(code))
+
+
 def _header_size(payload: bytes) -> int:
     return struct.unpack_from("<I", payload, 0x108)[0]
 
@@ -213,33 +304,45 @@ def _offset(payload: bytes, va: int) -> int:
 
 def _sites(payload: bytes) -> list[tuple[str, int, bytes, bytes]]:
     _require(len(RETAIL_SITE) == SITE_SIZE, "retail transcript must cover the whole returner loop")
-    return [("returner_loop", _offset(payload, SITE_VA), RETAIL_SITE, site_bytes())]
+    _require(len(RETAIL_GETTER) == GETTER_SIZE, "retail transcript must cover the whole returner getter")
+    return [("returner_loop", _offset(payload, SITE_VA), RETAIL_SITE, site_bytes()),
+            ("returner_getter", _offset(payload, GETTER_VA), RETAIL_GETTER, getter_bytes())]
+
+
+def _site_states(payload: bytes) -> dict[str, str]:
+    states = {}
+    for label, off, before, after in _sites(payload):
+        got = payload[off: off + len(before)]
+        states[label] = "retail" if got == before else "applied" if got == after else "foreign"
+    return states
 
 
 def status(payload: bytes) -> str:
+    """retail | applied | legacy (the loop of beta-79 and older builds, getter still retail) | foreign"""
     try:
-        sites = _sites(payload)
+        states = _site_states(payload)
     except (ReturnerFixError, ValueError, struct.error):
         return "foreign"
-    states = set()
-    for _label, off, before, after in sites:
-        got = payload[off: off + len(before)]
-        states.add("retail" if got == before else "applied" if got == after else "foreign")
-    if states == {"retail"}:
+    if set(states.values()) == {"retail"}:
         return "retail"
-    if states == {"applied"}:
+    if set(states.values()) == {"applied"}:
         return "applied"
+    if states == {"returner_loop": "applied", "returner_getter": "retail"}:
+        return "legacy"
     return "foreign"
 
 
 def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
     state = status(payload)
-    _require(state == "retail", f"returner sites are {state}, not retail")
+    _require(state in ("retail", "legacy"), f"returner sites are {state}, not retail")
+    states = _site_states(payload)
     buf = bytearray(payload)
     sections = _sections(payload)
     touched = set()
     edits = []
     for label, off, before, after in _sites(payload):
+        if states[label] == "applied":            # legacy: only the getter is still retail
+            continue
         buf[off: off + len(after)] = after
         touched.add(_section_for_offset(sections, off).index)
         edits.append({"label": label, "file_offset": f"0x{off:x}", "bytes": len(after)})
@@ -252,8 +355,10 @@ def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
     changed = sum(1 for a, b in zip(payload, patched) if a != b)
     return patched, {"edits": edits, "changed_bytes": changed, "sections_repinned": sorted(touched),
                      "code_bytes": len(site_bytes()) - site_bytes().count(b"\xcc"),
+                     "getter_code_bytes": len(_getter_code()),
+                     **({"upgraded_from": "legacy"} if state == "legacy" else {}),
                      "kr_eligible": list(KR_ELIGIBLE), "pr_eligible": list(PR_ELIGIBLE)}
 
 
-__all__ = ["ReturnerFixError", "SITE_VA", "SITE_SIZE", "RETAIL_SITE", "KR_ELIGIBLE", "PR_ELIGIBLE",
-           "apply", "mask_bytes", "site_bytes", "status"]
+__all__ = ["ReturnerFixError", "SITE_VA", "SITE_SIZE", "RETAIL_SITE", "GETTER_VA", "GETTER_SIZE", "RETAIL_GETTER",
+           "KR_ELIGIBLE", "PR_ELIGIBLE", "apply", "getter_bytes", "mask_bytes", "site_bytes", "status"]

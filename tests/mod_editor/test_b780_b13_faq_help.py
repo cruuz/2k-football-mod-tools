@@ -108,7 +108,7 @@ class NewFaqAnswers(unittest.TestCase):
         faq_anchors = {_slug(h) for h in re.findall(r"^## (.+)$", FAQ.read_text(encoding="utf-8"), re.M)}
         start = START_HERE.read_text(encoding="utf-8")
         anchors = re.findall(r"2k5_mod_studio_faq\.md#([\w\-]+)", start)
-        self.assertEqual(len(anchors), 3)  # b780: plus the Linux Python 3.13 answer
+        self.assertEqual(len(anchors), 4)  # b780: plus the Linux Python 3.13 answer; b780-m64b: plus the 64 MB answer
         for anchor in anchors:
             self.assertIn(anchor, faq_anchors)
         self.assertEqual(_slug(NEW_HEADINGS[3]), "the-game-will-not-start-what-should-i-check")

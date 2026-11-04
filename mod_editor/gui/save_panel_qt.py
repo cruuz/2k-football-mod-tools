@@ -146,7 +146,7 @@ class SavePanel(QWidget):
         root.setContentsMargins(24, 22, 24, 22)
         root.setSpacing(14)
 
-        title = QLabel("Xbox save: sliders && franchise year (experimental)")
+        title = QLabel("Xbox save: sliders & franchise year (experimental)")  # b780-uxfix: a QLabel shows && as two
         title.setObjectName("bumpTitle")
         subtitle = QLabel(
             "Open SAVEGAME.DAT and your game disc (or its default.xbe), then save a signed copy. "

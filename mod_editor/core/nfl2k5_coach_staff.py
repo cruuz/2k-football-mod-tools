@@ -700,6 +700,15 @@ def plan(staff, body, teams=None) -> StaffPlan:
             result.notes.append(f"{c.place} plays {book_from.place}'s playbook (a copy of its final book)")
         if dcs[i] != c.book:
             result.notes.append(f"{c.place}: defensive coordinator {dc_names[dcs[i]]} (from {club(dcs[i]).place})")
+    # 4b. a roster whose capacity arena has grown (a built disc, the SOFTDRINK pack) cannot take a created coach: its text
+    # region cannot be laid out again, so apply_to_body refuses. The plan must refuse it too ("no errors means
+    # apply_to_body writes exactly this plan"): the Coaches page and the build's preflight both read this list, and
+    # without the line a created coach on the pack disc passed both and stopped the build in its roster step.
+    if not result.errors and any(c.created for c in result.clubs if c.moved):
+        from . import nfl2k5_roster_records as rr
+        if len(body) != rr._coach_tool().ROST_BODY_SIZE:
+            result.errors.append("a created coach can be written only on a roster before its capacity growth (build "
+                                 "from your retail disc); this roster has grown")
     # 5. who no club employs any more, and a head coach who called his club's defense
     if not result.errors:
         employed = {source for kind, source in final.values() if kind == "record"}

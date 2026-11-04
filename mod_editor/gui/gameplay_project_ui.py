@@ -43,6 +43,9 @@ def _combo(widget, value):
 def restore(panel, state):
     choices = {**saved.from_plan(saved.to_plan({}, "", "")), **saved.build_settings(state)}
     with quiet(panel):
+        if hasattr(panel, "set_console_memory"):
+            # b780-m64b: the target first, so the boxes below land under its rules; an older project reads 128 MB
+            panel.set_console_memory(choices.get("console_memory", 128), keep_ticks=False, refresh=False)
         for key, box in panel._boxes().items():
             value = choices[key]
             box.setChecked(value == "matte" if key == "helmet_finish"
@@ -95,6 +98,7 @@ class GameplayBuildLink:
         self.build, self.gameplay, self.changed = build, gameplay, changed
         self.suspended = suspended
         self.busy = False
+        self._dropped = False
         self.shared = set(build._boxes()) & set(gameplay.checks)
         for key in self.shared:
             build._boxes()[key].toggled.connect(lambda _on, k=key: self.copy_from_build(k))
@@ -145,12 +149,23 @@ class GameplayBuildLink:
 
     def _copy(self, source, destination):
         if self.busy or self.suspended():
+            if self.busy:
+                self._dropped = True          # a rule on the other page fired while a copy was in flight (see below)
             return
         self.busy = True
+        self._dropped = False
         try:
             destination.setChecked(source.isChecked())
         finally:
             self.busy = False
+        # While `busy` was set, the destination page's own rules (a child that needs its parents, a rival that must go
+        # off) could tick or clear other boxes, and those toggles were dropped. Ticking ESPN scorebug effects on Game
+        # Fixes left Build with the scorebug and extra patch space ticked while Game Fixes showed both unticked. The
+        # Build page owns the plan, so when anything was dropped settle the Game Fixes boxes back to it: the two pages
+        # never disagree. (A copy that dropped nothing costs nothing: a preset is a hundred copies.)
+        if self._dropped:
+            self._dropped = False
+            self.refresh_from_build()
         self.changed()
 
 

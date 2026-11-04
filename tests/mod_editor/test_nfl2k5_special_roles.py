@@ -153,9 +153,11 @@ class RetailSpecialTests(unittest.TestCase):
 class SpecialChartContractTests(unittest.TestCase):
     def test_noahs_labels_keep_the_book_ordinals(self):
         from mod_editor.core import nfl2k5_depth_chart_rows as rows
+        # b780 hunt5 (Noah 11/03: the starting back keeps priority): 3DRB is RB ordinal 2, rank row 1, which no book
+        # formation asks for, so its top back is RB2 behind the starter; the passing sets keep the lead back (0).
         expected = {'LS': (6, 1), 'LGUN': (9, 3), 'RGUN': (18, 3),
                     'NCB': (18, 2), 'DCB': (18, 3), 'SLWR': (9, 2),
-                    'GAD': (9, 4), '3DRB': (10, 0), 'PWRB': (10, 1)}
+                    'GAD': (9, 4), '3DRB': (10, 2), 'PWRB': (10, 1)}
         kinds = {3: 9, 4: 18, 7: 10, 12: 6}
         actual = {abbr: (kinds[pos], chain >> 1 if pos == 12 else chain)
                   for _, _, abbr, _, pos, chain in rows.ROLE_ROWS}
