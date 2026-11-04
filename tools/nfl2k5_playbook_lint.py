@@ -15,6 +15,9 @@ Checks (see mod_editor/core/nfl2k5_playbook_lint.py for the measured retail enve
   BACK_PRIMARY_SHARE           book-level: a back is the first read on more pass links than retail (P3)
   SCREEN_DEPTH_MARGIN / SCREEN_SIDE_CROSS / SCREEN_NO_RELEASE   screen setup (P2)
   FORMATION_OVERLAP / FORMATION_ILLEGAL / DEF_STACK / DEF_MIDDLE_MUG          formations (P5)
+  FORMATION_NO_RUN / FORMATION_NO_PASS   an offense formation whose menu lacks a run (a pass) play: the native lottery
+                               returns one fixed pass (run) when the CPU wants the other kind (Q18; retail's Hail Mary
+                               set and its two "Gun: Straight" sets are exempt from the run rule)
 
 --studio-rules lints packs as the Studio compiler writes them (deep-flat and p13 repair rules).
 Exit status: 0 clean, 1 findings at or above --fail-on, 2 usage or read error. Never writes a game file.

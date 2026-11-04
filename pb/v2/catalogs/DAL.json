@@ -307,12 +307,15 @@
    "align": "uc",
    "tag": "base",
    "menu": [
+    "Crack Toss",
+    "RB Sweep Wk",
     "Slip Screen Wk",
     "Go Shot",
     "PA X Dagger",
     "Comeback Seam",
     "Z Curl Flat",
-    "Quick Outs"
+    "Quick Outs",
+    "Lead Stretch"
    ],
    "cpu_situation": [
     3,
@@ -417,10 +420,10 @@
    "align": "gun",
    "tag": "empty",
    "menu": [
-    "RB Choice",
-    "Post Wheel",
+    "QB Power",
+    "DAL Double Slants",
     "Y Stick",
-    "RB Sail",
+    "QB Draw",
     "Drive",
     "Y Sail"
    ],
@@ -465,7 +468,7 @@
     "Slot Sail",
     "Power G",
     "Post Wheel",
-    "Sail",
+    "Snag",
     "X Levels",
     "Slot China",
     "PA Fade Curl",
@@ -577,7 +580,10 @@
    "menu": [
     "Slip Screen",
     "PA X Sail",
-    "Comeback Seam"
+    "RB Toss",
+    "Snag",
+    "Counter GT Wk",
+    "01 Trap"
    ],
    "cpu_situation": [
     4,
@@ -2985,6 +2991,7 @@
    "formations": [
     "Singleback Ace",
     "Pistol Ace Wing",
+    "Gun Wing Slot Offset",
     "Singleback Y Trips"
    ]
   },
@@ -3164,6 +3171,7 @@
    "formations": [
     "Singleback Ace",
     "Pistol Ace Wing",
+    "Gun Wing Slot Offset",
     "Singleback Y Trips"
    ]
   },
@@ -3360,6 +3368,7 @@
    "lane": 4,
    "formations": [
     "Pistol Strong Y Off Close",
+    "I-Form Pro",
     "Pistol Strong"
    ]
   },
@@ -4043,28 +4052,25 @@
   {
    "play": "p113",
    "play_index": 169,
-   "name": "RB Sail",
-   "concept": "HB Sail Return Slant Flat",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
+   "name": "QB Draw",
+   "concept": "QB Draw",
+   "family": "qb",
+   "header": "qb_draw",
+   "play_type": "keeper",
    "personnel": "11",
    "home": "Gun Empty Trey",
-   "primary": "HB",
+   "primary": null,
    "screen": null,
    "must": "",
    "routes": [
-    "Arrow",
-    "Return",
-    "Sail",
-    "Slant",
-    "Whip"
+    "Go"
    ],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Empty Trey"
-   ]
+   ],
+   "added_by": "b780 plays2"
   },
   {
    "play": "p114",
@@ -4204,28 +4210,23 @@
   {
    "play": "p120",
    "play_index": 176,
-   "name": "RB Choice",
-   "concept": "HB Choice Out and Up Bench",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
+   "name": "QB Power",
+   "concept": "QB Power",
+   "family": "qb",
+   "header": "qb_draw",
+   "play_type": "keeper",
    "personnel": "11",
    "home": "Gun Empty Trey",
-   "primary": "HB",
+   "primary": null,
    "screen": null,
    "must": "",
-   "routes": [
-    "Arrow",
-    "Curl",
-    "Out",
-    "Out and Up",
-    "Whip"
-   ],
+   "routes": [],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Empty Trey"
-   ]
+   ],
+   "added_by": "b780 plays2"
   },
   {
    "play": "p121",
@@ -4244,6 +4245,7 @@
    "deep": false,
    "lane": 4,
    "formations": [
+    "I-Form Pro",
     "Wing T"
    ]
   },
@@ -4333,6 +4335,7 @@
    "deep": false,
    "lane": 4,
    "formations": [
+    "Gun Wing Slot Offset",
     "Gun Ace Flex"
    ]
   },
@@ -4509,6 +4512,7 @@
    "deep": false,
    "lane": 0,
    "formations": [
+    "I-Form Pro",
     "Wing T"
    ]
   },

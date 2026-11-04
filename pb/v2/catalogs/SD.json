@@ -113,7 +113,7 @@
    "tag": "empty",
    "menu": [
     "Y Drive Out",
-    "Z Bench Dig",
+    "SD Slant Flat",
     "QB Keep",
     "End Around",
     "Post Wheel",
@@ -213,7 +213,7 @@
     "RB Stretch Wk",
     "Slot Drive",
     "Zone Toss",
-    "Cross Dig",
+    "RB Quick Outs",
     "Hitch Seam",
     "Y Switch",
     "Sprint Y Sail"
@@ -375,7 +375,10 @@
    "menu": [
     "Tush Push",
     "QB Sneak",
-    "Inside Zone Split"
+    "RB Texas",
+    "Inside Zone Split",
+    "Y Post Corner",
+    "PA Y Mills"
    ],
    "cpu_situation": [
     4,
@@ -418,9 +421,9 @@
    "tag": "empty",
    "menu": [
     "RB Choice Out",
-    "RB Deep Flood",
-    "Slot Spacing",
-    "Z Dagger",
+    "QB Draw",
+    "QB Power",
+    "Z Quick Outs",
     "Stick",
     "Bubble Screen"
    ],
@@ -469,13 +472,13 @@
     "Stretch Wk",
     "Sprint Slot Sail",
     "Sail",
-    "Slot Sail",
+    "Z Snag",
     "Outside Zone",
     "X Hitch Seam",
     "Slot China",
     "Sprint Sail",
     "Slot Whip",
-    "X Scissors"
+    "Slot Spacing"
    ],
    "cpu_situation": [
     2,
@@ -690,13 +693,13 @@
    "menu": [
     "FB Screen",
     "PA Y Seam Shot",
+    "RB Toss",
     "Z Quick Outs",
-    "X Corner Post",
     "Z Dagger",
-    "X Dagger",
     "X China",
     "X Scissors",
-    "RB Texas"
+    "RB Texas",
+    "RB Slam"
    ],
    "cpu_situation": [
     0,
@@ -749,13 +752,16 @@
    "menu": [
     "Slip Screen",
     "PA Deep Over",
+    "Outside Zone",
     "Y Y Trail Out",
     "Y Y Trail",
     "X Double Move",
     "PA Fade Curl",
     "PA Z Comeback Seam",
     "Corner Strike",
-    "Z Out Seam"
+    "Z Out Seam",
+    "Power G",
+    "Inside Zone"
    ],
    "cpu_situation": [
     1,
@@ -1306,8 +1312,7 @@
    "formations": [
     "I-Form Close",
     "Wing T",
-    "Pistol Strong",
-    "Gun Split Pro"
+    "Pistol Strong"
    ]
   },
   {
@@ -1732,7 +1737,6 @@
    "formations": [
     "Singleback Doubles",
     "Gun Doubles",
-    "Gun Trips TE",
     "Gun Bunch X Nasty",
     "Pistol Trey",
     "Singleback Wing",
@@ -2241,6 +2245,7 @@
    "lane": null,
    "formations": [
     "Singleback Doubles",
+    "Gun Trips TE",
     "Gun Bunch X Nasty",
     "Pistol Trey",
     "Singleback Wing",
@@ -2548,8 +2553,7 @@
    "formations": [
     "I-Form Close",
     "Wing T",
-    "Pistol Strong",
-    "Gun Split Pro"
+    "Pistol Strong"
    ]
   },
   {
@@ -2957,7 +2961,8 @@
    "formations": [
     "Singleback Ace Close",
     "Pistol Ace Wing",
-    "Singleback Ace"
+    "Singleback Ace",
+    "Gun Y Trips"
    ]
   },
   {
@@ -3001,6 +3006,7 @@
    "formations": [
     "Singleback Ace Close",
     "Pistol Ace Wing",
+    "Gun Y Trips",
     "Pistol Ace"
    ]
   },
@@ -3051,7 +3057,8 @@
    "formations": [
     "Singleback Ace Close",
     "Pistol Ace Wing",
-    "Singleback Ace"
+    "Singleback Ace",
+    "Gun Y Trips"
    ]
   },
   {
@@ -3423,7 +3430,8 @@
    "lane": 4,
    "formations": [
     "I-Form Close",
-    "I-Form Pro"
+    "I-Form Pro",
+    "Gun Split Pro"
    ]
   },
   {
@@ -3470,7 +3478,8 @@
    "lane": 3,
    "formations": [
     "I-Form Close",
-    "I-Form Pro"
+    "I-Form Pro",
+    "Gun Split Pro"
    ]
   },
   {
@@ -3541,6 +3550,7 @@
    "lane": null,
    "formations": [
     "I-Form Tight",
+    "Full House Sneak",
     "Weak Wing"
    ]
   },
@@ -3916,28 +3926,25 @@
   {
    "play": "p109",
    "play_index": 123,
-   "name": "RB Deep Flood",
-   "concept": "HB Deep Flood Seams",
-   "family": "deep",
-   "header": "dropback",
-   "play_type": "pass",
+   "name": "QB Draw",
+   "concept": "QB Draw",
+   "family": "qb",
+   "header": "qb_draw",
+   "play_type": "keeper",
    "personnel": "11",
    "home": "Gun Empty Trey",
-   "primary": "HB",
+   "primary": null,
    "screen": null,
    "must": "",
    "routes": [
-    "Flat",
-    "Go",
-    "Hitch",
-    "Post",
-    "Sail"
+    "Go"
    ],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Empty Trey"
-   ]
+   ],
+   "added_by": "b780 plays2"
   },
   {
    "play": "p110",
@@ -4151,7 +4158,8 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Full House"
+    "Full House",
+    "Full House Sneak"
    ]
   },
   {
@@ -4240,7 +4248,8 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Full House"
+    "Full House",
+    "Full House Sneak"
    ]
   },
   {
@@ -4521,27 +4530,23 @@
   {
    "play": "p136",
    "play_index": 225,
-   "name": "Slot Spacing",
-   "concept": "Slot Spacing Seams",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
+   "name": "QB Power",
+   "concept": "QB Power",
+   "family": "qb",
+   "header": "qb_draw",
+   "play_type": "keeper",
    "personnel": "11",
    "home": "Gun Empty Trey",
-   "primary": "Slot",
+   "primary": null,
    "screen": null,
    "must": "",
-   "routes": [
-    "Flat",
-    "Go",
-    "Hitch",
-    "Stick"
-   ],
+   "routes": [],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Empty Trey"
-   ]
+   ],
+   "added_by": "b780 plays2"
   },
   {
    "play": "p137",

@@ -122,6 +122,8 @@
    "align": "uc",
    "tag": "base",
    "menu": [
+    "Inside Zone Split",
+    "Pin Pull Sweep",
     "Slot Bubble Screen",
     "WAS Curl Flat",
     "WAS Mills",
@@ -133,7 +135,8 @@
     "X Curl Combo",
     "Slot Curl Flat",
     "Slot Comeback Seam",
-    "Y Mills"
+    "Y Mills",
+    "RB Stretch"
    ],
    "cpu_situation": [
     1,
@@ -196,7 +199,7 @@
     "WAS Slant Flat",
     "RB Texas",
     "RB Stretch",
-    "X Curl Combo",
+    "Slot Stick Out Bang",
     "PA Slot Deep Over",
     "Slot Stick Out",
     "Slot Bubble Screen",
@@ -335,7 +338,10 @@
    "menu": [
     "RB Counter",
     "Inside Trap Wk",
-    "RB Dive"
+    "RB Texas",
+    "RB Dive",
+    "PA X Snag",
+    "PA X Slant Flat Out"
    ],
    "cpu_situation": [
     4,
@@ -394,9 +400,9 @@
    "tag": "empty",
    "menu": [
     "RB Choice Return",
-    "Z Curl Combo",
+    "QB Power",
     "RB Scat Out Drag",
-    "Slot Choice Out",
+    "QB Draw",
     "Max Slot Post Go",
     "X Slip Screen"
    ],
@@ -438,7 +444,7 @@
    "tag": "spread",
    "menu": [
     "Z Quick Outs",
-    "Z Steep In Seam",
+    "WAS Slant Flat",
     "Inside Zone",
     "Slot Whip",
     "Slot Stick Return",
@@ -466,8 +472,11 @@
    "tag": "pass",
    "menu": [
     "Y Slot Fade Levels",
-    "Z Dagger Whip",
-    "Y Whip Out and Up"
+    "Inside Zone Wk",
+    "Y Pivot",
+    "Y Whip Out and Up",
+    "01 Trap",
+    "RB Sweep"
    ],
    "cpu_situation": [
     4,
@@ -1432,7 +1441,6 @@
    "formations": [
     "Singleback Doubles",
     "Gun Doubles",
-    "Gun Trips TE",
     "Gun Bunch X Nasty",
     "Gun Doubles Clamp Stack",
     "Pistol Wing",
@@ -1779,6 +1787,7 @@
    "lane": null,
    "formations": [
     "Gun Doubles",
+    "Gun Trips TE",
     "Gun Bunch X Nasty",
     "Gun Doubles Clamp Stack",
     "Gun Wildcat",
@@ -2019,6 +2028,7 @@
    "deep": false,
    "lane": 0,
    "formations": [
+    "Singleback Doubles",
     "Gun Doubles",
     "Gun Trips TE",
     "Gun Bunch X Nasty",
@@ -2239,6 +2249,7 @@
    "deep": false,
    "lane": 4,
    "formations": [
+    "Singleback Doubles",
     "Gun Doubles",
     "Gun Bunch X Nasty",
     "Gun Bunch",
@@ -2582,7 +2593,8 @@
    "lane": 4,
    "formations": [
     "Pistol Deuce Close",
-    "Pistol Ace"
+    "Pistol Ace",
+    "Gun Wing Slot Offset"
    ]
   },
   {
@@ -2700,6 +2712,7 @@
    "lane": null,
    "formations": [
     "I-Form Tight",
+    "Full House",
     "Weak Wing"
    ]
   },
@@ -2946,6 +2959,7 @@
    "deep": false,
    "lane": 2,
    "formations": [
+    "Singleback Doubles",
     "Gun Doubles Clamp Stack",
     "Gun Wildcat"
    ]
@@ -3495,6 +3509,7 @@
    "deep": false,
    "lane": 2,
    "formations": [
+    "Gun Wing Slot Offset",
     "Gun Deuce Close"
    ]
   },
@@ -3734,6 +3749,7 @@
    "deep": false,
    "lane": null,
    "formations": [
+    "Full House",
     "Pistol Full House"
    ]
   },
@@ -3899,27 +3915,23 @@
   {
    "play": "p117",
    "play_index": 179,
-   "name": "Z Curl Combo",
-   "concept": "Z Curl Combo Spot Out Levels",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
+   "name": "QB Power",
+   "concept": "QB Power",
+   "family": "qb",
+   "header": "qb_draw",
+   "play_type": "keeper",
    "personnel": "11",
    "home": "Gun Empty Trey",
-   "primary": "Z",
+   "primary": null,
    "screen": null,
    "must": "",
-   "routes": [
-    "Curl",
-    "Dig",
-    "Flat",
-    "Spot Out"
-   ],
+   "routes": [],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Empty Trey"
-   ]
+   ],
+   "added_by": "b780 plays2"
   },
   {
    "play": "p118",
@@ -4076,6 +4088,7 @@
    "deep": false,
    "lane": null,
    "formations": [
+    "Full House",
     "Weak Wing"
    ]
   },
@@ -4249,6 +4262,7 @@
    "deep": false,
    "lane": 2,
    "formations": [
+    "Gun Wing Slot Offset",
     "Gun Deuce Close"
    ]
   },
@@ -4321,27 +4335,25 @@
   {
    "play": "p136",
    "play_index": 219,
-   "name": "Slot Choice Out",
-   "concept": "Slot Choice Out Levels",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
+   "name": "QB Draw",
+   "concept": "QB Draw",
+   "family": "qb",
+   "header": "qb_draw",
+   "play_type": "keeper",
    "personnel": "11",
    "home": "Gun Empty Trey",
-   "primary": "Slot",
+   "primary": null,
    "screen": null,
    "must": "",
    "routes": [
-    "Corner Post",
-    "Dig",
-    "Out",
-    "Whip"
+    "Go"
    ],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Empty Trey"
-   ]
+   ],
+   "added_by": "b780 plays2"
   },
   {
    "play": "p137",

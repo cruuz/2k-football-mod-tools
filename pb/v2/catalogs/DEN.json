@@ -209,14 +209,14 @@
    "tag": "pass",
    "menu": [
     "RB Slip Screen",
-    "Drive",
-    "DEN Slant Flat",
     "PA X Cluster Wheel",
-    "X Dagger Spot Out",
-    "Slot Quick Outs",
+    "RB Counter",
+    "DEN Slant Flat",
     "X Post Wheel Bench",
     "Slot Return Flood",
-    "Y China Out and Up"
+    "Y China Out and Up",
+    "Inside Trap",
+    "Lead Stretch"
    ],
    "cpu_situation": [
     0,
@@ -359,7 +359,10 @@
    "menu": [
     "Outside Zone Wk",
     "RB Lead Draw",
-    "01 Trap Wk"
+    "X Stick",
+    "01 Trap Wk",
+    "PA X Double Slants",
+    "RB Counter Wk"
    ],
    "cpu_situation": [
     0,
@@ -378,7 +381,7 @@
    "menu": [
     "Tush Push",
     "QB Sneak",
-    "Guard Iso"
+    "Fade Out"
    ],
    "cpu_situation": [
     2,
@@ -395,11 +398,11 @@
    "align": "uc",
    "tag": "short",
    "menu": [
+    "RB Draw",
+    "RB Slam",
     "Z Slant Flat",
     "Max Z Corner Post",
     "PA Z Out Seam",
-    "Comeback Seam",
-    "X Comeback Seam",
     "X China Out",
     "Y Whip Out",
     "Y Smash",
@@ -421,9 +424,9 @@
    "tag": "empty",
    "menu": [
     "RB Spacing Outs",
-    "Y Stick Nod Return",
+    "QB Draw",
     "RB Scat Whip",
-    "RB Scat Post Dig",
+    "QB Power",
     "Slot Quick Outs",
     "X Slip Screen"
    ],
@@ -1577,7 +1580,6 @@
    "lane": null,
    "formations": [
     "Gun Doubles",
-    "Gun Trips TE",
     "Gun Bunch X Nasty",
     "Pistol Doubles",
     "Gun Spread Y-Slot",
@@ -1741,7 +1743,6 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Gun Trips TE",
     "Gun Bunch X Nasty",
     "Gun Empty Trey",
     "Gun Spread Y-Slot",
@@ -2080,7 +2081,6 @@
    "lane": null,
    "formations": [
     "Gun Doubles",
-    "Gun Trips TE",
     "Gun Bunch X Nasty",
     "Pistol Doubles",
     "Gun Tight Slots",
@@ -2623,6 +2623,7 @@
    "lane": 2,
    "formations": [
     "Singleback Doubles",
+    "Gun Trips TE",
     "Pistol Y Off Trips",
     "Singleback Wing",
     "Singleback Bunch",
@@ -2676,6 +2677,7 @@
    "lane": 4,
    "formations": [
     "Singleback Doubles",
+    "Gun Trips TE",
     "Pistol Y Off Trips",
     "Pistol Wing",
     "Singleback Bunch",
@@ -2876,8 +2878,7 @@
    "formations": [
     "I-Form Slot",
     "I-Form Close",
-    "I-Form Pro",
-    "Wing T"
+    "I-Form Pro"
    ]
   },
   {
@@ -3005,8 +3006,7 @@
    "formations": [
     "I-Form Slot",
     "I-Form Close",
-    "I-Form Pro",
-    "Wing T"
+    "I-Form Pro"
    ]
   },
   {
@@ -3077,7 +3077,8 @@
    "formations": [
     "I-Form Slot",
     "I-Form Close",
-    "I-Form Pro"
+    "I-Form Pro",
+    "Wing T"
    ]
   },
   {
@@ -3099,7 +3100,8 @@
    "formations": [
     "I-Form Slot",
     "I-Form Close",
-    "I-Form Pro"
+    "I-Form Pro",
+    "Wing T"
    ]
   },
   {
@@ -3145,6 +3147,7 @@
    "lane": 3,
    "formations": [
     "Gun Doubles",
+    "Gun Trips TE",
     "Gun Bunch X Nasty",
     "Gun Y Off Trips"
    ]
@@ -3356,6 +3359,7 @@
    "lane": null,
    "formations": [
     "I-Form Tight",
+    "Full House",
     "Weak Wing"
    ]
   },
@@ -3398,6 +3402,7 @@
    "lane": 1,
    "formations": [
     "I-Form Tight",
+    "Full House",
     "Weak Wing"
    ]
   },
@@ -4487,6 +4492,7 @@
    "deep": false,
    "lane": null,
    "formations": [
+    "Full House",
     "Weak Wing"
    ]
   },
@@ -4513,28 +4519,23 @@
   {
    "play": "p132",
    "play_index": 207,
-   "name": "RB Scat Post Dig",
-   "concept": "HB Scat Post Dig",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
+   "name": "QB Power",
+   "concept": "QB Power",
+   "family": "qb",
+   "header": "qb_draw",
+   "play_type": "keeper",
    "personnel": "11",
    "home": "Gun Empty Trey",
-   "primary": "HB",
+   "primary": null,
    "screen": null,
    "must": "",
-   "routes": [
-    "Bang",
-    "Dig",
-    "Out",
-    "Post",
-    "Spot Out"
-   ],
+   "routes": [],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Empty Trey"
-   ]
+   ],
+   "added_by": "b780 plays2"
   },
   {
    "play": "p133",
@@ -4632,22 +4633,26 @@
   {
    "play": "p137",
    "play_index": 212,
-   "name": "Guard Iso",
-   "concept": "Guard Iso",
-   "family": "run",
-   "header": "run",
-   "play_type": "run",
+   "name": "Fade Out",
+   "concept": "Fade Out",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
    "personnel": "22",
    "home": "Full House Sneak",
-   "primary": null,
+   "primary": "Y",
    "screen": null,
    "must": "",
-   "routes": [],
+   "routes": [
+    "Arrow",
+    "Comeback"
+   ],
    "deep": false,
-   "lane": 3,
+   "lane": null,
    "formations": [
     "Full House Sneak"
-   ]
+   ],
+   "added_by": "b780 plays2"
   },
   {
    "play": "p138",
@@ -4769,27 +4774,25 @@
   {
    "play": "p143",
    "play_index": 218,
-   "name": "Y Stick Nod Return",
-   "concept": "Y Stick Nod Return Slants",
-   "family": "deep",
-   "header": "dropback",
-   "play_type": "pass",
+   "name": "QB Draw",
+   "concept": "QB Draw",
+   "family": "qb",
+   "header": "qb_draw",
+   "play_type": "keeper",
    "personnel": "11",
    "home": "Gun Empty Trey",
-   "primary": "Y",
+   "primary": null,
    "screen": null,
    "must": "",
    "routes": [
-    "Arrow",
-    "Hitch and Go",
-    "Return",
-    "Slant"
+    "Go"
    ],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Empty Trey"
-   ]
+   ],
+   "added_by": "b780 plays2"
   },
   {
    "play": "p144",

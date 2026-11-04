@@ -24,6 +24,12 @@ with the game's own code (beta 77 job p13, offline native evidence):
   release three linemen.
 * Formations (P5 and general). Overlapping slots, offensive legality from the
   codec, and defensive fronts that stand two off-ball defenders over the ball.
+* Play-type coverage (Q18, b780 plays2). The native play lottery 0x2096A0 picks the play type from the CPU's run
+  share (0xBF16F8), then a play of that type from the formation's menu. A formation with no play of the wanted type
+  returns whatever it has, the same one every time: at run share 1.0 (the CPU burning the clock) BAL's Singleback Ace
+  "U Out Seam" came back 40 of 40 draws, and the v0.9 RC committed 88 runs in 100 where retail commits 100 of 100. Retail
+  has no pass-less set and one run-less set per book (the Hail Mary set) besides "Gun: Straight" and "Gun: Straight
+  Trips" in two books; FORMATION_NO_RUN / FORMATION_NO_PASS fail any other offense formation that lacks a run or a pass.
 
 Repair rules (``normalize_offense_play``) recognise the exact SOFTDRINK
 complete-offense templates (pb/build_giants.assignments), prove that the
@@ -82,6 +88,7 @@ SEVERITY = {
     "FORMATION_OVERLAP": "error", "FORMATION_ILLEGAL": "warning",
     "DEF_STACK": "warning", "DEF_MIDDLE_MUG": "warning", "BACK_PRIMARY_SHARE": "warning",
     "CATEGORY_EMPTY": "error",
+    "FORMATION_NO_RUN": "error", "FORMATION_NO_PASS": "error",
 }
 GOAL_IDS = {
     "PLAYCALL_UI": "V1A",
@@ -91,7 +98,15 @@ GOAL_IDS = {
     "FORMATION_OVERLAP": "P5", "FORMATION_ILLEGAL": "P5", "DEF_STACK": "P5", "DEF_MIDDLE_MUG": "P5",
     "BACK_PRIMARY_SHARE": "P3",
     "CATEGORY_EMPTY": "P5",
+    "FORMATION_NO_RUN": "Q18", "FORMATION_NO_PASS": "Q18",
 }
+#: Offense formations the retail books themselves ship without a run (matched case-insensitively on the formation name):
+#: the Hail Mary set in every book and "Gun: Straight" / "Gun: Straight Trips" in two. Nothing is exempt from a pass.
+NO_RUN_EXEMPT = frozenset({"hail mary", "gun: straight", "gun: straight trips"})
+#: Retail's utility books are neither club playbooks nor generated here (the "reference" book lists a "Trips" set whose
+#: only plays are a draw and a bootleg, both runs): the coverage rule is for the 32 club books and packs built for them.
+UTILITY_BOOKS = frozenset({"Editor", "GEN", "PRACTICE", "reference", "WCO"})
+RUN_FLAG, PASS_FLAG = 0x8000, 0x2000      # PLAY header word: the native lottery's own run / pass split (0x2096A0)
 # Play-level execution defects the Studio repair rules remove (BACK_PRIMARY_SHARE is a book-level design warning).
 EXECUTION_CODES = ("HANDOFF_FAR", "HANDOFF_PLAN_FAR", "PITCH_FAR", "TOSS_SIDE_CROSS", "CHECKDOWN_BACKWARD", "BACKWARD_TARGET",
                    "SCREEN_DEPTH_MARGIN", "SCREEN_SIDE_CROSS", "SCREEN_NO_RELEASE")
@@ -466,6 +481,53 @@ def check_offense_formation(view: PlayView) -> list[Finding]:
     return out
 
 
+def coverage_findings(rows: Iterable[tuple]) -> list[Finding]:
+    """FORMATION_NO_RUN / FORMATION_NO_PASS for ``rows`` of (formation index, name, run links, pass links): the native
+    lottery needs a play of the type it wants in the menu it is given (see the module docstring)."""
+    out = []
+    for index, name, runs, passes in rows:
+        name = name.strip()
+        if not runs and name.casefold() not in NO_RUN_EXEMPT:
+            out.append(Finding("FORMATION_NO_RUN", f"{name} lists no run play: when the CPU wants a run (run share up to "
+                               f"1.0 while it burns the clock) the lottery hands back the same pass every time", index, name,
+                               data=dict(runs=runs, passes=passes)))
+        if not passes:
+            out.append(Finding("FORMATION_NO_PASS", f"{name} lists no pass play: when the CPU wants a pass the lottery "
+                               f"hands back the same run every time", index, name, data=dict(runs=runs, passes=passes)))
+    return out
+
+
+def resource_coverage(resource: bytes) -> list[Finding]:
+    """Coverage of every offensive formation of a PLAY resource (ordinary offense plays only: family 0)."""
+    book = insp.parse_playbook_resource(resource)
+    if book.book_name.strip() in UTILITY_BOOKS:
+        return []
+    body = resource[insp.RESOURCE_HEADER_SIZE:]
+    rows = []
+    for formation in book.formations:
+        if lib.formation_record(body, formation.index).type_code >= 4:
+            continue
+        flags = [book.plays[l.play_index].flags_or_id for l in formation.play_links if book.plays[l.play_index].family_id == 0]
+        rows.append((formation.index, formation.name, sum(1 for f in flags if f & RUN_FLAG),
+                     sum(1 for f in flags if not f & RUN_FLAG and f & PASS_FLAG)))
+    return coverage_findings(rows)
+
+
+def pack_coverage(pack) -> list[Finding]:
+    """Coverage of every menu of a complete-offense pack (v4)."""
+    if not getattr(pack, "menus", None):
+        return []
+    plays = {p.id: p for p in pack.plays}
+    forms = {f.id: f for f in pack.formations}
+    rows = []
+    for fid, menu in pack.menus:
+        f = forms[fid]
+        flags = [int(plays[pid].play_flags or 0) for pid in menu if getattr(plays[pid], "play_type", "") != "defense"]
+        rows.append((f.replace_index if f.replace_index is not None else -1, f.custom_name,
+                     sum(1 for x in flags if x & RUN_FLAG), sum(1 for x in flags if not x & RUN_FLAG and x & PASS_FLAG)))
+    return coverage_findings(rows)
+
+
 def defense_findings(resource: bytes) -> list[Finding]:
     book = insp.parse_playbook_resource(resource)
     body = resource[insp.RESOURCE_HEADER_SIZE:]
@@ -526,6 +588,7 @@ def lint_views(views: Iterable[PlayView], label: str, native_plan: NativePlan | 
 
 def lint_resource(resource: bytes, label: str = "book", native_plan: NativePlan | None = None) -> LintReport:
     report = lint_views(resource_views(resource), label, native_plan)
+    report.findings.extend(resource_coverage(resource))
     report.findings.extend(defense_findings(resource))
     report.findings.extend(Finding("PLAYCALL_UI", problem, -1, "")
                            for problem in insp.playcall_ui_problems(resource))
@@ -578,6 +641,7 @@ def lint_pack(pack, label: str | None = None, *, studio_rules: bool = False,
     if studio_rules:
         views = as_built_views(views)
     report = lint_views(views, label or pack.book.name, native_plan)
+    report.findings.extend(pack_coverage(pack))
     report.findings.extend(pack_defense_findings(pack))
     for kind, rows in (("formation", pack.formations), ("play", pack.plays)):
         for index, row in enumerate(rows):
@@ -985,7 +1049,8 @@ def changed_slots(old_chains, new_chains) -> list[int]:
 __all__ = [
     "Finding", "LintReport", "PlayView", "as_built", "as_built_views", "EXECUTION_CODES", "SCHEMA", "FIX_SCHEMA", "SEVERITY", "GOAL_IDS",
     "defense_findings", "end_around_template", "screen_drop_yd", "fix_back_routes", "fix_end_around", "fix_rb_screen", "fix_toss_side",
-    "lint_pack", "lint_resource", "lint_views", "pack_defense_findings", "normalize_offense_play", "normalize_shared_offense_play",
+    "lint_pack", "lint_resource", "lint_views", "pack_defense_findings", "pack_coverage", "resource_coverage", "coverage_findings",
+    "NO_RUN_EXEMPT", "UTILITY_BOOKS", "normalize_offense_play", "normalize_shared_offense_play",
     "SharedPlayConflict", "toss_crosses", "pack_views", "rb_screen_template",
     "resource_views", "changed_slots",
 ]

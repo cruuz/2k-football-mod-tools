@@ -113,7 +113,7 @@
    "tag": "empty",
    "menu": [
     "SEA Double Slants",
-    "Z Bench",
+    "Spacing",
     "QB Keep",
     "End Around",
     "Y Deep Over",
@@ -219,7 +219,7 @@
     "SEA Mills",
     "Y Slot Fade Smash",
     "Zone Toss Wk",
-    "Y Flood"
+    "Slot Hitch Seam"
    ],
    "cpu_situation": [
     4,
@@ -378,7 +378,7 @@
    "menu": [
     "Tush Push",
     "QB Sneak",
-    "Inside Zone Split"
+    "Y Pivot"
    ],
    "cpu_situation": [
     4,
@@ -419,7 +419,7 @@
    "menu": [
     "RB Zig Flat",
     "RB Seam Shot",
-    "Slot Return Flood"
+    "QB Draw"
    ],
    "cpu_situation": [
     4,
@@ -2037,7 +2037,6 @@
    "lane": null,
    "formations": [
     "Gun Doubles",
-    "Gun Trips TE",
     "Gun Bunch X Nasty",
     "Pistol Doubles",
     "Gun Tight Y Off",
@@ -2890,6 +2889,7 @@
    "lane": null,
    "formations": [
     "Gun Doubles",
+    "Gun Trips TE",
     "Gun Tight Y Off",
     "Gun Trey Open",
     "Singleback Y Off Trey"
@@ -4395,22 +4395,28 @@
   {
    "play": "p126",
    "play_index": 183,
-   "name": "Inside Zone Split",
-   "concept": "Inside Zone Split",
-   "family": "run",
-   "header": "run",
-   "play_type": "run",
+   "name": "Y Pivot",
+   "concept": "Y Pivot",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
    "personnel": "22",
    "home": "Full House Sneak",
-   "primary": null,
+   "primary": "Y",
    "screen": null,
    "must": "",
-   "routes": [],
+   "routes": [
+    "Arrow",
+    "Comeback",
+    "Go",
+    "Slant"
+   ],
    "deep": false,
-   "lane": 2,
+   "lane": null,
    "formations": [
     "Full House Sneak"
-   ]
+   ],
+   "added_by": "b780 plays2"
   },
   {
    "play": "p127",
@@ -4587,27 +4593,25 @@
   {
    "play": "p135",
    "play_index": 195,
-   "name": "Slot Return Flood",
-   "concept": "Slot Return Flood Out Slants",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
+   "name": "QB Draw",
+   "concept": "QB Draw",
+   "family": "qb",
+   "header": "qb_draw",
+   "play_type": "keeper",
    "personnel": "11",
    "home": "Gun Empty Trey",
-   "primary": "Slot",
+   "primary": null,
    "screen": null,
    "must": "",
    "routes": [
-    "Flat",
-    "Out",
-    "Return",
-    "Slant"
+    "Go"
    ],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Empty Trey"
-   ]
+   ],
+   "added_by": "b780 plays2"
   },
   {
    "play": "p136",

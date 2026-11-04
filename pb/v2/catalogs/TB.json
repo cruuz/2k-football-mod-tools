@@ -311,9 +311,12 @@
    "align": "uc",
    "tag": "short",
    "menu": [
+    "Pin Pull Sweep",
+    "Inside Zone Split Wk",
     "PA Post Corner Shot",
     "PA X Out Seam",
-    "PA X Dagger"
+    "PA X Dagger",
+    "RB Slam"
    ],
    "cpu_situation": [
     4,
@@ -376,7 +379,10 @@
    "menu": [
     "RB Draw",
     "RB Counter Wk",
-    "Lead Stretch"
+    "FB Screen",
+    "Lead Stretch",
+    "PA X Sail Return",
+    "FB Screen"
    ],
    "cpu_situation": [
     4,
@@ -397,7 +403,7 @@
     "RB Cross Dig",
     "Y Whip Return",
     "RB Return Flood",
-    "Slot Flood Return",
+    "QB Power",
     "Max Y Verticals"
    ],
    "cpu_situation": [
@@ -749,12 +755,15 @@
    "align": "pistol",
    "tag": "base",
    "menu": [
+    "Crack Toss",
+    "RB Sweep",
     "RB Slip Screen Wk",
     "RB Comeback Seam",
     "X Steep In Seam",
     "Y Stick Nod",
     "U Choice Out",
-    "PA X Dagger"
+    "PA X Dagger",
+    "Zone Toss Wk"
    ],
    "cpu_situation": [
     4,
@@ -2844,7 +2853,8 @@
    "lane": null,
    "formations": [
     "Weak Close",
-    "I-Form Pro"
+    "I-Form Pro",
+    "Wing T"
    ]
   },
   {
@@ -2886,7 +2896,8 @@
    "lane": 4,
    "formations": [
     "Pistol Y Trips",
-    "Singleback Ace"
+    "Singleback Ace",
+    "Pistol Ace"
    ]
   },
   {
@@ -2959,7 +2970,8 @@
    "lane": 4,
    "formations": [
     "Pistol Y Trips",
-    "Singleback Ace"
+    "Singleback Ace",
+    "Pistol Ace"
    ]
   },
   {
@@ -3844,7 +3856,8 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "I-Form Pro"
+    "I-Form Pro",
+    "Wing T"
    ]
   },
   {
@@ -3938,7 +3951,8 @@
    "deep": false,
    "lane": 0,
    "formations": [
-    "Gun Ace Wing"
+    "Gun Ace Wing",
+    "Pistol Ace"
    ]
   },
   {
@@ -4133,6 +4147,7 @@
    "deep": false,
    "lane": 4,
    "formations": [
+    "I-Form Tight",
     "Full House"
    ]
   },
@@ -4275,28 +4290,23 @@
   {
    "play": "p128",
    "play_index": 206,
-   "name": "Slot Flood Return",
-   "concept": "Slot Flood Return Whip",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
+   "name": "QB Power",
+   "concept": "QB Power",
+   "family": "qb",
+   "header": "qb_draw",
+   "play_type": "keeper",
    "personnel": "11",
    "home": "Gun Empty Trey",
-   "primary": "Slot",
+   "primary": null,
    "screen": null,
    "must": "",
-   "routes": [
-    "Curl",
-    "Flat",
-    "Return",
-    "Sail",
-    "Whip"
-   ],
+   "routes": [],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Empty Trey"
-   ]
+   ],
+   "added_by": "b780 plays2"
   },
   {
    "play": "p129",
@@ -4403,6 +4413,7 @@
    "deep": false,
    "lane": 2,
    "formations": [
+    "I-Form Tight",
     "Full House"
    ]
   },
@@ -4423,7 +4434,8 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Weak Close"
+    "Weak Close",
+    "Wing T"
    ]
   },
   {
@@ -4618,6 +4630,7 @@
    "deep": false,
    "lane": 3,
    "formations": [
+    "I-Form Tight",
     "Full House"
    ]
   },

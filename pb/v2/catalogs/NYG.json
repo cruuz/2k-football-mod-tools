@@ -129,7 +129,7 @@
     "QB Keep",
     "End Around",
     "Max Double Move",
-    "Z Dagger Whip"
+    "Z Quick Outs"
    ],
    "cpu_situation": [
     3,
@@ -217,7 +217,7 @@
     "Stick",
     "Y Cross",
     "PA Cluster Wheel",
-    "Slot Flood Return",
+    "Y Double Slants",
     "Bubble Screen",
     "NYG Scissors"
    ],
@@ -362,7 +362,10 @@
    "menu": [
     "Pin Pull Sweep",
     "RB Slam",
-    "Inside Zone Split"
+    "FB Screen",
+    "Inside Zone Split",
+    "PA Comeback Seam",
+    "X Curl Flat"
    ],
    "cpu_situation": [
     4,
@@ -381,7 +384,7 @@
    "menu": [
     "Tush Push",
     "QB Sneak",
-    "Zone Toss"
+    "Y Pivot"
    ],
    "cpu_situation": [
     4,
@@ -421,11 +424,11 @@
    "tag": "empty",
    "menu": [
     "RB Choice Out",
-    "Y Stick Nod",
+    "QB Draw",
     "RB Scat",
     "RB Scat Bench",
     "Y Double Slants",
-    "Slot Dagger"
+    "QB Power"
    ],
    "cpu_situation": [
     4,
@@ -582,8 +585,8 @@
     "PA Cluster Wheel",
     "Power G Wk",
     "Z Post Wheel Dig",
-    "X Deep Hooks Dig",
-    "Slot Zig Flat",
+    "X China",
+    "Slot Stick",
     "Slot Choice Out",
     "Stick",
     "NYG Mesh Wheel"
@@ -721,12 +724,12 @@
    "tag": "pass",
    "menu": [
     "FB Screen",
-    "PA Seam Shot",
+    "Z Slant Flat",
     "RB Counter",
     "RB Iso",
     "Slot Mills",
     "Sail",
-    "Slot Sail",
+    "Spacing",
     "Slot China Out",
     "RB Sweep"
    ],
@@ -999,7 +1002,7 @@
    "tag": "pass",
    "menu": [
     "Y Slot Fade Flag",
-    "PA Z Deep Post",
+    "Y Double Slants",
     "RB Iso Wk",
     "X Hitch Seam",
     "Y Seam Shot",
@@ -1893,7 +1896,6 @@
     "Pistol Doubles",
     "Gun Tight Open",
     "Gun Y Off Trio Close",
-    "Gun Trey Y-Flex",
     "Pistol Y Off Trips",
     "Gun Bunch",
     "Singleback Trey"
@@ -2089,7 +2091,6 @@
    "lane": null,
    "formations": [
     "Gun Doubles",
-    "Gun Trips TE",
     "Gun Bunch X Nasty",
     "Pistol Doubles",
     "Pistol Y Off Trips",
@@ -2225,7 +2226,6 @@
     "Singleback Doubles",
     "Gun Tight Open",
     "Gun Y Off Trio Close",
-    "Gun Trey Y-Flex",
     "Pistol Wing",
     "Pistol Y Off Trips",
     "Gun Y Off Trips",
@@ -2394,6 +2394,7 @@
     "Gun Wildcat",
     "Gun Bunch X Nasty",
     "Gun Y Off Trio Close",
+    "Gun Trey Y-Flex",
     "Pistol Wing",
     "Pistol Y Off Trips",
     "Gun Bunch",
@@ -2428,6 +2429,7 @@
     "Gun Trips TE",
     "Gun Tight Open",
     "Gun Y Off Trio Close",
+    "Gun Trey Y-Flex",
     "Gun Y Off Trips",
     "Gun Tight Slots",
     "Gun Doubles Tight"
@@ -2454,6 +2456,7 @@
    "deep": false,
    "lane": null,
    "formations": [
+    "Gun Trips TE",
     "Gun Empty Trey",
     "Gun Tight Open",
     "Pistol Wing",
@@ -3173,6 +3176,7 @@
    "lane": null,
    "formations": [
     "I-Form Tight",
+    "Full House",
     "Weak Wing"
    ]
   },
@@ -3371,6 +3375,7 @@
    "lane": null,
    "formations": [
     "I-Form Tight",
+    "Full House",
     "Weak Wing"
    ]
   },
@@ -3986,28 +3991,25 @@
   {
    "play": "p109",
    "play_index": 168,
-   "name": "Y Stick Nod",
-   "concept": "Y Stick Nod Return Smash",
-   "family": "deep",
-   "header": "dropback",
-   "play_type": "pass",
+   "name": "QB Draw",
+   "concept": "QB Draw",
+   "family": "qb",
+   "header": "qb_draw",
+   "play_type": "keeper",
    "personnel": "11",
    "home": "Gun Empty Trey",
-   "primary": "Y",
+   "primary": null,
    "screen": null,
    "must": "",
    "routes": [
-    "Arrow",
-    "Corner",
-    "Hitch",
-    "Hitch and Go",
-    "Return"
+    "Go"
    ],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Empty Trey"
-   ]
+   ],
+   "added_by": "b780 plays2"
   },
   {
    "play": "p110",
@@ -4501,22 +4503,28 @@
   {
    "play": "p132",
    "play_index": 209,
-   "name": "Zone Toss",
-   "concept": "Zone Toss",
-   "family": "run",
-   "header": "run_toss",
-   "play_type": "run",
+   "name": "Y Pivot",
+   "concept": "Y Pivot",
+   "family": "quick",
+   "header": "quick",
+   "play_type": "pass",
    "personnel": "22",
    "home": "Full House Sneak",
-   "primary": null,
+   "primary": "Y",
    "screen": null,
    "must": "",
-   "routes": [],
+   "routes": [
+    "Arrow",
+    "Comeback",
+    "Go",
+    "Slant"
+   ],
    "deep": false,
-   "lane": 4,
+   "lane": null,
    "formations": [
     "Full House Sneak"
-   ]
+   ],
+   "added_by": "b780 plays2"
   },
   {
    "play": "p133",
@@ -4694,7 +4702,8 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "I-Form Tight"
+    "I-Form Tight",
+    "Full House"
    ]
   },
   {
@@ -4770,28 +4779,23 @@
   {
    "play": "p144",
    "play_index": 227,
-   "name": "Slot Dagger",
-   "concept": "Slot Dagger Angle Cross Whip",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
+   "name": "QB Power",
+   "concept": "QB Power",
+   "family": "qb",
+   "header": "qb_draw",
+   "play_type": "keeper",
    "personnel": "11",
    "home": "Gun Empty Trey",
-   "primary": "Slot",
+   "primary": null,
    "screen": null,
    "must": "",
-   "routes": [
-    "Angle Cross",
-    "Curl",
-    "Dig",
-    "Flat",
-    "Whip"
-   ],
+   "routes": [],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Empty Trey"
-   ]
+   ],
+   "added_by": "b780 plays2"
   },
   {
    "play": "p145",
