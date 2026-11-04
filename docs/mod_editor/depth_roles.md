@@ -257,8 +257,8 @@ One late allocator owner, applied with the SPECIAL rows. It hooks two 5-byte cal
 * **Rule 3, GAD.** The builder is handed the called play (its second argument: `0x18AD10` → `0x18A5D0` →
   `0xE89F0`). Its slot chains are absolute after loading (the reader at `0x1915B0`). When a WR slot of an offensive
   play takes a handoff in that play (the planner's own `0x13`/`0x16` test), the GAD row (WR ordinal 7) is asked
-  first for that slot. A human club's pick is honoured. A CPU-run club takes him only when he is at least as fast as
-  the slot's own pick. When he takes the spot, the receiver he replaced can fill a later receiver spot of the same
+  first for that slot. He takes it only when he is at least as fast as the slot's own pick, on every club (the
+  same reasons as the 3DRB). When he takes the spot, the receiver he replaced can fill a later receiver spot of the same
   set, and the last receiver picked sits.
 
 Proof: the game's own builder and picker under Unicorn on the v0.9 executable and roster, all 37 club books.
@@ -266,8 +266,8 @@ Proof: the game's own builder and picker under Unicorn on the v0.9 executable an
   human and CPU clubs alike (see the SUB1 sweep log for the old-save, MyCareer and shipped-default rosters).
 - Rule 2 changed the FB slot of 84 formations. In two ATL goal-line sets a TE plays FB, because the only other back
   is the power back, who keeps his slot.
-- Rule 3 changed none of the 1,281 non-gadget plays. On the 111 gadget plays a human club's GAD took the carrier
-  spot 87 times (24 times he was already on the field). `mod_build.inspect` reads every other owner the same with
+- Rule 3 changed none of the 1,281 non-gadget plays. On the 111 gadget plays the GAD takes the carrier spot only
+  when he is at least as fast as the slot's own pick. `mod_build.inspect` reads every other owner the same with
   and without the owner.
 
 **Shipped defaults** (`nfl2k5_third_down_back.default_special_rows`, the last step of the final roster file):

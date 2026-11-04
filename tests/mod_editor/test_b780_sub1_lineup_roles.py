@@ -7,8 +7,8 @@ receivers get chosen depth rows and ratings in memory, then the native ctx build
 - Rule 1: the SPECIAL 3DRB (RB side row 1) plays the lead back on obvious passing downs when he is at least as good
   a receiver as the starter, on every club (MyCareer and old saves included).
 - Rule 2: with no fullback, RB2 plays fullback, and the power back keeps his own slot.
-- Rule 3: the SPECIAL GAD (WR side row 3) takes the carrier spot of a play that hands a receiver the ball. A CPU club
-  needs the faster man.
+- Rule 3: the SPECIAL GAD (WR side row 3) takes the carrier spot of a play that hands a receiver the ball when he is
+  at least as fast as the slot's own pick, on every club.
 """
 from __future__ import annotations
 
@@ -231,20 +231,23 @@ class LineupRolesTests(unittest.TestCase):
         m.uc.mem_write(PLAY, bytes(record))
         return PLAY
 
-    def test_a_human_club_gets_its_gad_at_the_carrier_spot(self):
+    def test_the_gad_takes_the_carrier_spot(self):
         play = self.play(self.owner)
         self.play(self.native)
         native, owner = self.both(I_FORM, play=play)
         self.assertEqual((native[8], owner[8]), (self.Z, self.gad))
         self.assertEqual([s for s in range(11) if owner[s] != native[s]], [8])
 
-    def test_a_cpu_club_needs_the_faster_man(self):
+    def test_every_club_needs_the_faster_man(self):
         play = self.play(self.owner)
-        self.assertEqual(self.lineup(self.owner, I_FORM, play=play, human=False)[8], self.gad)  # as fast: GAD
-        self.owner.uc.mem_write(self.gad + 0x36, bytes([70]))
-        self.assertEqual(self.lineup(self.owner, I_FORM, play=play, human=False)[8], self.Z)
-        self.owner.uc.mem_write(self.gad + 0x36, bytes([90]))
-        self.assertEqual(self.lineup(self.owner, I_FORM, play=play, human=False)[8], self.gad)
+        for human in (True, False):                                  # MyCareer and old saves: one rule
+            with self.subTest(human=human):
+                self.owner.uc.mem_write(self.gad + 0x36, bytes([80]))
+                self.assertEqual(self.lineup(self.owner, I_FORM, play=play, human=human)[8], self.gad)  # as fast
+                self.owner.uc.mem_write(self.gad + 0x36, bytes([70]))
+                self.assertEqual(self.lineup(self.owner, I_FORM, play=play, human=human)[8], self.Z)
+                self.owner.uc.mem_write(self.gad + 0x36, bytes([90]))
+                self.assertEqual(self.lineup(self.owner, I_FORM, play=play, human=human)[8], self.gad)
 
     def test_other_plays_keep_their_receivers(self):
         for kw in (dict(handoff_to=7), dict(family=1)):              # the carrier is not this WR; a defensive play

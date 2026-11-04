@@ -31,8 +31,8 @@ Rule 3, the gadget player (needs the SPECIAL rows, whose GAD row is the WR side 
 ordinal 7). The lineup builder is handed the called play (its second argument, from 0x18AD10 via 0x18A5D0). When a WR
 slot of an offensive play takes a handoff in that play (the planner's own test: a 0x13 handoff node names the slot
 and the slot's chain has a 0x16 node), the GAD row is asked first for that slot. He plays if he is not already on the
-field and passes the picker's gate. A human club's pick is honoured. On a CPU-run club he must be at least as fast as
-the slot's own pick (the native picker with the same arguments), because the GAD row there is shipped data. Every
+field, passes the picker's gate and is at least as fast as the slot's own pick (the native picker with the same
+arguments), on every club, for the same reasons as the 3DRB. Every
 other play keeps its receivers: the planner no longer writes a gadget ordinal into shared personnel groups (Q61).
 
 Two sites, both 5-byte calls: the builder's call to the picker (0xE8B20) and the picker's list-length call at the top
@@ -55,8 +55,8 @@ BUILD_CAPTION = "Third-down back on passing downs, gadget player on gadget plays
 HELP_TEXT = ("EXPERIMENTAL. Your SPECIAL 3DRB comes in for the starting running back on obvious passing downs (3rd or 4th "
              "down with 5 yards or more to go, 2nd down with 10 or more) when he's at least as good a receiver as your "
              "starter; the starter keeps every other snap. Your SPECIAL GAD comes in only on a play that hands the "
-             "ball to a receiver (a reverse or an end around), at that receiver's spot; a CPU club uses its GAD only "
-             "when he is at least as fast as the receiver he replaces. A club with no fullback now puts its second "
+             "ball to a receiver (a reverse or an end around), at that receiver's spot, when he's at least as fast as "
+             "the receiver he replaces. A club with no fullback now puts its second "
              "running back at fullback instead of its deepest one.")
 
 PICKER = 0x000E8790
@@ -67,7 +67,7 @@ BOUND = 0x000E7640                          # the picker's protection bound for 
 NEXT_TIER, PICKER_TAKE = 0x000E890A, 0x000E89AB   # next tier, success exit
 GATE_CALL = 0x000E8864                      # the forward loop's gate call (a later owner may point it at its own guard)
 LIST_LENGTH, LIST_READ, ALREADY_PLACED, ORDINAL = 0x000E75A0, 0x000E7810, 0x000E7580, 0x000E7530
-SITUATION, OFFENSE, HUMAN, ROSTER_ROOT = 0x00E602EC, 0x00E60280, 0x00E5775C, 0x00B72918
+SITUATION, OFFENSE = 0x00E602EC, 0x00E60280
 TO_GO = 0x00207950
 RB_KIND, FB_KIND, RB_RANK_LIST = 10, 11, 1
 LIST_TABLE = 0x004F5930                     # (rank list, side list) per kind; one-pool positions pair RB as (1, 15)
@@ -173,15 +173,6 @@ def assemble(code_va: int, gate: int, *, third_down: bool = True) -> tuple[bytes
     b("b801000000c3")
     label("no")
     b("33c0c3")
-    # ---------------------------------------------------------------- is_human: eax != 0 if the club is user-run
-    label("is_human")
-    b("a1" + struct.pack("<I", ROSTER_ROOT).hex()); b("85c0"); j8("74", "cpu")
-    b("8b401c" "8b4d00" "2bc8"); j8("72", "cpu")     # ecx = this team - team table
-    b("8bc1" "33d2" "b9f4010000" "f7f1" "85d2"); j8("75", "cpu")
-    b("83f820"); j8("73", "cpu")
-    b("8b0485" + struct.pack("<I", HUMAN).hex() + "c3")
-    label("cpu")
-    b("33c0c3")
     # ---------------------------------------------------------------- gad_entry: rule 3, the gadget player
     # The builder's second argument is the called play ([esp+0xa0] here: 0x18AD10 -> 0x18A5D0 -> 0xE89F0). Its slot
     # chains are absolute after loading (0x1915B0 reads [play+0xc+slot*8] + node*8). The planner's own test: this WR
@@ -218,8 +209,8 @@ def assemble(code_va: int, gate: int, *, third_down: bool = True) -> tuple[bytes
     b("85c0"); j32("0f85", "gad_restore")
     b("6a03" "ff74242c" "ff74242c" "8bcd" "8bd3"); a.append(("call", gate))
     b("85c0"); j32("0f84", "gad_restore")
-    a.append(("calllabel", "is_human")); b("85c0"); j8("75", "gad_take")   # a human club's GAD is honoured
-    # a CPU club (shipped data): the slot's own pick (the native picker, same arguments) unless the GAD is as fast
+    # every club (coordinator 11/04, as for the 3DRB: MyCareer marks its club human, old saves keep their rosters):
+    # the slot's own pick (the native picker, same arguments) unless the GAD is at least as fast
     b("8b542414" "8bcd" + "ff74243c" * 7); a.append(("call", PICKER))
     b("85c0"); j8("74", "gad_take")
     b("0fb64836" "0fb65336" "3bd1"); j8("7d", "gad_take")    # speed: GAD >= the slot's own pick
