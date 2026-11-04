@@ -7,18 +7,19 @@ Prep menu row at 0x52032C, event 4 0x365F90) share the event 8 draw handler 0x36
 third column label at 0x365E34. The getter tells the screens apart by [0xCC2388]: 0x365F70 stores 0, 0x365F90 stores 1,
 and with 1 the getter takes the practice values (0x2ABE60). The Player Progress owner (beta-78 on, released v0.8 and
 the v0.9 RC) replaced the getter and the label with code that never read 0xCC2388. Once the season baseline existed,
-Player Results showed the season baseline and the season change instead of what the practice did, and a stepped
-Player Progress view could put a week name over its third column.
+Player Results showed the season baseline and the season change instead of what the practice did (and the label hook
+read Player Progress's view byte there too).
 
 The fix: when [0xCC2388] is not 0 the value hook runs the retail getter (ECX, the stack and the return address
 untouched) and the label hook leaves the retail label. Player Progress is exactly as before.
 
 Proof level: offline. The sharing is read from the retail executable; the owner's cave runs under Unicorn with the
-same mocks as test_nfl2k5_player_progress_screen. Nothing here is an in-game capture.
+same mocks as test_nfl2k5_player_progress_screen; and the owner applied to the retail executable runs whole (the
+retail getter and the retail cache fill natively, only the list, roster and practice helpers as fixtures). Nothing
+here is an in-game capture.
 """
 from __future__ import annotations
 
-import os
 import struct
 import sys
 import unittest
