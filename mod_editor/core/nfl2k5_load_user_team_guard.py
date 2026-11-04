@@ -5,107 +5,73 @@ loaded", then backing out of the Load screen stopped the game (bugcheck 0x1E, ac
 reading 0x10C). The Franchise Desk callback ([0x521DCC], retail 0x142DD0) loads the club's front-office scene in
 0x142BB0, which reads ``user_team+0x10C`` from the user-team getter 0x13EC80 (``mov eax,[0xE3C0A0]``) with no null
 check; 164 retail callers of that getter assume it is set. The front-office deserializer 0x2D0CE0 sets it at
-0x2D0D53..0x2D0D5A to C4D70(), the first club whose human-control word [0xE5775C + i*4] is set, and stores 0 when the
+0x2D0D53..0x2D0D5E to C4D70(), the first club whose human-control word [0xE5775C + i*4] is set, and stores 0 when the
 save has no human club. Retail code throughout; a save made by headless franchise tools has no human club, and so
 has a MyCareer career saved while MyPlayer has no club (resolve_team keeps only his club's word).
 
-What this owner adds
---------------------
-One five-byte hook at 0x2D0D53 (the deserializer's ``call 0xC4D70``) and a 17-byte code cave: the same call, and
-when it finds no human club, the league's club 0 through the game's own team getter 0xC4C50. The user-team pointer is
-then never 0 after a load. The human-control table and every club's CPU control stay as the save has them; a save
-with a human club loads exactly as before (the cave returns C4D70's own answer).
+What this owner changes (in place: no allocation, no section, nothing at 64 MB)
+-------------------------------------------------------------------------------
+The deserializer's ``call 0xC4D70`` at 0x2D0D53 calls a 17-byte routine written into the retail alignment padding
+around the user-team accessors (the 10 bytes 0x13EC86..0x13EC8F after the getter's ``ret`` and 7 of the 9 bytes
+0x13EC97..0x13EC9F after the setter's ``ret``; nothing falls through or jumps into either run)::
 
-Allocation: a late owner (appended at the end of ``nfl2k5_xbe_space.LATE_OWNERS``), 32 bytes of code (16-aligned).
-It is applied by ``mod_build`` after the other late owners; the full build regenerates the cave reservations.
+    13EC86  call 0xC4D70        ; the first human club, as before
+    13EC8B  test eax, eax
+    13EC8D  jz   13EC97
+    13EC8F  ret                 ; a human club: its own answer (the setter at 0x13EC90 is untouched)
+    13EC97  xor  ecx, ecx
+    13EC99  jmp  0xC4C50        ; no human club: club 0 through the game's own team getter
+
+The user-team pointer is then never 0 after a load. The human-control table and every club's CPU control stay as the
+save has them; a save with a human club loads exactly as before.
 """
 from __future__ import annotations
 
-import hashlib
 import struct
-from typing import Mapping
 
 from . import nfl2k5_rdata_sites as rdata
-from . import nfl2k5_xbe_space as space
-from .nfl2k5_cave_oracle import XbeImage
 
 OWNER = "nfl2k5_load_user_team_guard"
-CODE_SIZE = 32
-REQUESTS = ((OWNER, "code", CODE_SIZE, 16),)
+REVISION = 1
 FIRST_HUMAN_CLUB = 0x000C4D70   # first club with [0xE5775C + i*4] != 0, else 0
 CLUB_BY_INDEX = 0x000C4C50      # the game's own club getter (ECX = league index)
-HOOK = ("load_user_team", 0x002D0D53, bytes.fromhex("e81840dfff"))  # call 0xC4D70 (then mov ecx,eax; call 0x13EC90)
+SITE_VA = 0x002D0D53            # call 0xC4D70 (then mov ecx,eax; call 0x13EC90)
+HEAD_VA, TAIL_VA = 0x0013EC86, 0x0013EC97
 BUILD_CAPTION = "Franchise load: no crash on a save without a human club"
 HELP_TEXT = ("Fixes a freeze after loading a Franchise save in which no club is human-controlled (made by save tools, "
              "or a MyCareer career saved while MyPlayer had no club): the front office would read address zero when "
              "you leave the Load screen. Such a load now uses the league's first club as the front office's team; "
              "every club's CPU control stays as saved.")
-_ERRORS = (ValueError, TypeError, KeyError, IndexError, struct.error, OverflowError)
 
 
-class LoadUserTeamGuardError(ValueError):
-    pass
+def _rel(at: int, target: int, size: int = 5) -> bytes:
+    return struct.pack("<i", target - (at + size))
 
 
-def require(ok, message):
-    if not ok:
-        raise LoadUserTeamGuardError(message)
+def _build_sites():
+    head = b"\xe8" + _rel(HEAD_VA, FIRST_HUMAN_CLUB) + bytes.fromhex("85c0") + b"\x74" \
+        + bytes([TAIL_VA - (HEAD_VA + 9)]) + b"\xc3"
+    tail = bytes.fromhex("31c9") + b"\xe9" + _rel(TAIL_VA + 2, CLUB_BY_INDEX) + b"\x90\x90"
+    assert len(head) == 10 and len(tail) == 9
+    return (("front-office load: the user-team call goes through the guard", SITE_VA,
+             bytes.fromhex("e81840dfff"), b"\xe8" + _rel(SITE_VA, HEAD_VA)),
+            ("guard head in the getter's alignment padding", HEAD_VA, b"\x90" * 10, head),
+            ("guard tail in the setter's alignment padding", TAIL_VA, b"\x90" * 9, tail))
 
 
-def _rel(at: int, target: int) -> bytes:
-    rel = target - (at + 5)
-    require(-(1 << 31) <= rel < (1 << 31), "call target out of rel32 range")
-    return struct.pack("<i", rel)
-
-
-def code_for(code_va: int) -> bytes:
-    """The 17-byte cave, padded with int3 to the 32-byte allocation."""
-    body = bytearray()
-    body += b"\xe8" + _rel(code_va + len(body), FIRST_HUMAN_CLUB)   # call 0xC4D70
-    body += bytes.fromhex("85c0")                                     # test eax,eax
-    body += bytes.fromhex("7507")                                     # jnz done
-    body += bytes.fromhex("31c9")                                     # xor ecx,ecx
-    body += b"\xe8" + _rel(code_va + len(body), CLUB_BY_INDEX)       # call 0xC4C50 (club 0)
-    body += b"\xc3"                                                   # done: ret
-    require(len(body) == 17, "cave size")
-    return bytes(body).ljust(CODE_SIZE, b"\xcc")
-
-
-def sites(code_va: int) -> list[tuple[str, int, bytes, bytes]]:
-    name, va, before = HOOK
-    after = b"\xe8" + _rel(va, code_va)
-    require(len(after) == len(before), "hook size")
-    return [(name, va, before, after)]
-
-
-def allocation(payload: bytes) -> dict:
-    rows = [r for r in space.layout(payload)["allocations"] if r["owner"] == OWNER]
-    require(len(rows) == 1 and (rows[0]["kind"], rows[0]["size"], rows[0]["align"]) == ("code", CODE_SIZE, 16),
-            "missing or foreign load user-team allocation")
-    return rows[0]
-
-
-def _recognize(payload: bytes):
-    image = XbeImage(payload)
-    present = any(r["owner"] == OWNER for r in space.layout(payload)["allocations"])
-    owned = allocation(payload) if present else None
-    edits = sites(owned["va"] if owned else 0)
-    state = rdata.status(payload, edits)
-    if owned is None:
-        require(state == "retail", "the load user-team site changed without an allocation")
-        return "retail", None
-    code = image.read(owned["va"], CODE_SIZE)
-    require(code in (b"\xcc" * CODE_SIZE, code_for(owned["va"])), "foreign load user-team code")
-    require(state == ("retail" if code == b"\xcc" * CODE_SIZE else "applied"),
-            "mixed load user-team installation")
-    return ("retail" if code == b"\xcc" * CODE_SIZE else "applied"), owned
+SITES = _build_sites()
+#: the accessors the padding sits between (getter, setter), pinned so a build that moved them is refused
+NEIGHBOURS = ((0x13EC80, bytes.fromhex("a1a0c0e300c3")), (0x13EC90, bytes.fromhex("890da0c0e300c3")))
 
 
 def status(payload: bytes) -> str:
-    try:
-        return _recognize(payload)[0]
-    except _ERRORS:
+    """``retail`` | ``applied`` | ``foreign``."""
+    state = rdata.status(payload, SITES)
+    if state == "foreign":
+        return state
+    if rdata.status(payload, tuple(("accessor", va, raw, raw) for va, raw in NEIGHBOURS)) != "retail":
         return "foreign"
+    return state
 
 
 def read_settings(payload: bytes) -> dict:
@@ -113,34 +79,19 @@ def read_settings(payload: bytes) -> dict:
     return {"status": state, "load_user_team_guard": state == "applied"}
 
 
-def reservations(payload: bytes | None = None) -> list[dict]:
-    rows = [r for r in space.reservations(payload) if r["owner"] == OWNER] if payload is not None else []
-    return rows + [dict(owner=OWNER, start=hex(HOOK[1]), end=hex(HOOK[1] + len(HOOK[2])), size=len(HOOK[2]),
-                        basis="pinned live front-office deserializer user-team call; not a cave")]
+def apply(payload: bytes):
+    """(patched payload, receipt). Idempotent; anything neither retail nor applied is refused."""
+    state = status(payload)
+    if state == "foreign":
+        raise ValueError("the Franchise load user-team guard: the site or its padding is not retail")
+    patched, receipt = rdata.apply(payload, SITES, "Franchise load user-team guard")
+    return patched, {**receipt, "revision": REVISION, "code_bytes": 17}
 
 
-def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
-    """Install the guard and its one site. Idempotent."""
-    state, owned = _recognize(payload)
-    common = {"owner": OWNER, "code_bytes": 17, "owner_bytes": CODE_SIZE, "experimental": False}
-    if state == "applied":
-        return payload, {**common, "already_applied": True, "changed_bytes": 0}
-    before = payload
-    if owned is None:
-        if space.status(payload) == "retail":
-            payload, _ = space.apply(payload, REQUESTS, scaleout=True)
-        else:
-            payload, _ = space.extend_scaleout(payload, REQUESTS)
-        owned = allocation(payload)
-    installed, code_receipt = space.install_code(payload, OWNER, code_for(owned["va"]))
-    result, site_receipt = rdata.apply(installed, sites(owned["va"]), OWNER)
-    require(status(result) == "applied", "load user-team postcondition failed")
-    return result, {**common, **site_receipt, "already_applied": False, "code_install": code_receipt,
-                    "code_va": hex(owned["va"]), "changed_bytes": sum(a != b for a, b in zip(before, result)),
-                    "before_sha256": hashlib.sha256(before).hexdigest(),
-                    "after_sha256": hashlib.sha256(result).hexdigest()}
+def verify(payload: bytes) -> dict:
+    return {"owner": OWNER, "status": status(payload), "sites": [{"label": s[0], "va": f"0x{s[1]:x}"} for s in SITES],
+            "experimental": False, "runtime_witnessed": False}
 
 
-__all__ = ["OWNER", "REQUESTS", "CODE_SIZE", "FIRST_HUMAN_CLUB", "CLUB_BY_INDEX", "HOOK", "BUILD_CAPTION", "HELP_TEXT",
-           "LoadUserTeamGuardError", "code_for", "sites", "allocation", "status", "read_settings", "reservations",
-           "apply"]
+__all__ = ["OWNER", "REVISION", "SITES", "SITE_VA", "HEAD_VA", "TAIL_VA", "FIRST_HUMAN_CLUB", "CLUB_BY_INDEX",
+           "BUILD_CAPTION", "HELP_TEXT", "status", "read_settings", "apply", "verify"]

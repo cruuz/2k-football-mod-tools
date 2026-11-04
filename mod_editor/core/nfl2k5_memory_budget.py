@@ -125,7 +125,7 @@ OWNER_BYTES = {
     "scramble_tuning": (160, 0, 0, 0, 0), "run_blocking": (160, 0, 0, 0, 0), "cpu_scrambles": (128, 0, 4, 0, 0),
     "widescreen_menus": (128, 0, 0, 0, 0), "force_out": (96, 0, 0, 0, 0), "roster_storage": (82, 0, 0, 0, 0),
     "zone_drop": (80, 0, 0, 0, 0), "team_logo_swap": (0, 0, 64, 0, 0), "star_retention": (64, 0, 0, 0, 0),
-    "practice_injuries": (48, 0, 0, 0, 0), "contract_college_guard": (32, 0, 0, 0, 0), "load_user_team_guard": (32, 0, 0, 0, 0), "coverage_slider": (16, 0, 0, 0, 0),
+    "practice_injuries": (48, 0, 0, 0, 0), "contract_college_guard": (32, 0, 0, 0, 0), "coverage_slider": (16, 0, 0, 0, 0),
     "letter_grades_progress": (16, 0, 0, 0, 0), "preseason_warning": (0, 0, 0, 0, 16), "moment_context": (0, 0, 0, 0, 16),
     "cpu_money_downs_late_state": (0, 0, 0, 0, 8),
     # not in the RC (their own REQUESTS; placed where the model puts them: v3 first, the pool for the overflow)
@@ -178,7 +178,7 @@ OWNER_FIELDS = {
     "ball_carrier_ai": ("cpu_ball_carriers",), "scramble_tuning": ("scramble_tuning",), "run_blocking": ("run_blocking",),
     "cpu_scrambles": ("cpu_scrambles",), "force_out": ("modern_force_out",), "roster_storage": ("all_stadiums",),
     "zone_drop": ("zone_drop_cap",), "star_retention": ("star_retention",), "practice_injuries": ("practice_injuries",),
-    "contract_college_guard": ("contract_college_guard",), "load_user_team_guard": ("load_user_team_guard",), "coverage_slider": ("coverage_slider",),
+    "contract_college_guard": ("contract_college_guard",), "coverage_slider": ("coverage_slider",),
     "franchise_footer": ("franchise_history",), "coach_carousel": ("coach_carousel",),
     "runner_vision": ("cpu_runner_vision",), "dive_window": ("db_dive_window",), "catch_snap_limit": ("catch_snap_limit",),
     "speed_threshold": ("speed_threshold",), "scramble_blocking": ("scramble_blocking",),
@@ -703,7 +703,8 @@ PROFILE_64_TRIM = ("scorebug", "scorebug_runtime", "hair_styles", "kick_meter_20
 # b780 hist1: in-place 2004 bug fixes the profile turns ON when a plan has them off (no allocation, no section: they
 # cost nothing at 64 MB). The career history pool fix keeps a long franchise's totals whole and its pool collecting in
 # 6,000-word chunks (nfl2k5_history_pool: six sites inside the history engine's own bytes).
-PROFILE_64_ON = ("history_pool",)
+# b780 mc1: the Franchise load user-team guard (three in-place sites, a retail crash path on a save with no human club).
+PROFILE_64_ON = ("history_pool", "load_user_team_guard")
 PSEUDO_FIELDS = frozenset(("roster_capacity", "roster_draft_pick_ownership", "roster_hback_roles",
                            "cpu_money_downs_modern2"))
 PROFILE_64_ROSTER = ("roster edits at retail capacity without the draft_pick_ownership and hback_roles sections: "

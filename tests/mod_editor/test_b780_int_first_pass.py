@@ -153,8 +153,7 @@ class LateOwnerReservationTests(unittest.TestCase):
                 speed_threshold=35, scramble_blocking=True, protection_calls=True, audible_legend=True,
                 lineup_roles=True,  # b780 sub1
                 intro_autoskip=True,  # b780-mem1
-                injured_reserve=True,  # b780 IR1
-                load_user_team_guard=True)  # b780 mc1
+                injured_reserve=True)  # b780 IR1
 
     def test_the_first_pass_reserves_every_wave_owner(self):
         from mod_editor.core import nfl2k5_throw_tuning as tt, nfl2k5_xbe_space as space

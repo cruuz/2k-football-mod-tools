@@ -726,8 +726,9 @@ class BuildPlan:
     # franchise with a null college opens without a roster repair. On in every SOFTDRINK preset (a crash fix).
     contract_college_guard: bool = False
     # b780 mc1 (EMU1 crash_load): a Franchise save with no human-controlled club leaves the user team 0 after a load
-    # (the FO deserializer 0x2D0D53 takes the first human club), and the Desk crashes on it (0x142BBD). One late
-    # executable owner (nfl2k5_load_user_team_guard) falls back to club 0 there. A retail crash path: on in every preset.
+    # (the FO deserializer 0x2D0D53 takes the first human club), and the Desk crashes on it (0x142BBD). Three in-place
+    # sites (nfl2k5_load_user_team_guard: the call and a 17-byte routine in the user-team accessors' alignment padding)
+    # fall back to club 0 there. A retail crash path: on in every preset and in the 64 MB profile (no allocation).
     load_user_team_guard: bool = False
     # b780 c1-coachdata (wired at b780-int): the season rollover adds one Super Bowl trip to a head coach's record
     # (+0x32) for every winning season. One in-place site (0x247CD6, inc -> nop) stops it so a coach's Super Bowl
@@ -1674,7 +1675,6 @@ _LATE_OWNER_OPTIONS = (
     ("nfl2k5_audible_legend", "Audible panel legend", lambda p: _audible_panel_choice(p) is not None),  # b780-p3
     ("nfl2k5_lineup_roles", "SPECIAL situational roles (3DRB, GAD, fullback)", lambda p: p.depth_chart_rows),  # b780 sub1
     ("nfl2k5_injured_reserve", "Modern injured reserve", lambda p: p.modern_injured_reserve or p.injured_reserve_guard),  # b780 IR1
-    ("nfl2k5_load_user_team_guard", "Franchise load user-team guard", lambda p: p.load_user_team_guard),  # b780 mc1
     ("nfl2k5_clock_led", "Modern clock digits", lambda p: p.modern_clock_led),  # b778-sd4
     ("nfl2k5_return_coverage", "Return coverage pursuit angles", lambda p: p.return_coverage),  # b778-kr1
     ("nfl2k5_catch_snap_limit", "Defender catch snap limit", lambda p: p.catch_snap_limit),  # b780-cv4
@@ -2787,7 +2787,7 @@ def _sim_stats_preflight(source: Path, progress) -> None:
 
 @_core_step("load_user_team_guard")
 def _apply_load_user_team_guard(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
-    """b780 mc1: the Franchise load user-team guard, the last late allocator owner (LATE_OWNERS order)."""
+    """b780 mc1: the Franchise load user-team guard (three in-place sites, no allocation)."""
     if not plan.load_user_team_guard:
         return
     module = _core_module("nfl2k5_load_user_team_guard")
@@ -5716,6 +5716,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("The coach career counter fix must be Off or On.")
     if type(plan.history_pool) is not bool:  # b780 hist1
         raise ValueError("The career history pool fix must be Off or On.")
+    if type(plan.load_user_team_guard) is not bool:  # b780 mc1
+        raise ValueError("The Franchise load user-team guard must be Off or On.")
     if type(plan.sim_cb_tackles) is not bool:  # b778-cb1
         raise ValueError("Cornerback tackle credit must be Off or On.")
     if type(plan.sim_stats) is not bool:  # b778-sim1
@@ -7119,8 +7121,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         audible_legend=_audible_panel_choice(plan) is not None,  # b780-p3
         lineup_roles=plan.depth_chart_rows,  # b780 sub1: the SPECIAL third-down back rides with the SPECIAL rows
         intro_autoskip=plan.intro_autoskip,  # b780-mem1
-        injured_reserve=plan.modern_injured_reserve,  # b780 IR1
-        load_user_team_guard=plan.load_user_team_guard)  # b780 mc1
+        injured_reserve=plan.modern_injured_reserve)  # b780 IR1
     if plan.read_option_runtime or plan.qb_spy:
         _step("play_intents")
         resolver = _core_module("nfl2k5_play_intents")
@@ -7213,7 +7214,6 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             lineup_roles=plan.depth_chart_rows,  # b780 sub1
             intro_autoskip=plan.intro_autoskip,  # b780-mem1
             injured_reserve=plan.modern_injured_reserve,  # b780 IR1
-            load_user_team_guard=plan.load_user_team_guard,  # b780 mc1
             **{**r62, "read_option_intent_table": read_table, "modern_naming": False, "crib_reclaim": False})
         _write_xbe_bytes(target, patched)
         receipt["steps"].append({"step": "xbe_space", **space_receipt,
@@ -8411,6 +8411,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     _apply_coach_career_fix(plan, target, receipt, progress)
     # b780 hist1: the history pool fix, in place inside the history engine (honors and defensive_try accept it)
     _apply_history_pool(plan, target, receipt, progress)
+    # b780 mc1: the Franchise load user-team guard, in place (the deserializer call and the accessors' padding)
+    _apply_load_user_team_guard(plan, target, receipt, progress)
     # b778-cb1: cornerback tackle credit, after the Contracts guard (LATE_OWNERS order)
     _apply_sim_cb_tackles(plan, target, receipt, progress)
     # b778-sim1: the simulated-game pace fix is in place and touches no allocator owner
@@ -8466,8 +8468,6 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     _apply_intro_autoskip(plan, target, receipt, progress)
     # b780 IR1: modern injured reserve (or the Pro Bowl guard alone) (LATE_OWNERS order)
     _apply_injured_reserve(plan, target, receipt, progress)
-    # b780 mc1: the Franchise load user-team guard, after IR1 (LATE_OWNERS order; the rookie faces hair owner comes later, at its image step)
-    _apply_load_user_team_guard(plan, target, receipt, progress)
     # b778-pg2: the Player Progress screen and weekly snapshot (a late allocator owner after force_out)
     # b778-cb1: cornerback tackle credit, after force_out
     # b778-sd4: modern clock digits, after modern sideline catches
@@ -8569,6 +8569,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("the coach career counter fix did not survive the final passes")  # b780 c1
     if plan.history_pool and _core_module("nfl2k5_history_pool").status(_xbe_bytes(target)) != "applied":
         raise ValueError("the career history pool fix did not survive the final passes")  # b780 hist1
+    if plan.load_user_team_guard and _core_module("nfl2k5_load_user_team_guard").status(_xbe_bytes(target)) != "applied":
+        raise ValueError("the Franchise load user-team guard did not survive the final passes")  # b780 mc1
     if plan.sim_rb_injuries and _core_module("nfl2k5_sim_rb_injuries").status(_xbe_bytes(target)) != "applied":
         raise ValueError("simulated RB short injuries did not survive the final passes")  # b779-sim2
     if plan.catch_snap_limit and _core_module("nfl2k5_catch_snap_limit").status(_xbe_bytes(target)) != "applied":  # b780-cv4

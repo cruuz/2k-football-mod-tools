@@ -592,8 +592,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
                                     history_screen=False, standings_records=False, audible_legend=False,
                                     franchise_history=False, scramble_blocking=False,
                                     # b780 IR1: modern injured reserve (Advanced/Experimental) is observed on the copy
-                                    modern_injured_reserve=False, injured_reserve_guard=False,
-                                    load_user_team_guard=False),  # b780 mc1
+                                    modern_injured_reserve=False, injured_reserve_guard=False),
                             progress=lambda message, *_: progress(message))
             owner_base = build._xbe_bytes(target)
             # All current owners, even the hidden opt-in patch, reserve their space.

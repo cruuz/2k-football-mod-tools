@@ -1,8 +1,9 @@
 """b780 mc1: Franchise load user-team guard (EMU1 crash_load: bugcheck 0x1E at 0x142BBD after a load).
 
-Static: the 17-byte cave and its one five-byte site, idempotent apply on retail, status, the presets, its place
-among the late owners. Native (Unicorn, pinned USA retail executable and the signed f0 Franchise, the game's own season and
-front-office deserializers 0xC5800 / 0x2D0CE0): with no human-controlled club ([0xE5775C + i*4] all 0) the retail
+Static: the 17-byte routine in the user-team accessors' alignment padding and the deserializer call, in place (no
+allocation), on in the presets and the 64 MB profile; idempotent apply, status, a non-retail padding refused.
+Native (Unicorn, pinned USA retail executable and the signed f0 Franchise, the game's own season and front-office
+deserializers 0xC5800 / 0x2D0CE0): with no human-controlled club ([0xE5775C + i*4] all 0) the retail
 deserializer leaves the user team [0xE3C0A0] at 0 and the Desk's front-office scene 0x142BB0 faults reading
 user_team+0x10C (negative control); with the guard the user team is club 0 and the read goes through. A load with a
 human club is byte-identical with and without the guard.
@@ -22,28 +23,27 @@ HUMAN, USER_TEAM, TEAM_TABLE = 0xE5775C, 0xE3C0A0, 0xE5786C
 
 
 class StaticTests(unittest.TestCase):
-    def test_cave_and_site(self):
-        va = 0x150F000
-        code = guard.code_for(va)
-        self.assertEqual(len(code), guard.CODE_SIZE)
-        self.assertEqual(code[0], 0xE8)
-        self.assertEqual(va + 5 + struct.unpack_from('<i', code, 1)[0], guard.FIRST_HUMAN_CLUB)
-        self.assertEqual(code[5:11], bytes.fromhex('85c0' '7507' '31c9'))
-        self.assertEqual(code[11], 0xE8)
-        self.assertEqual(va + 16 + struct.unpack_from('<i', code, 12)[0], guard.CLUB_BY_INDEX)
-        self.assertEqual(code[16], 0xC3)
-        self.assertEqual(code[17:], b'\xcc' * (guard.CODE_SIZE - 17))
-        ((name, site, before, after),) = guard.sites(va)
+    def test_the_routine_and_its_three_sites(self):
+        import capstone
+        (_, site, before, after), (_, head_va, head_old, head), (_, tail_va, tail_old, tail) = guard.SITES
         self.assertEqual((site, before), (0x2D0D53, bytes.fromhex('e81840dfff')))
-        self.assertEqual(site + 5 + struct.unpack_from('<i', after, 1)[0], va)
+        self.assertEqual(site + 5 + struct.unpack_from('<i', after, 1)[0], guard.HEAD_VA)
+        self.assertEqual((head_va, head_old, tail_va, tail_old), (0x13EC86, b'\x90' * 10, 0x13EC97, b'\x90' * 9))
+        md = capstone.Cs(capstone.CS_ARCH_X86, capstone.CS_MODE_32)
+        code = [(i.address, i.mnemonic, i.op_str) for i in md.disasm(head, head_va)]
+        code += [(i.address, i.mnemonic, i.op_str) for i in md.disasm(tail, tail_va)]
+        self.assertEqual(code, [(0x13EC86, 'call', '0xc4d70'), (0x13EC8B, 'test', 'eax, eax'), (0x13EC8D, 'je', '0x13ec97'),
+                                (0x13EC8F, 'ret', ''), (0x13EC97, 'xor', 'ecx, ecx'), (0x13EC99, 'jmp', '0xc4c50'),
+                                (0x13EC9E, 'nop', ''), (0x13EC9F, 'nop', '')])
 
-    def test_last_late_owner_and_presets(self):
-        from mod_editor.core import mod_build
-        # last of the owners the first space pass reserves; only the rookie faces hair owner (appended at its image
-        # step) comes later
-        self.assertEqual(space.LATE_OWNERS[space.LATE_OWNERS.index(guard.OWNER) + 1:], ('nfl2k5_rookie_faces_hair',))
+    def test_in_place_on_in_every_preset_and_at_64_mb(self):
+        from mod_editor.core import mod_build, nfl2k5_memory_budget as mb
+        self.assertNotIn(guard.OWNER, space.LATE_OWNERS)
+        self.assertFalse(hasattr(guard, 'REQUESTS'))
         for name in ('softdrink_basic', 'softdrink_advanced', 'softdrink_experimental'):
             self.assertIs(mod_build.PRESETS[name]['load_user_team_guard'], True, name)
+        self.assertIn('load_user_team_guard', mb.PROFILE_64_ON)
+        self.assertIs(mb.profile_64_plan(None).get('load_user_team_guard'), True)
 
     @unittest.skipUnless(XBE.is_file(), 'pinned USA retail XBE required')
     def test_apply_status_and_replay(self):
@@ -52,10 +52,15 @@ class StaticTests(unittest.TestCase):
         self.assertEqual(guard.status(retail), 'retail')
         patched, receipt = guard.apply(retail)
         self.assertEqual(guard.status(patched), 'applied')
-        self.assertFalse(receipt['already_applied'])
-        again, replay = guard.apply(patched)
+        self.assertEqual(len(patched), len(retail))
+        again, _ = guard.apply(patched)
         self.assertEqual(again, patched)
-        self.assertTrue(replay['already_applied'])
+        moved = bytearray(retail)
+        from mod_editor.core import nfl2k5_rdata_sites as rdata
+        moved[rdata.offset_of(retail, 0x13EC88)] = 0xCC
+        self.assertEqual(guard.status(bytes(moved)), 'foreign')
+        with self.assertRaises(ValueError):
+            guard.apply(bytes(moved))
 
 
 @unittest.skipUnless(HAVE_UC and XBE.is_file(), 'pinned USA XBE, the signed f0 Franchise and Unicorn required')
