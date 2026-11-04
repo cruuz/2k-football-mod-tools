@@ -491,7 +491,30 @@ panel_done:
 human_compact:
  mov ecx,edi
  call compact
+human_next:
  jmp 0x2bdfd4
+
+# b780 (hunt6): the postseason schedule (0x2A8261..0x2A827E) puts the AFC
+# and NFC Pro Bowl teams in league slots 32 and 33 until the rollover, so the
+# weekly pass sorted them after the clubs, and rank/side live in the player
+# record a Pro Bowler shares with his club: each one took his Pro Bowl row on
+# his own club for the playoff games. The loop head's user-club test now
+# comes here first (ECX = the team): an all-star team (+0x128 kind 1: AFC,
+# NFC, NFL, the all-time squads) goes straight to the loop tail (the return
+# address is dropped), every other team takes the user-club test as before.
+all_star_skip:
+ cmp dword ptr [ecx+0x128],1
+ jne all_star_club
+ pop eax
+ jmp human_next
+all_star_club:
+ jmp 0x13ec30
+
+# The weekly loop head's user-club test (retail call 0x13EC30).
+.section .depth_all_star,"ax"
+.global all_star_call
+all_star_call:
+ call all_star_skip
 
 # The weekly auto-depth's user-club skip (retail 0F84 to 0x2BDFD4).
 .section .depth_human,"ax"
