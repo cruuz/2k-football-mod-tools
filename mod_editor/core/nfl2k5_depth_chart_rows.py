@@ -15,9 +15,10 @@ shouldn't be in every single play. The starting halfback should have
 priority."). Revision 1 (beta-76.4 to the beta-80 RC) drew 3DRB as chain 0,
 the RB rank list itself: moving a back to the top of 3DRB made him RB1, the
 back in every formation. 3DRB is now chain 2, RB rank row 1: the top of the
-row is RB2 and the starter is not in its list. No shipped formation draws RB
-rank row 1 (the books' passing sets use the lead back, heavy sets the power
-order), so the 3DRB back plays when the picker passes over the starter (tired,
+row is RB2 and the starter is not in its list. No offensive formation of the
+37 club books asks for RB rank row 1 (their passing sets use the lead back,
+heavy sets the power order; kickoff and kick-return units do use RB2), so on
+offense the 3DRB back plays when the picker passes over the starter (tired,
 hurt or already on the field). A revision-1 table reads "applied" (same layout)
 and ``apply`` rewrites only that record's chain dword (0 -> 2) and the section
 digest.

@@ -220,7 +220,7 @@ SPECIAL has **13 rows**, scrolling only on SPECIAL:
 | 7 | NCB / NICKEL CORNER | 4, 2 | CB rank 1 | 18, 2 | CB3 in 114 nickel and dime formations; kickoff units |
 | 8 | DCB / DIME CORNER | 4, 3 | CB side 1 | 18, 3 | CB4 in 38 dime formations; kickoff units |
 | 9 | SLWR / SLOT RECEIVER | 3, 2 | WR rank 1 | 9, 2 | inside WR in 541 three-WR sets (and in 4/5-WR sets) |
-| 10 | GAD / GADGET | 3, 4 | WR rank 2 | 9, 4 | WR5 in 40 five-WR sets; a WR in 29 base two-WR sets of gadget groups |
+| 10 | GAD / GADGET | 3, 4 | WR rank 2 | 9, 4 | WR5 in 40 five-WR sets; a WR in 35 one- and two-WR sets of gadget groups (Cleveland 5, the GEN, WCO and reference books 30) |
 | 11 | 3DRB / THIRD DOWN BACK | 7, 2 | HB rank 1 | 10, 2 | RB2 behind the starter; no offensive set asks for it; kickoff and kick-return units |
 | 12 | PWRB / POWER BACK | 7, 1 | HB side 0 | 10, 1 | the back in 217 goal-line, jumbo and heavy-I sets; 2nd back in two-back sets |
 

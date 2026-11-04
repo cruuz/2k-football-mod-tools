@@ -34,7 +34,6 @@ from nfl2k5_position_pools_test import _repin  # noqa: E402
 
 RB, RB_KIND = 7, 10
 THIRD_DOWN = (3, 11)                       # SPECIAL unit 3, row 11
-OFFENSE_RB = (0, 1)
 
 
 def revision_1(payload: bytes) -> bytes:

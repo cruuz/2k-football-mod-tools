@@ -33,7 +33,7 @@ os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 from mod_editor.core import nfl2k5_franchise_save as fs  # noqa: E402
 from mod_editor.core import nfl2k5_roster_records as rr  # noqa: E402
 from mod_editor.core.nfl2k5_cave_oracle import RETAIL_SHA256, XbeImage  # noqa: E402
-from test_nfl2k5_roster_records import league_body, synthetic_body  # noqa: E402
+from test_nfl2k5_roster_records import league_body  # noqa: E402
 
 try:
     import unicorn
@@ -211,6 +211,19 @@ class RosterOperationTests(unittest.TestCase):
         self.assertTrue(self.document.move_in_depth(0, 21, -1))
         self.assertEqual(who(self.document, 0), names)
         self.assert_round_trip(0)
+
+    def test_a_swap_inside_one_club_never_benches_a_starter(self) -> None:
+        # the Swap dialog lists every team, the player's own included; before b780 hunt5 both players were re-ranked to
+        # the bottom of their chains (on the v0.8 roster SF's starting QB became QB3) and lost their locks
+        team = self.document.teams[0]
+        a, b = (self.document.by_offset[o] for o in (team.slots[4], team.slots[17]))
+        before = [(p.record.values["depth_rank"], p.record.values["depth_side"], p.record.values["unknown_52"])
+                  for p in (a, b)]
+        receipt = self.document.swap(a, b)
+        self.assertEqual(receipt["depth"], {})
+        self.assertEqual([(p.record.values["depth_rank"], p.record.values["depth_side"], p.record.values["unknown_52"])
+                          for p in (a, b)], before)
+        self.assertEqual((team.slots[4], team.slots[17]), (b.offset, a.offset))
 
     def test_project_replay_keeps_roles_and_records_no_specialist_edits(self) -> None:
         base = self.document.to_body()
