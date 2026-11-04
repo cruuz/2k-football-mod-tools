@@ -583,8 +583,9 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_inbox_standings.py": "4f8d3d31e878a1584d8a0c21a9860a2dd746fdf0f50db383f4bf7ce53b28b19e",
         "mod_editor/core/nfl2k5_coin_defer_code.py": "640875d3b9e3cd3608808d0f0dec45ff9936d5e1123ffc017ad6de93a7ba0056",
         "mod_editor/core/nfl2k5_coin_defer_code_b779.py": "fbbd7deef5b1d357a3a82d20c3685530b11585f9fa7e66c8c2a336ef4ac41821",  # b780 modes2: frozen beta-69 .. v0.9 RC revision
-        "mod_editor/core/nfl2k5_decided_clock.py": "cf27be38419bf9443c50fbed9de5c5deb08c620613af84869e60683f1b135a5b",
-        "mod_editor/core/nfl2k5_decided_clock_code.py": "83d7961b291a0fe08d3ac1518ec7b97ab4489f830c20c04bdd99626344d53c58",
+        "mod_editor/core/nfl2k5_decided_clock.py": "9fdbf3ec93f04366946b8c05b48e312106c8e1273b5d661cb394d4278af9dfec",
+        "mod_editor/core/nfl2k5_decided_clock_code.py": "26d142750b0a14c479bf63ae9a17144b91debb561b8827618785392d70e667a8",
+        "mod_editor/core/nfl2k5_decided_clock_code_b779.py": "519d35265dadabde1345dfcb876a0b3d81ab0b9bddc564bc48514e6ff65cb361",  # b780 modes2: frozen beta-69 .. v0.9 RC revision
         "mod_editor/core/nfl2k5_cpu_scrambles.py": "fe92efe55a22046089ccea3e3b2c9f24075347c6c78fe21ef74a73b1eea18057",
         "mod_editor/core/nfl2k5_cpu_scrambles_code.py": "6519b049d4f570dc92c58ede831a521ebface07ce23fb8406eb42318bbf52a92",
         "mod_editor/core/audio_conform.py": "b71528aa23b6dca49bbe023477920661da77cd7c34610dc8f6962be3a0cc9156",

@@ -18,6 +18,12 @@ decide:
     pushad
     cmp dword ptr [0xa83a18], 3
     jne done
+    /* b780 modes2 (revision 2, Q26): never in game mode 8, the ESPN 25th Anniversary moments and the Situation mode
+     * (mode 8 with flag 0xE6014C). The era rules excluded only a moment with a profile (0x14DDCB0 returns 0 for the
+     * Situation flag and for moments past its 51 profiles), so a Situation scenario set in Q4 with 60 s or less and a
+     * 17+ point lead ended at its first dead ball. A scenario plays to its own end. */
+    cmp dword ptr [0xe5ff80], 8
+    je done
     cmp dword ptr [0xe602c4], 4
     jne done
     cmp dword ptr [0xe602b4], 4

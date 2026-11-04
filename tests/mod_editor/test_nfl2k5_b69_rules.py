@@ -320,6 +320,26 @@ class ClockTests(unittest.TestCase):
         m.run(0xB6E80)
         self.assertEqual(m.readf(m.GAME+16), 60)
 
+    def test_b780_modes2_situation_and_moments_play_to_their_end(self):
+        """Q26: revision 2 never ends the clock in game mode 8 (moments; Situation = mode 8 + flag 0xE6014C)."""
+        previous = _revision_1(decided, self.payload)
+        self.assertEqual((decided.status(self.payload), decided.status(previous)), ("applied", "previous"))
+        for payload, mode, flag, zero in ((self.payload, 4, 0, True), (self.payload, 8, 1, False),
+                                          (self.payload, 8, 0, False), (previous, 8, 1, True),
+                                          (previous, 4, 0, True)):
+            with self.subTest(revision=1 if payload is previous else 2, mode=mode, situation=flag):
+                m = self.machine(payload)
+                m.put(0xE5FF80, mode)
+                m.put(0xE6014C, flag)
+                before = bytes(m.uc.mem_read(m.GAME+16, 4))
+                m.run(0xB6E80)
+                self.assertEqual(bytes(m.uc.mem_read(m.GAME+16, 4)), bytes(4) if zero else before)
+        up, receipt = decided.apply(previous)
+        self.assertEqual((up, receipt["upgraded"], receipt["edits"]), (self.payload, True, []))
+        self.assertEqual(decided.verify(up)["settings"], decided.DEFAULTS)
+        other = decided.apply(self.payload)[0]
+        self.assertEqual(other, self.payload)
+
     def test_pair_preserves_accelerated_final_two_minutes_exclusion(self):
         m = self.machine(self.paired, margin=16)
         m.run(0xB8650, ecx=m.HOME)

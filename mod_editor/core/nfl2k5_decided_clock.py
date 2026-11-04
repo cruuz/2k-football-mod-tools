@@ -3,12 +3,18 @@
 This is a selected margin/time rule, not a proof of mathematical elimination.
 The next native dead-ball or huddle boundary zeros only the game timer. The
 native period-end dispatcher finishes the game. Live plays and OT are excluded.
+
+Revision 2 (b780 modes2, Q26): never in game mode 8, the ESPN 25th Anniversary moments and the Situation mode
+(mode 8, flag 0xE6014C). The era rules excluded only a moment with a profile (0x14DDCB0 returns 0 for the
+Situation flag and past the 51 profiles), so a Situation scenario set in Q4 with 60 s or less and a 17+ point lead
+ended at its first dead ball. Revision-1 installs read "previous" and upgrade in place (the code only).
 """
 from __future__ import annotations
 import struct
 import sys
 from . import nfl2k5_rules_patch as patch
 from . import nfl2k5_decided_clock_code as assembly
+from . import nfl2k5_decided_clock_code_b779 as assembly_b779
 
 OWNER = "nfl2k5_decided_clock"
 REQUESTS = ((OWNER, "code", 384, 16), (OWNER, "read_only", 8, 4))
@@ -20,7 +26,9 @@ HELP_TEXT = ("EXPERIMENTAL / UNWITNESSED. Off in every preset. In the fourth qua
              "leads by your selected margin with no more than your selected time left. "
              "Default: at least 17 points and at most 60 seconds. This is a convenience "
              "cutoff, not mathematical elimination. Live plays, the trailing team's "
-             "possession and overtime are excluded. Accelerated clock keeps its own rules.")
+             "possession, overtime, Situation games and Anniversary moments are excluded. "
+             "Accelerated clock keeps its own rules.")
+UPGRADES_PREVIOUS = True
 HOOKS = (("huddle", 0xB6E80, bytes.fromhex("a1b402e600"), b"\xe9"),
          ("dead_ball", 0xA03DC, bytes.fromhex("e89f8c0e00"), b"\xe8"))
 GUARDS = (
@@ -44,13 +52,18 @@ def decode_options(content):
     return selected
 
 
-def code_for(places):
-    return patch.relocate(assembly, places, dict(options=places["read_only"]["va"],
+def code_for(places, source=assembly):
+    return patch.relocate(source, places, dict(options=places["read_only"]["va"],
                           huddle_tail=0xB6E85, native_lineup=0x189080))
 
 
 def sites(places):
     return patch.hook_sites(HOOKS, assembly, places)
+
+
+def previous(places):
+    """Revision 1 (beta-69 .. the v0.9 RC): no mode-8 exclusion; the same hooks."""
+    return [(code_for(places, assembly_b779), patch.hook_sites(HOOKS, assembly_b779, places))]
 
 
 def status(payload):
