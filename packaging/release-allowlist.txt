@@ -701,6 +701,7 @@ mod_editor/core/nfl2k5_menu_helmet_w2026.py
 data/nfl2k5_menu_helmet_w2026.json
 mod_editor/core/nfl2k5_anniversary_kickoff.py
 mod_editor/core/nfl2k5_k128.py
+mod_editor/core/nfl2k5_memory_budget.py
 mod_editor/core/nfl2k5_letter_grades.py
 mod_editor/core/nfl2k5_letter_grades_attributes.py
 mod_editor/core/nfl2k5_letter_grades_code.py
