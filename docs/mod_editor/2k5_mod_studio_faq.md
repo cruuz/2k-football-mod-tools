@@ -68,9 +68,9 @@ Go through this list in order. Most start-up problems are an xemu setup problem,
 
 ## Can I play SOFTDRINK 2K28 on Android, in hakuX?
 
-Not the ready-made pack, but you can try an **experimental 64 MB build**. The SOFTDRINK 2K28 pack that **Install SOFTDRINK
-2K28** puts on your disc is the full build for xemu on a Windows, Linux or macOS computer (and the Steam Deck), with 128 MiB
-of memory and the COMPLEX 4627 BIOS. hakuX is a separate Android emulator, not xemu: by its own requirements it runs without
+Not the ready-made pack, but you can try a **64 MB build** (experimental, estimated, not yet tested on a real Xbox or
+hakuX). The SOFTDRINK 2K28 pack that **Install SOFTDRINK 2K28** puts on your disc is the full build for xemu on a Windows,
+Linux or macOS computer (and the Steam Deck), with 128 MiB of memory and the COMPLEX 4627 BIOS. hakuX is a separate Android emulator, not xemu: by its own requirements it runs without
 an Xbox BIOS, because it reimplements the Xbox kernel instead of running the real one. The pack's start-up check needs the
 real 4627 kernel and 128 MiB, so the pack is not expected to start there, and a black screen without the message is what to
 expect.
@@ -78,21 +78,22 @@ expect.
 The Studio can make a disc for 64 MB machines, such as an original Xbox console and hakuX:
 
 1. In **Build & Share**, open the **Share** tab. Set **Build for** to **64 MB, original Xbox and Android hakuX
-   (experimental)**, then click **Customize SOFTDRINK 2K28…**. (To start from your own selection instead, open the **Build**
-   tab and set **Console memory** there.)
-2. On the **Build** tab, **Console memory** reads **64 MB, original Xbox and Android hakuX (experimental)**. Every option
-   that needs 128 MB or the real Xbox kernel is off and greyed out, with the reason beside it, for example the three 128 MB
-   memory options, Guardian caps, 16 reserves and the two extra created teams. The start-up checks for 128 MB and the 4627
-   BIOS are left out too.
+   (experimental, estimated, not yet tested on a real Xbox or hakuX)**, then click **Customize SOFTDRINK 2K28…**. (To start
+   from your own selection instead, open the **Build** tab and set **Console memory** there.)
+2. On the **Build** tab, **Console memory** now reads 64 MB. Every option that needs 128 MB or the real Xbox kernel is off
+   and greyed out, with the reason beside it, for example the three 128 MB memory options, Guardian caps, 16 reserves, the
+   two extra created teams and the Hi-res pack. The start-up checks for 128 MB and the 4627 BIOS are left out too.
 3. Each remaining option shows what it costs in memory at 64 MB. The line under **Console memory** says whether your
    selection is predicted to fit at the hardest stadium, or how much to remove and what to turn off. Untick what you can
    do without, or click **Use the recommended 64 MB set**. **Make my disc** refuses a selection that is predicted not to fit
-   and names what to turn off.
+   and names what to turn off. When the line says the selection fits with the default uniforms but a player-picked
+   alternate kit at the heaviest stadium may not fit, the disc is made with that warning: if a game loops on the stadium
+   shots, use the default uniforms.
 4. The pack's 2026 rosters make the roster file bigger, which needs 128 MB, so untick **Include exported ★ Rosters edits**
    for now. This route keeps the pack's art and the options that fit.
 
-The 64 MB build is experimental: it is untested on a real Xbox and in hakuX, and its memory numbers are an estimate from a
-model, not a measurement on a console. We cannot fix hakuX itself. For the full SOFTDRINK experience, use xemu at 128 MiB.
+The 64 MB build is experimental, estimated, not yet tested on a real Xbox or hakuX: its memory numbers come from a model,
+not a measurement on a console. We cannot fix hakuX itself. For the full SOFTDRINK experience, use xemu at 128 MiB.
 To try a 64 MB disc in xemu the way a console runs it, set xemu's **System Memory** to **64 MiB**. xemu itself has no
 Android version (see xemu's [FAQ](https://xemu.app/docs/faq/)).
 

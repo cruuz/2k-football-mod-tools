@@ -4953,11 +4953,10 @@ class BuildPanel(QWidget):
         if files:
             lines.append("Files: " + "; ".join(files))
         if getattr(plan, "console_memory", 128) == 64:  # b780-m64b
-            lines += ["", "Console memory: " + console_memory.LABELS[64] + ". Untested on a real Xbox and in hakuX; "
-                      "for the full experience use xemu at 128 MB."]
+            lines += ["", "Console memory: " + console_memory.LABELS[64] + ". For the full experience use xemu at 128 MB."]
             prediction = self._memory_budget_result[0] if self._memory_budget_result else None
             if console_memory.alternate_kit_shortfall(prediction):
-                lines.append(console_memory.ALTERNATE_KIT_WARNING + ".")
+                lines.append(console_memory.alternate_kit_warning(prediction))
         lines += ["", "Takes a few minutes. " + XEMU_LINE]
         return "\n".join(lines)
 

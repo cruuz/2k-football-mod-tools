@@ -572,8 +572,8 @@ class SharePanel(QWidget):
             self.customization_ready.emit(recipe)
             text = "Sources ready. Build now has the frozen recipe and league artwork. Change its options, then Make my disc. Custom builds use the full builder and take longer than installation."
             if memory == 64:
-                text += (" Console memory is set to 64 MB (experimental, untested on a real Xbox and in hakuX): the options "
-                         "that need 128 MB are off, and the pack's 2026 rosters need 128 MB for now.")
+                text += (f" Console memory is set to 64 MB ({console_memory.STATUS_64}): the options that need 128 MB are off, "
+                         "and the pack's 2026 rosters need 128 MB for now.")
             self.apply_status.setText(text)
         self._start(operation, done, self._apply_failed)
 

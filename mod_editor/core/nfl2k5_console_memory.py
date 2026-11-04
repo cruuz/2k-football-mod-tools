@@ -1,4 +1,4 @@
-"""The console memory a build is made for (b780-m64b): 128 MB for xemu, or an EXPERIMENTAL 64 MB build.
+"""The console memory a build is made for (b780-m64b): 128 MB for xemu, or an experimental 64 MB build.
 
 Noah, 2026-11-03: "We need an option in the editor to limit a few things to allow the 64 MB option for Xbox and
 Android ... maybe let people pick and choose what must be removed to get 64 to work."
@@ -15,7 +15,9 @@ Android ... maybe let people pick and choose what must be removed to get 64 to w
   ``recommended_64_profile``. Its numbers are modelled, not measured on a console, so the Studio calls them an
   estimate. Without that module the 64 MB target keeps the rules below and makes no fit prediction.
 
-The 64 MB build is EXPERIMENTAL and UNTESTED on a real Xbox and in hakuX. The full experience is xemu at 128 MB.
+The 64 MB build is experimental, estimated, not yet tested on a real Xbox or hakuX (``STATUS_64``, the label the
+coordinator set). A selection the model says fits only with the default uniforms builds with a warning
+(``ALLOW_ALTERNATE_KIT_SHORTFALL``, coordinator 11/03: option b). The full experience is xemu at 128 MB.
 """
 
 from __future__ import annotations
@@ -32,8 +34,10 @@ FIELD = "console_memory"
 DEFAULT = 128
 CHOICES = (128, 64)
 CAPTION = "Console memory"
+#: How the whole 64 MB target is labelled everywhere (coordinator, 11/03).
+STATUS_64 = "experimental, estimated, not yet tested on a real Xbox or hakuX"
 LABELS = {128: "128 MB, xemu (full SOFTDRINK)",
-          64: "64 MB, original Xbox and Android hakuX (experimental)"}
+          64: f"64 MB, original Xbox and Android hakuX ({STATUS_64})"}
 SHORT = {128: "128 MB (xemu)", 64: "64 MB (experimental)"}
 EVIDENCE_WORD = "estimate"
 #: The fit rule (coordinator's call, b780-m64b). The model's hardest game includes uniforms a player picks (an alternate
@@ -43,28 +47,29 @@ ALLOW_ALTERNATE_KIT_SHORTFALL = True
 HELP_TEXT = (
     "Which machine the disc is made for. 128 MB, xemu (full SOFTDRINK) is the default and the main build: every option, "
     "for xemu with System Memory set to 128 MiB and the Complex 4627 BIOS. 64 MB is for an original Xbox console and the "
-    "Android emulator hakuX. It is EXPERIMENTAL and untested on a real Xbox and in hakuX: it leaves out every option "
-    "that needs 128 MB or the real Xbox kernel, shows what each remaining option costs in memory, and refuses a "
-    "selection the memory model says will not fit. For the full experience use xemu at 128 MB.")
+    f"Android emulator hakuX: {STATUS_64}. It leaves out every option that needs 128 MB or the real Xbox kernel, "
+    "shows what each remaining option costs in memory (an estimate from the memory model), and refuses a selection the "
+    "model says will not fit. For the full experience use xemu at 128 MB.")
 NOTE_128 = ("128 MB is the full SOFTDRINK build for xemu (System Memory 128 MiB, Complex 4627 BIOS) with every option. "
             "It is the default.")
-NOTE_64 = ("EXPERIMENTAL: the 64 MB build is untested on a real Xbox and in hakuX. Options that need 128 MB or the real "
-           "Xbox kernel are off and greyed out below, with the reason; the start-up checks for 128 MB and the 4627 BIOS "
-           "are left out too. The remaining options show what they cost in memory; pick what to drop until the line "
-           "below says it fits. For the full experience use xemu at 128 MB.")
+NOTE_64 = (f"The 64 MB build is {STATUS_64}. Options that need 128 MB or the real Xbox kernel are off and greyed out "
+           "below, with the reason; the start-up checks for 128 MB and the 4627 BIOS are left out too. The remaining "
+           "options show what they cost in memory (estimates); pick what to drop until the line below says it fits. For "
+           "the full experience use xemu at 128 MB.")
 RECOMMENDED_BUTTON = "Use the recommended 64 MB set"
 CHECKING = "Checking the 64 MB memory budget for this selection (the estimate takes a few seconds)."
-ALTERNATE_KIT_WARNING = ("A uniform you pick yourself (an alternate kit) at the heaviest stadium may not fit; keep the "
-                         "default uniforms there")
+#: The warning of a selection that fits with the default uniforms only (coordinator's wording, 11/03).
+ALTERNATE_KIT_WARNING = ("A player-picked alternate kit at {stadium} may not fit ({short} KB short); if a game loops on the "
+                         "stadium shots, use the default uniforms.")
 RECOMMENDED_HELP = ("Applies the recommended 64 MB selection from the memory model: it turns off the options that cost the "
                     "most memory and keeps the rest of your choices. Review the list before Make my disc.")
 #: The badge of an option the 64 MB target turns off ("Off at 64 MB: <reason>").
 LOCK_PREFIX = "Off at 64 MB: "
-NEXT_STEPS_64 = ("This is the EXPERIMENTAL 64 MB build, for an original Xbox or the Android emulator hakuX. It is untested "
-                 "on both. To try it in xemu the way a console runs it, set System Memory to 64 MiB; for the full "
-                 "SOFTDRINK experience build the 128 MB target and play it in xemu at 128 MiB.")
+NEXT_STEPS_64 = (f"This is the 64 MB build for an original Xbox or the Android emulator hakuX: {STATUS_64}. To try it in "
+                 "xemu the way a console runs it, set System Memory to 64 MiB; for the full SOFTDRINK experience build the "
+                 "128 MB target and play it in xemu at 128 MiB.")
 SHARE_NOTE = ("The ready-made SOFTDRINK 2K28 pack is the full 128 MB build for xemu (System Memory 128 MiB). For the "
-              "EXPERIMENTAL 64 MB build (original Xbox, Android hakuX; untested on both): choose Customize SOFTDRINK 2K28 "
+              f"64 MB build (original Xbox, Android hakuX; {STATUS_64}): choose Customize SOFTDRINK 2K28 "
               "with Build for: 64 MB, then make the disc on the Build tab. That route keeps the pack's art and the options "
               "that fit; the pack's 2026 rosters need 128 MB for now.")
 SHARE_CHOICE_CAPTION = "Build for"
@@ -382,6 +387,13 @@ def alternate_kit_shortfall(prediction: Mapping[str, Any] | None) -> bool:
     return bool(prediction) and not prediction.get("fits") and prediction.get("primary_fits") is True
 
 
+def alternate_kit_warning(prediction: Mapping[str, Any]) -> str:
+    """'A player-picked alternate kit at NRG Stadium (s37) may not fit (55 KB short); if a game loops ...'."""
+
+    return ALTERNATE_KIT_WARNING.format(stadium=prediction.get("hardest") or "the heaviest stadium",
+                                        short=f"{kb_up(int(prediction.get('over_bytes', 0))):,}")
+
+
 def refuses(prediction: Mapping[str, Any] | None) -> bool:
     """Whether Make my disc refuses this prediction (see ALLOW_ALTERNATE_KIT_SHORTFALL)."""
 
@@ -442,7 +454,7 @@ def budget_line(prediction: Mapping[str, Any] | None, labels=None) -> str:
 
     if prediction is None:
         return ("No memory model is in this build, so the Studio cannot predict whether this selection fits in 64 MB. "
-                "The 64 MB build is untested; for the full experience use xemu at 128 MB.")
+                f"The 64 MB build is {STATUS_64}; for the full experience use xemu at 128 MB.")
     where = prediction.get("hardest") or ""
     where = f", {where}" if where else ""
     tail = (" This is an estimate from the memory model, not a measurement on a console."
@@ -453,9 +465,8 @@ def budget_line(prediction: Mapping[str, Any] | None, labels=None) -> str:
     if alternate_kit_shortfall(prediction):
         primary_where = prediction.get("primary_hardest") or ""
         primary_where = f", {primary_where}" if primary_where else ""
-        line = (f"Predicted to fit with the default uniforms: {kb_down(int(prediction.get('primary_spare_bytes', 0))):,} KB "
-                f"to spare at the hardest stadium{primary_where}. {ALTERNATE_KIT_WARNING} "
-                f"({kb_up(int(prediction.get('over_bytes', 0))):,} KB short at{where[1:]}).")
+        line = (f"Predicted to fit with the default uniforms ({kb_down(int(prediction.get('primary_spare_bytes', 0))):,} "
+                f"KB to spare at the hardest stadium{primary_where}). " + alternate_kit_warning(prediction))
         if not ALLOW_ALTERNATE_KIT_SHORTFALL:
             line = "Will not fit with every uniform. " + line
         return line + tail

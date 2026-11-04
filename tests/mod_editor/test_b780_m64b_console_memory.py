@@ -268,9 +268,10 @@ class AlternateKits(unittest.TestCase):
             self.assertFalse(cm.refuses(prediction))
             self.assertEqual(mod_build.validate_plan(plan), [])
             line = cm.budget_line(prediction)
-        self.assertTrue(line.startswith("Predicted to fit with the default uniforms: 124 KB to spare at the hardest "
-                                        "stadium, NRG Stadium (s37). A uniform you pick yourself"), line)
-        self.assertIn("(56 KB short at Lambeau Field (s10))", line)
+        self.assertTrue(line.startswith(
+            "Predicted to fit with the default uniforms (124 KB to spare at the hardest stadium, NRG Stadium (s37)). A "
+            "player-picked alternate kit at Lambeau Field (s10) may not fit (56 KB short); if a game loops on the stadium "
+            "shots, use the default uniforms."), line)
         self.assertIn("estimate", line)
 
     def test_the_strict_rule_refuses_it(self):
@@ -386,10 +387,13 @@ class Model(unittest.TestCase):
         for text in texts:
             self.assertNotIn("\u2014", text)
             self.assertNotIn("\u2013", text)
-        self.assertIn("untested on a real Xbox and in hakuX", cm.NOTE_64)
+        self.assertEqual(cm.STATUS_64, "experimental, estimated, not yet tested on a real Xbox or hakuX")
+        for text in (cm.NOTE_64, cm.HELP_TEXT, cm.SHARE_NOTE, cm.NEXT_STEPS_64, cm.LABELS[64]):
+            self.assertIn(cm.STATUS_64, text)
         self.assertIn("For the full experience use xemu at 128 MB", cm.NOTE_64)
         self.assertEqual(cm.LABELS[128], "128 MB, xemu (full SOFTDRINK)")
-        self.assertEqual(cm.LABELS[64], "64 MB, original Xbox and Android hakuX (experimental)")
+        self.assertEqual(cm.LABELS[64], "64 MB, original Xbox and Android hakuX (experimental, estimated, not yet "
+                                        "tested on a real Xbox or hakuX)")
         self.assertIn("2026 rosters need 128 MB for now", cm.SHARE_NOTE)
 
 

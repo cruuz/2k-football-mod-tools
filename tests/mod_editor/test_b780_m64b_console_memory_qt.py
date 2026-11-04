@@ -64,14 +64,15 @@ class Selector(_Page):
             panel = self.page()
             combo = panel.console_memory_combo
             self.assertEqual([combo.itemText(i) for i in range(combo.count())],
-                             ["128 MB, xemu (full SOFTDRINK)", "64 MB, original Xbox and Android hakuX (experimental)"])
+                             ["128 MB, xemu (full SOFTDRINK)", "64 MB, original Xbox and Android hakuX (experimental, "
+                              "estimated, not yet tested on a real Xbox or hakuX)"])
             self.assertEqual([combo.itemData(i) for i in range(combo.count())], [128, 64])
             self.assertEqual(panel.console_memory(), 128)
             self.assertEqual(panel.plan().console_memory, 128)
             self.assertNotIn("console_memory", panel.plan().to_recipe())
             self.assertEqual(panel.console_memory_caption.text(), "Console memory")
             self.assertEqual(combo.accessibleName(), "Console memory")
-            self.assertIn("untested on a real Xbox and in hakuX", combo.toolTip())
+            self.assertIn(cm.STATUS_64, combo.toolTip())
             self.assertEqual(panel.console_memory_note.text(), cm.NOTE_128)
             self.assertFalse(panel.memory_budget_label.isVisibleTo(panel))
             self.assertFalse(panel.memory_recommended_button.isVisibleTo(panel))
@@ -84,14 +85,14 @@ class Selector(_Page):
             self.assertEqual(panel.plan().console_memory, 64)
             self.assertEqual(panel.plan().to_recipe()["console_memory"], 64)
             self.assertEqual(panel.console_memory_note.text(), cm.NOTE_64)
-            self.assertIn("EXPERIMENTAL", panel.console_memory_note.text())
+            self.assertIn(cm.STATUS_64, panel.console_memory_note.text())
             self.assertIn("For the full experience use xemu at 128 MB", panel.console_memory_note.text())
             self.assertTrue(panel.memory_budget_label.isVisibleTo(panel))
             self.assertTrue(panel.memory_recommended_button.isVisibleTo(panel))
             self.assertEqual(panel.memory_recommended_button.text(), "Use the recommended 64 MB set")
             text = panel.confirmation_text(panel.plan())
-            self.assertIn("Console memory: 64 MB, original Xbox and Android hakuX (experimental)", text)
-            self.assertIn("Untested on a real Xbox and in hakuX", text)
+            self.assertIn("Console memory: " + cm.LABELS[64], text)
+            self.assertIn("not yet tested on a real Xbox or hakuX", text)
 
 
 class ForcedOff(_Page):
@@ -322,7 +323,12 @@ class WithTheModel(_Page):
         self.assertEqual(panel.blocker(), "")
         self.assertTrue(panel.build_button.isEnabled())
         self.assertEqual(mod_build.validate_plan(panel.plan()), [])
-        self.assertIn("Console memory: 64 MB", panel.confirmation_text(panel.plan()))
+        confirmation = panel.confirmation_text(panel.plan())
+        self.assertIn("Console memory: 64 MB", confirmation)
+        prediction = panel._memory_budget_result[0]
+        if cm.alternate_kit_shortfall(prediction):
+            self.assertIn("if a game loops on the stadium shots, use the default uniforms", confirmation)
+            self.assertIn("A player-picked alternate kit at ", panel.memory_budget_label.text())
 
 
 class SavedAndShared(_Page):
@@ -378,8 +384,8 @@ class SavedAndShared(_Page):
         self.assertEqual(disc_next_steps("x.iso"), disc_next_steps("x.iso", console_memory=128))
         self.assertIn("System Memory to 128 MiB", disc_next_steps("x.iso"))
         text = disc_next_steps("x.iso", console_memory=64)
-        self.assertIn("EXPERIMENTAL 64 MB build", text)
-        self.assertIn("untested on both", text)
+        self.assertIn("64 MB build", text)
+        self.assertIn(cm.STATUS_64, text)
         self.assertNotIn("\u2014", text)
 
 

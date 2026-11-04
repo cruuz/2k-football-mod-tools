@@ -1472,13 +1472,15 @@ file anyone can check and apply to their own image.
 
 **Console memory** (top of **Make my disc**, beta 80): **128 MB, xemu (full SOFTDRINK)** is the default and the main
 build, with every option, for xemu with System Memory at 128 MiB and the Complex 4627 BIOS. **64 MB, original Xbox and
-Android hakuX (experimental)** makes a disc for 64 MB machines. It turns off and greys out every option that needs 128 MB
+Android hakuX (experimental, estimated, not yet tested on a real Xbox or hakuX)** makes a disc for 64 MB machines. It turns
+off and greys out every option that needs 128 MB
 or the real Xbox kernel (each says why), leaves out the 128 MB and 4627 BIOS start-up checks, shows what each remaining
 option costs in memory, and says whether the selection is predicted to fit at the hardest stadium or what to turn off.
 **Use the recommended 64 MB set** applies the memory model's suggestion, and **Make my disc** refuses a selection that is
-predicted not to fit. Roster edits that make the roster file bigger (the SOFTDRINK 2K28 2026 rosters do) need 128 MB.
-The 64 MB build is untested on a real Xbox and in hakuX, and its memory numbers are an estimate; for the full experience
-use xemu at 128 MiB. Going back to 128 MB gives back everything 64 MB turned off. On **Share**, **Build for** next to
+predicted not to fit. A selection that fits only with the default uniforms is made with a warning: a player-picked
+alternate kit at the heaviest stadium may not fit, so if a game loops on the stadium shots, use the default uniforms.
+Roster edits that make the roster file bigger (the SOFTDRINK 2K28 2026 rosters do) need 128 MB. The memory numbers are an
+estimate from a model; for the full experience use xemu at 128 MiB. Going back to 128 MB gives back everything 64 MB turned off. On **Share**, **Build for** next to
 **Customize SOFTDRINK 2K28…** loads the pack's sources straight into the 64 MB target.
 
 Modern overtime (in Advanced and Experimental) is the current NFL rule: a 10-minute
