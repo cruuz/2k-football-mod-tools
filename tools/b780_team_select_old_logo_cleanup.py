@@ -7,8 +7,8 @@ shows").
 The SOFTDRINK league project's Team Select cards (``team_select`` edits: ``helm`` 256 and 128, ``unif`` 256) are
 Blender renders of the 2026 helmet art (job k2, cards v5). Where the helmet texture still carried pieces of the
 retail decal that the 2026 logo does not cover (Detroit's old lion head, tail, front leg and hind paws, Baltimore's
-old raven outline tips, Arizona's old crest tip beside the vent, the Jets' old oval top on the white throwback), the
-renders show them next to the new logo. This step repaints only those pieces, card by card, from the hand masks in
+old raven outline tips, Arizona's old crest tip beside the vent, the Jets' old oval top on the white throwback,
+Washington's old feather, feather tips and dark red roundel ring), the renders show them next to the new logo. This step repaints only those pieces, card by card, from the hand masks in
 ``data/nfl2k5_team_select_old_logo_cleanup.json``:
 
 1. every region is a polygon in card pixels drawn around one old-logo piece, clear of the new logo;
@@ -20,9 +20,10 @@ renders show them next to the new logo. This step repaints only those pieces, ca
 3. ``"mode": "all"`` (most regions) repaints the whole polygon with that rebuilt shell; ``"mode": "deviation"``
    repaints only the pixels that differ from it by more than the region's threshold (``"sign": "darker"`` or
    ``"lighter"`` limits it to one direction, so a highlight next to a dark piece stays; ``"redder"`` takes only the
-   pixels redder than the shell, for a red piece on a neutral shell; ``"estimate": "local"`` rebuilds the shell from
+   pixels redder than the shell (red, not gold), for a red piece on a neutral shell; ``"estimate": "local"`` rebuilds the shell from
    a blur of its own pixels instead, which keeps the helmet's highlights under a thin piece), plus ``grow`` pixels
-   of anti-aliased fringe; alpha never changes and only opaque pixels are painted;
+   of anti-aliased fringe; ``inset`` keeps a region that many pixels inside the helmet's outline (its piping);
+   alpha never changes and only opaque pixels are painted;
 4. the 128 helm card is the premultiplied 2 x 2 box reduction of the 256 card (measured: within 1.6 levels on every
    card), so its blocks that cover a repainted 256 pixel take the box of the cleaned 256 card plus the original 128
    residual; every other 128 pixel stays as it was.
@@ -37,7 +38,9 @@ card is the source art byte for byte, and the importer's re-quantized card stays
 
 ``apply`` writes the cleaned PNGs (same file names, in DIR) and a copy of the project whose ``team_select`` edits
 point at them; nothing else in the project changes. The Studio's own Team Select importer then quantizes the cleaned
-PNGs exactly as before (256-entry median cut, the retail P8 slot, wrapper and size unchanged).
+PNGs exactly as before (256-entry median cut, the retail P8 slot, wrapper and size unchanged). Washington's 29_0
+cards are then repainted by the Studio's hu1 W pass (nfl2k5_menu_helmet_w2026), which knows the cleaned cards as a
+second pinned pair (``also``) next to the art it was first pinned to.
 """
 from __future__ import annotations
 
@@ -156,7 +159,10 @@ def harmonic_fill(rgb: np.ndarray, unknown: np.ndarray, known: np.ndarray) -> np
             total += np.where(ok[..., None], shifted(sub, dy, dx, 0.0), 0.0)
             count += ok
         ready = todo & (count > 0)
-        require(ready.any(), "a region is cut off from its shell")
+        if not ready.any():
+            # pixels cut off from the shell (enclosed by the logo or the piping) take the shell's median colour
+            sub[todo] = np.median(sub[k], axis=0)
+            break
         sub[ready] = total[ready] / count[ready][:, None]
         have |= ready
         todo &= ~ready
@@ -251,7 +257,9 @@ def local_shell(rgb: np.ndarray, support: np.ndarray, threshold: float, sign: st
 
 
 def redness(rgb: np.ndarray) -> np.ndarray:
-    return rgb[..., 0] - np.maximum(rgb[..., 1], rgb[..., 2])
+    """How much a pixel is red rather than neutral or gold: red over green and blue, less their own difference
+    (gold and yellow, green well above blue, come out negative)."""
+    return rgb[..., 0] - np.maximum(rgb[..., 1], rgb[..., 2]) - np.abs(rgb[..., 1] - rgb[..., 2])
 
 
 def signed_deviation(difference: np.ndarray, sign: str) -> np.ndarray:
@@ -274,6 +282,9 @@ def clean_regions(rgba: np.ndarray, regions) -> tuple[np.ndarray, list[dict]]:
     for number, region in enumerate(regions):
         rgb = out[..., :3].astype(np.float64)
         area = polygon_mask((h, w), region["poly"]) & opaque
+        if region.get("inset"):
+            # keep clear of the helmet's outline (its piping) by ``inset`` pixels from the card's transparent edge
+            area &= ~dilate(~opaque, int(region["inset"]))
         require(area.any(), f"region {number} covers no opaque pixel")
         band = dilate(area, BAND) & ~area & opaque
         reference = None
@@ -306,6 +317,9 @@ def clean_regions(rgba: np.ndarray, regions) -> tuple[np.ndarray, list[dict]]:
             paint = dilate(paint, int(region.get("grow", 1))) & area
         keep = (area | band) & ~paint
         keep &= ~band | shell
+        if mode != "all" and region.get("sign") == "redder":
+            # the gold piping and logo outline beside a red piece are not shell to fill it from
+            keep &= (np.minimum(rgb[..., 0], rgb[..., 1]) - rgb[..., 2]) <= 40
         filled = harmonic_fill(rgb, paint, keep)
         out[paint, :3] = round_half_up(filled[paint])
         rows.append(dict(region=number, note=region.get("note", ""), area_pixels=int(area.sum()),

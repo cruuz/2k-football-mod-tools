@@ -1941,6 +1941,1001 @@
      ]
     }
    ]
+  },
+  {
+   "team": "WAS",
+   "code": "29",
+   "styles": [
+    9
+   ],
+   "card": "helm_h_256",
+   "regions": [
+    {
+     "note": "old feather (gold) in front of the new W",
+     "mode": "all",
+     "poly": [
+      [
+       66,
+       100
+      ],
+      [
+       68,
+       104
+      ],
+      [
+       78,
+       104.5
+      ],
+      [
+       90,
+       101.5
+      ],
+      [
+       97,
+       99
+      ],
+      [
+       102,
+       97.5
+      ],
+      [
+       106,
+       95
+      ],
+      [
+       107.5,
+       90
+      ],
+      [
+       108,
+       85
+      ],
+      [
+       106.5,
+       79
+      ],
+      [
+       104,
+       75
+      ],
+      [
+       101.5,
+       71
+      ],
+      [
+       98,
+       70.5
+      ],
+      [
+       88,
+       77
+      ],
+      [
+       78,
+       87
+      ],
+      [
+       70,
+       95
+      ]
+     ]
+    },
+    {
+     "note": "old roundel ring (dark red) around the new W (red pixels only: the gold piping and the W stay)",
+     "mode": "deviation",
+     "sign": "redder",
+     "threshold": 8,
+     "grow": 1,
+     "poly": [
+      [
+       96,
+       4
+      ],
+      [
+       252,
+       4
+      ],
+      [
+       252,
+       150
+      ],
+      [
+       212,
+       150
+      ],
+      [
+       211,
+       142
+      ],
+      [
+       211,
+       108
+      ],
+      [
+       210,
+       104
+      ],
+      [
+       214,
+       95
+      ],
+      [
+       217,
+       80
+      ],
+      [
+       220,
+       66
+      ],
+      [
+       221,
+       56
+      ],
+      [
+       214,
+       50
+      ],
+      [
+       96,
+       50
+      ]
+     ],
+     "inset": 2
+    },
+    {
+     "note": "old roundel ring (dark red) left of the new W (red pixels only)",
+     "mode": "deviation",
+     "sign": "redder",
+     "threshold": 8,
+     "grow": 1,
+     "inset": 2,
+     "poly": [
+      [
+       30,
+       20
+      ],
+      [
+       96,
+       20
+      ],
+      [
+       96,
+       50
+      ],
+      [
+       98,
+       56
+      ],
+      [
+       103,
+       70
+      ],
+      [
+       108,
+       84
+      ],
+      [
+       112,
+       98
+      ],
+      [
+       116,
+       112
+      ],
+      [
+       119,
+       126
+      ],
+      [
+       119,
+       150
+      ],
+      [
+       30,
+       150
+      ]
+     ]
+    },
+    {
+     "note": "old feather tip (white) beside the new W",
+     "mode": "all",
+     "poly": [
+      [
+       202.6,
+       114.5
+      ],
+      [
+       211,
+       114.5
+      ],
+      [
+       211,
+       157.5
+      ],
+      [
+       200.5,
+       157.5
+      ],
+      [
+       200.5,
+       133.5
+      ],
+      [
+       202,
+       131.5
+      ],
+      [
+       202,
+       121.5
+      ],
+      [
+       202.6,
+       120
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "team": "WAS",
+   "code": "29",
+   "styles": [
+    9
+   ],
+   "card": "helm_a_256",
+   "regions": [
+    {
+     "note": "old feather (gold) in front of the new W",
+     "mode": "all",
+     "poly": [
+      [
+       34,
+       110
+      ],
+      [
+       42,
+       111
+      ],
+      [
+       50,
+       106.5
+      ],
+      [
+       58,
+       102
+      ],
+      [
+       66,
+       100.6
+      ],
+      [
+       79.5,
+       100.2
+      ],
+      [
+       78.2,
+       96
+      ],
+      [
+       78,
+       92
+      ],
+      [
+       76.6,
+       88
+      ],
+      [
+       74.6,
+       84
+      ],
+      [
+       73,
+       80
+      ],
+      [
+       70.2,
+       76
+      ],
+      [
+       66,
+       74.5
+      ],
+      [
+       61,
+       76.5
+      ],
+      [
+       54,
+       84
+      ],
+      [
+       46,
+       92
+      ],
+      [
+       38,
+       101
+      ],
+      [
+       33,
+       106
+      ]
+     ]
+    },
+    {
+     "note": "the old feather's lower edge over the helmet's highlight (pixels standing out from the highlight only)",
+     "mode": "deviation",
+     "estimate": "local",
+     "threshold": 18,
+     "grow": 1,
+     "poly": [
+      [
+       32,
+       108
+      ],
+      [
+       42,
+       109.5
+      ],
+      [
+       50,
+       105
+      ],
+      [
+       58,
+       100.6
+      ],
+      [
+       66,
+       99.2
+      ],
+      [
+       72,
+       98.8
+      ],
+      [
+       72,
+       103.5
+      ],
+      [
+       66,
+       104.2
+      ],
+      [
+       58,
+       105.8
+      ],
+      [
+       50,
+       110
+      ],
+      [
+       42,
+       113.5
+      ],
+      [
+       32,
+       112.5
+      ]
+     ]
+    },
+    {
+     "note": "old roundel ring (dark red) left of and above the new W (red pixels only: the gold piping and the W stay)",
+     "mode": "deviation",
+     "sign": "redder",
+     "threshold": 8,
+     "grow": 1,
+     "inset": 2,
+     "poly": [
+      [
+       0,
+       0
+      ],
+      [
+       210,
+       0
+      ],
+      [
+       210,
+       49
+      ],
+      [
+       60,
+       49
+      ],
+      [
+       58,
+       56
+      ],
+      [
+       62,
+       70
+      ],
+      [
+       67,
+       80
+      ],
+      [
+       72,
+       92
+      ],
+      [
+       76,
+       104
+      ],
+      [
+       80,
+       116
+      ],
+      [
+       83,
+       128
+      ],
+      [
+       83,
+       158
+      ],
+      [
+       0,
+       158
+      ]
+     ]
+    },
+    {
+     "note": "old feather tip (yellow) below the helmet's highlight",
+     "mode": "all",
+     "shell_box": [
+      58,
+      136,
+      66,
+      156
+     ],
+     "poly": [
+      [
+       47,
+       135
+      ],
+      [
+       58,
+       135
+      ],
+      [
+       58,
+       157.5
+      ],
+      [
+       47,
+       157.5
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "team": "WAS",
+   "code": "29",
+   "styles": [
+    9
+   ],
+   "card": "unif_h_256",
+   "regions": [
+    {
+     "note": "old feather (gold) in front of the new W",
+     "mode": "all",
+     "poly": [
+      [
+       24,
+       212.5
+      ],
+      [
+       28,
+       212
+      ],
+      [
+       34,
+       209.5
+      ],
+      [
+       42,
+       207.5
+      ],
+      [
+       48,
+       205.5
+      ],
+      [
+       53.5,
+       204
+      ],
+      [
+       53,
+       202
+      ],
+      [
+       52,
+       200
+      ],
+      [
+       51.4,
+       198
+      ],
+      [
+       50.6,
+       196
+      ],
+      [
+       50,
+       194
+      ],
+      [
+       47,
+       192.8
+      ],
+      [
+       41,
+       192.5
+      ],
+      [
+       36,
+       195.5
+      ],
+      [
+       30,
+       201
+      ],
+      [
+       25,
+       206.5
+      ],
+      [
+       23,
+       210
+      ]
+     ]
+    },
+    {
+     "note": "old roundel ring (dark red) left of and above the new W (red pixels only: the gold piping and the W stay)",
+     "mode": "deviation",
+     "sign": "redder",
+     "threshold": 8,
+     "grow": 1,
+     "poly": [
+      [
+       5,
+       180
+      ],
+      [
+       18,
+       163
+      ],
+      [
+       32,
+       153
+      ],
+      [
+       48,
+       148
+      ],
+      [
+       66,
+       146
+      ],
+      [
+       84,
+       148
+      ],
+      [
+       95,
+       154
+      ],
+      [
+       102,
+       162
+      ],
+      [
+       104,
+       170
+      ],
+      [
+       100,
+       176
+      ],
+      [
+       40,
+       176.5
+      ],
+      [
+       41.5,
+       182
+      ],
+      [
+       44,
+       186
+      ],
+      [
+       47,
+       190
+      ],
+      [
+       49,
+       193
+      ],
+      [
+       52.5,
+       198
+      ],
+      [
+       54,
+       204
+      ],
+      [
+       55.5,
+       210
+      ],
+      [
+       57,
+       216
+      ],
+      [
+       58.5,
+       222
+      ],
+      [
+       59,
+       226
+      ],
+      [
+       59,
+       238
+      ],
+      [
+       5,
+       238
+      ]
+     ]
+    },
+    {
+     "note": "old feather tip (white and yellow) beside the new W",
+     "mode": "all",
+     "poly": [
+      [
+       31.6,
+       211
+      ],
+      [
+       37.4,
+       211
+      ],
+      [
+       37.4,
+       241
+      ],
+      [
+       31.6,
+       241
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "team": "WAS",
+   "code": "29",
+   "styles": [
+    9
+   ],
+   "card": "unif_a_256",
+   "regions": [
+    {
+     "note": "old feather (gold) in front of the new W",
+     "mode": "all",
+     "poly": [
+      [
+       24,
+       212.5
+      ],
+      [
+       28,
+       212
+      ],
+      [
+       34,
+       209.5
+      ],
+      [
+       42,
+       207.5
+      ],
+      [
+       48,
+       205.5
+      ],
+      [
+       53.5,
+       204
+      ],
+      [
+       53,
+       202
+      ],
+      [
+       52,
+       200
+      ],
+      [
+       51.4,
+       198
+      ],
+      [
+       50.6,
+       196
+      ],
+      [
+       50,
+       194
+      ],
+      [
+       47,
+       192.8
+      ],
+      [
+       41,
+       192.5
+      ],
+      [
+       36,
+       195.5
+      ],
+      [
+       30,
+       201
+      ],
+      [
+       25,
+       206.5
+      ],
+      [
+       23,
+       210
+      ]
+     ]
+    },
+    {
+     "note": "old roundel ring (dark red) left of and above the new W (red pixels only: the gold piping and the W stay)",
+     "mode": "deviation",
+     "sign": "redder",
+     "threshold": 8,
+     "grow": 1,
+     "poly": [
+      [
+       5,
+       180
+      ],
+      [
+       18,
+       163
+      ],
+      [
+       32,
+       153
+      ],
+      [
+       48,
+       148
+      ],
+      [
+       66,
+       146
+      ],
+      [
+       84,
+       148
+      ],
+      [
+       95,
+       154
+      ],
+      [
+       102,
+       162
+      ],
+      [
+       104,
+       170
+      ],
+      [
+       100,
+       176
+      ],
+      [
+       40,
+       176.5
+      ],
+      [
+       41.5,
+       182
+      ],
+      [
+       44,
+       186
+      ],
+      [
+       47,
+       190
+      ],
+      [
+       49,
+       193
+      ],
+      [
+       52.5,
+       198
+      ],
+      [
+       54,
+       204
+      ],
+      [
+       55.5,
+       210
+      ],
+      [
+       57,
+       216
+      ],
+      [
+       58.5,
+       222
+      ],
+      [
+       59,
+       226
+      ],
+      [
+       59,
+       238
+      ],
+      [
+       5,
+       238
+      ]
+     ]
+    },
+    {
+     "note": "old feather tip (white and yellow) beside the new W",
+     "mode": "all",
+     "poly": [
+      [
+       31.6,
+       211
+      ],
+      [
+       37.4,
+       211
+      ],
+      [
+       37.4,
+       241
+      ],
+      [
+       31.6,
+       241
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "team": "WAS",
+   "code": "29",
+   "styles": [
+    0
+   ],
+   "card": "helm_h_256",
+   "regions": [
+    {
+     "note": "old feather tip (white and yellow) beside the new W",
+     "mode": "all",
+     "poly": [
+      [
+       199.5,
+       102
+      ],
+      [
+       209.5,
+       102
+      ],
+      [
+       209.5,
+       157.5
+      ],
+      [
+       199,
+       157.5
+      ],
+      [
+       199,
+       140
+      ],
+      [
+       199.5,
+       130
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "team": "WAS",
+   "code": "29",
+   "styles": [
+    0
+   ],
+   "card": "unif_h_256",
+   "regions": [
+    {
+     "note": "old feather tip (white and yellow) beside the new W",
+     "mode": "all",
+     "poly": [
+      [
+       31.6,
+       205
+      ],
+      [
+       36.6,
+       205
+      ],
+      [
+       36.6,
+       231
+      ],
+      [
+       35.8,
+       246
+      ],
+      [
+       31.6,
+       246
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "team": "WAS",
+   "code": "29",
+   "styles": [
+    0
+   ],
+   "card": "unif_a_256",
+   "regions": [
+    {
+     "note": "old feather tip (white and yellow) beside the new W",
+     "mode": "all",
+     "poly": [
+      [
+       31.6,
+       205
+      ],
+      [
+       36.6,
+       205
+      ],
+      [
+       36.6,
+       231
+      ],
+      [
+       35.8,
+       246
+      ],
+      [
+       31.6,
+       246
+      ]
+     ]
+    }
+   ]
   }
  ],
  "cards": {
@@ -2044,6 +3039,16 @@
    "clean_rgba_sha256": "9f95eac30291b99ce6eade38a768cc48c202b80874646da82e02782cb524de5f",
    "changed_pixels": 2578
   },
+  "helm_a29_9_128": {
+   "source_rgba_sha256": "2d7d336e6e8c4d1c442d6eda14692352c0817467ff2419b90f2c8efb03095478",
+   "clean_rgba_sha256": "980dd73adf4d72079f3e87b2724340d65b2ee161d91538c1cc4846061c0738f5",
+   "changed_pixels": 1024
+  },
+  "helm_a29_9_256": {
+   "source_rgba_sha256": "6dd64ab839f3aea443e081b5eb435594dc2ab7967e5177271aeacd8ec003383b",
+   "clean_rgba_sha256": "3d9a63dc8195f0dd870f09b31053a073375cc5a147bfc657c7f9a1220969a818",
+   "changed_pixels": 3592
+  },
   "helm_h00_0_128": {
    "source_rgba_sha256": "7a5af7d99959d3d12e40c9788aa84ab7cec336f2bc6dca1f99366ea8400f268b",
    "clean_rgba_sha256": "ff1981d60b74d7ddb4f311de85c6a171a2e68027740fd8d39573a1c41e42020e",
@@ -2144,6 +3149,26 @@
    "clean_rgba_sha256": "8ea762bdd6a1ac0c20222d5a762cf0888d4dc6818382d712f04e8dd283b090d6",
    "changed_pixels": 2261
   },
+  "helm_h29_0_128": {
+   "source_rgba_sha256": "0dfab901d76405f8e17cf39a757e39c6690f0e47c4f4e074c4ba48cf6669100f",
+   "clean_rgba_sha256": "b30cd028610ba7ba9d9b13ffd02dc49cc340f0b47b9bfea355ce63a75a110157",
+   "changed_pixels": 136
+  },
+  "helm_h29_0_256": {
+   "source_rgba_sha256": "ef3d3ad2d54fc1da08500a939c9dae5470f47fadeb92d1d9deb79fabda8918da",
+   "clean_rgba_sha256": "a90ba984f83f41966e4b01704e6830df8631a84d0aa7749f696ac85da0321c60",
+   "changed_pixels": 499
+  },
+  "helm_h29_9_128": {
+   "source_rgba_sha256": "3688b560897dec7d1d0ca70fdcb2fbe526f0511bd11db253af6718aa029a83f5",
+   "clean_rgba_sha256": "8c336f04131d99807e942ac5bab531962c2aa72465da84f42d2d8ca695f1eb32",
+   "changed_pixels": 1039
+  },
+  "helm_h29_9_256": {
+   "source_rgba_sha256": "2a1bb862357371a5685bf2bb4fc39e446755a7a0e31395969971f61c04306d1c",
+   "clean_rgba_sha256": "def2a0f6392c0f62cf53de5bbb6527baee2e57dc33ae65af50a1213f63081509",
+   "changed_pixels": 3737
+  },
   "unif_a00_0_256": {
    "source_rgba_sha256": "b0b8854f1ff7679812144fbdab9932729b3b6d9ce2f374ebad23fffc81346e77",
    "clean_rgba_sha256": "063c98ebeb881f08d19b80df247f827a14e812c131aaf58182bfa988ca28ea51",
@@ -2194,6 +3219,16 @@
    "clean_rgba_sha256": "7695616939cfebd446dba3270052ea579081bf1ce8c3c9d89165ef34151d7178",
    "changed_pixels": 1036
   },
+  "unif_a29_0_256": {
+   "source_rgba_sha256": "18df42c2d9723b7854766c9e84eb0ff0e959f882dec3dfb423c317f76114ca99",
+   "clean_rgba_sha256": "e5074a76a4b966a777dc9e214e5d2257c64280422869a9722e8560d241b03254",
+   "changed_pixels": 191
+  },
+  "unif_a29_9_256": {
+   "source_rgba_sha256": "f9e7936fecce9d393ece0a89d5c810f0d63f93d0103b939f07dca2f62414269d",
+   "clean_rgba_sha256": "a9abdbadd9e551d4d9bddc7b4925e3987e1f3f9ee2ffa4aefd9a1ff69945aae6",
+   "changed_pixels": 1437
+  },
   "unif_h00_0_256": {
    "source_rgba_sha256": "db6362cd73d318861662cc1e45021ff2b1e4169b64b8cb7f9974338ea040d97c",
    "clean_rgba_sha256": "fb63807b958008f335eddcdee554184acd3f20ef44f9aeea98baed998dbbdd3c",
@@ -2243,6 +3278,16 @@
    "source_rgba_sha256": "9bc6cee26687f1ae377fae7ce1bf5651eb67bdf221e3b1e2c52f43fff3d2d97c",
    "clean_rgba_sha256": "7695616939cfebd446dba3270052ea579081bf1ce8c3c9d89165ef34151d7178",
    "changed_pixels": 1036
+  },
+  "unif_h29_0_256": {
+   "source_rgba_sha256": "4af6f16d3a071e8331976549b0ed04ff555a28d87103faf189d1533fd6dce41d",
+   "clean_rgba_sha256": "9edbd12246418249c918a93c2cf1bd8fcd62ad38d4cbc599d98bf9c7470ab266",
+   "changed_pixels": 191
+  },
+  "unif_h29_9_256": {
+   "source_rgba_sha256": "f9e7936fecce9d393ece0a89d5c810f0d63f93d0103b939f07dca2f62414269d",
+   "clean_rgba_sha256": "a9abdbadd9e551d4d9bddc7b4925e3987e1f3f9ee2ffa4aefd9a1ff69945aae6",
+   "changed_pixels": 1437
   }
  }
 }

@@ -408,7 +408,7 @@ class ProviderIntegrityTests(unittest.TestCase):
                 "data/nfl2k5_kit_fixes_2026_sw1.json": "4f7052e03fd8d23dceef19de010459e552d3f4b63fd2335e575d13bd1e0de18e",
                 "data/nfl2k5_kit_fixes_2026_names.json": "cb354c62aa6b6e8de0ff01e9f25937f0a2e54169bfc37932bd689599529693fb",
                 "data/nfl2k5_menu_chiefs_2026.json": "8b4a86d2bb6893d6e23546ebddc3ff1626e029fcf3b8ed4a14fbee6fd1748eb2",
-                "data/nfl2k5_menu_helmet_w2026.json": "ee8b9dcc3903f3c63fd4ae3bf0ab1f50e5aa7f7d26240c8d02ff10aa2c0ed590",
+                "data/nfl2k5_menu_helmet_w2026.json": "4f85ab5412c2ad8d30e1002fefc4d2b48eeb17b2895d9f048b5f40588f521d7f",
                 "data/nfl2k5_indicator_names/atlas.png": "2693d6044962f9f59f4390b3e578d3575d9d3f0c081ae668510c83399c3197f7",
                 "data/nfl2k5_indicator_names/metrics.json": "2bebe47d2fb50e36a5c3a736d95677c06c780addf88463c2b5b266111af4a129",
                 "mod_editor/data/nfl2k5_free_agents_2026.v1.json": "39cf9602756dcf8742e90654a43fecf10c86f24db61a915074ccef094a6f7ad8",

@@ -58,7 +58,7 @@ class Document(unittest.TestCase):
 
     def test_the_cleaned_teams(self):
         teams = {(g["team"], g["code"]) for g in cl.spec()["groups"]}
-        self.assertEqual(teams, {("ARI", "00"), ("BAL", "02"), ("DET", "09"), ("NYJ", "19")})
+        self.assertEqual(teams, {("ARI", "00"), ("BAL", "02"), ("DET", "09"), ("NYJ", "19"), ("WAS", "29")})
 
     def test_unknown_document_is_refused(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -186,14 +186,45 @@ class Refusals(unittest.TestCase):
 
 @unittest.skipUnless(PROJECT.is_file(), "the SOFTDRINK v0.9 league project (B780_ART1_PROJECT) is not on this machine")
 class LeagueProject(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.project = json.loads(PROJECT.read_text(encoding="utf-8"))
+        cls.images, cls.receipts = cl.clean_project_cards(cls.project)
+
     def test_every_card_reproduces_its_pin(self):
-        project = json.loads(PROJECT.read_text(encoding="utf-8"))
-        images, receipts = cl.clean_project_cards(project)
         doc = cl.spec()
-        self.assertEqual(set(images), set(doc["cards"]))
-        for name, receipt in receipts.items():
+        self.assertEqual(set(self.images), set(doc["cards"]))
+        for name, receipt in self.receipts.items():
             self.assertEqual(receipt["clean_rgba_sha256"], doc["cards"][name]["clean_rgba_sha256"], name)
             self.assertEqual(receipt["changed_pixels"], doc["cards"][name]["changed_pixels"], name)
+
+    @unittest.skipUnless(os.environ.get("NFL2K5_RETAIL_INDEX"), "set NFL2K5_RETAIL_INDEX (retail pack 0) for the importer")
+    def test_the_washington_w_pass_knows_the_cleaned_cards(self):
+        """The hu1 W pass still paints the 2026 W on Washington's cleaned 29_0 cards: the importer's slot for each
+        cleaned card is the pass's ``also`` before pin, and its paint gives the ``also`` after pin."""
+        import hashlib
+        import nfl_team_select_card_png_import as importer
+        from mod_editor.core import nfl2k5_menu_helmet_w2026 as hw
+        doc = hw.spec()
+        checked = 0
+        with tempfile.TemporaryDirectory() as tmp:
+            for target in doc["targets"]:
+                if not target.get("also"):
+                    continue
+                family, sc, style = target["member"].split("_")
+                res = 128 if target["aggregate"] == "logos128" else 256
+                name = f"{family}_{sc}_{style}_{res}"
+                png = Path(tmp) / f"{name}.png"
+                cl.save_rgba(self.images[name], png)
+                span, _, _ = importer.build_import(
+                    Path(os.environ["NFL2K5_RETAIL_INDEX"]), ROOT / "reports/assets/nfl2k5_team_select_card_inventory.json",
+                    family, sc[1:], "home" if sc[0] == "h" else "away", int(style), res, png)
+                slot = span + bytes(96)
+                self.assertEqual(hashlib.sha256(slot).hexdigest(), target["also"][0]["before_sha256"], name)
+                after, _ = hw.paint(slot, doc["model"], target)
+                self.assertEqual(hashlib.sha256(after).hexdigest(), target["also"][0]["after_sha256"], name)
+                checked += 1
+        self.assertEqual(checked, 4)
 
 
 if __name__ == "__main__":
