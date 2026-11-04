@@ -706,13 +706,16 @@ class GameplayPatchesPanel(QWidget):
             upgrade = key == "position_pools" and value == "needs_fix"
             # b780 studio1: the Build tab's Needs update treatment, which this page lacked: on the released v0.8 disc these
             # read "Unknown state." or, for a legacy draft AI, a tooltip about the beta 58-60 star, and no badge.
-            from mod_editor.gui.build_panel_qt import LEGACY_UPGRADE_KEYS, PREVIOUS_REBUILD_KEYS, PREVIOUS_UPGRADE_KEYS
+            from mod_editor.gui.build_panel_qt import (
+                LEGACY_UPGRADE_KEYS, PREVIOUS_REBUILD_KEYS, PREVIOUS_UPGRADE_KEYS, rebuild_only_reason)
             locked_on = key in ("honors_page", "k128_memory")      # Build keeps these ticked and greyed out; so does this page
             update = ((value == "previous" and key in PREVIOUS_UPGRADE_KEYS)
                       or (value == "legacy" and (key in LEGACY_UPGRADE_KEYS or key in ("draft_ai", "depth_locks"))))
             rebuild = value == "previous" and key in PREVIOUS_REBUILD_KEYS
-            check.setEnabled((value == "retail" or upgrade or (update and not locked_on)) and not needs_image
-                             and key not in r62_ui.UNAVAILABLE)
+            # b780 studio1 (Q69): on a disc this release cannot build on, an in-place update is not an offer (same rule as Build)
+            declined_reason = rebuild_only_reason(state) if (update or upgrade) else ""
+            check.setEnabled((value == "retail" or (not declined_reason and (upgrade or (update and not locked_on))))
+                             and not needs_image and key not in r62_ui.UNAVAILABLE)
             check.setChecked(False)
             tip = {"applied": "Already installed on this source.",
                    "needs_fix": "Position pools are installed, but the CPU lineup exhaustion repair is missing. Select to upgrade.",
@@ -724,7 +727,9 @@ class GameplayPatchesPanel(QWidget):
             # a known non-retail state is the more useful message; an unreadable one (a bare XBE cannot
             # carry a playbook patch, so inspect says n/a) should say what the user needs instead
             full_disc = needs_image and value not in ("applied", "foreign", "partial", "previous", "legacy")
-            if update:
+            if declined_reason:
+                tip = "An older revision of this change is installed (beta 79 or earlier). " + declined_reason
+            elif update:
                 tip = ("An older revision of this change is installed (beta 79 or earlier). "
                        + ("This build brings it up to date in place, so it stays ticked." if locked_on else
                           "Select to update it to this release's revision (in place)."))
@@ -733,6 +738,7 @@ class GameplayPatchesPanel(QWidget):
                        "your retail game to get this release's version.")
             check.setToolTip("Full disc required (not a bare default.xbe)." if full_disc else tip)
             badge = ("Full disc required" if full_disc else
+                     "Older revision: rebuild from retail" if declined_reason else
                      "Needs update" if update else
                      "Beta 79 version: rebuild from retail" if rebuild else
                      {"applied": "Already installed", "foreign": "Unrecognized source data",
@@ -1011,10 +1017,12 @@ class GameplayPatchesPanel(QWidget):
             self.checks, self._helpers, self._state)
         any_on = any(c.isChecked() for key, c in self.checks.items() if key not in ("helmet_finish", "weather_haze")) or self._helmet_finish_changed() or self._weather_haze_changed() or self._modern_scrambles_selected()
         configured = True   # MyCareer no longer needs a setup file: an empty field selects in-game creation
+        from mod_editor.gui.build_panel_qt import rebuild_only_reason
+        rebuild_only = rebuild_only_reason(self._state or {})    # b780 studio1 (Q69): said here, as Build says it, not by the engine
         self.write_button.setEnabled(configured and any_on and bool(self.source_field.text()) and bool(self.target_field.text())
                                      and self._task is None and not self._reading
-                                     and not self._playbook_blockers)
-        self.write_button.setToolTip(" ".join(self._playbook_blockers))
+                                     and not self._playbook_blockers and not rebuild_only)
+        self.write_button.setToolTip(rebuild_only or " ".join(self._playbook_blockers))
 
     def _choose_source(self) -> None:
         chosen, _f = QFileDialog.getOpenFileName(self, "Choose your game disc (.iso) or default.xbe", str(Path.home()), SOURCE_FILTER)
