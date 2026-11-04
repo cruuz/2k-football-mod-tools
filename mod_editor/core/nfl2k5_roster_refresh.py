@@ -136,6 +136,8 @@ def _rejoin_injured(by, rows, teams, assigned, policy=ROOM_POLICY):
 
     def big_deal(index):
         record = by[index].record
+        if record.get("contract_length") < 1 or record.get("contract_value") < 1:
+            return -1               # no contract on a club's list: an earlier application of this plan released him
         return record.get("contract_value") > SMALL_DEAL_PER_YEAR * max(1, record.get("contract_length"))
 
     ranks = charted_ranks(rows)
@@ -162,7 +164,9 @@ def _rejoin_injured(by, rows, teams, assigned, policy=ROOM_POLICY):
         keep = set(placed.get(team["index"], ())) | {v for v in team["specialists"].values() if v is not None}
         # "ir": the injured stay and only a list past 65 with the reserves makes room; "release": the 53 plus nobody
         limit = IR_LIST_LIMIT - len(team["reserves"]) if policy == "ir" else ps.ACTIVE_LIMIT
-        released.extend(_make_room(team["team"], active, keep, position, minimums, ranks, big_deal, overall, limit))
+        # sorted: the order players are released in may differ between the first application of a plan and its replay (a
+        # released player's contract is zero by then); the free-agent list takes them in index order either way
+        released.extend(sorted(_make_room(team["team"], active, keep, position, minimums, ranks, big_deal, overall, limit)))
         actives[team["index"]] = active
     rejoined = {i for ids in placed.values() for i in ids}
     return actives, rejoined, released, to_free
