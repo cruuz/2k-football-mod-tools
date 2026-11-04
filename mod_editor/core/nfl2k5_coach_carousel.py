@@ -103,6 +103,18 @@ RATINGS = ("overall", "offense", "rush_for", "pass_for", "defense", "pass_rush",
            "leadership", "discipline", "respect")
 DEFAULT_RATING = 50                                            # the retail created-coach records 32 and 33
 DEFAULT_PERSONALITY = 50
+# b780 hunt6 (Q37): the 2026 rating model (tools/nfl2k5_coach_2026_data.py, data/nfl2k5_coaches_2026.json "scale") gives a
+# rating it has no evidence for its league baseline, 78 for the 16 football ratings and 83 for the 7 character ratings
+# (the 2026 first-time head coaches' character ratings are all 83). The pool is not rated by that model, so each pool
+# coach takes the baseline. Retail's created-coach 50 put every carousel hire's leadership and respect, the ratings
+# the game uses on the field, below all 32 sitting coaches (60 to 99).
+CHARACTER_RATINGS = RATINGS[16:]                                # professionalism .. respect
+POOL_FOOTBALL_RATING, POOL_CHARACTER_RATING = 78, 83
+
+
+def pool_ratings() -> dict[str, int]:
+    """A pool coach's 23 ratings: the 2026 model's league baseline."""
+    return {k: POOL_CHARACTER_RATING if k in CHARACTER_RATINGS else POOL_FOOTBALL_RATING for k in RATINGS}
 NO_PHOTO = 8999
 KINDS = {"coordinator": 1, "former_head_coach": 3}                # c5 pool "kind" (1 = coordinator, 3 = former head coach)
 
@@ -200,7 +212,7 @@ def _clean(text: str) -> str:
 def load_pool(data: Mapping | None = None, pool_doc: Mapping | None = None) -> list[dict]:
     """The hiring pool for the roster block: c5-owners' candidates (real people, every one with sources), their head
     coaching records, and this job's Super Bowl and winning-season counts (``pool_extras``, from the same games.csv).
-    Ratings are the game's own created-coach default (50); no picture (8999)."""
+    Ratings are the 2026 rating model's league baseline (``pool_ratings``: 78 football, 83 character); no picture (8999)."""
 
     data = data if data is not None else load()
     doc = pool_doc if pool_doc is not None else owners_model.load_pool()
@@ -219,7 +231,7 @@ def load_pool(data: Mapping | None = None, pool_doc: Mapping | None = None) -> l
                       super_bowl_wins=extra.get("super_bowl_wins", 0), super_bowl_losses=extra.get("super_bowl_losses", 0))
         pool.append(dict(id=c["id"], first=_clean(c["first"]), last=_clean(c["last"]), kind=c.get("kind", ""),
                          weight=10 + min(int(career["seasons"]), 10), photo=NO_PHOTO, personality=DEFAULT_PERSONALITY,
-                         career=career, ratings={k: DEFAULT_RATING for k in RATINGS}))
+                         career=career, ratings=pool_ratings()))
     return pool
 
 
@@ -260,7 +272,8 @@ def pool_block(entries: Sequence[Mapping]) -> bytes:
         for k, field in enumerate(CAREER_FIELDS):
             struct.pack_into("<H", raw, 16 + 2 * k, max(0, min(0xFFFF, int(career.get(field, 0)))))
         ratings = entry.get("ratings") or {}
-        raw[36:59] = bytes(max(0, min(99, int(ratings.get(r, DEFAULT_RATING)))) for r in RATINGS)
+        baseline = pool_ratings()
+        raw[36:59] = bytes(max(0, min(99, int(ratings.get(r, baseline[r])))) for r in RATINGS)
         table += raw
     body = bytes(table) + bytes(strings)
     size = (POOL_HEADER + len(body) + 3) & ~3

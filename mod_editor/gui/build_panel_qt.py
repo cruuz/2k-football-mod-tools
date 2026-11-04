@@ -376,7 +376,9 @@ PREVIOUS_UPGRADE_KEYS = {"honors_page": "honors page", "camera": "camera", "k128
                          # place (catch_slider_patch.apply, nfl2k5_sim_cb_tackles.apply); their boxes were greyed out
                          "catch_slider": "catching slider", "sim_cb_tackles": "cornerback tackle credit",
                          # b780 db2: the beta-79 RB injury guard (no fullback rule) is upgraded in place as well
-                         "sim_rb_injuries": "simulated RB injuries"}
+                         "sim_rb_injuries": "simulated RB injuries",
+                         # b780 hunt6: revision 1 of the franchise record fixes (the v0.9 release candidates)
+                         "coach_career_fix": "coach record fix"}
 # b780 studio1: older revisions that read "legacy" and that the build upgrades in place (progression.apply and
 # franchise_economy.apply both accept "retail" or "legacy"). A v0.8 disc reads legacy for both; the boxes were greyed out
 # with no badge and no line in the disc summary, so retirement by age and the economy revision could not be added.
@@ -2359,7 +2361,8 @@ class BuildPanel(QWidget):
                                "position mixes.")
                 self._set_badge(key, "Needs update")
             elif previous_upgrade:
-                box.setToolTip(f"The {PREVIOUS_UPGRADE_KEYS[key]} from an older build (beta 79) is installed. Select to "
+                older = "a v0.9 test build" if key == "coach_career_fix" else "an older build (beta 79)"  # b780 hunt6
+                box.setToolTip(f"The {PREVIOUS_UPGRADE_KEYS[key]} from {older} is installed. Select to "
                                "update it to this release's revision (in place).")
                 self._set_badge(key, "Needs update")
             elif legacy_upgrade:
