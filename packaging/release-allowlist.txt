@@ -2151,6 +2151,8 @@ data/nfl2k5_scorebug_mnf/painted_label_2x.json
 mod_editor/core/nfl2k5_scorebug_sprite.py
 mod_editor/core/nfl2k5_scorebug_sprite_code.py
 mod_editor/core/nfl2k5_scorebug_sprite_code_b779.py
+mod_editor/core/nfl2k5_scorebug_sprite_code_r15.py
+mod_editor/core/nfl2k5_scorebug_sprite_code_r16.py
 mod_editor/gui/scorebug_sprite_preview_qt.py
 data/nfl2k5_scorebug_sprite/template.png
 data/nfl2k5_scorebug_sprite/layout.json

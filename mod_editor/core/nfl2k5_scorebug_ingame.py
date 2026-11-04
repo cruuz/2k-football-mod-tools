@@ -592,11 +592,15 @@ def _runtime_identity(payload, runtime):
 
 
 def _installed_runtime(payload):
-    """The scorebug runtime module whose complete code and hooks this image carries: this release's, or (b780 n6) the
-    beta-79 one a v0.8 executable carries (nfl2k5_scorebug_runtime_b779, recognition only), else None."""
+    """The scorebug runtime module whose complete code and hooks this image carries: this release's, (b780 pres2) an
+    earlier revision of it that sat in a 5,920-byte allocation, or (b780 n6) the beta-79 one a v0.8 executable carries
+    (nfl2k5_scorebug_runtime_b779, recognition only), else None."""
     from . import nfl2k5_scorebug_runtime as runtime
     if _runtime_identity(payload, runtime):
         return runtime
+    for revision in runtime.EARLIER_REVISIONS:   # b780 pres2: the 5,920-byte revisions 16 and 15 (recognition only)
+        if _runtime_identity(payload, runtime.earlier_revision(revision)):
+            return runtime.earlier_revision(revision)
     from . import nfl2k5_scorebug_runtime_b779 as previous
     return previous if _runtime_identity(payload, previous) else None
 
