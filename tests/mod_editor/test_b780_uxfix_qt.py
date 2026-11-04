@@ -598,6 +598,24 @@ class StudioWindowTests(unittest.TestCase):
                 time.sleep(0.01)
         self.assertEqual(order, ["project", ("prefill", disc.resolve())])   # the disc reaches the pages after recovery
 
+    def test_7_getting_started_offers_the_last_game_file(self):
+        window = self.window
+        folder = Path(tempfile.mkdtemp(prefix="uxfix-recent-"))
+        last = folder / "ESPN NFL 2K5 (USA).iso"
+        last.write_bytes(b"x")
+        state = SimpleNamespace(recent_sources=(str(folder / "gone.iso"), str(last)), recent_projects=())
+        with mock.patch.object(window, "_workspace_state", return_value=state), \
+             mock.patch.object(window, "_request_source_switch") as switch:
+            window._refresh_welcome_state()
+            button = window.welcome_continue_button
+            self.assertFalse(button.isHidden())
+            self.assertEqual(button.text(), "Continue with ESPN NFL 2K5 (USA).iso")   # the newest file that exists
+            button.click()
+        switch.assert_called_once_with(last)
+        with mock.patch.object(window, "_workspace_state", return_value=None):
+            window._refresh_welcome_state()
+        self.assertTrue(window.welcome_continue_button.isHidden())
+
     def test_6_opening_gameplay_at_1480x920_reports_no_error(self):
         from mod_editor.gui import crash_report
         window = self.window
