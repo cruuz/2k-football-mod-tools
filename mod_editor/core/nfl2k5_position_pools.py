@@ -870,7 +870,7 @@ def status(payload: bytes, *, linebacker_penalty_fix: bool = True, depth_chart_t
     if need == "foreign":
         return "foreign"
     if states == {"retail"} and filters == "retail":
-        return "retail" if need == "retail" else "foreign"
+        return "retail" if need in ("retail", "absent") else "foreign"
     # A complete retained profile is necessary for unscanned/custom rosters.
     # It also recognizes pre-r64 pooled XBEs for a safe, explicit upgrade.
     if states == {"applied"}:
