@@ -1877,6 +1877,25 @@ class RosterDocument:
         player.record.set("position", value)
         return value
 
+    def change_position(self, player: Player, code: int | str) -> dict[str, Any]:
+        """A position change on the Rosters page (b780 sub1, Q63): set the position, and on a club also unlock the
+        player and put him at the bottom of his new position's chain, the way sign and transfer do. Keeping his old
+        rank, side and locks would seat him on a row another locked starter owns at the new position, and the roster
+        could then not be saved or built ("conflicting depth locks"). Returns the old values for undo."""
+
+        before = {key: player.record.values[key] for key in ("position", "depth_rank", "depth_side", "unknown_52")}
+        value = self.set_position(player, code)
+        club = self.club_of(player)
+        if value != before["position"] and club is not None:
+            self._rerank(player, club)
+        return before
+
+    def restore_position(self, player: Player, values: Mapping[str, int]) -> None:
+        """Undo of ``change_position``: the position, depth rows and lock bits exactly as they were."""
+
+        for key in ("position", "depth_rank", "depth_side", "unknown_52"):
+            player.record.values[key] = int(values[key])
+
     # ------------------------------------------------------------------ edits
     def set_name(self, player: Player, which: str, text: str) -> dict[str, Any]:
         """Set a player's first or last name through the shared pool.  ``which`` is first|last."""

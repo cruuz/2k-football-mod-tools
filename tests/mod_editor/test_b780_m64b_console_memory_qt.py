@@ -25,7 +25,7 @@ from PyQt5.QtWidgets import QApplication  # noqa: E402
 from mod_editor.core import mod_build  # noqa: E402
 from mod_editor.core import nfl2k5_console_memory as cm  # noqa: E402
 from mod_editor.gui.build_panel_qt import BuildPanel  # noqa: E402
-from test_b780_m64b_console_memory import fake_model, with_model, without_model  # noqa: E402
+from test_b780_m64b_console_memory import fake_model, grown_roster_edits, with_model, without_model  # noqa: E402
 
 FORCED = ("k128_memory", "k128_roster_heap", "k128_early", "guardian_overlay", "reserves_16", "created_teams_extra")
 
@@ -173,29 +173,60 @@ class ForcedOff(_Page):
             panel.set_console_memory(128)
             self.assertEqual(panel.blocker(), "")
 
+    def test_a_disc_read_at_64_mb_keeps_each_disc_own_state(self):
+        with without_model():
+            panel = self.page()
+            panel.set_console_memory(64)                       # retail disc: K128 locked, its box was enabled
+            self.assertFalse(panel.k128_memory_check.isEnabled())
+            state = {key: "retail" for key in panel._boxes()}
+            state.update(path=str(self.source), container="xiso", throw=None, speed_threshold="retail",
+                         k128_memory="applied")
+            panel.apply_state(state)                           # now a disc with K128 installed, still at 64 MB
+            panel.set_console_memory(128)
+            self.assertFalse(panel.k128_memory_check.isEnabled())   # installed: stays as the disc read set it
+            self.assertTrue(panel.k128_memory_check.isChecked())
+
 
 class RosterCapacity(_Page):
-    def test_roster_edits_that_grow_the_roster_file_are_refused_by_name_at_64(self):
+    def test_roster_edits_that_grow_the_roster_file_are_fitted_at_64_and_the_page_says_what_goes(self):
         with without_model():
             panel = self.page()
             grown = Path(self.tmp.name) / "softdrink-rosters.json"
-            grown.write_text(json.dumps({"schema": "x", "edits": [], "free_agent_capacity": {
-                "schema": "nfl2k5.free_agent_capacity.v1", "records": 612}}))
+            grown.write_text(json.dumps(grown_roster_edits(records=612)))
             panel.throw_check.setChecked(True)
             panel.roster_edits_check.setChecked(True)
             panel.roster_edits_field.setText(str(grown))
             before = panel.blocker()                   # 128 MB: the page says what it said before this option
+            self.assertFalse(panel.memory_roster_label.isVisibleTo(panel))
+            panel.set_console_memory(64)
+            self.assertEqual(panel.blocker(), "")      # kept: the build fits them to the original roster size
+            self.assertTrue(panel.build_button.isEnabled())
+            self.assertTrue(panel.memory_roster_label.isVisibleTo(panel))
+            self.assertEqual(panel.memory_roster_label.text(), cm.ROSTER_FIT_NOTE)
+            self.assertIn(cm.ROSTER_FIT_NOTE, panel.confirmation_text(panel.plan()))
+            panel.set_console_memory(128)
+            self.assertFalse(panel.memory_roster_label.isVisibleTo(panel))
+            self.assertNotIn(cm.ROSTER_FIT_NOTE, panel.confirmation_text(panel.plan()))
+            self.assertEqual(panel.blocker(), before)
+
+    def test_roster_edits_the_fit_refuses_are_refused_by_name_at_64(self):
+        with without_model():
+            panel = self.page()
+            document = grown_roster_edits(records=612)
+            document["edits"].append({"index": 2620, "pool": "primary"})
+            grown = Path(self.tmp.name) / "softdrink-rosters.json"
+            grown.write_text(json.dumps(document))
+            panel.throw_check.setChecked(True)
+            panel.roster_edits_check.setChecked(True)
+            panel.roster_edits_field.setText(str(grown))
             panel.set_console_memory(64)
             blocker = panel.blocker()
-            self.assertIn("The 64 MB build cannot use the roster edits softdrink-rosters.json (612 more records)", blocker)
-            self.assertIn("Untick Include exported \u2605 Rosters edits", blocker)
+            self.assertIn("The 64 MB build cannot fit the roster edits softdrink-rosters.json", blocker)
             self.assertFalse(panel.build_button.isEnabled())
             self.assertTrue(panel.roster_edits_check.isEnabled())   # still the user's to untick or change
+            self.assertFalse(panel.memory_roster_label.isVisibleTo(panel))
             panel.roster_edits_check.setChecked(False)
             self.assertEqual(panel.blocker(), "")
-            panel.set_console_memory(128)
-            panel.roster_edits_check.setChecked(True)
-            self.assertEqual(panel.blocker(), before)
 
 
 class Budget(_Page):
@@ -259,6 +290,17 @@ class Budget(_Page):
             panel.set_console_memory(128)
             self.assertEqual(panel.blocker(), "")      # the 128 MB build never asks the 64 MB model
             self.assertFalse(panel.memory_budget_label.isVisibleTo(panel))
+
+    def test_a_model_that_cannot_estimate_says_so_and_does_not_refuse(self):
+        model = fake_model()
+        model.predict = lambda plan, target_mb=64: 1 / 0
+        with with_model(model):
+            panel = self.page()
+            panel.throw_check.setChecked(True)
+            panel.set_console_memory(64)
+            self.assertTrue(panel.wait_for_memory_budget())
+            self.assertEqual(panel.memory_budget_label.text(), cm.NO_ESTIMATE)
+            self.assertEqual(panel.blocker(), "")
 
     def test_no_model_says_so(self):
         with without_model():
@@ -331,6 +373,22 @@ class WithTheModel(_Page):
             self.assertIn("A player-picked alternate kit at ", panel.memory_budget_label.text())
 
 
+    def test_customize_softdrink_for_64_mb_starts_from_the_recommended_set(self):
+        panel = self.page()
+        project = Path(self.tmp.name) / "league.json"
+        project.write_text("{}")
+        panel.load_softdrink_sources({"preset": "softdrink_experimental", "project": str(project), "console_memory": 64,
+                                      "overrides": {"k128_memory": True, "k128_roster_heap": True}})
+        self.assertEqual(panel.console_memory(), 64)
+        self.assertTrue(panel.memory_action_label.text().startswith("Recommended 64 MB set applied: turned off "),
+                        panel.memory_action_label.text())
+        self.assertTrue(panel.wait_for_memory_budget())
+        self.assertFalse(cm.refuses(panel._memory_budget_result[0]), panel.memory_budget_label.text())
+        self.assertFalse(panel.blocker().startswith("The 64 MB build"), panel.blocker())
+        panel.set_console_memory(128)                       # the full pack build gives K128 back
+        self.assertTrue(panel.plan().k128_memory)
+
+
 class SavedAndShared(_Page):
     def test_project_settings_round_trip_and_old_projects_read_128(self):
         with without_model():
@@ -375,7 +433,7 @@ class SavedAndShared(_Page):
         self.assertEqual(share.customize_memory(), 128)
         self.assertEqual(share.customize_memory_caption.text(), "Build for")
         self.assertIn("full 128 MB build for xemu", share.memory_note.text())
-        self.assertIn("2026 rosters need 128 MB for now", share.memory_note.text())
+        self.assertIn("the 2026 rosters, fitted to the original game's roster size", share.memory_note.text())
         combo.setCurrentIndex(combo.findData(64))
         self.assertEqual(share.customize_memory(), 64)
 

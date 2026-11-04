@@ -190,7 +190,7 @@ class SharePanelTests(unittest.TestCase):
             self.assertIsNotNone(tabs)
             labels = [tabs.tabText(index).replace("&&", "&") for index in range(tabs.count())]
             # Share lives on the ★ Build & Share row next to Build, after the rework.
-            self.assertEqual(labels, ["Build", "Share"])
+            self.assertEqual(labels, ["Build", "Install & Share"])   # b780-uxfix: the tab installs first
         finally:
             window.deleteLater()
             self.app.processEvents()

@@ -356,6 +356,17 @@ class ModelTests(unittest.TestCase):
         self.assertEqual(sr.division_conference_records(*partial, REAL_DIVISIONS, weeks=17),
                          sr.division_conference_records(*partial, REAL_DIVISIONS, weeks=9))
 
+    def test_preseason_games_are_never_division_or_conference_records(self):
+        # b780-season1: in the preseason the first grid rows hold the preseason games (a conference opponent in 15 of
+        # the 49 games of the 2026 preseason); DIV and CONF stay 0-0 until the regular season replaces them
+        grid, scores = season(13, weeks=8, playoff_rows=0)
+        counted = sr.division_conference_records(grid, scores, REAL_DIVISIONS, weeks=18)
+        self.assertTrue(any(sum(r["conf"]) for r in counted))
+        preseason = sr.division_conference_records(grid, scores, REAL_DIVISIONS, weeks=18, stage=sr.PRESEASON_STAGE)
+        self.assertEqual(preseason, [{"div": [0, 0, 0], "conf": [0, 0, 0]}] * 32)
+        for stage in (1, 6, sr.SEASON_STAGE, 9):                # the offseason keeps the finished season's records
+            self.assertEqual(sr.division_conference_records(grid, scores, REAL_DIVISIONS, weeks=18, stage=stage), counted)
+
     def test_eighteen_week_season_counts_the_extra_row(self):
         grid, scores = season(3, weeks=18, playoff_rows=4)
         seventeen = sr.division_conference_records(grid, scores, REAL_DIVISIONS, weeks=17)
@@ -568,8 +579,10 @@ class Standings(Machine):
     SCREEN = Machine.HEAP + 0x60000
 
     def __init__(self, payload, grid, scores, *, view=0, conference=0, standings=True, weeks=17, user=0,
-                 divisions=REAL_DIVISIONS, state_va=None, retail_counts=True, state=None, char_width=9):
+                 divisions=REAL_DIVISIONS, state_va=None, retail_counts=True, state=None, char_width=9, stage=None):
         super().__init__(payload)
+        if stage is not None:
+            self.put(sr.STAGE_VA, stage)                          # the league stage (7 = preseason)
         self.state_va = state_va
         self.char_width = char_width                  # what the text width call answers for each character
         self.text, self.contexts, self.sound = [], {}, []
@@ -900,6 +913,22 @@ class NativeTests(unittest.TestCase):
         everything = {c: sum(1 for _r, _s, h, a, hp, ap in sr._cell_games(grid, scores, 22)
                              if (h == c and hp > ap) or (a == c and ap > hp)) for c in retail_w}
         self.assertEqual({c: int(cells[0][0]) for c, cells in retail_w.items()}, everything)
+
+    def test_preseason_rows_show_no_division_or_conference_record(self):
+        # b780-season1: the game's own draw code, with preseason games played in the first rows
+        grid, scores = season(13, weeks=8, playoff_rows=0)
+        for stage in (sr.PRESEASON_STAGE, sr.SEASON_STAGE):
+            model = sr.division_conference_records(grid, scores, REAL_DIVISIONS, weeks=18, stage=stage)
+            for conference in (0, 1):
+                blocks, clubs = parse(self.game(grid, scores, view=1, conference=conference, weeks=18,
+                                                retail_counts=False, stage=stage).draw())
+                for club, cells in clubs.items():
+                    with self.subTest(stage=stage, conference=conference, club=club):
+                        self.assertEqual((cells[0][0], cells[2][0]),
+                                         (sr.format_record(model[club]["div"]), sr.format_record(model[club]["conf"])))
+                        if stage == sr.PRESEASON_STAGE:
+                            self.assertEqual((cells[0][0], cells[2][0]), ("0-0", "0-0"))
+        self.assertTrue(any(sum(r["conf"]) for r in sr.division_conference_records(grid, scores, REAL_DIVISIONS, weeks=18)))
 
     def test_home_road_and_streak_are_the_games_own_values(self):
         for seed in (2, 8):

@@ -3097,7 +3097,7 @@ def inspect_screen_timing(source: Path | str, level: str = "D") -> dict[str, Any
         return {"status": "foreign", "level": level, "books": [], "reason": str(exc)}
 
 
-def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str, Any]:
+def _inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str, Any]:
     """Current state of every patch in ``source`` (a default.xbe or a disc image)."""
 
     source = Path(source)
@@ -3834,6 +3834,17 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
     return out
 
 
+def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str, Any]:
+    """Current state of every patch in ``source`` (a default.xbe or a disc image).
+
+    The read asks ~150 status functions about one executable, and each re-ran its scale-out structure checks; they run
+    once per executable inside the memo (``studio_inspection.memoised_validation``), which is dropped when this returns."""
+
+    from .studio_inspection import memoised_validation
+    with memoised_validation():
+        return _inspect(source, screen_timing=screen_timing)
+
+
 def _check_playbook_menus(target: Path, progress: Callable[..., Any]) -> dict[str, Any] | None:
     """Refuse unsafe labels or formation menus in every PLAY book on the image.
 
@@ -4081,7 +4092,7 @@ def validate_plan(plan: BuildPlan) -> list[str]:
             console_memory.normalize(memory)
         except ValueError as exc:
             return [str(exc)]
-        return console_memory.problems(plan, records=_roster_capacity_records(plan))
+        return console_memory.problems(plan, records=_requested_capacity_records(plan))
     return []
 
 
@@ -5009,6 +5020,8 @@ def _apply_roster_history(plan, target, receipt, progress):
 def _apply_draft_pick_ownership(plan, target, receipt, progress):
     if not plan.roster_edits:
         return
+    if _roster_fit_applies(plan):
+        return   # b780-m64b: the 64 MB roster fit drops this section (its XBE step takes the allocator's scale-out)
     document = _core_module("nfl2k5_roster_records").read_edits(Path(plan.roster_edits))
     pick_plan = document.get("draft_pick_ownership")
     if pick_plan is not None:
@@ -5023,6 +5036,8 @@ def _apply_draft_pick_ownership(plan, target, receipt, progress):
 def _apply_hback_roles(plan, target, receipt, progress):
     if not plan.roster_edits:
         return
+    if _roster_fit_applies(plan):
+        return   # b780-m64b: the 64 MB roster fit drops this section (its XBE step takes the allocator's scale-out)
     document = _core_module("nfl2k5_roster_records").read_edits(Path(plan.roster_edits))
     roles = document.get("hback_roles")
     if roles is not None:
@@ -5152,7 +5167,21 @@ def _apply_protection_calls(plan, target, receipt, progress):
 
 
 def _roster_capacity_records(plan):
-    """b778 fa4: records the paired arena writer must reserve for the dated free-agent plan."""
+    """b778 fa4: records the paired arena writer must reserve for the dated free-agent plan. b780-m64b: none for a 64 MB
+    build: it fits roster edits that ask for capacity growth to the original roster size instead (no arena growth, no
+    K128), in the dated refresh pass (_apply_roster_refresh)."""
+    if getattr(plan, "console_memory", 128) == 64:
+        return 0
+    return _requested_capacity_records(plan)
+
+
+def _roster_fit_applies(plan) -> bool:
+    """b780-m64b: a 64 MB build whose roster edits ask for capacity growth: they are fitted to the retail roster size."""
+    return getattr(plan, "console_memory", 128) == 64 and _requested_capacity_records(plan) > 0
+
+
+def _requested_capacity_records(plan):
+    """The capacity growth the plan's roster edits ask for (free_agent_capacity.records), whatever the target."""
     if not plan.roster_edits:
         return 0
     records = _core_module("nfl2k5_roster_records")
@@ -5250,8 +5279,27 @@ def _apply_roster_refresh(plan, target, receipt, progress):
         return
     if not plan.position_pools:
         raise ValueError("Dated roster refresh requires modern position pools")
+    refresh = document["roster_refresh"]
+    if _roster_fit_applies(plan):
+        # b780-m64b (coordinator 11/03: a 64 MB build keeps the 2026 rosters): the refresh is fitted to the retail roster
+        # size with M64A's retail fit, on the main roster this build has made from the user's own disc so far.
+        from . import nfl2k5_console_memory as console_memory
+        progress("Fitting the roster edits to the original game's roster size (64 MB)", 0, 0)
+        base = records.load_image(target).to_body()
+        try:
+            import hashlib
+            source_sha256 = hashlib.sha256(Path(plan.roster_edits).read_bytes()).hexdigest()
+            fitted, fit_receipt = console_memory.fit_roster_edits(document, base, source_sha256=source_sha256)
+        except (OSError, ValueError) as exc:
+            raise ValueError(f"The 64 MB build could not fit the roster edits to the original game's roster size: {exc}. "
+                             "Choose Console memory 128 MB, or roster edits that do not grow the roster file.") from exc
+        refresh = fitted["roster_refresh"]
+        receipt["steps"].append({"step": "roster_retail_fit", **fit_receipt})
+        note = console_memory.roster_fit_note(fit_receipt)
+        progress(note, 0, 0)
+        receipt.setdefault("user_notes", []).append(note)
     progress("Applying the dated roster refresh", 0, 0)
-    directive = {"schema": records.EDITS_SCHEMA, "edits": [], "roster_refresh": document["roster_refresh"]}
+    directive = {"schema": records.EDITS_SCHEMA, "edits": [], "roster_refresh": refresh}
     if document.get("created_history"):
         directive["created_history"] = document["created_history"]       # b779 fh1: after every identity exists
     if plan.espn25_more_moments or plan.historic_teams_quick_game:
@@ -6692,7 +6740,13 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             xbe, deadline_receipt = deadline.apply(xbe)
             _write_xbe_bytes(target, xbe)
         elif deadline_state == "applied":
-            deadline_receipt = {"already_applied": True}
+            # b780-season1: the pending-trade purge and the deadline inbox story still read the retail week on
+            # images moved by a two-site version (v0.7 to v0.9); move both to Week 9 as well (idempotent)
+            xbe, followups = deadline.repair_followups(xbe)
+            deadline_receipt = {"already_applied": True,
+                                "followups": {k: v for k, v in followups.items() if k != "edits"}}
+            if not followups["already_applied"]:
+                _write_xbe_bytes(target, xbe)
         else:
             raise ValueError(f"trade-deadline sites are {deadline_state}; refusing")
         season_receipt = {**season_receipt,

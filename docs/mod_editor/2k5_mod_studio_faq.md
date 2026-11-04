@@ -78,8 +78,9 @@ expect.
 The Studio can make a disc for 64 MB machines, such as an original Xbox console and hakuX:
 
 1. In **Build & Share**, open the **Share** tab. Set **Build for** to **64 MB, original Xbox and Android hakuX
-   (experimental, estimated, not yet tested on a real Xbox or hakuX)**, then click **Customize SOFTDRINK 2K28…**. (To start
-   from your own selection instead, open the **Build** tab and set **Console memory** there.)
+   (experimental, estimated, not yet tested on a real Xbox or hakuX)**, then click **Customize SOFTDRINK 2K28…**. The **Build**
+   tab opens with the pack's art and options and the recommended 64 MB set already applied. (To start from your own
+   selection instead, open the **Build** tab and set **Console memory** there.)
 2. On the **Build** tab, **Console memory** now reads 64 MB. Every option that needs 128 MB or the real Xbox kernel is off
    and greyed out, with the reason beside it, for example the three 128 MB memory options, Guardian caps, 16 reserves, the
    two extra created teams and the Hi-res pack. The start-up checks for 128 MB and the 4627 BIOS are left out too.
@@ -89,8 +90,11 @@ The Studio can make a disc for 64 MB machines, such as an original Xbox console 
    and names what to turn off. When the line says the selection fits with the default uniforms but a player-picked
    alternate kit at the heaviest stadium may not fit, the disc is made with that warning: if a game loops on the stadium
    shots, use the default uniforms.
-4. The pack's 2026 rosters make the roster file bigger, which needs 128 MB, so untick **Include exported ★ Rosters edits**
-   for now. This route keeps the pack's art and the options that fit.
+4. The pack's 2026 rosters stay. At 128 MB they make the roster file bigger; at 64 MB the build fits them to the original
+   game's roster size instead. What is dropped: the free agents beyond the original game's count, and franchise draft-pick
+   ownership and the backfield labels fall back to the 2004 game's (the Player Card champions page also starts empty).
+   The build summary lists how many free agents were kept. This route keeps the pack's art, the 2026 rosters and the
+   options that fit.
 
 The 64 MB build is experimental, estimated, not yet tested on a real Xbox or hakuX: its memory numbers come from a model,
 not a measurement on a console. We cannot fix hakuX itself. For the full SOFTDRINK experience, use xemu at 128 MiB.

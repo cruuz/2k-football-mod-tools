@@ -30,9 +30,14 @@ from PyQt5.QtWidgets import (
     QCheckBox, QLabel, QLayout, QMessageBox, QSizePolicy, QStyle, QStyleOptionButton, QToolButton,
     QVBoxLayout, QWidget,
 )
+from PyQt5.QtWidgets import QDialog, QHBoxLayout, QPushButton, QTextBrowser  # b780-uxfix: the help window
 
 #: The compatibility line every executable-patch page shows once.
 XEMU_LINE = "For xemu; original Xbox support is not provided."
+
+#: b780-uxfix: where the two xemu settings a SOFTDRINK 2K28 disc needs are set (the Disc ready box and the Help page).
+XEMU_SETUP_STEPS = ("Before you play, once, in xemu: open Machine > Settings > System, set System Memory to 128 MiB "
+                    "and Flash ROM (BIOS) to your Complex 4627 file, then close xemu and open it again.")
 
 #: The qualifier next to a change nobody has watched in-game yet.
 NOT_TESTED = "Not yet tested in-game"
@@ -306,6 +311,88 @@ class WrappedLabel(QLabel):
         self.updateGeometry()
 
 
+class ElidedStatusLabel(WrappedLabel):
+    """A footer message that never sets the footer's size: it wraps to at most ``max_lines`` lines, then "…".
+
+    b780-uxfix: the footer status was a wrapped label beside the buttons and took whatever width
+    they left. At 1280x720 that was a one-letter column, and the footer grew to about 210 px over
+    the page. This label keeps the whole message in ``text()`` and in its tooltip, shows what fits
+    in its lines, and reserves only the height of the lines it shows.
+    """
+
+    #: The narrowest the message column may be squeezed to.
+    MIN_WIDTH = 240
+
+    def __init__(self, text: str = "", parent: QWidget | None = None, *, max_lines: int = 2) -> None:
+        self._full_text = ""
+        self._max_lines = max(1, int(max_lines))
+        super().__init__("", parent)
+        self.setWordWrap(False)          # the lines are folded here, to the width the label has
+        self.setTextFormat(Qt.PlainText)
+        self.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Fixed)
+        self.setMinimumWidth(self.MIN_WIDTH)
+        self.setText(text)
+
+    def text(self) -> str:  # type: ignore[override]
+        return self._full_text
+
+    def shown_text(self) -> str:
+        """What is on screen (the message, or its first lines ending in "…")."""
+        return QLabel.text(self)
+
+    def setText(self, text: str) -> None:  # type: ignore[override]
+        self._full_text = str(text)
+        self.setToolTip(self._full_text)
+        self._refit()
+
+    def _lines(self, width: int) -> list[str]:
+        metrics = self.fontMetrics()
+        lines: list[str] = []
+        for paragraph in self._full_text.split("\n"):
+            current = ""
+            for word in paragraph.split(" "):
+                trial = word if not current else current + " " + word
+                if current and metrics.horizontalAdvance(trial) > width:
+                    lines.append(current)
+                    current = word
+                else:
+                    current = trial
+            lines.append(current)
+        if len(lines) > self._max_lines:
+            # the last line shown carries the rest of the message, cut with "…" where it runs out
+            lines = lines[: self._max_lines - 1] + [" ".join(lines[self._max_lines - 1:])]
+        return [metrics.elidedText(line, Qt.ElideRight, width) for line in lines]
+
+    def _refit(self) -> None:
+        width = max(1, self.contentsRect().width() - max(0, self.indent()))
+        shown = "\n".join(self._lines(width))
+        if shown != QLabel.text(self):
+            lines_before = QLabel.text(self).count("\n")
+            QLabel.setText(self, shown)
+            if shown.count("\n") != lines_before:
+                self.updateGeometry()
+
+    def _wrapped_height(self, width: int) -> int:
+        margins = self.contentsMargins()
+        lines = max(1, QLabel.text(self).count("\n") + 1)
+        return self.fontMetrics().lineSpacing() * lines + margins.top() + margins.bottom()
+
+    def sizeHint(self) -> QSize:  # type: ignore[override]
+        return QSize(self.MIN_WIDTH, self._wrapped_height(self.width()))
+
+    def minimumSizeHint(self) -> QSize:  # type: ignore[override]
+        return QSize(self.MIN_WIDTH, self._wrapped_height(self.width()))
+
+    def resizeEvent(self, event) -> None:  # type: ignore[no-untyped-def]
+        QLabel.resizeEvent(self, event)
+        self._refit()
+
+    def changeEvent(self, event) -> None:  # type: ignore[no-untyped-def]
+        super().changeEvent(event)
+        if event.type() in (QEvent.FontChange, QEvent.StyleChange):
+            self._refit()
+
+
 class FlowLayout(QLayout):
     """Lays widgets left to right and wraps to a new line when the width runs out.
 
@@ -403,14 +490,22 @@ class WrappingCheckBox(QCheckBox):
         return self.fontMetrics().horizontalAdvance(text.replace("&&", "\0").replace("&", "").replace("\0", "&"))
 
     def _chrome_width(self) -> int:
-        """Indicator, spacing and padding: the width of the box that is not caption."""
+        """Indicator, spacing and padding: the width of the box that is not caption.
+
+        b780-uxfix: never through ``sizeHint()``. ``sizeHint()`` asks for this width, so a box laid out
+        narrower than its indicator (no caption room yet) went round the two forever: 215 RecursionError
+        reports and about 51 MB of errors.log on every Gameplay page visit. The style measures the chrome
+        on its own: the size of a check box whose caption is zero pixels wide.
+        """
         option = QStyleOptionButton()
         self.initStyleOption(option)
-        option.rect = self.rect() if self.width() > 0 else option.rect
-        contents = self.style().subElementRect(QStyle.SE_CheckBoxContents, option, self)
-        if self.width() > 0 and contents.width() > 0:
-            return max(0, self.width() - contents.width())
-        return self.sizeHint().width() - self._measure(self._shown_text.split("\n")[0]) if self._shown_text else 24
+        style = self.style()
+        if self.width() > 0:
+            option.rect = self.rect()
+            contents = style.subElementRect(QStyle.SE_CheckBoxContents, option, self)
+            if contents.width() > 0:
+                return max(0, self.width() - contents.width())
+        return max(0, style.sizeFromContents(QStyle.CT_CheckBox, option, QSize(0, 0), self).width())
 
     def _wrapped(self, available: int) -> str:
         lines: list[str] = []
@@ -488,6 +583,102 @@ def disc_next_steps(target: str | Path, console_memory: int = 128) -> str:
                 "In the game, load the disc roster, then start a fresh franchise. "
                 "An existing franchise keeps its saved roster.\n" + NEXT_STEPS_64)
     return text
+
+
+class MarkdownHelpDialog(QDialog):
+    """A packaged Markdown help page shown inside the Studio (b780-uxfix).
+
+    Links to other packaged pages open here, ``#anchors`` scroll, and web links open in the browser.
+    The window is not modal, so the page can stay open beside the Studio while you follow it.
+    """
+
+    def __init__(self, parent: QWidget | None = None) -> None:
+        super().__init__(parent)
+        self._path: Path | None = None
+        self.setModal(False)
+        layout = QVBoxLayout(self)
+        self.browser = QTextBrowser(self)
+        self.browser.setOpenLinks(False)
+        self.browser.anchorClicked.connect(self._follow)
+        self.browser.setAccessibleName("Help page")
+        layout.addWidget(self.browser, 1)
+        close = QPushButton("Close", self)
+        close.clicked.connect(self.close)
+        row = QHBoxLayout()
+        row.addStretch(1)
+        row.addWidget(close)
+        layout.addLayout(row)
+        self.resize(860, 680)
+
+    @property
+    def path(self) -> Path | None:
+        return self._path
+
+    def load(self, path: str | Path) -> None:
+        target = Path(path)
+        text = target.read_text(encoding="utf-8")
+        self._path = target
+        self.browser.setSearchPaths([str(target.parent)])
+        if hasattr(self.browser, "setMarkdown"):
+            self.browser.setMarkdown(text)
+        else:  # Qt before 5.14: the words still read, without formatting
+            self.browser.setPlainText(text)
+        heading = next((line[2:].strip() for line in text.splitlines() if line.startswith("# ")), target.stem)
+        self.setWindowTitle(f"{heading.replace('**', '')} - 2K5 Mod Studio help")
+
+    def _follow(self, url) -> None:  # type: ignore[no-untyped-def]
+        from PyQt5.QtGui import QDesktopServices
+        if url.scheme() in ("http", "https", "mailto"):
+            QDesktopServices.openUrl(url)
+            return
+        if not url.path() and url.fragment():
+            self.browser.scrollToAnchor(url.fragment())
+            return
+        if self._path is not None and url.scheme() in ("", "file"):
+            target = Path(url.toLocalFile()) if url.isLocalFile() else self._path.parent / url.path()
+            if target.suffix.lower() == ".md" and target.is_file():
+                self.load(target)
+                if url.fragment():
+                    self.browser.scrollToAnchor(url.fragment())
+                return
+        QDesktopServices.openUrl(url)
+
+
+def show_in_folder(path: str | Path) -> bool:
+    """Open the folder that holds ``path`` in the file manager (b780-uxfix: Disc ready's Show in folder)."""
+
+    from PyQt5.QtCore import QUrl
+    from PyQt5.QtGui import QDesktopServices
+    target = Path(path)
+    return bool(QDesktopServices.openUrl(QUrl.fromLocalFile(str(target.parent if target.suffix else target))))
+
+
+def show_disc_ready(parent: QWidget | None, title: str, text: str, disc: str | Path, *, play=None) -> str:
+    """The Disc ready box: [Play in xemu] when ``play`` is given, [Show in folder] and [Close].
+
+    b780-uxfix: the box had only OK, so the next step (find the file, or start it) meant hunting through
+    folders or the footer. Returns which button was used: "play", "folder" or "close".
+    """
+
+    box = QMessageBox(parent)
+    box.setIcon(QMessageBox.Information)
+    box.setWindowTitle(title)
+    box.setText(text)
+    box.setTextInteractionFlags(Qt.TextSelectableByMouse)
+    play_button = box.addButton("Play in xemu", QMessageBox.AcceptRole) if play is not None else None
+    folder_button = box.addButton("Show in folder", QMessageBox.ActionRole)
+    close_button = box.addButton(QMessageBox.Close)
+    box.setDefaultButton(play_button or close_button)
+    box.setEscapeButton(close_button)
+    box.exec_()
+    clicked = box.clickedButton()
+    if play_button is not None and clicked is play_button:
+        play()
+        return "play"
+    if clicked is folder_button:
+        show_in_folder(disc)
+        return "folder"
+    return "close"
 
 
 class Details(QWidget):

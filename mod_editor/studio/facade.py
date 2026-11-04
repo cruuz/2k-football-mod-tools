@@ -4015,7 +4015,7 @@ class Nfl2k5StudioFacade:
     def _require_text_catalog(self) -> Nfl2k5TextCatalog:
         if self._text_catalog is None:
             raise ValidationError(
-                "Load your NFL 2K5 XISO before browsing or editing text."
+                "Open your NFL 2K5 game file before browsing or editing text."
             )
         return self._text_catalog
 
