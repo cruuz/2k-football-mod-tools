@@ -26,7 +26,9 @@ V09_ROST = Path(os.environ.get("NFL2K5_V09_ROST_BODY", "") or "missing")
 def club_backs(body: bytes, club: int = 0):
     doc = rr.RosterDocument(body)
     slots = doc.team_players(club)
-    backs = [p for p in slots if p.record.values["position"] == tdb.HB]
+    # b780-int (rst2): the candidates are the club's backs on a locked chart row, as the default picks them (an injured
+    # player the refresh put back at the overflow row is out)
+    backs = tdb._locked(slots, tdb.HB)
     side = sorted(backs, key=lambda p: (p.record.values["depth_side"], slots.index(p)))
     return doc, backs, side
 
@@ -174,8 +176,8 @@ class ReleasedRosterTests(unittest.TestCase):
         before, after = rr.RosterDocument(body), rr.RosterDocument(out)
         for club in tdb.CLUBS:
             slots_b, slots_a = before.team_players(club), after.team_players(club)
-            wr_b = [p for p in slots_b if p.record.values["position"] == tdb.WR]
-            wr_a = [p for p in slots_a if p.record.values["position"] == tdb.WR]
+            wr_b = tdb._locked(slots_b, tdb.WR)                            # b780-int (rst2): locked rows, as the default
+            wr_a = tdb._locked(slots_a, tdb.WR)
             side_b, rank_b = tdb._orders(slots_b, wr_b)
             side_a, _ = tdb._orders(slots_a, wr_a)
             self.assertEqual([p.offset for p in side_a[:2]], [p.offset for p in side_b[:2]])   # Z and slot stay
