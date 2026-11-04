@@ -9,10 +9,10 @@
   "notes": "DESIGN: Brian Duker (Glenn / Weaver multiple); 2025 baseline MIA. Clean technique fronts (pb/v2/defense/design.py), retail 2K5 coverage scripts with native pre-snap alignment, situational formation ratings and CPU score bands fitted to the sourced 2025 coverage and blitz rates. Exact offense source required. Gameplay unwitnessed."
  },
  "base": {
-  "book_fingerprint": "ac6c6825e0f72febffb90bc313bf6389230f8ee0027de836e01f22dba37cdf64",
+  "book_fingerprint": "71f3c41a7a85ec88ddec9c4ad53d266de5152487939533d88ec6444318daa5b5",
   "donor_formation_count": 50,
   "donor_play_count": 270,
-  "donor_node_count": 2284
+  "donor_node_count": 2282
  },
  "budget": {
   "formations": 50,

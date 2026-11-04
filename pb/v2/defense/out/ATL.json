@@ -1934,13 +1934,13 @@
  "receipt": {
   "team": "ATL",
   "offense_pack": "data/playbooks/softdrink_atl_modern.2k5book",
-  "offense_pack_sha256": "9acc4753f8b23fc5b79d26daef4e8a7f516833f0b17da36cb4860d5c08cc20fe",
-  "source_fingerprint": "474731ef27e785f8a08cccb88f78c7470adcdc68270400d8a22796251f1333d0",
-  "replacement_sha256": "4714b44baf446455d5736da8c51318680f83b17c46c80f0e41cb3fddac080c92",
+  "offense_pack_sha256": "a8926ca9e86ce691def80f477d3ddeaa116c6031f498332d92114315a696da9f",
+  "source_fingerprint": "14a9010430dc508227652643cc7a9b1171c8a02b044c3f3751d731811426b474",
+  "replacement_sha256": "4e77617a5a414c303e85234885279269005a329794d612a68223442f433e059d",
   "semantic_sha256": "ebed333bc545b10ba4a7c3e3cd990e1cbf8df557ca9fd370e389d278ff151418",
   "plays": 64,
   "formations": 4,
-  "nodes": 2715,
+  "nodes": 2713,
   "node_capacity": 3500,
   "formation_count": 50,
   "play_count": 270,
@@ -1948,10 +1948,10 @@
   "band_loss": 0.11054,
   "spy_play": null,
   "native_scoring_faults": 0,
-  "name_pool_units": 5053,
+  "name_pool_units": 5025,
   "name_pool_capacity": 5088,
   "name_mode": 0,
   "pack": "data/playbooks/softdrink_atl_defense.2k5book",
-  "pack_sha256": "9d5e374123397387d5a906f16b47c963a2ad4041b5641813f61f66a03ff975ec"
+  "pack_sha256": "4094c2e1733fe82b58d8318c1c15462b9b5baf41695f41be5d3fc1dd2e0bd022"
  }
 }

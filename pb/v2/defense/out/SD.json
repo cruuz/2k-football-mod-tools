@@ -491,7 +491,7 @@
   {
    "play": 150,
    "appended": false,
-   "name": "Cover 3 Sky",
+   "name": "Cover 3 Sky Strong",
    "component": "coverage",
    "concept": "Cover 3 Sky",
    "band": 3,
@@ -514,7 +514,7 @@
   {
    "play": 151,
    "appended": false,
-   "name": "Cover 6 Flip",
+   "name": "Cover 6 Split",
    "component": "coverage",
    "concept": "Cover 6",
    "band": 3,
@@ -537,7 +537,7 @@
   {
    "play": 152,
    "appended": false,
-   "name": "2 Read Match",
+   "name": "Cover 2 Match",
    "component": "coverage",
    "concept": "Cover 2 Hard",
    "band": 3,
@@ -560,7 +560,7 @@
   {
    "play": 153,
    "appended": false,
-   "name": "Cover 3 Buzz",
+   "name": "Cover 3 Buzz Weak",
    "component": "coverage",
    "concept": "Cover 3 Buzz",
    "band": 3,
@@ -606,7 +606,7 @@
   {
    "play": 155,
    "appended": false,
-   "name": "Cover 3 Sky Bail",
+   "name": "Cover 3 Sky Strong Bail",
    "component": "coverage",
    "concept": "Cover 3 Sky",
    "band": 3,
@@ -629,7 +629,7 @@
   {
    "play": 156,
    "appended": false,
-   "name": "Cover 6 Split",
+   "name": "Cover 6 Flip",
    "component": "coverage",
    "concept": "Cover 6",
    "band": 3,
@@ -673,7 +673,7 @@
   {
    "play": 158,
    "appended": false,
-   "name": "Cover 3 Buzz Weak",
+   "name": "Cover 3 Buzz Weak Bail",
    "component": "coverage",
    "concept": "Cover 3 Buzz",
    "band": 3,
@@ -696,7 +696,7 @@
   {
    "play": 159,
    "appended": false,
-   "name": "Quarters",
+   "name": "Cover 4 Quarters",
    "component": "coverage",
    "concept": "Cover 4 Quarters",
    "band": 3,
@@ -742,7 +742,7 @@
   {
    "play": 161,
    "appended": false,
-   "name": "Cover 3 Cloud",
+   "name": "Cover 3 Cloud Strong",
    "component": "coverage",
    "concept": "Cover 3 Cloud",
    "band": 3,
@@ -811,7 +811,7 @@
   {
    "play": 164,
    "appended": false,
-   "name": "Cover 1 Rat",
+   "name": "Cover 1 Rat Press",
    "component": "coverage",
    "concept": "Cover 1 Robber",
    "band": 3,
@@ -834,7 +834,7 @@
   {
    "play": 165,
    "appended": false,
-   "name": "Creeper Mike",
+   "name": "Sim Pressure Mike",
    "component": "coverage",
    "concept": "Sim Pressure 3",
    "band": 3,
@@ -855,7 +855,7 @@
   {
    "play": 166,
    "appended": false,
-   "name": "Cover 3 Buzz Bail",
+   "name": "Cover 3 Buzz",
    "component": "coverage",
    "concept": "Cover 3 Buzz",
    "band": 3,
@@ -878,7 +878,7 @@
   {
    "play": 167,
    "appended": false,
-   "name": "Zero Blitz",
+   "name": "Cover 0 Double A Blitz",
    "component": "coverage",
    "concept": "Cover 0 Blitz",
    "band": 3,
@@ -901,7 +901,7 @@
   {
    "play": 168,
    "appended": false,
-   "name": "2 Fire Corner",
+   "name": "Cover 2 Corner Fire",
    "component": "coverage",
    "concept": "Cover 2 Fire",
    "band": 3,
@@ -924,7 +924,7 @@
   {
    "play": 169,
    "appended": false,
-   "name": "Cover 4 Drop",
+   "name": "Quarters Drop 8",
    "component": "coverage",
    "concept": "Cover 4 Quarters",
    "band": 3,
@@ -991,7 +991,7 @@
   {
    "play": 172,
    "appended": false,
-   "name": "Rotate 3 Cloud",
+   "name": "Rotate 3 Cloud Strong",
    "component": "coverage",
    "concept": "Cover 3 Cloud",
    "band": 3,
@@ -1042,7 +1042,7 @@
   {
    "play": 174,
    "appended": false,
-   "name": "Cover 6 Flip 2",
+   "name": "Cover 6 Split 2",
    "component": "coverage",
    "concept": "Cover 6",
    "band": 3,
@@ -1153,7 +1153,7 @@
   {
    "play": 179,
    "appended": false,
-   "name": "Cover 3 Cloud Bail",
+   "name": "Cover 3 Cloud Weak Bail",
    "component": "coverage",
    "concept": "Cover 3 Cloud",
    "band": 3,
@@ -1176,7 +1176,7 @@
   {
    "play": 180,
    "appended": false,
-   "name": "Cover 1 Man",
+   "name": "Cover 1 Man Off",
    "component": "coverage",
    "concept": "Cover 1",
    "band": 3,
@@ -1197,7 +1197,7 @@
   {
    "play": 181,
    "appended": false,
-   "name": "Cover 4 Quarters",
+   "name": "Quarters",
    "component": "coverage",
    "concept": "Cover 4 Quarters",
    "band": 3,
@@ -1239,7 +1239,7 @@
   {
    "play": 183,
    "appended": false,
-   "name": "Cover 0 Max",
+   "name": "Cover 0 Nickel Blitz",
    "component": "coverage",
    "concept": "Cover 0 Blitz",
    "band": 3,
@@ -1310,7 +1310,7 @@
   {
    "play": 186,
    "appended": false,
-   "name": "2 Fire Mike",
+   "name": "Cover 2 Mike Fire",
    "component": "coverage",
    "concept": "Cover 2 Fire",
    "band": 3,
@@ -1331,7 +1331,7 @@
   {
    "play": 187,
    "appended": false,
-   "name": "Rotate 3 Sky",
+   "name": "Rotate 3 Sky Strong",
    "component": "coverage",
    "concept": "Cover 3 Sky",
    "band": 3,
@@ -1362,7 +1362,7 @@
   {
    "play": 188,
    "appended": false,
-   "name": "Cover 6 Flip 3",
+   "name": "Cover 6 Split 3",
    "component": "coverage",
    "concept": "Cover 6",
    "band": 3,
@@ -1384,7 +1384,7 @@
   {
    "play": 189,
    "appended": false,
-   "name": "Cover 3 Cloud Strong",
+   "name": "Cover 3 Cloud Strong Bail",
    "component": "coverage",
    "concept": "Cover 3 Cloud",
    "band": 3,
@@ -1406,7 +1406,7 @@
   {
    "play": 190,
    "appended": false,
-   "name": "Cover 1 Hole",
+   "name": "Cover 1 Man",
    "component": "coverage",
    "concept": "Cover 1",
    "band": 3,
@@ -1493,7 +1493,7 @@
   {
    "play": 194,
    "appended": false,
-   "name": "Cover 1 Man Off",
+   "name": "Cover 1 Man Lurk",
    "component": "coverage",
    "concept": "Cover 1",
    "band": 1,
@@ -1514,7 +1514,7 @@
   {
    "play": 195,
    "appended": false,
-   "name": "Creeper Mike Rotate",
+   "name": "Sim Pressure Mike Rotate",
    "component": "coverage",
    "concept": "Sim Pressure 3",
    "band": 3,
@@ -1543,7 +1543,7 @@
   {
    "play": 196,
    "appended": false,
-   "name": "Rotate 3 Cloud Bail",
+   "name": "Rotate 3 Cloud Strong Bail",
    "component": "coverage",
    "concept": "Cover 3 Cloud",
    "band": 2,
@@ -1572,7 +1572,7 @@
   {
    "play": 197,
    "appended": false,
-   "name": "Creeper Corner",
+   "name": "Sim Pressure Corner",
    "component": "coverage",
    "concept": "Sim Pressure 3",
    "band": 1,
@@ -1615,7 +1615,7 @@
   {
    "play": 199,
    "appended": false,
-   "name": "Cover 3 Buzz Weak Bail",
+   "name": "Cover 3 Buzz Bail",
    "component": "coverage",
    "concept": "Cover 3 Buzz",
    "band": 1,
@@ -1636,7 +1636,7 @@
   {
    "play": 200,
    "appended": false,
-   "name": "2 Fire Double",
+   "name": "Cover 2 Double Fire",
    "component": "coverage",
    "concept": "Cover 2 Fire",
    "band": 3,
@@ -1657,7 +1657,7 @@
   {
    "play": 201,
    "appended": false,
-   "name": "Cover 0 Nickel Blitz",
+   "name": "Zero Blitz",
    "component": "coverage",
    "concept": "Cover 0 Blitz",
    "band": 3,
@@ -1678,7 +1678,7 @@
   {
    "play": 202,
    "appended": false,
-   "name": "Cover 0 Safety Off",
+   "name": "Cover 0 Safety Blitz",
    "component": "coverage",
    "concept": "Cover 0 Blitz",
    "band": 3,
@@ -1751,7 +1751,7 @@
   {
    "play": 205,
    "appended": false,
-   "name": "Cover 2 Mike Fire",
+   "name": "2 Fire Mike",
    "component": "coverage",
    "concept": "Cover 2 Fire",
    "band": 1,
@@ -1772,7 +1772,7 @@
   {
    "play": 206,
    "appended": false,
-   "name": "Quarters 2",
+   "name": "Cover 4 Quarters 2",
    "component": "coverage",
    "concept": "Cover 4 Quarters",
    "band": 1,
@@ -1919,7 +1919,7 @@
   {
    "play": 213,
    "appended": false,
-   "name": "Quarters 3",
+   "name": "Cover 4 Quarters 3",
    "component": "coverage",
    "concept": "Cover 4 Quarters",
    "band": 2,
@@ -1940,7 +1940,7 @@
   {
    "play": 214,
    "appended": false,
-   "name": "Cover 1 Man Lurk",
+   "name": "Cover 1 Hole",
    "component": "coverage",
    "concept": "Cover 1",
    "band": 3,
@@ -2076,10 +2076,10 @@
  "receipt": {
   "team": "SD",
   "offense_pack": "data/playbooks/softdrink_sd_modern.2k5book",
-  "offense_pack_sha256": "5916200aea169b007b720f0e0dba88cc3509371a1210f2762e0784615cf68bd7",
-  "source_fingerprint": "c2ff9574a3eaef7e09e81063350aab345ade4e1fc3f8723cd753467876c352d2",
-  "replacement_sha256": "b688dac0f236cc959e02204782fb15940000d483864bd731da85ddf3ead418bb",
-  "semantic_sha256": "9622131f3923e9b3ea198806eda043e8a761608ff479ef03efa72b5df361a844",
+  "offense_pack_sha256": "748af70ff9bbbd78ccc922f9d8f880d06fabae4cbfdb2c51961cbbf7351c2c11",
+  "source_fingerprint": "ea2d8b3a00279e7fa79c1d7668dbafddd31fecbc5c915c1a1ea73d1df3acb689",
+  "replacement_sha256": "4b69e19de9b904bcbc9050c9db17f915eb0a17a4a10bdd42d95b1af82f12b453",
+  "semantic_sha256": "1905e8bb16d89c6b9648af1b6168c47710831d7cde59fc6ccd5578fc3176ad3a",
   "plays": 72,
   "formations": 4,
   "nodes": 3258,
@@ -2090,10 +2090,10 @@
   "band_loss": 0.62028,
   "spy_play": null,
   "native_scoring_faults": 0,
-  "name_pool_units": 4970,
+  "name_pool_units": 5084,
   "name_pool_capacity": 5088,
-  "name_mode": 1,
+  "name_mode": 0,
   "pack": "data/playbooks/softdrink_sd_defense.2k5book",
-  "pack_sha256": "aa2b9903437efe18d04b8cea7fdb7eace2c2198e1769034728a04a8c3c4e1023"
+  "pack_sha256": "d3e22564aae001f50b481c3a381a5dafd6e7c1faf068896c64ecb0dda8c95759"
  }
 }

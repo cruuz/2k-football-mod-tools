@@ -708,7 +708,7 @@ def main(argv=None) -> int:
         fields = ["team", "formation", "need", "play_id", "play", "old_play", "concept", "play_type", "home_formation", "tier",
                   "back_yd", "qb_yd", "exact_codes", "level", "action", "links_after"]
         with a.csv.open("w", newline="", encoding="utf-8") as fh:
-            w = csv.DictWriter(fh, fieldnames=fields)
+            w = csv.DictWriter(fh, fieldnames=fields, lineterminator="\n")
             w.writeheader()
             w.writerows(csv_rows)
     if a.json:

@@ -9,10 +9,10 @@
   "notes": "DESIGN: Chris Shula (Phillips / Staley / Morris multiple); 2025 baseline LA. Clean technique fronts (pb/v2/defense/design.py), retail 2K5 coverage scripts with native pre-snap alignment, situational formation ratings and CPU score bands fitted to the sourced 2025 coverage and blitz rates. Exact offense source required. Gameplay unwitnessed."
  },
  "base": {
-  "book_fingerprint": "b22a7ae7ccb7fa317abedc4cf4a947b5f1ad14b80dbb90e34c56a59b96562010",
+  "book_fingerprint": "df67b208abb6b094233cd645ff654031a6dbfa0326cc93f83806896045fef805",
   "donor_formation_count": 50,
   "donor_play_count": 269,
-  "donor_node_count": 2343
+  "donor_node_count": 2341
  },
  "budget": {
   "formations": 50,

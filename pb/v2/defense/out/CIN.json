@@ -1834,13 +1834,13 @@
  "receipt": {
   "team": "CIN",
   "offense_pack": "data/playbooks/softdrink_cin_modern.2k5book",
-  "offense_pack_sha256": "2378a99578bed986df9a09451d1d26d491fe4424daa4fbc2d5acc92362c2b13e",
-  "source_fingerprint": "3d380b92bd51356fce2f962ab4e68cf878eb2a694f0ce6eaa1489cb0bec58f43",
-  "replacement_sha256": "c7acc4f3364275062a3645d657a48273414f358ed90c4bd0c99362bd6aefb7a3",
+  "offense_pack_sha256": "0e2a69a6ab94f6e044da2961798f28021d70316c407622c39cce45ba669a2e90",
+  "source_fingerprint": "7558fa7e7bed5bd65911c6cc6335e586c4156339c050bdd6339f52635c0447a0",
+  "replacement_sha256": "679af4a397e49f6ce73e9ce1c85cf5a8fbd92ebde4172cf737766d2ce4d3c805",
   "semantic_sha256": "2cab68dbd3d8d1d92814daa65f7cb44cefc8c5550690fc0bbebdafe6f84332d6",
   "plays": 59,
   "formations": 4,
-  "nodes": 2772,
+  "nodes": 2774,
   "node_capacity": 3500,
   "formation_count": 50,
   "play_count": 270,
@@ -1848,10 +1848,10 @@
   "band_loss": 0.09877,
   "spy_play": null,
   "native_scoring_faults": 0,
-  "name_pool_units": 5050,
+  "name_pool_units": 5027,
   "name_pool_capacity": 5088,
   "name_mode": 0,
   "pack": "data/playbooks/softdrink_cin_defense.2k5book",
-  "pack_sha256": "b28dbfce182c5a2474b5211ea46a4aae2e06bfbad6652637cc97d33697c98fb6"
+  "pack_sha256": "2d28feb23f00e33e3b4ab99129a64edf8b86dd6e29d425a7d5058ef6a06c0272"
  }
 }

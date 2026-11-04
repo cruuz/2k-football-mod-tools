@@ -9,10 +9,10 @@
   "notes": "DESIGN: Mike Rutenberg (Saleh / Ulbrich four-down); 2025 baseline ATL. Clean technique fronts (pb/v2/defense/design.py), retail 2K5 coverage scripts with native pre-snap alignment, situational formation ratings and CPU score bands fitted to the sourced 2025 coverage and blitz rates. Exact offense source required. Gameplay unwitnessed."
  },
  "base": {
-  "book_fingerprint": "bff10a1b0123d16e3af8f18dfe96fe5b9536e33d4726951b781783aeb5d7b5ab",
+  "book_fingerprint": "e6a9e716c5d72ff79244b009d349758cd97f0ea07acdcc5bd4bda67767e89418",
   "donor_formation_count": 50,
   "donor_play_count": 269,
-  "donor_node_count": 2314
+  "donor_node_count": 2312
  },
  "budget": {
   "formations": 50,
