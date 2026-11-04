@@ -355,6 +355,41 @@ def roster_labels(roster):
     return out
 
 
+def retail_labels(rows, labels):
+    """{(asset code, style): retail (first, last)} for each era slot the roster labels with its era years while the
+    build leaves the kit at its retail look because the donor is absent (b780 m64kits).
+
+    Without ESPN Anniversary more moments there are no historic spare styles, so the NE 11 and BAL 1 kits stay retail
+    (ship10's 64 MB disc: 16H11/02H1 donor_absent) while the roster edits still label them 2017 and 2008-2025; the
+    uniform select then named the 1997-99 Ravens throwback "2008-2025". Such a slot gets its retail label back. A
+    slot with any composed or already applied side keeps the era label."""
+    states = {}
+    for _selector, _data, row in rows:
+        states.setdefault(row["id"], set()).add(row["state"])
+    out = {}
+    for recipe in recipes():
+        seen = states.get(recipe["id"], set())
+        key = (recipe["code"], recipe["style"])
+        if "donor_absent" in seen and not seen & {"composed", "applied"} and labels.get(key) == tuple(recipe["label"]):
+            out[key] = tuple(recipe["retail_pair"])
+    return out
+
+
+def relabel_roster(roster, wanted):
+    """The main ROST resource with the (first, last) year pairs of ``wanted`` written; every other byte kept."""
+    from . import nfl2k5_historic_styles as hs
+    require(roster[:4] == b"ROST", "unexpected main roster wrapper")
+    out = bytearray(roster)
+    records = {}
+    for at, code in hs.team_records(roster)[:32]:
+        records.setdefault(code, []).append(at)
+    for (code, style), pair in sorted(wanted.items()):
+        found = records.get(code, [])
+        require(len(found) == 1, f"the main roster has {len(found)} team records with asset code {code}")
+        struct.pack_into("<HH", out, 32 + found[0] + TEAM_TABLE + 4 * (style - 1), *pair)
+    return bytes(out)
+
+
 def _kit_task(task):
     """Worker: one composed kit. A pure function of the target, donor, parts and recipe bytes."""
     raw, donor, parts, recipe = task
@@ -518,6 +553,7 @@ def apply_to_image(path, retail_source):
                 retail_parts = _read_packages(original, retail_names)[2]
             require(set(retail_parts) == set(retail_names), "retail era kit parts absent from the source disc")
         rows = plan(kits, labels, retail_parts)
+        relabel = retail_labels(rows, labels)
         written = 0
         for selector, data, _row in rows:
             if data is None:
@@ -527,7 +563,16 @@ def apply_to_image(path, retail_source):
             image.write_segments(segments, data)
             require(image.read_segments(segments) == data, selector + " read-back differs")
             written += 1
+        if relabel:
+            segments = index.sub_extents(roster_entry, 0, roster_entry.size)
+            roster = image.read_segments(segments)
+            fixed = relabel_roster(roster, relabel)
+            image.write_segments(segments, fixed)
+            require(image.read_segments(segments) == fixed, "main roster read-back differs after the era labels")
+            require(all(roster_labels(fixed)[key] == pair for key, pair in relabel.items()), "era labels not written")
     receipts = [row for _selector, _data, row in rows]
     states = {row["state"] for row in receipts}
-    return dict(state="applied" if states & {"composed", "applied"} else "other_uniform", written=written,
-                runtime_witnessed=False, kits=receipts)
+    relabelled = [dict(code=code, style=style, label=list(pair)) for (code, style), pair in sorted(relabel.items())]
+    # retail labels written are an applied step too (mod_build records the step only when it is "applied")
+    state = "applied" if states & {"composed", "applied"} or relabelled else "other_uniform"
+    return dict(state=state, written=written, runtime_witnessed=False, kits=receipts, retail_labels=relabelled)
