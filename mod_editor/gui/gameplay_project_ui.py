@@ -151,6 +151,11 @@ class GameplayBuildLink:
             destination.setChecked(source.isChecked())
         finally:
             self.busy = False
+        # While `busy` was set, the destination page's own rules (a child that needs its parents, a rival that must go
+        # off) could tick or clear other boxes, and those toggles were dropped. Ticking ESPN scorebug effects on Game
+        # Fixes left Build with the scorebug and extra patch space ticked while Game Fixes showed both unticked. The
+        # Build page owns the plan, so settle the Game Fixes boxes back to it: the two pages never disagree.
+        self.refresh_from_build()
         self.changed()
 
 

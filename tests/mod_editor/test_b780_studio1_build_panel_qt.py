@@ -102,5 +102,68 @@ class StandaloneOptionsAreWorkTests(_PanelCase):
         self.assertIn("Nothing is selected", panel.blocker())
 
 
+class GameFixesFollowsBuildTests(unittest.TestCase):
+    """Game Fixes and Build share one set of check boxes; the Build page owns the plan. A rule that fired on the other
+    page while a copy was in flight used to be dropped, so Game Fixes showed unticked boxes the plan had ticked."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.app = QApplication.instance() or QApplication([])
+
+    def setUp(self) -> None:
+        from mod_editor.gui.studio_qt import BrowseOnlyFacade, StudioMainWindow
+        required = ROOT / "reports/assets/nfl2k5_team_select_card_inventory.json"
+        if not required.exists():
+            raise unittest.SkipTest(f"Missing asset: {required}")
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        source = Path(self.tmp.name) / "retail.xiso.iso"
+        source.write_bytes(b"x" * 4096)
+        self.window = StudioMainWindow(eager_pages=True, facade=BrowseOnlyFacade(), offer_recovery=False)
+        self.addCleanup(self.app.processEvents)
+        self.addCleanup(self.window.deleteLater)
+        self.build, self.fixes = self.window._build_panel, self.window._gameplay_patches_panel
+        state = {key: "retail" for key in self.build._boxes()}
+        state.update(path=str(source), container="xiso", throw=None, speed_threshold="retail")
+        for panel in (self.build, self.fixes):
+            panel.apply_state(state)
+        self.app.processEvents()
+
+    def view(self, keys):
+        return ([self.build._boxes()[key].isChecked() for key in keys], [self.fixes.checks[key].isChecked() for key in keys])
+
+    def test_ticking_scorebug_effects_on_game_fixes_shows_what_the_plan_ticks(self) -> None:
+        keys = ("scorebug_runtime", "scorebug", "xbe_space")
+        self.fixes.checks["scorebug_runtime"].setChecked(True)
+        self.app.processEvents()
+        build_view, fixes_view = self.view(keys)
+        self.assertEqual(build_view, [True, True, True])          # the rule on Build ticks the scorebug and the space
+        self.assertEqual(fixes_view, build_view)
+        self.assertTrue(self.build.plan().xbe_space)
+        # and the other way: untick on Game Fixes; the parents stay on Build (they may serve other options) and both agree
+        self.fixes.checks["scorebug_runtime"].setChecked(False)
+        self.app.processEvents()
+        build_view, fixes_view = self.view(keys)
+        self.assertEqual(fixes_view, build_view)
+
+    def test_random_ticks_on_either_page_never_leave_the_pages_apart(self) -> None:
+        import random
+        shared = sorted(set(self.build._boxes()) & set(self.fixes.checks))
+        rng = random.Random(3)           # the seed that found it in five steps
+        for step in range(150):
+            if rng.random() < 0.06:
+                self.build.apply_preset(rng.choice(("softdrink_basic", "softdrink_advanced", "softdrink_experimental")))
+            else:
+                key = rng.choice(shared)
+                box = rng.choice((self.build._boxes()[key], self.fixes.checks[key]))
+                if not box.isEnabled():
+                    continue
+                box.setChecked(not box.isChecked())
+            self.app.processEvents()
+            apart = [(key, self.build._boxes()[key].isChecked(), self.fixes.checks[key].isChecked()) for key in shared
+                     if self.build._boxes()[key].isChecked() != self.fixes.checks[key].isChecked()]
+            self.assertEqual(apart, [], f"step {step}")
+
+
 if __name__ == "__main__":
     unittest.main()
