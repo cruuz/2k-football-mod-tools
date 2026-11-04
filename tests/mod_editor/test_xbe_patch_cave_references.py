@@ -623,7 +623,9 @@ class CaveReferenceTests(unittest.TestCase):
             # b778 int3: with ai8/kr1/pr1 the growable v4 pool carries the same
             # 1,128 owner-hook raw candidates into its new pages as v3; the
             # legacy-page gate above is still empty.
-            self.assertEqual(len(proof["encoded_references"]), 1128)
+            # b780 pres2 (Q51, 9b9d86f38): the sprite scorebug spills to the pool, which grows from 3 to 4 pages; the 12 raw
+            # candidates on the new page 0x150E000 are the whole change (test_nfl2k5_xbe_space pins the same 1,140).
+            self.assertEqual(len(proof["encoded_references"]), 1140)  # 1,128 + 12
         self.assertEqual(relocated.status(self.patched), "applied")
         from mod_editor.core import nfl2k5_scorebug_runtime as runtime
         self.assertEqual(runtime.status(self.patched), "applied")
