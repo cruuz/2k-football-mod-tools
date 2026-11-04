@@ -296,11 +296,13 @@ class RetailTests(unittest.TestCase):
         # gate and pin every raw candidate in the larger mappings; those
         # encodings are retained as unknown, never declared free retail code.
         self.assertEqual(evidence["legacy_encoded_references"], [])
-        self.assertEqual(len(evidence["encoded_references"]), 1128)  # b778-ai8: + the third-down owner page
+        # b780 pres2 (Q51, 9b9d86f38): the sprite scorebug spills whole to the v4 pool, which grows from 3 to 4 pages
+        # (beta61: 4,096 + 6,336 + 5,632 = 16,064 B); the 12 raw candidates on the new page 0x150E000 are the whole change.
+        self.assertEqual(len(evidence["encoded_references"]), 1140)  # 1,128 + 12; b778-ai8: + the third-down owner page
         import json
         self.assertEqual(hashlib.sha256(json.dumps(evidence["encoded_references"],
             separators=(',', ':')).encode()).hexdigest(),
-            "cab22ff3bf283ad487fafd116e98869f160197e405c86fdc9ac08fa730915b6e")
+            "a8499a16612a91c6cbe1d39303544319dc8a2f6c8c4e9c176eee4c767c212111")
         self.assertEqual(evidence["reference_policy"],
             "v3 adds loader mappings, never overwrites a retail cave; all raw encoding candidates retained; legacy pages retain zero-encoding gate")
         old = kickoff._offset(self.grown, kickoff.CAVE_VA, kickoff.CAVE_SIZE)
