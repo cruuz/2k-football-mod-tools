@@ -88,6 +88,65 @@ class DefaultThirdDownBackTests(unittest.TestCase):
             self.assertEqual(tdb.default_third_down_backs(body), (body, []))
 
 
+def with_receivers(speeds: list[int]) -> tuple[bytes, list[int]]:
+    """Club 0 with len(speeds) receivers ranked in list order, sides as the 2026 tools write them."""
+    doc = rr.RosterDocument(league_body())
+    players = doc.team_players(0)
+    for p in players:
+        if p.record.values["position"] == tdb.WR:
+            p.record.values["position"] = 9                     # no other receivers on this club
+    chosen = players[:len(speeds)]
+    for rank, (p, speed) in enumerate(zip(chosen, speeds)):
+        p.record.values.update(position=tdb.WR, depth_rank=rank, speed=speed,
+                               depth_side=min(rr.DEPTH_SIDE_FOR_RANK.get(rank, rank), rr.DEPTH_ROW_CAP))
+    return doc.to_body(normalise_commentary=False), [p.offset for p in chosen]
+
+
+def receiver_side_order(body: bytes, offsets: list[int]) -> list[int]:
+    """Side order as rank indexes (0 = WR1)."""
+    doc = rr.RosterDocument(body)
+    slots = doc.team_players(0)
+    wrs = [p for p in slots if p.record.values["position"] == tdb.WR]
+    side = sorted(wrs, key=lambda p: (p.record.values["depth_side"], slots.index(p)))
+    return [offsets.index(p.offset) for p in side]
+
+
+class DefaultGadgetTests(unittest.TestCase):
+    # the 2026 side order for six receivers: WR2, WR3, WR1, WR4, WR5, WR6 (rank indexes 1, 2, 0, 3, 4, 5)
+    def run_once(self, speeds):
+        body, offsets = with_receivers(speeds)
+        self.assertEqual(receiver_side_order(body, offsets), [1, 2, 0, 3, 4, 5])
+        out, rows = tdb.default_gadget_receivers(body)
+        self.assertEqual(tdb.default_gadget_receivers(out)[0], out)          # twice changes nothing
+        return receiver_side_order(out, offsets), rows[0]
+
+    def test_the_fastest_deep_receiver_becomes_the_gad(self):
+        order, row = self.run_once([80, 82, 81, 79, 95, 70])                # WR5 is the fastest
+        self.assertEqual(order, [1, 2, 0, 4, 3, 5])                         # Z, slot and row 2 unchanged
+        self.assertEqual((row["gad_rank"], row["exception"], row["changed"]), (5, False, True))
+
+    def test_a_fastest_x_moves_from_the_kick_return_row(self):
+        order, row = self.run_once([95, 82, 81, 79, 80, 70])                # WR1 (side row 2) is the fastest
+        self.assertEqual(order, [1, 2, 3, 0, 4, 5])                         # the old row-3 receiver takes row 2
+        self.assertEqual((row["gad_rank"], row["exception"]), (1, False))
+
+    def test_a_fastest_z_or_slot_receiver_defaults_the_gad_to_the_x(self):
+        for speeds in ([80, 95, 81, 79, 78, 70], [80, 82, 95, 79, 78, 70]):  # the Z, then WR3, is the fastest
+            order, row = self.run_once(speeds)
+            self.assertEqual(order[:2], [1, 2])                              # base-set side receivers unchanged
+            self.assertEqual(order[3], 0)                                    # GAD = WR1, the X
+            self.assertEqual((row["gad_rank"], row["exception"]), (1, True))
+
+    def test_the_current_gad_already_fastest_changes_nothing(self):
+        body, _ = with_receivers([80, 82, 81, 95, 78, 70])                  # WR4 is already side row 3
+        out, rows = tdb.default_gadget_receivers(body)
+        self.assertEqual((out, rows[0]["changed"], rows[0]["gad_rank"]), (body, False, 4))
+
+    def test_fewer_than_four_receivers_change_nothing(self):
+        body, _ = with_receivers([80, 82, 95])
+        self.assertEqual(tdb.default_gadget_receivers(body)[0], body)
+
+
 @unittest.skipUnless(V09_ROST.is_file(), "NFL2K5_V09_ROST_BODY (the released v0.9 roster body) required")
 class ReleasedRosterTests(unittest.TestCase):
     def test_every_club_gets_its_best_receiving_back_and_twice_changes_nothing(self):
@@ -105,6 +164,24 @@ class ReleasedRosterTests(unittest.TestCase):
         self.assertGreater(len(changes), 0)
         rows = [c for c in changes if c["third_down_back_rank"] != 1]
         self.assertTrue(all(c["receiving"] > c["starter_receiving"] for c in rows))
+
+    def test_both_defaults_in_one_pass(self):
+        body = V09_ROST.read_bytes()
+        out, report = tdb.default_special_rows(body)
+        self.assertEqual(tdb.default_special_rows(out)[0], out)
+        exceptions = [r["club"] for r in report["gadgets"] if r.get("exception")]
+        self.assertEqual(len(exceptions), 9)                                # the fastest WR is the Z or WR3
+        before, after = rr.RosterDocument(body), rr.RosterDocument(out)
+        for club in tdb.CLUBS:
+            slots_b, slots_a = before.team_players(club), after.team_players(club)
+            wr_b = [p for p in slots_b if p.record.values["position"] == tdb.WR]
+            wr_a = [p for p in slots_a if p.record.values["position"] == tdb.WR]
+            side_b, rank_b = tdb._orders(slots_b, wr_b)
+            side_a, _ = tdb._orders(slots_a, wr_a)
+            self.assertEqual([p.offset for p in side_a[:2]], [p.offset for p in side_b[:2]])   # Z and slot stay
+            fastest = min(wr_b, key=lambda p: (-tdb._speed(p), rank_b.index(p)))
+            want = rank_b[0] if club in exceptions else fastest
+            self.assertEqual(side_a[3].offset, want.offset)
 
 
 if __name__ == "__main__":

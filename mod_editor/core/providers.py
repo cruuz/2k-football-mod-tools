@@ -976,7 +976,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_scramble_blocking.py": "f3116c50b1c01913aab22fc3cc497d843afffee4ee47161e11ac5dc0bc3556f1",  # b780-cv7
         "mod_editor/core/nfl2k5_scramble_blocking_code.py": "658ec167085e6fc083ec3acde723db330280091624a413401c09fc3e73643611",  # b780-cv7
         "mod_editor/core/nfl2k5_audible_legend.py": "a441d13947fd09d7dcd82f79f80f66642e29148484b40fdab8525aee14161b20",  # b780-p3: imported by throw_tuning for the build union
-        "mod_editor/core/nfl2k5_lineup_roles.py": "4952bcadd9716e86a07b9df4a6aa5ab1b36675ebbf40250c8f41e074546bc059",  # b780 sub1: the SPECIAL third-down back + FB fallback (late owner)
+        "mod_editor/core/nfl2k5_lineup_roles.py": "d124d0d62cb3cec2aeecb3e79e14a612fe41f1de6c69e6895bb178ed73f872ec",  # b780 sub1: the SPECIAL third-down back + FB fallback (late owner)
         "mod_editor/core/nfl2k5_intro_autoskip.py": "6a9abe26bfb6552a2dd127ac628c7dbf04061d7d983e0e8d941c4ee0e6042f7b",  # b780-mem1: imported by throw_tuning for the build union
         "mod_editor/core/nfl2k5_preseason_warning.py": "44647523c32291820e98b2dad0a9c44af27fe6bca13626104551dc3647bcc6f2",  # b779-int1: imported by throw_tuning for the build union (693fe63a0)
         "mod_editor/core/nfl2k5_coach_carousel.py": "54925f33ea8d2aea6b3fe3499ca094465bdcf0c6a0d67fa3cc8407714fbd74ee",  # b780-c6: the coaching carousel (late owner, imported by throw_tuning)
