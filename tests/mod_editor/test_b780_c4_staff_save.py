@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import contextlib
 import io
+import os
 import struct
 import sys
 import tempfile
@@ -518,6 +519,77 @@ class RealFranchiseTests(unittest.TestCase):
         save.replace_head_coach(3, "Jonathan Christopher", "Hasselbeck-Longname", ["x" * 30, "y" * 20])
         after = texts(save)
         self.assertEqual([t for i, t in enumerate(after) if i != 3], [t for i, t in enumerate(before) if i != 3])
+
+
+class OtherTextTests(unittest.TestCase):
+    """b780 HUNT4: another string's text is not a pointer field.
+
+    The coach text check scans every dword of the arena for a pointer at a coach string. On every v0.8 and v0.9
+    franchise the created-club label "User A" sits right before the coach strings, and its "A" plus terminator read as
+    the dword 65: a "pointer" 64 bytes ahead, which is the second coach's first name, so Fire and hire refused every
+    new coach name ("some coach text is also used by another record"). Here a name string ends the same way just
+    before the first coach string."""
+
+    @staticmethod
+    def label_before_the_coach_text() -> bytes:
+        data = bytearray(synthetic_staff_franchise())
+        dword = STRINGS_AT - 0x40                      # the coach text starts at STRINGS_AT: 0x41 here aims at it
+        text_at = dword - 10                           # "User A": the "A" and the terminator fill that dword
+        text = "User A".encode("utf-16-le") + b"\0\0"
+        assert not any(data[text_at:text_at + len(text)])
+        data[text_at:text_at + len(text)] = text
+        player = fs.FranchiseSave(bytes(data)).player_offset(0)
+        point(data, player + 0x14, text_at)            # a real pointer field (a last name) aims at that text
+        assert struct.unpack_from("<i", data, dword)[0] == 0x41 and dword + 0x41 - 1 == STRINGS_AT
+        return bytes(data)
+
+    def test_a_label_ending_in_one_letter_does_not_block_a_new_coach(self) -> None:
+        save = fs.FranchiseSave(self.label_before_the_coach_text())
+        self.assertEqual(save.coach_text_problem(), "")
+        before = texts(save)
+        receipt = save.replace_head_coach(0, "Dan", "Quinn")
+        self.assertEqual(receipt["text"]["mode"], "in place")
+        self.assertEqual(save.coach_for_team(0).name, "Dan Quinn")
+        self.assertEqual(texts(save)[1:], before[1:])
+        self.assertEqual(save.player_name(0).split()[-2:], ["User", "A"])     # the other string keeps its text
+
+    def test_a_stray_reference_outside_any_text_still_refuses(self) -> None:
+        payload = synthetic_staff_franchise(shared_text=True)
+        save = fs.FranchiseSave(payload)
+        self.assertIn("used by another record", save.coach_text_problem())
+        with self.assertRaisesRegex(fs.FranchiseSaveError, "used by another record"):
+            save.replace_head_coach(0, "Dan", "Quinn")
+        self.assertEqual(save.to_bytes(), payload)
+
+    def test_a_real_second_pointer_from_a_table_still_refuses(self) -> None:
+        data = bytearray(self.label_before_the_coach_text())
+        save = fs.FranchiseSave(bytes(data))
+        point(data, save.player_offset(1) + 0x10, STRINGS_AT)    # a first name that IS the first coach string
+        save = fs.FranchiseSave(bytes(data))
+        with self.assertRaisesRegex(fs.FranchiseSaveError, "used by another record"):
+            save.replace_head_coach(0, "Dan", "Quinn")
+        self.assertEqual(save.to_bytes(), bytes(data))
+
+
+_V08_SAVE = Path(os.environ.get("NFL2K5_B780_V08_SAVE", "") or "/nonexistent")
+
+
+@unittest.skipUnless(_V08_SAVE.is_file(), "a v0.8 franchise SAVEGAME.DAT (NFL2K5_B780_V08_SAVE) is absent")
+class RealSoftdrinkFranchiseTests(unittest.TestCase):
+    """b780 HUNT4: a franchise saved by the released v0.8 game takes a new coach name."""
+
+    def test_fire_and_hire_a_new_person_on_a_v08_franchise(self) -> None:
+        payload = _V08_SAVE.read_bytes()
+        save = fs.FranchiseSave(payload)
+        self.assertEqual(save.coach_text_problem(), "")
+        before = texts(save)
+        index = save.head_coach_index(2)
+        save.replace_head_coach(2, "Hunt", "Fourcoach", ["Line one", "Line two"])
+        self.assertEqual(save.coach_for_team(2).name, "Hunt Fourcoach")
+        self.assertEqual([t for i, t in enumerate(texts(save)) if i != index],
+                         [t for i, t in enumerate(before) if i != index])
+        ps.validate_save(save.to_bytes())
+        self.assertEqual(_V08_SAVE.read_bytes(), payload)
 
 
 @unittest.skipUnless(F0.is_file(), f"private 8007Fran fixture missing under {FIXTURES}")

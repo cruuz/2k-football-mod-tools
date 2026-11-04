@@ -1241,6 +1241,46 @@ class FranchiseSave:
                  f"the coach's {label} uses a character the game cannot show; use letters, numbers and plain punctuation")
         return text
 
+    def _other_text_mask(self) -> bytearray | None:
+        """A mask over the save of the bytes that are text of the arena's strings: every string a relocated pointer
+        field aims at outside the tables and the history pool, read to its terminator.  None when the arena does not
+        decode (the coach text check then stays as strict as it was).
+
+        The coach text check scans every dword of the arena for a pointer at a coach string, and text is not a pointer
+        field.  A one-letter word at the end of a string reads as a small dword: the created-club label "User A" sits
+        right before the coach strings on every SOFTDRINK roster, and its "A" and terminator read as 65, a "pointer"
+        64 bytes ahead, which is the second coach's first name, so every v0.8 and v0.9 franchise refused a new coach
+        name.  Every pointer field the game relocates sits in a table or the root, never in this text, so a real
+        second reference to a coach string is still counted.
+        """
+
+        from . import nfl2k5_franchise_extension as ext
+        from . import nfl2k5_roster_arena as arena
+        from . import nfl2k5_save_rost as sr
+        data = bytes(self.buffer)
+        found = ext.layout(data)
+        try:
+            document = sr.decode(data[:found.native_size] if found is not None else data)
+            fields = arena.pointer_fields(document)
+        except (ValueError, struct.error):
+            return None
+        records = [(t.offset, t.offset + t.count * t.stride) for t in document.tables.values() if t.offset is not None]
+        if document.pool is not None:
+            records.append((document.pool, document.pool + 4 * document.pool_used))
+        mask = bytearray(len(data))
+        for field in fields:
+            value = struct.unpack_from("<i", data, field)[0]
+            target = field + value - 1
+            if (not value or target % 2 or not ARENA_ROOT <= target < self.arena_end
+                    or any(low <= target < high for low, high in records)):
+                continue
+            end = target
+            while end + 2 <= self.arena_end and data[end:end + 2] != b"\0\0":
+                end += 2
+            end = min(end + 2, self.arena_end)
+            mask[target:end] = b"\1" * (end - target)
+        return mask
+
     def _coach_text_layout(self) -> dict[str, Any]:
         """Where the 175 coach strings sit (35 records x first, last, three biography lines), or why they cannot move.
 
@@ -1278,6 +1318,7 @@ class FranchiseSave:
             cursor = target + 2 * len(text) + 2
         strings_end = cursor
         targets = {target for _at, target, _text in slots}
+        other_text = self._other_text_mask()
         words = (self.arena_end - ARENA_ROOT) // 4
         values = struct.unpack_from(f"<{words}i", self.buffer, ARENA_ROOT)
         hits: dict[int, int] = {}
@@ -1286,6 +1327,8 @@ class FranchiseSave:
                 field = ARENA_ROOT + 4 * k
                 if start <= field < strings_end:
                     continue                      # text bytes, not a pointer field
+                if other_text is not None and other_text[field]:
+                    continue                      # another string's text, not a pointer field either
                 target = field + value - 1
                 if target in targets:
                     hits[target] = hits.get(target, 0) + 1
