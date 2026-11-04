@@ -332,6 +332,88 @@ class RebuildOnlyDiscTests(_PanelCase):
                 self.assertIn("cannot build on top of this disc", fixes.write_button.toolTip())
 
 
+class MemoryLockMirrorTests(unittest.TestCase):
+    """At Console memory 64 MB Build greys out the options a 64 MB build cannot carry. Game Fixes still showed them enabled: a
+    click there looked like nothing, but was recorded on Build's locked box as a tick to bring back, and switching to 128 MB
+    then ticked it on both pages and put it in the plan."""
+
+    KEYS = ("reserves_16", "created_teams_extra", "guardian_overlay", "k128_memory", "k128_roster_heap", "k128_early")
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.app = QApplication.instance() or QApplication([])
+
+    def setUp(self) -> None:
+        from mod_editor.gui.build_panel_qt import BuildPanel
+        from mod_editor.gui.gameplay_patches_panel_qt import GameplayPatchesPanel
+        from mod_editor.gui.gameplay_project_ui import GameplayBuildLink
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        source = Path(self.tmp.name) / "retail.iso"
+        source.write_bytes(b"\0" * 4096)
+        self.build, self.fixes = BuildPanel(), GameplayPatchesPanel()
+        for panel in (self.build, self.fixes):
+            self.addCleanup(panel.deleteLater)
+        state = {key: "retail" for key in set(self.build._boxes()) | set(self.fixes.checks)}
+        state.update(path=str(source), container="xiso", throw=None, speed_threshold="retail")
+        self.build.apply_state(dict(state))
+        self.fixes._state = dict(state)
+        self.fixes.apply_state(dict(state))
+        self.build.target_field.setText(str(Path(self.tmp.name) / "out.iso"))
+        self.link = GameplayBuildLink(self.build, self.fixes, lambda: None)
+        self.keys = [key for key in self.KEYS if key in self.link.shared]
+        self.assertGreaterEqual(len(self.keys), 4)
+        self.app.processEvents()
+
+    def test_game_fixes_shows_build_s_lock_and_a_click_changes_nothing(self) -> None:
+        self.build.set_console_memory(64)
+        self.app.processEvents()
+        for key in self.keys:
+            build_box, fix_box = self.build._boxes()[key], self.fixes.checks[key]
+            self.assertFalse(build_box.isEnabled(), key)
+            self.assertFalse(fix_box.isEnabled(), key)                                    # was enabled
+            self.assertEqual(fix_box.toolTip(), build_box.toolTip(), key)
+            self.assertIn("Off for the 64 MB build", fix_box.toolTip(), key)
+            self.assertEqual(self.fixes.badges[key].text(), self.build._badges[key].text(), key)
+            self.assertFalse(self.fixes.badges[key].isHidden(), key)
+            fix_box.click()                                                               # a disabled box ignores a click
+            fix_box.setChecked(True)                                                      # and a stray programmatic tick is not copied
+            self.app.processEvents()
+            self.assertFalse(build_box.isChecked(), key)
+            self.assertFalse(fix_box.isChecked(), key)                                    # shown as the plan holds it
+        self.assertEqual(self.build._memory_ticks, set())                                 # nothing to bring back at 128 MB
+        plan = self.build.plan()
+        self.assertFalse(plan.reserves_16 or plan.guardian_overlay or plan.k128_memory or plan.created_teams_extra)
+        self.build.set_console_memory(128)
+        self.app.processEvents()
+        for key in self.keys:
+            self.assertFalse(self.build._boxes()[key].isChecked() or self.fixes.checks[key].isChecked(), key)
+
+    def test_switching_back_to_128_mb_gives_back_exactly_what_the_user_had(self) -> None:
+        before = {key: (self.fixes.checks[key].isEnabled(), self.fixes.checks[key].toolTip(), self.fixes.badges[key].text())
+                  for key in self.keys}
+        self.fixes.checks["reserves_16"].setChecked(True)                                 # the user's own choices, on Game Fixes
+        self.fixes.checks["guardian_overlay"].setChecked(True)
+        self.app.processEvents()
+        self.build.set_console_memory(64)
+        self.app.processEvents()
+        for key in self.keys:                                                             # taken away on both pages
+            self.assertFalse(self.build._boxes()[key].isChecked() or self.fixes.checks[key].isChecked(), key)
+            self.fixes.checks[key].click()
+        self.app.processEvents()
+        self.assertEqual(self.build._memory_ticks, {"reserves_16", "guardian_overlay"})
+        self.build.set_console_memory(128)
+        self.app.processEvents()
+        for key in self.keys:
+            want = key in ("reserves_16", "guardian_overlay")
+            self.assertEqual((self.build._boxes()[key].isChecked(), self.fixes.checks[key].isChecked()), (want, want), key)
+            self.assertEqual((self.fixes.checks[key].isEnabled(), self.fixes.checks[key].toolTip(), self.fixes.badges[key].text()),
+                             before[key], key)                                            # the box is handed back as it was
+        plan = self.build.plan()
+        self.assertTrue(plan.reserves_16 and plan.guardian_overlay)
+        self.assertFalse(plan.k128_memory or plan.created_teams_extra)
+
+
 class GameFixesNeedsUpdateTests(unittest.TestCase):
     """Game Fixes read the same disc as Build; on a v0.8 disc it said 'Unknown state.' with no badge for what Build calls Needs
     update, and its legacy tooltip talked about the beta 58-60 star for the draft AI and progression."""

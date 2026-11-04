@@ -502,6 +502,7 @@ class BuildPanel(QWidget):
     abilities_locks_changed = pyqtSignal(dict)  # rules v2 lock settings (runtime key names) for the Rosters page
     built = pyqtSignal(dict)   # the receipt of the copy just written (Share pre-fills from it)
     book_set_changed = pyqtSignal()   # modern/classic books or pack list edited here; the shell saves it and syncs Playbooks
+    memory_locks_changed = pyqtSignal()   # the 64 MB target locked or unlocked options (Game Fixes shows the same locks)
 
     def __init__(self, facade: object | None = None, parent: QWidget | None = None, *, available=None,
                  theme: str = "dark") -> None:
@@ -3435,6 +3436,7 @@ class BuildPanel(QWidget):
                         box.setChecked(True)
                 self._memory_ticks.clear()
             self._refresh_memory_display(target)
+            self.memory_locks_changed.emit()
         finally:
             self._memory_applying = False
 

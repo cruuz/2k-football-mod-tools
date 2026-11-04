@@ -404,6 +404,9 @@ class GameplayPatchesPanel(QWidget):
         self._pool = QThreadPool(self)
         self._task: _Task | None = None
         self._state: dict[str, object] | None = None
+        # b780 studio1: the 64 MB target locks options on Build; the link hands this page the same lock (key -> tooltip, badge)
+        self.memory_lock_for = None
+        self._memory_mirror: dict[str, tuple] = {}
         self.checks: dict[str, QCheckBox] = {}
         self._patches = tuple(patches)
         self._title = title
@@ -833,6 +836,31 @@ class GameplayPatchesPanel(QWidget):
         if path:
             self.my_career_setup_field.setText(path)
 
+    def _apply_memory_locks(self) -> None:
+        """Grey out here what Build's 64 MB target has greyed out, with Build's reason, and give it back at 128 MB exactly as it
+        was. Without it a click here was recorded on the locked Build box and came back on at 128 MB."""
+        provider = self.memory_lock_for
+        for key, box in self.checks.items():
+            info = provider(key) if provider is not None else None
+            badge = self.badges.get(key)
+            if info is not None:
+                if key not in self._memory_mirror:
+                    self._memory_mirror[key] = (box.isEnabled(), box.toolTip(),
+                                                badge.text() if badge is not None else None,
+                                                not badge.isHidden() if badge is not None else False)
+                box.setEnabled(False)
+                box.setToolTip(info[0])
+                if badge is not None:
+                    badge.setText(info[1])
+                    badge.setVisible(bool(info[1]))
+            elif key in self._memory_mirror:
+                enabled, tip, text, shown = self._memory_mirror.pop(key)
+                box.setEnabled(enabled)
+                box.setToolTip(tip)
+                if badge is not None and text is not None:
+                    badge.setText(text)
+                    badge.setVisible(shown)
+
     def _requirement_child_toggled(self, child, on):
         """Q60: a ticked child ticks the parents it needs that this page has."""
         if on:
@@ -1026,6 +1054,7 @@ class GameplayPatchesPanel(QWidget):
                                      and self._task is None and not self._reading
                                      and not self._playbook_blockers and not rebuild_only)
         self.write_button.setToolTip(rebuild_only or " ".join(self._playbook_blockers))
+        self._apply_memory_locks()
 
     def _choose_source(self) -> None:
         chosen, _f = QFileDialog.getOpenFileName(self, "Choose your game disc (.iso) or default.xbe", str(Path.home()), SOURCE_FILTER)
