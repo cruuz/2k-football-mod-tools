@@ -308,6 +308,7 @@ from mod_editor.core import nfl2k5_sim_realism as _sim_realism  # noqa: E402  b7
 from mod_editor.core import nfl2k5_coach_carousel as _coach_carousel  # noqa: E402  b780-c6
 from mod_editor.core import nfl2k5_standings_records as _standings_records  # noqa: E402  b780-j1
 from mod_editor.core import nfl2k5_audible_legend as _audible_legend  # noqa: E402  b780-p3
+from mod_editor.core import nfl2k5_injured_reserve as _injured_reserve  # noqa: E402  b780 IR1
 from mod_editor.core import nfl2k5_sim_stats as _sim_stats  # noqa: E402
 from mod_editor.core import nfl2k5_quick_long_release as _quick_long_release  # noqa: E402  b780-c-release
 from mod_editor.core import nfl2k5_option_defaults as _option_defaults  # noqa: E402  b779-df1
@@ -365,6 +366,8 @@ BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                  ("coach_carousel", _coach_carousel.BUILD_CAPTION, _coach_carousel.HELP_TEXT),  # b780-c6
                  ("standings_records", _standings_records.BUILD_CAPTION, _standings_records.HELP_TEXT),  # b780-j1
                  ("audible_legend", _audible_legend.BUILD_CAPTION, _audible_legend.HELP_TEXT),  # b780-p3
+                 ("modern_injured_reserve", _injured_reserve.BUILD_CAPTION, _injured_reserve.HELP_TEXT),  # b780 IR1
+                 ("injured_reserve_guard", _injured_reserve.GUARD_CAPTION, _injured_reserve.GUARD_HELP),  # b780 IR1 (Q66)
                  ("sim_stats", _sim_stats.BUILD_CAPTION, _sim_stats.HELP_TEXT),  # b778-sim1
                  ("quick_long_release", _quick_long_release.BUILD_CAPTION, _quick_long_release.HELP_TEXT),  # b780-c-release
                  ("option_defaults", _option_defaults.BUILD_CAPTION, _option_defaults.HELP_TEXT),  # b779-df1

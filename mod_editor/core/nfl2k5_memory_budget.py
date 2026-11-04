@@ -135,6 +135,7 @@ OWNER_BYTES = {
     "playbook_pair": (8192, 0, 4096, 0, 512), "senior_bowl": (4096, 0, 0, 0, 65536),
     "franchise_2026": (5120, 0, 0, 0, 4096), "dynamic_kickoff_relocated": (1939, 0, 0, 0, 10),
     "guardian_overlay": (496, 0, 0, 0, 0),
+    "injured_reserve": (6144, 0, 0, 0, 5312),   # b780 IR1: the runtime and its 32 x 20 store (nfl2k5_injured_reserve.REQUESTS)
 }
 FRANCHISE_STATIC_BODY = 98_352 - 64    # without the 128 MB roster heap the franchise history body is XBE data
 # the scale-out's own owners (counted only with the scale-out; the legacy layout carries the boot logo itself)
@@ -184,6 +185,7 @@ OWNER_FIELDS = {
     "read_option_runtime": ("read_option_runtime",), "playbook_pair": ("playbook_pair",), "senior_bowl": ("senior_bowl",),
     "franchise_2026": ("franchise_2026_rules",), "dynamic_kickoff_relocated": ("kickoff_relocated",),
     "guardian_overlay": ("guardian_overlay",), "human_tap_burst_spill": ("abilities",),
+    "injured_reserve": ("modern_injured_reserve",),   # b780 IR1 (the Pro Bowl guard alone is in place: no bytes)
     "team_ratings_spill": ("team_ratings",), "preseason_warning": ("franchise_economy",),
     # small owners the build adds from other options on a disc image (mod_build _widescreen_menus_wanted,
     # _period_goalposts_wanted, _team_logo_swap_wanted; the economy's preseason warning flag)
@@ -199,7 +201,7 @@ SCALEOUT_FIELDS = ("camera", "franchise_autosave", "weekly_prep", "weekly_prep_c
                    "coin_defer", "decided_clock", "cpu_scrambles", "sim_rb_injuries", "sim_realism", "coach_carousel",
                    "standings_records", "history_screen", "franchise_history", "speed_threshold", "cpu_clock2",
                    "cpu_runner_vision", "catch_snap_limit", "scramble_blocking", "audible_legend", "team_ratings",
-                   "roster_draft_pick_ownership", "roster_hback_roles")
+                   "roster_draft_pick_ownership", "roster_hback_roles", "modern_injured_reserve")
 
 # --- disc resources the options add to the main heap (inventory of the RC disc against retail, decoded charges) ------
 RESOURCE_BYTES = {
@@ -315,6 +317,10 @@ REQUIRES_128 = {
                         "failed in the lab.",
     "hires_pack": "2x textures cost 0.25 MB (one helmet) to 2.3 MB (both kits) per match; only K128's early form at "
                   "128 MB has that room.",
+    "modern_injured_reserve": "Modern injured reserve keeps its code and its list of every club's injured players in "
+                              "the extra executable sections (the scale-out), and the 64 MB profile is the legacy "
+                              "layout, which has no room left for it. A 64 MB build keeps the 2004 injured reserve "
+                              "(5 a club, season-ending) with the Pro Bowl guard.",
 }
 
 # A field and the sub-options that only matter with it; a suggestion turns the whole group off.

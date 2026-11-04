@@ -220,6 +220,7 @@ STEP_LABELS: dict[str, str] = {
     "scramble_blocking": "Receivers block for a scrambling QB",
     "protection_calls": "Protection calls",
     "audible_legend": "the audible panel lift and button legend",
+    "injured_reserve": "Modern injured reserve",
     "quick_long_release": "Quicker deep and rollout throws",
     "coach_carousel_pool": "the coaching carousel's hiring pool",
     "indicator_names": "the player name label",
