@@ -66,6 +66,7 @@ from PyQt5.QtWidgets import (
 
 from mod_editor.core import nfl2k5_franchise_save as fs
 from mod_editor.core import nfl2k5_roster_records as rr
+from mod_editor.core import nfl2k5_injured_reserve_save as irs   # b780-uxfix: modern injured reserve (IR1)
 
 # the coach numbers Finn's Statistics group edits, in his order, then the two ids and the playcalling split
 COACH_STATS: tuple[tuple[str, str], ...] = (
@@ -160,16 +161,37 @@ class FranchiseEdit:
         elif self.kind == "coach_replace":
             save.replace_head_coach(int(a["team"]), str(a["first"]), str(a["last"]), [str(x) for x in a.get("bio", ())])
         elif self.kind == "ir_place":
-            # b780 hunt5: the game's removal rule keeps the holder and returners on their players (never Finn's bytes)
-            save.place_on_injured_reserve(int(a["team"]), int(a["player"]), finn_roles=False)
+            if irs.read_state(save).extension:   # b780-uxfix: modern IR keeps its own rules and games-missed clock
+                _replace_bytes(save, irs.place(save, int(a["team"]), int(a["player"])))
+            else:
+                # b780 hunt5: the game's removal rule keeps the holder and returners on their players (never Finn's bytes)
+                save.place_on_injured_reserve(int(a["team"]), int(a["player"]), finn_roles=False)
         elif self.kind == "promote_reserve":
             save.promote_reserve(int(a["team"]), int(a["player"]))
         elif self.kind == "demote_active":
             save.demote_active(int(a["team"]), int(a["player"]))
         elif self.kind == "ir_activate":
-            save.activate_from_injured_reserve(int(a["team"]), int(a["player"]))
+            if irs.read_state(save).extension:
+                _replace_bytes(save, irs.activate(save, int(a["team"]), int(a["player"])))
+            else:
+                save.activate_from_injured_reserve(int(a["team"]), int(a["player"]))
         else:
             raise fs.FranchiseSaveError(f"unknown franchise edit {self.kind!r}")
+
+
+def _replace_bytes(save: fs.FranchiseSave, payload: bytes) -> None:
+    """Take the bytes a core writer returned (same length) into the live save, dropping its parsed roster."""
+    if len(payload) != len(save.buffer):
+        raise fs.FranchiseSaveError("the injured reserve edit changed the save length")
+    save.buffer[:] = payload
+    save._roster = None
+
+
+#: b780-uxfix: the IR table: the three old columns, then what modern injured reserve adds.
+IR_COLUMNS = ("Slot", "Player", "Player index", "Games missed", "Season-ending", "Can return")
+IR_LEGACY_NOTE = ("This save has 5 injured reserve slots a club (an older build wrote it). Modern injured reserve, "
+                  "with 20 slots, the 4-game minimum and 8 returns a season, starts when the save is loaded and "
+                  "saved once in a build with modern injured reserve.")
 
 
 # --------------------------------------------------------------------------------------------- dialogs
@@ -758,8 +780,13 @@ class FranchisePanel(QWidget):
         top.addWidget(activate_note)
         top.addStretch(1)
         box.addLayout(top)
-        self.ir_table = QTableWidget(fs.IR_SLOTS, 3)
-        self.ir_table.setHorizontalHeaderLabels(["Slot", "Player", "Player index"])
+        self.ir_returns_label = QLabel("")   # b780-uxfix: returns used, or why this save has 5 slots
+        self.ir_returns_label.setWordWrap(True)
+        self.ir_returns_label.setAccessibleName("Injured reserve returns")
+        box.addWidget(self.ir_returns_label)
+        self.ir_table = QTableWidget(fs.IR_SLOTS, len(IR_COLUMNS))
+        self.ir_table.setHorizontalHeaderLabels(list(IR_COLUMNS))
+        self.ir_table.itemSelectionChanged.connect(self._ir_selection_changed)
         self.ir_table.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.ir_table.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.ir_table.setSelectionMode(QAbstractItemView.SingleSelection)
@@ -1272,34 +1299,73 @@ class FranchisePanel(QWidget):
         self._quiet = True
         try:
             self.league_ir_list.clear()
+            self.ir_table.setRowCount(fs.IR_SLOTS)
             for row in range(fs.IR_SLOTS):
-                for column in range(3):
+                for column in range(len(IR_COLUMNS)):
                     self.ir_table.setItem(row, column, QTableWidgetItem(""))
             if self._save is None:
                 self.place_ir_button.setEnabled(False)
                 self.activate_ir_button.setEnabled(False)
+                self.ir_returns_label.setText("")
                 return
             team = self._ir_team()
+            # b780-uxfix: a save with modern injured reserve shows its 20 slots, the games missed, the season-ending
+            # flag and whether each player can return (or the game's reason why not); a legacy save its 5 slots
+            state = irs.read_state(self._save)
+            modern = {e.slot: e for e in state.club(team)} if state.extension else {}
             entries = {e.slot: e for e in self._save.injured_reserve(include_empty=True) if e.team == team}
-            for slot in range(fs.IR_SLOTS):
-                entry = entries.get(slot)
+            slots = irs.CAP if state.extension else fs.IR_SLOTS
+            self.ir_table.setRowCount(slots)
+            for slot in range(slots):
+                detail = modern.get(slot)
+                entry = detail or entries.get(slot)
                 empty = entry is None or entry.player_index == fs.IR_EMPTY
                 cells = [str(slot + 1), "(empty)" if empty else (entry.name or f"#{entry.player_index}"),
-                         "" if empty else str(entry.player_index)]
+                         "" if empty else str(entry.player_index), "", "", ""]
+                if detail is not None:
+                    cells[3] = str(detail.games_missed) + ("+" if detail.games_missed >= 7 else "")
+                    cells[4] = "Yes" if detail.season_ending else "No"
+                    cells[5] = "Yes" if detail.can_return else (detail.reason or "No")
                 for column, text in enumerate(cells):
-                    self.ir_table.setItem(slot, column, QTableWidgetItem(text))
+                    item = QTableWidgetItem(text)
+                    if column == 5 and detail is not None and detail.reason:
+                        item.setToolTip(detail.reason)
+                    self.ir_table.setItem(slot, column, item)
             self.ir_table.resizeColumnsToContents()
+            if state.extension:
+                used = state.returns_used[team] if team < len(state.returns_used) else 0
+                self.ir_returns_label.setText(
+                    f"Returns from injured reserve this season: {used} of {irs.RETURNS} used. A player can come back "
+                    f"after missing {irs.MIN_GAMES} games, once he is healthy. Up to {irs.CAP} players a club.")
+            else:
+                self.ir_returns_label.setText(IR_LEGACY_NOTE)
             for entry in self._save.injured_reserve():
                 self.league_ir_list.addItem(f"{self._team_label(entry.team)}: {entry.name or f'#{entry.player_index}'} "
                                             f"(slot {entry.slot + 1}, player #{entry.player_index})")
             self.place_ir_button.setEnabled(True)
-            self.activate_ir_button.setEnabled(any(e.player_index != fs.IR_EMPTY for e in entries.values()))
+            filled = [e for e in (list(entries.values()) + list(modern.values())) if e.player_index != fs.IR_EMPTY]
+            self.activate_ir_button.setEnabled(bool(filled))
+            self._ir_selection_changed()
         finally:
             self._quiet = False
 
     def _ir_team(self) -> int:
         data = self.ir_team_combo.currentData()
         return int(data) if data is not None else 0
+
+    def _ir_selection_changed(self) -> None:
+        """b780-uxfix: Activate says why the game would refuse the selected player, in the game's own words."""
+        tip = "Bring the selected player back to the roster. The game's rules are checked before anything changes."
+        row = self.ir_table.currentRow()
+        item = self.ir_table.item(row, 2) if row >= 0 else None
+        if self._save is not None and item is not None and item.text() and irs.read_state(self._save).extension:
+            try:
+                reason = irs.can_activate(self._save, self._ir_team(), int(item.text()))
+            except (ValueError, IndexError):
+                reason = None
+            if reason:
+                tip = f"Can't bring him back yet: {reason}"
+        self.activate_ir_button.setToolTip(tip)
 
     def checks_text_for(self) -> str:
         """The Checks page as text: the region map by status, what is editable here, the edits, the byte diff."""
