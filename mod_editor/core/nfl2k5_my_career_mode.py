@@ -737,6 +737,16 @@ def check_context(payload, edits, *, installed=False, real=None):
         legacy.require(lineman.status(companions) == "applied", "foreign overall-dispatch owner")
         camera_edits.append(("lineman_overall_dispatch", lineman.HOOK_VA,
                              lineman.RETAIL_HOOK, lineman.PATCHED_HOOK))
+    # b780-int (ship10 rehearsal2, 28c404c17): MC1's Franchise load user-team guard redirects the user-team call at
+    # 0x2D0D53 inside the front-office deserializer this context pins (0x2D0CE0 + 0x5BF), so MyCareer, Career Home and
+    # the module loader read foreign once the guard step ran. Accept that exact call only after the guard's complete
+    # status (the call, its head and tail in the accessors' padding, the pinned neighbours) reads applied, then restore
+    # the retail call in this hash view. The guard reads only its own bytes, so this adds no validation cycle.
+    from . import nfl2k5_load_user_team_guard as user_team_guard
+    _, guard_va, guard_before, guard_after = user_team_guard.SITES[0]
+    if image.read(guard_va, len(guard_before)) != guard_before:
+        legacy.require(user_team_guard.status(companions) == "applied", "foreign Franchise load user-team guard")
+        camera_edits.append(("load_user_team_guard", guard_va, guard_before, guard_after))
     for va, size, digest in GUARDS:
         raw = bytearray(image.read(va, size))
         # nm1 changes only the collector's label decision, not career control.

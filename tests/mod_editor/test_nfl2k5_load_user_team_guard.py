@@ -63,6 +63,27 @@ class StaticTests(unittest.TestCase):
             guard.apply(bytes(moved))
 
 
+    @unittest.skipUnless(XBE.is_file(), 'pinned USA retail XBE required')
+    def test_mycareer_accepts_the_guard_in_its_front_office_context(self):
+        # b780-int (ship10 rehearsal2 on 28c404c17): the guard's call at 0x2D0D53 sits inside the front-office
+        # deserializer MyCareer pins (0x2D0CE0 + 0x5BF). MyCareer read foreign once the guard was in, so the
+        # module loader refused ("foreign/mixed module loader input") and the cave manifest's probe refused MyCareer's
+        # apply. MyCareer now accepts the guard's exact call after the guard's complete status, in either order.
+        from mod_editor.core import nfl2k5_my_career_mode as career
+        from tests.nfl2k5_supersim_draft_fixture import retail_bytes
+        guarded, _ = guard.apply(retail_bytes())
+        self.assertEqual(career.status(guarded), 'retail')
+        both, _ = career.apply(guarded)
+        self.assertEqual((career.status(both), guard.status(both)), ('applied', 'applied'))
+        career_first, _ = career.apply(retail_bytes())
+        both_again, _ = guard.apply(career_first)
+        self.assertEqual((career.status(both_again), guard.status(both_again)), ('applied', 'applied'))
+        # a different call at the site is not the guard: MyCareer stays strict
+        bent = bytearray(guarded)
+        from mod_editor.core import nfl2k5_rdata_sites as rdata
+        bent[rdata.offset_of(guarded, guard.SITE_VA + 1)] ^= 0x40
+        self.assertEqual(career.status(bytes(bent)), 'foreign')
+
 @unittest.skipUnless(HAVE_UC and XBE.is_file(), 'pinned USA XBE, the signed f0 Franchise and Unicorn required')
 class NativeLoadTests(unittest.TestCase):
     @classmethod
