@@ -136,19 +136,8 @@ KEYS = tuple(row[0] for row in OPTIONS)
 # build refuses a child whose parent is missing. This module used to hold only the beta-62 pairs (as parent -> children) and the
 # Build page held the Anniversary and clock rules in a second table of its own (ANNIVERSARY_DEPENDENCIES), so Game Fixes did not
 # know those rules at all; a rule held by one page only is how the two pages came to disagree about the same plan.
-REQUIRES = {
-    "coverage_hitch_brake": ("coverage_trail",),
-    "weekly_prep_cpu": ("weekly_prep",),
-    "weekly_prep_remember": ("weekly_prep",),
-    "k128_roster_heap": ("k128_memory",),
-    "k128_early": ("k128_memory",),
-    "espn25_named_previews": ("espn25_more_moments",),
-    "espn25_era_rules": ("espn25_more_moments", "dynamic_kickoff", "defensive_try", "overtime"),
-    "historic_rosters_2026": ("historic_teams_quick_game",),
-    "classic_teams": ("historic_teams_quick_game",),  # b775-ct1
-    "cpu_clock2_overtime": ("cpu_clock2",),  # b780 b-clock: the overtime window extends the modern clock rules
-    "cpu_runner_vision": ("cpu_ball_carriers",),  # b780 cv2-runner: its wider sideline limit is cpu_ball_carriers' taper
-}
+# b780 m64prof: the table lives in core (nfl2k5_build_settings.REQUIRES) so the 64 MB profile closes over the same rules.
+from mod_editor.core.nfl2k5_build_settings import REQUIRES  # noqa: E402
 
 
 def _children_of(requires):

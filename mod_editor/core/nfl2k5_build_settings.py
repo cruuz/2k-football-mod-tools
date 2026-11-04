@@ -209,3 +209,33 @@ def to_plan(state, source, target):
     return BuildPlan(source, target, **values)
 
 FEATURE_KEYS += ("team_ratings",)  # Dynamic modern team rating getters.
+
+
+# b780 studio1 (Q60): every "this box needs that box" rule between the Build and Game Fixes boxes, in ONE table (moved here
+# from mod_editor/gui/beta62_options.py by b780 m64prof, which the pages still import it through). Each child lists the
+# parents it needs: ticking a child ticks its parents that can be ticked, unticking a parent unticks its children, and the
+# build refuses a child whose parent is missing.
+REQUIRES = {
+    "coverage_hitch_brake": ("coverage_trail",),
+    "weekly_prep_cpu": ("weekly_prep",),
+    "weekly_prep_remember": ("weekly_prep",),
+    "k128_roster_heap": ("k128_memory",),
+    "k128_early": ("k128_memory",),
+    "espn25_named_previews": ("espn25_more_moments",),
+    "espn25_era_rules": ("espn25_more_moments", "dynamic_kickoff", "defensive_try", "overtime"),
+    "historic_rosters_2026": ("historic_teams_quick_game",),
+    "classic_teams": ("historic_teams_quick_game",),  # b775-ct1
+    "cpu_clock2_overtime": ("cpu_clock2",),  # b780 b-clock: the overtime window extends the modern clock rules
+    "cpu_runner_vision": ("cpu_ball_carriers",),  # b780 cv2-runner: its wider sideline limit is cpu_ball_carriers' taper
+}
+# b780 m64prof: values that mean something only with another option on; the build refuses them otherwise
+# (nfl2k5_momentum._settings: "a collision level requires momentum_collisions", "contact requires a nonzero momentum level").
+VALUE_REQUIRES = {
+    "momentum_collision_level": ("momentum_collisions",),
+    "momentum_contact": ("momentum",),
+}
+
+
+def build_requires():
+    """{option: the options it needs} for every dependency rule the build applies: REQUIRES and VALUE_REQUIRES."""
+    return {**REQUIRES, **VALUE_REQUIRES}
