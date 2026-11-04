@@ -80,6 +80,33 @@ class SpeedSeparationIsCountedTests(_PanelCase):
         self.assertEqual([label for label in locked.selected_labels() if "Speed separation" in label], [])
 
 
+class SpeedSeparationSurvivesAProjectSaveTests(_PanelCase):
+    """The project is saved from the plan; a disabled row used to plan 0 even when no disc had been read yet."""
+
+    def test_a_restored_strength_is_kept_by_a_save_made_before_the_disc_is_read(self) -> None:
+        panel = BuildPanel()
+        self.addCleanup(panel.deleteLater)
+        panel.restore_project_build_settings({"speed_threshold": 60})
+        self.assertFalse(panel.speed_threshold_spin.isEnabled())            # no disc read yet
+        self.assertEqual(panel.project_build_settings()["speed_threshold"], 60)
+
+    def test_it_is_still_zero_where_the_disc_cannot_take_it(self) -> None:
+        for state in (dict(path="default.xbe", container="xbe", speed_threshold="retail"),
+                      dict(path="d.iso", container="xiso", speed_threshold="foreign")):
+            panel = self.panel()
+            panel.speed_threshold_spin.setValue(60)
+            panel.apply_state(state)
+            panel.speed_threshold_spin.setValue(60)
+            self.assertFalse(panel.speed_threshold_spin.isEnabled(), state)
+            self.assertEqual(panel.plan().speed_threshold, 0, state)
+
+    def test_a_read_disc_keeps_the_restored_strength(self) -> None:
+        panel = self.panel()
+        panel.restore_project_build_settings({"speed_threshold": 60})
+        self.assertTrue(panel.speed_threshold_spin.isEnabled())
+        self.assertEqual(panel.project_build_settings()["speed_threshold"], 60)
+
+
 class StandaloneOptionsAreWorkTests(_PanelCase):
     """Options mod_build builds on their own were refused as "Nothing is selected" when they were the only tick."""
 

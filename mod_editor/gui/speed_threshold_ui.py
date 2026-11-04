@@ -80,8 +80,15 @@ def refresh(control, state, available=True):
 
 
 def plan_value(control, state):
-    """The strength a build should use: the installed one when locked, 0 when the control is off, else the number."""
+    """The strength a build should use: the installed one when locked, 0 when the control is off, else the number.
+
+    Before any disc has been read (``state`` empty) the control is off only because it cannot be judged yet, and the
+    number is whatever the player or an opened project put there. The project is saved from this plan, so returning 0
+    here dropped a saved strength whenever the project was saved ahead of the disc read; no build can start in that
+    window (Build waits for the read)."""
     if control.isEnabled():
+        return int(control.value())
+    if not state:
         return int(control.value())
     state = state or {}
     installed = state.get("speed_threshold_settings") or {}
