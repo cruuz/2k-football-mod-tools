@@ -54,6 +54,20 @@ class RetailRefusedTests(unittest.TestCase):
             lr.apply(retail_bytes())
 
 
+@unittest.skipUnless(V09_XBE.is_file(), "NFL2K5_V09_XBE required")
+class ReservationTests(unittest.TestCase):
+    def test_a_first_pass_reservation_is_reused(self):
+        from mod_editor.core import nfl2k5_sim_cb_tackles as tackles, nfl2k5_xbe_space as space
+        xbe = V09_XBE.read_bytes()
+        reserved, _ = space.extend_scaleout(xbe, lr.REQUESTS)       # what the build's first space pass does
+        self.assertEqual(lr.status(reserved), "retail")
+        installed, receipt = lr.apply(reserved)
+        self.assertTrue(receipt["allocation"]["reserved_by_first_pass"])
+        self.assertEqual(installed, lr.apply(xbe)[0])
+        self.assertEqual((lr.status(installed), tackles.status(installed)), ("applied", "applied"))
+        self.assertEqual(lr.apply(installed)[0], installed)
+
+
 @unittest.skipUnless(HAVE_UC and V09_XBE.is_file() and V09_ROST.is_file(),
                      "Python unicorn, NFL2K5_V09_XBE and NFL2K5_V09_ROST_BODY required")
 class LineupRolesTests(unittest.TestCase):
