@@ -7,55 +7,55 @@
   "ARZ": {
    "team": "ARZ",
    "ok": true,
-   "offense_pack_sha256": "7ce7e42e284f58cb95c60ca4a026394f3160322c5dca9edfd06a5cc412ddd335",
+   "offense_pack_sha256": "7fcde0bede95064574d0542a3e7d603171930883425621578335d852471f1a41",
    "compose": {
     "team": "ARZ",
     "source_sha256": "bfef19854973fa7edfb1df46fe0f9a86ba9569470cc2911846620d208b6dbd22",
     "steps": [
      {
       "step": "complete_offense",
-      "sha256": "a6d71b058b3ab54e7e6cf22c1ae8d31c0044180caffeb4af1e3efe8886d4bb08",
+      "sha256": "821f0bdb2ffa113adc66a96d530236f052edc5af989011a4c60f1fc26224d5ea",
       "nodes": 2281,
       "names": 8002,
       "native_scoring": 0
      },
      {
       "step": "defense",
-      "sha256": "9c273242264ffda7c8912e036e4634c6482233ccd78f940ae556bd4ec36fa99c",
+      "sha256": "a7a01eba86ecf8bc43f3e394c4872b9b7f6920a380811855ddb44af06d092e1d",
       "nodes": 2681,
       "native_scoring": 0
      },
      {
       "step": "position_pools",
-      "sha256": "333e057f5edb7bd0546d3b38318fc066b427d30537d8bcacf09931e6c9249f9e"
+      "sha256": "10a7307ab8aa07a128dc59a36bdb45aeafcec1620bdac85630aab3b2625d06dd"
      },
      {
       "step": "kickoff_alignment",
-      "sha256": "2a0ad0e4112ba0f1c3c238127ffc9c013cc51ac0cd276afb31f490e3befcbcaf"
+      "sha256": "d1a7235d5a72cfba44d94f98bc9ad6bb08d43e4f38ab3ca2a4956289d185e834"
      },
      {
       "step": "kickoff_returns",
-      "sha256": "9194714d235fbcb81be1c5a5bdda8a42e71e21df574ce9400a245dd8bcfbbc96",
+      "sha256": "a9f261ba5f42a651c541796b176f3e50963281d9f856a14381d4ea72d5a0de1f",
       "status": "applied"
      },
      {
       "step": "depth_roles",
-      "sha256": "fd6be437b15f80d1f9ec046032c1b308f52eb2b74c4e11be84d7a80e5254a038",
+      "sha256": "a1cb002c03a82cdc27e9a9669964c46d13c0f3ab9c3615f7aa461244122cc1ab",
       "changed_bytes": 9
      },
      {
       "step": "screen_timing",
-      "sha256": "fd6be437b15f80d1f9ec046032c1b308f52eb2b74c4e11be84d7a80e5254a038",
+      "sha256": "a1cb002c03a82cdc27e9a9669964c46d13c0f3ab9c3615f7aa461244122cc1ab",
       "status": "applied",
       "already_applied": true
      }
     ],
-    "final_sha256": "fd6be437b15f80d1f9ec046032c1b308f52eb2b74c4e11be84d7a80e5254a038"
+    "final_sha256": "a1cb002c03a82cdc27e9a9669964c46d13c0f3ab9c3615f7aa461244122cc1ab"
    },
    "lint": {},
    "offense_findings": [],
    "formations": 50,
-   "menu_entries": 712,
+   "menu_entries": 721,
    "walks_ended": true,
    "scoring": {
     "status": "PROVED OFFLINE",
@@ -77,60 +77,60 @@
     "name_pool_units": 5074,
     "strings_end": "0x12fe4"
    },
-   "final_sha256": "fd6be437b15f80d1f9ec046032c1b308f52eb2b74c4e11be84d7a80e5254a038"
+   "final_sha256": "a1cb002c03a82cdc27e9a9669964c46d13c0f3ab9c3615f7aa461244122cc1ab"
   },
   "ATL": {
    "team": "ATL",
    "ok": true,
-   "offense_pack_sha256": "9acc4753f8b23fc5b79d26daef4e8a7f516833f0b17da36cb4860d5c08cc20fe",
+   "offense_pack_sha256": "483f4df1609b45309208ff3f9354871ffa5bc9c9521693e8254accb00e8ff203",
    "compose": {
     "team": "ATL",
     "source_sha256": "7963263b71c0a7a2de4798afa8053b59647f6773c2cf76b6f902288217bd62d5",
     "steps": [
      {
       "step": "complete_offense",
-      "sha256": "9fabb085a3acf3ac6014ccea01c4810ccb105ca739396ed378e5081474c33920",
-      "nodes": 2289,
-      "names": 7858,
+      "sha256": "818cc63565fb189914e9da228151a5dbd8fcca38c383093872645aab796da5c7",
+      "nodes": 2287,
+      "names": 7802,
       "native_scoring": 0
      },
      {
       "step": "defense",
-      "sha256": "4714b44baf446455d5736da8c51318680f83b17c46c80f0e41cb3fddac080c92",
-      "nodes": 2715,
+      "sha256": "0a5bb3c4792c20a7073172dee6a532763259cc15e71681fb1652040fbddbce0c",
+      "nodes": 2713,
       "native_scoring": 0
      },
      {
       "step": "position_pools",
-      "sha256": "650ea29748dd1208e8e91cc83c8983d36784782825215532204836e6df1cb7c5"
+      "sha256": "a93f18614f802c8d1e940f607df39409ede3f5aeee07a296076e363f6eb51835"
      },
      {
       "step": "kickoff_alignment",
-      "sha256": "7e662ff4e3337baedbc82a00ca1e5b4a3410d5ce15104dfb4449efc9336ef0ec"
+      "sha256": "3519976efd2410d12b12f2ca0455312e41a0e48fce83e68efdada477c298e936"
      },
      {
       "step": "kickoff_returns",
-      "sha256": "d3c09ffba949b79f15366f5a4f5cfebe1d5159635564769b03e1c496578f16d4",
+      "sha256": "e88064ce2f49565d73ddbf43187969c22e7f9cd9459a475aefe879be3b559f67",
       "status": "applied"
      },
      {
       "step": "depth_roles",
-      "sha256": "cb62ff2e332245feebdcfbd5829d974ee9fe59ac35d1ce62ba7554d649ab645b",
+      "sha256": "e6c12c964cb563c3ffb7240ceb654af9d42511e375a88eef90258a7114c69662",
       "changed_bytes": 10
      },
      {
       "step": "screen_timing",
-      "sha256": "cb62ff2e332245feebdcfbd5829d974ee9fe59ac35d1ce62ba7554d649ab645b",
+      "sha256": "e6c12c964cb563c3ffb7240ceb654af9d42511e375a88eef90258a7114c69662",
       "status": "applied",
       "already_applied": true
      }
     ],
-    "final_sha256": "cb62ff2e332245feebdcfbd5829d974ee9fe59ac35d1ce62ba7554d649ab645b"
+    "final_sha256": "e6c12c964cb563c3ffb7240ceb654af9d42511e375a88eef90258a7114c69662"
    },
    "lint": {},
    "offense_findings": [],
    "formations": 50,
-   "menu_entries": 648,
+   "menu_entries": 657,
    "walks_ended": true,
    "scoring": {
     "status": "PROVED OFFLINE",
@@ -148,64 +148,64 @@
     "formations": 50,
     "plays": 270,
     "categories": 23,
-    "nodes": 2793,
-    "name_pool_units": 5053,
-    "strings_end": "0x12fba"
+    "nodes": 2791,
+    "name_pool_units": 5025,
+    "strings_end": "0x12f82"
    },
-   "final_sha256": "cb62ff2e332245feebdcfbd5829d974ee9fe59ac35d1ce62ba7554d649ab645b"
+   "final_sha256": "e6c12c964cb563c3ffb7240ceb654af9d42511e375a88eef90258a7114c69662"
   },
   "BAL": {
    "team": "BAL",
    "ok": true,
-   "offense_pack_sha256": "06d62404c43d71df0cbce544d6d11a56177b495f9ee3e41763f92170f825fdf4",
+   "offense_pack_sha256": "f287405737f6ff8d48037a6a5209ced84af19249fef9eee39a8f04452925c70f",
    "compose": {
     "team": "BAL",
     "source_sha256": "56ff0239095b6b62a52b184546413691a5a59c9388f093e5f438a60715ce633a",
     "steps": [
      {
       "step": "complete_offense",
-      "sha256": "0656668ce77cea24c81d75fb9cb5d712cd49861101c5d9b7f59f78a5847b265b",
-      "nodes": 2265,
-      "names": 8088,
+      "sha256": "e031a6458862ab17b97ede5e58b317843573d7582f4788091862acf8cfbc78ea",
+      "nodes": 2261,
+      "names": 8062,
       "native_scoring": 0
      },
      {
       "step": "defense",
-      "sha256": "5540e3985264d5366ae7779e2d8fb28065ad3cdb7051b8917ca509bd2bff2e9e",
-      "nodes": 2945,
+      "sha256": "98beed15ffc26f617181d09a48212b5bb29a56d50919427feb835fffda16dee4",
+      "nodes": 2941,
       "native_scoring": 0
      },
      {
       "step": "position_pools",
-      "sha256": "589c851da2a625b67a94766a42b8739e6100bb8cc4849d74581a023fc22ac9f5"
+      "sha256": "12dea878d916b45e60e4bc92a7e8c9eb2ba93fab2c8cc11065abd526cf94a37a"
      },
      {
       "step": "kickoff_alignment",
-      "sha256": "3089cdc1e562592db2c469ecf8ee99b2db9bcd9927e0a3bf5b3c06c5483fb7e1"
+      "sha256": "615431edb4216abab9a5a88e5acda17f25ca199a34e045ff31ef390db0e18b3c"
      },
      {
       "step": "kickoff_returns",
-      "sha256": "9fc09e3b882098a60540f366fdc4bc237cfdd8a36e04ea239c50b458f12ac227",
+      "sha256": "edab58e16fa52bcd78eafdb069946674f1e29eba15f347e5c734377db912025a",
       "status": "applied"
      },
      {
       "step": "depth_roles",
-      "sha256": "36cbe11b0db3a632b85cf8effd133d904df8de650086e464ebeb529a600c2953",
+      "sha256": "2b3d9e0c51534534e6e34a0e8250e5db2b1b66135f94450b8439348f07d3b65c",
       "changed_bytes": 5
      },
      {
       "step": "screen_timing",
-      "sha256": "36cbe11b0db3a632b85cf8effd133d904df8de650086e464ebeb529a600c2953",
+      "sha256": "2b3d9e0c51534534e6e34a0e8250e5db2b1b66135f94450b8439348f07d3b65c",
       "status": "applied",
       "already_applied": true
      }
     ],
-    "final_sha256": "36cbe11b0db3a632b85cf8effd133d904df8de650086e464ebeb529a600c2953"
+    "final_sha256": "2b3d9e0c51534534e6e34a0e8250e5db2b1b66135f94450b8439348f07d3b65c"
    },
    "lint": {},
    "offense_findings": [],
    "formations": 50,
-   "menu_entries": 607,
+   "menu_entries": 625,
    "walks_ended": true,
    "scoring": {
     "status": "PROVED OFFLINE",
@@ -223,64 +223,64 @@
     "formations": 50,
     "plays": 270,
     "categories": 24,
-    "nodes": 3023,
-    "name_pool_units": 5080,
-    "strings_end": "0x12ff0"
+    "nodes": 3019,
+    "name_pool_units": 5067,
+    "strings_end": "0x12fd6"
    },
-   "final_sha256": "36cbe11b0db3a632b85cf8effd133d904df8de650086e464ebeb529a600c2953"
+   "final_sha256": "2b3d9e0c51534534e6e34a0e8250e5db2b1b66135f94450b8439348f07d3b65c"
   },
   "BUF": {
    "team": "BUF",
    "ok": true,
-   "offense_pack_sha256": "a76b299bf846ff24150a7fc1ee1ff62ddb342a44a8329da2e6837b7070c94fca",
+   "offense_pack_sha256": "5715507b0f810e369a91056ac0a0050953b8532c30db3948b9586f243fb5dae4",
    "compose": {
     "team": "BUF",
     "source_sha256": "d15e31e7a83c68d411d815105938942afeb9faf03d4b9cc53be3f8a0146c6f9d",
     "steps": [
      {
       "step": "complete_offense",
-      "sha256": "42a8ae78b97065b3e776cd4e2afe141ea1ad395c40303e3e5a41733535806c7d",
-      "nodes": 2316,
-      "names": 7708,
+      "sha256": "73b6efb4262d1859fcf7914125f34d055ef857fa739622ce2dda1c70b8ce1615",
+      "nodes": 2298,
+      "names": 7628,
       "native_scoring": 0
      },
      {
       "step": "defense",
-      "sha256": "4ae955c506a2501ac28bdc18468faeeeac948adb4007855155b0ab109ccb76bf",
-      "nodes": 2835,
+      "sha256": "e6538a28ab7a2f93890d40668507cce5ac0db837fe3559cc9899fb21df1e902f",
+      "nodes": 2817,
       "native_scoring": 0
      },
      {
       "step": "position_pools",
-      "sha256": "e3cfdd9e9f7e352d4032c07ef34ca8e5de118a50336b376311708ede6723451f"
+      "sha256": "109075669fefd632e43d10d40088881a235139e377bba897c18578bdee619713"
      },
      {
       "step": "kickoff_alignment",
-      "sha256": "a452e40e72a60b537b61d7af36de7d71b30a8fb6989229f107653b02417f48d8"
+      "sha256": "e2c155e9f7262975c953072d651a8f9a2d5211b46584a5918162486ab32ba399"
      },
      {
       "step": "kickoff_returns",
-      "sha256": "0291a044617695a4b694baa9ed38e7515355b27658dc076e57ceef8ce92688b1",
+      "sha256": "a6795d82bf414eea34321999cf6d494a198531e9f9a26f4886d08277fd469797",
       "status": "applied"
      },
      {
       "step": "depth_roles",
-      "sha256": "c6141aed614e9884a6c908cb20cecf547a3b203f658b3e29e19a7055d8a41a68",
+      "sha256": "8b6fab54eaf00071f7308f67e1b8e1ad520c3ae6419087874616ef46011c5f54",
       "changed_bytes": 9
      },
      {
       "step": "screen_timing",
-      "sha256": "c6141aed614e9884a6c908cb20cecf547a3b203f658b3e29e19a7055d8a41a68",
+      "sha256": "8b6fab54eaf00071f7308f67e1b8e1ad520c3ae6419087874616ef46011c5f54",
       "status": "applied",
       "already_applied": true
      }
     ],
-    "final_sha256": "c6141aed614e9884a6c908cb20cecf547a3b203f658b3e29e19a7055d8a41a68"
+    "final_sha256": "8b6fab54eaf00071f7308f67e1b8e1ad520c3ae6419087874616ef46011c5f54"
    },
    "lint": {},
    "offense_findings": [],
    "formations": 50,
-   "menu_entries": 631,
+   "menu_entries": 640,
    "walks_ended": true,
    "scoring": {
     "status": "PROVED OFFLINE",
@@ -298,59 +298,59 @@
     "formations": 50,
     "plays": 270,
     "categories": 25,
-    "nodes": 2913,
-    "name_pool_units": 5069,
-    "strings_end": "0x12fda"
+    "nodes": 2895,
+    "name_pool_units": 5029,
+    "strings_end": "0x12f8a"
    },
-   "final_sha256": "c6141aed614e9884a6c908cb20cecf547a3b203f658b3e29e19a7055d8a41a68"
+   "final_sha256": "8b6fab54eaf00071f7308f67e1b8e1ad520c3ae6419087874616ef46011c5f54"
   },
   "CAR": {
    "team": "CAR",
    "ok": true,
-   "offense_pack_sha256": "e7d14f75cc0239923c0e218ee50e64b19ffc065f16665cb383143899e7578ca6",
+   "offense_pack_sha256": "7c94fe06f4f6d3598f163dfce8821a8bb3b634251bbbbc6479ff153288274cda",
    "compose": {
     "team": "CAR",
     "source_sha256": "5fb8fc4a482fd622c4429a1db92bc87c2dc84a45c134ead72f7d7bbe51ae729a",
     "steps": [
      {
       "step": "complete_offense",
-      "sha256": "5551444be5457de995a44791e958f40dbb46d3aaae3ffab3ff50e345d38f9eb4",
-      "nodes": 2296,
-      "names": 8040,
+      "sha256": "c43ce21a912418847219bff9a2cc0ed62e1b88affe586532002ded8e9e00c06b",
+      "nodes": 2290,
+      "names": 8006,
       "native_scoring": 0
      },
      {
       "step": "defense",
-      "sha256": "7a9292b65159d1c46290cd59a350468280131e0655f40c4aaeddf7e5a8d9646b",
-      "nodes": 2720,
+      "sha256": "85ecc408ddb159e4d431f003c87c5b08089cf65c88bc30218a9f012c509dfbcf",
+      "nodes": 2714,
       "native_scoring": 0
      },
      {
       "step": "position_pools",
-      "sha256": "52126a6d003b3a2aba7b2a69b59098b8eca69bbdfbaecf6e28f3b053e16b1cf7"
+      "sha256": "0b913fd7b326cd263d53b6157d9c66ce7cc8505585c3d4db3f747f2cde8bee96"
      },
      {
       "step": "kickoff_alignment",
-      "sha256": "acaacdbc5d743f3dc19cdc90a3741a65be8c9a04aea847ddc2fe8ac9b1cbbbbe"
+      "sha256": "cb41528820264a509810c335b3e4ca372900d611b0878ddd42f93a9b02a8081e"
      },
      {
       "step": "kickoff_returns",
-      "sha256": "71cd93f7a9335fc57038ee62d948fc2becd09520a5a4bd3bbe7d188c7358db4e",
+      "sha256": "1ec0da21db1211ec3871986474aca39efe7023bea58ba935e4760ef00c781994",
       "status": "applied"
      },
      {
       "step": "depth_roles",
-      "sha256": "de4fad109f4d192a716379ece98f52a3980ffa954c1ffee869897664d9ffa031",
+      "sha256": "2238b1193402bfae8a2c1203818dff56e5d6b4ae7ead42f053c280a2f572c4d7",
       "changed_bytes": 10
      },
      {
       "step": "screen_timing",
-      "sha256": "de4fad109f4d192a716379ece98f52a3980ffa954c1ffee869897664d9ffa031",
+      "sha256": "2238b1193402bfae8a2c1203818dff56e5d6b4ae7ead42f053c280a2f572c4d7",
       "status": "applied",
       "already_applied": true
      }
     ],
-    "final_sha256": "de4fad109f4d192a716379ece98f52a3980ffa954c1ffee869897664d9ffa031"
+    "final_sha256": "2238b1193402bfae8a2c1203818dff56e5d6b4ae7ead42f053c280a2f572c4d7"
    },
    "lint": {},
    "offense_findings": [],
@@ -373,64 +373,64 @@
     "formations": 50,
     "plays": 270,
     "categories": 23,
-    "nodes": 2798,
-    "name_pool_units": 5076,
-    "strings_end": "0x12fe8"
+    "nodes": 2792,
+    "name_pool_units": 5059,
+    "strings_end": "0x12fc6"
    },
-   "final_sha256": "de4fad109f4d192a716379ece98f52a3980ffa954c1ffee869897664d9ffa031"
+   "final_sha256": "2238b1193402bfae8a2c1203818dff56e5d6b4ae7ead42f053c280a2f572c4d7"
   },
   "CHI": {
    "team": "CHI",
    "ok": true,
-   "offense_pack_sha256": "c7e201f61c9a05739066079a7d1540ccfa5495566c1aa7bd7a1d7eee6dddb25c",
+   "offense_pack_sha256": "ed65ec2441a2422a6948ab272511736d29a7f48cff99793af3f4e4039eaa06a0",
    "compose": {
     "team": "CHI",
     "source_sha256": "deadb7395dccc2689bc325d6e93e0b585d2ddc52386ce697cafde755f224446b",
     "steps": [
      {
       "step": "complete_offense",
-      "sha256": "58be46118435147239f5d6c5410e030384677d2c770c8f0643b946dcf42c01cf",
-      "nodes": 2382,
-      "names": 7976,
+      "sha256": "6a6e1167bebf2f53eababf4b8f8fcd2cd051bc8383101b0ad61253d0f4f0b187",
+      "nodes": 2377,
+      "names": 7942,
       "native_scoring": 0
      },
      {
       "step": "defense",
-      "sha256": "83b96877708c7436e4c297f29c6eb9dd6dd67a7c3a9de98c5b6d7392453f1586",
-      "nodes": 2862,
+      "sha256": "beb88bf39dea07cef6a09f6d2fefadc428ba3c1caf9a7d8ab82601956e9d6c12",
+      "nodes": 2857,
       "native_scoring": 0
      },
      {
       "step": "position_pools",
-      "sha256": "f63c9c30015c135b5a64f521f49354977b4270afbcbe9a0162248d6c92f6013d"
+      "sha256": "9e79751869f317152745826e1d2c368742dc61d069b54dd84cbbe67371cebb28"
      },
      {
       "step": "kickoff_alignment",
-      "sha256": "ac6515ca70c910cfd67b19680128c060b048c57a95b33c44179f654d32e674af"
+      "sha256": "66a5df10628cf370e8791d557a1c99944fc05bd9eaddaddd34384fd55197f7e0"
      },
      {
       "step": "kickoff_returns",
-      "sha256": "183534e92a62f740a9903352bb96426628535f0dee61a09db12928cd7061facc",
+      "sha256": "631c1cde54e291800c5bf07bbe4e4dd104794aceccb500770e28e1c89d6a4586",
       "status": "applied"
      },
      {
       "step": "depth_roles",
-      "sha256": "56fa0e0c8a26f36e5e87ae7ec0ea4c9b6c4047610642855c233a92daf0e8d9a8",
+      "sha256": "799ff9e520791eaf1a351022566086ded2713907a904bc88cd91c0a69fb33b4a",
       "changed_bytes": 9
      },
      {
       "step": "screen_timing",
-      "sha256": "56fa0e0c8a26f36e5e87ae7ec0ea4c9b6c4047610642855c233a92daf0e8d9a8",
+      "sha256": "799ff9e520791eaf1a351022566086ded2713907a904bc88cd91c0a69fb33b4a",
       "status": "applied",
       "already_applied": true
      }
     ],
-    "final_sha256": "56fa0e0c8a26f36e5e87ae7ec0ea4c9b6c4047610642855c233a92daf0e8d9a8"
+    "final_sha256": "799ff9e520791eaf1a351022566086ded2713907a904bc88cd91c0a69fb33b4a"
    },
    "lint": {},
    "offense_findings": [],
    "formations": 50,
-   "menu_entries": 672,
+   "menu_entries": 681,
    "walks_ended": true,
    "scoring": {
     "status": "PROVED OFFLINE",
@@ -448,64 +448,64 @@
     "formations": 50,
     "plays": 270,
     "categories": 22,
-    "nodes": 2940,
-    "name_pool_units": 5055,
-    "strings_end": "0x12fbe"
+    "nodes": 2935,
+    "name_pool_units": 5038,
+    "strings_end": "0x12f9c"
    },
-   "final_sha256": "56fa0e0c8a26f36e5e87ae7ec0ea4c9b6c4047610642855c233a92daf0e8d9a8"
+   "final_sha256": "799ff9e520791eaf1a351022566086ded2713907a904bc88cd91c0a69fb33b4a"
   },
   "CIN": {
    "team": "CIN",
    "ok": true,
-   "offense_pack_sha256": "2378a99578bed986df9a09451d1d26d491fe4424daa4fbc2d5acc92362c2b13e",
+   "offense_pack_sha256": "0b0aa3ce33f11e7c0d046f83fb519734d7fc66a8d7157e7e26f0612718a28000",
    "compose": {
     "team": "CIN",
     "source_sha256": "858dd688901691d61d1838c85ce0dd6588130bde772f177e0d3dfdd55332d1c6",
     "steps": [
      {
       "step": "complete_offense",
-      "sha256": "ab3e0f8837d47a1ec95be80feee1d66928a916910dc6920d78178ff6a0aa414d",
-      "nodes": 2362,
-      "names": 8124,
+      "sha256": "8a526f57dcfc88769377ed38e4639705af571d6e442d8a726ec6a743068ab979",
+      "nodes": 2364,
+      "names": 8078,
       "native_scoring": 0
      },
      {
       "step": "defense",
-      "sha256": "c7acc4f3364275062a3645d657a48273414f358ed90c4bd0c99362bd6aefb7a3",
-      "nodes": 2772,
+      "sha256": "425d7fb4cc39e3381dc0b5614f06a2b8254064f9772d6efc92e4cd67cf0cb788",
+      "nodes": 2774,
       "native_scoring": 0
      },
      {
       "step": "position_pools",
-      "sha256": "0b8197558b3f9db1ab55b473ba53c2b5ae202327b71ac53ef3d53162ca1929d9"
+      "sha256": "64f89feabe7324b5fa8ff68061ff21c9cebdf971570329279107f38b8c8a39e1"
      },
      {
       "step": "kickoff_alignment",
-      "sha256": "90c37bcb39509579e57ab1fb729885411c9b97a8b56ff70814a914966c1e9809"
+      "sha256": "fa3aa48f7310c5d6a71326d65bdb41716522aa5a0172c123a67045ee6f858c4e"
      },
      {
       "step": "kickoff_returns",
-      "sha256": "630c8a0c585c16dd6429dde8de766258102515ead03fab6bcec25f42c8f03e0b",
+      "sha256": "8025f3adf7f5bbbac47167d3fafdf5725fc63067864490d7ff040b6bcbc57081",
       "status": "applied"
      },
      {
       "step": "depth_roles",
-      "sha256": "4248b80df28447bb7091f7bc02134341ec90c7f7b5e446e6930cfb23058366ee",
+      "sha256": "6c097f8a202d3748ae807a94b70c26f165159db219e9c31e38eae467aed27808",
       "changed_bytes": 9
      },
      {
       "step": "screen_timing",
-      "sha256": "4248b80df28447bb7091f7bc02134341ec90c7f7b5e446e6930cfb23058366ee",
+      "sha256": "6c097f8a202d3748ae807a94b70c26f165159db219e9c31e38eae467aed27808",
       "status": "applied",
       "already_applied": true
      }
     ],
-    "final_sha256": "4248b80df28447bb7091f7bc02134341ec90c7f7b5e446e6930cfb23058366ee"
+    "final_sha256": "6c097f8a202d3748ae807a94b70c26f165159db219e9c31e38eae467aed27808"
    },
    "lint": {},
    "offense_findings": [],
    "formations": 50,
-   "menu_entries": 715,
+   "menu_entries": 718,
    "walks_ended": true,
    "scoring": {
     "status": "PROVED OFFLINE",
@@ -523,64 +523,64 @@
     "formations": 50,
     "plays": 270,
     "categories": 22,
-    "nodes": 2850,
-    "name_pool_units": 5050,
-    "strings_end": "0x12fb4"
+    "nodes": 2852,
+    "name_pool_units": 5027,
+    "strings_end": "0x12f86"
    },
-   "final_sha256": "4248b80df28447bb7091f7bc02134341ec90c7f7b5e446e6930cfb23058366ee"
+   "final_sha256": "6c097f8a202d3748ae807a94b70c26f165159db219e9c31e38eae467aed27808"
   },
   "CLE": {
    "team": "CLE",
    "ok": true,
-   "offense_pack_sha256": "3620dc05ab13044fd84db8e02032a52352048de7dc2f0e8fbd65df6e7d3400f4",
+   "offense_pack_sha256": "2e542859074856661df11aa065bd5b3df18bac6187770f014c4f708a96e74351",
    "compose": {
     "team": "CLE",
     "source_sha256": "61afe904be26b3f61b92c465eb75d877116100b376d543ba800c9abf6617c2b7",
     "steps": [
      {
       "step": "complete_offense",
-      "sha256": "0397ee75369de1c6efe501d8f8745b533a148891ec6c46132e113b7ec1911660",
-      "nodes": 2314,
-      "names": 8050,
+      "sha256": "6f3fe2f78f3811a45c58c442c6d6a0bf512f4e8ab7d59e65b0ccc3bc181e24a0",
+      "nodes": 2312,
+      "names": 7990,
       "native_scoring": 0
      },
      {
       "step": "defense",
-      "sha256": "0ed91141dd08eaa87ba043a91815617125525ed17894f0321c1de341df91f6bc",
-      "nodes": 2700,
+      "sha256": "80ba05d3e7ef20e016f6d01533f594d0e7cf5a4712afcd3ce9ff214cffe665c5",
+      "nodes": 2698,
       "native_scoring": 0
      },
      {
       "step": "position_pools",
-      "sha256": "0add3134323b1c38f039e908964bfc1889b7d7984d13fbd9e6d825e849aa3be5"
+      "sha256": "bc2ef8d606c7be0387ed7137fe20aa2adf1dae1f0b369e44a56814bcde0f40f1"
      },
      {
       "step": "kickoff_alignment",
-      "sha256": "a7aa6d443299cfeb4b64703a9984ebbce76628625b659ba74ce955cc415e0452"
+      "sha256": "5bcaf79acc856f61ab5e7f4ebbd1080563815009ab547788e391207a91c0761c"
      },
      {
       "step": "kickoff_returns",
-      "sha256": "3c51497e3a710d1460c9b877bfd593a7e26d2260e655812489c667ea0fe992db",
+      "sha256": "f0bcad5fe918b8a8238a8559310b6e90816220f0397dc93331c8291dedd81acd",
       "status": "applied"
      },
      {
       "step": "depth_roles",
-      "sha256": "d4d0f47e1341d126e56e17c7d250bc030c90496a6ac8afdae48c3ae236832472",
+      "sha256": "80a1bf9cd136163a9fc77f0ddb5f90be0021e87594a5d6877638c350981b28ba",
       "changed_bytes": 10
      },
      {
       "step": "screen_timing",
-      "sha256": "d4d0f47e1341d126e56e17c7d250bc030c90496a6ac8afdae48c3ae236832472",
+      "sha256": "80a1bf9cd136163a9fc77f0ddb5f90be0021e87594a5d6877638c350981b28ba",
       "status": "applied",
       "already_applied": true
      }
     ],
-    "final_sha256": "d4d0f47e1341d126e56e17c7d250bc030c90496a6ac8afdae48c3ae236832472"
+    "final_sha256": "80a1bf9cd136163a9fc77f0ddb5f90be0021e87594a5d6877638c350981b28ba"
    },
    "lint": {},
    "offense_findings": [],
    "formations": 50,
-   "menu_entries": 647,
+   "menu_entries": 650,
    "walks_ended": true,
    "scoring": {
     "status": "PROVED OFFLINE",
@@ -598,64 +598,64 @@
     "formations": 50,
     "plays": 270,
     "categories": 23,
-    "nodes": 2778,
-    "name_pool_units": 5065,
-    "strings_end": "0x12fd2"
+    "nodes": 2776,
+    "name_pool_units": 5035,
+    "strings_end": "0x12f96"
    },
-   "final_sha256": "d4d0f47e1341d126e56e17c7d250bc030c90496a6ac8afdae48c3ae236832472"
+   "final_sha256": "80a1bf9cd136163a9fc77f0ddb5f90be0021e87594a5d6877638c350981b28ba"
   },
   "DAL": {
    "team": "DAL",
    "ok": true,
-   "offense_pack_sha256": "c3a0c7b867f35dd7ff78d25c2d0341d56ddd246c246db11cb41a9811361ac43c",
+   "offense_pack_sha256": "2ee7708cc5fb7c28f0c545cae638c0ffc9c0c9e0e828fb7417055b04d78a9532",
    "compose": {
     "team": "DAL",
     "source_sha256": "7c2200f05c210ca69a90a0215a3475a798a782abf54a2cf15b1b43997f244fab",
     "steps": [
      {
       "step": "complete_offense",
-      "sha256": "95a67a2e229dfc752d403132d7b6015099dede3d8f89922e418d86dfb7d5c53c",
-      "nodes": 2323,
-      "names": 7622,
+      "sha256": "eb760f5d27400330e3652c29527a496b3e3fdec646f29aff84ba4fb72999d4f1",
+      "nodes": 2321,
+      "names": 7606,
       "native_scoring": 0
      },
      {
       "step": "defense",
-      "sha256": "e6ed9d4ac1b3be771802d073e62bd5209a556433d313e7ff144d78a1d46c0677",
-      "nodes": 2893,
+      "sha256": "11fad0d9c94ab0fad6d0081312f3a7003ce3fbd86be24419f52bd99889910bc1",
+      "nodes": 2891,
       "native_scoring": 0
      },
      {
       "step": "position_pools",
-      "sha256": "77b1d06a20bce074aaf8f222b118d118908a85405215341836c81192d1771a88"
+      "sha256": "651db12a34cf563a34577cb617b14bd158ee933d07d687702368aabdbcf7c4f1"
      },
      {
       "step": "kickoff_alignment",
-      "sha256": "5ce0de32bd1bb619de1b69b3cc7e92a26f50073f2321a0c3e268549bb7044c68"
+      "sha256": "3eff877545af85a4710f73a615756768a3722f4f2a7209a3aa63e118b60904fd"
      },
      {
       "step": "kickoff_returns",
-      "sha256": "4dc235cfb08e418f41a95ef5cb8b30efacbe3f540151ed951acc47528915b4bd",
+      "sha256": "48025109ffd34fcc106ca4fe91f14ef3f2b9b3c879a257fe47f9ea5e80302419",
       "status": "applied"
      },
      {
       "step": "depth_roles",
-      "sha256": "300f1c08cd4df13efc4444eb4b285b85728a6be23d1f1d54d9dbd869c36383ee",
+      "sha256": "6f91827841bd4e7842fb4b69d7b48432e50ad28543cf07c31c8ac3cfe4c55889",
       "changed_bytes": 9
      },
      {
       "step": "screen_timing",
-      "sha256": "300f1c08cd4df13efc4444eb4b285b85728a6be23d1f1d54d9dbd869c36383ee",
+      "sha256": "6f91827841bd4e7842fb4b69d7b48432e50ad28543cf07c31c8ac3cfe4c55889",
       "status": "applied",
       "already_applied": true
      }
     ],
-    "final_sha256": "300f1c08cd4df13efc4444eb4b285b85728a6be23d1f1d54d9dbd869c36383ee"
+    "final_sha256": "6f91827841bd4e7842fb4b69d7b48432e50ad28543cf07c31c8ac3cfe4c55889"
    },
    "lint": {},
    "offense_findings": [],
    "formations": 50,
-   "menu_entries": 680,
+   "menu_entries": 686,
    "walks_ended": true,
    "scoring": {
     "status": "PROVED OFFLINE",
@@ -673,66 +673,66 @@
     "formations": 50,
     "plays": 270,
     "categories": 23,
-    "nodes": 2971,
-    "name_pool_units": 5055,
-    "strings_end": "0x12fbe"
+    "nodes": 2969,
+    "name_pool_units": 5047,
+    "strings_end": "0x12fae"
    },
-   "final_sha256": "300f1c08cd4df13efc4444eb4b285b85728a6be23d1f1d54d9dbd869c36383ee"
+   "final_sha256": "6f91827841bd4e7842fb4b69d7b48432e50ad28543cf07c31c8ac3cfe4c55889"
   },
   "DEN": {
    "team": "DEN",
    "ok": true,
-   "offense_pack_sha256": "100f6a52446360d9e22b1c664288732c4ac95e5e31847d7d64edeaec574cd429",
+   "offense_pack_sha256": "2d66ec8f7bed99f08ce7237e14d05a8c7d7944e5c17dab2954ebbfbe685c31a5",
    "compose": {
     "team": "DEN",
     "source_sha256": "ce4c6da4fe76ff2a132cf1a78817e80496bfbce80e09d1618a09bbfbcdfc3d71",
     "steps": [
      {
       "step": "complete_offense",
-      "sha256": "46427acc95d0831fa7458501c13d7fe39142d727639aa0b395722a7d8d52b84e",
-      "nodes": 2191,
-      "names": 8014,
+      "sha256": "d2dd21543ac684c6b76d3d026e89827856ae54da96d1f8753fd05a9291fbc754",
+      "nodes": 2189,
+      "names": 7942,
       "native_scoring": 0
      },
      {
       "step": "defense",
-      "sha256": "70a68ed63fd01317c7623922ffb3de19a7468eb8d8b996b989bccdb2c913c6d5",
-      "nodes": 2601,
+      "sha256": "4ed0d2b328e7e5eb91b43ac45df455bf5514be41faf5115e1cc826538532a8b8",
+      "nodes": 2599,
       "native_scoring": 0
      },
      {
       "step": "position_pools",
-      "sha256": "65e90811db01f48911230c905d7a90a53e1b1ce055150eec3fdfc774ec286af0"
+      "sha256": "27c8abe6c6f8026aeba3272c0fbb717337e0e8c8b7b129027e6f56c01b93a2ee"
      },
      {
       "step": "kickoff_alignment",
-      "sha256": "9899231387ae96690c06bdd64dab9abbebeee52ecdfb09252bef61271f335d0b"
+      "sha256": "6a186f174e62e0564560dd96a23e66cc7b2be0b4082fa5600b85eea43eafbc3c"
      },
      {
       "step": "kickoff_returns",
-      "sha256": "fa363933028d29ddad19c7ce15a3fd1c3163bf2f4459bc599de8fe2a217faa76",
+      "sha256": "e7257aa30a44b4eb180d08b1c094e9e56cfee9043cbea1ccd642641cc8c27ec1",
       "status": "applied"
      },
      {
       "step": "depth_roles",
-      "sha256": "52ab88fa9114277ded27bc60be5e08a70e37ce4c3e8b12706c315f3cda492a3e",
+      "sha256": "8fefb9d779cd41d95e375f8c1248c69c858cc594d475e7ff3390c28f09e27880",
       "changed_bytes": 10
      },
      {
       "step": "screen_timing",
-      "sha256": "52ab88fa9114277ded27bc60be5e08a70e37ce4c3e8b12706c315f3cda492a3e",
+      "sha256": "8fefb9d779cd41d95e375f8c1248c69c858cc594d475e7ff3390c28f09e27880",
       "status": "applied",
       "already_applied": true
      }
     ],
-    "final_sha256": "52ab88fa9114277ded27bc60be5e08a70e37ce4c3e8b12706c315f3cda492a3e"
+    "final_sha256": "8fefb9d779cd41d95e375f8c1248c69c858cc594d475e7ff3390c28f09e27880"
    },
    "lint": {
     "DEF_MIDDLE_MUG": 1
    },
    "offense_findings": [],
    "formations": 50,
-   "menu_entries": 723,
+   "menu_entries": 729,
    "walks_ended": true,
    "scoring": {
     "status": "PROVED OFFLINE",
@@ -750,64 +750,64 @@
     "formations": 50,
     "plays": 270,
     "categories": 23,
-    "nodes": 2679,
-    "name_pool_units": 5061,
-    "strings_end": "0x12fca"
+    "nodes": 2677,
+    "name_pool_units": 5025,
+    "strings_end": "0x12f82"
    },
-   "final_sha256": "52ab88fa9114277ded27bc60be5e08a70e37ce4c3e8b12706c315f3cda492a3e"
+   "final_sha256": "8fefb9d779cd41d95e375f8c1248c69c858cc594d475e7ff3390c28f09e27880"
   },
   "DET": {
    "team": "DET",
    "ok": true,
-   "offense_pack_sha256": "ae82add8114b1ca9052b096a411566f31f7ce569bc724e0b5499d3896a4fddfb",
+   "offense_pack_sha256": "c6fb9bb730b6f6870b0f83160b8e9c314c436414f808bbd1ad17968db7abdab8",
    "compose": {
     "team": "DET",
     "source_sha256": "4eb3f42cc5b58a8165329b266e6c28e7ae74f0277d5f2149c22c8f6dc1a3a0aa",
     "steps": [
      {
       "step": "complete_offense",
-      "sha256": "a07fcb9c549d69a47eeb89af91af8d4a982ec2651268301528726214cec24d77",
-      "nodes": 2248,
-      "names": 7976,
+      "sha256": "70b9001de93ebc64147e3ecc55c7b51926cd7e6bdcad96d5ece0887298da344a",
+      "nodes": 2244,
+      "names": 7948,
       "native_scoring": 0
      },
      {
       "step": "defense",
-      "sha256": "58742181980820a64e19e5ee17d2cde83b84375ddad30441dd32912bd0813cba",
-      "nodes": 2670,
+      "sha256": "026944bcdb9e7fa2eed274adbe0044e09a254b1520b3887f466d38cf6fcdd619",
+      "nodes": 2666,
       "native_scoring": 0
      },
      {
       "step": "position_pools",
-      "sha256": "bd47dbc974e53cdc7c50e0c8af0bdd26a28fcd34cac41ddac9ba2963f0a9f7b5"
+      "sha256": "e4e73a32f793f5097f00544c74512b0ed5fea4388101c5e8633b5387bf289a96"
      },
      {
       "step": "kickoff_alignment",
-      "sha256": "ff39299b27154411b0dc9b25dbc3bc1fd9d726f8436fed44bead7b2fd55836d0"
+      "sha256": "85a14acdc4afa4e9cc09970141f4d9212374ef10e578b4795ce7b3e71daf93c7"
      },
      {
       "step": "kickoff_returns",
-      "sha256": "3e5f7586294321dad238c2808a4729764b267b84fe220d23db4ae5440e98962d",
+      "sha256": "1c6a9ea55872dacab9778e395a457988737164066ea0e37e4a2d07ea7c3c073b",
       "status": "applied"
      },
      {
       "step": "depth_roles",
-      "sha256": "f2c588ba3d623b1f980fa1d9ce9ee5bce44d64175ce0ca91642a058796f5cd87",
+      "sha256": "c48fa6ab9c2c29f116534dbc3bc9614860bf834b5c29dd9218aba7cfb3b3ca3b",
       "changed_bytes": 9
      },
      {
       "step": "screen_timing",
-      "sha256": "f2c588ba3d623b1f980fa1d9ce9ee5bce44d64175ce0ca91642a058796f5cd87",
+      "sha256": "c48fa6ab9c2c29f116534dbc3bc9614860bf834b5c29dd9218aba7cfb3b3ca3b",
       "status": "applied",
       "already_applied": true
      }
     ],
-    "final_sha256": "f2c588ba3d623b1f980fa1d9ce9ee5bce44d64175ce0ca91642a058796f5cd87"
+    "final_sha256": "c48fa6ab9c2c29f116534dbc3bc9614860bf834b5c29dd9218aba7cfb3b3ca3b"
    },
    "lint": {},
    "offense_findings": [],
    "formations": 50,
-   "menu_entries": 669,
+   "menu_entries": 672,
    "walks_ended": true,
    "scoring": {
     "status": "PROVED OFFLINE",
@@ -816,7 +816,7 @@
    "coach_ai": {
     "ok": true,
     "pools": 20,
-    "max_play_index": 255
+    "max_play_index": 238
    },
    "short_page_formations": [],
    "duplicate_link_formations": [],
@@ -825,64 +825,64 @@
     "formations": 50,
     "plays": 270,
     "categories": 22,
-    "nodes": 2748,
-    "name_pool_units": 5048,
-    "strings_end": "0x12fb0"
+    "nodes": 2744,
+    "name_pool_units": 5034,
+    "strings_end": "0x12f94"
    },
-   "final_sha256": "f2c588ba3d623b1f980fa1d9ce9ee5bce44d64175ce0ca91642a058796f5cd87"
+   "final_sha256": "c48fa6ab9c2c29f116534dbc3bc9614860bf834b5c29dd9218aba7cfb3b3ca3b"
   },
   "GB": {
    "team": "GB",
    "ok": true,
-   "offense_pack_sha256": "aa426e6851730759caa2bf4aacbbd877643da6cfa9ad23f2dbc38ce585d1cb36",
+   "offense_pack_sha256": "942ac4fc8730ae3c90123b3c6a78df935dfa3c7211c841bbe7dc225e7c6d61a3",
    "compose": {
     "team": "GB",
     "source_sha256": "45efe7167b4a4b6cf8a521fa3a5be9c013c33911004ce7a6f193660b043bbcc3",
     "steps": [
      {
       "step": "complete_offense",
-      "sha256": "204a14a35e7e08e5d6a56d00dcd707261ac0162911eb63ed80f34b78cf0c1aa8",
-      "nodes": 2330,
-      "names": 7878,
+      "sha256": "c0fd8402dab197e5bba883d224b7a047e2ab71cb0e2f6e5f13db0d84e1fc68c8",
+      "nodes": 2329,
+      "names": 7850,
       "native_scoring": 0
      },
      {
       "step": "defense",
-      "sha256": "16e78257acd76b57b1a480f9d0378de74ff0bd4eeabcdc10020c3fd029691ecd",
-      "nodes": 2740,
+      "sha256": "92b0ede7b5e30c31106d6dd5aca89aa8b31d35892ce67980ccf17c5cc16e7202",
+      "nodes": 2739,
       "native_scoring": 0
      },
      {
       "step": "position_pools",
-      "sha256": "4f3861aae466b5b9c2f0da13827053e55107bb2344036917eca6c359cd204433"
+      "sha256": "23fd2e2ab9edf8389769969346e479ddeb1832135382facd9ad0cb70fb5f1e23"
      },
      {
       "step": "kickoff_alignment",
-      "sha256": "fa87517d684be41a5cb9a9c93fb7f45480b5f8b373ffde69217b070ba48e877e"
+      "sha256": "c606b931e90db2384658e977a7eec11ae3a197650c487542a741f4cf24444c7a"
      },
      {
       "step": "kickoff_returns",
-      "sha256": "8ddba0c592364fbd81beb0bf6379db184b30a8c38188b5229807c045644a45dd",
+      "sha256": "75090f8f45be139696dee63c152266a0f127e4743af9b9327d8152e1c491df32",
       "status": "applied"
      },
      {
       "step": "depth_roles",
-      "sha256": "faa550dff914296ea8a09c3b85a64d2074a71f67e68aab9b7b50ac41ea8f006b",
+      "sha256": "070522637e6a20df53d14be81b221dd25e2e7d0185dbd549003b82036a2089fd",
       "changed_bytes": 9
      },
      {
       "step": "screen_timing",
-      "sha256": "faa550dff914296ea8a09c3b85a64d2074a71f67e68aab9b7b50ac41ea8f006b",
+      "sha256": "070522637e6a20df53d14be81b221dd25e2e7d0185dbd549003b82036a2089fd",
       "status": "applied",
       "already_applied": true
      }
     ],
-    "final_sha256": "faa550dff914296ea8a09c3b85a64d2074a71f67e68aab9b7b50ac41ea8f006b"
+    "final_sha256": "070522637e6a20df53d14be81b221dd25e2e7d0185dbd549003b82036a2089fd"
    },
    "lint": {},
    "offense_findings": [],
    "formations": 50,
-   "menu_entries": 684,
+   "menu_entries": 690,
    "walks_ended": true,
    "scoring": {
     "status": "PROVED OFFLINE",
@@ -900,64 +900,64 @@
     "formations": 50,
     "plays": 270,
     "categories": 23,
-    "nodes": 2818,
-    "name_pool_units": 5061,
-    "strings_end": "0x12fca"
+    "nodes": 2817,
+    "name_pool_units": 5047,
+    "strings_end": "0x12fae"
    },
-   "final_sha256": "faa550dff914296ea8a09c3b85a64d2074a71f67e68aab9b7b50ac41ea8f006b"
+   "final_sha256": "070522637e6a20df53d14be81b221dd25e2e7d0185dbd549003b82036a2089fd"
   },
   "HOU": {
    "team": "HOU",
    "ok": true,
-   "offense_pack_sha256": "2ec1370aae50227148b7fb7e7d41fa2f06cabd3008ad2347ca41617a6e4e9732",
+   "offense_pack_sha256": "eadec85530233678bd86b68d69f4ab059c43059cd7cdadab20aac6c0353902b9",
    "compose": {
     "team": "HOU",
     "source_sha256": "7fc25a62457c130c6bd78a46186abbb43bb5cd19f7f331e766c53f1d1b42ba98",
     "steps": [
      {
       "step": "complete_offense",
-      "sha256": "63e6294f7c168def4184c02c036c67dd30eec9ab45b5bbc6ad9b0b5144bcec9c",
-      "nodes": 2294,
-      "names": 8130,
+      "sha256": "5d6c29a5ce3a7c810725316c6a7f878ae7e8599fec8b655b2bb0bcc4c3f0db88",
+      "nodes": 2297,
+      "names": 8062,
       "native_scoring": 0
      },
      {
       "step": "defense",
-      "sha256": "ccdaef02dec436daf2d32097826ec09ff0991e2da5eb2cd3bc84fca023eff5ad",
-      "nodes": 2984,
+      "sha256": "c9fd94258b71a7452a671aa5eb88f8255882ae8d29a42fb3eabc42dfb0b343df",
+      "nodes": 2987,
       "native_scoring": 0
      },
      {
       "step": "position_pools",
-      "sha256": "8505cdfe0826ca2ad7ce3d23a5ea0a1e94d3cd638d9b08f27586b1788c591a22"
+      "sha256": "024e27c96338eeb4117ad48c091d5f54b5ebbe102f0ce7859ddcfaa359949e0a"
      },
      {
       "step": "kickoff_alignment",
-      "sha256": "6d43d10b4a598b16f515346a30db0cd1214c856e3b0498ef09fefdf8a11b18c7"
+      "sha256": "6465f36a3a95f67360c237df40956f77079aec545ff492c81d7b47f42913646b"
      },
      {
       "step": "kickoff_returns",
-      "sha256": "34f39e4b9eb5eae8e24da45e00712e339c296e33e00b37f26009232873bc3965",
+      "sha256": "2e46dc922f2682cd03ad45850049d7bc13a242c696e75b62cc607109f8c51342",
       "status": "applied"
      },
      {
       "step": "depth_roles",
-      "sha256": "269e8126a78a79004d61269b6fd8e065b86c0e2ddfaf9717723e6a9d7a7eaf79",
+      "sha256": "9add5b171914d88b464cf6e0b72b0b1d6ff8623b2acda7f39700381d487994df",
       "changed_bytes": 10
      },
      {
       "step": "screen_timing",
-      "sha256": "269e8126a78a79004d61269b6fd8e065b86c0e2ddfaf9717723e6a9d7a7eaf79",
+      "sha256": "9add5b171914d88b464cf6e0b72b0b1d6ff8623b2acda7f39700381d487994df",
       "status": "applied",
       "already_applied": true
      }
     ],
-    "final_sha256": "269e8126a78a79004d61269b6fd8e065b86c0e2ddfaf9717723e6a9d7a7eaf79"
+    "final_sha256": "9add5b171914d88b464cf6e0b72b0b1d6ff8623b2acda7f39700381d487994df"
    },
    "lint": {},
    "offense_findings": [],
    "formations": 50,
-   "menu_entries": 674,
+   "menu_entries": 680,
    "walks_ended": true,
    "scoring": {
     "status": "PROVED OFFLINE",
@@ -975,64 +975,64 @@
     "formations": 50,
     "plays": 270,
     "categories": 24,
-    "nodes": 3062,
-    "name_pool_units": 5059,
-    "strings_end": "0x12fc6"
+    "nodes": 3065,
+    "name_pool_units": 5025,
+    "strings_end": "0x12f82"
    },
-   "final_sha256": "269e8126a78a79004d61269b6fd8e065b86c0e2ddfaf9717723e6a9d7a7eaf79"
+   "final_sha256": "9add5b171914d88b464cf6e0b72b0b1d6ff8623b2acda7f39700381d487994df"
   },
   "IND": {
    "team": "IND",
    "ok": true,
-   "offense_pack_sha256": "601c2993cffa11caa6b12921327d8d51f6053cd5059f9f45162b149567103170",
+   "offense_pack_sha256": "8db7799183324e094940215501cee91b36038af8f64f21bbf525d084d6f6be57",
    "compose": {
     "team": "IND",
     "source_sha256": "6f54310741b89b4b39167d03a1f47eae34d0d16d757d061530299e2a6c383537",
     "steps": [
      {
       "step": "complete_offense",
-      "sha256": "e013f8fa9c289d085cbbee75e7b7f6cfa63b51d3657a29122605f8c951f12a0a",
-      "nodes": 2382,
-      "names": 8082,
+      "sha256": "1be3c58d43d781b5b20dd0d7c4d87ab267b021f8b07b79ebff73f60718fbd6ec",
+      "nodes": 2390,
+      "names": 8042,
       "native_scoring": 0
      },
      {
       "step": "defense",
-      "sha256": "0483db93a2c99269d24559b88d839bd30178d7a8727c05a6cb88402e34435c8d",
-      "nodes": 2800,
+      "sha256": "9f70ea11230297db0763f2747760f8e15131ed05d7657d869d02ae64aa318fff",
+      "nodes": 2808,
       "native_scoring": 0
      },
      {
       "step": "position_pools",
-      "sha256": "1d3dba82d019c78d18fc63411904b74e0635b269c9d214051f6e3276af951eeb"
+      "sha256": "9a1d3d4c17452ea58a7d113da5c56075fbae612bc88d6ccf26a81898d6d54f9c"
      },
      {
       "step": "kickoff_alignment",
-      "sha256": "51095cb2e93c47a866c4eabb332034110c0805946b693068a44afbfa78399e25"
+      "sha256": "882d0a9d6be1704061eac2a6f2bc815159b034a657e09cfbe7e446fb47d127f4"
      },
      {
       "step": "kickoff_returns",
-      "sha256": "a43c930df142bc6dbc1304ce2bc03fd275415d0a9419f40f67e3337f22ec53bb",
+      "sha256": "c14b61f16f46a5decddf4dcada079b3bce3e8ceef5c1db926594da92df31f4b7",
       "status": "applied"
      },
      {
       "step": "depth_roles",
-      "sha256": "8132d5616777726069b48753124414160d6b16b77e57267d7aec51d0bd09cefc",
+      "sha256": "f92a4c0c94fcba47f5c0985fcf05fd71e7443ef41aaee3b2a1e2f71af0d1bb1c",
       "changed_bytes": 9
      },
      {
       "step": "screen_timing",
-      "sha256": "8132d5616777726069b48753124414160d6b16b77e57267d7aec51d0bd09cefc",
+      "sha256": "f92a4c0c94fcba47f5c0985fcf05fd71e7443ef41aaee3b2a1e2f71af0d1bb1c",
       "status": "applied",
       "already_applied": true
      }
     ],
-    "final_sha256": "8132d5616777726069b48753124414160d6b16b77e57267d7aec51d0bd09cefc"
+    "final_sha256": "f92a4c0c94fcba47f5c0985fcf05fd71e7443ef41aaee3b2a1e2f71af0d1bb1c"
    },
    "lint": {},
    "offense_findings": [],
    "formations": 50,
-   "menu_entries": 597,
+   "menu_entries": 606,
    "walks_ended": true,
    "scoring": {
     "status": "PROVED OFFLINE",
@@ -1050,64 +1050,64 @@
     "formations": 50,
     "plays": 270,
     "categories": 22,
-    "nodes": 2878,
-    "name_pool_units": 5003,
-    "strings_end": "0x12f56"
+    "nodes": 2886,
+    "name_pool_units": 5074,
+    "strings_end": "0x12fe4"
    },
-   "final_sha256": "8132d5616777726069b48753124414160d6b16b77e57267d7aec51d0bd09cefc"
+   "final_sha256": "f92a4c0c94fcba47f5c0985fcf05fd71e7443ef41aaee3b2a1e2f71af0d1bb1c"
   },
   "JAX": {
    "team": "JAX",
    "ok": true,
-   "offense_pack_sha256": "4a0d642c3cf86e2c184ea053445a70b35daf334db62ccdbf02396288596986da",
+   "offense_pack_sha256": "38dc9d4dc0678c74d8384030759791683474c43ffe057e5a227eaa747022f122",
    "compose": {
     "team": "JAX",
     "source_sha256": "c7ed939ecacec0196d98f0b698c7a2461f2804739770d59cfe14a38e76b43e7a",
     "steps": [
      {
       "step": "complete_offense",
-      "sha256": "9cef3a88aad2f87ac39b34641093bf592b3cb3675efc2560b6e681db30a46fd0",
-      "nodes": 2296,
-      "names": 8090,
+      "sha256": "9c63473cb8eb8d441bf7a12c7c858d5eff280183ade4419c9ef3882645717da5",
+      "nodes": 2306,
+      "names": 8054,
       "native_scoring": 0
      },
      {
       "step": "defense",
-      "sha256": "df7cfffe10aa50ca2fcc0d467cb05be466f19ea2f4259e9b7ea37339b52e667a",
-      "nodes": 2726,
+      "sha256": "e3a18599a4acd5c7c895dec8eea42d2448b393134ac50bfead72d5d75cc63b0b",
+      "nodes": 2736,
       "native_scoring": 0
      },
      {
       "step": "position_pools",
-      "sha256": "0d03119279c8cad80c45eb2cee9feee1a997429ee7f3cdeac3c3d6ea72a8cbd0"
+      "sha256": "9a5b96f429dec6f45879abc04e1736523d5f5f5f9d0cf2b2ddf2edabb29bc6ab"
      },
      {
       "step": "kickoff_alignment",
-      "sha256": "235db0c30416491ffcd5dbe374386e5f5029f0eb7f2813f83e480b93f27929d5"
+      "sha256": "2dd0e59eb5f6d3c4100cb385aaa0183b5e75149f02aa69ad78ed6748c56b3119"
      },
      {
       "step": "kickoff_returns",
-      "sha256": "9ff09d5a4af0bbbf914a682f63a5b80aa614c2da175a4ea3d83027bac1cad7c1",
+      "sha256": "966652a52d56eb081c7ad483ac06f8867db2d09f414cda782077e12de4b84c88",
       "status": "applied"
      },
      {
       "step": "depth_roles",
-      "sha256": "c5f59ff4b65b07d4788a26dcebb089812bbf0467f9f8b81ca3eef0866fcac044",
+      "sha256": "fcea0b995325887e30e197195ca58dcb04b80b5cf3a0f7cc7c9256d16bca4c5f",
       "changed_bytes": 8
      },
      {
       "step": "screen_timing",
-      "sha256": "c5f59ff4b65b07d4788a26dcebb089812bbf0467f9f8b81ca3eef0866fcac044",
+      "sha256": "fcea0b995325887e30e197195ca58dcb04b80b5cf3a0f7cc7c9256d16bca4c5f",
       "status": "applied",
       "already_applied": true
      }
     ],
-    "final_sha256": "c5f59ff4b65b07d4788a26dcebb089812bbf0467f9f8b81ca3eef0866fcac044"
+    "final_sha256": "fcea0b995325887e30e197195ca58dcb04b80b5cf3a0f7cc7c9256d16bca4c5f"
    },
    "lint": {},
    "offense_findings": [],
    "formations": 50,
-   "menu_entries": 716,
+   "menu_entries": 725,
    "walks_ended": true,
    "scoring": {
     "status": "PROVED OFFLINE",
@@ -1125,59 +1125,59 @@
     "formations": 50,
     "plays": 270,
     "categories": 22,
-    "nodes": 2804,
-    "name_pool_units": 5070,
-    "strings_end": "0x12fdc"
+    "nodes": 2814,
+    "name_pool_units": 5052,
+    "strings_end": "0x12fb8"
    },
-   "final_sha256": "c5f59ff4b65b07d4788a26dcebb089812bbf0467f9f8b81ca3eef0866fcac044"
+   "final_sha256": "fcea0b995325887e30e197195ca58dcb04b80b5cf3a0f7cc7c9256d16bca4c5f"
   },
   "KC": {
    "team": "KC",
    "ok": true,
-   "offense_pack_sha256": "6591944da9ad0c1dd9ff31d871c72c61ccc1ad13d60daccb7e698703738b5086",
+   "offense_pack_sha256": "73a68bfcea705bebab163689c25fbac9654ae165864d2e03c880b58f07ef895c",
    "compose": {
     "team": "KC",
     "source_sha256": "56935ebb3cd8915f87d5647be7a8bcd324e2a04fe6134ff10c97c1c94f55b457",
     "steps": [
      {
       "step": "complete_offense",
-      "sha256": "511eb984737b2b3f1671bbbd4c470a44ab19ffd5bea6c24b00f16efd2f3c2e78",
-      "nodes": 2288,
-      "names": 8074,
+      "sha256": "d5034efa52eeb04f7a149474098a2fea7aa61f801f8a38f6fef483b570805eed",
+      "nodes": 2289,
+      "names": 8062,
       "native_scoring": 0
      },
      {
       "step": "defense",
-      "sha256": "21591e8e3b698ef5236f3f2ebba7a84a70efb7632c3b0312ac74c4da0e9d056a",
-      "nodes": 2712,
+      "sha256": "0b232fceceb4fca40623b341d6ecfd8ceb42077f4b85870026c0bfeea515ef9f",
+      "nodes": 2713,
       "native_scoring": 0
      },
      {
       "step": "position_pools",
-      "sha256": "6e2fedd876a2ed009067a246d891f8cf5ed0ca4c395b866034cbd0638e77bca0"
+      "sha256": "c7e46accf5c0bec41bf9aa6f3b1632e839fa28b2f86624413c161985ce343505"
      },
      {
       "step": "kickoff_alignment",
-      "sha256": "03f106516bf0bdcaaadb6b5f7f1a120b42ba1960e23ba87ec31163b427d3c7ec"
+      "sha256": "9e2513b5c1e88a2a5d78ce7963cebecc409775a2e0cc0f45fd1330ccec137443"
      },
      {
       "step": "kickoff_returns",
-      "sha256": "d972d017872a94fe29aa7e7918201bd5b762617b62675d165c1e82393e429b5c",
+      "sha256": "fce7fca3c686c000d06c835ba1f917e9985f74e13820a9de8bbd271971311a1b",
       "status": "applied"
      },
      {
       "step": "depth_roles",
-      "sha256": "6633de93b3d430e0fbea6f9a526245005cb03aae993bb113997fd375338ba98d",
+      "sha256": "e672bd752df7e69f350544db7f2cb9cb17a2bde825dbbec63aba4f3f34cc1503",
       "changed_bytes": 9
      },
      {
       "step": "screen_timing",
-      "sha256": "6633de93b3d430e0fbea6f9a526245005cb03aae993bb113997fd375338ba98d",
+      "sha256": "e672bd752df7e69f350544db7f2cb9cb17a2bde825dbbec63aba4f3f34cc1503",
       "status": "applied",
       "already_applied": true
      }
     ],
-    "final_sha256": "6633de93b3d430e0fbea6f9a526245005cb03aae993bb113997fd375338ba98d"
+    "final_sha256": "e672bd752df7e69f350544db7f2cb9cb17a2bde825dbbec63aba4f3f34cc1503"
    },
    "lint": {
     "DEF_MIDDLE_MUG": 1
@@ -1202,64 +1202,64 @@
     "formations": 50,
     "plays": 270,
     "categories": 22,
-    "nodes": 2790,
-    "name_pool_units": 5073,
-    "strings_end": "0x12fe2"
+    "nodes": 2791,
+    "name_pool_units": 5067,
+    "strings_end": "0x12fd6"
    },
-   "final_sha256": "6633de93b3d430e0fbea6f9a526245005cb03aae993bb113997fd375338ba98d"
+   "final_sha256": "e672bd752df7e69f350544db7f2cb9cb17a2bde825dbbec63aba4f3f34cc1503"
   },
   "MIA": {
    "team": "MIA",
    "ok": true,
-   "offense_pack_sha256": "dc48a3d92a77206e7d32491bb4f0bb6c07268c18de5f0ed32ff5c3929a0d55a7",
+   "offense_pack_sha256": "7f0d6979385e092b989b2778a8948c4bce1951ad627162fb1e8f2dd344fa1252",
    "compose": {
     "team": "MIA",
     "source_sha256": "e3da606f907617aeea92a5fef1381bfcca485cac01d0fa664fda8afdad27b9f9",
     "steps": [
      {
       "step": "complete_offense",
-      "sha256": "d827680fdd24d89f34863587ffc99c7e91e8e392bd5f1799879b25de9afe375d",
-      "nodes": 2369,
-      "names": 7706,
+      "sha256": "a5daac0f24939a75a7ab639e6100bae9bd7a86c53f80cc8771c214af8acb1eb2",
+      "nodes": 2370,
+      "names": 7698,
       "native_scoring": 0
      },
      {
       "step": "defense",
-      "sha256": "c0d3aaedc2a84349e91e7a466654d8e011bc4d9059884e7bbfa7fcad394365d4",
-      "nodes": 2833,
+      "sha256": "1810ba3d7d93b7369a3cb9bee0295fc6a4fc301b6c8ae421bd48ce6179385b7a",
+      "nodes": 2834,
       "native_scoring": 0
      },
      {
       "step": "position_pools",
-      "sha256": "c1037ab47325b67def34ff9cb8055e4e9d26b4e7f2d8ba67fa698aa8a0cd37ef"
+      "sha256": "3676e9917566ae6720f20f1bce70261dbd9dedec3372bc5262c50b5547ae1c96"
      },
      {
       "step": "kickoff_alignment",
-      "sha256": "1b30f6015556570ee97feab5fdc97607fd48c4772835c063bc62c4ce7e9b2c45"
+      "sha256": "18f44aa4003757bf7ccc9a1707e0fc8806e9ade7579309d92c18686ccf1f8c15"
      },
      {
       "step": "kickoff_returns",
-      "sha256": "c3d58565dbe9d027cb75d8e8debb680b6e65bf1f21d6aea94a6de0d3edb01985",
+      "sha256": "a7e9ffd38a001c92155e2ca79d198e66dd92f0b44651d969e08a1ec5d9f96a25",
       "status": "applied"
      },
      {
       "step": "depth_roles",
-      "sha256": "f362c5a181cfccfb243c7baf9f7c5b93ec60b2ea728465cff0f681ed9e4836c3",
+      "sha256": "ea469ec75f86c9f33ca75d7be3ce934cbfa4eb14e08c52e80803be26dacddb4a",
       "changed_bytes": 13
      },
      {
       "step": "screen_timing",
-      "sha256": "f362c5a181cfccfb243c7baf9f7c5b93ec60b2ea728465cff0f681ed9e4836c3",
+      "sha256": "ea469ec75f86c9f33ca75d7be3ce934cbfa4eb14e08c52e80803be26dacddb4a",
       "status": "applied",
       "already_applied": true
      }
     ],
-    "final_sha256": "f362c5a181cfccfb243c7baf9f7c5b93ec60b2ea728465cff0f681ed9e4836c3"
+    "final_sha256": "ea469ec75f86c9f33ca75d7be3ce934cbfa4eb14e08c52e80803be26dacddb4a"
    },
    "lint": {},
    "offense_findings": [],
    "formations": 50,
-   "menu_entries": 651,
+   "menu_entries": 660,
    "walks_ended": true,
    "scoring": {
     "status": "PROVED OFFLINE",
@@ -1277,66 +1277,66 @@
     "formations": 50,
     "plays": 270,
     "categories": 23,
-    "nodes": 2911,
-    "name_pool_units": 5071,
-    "strings_end": "0x12fde"
+    "nodes": 2912,
+    "name_pool_units": 5067,
+    "strings_end": "0x12fd6"
    },
-   "final_sha256": "f362c5a181cfccfb243c7baf9f7c5b93ec60b2ea728465cff0f681ed9e4836c3"
+   "final_sha256": "ea469ec75f86c9f33ca75d7be3ce934cbfa4eb14e08c52e80803be26dacddb4a"
   },
   "MIN": {
    "team": "MIN",
    "ok": true,
-   "offense_pack_sha256": "fb5f709e3e756f03026171d7d9dc97e1ebedeb795e5d26365ae0b9c4fbc7eafc",
+   "offense_pack_sha256": "e43a6a2dded05abb98531611126ca271fec3f6d89bb3d824d85eb9eefb9d7ba9",
    "compose": {
     "team": "MIN",
     "source_sha256": "50673fd09d38f4a17057a4e79a87119ee861456dd4416b94191b1563aa60887e",
     "steps": [
      {
       "step": "complete_offense",
-      "sha256": "3ad1ee449fd73c2962f564ca8ac1afaa2d2f490e90d8a9560e6982dc7861810a",
-      "nodes": 2281,
-      "names": 7840,
+      "sha256": "5e83a5e54a26e21f74e88b7fab692ed5202f3c86cbb52ad8ab481f36fc383845",
+      "nodes": 2274,
+      "names": 7816,
       "native_scoring": 0
      },
      {
       "step": "defense",
-      "sha256": "531a751bcf9f1bef015c9d76baf6ab672d322dc857b4a5b6795ee04fc1966d7d",
-      "nodes": 2811,
+      "sha256": "3ad68e6e20b2b68f4d876ba49ae041f37b22ab7fade0d8a57732d4b2a886aee3",
+      "nodes": 2804,
       "native_scoring": 0
      },
      {
       "step": "position_pools",
-      "sha256": "4026987f8560e2eaf027b660dec7b117eb42cc4fa2014bece32778e04938bd3c"
+      "sha256": "9ef9ab868ca35b6f871c583f139845aab3325a9235d4cff8775d051ffe1f146f"
      },
      {
       "step": "kickoff_alignment",
-      "sha256": "4fddfa97c4e45df2e91538de08adb3e2bd738120e3f8dffc0da86314828642ae"
+      "sha256": "8ffaf3f275c302535e4900d273320349bfcdda35805142adfb760b162b40f14b"
      },
      {
       "step": "kickoff_returns",
-      "sha256": "da09d4233e733b39e59b3e11d6b3f92576ae8f6a12828c92d5878b80a254378f",
+      "sha256": "65784932f73dd4ae74dc8540818aa9f3b542189a896284cb1045dd26acc450c7",
       "status": "applied"
      },
      {
       "step": "depth_roles",
-      "sha256": "8c01a4e7f4506cffa743af509919134b4f6d7ad9cf28679ac938636e912ea569",
+      "sha256": "6f3ae755436cce1d8917ee827237d62d9718ff470373a16c9b4b725b66fdc8d3",
       "changed_bytes": 9
      },
      {
       "step": "screen_timing",
-      "sha256": "8c01a4e7f4506cffa743af509919134b4f6d7ad9cf28679ac938636e912ea569",
+      "sha256": "6f3ae755436cce1d8917ee827237d62d9718ff470373a16c9b4b725b66fdc8d3",
       "status": "applied",
       "already_applied": true
      }
     ],
-    "final_sha256": "8c01a4e7f4506cffa743af509919134b4f6d7ad9cf28679ac938636e912ea569"
+    "final_sha256": "6f3ae755436cce1d8917ee827237d62d9718ff470373a16c9b4b725b66fdc8d3"
    },
    "lint": {
     "DEF_MIDDLE_MUG": 1
    },
    "offense_findings": [],
    "formations": 50,
-   "menu_entries": 541,
+   "menu_entries": 547,
    "walks_ended": true,
    "scoring": {
     "status": "PROVED OFFLINE",
@@ -1354,64 +1354,64 @@
     "formations": 50,
     "plays": 270,
     "categories": 25,
-    "nodes": 2889,
-    "name_pool_units": 5081,
-    "strings_end": "0x12ff2"
+    "nodes": 2882,
+    "name_pool_units": 5069,
+    "strings_end": "0x12fda"
    },
-   "final_sha256": "8c01a4e7f4506cffa743af509919134b4f6d7ad9cf28679ac938636e912ea569"
+   "final_sha256": "6f3ae755436cce1d8917ee827237d62d9718ff470373a16c9b4b725b66fdc8d3"
   },
   "NE": {
    "team": "NE",
    "ok": true,
-   "offense_pack_sha256": "d3081935fa88c6f60ecb3264078c694099c904a0a4b57b590485b0224e9b6403",
+   "offense_pack_sha256": "f1ecc7b0194f8bf46f2b051749db63c64c40a5002f71b554cf1130c4f8ebf3de",
    "compose": {
     "team": "NE",
     "source_sha256": "c49392010deb41a8ec757affc62aa1bfb801f752a7c49a85b1f55e120bd87510",
     "steps": [
      {
       "step": "complete_offense",
-      "sha256": "5be12bf9a40d37587fd7b50f5bafc067db741ab9d345216d6a03f8abcb79ad13",
-      "nodes": 2209,
-      "names": 7004,
+      "sha256": "15dc41c588ef57508a9626571e4f234fba7f1a486a4d3610380657409ac2dcb6",
+      "nodes": 2216,
+      "names": 6980,
       "native_scoring": 0
      },
      {
       "step": "defense",
-      "sha256": "d413e5cedf85db9e95bfc438f5c4d23adeae3a277398f9994fcf1ce67cb4faae",
-      "nodes": 3208,
+      "sha256": "7cdece534d575d177f6027e49d737a38486caf491b0f1459433744c9371a8907",
+      "nodes": 3215,
       "native_scoring": 0
      },
      {
       "step": "position_pools",
-      "sha256": "8262cf96c24aafe382ef67cdb7fe8c0043278515eb2f3d93154b2273077ec9b8"
+      "sha256": "170fe27fa62a225aa782674ff69d84e557a65f524d4d200e4b1b2d2481333013"
      },
      {
       "step": "kickoff_alignment",
-      "sha256": "c0aa865091d27ebdb7bbec3391036d2a5c23f7e4a710268fe3f66eea90d478be"
+      "sha256": "03bcdd31f34da12a341cdaee77a4fce4e030eda569016d5d7d5da276ea5404c0"
      },
      {
       "step": "kickoff_returns",
-      "sha256": "0f71e1537a8fda1f80d7e7fd48ae80750bd935f2ccb7dc06769824437e12aca4",
+      "sha256": "a9dd577eb1a9f0be7402e5d829ce55ad466e4514439aa933433a9680483d09b7",
       "status": "applied"
      },
      {
       "step": "depth_roles",
-      "sha256": "a3d6a8418b9b08569198b6baa9bdbe521065df335ab9b2aef78429aee43bfc00",
+      "sha256": "8c9fb87a4abd69d8520b522375d4df7e91fe436903b693d43be162c3b116145b",
       "changed_bytes": 10
      },
      {
       "step": "screen_timing",
-      "sha256": "a3d6a8418b9b08569198b6baa9bdbe521065df335ab9b2aef78429aee43bfc00",
+      "sha256": "8c9fb87a4abd69d8520b522375d4df7e91fe436903b693d43be162c3b116145b",
       "status": "applied",
       "already_applied": true
      }
     ],
-    "final_sha256": "a3d6a8418b9b08569198b6baa9bdbe521065df335ab9b2aef78429aee43bfc00"
+    "final_sha256": "8c9fb87a4abd69d8520b522375d4df7e91fe436903b693d43be162c3b116145b"
    },
    "lint": {},
    "offense_findings": [],
    "formations": 50,
-   "menu_entries": 615,
+   "menu_entries": 624,
    "walks_ended": true,
    "scoring": {
     "status": "PROVED OFFLINE",
@@ -1429,64 +1429,64 @@
     "formations": 50,
     "plays": 268,
     "categories": 25,
-    "nodes": 3286,
-    "name_pool_units": 4777,
-    "strings_end": "0x12d92"
+    "nodes": 3293,
+    "name_pool_units": 4765,
+    "strings_end": "0x12d7a"
    },
-   "final_sha256": "a3d6a8418b9b08569198b6baa9bdbe521065df335ab9b2aef78429aee43bfc00"
+   "final_sha256": "8c9fb87a4abd69d8520b522375d4df7e91fe436903b693d43be162c3b116145b"
   },
   "NO": {
    "team": "NO",
    "ok": true,
-   "offense_pack_sha256": "912438144db30a48054bd77e12def288a5c4d4ec9a6e122d7a02ed2b824763e4",
+   "offense_pack_sha256": "88491a93b143c3f7e5a00dd953754651606800c0deef5d3f85340cb9befb92e0",
    "compose": {
     "team": "NO",
     "source_sha256": "e246947ab221107032e1e7ee385c528960efc1a92271673d4761f28d275a4f94",
     "steps": [
      {
       "step": "complete_offense",
-      "sha256": "0b04ee3cd760cb3dc7717fb2c073e59cd429e2f2a6f72f7cf850fe4197bd9c8b",
-      "nodes": 2284,
-      "names": 7958,
+      "sha256": "05e4f75c45d7d45547e32c3270df93c33ba7765d6ee920fb5e3bbfcaab529b3b",
+      "nodes": 2276,
+      "names": 7914,
       "native_scoring": 0
      },
      {
       "step": "defense",
-      "sha256": "b6d8f7f6fc13dc24e76a964ad71053f50cf3c5900a975491b9852081df377a00",
-      "nodes": 2714,
+      "sha256": "33d9fba09f1bec7e875bca025705578ece9ee47a639a35764eaf2ec4bfb0a764",
+      "nodes": 2706,
       "native_scoring": 0
      },
      {
       "step": "position_pools",
-      "sha256": "bd31b7b782ae7979312b5feb33b8d449f0fabb08a1091563b955feb6d2a0b665"
+      "sha256": "aac5e101a0977b2e9f4754c2d4e263874bd8c0deba668913f4a8d73c557ec397"
      },
      {
       "step": "kickoff_alignment",
-      "sha256": "2774fb6a820102eb386509995a38d2ec3b8d4317cefdc724f687a37a7819d2d0"
+      "sha256": "79ecbec9ae5405ab1360a9702f482f7f2f98d0c4aa34742e348a5d5d199cc09f"
      },
      {
       "step": "kickoff_returns",
-      "sha256": "fd9bd9d98d30add7d7b723b90cc49e982947199f05b47fa79a401ae4c5d9e8ae",
+      "sha256": "0ec3f3ab86218dffd7bf2ae70cf5ef65bc6cb75e1b79631d1f8e351f1738414e",
       "status": "applied"
      },
      {
       "step": "depth_roles",
-      "sha256": "2dd0d8a719e879affed9d1995b7655b6dbfd83fe9910d426d6e112440b61bbc1",
+      "sha256": "be6e33f86cc775ef5c8bc264fb87249ef7c1852f0545f6ba5b0bdb2a990b6529",
       "changed_bytes": 8
      },
      {
       "step": "screen_timing",
-      "sha256": "2dd0d8a719e879affed9d1995b7655b6dbfd83fe9910d426d6e112440b61bbc1",
+      "sha256": "be6e33f86cc775ef5c8bc264fb87249ef7c1852f0545f6ba5b0bdb2a990b6529",
       "status": "applied",
       "already_applied": true
      }
     ],
-    "final_sha256": "2dd0d8a719e879affed9d1995b7655b6dbfd83fe9910d426d6e112440b61bbc1"
+    "final_sha256": "be6e33f86cc775ef5c8bc264fb87249ef7c1852f0545f6ba5b0bdb2a990b6529"
    },
    "lint": {},
    "offense_findings": [],
    "formations": 50,
-   "menu_entries": 705,
+   "menu_entries": 708,
    "walks_ended": true,
    "scoring": {
     "status": "PROVED OFFLINE",
@@ -1504,64 +1504,64 @@
     "formations": 50,
     "plays": 270,
     "categories": 22,
-    "nodes": 2792,
-    "name_pool_units": 5053,
-    "strings_end": "0x12fba"
+    "nodes": 2784,
+    "name_pool_units": 5031,
+    "strings_end": "0x12f8e"
    },
-   "final_sha256": "2dd0d8a719e879affed9d1995b7655b6dbfd83fe9910d426d6e112440b61bbc1"
+   "final_sha256": "be6e33f86cc775ef5c8bc264fb87249ef7c1852f0545f6ba5b0bdb2a990b6529"
   },
   "NYG": {
    "team": "NYG",
    "ok": true,
-   "offense_pack_sha256": "1aef6ce634b0ebc6c9926a46562b4bf3f57d3576b805093c3a2802cc78086c25",
+   "offense_pack_sha256": "f1eb221c536724ce9fc6cecb13110f968760f5d6562a913648f90f58852d7910",
    "compose": {
     "team": "NYG",
     "source_sha256": "113a15c75d6a99ba0918f90174990323e84252a796a6941a56342165f9f1f9b6",
     "steps": [
      {
       "step": "complete_offense",
-      "sha256": "ae5016a794f53929bc44b3f331adc1cc9084b2a5ed13e99439ac62d2df9dc49d",
-      "nodes": 2338,
-      "names": 7976,
+      "sha256": "339d0b23da5ecff4d3f73917c5a6c5a855cd48173587f8c0da5d8d2223278cd5",
+      "nodes": 2349,
+      "names": 7944,
       "native_scoring": 0
      },
      {
       "step": "defense",
-      "sha256": "48a1312f1ffc1c3d7054214dd13950703a5d8f5ecd5d6d9da27f79cde5c17670",
-      "nodes": 2800,
+      "sha256": "4a156618707ec68b66439a557d629fac752e665c0061b64041bfed685038850a",
+      "nodes": 2811,
       "native_scoring": 0
      },
      {
       "step": "position_pools",
-      "sha256": "90e5f6ca183c0fd9708d32d9e2a3df9181de447726d586151bee95786d0efcf6"
+      "sha256": "6d1f5d0d6b1591981b9fdc92b1bcb4f0f75ae0d74772a472efcfc1a78bb3ae8d"
      },
      {
       "step": "kickoff_alignment",
-      "sha256": "49ffec1cbb129f3c3943ebb25e6ac516aa095b80a5bfc5dffd4f306cbbd3e5b8"
+      "sha256": "5dfb340a810a3661cef56137bc441d38ff9a19936ee23b33f54564a294469e6b"
      },
      {
       "step": "kickoff_returns",
-      "sha256": "65d6c37151c92a13631ea2bf10c261b1c0ce849fdf890935cf2bbfbf70f00e35",
+      "sha256": "02b681eb138c76e15ac1d208185df16eb1e702d8add067a5e0e3483e7c5df98f",
       "status": "applied"
      },
      {
       "step": "depth_roles",
-      "sha256": "67dfd253f17943e7309644a033bcadd00f6c1f653f13b16a166e24fa1189f816",
+      "sha256": "25639e5f57e12eff0d0bcdc040d151d17747b3b31eee8b5efb90e66beb9a749b",
       "changed_bytes": 9
      },
      {
       "step": "screen_timing",
-      "sha256": "67dfd253f17943e7309644a033bcadd00f6c1f653f13b16a166e24fa1189f816",
+      "sha256": "25639e5f57e12eff0d0bcdc040d151d17747b3b31eee8b5efb90e66beb9a749b",
       "status": "applied",
       "already_applied": true
      }
     ],
-    "final_sha256": "67dfd253f17943e7309644a033bcadd00f6c1f653f13b16a166e24fa1189f816"
+    "final_sha256": "25639e5f57e12eff0d0bcdc040d151d17747b3b31eee8b5efb90e66beb9a749b"
    },
    "lint": {},
    "offense_findings": [],
    "formations": 50,
-   "menu_entries": 694,
+   "menu_entries": 700,
    "walks_ended": true,
    "scoring": {
     "status": "PROVED OFFLINE",
@@ -1579,64 +1579,64 @@
     "formations": 50,
     "plays": 270,
     "categories": 23,
-    "nodes": 2878,
-    "name_pool_units": 5070,
-    "strings_end": "0x12fdc"
+    "nodes": 2889,
+    "name_pool_units": 5054,
+    "strings_end": "0x12fbc"
    },
-   "final_sha256": "67dfd253f17943e7309644a033bcadd00f6c1f653f13b16a166e24fa1189f816"
+   "final_sha256": "25639e5f57e12eff0d0bcdc040d151d17747b3b31eee8b5efb90e66beb9a749b"
   },
   "NYJ": {
    "team": "NYJ",
    "ok": true,
-   "offense_pack_sha256": "958a796ca9ed88a3bde7040f91bb6fe4de749d04ed000b10efcfea88a4c9aa65",
+   "offense_pack_sha256": "0a132df48ccea3d083776358cfbf8f2f0db89c8174cdf98c7fc7adc65e582a83",
    "compose": {
     "team": "NYJ",
     "source_sha256": "0f523411813ae945dfc49e9ba5419fc659615072bd281e5191fcf8c9a73e6932",
     "steps": [
      {
       "step": "complete_offense",
-      "sha256": "a0cd46a9aa009461602fea8902028eb1f71375edcb5f5fa7546f6f328f964302",
-      "nodes": 2284,
-      "names": 7722,
+      "sha256": "87acd8940166732b09da52d3146507afeadd776046c247d20a33ce30c40df6b0",
+      "nodes": 2282,
+      "names": 7676,
       "native_scoring": 0
      },
      {
       "step": "defense",
-      "sha256": "653839370cebce2c6ac9a594478aace8e6cde9c1fb06c08dc6f0c7ad79bf2b6d",
-      "nodes": 2870,
+      "sha256": "f007a93cd9dd3041cd6e55cdcc4f4661065e777c7e97d4e7fcbca566f29b90b5",
+      "nodes": 2868,
       "native_scoring": 0
      },
      {
       "step": "position_pools",
-      "sha256": "cc3cbc492fe5c0e71e114e166c36e200977a9149689fd87c84e5948ea61720fb"
+      "sha256": "94864940d5e9f2c973716b808422774baa73e3a6cba6348e94f26a9e1ae4d9cf"
      },
      {
       "step": "kickoff_alignment",
-      "sha256": "87e3cd6a0aa971b16701ee1e2bb0e21bb41ef80673618ab2458480006c0928f9"
+      "sha256": "1bc069d4952e90db8d5f188026a562a3524a10bbea10c739851fb0d27c1ef2ba"
      },
      {
       "step": "kickoff_returns",
-      "sha256": "ca79e167658244bf428809b8aae6829a494f5fd4bfb9e8696d27586c6bfc102b",
+      "sha256": "da35cbacbbd8977e0cb33b69af4d8e204711b63a8e70d77c1a20aa3b4f40f8e0",
       "status": "applied"
      },
      {
       "step": "depth_roles",
-      "sha256": "d3b34682e1fe0042ec97e305c75ec59cef71c38fd91d69e4f996591e725a5b4f",
+      "sha256": "6bb3f95e143f7eeabecfb445e810fa8106f25e9c9ea79803a76e1058d4fa9669",
       "changed_bytes": 9
      },
      {
       "step": "screen_timing",
-      "sha256": "d3b34682e1fe0042ec97e305c75ec59cef71c38fd91d69e4f996591e725a5b4f",
+      "sha256": "6bb3f95e143f7eeabecfb445e810fa8106f25e9c9ea79803a76e1058d4fa9669",
       "status": "applied",
       "already_applied": true
      }
     ],
-    "final_sha256": "d3b34682e1fe0042ec97e305c75ec59cef71c38fd91d69e4f996591e725a5b4f"
+    "final_sha256": "6bb3f95e143f7eeabecfb445e810fa8106f25e9c9ea79803a76e1058d4fa9669"
    },
    "lint": {},
    "offense_findings": [],
    "formations": 50,
-   "menu_entries": 541,
+   "menu_entries": 562,
    "walks_ended": true,
    "scoring": {
     "status": "PROVED OFFLINE",
@@ -1654,64 +1654,64 @@
     "formations": 50,
     "plays": 270,
     "categories": 24,
-    "nodes": 2948,
-    "name_pool_units": 5060,
-    "strings_end": "0x12fc8"
+    "nodes": 2946,
+    "name_pool_units": 5037,
+    "strings_end": "0x12f9a"
    },
-   "final_sha256": "d3b34682e1fe0042ec97e305c75ec59cef71c38fd91d69e4f996591e725a5b4f"
+   "final_sha256": "6bb3f95e143f7eeabecfb445e810fa8106f25e9c9ea79803a76e1058d4fa9669"
   },
   "OAK": {
    "team": "OAK",
    "ok": true,
-   "offense_pack_sha256": "d3dcd9d3049e9b37203c597d5a82c2c897d9008747aae9c68efde0e793b6832f",
+   "offense_pack_sha256": "5d9734db906aaceb9da8f31461f8d1a9bafffd37ce357d39646bd37461a3e8b8",
    "compose": {
     "team": "OAK",
     "source_sha256": "73955c2e2e7c63f9aea3ae744eaf250db3c34cc54e0bf884d3a977481ae23577",
     "steps": [
      {
       "step": "complete_offense",
-      "sha256": "eb732d317b69581e4ac6433297e435edc125b62b0ca56e0557fcde08c97d56d9",
-      "nodes": 2302,
-      "names": 8302,
+      "sha256": "1c52d7c02f8ec9aa70eee166746444c208c4d4b1b8429e5a8a1bfe90db2acfcd",
+      "nodes": 2300,
+      "names": 8262,
       "native_scoring": 0
      },
      {
       "step": "defense",
-      "sha256": "5244b66a1089f87614e214706a2a2581371ca46548fb049bd9f0ef20cd414e13",
-      "nodes": 2882,
+      "sha256": "56cc7e15066be17d5b6e9bce4ef98fd6e0b0404f98b8b85969b369f543967d8f",
+      "nodes": 2880,
       "native_scoring": 0
      },
      {
       "step": "position_pools",
-      "sha256": "2317d2592c33984eebf2860754eb54774013cccd834f85c7eb46f520e8d9e6e8"
+      "sha256": "73c5822348c451cbfef81f89ef58a3484e838253cbae0f1d8f94db01e979a70f"
      },
      {
       "step": "kickoff_alignment",
-      "sha256": "856cd08aa0e91d0ead3a0ce309e442c7da2d10d3ceecd1d23675f8e080542d13"
+      "sha256": "872fc5f3a57b1fa7c700c97e41fd7041836fdedc12a3c315c58efaebae07ff18"
      },
      {
       "step": "kickoff_returns",
-      "sha256": "df1f33ce1e8ea0af800a92755d4fdffe6beab1673571124a6f82d3bfa11514d8",
+      "sha256": "7adecb8c99c5aa613767585036312ee2dd5c062252ec931c31fed33d4f0a6900",
       "status": "applied"
      },
      {
       "step": "depth_roles",
-      "sha256": "9ae553e6999dedf0f8d2700dd426ce8de3775b99ba9dec2f9f83acce216e4094",
+      "sha256": "0666cfde7e6de42e03d62278443fd67eabc706e2f5d9832fed70ff523b16fe78",
       "changed_bytes": 9
      },
      {
       "step": "screen_timing",
-      "sha256": "9ae553e6999dedf0f8d2700dd426ce8de3775b99ba9dec2f9f83acce216e4094",
+      "sha256": "0666cfde7e6de42e03d62278443fd67eabc706e2f5d9832fed70ff523b16fe78",
       "status": "applied",
       "already_applied": true
      }
     ],
-    "final_sha256": "9ae553e6999dedf0f8d2700dd426ce8de3775b99ba9dec2f9f83acce216e4094"
+    "final_sha256": "0666cfde7e6de42e03d62278443fd67eabc706e2f5d9832fed70ff523b16fe78"
    },
    "lint": {},
    "offense_findings": [],
    "formations": 50,
-   "menu_entries": 551,
+   "menu_entries": 554,
    "walks_ended": true,
    "scoring": {
     "status": "PROVED OFFLINE",
@@ -1729,64 +1729,64 @@
     "formations": 50,
     "plays": 270,
     "categories": 24,
-    "nodes": 2960,
-    "name_pool_units": 5068,
-    "strings_end": "0x12fd8"
+    "nodes": 2958,
+    "name_pool_units": 5048,
+    "strings_end": "0x12fb0"
    },
-   "final_sha256": "9ae553e6999dedf0f8d2700dd426ce8de3775b99ba9dec2f9f83acce216e4094"
+   "final_sha256": "0666cfde7e6de42e03d62278443fd67eabc706e2f5d9832fed70ff523b16fe78"
   },
   "PHI": {
    "team": "PHI",
    "ok": true,
-   "offense_pack_sha256": "6e2e7a7c5ccc1abc9d1a9aafcc9d9b1c3e8cfa87969b8b431695a2e15fe722c7",
+   "offense_pack_sha256": "e1dbc31b487aae8fda4fac862c89513a068878476727d1a921057a7c304b1602",
    "compose": {
     "team": "PHI",
     "source_sha256": "1b5bed4b207e8e39d6b1e2c8c23951576b5f7126d55ea5db2876b3b824427d1f",
     "steps": [
      {
       "step": "complete_offense",
-      "sha256": "d95b7af6465cfcf687d7acdc8c66581894a4debc54cf169a570ea23d903fd97a",
-      "nodes": 2328,
-      "names": 7872,
+      "sha256": "b8ec9b84b20e77ce45f892739bc9ad15d1e5867dc7e92632b602c0b3ab82241c",
+      "nodes": 2324,
+      "names": 7822,
       "native_scoring": 0
      },
      {
       "step": "defense",
-      "sha256": "db3dd2741c2f89dac5cb2a48bedb212156a3f63c85913b3e6bb1149fd167a267",
-      "nodes": 2758,
+      "sha256": "f46f34314380515197a3b774fe9969a35cc769a1e069fc85c3228a653745ea07",
+      "nodes": 2754,
       "native_scoring": 0
      },
      {
       "step": "position_pools",
-      "sha256": "1789ce4e79f19610bf32ef6bb3907fe52602a4af90d2b97d25ed2bcc83fe60c7"
+      "sha256": "0ea363edc65a8999ab8372986fd8215d27382fd82ea501f2abaa242376afdaad"
      },
      {
       "step": "kickoff_alignment",
-      "sha256": "b99fdcbddfcfa4a11c27f04c84362b1a1b2e9c23f05328455eb1749ca3018f16"
+      "sha256": "eac3d4451bd6e9e69e0350be8bd4f39caae5af9a9b4fcb3222cdb204a5c2e6d2"
      },
      {
       "step": "kickoff_returns",
-      "sha256": "c0de903728ac7dccd7d58e556979206b2ed5b85a8543c2ef019ff7b7012d3048",
+      "sha256": "7b868aa1381048c61a15d4273a2054d516984894aeb8fdf91866bfdf8cab6a27",
       "status": "applied"
      },
      {
       "step": "depth_roles",
-      "sha256": "53121b649340e476cd82f1afa2772c681cb925946ec5b043fcadcf2ff0054575",
+      "sha256": "0e53c2ee636c44b41a22a1153a847850d2a2c523e7fe09aa8f3431222b66d2a5",
       "changed_bytes": 9
      },
      {
       "step": "screen_timing",
-      "sha256": "53121b649340e476cd82f1afa2772c681cb925946ec5b043fcadcf2ff0054575",
+      "sha256": "0e53c2ee636c44b41a22a1153a847850d2a2c523e7fe09aa8f3431222b66d2a5",
       "status": "applied",
       "already_applied": true
      }
     ],
-    "final_sha256": "53121b649340e476cd82f1afa2772c681cb925946ec5b043fcadcf2ff0054575"
+    "final_sha256": "0e53c2ee636c44b41a22a1153a847850d2a2c523e7fe09aa8f3431222b66d2a5"
    },
    "lint": {},
    "offense_findings": [],
    "formations": 50,
-   "menu_entries": 620,
+   "menu_entries": 629,
    "walks_ended": true,
    "scoring": {
     "status": "PROVED OFFLINE",
@@ -1804,64 +1804,64 @@
     "formations": 50,
     "plays": 270,
     "categories": 22,
-    "nodes": 2836,
-    "name_pool_units": 5063,
-    "strings_end": "0x12fce"
+    "nodes": 2832,
+    "name_pool_units": 5038,
+    "strings_end": "0x12f9c"
    },
-   "final_sha256": "53121b649340e476cd82f1afa2772c681cb925946ec5b043fcadcf2ff0054575"
+   "final_sha256": "0e53c2ee636c44b41a22a1153a847850d2a2c523e7fe09aa8f3431222b66d2a5"
   },
   "PIT": {
    "team": "PIT",
    "ok": true,
-   "offense_pack_sha256": "11a137dc65b4276ed35bb927d3fd13d690674cd5478d0c1cf0126278069ca66b",
+   "offense_pack_sha256": "2506e3808d827a2aafd3bb5c2d46bd862c60ad5994eb1f8480e8adf26fceaeba",
    "compose": {
     "team": "PIT",
     "source_sha256": "9f27b57168c04210d44368748d0699cbfd9e727405cdc5d62426cac9013409dd",
     "steps": [
      {
       "step": "complete_offense",
-      "sha256": "298459d642f8e381f8ea11d330ab9914f46152ea37a50698c042292d6a7abf66",
-      "nodes": 2377,
-      "names": 7758,
+      "sha256": "d68fe6cb002f63ed647d0edc911884aa81b14db9f98610d043a96da7176d7686",
+      "nodes": 2379,
+      "names": 7712,
       "native_scoring": 0
      },
      {
       "step": "defense",
-      "sha256": "fde5dedf5ec239f9e4955b52e115405320cd44e96cbec93b25779c7852934050",
-      "nodes": 3218,
+      "sha256": "2a07a98e2eb922850c08a52926aad8f4b07c36f825d52dfa4e19aac25a2ce630",
+      "nodes": 3220,
       "native_scoring": 0
      },
      {
       "step": "position_pools",
-      "sha256": "cb09ef2cd4f07c0953ebc916e20cb2c45fffce0772234eaca7d02b4923f46c57"
+      "sha256": "47777e928507f1a4abfb3cbf8c854ab07f00ba93b806223053ffc1fb388a2dd9"
      },
      {
       "step": "kickoff_alignment",
-      "sha256": "d8459f90c470776cb41dd7ab4015b2a4d0d38b8ba8fd8d831003b212307946e3"
+      "sha256": "0eb7303b4f7a71cab0a63e0060f1dd27254cbdb406f7d16c59facb2060e14b40"
      },
      {
       "step": "kickoff_returns",
-      "sha256": "df5d2e51ca0ad5ff84fdbbb704d9fe8f5798359e9058b668ba7bb8f9f9ffaab2",
+      "sha256": "cf522bfc14f25a77ef6f3560809a816f8485a24f4a13aacd384842ad711b498b",
       "status": "applied"
      },
      {
       "step": "depth_roles",
-      "sha256": "4c8206443c16364dfc42da25313252981f64417878d63ad996056d1dfa51ece2",
+      "sha256": "36bbcb8b46f11837533728855140289bd817ac4db41b420cbca5ab405de599a8",
       "changed_bytes": 11
      },
      {
       "step": "screen_timing",
-      "sha256": "4c8206443c16364dfc42da25313252981f64417878d63ad996056d1dfa51ece2",
+      "sha256": "36bbcb8b46f11837533728855140289bd817ac4db41b420cbca5ab405de599a8",
       "status": "applied",
       "already_applied": true
      }
     ],
-    "final_sha256": "4c8206443c16364dfc42da25313252981f64417878d63ad996056d1dfa51ece2"
+    "final_sha256": "36bbcb8b46f11837533728855140289bd817ac4db41b420cbca5ab405de599a8"
    },
    "lint": {},
    "offense_findings": [],
    "formations": 50,
-   "menu_entries": 641,
+   "menu_entries": 650,
    "walks_ended": true,
    "scoring": {
     "status": "PROVED OFFLINE",
@@ -1879,64 +1879,64 @@
     "formations": 50,
     "plays": 270,
     "categories": 23,
-    "nodes": 3296,
-    "name_pool_units": 5059,
-    "strings_end": "0x12fc6"
+    "nodes": 3298,
+    "name_pool_units": 5036,
+    "strings_end": "0x12f98"
    },
-   "final_sha256": "4c8206443c16364dfc42da25313252981f64417878d63ad996056d1dfa51ece2"
+   "final_sha256": "36bbcb8b46f11837533728855140289bd817ac4db41b420cbca5ab405de599a8"
   },
   "SD": {
    "team": "SD",
    "ok": true,
-   "offense_pack_sha256": "5916200aea169b007b720f0e0dba88cc3509371a1210f2762e0784615cf68bd7",
+   "offense_pack_sha256": "fe6b5290103578407954a6e4d77c020eae91e09dccb06af4aad7a2132940502e",
    "compose": {
     "team": "SD",
     "source_sha256": "7e6ddb8d36ab3451e2aa80d110903d8a726ec5efdb68e3e2dc9462599144a0c0",
     "steps": [
      {
       "step": "complete_offense",
-      "sha256": "97897dff43ba2e314a858bb3ec4f9b2ceea8537b8122215522ede69fad0bd51b",
+      "sha256": "e60a23c08786bc7cb7cba70476fc8a64c53cca0f10cd4c958dd2cfba2003ee78",
       "nodes": 2421,
-      "names": 7714,
+      "names": 7702,
       "native_scoring": 0
      },
      {
       "step": "defense",
-      "sha256": "b688dac0f236cc959e02204782fb15940000d483864bd731da85ddf3ead418bb",
+      "sha256": "48fd54c214c4d7779bd8282db38187552c610a9ae3999bf18c85a2e3f01decb4",
       "nodes": 3258,
       "native_scoring": 0
      },
      {
       "step": "position_pools",
-      "sha256": "1c35f779f05e0ce4680f4e4bcd8aa0aee732b34c3092eea3932f6f1a0218504c"
+      "sha256": "702703f0b2b95f84415b77c3b8e135796314d5e3c22bb81a6b437cc969fe904f"
      },
      {
       "step": "kickoff_alignment",
-      "sha256": "c8462bd4c068a82df4476920c01afbd0ec753dd405f82e5c104587d65fd3b11a"
+      "sha256": "176ab950e3167017ac4dc7085aa9874cc9895d8e5248d931a73c258f03402ec2"
      },
      {
       "step": "kickoff_returns",
-      "sha256": "4c2d6f335ed51860a0ee92e1cba59cc439550572a20d29f728824677affdda67",
+      "sha256": "ba4cc63c5fbcc0e9977d2ad83c47215a7184ddc7a4809dcc7aecbd7ddfa1613b",
       "status": "applied"
      },
      {
       "step": "depth_roles",
-      "sha256": "cc5e6c30c7c2b611f5fbe25d67640a29d7d721c09837b77ad923c9d2e7e98098",
+      "sha256": "831b34cf53f132a3fba146b0bba791b091fc7d75ad5ab22034f7cb3c641c639d",
       "changed_bytes": 9
      },
      {
       "step": "screen_timing",
-      "sha256": "cc5e6c30c7c2b611f5fbe25d67640a29d7d721c09837b77ad923c9d2e7e98098",
+      "sha256": "831b34cf53f132a3fba146b0bba791b091fc7d75ad5ab22034f7cb3c641c639d",
       "status": "applied",
       "already_applied": true
      }
     ],
-    "final_sha256": "cc5e6c30c7c2b611f5fbe25d67640a29d7d721c09837b77ad923c9d2e7e98098"
+    "final_sha256": "831b34cf53f132a3fba146b0bba791b091fc7d75ad5ab22034f7cb3c641c639d"
    },
    "lint": {},
    "offense_findings": [],
    "formations": 50,
-   "menu_entries": 635,
+   "menu_entries": 644,
    "walks_ended": true,
    "scoring": {
     "status": "PROVED OFFLINE",
@@ -1955,63 +1955,63 @@
     "plays": 270,
     "categories": 23,
     "nodes": 3336,
-    "name_pool_units": 4970,
-    "strings_end": "0x12f14"
+    "name_pool_units": 5084,
+    "strings_end": "0x12ff8"
    },
-   "final_sha256": "cc5e6c30c7c2b611f5fbe25d67640a29d7d721c09837b77ad923c9d2e7e98098"
+   "final_sha256": "831b34cf53f132a3fba146b0bba791b091fc7d75ad5ab22034f7cb3c641c639d"
   },
   "SEA": {
    "team": "SEA",
    "ok": true,
-   "offense_pack_sha256": "6e56117ec3277a54499a8b3a1f2536e79d5ad72d2d0ce7a5e0daff0f65895bed",
+   "offense_pack_sha256": "9e9b4745bef4b996f394e217d2e5ec32daf9f58227bda4ee56d95303b17f7f59",
    "compose": {
     "team": "SEA",
     "source_sha256": "4d5ff26d6102d943aa0bee61a7f452c8570f28c0bf9db879db60de0dbd791506",
     "steps": [
      {
       "step": "complete_offense",
-      "sha256": "92081d77fee4b662f7b9d92771666bc3b9b9f9d0ef99e3f7e3cec72f1974573d",
-      "nodes": 2286,
-      "names": 8034,
+      "sha256": "f5fdfdd27bc4d2928e3145652409e720f9f284613eef3836f71e0792333b210e",
+      "nodes": 2282,
+      "names": 7998,
       "native_scoring": 0
      },
      {
       "step": "defense",
-      "sha256": "745445be06c15caa383c50d24611022d74c99f119100e45f68390cf52b058eea",
-      "nodes": 2720,
+      "sha256": "bb695f5ab0dd8e467544a17d5b13ec79e7307738ce316f4eba83848fb9a9e8ee",
+      "nodes": 2716,
       "native_scoring": 0
      },
      {
       "step": "position_pools",
-      "sha256": "ea94edfa129f3c441d670affc4282ee014ecb41bc88d445fe9e10ab2bb088453"
+      "sha256": "07343b98e4cb077eb7dbcf1738a1c347561d1e9466a43381ec002c1207465690"
      },
      {
       "step": "kickoff_alignment",
-      "sha256": "87461ef4820304e2fecb92c4e05449950befd1990287de6fdb6cbeddae563c25"
+      "sha256": "18f22fcea266ec52587324b743b9d04ec896743a5f93dde8ab3b5ec06ce07f46"
      },
      {
       "step": "kickoff_returns",
-      "sha256": "7db68aee7db57e0eecf5789f217925f9d0df979fd8453a5906498997afa91660",
+      "sha256": "fd039dcbac76c60416c8580fb6365e5cd691b810e751870bd7f9d806eb493b41",
       "status": "applied"
      },
      {
       "step": "depth_roles",
-      "sha256": "71d4727ae25170be162b1d1cde5690f85502b1a5070c90648dc554d3fe4f253f",
+      "sha256": "155eb11484bad0ddb61e90131bc4c0e5a07f354b05ba732356913ee0600dad5c",
       "changed_bytes": 10
      },
      {
       "step": "screen_timing",
-      "sha256": "71d4727ae25170be162b1d1cde5690f85502b1a5070c90648dc554d3fe4f253f",
+      "sha256": "155eb11484bad0ddb61e90131bc4c0e5a07f354b05ba732356913ee0600dad5c",
       "status": "applied",
       "already_applied": true
      }
     ],
-    "final_sha256": "71d4727ae25170be162b1d1cde5690f85502b1a5070c90648dc554d3fe4f253f"
+    "final_sha256": "155eb11484bad0ddb61e90131bc4c0e5a07f354b05ba732356913ee0600dad5c"
    },
    "lint": {},
    "offense_findings": [],
    "formations": 50,
-   "menu_entries": 682,
+   "menu_entries": 685,
    "walks_ended": true,
    "scoring": {
     "status": "PROVED OFFLINE",
@@ -2029,64 +2029,64 @@
     "formations": 50,
     "plays": 270,
     "categories": 23,
-    "nodes": 2798,
-    "name_pool_units": 5057,
-    "strings_end": "0x12fc2"
+    "nodes": 2794,
+    "name_pool_units": 5039,
+    "strings_end": "0x12f9e"
    },
-   "final_sha256": "71d4727ae25170be162b1d1cde5690f85502b1a5070c90648dc554d3fe4f253f"
+   "final_sha256": "155eb11484bad0ddb61e90131bc4c0e5a07f354b05ba732356913ee0600dad5c"
   },
   "SF": {
    "team": "SF",
    "ok": true,
-   "offense_pack_sha256": "1c9161f254cc48207f70e1f1bcec14d2493d95663c3660013e16f1b8b0c3bec3",
+   "offense_pack_sha256": "7d78726dabc8c76c1dfc807ae3ea86ebc364551357b1c9d2f160fe94c9743212",
    "compose": {
     "team": "SF",
     "source_sha256": "a1bb2195e1df901230e8d79885bdb448eb19b6ca90976c2a3fd673bcf74f6ec6",
     "steps": [
      {
       "step": "complete_offense",
-      "sha256": "e65372de62f08c307e3882cf394c938451c2648477f99fa561059e8ed8c9df81",
-      "nodes": 2286,
-      "names": 7938,
+      "sha256": "339bd03ac86bd5a43e61fe2182b486efa69384b1775c79a130cac23df91fdd5d",
+      "nodes": 2285,
+      "names": 7898,
       "native_scoring": 0
      },
      {
       "step": "defense",
-      "sha256": "7d576396c13ee702f7be6ed584e62feffc9d49a746b5057d3e9151ff7389ab84",
-      "nodes": 2720,
+      "sha256": "4f876033520e1b619c04a078e64241df013e149f9bf352e6f306362f9200aa06",
+      "nodes": 2719,
       "native_scoring": 0
      },
      {
       "step": "position_pools",
-      "sha256": "2ed11357562dad09250708bf55fb20362a34bf814d48c9f87162f92fa91e139e"
+      "sha256": "2e58855f7053cbedb59ffd2fb3d9327ea5482d1e84bd7afff7849b6c09f169a6"
      },
      {
       "step": "kickoff_alignment",
-      "sha256": "2e19bfcfd63ac9d944d6d08fcdfca2015cbe13653696703bd875760b6e4b215f"
+      "sha256": "950414a026a2a1ca753589a0a976a937f7925a491d3c4f93c3fed375e117013c"
      },
      {
       "step": "kickoff_returns",
-      "sha256": "0afe0dcb60ecc3c0a6a4c6398853177c5d39ea9e1d2a52d8fb15edc6f1cf1910",
+      "sha256": "d5ba3529170710464be7bf1fd1e9e1baf80603c67ecbfcc42d16dc122e77e32f",
       "status": "applied"
      },
      {
       "step": "depth_roles",
-      "sha256": "ce285aa858d94c2ef7d9996ccdb0bf83d1681ac92f157d2ac942b00d9f8a8c09",
+      "sha256": "c824a42118c2eba41b7cebca06906cc19b140e1f241a780995351569dbdc67af",
       "changed_bytes": 12
      },
      {
       "step": "screen_timing",
-      "sha256": "ce285aa858d94c2ef7d9996ccdb0bf83d1681ac92f157d2ac942b00d9f8a8c09",
+      "sha256": "c824a42118c2eba41b7cebca06906cc19b140e1f241a780995351569dbdc67af",
       "status": "applied",
       "already_applied": true
      }
     ],
-    "final_sha256": "ce285aa858d94c2ef7d9996ccdb0bf83d1681ac92f157d2ac942b00d9f8a8c09"
+    "final_sha256": "c824a42118c2eba41b7cebca06906cc19b140e1f241a780995351569dbdc67af"
    },
    "lint": {},
    "offense_findings": [],
    "formations": 50,
-   "menu_entries": 624,
+   "menu_entries": 636,
    "walks_ended": true,
    "scoring": {
     "status": "PROVED OFFLINE",
@@ -2104,64 +2104,64 @@
     "formations": 50,
     "plays": 270,
     "categories": 23,
-    "nodes": 2798,
-    "name_pool_units": 5081,
-    "strings_end": "0x12ff2"
+    "nodes": 2797,
+    "name_pool_units": 5061,
+    "strings_end": "0x12fca"
    },
-   "final_sha256": "ce285aa858d94c2ef7d9996ccdb0bf83d1681ac92f157d2ac942b00d9f8a8c09"
+   "final_sha256": "c824a42118c2eba41b7cebca06906cc19b140e1f241a780995351569dbdc67af"
   },
   "STL": {
    "team": "STL",
    "ok": true,
-   "offense_pack_sha256": "18621fa48de9aa39af0947580859a958e961a6f4a16d4150729551ca518a9595",
+   "offense_pack_sha256": "9e31f8fbfb650f00ec0bdabb62bef37fcb536c535cf2a09041c4c13ee0483c27",
    "compose": {
     "team": "STL",
     "source_sha256": "dc4745657752e75205dc4d163e7c95b6aa7db28e6fb565af5f77d6d8a07b984a",
     "steps": [
      {
       "step": "complete_offense",
-      "sha256": "ff3031bffd905201f8d96ebc3c11251142c265298aee396ed2a1a54e5b0b2eea",
-      "nodes": 2343,
-      "names": 8028,
+      "sha256": "820b905a2e95db5aa6a7d68d8040f7317290531719bce6bf1305638efff6b4ae",
+      "nodes": 2345,
+      "names": 7988,
       "native_scoring": 0
      },
      {
       "step": "defense",
-      "sha256": "afc8f91960a2ddee4e055b03d1237d32faccc9b14bbc687ca1950a2d6de9c2da",
-      "nodes": 2779,
+      "sha256": "2855e17e269659db87added6e7b8b40b6c14e6320312bc5bf5fa041f5a5f9b89",
+      "nodes": 2781,
       "native_scoring": 0
      },
      {
       "step": "position_pools",
-      "sha256": "633f0e38537b349771f2456350285078dea09420017d69a5ce3101ee7ae9eebb"
+      "sha256": "76facbd3e19cbf0bf79d06dbb7f023b99e7dc9af6cb78dd6b9361b4a923b026f"
      },
      {
       "step": "kickoff_alignment",
-      "sha256": "028bfc738357ec3518f554c5b65f387df68a9bd4a7b4072a6a995b63992a7981"
+      "sha256": "d9c3eeafcba44876edc2bc692c846e0b747cc570a8f4b01800fb2d114aa42732"
      },
      {
       "step": "kickoff_returns",
-      "sha256": "37580edbd57abd7c51a9208e7882b8639f588e8762c0e05d8fadb814bf044b6a",
+      "sha256": "cc5fcd45e1dda4a995c2bb709a7aa15cdf21be6526bd7d0c72453407504959c0",
       "status": "applied"
      },
      {
       "step": "depth_roles",
-      "sha256": "3f25bf04f4b36da71b3430cf50f2af4e4f0ca156c092e552e090d1d7345f10b3",
+      "sha256": "88df107a08903025689f211e2321cabeefed72a479f9207f6277402365087bee",
       "changed_bytes": 9
      },
      {
       "step": "screen_timing",
-      "sha256": "3f25bf04f4b36da71b3430cf50f2af4e4f0ca156c092e552e090d1d7345f10b3",
+      "sha256": "88df107a08903025689f211e2321cabeefed72a479f9207f6277402365087bee",
       "status": "applied",
       "already_applied": true
      }
     ],
-    "final_sha256": "3f25bf04f4b36da71b3430cf50f2af4e4f0ca156c092e552e090d1d7345f10b3"
+    "final_sha256": "88df107a08903025689f211e2321cabeefed72a479f9207f6277402365087bee"
    },
    "lint": {},
    "offense_findings": [],
    "formations": 50,
-   "menu_entries": 670,
+   "menu_entries": 673,
    "walks_ended": true,
    "scoring": {
     "status": "PROVED OFFLINE",
@@ -2179,66 +2179,66 @@
     "formations": 50,
     "plays": 270,
     "categories": 23,
-    "nodes": 2857,
-    "name_pool_units": 5070,
-    "strings_end": "0x12fdc"
+    "nodes": 2859,
+    "name_pool_units": 5050,
+    "strings_end": "0x12fb4"
    },
-   "final_sha256": "3f25bf04f4b36da71b3430cf50f2af4e4f0ca156c092e552e090d1d7345f10b3"
+   "final_sha256": "88df107a08903025689f211e2321cabeefed72a479f9207f6277402365087bee"
   },
   "TB": {
    "team": "TB",
    "ok": true,
-   "offense_pack_sha256": "7f6893e4a3dede53c3d8dbddcd8f0f233aa1ed18299a4855238caa247b073573",
+   "offense_pack_sha256": "4ec44c12a7000d9d632f36ed433b2b59fc00b5a70867eafb6b0ea66b13c8074c",
    "compose": {
     "team": "TB",
     "source_sha256": "baa2902b92cc67bbdc60bdc8d8ef9167ed51160a7b6904b7365b81b992757f2e",
     "steps": [
      {
       "step": "complete_offense",
-      "sha256": "2c0d05a082367e0374af9c753488555de9f1105b8abd1dfa5c61ad50bc462baa",
-      "nodes": 2234,
-      "names": 7940,
+      "sha256": "6fc7666804614d2ee60d710051325fea93a4d7afd697b509e9f65ded14ee830c",
+      "nodes": 2232,
+      "names": 7904,
       "native_scoring": 0
      },
      {
       "step": "defense",
-      "sha256": "956710b2b40806435636a0c886113d251ecb39af63bcb7f09bc1490945b92165",
-      "nodes": 2714,
+      "sha256": "81c57df1d46cc74b3b89b265e31c9b91fb26fccb4af0c7888e4cfb9812dcd5f6",
+      "nodes": 2712,
       "native_scoring": 0
      },
      {
       "step": "position_pools",
-      "sha256": "64391b226081d4f7ed211397847d570753c7252c64ebadacb3ec443a0a5ddb5f"
+      "sha256": "997a3bb0e1cd29fc00e47174f9a5949f1fd2f9902404fc15ecd683e198ba9b03"
      },
      {
       "step": "kickoff_alignment",
-      "sha256": "00daf6274985f1955603cd1c567fcf5f4d7060a730d95754791cf765e1ba105e"
+      "sha256": "88c575ab0d537f50221094d7456a5e2c385bf304f934772ecaffcf4d616f7cbd"
      },
      {
       "step": "kickoff_returns",
-      "sha256": "ac0bc348a2eeb8f13cbfa9baf47dc95ddb324779f1daf95e958365ed25a738bb",
+      "sha256": "ee10d2264fc3f098242d4e5e47a0ecac7028c6ea5e6e84db81c88765a4009719",
       "status": "applied"
      },
      {
       "step": "depth_roles",
-      "sha256": "93fb4c45fbb02c3ed91defb100654d15be1e30116643878c3e54e6d2eab1ddea",
+      "sha256": "1a7fef7a76254dc9103900a4a9eb7caf93f503252255f8028889ecc66d8f69f4",
       "changed_bytes": 6
      },
      {
       "step": "screen_timing",
-      "sha256": "93fb4c45fbb02c3ed91defb100654d15be1e30116643878c3e54e6d2eab1ddea",
+      "sha256": "1a7fef7a76254dc9103900a4a9eb7caf93f503252255f8028889ecc66d8f69f4",
       "status": "applied",
       "already_applied": true
      }
     ],
-    "final_sha256": "93fb4c45fbb02c3ed91defb100654d15be1e30116643878c3e54e6d2eab1ddea"
+    "final_sha256": "1a7fef7a76254dc9103900a4a9eb7caf93f503252255f8028889ecc66d8f69f4"
    },
    "lint": {
     "DEF_MIDDLE_MUG": 1
    },
    "offense_findings": [],
    "formations": 50,
-   "menu_entries": 648,
+   "menu_entries": 657,
    "walks_ended": true,
    "scoring": {
     "status": "PROVED OFFLINE",
@@ -2256,64 +2256,64 @@
     "formations": 50,
     "plays": 270,
     "categories": 23,
-    "nodes": 2792,
-    "name_pool_units": 5066,
-    "strings_end": "0x12fd4"
+    "nodes": 2790,
+    "name_pool_units": 5048,
+    "strings_end": "0x12fb0"
    },
-   "final_sha256": "93fb4c45fbb02c3ed91defb100654d15be1e30116643878c3e54e6d2eab1ddea"
+   "final_sha256": "1a7fef7a76254dc9103900a4a9eb7caf93f503252255f8028889ecc66d8f69f4"
   },
   "TEN": {
    "team": "TEN",
    "ok": true,
-   "offense_pack_sha256": "f89c61286145ea0f9827457bb1e47615e10820b8fb3cc354ef8ec2124a47c144",
+   "offense_pack_sha256": "c7d34d1b24a68d61cbbc1ffda1d9c7911070ec65f3f525ccbd78b22f06b5b71c",
    "compose": {
     "team": "TEN",
     "source_sha256": "c5b13aa07d03d0da6b78a2b117e3e46792bacc213a0cb7016ca8e1478f062141",
     "steps": [
      {
       "step": "complete_offense",
-      "sha256": "f1fd95658cfc0d3aff15a69dc6112c640cfe438bf97d9c152774da4d3c16b66f",
-      "nodes": 2304,
-      "names": 7726,
+      "sha256": "f2a20c15f38b2a9b15f40de9b86263bba5d7e28378d64455a2fa55bace506d06",
+      "nodes": 2300,
+      "names": 7706,
       "native_scoring": 0
      },
      {
       "step": "defense",
-      "sha256": "42615a2609c91279b7521914125661706205628c9f473730a3f55a5ea86a8a7f",
-      "nodes": 2870,
+      "sha256": "7a8dea0036ef811cf8730307ac2b1eaad28450a4671e5c89f4cfe17ed498367e",
+      "nodes": 2866,
       "native_scoring": 0
      },
      {
       "step": "position_pools",
-      "sha256": "b7ec63f04ccc7b97161efe57bd781bcc24aa5c9641fbe38ab391f8b8857ffdcc"
+      "sha256": "688dd695f748af30daf9f21300d9cf586f2234ea77641119abe9d4b9b404ead8"
      },
      {
       "step": "kickoff_alignment",
-      "sha256": "55e786023247b3be0c452cd33df3e99e02bc9ba1810e37b39bcfce946babad31"
+      "sha256": "a642d503689354c1cb7be7e81ca3e13e8e2aaf002ec6e3e5fc82a903f9d81535"
      },
      {
       "step": "kickoff_returns",
-      "sha256": "b03a612c3743be0b8fbedcc06b5f6082239faba06f80488ee5de3d99077d7dcc",
+      "sha256": "432781d80306ebe86a19fda2d51fe70617875bcdf7156aaad7341558062b6d80",
       "status": "applied"
      },
      {
       "step": "depth_roles",
-      "sha256": "e16de962ca82bcdff0862b53da9751b83bb12545e09344a773508e1b73f6bda2",
+      "sha256": "0431a962df0379c3e734ae343d74df66a4911de056d3ea6ca387f58882e93c20",
       "changed_bytes": 6
      },
      {
       "step": "screen_timing",
-      "sha256": "e16de962ca82bcdff0862b53da9751b83bb12545e09344a773508e1b73f6bda2",
+      "sha256": "0431a962df0379c3e734ae343d74df66a4911de056d3ea6ca387f58882e93c20",
       "status": "applied",
       "already_applied": true
      }
     ],
-    "final_sha256": "e16de962ca82bcdff0862b53da9751b83bb12545e09344a773508e1b73f6bda2"
+    "final_sha256": "0431a962df0379c3e734ae343d74df66a4911de056d3ea6ca387f58882e93c20"
    },
    "lint": {},
    "offense_findings": [],
    "formations": 50,
-   "menu_entries": 642,
+   "menu_entries": 651,
    "walks_ended": true,
    "scoring": {
     "status": "PROVED OFFLINE",
@@ -2331,66 +2331,66 @@
     "formations": 50,
     "plays": 270,
     "categories": 23,
-    "nodes": 2948,
-    "name_pool_units": 5039,
-    "strings_end": "0x12f9e"
+    "nodes": 2944,
+    "name_pool_units": 5029,
+    "strings_end": "0x12f8a"
    },
-   "final_sha256": "e16de962ca82bcdff0862b53da9751b83bb12545e09344a773508e1b73f6bda2"
+   "final_sha256": "0431a962df0379c3e734ae343d74df66a4911de056d3ea6ca387f58882e93c20"
   },
   "WAS": {
    "team": "WAS",
    "ok": true,
-   "offense_pack_sha256": "00e6a32ced6089ba118c8641d924b61f8203b49212f535a7ab9ab74e43a93abe",
+   "offense_pack_sha256": "9685fb207521df0f6a209c92b66f6e107f7497a6ae588fd2496ea4ee10d26008",
    "compose": {
     "team": "WAS",
     "source_sha256": "7f4c96bb44c330cfeb733cdcd1d9f0b2342c876b6c342c83da88bab7dbc2e881",
     "steps": [
      {
       "step": "complete_offense",
-      "sha256": "0396a4b236b04e03ea356b4b013f4ef94f12612dca0ab1b9b1e627c880be8ff0",
-      "nodes": 2264,
-      "names": 7784,
+      "sha256": "14ecccd26d52a22171514478b673cb1faf977916d141f2bb778c406b1aa23010",
+      "nodes": 2268,
+      "names": 7776,
       "native_scoring": 0
      },
      {
       "step": "defense",
-      "sha256": "d1e882b496ba2c4ac58ea92ad4e932c60e18aac4e91cf595d25dce1daa4583f9",
-      "nodes": 2706,
+      "sha256": "5af28c89548343e9969f6c731169b487f0b23d7585512a356217e52e7bc185cc",
+      "nodes": 2710,
       "native_scoring": 0
      },
      {
       "step": "position_pools",
-      "sha256": "d07680a5d52eedff792e401515db944dbe756085dfa1e06e9143692aa4d75094"
+      "sha256": "b3b07e32889e075641f49abef0b9f47cc576c3846ebdf753c41092c38045cebd"
      },
      {
       "step": "kickoff_alignment",
-      "sha256": "32727a36af4677144f3a7e61f779cf71bb13384474cf0709ac3e5111b72e3dce"
+      "sha256": "e7ddd01e3e3c7dfd0ad31e2ad5c7e73ca6b1583894be572f39113e091bb1d3cd"
      },
      {
       "step": "kickoff_returns",
-      "sha256": "baa15205dabf8febe62306f7f2f5c0ea45264e0f50f11f004a7b26bcf3fdacf8",
+      "sha256": "7a69c793c5e059c88d24db409ab670d861fa0b9706103137083d2ae4ce5d0178",
       "status": "applied"
      },
      {
       "step": "depth_roles",
-      "sha256": "4205be0f11dc12cbb8c4e33aa151bbf6579c4ba05d890effbbf61c48c9c5561e",
+      "sha256": "22180631c5c2afa2d1ce8c026bbc3e59d3a2a2b67dea3db8f5435601f3b860f2",
       "changed_bytes": 8
      },
      {
       "step": "screen_timing",
-      "sha256": "4205be0f11dc12cbb8c4e33aa151bbf6579c4ba05d890effbbf61c48c9c5561e",
+      "sha256": "22180631c5c2afa2d1ce8c026bbc3e59d3a2a2b67dea3db8f5435601f3b860f2",
       "status": "applied",
       "already_applied": true
      }
     ],
-    "final_sha256": "4205be0f11dc12cbb8c4e33aa151bbf6579c4ba05d890effbbf61c48c9c5561e"
+    "final_sha256": "22180631c5c2afa2d1ce8c026bbc3e59d3a2a2b67dea3db8f5435601f3b860f2"
    },
    "lint": {
     "DEF_MIDDLE_MUG": 1
    },
    "offense_findings": [],
    "formations": 50,
-   "menu_entries": 571,
+   "menu_entries": 580,
    "walks_ended": true,
    "scoring": {
     "status": "PROVED OFFLINE",
@@ -2408,11 +2408,11 @@
     "formations": 50,
     "plays": 270,
     "categories": 23,
-    "nodes": 2784,
-    "name_pool_units": 5076,
-    "strings_end": "0x12fe8"
+    "nodes": 2788,
+    "name_pool_units": 5072,
+    "strings_end": "0x12fe0"
    },
-   "final_sha256": "4205be0f11dc12cbb8c4e33aa151bbf6579c4ba05d890effbbf61c48c9c5561e"
+   "final_sha256": "22180631c5c2afa2d1ce8c026bbc3e59d3a2a2b67dea3db8f5435601f3b860f2"
   }
  }
 }

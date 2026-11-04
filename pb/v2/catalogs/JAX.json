@@ -33,7 +33,7 @@
     "PA Z Dagger",
     "X Y Trail",
     "U Curls Return",
-    "PA Dagger"
+    "Y Flood"
    ],
    "cpu_situation": [
     4,
@@ -207,7 +207,7 @@
     "Slot Stick Nod",
     "Slot Stick",
     "Y Double Slants",
-    "Slot Flood Out"
+    "Slot Stick Return"
    ],
    "cpu_situation": [
     2,
@@ -329,12 +329,15 @@
    "align": "uc",
    "tag": "short",
    "menu": [
+    "RB Draw Wk",
+    "RB Iso",
     "U Stick",
     "PA X Deep Post",
     "Y Cross",
     "PA Slant Flat",
     "PA X Slant Flat",
-    "PA Deep Post"
+    "PA Deep Post",
+    "Outside Zone Wk"
    ],
    "cpu_situation": [
     3,
@@ -375,7 +378,10 @@
    "menu": [
     "Tush Push",
     "QB Sneak",
-    "Power G"
+    "RB Slip Screen Wk",
+    "Power G",
+    "PA Shot",
+    "U Stick"
    ],
    "cpu_situation": [
     4,
@@ -418,10 +424,10 @@
    "tag": "empty",
    "menu": [
     "RB Scat Seam Out",
-    "RB Flood",
-    "RB Choice Return",
+    "QB Draw",
+    "QB Power",
     "Y Screen",
-    "Max Z Hook Corner",
+    "Spacing",
     "Y Stick Return"
    ],
    "cpu_situation": [
@@ -658,9 +664,12 @@
    "align": "pistol",
    "tag": "short",
    "menu": [
+    "Guard Iso",
+    "Inside Trap",
     "PA U Seam Shot",
     "PA Comeback Seam",
-    "PA X Out Seam"
+    "PA X Out Seam",
+    "RB Draw Wk"
    ],
    "cpu_situation": [
     3,
@@ -1834,7 +1843,6 @@
    "lane": null,
    "formations": [
     "Singleback Doubles",
-    "Gun Trips TE",
     "Gun Bunch X Nasty",
     "Gun Doubles Clamp Stack",
     "Pistol Y Off Trips",
@@ -2700,6 +2708,7 @@
    "lane": null,
    "formations": [
     "Gun Doubles",
+    "Gun Trips TE",
     "Gun Bunch X Nasty",
     "Gun Doubles Clamp Stack",
     "Singleback Tight Y Off",
@@ -2805,7 +2814,6 @@
    "lane": null,
    "formations": [
     "Gun Bunch X Nasty",
-    "Gun Empty Trey",
     "Gun Doubles Clamp Stack",
     "Singleback Trey",
     "Gun Tight Y Off"
@@ -3603,6 +3611,7 @@
    "deep": false,
    "lane": null,
    "formations": [
+    "Singleback Ace",
     "Singleback Ace Bunch",
     "Gun Ace Wing"
    ]
@@ -4170,7 +4179,9 @@
    "deep": false,
    "lane": 2,
    "formations": [
-    "Full House"
+    "I-Form Tight",
+    "Full House",
+    "Pistol Jumbo"
    ]
   },
   {
@@ -4250,33 +4261,32 @@
    "deep": false,
    "lane": 3,
    "formations": [
+    "Pistol Jumbo",
     "Pistol Full House"
    ]
   },
   {
    "play": "p117",
    "play_index": 170,
-   "name": "RB Flood",
-   "concept": "HB Flood Out and Up Slants",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
+   "name": "QB Draw",
+   "concept": "QB Draw",
+   "family": "qb",
+   "header": "qb_draw",
+   "play_type": "keeper",
    "personnel": "11",
    "home": "Gun Empty Trey",
-   "primary": "HB",
+   "primary": null,
    "screen": null,
    "must": "",
    "routes": [
-    "Flat",
-    "Out and Up",
-    "Sail",
-    "Slant"
+    "Go"
    ],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Empty Trey"
-   ]
+   ],
+   "added_by": "b780 plays2"
   },
   {
    "play": "p118",
@@ -4299,6 +4309,7 @@
    "deep": false,
    "lane": null,
    "formations": [
+    "Full House Sneak",
     "Pistol Full House"
    ]
   },
@@ -4371,7 +4382,8 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "I-Form Tight"
+    "I-Form Tight",
+    "Full House Sneak"
    ]
   },
   {
@@ -4411,6 +4423,7 @@
    "deep": false,
    "lane": 3,
    "formations": [
+    "I-Form Tight",
     "Full House"
    ]
   },
@@ -4639,6 +4652,7 @@
    "deep": false,
    "lane": 2,
    "formations": [
+    "Pistol Jumbo",
     "Pistol Full House"
    ]
   },
@@ -4694,28 +4708,23 @@
   {
    "play": "p136",
    "play_index": 207,
-   "name": "RB Choice Return",
-   "concept": "HB Choice Return Curls",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
+   "name": "QB Power",
+   "concept": "QB Power",
+   "family": "qb",
+   "header": "qb_draw",
+   "play_type": "keeper",
    "personnel": "11",
    "home": "Gun Empty Trey",
-   "primary": "HB",
+   "primary": null,
    "screen": null,
    "must": "",
-   "routes": [
-    "Curl",
-    "Flat",
-    "Return",
-    "Steep In",
-    "Whip"
-   ],
+   "routes": [],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Empty Trey"
-   ]
+   ],
+   "added_by": "b780 plays2"
   },
   {
    "play": "p137",
@@ -4754,6 +4763,7 @@
    "deep": false,
    "lane": 0,
    "formations": [
+    "I-Form Tight",
     "Full House"
    ]
   },
@@ -4981,7 +4991,8 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Full House"
+    "Full House",
+    "Full House Sneak"
    ]
   },
   {

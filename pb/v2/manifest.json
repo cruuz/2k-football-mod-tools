@@ -53,40 +53,40 @@
    "pack": "data/playbooks/softdrink_arz_modern.2k5book",
    "formations": 33,
    "plays": 151,
-   "links": 546,
+   "links": 555,
    "appended_formations": 9,
    "appended_plays": 0,
-   "semantic_sha256": "ea20821a8b2786fbfba0cedba90adac645597a49149404db3f8e8d7442db54c2"
+   "semantic_sha256": "67d4464f1c905fd15c31f0d77cfac2fd294e8c5f8530facd14a0e9aeef0dcf0e"
   },
   {
    "team": "ATL",
    "pack": "data/playbooks/softdrink_atl_modern.2k5book",
    "formations": 33,
    "plays": 151,
-   "links": 480,
+   "links": 489,
    "appended_formations": 11,
    "appended_plays": 14,
-   "semantic_sha256": "95a8c1567ae9b4db39491404ca0c773c284e6eb64f557e248e6d360987c0496a"
+   "semantic_sha256": "a36c5a28b9737a2c92150d1f0acfd91c82815d5d0ab7218abc4decfd22e06fc3"
   },
   {
    "team": "BAL",
    "pack": "data/playbooks/softdrink_bal_modern.2k5book",
    "formations": 33,
    "plays": 151,
-   "links": 441,
+   "links": 459,
    "appended_formations": 8,
    "appended_plays": 7,
-   "semantic_sha256": "4d086807f1698a30196c09754bc0712509d0107f05a6202b13b85e76add279ec"
+   "semantic_sha256": "3a201097e9106dc8efbb2db5073e2e6f30212adfe654962789952f3dee513310"
   },
   {
    "team": "BUF",
    "pack": "data/playbooks/softdrink_buf_modern.2k5book",
    "formations": 31,
    "plays": 143,
-   "links": 450,
+   "links": 459,
    "appended_formations": 4,
    "appended_plays": 0,
-   "semantic_sha256": "19b606354b2163348c2f21d352f39be4a10ce9df4e01bebb630818ef8880b04c"
+   "semantic_sha256": "561d49f078eb14e35c31d1e81345f1409a8e1b0611a02ee3eafa887e161dea46"
   },
   {
    "team": "CAR",
@@ -96,107 +96,107 @@
    "links": 474,
    "appended_formations": 5,
    "appended_plays": 0,
-   "semantic_sha256": "2635d78b2ffe18317ebaaac3940dfb1ce83894ba9f9e88be3505972a0f477d87"
+   "semantic_sha256": "3dc695e8e0f545cb2f1cccccc902355012bc4998633bb77d997c436ad062004f"
   },
   {
    "team": "CHI",
    "pack": "data/playbooks/softdrink_chi_modern.2k5book",
    "formations": 33,
    "plays": 151,
-   "links": 495,
+   "links": 504,
    "appended_formations": 9,
    "appended_plays": 2,
-   "semantic_sha256": "93fd97f136c60fe453c3212f63aeda81197bafacbdbc7ca88cf9e382bf5eb3d4"
+   "semantic_sha256": "18450b5bf6a88e88debb5d0f99c56393e4e39d3f0fd36aaf0ed8cbb1ff2ba1fb"
   },
   {
    "team": "CIN",
    "pack": "data/playbooks/softdrink_cin_modern.2k5book",
    "formations": 33,
    "plays": 156,
-   "links": 540,
+   "links": 543,
    "appended_formations": 6,
    "appended_plays": 0,
-   "semantic_sha256": "1ce4a6d93fc71a9e18bb55636c22504234a04101ddddd9b7d44a1ccad23c6bbd"
+   "semantic_sha256": "9ae2c2aed53727f2b75d64d103571388c4cdcfbe7f4f4e5130e439866af92cac"
   },
   {
    "team": "CLE",
    "pack": "data/playbooks/softdrink_cle_modern.2k5book",
    "formations": 33,
    "plays": 153,
-   "links": 489,
+   "links": 492,
    "appended_formations": 6,
    "appended_plays": 0,
-   "semantic_sha256": "c6b83e5c95ea8278c191a85b48cde441410ad1a9d620f6c036542d930d2e4a0a"
+   "semantic_sha256": "4f686dc1373c1e7d4e670c94b98500a2b9671881438c4e374c241bf08045dc99"
   },
   {
    "team": "DAL",
    "pack": "data/playbooks/softdrink_dal_modern.2k5book",
    "formations": 32,
    "plays": 139,
-   "links": 498,
+   "links": 504,
    "appended_formations": 9,
    "appended_plays": 0,
-   "semantic_sha256": "b662ae309e88ef861bcb55932d8f27e3c1e4e4002b663a742a48d170e7ffcdbb"
+   "semantic_sha256": "25092a7346e7f0288775e10416491c9dcfe341f2f6a035c663e793d0362980aa"
   },
   {
    "team": "DEN",
    "pack": "data/playbooks/softdrink_den_modern.2k5book",
    "formations": 32,
    "plays": 150,
-   "links": 522,
+   "links": 528,
    "appended_formations": 8,
    "appended_plays": 0,
-   "semantic_sha256": "6e820f9e47aa002a5c3678c3d738e70675f2fee93d238adfbd145e5b31c995f1"
+   "semantic_sha256": "4716baf8a1dce5aa00fdfc9f118d441794334bd0e5df274468efd3d855d7979c"
   },
   {
    "team": "DET",
    "pack": "data/playbooks/softdrink_det_modern.2k5book",
    "formations": 33,
    "plays": 151,
-   "links": 498,
+   "links": 501,
    "appended_formations": 9,
    "appended_plays": 13,
-   "semantic_sha256": "5d92e77b17be09f3d3ae5ab5131ce118f8be488f6300f161236532e440512086"
+   "semantic_sha256": "34d2874747fb75773cbb0dc35c5959d810c9c2afbd0bf7b3582b6ecb75c591a5"
   },
   {
    "team": "GB",
    "pack": "data/playbooks/softdrink_gb_modern.2k5book",
    "formations": 33,
    "plays": 149,
-   "links": 513,
+   "links": 519,
    "appended_formations": 2,
    "appended_plays": 4,
-   "semantic_sha256": "c2fe7729ce4b754f6bc5d4f17de06fad7d86caea0e63beb12bb526a63b052b81"
+   "semantic_sha256": "7b5457e55190c27d6688fcf8ab688a81e37f3693933ca8c7401d1f0bcb0f5287"
   },
   {
    "team": "HOU",
    "pack": "data/playbooks/softdrink_hou_modern.2k5book",
    "formations": 33,
    "plays": 154,
-   "links": 522,
+   "links": 528,
    "appended_formations": 10,
    "appended_plays": 0,
-   "semantic_sha256": "62c6365a3018f0a4b078d2ff37d5610d3eab4d0afcc6aff51f308a82c71a6b28"
+   "semantic_sha256": "9cb220cfc9b99c3c434a2fa5d3109d6f359e7f5281c1c07fbf17f1cb783eb436"
   },
   {
    "team": "IND",
    "pack": "data/playbooks/softdrink_ind_modern.2k5book",
    "formations": 33,
    "plays": 153,
-   "links": 420,
+   "links": 429,
    "appended_formations": 5,
    "appended_plays": 3,
-   "semantic_sha256": "4e6377c1b2cfdcceea7201b4cce6545a8a5c23f55db4156ddbc0fb6a96dd0169"
+   "semantic_sha256": "c424a67de222cd9aaf50d74878d927a5c99ee90e5ed8fc685c3a88e59b8a3820"
   },
   {
    "team": "JAX",
    "pack": "data/playbooks/softdrink_jax_modern.2k5book",
    "formations": 33,
    "plays": 152,
-   "links": 549,
+   "links": 558,
    "appended_formations": 9,
    "appended_plays": 0,
-   "semantic_sha256": "6abe03c8ac8d3e3d810ae2f9b66fc8d8f59f60a2d3801c0d80f16b6123eb42bd"
+   "semantic_sha256": "c0fcf568d3a34e32da369db13c29978d9f04035741eb10d73b1f34b32bf93bcc"
   },
   {
    "team": "KC",
@@ -206,167 +206,167 @@
    "links": 573,
    "appended_formations": 7,
    "appended_plays": 1,
-   "semantic_sha256": "01f1818dc8e69adcc829f813aa482c3ff886accaba4db1848ff0a564dfd9bbb5"
+   "semantic_sha256": "dcdde2d46ce8b605e5a9cdc731c267b0d736685d3d7173f515f6bd860d17f352"
   },
   {
    "team": "MIA",
    "pack": "data/playbooks/softdrink_mia_modern.2k5book",
    "formations": 33,
    "plays": 144,
-   "links": 474,
+   "links": 483,
    "appended_formations": 7,
    "appended_plays": 9,
-   "semantic_sha256": "818e7ec83aace115f7c6571f023b124c3cff88c0abe1c267cab13f3ce21aa139"
+   "semantic_sha256": "9f7e038ee2e26de85a9f13bff09c1dd44ef5c07f682f100c3fd61e6dec6605bd"
   },
   {
    "team": "MIN",
    "pack": "data/playbooks/softdrink_min_modern.2k5book",
    "formations": 31,
    "plays": 140,
-   "links": 336,
+   "links": 342,
    "appended_formations": 3,
    "appended_plays": 0,
-   "semantic_sha256": "eed02d3b8673a6387b1365b2d057633d6f7d28beef26c6661f76f983a4205911"
+   "semantic_sha256": "915555b7fef39ca9d24ad8b2a16ca21b3f01c9fdc172f0f1940af956c8f4e70f"
   },
   {
    "team": "NE",
    "pack": "data/playbooks/softdrink_ne_modern.2k5book",
    "formations": 33,
    "plays": 134,
-   "links": 417,
+   "links": 426,
    "appended_formations": 8,
    "appended_plays": 0,
-   "semantic_sha256": "514e73dafb92b2965f464d95f9ef918329cedefd49b102b5f0bfa11533f784cc"
+   "semantic_sha256": "b0e98ccd804fb871cc90f119031b75cacfb595b35c13ddb9401840e11e917c76"
   },
   {
    "team": "NO",
    "pack": "data/playbooks/softdrink_no_modern.2k5book",
    "formations": 33,
    "plays": 151,
-   "links": 537,
+   "links": 540,
    "appended_formations": 9,
    "appended_plays": 4,
-   "semantic_sha256": "763d362b229c43b86bb9b9950805891398cead73faf91d97a03f9b0935e61dc9"
+   "semantic_sha256": "ccd0c4cb3a9c10e2b7bee3635ec3fcb5a34ed600fb2d0b8318d6da68b58f4af6"
   },
   {
    "team": "NYG",
    "pack": "data/playbooks/softdrink_giants_modern.2k5book",
    "formations": 33,
    "plays": 148,
-   "links": 513,
+   "links": 519,
    "appended_formations": 7,
    "appended_plays": 0,
-   "semantic_sha256": "489fd6789e992a91a9fa09865a4964e0c55e92834828ad87666f6453963a53a3"
+   "semantic_sha256": "654e028d66b22f57db95d6035e45bdbdd96fd62840c6a7796f050985cd9b2b5a"
   },
   {
    "team": "NYJ",
    "pack": "data/playbooks/softdrink_nyj_modern.2k5book",
    "formations": 32,
    "plays": 141,
-   "links": 360,
+   "links": 381,
    "appended_formations": 9,
    "appended_plays": 0,
-   "semantic_sha256": "e3db1c51f192762e185eb3b3f62bfbce9e9236b9f023cbae5a295a89913f123f"
+   "semantic_sha256": "e0f868f21d44000a6efe1f773d7726bbc02e1759ee31fb2b530bdebdbe9473e1"
   },
   {
    "team": "OAK",
    "pack": "data/playbooks/softdrink_oak_modern.2k5book",
    "formations": 32,
    "plays": 135,
-   "links": 369,
+   "links": 372,
    "appended_formations": 7,
    "appended_plays": 0,
-   "semantic_sha256": "6636afde5d170433663065a1861fc45c7da29fc60de0dd731cacfaeb2d59441d"
+   "semantic_sha256": "1c8ff878c30da8a265e4b383446ab6f30619f2fa8cbfc3755e99b4a0f51ede88"
   },
   {
    "team": "PHI",
    "pack": "data/playbooks/softdrink_phi_modern.2k5book",
    "formations": 33,
    "plays": 147,
-   "links": 438,
+   "links": 447,
    "appended_formations": 9,
    "appended_plays": 1,
-   "semantic_sha256": "0d8f5bc33f175a0562b52b50445414ce382caa3ec143295682aac0870f454a74"
+   "semantic_sha256": "33ed2c57d4ed194d2c505516d81460186eb5ad4fc5003e51c11f5efae2a9ad99"
   },
   {
    "team": "PIT",
    "pack": "data/playbooks/softdrink_pit_modern.2k5book",
    "formations": 33,
    "plays": 145,
-   "links": 483,
+   "links": 492,
    "appended_formations": 9,
    "appended_plays": 7,
-   "semantic_sha256": "f95864a2b2157be8a99899c144a155acddc51205efa92f9c34e548cecb634039"
+   "semantic_sha256": "aeed8a3581bb9deb8b4e3df6c7d2d4de00cebab5f09dc4e58e2a89c81c8a77e7"
   },
   {
    "team": "SD",
    "pack": "data/playbooks/softdrink_sd_modern.2k5book",
    "formations": 33,
    "plays": 143,
-   "links": 471,
+   "links": 480,
    "appended_formations": 9,
    "appended_plays": 0,
-   "semantic_sha256": "1de7f6807d7adf42f6c335aff009d79cbcead63b88201d07c49cc072e6c75d6b"
+   "semantic_sha256": "d9d5b4952e494a819e6dc68b8815833e3a6a38c0c6db86038a2730dd2f7004d7"
   },
   {
    "team": "SEA",
    "pack": "data/playbooks/softdrink_sea_modern.2k5book",
    "formations": 33,
    "plays": 150,
-   "links": 507,
+   "links": 510,
    "appended_formations": 7,
    "appended_plays": 0,
-   "semantic_sha256": "373fab89dd3fde43bc8ef36be5a8e437b51577c7b9e96284c24baf6d3f73bbfe"
+   "semantic_sha256": "64c9f92c8cff6f10bb2f9f8cd049fcc0f1a17c164a313e17b232cc776c85717b"
   },
   {
    "team": "SF",
    "pack": "data/playbooks/softdrink_sf_modern.2k5book",
    "formations": 33,
    "plays": 151,
-   "links": 456,
+   "links": 468,
    "appended_formations": 11,
    "appended_plays": 19,
-   "semantic_sha256": "0cd675c1be4f65c69948c11631a8d665cf4056f31d8024b56f6d7fc7976258fb"
+   "semantic_sha256": "4cf65d6e27bd6f85420bf3b2b44949476591bc07140fc0b3cfb9af9a7f0c5740"
   },
   {
    "team": "STL",
    "pack": "data/playbooks/softdrink_stl_modern.2k5book",
    "formations": 33,
    "plays": 152,
-   "links": 498,
+   "links": 501,
    "appended_formations": 5,
    "appended_plays": 0,
-   "semantic_sha256": "9298bed8d08f90a4e6f07efe02777d6f790afe866fc52ee12824943b4da09128"
+   "semantic_sha256": "d9ef6a7d916d60fbbb4b8e3b88f2c02f775c71d6aa4da1f494ecc81f08b8dc32"
   },
   {
    "team": "TB",
    "pack": "data/playbooks/softdrink_tb_modern.2k5book",
    "formations": 32,
    "plays": 146,
-   "links": 447,
+   "links": 456,
    "appended_formations": 0,
    "appended_plays": 9,
-   "semantic_sha256": "46a9d403527750da9b1bb3997f7e1b9cfef752c1f1583202e6300f6df415069e"
+   "semantic_sha256": "bde52730c32407450898c34b46445936ae1a70e294231119ce855a74e5ac6a43"
   },
   {
    "team": "TEN",
    "pack": "data/playbooks/softdrink_ten_modern.2k5book",
    "formations": 32,
    "plays": 143,
-   "links": 471,
+   "links": 480,
    "appended_formations": 11,
    "appended_plays": 4,
-   "semantic_sha256": "9f40307242449ea04a98b21adf187f73de3ee6f51014d658ad523a343aa7693f"
+   "semantic_sha256": "78b244ad33ec21b3605062a77755ac3ddca0dcde049743aa1993f61b78ab22a1"
   },
   {
    "team": "WAS",
    "pack": "data/playbooks/softdrink_was_modern.2k5book",
    "formations": 32,
    "plays": 141,
-   "links": 372,
+   "links": 381,
    "appended_formations": 7,
    "appended_plays": 2,
-   "semantic_sha256": "379833f1566a99028a53be314ddf37b6e6c0b96f1837feba8626d79e74a903af"
+   "semantic_sha256": "088a13db3e69a9de20aaf7e955892db033ce42c3dd75277e03bc824ad5f1ca51"
   }
  ]
 }

@@ -318,7 +318,7 @@
    "menu": [
     "RB Off Tackle Wk",
     "Y China",
-    "Y Mills",
+    "Z Hitch Seam",
     "RB Texas",
     "FB Screen",
     "Z Hook Corner"
@@ -428,8 +428,8 @@
    "menu": [
     "RB Scat Seam Out",
     "Z Dagger Seam Out",
-    "RB Spacing",
-    "Slot Choice",
+    "QB Draw",
+    "QB Power",
     "RB Scat Slants",
     "X Bench Steep In"
    ],
@@ -610,7 +610,7 @@
    "tag": "pass",
    "menu": [
     "RB Slip Screen",
-    "X Levels Steep In",
+    "Z Slant Flat",
     "RB Draw",
     "U Levels Steep In",
     "PA X Deep Flood",
@@ -792,7 +792,7 @@
     "Z Dagger Whip Seams",
     "U Drive Skinny Post",
     "U Levels Steep In",
-    "U Y Trail"
+    "Z Slant Flat"
    ],
    "cpu_situation": [
     2,
@@ -903,10 +903,13 @@
    "menu": [
     "Z Hitch Seam",
     "Y Mills",
+    "RB Off Tackle Wk",
     "Y China",
     "Z Out Seam Spot Out",
     "Z Hook Corner",
-    "PA Y Sail Return"
+    "PA Y Sail Return",
+    "01 Trap",
+    "Inside Trap Wk"
    ],
    "cpu_situation": [
     3,
@@ -1471,7 +1474,8 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Gun Ace Wing"
+    "Gun Ace Wing",
+    "Gun Ace Flex"
    ],
    "added_by": "b778 pb7"
   },
@@ -2631,7 +2635,6 @@
    "lane": null,
    "formations": [
     "Singleback Ace",
-    "Gun Ace Wing",
     "Gun Ace Flex",
     "Singleback Ace Bunch",
     "Singleback Y Trips"
@@ -2692,7 +2695,6 @@
    "formations": [
     "Singleback Ace",
     "Gun Ace Wing",
-    "Gun Ace Flex",
     "Singleback Ace Bunch",
     "Singleback Y Trips"
    ]
@@ -3991,7 +3993,8 @@
    "deep": false,
    "lane": 2,
    "formations": [
-    "Wing T"
+    "Wing T",
+    "Gun Split Pro"
    ]
   },
   {
@@ -4056,6 +4059,7 @@
    "deep": false,
    "lane": null,
    "formations": [
+    "I-Form Pro",
     "Gun Split Pro"
    ]
   },
@@ -4316,28 +4320,25 @@
   {
    "play": "p120",
    "play_index": 170,
-   "name": "RB Spacing",
-   "concept": "HB Spacing Seam Out Dagger",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
+   "name": "QB Draw",
+   "concept": "QB Draw",
+   "family": "qb",
+   "header": "qb_draw",
+   "play_type": "keeper",
    "personnel": "11",
    "home": "Gun Empty Trey",
-   "primary": "HB",
+   "primary": null,
    "screen": null,
    "must": "",
    "routes": [
-    "Dig",
-    "Flat",
-    "Hitch",
-    "Seam Out",
-    "Stick"
+    "Go"
    ],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Empty Trey"
-   ]
+   ],
+   "added_by": "b780 plays2"
   },
   {
    "play": "p121",
@@ -4548,26 +4549,23 @@
   {
    "play": "p130",
    "play_index": 183,
-   "name": "Slot Choice",
-   "concept": "Slot Choice Out and Up Whip",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
+   "name": "QB Power",
+   "concept": "QB Power",
+   "family": "qb",
+   "header": "qb_draw",
+   "play_type": "keeper",
    "personnel": "11",
    "home": "Gun Empty Trey",
-   "primary": "Slot",
+   "primary": null,
    "screen": null,
    "must": "",
-   "routes": [
-    "Curl",
-    "Out and Up",
-    "Whip"
-   ],
+   "routes": [],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Empty Trey"
-   ]
+   ],
+   "added_by": "b780 plays2"
   },
   {
    "play": "p131",
@@ -4626,7 +4624,8 @@
    "deep": false,
    "lane": 2,
    "formations": [
-    "Wing T"
+    "Wing T",
+    "Gun Split Pro"
    ]
   },
   {
@@ -4868,7 +4867,8 @@
    "deep": false,
    "lane": 1,
    "formations": [
-    "I-Form Pro"
+    "I-Form Pro",
+    "Gun Split Pro"
    ]
   },
   {

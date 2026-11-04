@@ -41,7 +41,8 @@ class CategoryMenuTests(unittest.TestCase):
         raw = fixture()
         self.assertEqual([r['members'] for r in ip.category_menu_rows(raw)], [[0], [], [1]])
         self.assertEqual(len(ip.category_menu_problems(raw)), 1)
-        with patch.object(lint, 'resource_views', return_value=[]), patch.object(lint, 'defense_findings', return_value=[]):
+        with patch.object(lint, 'resource_views', return_value=[]), patch.object(lint, 'defense_findings', return_value=[]), \
+                patch.object(lint, 'resource_coverage', return_value=[]):     # b780 Q18: the synthetic book isolates one rule
             result = lint.lint_resource(raw)
         self.assertEqual([(f.code, f.severity) for f in result.findings], [('CATEGORY_EMPTY', 'error')])
 

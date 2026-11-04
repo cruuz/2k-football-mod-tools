@@ -116,7 +116,7 @@
    "tag": "empty",
    "menu": [
     "RB Spacing",
-    "Z Deep Post",
+    "Double Slants",
     "QB Keep",
     "End Around",
     "Z Snag Seams",
@@ -202,7 +202,7 @@
     "X Snag",
     "PA Z Post Wheel",
     "Zone Toss",
-    "X Cluster Wheel",
+    "Y Whip Out",
     "MIN Scissors",
     "PA Z Flood",
     "MIN Post Corner",
@@ -244,7 +244,7 @@
     "MIN Scissors",
     "Slot Smash Zig",
     "Slot Y Trail",
-    "Slot Drive Out"
+    "Y Whip Out"
    ],
    "cpu_situation": [
     3,
@@ -354,7 +354,10 @@
    "menu": [
     "Tush Push",
     "QB Sneak",
-    "Inside Zone Split"
+    "X Dagger",
+    "Inside Zone Split",
+    "Inside Zone Wk",
+    "RB Toss"
    ],
    "cpu_situation": [
     4,
@@ -395,7 +398,7 @@
    "menu": [
     "RB Choice Out",
     "Z Deep Hooks",
-    "RB Zig Flat"
+    "QB Power"
    ],
    "cpu_situation": [
     4,
@@ -468,8 +471,8 @@
     "X Snag",
     "PA Z Flood",
     "Crack Toss Wk",
-    "Slot Y Trail Out",
-    "X Go Shot Whip In",
+    "Slot Stick",
+    "Y Whip Out",
     "PA Z Post Wheel",
     "MIN Bench",
     "Y Slot Fade Outs",
@@ -633,12 +636,12 @@
    "align": "uc",
    "tag": "base",
    "menu": [
+    "Counter GT",
+    "Lead Stretch",
     "PA Z Bench Stick",
     "Sprint FB Sail",
     "X Mills",
-    "X Sail",
-    "PA X Hitch Seam",
-    "Mesh Wheel"
+    "X Sail"
    ],
    "cpu_situation": [
     3,
@@ -735,6 +738,7 @@
    "menu": [
     "Z Quick Outs",
     "Boot Y Scissors",
+    "Inside Zone Split Wk",
     "Y Double Slants",
     "Y Smash Seams",
     "Z Steep In Seam",
@@ -747,7 +751,9 @@
     "Z Out Seam Whip",
     "U Post Wheel Dig",
     "U Double Move",
-    "RB Texas"
+    "RB Texas",
+    "RB Stretch",
+    "RB Draw Wk"
    ],
    "cpu_situation": [
     4,
@@ -839,7 +845,7 @@
     "Slot Stick Nod",
     "Slot Drive Out",
     "Slot Y Trail Out",
-    "Slot Y Trail",
+    "Y Whip Out",
     "RB Texas"
    ],
    "cpu_situation": [
@@ -1149,7 +1155,6 @@
    "lane": null,
    "formations": [
     "Gun Doubles",
-    "Gun Trips TE",
     "Gun Bunch X Nasty",
     "Pistol Doubles",
     "Singleback Bunch X Nasty",
@@ -1520,6 +1525,7 @@
     "Singleback Doubles",
     "Gun Doubles",
     "Gun Bunch X Nasty",
+    "Gun Bunch TE",
     "Singleback Bunch X Nasty",
     "Singleback Bunch",
     "Gun Trips"
@@ -1550,7 +1556,6 @@
    "formations": [
     "Gun Doubles",
     "Gun Wildcat",
-    "Gun Bunch TE",
     "Singleback Bunch X Nasty",
     "Pistol Bunch",
     "Gun Trips"
@@ -1582,8 +1587,7 @@
     "Gun Doubles",
     "Gun Bunch X Nasty",
     "Singleback Bunch X Nasty",
-    "Singleback Bunch",
-    "Gun Trips"
+    "Singleback Bunch"
    ]
   },
   {
@@ -1640,7 +1644,6 @@
    "lane": null,
    "formations": [
     "Gun Doubles",
-    "Gun Bunch X Nasty",
     "Gun Wildcat",
     "Singleback Bunch X Nasty",
     "Pistol Bunch",
@@ -1961,7 +1964,8 @@
     "Pistol Deuce Close",
     "Ace Wing",
     "Pistol Ace",
-    "Singleback Ace Bunch"
+    "Singleback Ace Bunch",
+    "Gun Deuce Close"
    ]
   },
   {
@@ -2012,7 +2016,8 @@
     "Pistol Deuce Close",
     "Ace Wing",
     "Singleback Ace",
-    "Singleback Ace Bunch"
+    "Singleback Ace Bunch",
+    "Gun Deuce Close"
    ]
   },
   {
@@ -2090,9 +2095,13 @@
    "lane": null,
    "formations": [
     "Gun Doubles",
+    "Gun Trips TE",
+    "Gun Bunch X Nasty",
     "Gun Wildcat",
+    "Gun Bunch TE",
     "Singleback Bunch X Nasty",
-    "Singleback Bunch"
+    "Singleback Bunch",
+    "Gun Trips"
    ]
   },
   {
@@ -2197,7 +2206,8 @@
     "Pistol Deuce Close",
     "Ace Wing",
     "Pistol Ace",
-    "Singleback Ace Bunch"
+    "Singleback Ace Bunch",
+    "Gun Deuce Close"
    ]
   },
   {
@@ -2395,8 +2405,7 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Wing T",
-    "Singleback FB Wing"
+    "Wing T"
    ]
   },
   {
@@ -2525,6 +2534,7 @@
    "lane": null,
    "formations": [
     "I-Form Tight",
+    "Full House Sneak",
     "Strong H Tight Close"
    ]
   },
@@ -2546,6 +2556,7 @@
    "lane": 2,
    "formations": [
     "I-Form Tight",
+    "Full House Sneak",
     "Strong H Tight Close"
    ]
   },
@@ -2623,7 +2634,6 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Gun Bunch TE",
     "Pistol Bunch"
    ]
   },
@@ -2671,6 +2681,7 @@
    "lane": 0,
    "formations": [
     "I-Form Tight",
+    "Full House Sneak",
     "Strong H Tight Close"
    ]
   },
@@ -2695,8 +2706,7 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Wing T",
-    "Singleback FB Wing"
+    "Wing T"
    ]
   },
   {
@@ -3605,7 +3615,8 @@
    "deep": false,
    "lane": 4,
    "formations": [
-    "Wing T"
+    "Wing T",
+    "Singleback FB Wing"
    ]
   },
   {
@@ -3927,7 +3938,8 @@
    "deep": false,
    "lane": 3,
    "formations": [
-    "I-Form Pro"
+    "I-Form Pro",
+    "Singleback FB Wing"
    ]
   },
   {
@@ -4068,28 +4080,23 @@
   {
    "play": "p129",
    "play_index": 199,
-   "name": "RB Zig Flat",
-   "concept": "HB Zig Flat Out and Up Whip",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
+   "name": "QB Power",
+   "concept": "QB Power",
+   "family": "qb",
+   "header": "qb_draw",
+   "play_type": "keeper",
    "personnel": "11",
    "home": "Gun Empty Trey",
-   "primary": "HB",
+   "primary": null,
    "screen": null,
    "must": "",
-   "routes": [
-    "Curl",
-    "Flat",
-    "Out and Up",
-    "Whip",
-    "Zig"
-   ],
+   "routes": [],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Empty Trey"
-   ]
+   ],
+   "added_by": "b780 plays2"
   },
   {
    "play": "p130",
@@ -4685,8 +4692,8 @@
    {
     "entry": 0,
     "role": "inside_run",
-    "formation": "Pistol Strong Slot",
-    "play": "RB Lead Draw"
+    "formation": "Gun Deuce Close",
+    "play": "RB Draw Wk"
    },
    {
     "entry": 1,
