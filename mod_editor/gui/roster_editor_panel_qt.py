@@ -4065,8 +4065,14 @@ class RosterEditorPanel(QWidget):
         if self.document is None:
             return
         chosen, _f = QFileDialog.getSaveFileName(self, "Export roster edits (for ★ Build & Share)", "roster_edits.json", EDITS_FILTER)
-        if chosen:
+        if not chosen:
+            return
+        try:
             self.save_edits_to(chosen)
+        except (OSError, ValueError) as exc:
+            # RosterRecordError is a ValueError: staff changes on a roster loaded with its faces, staff problems, a path
+            # that cannot be written. Every other button on this page says so in a dialog; this one raised out of the click.
+            show_operation_error(self, "export the roster edits", plain_error(exc))
 
     def write_copy_to(self, target: Path | str, *, overwrite: bool = False) -> dict[str, Any]:
         """Disc: copy the image and apply.  Save: write a re-signed container.  Never the source."""
