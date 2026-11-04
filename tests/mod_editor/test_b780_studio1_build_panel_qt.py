@@ -122,6 +122,94 @@ class LegacyInstallsCanBeUpdatedTests(_PanelCase):
         self.assertNotEqual(panel._badges["franchise_economy"].text(), "Needs update")
 
 
+class InstalledBasesMeetDependenciesTests(_PanelCase):
+    """On the released v0.8 disc the Anniversary rules by season are installed with their bases, the bases' boxes read
+    'Already installed' (unticked, greyed out), and Make my disc was blocked for every choice by 'Anniversary rules by season
+    requires: Dynamic kickoff ...'; the build's own check (era rules need the four bases in the plan) refused it too."""
+
+    V08 = dict(espn25_more_moments="applied", espn25_era_rules="applied", espn25_named_previews="applied",
+               dynamic_kickoff="applied", defensive_try="applied", overtime="applied", catch_slider="previous",
+               coverage_trail="applied", cpu_ball_carriers="applied")
+
+    def test_the_disc_with_era_rules_installed_can_still_be_built_on(self) -> None:
+        panel = self.panel(**self.V08)
+        for key in ("dynamic_kickoff", "defensive_try", "overtime"):
+            self.assertFalse(getattr(panel, key + "_check").isChecked(), key)          # installed, not ticked
+        self.assertTrue(panel.espn25_era_rules_check.isChecked())
+        self.assertFalse(panel.espn25_era_rules_check.isEnabled())
+        panel.catch_check.setChecked(True)                                              # an in-place update
+        self.assertEqual(panel.blocker(), "")
+        self.assertTrue(panel.build_button.isEnabled())
+
+    def test_the_plan_for_a_build_carries_the_installed_bases_and_the_plain_plan_does_not(self) -> None:
+        panel = self.panel(**self.V08)
+        build = panel._plan_for_build()
+        self.assertTrue(all(getattr(build, key) for key in
+                            ("espn25_era_rules", "espn25_more_moments", "dynamic_kickoff", "defensive_try", "overtime")))
+        plain = panel.plan()
+        self.assertFalse(plain.dynamic_kickoff or plain.defensive_try or plain.overtime)   # what the page shows stays what it shows
+        from mod_editor.core import mod_build
+        self.assertEqual(mod_build.validate_plan(build), [])
+
+    def test_a_build_keeps_the_runtime_options_the_disc_carries(self) -> None:
+        """The build refuses to drop an installed runtime option ("4:3 menus in widescreen is installed; rebuild from a
+        verified base to turn it off"); this page shows it unticked and greyed out, so the plan for a build keeps it."""
+        panel = self.panel(widescreen="applied", dynamic_kickoff="applied", modern_goalposts="applied", letter_grades="applied",
+                           coach_ai="applied", modern_practice_field_team_logo="applied", modern_practice_field="foreign")
+        plain, build = panel.plan(), panel._plan_for_build()
+        self.assertFalse(plain.widescreen or plain.dynamic_kickoff or plain.modern_goalposts)       # as the page shows them
+        self.assertTrue(build.widescreen and build.dynamic_kickoff and build.modern_goalposts)       # as the build needs them
+        self.assertTrue(build.letter_grades and build.coach_ai)
+        # a sub-option whose parent is not installed is not kept on its own (the build would name the wrong box)
+        self.assertFalse(build.modern_practice_field_team_logo or build.modern_practice_field)
+        # nothing installed, nothing kept
+        clean, clean_plan = self.panel(), self.panel().plan()
+        self.assertEqual(clean._plan_for_build(), clean_plan)
+
+    def test_a_base_the_disc_cannot_take_still_blocks_with_its_name(self) -> None:
+        # a base that is neither installed nor tickable (foreign bytes) is still missing, and still named
+        panel = self.panel(dynamic_kickoff="foreign")
+        self.assertFalse(panel.dynamic_kickoff_check.isEnabled())
+        panel.espn25_era_rules_check.setChecked(True)
+        self.app.processEvents()
+        self.assertTrue(panel.espn25_era_rules_check.isChecked())
+        self.assertTrue(panel.blocker().startswith("Anniversary rules by season requires: "), panel.blocker())
+        self.assertIn(panel.dynamic_kickoff_check.text(), panel.blocker())
+        # on a disc where the base is simply there, ticking the rules is fine
+        fine = self.panel(dynamic_kickoff="applied")
+        fine.espn25_era_rules_check.setChecked(True)
+        self.assertNotIn("requires", fine.blocker())
+
+    def test_the_hitch_brake_on_an_installed_close_pursuit_recovery_saves_and_builds(self) -> None:
+        panel = self.panel(coverage_trail="applied")
+        self.assertFalse(panel.coverage_trail_check.isEnabled())
+        panel.coverage_hitch_brake_check.setChecked(True)
+        self.assertFalse(panel.coverage_trail_check.isChecked())                        # nobody can tick the installed parent
+        plan = panel.plan()
+        self.assertTrue(plan.coverage_trail and plan.coverage_hitch_brake)             # the installed parent is in the plan
+        self.assertTrue(panel.project_build_settings()["coverage_hitch_brake"])         # Save Project used to fail here
+        self.assertEqual(panel.blocker(), "")
+
+    def test_the_hitch_brake_without_an_installed_parent_still_ticks_the_parent(self) -> None:
+        panel = self.panel()
+        panel.coverage_hitch_brake_check.setChecked(True)
+        self.assertTrue(panel.coverage_trail_check.isChecked())
+        panel.coverage_trail_check.setChecked(False)
+        self.assertFalse(panel.coverage_hitch_brake_check.isChecked())
+
+    def test_carrier_vision_cannot_be_added_to_installed_ball_carriers(self) -> None:
+        installed = self.panel(cpu_ball_carriers="applied", cpu_runner_vision="retail")
+        box = installed.cpu_runner_vision_check
+        self.assertFalse(box.isEnabled())
+        self.assertFalse(box.isChecked())
+        self.assertEqual(installed._badges["cpu_runner_vision"].text(), "Build from retail to add")
+        self.assertIn("needs a disc built from your retail game", box.toolTip())
+        fresh = self.panel()
+        self.assertTrue(fresh.cpu_runner_vision_check.isEnabled())
+        fresh.cpu_runner_vision_check.setChecked(True)
+        self.assertTrue(fresh.cpu_ball_carriers_check.isChecked())                      # the cascade still ticks its parent
+
+
 class V08DiscStatesTests(_PanelCase):
     """What the released v0.8 disc reads (inspect of the real disc): every 'previous' option is either an update or a rebuild."""
 

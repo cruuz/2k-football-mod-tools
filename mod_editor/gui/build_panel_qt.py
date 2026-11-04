@@ -382,6 +382,15 @@ PREVIOUS_REBUILD_KEYS = {"my_career": "MyCareer", "my_career_home": "Career Home
                          # be written over the beta-79 generator bytes (xbe_apply wants retail or this release's), and the
                          # Player Progress row belongs to the screen above; both were greyed out with a generic badge.
                          "rookie_faces": "rookie faces and first names", "player_progress_visible": "Player Progress row"}
+# b780 studio1: the plan fields behind the installed runtime options the build will not drop (the modules listed in
+# nfl2k5_throw_tuning._check_installed_runtime_settings, and the plan fields their derived switches read:
+# widescreen -> 4:3 menus, dynamic kickoff -> the 25th Anniversary kickoff gate, modern goalposts -> period goalposts,
+# the practice facility and its team logo -> the logo swap).
+KEPT_WHEN_INSTALLED = ("coin_defer", "decided_clock", "historic_teams_quick_game", "espn25_more_moments", "espn25_named_previews",
+                       "historic_stock_books", "espn25_era_rules", "dynamic_kickoff", "widescreen", "modern_goalposts",
+                       "modern_practice_field", "modern_practice_field_team_logo", "k128_memory", "letter_grades", "honors_page",
+                       "coach_ai")
+KEPT_NEEDS = {"modern_practice_field_team_logo": "modern_practice_field"}
 VENUE_BUILD_KEYS = (
     "modern_sofi", "modern_highmark", "modern_att", "modern_levis", "modern_allegiant",
     "modern_mercedes_benz", "modern_usbank", "modern_lucas_oil", "modern_state_farm",
@@ -2282,6 +2291,16 @@ class BuildPanel(QWidget):
                     "music_shuffle", "practice_squad_screen", "abilities", "qb_spy", *BUILD_KEYS):
             gate(getattr(self, key + "_check"), key, needs_image=True)
         gate(self.trim_intro_videos_check, "trim_intro_videos", needs_image=True)
+        # b780 studio1: CPU ball carrier vision is the wider sideline taper of the carrier owner, which can only be chosen
+        # when the owner is first written (nfl2k5_ball_carrier_ai.apply refuses the other taper on an installed one). The box
+        # stayed tickable on a disc that already carries the owner and then met a dependency it could never satisfy.
+        if state.get("cpu_ball_carriers") == "applied" and state.get("cpu_runner_vision") == "retail":
+            box = self.cpu_runner_vision_check
+            box.setEnabled(False)
+            box.setChecked(False)
+            box.setToolTip("CPU ball carriers are already installed on this disc with the normal sideline taper, and carrier "
+                           "vision is the wider taper of the same patch, so it needs a disc built from your retail game.")
+            self._set_badge("cpu_runner_vision", "Build from retail to add")
         # b76-i1: a source with a custom intro may take another movie, so retail or custom enables it
         custom_state = str(state.get("custom_intro"))
         custom_available = self._available.get("custom_intro", False)
@@ -3164,6 +3183,41 @@ class BuildPanel(QWidget):
             setattr(plan, key, value)
         if getattr(self, "_momentum_legacy_disabled", False):
             plan.notes = (plan.notes + "\nlegacy_accel_ramp_disabled_by_momentum_profile=true").strip()
+        # b780 studio1: a child whose parent the disc already carries is met by the disc. The parent's box is greyed out
+        # ("Already installed", unticked), so the plan said hitch brake without close pursuit recovery and the settings
+        # validator refused it: Save Project failed with "turn both on, or both off" about a box nobody could tick. The
+        # build replays an installed parent as already applied and adds the child to it in place.
+        for parent, children in r62_ui.CHILDREN.items():
+            if not getattr(plan, parent, False) and self._installed(parent) and any(getattr(plan, child, False) for child in children):
+                setattr(plan, parent, True)
+        return plan
+
+    def _installed(self, key: str) -> bool:
+        """The disc this page read already carries ``key`` exactly as this release writes it."""
+        return (self._state or {}).get(key) == "applied"
+
+    def _plan_for_build(self) -> mod_build.BuildPlan:
+        """``plan()`` for a build over a disc that already carries options: the plan keeps what is installed.
+
+        The build refuses to drop an installed runtime option ("X is installed; rebuild from a verified base to turn it
+        off", ``nfl2k5_throw_tuning._check_installed_runtime_settings``) and checks option dependencies against the plan,
+        not the disc, while this page shows an installed option as greyed out and unticked. So on a disc built by the
+        Studio, including the released v0.8 disc, every build was refused at its first check (era rules without their
+        bases, widescreen menus, the kickoff gate ...). An installed option is replayed as already applied."""
+        plan = self.plan()
+        for name in KEPT_WHEN_INSTALLED:
+            if getattr(plan, name, True) is False and self._installed(name):
+                # a sub-option is kept only with its parent in the plan (the build refuses the logo without the facility)
+                parent = KEPT_NEEDS.get(name)
+                if parent is None or getattr(plan, parent, False) or self._installed(parent):
+                    setattr(plan, name, True)
+                    if parent is not None:
+                        setattr(plan, parent, True)
+        for child, parents in ANNIVERSARY_DEPENDENCIES.items():
+            if getattr(plan, child, False):
+                for parent in parents:
+                    if not getattr(plan, parent, False) and self._installed(parent):
+                        setattr(plan, parent, True)
         return plan
 
     def has_work(self) -> bool:
@@ -3339,11 +3393,15 @@ class BuildPanel(QWidget):
             if self._include_session_project():
                 return "Save the open project's edits, then use a clean session for the SOFTDRINK source project, or turn off Include SOFTDRINK league artwork."
         for child, parents in ANNIVERSARY_DEPENDENCIES.items():
-            if getattr(self, child + "_check").isChecked():
+            child_box = getattr(self, child + "_check")
+            # b780 studio1: a ticked box that is greyed out is installed on the disc, not asked for, and a base the disc
+            # already carries is met. Both were treated as missing, so on the released v0.8 disc (era rules installed, the
+            # kickoff, defensive try and overtime boxes unticked as installed) Make my disc was blocked for every choice.
+            if child_box.isChecked() and child_box.isEnabled():
                 missing = [getattr(self, key + "_check").text() for key in parents
-                           if not getattr(self, key + "_check").isChecked()]
+                           if not getattr(self, key + "_check").isChecked() and not self._installed(key)]
                 if missing:
-                    return getattr(self, child + "_check").text() + " requires: " + ", ".join(missing) + "."
+                    return child_box.text() + " requires: " + ", ".join(missing) + "."
         if self.historic_stock_books_check.isChecked() and self.playbook_pair_check.isChecked():
             return "Choose stock historic books or separate offensive and defensive playbooks."
         if self._include_session_project():
@@ -4828,7 +4886,7 @@ class BuildPanel(QWidget):
         # page is on afterwards, not the one it was on before.
         if self.blocker():
             return
-        plan = self.plan()
+        plan = self._plan_for_build()
         if not self._confirm_make_disc(plan):
             return
         self._requested_build_summary = f"2K5 Mod Studio {BUILD_RELEASE_TAG}\n" + self.confirmation_text(plan)
@@ -4863,7 +4921,7 @@ class BuildPanel(QWidget):
         nothing written to the project or the disc."""
         if self.blocker():
             return
-        plan = self.plan()
+        plan = self._plan_for_build()
         include_session = self._include_session_project()
         facade = self._facade
         labels = {key: box.text().replace("&&", "&") for key, box in self._boxes().items()}
