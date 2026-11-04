@@ -6641,7 +6641,13 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             xbe, deadline_receipt = deadline.apply(xbe)
             _write_xbe_bytes(target, xbe)
         elif deadline_state == "applied":
-            deadline_receipt = {"already_applied": True}
+            # b780-season1: the pending-trade purge and the deadline inbox story still read the retail week on
+            # images moved by a two-site version (v0.7 to v0.9); move both to Week 9 as well (idempotent)
+            xbe, followups = deadline.repair_followups(xbe)
+            deadline_receipt = {"already_applied": True,
+                                "followups": {k: v for k, v in followups.items() if k != "edits"}}
+            if not followups["already_applied"]:
+                _write_xbe_bytes(target, xbe)
         else:
             raise ValueError(f"trade-deadline sites are {deadline_state}; refusing")
         season_receipt = {**season_receipt,

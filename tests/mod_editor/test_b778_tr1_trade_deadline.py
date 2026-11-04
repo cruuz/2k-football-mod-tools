@@ -48,7 +48,7 @@ def _digest(payload: bytes, raw: int, size: int) -> bytes:
 
 
 def build_synthetic_xbe(*, weeks: int = 0x12, deadline: int = td.RETAIL_PREDICATE_WEEK,
-                        screen: int = td.RETAIL_SCREEN_WEEK) -> bytes:
+                        screen: int = td.RETAIL_SCREEN_WEEK, followups: bool = True) -> bytes:
     buf = bytearray(DATA_RAW + DATA_SIZE)
     buf[0:4] = strength.XBE_MAGIC
     struct.pack_into("<I", buf, 0x104, IMAGE_BASE)
@@ -67,6 +67,10 @@ def build_synthetic_xbe(*, weeks: int = 0x12, deadline: int = td.RETAIL_PREDICAT
     row = td.STAGE_GUARD_HEAD + bytes([weeks, deadline]) + td.STAGE_GUARD_TAIL
     off = _raw_offset(td.STAGE_GUARD_VA)
     buf[off:off + len(row)] = row
+    if followups:  # b780-season1: the retail pending-trade purge and deadline-story instruction runs
+        for _label, context_va, context, _va, _retail, _patched, _note in td.FOLLOWUPS:
+            off = _raw_offset(context_va)
+            buf[off:off + len(context)] = context
     for index, (_va, raw, size) in SECTIONS.items():
         header = TABLE_OFF + index * strength.SECTION_HEADER_SIZE
         buf[header + 36:header + 56] = _digest(bytes(buf), raw, size)
@@ -111,7 +115,7 @@ class ApplyTests(unittest.TestCase):
         applied, receipt = td.apply(retail)
         self.assertEqual(td.status(applied), "applied")
         self.assertEqual((receipt["status"], receipt["deadline_week"]), ("applied", 9))
-        self.assertEqual(receipt["changed_bytes"], 42)
+        self.assertEqual(receipt["changed_bytes"], 44)  # b780-season1: + the two follow-ups
         self.assertEqual(receipt["sections_repinned"], [0, 12])
         self.assertEqual(receipt["file_growth"], 0)
         self.assertEqual(applied[_raw_offset(td.SCREEN_VA):_raw_offset(td.SCREEN_VA) + 1], b"\x08")
@@ -186,7 +190,7 @@ class RetailXbeTests(unittest.TestCase):
         self.assertEqual(td.status(applied), "applied")
         self.assertEqual(XbeImage(applied).read(td.SCREEN_VA, 1), b"\x08")
         self.assertEqual(XbeImage(applied).read(td.STAGE_VA, 1), b"\x09")
-        self.assertEqual(receipt["changed_bytes"], 42)
+        self.assertEqual(receipt["changed_bytes"], 44)  # b780-season1: + the two follow-ups
 
 
 if __name__ == "__main__":

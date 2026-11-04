@@ -89,7 +89,7 @@ class PatchTests(unittest.TestCase):
     def test_week_nine_trade_deadline_companion_composes(self):
         from mod_editor.core import nfl2k5_trade_deadline as deadline
         patched, receipt = deadline.apply(self.retail)
-        self.assertEqual(receipt['changed_bytes'], 42)
+        self.assertEqual(receipt['changed_bytes'], 44)  # b780-season1: two boundaries + two follow-ups + digests
         self.assertEqual(deadline.status(patched), 'applied')
         self.assertEqual(edit.status(patched), 'retail')
         result, second = edit.apply(patched)
