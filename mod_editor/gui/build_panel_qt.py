@@ -373,7 +373,9 @@ PREVIOUS_UPGRADE_KEYS = {"honors_page": "honors page", "camera": "camera", "k128
                          # place (catch_slider_patch.apply, nfl2k5_sim_cb_tackles.apply); their boxes were greyed out
                          "catch_slider": "catching slider", "sim_cb_tackles": "cornerback tackle credit",
                          # b780 db2: the beta-79 RB injury guard (no fullback rule) is upgraded in place as well
-                         "sim_rb_injuries": "simulated RB injuries"}
+                         "sim_rb_injuries": "simulated RB injuries",
+                         # b780 hunt6: revision 1 of the franchise record fixes (the v0.9 release candidates)
+                         "coach_career_fix": "coach record fix"}
 # b780 n6: beta-79 installs this release reads ("previous") but cannot update in place (they grew, or MyCareer and its
 # companions are linked together); the option stays off and says to rebuild from the retail game
 PREVIOUS_REBUILD_KEYS = {"my_career": "MyCareer", "my_career_home": "Career Home", "player_progress": "Player Progress",
@@ -2296,7 +2298,8 @@ class BuildPanel(QWidget):
                                "position mixes.")
                 self._set_badge(key, "Needs update")
             elif previous_upgrade:
-                box.setToolTip(f"The {PREVIOUS_UPGRADE_KEYS[key]} from an older build (beta 79) is installed. Select to "
+                older = "a v0.9 test build" if key == "coach_career_fix" else "an older build (beta 79)"  # b780 hunt6
+                box.setToolTip(f"The {PREVIOUS_UPGRADE_KEYS[key]} from {older} is installed. Select to "
                                "update it to this release's revision (in place).")
                 self._set_badge(key, "Needs update")
             elif upgrade:
