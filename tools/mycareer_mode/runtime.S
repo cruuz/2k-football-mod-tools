@@ -418,6 +418,10 @@ start_rank:
  call mode_prospect_rank
  mov DWORD PTR [state+2748],eax
  mov edi,DWORD PTR [state+2560]
+ /* b780 mc1: an injured MyPlayer (+0x20 bit 31, the flag the weekly IR pass 0x2BE020 reads) is not put at the top
+  * of the depth chart; the game's own weekly order stands until he is healthy. */
+ test BYTE PTR [edi+0x23],0x80
+ jnz start_done
  mov esi,DWORD PTR [state+2588]
  movzx ebp,BYTE PTR [edi+41]
  shr ebp,2

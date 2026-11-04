@@ -892,7 +892,6 @@ void FC mode_sign(u32 manager) {
  * Retail rows have 17 eight-byte entries; 0/1 are the unplayed states.
  * Advance intervening league weeks natively, then continue the same action
  * into C79F0. The first own fixture is never included in that CPU advance. */
-u32 FC mode_loaded(u32 manager,u32 target);
 u32 mode_next_fixture(void) {
     u32 i; const u8 *p=(const u8 *)0xE57C40;
     if(G(0xE576A4)<7 || G(0xE576A4)>9 || S(56)>=32) return 374;
@@ -908,9 +907,9 @@ void FC mode_play(u32 manager) {
     start_player();
     /* b780 mc1: no club (released, or his contract ran out: start_player's resolve_team leaves S(56) at -1 and the
      * career at 4) used to return here without a word, so every Career Home row did nothing and the career could
-     * not go on. Open what a load of this career opens (mode_loaded: Choose team / Sign for career state 4), on top
-     * of Career Home, so B comes back here instead of leaving MyCareer half open in Game Modes. */
-    if(S(56)>=32) { CALL2(0x6e390,manager,mode_loaded(manager,0)); return; }
+     * not go on. Open Choose team / Sign on top of Career Home, so B comes back here. A loaded free-agent career
+     * opens Career Home too (mode_loaded), and this row then offers the same choice. */
+    if(S(56)>=32) { S(2680)=2; CALL2(0x6e390,manager,(u32)team_menu); return; }
     slot=mode_next_fixture();
     if(slot<374 && slot/17<=G(0xE576B4)) {
         if(!((u32 (FC *)(u32,u32,u32))0xC79F0)(slot/17,slot%17,S(32))) {
@@ -1019,10 +1018,13 @@ u32 FC mode_loaded(u32 manager,u32 target) {
         M(0)=0;
         if(S(2588)) CALL1(0x13ec90,S(2588));
         if(G(0xE576A4)==4 && S(24)==2) return (u32)m3_prep_menu;
-        /* b780 mc1: only a prospect resumes his own draft. A veteran saved on a later draft day (stage 5) was
-         * sent to the MyCareer draft screen and told "You were drafted by" his club again. */
-        if(G(0xE576A4)==5 && S(24)==2) return (u32)m3_draft_menu;
-        if(S(24)==4) { S(2680)=2; return (u32)team_menu; }
+        /* b780 mc1: only a rookie in his own draft resumes the draft screen, picked or not: draft prospects carry
+         * years pro 1 (+0x25 bits 0-4) and every year rollover adds one, so a veteran has 2 or more. A veteran
+         * saved on a later draft day was sent to the MyCareer draft screen and told "You were drafted by" again. */
+        if(G(0xE576A4)==5 && (B((u8 *)primary(),0x25)&0x1f)<2) return (u32)m3_draft_menu;
+        /* b780 mc1: a free-agent career (state 4) loads into Career Home, not into Choose team: the load replaced
+         * its screen with the choice, and B there left MyCareer half open (the owner word held, so the MyCareer row
+         * did nothing). Play next game opens the choice over Career Home. */
         return (u32)apartment;
     }
     return target;
