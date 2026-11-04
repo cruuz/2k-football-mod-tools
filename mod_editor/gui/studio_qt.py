@@ -2950,9 +2950,9 @@ class StudioMainWindow(QMainWindow):
         self.navigation.addItem(build_item)
         side_layout.addWidget(self.navigation, 1)
 
-        safety = QLabel(
-            "ORIGINAL STAYS SAFE\nKeep your original disc. Check the destination "
-            "before writing a copy."
+        safety = QLabel(   # b780-uxfix: say what the Studio does, in plain words
+            "ORIGINAL STAYS SAFE\nYour original game file is never changed. The Studio always "
+            "saves a new file."
         )
         safety.setObjectName("safetyCard")
         safety.setWordWrap(True)
@@ -3472,8 +3472,8 @@ class StudioMainWindow(QMainWindow):
         hero = QLabel("Make NFL 2K5 yours.")
         hero.setObjectName("heroTitle")
         sub = QLabel(
-            "Open your Xbox game disc file, choose patches or edit your roster, then "
-            "save a new copy. You can also replace uniforms and artwork."
+            "Install SOFTDRINK 2K28 on your own game file, or open your game file to choose patches, edit your "
+            "roster and replace uniforms and artwork. The Studio always saves a new copy."
         )
         sub.setObjectName("heroSubtitle")
         sub.setWordWrap(True)
@@ -3483,11 +3483,12 @@ class StudioMainWindow(QMainWindow):
 
         steps = QHBoxLayout()
         steps.setSpacing(12)
+        # b780-uxfix: the four steps of the common job (install SOFTDRINK 2K28 and play it), xemu setup included
         for number, title, body in (
-            ("1", "Open your game", "Use your ESPN NFL 2K5 USA Xbox disc file (.iso), or open an Xbox save on ★ Rosters."),
-            ("2", "Choose your changes", "Start with SOFTDRINK patches, edit players, or replace artwork."),
-            ("3", "Save a copy", "Use the save or build button for that task. Your original is never changed."),
-            ("4", "Play or share", "Open the disc copy in xemu, or export a mod file from Share."),
+            ("1", "Get your two files", "Your NFL 2K5 game file (.iso) and the SOFTDRINK 2K28 download (.2k5patch)."),
+            ("2", "Install", "Press Install SOFTDRINK 2K28 and pick the two files. Your original file is never changed."),
+            ("3", "Set up xemu once", "System Memory 128 MiB and the Complex 4627 BIOS, then restart xemu (Help ▸ Set up xemu)."),
+            ("4", "Play", "Press Play latest disc in xemu, or in xemu choose Machine > Load Disc."),
         ):
             card = QFrame()
             card.setObjectName("stepCard")
@@ -9496,6 +9497,7 @@ class StudioMainWindow(QMainWindow):
         tabs.setObjectName("buildShareTabs")
         tabs.setAccessibleName("Build and share workspaces")
         self._build_share_page = tabs
+        tabs.currentChanged.connect(lambda _index: self._refresh_action_bar_for_page(self.navigation.currentRow()))
         self._build_panel = BuildPanel(self.facade, available=self._available_build_options, theme=self._theme)
         self._refresh_build_includes()
         # The MyCareer picker follows the position-pools option (EDGE and LB only
@@ -9850,7 +9852,10 @@ class StudioMainWindow(QMainWindow):
         for widget in (self.edit_count, self.undo_button, self.revert_all_button,
                        self.check_images_button, self.build_button):
             widget.setVisible(not on_build_share)
-        self.build_share_caption.setVisible(on_build_share)
+        # b780-uxfix: the caption is about the Build tab; Install & Share showed it too
+        tabs = getattr(self, "_build_share_page", None)
+        on_build_tab = tabs is None or tabs.currentWidget() is getattr(self, "_build_panel", None)
+        self.build_share_caption.setVisible(on_build_share and on_build_tab)
 
     def _update_header_title(self, row: int) -> None:
         if row <= 0:
