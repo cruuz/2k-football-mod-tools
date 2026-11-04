@@ -523,6 +523,7 @@ class NativeTests(unittest.TestCase):
         self.assertEqual(seen, set(by_file))
 
     def test_the_seamen_label_says_seamen_on_both_sides(self):
+        # b780 modes2: Quick Game revision 2's own-name pair (SEAMEN, and SEA from the classic page), no holder rows
         from tests.nfl2k5_classic_teams_native import build as _build  # noqa: F401
         name = [n for n, _raw in self.files if n.endswith("-2006-dolphins-8.iff")]
         self.assertEqual(len(name), 1)
@@ -618,6 +619,174 @@ class NativeTests(unittest.TestCase):
         self.assertEqual(ct.xbe_status(after), "applied")
         self.assertEqual(h1.status(after), "applied")
         self.assertEqual(ct.xbe_status(payload), "retail")
+
+
+V09_RC_XBE = Path("/media/noah/Storage/2K5-project/b780-rev2-tmp/evidence/v09_rc_default.xbe")
+
+
+def _club_labels(cpu):
+    """{asset code: label pair} of the 32 clubs (rows 0..31) in the machine's roster."""
+    return {cpu.text(cpu.r(cpu.team(i) + 0x10C)): cpu.label(cpu.team(i)) for i in range(32)}
+
+
+def _code_of(name):
+    return name.split("-")[2] if name.startswith("HTS-") else name.split("-")[1]
+
+
+class B780Modes2LabelTests(unittest.TestCase):
+    """b780 modes2 (Q23/Q24): every imported team takes its club's label, the Seamen their own name, whatever the other
+    side holds; the b778 holder roster with the revision-1 code reproduces the SEAMEN Dolphins; Create a Team."""
+
+    @classmethod
+    def setUpClass(cls):
+        if _main_roster() is None:
+            raise unittest.SkipTest("private retail roster archive is absent")
+        try:
+            from nfl2k5_classic_teams_native import build
+        except ImportError as exc:
+            raise unittest.SkipTest(f"Unicorn unavailable: {exc}")
+        from tests.nfl2k5_supersim_draft_fixture import XBE
+        cls.retail_dir = XBE.parent
+        make, cls.data, _moments, cls.files, cls.receipt, cls.receipts = build(XBE.parent)
+        cls.make = staticmethod(make)
+        cls.seamen = next(n for n, _raw in cls.files if n.endswith("-2006-dolphins-8.iff"))
+
+    def _load_on(self, cpu, side, name, direction=-1):
+        for _ in range(151):
+            step = cpu.press(side, direction)
+            if step["loaded"] and step["loaded"][0] == name:
+                return step
+        self.fail(f"{name} never loaded on the {side} side")
+
+    def _sweep(self, cpu, labels, *, other):
+        """Home steps once through the whole list; returns {file: label}."""
+        seen = {}
+        for _ in range(150):
+            step = cpu.press("home", -1)
+            name = step["loaded"][0]
+            seen[name] = step["home"]["label"]
+            self.assertEqual(cpu.label(cpu.spare_slots()[1]), other, name)       # the other side keeps its name
+        return seen
+
+    def test_own_name_identity_is_the_seamen(self):
+        self.assertEqual(ct.own_name_identity(self.data), 230)
+        self.assertEqual(self.receipts["seamen_2006"]["identity"], 230)
+
+    def test_with_the_seamen_on_the_other_side_every_team_takes_its_club_label(self):
+        cpu = self.make()
+        cpu.team_select(cpu.team(0), cpu.team(0))
+        self.assertEqual(self._load_on(cpu, "away", self.seamen)["away"]["label"], ["SEAMEN", "SEA"])
+        clubs = _club_labels(cpu)
+        seen = self._sweep(cpu, clubs, other=["SEAMEN", "SEA"])
+        self.assertEqual(len(seen), 150)
+        for name, label in seen.items():
+            expected = ["SEAMEN", "SEA"] if name == self.seamen else clubs[_code_of(name)]
+            self.assertEqual(label, expected, name)
+        miami = sorted(n for n in seen if _code_of(n) == "14" and n != self.seamen)
+        self.assertEqual([n.split("-")[2] for n in miami], ["1972", "1984"])   # the '72 and '84 Dolphins
+        self.assertTrue(all(seen[n] == ["Dolphins", "MIA"] for n in miami))
+
+    def _miami(self):
+        return next(d["filename"] for d in ct._descriptors(_main_roster()) if d["code"] == "14")
+
+    def test_with_a_miami_team_on_the_other_side_the_seamen_keep_their_name(self):
+        cpu = self.make()
+        cpu.team_select(cpu.team(0), cpu.last_resident())
+        self.assertEqual(self._load_on(cpu, "away", self._miami(), +1)["away"]["label"], ["Dolphins", "MIA"])
+        self.assertEqual(self._load_on(cpu, "home", self.seamen)["home"]["label"], ["SEAMEN", "SEA"])
+        self.assertEqual(cpu.label(cpu.spare_slots()[1]), ["Dolphins", "MIA"])
+
+    def test_the_previous_configuration_names_the_dolphins_seamen_and_the_upgrade_fixes_it(self):
+        from nfl2k5_classic_teams_native import build
+        make, *_rest = build(self.retail_dir, previous=True)
+        self.assertEqual((h1.status(make.payload), ct.xbe_status(make.payload)), ("previous", "previous"))
+        before = make()
+        before.team_select(before.last_resident(), before.team(15))
+        self.assertEqual(self._load_on(before, "home", self._miami(), +1)["home"]["label"], ["SEAMEN", "SEA"])  # Q23
+        self.assertEqual(self._load_on(before, "home", self.seamen)["home"]["label"], ["SEAMEN", "SEA"])
+        upgraded, receipt = ct.upgrade_xbe(make.payload)
+        self.assertEqual((receipt["status"], h1.status(upgraded), ct.xbe_status(upgraded)),
+                         ("upgraded", "applied", "applied"))
+        after = make(upgraded)              # the b778 holder roster is still in memory: the code alone fixes it
+        after.team_select(after.last_resident(), after.team(15))
+        self.assertEqual(self._load_on(after, "home", self._miami(), +1)["home"]["label"], ["Dolphins", "MIA"])
+        self.assertEqual(self._load_on(after, "home", self.seamen)["home"]["label"], ["SEAMEN", "SEA"])
+
+    def test_create_a_team_without_a_logo(self):
+        """Q24 settled: the new-team path 319E30 writes logo 0 (code 51) and TEAM1/XXX over the row, holder or not."""
+        from unicorn import UC_HOOK_CODE
+        ui = (0xF31B0, 0x170510, 0x14E520, 0x14E4B0, 0x69E60, 0x6E390)
+
+        def create(cpu):
+            for at in ui:
+                if at not in cpu.BOUNDARIES:
+                    cpu.uc.hook_add(UC_HOOK_CODE, cpu._hook, begin=at, end=at)
+            cpu.BOUNDARIES = cpu.BOUNDARIES | set(ui)
+            cpu.stubs.update({0xF31B0: lambda: cpu.ret(0x2390000), 0x170510: lambda: cpu.ret(0)})
+            cpu.stubs.update({at: (lambda: cpu.ret(0)) for at in ui[2:]})
+            cpu.w(0xC8F7EC, 0)
+            cpu.run(0x319E30, ecx=0x2310000)
+            team = cpu.r(0xC8F7EC)
+            v = cpu.view(team)
+            return (v["index"], v["name"], v["abbr"], cpu.text(cpu.r(team + 0x10C)), v["label"])
+        self.assertEqual(create(self.make()), (32, "TEAM1", "XXX", "51", ["49ers", "SF"]))
+
+    def test_restore_gives_back_the_retail_rows_and_compiles_match(self):
+        main = _main_roster()
+        holder = ct.label_holder(main)
+        self.assertTrue(ct.holder_present(holder))
+        self.assertFalse(ct.holder_present(main))
+        self.assertEqual(ct.restore_spare_rows(holder, main), main)
+        files_main, _ = ct.compile_files(main, {k: self._template(k) for k in self.data.order()}, self.data,
+                                         spares={}, has_kit=lambda c, s: True)
+        files_holder, _ = ct.compile_files(holder, {k: self._template(k) for k in self.data.order()}, self.data,
+                                           spares={}, has_kit=lambda c, s: True)
+        self.assertEqual(files_main, files_holder)
+
+    def _template(self, key):
+        from mod_editor.core import nfl2k5_roster_records as rr
+        if not hasattr(type(self), "_templates"):
+            with rr._outer_image()(self.retail_dir) as archive:
+                by_id = {x.name_id: x for x in archive.entries}
+                type(self)._templates = {
+                    k: archive.read(by_id[mm.name_id(t["template"])].virtual_offset,
+                                    by_id[mm.name_id(t["template"])].size)
+                    for k, t in self.data.teams.items()}
+        return self._templates[key]
+
+
+class B780Modes2ShippedTests(unittest.TestCase):
+    """The v0.9 RC executable (beta-78 .. RC revision) reads previous and upgrades in place."""
+
+    def test_the_rc_reads_previous_and_upgrades(self):
+        if not V09_RC_XBE.is_file():
+            self.skipTest("the v0.9 RC executable evidence is absent")
+        rc = V09_RC_XBE.read_bytes()
+        self.assertEqual(h1.status(rc), "previous")
+        self.assertEqual(h1.classic_status(rc), "previous")
+        self.assertEqual(ct.xbe_status(rc), "previous")
+        seasons = h1.season_routing_status(rc)
+        up, receipt = ct.upgrade_xbe(rc)
+        self.assertEqual(receipt["status"], "upgraded")
+        self.assertEqual((h1.status(up), h1.classic_status(up), ct.xbe_status(up)), ("applied", "applied", "applied"))
+        page = ct.allocation(up)
+        self.assertEqual(h1.classic_own_name(up), (230, "SEAMEN", page["va"] + ct.ABBR_OFFSET))
+        self.assertEqual(h1.season_routing_status(up), seasons)
+        code, _state = h1.allocations(up)
+        page = ct.allocation(up)
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage
+        fmt = struct.unpack_from("<I", XbeImage(up).read(page["va"] + ct.OFF_FMT + 1, 4))[0]
+        self.assertEqual(fmt, code["va"] + len(h1.assembly.CODE) if seasons else 0xE9F984)
+        # only the Quick Game body, the classic page and the seals change
+        changed = [i for i in range(len(rc)) if rc[i] != up[i]]
+        spans = [(code["raw"], code["raw"] + h1.CODE_SIZE), (page["raw"], page["raw"] + ct.RO_SIZE), (0, 0x1000)]
+        directory = next(r for r in space.layout(up)["regions"] if r["kind"] == "read_only")
+        spans.append((directory["raw"], directory["raw"] + space.PAGE))
+        self.assertTrue(all(any(lo <= i < hi for lo, hi in spans) for i in changed))
+        again, receipt2 = h1.apply(up)
+        self.assertEqual((again, receipt2["status"]), (up, "already_applied"))
+        via_h1, _ = h1.apply(rc)
+        self.assertEqual(via_h1, up)
 
 
 class HonoursTests(unittest.TestCase):

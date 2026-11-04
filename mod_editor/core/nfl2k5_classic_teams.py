@@ -27,6 +27,19 @@ This option:
   route (HTS- files) is on.
 Create a Team's own "Load Historic Team" list stays the retail 75. Franchise and season modes are unchanged.
 
+Job b780 modes2 (Q23/Q24): the Seamen keep their own name without a label holder. b778 ss1 wrote SEAMEN/SEA, asset
+code 14 and their own label pair into the two empty created-team rows (32/33, the spare slots USER1/USER2) so that
+Quick Game's last-match label loop named the imported Seamen; the same rows then named every Miami team (the '72
+and '84 Dolphins, the Miami moments) SEAMEN and ran Seattle's book for them, and once the other side loaded a team
+the Seamen took that team's name. The main roster is no longer changed. Quick Game revision 2 takes the first club
+with the entry's asset code, and the classic variant names the one team that keeps its own label pair: the classic
+team whose nickname is not its franchise's (own_name_identity: the Seamen, identity 230). A disc that carries the
+b778 holder rows (beta-78 .. the v0.9 RC) reads "previous" and upgrades in place: rows 32/33 get the retail
+created-team texts and label back, and the Quick Game code takes revision 2. Create a Team was never affected
+(Q24, settled in Unicorn): its new-team path 319E30 picks logo 0 (319310, code 51) and writes TEAM1/XXX (C22A0)
+over the row, so the holder's code 14 and SEAMEN/SEA never reached a created team; only the row's label pointer
+(its own pair, retail: the 49ers' pair) came from the holder.
+
 Job sm1 (Noah, 2026-10-18, after the b775 video: "they should all be organized by date properly"): Team Select used to
 step through the list in storage order (the retail 75 in franchise order, then the moments, then the classic rows). The
 list is now one chronological run. The Quick Game code still steps a list POSITION k; the entry helper (ENTRY_SORTED)
@@ -67,6 +80,10 @@ ROWS_OFFSET = 0xB4                                 # 25 four-byte rows follow th
 # (the next byte-wide identity), so 25 rows need 280 of the 288 bytes and the created teams keep their numbers.
 IDENTITIES = tuple([*range(226, 250), 252])
 MAX_ROWS = len(IDENTITIES)                         # 25
+# b780 modes2: the last 8 bytes carry the own-name team's abbreviation (up to 3 UTF-16 characters and the NUL), the
+# text Quick Game's own-name label pair points at (its playbook key); zero on a beta-78 .. v0.9 RC page.
+ABBR_OFFSET = ROWS_OFFSET + 4 * MAX_ROWS           # 280
+ABBR_CHARS = 3
 RO_SIZE = 288                                      # the all-owner union holds 304 here and keeps 16 for a synthetic constant
 REQUESTS = ((OWNER, "read_only", RO_SIZE, 16),)
 FIRST_ID, LAST_ID = IDENTITIES[0], IDENTITIES[-1]  # free team identities: the ceiling for new files
@@ -148,8 +165,99 @@ class Data:
 
 
 
+def own_name(page_va, data=None):
+    """(identity, nickname, abbreviation VA) for Quick Game's own-name label pair, or None: the team's nickname in
+    capitals (SEAMEN, as the b778 holder showed it) and its abbreviation on this owner's page (page_va + ABBR_OFFSET)."""
+    from . import nfl2k5_historic_teams_quick_game as h1
+    data = Data.load() if data is None else data
+    identity = own_name_identity(data)
+    if identity is h1.NO_OWN_NAME:
+        return h1.NO_OWN_NAME
+    key = data.order()[IDENTITIES.index(identity)]
+    return identity, data.teams[key]["nickname"].upper(), page_va + ABBR_OFFSET
+
+
+def own_abbreviation(data=None):
+    """The own-name team's abbreviation (its playbook key), or None."""
+    data = Data.load() if data is None else data
+    identity = own_name_identity(data)
+    return None if identity is None else data.teams[data.order()[IDENTITIES.index(identity)]]["abbreviation"]
+
+
+def own_name_identity(data=None):
+    """The identity of the one classic team that keeps its own label pair (Team Select name and playbook key): the
+    team whose nickname is not its franchise's (its file borrows the franchise text ``selector``). The Seamen
+    (selector "dolphins") are the only one; NO_OWN_NAME when no team qualifies. At most one is supported."""
+    from . import nfl2k5_historic_teams_quick_game as h1
+    data = Data.load() if data is None else data
+    own = [IDENTITIES[n] for n, key in enumerate(data.order())
+           if data.teams[key]["nickname"].lower() != data.teams[key]["selector"]]
+    require(len(own) <= 1, "Quick Game names at most one classic team by its own label pair")
+    return own[0] if own else h1.NO_OWN_NAME
+
+
+HOLDER_ROWS = (32, 33)
+HOLDER_TEXTS = ((0x104, "SEAMEN", 34), (0x108, "SEA", 12), (0x10C, "14", 6))
+
+
+def holder_present(main):
+    """True when rows 32/33 carry the b778 ss1 label holder (beta-78 .. the v0.9 RC discs)."""
+    from . import nfl2k5_roster_records as rr
+    body = main[32:]
+    doc = rr.RosterDocument(bytes(body))
+    if len(doc.teams) < 34:
+        return False
+    for index in HOLDER_ROWS:
+        t = doc.teams[index].offset
+        if struct.unpack_from("<i", body, t + 0x110)[0] != -11:
+            return False
+        for field, text, _capacity in HOLDER_TEXTS:
+            at = t + field + struct.unpack_from("<i", body, t + field)[0] - 1
+            if body[at:at + 2 * len(text) + 2] != text.encode("utf-16le") + b"\0\0":
+                return False
+    return True
+
+
+def restore_spare_rows(main, retail_main):
+    """Rows 32/33 with the retail created-team texts (nickname, abbreviation, asset code) and label (the label pair
+    the retail row points at) in place of the b778 holder. Only those 4 fields of those 2 rows change."""
+    from . import nfl2k5_roster_records as rr
+    body, retail = bytearray(main[32:]), retail_main[32:]
+    doc, rdoc = rr.RosterDocument(bytes(body)), rr.RosterDocument(bytes(retail))
+    require(holder_present(main), "the roster carries no label holder")
+    for index in HOLDER_ROWS:
+        t, r = doc.teams[index].offset, rdoc.teams[index].offset
+        for field, _text, capacity in HOLDER_TEXTS:
+            at = t + field + struct.unpack_from("<i", body, t + field)[0] - 1
+            raw = _wide_at(retail, r + field).encode("utf-16le") + b"\0\0"
+            require(len(raw) <= capacity, "retail created-team text exceeds the holder capacity")
+            body[at:at + capacity] = raw + bytes(capacity - len(raw))
+        # the retail label pair (the same pair the retail row names), found by its texts in this roster's label table
+        rpair = r + 0x110 + struct.unpack_from("<i", retail, r + 0x110)[0] - 1
+        texts = [_wide_at(retail, rpair + 4 * k) for k in range(2)]
+        target = next(row.offset + 0x110 + struct.unpack_from("<i", body, row.offset + 0x110)[0] - 1
+                      for row in doc.teams[:32]
+                      if [_wide_at(body, row.offset + 0x110 + struct.unpack_from("<i", body, row.offset + 0x110)[0]
+                                   - 1 + 4 * k) for k in range(2)] == texts)
+        struct.pack_into("<i", body, t + 0x110, target - (t + 0x110) + 1)
+    result = main[:32] + bytes(body)
+    require(not holder_present(result), "spare row restore read-back")
+    return result
+
+
+def _wide_at(body, field):
+    """The UTF-16 text a self-relative text pointer at ``field`` names."""
+    at = field + struct.unpack_from("<i", body, field)[0] - 1
+    out = bytearray()
+    while body[at:at + 2] != b"\0\0":
+        out += body[at:at + 2]
+        at += 2
+    return out.decode("utf-16le")
+
+
 def label_holder(main):
-    """The main roster with the two empty created-team rows made into the Seamen's label holder. Quick Game's
+    """RECOGNITION ONLY (b780 modes2): the b778 ss1 roster, the main roster with the two empty created-team rows made
+    into the Seamen's label holder. No build writes it any more (see the module docstring). Quick Game's
     historic import copies the label of the resident team with the entry's asset code; both user rows take code 14,
     their own name as the label pair (nickname/abbreviation), so the last matching row names the imported team SEAMEN
     (Sarasota's abbreviation is SEA, whose playbook exists) without renaming any real team. The rows stay category 2
@@ -198,10 +306,10 @@ _SORT_CODE = bytes.fromhex(
     "5389c531f689f0e8ddffffff5031db31d289d0e8d1ffffff3b04247206770539f27301434280fa7f72e75839eb740346ebd389f05b90")
 
 
-def helper_code(va, *, moment_table, moment_count, rows, default_fmt):
+def helper_code(va, *, moment_table, moment_count, rows, default_fmt, own_abbreviation=None):
     """The owned bytes: total, cmp_total, fmt, the chronological entry helper (key, sorted) and the entry body, then one
-    4-byte row per new team. rows: [(season, digit, retail entry index)]. The list length is a constant (the build checks
-    the roster's own count is 75)."""
+    4-byte row per new team, then (b780 modes2) the own-name team's abbreviation at ABBR_OFFSET. rows: [(season, digit,
+    retail entry index)]. The list length is a constant (the build checks the roster's own count is 75)."""
     require(len(rows) <= MAX_ROWS and 0 <= moment_count <= 50, "too many classic rows or moment team-seasons")
     root = struct.pack("<I", ROOT_PTR)
     p32 = lambda v: struct.pack("<I", v & 0xFFFFFFFF)  # noqa: E731
@@ -236,6 +344,12 @@ def helper_code(va, *, moment_table, moment_count, rows, default_fmt):
     for season, digit, index in rows:
         require(0 <= index < 75 and 0 <= digit <= 9 and 1900 < season < 2100, "classic row")
         out.extend(struct.pack("<HBB", season, digit, index))
+    out = out.ljust(ABBR_OFFSET, b"\0")
+    if own_abbreviation is not None:
+        require(isinstance(own_abbreviation, str) and own_abbreviation.isascii() and own_abbreviation.isalnum()
+                and 0 < len(own_abbreviation) <= ABBR_CHARS, "own-name abbreviation must be 1..3 letters or digits")
+        out.extend(own_abbreviation.encode("utf-16le"))
+    require(len(out) <= RO_SIZE - 2, "classic helper page layout")
     return bytes(out).ljust(RO_SIZE, b"\0")
 
 
@@ -288,23 +402,44 @@ def moment_table(payload):
     return va, count
 
 
-def xbe_status(payload):
-    """'retail' (the owner reserved and empty), 'applied' (helpers installed and the Quick Game classic variant on),
-    else 'foreign'."""
+def _page_rows(body):
+    return [struct.unpack_from("<HBB", body, ROWS_OFFSET + 4 * i)
+            for i in range((len(body[:ABBR_OFFSET].rstrip(b"\0")) - ROWS_OFFSET + 3) // 4)]
+
+
+def _page_abbreviation(body):
+    raw = body[ABBR_OFFSET:RO_SIZE]
+    if raw == bytes(len(raw)):
+        return None
+    end = next(i for i in range(0, len(raw), 2) if raw[i:i + 2] == b"\0\0")
+    return raw[:end].decode("utf-16le")
+
+
+def xbe_status(payload, data=None):
+    """'retail' (the owner reserved and empty), 'applied' (helpers installed and the revision-2 Quick Game classic
+    variant on, naming own_name_identity), 'previous' (helpers installed under the revision-1 classic variant:
+    beta-78 .. the v0.9 RC; apply_to_image upgrades it), else 'foreign'."""
     from . import nfl2k5_historic_teams_quick_game as h1
     try:
         if not reserved(payload):
-            return "retail" if h1.classic_status(payload) != "applied" else "foreign"
+            return "retail" if h1.classic_status(payload) not in ("applied", "previous") else "foreign"
         a = allocation(payload)
         body = XbeImage(payload).read(a["va"], RO_SIZE)
         if body == bytes(RO_SIZE):
-            return "retail" if h1.classic_status(payload) != "applied" else "foreign"
-        rows = (len(body.rstrip(b"\0")) - ROWS_OFFSET + 3) // 4
+            return "retail" if h1.classic_status(payload) not in ("applied", "previous") else "foreign"
+        rows = _page_rows(body)
         table, count = moment_table(payload)
         default = struct.unpack_from("<I", body, OFF_FMT + 1)[0]
+        abbreviation = _page_abbreviation(body)
         expected = helper_code(a["va"], moment_table=table, moment_count=count, default_fmt=default,
-                               rows=[struct.unpack_from("<HBB", body, ROWS_OFFSET + 4 * i) for i in range(rows)])
-        return "applied" if body == expected and h1.classic_status(payload) == "applied" else "foreign"
+                               rows=rows, own_abbreviation=abbreviation)
+        if body != expected:
+            return "foreign"
+        variant = h1.classic_status(payload)
+        if variant == "previous":
+            return "previous" if abbreviation is None else "foreign"
+        return ("applied" if variant == "applied" and abbreviation == own_abbreviation(data)
+                and h1.classic_own_name(payload) == own_name(a["va"], data) else "foreign")
     except (ValueError, KeyError, IndexError, struct.error):
         return "foreign"
 
@@ -343,11 +478,50 @@ def install_authored_kits(path, retail=None):
     return dict(kits.apply_to_image(path, doc, retail, allow_skip=False, feature="Classic teams' kits"), status="applied")
 
 
-def apply_xbe(payload, rows):
-    """Install the helpers for these rows and switch Quick Game to the classic variant (after the season route)."""
+def upgrade_xbe(payload, data=None):
+    """'previous' -> 'applied' in place (b780 modes2): the Quick Game code takes revision 2 with the own-name identity,
+    and with the season route the helpers' file-name format follows that format's new address (the revision-2 body is
+    16 bytes shorter, and the HTS- format string sits right after it). The rows, the list and the allocation stay."""
     from . import nfl2k5_historic_teams_quick_game as h1
-    state = xbe_status(payload)
-    require(state in ("retail", "applied"), f"classic teams: the executable is {state}")
+    require(xbe_status(payload, data) == "previous", "classic teams: only a previous executable upgrades")
+    a = allocation(payload)
+    image = XbeImage(payload)
+    body = image.read(a["va"], RO_SIZE)
+    rows = _page_rows(body)
+    table, count = moment_table(payload)
+    code, state = h1.allocations(payload)
+    seasons = h1.season_routing_status(payload)
+    default = (code["va"] + len(h1.assembly.CODE)) if seasons else FMT_FILE
+    content = helper_code(a["va"], moment_table=table, moment_count=count, rows=rows, default_fmt=default,
+                          own_abbreviation=own_abbreviation(data))
+    own = own_name(a["va"], data)
+    buffer = bytearray(payload)
+    buffer[a["raw"]:a["raw"] + RO_SIZE] = content
+    buffer[code["raw"]:code["raw"] + h1.CODE_SIZE] = h1.code_for(code["va"], state["va"], seasons=seasons,
+                                                                 classic_va=a["va"], own_name=own)
+    _, _, requests = space._validate(payload)
+    require(space.is_scaleout(payload), "classic teams live in a scale-out image")
+    space._seal_scaleout(buffer, requests)
+    result = bytes(buffer)
+    require(xbe_status(result, data) == "applied" and h1.status(result) == "applied"
+            and h1.season_routing_status(result) == seasons, "classic teams executable upgrade read-back")
+    return result, dict(status="upgraded", owner_va=hex(a["va"]), own_name=own, season_route=seasons,
+                        changed_bytes=sum(x != y for x, y in zip(payload, result)))
+
+
+def apply_xbe(payload, rows, data=None):
+    """Install the helpers for these rows and switch Quick Game to the classic variant (after the season route). A
+    'previous' executable (the revision-1 classic variant) is upgraded in place: the helpers stay, the Quick Game
+    code takes revision 2 with the own-name identity."""
+    from . import nfl2k5_historic_teams_quick_game as h1
+    state = xbe_status(payload, data)
+    require(state in ("retail", "applied", "previous"), f"classic teams: the executable is {state}")
+    if state == "previous":
+        a = allocation(payload)
+        installed = XbeImage(payload).read(a["va"], RO_SIZE)
+        require([struct.unpack_from("<HBB", installed, ROWS_OFFSET + 4 * i) for i in range(len(rows))] == list(rows),
+                "classic teams: installed with other rows")
+        return upgrade_xbe(payload, data)
     require(h1.status(payload) == "applied", "classic teams need historic teams in Quick Game")
     original = payload
     payload, reservation = reserve(payload)
@@ -357,13 +531,14 @@ def apply_xbe(payload, rows):
     code, _data = h1.allocations(payload)
     seasons = h1.season_routing_status(payload)
     default = (code["va"] + len(h1.assembly.CODE)) if seasons else FMT_FILE
-    content = helper_code(a["va"], moment_table=table, moment_count=count, rows=rows, default_fmt=default)
+    content = helper_code(a["va"], moment_table=table, moment_count=count, rows=rows, default_fmt=default,
+                          own_abbreviation=own_abbreviation(data))
     if state == "applied":
         require(XbeImage(payload).read(a["va"], RO_SIZE) == content, "classic teams: installed with other rows")
         return payload, dict(status="already_applied", changed_bytes=0)
     result, _ = space.install_read_only(payload, OWNER, content)
-    result = h1.enable_classic(result, a["va"])
-    require(xbe_status(result) == "applied", "classic teams executable read-back")
+    result = h1.enable_classic(result, a["va"], own_name(a["va"], data))
+    require(xbe_status(result, data) == "applied", "classic teams executable read-back")
     return result, dict(status="applied", owner_va=hex(a["va"]), moment_table=hex(table), moment_teams=count,
                         classic_rows=len(rows), list_length=75 + count + len(rows), season_route=seasons,
                         reservation={k: v for k, v in reservation.items() if k != "allocations"},
@@ -529,8 +704,9 @@ def _inputs(path, source, data):
 
 
 def image_status(path, source, data=None):
-    """'retail' (no classic file, executable retail), 'applied' (files equal a fresh compile, executable applied),
-    else 'foreign'."""
+    """'retail' (no classic file, executable retail), 'applied' (files equal a fresh compile, executable applied, the
+    created-team rows untouched), 'previous' (a complete b778 .. v0.9 RC install: the label holder rows and the
+    revision-1 Quick Game classic variant; apply_to_image upgrades it in place), else 'foreign'."""
     from . import nfl2k5_espn25_rosters as e
     from . import nfl2k5_historic_styles as hs
     from . import nfl2k5_historic_teams_quick_game as h1
@@ -550,21 +726,51 @@ def image_status(path, source, data=None):
         main, templates, spares, has_kit, present = _inputs(path, source, data)
         if not present and state == "retail":
             return "retail" if field_state == "retail" and authored in ("retail", "not_applicable") else "foreign"
-        holder = label_holder(main)
+        holder = holder_present(main)
         prefix = "HTS-" if h1.season_routing_status(payload) else ""
-        files, _ = compile_files(holder, templates, data, spares=spares, has_kit=has_kit, prefix=prefix,
+        # The created-team rows never reach a classic file (no players, not a college, photo or person row), so a
+        # holder roster compiles the same files as the retail rows.
+        files, _ = compile_files(main, templates, data, spares=spares, has_kit=has_kit, prefix=prefix,
                                  one_pool=pools.status(payload) == "applied")
         with archive.Disc(Path(path), descriptors=()) as disc:
             target = hs.Target(disc)
             same = all(target.has(name) and target.get(name) == raw for name, raw in files)
-            same = same and target.get(identity=hs.ROSTER_OUTER_ID) == holder
-        rows_ok = state == "applied" and XbeImage(payload).read(allocation(payload)["va"] + ROWS_OFFSET,
-                                                                4 * len(files)) == b"".join(
+        rows_ok = state in ("applied", "previous") and XbeImage(payload).read(
+            allocation(payload)["va"] + ROWS_OFFSET, 4 * len(files)) == b"".join(
             struct.pack("<HBB", *r) for r in rows_for(main, data))
-        return "applied" if (same and rows_ok and present == {n for n, _ in files}
-                              and authored == "applied" and field_state == "applied") else "foreign"
+        if not (same and rows_ok and present == {n for n, _ in files}
+                and authored == "applied" and field_state == "applied"):
+            return "foreign"
+        return "applied" if state == "applied" and not holder else "previous"
     except (ValueError, OSError, KeyError, IndexError, struct.error):
         return "foreign"
+
+
+def upgrade_image(path, source, data=None):
+    """A 'previous' disc (b778 .. the v0.9 RC) in place: rows 32/33 of the main roster get the retail created-team
+    texts and label back (restore_spare_rows, from the retail source), and the executable takes the revision-2
+    Quick Game classic variant (upgrade_xbe). The classic files, kits, field and face spans stay as they are."""
+    from . import nfl2k5_espn25_rosters as e
+    from . import nfl2k5_historic_styles as hs
+    from . import nfl2k5_historic_rosters as seasons_bank
+    from . import nfl2k5_music_archive as archive
+    data = Data.load() if data is None else data
+    require(image_status(path, source, data) == "previous", "classic teams: only a previous disc upgrades")
+    payload = e.read_xbe(path)
+    patched, xbe_receipt = (upgrade_xbe(payload, data) if xbe_status(payload, data) == "previous"
+                            else (payload, dict(status="already_applied", changed_bytes=0)))
+    with archive.Disc(Path(path), descriptors=()) as disc, hs.Source(source) as src:
+        target = hs.Target(disc)
+        main = target.get(identity=hs.ROSTER_OUTER_ID)
+        roster_outer = target.outer(identity=hs.ROSTER_OUTER_ID)
+        retail_main = src.get(identity=hs.ROSTER_OUTER_ID)
+    receipt = {}
+    if holder_present(main):
+        receipt = hs.rewrite_archive(path, {roster_outer: restore_spare_rows(main, retail_main)}, [])
+    seasons_bank.write_xbe(path, patched)
+    require(image_status(path, source, data) == "applied", "classic teams upgrade read-back failed")
+    return dict(status="upgraded", experimental=True, runtime_witnessed=False, xbe=xbe_receipt,
+                spare_rows_restored=bool(receipt), **receipt)
 
 
 def apply_to_image(path, source, data=None):
@@ -579,6 +785,8 @@ def apply_to_image(path, source, data=None):
     state = image_status(path, source, data)
     if state == "applied":
         return dict(status="already_applied", teams=len(data.teams))
+    if state == "previous":
+        return upgrade_image(path, source, data)
     require(state == "retail", f"classic teams: the disc is {state}")
     payload = e.read_xbe(path)
     require(h1.status(payload) == "applied", "classic teams need historic teams in Quick Game")
@@ -588,16 +796,12 @@ def apply_to_image(path, source, data=None):
     field_edits, field_receipts = field.edits(path, source)
     prefix = "HTS-" if h1.season_routing_status(payload) else ""
     main, templates, spares, has_kit, _present = _inputs(path, source, data)
-    holder = label_holder(main)
-    files, receipts = compile_files(holder, templates, data, spares=spares, has_kit=has_kit, prefix=prefix,
+    files, receipts = compile_files(main, templates, data, spares=spares, has_kit=has_kit, prefix=prefix,
                                     one_pool=pools.status(payload) == "applied")
     rows = rows_for(main, data)
-    patched, xbe_receipt = apply_xbe(payload, rows)      # computed before any disc write
-    # b778 bf1: rewrite_plan keys edits by outer index, not by name id.
-    from . import nfl2k5_music_archive as archive
-    with archive.Disc(Path(path), descriptors=()) as disc:
-        roster_outer = hs.Target(disc).outer(identity=hs.ROSTER_OUTER_ID)
-    edits = {roster_outer: holder, **field_edits}
+    patched, xbe_receipt = apply_xbe(payload, rows, data)      # computed before any disc write
+    # b780 modes2: the main roster is not edited (no label holder); the field bundles are.
+    edits = dict(field_edits)
     receipt = hs.rewrite_archive(path, edits, files + [(FILLER, bytes(2048))])
     seasons_bank.write_xbe(path, patched)
     try:

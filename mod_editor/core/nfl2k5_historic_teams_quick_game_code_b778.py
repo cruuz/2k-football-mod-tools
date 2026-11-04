@@ -1,0 +1,130 @@
+"""Revision 1 of the Historic teams in Quick Game code, as shipped from beta-78 (SOFTDRINK v0.7) through the v0.9 RC.
+
+Recognition only (b780 modes2): its label loop took the LAST team with the entry's asset code, so the two spare
+slots named every team with their code. nfl2k5_historic_teams_quick_game reads an installed copy as "previous" and
+upgrades it in place to revision 2. Do not regenerate: these are the shipped bytes."""
+
+CODE = bytes.fromhex(
+    "31c0eb036a0158526a0150e83100000083c40cc331c0eb036a015850e8fcffffff59506aff51e816"
+    "00000083c40cc331c0eb036a01585250e88501000083c408c3555356578b742414a114f6ac0083f8"
+    "03740e83f807740983f8010f852e010000e8fcffffff85c00f85210100008b1cb53cf6ac0085db0f"
+    "841201000089f1e80102000089c789f189fae82702000089c585ed0f849800000039fb0f85900000"
+    "0083bf28010000040f858300000089f189fae83702000083f8ff750f837c2418007f08a11829b700"
+    "8b405803442418782e8b0d1829b7003b41587d2389c5565557e89a02000083c40c85c0741289f189"
+    "fa89e8e82802000089fae98700000089f189fae84202000031c9837c2418007f098b0d1829b7008b"
+    "491c8b54241c528b54241c5251e81901000083c40c89c2eb558b54241c528b54241c5253e8020100"
+    "0083c40c89c285ed743c837c2418007c0839da773131c0eb0d39da7229a11829b7008b40584889c5"
+    "52565557e80f02000083c40c5a85c0740d89f189fa89e8e89c01000089fa89f1e8ad010000eb2e8b"
+    "54241c8b44241885f6751285c07c07e8fcffffffeb17e8fcffffffeb1085c07c07e8fcffffffeb05"
+    "e8fcffffff5f5e5b5dc3555356578b742414a114f6ac0083f803740a83f807740583f801754ce8fc"
+    "ffffff85c075438b1cb53cf6ac0085db74388b542418526a0153e84400000083c40c3b1cf5000000"
+    "00751483bb2801000004750b5089da89f1e82c0100005889c289f1e812010000eb148b54241885f6"
+    "7507e8fcffffffeb05e8fcffffff5f5e5b5dc35356578b7424108b1d1829b7008b5b184389f18b54"
+    "2418837c2414007c07e8fcffffffeb05e8fcffffff89c685c0740c83b8280100000475034b75d589"
+    "f05f5e5bc353a11829b7008b50188b401c85d27e1d8b982801000083fb02740583fb04750585c974"
+    "0b4905f40100004aebdf31c05bc331c085d27431f7d93b148d40f6ac0074268b8a2801000083f904"
+    "740e83f902751680ba1c01000000750d8b0d1829b700837958007e0140c3538d0ccd000000003911"
+    "75210fb7410485c07419668b5906663b9a18010000750c488b0d1829b7003b4158720383c8ff5bc3"
+    "8d0ccd0000000089114066894104668b821801000066894106c385c989d17505e9fcffffffe9fcff"
+    "ffff85d27431535689d389ce89d9e8fcffffffc6831c01000000c68328010000028d465a66898318"
+    "01000066c704f50400000000005e5bc381ecb4000000535556578b9c24c80000008b8424cc000000"
+    "8b0d1829b700c1e00403415c0fb64802894c241c8b500c895424180fb708894c24148d70048d5424"
+    "1052ba84f9e9008d4c242489742414e8fcffffff6a006a00e8fcffffff508d8424ac000000508d54"
+    "2430b9a8f9e900e8fcffffffe8fcffffff68a8f9e900ba524f5354b9a8f9e900e8fcffffff85c00f"
+    "84a200000089c589d9e8fcffffff89da89e9e8fcffffff85c0746dc68328010000048d4c241051ba"
+    "bcf9e9008d4c242489742414e8fcffffff31ff8b0d1829b7003b79187d318b711c69c7f401000001"
+    "c68b8e0c0100008d542420e8fcffffff85c0741039de740c8b861001000089831001000047ebc4b9"
+    "a8f9e900e8fcffffffb801000000eb2bc6831c01000000c68328010000028b8424d000000083c05a"
+    "66898318010000b9a8f9e900e8fcffffff31c05f5e5d5b81c4b4000000c3"
+)
+RELOCATIONS = (
+    (29, 2, 'team_mask', 0),
+    (98, 2, 'network_session', 0),
+    (416, 2, 'retail_home_next', 0),
+    (423, 2, 'retail_home_prev', 0),
+    (434, 2, 'retail_away_next', 0),
+    (441, 2, 'retail_away_prev', 0),
+    (479, 2, 'network_session', 0),
+    (517, 1, 'state', 0),
+    (563, 2, 'retail_home_next', 0),
+    (570, 2, 'retail_away_next', 0),
+    (610, 2, 'iter_next', 0),
+    (617, 2, 'iter_prev', 0),
+    (754, 1, 'state', 0),
+    (803, 1, 'state', 0),
+    (855, 2, 'team_release', 0),
+    (887, 1, 'state', 0),
+    (976, 2, 'text_format', 0),
+    (985, 2, 'loader_heap', 0),
+    (1008, 2, 'loader_queue', 0),
+    (1013, 2, 'loader_wait', 0),
+    (1033, 2, 'loader_lookup', 0),
+    (1050, 2, 'team_release', 0),
+    (1059, 2, 'team_import', 0),
+    (1093, 2, 'text_format', 0),
+    (1132, 2, 'text_equal', 0),
+    (1165, 2, 'loader_pop', 0),
+    (1213, 2, 'loader_pop', 0),
+    (833, 2, 'set_home', 0),
+    (838, 2, 'set_away', 0),
+)
+LABELS = {
+    'away_next': 4,
+    'away_prev': 24,
+    'away_random': 51,
+    'current_entry': 750,
+    'entry_out': 798,
+    'entry_unknown': 795,
+    'home_next': 0,
+    'home_prev': 20,
+    'home_random': 47,
+    'import_failed': 1176,
+    'label_done': 1159,
+    'label_loop': 1099,
+    'label_next': 1156,
+    'load_entry': 896,
+    'load_failed': 1207,
+    'load_out': 1219,
+    'next_side': 7,
+    'prev_side': 27,
+    'publish': 826,
+    'publish_away': 837,
+    'random_local': 478,
+    'random_out': 574,
+    'random_publish': 543,
+    'random_retail': 554,
+    'random_retail_away': 569,
+    'random_side': 54,
+    'random_step': 450,
+    'release_done': 895,
+    'release_slot': 842,
+    'remember': 800,
+    'resident_done': 639,
+    'resident_got': 621,
+    'resident_loop': 596,
+    'resident_prev': 616,
+    'resident_step': 579,
+    'slot_usable': 694,
+    'spare_done': 692,
+    'spare_loop': 657,
+    'spare_match': 677,
+    'spare_next': 682,
+    'spare_none': 690,
+    'spare_slot': 645,
+    'step': 65,
+    'step_enter': 358,
+    'step_have_entry': 203,
+    'step_leave': 255,
+    'step_leave_target': 282,
+    'step_local': 97,
+    'step_out': 445,
+    'step_publish': 390,
+    'step_resident': 305,
+    'step_resident_back': 345,
+    'step_retail': 399,
+    'step_retail_away': 429,
+    'step_retail_away_prev': 440,
+    'step_retail_home_prev': 422,
+    'usable_done': 749,
+    'usable_list': 736,
+}
