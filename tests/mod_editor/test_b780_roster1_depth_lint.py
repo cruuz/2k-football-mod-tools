@@ -94,7 +94,14 @@ def lint(doc, *, portraits=False):
         # the locked chart of every position in the native pairs, and row 0 of every position the club carries held
         # (an injured player who rejoined as the club's only fullback takes it, unlocked)
         for position, pairs in charts.items():
-            if sorted(pairs) != [refresh.native_depth_pair(n) for n in range(len(pairs))]:
+            native = [refresh.native_depth_pair(n) for n in range(len(pairs))]
+            if position == "HB":
+                # b780 sub1: the default third-down back takes side row 1, so the side rows are a permutation of the native ones
+                ok = [r for r, _s in sorted(pairs)] == [r for r, _s in native] and \
+                    sorted(side for _r, side in pairs) == sorted(side for _r, side in native)
+            else:
+                ok = sorted(pairs) == native
+            if not ok:
                 found[(club, f"chart {position}")] = sorted(pairs)
         for position in set(names) - {"OLB"}:
             if not any(n == position and p.record.get("depth_rank") == 0 for n, p in zip(names, roster)):

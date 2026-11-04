@@ -293,6 +293,42 @@ def create(args):
 BIRTH_CORRECTIONS = ("00-0041539",)         # Logan Jones (CHI C): the guard had 2001-10-29, nflverse lists 2001-10-19 (Q48)
 
 
+# ECON3 (Q45): a player traded at the deadline owes his new club only the rest of his base salary; the signing-bonus
+# proration stays with the club that paid it (OverTheCap trade accounting). Weeks left after roster week 8 of 18.
+TRADED_CONTRACTS = {"00-0034342": ("Quenton Nelson", "IND", "SEA")}
+SEASON_WEEKS = 18
+
+
+def traded_contracts(plan, fresh):
+    """Corrections for the traded players above: the new club's charge is base salary x weeks left / 18, fitted to the
+    native contract with the fc fit (tools/franchise_economy/contracts.py); the record must hold the full-year fit now."""
+    from tools.franchise_economy.contracts import fit_schedule
+    audit = {(r["pool"], r["index"]): r for r in json.loads((ROOT / "fc/data/contract_audit.json").read_text(
+        encoding="utf-8"))["ledger"]}
+    rows = {r["gsis_id"]: r for r in plan["players"]}
+    week = max(int(n["week"] or 0) for n in fresh.values())
+    done = []
+    out = [c for c in plan.get("contract_corrections", ()) if c["index"] not in {rows[g]["index"] for g in TRADED_CONTRACTS}]
+    for g, (name, _was_club, club) in TRADED_CONTRACTS.items():
+        row, entry = rows[g], audit[("primary", rows[g]["index"])]
+        if row["team"] != club or row["status"] not in upd.CLUB_STATUSES:
+            continue
+        year = entry["season_history_2026_and_later"][0]
+        charge = round(year["base_salary"] * 1_000_000 * (SEASON_WEEKS - week) / SEASON_WEEKS)
+        fit = fit_schedule([charge])
+        out.append(dict(index=row["index"], first=row["first"], last=row["last"], was=entry["fit"]["fields"],
+                        fields=fit["fields"], from_club=_was_club, to_club=club, source=entry["source"],
+                        rule=f"DESIGN: the acquiring club owes the rest of the base salary: ${year['base_salary']}M x "
+                             f"{SEASON_WEEKS - week}/{SEASON_WEEKS} weeks left after roster week {week} = ${charge:,}; the "
+                             f"${year['prorated_bonus']}M signing-bonus proration stays with {_was_club}. Fitted to the native "
+                             "contract as fc does (one year, errors below).",
+                        fit={k: v for k, v in fit.items() if k != "fields"}))
+        done.append(f"{name} {_was_club} -> {club}: {entry['fit']['fields']['contract_value']} -> {fit['fields']['contract_value']} "
+                    f"(${charge:,})")
+    plan["contract_corrections"] = out
+    return done
+
+
 def finalize(args):
     """The document-level fixes of the wave: Q47 (no stale top-level special_teams roles), Q48 (a sourced birth date), the
     Ole Miss -> Mississippi college fold (GEN1 folded the table's double name: row 93 -> row 176)."""
@@ -324,6 +360,8 @@ def finalize(args):
                 "players.csv of 2026-09-24 the plan's identity guard came from listed the earlier one")
             row["birth_date"] = node["birth_date"]
     plan["birth_corrections"] = sorted(corrections.values(), key=lambda c: c["index"])
+    report["contract_corrected"] = traded_contracts(plan, fresh)
+    plan["third_down_backs"] = True            # b780 sub1: the writer's last step (nfl2k5_third_down_back)
     report["birth_corrected"] = [f"{c['first']} {c['last']} {c['was']} -> {c['birth_date']}" for c in plan["birth_corrections"]]
     report["other_birth_date_differences_not_changed"] = [m for m in mismatches if not any(
         m.startswith(f"{c['first']} {c['last']} ") for c in plan["birth_corrections"])]

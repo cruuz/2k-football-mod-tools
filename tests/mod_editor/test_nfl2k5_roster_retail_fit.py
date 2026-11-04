@@ -99,12 +99,84 @@ class PlanSurgeryTests(unittest.TestCase):
         self.assertEqual(out["contract_initializations"][0]["index"], 2554)
         self.assertEqual(out["free_agents"], [7, 2464, 2555])                    # a signed player is not a free agent
         self.assertFalse(fit.capacity_dependencies({"roster_refresh": out}))
-        with self.assertRaises(fit.RetailFitError):
-            fit.plan_with(stripped, rows, [2554, 2555, 2556], 0, [2700])        # the signed row must be kept
+        left = fit.plan_with(stripped, rows, [2554, 2555, 2556], 0, [2700])    # b780 rst2: a signed row may not fit
+        self.assertEqual(left["teams"][0]["reserves"], [4])                      # he leaves his club
+        self.assertEqual(left["contract_initializations"], [])
+        self.assertEqual(len(left["unrepresented"]), 1)
+        self.assertFalse(fit.capacity_dependencies({"roster_refresh": left}))
         other = copy.deepcopy(document)
         other["edits"].append({"index": 2700, "pool": "primary"})                # an edit cannot follow a move
         with self.assertRaisesRegex(fit.RetailFitError, "appended capacity records"):
             fit.pinned_depth(other)
+
+    def club_plan(self):
+        """Club SF holds five created players (rows marked club_new) and two records; a chain per position."""
+        def row(index, position, rank, side, pos_rank=None, status="ACT", ovr=60):
+            fields = {"position": position, "depth_rank": rank, "depth_side": side, "jersey": index % 100}
+            out = {"index": index, "new": True, "club_new": True, "first": f"C{index}", "last": f"P{index}", "gsis_id": f"g{index}",
+                   "status": status, "team": "SF", "source": "https://example.org", "fields": fields}
+            if pos_rank:
+                out["depth_source"] = {"pos_abb": "X", "pos_rank": str(pos_rank)}
+            return out
+
+        rows = [{"index": 1, "new": False, "first": "Rec", "last": "One", "gsis_id": "r1", "status": "ACT", "team": "SF",
+                 "fields": {"position": 3, "depth_rank": 0, "depth_side": 2}},
+                {"index": 2, "new": False, "first": "Rec", "last": "Two", "gsis_id": "r2", "status": "ACT", "team": "SF",
+                 "fields": {"position": 3, "depth_rank": 1, "depth_side": 0}},
+                row(2700, 1, 0, 2, 1),                               # the club's kicker: the most important
+                row(2701, 3, 2, 1, 1),                               # a charted starter at receiver (chain order 2)
+                row(2702, 3, 3, 3, 3),                               # a receiver deep on the chart
+                row(2703, 7, 0, 2, 2),                               # a halfback behind the starter
+                row(2704, 3, 4, 4, None, "DEV")]                     # a practice-squad receiver
+        return {"schema": "nfl2k5.roster_refresh.v1", "players": rows, "free_agents": [],
+                "identity_guards": [[1, "Rec", "One", "2000-01-01"]],
+                "contract_initializations": [{"index": i, "fields": {"contract_value": 25}} for i in (2700, 2701, 2702, 2703, 2704)],
+                "unrepresented": [],
+                "teams": [{"index": 0, "team": "SF", "active": [1, 2, 2700, 2701, 2702, 2703], "reserves": [2704],
+                           "specialists": {"k": 2700, "h": None, "ls": None, "kr1": 2703, "kr2": None, "pr": 2702}}]}
+
+    def test_club_players_are_ranked_kicker_returner_starter_chart_rank_practice_squad(self):
+        plan = self.club_plan()
+        order = [r["index"] for r in sorted(fit.club_rows(plan), key=lambda r: fit.importance(plan, r))]
+        self.assertEqual(order, [2700, 2703, 2702, 2701, 2704])
+        classes = {r["index"]: fit.importance(plan, r)[0] for r in fit.club_rows(plan)}
+        self.assertEqual(classes, {2700: 0, 2701: 2, 2702: 1, 2703: 1, 2704: 4})
+
+    def test_a_club_player_who_does_not_fit_leaves_his_club_and_the_chain_and_roles_close_up(self):
+        plan = self.club_plan()
+        document = {"edits": [], "roster_refresh": plan}
+        pinned = fit.pinned_depth(document)
+        self.assertEqual(pinned, [2700, 2701, 2702, 2703, 2704])
+        stripped, rows = fit.split(plan)
+        self.assertEqual([p["index"] for p in stripped["players"]], [1, 2])
+        rows = fit.ordered_rows(rows, pinned, plan)
+        out = fit.plan_with(stripped, rows, [2554, 2555, 2556], 3, pinned)       # three fit; the two least important leave
+        team = out["teams"][0]
+        kept = {r["gsis_id"] for r in out["players"] if r.get("club_new")}
+        self.assertEqual(len(kept), 3)
+        self.assertNotIn("g2704", kept)                                          # the practice-squad player is the last
+        self.assertEqual(team["reserves"], [])
+        self.assertEqual(len(team["active"]), 5)
+        self.assertEqual(len(out["unrepresented"]), 2)
+        self.assertEqual({u["reason"] for u in out["unrepresented"]}, {"no vacant create record at retail capacity (64 MB)"})
+        by = {r["index"]: r for r in out["players"]}
+        receivers = sorted((i for i in team["active"] if by[i]["fields"]["position"] == 3),
+                           key=lambda i: (by[i]["fields"]["depth_rank"], i))
+        pairs = [(by[i]["fields"]["depth_rank"], by[i]["fields"]["depth_side"]) for i in receivers]
+        self.assertEqual(pairs, [(0, 2), (1, 0), (2, 1)][:len(pairs)])           # no row is left empty
+        self.assertFalse(fit.capacity_dependencies({"roster_refresh": out}))
+        self.assertIsNotNone(team["specialists"]["k"])                           # the kicker was the most important
+
+    def test_a_dropped_returner_is_replaced_by_the_best_remaining_returner(self):
+        plan = self.club_plan()
+        pinned = fit.pinned_depth({"edits": [], "roster_refresh": plan})
+        stripped, rows = fit.split(plan)
+        rows = [r for r in fit.ordered_rows(rows, pinned, plan) if r["index"] != 2703] + \
+            [r for r in fit.ordered_rows(rows, pinned, plan) if r["index"] == 2703]
+        out = fit.plan_with(stripped, rows, [2554, 2555, 2556, 2557, 2558], 4, pinned)   # the halfback (kr1) is the one left out
+        spec = out["teams"][0]["specialists"]
+        self.assertIsNotNone(spec["kr1"])
+        self.assertNotEqual(spec["kr1"], 2703)
 
     def test_the_base_must_be_the_refresh_pin(self):
         document = {"schema": rr.EDITS_SCHEMA, "edits": [], "roster_refresh": refresh(),
@@ -170,6 +242,8 @@ class SoftdrinkV09RetailFitTests(unittest.TestCase):
     def test_against_the_shipped_rc_disc_the_trim_adds_no_club_difference(self):
         if not self.has_disc:
             self.skipTest("needs the v0.9 RC disc's main ROST (NFL2K5_B780_RC_ROST)")
+        self.skipTest("b780 rst2: the RC disc was built before the release-for-room policy (Q43) and the free-agent contracts "
+                      "(Q44) changed the writer, so a variant built with today's writer differs from it by design")
         disc = self.report["summary"]["disc_comparison"]
         self.assertGreaterEqual(disc["clubs_identical_to_disc"], 28)
         self.assertIn("the trim adds no club difference to the disc built from the source",

@@ -429,6 +429,18 @@ def apply_body(body, plan):
             for k, v in row["fields"].items():
                 if k in EXISTING_FIELDS:
                     p.record.set(k, v)
+    # b780 rst2 (ECON3, Q45): a player the refresh moves to another club while he is under contract (Quenton Nelson, IND to
+    # SEA) keeps the full-year charge the record holds, which the new club could not owe. A sourced correction replaces the
+    # five contract fields, only on a record that holds exactly the ``was`` fields (or already the new ones: a replay).
+    for c in plan.get("contract_corrections", ()):
+        rr._require(c["index"] in owned and set(c["fields"]) == CONTRACT_FIELDS == set(c["was"]) and c.get("rule")
+                    and str(c.get("source", "")).startswith("https://"),
+                    "A contract correction needs a club-owned player, the five fields before and after, its rule and its source")
+        rec = by[c["index"]].record
+        now = {k: rec.get(k) for k in CONTRACT_FIELDS}
+        rr._require(now in (c["was"], c["fields"]), f"contract correction: record {c['index']} holds neither contract")
+        for key, value in c["fields"].items():
+            rec.set(key, value)
     initialized_contracts = 0
     for row in contracts:
         rec = by[row["index"]].record
@@ -502,6 +514,12 @@ def apply_body(body, plan):
                 "Refresh creates conflicting club depth locks")
     create_buffers_repaired = _repair_create_buffers(doc)
     result = doc.to_body()
+    # b780 sub1 (option (c), coordinator 11/03): the last step of the final roster. Each club's best receiving running back
+    # is its default SPECIAL third-down back (side row 1), after every record the plan creates exists. Opt-in per plan.
+    third_down_backs = []
+    if plan.get("third_down_backs") is True:
+        from .nfl2k5_third_down_back import default_third_down_backs
+        result, third_down_backs = default_third_down_backs(result)
     checked = rr.RosterDocument(result, scheme="one_pool", reference_year=2026)
     errors = [r for r in rr.validate_membership(checked) if r["level"] == "error"]
     rr._require(not errors, f"Refreshed membership failed validation: {errors}")
@@ -516,6 +534,8 @@ def apply_body(body, plan):
                     "changed_bytes": sum(a != b for a, b in zip(body, result)),
                     "unrepresented": len(plan.get("unrepresented", [])),
                     # b780 rst2 (Q44): free agents whose stale contract block was zeroed
+                    "third_down_backs": third_down_backs,
+                    "contracts_corrected": sorted(by[c["index"]].display for c in plan.get("contract_corrections", ())),
                     "birth_dates_corrected": sorted(f"{by[i].display} {c['was']} -> {c['birth_date']}"
                                                      for i, c in corrections.items()),
                     "free_agent_contracts_cleared": len(cleared),

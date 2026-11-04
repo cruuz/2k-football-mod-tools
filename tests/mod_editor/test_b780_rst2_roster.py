@@ -134,6 +134,38 @@ class BirthCorrectionTests(unittest.TestCase):
             refresh.apply_body(self.body, plan)
 
 
+class ContractCorrectionTests(unittest.TestCase):
+    """ECON3 (Q45): Quenton Nelson IND -> SEA keeps a full-year $24.2M charge on the club that owes the rest of the year."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.body, cls.plan = _sample()
+
+    def correction(self, plan, **change):
+        index = plan["teams"][0]["active"][3]
+        was = {"contract_value": 605, "contract_length": 1, "contract_remaining": 1, "contract_type": 2, "contract_bonus": 0}
+        plan["contract_corrections"] = [dict(index=index, was=was, fields={**was, "contract_value": 222},
+                                             rule="DESIGN: base salary x weeks left / 18", source="https://example.org/otc",
+                                             **change)]
+        return index, was
+
+    def test_a_record_that_holds_the_was_contract_takes_the_corrected_one_and_a_replay_is_stable(self):
+        plan = copy.deepcopy(self.plan)
+        index, was = self.correction(plan)
+        body = _set(self.body, {index: was})
+        out, receipt = refresh.apply_body(body, plan)
+        record = rr.RosterDocument(out, scheme="one_pool", reference_year=2026).by_pool("primary")[index].record
+        self.assertEqual(record.get("contract_value"), 222)
+        self.assertEqual(len(receipt["contracts_corrected"]), 1)
+        self.assertEqual(refresh.apply_body(out, plan)[0], out)
+
+    def test_a_record_with_another_contract_refuses(self):
+        plan = copy.deepcopy(self.plan)
+        index, _was = self.correction(plan)
+        with self.assertRaisesRegex(rr.RosterRecordError, "holds neither contract"):
+            refresh.apply_body(self.body, plan)                  # the sample's records hold a 0-value, one-year contract
+
+
 class CreationRuleTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
