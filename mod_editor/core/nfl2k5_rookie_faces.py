@@ -173,7 +173,8 @@ RECORD_NAME = "Portrai2.iff"
 CDF_NAME = "portrai2.cdf"
 RETAIL_RECORD_NAME = "Portrait.iff"
 RETAIL_CDF_NAME = "portrait.cdf"
-# Assembled from tools/b77/rh1_rookie_faces.S (GNU as, linked at 0xE67EA; b779-rf3 version); the listing is in that file.
+# Assembled from tools/b77/rh1_rookie_faces.S (GNU as, linked at 0xE67EA; b780 GEN1 version: rarefirst at the end of
+# region C, region D calls it); the listing is in that file.
 CODE_A = bytes.fromhex(
     "e9e900000051e8060000005931d2f7f1c3b9a0fce500e94b23f6ff31ff39cf73083904fb740347ebf4c38b4d008b5504"
     "85c9740c66394206740983c25449ebf083c901c30fb705a04f4f0039c7722e39cf732a663b3d9d4f4f00730de8b0ffff"

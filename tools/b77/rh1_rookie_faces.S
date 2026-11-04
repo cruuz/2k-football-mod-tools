@@ -7,6 +7,9 @@
 # their three bytes (correlation 1/3); weight only: 1 prospect in 64 adds 384 to S (a heavy outlier, centred on +3 sd).
 # The generic head-shape draw moved here from region D, which now down-weights each row's last 5/16 (the review's
 # plainest/ugliest faces): a first draw that lands there is redrawn once.
+# b780 GEN1: a rare surname's first name comes from rarefirst (end of region C, called from region D), which skips a
+# full name a player on the roster already carries. The college bands and the draft number flag are retail code
+# immediates the Python module writes (COLLEGE_BANDS, NUMBER_VA); they are not assembled here.
 # Linked at 0xE67EA: as --32; ld -m elf_i386 -Ttext=0xE67EA; objcopy -O binary.
 .intel_syntax noprefix
 .set D, 0x4F4F40
