@@ -13,6 +13,10 @@ overtime toss, and in place of the hang-time, ball-on and FUMBLE plates), the
 interim "3rd Down" label, ":54" under a minute, HALFTIME, the TIMEOUT tab and the
 red play clock at 5 seconds and under; CODE_SIZE 4608 -> 5376 for them, and the
 update now hands the frame time FC9C0 receives to the engine.
+b780 pres2 revision 17 draws the 2026 bar on the pause screen: the Paused menu's backdrop (0x6BEF0 -> 0x64FE0) draws the
+frozen game and the retail play-call panel (0x8CA00, which this owner keeps off) but never the HUD draw, so no score showed
+while paused. One owned hook takes the backdrop's call to 0x8CA00 (0x65092), and the engine draws the bar there, moved into
+the band above the menu so the PAUSED banner and the menu stay untouched; CODE_SIZE 5920 -> 6336 for it.
 
 Private textures are resolved in GAMEDATA, the resident HUD collection.
 Reserve the union of REQUESTS and other owners before applying either patch.
@@ -29,7 +33,7 @@ from .nfl2k5_draft_ai import _Asm
 from .nfl2k5_bump_strength import _sections, section_digest
 
 OWNER = "nfl2k5_scorebug_runtime"
-CODE_SIZE, DATA_SIZE = 5920, 128  # b780 p2: +544 for the ball spot and the page strip fit; beta 76 s15: +512 for records, tabs, arrow; sb: +768 for the broadcast states; the owner is placed last in the scale-out RX pool
+CODE_SIZE, DATA_SIZE = 6336, 128  # b780 pres2: +416 for the pause-screen bar (the 5,920-byte allocation held 16 spare bytes; the body is 6,314); b780 p2: +544 for the ball spot and the page strip fit; beta 76 s15: +512 for records, tabs, arrow; sb: +768 for the broadcast states; the owner is placed last in the scale-out RX pool
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "data", DATA_SIZE, 16))
 HOOKS = {"setup": (0xFCE56, bytes.fromhex("e845f3ffff")),
          "update": (0xFCFA2, bytes.fromhex("e819faffff"))}
@@ -45,6 +49,16 @@ PLAYCALL_EDITS = ((0x8CA18, bytes.fromhex("0f8421050000"), bytes.fromhex("e92205
 # franchise IFF's "scorepanel" (teams, scores, quarter, clock, down and distance, ball spot) from the simulator's
 # state. With it off the Gamecast showed no score or time (v0.8 and the v0.9 RC). Every build now leaves it retail.
 GAMECAST_PANEL_GATE = (0x8C465, bytes.fromhex("0f8417050000"))
+# b780 pres2: the paused backdrop 0x64FE0 (the in-game menu backdrop 0x6BEF0 calls it while the pause counter [0xA83A14] is
+# above zero and [0xA83F14] is 1) ends with one call to the retail play-call panel draw 0x8CA00. The owner's stub makes that call
+# (the 0x8CA18 jump above still turns the panel off) and then draws the 2026 bar through the engine (sprite_pause_draw).
+PAUSE_HOOK_NAME = "sprite_pause_hook"
+PAUSE_HOOK = (0x65092, bytes.fromhex("e869790200"))   # call 0x8CA00
+# b780 pres2: earlier revisions that sat in a 5,920-byte allocation (15: b780 p2, 16: b780 gc1) read "previous": this
+# release's body is larger, so an install of either cannot be updated in place. Their engines are frozen in
+# nfl2k5_scorebug_sprite_code_r15 and _r16. Revision 15 also had the Gamecast panel jump (0x8C465) in place.
+EARLIER_CODE_SIZE, EARLIER_REVISIONS = 5920, (16, 15)
+GAMECAST_PANEL_OFF_R15 = (0x8C465, GAMECAST_PANEL_GATE[1], bytes.fromhex("e91805000090"), "sb play-call bar off (0x8C450)")
 
 
 def playcall():
@@ -53,20 +67,24 @@ def playcall():
     return os.environ.get("NFL2K5_SCOREBUG_PLAYCALL", "sprite") != "retail"
 
 
-def hooks():
-    """Setup/update plus sprite play-call visibility and layout initialization."""
+def hooks(earlier=None):
+    """Setup/update plus sprite play-call visibility and layout initialization (and the pause-screen bar, b780 pres2;
+    ``earlier`` names an earlier revision, which had no such hook)."""
     rows = dict(HOOKS)
     if playcall():
         rows[PLAYCALL_HOOK[0]] = PLAYCALL_HOOK[1:]
         rows[playcall_layout.HOOK_NAME] = playcall_layout.HOOK
         rows[playcall_layout.STRIP_HOOK_NAME] = playcall_layout.STRIP_HOOK  # b780 p2: the page strip fits long menus
         rows[playcall_layout.STRIP_ENTRY_HOOK_NAME] = playcall_layout.STRIP_ENTRY_HOOK
+        if earlier is None:
+            rows[PAUSE_HOOK_NAME] = PAUSE_HOOK
     return rows
-REVISION = 16  # b780 gc1: the franchise Gamecast's score panel (0x8C450) stays retail and the play-call guard reads 0x8CA18; was 15 (b780 p2: the ball spot (nwostar 10/24) and the page strip fit); 14 (hd1: sprite camera retains full picture clip for the corner watermark)
+REVISION = 17  # b780 pres2: the pause screen draws the 2026 bar (one hook, the engine moves the bar above the menu); was 16 (b780 gc1: the franchise Gamecast's score panel (0x8C450) stays retail and the play-call guard reads 0x8CA18; was 15 (b780 p2: the ball spot (nwostar 10/24) and the page strip fit); 14 (hd1: sprite camera retains full picture clip for the corner watermark)
 # State (128 bytes): scene, populated, two wing materials, the plate material,
 # two wing textures, two scores, two flash timers, down, possession, ball/line,
 # phase, red cell, wing colours and plate colours. All state stays in the owned RW page.
-# The sprite engine's State (tools/scorebug_sprite/runtime.c) uses 120 of the 128 bytes:
+# The sprite engine's State (tools/scorebug_sprite/runtime.c) uses 124 of the 128 bytes (b780 pres2: the pause shift word at 120;
+# 124 is the play-call strip flag):
 # ten words of scene/logo/colour state, the kick-phase capture (40, 44), the two
 # cached UTF-16 records at 48 (home) and 72 (away), 12 units each, and (sb) the last
 # down (96), the interim and TIMEOUT-tab timers (100, 108; float bits), the packed
@@ -389,14 +407,35 @@ def _legacy_code_for(code_va, data_va):
     return bytes(content).ljust(1408, b"\xcc"), {k: code_va + v for k, v in a.labels.items()}
 
 
-def code_for(code_va, data_va):
+def _pause_code_for(start, data_va, draw_va):
+    """b780 pres2: the stub the paused backdrop's call to 0x8CA00 goes to. The retail panel draw runs first and returns as it
+    always did (the owner keeps it off); then the engine draws the bar. Every register and the FPU/SSE state survive."""
+    a = _Asm(start)
+    a.call(0x8CA00)
+    _save(a)
+    a.b('68' + _u(data_va))
+    a.call(draw_va)
+    a.b('83c404')
+    _restore(a)
+    a.b('c3')
+    return a.assemble()
+
+
+def code_for(code_va, data_va, earlier=None):
     """Sprite dispatch plus the sealed historical resource fallback.
 
     Only a scene carrying the compiler's SPR5 marker selects the quad engine.
     The old resource probes keep their original callback ABI and font behavior.
     Production builds append the sprite scene and no FONT resources.
+    ``earlier`` (16 or 15) rebuilds an earlier revision's body from its frozen engine (b780 pres2, recognition only).
     """
-    from . import nfl2k5_scorebug_sprite_code as engine
+    if earlier == 16:
+        from . import nfl2k5_scorebug_sprite_code_r16 as engine
+    elif earlier == 15:
+        from . import nfl2k5_scorebug_sprite_code_r15 as engine
+    else:
+        space._require(earlier is None, "unknown scorebug revision")
+        from . import nfl2k5_scorebug_sprite_code as engine
     legacy, labels = _legacy_code_for(code_va, data_va)
     engine_va = code_va + len(legacy)
     content = bytearray(engine.CODE)
@@ -444,27 +483,31 @@ def code_for(code_va, data_va):
         result += playcall_layout.strip_entry_code_for(code_va + len(result), data_va)
         labels[playcall_layout.STRIP_HOOK_NAME] = code_va + len(result)
         result += playcall_layout.strip_code_for(code_va + len(result), data_va)
-    if len(result)>CODE_SIZE:
+        if earlier is None:
+            labels[PAUSE_HOOK_NAME] = code_va + len(result)
+            result += _pause_code_for(code_va + len(result), data_va, engine_va + engine.LABELS['sprite_pause_draw'])
+    size = CODE_SIZE if earlier is None else EARLIER_CODE_SIZE
+    if len(result)>size:
         raise ValueError('sprite owner exceeds its named RX allocation: '+str(len(result)))
     labels.update({name:start+offset for name,offset in a.labels.items()})
     labels.update({name:engine_va+offset for name,offset in engine.LABELS.items()})
-    return result.ljust(CODE_SIZE,b'\xcc'),labels
+    return result.ljust(size,b'\xcc'),labels
 
 
-def sites(payload):
+def sites(payload, earlier=None):
     owned = {a["kind"]: a for a in space.layout(payload)["allocations"] if a["owner"] == OWNER}
     space._require(set(owned) == {"code", "data"}, "missing scorebug allocations; reserve the owner union first")
-    for kind, size, align in (("code", CODE_SIZE, 16), ("data", DATA_SIZE, 16)):
+    for kind, size, align in (("code", CODE_SIZE if earlier is None else EARLIER_CODE_SIZE, 16), ("data", DATA_SIZE, 16)):
         space._require((owned[kind]["size"], owned[kind]["align"]) == (size, align), "foreign scorebug allocation")
     return owned["code"], owned["data"]
 
 
-def hook_bytes(name, labels):
-    va, original = hooks()[name]
+def hook_bytes(name, labels, earlier=None):
+    va, original = hooks(earlier)[name]
     return b"\xe8" + struct.pack("<i", labels[name] - va - 5)
 
 
-def override_edits():
+def override_edits(earlier=None):
     """(va, static bytes, owner bytes, label) for the text-record overrides and literals."""
     from . import nfl2k5_scorebug_exact as exact
     static = {va: new for va, _old, new, _ in exact.xbe_specs(scene.xbe_specs(baseline_v8=True))}
@@ -473,8 +516,37 @@ def override_edits():
         rows.append((va, (old + "\0").encode("utf-16le"), (new + "\0").encode("utf-16le"), "mnf literal"))
     if playcall():
         rows.extend(PLAYCALL_EDITS)
+        if earlier == 15:
+            rows.append(GAMECAST_PANEL_OFF_R15)   # revision 15 still turned the Gamecast panel off
         rows.extend(playcall_layout.edits())
     return rows
+
+
+class _Earlier:
+    """An earlier revision of this owner shaped like the module nfl2k5_scorebug_ingame reads an installed owner through
+    (recognition only, b780 pres2): its sites, body, setup/update hooks and static overrides."""
+    HOOKS = HOOKS
+
+    def __init__(self, revision):
+        self.revision = revision
+
+    def sites(self, payload):
+        return sites(payload, self.revision)
+
+    def code_for(self, code_va, data_va):
+        return code_for(code_va, data_va, self.revision)
+
+    def hook_bytes(self, name, labels):
+        return hook_bytes(name, labels, self.revision)
+
+    def override_edits(self):
+        return override_edits(self.revision)
+
+
+def earlier_revision(revision):
+    """The module-shaped recognizer of revision 16 or 15 (see EARLIER_REVISIONS)."""
+    space._require(revision in EARLIER_REVISIONS, "unknown scorebug revision")
+    return _Earlier(revision)
 
 
 def _abi_valid(payload):
@@ -500,14 +572,19 @@ def _abi_valid(payload):
 # install, as e8c1de3a8's recognizer reads it (frozen in nfl2k5_scorebug_runtime_b779 with its play-call layout and sprite
 # engine), reads "previous"; this release's code does not fit that allocation, so apply() refuses to update it in place.
 PREVIOUS_REVISION = "beta-79"
-PREVIOUS_REFUSAL = ("The scorebug effects on this disc are the beta 79 revision. This release's version is larger than "
-                    "the room the earlier build gave it, so it cannot be updated in place. Rebuild from your retail game.")
+# b780 pres2: the same holds for the beta-80 test builds before the pause screen (revisions 15 and 16, 5,920 bytes).
+PREVIOUS_REFUSAL = ("The scorebug effects on this disc are an earlier revision (beta 79, or a beta 80 test build from before "
+                    "the pause screen score). This release's version is larger than the room the earlier build gave it, so it "
+                    "cannot be updated in place. Rebuild from your retail game.")
 
 
 def status(payload):
     state = _status(payload)
     if state != "foreign":
         return state
+    for revision in EARLIER_REVISIONS:   # b780 pres2: exact revision 16 / 15 installs
+        if _status(payload, revision) == "applied":
+            return "previous"
     try:
         from . import nfl2k5_scorebug_runtime_b779 as previous
         return "previous" if previous.status(payload) == "applied" else "foreign"
@@ -515,25 +592,28 @@ def status(payload):
         return "foreign"
 
 
-def _status(payload):
+def _status(payload, earlier=None):
+    """The exact state of this release's install, or (``earlier`` 16 or 15) of that earlier revision's: it differs by the
+    body (its own engine, its own size), the pause hook and, for 15, the Gamecast panel jump."""
     try:
         ss = space.status(payload)
         if ss == "foreign" or scene.xbe_status(payload) == "foreign" or not _abi_valid(payload):
             return "foreign"
-        expected = {name: original for name, (_, original) in hooks().items()}
+        size = CODE_SIZE if earlier is None else EARLIER_CODE_SIZE
+        expected = {name: original for name, (_, original) in hooks(earlier).items()}
         code_state = "retail"
         if ss == "applied" and any(a["owner"] == OWNER for a in space.layout(payload)["allocations"]):
-            code, data = sites(payload)
-            content, labels = code_for(code["va"], data["va"])
-            have = payload[code["raw"]:code["raw"] + CODE_SIZE]
+            code, data = sites(payload, earlier)
+            content, labels = code_for(code["va"], data["va"], earlier)
+            have = payload[code["raw"]:code["raw"] + size]
             if have == content:
                 code_state = "applied"
-                expected = {n: hook_bytes(n, labels) for n in hooks()}
-            elif have != b"\xcc" * CODE_SIZE:
+                expected = {n: hook_bytes(n, labels, earlier) for n in hooks(earlier)}
+            elif have != b"\xcc" * size:
                 return "foreign"
-        for name, (va, _) in hooks().items():
+        for name, (va, original) in hooks(earlier).items():
             off = scene.layout.sbpos.va_to_off(payload, va)
-            if payload[off:off + 5] != expected[name]:
+            if payload[off:off + len(original)] != expected[name]:
                 return "foreign"
         if not playcall_layout.valid(payload, applied=code_state == "applied" and playcall()):
             return "foreign"
@@ -545,7 +625,7 @@ def _status(payload):
         if code_state == "applied" and scene.xbe_status(payload, scorebug_folder=None) != "applied":
             return "foreign"
         if code_state == "applied":
-            for va, _old, new, _ in override_edits():
+            for va, _old, new, _ in override_edits(earlier):
                 off = scene.layout.sbpos.va_to_off(payload, va)
                 if payload[off:off + len(new)] != new:
                     return "foreign"
@@ -555,8 +635,10 @@ def _status(payload):
                     off = scene.layout.sbpos.va_to_off(payload, va)
                     if payload[off:off + len(old)] != old:
                         return "foreign"
-            # b780 gc1: every build leaves the franchise Gamecast's score panel draw retail.
+            # b780 gc1: every build leaves the franchise Gamecast's score panel draw retail (revision 15 turned it off).
             va, old = GAMECAST_PANEL_GATE
+            if earlier == 15 and playcall():
+                old = GAMECAST_PANEL_OFF_R15[2]
             off = scene.layout.sbpos.va_to_off(payload, va)
             if payload[off:off + len(old)] != old:
                 return "foreign"

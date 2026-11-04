@@ -764,7 +764,8 @@ class ExecutionTests(unittest.TestCase):
                         cpu.uc.mem_write(TEAM + squad.VERSION_OFFSET, bytes([squad.VERSION]))
                         cpu.uc.mem_write(TEAM + squad.COUNT, bytes([3, squad.MARKER]))
                         cpu.uc.mem_write(TEAM + 500, bytes(500))
-                        cpu.uc.mem_write(reserves.LEAGUE_VA, struct.pack("<I", 1))
+                        # b780-int (modes2 Q27): league type 2 is Franchise (1, the Tournament, was the old mistaken test value)
+                        cpu.uc.mem_write(reserves.LEAGUE_VA, struct.pack("<I", reserves.LEAGUE_FRANCHISE))
                         cpu.uc.mem_write(reserves.MODE_VA, struct.pack("<I", mode))
                         before = bytes(cpu.uc.mem_read(TEAM, 1000)), [cpu.player(i) for i in range(9)]
                         self.assertEqual(cpu.run(reserves.STAGE_VA, edx=TEAM + 500), STACK + 4)

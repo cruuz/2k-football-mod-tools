@@ -1,6 +1,6 @@
 {
  "schema": "nfl2k5_moment_kits_pins/v1",
- "about": "SOFTDRINK donors as the release-candidate Studio build holds them (measured on 'SOFTDRINK 2K28 v0.6.1 i4 test (2026-10-17)', read only) and the packages ek1's stage composes from them; with these donors every package must equal its pin. Members: the renamed aggregate slots (b776-sm1: helm and mini cards take the slot's own letter, so a swapped H/A kit keeps its helmet facing the right way); team files and SITU: before/after. b779-int1: re-derived after b779-vk2's sideline pass, which repaints donors 06A0, 06H0 and 30H3 before this stage (06a13.iff and 06h13.iff change). b780-b12: re-derived after the D14 sideline fix, which removes the orange collar trim of donor 06H0's sideline atlas (06h13.iff changes).",
+ "about": "SOFTDRINK donors as the release-candidate Studio build holds them (measured on 'SOFTDRINK 2K28 v0.6.1 i4 test (2026-10-17)', read only) and the packages ek1's stage composes from them; with these donors every package must equal its pin. Members: the renamed aggregate slots (b776-sm1: helm and mini cards take the slot's own letter, so a swapped H/A kit keeps its helmet facing the right way); team files and SITU: before/after. b779-int1: re-derived after b779-vk2's sideline pass, which repaints donors 06A0, 06H0 and 30H3 before this stage (06a13.iff and 06h13.iff change). b780-b12: re-derived after the D14 sideline fix, which removes the orange collar trim of donor 06H0's sideline atlas (06h13.iff changes). b780-art1: re-derived after the art1 Revolution-shell fixes change donors 08H0 (the old crown stripe's dither) and 30H0, 30A0, 30H3 (the heavy crease arcs): their helmet02 is the Studio importer's span of the cleaned PNG.",
  "data_sha256": "e2fcbb93f376f266f6973626a48e2244521df1f529f3fbe67ec28cfdc7565c18",
  "donors": {
   "06A0": "0d8e18a75c435b97ed7510b0cf691551a929cd78daa53bc6927a2d904d33940c",
@@ -9,7 +9,7 @@
   "07A3": "75e7677ce28c5892a3d244fc716d5223365f234d14de4069b4cf6fc6f79e1b38",
   "07H3": "04bb64d9ff1a399e84c9be75d717b1d3651a295a14ff4232a0e54c1e9597b862",
   "08A7": "4ddb40e12e6004c99ebf032c0d6f2c0d3cc888b80fb3208cf8270883b70bf693",
-  "08H0": "0185a8eeef034bd0f7dd75bc637d7883bf740f39e3211aea7e70d97407513eb9",
+  "08H0": "41a173b308ac6f991e918d55784e38651edb15d49c2f5a8972a4ef1cde3bab0e",
   "08H1": "d71c517e090b5fd063a9970ccb5ae8a115e501d3520b208fe86bf78989002adc",
   "08H7": "365417ce3be8aa8b770174ab396e253c9b39e07f3f0a53c033339ac6413c3e20",
   "13A2": "2d8649b8735d9c780533dd27b113a9a6f3d34f069e34b79e8b75962225931db2",
@@ -27,11 +27,11 @@
   "28H9": "e0963ff21dc1bde2d4800d588b4bcfe964113e0a32fb2abe8fc85c35db965b52",
   "29A2": "b8a25fe31209591884926d9d0eaa3d3149204a87c79ff8ac2332f612c84a6462",
   "29H2": "2930a6d5080dce25b6e3988b6a3aa2285aa71c72b4681c4b03105984df9b754a",
-  "30A0": "2047bef2ab310e428dc4d5ebe3e3a460e0a2565db352af3ec160cf265f0bf7a0",
+  "30A0": "00b03851e1b84b2b93782ef3c467dbd08df9244ef4836f8c087146400d2795a9",
   "30A2": "e392efd40647751db448666d2ffb00e9b964dd38ae45be29d7dd19e45b02c565",
-  "30H0": "40d105495f5acd7313dbc34d73cf883e2838e534dd10514c6e64e6f18ead2ae9",
+  "30H0": "8d6792b9fb485d7cfcf4f0c179f3bbffa773d6d083c66613e30a40422431aec4",
   "30H2": "472bb8d50a290b79b1ec7f447d0f70933a58bc524df80ad0db9c16e93043281b",
-  "30H3": "962f384c67a94ef02876af8565ac795a8296dd8d144cd296b27f64537dcd25e2"
+  "30H3": "d58244e59590582a1c13766100539584b538eff8698c3d80e0fcd40e619df5f6"
  },
  "packages": {
   "18h9.iff": "5a6c242691cfb24bb265fed2625b64886b1b851a3b00a4818096714606f0fdab",
@@ -54,8 +54,8 @@
   "13a6.iff": "dabc4344bfa887f6286b4b3d28f4c42d47af51c0ce89feb71f30f5b39b117da2",
   "28h14.iff": "772116588370351bbefcf1a64fbe048694ff57359f674704b26cc757034366b7",
   "28a14.iff": "674d5055178cde5117c0511b392f9c0a68629588e6b9fe755c4d9604ca5a6850",
-  "30h14.iff": "ab7857ccc56306ae1abd9e73f2ccf8a067dd2837e8400afa1af6533664bb88cd",
-  "30a14.iff": "aeb32997d4aacf327a11571c0bb9539b441110352b53678d7a8643611f2d85ee",
+  "30h14.iff": "254cef1177981af5f58a8c7d8322ad0a2d3cf36951a8c694ff896be318ec2929",
+  "30a14.iff": "5b9c4520778f11db93dd1c4b87520d842b25bdd71d2a6b07bfa531cbff93e72f",
   "23h13.iff": "cb380794b5613852d893367ef8c56bca486f2f7bd5e1eff2454e45944fe919e1",
   "23a13.iff": "424ce477e1b807150c7f4bb5128d46bcbf193f99c35c960d9a70fe1ad5437368",
   "06h13.iff": "0ef1d35143d5572bf745f2516df3bb77a995e0b1c0582b158d711a20aba05667",

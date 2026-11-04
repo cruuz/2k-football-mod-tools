@@ -131,6 +131,8 @@
    "align": "uc",
    "tag": "base",
    "menu": [
+    "Crack Toss",
+    "01 Trap",
     "Slot Spot Out",
     "NYJ Smash",
     "NYJ Curl Flat",
@@ -139,7 +141,8 @@
     "PA Comeback Seam",
     "WB Sweep",
     "Z Dagger",
-    "Y Return Flood"
+    "Y Return Flood",
+    "Inside Zone Wk"
    ],
    "cpu_situation": [
     1,
@@ -255,6 +258,8 @@
    "align": "pistol",
    "tag": "base",
    "menu": [
+    "Crack Toss",
+    "01 Trap",
     "Bubble Screen",
     "Z Fade Curl",
     "PA Double Move",
@@ -263,7 +268,8 @@
     "Post Wheel",
     "Smash Wheel",
     "NYJ Hank",
-    "Y Scissors"
+    "Y Scissors",
+    "Inside Zone Wk"
    ],
    "cpu_situation": [
     4,
@@ -280,12 +286,15 @@
    "align": "uc",
    "tag": "base",
    "menu": [
+    "Lead Stretch",
+    "Inside Zone",
     "X Quick Outs",
     "Y Sail",
     "Z Hitch Seam",
     "Z Out Seam Whip",
     "PA Y Switch",
-    "X China Out"
+    "X China Out",
+    "RB Draw"
    ],
    "cpu_situation": [
     3,
@@ -326,7 +335,10 @@
    "menu": [
     "Guard Iso",
     "Outside Zone Wk",
-    "Zone Toss"
+    "Double Slants",
+    "Zone Toss",
+    "RB Texas",
+    "U China Out"
    ],
    "cpu_situation": [
     4,
@@ -345,7 +357,10 @@
    "menu": [
     "Tush Push",
     "QB Sneak",
-    "01 Trap Wk"
+    "U China Out",
+    "01 Trap Wk",
+    "RB Texas",
+    "Double Slants"
    ],
    "cpu_situation": [
     4,
@@ -390,9 +405,9 @@
     "RB Slants",
     "RB Post Wheel",
     "Y Screen",
-    "Z Curl Combo",
+    "QB Draw",
     "Slot Bench",
-    "RB Choice"
+    "QB Power"
    ],
    "cpu_situation": [
     4,
@@ -505,9 +520,12 @@
    "align": "gun",
    "tag": "pass",
    "menu": [
-    "Y Sail Out",
+    "Y Double Slants",
     "X Bench Snag",
-    "PA Post Corner Shot"
+    "Inside Zone Split",
+    "PA Post Corner Shot",
+    "QB Power",
+    "Y Stick"
    ],
    "cpu_situation": [
     1,
@@ -649,6 +667,8 @@
    "align": "uc",
    "tag": "base",
    "menu": [
+    "Crack Toss",
+    "01 Trap",
     "Double Slants",
     "Max Corner Post",
     "PA Comeback Seam",
@@ -672,7 +692,8 @@
     "Y Return Flood",
     "PA X Post Wheel",
     "Bubble Screen",
-    "Slot Post Wheel"
+    "Slot Post Wheel",
+    "Inside Zone Wk"
    ],
    "cpu_situation": [
     0,
@@ -1941,6 +1962,7 @@
    "lane": null,
    "formations": [
     "Pistol Deuce Close",
+    "Gun Wing Slot Offset",
     "Pistol Ace",
     "Singleback Y Trips",
     "Gun Deuce Close"
@@ -2046,9 +2068,12 @@
    "deep": false,
    "lane": 2,
    "formations": [
+    "Singleback Doubles",
     "Gun Doubles",
     "Gun Trips TE",
     "Gun Bunch X Nasty",
+    "Pistol Doubles",
+    "Singleback Doubles Tight",
     "Gun Trips"
    ]
   },
@@ -2291,7 +2316,10 @@
    "deep": false,
    "lane": 4,
    "formations": [
+    "Singleback Doubles",
+    "Pistol Doubles",
     "Gun Tight Open",
+    "Singleback Doubles Tight",
     "Gun Wildcat",
     "Gun Normal Y Off Close"
    ]
@@ -2524,6 +2552,7 @@
    "formations": [
     "Pistol Deuce Close",
     "Singleback Ace",
+    "Gun Wing Slot Offset",
     "Singleback Y Trips"
    ]
   },
@@ -2544,8 +2573,11 @@
    "deep": false,
    "lane": 2,
    "formations": [
+    "Singleback Doubles",
     "Gun Doubles",
     "Gun Bunch X Nasty",
+    "Pistol Doubles",
+    "Singleback Doubles Tight",
     "Gun Trips"
    ]
   },
@@ -2598,6 +2630,8 @@
    "lane": null,
    "formations": [
     "I-Form Tight",
+    "Full House",
+    "Full House Sneak",
     "Heavy Wing"
    ]
   },
@@ -2711,6 +2745,7 @@
    "lane": 2,
    "formations": [
     "Split Backs",
+    "I-Form Pro",
     "Gun Split Y Off"
    ]
   },
@@ -2782,6 +2817,7 @@
    "lane": 4,
    "formations": [
     "I-Form Slot",
+    "I-Form Pro",
     "Weak I"
    ]
   },
@@ -2878,6 +2914,7 @@
    "lane": 2,
    "formations": [
     "Split Backs",
+    "I-Form Pro",
     "Gun Split Y Off"
    ]
   },
@@ -3544,6 +3581,8 @@
    "deep": false,
    "lane": null,
    "formations": [
+    "Full House",
+    "Full House Sneak",
     "Heavy Wing"
    ]
   },
@@ -3717,7 +3756,9 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "I-Form Tight"
+    "I-Form Tight",
+    "Full House",
+    "Full House Sneak"
    ]
   },
   {
@@ -4130,28 +4171,25 @@
   {
    "play": "p129",
    "play_index": 199,
-   "name": "Z Curl Combo",
-   "concept": "Z Curl Combo Whip Seams",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
+   "name": "QB Draw",
+   "concept": "QB Draw",
+   "family": "qb",
+   "header": "qb_draw",
+   "play_type": "keeper",
    "personnel": "11",
    "home": "Gun Empty Trey",
-   "primary": "Z",
+   "primary": null,
    "screen": null,
    "must": "",
    "routes": [
-    "Curl",
-    "Flat",
-    "Go",
-    "Hitch",
-    "Whip"
+    "Go"
    ],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Empty Trey"
-   ]
+   ],
+   "added_by": "b780 plays2"
   },
   {
    "play": "p130",
@@ -4294,6 +4332,7 @@
    "deep": false,
    "lane": null,
    "formations": [
+    "Gun Wing Slot Offset",
     "Gun Deuce Close"
    ]
   },
@@ -4343,28 +4382,23 @@
   {
    "play": "p139",
    "play_index": 215,
-   "name": "RB Choice",
-   "concept": "HB Choice Out and Up Dagger",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
+   "name": "QB Power",
+   "concept": "QB Power",
+   "family": "qb",
+   "header": "qb_draw",
+   "play_type": "keeper",
    "personnel": "11",
    "home": "Gun Empty Trey",
-   "primary": "HB",
+   "primary": null,
    "screen": null,
    "must": "",
-   "routes": [
-    "Curl",
-    "Dig",
-    "Out and Up",
-    "Seam Out",
-    "Whip"
-   ],
+   "routes": [],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Empty Trey"
-   ]
+   ],
+   "added_by": "b780 plays2"
   }
  ],
  "shared_links": 220,

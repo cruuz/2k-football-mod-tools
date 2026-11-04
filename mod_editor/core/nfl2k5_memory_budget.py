@@ -328,8 +328,16 @@ GROUPS = {"momentum": ("momentum_contact", "momentum_collisions"), "weekly_prep"
           "deep_zone_facing": ("deep_zone_bail",), "cpu_qb_zone_windows": ("cpu_qb_recheck", "cpu_qb_tiers"),
           "coverage_trail": ("coverage_hitch_brake",), "my_career": ("my_career_home",),
           "player_progress": ("player_progress_visible",), "scorebug": ("scorebug_runtime",)}
+# b780 m64prof: each value is the BuildPlan's own off value (the build refuses None for modern_venues_2026 and
+# team_number_scale: "Jersey number sizes must be an object of kit: scale").
 OFF_VALUES = {"cpu_money_downs": "retail", "cpu_scrambles": "retail", "momentum": 0, "created_teams_extra": 0,
-              "speed_threshold": 0, "modern_venues_2026": None, "team_number_scale": None}
+              "speed_threshold": 0, "modern_venues_2026": "", "team_number_scale": {}, "momentum_collision_level": 0}
+
+
+def off_value(field: str):
+    """The value that turns ``field`` off in a BuildPlan (a fresh copy for a mutable one)."""
+    value = OFF_VALUES.get(field, False)
+    return dict(value) if isinstance(value, dict) else value
 # these never become suggestions: they cost room when off (the on-demand loader) or are required off already
 NOT_SUGGESTED = frozenset(("module_loader", "resource_load_guard")) | frozenset(REQUIRES_128)
 
@@ -438,7 +446,7 @@ def _target(target_mb):
 def _turn_off(opts: dict, fields) -> dict:
     out = dict(opts)
     for f in fields:
-        out[f] = OFF_VALUES.get(f, False)
+        out[f] = off_value(f)
     return out
 
 
@@ -703,7 +711,8 @@ PROFILE_64_TRIM = ("scorebug", "scorebug_runtime", "hair_styles", "kick_meter_20
 # b780 hist1: in-place 2004 bug fixes the profile turns ON when a plan has them off (no allocation, no section: they
 # cost nothing at 64 MB). The career history pool fix keeps a long franchise's totals whole and its pool collecting in
 # 6,000-word chunks (nfl2k5_history_pool: six sites inside the history engine's own bytes).
-PROFILE_64_ON = ("history_pool",)
+# b780 mc1: the Franchise load user-team guard (three in-place sites, a retail crash path on a save with no human club).
+PROFILE_64_ON = ("history_pool", "load_user_team_guard")
 PSEUDO_FIELDS = frozenset(("roster_capacity", "roster_draft_pick_ownership", "roster_hback_roles",
                            "cpu_money_downs_modern2"))
 PROFILE_64_ROSTER = ("roster edits at retail capacity without the draft_pick_ownership and hback_roles sections: "
@@ -724,10 +733,30 @@ def recommended_64_profile(plan=None) -> dict:
     out = {}
     for field in sorted(fields - keep - PSEUDO_FIELDS):
         if on(opts, field):
-            out[field] = OFF_VALUES.get(field, False)
+            out[field] = off_value(field)
     for field in PROFILE_64_ON:
         if not on(opts, field):
             out[field] = True
+    return _close_dependencies(opts, out)
+
+
+def _close_dependencies(opts: dict, out: dict) -> dict:
+    """``out`` plus every option whose parent it leaves off, turned off too, until nothing changes (b780 m64prof).
+
+    The rules are the build's own (nfl2k5_build_settings.build_requires: the Studio's option table and the value
+    rules), so an option the build refuses without its parent never stays on after the profile turns the parent
+    off: 64 MB build 1 (11/04) stopped on "a collision level requires momentum_collisions" and "Historic season
+    rosters require historic local Team Select"."""
+    from .nfl2k5_build_settings import build_requires
+    rules = build_requires()
+    plan = {**opts, **out}
+    changed = True
+    while changed:
+        changed = False
+        for child in sorted(rules):
+            if on(plan, child) and not all(on(plan, parent) for parent in rules[child]):
+                out[child] = plan[child] = off_value(child)
+                changed = True
     return out
 
 

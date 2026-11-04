@@ -408,6 +408,13 @@ def _neighbors(payload):
     # b778-ai8: the third-down run weight hook sits in the same play selector (0x2096A0); normalize its five bytes
     # before hashing the function this owner guards.
     neighbors.extend((va, before) for _, va, before, _ in third_down.normalized_sites(payload))
+    # b780 modes2: Modern CPU clock management's no-hopeless-field-goal entry (0x20AF80) is the first instruction of the
+    # native field-goal test this owner hashes; normalize it only when that owner is fully recognized.
+    from . import nfl2k5_cpu_clock2 as clock2
+    image = XbeImage(payload)
+    site = next(row for row in clock2.SITES if row[0] == "fg_late")
+    if image.read(site[1], len(bytes.fromhex(site[2]))) != bytes.fromhex(site[2]):
+        neighbors.extend((va, before) for name, va, before, _ in clock2.normalized_sites(payload) if name == "fg_late")
     return tuple(neighbors)
 
 

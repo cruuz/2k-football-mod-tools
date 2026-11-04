@@ -86,7 +86,7 @@ class Document(unittest.TestCase):
         doc = hw.spec()
         also = {(t["aggregate"], t["member"]) for t in doc["targets"] if t.get("also")}
         self.assertEqual(also, {("logos", "helm_h29_0"), ("logos128", "helm_h29_0"), ("logos", "unif_h29_0"),
-                                ("logos", "unif_a29_0")})
+                                ("logos", "unif_a29_0"), ("logos", "helm_a29_0"), ("logos128", "helm_a29_0")})
         for target in doc["targets"]:
             pins = hw.known_pins(target)
             self.assertEqual(pins[target["before_sha256"]], target["after_sha256"])

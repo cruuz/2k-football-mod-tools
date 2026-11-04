@@ -172,14 +172,16 @@ class NativeStageSixTests(unittest.TestCase):
         from tests.franchise_economy_legacy import no_restructure_room
         no_restructure_room(m, team, {p})
         m.call(0xC3F00, ecx=team)
-        m.put(0xE3C278, m.get(team + 0x124) + 1000)
+        m.put(0xE3C278, m.get(team + 0x124) + 100)   # b780 econ3 (revision 7): short of the cut's line
         m.put(0xE576A4, 6)
         m.put(0xE576B4, 0)
         released = []
         m.uc.hook_add(m.u.UC_HOOK_CODE, lambda *_: released.append((m.reg("EDX"), m.get(m.reg("ESP")))),
                       begin=0x2BD900, end=0x2BD900)
         m.call(0x247D40, ecx=m.ARENA + 0x1A0000, budget=2_000_000_000)
-        self.assertIn((p, 0x2BFBC2), released)
+        # b780 econ3 (revision 7): the overpaid veteran triggers the cut, whose release is the least value lost that
+        # clears the club's shortfall, from any position above its minimum
+        self.assertTrue(any(caller == 0x2BFBC2 for _, caller in released))
 
 
 @unittest.skipUnless(HAVE_UC, "Unicorn is not installed")

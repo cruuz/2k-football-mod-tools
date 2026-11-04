@@ -89,9 +89,13 @@ class CoachKernelTemplates(unittest.TestCase):
     def test_v061_kernel_is_kept_exactly_and_differs_only_by_the_deferral(self):
         self.assertEqual(len(kernel.CODE_V061), 4448)
         self.assertLessEqual(len(kernel.CODE), ai.CODE_SIZE)
-        names = {r[2] for r in kernel.RELOCATIONS} - {r[2] for r in kernel.RELOCATIONS_V061}
+        names = {r[2] for r in kernel.RELOCATIONS_B778} - {r[2] for r in kernel.RELOCATIONS_V061}
         self.assertEqual(names, {"late_native", "half_time_native"})
         self.assertEqual((ai.SYMBOLS["late_native"], ai.SYMBOLS["half_time_native"]), (0x205FE0, 0x205F80))
+        # b780 modes2 (Q7): the current kernel adds only the native margin for the two-score window
+        names = {r[2] for r in kernel.RELOCATIONS} - {r[2] for r in kernel.RELOCATIONS_B778}
+        self.assertEqual((names, ai.SYMBOLS["margin_native"]), ({"margin_native"}, 0x205F40))
+        self.assertEqual(ai.VARIANTS, ("b780", "b778", "v061"))
 
 
 @unittest.skipUnless(uc is not None, "Unicorn is required for bounded instruction replay")
@@ -126,13 +130,26 @@ class AutomaticCoachDeferral(unittest.TestCase):
             old[section.header_offset + 36:section.header_offset + 56] = section_digest(old, section)
         cls.payloads["v061"] = bytes(old)
         assert ai.installed_variant(cls.payloads["v061"]) == "v061"
+        # b780 modes2: the beta-78 .. v0.9 RC kernel in the same allocation
+        older = bytearray(current)
+        older[off:off + ai.CODE_SIZE] = ai.code_for(c, d, 0, "b778")
+        for _, va, _, after in ai.sites(c, "b778"):
+            o = image.offset(va, len(after))
+            older[o:o + len(after)] = after
+        space._seal_scaleout(older, space._read_scale_directory(current))
+        for section in _sections(older):
+            older[section.header_offset + 36:section.header_offset + 56] = section_digest(older, section)
+        cls.payloads["b778k"] = bytes(older)
+        assert ai.installed_variant(cls.payloads["b778k"]) == "b778"
+        assert ai.status(cls.payloads["b778k"]) == "previous"
+        assert ai.upgrade(cls.payloads["b778k"])[0] == current
         assert ai.upgrade(cls.payloads["v061"])[0] == current      # the native repair reproduces a fresh install
         cls.code, cls.data = c, d
 
-    def choose(self, variant, *, down, quarter, seconds, distance=3):
+    def choose(self, variant, *, down, quarter, seconds, distance=3, margin=3):
         m = Machine(self.payloads[variant])
         m.supply_fg_range(50)
-        m.configure(down=down, quarter=quarter, seconds=seconds, score_margin=3, own_yard=45, distance=distance,
+        m.configure(down=down, quarter=quarter, seconds=seconds, score_margin=margin, own_yard=45, distance=distance,
                     home=True, quarter_seconds=300)
         team, context, book = m.HOME, m.SOURCE + 0x1E000, m.SOURCE + 0x1C000
         m.u32(0xE5FF80, 6)                       # franchise
@@ -148,7 +165,7 @@ class AutomaticCoachDeferral(unittest.TestCase):
         m.u32(state + 48, 1)                     # active[home]
         m.u32(state + 60, 0)                     # not selecting
         out = m.SOURCE + 0x1F800
-        labels = kernel.LABELS if variant == "b778" else kernel.LABELS_V061
+        labels = {"b778": kernel.LABELS, "b778k": kernel.LABELS_B778, "v061": kernel.LABELS_V061}[variant]
         at = m.run(self.code + labels["coach_choose"], ecx=team, edx=out, stop_at=0x17F1D0, count=200000)
         drew = at == 0x17F1D0
         return drew, (None if drew else m.uc.reg_read(x86.UC_X86_REG_EAX)), m.get(team + 0x38)
@@ -160,6 +177,21 @@ class AutomaticCoachDeferral(unittest.TestCase):
             self.assertEqual((result, flag), (0, 0))
             # beta-77.1 kernel: every one of these snaps came from the playback pools
             self.assertTrue(self.choose("v061", down=down, quarter=quarter, seconds=seconds)[0], (down, quarter, seconds))
+
+    def test_b780_modes2_the_two_score_window_goes_to_the_native_caller(self):
+        """Q7 (REV2): with Modern CPU clock management, Q4 with 10:00 or less left and a margin of 9 or more is a clock
+        window (the trailing team hurries, the leader runs it out: the native estimate and urgency), but the b778
+        kernel deferred only on 4th down, the native late window (5:00), Q2 at 2:00 and third and 3+, so its playback
+        pools chose every 1st and 2nd down there. The current kernel defers the whole two-score window to the native
+        caller; one-score games and earlier clocks keep the coach's profile."""
+        for margin, seconds, native in ((-10, 480, True), (10, 480, True), (-9, 600, True), (9, 330, True),
+                                        (-8, 480, False), (8, 480, False), (-10, 660, False), (-17, 601, False)):
+            for down in (1, 2):
+                drew = self.choose("b778", down=down, quarter=4, seconds=seconds, margin=margin)[0]
+                self.assertEqual(drew, not native, (margin, seconds, down))
+                self.assertTrue(self.choose("b778k", down=down, quarter=4, seconds=seconds, margin=margin)[0],
+                                (margin, seconds, down))      # the b778 kernel drew them all (Q7)
+        self.assertTrue(self.choose("b778", down=1, quarter=2, seconds=480, margin=-10)[0])   # Q4 only
 
     def test_ordinary_snaps_keep_the_coach_profile(self):
         for down, distance, quarter, seconds in ((1, 10, 1, 600), (3, 2, 2, 400), (2, 5, 3, 100), (2, 5, 4, 600)):

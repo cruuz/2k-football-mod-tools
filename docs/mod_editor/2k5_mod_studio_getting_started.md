@@ -26,7 +26,7 @@ If a bundled package is missing, reinstall the latest Setup.
 The Windows `.bat` launchers in a source ZIP or portable archive now set up a
 private `.venv` beside the application on the first run. They install
 `packaging/requirements-studio.txt` automatically (about 110 MB to download,
-about 400 MB on disk) and need 64-bit Python 3.11 or 3.12 from python.org plus
+about 400 MB on disk) and need 64-bit Python 3.11, 3.12 or 3.13 from python.org plus
 an internet connection. A source ZIP also downloads the reviewed data files
 the Studio needs from the same release (about 65 MB); a portable archive
 already contains them. No administrator rights are used. To repair that
@@ -34,8 +34,11 @@ runtime, run `2K5-Mod-Studio.bat --setup`; to use a different interpreter, set
 `MOD_STUDIO_PYTHON` to its full path before running the launcher.
 
 The Linux tarball contains application files and no Python runtime. Use Python
-3.11 or 3.12 with `packaging/requirements-studio.txt`, which pins NumPy 1.26.4 to
-the same version as CI. From the extracted application folder:
+3.11, 3.12 or 3.13 with `packaging/requirements-studio.txt`. It pins NumPy
+1.26.4 on 3.11 and 3.12 (the same version as CI and Windows Setup) and NumPy
+2.3.5 on 3.13, which has no NumPy 1.26 build; the same project builds
+byte-identical discs on Python 3.12 and 3.13. From the extracted application
+folder:
 
 ```sh
 python3 -m venv .venv

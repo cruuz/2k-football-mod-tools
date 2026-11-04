@@ -16,7 +16,7 @@
 .code32
 .text
 .global estimate_lw, urgency_lw, hurry_lw, onside_need, four_minute_route, four_minute, early_timeout, half_kneel
-.global kneel_runoff
+.global kneel_runoff, fg_late
 .global ot_window
 .extern late_native, late_time, half_time, margin_fn, need_fn, distance_fn, permit_fn
 .extern snap_back, snap_special, snap_normal, poll_back, poll_return, poll_take, kneel_back, lineup_back
@@ -165,7 +165,8 @@ early_timeout:
     test eax, eax
     pop edx
     pop eax
-    jge 4f                            /* not trailing: retail */
+    jg 5f                             /* b780 modes2: leading (below) */
+    je 4f                             /* tied: retail */
     push eax
     fld dword ptr [eax+0x10]
     fcomp dword ptr [c120]
@@ -196,9 +197,53 @@ early_timeout:
     jmp poll_take                     /* 0x188722: the native timeout request */
 2:  fstp st(0)
 3:  jmp poll_return                   /* 0x18873C */
+/* b780 modes2 (Q22): a LEADING CPU defense in Q4 calls no timeout with 40 s or less left. Retail asks for one when the
+ * trailing offense (down 1) is in field goal range, to keep time for its own answer; with 40 s or less that answer is
+ * gone (the offense can kick on the last snap) and the stopped clock only gives the offense more snaps. More time
+ * left: retail (the native rules still decide). */
+5:  push eax
+    fld dword ptr [eax+0x10]
+    fcomp dword ptr [c40]
+    fnstsw ax
+    test ah, 0x41                     /* clock <= 40 */
+    pop eax
+    jnz 3b
 4:  fld dword ptr [eax+0x10]
     fcomp dword ptr [c120]
     jmp poll_back
+
+/* ---- b780 modes2 (Q22): no hopeless field goal. Site 0x20AF80, the entry of the native field-goal test (its callers:
+ * the fourth-down chooser 0x20B180, Modern 2's fallback when the native Hail Mary call takes over, the end-of-half
+ * kicks 0x17F3D8 / 0x189DA6 / 0x18B6F7). In Q4 with 2:00 or less left an offense down 4 or more gets 0: a field goal
+ * neither ties nor takes the lead, the rule Modern 2's late fourth downs already follow (Noah, 10/23: kick only when
+ * trailing by 1 to 3). Retail (the v0.9 RC too, Modern 2 included) kicked down 9 with 5 s left on fourth down. */
+fg_late:
+    cmp dword ptr [0xe602c4], 4
+    jne 1f
+    push ecx
+    push edx
+    push eax
+    mov ecx, dword ptr [0xe60280]
+    call margin_fn
+    cmp eax, -4
+    jg 2f
+    call half_time                    /* ST0 = seconds left in the half (the quarter clock in Q4) */
+    fcomp dword ptr [c120]
+    fnstsw ax
+    test ah, 0x41                     /* t <= 120 */
+    jz 2f
+    pop eax
+    pop edx
+    pop ecx
+    xor eax, eax
+    ret
+2:  pop eax
+    pop edx
+    pop ecx
+1:  push ebp                          /* the displaced prologue */
+    mov ebp, esp
+    and esp, -16
+    jmp fg_back                       /* 0x20AF86 */
 
 /* ---- End-of-half kneel. Site 0x206F10, entry of the CPU kneel test (called by the native caller 0x20B180 and the
  * VIP situation key 0xF7010). Q2: kneel when the offense is on its own side (50 to 92 yards out), down 1 to 3, at
@@ -412,6 +457,7 @@ c600:   .float 600.0
 c300:   .float 300.0
 c120:   .float 120.0
 c60:    .float 60.0
+c40:    .float 40.0
 c15:    .float 15.0
 c0:     .float 0.0
 c4572:  .float 4572.0

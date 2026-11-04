@@ -78,6 +78,18 @@ class StaticTests(unittest.TestCase):
         head = image.read(ir.GUARD_VA, len(ir.GUARD))
         self.assertEqual((head[0], head[5:]), (0xE9, b"\x90" + ir.GUARD[6:]))   # the guard stays under the hook
 
+    def test_an_allocation_the_build_reserved_first_is_not_an_install(self):
+        """rehearsal1: the build's first space pass reserves this owner's allocation (0xCC code) before its step."""
+        from mod_editor.core import nfl2k5_xbe_space as space
+        reserved, _ = space.apply(self.retail, ir.REQUESTS, scaleout=True)
+        self.assertEqual(ir.status(reserved), "retail")
+        modern, _ = ir.apply(reserved, "modern")
+        self.assertEqual(ir.status(modern), "applied")
+        self.assertEqual(ir.allocations(modern)["code"]["va"], ir.allocations(reserved)["code"]["va"])
+        guarded, _ = ir.apply(reserved, "guard")
+        self.assertEqual(ir.status(guarded), "guard")
+        self.assertEqual(ir.status(ir.apply(guarded, "modern")[0]), "applied")
+
     def test_runtime_template_is_reproducible(self):
         if shutil.which("gcc") is None or shutil.which("ld") is None:
             self.skipTest("gcc/binutils are not installed")
@@ -514,6 +526,67 @@ class ProBowlTests(unittest.TestCase):
             writes, n, after = self.run_pass(payload)
             self.assertEqual((writes, after), ([], n))
 
+
+
+
+@unittest.skipUnless(HAVE_UC, "unicorn is needed")
+class MyCareerTests(GameTests):
+    """In MyCareer the person is a player, not the GM: the career club's IR is the CPU's. MyCareer marks its club in the
+    human-coach array 0xE5775C and hooks the user-club test (C4D50, under 13EC30) so management code sees the club as
+    CPU; the weekly IR pass asks 13EC30. Control: the same array without a loaded career is a Franchise human club, left
+    to its user (MODES2's Q29 state: the real MyCareer owner composed with this one, its state block written)."""
+
+    @classmethod
+    def setUpClass(cls):
+        from tests.nfl2k5_supersim_draft_fixture import retail_roster
+        from mod_editor.core import nfl2k5_my_career as career, nfl2k5_xbe_space as space
+        data = retail_bytes()
+        if data is None:
+            raise unittest.SkipTest("private USA retail XBE is absent")
+        cls.career = career
+        base, _ = space.apply(data, career.REQUESTS, scaleout=True)
+        composed, _ = ir.apply(career.apply(base)[0], "modern")
+        cls.payload = composed
+        cls.store_va = ir.store_va(composed)
+        cls.career_state = career.allocations(composed)[1]["va"]
+        cls.body = retail_roster()
+
+    def career_club(self, m, *, loaded):
+        m.uc.mem_write(0xE5775C, bytes(34 * 4))
+        m.put(0xE5775C, 1)                                                 # club 0: MyCareer's club / a human coach
+        if loaded:
+            m.uc.mem_write(self.career_state, self.career.MAGIC)
+            m.put(self.career_state + 24, 2)                               # an active career stage
+            m.put(self.career_state + 56, 0)                               # the club MyCareer resolved
+            m.put(self.career_state + 2588, self.club(m, 0))
+        return m.call(0x13EC30, ecx=self.club(m, 0))
+
+    def test_the_career_club_ir_is_cpu_managed_and_a_franchise_human_club_is_not(self):
+        for loaded in (True, False):
+            m = self.boot(human=None)
+            human = self.career_club(m, loaded=loaded)
+            self.assertEqual(human, 0 if loaded else 1)
+            p = self.roster(m, 0)[0]
+            self.hurt(m, p, 6)
+            self.week(m)
+            if not loaded:
+                self.assertEqual(self.store(m, 0)[0], 0)                   # the Franchise user's club: his call
+                self.assertIn(p, self.roster(m, 0))
+                continue
+            self.assertEqual(self.store(m, 0)[0], 1)                       # MyCareer: placed like any CPU club
+            agents = m.get(m.root + 0x3C)
+            m.call(0xC3EE0, ecx=self.club(m, 0), edx=m.get(agents))        # the spot filled: 53
+            self.heal(m, p)
+            self.play(m, 0, 4)
+            self.week(m)
+            self.assertEqual(self.store(m, 0)[:2], (0, 1))                 # back, the cut-down made the room
+            self.assertIn(p, self.roster(m, 0))
+            self.assertLessEqual(len(self.roster(m, 0)), 53)
+
+    # the inherited GameTests run on the composed image too; keep this class to its own test
+    for _name in [n for n in dir(GameTests) if n.startswith("test_")]:
+        locals()[_name] = None
+    del _name
 
 if __name__ == "__main__":
     unittest.main()

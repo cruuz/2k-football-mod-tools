@@ -37,6 +37,8 @@ from mod_editor.core import nfl2k5_roster_refresh as refresh  # noqa: E402
 
 V08_ROST = Path(os.environ.get("NFL2K5_V08_ROST_BODY", "") or "missing")
 V08_PLAN = Path(os.environ.get("NFL2K5_V08_ROSTER_EDITS", "") or "missing")
+# b780-int: the release roster edits (RST2, room_policy "ir"); the beta-79 file above has no IR policy
+RELEASE_PLAN = Path(os.environ.get("NFL2K5_RELEASE_ROSTER_EDITS", "") or "missing")
 V08_ROST_SHA256 = "526291e894e40ea92b3d5f0611b6a246d5c1ade2e7603d89b59cb24ecad6b048"
 LINT_IMAGE = Path(os.environ.get("NFL2K5_PACK_LINT_IMAGE", "") or "missing")
 
@@ -357,6 +359,40 @@ class WrongFaceTests(unittest.TestCase):
 
 
 # ------------------------------------------------------------------------------------------------ pack data
+@unittest.skipUnless(V08_ROST.is_file() and RELEASE_PLAN.is_file(),
+                     "NFL2K5_RELEASE_ROSTER_EDITS (the release roster edits, room_policy ir) or the v0.8 disc roster is not set")
+class ReleaseRosterInjuredReserveTests(unittest.TestCase):
+    """b780-int: the release roster edits (RST2, room_policy "ir") replayed on the released v0.8 disc roster, as the
+    v0.9 build runs them. NFL2K5_V08_ROSTER_EDITS stays the beta-79 file the other pack tests expect."""
+
+    @classmethod
+    def setUpClass(cls):
+        body = V08_ROST.read_bytes()
+        if hashlib.sha256(body).hexdigest() != V08_ROST_SHA256:
+            raise unittest.SkipTest("v0.8 disc roster pin differs")
+        cls.document = json.loads(RELEASE_PLAN.read_text(encoding="utf-8"))
+        cls.plan = cls.document["roster_refresh"]
+        cls.out, cls.receipt = refresh.apply_body(body, cls.plan)
+        cls.doc = rr.RosterDocument(cls.out, scheme="one_pool", reference_year=2026)
+
+    def test_every_injured_player_the_plan_keeps_starts_on_injured_reserve(self):
+        """b780 IR1 (room_policy "ir"): the plan's injured players stay on their clubs, marked out 8 weeks (17 when out
+        since week 4), and nobody is released for room."""
+        self.assertEqual(self.plan.get("room_policy"), "ir")
+        injured = {r["index"]: r for r in self.plan["players"] if r["status"] == "RES" and r["team"]}
+        self.assertEqual(self.receipt["injured_reserve"]["released_for_room"], 0)
+        marked = [self.doc.by_pool("primary")[i] for i in injured if self.doc.club_of(self.doc.by_pool("primary")[i]) is not None]
+        self.assertEqual(len(marked), self.receipt["injured_reserve"]["rejoined"])
+        for player in marked:
+            self.assertTrue(starts_on_ir(self.doc, player), player.display)
+            weeks = (struct.unpack_from("<I", self.doc.body, player.offset + 0x20)[0] >> 22) & 0xFF
+            self.assertIn(weeks, (8, 17), player.display)
+        for team in self.doc.teams[:32]:
+            on_ir = [p for p in self.doc.team_players(team.index) if starts_on_ir(self.doc, p)]
+            self.assertLessEqual(len(self.doc.team_players(team.index)) + len(self.doc.reserves.get(team.index, ())), 65)
+            self.assertLessEqual(len(self.doc.team_players(team.index)) - len(on_ir), 53)
+
+
 @unittest.skipUnless(V08_ROST.is_file() and V08_PLAN.is_file(), "private v0.8 disc roster / b779 roster edits absent")
 class PackRosterLintTests(unittest.TestCase):
     """The pack's dated refresh replayed on the released v0.8 disc roster, as the v0.9 build runs it."""
@@ -400,23 +436,6 @@ class PackRosterLintTests(unittest.TestCase):
                     continue
                 self.assertIn(index, team["active"], (team["team"], key))
                 self.assertIn(rows[index]["status"], ("ACT", "INA"), (team["team"], key))     # on the club's 53
-
-    def test_every_injured_player_the_plan_keeps_starts_on_injured_reserve(self):
-        """b780 IR1 (room_policy "ir"): the plan's injured players stay on their clubs, marked out 8 weeks (17 when out
-        since week 4), and nobody is released for room."""
-        self.assertEqual(self.plan.get("room_policy"), "ir")
-        injured = {r["index"]: r for r in self.plan["players"] if r["status"] == "RES" and r["team"]}
-        self.assertEqual(self.receipt["injured_reserve"]["released_for_room"], 0)
-        marked = [self.doc.by_pool("primary")[i] for i in injured if self.doc.club_of(self.doc.by_pool("primary")[i]) is not None]
-        self.assertEqual(len(marked), self.receipt["injured_reserve"]["rejoined"])
-        for player in marked:
-            self.assertTrue(starts_on_ir(self.doc, player), player.display)
-            weeks = (struct.unpack_from("<I", self.doc.body, player.offset + 0x20)[0] >> 22) & 0xFF
-            self.assertIn(weeks, (8, 17), player.display)
-        for team in self.doc.teams[:32]:
-            on_ir = [p for p in self.doc.team_players(team.index) if starts_on_ir(self.doc, p)]
-            self.assertLessEqual(len(self.doc.team_players(team.index)) + len(self.doc.reserves.get(team.index, ())), 65)
-            self.assertLessEqual(len(self.doc.team_players(team.index)) - len(on_ir), 53)
 
     def test_no_free_agent_carries_a_contract(self):
         """b780 rst2 (Q44): unsigned contracts are zero, as retail's free agents."""

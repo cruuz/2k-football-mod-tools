@@ -261,6 +261,30 @@ One late allocator owner, applied with the SPECIAL rows. It hooks two 5-byte cal
   same reasons as the 3DRB). When he takes the spot, the receiver he replaced can fill a later receiver spot of the same
   set, and the last receiver picked sits.
 
+* **Rule 4, injured players on CPU depth charts** (MC1's finding). The weekly CPU auto-depth `0x2BDCF0` ranks by
+  rating and never tests the injury bit (player `+0x20` bit 31). Its three calls (`0x247D5C`, `0x248075`, `0x24853D`)
+  now run it, then on every league club it sorts list each position's healthy players ahead of its injured ones in
+  the rank chain and, for paired positions, the side chain. The league club test is team kind 0, never a
+  shared-player all-star, Pro Bowl or historic side. A user club is touched only with "CPU manages my depth chart".
+  An injured player moved down loses his rank and side locks, so a healed starter is seated by rating again and
+  depth locks' release rule frees a clearly worse locked backup. A changed paired position keeps its rank starter
+  out of side rows 0 and 1. Code: `nfl2k5_lineup_roles_injured.S`.
+  On RST2's final roster with modern IR, all 121 injured players have 4 or more weeks out (8 or 17), so they start
+  on IR and none is on a chart at the franchise start. Rule 4 covers in-season short injuries and builds without
+  modern IR. One native pass there leaves 32 injured rank starters and 18 injured side starters. Rule 4 leaves 1:
+  a club whose only fullback is hurt. Every healthy order is kept, and a user club is unchanged unless the CPU manages
+  its chart.
+* **The season-start pass** (MC1's season-2 finding). Entering the regular season of every later season, charts were
+  stale league-wide: 20 empty KR1/KR2/PR slots, 29 empty long snapper slots, 12 ST:LS holes, and holes on the MyCareer
+  club. The stage advance's tail `0x27EDF0` calls `0x27EB80` after every earlier pass, and the week sim sorts again
+  only after week 1's games. Its next call, `0x2BFDD0` at `0x24868C`, now also runs the pass with rule 4 when the
+  advance lands on the regular season (stage `[0xE576A4]` 8). The pass also fills an empty long snapper slot (team
+  `+0x198`) with the SPECIAL LS, the second center by rank.
+  Proof: the game's own stage advance under Unicorn on MC1's RC career (`save_y1s5.bin`, advanced to stage 8 week 0).
+  Native: 53 empty special slots, 31 holes and 12 injured starters. With the owner: 4 empty special slots and 14
+  holes, all of them clubs with no kicker or no fullback on the roster, and no injured starter. The MyCareer club has
+  no problem left. Season 1 starts at stage 8 with no stage advance, and its charts entering week 1 are identical.
+
 Proof: the game's own builder and picker under Unicorn on the v0.9 executable and roster, all 37 club books.
 - 3rd and 8 versus 1st and 10 over 1,211 offensive formations: the 3DRB comes in only as the better receiver, on
   human and CPU clubs alike (see the SUB1 sweep log for the old-save, MyCareer and shipped-default rosters).

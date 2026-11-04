@@ -84,7 +84,7 @@ class CompleteOwnerTests(unittest.TestCase):
         self.assertEqual([r["size"] for r in regions if r["kind"] == "code"], [4096, 4096, 24 * 4096])
         # Beta 76: era rules add 2048 RX, stock books 1536 RX, and moment
         # venue labels 2304 RX to the previous 91879-byte union.
-        self.assertEqual(sum(a["size"] for a in layout["allocations"] if a["kind"] == "code"), 116071)  # b780 p2-playcall: + 544 sprite scorebug code (5,376 -> 5,920: the ball spot and page boxes) = 116,071; b778 ai8: + 192 cpu_third_down (the pin was stale on the beta-78 base: 109,031); b779: + 352 camera code (512 -> 864, cm2 grew the camera code owner), + 512 K128 (1,024 -> 1,536, km1), + 5,632 champions code (hn1) = 115,527. Earlier history: b773 i4: + 3,040 = 512 moment coaches code (mo1) and the four named directory code spills (tap burst 512, draft picks 544, H-back 1024, team ratings 448); b772-vt1: + 5,120 coach AI code; b77-f4: + the 160 RX bytes of the letter grades owner; b77-f4b: + 16 for the progression row; b77-v1b: + 176 period goalposts (legacy RX tail); b77-f5: + 2,560 honors code (MyCareer footprint gap)
+        self.assertEqual(sum(a["size"] for a in layout["allocations"] if a["kind"] == "code"), 116487)  # b780 pres2 (Q51, 9b9d86f38): + 416 sprite scorebug code (5,920 -> 6,336: the pause menu score bar) = 116,487; b780 p2-playcall: + 544 sprite scorebug code (5,376 -> 5,920: the ball spot and page boxes) = 116,071; b778 ai8: + 192 cpu_third_down (the pin was stale on the beta-78 base: 109,031); b779: + 352 camera code (512 -> 864, cm2 grew the camera code owner), + 512 K128 (1,024 -> 1,536, km1), + 5,632 champions code (hn1) = 115,527. Earlier history: b773 i4: + 3,040 = 512 moment coaches code (mo1) and the four named directory code spills (tap burst 512, draft picks 544, H-back 1024, team ratings 448); b772-vt1: + 5,120 coach AI code; b77-f4: + the 160 RX bytes of the letter grades owner; b77-f4b: + 16 for the progression row; b77-v1b: + 176 period goalposts (legacy RX tail); b77-f5: + 2,560 honors code (MyCareer footprint gap)
         # Era rules also add one 16-byte state allocation.
         self.assertEqual(sum(a["size"] for a in layout["allocations"] if a["kind"] == "data"), 85218)  # b775 mo2: + the 16-byte moment context state (legacy RW tail); b773 mo1: + the 512-byte moment coaches state; b772-vt1: + 128 coach AI state; b77-f5: + the 16-byte honors state block (legacy RW tail)
         image = XbeImage(self.full)
@@ -125,8 +125,11 @@ class CompleteOwnerTests(unittest.TestCase):
         self.assertEqual(len(legacy) - space.FILE_SIZE, 270336)
         # b778-xs1/b779 km1+hn1: the full union is a v4 image. K128 (1,536 B) and champions (5,632 B) sit whole in the
         # pool behind its directory page: 4,096 + 1,536 + 5,632 = 11,264 bytes = 3 pages appended to the v3 file.
+        # b780 pres2 (Q51, 9b9d86f38): the 6,336-byte sprite scorebug spills whole to the pool and K128 packs back into the
+        # run, so the pool holds the directory page, the scorebug (0x150C000) and champions (0x150D8C0):
+        # 4,096 + 6,336 + 5,632 = 16,064 bytes = 4 pages.
         pool_bytes = space.plan(REQUESTS)["file_size"] - len(legacy)
-        self.assertEqual(pool_bytes, 3 * space.PAGE)
+        self.assertEqual(pool_bytes, 4 * space.PAGE)  # was 3 pages
         self.assertEqual(len(self.full), len(legacy) + pool_bytes)
         # Beta 71: the sprite scorebug owner's 4,096-byte code no longer fits the first cave after the kickoff
         # owner (it was 1,408 at CODE_VA+2656 through beta 70) and is allocated in the scale region after the union.
@@ -183,23 +186,26 @@ class CompleteOwnerTests(unittest.TestCase):
 
         free = run_end - max(a["va"] + a["size"] for a in v3["allocations"]
                              if a["kind"] == "code" and run["va"] <= a["va"] < run_end)
-        self.assertEqual(free, 144)  # b780 p2-playcall: the sprite scorebug grew 544 bytes and the third-down owner moved to the pool (496 -> 144)
-        self.assertEqual(pooled(v3), ["nfl2k5_k128", "nfl2k5_champions", "nfl2k5_cpu_third_down"])  # b780 p2: third down falls to the pool
+        # b780 pres2 (Q51, 9b9d86f38): the 6,336-byte sprite scorebug no longer fits the run, so the planner spills it whole
+        # to the pool and K128 (1,536) and cpu_third_down (192) pack back into the run: 144 + 5,920 - 1,536 - 192 = 4,336
+        # free after cpu_third_down (0x14F0E50 + 192 = 0x14F0F10, run end 0x14F2000).
+        self.assertEqual(free, 4336)  # was 144; b780 p2-playcall: the sprite scorebug grew 544 bytes and the third-down owner moved to the pool (496 -> 144)
+        self.assertEqual(pooled(v3), ["nfl2k5_scorebug_runtime", "nfl2k5_champions"])  # b780 pres2: the sprite scorebug is the pool owner now
         self.assertEqual(pooled(space.plan(REQUESTS + (("extra", "code", 32, 16),))), pooled(v3))
         self.assertEqual(pooled(space.plan(REQUESTS + (("extra", "code", free, 16),))), pooled(v3))    # fills the run exactly
-        # one aligned step more pushes the last late code owner of the run whole into the pool (b780 p2: third down is
-        # already there, so the next one is letter_grades_progress)
+        # one aligned step more pushes the last late code owner of the run whole into the pool (b780 pres2: cpu_third_down,
+        # back in the run since the scorebug spilled)
         self.assertEqual(pooled(space.plan(REQUESTS + (("extra", "code", free + 16, 16),))),
-                         ["nfl2k5_k128", "nfl2k5_letter_grades_progress", "nfl2k5_champions", "nfl2k5_cpu_third_down"])
+                         ["nfl2k5_scorebug_runtime", "nfl2k5_champions", "nfl2k5_cpu_third_down"])
         v4 = space.plan(REQUESTS + (("extra", "code", 98305, 16),))
         extra = next(a for a in v4["allocations"] if a["owner"] == "extra")
         self.assertEqual((v4["version"], extra["va"], extra["size"]), (4, space.POOL_VA + space.PAGE, 98305))
         # An ordinary owner is placed before the late ones, so it takes the pool's first slot and the pool's late
-        # owners (k128, champions, cpu_third_down) follow it: they keep their allocation (owner, kind, size, align) and only their
+        # owners (b780 pres2: the sprite scorebug, champions) follow it: they keep their allocation (owner, kind, size, align) and only their
         # pool address moves. Every v3 row keeps its complete record.
         self.assertTrue(all(a in v4["allocations"] for a in v3["allocations"]
                             if a["owner"] != space.DIRECTORY_OWNER and a["va"] < space.POOL_VA))
-        self.assertEqual(pooled(v4), ["extra", "nfl2k5_k128", "nfl2k5_champions", "nfl2k5_cpu_third_down"])  # b780 p2: third down is a pool owner too
+        self.assertEqual(pooled(v4), ["extra", "nfl2k5_scorebug_runtime", "nfl2k5_champions"])  # b780 pres2
         for old_row in (a for a in v3["allocations"] if a["va"] >= space.POOL_VA and a["owner"] != space.DIRECTORY_OWNER):
             moved = next(a for a in v4["allocations"] if (a["owner"], a["kind"]) == (old_row["owner"], old_row["kind"]))
             self.assertEqual({k: v for k, v in moved.items() if k not in ("va", "raw")},

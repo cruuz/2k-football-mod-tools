@@ -177,6 +177,21 @@ class AdvisoryTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'tables differ'):
             advisory.roster_tables('one_pool', xbe=payload)
 
+    @unittest.skipUnless(XBE.is_file(), 'pinned USA retail XBE required')
+    def test_cut_risk_follows_the_franchise_economy_cut_down(self):
+        """b780 mc1 (ECON3): with the economy installed its smart cut-down maxima (QB 3, FB 2) cap the native ones."""
+        from unittest import mock
+        from mod_editor.core import nfl2k5_franchise_economy as economy, nfl2k5_position_pools as pools
+        payload = XBE.read_bytes()
+        with mock.patch.object(economy, 'CUT_MAXIMUM', {0: 3, 8: 2}, create=True):
+            self.assertEqual(advisory.roster_tables(xbe=payload)[1], pools.RETAIL_MAXIMA)   # retail: no economy
+            with mock.patch.object(economy, 'status', return_value='applied'):
+                maxima = advisory.roster_tables(xbe=payload)[1]
+        expected = list(pools.RETAIL_MAXIMA)
+        expected[0], expected[8] = min(expected[0], 3), min(expected[8], 2)
+        self.assertEqual(list(maxima), expected)
+        self.assertEqual(maxima[0], 3)
+
 
 if __name__ == '__main__':
     unittest.main()

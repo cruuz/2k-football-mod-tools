@@ -737,6 +737,35 @@ def check_context(payload, edits, *, installed=False, real=None):
         legacy.require(lineman.status(companions) == "applied", "foreign overall-dispatch owner")
         camera_edits.append(("lineman_overall_dispatch", lineman.HOOK_VA,
                              lineman.RETAIL_HOOK, lineman.PATCHED_HOOK))
+    # b780-int (ship10 rehearsal2, 28c404c17): MC1's Franchise load user-team guard redirects the user-team call at
+    # 0x2D0D53 inside the front-office deserializer this context pins (0x2D0CE0 + 0x5BF), so MyCareer, Career Home and
+    # the module loader read foreign once the guard step ran. Accept that exact call only after the guard's complete
+    # status (the call, its head and tail in the accessors' padding, the pinned neighbours) reads applied, then restore
+    # the retail call in this hash view. The guard reads only its own bytes, so this adds no validation cycle.
+    from . import nfl2k5_load_user_team_guard as user_team_guard
+    _, guard_va, guard_before, guard_after = user_team_guard.SITES[0]
+    if image.read(guard_va, len(guard_before)) != guard_before:
+        legacy.require(user_team_guard.status(companions) == "applied", "foreign Franchise load user-team guard")
+        camera_edits.append(("load_user_team_guard", guard_va, guard_before, guard_after))
+    # b780-int (ship10 replay on 8c6b71d41): sub1's situational lineup roles redirect the third auto-depth call
+    # (0x24853D, injured_depth_2) inside the season-stage context this check pins (0x2484C9 + 0xA8). Accept its exact
+    # hooks only after the lineup roles' complete status (sites, owned code, its own pins) reads applied, then restore
+    # the retail calls in this hash view (only that one lies in a MyCareer span). lineup_roles reads only its own bytes.
+    from . import nfl2k5_lineup_roles as lineup_roles
+    if any(image.read(va, len(before)) != before for _, va, before, _ in lineup_roles.sites(0)):
+        legacy.require(lineup_roles.status(companions) == "applied", "foreign situational lineup roles companion")
+        camera_edits.extend(lineup_roles.sites(lineup_roles.allocation(payload)["va"], lineup_roles._gate_target(payload)))
+    # b780-int (ship10 replay on 8c6b71d41): IR1's modern injured reserve hooks the franchise save (0x2D09FD), load
+    # (0x2D0F70) and start (0x13EEDA) inside three contexts this check pins (0x2D0790, 0x2D0CE0, 0x13EE10). Accept its
+    # exact hooks only after its complete status (allocation, every hook, owned code, the hooked Pro Bowl guard) reads
+    # applied, then restore the retail bytes in this hash view. Its Pro Bowl guard (0x246FF0) lies in no MyCareer span;
+    # injured_reserve reads only its own bytes.
+    from . import nfl2k5_injured_reserve as injured_reserve
+    ir_sites = [site for site in injured_reserve.sites(0) if site[1] != injured_reserve.GUARD_VA]
+    if any(image.read(va, len(before)) != before for _, va, before, _ in ir_sites):
+        legacy.require(injured_reserve.status(companions) == "applied", "foreign injured reserve companion")
+        ir_code = injured_reserve.allocations(payload)["code"]["va"]
+        camera_edits.extend(site for site in injured_reserve.sites(ir_code) if site[1] != injured_reserve.GUARD_VA)
     for va, size, digest in GUARDS:
         raw = bytearray(image.read(va, size))
         # nm1 changes only the collector's label decision, not career control.

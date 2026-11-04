@@ -249,11 +249,15 @@ class HostBudgetTests(unittest.TestCase):
             # b780 n2: at a punt or field goal the Supersim hand-back keeps the CPU's call instead of reopening the
             # play-call screen (on the released disc the CPU punter then never snapped), and
             # mode_ff_hold_snap never holds a CPU snap into the last 3 s of the play clock (test_nfl2k5_my_career_punt_settle).
+            # b780 mc1: mode_play opens Choose team / Sign over Career Home for a MyPlayer without a club, a loaded
+            # free-agent career opens Career Home, and mode_loaded resumes the draft screen only for a rookie in his
+            # own draft (test_nfl2k5_my_career_mc1).
             'tools/mycareer_mode/runtime.c':
-                '4310a36e9d85141611cd22351a22953ab0aefa6adf0dd23379e20ebc49168ea5',  # b780-int: b8 + j23 + n2, merged (scratch buffer at m3+3248)
+                'a117be3bcfce2c6cc6920abd344da36bca0605845c2860b416fdcad85763c725',  # b780 mc1 on b780-int (b8 + j23 + n2)
             'tools/mycareer_mode/runtime.S':
                 # b780 n1: mode_camera_dir (the defensive camera read) and five byte-identical size rewrites.
-                'd7ae0a793c1b9cb52a8de0dcd2964f37b3b2546a8d34522c6cceadba38ab0f56',
+                # b780 mc1: start_player leaves an injured MyPlayer (+0x20 bit 31) where the game's order has him.
+                'f76373e1df0b38b6a2eb0773e861329d88bc1d2198e1acba0d4685bd9137cc79',
             'mod_editor/core/nfl2k5_my_career_mode.py':
                 # Integrated era/context and CP companion validation. CP2 only
                 # refreshes this host pin. v1h also repairs the reviewed native C
@@ -263,7 +267,7 @@ class HostBudgetTests(unittest.TestCase):
                 # mo2: guard view accepts the moment context hook over the pinned 0xCB240 span.
                 # b778 bd3: recognition views for the star-career class-loop hooks and the Player Progress
                 # screen chained over the inline footer hooks (runtime code unchanged).
-                'df5c6afa055314d36edbc085ffb7c27d51c06b9b05a15fe5d660e214fc99180a',  # b780-int: b8 + j23 + n1 (defensive camera read and its five byte-identical rewrites)
+                '3c82e41999502ce5d0003dada780f57a84e6d6ffe9f7151908049bb78143d9c1',  # b780-int: b8 + j23 + n1 (defensive camera read and its five byte-identical rewrites)
             'mod_editor/core/nfl2k5_my_career_code.py':
                 '0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b',
             'mod_editor/core/nfl2k5_my_career_progression.py':

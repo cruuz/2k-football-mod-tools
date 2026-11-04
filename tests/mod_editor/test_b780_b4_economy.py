@@ -136,7 +136,8 @@ class InjuredReserveTests(unittest.TestCase):
 
     def test_cut_minimums_are_the_economy_smart_cut_table(self):
         source = (ROOT / "tools/franchise_economy/runtime.c").read_text(encoding="utf-8")
-        start = source.index("cut_min[17] = {") + len("cut_min[17] = {")
+        # b780 econ3 (economy revision 7): the minimums are the third row of the smart cut's tier table, cut_rows
+        start = source.index("{", source.index("/* cut_min, as before")) + 1
         table = tuple(int(v) for v in source[start:source.index("}", start)].split(","))
         self.assertEqual(table, refresh.CUT_MINIMUMS)
 
@@ -358,7 +359,8 @@ class CampTests(unittest.TestCase):
         self.assertEqual(self.receipt.get("upgraded_from"), "legacy")
         # b780 hunt1: revision 6 adds the veteran cut's release guard call (roster_m is a revision-5 window already)
         self.assertEqual(sorted(int(e["va"], 16) for e in self.receipt["edits"]),
-                         sorted(self.economy.REVISION_5_SITES | getattr(self.economy, "REVISION_6_SITES", frozenset())))
+                         sorted(self.economy.REVISION_5_SITES | getattr(self.economy, "REVISION_6_SITES", frozenset())
+                                | getattr(self.economy, "REVISION_7_SITES", frozenset())))   # b780 econ3: revision 7
         self.assertEqual(self.economy.status(self.fixed), "applied")
 
     def _camp(self, payload, stage, size):

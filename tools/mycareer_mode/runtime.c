@@ -42,7 +42,11 @@ static NI void settings_labels(void) {
                                S(2736)?m3_call_position_text:m3_call_every_text);
     W(entry_rows,208+4)=(u32)m3_prospect_labels[S(2744)];
 }
-static NI void player_star(u8 *p) { p[0x53]=(p[0x53]&0xfe)|!S(2700); }
+/* b780 mc1: "MyPlayer star: On" (S(2700) 0) sets +0x53 bit 0; Off leaves the bit to the game, so MyPlayer earns or
+ * loses stardom like anyone else (star_career's preseason evaluation). Turning the setting Off clears it once. */
+static NI void player_star(u8 *p) {
+    __asm__ volatile("cmpb $0,%1\n\tjne 1f\n\torb $1,0x53(%0)\n1:" : : "r"(p), "m"(S(2700)) : "cc", "memory");
+}
 extern const u8 menu_template[];
 extern const u8 text_template[], text_bytes[], text2_template[], text2_bytes[];
 static NI void unpack_menu(const u8 *p,u8 *dst) {
@@ -791,7 +795,7 @@ void FC mode_settings_toggle(u32 manager) {
         row=W((u8 *)manager,8*W((u8 *)manager,0x100)+4);
         if(row==0) CALL0(0x147e60); /* Retail Franchise Settings toggle. */
         if(row==1) { S(2696)=S(2696)==2?1:S(2696)==1?0:2; S(2708)=S(2716)=S(2732)=0; }
-        if(row==2 && (p=(u8 *)primary())) { S(2700)=!S(2700); player_star(p); }
+        if(row==2 && (p=(u8 *)primary())) { S(2700)=!S(2700); p[0x53]&=0xfe; player_star(p); }
         if(row==3) S(2712)=!S(2712);
         if(row==4) S(2736)=(S(2736)+1)%3;
         settings_labels();
@@ -824,7 +828,7 @@ static NI void capture(u8 *p) {
     u32 i;
     zero(state,200); S(2696)=2;
     S(2708)=S(2716)=S(2732)=S(2736)=S(2740)=S(2700)=S(2704)=S(2712)=G(0xE5FFE4)=0;
-    player_star(p); S(4)=0x31303030; S(8)=1280;
+    p[0x53]|=1; S(4)=0x31303030; S(8)=1280;  /* player_star(p) with the new career's star setting On (S(2700) 0) */
     S(24)=3; S(28)=((u32)p-W(ROOT,4))/84; S(56)=S(2684);
     /* Native RNG supplies a new per-career token. It is data, never identity
      * selected by name, a pre-generated player, or an executable recipe. */
@@ -900,12 +904,19 @@ u32 mode_next_fixture(void) {
     return 374;
 }
 void FC mode_play(u32 manager) {
-    u32 slot;
+    u32 slot; u8 *me;
     extern const u16 advance_notice[];
-    if(!hub(manager) || !primary()) return;
+    if(!hub(manager) || !(me=(u8 *)primary())) return;
     claim_port(manager);
     start_player();
-    if(S(56)>=32) return;
+    /* b780 mc1: "MyPlayer star: On" outlives star_career's preseason evaluation (0x24857A clears +0x53 bit 0 under an
+     * 85 score): every game starts from the setting, as a load already does. */
+    player_star(me);
+    /* b780 mc1: no club (released, or his contract ran out: start_player's resolve_team leaves S(56) at -1 and the
+     * career at 4) used to return here without a word, so every Career Home row did nothing and the career could
+     * not go on. Open Choose team / Sign on top of Career Home, so B comes back here. A loaded free-agent career
+     * opens Career Home too (mode_loaded), and this row then offers the same choice. */
+    if(S(56)>=32) { S(2680)=2; CALL2(0x6e390,manager,(u32)team_menu); return; }
     slot=mode_next_fixture();
     if(slot<374 && slot/17<=G(0xE576B4)) {
         if(!((u32 (FC *)(u32,u32,u32))0xC79F0)(slot/17,slot%17,S(32))) {
@@ -1014,8 +1025,16 @@ u32 FC mode_loaded(u32 manager,u32 target) {
         M(0)=0;
         if(S(2588)) CALL1(0x13ec90,S(2588));
         if(G(0xE576A4)==4 && S(24)==2) return (u32)m3_prep_menu;
-        if(G(0xE576A4)==5) return (u32)m3_draft_menu;
-        if(S(24)==4) { S(2680)=2; return (u32)team_menu; }
+        /* b780 mc1: only a rookie in his own draft resumes the draft screen, picked or not: draft prospects carry
+         * years pro 1 (+0x25 bits 0-4) and every year rollover adds one, so a veteran has 2 or more. A veteran
+         * saved on a later draft day was sent to the MyCareer draft screen and told "You were drafted by" again. */
+        if(G(0xE576A4)==5) {
+            u8 *me=(u8 *)primary();     /* 0 for a lost career (inline_decode): never read through it */
+            if(me && (me[0x25]&0x1f)<2) return (u32)m3_draft_menu;
+        }
+        /* b780 mc1: a free-agent career (state 4) loads into Career Home, not into Choose team: the load replaced
+         * its screen with the choice, and B there left MyCareer half open (the owner word held, so the MyCareer row
+         * did nothing). Play next game opens the choice over Career Home. */
         return (u32)apartment;
     }
     return target;

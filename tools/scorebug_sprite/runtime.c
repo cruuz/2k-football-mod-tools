@@ -2,7 +2,8 @@
  * Resource tables contain all layout/UV/glyph metrics. Native formatters retain
  * the game's clock, quarter, down/distance and score semantics. Franchise team
  * records are counted once at setup with the retail per-week counters. b780 p2: while the play-call screen keeps the bar up,
- * the down text is followed by the ball spot ("1st & 10  NYJ 35"), read from the retail "Ball on" formatter. */
+ * the down text is followed by the ball spot ("1st & 10  NYJ 35"), read from the retail "Ball on" formatter. b780 pres2: while
+ * the pause screen is up the bar is drawn in the band above the menu (sprite_pause_draw). */
 typedef unsigned int u32;
 typedef unsigned short u16;
 typedef short s16;
@@ -26,7 +27,9 @@ struct Header {u32 magic,revision,fields,field_offset,statics,static_offset,size
  * left (home bits 0..7, away 8..15), the tab's side (1 away at the anchor, 2 home at the alternate) and the red
  * play-clock flag the frame's fields read. */
 struct State {u32 scene,active,home,away,home_wing,away_wing,home_plate,away_plate,home_rim,away_rim,kick_phase,kicker;u16 record[2][12];
- u32 down,interim,timeouts,tab,tab_side,red;};
+ u32 down,interim,timeouts,tab,tab_side,red,shift;};
+/* b780 pres2: shift is the y offset (packed scene units) the pause screen has moved the bar by, 0 when it sits in place. */
+_Static_assert(sizeof(struct State)==124,"bytes 124..127 of the owner's data page are the play-call strip flag");
 typedef union {u32 u;float f;} Bits;
 #define INTERIM_SECONDS 0x40e00000u /* 7.0: ESPN's median "3rd Down" (52 in the full Broncos-Chiefs game, p25 5, p75 10) */
 #define TAB_SECONDS 0x40800000u     /* 4.0: ESPN's TIMEOUT popups ran 2, 4 and 5 s in the same game */
@@ -302,7 +305,7 @@ NOINLINE static void field(u8 *b,struct State *s,struct Field *f) {
  for(u32 i=0;i<count;i++) {
   struct Glyph *g=tokens[i];
   int x0=left+advance*width/total,x1=left+(advance+g->width)*width/total;
-  int y0=f->y+g->rise,y1=y0-g->height;
+  int y0=f->y+g->rise+(int)s->shift,y1=y0-g->height;
   advance+=g->advance;
   if(!g->width || !g->height)continue;
   u32 first=f->vertex+quad++*4;
@@ -330,9 +333,43 @@ static u32 playcall_keep(void) {
  return V(0xb641b4) && V(0xb641b0) && *(volatile u8 *)0x8ca18==0xe9;
 }
 
+/* b780 pres2: the pause screen. The Paused menu's backdrop (0x6BEF0 -> 0x64FE0) draws the frozen game and the play-call
+ * panel (0x8CA00, which this build keeps off) but never the HUD draw (FC360, called only by the in-game draw 0x646B0), so
+ * no bar showed while paused. [0xA83A14] is the retail pause counter (IsPaused() is 0x64BE0: above zero while a menu holds
+ * the game) and [0xA83F14] is 1 while that menu uses the frozen-game backdrop (the Gamecast clears it). In play the PAUSED
+ * banner sits where the bar draws, so while paused the bar moves into the empty band above the menu panel (HUD lines 44 to
+ * 90 of 448; the panel starts at line 102): PAUSE_TOP is its top edge in packed scene units (scene y 380 = HUD line 44).
+ * Every quad but the corner mark moves, so text, tab and plates follow; the first update after the pause moves it back. */
+#define PAUSE_TOP 21845
+static u32 pausing(void) {return (int)V(0xa83a14)>0 && V(0xa83f14)==1;}
+static s16 *vy(u8 *b,u32 v) {return (s16*)(b+0x2660+v*6)+1;}
+/* The highest y of the bar's own quads (the statics but the corner mark). */
+static int bar_top(u8 *b) {
+ struct Header *h=header(b);struct Static *st=(struct Static*)(b+h->static_offset);int top=-32768;
+ for(u32 i=0;i<h->statics;i++)if(!st[i].brand)for(u32 j=0;j<4;j++){int y=*vy(b,st[i].vertex+j);if(y>top)top=y;}
+ return top;
+}
+static void bar_move(u8 *b,int d) {
+ struct Header *h=header(b);struct Static *st=(struct Static*)(b+h->static_offset);
+ for(u32 v=0;v<h->quads*4;v++)*vy(b,v)+=d;
+ for(u32 i=0;i<h->statics;i++)if(st[i].brand)for(u32 j=0;j<4;j++)*vy(b,st[i].vertex+j)-=d;
+}
+/* Called in place of the paused backdrop's call to 0x8CA00 (after it): draws the bar with the HUD draw, whatever the
+ * retail show/hide left the draw gate [0xA95524] at, and puts the gate back. */
+NOINLINE void sprite_pause_draw(struct State *s) {
+ u8 *b=base();if(!b || !s->active || s->scene!=(u32)b+256 || !pausing())return;
+ if(!s->shift){int top=bar_top(b);if(top>-32768 && top<PAUSE_TOP){bar_move(b,PAUSE_TOP-top);s->shift=(u32)(PAUSE_TOP-top);}}
+ u32 gate=V(0xa95524);V(0xa95524)=1;
+ ((void (*)(void))0xfc360)();
+ V(0xa95524)=gate;
+}
+
 /* dt is the frame time FC9C0 receives (IEEE single bits, sb). */
 NOINLINE void sprite_update(struct State *s,u32 dt) {
  u8 *b=base();if(!b || !s->active || s->scene!=(u32)b+256)return;
+ /* b780 pres2: back in place on the first frame the pause screen is gone (a bar not at the paused top, a scene loaded
+  * since, is left alone). */
+ if(s->shift && !pausing()){if(bar_top(b)==PAUSE_TOP)bar_move(b,-(int)s->shift);s->shift=0;}
  if(dt-1>=0x3f7fffffu)dt=0;
  /* sb: the interim label starts when the down steps to 2nd, 3rd or 4th in the same series. */
  u32 p=V(0xe602ec);

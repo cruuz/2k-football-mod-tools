@@ -50,6 +50,7 @@
     "classic_teams": true,
     "coin_defer": true,
     "contract_college_guard": true,
+    "load_user_team_guard": true,
     "coverage_slider": true,
     "cpu_ball_carriers": true,
     "cpu_money_downs": "modern2",

@@ -183,6 +183,7 @@ from . import nfl2k5_audible_legend as audible_legend_patch  # noqa: F401  b780-
 from . import nfl2k5_lineup_roles as lineup_roles_patch  # noqa: F401  b780 sub1: SPECIAL third-down back + FB fallback (late owner)
 from . import nfl2k5_intro_autoskip as intro_autoskip_patch  # noqa: F401  b780-mem1: the intro skips itself when its director could not load (late tail owner)
 from . import nfl2k5_injured_reserve as injured_reserve_patch  # noqa: F401  b780 IR1: modern injured reserve (late owner)
+from . import nfl2k5_load_user_team_guard as load_user_team_guard_patch  # noqa: F401  b780 mc1: Franchise load guard (in-place sites); imported so the cave manifest recorder observes it
 from . import nfl2k5_preseason_warning as preseason_warning_patch  # noqa: F401  b779-int1: rc1's warned flag joins the union (LATE_OWNERS before the sim owners)
 from . import nfl2k5_cpu_passer_iq as cpu_passer_iq_patch  # noqa: F401  b780 a-passer: late owner (CPU quarterbacks throw on time); imported so the cave manifest recorder observes it
 from . import nfl2k5_cpu_clock2 as cpu_clock2_patch  # noqa: F401  b780 b-clock: late owner (modern CPU clock management)
@@ -1737,6 +1738,8 @@ def k128_requires_128(guardian_overlay=False, reserves_16=False, created_teams_e
 
 
 class _roster_arena_adapter:
+    UPGRADES_PREVIOUS = True   # b780 modes2: a beta-78 .. v0.9 RC runtime (practice staging league 1) upgrades in place
+
     def __init__(self, reserves_16, created_teams_extra, capacity=False):
         self.kwargs = dict(reserves_16=reserves_16, created_teams_extra=created_teams_extra,
                            capacity=capacity)
@@ -2363,7 +2366,7 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
     if practice_squad and franchise_practice:
         # practice-only reserve staging (beta 61): reserves join the disposable practice roster; needs both patches above
         state = practice_reserves_patch.status(patched)
-        if state == "retail":
+        if state in ("retail", "previous"):   # b780 modes2: a previous staging (league 1) is upgraded in place
             patched, sub_receipt = practice_reserves_patch.apply(patched)
             receipt = {**receipt, "practice_reserves_patch": sub_receipt,
                        "changed_byte_count": int(receipt.get("changed_byte_count", 0)) + int(sub_receipt["changed_bytes"])}

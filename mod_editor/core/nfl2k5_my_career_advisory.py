@@ -36,6 +36,12 @@ def roster_tables(scheme='retail', *, xbe=None):
                   struct.unpack('<17I', image.read(pools.ROSTER_MAXIMA_VA, 68)))
         if actual != (target, maximum):
             raise ValueError('Executable roster tables differ from the selected roster mode. Match the mode before reviewing.')
+        # b780 mc1 (ECON3): an installed franchise economy's smart cut-down keeps fewer players at some positions
+        # (QB 3, FB 2) than the native maxima, which it does not rewrite; rate cut risk against what it keeps.
+        from . import nfl2k5_franchise_economy as economy
+        cut = getattr(economy, 'CUT_MAXIMUM', None)
+        if cut and economy.status(xbe) == 'applied':
+            maximum = tuple(min(value, cut.get(pos, value)) for pos, value in enumerate(maximum))
     return target, maximum
 
 

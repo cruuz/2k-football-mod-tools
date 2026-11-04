@@ -109,7 +109,7 @@
    "align": "uc",
    "tag": "empty",
    "menu": [
-    "Y Y Trail",
+    "Z Quick Outs",
     "QB Keep",
     "End Around"
    ],
@@ -332,9 +332,12 @@
    "align": "uc",
    "tag": "short",
    "menu": [
+    "RB Stretch",
+    "Inside Zone Wk",
     "U Whip Return",
     "PA Post Corner Shot",
-    "U Flood"
+    "U Flood",
+    "Pin Pull Sweep"
    ],
    "cpu_situation": [
     2,
@@ -353,7 +356,10 @@
    "menu": [
     "RB Stretch",
     "Inside Zone Wk",
-    "Pin Pull Sweep"
+    "U Whip Return",
+    "Pin Pull Sweep",
+    "RB Texas",
+    "U Flood"
    ],
    "cpu_situation": [
     4,
@@ -372,7 +378,10 @@
    "menu": [
     "Tush Push",
     "QB Sneak",
-    "Inside Trap"
+    "U Whip Return",
+    "Inside Trap",
+    "RB Texas",
+    "U Flood"
    ],
    "cpu_situation": [
     3,
@@ -417,9 +426,9 @@
     "Y Stick Out Whip",
     "Z Go Shot Stick",
     "X Stick Return",
-    "RB Return Flood",
-    "Y Y Trail",
-    "RB Zig Flat"
+    "QB Power",
+    "Spacing",
+    "QB Draw"
    ],
    "cpu_situation": [
     4,
@@ -622,7 +631,7 @@
     "Slot Stick Nod",
     "Z Curls Deep Go",
     "PA Slot Y Trail",
-    "Y Sail",
+    "X Stick Out",
     "Inside Zone Split"
    ],
    "cpu_situation": [
@@ -1672,6 +1681,7 @@
     "Gun Normal Y Off Close",
     "Gun Tight Open",
     "Pistol Wing",
+    "Pistol Bunch TE",
     "Gun Tight Slots",
     "Singleback Bunch X Nasty",
     "Singleback Doubles Tight",
@@ -1774,7 +1784,6 @@
     "Gun Normal Y Off Close",
     "Gun Tight Open",
     "Pistol Wing",
-    "Pistol Bunch TE",
     "Pistol Trey",
     "Gun Tight Slots",
     "Singleback Doubles Tight"
@@ -4085,6 +4094,7 @@
    "deep": false,
    "lane": 4,
    "formations": [
+    "I-Form Tight",
     "Full House"
    ]
   },
@@ -4155,6 +4165,8 @@
    "deep": false,
    "lane": null,
    "formations": [
+    "Full House",
+    "Full House Sneak",
     "Pistol Full House"
    ]
   },
@@ -4244,6 +4256,7 @@
    "deep": false,
    "lane": 2,
    "formations": [
+    "I-Form Tight",
     "Full House"
    ]
   },
@@ -4270,28 +4283,23 @@
   {
    "play": "p123",
    "play_index": 196,
-   "name": "RB Return Flood",
-   "concept": "HB Return Flood Out and Up Outs",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
+   "name": "QB Power",
+   "concept": "QB Power",
+   "family": "qb",
+   "header": "qb_draw",
+   "play_type": "keeper",
    "personnel": "11",
    "home": "Gun Empty Trey",
-   "primary": "HB",
+   "primary": null,
    "screen": null,
    "must": "",
-   "routes": [
-    "Flat",
-    "Out",
-    "Out and Up",
-    "Return",
-    "Stick"
-   ],
+   "routes": [],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Empty Trey"
-   ]
+   ],
+   "added_by": "b780 plays2"
   },
   {
    "play": "p124",
@@ -4379,7 +4387,9 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "I-Form Tight"
+    "I-Form Tight",
+    "Full House",
+    "Full House Sneak"
    ]
   },
   {
@@ -4448,7 +4458,9 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "I-Form Tight"
+    "I-Form Tight",
+    "Full House",
+    "Full House Sneak"
    ]
   },
   {
@@ -4644,6 +4656,7 @@
    "deep": false,
    "lane": 4,
    "formations": [
+    "I-Form Tight",
     "Full House"
    ]
   },
@@ -4825,28 +4838,25 @@
   {
    "play": "p148",
    "play_index": null,
-   "name": "RB Zig Flat",
-   "concept": "HB Zig Flat Out and Up Smash",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
+   "name": "QB Draw",
+   "concept": "QB Draw",
+   "family": "qb",
+   "header": "qb_draw",
+   "play_type": "keeper",
    "personnel": "11",
    "home": "Gun Empty Trey",
-   "primary": "HB",
+   "primary": null,
    "screen": null,
    "must": "",
    "routes": [
-    "Corner",
-    "Flat",
-    "Hitch",
-    "Out and Up",
-    "Zig"
+    "Go"
    ],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Empty Trey"
-   ]
+   ],
+   "added_by": "b780 plays2"
   },
   {
    "play": "p149",

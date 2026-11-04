@@ -22,6 +22,12 @@ the CPU never kneels before halftime, and overtime counts as early in every rout
   come), the clock goes to 0:00 and stops, exactly as when time runs out during a play, and the native clock tick ends
   the half or the game. b780 hunt7: a human kneel in Q2, or tied or behind in Q4, keeps the native clock, because that
   team may still call its own timeout and kick (a kneel to set up the walk-off field goal ended a tied game at once);
+* b780 modes2 (Q22), two retail decisions the hunt7 sweep found identical in retail, v0.8 and the RC: no hopeless
+  field goal (the native field-goal test 0x20AF80, at its prologue, answers no in Q4 with 2:00 or less left when the
+  offense is down 4 or more: a kick neither ties nor leads, the rule Modern 2's own late fourth downs follow; Modern 2
+  hands the Hail Mary case back to the native chooser, which asked this test first and kicked down 9 with 5 s left),
+  and no late timeout by a leading defense (the timeout poll: a CPU defense that leads in Q4 calls none with 40 s or
+  less left; retail asked for one when the offense, down 1, was in field goal range, which only gave it more snaps);
 * overtime (a separate build choice, off unless selected): overtime counts as the late window only where the end of
   the period can end the game, i.e. franchise pre/regular season (mode 7, period 5, a tie) and any non-playoff mode
   while the scores differ (modern overtime); playoffs (modes 5 and 6) play another period, so they stay native.
@@ -32,7 +38,8 @@ down when less than half the needed time is left) matches the NFL 2022-2025 spik
 second spike path (overtime makes the native one available there).
 
 Everything is a pinned five-to-ten-byte hook at a retail instruction boundary, the displaced instructions are
-re-executed, and the routines hooked or called are guarded by hash. One late allocation (1,152 bytes), no writable data.
+re-executed, and the routines hooked or called are guarded by hash. One late allocation (1,152 bytes, 1,148 used), no
+writable data. cpu_money_downs hashes the native field-goal test too and normalizes this owner's entry there.
 """
 from __future__ import annotations
 
@@ -53,7 +60,9 @@ HELP_TEXT = (
     "back, the CPU kneels at the end of the first half when it is backed up and not trying to score, and after "
     "a CPU Take Knee, or yours while you lead in the fourth quarter, the clock runs out at once when the remaining "
     "kneels would end the half or the game anyway (your own kneel while tied or behind, or before halftime, keeps "
-    "the clock running normally, so you can still call a timeout and kick). "
+    "the clock running normally, so you can still call a timeout and kick). In the last 2:00 the CPU no longer "
+    "kicks a field goal that cannot tie or take the lead, and a leading CPU defense keeps its timeouts in the last "
+    "40 seconds. "
     "The CPU spike was already in the game and is unchanged.")
 OT_CAPTION = "Modern CPU clock management in overtime (experimental)"
 OT_HELP_TEXT = (
@@ -65,7 +74,8 @@ OT_HELP_TEXT = (
 SYMBOLS = dict(late_native=0x205FE0, late_time=0x205FEF, half_time=0x205F80, margin_fn=0x205F40,
                need_fn=0x205F50, distance_fn=0x203370, permit_fn=0x207270, timer_stop=0xAF4F0,
                snap_back=0x2D341B, snap_special=0x2D33E2, snap_normal=0x2D3427, poll_back=0x18861D,
-               poll_return=0x18873C, poll_take=0x188722, kneel_back=0x206F1A, lineup_back=0x189086)
+               poll_return=0x18873C, poll_take=0x188722, kneel_back=0x206F1A, lineup_back=0x189086,
+               fg_back=0x20AF86)
 # (label, site VA, retail bytes, opcode, code label). Calls replace a retail call; jumps replace whole instructions.
 SITES = (
     ("estimate_window", 0x20A79B, "e840b8ffff", 0xE8, "estimate_lw"),
@@ -77,6 +87,8 @@ SITES = (
     ("early_timeout", 0x188614, "d94010d81d586d4e00", 0xE9, "early_timeout"),
     ("half_kneel", 0x206F10, "83ec0c568b358002e600", 0xE9, "half_kneel"),
     ("kneel_runoff", 0x189080, "51a18002e600", 0xE9, "kneel_runoff"),
+    # b780 modes2 (Q22): the native field-goal test's prologue (push ebp; mov ebp,esp; and esp,-16)
+    ("fg_late", 0x20AF80, "558bec83e4f0", 0xE9, "fg_late"),
 )
 OT_SITE = ("overtime_window", 0x205FE0, "a1c402e600", 0xE9, "ot_window")
 # Full retail routines this owner hooks, re-enters or calls (USA default.xbe), hashed with this owner's own hook
@@ -99,6 +111,8 @@ GUARDS = (
     (0x1885F0, 337, "ce95813721a18913552fe1f22d977c8246411ff5f99d5d26cfc3bbeb80cf9de5"),
     (0x206F10, 310, "3cf69a165b02e484e5a188308bda4c97c9b72813f5d00a7cfe1c8e9c93d04296"),
     (0x189080, 183, "d4d1e9e0ab681598615fcc851024063f628a23d1f59071316fbda1aedc0e7e2f"),
+    # b780 modes2: the native field-goal test, as cpu_money_downs pins it
+    (0x20AF80, 499, "e956a8d796ee1ea0e203edda765bce91c0e1e1ce13e737e5c5919c205dc009fb"),
 )
 SETTINGS = ("overtime",)
 

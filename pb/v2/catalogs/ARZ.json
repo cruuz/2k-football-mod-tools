@@ -150,7 +150,7 @@
     "QB Keep",
     "End Around",
     "Slot Drive",
-    "Y Drive Return"
+    "Z Snag"
    ],
    "cpu_situation": [
     4,
@@ -342,9 +342,9 @@
    "menu": [
     "RB Off Tackle",
     "FB Screen",
-    "PA Z Deep Post",
+    "PA Steep In Seam",
     "PA X Double Move",
-    "RB Texas",
+    "PA Double Move",
     "X Comeback Seam"
    ],
    "cpu_situation": [
@@ -362,12 +362,15 @@
    "align": "uc",
    "tag": "short",
    "menu": [
+    "RB Draw",
+    "Inside Zone Split",
     "PA Post Corner Shot",
     "Y Cross",
     "PA Steep In Seam",
     "PA U Stick",
     "PA U Sail",
-    "PA X Steep In Seam"
+    "PA X Steep In Seam",
+    "RB Counter Wk"
    ],
    "cpu_situation": [
     2,
@@ -408,7 +411,10 @@
    "menu": [
     "Tush Push",
     "QB Sneak",
-    "Pin Pull Sweep"
+    "PA U Stick",
+    "Pin Pull Sweep",
+    "PA U Sail",
+    "RB Draw"
    ],
    "cpu_situation": [
     4,
@@ -453,7 +459,7 @@
     "RB Choice Out",
     "RB Post Wheel",
     "QB Power",
-    "Slot Curl Combo",
+    "Double Slants",
     "Slot Y Trail",
     "Bubble Screen"
    ],
@@ -513,7 +519,7 @@
     "Z Hook Corner",
     "Z Hitch Seam",
     "Sail",
-    "Slot Sail",
+    "Double Slants",
     "Z Fade Curl"
    ],
    "cpu_situation": [
@@ -531,9 +537,12 @@
    "align": "gun",
    "tag": "pass",
    "menu": [
-    "PA Steep In Seam",
+    "Double Slants",
     "U Comeback Seam",
-    "X Levels Outs"
+    "Crack Toss",
+    "X Levels Outs",
+    "RB Sweep",
+    "X Slip Screen"
    ],
    "cpu_situation": [
     3,
@@ -1077,7 +1086,7 @@
     "Z Hitch Seam",
     "Sail",
     "Inside Zone",
-    "Slot Sail",
+    "Slant Flat",
     "Z Fade Curl",
     "Z Hook Corner",
     "QB Power",
@@ -2156,7 +2165,6 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Empty Trey",
     "Gun Bunch X Nasty",
     "Singleback Y Off Trey",
     "Singleback Tight Y Off",
@@ -2791,6 +2799,7 @@
     "Pistol Y Trips",
     "Ace Wing",
     "Singleback Ace",
+    "Gun Wing Slot Offset",
     "Singleback Ace Close",
     "Singleback Ace Bunch"
    ]
@@ -3457,6 +3466,7 @@
    "formations": [
     "Pistol Deuce Close",
     "Pistol Y Trips",
+    "Gun Wing Slot Offset",
     "Pistol Ace",
     "Singleback Ace Close"
    ]
@@ -3504,6 +3514,7 @@
    "formations": [
     "Pistol Deuce Close",
     "Singleback Ace",
+    "Gun Wing Slot Offset",
     "Singleback Ace Bunch"
    ]
   },
@@ -4007,6 +4018,7 @@
    "deep": false,
    "lane": null,
    "formations": [
+    "I-Form Pro",
     "Wing T"
    ]
   },
@@ -4027,7 +4039,9 @@
    "deep": false,
    "lane": 2,
    "formations": [
-    "Full House"
+    "I-Form Tight",
+    "Full House",
+    "Full House Sneak"
    ]
   },
   {
@@ -4097,6 +4111,7 @@
    "deep": false,
    "lane": null,
    "formations": [
+    "I-Form Pro",
     "Wing T"
    ]
   },
@@ -4273,6 +4288,7 @@
    "deep": false,
    "lane": 2,
    "formations": [
+    "I-Form Tight",
     "Full House"
    ]
   },
@@ -4562,6 +4578,7 @@
    "deep": false,
    "lane": 1,
    "formations": [
+    "I-Form Tight",
     "Full House"
    ]
   },
@@ -4965,7 +4982,8 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "I-Form Tight"
+    "I-Form Tight",
+    "Full House Sneak"
    ]
   },
   {
@@ -4990,7 +5008,8 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "I-Form Tight"
+    "I-Form Tight",
+    "Full House Sneak"
    ]
   },
   {

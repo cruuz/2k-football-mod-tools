@@ -263,3 +263,107 @@ class LineupRolesTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+# ------------------------------------------------------------------------------------------------ rule 4
+def league_machine(payload: bytes, body: bytes) -> Machine:
+    """machine() with 0xC4BE0 answering 32, a franchise league (without one loaded it counts every roster team)."""
+    import unicorn
+    m = machine(payload, body)
+    X = unicorn.x86_const
+
+    def count(uc, _addr, _size, _data):
+        esp = uc.reg_read(X.UC_X86_REG_ESP)
+        uc.reg_write(X.UC_X86_REG_EAX, 32)
+        uc.reg_write(X.UC_X86_REG_ESP, esp + 4)
+        uc.reg_write(X.UC_X86_REG_EIP, struct.unpack("<I", uc.mem_read(esp, 4))[0])
+    m.uc.hook_add(unicorn.UC_HOOK_CODE, count, begin=0xC4BE0, end=0xC4BE0)
+    return m
+
+
+@unittest.skipUnless(HAVE_UC and V09_XBE.is_file() and V09_ROST.is_file(),
+                     "Python unicorn, NFL2K5_V09_XBE and NFL2K5_V09_ROST_BODY required")
+class InjuredDepthTests(unittest.TestCase):
+    """Rule 4 with the game's own weekly CPU auto-depth 0x2BDCF0 (native) and the owner's call of it."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.xbe, cls.body = V09_XBE.read_bytes(), V09_ROST.read_bytes()
+        cls.owned = lr.apply(cls.xbe)[0]
+        cls.entry = lr.allocation(cls.owned)["va"] + lr.INJ_OFFSET
+
+    def run_both(self, injure, *, user=None, manages=False):
+        out = []
+        for payload, entry in ((self.xbe, 0x2BDCF0), (self.owned, self.entry)):
+            m = league_machine(payload, self.body)
+            team = m.team_base + 500 * CLUB
+            players = [m.get(team + 4 * i) for i in range(m.uc.mem_read(team + 0x11C, 1)[0])]
+            for p in injure(m, players):
+                m.put(p + 0x20, m.get(p + 0x20) | 0x80000000 | 6 << 22)
+                m.uc.mem_write(p + 0x52, bytes([m.uc.mem_read(p + 0x52, 1)[0] | 0x13]))   # rank, side and PR locks
+            if user is not None:
+                self.user_club(m, m.team_base + 500 * user)
+                m.put(0xE60140, 1 if manages else 0)
+            m.call(entry, budget=3_000_000_000)
+            out.append((m, players))
+        return out
+
+    @staticmethod
+    def user_club(m, team):
+        import unicorn
+        X = unicorn.x86_const
+
+        def test(uc, _addr, _size, _data):
+            esp = uc.reg_read(X.UC_X86_REG_ESP)
+            uc.reg_write(X.UC_X86_REG_EAX, 1 if uc.reg_read(X.UC_X86_REG_ECX) == team else 0)
+            uc.reg_write(X.UC_X86_REG_ESP, esp + 4)
+            uc.reg_write(X.UC_X86_REG_EIP, struct.unpack("<I", uc.mem_read(esp, 4))[0])
+        m.uc.hook_add(unicorn.UC_HOOK_CODE, test, begin=0xC4D50, end=0xC4D50)
+
+    @staticmethod
+    def order(m, players, position, shift=10):
+        at = [p for p in players if m.uc.mem_read(p + 0x35, 1)[0] == position]
+        return sorted(at, key=lambda p: (struct.unpack("<H", m.uc.mem_read(p + 0x28, 2))[0] >> shift & 7, players.index(p)))
+
+    def test_an_injured_starter_goes_below_the_healthy_players(self):
+        (native, nps), (owner, ops) = self.run_both(lambda m, ps: [p for p in ps if m.uc.mem_read(p + 0x35, 1)[0] == 0][:1])
+        hurt = [p for p in ops if owner.get(p + 0x20) & 0x80000000]
+        n_order, o_order = self.order(native, nps, 0), self.order(owner, ops, 0)
+        self.assertEqual(o_order[-1], hurt[0])                          # below every healthy quarterback
+        self.assertEqual([p for p in o_order if p != hurt[0]], [p for p in n_order if p != hurt[0]])
+        self.assertEqual(owner.uc.mem_read(hurt[0] + 0x52, 1)[0] & 0x1F, 0x10)   # rank/side locks off, PR stays
+
+    def test_a_paired_rank_starter_stays_out_of_the_first_side_rows(self):
+        (owner, ops) = self.run_both(lambda m, ps: [self.order(m, ps, 3)[0]])[1]
+        wrs = [p for p in ops if owner.uc.mem_read(p + 0x35, 1)[0] == 3]
+        healthy = [p for p in wrs if not owner.get(p + 0x20) & 0x80000000]
+        if len(healthy) >= 3:
+            starter = self.order(owner, ops, 3)[0]
+            self.assertNotIn(starter, self.order(owner, ops, 3, shift=13)[:2])
+        for shift in (10, 13):
+            chain = self.order(owner, ops, 3, shift)
+            hurt = [i for i, p in enumerate(chain) if owner.get(p + 0x20) & 0x80000000]
+            self.assertTrue(all(i >= len(healthy) for i in hurt))
+
+    def test_a_user_club_is_left_alone_unless_the_cpu_manages_it(self):
+        pick = lambda m, ps: [p for p in ps if m.uc.mem_read(p + 0x35, 1)[0] == 0][:1]
+        for manages in (False, True):
+            with self.subTest(manages=manages):
+                (native, nps), (owner, ops) = self.run_both(pick, user=CLUB, manages=manages)
+                same = [bytes(native.uc.mem_read(p + 0x28, 2)) for p in nps] == [bytes(owner.uc.mem_read(p + 0x28, 2)) for p in ops]
+                self.assertEqual(same, not manages)
+
+    def test_the_embedded_block_is_the_assembled_source(self):
+        import shutil, subprocess, tempfile
+        if not shutil.which("as") or not shutil.which("objcopy"):
+            self.skipTest("GNU as and objcopy are needed")
+        with tempfile.TemporaryDirectory() as tmp:
+            source = ROOT / "docs" / "mod_editor" / "nfl2k5_lineup_roles_injured.S"
+            subprocess.run(["as", "--32", "-o", f"{tmp}/x.o", str(source)], check=True)
+            subprocess.run(["objcopy", "-O", "binary", "-j", ".text", f"{tmp}/x.o", f"{tmp}/x.bin"], check=True)
+            self.assertEqual(Path(f"{tmp}/x.bin").read_bytes(), lr.INJURED_CODE)
+            if shutil.which("objdump") and shutil.which("nm"):          # position independent; the tail's entry
+                relocs = subprocess.run(["objdump", "-r", f"{tmp}/x.o"], capture_output=True, text=True).stdout
+                self.assertNotIn("R_386", relocs)
+                symbols = subprocess.run(["nm", f"{tmp}/x.o"], capture_output=True, text=True).stdout.split()
+                self.assertEqual(int(symbols[symbols.index("season_tail") - 2], 16), lr.SEASON_ENTRY)

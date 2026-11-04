@@ -39,10 +39,12 @@ from tools.b77.sp1_repair import open_binary, digest_disc, require
 # read-only `predict` on the 10-13 base disc; scope: only the owner's regions, hooks and seals change.
 # b780 re-pin (beta-80 MyCareer owner: defensive camera, punt settle, draft need): derived the same way from the
 # current owner on the pinned base, 69 spans and 19,285 changed bytes, every postcondition of build() holding.
+# b780 mc1 re-pin (Play next game without a club, loads of free-agent and draft-day careers, injured MyPlayer, CPU
+# depth management for the career club): the same way, 69 spans and 19,261 changed bytes, build() replays with 0.
 BASE_DISC_SHA256 = "520429148f57c29a23f56b5f43c5fe04be39728d01a101210aad8336b60581a4"
 BASE_XBE_SHA256 = "1b41ec19aac6377484b9b30ee7a5c5ab220fb93d61aa3c14bafdb70092a9504f"
-REPAIRED_XBE_SHA256 = "d08acacd6ddbd77b1d77afdea66a83e90c26e1c8b224b4cb9e9264030ed95f8c"
-REPAIRED_DISC_SHA256 = "50494c5e52a7315da067c223220065338dffbbfb8ad85a23c34da393541bc486"
+REPAIRED_XBE_SHA256 = "4939def556918bb24ebe2d9075b284fac17c53db9fb8791b759ec2c3206b1b8f"
+REPAIRED_DISC_SHA256 = "9adcb4ef06f0fa7e2c9a9b538dda35ca630ff13c35c3d17a9938260f87803703"
 DISC_SIZE, XBE_OFFSET, XBE_SIZE = 6004408320, 2398208, 12300288
 
 

@@ -48,15 +48,22 @@ retail merge is not re-entered, so the hook cannot recurse, and the weekly-progr
 ``0x134e05`` sees the credited line in its post-merge read.  The fix is a stat correction, not a
 gameplay change: it does not move a player, alter a rating, or change a play.
 
-The same 256-byte cave carries a small second entry (``GUARD_OFFSET``) used by the franchise
-scheduled-game simulator. Report (b779, v0.7): an injured running back scored a touchdown in a
+The same 256-byte cave carries a small second entry (``GUARD_OFFSET``) at the lineup picker's two depth
+calls, written for the franchise scheduled-game simulator. Report (b779, v0.7): an injured running back scored a touchdown in a
 simulated ("Game Cast") game. The simulator's lineup picker ``FUN_000e8790`` asks
 ``FUN_000e8340`` whether a player fills a depth slot.  That routine's own injured path keys on the
 save's status (`+0x24` bits 28..30), so a player whose status is 0 or was cleared while the
-injury report still shows weeks out (`+0x20` bits 22..29) is accepted.  In the scheduled simulator
-(game mode ``[0xE5FF80] == 4``) the guard refuses any player with the injured bit (`+0x20` bit 31)
-or a nonzero weeks field before retail's check runs, so the picker walks to the next depth player.
-Played games (modes 5..7), practice, and every other caller of ``FUN_000e8340`` keep retail.  This
+injury report still shows weeks out (`+0x20` bits 22..29) is accepted.  In game mode
+``[0xE5FF80] == 4`` the guard refuses any player with the injured bit (`+0x20` bit 31) or a nonzero
+weeks field before retail's check runs, so the picker walks to the next depth player.
+
+Correction (b780 modes2, Q28): mode 4 is not only the scheduled simulator. A live Play Now game runs in
+mode 4 too, and ``FUN_000e8790`` is also the CPU's live lineup picker: ``FUN_000e89f0`` calls it at
+``0xE8B20``, and its callers ``0x18A641``, ``0x204F82`` and ``0x2056E2`` are live-game CPU personnel
+paths. So the guard also runs in live Play Now lineups. The shipped roster has no player with those
+fields set (0 of 4,164 after boot), so live Play Now picks the same players as retail; a franchise
+roster carried into Play Now would skip injured players the same way the simulator does. Played
+franchise games (modes 5..7), practice, and every other caller of ``FUN_000e8340`` keep retail.  This
 is a lineup eligibility guard only; no injury field is written and no retail routine is changed.
 """
 
@@ -92,13 +99,13 @@ V061_MERGE_SHA256 = "6ae07e90d515c3611b0eac54b0d11e52e1b888adb48794db9c2d9e7f07f
 
 # The simulator's lineup picker FUN_000e8790 asks FUN_000e8340 at two call sites (forward and reverse depth
 # search). The surrounding code, after restoring those two retail calls, is byte-identical in the USA retail,
-# v0.6.1 and v0.7 executables. The guard is gated on the scheduled-sim game mode (4) so played games and every
-# other caller keep retail. See the docstring.
+# v0.6.1 and v0.7 executables. The guard is gated on game mode 4 (the scheduled sim, and live Play Now: see the
+# docstring's b780 correction) so played franchise games and every other caller keep retail.
 PICKER = 0x000E8790
 PICKER_PIN = (0x000E87F0, 0x110, "e9ca4dc737e13b19b200884c27c353a287a6c7f8b0601f3a0b2cf3e7d64d1598")
 GUARD_HOOKS = ((0x000E8864, bytes.fromhex("e8d7faffff")),   # call 0xe8340, forward depth search
                (0x000E88EC, bytes.fromhex("e84ffaffff")))  # call 0xe8340, reverse depth search
-SIM_MODE = 0x00E5FF80             # game-mode word: 4 = the franchise scheduled-game simulator
+SIM_MODE = 0x00E5FF80             # game-mode word: 4 = the franchise scheduled-game simulator and live Play Now
 INJURY_WEEKS = 0xBFC00000         # +0x20 bit 31 (injured) plus bits 22..29 (weeks out)
 GUARD_OFFSET = 160                # second entry inside the 256-byte cave, before TABLE_OFF (192)
 
@@ -220,7 +227,7 @@ def code_for(code_va):
     a.b("cc" * (GUARD_OFFSET - used))
     a.label("sim_guard")
     # Entry from the two picker call sites: EDX = the player record, ECX and the stack args are the
-    # caller's slot request. Scheduled sim only; any injured bit or weeks value is refused.
+    # caller's slot request. Mode 4 only (the scheduled sim and live Play Now); any injured bit or weeks value is refused.
     a.b("803d" + struct.pack("<I", SIM_MODE).hex() + "04")   # cmp byte [mode], 4
     a.j8("75", "guard_retail")                                # not the scheduled sim: retail
     a.b("f74220" + struct.pack("<I", INJURY_WEEKS).hex())     # test dword [edx+0x20], injured | weeks

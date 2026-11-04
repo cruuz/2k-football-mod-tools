@@ -68,7 +68,10 @@ ROUTES = {"hitch": ("return", 0, 0), "curl_1": ("return", 1, 0), "curl_1_5": ("r
           "slant": ("slant", 0, 0), "go": ("go", 0, 0),
           # exploratory (not in the acceptance): after the 1.5-yard curl the receiver drifts sideways at 0.5 yd/s
           "curl_drift": ("drift", 1.5, 0)}
-MATRICES = {"r5": {"receiver_yards_s": 6.0, "speed": .90, "agility": .80, "routes": tuple(ROUTES)},
+# b780 modes2 (Q6): r5 lists its seven routes. tuple(ROUTES) took in curl_drift once the drift case was added (5d6f363,
+# "outside the acceptance"), so the CV1 acceptance checked the exploratory drift with r5's rules; it has its own matrix.
+MATRICES = {"r5": {"receiver_yards_s": 6.0, "speed": .90, "agility": .80,
+                   "routes": tuple(r for r in ROUTES if ROUTES[r][0] != "drift")},
             "fast": {"receiver_yards_s": 9.0, "speed": .85, "agility": .80,
                      "routes": ("hitch", "curl_1_5", "slant", "go")},
             "drift": {"receiver_yards_s": 6.0, "speed": .90, "agility": .80, "routes": ("curl_drift",)}}
@@ -146,6 +149,13 @@ def summarize(rows, name):
     stop = BREAK if name == "hitch" else BREAK + RETURN_FRAMES
     angles = [math.atan2(r["defender_x"] - r["target_x"], r["defender_z"] - r["target_z"]) for r in rows[stop:]]
     winding = sum((b - a + math.pi) % (2 * math.pi) - math.pi for a, b in zip(angles, angles[1:]))
+    # b780 modes2 (Q6): the winding after the defender first comes to rest at the target (speed 0 inside the native
+    # arrival distance). An orbit never rests (retail circles the stopped receiver for the whole tail); a defender
+    # closing at full speed when the receiver stops slides past him once by momentum and then holds, and that one
+    # close pass is no orbit (the fixture has no contact solver, which in the game stops him at the receiver's body).
+    rest = next((i for i, r in enumerate(rows[stop:]) if r["speed_yards_s"] == 0 and r["distance_yards"] <= .35), None)
+    rest_winding = (sum((b - a + math.pi) % (2 * math.pi) - math.pi for a, b in zip(angles[rest:], angles[rest + 1:]))
+                    if rest is not None else winding)
     pivots = [r["frame"] for r in rows if abs(r["turn_degrees"]) >= 90]
     return {
         "kind": kind,
@@ -164,6 +174,8 @@ def summarize(rows, name):
         "tail_total_degrees": sum(abs(r["turn_degrees"]) for r in rows[TAIL:]),
         "tail_max_speed_yards_s": max(r["speed_yards_s"] for r in rows[TAIL:]),
         "stationary_target_winding_degrees": math.degrees(winding),
+        "winding_after_rest_degrees": math.degrees(rest_winding),
+        "first_rest_frame": None if rest is None else stop + rest,
         "final_gap_yards": rows[-1]["distance_yards"],
         "max_gap_yards": max(r["distance_yards"] for r in rows),
         "max_post_break_gap_yards": max(r["distance_yards"] for r in rows[BREAK:]),
@@ -278,9 +290,12 @@ def verify_document(document, brake_builds=("v08_brake",)):
         for matrix in ACCEPTANCE:
             for direction in (1, -1):
                 s = cases[f"{build}/{matrix}/man/hitch/{direction}"]["summary"]
-                need(s["post_break_total_degrees"] < 10 and abs(s["stationary_target_winding_degrees"]) < 45,
+                need(s["post_break_total_degrees"] < 10 and abs(s["winding_after_rest_degrees"]) < 45,
                      f"{build}/{matrix} hitch {direction}: the stationary orbit is back")
         twin = twin_of(build)
+        if twin is None or not any(k.startswith(f"{twin}/") for k in cases):
+            # b780 modes2: an --extra brake build without a NAME_nobrake twin has nothing to compare pursuit with
+            continue
         for route in ("hitch", "curl_1_5"):
             for direction in (1, -1):
                 a = cases.get(f"{twin}/r5/pursuit/{route}/{direction}")
@@ -296,6 +311,8 @@ def verify_document(document, brake_builds=("v08_brake",)):
         need(len(s["large_pivot_frames"]) >= 10, f"v08 go {direction}: the shipped go-route spins no longer reproduce")
         s = cases[f"retail/r5/man/hitch/{direction}"]["summary"]
         need(s["post_break_total_degrees"] > 720, f"retail hitch {direction}: the retail orbit no longer reproduces")
+        need(abs(s["winding_after_rest_degrees"]) >= 45,
+             f"retail hitch {direction}: the orbit check no longer sees the retail orbit")
     need(cases["v08_without_trail/r5/man/hitch/1"]["summary"]["post_break_total_degrees"] > 720,
          "ablation: restoring the retail hook no longer brings back the orbit")
     for key, case in cases.items():

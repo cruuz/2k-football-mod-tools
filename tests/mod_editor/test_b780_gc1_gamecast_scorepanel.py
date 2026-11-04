@@ -96,7 +96,7 @@ class StaticTests(unittest.TestCase):
         self.assertNotIn("0x8c465==", source)
 
     def test_revision(self):
-        self.assertEqual(owner.REVISION, 16)
+        self.assertEqual(owner.REVISION, 17)   # b780 pres2: 16 was this fix; 17 adds the pause-screen bar on top of it
 
 
 @unittest.skipUnless(XBE.is_file(), "pinned USA retail XBE required")
@@ -143,7 +143,7 @@ class RetailOwnershipTests(unittest.TestCase):
     def test_the_owner_leaves_the_panel_retail_and_keeps_the_play_call_bar_off(self):
         from mod_editor.core import nfl2k5_scorebug_ingame as scene
         patched, receipt = owner.apply(self.payload)
-        self.assertEqual((owner.status(patched), receipt["binding_revision"]), ("applied", 16))
+        self.assertEqual((owner.status(patched), receipt["binding_revision"]), ("applied", 17))
         at = lambda va, n: patched[scene.layout.sbpos.va_to_off(patched, va):scene.layout.sbpos.va_to_off(patched, va) + n]
         self.assertEqual(at(PANEL_DRAW, PANEL_DRAW_END - PANEL_DRAW), self.image.read(PANEL_DRAW, PANEL_DRAW_END - PANEL_DRAW))
         self.assertEqual(at(PLAYCALL_GATE, 6), bytes.fromhex("e92205000090"))

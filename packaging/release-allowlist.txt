@@ -598,6 +598,7 @@ mod_editor/core/nfl2k5_franchise_footer_code.py
 mod_editor/core/nfl2k5_history.py
 mod_editor/core/nfl2k5_history_code.py
 mod_editor/core/nfl2k5_contract_college_guard.py
+mod_editor/core/nfl2k5_load_user_team_guard.py
 mod_editor/core/nfl2k5_coach_career_fix.py
 mod_editor/core/nfl2k5_history_pool.py
 mod_editor/core/nfl2k5_history_pool_code.py
@@ -2159,6 +2160,8 @@ data/nfl2k5_scorebug_mnf/painted_label_2x.json
 mod_editor/core/nfl2k5_scorebug_sprite.py
 mod_editor/core/nfl2k5_scorebug_sprite_code.py
 mod_editor/core/nfl2k5_scorebug_sprite_code_b779.py
+mod_editor/core/nfl2k5_scorebug_sprite_code_r15.py
+mod_editor/core/nfl2k5_scorebug_sprite_code_r16.py
 mod_editor/gui/scorebug_sprite_preview_qt.py
 data/nfl2k5_scorebug_sprite/template.png
 data/nfl2k5_scorebug_sprite/layout.json
@@ -3945,6 +3948,7 @@ tests/mod_editor/test_nfl2k5_draft_clock.py
 tests/mod_editor/test_nfl2k5_weekly_progression.py
 tests/mod_editor/test_nfl2k5_player_progress_screen.py
 tests/mod_editor/test_nfl2k5_contract_college_guard.py
+tests/mod_editor/test_nfl2k5_load_user_team_guard.py
 tests/mod_editor/test_nfl2k5_sim_cb_tackles.py
 tests/mod_editor/test_nfl2k5_option_defaults.py
 tests/mod_editor/test_nfl2k5_sim_rb_injuries.py

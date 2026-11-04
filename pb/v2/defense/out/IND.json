@@ -670,7 +670,7 @@
   {
    "play": 9,
    "appended": false,
-   "name": "Cover 1 Hole",
+   "name": "Cover 1 Robber Off",
    "component": "coverage",
    "concept": "Cover 1 Robber",
    "band": 2,
@@ -718,7 +718,7 @@
   {
    "play": 11,
    "appended": false,
-   "name": "Quarters",
+   "name": "Cover 4 Quarters",
    "component": "coverage",
    "concept": "Cover 4 Quarters",
    "band": 2,
@@ -768,7 +768,7 @@
   {
    "play": 13,
    "appended": false,
-   "name": "Rotate 3 Sky",
+   "name": "Rotate 3 Sky Strong",
    "component": "coverage",
    "concept": "Cover 3 Sky",
    "band": 2,
@@ -800,7 +800,7 @@
   {
    "play": 14,
    "appended": false,
-   "name": "Cover 3 Buzz",
+   "name": "Cover 3 Buzz Weak",
    "component": "coverage",
    "concept": "Cover 3 Buzz",
    "band": 2,
@@ -823,7 +823,7 @@
   {
    "play": 15,
    "appended": false,
-   "name": "Rotate 3 Sky Bail",
+   "name": "Rotate 3 Sky Strong Bail",
    "component": "coverage",
    "concept": "Cover 3 Sky",
    "band": 2,
@@ -904,7 +904,7 @@
   {
    "play": 18,
    "appended": false,
-   "name": "Zero Blitz",
+   "name": "Cover 0 Double A Blitz",
    "component": "coverage",
    "concept": "Cover 0 Blitz",
    "band": 2,
@@ -954,7 +954,7 @@
   {
    "play": 20,
    "appended": false,
-   "name": "Rotate 3 Cloud",
+   "name": "Rotate 3 Cloud Strong",
    "component": "coverage",
    "concept": "Cover 3 Cloud",
    "band": 2,
@@ -987,7 +987,7 @@
   {
    "play": 21,
    "appended": false,
-   "name": "Cover 6 Flip",
+   "name": "Cover 6 Split",
    "component": "coverage",
    "concept": "Cover 6",
    "band": 2,
@@ -1059,7 +1059,7 @@
   {
    "play": 24,
    "appended": false,
-   "name": "Rotate 3 Cloud Bail",
+   "name": "Rotate 3 Cloud Strong Bail",
    "component": "coverage",
    "concept": "Cover 3 Cloud",
    "band": 3,
@@ -1165,7 +1165,7 @@
   {
    "play": 28,
    "appended": false,
-   "name": "Creeper Mike Rotate",
+   "name": "Sim Pressure Mike Rotate",
    "component": "coverage",
    "concept": "Sim Pressure 3",
    "band": 2,
@@ -1293,7 +1293,7 @@
   {
    "play": 33,
    "appended": false,
-   "name": "2 Fire Nickel",
+   "name": "Cover 2 Nickel Fire",
    "component": "coverage",
    "concept": "Cover 2 Fire",
    "band": 3,
@@ -1317,7 +1317,7 @@
   {
    "play": 34,
    "appended": false,
-   "name": "Cover 0 Max",
+   "name": "Cover 0 Nickel Blitz",
    "component": "coverage",
    "concept": "Cover 0 Blitz",
    "band": 3,
@@ -1340,7 +1340,7 @@
   {
    "play": 35,
    "appended": false,
-   "name": "Cover 6 Split",
+   "name": "Cover 6 Flip",
    "component": "coverage",
    "concept": "Cover 6",
    "band": 2,
@@ -1384,7 +1384,7 @@
   {
    "play": 37,
    "appended": false,
-   "name": "Cover 1 Rat",
+   "name": "Cover 1 Rat Off",
    "component": "coverage",
    "concept": "Cover 1 Robber",
    "band": 3,
@@ -1407,7 +1407,7 @@
   {
    "play": 187,
    "appended": false,
-   "name": "Cover 4 Drop",
+   "name": "Quarters Drop 8",
    "component": "coverage",
    "concept": "Cover 4 Quarters",
    "band": 2,
@@ -1558,7 +1558,7 @@
   {
    "play": 194,
    "appended": false,
-   "name": "Cover 0 Double A Blitz",
+   "name": "Zero Blitz",
    "component": "coverage",
    "concept": "Cover 0 Blitz",
    "band": 2,
@@ -1581,7 +1581,7 @@
   {
    "play": 195,
    "appended": false,
-   "name": "Cover 1 Robber Off",
+   "name": "Cover 1 Robber Lurk",
    "component": "coverage",
    "concept": "Cover 1 Robber",
    "band": 1,
@@ -1602,7 +1602,7 @@
   {
    "play": 196,
    "appended": false,
-   "name": "Cover 3 Sky",
+   "name": "Cover 3 Sky Strong",
    "component": "coverage",
    "concept": "Cover 3 Sky",
    "band": 2,
@@ -1671,7 +1671,7 @@
   {
    "play": 199,
    "appended": false,
-   "name": "Zero Blitz 2",
+   "name": "Cover 0 Max",
    "component": "coverage",
    "concept": "Cover 0 Blitz",
    "band": 3,
@@ -1771,7 +1771,7 @@
   {
    "play": 210,
    "appended": false,
-   "name": "Cover 3 Buzz Weak",
+   "name": "Cover 3 Buzz Weak Bail",
    "component": "coverage",
    "concept": "Cover 3 Buzz",
    "band": 2,
@@ -1817,7 +1817,7 @@
   {
    "play": 212,
    "appended": false,
-   "name": "2 Read Match",
+   "name": "Cover 2 Match",
    "component": "coverage",
    "concept": "Cover 2",
    "band": 2,
@@ -1840,7 +1840,7 @@
   {
    "play": 213,
    "appended": false,
-   "name": "Cover 3 Cloud",
+   "name": "Cover 3 Cloud Weak",
    "component": "coverage",
    "concept": "Cover 3 Cloud",
    "band": 2,
@@ -1863,7 +1863,7 @@
   {
    "play": 214,
    "appended": false,
-   "name": "Cover 2 Match",
+   "name": "2 Read Match",
    "component": "coverage",
    "concept": "Cover 2 Hard",
    "band": 2,
@@ -1952,13 +1952,13 @@
  "receipt": {
   "team": "IND",
   "offense_pack": "data/playbooks/softdrink_ind_modern.2k5book",
-  "offense_pack_sha256": "601c2993cffa11caa6b12921327d8d51f6053cd5059f9f45162b149567103170",
-  "source_fingerprint": "f16900981d5f2cd466c7909396710bb55d323b68983fb77e3cd07f14797929d3",
-  "replacement_sha256": "0483db93a2c99269d24559b88d839bd30178d7a8727c05a6cb88402e34435c8d",
-  "semantic_sha256": "53724a38887b421089c0e4a3b1bef38245f9a58b89884313e3289ea8ff449fea",
+  "offense_pack_sha256": "8db7799183324e094940215501cee91b36038af8f64f21bbf525d084d6f6be57",
+  "source_fingerprint": "c2993ebcbbd2beab4a429a4615e7352cb8076028f7b3bfcfc30426d81d00efc3",
+  "replacement_sha256": "9f70ea11230297db0763f2747760f8e15131ed05d7657d869d02ae64aa318fff",
+  "semantic_sha256": "3b13db7df3349f6df246aa67a5d4debd203f4d43c95b0d33bf59a0225dfe9584",
   "plays": 62,
   "formations": 4,
-  "nodes": 2800,
+  "nodes": 2808,
   "node_capacity": 3500,
   "formation_count": 50,
   "play_count": 270,
@@ -1966,10 +1966,10 @@
   "band_loss": 0.06386,
   "spy_play": null,
   "native_scoring_faults": 0,
-  "name_pool_units": 5003,
+  "name_pool_units": 5074,
   "name_pool_capacity": 5088,
-  "name_mode": 1,
+  "name_mode": 0,
   "pack": "data/playbooks/softdrink_ind_defense.2k5book",
-  "pack_sha256": "d398627e5b4f84b281b853ab57d0c06f738fa747da6a1930a0a3aa2363668ae1"
+  "pack_sha256": "9d305912025e6c5b0855af562c43fcda209587e76427cb8994e78212b4502d69"
  }
 }

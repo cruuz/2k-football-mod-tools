@@ -68,7 +68,7 @@ def with_revision_five_gate(payload: bytes) -> bytes:
 
 class SiteTests(unittest.TestCase):
     def test_the_release_guard_is_revision_six_and_reads_back(self):
-        self.assertEqual(economy.REVISION, 6)
+        self.assertIn(economy.REVISION, (6, 7))     # b780 econ3: revision 7 keeps the guard's call (its pick moved)
         site = next(s for s in economy.sites() if s.va == economy.VETERAN_CUT_RELEASE)
         self.assertEqual(site.patched[:1], b"\xe8")
         target = (economy.VETERAN_CUT_RELEASE + 5 + struct.unpack_from("<i", site.patched, 1)[0]) & 0xFFFFFFFF
@@ -83,8 +83,13 @@ class SiteTests(unittest.TestCase):
 
     def test_a_revision_five_image_reads_legacy_and_upgrades_in_place(self):
         applied, _ = economy.apply(retail_bytes())
-        image = XbeImage(applied)
-        before = bytearray(applied)
+        # b780 econ3: revision 7's sites go back to their revision-6 bytes first (a revision-5 image has neither)
+        six = applied
+        if economy.REVISION >= 7:
+            from tests.mod_editor.test_b780_econ3_roster_drift import revision_six
+            six = revision_six(applied)
+        image = XbeImage(six)
+        before = bytearray(six)
         # revision 5: the native release call and roster_m without the guard (the guard's bytes back to int3)
         at = image.offset(economy.VETERAN_CUT_RELEASE, 5)
         before[at:at + 5] = NATIVE_RELEASE_CALL
@@ -180,7 +185,8 @@ class NativeStageSixTests(unittest.TestCase):
         self.assertGreater(m.call(0xE6380, ecx=p), market * 21 // 10)
         no_restructure_room(m, team, {p})
         m.call(0xC3F00, ecx=team)
-        m.put(0xE3C278, m.get(team + 0x124) + 1000)   # within 6000 of the cap
+        # b780 econ3 (revision 7, Q45): the cut acts only while the club cannot fit two league-minimum signings
+        m.put(0xE3C278, m.get(team + 0x124) + 100)    # short of that line (was: within 6000 of the cap)
         m.put(0xE576A4, 6)
         m.put(0xE576B4, 0)
         released = []
@@ -210,9 +216,11 @@ class NativeStageSixTests(unittest.TestCase):
         self.assertNotIn(p, cut)
         self.assertIn(p, members)
 
-    def test_a_kicker_with_a_healthy_second_kicker_is_still_cut(self):
+    def test_a_kicker_with_a_healthy_second_kicker_does_not_stop_the_cut(self):
+        # b780 econ3 (revision 7): the release is the least value lost from any position above its minimum, so it need
+        # not be the overpaid kicker; with a healthy second kicker the guard no longer blocks it
         p, cut, members = self.run_stage_six(self.after, K, extra="healthy")
-        self.assertIn(p, cut)
+        self.assertTrue(cut)
 
     def test_a_kicker_whose_only_other_kicker_is_hurt_stays(self):
         p, cut, members = self.run_stage_six(self.after, K, extra="injured")
