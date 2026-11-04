@@ -478,11 +478,12 @@ void FC history_game(u32 kind) {
 
 /* ---- the season close ------------------------------------------------------------------------------------- */
 typedef struct {
-    u32 w, l, t, pf, pa, dw, dl, dt, result, bye, played_wc, games;
+    u32 w, l, t, pf, pa, dw, dl, dt, result, bye, played_wc, games, seeded;
 } Line;
 
 static void tally_season(Line *lines, u32 weeks, u32 sb) {
     zero((u8 *)lines, sizeof(Line) * 32);
+    u32 wild_cards = 0;
     for (u32 row = 0; row <= sb && row < 22; row++)
         for (u32 slot = 0; slot < 17; slot++) {
             const u8 *cell = (const u8 *)(GRID + (row * 17 + slot) * 8);
@@ -519,12 +520,20 @@ static void tally_season(Line *lines, u32 weeks, u32 sb) {
             u32 winner = hp > ap ? home : away, loser = hp > ap ? away : home;
             if (hp == ap)
                 continue;
+            /* b780-season1: the division winners are the clubs the game seeded 1-4: every wild card host (seeds 2-4; 3-4 in
+               the retail twelve-team bracket) and the divisional hosts the bracket fixed at its start (the #1 seeds in
+               slots 0 and 2 of the fourteen-team bracket; every slot of the retail one, seeds 1 and 2). A tied division
+               then shows the club the game made champion, whatever the History's own order says. */
             if (round == 1) {
                 lines[home].played_wc = lines[away].played_wc = 1;
+                lines[home].seeded = 1;
+                wild_cards++;
             }
             if (round == 2) {                                  /* a divisional team that skipped the wild card */
                 if (!lines[home].played_wc) lines[home].bye = 1;
                 if (!lines[away].played_wc) lines[away].bye = 1;
+                if (wild_cards <= 4 || !(slot & 1))
+                    lines[home].seeded = 1;
             }
             if (lines[loser].result < round)
                 lines[loser].result = round;                   /* lost in this round */
@@ -554,10 +563,13 @@ static u32 ahead(const Line *a, u32 ia, const Line *b, u32 ib) {
     return ia < ib;
 }
 
+/* the division place: the club the game seeded as division winner first, then the History's own order */
 static u32 place_of(const Line *lines, u32 club) {
     u32 division = G(DIVISIONS + 4 * club) & 7, place = 1;
     for (u32 o = 0; o < 32; o++)
-        if (o != club && (G(DIVISIONS + 4 * o) & 7) == division && ahead(&lines[o], o, &lines[club], club))
+        if (o != club && (G(DIVISIONS + 4 * o) & 7) == division
+            && (lines[o].seeded != lines[club].seeded ? lines[o].seeded > lines[club].seeded
+                                                       : ahead(&lines[o], o, &lines[club], club)))
             place++;
     return place > 4 ? 4 : place;
 }
