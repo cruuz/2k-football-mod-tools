@@ -482,7 +482,7 @@ def _context(payload: bytes) -> tuple[XbeImage, str]:
     rows_state = rows.status(payload)
     if rows_state == "foreign":
         raise DepthLockError("unknown or mixed retail/SPECIAL depth-chart layout")
-    layout = "special" if rows_state == "applied" else "retail"
+    layout = "special" if rows_state in ("applied", "previous") else "retail"  # previous: an older SPECIAL role table
     frame = bytearray(image.read(0x2BDCF0, 0xF0))
     at = HUMAN_VA - 0x2BDCF0
     if frame[at:at + len(PATCHED_HUMAN)] == PATCHED_HUMAN:

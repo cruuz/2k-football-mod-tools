@@ -67,17 +67,25 @@ RETAIL_BENCH = bytes.fromhex(
 DUPLICATE_COUNT_CALLS = (0x243B6C, 0x243B90, 0x243BCD, 0x243BD7)
 # unit, slot, <=4-char abbreviation, <=26-char long name, position, encoded chain
 ROLE_ROWS = ((3, 4, "LS", "LONG SNAPPER", 12, 2),
-             (3, 5, "LGUN", "LEFT GUNNER", 3, 3),
-             (3, 6, "RGUN", "RIGHT GUNNER", 4, 3),
+             (3, 5, "LGUN", "LEFT GUNNER", 3, 6),
+             (3, 6, "RGUN", "RIGHT GUNNER", 4, 6),
              (3, 7, "NCB", "NICKEL CORNER", 4, 2),
              (3, 8, "DCB", "DIME CORNER", 4, 3),
              (3, 9, "SLWR", "SLOT RECEIVER", 3, 2),
-             (3, 10, "GAD", "GADGET", 3, 4),
-             (3, 11, "3DRB", "THIRD DOWN BACK", 7, 2),
+             (3, 10, "GAD", "GADGET", 3, 7),
+             (3, 11, "3DRB", "THIRD DOWN BACK", 7, 3),
              (3, 12, "PWRB", "POWER BACK", 7, 1))
-# Revision 1 (beta-76.4 .. the beta-80 RC): 3DRB was the RB rank list itself; accepted on read, upgraded by apply.
-REVISION = 2
-LEGACY_ROLE_ROWS = ((3, 11, "3DRB", "THIRD DOWN BACK", 7, 0),)
+# Revision 3 (b780 sub1; Noah 11/03: a special-row pick never starts somewhere else). LGUN and RGUN read rank row 3
+# of the WR and CB orders (ordinal 6, which no club formation asks for except the punt gunners), 3DRB the RB side
+# order from row 1 (ordinal 3: only the third-down rule asks for it), GAD the WR side order from row 3 (ordinal 7:
+# only the gadget rule asks for it). Revision 1 (beta-76.4 .. the beta-80 RC: 3DRB = the RB rank list itself, LGUN =
+# WR side row 1, the 4th WR in four- and five-WR sets, RGUN = the dime corner, GAD = WR rank row 2) and revision 2
+# (the b780 hunt5 3DRB = RB rank row 1) read "previous" and apply() rewrites their role records in place.
+REVISION = 3
+PREVIOUS_ROLE_ROWS = {
+    1: {"LGUN": 3, "RGUN": 3, "GAD": 4, "3DRB": 0},
+    2: {"LGUN": 3, "RGUN": 3, "GAD": 4, "3DRB": 2},
+}
 # What each SPECIAL row does on the field (b780 hunt5, measured on the 37 club playbooks of SOFTDRINK v0.9 and the
 # game's own row getter, swap path and lineup picker; tests/mod_editor/test_b780_hunt5_special_rows.py). Both Studio
 # pages show this text. Plain words, no dashes between clauses.
@@ -252,12 +260,8 @@ def _records(payload: bytes, applied: bool) -> list[bytes]:
     raw = _read(payload, TABLE_VA if applied else RETAIL_TABLE_VA, TABLE_SIZE if applied else RETAIL_TABLE_SIZE)
     records = [raw[i:i + RECORD_SIZE] for i in range(0, TABLE_SIZE, RECORD_SIZE)]
     if applied:
-        legacy = {(row[0], row[1]): _role_record(row) for row in LEGACY_ROLE_ROWS}
-        for row in ROLE_ROWS:
-            unit, slot, abbrev = row[0], row[1], row[2]
-            got = records[unit * STRIDE + slot]
-            _require(got == _role_record(row) or got == legacy.get((unit, slot)),
-                     f"unknown {abbrev} record in unit {unit}")
+        found = _role_revision(records)
+        _require(found is not None, "unknown SPECIAL role records")
         for slot, _before, after in WR_LABELS:
             _require(records[slot][:64] == modern.slot_text(*after), "unknown X/Z labels")
         records = records[:37] + [bytes(RECORD_SIZE)] * 7
@@ -317,29 +321,45 @@ def _role_record(row) -> bytes:
     return modern.slot_text(abbrev, long_name) + struct.pack("<II", position, chain)
 
 
-def revision(payload: bytes) -> int | None:
-    """2 for an applied table with the current ROLE_ROWS, 1 for the beta-76.4..beta-80 RC 3DRB record, None otherwise."""
+def _rows_for(revision: int) -> tuple:
+    """ROLE_ROWS as revision ``revision`` wrote them."""
 
-    if status(payload) != "applied":
+    chains = PREVIOUS_ROLE_ROWS.get(revision, {})
+    return tuple(row[:5] + (chains.get(row[2], row[5]),) for row in ROLE_ROWS)
+
+
+def _role_revision(records: list[bytes]) -> int | None:
+    """Which revision wrote these nine SPECIAL role records (3 = current), or None when they are none of them."""
+
+    for revision in (REVISION, *sorted(PREVIOUS_ROLE_ROWS, reverse=True)):
+        if all(records[row[0] * STRIDE + row[1]] == _role_record(row) for row in _rows_for(revision)):
+            return revision
+    return None
+
+
+def revision(payload: bytes) -> int | None:
+    """The SPECIAL role table's revision (1, 2 or 3) on an installed table, None otherwise."""
+
+    if status(payload) not in ("applied", "previous"):
         return None
-    for row in LEGACY_ROLE_ROWS:
-        if _read(payload, modern.record_va(row[0], row[1], table_va=TABLE_VA), RECORD_SIZE) == _role_record(row):
-            return 1
-    return REVISION
+    raw = _read(payload, TABLE_VA, TABLE_SIZE)
+    return _role_revision([raw[i:i + RECORD_SIZE] for i in range(0, TABLE_SIZE, RECORD_SIZE)])
 
 
 def _upgrade(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
-    """Revision 1 -> 2 in place: only the legacy role records (3DRB's chain dword) and their section digest."""
+    """Revision 1 or 2 -> 3 in place: only the changed role records' chain dwords and their section digest."""
 
+    old_revision = revision(payload)
+    _require(old_revision in PREVIOUS_ROLE_ROWS, "not a previous SPECIAL role table")
     buf = bytearray(payload)
     sections = _sections(buf)
     edits, touched = [], set()
-    for old in LEGACY_ROLE_ROWS:
-        new = next(row for row in ROLE_ROWS if row[:2] == old[:2])
+    for old, new in zip(_rows_for(old_revision), ROLE_ROWS):
+        if old == new:
+            continue
         va = modern.record_va(new[0], new[1], table_va=TABLE_VA)
         off = _span(buf, va, RECORD_SIZE)
-        if bytes(buf[off:off + RECORD_SIZE]) != _role_record(old):
-            continue
+        _require(bytes(buf[off:off + RECORD_SIZE]) == _role_record(old), f"unknown {old[2]} record")
         buf[off:off + RECORD_SIZE] = _role_record(new)
         touched.add(_section_for_offset(sections, off).index)
         edits.append({"label": f"special_{new[2]}_chain", "va": f"0x{va + 0x44:x}", "file_offset": f"0x{off + 0x44:x}",
@@ -350,7 +370,7 @@ def _upgrade(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
             buf[at:at + 20] = section_digest(bytes(buf), section)
     patched = bytes(buf)
     _require(status(patched) == "applied" and revision(patched) == REVISION, "SPECIAL rows upgrade verification failed")
-    return patched, {"status": "applied", "already_applied": False, "upgraded_from": "revision 1",
+    return patched, {"status": "applied", "already_applied": False, "upgraded_from": f"revision {old_revision}",
                      "changed_bytes": sum(a != b for a, b in zip(payload, patched)), "edits": edits,
                      "sections_repinned": sorted(touched), "stride": STRIDE, "row_counts": list(ROW_COUNTS),
                      "revision": REVISION, "runtime_witnessed": False}
@@ -376,7 +396,10 @@ def status(payload: bytes) -> str:
         if applied:
             _table_is_known(payload, False)  # retired allocation and its padding are retained intact
             _require(pools.status(payload) in ("applied", "needs_fix"), "position_pools dependency is not applied")
-        return "applied" if applied else "retail"
+            raw = _read(payload, TABLE_VA, TABLE_SIZE)
+            current = _role_revision([raw[i:i + RECORD_SIZE] for i in range(0, TABLE_SIZE, RECORD_SIZE)]) == REVISION
+            return "applied" if current else "previous"
+        return "retail"
     except (ValueError, struct.error, IndexError):
         return "foreign"
 
@@ -388,9 +411,9 @@ def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
     _require(state != "foreign", "depth-chart rows are foreign; refusing")
     _require(pools.status(payload) == "applied",
              "apply nfl2k5_position_pools with depth_chart_third_starter before depth-chart rows")
+    if state == "previous":
+        return _upgrade(payload)
     if state == "applied":
-        if revision(payload) != REVISION:
-            return _upgrade(payload)
         return payload, {"status": "applied", "already_applied": True, "changed_bytes": 0,
                          "edits": [], "sections_repinned": [], "stride": STRIDE, "row_counts": list(ROW_COUNTS),
                          "revision": REVISION}

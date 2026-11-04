@@ -1619,6 +1619,7 @@ _LATE_OWNER_OPTIONS = (
     ("nfl2k5_standings_records", "Team Standings records", lambda p: p.standings_records),  # b780-j1
     ("nfl2k5_cpu_clock2", "Modern CPU clock management", lambda p: p.cpu_clock2),  # b780 b-clock
     ("nfl2k5_audible_legend", "Audible panel legend", lambda p: _audible_panel_choice(p) is not None),  # b780-p3
+    ("nfl2k5_lineup_roles", "SPECIAL third-down back", lambda p: p.depth_chart_rows),  # b780 sub1
     ("nfl2k5_clock_led", "Modern clock digits", lambda p: p.modern_clock_led),  # b778-sd4
     ("nfl2k5_return_coverage", "Return coverage pursuit angles", lambda p: p.return_coverage),  # b778-kr1
     ("nfl2k5_catch_snap_limit", "Defender catch snap limit", lambda p: p.catch_snap_limit),  # b780-cv4
@@ -2646,6 +2647,25 @@ def _apply_audible_legend(plan: "BuildPlan", target: Path, receipt: dict, progre
     receipt["result"]["audible_legend"] = "applied"
 
 
+@_core_step("lineup_roles")
+def _apply_lineup_roles(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    """b780 sub1: the SPECIAL 3DRB on obvious passing downs and RB2 at a missing fullback, with the SPECIAL rows (whose
+    3DRB row it reads); the last late allocator owner (nfl2k5_xbe_space.LATE_OWNERS order)."""
+    if not plan.depth_chart_rows:
+        return
+    module = _core_module("nfl2k5_lineup_roles")
+    if module is None:
+        raise RuntimeError("The SPECIAL third-down back needs nfl2k5_lineup_roles.")
+    progress("Depth chart: third-down back on passing downs", 0, 0)
+    payload, roles_receipt = module.apply(_xbe_bytes(target), third_down=True)
+    _write_xbe_bytes(target, payload)
+    final = _xbe_bytes(target)
+    if final != payload or module.read_settings(final) != {"status": "applied", "third_down": True}:
+        raise RuntimeError("Situational lineup roles: the output does not read back as applied")
+    receipt["steps"].append({"step": "lineup_roles", **roles_receipt})
+    receipt["result"]["lineup_roles"] = "applied"
+
+
 def _sim_stats_preflight(source: Path, progress) -> None:
     """b778-sim1: refuse a source whose simulator initializer is foreign, before any write."""
     module = _core_module("nfl2k5_sim_stats")
@@ -2926,6 +2946,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
                                ("cpu_clock2_overtime", "nfl2k5_cpu_clock2"),  # b780 b-clock
                                ("catch_snap_limit", "nfl2k5_catch_snap_limit"),  # b780-cv4
                                ("audible_legend", "nfl2k5_audible_legend"),  # b780-p3
+                               ("lineup_roles", "nfl2k5_lineup_roles"),  # b780 sub1
                                ("modern_clock_led", "nfl2k5_clock_led"),  # b778-sd4
                                ("letter_grades", "nfl2k5_letter_grades"),
                                ("honors_page", "nfl2k5_honors"), ("honors_history", "nfl2k5_honors_history"),
@@ -3240,6 +3261,8 @@ def _inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[st
                                 else "unavailable")
     audible_legend = _core_module("nfl2k5_audible_legend")  # b780-p3
     out["audible_legend"] = audible_legend.status(_xbe_bytes(source)) if audible_legend is not None else "unavailable"
+    lineup_roles = _core_module("nfl2k5_lineup_roles")  # b780 sub1
+    out["lineup_roles"] = lineup_roles.status(_xbe_bytes(source)) if lineup_roles is not None else "unavailable"
     sim_stats = _core_module("nfl2k5_sim_stats")  # b778-sim1
     out["sim_stats"] = sim_stats.status(_xbe_bytes(source)) if sim_stats is not None else "unavailable"
     quick_release = _core_module("nfl2k5_quick_long_release")  # b780-c-release
@@ -6927,7 +6950,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         cpu_clock2=plan.cpu_clock2,
         catch_snap_limit=plan.catch_snap_limit,
         scramble_blocking=plan.scramble_blocking, protection_calls=plan.protection_calls,
-        audible_legend=_audible_panel_choice(plan) is not None)  # b780-p3
+        audible_legend=_audible_panel_choice(plan) is not None,  # b780-p3
+        lineup_roles=plan.depth_chart_rows)  # b780 sub1: the SPECIAL third-down back rides with the SPECIAL rows
     if plan.read_option_runtime or plan.qb_spy:
         _step("play_intents")
         resolver = _core_module("nfl2k5_play_intents")
@@ -6972,6 +6996,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             or plan.music_shuffle or plan.practice_squad_screen or plan.abilities or plan.qb_spy or plan.calendar_engine or plan.camera or plan.franchise_autosave
             or plan.historic_teams_quick_game or plan.espn25_more_moments or plan.historic_stock_books or plan.espn25_era_rules or r62.get("anniversary_kickoff") or r62.get("widescreen_menus") or r62.get("team_logo_swap") or r62.get("period_goalposts") or plan.k128_memory or plan.letter_grades or plan.honors_page
             or plan.return_coverage or plan.pass_protection or plan.pass_rush_stats or plan.cpu_passer_iq or plan.catch_snap_limit or plan.protection_calls or plan.audible_legend
+            or plan.depth_chart_rows  # b780 sub1: the lineup roles owner rides with the SPECIAL rows
             or plan.history_screen or plan.franchise_history or bool(plan.speed_threshold)):  # b780-int: reserved up front too
         _step("xbe_space")
         progress("Adding experimental extra patch space", 0, 0)
@@ -7016,6 +7041,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             catch_snap_limit=plan.catch_snap_limit,
             scramble_blocking=plan.scramble_blocking, protection_calls=plan.protection_calls,
             audible_legend=_audible_panel_choice(plan) is not None,  # b780-p3
+            lineup_roles=plan.depth_chart_rows,  # b780 sub1
             **{**r62, "read_option_intent_table": read_table, "modern_naming": False, "crib_reclaim": False})
         _write_xbe_bytes(target, patched)
         receipt["steps"].append({"step": "xbe_space", **space_receipt,
@@ -8260,6 +8286,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     _apply_protection_calls(plan, target, receipt, progress)
     # b780-p3: the audible panel lift / button legend, the last late allocator owner (LATE_OWNERS order)
     _apply_audible_legend(plan, target, receipt, progress)
+    # b780 sub1: the SPECIAL third-down back and the fullback fallback, the last late allocator owner (LATE_OWNERS order)
+    _apply_lineup_roles(plan, target, receipt, progress)
     # b778-pg2: the Player Progress screen and weekly snapshot (a late allocator owner after force_out)
     # b778-cb1: cornerback tackle credit, after force_out
     # b778-sd4: modern clock digits, after modern sideline catches
