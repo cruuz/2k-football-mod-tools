@@ -52,7 +52,8 @@ class SourceTests(unittest.TestCase):
 
     def test_only_a_prospect_resumes_the_draft_on_load(self):
         body = SRC[SRC.index('u32 FC mode_loaded(u32 manager,u32 target) {'):SRC.index('void mode_load_error')]
-        self.assertIn('if(G(0xE576A4)==5 && (B((u8 *)primary(),0x25)&0x1f)<2) return (u32)m3_draft_menu;', body)
+        self.assertIn('if(me && (me[0x25]&0x1f)<2) return (u32)m3_draft_menu;', body)
+        self.assertIn('u8 *me=(u8 *)primary();', body)
         self.assertNotIn('if(G(0xE576A4)==5) return', body)
         self.assertNotIn('return (u32)team_menu', body, 'a free-agent career loads into Career Home')
 

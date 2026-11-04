@@ -73,6 +73,17 @@ class Machine:
         # The native 0x1565F0 assignment helper itself is executed unchanged.
         self.stub(0x120880, lambda: (self.input_modes.append((self.reg("ECX"), self.reg("EDX"))), self.ret()))
         self.stub(0x7D550, lambda: self.ret())
+        # (after the two native-service stubs: mode4's presentation() pops stubs[0])
+        # b780 mc1 (Q79): a composed build with the on-demand Career Home module (nfl2k5_module_loader) calls the
+        # kernel's XeLoadSection (ordinal 327, thunk 0x4E3BFC -> 0x80000147) when a MyCareer screen opens; the thunk
+        # target was unmapped here. Every section's bytes are already mapped above, so the service answers
+        # STATUS_SUCCESS (stdcall, one argument) and records the section header; XeUnloadSection (328) likewise.
+        self.section_loads = []
+        self.uc.mem_map(0x80000000, 0x1000)
+        self.uc.mem_write(0x80000000, b"\xc3" * 0x1000)
+        self.stubs.append(self.uc.hook_add(u.UC_HOOK_CODE, lambda *_: (
+            self.section_loads.append(self.get(self.reg("ESP") + 4)), self.ret(0, pop=4)), begin=0x80000147, end=0x80000147))
+        self.stubs.append(self.uc.hook_add(u.UC_HOOK_CODE, lambda *_: self.ret(0, pop=4), begin=0x80000148, end=0x80000148))
         if save is not None:
             self.uc.mem_write(self.SAVE, save)
             self.root = self.SAVE + 0x320

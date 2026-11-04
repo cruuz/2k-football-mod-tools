@@ -2177,14 +2177,14 @@
   ],
   "minimal_composition": {
     "edge_modern_pools_sha256": "fba54dc68b2cc31903e675c3880605c23fec077ffb9fe7eca8905530536b5b27",
-    "with_inline_mycareer_sha256": "95fa2cd519fd5d1d1c5346b6bd70d46d6dae6ab54c69130ab58b6e8e04d6a80f",
+    "with_inline_mycareer_sha256": "1d77f06d850ba66324ef61474b9a80a9966089677fe60982e7fcc06903158553",
     "pool_changed_bytes": 1916,
     "pool_sections_repinned": [
       0,
       12,
       14
     ],
-    "mycareer_content_bytes": 20451
+    "mycareer_content_bytes": 20456
   },
   "lineup_exhaustion_revision": "SD2, 2026-09-28; PROVED OFFLINE; see sd/SD2_REPORT.md",
   "halfback_side_chain_revision": "2c82378d5: HB list pair and inverse list-kind mapping; minimal hashes rebuilt with current inline MyCareer mode; PROVED OFFLINE, historical FPF evidence unchanged",

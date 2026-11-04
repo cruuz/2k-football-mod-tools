@@ -1021,7 +1021,10 @@ u32 FC mode_loaded(u32 manager,u32 target) {
         /* b780 mc1: only a rookie in his own draft resumes the draft screen, picked or not: draft prospects carry
          * years pro 1 (+0x25 bits 0-4) and every year rollover adds one, so a veteran has 2 or more. A veteran
          * saved on a later draft day was sent to the MyCareer draft screen and told "You were drafted by" again. */
-        if(G(0xE576A4)==5 && (B((u8 *)primary(),0x25)&0x1f)<2) return (u32)m3_draft_menu;
+        if(G(0xE576A4)==5) {
+            u8 *me=(u8 *)primary();     /* 0 for a lost career (inline_decode): never read through it */
+            if(me && (me[0x25]&0x1f)<2) return (u32)m3_draft_menu;
+        }
         /* b780 mc1: a free-agent career (state 4) loads into Career Home, not into Choose team: the load replaced
          * its screen with the choice, and B there left MyCareer half open (the owner word held, so the MyCareer row
          * did nothing). Play next game opens the choice over Career Home. */
