@@ -54,8 +54,10 @@ b780 st1, three more sites (all in place, retail-pinned):
 * the weekly loop head 0x2BDD1B (HUNT6's finding): the postseason puts the AFC and NFC Pro Bowl teams in
   league slots 32/33 and the weekly auto-depth sorted them, moving their members on their own clubs.  The
   call now goes to an all-star skip in the exchange site's spare bytes, so Basic and Advanced (no depth
-  locks) skip them as depth locks revision 5 does.  Depth locks accepts this call as its own skip; an
-  image where depth locks came first keeps depth locks' call (status ``applied`` either way).
+  locks) skip them as depth locks revision 5 does.  The returner fix owns this call: depth locks accepts
+  it as its own skip site and leaves it, and on an image where depth locks came first the returner fix
+  reads depth locks' call as ``previous`` (status ``legacy``) and points it at its own skip, so either
+  order ends in the same bytes.
 """
 
 from __future__ import annotations
