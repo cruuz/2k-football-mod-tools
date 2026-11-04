@@ -1,8 +1,9 @@
 """Formation substitutions behind SPECIAL; pure, bounded personnel planning.
 
-GADGET = WR rank row 2 (ordinal 4); gunners = WR/CB side row 1
-(ordinal 3); LS = C rank row 1 (ordinal 1); 3DB = HB rank row 0;
-PWR = HB side row 0 (paired ordinal 1).
+Gunners = WR/CB rank row 3 (ordinal 6, b780 sub1; was side row 1, ordinal 3);
+LS = C rank row 1 (ordinal 1); 3DB sets keep the lead back (HB ordinal 0);
+PWR = HB side row 0 (paired ordinal 1). GADGET (WR side row 3, ordinal 7) is
+a per-play substitution in nfl2k5_lineup_roles; groups keep X/Z.
 Shared groups with incompatible requests are refused, never silently made
 formation-specific. No plays, routes, formations, categories or nodes grow.
 """
@@ -17,6 +18,11 @@ from . import nfl2k5_play_library as lib
 from . import nfl2k5_playbook_inspector as insp
 
 WR, CB, HB, FB, TE, C = 9, 18, 10, 11, 8, 6
+# b780 sub1 (Noah 11/03: a special-row pick never starts somewhere else): the punt gunners read rank row 3 of the WR and
+# CB orders (ordinal 6, the SPECIAL LGUN / RGUN rows), which no other club formation asks for; before, WR/CB ordinal 3
+# made the left gunner the 4th WR in four- and five-WR sets and the right gunner the dime corner. GADGET_ORDINAL (7,
+# WR side row 3) is the SPECIAL GAD row; no book group carries it (the gadget player comes in per play).
+GUNNER_ORDINAL, GADGET_ORDINAL = 6, 7
 RETAIL_SHA256: dict[str, str] = {
     "ARZ": "590ea15c4609fcd922e09b89e90d9742fc8b6b2c6619d8862e2eea3609f090d5",
     "ATL": "a321f20ffc2921734014bbc45fbcd112156718142110492e2f1c7cdbe8c66041",
@@ -57,43 +63,43 @@ RETAIL_SHA256: dict[str, str] = {
     "reference": "7cfab0516cb7916a816176a394c047f44f58aba88f939f3444d2a57a76c82740"
 }
 APPLIED_SHA256: dict[str, str] = {
-    "ARZ": "ca9d1391543b1c6eefae30837aadce9fee9c27a3b74f7271f90616270602f06f",
-    "ATL": "c64b347220a35b5a9b55193ce81477e60bfc849581a8dc821e21f05cb9f22f12",
-    "BAL": "405b059a14ee9c2d5efd81deba0c25fd53fe98dd9c982eb842aa3970284016d7",
-    "BUF": "ae8840fa4bcd5ca8a9a3df8889a556852fe4b7448c8d057714063d10407ed7fb",
-    "CAR": "306d1d7fc2ed5ee883d55df9d1de1aff967254de899b742abc5200d54b4e0c90",
-    "CHI": "8c98e15d747ea66e8095cc283532be88aa6f213def934c99c739f3ae121c1127",
-    "CIN": "60107bfbdb82dca42eaed89873b3f9461af88522080a96b7af9957ed3e7ef82a",
-    "CLE": "cf43ba188a9b1f56fd59a326e7d4e05de84bb1a2594aa52ffff3a4a7955e2f65",
-    "DAL": "ada513cd3a0bf6ec1c1b975e030882bb6aa2aac98c4fe0bbdabb6a84498e88a8",
-    "DEN": "6c593ca1ef3ae395bc0d83db4b3511602fbb762befffe40cd805e4b60809ad7e",
-    "DET": "ae883c68d695de0ca9b6375800995af258328430a29aeccaec751a322b2181e3",
-    "Editor": "8011fa2c18428cddab931f39747ab13873eefe0a2fa7ab4116d90a739f111412",
-    "GB": "85b8a175d58d6c7973172bcd7c13411bc116610c3bf8d85d902f1a80bf8f6cbc",
-    "GEN": "b1a95032cea6704a34b2a9b3fe2643eebdb80b99dafcede9bf43949b9ebcf2df",
-    "HOU": "514249a1163be9c501aed3c34e3efc91e44fc31bf015e46bff5cd919ac5b19a8",
-    "IND": "a3b3b302751f77788cb4132778d4f1a32ee3a53068fb41bb68a274db6e2db534",
-    "JAX": "47d713c499369524311fc776c8287265d8ab0b80c3e58b5d2ac0e993f8b17c5d",
-    "KC": "4d95d3c760eb1a68f907c6bdee98a25403e8db207d29196d73095a52b5baad8a",
-    "MIA": "a1c988ef93a93443d711006a42082207e273a6266095de0a05ec30aeaece8a81",
-    "MIN": "d6609c7a11d9b6414444d9412571ec07494dcc275c44af505af0ba723e1a960b",
-    "NE": "737fc94f1c3a0269a2e6c236a6f8756cd7370339949c1b6791806ba06d32f053",
-    "NO": "871f0855b4e4f0b295df72164877e5de1e916b4bbc03415296a6e32fbee35d1c",
-    "NYG": "a2934009da7afe8069d093c298264ad3251de35fab09a4230e9b1762d50aa498",
-    "NYJ": "5cca62176f32f917b48fef5dc0b600117940483fc257594aebde3a407d0562e1",
-    "OAK": "9abd267989025e64996cccd8aa25e3f9c06f740c93ef6515c6bb3679228e40b3",
-    "PHI": "0e80ac3d527762041e1f2c6c14ce8ecfb72918fb8387ea47757b67fc05bc7e18",
-    "PIT": "f79e8d1148620dff38564241db9a5bbdec9bfedb22aadb093f91979a4110ce1f",
+    "ARZ": "b42704074bdb588e53dbcba4d5edf56df6dfad6e4f86f4a33f781f156b40dc7e",
+    "ATL": "fc94bfda288d1937576f41737c80390dd042ffbc4dfa948a84d16a45e299ce2d",
+    "BAL": "3b1277442c8df35055a0d956757c2ad515861bf6a4fc48fccb591d77b8e46627",
+    "BUF": "ecb57363063a361b48f455873270ae21f3a477ce3e593791be9671afff64b82f",
+    "CAR": "f7fadd4299a373f65032a386f56f57f4731e8fe374834801c297f0c5121a6fb8",
+    "CHI": "6b451fbff5d66248ffef6457acfc26d3e39f50f7bf7f7ebf8563d9d392410ab2",
+    "CIN": "4b9352252bda970d89f17da57d4f354d8af51fa8308bcffcc2fffd248845ec75",
+    "CLE": "8bfd1d004871aef0b8422a4da55928129f6188a0511a974e02f52d737ac8bc71",
+    "DAL": "496aaab57d1686b801759e6409da18fffbae2f0f9eeeb79244f05032a8ea80ba",
+    "DEN": "05be09be2ff0d9a1dde8f025b3e9a1b5644c8210e75daabb2519bba17b394ad7",
+    "DET": "41f9fc0cfb41a0c025ed3b9f601fd42591f25d2676da2cd47eae4be825ccdac2",
+    "Editor": "61f55da2646e88060a0f5f6960df15b6a932ebf0d799d933ffc3237def0abc24",
+    "GB": "658c4ff498c91ec819f29a79b0de7a069fd85c638a9f7fe47aa4a472d2794c77",
+    "GEN": "1fb00b9ca41e3e4ff51fd3110fd135b457a2123b85c738a845de9d4d96e685de",
+    "HOU": "46ff3a1cc23379a09027e8621243b425fd505333a2b47f69bb7cdd73c0e6d5dd",
+    "IND": "da597a813181af815e514e0912682dd736a212b7e9908d91f1c77381a3b1e67a",
+    "JAX": "7335291e7353bcfe1b82c17435fa624ca54a722b489c25ef240d2a0d6bda8be1",
+    "KC": "7e17c57899883382c7af42234f2474e2fe4ea52cef3263857b07d56694592b02",
+    "MIA": "56af6764227935ee3d0850d8e0596b3d2ee5946bae3471b9c4134e3b67251895",
+    "MIN": "969c122c72cac2f98ebdba4c51efb439f6edfd514bcd9ccc4fcf6685b78eec96",
+    "NE": "24d36184d4aee148826e309d40971c77fd7ee86f131cc52b022eaa727f28b340",
+    "NO": "5ba0b151324b1cbc8227734ffb91cf29080717c168f7949d91e51cb74d719b9f",
+    "NYG": "eab350360a43d295b937e9c3aa17530f01cd73eef687a63a4ab1ef958bd380a6",
+    "NYJ": "07d2924f5da269fe34cde5fc754c3f13b3879636bb004692695628b9d660c6b2",
+    "OAK": "9b42a1a525693b96bb217e8e30b6242fd875e3249674ef68d940d39f0846c81a",
+    "PHI": "105eb568f9b9df2229b65e9f4c1873aa8cf0f8eb9fcf60a0dfa5adcaed4ec10f",
+    "PIT": "b9074e456561bc33c074762265cae335572c736e313db82c35109cf7722d8ee9",
     "PRACTICE": "b7d4955eb07e5528c296ae1373590e81b302fc1074cc26b2102996be1ba41d58",
-    "SD": "2b27cf5c79bbfb93c2aea7fb344717650966c47b17ccebc4ce0a2181eacf2a14",
-    "SEA": "a85aa116710c19254a9a22e1724c09b04a1b86ad06a8a0492bc120f8488658c0",
-    "SF": "18eaff6c86c2642a538d2eebaefbfed8788e4e7182d38ba8bc00bbf0833c0f9b",
-    "STL": "027c82f8f5ad7762aff024f9666fe50c9833820dea29611fd50cd001311c7cc4",
-    "TB": "c1d5c83e38f77b7deb9cbd11c42dfb66e06edbb47eeabf700a2651e8b8499f39",
-    "TEN": "fb1c5fc855096ec59d9fa6f0d6808826c67e2001d3b4282eab960d1fe17c0b19",
-    "WAS": "9b0e3f1fc2c1ed743114f110eb92585d039eab81857204bd7476f31b9d86d03f",
-    "WCO": "05a0eae92c7e580ddf162cc4c2f8d52abc8164340407562aa9c77b984d3f96c8",
-    "reference": "e59b4da23c794d439e29f6308199e247a26ad291b99e76d1abbf72b5c53ce710"
+    "SD": "40ce1a8bbaaddb088e15217eb5267ad3f8b3f764f25dd4c3d6637676dc7b6eaf",
+    "SEA": "a89529ce4c24c0130bbe1cba09b4af3dca612d0c8869955a23fe0a283d3a99b0",
+    "SF": "bd123e295a6f6ce7033b57cce58839957c41318b3c2bbfcd0c5c0c661cc4157a",
+    "STL": "b07a72b76a64ce92a6a5da1ff509d6d0ea63e418516c0c823378443d15c1093e",
+    "TB": "b4c1dfe433bc7d6db767eb574065e678f931c477618dbc751c9694bd3b7fec56",
+    "TEN": "284d9c46226aa3eff6015e13d1f3ab3e5125e9704e6b33f31f8fb763c0acd1e7",
+    "WAS": "027b3254ce75c66ca34284b1386c635fe3f786ae3d54a74039de857cc312af5f",
+    "WCO": "6ed9efc8f9aa7b156a5cb5a0827e721fa282627057e972c0033f091b1d12db47",
+    "reference": "08a815ee2cd754a6799326a5629849cf73470ae915e46c28f708451a7ce61ae1"
 }
 
 
@@ -209,7 +215,12 @@ def plan(raw: bytes, book) -> dict:
                 reason = "shared_group_gadget_carriers_disagree"
             elif sum(c & 31 == WR for c in codes) >= 3:
                 reason = "gadget_conflicts_with_x_z_slot_ordinals"
-            add(group, "gadget", {s: WR | 4 << 5 for s in slots}, reason, gadgets)
+            else:
+                # b780 sub1 (Q61): personnel belongs to the shared group, so a gadget ordinal here also put the gadget
+                # receiver at WR in every base set of that group (35 formations: Cleveland and the GEN, WCO and
+                # reference books). The gadget player now comes in per play (nfl2k5_lineup_roles); groups keep X/Z.
+                reason = "gadget_is_a_per_play_substitution"
+            add(group, "gadget", {s: WR | GADGET_ORDINAL << 5 for s in slots}, reason, gadgets)
         specials = [f for f in fs if f["special"]]
         if specials:
             snap_slots = {s for f in specials for s in f["snap_slots"]}
@@ -231,7 +242,7 @@ def plan(raw: bytes, book) -> dict:
                         or abs(f["positions"][left][1]) > codec.YD_CM
                         or abs(f["positions"][right][1]) > codec.YD_CM for f in punts):
                     reason = "gunner_geometry_disagrees"
-                add(group, "gunners", {left: WR | 3 << 5, right: CB | 3 << 5}, reason, punts)
+                add(group, "gunners", {left: WR | GUNNER_ORDINAL << 5, right: CB | GUNNER_ORDINAL << 5}, reason, punts)
     failures = []
     for e in entries:
         if not e["refused_reason"] and e["before"] != e["after"]:

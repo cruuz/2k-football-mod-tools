@@ -993,7 +993,11 @@ class CoachesPanel(QWidget):
             return
         chosen, _filter = QFileDialog.getSaveFileName(self, "Save staff file", "staff.json", STAFF_FILTER)
         if chosen:
-            ui.write_file(chosen, self._staff)
+            try:
+                ui.write_file(chosen, self._staff)
+            except OSError as exc:                       # a folder that is gone, read only, or a full drive
+                self._set_state_text(f"Could not save the staff file: {plain_error(exc)}")
+                return
             self._set_state_text(f"Staff file saved: {Path(chosen).name}")
 
     def _load_file(self) -> None:

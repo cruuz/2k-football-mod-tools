@@ -23,6 +23,10 @@ and makes it useful all season:
 * **Screen values** (0x365B20): the season view returns the stored baseline for ``Previously``, the
   live rating for ``Currently`` and their difference for ``Change``. The view button (below) steps
   the same three rows through the stored weeks.
+* **Weekly Prep's Player Results stays retail** (b780 hunt3): retail draws that screen ("Preparation Results",
+  descriptor 0x551A40) with the same handler, getter and label site as Player Progress, and tells them apart by
+  [0xCC2388] (1 there, 0 here). Beta-78 to the v0.9 RC never read it, so once the season baseline existed the
+  practice results showed the season baseline and season change. Both hooks now hand that screen to retail.
 * **Weekly views, screen-scoped** (b780-b9, Noah's v0.8 known issue "weekly Player Progress views are not
   reachable"): b779-pp5 found that the old toggle sat on the shared ignored-event slot (0xF4268), a per-frame event
   (event 9), so the label cycled at frame rate with no button involved, and removed it.  The views come back through
@@ -119,6 +123,12 @@ FN_STAGE_ENTER = 0x00247B20
 FN_STAGE = 0x000C4BB0
 FN_LEAGUE = 0x000C4B80
 RETAIL_HEADER_TEXT = 0x00EB92D8
+# b780 hunt3: the getter (0x365B20) and the label site (0x365E34) are shared. Retail draws Player Progress (descriptor
+# 0x551800) and Weekly Prep's Player Results, titled "Preparation Results" (descriptor 0x551A40), with one handler
+# (event 8, 0x365CE0). Their event 4 handlers store this word: 0x365F70 stores 0 (Player Progress), 0x365F90 stores 1
+# (Preparation Results), and the retail getter takes the practice values when it is 1. Both hooks leave that screen
+# retail.
+SCREEN_MODE_VA = 0x00CC2388
 
 
 # --- hook sites ---------------------------------------------------------------------------------
@@ -306,6 +316,8 @@ def _assemble(code_va: int, data_va: int, map_va: int, text_va: int,
     # Call site 0x365E34 replaced `mov edx,0xEB92D8`; EAX and ECX are dead there (ECX is reloaded by the next lea).
     a.label("header")
     a.b("ba" + _imm(RETAIL_HEADER_TEXT))          # mov edx,retail "+/- Change"
+    a.b("833d" + _imm(SCREEN_MODE_VA) + "00")     # cmp dword [0xCC2388],0 (b780 hunt3)
+    a.j8("75", "hdr_done")                        # jne done: Preparation Results keeps the retail label
     a.b("0fb605" + _imm(data_va))                 # movzx eax,byte [view]
     a.b("85c0"); a.j8("74", "hdr_done")           # test eax,eax ; jz done (season)
     a.b("813d" + _imm(record_va) + _imm(RECORD_MAGIC)); a.j8("75", "hdr_done")
@@ -357,6 +369,10 @@ def _assemble(code_va: int, data_va: int, map_va: int, text_va: int,
     # tables, not one byte), so the screen asks it for both sides of the comparison.  The stored
     # side is staged into the live player's 28 ratings, read, and restored.
     a.label("value")
+    # b780 hunt3: Preparation Results (Weekly Prep's Player Results) shares this getter; it gets the retail getter
+    # with ECX, the arguments and the return address exactly as its caller left them.
+    a.b("833d" + _imm(SCREEN_MODE_VA) + "00")   # cmp dword [0xCC2388],0
+    a.j32(JNE, "value_screen_retail")
     a.b("53565755")                             # push ebx,esi,edi,ebp
     a.b("83ec48")                               # sub esp,0x48
     a.b("8b44245c")                             # mov eax,[esp+0x5c] mode
@@ -480,6 +496,7 @@ def _assemble(code_va: int, data_va: int, map_va: int, text_va: int,
     # franchise with no record yet the fallback bugchecked at 0xF31B6 (Front Office > Player Progress froze).
     a.b("8b4c2418")                             # mov ecx,[esp+0x18] (the manager)
     a.b("83c448"); a.b("5d5f5e5b")              # restore the caller frame
+    a.label("value_screen_retail")              # b780 hunt3: entered untouched for Preparation Results
     a.b("53"); a.b("8b5c240c")                  # replay the retail prologue
     a.jmp_abs(0x00365B25)
 

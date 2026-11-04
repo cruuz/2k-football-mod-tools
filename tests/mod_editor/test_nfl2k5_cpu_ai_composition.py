@@ -19,6 +19,7 @@ from tests import nfl2k5_allocator_stack as stack
 from mod_editor.core import nfl2k5_cpu_qb_reads as reads, nfl2k5_db_ball_play as ball
 from mod_editor.core import nfl2k5_xbe_space as space, nfl2k5_throw_tuning as tt
 from mod_editor.core import nfl2k5_catch_slider as catch
+from mod_editor.core import nfl2k5_cpu_third_down as third_down
 from tests.mod_editor.test_nfl2k5_owner_pairwise_composition import retail_xbe, prerequisites
 from tests.mod_editor.test_nfl2k5_cpu_qb_reads import b775_xbe
 
@@ -112,12 +113,23 @@ for _name, _owner in GAMEPLAY:
 
 class CeilingTests(unittest.TestCase):
     def test_complete_gate_union_is_at_the_request_ceiling(self):
-        seed, _ = space.apply(prerequisites(retail_xbe()), stack.REQUESTS, scaleout=True)
+        # b780 int2: late owners are appended in LATE_OWNERS order (a build reserves every selected one in its first
+        # space pass, _selected_space_requests). The beta-80 sprite scorebug (+544 B, p2-playcall) leaves the RX run no
+        # room for the 192-byte CPU third-down owner, so in the complete union it sits in the v4 pool, where appending
+        # CPU QB reads (ordered before it) would move it. The seed is the complete union up to CPU QB reads, and the
+        # third-down owner is appended after it, in build order.
+        later = set(space.LATE_OWNERS[space.LATE_OWNERS.index(reads.OWNER) + 1:])
+        seed, _ = space.apply(prerequisites(retail_xbe()), tuple(r for r in stack.REQUESTS if r[0] not in later),
+                              scaleout=True)
         # b778-xs1: the 97th entry no longer refuses; the v4 directory document in the pool holds the list
         grown = reads.apply(seed, recheck=True)[0]
         self.assertEqual((space.status(grown), space.scale_version(grown)), ("applied", 4))
+        complete = third_down.apply(grown)[0]
+        self.assertEqual((space.status(complete), reads.status(complete), third_down.status(complete)),
+                         ("applied", "applied", "applied"))
         # the data-only option needs no allocation, so it still installs on the complete union
-        self.assertEqual(reads.read_settings(reads.apply(seed, zone_windows=True)[0])["zone_windows"], True)
+        union, _ = space.apply(prerequisites(retail_xbe()), stack.REQUESTS, scaleout=True)
+        self.assertEqual(reads.read_settings(reads.apply(union, zone_windows=True)[0])["zone_windows"], True)
 
 
 class ThrowTuningTests(unittest.TestCase):

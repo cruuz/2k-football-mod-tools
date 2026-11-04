@@ -41,6 +41,14 @@ def toy_bank(count=40, hanging=5, start=2200, rare=10):
 RARE_ROW = 347
 
 
+def same_code_surnames(table, row=0, count=41):
+    """b780 GEN1: ordinary surnames with the same name-odds code as pool row `row`, so a test that varies only the
+    first name keeps every full name different (namefix redraws a repeated full name) without moving the coin."""
+    code = lambda i: (table[rf.T_LASTBITS + (i >> 2)] >> ((i & 3) * 2)) & 3  # noqa: E731
+    rows = [i for i in range(445) if code(i) == code(row) and not RARE_ROW <= i < RARE_ROW + 3]
+    return rows[:count]
+
+
 class Tables(unittest.TestCase):
     def setUp(self):
         self.firsts, self.lasts = shipped_pool()
@@ -181,11 +189,13 @@ def _emulator(table, rand_seed=1):
 OBJ, TABLE, ENTRIES, STACK, SENT = 0x2000000, 0x2100000, 0x2300000, 0x2400000, 0x2500000
 
 
-def run_class(table, prospects, roster_photos=(), seed=1, keep_body=False):
+def run_class(table, prospects, roster_photos=(), seed=1, keep_body=False, roster_names=(), hair=None):
     """Region A (b779-rf3: body draw + generic head shape), then region B..D, per prospect.  Unless keep_body, the
-    prospect's given weight is written back after region A so the face tests choose the build."""
+    prospect's given weight is written back after region A so the face tests choose the build.  roster_names: (first,
+    last) pool rows of players already on the roster (b780 GEN1), after the roster_photos records."""
     from unicorn.x86_const import UC_X86_REG_EAX, UC_X86_REG_ESI, UC_X86_REG_ESP
     mu = _emulator(table, seed)
+    roster_photos = list(roster_photos) + [0xFFFF] * len(roster_names)
     n = len(roster_photos) + len(prospects)
     mu.mem_write(OBJ, struct.pack("<II", n, TABLE))
     mu.mem_write(OBJ + 0x50, struct.pack("<II", rf.POOL_COUNT, ENTRIES))
@@ -197,6 +207,11 @@ def run_class(table, prospects, roster_photos=(), seed=1, keep_body=False):
         mu.mem_write(0x2280000 + 64 * i, lasts[i].encode("utf-16-le") + b"\0\0")
     for k, photo in enumerate(roster_photos):
         mu.mem_write(TABLE + k * 0x54 + 6, struct.pack("<H", photo))
+    for k, (fi, li) in enumerate(roster_names, len(roster_photos) - len(roster_names)):
+        mu.mem_write(TABLE + k * 0x54 + 0x10, struct.pack("<II", 0x2200000 + 64 * fi, 0x2280000 + 64 * li))
+    if hair is not None:                 # b780 GEN1 Q81: (va, helper bytes) installed and HAIRPTR pointed at it
+        mu.mem_write(hair[0], hair[1])
+        mu.mem_write(rf.HAIRPTR_VA, struct.pack("<I", hair[0]))
     rng = random.Random(seed)
     out = []
     for j, (fi, li, pos, wt) in enumerate(prospects):
@@ -221,6 +236,7 @@ def run_class(table, prospects, roster_photos=(), seed=1, keep_body=False):
         d18, d20 = struct.unpack_from("<I", r, 0x18)[0], struct.unpack_from("<I", r, 0x20)[0]
         out.append(dict(photo=struct.unpack_from("<H", r, 6)[0], tone=(d18 >> 7) & 7, dreads=d18 & 1,
                         face=(d20 >> 17) & 7, weight=body[0] + 150, height=body[1], first=(struct.unpack_from("<I", r, 0x10)[0] - 0x2200000) // 64,
+                        b0d=r[0x0D],
                         changed={k for k in range(0x54) if r[k] != blob[k]}, college=struct.unpack_from("<I", r, 0)[0],
                         esp=mu.reg_read(UC_X86_REG_ESP) - sp,
                         regs=tuple(struct.unpack_from("<IIII", bytes(mu.mem_read(sp, 16))))))
@@ -265,6 +281,7 @@ class Native(unittest.TestCase):
                                                 0x2A, 0x2B})  # b779-rf3: region A draws weight and height
 
     def test_face_matches_bucket(self):
+        taken = collections.defaultdict(set)
         for (fi, li, pos, wt), r in zip(self.prospects, self.res):
             build = 0 if wt <= rf.LEAN_MAX_LB else 1 if wt < rf.HEAVY_MIN_LB else 2
             if RARE_ROW <= li < RARE_ROW + 3:
@@ -272,8 +289,13 @@ class Native(unittest.TestCase):
                 rare_b, k = divmod(r["photo"] - 2920, 10)
                 self.assertEqual(rare_b, 3 * g + build, "a rare surname takes his group's row for his build")
                 self.assertEqual(r["tone"], rf.RARE_TONES[g])
-                # b780: the rare first name follows the body region A rolled ((weight - 150) ^ height), not the college
-                self.assertEqual(r["first"], 473 + 4 * (li - RARE_ROW) + (((wt - 150) ^ r["height"]) & 3))
+                # b780: the rare first name follows the body region A rolled ((weight - 150) ^ height), not the college;
+                # b780 GEN1: then the next of the four while that full name is taken (the fourth try stands)
+                first = 473 + 4 * (li - RARE_ROW)
+                k = ((wt - 150) ^ r["height"]) & 3
+                tries = [first + (k + t) % 4 for t in range(4)]
+                self.assertEqual(r["first"], next((f for f in tries[:3] if f not in taken[li]), tries[3]))
+                taken[li].add(r["first"])
                 self.assertEqual(r["dreads"], 0)
                 continue
             b, k = divmod(r["photo"] - 2200, 40)
@@ -325,7 +347,8 @@ class Native(unittest.TestCase):
         names = rf.load_names()
         black = [i for i, n in enumerate(firsts[:445]) if names["first"][n] > 40][:5]
         qb = rf.POSITIONS.index("QB")
-        pros = [(black[i % len(black)], 0, qb, 220) for i in range(150)]
+        last = same_code_surnames(self.table)
+        pros = [(black[i % len(black)], last[i % len(last)], qb, 220) for i in range(150)]
         on = sum(r["tone"] >= 2 for r in run_class(self.table, pros, seed=4))
         off = sum(r["tone"] >= 2 for r in run_class(bytes(t), pros, seed=4))
         self.assertGreater(on, 100)
@@ -337,8 +360,9 @@ class Native(unittest.TestCase):
         white = [i for i, n in enumerate(firsts[:445]) if names["first"][n] < -40][:5]
         black = [i for i, n in enumerate(firsts[:445]) if names["first"][n] > 40][:5]
         qb = rf.POSITIONS.index("QB")
-        pros = [(white[i % len(white)], 0, qb, 220) for i in range(100)] + [(black[i % len(black)], 0, qb, 220)
-                                                                             for i in range(100)]
+        last = same_code_surnames(self.table)
+        pros = ([(white[i % len(white)], last[i % len(last)], qb, 220) for i in range(100)]
+                + [(black[i % len(black)], last[i % len(last)], qb, 220) for i in range(100)])
         res = run_class(self.table, pros, seed=9)
         w = sum(r["tone"] >= 2 for r in res[:100])
         b = sum(r["tone"] >= 2 for r in res[100:])
@@ -402,6 +426,92 @@ class NativeRh2(unittest.TestCase):
             self.assertEqual(sum(counts.values()), 160, "only the surname's own four first names")
             self.assertTrue(all(20 <= c <= 70 for c in counts.values()), (rf.RARE_SURNAMES[g], counts))
 
+    def test_a_rare_full_name_is_not_repeated_while_one_is_free(self):
+        """b780 GEN1: two prospects with one rare surname drew the same first name one time in four (the RC's classes:
+        "Raj Patel" twice in one class). A full name a player on the roster already carries is skipped while one of the
+        four is free."""
+        table = rf.tables(self.firsts, self.lasts, toy_bank())
+        rng = random.Random(781)
+        for g in range(3):
+            li, names = RARE_ROW + g, list(range(473 + 4 * g, 477 + 4 * g))
+            for trial in range(25):           # four prospects with one rare surname in a class: four different names
+                pros = [(rng.randrange(400), li, rng.randrange(17), rng.randint(185, 320)) for _ in range(4)]
+                res = run_class(table, pros, seed=7800 + trial, keep_body=True)
+                self.assertEqual(sorted(r["first"] for r in res), names, (rf.RARE_SURNAMES[g], trial))
+            for free in names:                # three of the four on the roster already: the next one gets the fourth
+                pros = [(rng.randrange(400), li, rng.randrange(17), rng.randint(185, 320)) for _ in range(6)]
+                res = run_class(table, pros, roster_names=[(f, li) for f in names if f != free], seed=free,
+                                keep_body=True)
+                self.assertEqual(res[0]["first"], free, (rf.RARE_SURNAMES[g], free))
+                self.assertTrue(all(r["first"] in names for r in res))
+        # the same first name with another surname is another full name: three players named Wei (pool surname row 0)
+        # change nothing for the Chens
+        chen, wei = RARE_ROW + 1, 477
+        pros = [(rng.randrange(400), chen, 0, 220) for _ in range(40)]
+        plain = run_class(table, pros, seed=99, keep_body=True)
+        other = run_class(table, pros, roster_names=[(wei, 0)] * 3, seed=99, keep_body=True)
+        self.assertEqual([r["first"] for r in plain], [r["first"] for r in other])
+
+    def test_an_ordinary_full_name_is_not_repeated(self):
+        """b780 GEN1 Q85: first and last names are independent draws, so a class repeated a full name about once in
+        three classes (and could repeat any generated player's). namefix redraws the first name while another player
+        on the roster has the same full name."""
+        table = rf.tables(self.firsts, self.lasts, toy_bank())
+        pros = [(5, 7, rf.POSITIONS.index("WR"), 200) for _ in range(60)]   # every prospect drew the same full name
+        res = run_class(table, pros, seed=785)
+        names = [(r["first"], 7) for r in res]
+        self.assertEqual(res[0]["first"], 5, "the first one keeps his name")
+        self.assertEqual(len(set(names)), len(names), "no full name twice")
+        self.assertTrue(all(r["first"] < 445 for r in res), "redraws are ordinary first names")
+        taken = run_class(table, pros[:10], roster_names=[(5, 7)], seed=786)
+        self.assertNotIn(5, [r["first"] for r in taken], "nor a full name a roster player already carries")
+
+    def test_the_helpers_are_where_the_hooks_go(self):
+        code = dict(rf._spans(bytes(rf.TABLE_DATA)))
+        hook = code[rf.JERSEY_HOOK_VA]
+        self.assertEqual(rf.JERSEY_HOOK_VA + 5 + struct.unpack_from("<i", hook, 1)[0], rf.HELPER_VA["dlwrap"])
+        region_c = code[rf.REGION_C]
+        self.assertEqual(region_c[0], 0xE8)
+        self.assertEqual(rf.REGION_C + 5 + struct.unpack_from("<i", region_c, 1)[0], rf.HELPER_VA["gearsetup"])
+        for name, va in rf.HELPER_VA.items():
+            self.assertTrue(rf.REGION_C <= va < rf.REGION_C_END or rf.COLLEGE_VA <= va < rf.COLLEGE_END, name)
+            self.assertNotEqual(code[rf.COLLEGE_VA if va >= rf.COLLEGE_VA else rf.REGION_C]
+                                [va - (rf.COLLEGE_VA if va >= rf.COLLEGE_VA else rf.REGION_C)], 0xCC, name)
+
+    def test_the_face_mask_no_longer_tells_the_tier(self):
+        """b780 GEN1 Q82: the gear coin took the face mask from the tier's own pair of templates, and the tiers wear
+        different masks, so the mask gave the tier away. gearsetup draws it from any of the position's four templates
+        and sets the helmet bit (+0x0C bit 6) from it as retail does (masks 15 and up)."""
+        from unicorn.x86_const import UC_X86_REG_ESI, UC_X86_REG_ESP
+        mu = _emulator(rf.tables(self.firsts, self.lasts, toy_bank()), 782)
+        templates, rec = 0x2580000, 0x2590000
+        masks = (3, 9, 17, 22)
+        pos = rf.POSITIONS.index("CB")
+        for k in range(68):
+            mu.mem_write(templates + 0x54 * k, bytes(0x54))
+        for k, m in enumerate(masks):
+            mu.mem_write(templates + 0x54 * (4 * pos + k) + 0x20, struct.pack("<I", m << 10))
+        mu.mem_write(OBJ + 0x08, struct.pack("<II", 68, templates))
+        mu.mem_write(rf.ROSTER_VA, struct.pack("<I", OBJ))
+        seen = collections.Counter()
+        for trial in range(4000):
+            before = (0x5A5A5A5A & ~0x7C00) | ((trial % 32) << 10)
+            mu.mem_write(rec, bytes(0x54))
+            mu.mem_write(rec + 0x20, struct.pack("<I", before))
+            mu.mem_write(rec + 0x0C, b"\xff")
+            mu.mem_write(rec + 0x35, bytes((pos,)))
+            mu.mem_write(STACK + 0x800, struct.pack("<I", SENT))
+            mu.reg_write(UC_X86_REG_ESI, rec)
+            mu.reg_write(UC_X86_REG_ESP, STACK + 0x800)
+            mu.emu_start(rf.HELPER_VA["gearsetup"], SENT, count=10_000)
+            after = struct.unpack("<I", bytes(mu.mem_read(rec + 0x20, 4)))[0]
+            mask = (after >> 10) & 0x1F
+            self.assertEqual(after & ~0x7C00, before & ~0x7C00, "only the mask bits change")
+            self.assertEqual(mu.mem_read(rec + 0x0C, 1)[0], 0x3F | (0x40 if mask >= 15 else 0), "retail helmet bit")
+            seen[mask] += 1
+        self.assertEqual(set(seen), set(masks))
+        self.assertTrue(all(800 <= n <= 1200 for n in seen.values()), seen)   # a quarter each, whatever came in
+
     def test_rare_rate_in_a_class(self):
         """Uniform surname draws: about 3 rare prospects in 485, two East to one South."""
         table = rf.tables(self.firsts, self.lasts, toy_bank())
@@ -420,7 +530,7 @@ class NativeRh2(unittest.TestCase):
         lasts[RARE_ROW:RARE_ROW + 3] = ["Smith", "Jones", "Brown"]
         user = rf.tables(self.firsts, lasts, toy_bank())
         self.assertEqual(struct.unpack_from("<H", user, rf.T_RS0)[0], rf.RS0_OFF)
-        pros = [(5, RARE_ROW + g, 0, 220) for g in range(3)] * 10
+        pros = [(5 + k, RARE_ROW + g, 0, 220) for k in range(10) for g in range(3)]   # every full name different
         for table in (bytes(old), user):
             for (fi, *_), r in zip(pros, run_class(table, pros, seed=4)):
                 self.assertLess(r["photo"], 2920, "an ordinary row")
@@ -443,8 +553,354 @@ class RetailXbe(unittest.TestCase):
         headers = [h + 36 for _va, _raw, _rs, h in rf._section_map(payload)]
         for i in diff:
             self.assertTrue(any(o <= i < o + n for o, n in spans) or any(h <= i < h + 20 for h in headers), hex(i))
-        self.assertEqual(len(receipt["edits"]), 5)   # b779-rf3: + the rating loop (region C)
+        # b779-rf3: + the rating loop (region C); b780 GEN1: + the college pick and the draft number flag; b780 Q10:
+        # + the Franchise Show's record name; Q83: + the jersey walk hook
+        self.assertEqual(len(receipt["edits"]), 9)
+        at = rf._offset(out, rf.WRAPUP_STRING_VA, len(rf.WRAPUP_PATCHED))
+        self.assertEqual((payload[at:at + 24], out[at:at + 24]), (rf.WRAPUP_RETAIL, rf.WRAPUP_PATCHED))
+        self.assertEqual(payload[at + 24:at + 26], b"\0\0", "the name stays terminated, same length")
+        at = rf._offset(out, rf.COLLEGE_VA, len(rf.COLLEGE_RETAIL))
+        self.assertEqual(payload[at:at + len(rf.COLLEGE_RETAIL)], rf.COLLEGE_RETAIL)
+        self.assertEqual(out[at:at + len(rf.COLLEGE_RETAIL)], rf.COLLEGE_CODE)
+        at = rf._offset(out, rf.NUMBER_VA, 2)
+        self.assertEqual((payload[at:at + 2], out[at:at + 2]), (rf.NUMBER_RETAIL, rf.NUMBER_PATCHED))
+        at = rf._offset(out, rf.JERSEY_HOOK_VA, 6)
+        self.assertEqual((payload[at:at + 6], out[at:at + 6]), (rf.JERSEY_RETAIL, rf.JERSEY_PATCHED))
 
+    def test_previous_states(self):
+        """Beta-79 / v0.8 (the old region D) and the first v0.9 release candidate (its region C and D, retail college
+        bands and draft numbers) read "previous"; a mix of old and new spans is foreign."""
+        payload = Path(RETAIL_XBE).read_bytes()
+        firsts, lasts = shipped_pool()
+        out, _ = rf.xbe_apply(payload, rf.tables(firsts, lasts, toy_bank()))
+
+        def put(data, va, value):
+            buf = bytearray(data)
+            at = rf._offset(data, va, len(value))
+            buf[at:at + len(value)] = value
+            return bytes(buf)
+        tail = rf.TABLE_END - rf.TABLE_VA - rf.TABLE_DATA
+        old_c = rf.CODE_C_RF3 + b"\xcc" * (rf.REGION_C_END - rf.REGION_C - len(rf.CODE_C_RF3))
+        rc = put(put(out, rf.COLLEGE_VA, rf.COLLEGE_RETAIL), rf.NUMBER_VA, rf.NUMBER_RETAIL)
+        rc = put(put(rc, rf.WRAPUP_STRING_VA, rf.WRAPUP_RETAIL), rf.JERSEY_HOOK_VA, rf.JERSEY_RETAIL)
+        rc = put(rc, rf.REGION_B, rf.CODE_B_RF3 + b"\xcc" * (rf.REGION_B_END - rf.REGION_B - len(rf.CODE_B_RF3)))
+        rc = put(put(rc, rf.REGION_C, old_c), rf.TABLE_VA + rf.TABLE_DATA,
+                 rf.CODE_D_B780RC + b"\xcc" * (tail - len(rf.CODE_D_B780RC)))
+        self.assertEqual(rf.xbe_status(rc), "previous")
+        b779 = put(rc, rf.TABLE_VA + rf.TABLE_DATA, rf.CODE_D_B779 + b"\xcc" * (tail - len(rf.CODE_D_B779)))
+        self.assertEqual(rf.xbe_status(b779), "previous")
+        self.assertEqual(rf.xbe_status(put(rc, rf.NUMBER_VA, rf.NUMBER_PATCHED)), "foreign")    # one new span alone
+        self.assertEqual(rf.xbe_status(put(out, rf.NUMBER_VA, rf.NUMBER_RETAIL)), "foreign")
+        self.assertEqual(rf.xbe_status(put(out, rf.COLLEGE_VA, rf.COLLEGE_RETAIL)), "foreign")
+        self.assertEqual(rf.xbe_status(put(out, rf.REGION_C, old_c)), "foreign")
+        self.assertEqual(rf.xbe_status(put(out, rf.WRAPUP_STRING_VA, rf.WRAPUP_RETAIL)), "foreign")
+        self.assertEqual(rf.xbe_status(put(out, rf.JERSEY_HOOK_VA, rf.JERSEY_RETAIL)), "foreign")
+
+    def test_the_franchise_show_reads_the_new_portrait_record(self):
+        """b780 Q10 (HUNT3): the show's WRAPUP_PORTRAIT context (registered at 0x28FBFB, edx = the record name) read
+        the retail record, so bank faces and created real players were "nophoto" on its boards."""
+        payload = Path(RETAIL_XBE).read_bytes()
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage
+        image = XbeImage(payload)
+        self.assertEqual(image.read(0x28FC0A, 5), b"\xba" + struct.pack("<I", rf.WRAPUP_STRING_VA))   # mov edx, name
+        self.assertEqual(image.read(0xE714E, 5), b"\xba" + struct.pack("<I", rf.STRING_VA))          # PORTRAIT's
+        firsts, lasts = shipped_pool()
+        out = XbeImage(rf.xbe_apply(payload, rf.tables(firsts, lasts, toy_bank()))[0])
+        show, card = (out.read(va, 24).decode("utf-16-le") for va in (rf.WRAPUP_STRING_VA, rf.STRING_VA))
+        self.assertEqual((show, card), ("portrai2.iff", rf.RECORD_NAME))
+        self.assertEqual(rf.name_id(show), rf.name_id(rf.RECORD_NAME), "names are looked up upper case")
+        self.assertNotEqual(rf.name_id(show), rf.name_id(rf.RETAIL_RECORD_NAME))
+
+
+# ------------------------------------------------------------------------------------------- b780 GEN1
+# The retail college pick (0xE6F56..0xE7019, FUN_000E6780's own bytes = rf.COLLEGE_RETAIL) reads the retail float rand
+# 0x48B90 and five .rdata floats; the rand below it is the xorshift stand-in. Q84's block (rf.COLLEGE_CODE) is entered
+# after its table, from region C's tail, and needs only region A's rnd.
+FRAND_RETAIL = bytes.fromhex("51c74424000000803fe8b2ffffff8b4c240025ffff7f000bc8894c2400d9442400d8259c414e0059c3")
+COLLEGE_FLOATS = {0x4E419C: 1.0, 0x4E5CAC: 100.0, 0x4E6C4C: 35.0, 0x4F0F1C: 65.0, 0x4F5928: 86.0, 0x4E6958: 96.0}
+ACC_2004 = range(0, 9)          # Clemson .. Wake Forest: the first rows of the 2004 table
+SEC = list(range(86, 93)) + list(range(94, 98)) + [rf.MISSISSIPPI]   # Alabama .. Vanderbilt, Ole Miss as row 176
+ALABAMA, GEORGIA = 86, 90
+
+
+def run_college_pick(block, entry, draws=20000, seed=780):
+    """The class generator's college pick (this block at 0xE6F56, entered at `entry`) `draws` times: the rows drawn."""
+    from unicorn.x86_const import UC_X86_REG_EAX, UC_X86_REG_ECX, UC_X86_REG_ESI, UC_X86_REG_ESP
+    mu = _emulator(bytes(rf.TABLE_DATA), seed)
+    assert len(block) == rf.COLLEGE_END - rf.COLLEGE_VA
+    mu.mem_write(rf.COLLEGE_VA, block)
+    mu.mem_write(0x48B90, FRAND_RETAIL)
+    for va, value in COLLEGE_FLOATS.items():
+        mu.mem_write(va, struct.pack("<f", value))
+    mu.mem_write(OBJ + 0x20, struct.pack("<II", rf.COLLEGE_ROWS, TABLE))
+    mu.mem_write(rf.ROSTER_VA, struct.pack("<I", OBJ))
+    rows = []
+    for _ in range(draws):
+        mu.reg_write(UC_X86_REG_ESI, SENT + 0x100)
+        mu.reg_write(UC_X86_REG_ECX, 0xE5FCA0)          # region C leaves the generator in ecx (the retail pick uses it)
+        mu.reg_write(UC_X86_REG_ESP, STACK + 0x800)
+        mu.emu_start(entry, rf.COLLEGE_END, count=20_000)
+        pointer = mu.reg_read(UC_X86_REG_EAX)
+        rows.append((pointer - TABLE) // 8 if pointer else None)
+    return rows
+
+
+class NativeCollegePick(unittest.TestCase):
+    """b780 GEN1: the five college bands followed the college table's 2004 conference order (the first 13 rows took
+    35 % of all prospects, the SEC 2.4 %); Q84 draws each college by its own weight, fitted to the 2026 roster's
+    colleges. Measured with the game's own pick and the new block, 20,000 draws each."""
+
+    @classmethod
+    def setUpClass(cls):
+        try:
+            import unicorn  # noqa: F401
+        except ImportError:  # pragma: no cover
+            raise unittest.SkipTest("unicorn is not installed")
+        cls.retail = run_college_pick(rf.COLLEGE_RETAIL, rf.COLLEGE_VA)
+        cls.fixed = run_college_pick(rf.COLLEGE_CODE, rf.COLLEGE_VA + rf.COLLEGE_TABLE_BYTES)
+
+    @staticmethod
+    def share(rows, which):
+        return sum(1 for r in rows if r in which) / len(rows)
+
+    def test_the_block_layout(self):
+        self.assertEqual(len(rf.COLLEGE_CODE), 195)
+        self.assertEqual(sum(rf.college_weights()), rf.COLLEGE_TOTAL)
+        self.assertEqual(struct.unpack_from("<I", rf.COLLEGE_CODE, rf.COLLEGE_TABLE_BYTES + 6)[0], rf.COLLEGE_TOTAL)
+        self.assertEqual([i for i, w in enumerate(rf.college_weights()) if not w], [rf.OLE_MISS, rf.NO_COLLEGE])
+        self.assertAlmostEqual(sum(rf.retail_college_odds()), 1.0)
+
+    def test_every_draw_is_a_college_row(self):
+        for rows in (self.retail, self.fixed):
+            self.assertTrue(all(r is not None and 0 <= r < rf.COLLEGE_ROWS for r in rows))
+        self.assertFalse({rf.OLE_MISS, rf.NO_COLLEGE} & set(self.fixed), "one name for Ole Miss; never None")
+
+    def test_negative_control_the_retail_bands_favour_the_first_rows(self):
+        top = max(collections.Counter(self.retail).values()) / len(self.retail)
+        self.assertGreater(self.share(self.retail, ACC_2004), 0.20)          # exact 24.2 %
+        self.assertLess(self.share(self.retail, SEC), 0.04)                  # exact 2.4 %
+        self.assertLess(self.share(self.retail, (ALABAMA,)), 0.004)          # exact 0.20 %
+        self.assertGreater(top, 0.023)                                       # exact 2.69 % (each of rows 0..12)
+
+    def test_colleges_vary_like_the_roster(self):
+        self.assertLess(self.share(self.fixed, ACC_2004), 0.11)              # exact 8.3 % (2026 roster 8.3 %)
+        self.assertGreater(self.share(self.fixed, SEC), 0.14)                # exact 17.1 % (2026 roster 16.7 %)
+        for row in (ALABAMA, GEORGIA):
+            self.assertGreater(self.share(self.fixed, (row,)), 0.02)         # exact 2.83 %
+        counts = collections.Counter(self.fixed)
+        odds = rf.college_odds()
+        tv = 0.5 * sum(abs(counts[i] / len(self.fixed) - odds[i]) for i in range(rf.COLLEGE_ROWS))
+        self.assertLess(tv, 0.07, "the native draws follow the table's exact odds")
+
+    @unittest.skipUnless(os.environ.get("NFL2K5_B780_RC_ROST") and Path(os.environ["NFL2K5_B780_RC_ROST"]).is_file(),
+                         "the v0.9 RC roster (NFL2K5_B780_RC_ROST) gives the target colleges")
+    def test_the_weights_fit_the_roster_colleges(self):
+        from mod_editor.core import nfl2k5_roster_records as rr
+        raw = Path(os.environ["NFL2K5_B780_RC_ROST"]).read_bytes()
+        doc = rr.RosterDocument(raw[0x20:0x20 + struct.unpack_from("<I", raw, 4)[0]])
+        self.assertEqual(len(doc.colleges), rf.COLLEGE_ROWS)
+        self.assertEqual((doc.colleges[rf.OLE_MISS], doc.colleges[rf.MISSISSIPPI], doc.colleges[rf.NO_COLLEGE]),
+                         ("Ole Miss", "Mississippi", "None"))
+        rows = collections.Counter(rf.MISSISSIPPI if p.college_index == rf.OLE_MISS else p.college_index
+                                   for p in doc.players if p.group in ("team", "free_agent", "reserve")
+                                   and p.college_index not in (None, rf.NO_COLLEGE))
+        total = sum(rows.values())
+
+        def kl(odds):
+            return sum(c / total * math.log(c / total / odds[i]) for i, c in rows.items())
+        self.assertGreater(kl(rf.retail_college_odds()), 0.6)                # 0.64 nats
+        self.assertLess(kl(rf.college_odds()), 0.05)                          # 0.011 nats
+
+
+@unittest.skipUnless(RETAIL_XBE and Path(RETAIL_XBE).is_file(), "set NFL2K5_RETAIL_XBE to the retail default.xbe")
+class NativeDraftNumbers(unittest.TestCase):
+    """b780 GEN1: the draft (FUN_00325B50) calls the jersey routine 0x2BD260 with keep = 0, so every drafted rookie
+    took the lowest free number of his position's range (a measured v0.9 RC draft: 27 of 32 rookie WRs wore 80 or 81,
+    every DT and DE a number in the 60s). With keep = 1 (rf.NUMBER_PATCHED) he keeps his own number when his club has
+    it free. The game's own routine on synthetic clubs."""
+
+    @classmethod
+    def setUpClass(cls):
+        try:
+            import unicorn  # noqa: F401
+        except ImportError:  # pragma: no cover
+            raise unittest.SkipTest("unicorn is not installed")
+        from tests.nfl2k5_supersim_draft_fixture import Machine
+        cls.m = Machine(Path(RETAIL_XBE).read_bytes(), trace_writes=False)
+        cls.m.seed(780)
+
+    def assign(self, position, rolled, taken, keep):
+        m = self.m
+        team, rookie, mates = m.ARENA + 0x1000, m.ARENA + 0x2000, m.ARENA + 0x3000
+        m.uc.mem_write(team, bytes(500))
+        for k, number in enumerate(taken):
+            mate = mates + 0x54 * k
+            m.uc.mem_write(mate, bytes(0x54))
+            m.put(mate + 0x20, number << 3)
+            m.uc.mem_write(mate + 0x35, bytes((position,)))
+            m.put(team + 4 * k, mate)
+        m.uc.mem_write(team + 0x11C, bytes((len(taken),)))
+        m.uc.mem_write(rookie, bytes(0x54))
+        m.put(rookie + 0x20, rolled << 3)
+        m.uc.mem_write(rookie + 0x35, bytes((position,)))
+        m.call(0x2BD260, ecx=rookie, edx=team, args=(keep,))
+        return (m.get(rookie + 0x20) >> 3) & 0x7F
+
+    def test_the_draft_flag(self):
+        self.assertEqual((rf.NUMBER_RETAIL, rf.NUMBER_PATCHED), (b"\x6a\x00", b"\x6a\x01"))   # push 0 -> push 1
+        self.assertEqual(rf.RETAIL_SPAN_SHA256[rf.NUMBER_VA], rf.sha(rf.NUMBER_RETAIL))
+
+    def test_dt_and_de_keep_to_the_90s(self):
+        """b780 GEN1 Q83: a DT or DE whose own 90s number his club already wears walked past 79 and wrapped to the
+        lowest free 60s number; dlwrap (from the walk's wrap at 0x2BD2F7) lets him walk up to 99 first."""
+        from tests.nfl2k5_supersim_draft_fixture import Machine
+        firsts, lasts = shipped_pool()
+        patched = rf.xbe_apply(Path(RETAIL_XBE).read_bytes(), rf.tables(firsts, lasts, toy_bank()))[0]
+        retail_m, self.m = self.m, Machine(patched, trace_writes=False)
+        try:
+            self.m.seed(780)
+            taken = (90, 91, 95, 60, 61, 62)
+            for position in ("DT", "DE"):
+                pos = rf.POSITIONS.index(position)
+                rolled = list(range(90, 100))
+                after = [self.assign(pos, r, taken, 1) for r in rolled]
+                self.assertTrue(all(92 <= a <= 99 and a not in taken for a in after), (position, after))
+                self.assertEqual(after, [92, 92, 92, 93, 94, 96, 96, 97, 98, 99], position)
+            wr = rf.POSITIONS.index("WR")                # other positions keep the retail walk
+            self.assertEqual(self.assign(wr, 89, (89,), 1), 80)
+        finally:
+            self.m = retail_m
+        pos = rf.POSITIONS.index("DE")                   # negative control, the retail walk: straight to the 60s
+        self.assertEqual(self.assign(pos, 95, (90, 91, 95, 60, 61, 62), 1), 63)
+
+    def test_drafted_rookies_keep_their_own_numbers(self):
+        rng = random.Random(780)
+        for position, low, high, taken, lowest in (("WR", 80, 89, (80, 81, 84, 88), 82),
+                                                   ("DE", 90, 99, (90, 91, 95, 60, 61, 62), 63)):
+            pos = rf.POSITIONS.index(position)
+            rolled = [rng.randint(low, high) for _ in range(200)]
+            before = [self.assign(pos, r, taken, 0) for r in rolled]
+            after = [self.assign(pos, r, taken, 1) for r in rolled]
+            self.assertEqual(set(before), {lowest}, position)                 # retail: one number for every rookie
+            self.assertGreaterEqual(len(set(after)), 6, position)
+            self.assertFalse(set(after) & set(taken), position)              # never a number his club wears
+            for r, a in zip(rolled, after):
+                if r not in taken:
+                    self.assertEqual(a, r, (position, r))                    # his own number when it is free
+            self.assertLessEqual(max(collections.Counter(after).values()) / len(after), 0.35, position)
+
+
+
+@unittest.skipUnless(RETAIL_XBE and Path(RETAIL_XBE).is_file(), "set NFL2K5_RETAIL_XBE to the retail default.xbe")
+class MyCareerContext(unittest.TestCase):
+    """b780 (REV1): the draft number flag at 0x325B61 sits inside MyCareer's native draft-signing context pin
+    (0x325B50, 0x1AE). With Rookie faces and MyCareer both installed, MyCareer must still read applied; the flag
+    without a complete Rookie faces install, or any other byte there, is foreign."""
+
+    @staticmethod
+    def write(payload, writes):
+        import hashlib
+        buf = bytearray(payload)
+        for va, data in writes:
+            at = rf._offset(payload, va, len(data))
+            buf[at:at + len(data)] = data
+        for _va, raw, rsize, header in rf._section_map(payload):
+            buf[header + 36:header + 56] = hashlib.sha1(struct.pack("<I", rsize) + bytes(buf[raw:raw + rsize])).digest()  # nosec B324
+        return bytes(buf)
+
+    def test_mycareer_accepts_the_rookie_faces_draft_number(self):
+        from mod_editor.core import nfl2k5_my_career_mode as mcm
+        from mod_editor.core import nfl2k5_throw_tuning as tt
+        career, _ = tt._apply_all(Path(RETAIL_XBE).read_bytes(), None, catch_slider=False, xbe_space=True,
+                                  my_career=True)
+        self.assertEqual(mcm.status(career), "applied")
+        firsts, lasts = shipped_pool()
+        both, _ = rf.xbe_apply(career, rf.tables(firsts, lasts, toy_bank()))
+        self.assertEqual(rf.xbe_status(both), "applied")
+        self.assertEqual(mcm.status(both), "applied")
+        self.assertEqual(mcm.status(self.write(career, [(rf.NUMBER_VA, rf.NUMBER_PATCHED)])), "foreign")  # flag alone
+        self.assertEqual(mcm.status(self.write(both, [(rf.NUMBER_VA, b"\x6a\x02")])), "foreign")       # another byte
+
+class RookieHair(unittest.TestCase):
+    """b780 GEN1 Q81: every generated rookie had hair style 0 (the template's), so a face with braids, a bun, a mullet,
+    an afro or blond locs showed the retail dreads or no hair under the helmet. The bank faces carry a hair style
+    (data/nfl2k5_rookie_faces/hair.json); region D gives the drawn face's style to +0x0D through the rookie hair
+    helper, a late allocator owner installed only when Hair styles is on."""
+
+    def test_the_labels(self):
+        hair = rf.load_hair()
+        bank = rf.load_bank()
+        base, count = rf.hair_span(bank)
+        self.assertEqual(len(hair), 697)
+        self.assertTrue(all(base <= pid < base + count for pid in hair))
+        self.assertEqual(set(hair.values()), {2, 3, 5, 6, 7, 8, 9, 10, 11})
+        hanging = {row["start"] + k for row in bank["buckets"] for k in range(row["hanging"])}
+        self.assertTrue(all(hair.get(pid) in (2, 7, 11) for pid in hanging), "every hanging face has locs or braids")
+        table = rf.hair_table(bank, hair)
+        for k in range(count):
+            self.assertEqual((table[k >> 1] >> (4 * (k & 1))) & 15, hair.get(base + k, 0))
+        code = rf.hair_code(0x1520000, bank, hair)
+        self.assertEqual(len(code), rf.HAIR_SIZE)
+        self.assertEqual(code[rf.HAIR_TABLE_AT:rf.HAIR_TABLE_AT + len(table)], table)
+        self.assertEqual(rf.HAIRPTR_VA, rf.TABLE_END - 4)
+        self.assertEqual(dict(rf._spans(bytes(rf.TABLE_DATA)))[rf.TABLE_VA][-4:], bytes(4), "off by default")
+
+    def test_region_d_gives_each_face_its_hair(self):
+        try:
+            import unicorn  # noqa: F401
+        except ImportError:  # pragma: no cover
+            raise unittest.SkipTest("unicorn is not installed")
+        firsts, lasts = shipped_pool()
+        bank = toy_bank()
+        ids = rf.bank_ids(bank)
+        toy_hair = {pid: 1 + (pid % 12) for pid in ids if pid % 3}       # a style for two faces in three
+        table = rf.tables(firsts, lasts, bank)
+        va = 0x700000
+        rng = random.Random(81)
+        pros = [(rng.randrange(445), rng.randrange(445), rng.randrange(17), rng.randint(185, 320)) for _ in range(200)]
+        on = run_class(table, pros, seed=81, hair=(va, rf.hair_code(va, bank, toy_hair)), keep_body=True)
+        off = run_class(table, pros, seed=81, keep_body=True)
+        self.assertEqual([r["photo"] for r in on], [r["photo"] for r in off], "the helper draws nothing")
+        styled = 0
+        for r_on, r_off in zip(on, off):
+            self.assertEqual(r_on["changed"] - {0x0D}, r_off["changed"] - {0x0D})
+            self.assertEqual(r_on["b0d"] & 15, toy_hair.get(r_on["photo"], 0), "his face's style")
+            self.assertEqual(r_on["b0d"] & 0xF0, r_off["b0d"] & 0xF0, "the high nibble is kept")
+            styled += bool(toy_hair.get(r_on["photo"]))
+        self.assertGreater(styled, 100)
+
+    @unittest.skipUnless(os.environ.get("NFL2K5_B780_RC_XBE") and Path(os.environ["NFL2K5_B780_RC_XBE"]).is_file(),
+                         "the v0.9 RC executable (NFL2K5_B780_RC_XBE) carries Hair styles in the scale-out")
+    def test_install_on_an_executable_with_hair_styles(self):
+        import hashlib
+        from mod_editor.core import nfl2k5_xbe_space as space
+        rc = Path(os.environ["NFL2K5_B780_RC_XBE"]).read_bytes()
+        full = MyCareerContext.write(rc, rf._spans(rf.xbe_tables(rc)))
+        self.assertEqual((rf.xbe_status(full), rf.hair_status(full)), ("applied", "off"))
+        out, receipt = rf.apply_hair(full)
+        self.assertEqual((rf.xbe_status(out), rf.hair_status(out), space.status(out)), ("applied", "applied", "applied"))
+        self.assertEqual(rf.apply_hair(out)[0], out, "idempotent")
+        va = int(receipt["va"], 16)
+        self.assertEqual(struct.unpack("<I", out[rf._offset(out, rf.HAIRPTR_VA, 4):][:4])[0], va)
+        rows = [a for a in space.layout(out)["allocations"] if a["owner"] == rf.HAIR_OWNER]
+        self.assertEqual([(a["kind"], a["size"]) for a in rows], [("code", rf.HAIR_SIZE)])
+        before = [a for a in space.layout(full)["allocations"]]
+        after = [a for a in space.layout(out)["allocations"] if a["owner"] != rf.HAIR_OWNER]
+        self.assertEqual(sorted((a["owner"], a["kind"], a["va"]) for a in before),
+                         sorted((a["owner"], a["kind"], a["va"]) for a in after), "no other owner moves")
+        broken = bytearray(out)
+        broken[rf._offset(out, va + rf.HAIR_TABLE_AT, 1)] ^= 0x11
+        self.assertEqual(rf.xbe_status(bytes(broken)), "foreign")
+        stray = MyCareerContext.write(full, [(rf.HAIRPTR_VA, struct.pack("<I", 0x1520000))])
+        self.assertEqual(rf.xbe_status(stray), "foreign", "HAIRPTR without the installed helper")
+
+    @unittest.skipUnless(RETAIL_XBE and Path(RETAIL_XBE).is_file(), "set NFL2K5_RETAIL_XBE to the retail default.xbe")
+    def test_no_hair_without_the_scale_out(self):
+        firsts, lasts = shipped_pool()
+        out, _ = rf.xbe_apply(Path(RETAIL_XBE).read_bytes(), rf.tables(firsts, lasts, toy_bank()))
+        self.assertEqual(rf.hair_status(out), "off")
+        with self.assertRaises(rf.RookieFacesError):
+            rf.apply_hair(out)
 
 class Portraits(unittest.TestCase):
     def test_face_pixels_roundtrip(self):
@@ -697,10 +1153,12 @@ class NativeRf3Ratings(unittest.TestCase):
             sp = STACK + 0x1000
             mu.reg_write(UC_X86_REG_ESP, sp); mu.reg_write(UC_X86_REG_EBX, hi); mu.reg_write(UC_X86_REG_EBP, lo)
             mu.reg_write(UC_X86_REG_ESI, rec)
-            mu.emu_start(rf.REGION_C, rf.REGION_C_END, count=200_000)
+            # b780 GEN1: region C ends in the type byte and a jump to the college pick (Q84)
+            mu.emu_start(rf.REGION_C, rf.HELPER_VA["collegepick"], count=200_000)
             self.assertEqual((mu.reg_read(UC_X86_REG_ESP), mu.reg_read(UC_X86_REG_EBX), mu.reg_read(UC_X86_REG_EBP),
-                              mu.reg_read(UC_X86_REG_ESI), mu.reg_read(UC_X86_REG_ECX)), (sp, hi, lo, rec, 0xE5FCA0))
+                              mu.reg_read(UC_X86_REG_ESI)), (sp, hi, lo, rec))
             r = bytes(mu.mem_read(rec, 0x54))
+            self.assertEqual(r[8], 6, "the record's type byte (the college pick's retail first instruction)")
             out.append((r, struct.unpack_from("<i", bytes(mu.mem_read(sp + 0x14, 4)))[0]))
         return out
 

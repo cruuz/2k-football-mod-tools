@@ -808,7 +808,8 @@ class ThrowTuningPanel(QWidget):
         want_accel = self.accel_check.isChecked() and str(self._report.get("accel_ramp") if self._report else "") == "retail"
         want_draft = self.draft_check.isChecked() and str(self._report.get("draft_ai") if self._report else "") in ("retail", "legacy")
         want_edge = self.edge_check.isChecked() and getattr(self, "_edge_writable", False)
-        want_returner = self.returner_check.isChecked() and str(self._report.get("returner_fix") if self._report else "") == "retail"
+        # b780 st1: a beta-79 or older returner fix ("legacy": loop only) gains the KR/PR getter's slot check when ticked
+        want_returner = self.returner_check.isChecked() and str(self._report.get("returner_fix") if self._report else "") in ("retail", "legacy")
         want_progression = self.progression_check.isChecked() and str(self._report.get("progression") if self._report else "") == "retail"
         overwrite = target.exists()
         is_image = tt.is_disc_image(source)

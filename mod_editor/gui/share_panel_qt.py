@@ -19,6 +19,7 @@ import threading
 
 from PyQt5.QtCore import QObject, QRunnable, Qt, QThreadPool, pyqtSignal
 from PyQt5.QtWidgets import (
+    QComboBox,
     QFileDialog,
     QFormLayout,
     QGroupBox,
@@ -35,7 +36,9 @@ from PyQt5.QtWidgets import (
 )
 
 from mod_editor.core import mod_build, modpack, platform_compat
+from mod_editor.core import nfl2k5_console_memory as console_memory  # b780-m64b
 from mod_editor.gui.ux_text import XEMU_LINE, Details, FlowLayout, WrappedLabel, disc_next_steps
+from mod_editor.gui.ux_text import XEMU_SETUP_STEPS  # b780-uxfix
 from mod_editor.gui.task_delivery import bound
 
 IMAGE_FILTER = "Disc images (*.iso *.xiso);;All files (*)"
@@ -103,6 +106,9 @@ class SharePanel(QWidget):
         self._progress_stage = None
         self._progress_started = 0.0
         self._followed_source = ""         # the last open disc the install form followed
+        self._ready_disc = ""              # b780-uxfix: the disc the Disc ready box offers to show or play
+        #: b780-uxfix: set by the Studio: () -> callable or None; the callable starts the latest disc in xemu.
+        self.play_hook = None
         self._build()
 
     # ------------------------------------------------------------------ the open-disc hook
@@ -232,12 +238,32 @@ class SharePanel(QWidget):
         apply_layout.addWidget(self.install_hint)
         self.install_softdrink_button = QPushButton("Install SOFTDRINK 2K28")
         self.install_softdrink_button.setObjectName("primaryButton")
-        self.install_softdrink_button.setToolTip("Choose your clean Xbox ISO and the finished pack, then save a playable XISO.")
+        self.install_softdrink_button.setToolTip("You pick 1) your NFL 2K5 game file (.iso), 2) the SOFTDRINK 2K28 "
+                                                 ".2k5patch file, 3) where to save the new disc. Your original is never changed.")
         self.install_softdrink_button.clicked.connect(self.install_softdrink)
         apply_layout.addWidget(self.install_softdrink_button)
         self.customize_softdrink_button = QPushButton("Customize SOFTDRINK 2K28…")
         self.customize_softdrink_button.clicked.connect(self.customize_softdrink)
-        apply_layout.addWidget(self.customize_softdrink_button)
+        # b780-m64b: the pack is the full 128 MB build; Customize can load its sources for the experimental 64 MB target
+        customize_row = QHBoxLayout()
+        customize_row.addWidget(self.customize_softdrink_button)
+        self.customize_memory_caption = QLabel(console_memory.SHARE_CHOICE_CAPTION)
+        customize_row.addWidget(self.customize_memory_caption)
+        self.customize_memory_combo = QComboBox()
+        for value in console_memory.CHOICES:
+            self.customize_memory_combo.addItem(console_memory.LABELS[value], value)
+        self.customize_memory_combo.setCurrentIndex(self.customize_memory_combo.findData(console_memory.DEFAULT))
+        self.customize_memory_combo.setAccessibleName("Customize SOFTDRINK 2K28: build for console memory")
+        self.customize_memory_combo.setToolTip(console_memory.SHARE_CHOICE_HELP)
+        self.customize_memory_combo.setMinimumWidth(220)
+        self.customize_memory_caption.setBuddy(self.customize_memory_combo)
+        customize_row.addWidget(self.customize_memory_combo, 1)
+        apply_layout.addLayout(customize_row)
+        self.memory_note = WrappedLabel(console_memory.SHARE_NOTE)
+        self.memory_note.setObjectName("throwMuted")
+        self.memory_note.setWordWrap(True)
+        self.memory_note.setAccessibleName("SOFTDRINK 2K28 pack memory")
+        apply_layout.addWidget(self.memory_note)
         self.pack_field, self.pack_button = self._path_row(apply_layout, "Mod file (.2k5patch)", self._choose_pack)
         self.pack_summary = WrappedLabel("Choose a .2k5patch file to see what it does.")
         self.pack_summary.setWordWrap(True)
@@ -302,6 +328,11 @@ class SharePanel(QWidget):
     def _notify(self, kind: str, title: str, text: str) -> None:
         if kind == "error":
             QMessageBox.critical(self, title, text)
+        elif title == "Disc ready" and self._ready_disc:
+            # b780-uxfix: Play in xemu (when the Studio can start it) and Show in folder, not only OK
+            from mod_editor.gui.ux_text import show_disc_ready
+            play = self.play_hook() if callable(self.play_hook) else None
+            show_disc_ready(self, title, text, self._ready_disc, play=play)
         else:
             QMessageBox.information(self, title, text)
 
@@ -309,6 +340,7 @@ class SharePanel(QWidget):
     def _refresh(self) -> None:
         self.install_softdrink_button.setEnabled(not self.busy)
         self.customize_softdrink_button.setEnabled(not self.busy)
+        self.customize_memory_combo.setEnabled(not self.busy)  # b780-m64b
         if self.busy:
             for button in (self.export_button, self.check_button, self.apply_button):
                 button.setEnabled(False)
@@ -467,19 +499,84 @@ class SharePanel(QWidget):
             if self._pack is not None:
                 self.start_check()
 
+    def _wrong_file(self, title: str, text: str, details: str) -> bool:
+        """Say in plain words why a chosen file cannot be used; True means "Choose again" (b780-uxfix)."""
+        box = QMessageBox(self)
+        box.setIcon(QMessageBox.Warning)
+        box.setWindowTitle(title)
+        box.setText(text)
+        box.setInformativeText("Nothing was changed.")
+        if details:
+            box.setDetailedText(details)
+        again = box.addButton("Choose again", QMessageBox.AcceptRole)
+        cancel = box.addButton(QMessageBox.Cancel)
+        box.setDefaultButton(again)
+        box.setEscapeButton(cancel)
+        box.exec_()
+        return box.clickedButton() is again
+
+    @staticmethod
+    def game_file_problem(path: str | Path) -> tuple[str, str] | None:
+        """Plain words for a step-1 choice that is clearly not a game file, plus the technical reason; else None.
+
+        b780-uxfix: a text file or a folder was only refused after all three choosers, in words like
+        "no XDVDFS game partition found", without naming the file. Only what is plainly not an Xbox game
+        file is stopped here; a disc of the wrong game or a modified one still gets the full check later.
+        """
+        target = Path(path)
+        name = target.name or str(target)
+        if target.is_dir():
+            return (f'"{name}" is a folder. The installer needs the single NFL 2K5 game file that ends in .iso '
+                    "(usually 4 to 7 GB). A folder of game files has to be made into one .iso file first.",
+                    f"Folder: {target}")
+        if target.suffix.casefold() in (".zip", ".7z", ".rar"):
+            return (f'"{name}" is a {target.suffix.lower()} file. Unzip it first, then choose the .iso inside.',
+                    f"File: {target}")
+        try:
+            from mod_editor.core import nfl2k5_disc_identity as identity
+            found = identity.identify(target)
+        except Exception as exc:  # noqa: BLE001 -- an unreadable file is a wrong file here
+            return (f'"{name}" could not be read as a game file. Choose the NFL 2K5 file that ends in .iso.',
+                    f"{target}\n{exc}")
+        if found.kind == identity.KIND_NOT_A_DISC:
+            return (f'"{name}" is not an NFL 2K5 game file. Choose the file that ends in .iso (usually 4 to 7 GB).',
+                    f"{target}\n{found.headline}\n{found.detail}")
+        return None
+
     def install_softdrink(self) -> None:
         """One action: choose source, pack and destination; verification is part of apply."""
         if self.busy:
             return
-        source, _ = QFileDialog.getOpenFileName(self, "1 of 3: Choose your unmodified ESPN NFL 2K5 USA Xbox image file (an .iso or .xiso, not a game folder)", "", IMAGE_FILTER)
-        if not source:
-            return
-        pack_path, _ = QFileDialog.getOpenFileName(self, "2 of 3: Choose the downloaded .2k5patch file (do not extract it)", "", PACK_FILTER)
-        if not pack_path:
-            return
-        self.load_pack(Path(pack_path))
-        if self._pack is None:
-            return
+        # b780-uxfix: the choosers start at the game file already open (or chosen last) and at Downloads for the
+        # patch, not in the program's own folder
+        opened = self.source_field.text().strip()
+        downloads = Path.home() / "Downloads"
+        while True:
+            source, _ = QFileDialog.getOpenFileName(self, "1 of 3: Choose your unmodified ESPN NFL 2K5 USA Xbox image file (an .iso or .xiso, not a game folder)", opened, IMAGE_FILTER)
+            if not source:
+                return
+            problem = self.game_file_problem(source)   # b780-uxfix: checked now, not after step 3
+            if problem is None:
+                break
+            if not self._wrong_file("That file is not the NFL 2K5 game", *problem):
+                return
+        last_pack = self.pack_field.text().strip()
+        while True:
+            pack_path, _ = QFileDialog.getOpenFileName(
+                self, "2 of 3: Choose the downloaded .2k5patch file (do not extract it)",
+                last_pack or (str(downloads) if downloads.is_dir() else ""), PACK_FILTER)
+            if not pack_path:
+                return
+            self.load_pack(Path(pack_path))
+            if self._pack is not None:
+                break
+            # b780-uxfix: a wrong patch file stopped the installer with one small status line
+            if not self._wrong_file(
+                    "That file is not a SOFTDRINK 2K28 patch",
+                    f'"{Path(pack_path).name}" is not a SOFTDRINK 2K28 patch. Choose the file that ends in .2k5patch '
+                    "(about 1.2 GB) from the SOFTDRINK download page, as downloaded.",
+                    self.pack_summary.text()):
+                return
         if self._pack.manifest.raw.get("format") != 3:
             self._notify("error", "Choose a file pack", "This installer needs the SOFTDRINK format-3 pack. Older packs use the controls below.")
             return
@@ -490,6 +587,9 @@ class SharePanel(QWidget):
             target += ".xiso.iso"
         self.source_field.setText(source)
         self.target_field.setText(target)
+        self.check_status.setText("")    # b780-uxfix: an earlier try's error must not sit beside the new files
+        self.apply_status.setText("")
+        self.describe_source()
         self.start_file_install()
 
     def start_file_install(self) -> None:
@@ -543,10 +643,23 @@ class SharePanel(QWidget):
             if error:
                 progress(error, 0, 0)
             return modpack_sources.materialize(recipe, folder)
+        memory = self.customize_memory()
         def done(recipe):
+            if memory == 64:   # b780-m64b: the Build tab switches to the experimental 64 MB target
+                recipe = {**recipe, console_memory.FIELD: 64}
             self.customization_ready.emit(recipe)
-            self.apply_status.setText("Sources ready. Build now has the frozen recipe and league artwork. Change its options, then Make my disc. Custom builds use the full builder and take longer than installation.")
+            text = "Sources ready. Build now has the frozen recipe and league artwork. Change its options, then Make my disc. Custom builds use the full builder and take longer than installation."
+            if memory == 64:
+                text += (f" Console memory is set to 64 MB ({console_memory.STATUS_64}) with the recommended 64 MB set: the "
+                         "options that need 128 MB are off and the Build tab lists what else it turned off. "
+                         + console_memory.ROSTER_FIT_NOTE)
+            self.apply_status.setText(text)
         self._start(operation, done, self._apply_failed)
+
+    def customize_memory(self) -> int:
+        """b780-m64b: the console memory Customize SOFTDRINK 2K28 builds for (128 unless 64 is chosen)."""
+        value = self.customize_memory_combo.currentData()
+        return value if value in console_memory.CHOICES else console_memory.DEFAULT
 
     def describe_source(self) -> str:
         """Name the disc image in the source field (also used by tests)."""
@@ -560,8 +673,10 @@ class SharePanel(QWidget):
             except Exception:  # noqa: BLE001 -- naming the disc must never break the panel
                 found = None
             if found is not None:
+                # a Studio-built disc's own line already says what to do (build from a retail dump); "make this mod yourself"
+                # would send its owner to the Build tab to build on top of it
                 text = ("Your image: " + found.line()
-                        + ("" if found.can_take_a_byte_run_patch
+                        + ("" if found.can_take_a_byte_run_patch or found.kind == "studio-built"
                            else " Use the Build tab to make this mod yourself instead."))
         self.source_identity.setText(text)
         return text
@@ -746,7 +861,10 @@ class SharePanel(QWidget):
         self.disc_written.emit(str(target["path"]))
         next_steps = disc_next_steps(target["path"])
         self.apply_status.setText(self.apply_status.text() + "\n" + next_steps)
-        self._notify("info", "Disc ready", f"{target['path']}\n\n{next_steps}\n\n" + XEMU_LINE + extra)
+        # b780-uxfix: a disc that needs the 128 MiB / Complex 4627 setup says where to set it, before play
+        setup = ("\n\n" + XEMU_SETUP_STEPS) if receipt.get("memory_tip") else ""
+        self._ready_disc = str(target["path"])
+        self._notify("info", "Disc ready", f"{target['path']}\n\n{next_steps}\n\n" + XEMU_LINE + extra + setup)
 
     def _apply_failed(self, message: str) -> None:
         self.apply_status.setText(f"Couldn't make the disc: {message}")

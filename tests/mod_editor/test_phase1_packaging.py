@@ -39,8 +39,13 @@ class ModStudioPackagingTests(unittest.TestCase):
             'release_candidate = __version__.rsplit("rc", 1)[-1]',
             studio_source,
         )
+        # b780-uxfix: the header names the release people know (Beta 80); the RC is in its tooltip
         self.assertIn(
-            'QLabel(f"v1.0 RC{release_candidate} • Xbox Edition")',
+            'QLabel(f"{release_name} • Xbox Edition")',
+            studio_source,
+        )
+        self.assertIn(
+            'setToolTip(f"2K5 Mod Studio v1.0 RC{release_candidate} ({update_check.BUILD_RELEASE_TAG})")',
             studio_source,
         )
         getting_started = (

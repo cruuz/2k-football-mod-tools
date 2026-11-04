@@ -134,6 +134,8 @@ def refresh(output):
                     spans=sorted(unique.values(), key=lambda r: (int(r['start'], 0), int(r['end'], 0), r['owner'])),
                     allocator_layout=space.layout(final), source_sha256=pins,
                     stack_xbe_sha256=hashlib.sha256(final).hexdigest(), stack_image_size=XbeImage(final).image_size)
+    from mod_editor.core.nfl2k5_cave_manifest import stack_extent  # b780: inherited allocator spans may lie past this image
+    document['stack_image_size'] = stack_extent(XbeImage(final), document['spans'])
     document['steps'].extend(recorder.steps)
     document['settings_projection'] = dict(release_manifest=False, disc_built=False, runtime_witnessed=False,
         parent_manifest_sha256=hashlib.sha256(parent_bytes).hexdigest(), parent_disc_fields_are_historical=True,

@@ -61,7 +61,7 @@ repeat.
 ## 2. Install SOFTDRINK 2K28 (one-click path)
 
 1. Open 2K5 Mod Studio.
-2. In the left sidebar choose **Build & Share**, then the **Share** tab, then **Install SOFTDRINK 2K28**.
+2. On **Getting Started** press **Install SOFTDRINK 2K28…** (or in the left sidebar choose **Build & Share**, then the **Install & Share** tab, then **Install SOFTDRINK 2K28**).
 3. Pick your untouched NFL 2K5 disc image, then pick the `.2k5patch` file itself.
 4. Choose where to save the new image, for example `SOFTDRINK 2K28.xiso.iso`.
 5. Wait for **Disc ready**. The Studio checks everything it writes. Your original image is never changed.
@@ -72,7 +72,8 @@ For every new SOFTDRINK version, start again from your original untouched image,
 
 1. In xemu, open the settings, set **System Memory** to **128 MiB** and choose the **Complex 4627** BIOS image as the Flash ROM
    (BIOS), then restart xemu. This is required for SOFTDRINK 2K28 v0.9: the disc uses the bigger roster built for the 128 MiB
-   layout, and its startup patch needs the 4627 BIOS. Do not run this disc at 64 MiB.
+   layout, and its startup patch needs the 4627 BIOS. Do not run this disc at 64 MiB. (For an original Xbox or Android
+   hakuX, see **Memory** under Common settings below.)
 2. In xemu choose **Machine, Load Disc** and select the new image. (Or click **Play latest disc in xemu** in the Studio.)
 3. If the picture looks grainy, try **View, Int. Resolution Scale, 2x**.
 4. Start the game. If it sits on the Xbox logo, restart xemu.
@@ -147,7 +148,7 @@ Your changes go into a new disc build. They do not change a save you already hav
    The depth chart is the order of the list; use **Move up** and **Move down**.
 3. Press **Export roster edits (.json)...** and save the file.
 4. Open **Build & Share**. Tick **Include exported Rosters edits** and use **Choose...** to pick that `.json` file.
-   To keep the SOFTDRINK art and settings, start from **Customize SOFTDRINK 2K28** on the **Share** tab, which loads the SOFTDRINK
+   To keep the SOFTDRINK art and settings, start from **Customize SOFTDRINK 2K28** on the **Install & Share** tab, which loads the SOFTDRINK
    sources and recipe into the Build tab.
 5. Tick **Save disc copy as**, choose a file name, and click **Make my disc**. Review the confirmation, then wait for **Disc ready**.
 6. Load the new disc in xemu and load the disc roster in the game, then start a fresh franchise.
@@ -166,7 +167,7 @@ disc...** (marked experimental).
   SOFTDRINK also turns on **Dynamic kickoff alignment** (kickoff coverage and return line-ups) and **Dynamic kickoff** (nobody
   moves until the ball comes down, a landing zone, CPU kicks and touchbacks to the 35), which are built for the 35-yard tee.
   To go back to the original extra point spot:
-  1. Open **Build & Share**, **Share**, **Customize SOFTDRINK 2K28**.
+  1. Open **Build & Share**, **Install & Share**, **Customize SOFTDRINK 2K28**.
   2. Untick **Dynamic kickoff: ready stance and close blocks**. Do this first: while it is ticked, a build switches
      **Modern kick spots & kicking power** back on by itself.
   3. Untick **Dynamic kickoff alignment**, and untick **Modern kick spots & kicking power**.
@@ -176,11 +177,16 @@ disc...** (marked experimental).
      the 20, with the original kickoff set-ups.
   A customized build is made from the pack's included sources. The pack notes say a rebuild from those sources has not been
   checked against the released disc byte for byte, so expect to test it yourself.
-- **Choose what a build changes.** In **Build & Share** choose a preset (Basic, Modern, Experimental), read the list of changes,
+- **Choose what a build changes.** In **Build & Share** choose a preset (Basic, Advanced, Experimental), read the list of changes,
   then **Make my disc**. The presets do not add the SOFTDRINK 2K28 pack itself; use Install SOFTDRINK 2K28 for that.
 - **Play clock.** **Accelerated clock** and **Minimum Play Clock Time** are in Gameplay, Game Fixes. SOFTDRINK 2K28 has the
   accelerated clock on with a 20 second minimum. Its runoff stops at 2:00 in the second quarter, fourth quarter and overtime.
-- **Memory.** Always 128 MiB in xemu for SOFTDRINK.
+- **Memory.** Always 128 MiB in xemu for SOFTDRINK. An original Xbox console and the Android emulator hakuX have 64 MB:
+  for them the Studio can make a **64 MB build** (Build tab, **Console memory**, or Share, **Build for**, then **Customize
+  SOFTDRINK 2K28**). It is experimental, estimated, not yet tested on a real Xbox or hakuX, and it leaves out the options
+  that need 128 MB. The 2026 rosters stay, fitted to the original game's roster size (the free agents beyond the original
+  count are left out). For the full experience use xemu at 128 MiB. See
+  [the FAQ](mod_editor/2k5_mod_studio_faq.md#can-i-play-softdrink-2k28-on-android-in-hakux).
 
 ## 8. If something goes wrong
 
