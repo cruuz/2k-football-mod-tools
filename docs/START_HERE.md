@@ -61,7 +61,7 @@ repeat.
 ## 2. Install SOFTDRINK 2K28 (one-click path)
 
 1. Open 2K5 Mod Studio.
-2. In the left sidebar choose **Build & Share**, then the **Share** tab, then **Install SOFTDRINK 2K28**.
+2. On **Getting Started** press **Install SOFTDRINK 2K28…** (or in the left sidebar choose **Build & Share**, then the **Install & Share** tab, then **Install SOFTDRINK 2K28**).
 3. Pick your untouched NFL 2K5 disc image, then pick the `.2k5patch` file itself.
 4. Choose where to save the new image, for example `SOFTDRINK 2K28.xiso.iso`.
 5. Wait for **Disc ready**. The Studio checks everything it writes. Your original image is never changed.
@@ -147,7 +147,7 @@ Your changes go into a new disc build. They do not change a save you already hav
    The depth chart is the order of the list; use **Move up** and **Move down**.
 3. Press **Export roster edits (.json)...** and save the file.
 4. Open **Build & Share**. Tick **Include exported Rosters edits** and use **Choose...** to pick that `.json` file.
-   To keep the SOFTDRINK art and settings, start from **Customize SOFTDRINK 2K28** on the **Share** tab, which loads the SOFTDRINK
+   To keep the SOFTDRINK art and settings, start from **Customize SOFTDRINK 2K28** on the **Install & Share** tab, which loads the SOFTDRINK
    sources and recipe into the Build tab.
 5. Tick **Save disc copy as**, choose a file name, and click **Make my disc**. Review the confirmation, then wait for **Disc ready**.
 6. Load the new disc in xemu and load the disc roster in the game, then start a fresh franchise.
@@ -166,7 +166,7 @@ disc...** (marked experimental).
   SOFTDRINK also turns on **Dynamic kickoff alignment** (kickoff coverage and return line-ups) and **Dynamic kickoff** (nobody
   moves until the ball comes down, a landing zone, CPU kicks and touchbacks to the 35), which are built for the 35-yard tee.
   To go back to the original extra point spot:
-  1. Open **Build & Share**, **Share**, **Customize SOFTDRINK 2K28**.
+  1. Open **Build & Share**, **Install & Share**, **Customize SOFTDRINK 2K28**.
   2. Untick **Dynamic kickoff: ready stance and close blocks**. Do this first: while it is ticked, a build switches
      **Modern kick spots & kicking power** back on by itself.
   3. Untick **Dynamic kickoff alignment**, and untick **Modern kick spots & kicking power**.
@@ -176,7 +176,7 @@ disc...** (marked experimental).
      the 20, with the original kickoff set-ups.
   A customized build is made from the pack's included sources. The pack notes say a rebuild from those sources has not been
   checked against the released disc byte for byte, so expect to test it yourself.
-- **Choose what a build changes.** In **Build & Share** choose a preset (Basic, Modern, Experimental), read the list of changes,
+- **Choose what a build changes.** In **Build & Share** choose a preset (Basic, Advanced, Experimental), read the list of changes,
   then **Make my disc**. The presets do not add the SOFTDRINK 2K28 pack itself; use Install SOFTDRINK 2K28 for that.
 - **Play clock.** **Accelerated clock** and **Minimum Play Clock Time** are in Gameplay, Game Fixes. SOFTDRINK 2K28 has the
   accelerated clock on with a 20 second minimum. Its runoff stops at 2:00 in the second quarter, fourth quarter and overtime.

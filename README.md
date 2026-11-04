@@ -262,7 +262,7 @@ the checkout: it installs the packages and the reviewed data files on first run.
 New to modding? Read [START HERE](docs/START_HERE.md) first: it goes step by step from
 nothing to a playing SOFTDRINK 2K28 disc, then roster edits and franchise upgrades.
 
-**Install SOFTDRINK 2K28:** go to **Build & Share → Share → Install SOFTDRINK
+**Install SOFTDRINK 2K28:** press **Install SOFTDRINK 2K28…** on **Getting Started**, or go to **Build & Share → Install & Share → Install SOFTDRINK
 2K28**, then choose your unmodified retail image, the downloaded `.2k5patch`
 file itself, and a new output image. Follow [Install SOFTDRINK 2K28 in 5
 steps](docs/mod_editor/install_softdrink_2k28.md) and [recommended xemu
@@ -272,7 +272,7 @@ settings](docs/mod_editor/recommended_xemu_settings.md).
 ★ Build & Share → Build, press **Basic** (the 2004 game with the 2K5 fixes),
 **Advanced** (everything modern) or **Experimental** (widescreen and the rough
 edges), then Build. You get a patched COPY with a receipt; the original is never
-touched. The Share tab turns that copy into a `.2k5patch` anyone can apply to
+touched. The Install & Share tab turns that copy into a `.2k5patch` anyone can apply to
 their own image.
 
 1. **Load Game** → select your clean ISO (or its extracted folder). The editor

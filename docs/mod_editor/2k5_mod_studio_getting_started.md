@@ -51,8 +51,8 @@ including NumPy. An external interpreter remains your responsibility.
 ## First disc: open, choose, build, play
 
 1. Click **Open game disc…** and choose your untouched USA Xbox disc image. Wait for **Disc open**.
-2. In **Getting Started**, choose **Start SOFTDRINK Basic →**. This opens **★ Build & Share**
-   and selects **Basic — 2004 fixes** after the disc check. **Modern** is the ADVANCED pack;
+2. In **Getting Started**, choose **Make my own disc (fixes only) →**. This opens **★ Build & Share**
+   and selects **Basic: 2004 fixes** after the disc check. **Advanced** adds updated gameplay and the 2026 season;
    **Experimental** adds further experiments. Read the selected changes and their help before building.
    These presets choose gameplay, franchise and presentation changes. They do not add the SOFTDRINK 2K28
    pack (its edited rosters, uniforms, stadium art and moments); for that disc use **Share → Install
@@ -1467,7 +1467,7 @@ default, Franchise Auto Save, the 2026 franchise);
 **Experimental** adds widescreen hor+ (set xemu's Display aspect to 16x9), the
 dynamic-kickoff line-up and the ESPN scorebar. Untick anything you do not want, choose where the
 patched **copy** goes, and Build. The original is never touched; a receipt is
-written beside the copy. The **Share** tab turns that copy into a `.2k5patch`
+written beside the copy. The **Install & Share** tab turns that copy into a `.2k5patch`
 file anyone can check and apply to their own image.
 
 Modern overtime (in Advanced and Experimental) is the current NFL rule: a 10-minute
