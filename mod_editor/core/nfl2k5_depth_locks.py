@@ -99,6 +99,13 @@ kind-1 team leaves through revision 2's ``jmp 0x2BDFD4`` to the loop tail
 Play Now AFC and NFC teams play the same way). Revision-4, -3, -2 and -1
 images report ``legacy`` and upgrade in place.
 
+b780 st1: the returner fix (on in every preset, applied before depth locks)
+owns the loop head's call and sends it to the same skip in its own site, so
+Basic and Advanced (no depth locks) skip the Pro Bowl teams too. A loop head
+already pointing at the returner fix's skip counts as this revision's site in
+every state and is left alone; the 0x242CFE skip stays for builds without the
+returner fix.
+
 Conflicting imported locks are preserved (and reported by the roster API),
 not silently reassigned. Valid records have unique locked rows 0..6 per
 position/chain and at most one owner of each returner role per team. Row 7
@@ -468,8 +475,10 @@ def _context(payload: bytes) -> tuple[XbeImage, str]:
     if frame[at:at + len(PATCHED_SORT)] == PATCHED_SORT:
         frame[at:at + len(RETAIL_SORT)] = RETAIL_SORT  # revision 3 owns the sort body
     at = ALL_STAR_VA - 0x2BDCF0
-    if frame[at:at + len(PATCHED_ALL_STAR)] == PATCHED_ALL_STAR:
-        frame[at:at + len(RETAIL_ALL_STAR)] = RETAIL_ALL_STAR  # revision 5 owns the loop head's user-club call
+    if frame[at:at + len(PATCHED_ALL_STAR)] in (PATCHED_ALL_STAR, returners.all_star_call_bytes()):
+        # revision 5 points the loop head's user-club call at its skip, or the returner fix (b780 st1, applied
+        # first in every build) already points it at the same skip in its own site
+        frame[at:at + len(RETAIL_ALL_STAR)] = RETAIL_ALL_STAR
     if image.read(MARGIN_VA, 4) != struct.pack("<f", MARGIN):
         raise DepthLockError("unknown release margin constant")
     msec = image.section(MARGIN_VA, 4)
@@ -497,13 +506,16 @@ def read_any(payload: bytes) -> dict[str, object]:
         for site in sites(layout):
             got = image.read(site.va, len(site.before))
             states[site.label] = ("retail" if got == site.before else
-                                  "applied" if got == site.after else "foreign")
-        unique = set(states.values())
+                                  "applied" if got == site.after else
+                                  "returner_fix" if _returner_all_star(site, got) else "foreign")
+        # b780 st1: a loop head already sent to the returner fix's all-star skip counts as this site in every state
+        unique = {v for v in states.values() if v != "returner_fix"}
         state = next(iter(unique)) if len(unique) == 1 else "foreign"
         legacy = None
         if state == "foreign":
             for old in (4, 3, 2, 1):
                 if all(image.read(site.va, len(site.after)) == site.after
+                       or _returner_all_star(site, image.read(site.va, len(site.after)))
                        for site in sites(layout, old)):
                     # A complete revision-4 (beta-77 .. beta-79 / SOFTDRINK v0.6 .. v0.8 discs),
                     # revision-3/-2 (b777 release candidates) or revision-1
@@ -514,6 +526,13 @@ def read_any(payload: bytes) -> dict[str, object]:
                 "layout": layout, "revision": REVISION if state == "applied" else legacy}
     except (ValueError, struct.error, IndexError) as exc:
         return {"status": "foreign", "reason": str(exc)}
+
+
+def _returner_all_star(site: Site, got: bytes) -> bool:
+    """b780 st1: the returner fix owns the weekly loop head's call (0x2BDD1B) and sends it to the same all-star
+    skip from its own site; depth locks then leaves the call alone (its 0x242CFE skip stays for builds without
+    the returner fix)."""
+    return site.label == "weekly_all_star_skip" and got == returners.all_star_call_bytes()
 
 
 def status(payload: bytes) -> str:
@@ -536,6 +555,8 @@ def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
         off = image.offset(site.va, len(site.before))
         if buf[off:off + len(site.after)] == site.after:
             continue  # a revision-1 upgrade keeps its unchanged sites
+        if _returner_all_star(site, bytes(buf[off:off + len(site.after)])):
+            continue  # b780 st1: the returner fix's call already reaches the all-star skip
         buf[off:off + len(site.after)] = site.after
         touched.add(_section_for_offset(sections, off).index)
         edits.append({"label": site.label, "va": hex(site.va),
