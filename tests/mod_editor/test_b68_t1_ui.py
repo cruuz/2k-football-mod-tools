@@ -44,7 +44,7 @@ class UiTests(unittest.TestCase):
                 state = window._visual_browsers[ProductCategory.TEXTURES]
                 self.assertEqual(state.asset_list.count(), 45)
                 self.assertEqual(state.search.text(), "18H0 equipment")
-                self.assertEqual(window.navigation.currentRow(), PRODUCT_CATEGORY_ORDER.index(ProductCategory.TEXTURES) + 1)
+                self.assertEqual(window.navigation.currentRow(), window._navigation_row(ProductCategory.TEXTURES))
                 window._browse_selected_uniform_equipment()
                 self.assertIs(window._visual_browsers[ProductCategory.TEXTURES], state)
                 self.assertFalse(errors)

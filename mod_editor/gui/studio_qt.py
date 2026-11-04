@@ -1501,7 +1501,7 @@ class _WorkspaceMap(dict):
         self.window = window
 
     def __missing__(self, category):
-        self.window._ensure_workspace(PRODUCT_CATEGORY_ORDER.index(category) + 1)
+        self.window._ensure_workspace(self.window._navigation_row(category))
         if category not in self:
             raise KeyError(category)
         return self[category]
@@ -2902,6 +2902,13 @@ class StudioMainWindow(QMainWindow):
         welcome_item.setData(Qt.UserRole, "welcome")
         welcome_item.setSizeHint(QSize(210, 38))
         self.navigation.addItem(welcome_item)
+        # b780-uxfix: ★ Build & Share is second (it was 20th of 20, below the fold): it installs SOFTDRINK 2K28.
+        # Rows are found by key (_navigation_row), never by position.
+        build_item = QListWidgetItem("  ★ Build & Share")
+        build_item.setData(Qt.UserRole, "build_share")
+        build_item.setSizeHint(QSize(210, 44))
+        build_item.setToolTip("Install SOFTDRINK 2K28, choose patches and make a disc copy, or export and install mod files.")
+        self.navigation.addItem(build_item)
         for category in PRODUCT_CATEGORY_ORDER:
             display_title = category_display_title(self.product_catalog, category)
             item = QListWidgetItem(f"  {display_title}")
@@ -2943,11 +2950,6 @@ class StudioMainWindow(QMainWindow):
         scorebar_item.setToolTip("Design the in-game scorebar: pick a preset, recolour each part or use your "
                                  "own pictures, then hand the folder to Build. Experimental and unwitnessed.")
         self.navigation.addItem(scorebar_item)
-        build_item = QListWidgetItem("  ★ Build & Share")
-        build_item.setData(Qt.UserRole, "build_share")
-        build_item.setSizeHint(QSize(210, 44))
-        build_item.setToolTip("Choose patches, make a disc copy, or export and install mod files.")
-        self.navigation.addItem(build_item)
         side_layout.addWidget(self.navigation, 1)
 
         safety = QLabel(   # b780-uxfix: say what the Studio does, in plain words
@@ -2980,6 +2982,7 @@ class StudioMainWindow(QMainWindow):
         self.pages.setObjectName("pages")
         self.welcome_page = self._build_welcome_page()
         self.pages.addWidget(self._page_scroll_host(self.welcome_page))
+        self._add_lazy_page("build_share", self._build_build_share_page)   # b780-uxfix: second, as in the sidebar
         for category in PRODUCT_CATEGORY_ORDER:
             self._add_lazy_page(category.value, lambda category=category: self._build_category_page(category))
         self._roster_editor_panel = _BuildContextRosterPanel(self.facade)
@@ -3002,7 +3005,6 @@ class StudioMainWindow(QMainWindow):
         self._sync_mycareer_position_scheme()
         self.pages.addWidget(self._page_scroll_host(self._my_career_panel))
         self._add_lazy_page("scorebar", self._build_scorebar_page)
-        self._add_lazy_page("build_share", self._build_build_share_page)
         workspace_layout.addWidget(self.pages, 1)
         workspace_layout.addWidget(footer)
         root_layout.addWidget(workspace, 1)
@@ -3333,7 +3335,7 @@ class StudioMainWindow(QMainWindow):
             self._connect_book_set()
             page = self._playbooks_panel
         elif category == ProductCategory.SLIDERS_GAMEPLAY:
-            self._ensure_workspace(self.navigation.count() - 1)
+            self._ensure_workspace(self._navigation_row("build_share"))
             # Throw Distance & Arc is the one writable workspace on this
             # page: two sliders over the game's own arm-strength curve
             # tables, written to a COPY of default.xbe (xemu-only), the
@@ -7137,7 +7139,7 @@ class StudioMainWindow(QMainWindow):
                 "Choose a physical uniform set before browsing its equipment."
             )
             return
-        row = PRODUCT_CATEGORY_ORDER.index(ProductCategory.TEXTURES) + 1
+        row = self._navigation_row(ProductCategory.TEXTURES)
         self._ensure_workspace(row)
         state = self._visual_browsers.get(ProductCategory.TEXTURES)
         if state is None:
@@ -8522,6 +8524,23 @@ class StudioMainWindow(QMainWindow):
         item = self.navigation.item(row)
         return str(item.data(Qt.UserRole) or "") if item is not None else ""
 
+    def _navigation_row(self, key) -> int:
+        """The sidebar row (and page index) of a workspace key or ProductCategory (b780-uxfix: never by position)."""
+
+        wanted = str(getattr(key, "value", key))
+        for row in range(self.navigation.count()):
+            if self._navigation_key(row) == wanted:
+                return row
+        raise ValueError(f"Unknown workspace: {wanted}")
+
+    def _row_category(self, row: int):
+        """The ProductCategory a sidebar row shows, or None for Getting Started and the ★ workspaces."""
+
+        try:
+            return ProductCategory(self._navigation_key(row))
+        except ValueError:
+            return None
+
     def _prefill_panels_from_source(self, source: Path | None) -> None:
         """Feed the disc that was just opened to every page that has its own source field.
 
@@ -9387,7 +9406,7 @@ class StudioMainWindow(QMainWindow):
             self._mark_workspace_changed()
 
     def _sprite_watermark_changed(self, value: str) -> None:
-        self._ensure_workspace(self.navigation.count() - 1)
+        self._ensure_workspace(self._navigation_row("build_share"))
         combo=self._build_panel.scorebug_watermark_combo
         combo.setCurrentIndex(combo.findData(value))
         self._capture_music_build_settings()
@@ -9402,7 +9421,7 @@ class StudioMainWindow(QMainWindow):
 
     def _scorebar_folder_chosen(self, folder: str) -> None:
         """Scorebar Studio saved a folder: fill the Build tab's scorebar folder field."""
-        self._ensure_workspace(self.navigation.count() - 1)
+        self._ensure_workspace(self._navigation_row("build_share"))
         self._build_panel.scorebug_folder_field.setText(folder)
         self._capture_music_build_settings()
         self._mark_workspace_changed()
@@ -9447,7 +9466,7 @@ class StudioMainWindow(QMainWindow):
             self._mark_workspace_changed()
 
     def _my_career_setup_ready(self, path):
-        self._ensure_workspace(self.navigation.count() - 1)
+        self._ensure_workspace(self._navigation_row("build_share"))
         self._build_panel.set_my_career_setup(path)
         self._capture_music_build_settings()
         self._mark_workspace_changed()
@@ -9765,7 +9784,7 @@ class StudioMainWindow(QMainWindow):
     ) -> None:
         if self._navigation_key(row) == "rosters":
             if self._build_panel is None:
-                self._show_workspace(self.navigation.count() - 1, select=False)
+                self._show_workspace(self._navigation_row("build_share"), select=False)
                 if self._build_panel is None:
                     return
             self._prefill_roster_if_pending()
@@ -9778,9 +9797,9 @@ class StudioMainWindow(QMainWindow):
             if getattr(self.facade, "models_source_paths", None):
                 self._animations_panel.reload()
             return
-        if row <= 0 or row - 1 >= len(PRODUCT_CATEGORY_ORDER):
+        category = self._row_category(row)
+        if category is None:
             return
-        category = PRODUCT_CATEGORY_ORDER[row - 1]
         if category in self._visual_browsers:
             self._filter_visual_assets(category)
             if category == ProductCategory.ROSTERS_PLAYERS \
@@ -9861,12 +9880,13 @@ class StudioMainWindow(QMainWindow):
         if row <= 0:
             self.page_title.setText("Getting Started")
             return
-        if row - 1 >= len(PRODUCT_CATEGORY_ORDER):
-            special = row - 1 - len(PRODUCT_CATEGORY_ORDER)
-            titles = ("Rosters", "Models", "Animations", "Create a Play", "MyCareer", "Scorebar", "Build & Share")
-            self.page_title.setText(titles[special] if special < len(titles) else "")
+        category = self._row_category(row)
+        if category is None:   # b780-uxfix: the ★ workspaces by key, wherever their row is
+            titles = {"rosters": "Rosters", "models": "Models", "animations": "Animations",
+                      "create_play": "Create a Play", "my_career": "MyCareer", "scorebar": "Scorebar",
+                      "build_share": "Build & Share"}
+            self.page_title.setText(titles.get(self._navigation_key(row), ""))
             return
-        category = PRODUCT_CATEGORY_ORDER[row - 1]
         self.page_title.setText(
             category_display_title(self.product_catalog, category)
         )

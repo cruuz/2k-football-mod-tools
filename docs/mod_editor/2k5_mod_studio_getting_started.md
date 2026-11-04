@@ -72,7 +72,8 @@ including NumPy. An external interpreter remains your responsibility.
 
 | Page | What you can do |
 | --- | --- |
-| Getting Started | Open your game disc or start the Basic preset. |
+| Getting Started | Install SOFTDRINK 2K28, open your game disc, or start your own disc from the Basic preset. |
+| ★ Build & Share | Install SOFTDRINK 2K28 (Install & Share), choose a preset, review all changes, Make my disc, copy the Build summary, or share a patch. |
 | Uniforms & Equipment | Edit uniform sets, team kits, equipment colours and helmet finish. |
 | Names, Numbers & Faces | Find portrait, face and number artwork. |
 | Text & Team Identity | Edit game text and preview Position Names (EDGE) and modern mode names. |
@@ -91,7 +92,6 @@ including NumPy. An external interpreter remains your responsibility.
 | ★ Create a Play | Design plays with the wizard and its Info reference. |
 | MyCareer | Create MyPlayer and review MyCareer settings. |
 | Scorebar | Edit the scorebar layout and artwork. |
-| ★ Build & Share | Choose a preset, review all changes, Make my disc, copy the Build summary, or share a patch. |
 
 
 ## Before you begin

@@ -91,11 +91,12 @@ class StartupTests(unittest.TestCase):
         window=self.make_window()
         try:
             with mock.patch.object(shell,'load_nfl2k5_extended_visual_catalog',load):
-                window.navigation.setCurrentRow(12)
+                row=window._navigation_row(shell.ProductCategory.TEXTURES)   # b780-uxfix: rows by key
+                window.navigation.setCurrentRow(row)
                 self.assertTrue(entered.wait(1))
                 self.app.processEvents()
-                self.assertEqual(window.pages.currentIndex(),12)
-                self.assertIn(12,window._page_loads)
+                self.assertEqual(window.pages.currentIndex(),row)
+                self.assertIn(row,window._page_loads)
                 gate.set()
                 deadline=time.monotonic()+5
                 while window._workers and time.monotonic()<deadline:
@@ -114,7 +115,7 @@ class StartupTests(unittest.TestCase):
                    if window._navigation_key(i) == 'rosters')
         with mock.patch.object(window, '_show_workspace') as prepare:
             window._refresh_entered_page(row)
-        prepare.assert_called_once_with(window.navigation.count() - 1, select=False)
+        prepare.assert_called_once_with(window._navigation_row('build_share'), select=False)
         self.assertIsNone(window._build_panel)
 
     def test_saving_before_build_page_keeps_existing_gameplay_choices(self):

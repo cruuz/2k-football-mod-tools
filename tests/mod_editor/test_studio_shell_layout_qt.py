@@ -52,14 +52,16 @@ class StudioShellLayoutTests(unittest.TestCase):
         rows = self._row_texts()
         self.assertEqual(len(rows), 1 + len(PRODUCT_CATEGORY_ORDER) + 7)
         self.assertEqual(rows[0], "Getting Started")
-        self.assertEqual(rows[-7], "★ Rosters")
-        self.assertEqual(rows[-6], "★ Models")
-        self.assertEqual(rows[-5], "Animations")
+        self.assertEqual(rows[1], "★ Build & Share")       # b780-uxfix: second, not 20th of 20 below the fold
+        self.assertEqual(rows[-6], "★ Rosters")
+        self.assertEqual(rows[-5], "★ Models")
+        self.assertEqual(rows[-4], "Animations")
         self.assertFalse(self.window._animations_panel.import_button.isEnabled())
-        self.assertEqual(rows[-4], "★ Create a Play")
-        self.assertEqual(rows[-3], "MyCareer")
-        self.assertEqual(rows[-2], "Scorebar")
-        self.assertEqual(rows[-1], "★ Build & Share")
+        self.assertEqual(rows[-3], "★ Create a Play")
+        self.assertEqual(rows[-2], "MyCareer")
+        self.assertEqual(rows[-1], "Scorebar")
+        for row in range(self.window.navigation.count()):  # every row opens its own page
+            self.assertEqual(self.window._navigation_row(self.window._navigation_key(row)), row)
         self.assertEqual(_tab_titles(self.window._create_play_tabs), ["Create a Play", "Info"])
         self.assertIn("Gameplay", rows)
         self.assertIn("Presentation", rows)
@@ -122,7 +124,7 @@ class StudioShellLayoutTests(unittest.TestCase):
 
     def test_build_and_share_page_has_both_tabs(self) -> None:
         nav = self.window.navigation
-        nav.setCurrentRow(nav.count() - 1)
+        nav.setCurrentRow(self.window._navigation_row("build_share"))
         self.application.processEvents()
         page = self.window._build_share_page
         self.assertIsInstance(page, QTabWidget)
@@ -169,13 +171,13 @@ class BuildShareActionBarTests(StudioShellLayoutTests):
         nav = self.window.navigation
         project_widgets = (self.window.edit_count, self.window.undo_button, self.window.revert_all_button,
                            self.window.check_images_button, self.window.build_button)
-        nav.setCurrentRow(1)
+        nav.setCurrentRow(self.window._navigation_row(ProductCategory.UNIFORMS_EQUIPMENT))
         self.assertTrue(all(not w.isHidden() for w in project_widgets))
-        nav.setCurrentRow(nav.count() - 1)          # ★ Build & Share
+        nav.setCurrentRow(self.window._navigation_row("build_share"))          # ★ Build & Share
         self.assertTrue(all(w.isHidden() for w in project_widgets))
         self.assertFalse(self.window.launch_button.isHidden())
         self.assertFalse(self.window.configure_xemu_button.isHidden())
-        nav.setCurrentRow(nav.count() - 2)          # ★ Create a Play: controls return
+        nav.setCurrentRow(self.window._navigation_row("create_play"))          # ★ Create a Play: controls return
         self.assertTrue(all(not w.isHidden() for w in project_widgets))
 
     def test_a_finished_build_tab_copy_is_offered_to_launch(self) -> None:
