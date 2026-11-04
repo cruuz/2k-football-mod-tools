@@ -96,6 +96,50 @@ class TemplateTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
 
+class WiringTests(unittest.TestCase):
+    """A Build option on in every preset (a 2004 bug fix), validated, inspected, applied after the coach career fix and
+    read back after the final passes; on in the 64 MB profile, at no memory cost."""
+
+    def test_option_presets_settings_panel_and_profile(self):
+        from mod_editor.core import mod_build
+        from mod_editor.core import nfl2k5_build_settings as settings
+        from mod_editor.core import nfl2k5_memory_budget as mb
+        self.assertIs(mod_build.BuildPlan("", "").history_pool, False)
+        self.assertEqual({name: preset["history_pool"] for name, preset in mod_build.PRESETS.items()},
+                         {name: True for name in mod_build.PRESETS})
+        self.assertIn("history_pool", settings.FEATURE_KEYS)
+        self.assertIs(mod_build.BuildPlan("a.iso", "b.iso", history_pool=True).wants_xbe_patch(), True)
+        self.assertIs(mod_build.availability()["history_pool"], True)
+        source = (ROOT / "mod_editor/gui/build_panel_qt.py").read_text(encoding="utf-8")
+        self.assertIn('("history_pool", _history_pool.BUILD_CAPTION, _history_pool.HELP_TEXT)', source)
+        with self.assertRaises(ValueError):
+            mod_build.build(mod_build.BuildPlan("in.xbe", "out.xbe", history_pool=1))
+        # the 64 MB profile turns it on and it costs nothing there (in place: no allocation, no section)
+        self.assertIs(mb.recommended_64_profile({"history_pool": False}).get("history_pool"), True)
+        self.assertNotIn("history_pool", mb.recommended_64_profile({"history_pool": True}))
+        plan = mb.profile_64_plan()
+        self.assertIs(plan["history_pool"], True)
+        off = dict(plan, history_pool=False)
+        self.assertEqual(mb.xbe_resident(plan, 64), mb.xbe_resident(off, 64))
+        a, b = mb.predict(plan, 64), mb.predict(off, 64)
+        self.assertEqual((a["room"], a["heap_b"], a["fits"]), (b["room"], b["heap_b"], b["fits"]))
+
+    @unittest.skipUnless(_retail() is not None, "pinned USA XBE required")
+    def test_a_retail_build_with_only_the_fix_applies_it(self):
+        import tempfile
+        from mod_editor.core import mod_build
+        retail = _retail()
+        with tempfile.TemporaryDirectory() as temp:
+            source = Path(temp) / "default.xbe"
+            source.write_bytes(retail)
+            target = Path(temp) / "built.xbe"
+            receipt = mod_build.build(mod_build.BuildPlan(str(source), str(target), history_pool=True))
+            self.assertEqual(receipt["result"]["history_pool"], "applied")
+            self.assertEqual(target.read_bytes(), hp.apply(retail)[0])
+            self.assertEqual(mod_build.inspect(target)["history_pool"], "applied")
+            self.assertEqual(mod_build.inspect(source)["history_pool"], "retail")
+
+
 @unittest.skipUnless(_retail() is not None, "pinned USA XBE required")
 class RetailExecutableTests(unittest.TestCase):
 
