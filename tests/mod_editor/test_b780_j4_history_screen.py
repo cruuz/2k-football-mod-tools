@@ -957,7 +957,8 @@ class NativeTests(unittest.TestCase):
             type(self).payload = saved
 
     def test_card_cycle_through_the_champions_owner(self):
-        """Honors (with champions) and this owner on one image: the card cycles card, honors, champions, game log."""
+        """Honors (with champions) and this owner on one image: the card cycles card, honors, champions, game log
+        while there is a franchise footer to read (b780 hist1, Q5: without one the game log is no page at all)."""
         from mod_editor.core import nfl2k5_champions as champions
         from mod_editor.core import nfl2k5_honors as honors
         both, _ = honors.apply(self.retail)
@@ -966,13 +967,31 @@ class NativeTests(unittest.TestCase):
         ch = champions.labels(champions.allocations(both)["code"]["va"])
         m = Machine(both)
         m.capture_text()
-        m.uc.mem_map(self.WORDS, 0x1000)                 # the footer host's word: no body
+        m.uc.mem_map(self.WORDS, 0x1000)                 # the footer host's word: no body yet
+        m.uc.mem_map(self.FOOTER, 0x20000)
         state = m.HEAP + 0x31000
         m.uc.mem_write(state, bytes(16))
 
         def flip(buttons):
             return m.call(ch["champions_flip"], ecx=buttons, edx=state)
 
+        # Q5: no footer (history off, or not a franchise): card, honors, champions, both ways; no game log page
+        pages = []
+        for _ in range(4):
+            flip(0x1000)
+            pages.append((m.get(state), m.get(state + 4)))
+        self.assertEqual(pages, [(1, 0), (2, 0), (0, 0), (1, 0)])
+        for _ in range(2):
+            flip(0x2000)
+            pages.append((m.get(state), m.get(state + 4)))
+        self.assertEqual(pages[4:], [(0, 0), (2, 0)])
+        m.uc.mem_write(state, struct.pack("<4I", 2, 0x80000000, 0, 0))   # a log page left from a franchise
+        flip(0x1000)
+        self.assertEqual((m.get(state), m.get(state + 4)), (0, 0))
+        # with the franchise footer the game log is the fourth page
+        m.uc.mem_write(self.FOOTER, j23_body(self.season_footer()))
+        m.put(self.WORDS, self.FOOTER)
+        m.uc.mem_write(state, bytes(16))
         pages = []
         for _ in range(5):                               # Black: forward
             flip(0x1000)

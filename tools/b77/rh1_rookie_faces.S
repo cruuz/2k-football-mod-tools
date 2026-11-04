@@ -46,6 +46,7 @@
 .set COLLEGE_TOTAL, 6936   # b780 GEN1 Q84: the sum of the college weights n * n
 .set JERSEY_MIN, 0x521B90  # u32 per position: the bottom of his jersey range (FUN_002BD260)
 .set JERSEY_WALK, 0x2BD2FD # FUN_002BD260: back to its walk's stop test
+.set HAIRPTR, D+0x1F4      # b780 GEN1 Q81: the rookie hair helper (nfl2k5_rookie_faces_hair), 0 when not installed
 
 .text
 .globl _start
@@ -496,7 +497,10 @@ regionD:                            # ebx = tone, edx = build
 26: dec ebx
     jnz 22b
 23: mov [esi+6], ax
-    mov ecx, [esi+0x18]             # skin bits 7-9 = tone, Dreads = hanging face
+    mov ecx, [HAIRPTR]              # b780 GEN1 Q81: his hair style from the face (+0x0D) when the rookie hair helper
+    jecxz 81f                       # is installed (Hair styles on): ax = the portrait id
+    call ecx
+81: mov ecx, [esi+0x18]             # skin bits 7-9 = tone, Dreads = hanging face
     and ecx, 0xFFFFFC7E
     mov eax, [esp+0x10]
     shl eax, 7
@@ -514,4 +518,6 @@ regionD:                            # ebx = tone, edx = build
     add esp, 8
     ret 4
 regionD_end:
-    .fill D + 0x1F8 - TABLE_END - (regionD_end - regionD), 1, 0xCC
+    .fill D + 0x1F4 - TABLE_END - (regionD_end - regionD), 1, 0xCC
+hairptr:
+    .long 0                         # b780 GEN1 Q81: written by the build when the rookie hair helper is installed

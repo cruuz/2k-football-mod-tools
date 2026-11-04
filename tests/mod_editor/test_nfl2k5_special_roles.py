@@ -120,7 +120,8 @@ class RetailSpecialTests(unittest.TestCase):
         self.assertEqual(coverage["ls"], 72)
         self.assertGreater(coverage["3db"], 300)
         self.assertGreater(coverage["pwr"], 100)
-        self.assertGreater(coverage["gadget"], 40)
+        # b780 sub1 (Q61): no group carries the gadget ordinal any more (the gadget player comes in per play)
+        self.assertEqual(coverage["gadget"], 0)
 
     def test_gadget_audit_uses_handoff_nodes_and_reports_slot_conflicts(self):
         forms, plays, refused = 0, set(), Counter()
@@ -134,6 +135,7 @@ class RetailSpecialTests(unittest.TestCase):
         self.assertGreater(len(plays), 100)
         self.assertGreater(refused["gadget_conflicts_with_x_z_slot_ordinals"], 0)
         self.assertGreater(refused["shared_group_gadget_carriers_disagree"], 0)
+        self.assertGreater(refused["gadget_is_a_per_play_substitution"], 40)
 
     def test_hb_and_gunner_tampering_are_foreign_and_reapply_is_idempotent(self):
         for key, result in self.results.items():
@@ -155,9 +157,11 @@ class SpecialChartContractTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_depth_chart_rows as rows
         # b780 hunt5 (Noah 11/03: the starting back keeps priority): 3DRB is RB ordinal 2, rank row 1, which no book
         # formation asks for, so its top back is RB2 behind the starter; the passing sets keep the lead back (0).
-        expected = {'LS': (6, 1), 'LGUN': (9, 3), 'RGUN': (18, 3),
+        # b780 sub1: LGUN/RGUN = rank row 3 (ordinal 6, the punt gunners only), GAD = WR side row 3 (ordinal 7, the
+        # per-play gadget rule only), 3DRB = RB side row 1 (ordinal 3, the passing-down rule only)
+        expected = {'LS': (6, 1), 'LGUN': (9, 6), 'RGUN': (18, 6),
                     'NCB': (18, 2), 'DCB': (18, 3), 'SLWR': (9, 2),
-                    'GAD': (9, 4), '3DRB': (10, 2), 'PWRB': (10, 1)}
+                    'GAD': (9, 7), '3DRB': (10, 3), 'PWRB': (10, 1)}
         kinds = {3: 9, 4: 18, 7: 10, 12: 6}
         actual = {abbr: (kinds[pos], chain >> 1 if pos == 12 else chain)
                   for _, _, abbr, _, pos, chain in rows.ROLE_ROWS}

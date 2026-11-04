@@ -255,6 +255,7 @@ from mod_editor.core import nfl2k5_pass_rush_stats as _pass_rush_stats  # noqa: 
 from mod_editor.core import nfl2k5_history_screen as _history_screen  # noqa: E402  b780-j4
 from mod_editor.core import nfl2k5_cpu_passer_iq as _cpu_passer_iq  # noqa: E402  b780 a-passer
 from mod_editor.core import nfl2k5_protection_calls as _protection_calls  # noqa: E402  b780 p1-slide
+from mod_editor.core import nfl2k5_intro_autoskip as _intro_autoskip  # noqa: E402  b780-mem1
 CPU_AI_OPTIONS = (
     ("cpu_qb_zone_windows", _cpu_qb_reads.BUILD_CAPTION_ZONE, _cpu_qb_reads.HELP_ZONE),
     ("cpu_qb_recheck", _cpu_qb_reads.BUILD_CAPTION_RECHECK, _cpu_qb_reads.HELP_RECHECK),
@@ -302,12 +303,14 @@ from mod_editor.core import nfl2k5_player_progress_screen as _player_progress  #
 from mod_editor.core import nfl2k5_franchise_footer as _franchise_footer  # noqa: E402  b780 j23
 from mod_editor.core import nfl2k5_contract_college_guard as _contract_guard  # noqa: E402
 from mod_editor.core import nfl2k5_coach_career_fix as _coach_career_fix  # noqa: E402  b780 c1 (wired at b780-int)
+from mod_editor.core import nfl2k5_history_pool as _history_pool  # noqa: E402  b780 hist1
 from mod_editor.core import nfl2k5_sim_cb_tackles as _sim_cb_tackles  # noqa: E402
 from mod_editor.core import nfl2k5_sim_rb_injuries as _sim_rb_injuries  # noqa: E402  b779-sim2
 from mod_editor.core import nfl2k5_sim_realism as _sim_realism  # noqa: E402  b779-sim2 r4
 from mod_editor.core import nfl2k5_coach_carousel as _coach_carousel  # noqa: E402  b780-c6
 from mod_editor.core import nfl2k5_standings_records as _standings_records  # noqa: E402  b780-j1
 from mod_editor.core import nfl2k5_audible_legend as _audible_legend  # noqa: E402  b780-p3
+from mod_editor.core import nfl2k5_injured_reserve as _injured_reserve  # noqa: E402  b780 IR1
 from mod_editor.core import nfl2k5_sim_stats as _sim_stats  # noqa: E402
 from mod_editor.core import nfl2k5_quick_long_release as _quick_long_release  # noqa: E402  b780-c-release
 from mod_editor.core import nfl2k5_option_defaults as _option_defaults  # noqa: E402  b779-df1
@@ -331,6 +334,7 @@ BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                  ("pass_rush_stats", _pass_rush_stats.BUILD_CAPTION, _pass_rush_stats.HELP_TEXT),
                  ("history_screen", _history_screen.BUILD_CAPTION, _history_screen.HELP_TEXT),  # b780-j4
                  ("protection_calls", _protection_calls.BUILD_CAPTION, _protection_calls.HELP_TEXT),  # b780 p1-slide
+                 ("intro_autoskip", _intro_autoskip.BUILD_CAPTION, _intro_autoskip.HELP_TEXT),  # b780-mem1
                  ("modern_force_out", _force_out.BUILD_CAPTION, _force_out.HELP_TEXT),  # b778-fo1
                  ("module_loader", _module_loader.BUILD_CAPTION, _module_loader.HELP_TEXT),  # b778-xs1
                  ("crib_trophy_room", _crib_trophy_room.BUILD_CAPTION, _crib_trophy_room.HELP_TEXT),  # b778-xs1
@@ -359,12 +363,15 @@ BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                  ("franchise_history", _franchise_footer.BUILD_CAPTION, _franchise_footer.HELP_TEXT),  # b780 j23
                  ("contract_college_guard", _contract_guard.BUILD_CAPTION, _contract_guard.HELP_TEXT),  # b778-cr1
                  ("coach_career_fix", _coach_career_fix.BUILD_CAPTION, _coach_career_fix.HELP_TEXT),  # b780 c1
+                 ("history_pool", _history_pool.BUILD_CAPTION, _history_pool.HELP_TEXT),  # b780 hist1
                  ("sim_cb_tackles", _sim_cb_tackles.BUILD_CAPTION, _sim_cb_tackles.HELP_TEXT),  # b778-cb1
                  ("sim_rb_injuries", _sim_rb_injuries.BUILD_CAPTION, _sim_rb_injuries.HELP_TEXT),  # b779-sim2
                  ("sim_realism", _sim_realism.BUILD_CAPTION, _sim_realism.HELP_TEXT),  # b779-sim2 r4
                  ("coach_carousel", _coach_carousel.BUILD_CAPTION, _coach_carousel.HELP_TEXT),  # b780-c6
                  ("standings_records", _standings_records.BUILD_CAPTION, _standings_records.HELP_TEXT),  # b780-j1
                  ("audible_legend", _audible_legend.BUILD_CAPTION, _audible_legend.HELP_TEXT),  # b780-p3
+                 ("modern_injured_reserve", _injured_reserve.BUILD_CAPTION, _injured_reserve.HELP_TEXT),  # b780 IR1
+                 ("injured_reserve_guard", _injured_reserve.GUARD_CAPTION, _injured_reserve.GUARD_HELP),  # b780 IR1 (Q66)
                  ("sim_stats", _sim_stats.BUILD_CAPTION, _sim_stats.HELP_TEXT),  # b778-sim1
                  ("quick_long_release", _quick_long_release.BUILD_CAPTION, _quick_long_release.HELP_TEXT),  # b780-c-release
                  ("option_defaults", _option_defaults.BUILD_CAPTION, _option_defaults.HELP_TEXT),  # b779-df1
@@ -5491,7 +5498,8 @@ class BuildPanel(QWidget):
         contents = "Build selection: " + (", ".join(labels) if labels else "no recorded changes") + "."
         from mod_editor.gui.ux_text import disc_next_steps
         built_plan = receipt.get("plan") if isinstance(receipt.get("plan"), dict) else {}
-        next_step = disc_next_steps(target, console_memory=console_memory.of(built_plan))  # b780-m64b
+        next_step = disc_next_steps(target, console_memory=console_memory.of(built_plan),  # b780-m64b
+                                    next_steps_64=console_memory.NEXT_STEPS_64)
         if not tt.is_disc_image(target):
             next_step = "This is an executable copy. Build from a game disc to make a playable disc image."
         from mod_editor.core.build_feedback import timing_summary

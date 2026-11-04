@@ -147,10 +147,16 @@ def _revision_three(current, retail):
     if cut is not None:
         # b780 hunt1: revision 6 also rewrote the fill gate (the money window's tail); revisions 3 to 5 installed the
         # same money window, the gate with only the count test
-        from tests.mod_editor.test_b780_hunt1_specialist_cut import revision_five_money
+        from tests.mod_editor.test_b780_hunt1_specialist_cut import released_roster_a, revision_five_money
         money = revision_five_money()
         offset = image.offset(economy.MONEY_WINDOW, len(money))
         out[offset:offset + len(money)] = money
+        # b780 hunt1: and roster_a (the weekly upkeep) without the in-season K/P cover, as revisions 3 to 5 installed
+        # it (taken from a released v0.8 or v0.9 RC executable when one is here; otherwise it stays current)
+        upkeep = released_roster_a() if hasattr(economy, "ROSTER_A_WINDOW") else None
+        if upkeep is not None:
+            offset = image.offset(economy.ROSTER_A_WINDOW, len(upkeep))
+            out[offset:offset + len(upkeep)] = upkeep
     # b780-int: revision 5 (b4-economy) rewrote the reconcile and roster_c windows, which revision 3 shares with
     # revision 4; put their revision-4 bytes back so the image is the real revision 3 again (a v0.7 executable)
     from tests.franchise_economy_revision4_windows import WINDOWS as REVISION_4_WINDOWS
@@ -238,9 +244,12 @@ class DraftClassSupplyTests(unittest.TestCase):
         self.assertEqual(receipt.get("upgraded_from"), "legacy")
         # b780-int: a revision-3 image upgrades straight to revision 5 (b4-economy): the revision-4 sites plus the two
         # windows revision 5 rewrote, which revision 3 shares with revision 4
-        self.assertEqual(sorted(int(e["va"], 16) for e in receipt["edits"]),
-                         sorted(economy.REVISION_4_SITES | getattr(economy, "REVISION_5_SITES", frozenset())
-                                | getattr(economy, "REVISION_6_SITES", frozenset())))
+        expected = set(economy.REVISION_4_SITES | getattr(economy, "REVISION_5_SITES", frozenset())
+                       | getattr(economy, "REVISION_6_SITES", frozenset()))
+        from tests.mod_editor.test_b780_hunt1_specialist_cut import released_roster_a
+        if hasattr(economy, "ROSTER_A_WINDOW") and released_roster_a() is None:
+            expected.discard(economy.ROSTER_A_WINDOW)     # b780 hunt1: no released upkeep bytes here to put back
+        self.assertEqual(sorted(int(e["va"], 16) for e in receipt["edits"]), sorted(expected))
 
     def test_a_small_pool_still_gets_a_full_draft_and_keeps_the_vacancies(self):
         # The retail roster has only 241 free agents, mostly young: retiring by age alone frees far fewer than

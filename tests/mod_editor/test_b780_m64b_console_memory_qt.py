@@ -441,7 +441,7 @@ class SavedAndShared(_Page):
         from mod_editor.gui.ux_text import disc_next_steps
         self.assertEqual(disc_next_steps("x.iso"), disc_next_steps("x.iso", console_memory=128))
         self.assertIn("System Memory to 128 MiB", disc_next_steps("x.iso"))
-        text = disc_next_steps("x.iso", console_memory=64)
+        text = disc_next_steps("x.iso", console_memory=64, next_steps_64=cm.NEXT_STEPS_64)  # the 2K5 build page passes it
         self.assertIn("64 MB build", text)
         self.assertIn(cm.STATUS_64, text)
         self.assertNotIn("\u2014", text)

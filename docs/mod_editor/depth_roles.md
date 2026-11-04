@@ -172,17 +172,18 @@ return personnel for offense.
   passing/power classifications, and shared groups whose HB requests differ.
   Groups are never split. The retail MIN two-HB sets are explicitly ambiguous.
 * **GADGET:** actual WR-targeted handoff opcode `0x13` plus target take-handoff
-  opcode `0x16` identifies a receiver carry. WR rank row 2 (ordinal 4) keeps
-  it distinct from SLOT and both HB roles. Agreeing two-WR groups use that
-  receiver; three-plus-WR groups retain X/Z/SLOT priority. Disagreeing carrier
-  slots and HB direct snaps are refused for this WR-backed role. This is a
-  shared-group formation substitution: other formations and normal plays in
-  an accepted group also field that gadget receiver, including at an outside
-  WR spot. It is not a per-play substitution.
+  opcode `0x16` identifies a receiver carry. Since b780 sub1 (Q61) no group is
+  given a gadget ordinal (refused as `gadget_is_a_per_play_substitution`):
+  personnel belongs to the whole shared group, so the old WR ordinal 4 also
+  put the gadget receiver at WR in 35 base sets of those groups. The gadget
+  player now comes in per play (`nfl2k5_lineup_roles` rule 3, below) and every
+  group keeps X/Z/SLOT.
 * **GUN/GUNR:** punt type 10 with a punter, two unambiguous outside coverage
   positions at least ten yards wide, within one yard of the line. Left uses
-  WR ordinal 3 (side row 1); right uses CB ordinal 3 (side row 1). These are
-  explicit positional lists, not an unimplemented fastest-player sort.
+  WR ordinal 6 (rank row 3); right uses CB ordinal 6 (rank row 3), the SPECIAL
+  LGUN/RGUN rows, which no other club formation asks for (b780 sub1; ordinal
+  3 made the left gunner the fourth WR of four- and five-WR sets and the right
+  gunner the dime corner). These are explicit positional lists.
 * **LS:** punt type 10 and FG/PAT type 12 with their correct specialist;
   all linked snap opcodes must agree on the central C slot within 30 cm of
   `(0,0)`. Assign C ordinal 1. Retail already uses this second center.
@@ -196,8 +197,8 @@ coverage is CB ordinal 2, right is FS ordinal 1; Editor uses WR ordinals 4/3.
 Both versions' snapper is C ordinal 1, as are all FG/PAT snappers.
 
 The audit identifies **242 WR-carry formations / 357 distinct linked plays**;
-56 WR-carry formations accept GADGET, affecting **265 formations total** in
-their shared personnel groups, including ordinary plays. It also finds 22 offensive formations
+no group takes a GADGET ordinal any more (b780 sub1; before, 56 WR-carry formations accepted it, affecting 265
+formations of their shared groups, including ordinary plays). It also finds 22 offensive formations
 with an HB direct-snap play; those are reported, not presented as absent
 Wildcat-style football. The WR-backed GADGET pass leaves those HB slots to
 the independently classified HB role. Accepted counts are **356 3DB,
@@ -215,30 +216,66 @@ SPECIAL has **13 rows**, scrolling only on SPECIAL:
 |---:|---|---|---|---|---|
 | 0–3 | KR, PR, K, P | Retail | Retail | Retail | returners (team bytes +0x195/+0x196/+0x199), kicker, punter |
 | 4 | LS / LONG SNAPPER | 12, 2 | C rank 1 | 6, 1 | snapper in all 36 punt and 36 FG/PAT formations; C2 |
-| 5 | LGUN / LEFT GUNNER | 3, 3 | WR side 1 | 9, 3 | punt left gunner (36); WR4 in 58 four-WR and 40 five-WR sets; kickoff and kick-return units |
-| 6 | RGUN / RIGHT GUNNER | 4, 3 | CB side 1 | 18, 3 | punt right gunner (36); the same list as DCB |
+| 5 | LGUN / LEFT GUNNER | 3, 6 | WR rank 3 | 9, 6 | punt left gunner (36); no other club formation asks for it |
+| 6 | RGUN / RIGHT GUNNER | 4, 6 | CB rank 3 | 18, 6 | punt right gunner (36); no other club formation asks for it |
 | 7 | NCB / NICKEL CORNER | 4, 2 | CB rank 1 | 18, 2 | CB3 in 114 nickel and dime formations; kickoff units |
 | 8 | DCB / DIME CORNER | 4, 3 | CB side 1 | 18, 3 | CB4 in 38 dime formations; kickoff units |
 | 9 | SLWR / SLOT RECEIVER | 3, 2 | WR rank 1 | 9, 2 | inside WR in 541 three-WR sets (and in 4/5-WR sets) |
-| 10 | GAD / GADGET | 3, 4 | WR rank 2 | 9, 4 | WR5 in 40 five-WR sets; a WR in 35 one- and two-WR sets of gadget groups (Cleveland 5, the GEN, WCO and reference books 30) |
-| 11 | 3DRB / THIRD DOWN BACK | 7, 2 | HB rank 1 | 10, 2 | RB2 behind the starter; no offensive set asks for it; kickoff and kick-return units |
+| 10 | GAD / GADGET | 3, 7 | WR side 3 | (rule 3) | the carrier spot of the 111 gadget plays of the v0.9 club books, on that play only; no formation asks for it |
+| 11 | 3DRB / THIRD DOWN BACK | 7, 3 | HB side 1 | (rule 1) | the lead back on obvious passing downs; no formation asks for it |
 | 12 | PWRB / POWER BACK | 7, 1 | HB side 0 | 10, 1 | the back in 217 goal-line, jumbo and heavy-I sets; 2nd back in two-back sets |
 
-**3DRB revision 2 (b780 hunt5, Noah 11/03: "If I make someone a third down back, they shouldn't be in every single
-play. The starting halfback should have priority.").** Beta-76.4 to the beta-80 RC drew 3DRB as chain 0, the RB rank
-list itself: the back put at its top became RB1, the back in all 953 base and passing formations. 3DRB now starts at
-RB rank row 1, so the starter is not in its list and its top back is RB2, who comes in when the lineup picker passes
-the starter over. A real third-down back needs a down and distance rule in the lineup builder (beta-81). A revision-1
-executable reads applied and `apply` rewrites the one chain dword (VA 0xEE3CA4, 0 to 2) and the section digest.
-The 32 preserved retail books (entries 4410..4441, historic sides) keep retail personnel; SPECIAL roles other than
-KR/PR/K/P do not apply to them.
+**Revision 3 (b780 sub1, Noah 11/03: "a pick never starts somewhere else"; "If I make someone a third down back,
+they shouldn't be in every single play. The starting halfback should have priority.").** Every role row reads its own
+order from a place no formation asks for (LGUN/RGUN rank row 3, GAD WR side row 3, 3DRB HB side row 1), so a move
+within a row never changes the players ahead of it. Beta-76.4 to the beta-80 RC drew 3DRB as the RB rank list itself
+(revision 1: the back put at its top became RB1 in every play). Revision 2 (b780 hunt5) started it at RB rank row 1,
+which still reordered the Offense RB row. Revisions 1 and 2 read `previous`. `apply` rewrites only their role
+records (one chain byte each) and the section digest, and depth locks and the storage check accept them.
+`ThirdDownBackMirrorTests` and `test_b780_hunt5_special_rows.py` run the game's own row lookup and SPECIAL swap path:
+a 3DRB or PWRB move never moves the Offense RB order. The 32 preserved retail books (entries 4410..4441, historic
+sides) keep retail personnel; SPECIAL roles other than KR/PR/K/P do not apply to them.
 
-b780 db2 (amended for revision 2 at b780-int): the table follows `ROLE_ROWS`. 3DRB is a view of the Offense HB
-rank order from its second man, so a swap on it reorders that order behind the starter, and no rule puts a
-different back in on third down (`ThirdDownBackMirrorTests` runs the game's own lookup and swap). Only PWRB is an
-independent back order. A 3DRB that holds its own order would need a third per-player chain (no free 3-bit field
-remains in `+0x28`: bits 0-7 injured reserve, 8-9 unaudited, 10-12 rank, 13-15 side) kept by every native depth
-chart routine, and a down-aware rule in the 11-man lineup builder `FUN_000E89F0` at its picker call `0xE8B20`.
+## Situational lineup roles (`nfl2k5_lineup_roles`, EXPERIMENTAL)
+
+One late allocator owner, applied with the SPECIAL rows. It hooks two 5-byte calls:
+- The lineup builder's call to its picker (`0xE8B20` in `FUN_000E89F0`).
+- The picker's list-length call at the top of each fallback tier (`0xE87E9`, outside the span `nfl2k5_sim_cb_tackles`
+  pins).
+
+* **Rule 1, 3DRB.** On an obvious passing down (3rd or 4th and 5 or more, 2nd and 10 or more: the down at
+  `[[0xE602EC]+4]`, the distance from the game's own `0x207950`), a lead-back slot (RB ordinal 0, not a user
+  substitution, the club with the ball) asks for the 3DRB first. He plays if he is not on the field, passes the
+  picker's gate and is at least as good a receiver (catch + route running) as the starter, on every club. MyCareer
+  marks its club human and rewrites RB side = rank, so its 3DRB row is RB2, and old franchise saves keep their own
+  rosters, so the check runs for human clubs too (coordinator 11/04).
+* **Rule 2, fullback fallback.** With no fullback, the RB fallback tier of an FB slot on the field reads forward from
+  RB2 (from the picker's own bound, never the starter). Retail read it from the end, which put in the deepest back.
+  When the formation also asks for the power back (an RB ordinal-1 slot), he keeps his own slot and the next back
+  plays fullback. When no back is free, the next tier (a tight end) does. The scheduled simulator's own lineup is
+  unchanged, so its calibrated carry shares hold.
+* **Rule 3, GAD.** The builder is handed the called play (its second argument: `0x18AD10` → `0x18A5D0` →
+  `0xE89F0`). Its slot chains are absolute after loading (the reader at `0x1915B0`). When a WR slot of an offensive
+  play takes a handoff in that play (the planner's own `0x13`/`0x16` test), the GAD row (WR ordinal 7) is asked
+  first for that slot. He takes it only when he is at least as fast as the slot's own pick, on every club (the
+  same reasons as the 3DRB). When he takes the spot, the receiver he replaced can fill a later receiver spot of the same
+  set, and the last receiver picked sits.
+
+Proof: the game's own builder and picker under Unicorn on the v0.9 executable and roster, all 37 club books.
+- 3rd and 8 versus 1st and 10 over 1,211 offensive formations: the 3DRB comes in only as the better receiver, on
+  human and CPU clubs alike (see the SUB1 sweep log for the old-save, MyCareer and shipped-default rosters).
+- Rule 2 changed the FB slot of 84 formations. In two ATL goal-line sets a TE plays FB, because the only other back
+  is the power back, who keeps his slot.
+- Rule 3 changed none of the 1,281 non-gadget plays. On the 111 gadget plays the GAD takes the carrier spot only
+  when he is at least as fast as the slot's own pick. `mod_build.inspect` reads every other owner the same with
+  and without the owner.
+
+**Shipped defaults** (`nfl2k5_third_down_back.default_special_rows`, the last step of the final roster file):
+- 3DRB is the club's best receiving back (catch + route running; the starter included, the power back excluded), so
+  a backup takes obvious passing downs by default only when he is the better receiver.
+- GAD is the club's fastest receiver. Where he is the Z or the side slot receiver (side rows 0 and 1, used by the
+  base sets) the default is WR1, the X, who is already on the field on a gadget play, so the slot keeps its own pick.
+- The 2026 roster tools had written RB3 and WR4 there.
 
 All indices remain `unit * 11 + slot`: units 0–2 occupy records 0–32 and
 SPECIAL records 33–45. No multiplication uses 13. The count callback at

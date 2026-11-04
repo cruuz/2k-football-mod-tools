@@ -194,6 +194,7 @@ STEP_LABELS: dict[str, str] = {
     "player_progress": "the Player Progress screen",
     "contract_college_guard": "the Player Contracts college guard",
     "coach_career_fix": "the coach career counter fix",
+    "history_pool": "the career history pool fix",
     "sim_cb_tackles": "Cornerback tackle credit",
     "sim_stats": "the franchise sim pace fix",
     "option_defaults": "the SOFTDRINK default options",
@@ -219,7 +220,10 @@ STEP_LABELS: dict[str, str] = {
     "speed_threshold": "Speed separation on deep routes",
     "scramble_blocking": "Receivers block for a scrambling QB",
     "protection_calls": "Protection calls",
+    "intro_autoskip": "Intro auto-skip",
+    "lineup_roles": "Situational lineup roles",  # b780 sub1
     "audible_legend": "the audible panel lift and button legend",
+    "injured_reserve": "Modern injured reserve",
     "quick_long_release": "Quicker deep and rollout throws",
     "coach_carousel_pool": "the coaching carousel's hiring pool",
     "indicator_names": "the player name label",

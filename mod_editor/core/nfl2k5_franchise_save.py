@@ -759,6 +759,8 @@ class FranchiseSave:
         return [self.team_salary(team) for team in range(self.league_team_count)]
 
     def injured_reserve(self, *, include_empty: bool = False) -> list[InjuredReserveEntry]:
+        """Every IR player: the five legacy cells of each club, then (b780 IR1) the modern IR extension's further
+        entries of a save a modern-IR build wrote (slots 5..19; offset = the high half that holds the entry)."""
         out = []
         for team in range(NFL_TEAMS):
             for slot in range(IR_SLOTS):
@@ -768,7 +770,35 @@ class FranchiseSave:
                     continue
                 name = self.player_name(index) if index != IR_EMPTY and team < self.league_team_count else ""
                 out.append(InjuredReserveEntry(team, slot, offset, index, name))
+        from . import nfl2k5_injured_reserve_save as irsave
+        block = bytes(self.buffer[self.front_office_block + F_INJURED_RESERVE:
+                                  self.front_office_block + F_INJURED_RESERVE + NFL_TEAMS * IR_SLOTS * IR_ENTRY])
+        extension, _returns, clubs = irsave.decode(block)
+        if extension:
+            word = irsave.W_EXT
+            for team, rows in enumerate(clubs):
+                for slot, (index, _games, _season) in enumerate(rows[IR_SLOTS:], IR_SLOTS):
+                    offset = self.front_office_block + F_INJURED_RESERVE + word * IR_ENTRY + 2
+                    word += 1
+                    name = self.player_name(index) if team < self.league_team_count else ""
+                    out.append(InjuredReserveEntry(team, slot, offset, index, name))
         return out
+
+    def _keep_ir_extension(self, candidate: bytearray, team: int, *, add: int | None = None,
+                           remove: int | None = None) -> None:
+        """b780 IR1: a legacy IR edit (Finn's 5-slot move) on a save with the modern IR extension rewrites the whole
+        block through the extension's codec, so the extension stays valid (the legacy write zeroes a high half)."""
+        from . import nfl2k5_injured_reserve_save as irsave
+        start = self.front_office_block + F_INJURED_RESERVE
+        end = start + NFL_TEAMS * IR_SLOTS * IR_ENTRY
+        extension, returns, clubs = irsave.decode(bytes(self.buffer[start:end]))
+        if not extension:
+            return
+        rows = [row for row in clubs[team] if row[0] != remove]
+        if add is not None:
+            rows.insert(min(sum(1 for r in rows[:IR_SLOTS]), IR_SLOTS), (add, 0, False))
+        clubs[team] = rows
+        candidate[start:end] = irsave.encode(clubs, returns, extension=True)
 
     def _team_slots(self, team: int) -> tuple[int, list[int | None]]:
         base = self.team_offset(team)
@@ -831,6 +861,7 @@ class FranchiseSave:
             roles = slice(self.team_offset(team) + 0x194, self.team_offset(team) + 0x19a)
             candidate[roles] = bytes(rr.specialists_after_removal(candidate[roles], removed_slot))
         struct.pack_into("<I", candidate, free[1], player_index)
+        self._keep_ir_extension(candidate, team, add=player_index)
         try:
             candidate = bytearray(ps.recompute_salary(bytes(candidate), team))
         except ValueError as exc:
@@ -871,6 +902,7 @@ class FranchiseSave:
                      if self.u16(ir_base + slot * IR_ENTRY) not in (IR_EMPTY, player_index)]
         for slot, index in enumerate(remaining + [IR_EMPTY] * (IR_SLOTS - len(remaining))):
             struct.pack_into("<I", candidate, ir_base + slot * IR_ENTRY, index)
+        self._keep_ir_extension(candidate, team, remove=player_index)
         if clear_legacy_marker and candidate[target + 0x28] == IR_MARK:
             candidate[target + 0x28] = 0
         active = [self.player_index(o) for o in slots[:count]] + [player_index]
