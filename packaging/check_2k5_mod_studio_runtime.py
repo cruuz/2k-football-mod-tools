@@ -115,13 +115,13 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
 B69_GAME_RUNTIME_PINS = {
     "mod_editor/core/nfl2k5_weather.py": "ec3d253e348ff0cf7fb1951b5dad2983d8aebc0802d5c6fca32c74dc80a6985b",
     "mod_editor/core/nfl2k5_weather_haze.py": "b8c58c592794312358eb1554b1d3be43a1ca41f7fdd8fd3cd498d4f345c641cc",
-    "mod_editor/gui/build_panel_qt.py": "193f0f8be91d16a5866fc800e6a480643190b8f01be228532ad746a0524b14f4",
+    "mod_editor/gui/build_panel_qt.py": "a9869b8505cdc013c432f289badcad26a973593974601948464506c0f19092c9",
     "mod_editor/gui/gameplay_patches_panel_qt.py": "52114589294125c83b7d454d5761d6def2565ff073edbb95b219368696d02a3e",
     "mod_editor/gui/my_career_panel_qt.py": "cd39ce1685ed119288122e46b0f8c1c8ba586cea611f5d5feee096a71d7ea9ac",
     "mod_editor/gui/gameplay_project_ui.py": "cb5db940034b070a8f49a04cfd4de5ad47fc4e642b963cded0daf1d592e6e41e",
     "mod_editor/gui/beta62_options.py": "ea710261741b8462cf9d5a3e0e8f72cbc667efe3488a738e0c1dde67630082ba",
     "tools/nfl2k5_weather_editor.py": "39a2847b873bbdc567712ca87657d700fa95e226c3408983acce4d714b1031de",
-    "mod_editor/gui/build_panel_qt.py": "193f0f8be91d16a5866fc800e6a480643190b8f01be228532ad746a0524b14f4",
+    "mod_editor/gui/build_panel_qt.py": "a9869b8505cdc013c432f289badcad26a973593974601948464506c0f19092c9",
     "mod_editor/gui/gameplay_patches_panel_qt.py": "52114589294125c83b7d454d5761d6def2565ff073edbb95b219368696d02a3e",
     "mod_editor/gui/my_career_panel_qt.py": "cd39ce1685ed119288122e46b0f8c1c8ba586cea611f5d5feee096a71d7ea9ac",
     "mod_editor/gui/gameplay_project_ui.py": "cb5db940034b070a8f49a04cfd4de5ad47fc4e642b963cded0daf1d592e6e41e",
@@ -2044,6 +2044,7 @@ def main() -> int:
         "mod_editor.core.nfl2k5_cpu_passer_iq",                   # b780 a-passer
         "mod_editor.core.nfl2k5_cpu_passer_iq_code",              # b780 a-passer
         "mod_editor.core.nfl2k5_protection_calls",                # b780 p1-slide
+        "mod_editor.core.nfl2k5_intro_autoskip",                  # b780-mem1
         "mod_editor.core.nfl2k5_protection_calls_code",           # b780 p1-slide
         "mod_editor.core.nfl2k5_qb_accuracy",                     # b777-qb3
         "mod_editor.core.nfl2k5_qb_accuracy_code",                # b777-qb3
@@ -2335,7 +2336,7 @@ def main() -> int:
         check_files=False,
     )
     product_catalog = product_catalog_module.build_nfl2k5_product_catalog(registry)
-    require(len(registry.capabilities) == 225,  # b780-int: + coach_carousel (c6), franchise_history (j23), history_screen (j4); c2's duplicate rosters.coaching_staff row dropped (c4's rosters.coach_staff covers the Coaches tab); b77-f5: + Player Card honors page; b77-v1: + modern goalposts; b76: + custom intro video, ESPN presentation marks (2026), b76-p2 wipes and boards, b76-h1 historic teams in Quick Game, b76-u2 MetLife, b76-m1 25 more moments, b76-k1 128 MB memory, b76-vb3 kickoff return blocking, b76-u4 venues 2026, b76-u5, b76-u6, b76-st, b76-tf, b76-km: + kick meter, b76-hm, b76-st3: + modern_usbank, b76-pf: + the practice facility, b76-st4: + modern_hard_rock, modern_gillette, modern_lambeau, modern_everbank, b76-st5: + modern_board_kit, b77-f4: + letter grades in Franchise
+    require(len(registry.capabilities) == 226,  # b780-mem1: + nfl2k5.gameplay.intro_autoskip;  # b780-int: + coach_carousel (c6), franchise_history (j23), history_screen (j4); c2's duplicate rosters.coaching_staff row dropped (c4's rosters.coach_staff covers the Coaches tab); b77-f5: + Player Card honors page; b77-v1: + modern goalposts; b76: + custom intro video, ESPN presentation marks (2026), b76-p2 wipes and boards, b76-h1 historic teams in Quick Game, b76-u2 MetLife, b76-m1 25 more moments, b76-k1 128 MB memory, b76-vb3 kickoff return blocking, b76-u4 venues 2026, b76-u5, b76-u6, b76-st, b76-tf, b76-km: + kick meter, b76-hm, b76-st3: + modern_usbank, b76-pf: + the practice facility, b76-st4: + modern_hard_rock, modern_gillette, modern_lambeau, modern_everbank, b76-st5: + modern_board_kit, b77-f4: + letter grades in Franchise
             "canonical capability registry row count changed")
     require(len(product_catalog.sections) == 12,
             "product sidebar category count changed")
@@ -2742,7 +2743,7 @@ def main() -> int:
     print(
         "2K5_MOD_STUDIO_RUNTIME_CLOSURE_PASS "
         f"product_modules={len(product_modules)} tool_modules={len(tool_modules)} "
-        "registry=225 sections=12 nfl2k5_capabilities=150 "
+        "registry=226 sections=12 nfl2k5_capabilities=151 "
         "reports=16 reviewed_metadata=25 sets=634 visuals=71963 "
         "team_kit_sets=634 team_kit_assets_per_set=39 "
         "text_banks=716 text_strings=23346 text_editable=20074 "

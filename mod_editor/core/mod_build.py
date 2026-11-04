@@ -599,6 +599,10 @@ class BuildPlan:
     # allocator owner) replaces that value for the offense that made the call, on that play only. CPU offenses keep the
     # automatic read; L / R keep their audibles on the five-play menus. EXPERIMENTAL: on in the Experimental preset.
     protection_calls: bool = False
+    # b780-mem1: the pregame intro skips itself when its director (DIR_INTRO) could not load, instead of looping on the
+    # stadium flyover until A is pressed (nfl2k5_intro_autoskip, a late tail owner: the game's own A skip, only then).
+    # On in every SOFTDRINK preset and the pack.
+    intro_autoskip: bool = False
     # b778-fo1: modern sideline catches: no force-out credit. Retail rules a receiver carried out of bounds by a
     # defender (contact state) a catch without his feet down, the pre-2008 force-out rule; from the 2008 season a
     # receiver must get both feet down in bounds. A late executable owner (nfl2k5_force_out) hooks the credit read at
@@ -869,7 +873,7 @@ class BuildPlan:
                 or self.guardian_overlay or self.my_career or self.screen_hooks or self.coverage_trail or self.franchise_edit_player or self.cpu_money_downs != "retail" or self.accelerated_clock or self.coin_defer or self.decided_clock or self.cpu_scrambles == "modern" or self.weather_haze or self.number_kerning or self.modern_color or self.weekly_prep or self.weekly_prep_cpu or self.weekly_prep_remember or self.coach_ai or self.playbook_pair or self.deep_zone_facing or self.deep_zone_bail or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave or self.historic_teams_quick_game or self.espn25_more_moments or self.historic_stock_books or self.espn25_era_rules or self.k128_memory or self.team_ratings or self.play_art_routes or self.letter_grades or self.honors_page or self.sim_cb_tackles or self.sim_stats or self.option_defaults or self.sim_rb_injuries or self.sim_realism or self.coach_carousel or self.history_screen
                 or self.momentum_collisions or self.scorebug_runtime or self.indicator_names_style != "retail" or self.momentum > 0 or self.momentum_contact or self.defensive_try or self.zone_drop_cap or self.all_stadiums or self.music_shuffle or self.practice_squad_screen or self.abilities or self.qb_spy or self.calendar_engine or self.coverage_slider or self.scramble_tuning or self.flatter_deep_ball or self.chop_block_toggle or self.music_policy != "retail" or self.music_unlock or self.music_userlist
                 or bool(self.music_library and _music_library_document(self.music_library)["bank"] == "cribmusic")
-                or self.pass_protection or self.pass_rush_stats or self.standings_records or self.cpu_passer_iq or self.cpu_clock2 or self.scramble_blocking or self.protection_calls or self.audible_legend)  # b778-pr1, b779-st1, b780-j1
+                or self.pass_protection or self.pass_rush_stats or self.standings_records or self.cpu_passer_iq or self.cpu_clock2 or self.scramble_blocking or self.protection_calls or self.audible_legend or self.intro_autoskip)  # b778-pr1, b779-st1, b780-j1
 
     def to_recipe(self) -> dict[str, Any]:
         d = asdict(self)
@@ -1041,6 +1045,10 @@ del _preset
 for _preset in PRESETS.values():
     _preset["protection_calls"] = False
 PRESETS["softdrink_experimental"]["protection_calls"] = True
+# b780-mem1 (Noah 11/03: "I want everything we've found fixed in 80"): the intro skips itself when its director could not
+# load (64 MB, and 128 MB without the early form), in every preset.
+for _preset in PRESETS.values():
+    _preset["intro_autoskip"] = True
 del _preset
 # b778-fo1: modern sideline catches (no force-out from 2008): a modern rule like overtime and the kick rules, so on in
 # the Advanced and Experimental presets; Basic keeps the game in 2004 (the force-out catch of its time).
@@ -1506,6 +1514,21 @@ def _cpu_passer_iq_preflight(source: Path, progress) -> None:
                          "off or build from your unmodified retail dump.")
 
 
+def _intro_autoskip_preflight(source: Path, progress) -> None:
+    """b780-mem1: refuse a source whose pregame intro update or skip code is foreign, before any write."""
+    module = _core_module("nfl2k5_intro_autoskip")
+    if module is None or _core_module("nfl2k5_xbe_space") is None:
+        raise ValueError("The intro auto-skip is not available in this installation.")
+    progress("Checking the pregame intro code for the intro auto-skip", 0, 0)
+    try:
+        payload = _xbe_bytes(source)
+    except (OSError, ValueError) as exc:
+        raise ValueError(f"The intro auto-skip cannot read default.xbe: {exc}") from exc
+    if module.status(payload) == "foreign":
+        raise ValueError("The pregame intro code in this source is not retail or the intro auto-skip. Turn it off "
+                         "or build from your unmodified retail dump.")
+
+
 def _protection_calls_preflight(source: Path, progress) -> None:
     """b780 p1-slide: refuse a source whose slide call or at-line audible code is foreign, before any write."""
     module = _core_module("nfl2k5_protection_calls")
@@ -1600,6 +1623,7 @@ _LATE_OWNER_OPTIONS = (
     ("nfl2k5_pass_protection", "Pass protection", lambda p: p.pass_protection),  # b778-pr1
     ("nfl2k5_pass_rush_stats", "Pass rush stats", lambda p: p.pass_rush_stats),  # b779-st1
     ("nfl2k5_protection_calls", "Protection calls", lambda p: p.protection_calls),  # b780 p1-slide
+    ("nfl2k5_intro_autoskip", "Intro auto-skip", lambda p: p.intro_autoskip),  # b780-mem1
     ("nfl2k5_qb_accuracy", "Accurate short throws", lambda p: p.qb_accuracy),
     ("nfl2k5_formation_art_spacing", "Play art: icon spacing", lambda p: p.play_art_routes),  # b777-tp1
     ("nfl2k5_force_out", "Modern sideline catches", lambda p: p.modern_force_out),  # b778-fo1
@@ -2919,6 +2943,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
                                ("pass_rush_stats", "nfl2k5_pass_rush_stats"),  # b779-st1
                                ("cpu_passer_iq", "nfl2k5_cpu_passer_iq"),  # b780 a-passer
                                ("protection_calls", "nfl2k5_protection_calls"),  # b780 p1-slide
+                               ("intro_autoskip", "nfl2k5_intro_autoskip"),  # b780-mem1
                                ("modern_force_out", "nfl2k5_force_out"),  # b778-fo1
                                ("module_loader", "nfl2k5_module_loader"),  # b778-xs1
                                ("crib_trophy_room", "nfl2k5_crib_trophy_room"),  # b778-xs1
@@ -3198,6 +3223,8 @@ def _inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[st
     out["cpu_passer_iq"] = passer_iq.status(_xbe_bytes(source)) if passer_iq is not None else "unavailable"
     protection_calls = _core_module("nfl2k5_protection_calls")  # b780 p1-slide
     out["protection_calls"] = protection_calls.status(_xbe_bytes(source)) if protection_calls is not None else "unavailable"
+    intro_autoskip = _core_module("nfl2k5_intro_autoskip")  # b780-mem1
+    out["intro_autoskip"] = intro_autoskip.status(_xbe_bytes(source)) if intro_autoskip is not None else "unavailable"
     force_out = _core_module("nfl2k5_force_out")  # b778-fo1
     out["modern_force_out"] = force_out.status(_xbe_bytes(source)) if force_out is not None else "unavailable"
     inbox = _core_module("nfl2k5_inbox_standings")
@@ -5165,6 +5192,24 @@ def _apply_pass_rush_stats(plan, target, receipt, progress):
     receipt["result"]["pass_rush_stats"] = "applied"
 
 
+@_core_step("intro_autoskip")
+def _apply_intro_autoskip(plan, target, receipt, progress):
+    """b780-mem1: the intro auto-skip owner, a late tail owner (nfl2k5_xbe_space.LATE_OWNERS / TAIL_OWNERS)."""
+    if not plan.intro_autoskip:
+        return
+    module = _core_module("nfl2k5_intro_autoskip")
+    if module is None:
+        raise RuntimeError("The intro auto-skip module is not available in this build")
+    progress("Intro auto-skip: the pregame intro skips itself when it cannot load", 0, 0)
+    xbe, result = module.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, xbe)
+    if module.status(_xbe_bytes(target)) != "applied":
+        raise RuntimeError("Intro auto-skip: the executable does not read back as applied")
+    receipt["steps"].append({"step": "intro_autoskip", **{k: v for k, v in result.items() if k not in ("edits", "reservations")},
+                             "edits": result.get("edits", [])})
+    receipt["result"]["intro_autoskip"] = "applied"
+
+
 @_core_step("protection_calls")
 def _apply_protection_calls(plan, target, receipt, progress):
     """b780 p1-slide: the protection-calls owner, the last late allocator owner (nfl2k5_xbe_space.LATE_OWNERS order)."""
@@ -5508,6 +5553,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("Modern CPU clock management and its overtime choice must be Off or On.")
     if type(plan.protection_calls) is not bool:  # b780 p1-slide
         raise ValueError("Protection calls must be Off or On.")
+    if type(plan.intro_autoskip) is not bool:  # b780-mem1
+        raise ValueError("The intro auto-skip must be Off or On.")
     if type(plan.weekly_progression) is not bool:  # b778-pg1
         raise ValueError("Weekly player progression must be Off or On.")
     if type(plan.modern_force_out) is not bool:  # b778-fo1
@@ -6307,6 +6354,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         _cpu_passer_iq_preflight(source, progress)
     if plan.protection_calls:  # b780 p1-slide: before any write
         _protection_calls_preflight(source, progress)
+    if plan.intro_autoskip:  # b780-mem1: before any write
+        _intro_autoskip_preflight(source, progress)
     if plan.modern_force_out:  # b778-fo1: like qb3, before any write
         _force_out_preflight(source, progress)
     if plan.inbox_standings:
@@ -6951,7 +7000,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         catch_snap_limit=plan.catch_snap_limit,
         scramble_blocking=plan.scramble_blocking, protection_calls=plan.protection_calls,
         audible_legend=_audible_panel_choice(plan) is not None,  # b780-p3
-        lineup_roles=plan.depth_chart_rows)  # b780 sub1: the SPECIAL third-down back rides with the SPECIAL rows
+        lineup_roles=plan.depth_chart_rows,  # b780 sub1: the SPECIAL third-down back rides with the SPECIAL rows
+        intro_autoskip=plan.intro_autoskip)  # b780-mem1
     if plan.read_option_runtime or plan.qb_spy:
         _step("play_intents")
         resolver = _core_module("nfl2k5_play_intents")
@@ -6997,7 +7047,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             or plan.historic_teams_quick_game or plan.espn25_more_moments or plan.historic_stock_books or plan.espn25_era_rules or r62.get("anniversary_kickoff") or r62.get("widescreen_menus") or r62.get("team_logo_swap") or r62.get("period_goalposts") or plan.k128_memory or plan.letter_grades or plan.honors_page
             or plan.return_coverage or plan.pass_protection or plan.pass_rush_stats or plan.cpu_passer_iq or plan.catch_snap_limit or plan.protection_calls or plan.audible_legend
             or plan.depth_chart_rows  # b780 sub1: the lineup roles owner rides with the SPECIAL rows
-            or plan.history_screen or plan.franchise_history or bool(plan.speed_threshold)):  # b780-int: reserved up front too
+            or plan.history_screen or plan.franchise_history or bool(plan.speed_threshold) or plan.intro_autoskip):  # b780-int: reserved up front too
         _step("xbe_space")
         progress("Adding experimental extra patch space", 0, 0)
         playlist_selection, playlist_preflight = None, None
@@ -7042,6 +7092,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             scramble_blocking=plan.scramble_blocking, protection_calls=plan.protection_calls,
             audible_legend=_audible_panel_choice(plan) is not None,  # b780-p3
             lineup_roles=plan.depth_chart_rows,  # b780 sub1
+            intro_autoskip=plan.intro_autoskip,  # b780-mem1
             **{**r62, "read_option_intent_table": read_table, "modern_naming": False, "crib_reclaim": False})
         _write_xbe_bytes(target, patched)
         receipt["steps"].append({"step": "xbe_space", **space_receipt,
@@ -8286,8 +8337,10 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     _apply_protection_calls(plan, target, receipt, progress)
     # b780-p3: the audible panel lift / button legend, the last late allocator owner (LATE_OWNERS order)
     _apply_audible_legend(plan, target, receipt, progress)
-    # b780 sub1: the SPECIAL third-down back and the fullback fallback, the last late allocator owner (LATE_OWNERS order)
+    # b780 sub1: the SPECIAL third-down back and the fullback fallback (LATE_OWNERS order: lineup roles, then intro auto-skip)
     _apply_lineup_roles(plan, target, receipt, progress)
+    # b780-mem1: the intro auto-skip (after the audible legend in LATE_OWNERS; its code sits in a legacy RX tail)
+    _apply_intro_autoskip(plan, target, receipt, progress)
     # b778-pg2: the Player Progress screen and weekly snapshot (a late allocator owner after force_out)
     # b778-cb1: cornerback tackle credit, after force_out
     # b778-sd4: modern clock digits, after modern sideline catches
@@ -8339,6 +8392,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise RuntimeError("CPU quarterbacks throw on time: the output does not read back as applied")
     if plan.protection_calls and _core_module("nfl2k5_protection_calls").status(_xbe_bytes(target)) != "applied":  # b780 p1-slide
         raise RuntimeError("Protection calls: the output does not read back as applied")
+    if plan.intro_autoskip and _core_module("nfl2k5_intro_autoskip").status(_xbe_bytes(target)) != "applied":  # b780-mem1
+        raise RuntimeError("Intro auto-skip: the output does not read back as applied")
     if plan.run_blocking and _core_module("nfl2k5_run_blocking").status(_xbe_bytes(target)) != "applied":  # b777-ol1
         raise ValueError("run blocking did not survive the final passes")
     if plan.qb_accuracy and _core_module("nfl2k5_qb_accuracy").status(_xbe_bytes(target)) != "applied":  # b777-qb3

@@ -219,6 +219,7 @@ STEP_LABELS: dict[str, str] = {
     "speed_threshold": "Speed separation on deep routes",
     "scramble_blocking": "Receivers block for a scrambling QB",
     "protection_calls": "Protection calls",
+    "intro_autoskip": "Intro auto-skip",
     "audible_legend": "the audible panel lift and button legend",
     "quick_long_release": "Quicker deep and rollout throws",
     "coach_carousel_pool": "the coaching carousel's hiring pool",
