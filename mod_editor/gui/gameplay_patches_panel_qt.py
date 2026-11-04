@@ -517,11 +517,6 @@ class GameplayPatchesPanel(QWidget):
                 check.setToolTip(helper or label)
                 check.toggled.connect(lambda _c: self._refresh())
                 head.addWidget(check)
-            if key in r62_ui.CHILDREN:
-                check.toggled.connect(lambda on, p=key: self._parent_toggled(p, on))
-            for parent, children in r62_ui.CHILDREN.items():
-                if key in children:
-                    check.toggled.connect(lambda on, p=parent: self._child_toggled(p, on))
             if key == "cpu_money_downs":
                 self.cpu_money_downs_level = QComboBox()
                 for text, value in r62_ui.LEVELS["cpu_money_downs"]:
@@ -628,6 +623,8 @@ class GameplayPatchesPanel(QWidget):
             self.badges[key] = badge_label
             self._static_badges[key] = badge
         root.addWidget(list_box)
+        # b780 studio1 (Q60): the same rule table Build reads (beta62_options.REQUIRES), for the boxes this page has
+        r62_ui.connect_requirements(self.checks.get, self._requirement_child_toggled, self._requirement_parent_toggled)
         out = QHBoxLayout()
         self.target_caption = QLabel("Save disc copy as")
         out.addWidget(self.target_caption)
@@ -834,17 +831,16 @@ class GameplayPatchesPanel(QWidget):
         if path:
             self.my_career_setup_field.setText(path)
 
-    def _parent_toggled(self, parent, on):
-        if not on:
-            for child in r62_ui.CHILDREN[parent]:
-                if child in self.checks:
-                    self.checks[child].setChecked(False)
+    def _requirement_child_toggled(self, child, on):
+        """Q60: a ticked child ticks the parents it needs that this page has."""
+        if on:
+            r62_ui.tick_parents(child, self.checks.get)
         self._refresh()
 
-    def _child_toggled(self, parent, on):
-        box = self.checks.get(parent)
-        if box is not None and on and not box.isChecked() and box.isEnabled():
-            box.setChecked(True)
+    def _requirement_parent_toggled(self, parent, on):
+        """Q60: an unticked parent unticks the children that need it."""
+        if not on:
+            r62_ui.untick_children(parent, self.checks.get)
         self._refresh()
 
     def _money_downs_changed(self):

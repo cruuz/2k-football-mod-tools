@@ -131,8 +131,72 @@ OPTIONS += (
 )
 KEYS = tuple(row[0] for row in OPTIONS)
 # String-valued option rows: the checkbox means "not retail"; the adjacent combo picks the level.
-# Parent option -> child options: unchecking the parent clears the children; checking a child checks the parent.
-CHILDREN = {"coverage_trail": ("coverage_hitch_brake",), "weekly_prep": ("weekly_prep_cpu", "weekly_prep_remember"), "k128_memory": ("k128_roster_heap", "k128_early")}
+# b780 studio1 (Q60): every "this box needs that box" rule between the Build and Game Fixes boxes, in ONE table. Each child lists
+# the parents it needs: ticking a child ticks its parents that can be ticked, unticking a parent unticks its children, and the
+# build refuses a child whose parent is missing. This module used to hold only the beta-62 pairs (as parent -> children) and the
+# Build page held the Anniversary and clock rules in a second table of its own (ANNIVERSARY_DEPENDENCIES), so Game Fixes did not
+# know those rules at all; a rule held by one page only is how the two pages came to disagree about the same plan.
+REQUIRES = {
+    "coverage_hitch_brake": ("coverage_trail",),
+    "weekly_prep_cpu": ("weekly_prep",),
+    "weekly_prep_remember": ("weekly_prep",),
+    "k128_roster_heap": ("k128_memory",),
+    "k128_early": ("k128_memory",),
+    "espn25_named_previews": ("espn25_more_moments",),
+    "espn25_era_rules": ("espn25_more_moments", "dynamic_kickoff", "defensive_try", "overtime"),
+    "historic_rosters_2026": ("historic_teams_quick_game",),
+    "classic_teams": ("historic_teams_quick_game",),  # b775-ct1
+    "cpu_clock2_overtime": ("cpu_clock2",),  # b780 b-clock: the overtime window extends the modern clock rules
+    "cpu_runner_vision": ("cpu_ball_carriers",),  # b780 cv2-runner: its wider sideline limit is cpu_ball_carriers' taper
+}
+
+
+def _children_of(requires):
+    children = {}
+    for child, parents in requires.items():
+        for parent in parents:
+            children.setdefault(parent, []).append(child)
+    return {parent: tuple(kids) for parent, kids in children.items()}
+
+
+# Parent option -> child options, derived from REQUIRES (never edited by hand).
+CHILDREN = _children_of(REQUIRES)
+# The parents whose children the settings validator (nfl2k5_throw_tuning) refuses to take without them: a plan that ticks one of
+# those children must carry the parent even when the disc only has it installed (Save Project failed otherwise). The other rules
+# are met when a build is made (BuildPanel._plan_for_build).
+VALIDATED_TOGETHER = ("coverage_trail", "weekly_prep", "k128_memory")
+
+
+def tick_parents(child, box_of):
+    """A ticked child needs its parents: tick each one that can be ticked. ``box_of(key)`` is the page's check box or None."""
+    for parent in REQUIRES.get(child, ()):
+        box = box_of(parent)
+        if box is not None and box.isEnabled() and not box.isChecked():
+            box.setChecked(True)
+
+
+def untick_children(parent, box_of):
+    """An unticked parent leaves its children without what they need: untick each one that can be changed."""
+    for child in CHILDREN.get(parent, ()):
+        box = box_of(child)
+        if box is not None and box.isEnabled() and box.isChecked():
+            box.setChecked(False)
+
+
+def connect_requirements(box_of, child_toggled, parent_toggled):
+    """Wire the rules to a page whose boxes all exist: ``child_toggled(child, on)`` for every child box and
+    ``parent_toggled(parent, on)`` for every parent box, once each. ``box_of(key)`` is the page's check box or None (a page may
+    lack some of them)."""
+    for child in REQUIRES:
+        box = box_of(child)
+        if box is not None:
+            box.toggled.connect(lambda on, key=child: child_toggled(key, on))
+    for parent in CHILDREN:
+        box = box_of(parent)
+        if box is not None:
+            box.toggled.connect(lambda on, key=parent: parent_toggled(key, on))
+
+
 LEVELS = {"cpu_money_downs": (("Retail", "retail"), ("Modern", "modern"), ("Aggressive", "aggressive"), ("Modern 2", "modern2"))}
 UNAVAILABLE = {"franchise_2026_rules": FRANCHISE_HELP, "senior_bowl": tt.senior_bowl_patch.NATIVE_BLOCKER}
 HIRES_FAMILIES = (
