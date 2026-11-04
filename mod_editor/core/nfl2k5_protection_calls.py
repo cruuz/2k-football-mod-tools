@@ -24,9 +24,14 @@ What this owner adds (two hooks, 288 bytes of code, a 16-byte RW state block; no
 * ``snap_slide`` replaces 0x23BC40's tail jump: the retail automatic read runs first, unchanged, then, when the offense
   has a call for this play, 0xC16BAC becomes 274.32 cm toward the called side. The call belongs to the offense team that
   made it and to the play it was made on (the play log counter 0xE53804, which moves when a play ends), holds for every
-  tick of that snap, and is dropped when the next play is set at the line. A call left over from a game that was quit before the snap is
-  dropped too: the game tick 0xB71D10 restarts at 0 in every game (0x11A540), so the new game's tick is behind the
-  call's. CPU offenses never make a call, so they keep the automatic read.
+  tick of that snap, and is dropped when the next play is set at the line. CPU offenses never make a call, so they
+  keep the automatic read.
+* ``game_start`` (b780 modes2, Q4) replaces the game start's call of the per-game reset 0x11A540 at 0x648A8 (its only
+  caller): the call is cleared, then the reset runs. REV2 found that the tick test alone (0xB71D10 restarts at 0 in
+  every game, so an older call's tick is ahead of a new game's) kept a call from a game quit before its snap whenever
+  the next game reached the same play log count (it restarts at 0 too, 0xCCE00) with the same team on offense at a
+  later tick: that game's first such snap slid by the old call. The clear makes the tick test (and its store, 26
+  bytes the new entry needed) redundant; it is gone, and the state's +12 word is unused.
 
 Direction. The set points are world coordinates: 0x1B8960 maps an authored offset with x_world = s * x + ball x, where
 s = +1 when the offense attacks +z (the attacked goal z at [[[offense]+8]+0xC]+4 is positive) and -1 otherwise, and
@@ -35,8 +40,8 @@ authored +x is the offense's right (nfl2k5_play_codec). So a call to the offense
 writes the two values (no reassembly). Measured in the emulator (b780 p1-slide report).
 
 State block: +0 offense team, +4 play log counter at the call, +8 call (0 none, 1 left, 2 right), +9 used on a live
-snap, +12 game tick at the call. A later owner (the b780 p3 legend) may read it to show the call; it is zero in the
-executable file.
+snap, +12 unused (it held the game tick until b780 modes2). A later owner (the b780 p3 legend) reads +0, +4 and +8 to
+show the call; it is zero in the executable file.
 """
 from __future__ import annotations
 
@@ -54,7 +59,8 @@ HELP_TEXT = ("EXPERIMENTAL. At the line, press Y to open the audible menu as usu
              "3 yards (the game's largest slide) toward the side you called. Run plays are not changed. The "
              "computer's offense keeps the game's automatic slide, and L and R keep their audibles in the defense, "
              "No Huddle and kick menus.")
-SYMBOLS = dict(slide_auto=0x0023B6E0, select_play=0x000FEFA0, case_resume=0x0018FE6F, case_done=0x0018FF1C)
+SYMBOLS = dict(slide_auto=0x0023B6E0, select_play=0x000FEFA0, case_resume=0x0018FE6F, case_done=0x0018FF1C,
+               game_reset=0x0011A540)
 SLIDE_CM = 274.32                   # the game's own maximum (retail constants 0x4EDD28 / 0x50A514)
 RIGHT_IS_LOCAL_PLUS_X = True        # authored +x is the offense's right; see the module docstring
 CALL_NONE, CALL_LEFT, CALL_RIGHT = 0, 1, 2
@@ -69,6 +75,8 @@ HOOKS = (
     # (label, va, retail bytes, entry label)
     ("snap_slide", 0x0023BC4F, bytes.fromhex("e98cfaffff"), "snap_slide"),             # jmp 0x23B6E0
     ("line_button", 0x0018FE65, bytes.fromhex("8d51c98bcee831f1f6ff"), "line_button"),  # lea edx,[ecx-0x37]; mov ecx,esi; call 0xFEFA0
+    # b780 modes2 (Q4): the game start's only call of the per-game reset 0x11A540 (a call, so the stub tail-jumps)
+    ("game_start", 0x000648A8, bytes.fromhex("e8935c0b00"), "game_start"),           # call 0x11A540
 )
 GUARDS = (          # (va, size, sha256 of the retail bytes), this owner's own site bytes masked back to retail
     (0x0023BC40, 0x14, "c971866a1c2f6bb82507bb74cfdbb715d501fd588eb281ac559f09d07f632111"),  # 0x23BC40, the per-tick slide call
@@ -77,6 +85,9 @@ GUARDS = (          # (va, size, sha256 of the retail bytes), this owner's own s
     (0x0018FF1C, 0x0A, "c6f3255e924bce31c553c2b9d5533480195e216bf442f5ef8cb7524ee0e3c871"),  # next controller
     (0x0018FF3C, 0x04, "c6b52bb78b8935621cb135ce00116b726891f091713ad13e86c6e9285e7bb402"),  # switch slot 3 -> 0x18FE65
     (0x0018FF9F, 0x02, "8655173af1ec080de2dae0c6d0a7a2da5ade8b2cf8117645da18b90aaefd0ee2"),  # events 0x3A, 0x3B -> slot 3
+    # b780 modes2 (Q4): the game start around its reset call 0x648A8, and the reset 0x11A540's head
+    (0x000648A3, 0x13, "83ce17365b082f2425284de7f50aafd6f144db06a415cd8de6008c6b05622ccc"),
+    (0x0011A540, 0x30, "0cc80758d6178a4d46407d3ce981764876ad625254d2e51bcb0c670ac9f3d1a6"),
 )
 _ERRORS = (ValueError, TypeError, KeyError, IndexError, struct.error, OverflowError, UnicodeError)
 
@@ -137,7 +148,8 @@ def sites(code_va=0):
     from . import nfl2k5_protection_calls_code as assembly
     out = []
     for name, va, before, label in HOOKS:
-        jump = b"\xe9" + struct.pack("<i", code_va + assembly.LABELS[label] - va - 5)
+        opcode = b"\xe8" if before[0] == 0xE8 and len(before) == 5 else b"\xe9"   # a call site stays a call
+        jump = opcode + struct.pack("<i", code_va + assembly.LABELS[label] - va - 5)
         out.append((name, va, before, jump.ljust(len(before), b"\x90")))
     return out
 

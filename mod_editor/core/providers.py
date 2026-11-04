@@ -809,8 +809,8 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_cpu_passer_iq_code.py": "8f9e07127306df30acb5e5f65cb2c299da1cc8b0fb06e29f1459e3b7d9d209bc",  # b780 a-passer
         "mod_editor/core/nfl2k5_cpu_clock2.py": "0551a8641fe264a41b6b852fb02ea32982789d187835da5b73d58b8ada6affe2",  # b780 b-clock
         "mod_editor/core/nfl2k5_cpu_clock2_code.py": "d93fc3d5bca3a4aa1fee50e62d919ef75f2f6fbf1cf15d6c749c8a3c9fb4790e",  # b780 b-clock
-        "mod_editor/core/nfl2k5_protection_calls.py": "9ad8fbe2675e6287416f23029ee841383465655bf0eeec65350769ef6899a715",  # b780 p1-slide
-        "mod_editor/core/nfl2k5_protection_calls_code.py": "381feb0430fdcbbb1550f75889e3ca556ebc18550813c8f0a740ee9d5179183c",  # b780 p1-slide
+        "mod_editor/core/nfl2k5_protection_calls.py": "3b22fb81f3d641e51fa849156910d39190d4a34a8f1ac36297c4e8c849fa5730",  # b780 p1-slide
+        "mod_editor/core/nfl2k5_protection_calls_code.py": "2b7d47b62cca789dea4a8da518eeeff36f337b267e1dd2f97eefcd1a6d8509b1",  # b780 p1-slide
         "mod_editor/core/nfl2k5_lineman_rating.py": "e1c08c86e0a31c58fd86d5a155c56ad200cf5ef237771c95b39bfe29215261c1",
         "mod_editor/core/nfl2k5_match_coverage.py": "d9c1a93508a25a17d389b1dfa628ab8d0ac2da25d99bcc64a347b98f4447cfa2",
         "mod_editor/core/nfl2k5_model_project.py": "04371be3e1e86a9a6b3d2499dc0db203d6d5d9241c104c78879a2a414aa05488",

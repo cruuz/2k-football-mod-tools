@@ -17,15 +17,20 @@
  * stays open. Every other press, and L/R on five-play panels (defense, No Huddle, kicks), runs the retail code.
  *
  * State (16-byte RW block, symbol state): +0 team, +4 play log counter, +8 call (0 none, 1 left, 2 right), +9 used,
- * +12 game tick at the call (0xB71D10 counts frames from 0 in every game, 0x11A540; a call left over from a game that was
- * quit before its snap is older than the new game's clock and is dropped).
+ * +12 unused (b780 modes2: it held the game tick 0xB71D10 at the call; see game_start).
+ * game_start (call from 0x648A8, the game start's only call of the per-game reset 0x11A540): b780 modes2 (Q4). The
+ * tick test it replaces (0xB71D10 restarts at 0 in every game, so an older call's tick was ahead) kept a call from a
+ * game quit before its snap whenever the next game reached the same play log count (it restarts at 0 too, 0xCCE00)
+ * with the same team on offense at a later tick: that game's first such snap slid by the old call. Every game now
+ * starts with no call, so the tick test and its store are gone (26 bytes, which the new entry needs).
  * Local +x is the offense's right; world x = s * local x with s = +1 when the offense attacks +z (0x1B8960), so
  * k_slide[0] is the slide for RIGHT when s = +1 (and LEFT when s = -1), k_slide[1] the other (code_for writes them). */
 .intel_syntax noprefix
 .code32
 .text
-.global snap_slide, line_button, k_slide, code_end
+.global snap_slide, line_button, game_start, k_slide, code_end
 .extern slide_auto
+.extern game_reset
 .extern select_play
 .extern case_resume
 .extern case_done
@@ -45,9 +50,6 @@ snap_slide:
     mov edx, dword ptr [0xE53804]            /* play log counter: moves when a play ends */
     cmp edx, dword ptr [state+4]
     jne 7f
-    mov edx, dword ptr [0xB71D10]            /* game tick */
-    sub edx, dword ptr [state+12]
-    js 7f                                    /* the call is from an earlier game */
     cmp dword ptr [esp+0x28], 0              /* the argument: 0 = set at the line, 1 = live */
     jne 2f
     cmp byte ptr [state+9], 0
@@ -101,8 +103,6 @@ line_button:
     mov dword ptr [state+4], edx
     mov byte ptr [state+8], al
     mov byte ptr [state+9], 0
-    mov edx, dword ptr [0xB71D10]
-    mov dword ptr [state+12], edx
     pop edx
     pop eax
     jmp case_done                            /* no audible; the panel stays open */
@@ -111,6 +111,10 @@ line_button:
     mov ecx, esi
     call select_play
     jmp case_resume
+
+game_start:
+    mov byte ptr [state+8], 0                /* no call carries into a new game */
+    jmp game_reset                           /* 0x11A540 returns to the game start, 0x648AD */
 
     .p2align 2
 k_slide:
