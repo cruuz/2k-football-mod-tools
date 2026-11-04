@@ -1045,8 +1045,9 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_uniform_choice.py": "d618e2d8ebeae1443b0e9846e4f26d53cbc8d74314253798b860ddf8e9c312d9",
         "mod_editor/core/nfl2k5_uniform_equipment_writer.py": "f7a3c42dad2167df14044ac8ffb6ed3241d060b8809294a9bc91fc2a452ec1b2",
         "mod_editor/core/nfl2k5_universal_asset_index.py": "9df3c0a754abcb60fa4db3afd0f9b8af364f60551014d259e2713f5387491421",
-        "mod_editor/core/nfl2k5_weekly_prep.py": "5b3b9847f24246b33be5d63d141908f7241ea3da7a62a8d9736c0964b0bff933",
-        "mod_editor/core/nfl2k5_weekly_prep_code.py": "554fb7018dd0d2d5c59bd230cffd64d3be1cbc910df6410e40920cd3c08e97f8",
+        "mod_editor/core/nfl2k5_weekly_prep.py": "7987f113bca8fc358fe197ce791b6f1114323b1468c27f6589df6bb76ea90292",
+        "mod_editor/core/nfl2k5_weekly_prep_code.py": "b44155d9f5ceb529d6e9534e9d23f211c569cd4e602e28683479ad187bfb40cd",
+        "mod_editor/core/nfl2k5_weekly_prep_code_b779.py": "aa5ca8cc6a4427c8c5a487d03a9b5cbdf858a8d44b178c0ca1c31eb21813aba4",  # b780 modes2: frozen beta-63 .. v0.9 RC revision
         "mod_editor/core/nfl2k5_weekly_prep_save.py": "aedb0576c3a19a3a6574362729f83d3dfac5bc4aae7eb203388403c721a83720",
         "mod_editor/core/nfl2k5_widescreen.py": "98e3fd35f5c45a35143e678055872fe405447a735b211cd2897119d3ed801b4c",
         "mod_editor/core/nfl2k5_widescreen_menus.py": "a72a4d2387e023c0552c9bfb6c5b3330a689bbe00ed5619853260a7c13012701",
