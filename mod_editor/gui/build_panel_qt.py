@@ -34,6 +34,7 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
+import os
 import threading
 import time
 import tempfile
@@ -3048,7 +3049,7 @@ class BuildPanel(QWidget):
     def plan(self) -> mod_build.BuildPlan:
         plan = mod_build.BuildPlan(
             source=self.source_field.text(), target=self.target_field.text(),
-            overwrite=platform_compat.io_path(self.target_field.text()).exists() if self.target_field.text() else False,
+            overwrite=self._target_exists(),
             throw=self.throw_check.isChecked(), max_deep_yards=float(self.ceiling_spin.value()),
             arc=float(self.arc_spin.value()) / 100.0,
             realistic_flight=self.realistic_check.isChecked(),
@@ -3191,6 +3192,24 @@ class BuildPanel(QWidget):
             if not getattr(plan, parent, False) and self._installed(parent) and any(getattr(plan, child, False) for child in children):
                 setattr(plan, parent, True)
         return plan
+
+    def _target_exists(self) -> bool:
+        """Whether the output file is already there. A name the drive cannot hold is simply not there: ``Path.exists``
+        raises OSError (File name too long) for it, and plan() runs on every keystroke in the field, so typing or
+        suggesting a long name raised out of the slot and made Save Project fail until the name was shortened."""
+        text = self.target_field.text()
+        if not text:
+            return False
+        try:
+            return bool(platform_compat.io_path(text).exists())
+        except (OSError, ValueError):
+            return False
+
+    @staticmethod
+    def _name_too_long(text: str) -> bool:
+        """The file name part is longer than the drive allows (255 bytes on Linux and macOS, 255 characters on Windows)."""
+        name = Path(text.strip()).name
+        return len(name) > 255 if platform_compat.IS_WINDOWS else len(os.fsencode(name)) > 255
 
     def _installed(self, key: str) -> bool:
         """The disc this page read already carries ``key`` exactly as this release writes it."""
@@ -3460,6 +3479,9 @@ class BuildPanel(QWidget):
         target = self.target_field.text().strip()
         if not target:
             return "Choose where to save the disc."
+        if self._name_too_long(target):
+            return ("That disc copy name is too long for the drive (a file name can be 255 characters at most). Shorten it, "
+                    "or choose another name with Choose….")
         if platform_compat.paths_alias(target, source):
             return "Source and output are the same file. Fix: choose a different output file."
         # b778-bd2: an empty selection used to finish "successfully" with a copy of the

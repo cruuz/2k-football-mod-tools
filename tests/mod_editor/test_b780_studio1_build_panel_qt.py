@@ -280,6 +280,37 @@ class GameFixesNeedsUpdateTests(unittest.TestCase):
         self.assertIn("never drew the star", panel.checks["player_star"].toolTip())          # the star's own legacy text stays
 
 
+class LongOutputNameTests(_PanelCase):
+    """A disc copy name over the drive's 255 limit raised OSError out of plan() (Path.exists) on every keystroke in the field,
+    and out of Save Project, which saves the plan's settings."""
+
+    def test_a_name_the_drive_cannot_hold_is_a_sentence_not_an_exception(self) -> None:
+        panel = self.panel()
+        panel.catch_check.setChecked(True)
+        for name in ("a" * 260 + ".xiso.iso", "\u65e5" * 100 + ".xiso.iso"):                 # 260 bytes, and 300 bytes of kanji
+            panel.target_field.setText(str(Path(self.tmp.name) / name))
+            self.app.processEvents()
+            self.assertFalse(panel.plan().overwrite, name[:4])
+            self.assertIn("too long", panel.blocker(), name[:4])
+            self.assertFalse(panel.build_button.isEnabled())
+            self.assertTrue(panel.project_build_settings()["catch_slider"])                 # Save Project still works
+        panel.target_field.setText(str(Path(self.tmp.name) / ("a" * 200 + ".xiso.iso")))     # 209 bytes: fine
+        self.assertEqual(panel.blocker(), "")
+
+    def test_a_long_source_name_gets_a_suggested_copy_the_page_can_hold(self) -> None:
+        source = Path(self.tmp.name) / ("s" * 240 + ".xiso.iso")
+        source.write_bytes(b"x" * 4096)
+        panel = BuildPanel()
+        self.addCleanup(panel.deleteLater)
+        state = {key: "retail" for key in panel._boxes()}
+        state.update(path=str(source), container="xiso", throw=None)
+        panel.apply_state(state)                                                           # the suggestion is 240 + " (modded)" long
+        panel.suggest_target()
+        self.app.processEvents()
+        panel.plan()                                                                       # must not raise
+        self.assertIsInstance(panel.blocker(), str)
+
+
 class SpeedSeparationSurvivesAProjectSaveTests(_PanelCase):
     """The project is saved from the plan; a disabled row used to plan 0 even when no disc had been read yet."""
 
