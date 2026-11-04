@@ -82,6 +82,30 @@ class PlanSurgeryTests(unittest.TestCase):
         grown["edits"].append({"index": 2621, "pool": "secondary"})           # another pool's numbering
         self.assertEqual(fit.capacity_dependencies(grown), {"edits": [2620], "roster_refresh.teams.active": [2650]})
 
+    def test_depth_rows_a_club_signed_are_kept_first_and_their_references_follow(self):
+        # ROSTER1's 11/03 refresh signs depth free agents to club reserve lists (5 of them in appended records)
+        document = {"edits": [], "roster_refresh": refresh()}
+        signed = document["roster_refresh"]
+        signed["teams"][0]["reserves"].append(2700)
+        signed["free_agents"].remove(2700)
+        signed["contract_initializations"] = [{"index": 2700, "fields": {"contract_value": 31}}]
+        self.assertEqual(fit.pinned_depth(document), [2700])
+        stripped, rows = fit.split(signed)
+        rows = fit.ordered_rows(rows, [2700])
+        self.assertEqual([r["fa3_priority"] for r in rows], [3, 1, 2])
+        out = fit.plan_with(stripped, rows, [2554, 2555, 2556], 2, [2700])
+        self.assertEqual([(m["fa3_priority"], m["index"]) for m in out["players"][1:]], [(3, 2554), (1, 2555)])
+        self.assertEqual(out["teams"][0]["reserves"], [4, 2554])                 # the club list follows the move
+        self.assertEqual(out["contract_initializations"][0]["index"], 2554)
+        self.assertEqual(out["free_agents"], [7, 2464, 2555])                    # a signed player is not a free agent
+        self.assertFalse(fit.capacity_dependencies({"roster_refresh": out}))
+        with self.assertRaises(fit.RetailFitError):
+            fit.plan_with(stripped, rows, [2554, 2555, 2556], 0, [2700])        # the signed row must be kept
+        other = copy.deepcopy(document)
+        other["edits"].append({"index": 2700, "pool": "primary"})                # an edit cannot follow a move
+        with self.assertRaisesRegex(fit.RetailFitError, "appended capacity records"):
+            fit.pinned_depth(other)
+
     def test_the_base_must_be_the_refresh_pin(self):
         document = {"schema": rr.EDITS_SCHEMA, "edits": [], "roster_refresh": refresh(),
                     "fa3_free_agent_depth": {"base_sha256": "0" * 64}}

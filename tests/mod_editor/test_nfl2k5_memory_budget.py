@@ -152,9 +152,10 @@ class AllocatorLayoutTests(unittest.TestCase):
                          ["abilities_runtime", "ball_carrier_ai", "contract_college_guard", "coverage_slider",
                           "cpu_passer_iq", "cpu_qb_reads", "db_ball_play", "draft_clock", "force_out",
                           "human_tap_burst_spill", "pass_protection", "practice_injuries", "preseason_warning",
-                          "qb_accuracy", "return_coverage", "run_blocking", "scramble_tuning", "sim_cb_tackles",
-                          "star_retention", "weekly_progression", "widescreen_menus"])
-        self.assertEqual(mb.xbe_resident(plan, 64) - mb.RETAIL_RESIDENT, 12_288)   # 23 requests, MEASURED
+                          "protection_calls", "qb_accuracy", "return_coverage", "run_blocking", "scramble_tuning",
+                          "sim_cb_tackles", "star_retention", "weekly_progression", "widescreen_menus"])
+        self.assertEqual(mb.xbe_resident(plan, 64) - mb.RETAIL_RESIDENT, 12_288)   # 25 requests, MEASURED
+        self.assertEqual(mb.xbe_resident(dict(plan, all_stadiums=True), 64) - mb.RETAIL_RESIDENT, 212_992)
         self.assertEqual(mb.xbe_resident(dict(plan, screen_hooks=True), 64) - mb.RETAIL_RESIDENT, 212_992)
 
     def test_scale_out_fields_and_the_roster_edits_xbe_sections_take_the_scale_out(self):

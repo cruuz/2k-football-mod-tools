@@ -88,9 +88,11 @@ def read_base(path: Path | str) -> bytes:
     return fa3.read_base(path)
 
 
-def depth_rows(refresh: dict) -> list[dict]:
+def depth_rows(refresh: dict, *, contiguous: bool = True) -> list[dict]:
+    """The depth rows in priority order; a source's priorities are 1..n (a variant keeps the signed ones too)."""
     rows = sorted((p for p in refresh.get("players") or [] if DEPTH_KEY in p), key=lambda p: p[DEPTH_KEY])
-    require([p[DEPTH_KEY] for p in rows] == list(range(1, len(rows) + 1)), "depth priorities must be 1..n")
+    require(not contiguous or [p[DEPTH_KEY] for p in rows] == list(range(1, len(rows) + 1)),
+            "depth priorities must be 1..n")
     return rows
 
 
@@ -140,6 +142,51 @@ def capacity_dependencies(document: dict) -> dict[str, list[int]]:
             if any(v >= RETAIL_PRIMARY for v in values)}
 
 
+REMAPPABLE = ("roster_refresh.teams.active", "roster_refresh.teams.reserves", "roster_refresh.teams.specialists",
+              "roster_refresh.contract_initializations", "roster_refresh.identity_guards")
+
+
+def pinned_depth(document: dict) -> list[int]:
+    """Depth free agents the refresh itself signed (a club's active or reserve list, a contract, a guard): they are
+    kept first and every reference follows their new index. Any other row that needs an appended record refuses."""
+    needs = capacity_dependencies(document)
+    refresh = document.get("roster_refresh") or {}
+    depth = {p["index"] for p in refresh.get("players") or [] if DEPTH_KEY in p}
+    other = {k: v for k, v in needs.items() if k not in REMAPPABLE or not set(v) <= depth}
+    require(not other, "these rows need appended capacity records, not only the depth free agents: "
+            + "; ".join(f"{k} {v[:5]}" for k, v in other.items()))
+    # every depth row a club list, contract or guard names, retail-addressed ones included (they move too)
+    named = {i for k, v in _indices(document).items() if k in REMAPPABLE for i in v}
+    return sorted(depth & named)
+
+
+def remap(refresh: dict, mapping: dict[int, int]) -> dict:
+    """The refresh with its club lists, specialists, contracts and guards following ``mapping`` (old -> new index)."""
+    if not mapping:
+        return refresh
+    out = copy.deepcopy(refresh)
+    for team in out.get("teams") or []:
+        for key in ("active", "reserves"):
+            if team.get(key):
+                team[key] = [mapping.get(v, v) for v in team[key]]
+        if isinstance(team.get("specialists"), dict):
+            team["specialists"] = {k: mapping.get(v, v) for k, v in team["specialists"].items()}
+    for row in out.get("contract_initializations") or []:
+        if row.get("index") in mapping:
+            row["index"] = mapping[row["index"]]
+    out["identity_guards"] = [[mapping.get(g[0], g[0]), *g[1:]] for g in out.get("identity_guards") or []] \
+        if "identity_guards" in out else out.get("identity_guards")
+    if out.get("identity_guards") is None:
+        out.pop("identity_guards", None)
+    return out
+
+
+def ordered_rows(rows: list[dict], pinned) -> list[dict]:
+    """The depth rows the fit keeps first: the pinned ones, then the rest, each in priority order."""
+    pinned = set(pinned)
+    return [r for r in rows if r["index"] in pinned] + [r for r in rows if r["index"] not in pinned]
+
+
 def split(refresh: dict) -> tuple[dict, list[dict]]:
     """(the refresh without the depth rows and their free-agent pointers, the depth rows in priority order)."""
     rows = depth_rows(refresh)
@@ -150,20 +197,27 @@ def split(refresh: dict) -> tuple[dict, list[dict]]:
     return stripped, rows
 
 
-def plan_with(stripped: dict, rows: list[dict], vacant: list[int], count: int) -> dict:
-    """``stripped`` plus the first ``count`` depth rows on the first ``count`` vacancies (fa3.extend_plan's addressing)."""
+def plan_with(stripped: dict, rows: list[dict], vacant: list[int], count: int, pinned=()) -> dict:
+    """``stripped`` plus the first ``count`` depth rows on the first ``count`` vacancies (fa3.extend_plan's addressing).
+    A pinned row (one the refresh signed to a club) is not a free agent; the club lists and contracts follow it."""
     require(0 <= count <= min(len(rows), len(vacant)), f"{count} depth rows for {len(vacant)} vacant records")
+    pinned = set(pinned)
+    require(count >= len(pinned), f"{len(pinned)} signed depth free agents need at least {len(pinned)} records")
     out = copy.deepcopy(stripped)
+    mapping = {}
     for index, row in zip(vacant, rows[:count]):
         moved = copy.deepcopy(row)
         moved["index"] = index
         moved["fields"] = dict(moved["fields"], photo_id=fa3.PHOTO_BASE + index)
         out["players"].append(moved)
-        out["free_agents"].append(index)
-    return out
+        if row["index"] in pinned:
+            mapping[row["index"]] = index
+        else:
+            out["free_agents"].append(index)
+    return remap(out, mapping)
 
 
-def fit(base: bytes, stripped: dict, rows: list[dict], margin: int = fa3.DEFAULT_MARGIN, progress=None):
+def fit(base: bytes, stripped: dict, rows: list[dict], margin: int = fa3.DEFAULT_MARGIN, progress=None, pinned=()):
     """(count, vacancies, final body, import-floor receipt): fa3.fit's rule on these rows, every count the real writer."""
     vacant = fa3.vacant_indices(stripped, base)
     want = capacity.IMPORT_FLOOR + margin
@@ -172,7 +226,7 @@ def fit(base: bytes, stripped: dict, rows: list[dict], margin: int = fa3.DEFAULT
     def trial(n):
         if n not in cache:
             try:
-                body, receipt = fa3.apply_with_floor(base, plan_with(stripped, rows, vacant, n))
+                body, receipt = fa3.apply_with_floor(base, plan_with(stripped, rows, vacant, n, pinned))
                 floor = receipt["roster_refresh"]["import_floor"]
                 cache[n] = (floor["vacancies_after"] >= want, body, floor)
             except (rr.RosterRecordError, capacity.SpareCapacityError, RetailFitError) as exc:
@@ -182,8 +236,9 @@ def fit(base: bytes, stripped: dict, rows: list[dict], margin: int = fa3.DEFAULT
                          f"({cache[n][2].get('vacancies_after', cache[n][2].get('refused'))})")
         return cache[n]
 
-    require(trial(0)[0], f"the refresh alone keeps fewer than {want} import vacancies at retail capacity")
-    lo, hi = 0, min(len(rows), len(vacant))
+    floor_n = len(set(pinned))
+    require(trial(floor_n)[0], f"the refresh alone keeps fewer than {want} import vacancies at retail capacity")
+    lo, hi = floor_n, min(len(rows), len(vacant))
     while lo < hi:                          # vacancies fall as players are added: the largest n that still fits
         mid = (lo + hi + 1) // 2
         lo, hi = (mid, hi) if trial(mid)[0] else (lo, mid - 1)
@@ -201,13 +256,12 @@ def retail_variant(document: dict, base: bytes, *, margin: int = fa3.DEFAULT_MAR
     pin = recorded_base(document)
     require(pin is None or pin == sha256(base), f"the base is not the refresh's pinned base ({pin[:12] if pin else ''}...)")
     require(len(base) == capacity.BODY_SIZE, "the base must be a 0x90F60-byte main ROST body")
-    needs = capacity_dependencies(document)
-    require(not needs, "these rows need appended capacity records, not only the depth free agents: "
-            + "; ".join(f"{k} {v[:5]}" for k, v in needs.items()))
+    pinned = pinned_depth(document)
     stripped, rows = split(document["roster_refresh"])
-    count, vacant, body, floor = fit(base, stripped, rows, margin, progress)
+    rows = ordered_rows(rows, pinned)
+    count, vacant, body, floor = fit(base, stripped, rows, margin, progress, pinned)
     out = copy.deepcopy(document)
-    out["roster_refresh"] = plan_with(stripped, rows, vacant, count)
+    out["roster_refresh"] = plan_with(stripped, rows, vacant, count, pinned)
     out.pop("free_agent_capacity", None)
     old = document.get("fa3_free_agent_depth") or {}
     receipt = {"schema": SCHEMA, "source_sha256": source_sha256, "base_sha256": sha256(base), "margin_target": margin,
@@ -219,6 +273,8 @@ def retail_variant(document: dict, base: bytes, *, margin: int = fa3.DEFAULT_MAR
                "import_vacancies_after_floor": floor["vacancies_after"], "import_floor": capacity.IMPORT_FLOOR,
                "import_floor_added_records": floor.get("added_records"), "primary_after_floor": floor.get("primary_after"),
                "removed_capacity_records": (document.get("free_agent_capacity") or {}).get("records", 0),
+               "signed_depth_kept": [{"old_index": r["index"], "index": i, "name": f"{r['first']} {r['last']}"}
+                                     for i, r in zip(vacant, rows[:count]) if r["index"] in set(pinned)],
                "final_body_sha256": sha256(body)}
     out["fa3_free_agent_depth"] = {
         **{k: old[k] for k in ("data", "data_sha256", "as_of") if k in old},
@@ -277,12 +333,18 @@ def validate(variant: dict, source: dict, base: bytes, *, margin: int = fa3.DEFA
     check("every free-agent pointer is a retail record", max(refresh["free_agents"] + [-1]) < RETAIL_PRIMARY,
           f"{len(refresh['free_agents'])} free agents")
     check("no other row addresses an appended record", not capacity_dependencies(variant))
-    kept, rows = depth_rows(refresh), depth_rows(source_refresh)
+    kept, rows = depth_rows(refresh, contiguous=False), depth_rows(source_refresh)
+    pinned = pinned_depth(source)
+    expected = sorted(ordered_rows(rows, pinned)[:len(kept)], key=lambda p: p[DEPTH_KEY])
     same = [{k: v for k, v in p.items() if k not in ("index", "fields")} for p in kept] == \
-        [{k: v for k, v in p.items() if k not in ("index", "fields")} for p in rows[:len(kept)]]
+        [{k: v for k, v in p.items() if k not in ("index", "fields")} for p in expected]
     fields = all({k: v for k, v in a["fields"].items() if k != "photo_id"} == {k: v for k, v in b["fields"].items() if k != "photo_id"}
-                 and a["fields"]["photo_id"] == fa3.PHOTO_BASE + a["index"] for a, b in zip(kept, rows))
-    check("kept depth rows are the source's rows 1..N (re-addressed only)", same and fields, f"{len(kept)} of {len(rows)} kept")
+                 and a["fields"]["photo_id"] == fa3.PHOTO_BASE + a["index"] for a, b in zip(kept, expected))
+    check("kept depth rows are the source's signed ones plus rows 1..N (re-addressed only)", same and fields,
+          f"{len(kept)} of {len(rows)} kept, {len(pinned)} signed to clubs")
+    back = {a["index"]: b["index"] for a, b in zip(kept, expected) if b["index"] in set(pinned)}
+    check("every signed depth free agent is kept and its club lists and contract follow it",
+          len(back) == len(pinned), f"{len(back)} of {len(pinned)}")
     check("kept depth rows that kept their index are byte for byte the source's",
           True, f"{sum(1 for a, b in zip(kept, rows) if a == b)} of {len(kept)} identical")
     check("every other refresh row is the source's, same order",
@@ -298,8 +360,9 @@ def validate(variant: dict, source: dict, base: bytes, *, margin: int = fa3.DEFA
         check("no scale-out XBE sections (draft-pick ownership, H-back roles)",
               not any(k in variant for k in XBE_SECTIONS), [k for k in XBE_SECTIONS if k in variant])
     check("every other section is the source's", set(other) <= allowed, f"changed {other}")
-    check("refresh teams, guards, contracts and corrections unchanged",
-          all(refresh.get(k) == source_refresh.get(k) for k in set(refresh) | set(source_refresh)
+    restored = remap(refresh, back)
+    check("refresh teams, guards, contracts and corrections unchanged (signed depth free agents re-addressed)",
+          all(restored.get(k) == source_refresh.get(k) for k in set(restored) | set(source_refresh)
               if k not in ("players", "free_agents")))
     from mod_editor.core import mod_build
     from mod_editor.core import nfl2k5_throw_tuning as tt
