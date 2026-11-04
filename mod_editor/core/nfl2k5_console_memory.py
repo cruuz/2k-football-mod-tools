@@ -520,7 +520,7 @@ def _roster_facts(path: str) -> dict[str, Any]:
     key = (path, stat.st_mtime_ns, stat.st_size)
     if key not in _ROSTER_FACTS:
         try:
-            document = json.loads(Path(path).read_text(encoding="utf-8"))
+            document = json.loads(Path(path).read_text(encoding="utf-8-sig"))   # b780-uxfix: a Notepad BOM is fine
         except (OSError, ValueError):
             document = None
         request = document.get("free_agent_capacity") if isinstance(document, dict) else None

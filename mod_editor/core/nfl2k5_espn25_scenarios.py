@@ -120,6 +120,8 @@ def read_json(path):
     with Path(path).open("rb") as stream:
         raw = stream.read(MAX_JSON + 1)
     require(len(raw) <= MAX_JSON, "JSON exceeds 2 MiB")
+    if raw.startswith(b"\xef\xbb\xbf"):   # b780-uxfix: a plan saved by Windows Notepad carries a byte-order mark
+        raw = raw[3:]
     try:
         return json.loads(raw, object_pairs_hook=pairs,
                           parse_constant=lambda x: (_ for _ in ()).throw(Espn25Error("nonfinite JSON number")))

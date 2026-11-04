@@ -49,6 +49,42 @@ class Q58ByteOrderMarkTests(unittest.TestCase):
             self.assertEqual(staff_ui.read_file(path), staff)
 
 
+class ByteOrderMarkEverywhereTests(unittest.TestCase):
+    """The 64 MB page, the memory budget, the ESPN plan and MyCareer setup read a Notepad-saved file like any other."""
+
+    def _pair(self, folder, document):
+        plain, marked = Path(folder) / "plain.json", Path(folder) / "marked.json"
+        plain.write_text(json.dumps(document), encoding="utf-8")
+        marked.write_bytes(b"\xef\xbb\xbf" + json.dumps(document).encode("utf-8"))
+        return plain, marked
+
+    def test_a_grown_roster_edits_file_reads_the_same_with_and_without_the_mark(self):
+        from types import SimpleNamespace
+        from mod_editor.core import nfl2k5_console_memory as memory, nfl2k5_memory_budget as budget
+        document = {"schema": rr.EDITS_SCHEMA, "edits": [], "free_agent_capacity": {"records": 120}}
+        with tempfile.TemporaryDirectory() as folder:
+            results = []
+            for path in self._pair(folder, document):
+                plan = SimpleNamespace(roster_edits=str(path), console_memory=64)
+                predicted = budget.predict({"roster_edits": str(path), "console_memory": 64}, 64)
+                results.append((memory._roster_facts(str(path)), memory.roster_fit_applies(plan),
+                                budget.roster_edits_summary(str(path)), predicted["fits"], predicted["block"]))
+            self.assertEqual(results[0], results[1])
+            self.assertEqual(results[1][0]["records"], 120)     # was 0 ("no capacity growth") with the mark
+            self.assertTrue(results[1][1])
+
+    def test_an_espn_plan_and_a_mycareer_setup_saved_by_notepad_read(self):
+        from mod_editor.core import nfl2k5_espn25_scenarios as espn
+        with tempfile.TemporaryDirectory() as folder:
+            plain, marked = self._pair(folder, {"schema": "x", "rows": [1, 2]})
+            self.assertEqual(espn.read_json(marked), espn.read_json(plain))
+            from tests.nfl2k5_my_career_fixture import prepared
+            _result, setup, _receipt = prepared()
+            path = Path(folder) / "MyCareer.json"
+            path.write_bytes(b"\xef\xbb\xbf" + json.dumps(setup).encode("utf-8"))
+            self.assertEqual(career.read_setup(path), career.read_setup(setup))
+
+
 class Q59UpgradedFolderNameTests(unittest.TestCase):
     def test_a_dotted_save_folder_keeps_its_whole_name(self):
         from mod_editor.gui.franchise_upgrade_dialog_qt import upgraded_folder_name
