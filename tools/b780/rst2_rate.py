@@ -59,7 +59,9 @@ def chart_ranks(path):
         newest[row["team"]] = max(newest.get(row["team"], ""), row["dt"])
     best = {}
     for row in rows:
-        if row["dt"] != newest[row["team"]] or row["pos_grp"] == "Special Teams" and row["pos_abb"] not in ("PK", "P", "LS"):
+        # a kicker or punter starts at his own position; a long snapper is not a starting centre (a backup, as the pack's
+        # other long snappers are), and the other special-teams slots (gunners, returners) do not rank a position
+        if row["dt"] != newest[row["team"]] or row["pos_grp"] == "Special Teams" and row["pos_abb"] not in ("PK", "P"):
             continue
         best[row["gsis_id"]] = min(best.get(row["gsis_id"], 99), int(row["pos_rank"]))
     return best

@@ -304,7 +304,9 @@ def append(args):
     gate = json.loads((work / "gate.json").read_text(encoding="utf-8"))
     accepted = [g for g in json.loads((work / "accepted.json").read_text(encoding="utf-8"))]
     have = {r["gsis_id"] for r in doc["portraits"]}
-    accepted = [g for g in accepted if g not in have]
+    named = {(r["first"], r["last"], r["birth_month"], r["birth_day"]) for r in doc["portraits"]}
+    accepted = [g for g in accepted if g not in have
+                and (targets[g]["first"], targets[g]["last"], targets[g]["bm"], targets[g]["bd"]) not in named]
     n_old, id_base = len(doc["portraits"]), doc["id_base"]
     atlases, rows = {}, []
     for k, g in enumerate(accepted):

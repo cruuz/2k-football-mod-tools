@@ -228,7 +228,8 @@ def create(args):
                    source=upd.ROSTER_URL, source_as_of=args.as_of, source_name=n["full_name"], source_week=n["week"],
                    status=n["status"], team=club_code(n["team"]))
         rows.append(row)
-        guards.append([p.index, p.first, p.last, str(p.record.birth_date)])
+        if not any(g[0] == p.index for g in guards):             # a free agent of the dated pool is already guarded
+            guards.append([p.index, p.first, p.last, str(p.record.birth_date)])
         added_existing.append(f"{n['full_name']} (record {p.index})")
     fresh_new = [c for c in found if c["record"] is None]
     import rst2_rate
