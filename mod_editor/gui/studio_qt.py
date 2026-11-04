@@ -2646,10 +2646,10 @@ class StudioMainWindow(QMainWindow):
         box.setText("You have changes that are not saved in a project file yet.")
         box.setInformativeText(
             f"{context} can lose them. Save them as a .2k5mod project (it holds only your own changes, "
-            "never game data), continue without saving, or cancel."
+            "never game data), discard them, or cancel."
         )
         save = box.addButton("Save project", QMessageBox.AcceptRole)
-        discard = box.addButton("Don't save", QMessageBox.DestructiveRole)
+        discard = box.addButton("Discard changes", QMessageBox.DestructiveRole)
         cancel = box.addButton(QMessageBox.Cancel)
         box.setDefaultButton(save)
         box.setEscapeButton(cancel)
