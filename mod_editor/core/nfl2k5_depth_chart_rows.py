@@ -93,16 +93,18 @@ ROW_HELP = (
     ("KR / PR", "who returns kickoffs and punts (a new KR1 moves the old one to KR2). No position order moves."),
     ("LS", "your second center. He snaps on every punt, field goal and extra point and is the first center off the "
            "bench."),
-    ("LGUN", "the second man in the receiver side order: left gunner on punts, and the fourth receiver in four and five "
-             "receiver sets."),
-    ("RGUN and DCB", "one list, the second man in the corner side order: right gunner on punts and the fourth corner "
-                     "in dime."),
-    ("NCB", "the second man in the corner rank order: the third corner in nickel and dime."),
-    ("SLWR", "the second man in the receiver rank order: the inside receiver in three receiver sets."),
-    ("GAD", "the third man in the receiver rank order: the fifth receiver, and a receiver in the base sets that share "
-            "a gadget play's personnel."),
-    ("3DRB", "the running backs behind your starter, RB2 first. The starter keeps priority: the 3DRB back comes in "
-             "when the starter cannot take the snap. There is no third down switch yet."),
+    ("LGUN", "the receiver rank order from its fourth man: the left gunner on punts. No other formation asks for him."),
+    ("RGUN", "the corner rank order from its fourth man: the right gunner on punts. No other formation asks for him."),
+    ("NCB", "the corner rank order from its second man: the third corner in nickel and dime."),
+    ("DCB", "the corner side order from its second man: the fourth corner in dime."),
+    ("SLWR", "the receiver rank order from its second man: the inside receiver in three receiver sets."),
+    ("GAD", "the receiver side order from its fourth man. He comes in only on a play that hands the ball to a "
+            "receiver (a reverse or an end around), at that receiver's spot. A CPU club uses him only when he is at "
+            "least as fast as the receiver he replaces."),
+    ("3DRB", "the running back side order from its second man (PWRB is its first). He comes in for the starter on "
+             "obvious passing downs: 3rd or 4th down with 5 yards or more to go, 2nd down with 10 or more. The starter "
+             "keeps every other snap. A CPU club uses him only when he is at least as good a receiver as its "
+             "starter."),
     ("PWRB", "the power back order: the back in goal line, jumbo and heavy I sets, and the second back in two back "
              "sets."),
 )
@@ -110,10 +112,12 @@ HELP_TEXT = ("Retail: special teams has four depth-chart rows. Patch: SPECIAL sh
              "DCB, SLWR, GAD, 3DRB and PWRB together, with names beside all available player numbers. Offense and "
              "defense keep eleven rows and show X / Z receiver labels. Row spacing is three pixels tighter on all "
              "depth-chart tabs; the font stays the same. Role labels have more room. Each role row is a view of a "
-             "position order, so moving a player there moves him in that order too. "
+             "position order from a given place, so moving a player there moves him in that order too; a move "
+             "within a row never changes the players ahead of it. "
              + " ".join(f"{label}: {text}" for label, text in ROW_HELP)
-             + " The backups in these orders also cover kickoffs and block on kick returns. Requires one-pool "
-               "positions and the playbook roles. EXPERIMENTAL/UNWITNESSED.")
+             + " With no fullback on the roster, the second running back plays fullback (the power back keeps his own "
+               "slot; a tight end when no back is free). The backups in these orders also cover kickoffs and block "
+               "on kick returns. Requires one-pool positions and the playbook roles. EXPERIMENTAL/UNWITNESSED.")
 WR_LABELS = ((3, ("LWR", "LEFT WIDE RECEIVER"), ("X", "X RECEIVER")),
              (4, ("RWR", "RIGHT WIDE RECEIVER"), ("Z", "Z RECEIVER")))
 
