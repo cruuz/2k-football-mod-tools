@@ -297,6 +297,15 @@ class LongOutputNameTests(_PanelCase):
         panel.target_field.setText(str(Path(self.tmp.name) / ("a" * 200 + ".xiso.iso")))     # 209 bytes: fine
         self.assertEqual(panel.blocker(), "")
 
+    def test_a_venue_art_folder_name_the_drive_cannot_hold_is_not_found_not_an_exception(self) -> None:
+        panel = self.panel()
+        panel._state = dict(panel._state or {}, modern_venues_2026="retail")
+        panel.modern_venues_check.setEnabled(True)
+        panel.modern_venues_check.setChecked(True)
+        panel.modern_venues_field.setText(str(Path(self.tmp.name) / ("d" * 300)))
+        panel.target_field.setText(str(Path(self.tmp.name) / "out.xiso.iso"))
+        self.assertIn("venue art folder was not found", panel.blocker())
+
     def test_a_long_source_name_gets_a_suggested_copy_the_page_can_hold(self) -> None:
         source = Path(self.tmp.name) / ("s" * 240 + ".xiso.iso")
         source.write_bytes(b"x" * 4096)

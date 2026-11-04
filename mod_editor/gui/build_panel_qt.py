@@ -4083,7 +4083,11 @@ class BuildPanel(QWidget):
         if not name:
             return "Choose the folder of 2026 team venue art (one <team>/venue folder per team)."
         folder = Path(name)
-        if not folder.is_dir():
+        try:
+            is_folder = folder.is_dir()
+        except (OSError, ValueError):       # a name the drive cannot hold raises File name too long, not False
+            is_folder = False
+        if not is_folder:
             return f"The 2026 venue art folder was not found: {name}"
         try:
             stamp = tuple(sorted((str(m), m.stat().st_mtime_ns) for m in folder.glob("*/venue/manifest.json")))
