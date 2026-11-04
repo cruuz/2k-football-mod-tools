@@ -3985,3 +3985,5 @@ data/nfl2k5_coach_pool_2026.json
 tests/mod_editor/test_nfl2k5_franchise_footer.py
 tests/mod_editor/test_nfl2k5_history.py
 tests/mod_editor/test_nfl2k5_franchise_footer_transaction.py
+# b780 gc1: the franchise Gamecast's score panel (0x8C450) stays retail under the 2026 scorebug
+tests/mod_editor/test_b780_gc1_gamecast_scorepanel.py
