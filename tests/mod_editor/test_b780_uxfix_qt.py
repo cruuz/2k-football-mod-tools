@@ -564,7 +564,7 @@ class StudioWindowTests(unittest.TestCase):
                 event.accept.assert_not_called()
             self.assertEqual(asked, ["Opening another disc", "Closing Mod Studio"])
             # once exported, the same edits are saved work
-            panel._edits_snapshot = (frozenset(panel._dirty), len(panel.undo_stack._done))
+            panel._edits_snapshot = panel.edits_key()
             self.assertFalse(window._roster_work_unsaved())
         window._refresh_project_document_state()
         self.assertNotIn("*", window.windowTitle())
@@ -597,6 +597,24 @@ class StudioWindowTests(unittest.TestCase):
                 self.app.processEvents()
                 time.sleep(0.01)
         self.assertEqual(order, ["project", ("prefill", disc.resolve())])   # the disc reaches the pages after recovery
+
+    def test_7_getting_started_offers_the_last_game_file(self):
+        window = self.window
+        folder = Path(tempfile.mkdtemp(prefix="uxfix-recent-"))
+        last = folder / "ESPN NFL 2K5 (USA).iso"
+        last.write_bytes(b"x")
+        state = SimpleNamespace(recent_sources=(str(folder / "gone.iso"), str(last)), recent_projects=())
+        with mock.patch.object(window, "_workspace_state", return_value=state), \
+             mock.patch.object(window, "_request_source_switch") as switch:
+            window._refresh_welcome_state()
+            button = window.welcome_continue_button
+            self.assertFalse(button.isHidden())
+            self.assertEqual(button.text(), "Continue with ESPN NFL 2K5 (USA).iso")   # the newest file that exists
+            button.click()
+        switch.assert_called_once_with(last)
+        with mock.patch.object(window, "_workspace_state", return_value=None):
+            window._refresh_welcome_state()
+        self.assertTrue(window.welcome_continue_button.isHidden())
 
     def test_6_opening_gameplay_at_1480x920_reports_no_error(self):
         from mod_editor.gui import crash_report

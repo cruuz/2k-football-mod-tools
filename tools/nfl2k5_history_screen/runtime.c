@@ -1629,7 +1629,9 @@ static void card_table(volatile u32 *state, u32 hide) {
 
 /* The card's page turn while this owner is there (the champions owner calls it): card, honors, champions, game log;
    Black and R forward, White and L back; Up and Down scroll the champions list or the game log. Returns 1 when the
-   cursor sound is due. */
+   cursor sound is due. b780 hist1 (Q5): the game log is a page only while there is a franchise footer to read (the
+   option Franchise history and records, in a franchise); without one the card keeps its three pages, as it does
+   without this owner, instead of a page that can only say NO GAMES KEPT. */
 u32 FC hist_card_flip(u32 buttons, volatile u32 *state) {
     u32 page = state[0], log = state[1] & LOG;
     if (buttons & 0x3000000) {
@@ -1650,8 +1652,11 @@ u32 FC hist_card_flip(u32 buttons, volatile u32 *state) {
             card_table(state, 0);         /* B or Back: the card closes, its table is whole again */
         return 0;
     }
+    u32 pages = x_body() ? 4 : 3;
     u32 at = page >= 3 ? 0 : page == 2 && log ? 3 : page;
-    at = buttons & 0x6000 ? (at + 3) % 4 : (at + 1) % 4;
+    if (at >= pages)
+        at = pages - 1;
+    at = buttons & 0x6000 ? (at + pages - 1) % pages : (at + 1) % pages;
     state[0] = at == 3 ? 2 : at;
     state[1] = at == 3 ? LOG : 0;
     hist_state[S_CARD_FRAME] = 0;

@@ -142,7 +142,16 @@ class PoolBlockTests(unittest.TestCase):
         tomlin = next(e for e in self.pool if e["last"] == "Tomlin")
         self.assertEqual((tomlin["career"]["wins"], tomlin["career"]["losses"], tomlin["career"]["playoff_wins"],
                           tomlin["career"]["super_bowl_wins"]), (193, 114, 8, 1))
-        self.assertTrue(all(set(e["ratings"].values()) == {cc.DEFAULT_RATING} for e in self.pool))
+        # b780 hunt6 (Q37): the 2026 rating model's league baseline, inside the 32 sitting coaches' range (60 to 99)
+        self.assertTrue(all(e["ratings"] == cc.pool_ratings() for e in self.pool))
+        data = json.loads((cc.ROOT / "data/nfl2k5_coaches_2026.json").read_text())
+        self.assertEqual((cc.POOL_FOOTBALL_RATING, cc.POOL_CHARACTER_RATING),
+                         (data["scale"]["football_centre"], data["scale"]["character_centre"]))
+        self.assertEqual(cc.CHARACTER_RATINGS, ("professionalism", "preparation", "conditioning", "motivation",
+                                                "leadership", "discipline", "respect"))
+        low = {r: min(c["ratings"][r] for c in data["coaches"].values()) for r in cc.RATINGS}
+        high = {r: max(c["ratings"][r] for c in data["coaches"].values()) for r in cc.RATINGS}
+        self.assertTrue(all(low[r] <= v <= high[r] for r, v in cc.pool_ratings().items()))
 
     def test_block_reads_back_and_is_found_on_a_four_byte_step(self):
         entries = cc.read_pool_block(self.block)

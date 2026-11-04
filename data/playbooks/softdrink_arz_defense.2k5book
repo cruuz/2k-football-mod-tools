@@ -9,7 +9,7 @@
   "notes": "DESIGN: Nick Rallis (Gannon / Zimmer split coverage); 2025 baseline ARI. Clean technique fronts (pb/v2/defense/design.py), retail 2K5 coverage scripts with native pre-snap alignment, situational formation ratings and CPU score bands fitted to the sourced 2025 coverage and blitz rates. Exact offense source required. Gameplay unwitnessed."
  },
  "base": {
-  "book_fingerprint": "fda72e13cc5a76d737be4b763997312072a859d5947f61b53b27aa98c50f4691",
+  "book_fingerprint": "da4d6643ef48aa63e984379700ab0237ecf0ab40f41b200f5fc32c5cf0e03236",
   "donor_formation_count": 50,
   "donor_play_count": 270,
   "donor_node_count": 2281

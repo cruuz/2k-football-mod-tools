@@ -43,6 +43,10 @@
 .set GETTAB, 0x4F4CB4     # rating getter/setter table (stride 0x14, setter at -4)
 .set GETEND, 0x4F4EF8
 .set HALF, 0x4E4184       # .rdata 0.5f         # +3 sd on S (sd of S = 128, the table's c = 8 sd)
+.set COLLEGE_TOTAL, 6936   # b780 GEN1 Q84: the sum of the college weights n * n
+.set JERSEY_MIN, 0x521B90  # u32 per position: the bottom of his jersey range (FUN_002BD260)
+.set JERSEY_WALK, 0x2BD2FD # FUN_002BD260: back to its walk's stop test
+.set HAIRPTR, D+0x1F4      # b780 GEN1 Q81: the rookie hair helper (nfl2k5_rookie_faces_hair), 0 when not installed
 
 .text
 .globl _start
@@ -160,7 +164,7 @@ regionA_end:
 28:
     .fill 0xE6D51 - 0xE6923, 1, 0
 regionC:                            # b779-rf3: the rating loop (29 getter/setter pairs at 0x4F4CB4, retail semantics:
-    call qsetup                     # value = b + r * (a - b) between the two templates) with r from qrand, then the
+    call gearsetup                  # value = b + r * (a - b) between the two templates) with r from qrand, then the
 40: mov ecx, ebx                    # three capped rolls (consistency, aggressiveness, composure) as one small loop
     call [edi]
     mov [esp+0x1c], eax
@@ -214,8 +218,8 @@ regionC:                            # b779-rf3: the rating loop (29 getter/sette
     mov [esi+edx], al
     dec edi
     jns 41b
-    mov ecx, RNG                    # the next retail instruction draws with it
-    jmp 29f
+    mov byte ptr [esi+8], 6         # retail (the record's type byte, the college pick's first instruction)
+    jmp collegepick                 # b780 GEN1 Q84
 qsetup:                             # one byte per prospect: a blue-chip (BLUEK in 256) rolls every rating in the upper
     call rnd                        # half of his template range; the flag lives in the frame's free slot [esp+0x14]
     cmp al, BLUEK
@@ -233,6 +237,27 @@ qrand:                              # st0 = r, or (r + 1) / 2 for a blue-chip
 44: ret
 cofs:
     .byte 0x4E, 0x51, 0x50
+taken:                              # b780 GEN1: eax = a first-name string -> CF = 1 when another player on the roster
+    push ecx                        # has it with this prospect's surname string ([esi+0x14]); keeps every register
+    push edx
+    mov ecx, [ebp]
+    mov edx, [ebp+4]
+75: cmp [edx+0x10], eax
+    jne 76f
+    cmp edx, esi
+    je 76f
+    push eax
+    mov eax, [edx+0x14]
+    cmp eax, [esi+0x14]
+    pop eax
+    stc
+    je 77f
+76: add edx, 0x54
+    loop 75b
+    clc
+77: pop edx
+    pop ecx
+    ret
 rarefirst:                          # b780 GEN1, called from region D: eax = rare surname 0..2 -> [esi+0x10] = one of its
     push edx                        # four first names, (weight ^ height) & 3 first (the body region A rolled), then the
     push ebx                        # next ones while a player on the roster already has that full name ("Raj Patel"
@@ -248,31 +273,101 @@ rarefirst:                          # b780 GEN1, called from region D: eax = rar
     mov eax, [edx+eax*8]            # the candidate's pool string
     dec edi
     jz 53f
-    push ecx
-    mov ecx, [ebp]
-    mov edx, [ebp+4]
-51: cmp [edx+0x10], eax
-    jne 52f
-    push eax
-    mov eax, [edx+0x14]
-    cmp eax, [esi+0x14]             # same surname string too: that full name is taken
-    pop eax
-    je 54f
-52: add edx, 0x54
-    loop 51b
-    pop ecx
+    call taken
+    jnc 53f
+    inc ecx
+    and ecx, 3
+    jmp 50b
 53: mov [esi+0x10], eax
     pop ebx
     pop edx
     ret
-54: pop ecx
-    inc ecx
-    and ecx, 3
-    jmp 50b
+namefix:                            # b780 GEN1 Q85, called from region B (edi = first-name index, ebx = the pool's first
+    call nickfix                    # names): nickfix, then while another player on the roster has this full name, another
+    push 4                          # ordinary first name (at most four redraws; then the name stands)
+73: mov eax, [esi+0x10]
+    call taken
+    jnc 74f
+    dec dword ptr [esp]
+    js 74f
+    movzx ecx, word ptr [NICK0]
+    call rndmod
+    mov edi, edx
+    mov eax, [ebx+edi*8]
+    mov [esi+0x10], eax
+    jmp 73b
+74: pop ecx
+    ret
+dlwrap:                             # b780 GEN1 Q83, from the jersey walk at 0x2BD2F7 when the next number passed his range's
+    cmp esi, 100                    # top (eax = position * 4): a DT or DE walking up from his own 90s number keeps going
+    jae 71f                         # to 99 before the retail wrap to the bottom of his range
+    cmp esi, 91
+    jb 71f
+    cmp eax, 15 * 4
+    jae 72f
+71: mov esi, [eax+JERSEY_MIN]
+72: jmp JERSEY_WALK
+gearsetup:                          # b780 GEN1 Q82: the face mask from any of the position's four templates (the tier's
+    call rnd                        # own pair gave his tier away: 16 of 17 positions' tiers wear different masks), the
+    shr eax, 30                     # retail helmet bit (+0x0C bit 6: mask 15 and up) after it; then the blue-chip setup
+    movzx ecx, byte ptr [esi+0x35]
+    lea eax, [eax+ecx*4]            # template row 4 * position + k
+    mov ecx, [ROSTER]
+    cmp eax, [ecx+8]
+    jae 70f
+    imul eax, eax, 0x54
+    add eax, [ecx+0xC]
+    mov eax, [eax+0x20]
+    xor eax, [esi+0x20]
+    and eax, 0x7C00
+    xor [esi+0x20], eax
+    mov eax, [esi+0x20]
+    and eax, 0x7C00
+    cmp eax, 15 << 10
+    setae al
+    shl al, 6
+    and byte ptr [esi+0x0C], 0x3F
+    or [esi+0x0C], al
+70: jmp qsetup
 regionC_end:
     .fill 0xE6F56 - 0xE6D51 - (regionC_end - regionC), 1, 0xCC
 29:
-    .fill 0xE7019 - 0xE6F56, 1, 0
+collegetab:                         # b780 GEN1 Q84 (replaces the retail college pick 0xE6F56..0xE7019): a 4-bit weight n per
+                                    # college row, low nibble first; weight n * n, fitted to the 2026 roster's colleges
+    .byte 0x7b, 0x6a, 0x89, 0x57, 0x87, 0xb8, 0x7d, 0x58, 0xcf, 0x87, 0x67, 0x57, 0x97, 0xb8, 0xc7, 0x8a
+    .byte 0x98, 0x78, 0x87, 0x56, 0x64, 0x13, 0x43, 0x73, 0x74, 0x77, 0x63, 0x22, 0x53, 0x43, 0x22, 0x42
+    .byte 0x33, 0x56, 0x63, 0x25, 0x27, 0x49, 0xab, 0x77, 0x67, 0x9a, 0xa6, 0x9e, 0xc9, 0x8e, 0x0b, 0xa8
+    .byte 0x6a, 0x35, 0x44, 0x63, 0x39, 0x34, 0x44, 0x13, 0x5c, 0x24, 0x23, 0x42, 0x24, 0x22, 0x33, 0x13
+    .byte 0x32, 0x15, 0x22, 0x11, 0x12, 0x32, 0x22, 0x21, 0x21, 0x22, 0x43, 0x23, 0x12, 0x14, 0x21, 0x21
+    .byte 0x22, 0x23, 0x14, 0x12, 0x51, 0x22, 0x12, 0x21, 0x2a, 0x22, 0x14, 0x22, 0x21, 0x01, 0x21, 0x62
+    .byte 0x22, 0x32, 0x13, 0x32, 0x22, 0x21, 0x22, 0x23, 0x11, 0x22, 0x54, 0x23, 0x22, 0x32, 0x12, 0x22
+    .byte 0x54, 0x11, 0x13, 0x32, 0x12, 0x22, 0x21, 0x63, 0x24, 0x22, 0x22, 0x23, 0x13, 0x31, 0x22, 0x23
+    .byte 0x23, 0x21, 0x12, 0x11, 0x11
+collegepick:                        # from region C's tail: a college row by weight -> eax = its record (0 past the table)
+    call rnd
+    mov ecx, COLLEGE_TOTAL
+    mul ecx                         # edx = rand * TOTAL >> 32, uniform in [0, TOTAL)
+    xor edi, edi
+60: mov eax, edi
+    shr eax, 1
+    movzx eax, byte ptr [collegetab+eax]
+    jnc 61f
+    shr eax, 4
+61: and eax, 15
+    imul eax, eax
+    sub edx, eax
+    jb 62f
+    inc edi
+    jmp 60b
+62: mov ecx, [ROSTER]
+    xor eax, eax
+    cmp edi, [ecx+0x20]
+    jae 63f
+    mov eax, [ecx+0x24]
+    lea eax, [eax+edi*8]
+63:
+regionE_end:
+    .fill 0xE7019 - 0xE6F56 - (regionE_end - collegetab), 1, 0xCC
 regionB:
     mov [esi], eax                  # college (retail store)
     mov ebp, [ROSTER]
@@ -299,7 +394,7 @@ regionB:
     sub ebx, 4
     mov eax, [esi+0x10]
     call findname
-    call nickfix
+    call namefix                    # b780 GEN1 Q85: nickfix + the same-full-name check
     mov eax, [ebx]                  # canary: an older save carries its own pool (no first-name term, no rare groups)
     mov ax, [eax]
     cmp ax, [CANARY]
@@ -360,7 +455,11 @@ regionB:
 19: jmp regionD
 regionB_end:
     .fill 0xE7120 - 0xE7019 - (regionB_end - regionB), 1, 0xCC
-    .fill TABLE_END - 0xE7120, 1, 0
+    .fill 0x2BD2F7 - 0xE7120, 1, 0
+dlhook:                             # b780 GEN1 Q83: FUN_002BD260's wrap (mov esi, [eax+0x521B90]) -> dlwrap
+    jmp dlwrap
+    nop
+    .fill TABLE_END - 0x2BD2FD, 1, 0
 regionD:                            # ebx = tone, edx = build
     mov [esp+0x10], ebx             # the tone written to the skin bits
     mov eax, [esp+0x14]             # a rare surname? (-1 on an older pool)
@@ -398,7 +497,10 @@ regionD:                            # ebx = tone, edx = build
 26: dec ebx
     jnz 22b
 23: mov [esi+6], ax
-    mov ecx, [esi+0x18]             # skin bits 7-9 = tone, Dreads = hanging face
+    mov ecx, [HAIRPTR]              # b780 GEN1 Q81: his hair style from the face (+0x0D) when the rookie hair helper
+    jecxz 81f                       # is installed (Hair styles on): ax = the portrait id
+    call ecx
+81: mov ecx, [esi+0x18]             # skin bits 7-9 = tone, Dreads = hanging face
     and ecx, 0xFFFFFC7E
     mov eax, [esp+0x10]
     shl eax, 7
@@ -416,4 +518,6 @@ regionD:                            # ebx = tone, edx = build
     add esp, 8
     ret 4
 regionD_end:
-    .fill D + 0x1F8 - TABLE_END - (regionD_end - regionD), 1, 0xCC
+    .fill D + 0x1F4 - TABLE_END - (regionD_end - regionD), 1, 0xCC
+hairptr:
+    .long 0                         # b780 GEN1 Q81: written by the build when the rookie hair helper is installed

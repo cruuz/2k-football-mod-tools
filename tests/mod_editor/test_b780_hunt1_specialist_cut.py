@@ -68,7 +68,7 @@ def with_revision_five_gate(payload: bytes) -> bytes:
 
 class SiteTests(unittest.TestCase):
     def test_the_release_guard_is_revision_six_and_reads_back(self):
-        self.assertEqual(economy.REVISION, 6)
+        self.assertIn(economy.REVISION, (6, 7))     # b780 econ3: revision 7 keeps the guard's call (its pick moved)
         site = next(s for s in economy.sites() if s.va == economy.VETERAN_CUT_RELEASE)
         self.assertEqual(site.patched[:1], b"\xe8")
         target = (economy.VETERAN_CUT_RELEASE + 5 + struct.unpack_from("<i", site.patched, 1)[0]) & 0xFFFFFFFF
@@ -83,8 +83,13 @@ class SiteTests(unittest.TestCase):
 
     def test_a_revision_five_image_reads_legacy_and_upgrades_in_place(self):
         applied, _ = economy.apply(retail_bytes())
-        image = XbeImage(applied)
-        before = bytearray(applied)
+        # b780 econ3: revision 7's sites go back to their revision-6 bytes first (a revision-5 image has neither)
+        six = applied
+        if economy.REVISION >= 7:
+            from tests.mod_editor.test_b780_econ3_roster_drift import revision_six
+            six = revision_six(applied)
+        image = XbeImage(six)
+        before = bytearray(six)
         # revision 5: the native release call and roster_m without the guard (the guard's bytes back to int3)
         at = image.offset(economy.VETERAN_CUT_RELEASE, 5)
         before[at:at + 5] = NATIVE_RELEASE_CALL
@@ -93,14 +98,27 @@ class SiteTests(unittest.TestCase):
         before[window + guard:window + 160] = b"\xcc" * (160 - guard)
         money = image.offset(economy.MONEY_WINDOW, 198)
         before[money:money + 198] = revision_five_money()
-        from mod_editor.core.nfl2k5_bump_strength import _sections, section_digest
-        for section in _sections(bytes(before)):
-            before[section.header_offset + 36:section.header_offset + 56] = section_digest(bytes(before), section)
         revision_five = bytes(before)
+        # and (when a released executable is here) roster_a and roster_h without the in-season K/P cover, the bytes
+        # every revision up to 5 installed there (without_cover recomputes the section digests either way)
+        roster_a = released_roster_a()
+        revision_five = without_cover(revision_five, roster_a if roster_a is not None
+                                      else image.read(economy.ROSTER_A_WINDOW, 448))
         self.assertEqual(economy.status(revision_five), "legacy")
         upgraded, receipt = economy.apply(revision_five)
         self.assertEqual(receipt.get("upgraded_from"), "legacy")
         self.assertEqual(upgraded, applied)
+
+    def test_the_windows_without_the_cover_are_the_ones_the_owner_recognises(self):
+        import hashlib
+        roster_a = released_roster_a()
+        if roster_a is None:
+            self.skipTest("no released v0.8 / v0.9 RC executable in this scratch")
+        old = XbeImage(without_cover(economy.apply(retail_bytes())[0], roster_a))
+        for va in (economy.ROSTER_A_WINDOW, economy.ROSTER_H_WINDOW):
+            with self.subTest(window=hex(va)):
+                self.assertEqual(hashlib.sha256(old.read(va, len(economy.WINDOWS[va]))).hexdigest(),
+                                 economy.PREVIOUS_REVISION_5[va])
 
     def test_the_revision_five_money_window_is_the_one_the_owner_recognises(self):
         import hashlib
@@ -167,7 +185,8 @@ class NativeStageSixTests(unittest.TestCase):
         self.assertGreater(m.call(0xE6380, ecx=p), market * 21 // 10)
         no_restructure_room(m, team, {p})
         m.call(0xC3F00, ecx=team)
-        m.put(0xE3C278, m.get(team + 0x124) + 1000)   # within 6000 of the cap
+        # b780 econ3 (revision 7, Q45): the cut acts only while the club cannot fit two league-minimum signings
+        m.put(0xE3C278, m.get(team + 0x124) + 100)    # short of that line (was: within 6000 of the cap)
         m.put(0xE576A4, 6)
         m.put(0xE576B4, 0)
         released = []
@@ -197,9 +216,11 @@ class NativeStageSixTests(unittest.TestCase):
         self.assertNotIn(p, cut)
         self.assertIn(p, members)
 
-    def test_a_kicker_with_a_healthy_second_kicker_is_still_cut(self):
+    def test_a_kicker_with_a_healthy_second_kicker_does_not_stop_the_cut(self):
+        # b780 econ3 (revision 7): the release is the least value lost from any position above its minimum, so it need
+        # not be the overpaid kicker; with a healthy second kicker the guard no longer blocks it
         p, cut, members = self.run_stage_six(self.after, K, extra="healthy")
-        self.assertIn(p, cut)
+        self.assertTrue(cut)
 
     def test_a_kicker_whose_only_other_kicker_is_hurt_stays(self):
         p, cut, members = self.run_stage_six(self.after, K, extra="injured")
@@ -265,6 +286,125 @@ class CampSigningTests(unittest.TestCase):
         ok, receivers, count = self.sign(self.after, 3, remove_kicker=False)
         self.assertFalse(ok)
         self.assertEqual(count, 58)
+
+
+
+def without_cover(payload: bytes, roster_a: bytes) -> bytes:
+    """``payload`` with roster_a (upkeep) and roster_h as revision 6 had them before the in-season K/P cover: the
+    upkeep without its call, and the class top-up window's tail as int3 padding (``roster_a``: those 448 bytes from a
+    released v0.8 or v0.9 RC executable, which carry them)."""
+    from mod_editor.core.nfl2k5_bump_strength import _sections, section_digest
+    image, out = XbeImage(payload), bytearray(payload)
+    head = economy.WINDOWS[economy.ROSTER_H_WINDOW]
+    cover = economy.SYMBOLS["economy_cover"] - economy.ROSTER_H_WINDOW
+    for va, code in ((economy.ROSTER_A_WINDOW, roster_a), (economy.ROSTER_H_WINDOW, head[:cover] + b"\xcc" * (len(head) - cover))):
+        at = image.offset(va, len(code))
+        out[at:at + len(code)] = code
+    for section in _sections(bytes(out)):
+        out[section.header_offset + 36:section.header_offset + 56] = section_digest(bytes(out), section)
+    return bytes(out)
+
+
+def released_roster_a() -> bytes | None:
+    import os
+    for name in ("NFL2K5_V08_XBE", "NFL2K5_B780_RC_XBE"):
+        path = Path(os.environ.get(name, "/nonexistent"))
+        if path.is_file():
+            return XbeImage(path.read_bytes()).read(economy.ROSTER_A_WINDOW, len(economy.WINDOWS[economy.ROSTER_A_WINDOW]))
+    return None
+
+
+@unittest.skipUnless(HAVE_UC, "Unicorn is not installed")
+class InSeasonCoverTests(unittest.TestCase):
+    """FIXWAVE #5: a played game can hurt a kicker or a punter (the collision injury chain 0x137520 / 0x137680 ->
+    0x1373C0 -> 0x136B10 tests no position) and the native need counts injured players, so the CPU fill never asked for
+    a replacement. Club 0, a computer club grown to 53 with one-year free agents, in the regular season (stage 8) with
+    its only kicker hurt for three weeks and cap room; the free-agent pool holds healthy kickers. The weekly CPU pass
+    (economy_week, the fills off) runs every computer club's upkeep, which now covers the hurt specialist."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.after, _ = economy.apply(retail_bytes())
+        cls.body = retail_roster()
+        roster_a = released_roster_a()
+        cls.before = without_cover(cls.after, roster_a) if roster_a is not None else None
+
+    def season(self, payload, *, hurt=True, size=53, stage=8, direct=False):
+        from tools.franchise_economy.probe import start
+        m = start(self.body, payload)
+        m.leaf(0x177990, lambda: m.ret(pop=4), reason="progress renderer only")
+        m.leaf(0x14E520, lambda: m.ret(), reason="informational dialog only")
+        team, lst = m.team_base, m.root + 0x38
+        members = lambda: [m.get(team + 4 * i) for i in range(m.uc.mem_read(team + 0x11C, 1)[0])]
+        for t in range(34):
+            m.put(0xE5775C + 4 * t, 0)                        # every club the computer's
+        m.put(0xE576A4, 5)
+        free = [m.call(0x242500, ecx=lst, edx=i) for i in range(m.call(0x2424F0, ecx=lst))]
+        for p in free:
+            if m.uc.mem_read(team + 0x11C, 1)[0] >= size:
+                break
+            raw = bytearray(m.uc.mem_read(p, 84))
+            if raw[0x35] in (K, P) or raw[0x35] >= 17:
+                continue
+            m.call(0x2425C0, ecx=lst, edx=p)
+            raw[0x27] = (raw[0x27] & 0xF0) | 1; raw[0x24] = (raw[0x24] & 0xF0) | 1
+            struct.pack_into("<H", raw, 10, 30)
+            m.uc.mem_write(p, bytes(raw))
+            self.assertTrue(m.call(0xC3EE0, ecx=team, edx=p))
+        while m.uc.mem_read(team + 0x11C, 1)[0] > size:          # a club that starts above it drops its last listed
+            m.call(0x2BD900, ecx=team, edx=members()[-1], args=(1, 0))
+        kickers = [p for p in members() if m.uc.mem_read(p + 0x35, 1)[0] == K]
+        self.assertEqual(len(kickers), 1)
+        if hurt:
+            m.put(kickers[0] + 0x20, (m.get(kickers[0] + 0x20) & 0x003FFFFF) | 0x80000000 | (3 << 22))
+        m.put(0xE576A4, stage)
+        m.call(0xC3F00, ecx=team)
+        m.put(0xE3C278, m.get(team + 0x124) + 40000)
+        before = members()
+        menu = m.ARENA + 0x1A0000
+        if direct:
+            m.call(economy.SYMBOLS["economy_cover"], ecx=team, edx=menu, budget=400_000_000)
+        else:
+            zero = struct.unpack("<I", struct.pack("<f", 0.0))[0]
+            m.call(economy.SYMBOLS["economy_week"], ecx=menu, edx=0, args=(zero, zero), budget=2_000_000_000)
+        after = members()
+        healthy = [p for p in after if m.uc.mem_read(p + 0x35, 1)[0] == K and not m.uc.mem_read(p + 0x23, 1)[0] & 0x80]
+        released = [p for p in before if p not in after]
+        signed = [p for p in after if p not in before]
+        positions = lambda ps: [m.uc.mem_read(p + 0x35, 1)[0] for p in ps]
+        return dict(count=len(after), healthy=len(healthy), hurt_kept=kickers[0] in after,
+                    released=positions(released), signed=positions(signed))
+
+    def test_a_hurt_kicker_is_covered_and_the_club_stays_at_53(self):
+        got = self.season(self.after)
+        self.assertEqual((got["count"], got["healthy"], got["hurt_kept"]), (53, 1, True))
+        self.assertEqual(got["signed"], [K])
+        self.assertEqual(len(got["released"]), 1)
+        self.assertNotIn(got["released"][0], (K, P))
+
+    def test_the_cover_alone_makes_room_with_the_smart_cut(self):
+        got = self.season(self.after, direct=True)
+        self.assertEqual((got["count"], got["healthy"], got["hurt_kept"], got["signed"]), (53, 1, True, [K]))
+        self.assertEqual(len(got["released"]), 1)
+
+    def test_a_club_with_room_signs_without_a_cut(self):
+        got = self.season(self.after, size=52, direct=True)
+        self.assertEqual((got["count"], got["healthy"], got["released"], got["signed"]), (53, 1, [], [K]))
+
+    def test_a_healthy_kicker_changes_nothing(self):
+        got = self.season(self.after, hurt=False, direct=True)
+        self.assertEqual((got["count"], got["released"], got["signed"]), (53, [], []))
+
+    def test_camp_is_left_to_the_fill_gate(self):
+        # stage 7: the upkeep does not run the cover (camp limits differ; revision 6's gate rule covers a club with no K)
+        got = self.season(self.after, stage=7)
+        self.assertEqual((got["healthy"], got["signed"].count(K)), (0, 0))
+
+    def test_before_the_cover_the_club_kept_only_its_hurt_kicker(self):
+        if self.before is None:
+            self.skipTest("no released v0.8 / v0.9 RC executable in this scratch")
+        got = self.season(self.before)
+        self.assertEqual((got["count"], got["healthy"], got["signed"].count(K)), (53, 0, 0))
 
 
 if __name__ == "__main__":

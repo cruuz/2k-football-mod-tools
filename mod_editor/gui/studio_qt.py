@@ -324,6 +324,10 @@ def _build_blocker_message(*, ready: bool, edit_count: int, busy: bool) -> str:
     return BUILD_READY_MESSAGE
 
 
+#: b780 Q52: from this many edits a recovery snapshot waits for AUTOSAVE_QUIET_MS without changes (it takes seconds).
+AUTOSAVE_QUIET_EDITS = 1000
+AUTOSAVE_QUIET_MS = 15000
+
 #: b780-uxfix: the Share tab installs SOFTDRINK 2K28 first; "Share" alone read as sending something to a friend.
 SHARE_TAB_TITLE = "Install & Share"
 
@@ -2510,6 +2514,8 @@ class StudioMainWindow(QMainWindow):
 
     def _refresh_recent_menus(self) -> None:
         state = self._workspace_state()
+        if hasattr(self, "welcome_continue_button"):
+            QTimer.singleShot(0, bound(self, self._refresh_welcome_state))   # b780-uxfix: Continue with <last file>
         if self._recent_source_menu is not None:
             self._recent_source_menu.clear()
             sources = tuple(getattr(state, "recent_sources", ()))
@@ -2590,8 +2596,8 @@ class StudioMainWindow(QMainWindow):
                 return False
             if panel.espn25_dirty():
                 return True
-            snapshot = getattr(panel, "_edits_snapshot", None)   # set when the roster edits were last exported
-            return snapshot is None or snapshot != (frozenset(panel._dirty), len(panel.undo_stack._done))
+            snapshot = getattr(panel, "_edits_snapshot", None)   # set when the edits were last exported or written
+            return snapshot is None or snapshot != panel.edits_key()
         except Exception:  # noqa: BLE001 - a guard question must never break closing
             return False
 
@@ -2642,10 +2648,10 @@ class StudioMainWindow(QMainWindow):
         box.setText("You have changes that are not saved in a project file yet.")
         box.setInformativeText(
             f"{context} can lose them. Save them as a .2k5mod project (it holds only your own changes, "
-            "never game data), continue without saving, or cancel."
+            "never game data), discard them, or cancel."
         )
         save = box.addButton("Save project", QMessageBox.AcceptRole)
-        discard = box.addButton("Don't save", QMessageBox.DestructiveRole)
+        discard = box.addButton("Discard changes", QMessageBox.DestructiveRole)
         cancel = box.addButton(QMessageBox.Cancel)
         box.setDefaultButton(save)
         box.setEscapeButton(cancel)
@@ -3565,10 +3571,17 @@ class StudioMainWindow(QMainWindow):
         rosters_button.setObjectName("secondaryButton")
         rosters_button.setToolTip("★ Rosters: players, ratings, equipment, contracts and depth order, from the open disc or an Xbox save.")
         rosters_button.clicked.connect(self._go_to_rosters)
+        # b780-uxfix (beginner review 9.1): after a restart the last game file was only under File > Recent discs
+        continue_button = QPushButton("")
+        continue_button.setObjectName("secondaryButton")
+        continue_button.hide()
+        continue_button.clicked.connect(self._continue_with_recent_source)
+        self.welcome_continue_button = continue_button
         self.welcome_install_button = install_button
         self.welcome_open_button = open_button
         self.welcome_task_buttons = (softdrink_button, rosters_button)
         start_buttons.addWidget(install_button)
+        start_buttons.addWidget(continue_button)
         start_buttons.addWidget(open_button)
         start_buttons.addWidget(softdrink_button)
         start_buttons.addWidget(rosters_button)
@@ -8675,7 +8688,7 @@ class StudioMainWindow(QMainWindow):
         identity = state.get("disc_identity")
         kind = str(identity.get("kind", "")) if isinstance(identity, Mapping) else ""
         badge = {"retail-xiso": "original", "retail-raw": "original",
-                 "repack": "repacked", "modified": "modified"}.get(kind, "")
+                 "repack": "repacked", "modified": "modified", "studio-built": "built with the Studio"}.get(kind, "")
         self.source_pill.setText(f"●  Disc: {display}" + (f" · {badge}" if badge else ""))
         line = str(state.get("disc_identity_line") or "")
         self.source_pill.setToolTip(
@@ -8694,7 +8707,7 @@ class StudioMainWindow(QMainWindow):
         if bool(getattr(self.facade, "source_ready", False)):
             display = str(getattr(self.facade, "source_display_name", "") or "your disc")
             ready_label.setText(f"Disc open: {display}")
-            sub_label.setText("Next: choose SOFTDRINK patches or edit rosters.")
+            sub_label.setText("Next: install SOFTDRINK 2K28 on this game file, make your own disc, or edit rosters.")
         else:
             ready_label.setText("Start here")
             sub_label.setText(
@@ -8702,6 +8715,31 @@ class StudioMainWindow(QMainWindow):
                 "SOFTDRINK 2K28 download (.2k5patch). To make your own changes, open your game file instead.")
         for button in getattr(self, "welcome_task_buttons", ()):
             button.setEnabled(True)
+        continue_button = getattr(self, "welcome_continue_button", None)
+        if continue_button is not None:
+            recent = None if bool(getattr(self.facade, "source_ready", False)) else self._recent_source()
+            continue_button.setVisible(recent is not None)
+            if recent is not None:
+                continue_button.setText(f"Continue with {recent.name}")
+                continue_button.setToolTip(f"Open the game file you used last time: {recent}")
+                continue_button.setProperty("recent_source", str(recent))
+
+    def _recent_source(self) -> Path | None:
+        """The most recent game file that still exists, or None."""
+        state = self._workspace_state()
+        for value in tuple(getattr(state, "recent_sources", ()) or ()):
+            path = Path(value)
+            try:
+                if path.is_file() and not path.is_symlink():
+                    return path
+            except OSError:
+                continue
+        return None
+
+    def _continue_with_recent_source(self) -> None:
+        value = self.welcome_continue_button.property("recent_source")
+        if value:
+            self._request_source_switch(Path(value))
 
     def _refresh_player_assets_hint(self) -> None:
         search = getattr(self, "player_asset_search", None)
@@ -8748,6 +8786,35 @@ class StudioMainWindow(QMainWindow):
         if self._build_panel is not None:
             self._build_panel._refresh()
 
+    def _recovery_waits_for_quiet(self) -> bool:
+        """Coalesce recovery snapshots of a big project into one after 15 quiet seconds (b780 Q52).
+
+        A snapshot of a project with thousands of edits takes seconds to write, and every Build-tab change asked
+        for a new one. Below AUTOSAVE_QUIET_EDITS nothing changes; above it each change restarts a 15 s timer and
+        the snapshot is written once the edits stop.
+        """
+        if getattr(self, "_recovery_quiet_over", False):
+            self._recovery_quiet_over = False
+            return False
+        try:
+            big = int(getattr(self.facade, "modified_count", 0)) >= AUTOSAVE_QUIET_EDITS
+        except Exception:  # noqa: BLE001 - a count must never stop autosave
+            big = False
+        if not big:
+            return False
+        timer = getattr(self, "_recovery_quiet_timer", None)
+        if timer is None:
+            timer = self._recovery_quiet_timer = QTimer(self)
+            timer.setSingleShot(True)
+            timer.setInterval(AUTOSAVE_QUIET_MS)
+            timer.timeout.connect(bound(self, self._recovery_quiet_elapsed))
+        timer.start()   # every change starts the quiet period again
+        return True
+
+    def _recovery_quiet_elapsed(self) -> None:
+        self._recovery_quiet_over = True
+        self._save_recovery_snapshot()
+
     def _mark_workspace_changed(self, *, rebuild_components: bool = False) -> None:
         """Mark an authored change and immediately queue a safe autosave."""
 
@@ -8762,6 +8829,8 @@ class StudioMainWindow(QMainWindow):
     def _save_recovery_snapshot(self) -> None:
         store = self.workspace_store
         if store is None or not self._workspace_dirty:
+            return
+        if self._recovery_waits_for_quiet():
             return
         embedded_owners = self._embedded_operation_owners()
         if embedded_owners:

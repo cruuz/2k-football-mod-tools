@@ -48,8 +48,15 @@ MORE = ("nfl2k5_xs1_probe_more", "code", 9000, 16)
 # b780-p2: the scorebug owner's code request grew 5376 -> 5920 bytes (+544: the ball spot and the page strip fit), which takes
 # the last v3 tail slot ai8's 192-byte third-down owner had again; it spills into the v4 pool with the other two, so the v3
 # half is the union without all three.
+# b780 pres2: the scorebug owner's code request grew 5920 -> 6336 bytes (+416: the pause-screen bar). It no longer fits the v3
+# run's tail even without those three (144 B were left), so in the complete union the planner spills it whole to the v4 pool
+# too (the first pool owner, behind the directory page). The v3 fixture keeps the 5,920-byte request, the size that
+# genuinely fits v3, so every other owner's v3 row is still compared; only the sprite's own code row differs.
+SPRITE = "nfl2k5_scorebug_runtime"
 POOLED = ("nfl2k5_champions", "nfl2k5_cpu_third_down", "nfl2k5_k128")
-V3_REQUESTS = tuple(r for r in REQUESTS if r[0] not in POOLED)
+V3_SPRITE_CODE = 5920
+V3_REQUESTS = tuple((o, k, V3_SPRITE_CODE if (o, k) == (SPRITE, "code") else n, al) for o, k, n, al in REQUESTS
+                    if o not in POOLED)
 
 
 def rows(layout):
@@ -100,10 +107,18 @@ class PoolPlannerTests(unittest.TestCase):
         v3 = space.plan(V3_REQUESTS)
         full = space.plan(REQUESTS)
         self.assertEqual((v3["version"], full["version"]), (3, 4))
-        self.assertLessEqual(rows(v3), rows(full))
+        # b780 pres2: the sprite's own row moves to the pool; the room it leaves in the v3 run takes K128 (1,536 B) and
+        # ai8's third-down owner again, and the two late owners that sat behind the sprite (letter grades and its
+        # progression row) move up by 5,920 - 1,536 = 4,384 B; every other v3 row is kept.
+        moved = {(SPRITE, "code"), ("nfl2k5_letter_grades", "code"), ("nfl2k5_letter_grades_progress", "code")}
+        self.assertLessEqual({r for r in rows(v3) if r[:2] not in moved}, rows(full))
+        for owner, kind in moved - {(SPRITE, "code")}:
+            old = next(r for r in rows(v3) if r[:2] == (owner, kind))
+            new = next(r for r in rows(full) if r[:2] == (owner, kind))
+            self.assertEqual((old[2] - new[2], old[4]), (V3_SPRITE_CODE - 1536, new[4]))
         pooled = [a["owner"] for a in full["allocations"]
                   if a["va"] >= space.POOL_VA and a["owner"] != space.DIRECTORY_OWNER]
-        self.assertEqual(sorted(pooled), sorted(POOLED))
+        self.assertEqual(sorted(pooled), sorted(("nfl2k5_champions", SPRITE)))   # b780 pres2: K128 and the third-down owner fit v3 again
         self.assertEqual(sum(1 for r in full["regions"] if r["kind"] == "pool"), 1)
 
     def test_late_owner_appended_after_the_pool_moves_nothing(self):

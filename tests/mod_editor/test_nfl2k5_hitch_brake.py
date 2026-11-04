@@ -94,6 +94,34 @@ class PublicTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             trail.code_for(0x14DC030, moving_arrival_brake=1)
 
+    def test_b780_modes2_the_acceptance_matrix_and_the_orbit_rule(self):
+        """Q6: the exploratory drift is outside the r5 acceptance (its own matrix), and the stationary-orbit check counts
+        the winding after the defender first rests at the target: one momentum slide past a receiver who just stopped
+        is not an orbit; circling without ever resting still is."""
+        self.assertNotIn("curl_drift", replay.MATRICES["r5"]["routes"])
+        self.assertEqual(len(replay.MATRICES["r5"]["routes"]), 7)
+        self.assertEqual(replay.MATRICES["drift"]["routes"], ("curl_drift",))
+        self.assertNotIn("drift", replay.ACCEPTANCE)
+
+        def rows(points, speeds):
+            out = []
+            for i in range(replay.FRAMES):
+                x, z = points(i)
+                out.append(dict(frame=i, defender_x=x, defender_z=z, target_x=0.0, target_z=0.0, turn_degrees=0.0,
+                                speed_yards_s=speeds(i), distance_yards=math.hypot(x, z) / YARD, final_throttle=1,
+                                throttle=1, lapse_calls=0, lapse_words=[]))
+            return out
+        stop = replay.BREAK
+        past = rows(lambda i: (10.0, -20.0 + 7.0 * min(max(i - stop, 0), 4)), lambda i: 0 if i >= stop + 4 else 9.0)
+        s = replay.summarize(past, "hitch")
+        self.assertGreater(abs(s["stationary_target_winding_degrees"]), 45)      # the old rule saw an orbit here
+        self.assertEqual((s["winding_after_rest_degrees"], s["first_rest_frame"]), (0.0, stop + 4))
+        orbit = rows(lambda i: (20.0 * math.cos(i / 9), 20.0 * math.sin(i / 9)), lambda i: 6.0)
+        s = replay.summarize(orbit, "hitch")
+        self.assertIsNone(s["first_rest_frame"])
+        self.assertEqual(s["winding_after_rest_degrees"], s["stationary_target_winding_degrees"])
+        self.assertGreater(abs(s["winding_after_rest_degrees"]), 720)
+
     def test_fixture_routes_have_the_r5_shapes(self):
         for name, (kind, back, lateral) in replay.ROUTES.items():
             for speed in (6.0, 9.0):

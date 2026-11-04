@@ -147,13 +147,20 @@ class UndoStack:
         self._undone: list[UndoEntry] = []
         self._limit = limit
         self.on_change = on_change
+        # b780-uxfix: only goes up (push, undo, redo, clear). len(_done) stops at the 500-entry limit, so an export
+        # snapshot taken there kept matching while the user went on editing, and later edits closed without a prompt.
+        self.revision = 0
+
+    def _changed(self) -> None:
+        self.revision += 1
+        if self.on_change is not None:
+            self.on_change()
 
     def push(self, entry: UndoEntry) -> None:
         self._done.append(entry)
         del self._done[: max(0, len(self._done) - self._limit)]
         self._undone.clear()
-        if self.on_change is not None:
-            self.on_change()
+        self._changed()
 
     def can_undo(self) -> bool:
         return bool(self._done)
@@ -168,6 +175,7 @@ class UndoStack:
         entry.undo()
         self._done.pop()
         self._undone.append(entry)
+        self._changed()   # b780-uxfix: the title's * follows Undo
         return entry.label
 
     def redo(self) -> str:
@@ -177,11 +185,14 @@ class UndoStack:
         entry.redo()
         self._undone.pop()
         self._done.append(entry)
+        self._changed()   # b780-uxfix: the title's * follows Redo
         return entry.label
 
     def clear(self) -> None:
+        """A reset (a new roster loads): the revision moves on; the owner refreshes once its load is complete."""
         self._done.clear()
         self._undone.clear()
+        self.revision += 1
 
     @property
     def depth(self) -> tuple[int, int]:
@@ -2195,6 +2206,8 @@ class RosterEditorPanel(QWidget):
             self.report.setPlainText("Check & repair found:\n" + "\n".join(
                 f"  - {plan['detail']}" for plan in self._repair_plans)
                 + "\n\nNothing has been changed. Press Repair to apply these, or leave them.")
+        if self.undo_stack.on_change is not None:   # b780-uxfix: the Studio title follows a fresh load too
+            self.undo_stack.on_change()
 
     def _offer_college_repair(self, document) -> None:
         """Offer Check my rosters inline for a document that loaded with unresolved colleges.
@@ -2767,7 +2780,31 @@ class RosterEditorPanel(QWidget):
             if name == "scramble":
                 self.cards[name].set_value(before)
             return
+        if name == "position":
+            self.set_position(player, int(value))
+            return
         self.set_field(player, name, value)
+
+    def set_position(self, player: rr.Player, value: int) -> None:
+        """A position change with undo: the player is unlocked and moves to the bottom of his new position's depth
+        chain on his club (b780 sub1, Q63), so a locked starter never collides with the new position's locks."""
+
+        assert self.document is not None
+        before = self.document.change_position(player, value)
+        after = {key: player.record.values[key] for key in before}
+
+        def do(values=after) -> None:
+            assert self.document is not None
+            self.document.restore_position(player, values)
+            self._after_edit(player, "position")
+
+        def undo(values=before) -> None:
+            assert self.document is not None
+            self.document.restore_position(player, values)
+            self._after_edit(player, "position")
+
+        self._after_edit(player, "position")
+        self.undo_stack.push(UndoEntry(f"{player.display}: position", undo, do))
 
     def set_field(self, player: rr.Player, name: str, value: int) -> None:
         """Set one field with undo, dirty marking and a refreshed header."""
@@ -3992,7 +4029,7 @@ class RosterEditorPanel(QWidget):
         from mod_editor.core.nfl2k5_roster_save_to_disc import json_text
         Path(path).write_text(json_text(document), encoding="utf-8", newline="\n")
         self._edits_path = Path(path)
-        self._edits_snapshot = (frozenset(self._dirty), len(self.undo_stack._done))
+        self._edits_snapshot = self.edits_key()
         self.roster_edits_changed.emit(str(path))
         self._set_status(f"Roster edits exported to {path} ({len(document.get('edits', []))} players). "
                          "Build uses this saved file. Export again after further changes.")
@@ -4074,8 +4111,22 @@ class RosterEditorPanel(QWidget):
             # that cannot be written. Every other button on this page says so in a dialog; this one raised out of the click.
             show_operation_error(self, "export the roster edits", plain_error(exc))
 
+    def edits_key(self) -> tuple[frozenset[tuple[str, int]], int]:
+        """What an export or a written copy is compared with: the edited players and the undo stack's revision."""
+        return frozenset(self._dirty), self.undo_stack.revision
+
     def write_copy_to(self, target: Path | str, *, overwrite: bool = False) -> dict[str, Any]:
-        """Disc: copy the image and apply.  Save: write a re-signed container.  Never the source."""
+        """Disc: copy the image and apply.  Save: write a re-signed container.  Never the source.
+
+        b780-uxfix: a written copy holds the edits, so they count as saved (the title's * goes, closing stops asking).
+        """
+        result = self._write_copy_target(target, overwrite=overwrite)
+        self._edits_snapshot = self.edits_key()
+        if self.undo_stack.on_change is not None:
+            self.undo_stack.on_change()
+        return result
+
+    def _write_copy_target(self, target: Path | str, *, overwrite: bool = False) -> dict[str, Any]:
 
         if self.document is None:
             raise rr.RosterRecordError("no roster is loaded")
@@ -4161,8 +4212,7 @@ class RosterEditorPanel(QWidget):
         self.save_roster_to_disc_action.setVisible(loaded and self._source_kind == "disc")
         self.save_roster_to_disc_action.setEnabled(loaded)
         selected = self.selected_player() is not None
-        if self._edits_snapshot is not None and \
-                self._edits_snapshot != (frozenset(self._dirty), len(self.undo_stack._done)):
+        if self._edits_snapshot is not None and self._edits_snapshot != self.edits_key():
             self._edits_snapshot = None
             self.roster_edits_stale.emit()
             if self._edits_path is not None:

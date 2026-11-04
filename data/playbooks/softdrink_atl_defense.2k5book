@@ -9,10 +9,10 @@
   "notes": "DESIGN: Jeff Ulbrich (Saleh / Seattle four-down); 2025 baseline ATL. Clean technique fronts (pb/v2/defense/design.py), retail 2K5 coverage scripts with native pre-snap alignment, situational formation ratings and CPU score bands fitted to the sourced 2025 coverage and blitz rates. Exact offense source required. Gameplay unwitnessed."
  },
  "base": {
-  "book_fingerprint": "474731ef27e785f8a08cccb88f78c7470adcdc68270400d8a22796251f1333d0",
+  "book_fingerprint": "25ee90398944ebfe1d6039a21fc794472e1e3e4d92c030a5a022a4b804453579",
   "donor_formation_count": 50,
   "donor_play_count": 268,
-  "donor_node_count": 2289
+  "donor_node_count": 2287
  },
  "budget": {
   "formations": 50,

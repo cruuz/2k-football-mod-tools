@@ -9,10 +9,10 @@
   "notes": "DESIGN: Christian Parker (Fangio split coverage); 2025 baseline PHI. Clean technique fronts (pb/v2/defense/design.py), retail 2K5 coverage scripts with native pre-snap alignment, situational formation ratings and CPU score bands fitted to the sourced 2025 coverage and blitz rates. Exact offense source required. Gameplay unwitnessed."
  },
  "base": {
-  "book_fingerprint": "f635440db19ca56c076108df631063f758ad3a3084cd0b6bdec480c2a7b5fce6",
+  "book_fingerprint": "968cbe17845578f084e63ad7fc864d41494e513fb71fc5c928447021235338ff",
   "donor_formation_count": 50,
   "donor_play_count": 269,
-  "donor_node_count": 2323
+  "donor_node_count": 2321
  },
  "budget": {
   "formations": 50,

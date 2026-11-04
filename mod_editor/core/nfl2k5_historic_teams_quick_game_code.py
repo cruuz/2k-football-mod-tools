@@ -27,11 +27,11 @@ CODE = bytes.fromhex(
     "8b0d1829b700c1e00403415c0fb64802894c241c8b500c895424180fb708894c24148d70048d5424"
     "1052ba84f9e9008d4c242489742414e8fcffffff6a006a00e8fcffffff508d8424ac000000508d54"
     "2430b9a8f9e900e8fcffffffe8fcffffff68a8f9e900ba524f5354b9a8f9e900e8fcffffff85c00f"
-    "84a200000089c589d9e8fcffffff89da89e9e8fcffffff85c0746dc68328010000048d4c241051ba"
-    "bcf9e9008d4c242489742414e8fcffffff31ff8b0d1829b7003b79187d318b711c69c7f401000001"
-    "c68b8e0c0100008d542420e8fcffffff85c0741039de740c8b861001000089831001000047ebc4b9"
-    "a8f9e900e8fcffffffb801000000eb2bc6831c01000000c68328010000028b8424d000000083c05a"
-    "66898318010000b9a8f9e900e8fcffffff31c05f5e5d5b81c4b4000000c3"
+    "848f00000089c589d9e8fcffffff89da89e9e8fcffffff85c0745ac6832801000004b8bb04000080"
+    "bb18010000ff742e31ff8b0d1829b7003b79187d2769eff401000003691c478b8d0c01000089f2e8"
+    "fcffffff85c074da8b8510010000898310010000b9a8f9e900e8fcffffffb801000000eb2bc6831c"
+    "01000000c68328010000028b8424d000000083c05a66898318010000b9a8f9e900e8fcffffff31c0"
+    "5f5e5d5b81c4b4000000c3c3040000c30400000000000000000000000000000000"
 )
 RELOCATIONS = (
     (29, 2, 'team_mask', 0),
@@ -57,10 +57,12 @@ RELOCATIONS = (
     (1033, 2, 'loader_lookup', 0),
     (1050, 2, 'team_release', 0),
     (1059, 2, 'team_import', 0),
-    (1093, 2, 'text_format', 0),
-    (1132, 2, 'text_equal', 0),
-    (1165, 2, 'loader_pop', 0),
-    (1213, 2, 'loader_pop', 0),
+    (1075, 1, 'code', 0),
+    (1120, 2, 'text_equal', 0),
+    (1146, 2, 'loader_pop', 0),
+    (1194, 2, 'loader_pop', 0),
+    (1211, 1, 'code', 0),
+    (1215, 1, 'code', 0),
     (833, 2, 'set_home', 0),
     (838, 2, 'set_away', 0),
 )
@@ -74,14 +76,17 @@ LABELS = {
     'home_next': 0,
     'home_prev': 20,
     'home_random': 47,
-    'import_failed': 1176,
-    'label_done': 1159,
-    'label_loop': 1099,
-    'label_next': 1156,
+    'import_failed': 1157,
+    'label_done': 1140,
+    'label_loop': 1090,
+    'label_set': 1134,
     'load_entry': 896,
-    'load_failed': 1207,
-    'load_out': 1219,
+    'load_failed': 1188,
+    'load_out': 1200,
     'next_side': 7,
+    'own_label': 1211,
+    'own_name': 1079,
+    'own_text': 1219,
     'prev_side': 27,
     'publish': 826,
     'publish_away': 837,

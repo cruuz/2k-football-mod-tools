@@ -53,6 +53,17 @@ class PatchTests(unittest.TestCase):
         self.assertTrue(all(any(a <= i < b for a, b in regions)
                             for i, (x, y) in enumerate(zip(base, self.patched)) if x != y))
 
+    def test_b780_modes2_the_previous_staging_reads_previous_and_upgrades_in_place(self):
+        from mod_editor.core import nfl2k5_rdata_sites as rdata
+        base = fp.apply(ps.apply(self.retail)[0])[0]
+        old, _ = rdata.apply(base, pr.sites(pr.PREVIOUS_LEAGUE), "revision 1")
+        self.assertEqual((pr.status(old), pr.LEAGUE_FRANCHISE, pr.PREVIOUS_LEAGUE), ("previous", 2, 1))
+        self.assertTrue(pr.UPGRADES_PREVIOUS)
+        up, receipt = pr.apply(old)
+        self.assertEqual((up, receipt["league_type"]), (self.patched, 2))
+        self.assertEqual(sum(a != b for a, b in zip(old, up) if True) - sum(
+            a != b for a, b in zip(old[:0x1000], up[:0x1000])), 1)          # one staging byte (plus the section digest)
+
     def test_foreign_partial_and_truncated_input_refused(self):
         for image in (b"", self.patched[:4096]):
             self.assertEqual(pr.status(image), "foreign")
@@ -93,6 +104,7 @@ class PatchTests(unittest.TestCase):
 
 @unittest.skipUnless(XBE.is_file() and HAVE_UNICORN, "private XBE or Unicorn absent")
 class ExecutionTests(unittest.TestCase):
+    STAGE_BUDGET = 100000
     ROOT_BASE = 0x2000000
     STACK = 0x3008000
     STOP = 0x3100000
@@ -113,7 +125,7 @@ class ExecutionTests(unittest.TestCase):
     def setUp(self):
         import unicorn as u
         self.uc = u.Uc(u.UC_ARCH_X86, u.UC_MODE_32)
-        self.uc.mem_map(0x10000, 0xFF0000)
+        self.uc.mem_map(0x10000, 0x1FF0000)    # b780 modes2: through the scale-out allocations (arena growth)
         for section in ps._sections(self.patched):
             self.uc.mem_write(section.virtual_address,
                               self.patched[section.raw_offset:section.raw_offset + section.raw_size])
@@ -127,7 +139,7 @@ class ExecutionTests(unittest.TestCase):
         self.call(0xC0500, ecx=self.root)
         self.team = self.word(self.root + 0x1C)
         self.other = self.team + 500
-        self.put(pr.LEAGUE_VA, 1)
+        self.put(pr.LEAGUE_VA, pr.LEAGUE_FRANCHISE)     # b780 modes2: 2 is Franchise (1 is the Tournament)
         self.put(0xE576A4, 7)
         self.uc.mem_write(0xE421E0, bytes(160 * 4))
 
@@ -169,7 +181,7 @@ class ExecutionTests(unittest.TestCase):
             player = self.word(self.team + 4 * (self.byte(self.team + ps.ACTIVE_COUNT) - 1))
             self.assertEqual(self.call(ps.SYMBOLS["ps_demote"], ecx=self.team, edx=player), 1)
 
-    def stage(self, mode, league=1, same_team=False):
+    def stage(self, mode, league=pr.LEAGUE_FRANCHISE, same_team=False):
         import unicorn as u
         self.put(pr.MODE_VA, mode)
         self.put(pr.LEAGUE_VA, league)
@@ -184,7 +196,7 @@ class ExecutionTests(unittest.TestCase):
                 unexpected.append((hex(address), size))
         hook = self.uc.hook_add(u.UC_HOOK_MEM_WRITE, write)
         try:
-            self.call(pr.STAGE_VA, ecx=self.team, edx=self.team if same_team else self.other, budget=100000)
+            self.call(pr.STAGE_VA, ecx=self.team, edx=self.team if same_team else self.other, budget=self.STAGE_BUDGET)
         finally:
             self.uc.hook_del(hook)
         self.assertEqual(unexpected, [])
@@ -219,7 +231,7 @@ class ExecutionTests(unittest.TestCase):
 
     def test_every_game_day_training_and_nonfranchise_gate_is_active_only(self):
         self.demote()
-        for league, mode in [(1, x) for x in (3, 4, 5, 6, 7, 8, 0xFFFFFFFF)] + [(x, 1) for x in (0, 2, 3)]:
+        for league, mode in [(2, x) for x in (3, 4, 5, 6, 7, 8, 0xFFFFFFFF)] + [(x, 1) for x in (0, 1, 3)]:
             with self.subTest(league=league, mode=mode):
                 self.stage(mode, league)
                 self.assert_copied(False)
@@ -284,6 +296,65 @@ class ExecutionTests(unittest.TestCase):
                         continue
                 selectable.append(row["label"])
             self.assertEqual(selectable, [expected, "Practice"], (phase, week))
+
+    def test_b780_modes2_previous_staging_tested_the_tournament(self):
+        """Q27: the beta-61 .. v0.9 RC staging compared league type 1, the Tournament: Franchise Free Practice never
+        got the reserves. Run that staging natively next to this one."""
+        self.demote()
+        current = bytes(self.uc.mem_read(pr.STAGE_VA, pr.STAGE_SIZE))
+        old = pr.sites(pr.PREVIOUS_LEAGUE)[0][3]
+        if current != pr.sites()[0][3]:
+            self.skipTest("the staging is the arena runtime's (ArenaStageTests covers it)")
+        for code, league, reserves in ((current, 2, True), (current, 1, False), (old, 2, False), (old, 1, True)):
+            with self.subTest(previous=code == old, league=league):
+                self.uc.mem_write(pr.STAGE_VA, code)
+                self.uc.ctl_remove_cache(pr.STAGE_VA, pr.STAGE_VA + pr.STAGE_SIZE)   # drop translated blocks
+                self.stage(1, league)
+                self.assert_copied(reserves)
+        self.uc.mem_write(pr.STAGE_VA, current)
+        self.uc.ctl_remove_cache(pr.STAGE_VA, pr.STAGE_VA + pr.STAGE_SIZE)
+
+
+@unittest.skipUnless(XBE.is_file() and HAVE_UNICORN, "private XBE or Unicorn absent")
+class ArenaStageTests(ExecutionTests):
+    """b780 modes2 (Q27): every staging test again, through the roster arena growth runtime's own staging (arena_stage,
+    0x61730 jumps there) on a migrated arena roster; it checks its arena block's CRC for each copy, so it runs longer."""
+    STAGE_BUDGET = 20_000_000
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        from mod_editor.core import nfl2k5_roster_arena as arena, nfl2k5_roster_arena_growth as growth
+        from mod_editor.core import nfl2k5_team_history as th
+        cls.arena, cls.growth = arena, growth
+        cls.patched, _ = growth.apply(cls.patched, reserves_16=True)
+        with th._outer_image()(XBE.parent) as archive:
+            entry = th._entry(archive)
+            resource = archive.read(entry.virtual_offset, entry.size)
+        cls.body = arena.migrate(resource, reserves_16=True)[0][th.RESOURCE_HEADER_SIZE:]
+
+    def setUp(self):
+        super().setUp()
+        self.put(0xB72808, self.arena.ARENA_SIZE)        # the loader's arena capacity (its hook 0xC1F2D writes it)
+
+    def test_the_previous_runtime_tested_the_tournament_and_upgrades_in_place(self):
+        site = self.growth.allocation(self.patched)
+        flags = self.growth._owned_state(self.patched)[2]
+        old = self.growth.code_for(site["va"], flags, previous=True)
+        new = self.growth.code_for(site["va"], flags)
+        self.assertEqual(sum(a != b for a, b in zip(old, new)), 1)
+        self.demote()
+        for code, league, reserves in ((new, 2, True), (new, 1, False), (old, 2, False), (old, 1, True)):
+            with self.subTest(previous=code == old, league=league):
+                self.uc.mem_write(site["va"], code)
+                self.uc.ctl_remove_cache(site["va"], site["va"] + len(code))
+                self.stage(1, league)
+                self.assert_copied(reserves)
+        from mod_editor.core import nfl2k5_xbe_space as space
+        previous, _ = space.install_code(self.patched, self.growth.OWNER, old, previous=new)
+        self.assertEqual((self.growth.status(previous), pr.status(previous)), ("previous", "applied"))
+        upgraded, receipt = self.growth.apply(previous, reserves_16=True)
+        self.assertEqual((upgraded, receipt["upgraded"]), (self.patched, True))
 
 
 if __name__ == "__main__":

@@ -45,15 +45,85 @@ CUT_MINIMUMS = (2, 1, 1, 5, 5, 2, 2, 3, 0, 3, 3, 2, 2, 3, 3, 3, 4)
 SMALL_DEAL_PER_YEAR = 60
 OVERFLOW_DEPTH_ROW = 7
 LOCK_ROLES = ("rank", "side", "kr1", "kr2", "pr")
+# b780 rst2 (Q43, Noah 11/03: "release the lowest-ranked non-starters first"): the injured-reserve pass never releases a
+# player the dated chart lists as a starter (rank 1 at his own slot) while another player can go, and among the rest it
+# releases the deepest chart rank first (a player the chart does not list at all is the deepest).
+STARTER_CHART_RANK = 1
+UNLISTED_CHART_RANK = 99
 
 
-def _rejoin_injured(by, rows, teams, assigned):
+def charted_ranks(rows):
+    """{index: his chart rank at his own slot} from the refresh rows' dated depth chart (``depth_source``)."""
+    ranks = {}
+    for row in rows:
+        source = row.get("depth_source") or {}
+        if str(source.get("pos_rank", "")).isdigit():
+            ranks[row["index"]] = int(source["pos_rank"])
+    return ranks
+
+
+# b780 rst2 (coordinator 11/03: Noah asked for a full modern injured reserve in beta-80 and IR1 builds it): how a club that
+# is over the 53-man limit because its injured players rejoined makes room. "release" is this release's policy: the
+# lowest-ranked non-starters go to the free agents (_make_room). "ir" is reserved for IR1's format: the injured players
+# would go on the club's injured reserve list and nobody would be released, so only _rejoin_injured's placement block and
+# the caller's release bookkeeping change; _make_room is the one function the release policy lives in.
+ROOM_POLICY = "release"
+# b780 rst2 + IR1 (Noah: modern injured reserve in beta-80). plan["room_policy"] = "ir" keeps every injured player on his club's
+# pointer list instead of releasing a healthy player for room, and marks him with the fields the game's own injuries use
+# (player +0x20 bit 31 injured, bits 22..29 weeks out, +0x24 bits 28..30 status 4 = Out): a modern-IR franchise start puts
+# a player who is injured four or more weeks on his club's injured reserve (off the 53, his salary still counted). A club's
+# list (healthy players, injured players and practice-squad reserves) holds at most 65. Weeks: the row's ``ir_weeks``
+# (17 for a player on injured reserve since week 4, else 8). Builds without modern IR keep the "release" policy.
+IR_LIST_LIMIT = 65
+IR_LONG_WEEKS, IR_DEFAULT_WEEKS = 4, 8
+INJURED_BIT, STATUS_OUT, STATUS_MASK, WEEKS_SHIFT = 0x80000000, 0x40000000, 0x70000000, 22
+
+
+def long_injury_words(word20, word24, weeks):
+    """Player +0x20 / +0x24 for a player a franchise start puts on injured reserve (IR1's nfl2k5_injured_reserve_save
+    long_injury_words, bit for bit)."""
+    from . import nfl2k5_roster_records as rr
+    rr._require(IR_LONG_WEEKS <= weeks <= 255, "a player who starts on injured reserve is out 4..255 weeks")
+    return ((word20 & ~(0xFF << WEEKS_SHIFT) & 0xFFFFFFFF) | INJURED_BIT | (weeks << WEEKS_SHIFT),
+            (word24 & ~STATUS_MASK & 0xFFFFFFFF) | STATUS_OUT)
+
+
+def _make_room(club, active, keep, position, minimums, ranks, big_deal, overall, limit):
+    """Remove players from ``active`` (a list, changed in place) until it holds ``limit``; returns who left, in order.
+
+    The release-for-room policy (Q43, Noah 11/03: "release the lowest-ranked non-starters first"). A charted starter
+    (rank 1 at his own slot) goes last, after every position floor has been tried without him; among the rest the
+    deepest chart rank goes first (a player the chart does not list is the deepest), then the pre-rst2 order: a player
+    on a small deal, then the lowest rated. A player in ``keep`` (the injured who rejoined and the specialists) stays."""
+    from . import nfl2k5_roster_records as rr
+
+    left = []
+    while len(active) > limit:
+        counts = {}
+        for index in active:
+            counts[position[index]] = counts.get(position[index], 0) + 1
+        victim = None
+        for protect, floor in ((True, False), (True, True), (False, False), (False, True)):
+            pool = [i for i in active if i not in keep and position[i] < 17 and
+                    counts[position[i]] > (1 if floor else minimums[position[i]]) and
+                    not (protect and ranks.get(i, UNLISTED_CHART_RANK) == STARTER_CHART_RANK)]
+            if pool:
+                victim = min(pool, key=lambda i: (-ranks.get(i, UNLISTED_CHART_RANK), big_deal(i), overall(i), i))
+                break
+        rr._require(victim is not None, f"{club}: no player can make room for an injured player")
+        active.remove(victim)
+        left.append(victim)
+    return left
+
+
+def _rejoin_injured(by, rows, teams, assigned, policy=ROOM_POLICY):
     """The membership after the injured players rejoin: (active list by club index, rejoined, released, to FA).
     Called after the rows and the contract initializers are written, so it reads the final records."""
     from . import nfl2k5_practice_squad as ps
     from . import nfl2k5_roster_records as rr
     from .nfl2k5_my_career_prospects import native_overall
 
+    rr._require(policy in ("release", "ir"), f"unknown room policy {policy!r}")
     position = {i: p.record.values["position"] for i, p in by.items()}
     for row in rows:
         if "position" in row["fields"]:
@@ -66,8 +136,11 @@ def _rejoin_injured(by, rows, teams, assigned):
 
     def big_deal(index):
         record = by[index].record
+        if record.get("contract_length") < 1 or record.get("contract_value") < 1:
+            return -1               # no contract on a club's list: an earlier application of this plan released him
         return record.get("contract_value") > SMALL_DEAL_PER_YEAR * max(1, record.get("contract_length"))
 
+    ranks = charted_ranks(rows)
     placed, to_free = {}, []
     by_team = {t["team"]: t for t in teams}
     taken = set(assigned)
@@ -89,20 +162,11 @@ def _rejoin_injured(by, rows, teams, assigned):
     for team in teams:
         active = list(team["active"]) + placed.get(team["index"], [])
         keep = set(placed.get(team["index"], ())) | {v for v in team["specialists"].values() if v is not None}
-        while len(active) > ps.ACTIVE_LIMIT:
-            counts = {}
-            for index in active:
-                counts[position[index]] = counts.get(position[index], 0) + 1
-            victim = None
-            for floor in (False, True):
-                pool = [i for i in active if i not in keep and position[i] < 17 and
-                        counts[position[i]] > (1 if floor else minimums[position[i]])]
-                if pool:
-                    victim = min(pool, key=lambda i: (big_deal(i), overall(i), i))
-                    break
-            rr._require(victim is not None, f"{team['team']}: no player can make room for an injured player")
-            active.remove(victim)
-            released.append(victim)
+        # "ir": the injured stay and only a list past 65 with the reserves makes room; "release": the 53 plus nobody
+        limit = IR_LIST_LIMIT - len(team["reserves"]) if policy == "ir" else ps.ACTIVE_LIMIT
+        # sorted: the order players are released in may differ between the first application of a plan and its replay (a
+        # released player's contract is zero by then); the free-agent list takes them in index order either way
+        released.extend(sorted(_make_room(team["team"], active, keep, position, minimums, ranks, big_deal, overall, limit)))
         actives[team["index"]] = active
     rejoined = {i for ids in placed.values() for i in ids}
     return actives, rejoined, released, to_free
@@ -247,8 +311,10 @@ def _without_suffix(last):
     return re.sub(r"\s+(?:jr|sr|ii|iii|iv|v)\.?$", "", last.strip(), flags=re.IGNORECASE)
 
 
-def _same_person(player, first, last, birth):
-    return (player.first, _without_suffix(player.last), str(player.record.birth_date)) == (first, _without_suffix(last), birth)
+def _same_person(player, first, last, birth, alternates=()):
+    """``alternates``: other birth dates the plan accepts for this record (a sourced birth-date correction, below)."""
+    return ((player.first, _without_suffix(player.last)) == (first, _without_suffix(last))
+            and str(player.record.birth_date) in (birth, *alternates))
 
 
 def apply_body(body, plan):
@@ -277,18 +343,33 @@ def apply_body(body, plan):
         rr._require(spare.PRIMARY_AFTER <= primary_count <= spare.PRIMARY_AFTER + spare.MAX_FLOOR_RECORDS,
                     "Refresh needs the pack's 2619-player capacity")
     by = {p.index: p for p in doc.by_pool("primary")}
+    # b780 rst2 (Q48, Logan Jones CHI C: the plan's guard had 2001-10-29, nflverse roster_2026 and players.csv of 10/28 and
+    # 11/03 list 2001-10-19): a record may carry either date of a sourced correction; the correction writes the new one.
+    corrections = {c["index"]: c for c in plan.get("birth_corrections", ())}
+    rr._require(len(corrections) == len(plan.get("birth_corrections", ())), "Duplicate birth correction")
+    for c in corrections.values():
+        rr._require({"first", "last", "was", "birth_date"} <= set(c) and str(c.get("source", "")).startswith("https://"),
+                    "A birth correction needs the name, both dates and its source")
+        datetime.date.fromisoformat(c["was"])
+        datetime.date.fromisoformat(c["birth_date"])
+
+    def alternates(index):
+        c = corrections.get(index)
+        return (c["was"], c["birth_date"]) if c else ()
+
     guards = plan["identity_guards"]
     rr._require(len({g[0] for g in guards}) == len(guards), "Duplicate identity guard")
     for index, first, last, birth in guards:
         p = by.get(index)
-        rr._require(p is not None and _same_person(p, first, last, birth), f"Pack identity guard failed at {index}")
+        rr._require(p is not None and _same_person(p, first, last, birth, alternates(index)),
+                    f"Pack identity guard failed at {index}")
     rows = plan["players"]
     rr._require(len({r["index"] for r in rows}) == len(rows), "Duplicate refresh identity")
     rr._require(len({r["gsis_id"] for r in rows}) == len(rows), "Duplicate source identity")
     for row in rows:
         p = by.get(row["index"])
         rr._require(p is not None and p.group != "draft_class", "Refresh touches absent/draft record")
-        same = _same_person(p, row["first"], row["last"], row["birth_date"])
+        same = _same_person(p, row["first"], row["last"], row["birth_date"], alternates(row["index"]))
         vacant = (p.index >= 2464 and p.group == "pool" and
                   p.first == p.last == "****************" and p.record.get("player_type") == 1)
         rr._require(same or (row.get("new") is True and vacant),
@@ -337,6 +418,10 @@ def apply_body(body, plan):
     # All identity/capacity gates precede mutation of this private document (the injured-reserve placement below
     # reads the records as this refresh writes them, so its own gates run after the rows; a refusal there still
     # leaves the caller's body untouched).
+    for index, c in corrections.items():
+        year, month, day = (int(x) for x in c["birth_date"].split("-"))
+        for key, value in (("birth_year", year), ("birth_month", month), ("birth_day", day)):
+            by[index].record.set(key, value)
     added = 0
     for row in rows:
         p = by[row["index"]]
@@ -367,6 +452,18 @@ def apply_body(body, plan):
             for k, v in row["fields"].items():
                 if k in EXISTING_FIELDS:
                     p.record.set(k, v)
+    # b780 rst2 (ECON3, Q45): a player the refresh moves to another club while he is under contract (Quenton Nelson, IND to
+    # SEA) keeps the full-year charge the record holds, which the new club could not owe. A sourced correction replaces the
+    # five contract fields, only on a record that holds exactly the ``was`` fields (or already the new ones: a replay).
+    for c in plan.get("contract_corrections", ()):
+        rr._require(c["index"] in owned and set(c["fields"]) == CONTRACT_FIELDS == set(c["was"]) and c.get("rule")
+                    and str(c.get("source", "")).startswith("https://"),
+                    "A contract correction needs a club-owned player, the five fields before and after, its rule and its source")
+        rec = by[c["index"]].record
+        now = {k: rec.get(k) for k in CONTRACT_FIELDS}
+        rr._require(now in (c["was"], c["fields"]), f"contract correction: record {c['index']} holds neither contract")
+        for key, value in c["fields"].items():
+            rec.set(key, value)
     initialized_contracts = 0
     for row in contracts:
         rec = by[row["index"]].record
@@ -379,7 +476,8 @@ def apply_body(body, plan):
     # b780 b4-economy (D6): the injured players rejoin their clubs (see INJURED_STATUSES), chosen on the records as
     # this refresh leaves them (new players created, positions and modeled contracts written), so a replay on the
     # output makes the same choices.
-    actives, rejoined, released, injured_free = _rejoin_injured(by, rows, teams, assigned)
+    room_policy = plan.get("room_policy", ROOM_POLICY)
+    actives, rejoined, released, injured_free = _rejoin_injured(by, rows, teams, assigned, room_policy)
     free_agents = list(plan["free_agents"]) + released + injured_free
     rr._require(len(free_agents) == len(set(free_agents)), "Refresh has duplicate or absent membership")
     rr._require(len(free_agents) <= doc.free_agent_capacity, "Free-agent list is full")
@@ -421,6 +519,17 @@ def apply_body(body, plan):
             rec.set(key, 0)
         for role in LOCK_ROLES:
             rec.set_depth_lock(role, False)
+    # b780 rst2 (Q44, the held b778 fd1 fix): the pack's policy is "unsigned contracts zero" (retail free agents carry a
+    # zero contract block). The 10/14 plan's one-year placeholders landed on 11 players who were free agents again by
+    # 11/03 (Andy Dalton, Harrison Mevis, Chris Moore, Blake Grupe ...), and a player the dated plan moves to the free
+    # agents kept his old contract block. Every free agent on the final list has all five contract fields zero.
+    cleared = []
+    for index in free_agents:
+        rec = by[index].record
+        if any(rec.get(key) for key in CONTRACT_FIELDS):
+            cleared.append(index)
+            for key in CONTRACT_FIELDS:
+                rec.set(key, 0)
     doc.free_agents = [by[i].offset for i in free_agents]
     doc._reindex_membership()
     # Celebrity/alumni squads alias the same records and cannot have independent
@@ -429,6 +538,25 @@ def apply_body(body, plan):
                 "Refresh creates conflicting club depth locks")
     create_buffers_repaired = _repair_create_buffers(doc)
     result = doc.to_body()
+    ir_marked = []
+    if room_policy == "ir":
+        import struct
+        buffer = bytearray(result)
+        weeks_of = {r["index"]: r for r in rows}
+        for index in sorted(rejoined & {i for ids in actives.values() for i in ids}):
+            weeks = max(IR_LONG_WEEKS, min(255, int(weeks_of[index].get("ir_weeks") or IR_DEFAULT_WEEKS)))
+            offset = by[index].offset + 0x20
+            word20, word24 = struct.unpack_from("<II", buffer, offset)
+            struct.pack_into("<II", buffer, offset, *long_injury_words(word20, word24, weeks))
+            ir_marked.append({"player": by[index].display, "club": weeks_of[index].get("team"), "weeks": weeks})
+        result = bytes(buffer)
+    # b780 sub1 (option (c), coordinator 11/03): the last step of the final roster, after every record the plan creates
+    # exists. Each club's best receiving running back is its default SPECIAL third-down back (RB side row 1) and its
+    # fastest receiver its default gadget (WR side row 3). Opt-in per plan.
+    special_rows = {"third_down_backs": [], "gadgets": []}
+    if plan.get("special_row_defaults") is True:
+        from .nfl2k5_third_down_back import default_special_rows
+        result, special_rows = default_special_rows(result)
     checked = rr.RosterDocument(result, scheme="one_pool", reference_year=2026)
     errors = [r for r in rr.validate_membership(checked) if r["level"] == "error"]
     rr._require(not errors, f"Refreshed membership failed validation: {errors}")
@@ -442,8 +570,16 @@ def apply_body(body, plan):
                     "reserves": sum(len(t["reserves"]) for t in teams),
                     "changed_bytes": sum(a != b for a, b in zip(body, result)),
                     "unrepresented": len(plan.get("unrepresented", [])),
+                    # b780 rst2 (Q44): free agents whose stale contract block was zeroed
+                    "third_down_backs": special_rows["third_down_backs"], "gadgets": special_rows["gadgets"],
+                    "contracts_corrected": sorted(by[c["index"]].display for c in plan.get("contract_corrections", ())),
+                    "birth_dates_corrected": sorted(f"{by[i].display} {c['was']} -> {c['birth_date']}"
+                                                     for i, c in corrections.items()),
+                    "free_agent_contracts_cleared": len(cleared),
+                    "free_agent_contracts_cleared_players": sorted(by[i].display for i in cleared),
                     # b780 b4-economy (D6)
-                    "injured_reserve": {"rejoined": len(rejoined), "released_for_room": len(released),
+                    "injured_reserve": {"policy": room_policy, "marked_to_start_on_ir": ir_marked,
+                                        "rejoined": len(rejoined), "released_for_room": len(released),
                                         "to_free_agents": len(injured_free),
                                         "rejoined_players": sorted(by[i].display for i in rejoined),
                                         "released_players": [by[i].display for i in released],

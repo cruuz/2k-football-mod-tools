@@ -128,6 +128,8 @@
    "align": "uc",
    "tag": "base",
    "menu": [
+    "Crack Toss",
+    "Pin Pull Sweep",
     "X Slot Fade",
     "MIA Post Wheel",
     "End Around",
@@ -139,7 +141,8 @@
     "X Y Trail",
     "Sail",
     "MIA Double Post",
-    "RB Post Wheel"
+    "RB Post Wheel",
+    "Lead Stretch"
    ],
    "cpu_situation": [
     1,
@@ -416,7 +419,7 @@
    "menu": [
     "Z Deep Post",
     "RB Zig Flat",
-    "RB Cross Dig"
+    "QB Power"
    ],
    "cpu_situation": [
     4,
@@ -469,7 +472,7 @@
     "RB Stretch",
     "Slot Sail Out",
     "Slot Smash",
-    "Steep In Seam",
+    "Double Slants",
     "Slot Stick",
     "X Whip",
     "X Stick Out"
@@ -560,12 +563,15 @@
    "align": "pistol",
    "tag": "base",
    "menu": [
+    "Zone Toss Wk",
+    "Lead Stretch Wk",
     "FB Screen",
     "PA Z Post Corner Shot",
     "Post Corner Shot",
     "PA Deep Post",
     "X Slot Fade",
-    "Y Hank"
+    "Y Hank",
+    "Outside Zone"
    ],
    "cpu_situation": [
     0,
@@ -702,6 +708,8 @@
    "align": "uc",
    "tag": "base",
    "menu": [
+    "Crack Toss",
+    "Pin Pull Sweep",
     "X Slot Fade",
     "PA Go Shot",
     "Bang Hitch",
@@ -725,7 +733,8 @@
     "X Y Trail",
     "Slot Sail",
     "Y Drive",
-    "MIA RB Screen"
+    "MIA RB Screen",
+    "Lead Stretch"
    ],
    "cpu_situation": [
     0,
@@ -2412,9 +2421,11 @@
    "deep": false,
    "lane": 0,
    "formations": [
+    "Singleback Doubles",
     "Gun Wildcat",
     "Gun Normal Y Off Close",
     "Gun Bunch TE",
+    "Singleback Tight Y Off",
     "Gun Y Off Trio Close",
     "Gun Tight Open"
    ]
@@ -2625,8 +2636,10 @@
    "deep": false,
    "lane": 4,
    "formations": [
+    "Singleback Doubles",
     "Gun Wildcat",
     "Gun Normal Y Off Close",
+    "Singleback Tight Y Off",
     "Gun Y Off Trio Close",
     "Gun Tight Open"
    ]
@@ -2648,8 +2661,10 @@
    "deep": false,
    "lane": 4,
    "formations": [
+    "Singleback Doubles",
     "Gun Wildcat",
     "Gun Normal Y Off Close",
+    "Singleback Tight Y Off",
     "Gun Y Off Trio Close",
     "Gun Tight Open"
    ]
@@ -2849,7 +2864,8 @@
    "formations": [
     "I-Form Close",
     "I-Form Y Off Close",
-    "I-Form Pro"
+    "I-Form Pro",
+    "Pistol Strong"
    ]
   },
   {
@@ -2871,7 +2887,8 @@
    "formations": [
     "I-Form Close",
     "I-Form Y Off Close",
-    "I-Form Pro"
+    "I-Form Pro",
+    "Pistol Strong"
    ]
   },
   {
@@ -2947,7 +2964,8 @@
    "formations": [
     "I-Form Close",
     "I-Form Y Off Close",
-    "I-Form Pro"
+    "I-Form Pro",
+    "Pistol Strong"
    ]
   },
   {
@@ -4481,27 +4499,23 @@
   {
    "play": "p134",
    "play_index": 220,
-   "name": "RB Cross Dig",
-   "concept": "HB Cross Dig Skinny Post Levels",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
+   "name": "QB Power",
+   "concept": "QB Power",
+   "family": "qb",
+   "header": "qb_draw",
+   "play_type": "keeper",
    "personnel": "11",
    "home": "Gun Empty Trey",
-   "primary": "HB",
+   "primary": null,
    "screen": null,
    "must": "",
-   "routes": [
-    "Crossing Dig",
-    "Dig",
-    "Flat",
-    "Skinny Post"
-   ],
+   "routes": [],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Empty Trey"
-   ]
+   ],
+   "added_by": "b780 plays2"
   },
   {
    "play": "p135",

@@ -233,6 +233,9 @@ class DraftTests(unittest.TestCase):
         squad_payload=mode.apply(ps.apply(ai.apply(retail_bytes())[0])[0])[0]
         with Machine(squad_payload) as squad:
             squad.cold(self.roster,unsigned)
+            # b780 mc1 (Q75): a loaded free-agent career opens Career Home; Play next game opens the club choice
+            self.assertEqual(squad.top(),squad.labels['apartment'])
+            squad.select(0,budget=200000000)
             self.assertEqual(squad.top(),squad.labels['team_menu'])
             t=squad.get(squad.root+0x1C)+500*club
             reserved=squad.get(t)

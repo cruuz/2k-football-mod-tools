@@ -67,6 +67,36 @@ def _after_vk2(packages):
     return out
 
 
+ART1_PROJECT = Path(os.environ.get("B780_ART1_PROJECT",
+                                   "/home/noah/2k-worktrees/.b77-scratch/ship10/project/recipe_project_v09.json"))
+ART1_DONORS = {"08H0": "den_helmet02_navy", "30H0": "cle_helmet02_30_0", "30A0": "cle_helmet02_30_0", "30H3": "cle_helmet02_30_3"}
+
+
+def _after_art1(packages):
+    """b780-art1 cleans four donors' Revolution shell (helmet02, chunk 12) at their source PNGs: Denver's dithered old
+    crown stripe (08H0) and the Browns' heavy crease arcs (30H0, 30A0, 30H3); the fixture disc predates it. Give those
+    donors the Studio importer's span of the cleaned PNG, as the build does, before comparing with the pins."""
+    import tempfile
+    import b780_team_select_old_logo_cleanup as cleanup
+    import nfl2k5_visual_mod_project as writer
+    from mod_editor.core import nfl2k5_kit_fixes_2026 as fixes
+    project = json.loads(ART1_PROJECT.read_text(encoding="utf-8"))
+    images, _ = cleanup.clean_project_textures(project)
+    index = Path(os.environ["NFL2K5_RETAIL_INDEX"])
+    out = dict(packages)
+    with tempfile.TemporaryDirectory() as tmp:
+        for selector, name in ART1_DONORS.items():
+            png = Path(tmp) / f"{selector}.png"
+            cleanup.save_rgba(images[name], png)
+            span = writer.helmet_import.build_import(index, writer.REPORTS["live_helmet"], selector[:2], selector[2],
+                                                     int(selector[3:]), "helmet02", png)[0]
+            raw = out[selector]
+            chunk = {c.index: c for c in fixes.parse_chunks(raw)}[12]
+            assert len(span) == chunk.end_offset - chunk.offset, selector
+            out[selector] = raw[:chunk.offset] + span + raw[chunk.end_offset:]
+    return out
+
+
 class Data(unittest.TestCase):
     def test_document_validates_and_every_selection_is_wired(self):
         doc = mk.document()
@@ -185,14 +215,15 @@ class Wiring(unittest.TestCase):
         self.assertNotIn("h-11-1970-colts-5.iff", added)            # reuse of an existing style: nothing added
 
 
-@unittest.skipUnless(DISC.is_file(), "release-candidate test disc absent")
+@unittest.skipUnless(DISC.is_file() and ART1_PROJECT.is_file() and os.environ.get("NFL2K5_RETAIL_INDEX"),
+                     "release-candidate test disc, the v0.9 league project or NFL2K5_RETAIL_INDEX absent")
 class Disc(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.doc = mk.document()
         cls.src = hs.Source(DISC)
         cls.inputs = mk.read_inputs(cls.src, cls.doc)
-        cls.inputs["packages"] = _after_vk2(_after_sw1(cls.src, cls.inputs["packages"]))
+        cls.inputs["packages"] = _after_art1(_after_vk2(_after_sw1(cls.src, cls.inputs["packages"])))
 
     @classmethod
     def tearDownClass(cls):

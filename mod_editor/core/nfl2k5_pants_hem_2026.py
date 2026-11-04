@@ -25,8 +25,9 @@ allocation kept):
   normal under the hem, so the legging does not carry pants folds.
 
 Only changed texels and their mip parents move. The Studio runs this after the uf3 kit finish; exact pins limit it to
-the known SOFTDRINK kit spans, so retail kits, the era and throwback kits and textures a user's recipe replaced are
-left alone. The native repair (strict) refuses any kit that is not exactly the pinned input or the pinned output.
+the known SOFTDRINK kit spans (a row's ``also`` pairs pin later known art: b780 art1's splayers with the old 2004 logo
+cleaned at the source), so retail kits, the era and throwback kits and textures a user's recipe replaced are left
+alone. The native repair (strict) refuses any kit that is not exactly the pinned input or the pinned output.
 """
 from __future__ import annotations
 
@@ -510,6 +511,18 @@ def _compile_row(span, row, document):
     return compile_bump(span, row, hems["pants"])
 
 
+def known_pairs(row) -> dict:
+    """{input SHA-256: output SHA-256} of one pinned texture: its pins, ``before_equivalent_sha256`` (the same input
+    stored by an earlier codec, same output) and the ``also`` pairs (b780 art1: a kit atlas whose old 2004 logo was
+    cleaned at the source, the same hem compiled on it)."""
+    pairs = {row["before_sha256"]: row["after_sha256"]}
+    for digest in row.get("before_equivalent_sha256", ()):
+        pairs[digest] = row["after_sha256"]
+    for pair in row.get("also", ()):
+        pairs[pair["before_sha256"]] = pair["after_sha256"]
+    return pairs
+
+
 def compile_resource(selector, raw, *, strict=True, document=None, cache=None):
     """Compile every pinned texture of one kit package; refuses partial or unknown inputs when strict."""
     document = document or spec()
@@ -521,10 +534,9 @@ def compile_resource(selector, raw, *, strict=True, document=None, cache=None):
         span = raw[chunk.offset:chunk.end_offset]
         layout_ok = (len(raw), chunk.offset, len(span)) == (row["resource_size"], row["offset"], row["length"])
         digest = sha(span) if layout_ok else None
-        # ``before_equivalent_sha256``: the same input texture stored by an earlier codec (an already repaired disc).
-        states.append((row, chunk, span, "before" if digest == row["before_sha256"]
-                                         or digest in row.get("before_equivalent_sha256", ())
-                       else "after" if digest == row["after_sha256"] else "other"))
+        pairs = known_pairs(row)
+        states.append((row, chunk, span, "before" if digest in pairs
+                       else "after" if digest in pairs.values() else "other"))
     kinds = {s[3] for s in states}
     if kinds == {"after"}:
         return [], dict(selector=selector, state="applied", changed_bytes=0, parts=[], skipped_textures=[])
@@ -545,7 +557,7 @@ def compile_resource(selector, raw, *, strict=True, document=None, cache=None):
             require(not strict, selector + ": socks differ from their pin")
             skipped.append(row["chunk"])
             continue
-        require(sha(new) == row["after_sha256"], selector + ": Studio compile differs from its output pin")
+        require(sha(new) == known_pairs(row)[sha(span)], selector + ": Studio compile differs from its output pin")
         replacements.append((chunk.offset, new))
         parts.append(dict(selector=selector, chunk_index=chunk.index, offset=chunk.offset, length=len(new),
                           before_sha256=sha(span), after_sha256=sha(new),

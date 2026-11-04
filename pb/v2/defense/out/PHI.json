@@ -2013,13 +2013,13 @@
  "receipt": {
   "team": "PHI",
   "offense_pack": "data/playbooks/softdrink_phi_modern.2k5book",
-  "offense_pack_sha256": "6e2e7a7c5ccc1abc9d1a9aafcc9d9b1c3e8cfa87969b8b431695a2e15fe722c7",
-  "source_fingerprint": "19381c62fd1211b5da946e1a9dfdca6825e907309d052cfe59aed13c31031724",
-  "replacement_sha256": "db3dd2741c2f89dac5cb2a48bedb212156a3f63c85913b3e6bb1149fd167a267",
+  "offense_pack_sha256": "e1dbc31b487aae8fda4fac862c89513a068878476727d1a921057a7c304b1602",
+  "source_fingerprint": "792588377b9c16225772ef579cf2c305b8e5005b4f5a3a4081f450295f4194b8",
+  "replacement_sha256": "f46f34314380515197a3b774fe9969a35cc769a1e069fc85c3228a653745ea07",
   "semantic_sha256": "8cc84c84f3a216e9e33de40fc6fba09bd3475fbfa574153ba2a2778288239d68",
   "plays": 66,
   "formations": 4,
-  "nodes": 2758,
+  "nodes": 2754,
   "node_capacity": 3500,
   "formation_count": 50,
   "play_count": 270,
@@ -2027,10 +2027,10 @@
   "band_loss": 0.19295,
   "spy_play": null,
   "native_scoring_faults": 0,
-  "name_pool_units": 5063,
+  "name_pool_units": 5038,
   "name_pool_capacity": 5088,
   "name_mode": 0,
   "pack": "data/playbooks/softdrink_phi_defense.2k5book",
-  "pack_sha256": "6d7deb4ad080f03d83db25faf7a8df5d5f4366ced735f0c2c0716249fd367db7"
+  "pack_sha256": "ba7fb41a1668447f8df852c4928774f05faec07107f863a4a6bf1d6ee75c9891"
  }
 }

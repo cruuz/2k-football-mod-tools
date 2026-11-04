@@ -41,7 +41,7 @@ class TemplateTests(unittest.TestCase):
             else:
                 self.assertIn(struct.unpack_from("<I", code, off)[0] - symbols[symbol] - value, range(0, 16), symbol)
         self.assertEqual(pc.SYMBOLS, dict(slide_auto=0x23B6E0, select_play=0xFEFA0, case_resume=0x18FE6F,
-                                          case_done=0x18FF1C))
+                                          case_done=0x18FF1C, game_reset=0x11A540))     # b780 modes2: the reset
 
     def test_world_slide_sign(self):
         # local +x is the offense's right; the world slide is the attack direction times the local slide
@@ -55,7 +55,11 @@ class TemplateTests(unittest.TestCase):
     def test_site_shape(self):
         code_va = 0x14F0000
         rows = {name: (va, before, after) for name, va, before, after in pc.sites(code_va)}
-        self.assertEqual(set(rows), {"snap_slide", "line_button"})
+        self.assertEqual(set(rows), {"snap_slide", "line_button", "game_start"})
+        va, before, after = rows["game_start"]                                            # b780 modes2 (Q4)
+        self.assertEqual((va, before), (0x648A8, bytes.fromhex("e8935c0b00")))            # call 0x11A540
+        self.assertEqual(after[0], 0xE8)                                                  # still a call
+        self.assertEqual(va + 5 + struct.unpack_from("<i", after, 1)[0], code_va + assembly.LABELS["game_start"])
         va, before, after = rows["snap_slide"]
         self.assertEqual((va, before), (0x23BC4F, bytes.fromhex("e98cfaffff")))           # 0x23BC40's tail jump
         self.assertEqual(after[0], 0xE9)
@@ -93,7 +97,7 @@ class WriterTests(unittest.TestCase):
         for _name, at, _before, after in pc.sites(code_va):
             self.assertEqual(image.read(at, len(after)), after)
         self.assertEqual(self.receipt["runtime_witnessed"], False)
-        self.assertEqual({e["label"] for e in self.receipt["edits"]}, {"snap_slide", "line_button"})
+        self.assertEqual({e["label"] for e in self.receipt["edits"]}, {"snap_slide", "line_button", "game_start"})
         self.assertEqual(self.receipt["code_va"], hex(code_va))
         self.assertEqual(self.receipt["state_va"], hex(state_va))
         self.assertEqual(space.status(self.final), "applied")

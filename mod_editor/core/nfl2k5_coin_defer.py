@@ -5,11 +5,19 @@ the 2023 regular-season count published by jpmSportsStats. This dated measured
 rate is not a claimed 2026 league average. The loser chooses for the first
 half; the deferring CPU chooses receive for the second half. Humans retain
 the two retail choices. See docs/research/nfl2k5_b69_rules.md for the menu limit.
+
+Revision 2 (b780 modes2, Q25): every game starts with no deferral. Revision 1 cleared the state only at a toss, so
+a game without an opening toss (a Situation game, a moment, which the era rules forward here for post-2008
+seasons) that crossed halftime gave the second-half kickoff by the previous game's CPU deferral. A fifth hook, the
+match reset's call 0x55F61 (FUN_00055dd0 runs once per game before any toss; call 0xAF400, the clock record reset),
+clears it first. It is not one of HOOKS: the era rules wrap those four, and the reset must run in every mode.
+Revision-1 installs read "previous" and upgrade in place (the code, then the new hook).
 """
 from __future__ import annotations
 import sys
 from . import nfl2k5_rules_patch as patch
 from . import nfl2k5_coin_defer_code as assembly
+from . import nfl2k5_coin_defer_code_b779 as assembly_b779
 
 OWNER = "nfl2k5_coin_defer"
 REQUESTS = ((OWNER, "code", 384, 16), (OWNER, "data", 4, 4), (OWNER, "read_only", 128, 4))
@@ -27,6 +35,9 @@ HOOKS = (("choose", 0x25E7B5, bytes.fromhex("8bd8a18c91c300"), b"\xe9"),
          ("menu", 0x25E81F, bytes.fromhex("e89cf8ffff"), b"\xe8"),
          ("halftime", 0x15864C, bytes.fromhex("e80f0ef9ff"), b"\xe8"),
          ("winner_result", 0x25EAF0, bytes.fromhex("8b0d8c91c300"), b"\xe9"))
+# b780 modes2: the match reset's clock-record call (FUN_00055dd0, once per game, before the toss)
+INIT_HOOK = ("game_init", 0x55F61, bytes.fromhex("e89a940500"), b"\xe8")
+UPGRADES_PREVIOUS = True
 GUARDS = (
     (0x25e780, 171, "d26b37746850937511a50a31f8e7862894e615e67fc6e23af5dfe57066a5a21b"),
     (0x25eaf0, 20, "53ec57e42084bf8db18240a66f1c8017b852a5195c44157489cf7b412c1bf88c"),
@@ -42,6 +53,10 @@ GUARDS = (
     (0x25e0c0, 254, "0bf07d7d16eddb8071aa46c0546750e401322e888cbb6f51d057af105c5f5a17"),
     (0x1be1f0, 65, "4f3106616dab10958821450aaee362f6984cb5a60067a1a813812451185ff125"),
     (0x1bdd20, 39, "e59e82e82cee209b9dae4030b8bf25debec772824019a9213cdbfbd38a110d2f"),
+    # b780 modes2: the reset's call, the clock record reset it calls, and the reset's period/phase/possession tail
+    (0x55f61, 5, "c658936f38c0a6478b27c0eff54f25f67229a8196bc374dbda670de29414b164"),
+    (0xaf400, 31, "32578d950df0d2fe320c6a2c4e1ea8af01bd6c99e18e5e8bc8ce6d202da7f706"),
+    (0x56032, 44, "f52f4798820289ec80b83f6ba248d136c83b8ea7e1ad0f6d57dbadbfaebeab38"),
 )
 
 
@@ -55,15 +70,20 @@ def decode_options(content):
     return {}
 
 
-def code_for(places):
-    return patch.relocate(assembly, places, dict(state=places["data"]["va"],
+def code_for(places, source=assembly):
+    return patch.relocate(source, places, dict(state=places["data"]["va"],
         notice=places["read_only"]["va"], choose_tail=0x25E7BC,
         native_menu=0x25E0C0, native_possession=0xE9460, human_query=0x25DFC0,
-        random_word=0x48B50, home_name=0x61C50, away_name=0x61C60))
+        random_word=0x48B50, home_name=0x61C50, away_name=0x61C60, native_game_init=0xAF400))
 
 
 def sites(places):
-    return patch.hook_sites(HOOKS, assembly, places)
+    return patch.hook_sites(HOOKS + (INIT_HOOK,), assembly, places)
+
+
+def previous(places):
+    """Revision 1 (beta-69 .. the v0.9 RC): its code and its four hooks."""
+    return [(code_for(places, assembly_b779), patch.hook_sites(HOOKS, assembly_b779, places))]
 
 
 def status(payload):

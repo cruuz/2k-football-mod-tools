@@ -125,8 +125,10 @@ class Machine:
             self.put(address, value)
         self.call(0xC0500, ecx=self.root)
         self.teams = self.word(self.root + 0x1C)
+        self.ret_65d30 = 0          # 0x65D30's answer (the intro update's loop gate wants 8)
         hooks = {0x84C80: self._game_object, 0x84C50: self._release_object, 0x43F50: lambda: self._return(0, 0x10),
-                 0xF9310: lambda: self._return(0), 0x4A400: lambda: self._return(0, 4), 0x65D30: lambda: self._return(0)}
+                 0xF9310: lambda: self._return(0), 0x4A400: lambda: self._return(0, 4),
+                 0x65D30: lambda: self._return(self.ret_65d30)}
         for address, fn in hooks.items():
             self.uc.hook_add(uni.UC_HOOK_CODE, lambda _uc, _a, _s, f: f(), begin=address, end=address, user_data=fn)
 

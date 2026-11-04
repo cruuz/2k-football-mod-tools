@@ -122,7 +122,9 @@ check_roster:
     jb check_roster
     imul esi, ebx, 2000
     add esi, 0xe42460
-    cmp dword ptr [ebx*4+0xe5775c], 0
+    call human_team           /* b780 modes2: was cmp dword ptr [ebx*4+0xe5775c], 0 (same 8 bytes) */
+    test eax, eax
+    nop
     je cpu_plan
     mov eax, offset remember_option
     test eax, eax
@@ -213,7 +215,9 @@ remember_clear:
     jae clear_retail
     cmp dword ptr [0xe576a0], 2
     jne clear_retail
-    cmp dword ptr [ecx*4+0xe5775c], 0
+    call human_index          /* b780 modes2: was cmp dword ptr [ecx*4+0xe5775c], 0 (same 8 bytes) */
+    test eax, eax
+    nop
     je clear_cpu
     mov eax, offset remember_option
     jmp clear_enabled
@@ -238,3 +242,31 @@ clear_retail:
     pop edx
     pop ecx
     jmp native_clear
+
+/* b780 modes2 (revision 2, Q29): who keeps a remembered human plan is asked of the game's own user-club test
+ * 13EC30 (C4D50), as team_gate already does, not read from the human-coach array 0xE5775C directly. Retail C4D50
+ * reads that same array (C4CA0 gives the team's index), so a Franchise is unchanged. MyCareer marks its club human
+ * in the array (it is the player's team) and hooks C4D50 so that weekly management callers see the club as CPU:
+ * through the array the club took the remembered human plan path, and no MyCareer plan exists, so it was the only
+ * club without weekly prep bonuses. Now it gets the CPU plan like every opponent. Both helpers are new code after
+ * the last entry, and the two call sites keep their 8 bytes, so every label (and every hook) stays. */
+human_team:                   /* EBP = the team -> EAX nonzero: a human club */
+    push ecx
+    push edx
+    mov ecx, ebp
+    call native_human
+    pop edx
+    pop ecx
+    ret
+human_index:                  /* ECX = the team index -> EAX nonzero: a human club */
+    push ecx
+    push edx
+    call native_team
+    test eax, eax
+    jz human_none
+    mov ecx, eax
+    call native_human
+human_none:
+    pop edx
+    pop ecx
+    ret

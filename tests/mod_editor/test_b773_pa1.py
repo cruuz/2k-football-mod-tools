@@ -162,6 +162,25 @@ class ShippedData(unittest.TestCase):
                 self.assertEqual(row["socks_chunk"], 4)
         self.assertEqual(len({(r["selector"], r["chunk"]) for r in DATA["textures"]}), len(DATA["textures"]))
 
+    def test_also_pairs_cover_the_cleaned_sideline_atlases(self):
+        """b780 art1: the splayers and pants whose old 2004 logo was cleaned at the source carry a second known pair;
+        where kit_fixes alternates runs first, its ``also`` output is the hem's ``also`` input."""
+        also = {(r["selector"], r["chunk"]) for r in DATA["textures"] if r.get("also")}
+        self.assertEqual(also, {(s, 51) for s in ("03A0", "03H0", "04A0", "09A0", "09H0", "28A0", "28H0")}
+                         | {(s, 2) for s in ("02H0", "02A0", "02H2", "02A2", "02H3", "02A3", "04H0", "04A0")})
+        alts = {(r["selector"], r["chunk"]): r for r in fixes.alternates()["textures"] if r.get("also")}
+        for row in DATA["textures"]:
+            key = (row["selector"], row["chunk"])
+            if key in alts and row.get("also"):
+                self.assertEqual([p["after_sha256"] for p in alts[key]["also"]], [p["before_sha256"] for p in row["also"]], key)
+        for row in DATA["textures"]:
+            pairs = hem.known_pairs(row)
+            self.assertEqual(pairs[row["before_sha256"]], row["after_sha256"])
+            for pair in row.get("also", ()):
+                self.assertEqual(pairs[pair["before_sha256"]], pair["after_sha256"])
+                self.assertNotEqual(pair["before_sha256"], row["before_sha256"])
+                self.assertNotEqual(pair["after_sha256"], row["after_sha256"])
+
     def test_input_pins_are_the_output_of_the_earlier_kit_passes(self):
         mine = {(r["selector"], r["chunk"]): r for r in DATA["textures"]}
         socks = {r["selector"]: r["socks_sha256"] for r in DATA["textures"] if r["kind"] == "pants"}

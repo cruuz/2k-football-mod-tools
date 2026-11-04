@@ -1,0 +1,348 @@
+team,formation,need,play_id,play,old_play,concept,play_type,home_formation,tier,back_yd,qb_yd,exact_codes,level,action,links_after
+ARZ,I-Form Tight,run,p105,RB Draw,,HB Draw,run,Full House,0,0.0,0.0,1,0,added,9
+ARZ,I-Form Tight,run,p116,Inside Zone Split,,Inside Zone Split,run,Full House,0,0.0,0.0,1,0,added,9
+ARZ,I-Form Tight,run,p129,RB Counter Wk,,HB Counter,run,Full House,0,0.0,0.0,1,0,added,9
+ARZ,Full House Sneak,pass,p147,PA U Stick,,PA U Stick Corner Curl,pa_pass,I-Form Tight,3,0.0,0.0,1,3,added,6
+ARZ,Full House Sneak,pass,p148,PA U Sail,,PA U Sail Out and Up Corner,pa_pass,I-Form Tight,3,0.0,0.0,1,3,added,6
+ARZ,Full House Sneak,pass,p105,RB Draw,,HB Draw,run,Full House,1,2.64,0.0,1,0,"added (page filler, run)",6
+ARZ,Gun Wing Slot Offset,run,p083,Crack Toss,,Crack Toss,run,Singleback Ace,2,3.04,1.27,1,1,added,6
+ARZ,Gun Wing Slot Offset,run,p056,RB Sweep,,HB Sweep,run,Singleback Ace Close,2,3.04,1.27,1,1,added,6
+ARZ,Gun Wing Slot Offset,run,p081,X Slip Screen,,WR Slip Screen,pass,Pistol Y Trips,1,0.0,0.0,1,1,"added (page filler, pass)",6
+ATL,I-Form Tight,run,p114,RB Stretch,,HB Stretch,run,Full House,0,0.0,0.0,1,0,added,6
+ATL,I-Form Tight,run,p121,Inside Zone Wk,,Inside Zone,run,Full House,0,0.0,0.0,1,0,added,6
+ATL,I-Form Tight,run,p139,Pin Pull Sweep,,Pin Pull Sweep,run,Full House,0,0.0,0.0,1,0,added,6
+ATL,Full House,pass,p117,RB Texas,,Texas,pass,Pistol Full House,1,0.0,0.0,1,1,added,6
+ATL,Full House,pass,p127,U Whip Return,,U Whip Return Whip In,pass,I-Form Tight,3,0.0,0.0,1,3,added,6
+ATL,Full House,pass,p130,U Flood,,Flood,pass,I-Form Tight,3,0.0,0.0,1,3,added,6
+ATL,Full House Sneak,pass,p127,U Whip Return,,U Whip Return Whip In,pass,I-Form Tight,0,0.0,0.0,1,0,added,6
+ATL,Full House Sneak,pass,p117,RB Texas,,Texas,pass,Pistol Full House,0,0.0,0.0,1,0,added,6
+ATL,Full House Sneak,pass,p130,U Flood,,Flood,pass,I-Form Tight,0,0.0,0.0,1,0,added,6
+ATL,Gun Empty Trey,run,p148,QB Draw,RB Zig Flat,QB Draw,keeper,Gun Empty Trey,designed,0.0,0.0,1,convert,converted,6
+ATL,Gun Empty Trey,run,p123,QB Power,RB Return Flood,QB Power,keeper,Gun Empty Trey,designed,0.0,0.0,1,convert,converted,6
+BAL,Singleback Ace,run,p064,RB Sweep,,HB Sweep,run,Singleback Y Trips,0,0.0,0.0,1,0,added,12
+BAL,Singleback Ace,run,p067,Inside Trap Wk,,Inside Trap,run,Pistol Ace,0,0.0,0.0,1,0,added,12
+BAL,Singleback Ace,run,p071,RB Toss,,HB Toss,run,Pistol Ace,0,0.0,0.0,1,0,added,12
+BAL,Singleback Doubles,run,p061,01 Trap,,01 Trap,run,Gun Tight Slots,2,2.62,3.25,1,1,added,15
+BAL,Singleback Doubles,run,p068,RB Sweep Wk,,HB Sweep,run,Gun Wildcat,2,2.62,3.25,1,1,added,15
+BAL,Singleback Doubles,run,p072,RB Dive,,HB Dive,run,Gun Tight Slots,2,2.62,3.25,1,1,added,15
+BAL,Pistol Doubles,run,p061,01 Trap,,01 Trap,run,Gun Tight Slots,2,0.0,1.98,1,1,added,15
+BAL,Pistol Doubles,run,p068,RB Sweep Wk,,HB Sweep,run,Gun Wildcat,2,0.0,1.98,1,1,added,15
+BAL,Pistol Doubles,run,p072,RB Dive,,HB Dive,run,Gun Tight Slots,2,0.0,1.98,1,1,added,15
+BAL,Full House Sneak,pass,p110,RB Texas,,Texas,pass,Pistol Full House,0,0.0,0.0,1,0,added,6
+BAL,Full House Sneak,pass,p118,PA Shot,,PA Shot,pa_pass,Full House,0,0.0,0.0,1,0,added,6
+BAL,Full House Sneak,pass,p120,Y Post Corner,,Post Corner,pass,Pistol Full House,0,0.0,0.0,1,0,added,6
+BAL,Gun Empty Trey,run,p114,QB Power,Z Curl Combo,QB Power,keeper,Gun Empty Trey,designed,0.0,0.0,1,convert,converted,3
+BAL,Pistol Wing,run,p061,01 Trap,,01 Trap,run,Gun Tight Slots,0,0.0,0.0,1,0,added,30
+BAL,Pistol Wing,run,p068,RB Sweep Wk,,HB Sweep,run,Gun Wildcat,0,0.0,0.0,1,0,added,30
+BAL,Pistol Wing,run,p072,RB Dive,,HB Dive,run,Gun Tight Slots,0,0.0,0.0,1,0,added,30
+BAL,Pistol Trey,run,p061,01 Trap,,01 Trap,run,Gun Tight Slots,0,0.0,0.0,1,0,added,30
+BAL,Pistol Trey,run,p068,RB Sweep Wk,,HB Sweep,run,Gun Wildcat,0,0.0,0.0,1,0,added,30
+BAL,Pistol Trey,run,p072,RB Dive,,HB Dive,run,Gun Tight Slots,0,0.0,0.0,1,0,added,30
+BUF,Singleback Doubles,run,p048,01 Trap,,01 Trap,run,Gun Tight Y Off,2,2.62,3.25,1,1,added,15
+BUF,Singleback Doubles,run,p051,Lead Stretch,,Lead Stretch,run,Gun Tight Y Off,2,2.62,3.25,1,1,added,15
+BUF,Singleback Doubles,run,p055,Pin Pull Sweep,,Pin Pull Sweep,run,Gun Doubles,2,3.04,3.25,1,1,added,15
+BUF,Gun Trips TE,run,p056,RB Counter,,HB Counter,run,Gun Bunch X Nasty,0,0.0,0.0,1,0,added,9
+BUF,Gun Trips TE,run,p055,Pin Pull Sweep,,Pin Pull Sweep,run,Gun Doubles,0,0.0,0.0,1,0,added,9
+BUF,Gun Trips TE,run,p048,01 Trap,,01 Trap,run,Gun Tight Y Off,2,3.04,3.25,1,1,added,9
+BUF,Gun Trips TE,run,p021,Y China Out,,,,,,,,,,dropped (listed in another menu),9
+BUF,Gun Trips TE,run,p031,PA Y Sail,,,,,,,,,,dropped (listed in another menu),9
+BUF,Gun Trips TE,run,p036,Stick,,,,,,,,,,dropped (listed in another menu),9
+BUF,Full House,pass,p122,Y Pivot,RB Dive Wk,Y Pivot,pass,Full House,designed,0.0,0.0,1,convert,converted,3
+BUF,Gun Empty Trey,run,p139,QB Power,RB Spot Out Drag,QB Power,keeper,Gun Empty Trey,designed,0.0,0.0,1,convert,converted,6
+BUF,Gun Empty Trey,run,p019,QB Draw,Y Deep Over,QB Draw,keeper,Gun Empty Trey,designed,0.0,0.0,1,convert,converted,6
+BUF,Pistol Strong,run,p059,RB Lead Draw,,HB Lead Draw,run,Strong I,2,0.0,1.98,1,1,added,6
+BUF,Pistol Strong,run,p061,RB Stretch,,HB Stretch,run,I-Form Pro,2,0.0,1.98,1,1,added,6
+BUF,Pistol Strong,run,p062,Inside Trap,,Inside Trap,run,I-Form Y Off Close,2,0.0,1.98,1,1,added,6
+BUF,Singleback Y Off Trey,run,p051,Lead Stretch,,Lead Stretch,run,Gun Tight Y Off,0,0.0,0.0,1,0,added,21
+BUF,Singleback Y Off Trey,run,p055,Pin Pull Sweep,,Pin Pull Sweep,run,Gun Doubles,0,0.0,0.0,1,0,added,21
+BUF,Singleback Y Off Trey,run,p048,01 Trap,,01 Trap,run,Gun Tight Y Off,0,0.0,0.0,1,0,added,21
+CAR,Gun Empty Trey,run,p129,QB Draw,X Stick,QB Draw,keeper,Gun Empty Trey,designed,0.0,0.0,1,convert,converted,6
+CAR,Gun Empty Trey,run,p142,QB Power,Z Dagger,QB Power,keeper,Gun Empty Trey,designed,0.0,0.0,1,convert,converted,6
+CHI,Pistol Doubles,run,p081,RB Toss,,HB Toss,run,Pistol Bunch,0,0.0,0.0,1,0,added,15
+CHI,Pistol Doubles,run,p067,RB Sweep Wk,,HB Sweep,run,Gun Spread Y-Slot,2,2.62,1.27,1,1,added,15
+CHI,Pistol Doubles,run,p070,RB Dive,,HB Dive,run,Gun Normal Y Off Close,2,2.62,1.27,1,1,added,15
+CHI,Gun Empty Trey,run,p121,QB Power,RB Zig Flat,QB Power,keeper,Gun Empty Trey,designed,0.0,0.0,1,convert,converted,6
+CHI,Gun Empty Trey,run,p113,QB Draw,RB Deep Flood,QB Draw,keeper,Gun Empty Trey,designed,0.0,0.0,1,convert,converted,6
+CHI,Singleback Ace Double Wing,run,p133,RB Iso,,HB Iso,run,Goal Line,0,0.5,0.0,1,0,added,6
+CHI,Singleback Ace Double Wing,run,p114,Power G,,Power G,run,Goal Line Sneak,1,2.64,0.0,1,0,added,6
+CHI,Singleback Ace Double Wing,run,p148,Guard Iso,,Guard Iso,run,Goal Line Sneak,1,2.64,0.0,1,0,added,6
+CHI,Gun Split Y Off,run,p085,Counter GT Wk,,Counter GT,run,I-Form Close,2,3.04,3.25,1,1,added,12
+CHI,Gun Split Y Off,run,p088,Power G,,Power G,run,I-Form Pro,2,3.04,3.25,1,1,added,12
+CHI,Gun Split Y Off,run,p124,FB Off Tackle Wk,,HB Off Tackle,run,Wing T,2,2.62,3.25,1,1,added,12
+CIN,Gun Empty Trey,run,p130,QB Power,Slot Choice,QB Power,keeper,Gun Empty Trey,designed,0.0,0.0,1,convert,converted,6
+CIN,Gun Empty Trey,run,p120,QB Draw,RB Spacing,QB Draw,keeper,Gun Empty Trey,designed,0.0,0.0,1,convert,converted,6
+CIN,Gun Split Pro,run,p144,RB Off Tackle Wk,,HB Off Tackle,run,I-Form Pro,2,3.04,3.25,1,1,added,9
+CIN,Gun Split Pro,run,p105,01 Trap,,01 Trap,run,Wing T,3,5.02,3.25,1,2,added,9
+CIN,Gun Split Pro,run,p133,Inside Trap Wk,,Inside Trap,run,Wing T,3,5.02,3.25,1,2,added,9
+CLE,Gun Trips TE,run,p063,RB Counter Wk,,HB Counter,run,Gun Bunch X Nasty,0,0.0,0.0,1,0,added,9
+CLE,Gun Trips TE,run,p070,RB Stretch Wk,,HB Stretch,run,Gun Bunch X Nasty,0,0.0,0.0,1,0,added,9
+CLE,Gun Trips TE,run,p071,Lead Stretch Wk,,Lead Stretch,run,Pistol Y Off Trips,2,3.04,1.27,1,1,added,9
+CLE,Gun Trips TE,run,p017,PA X Dagger,,,,,,,,,,dropped (listed in another menu),9
+CLE,Gun Trips TE,run,p031,Drive,,,,,,,,,,dropped (listed in another menu),9
+CLE,Gun Trips TE,run,p036,X Curl Combo,,,,,,,,,,dropped (listed in another menu),9
+CLE,Full House,pass,p075,PA Dagger,,PA X Dagger Spot Out Hitch and Go,pa_pass,I-Form Tight,2,0.0,0.0,1,2,added,6
+CLE,Full House,pass,p077,PA X Dagger,,PA X Dagger Spot Out Slant,pa_pass,I-Form Wing,2,0.0,0.0,1,2,added,6
+CLE,Full House,pass,p127,Y Whip Out and Up,,Y Whip Out and Up Crossing Dig,pass,I-Form Wing,2,0.0,0.0,1,2,added,6
+CLE,Gun Empty Trey,run,p133,QB Draw,Z Bench Steep In,QB Draw,keeper,Gun Empty Trey,designed,0.0,0.0,1,convert,converted,6
+CLE,Gun Empty Trey,run,p123,QB Power,RB Cross Dig,QB Power,keeper,Gun Empty Trey,designed,0.0,0.0,1,convert,converted,6
+DAL,I-Form Pro,run,p121,Crack Toss,,Crack Toss,run,Wing T,1,3.21,0.0,1,0,added,9
+DAL,I-Form Pro,run,p133,RB Sweep Wk,,HB Sweep,run,Wing T,1,3.21,0.0,1,0,added,9
+DAL,I-Form Pro,run,p082,Lead Stretch,,Lead Stretch,run,Pistol Strong,2,0.0,1.98,1,1,added,9
+DAL,Gun Empty Trey,run,p113,QB Draw,RB Sail,QB Draw,keeper,Gun Empty Trey,designed,0.0,0.0,1,convert,converted,6
+DAL,Gun Empty Trey,run,p120,QB Power,RB Choice,QB Power,keeper,Gun Empty Trey,designed,0.0,0.0,1,convert,converted,6
+DAL,Gun Wing Slot Offset,run,p125,RB Toss,,HB Toss,run,Gun Wing Slot Offset,0,0.0,0.0,1,0,added,6
+DAL,Gun Wing Slot Offset,run,p067,Counter GT Wk,,Counter GT,run,Singleback Ace,2,3.04,1.27,1,1,added,6
+DAL,Gun Wing Slot Offset,run,p074,01 Trap,,01 Trap,run,Singleback Y Trips,2,3.04,1.27,1,1,added,6
+DEN,Gun Trips TE,run,p072,RB Counter,,HB Counter,run,Gun Bunch X Nasty,0,0.0,0.0,1,0,added,9
+DEN,Gun Trips TE,run,p051,Inside Trap,,Inside Trap,run,Singleback Bunch X Nasty,2,3.04,1.27,1,1,added,9
+DEN,Gun Trips TE,run,p053,Lead Stretch,,Lead Stretch,run,Pistol Wing,2,3.04,1.27,1,1,added,9
+DEN,Gun Trips TE,run,p019,Drive,,,,,,,,,,dropped (listed in another menu),9
+DEN,Gun Trips TE,run,p034,X Dagger Spot Out,,,,,,,,,,dropped (listed in another menu),9
+DEN,Gun Trips TE,run,p024,Slot Quick Outs,,,,,,,,,,dropped (listed in another menu),9
+DEN,Full House,pass,p130,PA X Double Slants,,PA X Double Slants Comeback Go,pa_pass,Weak Wing,2,0.0,0.0,1,2,added,6
+DEN,Full House,pass,p080,X Stick,,X Stick Skinny Post Corner Curl,pass,Weak Wing,2,0.0,0.0,1,2,added,6
+DEN,Full House,pass,p015,PA U Seam Shot,,PA U Seam Shot Curl,pa_pass,I-Form Tight,3,0.0,0.0,1,3,added,6
+DEN,Full House Sneak,pass,p015,PA U Seam Shot,,PA U Seam Shot Curl,pa_pass,I-Form Tight,0,0.0,0.0,1,0,added,6
+DEN,Full House Sneak,pass,p130,PA X Double Slants,,PA X Double Slants Comeback Go,pa_pass,Weak Wing,3,0.0,0.0,1,3,added,6
+DEN,Full House Sneak,pass,p084,U Double Slants,,U Double Slants Bang,pass,I-Form Tight,3,0.0,0.0,1,3,added,6
+DEN,Wing T,run,p069,RB Draw,,HB Draw,run,I-Form Close,1,3.21,0.0,1,0,added,9
+DEN,Wing T,run,p070,RB Slam,,HB Slam,run,I-Form Pro,1,3.21,0.0,1,0,added,9
+DEN,Wing T,run,p061,Comeback Seam,,,,,,,,,,dropped (listed in another menu),9
+DEN,Wing T,run,p066,X Comeback Seam,,,,,,,,,,dropped (listed in another menu),9
+DEN,Gun Empty Trey,run,p132,QB Power,RB Scat Post Dig,QB Power,keeper,Gun Empty Trey,designed,0.0,0.0,1,convert,converted,6
+DEN,Gun Empty Trey,run,p143,QB Draw,Y Stick Nod Return,QB Draw,keeper,Gun Empty Trey,designed,0.0,0.0,1,convert,converted,6
+DET,Gun Empty Trey,run,p128,QB Power,RB Flood,QB Power,keeper,Gun Empty Trey,designed,0.0,0.0,1,convert,converted,6
+DET,Gun Empty Trey,run,p138,QB Draw,RB Choice Out,QB Draw,keeper,Gun Empty Trey,designed,0.0,0.0,1,convert,converted,6
+DET,Gun Split Y Off,run,p088,Power G Wk,,Power G,run,I-Form Pro,2,3.04,3.25,1,1,added,15
+DET,Gun Split Y Off,run,p116,RB Slam,,HB Slam,run,Strong Close,2,3.04,3.25,1,1,added,15
+DET,Gun Split Y Off,run,p143,Inside Zone,,Inside Zone,run,Singleback FB Wing,2,3.04,3.25,1,1,added,15
+GB,I-Form Tight,run,p108,RB Counter,,HB Counter,run,Full House,0,0.0,0.0,1,0,added,6
+GB,I-Form Tight,run,p113,RB Draw,,HB Draw,run,Full House,0,0.0,0.0,1,0,added,6
+GB,I-Form Tight,run,p132,RB Iso,,HB Iso,run,Full House,0,0.0,0.0,1,0,added,6
+GB,Wing T,run,p122,Guard Iso,,Guard Iso,run,I-Form Pro,1,3.21,0.0,1,0,added,9
+GB,Wing T,run,p134,Inside Trap,,Inside Trap,run,I-Form Pro,1,3.21,0.0,1,0,added,9
+GB,Wing T,run,p123,FB Inside Zone Wk,,Inside Zone,run,Gun Split Pro,2,2.62,3.25,1,1,added,9
+GB,Gun Empty Trey,run,p137,QB Draw,X Flood,QB Draw,keeper,Gun Empty Trey,designed,0.0,0.0,1,convert,converted,6
+GB,Gun Empty Trey,run,p129,QB Power,RB Curls Seams,QB Power,keeper,Gun Empty Trey,designed,0.0,0.0,1,convert,converted,6
+HOU,Singleback Ace,run,p082,Crack Toss Wk,,Crack Toss,run,Gun Ace,2,3.04,3.25,1,1,added,12
+HOU,Singleback Ace,run,p058,X Curl Flat,,,,,,,,,,dropped (listed in another menu),12
+HOU,Strong Close,run,p110,Counter GT,,Counter GT,run,Wing T,1,3.21,0.0,1,0,added,12
+HOU,Strong Close,run,p118,RB Stretch Wk,,HB Stretch,run,Wing T,1,3.21,0.0,1,0,added,12
+HOU,Strong Close,run,p142,RB Lead Draw,,HB Lead Draw,run,Wing T,1,3.21,0.0,1,0,added,12
+HOU,I-Form Pro,run,p110,Counter GT,,Counter GT,run,Wing T,0,0.0,0.0,1,0,added,12
+HOU,I-Form Pro,run,p118,RB Stretch Wk,,HB Stretch,run,Wing T,0,0.0,0.0,1,0,added,12
+HOU,I-Form Pro,run,p142,RB Lead Draw,,HB Lead Draw,run,Wing T,0,0.0,0.0,1,0,added,12
+HOU,Gun Empty Trey,run,p152,QB Power,RB Smash Whip,QB Power,keeper,Gun Empty Trey,designed,0.0,0.0,1,convert,converted,6
+HOU,Gun Empty Trey,run,p129,QB Draw,RB Verticals,QB Draw,keeper,Gun Empty Trey,designed,0.0,0.0,1,convert,converted,6
+HOU,Gun Ace Flex,run,p123,Outside Zone,RB Slip Screen,Outside Zone,run,Gun Ace Flex,designed,0.0,0.0,1,convert,converted,12
+IND,Gun Trips TE,run,p072,RB Sweep Wk,,HB Sweep,run,Gun Wing Trio,0,0.0,0.0,1,0,added,9
+IND,Gun Trips TE,run,p074,RB Dive Wk,,HB Dive,run,Gun Doubles,0,0.0,0.0,1,0,added,9
+IND,Gun Trips TE,run,p080,Counter GT,,Counter GT,run,Pistol Doubles,2,3.04,1.27,1,1,added,9
+IND,Gun Trips TE,run,p021,PA Stick Nod,,,,,,,,,,dropped (listed in another menu),9
+IND,Gun Trips TE,run,p024,Slot Y Trail Out,,,,,,,,,,dropped (listed in another menu),9
+IND,Gun Trips TE,run,p023,PA Slot Out and Up,,,,,,,,,,dropped (listed in another menu),9
+IND,I-Form Pro,run,p087,Zone Toss,,Zone Toss,run,Strong I,0,0.0,0.0,1,0,added,9
+IND,I-Form Pro,run,p089,RB Iso,,HB Iso,run,I-Form Y Off Close,0,0.0,0.0,1,0,added,9
+IND,I-Form Pro,run,p095,RB Off Tackle,,HB Off Tackle,run,I-Form Y Off Close,0,0.0,0.0,1,0,added,9
+IND,I-Form Tight,run,p112,Outside Zone,,Outside Zone,run,Full House,0,0.0,0.0,1,0,added,6
+IND,I-Form Tight,run,p115,RB Toss,,HB Toss,run,Full House,0,0.0,0.0,1,0,added,6
+IND,I-Form Tight,run,p137,RB Counter Wk,,HB Counter,run,Full House,0,0.0,0.0,1,0,added,6
+IND,Gun Empty Trey,run,p151,QB Power,RB Return Flood,QB Power,keeper,Gun Empty Trey,designed,0.0,0.0,1,convert,converted,6
+IND,Gun Empty Trey,run,p150,QB Draw,RB Zig Flat,QB Draw,keeper,Gun Empty Trey,designed,0.0,0.0,1,convert,converted,6
+IND,Gun Wing Slot Offset,run,p119,RB Sweep,,HB Sweep,run,Gun Ace Flex,0,0.0,0.0,1,0,added,6
+IND,Gun Wing Slot Offset,run,p147,Inside Trap,,Inside Trap,run,Gun Wing Slot Offset,0,0.0,0.0,1,0,added,6
+IND,Gun Wing Slot Offset,run,p056,RB Draw Wk,,HB Draw,run,Pistol Deuce Close,2,3.04,1.27,1,1,added,6
+JAX,I-Form Tight,run,p112,RB Draw Wk,,HB Draw,run,Full House,0,0.0,0.0,1,0,added,9
+JAX,I-Form Tight,run,p123,RB Iso,,HB Iso,run,Full House,0,0.0,0.0,1,0,added,9
+JAX,I-Form Tight,run,p138,Outside Zone Wk,,Outside Zone,run,Full House,0,0.0,0.0,1,0,added,9
+JAX,Full House Sneak,pass,p118,PA Shot,,PA Shot,pa_pass,Pistol Full House,0,0.0,0.0,1,0,added,6
+JAX,Full House Sneak,pass,p148,RB Slip Screen Wk,,HB Slip Screen Wk,pass,Full House,1,0.0,0.0,1,1,added,6
+JAX,Full House Sneak,pass,p121,U Stick,,U Stick Out and Up Steep In,pass,I-Form Tight,3,0.0,0.0,1,3,added,6
+JAX,Gun Empty Trey,run,p136,QB Power,RB Choice Return,QB Power,keeper,Gun Empty Trey,designed,0.0,0.0,1,convert,converted,6
+JAX,Gun Empty Trey,run,p117,QB Draw,RB Flood,QB Draw,keeper,Gun Empty Trey,designed,0.0,0.0,1,convert,converted,6
+JAX,Pistol Jumbo,run,p116,Guard Iso,,Guard Iso,run,Pistol Full House,0,0.0,0.0,1,0,added,6
+JAX,Pistol Jumbo,run,p133,Inside Trap,,Inside Trap,run,Pistol Full House,0,0.0,0.0,1,0,added,6
+JAX,Pistol Jumbo,run,p112,RB Draw Wk,,HB Draw,run,Full House,2,0.0,1.98,1,1,added,6
+KC,Gun Empty Trey,run,p121,QB Draw,RB Post Wheel,QB Draw,keeper,Gun Empty Trey,designed,0.0,0.0,1,convert,converted,6
+KC,Gun Empty Trey,run,p117,QB Power,Y Stick Skinny Post,QB Power,keeper,Gun Empty Trey,designed,0.0,0.0,1,convert,converted,6
+MIA,Gun Empty Trey,run,p134,QB Power,RB Cross Dig,QB Power,keeper,Gun Empty Trey,designed,0.0,0.0,1,convert,converted,3
+MIA,Pistol Strong,run,p063,Zone Toss Wk,,Zone Toss,run,I-Form Pro,2,0.0,1.98,1,1,added,9
+MIA,Pistol Strong,run,p064,Lead Stretch Wk,,Lead Stretch,run,I-Form Pro,2,0.0,1.98,1,1,added,9
+MIA,Pistol Strong,run,p067,Outside Zone,,Outside Zone,run,I-Form Pro,2,0.0,1.98,1,1,added,9
+MIA,Singleback Tight Y Off,run,p054,Crack Toss,,Crack Toss,run,Gun Tight Open,2,2.62,3.25,1,1,added,27
+MIA,Singleback Tight Y Off,run,p055,Pin Pull Sweep,,Pin Pull Sweep,run,Gun Y Off Trio Close,2,2.62,3.25,1,1,added,27
+MIA,Singleback Tight Y Off,run,p046,Lead Stretch,,Lead Stretch,run,Gun Bunch TE,2,2.62,3.25,1,1,added,27
+MIA,Singleback Doubles,run,p054,Crack Toss,,Crack Toss,run,Gun Tight Open,0,0.0,0.0,1,0,added,15
+MIA,Singleback Doubles,run,p055,Pin Pull Sweep,,Pin Pull Sweep,run,Gun Y Off Trio Close,0,0.0,0.0,1,0,added,15
+MIA,Singleback Doubles,run,p046,Lead Stretch,,Lead Stretch,run,Gun Bunch TE,0,0.0,0.0,1,0,added,15
+MIN,Full House Sneak,pass,p061,X Dagger,,Dagger,pass,I-Form Tight,3,0.0,0.0,1,3,added,6
+MIN,Full House Sneak,pass,p062,Inside Zone Wk,,Inside Zone,run,Strong H Tight Close,1,2.64,0.0,1,0,"added (page filler, run)",6
+MIN,Full House Sneak,pass,p067,RB Toss,,HB Toss,run,I-Form Tight,1,2.64,0.0,1,0,"added (page filler, run)",6
+MIN,Gun Empty Trey,run,p129,QB Power,RB Zig Flat,QB Power,keeper,Gun Empty Trey,designed,0.0,0.0,1,convert,converted,3
+MIN,Singleback FB Wing,run,p122,Counter GT,,Counter GT,run,I-Form Pro,0,0.0,0.0,1,0,added,6
+MIN,Singleback FB Wing,run,p108,Lead Stretch,,Lead Stretch,run,Wing T,1,3.21,0.0,1,0,added,6
+MIN,Singleback FB Wing,run,p056,PA X Hitch Seam,,,,,,,,,,dropped (listed in another menu),6
+MIN,Singleback FB Wing,run,p068,Mesh Wheel,,,,,,,,,,dropped (listed in another menu),6
+MIN,Gun Deuce Close,run,p039,Inside Zone Split Wk,,Inside Zone Split,run,Pistol Deuce Close,2,3.04,1.27,1,1,added,18
+MIN,Gun Deuce Close,run,p041,RB Stretch,,HB Stretch,run,Pistol Deuce Close,2,3.04,1.27,1,1,added,18
+MIN,Gun Deuce Close,run,p048,RB Draw Wk,,HB Draw,run,Pistol Deuce Close,2,3.04,1.27,1,1,added,18
+NE,Singleback Ace,run,p098,Inside Zone Wk,,Inside Zone,run,Singleback Ace Close,0,0.0,0.0,1,0,added,6
+NE,Singleback Ace,run,p058,Y Slot Fade,,,,,,,,,,dropped (listed in another menu),6
+NE,Full House,pass,p117,Y Pivot,Zone Toss,Y Pivot,pass,Full House,designed,0.0,0.0,1,convert,converted,3
+NE,Full House Sneak,pass,p117,Y Pivot,,Y Pivot,pass,Full House,0,0.0,0.0,1,0,added,6
+NE,Full House Sneak,pass,p101,X Hitch Seam,,X Hitch Seam Whip Over,pass,I-Form Tight,3,0.0,0.0,1,3,added,6
+NE,Full House Sneak,pass,p104,X Comebacks,,Comebacks,pass,I-Form Tight,3,0.0,0.0,1,3,added,6
+NE,Gun Empty Trey,run,p121,QB Power,RB Curls,QB Power,keeper,Gun Empty Trey,designed,0.0,0.0,1,convert,converted,6
+NE,Gun Empty Trey,run,p107,QB Draw,RB Choice,QB Draw,keeper,Gun Empty Trey,designed,0.0,0.0,1,convert,converted,6
+NE,Pistol Ace,run,p098,Inside Zone Wk,,Inside Zone,run,Singleback Ace Close,2,0.0,1.98,1,1,added,3
+NE,Pistol Ace,run,p057,Slot Fade,,,,,,,,,,dropped (listed in another menu),3
+NE,Pistol Weak,run,p003,Iso Weak,,Iso,run,I-Form Pro,2,0.0,1.98,1,1,added,6
+NE,Pistol Weak,run,p068,Off Tackle,,HB Off Tackle,run,I-Form Pro,2,0.0,1.98,1,1,added,6
+NE,Pistol Weak,run,p113,Inside Zone,,Inside Zone,run,Wing T,2,3.21,1.98,1,1,added,6
+NE,Split Backs,run,p003,Iso Weak,,Iso,run,I-Form Pro,1,2.92,0.0,1,0,added,9
+NE,Split Backs,run,p068,Off Tackle,,HB Off Tackle,run,I-Form Pro,1,2.92,0.0,1,0,added,9
+NE,Split Backs,run,p113,Inside Zone,,Inside Zone,run,Wing T,2,2.92,1.98,1,1,added,9
+NO,Gun Empty Trey,run,p125,QB Power,RB Zig Flat,QB Power,keeper,Gun Empty Trey,designed,0.0,0.0,1,convert,converted,6
+NO,Gun Empty Trey,run,p142,QB Draw,RB Choice,QB Draw,keeper,Gun Empty Trey,designed,0.0,0.0,1,convert,converted,6
+NO,Pistol Jumbo,run,p123,RB Slam,,HB Slam,run,Full House,2,0.0,1.98,1,1,added,6
+NO,Pistol Jumbo,run,p124,RB Draw Wk,,HB Draw,run,I-Form Tight,2,0.0,1.98,1,1,added,6
+NO,Pistol Jumbo,run,p138,RB Dive,,HB Dive,run,Full House,2,0.0,1.98,1,1,added,6
+NYG,Full House,pass,p140,FB Screen,,FB Screen,pass,I-Form Tight,1,0.0,0.0,1,1,added,6
+NYG,Full House,pass,p073,PA Comeback Seam,,PA X Comeback Seam Spot Out Flag,pa_pass,I-Form Tight,2,0.0,0.0,1,2,added,6
+NYG,Full House,pass,p081,X Curl Flat,,Curl Flat,pass,I-Form Tight,2,0.0,0.0,1,2,added,6
+NYG,Full House Sneak,pass,p145,PA U Post Wheel,,PA U Post Wheel Return,pa_pass,I-Form Tight,3,0.0,0.0,1,3,added,6
+NYG,Full House Sneak,pass,p146,PA U Slot Fade,,PA U Slot Fade Slant,pa_pass,I-Form Tight,3,0.0,0.0,1,3,added,6
+NYG,Full House Sneak,pass,p083,U Comebacks,,Comebacks,pass,Weak Wing,3,0.0,0.0,1,3,added,6
+NYG,Gun Empty Trey,run,p144,QB Power,Slot Dagger,QB Power,keeper,Gun Empty Trey,designed,0.0,0.0,1,convert,converted,6
+NYG,Gun Empty Trey,run,p109,QB Draw,Y Stick Nod,QB Draw,keeper,Gun Empty Trey,designed,0.0,0.0,1,convert,converted,6
+NYJ,Pistol Doubles,run,p049,Crack Toss,,Crack Toss,run,Gun Normal Y Off Close,2,2.62,1.27,1,1,added,12
+NYJ,Pistol Doubles,run,p059,01 Trap,,01 Trap,run,Gun Bunch X Nasty,2,3.04,1.27,1,1,added,12
+NYJ,Pistol Doubles,run,p040,Inside Zone Wk,,Inside Zone,run,Gun Bunch X Nasty,2,3.04,1.27,1,1,added,12
+NYJ,I-Form Pro,run,p069,Lead Stretch,,Lead Stretch,run,Weak I,0,0.0,0.0,1,0,added,9
+NYJ,I-Form Pro,run,p066,Inside Zone,,Inside Zone,run,Gun Split Y Off,1,2.92,0.0,1,0,added,9
+NYJ,I-Form Pro,run,p073,RB Draw,,HB Draw,run,Split Backs,1,2.92,0.0,1,0,added,9
+NYJ,Full House,pass,p102,Double Slants,,X Double Slants Whip In,pass,Heavy Wing,2,0.0,0.0,1,2,added,6
+NYJ,Full House,pass,p061,RB Texas,,Texas,pass,I-Form Tight,2,0.0,0.0,1,2,added,6
+NYJ,Full House,pass,p110,U China Out,,U China Out Deep Go,pass,I-Form Tight,3,0.0,0.0,1,3,added,6
+NYJ,Full House Sneak,pass,p110,U China Out,,U China Out Deep Go,pass,I-Form Tight,0,0.0,0.0,1,0,added,6
+NYJ,Full House Sneak,pass,p061,RB Texas,,Texas,pass,I-Form Tight,0,0.0,0.0,1,0,added,6
+NYJ,Full House Sneak,pass,p102,Double Slants,,X Double Slants Whip In,pass,Heavy Wing,3,0.0,0.0,1,3,added,6
+NYJ,Gun Empty Trey,run,p139,QB Power,RB Choice,QB Power,keeper,Gun Empty Trey,designed,0.0,0.0,1,convert,converted,6
+NYJ,Gun Empty Trey,run,p129,QB Draw,Z Curl Combo,QB Draw,keeper,Gun Empty Trey,designed,0.0,0.0,1,convert,converted,6
+NYJ,Gun Wing Slot Offset,run,p058,Inside Zone Split,,Inside Zone Split,run,Pistol Deuce Close,2,3.04,1.27,1,1,added,6
+NYJ,Gun Wing Slot Offset,run,p136,QB Power,,QB Power,keeper,Gun Deuce Close,0,0.0,0.0,1,2,added,6
+NYJ,Gun Wing Slot Offset,run,p036,Y Stick,,Y Stick Skinny Post Hitches,pass,Pistol Deuce Close,2,0.0,0.0,1,2,"added (page filler, pass)",6
+NYJ,Singleback Doubles,run,p049,Crack Toss,,Crack Toss,run,Gun Normal Y Off Close,2,0.0,1.98,1,1,added,12
+NYJ,Singleback Doubles,run,p059,01 Trap,,01 Trap,run,Gun Bunch X Nasty,2,0.0,1.98,1,1,added,12
+NYJ,Singleback Doubles,run,p040,Inside Zone Wk,,Inside Zone,run,Gun Bunch X Nasty,2,0.0,1.98,1,1,added,12
+NYJ,Singleback Doubles Tight,run,p049,Crack Toss,,Crack Toss,run,Gun Normal Y Off Close,0,0.0,0.0,1,0,added,27
+NYJ,Singleback Doubles Tight,run,p059,01 Trap,,01 Trap,run,Gun Bunch X Nasty,0,0.0,0.0,1,0,added,27
+NYJ,Singleback Doubles Tight,run,p040,Inside Zone Wk,,Inside Zone,run,Gun Bunch X Nasty,0,0.0,0.0,1,0,added,27
+OAK,Full House,pass,p041,PA X Fade Curl,,PA X Fade Curl Deep Fade,pa_pass,I-Form Tight,2,0.0,0.0,1,2,added,6
+OAK,Full House,pass,p073,X Hitch Seam,,X Hitch Seam Seam Out Bang,pass,Strong H Tight Close,2,0.0,0.0,1,2,added,6
+OAK,Full House,pass,p051,X Bench,,Bench,pass,Strong H Tight Close,2,0.0,0.0,1,2,added,6
+OAK,Gun Empty Trey,run,p124,QB Power,Z Curl Combo,QB Power,keeper,Gun Empty Trey,designed,0.0,0.0,1,convert,converted,6
+OAK,Gun Empty Trey,run,p118,QB Draw,RB Flood Return,QB Draw,keeper,Gun Empty Trey,designed,0.0,0.0,1,convert,converted,6
+PHI,Full House,pass,p068,PA X Post Go,,PA X Post Go Whip In,pa_pass,Strong H Tight Close,2,0.0,0.0,1,2,added,6
+PHI,Full House,pass,p073,PA X Hook Corner,,PA X Hook Corner Deep Go,pa_pass,Strong H Tight Close,2,0.0,0.0,1,2,added,6
+PHI,Full House,pass,p083,Y Slot Fade,,Y Slot Fade Comeback Go,pass,Strong H Tight Close,2,0.0,0.0,1,2,added,6
+PHI,Full House Sneak,pass,p083,Y Slot Fade,,Y Slot Fade Comeback Go,pass,Strong H Tight Close,0,0.0,0.0,1,0,added,6
+PHI,Full House Sneak,pass,p073,PA X Hook Corner,,PA X Hook Corner Deep Go,pa_pass,Strong H Tight Close,3,0.0,0.0,1,3,added,6
+PHI,Full House Sneak,pass,p081,U China Out,,U China Out Whip In,pass,I-Form Tight,3,0.0,0.0,1,3,added,6
+PHI,Gun Empty Trey,run,p126,QB Draw,RB Zig Flat,QB Draw,keeper,Gun Empty Trey,designed,0.0,0.0,1,convert,converted,6
+PHI,Gun Empty Trey,run,p112,QB Power,RB Cross Dig,QB Power,keeper,Gun Empty Trey,designed,0.0,0.0,1,convert,converted,6
+PHI,Singleback Ace Double Wing,run,p108,Inside Zone Split,,Inside Zone Split,run,Strong Jumbo,0,0.5,0.0,1,0,added,6
+PHI,Singleback Ace Double Wing,run,p114,RB Off Tackle,,HB Off Tackle,run,Strong Jumbo,0,0.5,0.0,1,0,added,6
+PHI,Singleback Ace Double Wing,run,p136,RB Iso,,HB Iso,run,Goal Line,0,0.5,0.0,1,0,added,6
+PIT,Gun Trips TE,run,p045,Power G,,Power G,run,Gun Trey Open,0,0.0,0.0,1,0,added,9
+PIT,Gun Trips TE,run,p047,Crack Toss Wk,,Crack Toss,run,Gun Doubles Tight,0,0.0,0.0,1,0,added,9
+PIT,Gun Trips TE,run,p049,01 Trap,,01 Trap,run,Gun Trey Open,0,0.0,0.0,1,0,added,9
+PIT,Gun Trips TE,run,p027,PA Slot Stick Nod,,,,,,,,,,dropped (listed in another menu),9
+PIT,Gun Trips TE,run,p024,X Snag Post,,,,,,,,,,dropped (listed in another menu),9
+PIT,Gun Trips TE,run,p029,X Dagger,,,,,,,,,,dropped (listed in another menu),9
+PIT,I-Form Pro,run,p100,RB Counter,,HB Counter,run,Singleback FB Wing,0,0.0,0.0,1,0,added,9
+PIT,I-Form Pro,run,p112,Guard Iso,,Guard Iso,run,Split Backs,1,2.92,0.0,1,0,added,9
+PIT,I-Form Pro,run,p062,X Whip Out Dig,,,,,,,,,,dropped (listed in another menu),9
+PIT,I-Form Pro,run,p015,X Snag Deep Go,,,,,,,,,,dropped (listed in another menu),9
+PIT,Full House,pass,p107,FB Slant Flat,,FB Slant Flat Corner Smash,pass,Ace Jumbo,3,0.0,0.0,1,3,added,6
+PIT,Full House,pass,p111,U China Out,,U China Out Steep Slant,pass,I-Form Tight,3,0.0,0.0,1,3,added,6
+PIT,Full House,pass,p018,Max FB Go Shot,,Max FB Go Shot Post Dig,pass,Ace Jumbo,3,0.0,0.0,1,3,added,6
+PIT,Full House Sneak,pass,p107,FB Slant Flat,,FB Slant Flat Corner Smash,pass,Ace Jumbo,0,0.0,0.0,1,0,added,6
+PIT,Full House Sneak,pass,p111,U China Out,,U China Out Steep Slant,pass,I-Form Tight,0,0.0,0.0,1,0,added,6
+PIT,Full House Sneak,pass,p018,Max FB Go Shot,,Max FB Go Shot Post Dig,pass,Ace Jumbo,0,0.0,0.0,1,0,added,6
+PIT,Wing T,run,p100,RB Counter,,HB Counter,run,Singleback FB Wing,1,3.21,0.0,1,0,added,6
+PIT,Wing T,run,p112,Guard Iso,,Guard Iso,run,Split Backs,1,3.21,0.0,1,0,added,6
+PIT,Wing T,run,p066,PA X Sail,,,,,,,,,,dropped (listed in another menu),6
+PIT,Wing T,run,p069,X Steep In Seam,,,,,,,,,,dropped (listed in another menu),6
+PIT,Gun Empty Trey,run,p139,QB Power,Z Snag Spot Out,QB Power,keeper,Gun Empty Trey,designed,0.0,0.0,1,convert,converted,6
+PIT,Gun Empty Trey,run,p115,QB Draw,RB Flood Return,QB Draw,keeper,Gun Empty Trey,designed,0.0,0.0,1,convert,converted,6
+PIT,Ace Jumbo,run,p105,RB Dive Wk,,HB Dive,run,Full House,0,0.0,0.0,1,0,added,6
+PIT,Ace Jumbo,run,p121,Inside Zone,,Inside Zone,run,Full House,0,0.0,0.0,1,0,added,6
+PIT,Ace Jumbo,run,p123,RB Iso Wk,,HB Iso,run,I-Form Tight,0,0.0,0.0,1,0,added,6
+SD,Full House Sneak,pass,p119,RB Texas,,Texas,pass,Full House,0,0.0,0.0,1,0,added,6
+SD,Full House Sneak,pass,p123,Y Post Corner,,Post Corner,pass,Full House,0,0.0,0.0,1,0,added,6
+SD,Full House Sneak,pass,p092,PA Y Mills,,PA Y Mills Deep Go,pa_pass,Weak Wing,2,0.0,0.0,1,2,added,6
+SD,Gun Empty Trey,run,p136,QB Power,Slot Spacing,QB Power,keeper,Gun Empty Trey,designed,0.0,0.0,1,convert,converted,6
+SD,Gun Empty Trey,run,p109,QB Draw,RB Deep Flood,QB Draw,keeper,Gun Empty Trey,designed,0.0,0.0,1,convert,converted,6
+SD,Gun Split Pro,run,p087,RB Toss,,HB Toss,run,I-Form Close,2,3.04,3.25,1,1,added,12
+SD,Gun Split Pro,run,p089,RB Slam,,HB Slam,run,I-Form Pro,2,3.04,3.25,1,1,added,12
+SD,Gun Split Pro,run,p115,RB Off Tackle,,HB Off Tackle,run,Wing T,3,5.02,3.25,1,2,added,12
+SD,Gun Y Trips,run,p068,Outside Zone,,Outside Zone,run,Singleback Ace,2,3.04,1.27,1,1,added,12
+SD,Gun Y Trips,run,p070,Power G,,Power G,run,Pistol Ace,2,3.04,1.27,1,1,added,12
+SD,Gun Y Trips,run,p072,Inside Zone,,Inside Zone,run,Singleback Ace Close,2,3.04,1.27,1,1,added,12
+SEA,Full House Sneak,pass,p142,Y Pivot,,Y Pivot,pass,Full House,0,0.0,0.0,1,0,added,6
+SEA,Full House Sneak,pass,p146,PA U Sail,,PA U Sail Skinny Post Skinny Post,pa_pass,I-Form Tight,3,0.0,0.0,1,3,added,6
+SEA,Full House Sneak,pass,p147,PA U Slot Fade,,PA U Slot Fade Fade,pa_pass,I-Form Tight,3,0.0,0.0,1,3,added,6
+SEA,Gun Empty Trey,run,p135,QB Draw,Slot Return Flood,QB Draw,keeper,Gun Empty Trey,designed,0.0,0.0,1,convert,converted,3
+SF,Full House,pass,p084,PA Y China,,PA Y China Comeback,pa_pass,Strong H Tight Close,2,0.0,0.0,1,2,added,6
+SF,Full House,pass,p097,Max X Post Go,,Max X Post Go Hitch and Go,pass,I-Form Tight,2,0.0,0.0,1,2,added,6
+SF,Full House,pass,p083,PA U Whip Curl,,PA U Whip Curl,pa_pass,I-Form Tight,3,0.0,0.0,1,3,added,6
+SF,Full House Sneak,pass,p084,PA Y China,,PA Y China Comeback,pa_pass,Strong H Tight Close,0,0.0,0.0,1,0,added,6
+SF,Full House Sneak,pass,p087,U Whip,,U Whip Out and Up Deep Go,pass,I-Form Tight,3,0.0,0.0,1,3,added,6
+SF,Full House Sneak,pass,p097,Max X Post Go,,Max X Post Go Hitch and Go,pass,I-Form Tight,3,0.0,0.0,1,3,added,6
+SF,Gun Empty Trey,run,p137,QB Power,Slot Y Trail,QB Power,keeper,Gun Empty Trey,designed,0.0,0.0,1,convert,converted,6
+SF,Gun Empty Trey,run,p127,QB Draw,RB Curls Seams,QB Draw,keeper,Gun Empty Trey,designed,0.0,0.0,1,convert,converted,6
+SF,Gun Split Pro,run,p005,Wide Zone Weak,,Outside Zone,run,I-Form Pro,2,3.04,3.25,1,1,added,12
+SF,Gun Split Pro,run,p093,RB Lead Draw,,HB Lead Draw,run,I-Form Pro,2,3.04,3.25,1,1,added,12
+SF,Gun Split Pro,run,p142,Power G,,Power G,run,Pistol Strong,2,3.04,1.27,1,1,added,12
+SF,Singleback FB Wing,run,p005,Wide Zone Weak,,Outside Zone,run,I-Form Pro,0,0.0,0.0,1,0,added,9
+SF,Singleback FB Wing,run,p093,RB Lead Draw,,HB Lead Draw,run,I-Form Pro,0,0.0,0.0,1,0,added,9
+SF,Singleback FB Wing,run,p143,Inside Zone,,Inside Zone,run,Wing T,1,3.21,0.0,1,0,added,9
+STL,Full House Sneak,pass,p135,RB Texas,,Texas,pass,Full House,0,0.0,0.0,1,0,added,6
+STL,Full House Sneak,pass,p018,PA U Seam Shot,,PA U Seam Shot Quick Out,pa_pass,I-Form Tight,3,0.0,0.0,1,3,added,6
+STL,Full House Sneak,pass,p115,PA X Out Seam,,PA X Out Seam Seam Out Steep Slant,pa_pass,I-Form Tight,3,0.0,0.0,1,3,added,6
+STL,Gun Empty Trey,run,p149,QB Power,RB Corner Strike,QB Power,keeper,Gun Empty Trey,designed,0.0,0.0,1,convert,converted,6
+STL,Gun Empty Trey,run,p019,QB Draw,Z Deep Post,QB Draw,keeper,Gun Empty Trey,designed,0.0,0.0,1,convert,converted,6
+STL,Gun Ace Flex,run,p064,Crack Toss,,Crack Toss,run,Singleback Ace Bunch,2,3.04,3.25,1,1,added,12
+STL,Gun Ace Flex,run,p055,PA Z Corner Post,,,,,,,,,,dropped (listed in another menu),12
+TB,I-Form Tight,run,p121,Pin Pull Sweep,,Pin Pull Sweep,run,Full House,0,0.0,0.0,1,0,added,6
+TB,I-Form Tight,run,p133,Inside Zone Split Wk,,Inside Zone Split,run,Full House,0,0.0,0.0,1,0,added,6
+TB,I-Form Tight,run,p143,RB Slam,,HB Slam,run,Full House,0,0.0,0.0,1,0,added,6
+TB,Wing T,pass,p065,PA X Sail Return,,PA X Sail Return Flag,pa_pass,Wing T,0,0.0,0.0,1,0,added,6
+TB,Wing T,pass,p108,FB Screen,,FB Screen,pass,I-Form Pro,1,0.0,0.0,1,1,added,6
+TB,Wing T,pass,p011,PA Z Go Shot,,PA Z Go Shot Fade Stop,pa_pass,I-Form Pro,3,0.0,0.0,1,3,added,6
+TB,Gun Empty Trey,run,p128,QB Power,Slot Flood Return,QB Power,keeper,Gun Empty Trey,designed,0.0,0.0,1,convert,converted,6
+TB,Pistol Ace,run,p067,Crack Toss,,Crack Toss,run,Singleback Ace,0,0.0,0.0,1,0,added,9
+TB,Pistol Ace,run,p070,RB Sweep,,HB Sweep,run,Pistol Y Trips,0,0.0,0.0,1,0,added,9
+TB,Pistol Ace,run,p112,Zone Toss Wk,,Zone Toss,run,Gun Ace Wing,2,3.04,1.27,1,1,added,9
+TEN,I-Form Tight,run,p103,RB Slam,,HB Slam,run,Full House,0,0.0,0.0,1,0,added,6
+TEN,I-Form Tight,run,p128,RB Dive,,HB Dive,run,Full House,0,0.0,0.0,1,0,added,6
+TEN,I-Form Tight,run,p117,RB Lead Draw,,HB Lead Draw,run,Full House Sneak,1,2.64,0.0,1,0,added,6
+TEN,Gun Empty Trey,run,p119,QB Power,RB Slants,QB Power,keeper,Gun Empty Trey,designed,0.0,0.0,1,convert,converted,6
+TEN,Gun Wing Slot Offset,run,p134,01 Trap,,01 Trap,run,Gun Deuce Close,0,0.0,0.0,1,0,added,6
+TEN,Gun Wing Slot Offset,run,p137,Power G,,Power G,run,Gun Wing Slot Offset,0,0.0,0.0,1,0,added,6
+TEN,Gun Wing Slot Offset,run,p054,Counter GT,,Counter GT,run,Pistol Deuce Close,2,3.04,1.27,1,1,added,6
+TEN,Pistol Doubles Y Off,run,p041,RB Counter Wk,,HB Counter,run,Pistol Doubles,0,0.0,0.0,1,0,added,21
+TEN,Pistol Doubles Y Off,run,p042,Crack Toss,,Crack Toss,run,Pistol Trey,0,0.0,0.0,1,0,added,21
+TEN,Pistol Doubles Y Off,run,p067,Lead Stretch,,Lead Stretch,run,Gun Tight Slots,2,2.62,1.27,1,1,added,21
+WAS,Singleback Doubles,run,p075,Inside Zone Split,,Inside Zone Split,run,Gun Doubles Clamp Stack,2,2.62,3.25,1,1,added,15
+WAS,Singleback Doubles,run,p046,Pin Pull Sweep,,Pin Pull Sweep,run,Gun Bunch X Nasty,2,3.04,3.25,1,1,added,15
+WAS,Singleback Doubles,run,p038,RB Stretch,,HB Stretch,run,Gun Trips TE,2,3.04,3.25,1,1,added,15
+WAS,Full House,pass,p109,RB Texas,,Texas,pass,Pistol Full House,1,0.0,0.0,1,1,added,6
+WAS,Full House,pass,p065,PA X Snag,,PA X Snag Post Corner,pa_pass,I-Form Tight,2,0.0,0.0,1,2,added,6
+WAS,Full House,pass,p124,PA X Slant Flat Out,,PA X Slant Flat Out,pa_pass,Weak Wing,2,0.0,0.0,1,2,added,6
+WAS,Gun Empty Trey,run,p136,QB Draw,Slot Choice Out,QB Draw,keeper,Gun Empty Trey,designed,0.0,0.0,1,convert,converted,6
+WAS,Gun Empty Trey,run,p117,QB Power,Z Curl Combo,QB Power,keeper,Gun Empty Trey,designed,0.0,0.0,1,convert,converted,6
+WAS,Gun Wing Slot Offset,run,p099,Inside Zone Wk,,Inside Zone,run,Gun Deuce Close,0,0.0,0.0,1,0,added,6
+WAS,Gun Wing Slot Offset,run,p132,01 Trap,,01 Trap,run,Gun Deuce Close,0,0.0,0.0,1,0,added,6
+WAS,Gun Wing Slot Offset,run,p060,RB Sweep,,HB Sweep,run,Pistol Deuce Close,2,3.04,1.27,1,1,added,6

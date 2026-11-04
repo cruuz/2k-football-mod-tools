@@ -5,6 +5,7 @@ from __future__ import annotations
 import csv
 import copy
 import errno
+from contextlib import contextmanager
 from dataclasses import dataclass
 from functools import lru_cache
 import hashlib
@@ -938,6 +939,11 @@ class Nfl2k5StudioFacade:
         self._lock = threading.RLock()
         self._audio_preparation_lock = threading.Lock()
         self._preview_io_lock = threading.Lock()
+        # b780 Q52: while a project archive is written (a named save or a recovery snapshot) the writer holds _lock
+        # only to keep changes out; it changes nothing itself. The GUI's read-only properties read beside it
+        # (_read_lock) instead of waiting seconds, and a Build choice made meanwhile waits in _pending_build_settings.
+        self._archive_reads = threading.Condition()
+        self._beside = threading.local()
 
     @property
     def uniform_catalog(self):
@@ -951,21 +957,93 @@ class Nfl2k5StudioFacade:
             self._visual_catalog = load_nfl2k5_product_visual_catalog()
         return self._visual_catalog
 
+    # b780 Q52 defaults; a facade made without __init__ (some tests) creates the condition and the thread state lazily
+    _archive_writing = False
+    _archive_readers = 0
+    _pending_build_settings = None
+
+    def _reads(self) -> threading.Condition:
+        reads = self.__dict__.get("_archive_reads")
+        return reads if reads is not None else self.__dict__.setdefault("_archive_reads", threading.Condition())
+
+    def _beside_state(self) -> threading.local:
+        beside = self.__dict__.get("_beside")
+        return beside if beside is not None else self.__dict__.setdefault("_beside", threading.local())
+
+    @contextmanager
+    def _read_lock(self):
+        """The facade lock for a read-only property, without waiting behind a project archive write (b780 Q52).
+
+        A 13,000-edit project took about 4 s per recovery snapshot and the GUI thread's own reads of
+        modified_count and modified_asset_ids waited the whole time, freezing the window on every Build-tab
+        change. The archive writer reads the session and changes nothing, and it holds _lock until every
+        reader that came in beside it has finished, so no change can start while such a read runs.
+        """
+        beside_state = self._beside_state()
+        if getattr(beside_state, "depth", 0):
+            yield          # nested in a read already running beside the writer, which waits for it
+            return
+        if self._lock.acquire(blocking=False):
+            try:
+                yield
+            finally:
+                self._lock.release()
+            return
+        reads = self._reads()
+        with reads:
+            beside = self._archive_writing
+            if beside:
+                self._archive_readers += 1
+        if not beside:
+            with self._lock:
+                yield
+            return
+        beside_state.depth = 1
+        try:
+            yield
+        finally:
+            beside_state.depth = 0
+            with reads:
+                self._archive_readers -= 1
+                reads.notify_all()
+
+    @contextmanager
+    def _archive_write(self):
+        """Mark the archive write (call with _lock held); readers may read beside it until it ends."""
+        reads = self._reads()
+        with reads:
+            self._archive_writing = True
+        try:
+            yield
+        finally:
+            with reads:
+                self._archive_writing = False
+                while self._archive_readers:
+                    reads.wait()
+            self._apply_pending_build_settings()
+
+    def _apply_pending_build_settings(self) -> None:
+        """Store a Build choice made during an archive write (call with _lock held)."""
+        with self._reads():
+            pending, self._pending_build_settings = self._pending_build_settings, None
+        if pending is not None and self._session is not None:
+            self._session.set_build_settings(pending)
+
     @property
     def source_ready(self) -> bool:
-        with self._lock:
+        with self._read_lock():
             return self._session is not None
 
     @property
     def source_display_name(self) -> str:
-        with self._lock:
+        with self._read_lock():
             return self._source_name
 
     @property
     def source_path(self) -> Path | None:
         """Return the active private source path for local recovery metadata."""
 
-        with self._lock:
+        with self._read_lock():
             cache = self._cache
             return (
                 Path(os.path.abspath(os.fspath(cache.source.selected_path)))
@@ -1010,12 +1088,12 @@ class Nfl2k5StudioFacade:
     def source_sha256(self) -> str | None:
         """Return the active source identity without exposing any game bytes."""
 
-        with self._lock:
+        with self._read_lock():
             return self._cache.source.sha256 if self._cache is not None else None
 
     @property
     def modified_asset_ids(self) -> Iterable[str]:
-        with self._lock:
+        with self._read_lock():
             return (
                 self._session.modified_asset_ids if self._session is not None
                 else frozenset()
@@ -1023,14 +1101,14 @@ class Nfl2k5StudioFacade:
 
     @property
     def modified_count(self) -> int:
-        with self._lock:
+        with self._read_lock():
             return self._session.modified_count if self._session is not None else 0
 
     @property
     def project_metadata_count(self) -> int:
         """Return authored metadata rows that do not alter a built XISO."""
 
-        with self._lock:
+        with self._read_lock():
             return (
                 self._session.project_metadata_count
                 if self._session is not None
@@ -1040,7 +1118,7 @@ class Nfl2k5StudioFacade:
 
     @property
     def can_undo(self) -> bool:
-        with self._lock:
+        with self._read_lock():
             return bool(self._session and self._session.can_undo)
 
     @property
@@ -1139,7 +1217,7 @@ class Nfl2k5StudioFacade:
 
     @property
     def last_build_output(self) -> Path | None:
-        with self._lock:
+        with self._read_lock():
             return self._last_build.output_xiso if self._last_build else None
 
     @property
@@ -1354,7 +1432,7 @@ class Nfl2k5StudioFacade:
 
     @property
     def text_available(self) -> bool:
-        with self._lock:
+        with self._read_lock():
             return self._text_catalog is not None
 
     def text_catalog_snapshot(
@@ -1461,7 +1539,7 @@ class Nfl2k5StudioFacade:
 
     @property
     def modified_crib_asset_ids(self) -> Iterable[str]:
-        with self._lock:
+        with self._read_lock():
             return (
                 self._session.modified_crib_asset_ids
                 if self._session is not None
@@ -1523,7 +1601,7 @@ class Nfl2k5StudioFacade:
 
     @property
     def modified_crib_model_scene_ids(self) -> frozenset[str]:
-        with self._lock:
+        with self._read_lock():
             session = self._session
             if session is None or not hasattr(
                 session, "modified_crib_model_scene_ids"
@@ -1595,7 +1673,7 @@ class Nfl2k5StudioFacade:
 
     @property
     def modified_audio_asset_ids(self) -> Iterable[str]:
-        with self._lock:
+        with self._read_lock():
             return (
                 self._session.modified_audio_asset_ids
                 if self._session is not None and
@@ -1606,7 +1684,7 @@ class Nfl2k5StudioFacade:
     def audio_editing_ready(self) -> bool:
         """Cheaply report whether first-edit private safety data is available."""
 
-        with self._lock:
+        with self._read_lock():
             cache = self._cache
             service = self._audio_service
             return bool(
@@ -1809,7 +1887,7 @@ class Nfl2k5StudioFacade:
 
     @property
     def labeled_audio_asset_ids(self) -> Iterable[str]:
-        with self._lock:
+        with self._read_lock():
             session = self._session
             return (
                 session.labeled_audio_asset_ids
@@ -2321,7 +2399,7 @@ class Nfl2k5StudioFacade:
     def playbook_available(self) -> bool:
         """The source index can construct the private PLAY service on demand."""
 
-        with self._lock:
+        with self._read_lock():
             return self._universal_index is not None
 
     def browse_playbooks(
@@ -3119,7 +3197,7 @@ class Nfl2k5StudioFacade:
 
     @property
     def stadium_available(self) -> bool:
-        with self._lock:
+        with self._read_lock():
             return self._session is not None and (
                 self._stadium_studio is not None
                 or self._stadium_cache_coordinator is not None
@@ -3594,13 +3672,36 @@ class Nfl2k5StudioFacade:
 
     def project_build_settings(self):
         """A detached map for restoring the Build and Music pages."""
-        with self._lock:
+        with self._read_lock():
+            pending = self._pending_build_settings
+            if pending is not None:   # b780 Q52: a choice made during an archive write, stored when it ends
+                from mod_editor.core.nfl2k5_build_settings import build_settings
+                return build_settings(pending)
             return self._require_session().build_settings
 
     def set_project_build_settings(self, value):
-        """Keep personal Build choices with named and recovery project saves."""
-        with self._lock:
+        """Keep personal Build choices with named and recovery project saves.
+
+        b780 Q52: during a project archive write the choice is checked now and stored when the write ends, so a
+        Build-tab change never waits for a recovery snapshot of a big project.
+        """
+        if not self._lock.acquire(blocking=False):
+            reads = self._reads()
+            with reads:
+                writing = self._archive_writing
+            if writing:
+                from mod_editor.core.nfl2k5_build_settings import build_settings
+                checked = build_settings(value)          # a bad value is still refused at once
+                with reads:
+                    if self._archive_writing:
+                        self._pending_build_settings = checked
+                        return
+            self._lock.acquire()
+        try:
+            self._apply_pending_build_settings()
             self._require_session().set_build_settings(value)
+        finally:
+            self._lock.release()
 
     def save_project(
         self,
@@ -3619,7 +3720,8 @@ class Nfl2k5StudioFacade:
                 save_keywords["expected_target"] = expected_target
             if allow_empty:
                 save_keywords["allow_empty"] = True
-            path = session.save_shareable_project(destination, **save_keywords)
+            with self._archive_write():   # b780 Q52: the GUI's reads go on beside the write
+                path = session.save_shareable_project(destination, **save_keywords)
             identity = project_target_identity(path)
         progress("Project saved", 1, 1)
         return StudioOperationResult(
@@ -3648,9 +3750,11 @@ class Nfl2k5StudioFacade:
                 raise ValidationError(
                     "The loaded source changed before recovery could be saved."
                 )
-            path = self._require_session().save_shareable_project(
-                destination, replace=True, allow_empty=True
-            )
+            session = self._require_session()
+            with self._archive_write():   # b780 Q52: the GUI's reads go on beside the write
+                path = session.save_shareable_project(
+                    destination, replace=True, allow_empty=True
+                )
         progress("Recovery snapshot saved", 1, 1)
         return StudioOperationResult("Recovery snapshot updated.", path)
 

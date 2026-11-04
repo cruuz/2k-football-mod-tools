@@ -14,6 +14,14 @@ candidate, most of them into the appended records. This tool writes the retail-c
   rule: the most that keep the two-team import floor (106) plus the Create Player margin after the import floor,
   decided by the real refresh writer on the refresh's pinned base (the base fa3 and fa4 used, checked by SHA-256).
 
+b780 rst2 (Q41): the 11/03 refresh also creates real players for the clubs' 53-man rosters (rows marked ``club_new``,
+tools/b780/rst2_create_players.py), far more than the retail vacancies hold. They compete with the depth rows for the
+vacancies, most important first: the club's kicker, punter and long snapper, then its kick and punt returners, then charted
+starters (chart rank 1) by overall, then the other active players by chart rank, then practice-squad players. A club
+player who does not fit is removed from his club (active or practice squad list, contract, guard), the club's chains
+are renumbered in their old order, a specialist role he held goes to the next player at the position, and he is listed
+as unrepresented (no vacant create record at retail capacity).
+
 It refuses a document whose other rows need appended records. ``validate`` (run after ``fit`` unless --no-validate)
 checks the variant with the build's own roster writers: the document checks, mod_build's capacity and champions-history
 decisions, the refresh + import floor, college heal and created history on the pinned base (read-back, body size,
@@ -61,6 +69,8 @@ SCHEMA = "nfl2k5.roster_retail_fit.v1"
 XBE_SECTIONS = ("draft_pick_ownership", "hback_roles")   # the roster edits' own XBE steps (scale-out owners)
 RETAIL_PRIMARY = capacity.PRIMARY_AFTER          # 2619 primary records: the retail main ROST (and every grown one's base)
 DEPTH_KEY = "fa3_priority"
+CLUB_KEY = "club_new"           # b780 rst2: a real player created for a club's 53-man roster
+ACTIVE_STATUSES = ("ACT", "INA")
 
 
 class RetailFitError(ValueError):
@@ -96,6 +106,39 @@ def depth_rows(refresh: dict, *, contiguous: bool = True) -> list[dict]:
     return rows
 
 
+def is_droppable(row: dict) -> bool:
+    """A row the retail variant may leave out: a dated free-agent depth row or a real player created for a club."""
+    return DEPTH_KEY in row or bool(row.get(CLUB_KEY))
+
+
+def club_rows(refresh: dict) -> list[dict]:
+    return [p for p in refresh.get("players") or [] if p.get(CLUB_KEY)]
+
+
+def overall(row: dict) -> int:
+    """The game's own overall of a row's ratings and position (0 for a row without them)."""
+    from mod_editor.core.nfl2k5_my_career_prospects import native_overall
+    fields = row.get("fields") or {}
+    if "position" not in fields or not set(rr.RATING_BYTE_ORDER) <= set(fields):
+        return 0
+    record = rr.PlayerRecord.decode(bytes(rr.PLAYER_SIZE), scheme="one_pool", reference_year=2026)
+    for key in (*rr.RATING_BYTE_ORDER, "position"):
+        record.set(key, fields[key])
+    return int(native_overall(record))
+
+
+def importance(refresh: dict, row: dict) -> tuple:
+    """Lower is more important: his club's kicker, punter or long snapper; its kick or punt returner; a charted starter;
+    another active player by chart rank (a player the chart does not list is the deepest); a practice-squad player."""
+    roles = {role for t in refresh.get("teams") or [] for role, holder in (t.get("specialists") or {}).items()
+             if holder == row["index"]}
+    source = row.get("depth_source") or {}
+    rank = int(source["pos_rank"]) if str(source.get("pos_rank", "")).isdigit() else 99
+    active = row.get("status") in ACTIVE_STATUSES
+    cls = 0 if roles & {"k", "h", "ls"} else 1 if roles & {"kr1", "pr"} else 2 if active and rank == 1 else 3 if active else 4
+    return (cls, rank, -overall(row), row["index"])
+
+
 def _indices(document: dict) -> dict[str, list[int]]:
     """Every primary record index the document addresses, by section, except the depth rows and their pointers."""
     out: dict[str, list[int]] = {}
@@ -116,9 +159,9 @@ def _indices(document: dict) -> dict[str, list[int]]:
             if isinstance(role, dict) and str(role.get("pool", "primary")) == "primary":
                 add("special_teams", role.get("index"))
     refresh = document.get("roster_refresh") or {}
-    depth = {p["index"] for p in refresh.get("players") or [] if DEPTH_KEY in p}
+    depth = {p["index"] for p in refresh.get("players") or [] if is_droppable(p)}
     for row in refresh.get("players") or []:
-        if DEPTH_KEY not in row:
+        if not is_droppable(row):
             add("roster_refresh.players", row.get("index"))
     for guard in refresh.get("identity_guards") or []:
         add("roster_refresh.identity_guards", guard[0])
@@ -151,7 +194,7 @@ def pinned_depth(document: dict) -> list[int]:
     kept first and every reference follows their new index. Any other row that needs an appended record refuses."""
     needs = capacity_dependencies(document)
     refresh = document.get("roster_refresh") or {}
-    depth = {p["index"] for p in refresh.get("players") or [] if DEPTH_KEY in p}
+    depth = {p["index"] for p in refresh.get("players") or [] if is_droppable(p)}
     other = {k: v for k, v in needs.items() if k not in REMAPPABLE or not set(v) <= depth}
     require(not other, "these rows need appended capacity records, not only the depth free agents: "
             + "; ".join(f"{k} {v[:5]}" for k, v in other.items()))
@@ -181,35 +224,110 @@ def remap(refresh: dict, mapping: dict[int, int]) -> dict:
     return out
 
 
-def ordered_rows(rows: list[dict], pinned) -> list[dict]:
-    """The depth rows the fit keeps first: the pinned ones, then the rest, each in priority order."""
+def ordered_rows(rows: list[dict], pinned, refresh: dict | None = None) -> list[dict]:
+    """The rows the fit keeps first: the pinned ones (on a club: most important first when ``refresh`` is given, else in
+    the order they come), then the rest in their order (depth priority)."""
     pinned = set(pinned)
-    return [r for r in rows if r["index"] in pinned] + [r for r in rows if r["index"] not in pinned]
+    first = [r for r in rows if r["index"] in pinned]
+    if refresh is not None:
+        first.sort(key=lambda r: importance(refresh, r))
+    return first + [r for r in rows if r["index"] not in pinned]
 
 
 def split(refresh: dict) -> tuple[dict, list[dict]]:
-    """(the refresh without the depth rows and their free-agent pointers, the depth rows in priority order)."""
+    """(the refresh without the droppable rows and their free-agent pointers, the depth rows in priority order followed by
+    the created club rows in document order)."""
     rows = depth_rows(refresh)
-    depth = {p["index"] for p in rows}
+    extra = club_rows(refresh)
+    gone = {p["index"] for p in rows} | {p["index"] for p in extra}
     stripped = copy.deepcopy(refresh)
-    stripped["players"] = [p for p in refresh.get("players") or [] if DEPTH_KEY not in p]
-    stripped["free_agents"] = [x for x in refresh.get("free_agents") or [] if x not in depth]
-    return stripped, rows
+    stripped["players"] = [p for p in refresh.get("players") or [] if not is_droppable(p)]
+    stripped["free_agents"] = [x for x in refresh.get("free_agents") or [] if x not in gone]
+    return stripped, rows + extra
+
+
+RETURNER_POSITIONS = ("HB", "WR", "CB", "FS", "SS", "FB")
+
+
+def _chains(team: dict, rows: dict) -> dict[int, list[int]]:
+    chains: dict[int, list[int]] = {}
+    for index in team["active"]:
+        if index in rows:                                   # every club player has a row in a real plan
+            chains.setdefault(rows[index]["fields"].get("position"), []).append(index)
+    for members in chains.values():
+        members.sort(key=lambda i: (rows[i]["fields"].get("depth_rank", 7), rows[i]["fields"].get("depth_side", 7), i))
+    return chains
+
+
+def drop_club_players(plan: dict, gone: set, lost: list[dict]) -> dict:
+    """``plan`` without the club players in ``gone`` (changed in place): off their club's lists, contract initializers and
+    guards; the club's chains renumbered in their old order; a specialist role they held goes to the next player."""
+    from mod_editor.core import nfl2k5_roster_refresh as writer
+    rows = {r["index"]: r for r in plan["players"]}
+    names = rr.SCHEME_POSITION_NAMES["one_pool"]
+    code = {name: i for i, name in enumerate(names)}
+    for team in plan["teams"]:
+        held = set(team["active"]) | set(team["reserves"]) | {v for v in team["specialists"].values() if v is not None}
+        if not held & gone:
+            continue
+        team["active"] = [i for i in team["active"] if i not in gone]
+        team["reserves"] = [i for i in team["reserves"] if i not in gone]
+        chains = _chains(team, rows)
+        for members in chains.values():
+            for order, index in enumerate(members):
+                rank, side = writer.native_depth_pair(order)
+                rows[index]["fields"]["depth_rank"], rows[index]["fields"]["depth_side"] = rank, side
+        spec = team["specialists"]
+
+        def nth(position, n=0):
+            members = chains.get(code[position], [])
+            return members[n] if len(members) > n else None
+
+        if spec.get("k") in gone:
+            spec["k"] = nth("K")
+        if spec.get("h") in gone:
+            spec["h"] = nth("P")
+        if spec.get("ls") in gone:
+            spec["ls"] = nth("C", 1) or (chains.get(code["TE"], [])[1:] or [None])[-1]
+        for role in ("kr1", "kr2", "pr"):
+            if spec.get(role) in gone:
+                spec[role] = None
+        taken = {v for v in spec.values() if v is not None}
+        pool = sorted((i for position in RETURNER_POSITIONS for i in chains.get(code[position], []) if i not in taken),
+                      key=lambda i: (RETURNER_POSITIONS.index(names[rows[i]["fields"]["position"]]),
+                                     rows[i]["fields"].get("depth_rank", 7), i))
+        for role in ("kr1", "pr"):
+            if spec.get(role) is None and pool:
+                spec[role] = pool.pop(0)
+    plan["contract_initializations"] = [c for c in plan.get("contract_initializations") or [] if c["index"] not in gone]
+    plan["identity_guards"] = [g for g in plan.get("identity_guards") or [] if g[0] not in gone]
+    plan["free_agents"] = [i for i in plan.get("free_agents") or [] if i not in gone]
+    plan["unrepresented"] = list(plan.get("unrepresented") or []) + [
+        {"gsis_id": r.get("gsis_id"), "name": f"{r.get('first')} {r.get('last')}", "status": r.get("status"),
+         "team": r.get("team"), "source": r.get("source"), "reason": "no vacant create record at retail capacity (64 MB)"}
+        for r in lost]
+    return plan
 
 
 def plan_with(stripped: dict, rows: list[dict], vacant: list[int], count: int, pinned=()) -> dict:
-    """``stripped`` plus the first ``count`` depth rows on the first ``count`` vacancies (fa3.extend_plan's addressing).
-    A pinned row (one the refresh signed to a club) is not a free agent; the club lists and contracts follow it."""
-    require(0 <= count <= min(len(rows), len(vacant)), f"{count} depth rows for {len(vacant)} vacant records")
+    """``stripped`` plus the first ``count`` rows on the first ``count`` vacancies (fa3.extend_plan's addressing).
+    A pinned row (one the refresh put on a club) is not a free agent; the club lists and contracts follow it. A pinned row
+    past ``count`` is removed from its club (drop_club_players), before anything is re-addressed: a new address can equal
+    the old address of a row that was left out."""
+    require(0 <= count <= min(len(rows), len(vacant)), f"{count} rows for {len(vacant)} vacant records")
     pinned = set(pinned)
-    require(count >= len(pinned), f"{len(pinned)} signed depth free agents need at least {len(pinned)} records")
     out = copy.deepcopy(stripped)
+    first = len(out["players"])
+    out["players"].extend(copy.deepcopy(r) for r in rows[:count])        # still at their own indices, as the lists name them
+    lost = [r for r in rows[count:] if r["index"] in pinned]
+    if lost:
+        drop_club_players(out, {r["index"] for r in lost}, lost)
     mapping = {}
-    for index, row in zip(vacant, rows[:count]):
-        moved = copy.deepcopy(row)
+    for k, (index, row) in enumerate(zip(vacant, rows[:count])):
+        moved = out["players"][first + k]
         moved["index"] = index
-        moved["fields"] = dict(moved["fields"], photo_id=fa3.PHOTO_BASE + index)
-        out["players"].append(moved)
+        if DEPTH_KEY in moved:
+            moved["fields"] = dict(moved["fields"], photo_id=fa3.PHOTO_BASE + index)
         if row["index"] in pinned:
             mapping[row["index"]] = index
         else:
@@ -232,13 +350,12 @@ def fit(base: bytes, stripped: dict, rows: list[dict], margin: int = fa3.DEFAULT
             except (rr.RosterRecordError, capacity.SpareCapacityError, RetailFitError) as exc:
                 cache[n] = (False, None, {"refused": str(exc)})
             if progress:
-                progress(f"{n} depth free agents: {'fit' if cache[n][0] else 'do not fit'} "
+                progress(f"{n} rows: {'fit' if cache[n][0] else 'do not fit'} "
                          f"({cache[n][2].get('vacancies_after', cache[n][2].get('refused'))})")
         return cache[n]
 
-    floor_n = len(set(pinned))
-    require(trial(floor_n)[0], f"the refresh alone keeps fewer than {want} import vacancies at retail capacity")
-    lo, hi = floor_n, min(len(rows), len(vacant))
+    require(trial(0)[0], f"the refresh alone keeps fewer than {want} import vacancies at retail capacity")
+    lo, hi = 0, min(len(rows), len(vacant))
     while lo < hi:                          # vacancies fall as players are added: the largest n that still fits
         mid = (lo + hi + 1) // 2
         lo, hi = (mid, hi) if trial(mid)[0] else (lo, mid - 1)
@@ -258,30 +375,45 @@ def retail_variant(document: dict, base: bytes, *, margin: int = fa3.DEFAULT_MAR
     require(len(base) == capacity.BODY_SIZE, "the base must be a 0x90F60-byte main ROST body")
     pinned = pinned_depth(document)
     stripped, rows = split(document["roster_refresh"])
-    rows = ordered_rows(rows, pinned)
+    rows = ordered_rows(rows, pinned, document["roster_refresh"])
     count, vacant, body, floor = fit(base, stripped, rows, margin, progress, pinned)
     out = copy.deepcopy(document)
     out["roster_refresh"] = plan_with(stripped, rows, vacant, count, pinned)
+    # b780 IR1: modern injured reserve is forced off at 64 MB, so an injured player cannot start on the club's IR there:
+    # the variant releases players for room (charted starters protected) as the pre-IR plans did
+    out["roster_refresh"]["room_policy"] = "release"
     out.pop("free_agent_capacity", None)
     old = document.get("fa3_free_agent_depth") or {}
+    kept_rows, left_rows = rows[:count], rows[count:]
+    depth_kept = [r for r in kept_rows if DEPTH_KEY in r]
+    depth_left = [r for r in left_rows if DEPTH_KEY in r]
+    club_kept = [r for r in kept_rows if r.get(CLUB_KEY)]
+    club_left = [r for r in left_rows if r.get(CLUB_KEY)]
+    name = lambda r: f"{r['first']} {r['last']}"  # noqa: E731
     receipt = {"schema": SCHEMA, "source_sha256": source_sha256, "base_sha256": sha256(base), "margin_target": margin,
-               "retail_primary": RETAIL_PRIMARY, "depth_candidates": len(rows), "depth_kept": count,
-               "depth_dropped": len(rows) - count, "vacant_records": len(vacant),
+               "retail_primary": RETAIL_PRIMARY, "depth_candidates": len(depth_kept) + len(depth_left),
+               "depth_kept": len(depth_kept), "depth_dropped": len(depth_left),
+               "club_players_candidates": len(club_kept) + len(club_left), "club_players_kept": len(club_kept),
+               "club_players_dropped": len(club_left),
+               "club_players_kept_names": [f"{name(r)} {r['team']} {r['fields'].get('position')}" for r in club_kept],
+               "club_players_dropped_names": [f"{name(r)} {r['team']}" for r in club_left],
+               "vacant_records": len(vacant),
                "vacancies_used_by_depth": count, "vacancies_left_for_depth": len(vacant) - count,
                "free_agents_before": len((document["roster_refresh"]).get("free_agents") or []),
                "free_agents_after": len(out["roster_refresh"]["free_agents"]),
                "import_vacancies_after_floor": floor["vacancies_after"], "import_floor": capacity.IMPORT_FLOOR,
                "import_floor_added_records": floor.get("added_records"), "primary_after_floor": floor.get("primary_after"),
                "removed_capacity_records": (document.get("free_agent_capacity") or {}).get("records", 0),
-               "signed_depth_kept": [{"old_index": r["index"], "index": i, "name": f"{r['first']} {r['last']}"}
-                                     for i, r in zip(vacant, rows[:count]) if r["index"] in set(pinned)],
+               "signed_depth_kept": [{"old_index": r["index"], "index": i, "name": name(r)}
+                                     for i, r in zip(vacant, kept_rows) if r["index"] in set(pinned) and DEPTH_KEY in r],
                "final_body_sha256": sha256(body)}
     out["fa3_free_agent_depth"] = {
         **{k: old[k] for k in ("data", "data_sha256", "as_of") if k in old},
-        "added": count, "candidates": len(rows), "margin": floor["vacancies_after"] - capacity.IMPORT_FLOOR,
+        "added": len(depth_kept), "candidates": len(depth_kept) + len(depth_left),
+        "margin": floor["vacancies_after"] - capacity.IMPORT_FLOOR,
         "import_vacancies_after_floor": floor["vacancies_after"], "floor": capacity.IMPORT_FLOOR,
-        "names": [f"{p['first']} {p['last']}" for p in rows[:count]],
-        "left_out": [f"{p['first']} {p['last']}" for p in rows[count:]],
+        "names": [name(p) for p in depth_kept],
+        "left_out": [name(p) for p in depth_left],
         "base_sha256": sha256(base), "final_body_sha256": sha256(body), "capacity_arena": False,
         "retail_capacity": receipt}
     receipt["dropped_xbe_sections"] = [k for k in XBE_SECTIONS if drop_xbe_sections and k in out]
@@ -334,25 +466,42 @@ def validate(variant: dict, source: dict, base: bytes, *, margin: int = fa3.DEFA
           f"{len(refresh['free_agents'])} free agents")
     check("no other row addresses an appended record", not capacity_dependencies(variant))
     kept, rows = depth_rows(refresh, contiguous=False), depth_rows(source_refresh)
+    club_kept, club_all = club_rows(refresh), club_rows(source_refresh)
     pinned = pinned_depth(source)
-    expected = sorted(ordered_rows(rows, pinned)[:len(kept)], key=lambda p: p[DEPTH_KEY])
-    same = [{k: v for k, v in p.items() if k not in ("index", "fields")} for p in kept] == \
-        [{k: v for k, v in p.items() if k not in ("index", "fields")} for p in expected]
-    fields = all({k: v for k, v in a["fields"].items() if k != "photo_id"} == {k: v for k, v in b["fields"].items() if k != "photo_id"}
-                 and a["fields"]["photo_id"] == fa3.PHOTO_BASE + a["index"] for a, b in zip(kept, expected))
+    pinned_set = set(pinned)
+    everyone = ordered_rows(rows + club_all, pinned, source_refresh)
+    n = len(kept) + len(club_kept)
+    expected_all, left_all = everyone[:n], everyone[n:]
+    expected = sorted([r for r in expected_all if DEPTH_KEY in r], key=lambda p: p[DEPTH_KEY])
+    expected_club = sorted([r for r in expected_all if r.get(CLUB_KEY)], key=lambda p: p["gsis_id"])
+    renumbered = ("depth_rank", "depth_side")                # a club that lost a player renumbers its chains
+    bare = lambda p: {k: v for k, v in p.items() if k not in ("index", "fields")}  # noqa: E731
+    inner = lambda p: {k: v for k, v in p["fields"].items() if k not in ("photo_id", *renumbered)}  # noqa: E731
+    same = [bare(p) for p in kept] == [bare(p) for p in expected] and \
+        [bare(p) for p in sorted(club_kept, key=lambda p: p["gsis_id"])] == [bare(p) for p in expected_club]
+    fields = all(inner(a) == inner(b) and a["fields"]["photo_id"] == fa3.PHOTO_BASE + a["index"] for a, b in zip(kept, expected)) \
+        and all(inner(a) == inner(b) and a["fields"].get("photo_id") == b["fields"].get("photo_id")
+                for a, b in zip(sorted(club_kept, key=lambda p: p["gsis_id"]), expected_club))
     check("kept depth rows are the source's signed ones plus rows 1..N (re-addressed only)", same and fields,
-          f"{len(kept)} of {len(rows)} kept, {len(pinned)} signed to clubs")
-    back = {a["index"]: b["index"] for a, b in zip(kept, expected) if b["index"] in set(pinned)}
+          f"{len(kept)} of {len(rows)} depth rows and {len(club_kept)} of {len(club_all)} club players kept, "
+          f"{len(pinned)} signed to clubs")
+    new_index = {p["gsis_id"]: p["index"] for p in refresh["players"] if is_droppable(p)}
+    back = {r["index"]: new_index[r["gsis_id"]] for r in expected_all if r["index"] in pinned_set and r["gsis_id"] in new_index}
+    kept_pinned = [r for r in expected_all if r["index"] in pinned_set]
     check("every signed depth free agent is kept and its club lists and contract follow it",
-          len(back) == len(pinned), f"{len(back)} of {len(pinned)}")
+          len(back) == len(kept_pinned), f"{len(back)} of {len(pinned)} kept; the rest leave their clubs")
     check("kept depth rows that kept their index are byte for byte the source's",
           True, f"{sum(1 for a, b in zip(kept, rows) if a == b)} of {len(kept)} identical")
+    others_v = [p for p in refresh["players"] if not is_droppable(p)]
+    others_s = [p for p in source_refresh["players"] if not is_droppable(p)]
+    flat = lambda p: {**p, "fields": {k: v for k, v in p["fields"].items() if k not in renumbered}}  # noqa: E731
     check("every other refresh row is the source's, same order",
-          [p for p in refresh["players"] if DEPTH_KEY not in p] == [p for p in source_refresh["players"] if DEPTH_KEY not in p])
-    dropped_source = {p["index"] for p in rows}
+          [flat(p) for p in others_v] == [flat(p) for p in others_s],
+          f"{sum(1 for a, b in zip(others_v, others_s) if a != b)} rows with renumbered depth rows")
+    droppable_source = {p["index"] for p in rows} | {p["index"] for p in club_all}
     check("free agents: the source's other pointers, same order",
-          [x for x in refresh["free_agents"] if x not in {p["index"] for p in kept}]
-          == [x for x in source_refresh["free_agents"] if x not in dropped_source])
+          [x for x in refresh["free_agents"] if x not in {p["index"] for p in kept} | {p["index"] for p in club_kept}]
+          == [x for x in source_refresh["free_agents"] if x not in droppable_source])
     other = sorted(k for k in set(variant) | set(source) if variant.get(k) != source.get(k))
     allowed = {"roster_refresh", "free_agent_capacity", "fa3_free_agent_depth", "name"}
     if drop_xbe_sections:
@@ -360,10 +509,29 @@ def validate(variant: dict, source: dict, base: bytes, *, margin: int = fa3.DEFA
         check("no scale-out XBE sections (draft-pick ownership, H-back roles)",
               not any(k in variant for k in XBE_SECTIONS), [k for k in XBE_SECTIONS if k in variant])
     check("every other section is the source's", set(other) <= allowed, f"changed {other}")
-    restored = remap(refresh, back)
-    check("refresh teams, guards, contracts and corrections unchanged (signed depth free agents re-addressed)",
-          all(restored.get(k) == source_refresh.get(k) for k in set(restored) | set(source_refresh)
-              if k not in ("players", "free_agents")))
+    lost_pinned = {r["index"] for r in left_all if r["index"] in pinned_set}
+    again = lambda i: back.get(i, i)  # noqa: E731
+    teams_ok = True
+    for tv, ts in zip(refresh["teams"], source_refresh["teams"]):
+        teams_ok &= tv["active"] == [again(i) for i in ts["active"] if i not in lost_pinned]
+        teams_ok &= tv["reserves"] == [again(i) for i in ts["reserves"] if i not in lost_pinned]
+        teams_ok &= {k: v for k, v in tv.items() if k not in ("active", "reserves", "specialists")} == \
+            {k: v for k, v in ts.items() if k not in ("active", "reserves", "specialists")}
+        for role, holder in ts["specialists"].items():
+            teams_ok &= (tv["specialists"][role] == again(holder)) if holder not in lost_pinned else \
+                (tv["specialists"][role] is not None or role == "kr2")
+    teams_ok &= refresh["contract_initializations"] == [dict(c, index=again(c["index"]))
+                                                        for c in source_refresh["contract_initializations"]
+                                                        if c["index"] not in lost_pinned]
+    teams_ok &= refresh["identity_guards"] == [[again(g[0]), *g[1:]] for g in source_refresh["identity_guards"]
+                                               if g[0] not in lost_pinned]
+    teams_ok &= len(refresh.get("unrepresented") or []) == len(source_refresh.get("unrepresented") or []) + len(lost_pinned)
+    teams_ok &= all(refresh.get(k) == source_refresh.get(k) for k in set(refresh) | set(source_refresh)
+                    if k not in ("players", "free_agents", "teams", "contract_initializations", "identity_guards",
+                                 "unrepresented", "room_policy"))
+    teams_ok &= refresh.get("room_policy", "release") == "release"
+    check("refresh teams, guards, contracts and corrections unchanged (signed depth free agents re-addressed)", teams_ok,
+          f"{len(lost_pinned)} club players removed from their clubs")
     from mod_editor.core import mod_build
     from mod_editor.core import nfl2k5_throw_tuning as tt
     records = 0
@@ -398,20 +566,41 @@ def validate(variant: dict, source: dict, base: bytes, *, margin: int = fa3.DEFA
                "import_vacancies": vacancies, "free_agents": len(doc.free_agents),
                "free_agent_pointer_slots": doc.free_agent_capacity, "club_players": sum(len(v) for v in clubs.values()),
                "depth_free_agents_kept": len(kept), "depth_free_agents_dropped": len(rows) - len(kept),
+               "club_players_kept": len(club_kept), "club_players_left_out": len(club_all) - len(club_kept),
                "body_bytes": len(body), "final_body_sha256": sha256(body),
                "created_history": history and {k: history[k] for k in ("players_written", "players_not_in_roster", "words_written")}}
     cclubs = None
     if source.get("free_agent_capacity"):
         from tools.b77 import b778_fa4_capacity as fa4
         grown, _ = fa4.grow(base, source["free_agent_capacity"]["records"])
-        cbody, _cfloor, _cheal, chistory = _writers(grown, source_refresh, source.get("created_history"))
+        # the capacity route is the source's plan under the variant's own room policy (release at 64 MB)
+        route_plan = dict(source_refresh, room_policy=refresh.get("room_policy", "release"))
+        cbody, _cfloor, _cheal, chistory = _writers(grown, route_plan, source.get("created_history"))
         cdoc, cclubs, cfree = _clubs(cbody)
-        differ = [t for t in range(32) if clubs.get(t) != cclubs.get(t)]
+        out_keys = {f"{r['last']},{r['first']},{r['birth_date']}" for r in left_all if r["index"] in pinned_set}
+        cfree_set = set(cfree)
+        differ, extra_total, extra_keys = [], 0, set()
+        for t in range(32):
+            route, here = cclubs.get(t, []), clubs.get(t, [])
+            extra = [k for k in here if k not in route]
+            # a club that lost a created player has an open place: the capacity route released a player for room that the
+            # variant keeps (at most one per player left out), the rest is the route's club in the route's order
+            freed = len([k for k in route if k in out_keys])
+            if [k for k in here if k in route] != [k for k in route if k not in out_keys] or not set(extra) <= cfree_set \
+                    or len(extra) > freed:
+                differ.append(t)
+            extra_total += len(extra)
+            extra_keys |= set(extra)
         check("every club identical to the source's capacity route (membership and depth order)", not differ,
-              f"differing clubs {differ}")
-        gone = set(cfree) - set(free)
+              f"differing clubs {differ}; {len(out_keys)} club players left out for capacity, {extra_total} players the "
+              "route released for room stay")
+        gone = cfree_set - set(free)
+        left_keys = {f"{r['last']},{r['first']},{r['birth_date']}" for r in left_all}
+        # a free agent the capacity route has and the variant lacks is a row left out (a depth free agent, or a created
+        # player the route released for room) or a player the route released that a club now keeps
         check("free agents: the capacity route's minus the dropped depth rows",
-              set(free) <= set(cfree) and len(gone) == len(rows) - len(kept), f"{len(free)} vs {len(cfree)}")
+              set(free) <= cfree_set and gone == (left_keys & cfree_set) | extra_keys,
+              f"{len(free)} vs {len(cfree)}: {len(gone)} fewer")
         summary["capacity_route"] = {"primary_records": len(cdoc.by_pool("primary")), "free_agents": len(cdoc.free_agents),
                                      "body_bytes": len(cbody)}
     if compare_rost is not None:

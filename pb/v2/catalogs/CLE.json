@@ -212,14 +212,14 @@
    "tag": "pass",
    "menu": [
     "Bubble Screen",
-    "PA X Dagger",
-    "Y Double Slants",
     "Max Deep Over",
-    "Drive",
-    "X Curl Combo",
+    "RB Counter Wk",
+    "Y Double Slants",
     "Y Stick",
-    "Y Sail Return",
-    "X Whip Return"
+    "Slot Spacing",
+    "X Whip Return",
+    "RB Stretch Wk",
+    "Lead Stretch Wk"
    ],
    "cpu_situation": [
     4,
@@ -362,7 +362,10 @@
    "menu": [
     "Inside Zone Split",
     "Guard Iso",
-    "Zone Toss"
+    "Y Whip Out and Up",
+    "Zone Toss",
+    "PA Dagger",
+    "PA X Dagger"
    ],
    "cpu_situation": [
     4,
@@ -423,8 +426,8 @@
     "X Whip Return",
     "RB Verticals",
     "Slot Choice",
-    "RB Cross Dig",
-    "Z Bench Steep In",
+    "QB Power",
+    "QB Draw",
     "Drive"
    ],
    "cpu_situation": [
@@ -473,7 +476,7 @@
     "X Snag Out Drag",
     "Slot Stick",
     "Outside Zone",
-    "X Steep In Seam",
+    "Slot Spacing",
     "Slot Double Slants",
     "X Post Corner Shot"
    ],
@@ -1511,7 +1514,6 @@
    "lane": null,
    "formations": [
     "Gun Doubles",
-    "Gun Trips TE",
     "Pistol Y Off Trips",
     "Pistol Doubles Y Off",
     "Singleback Bunch X Nasty",
@@ -1712,7 +1714,6 @@
    "lane": null,
    "formations": [
     "Gun Doubles",
-    "Gun Trips TE",
     "Gun Bunch X Nasty",
     "Pistol Doubles",
     "Pistol Doubles Y Off",
@@ -1968,7 +1969,6 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Gun Trips TE",
     "Gun Bunch X Nasty",
     "Gun Empty Trey",
     "Pistol Y Off Trips",
@@ -2131,7 +2131,6 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Gun Trips TE",
     "Gun Bunch X Nasty",
     "Pistol Doubles Y Off",
     "Singleback Bunch X Nasty",
@@ -2315,6 +2314,7 @@
    "lane": null,
    "formations": [
     "Gun Doubles",
+    "Gun Trips TE",
     "Gun Bunch X Nasty",
     "Gun Trey",
     "Gun Y Off Trio Close",
@@ -2883,6 +2883,7 @@
    "lane": 1,
    "formations": [
     "Gun Doubles",
+    "Gun Trips TE",
     "Gun Bunch X Nasty",
     "Gun Trey"
    ]
@@ -3045,6 +3046,7 @@
    "lane": 0,
    "formations": [
     "Gun Doubles",
+    "Gun Trips TE",
     "Gun Bunch X Nasty",
     "Gun Trey"
    ]
@@ -3066,6 +3068,7 @@
    "deep": false,
    "lane": 0,
    "formations": [
+    "Gun Trips TE",
     "Pistol Y Off Trips",
     "Singleback Bunch X Nasty",
     "Singleback Doubles Tight"
@@ -3164,6 +3167,7 @@
    "lane": null,
    "formations": [
     "I-Form Tight",
+    "Full House",
     "I-Form Wing"
    ]
   },
@@ -3216,6 +3220,7 @@
    "lane": null,
    "formations": [
     "I-Form Tight",
+    "Full House",
     "I-Form Wing"
    ]
   },
@@ -4254,28 +4259,23 @@
   {
    "play": "p123",
    "play_index": 183,
-   "name": "RB Cross Dig",
-   "concept": "HB Cross Dig Skinny Post Outs",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
+   "name": "QB Power",
+   "concept": "QB Power",
+   "family": "qb",
+   "header": "qb_draw",
+   "play_type": "keeper",
    "personnel": "11",
    "home": "Gun Empty Trey",
-   "primary": "HB",
+   "primary": null,
    "screen": null,
    "must": "",
-   "routes": [
-    "Crossing Dig",
-    "Flat",
-    "Out",
-    "Skinny Post",
-    "Stick"
-   ],
+   "routes": [],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Empty Trey"
-   ]
+   ],
+   "added_by": "b780 plays2"
   },
   {
    "play": "p124",
@@ -4359,6 +4359,7 @@
    "deep": false,
    "lane": null,
    "formations": [
+    "Full House",
     "I-Form Wing"
    ]
   },
@@ -4491,28 +4492,25 @@
   {
    "play": "p133",
    "play_index": 193,
-   "name": "Z Bench Steep In",
-   "concept": "Z Bench Steep In Corner Smash",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
+   "name": "QB Draw",
+   "concept": "QB Draw",
+   "family": "qb",
+   "header": "qb_draw",
+   "play_type": "keeper",
    "personnel": "11",
    "home": "Gun Empty Trey",
-   "primary": "Z",
+   "primary": null,
    "screen": null,
    "must": "",
    "routes": [
-    "Arrow",
-    "Corner",
-    "Hitch",
-    "Out",
-    "Steep In"
+    "Go"
    ],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Empty Trey"
-   ]
+   ],
+   "added_by": "b780 plays2"
   },
   {
    "play": "p134",

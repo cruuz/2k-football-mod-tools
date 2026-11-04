@@ -35,6 +35,7 @@ HB-kind list pair                       0x4F5980    lists (1, 1) -> (1, 15): reg
 physical-list inverse for list 15       0x4F5A04    kind 15 -> 10: the freed OLB list now sorts HB side order
 roster targets (``FUN_002bd410``)          0x521C68    OLB 3 / ILB 2 / DT 2 / DE 2 -> 0 / 5 / 4 / 4
 roster maxima (``FUN_002bd400``)           0x521C20    OLB 5 / ILB 4 / DT 4 / DE 4 -> 0 / 7 / 6 / 6
+OLB draft need weights (``FUN_0031dea0``)  0x532088    2.0 and the 7 round rows (0x5320CC + 68 n) -> -50: OLB sorts last (b780 hunt6)
 enum abbreviation entry 11 (ILB)           0x4F26FC    -> the existing ``LB`` string at 0xE69C30 (entry 10 keeps ``OLB``)
 long name (shrunk in place)                0xE69D68    ``Inside Linebacker`` -> ``Linebacker`` (0xE69D40 keeps ``Outside Linebacker``)
 plural (shrunk in place)                   0xE69F10    ``Inside Linebackers`` -> ``Linebackers`` (0xE69EE8 keeps ``Outside Linebackers``)
@@ -627,6 +628,42 @@ class Site:
         return len(self.after)
 
 
+# b780 hunt6 (fix wave Q36): FUN_0031dea0, the draft need behind every CPU pick, the human auto-pick and the draft AI's
+# need order, scores a position (target + per-round weight - count) * (100 - its average overall), or for the first
+# round's top picks the weight alone. The pools set OLB's target and maximum to 0 and draft no OLB, but OLB kept
+# its retail weights (2.0 in round 1), so with no OLB on the roster it topped the need order in rounds 1, 2 and 4 and
+# sat mid-order in rounds 3, 5 and 7, a one-rank gap the draft AI's need tilt reads. Its weight is now -50 in all
+# eight rows, so OLB always sorts last (about -5,000 against real needs within +-1,300) and the 16 real positions
+# keep ranks 0 to 15.
+DRAFT_NEED_FIRST_PICKS_VA = 0x00532060    # 17 floats: round 1, picks before the sixth
+DRAFT_NEED_ROUNDS_VA = 0x005320A4         # 7 x 17 floats, one row per round
+RETAIL_OLB_NEED = (2.0, 2.0, 0.8, 0.1, 1.5, 0.1, -1.1, 0.4)   # first picks, then rounds 1..7 (exact as floats)
+OLB_NEED = -50.0
+
+
+def draft_need_sites() -> tuple[Site, ...]:
+    """The eight OLB weights of the draft need tables (group "draft_need")."""
+    vas = [DRAFT_NEED_FIRST_PICKS_VA + 4 * ENUM_OLB] + [DRAFT_NEED_ROUNDS_VA + 68 * r + 4 * ENUM_OLB for r in range(7)]
+    labels = ["draft_need_first_picks_olb"] + [f"draft_need_round{r + 1}_olb" for r in range(7)]
+    return tuple(Site(label, va, (struct.pack("<f", old),), struct.pack("<f", OLB_NEED), "draft_need")
+                 for label, va, old in zip(labels, vas, RETAIL_OLB_NEED))
+
+
+def draft_need_status(payload: bytes) -> str:
+    """``retail`` | ``applied`` | ``foreign`` for the eight OLB draft need weights (a partial set is foreign), or
+    ``absent`` for an image without the tables (unmapped or all zero: the synthetic test fixtures), which is left alone."""
+    sites = draft_need_sites()
+    try:
+        raws = [payload[_offset(payload, site.va): _offset(payload, site.va) + site.size] for site in sites]
+    except (PositionPoolsError, ValueError, struct.error):
+        return "absent"
+    if all(raw == bytes(len(raw)) for raw in raws):
+        return "absent"
+    states = {"applied" if raw == site.after else "retail" if raw in site.befores else "foreign"
+              for raw, site in zip(raws, sites)}
+    return states.pop() if len(states) == 1 else "foreign"
+
+
 CREATE_POSITION_NEXT_VA = 0x345560
 CREATE_POSITION_PREVIOUS_VA = 0x345590
 CREATE_POSITION_TABLE_VA = 0x555AE0
@@ -829,8 +866,11 @@ def status(payload: bytes, *, linebacker_penalty_fix: bool = True, depth_chart_t
             return "foreign"
     except (ValueError, struct.error):
         return "foreign"
+    need = draft_need_status(payload)                # b780 hunt6 (Q36)
+    if need == "foreign":
+        return "foreign"
     if states == {"retail"} and filters == "retail":
-        return "retail"
+        return "retail" if need in ("retail", "absent") else "foreign"
     # A complete retained profile is necessary for unscanned/custom rosters.
     # It also recognizes pre-r64 pooled XBEs for a safe, explicit upgrade.
     if states == {"applied"}:
@@ -953,6 +993,8 @@ def apply(payload: bytes, *, linebacker_penalty_fix: bool = True,
                      modern.layout_table(payload), include_filter_lists=False) if state == "retail" else []
     if state == "needs_fix":
         planned = [Site("lineup_iterator", lineup.VA, (lineup.RETAIL,), lineup.replacement(), "lineup")]
+    if draft_need_status(payload) == "retail":       # b780 hunt6 (Q36): new installs, and older installs on replay
+        planned.extend(draft_need_sites())
     if remove != (current_filters == "applied"):
         for site in filter_list_sites(probowl_ordered=_probowl_ordered(payload)):
             planned.append(site if remove else Site(site.label, site.va, (site.after,), site.befores[0], site.group))
@@ -976,6 +1018,7 @@ def apply(payload: bytes, *, linebacker_penalty_fix: bool = True,
     patched = bytes(buf)
     _require(status(patched, linebacker_penalty_fix=linebacker_penalty_fix,
                     depth_chart_third_starter=depth_chart_third_starter) == "applied", "post-apply verification failed")
+    _require(draft_need_status(patched) in ("applied", "absent"), "post-apply verification failed (OLB draft need)")
     _require(filter_list_status(patched) == ("applied" if remove else "retail"),
              "post-apply filter policy differs")
     _require(modern.status(patched) == "applied", "the Phase-1 labels no longer read applied after the pool rewrite")
@@ -983,6 +1026,7 @@ def apply(payload: bytes, *, linebacker_penalty_fix: bool = True,
     return patched, {"edits": edits, "changed_bytes": changed, "sections_repinned": sorted(touched),
                      "already_applied": not edits, "experimental": True, "runtime_witnessed": False,
                      "lineup_iterator": lineup_status(patched), "upgraded_lineup_iterator": state == "needs_fix",
+                     "draft_need": draft_need_status(patched),
                      "olb_filter_rows": "removed" if remove else "retained",
                      "roster_has_olb": roster_has_olb,
                      "filter_tables": [{"name": name, "va": f"0x{va:x}",
@@ -1086,6 +1130,8 @@ __all__ = [
     "RETAINED_OLB_IDENTITY", "FILTER_OLB_RETAIL_TEXTS", "filter_rows", "retail_olb_identity",
     "ROSTER_MAXIMA_VA", "ROSTER_TARGETS_VA", "ROW_LOOKUP_RESUME_VA", "ROW_LOOKUP_SITE_VA", "STRING_LB_VA",
     "STRING_SITES", "Site", "apply", "cave_bytes", "new_maxima", "new_targets", "package_word", "read_tables",
+    "DRAFT_NEED_FIRST_PICKS_VA", "DRAFT_NEED_ROUNDS_VA", "OLB_NEED", "RETAIL_OLB_NEED", "draft_need_sites",
+    "draft_need_status",
     "row_lookup_hook_bytes", "site_states", "status",
     "RATING_TABLES", "CHAIN_INDEX_VA", "CONSISTENCY_DEF_VA", "TAB_INIT_VA", "TAB_INIT_END_VA", "RETAIL_TAB_INIT",
     "FILTER_ILB_RECORDS", "FILTER_OLB_RECORDS", "FILTER_ILB_STRINGS", "FILTER_OLB_STRINGS", "LB_STARTERS",

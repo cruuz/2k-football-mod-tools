@@ -135,6 +135,7 @@ OWNER_BYTES = {
     "playbook_pair": (8192, 0, 4096, 0, 512), "senior_bowl": (4096, 0, 0, 0, 65536),
     "franchise_2026": (5120, 0, 0, 0, 4096), "dynamic_kickoff_relocated": (1939, 0, 0, 0, 10),
     "guardian_overlay": (496, 0, 0, 0, 0),
+    "injured_reserve": (6144, 0, 0, 0, 5312),   # b780 IR1: the runtime and its 32 x 20 store (nfl2k5_injured_reserve.REQUESTS)
 }
 FRANCHISE_STATIC_BODY = 98_352 - 64    # without the 128 MB roster heap the franchise history body is XBE data
 # the scale-out's own owners (counted only with the scale-out; the legacy layout carries the boot logo itself)
@@ -184,6 +185,7 @@ OWNER_FIELDS = {
     "read_option_runtime": ("read_option_runtime",), "playbook_pair": ("playbook_pair",), "senior_bowl": ("senior_bowl",),
     "franchise_2026": ("franchise_2026_rules",), "dynamic_kickoff_relocated": ("kickoff_relocated",),
     "guardian_overlay": ("guardian_overlay",), "human_tap_burst_spill": ("abilities",),
+    "injured_reserve": ("modern_injured_reserve",),   # b780 IR1 (the Pro Bowl guard alone is in place: no bytes)
     "team_ratings_spill": ("team_ratings",), "preseason_warning": ("franchise_economy",),
     # small owners the build adds from other options on a disc image (mod_build _widescreen_menus_wanted,
     # _period_goalposts_wanted, _team_logo_swap_wanted; the economy's preseason warning flag)
@@ -199,7 +201,7 @@ SCALEOUT_FIELDS = ("camera", "franchise_autosave", "weekly_prep", "weekly_prep_c
                    "coin_defer", "decided_clock", "cpu_scrambles", "sim_rb_injuries", "sim_realism", "coach_carousel",
                    "standings_records", "history_screen", "franchise_history", "speed_threshold", "cpu_clock2",
                    "cpu_runner_vision", "catch_snap_limit", "scramble_blocking", "audible_legend", "team_ratings",
-                   "roster_draft_pick_ownership", "roster_hback_roles")
+                   "roster_draft_pick_ownership", "roster_hback_roles", "modern_injured_reserve")
 
 # --- disc resources the options add to the main heap (inventory of the RC disc against retail, decoded charges) ------
 RESOURCE_BYTES = {
@@ -315,6 +317,10 @@ REQUIRES_128 = {
                         "failed in the lab.",
     "hires_pack": "2x textures cost 0.25 MB (one helmet) to 2.3 MB (both kits) per match; only K128's early form at "
                   "128 MB has that room.",
+    "modern_injured_reserve": "Modern injured reserve keeps its code and its list of every club's injured players in "
+                              "the extra executable sections (the scale-out), and the 64 MB profile is the legacy "
+                              "layout, which has no room left for it. A 64 MB build keeps the 2004 injured reserve "
+                              "(5 a club, season-ending) with the Pro Bowl guard.",
 }
 
 # A field and the sub-options that only matter with it; a suggestion turns the whole group off.
@@ -351,7 +357,7 @@ def roster_edits_summary(path) -> dict:
     if key not in _ROSTER_CACHE:
         got = dict(empty)
         try:
-            with open(path, encoding="utf-8") as handle:
+            with open(path, encoding="utf-8-sig") as handle:   # b780-uxfix: a Notepad BOM is fine
                 document = json.load(handle)
             if isinstance(document, dict):
                 request = document.get("free_agent_capacity")
@@ -694,6 +700,11 @@ PROFILE_64_PATCHES = ("contract_college_guard", "widescreen", "franchise_economy
 # trimmed beyond the space owners: the heavy disc resources and the SPECIAL rows' 80 KB .XTLID storage
 PROFILE_64_TRIM = ("scorebug", "scorebug_runtime", "hair_styles", "kick_meter_2026", "depth_chart_rows",
                    "my_career_home", "module_loader")
+# b780 hist1: in-place 2004 bug fixes the profile turns ON when a plan has them off (no allocation, no section: they
+# cost nothing at 64 MB). The career history pool fix keeps a long franchise's totals whole and its pool collecting in
+# 6,000-word chunks (nfl2k5_history_pool: six sites inside the history engine's own bytes).
+# b780 mc1: the Franchise load user-team guard (three in-place sites, a retail crash path on a save with no human club).
+PROFILE_64_ON = ("history_pool", "load_user_team_guard")
 PSEUDO_FIELDS = frozenset(("roster_capacity", "roster_draft_pick_ownership", "roster_hback_roles",
                            "cpu_money_downs_modern2"))
 PROFILE_64_ROSTER = ("roster edits at retail capacity without the draft_pick_ownership and hback_roles sections: "
@@ -702,7 +713,8 @@ PROFILE_64_ROSTER = ("roster edits at retail capacity without the draft_pick_own
 
 def recommended_64_profile(plan=None) -> dict:
     """{BuildPlan field: value} to set on the plan (None: the v0.9 pack) for the 64 MB profile: every REQUIRES_128
-    field off, the heavy disc resources off, every space owner off except PROFILE_64_PATCHES. In place features stay
+    field off, the heavy disc resources off, every space owner off except PROFILE_64_PATCHES, and the in-place 2004 fixes of
+    PROFILE_64_ON on. In place features stay
     (2026 rosters, names, ratings, faces, coaches, uniforms, helmets, fans, officials, ESPN marks and wipes, the
     stadium models and the 2026 venue art, rules, sim and AI edits that need no allocation). The roster edits must be
     the retail-capacity file without the two XBE sections (PROFILE_64_ROSTER); that is a file, not a field."""
@@ -714,6 +726,9 @@ def recommended_64_profile(plan=None) -> dict:
     for field in sorted(fields - keep - PSEUDO_FIELDS):
         if on(opts, field):
             out[field] = OFF_VALUES.get(field, False)
+    for field in PROFILE_64_ON:
+        if not on(opts, field):
+            out[field] = True
     return out
 
 
@@ -733,7 +748,7 @@ def _main(argv=None) -> int:
     parser.add_argument("--target", type=int, default=64, choices=TARGETS)
     parser.add_argument("--profile", action="store_true", help="apply the recommended 64 MB profile first")
     args = parser.parse_args(argv)
-    plan = json.loads(open(args.recipe, encoding="utf-8").read()) if args.recipe else None
+    plan = json.loads(open(args.recipe, encoding="utf-8-sig").read()) if args.recipe else None
     if args.profile:
         plan = profile_64_plan(plan)
     got = predict(plan, args.target)

@@ -1610,6 +1610,8 @@ def build_league(image: Path, teams, *, era: str = "2020s", xbe: Path | None = N
     from nfl2k5_playbook_position_recode import OuterImage, BOOK_ENTRIES
     progress = progress or (lambda msg: print(msg, flush=True))
     checker = Checker(xbe)
+    from pb.v2 import run_pass_floor as floor_q18
+    floor_checks = floor_q18.native_checks(xbe) if xbe else None
     league_routes, league_concepts = Counter(), Counter()
     manifest = []
     (v2.V2 / "catalogs").mkdir(exist_ok=True)
@@ -1630,6 +1632,15 @@ def build_league(image: Path, teams, *, era: str = "2020s", xbe: Path | None = N
             doc = json.loads(pack.dumps())
             catalog["hurry_b778"] = hurry.fix_doc(doc, catalog, checker=sanity.native_route_checker(xbe) if xbe else None)
             doc.pop("_pool_credit", None)
+            # b780 plays2 (Q18): every offense formation lists a run and a pass, else the native lottery hands back one
+            # fixed pass (run) whenever the CPU wants a run (pass): sister records linked into the short menus, or a design
+            # built for the formation where no sister fits (pb/v2/run_pass_floor.py, the pass the shipped packs took)
+            from pb.v2 import run_pass_floor as floor
+            catalog["floor_q18"] = floor.fix_doc(doc, catalog, floor_checks, floor.Converter(retail, team, checker=checker))
+            sanity._update_catalog(catalog, doc)
+            short = floor.short_formations(doc)
+            if short:
+                raise SystemExit(f"{team}: formations still without a run or a pass: {short}")
             pack = packs.loads_pack(json.dumps(doc))
             check = packs.check_pack(pack)
             if not check.ok:

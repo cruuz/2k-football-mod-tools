@@ -99,11 +99,15 @@ class ScheduleStaticTests(unittest.TestCase):
         (41 / 35); b780 n1 (the defensive camera read, 36 bytes, less five byte-identical runtime.S rewrites worth 30) 7 more
         after alignment (34 / 28); and b780 n2 adds the kick check to the Supersim hand-back and the 3-second play-clock limit
         on the snap hold (32 bytes) and moves the ticker's "Waiting for the next play" into the M3 ASCII pool (26 bytes
-        back): 35 / 29 on the merged beta-80 runtime (b780-int, b8 + j23 + n1 + n2; the M3 scratch buffer moved to +3248)."""
+        back): 35 / 29 on the merged beta-80 runtime (b780-int, b8 + j23 + n1 + n2; the M3 scratch buffer moved to +3248).
+        b780 mc1 spends 28 more: Play next game opens Choose team / Sign over Career Home for a MyPlayer without a club,
+        a loaded free-agent career opens Career Home, only a rookie in his own draft resumes the draft screen (never
+        reading through a lost career's empty identity), an injured MyPlayer is not made the starter, and the career
+        club has CPU depth management on (7 / 1)."""
         code, data = mode.legacy.allocations(self.career17)
         alone = mode.TAG_OFFSET - (mode.code_for(code['va'], data['va'])[1]['content_end'] - code['va'])
         with_home = home.check_static(self.p17)['mycareer_spare_bytes']
-        self.assertEqual((alone, with_home), (35, 29))
+        self.assertEqual((alone, with_home), (7, 1))
         self.assertEqual(alone - with_home, 6)       # Career Home's three addresses cost 6 bytes, as at ui1 and on the beta-78 base
         self.assertGreaterEqual(home.check_static(self.p18)['mycareer_spare_bytes'], 0)
 

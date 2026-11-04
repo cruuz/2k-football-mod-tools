@@ -332,9 +332,12 @@
    "align": "uc",
    "tag": "short",
    "menu": [
+    "RB Counter",
+    "RB Draw",
     "PA Post Corner Shot",
     "PA X Steep In Seam",
-    "PA Steep In Seam"
+    "PA Steep In Seam",
+    "RB Iso"
    ],
    "cpu_situation": [
     4,
@@ -395,12 +398,15 @@
    "align": "uc",
    "tag": "short",
    "menu": [
+    "Guard Iso",
+    "Inside Trap",
     "Z Quick Outs",
     "PA Post Corner Shot",
     "PA Z Snag Post",
     "Max Z Deep Post",
     "PA Y Seam Shot",
-    "Y Double Slants"
+    "Y Double Slants",
+    "FB Inside Zone Wk"
    ],
    "cpu_situation": [
     3,
@@ -420,8 +426,8 @@
     "Y Screen",
     "RB Post Wheel",
     "Stick",
-    "RB Curls Seams",
-    "X Flood",
+    "QB Power",
+    "QB Draw",
     "Slot Slant Flat"
    ],
    "cpu_situation": [
@@ -465,7 +471,7 @@
     "Slot Scissors",
     "RB Stretch",
     "Slot Sail Return",
-    "Slot Sail",
+    "Double Slants",
     "RB Fade Curl",
     "Inside Zone",
     "Z Hitch Seam",
@@ -3978,6 +3984,7 @@
    "deep": false,
    "lane": 3,
    "formations": [
+    "I-Form Tight",
     "Full House"
    ]
   },
@@ -4093,6 +4100,7 @@
    "deep": false,
    "lane": 2,
    "formations": [
+    "I-Form Tight",
     "Full House"
    ]
   },
@@ -4290,7 +4298,8 @@
    "deep": false,
    "lane": 3,
    "formations": [
-    "I-Form Pro"
+    "I-Form Pro",
+    "Wing T"
    ]
   },
   {
@@ -4310,6 +4319,7 @@
    "deep": false,
    "lane": 2,
    "formations": [
+    "Wing T",
     "Gun Split Pro"
    ]
   },
@@ -4429,28 +4439,23 @@
   {
    "play": "p129",
    "play_index": 189,
-   "name": "RB Curls Seams",
-   "concept": "HB Curls Seams",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
+   "name": "QB Power",
+   "concept": "QB Power",
+   "family": "qb",
+   "header": "qb_draw",
+   "play_type": "keeper",
    "personnel": "11",
    "home": "Gun Empty Trey",
-   "primary": "HB",
+   "primary": null,
    "screen": null,
    "must": "",
-   "routes": [
-    "Curl",
-    "Flat",
-    "Go",
-    "Hitch",
-    "Hook"
-   ],
+   "routes": [],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Empty Trey"
-   ]
+   ],
+   "added_by": "b780 plays2"
   },
   {
    "play": "p130",
@@ -4520,6 +4525,7 @@
    "deep": false,
    "lane": 3,
    "formations": [
+    "I-Form Tight",
     "Full House"
    ]
   },
@@ -4566,7 +4572,8 @@
    "deep": false,
    "lane": 2,
    "formations": [
-    "I-Form Pro"
+    "I-Form Pro",
+    "Wing T"
    ]
   },
   {
@@ -4617,28 +4624,25 @@
   {
    "play": "p137",
    "play_index": 218,
-   "name": "X Flood",
-   "concept": "X Flood Skinny Post Corner Smash",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
+   "name": "QB Draw",
+   "concept": "QB Draw",
+   "family": "qb",
+   "header": "qb_draw",
+   "play_type": "keeper",
    "personnel": "11",
    "home": "Gun Empty Trey",
-   "primary": "X",
+   "primary": null,
    "screen": null,
    "must": "",
    "routes": [
-    "Corner",
-    "Flat",
-    "Hitch",
-    "Sail",
-    "Skinny Post"
+    "Go"
    ],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Empty Trey"
-   ]
+   ],
+   "added_by": "b780 plays2"
   },
   {
    "play": "p138",

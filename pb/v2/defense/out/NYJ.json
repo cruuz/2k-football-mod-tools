@@ -2231,13 +2231,13 @@
  "receipt": {
   "team": "NYJ",
   "offense_pack": "data/playbooks/softdrink_nyj_modern.2k5book",
-  "offense_pack_sha256": "958a796ca9ed88a3bde7040f91bb6fe4de749d04ed000b10efcfea88a4c9aa65",
-  "source_fingerprint": "ac6c6825e0f72febffb90bc313bf6389230f8ee0027de836e01f22dba37cdf64",
-  "replacement_sha256": "653839370cebce2c6ac9a594478aace8e6cde9c1fb06c08dc6f0c7ad79bf2b6d",
+  "offense_pack_sha256": "0a132df48ccea3d083776358cfbf8f2f0db89c8174cdf98c7fc7adc65e582a83",
+  "source_fingerprint": "f282df991bfe6a07929aa48566c2f4eb902233d61c05c635f9a73877c82cf2eb",
+  "replacement_sha256": "f007a93cd9dd3041cd6e55cdcc4f4661065e777c7e97d4e7fcbca566f29b90b5",
   "semantic_sha256": "ae23210878a9405460ddb462bc812ac0c4a1d028acc4d8b8b25534ebeed5e5a8",
   "plays": 74,
   "formations": 5,
-  "nodes": 2870,
+  "nodes": 2868,
   "node_capacity": 3500,
   "formation_count": 50,
   "play_count": 270,
@@ -2245,10 +2245,10 @@
   "band_loss": 0.12847,
   "spy_play": null,
   "native_scoring_faults": 0,
-  "name_pool_units": 5060,
+  "name_pool_units": 5037,
   "name_pool_capacity": 5088,
   "name_mode": 0,
   "pack": "data/playbooks/softdrink_nyj_defense.2k5book",
-  "pack_sha256": "b84cea00749b5af8399a077160936206f3acb2cb22c068472845cb8e10eb93f7"
+  "pack_sha256": "10f3bb30f8072f9aa2ab15c1e139fd942288e44d2a04ba113342b74e076fca45"
  }
 }

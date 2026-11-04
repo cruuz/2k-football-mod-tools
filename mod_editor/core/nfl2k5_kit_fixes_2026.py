@@ -1404,6 +1404,15 @@ def _chunk_for(raw, index):
     raise ValueError("2026 kit fixes: chunk %d absent" % index)
 
 
+def known_pairs(row) -> dict:
+    """{input SHA-256: output SHA-256} of one pinned texture: its own pins and its ``also`` pairs (b780 art1: a kit
+    texture whose old 2004 logo was cleaned at the source; the same fix compiled on it)."""
+    pairs = {row["before_sha256"]: row["after_sha256"]}
+    for pair in row.get("also", ()):
+        pairs[pair["before_sha256"]] = pair["after_sha256"]
+    return pairs
+
+
 def compile_resource(selector, raw, *, strict=True, document=None, kits=None):
     """Compile every pinned texture of one kit package; refuses partial or unknown inputs when strict. ``kits`` maps
     a donor kit selector to its package bytes (the uf3 ``name`` rows)."""
@@ -1416,9 +1425,10 @@ def compile_resource(selector, raw, *, strict=True, document=None, kits=None):
         span = raw[chunk.offset:chunk.end_offset]
         layout_ok = (len(raw), chunk.offset, len(span)) == (row["resource_size"], row["offset"], row["length"])
         digest = sha(span) if layout_ok else None
+        pairs = known_pairs(row)
         # ``after_equivalent_sha256``: the same finished texture stored by an earlier codec (an already repaired disc).
-        states.append((row, chunk, span, "before" if digest == row["before_sha256"]
-                       else "after" if digest == row["after_sha256"] or digest in row.get("after_equivalent_sha256", ())
+        states.append((row, chunk, span, "before" if digest in pairs
+                       else "after" if digest in pairs.values() or digest in row.get("after_equivalent_sha256", ())
                        else "other"))
     kinds = {s[3] for s in states}
     if kinds == {"after"}:
@@ -1494,7 +1504,7 @@ def compile_resource(selector, raw, *, strict=True, document=None, kits=None):
                 skipped.append(row["chunk"])
                 continue
             new, detail = compile_texture(span, row, donors)
-        require(sha(new) == row["after_sha256"], selector + ": Studio compile differs from its output pin")
+        require(sha(new) == known_pairs(row)[sha(span)], selector + ": Studio compile differs from its output pin")
         replacements.append((chunk.offset, new))
         parts.append(dict(selector=selector, chunk_index=chunk.index, offset=chunk.offset, length=len(new),
                           before_sha256=sha(span), after_sha256=sha(new),

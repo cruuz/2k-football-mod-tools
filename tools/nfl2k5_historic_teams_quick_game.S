@@ -8,7 +8,7 @@
  * slot choice and without 2D13B0 (the Create a Team refresh):
  *   name "h-%s-%d-%s-%d.iff", queue 43F50 in context "historic", wait 432D0, lookup 449E0 (ROST),
  *   clear C2300 (the slot's players go back to the spare pool first), import C1030, category 4,
- *   label copied from the team with the same asset code, pop 432F0.
+ *   label copied from the first team (club) with the same asset code, pop 432F0.
  * The slot is loaded only when it is empty (category 2, no players) or holds a historic team
  * (category 4), and never while the other side is showing it. A user-created team is never touched:
  * that side just skips the historic list. The resident list skips both spare slots while they hold
@@ -44,7 +44,7 @@
 .set ACTIVE, 0x11c               /* team: player count */
 .set CAT, 0x128                  /* team: category (2 created, 4 historic) */
 .set FMT_FILE, 0xe9f984          /* "h-%s-%d-%s-%d.iff" */
-.set FMT_CODE, 0xe9f9bc          /* "%s" */
+.set FMT_CODE, 0xe9f9bc          /* "%s" (revision 1 formatted the label key with it; unused since revision 2) */
 .set CTX, 0xe9f9a8               /* "historic" */
 .set ROST, 0x54534f52
 
@@ -500,32 +500,44 @@ load_entry:
     test eax, eax
     jz import_failed
     mov byte ptr [ebx+CAT], 4
-    lea ecx, [esp+0x10]                  /* the label of the team with the same asset code */
-    push ecx
-    mov edx, FMT_CODE
-    lea ecx, [esp+0x24]
-    mov dword ptr [esp+0x14], esi
-    call text_format
+    /* The label pair names the team in Team Select and keys its playbook (stock books read [[team+LABEL]+4]).
+     * b780 modes2, revision 2. Revision 1 copied the label of the LAST team with the entry's asset code, skipping
+     * only the slot itself, so the two spare slots (rows 32/33) named every team with their code: the classic
+     * teams' SEAMEN/SEA holder rows named the '72 and '84 Dolphins and every Miami team-season, and a historic
+     * team on the other side named any team of its franchise (Q23). Now:
+     *  - the one team that keeps its own name (own_name: its identity, a byte like every team identity, 100..252;
+     *    0xFF here matches no team) takes own_label, a label pair in this code that the classic teams variant fills
+     *    (the Seamen: SEAMEN and SEA from its helper page, so they keep Seattle's book). A team's own
+     *    pair (+0x104/+0x108) would not do: a historic file's texts carry the season ("Seamen '06", "SEA06"), and
+     *    there is no "SEA06" book;
+     *  - every other team takes the label of the FIRST team with the entry's asset code. The 32 clubs are rows
+     *    0..31 with 32 distinct codes, and no later row carries a club's code, so this is the club's own label,
+     *    which is what retail 2D17B0 gives on a retail roster (its last match over every row is the same club).
+     * The code is compared in place (ESI = the entry's code, NUL-terminated at entry+8, the same string the
+     * file name was formatted from); revision 1 formatted a copy first. EBP (the loaded file) is free after
+     * the import and holds the row. text_equal 30C40 clobbers only EAX, ECX and EDX. */
+    mov eax, offset own_label
+own_name:                                /* cmp byte ptr [ebx+IDENT], 0xff: the classic variant writes the imm8 */
+    .byte 0x80, 0xbb
+    .long IDENT
+    .byte 0xff
+    je label_set
     xor edi, edi
 label_loop:
     mov ecx, dword ptr [ROOT]
     cmp edi, dword ptr [ecx+TEAMS]
-    jge label_done
-    mov esi, dword ptr [ecx+TABLE]
-    imul eax, edi, 500
-    add esi, eax
-    mov ecx, dword ptr [esi+CODE]
-    lea edx, [esp+0x20]
+    jge label_done                       /* no team has the code: the importer's label stays (as in revision 1) */
+    imul ebp, edi, 500
+    add ebp, dword ptr [ecx+TABLE]
+    inc edi
+    mov ecx, dword ptr [ebp+CODE]
+    mov edx, esi
     call text_equal
     test eax, eax
-    jz label_next
-    cmp esi, ebx                         /* b778-ss1: the slot itself must not overwrite its own custom label */
-    je label_next
-    mov eax, dword ptr [esi+LABEL]
+    jz label_loop
+    mov eax, dword ptr [ebp+LABEL]       /* the first (club) row with the entry's asset code */
+label_set:
     mov dword ptr [ebx+LABEL], eax
-label_next:
-    inc edi
-    jmp label_loop
 label_done:
     mov ecx, CTX
     call loader_pop
@@ -548,3 +560,14 @@ load_out:
     pop ebx
     add esp, 0xb4
     ret
+
+/* b780 modes2: the own-name team's label pair (nickname, abbreviation pointers) and its nickname text. The base
+ * variant leaves both pointers on the empty text (no team takes it: own_name is 0xFF). The classic teams variant
+ * writes the nickname (up to 6 UTF-16 characters, NUL-terminated) and points the abbreviation at the text its own
+ * helper page carries (the last 8 bytes: up to 3 characters, the playbook key), so the pair never depends on a
+ * slot's buffers, which the next import overwrites, nor on retail .rdata another owner may rewrite. */
+own_label:
+    .long own_text
+    .long own_text
+own_text:
+    .word 0, 0, 0, 0, 0, 0, 0

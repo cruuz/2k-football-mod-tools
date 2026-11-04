@@ -150,7 +150,7 @@ def check_table(rows):
         identities.add(row["identity"])
 
 
-def table_offset(variant="b778"):
+def table_offset(variant="b780"):
     """Byte offset of the table inside the kernel template, found by its symbol and checked by content."""
     code, relocations, labels = _template(variant)
     at = labels.get("portraits")
@@ -385,7 +385,8 @@ SYMBOLS = dict(source_continue=0x161E37, resource_continue=0xE0D95,
                offense_publish=0x20B7C0, offense_special=0x20B76D,
                offense_continue=0x20B694, defense_publish=0x20B977,
                defense_ordinary=0x20B8D0, defense_continue=0x20B843,
-               late_native=0x205FE0, half_time_native=0x205F80)  # b778: clock-window deferral
+               late_native=0x205FE0, half_time_native=0x205F80,  # b778: clock-window deferral
+               margin_native=0x205F40)                           # b780 modes2: the two-score window
 
 
 def allocations(payload):
@@ -402,20 +403,26 @@ def career_state_va(payload):
                  if r["owner"] == "nfl2k5_my_career" and r["kind"] == "data"), 0)
 
 
-# b778: the current kernel defers fourth downs and the clock windows to the native CPU caller; the beta-77.1 kernel
-# ("v061") is kept as an exact recognizer so neighbors and the upgrade path accept a v0.6.1 executable.
-VARIANTS = ("b778", "v061")
+# b778: the kernel defers fourth downs and the clock windows to the native CPU caller; the beta-77.1 kernel ("v061")
+# is kept as an exact recognizer so neighbors and the upgrade path accept a v0.6.1 executable.
+# b780 modes2 (Q7): the current kernel ("b780") also defers Modern CPU clock management's fourth-quarter two-score
+# window (10:00 or less, a margin of 9 or more either way), where the native caller has the estimate and urgency and
+# the playback pools know no clock (REV2: they chose every 1st and 2nd down there). The beta-78 .. v0.9 RC kernel
+# ("b778") reads "previous" and apply() upgrades it in place through upgrade().
+VARIANTS = ("b780", "b778", "v061")
+CURRENT = VARIANTS[0]
+UPGRADES_PREVIOUS = True
 
 
 def _template(variant):
     from . import nfl2k5_coach_ai_code as assembly
     require(variant in VARIANTS, f"Unknown coach AI kernel {variant!r}")
-    suffix = "" if variant == "b778" else "_V061"
+    suffix = {"b780": "", "b778": "_B778", "v061": "_V061"}[variant]
     return (getattr(assembly, "CODE" + suffix), getattr(assembly, "RELOCATIONS" + suffix),
             getattr(assembly, "LABELS" + suffix))
 
 
-def code_for(code_va, data_va, career_va=0, variant="b778", table=None):
+def code_for(code_va, data_va, career_va=0, variant=CURRENT, table=None):
     """The kernel bytes for an allocation; ``table`` (1,408 bytes or rows) replaces the shipped 32-row table."""
     code, relocations, _ = _template(variant)
     symbols = dict(SYMBOLS, code=code_va, state=data_va, career_state=career_va)
@@ -434,7 +441,7 @@ def code_for(code_va, data_va, career_va=0, variant="b778", table=None):
     return bytes(out).ljust(CODE_SIZE, b"\xcc")
 
 
-def sites(code_va=0, variant="b778"):
+def sites(code_va=0, variant=CURRENT):
     labels = _template(variant)[2]
     result = []
     for name, va, pin, op in HOOKS:
@@ -444,7 +451,7 @@ def sites(code_va=0, variant="b778"):
     return result
 
 
-def _owned(payload, variant="b778"):
+def _owned(payload, variant=CURRENT):
     """Validate complete owned spans without recursively checking neighbors."""
     from . import nfl2k5_xbe_space as space
     from .nfl2k5_cave_oracle import XbeImage
@@ -493,7 +500,7 @@ def normalized_sites(payload):
     raise CoachAIError("Foreign coach AI neighbor")
 
 
-def _recognize(payload, variant="b778"):
+def _recognize(payload, variant=CURRENT):
     from . import nfl2k5_playbook_pair as pair
     from .nfl2k5_cave_oracle import XbeImage
     state, edits = _owned(payload, variant)
@@ -516,14 +523,19 @@ def _recognize(payload, variant="b778"):
 
 
 def status(payload):
+    """'retail', 'applied', 'previous' (the beta-78 .. v0.9 RC kernel; apply() upgrades it) or 'foreign'."""
     try:
         return _recognize(payload)
+    except (ValueError, TypeError, KeyError, IndexError, struct.error, OverflowError):
+        pass
+    try:
+        return "previous" if _recognize(payload, "b778") == "applied" else "foreign"
     except (ValueError, TypeError, KeyError, IndexError, struct.error, OverflowError):
         return "foreign"
 
 
 def installed_variant(payload):
-    """'b778', 'v061' (the beta-77.1 kernel) or None."""
+    """'b780', 'b778' (the beta-78 .. v0.9 RC kernel), 'v061' (the beta-77.1 kernel) or None."""
     for variant in VARIANTS:
         try:
             if _recognize(payload, variant) == "applied":
@@ -534,24 +546,25 @@ def installed_variant(payload):
 
 
 def upgrade(payload):
-    """b778 native repair: a verified beta-77.1 kernel becomes the current kernel in its own allocation (code bytes,
-    hook displacements and the .text digest only). Idempotent; refuses anything else. Returns (payload, receipt)."""
+    """Native repair: a verified beta-77.1 (b778) or beta-78 .. v0.9 RC (b780 modes2) kernel becomes the current kernel
+    in its own allocation (code bytes, hook displacements and the .text digest only). Idempotent; refuses anything
+    else. Returns (payload, receipt)."""
     from .nfl2k5_bump_strength import _sections, section_digest
     from .nfl2k5_cave_oracle import XbeImage
     variant = installed_variant(payload)
-    if variant == "b778":
+    if variant == CURRENT:
         return payload, dict(owner=OWNER, status="already_applied", changed_bytes=0)
-    require(variant == "v061", "Coach AI upgrade needs the verified beta-77.1 kernel")
+    require(variant in ("v061", "b778"), "Coach AI upgrade needs a verified earlier kernel")
     owned = allocations(payload)
     c, d = owned["code"]["va"], owned["data"]["va"]
     image = XbeImage(payload)
     buf = bytearray(payload)
     code_off = image.offset(c, CODE_SIZE)
     # b780 c2-staff: the club assignment the old kernel carries comes along unchanged
-    old_at = table_offset("v061")
+    old_at = table_offset(variant)
     table = image.read(c, CODE_SIZE)[old_at:old_at + TABLE_SIZE]
     buf[code_off:code_off + CODE_SIZE] = code_for(c, d, career_state_va(payload), table=table)
-    for (_, va, _, old), (_, _, _, new) in zip(sites(c, "v061"), sites(c)):
+    for (_, va, _, old), (_, _, _, new) in zip(sites(c, variant), sites(c)):
         off = image.offset(va, len(old))
         require(bytes(buf[off:off + len(old)]) == old, "Coach AI upgrade: foreign hook bytes")
         buf[off:off + len(new)] = new
@@ -561,7 +574,7 @@ def upgrade(payload):
         buf[section.header_offset + 36:section.header_offset + 56] = section_digest(buf, section)
     result = bytes(buf)
     require(status(result) == "applied", "Coach AI upgrade postcondition failed")
-    return result, dict(owner=OWNER, status="upgraded", from_variant="v061",
+    return result, dict(owner=OWNER, status="upgraded", from_variant=variant,
                         changed_bytes=sum(a != b for a, b in zip(payload, result)),
                         before_sha256=hashlib.sha256(payload).hexdigest(), after_sha256=hashlib.sha256(result).hexdigest())
 
@@ -570,6 +583,8 @@ def apply(payload):
     from . import nfl2k5_xbe_space as space, nfl2k5_cpu_money_downs as money
     from .nfl2k5_bump_strength import _sections, section_digest
     from .nfl2k5_cave_oracle import XbeImage
+    if status(payload) == "previous":           # b780 modes2: the beta-78 .. v0.9 RC kernel, upgraded in place
+        return upgrade(payload)
     state = _recognize(payload)
     policy = money.read_settings(payload)
     # b778: the beta-77.1 VIP-aware template is still accepted; with it, deferred fourth downs use the retail chart.

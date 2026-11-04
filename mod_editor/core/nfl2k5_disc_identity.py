@@ -101,12 +101,16 @@ REPACK = ("repacked disc (retail files, different layout: rebuild your image wit
 MODIFIED = ("modified disc (pack 0 / default.xbe differ from retail: this image "
             "already carries a mod; start from a clean retail dump)")
 UNKNOWN = "unknown image"
+# b780 studio1 (Q67): a disc the Studio itself built (SOFTDRINK 2K28 or a Customize build) has a grown default.xbe and resized
+# packs, so it failed the retail size check and was called "unknown image" above boxes the same panel marks Needs update.
+STUDIO_BUILT = "disc built with 2K5 Mod Studio"
 
 KIND_RETAIL_XISO = "retail-xiso"
 KIND_RETAIL_RAW = "retail-raw"
 KIND_REPACK = "repack"
 KIND_MODIFIED = "modified"
 KIND_UNKNOWN = "unknown"
+KIND_STUDIO_BUILT = "studio-built"
 KIND_NOT_A_DISC = "not-a-disc"
 
 CHUNK = 1 << 24
@@ -215,6 +219,72 @@ def _xemu_note(base: int | None) -> str:
             f"the first 0x{base:X} bytes off the copy (xdvdfs pack, or {cut}).")
 
 
+def _released_name(xbe_sha256: str) -> str:
+    """The released SOFTDRINK disc whose default.xbe has this hash ("SOFTDRINK 2K28 v0.8"), or "".
+
+    The list is data/nfl2k5_released_discs.json (the disc check's); a build without it, or a release not yet recorded, simply
+    leaves the disc unnamed."""
+
+    try:
+        from . import nfl2k5_disc_check as disc_check
+        for release in disc_check.load_releases():
+            if (release.get("files", {}).get("default.xbe", {}).get("sha256")) == xbe_sha256:
+                return str(release.get("name") or "")
+    except Exception:  # noqa: BLE001 -- a name is a courtesy; the disc is still described
+        pass
+    return ""
+
+
+def _studio_built_xbe(xc, descriptor: int, base: int, record: Mapping[str, Any]) -> str | None:
+    """The SHA-256 of default.xbe when it is an executable the Studio's own writers grew, else None.
+
+    Two tests, the ones the readers already trust: a file size the extra-space owner accepts, and the layout it recognises
+    (``recognized_grown_xbe``, the policy the writer and the extent handoff share)."""
+
+    size = int(record["size"])
+    if size == RETAIL_XBE_SIZE:
+        return None
+    try:
+        from . import nfl2k5_depth_chart_storage as storage
+        from . import nfl2k5_xbe_space as space
+        if size != storage.FILE_SIZE and size not in space.accepted_file_sizes():
+            return None
+        payload = xc.read_exact(descriptor, base + int(record["offset"]), size)
+        if len(payload) != size or not storage.recognized_grown_xbe(payload):
+            return None
+        return hashlib.sha256(payload).hexdigest()
+    except Exception:  # noqa: BLE001 -- anything unreadable is simply not recognised
+        return None
+
+
+def _studio_built_identity(xc, descriptor: int, size: int, base: int, found: Mapping[str, Any], missing: list[str],
+                           wrong_size: list[str], layout: str, aside: str) -> "DiscIdentity | None":
+    """The answer for a disc the Studio built, or None when this is not one.
+
+    Not one when a file the game needs is absent (a damaged or incomplete copy) or when default.xbe is not a recognised
+    grown executable (then the old answer, unknown image, still stands)."""
+
+    if [path for path in missing if path not in OPTIONAL_FILES]:
+        return None
+    record = found.get(RETAIL_XBE_PATH)
+    if record is None or record.get("retail_size_ok"):
+        return None
+    xbe_sha256 = _studio_built_xbe(xc, descriptor, base, record)
+    if xbe_sha256 is None:
+        return None
+    release = _released_name(xbe_sha256)
+    resized = [path for path in wrong_size if path not in OPTIONAL_FILES]
+    others = len(resized) - 1
+    which = RETAIL_XBE_PATH + (f" and {others} other game file{'s' if others != 1 else ''}" if others > 0 else "")
+    headline = f"{release} (a released disc)" if release else STUDIO_BUILT
+    detail = (f"Read as {_container(base)}. {which} {'is' if others <= 0 else 'are'} not the retail size because 2K5 Mod "
+              "Studio wrote its changes into " + ("it" if others <= 0 else "them") + ", so this is not an original game "
+              "dump. The boxes below show what is already on it. Building again from a dump of your own retail disc is the "
+              "supported way to change it." + aside)
+    return DiscIdentity(kind=KIND_STUDIO_BUILT, headline=headline, detail=detail, image_size=size, partition_base=base,
+                        layout=layout, files=found)
+
+
 def identify_descriptor(descriptor: int, size: int, *, pack0: bytes | None = None,
                         deep: bool = False) -> DiscIdentity:
     """Identify the already-open image; never seeks past what it reports.
@@ -310,6 +380,9 @@ def identify_descriptor(descriptor: int, size: int, *, pack0: bytes | None = Non
 
     # --- the answer --------------------------------------------------------
     if needed:
+        studio = _studio_built_identity(xc, descriptor, size, base, found, missing, wrong_size, layout, aside)
+        if studio is not None:
+            return studio
         broken = ", ".join(needed[:4])
         return DiscIdentity(
             kind=KIND_UNKNOWN, headline=UNKNOWN, image_size=size, partition_base=base,
@@ -402,6 +475,7 @@ def note_for(image: Path | str | None, *, pack0: bytes | None = None, deep: bool
 __all__ = [
     "DiscIdentity",
     "DiscIdentityError",
+    "KIND_STUDIO_BUILT",
     "MODIFIED",
     "REPACK",
     "RETAIL_LAYOUT",
@@ -410,6 +484,7 @@ __all__ = [
     "RETAIL_ROST_SHA256",
     "RETAIL_XBE_SHA256",
     "RETAIL_XISO",
+    "STUDIO_BUILT",
     "UNKNOWN",
     "describe",
     "identify",

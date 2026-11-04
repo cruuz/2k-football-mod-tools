@@ -81,6 +81,20 @@ class Document(unittest.TestCase):
         self.assertEqual(model["gold"], "#FFB612")
         self.assertNotIn("logo_29_0", {t["member"] for t in hw.spec()["targets"]})      # the club logo stays
 
+    def test_also_pins_cover_the_cleaned_league_cards(self):
+        """b780 art1: the cards whose old feather tips were cleaned at the source get a second known pair."""
+        doc = hw.spec()
+        also = {(t["aggregate"], t["member"]) for t in doc["targets"] if t.get("also")}
+        self.assertEqual(also, {("logos", "helm_h29_0"), ("logos128", "helm_h29_0"), ("logos", "unif_h29_0"),
+                                ("logos", "unif_a29_0"), ("logos", "helm_a29_0"), ("logos128", "helm_a29_0")})
+        for target in doc["targets"]:
+            pins = hw.known_pins(target)
+            self.assertEqual(pins[target["before_sha256"]], target["after_sha256"])
+            for pair in target.get("also", ()):
+                self.assertEqual(pins[pair["before_sha256"]], pair["after_sha256"])
+                self.assertNotEqual(pair["before_sha256"], target["before_sha256"])
+                self.assertEqual(len(pair["after_sha256"]), 64)
+
     def test_unknown_document_is_refused(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "doc.json"

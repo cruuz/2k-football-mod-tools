@@ -786,6 +786,13 @@ LATE_OWNERS += ("nfl2k5_speed_threshold",)
 LATE_OWNERS += ("nfl2k5_scramble_blocking",)  # b780-cv7: receivers block for a scrambling QB (after every other late owner)
 LATE_OWNERS += ("nfl2k5_protection_calls",)  # b780 p1-slide: the user's slide call at the line (code + 16-byte RW state)
 LATE_OWNERS += ("nfl2k5_audible_legend",)  # b780-p3: audible panel lift + on-screen button legend (code only)
+LATE_OWNERS += ("nfl2k5_lineup_roles",)  # b780 sub1: third-down back on passing downs + the FB fallback (code only)  (reserved by the first space pass)
+LATE_OWNERS += ("nfl2k5_intro_autoskip",)  # b780-mem1: the pregame intro skips itself when its director could not load (64 B code)  (reserved by the first space pass)
+LATE_OWNERS += ("nfl2k5_injured_reserve",)  # b780 IR1: modern franchise injured reserve (code + its 5,312-byte store)  (reserved by the first space pass)
+LATE_OWNERS += ("nfl2k5_rookie_faces_hair",)  # b780 GEN1 Q81: rookie hair styles from the faces, appended at the
+# rookie faces image step only when Hair styles is on (so 64 MB builds never take it); last, so it moves nothing
+# b780-int: the hair owner stays after lineup_roles, intro_autoskip and injured_reserve: all are reserved by the first space pass, the hair owner
+# is appended at the rookie faces image step, so an earlier place would move them and extend_scaleout refuses.
 # b77-i1 (coordinator-approved fix of the all-owner union overflow): late owners whose code is placed top-down in the
 # reserved legacy RX page tails (0x14D9000 first, then 0x14BA000) instead of the full scale-out run. Static, so the
 # placement does not depend on which other owners are present.
@@ -1108,10 +1115,15 @@ def _scale_allocations(requests):
         r = next(r for r in regions if r["kind"] == "code")
         owner, kind, size, align = sprite
         at = (cursors[r["va"]] + align - 1) & -align
-        _require(at + size <= r["size"], "Sprite scorebug exceeds remaining RX capacity")
-        out.append(dict(owner=owner, kind=kind, size=size, align=align,
-                        va=r["va"] + at, raw=r["raw"] + at, owner_offset=0))
-        cursors[r["va"]] = at + size
+        if at + size <= r["size"]:
+            out.append(dict(owner=owner, kind=kind, size=size, align=align,
+                            va=r["va"] + at, raw=r["raw"] + at, owner_offset=0))
+            cursors[r["va"]] = at + size
+        else:
+            # b780 pres2: grown past the room the v3 run has left (revision 17: 5,920 -> 6,336 bytes), the sprite scorebug
+            # goes whole to the pool, after every owner placed so far, like any owner the v3 run cannot hold whole. A plan
+            # it fit in packs exactly as before; only a plan that used to be refused here changes.
+            to_pool(owner, kind, size, align)
     for owner, kind, size, align in late:
         for r in regions:
             if r["kind"] != kind:

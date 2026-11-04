@@ -1877,6 +1877,25 @@ class RosterDocument:
         player.record.set("position", value)
         return value
 
+    def change_position(self, player: Player, code: int | str) -> dict[str, Any]:
+        """A position change on the Rosters page (b780 sub1, Q63): set the position, and on a club also unlock the
+        player and put him at the bottom of his new position's chain, the way sign and transfer do. Keeping his old
+        rank, side and locks would seat him on a row another locked starter owns at the new position, and the roster
+        could then not be saved or built ("conflicting depth locks"). Returns the old values for undo."""
+
+        before = {key: player.record.values[key] for key in ("position", "depth_rank", "depth_side", "unknown_52")}
+        value = self.set_position(player, code)
+        club = self.club_of(player)
+        if value != before["position"] and club is not None:
+            self._rerank(player, club)
+        return before
+
+    def restore_position(self, player: Player, values: Mapping[str, int]) -> None:
+        """Undo of ``change_position``: the position, depth rows and lock bits exactly as they were."""
+
+        for key in ("position", "depth_rank", "depth_side", "unknown_52"):
+            player.record.values[key] = int(values[key])
+
     # ------------------------------------------------------------------ edits
     def set_name(self, player: Player, which: str, text: str) -> dict[str, Any]:
         """Set a player's first or last name through the shared pool.  ``which`` is first|last."""
@@ -2842,7 +2861,9 @@ def inspect_states(source: Path | str) -> dict[str, Any] | None:
 
     try:
         from . import mod_build                            # local: mod_build imports this module back
-        report = mod_build.inspect(Path(source))
+        # b780 studio1: not mod_build.inspect, the whole Build read (50 s on a retail disc, over 3 minutes on a SOFTDRINK one,
+        # on the Rosters page's own thread); the same four values, read from the executable once.
+        report = mod_build.inspect_scheme_states(Path(source))
     except Exception:                                       # noqa: BLE001 - detection is never fatal
         return None
     return {key: report.get(key) for key in
@@ -3128,7 +3149,9 @@ def edits_between(base_body: bytes, patched_body: bytes, *, name: str = "") -> d
 
 def read_edits(source: Path | str | Mapping[str, Any]) -> dict[str, Any]:
     from .nfl2k5_roster_snapshot import SCHEMA as snapshot_schema
-    document = source if isinstance(source, Mapping) else json.loads(Path(source).read_text(encoding="utf-8"))
+    # utf-8-sig (b780 Q58): Windows Notepad saves a hand-edited file with a byte-order mark; plain utf-8 refused it
+    # with "Unexpected UTF-8 BOM". A file without the mark reads exactly as before.
+    document = source if isinstance(source, Mapping) else json.loads(Path(source).read_text(encoding="utf-8-sig"))
     _require(isinstance(document, Mapping), "a roster-edits file must be a JSON object")
     _require(str(document.get("schema")) in (EDITS_SCHEMA, snapshot_schema),
              f"unknown roster-edits schema {document.get('schema')!r}; expected {EDITS_SCHEMA}")

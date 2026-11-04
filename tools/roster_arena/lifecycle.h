@@ -119,7 +119,7 @@ void FC arena_stage(u8 *away,u8 *home) {
     for(side=0;side<2;side++) {
         t=(u8 *)(0xB30864+500*side); p=(u8 *)(0xB30C4C+5460*side);
         copy(t,src[side],500); a=B(t,ACTIVE); n=a; r=0;
-        if(U32((u8 *)0xE576A0,0)==1 && U32((u8 *)0xE5FF80,0)<=2 && integrity()) {
+        if(U32((u8 *)0xE576A0,0)==2 && U32((u8 *)0xE5FF80,0)<=2 && integrity()) {
             int reserves=reserve_count(src[side]);
             if(reserves>0) { r=(u32)reserves; n=a+r; if(n>65) n=65; }
         }

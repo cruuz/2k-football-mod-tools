@@ -404,6 +404,9 @@ class GameplayPatchesPanel(QWidget):
         self._pool = QThreadPool(self)
         self._task: _Task | None = None
         self._state: dict[str, object] | None = None
+        # b780 studio1: the 64 MB target locks options on Build; the link hands this page the same lock (key -> tooltip, badge)
+        self.memory_lock_for = None
+        self._memory_mirror: dict[str, tuple] = {}
         self.checks: dict[str, QCheckBox] = {}
         self._patches = tuple(patches)
         self._title = title
@@ -518,11 +521,6 @@ class GameplayPatchesPanel(QWidget):
                 check.setToolTip(helper or label)
                 check.toggled.connect(lambda _c: self._refresh())
                 head.addWidget(check)
-            if key in r62_ui.CHILDREN:
-                check.toggled.connect(lambda on, p=key: self._parent_toggled(p, on))
-            for parent, children in r62_ui.CHILDREN.items():
-                if key in children:
-                    check.toggled.connect(lambda on, p=parent: self._child_toggled(p, on))
             if key == "cpu_money_downs":
                 self.cpu_money_downs_level = QComboBox()
                 for text, value in r62_ui.LEVELS["cpu_money_downs"]:
@@ -629,6 +627,9 @@ class GameplayPatchesPanel(QWidget):
             self.badges[key] = badge_label
             self._static_badges[key] = badge
         root.addWidget(list_box)
+        # b780 studio1 (Q60): the same rule table Build reads (beta62_options.REQUIRES), for the boxes this page has
+        r62_ui.connect_requirements(self.checks.get, self._requirement_child_toggled, self._requirement_parent_toggled,
+                                   self._requirement_parent_clicked)
         out = QHBoxLayout()
         self.target_caption = QLabel("Save disc copy as")
         out.addWidget(self.target_caption)
@@ -707,13 +708,16 @@ class GameplayPatchesPanel(QWidget):
             upgrade = key == "position_pools" and value == "needs_fix"
             # b780 studio1: the Build tab's Needs update treatment, which this page lacked: on the released v0.8 disc these
             # read "Unknown state." or, for a legacy draft AI, a tooltip about the beta 58-60 star, and no badge.
-            from mod_editor.gui.build_panel_qt import LEGACY_UPGRADE_KEYS, PREVIOUS_REBUILD_KEYS, PREVIOUS_UPGRADE_KEYS
+            from mod_editor.gui.build_panel_qt import (
+                LEGACY_UPGRADE_KEYS, PREVIOUS_REBUILD_KEYS, PREVIOUS_UPGRADE_KEYS, rebuild_only_reason)
             locked_on = key in ("honors_page", "k128_memory")      # Build keeps these ticked and greyed out; so does this page
             update = ((value == "previous" and key in PREVIOUS_UPGRADE_KEYS)
                       or (value == "legacy" and (key in LEGACY_UPGRADE_KEYS or key in ("draft_ai", "depth_locks"))))
             rebuild = value == "previous" and key in PREVIOUS_REBUILD_KEYS
-            check.setEnabled((value == "retail" or upgrade or (update and not locked_on)) and not needs_image
-                             and key not in r62_ui.UNAVAILABLE)
+            # b780 studio1 (Q69): on a disc this release cannot build on, an in-place update is not an offer (same rule as Build)
+            declined_reason = rebuild_only_reason(state) if (update or upgrade) else ""
+            check.setEnabled((value == "retail" or (not declined_reason and (upgrade or (update and not locked_on))))
+                             and not needs_image and key not in r62_ui.UNAVAILABLE)
             check.setChecked(False)
             tip = {"applied": "Already installed on this source.",
                    "needs_fix": "Position pools are installed, but the CPU lineup exhaustion repair is missing. Select to upgrade.",
@@ -725,7 +729,9 @@ class GameplayPatchesPanel(QWidget):
             # a known non-retail state is the more useful message; an unreadable one (a bare XBE cannot
             # carry a playbook patch, so inspect says n/a) should say what the user needs instead
             full_disc = needs_image and value not in ("applied", "foreign", "partial", "previous", "legacy")
-            if update:
+            if declined_reason:
+                tip = "An older revision of this change is installed (beta 79 or earlier). " + declined_reason
+            elif update:
                 tip = ("An older revision of this change is installed (beta 79 or earlier). "
                        + ("This build brings it up to date in place, so it stays ticked." if locked_on else
                           "Select to update it to this release's revision (in place)."))
@@ -734,6 +740,7 @@ class GameplayPatchesPanel(QWidget):
                        "your retail game to get this release's version.")
             check.setToolTip("Full disc required (not a bare default.xbe)." if full_disc else tip)
             badge = ("Full disc required" if full_disc else
+                     "Older revision: rebuild from retail" if declined_reason else
                      "Needs update" if update else
                      "Beta 79 version: rebuild from retail" if rebuild else
                      {"applied": "Already installed", "foreign": "Unrecognized source data",
@@ -829,18 +836,47 @@ class GameplayPatchesPanel(QWidget):
         if path:
             self.my_career_setup_field.setText(path)
 
-    def _parent_toggled(self, parent, on):
-        if not on:
-            for child in r62_ui.CHILDREN[parent]:
-                if child in self.checks:
-                    self.checks[child].setChecked(False)
+    def _apply_memory_locks(self) -> None:
+        """Grey out here what Build's 64 MB target has greyed out, with Build's reason, and give it back at 128 MB exactly as it
+        was. Without it a click here was recorded on the locked Build box and came back on at 128 MB."""
+        provider = self.memory_lock_for
+        for key, box in self.checks.items():
+            info = provider(key) if provider is not None else None
+            badge = self.badges.get(key)
+            if info is not None:
+                if key not in self._memory_mirror:
+                    self._memory_mirror[key] = (box.isEnabled(), box.toolTip(),
+                                                badge.text() if badge is not None else None,
+                                                not badge.isHidden() if badge is not None else False)
+                box.setEnabled(False)
+                box.setToolTip(info[0])
+                if badge is not None:
+                    badge.setText(info[1])
+                    badge.setVisible(bool(info[1]))
+            elif key in self._memory_mirror:
+                enabled, tip, text, shown = self._memory_mirror.pop(key)
+                box.setEnabled(enabled)
+                box.setToolTip(tip)
+                if badge is not None and text is not None:
+                    badge.setText(text)
+                    badge.setVisible(shown)
+
+    def _requirement_child_toggled(self, child, on):
+        """Q60: a ticked child ticks the parents it needs that this page has."""
+        if on:
+            r62_ui.tick_parents(child, self.checks.get)
         self._refresh()
 
-    def _child_toggled(self, parent, on):
-        box = self.checks.get(parent)
-        if box is not None and on and not box.isChecked() and box.isEnabled():
-            box.setChecked(True)
+    def _requirement_parent_toggled(self, parent, on):
+        """Q60: an unticked parent unticks the children that need it."""
+        if not on:
+            r62_ui.untick_children(parent, self.checks.get)
         self._refresh()
+
+    def _requirement_parent_clicked(self, parent, on):
+        """b780-mem1: a parent the user ticked brings its default children along."""
+        if on:
+            r62_ui.tick_default_children(parent, self.checks.get)
 
     def _money_downs_changed(self):
         level = str(self.cpu_money_downs_level.currentData() or "retail")
@@ -1012,10 +1048,13 @@ class GameplayPatchesPanel(QWidget):
             self.checks, self._helpers, self._state)
         any_on = any(c.isChecked() for key, c in self.checks.items() if key not in ("helmet_finish", "weather_haze")) or self._helmet_finish_changed() or self._weather_haze_changed() or self._modern_scrambles_selected()
         configured = True   # MyCareer no longer needs a setup file: an empty field selects in-game creation
+        from mod_editor.gui.build_panel_qt import rebuild_only_reason
+        rebuild_only = rebuild_only_reason(self._state or {})    # b780 studio1 (Q69): said here, as Build says it, not by the engine
         self.write_button.setEnabled(configured and any_on and bool(self.source_field.text()) and bool(self.target_field.text())
                                      and self._task is None and not self._reading
-                                     and not self._playbook_blockers)
-        self.write_button.setToolTip(" ".join(self._playbook_blockers))
+                                     and not self._playbook_blockers and not rebuild_only)
+        self.write_button.setToolTip(rebuild_only or " ".join(self._playbook_blockers))
+        self._apply_memory_locks()
 
     def _choose_source(self) -> None:
         chosen, _f = QFileDialog.getOpenFileName(self, "Choose your game disc (.iso) or default.xbe", str(Path.home()), SOURCE_FILTER)

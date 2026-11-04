@@ -18,7 +18,7 @@ What this module ships
   renders; the original files are never stored (``portraits.json`` keeps each source URL, size and sha256).
 * The portraits ride the rookie-faces record: ``Portrai2.iff`` / ``portrai2.cdf`` already hold every retail slot plus
   the rookie bank, and ``nfl2k5_rookie_faces.apply_to_image(extra_faces=...)`` adds more.  This module's faces take the
-  ids ``ID_BASE`` .. ``ID_BASE + count - 1`` (30000..30999 reserved), a five-digit run far above every retail,
+  ids ``ID_BASE`` .. ``ID_BASE + count - 1`` (30000..31199 reserved), a five-digit run far above every retail,
   coach, alien (1947) and rookie-bank id (1000..21695) and below the 65535 limit of the record's u16.
 * After the last roster writer, :func:`apply_assignments` writes each player's id into the main roster (record
   +0x06, two bytes, nothing else), matching him by first name, surname and birth month/day (not by slot, so a
@@ -33,6 +33,11 @@ they now ride the same pipeline (group ``created_player``, ids 30946..30994).  T
 free-agent membership or the record's slot, only at name, birth month/day and a no-photo selector, so the manifest
 alone was missing.  Four named real players keep NO PHOTO because no official headshot exists for them (Ron Stone,
 D.J. Miller, Kyon Barrs, Tra Fluellen).
+
+b780 rst2 (Q41, Q46): the 119 real players the dated refresh now creates for the 11/03 active rosters, and Brett Thorson
+(MIN) and Hezekiah Masses (LV), whose records showed a stock portrait of another man, ride the same pipeline
+(tools/b780/rst2_headshots.py: ids 30995..31115, a fifth atlas pair faces_04, group ``roster_player``). The window
+grows to 30000..31199 for them; the game's portrait id is a u16 and every other id family sits below 30000 or above 31200.
 
 Without the rookie-faces option the slots are not written and the cards stay on ``nophoto`` exactly as before.
 A rejected player (no photo, placeholder, obscured, wrong person) keeps the no-photo card rather than a wrong face.
@@ -52,7 +57,7 @@ DATA_DIR = ROOT / "data" / "nfl2k5_real_portraits"
 MANIFEST = DATA_DIR / "portraits.json"
 SCHEMA = "nfl2k5.real_portraits.v1"
 ID_BASE = 30000
-ID_LIMIT = 31000                     # reserved window 30000..30999
+ID_LIMIT = 31200                     # reserved window 30000..31199 (b780 rst2: 30000..30999 was full at 30994)
 NO_PHOTO_REFRESH = 7100              # the dated refresh's created players
 NO_PHOTO_FLOOR = 21696               # every free-agent selector (21696..23086 on v0.7)
 PHOTO_FIELD = 0x06                   # record +0x06, u16

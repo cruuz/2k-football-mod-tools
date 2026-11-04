@@ -599,6 +599,10 @@ class BuildPlan:
     # allocator owner) replaces that value for the offense that made the call, on that play only. CPU offenses keep the
     # automatic read; L / R keep their audibles on the five-play menus. EXPERIMENTAL: on in the Experimental preset.
     protection_calls: bool = False
+    # b780-mem1: the pregame intro skips itself when its director (DIR_INTRO) could not load, instead of looping on the
+    # stadium flyover until A is pressed (nfl2k5_intro_autoskip, a late tail owner: the game's own A skip, only then).
+    # On in every SOFTDRINK preset and the pack.
+    intro_autoskip: bool = False
     # b778-fo1: modern sideline catches: no force-out credit. Retail rules a receiver carried out of bounds by a
     # defender (contact state) a catch without his feet down, the pre-2008 force-out rule; from the 2008 season a
     # receiver must get both feet down in bounds. A late executable owner (nfl2k5_force_out) hooks the credit read at
@@ -721,10 +725,20 @@ class BuildPlan:
     # executable owner (nfl2k5_contract_college_guard) hooks it and uses the panel's own N/A fallback, so an existing
     # franchise with a null college opens without a roster repair. On in every SOFTDRINK preset (a crash fix).
     contract_college_guard: bool = False
+    # b780 mc1 (EMU1 crash_load): a Franchise save with no human-controlled club leaves the user team 0 after a load
+    # (the FO deserializer 0x2D0D53 takes the first human club), and the Desk crashes on it (0x142BBD). Three in-place
+    # sites (nfl2k5_load_user_team_guard: the call and a 17-byte routine in the user-team accessors' alignment padding)
+    # fall back to club 0 there. A retail crash path: on in every preset and in the 64 MB profile (no allocation).
+    load_user_team_guard: bool = False
     # b780 c1-coachdata (wired at b780-int): the season rollover adds one Super Bowl trip to a head coach's record
     # (+0x32) for every winning season. One in-place site (0x247CD6, inc -> nop) stops it so a coach's Super Bowl
     # count only changes when his own numbers do (nfl2k5_coach_career_fix). A pure bug fix: on in every preset.
     coach_career_fix: bool = False
+    # b780 hist1: the franchise career-history pool (a 2004 bug). When the 50,000-word pool fills, retail collects on
+    # every stat write and folds old seasons into one signed 16-bit cell with no overflow check (a long QB career's
+    # passing yards wrap). An in-place rewrite of the engine's collection (nfl2k5_history_pool): the fold never wraps
+    # and a full pool frees 6,000 words at a time. A pure bug fix: on in every preset and in the 64 MB profile.
+    history_pool: bool = False
     # b778-cb1: cornerback tackle credit in the post-game merge. A late executable owner draws a starting corner's
     # tackle line from the NFL per-game distribution through the game's own RNG, with lower nickel and dime
     # distributions, so simulated RCBs stop reading as low-tackle/high-INT outliers. Played games use the same
@@ -768,6 +782,15 @@ class BuildPlan:
     # the native button gates. One late executable owner (nfl2k5_audible_legend). The same owner also lifts the panel
     # 54 units clear of the bottom score bar whenever a build has the bar (scorebug / scorebug_runtime), legend or not.
     audible_legend: bool = False
+    # b780 IR1 (Q66): the CPU's weekly injured reserve pass also walks the two Pro Bowl clubs in the postseason, and a
+    # placement there would write past the 32-club IR table. HUNT6's 34-byte rewrite of 0x246FF0's head places nobody
+    # for a league index of 32 or more. In place, no allocation; on in every preset (also under modern IR).
+    injured_reserve_guard: bool = False
+    # b780 IR1 (Noah 11/03: "Do the full modern IR now"): modern franchise injured reserve. IR players stay with their
+    # club off the 53 (up to 20 a club), a 4-game minimum, 8 returns a club a season, the CPU's long-injury rule and
+    # returns, IR salaries in the cap, the save extension in the IR block's spare halves (older builds load the first 5
+    # a club). One late executable owner (nfl2k5_injured_reserve); not at 64 MB (the legacy layout has no room).
+    modern_injured_reserve: bool = False
     # b778-sim1: the simulated franchise game's clock pace. The simulator's per-event clock decrement came from
     # sqrt(300 / (Sim. Quarter Length * 60)) * 0.03, so a 15-minute setting produced about 1.7x the plays, points and
     # yards of a 5-minute setting. One in-place patch at 0x10B89C fixes the decrement (nfl2k5_sim_stats), so a
@@ -865,11 +888,11 @@ class BuildPlan:
                 or self.modern_naming or self.crib_reclaim or self.read_option_runtime or self.franchise_2026_rules or self.senior_bowl
                 or self.guardian_overlay or self.my_career or self.screen_hooks or self.coverage_trail or self.franchise_edit_player or self.cpu_money_downs != "retail" or self.accelerated_clock or self.coin_defer or self.decided_clock or self.cpu_scrambles == "modern" or self.weather_haze or self.number_kerning or self.modern_color or self.weekly_prep or self.weekly_prep_cpu or self.weekly_prep_remember or self.coach_ai or self.playbook_pair or self.deep_zone_facing or self.deep_zone_bail or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave or self.historic_teams_quick_game or self.espn25_more_moments or self.historic_stock_books or self.espn25_era_rules or self.k128_memory or self.team_ratings or self.play_art_routes or self.letter_grades or self.honors_page
                 or self.sportscenter_lineup or self.momentum_collisions or self.scorebug_runtime or self.indicator_names_style != "retail" or self.momentum > 0 or self.momentum_contact or self.defensive_try or self.zone_drop_cap or self.all_stadiums or self.music_shuffle or self.practice_squad_screen or self.abilities or self.qb_spy or self.calendar_engine or self.coverage_slider or self.scramble_tuning or self.flatter_deep_ball or self.chop_block_toggle or self.music_policy != "retail" or self.music_unlock or self.music_userlist
-                or self.guardian_overlay or self.my_career or self.screen_hooks or self.coverage_trail or self.franchise_edit_player or self.cpu_money_downs != "retail" or self.accelerated_clock or self.coin_defer or self.decided_clock or self.cpu_scrambles == "modern" or self.weather_haze or self.number_kerning or self.modern_color or self.weekly_prep or self.weekly_prep_cpu or self.weekly_prep_remember or self.coach_ai or self.playbook_pair or self.deep_zone_facing or self.deep_zone_bail or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave or self.historic_teams_quick_game or self.espn25_more_moments or self.historic_stock_books or self.espn25_era_rules or self.k128_memory or self.team_ratings or self.play_art_routes or self.letter_grades or self.honors_page or self.contract_college_guard or self.coach_career_fix
+                or self.guardian_overlay or self.my_career or self.screen_hooks or self.coverage_trail or self.franchise_edit_player or self.cpu_money_downs != "retail" or self.accelerated_clock or self.coin_defer or self.decided_clock or self.cpu_scrambles == "modern" or self.weather_haze or self.number_kerning or self.modern_color or self.weekly_prep or self.weekly_prep_cpu or self.weekly_prep_remember or self.coach_ai or self.playbook_pair or self.deep_zone_facing or self.deep_zone_bail or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave or self.historic_teams_quick_game or self.espn25_more_moments or self.historic_stock_books or self.espn25_era_rules or self.k128_memory or self.team_ratings or self.play_art_routes or self.letter_grades or self.honors_page or self.contract_college_guard or self.coach_career_fix or self.history_pool
                 or self.guardian_overlay or self.my_career or self.screen_hooks or self.coverage_trail or self.franchise_edit_player or self.cpu_money_downs != "retail" or self.accelerated_clock or self.coin_defer or self.decided_clock or self.cpu_scrambles == "modern" or self.weather_haze or self.number_kerning or self.modern_color or self.weekly_prep or self.weekly_prep_cpu or self.weekly_prep_remember or self.coach_ai or self.playbook_pair or self.deep_zone_facing or self.deep_zone_bail or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave or self.historic_teams_quick_game or self.espn25_more_moments or self.historic_stock_books or self.espn25_era_rules or self.k128_memory or self.team_ratings or self.play_art_routes or self.letter_grades or self.honors_page or self.sim_cb_tackles or self.sim_stats or self.option_defaults or self.sim_rb_injuries or self.sim_realism or self.coach_carousel or self.history_screen
                 or self.momentum_collisions or self.scorebug_runtime or self.indicator_names_style != "retail" or self.momentum > 0 or self.momentum_contact or self.defensive_try or self.zone_drop_cap or self.all_stadiums or self.music_shuffle or self.practice_squad_screen or self.abilities or self.qb_spy or self.calendar_engine or self.coverage_slider or self.scramble_tuning or self.flatter_deep_ball or self.chop_block_toggle or self.music_policy != "retail" or self.music_unlock or self.music_userlist
                 or bool(self.music_library and _music_library_document(self.music_library)["bank"] == "cribmusic")
-                or self.pass_protection or self.pass_rush_stats or self.standings_records or self.cpu_passer_iq or self.cpu_clock2 or self.scramble_blocking or self.protection_calls or self.audible_legend)  # b778-pr1, b779-st1, b780-j1
+                or self.pass_protection or self.pass_rush_stats or self.standings_records or self.cpu_passer_iq or self.cpu_clock2 or self.scramble_blocking or self.protection_calls or self.audible_legend or self.intro_autoskip or self.modern_injured_reserve or self.load_user_team_guard)  # b778-pr1, b779-st1, b780-j1, b780 mc1
 
     def to_recipe(self) -> dict[str, Any]:
         d = asdict(self)
@@ -1041,6 +1064,10 @@ del _preset
 for _preset in PRESETS.values():
     _preset["protection_calls"] = False
 PRESETS["softdrink_experimental"]["protection_calls"] = True
+# b780-mem1 (Noah 11/03: "I want everything we've found fixed in 80"): the intro skips itself when its director could not
+# load (64 MB, and 128 MB without the early form), in every preset.
+for _preset in PRESETS.values():
+    _preset["intro_autoskip"] = True
 del _preset
 # b778-fo1: modern sideline catches (no force-out from 2008): a modern rule like overtime and the kick rules, so on in
 # the Advanced and Experimental presets; Basic keeps the game in 2004 (the force-out catch of its time).
@@ -1141,8 +1168,11 @@ del _preset
 # b778-cr1: the Player Contracts null-college crash guard is a safety fix, not a taste option: on in every preset.
 for _preset in PRESETS.values():
     _preset["contract_college_guard"] = True
+    _preset["load_user_team_guard"] = True  # b780 mc1: Franchise load with no human club (a retail crash path)
     # b780 c1 (wired at b780-int): the coach career counter fix is a records bug fix: on in every preset
     _preset["coach_career_fix"] = True
+    # b780 hist1: the history pool fix is a 2004 bug fix (wrapped career totals, a stalled full pool): on in every preset
+    _preset["history_pool"] = True
 del _preset
 # b778-cb1: cornerback tackle credit: on in the Advanced and Experimental presets (the SOFTDRINK 2K28 recipe builds
 # from Experimental); Basic keeps the retail merge byte for byte.
@@ -1199,6 +1229,14 @@ for _preset in PRESETS.values():
 for _preset in PRESETS.values():
     _preset["audible_legend"] = False
 PRESETS["softdrink_experimental"]["audible_legend"] = True
+del _preset
+# b780 IR1: the Pro Bowl injured reserve guard (Q66) in every preset; modern injured reserve in Experimental (the
+# SOFTDRINK 2K28 recipe builds from Experimental) and Advanced (both already take the scale-out; MEMORY below).
+for _preset in PRESETS.values():
+    _preset["injured_reserve_guard"] = True
+    _preset["modern_injured_reserve"] = False
+PRESETS["softdrink_advanced"]["modern_injured_reserve"] = True
+PRESETS["softdrink_experimental"]["modern_injured_reserve"] = True
 del _preset
 # b778-sim1: the simulated-game pace fix is a stat correction, not a taste option: on in the Advanced and Experimental
 # presets (the SOFTDRINK 2K28 recipe builds from Experimental). Basic keeps retail for purists.
@@ -1506,6 +1544,21 @@ def _cpu_passer_iq_preflight(source: Path, progress) -> None:
                          "off or build from your unmodified retail dump.")
 
 
+def _intro_autoskip_preflight(source: Path, progress) -> None:
+    """b780-mem1: refuse a source whose pregame intro update or skip code is foreign, before any write."""
+    module = _core_module("nfl2k5_intro_autoskip")
+    if module is None or _core_module("nfl2k5_xbe_space") is None:
+        raise ValueError("The intro auto-skip is not available in this installation.")
+    progress("Checking the pregame intro code for the intro auto-skip", 0, 0)
+    try:
+        payload = _xbe_bytes(source)
+    except (OSError, ValueError) as exc:
+        raise ValueError(f"The intro auto-skip cannot read default.xbe: {exc}") from exc
+    if module.status(payload) == "foreign":
+        raise ValueError("The pregame intro code in this source is not retail or the intro auto-skip. Turn it off "
+                         "or build from your unmodified retail dump.")
+
+
 def _protection_calls_preflight(source: Path, progress) -> None:
     """b780 p1-slide: refuse a source whose slide call or at-line audible code is foreign, before any write."""
     module = _core_module("nfl2k5_protection_calls")
@@ -1600,6 +1653,7 @@ _LATE_OWNER_OPTIONS = (
     ("nfl2k5_pass_protection", "Pass protection", lambda p: p.pass_protection),  # b778-pr1
     ("nfl2k5_pass_rush_stats", "Pass rush stats", lambda p: p.pass_rush_stats),  # b779-st1
     ("nfl2k5_protection_calls", "Protection calls", lambda p: p.protection_calls),  # b780 p1-slide
+    ("nfl2k5_intro_autoskip", "Intro auto-skip", lambda p: p.intro_autoskip),  # b780-mem1
     ("nfl2k5_qb_accuracy", "Accurate short throws", lambda p: p.qb_accuracy),
     ("nfl2k5_formation_art_spacing", "Play art: icon spacing", lambda p: p.play_art_routes),  # b777-tp1
     ("nfl2k5_force_out", "Modern sideline catches", lambda p: p.modern_force_out),  # b778-fo1
@@ -1619,6 +1673,8 @@ _LATE_OWNER_OPTIONS = (
     ("nfl2k5_standings_records", "Team Standings records", lambda p: p.standings_records),  # b780-j1
     ("nfl2k5_cpu_clock2", "Modern CPU clock management", lambda p: p.cpu_clock2),  # b780 b-clock
     ("nfl2k5_audible_legend", "Audible panel legend", lambda p: _audible_panel_choice(p) is not None),  # b780-p3
+    ("nfl2k5_lineup_roles", "SPECIAL situational roles (3DRB, GAD, fullback)", lambda p: p.depth_chart_rows),  # b780 sub1
+    ("nfl2k5_injured_reserve", "Modern injured reserve", lambda p: p.modern_injured_reserve or p.injured_reserve_guard),  # b780 IR1
     ("nfl2k5_clock_led", "Modern clock digits", lambda p: p.modern_clock_led),  # b778-sd4
     ("nfl2k5_return_coverage", "Return coverage pursuit angles", lambda p: p.return_coverage),  # b778-kr1
     ("nfl2k5_catch_snap_limit", "Defender catch snap limit", lambda p: p.catch_snap_limit),  # b780-cv4
@@ -1910,6 +1966,17 @@ def _apply_force_out(plan: "BuildPlan", target: Path, receipt: dict, progress) -
         raise RuntimeError("Modern sideline catches: the output does not read back as applied")
     receipt["steps"].append({"step": "modern_force_out", **{k: v for k, v in force_receipt.items() if k != "reservations"}})
     receipt["result"]["modern_force_out"] = "applied"
+
+
+def _injured_reserve_preflight(source: Path, progress) -> None:
+    """b780 IR1: refuse a source whose injured reserve routines are foreign, before any write."""
+    module = _core_module("nfl2k5_injured_reserve")
+    if module is None:
+        raise ValueError("Modern injured reserve is not available in this installation.")
+    progress("Checking the franchise injured reserve", 0, 0)
+    if module.status(_xbe_bytes(source)) not in ("retail", "guard", "applied"):
+        raise ValueError("The franchise injured reserve routines in this source are not retail. Build from an "
+                         "unmodified retail dump.")
 
 
 def _sim_rb_injuries_preflight(source: Path, progress) -> None:
@@ -2340,7 +2407,7 @@ def _apply_coach_career_fix(plan: "BuildPlan", target: Path, receipt: dict, prog
     module = _core_module("nfl2k5_coach_career_fix")
     if module is None:
         raise RuntimeError("The coach career counter fix needs nfl2k5_coach_career_fix.")
-    progress("Franchise: coach Super Bowl trips count only real trips", 0, 0)
+    progress("Franchise records: coach Super Bowl trips and playoff W-L, the Owner Firing label", 0, 0)
     payload, fix_receipt = module.apply(_xbe_bytes(target))
     _write_xbe_bytes(target, payload)
     final = _xbe_bytes(target)
@@ -2349,6 +2416,26 @@ def _apply_coach_career_fix(plan: "BuildPlan", target: Path, receipt: dict, prog
     receipt["steps"].append({"step": "coach_career_fix", **{k: v for k, v in fix_receipt.items()
                                                             if k not in ("reservations", "log")}})
     receipt["result"]["coach_career_fix"] = "applied"
+
+
+@_core_step("history_pool")
+def _apply_history_pool(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    """b780 hist1: the career-history pool's collection rewritten in place (no wrapped career totals, no full-pool
+    collection on every write)."""
+    if not plan.history_pool:
+        return
+    module = _core_module("nfl2k5_history_pool")
+    if module is None:
+        raise RuntimeError("The career history pool fix needs nfl2k5_history_pool.")
+    progress("Franchise: career history keeps whole totals", 0, 0)
+    payload, fix_receipt = module.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, payload)
+    final = _xbe_bytes(target)
+    if final != payload or module.status(final) != "applied":
+        raise RuntimeError("The career history pool fix: the output does not read back as applied")
+    receipt["steps"].append({"step": "history_pool", **{k: v for k, v in fix_receipt.items()
+                                                        if k not in ("reservations", "log")}})
+    receipt["result"]["history_pool"] = "applied"
 @_core_step("sim_cb_tackles")
 def _apply_sim_cb_tackles(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
     """b778-cb1: the cornerback tackle credit owner, the last late allocator owner."""
@@ -2624,6 +2711,25 @@ def _audible_panel_choice(plan: "BuildPlan"):
     return lift, legend, bool(legend and getattr(plan, "protection_calls", False))
 
 
+@_core_step("injured_reserve")
+def _apply_injured_reserve(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    """b780 IR1: modern injured reserve (the last late allocator owner), or the Pro Bowl guard alone (in place)."""
+    if not (plan.modern_injured_reserve or plan.injured_reserve_guard):
+        return
+    module = _core_module("nfl2k5_injured_reserve")
+    if module is None:
+        raise RuntimeError("Modern injured reserve needs nfl2k5_injured_reserve.")
+    mode = "modern" if plan.modern_injured_reserve else "guard"
+    progress("Franchise injured reserve" if mode == "modern" else "Franchise injured reserve: the Pro Bowl guard", 0, 0)
+    payload, ir_receipt = module.apply(_xbe_bytes(target), mode)
+    _write_xbe_bytes(target, payload)
+    final = _xbe_bytes(target)
+    if final != payload or module.status(final) != ("applied" if mode == "modern" else "guard"):
+        raise RuntimeError("Modern injured reserve: the output does not read back as applied")
+    receipt["steps"].append({"step": "injured_reserve", **{k: v for k, v in ir_receipt.items() if k != "reservations"}})
+    receipt["result"]["injured_reserve"] = mode
+
+
 @_core_step("audible_legend")
 def _apply_audible_legend(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
     """b780-p3: the audible panel lift and/or button legend, the last late allocator owner (LATE_OWNERS order)."""
@@ -2646,6 +2752,25 @@ def _apply_audible_legend(plan: "BuildPlan", target: Path, receipt: dict, progre
     receipt["result"]["audible_legend"] = "applied"
 
 
+@_core_step("lineup_roles")
+def _apply_lineup_roles(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    """b780 sub1: the SPECIAL 3DRB on obvious passing downs and RB2 at a missing fullback, with the SPECIAL rows (whose
+    3DRB row it reads); the last late allocator owner (nfl2k5_xbe_space.LATE_OWNERS order)."""
+    if not plan.depth_chart_rows:
+        return
+    module = _core_module("nfl2k5_lineup_roles")
+    if module is None:
+        raise RuntimeError("The SPECIAL situational roles need nfl2k5_lineup_roles.")
+    progress("Depth chart: third-down back, gadget player and fullback fallback", 0, 0)
+    payload, roles_receipt = module.apply(_xbe_bytes(target), third_down=True)
+    _write_xbe_bytes(target, payload)
+    final = _xbe_bytes(target)
+    if final != payload or module.read_settings(final) != {"status": "applied", "third_down": True}:
+        raise RuntimeError("Situational lineup roles: the output does not read back as applied")
+    receipt["steps"].append({"step": "lineup_roles", **roles_receipt})
+    receipt["result"]["lineup_roles"] = "applied"
+
+
 def _sim_stats_preflight(source: Path, progress) -> None:
     """b778-sim1: refuse a source whose simulator initializer is foreign, before any write."""
     module = _core_module("nfl2k5_sim_stats")
@@ -2659,6 +2784,24 @@ def _sim_stats_preflight(source: Path, progress) -> None:
     if module.status(payload) == "foreign":
         raise ValueError("The franchise simulator in this source is not retail or the NFL pace fix. Turn it off or "
                          "rebuild from a supported USA source.")
+
+@_core_step("load_user_team_guard")
+def _apply_load_user_team_guard(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    """b780 mc1: the Franchise load user-team guard (three in-place sites, no allocation)."""
+    if not plan.load_user_team_guard:
+        return
+    module = _core_module("nfl2k5_load_user_team_guard")
+    if module is None:
+        raise RuntimeError("The Franchise load guard needs nfl2k5_load_user_team_guard.")
+    progress("Franchise: load user-team guard", 0, 0)
+    payload, guard_receipt = module.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, payload)
+    final = _xbe_bytes(target)
+    if final != payload or module.status(final) != "applied":
+        raise RuntimeError("The Franchise load guard: the output does not read back as applied")
+    receipt["steps"].append({"step": "load_user_team_guard", **{k: v for k, v in guard_receipt.items() if k != "reservations"}})
+    receipt["result"]["load_user_team_guard"] = "applied"
+
 @_core_step("sim_stats")
 def _apply_sim_stats(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
     """b778-sim1: normalise the simulated game's clock pace (in place, no allocator request)."""
@@ -2899,6 +3042,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
                                ("pass_rush_stats", "nfl2k5_pass_rush_stats"),  # b779-st1
                                ("cpu_passer_iq", "nfl2k5_cpu_passer_iq"),  # b780 a-passer
                                ("protection_calls", "nfl2k5_protection_calls"),  # b780 p1-slide
+                               ("intro_autoskip", "nfl2k5_intro_autoskip"),  # b780-mem1
                                ("modern_force_out", "nfl2k5_force_out"),  # b778-fo1
                                ("module_loader", "nfl2k5_module_loader"),  # b778-xs1
                                ("crib_trophy_room", "nfl2k5_crib_trophy_room"),  # b778-xs1
@@ -2916,6 +3060,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
                                ("player_progress", "nfl2k5_player_progress_screen"),  # b778-pg2
                                ("contract_college_guard", "nfl2k5_contract_college_guard"),  # b778-cr1
                                ("coach_career_fix", "nfl2k5_coach_career_fix"),  # b780 c1 (wired at b780-int)
+                               ("history_pool", "nfl2k5_history_pool"),  # b780 hist1
                                ("sim_cb_tackles", "nfl2k5_sim_cb_tackles"),  # b778-cb1
                                ("sim_rb_injuries", "nfl2k5_sim_rb_injuries"),  # b779-sim2
                                ("sim_realism", "nfl2k5_sim_realism"),  # b779-sim2 r4
@@ -2926,6 +3071,9 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
                                ("cpu_clock2_overtime", "nfl2k5_cpu_clock2"),  # b780 b-clock
                                ("catch_snap_limit", "nfl2k5_catch_snap_limit"),  # b780-cv4
                                ("audible_legend", "nfl2k5_audible_legend"),  # b780-p3
+                               ("lineup_roles", "nfl2k5_lineup_roles"),  # b780 sub1
+                               ("modern_injured_reserve", "nfl2k5_injured_reserve"), ("injured_reserve_guard", "nfl2k5_injured_reserve"),  # b780 IR1
+                               ("load_user_team_guard", "nfl2k5_load_user_team_guard"),  # b780 mc1
                                ("modern_clock_led", "nfl2k5_clock_led"),  # b778-sd4
                                ("letter_grades", "nfl2k5_letter_grades"),
                                ("honors_page", "nfl2k5_honors"), ("honors_history", "nfl2k5_honors_history"),
@@ -3069,6 +3217,30 @@ def inspect_screen_timing(source: Path | str, level: str = "D") -> dict[str, Any
         return {"status": "foreign", "level": level, "books": [], "reason": str(exc)}
 
 
+def inspect_scheme_states(source: Path | str) -> dict[str, Any]:
+    """``position_pools``, ``edge_rename``, ``edge_rename_disc`` and ``scheme_labels`` of ``source``, as ``inspect`` reports them.
+
+    These four are all the Rosters page needs to name a disc's position scheme, and ``inspect`` (about 150 status functions)
+    took 50 s on a retail disc and over 3 minutes on a SOFTDRINK one, on the window's own thread. This reads the executable
+    once and runs only these (b780 studio1). tests/mod_editor/test_b780_studio1_scheme_states.py holds it to ``inspect`` on a
+    real executable and a real disc image."""
+
+    source = Path(source)
+    report = tt.read_scheme_states(source)
+    out: dict[str, Any] = {
+        "position_pools": "n/a", "edge_rename": report.get("edge_rename", "unknown"),
+        "edge_rename_disc": report.get("edge_rename_disc"), "scheme_labels": report.get("scheme_labels", "unknown"),
+    }
+    if report.get("container") == "xiso":
+        pools = _core_module("nfl2k5_position_pools")
+        if pools is not None:
+            try:
+                out["position_pools"] = pools.status(_xbe_bytes(source))
+            except Exception:  # noqa: BLE001 - the same fallback inspect() takes
+                out["position_pools"] = "foreign"
+    return out
+
+
 def _inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str, Any]:
     """Current state of every patch in ``source`` (a default.xbe or a disc image)."""
 
@@ -3153,6 +3325,8 @@ def _inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[st
     out["cpu_passer_iq"] = passer_iq.status(_xbe_bytes(source)) if passer_iq is not None else "unavailable"
     protection_calls = _core_module("nfl2k5_protection_calls")  # b780 p1-slide
     out["protection_calls"] = protection_calls.status(_xbe_bytes(source)) if protection_calls is not None else "unavailable"
+    intro_autoskip = _core_module("nfl2k5_intro_autoskip")  # b780-mem1
+    out["intro_autoskip"] = intro_autoskip.status(_xbe_bytes(source)) if intro_autoskip is not None else "unavailable"
     force_out = _core_module("nfl2k5_force_out")  # b778-fo1
     out["modern_force_out"] = force_out.status(_xbe_bytes(source)) if force_out is not None else "unavailable"
     inbox = _core_module("nfl2k5_inbox_standings")
@@ -3190,6 +3364,8 @@ def _inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[st
     out["contract_college_guard"] = college_guard.status(_xbe_bytes(source)) if college_guard is not None else "unavailable"
     career_fix = _core_module("nfl2k5_coach_career_fix")  # b780 c1 (wired at b780-int)
     out["coach_career_fix"] = career_fix.status(_xbe_bytes(source)) if career_fix is not None else "unavailable"
+    history_pool = _core_module("nfl2k5_history_pool")  # b780 hist1
+    out["history_pool"] = history_pool.status(_xbe_bytes(source)) if history_pool is not None else "unavailable"
     cb_tackles = _core_module("nfl2k5_sim_cb_tackles")  # b778-cb1
     out["sim_cb_tackles"] = cb_tackles.status(_xbe_bytes(source)) if cb_tackles is not None else "unavailable"
     rb_injuries = _core_module("nfl2k5_sim_rb_injuries")  # b779-sim2
@@ -3216,6 +3392,15 @@ def _inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[st
                                 else "unavailable")
     audible_legend = _core_module("nfl2k5_audible_legend")  # b780-p3
     out["audible_legend"] = audible_legend.status(_xbe_bytes(source)) if audible_legend is not None else "unavailable"
+    lineup_roles = _core_module("nfl2k5_lineup_roles")  # b780 sub1
+    out["lineup_roles"] = lineup_roles.status(_xbe_bytes(source)) if lineup_roles is not None else "unavailable"
+    injured_reserve = _core_module("nfl2k5_injured_reserve")  # b780 IR1: retail, guard, applied (modern) or foreign
+    out["injured_reserve"] = injured_reserve.status(_xbe_bytes(source)) if injured_reserve is not None else "unavailable"
+    # b780 IR1: the two options' own states (the panel reads inspect()[option]): the guard is in both installs
+    out["injured_reserve_guard"] = {"guard": "applied", "applied": "applied"}.get(out["injured_reserve"], out["injured_reserve"])
+    out["modern_injured_reserve"] = {"guard": "retail"}.get(out["injured_reserve"], out["injured_reserve"])
+    load_guard = _core_module("nfl2k5_load_user_team_guard")  # b780 mc1
+    out["load_user_team_guard"] = load_guard.status(_xbe_bytes(source)) if load_guard is not None else "unavailable"
     sim_stats = _core_module("nfl2k5_sim_stats")  # b778-sim1
     out["sim_stats"] = sim_stats.status(_xbe_bytes(source)) if sim_stats is not None else "unavailable"
     quick_release = _core_module("nfl2k5_quick_long_release")  # b780-c-release
@@ -4062,7 +4247,7 @@ def validate_plan(plan: BuildPlan) -> list[str]:
             console_memory.normalize(memory)
         except ValueError as exc:
             return [str(exc)]
-        return console_memory.problems(plan, records=_roster_capacity_records(plan))
+        return console_memory.problems(plan, records=_requested_capacity_records(plan))
     return []
 
 
@@ -4990,6 +5175,8 @@ def _apply_roster_history(plan, target, receipt, progress):
 def _apply_draft_pick_ownership(plan, target, receipt, progress):
     if not plan.roster_edits:
         return
+    if _roster_fit_applies(plan):
+        return   # b780-m64b: the 64 MB roster fit drops this section (its XBE step takes the allocator's scale-out)
     document = _core_module("nfl2k5_roster_records").read_edits(Path(plan.roster_edits))
     pick_plan = document.get("draft_pick_ownership")
     if pick_plan is not None:
@@ -5004,6 +5191,8 @@ def _apply_draft_pick_ownership(plan, target, receipt, progress):
 def _apply_hback_roles(plan, target, receipt, progress):
     if not plan.roster_edits:
         return
+    if _roster_fit_applies(plan):
+        return   # b780-m64b: the 64 MB roster fit drops this section (its XBE step takes the allocator's scale-out)
     document = _core_module("nfl2k5_roster_records").read_edits(Path(plan.roster_edits))
     roles = document.get("hback_roles")
     if roles is not None:
@@ -5114,6 +5303,24 @@ def _apply_pass_rush_stats(plan, target, receipt, progress):
     receipt["result"]["pass_rush_stats"] = "applied"
 
 
+@_core_step("intro_autoskip")
+def _apply_intro_autoskip(plan, target, receipt, progress):
+    """b780-mem1: the intro auto-skip owner, a late tail owner (nfl2k5_xbe_space.LATE_OWNERS / TAIL_OWNERS)."""
+    if not plan.intro_autoskip:
+        return
+    module = _core_module("nfl2k5_intro_autoskip")
+    if module is None:
+        raise RuntimeError("The intro auto-skip module is not available in this build")
+    progress("Intro auto-skip: the pregame intro skips itself when it cannot load", 0, 0)
+    xbe, result = module.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, xbe)
+    if module.status(_xbe_bytes(target)) != "applied":
+        raise RuntimeError("Intro auto-skip: the executable does not read back as applied")
+    receipt["steps"].append({"step": "intro_autoskip", **{k: v for k, v in result.items() if k not in ("edits", "reservations")},
+                             "edits": result.get("edits", [])})
+    receipt["result"]["intro_autoskip"] = "applied"
+
+
 @_core_step("protection_calls")
 def _apply_protection_calls(plan, target, receipt, progress):
     """b780 p1-slide: the protection-calls owner, the last late allocator owner (nfl2k5_xbe_space.LATE_OWNERS order)."""
@@ -5133,7 +5340,21 @@ def _apply_protection_calls(plan, target, receipt, progress):
 
 
 def _roster_capacity_records(plan):
-    """b778 fa4: records the paired arena writer must reserve for the dated free-agent plan."""
+    """b778 fa4: records the paired arena writer must reserve for the dated free-agent plan. b780-m64b: none for a 64 MB
+    build: it fits roster edits that ask for capacity growth to the original roster size instead (no arena growth, no
+    K128), in the dated refresh pass (_apply_roster_refresh)."""
+    if getattr(plan, "console_memory", 128) == 64:
+        return 0
+    return _requested_capacity_records(plan)
+
+
+def _roster_fit_applies(plan) -> bool:
+    """b780-m64b: a 64 MB build whose roster edits ask for capacity growth: they are fitted to the retail roster size."""
+    return getattr(plan, "console_memory", 128) == 64 and _requested_capacity_records(plan) > 0
+
+
+def _requested_capacity_records(plan):
+    """The capacity growth the plan's roster edits ask for (free_agent_capacity.records), whatever the target."""
     if not plan.roster_edits:
         return 0
     records = _core_module("nfl2k5_roster_records")
@@ -5231,8 +5452,27 @@ def _apply_roster_refresh(plan, target, receipt, progress):
         return
     if not plan.position_pools:
         raise ValueError("Dated roster refresh requires modern position pools")
+    refresh = document["roster_refresh"]
+    if _roster_fit_applies(plan):
+        # b780-m64b (coordinator 11/03: a 64 MB build keeps the 2026 rosters): the refresh is fitted to the retail roster
+        # size with M64A's retail fit, on the main roster this build has made from the user's own disc so far.
+        from . import nfl2k5_console_memory as console_memory
+        progress("Fitting the roster edits to the original game's roster size (64 MB)", 0, 0)
+        base = records.load_image(target).to_body()
+        try:
+            import hashlib
+            source_sha256 = hashlib.sha256(Path(plan.roster_edits).read_bytes()).hexdigest()
+            fitted, fit_receipt = console_memory.fit_roster_edits(document, base, source_sha256=source_sha256)
+        except (OSError, ValueError) as exc:
+            raise ValueError(f"The 64 MB build could not fit the roster edits to the original game's roster size: {exc}. "
+                             "Choose Console memory 128 MB, or roster edits that do not grow the roster file.") from exc
+        refresh = fitted["roster_refresh"]
+        receipt["steps"].append({"step": "roster_retail_fit", **fit_receipt})
+        note = console_memory.roster_fit_note(fit_receipt)
+        progress(note, 0, 0)
+        receipt.setdefault("user_notes", []).append(note)
     progress("Applying the dated roster refresh", 0, 0)
-    directive = {"schema": records.EDITS_SCHEMA, "edits": [], "roster_refresh": document["roster_refresh"]}
+    directive = {"schema": records.EDITS_SCHEMA, "edits": [], "roster_refresh": refresh}
     if document.get("created_history"):
         directive["created_history"] = document["created_history"]       # b779 fh1: after every identity exists
     if plan.espn25_more_moments or plan.historic_teams_quick_game:
@@ -5414,6 +5654,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("Pass protection must be Off or On.")
     if type(plan.audible_legend) is not bool:  # b780-p3
         raise ValueError("The audible panel legend must be Off or On.")
+    if type(plan.injured_reserve_guard) is not bool or type(plan.modern_injured_reserve) is not bool:  # b780 IR1
+        raise ValueError("Modern injured reserve and the Pro Bowl injured reserve guard must be Off or On.")
     if type(plan.pass_rush_stats) is not bool:  # b779-st1
         raise ValueError("Pass rush stats must be Off or On.")
     if type(plan.history_screen) is not bool:  # b780-j4
@@ -5424,6 +5666,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("Modern CPU clock management and its overtime choice must be Off or On.")
     if type(plan.protection_calls) is not bool:  # b780 p1-slide
         raise ValueError("Protection calls must be Off or On.")
+    if type(plan.intro_autoskip) is not bool:  # b780-mem1
+        raise ValueError("The intro auto-skip must be Off or On.")
     if type(plan.weekly_progression) is not bool:  # b778-pg1
         raise ValueError("Weekly player progression must be Off or On.")
     if type(plan.modern_force_out) is not bool:  # b778-fo1
@@ -5470,6 +5714,10 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("The Player Contracts college guard must be Off or On.")
     if type(plan.coach_career_fix) is not bool:  # b780 c1 (wired at b780-int)
         raise ValueError("The coach career counter fix must be Off or On.")
+    if type(plan.history_pool) is not bool:  # b780 hist1
+        raise ValueError("The career history pool fix must be Off or On.")
+    if type(plan.load_user_team_guard) is not bool:  # b780 mc1
+        raise ValueError("The Franchise load user-team guard must be Off or On.")
     if type(plan.sim_cb_tackles) is not bool:  # b778-cb1
         raise ValueError("Cornerback tackle credit must be Off or On.")
     if type(plan.sim_stats) is not bool:  # b778-sim1
@@ -6223,6 +6471,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         _cpu_passer_iq_preflight(source, progress)
     if plan.protection_calls:  # b780 p1-slide: before any write
         _protection_calls_preflight(source, progress)
+    if plan.intro_autoskip:  # b780-mem1: before any write
+        _intro_autoskip_preflight(source, progress)
     if plan.modern_force_out:  # b778-fo1: like qb3, before any write
         _force_out_preflight(source, progress)
     if plan.inbox_standings:
@@ -6241,6 +6491,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         _practice_injuries_preflight(source, progress)
     if plan.sim_rb_injuries:  # b779-sim2: like pi1, before any write
         _sim_rb_injuries_preflight(source, progress)
+    if plan.modern_injured_reserve or plan.injured_reserve_guard:  # b780 IR1: like sim2, before any write
+        _injured_reserve_preflight(source, progress)
     if plan.sim_realism:  # b779-sim2 r4: like pi1, before any write
         _sim_realism_preflight(source, progress)
     if plan.coach_carousel:  # b780-c6: before any write
@@ -6866,7 +7118,10 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         cpu_clock2=plan.cpu_clock2,
         catch_snap_limit=plan.catch_snap_limit,
         scramble_blocking=plan.scramble_blocking, protection_calls=plan.protection_calls,
-        audible_legend=_audible_panel_choice(plan) is not None)  # b780-p3
+        audible_legend=_audible_panel_choice(plan) is not None,  # b780-p3
+        lineup_roles=plan.depth_chart_rows,  # b780 sub1: the SPECIAL third-down back rides with the SPECIAL rows
+        intro_autoskip=plan.intro_autoskip,  # b780-mem1
+        injured_reserve=plan.modern_injured_reserve)  # b780 IR1
     if plan.read_option_runtime or plan.qb_spy:
         _step("play_intents")
         resolver = _core_module("nfl2k5_play_intents")
@@ -6911,7 +7166,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             or plan.music_shuffle or plan.practice_squad_screen or plan.abilities or plan.qb_spy or plan.calendar_engine or plan.camera or plan.franchise_autosave
             or plan.historic_teams_quick_game or plan.espn25_more_moments or plan.historic_stock_books or plan.espn25_era_rules or r62.get("anniversary_kickoff") or r62.get("widescreen_menus") or r62.get("team_logo_swap") or r62.get("period_goalposts") or plan.k128_memory or plan.letter_grades or plan.honors_page
             or plan.return_coverage or plan.pass_protection or plan.pass_rush_stats or plan.cpu_passer_iq or plan.catch_snap_limit or plan.protection_calls or plan.audible_legend
-            or plan.history_screen or plan.franchise_history or bool(plan.speed_threshold)):  # b780-int: reserved up front too
+            or plan.depth_chart_rows  # b780 sub1: the lineup roles owner rides with the SPECIAL rows
+            or plan.history_screen or plan.franchise_history or bool(plan.speed_threshold) or plan.intro_autoskip):  # b780-int: reserved up front too
         _step("xbe_space")
         progress("Adding experimental extra patch space", 0, 0)
         playlist_selection, playlist_preflight = None, None
@@ -6955,6 +7211,9 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             catch_snap_limit=plan.catch_snap_limit,
             scramble_blocking=plan.scramble_blocking, protection_calls=plan.protection_calls,
             audible_legend=_audible_panel_choice(plan) is not None,  # b780-p3
+            lineup_roles=plan.depth_chart_rows,  # b780 sub1
+            intro_autoskip=plan.intro_autoskip,  # b780-mem1
+            injured_reserve=plan.modern_injured_reserve,  # b780 IR1
             **{**r62, "read_option_intent_table": read_table, "modern_naming": False, "crib_reclaim": False})
         _write_xbe_bytes(target, patched)
         receipt["steps"].append({"step": "xbe_space", **space_receipt,
@@ -8150,6 +8409,10 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     _apply_contract_college_guard(plan, target, receipt, progress)  # b778-cr1: after the other late owners
     # b780 c1 (wired at b780-int): the coach career counter fix, one in-place site in the season rollover
     _apply_coach_career_fix(plan, target, receipt, progress)
+    # b780 hist1: the history pool fix, in place inside the history engine (honors and defensive_try accept it)
+    _apply_history_pool(plan, target, receipt, progress)
+    # b780 mc1: the Franchise load user-team guard, in place (the deserializer call and the accessors' padding)
+    _apply_load_user_team_guard(plan, target, receipt, progress)
     # b778-cb1: cornerback tackle credit, after the Contracts guard (LATE_OWNERS order)
     _apply_sim_cb_tackles(plan, target, receipt, progress)
     # b778-sim1: the simulated-game pace fix is in place and touches no allocator owner
@@ -8199,6 +8462,12 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     _apply_protection_calls(plan, target, receipt, progress)
     # b780-p3: the audible panel lift / button legend, the last late allocator owner (LATE_OWNERS order)
     _apply_audible_legend(plan, target, receipt, progress)
+    # b780 sub1: the SPECIAL third-down back and the fullback fallback (LATE_OWNERS order: lineup roles, then intro auto-skip)
+    _apply_lineup_roles(plan, target, receipt, progress)
+    # b780-mem1: the intro auto-skip (after the audible legend in LATE_OWNERS; its code sits in a legacy RX tail)
+    _apply_intro_autoskip(plan, target, receipt, progress)
+    # b780 IR1: modern injured reserve (or the Pro Bowl guard alone) (LATE_OWNERS order)
+    _apply_injured_reserve(plan, target, receipt, progress)
     # b778-pg2: the Player Progress screen and weekly snapshot (a late allocator owner after force_out)
     # b778-cb1: cornerback tackle credit, after force_out
     # b778-sd4: modern clock digits, after modern sideline catches
@@ -8250,6 +8519,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise RuntimeError("CPU quarterbacks throw on time: the output does not read back as applied")
     if plan.protection_calls and _core_module("nfl2k5_protection_calls").status(_xbe_bytes(target)) != "applied":  # b780 p1-slide
         raise RuntimeError("Protection calls: the output does not read back as applied")
+    if plan.intro_autoskip and _core_module("nfl2k5_intro_autoskip").status(_xbe_bytes(target)) != "applied":  # b780-mem1
+        raise RuntimeError("Intro auto-skip: the output does not read back as applied")
     if plan.run_blocking and _core_module("nfl2k5_run_blocking").status(_xbe_bytes(target)) != "applied":  # b777-ol1
         raise ValueError("run blocking did not survive the final passes")
     if plan.qb_accuracy and _core_module("nfl2k5_qb_accuracy").status(_xbe_bytes(target)) != "applied":  # b777-qb3
@@ -8296,6 +8567,10 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("the Player Contracts college guard did not survive the final passes")  # b778-cr1
     if plan.coach_career_fix and _core_module("nfl2k5_coach_career_fix").status(_xbe_bytes(target)) != "applied":
         raise ValueError("the coach career counter fix did not survive the final passes")  # b780 c1
+    if plan.history_pool and _core_module("nfl2k5_history_pool").status(_xbe_bytes(target)) != "applied":
+        raise ValueError("the career history pool fix did not survive the final passes")  # b780 hist1
+    if plan.load_user_team_guard and _core_module("nfl2k5_load_user_team_guard").status(_xbe_bytes(target)) != "applied":
+        raise ValueError("the Franchise load user-team guard did not survive the final passes")  # b780 mc1
     if plan.sim_rb_injuries and _core_module("nfl2k5_sim_rb_injuries").status(_xbe_bytes(target)) != "applied":
         raise ValueError("simulated RB short injuries did not survive the final passes")  # b779-sim2
     if plan.catch_snap_limit and _core_module("nfl2k5_catch_snap_limit").status(_xbe_bytes(target)) != "applied":  # b780-cv4

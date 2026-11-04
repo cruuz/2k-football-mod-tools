@@ -50,16 +50,18 @@ def derive_table(fixture: Path, v08: Path) -> dict:
     from mod_editor.core import nfl2k5_classic_teams as ct
     from mod_editor.core import nfl2k5_historic_styles as hs
     from mod_editor.core import nfl2k5_moment_kits as mk
-    from tests.mod_editor.test_b775_ek1_moment_kits import _after_sw1, _after_vk2
+    from tests.mod_editor.test_b775_ek1_moment_kits import _after_art1, _after_sw1, _after_vk2
     moment, classic = mk.document(), ct.authored_kits()
     pins = json.loads(mk.PINS.read_text(encoding="utf-8"))
     table: dict = {}
     with hs.Source(fixture) as source:
         packages = {s: source.get(mk.selector_name(s)) for s in mk.donors(moment)}
-        packages = _after_vk2(_after_sw1(source, packages))
+        # b780-art1: four donors' Revolution shell is cleaned at its source PNG after the fixture (needs the retail
+        # index and the v0.9 league project, as test_b775_ek1 does)
+        packages = _after_art1(_after_vk2(_after_sw1(source, packages)))
     wrong = sorted(s for s, data in packages.items() if _sha(data) != pins["donors"][s])
     if wrong:
-        raise ValueError(f"the fixture disc's donors after sw1 and vk2 differ from the pins: {wrong}")
+        raise ValueError(f"the fixture disc's donors after sw1, vk2 and art1 differ from the pins: {wrong}")
     for selector, chunks in mk.stock_needs(moment).items():
         parsed = parse_chunks(packages[selector])
         table[selector] = {str(i): _sha(packages[selector][parsed[i].offset:parsed[i].end_offset]) for i in chunks}

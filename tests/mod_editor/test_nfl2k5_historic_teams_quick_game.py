@@ -73,7 +73,10 @@ class WiringTests(unittest.TestCase):
 
     def test_relocations_name_only_retail_functions_and_the_state(self):
         names = {symbol for _offset, _kind, symbol, _value in patch.assembly.RELOCATIONS}
-        self.assertEqual(names - set(patch.SYMBOLS), {"state"})
+        # b780 modes2: "code" = the own-name label pair's pointers at its own nickname text (code-relative)
+        self.assertEqual(names - set(patch.SYMBOLS), {"state", "code"})
+        self.assertEqual(sorted(off for off, _k, sym, _v in patch.assembly.RELOCATIONS if sym == "code"),
+                         [patch.assembly.LABELS["own_name"] - 4, patch.OWN_LABEL_AT, patch.OWN_LABEL_AT + 4])
         self.assertEqual(patch.SYMBOLS["team_release"], 0xC2300)
         self.assertEqual(patch.SYMBOLS["team_import"], 0xC1030)
         code = patch.code_for(0x14DA000, 0x14F2000)
@@ -220,6 +223,62 @@ class OwnerTests(unittest.TestCase):
                                                          "coin_defer": True, KEY: False})
 
 
+class B780Modes2RevisionTests(unittest.TestCase):
+    """b780 modes2: revision 2 (the first club's label, the own-name label pair); revision-1 copies (beta-78 .. the
+    v0.9 RC) read previous and upgrade in place to exactly the fresh revision-2 bytes."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.retail = _retail()
+        cls.patched, _ = patch.apply(cls.retail)
+        cls.code, cls.data = patch.allocations(cls.patched)
+
+    def _previous(self, payload, seasons):
+        return patch._with_body(payload, patch.code_for(self.code["va"], self.data["va"], seasons=seasons,
+                                                        revision=1))
+
+    def test_revision_1_reads_previous_and_upgrades_in_place(self):
+        for seasons in (False, True):
+            current = patch.enable_season_routing(self.patched) if seasons else self.patched
+            old = self._previous(current, seasons)
+            self.assertNotEqual(old, current)
+            self.assertEqual((patch.status(old), patch.season_routing_status(old), patch.classic_status(old)),
+                             ("previous", seasons, "base"))
+            self.assertTrue(patch.UPGRADES_PREVIOUS)
+            up, receipt = patch.apply(old)
+            self.assertEqual((receipt["status"], receipt["previous_revision"], receipt["revision"]), ("upgraded", 1, 2))
+            self.assertEqual(up, current)
+            self.assertEqual(patch.apply(up)[1]["status"], "already_applied")
+
+    def test_revision_2_is_shorter_and_its_season_format_moves_with_it(self):
+        self.assertEqual((len(patch.assembly_b778.CODE), len(patch.assembly.CODE)), (1230, 1233))
+        body = patch.code_for(self.code["va"], self.data["va"], seasons=True)
+        fmt = self.code["va"] + len(patch.assembly.CODE)
+        self.assertIn(bytes.fromhex("ba") + struct.pack("<I", fmt), body)
+        text = "HTS-h-%s-%d-%s-%d.iff\0".encode("utf-16le")
+        self.assertEqual(body[len(patch.assembly.CODE):len(patch.assembly.CODE) + len(text)], text)
+        self.assertEqual(len(patch.assembly.CODE) + len(text), 1277)     # 3 of the 1,280 bytes stay free
+
+    def test_the_own_name_label_pair_is_written_only_by_the_classic_variant(self):
+        base = patch.code_for(self.code["va"], self.data["va"])
+        self.assertEqual(base[patch.OWN_IDENTITY_AT], 0xFF)            # no team (identities are 100..252)
+        text_va = self.code["va"] + patch.OWN_TEXT_AT
+        self.assertEqual(struct.unpack_from("<II", base, patch.OWN_LABEL_AT), (text_va, text_va))
+        self.assertEqual(base[patch.OWN_TEXT_AT:patch.OWN_TEXT_AT + 14], bytes(14))
+        with self.assertRaises(patch.HistoricQuickGameError):
+            patch.code_for(self.code["va"], self.data["va"], own_name=(230, "SEAMEN", 0x1509E70 + 280))
+        classic = patch.code_for(self.code["va"], self.data["va"], classic_va=0x1509E70,
+                                 own_name=(230, "SEAMEN", 0x1509E70 + 280))
+        self.assertEqual(classic[patch.OWN_IDENTITY_AT], 230)
+        self.assertEqual(struct.unpack_from("<II", classic, patch.OWN_LABEL_AT), (text_va, 0x1509E70 + 280))
+        self.assertEqual(classic[patch.OWN_TEXT_AT:patch.OWN_TEXT_AT + 14], "SEAMEN\0".encode("utf-16le"))
+        self.assertEqual(patch._own_name_of(classic), (230, "SEAMEN", 0x1509E70 + 280))
+        self.assertIsNone(patch._own_name_of(base))
+        for bad in ((255, "SEAMEN", 0x1509F88), (230, "SEAMENS", 0x1509F88), (230, "", 0x1509F88)):
+            with self.assertRaises(patch.HistoricQuickGameError):
+                patch.code_for(self.code["va"], self.data["va"], classic_va=0x1509E70, own_name=bad)
+
+
 class ManifestReservationTests(unittest.TestCase):
     """The manifest Recorder attributes every byte this owner writes and the cave oracle then refuses its sites."""
 
@@ -277,6 +336,36 @@ class NativeTeamSelectTests(unittest.TestCase):
     def cpu(self):
         from nfl2k5_historic_quick_game_native import TeamSelectCPU
         return TeamSelectCPU(self.payload, *self.evidence)
+
+    def test_every_retail_historic_team_takes_its_club_label_in_both_revisions(self):
+        """b780 modes2: revision 2 compares the entry's code in place and takes the first club; on the base variant
+        it names exactly what revision 1 named (the club), also with the other side holding a team of that club."""
+        from nfl2k5_historic_quick_game_native import TeamSelectCPU
+        code, data = patch.allocations(self.payload)
+        old = patch._with_body(self.payload, patch.code_for(code["va"], data["va"], revision=1))
+        miami = [n for n in self.names if n.split("-")[1] == "14"]
+        self.assertGreaterEqual(len(miami), 2)
+        for payload in (self.payload, old):
+            cpu = TeamSelectCPU(payload, *self.evidence)       # the harness allows 100 archive events per machine
+            clubs = {cpu.text(cpu.r(cpu.team(i) + 0x10C)): cpu.label(cpu.team(i)) for i in range(32)}
+            cpu.team_select(cpu.last_resident(), cpu.team(15))
+            labels = {}
+            for _ in range(len(self.names)):
+                step = cpu.press("home", +1)
+                labels[step["loaded"][0]] = step["home"]["label"]
+            self.assertEqual(set(labels), set(self.names))
+            for name, label in labels.items():
+                self.assertEqual(label, clubs[name.split("-")[1]], name)
+            cpu = TeamSelectCPU(payload, *self.evidence)
+            cpu.team_select(cpu.last_resident(), cpu.last_resident())
+            while cpu.press("away", +1)["loaded"] != [miami[0]]:
+                pass
+            while True:
+                step = cpu.press("home", +1)
+                if step["loaded"] == [miami[1]]:
+                    break
+            self.assertEqual((step["home"]["label"], cpu.label(cpu.spare_slots()[1])),
+                             (["Dolphins", "MIA"], ["Dolphins", "MIA"]))
 
     def test_home_steps_into_the_list_through_twelve_entries_and_back_out(self):
         cpu = self.cpu()

@@ -50,13 +50,13 @@ class PlannerTests(unittest.TestCase):
         stable = lambda a: a['owner'] in space.LEGACY_OWNERS and not (a['owner'] == 'nfl2k5_scorebug_runtime' and a['kind'] == 'code')
         self.assertEqual([a for a in report['allocations'] if stable(a)], [a for a in before if stable(a)])
         sprite = next(a for a in report['allocations'] if a['owner'] == 'nfl2k5_scorebug_runtime' and a['kind'] == 'code')
-        self.assertEqual(sprite['size'], 5920)  # b780 p2: +544 for the ball spot and the page strip fit; was 5376 - beta 76 s15: the sprite owner grew by 512 for records and the arrow; b76-sb: 768 more for the broadcast states
+        self.assertEqual(sprite['size'], 6336)  # b780 pres2: +416 for the pause-screen bar (the planner spills it whole to the pool: it no longer fits the v3 run's tail); b780 p2: +544 for the ball spot and the page strip fit; was 5376 - beta 76 s15: the sprite owner grew by 512 for records and the arrow; b76-sb: 768 more for the broadcast states
         self.assertGreater(sprite['va'], max(a['va'] for a in before))
         self.assertEqual([report['capacity'][k]['capacity_bytes'] for k in ('code', 'data', 'read_only')],
                          [109024, 86016, 17952])  # 2528 directory bytes hold code; 464 hold the read-only rating table.
         self.assertEqual([report['capacity'][k]['available_bytes'] for k in ('code', 'data', 'read_only')],
-                         [128, 0, 16])  # b780-p2: the scorebug owner's code request grew 5376 -> 5920 bytes (+544) and ai8's 192-byte third-down owner no longer fits the legacy tail (it moves whole to the v4 pool), so 480 - 544 + 192 = 128 bytes remain; b779-cm2: the camera's code request grew 512 -> 864 bytes (+352) inside the legacy code run, so 832 - 352 = 480 bytes remain; b779-km1: K128's 1,536-byte code request moves it whole to the v4 pool, leaving 832 bytes in the legacy code run (before cm2); b777-ci2: the synthetic owner is one 16-byte code request; b776-sm1: none after the classic teams' 288 and a 16-byte synthetic constant; b775-ct1: 16 after the classic teams' 240 and a 48-byte synthetic constant; b76-pf P1: the team-logo table takes 64 RO bytes; b77-f4: 80 left after the grades owner and the 256-byte synthetic constant; b77-v1b: 48
-        self.assertEqual(len(report['pages']), 55)  # b778-ai8: + the third-down owner and its v4 pool page; b779-hn1: + the champions owner's pool page
+                         [4320, 0, 16])  # b780 pres2: the 6,336-byte sprite leaves the v3 run for the pool (measured with space.plan: its 5,920 B tail slot now holds the late owners that were spilling, 128 -> 4,320 B free); b780-p2: the scorebug owner's code request grew 5376 -> 5920 bytes (+544) and ai8's 192-byte third-down owner no longer fits the legacy tail (it moves whole to the v4 pool), so 480 - 544 + 192 = 128 bytes remain; b779-cm2: the camera's code request grew 512 -> 864 bytes (+352) inside the legacy code run, so 832 - 352 = 480 bytes remain; b779-km1: K128's 1,536-byte code request moves it whole to the v4 pool, leaving 832 bytes in the legacy code run (before cm2); b777-ci2: the synthetic owner is one 16-byte code request; b776-sm1: none after the classic teams' 288 and a 16-byte synthetic constant; b775-ct1: 16 after the classic teams' 240 and a 48-byte synthetic constant; b76-pf P1: the team-logo table takes 64 RO bytes; b77-f4: 80 left after the grades owner and the 256-byte synthetic constant; b77-v1b: 48
+        self.assertEqual(len(report['pages']), 56)  # b780 pres2: + the sprite scorebug's pool page; b778-ai8: + the third-down owner and its v4 pool page; b779-hn1: + the champions owner's pool page
         for a in report['allocations']:
             self.assertEqual(a['va'] % a['align'], 0)
         self.assertEqual(space.plan(reversed(REQUESTS + LARGE)), report)
@@ -69,7 +69,7 @@ class PlannerTests(unittest.TestCase):
         report = space.plan(requests)
         self.assertEqual({tuple(row) for row in requests}, set(space.dormant_union()))
         self.assertEqual([report['capacity'][k]['available_bytes'] for k in ('code', 'data', 'read_only')],
-                         [144, 0, 16])  # b780-p2: the fixture's scorebug code row grew 5376 -> 5920 bytes (+544); the 192-byte third-down owner and the 400-byte money-downs late code no longer fit the legacy run and move whole to the v4 pool, so 96 - 544 + 192 + 400 = 144 bytes remain; b779-cm2: the fixture's camera code row grew 512 -> 864 bytes (+352) in the legacy run, so 448 - 352 = 96 bytes remain (the 864 matches nfl2k5_camera.CODE_SIZE); b779-fixD: the fixture and dormant_union() also carry return coverage (192 B code) and the module loader (256 B code, 32 B data), the owners build_manifest's all_requests lists after third_down; they are late owners placed in the v4 pool, so they take nothing from the legacy run (still 96 code, 0 data, 16 read-only); b779-km1: the fixture's K128 request is 1,536 bytes and lives in the v4 pool, so its run keeps 448 bytes (before cm2) (the fixture also carries the four star-career/money-downs rows); b776-sm1: the classic teams' 288 RO; b775-ct1: the classic teams' 240 RO; b76-pf P1: the team-logo table, 64 RO; b77-f4: letter grades, 160 RX and 240 RO; b77-f4b: progression row, 16 RX; b77-v1b: period goalposts 32 RO (its 176 RX in the legacy tail)
+                         [1408, 0, 16])  # b780 pres2: the fixture's sprite row is 6,336 bytes and goes to the pool, so the v3 run keeps 1,408 B free (measured with space.plan, 144 before); b780-p2: the fixture's scorebug code row grew 5376 -> 5920 bytes (+544); the 192-byte third-down owner and the 400-byte money-downs late code no longer fit the legacy run and move whole to the v4 pool, so 96 - 544 + 192 + 400 = 144 bytes remain; b779-cm2: the fixture's camera code row grew 512 -> 864 bytes (+352) in the legacy run, so 448 - 352 = 96 bytes remain (the 864 matches nfl2k5_camera.CODE_SIZE); b779-fixD: the fixture and dormant_union() also carry return coverage (192 B code) and the module loader (256 B code, 32 B data), the owners build_manifest's all_requests lists after third_down; they are late owners placed in the v4 pool, so they take nothing from the legacy run (still 96 code, 0 data, 16 read-only); b779-km1: the fixture's K128 request is 1,536 bytes and lives in the v4 pool, so its run keeps 448 bytes (before cm2) (the fixture also carries the four star-career/money-downs rows); b776-sm1: the classic teams' 288 RO; b775-ct1: the classic teams' 240 RO; b76-pf P1: the team-logo table, 64 RO; b77-f4: letter grades, 160 RX and 240 RO; b77-f4b: progression row, 16 RX; b77-v1b: period goalposts 32 RO (its 176 RX in the legacy tail)
         # e2 adds 3,584 RX, 16 RW and 2,176 RO bytes. The old fixture also
         # reserved the nonexistent nfl2k5_guardian_cap_overlay (2,048 RX,
         # 336 RW), in addition to the real nfl2k5_guardian_overlay owner.
@@ -158,7 +158,7 @@ class PlannerTests(unittest.TestCase):
             self.assertIn('0 available', run.stdout)
             run = subprocess.run(cmd + ['--json'], capture_output=True, text=True, timeout=30)
             self.assertEqual(run.returncode, 0, run.stderr)
-            self.assertEqual(len(json.loads(run.stdout)['pages']), 55)  # b779-hn1: the champions owner's pool page
+            self.assertEqual(len(json.loads(run.stdout)['pages']), 56)  # b780 pres2: the sprite scorebug's pool page; b779-hn1: the champions owner's pool page
             # b778-xs1: 81,921 RW bytes now land in the v4 pool; one request above MAX_REQUEST_BYTES still refuses.
             path.write_text(json.dumps([['owner', 'data', space.MAX_REQUEST_BYTES + 1, 1]]), encoding='utf-8')
             run = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
@@ -332,7 +332,7 @@ class SyntheticTests(unittest.TestCase):
         spans = recorder.finish(self.grown)
         for reservation in space.reservations(self.grown):
             self.assertTrue(any(all(s[k] == reservation[k] for k in ('start', 'end', 'owner')) for s in spans), reservation)
-        self.assertEqual(len([r for r in space.reservations(self.grown) if r['owner'] == space.OWNER]), 55)  # b779-hn1
+        self.assertEqual(len([r for r in space.reservations(self.grown) if r['owner'] == space.OWNER]), 56)  # b780 pres2: the sprite scorebug's pool page; b779-hn1
 
     def test_music_both_orders_and_all_legacy_bytes_stay_identical(self):
         data = b'synthetic music metadata'
@@ -468,7 +468,9 @@ class RetailTests(unittest.TestCase):
                 from mod_editor.core import nfl2k5_scorebug_runtime as runtime
                 # S5 is a terminal scale owner: a different request union moves
                 # its RX allocation. Verify its regenerated code at that VA.
-                self.assertNotEqual(a['va'],old[a['owner'],a['kind']]['va'])
+                # b780 pres2: the 6,336-byte sprite lands whole in the pool (first, behind the directory page) in both
+                # unions, so the larger union no longer moves it; its code is still regenerated at that VA.
+                self.assertGreaterEqual(a['va'],space.POOL_VA)
                 state=old[a['owner'],'data']['va']
                 self.assertEqual(first[a['raw']:a['raw']+a['size']],runtime.code_for(a['va'],state)[0])
             elif a['owner'] in space.LEGACY_OWNERS:

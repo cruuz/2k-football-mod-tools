@@ -71,6 +71,29 @@ def latest_roster(path):
     return out
 
 
+def recent_practice_squad(path):
+    """{gsis} of players the roster file lists as ``DEV`` (practice squad) in the week before a club's latest week: the
+    two practice-squad players a club elevates for a game are listed as active that week, and are not on its 53."""
+    status = collections.defaultdict(dict)
+    for row in csv.DictReader(open(path, encoding="utf-8")):
+        if row["gsis_id"]:
+            status[row["gsis_id"]][int(row["week"] or 0)] = row["status"]
+    out = set()
+    for g, weeks in status.items():
+        latest = max(weeks)
+        if weeks.get(latest) in CLUB_STATUSES and weeks.get(latest - 1) == RESERVE_STATUS:
+            out.add(g)
+    return out
+
+
+def last_injury_reports(path):
+    """{gsis: the last week he is on a club's injury report}."""
+    out = collections.defaultdict(int)
+    for row in csv.DictReader(open(path, encoding="utf-8")):
+        out[row["gsis_id"]] = max(out[row["gsis_id"]], int(row["week"]))
+    return out
+
+
 def latest_charts(path):
     """({club: [entries]}, {club: dt}, {club: {dt: [entries]}}) from each club's newest chart and every snapshot."""
     newest, entries = {}, collections.defaultdict(list)
@@ -256,6 +279,7 @@ def update(document, roster_csv, charts_csv, as_of, body=None, injuries_csv=None
         if n["status"] in CLUB_STATUSES:
             club_week[club(n["team"])] = max(club_week[club(n["team"])], int(n["week"] or 0))
     stale = []
+    last_report = last_injury_reports(injuries_csv) if injuries_csv else {}
     # statuses and clubs
     for row in rows:
         n = fresh.get(row["gsis_id"])
@@ -270,6 +294,14 @@ def update(document, roster_csv, charts_csv, as_of, body=None, injuries_csv=None
         if status not in CLUB_STATUSES + (RESERVE_STATUS, INJURED_STATUS):
             team = team if status == "CUT" else row["team"]
         row.update(status=status, team=team, source=ROSTER_URL, source_as_of=as_of, source_week=n["week"])
+        if status == INJURED_STATUS:
+            # nflverse keeps one roster row per player and the charts keep listing injured players, so "on injured reserve
+            # since week 4 or earlier" (IR1: 17 weeks, else 8) is read from his roster row (a week 1 to 4 row: he left the
+            # weekly files then) or his last injury report (week 1 to 3: he went on injured reserve by week 4)
+            long_term = int(n["week"] or 0) <= 4 or 0 < last_report.get(row["gsis_id"], 0) <= 3
+            row["ir_weeks"] = 17 if long_term else 8                 # b780 rst2 / IR1
+        else:
+            row.pop("ir_weeks", None)
         if status in CLUB_STATUSES + (RESERVE_STATUS, INJURED_STATUS) and n["jersey_number"].isdigit():
             row["fields"]["jersey"] = int(n["jersey_number"])
     # membership
@@ -285,17 +317,32 @@ def update(document, roster_csv, charts_csv, as_of, body=None, injuries_csv=None
         old = before[t][1]
         reserves[t].sort(key=lambda i: (i not in old, old.index(i) if i in old else 0, i))
         reserves[t] = reserves[t][:12]
-    # A club the roster file lists with more than 53 active and inactive players (JAX 11/03: 54) keeps 53: the
-    # inactive player the club's chart ranks lowest (unlisted first) goes to its practice squad, else to free agency.
+    # A club the roster file lists with more than 53 active and inactive players (JAX 11/03: 54; most clubs 54 to 56, the
+    # two practice-squad players elevated for the game count as active) keeps 53. b780 rst2 (Q41): once every rostered
+    # player has a record this fires for most clubs, so it no longer drops an injured starter: the player who goes is
+    # never one the chart lists first at his slot (a kicker, punter or long snapper counts) while another can go, then the
+    # deepest chart rank (a player the chart does not list is the deepest), a player who was on the club's practice squad
+    # (an elevated one is not on the 53) and an inactive player first. He goes to the club's practice squad, else to the
+    # free agents.
     over_53 = []
+    elevated = recent_practice_squad(roster_csv)
     for t in teams:
         while len(active[t]) > 53:
             listed = collections.defaultdict(lambda: (99, 99))
             for e in charts.get(t, []):
-                if e["pos_grp"] != SPECIAL:
+                if e["pos_grp"] != SPECIAL or e["pos_abb"] in ("PK", "P", "LS"):
                     listed[e["gsis_id"]] = min(listed[e["gsis_id"]], (int(e["pos_rank"]), int(e["pos_slot"])))
-            inactive = [i for i in active[t] if by_index[i]["status"] == "INA"] or list(active[t])
-            drop = max(inactive, key=lambda i: (listed[by_index[i]["gsis_id"]], i))
+            # the club's own kicker, punter and long snapper (nflverse position) are never trimmed while another can go,
+            # the first of each by chart rank (a club's chart can lack its snapper: LAR 11/03)
+            keepers = set()
+            for kind in ("K", "P", "LS"):
+                kind_players = [i for i in active[t] if fresh.get(by_index[i]["gsis_id"], {}).get("position") == kind]
+                if kind_players:
+                    keepers.add(min(kind_players, key=lambda i: (listed[by_index[i]["gsis_id"]], i)))
+            drop = max(active[t], key=lambda i: (i not in keepers and listed[by_index[i]["gsis_id"]][0] != 1,
+                                                 by_index[i]["gsis_id"] in elevated,
+                                                 listed[by_index[i]["gsis_id"]][0], by_index[i]["status"] == "INA",
+                                                 listed[by_index[i]["gsis_id"]][1], i))
             active[t].remove(drop)
             if len(reserves[t]) < 12:
                 reserves[t].append(drop)
@@ -340,6 +387,8 @@ def update(document, roster_csv, charts_csv, as_of, body=None, injuries_csv=None
                 position = records[index].record.get("position")
                 row["fields"]["position"] = position
             chosen, key = best_entry(entries.get(row["gsis_id"], []), position, mapping)
+            if key is None and fresh.get(row["gsis_id"], {}).get("position") == "LS":
+                key = (True, 98, 98)        # b780 rst2 (Q39): a long snapper the chart does not list: after every centre
             row["depth_source"] = depth_source(chosen) if chosen else None
             picks[index] = (position, chosen, key)
         if healthy is not None:

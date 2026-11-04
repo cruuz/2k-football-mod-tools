@@ -295,5 +295,56 @@ class NativeTests(unittest.TestCase):
         self.assertEqual(calls, [])
 
 
+
+
+@unittest.skipUnless(HAVE_UC, "Unicorn is absent; bounded native instruction evidence requires it")
+class B780Modes2MyCareerTests(unittest.TestCase):
+    """Q29: with weekly prep for CPU teams on, a MyCareer franchise. MyCareer marks its club human in 0xE5775C (its
+    resolve writes [0xE5775C+club*4] = 1 over a cleared array) and hooks the user-club test C4D50 so that weekly
+    management sees the club as CPU. Revision 1 read the array, took the remembered human plan path, and MyCareer never
+    has a plan: the club was the only one without weekly prep. Revision 2 asks 13EC30 (C4D50): a CPU plan. The game's
+    own before_sim path, the weekly prep owner and the MyCareer owner run natively on the real signed Franchise."""
+
+    @classmethod
+    def setUpClass(cls):
+        from mod_editor.core import nfl2k5_my_career as career, nfl2k5_xbe_space as space
+        cls.career = career
+        cls.retail, cls.save = retail_bytes(), signed_save()
+        base, _ = space.apply(cls.retail, patch.REQUESTS + career.REQUESTS, scaleout=True)
+        cls.current = career.apply(patch.apply(base)[0])[0]
+        va = patch.allocation(cls.current)["va"]
+        cls.previous, _ = space.install_code(cls.current, patch.OWNER, patch.code_for(va, revision=1),
+                                             previous=patch.code_for(va))
+        cls.state = career.allocations(cls.current)[1]["va"]
+
+    def week(self, payload, *, my_career):
+        m = Machine(payload, self.save)
+        m.game(0, 1)
+        m.uc.mem_write(0xE5775C, bytes(34 * 4))
+        m.put(0xE5775C, 1)                       # club 0: MyCareer's club (or, without MyCareer, the human coach)
+        m.plan(0, [0] * 500)                    # no remembered plan: MyCareer has no plan screen
+        m.uc.mem_write(prep.STATE_VA, bytes(8))
+        if my_career:
+            m.uc.mem_write(self.state, self.career.MAGIC)
+            m.put(self.state + 24, 2)            # an active career stage (1..6)
+            m.put(self.state + 56, 0)            # the club index MyCareer resolved
+            m.put(self.state + 2588, m.team(0))
+        m.call("before_sim", budget=200_000_000)       # both clubs' native plan application runs
+        return m.get(prep.STATE_VA), m.get(prep.STATE_VA + 4), m.plan(0) == prep.default_plan()
+
+    def test_statuses_and_in_place_upgrade(self):
+        self.assertEqual((patch.status(self.current), patch.status(self.previous)), ("applied", "previous"))
+        self.assertEqual(self.career.status(self.current), "applied")
+        up, receipt = patch.apply(self.previous)
+        self.assertEqual((up, receipt["status"], receipt["previous_revision"]), (self.current, "upgraded", 1))
+        self.assertEqual(patch.read_settings(self.previous), dict(status="previous", cpu=True, remember=True))
+
+    def test_the_mycareer_club_gets_the_cpu_plan(self):
+        self.assertEqual(self.week(self.previous, my_career=True), (0, 2, False))     # Q29 reproduced: no prep
+        self.assertEqual(self.week(self.current, my_career=True), (2, 2, True))       # the CPU plan, like club 1
+        # A Franchise human coach (no MyCareer) still keeps the remembered-plan path in both revisions.
+        self.assertEqual(self.week(self.current, my_career=False), (0, 2, False))
+        self.assertEqual(self.week(self.previous, my_career=False), (0, 2, False))
+
 if __name__ == "__main__":
     unittest.main()

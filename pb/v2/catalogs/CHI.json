@@ -282,6 +282,8 @@
    "align": "pistol",
    "tag": "base",
    "menu": [
+    "RB Toss",
+    "RB Sweep Wk",
     "RB Slip Screen Wk",
     "Max Double Move",
     "Y Slot Fade",
@@ -293,7 +295,8 @@
     "PA Slot Stick Nod",
     "X Sail Skinny Post",
     "Slot Zig Flat",
-    "RB Texas"
+    "RB Texas",
+    "RB Dive"
    ],
    "cpu_situation": [
     3,
@@ -424,9 +427,9 @@
    "tag": "empty",
    "menu": [
     "Slot Bubble Screen",
-    "RB Deep Flood",
+    "QB Draw",
     "RB Slants Smash",
-    "RB Zig Flat",
+    "QB Power",
     "Slot Post Wheel",
     "Z Out and Up"
    ],
@@ -520,9 +523,12 @@
    "align": "uc",
    "tag": "goal",
    "menu": [
+    "RB Iso",
+    "Power G",
     "Y Spacing",
     "PA Crossers",
-    "PA Comeback Seam"
+    "PA Comeback Seam",
+    "Guard Iso"
    ],
    "cpu_situation": [
     4,
@@ -876,13 +882,16 @@
    "menu": [
     "X Whip Return",
     "PA Z Deep Post",
+    "Counter GT Wk",
     "FB Screen",
     "Post Corner Shot",
     "X Out Seam Whip",
     "X China Out and Up",
     "Z Dagger",
     "RB Texas",
-    "X China Out Slant"
+    "X China Out Slant",
+    "Power G",
+    "FB Off Tackle Wk"
    ],
    "cpu_situation": [
     0,
@@ -2992,6 +3001,7 @@
    "deep": false,
    "lane": 0,
    "formations": [
+    "Pistol Doubles",
     "Gun Wildcat",
     "Gun Spread Y-Slot",
     "Gun Normal Y Off Close"
@@ -3070,6 +3080,7 @@
    "deep": false,
    "lane": 2,
    "formations": [
+    "Pistol Doubles",
     "Gun Wildcat",
     "Gun Spread Y-Slot",
     "Gun Normal Y Off Close"
@@ -3351,6 +3362,7 @@
    "lane": 4,
    "formations": [
     "Singleback Doubles",
+    "Pistol Doubles",
     "Pistol Y Off Trips",
     "Pistol Bunch"
    ]
@@ -3444,6 +3456,7 @@
    "lane": 1,
    "formations": [
     "I-Form Pro",
+    "Gun Split Y Off",
     "I-Form Close"
    ]
   },
@@ -3517,6 +3530,7 @@
    "lane": 4,
    "formations": [
     "I-Form Pro",
+    "Gun Split Y Off",
     "I-Form Close"
    ]
   },
@@ -4063,28 +4077,25 @@
   {
    "play": "p113",
    "play_index": 163,
-   "name": "RB Deep Flood",
-   "concept": "HB Deep Flood Spot Out Comebacks",
-   "family": "deep",
-   "header": "dropback",
-   "play_type": "pass",
+   "name": "QB Draw",
+   "concept": "QB Draw",
+   "family": "qb",
+   "header": "qb_draw",
+   "play_type": "keeper",
    "personnel": "11",
    "home": "Gun Empty Trey",
-   "primary": "HB",
+   "primary": null,
    "screen": null,
    "must": "",
    "routes": [
-    "Comeback",
-    "Flat",
-    "Post",
-    "Sail",
-    "Spot Out"
+    "Go"
    ],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Empty Trey"
-   ]
+   ],
+   "added_by": "b780 plays2"
   },
   {
    "play": "p114",
@@ -4103,6 +4114,7 @@
    "deep": false,
    "lane": 0,
    "formations": [
+    "Singleback Ace Double Wing",
     "Goal Line Sneak"
    ]
   },
@@ -4238,28 +4250,23 @@
   {
    "play": "p121",
    "play_index": 171,
-   "name": "RB Zig Flat",
-   "concept": "HB Zig Flat Return Post Dig",
-   "family": "dropback",
-   "header": "dropback",
-   "play_type": "pass",
+   "name": "QB Power",
+   "concept": "QB Power",
+   "family": "qb",
+   "header": "qb_draw",
+   "play_type": "keeper",
    "personnel": "11",
    "home": "Gun Empty Trey",
-   "primary": "HB",
+   "primary": null,
    "screen": null,
    "must": "",
-   "routes": [
-    "Dig",
-    "Flat",
-    "Post",
-    "Return",
-    "Zig"
-   ],
+   "routes": [],
    "deep": false,
    "lane": null,
    "formations": [
     "Gun Empty Trey"
-   ]
+   ],
+   "added_by": "b780 plays2"
   },
   {
    "play": "p122",
@@ -4323,7 +4330,8 @@
    "deep": false,
    "lane": 1,
    "formations": [
-    "Wing T"
+    "Wing T",
+    "Gun Split Y Off"
    ]
   },
   {
@@ -4515,7 +4523,8 @@
    "deep": false,
    "lane": 3,
    "formations": [
-    "Goal Line"
+    "Goal Line",
+    "Singleback Ace Double Wing"
    ]
   },
   {
@@ -4848,6 +4857,7 @@
    "deep": false,
    "lane": 1,
    "formations": [
+    "Singleback Ace Double Wing",
     "Goal Line Sneak"
    ]
   },

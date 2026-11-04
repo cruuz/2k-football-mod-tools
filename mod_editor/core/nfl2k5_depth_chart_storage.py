@@ -197,9 +197,10 @@ def recognized_grown_xbe(payload: bytes) -> bool:
     """One recognition policy shared by the writer and protected extent handoff."""
     from . import nfl2k5_depth_chart_rows as rows
     from . import nfl2k5_xbe_space as space
+    installed = ("applied", "previous")     # previous: an older SPECIAL role table on the same storage (b780 sub1)
     if len(payload) in space.accepted_file_sizes() and space.status(payload) == "applied":
-        return space.special_state(payload) == "retail" or rows.status(payload) == "applied"
-    return len(payload) == FILE_SIZE and rows.status(payload) == "applied"
+        return space.special_state(payload) == "retail" or rows.status(payload) in installed
+    return len(payload) == FILE_SIZE and rows.status(payload) in installed
 
 
 def allocation_evidence(retail: bytes, manifest) -> dict:
