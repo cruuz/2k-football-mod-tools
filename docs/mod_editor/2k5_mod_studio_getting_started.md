@@ -144,9 +144,12 @@ the same:
 You do not have to work this out yourself. The Build tab's source line and the
 Apply panel both name your image as soon as you choose it: *retail dump (xiso)*,
 *retail dump (raw/redump with video partition)*, *repacked disc*, *modified disc*,
+*disc built with 2K5 Mod Studio* (a SOFTDRINK or Customize disc; a released
+SOFTDRINK disc is named, for example *SOFTDRINK 2K28 v0.8 (a released disc)*),
 or *unknown image*, with a sentence saying what to do. Every refusal quotes the
 same line, so a failure says which disc you handed it and not just how many bytes
-disagreed.
+disagreed. A disc the Studio built is not a starting point: to change it, build
+again from a dump of your own retail disc.
 
 
 **Hi-res pack (experimental, unwitnessed).** This optional Build choice is

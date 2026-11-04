@@ -8675,7 +8675,7 @@ class StudioMainWindow(QMainWindow):
         identity = state.get("disc_identity")
         kind = str(identity.get("kind", "")) if isinstance(identity, Mapping) else ""
         badge = {"retail-xiso": "original", "retail-raw": "original",
-                 "repack": "repacked", "modified": "modified"}.get(kind, "")
+                 "repack": "repacked", "modified": "modified", "studio-built": "built with the Studio"}.get(kind, "")
         self.source_pill.setText(f"●  Disc: {display}" + (f" · {badge}" if badge else ""))
         line = str(state.get("disc_identity_line") or "")
         self.source_pill.setToolTip(

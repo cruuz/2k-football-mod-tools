@@ -99,7 +99,7 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
     "mod_editor/gui/audio_panel_qt.py":
         "dd3529836c4ebdc5ddf344de19edca38191f918ca341248953cb289b56c5e42e",
     "mod_editor/gui/studio_qt.py":
-        "c462ea644e7b99eb1da9c0c8a5c9a36d788d85e677350d558cb9db2249cff9a4",
+        "b4175baa1a7b3a7301c3d5ee1009a5283d70caf4dce1bac16454991de0a5fe3c",
     "mod_editor/studio/audio_annotations.py":
         "c45c94b011d703a24d063138f82477814495705c3b0055a9a867dbab453ba923",
     "mod_editor/studio/audio_replacement_pack.py":
@@ -115,16 +115,16 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
 B69_GAME_RUNTIME_PINS = {
     "mod_editor/core/nfl2k5_weather.py": "ec3d253e348ff0cf7fb1951b5dad2983d8aebc0802d5c6fca32c74dc80a6985b",
     "mod_editor/core/nfl2k5_weather_haze.py": "b8c58c592794312358eb1554b1d3be43a1ca41f7fdd8fd3cd498d4f345c641cc",
-    "mod_editor/gui/build_panel_qt.py": "ed886401ad75c800a0a7284aba9e359a8d4d0177d370855e47d9b25f3e007d93",
-    "mod_editor/gui/gameplay_patches_panel_qt.py": "537a0b3fbc446d97d1e9099085134707234c0601b5acc4ef8299e602849d589e",
+    "mod_editor/gui/build_panel_qt.py": "5805e74e701168114925fa2e172415da0ad81c959b319c8b4ad44e7be4686736",
+    "mod_editor/gui/gameplay_patches_panel_qt.py": "52114589294125c83b7d454d5761d6def2565ff073edbb95b219368696d02a3e",
     "mod_editor/gui/my_career_panel_qt.py": "cd39ce1685ed119288122e46b0f8c1c8ba586cea611f5d5feee096a71d7ea9ac",
-    "mod_editor/gui/gameplay_project_ui.py": "640ed138e625932cc2de3948798e5652045169da967b417c0a78630fefe39bf0",
+    "mod_editor/gui/gameplay_project_ui.py": "cb5db940034b070a8f49a04cfd4de5ad47fc4e642b963cded0daf1d592e6e41e",
     "mod_editor/gui/beta62_options.py": "ea710261741b8462cf9d5a3e0e8f72cbc667efe3488a738e0c1dde67630082ba",
     "tools/nfl2k5_weather_editor.py": "39a2847b873bbdc567712ca87657d700fa95e226c3408983acce4d714b1031de",
-    "mod_editor/gui/build_panel_qt.py": "ed886401ad75c800a0a7284aba9e359a8d4d0177d370855e47d9b25f3e007d93",
-    "mod_editor/gui/gameplay_patches_panel_qt.py": "537a0b3fbc446d97d1e9099085134707234c0601b5acc4ef8299e602849d589e",
+    "mod_editor/gui/build_panel_qt.py": "5805e74e701168114925fa2e172415da0ad81c959b319c8b4ad44e7be4686736",
+    "mod_editor/gui/gameplay_patches_panel_qt.py": "52114589294125c83b7d454d5761d6def2565ff073edbb95b219368696d02a3e",
     "mod_editor/gui/my_career_panel_qt.py": "cd39ce1685ed119288122e46b0f8c1c8ba586cea611f5d5feee096a71d7ea9ac",
-    "mod_editor/gui/gameplay_project_ui.py": "640ed138e625932cc2de3948798e5652045169da967b417c0a78630fefe39bf0",
+    "mod_editor/gui/gameplay_project_ui.py": "cb5db940034b070a8f49a04cfd4de5ad47fc4e642b963cded0daf1d592e6e41e",
     "mod_editor/gui/beta62_options.py": "ea710261741b8462cf9d5a3e0e8f72cbc667efe3488a738e0c1dde67630082ba",
     "tools/nfl2k5_weather_editor.py": "39a2847b873bbdc567712ca87657d700fa95e226c3408983acce4d714b1031de",
     "tools/nfl2k5_weather_time_of_day.py": "37b2bd10f686db9fa99ba9034f9a7f68daa00bff516250ac0f67678880b98b47",

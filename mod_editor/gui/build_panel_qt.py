@@ -11,7 +11,7 @@ from __future__ import annotations
 from mod_editor.gui.ux_text import plain_error
 from mod_editor.core.update_check import BUILD_RELEASE_TAG
 
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from pathlib import Path
 
 from PyQt5.QtCore import QTimer, QObject, QRunnable, Qt, QThreadPool, pyqtSignal, pyqtSlot
@@ -384,6 +384,25 @@ PREVIOUS_UPGRADE_KEYS = {"honors_page": "honors page", "camera": "camera", "k128
 # read "legacy" for it, and nfl2k5_returner_fix.apply accepts "retail" or "legacy" the same way.
 LEGACY_UPGRADE_KEYS = {"progression": "player growth, decline and retirement", "franchise_economy": "2026 franchise economy",
                        "returner_fix": "CPU kick and punt returner fix"}
+
+
+def rebuild_only_reason(state: Mapping[str, object]) -> str:
+    """Why this release cannot build on top of the disc the state describes, in plain words, or "" when it can try.
+
+    b780 studio1 (Q69). A disc built by an older release (the released SOFTDRINK 2K28 discs) carries the Modern practice field's
+    team logo at midfield, a runtime table in the executable, while its practice facility reads foreign here, so the logo cannot
+    be kept (the engine keeps an installed option only with its parent in the plan) and it cannot be turned off in place. The
+    engine then stops every build at its first check ("Practice field: team logo at midfield (experimental) is installed;
+    rebuild from a verified base to turn it off"), and behind that check another waits (the v0.8 plan's next refusal is
+    "128 MB memory options differ", the installed heap, early and 128 MB settings not being the page's plan). The page used to
+    offer Needs update boxes on such a disc and then let the engine refuse. Both Build and Game Fixes ask this one function."""
+
+    if state.get("modern_practice_field_team_logo") == "applied" and state.get("modern_practice_field") != "applied":
+        what = "disc" if state.get("container") == "xiso" else "executable"
+        return (f"This {what} already has the practice field's team logo at midfield, put there by an older build. This release "
+                f"can neither keep it nor update it in place, so it cannot build on top of this {what}. To change it, build "
+                f"again from a dump of your own retail disc.")
+    return ""
 # b780 n6: beta-79 installs this release reads ("previous") but cannot update in place (they grew, or MyCareer and its
 # companions are linked together); the option stays off and says to rebuild from the retail game
 PREVIOUS_REBUILD_KEYS = {"my_career": "MyCareer", "my_career_home": "Career Home", "player_progress": "Player Progress",
@@ -2277,16 +2296,18 @@ class BuildPanel(QWidget):
             ("position_pools", "one-pool positions"), ("depth_roles", "depth roles"), ("depth_chart_rows", "depth-chart rows"),
             ("camera", "camera"), ("widescreen", "widescreen"), ("scorebug", "ESPN scorebug"))
             if state.get(key) == "applied"]
+        rebuild_only = rebuild_only_reason(state)   # b780 studio1 (Q69): on such a disc "needs update" would be an invitation
+        needs = "rebuild from retail to update" if rebuild_only else "needs update"
         if state.get("depth_locks") == "legacy":   # fx1 (review pr68 #4): an older revision, upgraded in place
-            applied.append("depth locks: older revision (needs update)")
+            applied.append(f"depth locks: older revision ({needs})")
         if state.get("draft_ai") == "legacy":      # b780 b1-draft: the beta-78/79 draft AI, upgraded in place
-            applied.append("draft AI: older revision (needs update)")
+            applied.append(f"draft AI: older revision ({needs})")
         for key, name in LEGACY_UPGRADE_KEYS.items():  # b780 studio1: upgraded in place too
             if state.get(key) == "legacy":
-                applied.append(f"{name}: older revision (needs update)")
+                applied.append(f"{name}: older revision ({needs})")
         for key, name in PREVIOUS_UPGRADE_KEYS.items():  # b780 n6: beta-79 installs, upgraded in place
             if state.get(key) == "previous":
-                applied.append(f"{name}: older revision (needs update)")
+                applied.append(f"{name}: older revision ({needs})")
         for key, name in PREVIOUS_REBUILD_KEYS.items():  # b780 n6: beta-79 installs a rebuild from retail updates
             if state.get(key) == "previous":
                 applied.append(f"{name}: beta 79 revision (rebuild from retail to update)")
@@ -2316,13 +2337,18 @@ class BuildPanel(QWidget):
             # b780 n6: a beta-79 install (honors page, camera v7, K128) reads "previous"; the build upgrades it in place.
             previous_upgrade = key in PREVIOUS_UPGRADE_KEYS and value == "previous"
             legacy_upgrade = key in LEGACY_UPGRADE_KEYS and value == "legacy"  # b780 studio1
-            box.setEnabled(available and (value == "retail" or upgrade or locks_upgrade or draft_upgrade or previous_upgrade
-                                          or legacy_upgrade)
+            # b780 studio1 (Q69): on a disc this release cannot build on, an in-place update is not an offer
+            update_only = upgrade or locks_upgrade or draft_upgrade or previous_upgrade or legacy_upgrade
+            declined = bool(rebuild_only) and update_only
+            box.setEnabled(available and (value == "retail" or (update_only and not declined))
                            and (is_image or not needs_image))
             box.setChecked(False)
             if not available:
                 box.setToolTip("Not available in this release.")
                 self._set_badge(key, "Not available in this release")
+            elif declined:
+                box.setToolTip("An older revision of this is installed. " + rebuild_only)
+                self._set_badge(key, "Older revision: rebuild from retail")
             elif locks_upgrade:
                 box.setToolTip("Depth chart locks from an older build are installed. Select to update them to this "
                                "release's revision (in place).")
@@ -3809,6 +3835,9 @@ class BuildPanel(QWidget):
             return denial
         if self._reading:
             return "Reading disc…"
+        reason = rebuild_only_reason(self._state or {})
+        if reason:      # b780 studio1 (Q69): said before Make my disc, not by the engine's first check after it
+            return reason
         if self.softdrink_project_check.isChecked():
             if not self.softdrink_project_field.text().strip() or not platform_compat.io_path(self.softdrink_project_field.text()).is_file():
                 return "Choose an existing SOFTDRINK league project, or turn off Include SOFTDRINK league artwork."
@@ -4032,8 +4061,9 @@ class BuildPanel(QWidget):
                 box.setEnabled(False)
                 if (self._state or {}).get(key) == "previous":
                     # gate() worded this as a box to select; a locked, ticked box needs no selecting (b780 studio1)
-                    box.setToolTip(f"The {PREVIOUS_UPGRADE_KEYS[key]} from an older build (beta 79) is installed. This build "
-                                   "brings it up to this release's revision in place, so it stays ticked.")
+                    reason = rebuild_only_reason(self._state or {})      # b780 studio1 (Q69): no in-place update on such a disc
+                    box.setToolTip(f"The {PREVIOUS_UPGRADE_KEYS[key]} from an older build (beta 79) is installed. "
+                                   + (reason or "This build brings it up to this release's revision in place, so it stays ticked."))
         state = self._state or {}
         installed = state.get("decided_clock_settings") or {}
         cutoff = installed.get("settings") or {}

@@ -673,8 +673,10 @@ class SharePanel(QWidget):
             except Exception:  # noqa: BLE001 -- naming the disc must never break the panel
                 found = None
             if found is not None:
+                # a Studio-built disc's own line already says what to do (build from a retail dump); "make this mod yourself"
+                # would send its owner to the Build tab to build on top of it
                 text = ("Your image: " + found.line()
-                        + ("" if found.can_take_a_byte_run_patch
+                        + ("" if found.can_take_a_byte_run_patch or found.kind == "studio-built"
                            else " Use the Build tab to make this mod yourself instead."))
         self.source_identity.setText(text)
         return text
