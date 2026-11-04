@@ -195,5 +195,31 @@ def apply(payload):
                         reservations=[r for r in space.reservations(result) if r["owner"] == OWNER])
 
 
+def main(argv=None) -> int:
+    """python3 -m mod_editor.core.nfl2k5_intro_autoskip {status,apply} source.xbe [--output new.xbe]"""
+    import argparse
+    import json
+    from pathlib import Path
+    parser = argparse.ArgumentParser(description=BUILD_CAPTION)
+    parser.add_argument("command", choices=("status", "apply"))
+    parser.add_argument("source", type=Path)
+    parser.add_argument("--output", type=Path)
+    args = parser.parse_args(argv)
+    payload = args.source.read_bytes()
+    if args.command == "status":
+        print(json.dumps({"owner": OWNER, "status": status(payload)}))
+        return 0
+    require(args.output is not None, "apply needs --output")
+    result, receipt = apply(payload)
+    with args.output.open("xb") as stream:
+        stream.write(result)
+    print(json.dumps({k: v for k, v in receipt.items() if k != "allocation"}, indent=2, default=str))
+    return 0
+
+
 __all__ = ["OWNER", "REQUESTS", "BUILD_CAPTION", "HELP_TEXT", "IntroAutoskipError", "apply", "status", "read_settings",
            "code_for", "site_bytes"]
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

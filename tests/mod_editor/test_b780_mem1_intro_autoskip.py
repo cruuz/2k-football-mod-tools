@@ -43,7 +43,7 @@ class ShapeTests(unittest.TestCase):
         site = autoskip.site_bytes(0x14D9FC0)
         self.assertEqual(autoskip.SITE_VA + 5 + struct.unpack_from('<i', site, 1)[0], 0x14D9FC0)
 
-    def test_apply_on_retail_is_idempotent_and_takes_no_new_section(self):
+    def test_apply_on_retail_is_idempotent_and_lands_in_executable_memory(self):
         retail = hb.RETAIL_XBE.read_bytes()
         self.assertEqual(hashlib.sha256(retail).hexdigest(), ps.RETAIL_SHA256)
         self.assertEqual(autoskip.status(retail), 'retail')
@@ -51,8 +51,26 @@ class ShapeTests(unittest.TestCase):
         self.assertEqual(autoskip.status(out), 'applied')
         self.assertEqual(autoskip.apply(out)[1]['status'], 'already_applied')
         code_va = int(receipt['code_va'], 16)
-        self.assertTrue(0x14D9000 <= code_va < 0x14DA000 or 0x14BA000 <= code_va < 0x14BB000, hex(code_va))  # a legacy tail
+        base, count, table = (struct.unpack_from('<I', out, o)[0] for o in (0x104, 0x11C, 0x120))
+        flags = [f for f, va, vsize in (struct.unpack_from('<3I', out, table - base + i * 0x38) for i in range(count))
+                 if va <= code_va and code_va + autoskip.CODE_SIZE <= va + vsize]
+        self.assertEqual(len(flags), 1, hex(code_va))
+        self.assertTrue(flags[0] & 4 and flags[0] & 2, hex(flags[0]))                  # executable, loaded at boot
         self.assertEqual(XbeImage(out).read(autoskip.SITE_VA, 5), autoskip.site_bytes(code_va))
+
+    def test_it_composes_through_a_reserved_union_in_either_order(self):
+        # the build reserves the late owners' union first (throw_tuning._selected_space_requests), then installs them
+        from mod_editor.core import nfl2k5_throw_tuning as tt, nfl2k5_protection_calls as calls
+        retail = hb.RETAIL_XBE.read_bytes()
+        requests = tt._selected_space_requests(protection_calls=True, intro_autoskip=True)
+        self.assertIn(autoskip.REQUESTS[0], requests)
+        base, _ = space.apply(retail, requests, scaleout=True)
+        placed = {(r['owner'], r['kind']): r['va'] for r in space.layout(base)['allocations']}
+        one = autoskip.apply(calls.apply(base)[0])[0]
+        two = calls.apply(autoskip.apply(base)[0])[0]
+        self.assertEqual(one, two)
+        self.assertEqual({(r['owner'], r['kind']): r['va'] for r in space.layout(one)['allocations']}, placed)
+        self.assertEqual((autoskip.status(one), calls.status(one)), ('applied', 'applied'))
 
     def test_a_foreign_site_refuses(self):
         retail = bytearray(hb.RETAIL_XBE.read_bytes())
@@ -144,8 +162,13 @@ class IntroUpdateTests(unittest.TestCase):
                 self.assertEqual([esi for esi, _ in owned], [controller])
 
     def test_the_rc_with_the_owner_keeps_its_layout(self):
+        # a late owner appended to the RC's sealed scale-out image: no other allocation moves, no section or page grows
         self.assertEqual(autoskip.status(self.owned), 'applied')
         self.assertEqual(hb.resident_bytes(self.owned), hb.resident_bytes(self.rc))
+        before = {(r['owner'], r['kind']): r['va'] for r in space.layout(self.rc)['allocations']}
+        after = {(r['owner'], r['kind']): r['va'] for r in space.layout(self.owned)['allocations']}
+        self.assertEqual({k: after[k] for k in before}, before)
+        self.assertEqual(set(after) - set(before), {(autoskip.OWNER, 'code')})
         changed = sum(a != b for a, b in zip(self.rc, self.owned))
         self.assertLess(changed, 900)
 

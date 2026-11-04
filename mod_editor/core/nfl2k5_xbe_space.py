@@ -792,8 +792,7 @@ LATE_OWNERS += ("nfl2k5_intro_autoskip",)  # b780-mem1: the pregame intro skips 
 # placement does not depend on which other owners are present.
 # Entries are (owner, kind); a data entry uses the legacy RW page 0x14BB000.
 TAIL_OWNERS = (("nfl2k5_period_goalposts", "code"), ("nfl2k5_honors", "data"), ("nfl2k5_coach_ai", "data"), ("nfl2k5_moment_coaches", "data"),
-               ("nfl2k5_moment_context", "data"),  # b775 mo2: 16 bytes under the coach records
-               ("nfl2k5_intro_autoskip", "code"))  # b780-mem1: 64 B in the legacy RX tails, so no layout grows for it
+               ("nfl2k5_moment_context", "data"))  # b775 mo2: 16 bytes under the coach records
 # b77-i1 (coordinator-approved, f5): late code owners placed from the start of the promoted MyCareer footprint (the 8,192
 # bytes the old my_career request still reserves in the run once M3 promotes it; 0xCC padding, unreferenced: static scan
 # + cave-reference + memory-write gates). Without a promoted MyCareer there is no such gap: they take the run as usual.
