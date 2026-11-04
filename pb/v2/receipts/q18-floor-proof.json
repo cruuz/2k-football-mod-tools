@@ -1,0 +1,180 @@
+{
+ "schema": "q18_floor_proof/v1",
+ "status": "PROVED OFFLINE under Unicorn on the v0.9 RC default.xbe (sha 1a476d94...); no emulator, no played game",
+ "books": {
+  "fixed": "verify3 composed books of this branch (32 club books) + the 5 utility books of the RC disc",
+  "rc": "v0.9 RC disc 93c889e4... entries 307-343",
+  "retail": "retail disc entries 307-343"
+ },
+ "census": {
+  "fixed": {
+   "books": 37,
+   "formations_without_run": 0,
+   "formations_without_pass": 0,
+   "bare_run_less_names": [
+    "Hail Mary"
+   ],
+   "bare_pass_less_total": 1
+  },
+  "rc": {
+   "books": 37,
+   "formations_without_run": 97,
+   "formations_without_pass": 28,
+   "bare_run_less_names": [
+    "Ace Jumbo",
+    "Gun Ace Flex",
+    "Gun Deuce Close",
+    "Gun Empty Trey",
+    "Gun Split Pro",
+    "Gun Split Y Off",
+    "Gun Trips TE",
+    "Gun Wing Slot Offset",
+    "Gun Y Trips",
+    "Hail Mary",
+    "I-Form Pro",
+    "I-Form Tight",
+    "Pistol Ace",
+    "Pistol Doubles",
+    "Pistol Doubles Y Off",
+    "Pistol Jumbo",
+    "Pistol Strong",
+    "Pistol Trey",
+    "Pistol Weak",
+    "Pistol Wing",
+    "Singleback Ace",
+    "Singleback Ace Double Wing",
+    "Singleback Doubles",
+    "Singleback Doubles Tight",
+    "Singleback FB Wing",
+    "Singleback Tight Y Off",
+    "Singleback Y Off Trey",
+    "Split Backs",
+    "Strong Close",
+    "Wing T"
+   ],
+   "bare_pass_less_total": 29
+  },
+  "retail": {
+   "books": 37,
+   "formations_without_run": 0,
+   "formations_without_pass": 0,
+   "bare_run_less_names": [
+    "Gun: Straight",
+    "Gun: Straight Trips",
+    "Hail Mary"
+   ],
+   "bare_pass_less_total": 1
+  },
+  "note": "bare = before the lint exemptions: Hail Mary in 36 books (retail ships it run-less), retail Gun: Straight (BUF) and Gun: Straight Trips (IND), and the retail utility book reference \"Trips\" (both plays are runs); the 5 utility books are untouched by the packs"
+ },
+ "lottery_r0_r1_20_draws": {
+  "fixed": {
+   "offense_formations": 1108,
+   "wrong_type_other_than_hail_mary_and_clock": 0
+  },
+  "rc": {
+   "offense_formations": 1108,
+   "wrong_type_other_than_hail_mary_and_clock": 125
+  }
+ },
+ "commit_r1_100_draws_per_club": {
+  "fixed": {
+   "runs": 3200,
+   "passes": 0,
+   "clubs_with_a_pass": []
+  },
+  "rc": {
+   "runs": 2916,
+   "passes": 284,
+   "clubs_with_a_pass": [
+    "ARZ",
+    "BAL",
+    "BUF",
+    "CHI",
+    "CIN",
+    "CLE",
+    "DAL",
+    "DEN",
+    "GB",
+    "HOU",
+    "IND",
+    "MIA",
+    "MIN",
+    "NE",
+    "NO",
+    "NYG",
+    "NYJ",
+    "OAK",
+    "PHI",
+    "PIT",
+    "SD",
+    "SF",
+    "TB",
+    "TEN",
+    "WAS"
+   ]
+  }
+ },
+ "normal_r_shares_r05_12_situations_60_draws": {
+  "fixed": {
+   "BAL": {
+    "run": 249,
+    "pas": 471,
+    "run_share": 0.3458,
+    "sd": 0.0177
+   },
+   "DEN": {
+    "run": 116,
+    "pas": 604,
+    "run_share": 0.1611,
+    "sd": 0.0137
+   },
+   "IND": {
+    "run": 169,
+    "pas": 551,
+    "run_share": 0.2347,
+    "sd": 0.0158
+   }
+  },
+  "rc": {
+   "BAL": {
+    "run": 217,
+    "pas": 503,
+    "run_share": 0.3014,
+    "sd": 0.0171
+   },
+   "DEN": {
+    "run": 128,
+    "pas": 592,
+    "run_share": 0.1778,
+    "sd": 0.0142
+   },
+   "IND": {
+    "run": 134,
+    "pas": 586,
+    "run_share": 0.1861,
+    "sd": 0.0145
+   }
+  },
+  "retail": {
+   "BAL": {
+    "run": 339,
+    "pas": 381,
+    "run_share": 0.4708,
+    "sd": 0.0186
+   },
+   "DEN": {
+    "run": 306,
+    "pas": 414,
+    "run_share": 0.425,
+    "sd": 0.0184
+   },
+   "IND": {
+    "run": 318,
+    "pas": 402,
+    "run_share": 0.4417,
+    "sd": 0.0185
+   }
+  }
+ }
+}
