@@ -2767,7 +2767,31 @@ class RosterEditorPanel(QWidget):
             if name == "scramble":
                 self.cards[name].set_value(before)
             return
+        if name == "position":
+            self.set_position(player, int(value))
+            return
         self.set_field(player, name, value)
+
+    def set_position(self, player: rr.Player, value: int) -> None:
+        """A position change with undo: the player is unlocked and moves to the bottom of his new position's depth
+        chain on his club (b780 sub1, Q63), so a locked starter never collides with the new position's locks."""
+
+        assert self.document is not None
+        before = self.document.change_position(player, value)
+        after = {key: player.record.values[key] for key in before}
+
+        def do(values=after) -> None:
+            assert self.document is not None
+            self.document.restore_position(player, values)
+            self._after_edit(player, "position")
+
+        def undo(values=before) -> None:
+            assert self.document is not None
+            self.document.restore_position(player, values)
+            self._after_edit(player, "position")
+
+        self._after_edit(player, "position")
+        self.undo_stack.push(UndoEntry(f"{player.display}: position", undo, do))
 
     def set_field(self, player: rr.Player, name: str, value: int) -> None:
         """Set one field with undo, dirty marking and a refreshed header."""

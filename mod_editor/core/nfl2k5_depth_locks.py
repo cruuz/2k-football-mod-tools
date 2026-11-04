@@ -104,6 +104,13 @@ not silently reassigned. Valid records have unique locked rows 0..6 per
 position/chain and at most one owner of each returner role per team. Row 7
 is the shared overflow row. Locks are preferences, not an injury or personnel
 eligibility override. Full game/UI/save lifecycles remain unwitnessed.
+
+Revision 6 (b780, job sub1; queue Q64). The confirmed KR selection arm
+copied the current KR1 into KR2 before marking the chosen player, so
+choosing the current KR1 again made him KR2 as well and the second kick
+returner was lost. The arm (still its own 65 bytes) now leaves both
+returners and every lock alone when the chosen player is already KR1.
+Revision-5 and older images report ``legacy`` and upgrade in place.
 """
 
 from __future__ import annotations
@@ -333,7 +340,14 @@ RETAIL_KR_SET = bytes.fromhex(
     "efe903010000888795010000e9f8000000"
 )
 
+# Revision 6 (b780 sub1, Q64): choosing the current KR1 again leaves both returners and their locks alone. Before
+# it (revisions 1..5, V5_PATCHED_KR_SET) the arm first copied KR1 into KR2, so the re-selected KR1 also became KR2
+# and the second returner was lost. EBP addresses the returner bytes, which pays for the check in the 65 bytes.
 PATCHED_KR_SET = bytes.fromhex(
+    "608daf9501000031c08a450084c078053b348774268845010fb64d8749781c8b1c8f806352f339c17504804b520839f3"
+    "75ea884d00804b5204ebe161e9f8000000"
+)
+V5_PATCHED_KR_SET = bytes.fromhex(
     "600fb6979501000088979601000031c03a871c01000073208b1c87806352f339d07504804b520839f3750a8887950100"
     "00804b520440ebd861e9fb000000"
 )
@@ -407,7 +421,7 @@ class Site:
     after: bytes
 
 
-REVISION = 5
+REVISION = 6
 
 
 def sites(layout: str = "retail", revision: int = REVISION) -> tuple[Site, ...]:
@@ -420,10 +434,12 @@ def sites(layout: str = "retail", revision: int = REVISION) -> tuple[Site, ...]:
     Revision 4 (b777 dl4) rewrites the compactor and rank stage again.
     Revision 5 (b780 hunt6) adds the all-star skip to the swap block's spare
     bytes and points the weekly loop head's user-club test at it; before it
-    the call is retail and those bytes are the swap block's 0x90 padding."""
+    the call is retail and those bytes are the swap block's 0x90 padding.
+    Revision 6 (b780 sub1) rewrites only the KR arm: re-selecting the current
+    KR1 no longer copies him into KR2."""
     if layout not in ("retail", "special"):
         raise DepthLockError("unknown depth-chart layout")
-    if revision not in (1, 2, 3, 4, 5):
+    if revision not in (1, 2, 3, 4, 5, 6):
         raise DepthLockError("unknown depth-lock revision")
     v1 = revision == 1
     swap_before = bytearray(RETAIL_SWAP)
@@ -437,7 +453,7 @@ def sites(layout: str = "retail", revision: int = REVISION) -> tuple[Site, ...]:
          V1_PATCHED_RANK_STAGE if v1 else V3_PATCHED_RANK_STAGE if revision < 4
          else PATCHED_RANK_STAGE),
         ("screen_swap", SWAP_VA, bytes(swap_before), bytes(swap_after)),
-        ("screen_kr", KR_SET_VA, RETAIL_KR_SET, PATCHED_KR_SET),
+        ("screen_kr", KR_SET_VA, RETAIL_KR_SET, PATCHED_KR_SET if revision >= 6 else V5_PATCHED_KR_SET),
         ("screen_pr", PR_SET_VA, RETAIL_PR_SET, PATCHED_PR_SET),
         ("membership_remove", REMOVE_VA, RETAIL_REMOVE, PATCHED_REMOVE),
         ("ratings_panel_guard", PANEL_VA, RETAIL_PANEL, RETAIL_PANEL if v1 else PATCHED_PANEL),
@@ -502,7 +518,7 @@ def read_any(payload: bytes) -> dict[str, object]:
         state = next(iter(unique)) if len(unique) == 1 else "foreign"
         legacy = None
         if state == "foreign":
-            for old in (4, 3, 2, 1):
+            for old in (5, 4, 3, 2, 1):
                 if all(image.read(site.va, len(site.after)) == site.after
                        for site in sites(layout, old)):
                     # A complete revision-4 (beta-77 .. beta-79 / SOFTDRINK v0.6 .. v0.8 discs),
