@@ -369,6 +369,10 @@ PREVIOUS_UPGRADE_KEYS = {"honors_page": "honors page", "camera": "camera", "k128
                          # b780 rev1: these two read "previous" on a v0.8 disc too, and the build upgrades them in
                          # place (catch_slider_patch.apply, nfl2k5_sim_cb_tackles.apply); their boxes were greyed out
                          "catch_slider": "catching slider", "sim_cb_tackles": "cornerback tackle credit"}
+# b780 studio1: older revisions that read "legacy" and that the build upgrades in place (progression.apply and
+# franchise_economy.apply both accept "retail" or "legacy"). A v0.8 disc reads legacy for both; the boxes were greyed out
+# with no badge and no line in the disc summary, so retirement by age and the economy revision could not be added.
+LEGACY_UPGRADE_KEYS = {"progression": "player growth, decline and retirement", "franchise_economy": "2026 franchise economy"}
 # b780 n6: beta-79 installs this release reads ("previous") but cannot update in place (they grew, or MyCareer and its
 # companions are linked together); the option stays off and says to rebuild from the retail game
 PREVIOUS_REBUILD_KEYS = {"my_career": "MyCareer", "my_career_home": "Career Home", "player_progress": "Player Progress",
@@ -2186,6 +2190,9 @@ class BuildPanel(QWidget):
             applied.append("depth locks: older revision (needs update)")
         if state.get("draft_ai") == "legacy":      # b780 b1-draft: the beta-78/79 draft AI, upgraded in place
             applied.append("draft AI: older revision (needs update)")
+        for key, name in LEGACY_UPGRADE_KEYS.items():  # b780 studio1: upgraded in place too
+            if state.get(key) == "legacy":
+                applied.append(f"{name}: older revision (needs update)")
         for key, name in PREVIOUS_UPGRADE_KEYS.items():  # b780 n6: beta-79 installs, upgraded in place
             if state.get(key) == "previous":
                 applied.append(f"{name}: older revision (needs update)")
@@ -2217,7 +2224,9 @@ class BuildPanel(QWidget):
             draft_upgrade = key == "draft_ai" and value == "legacy"
             # b780 n6: a beta-79 install (honors page, camera v7, K128) reads "previous"; the build upgrades it in place.
             previous_upgrade = key in PREVIOUS_UPGRADE_KEYS and value == "previous"
-            box.setEnabled(available and (value == "retail" or upgrade or locks_upgrade or draft_upgrade or previous_upgrade)
+            legacy_upgrade = key in LEGACY_UPGRADE_KEYS and value == "legacy"  # b780 studio1
+            box.setEnabled(available and (value == "retail" or upgrade or locks_upgrade or draft_upgrade or previous_upgrade
+                                          or legacy_upgrade)
                            and (is_image or not needs_image))
             box.setChecked(False)
             if not available:
@@ -2235,6 +2244,10 @@ class BuildPanel(QWidget):
             elif previous_upgrade:
                 box.setToolTip(f"The {PREVIOUS_UPGRADE_KEYS[key]} from an older build (beta 79) is installed. Select to "
                                "update it to this release's revision (in place).")
+                self._set_badge(key, "Needs update")
+            elif legacy_upgrade:
+                box.setToolTip(f"An older revision of {LEGACY_UPGRADE_KEYS[key]} is installed. Select to update it to this "
+                               "release's revision (in place).")
                 self._set_badge(key, "Needs update")
             elif upgrade:
                 box.setToolTip("Position pools are installed, but the CPU lineup exhaustion repair is missing. Select to upgrade.")

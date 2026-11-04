@@ -97,6 +97,31 @@ class NeedsUpdateWordingTests(_PanelCase):
         self.assertIn("Select to update", camera.toolTip())
 
 
+class LegacyInstallsCanBeUpdatedTests(_PanelCase):
+    """A v0.8 disc reads 'legacy' for progression and the franchise economy, and the build upgrades both in place."""
+
+    def test_the_boxes_are_an_update_with_a_badge_and_a_line_in_the_disc_summary(self) -> None:
+        panel = self.panel(progression="legacy", franchise_economy="legacy")
+        for key, words in (("progression", "player growth, decline and retirement"), ("franchise_economy", "2026 franchise economy")):
+            box = getattr(panel, key + "_check")
+            self.assertTrue(box.isEnabled(), key)
+            self.assertFalse(box.isChecked(), key)
+            self.assertEqual(panel._badges[key].text(), "Needs update", key)
+            self.assertIn("Select to update it", box.toolTip(), key)
+            self.assertIn(f"{words}: older revision (needs update)", panel.source_status.text(), key)
+            box.setChecked(True)
+            self.assertTrue(getattr(panel.plan(), key), key)
+            self.assertTrue(panel.has_work(), key)
+            box.setChecked(False)
+
+    def test_a_foreign_install_is_still_refused_and_a_retail_one_is_still_plain(self) -> None:
+        panel = self.panel(progression="foreign", franchise_economy="retail")
+        self.assertFalse(panel.progression_check.isEnabled())
+        self.assertEqual(panel._badges["progression"].text(), "Unrecognized source data")
+        self.assertTrue(panel.franchise_economy_check.isEnabled())
+        self.assertNotEqual(panel._badges["franchise_economy"].text(), "Needs update")
+
+
 class SpeedSeparationSurvivesAProjectSaveTests(_PanelCase):
     """The project is saved from the plan; a disabled row used to plan 0 even when no disc had been read yet."""
 
