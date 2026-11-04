@@ -801,7 +801,8 @@ class StockTable(unittest.TestCase):
         with mock.patch.object(mk, "pins", side_effect=ValueError("moment kit data changed after the pins")):
             self.assertEqual(mk._stock_table(), {})
 
-    @unittest.skipUnless(FIXTURE.is_file() and V08.is_file(), "fixture or v0.8 disc absent")
+    @unittest.skipUnless(FIXTURE.is_file() and V08.is_file() and os.environ.get("NFL2K5_RETAIL_INDEX"),
+                         "fixture or v0.8 disc absent, or NFL2K5_RETAIL_INDEX unset (b780-art1's donor replay)")
     def test_the_table_is_what_the_discs_give(self):
         import importlib.util
         spec = importlib.util.spec_from_file_location("h2_stock_pieces", ROOT / "tools/b77/h2_stock_pieces.py")
@@ -887,7 +888,8 @@ class RetailDonors(unittest.TestCase):
             mk.compose(k1_doc, self.packages)
 
 
-@unittest.skipUnless(FIXTURE.is_file() and RETAIL.is_file(), "fixture or retail disc absent")
+@unittest.skipUnless(FIXTURE.is_file() and RETAIL.is_file() and os.environ.get("NFL2K5_RETAIL_INDEX"),
+                     "fixture or retail disc absent, or NFL2K5_RETAIL_INDEX unset (b780-art1's donor replay)")
 class StageOnTheFixtureDisc(unittest.TestCase):
     """The b775 fixture disc is a SOFTDRINK disc this stage has not touched. Its team files, moment table and card
     records are the real inputs; the donors are swapped for retail ones to rebuild Coach Edwards' situation."""
@@ -1002,9 +1004,9 @@ class StageOnTheFixtureDisc(unittest.TestCase):
         # passes as test_b775_ek1_moment_kits gives the donors the build holds, which equal the pins. The forgiving mode is
         # what a SOFTDRINK build with one edit of its own elsewhere runs (its donors are then not all the pinned ones): every
         # drawing step must still run on the shipped pieces, so it must not change, keep or note anything
-        from tests.mod_editor.test_b775_ek1_moment_kits import _after_sw1, _after_vk2
+        from tests.mod_editor.test_b775_ek1_moment_kits import _after_art1, _after_sw1, _after_vk2
         donors = {s: self.src.get(mk.selector_name(s)) for s in mk.donors(self.doc)}
-        donors = _after_vk2(_after_sw1(self.src, donors))
+        donors = _after_art1(_after_vk2(_after_sw1(self.src, donors)))   # b780-art1's cleaned Revolution shells too
         strict = mk.compose(self.doc, donors)
         report, nothing, skipped, kept = [], [], {}, []
         lenient = mk.compose(self.doc, donors, mk.RetailPackages(RETAIL), report, skipped, nothing, kept)

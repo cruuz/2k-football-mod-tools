@@ -26,7 +26,11 @@ Washington's old feather, feather tips and dark red roundel ring), the renders s
    of anti-aliased fringe; ``"mode": "neutral"`` keeps the tinted pixels' brightness and drops their tint (the old
    shell colour in a screw's rim); ``"mode": "column"`` gives each column's run of region pixels the straight line
    between the pixels just above and below it (kit pants: the stripes run straight down the leg, so the fabric and
-   the stripe's anti-aliased edge carry on through a speck); ``inset`` keeps a region that many pixels inside the
+   the stripe's anti-aliased edge carry on through a speck); ``"mode": "copy"`` takes the region's pixels from an
+   earlier fix's cleaned texture (one shell's design carried to the other shell, which maps it alike); ``"mode":
+   "ops"`` runs the kit fixes' own drawing ops (nfl2k5_kit_fixes_2026.paint); ``runs`` ([[y, x0, x1], ...]) may name
+   a region instead of a polygon (a long thin piece); ``"keep_band": true`` lets every band pixel guide the
+   fill (a piece inside the helmet's specular highlight, whose gradient no plane fits); ``inset`` keeps a region that many pixels inside the
    helmet's outline (its piping); alpha never changes and only opaque pixels are painted;
 4. the 128 helm card is the premultiplied 2 x 2 box reduction of the 256 card (measured: within 1.6 levels on every
    card), so its blocks that cover a repainted 256 pixel take the box of the cleaned 256 card plus the original 128
@@ -293,20 +297,57 @@ def signed_deviation(difference: np.ndarray, sign: str) -> np.ndarray:
     return np.abs(difference).max(axis=2)
 
 
-def clean_regions(rgba: np.ndarray, regions, *, alpha_any: bool = False) -> tuple[np.ndarray, list[dict]]:
+def runs_mask(shape, runs) -> np.ndarray:
+    """Pixels named by ``[[y, x0, x1], ...]`` runs (inclusive), for a long thin piece no polygon follows well."""
+    mask = np.zeros(shape, bool)
+    for y, x0, x1 in runs:
+        require(0 <= y < shape[0] and 0 <= x0 <= x1 < shape[1], f"run {y} {x0} {x1} is outside the texture")
+        mask[int(y), int(x0):int(x1) + 1] = True
+    return mask
+
+
+def region_area(shape, region) -> np.ndarray:
+    require(("poly" in region) != ("runs" in region), "a region names a polygon or runs, not both")
+    return polygon_mask(shape, region["poly"]) if "poly" in region else runs_mask(shape, region["runs"])
+
+
+def clean_regions(rgba: np.ndarray, regions, *, alpha_any: bool = False, others=None) -> tuple[np.ndarray, list[dict]]:
     """Repaint each region of one card; returns the new RGBA and a receipt row per region. ``alpha_any``: the alpha
-    channel is not coverage (an in-game helmet keeps its reflection weight there), so every pixel may be painted."""
+    channel is not coverage (an in-game helmet keeps its reflection weight there), so every pixel may be painted.
+    ``others``: {fix name: cleaned RGBA} of the fixes before this one, for ``copy`` regions."""
     out = rgba.copy()
     h, w = rgba.shape[:2]
     opaque = np.ones((h, w), bool) if alpha_any else rgba[..., 3] >= OPAQUE
     rows = []
     for number, region in enumerate(regions):
         rgb = out[..., :3].astype(np.float64)
-        area = polygon_mask((h, w), region["poly"]) & opaque
+        if region.get("mode") == "ops":
+            # the kit fixes' own drawing ops (nfl2k5_kit_fixes_2026.paint), so a design another shell carries
+            # (Houston's navy horns, uw2) is drawn here with the same code and numbers
+            if str(ROOT) not in sys.path:
+                sys.path.insert(0, str(ROOT))
+            from mod_editor.core import nfl2k5_kit_fixes_2026 as kit
+            before = out.copy()
+            painted, _ = kit.paint(out.copy(), region["ops"])
+            out[..., :3] = painted[..., :3]
+            rows.append(dict(region=number, note=region.get("note", ""), area_pixels=0,
+                             painted_pixels=int((out != before).any(axis=2).sum()), shell_band_pixels=0))
+            continue
+        area = region_area((h, w), region) & opaque
         if region.get("inset"):
             # keep clear of the helmet's outline (its piping) by ``inset`` pixels from the card's transparent edge
             area &= ~dilate(~opaque, int(region["inset"]))
         require(area.any(), f"region {number} covers no opaque pixel")
+        if region.get("mode") == "copy":
+            # the same piece of the design from another shell's cleaned texture, pixel for pixel (Denver's crown
+            # stripe: both shells map the crown alike); alpha stays this texture's
+            require(others is not None and region["from"] in others, f"region {number}: {region.get('from')} is not cleaned yet")
+            source = others[region["from"]]
+            require(source.shape == out.shape, f"region {number}: {region['from']} has another size")
+            out[area, :3] = source[area, :3]
+            rows.append(dict(region=number, note=region.get("note", ""), area_pixels=int(area.sum()),
+                             painted_pixels=int(area.sum()), shell_band_pixels=0))
+            continue
         if region.get("mode") == "column":
             out[..., :3] = column_fill(out[..., :3], area)
             rows.append(dict(region=number, note=region.get("note", ""), area_pixels=int(area.sum()),
@@ -355,7 +396,9 @@ def clean_regions(rgba: np.ndarray, regions, *, alpha_any: bool = False) -> tupl
                 paint = area & (signed_deviation(rgb - estimate, sign) > threshold)
             paint = dilate(paint, int(region.get("grow", 1))) & area
         keep = (area | band) & ~paint
-        keep &= ~band | shell
+        if not region.get("keep_band"):
+            # ``keep_band``: a highlight's own gradient is the shell there, so every band pixel guides the fill
+            keep &= ~band | shell
         if mode != "all" and region.get("sign") == "redder":
             # the gold piping and logo outline beside a red piece are not shell to fill it from
             keep &= (np.minimum(rgb[..., 0], rgb[..., 1]) - rgb[..., 2]) <= 40
@@ -492,7 +535,7 @@ def clean_project_textures(project: dict, doc: dict | None = None) -> tuple[dict
                     f"{entry['name']}: {Path(path).name} is not the known art")
         source = sources[0]
         before = load_rgba(source)
-        after, rows = clean_regions(before, entry.get("regions", []), alpha_any=entry.get("alpha") == "any")
+        after, rows = clean_regions(before, entry.get("regions", []), alpha_any=entry.get("alpha") == "any", others=images)
         after = apply_marks(after, entry.get("marks", []))
         images[entry["name"]] = after
         receipts[entry["name"]] = dict(source=source, sources=sources, field=field, kind=entry["kind"], match=entry["match"],

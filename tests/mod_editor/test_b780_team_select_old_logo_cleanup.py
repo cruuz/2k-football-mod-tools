@@ -70,7 +70,10 @@ class Document(unittest.TestCase):
                           # Q17: kit pants and alternate helmets
                           "car_pants_04H0", "car_pants_04A0", "bal_pants_02H0", "bal_pants_02A0", "bal_pants_02H2",
                           "bal_pants_02A2", "bal_pants_02x3", "det_helmet00_alt", "det_helmet02_alt",
-                          "was_helmet00_29_9", "was_helmet02_29_9", "den_helmet00_alt"})
+                          "was_helmet00_29_9", "was_helmet02_29_9", "den_helmet00_alt",
+                          # batch 2: Revolution-shell crowns, HOU horns, CLE crease arcs
+                          "den_helmet02_navy", "den_helmet02_navy6", "den_helmet02_white", "hou_helmet00_horns",
+                          "hou_helmet02_bull", "cle_helmet02_30_0", "cle_helmet02_30_3", "cle_helmet02_30_4"})
         for entry in entries:
             self.assertIn(entry["kind"], ("live_helmet", "p8_texture", "pants"))
             if entry["kind"] == "pants":
@@ -118,6 +121,30 @@ class Document(unittest.TestCase):
         self.assertEqual(rows[0]["painted_pixels"], 20)
         with self.assertRaises(cl.CleanupError):
             cl.clean_regions(speck, [dict(mode="column", poly=[[8, 0], [12, 0], [12, 3], [8, 3]], note="t")])
+
+    def test_runs_copy_ops_and_keep_band(self):
+        """``runs`` name a region pixel by pixel; ``copy`` carries another fix's cleaned pixels; ``ops`` runs the kit
+        fixes' own drawing; ``keep_band`` lets a highlight's gradient guide the fill."""
+        base = shell(32, base=(176, 24, 48), highlight=False)
+        piece = base.copy()
+        piece[10, 5:9, :3] = (255, 255, 255)
+        out, _ = cl.clean_regions(piece, [dict(mode="all", runs=[[10, 5, 8]], note="t")])
+        self.assertTrue((np.abs(out.astype(int) - base.astype(int)) <= 1).all())
+        donor = base.copy()
+        donor[4:8, 4:8, :3] = (3, 32, 47)
+        out, _ = cl.clean_regions(base, [dict(mode="copy", poly=[[4, 4], [8, 4], [8, 8], [4, 8]], note="t", **{"from": "d"})],
+                                  others={"d": donor})
+        self.assertTrue((out == donor).all())
+        with self.assertRaises(cl.CleanupError):
+            cl.clean_regions(base, [dict(mode="copy", poly=[[4, 4], [8, 4], [8, 8], [4, 8]], note="t", **{"from": "x"})], others={})
+        drawn, _ = cl.clean_regions(base, [dict(mode="ops", note="t", ops=[dict(op="poly", color="#03202F",
+                                                                                     points=[[2, 2], [12, 2], [12, 12], [2, 12]])])])
+        self.assertTrue((drawn[6, 6, :3] == (3, 32, 47)).all() and (drawn[20, 20] == base[20, 20]).all())
+        ramp = np.zeros((24, 24, 4), np.uint8); ramp[..., 3] = 255
+        ramp[..., :3] = (np.arange(24) * 9)[None, :, None]           # a highlight's gradient, no plane outside it fits
+        streak = ramp.copy(); streak[4:20, 11:13, :3] = 255
+        out, _ = cl.clean_regions(streak, [dict(mode="all", keep_band=True, poly=[[11, 4], [13, 4], [13, 20], [11, 20]], note="t")])
+        self.assertTrue((np.abs(out[4:20, 11:13, 0].astype(int) - ramp[4:20, 11:13, 0].astype(int)) <= 5).all())
 
     def test_unknown_document_is_refused(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -316,7 +343,8 @@ class LeagueProject(unittest.TestCase):
         checked = 0
         with tempfile.TemporaryDirectory() as tmp:
             for entry in cl.texture_entries(cl.spec()):
-                if not entry["name"].startswith(("car_pants", "bal_pants", "was_helmet02")):
+                if not entry["name"].startswith(("car_pants", "bal_pants", "was_helmet02", "den_helmet02_white",
+                                                 "hou_helmet02_bull")):
                     continue
                 png = Path(tmp) / f"{entry['name']}.png"
                 cl.save_rgba(images[entry["name"]], png)
@@ -343,7 +371,7 @@ class LeagueProject(unittest.TestCase):
                         self.assertEqual(pairs[sha(span)], sha(new))
                         span = new
                         checked += 1
-        self.assertEqual(checked, 14)        # 6 alternates rows (4 BAL pants, 2 WAS helmets), 8 pants hem rows
+        self.assertEqual(checked, 18)        # 10 alternates rows (4 BAL pants; WAS, DEN, HOU helmets), 8 pants hem rows
 
     @unittest.skipUnless(os.environ.get("NFL2K5_RETAIL_INDEX"), "set NFL2K5_RETAIL_INDEX (retail pack 0) for the importer")
     def test_the_washington_w_pass_knows_the_cleaned_cards(self):
@@ -371,7 +399,7 @@ class LeagueProject(unittest.TestCase):
                 after, _ = hw.paint(slot, doc["model"], target)
                 self.assertEqual(hashlib.sha256(after).hexdigest(), target["also"][0]["after_sha256"], name)
                 checked += 1
-        self.assertEqual(checked, 4)
+        self.assertEqual(checked, 6)
 
 
 if __name__ == "__main__":
