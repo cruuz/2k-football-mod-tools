@@ -838,7 +838,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
         "mod_editor/core/nfl2k5_my_career_events.py": "228a0b59d43b9b9c52e10ac93cc72072e772e694cc864c8e2e037c5d7c772460",
         "mod_editor/core/nfl2k5_my_career_mode.py": "df5c6afa055314d36edbc085ffb7c27d51c06b9b05a15fe5d660e214fc99180a",
-        "mod_editor/core/nfl2k5_rookie_faces.py": "94fbd23e58708b13dd16d454ddedce913718efe38fd1fa5b3994d14db3596295",  # b780-int (gen1mc): MyCareer's draft-signing context reads its draft-number byte
+        "mod_editor/core/nfl2k5_rookie_faces.py": "3b7461fe711d72ada7c2009f04e2736783157612d03c351843fadbce9576b3f9",  # b780-int (gen1mc): MyCareer's draft-signing context reads its draft-number byte
         "mod_editor/core/nfl2k5_my_career_mode_code.py": "091f1be73945a0df705ed4665336bbfb78be52d7a5e404386b65b35247d57434",
         "mod_editor/core/nfl2k5_my_career_home.py": "e920e0003626def22a1a5dd755c2d128b7bab8e9934ae67e9a5a88d249c054ec",
         "mod_editor/core/nfl2k5_my_career_mode_code_b779.py": "9774a72e254da1609e82a53d2d5b74701e1d2acec484b6588256fc9b256c0355",  # b780 n6: frozen beta-79 revision
@@ -1050,7 +1050,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_weekly_prep_save.py": "aedb0576c3a19a3a6574362729f83d3dfac5bc4aae7eb203388403c721a83720",
         "mod_editor/core/nfl2k5_widescreen.py": "98e3fd35f5c45a35143e678055872fe405447a735b211cd2897119d3ed801b4c",
         "mod_editor/core/nfl2k5_widescreen_menus.py": "a72a4d2387e023c0552c9bfb6c5b3330a689bbe00ed5619853260a7c13012701",
-        "mod_editor/core/nfl2k5_xbe_space.py": "adf583f49dd0b6fc5dc98b464eacee4de3ef55aa7634b575e7ac3436b7c411d1",
+        "mod_editor/core/nfl2k5_xbe_space.py": "dbcc046f7a29d3228bd4f4387e5032b04ea2f1667aca38f425fd294a243b0dcf",
         "mod_editor/core/nfl2k5_zone_drop.py": "96b915ac40cfbcb61b9bfa88a584a18841635e061947a7e1644ea193f83a94f0",
         "mod_editor/core/nfl_audio.py": "31193529647bd5fc35a2c25d38bccb83d20b16d46358169c26ced120c6c8e05c",
         "mod_editor/core/platform_compat.py": "d9471c3c5aeff847b4bb777574bb123f3172f4f863e985b19303e8bd58567779",
