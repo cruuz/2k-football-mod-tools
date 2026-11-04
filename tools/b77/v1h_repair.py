@@ -27,7 +27,9 @@ V06_SHA256 = "f67e6fc1cb76c9ea1f1ad504e4a6491ff126483d66a9da8ddb92950bbaf740ba"
 # back, previous reading and companion status), so b544c801... was already stale at beta-79 (its private fixture was
 # absent, so the test skipped). Derived from repair() on the pinned base with every postcondition holding: 69 spans,
 # 19,247 changed bytes, all 70 other reservations unchanged, seals and directory intact, idempotent.
-REPAIRED_SHA256 = "09d7fbd8f9d6c5567bc004bb369d2de98d23cf5bcbb7b359366bc97f45461218"
+# b780-int re-pin 2 (after mc1 290936cd1 / a4b2f2d13, the MyCareer fixes and the MyPlayer star setting): the same
+# derivation, 69 spans, 19,342 changed bytes, every postcondition holding.
+REPAIRED_SHA256 = "2b22a68bb8c6173f50276c67800fc0f4dc8ae34a22aa6b1688e74d10a0414da8"
 
 
 def repair(payload: bytes, *, reference: bytes | None = None) -> tuple[bytes, dict]:
