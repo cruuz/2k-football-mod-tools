@@ -178,6 +178,31 @@ class PlanSurgeryTests(unittest.TestCase):
         self.assertIsNotNone(spec["kr1"])
         self.assertNotEqual(spec["kr1"], 2703)
 
+    def test_every_returner_role_a_dropped_player_held_is_refilled_and_a_role_the_source_left_empty_stays_empty(self):
+        """LAC 64 MB build 2: KR2 held by a left-out receiver read 255 and failed the pack lint."""
+        plan = self.club_plan()
+        plan["players"].append({"index": 3, "new": False, "first": "Rec", "last": "Three", "gsis_id": "r3", "status": "ACT",
+                                "team": "SF", "fields": {"position": 8, "depth_rank": 0, "depth_side": 2}})   # a fullback
+        plan["teams"][0]["active"].append(3)
+        plan["teams"][0]["specialists"].update(kr1=2703, kr2=2702, pr=2701)       # three created players hold the returns
+        pinned = fit.pinned_depth({"edits": [], "roster_refresh": plan})
+        stripped, rows = fit.split(plan)
+        rows = [r for r in rows if r["index"] not in (2701, 2702, 2703)] + [r for r in rows if r["index"] in (2701, 2702, 2703)]
+        out = fit.plan_with(stripped, rows, [2554, 2555], 2, pinned)               # the three returners are left out
+        spec = out["teams"][0]["specialists"]
+        by = {r["index"]: r for r in out["players"]}
+        for role in ("kr1", "kr2", "pr"):
+            self.assertIsNotNone(spec[role], role)
+        self.assertEqual(len({spec["kr1"], spec["kr2"], spec["pr"]}), 3)            # three different players
+        self.assertNotEqual(by[spec["pr"]]["fields"]["position"], 8)               # never the fullback on punts
+        self.assertIn(by[spec["kr1"]]["fields"]["position"], fit.ELIGIBLE_POSITIONS["kr1"])
+        empty = self.club_plan()
+        empty["teams"][0]["specialists"]["kr2"] = None                              # the dated chart listed one returner
+        stripped, rows = fit.split(empty)
+        pinned = fit.pinned_depth({"edits": [], "roster_refresh": empty})
+        out = fit.plan_with(stripped, fit.ordered_rows(rows, pinned, empty), [2554, 2555, 2556], 3, pinned)
+        self.assertIsNone(out["teams"][0]["specialists"]["kr2"])
+
     def test_the_base_must_be_the_refresh_pin(self):
         document = {"schema": rr.EDITS_SCHEMA, "edits": [], "roster_refresh": refresh(),
                     "fa3_free_agent_depth": {"base_sha256": "0" * 64}}
