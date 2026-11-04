@@ -205,17 +205,22 @@ class ReturnerGetterStatusTests(unittest.TestCase):
         self.assertEqual(returner.status(self.applied), "applied")
 
     def test_new_getter_fits_and_ends_in_int3(self):
-        code = returner._getter_code()
-        self.assertLessEqual(len(code), returner.GETTER_SIZE)
-        self.assertEqual(returner.getter_bytes(), code + b"\xcc" * (returner.GETTER_SIZE - len(code)))
-        self.assertEqual(code[-1:], b"\xc3")
+        code, helper = returner._getter_code(), returner._lineup_helper_code()
+        self.assertEqual((len(code), len(helper)), (96, 32))           # the site holds both, exactly 128 bytes
+        self.assertEqual(returner.getter_bytes(), code + helper)
+        self.assertEqual((code[-1:], helper[-1:]), (b"\xc3", b"\xc3"))
+        v1 = returner.getter_bytes_v1()                                  # the first st1 form upgrades in place
+        self.assertEqual(len(v1), returner.GETTER_SIZE)
+        self.assertEqual(v1[98:], b"\xcc" * 30)
 
-    def test_only_the_two_sites_and_the_text_digest_change(self):
+    def test_only_the_owned_sites_and_the_text_digest_change(self):
         text = next(s for s in _sections(self.retail) if s.virtual_address <= returner.GETTER_VA < s.virtual_address + s.raw_size)
-        loop = returner._offset(self.retail, returner.SITE_VA)
-        getter = returner._offset(self.retail, returner.GETTER_VA)
-        allowed = [(loop, loop + returner.SITE_SIZE), (getter, getter + returner.GETTER_SIZE),
-                   (text.header_offset + 36, text.header_offset + 56)]
+        allowed = [(text.header_offset + 36, text.header_offset + 56)]
+        for va, size in ((returner.SITE_VA, returner.SITE_SIZE), (returner.GETTER_VA, returner.GETTER_SIZE),
+                         (returner.LINEUP_HOOK_VA, 7), (returner.EXCHANGE_VA, returner.EXCHANGE_SIZE),
+                         (returner.ALL_STAR_CALL_VA, 5)):
+            off = returner._offset(self.retail, va)
+            allowed.append((off, off + size))
         for start, end in _diff_runs(self.retail, self.applied):
             self.assertTrue(any(lo <= start and end <= hi for lo, hi in allowed), hex(start))
 
@@ -225,7 +230,14 @@ class ReturnerGetterStatusTests(unittest.TestCase):
         upgraded, receipt = returner.apply(legacy)
         self.assertEqual(upgraded, self.applied)
         self.assertEqual(receipt["upgraded_from"], "legacy")
-        self.assertEqual([e["label"] for e in receipt["edits"]], ["returner_getter"])
+        self.assertEqual([e["label"] for e in receipt["edits"]],
+                         ["returner_getter", "lineup_slot_check", "exchange_store", "all_star_skip"])
+        # the first b780 st1 install (loop + 98-byte getter) upgrades the same way
+        first = bytearray(legacy)
+        off = returner._offset(legacy, returner.GETTER_VA)
+        first[off:off + returner.GETTER_SIZE] = returner.getter_bytes_v1()
+        self.assertEqual(returner.status(bytes(first)), "legacy")
+        self.assertEqual(returner.apply(bytes(first))[0][off:off + returner.GETTER_SIZE], returner.getter_bytes())
         with self.assertRaises(returner.ReturnerFixError):
             returner.apply(upgraded)
 
@@ -256,9 +268,13 @@ class ReturnerGetterStatusTests(unittest.TestCase):
                 getter = returner._offset(data, returner.GETTER_VA)
                 self.assertEqual(upgraded[getter:getter + returner.GETTER_SIZE], returner.getter_bytes())
                 text = next(s for s in _sections(data) if s.virtual_address <= returner.GETTER_VA < s.virtual_address + s.raw_size)
+                allowed = [(text.header_offset + 36, text.header_offset + 56)]
+                for va, size in ((returner.GETTER_VA, returner.GETTER_SIZE), (returner.LINEUP_HOOK_VA, 7),
+                                 (returner.EXCHANGE_VA, returner.EXCHANGE_SIZE), (returner.ALL_STAR_CALL_VA, 5)):
+                    off = returner._offset(data, va)
+                    allowed.append((off, off + size))
                 for start, end in _diff_runs(data, upgraded):
-                    self.assertTrue(getter <= start and end <= getter + returner.GETTER_SIZE
-                                    or text.header_offset + 36 <= start and end <= text.header_offset + 56, hex(start))
+                    self.assertTrue(any(lo <= start and end <= hi for lo, hi in allowed), hex(start))
                 self.assertEqual(receipt["changed_bytes"], sum(end - start for start, end in _diff_runs(data, upgraded)))
         if not seen:
             self.skipTest("no released executable configured (NFL2K5_V08_XBE, NFL2K5_B780_RC_XBE)")
