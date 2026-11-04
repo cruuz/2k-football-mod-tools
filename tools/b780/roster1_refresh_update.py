@@ -72,17 +72,69 @@ def latest_roster(path):
 
 
 def latest_charts(path):
-    """({club: [entries]}, {club: dt}) from each club's newest chart."""
+    """({club: [entries]}, {club: dt}, {club: {dt: [entries]}}) from each club's newest chart and every snapshot."""
     newest, entries = {}, collections.defaultdict(list)
+    history = collections.defaultdict(lambda: collections.defaultdict(list))
     rows = list(csv.DictReader(open(path, encoding="utf-8")))
     for row in rows:
         team = club(row["team"])
         newest[team] = max(newest.get(team, ""), row["dt"])
+        history[team][row["dt"]].append(row)
     for row in rows:
         team = club(row["team"])
         if row["dt"] == newest[team]:
             entries[team].append(row)
-    return entries, newest
+    return entries, newest, history
+
+
+HURT = ("Out", "Doubtful")
+RECENT_WEEKS = 4
+
+
+class Healthy:
+    """Noah 11/03 (healthy starters): an active player who is healthy in his club's latest injury report but was Out
+    or Doubtful in the last RECENT_WEEKS weeks takes back the rank he held at his slot on the club's last chart
+    before that injury streak (the chart of the day of the last game he played healthy), above the backups who
+    replaced him; everyone else keeps the newest chart's order. Injured reserve stays off the ranks (the writer)."""
+
+    def __init__(self, injuries_csv, schedule_json, history):
+        self.out = collections.defaultdict(set)
+        self.latest = collections.defaultdict(int)
+        self.reported = collections.defaultdict(set)          # the weeks a club filed a report (not its bye)
+        for row in csv.DictReader(open(injuries_csv, encoding="utf-8")):
+            week = int(row["week"])
+            self.latest[club(row["team"])] = max(self.latest[club(row["team"])], week)
+            self.reported[club(row["team"])].add(week)
+            if row["report_status"] in HURT:
+                self.out[row["gsis_id"]].add(week)
+        games = json.loads(Path(schedule_json).read_text(encoding="utf-8"))["games"]
+        self.kickoff = {}
+        for game in games:
+            self.kickoff[game["week"]] = min(self.kickoff.get(game["week"], "9999"), game["date"])
+        self.history = history
+
+    def returning(self, gsis, team):
+        """(first week of the streak, last week) for a player healthy now after a recent streak, else None."""
+        weeks = self.out.get(gsis, set())
+        latest = self.latest.get(team, 0)
+        if not weeks or latest in weeks or max(weeks) < latest - RECENT_WEEKS:
+            return None
+        last = max(w for w in weeks if w < latest)
+        first = last
+        while first - 1 in weeks or (first - 2 in weeks and first - 1 not in self.reported[team]):
+            first -= 1
+        return first, last
+
+    def chart_before(self, team, week):
+        """The club's last chart on or before the day of week ``week - 1``'s first game (week 1: its first chart)."""
+        snapshots = sorted(self.history.get(team, {}))
+        if not snapshots:
+            return []
+        if week <= 1:
+            return self.history[team][snapshots[0]]
+        cutoff = self.kickoff.get(week - 1, "")
+        earlier = [dt for dt in snapshots if dt[:10] <= cutoff]
+        return self.history[team][earlier[-1]] if earlier else []
 
 
 def slot_positions(plan_rows):
@@ -135,14 +187,61 @@ def placeholder(index, name, years_pro, as_of):
             "source": CBA_URL}
 
 
-def update(document, roster_csv, charts_csv, as_of, body=None):
+def reorder_healthy(team, picks, by_index, healthy, mapping, moves):
+    """Re-rank ``picks`` ({index: (position, entry, key)}) for players back from a recent injury: each takes his
+    pre-injury rank in his pre-injury slot's list; the players at that slot below him move down one."""
+    slots = collections.defaultdict(list)            # (position, pos_grp, pos_abb) -> [index] in 11/03 rank order
+    slot_no = {}
+    for index, (position, entry, key) in sorted(picks.items(), key=lambda kv: (kv[1][2] or (9,), kv[0])):
+        if entry is not None:
+            slots[(position, entry["pos_grp"], entry["pos_abb"])].append(index)
+            slot_no[(position, entry["pos_grp"], entry["pos_abb"])] = int(entry["pos_slot"])
+    returned = []
+    for index, (position, entry, key) in picks.items():
+        row = by_index[index]
+        streak = healthy.returning(row["gsis_id"], team)
+        if streak is None:
+            continue
+        before = [e for e in healthy.chart_before(team, streak[0]) if e["gsis_id"] == row["gsis_id"]]
+        old_entry, old_key = best_entry(before, position, mapping)
+        if old_entry is None or (key is not None and old_key[1] >= key[1]):
+            continue                                   # not ranked higher before the injury: the newest chart stands
+        returned.append((old_key, index, old_entry, streak))
+    changed = set()
+    for old_key, index, old_entry, streak in sorted(returned):
+        position = picks[index][0]
+        for slot, members in slots.items():
+            if index in members:
+                members.remove(index)
+                changed.add(slot)
+        target = (position, old_entry["pos_grp"], old_entry["pos_abb"])
+        slot_no.setdefault(target, int(old_entry["pos_slot"]))
+        members = slots[target]
+        members.insert(min(int(old_entry["pos_rank"]) - 1, len(members)), index)
+        changed.add(target)
+        row = by_index[index]
+        moves.append(f"{team} {row['first']} {row['last']}: {old_entry['pos_abb']}{old_entry['pos_rank']} as on "
+                     f"{old_entry['dt'][:10]} (Out or Doubtful weeks {streak[0]}-{streak[1]}, healthy in week "
+                     f"{healthy.latest.get(team)}'s report)")
+    # only the slots a returning player left or joined are renumbered (1..n in their new order), so on a paired
+    # position the returner takes his old place and the player who replaced him becomes the top backup again
+    for slot in changed:
+        position, grp, abb = slot
+        for rank, index in enumerate(slots[slot], 1):
+            old_position, entry, key = picks[index]
+            picks[index] = (old_position, entry, (abb == "LS" and grp == SPECIAL, rank, slot_no[slot]))
+
+
+def update(document, roster_csv, charts_csv, as_of, body=None, injuries_csv=None, schedule_json=None):
     doc = copy.deepcopy(document)
     plan = doc["roster_refresh"]
     rows = plan["players"]
     by_gsis = {r["gsis_id"]: r for r in rows}
     by_index = {r["index"]: r for r in rows}
     fresh = latest_roster(roster_csv)
-    charts, newest = latest_charts(charts_csv)
+    charts, newest, history = latest_charts(charts_csv)
+    healthy = Healthy(injuries_csv, schedule_json, history) if injuries_csv else None
+    healthy_moves = []
     mapping = slot_positions(rows)
     records = None
     if body is not None:
@@ -233,6 +332,7 @@ def update(document, roster_csv, charts_csv, as_of, body=None):
         for e in charts.get(t, []):
             entries[e["gsis_id"]].append(e)
         chains = collections.defaultdict(list)
+        picks = {}
         for index in active[t]:
             row = by_index[index]
             position = row["fields"].get("position")
@@ -241,6 +341,10 @@ def update(document, roster_csv, charts_csv, as_of, body=None):
                 row["fields"]["position"] = position
             chosen, key = best_entry(entries.get(row["gsis_id"], []), position, mapping)
             row["depth_source"] = depth_source(chosen) if chosen else None
+            picks[index] = (position, chosen, key)
+        if healthy is not None:
+            reorder_healthy(t, picks, by_index, healthy, mapping, healthy_moves)
+        for index, (position, chosen, key) in picks.items():
             old = old_rows[index][2]
             unlisted = (2, 9, old.get("depth_rank", 7), old.get("depth_side", 7), index)
             chains[position].append(((int(key[0]),) + key[1:] + (index,) if key else unlisted, index))
@@ -312,6 +416,7 @@ def update(document, roster_csv, charts_csv, as_of, body=None):
     plan["as_of"] = as_of
     plan["depth_as_of"] = max(chart_rows.values())
     summary = diff(before, old_rows, plan, by_index, chart_rows, added_inits, week)
+    summary["healthy_starters"] = healthy_moves
     summary["over_53_in_the_source"] = over_53
     summary["off_the_weekly_roster"] = stale
     summary["kicker_or_punter_kept"] = kept_specialists
@@ -369,10 +474,12 @@ def main(argv=None):
     ap.add_argument("--as-of", required=True)
     ap.add_argument("--body", help="a disc roster body to read contracts from and replay the plan on")
     ap.add_argument("--summary")
+    ap.add_argument("--injuries", help="nflverse injuries_2026.csv: healthy starters (Noah 11/03)")
+    ap.add_argument("--schedule", default=str(ROOT / "data" / "nfl_2026_schedule.json"))
     args = ap.parse_args(argv)
     base = json.loads(Path(args.base).read_text(encoding="utf-8"))
     body = Path(args.body).read_bytes() if args.body else None
-    doc, summary = update(base, args.roster_csv, args.charts_csv, args.as_of, body)
+    doc, summary = update(base, args.roster_csv, args.charts_csv, args.as_of, body, args.injuries, args.schedule)
     text = json.dumps(doc, indent=1, ensure_ascii=True) + "\n"            # the pack document's own format
     Path(args.out).write_text(text, encoding="utf-8")
     summary["out_sha256"] = hashlib.sha256(text.encode("utf-8")).hexdigest()
