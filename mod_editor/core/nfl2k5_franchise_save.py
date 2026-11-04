@@ -787,11 +787,17 @@ class FranchiseSave:
         field = self.team_offset(team) + 4 * slot
         struct.pack_into("<i", self.buffer, field, 0 if target is None else target - field + 1)
 
-    def place_on_injured_reserve(self, team: int, player_index: int, *, legacy_marker: bool = True) -> InjuredReserveEntry:
+    def place_on_injured_reserve(self, team: int, player_index: int, *, legacy_marker: bool = True,
+                                 finn_roles: bool = False) -> InjuredReserveEntry:
         """Finn's IR move: compact the team's pointer list, count -1, player +0x28 = 0xEE, fill an IR slot.
 
-        Reproduces the 17-byte diff between the two 8007Fran fixtures byte for byte (test).  The game
-        recomputes the team's salary (IR still counts against the cap) and its active count itself.
+        The team's six specialist slot bytes (+0x194..+0x199: holder, KR1, KR2, K, LS, PR) are roster slot
+        indexes. By default they follow the game's own removal handler 0xC3A90 (b780 hunt5): a role on the
+        removed slot is cleared and the roles on later slots move up one place, so every role still names the
+        same player. ``finn_roles=True`` leaves those six bytes as Finn's editor does, so a role below the removed
+        slot then names the next player down; it exists only for parity with Finn-made files: with it the call
+        reproduces the 17-byte diff between the two 8007Fran fixtures byte for byte (test). The game recomputes
+        the team's salary (IR still counts against the cap) and its active count itself.
         """
 
         _require(0 <= team < self.league_team_count, f"team {team} is not an NFL team in this arena")
@@ -800,6 +806,7 @@ class FranchiseSave:
         count, slots = self._team_slots(team)
         _require(target in slots[:count], f"player {player_index} is not on team {team}")
         _require(type(legacy_marker) is bool, "legacy_marker must be boolean")
+        _require(type(finn_roles) is bool, "finn_roles must be boolean")
         _require(not legacy_marker or self.buffer[target + 0x28] != IR_MARK,
                  f"player {player_index} is already marked injured reserve")
         free = None
@@ -818,15 +825,11 @@ class FranchiseSave:
         if legacy_marker:
             candidate[target + 0x28] = IR_MARK
         candidate[target + 0x52] &= ~0x1f
-        if not legacy_marker:
-            # Preserve the explicit Finn byte-for-byte import operation; modern
-            # host transactions additionally maintain native special-role slots.
-            for field in range(self.team_offset(team) + 0x194, self.team_offset(team) + 0x19a):
-                value = candidate[field]
-                if value == removed_slot:
-                    candidate[field] = 0xff
-                elif removed_slot < value < 0x80:
-                    candidate[field] -= 1
+        if not finn_roles:
+            # The game's removal rule (0xC3A90) for the native special-role slots; only the Finn parity
+            # operation (finn_roles=True) keeps Finn's untouched bytes.
+            roles = slice(self.team_offset(team) + 0x194, self.team_offset(team) + 0x19a)
+            candidate[roles] = bytes(rr.specialists_after_removal(candidate[roles], removed_slot))
         struct.pack_into("<I", candidate, free[1], player_index)
         try:
             candidate = bytearray(ps.recompute_salary(bytes(candidate), team))
