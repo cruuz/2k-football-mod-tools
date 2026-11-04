@@ -1030,6 +1030,8 @@ class BuildPanel(QWidget):
         self.cpu_scrambles_level.currentIndexChanged.connect(lambda _index: self._refresh())
         for parent, children in r62_ui.CHILDREN.items():
             getattr(self, parent + "_check").toggled.connect(lambda on, p=parent: self._parent_toggled(p, on))
+            if parent in r62_ui.DEFAULT_ON_CHILDREN:   # b780-mem1: a user's tick brings the default children along
+                getattr(self, parent + "_check").clicked.connect(lambda on, p=parent: self._parent_clicked(p, on))
             for child in children:
                 getattr(self, child + "_check").toggled.connect(lambda on, p=parent: self._child_toggled(p, on))
         self.momentum_collision_level = QComboBox()
@@ -4259,6 +4261,13 @@ class BuildPanel(QWidget):
             for child in r62_ui.CHILDREN[parent]:
                 getattr(self, child + "_check").setChecked(False)
         self._refresh()
+
+    def _parent_clicked(self, parent, on):
+        if on:
+            for child in r62_ui.DEFAULT_ON_CHILDREN.get(parent, ()):
+                box = getattr(self, child + "_check")
+                if box.isEnabled():
+                    box.setChecked(True)
 
     def _child_toggled(self, parent, on):
         box = getattr(self, parent + "_check")

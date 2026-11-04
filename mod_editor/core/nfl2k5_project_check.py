@@ -338,6 +338,16 @@ def check(plan, *, asset_ids: Iterable[str] = (), document: dict | None = None, 
     for blocker in mod_build.validate_plan(plan):
         report.findings.append(Finding(STOP, "Build options", blocker, "",
                                        "Untick or change the option this names on the Build tab."))
+    # b780-mem1: with the late form, the in-game block is what the main heap has left at the game start, and on this
+    # release's content the pregame intro's camera script no longer fits at retail-model stadiums (Baltimore,
+    # Detroit, New Orleans, Houston): the flyover loops until A is pressed. The early form makes the room.
+    if getattr(plan, "k128_memory", False) and not getattr(plan, "k128_early", False):
+        report.findings.append(Finding(
+            NOTE, "Build options", "128 MB memory is on without Bigger graphics memory (K128 early form).",
+            "At 128 MB the pregame intro can loop on the stadium flyover at retail-model stadiums such as Baltimore, "
+            "Detroit, New Orleans and Houston, because its camera script does not fit in what is left of the game's "
+            "memory.", "Tick Bigger graphics memory (K128 early form) under 128 MB memory on the Build tab.",
+            code="k128.early_off"))
     _step(report, "Build options", started)
 
     if document is not None:
