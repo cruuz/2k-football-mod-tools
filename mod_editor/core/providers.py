@@ -576,7 +576,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_era_rules.py": "16d368144431ac2910908ea14cc1ebf5424748cd160b13ebd5a61c449952cf1c",
         "mod_editor/core/nfl2k5_stock_books.py": "d8def627bbe667d5fb8f9e00fbd5bed5f436e30f64ac53571f6a59452a150a6c",
         "mod_editor/core/nfl2k5_moment_gun_weight.py": "ab0fa2a22641666208f5aecdb21d30a99b85c8d23ffeea87c5de37ebd5e29cb9",
-        "mod_editor/core/nfl2k5_project_fit.py": "ca9551a8f1d89e6435acba870daa3902ede49a84a2a9e5d1adf5b5eb53eeeb7a",
+        "mod_editor/core/nfl2k5_project_fit.py": "a0184fba0e2b544861fb127ee50f7492c29f9d0667963a492d5cda60fa8ea5fc",
         "mod_editor/core/nfl2k5_my_career_prospects.py": "7c326fbfdaf090c6bf3394af99d266c8f069be8e8a49919f7503e14db9b09c45",
         "mod_editor/core/nfl2k5_rules_patch.py": "49849dbc7908511afb5562298adb8764090df32fb126f380681f800472c0f959",
         "mod_editor/core/nfl2k5_coin_defer.py": "403dddd1c40718d1284f008ac52222a0e2cbf0b9109941d8f16949739f6be5e0",
