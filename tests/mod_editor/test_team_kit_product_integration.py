@@ -283,7 +283,7 @@ class TeamKitOffscreenGuiTests(unittest.TestCase):
         self.window.browse_uniform_equipment_button.click()
         self.application.processEvents()
 
-        texture_row = PRODUCT_CATEGORY_ORDER.index(ProductCategory.TEXTURES) + 1
+        texture_row = self.window._navigation_row(ProductCategory.TEXTURES)   # b780-uxfix: rows by key
         self.assertEqual(self.window.navigation.currentRow(), texture_row)
         state = self.window._visual_browsers[ProductCategory.TEXTURES]
         self.assertEqual(state.search.text(), "18H0 equipment")

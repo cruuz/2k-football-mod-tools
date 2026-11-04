@@ -87,17 +87,19 @@ IMAGE_FILTER = "Xbox disc images (*.xiso *.iso *.img);;All files (*)"
 XBE_FILTER = "Xbox executables (default.xbe *.xbe);;All files (*)"
 
 
-PRESET_LABELS = {"softdrink_basic": "Basic", "softdrink_advanced": "Modern", "softdrink_experimental": "Experimental"}
-PRESET_BUTTONS = {"softdrink_basic": "Basic — 2004 fixes",
-                  "softdrink_advanced": "Modern — updated gameplay & season",
-                  "softdrink_experimental": "Experimental — extra changes"}
+# b780-uxfix: one name per preset. The button said "Modern" while the help texts, the FAQ, the release notes, the
+# project check and the published "SOFTDRINK patch advanced" all say Advanced.
+PRESET_LABELS = {"softdrink_basic": "Basic", "softdrink_advanced": "Advanced", "softdrink_experimental": "Experimental"}
+PRESET_BUTTONS = {"softdrink_basic": "Basic: 2004 fixes",
+                  "softdrink_advanced": "Advanced: updated gameplay and season",
+                  "softdrink_experimental": "Experimental: extra changes"}
 PRESET_CAPTIONS = {
     "softdrink_basic": ("2004 season and rules. Throw/catching fixes, Franchise draft and free agency, CPU returners, "
                         "kicking power, Player Card team column with real past teams, Edit Player position and Pro Bowl tab order."),
     "softdrink_advanced": ("Basic plus acceleration, progression, position changes, modern rules, 2026 season, "
                            "letter-grade ratings in Franchise, presentation, screen timing and other selected changes. "
                            "Includes changes not yet tested in-game."),
-    "softdrink_experimental": ("Modern plus widescreen, dynamic kickoff alignment and kick laces. "
+    "softdrink_experimental": ("Advanced plus widescreen, dynamic kickoff alignment and kick laces. "
                                "Includes changes not yet tested in-game."),
 }
 BRIEF_CHANGES = 6   # changes named on the first screen of the Make my disc confirmation
@@ -3712,6 +3714,8 @@ class BuildPanel(QWidget):
                     text += f" ({self.hires_scale_combo.currentText()}, {self.hires_target_combo.currentText()}, {self.hires_folder_field.text().strip()})"
                 if key == "throw":
                     text += f" ({self.ceiling_spin.value()} yd)"
+                if key == "modern_everbank_construction" and not self.modern_everbank_check.isChecked():
+                    continue  # b780-uxfix: a sub-option is a change only with its stadium ("Selected: 1 change" with none ticked)
                 if key == "weather_haze" and not self._weather_haze_changed():
                     continue
                 if key == "number_kerning" and not self._number_kerning_changed():

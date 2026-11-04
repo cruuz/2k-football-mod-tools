@@ -51,8 +51,8 @@ including NumPy. An external interpreter remains your responsibility.
 ## First disc: open, choose, build, play
 
 1. Click **Open game disc…** and choose your untouched USA Xbox disc image. Wait for **Disc open**.
-2. In **Getting Started**, choose **Start SOFTDRINK Basic →**. This opens **★ Build & Share**
-   and selects **Basic — 2004 fixes** after the disc check. **Modern** is the ADVANCED pack;
+2. In **Getting Started**, choose **Make my own disc (fixes only) →**. This opens **★ Build & Share**
+   and selects **Basic: 2004 fixes** after the disc check. **Advanced** adds updated gameplay and the 2026 season;
    **Experimental** adds further experiments. Read the selected changes and their help before building.
    These presets choose gameplay, franchise and presentation changes. They do not add the SOFTDRINK 2K28
    pack (its edited rosters, uniforms, stadium art and moments); for that disc use **Share → Install
@@ -72,7 +72,8 @@ including NumPy. An external interpreter remains your responsibility.
 
 | Page | What you can do |
 | --- | --- |
-| Getting Started | Open your game disc or start the Basic preset. |
+| Getting Started | Install SOFTDRINK 2K28, open your game disc, or start your own disc from the Basic preset. |
+| ★ Build & Share | Install SOFTDRINK 2K28 (Install & Share), choose a preset, review all changes, Make my disc, copy the Build summary, or share a patch. |
 | Uniforms & Equipment | Edit uniform sets, team kits, equipment colours and helmet finish. |
 | Names, Numbers & Faces | Find portrait, face and number artwork. |
 | Text & Team Identity | Edit game text and preview Position Names (EDGE) and modern mode names. |
@@ -91,7 +92,6 @@ including NumPy. An external interpreter remains your responsibility.
 | ★ Create a Play | Design plays with the wizard and its Info reference. |
 | MyCareer | Create MyPlayer and review MyCareer settings. |
 | Scorebar | Edit the scorebar layout and artwork. |
-| ★ Build & Share | Choose a preset, review all changes, Make my disc, copy the Build summary, or share a patch. |
 
 
 ## Before you begin
@@ -1467,7 +1467,7 @@ default, Franchise Auto Save, the 2026 franchise);
 **Experimental** adds widescreen hor+ (set xemu's Display aspect to 16x9), the
 dynamic-kickoff line-up and the ESPN scorebar. Untick anything you do not want, choose where the
 patched **copy** goes, and Build. The original is never touched; a receipt is
-written beside the copy. The **Share** tab turns that copy into a `.2k5patch`
+written beside the copy. The **Install & Share** tab turns that copy into a `.2k5patch`
 file anyone can check and apply to their own image.
 
 **Console memory** (top of **Make my disc**, beta 80): **128 MB, xemu (full SOFTDRINK)** is the default and the main
