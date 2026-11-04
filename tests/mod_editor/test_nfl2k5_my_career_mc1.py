@@ -35,7 +35,7 @@ from tests.nfl2k5_my_career_fixture import XBE, HAVE_UC  # noqa: E402
 
 STAGE, WEEK, YEAR = 0xE576A4, 0xE576B4, 0xE576B8
 TEAM_SELECT = 0x51B908
-SRC = (ROOT / 'tools/mycareer_mode/runtime.c').read_text()
+SRC = (ROOT / 'tools/mycareer_mode/runtime.c').read_text(encoding='utf-8')
 
 
 class SourceTests(unittest.TestCase):
@@ -132,7 +132,6 @@ class LongFlowTests(unittest.TestCase):
             self.assertEqual(cold.top(), cold.labels['apartment'], 'not the MyCareer draft screen')
             self.assertEqual(cold.get(cold.state + 24), 3)
             self.assertEqual(cold.get(cold.state + 56), 15)
-
 
     def depth(self, m):
         """record -> (club, position, rank, side, lock byte +0x52) for every club. The weekly sort exchanges the
