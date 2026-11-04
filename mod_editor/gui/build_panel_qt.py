@@ -368,7 +368,9 @@ BUILD_KEYS = tuple(row[0] for row in BUILD_OPTIONS)
 PREVIOUS_UPGRADE_KEYS = {"honors_page": "honors page", "camera": "camera", "k128_memory": "128 MB memory",
                          # b780 rev1: these two read "previous" on a v0.8 disc too, and the build upgrades them in
                          # place (catch_slider_patch.apply, nfl2k5_sim_cb_tackles.apply); their boxes were greyed out
-                         "catch_slider": "catching slider", "sim_cb_tackles": "cornerback tackle credit"}
+                         "catch_slider": "catching slider", "sim_cb_tackles": "cornerback tackle credit",
+                         # b780 db2: the beta-79 RB injury guard (no fullback rule) is upgraded in place as well
+                         "sim_rb_injuries": "simulated RB injuries"}
 # b780 n6: beta-79 installs this release reads ("previous") but cannot update in place (they grew, or MyCareer and its
 # companions are linked together); the option stays off and says to rebuild from the retail game
 PREVIOUS_REBUILD_KEYS = {"my_career": "MyCareer", "my_career_home": "Career Home", "player_progress": "Player Progress",

@@ -23,7 +23,14 @@ class ConstantTests(unittest.TestCase):
         self.assertEqual(inj.OWNER, "nfl2k5_sim_rb_injuries")
         self.assertEqual(inj.REQUESTS, ((inj.OWNER, "code", inj.CODE_SIZE, 16),))
         self.assertEqual(inj.CODE_SIZE, 640)
-        self.assertEqual(inj.SUB_OFFSET, 256)
+        self.assertEqual(inj.SUB_OFFSET, 208)                 # b780 db2: the guard grew with the fullback rule (beta-79: 256)
+        self.assertTrue(inj.UPGRADES_PREVIOUS)
+
+    def test_fullback_rule_constants(self):
+        # b780 db2: a fullback keeps 1 in 16 of the carries the retail lottery gives him (NFL 2021-2025: 0.3% of
+        # carries; the retail lottery gave the modern roster's fullbacks 9.3-9.9%)
+        self.assertEqual((inj.FULLBACK_POSITION, inj.FULLBACK_KEEP_THRESHOLD, inj.FULLBACK_REDRAWS), (8, 4096, 3))
+        self.assertEqual(inj.FULLBACK_KEEP_THRESHOLD / 65536, 1 / 16)
 
     def test_sites_are_the_retail_tail_and_the_carrier_call(self):
         weekly, carrier = inj.sites(0x14DA000)
@@ -39,7 +46,15 @@ class ConstantTests(unittest.TestCase):
         code = inj.code_for(0x14DA000)
         self.assertEqual(len(code), inj.CODE_SIZE)
         self.assertEqual(code[:4], bytes.fromhex("5f5e5b60"))          # pop edi; pop esi; pop ebx; pushad
-        self.assertEqual(code[inj.SUB_OFFSET:inj.SUB_OFFSET + 6], bytes.fromhex("60e85a92c2fe"))  # pushad; call 0x103360
+        call = b"\x60\xe8" + struct.pack("<i", 0x103360 - (0x14DA000 + inj.SUB_OFFSET + 6))
+        self.assertEqual(code[inj.SUB_OFFSET:inj.SUB_OFFSET + 6], call)  # pushad; call 0x103360
+        # b780 db2: the beta-79 guard sat at 256 and had no fullback test
+        from mod_editor.core import nfl2k5_sim_rb_injuries_b779 as b779
+        previous = b779.code_for(0x14DA000)
+        self.assertEqual(previous[256:262], bytes.fromhex("60e85a92c2fe"))
+        self.assertNotIn(bytes.fromhex("807e3508"), previous)
+        self.assertEqual(code.count(bytes.fromhex("807e3508")), 1)     # cmp byte [esi+0x35], 8
+        self.assertEqual(code.count(bytes.fromhex("3d00100000")), 1)   # cmp eax, 4096
         self.assertEqual(code[inj.SUB_OFFSET - 1], 0xCC)
         # the roll embeds 4/5 weeks for the long bucket and 2/3 for the short one
         self.assertIn(bytes.fromhex("83c004"), code[:inj.SUB_OFFSET])
@@ -72,6 +87,52 @@ class ConstantTests(unittest.TestCase):
         self.assertEqual(bytes(image.read(0x106CFA, 5))[0], 0xE8)
         self.assertEqual(hashlib.sha256(image.read(va, inj.CODE_SIZE)).digest(),
                          hashlib.sha256(inj.code_for(va)).digest())
+
+
+class PreviousRevisionTests(unittest.TestCase):
+    """b780 db2: the released v0.8 executable carries the beta-79 guard; it reads "previous" and upgrades in place."""
+
+    def test_v08_install_reads_previous_and_upgrades_in_place(self):
+        import hashlib
+        import os
+        from pathlib import Path
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage
+        path = Path(os.environ.get("NFL2K5_V08_XBE", "/nonexistent"))
+        if not path.is_file():
+            self.skipTest("the released v0.8 executable is absent (NFL2K5_V08_XBE)")
+        data = path.read_bytes()
+        self.assertEqual(inj.status(data), "previous")
+        va = inj.allocation(data)["va"]
+        from mod_editor.core import nfl2k5_sim_rb_injuries_b779 as b779
+        self.assertEqual(XbeImage(data).read(va, inj.CODE_SIZE), b779.code_for(va))
+        upgraded, receipt = inj.apply(data)
+        self.assertEqual((receipt["status"], receipt["upgraded_from"], len(upgraded)), ("applied", "previous", len(data)))
+        self.assertEqual(inj.status(upgraded), "applied")
+        image = XbeImage(upgraded)
+        self.assertEqual(image.read(va, inj.CODE_SIZE), inj.code_for(va))      # the fresh install's bytes
+        for _name, site, _before, after in inj.sites(va):
+            self.assertEqual(image.read(site, len(after)), after)
+        self.assertEqual([e["label"] for e in receipt["edits"]], ["sim_carrier_guard"])  # the weekly hook is unchanged
+        again, second = inj.apply(upgraded)
+        self.assertEqual((again, second["status"]), (upgraded, "already_applied"))
+
+
+class BuildPreflightTests(unittest.TestCase):
+    def test_the_build_preflight_accepts_the_beta79_install(self):
+        # b780 db2: a v0.8 source carries the beta-79 guard ("previous"); the build step upgrades it in place
+        from pathlib import Path
+        from unittest import mock
+        from mod_editor.core import mod_build
+        for state, accepted in (("retail", True), ("applied", True), ("previous", True), ("foreign", False)):
+            with self.subTest(state=state):
+                fake = mock.Mock(status=mock.Mock(return_value=state))
+                with mock.patch.object(mod_build, "_core_module", return_value=fake), \
+                        mock.patch.object(mod_build, "_xbe_bytes", return_value=b""):
+                    if accepted:
+                        mod_build._sim_rb_injuries_preflight(Path("default.xbe"), lambda *_: None)
+                    else:
+                        with self.assertRaises(ValueError):
+                            mod_build._sim_rb_injuries_preflight(Path("default.xbe"), lambda *_: None)
 
 
 def patch_code(m, va, blob):
@@ -187,7 +248,7 @@ class CarrierGuardTests(unittest.TestCase):
         if selected_kind == "healthy":
             m.put(sel + 0x20, 0)
         elif selected_kind == "receiver":
-            m.uc.mem_write(sel + 0x35, b"\x08")
+            m.uc.mem_write(sel + 0x35, b"\x03")              # a wide receiver (b780 db2: 8 is the fullback rule)
         if backup:
             copy = match + 0x200
             m.uc.mem_write(copy, bytes(0x54))
@@ -352,12 +413,151 @@ class PreviousTests(unittest.TestCase):
         again, second = inj.apply(upgraded)
         self.assertEqual((again, second["status"]), (upgraded, "already_applied"))
 
-    def test_only_the_cave_differs_from_beta79(self):
+    def test_only_the_cave_and_the_carrier_call_differ_from_beta79(self):
         va = inj.allocation(self.previous)["va"]
         self.assertEqual(va, inj.allocation(self.current)["va"])
-        self.assertEqual(inj.sites(va), self.b779.sites(va))
+        (weekly, carrier), (weekly79, carrier79) = inj.sites(va), self.b779.sites(va)
+        self.assertEqual(weekly, weekly79)                    # the weekly hook keeps its bytes
+        self.assertEqual(carrier[:3], carrier79[:3])
+        # b780 db2: the guard moved from offset 256 to 208, so the call at 0x106CFA is re-pointed
+        for (_n, site, _b, after), offset in ((carrier, inj.SUB_OFFSET), (carrier79, 256)):
+            self.assertEqual((site + 5 + struct.unpack_from("<i", after, 1)[0]) & 0xFFFFFFFF, va + offset)
         self.assertNotEqual(inj.code_for(va), self.b779.code_for(va))
         self.assertEqual(len(inj.code_for(va)), len(self.b779.code_for(va)))
+
+    def test_a_mixed_install_is_foreign(self):
+        # b780 db2: this release's cave behind the beta-79 carrier call (or the reverse) is no install of either
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage
+        va = inj.allocation(self.current)["va"]
+        for payload, site_bytes in ((self.current, self.b779.sites(va)[1][3]), (self.previous, inj.sites(va)[1][3])):
+            buf = bytearray(payload)
+            off = XbeImage(payload).offset(0x106CFA, 5)
+            buf[off:off + 5] = site_bytes
+            self.assertEqual(inj.status(bytes(buf)), "foreign")
+
+
+@unittest.skipUnless(HAVE_UC, "unicorn is needed")
+class FullbackRuleTests(unittest.TestCase):
+    """b780 db2: the assembled guard on a constructed sim team (QB1, HB1, FB1, HB2 slots) and club. The retail lottery
+    0x103360 is replayed by a leaf that also checks it is always asked for the same team (ESI)."""
+
+    @classmethod
+    def setUpClass(cls):
+        data = retail_bytes()
+        if data is None:
+            raise unittest.SkipTest("private USA retail XBE is absent")
+        cls.payload = data
+
+    def machine(self, picks, draw=None, lead="healthy"):
+        """picks: the lottery's successive answers (role names), or a callable returning one. draw None: the game's
+        own league RNG (seeded); otherwise every 16-bit draw returns ``draw``."""
+        m = Machine(self.payload, trace_writes=False)
+        root, clubs, roster, match, team = (m.ARENA + 0x1000, m.ARENA + 0x2000, m.ARENA + 0x3000,
+                                            m.ARENA + 0x180000, m.ARENA + 0x4000)
+        self.code = 0x300F000
+        m.uc.mem_write(self.code, inj.code_for(self.code))
+        m.uc.mem_protect(self.code & ~0xFFF, 0x1000, m.u.UC_PROT_READ | m.u.UC_PROT_WRITE | m.u.UC_PROT_EXEC)
+        # one club: roster[0] HB1, roster[1] HB2, roster[2] FB1, roster[3] QB1; match copies 0x200 apart
+        self.copies = {}
+        for i, (role, pos) in enumerate((("hb1", 7), ("hb2", 7), ("fb", 8), ("qb", 0))):
+            rec, copy = roster + i * 0x54, match + i * 0x200
+            for at in (rec, copy):
+                m.uc.mem_write(at, bytes(0x54))
+                m.put(at, 0xA000 + i)                          # identity word
+                m.put(at + 0x10, 0x9000 + i)                   # name pointer
+                m.uc.mem_write(at + 0x35, bytes([pos]))
+            m.put(clubs + 4 * i, rec)
+            self.copies[role] = copy
+        self.copies["none"] = 0
+        m.uc.mem_write(clubs + 0x11C, b"\x04")
+        m.put(0xB72918, root)
+        m.put(root + 0x1C, clubs)
+        if lead == "injured":
+            for at in (roster, self.copies["hb1"]):
+                m.put(at + 0x20, 0x80000000 | (2 << 22))
+        # the sim team offense summary: +8 QB1, +0xC HB1, +0x10 FB1, +0x14 HB2 (lineup table 0xA96828)
+        for slot, role in enumerate(("qb", "hb1", "fb", "hb2")):
+            m.put(team + 8 + 4 * slot, self.copies[role])
+        self.team = team
+        self.asked = 0
+        nxt = picks if callable(picks) else iter(picks).__next__
+
+        def lottery():
+            self.assertEqual(m.reg("ESI"), self.team)          # every draw is for the team the guard was called with
+            self.asked += 1
+            m.ret(self.copies[nxt()])
+        m.leaf(0x00103360, lottery, reason="the retail carrier lottery's answers, replayed")
+        if draw is None:
+            m.seed(2501)
+        else:
+            patch_code(m, 0x00048BC0, b"\xb8" + struct.pack("<I", draw) + b"\xc3")
+        return m
+
+    def call(self, m):
+        return m.call(self.code + inj.SUB_OFFSET, esi=self.team, budget=2000000)
+
+    def test_a_fullback_keeps_one_carry_in_sixteen(self):
+        for draw, expected, asked in ((0, "fb", 1), (4095, "fb", 1), (4096, "hb1", 2), (65535, "hb1", 2)):
+            with self.subTest(draw=draw):
+                m = self.machine(["fb", "hb1"], draw)
+                self.assertEqual(self.call(m), self.copies[expected])
+                self.assertEqual(self.asked, asked)
+
+    def test_the_redraw_follows_the_lottery(self):
+        # a re-drawn halfback takes the halfback path: injured, his carry goes on to the next healthy back
+        m = self.machine(["fb", "hb1"], 65535, lead="injured")
+        self.assertEqual(self.call(m), self.copies["hb2"])
+        # a re-drawn quarterback or second back is returned as drawn
+        for pick in ("qb", "hb2"):
+            with self.subTest(pick=pick):
+                m = self.machine(["fb", pick], 65535)
+                self.assertEqual(self.call(m), self.copies[pick])
+        # fullback on the first draw and on all three re-draws, or no answer: the fullback keeps the carry
+        m = self.machine(["fb"] * 4, 65535)
+        self.assertEqual((self.call(m), self.asked), (self.copies["fb"], 1 + inj.FULLBACK_REDRAWS))
+        m = self.machine(["fb", "fb", "hb2"], 65535)
+        self.assertEqual((self.call(m), self.asked), (self.copies["hb2"], 3))
+        m = self.machine(["fb", "none"], 65535)
+        self.assertEqual(self.call(m), self.copies["fb"])
+
+    def test_other_picks_are_unchanged(self):
+        for pick in ("qb", "hb2"):
+            with self.subTest(pick=pick):
+                m = self.machine([pick], 65535)
+                self.assertEqual((self.call(m), self.asked), (self.copies[pick], 1))
+
+    def test_previous_guard_kept_every_fullback_carry(self):
+        from mod_editor.core import nfl2k5_sim_rb_injuries_b779 as b779
+        m = self.machine(["fb"], 65535)
+        m.uc.mem_write(self.code, b779.code_for(self.code))
+        self.assertEqual(m.call(self.code + b779.SUB_OFFSET, esi=self.team, budget=2000000), self.copies["fb"])
+
+    def test_measured_share_with_the_league_rng(self):
+        """4,000 carries from a lottery that answers in the measured v0.8 mix for a club with a fullback (HB1 46%,
+        HB2 23%, FB 10%, QB 21% with the realism QB picks folded in), through the guard with the game's own league
+        RNG: the fullback keeps about 1 in 16 of his picks and the rest are shared by the others in the same mix."""
+        import random
+        rng = random.Random(2501)
+        mix = (("hb1", 0.46), ("hb2", 0.23), ("fb", 0.10), ("qb", 0.21))
+
+        def lottery():
+            x = rng.random()
+            for role, share in mix:
+                if x < share:
+                    return role
+                x -= share
+            return "qb"
+        m = self.machine(lottery, None)
+        back = {v: k for k, v in self.copies.items() if v}
+        out = {"hb1": 0, "hb2": 0, "fb": 0, "qb": 0}
+        for _ in range(4000):
+            out[back[self.call(m)]] += 1
+        self.assertEqual(sum(out.values()), 4000)
+        self.assertLessEqual(out["fb"], 4000 * 0.10 / 16 * 1.8)   # about 26 expected (1/16 + 15/16 * 0.1^3 of 400)
+        self.assertGreaterEqual(out["fb"], 4000 * 0.10 / 16 * 0.4)
+        for role, share in mix:                                   # the others keep their relative shares
+            if role != "fb":
+                self.assertAlmostEqual(out[role] / (4000 - out["fb"]), share / 0.90, delta=0.03, msg=role)
 
 
 if __name__ == "__main__":
