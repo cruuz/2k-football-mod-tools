@@ -237,11 +237,19 @@ VETERAN_CUT_RELEASE = 0x2BFBBD      # call 0x2BD900 (the native release) inside 
 PINS[VETERAN_CUT_RELEASE] = "3d18b8832025dceab76a172af5a2e1082b4c45ca0d57b922dae19d762e4e2414"
 ROSTER_M_WINDOW = 0x3DBC10
 MONEY_WINDOW = 0x31E580
-REVISION_6_WINDOWS = frozenset({ROSTER_M_WINDOW, MONEY_WINDOW})
+# b780 hunt1 (revision 6, FIXWAVE #5): a played game can hurt a kicker or a punter (the collision injury chain 0x137520 /
+# 0x137680 -> 0x1373C0 -> 0x136B10 tests no position), and the CPU fill never asked for a replacement (the native need
+# 0x2BD880 counts injured players). In season the weekly upkeep (roster_a) now calls economy_cover (roster_h, after its
+# read-only byte): a CPU club with no healthy K (or P) signs one, a club at 53 first making room with the smart cut.
+ROSTER_A_WINDOW = 0x396F50
+ROSTER_H_WINDOW = 0x3A5F20
+REVISION_6_WINDOWS = frozenset({ROSTER_M_WINDOW, MONEY_WINDOW, ROSTER_A_WINDOW, ROSTER_H_WINDOW})
 REVISION_6_SITES = frozenset({VETERAN_CUT_RELEASE}) | REVISION_6_WINDOWS
 PREVIOUS_REVISION_5 = {             # the windows as revision 5 (and, for money, revisions 3 and 4) installed them
     ROSTER_M_WINDOW: "8598a66655239f218e2976ca5265172b449bdeb5d7598e38288e03d4c216c934",   # roster_m before the release guard
     MONEY_WINDOW: "89f77f74f246f1457c67a46019e43d3715acd906e87c78f240852a8cb057aafe",      # the gate with the count test only
+    ROSTER_A_WINDOW: "6be2398d8741253061b23f6b1f8771b01930b89afeb045ca1139244000331d73",   # upkeep without the K/P cover
+    ROSTER_H_WINDOW: "7acc32405997a296298697ce845112c708b40887729aa8121cadcbac3e1eca77",   # the class top-up alone
 }
 REVISION = 6
 

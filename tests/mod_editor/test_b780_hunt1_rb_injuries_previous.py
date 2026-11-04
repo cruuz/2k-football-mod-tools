@@ -107,7 +107,8 @@ class ReleasedV08Tests(unittest.TestCase):
 class ReleasedV08GuardTests(unittest.TestCase):
     """The released v0.8 executable's own carry guard bytes, run at their own address: when the next healthy back is
     AHEAD of the selected one in the club list, the beta-79 scan reads past the list (here into a small number, as the
-    club record's count word follows the 65 slots) and faults; the upgraded image's guard wraps and returns the back."""
+    club record's count word follows the 65 slots) and faults. The upgraded image's guard reads no club list: it hands
+    the carry to the other halfback of the game's lineup (the sim team's HB1 slot here)."""
 
     @classmethod
     def setUpClass(cls):
@@ -139,6 +140,10 @@ class ReleasedV08GuardTests(unittest.TestCase):
             m.put(copy + 0x10, 0x9000 + ident)
             m.uc.mem_write(copy + 0x35, b"\x07")
         m.put(sel + 0x20, 0x80000000 | (3 << 22))
+        team = m.ARENA + 0x4000                                  # the sim team's lineup: HB1 the healthy back, HB2 the pick
+        m.put(team + 0xC, backup)
+        m.put(team + 0x14, sel)
+        m.reg("ESI", team)
         for va, blob in ((0x00103360, b"\xb8" + struct.pack("<I", sel) + b"\xc3"),
                          (0x00048BC0, b"\xb8" + struct.pack("<I", 65535) + b"\xc3")):
             m.uc.mem_protect(va & ~0xFFF, 0x1000, m.u.UC_PROT_READ | m.u.UC_PROT_WRITE | m.u.UC_PROT_EXEC)
@@ -155,7 +160,7 @@ class ReleasedV08GuardTests(unittest.TestCase):
         with self.assertRaises(UcError):
             self.run_guard(self.v08, row["va"] + b779.SUB_OFFSET)
 
-    def test_the_upgraded_guard_wraps_to_the_back_ahead(self):
+    def test_the_upgraded_guard_gives_the_carry_to_the_lineups_other_back(self):
         row = inj.allocation(self.upgraded)
         returned, backup = self.run_guard(self.upgraded, row["va"] + inj.SUB_OFFSET)
         self.assertEqual(returned, backup)
