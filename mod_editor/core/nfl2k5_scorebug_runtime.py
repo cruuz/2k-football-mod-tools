@@ -34,11 +34,17 @@ REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "data", DATA_SIZE, 16))
 HOOKS = {"setup": (0xFCE56, bytes.fromhex("e845f3ffff")),
          "update": (0xFCFA2, bytes.fromhex("e819faffff"))}
 # Beta 76 sb B1 (play calling): the per-frame hide in FUN_0008bea0 calls the owner, which keeps the bar while the
-# retail play-call bar's mode is on; the two retail play-call bar draws take their own "mode off" exits. Build with
-# NFL2K5_SCOREBUG_PLAYCALL=retail to keep retail play calling (the retail top bar, our bar hidden).
+# retail play-call bar's mode is on; the retail play-call bar's draw (0x8CA00) takes its own "mode off" exit, and the
+# engine reads that jump (0x8CA18) as the build's guard. Build with NFL2K5_SCOREBUG_PLAYCALL=retail to keep retail play
+# calling (the retail top bar, our bar hidden).
 PLAYCALL_HOOK = ("sprite_playcall_hide", 0x8BEA0, bytes.fromhex("e80b080700"))
-PLAYCALL_EDITS = ((0x8C465, bytes.fromhex("0f8417050000"), bytes.fromhex("e91805000090"), "sb play-call bar off (0x8C450)"),
-                  (0x8CA18, bytes.fromhex("0f8421050000"), bytes.fromhex("e92205000090"), "sb play-call bar off (0x8CA00)"))
+PLAYCALL_EDITS = ((0x8CA18, bytes.fromhex("0f8421050000"), bytes.fromhex("e92205000090"), "sb play-call bar off (0x8CA00)"),)
+# b780 gc1: beta 76 to beta 80 also turned 0x8C450 off (0x8C465 je -> jmp), taking it for a second play-call bar draw.
+# It is the franchise Gamecast's score panel: its one caller is 0xEC555 in 0xEC550, the draw event of the
+# visualsimulatormenu event table (0x51C3E0 slot 8, named by the menu descriptor at 0x51C460), and it fills the
+# franchise IFF's "scorepanel" (teams, scores, quarter, clock, down and distance, ball spot) from the simulator's
+# state. With it off the Gamecast showed no score or time (v0.8 and the v0.9 RC). Every build now leaves it retail.
+GAMECAST_PANEL_GATE = (0x8C465, bytes.fromhex("0f8417050000"))
 
 
 def playcall():
@@ -56,7 +62,7 @@ def hooks():
         rows[playcall_layout.STRIP_HOOK_NAME] = playcall_layout.STRIP_HOOK  # b780 p2: the page strip fits long menus
         rows[playcall_layout.STRIP_ENTRY_HOOK_NAME] = playcall_layout.STRIP_ENTRY_HOOK
     return rows
-REVISION = 15  # b780 p2: the ball spot (nwostar 10/24) and the page strip fit; was 14 (hd1: sprite camera retains full picture clip for the corner watermark)
+REVISION = 16  # b780 gc1: the franchise Gamecast's score panel (0x8C450) stays retail and the play-call guard reads 0x8CA18; was 15 (b780 p2: the ball spot (nwostar 10/24) and the page strip fit); 14 (hd1: sprite camera retains full picture clip for the corner watermark)
 # State (128 bytes): scene, populated, two wing materials, the plate material,
 # two wing textures, two scores, two flash timers, down, possession, ball/line,
 # phase, red cell, wing colours and plate colours. All state stays in the owned RW page.
@@ -544,11 +550,16 @@ def _status(payload):
                 if payload[off:off + len(new)] != new:
                     return "foreign"
             if not playcall():
-                # A retail-play-calling build keeps all three B1 sites retail; a B1 build reads as foreign here.
+                # A retail-play-calling build keeps both B1 sites retail; a B1 build reads as foreign here.
                 for va, old in [PLAYCALL_HOOK[1:]] + [(va, old) for va, old, _new, _ in PLAYCALL_EDITS]:
                     off = scene.layout.sbpos.va_to_off(payload, va)
                     if payload[off:off + len(old)] != old:
                         return "foreign"
+            # b780 gc1: every build leaves the franchise Gamecast's score panel draw retail.
+            va, old = GAMECAST_PANEL_GATE
+            off = scene.layout.sbpos.va_to_off(payload, va)
+            if payload[off:off + len(old)] != old:
+                return "foreign"
         return code_state
     except (ValueError, KeyError, IndexError, struct.error, SystemExit):
         return "foreign"

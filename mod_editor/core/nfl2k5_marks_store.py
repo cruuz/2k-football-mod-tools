@@ -13,9 +13,9 @@ import zipfile
 
 from . import modpack as m, modpack_files as f, platform_compat
 
-MEMORY_TIP = ("Set xemu's System Memory to 128 MB (Settings, System). "
-              "At the default 64 MB it still plays, but at some stadiums the pregame show "
-              "repeats until you press A.")
+# b780-uxfix: the old tip said the disc "still plays" at 64 MB; the 128 MB disc stops on a black screen there.
+MEMORY_TIP = ("This disc needs xemu System Memory 128 MiB and the Complex 4627 BIOS. "
+              "It stops on a black screen if either one is wrong.")
 
 
 def state_root():

@@ -297,10 +297,12 @@ class PresetPlanEqualsPresetTests(unittest.TestCase):
         panel = BuildPanel()
         try:
             state = {key: "retail" for key in panel._boxes()}
-            state.update(path="v08.iso", container="xiso", throw=None, catch_slider="previous", sim_cb_tackles="previous")
+            state.update(path="v08.iso", container="xiso", throw=None, catch_slider="previous", sim_cb_tackles="previous",
+                         sim_rb_injuries="previous")   # b780 db2: the beta-79 RB injury guard (no fullback rule)
             panel.apply_state(state)
             for key, box, name in (("catch_slider", panel.catch_check, "catching slider"),
-                                   ("sim_cb_tackles", panel.sim_cb_tackles_check, "cornerback tackle credit")):
+                                   ("sim_cb_tackles", panel.sim_cb_tackles_check, "cornerback tackle credit"),
+                                   ("sim_rb_injuries", panel.sim_rb_injuries_check, "simulated RB injuries")):
                 with self.subTest(key=key):
                     self.assertTrue(box.isEnabled())
                     self.assertFalse(box.isChecked())

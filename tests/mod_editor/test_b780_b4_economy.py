@@ -356,8 +356,9 @@ class CampTests(unittest.TestCase):
     def test_the_released_economy_reads_legacy_and_upgrades_five_sites(self):
         self.assertEqual(self.economy.status(self.released), "legacy")
         self.assertEqual(self.receipt.get("upgraded_from"), "legacy")
+        # b780 hunt1: revision 6 adds the veteran cut's release guard call (roster_m is a revision-5 window already)
         self.assertEqual(sorted(int(e["va"], 16) for e in self.receipt["edits"]),
-                         sorted(self.economy.REVISION_5_SITES))
+                         sorted(self.economy.REVISION_5_SITES | getattr(self.economy, "REVISION_6_SITES", frozenset())))
         self.assertEqual(self.economy.status(self.fixed), "applied")
 
     def _camp(self, payload, stage, size):

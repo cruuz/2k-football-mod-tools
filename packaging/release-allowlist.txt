@@ -603,6 +603,7 @@ mod_editor/core/nfl2k5_sim_cb_tackles_b779.py
 mod_editor/core/nfl2k5_option_defaults.py
 mod_editor/core/nfl2k5_profile_defaults.py
 mod_editor/core/nfl2k5_sim_rb_injuries.py
+mod_editor/core/nfl2k5_sim_rb_injuries_b779.py
 mod_editor/core/nfl2k5_sim_realism.py
 mod_editor/core/nfl2k5_sim_realism_b779.py
 mod_editor/core/nfl2k5_coach_carousel.py
@@ -700,6 +701,7 @@ mod_editor/core/nfl2k5_menu_helmet_w2026.py
 data/nfl2k5_menu_helmet_w2026.json
 mod_editor/core/nfl2k5_anniversary_kickoff.py
 mod_editor/core/nfl2k5_k128.py
+mod_editor/core/nfl2k5_memory_budget.py
 mod_editor/core/nfl2k5_letter_grades.py
 mod_editor/core/nfl2k5_letter_grades_attributes.py
 mod_editor/core/nfl2k5_letter_grades_code.py
@@ -892,6 +894,8 @@ tools/nfl2k5_kickoff_returns.py
 tools/nfl2k5_modpack.py
 tools/nfl2k5_playbook_position_recode.py
 tools/nfl2k5_roster_reclassify.py
+tools/nfl2k5_roster_retail_fit.py
+tools/b77/b778_fa3_free_agent_depth.py
 tools/nfl2k5_scorebug_espn_art.py
 tools/nfl2k5_scorebug_layout.py
 tools/nfl2k5_scorebug_position_patch.py
@@ -1058,6 +1062,7 @@ mod_editor/core/nfl2k5_animation_bones.py
 mod_editor/core/nfl2k5_animation_import.py
 mod_editor/core/nfl2k5_animation_xbe.py
 mod_editor/core/nfl2k5_build_settings.py
+mod_editor/core/nfl2k5_console_memory.py
 mod_editor/core/nfl2k5_crib_reclaim.py
 mod_editor/core/nfl2k5_franchise_2026.py
 mod_editor/core/nfl2k5_franchise_2026_code.py
@@ -3933,6 +3938,7 @@ tests/mod_editor/test_nfl2k5_contract_college_guard.py
 tests/mod_editor/test_nfl2k5_sim_cb_tackles.py
 tests/mod_editor/test_nfl2k5_option_defaults.py
 tests/mod_editor/test_nfl2k5_sim_rb_injuries.py
+tests/mod_editor/test_b780_hunt1_rb_injuries_previous.py
 tests/mod_editor/test_nfl2k5_sim_realism.py
 tests/mod_editor/test_b780_c6_coach_carousel.py
 tests/mod_editor/test_nfl2k5_standings_records.py
@@ -3950,6 +3956,7 @@ tests/mod_editor/test_b779_ce1_kit_fallback.py
 tests/mod_editor/test_b779_ce1_project_check.py
 tests/mod_editor/test_b791_h4_project_doctor.py
 tests/mod_editor/test_b778_tr1_trade_deadline.py
+tests/mod_editor/test_b780_season1_trade_deadline_followups.py
 tests/mod_editor/test_b778_tr2_trade_guard.py
 tests/mod_editor/test_trophy_room_logo.py
 tests/mod_editor/test_nfl2k5_progression_careers.py
@@ -3977,6 +3984,7 @@ tests/mod_editor/test_b780_b10_profile_unicorn.py
 tests/mod_editor/test_b780_b10_coach_records.py
 # b780 b4-economy: retirement by age (never a starter before his position's age), camp limits, injured players rejoin clubs
 tests/mod_editor/test_b780_b4_economy.py
+tests/mod_editor/test_b780_hunt1_specialist_cut.py
 # b780 c5-owners: owner patience (sourced head coach history, owners, the firing hazard and its calibration) and the real-people
 # coach hiring pool, read by the coaching carousel
 mod_editor/core/nfl2k5_coach_owners.py
@@ -3986,3 +3994,9 @@ data/nfl2k5_coach_pool_2026.json
 tests/mod_editor/test_nfl2k5_franchise_footer.py
 tests/mod_editor/test_nfl2k5_history.py
 tests/mod_editor/test_nfl2k5_franchise_footer_transaction.py
+# b780 hunt3: Weekly Prep Player Results keeps the retail getter under the Player Progress owner
+tests/mod_editor/test_b780_hunt3_prep_results.py
+# b780 roster1: the dated refresh leaves no depth-chart row empty after a release for room; wrong-face portraits; pack roster lint
+tests/mod_editor/test_b780_roster1_depth_lint.py
+# b780 gc1: the franchise Gamecast's score panel (0x8C450) stays retail under the 2026 scorebug
+tests/mod_editor/test_b780_gc1_gamecast_scorepanel.py

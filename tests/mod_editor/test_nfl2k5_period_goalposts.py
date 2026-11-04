@@ -57,22 +57,23 @@ class Cpu:
     SCENE_BASE = {"goalpost": 0x03000000, "goalpost_shadow": 0x03010000}
     STACK, SENTINEL = 0x02000000, 0x02800000
 
-    def __init__(self, images: dict[str, bytes], mode: int, row: int):
+    def __init__(self, images: dict[str, bytes], mode: int, row: int, *, flag: int = 0, situation: bool = True):
         from unicorn import Uc, UC_ARCH_X86, UC_MODE_32, UC_HOOK_CODE
         from unicorn.x86_const import UC_X86_REG_ESP, UC_X86_REG_EIP, UC_X86_REG_EAX
         self.uc, self.regs = Uc(UC_ARCH_X86, UC_MODE_32), (UC_X86_REG_ESP, UC_X86_REG_EIP, UC_X86_REG_EAX)
         uc = self.uc
         for base, size in ((CODE_VA & ~(PAGE - 1), 2 * PAGE), (RO_VA & ~(PAGE - 1), PAGE), (0x00097000, PAGE),
                            (0x00044000, PAGE), (0x00E5F000, PAGE), (0x00BF1000, PAGE), (0x00E66000, PAGE),
+                           (0x00E60000, PAGE),                                # b780 hunt2: the Situation flag 0xE6014C
                            (0x00098000, PAGE), (0x02000000, 2 * PAGE), (0x02800000, PAGE),
                            (0x03000000, 0x20000)):
             uc.mem_map(base, size)
         uc.mem_write(0x00097B50, b"\xc3")                                    # the displaced callee: ret
         uc.mem_write(NAMES["goalpost"], "goalpost".encode("utf-16le") + b"\0\0")
         uc.mem_write(NAMES["goalpost_shadow"], "goalpost_shadow".encode("utf-16le") + b"\0\0")
-        uc.mem_write(pg.MODE_VA, struct.pack("<I", mode))
-        uc.mem_write(pg.ROW_VA, struct.pack("<I", row))
-        uc.mem_write(CODE_VA, pg.code_for(CODE_VA, RO_VA))
+        self.state(mode, row, flag)
+        # situation=False: the earlier body (beta-79 .. v0.9 RC), for the before/after comparisons
+        uc.mem_write(CODE_VA, pg.code_for(CODE_VA, RO_VA, situation=situation))
         uc.mem_write(RO_VA, pg.tables())
         self.scenes = {}
         for name, image in images.items():
@@ -100,6 +101,11 @@ class Cpu:
                 uc_.reg_write(UC_X86_REG_EIP, esp[0])
                 uc_.reg_write(UC_X86_REG_ESP, sp + 8)                         # ret 4
         uc.hook_add(UC_HOOK_CODE, find, begin=pg.FIND_VA, end=pg.FIND_VA)
+
+    def state(self, mode: int, row: int, flag: int = 0) -> None:
+        self.uc.mem_write(pg.MODE_VA, struct.pack("<I", mode))
+        self.uc.mem_write(pg.ROW_VA, struct.pack("<I", row))
+        self.uc.mem_write(pg.SITUATION_FLAG_VA, struct.pack("<I", flag))
 
     def run(self, entry: int, stop: int | None = None):
         uc = self.uc
@@ -316,6 +322,156 @@ class CaveRun(unittest.TestCase):
             cpu = Cpu(self.images(), mode, row)                              # no stadium load ran: nothing stored anywhere
             self.assertAlmostEqual(cpu.line_top(), top, places=3)
             self.assertAlmostEqual(cpu.collision_top(), top, places=3)
+
+
+# b780 hunt2: sha256 of the owner's 176 code bytes as beta-79 (v0.8) and the v0.9 RC installed them (both at 0x14D9F50,
+# tables at 0x1509E50), read from the released v0.8 default.xbe and the RC disc's default.xbe (sha256 1a476d94...).
+SHIPPED_VA, SHIPPED_RO_VA = 0x014D9F50, 0x01509E50
+SHIPPED_SHA256 = "06a3300394649afcd1a884bc5f4fdde7d9c7982635947311f975ba9f836c9ce5"
+PERIOD_ROWS = (0, 3, 20, 25, 28, 31, 38, 39)                                 # physical rows of pre-2014 moments
+MODERN_ROWS = (29, 30, 40, 45, 50)
+
+
+class SituationMode(unittest.TestCase):
+    """b780 hunt2: the plain Situation mode is game mode 8 with the Situation flag 0xE6014C set, and its moment row word
+    still holds 0 or the last moment played. It is modern play: 35 ft posts and the 35 ft collision top whatever that
+    stale row says. Every other input gives exactly what the earlier body (beta-79 .. v0.9 RC) gave."""
+
+    def images(self):
+        return {name: synthetic_modern(name) for name in goal.SCENES}
+
+    def test_the_situation_mode_keeps_the_35_ft_posts(self):
+        base = self.images()
+        stub = pg.labels(CODE_VA, RO_VA)["stub"]
+        for row in PERIOD_ROWS + MODERN_ROWS + (51, 0xFFFFFFFF):
+            for flag in (1, 2, 0x100, 0xFFFFFFFF):
+                cpu = Cpu(base, 8, row, flag=flag)
+                cpu.run(stub)
+                with self.subTest(row=row, flag=flag):
+                    for name in goal.SCENES:
+                        spec = goal.SCENES[name]
+                        self.assertEqual(cpu.positions(name),
+                                         base[name][spec["positions"]:spec["positions"] + 6 * spec["vertices"]])
+                    self.assertAlmostEqual(cpu.line_top(), pg.TOP_MODERN, places=3)
+                    self.assertAlmostEqual(cpu.collision_top(), pg.TOP_MODERN, places=3)
+
+    def test_the_earlier_body_gave_the_situation_mode_the_moment_posts(self):
+        """The defect this fixes: on the shipped body a Situation game after a pre-2014 row (row 0 is the default) got
+        the 30 ft uprights and the 30 ft collision top."""
+        for row in (0, 3, 39):
+            cpu = Cpu(self.images(), 8, row, flag=1, situation=False)
+            cpu.run(pg.labels(CODE_VA, RO_VA)["stub"])
+            self.assertIn(pg.WORD_PERIOD, y_words(cpu.positions("goalpost")), row)
+            self.assertAlmostEqual(cpu.line_top(), pg.TOP_PERIOD, places=3)
+            self.assertAlmostEqual(cpu.collision_top(), pg.TOP_PERIOD, places=3)
+
+    def test_a_situation_game_after_a_moment_puts_the_35_ft_posts_back(self):
+        cpu = Cpu(self.images(), 8, 3)
+        stub = pg.labels(CODE_VA, RO_VA)["stub"]
+        original = cpu.positions("goalpost")
+        cpu.run(stub)                                                   # a 1970s moment: 30 ft
+        self.assertNotEqual(cpu.positions("goalpost"), original)
+        cpu.state(8, 3, 1)                                              # then the Situation mode, same stale row
+        cpu.run(stub)
+        self.assertEqual(cpu.positions("goalpost"), original)
+        self.assertAlmostEqual(cpu.line_top(), pg.TOP_MODERN, places=3)
+
+    def test_the_site_stubs_give_the_earlier_answer_for_every_other_input(self):
+        new, old = Cpu(self.images(), 0, 0), Cpu(self.images(), 0, 0, situation=False)
+        rows = tuple(range(0, 56)) + (63, 64, 0xFF, 0x80000000, 0xFFFFFFFF)
+        modes = tuple(range(0, 10)) + (0x108, 0xFFFFFFF8, 0xFFFFFFFF)
+        checked = 0
+        for mode in modes:
+            for flag in (0, 1, 0xFFFFFFFF):
+                if mode == 8 and flag:
+                    continue                                            # the one case the fix changes
+                for row in rows:
+                    for cpu in (new, old):
+                        cpu.state(mode, row, flag)
+                    with self.subTest(mode=mode, flag=flag, row=row):
+                        self.assertEqual(struct.pack("<f", new.line_top()), struct.pack("<f", old.line_top()))
+                        self.assertEqual(struct.pack("<f", new.collision_top()), struct.pack("<f", old.collision_top()))
+                    checked += 1
+        self.assertEqual(checked, (len(modes) * 3 - 2) * len(rows))
+
+    def test_the_scene_patcher_writes_what_the_earlier_body_wrote_for_every_other_input(self):
+        stub = pg.labels(CODE_VA, RO_VA)["stub"]
+        for mode in (0, 1, 2, 3, 4, 5, 6, 7, 8, 9):
+            for flag in (0, 1):
+                if mode == 8 and flag:
+                    continue
+                for row in PERIOD_ROWS[:3] + MODERN_ROWS[:2] + (51, 0xFFFFFFFF):
+                    cpus = []
+                    for situation in (True, False):
+                        cpu = Cpu(self.images(), mode, row, flag=flag, situation=situation)
+                        cpu.run(stub)
+                        cpus.append(cpu)
+                    with self.subTest(mode=mode, flag=flag, row=row):
+                        for name in goal.SCENES:
+                            self.assertEqual(cpus[0].positions(name), cpus[1].positions(name))
+                        self.assertEqual(cpus[0].lookups, cpus[1].lookups)
+        # a stadium-load sequence on the same scene memory, both ways, with foreign and missing scenes too
+        sequence = ((8, 3, 0), (0, 0, 0), (8, 45, 0), (8, 3, 0), (8, 12, 0), (1, 12, 0), (7, 3, 1), (8, 3, 0))
+        spec = goal.SCENES["goalpost"]
+        foreign = bytearray(synthetic_modern("goalpost"))
+        struct.pack_into("<H", foreign, spec["record"] + 0x4C, 242)
+        for images in (self.images(), {"goalpost": synthetic_modern("goalpost")},
+                       {**self.images(), "goalpost": bytes(foreign)}):
+            cpus = [Cpu(images, 8, 3, situation=s) for s in (True, False)]
+            for mode, row, flag in sequence:
+                for cpu in cpus:
+                    cpu.state(mode, row, flag)
+                    cpu.run(stub)
+                for name in images:
+                    self.assertEqual(cpus[0].positions(name), cpus[1].positions(name), (mode, row, flag, name))
+            self.assertEqual(cpus[0].lookups, cpus[1].lookups)
+
+    def test_the_earlier_body_is_the_shipped_install_and_both_bodies_keep_the_site_targets(self):
+        self.assertEqual(hashlib.sha256(pg.code_for(SHIPPED_VA, SHIPPED_RO_VA, situation=False)).hexdigest(), SHIPPED_SHA256)
+        new = pg.code_for(CODE_VA, RO_VA)
+        new_labels = pg.labels(CODE_VA, RO_VA)
+        old = pg.code_for(CODE_VA, RO_VA, situation=False)
+        old_labels = dict((k, CODE_VA + v) for k, v in pg.code_for.labels.items())
+        for label in ("stub", "line", "coll"):                          # the four executable sites call these
+            self.assertEqual(new_labels[label], old_labels[label], label)
+        self.assertEqual(len(new), len(old), pg.CODE_SIZE)
+        self.assertEqual(new[new_labels["coll"] - CODE_VA + 17:], b"\xcc" * (pg.CODE_SIZE - (new_labels["coll"] - CODE_VA + 17)))
+        self.assertNotEqual(new, old)
+        self.assertIn(struct.pack("<I", pg.SITUATION_FLAG_VA), new)
+        self.assertNotIn(struct.pack("<I", pg.SITUATION_FLAG_VA), old)
+
+
+@unittest.skipUnless(os.environ.get("NFL2K5_V08_XBE") and Path(os.environ.get("NFL2K5_V08_XBE", "")).is_file(),
+                     "NFL2K5_V08_XBE (the default.xbe of the released v0.8 disc) is not set")
+class ReleasedExecutableUpgrade(unittest.TestCase):
+    """b780 hunt2: the released v0.8 executable carries the earlier body: it reads "previous" and apply() rewrites only the
+    owner's code (plus the allocator seals and section digests); the four sites and the tables stay."""
+
+    def test_v08_reads_previous_and_upgrades_in_place(self):
+        payload = Path(os.environ["NFL2K5_V08_XBE"]).read_bytes()
+        found = pg.allocations(payload)
+        self.assertEqual((found["code"]["va"], found["read_only"]["va"]), (SHIPPED_VA, SHIPPED_RO_VA))
+        self.assertEqual(pg.status(payload), "previous")
+        self.assertEqual(goal.xbe_status(payload), "applied")
+        result, receipt = pg.apply(payload)
+        self.assertTrue(receipt["upgraded_from_previous"])
+        self.assertEqual(pg.status(result), "applied")
+        self.assertEqual(goal.xbe_status(result), "applied")
+        self.assertEqual(space.status(result), "applied")
+        code = found["code"]
+        changed = [i for i in range(len(payload)) if payload[i] != result[i]]
+        in_code = [i for i in changed if code["raw"] <= i < code["raw"] + pg.CODE_SIZE]
+        self.assertTrue(in_code)
+        # outside the owner's code only the allocator's seals move: the region descriptors' digests (section headers),
+        # the header directory copy and the scale-out directory page
+        for i in changed:
+            if not code["raw"] <= i < code["raw"] + pg.CODE_SIZE:
+                self.assertTrue(space.META_START <= i < space.LIB_COPY
+                                or space.SCALE_DIRECTORY <= i < space.SCALE_DIRECTORY + space.PAGE, hex(i))
+        for _label, va, _accepted, after in pg.sites(code["va"], found["read_only"]["va"]):
+            at = pg._offset(payload, va, len(after))
+            self.assertEqual(result[at:at + len(after)], payload[at:at + len(after)])
+        self.assertEqual(pg.apply(result)[1]["status"], "already_applied")
 
 
 @unittest.skipUnless(HAVE_GAME, "needs the extracted retail files (NFL2K5_GAME_DIR)")

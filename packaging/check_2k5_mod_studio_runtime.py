@@ -99,13 +99,13 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
     "mod_editor/gui/audio_panel_qt.py":
         "dd3529836c4ebdc5ddf344de19edca38191f918ca341248953cb289b56c5e42e",
     "mod_editor/gui/studio_qt.py":
-        "c31a902ba17abf94b9810712766525473c1b7c6d806c7b7f4855df79357353ed",
+        "b4175baa1a7b3a7301c3d5ee1009a5283d70caf4dce1bac16454991de0a5fe3c",
     "mod_editor/studio/audio_annotations.py":
         "c45c94b011d703a24d063138f82477814495705c3b0055a9a867dbab453ba923",
     "mod_editor/studio/audio_replacement_pack.py":
         "68b6887e0778391916a6465a722b062d1c09afe3a376c318026e9db8bd7ed23a",
     "mod_editor/studio/facade.py":
-        "dc4bdf3dedc5d924666b72a875e0cdfae52022c718c6aae532110de0901c7a44",
+        "f0525daffd0344c58ce22427c527e7e1beec88a7d20e01fd8eaa26d474d20203",
     "mod_editor/studio/project_archive.py":
         "07ee0383db64aac79cd2846903da63756b45b09c05118de4fd6fec612701c8bb",
     "mod_editor/studio/session.py":
@@ -115,17 +115,17 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
 B69_GAME_RUNTIME_PINS = {
     "mod_editor/core/nfl2k5_weather.py": "ec3d253e348ff0cf7fb1951b5dad2983d8aebc0802d5c6fca32c74dc80a6985b",
     "mod_editor/core/nfl2k5_weather_haze.py": "b8c58c592794312358eb1554b1d3be43a1ca41f7fdd8fd3cd498d4f345c641cc",
-    "mod_editor/gui/build_panel_qt.py": "3a0681c911482615f36692552eabf0726f7a5fc7b23fe01ff88d14f91aedd84c",
-    "mod_editor/gui/gameplay_patches_panel_qt.py": "9af71ab6f4bfdc9ccc46b6268e8e0c12aab8312b1f254494c26ff96f8de7344a",
+    "mod_editor/gui/build_panel_qt.py": "eac1d6cf8e0864369c1b8be1099adae201ec6df4e9054624fcb747d43cc90e7d",
+    "mod_editor/gui/gameplay_patches_panel_qt.py": "5ccdb6fbcc71b966594ab459cd97098fc6bb236662bff6062e9b8693d194c1cc",
     "mod_editor/gui/my_career_panel_qt.py": "cd39ce1685ed119288122e46b0f8c1c8ba586cea611f5d5feee096a71d7ea9ac",
-    "mod_editor/gui/gameplay_project_ui.py": "3a6d9307a68e91313ea01ff15af61f0a7cc69783980a31cb1d77a2c9e361614e",
-    "mod_editor/gui/beta62_options.py": "b68a0dd59a3fb5455ca1608ace08249fd280124fed0776a51bf3fce5c058ec2d",
+    "mod_editor/gui/gameplay_project_ui.py": "cb5db940034b070a8f49a04cfd4de5ad47fc4e642b963cded0daf1d592e6e41e",
+    "mod_editor/gui/beta62_options.py": "22c11421d9bfe39fba527c5871e36478c72f5bf957174ff7a03d411105301ad7",
     "tools/nfl2k5_weather_editor.py": "39a2847b873bbdc567712ca87657d700fa95e226c3408983acce4d714b1031de",
-    "mod_editor/gui/build_panel_qt.py": "3a0681c911482615f36692552eabf0726f7a5fc7b23fe01ff88d14f91aedd84c",
-    "mod_editor/gui/gameplay_patches_panel_qt.py": "9af71ab6f4bfdc9ccc46b6268e8e0c12aab8312b1f254494c26ff96f8de7344a",
+    "mod_editor/gui/build_panel_qt.py": "eac1d6cf8e0864369c1b8be1099adae201ec6df4e9054624fcb747d43cc90e7d",
+    "mod_editor/gui/gameplay_patches_panel_qt.py": "5ccdb6fbcc71b966594ab459cd97098fc6bb236662bff6062e9b8693d194c1cc",
     "mod_editor/gui/my_career_panel_qt.py": "cd39ce1685ed119288122e46b0f8c1c8ba586cea611f5d5feee096a71d7ea9ac",
-    "mod_editor/gui/gameplay_project_ui.py": "3a6d9307a68e91313ea01ff15af61f0a7cc69783980a31cb1d77a2c9e361614e",
-    "mod_editor/gui/beta62_options.py": "b68a0dd59a3fb5455ca1608ace08249fd280124fed0776a51bf3fce5c058ec2d",
+    "mod_editor/gui/gameplay_project_ui.py": "cb5db940034b070a8f49a04cfd4de5ad47fc4e642b963cded0daf1d592e6e41e",
+    "mod_editor/gui/beta62_options.py": "22c11421d9bfe39fba527c5871e36478c72f5bf957174ff7a03d411105301ad7",
     "tools/nfl2k5_weather_editor.py": "39a2847b873bbdc567712ca87657d700fa95e226c3408983acce4d714b1031de",
     "tools/nfl2k5_weather_time_of_day.py": "37b2bd10f686db9fa99ba9034f9a7f68daa00bff516250ac0f67678880b98b47",
     "tools/nfl2k5_weather_native_probe.py": "cd2776060c41a0831b1a15342a4486e739bbda5c633af5f4427217333885fde2",
@@ -2022,6 +2022,8 @@ def main() -> int:
         "mod_editor.core.nfl2k5_menu_helmet_w2026",              # b773-hu1: Washington menu helmets, 2026 W
         "mod_editor.core.nfl2k5_anniversary_kickoff",             # b76-vb3
         "mod_editor.core.nfl2k5_k128",                            # b76-k1
+        "mod_editor.core.nfl2k5_console_memory",                  # b780-m64b: the 128 MB / 64 MB build target
+        "mod_editor.core.nfl2k5_memory_budget",                   # b780-m64a: the 64 MB memory model the target reads
         "mod_editor.core.nfl2k5_letter_grades_attributes",          # b773-lg2
         "mod_editor.core.nfl2k5_letter_grades",                   # b77-f4
         "mod_editor.core.nfl2k5_letter_grades_code",              # b77-f4

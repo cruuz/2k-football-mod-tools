@@ -153,10 +153,28 @@ OFFENSE_TEAM_POINTER = 0x00E60280
 DEFENSE_TEAM_POINTER = 0x00E60284
 
 
-def _stub_head(a, moment_table_va: int, *, live_team: bool = False, guard_active_team: bool = False) -> None:
-    """The Anniversary part and the start of the franchise part, shared by both generations of the stub."""
-    a.b("833d" + struct.pack("<I", MODE_WORD).hex() + "08")                 # cmp dword [mode], 8
-    a.j8("75", "team")
+# b780 hunt2: the moment test with the Situation flag, (mode ^ 8) | flag (moment_venues' test). 15 bytes, ZF set only in
+# an Anniversary moment; EAX is free here (both of the stub's paths load it next). It lives outside the stub's full 256
+# bytes (the owner's allocation tail, ``situation_gate_va``), so the stub keeps every byte after its first nine.
+SITUATION_GATE = bytes.fromhex("a1" + struct.pack("<I", MODE_WORD).hex() + "83f008"
+                               + "0b05" + struct.pack("<I", 0x00E6014C).hex() + "c3")
+assert len(SITUATION_GATE) == 15
+
+
+def _stub_head(a, moment_table_va: int, *, live_team: bool = False, guard_active_team: bool = False,
+               situation_gate_va: int | None = None) -> None:
+    """The Anniversary part and the start of the franchise part, shared by both generations of the stub.
+    ``situation_gate_va`` (b780 hunt2): only an Anniversary moment (mode 8 with the Situation flag clear) reads the
+    moment table; the plain Situation mode (mode 8, flag 1) takes the franchise part like every other mode."""
+    if situation_gate_va is None:
+        a.b("833d" + struct.pack("<I", MODE_WORD).hex() + "08")             # cmp dword [mode], 8
+        a.j8("75", "team")
+    else:
+        # b780 hunt2: the Situation mode's row word holds 0 or the last moment played (b777-sm2), so without the flag
+        # every Situation game took that moment's flat weight (0.05 after boot) instead of the 2026 club tables.
+        a.call(situation_gate_va)                                           # EAX = (mode ^ 8) | flag, ZF = a moment
+        a.j8("75", "team")
+        a.b("9090")                                                         # the moment part stays at +9
     a.b("a1" + struct.pack("<I", ROW_WORD).hex())                           # mov eax, [row]
     a.b("83f8" + bytes([MOMENT_COUNT]).hex())                               # cmp eax, 51
     a.j8("73", "ordinary")
@@ -223,7 +241,8 @@ def stub_bytes_single(stub_va: int, moment_table_va: int, key_table_va: int, tea
 
 
 def stub_bytes(stub_va: int, moment_table_va: int, key_table_va: int, bin_table_va: int,
-               *, legacy_team_pointer: bool = False, legacy_unguarded_live_team: bool = False) -> bytes:
+               *, legacy_team_pointer: bool = False, legacy_unguarded_live_team: bool = False,
+               situation_gate_va: int | None = None) -> bytes:
     """The stub (padded to STUB_SPACE) for the given tables.
 
     Mode 8: the moment's weight. Otherwise: the offense team's weight if it is a current franchise (category word not 4) whose
@@ -237,7 +256,11 @@ def stub_bytes(stub_va: int, moment_table_va: int, key_table_va: int, bin_table_
     a = _Asm(stub_va)
     _require(not (legacy_team_pointer and legacy_unguarded_live_team), "choose one legacy encoding")
     guarded = not (legacy_team_pointer or legacy_unguarded_live_team)
-    _stub_head(a, moment_table_va, live_team=not legacy_team_pointer, guard_active_team=guarded)
+    # b780 hunt2: ``situation_gate_va`` (the address of SITUATION_GATE, which the caller places) enters the moment part
+    # only for an Anniversary moment; None is the body every release up to the v0.9 RC shipped.
+    _require(situation_gate_va is None or guarded, "the Situation gate needs the guarded body")
+    _stub_head(a, moment_table_va, live_team=not legacy_team_pointer, guard_active_team=guarded,
+               situation_gate_va=situation_gate_va)
     _stub_scan(a, key_table_va)
     a.b("81e9" + struct.pack("<I", key_table_va).hex() + "c1e903" + "6bc9" + bytes([BIN_ROW_SIZE]).hex())   # sub ecx,rows / shr ecx,3 / imul ecx,ecx,14
     a.b("a1" + struct.pack("<I", STATE_POINTER).hex() + "8b4004" + "48")   # mov eax,[state] / mov eax,[eax+4] (down) / dec eax

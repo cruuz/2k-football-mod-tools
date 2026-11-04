@@ -52,6 +52,9 @@ WEIGHT_OFFSET = STUB_OFFSET + gun.STUB_SPACE        # 51 float32 moment weights 
 BIN_TABLE_OFFSET = WEIGHT_OFFSET + 208              # 32 x 7 uint16 franchise bin weights (units of 0.05), in the order of the key rows (448 bytes)
 assert SUFFIX_OFFSET + 16 <= STUB_OFFSET and WEIGHT_OFFSET + gun.TABLE_SIZE <= BIN_TABLE_OFFSET
 assert BIN_TABLE_OFFSET + gun.BIN_TABLE_SIZE <= CODE_SIZE
+# b780 hunt2: the shotgun stub's Situation-aware moment test, in the 16 bytes after the bin table (the stub's own 256 are full)
+GATE_OFFSET = BIN_TABLE_OFFSET + gun.BIN_TABLE_SIZE
+assert GATE_OFFSET + len(gun.SITUATION_GATE) <= CODE_SIZE
 # the a4 body (generation 2): 128 byte stub, 51 moment floats, 32 franchise floats
 SINGLE_WEIGHT_OFFSET = STUB_OFFSET + gun.STUB_SPACE_SINGLE
 SINGLE_TEAM_OFFSET = SINGLE_WEIGHT_OFFSET + 208
@@ -104,7 +107,7 @@ SITUATION_FLAG = 0xE6014C
 
 def code_for(va, *, modern_moments=True, moment_limit=MOMENT_COUNT, legacy=False, single_weight=False,
              legacy_team_pointer=False, legacy_unguarded_live_team=False, weights=None, team_weights=None,
-             first_season=MODERN_FIRST_SEASON, classic_ids=CLASSIC_MODERN_IDS, situation_flag=None):
+             first_season=MODERN_FIRST_SEASON, classic_ids=CLASSIC_MODERN_IDS, situation_flag=None, gun_situation=None):
     """The 1,536 owned bytes at ``va``. ``legacy`` is the body of v0.5 and earlier (40 byte alias rows, no shotgun weights);
     ``single_weight`` is the a4 body (one franchise float per franchise, ``team_weights`` = 32 floats); the default is the current
     body, whose weights are ``weights`` (51 moment floats) and ``team_weights`` (32 rows of 7 bin weights in key-row order) or the
@@ -113,10 +116,15 @@ def code_for(va, *, modern_moments=True, moment_limit=MOMENT_COUNT, legacy=False
     body, off for every earlier generation) routes only an
     Anniversary moment (mode 8 with the Situation flag 0xE6014C clear) to the moment decision; the plain Situation mode
     (mode 8, flag 1) takes the same book decision as every other mode. ``situation_flag=False`` is the b776 .. v0.7 body,
-    which sent every mode-8 side, plain Situation included, to the preserved retail bank."""
+    which sent every mode-8 side, plain Situation included, to the preserved retail bank. ``gun_situation`` (b780 hunt2;
+    default: the same as ``situation_flag``) puts the same Situation test into the shotgun weight stub, so the plain
+    Situation mode takes the 2026 club tables instead of a stale moment weight; ``gun_situation=False`` with every other
+    argument at its default is the body beta-79 / v0.8 and the v0.9 RC shipped ("b780_bins")."""
     require(type(moment_limit) is int and moment_limit in (50, MOMENT_COUNT), "unsupported Anniversary moment limit")
     if situation_flag is None:
         situation_flag = not legacy and not single_weight and classic_ids is not None
+    if gun_situation is None:
+        gun_situation = bool(situation_flag) and not legacy_team_pointer and not legacy_unguarded_live_team
     table, stride = (LEGACY_TABLE, LEGACY_STRIDE) if legacy else (TABLE, STRIDE)
     a = _Asm(va)
     a.b("8bd8")                         # EBX = match team (displaced)
@@ -248,10 +256,16 @@ def code_for(va, *, modern_moments=True, moment_limit=MOMENT_COUNT, legacy=False
     else:
         out.extend(gun.stub_bytes(va + STUB_OFFSET, va + WEIGHT_OFFSET, va + TABLE, va + BIN_TABLE_OFFSET,
                                   legacy_team_pointer=legacy_team_pointer,
-                                  legacy_unguarded_live_team=legacy_unguarded_live_team))
+                                  legacy_unguarded_live_team=legacy_unguarded_live_team,
+                                  situation_gate_va=va + GATE_OFFSET if gun_situation else None))
         out.extend(gun.table_bytes(moment_values))
         out.extend(b"\xcc" * (BIN_TABLE_OFFSET - len(out)))
         out.extend(gun.bin_table_bytes(gun.team_bin_weights(keys=key_order()) if team_weights is None else [list(r) for r in team_weights]))
+        if gun_situation:
+            # b780 hunt2: the stub's moment test with the Situation flag, in the allocation's tail after the bin table
+            require(len(out) <= GATE_OFFSET, "the bin table runs into the Situation gate")
+            out.extend(b"\xcc" * (GATE_OFFSET - len(out)))
+            out.extend(gun.SITUATION_GATE)
     return bytes(out).ljust(CODE_SIZE, b"\xcc")
 
 
@@ -290,6 +304,8 @@ def _installed_kind(image, va):
     "unfixed_bins" (early a4pd, missing the live-to-roster dereference);
     "unguarded_bins" (FRZ4 / October 9 v0.6, before the active-team identity guard);
     "b775_bins" (the per-bin body of v0.6.1 to b775: moments from 2005, no classic-team check);
+    "b778_bins" (b776 .. v0.7: plain Situation took the retail bank);
+    "b780_bins" (beta-79 / v0.8 and the v0.9 RC: the shotgun weight stub without the Situation test, b780 hunt2);
     "current" (fixed per-bin body; the weights are its own, 32 rows of 7)."""
     installed = image.read(va, CODE_SIZE)
     if installed == b"\xcc" * CODE_SIZE:
@@ -301,6 +317,8 @@ def _installed_kind(image, va):
         bins = gun.decode_bin_table(installed[BIN_TABLE_OFFSET:BIN_TABLE_OFFSET + gun.BIN_TABLE_SIZE])
         if installed == code_for(va, weights=weights, team_weights=bins):
             return "current", (weights, bins)
+        if installed == code_for(va, weights=weights, team_weights=bins, gun_situation=False):
+            return "b780_bins", (weights, bins)   # beta-79 .. v0.9 RC: plain Situation took a stale moment weight (b780 hunt2)
         if installed == code_for(va, weights=weights, team_weights=bins, situation_flag=False, classic_ids=V07_CLASSIC_IDS):
             return "b778_bins", (weights, bins)   # b776 .. v0.7: plain Situation took the retail bank (b779 au1)
         old = dict(first_season=LEGACY_FIRST_SEASON, classic_ids=None)
@@ -325,7 +343,7 @@ def _recognize(payload):
     state = "retail" if actual == RETAIL else "applied" if owned and actual == hook(owned["va"]) else "foreign"
     if owned:
         kind, _weights = _installed_kind(image, owned["va"])
-        gun_state = gun.site_state(image, owned["va"] + STUB_OFFSET if kind in ("single", "unfixed_bins", "unguarded_bins", "b775_bins", "b778_bins", "current") else None)
+        gun_state = gun.site_state(image, owned["va"] + STUB_OFFSET if kind in ("single", "unfixed_bins", "unguarded_bins", "b775_bins", "b778_bins", "b780_bins", "current") else None)
         if state == "retail":
             require(gun_state == "retail", "shotgun weight site installed without the stock book resolver")
         else:
@@ -333,7 +351,7 @@ def _recognize(payload):
             if kind == "previous":
                 require(gun_state == "retail", "shotgun weight site installed on an earlier resolver body")
                 state = "needs_fix"
-            elif kind in ("single", "unfixed_bins", "unguarded_bins", "b775_bins", "b778_bins"):
+            elif kind in ("single", "unfixed_bins", "unguarded_bins", "b775_bins", "b778_bins", "b780_bins"):
                 require(gun_state == "applied", "shotgun weight site missing on the earlier a4 resolver body")
                 state = "needs_fix"
             elif gun_state == "retail":
@@ -412,7 +430,7 @@ def apply(payload, *, enabled=True, weights=None, team_weights=None):
         gun.check_rule(image)                     # the shotgun rule must be the retail bytes this owner replaces the constant of
         kind, installed_weights = _installed_kind(image, owned["va"])
         wanted = code_for(owned["va"], weights=values, team_weights=team_values)
-        if kind in ("previous", "single", "unfixed_bins", "unguarded_bins", "b775_bins", "b778_bins") or (kind == "current" and image.read(owned["va"], CODE_SIZE) != wanted):
+        if kind in ("previous", "single", "unfixed_bins", "unguarded_bins", "b775_bins", "b778_bins", "b780_bins") or (kind == "current" and image.read(owned["va"], CODE_SIZE) != wanted):
             # Only this owner admits these exact checked version transitions (an earlier body, or other weights).
             # The generic allocator still refuses arbitrary filled-code edits.
             payload = _write_body(payload, owned, wanted)

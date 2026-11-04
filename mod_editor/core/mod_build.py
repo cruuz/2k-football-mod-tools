@@ -844,6 +844,13 @@ class BuildPlan:
     name: str = ""
     author: str = ""
     notes: str = ""
+    # b780-m64b (Noah 11/03: "an option in the editor to limit a few things to allow the 64 MB option for Xbox and
+    # Android"): the console memory the disc is made for. 128 = xemu at 128 MB, the full SOFTDRINK build with every
+    # option (the default; old projects and recipes have no key and read 128). 64 = an original Xbox or the Android
+    # emulator hakuX, EXPERIMENTAL and untested on both: validate_plan refuses the options that need 128 MB or the real
+    # Xbox kernel and a selection the memory model says will not fit (nfl2k5_console_memory). A 128 plan's recipe has
+    # no console_memory key, so it is byte for byte what it was before the option existed.
+    console_memory: int = 128
 
     def wants_xbe_patch(self) -> bool:
         return (self.throw or self.catch_slider or self.accel_ramp or self.draft_ai or self.returner_fix
@@ -867,6 +874,8 @@ class BuildPlan:
     def to_recipe(self) -> dict[str, Any]:
         d = asdict(self)
         d.pop("source"); d.pop("target"); d.pop("overwrite")
+        if d.get("console_memory") == 128:  # b780-m64b: a 128 MB recipe stays exactly the recipe it always was
+            d.pop("console_memory")
         return d
 
 
@@ -1910,7 +1919,7 @@ def _sim_rb_injuries_preflight(source: Path, progress) -> None:
         raise ValueError("Simulated RB short injuries is not available in this installation.")
     progress("Checking the franchise week for simulated RB injuries", 0, 0)
     state = module.status(_xbe_bytes(source))
-    if state not in ("retail", "applied"):
+    if state not in ("retail", "applied", "previous"):  # b780 hunt1: a v0.8 install is upgraded in place
         raise ValueError("The franchise week injury tick or the scheduled carrier site in this source is not "
                          "retail. Build from an unmodified retail dump.")
 
@@ -2331,7 +2340,7 @@ def _apply_coach_career_fix(plan: "BuildPlan", target: Path, receipt: dict, prog
     module = _core_module("nfl2k5_coach_career_fix")
     if module is None:
         raise RuntimeError("The coach career counter fix needs nfl2k5_coach_career_fix.")
-    progress("Franchise: coach Super Bowl trips count only real trips", 0, 0)
+    progress("Franchise records: coach Super Bowl trips and playoff W-L, the Owner Firing label", 0, 0)
     payload, fix_receipt = module.apply(_xbe_bytes(target))
     _write_xbe_bytes(target, payload)
     final = _xbe_bytes(target)
@@ -4068,6 +4077,16 @@ def validate_plan(plan: BuildPlan) -> list[str]:
     if plan.cpu_runner_vision is True and plan.cpu_ball_carriers is not True:
         return ["CPU ball carrier vision needs \"CPU ball carriers stay in bounds\": turn that on too, or turn "
                 "CPU ball carrier vision off."]
+    # b780-m64b: the console memory target. 128 (every older plan) checks nothing more; 64 refuses what needs 128 MB or
+    # the real Xbox kernel, roster edits that grow the roster file, and a selection the memory model says will not fit.
+    memory = getattr(plan, "console_memory", 128)
+    if memory != 128:
+        from . import nfl2k5_console_memory as console_memory
+        try:
+            console_memory.normalize(memory)
+        except ValueError as exc:
+            return [str(exc)]
+        return console_memory.problems(plan, records=_requested_capacity_records(plan))
     return []
 
 
@@ -4995,6 +5014,8 @@ def _apply_roster_history(plan, target, receipt, progress):
 def _apply_draft_pick_ownership(plan, target, receipt, progress):
     if not plan.roster_edits:
         return
+    if _roster_fit_applies(plan):
+        return   # b780-m64b: the 64 MB roster fit drops this section (its XBE step takes the allocator's scale-out)
     document = _core_module("nfl2k5_roster_records").read_edits(Path(plan.roster_edits))
     pick_plan = document.get("draft_pick_ownership")
     if pick_plan is not None:
@@ -5009,6 +5030,8 @@ def _apply_draft_pick_ownership(plan, target, receipt, progress):
 def _apply_hback_roles(plan, target, receipt, progress):
     if not plan.roster_edits:
         return
+    if _roster_fit_applies(plan):
+        return   # b780-m64b: the 64 MB roster fit drops this section (its XBE step takes the allocator's scale-out)
     document = _core_module("nfl2k5_roster_records").read_edits(Path(plan.roster_edits))
     roles = document.get("hback_roles")
     if roles is not None:
@@ -5138,7 +5161,21 @@ def _apply_protection_calls(plan, target, receipt, progress):
 
 
 def _roster_capacity_records(plan):
-    """b778 fa4: records the paired arena writer must reserve for the dated free-agent plan."""
+    """b778 fa4: records the paired arena writer must reserve for the dated free-agent plan. b780-m64b: none for a 64 MB
+    build: it fits roster edits that ask for capacity growth to the original roster size instead (no arena growth, no
+    K128), in the dated refresh pass (_apply_roster_refresh)."""
+    if getattr(plan, "console_memory", 128) == 64:
+        return 0
+    return _requested_capacity_records(plan)
+
+
+def _roster_fit_applies(plan) -> bool:
+    """b780-m64b: a 64 MB build whose roster edits ask for capacity growth: they are fitted to the retail roster size."""
+    return getattr(plan, "console_memory", 128) == 64 and _requested_capacity_records(plan) > 0
+
+
+def _requested_capacity_records(plan):
+    """The capacity growth the plan's roster edits ask for (free_agent_capacity.records), whatever the target."""
     if not plan.roster_edits:
         return 0
     records = _core_module("nfl2k5_roster_records")
@@ -5236,8 +5273,27 @@ def _apply_roster_refresh(plan, target, receipt, progress):
         return
     if not plan.position_pools:
         raise ValueError("Dated roster refresh requires modern position pools")
+    refresh = document["roster_refresh"]
+    if _roster_fit_applies(plan):
+        # b780-m64b (coordinator 11/03: a 64 MB build keeps the 2026 rosters): the refresh is fitted to the retail roster
+        # size with M64A's retail fit, on the main roster this build has made from the user's own disc so far.
+        from . import nfl2k5_console_memory as console_memory
+        progress("Fitting the roster edits to the original game's roster size (64 MB)", 0, 0)
+        base = records.load_image(target).to_body()
+        try:
+            import hashlib
+            source_sha256 = hashlib.sha256(Path(plan.roster_edits).read_bytes()).hexdigest()
+            fitted, fit_receipt = console_memory.fit_roster_edits(document, base, source_sha256=source_sha256)
+        except (OSError, ValueError) as exc:
+            raise ValueError(f"The 64 MB build could not fit the roster edits to the original game's roster size: {exc}. "
+                             "Choose Console memory 128 MB, or roster edits that do not grow the roster file.") from exc
+        refresh = fitted["roster_refresh"]
+        receipt["steps"].append({"step": "roster_retail_fit", **fit_receipt})
+        note = console_memory.roster_fit_note(fit_receipt)
+        progress(note, 0, 0)
+        receipt.setdefault("user_notes", []).append(note)
     progress("Applying the dated roster refresh", 0, 0)
-    directive = {"schema": records.EDITS_SCHEMA, "edits": [], "roster_refresh": document["roster_refresh"]}
+    directive = {"schema": records.EDITS_SCHEMA, "edits": [], "roster_refresh": refresh}
     if document.get("created_history"):
         directive["created_history"] = document["created_history"]       # b779 fh1: after every identity exists
     if plan.espn25_more_moments or plan.historic_teams_quick_game:
@@ -6676,7 +6732,13 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             xbe, deadline_receipt = deadline.apply(xbe)
             _write_xbe_bytes(target, xbe)
         elif deadline_state == "applied":
-            deadline_receipt = {"already_applied": True}
+            # b780-season1: the pending-trade purge and the deadline inbox story still read the retail week on
+            # images moved by a two-site version (v0.7 to v0.9); move both to Week 9 as well (idempotent)
+            xbe, followups = deadline.repair_followups(xbe)
+            deadline_receipt = {"already_applied": True,
+                                "followups": {k: v for k, v in followups.items() if k != "edits"}}
+            if not followups["already_applied"]:
+                _write_xbe_bytes(target, xbe)
         else:
             raise ValueError(f"trade-deadline sites are {deadline_state}; refusing")
         season_receipt = {**season_receipt,

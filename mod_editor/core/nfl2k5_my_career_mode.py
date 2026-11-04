@@ -643,6 +643,14 @@ def check_context(payload, edits, *, installed=False, real=None):
         legacy.require(practice_squad.status(companion_payload) == "applied",
                        "foreign draft squad companion")
         camera_edits += [(s.name, s.va, s.retail, s.patched) for s in squad_sites]
+    # b780 GEN1: Rookie faces passes keep = 1 to the jersey routine in the same draft signing (push 0 -> push 1 at
+    # 0x325B61, inside the 0x325B50 context). Accept that exact byte only after Rookie faces' complete status reads
+    # applied, then restore the retail push in this hash view.
+    from . import nfl2k5_rookie_faces as rookie_faces
+    if image.read(rookie_faces.NUMBER_VA, len(rookie_faces.NUMBER_RETAIL)) != rookie_faces.NUMBER_RETAIL:
+        legacy.require(rookie_faces.xbe_status(companions) == "applied", "foreign draft number companion")
+        camera_edits.append(("rookie_faces_draft_number", rookie_faces.NUMBER_VA, rookie_faces.NUMBER_RETAIL,
+                             rookie_faces.NUMBER_PATCHED))
     allocated = any(a["owner"] == autosave.OWNER for a in space.layout(payload)["allocations"])
     if allocated:
         owned = autosave.allocations(payload)

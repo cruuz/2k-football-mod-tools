@@ -34,7 +34,7 @@ def xbe_of(path: Path) -> bytes:
 
 class SiteTests(unittest.TestCase):
     def test_the_patch_changes_exactly_the_one_increment(self) -> None:
-        (label, va, before, after), = fix.SITES
+        (label, va, before, after), = fix.SITES_V1   # b780 hunt6: revision 2 adds three more sites (own test)
         self.assertEqual((va, len(before), len(after)), (0x247CD6, 8, 8))
         self.assertEqual(before[:4], after[:4], "the winning-seasons increment at +0x30 stays")
         self.assertEqual(before[4:], bytes.fromhex("66ff4032"))
@@ -68,8 +68,10 @@ class ExecutableTests(unittest.TestCase):
         self.assertEqual(len(patched), len(self.retail))
         self.assertEqual(patched[site:site + 4], bytes.fromhex("0f1f4000"))
         self.assertEqual(self.retail[site:site + 4], bytes.fromhex("66ff4032"))
-        outside = [i for i in changed if not site <= i < site + 4]
-        self.assertLessEqual(len(outside), 20, "only the section digest (20 bytes) may move besides the instruction")
+        # b780 hunt6: revision 2's two in-place routines (tests/mod_editor/test_b780_hunt6_franchise_records.py)
+        spans = [(rdata.offset_of(self.retail, va), len(before)) for _l, va, before, _a in fix.SITES_V2]
+        outside = [i for i in changed if not site <= i < site + 4 and not any(a <= i < a + n for a, n in spans)]
+        self.assertLessEqual(len(outside), 20, "only the section digest (20 bytes) may move besides the sites")
         self.assertEqual(receipt["sections_repinned"], [0])
         again, second = fix.apply(patched)
         self.assertEqual((again, second["changed_bytes"]), (patched, 0))

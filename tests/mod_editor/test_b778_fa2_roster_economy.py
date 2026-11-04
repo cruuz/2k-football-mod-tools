@@ -37,7 +37,7 @@ class Revision3ImageTests(unittest.TestCase):
         cls.current, cls.receipt = economy.apply(cls.retail)
 
     def test_revision_three_sites(self):
-        self.assertIn(economy.REVISION, (3, 4, 5))   # b779 rc1 revision 4 / b780 revision 5 keep every revision-3 site
+        self.assertIn(economy.REVISION, (3, 4, 5, 6))   # b779 rc1 revision 4 / b780 revision 5 / hunt1 6 keep every revision-3 site
         image = XbeImage(self.current)
         self.assertEqual(image.read(economy.USER_FLOOR, 7), bytes.fromhex("80b91c01000032"))
         text = image.read(0xE891F0, 120).decode("utf-16-le").split("\0")[0]

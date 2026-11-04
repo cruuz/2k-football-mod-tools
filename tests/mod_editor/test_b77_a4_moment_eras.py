@@ -103,9 +103,15 @@ class DataTests(unittest.TestCase):
         code = sb.code_for(va, weights=values, team_weights=teams)
         self.assertEqual(len(code), sb.CODE_SIZE)
         stub = code[sb.STUB_OFFSET:sb.STUB_OFFSET + gw.STUB_SPACE]
-        self.assertEqual(stub, gw.stub_bytes(va + sb.STUB_OFFSET, va + sb.WEIGHT_OFFSET, va + sb.TABLE, va + sb.BIN_TABLE_OFFSET))
-        # Anniversary part of the stub (unchanged since a4): cmp [mode],8 / jne team / mov eax,[row] / cmp eax,51 / jae ordinary / fld [table+eax*4] / ret
-        self.assertEqual(stub[:17].hex(), "833d80ffe500087512a15818bf0083f833")
+        self.assertEqual(stub, gw.stub_bytes(va + sb.STUB_OFFSET, va + sb.WEIGHT_OFFSET, va + sb.TABLE, va + sb.BIN_TABLE_OFFSET,
+                                             situation_gate_va=va + sb.GATE_OFFSET))
+        # Anniversary part of the stub: b780 hunt2 call gate ((mode ^ 8) | Situation flag) / jne team / nop nop, then (unchanged
+        # since a4) mov eax,[row] / cmp eax,51 / jae ordinary / fld [table+eax*4] / ret. The shipped body ("b780_bins") kept
+        # cmp [mode],8 / jne team in the first nine bytes.
+        self.assertEqual(stub[:17].hex(), "e88b03000075149090a15818bf0083f833")
+        shipped = sb.code_for(va, weights=values, team_weights=teams, gun_situation=False)
+        self.assertEqual(shipped[sb.STUB_OFFSET:sb.STUB_OFFSET + 17].hex(), "833d80ffe500087512a15818bf0083f833")
+        self.assertEqual(shipped[sb.STUB_OFFSET + 9:sb.GATE_OFFSET], code[sb.STUB_OFFSET + 9:sb.GATE_OFFSET])
         self.assertIn((va + sb.WEIGHT_OFFSET).to_bytes(4, "little"), stub)          # the moment table
         self.assertIn((va + sb.BIN_TABLE_OFFSET).to_bytes(4, "little"), stub)       # the franchise bin table
         self.assertIn((va + sb.TABLE).to_bytes(4, "little"), stub)                  # the key rows
@@ -119,7 +125,11 @@ class DataTests(unittest.TestCase):
         units = struct.unpack("<224H", code[sb.BIN_TABLE_OFFSET:sb.BIN_TABLE_OFFSET + 448])
         self.assertEqual([[round(u * 0.05, 2) for u in units[i * 7:i * 7 + 7]] for i in range(32)], teams)
         self.assertEqual(gw.decode_bin_table(code[sb.BIN_TABLE_OFFSET:sb.BIN_TABLE_OFFSET + 448]), teams)
-        self.assertEqual(code[sb.BIN_TABLE_OFFSET + 448:], b"\xcc" * (sb.CODE_SIZE - sb.BIN_TABLE_OFFSET - 448))
+        # b780 hunt2: the stub's Situation-aware moment test sits right after the bin table; the rest of the tail is free
+        self.assertEqual(sb.GATE_OFFSET, sb.BIN_TABLE_OFFSET + 448)
+        self.assertEqual(code[sb.GATE_OFFSET:sb.GATE_OFFSET + 15], gw.SITUATION_GATE)
+        self.assertEqual(code[sb.GATE_OFFSET + 15:], b"\xcc" * (sb.CODE_SIZE - sb.GATE_OFFSET - 15))
+        self.assertEqual(shipped[sb.GATE_OFFSET:], b"\xcc" * (sb.CODE_SIZE - sb.GATE_OFFSET))
         self.assertLessEqual(len(code[:sb.TABLE].rstrip(b"\xcc")), sb.TABLE)
         # the 32 key rows are the 8 byte UTF-16 franchise keys, in the manifest's order
         rows = [code[sb.TABLE + 8 * i:sb.TABLE + 8 * i + 8] for i in range(32)]

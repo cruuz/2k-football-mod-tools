@@ -83,7 +83,7 @@ class LayoutTests(unittest.TestCase):
             self.assertLessEqual(n, capacity[k], k)
         self.assertEqual(sprite.probe_sizes(), (34, 329184, 329728))    # sb4 drops 20 unreachable small-set tokens (-640 B); b780 p2: +47 label tokens (+1,880 B) and 46 ball-spot cells (+40 B of palette), 2,048 B more pack
         code, _ = owner.code_for(CODE_VA, DATA_VA)
-        self.assertEqual((owner.CODE_SIZE, owner.REVISION), (5920, 15))    # b780 p2: RX 5376 -> 5920, revision 15
+        self.assertEqual((owner.CODE_SIZE, owner.REVISION), (5920, 16))    # b780 p2: RX 5376 -> 5920, revision 15; b780 gc1: 16
         self.assertLess(len(code.rstrip(b'\xcc')), owner.CODE_SIZE - 8)
 
     def test_tokens_and_metrics(self):
@@ -444,11 +444,12 @@ if __name__ == '__main__':
     unittest.main()
 
 
-# Beta 76 sb B1 (play calling). Retail spans the B1 edits rely on (SHA-256 only).
+# Beta 76 sb B1 (play calling). Retail spans the B1 edits rely on (SHA-256 only). b780 gc1: 0x8C450 is the franchise
+# Gamecast's score panel draw, not a play-call draw; every build leaves it retail, so its spans stay pinned here.
 PLAYCALL_PINS = {
     'per-frame hide call 0x8BEA0': (0x08bea0, 0x0d, 'b0fed006e681aecf856735c2819ac0d4cfc4e17d7a1aa9179a3d48bb184b7e05'),
-    'play-call bar draw 0x8C450 entry and mode gate': (0x08c450, 0x1b, 'f5f706ef53e6496415c530ed5223dd2cd7eeca4de67796bb3fa8214bab3c6394'),
-    'play-call bar draw 0x8C450 exit': (0x08c982, 0x06, '1b7b147669549be5375a76a99768a4ee83fb99244ccee93704301fc79d582b1b'),
+    'Gamecast score panel draw 0x8C450 entry and mode gate': (0x08c450, 0x1b, 'f5f706ef53e6496415c530ed5223dd2cd7eeca4de67796bb3fa8214bab3c6394'),
+    'Gamecast score panel draw 0x8C450 exit': (0x08c982, 0x06, '1b7b147669549be5375a76a99768a4ee83fb99244ccee93704301fc79d582b1b'),
     'play-call bar draw 0x8CA00 entry and mode gate': (0x08ca00, 0x2a, '8bb622d44438b1a26250f84a38c9e0e925581386d7990e1ea94dd41f7ccde56d'),
     'play-call bar draw 0x8CA00 exit': (0x08cf3f, 0x08, '4af066e9babe398f7a2680a76d6d195edcf6dd4d57fec3c2d0633d81f4339a07'),
 }
@@ -457,7 +458,7 @@ MODE, MODE_SCENE, DRAW, AUTO = 0xB641B4, 0xB641B0, 0xA95524, 0xA957E0
 
 @unittest.skipUnless(HAVE_UC and XBE.is_file(), 'pinned USA XBE and Unicorn required')
 class PlayCallTests(unittest.TestCase):
-    """B1: the bar stays up through play calling; the retail play-call bar's two draws take their mode-off exits."""
+    """B1: the bar stays up through play calling; the retail play-call bar's draw (0x8CA00) takes its mode-off exit."""
 
     @classmethod
     def setUpClass(cls):
@@ -471,10 +472,12 @@ class PlayCallTests(unittest.TestCase):
         m.put(0xA95528, SCENE_BASE + 256); m.put(0xA95520, 0)
         m.put(DATA_VA, SCENE_BASE + 256); m.put(DATA_VA + 4, 1)
         m.put(DOWN_OBJECT, 0); m.put(HOME_SCORE, 0); m.put(AWAY_SCORE, 0)
-        self.retail_gate = bytes(m.uc.mem_read(0x8C465, 6))
+        self.retail_gate = bytes(m.uc.mem_read(0x8CA18, 6))
+        self.retail_panel_gate = bytes(m.uc.mem_read(0x8C465, 6))
 
     def tearDown(self):
-        self.m.uc.mem_write(0x8C465, self.retail_gate)
+        self.m.uc.mem_write(0x8CA18, self.retail_gate)
+        self.m.uc.mem_write(0x8C465, self.retail_panel_gate)
 
     def test_hide_keeps_the_bar_only_while_the_play_call_mode_is_on(self):
         m = self.m
@@ -486,11 +489,16 @@ class PlayCallTests(unittest.TestCase):
     def test_update_reshows_the_bar_only_with_the_build_guard(self):
         m = self.m
         m.put(MODE, 1); m.put(MODE_SCENE, 1)
-        for gate, shown in ((bytes.fromhex('e91805000090'), 1), (self.retail_gate, 0)):
-            m.uc.mem_write(0x8C465, gate); m.put(DRAW, 0)
+        for gate, shown in ((bytes.fromhex('e92205000090'), 1), (self.retail_gate, 0)):
+            m.uc.mem_write(0x8CA18, gate); m.put(DRAW, 0)
             m.call(self.labels['sprite_update'], args=(DATA_VA, 0))
             self.assertEqual(m.get(DRAW), shown, gate.hex())
-        m.uc.mem_write(0x8C465, bytes.fromhex('e91805000090')); m.put(MODE, 0); m.put(DRAW, 0)
+        # b780 gc1: the Gamecast panel's jump (the old guard) no longer re-shows the bar on its own.
+        m.uc.mem_write(0x8C465, bytes.fromhex('e91805000090')); m.put(DRAW, 0)
+        m.call(self.labels['sprite_update'], args=(DATA_VA, 0))
+        self.assertEqual(m.get(DRAW), 0)
+        m.uc.mem_write(0x8C465, self.retail_panel_gate)
+        m.uc.mem_write(0x8CA18, bytes.fromhex('e92205000090')); m.put(MODE, 0); m.put(DRAW, 0)
         m.call(self.labels['sprite_update'], args=(DATA_VA, 0))
         self.assertEqual(m.get(DRAW), 0)                                    # outside play calling: retail decides
 
@@ -508,7 +516,9 @@ class PlayCallTests(unittest.TestCase):
             jmp = struct.unpack('<i', bytes.fromhex(patched)[1:5])[0] + va + 5
             self.assertEqual((je, jmp), (exit_va, exit_va), hex(va))
         self.assertEqual([(va, old.hex(), new.hex()) for va, old, new, _ in owner.PLAYCALL_EDITS],
-                         [(0x8C465, '0f8417050000', 'e91805000090'), (0x8CA18, '0f8421050000', 'e92205000090')])
+                         [(0x8CA18, '0f8421050000', 'e92205000090')])
+        # b780 gc1: the Gamecast score panel's mode gate is the retail je to its own exit, left as it is.
+        self.assertEqual((owner.GAMECAST_PANEL_GATE[0], owner.GAMECAST_PANEL_GATE[1].hex()), (0x8C465, '0f8417050000'))
 
 
 @unittest.skipUnless(XBE.is_file(), 'pinned USA XBE required')
@@ -534,7 +544,7 @@ class PlayCallBuildTests(unittest.TestCase):
                 hook = b'\xe8' + struct.pack('<i', labels['sprite_playcall_hide'] - 0x8BEA0 - 5)
                 if mode == 'sprite':
                     self.assertEqual((at(0x8BEA0, 5), at(0x8C465, 6), at(0x8CA18, 6)),
-                                     (hook, bytes.fromhex('e91805000090'), bytes.fromhex('e92205000090')))
+                                     (hook, bytes.fromhex('0f8417050000'), bytes.fromhex('e92205000090')))
                 else:
                     self.assertEqual((at(0x8BEA0, 5), at(0x8C465, 6), at(0x8CA18, 6)),
                                      (bytes.fromhex('e80b080700'), bytes.fromhex('0f8417050000'), bytes.fromhex('0f8421050000')))

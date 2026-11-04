@@ -50,6 +50,8 @@ extern volatile u32 sr_state[4];
 #define DIVS    0x00E576D4u   /* u32 per league club index: its division */
 #define CONFS   0x004F0FE0u   /* u32 per division: its conference */
 #define WEEKS   0x005151C4u   /* regular-season rows: 17 retail, 18 with the season-length patch */
+#define STAGE   0x00E576A4u   /* the league stage (FUN_000C4BB0): 7 = preseason, its games fill the first grid rows */
+#define PRESEASON 7u
 #define STANDINGS_FLAG 0x00AE9EE8u /* 1 while the retail code draws the W L T columns (ESPN.com's page), 0 on the realignment screen */
 #define MENU_MOVE 0x00EB3C54u /* the retail conference switch's cursor sound name */
 #define CLUBS 32u
@@ -111,9 +113,13 @@ static void add(Rec *r, u32 mine, u32 theirs) {
         r->t++;
 }
 
-/* A club's division and conference records over the regular-season rows of this season's grid. */
+/* A club's division and conference records over the regular-season rows of this season's grid. In the preseason the
+   first rows hold the preseason games (b780-season1: they showed as division and conference records), so both stay 0-0
+   until the regular season's schedule replaces them. */
 static void records(u32 team, Rec *div, Rec *conf) {
     div->w = div->l = div->t = conf->w = conf->l = conf->t = 0;
+    if (G(STAGE) == PRESEASON)
+        return;
     u32 me = CLUB_INDEX(team);
     if (me >= CLUBS)
         return;

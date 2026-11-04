@@ -95,7 +95,7 @@ class WorkspaceTests(unittest.TestCase):
                         window._load_source_path(source)
                         self.pump_until(lambda: not window._blocking)
                         self.assertTrue(facade.source_ready, errors)
-                        row = 1
+                        row = window._navigation_row("uniforms_equipment")   # b780-uxfix: rows by key
                         placeholder = window.pages.widget(row)
                         window.navigation.setCurrentRow(row)
                         if not cached:
@@ -163,17 +163,17 @@ class WorkspaceTests(unittest.TestCase):
         window = shell.StudioMainWindow(offer_recovery=False)
         try:
             with patch.object(shell, "load_nfl2k5_uniform_catalog", side_effect=ValueError("synthetic failure")):
-                window.navigation.setCurrentRow(1)
+                window.navigation.setCurrentRow(window._navigation_row("uniforms_equipment"))
                 self.pump_until(lambda: not window._workers)
-            placeholder = window.pages.widget(1)
+            placeholder = window.pages.widget(window._navigation_row("uniforms_equipment"))
             self.assertIn("synthetic failure", placeholder.findChild(QLabel).text())
             retry = placeholder.findChild(QPushButton)
             self.assertIsNotNone(retry)
             with patch.object(shell, "load_nfl2k5_uniform_catalog", return_value=synthetic_catalog()):
                 retry.click()
                 self.pump_until(lambda: not window._workers)
-            self.assertIsNot(window.pages.widget(1), placeholder)
-            self.assertEqual(window.pages.currentIndex(), 1)
+            self.assertIsNot(window.pages.widget(window._navigation_row("uniforms_equipment")), placeholder)
+            self.assertEqual(window.pages.currentIndex(), window._navigation_row("uniforms_equipment"))
         finally:
             window.thread_pool.waitForDone(5000)
             window.deleteLater()
@@ -189,15 +189,15 @@ class WorkspaceTests(unittest.TestCase):
             return synthetic_catalog()
         try:
             with patch.object(shell, "load_nfl2k5_uniform_catalog", prepare):
-                placeholder = window.pages.widget(1)
-                window.navigation.setCurrentRow(1)
+                placeholder = window.pages.widget(window._navigation_row("uniforms_equipment"))
+                window.navigation.setCurrentRow(window._navigation_row("uniforms_equipment"))
                 self.pump_until(entered.is_set)
                 window.navigation.setCurrentRow(0)
                 release.set()
                 self.pump_until(lambda: not window._workers)
-            self.assertIsNot(window.pages.widget(1), placeholder)
+            self.assertIsNot(window.pages.widget(window._navigation_row("uniforms_equipment")), placeholder)
             self.assertEqual(window.pages.currentIndex(), 0)
-            window.navigation.setCurrentRow(1)
+            window.navigation.setCurrentRow(window._navigation_row("uniforms_equipment"))
             self.assertGreater(window.uniform_list.count(), 0)
         finally:
             release.set()
@@ -242,7 +242,7 @@ class WorkspaceTests(unittest.TestCase):
             # and bump-map browsing are covered by the source-open test above.
             window._sync_constructed_page = lambda: None
             try:
-                window.navigation.setCurrentRow(1)
+                window.navigation.setCurrentRow(window._navigation_row("uniforms_equipment"))
                 self.pump_until(lambda: not window._workers)
                 asset = window._selected_asset
                 self.assertEqual(asset.kind, "torso")

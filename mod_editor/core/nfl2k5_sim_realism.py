@@ -67,6 +67,15 @@ redirect share with the WR1's Catching (0.08 + 0.015 a point around 90); the sta
 simulated QB1 plays all 17 games (19 and 13 passers over 4,000 yards at 0.92 against the NFL's 8.2); the tackle
 correction uses its constant (10 percent; the code had a hard-coded 21).
 
+b780 db2: ``RUSH_BONUS_PCT`` 8 -> 0. The 8 percent lead-back correction made up for the carries fullbacks took (the retail
+lottery gave the modern roster's fullbacks 9.6-9.9% of simulated carries). With the fullback rule in
+``nfl2k5_sim_rb_injuries`` (a fullback keeps 1 in 16 of his carries, the rest are drawn again) the lead backs carry
+219-226 times a season (NFL 218), and the correction put them at 1,002-1,042 yards with 16-20 backs over 1,000
+(NFL 958 and 13.4). Without it, the same two v0.8-executable seasons (seeds 2502/2501; the correction is stat space only,
+so the games are identical) give lead backs 928/965 yards, 10/17 backs over 1,000 (mean 13.5), RB top-10 1,236/1,310
+(NFL 1,269) and top-32 960/1,006 (NFL 985). The correction code stays in place and adds nothing. A custom build with this
+option but without Simulated RB short injuries keeps the retail fullback carries and loses the old correction.
+
 Every site is recognised by its pinned retail bytes; the module refuses a foreign executable.  The
 data reservation (16 bytes) holds the temporary merge and run-outcome hand-offs and nothing else.
 The played-game path (game mode other than 4 at the merge gate), the live playbook calls and every
@@ -87,9 +96,9 @@ HELP_TEXT = (
     "the modern NFL (about 33 passes and 27 runs a team), and better passers call more passes than weaker ones; "
     "targets concentrate on the top receiver and tight end, more so for an elite receiver; mobile quarterbacks "
     "run for NFL-sized totals, team interceptions move toward 12.8, and tackle totals move toward the NFL leader and "
-    "top-10 levels. Red-zone passes gain fewer yards so scoring and the touchdown mix land near the modern NFL, and "
-    "each team's lead back gets a small post-game rush-yard correction. Played games, ratings and rosters are "
-    "unchanged. The numbers are calibrated from nflverse 2021-2025 regular seasons on 17-game simulated seasons."
+    "top-10 levels. Red-zone passes gain fewer yards so scoring and the touchdown mix land near the modern NFL. "
+    "Played games, ratings and rosters are unchanged. The numbers are calibrated from nflverse 2021-2025 regular "
+    "seasons on 17-game simulated seasons."
 )
 
 SIM_MODE = 0x00E5FF80                # game mode word: 4 = the franchise scheduled-game simulator
@@ -137,7 +146,9 @@ INTERCEPT_SCALE = 1.35
 PASS_SCALE = 0.86                    # b780 b5-sim: 17-game v0.8 seasons (every QB1 plays all 17 games); b779-int1 0.92
 RUN_RZ_SCALE = 0.94              # red-zone run yardage (round 6: near-retail, small trim)
 RZ_PASS_SCALE = 0.64             # red-zone pass yardage before the native conversion (scoring lever)
-RUSH_BONUS_PCT = 8               # post-game season rush-yard correction, lead backs only (b780 b5-sim: was 20, every non-QB)
+RUSH_BONUS_PCT = 0               # post-game season rush-yard correction, lead backs only (b780 db2: 0, was 8 in b780 b5-sim,
+                                 # 20 for every non-QB in b779-int1): it made up for the carries the fullbacks took, which
+                                 # nfl2k5_sim_rb_injuries now hands back (see the docstring)
 LEAD_BACK_POSITION = 7               # HB, depth rank 0 (player +0x28 bits 10-12) at the merge
 TACKLE_BONUS_PCT = 10                # b780 b5-sim: the code added a hard-coded 21% (imul 21) while this constant, the helper
                                      # and the round-5 notes said 10%; the code now uses the constant (17-game seasons put

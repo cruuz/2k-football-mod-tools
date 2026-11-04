@@ -3430,7 +3430,7 @@
     "mod_editor/core/nfl2k5_playbook_pair_code.py": "78e97a0ce01e49af9a22c59d540ea8121097ae26c31f6650983baa7a945969ae",
     "mod_editor/core/nfl2k5_playcall_layout.py": "10a12aebd99cd40ebcabb085e940734607c28e3c265902eac76580ce4cd9a077",
     "mod_editor/core/nfl2k5_playcall_layout_b779.py": "6f417b453783a751845d45e7d0c7987e2414cb86d03fd531e966533f4f8cd863",
-    "mod_editor/core/nfl2k5_player_progress_screen.py": "d9d232e659769fa9cf67524828521da2c09d7c539c684bde9ac05be814610296",
+    "mod_editor/core/nfl2k5_player_progress_screen.py": "f66f52acf2ea541f6be9d08fb3361ce2f094bbf23785e45bdcf527b46048ea57",
     "mod_editor/core/nfl2k5_player_progression.py": "83b48e765dbce3139edfe7c2cf7b16d84d81d9cea4b60956bf455e85ef1998c2",
     "mod_editor/core/nfl2k5_player_star.py": "6907c77e277b88dbbfc068370a62bdcf3be96ec0f4c776b57ac72c9e34778d03",
     "mod_editor/core/nfl2k5_player_tags.py": "19f01e1be1a41ebefadbd1801aba0d83da8954d7a9f19d5fa8d43984c64df45b",

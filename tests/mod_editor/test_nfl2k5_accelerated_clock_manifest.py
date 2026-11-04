@@ -18,6 +18,7 @@ from mod_editor.core import nfl2k5_accelerated_clock as patch
 from mod_editor.core import nfl2k5_cave_manifest as builder
 from mod_editor.core import nfl2k5_xbe_space as space
 from mod_editor.core import nfl2k5_music_metadata as music
+from mod_editor.core.nfl2k5_cave_manifest import stack_extent  # noqa: E402
 from mod_editor.core.nfl2k5_cave_oracle import DEFAULT_MANIFEST, OracleError, ReservationManifest, XbeImage
 from tests.mod_editor.test_nfl2k5_owner_pairwise_composition import retail_xbe
 from tests.nfl2k5_allocator_stack import production_union, SONGS, manifest_for_allocated_union
@@ -60,6 +61,7 @@ def bounded_projection(retail, document=None):
     recorder.observe(patch, "apply", allocated, final, receipt)
     observed = recorder.finish(final)
     layout = space.layout(final)
+    final_end = XbeImage(final).base + XbeImage(final).image_size
     known = {space.OWNER, "nfl2k5_xbe_space_directory"} | {a["owner"] for a in layout["allocations"]}
     # b775-int1: the scale-out image's one extra section slot holds the music library OR Career Home (ui1); the
     # production manifest observes both alternatives there.
@@ -73,7 +75,10 @@ def bounded_projection(retail, document=None):
             for region in sorted(regions, key=lambda r: r["va"]):
                 if region["va"] <= covered:
                     covered = max(covered, region["va"]+region["size"])
-            if row["owner"] not in known or covered < end:
+            # b780: the release manifest's allocator spans can describe a larger composition than this projection
+            # (the grown pool to 0x1525000); past this image's own end nothing can collide, so coverage is required
+            # up to that end only.
+            if row["owner"] not in known or covered < min(end, final_end):
                 raise OracleError(f"unrecognized inherited grown reservation: {row}")
         else:
             inherited.append(row)
@@ -84,6 +89,7 @@ def bounded_projection(retail, document=None):
                   stack_xbe_sha256=hashlib.sha256(final).hexdigest(),
                   allocator_layout=layout,
                   spans=sorted(unique.values(), key=lambda r: (int(r["start"], 0), int(r["end"], 0), r["owner"])))
+    result["stack_image_size"] = stack_extent(XbeImage(final), result["spans"])  # b780: inherited allocator spans may lie past this image
     result["source_sha256"].update({path: fingerprints[path] for path in OBSERVED_SOURCES})
     result["bounded_projection"] = dict(parent_document_sha256=hashlib.sha256(json.dumps(parent, sort_keys=True).encode()).hexdigest(),
                                         observed_steps=recorder.steps, observed_sources=OBSERVED_SOURCES,

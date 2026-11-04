@@ -20,15 +20,67 @@ same fields the game itself uses (``0xE6680`` clears them, ``0x13E3A0`` reads th
 invented and no roster record outside the injury fields changes. The roll is in the weekly advance only, so
 played games are never touched.
 
+b780 hunt1: the roll skips every club a person controls (the game's own human flag per club index, ``0xE5775C``, the
+array the game's setter ``0xC4D30`` writes and the weekly depth sort reads to leave user clubs alone; MyCareer's resolve
+marks its club there too). The first version asked ``0x13EC30`` (-> ``0xC4D50``); MyCareer hooks that getter and answers
+0 to every caller outside the game launch and the menu team enumerators, so while a career was loaded the MyCareer club
+was still rolled (REV1). The roll now reads the array itself. Before, the weekly advance rolled for all clubs, so the
+halfback a player's own Franchise or MyCareer club lists first was put out for 2 to 5 weeks about 1.7 times a season
+(about one advance in ten, preseason and playoff weeks included) even when the player played every game and nobody
+got hurt on the field: those games already have the game's own injuries. Measured on the SOFTDRINK 2K28 v0.9 RC
+executable with the game's own franchise start and weekly tick (400 ticks): 33 injuries on the user club's first
+healthy back, 39 on a computer club's (the published 9.9 % a tick); with this revision 0 on the user club. Clubs
+the computer runs are unchanged.
+
+b780 hunt1, the carry guard's backup: beta-79 looked for it in the club's roster list, in list order after the
+selected back. Two defects: (1) it kept the club's player count in EBP and loaded each candidate into EBP, so the scan
+never wrapped and, when no healthy halfback followed the selected one, ran past the list into the club record (the
+count word at +0x11C, 0x2E4D6441 on a 65-man preseason roster, is no pointer: the SOFTDRINK 2K28 v0.9 RC franchise,
+seed 2602, year 2 preseason, stopped there, a freeze on the console); (2) list order is not depth order, so the carry
+often went to a deep back the sim had not dressed: rushing yards with 0 games (a v0.9 RC season: NYG's HB3 Devin
+Singletary 2 carries, 11 yards, 0 games while HB1 and HB2 played all 17; MIA's HB4 Kaytron Allen 1 carry, 0 games).
+The guard now takes the other halfback of this game's lineup instead: the sim team's HB1 and HB2 slots (``+0xC`` and
+``+0x14``, the two halfbacks the retail lottery draws from), so the carry always goes to a back who is in the game, and
+it never reads the club's list. An injured pick (either slot) passes the carry to the other slot when he is a healthy
+halfback; otherwise the pick keeps it (retail). The 2% rotation draws on every healthy pick as before but moves only a
+lead back's (HB1 slot) carry to HB2.
+
+A beta-79 / SOFTDRINK 2K28 v0.8 install (same cave, same hooks) reads ``previous`` and is upgraded in place
+(``nfl2k5_sim_rb_injuries_b779`` is that frozen revision).
+
+Fullback carries (b780 db2, built on hunt1). Report (beta-80 cycle, v0.8): fullbacks running for 150 yards and 3
+touchdowns in simulated games. The retail lottery ``0x103360`` draws the carrier from four lineup slots, ``0x4F6A6C`` =
+1, 3, 2, 0 (HB1, HB2, FB1, QB1 in the lineup table ``0xA96828``), each weighted by its rating composite to the fourth
+power. That is the retail design and it suited 2004 (fullbacks had 8.0% of NFL carries); the modern NFL gives them 0.3%
+(nflverse 2021-2025, 1.4 carries a team-season), and the modern roster's fullbacks rate close enough to the backs that
+the lottery gave them 9.3-9.9% of simulated carries (44-47 a team-season, up to 172 for one fullback). The guard keeps a
+fullback's carry (position byte 8) 1 time in 16 (``FULLBACK_KEEP_THRESHOLD``); otherwise it runs the game's own lottery
+again for the same team (up to ``FULLBACK_REDRAWS`` times), so the other candidates share the carry by their own
+weights, and a halfback drawn this way takes the halfback path above (an injured back passes it to the other
+halfback of the lineup). If the lottery returns the fullback every time (a club whose first two backs are hurt, so weak backs fill the
+HB slots), the HB1 lineup slot takes the carry. A halfback the depth chart puts in the FB slot keeps the retail carries;
+only the position-8 fullback is thinned. Two v0.8-executable seasons with beta-80's sim owners and this guard (seeds
+2502/2501, against the same seeds without it): fullbacks 46.7/44.9 -> 3.3/3.1 carries a team-season (9.9/9.6% -> 0.7%),
+top fullback 167/741/5 and 172/682/6 -> 19/72/0 and 12/52/0, no fullback game of 100 yards or 2 TDs; lead backs 234/237
+carries and 949/972 yards (NFL 218 and 958), 15/15 backs over 1,000 (NFL 13.4). (A first version gave every such carry to HB1: lead backs 1,075 yards and 20
+backs over 1,000 against the NFL's 958 and 13.4. A second kept the fullback after three fullback draws: 4.1-4.2
+carries a team-season, but on hunt1's guard one club with its first two backs out gave its fullback 12-14 carries in
+three games, 64 for the season.) The guard grew from 350 to 427 bytes, so it moved from offset 256 to 208 (hunt1's
+weekly roll is 197 bytes); the carrier call at ``0x106CFA`` points there. (b780 hunt1's lineup backup: the guard is
+216 bytes and the weekly roll 196; both keep their offsets.) A beta-79 install reads "previous" from both
+its cave and its carrier call, and the in-place upgrade rewrites both. The Simulated season realism QB hook at
+``0x106CFF`` takes the guard's EAX: on every path it is a carrier of the same team (the lottery's pick, a re-drawn pick,
+the HB1 slot or the lineup's other halfback), and EBX, EBP and ESI come back unchanged (``CarrierSiteChainTests`` runs
+``0x106CFA`` to the store at ``0x106D0A`` with both owners installed).
+
 The scheduled-sim carry guard (``SUB_OFFSET``, ``CARRIER_SITE``) is the part that makes an injured back miss
 the simulated game. Retail's weekly tick clears the out status while the weeks run down, and the scheduled
 simulator's lineup picker then seats the player anyway (b779 inj1 patches that picker). The assist here hooks
 the simulator's own ball-carrier selection (``0x106CFA``, the call whose EAX is stored in the current-player
 global ``0xA971A4``): if the selected match copy is an injured halfback (``+0x35`` position 7 and the injury
-mask), the cave finds the same club through the roster pointer list, walks to the next healthy halfback and
-returns that player's match copy instead (the match copies are byte-identical to the roster record up to
-``+0x2C``). A healthy halfback keeps retail most of the time, but 2% of his selections go to the next healthy
-back as well (b779-int1: 6% before the integration rebalance, which with every sim owner installed left too few
+mask), the cave returns the lineup's other halfback (HB1 <-> HB2 slot) when he is healthy (b780 hunt1; beta-79
+walked the club's roster list to the next healthy halfback and returned that player's match copy). A healthy
+halfback keeps retail most of the time, but 2% of a lead back's selections go to HB2 as well (b779-int1: 6% before the integration rebalance, which with every sim owner installed left too few
 1,000-yard backs); with the injury weeks the lead back keeps a little over half of the club's carries. It is a scheduled-sim
 path only and writes no roster field; every other selection returns retail's own pointer. The game's own
 lineup guard remains the first line; this covers the weeks-only cases that guard and the sim's status clear
@@ -45,13 +97,17 @@ import struct
 
 OWNER = "nfl2k5_sim_rb_injuries"
 CODE_SIZE = 640
-SUB_OFFSET = 256
+SUB_OFFSET = 208                  # b780 db2: the guard (416 bytes with the fullback rule) starts here; beta-79 used 256
+UPGRADES_PREVIOUS = True          # status() may read "previous" (the beta-79 install); apply() upgrades it in place
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16),)
 BUILD_CAPTION = "Simulated RB short injuries"
 HELP_TEXT = ("EXPERIMENTAL. Simulated franchise games give running backs the short injuries the NFL sees: about 1.5 "
              "one-to-two-week injuries a team season and 0.2 of three weeks or longer. The injured back sits out "
-             "the simulated game and the next healthy back takes his carries; the injury is stored in the "
-             "franchise roster and counted down by the game's own weekly tick. Played games and every rating are "
+             "the simulated game and the other back in that game's lineup takes his carries; the injury is stored in the "
+             "franchise roster and counted down by the game's own weekly tick. Clubs you control (your Franchise "
+             "or MyCareer club) are left alone: their backs get hurt only on the field. A fullback keeps about 1 in "
+             "16 of the simulated carries the original game gives him, close to the handful modern fullbacks get; the "
+             "others are drawn again among the halfbacks and the quarterback. Played games and every rating are "
              "unchanged.")
 
 # The franchise week injury tick FUN_00133c50 ends with pop edi; pop esi; pop ebx; ret. It runs once per
@@ -63,6 +119,8 @@ CARRIER_SITE = 0x00106CFA
 CARRIER_BEFORE = bytes.fromhex("e861c6ffff")
 
 FN_RAND = 0x00048BC0              # mov ecx, 0xB12680; jmp 0x48B50: the league RNG, returns a dword in EAX
+FN_HUMAN_CLUB = 0x0013EC30        # ecx = club object -> eax = the club's human flag ([0xE5775C + 4 * index]); b780 hunt1
+HUMAN_FLAGS = 0x00E5775C          # the native human flag per club index (setter 0xC4D30; MyCareer's resolve sets its club)
 LEAGUE_ROOT = 0xB72918            # franchise root; +0x1C is the club array
 TEAM_COUNT = 32
 TEAM_STRIDE = 500
@@ -87,6 +145,14 @@ HEALTHY_HB_MASK = INJURY_MASK
 # to the next healthy back. With the injuries above the measured season share lands near 0.48-0.49.
 # b779-int1 rebalance: 2% (1311/65536 = 0.02); with all sim owners together 6% left 8-10 backs over 1,000 yards.
 ROTATION_THRESHOLD = 1311
+# b780 db2: a fullback (position byte 8) picked by the retail lottery keeps the carry when the 16-bit league draw is
+# below this (4096/65536 = 1 in 16); otherwise the lottery draws again (its candidates: sim team offense summary +8 QB1,
+# +0xC HB1, +0x10 FB1, +0x14 HB2, from 0x4F6A6C over the lineup table 0xA96828).
+FULLBACK_POSITION = 8
+FULLBACK_KEEP_THRESHOLD = 4096
+FULLBACK_REDRAWS = 3              # fresh lottery draws for a fullback's carry; then the HB1 slot takes it
+LEAD_BACK_SLOT = 0x0C             # sim team offense summary: the HB1 slot
+SECOND_BACK_SLOT = 0x14           # sim team offense summary: the HB2 slot (b780 hunt1: the other back)
 
 
 class SimRbInjuriesError(ValueError):
@@ -111,6 +177,12 @@ def _weekly(a):
     a.b("8bcb")                                        # mov ecx, ebx
     a.call(0x000C4C50)                                 # club object
     a.b("8bf8")                                        # mov edi, eax
+    # b780 hunt1: a club a person controls gets no roll. The test reads the native human array the game's setter
+    # 0xC4D30 writes (MyCareer's resolve marks its club there too), indexed by this loop's club index. Asking
+    # 0xC4D50 (through 0x13EC30) instead answered 0 for the MyCareer club: MyCareer's cpu_management hook there
+    # tells every caller outside the game launch and the menu enumerators that a CPU owns the career club (REV1 #1).
+    a.b("833c9d" + struct.pack("<I", HUMAN_FLAGS).hex() + "00")  # cmp dword [HUMAN_FLAGS + ebx*4], 0
+    a.j32("0f85", "next_team")
     a.b("8bcf")                                        # mov ecx, edi
     a.call(0x000C3E70)                                 # first player
     a.b("8bf0")                                        # mov esi, eax
@@ -161,7 +233,9 @@ def _weekly(a):
     a.b("c3")                                          # ret
 
 def _carrier(a):
-    """The scheduled-sim ball-carrier guard: replace an injured HB match copy with the next healthy one."""
+    """The scheduled-sim ball-carrier guard: replace an injured HB match copy with the next healthy one.
+
+    b780 db2: a fullback pick keeps the carry 1 time in 16; otherwise the retail lottery draws again (see FULLBACK_*)."""
     a.b("60")                                          # pushad
     a.call(0x00103360)
     a.b("89c6")                                        # mov esi, eax
@@ -169,96 +243,68 @@ def _carrier(a):
     a.b("85f6")                                        # test esi, esi
     a.j32("0f84", "done")
     a.b("807e3507")                                    # cmp byte [esi+0x35], 7
-    a.j32("0f85", "done")
+    a.j32("0f85", "fullback")                          # b780 db2: not a halfback (was: done)
+    a.label("halfback")
+    # b780 hunt1: the other back is the other halfback of THIS game's lineup (the sim team's HB1 and HB2 slots, the
+    # two halfbacks the lottery draws from), never the next halfback in the club's roster list. The list-order scan
+    # handed carries to a deep back the sim had not dressed (rushing yards with 0 games: a v0.9 RC season had NYG's
+    # HB3 Devin Singletary at 2 carries for 11 yards in 0 games while HB1 and HB2 played all 17).
     a.b("f74620" + struct.pack("<I", INJURY_MASK).hex())  # test dword [esi+0x20], injured | weeks
-    a.j32("0f84", "maybe_rotate")                      # healthy: 2% of the room's carries go to the next back
-    a.j32("e9", "find_team")                           # injured: always the next healthy back
-    a.label("maybe_rotate")
-    a.call(FN_RAND)
+    a.j32("0f85", "other_back")                        # injured: the other halfback of the lineup
+    a.call(FN_RAND)                                    # healthy: the rotation draw (every healthy pick draws, as before)
     a.b("0fb7c0")                                      # movzx eax, ax
     a.b("3d" + struct.pack("<I", ROTATION_THRESHOLD).hex())  # cmp eax, 1311
-    a.j32("0f82", "find_team")
-    a.j32("e9", "done")
-    a.label("find_team")
-    a.b("8b3d" + struct.pack("<I", LEAGUE_ROOT).hex())  # mov edi, [root]
-    a.b("8b7f1c")                                      # mov edi, [edi+0x1c]
-    a.b("33db")                                        # xor ebx, ebx
-    a.label("team_loop")
-    a.b("8bc3")                                        # mov eax, ebx
-    a.b("69c0" + struct.pack("<I", TEAM_STRIDE).hex())  # imul eax, eax, 500
-    a.b("03c7")                                        # add eax, edi
-    a.b("0fb688" + struct.pack("<I", PLAYER_COUNT).hex())  # movzx ecx, byte [eax+0x11c]
-    a.b("85c9")                                        # test ecx, ecx
-    a.j32("0f84", "next_team")
-    a.b("33d2")                                        # xor edx, edx
-    a.label("find_loop")
-    a.b("8b2c90")                                      # mov ebp, [eax+edx*4]
-    a.b("85ed")                                        # test ebp, ebp
-    a.j32("0f84", "find_next")
-    a.b("8b4e10")                                      # mov ecx, [esi+0x10]
-    a.b("3b4d10")                                      # cmp ecx, [ebp+0x10]
-    a.j32("0f85", "find_next")
-    a.b("8b0e")                                        # mov ecx, [esi]
-    a.b("3b4d00")                                      # cmp ecx, [ebp]
-    a.j32("0f85", "find_next")
-    a.b("807d3507")                                    # cmp byte [ebp+0x35], 7
-    a.j32("0f85", "find_next")
-    a.b("8bfa")                                        # mov edi, edx          injured index
-    a.j32("e9", "found_team")
-    a.label("find_next")
-    a.b("42")                                          # inc edx
-    a.b("0fb688" + struct.pack("<I", PLAYER_COUNT).hex())  # movzx ecx, byte [eax+0x11c]
-    a.b("3bd1")                                        # cmp edx, ecx
-    a.j32("0f8c", "find_loop")
-    a.label("next_team")
-    a.b("43")                                          # inc ebx
-    a.b("83fb" + struct.pack("<B", TEAM_COUNT).hex())  # cmp ebx, 32
-    a.j32("0f8c", "team_loop")
-    a.j32("e9", "done")
-    a.label("found_team")
-    a.b("0fb6a8" + struct.pack("<I", PLAYER_COUNT).hex())  # movzx ebp, byte [eax+0x11c]
-    a.b("8bdf")                                        # mov ebx, edi
-    a.b("8bcd")                                        # mov ecx, ebp
-    a.b("49")                                          # dec ecx
-    a.j32("0f8e", "done")
-    a.label("cand_loop")
-    a.b("43")                                          # inc ebx
-    a.b("3bdd")                                        # cmp ebx, ebp
-    a.j32("0f82", "no_wrap")
-    a.b("33db")                                        # xor ebx, ebx
-    a.label("no_wrap")
-    a.b("8b2c98")                                      # mov ebp, [eax+ebx*4]
-    a.b("85ed")                                        # test ebp, ebp
-    a.j32("0f84", "cand_next")
-    a.b("807d3507")                                    # cmp byte [ebp+0x35], 7
-    a.j32("0f85", "cand_next")
-    a.b("f74520" + struct.pack("<I", INJURY_MASK).hex())  # test dword [ebp+0x20], injured | weeks
-    a.j32("0f85", "cand_next")
-    a.j32("e9", "found_backup")
-    a.label("cand_next")
-    a.b("49")                                          # dec ecx
-    a.j32("0f85", "cand_loop")
-    a.j32("e9", "done")
-    a.label("found_backup")
-    a.b("8d8e00e0ffff")                                # lea ecx, [esi-0x2000]
-    a.b("8d9600e0ffff")                                # lea edx, [esi-0x2000]
-    a.b("81c200400000")                                # add edx, 0x4000
-    a.label("scan_loop")
-    a.b("3bca")                                        # cmp ecx, edx
     a.j32("0f83", "done")
+    a.b("8b442404")                                    # mov eax, [esp+4]      the team (saved ESI)
+    a.b("3b70" + bytes([LEAD_BACK_SLOT]).hex())        # cmp esi, [eax+0xc]    only the lead back (HB1 slot) rotates
+    a.j32("0f85", "done")
+    a.label("other_back")
+    a.b("8b442404")                                    # mov eax, [esp+4]      the team (saved ESI)
+    a.b("8b48" + bytes([LEAD_BACK_SLOT]).hex())        # mov ecx, [eax+0xc]    HB1 slot
+    a.b("3bce")                                        # cmp ecx, esi
+    a.j8("75", "candidate")                            # the pick is not HB1: HB1 is the other back
+    a.b("8b48" + bytes([SECOND_BACK_SLOT]).hex())      # mov ecx, [eax+0x14]   HB2 slot
+    a.label("candidate")
+    a.b("85c9")                                        # test ecx, ecx
+    a.j32("0f84", "done")                              # no other back: the pick keeps the carry (retail)
+    a.b("3bce")                                        # cmp ecx, esi
+    a.j32("0f84", "done")
     a.b("80793507")                                    # cmp byte [ecx+0x35], 7
-    a.j32("0f85", "scan_next")
-    a.b("8b5d10")                                      # mov ebx, [ebp+0x10]
-    a.b("3b5910")                                      # cmp ebx, [ecx+0x10]
-    a.j32("0f85", "scan_next")
-    a.b("8b5d00")                                      # mov ebx, [ebp]
-    a.b("3b19")                                        # cmp ebx, [ecx]
-    a.j32("0f85", "scan_next")
-    a.b("894c241c")                                    # mov [esp+0x1c], ecx   replacement
+    a.j32("0f85", "done")
+    a.b("f74120" + struct.pack("<I", INJURY_MASK).hex())  # test dword [ecx+0x20], injured | weeks
+    a.j32("0f85", "done")                              # the other back is hurt too: retail
+    a.b("894c241c")                                    # mov [esp+0x1c], ecx   the carry goes to him
     a.j32("e9", "done")
-    a.label("scan_next")
-    a.b("83c104")                                      # add ecx, 4
-    a.j32("e9", "scan_loop")
+    # b780 db2: a fullback keeps 1 in 16 of his retail carries; for the rest the game's own lottery draws again (up to
+    # FULLBACK_REDRAWS times) among the other candidates, so HB1, HB2 and the QB share them by rating
+    a.label("fullback")
+    a.b("807e35" + bytes([FULLBACK_POSITION]).hex())  # cmp byte [esi+0x35], 8
+    a.j8("75", "done")                                 # neither a halfback nor a fullback: retail
+    a.call(FN_RAND)
+    a.b("663d" + struct.pack("<H", FULLBACK_KEEP_THRESHOLD).hex())  # cmp ax, 4096   the 16-bit league draw
+    a.j8("72", "done")                                 # below: the fullback keeps this carry
+    a.b("bb" + struct.pack("<I", FULLBACK_REDRAWS).hex())  # mov ebx, 3   (0x103360 preserves ebx)
+    a.label("redraw")
+    a.b("8b742404")                                    # mov esi, [esp+4]      saved ESI: the team the lottery drew for
+    a.call(0x00103360)                                 # the retail lottery again (reads only; esi = team)
+    a.b("85c0")                                        # test eax, eax
+    a.j8("74", "done")                                 # nothing drawn: keep the fullback
+    a.b("807835" + bytes([FULLBACK_POSITION]).hex())  # cmp byte [eax+0x35], 8
+    a.j8("75", "redrawn")
+    a.b("4b")                                          # dec ebx
+    a.j8("75", "redraw")
+    # the lottery drew the fullback every time (a room of hurt or weak backs): the HB1 lineup slot takes the carry
+    a.b("8b442404")                                    # mov eax, [esp+4]      the team
+    a.b("8b40" + bytes([LEAD_BACK_SLOT]).hex())        # mov eax, [eax+0xc]    its HB1 slot (HB rank 0 at the lineup)
+    a.b("85c0")                                        # test eax, eax
+    a.j8("74", "done")
+    a.b("807835" + bytes([7]).hex())                   # cmp byte [eax+0x35], 7
+    a.j8("75", "done")                                 # no halfback there: the fullback keeps it
+    a.label("redrawn")
+    a.b("8bf0")                                        # mov esi, eax
+    a.b("8944241c")                                    # mov [esp+0x1c], eax   the new pick
+    a.b("807e3507")                                    # cmp byte [esi+0x35], 7
+    a.j32("0f84", "halfback")                          # a halfback: his own injury check and the 2% rotation
     a.label("done")
     a.b("61")                                          # popad
     a.b("c3")                                          # ret
@@ -299,15 +345,36 @@ def _recognize(payload):
     present = any(r["owner"] == OWNER for r in space.layout(payload)["allocations"])
     owned = allocation(payload) if present else None
     states = set()
-    for _name, va, before, after in sites(owned["va"] if owned else 0):
+    # b780 db2: the guard moved (256 -> 208), so a beta-79 install's carrier call is its own "previous" bytes
+    previous_sites = _previous_sites(owned["va"]) if owned else [None] * 2
+    for (_name, va, before, after), prior in zip(sites(owned["va"] if owned else 0), previous_sites):
         raw = image.read(va, len(before))
-        states.add("retail" if raw == before else "applied" if owned and raw == after else "foreign")
+        states.add("retail" if raw == before else "applied" if owned and raw == after
+                   else "previous" if prior is not None and raw == prior[3] else "foreign")
+    code_state = None
     if owned:
         raw = image.read(owned["va"], CODE_SIZE)
-        states.add("retail" if raw == b"\xcc" * CODE_SIZE else "applied" if raw == code_for(owned["va"])
-                   else "foreign")
-    require(states and states <= {"retail", "applied"}, "Foreign or mixed RB injury site/code")
+        code_state = ("retail" if raw == b"\xcc" * CODE_SIZE else "applied" if raw == code_for(owned["va"])
+                      else "previous" if raw == _previous_code_for(owned["va"]) else "foreign")
+        if code_state == "applied" and "previous" in states:
+            code_state = "foreign"  # b780 db2: this release's cave behind a beta-79 carrier call is no install of ours
+        states.add(code_state)
+    if states == {"applied", "previous"}:
+        states = {"previous"}   # b780 hunt1: the same hooks with the beta-79 roll (a v0.8 executable)
+    require(states in ({"retail"}, {"applied"}, {"previous"}), "Foreign or mixed RB injury site/code")
     return next(iter(states))
+
+
+def _previous_code_for(code_va):
+    """b780 hunt1: the beta-79 / v0.8 cave (its weekly roll also hit clubs a person controls), from the frozen module."""
+    from . import nfl2k5_sim_rb_injuries_b779 as b779
+    return b779.code_for(code_va)
+
+
+def _previous_sites(code_va):
+    """b780 db2: the beta-79 / v0.8 hooks (its guard at offset 256), from the frozen module."""
+    from . import nfl2k5_sim_rb_injuries_b779 as b779
+    return b779.sites(code_va)
 
 
 def status(payload):
@@ -327,6 +394,28 @@ def apply(payload):
     common = dict(owner=OWNER, experimental=True, runtime_witnessed=False)
     if state == "applied":
         return payload, dict(common, status="already_applied", changed_bytes=0, edits=[])
+    if state == "previous":
+        # b780 hunt1: a beta-79 / v0.8 install (same cave and hooks) is upgraded in place to the roll that leaves
+        # clubs a person controls alone. b780 db2: the guard moved, so the carrier call is re-pointed as well; the
+        # weekly hook keeps its bytes. Same allocation and address; the result equals a fresh install.
+        code_va = allocation(payload)["va"]
+        result, _ = space.install_code(payload, OWNER, code_for(code_va), previous=_previous_code_for(code_va))
+        image = XbeImage(result)
+        buf = bytearray(result)
+        edits = []
+        for (name, va, _retail, after), prior in zip(sites(code_va), _previous_sites(code_va)):
+            off = image.offset(va, len(after))
+            if bytes(buf[off:off + len(after)]) == after:
+                continue
+            require(bytes(buf[off:off + len(after)]) == prior[3], f"RB injury site {va:#x} is not the beta-79 hook")
+            buf[off:off + len(after)] = after
+            edits.append(dict(label=name, va=hex(va), before=prior[3].hex(), after=after.hex()))
+        for section in _sections(buf):
+            buf[section.header_offset + 36:section.header_offset + 56] = section_digest(buf, section)
+        result = bytes(buf)
+        require(status(result) == "applied" and space.status(result) == "applied", "RB injury upgrade postcondition failed")
+        return result, dict(common, status="applied", upgraded_from="previous",
+                            changed_bytes=space.count_differing_bytes(payload, result), edits=edits)
     before = payload
     receipt = {}
     if not any(r["owner"] == OWNER for r in space.layout(payload)["allocations"]):
@@ -362,4 +451,5 @@ def apply(payload):
 
 __all__ = ["OWNER", "REQUESTS", "CODE_SIZE", "SUB_OFFSET", "WEEKLY_SITE", "WEEKLY_BEFORE",
            "CARRIER_SITE", "CARRIER_BEFORE", "BUILD_CAPTION", "HELP_TEXT", "code_for", "sites", "allocation",
-           "status", "apply", "SimRbInjuriesError"]
+           "status", "apply", "SimRbInjuriesError", "FULLBACK_POSITION", "FULLBACK_KEEP_THRESHOLD", "FULLBACK_REDRAWS",
+           "UPGRADES_PREVIOUS"]

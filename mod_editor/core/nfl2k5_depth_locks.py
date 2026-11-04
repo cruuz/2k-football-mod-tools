@@ -79,11 +79,45 @@ writes each seat into its 3-bit field directly (the bytes come from a
 shorter side-priority mapping). Revision-3, -2 and -1 images report
 ``legacy`` and upgrade in place.
 
+Revision 5 (b780, job hunt6). The weekly auto-depth skips the all-star
+teams (team +0x128 kind 1: AFC, NFC, NFL and the all-time squads). The
+postseason schedule (0x2A8261..0x2A827E, retail) puts the AFC and NFC Pro
+Bowl teams in league slots 32 and 33 until the next rollover takes them out
+again (0x247B51..0x247B6A), so the weekly pass (TEAM_COUNT/TEAM_AT) sorted
+them after the 32 clubs, before every playoff game. Rank and side live in
+the player record (+0x28), which a Pro Bowler shares with his club, so each
+one took his Pro Bowl row on his own club's depth chart: an AFC QB2 became
+his club's QB2 next to the club's own backup (no QB1), a third Pro Bowl QB
+sat behind his club's backups, and with locks the clubs could not repair it
+for the rest of the postseason (the locks kept the Pro Bowl rows). A
+user's Pro Bowlers moved the same way (the Pro Bowl teams are not his). The
+loop head's call to the user-club test (0x2BDD1B, ``call 0x13EC30``) now
+calls a 17-byte check in the swap block's own spare bytes (0x242CFE): a
+kind-1 team leaves through revision 2's ``jmp 0x2BDFD4`` to the loop tail
+(no sort, no compactor, no returner pass); every other team goes to
+0x13EC30 as before. The Pro Bowl teams keep their members' club rows (the
+Play Now AFC and NFC teams play the same way). Revision-4, -3, -2 and -1
+images report ``legacy`` and upgrade in place.
+
+b780 st1: the returner fix (on in every preset, applied before depth locks)
+owns the loop head's call and sends it to the same skip in its own site, so
+Basic and Advanced (no depth locks) skip the Pro Bowl teams too. A loop head
+already pointing at the returner fix's skip counts as this revision's site in
+every state and is left alone; the 0x242CFE skip stays for builds without the
+returner fix.
+
 Conflicting imported locks are preserved (and reported by the roster API),
 not silently reassigned. Valid records have unique locked rows 0..6 per
 position/chain and at most one owner of each returner role per team. Row 7
 is the shared overflow row. Locks are preferences, not an injury or personnel
 eligibility override. Full game/UI/save lifecycles remain unwitnessed.
+
+Revision 6 (b780, job sub1; queue Q64). The confirmed KR selection arm
+copied the current KR1 into KR2 before marking the chosen player, so
+choosing the current KR1 again made him KR2 as well and the second kick
+returner was lost. The arm (still its own 65 bytes) now leaves both
+returners and every lock alone when the chosen player is already KR1.
+Revision-5 and older images report ``legacy`` and upgrade in place.
 """
 
 from __future__ import annotations
@@ -261,10 +295,25 @@ PATCHED_RANK_STAGE = bytes.fromhex(
     "ff475cc6041ffe8b449d008b4f4c66d34828806028f808502866d3402843eba64683fe09729e31c089475c89476061c3"
 )
 
-PATCHED_SWAP = bytes.fromhex(
+V4_PATCHED_SWAP = bytes.fromhex(
     "5731ffa801ba001c0000b801000000740aba00e00000b8020000000841520846520fb7792866337e2821d766317e2866"
     "3179285fc2040085f675126a0158a3c474c100a3c874c100a3cc74c100e91e02000089f9e8970a0000e9d6b20700"
 )
+# Revision 5 (b780 hunt6): the all-star skip, right after revision 2's user-club stub (which ends with
+# ``jmp 0x2BDFD4`` at 0x242CF9), in the swap block's own spare bytes:
+#   0x242CFE  cmp dword ptr [ecx+0x128], 1   ; ecx = the team (loop head: mov ecx, edi)
+#   0x242D05  jne 0x242D0A
+#   0x242D07  pop eax                        ; drop the loop head's return address
+#   0x242D08  jmp 0x242CF9                   ; -> jmp 0x2BDFD4, the loop tail (next team)
+#   0x242D0A  jmp 0x13EC30                   ; the user-club test, unchanged
+ALL_STAR_SKIP_VA = 0x242CFE
+ALL_STAR_KIND = 1
+ALL_STAR_SKIP = bytes.fromhex("83b92801000001" "7503" "58" "ebef" "e921bfefff")
+PATCHED_SWAP = V4_PATCHED_SWAP + ALL_STAR_SKIP
+assert SWAP_VA + len(V4_PATCHED_SWAP) == ALL_STAR_SKIP_VA and len(PATCHED_SWAP) <= len(RETAIL_SWAP)
+ALL_STAR_VA = 0x2BDD1B  # the weekly loop head's user-club test, inside the pinned sort frame
+RETAIL_ALL_STAR = bytes.fromhex("e8100fe8ff")      # call 0x13EC30
+PATCHED_ALL_STAR = bytes.fromhex("e8de4ff8ff")     # call 0x242CFE
 
 PANEL_VA = 0x242E40  # FUN_00242E00's empty-row branch
 RETAIL_PANEL = bytes.fromhex("0f84ca000000")
@@ -298,7 +347,14 @@ RETAIL_KR_SET = bytes.fromhex(
     "efe903010000888795010000e9f8000000"
 )
 
+# Revision 6 (b780 sub1, Q64): choosing the current KR1 again leaves both returners and their locks alone. Before
+# it (revisions 1..5, V5_PATCHED_KR_SET) the arm first copied KR1 into KR2, so the re-selected KR1 also became KR2
+# and the second returner was lost. EBP addresses the returner bytes, which pays for the check in the 65 bytes.
 PATCHED_KR_SET = bytes.fromhex(
+    "608daf9501000031c08a450084c078053b348774268845010fb64d8749781c8b1c8f806352f339c17504804b520839f3"
+    "75ea884d00804b5204ebe161e9f8000000"
+)
+V5_PATCHED_KR_SET = bytes.fromhex(
     "600fb6979501000088979601000031c03a871c01000073208b1c87806352f339d07504804b520839f3750a8887950100"
     "00804b520440ebd861e9fb000000"
 )
@@ -372,7 +428,7 @@ class Site:
     after: bytes
 
 
-REVISION = 4
+REVISION = 6
 
 
 def sites(layout: str = "retail", revision: int = REVISION) -> tuple[Site, ...]:
@@ -382,14 +438,19 @@ def sites(layout: str = "retail", revision: int = REVISION) -> tuple[Site, ...]:
     rank stage and swap block in their same spans and adds the ratings-panel
     branch, which stays retail in a revision-1 image. Revision 3 (b777 dl3)
     adds the weekly sort with the release rule; it stays retail before.
-    Revision 4 (b777 dl4) rewrites the compactor and rank stage again."""
+    Revision 4 (b777 dl4) rewrites the compactor and rank stage again.
+    Revision 5 (b780 hunt6) adds the all-star skip to the swap block's spare
+    bytes and points the weekly loop head's user-club test at it; before it
+    the call is retail and those bytes are the swap block's 0x90 padding.
+    Revision 6 (b780 sub1) rewrites only the KR arm: re-selecting the current
+    KR1 no longer copies him into KR2."""
     if layout not in ("retail", "special"):
         raise DepthLockError("unknown depth-chart layout")
-    if revision not in (1, 2, 3, 4):
+    if revision not in (1, 2, 3, 4, 5, 6):
         raise DepthLockError("unknown depth-lock revision")
     v1 = revision == 1
     swap_before = bytearray(RETAIL_SWAP)
-    swap_after = bytearray(V1_PATCHED_SWAP if v1 else PATCHED_SWAP)
+    swap_after = bytearray(V1_PATCHED_SWAP if v1 else V4_PATCHED_SWAP if revision < 5 else PATCHED_SWAP)
     swap_before[3:5] = swap_after[3:5] = bytes.fromhex("85c0" if layout == "retail" else "a801")
     values = (
         ("compactor", COMPACT_VA, RETAIL_COMPACT, V1_PATCHED_COMPACT if v1 else
@@ -399,12 +460,14 @@ def sites(layout: str = "retail", revision: int = REVISION) -> tuple[Site, ...]:
          V1_PATCHED_RANK_STAGE if v1 else V3_PATCHED_RANK_STAGE if revision < 4
          else PATCHED_RANK_STAGE),
         ("screen_swap", SWAP_VA, bytes(swap_before), bytes(swap_after)),
-        ("screen_kr", KR_SET_VA, RETAIL_KR_SET, PATCHED_KR_SET),
+        ("screen_kr", KR_SET_VA, RETAIL_KR_SET, PATCHED_KR_SET if revision >= 6 else V5_PATCHED_KR_SET),
         ("screen_pr", PR_SET_VA, RETAIL_PR_SET, PATCHED_PR_SET),
         ("membership_remove", REMOVE_VA, RETAIL_REMOVE, PATCHED_REMOVE),
         ("ratings_panel_guard", PANEL_VA, RETAIL_PANEL, RETAIL_PANEL if v1 else PATCHED_PANEL),
         ("user_club_compact", HUMAN_VA, RETAIL_HUMAN, RETAIL_HUMAN if v1 else PATCHED_HUMAN),
         ("weekly_sort_release", SORT_VA, RETAIL_SORT, PATCHED_SORT if revision >= 3 else RETAIL_SORT),
+        ("weekly_all_star_skip", ALL_STAR_VA, RETAIL_ALL_STAR,
+         PATCHED_ALL_STAR if revision >= 5 else RETAIL_ALL_STAR),
     )
     return tuple(Site(label, va, before, after + b"\x90" * (len(before) - len(after)))
                  for label, va, before, after in values)
@@ -427,6 +490,11 @@ def _context(payload: bytes) -> tuple[XbeImage, str]:
     at = SORT_VA - 0x2BDCF0
     if frame[at:at + len(PATCHED_SORT)] == PATCHED_SORT:
         frame[at:at + len(RETAIL_SORT)] = RETAIL_SORT  # revision 3 owns the sort body
+    at = ALL_STAR_VA - 0x2BDCF0
+    if frame[at:at + len(PATCHED_ALL_STAR)] in (PATCHED_ALL_STAR, returners.all_star_call_bytes()):
+        # revision 5 points the loop head's user-club call at its skip, or the returner fix (b780 st1, applied
+        # first in every build) already points it at the same skip in its own site
+        frame[at:at + len(RETAIL_ALL_STAR)] = RETAIL_ALL_STAR
     if image.read(MARGIN_VA, 4) != struct.pack("<f", MARGIN):
         raise DepthLockError("unknown release margin constant")
     msec = image.section(MARGIN_VA, 4)
@@ -454,22 +522,33 @@ def read_any(payload: bytes) -> dict[str, object]:
         for site in sites(layout):
             got = image.read(site.va, len(site.before))
             states[site.label] = ("retail" if got == site.before else
-                                  "applied" if got == site.after else "foreign")
-        unique = set(states.values())
+                                  "applied" if got == site.after else
+                                  "returner_fix" if _returner_all_star(site, got) else "foreign")
+        # b780 st1: a loop head already sent to the returner fix's all-star skip counts as this site in every state
+        unique = {v for v in states.values() if v != "returner_fix"}
         state = next(iter(unique)) if len(unique) == 1 else "foreign"
         legacy = None
         if state == "foreign":
-            for old in (3, 2, 1):
+            for old in (5, 4, 3, 2, 1):
                 if all(image.read(site.va, len(site.after)) == site.after
+                       or _returner_all_star(site, image.read(site.va, len(site.after)))
                        for site in sites(layout, old)):
-                    # A complete revision-3/-2 (b777 release candidates) or
-                    # revision-1 (b775/b776 discs) install: upgrade in place.
+                    # A complete revision-4 (beta-77 .. beta-79 / SOFTDRINK v0.6 .. v0.8 discs),
+                    # revision-3/-2 (b777 release candidates) or revision-1
+                    # (b775/b776 discs) install: upgrade in place.
                     state, legacy = "legacy", old
                     break
         return {"status": state, "sites": states, "stride": modern.SLOTS_PER_UNIT,
                 "layout": layout, "revision": REVISION if state == "applied" else legacy}
     except (ValueError, struct.error, IndexError) as exc:
         return {"status": "foreign", "reason": str(exc)}
+
+
+def _returner_all_star(site: Site, got: bytes) -> bool:
+    """b780 st1: the returner fix owns the weekly loop head's call (0x2BDD1B) and sends it to the same all-star
+    skip from its own site; depth locks then leaves the call alone (its 0x242CFE skip stays for builds without
+    the returner fix)."""
+    return site.label == "weekly_all_star_skip" and got == returners.all_star_call_bytes()
 
 
 def status(payload: bytes) -> str:
@@ -492,6 +571,8 @@ def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
         off = image.offset(site.va, len(site.before))
         if buf[off:off + len(site.after)] == site.after:
             continue  # a revision-1 upgrade keeps its unchanged sites
+        if _returner_all_star(site, bytes(buf[off:off + len(site.after)])):
+            continue  # b780 st1: the returner fix's call already reaches the all-star skip
         buf[off:off + len(site.after)] = site.after
         touched.add(_section_for_offset(sections, off).index)
         edits.append({"label": site.label, "va": hex(site.va),

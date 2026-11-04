@@ -30,6 +30,7 @@ from PyQt5.QtWidgets import (
 from mod_editor.gui import beta62_options as r62_ui
 from mod_editor.core import mod_build
 from mod_editor.core import nfl2k5_throw_tuning as tt
+from mod_editor.core import nfl2k5_depth_chart_rows as _special_rows
 from mod_editor.gui.ux_text import NOT_TESTED, XEMU_LINE, Details, plain_failure, show_operation_error, source_captions, suggest_copy_name, tab_title, write_caption
 
 SOURCE_FILTER = "NFL 2K5 default.xbe or disc image (default.xbe *.xbe *.xiso *.iso *.img);;All files (*)"
@@ -219,7 +220,7 @@ PATCHES = (
      "disagree by more than two yards, bunch sets and special teams keep their retail assignments and are listed in "
      "the build report. Changes who lines up, not how they play: Advanced. No new depth-chart rows yet. Unwitnessed in game."),
     ("depth_chart_rows", "SPECIAL: 13 rows and complete player names (experimental)",
-     "Retail: special teams has four depth-chart rows. Patch: SPECIAL shows KR, PR, K, P, LS, LGUN, RGUN, NCB, DCB, SLWR, GAD, 3DRB and PWRB together, with names beside all available player numbers. Offense and defense keep eleven rows and show X / Z receiver labels. Row spacing is three pixels tighter on all depth-chart tabs; the font stays the same. Role labels have more room. These roles share player lists, so changing one can change another. Requires one-pool positions and the playbook roles. EXPERIMENTAL/UNWITNESSED."),
+     _special_rows.HELP_TEXT),  # b780 hunt5: what each SPECIAL row does, row by row
     ("practice_squad", "Reserve save compatibility: 53 active + 12 existing reserves",
      "Retail: franchise rosters have no practice-squad phase. Patch: preserves existing reserves, contracts and save "
      "storage, with reserve moves available in Studio's save tools. Final cuts release players to free agency. "
@@ -624,7 +625,8 @@ class GameplayPatchesPanel(QWidget):
             self._static_badges[key] = badge
         root.addWidget(list_box)
         # b780 studio1 (Q60): the same rule table Build reads (beta62_options.REQUIRES), for the boxes this page has
-        r62_ui.connect_requirements(self.checks.get, self._requirement_child_toggled, self._requirement_parent_toggled)
+        r62_ui.connect_requirements(self.checks.get, self._requirement_child_toggled, self._requirement_parent_toggled,
+                                   self._requirement_parent_clicked)
         out = QHBoxLayout()
         self.target_caption = QLabel("Save disc copy as")
         out.addWidget(self.target_caption)
@@ -842,6 +844,11 @@ class GameplayPatchesPanel(QWidget):
         if not on:
             r62_ui.untick_children(parent, self.checks.get)
         self._refresh()
+
+    def _requirement_parent_clicked(self, parent, on):
+        """b780-mem1: a parent the user ticked brings its default children along."""
+        if on:
+            r62_ui.tick_default_children(parent, self.checks.get)
 
     def _money_downs_changed(self):
         level = str(self.cpu_money_downs_level.currentData() or "retail")

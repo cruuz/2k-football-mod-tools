@@ -183,10 +183,11 @@ def untick_children(parent, box_of):
             box.setChecked(False)
 
 
-def connect_requirements(box_of, child_toggled, parent_toggled):
+def connect_requirements(box_of, child_toggled, parent_toggled, parent_clicked=None):
     """Wire the rules to a page whose boxes all exist: ``child_toggled(child, on)`` for every child box and
-    ``parent_toggled(parent, on)`` for every parent box, once each. ``box_of(key)`` is the page's check box or None (a page may
-    lack some of them)."""
+    ``parent_toggled(parent, on)`` for every parent box, once each, and ``parent_clicked(parent, on)`` for a parent whose
+    default-on children come along when the user ticks it (a click, not a project load). ``box_of(key)`` is the page's check box
+    or None (a page may lack some of them)."""
     for child in REQUIRES:
         box = box_of(child)
         if box is not None:
@@ -195,8 +196,23 @@ def connect_requirements(box_of, child_toggled, parent_toggled):
         box = box_of(parent)
         if box is not None:
             box.toggled.connect(lambda on, key=parent: parent_toggled(key, on))
+    if parent_clicked is not None:
+        for parent in DEFAULT_ON_CHILDREN:
+            box = box_of(parent)
+            if box is not None:
+                box.clicked.connect(lambda on, key=parent: parent_clicked(key, on))
+# b780-mem1: children that come on when the user ticks their parent (a click, not a project load); untick to opt out.
+# The early form makes the room the pregame intro needs at 128 MB on this content (the late form loops at retail-model
+# stadiums such as Baltimore).
+DEFAULT_ON_CHILDREN = {"k128_memory": ("k128_early",)}
 
 
+def tick_default_children(parent, box_of):
+    """A parent the user ticked brings its default-on children along (b780-mem1); a child that cannot change is left alone."""
+    for child in DEFAULT_ON_CHILDREN.get(parent, ()):
+        box = box_of(child)
+        if box is not None and box.isEnabled():
+            box.setChecked(True)
 LEVELS = {"cpu_money_downs": (("Retail", "retail"), ("Modern", "modern"), ("Aggressive", "aggressive"), ("Modern 2", "modern2"))}
 UNAVAILABLE = {"franchise_2026_rules": FRANCHISE_HELP, "senior_bowl": tt.senior_bowl_patch.NATIVE_BLOCKER}
 HIRES_FAMILIES = (
