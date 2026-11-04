@@ -237,6 +237,49 @@ class V08DiscStatesTests(_PanelCase):
         self.assertNotIn("full disc required", note)
 
 
+class GameFixesNeedsUpdateTests(unittest.TestCase):
+    """Game Fixes read the same disc as Build; on a v0.8 disc it said 'Unknown state.' with no badge for what Build calls Needs
+    update, and its legacy tooltip talked about the beta 58-60 star for the draft AI and progression."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.app = QApplication.instance() or QApplication([])
+
+    def fixes(self, **overrides):
+        from mod_editor.gui.gameplay_patches_panel_qt import GameplayPatchesPanel
+        panel = GameplayPatchesPanel()
+        self.addCleanup(panel.deleteLater)
+        state = {key: "retail" for key in panel.checks}
+        state.update(path="v08.xiso.iso", container="xiso", throw=None)
+        state.update(overrides)
+        panel.apply_state(state)
+        return panel
+
+    def test_each_beta_79_state_is_an_update_a_locked_update_or_a_rebuild(self) -> None:
+        panel = self.fixes(catch_slider="previous", camera="previous", draft_ai="legacy", progression="legacy",
+                           honors_page="previous", k128_memory="previous", my_career="previous", scorebug_runtime="previous")
+        for key in ("catch_slider", "camera", "draft_ai", "progression"):
+            self.assertTrue(panel.checks[key].isEnabled(), key)
+            self.assertEqual(panel.badges[key].text(), "Needs update", key)
+            self.assertIn("Select to update it", panel.checks[key].toolTip(), key)
+            self.assertNotIn("star", panel.checks[key].toolTip(), key)
+        for key in ("honors_page", "k128_memory"):
+            self.assertFalse(panel.checks[key].isEnabled(), key)                    # kept ticked by the build, as on Build
+            self.assertEqual(panel.badges[key].text(), "Needs update", key)
+            self.assertIn("stays ticked", panel.checks[key].toolTip(), key)
+        for key in ("my_career", "scorebug_runtime"):
+            self.assertFalse(panel.checks[key].isEnabled(), key)
+            self.assertEqual(panel.badges[key].text(), "Beta 79 version: rebuild from retail", key)
+            self.assertIn("build from your retail game", panel.checks[key].toolTip(), key)
+
+    def test_the_states_it_already_knew_read_as_before(self) -> None:
+        panel = self.fixes(catch_slider="applied", draft_ai="foreign", progression="retail", player_star="legacy")
+        self.assertEqual(panel.badges["catch_slider"].text(), "Already installed")
+        self.assertEqual(panel.badges["draft_ai"].text(), "Unrecognized source data")
+        self.assertTrue(panel.checks["progression"].isEnabled())
+        self.assertIn("never drew the star", panel.checks["player_star"].toolTip())          # the star's own legacy text stays
+
+
 class SpeedSeparationSurvivesAProjectSaveTests(_PanelCase):
     """The project is saved from the plan; a disabled row used to plan 0 even when no disc had been read yet."""
 

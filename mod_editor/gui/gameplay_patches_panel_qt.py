@@ -704,7 +704,15 @@ class GameplayPatchesPanel(QWidget):
                 self.badges[key].setVisible(True)
                 continue
             upgrade = key == "position_pools" and value == "needs_fix"
-            check.setEnabled((value == "retail" or upgrade) and not needs_image and key not in r62_ui.UNAVAILABLE)
+            # b780 studio1: the Build tab's Needs update treatment, which this page lacked: on the released v0.8 disc these
+            # read "Unknown state." or, for a legacy draft AI, a tooltip about the beta 58-60 star, and no badge.
+            from mod_editor.gui.build_panel_qt import LEGACY_UPGRADE_KEYS, PREVIOUS_REBUILD_KEYS, PREVIOUS_UPGRADE_KEYS
+            locked_on = key in ("honors_page", "k128_memory")      # Build keeps these ticked and greyed out; so does this page
+            update = ((value == "previous" and key in PREVIOUS_UPGRADE_KEYS)
+                      or (value == "legacy" and (key in LEGACY_UPGRADE_KEYS or key in ("draft_ai", "depth_locks"))))
+            rebuild = value == "previous" and key in PREVIOUS_REBUILD_KEYS
+            check.setEnabled((value == "retail" or upgrade or (update and not locked_on)) and not needs_image
+                             and key not in r62_ui.UNAVAILABLE)
             check.setChecked(False)
             tip = {"applied": "Already installed on this source.",
                    "needs_fix": "Position pools are installed, but the CPU lineup exhaustion repair is missing. Select to upgrade.",
@@ -715,9 +723,18 @@ class GameplayPatchesPanel(QWidget):
                    "retail": ""}.get(value, "Unknown state.")
             # a known non-retail state is the more useful message; an unreadable one (a bare XBE cannot
             # carry a playbook patch, so inspect says n/a) should say what the user needs instead
-            full_disc = needs_image and value not in ("applied", "foreign", "partial")
+            full_disc = needs_image and value not in ("applied", "foreign", "partial", "previous", "legacy")
+            if update:
+                tip = ("An older revision of this change is installed (beta 79 or earlier). "
+                       + ("This build brings it up to date in place, so it stays ticked." if locked_on else
+                          "Select to update it to this release's revision (in place)."))
+            elif rebuild:
+                tip = ("The beta 79 version of this change is installed. This release cannot update it in place; build from "
+                       "your retail game to get this release's version.")
             check.setToolTip("Full disc required (not a bare default.xbe)." if full_disc else tip)
             badge = ("Full disc required" if full_disc else
+                     "Needs update" if update else
+                     "Beta 79 version: rebuild from retail" if rebuild else
                      {"applied": "Already installed", "foreign": "Unrecognized source data",
                       "needs_fix": "Needs CPU lineup fix",
                       "partial": "Unrecognized source data"}.get(value, self._static_badges.get(key, "")))
