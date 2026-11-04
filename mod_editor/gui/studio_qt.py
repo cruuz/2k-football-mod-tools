@@ -2638,13 +2638,14 @@ class StudioMainWindow(QMainWindow):
         box = QMessageBox(self)
         box.setIcon(QMessageBox.Warning)
         box.setWindowTitle("Save your changes first?")
-        box.setText("This workspace has changes that are not saved to its project.")
+        # b780-uxfix: plain words (it spoke of edit sets and retail-free projects)
+        box.setText("You have changes that are not saved in a project file yet.")
         box.setInformativeText(
-            f"{context} can replace the current edit set. Save a retail-free "
-            ".2k5mod project, discard these edits, or cancel."
+            f"{context} can lose them. Save them as a .2k5mod project (it holds only your own changes, "
+            "never game data), continue without saving, or cancel."
         )
-        save = box.addButton("Save Project", QMessageBox.AcceptRole)
-        discard = box.addButton("Discard Edits", QMessageBox.DestructiveRole)
+        save = box.addButton("Save project", QMessageBox.AcceptRole)
+        discard = box.addButton("Don't save", QMessageBox.DestructiveRole)
         cancel = box.addButton(QMessageBox.Cancel)
         box.setDefaultButton(save)
         box.setEscapeButton(cancel)
@@ -2706,15 +2707,17 @@ class StudioMainWindow(QMainWindow):
     def _prompt_recovery_decision(self, candidate: RecoveryCandidate) -> str:
         box = QMessageBox(self)
         box.setIcon(QMessageBox.Question)
-        box.setWindowTitle("Recover unsaved edits?")
-        box.setText("Mod Studio found an autosaved edit set from an interrupted session.")
+        box.setWindowTitle("Bring back your changes?")
+        # b780-uxfix: plain words (it spoke of an autosaved edit set from an interrupted session)
+        box.setText("Last time the Studio closed before your changes were saved.")
         box.setInformativeText(
-            f"Source: {candidate.source_path.name}\n"
-            "The recovery file contains user-authored replacements only."
+            f"Game file: {candidate.source_path.name}\n"
+            "The Studio kept a copy of your own changes (never game data). Bring them back reopens this "
+            "game file with them; Start fresh deletes the copy. Your original game file was not changed."
         )
-        recover = box.addButton("Recover Edits", QMessageBox.AcceptRole)
-        later = box.addButton("Not Now", QMessageBox.RejectRole)
-        discard = box.addButton("Discard Recovery", QMessageBox.DestructiveRole)
+        recover = box.addButton("Bring them back", QMessageBox.AcceptRole)
+        later = box.addButton("Ask me later", QMessageBox.RejectRole)
+        discard = box.addButton("Start fresh", QMessageBox.DestructiveRole)
         box.setDefaultButton(recover)
         box.setEscapeButton(later)
         box.exec_()
