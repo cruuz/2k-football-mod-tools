@@ -419,6 +419,12 @@ class HelpTests(unittest.TestCase):
             faq.trigger()
             self.assertEqual(dialog.path, studio_qt._faq_document())
         outside.assert_not_called()                                         # nothing handed to the OS as raw .md
+        logs = next(a for a in actions if a.text() == "Open the logs folder (errors.log)…")
+        with tempfile.TemporaryDirectory() as folder, \
+             mock.patch.dict(os.environ, {"MOD_STUDIO_LOG_DIR": folder}), \
+             mock.patch("mod_editor.gui.studio_qt.QDesktopServices.openUrl", return_value=True) as opened:
+            logs.trigger()
+            opened.assert_called_once_with(QUrl.fromLocalFile(str(Path(folder) / "2k5-mod-studio")))
 
     def test_a_link_to_another_page_opens_in_the_same_window(self):
         from mod_editor.gui.ux_text import MarkdownHelpDialog

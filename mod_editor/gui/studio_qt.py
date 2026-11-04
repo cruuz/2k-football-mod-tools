@@ -384,6 +384,17 @@ def _show_help_document(parent: QWidget, path: Path) -> QWidget:
     return dialog
 
 
+def _open_logs_folder() -> bool:
+    """Open the folder that holds errors.log (made first if this install has not written one yet)."""
+
+    folder = crash_report.log_directory("2K5 Mod Studio")
+    try:
+        folder.mkdir(parents=True, exist_ok=True)
+    except OSError:
+        pass
+    return bool(QDesktopServices.openUrl(QUrl.fromLocalFile(str(folder))))
+
+
 def _faq_document() -> Path | None:
     """The packaged FAQ (same lookup as the Getting Started guide), or None when this build does not carry it."""
 
@@ -2057,6 +2068,10 @@ class StudioMainWindow(QMainWindow):
             faq_action.triggered.connect(   # b780-uxfix: inside the Studio, not handed to the OS as raw .md
                 lambda _checked=False, path=faq: _show_help_document(self, path)
             )
+        # b780-uxfix: errors.log was hard to find when someone asked for it
+        logs_action = help_menu.addAction("Open the logs folder (errors.log)…")
+        logs_action.setToolTip("Opens the folder with errors.log, to attach it to a help request on the Discord.")
+        logs_action.triggered.connect(lambda _checked=False: _open_logs_folder())
         help_menu.addSeparator()
         check_action = help_menu.addAction("Check for Updates…")
         check_action.triggered.connect(self._check_for_updates_now)
@@ -2330,7 +2345,9 @@ class StudioMainWindow(QMainWindow):
                 if owner == "Audio" else "."
             )
             if busy
-            else f"{owner} finished — project actions are available again."
+            # b780-uxfix: a finished Check my project said "Build finished"; the Build tab runs both
+            else ("The Build tab is done. Project actions are available again." if owner == "Build"
+                  else f"{owner} finished — project actions are available again.")
         )
         self._refresh_recent_menus()
         self._refresh_action_states()
