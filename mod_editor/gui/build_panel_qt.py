@@ -5518,7 +5518,8 @@ class BuildPanel(QWidget):
         contents = "Build selection: " + (", ".join(labels) if labels else "no recorded changes") + "."
         from mod_editor.gui.ux_text import disc_next_steps
         built_plan = receipt.get("plan") if isinstance(receipt.get("plan"), dict) else {}
-        next_step = disc_next_steps(target, console_memory=console_memory.of(built_plan))  # b780-m64b
+        next_step = disc_next_steps(target, console_memory=console_memory.of(built_plan),  # b780-m64b
+                                    next_steps_64=console_memory.NEXT_STEPS_64)
         if not tt.is_disc_image(target):
             next_step = "This is an executable copy. Build from a game disc to make a playable disc image."
         from mod_editor.core.build_feedback import timing_summary
