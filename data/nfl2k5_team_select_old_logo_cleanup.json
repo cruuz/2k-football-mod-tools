@@ -3289,5 +3289,834 @@
    "clean_rgba_sha256": "a9abdbadd9e551d4d9bddc7b4925e3987e1f3f9ee2ffa4aefd9a1ff69945aae6",
    "changed_pixels": 1437
   }
+ },
+ "textures_note": "b780 art1 Q11 to Q16 (ART2's in-game findings on the v0.9 RC): the same cleanup on in-game textures by edit identity; marks are the repository's 2026 team logos (data/nfl2k5_scorebug_assets/logos), drawn where the old logo was and lit by the shell under them",
+ "textures": [
+  {
+   "name": "lac_helmet00_24",
+   "kind": "live_helmet",
+   "match": {
+    "asset_code": "24",
+    "family": "helmet00",
+    "variant": 0
+   },
+   "alpha": "any",
+   "note": "LAC 24H0/24A0 Standard shell (one PNG): the old bolt outline piece and the old navy shell left around the ear holes",
+   "regions": [
+    {
+     "note": "piece of the old 2004 bolt outline beside the flag",
+     "mode": "all",
+     "poly": [
+      [
+       93,
+       144
+      ],
+      [
+       109,
+       147
+      ],
+      [
+       109.5,
+       152.6
+      ],
+      [
+       105,
+       154.4
+      ],
+      [
+       96,
+       154.4
+      ],
+      [
+       93,
+       151
+      ]
+     ]
+    },
+    {
+     "note": "old navy shell edge along the jaw flap (navy pixels only)",
+     "mode": "deviation",
+     "sign": "bluer",
+     "threshold": 18,
+     "grow": 1,
+     "poly": [
+      [
+       35,
+       22
+      ],
+      [
+       35,
+       12
+      ],
+      [
+       42,
+       5
+      ],
+      [
+       50,
+       0.5
+      ],
+      [
+       67,
+       0.5
+      ],
+      [
+       82,
+       7
+      ],
+      [
+       94,
+       14
+      ],
+      [
+       94,
+       23
+      ],
+      [
+       86,
+       19
+      ],
+      [
+       78,
+       13
+      ],
+      [
+       66,
+       8
+      ],
+      [
+       52,
+       8
+      ],
+      [
+       44,
+       13
+      ],
+      [
+       40,
+       22
+      ]
+     ]
+    },
+    {
+     "note": "old navy left in the screws' rims and the ear hole's bevel (kept, made neutral)",
+     "mode": "neutral",
+     "sign": "bluer",
+     "threshold": 18,
+     "poly": [
+      [
+       38,
+       8
+      ],
+      [
+       95,
+       8
+      ],
+      [
+       95,
+       38
+      ],
+      [
+       38,
+       38
+      ]
+     ]
+    },
+    {
+     "note": "old small flag's red and navy smear",
+     "mode": "all",
+     "poly": [
+      [
+       108,
+       31
+      ],
+      [
+       126,
+       31
+      ],
+      [
+       126,
+       39
+      ],
+      [
+       123,
+       46
+      ],
+      [
+       116,
+       46
+      ],
+      [
+       116,
+       39
+      ],
+      [
+       108,
+       39
+      ]
+     ]
+    },
+    {
+     "note": "old navy shell edge along the jaw flap (navy pixels only)",
+     "mode": "deviation",
+     "sign": "bluer",
+     "threshold": 18,
+     "grow": 1,
+     "poly": [
+      [
+       35,
+       234
+      ],
+      [
+       40,
+       234
+      ],
+      [
+       46,
+       243
+      ],
+      [
+       56,
+       247
+      ],
+      [
+       70,
+       248
+      ],
+      [
+       82,
+       244
+      ],
+      [
+       90,
+       237
+      ],
+      [
+       96,
+       238
+      ],
+      [
+       92,
+       246
+      ],
+      [
+       82,
+       252
+      ],
+      [
+       68,
+       255.5
+      ],
+      [
+       52,
+       255.5
+      ],
+      [
+       42,
+       250
+      ],
+      [
+       35,
+       242
+      ]
+     ]
+    },
+    {
+     "note": "old navy left in the screws' rims and the ear hole's bevel (kept, made neutral)",
+     "mode": "neutral",
+     "sign": "bluer",
+     "threshold": 18,
+     "poly": [
+      [
+       38,
+       214
+      ],
+      [
+       95,
+       214
+      ],
+      [
+       95,
+       252
+      ],
+      [
+       38,
+       252
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "det_splayer_h",
+   "kind": "p8_texture",
+   "match": {
+    "asset_id": "p8:3685:splayer"
+   },
+   "note": "DET distance helmet: the 2026 lion where the old 2004 lion was",
+   "regions": [
+    {
+     "note": "2026 lion pasted on the helmet stripe by the 2026 kit step (misplaced)",
+     "mode": "all",
+     "poly": [
+      [
+       96.5,
+       91.5
+      ],
+      [
+       110,
+       91.5
+      ],
+      [
+       110,
+       100.5
+      ],
+      [
+       96.5,
+       100.5
+      ]
+     ]
+    },
+    {
+     "note": "old 2004 lion on the distance helmet",
+     "mode": "all",
+     "poly": [
+      [
+       98.5,
+       103.5
+      ],
+      [
+       121.5,
+       103.5
+      ],
+      [
+       121.5,
+       125
+      ],
+      [
+       98.5,
+       125
+      ]
+     ]
+    }
+   ],
+   "marks": [
+    {
+     "png": "data/nfl2k5_scorebug_assets/logos/det.png",
+     "box": [
+      99.5,
+      105.5,
+      120.5,
+      123.5
+     ],
+     "flip": true
+    }
+   ]
+  },
+  {
+   "name": "det_splayer_a",
+   "kind": "p8_texture",
+   "match": {
+    "asset_id": "p8:4002:splayer"
+   },
+   "note": "DET distance helmet: the 2026 lion where the old 2004 lion was",
+   "regions": [
+    {
+     "note": "2026 lion pasted on the helmet stripe by the 2026 kit step (misplaced)",
+     "mode": "all",
+     "poly": [
+      [
+       96.5,
+       91.5
+      ],
+      [
+       108.5,
+       91.5
+      ],
+      [
+       108.5,
+       100.5
+      ],
+      [
+       96.5,
+       100.5
+      ]
+     ]
+    },
+    {
+     "note": "old 2004 lion on the distance helmet",
+     "mode": "all",
+     "poly": [
+      [
+       98.5,
+       103.5
+      ],
+      [
+       121.5,
+       103.5
+      ],
+      [
+       121.5,
+       125
+      ],
+      [
+       98.5,
+       125
+      ]
+     ]
+    }
+   ],
+   "marks": [
+    {
+     "png": "data/nfl2k5_scorebug_assets/logos/det.png",
+     "box": [
+      99.5,
+      105.5,
+      120.5,
+      123.5
+     ],
+     "flip": true
+    }
+   ]
+  },
+  {
+   "name": "ten_splayer_h",
+   "kind": "p8_texture",
+   "match": {
+    "asset_id": "p8:3850:splayer"
+   },
+   "note": "TEN distance helmet: the 2026 roundel where the old flaming T was",
+   "regions": [
+    {
+     "note": "2026 roundel pasted on the helmet stripe by the 2026 kit step (misplaced)",
+     "mode": "all",
+     "poly": [
+      [
+       95.5,
+       90.5
+      ],
+      [
+       106.5,
+       90.5
+      ],
+      [
+       106.5,
+       100
+      ],
+      [
+       95.5,
+       100
+      ]
+     ]
+    },
+    {
+     "note": "old flaming T on the distance helmet",
+     "mode": "all",
+     "poly": [
+      [
+       98,
+       100
+      ],
+      [
+       123.5,
+       99
+      ],
+      [
+       123.5,
+       124
+      ],
+      [
+       98,
+       124
+      ]
+     ]
+    }
+   ],
+   "marks": [
+    {
+     "png": "data/nfl2k5_scorebug_assets/logos/ten.png",
+     "box": [
+      99.5,
+      107.5,
+      112.5,
+      120.5
+     ]
+    }
+   ]
+  },
+  {
+   "name": "ten_splayer_a",
+   "kind": "p8_texture",
+   "match": {
+    "asset_id": "p8:4167:splayer"
+   },
+   "note": "TEN distance helmet: the 2026 roundel where the old flaming T was",
+   "regions": [
+    {
+     "note": "2026 roundel pasted on the helmet stripe by the 2026 kit step (misplaced)",
+     "mode": "all",
+     "poly": [
+      [
+       88.5,
+       92.5
+      ],
+      [
+       100,
+       92.5
+      ],
+      [
+       100,
+       101
+      ],
+      [
+       88.5,
+       101
+      ]
+     ]
+    },
+    {
+     "note": "old flaming T on the distance helmet",
+     "mode": "all",
+     "poly": [
+      [
+       98,
+       100
+      ],
+      [
+       123.5,
+       99
+      ],
+      [
+       123.5,
+       124
+      ],
+      [
+       98,
+       124
+      ]
+     ]
+    }
+   ],
+   "marks": [
+    {
+     "png": "data/nfl2k5_scorebug_assets/logos/ten.png",
+     "box": [
+      99.5,
+      107.5,
+      112.5,
+      120.5
+     ]
+    }
+   ]
+  },
+  {
+   "name": "car_splayer_a",
+   "kind": "p8_texture",
+   "match": {
+    "asset_id": "p8:3967:splayer"
+   },
+   "note": "CAR 04A0 distance helmet: one 2026 panther where 04H0 has it",
+   "regions": [
+    {
+     "note": "2026 panther pasted at the strip's left edge by the 2026 kit step (misplaced)",
+     "mode": "all",
+     "poly": [
+      [
+       37.5,
+       99
+      ],
+      [
+       61.5,
+       99
+      ],
+      [
+       61.5,
+       119
+      ],
+      [
+       37.5,
+       119
+      ]
+     ],
+     "shell_box": [
+      62,
+      100,
+      80,
+      119
+     ]
+    },
+    {
+     "note": "old 2004 panther on the distance helmet",
+     "mode": "all",
+     "poly": [
+      [
+       97.5,
+       103
+      ],
+      [
+       122,
+       103
+      ],
+      [
+       122,
+       123
+      ],
+      [
+       97.5,
+       123
+      ]
+     ]
+    }
+   ],
+   "marks": [
+    {
+     "png": "data/nfl2k5_scorebug_assets/logos/car.png",
+     "box": [
+      100,
+      107,
+      119.5,
+      121
+     ]
+    }
+   ]
+  },
+  {
+   "name": "buf_splayer_h",
+   "kind": "p8_texture",
+   "match": {
+    "asset_id": "p8:3640:splayer"
+   },
+   "note": "BUF distance helmet: the pink ghost of the old red helmet on the new white shell",
+   "regions": [
+    {
+     "note": "pink ghost of the old red helmet left of the buffalo (red pixels only)",
+     "mode": "deviation",
+     "sign": "redder",
+     "threshold": 8,
+     "grow": 1,
+     "poly": [
+      [
+       37.5,
+       90.5
+      ],
+      [
+       99,
+       90.5
+      ],
+      [
+       99,
+       128
+      ],
+      [
+       37.5,
+       128
+      ]
+     ]
+    },
+    {
+     "note": "pink ghost of the old red helmet above the buffalo (red pixels only)",
+     "mode": "deviation",
+     "sign": "redder",
+     "threshold": 8,
+     "grow": 1,
+     "poly": [
+      [
+       99,
+       90.5
+      ],
+      [
+       128,
+       90.5
+      ],
+      [
+       128,
+       104.5
+      ],
+      [
+       99,
+       104.5
+      ]
+     ]
+    },
+    {
+     "note": "pink ghost of the old red helmet right of and below the buffalo (red pixels only)",
+     "mode": "deviation",
+     "sign": "redder",
+     "threshold": 8,
+     "grow": 1,
+     "poly": [
+      [
+       122.5,
+       104.5
+      ],
+      [
+       128,
+       104.5
+      ],
+      [
+       128,
+       128
+      ],
+      [
+       99,
+       128
+      ],
+      [
+       99,
+       123.5
+      ],
+      [
+       122.5,
+       123.5
+      ]
+     ]
+    }
+   ],
+   "marks": []
+  },
+  {
+   "name": "buf_splayer_a",
+   "kind": "p8_texture",
+   "match": {
+    "asset_id": "p8:3957:splayer"
+   },
+   "note": "BUF distance helmet: the pink ghost of the old red helmet on the new white shell",
+   "regions": [
+    {
+     "note": "pink ghost of the old red helmet left of the buffalo (red pixels only)",
+     "mode": "deviation",
+     "sign": "redder",
+     "threshold": 8,
+     "grow": 1,
+     "poly": [
+      [
+       37.5,
+       90.5
+      ],
+      [
+       99,
+       90.5
+      ],
+      [
+       99,
+       128
+      ],
+      [
+       37.5,
+       128
+      ]
+     ]
+    },
+    {
+     "note": "pink ghost of the old red helmet above the buffalo (red pixels only)",
+     "mode": "deviation",
+     "sign": "redder",
+     "threshold": 8,
+     "grow": 1,
+     "poly": [
+      [
+       99,
+       90.5
+      ],
+      [
+       128,
+       90.5
+      ],
+      [
+       128,
+       104.5
+      ],
+      [
+       99,
+       104.5
+      ]
+     ]
+    },
+    {
+     "note": "pink ghost of the old red helmet right of and below the buffalo (red pixels only)",
+     "mode": "deviation",
+     "sign": "redder",
+     "threshold": 8,
+     "grow": 1,
+     "poly": [
+      [
+       122.5,
+       104.5
+      ],
+      [
+       128,
+       104.5
+      ],
+      [
+       128,
+       128
+      ],
+      [
+       99,
+       128
+      ],
+      [
+       99,
+       123.5
+      ],
+      [
+       122.5,
+       123.5
+      ]
+     ]
+    }
+   ],
+   "marks": []
+  }
+ ],
+ "texture_pins": {
+  "lac_helmet00_24": {
+   "source_rgba_sha256": "2b5a77eb325df263a46fd3ecb8729ff40a8b35079b79443f3c35fbd603cf3e69",
+   "clean_rgba_sha256": "e7a4d635e4398881765f453c08149e8347cd428fbeeda9d3b4b93c5e56f6f42f",
+   "changed_pixels": 1119,
+   "edits": 2
+  },
+  "det_splayer_h": {
+   "source_rgba_sha256": "1055fc7954b65c1831061342865fcba359332246229174ad1c9c8c72bd8aadc3",
+   "clean_rgba_sha256": "bad98fdd27a3c4d0340caeff54a13f8a37abf73600d055257ed514ec51de1296",
+   "changed_pixels": 611,
+   "edits": 1
+  },
+  "det_splayer_a": {
+   "source_rgba_sha256": "02c9ef763e9014001ec701800086d91f29493c8f85ecce291f7003d216c75698",
+   "clean_rgba_sha256": "be38f942eaff9327191b5004fc62db77204d72f5159c9d5ca5e7ba8b467f5db7",
+   "changed_pixels": 604,
+   "edits": 1
+  },
+  "ten_splayer_h": {
+   "source_rgba_sha256": "2c534b31b4b55a9b43cb1b3ebe892c78b77a2645f403b2ab9b0fa613f964f290",
+   "clean_rgba_sha256": "1f22990ac91c18e349e9c0f2e3d23bb8302742dc565efb56e597a5b83f34c293",
+   "changed_pixels": 716,
+   "edits": 1
+  },
+  "ten_splayer_a": {
+   "source_rgba_sha256": "60b745dba63a191f67caa0cb028ccdb85338d48a8518cab13f6fe9316df52114",
+   "clean_rgba_sha256": "e04e60df8e8338e1ca9abd0bf71954a6f7c920cc3c8467eb4f4e65443a88d78e",
+   "changed_pixels": 709,
+   "edits": 1
+  },
+  "car_splayer_a": {
+   "source_rgba_sha256": "547ca9c231320e0b41c246de8614491889534a05f9445fca96e925e92b61736f",
+   "clean_rgba_sha256": "39e37cc0bcccbae9f3067af736b12c64664d763bfe824b8e6d3b516c41143eb9",
+   "changed_pixels": 965,
+   "edits": 1
+  },
+  "buf_splayer_h": {
+   "source_rgba_sha256": "2d6168b5e4c884ea7fb8ee25d67ef691f1e7637f54e5e53c0a0605026ef1cc87",
+   "clean_rgba_sha256": "9a417411dceb300e2ac10402a62d901f529d25b67fb592872c3b32f56fcdfdd3",
+   "changed_pixels": 1048,
+   "edits": 1
+  },
+  "buf_splayer_a": {
+   "source_rgba_sha256": "2736744066b59b46af0dbedc0a0b7b1056ba68c73f54e21ec2e1c26662b9d341",
+   "clean_rgba_sha256": "6c6840c7038074f23f8efd8dece5f349a6b8ffb09394e496de6e0767b91df6e8",
+   "changed_pixels": 1076,
+   "edits": 1
+  }
  }
 }

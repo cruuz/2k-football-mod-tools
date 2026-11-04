@@ -3411,7 +3411,7 @@
     "mod_editor/core/nfl2k5_option_defaults.py": "74c27b923397fc9ced78505caf95d4d9aacef221905ace82f1ce3230ffb0ad5d",
     "mod_editor/core/nfl2k5_overtime.py": "ca2e8703dce510bec31ad95a51e7c4545770f9b6edb040f5ad65d96417758703",
     "mod_editor/core/nfl2k5_p8_texture_writer.py": "4a519adf657eeb5ecbf8be6a8cba99411cbd0e5843bf55d7bd7e142723498485",
-    "mod_editor/core/nfl2k5_pants_hem_2026.py": "df199b8ddc5bf211830c27f796183374c28699fe1d1cbe7086ee106042970024",
+    "mod_editor/core/nfl2k5_pants_hem_2026.py": "ae9e1b88f56788ae2e3ec819f535461aa6872047102de1a7d24e9243c596f22d",
     "mod_editor/core/nfl2k5_pass_protection.py": "8d85ca582b80d79ad341e8c0158a89094662dd77fbfe655d39d9005742176692",
     "mod_editor/core/nfl2k5_pass_protection_code.py": "a9d8e2bfb43cab4c95d2e5c909a47a5d84fbf3b927ce51f97da619728b49e8de",
     "mod_editor/core/nfl2k5_pass_rush_stats.py": "3cda059a859bdceeceaf869fe3816ab42de10e94f3859207eb2dfdfff5101e74",

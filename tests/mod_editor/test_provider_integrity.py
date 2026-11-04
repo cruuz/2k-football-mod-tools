@@ -397,7 +397,7 @@ class ProviderIntegrityTests(unittest.TestCase):
                 "data/nfl2k5_kit_fixes_2026_uf3.json": "a1911b169c1a4bb8fe130575586563e1ac9c9567e490a7d753f7c017f492747c",
                 "data/nfl2k5_kit_fixes_2026_sea1.json": "507ea2233b31a41e5301427367186cca3c0f116be6b2f31172068b8dc9f34e35",
                 "data/nfl2k5_kit_fixes_2026_ov1.json": "506d9592290de13e4aeb17a23a0febf147e4392b985646ef9c0df5e15765c9c4",
-                "data/nfl2k5_pants_hem_2026.json": "902a3ec6b3eec65d09bd582e459b30c8c91ea26f432be20e7d2b5b35c869e6ca",
+                "data/nfl2k5_pants_hem_2026.json": "a4505da50107f8961e706b9500dcc20369f07e64441694401be02fb417e9bc38",
                 "data/nfl2k5_glyph_fixes_2026.json": "a709d39b5fb5ab4a6f6793e6626d36771197c6a196c410b8057e58f899148387",
                 "data/nfl2k5_nameplate_fixes_2026.json": "535f690f05dfb40a53239ca007fef42bdc4eaaa9611fcf4b74b1496b62980200",
                 "data/nfl2k5_glyph_fixes_2026/TEN_28A0_digit_arm_7.png": "01252bae05b33caa13780327eafd8add37303d54bc27d46429cef61230a292d5",

@@ -60,6 +60,41 @@ class Document(unittest.TestCase):
         teams = {(g["team"], g["code"]) for g in cl.spec()["groups"]}
         self.assertEqual(teams, {("ARI", "00"), ("BAL", "02"), ("DET", "09"), ("NYJ", "19"), ("WAS", "29")})
 
+    def test_in_game_texture_fixes_are_named_pinned_and_use_repository_marks(self):
+        doc = cl.spec()
+        entries = cl.texture_entries(doc)
+        self.assertEqual({e["name"] for e in entries}, set(doc["texture_pins"]))
+        self.assertEqual({e["name"] for e in entries},
+                         {"lac_helmet00_24", "det_splayer_h", "det_splayer_a", "ten_splayer_h", "ten_splayer_a",
+                          "car_splayer_a", "buf_splayer_h", "buf_splayer_a"})
+        for entry in entries:
+            self.assertIn(entry["kind"], ("live_helmet", "p8_texture"))
+            self.assertTrue(entry["note"])
+            pin = doc["texture_pins"][entry["name"]]
+            self.assertNotEqual(pin["source_rgba_sha256"], pin["clean_rgba_sha256"])
+            for mark in entry.get("marks", ()):
+                self.assertTrue((ROOT / mark["png"]).is_file(), mark["png"])
+                self.assertTrue(mark["png"].startswith("data/nfl2k5_scorebug_assets/logos/"))
+
+    def test_marks_are_drawn_inside_their_box_and_lit(self):
+        base = shell(64, base=(150, 150, 150), highlight=False)
+        out = cl.apply_marks(base, [dict(png="data/nfl2k5_scorebug_assets/logos/ten.png", box=[10, 10, 30, 30])])
+        changed = (out != base).any(axis=2)
+        ys, xs = np.nonzero(changed)
+        self.assertTrue(len(ys) > 100)
+        self.assertTrue(xs.min() >= 10 and xs.max() < 30 and ys.min() >= 10 and ys.max() < 30)
+        self.assertTrue((out[..., 3] == base[..., 3]).all())
+
+    def test_neutral_mode_keeps_brightness_and_drops_the_tint(self):
+        rgba = shell(32, base=(230, 230, 230), highlight=False)
+        rgba[10:14, 10:14, :3] = (30, 80, 140)                   # navy left in a screw's rim
+        out, _ = cl.clean_regions(rgba, [dict(poly=[[8, 8], [16, 8], [16, 16], [8, 16]], mode="neutral",
+                                              sign="bluer", threshold=18, note="t")])
+        rim = out[10:14, 10:14, :3].astype(int)
+        self.assertTrue((rim.max(axis=-1) - rim.min(axis=-1) <= 1).all())
+        self.assertTrue((np.abs(rim[..., 0] - 72) <= 2).all())        # 0.299*30 + 0.587*80 + 0.114*140
+        self.assertTrue((out[:8] == rgba[:8]).all())
+
     def test_unknown_document_is_refused(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "doc.json"
@@ -197,6 +232,36 @@ class LeagueProject(unittest.TestCase):
         for name, receipt in self.receipts.items():
             self.assertEqual(receipt["clean_rgba_sha256"], doc["cards"][name]["clean_rgba_sha256"], name)
             self.assertEqual(receipt["changed_pixels"], doc["cards"][name]["changed_pixels"], name)
+
+    def test_every_in_game_texture_reproduces_its_pin(self):
+        images, receipts = cl.clean_project_textures(self.project)
+        doc = cl.spec()
+        self.assertEqual(set(images), set(doc["texture_pins"]))
+        for name, receipt in receipts.items():
+            self.assertEqual(receipt["clean_rgba_sha256"], doc["texture_pins"][name]["clean_rgba_sha256"], name)
+
+    @unittest.skipUnless(os.environ.get("NFL2K5_RETAIL_INDEX"), "set NFL2K5_RETAIL_INDEX (retail pack 0) for the importer")
+    def test_the_pants_hem_pass_knows_the_fixed_sideline_atlases(self):
+        """The pants hem still paints the 2026 hem on the fixed distance-player atlases: the importer's span of each
+        fixed splayer is the hem row's ``also`` before pin and the hem compile gives its ``also`` after pin."""
+        import hashlib
+        import nfl2k5_visual_mod_project as writer
+        from mod_editor.core import nfl2k5_pants_hem_2026 as hem
+        images, _ = cl.clean_project_textures(self.project)
+        rows = {r["selector"]: r for r in hem.spec()["textures"] if r["kind"] == "splayer" and r.get("also")}
+        kits = {"det_splayer_h": "09H0", "det_splayer_a": "09A0", "ten_splayer_h": "28H0", "ten_splayer_a": "28A0",
+                "car_splayer_a": "04A0", "buf_splayer_h": "03H0", "buf_splayer_a": "03A0"}
+        entries = {e["name"]: e for e in cl.texture_entries(cl.spec())}
+        with tempfile.TemporaryDirectory() as tmp:
+            for name, selector in kits.items():
+                png = Path(tmp) / f"{name}.png"
+                cl.save_rgba(images[name], png)
+                span = writer.p8_texture_adapter.build_unified_p8_texture_import(
+                    Path(os.environ["NFL2K5_RETAIL_INDEX"]), entries[name]["match"]["asset_id"], png)[0]
+                row = rows[selector]
+                self.assertEqual(hashlib.sha256(span).hexdigest(), row["also"][0]["before_sha256"], name)
+                new, _ = hem._compile_row(span, row, hem.spec())
+                self.assertEqual(hashlib.sha256(new).hexdigest(), row["also"][0]["after_sha256"], name)
 
     @unittest.skipUnless(os.environ.get("NFL2K5_RETAIL_INDEX"), "set NFL2K5_RETAIL_INDEX (retail pack 0) for the importer")
     def test_the_washington_w_pass_knows_the_cleaned_cards(self):

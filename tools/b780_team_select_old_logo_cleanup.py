@@ -20,9 +20,11 @@ Washington's old feather, feather tips and dark red roundel ring), the renders s
 3. ``"mode": "all"`` (most regions) repaints the whole polygon with that rebuilt shell; ``"mode": "deviation"``
    repaints only the pixels that differ from it by more than the region's threshold (``"sign": "darker"`` or
    ``"lighter"`` limits it to one direction, so a highlight next to a dark piece stays; ``"redder"`` takes only the
-   pixels redder than the shell (red, not gold), for a red piece on a neutral shell; ``"estimate": "local"`` rebuilds the shell from
+   pixels redder than the shell (red, not gold), for a red piece on a neutral shell, ``"bluer"`` the same for navy,
+   ``"greyer"`` the old shell's grey seams on a coloured shell; ``"estimate": "local"`` rebuilds the shell from
    a blur of its own pixels instead, which keeps the helmet's highlights under a thin piece), plus ``grow`` pixels
-   of anti-aliased fringe; ``inset`` keeps a region that many pixels inside the helmet's outline (its piping);
+   of anti-aliased fringe; ``"mode": "neutral"`` keeps the tinted pixels' brightness and drops their tint (the old
+   shell colour in a screw's rim); ``inset`` keeps a region that many pixels inside the helmet's outline (its piping);
    alpha never changes and only opaque pixels are painted;
 4. the 128 helm card is the premultiplied 2 x 2 box reduction of the 256 card (measured: within 1.6 levels on every
    card), so its blocks that cover a repainted 256 pixel take the box of the cleaned 256 card plus the original 128
@@ -262,8 +264,23 @@ def redness(rgb: np.ndarray) -> np.ndarray:
     return rgb[..., 0] - np.maximum(rgb[..., 1], rgb[..., 2]) - np.abs(rgb[..., 1] - rgb[..., 2])
 
 
+def blueness(rgb: np.ndarray) -> np.ndarray:
+    """How much a pixel is navy or blue rather than neutral: blue over red and green."""
+    return rgb[..., 2] - np.maximum(rgb[..., 0], rgb[..., 1])
+
+
+def greyness(rgb: np.ndarray) -> np.ndarray:
+    """How grey a pixel is (255 less its saturation on a 0 to 255 scale): the old white shell's seams and stripes
+    left as grey lines on a coloured shell are greyer than the shell around them."""
+    high, low = rgb.max(axis=-1), rgb.min(axis=-1)
+    return 255.0 - (high - low) * 255.0 / np.maximum(high, 1.0)
+
+
+TINTS = {"redder": redness, "bluer": blueness, "greyer": greyness}
+
+
 def signed_deviation(difference: np.ndarray, sign: str) -> np.ndarray:
-    require(sign in ("any", "darker", "lighter", "redder"), f"unknown region sign {sign!r}")
+    require(sign in ("any", "darker", "lighter", "redder", "bluer", "greyer"), f"unknown region sign {sign!r}")
     if sign == "redder":
         return difference[..., 0]
     if sign == "darker":
@@ -273,11 +290,12 @@ def signed_deviation(difference: np.ndarray, sign: str) -> np.ndarray:
     return np.abs(difference).max(axis=2)
 
 
-def clean_regions(rgba: np.ndarray, regions) -> tuple[np.ndarray, list[dict]]:
-    """Repaint each region of one card; returns the new RGBA and a receipt row per region."""
+def clean_regions(rgba: np.ndarray, regions, *, alpha_any: bool = False) -> tuple[np.ndarray, list[dict]]:
+    """Repaint each region of one card; returns the new RGBA and a receipt row per region. ``alpha_any``: the alpha
+    channel is not coverage (an in-game helmet keeps its reflection weight there), so every pixel may be painted."""
     out = rgba.copy()
     h, w = rgba.shape[:2]
-    opaque = rgba[..., 3] >= OPAQUE
+    opaque = np.ones((h, w), bool) if alpha_any else rgba[..., 3] >= OPAQUE
     rows = []
     for number, region in enumerate(regions):
         rgb = out[..., :3].astype(np.float64)
@@ -287,14 +305,27 @@ def clean_regions(rgba: np.ndarray, regions) -> tuple[np.ndarray, list[dict]]:
             area &= ~dilate(~opaque, int(region["inset"]))
         require(area.any(), f"region {number} covers no opaque pixel")
         band = dilate(area, BAND) & ~area & opaque
+        if region.get("mode") == "neutral":
+            shell = band
         reference = None
         if "shell_box" in region:
             x0, y0, x1, y1 = (int(v) for v in region["shell_box"])
             reference = np.zeros((h, w), bool)
             reference[y0:y1, x0:x1] = True
             reference &= opaque & ~area
-        shell = shell_band(rgb, band, reference)
+        if region.get("mode") != "neutral":
+            shell = shell_band(rgb, band, reference)
         mode = region.get("mode", "deviation")
+        if mode == "neutral":
+            # the old shell colour left in a feature that stays (a screw's rim, the ear hole's bevel): the tinted
+            # pixels keep their own brightness and lose the tint
+            tint = TINTS[region.get("sign", "bluer")]
+            paint = area & (tint(rgb) > float(region.get("threshold", 12)))
+            grey = rgb @ np.array([0.299, 0.587, 0.114])
+            out[paint, :3] = round_half_up(np.repeat(grey[paint][:, None], 3, axis=1))
+            rows.append(dict(region=number, note=region.get("note", ""), area_pixels=int(area.sum()),
+                             painted_pixels=int(paint.sum()), shell_band_pixels=0))
+            continue
         if mode == "all":
             paint = area
         else:
@@ -304,12 +335,12 @@ def clean_regions(rgba: np.ndarray, regions) -> tuple[np.ndarray, list[dict]]:
             if region.get("estimate", "harmonic") == "local":
                 # thin pieces over shaded shell: the shell estimate follows the helmet's own highlights
                 paint = area & ~local_shell(rgb, area | shell, threshold, sign)
-            elif sign == "redder":
-                # a red piece on a neutral shell (Washington's old roundel ring on the black helmet): the excess of
-                # red over green and blue, against the same excess of the rebuilt shell
-                require(region.get("estimate", "harmonic") == "harmonic", "a redder region uses the harmonic estimate")
+            elif sign in TINTS:
+                # a red (or navy) piece on a neutral shell (Washington's old roundel ring on the black helmet, the old
+                # navy shell's edges on the Chargers' white helmet): the tint's excess against the rebuilt shell's
+                require(region.get("estimate", "harmonic") == "harmonic", "a tinted region uses the harmonic estimate")
                 estimate = harmonic_fill(rgb, area, shell)
-                paint = area & ((redness(rgb) - redness(estimate)) > threshold)
+                paint = area & ((TINTS[sign](rgb) - TINTS[sign](estimate)) > threshold)
             else:
                 require(region.get("estimate", "harmonic") == "harmonic", "unknown region estimate")
                 estimate = harmonic_fill(rgb, area, shell)
@@ -353,6 +384,83 @@ def derive_half(old_small: np.ndarray, old_big: np.ndarray, new_big: np.ndarray)
         moved[..., 3] = old_small[..., 3]
         out[blocks] = round_half_up(moved[blocks])
     return out
+
+
+LUMA = np.array([0.299, 0.587, 0.114])
+
+
+def apply_marks(rgba: np.ndarray, marks) -> np.ndarray:
+    """Composite each 2026 mark (a repository PNG, straight alpha) into its box: cropped to its ink, fitted inside the
+    box (aspect kept, centred), resized on premultiplied RGBA, and lit by the shell under it (square root of the luma
+    ratio to the box's median, 0.8 to 1.15, as the Team Select cards light their marks). Alpha stays."""
+    from PIL import Image
+    out = rgba.copy()
+    for mark in marks:
+        with Image.open(ROOT / mark["png"]) as image:
+            logo = image.convert("RGBA")
+        logo = logo.crop(logo.getbbox())
+        if mark.get("flip"):
+            logo = logo.transpose(Image.FLIP_LEFT_RIGHT)
+        x0, y0, x1, y1 = (float(v) for v in mark["box"])
+        scale = min((x1 - x0) / logo.width, (y1 - y0) / logo.height)
+        lw, lh = max(1, int(round(logo.width * scale))), max(1, int(round(logo.height * scale)))
+        pre = np.asarray(logo, dtype=np.float64) / 255.0
+        pre[..., :3] *= pre[..., 3:4]
+        planes = [np.asarray(Image.fromarray(pre[..., c].astype(np.float32), "F").resize((lw, lh), Image.LANCZOS),
+                             dtype=np.float64) for c in range(4)]
+        small = np.clip(np.stack(planes, axis=-1), 0.0, 1.0)
+        alpha = small[..., 3:4]
+        colour = np.where(alpha > 1e-6, small[..., :3] / np.maximum(alpha, 1e-6), 0.0)
+        ox, oy = int(round((x0 + x1 - lw) / 2.0)), int(round((y0 + y1 - lh) / 2.0))
+        require(0 <= ox and 0 <= oy and ox + lw <= out.shape[1] and oy + lh <= out.shape[0], "a mark leaves its texture")
+        base = out[oy:oy + lh, ox:ox + lw, :3].astype(np.float64)
+        luma = base @ LUMA
+        reference = float(np.median(luma)) if mark.get("lit", True) else 0.0
+        shade = (np.clip(np.sqrt(luma / max(reference, 1e-3)), 0.8, 1.15)[..., None] if mark.get("lit", True)
+                 else np.ones(luma.shape + (1,)))
+        lit = np.clip(colour * 255.0 * shade, 0.0, 255.0)
+        out[oy:oy + lh, ox:ox + lw, :3] = round_half_up(base * (1.0 - alpha) + lit * alpha)
+    return out
+
+
+def texture_entries(doc: dict) -> list:
+    """The in-game texture fixes (b780 art1 Q11 to Q16): live helmets and splayer atlases, by edit identity."""
+    entries = doc.get("textures", [])
+    names = [e["name"] for e in entries]
+    require(len(names) == len(set(names)), "texture fix names repeat")
+    return entries
+
+
+def matching_edits(project: dict, entry: dict) -> list:
+    return [e for e in project["edits"] if e.get("kind") == entry["kind"]
+            and all(e.get(k) == v for k, v in entry["match"].items())]
+
+
+def clean_project_textures(project: dict, doc: dict | None = None) -> tuple[dict, dict]:
+    """{fix name: fixed RGBA} and {fix name: receipt}: the regions cleaned, then the 2026 marks drawn. Refuses a
+    texture whose source is not the pinned art."""
+    doc = doc or spec()
+    pins = doc.get("texture_pins", {})
+    images, receipts = {}, {}
+    for entry in texture_entries(doc):
+        edits = matching_edits(project, entry)
+        require(edits, f"{entry['name']}: no {entry['kind']} edit matches {entry['match']}")
+        sources = {e["png"] for e in edits}
+        require(len(sources) == 1, f"{entry['name']}: the matched edits use different PNGs")
+        source = sources.pop()
+        before = load_rgba(source)
+        require(rgba_sha(before) == pins[entry["name"]]["source_rgba_sha256"],
+                f"{entry['name']}: the source is not the known art")
+        after, rows = clean_regions(before, entry.get("regions", []), alpha_any=entry.get("alpha") == "any")
+        after = apply_marks(after, entry.get("marks", []))
+        images[entry["name"]] = after
+        receipts[entry["name"]] = dict(source=source, kind=entry["kind"], match=entry["match"],
+                                       source_rgba_sha256=rgba_sha(before), clean_rgba_sha256=rgba_sha(after),
+                                       changed_pixels=int((before != after).any(axis=2).sum()), regions=rows)
+    for name, receipt in receipts.items():
+        require(receipt["clean_rgba_sha256"] == pins[name]["clean_rgba_sha256"], f"{name}: the result differs from its pin")
+        require(receipt["changed_pixels"] > 0, f"{name}: nothing was changed")
+    return images, receipts
 
 
 # ----------------------------------------------------------------------------------------------- the document
@@ -416,7 +524,11 @@ def cmd_apply(args) -> int:
     project_path = Path(args.project)
     project = json.loads(project_path.read_text(encoding="utf-8"))
     out_dir = Path(args.out_dir)
-    images, receipts = clean_project_cards(project, spec(args.data) if args.data else None)
+    doc = spec(args.data) if args.data else spec()
+    images, receipts = clean_project_cards(project, doc)
+    texture_images, texture_receipts = clean_project_textures(project, doc)
+    images.update(texture_images)
+    receipts.update(texture_receipts)
     by_source = {}
     for name, image in images.items():
         source = Path(receipts[name]["source"])
@@ -432,7 +544,7 @@ def cmd_apply(args) -> int:
         receipts[name]["output_file_sha256"] = sha(target.read_bytes())
     replaced = 0
     for edit in project["edits"]:
-        if edit.get("kind") == "team_select" and Path(edit["png"]) in by_source:
+        if isinstance(edit.get("png"), str) and Path(edit["png"]) in by_source:
             edit["png"] = str(out_dir / Path(edit["png"]).name)
             replaced += 1
     # the league project's own layout (indent 2, sorted keys), so the copy differs from it only in the repointed lines
@@ -448,7 +560,9 @@ def cmd_apply(args) -> int:
 
 def cmd_check(args) -> int:
     project = json.loads(Path(args.project).read_text(encoding="utf-8"))
-    images, receipts = clean_project_cards(project, spec(args.data) if args.data else None)
+    doc = spec(args.data) if args.data else spec()
+    images, receipts = clean_project_cards(project, doc)
+    receipts.update(clean_project_textures(project, doc)[1])
     print(json.dumps({name: dict(changed_pixels=r["changed_pixels"], clean_rgba_sha256=r["clean_rgba_sha256"])
                       for name, r in sorted(receipts.items())}, indent=1))
     return 0
