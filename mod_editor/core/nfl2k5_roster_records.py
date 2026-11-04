@@ -2330,7 +2330,8 @@ class RosterDocument:
     def swap(self, first: Player, second: Player) -> dict[str, Any]:
         """Exchange two rostered players' slots: each takes the other's team and list position, and
         each is re-ranked at the end of his position's chain on the new team.  Counts do not move,
-        so the 42 / 54 limits cannot be crossed."""
+        so the 42 / 54 limits cannot be crossed.  Two players of one team only trade list places (b780
+        hunt5): their ranks, sides and locks stay, so a swap never benches a starter."""
 
         self.check_operation(first, "swap")
         self.check_operation(second, "swap")
@@ -2359,7 +2360,8 @@ class RosterDocument:
             second.teams.remove(team_b)
             second.teams.append(team_a)
             second.teams.sort()
-        depth = {first.display: self._rerank(first, team_b), second.display: self._rerank(second, team_a)}
+        depth = ({first.display: self._rerank(first, team_b), second.display: self._rerank(second, team_a)}
+                 if team_a != team_b else {})
         return {"operation": "swap", "players": (first.display, second.display),
                 "first": {"pool": first.pool, "index": first.index, "from": a.abbreviation,
                           "to": b.abbreviation, "slot": slot_b},

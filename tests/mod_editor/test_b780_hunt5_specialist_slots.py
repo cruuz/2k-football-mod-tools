@@ -212,6 +212,19 @@ class RosterOperationTests(unittest.TestCase):
         self.assertEqual(who(self.document, 0), names)
         self.assert_round_trip(0)
 
+    def test_a_swap_inside_one_club_never_benches_a_starter(self) -> None:
+        # the Swap dialog lists every team, the player's own included; before b780 hunt5 both players were re-ranked to
+        # the bottom of their chains (on the v0.8 roster SF's starting QB became QB3) and lost their locks
+        team = self.document.teams[0]
+        a, b = (self.document.by_offset[o] for o in (team.slots[4], team.slots[17]))
+        before = [(p.record.values["depth_rank"], p.record.values["depth_side"], p.record.values["unknown_52"])
+                  for p in (a, b)]
+        receipt = self.document.swap(a, b)
+        self.assertEqual(receipt["depth"], {})
+        self.assertEqual([(p.record.values["depth_rank"], p.record.values["depth_side"], p.record.values["unknown_52"])
+                          for p in (a, b)], before)
+        self.assertEqual((team.slots[4], team.slots[17]), (b.offset, a.offset))
+
     def test_project_replay_keeps_roles_and_records_no_specialist_edits(self) -> None:
         base = self.document.to_body()
         loaded = rr.RosterDocument(base)
