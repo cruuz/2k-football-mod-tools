@@ -2300,7 +2300,8 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
         # Reserve compatibility also accepts the old automatic-cut installation;
         # replay its guarded writer so an upgrade actually restores native cuts.
         # b778-pg1: so does progression (the beta-77 curves-only patch gains the NFL career layer in place)
-        if state == "retail" or (state == "legacy" and key in ("player_star_patch", "depth_locks_patch", "franchise_economy_patch", "progression_patch")) or (state == "applied" and key == "team_column_patch" and module.revision(patched) == 1) or (state == "applied" and key in ("practice_squad_patch", "chop_block_toggle_patch", "flatter_deep_ball_patch", "widescreen_patch", "modern_naming_patch", "seven_on_seven_patch", "prospect_names_patch")):
+        # b780 hunt5: SPECIAL rows revision 1 (3DRB = the RB rank list itself) reads applied; apply moves 3DRB to RB2
+        if state == "retail" or (state == "legacy" and key in ("player_star_patch", "depth_locks_patch", "franchise_economy_patch", "progression_patch")) or (state == "applied" and key == "team_column_patch" and module.revision(patched) == 1) or (state == "applied" and key in ("practice_squad_patch", "chop_block_toggle_patch", "flatter_deep_ball_patch", "widescreen_patch", "modern_naming_patch", "seven_on_seven_patch", "prospect_names_patch", "depth_chart_rows_patch")):
             patched, sub_receipt = module.apply(patched)
             if state == "legacy":
                 sub_receipt = {**sub_receipt, "upgraded_from": "legacy"}

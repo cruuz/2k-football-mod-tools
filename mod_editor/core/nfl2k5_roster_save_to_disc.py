@@ -413,8 +413,11 @@ def compare(disc: rr.RosterDocument, save: rr.RosterDocument, *,
                 skip(p, "membership", reason)
         moves = []
     else:
+        # b780 hunt5: the replay keeps holder, returner, kicker and snapper roles on their players; so does this copy
+        roles_before = work.specialist_snapshot()
         for team in work.teams:
             team.slots = list(desired_slots[team.index])
+        work.keep_specialists_on_players(roles_before)
         work.free_agents = desired_free
         work._reindex_membership()
     # Export normal fields/texts, then include explicit moves for pure depth rotations.

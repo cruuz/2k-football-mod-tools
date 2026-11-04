@@ -161,10 +161,11 @@ return personnel for offense.
 
 * **3DB:** one HB, plus shotgun flag bit 19 corroborated by QB depth; or at
   least three WRs; or three WR/TE receiving positions with the HB split at
-  least five yards wide and no deeper than three yards. Assign HB ordinal 0
-  (RC109: the lead back; personnel belongs to a formation, not a down).
+  least five yards wide and no deeper than three yards. Since beta-76.4 these
+  sets keep HB ordinal 0, the lead back (shotgun and spread runs need him).
 * **PWR:** goal-line/jumbo categories or names, or at least two TEs plus FB
-  (the precise I-heavy definition). Assign HB ordinal 1 (the HB side order, PWRB). Ordinary I Pro with
+  (the precise I-heavy definition). Assign HB ordinal 1, the first man in the
+  independent power order (PWRB). Ordinary I Pro with
   one TE remains base. Clock inherits its heavy personnel group's PWR choice.
 * **Base:** retain/use HB ordinal 0. Empty sets without an HB get no HB edit.
 * Refuse multiple HBs, contradictory shotgun geometry/flag, simultaneous
@@ -210,21 +211,30 @@ with recognised signatures can be upgraded; partial/unknown role edits refuse.
 Offense, 4-3 and 3-4 have **11 rows**, with X/Z labels on the original WR rows.
 SPECIAL has **13 rows**, scrolling only on SPECIAL:
 
-| Row | Abbreviation / long name | Position, chain | List start | Book kind, ordinal |
-|---:|---|---|---|---|
-| 0–3 | KR, PR, K, P | Retail | Retail | Retail |
-| 4 | LS / LONG SNAPPER | 12, 2 | C rank 1 | 6, 1 |
-| 5 | LGUN / LEFT GUNNER | 3, 3 | WR side 1 | 9, 3 |
-| 6 | RGUN / RIGHT GUNNER | 4, 3 | CB side 1 | 18, 3 |
-| 7 | NCB / NICKEL CORNER | 4, 2 | CB rank 1 | 18, 2 |
-| 8 | DCB / DIME CORNER | 4, 3 | CB side 1 | 18, 3 |
-| 9 | SLWR / SLOT RECEIVER | 3, 2 | WR rank 1 | 9, 2 |
-| 10 | GAD / GADGET | 3, 4 | WR rank 2 | 9, 4 |
-| 11 | 3DRB / THIRD DOWN BACK | 7, 0 | HB rank 0 (the Offense HB order itself) | 10, 0 |
-| 12 | PWRB / POWER BACK | 7, 1 | HB side 0 (its own order) | 10, 1 |
+| Row | Abbreviation / long name | Position, chain | List start | Book kind, ordinal | Where he plays (37 club books, v0.9) |
+|---:|---|---|---|---|---|
+| 0–3 | KR, PR, K, P | Retail | Retail | Retail | returners (team bytes +0x195/+0x196/+0x199), kicker, punter |
+| 4 | LS / LONG SNAPPER | 12, 2 | C rank 1 | 6, 1 | snapper in all 36 punt and 36 FG/PAT formations; C2 |
+| 5 | LGUN / LEFT GUNNER | 3, 3 | WR side 1 | 9, 3 | punt left gunner (36); WR4 in 58 four-WR and 40 five-WR sets; kickoff and kick-return units |
+| 6 | RGUN / RIGHT GUNNER | 4, 3 | CB side 1 | 18, 3 | punt right gunner (36); the same list as DCB |
+| 7 | NCB / NICKEL CORNER | 4, 2 | CB rank 1 | 18, 2 | CB3 in 114 nickel and dime formations; kickoff units |
+| 8 | DCB / DIME CORNER | 4, 3 | CB side 1 | 18, 3 | CB4 in 38 dime formations; kickoff units |
+| 9 | SLWR / SLOT RECEIVER | 3, 2 | WR rank 1 | 9, 2 | inside WR in 541 three-WR sets (and in 4/5-WR sets) |
+| 10 | GAD / GADGET | 3, 4 | WR rank 2 | 9, 4 | WR5 in 40 five-WR sets; a WR in 29 base two-WR sets of gadget groups |
+| 11 | 3DRB / THIRD DOWN BACK | 7, 2 | HB rank 1 | 10, 2 | RB2 behind the starter; no offensive set asks for it; kickoff and kick-return units |
+| 12 | PWRB / POWER BACK | 7, 1 | HB side 0 | 10, 1 | the back in 217 goal-line, jumbo and heavy-I sets; 2nd back in two-back sets |
 
-b780 db2: this table follows `ROLE_ROWS` (RC109 moved 3DRB to the HB rank chain and PWRB to the HB side chain).
-3DRB is therefore the Offense HB row shown again: a swap on it reorders the Offense HB row, and no rule puts a
+**3DRB revision 2 (b780 hunt5, Noah 11/03: "If I make someone a third down back, they shouldn't be in every single
+play. The starting halfback should have priority.").** Beta-76.4 to the beta-80 RC drew 3DRB as chain 0, the RB rank
+list itself: the back put at its top became RB1, the back in all 953 base and passing formations. 3DRB now starts at
+RB rank row 1, so the starter is not in its list and its top back is RB2, who comes in when the lineup picker passes
+the starter over. A real third-down back needs a down and distance rule in the lineup builder (beta-81). A revision-1
+executable reads applied and `apply` rewrites the one chain dword (VA 0xEE3CA4, 0 to 2) and the section digest.
+The 32 preserved retail books (entries 4410..4441, historic sides) keep retail personnel; SPECIAL roles other than
+KR/PR/K/P do not apply to them.
+
+b780 db2 (amended for revision 2 at b780-int): the table follows `ROLE_ROWS`. 3DRB is a view of the Offense HB
+rank order from its second man, so a swap on it reorders that order behind the starter, and no rule puts a
 different back in on third down (`ThirdDownBackMirrorTests` runs the game's own lookup and swap). Only PWRB is an
 independent back order. A 3DRB that holds its own order would need a third per-player chain (no free 3-bit field
 remains in `+0x28`: bits 0-7 injured reserve, 8-9 unaudited, 10-12 rank, 13-15 side) kept by every native depth
