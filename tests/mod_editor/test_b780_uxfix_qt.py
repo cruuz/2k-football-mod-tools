@@ -328,6 +328,13 @@ class SharePanelTests(unittest.TestCase):
         self.assertEqual(asked[0][0], "That file is not a SOFTDRINK 2K28 patch")
         self.assertIn('"my notes.txt" is not a SOFTDRINK 2K28 patch', asked[0][1])
 
+    def test_step_one_starts_at_the_game_file_already_open(self):
+        opened = self.folder / "ESPN NFL 2K5 (USA).iso"
+        self.panel.source_field.setText(str(opened))
+        with mock.patch.object(QFileDialog, "getOpenFileName", return_value=("", "")) as chooser:
+            self.panel.install_softdrink()
+        self.assertEqual(chooser.call_args.args[2], str(opened))       # the open disc is preselected
+
     def _receipt(self, target: Path, memory: bool) -> dict:
         from mod_editor.core import nfl2k5_marks_store as store
         return {"target": {"path": str(target), "matches_author_result": None, "all_game_files_verified": True},
@@ -595,11 +602,27 @@ class StudioWindowTests(unittest.TestCase):
             sys.excepthook = lambda kind, exc, tb: (hook.seen.append(exc),
                                                     crash_report.handle(kind, exc, tb, app_name="2K5 Mod Studio",
                                                                         directory=folder, show_dialog=False))
-            window.open_workspace("sliders_gameplay")
+            page = window.open_workspace("sliders_gameplay")
             _pump(self.app, 20)
             for width in (1480, 1280, 1366, 1040, 1480):
                 self._size(width, 920)
             _shot(window, "after_gameplay_1480x920")
+            # Opening Gameplay builds the Build options it shares (window._build_panel). A layout can squeeze one
+            # of their wrapping check boxes narrower than its indicator for a moment (a first layout pass, a
+            # collapsed section, a small window). That is what recursed; make every box live through it.
+            from mod_editor.gui.ux_text import WrappingCheckBox
+            self.assertIsNotNone(page)
+            window.open_workspace("build_share")         # shown, so a resize reaches each box at once
+            window._build_share_page.setCurrentWidget(window._build_panel)
+            _pump(self.app, 10)
+            boxes = [box for box in window._build_panel.findChildren(WrappingCheckBox) if box.isVisible()]
+            self.assertGreater(len(boxes), 20)
+            for box in boxes:
+                for width in (10, 1):
+                    box.resize(width, max(1, box.height()))
+            _pump(self.app, 5)
+            self._size(1480, 920)
+            window.navigation.setCurrentRow(0)
         self.assertEqual([type(exc).__name__ for exc in hook.seen], [])
         log = folder / "errors.log"
         self.assertFalse(log.exists() and log.stat().st_size,

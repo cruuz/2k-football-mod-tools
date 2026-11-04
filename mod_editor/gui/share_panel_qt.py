@@ -525,8 +525,12 @@ class SharePanel(QWidget):
         """One action: choose source, pack and destination; verification is part of apply."""
         if self.busy:
             return
+        # b780-uxfix: the choosers start at the game file already open (or chosen last) and at Downloads for the
+        # patch, not in the program's own folder
+        opened = self.source_field.text().strip()
+        downloads = Path.home() / "Downloads"
         while True:
-            source, _ = QFileDialog.getOpenFileName(self, "1 of 3: Choose your unmodified ESPN NFL 2K5 USA Xbox image file (an .iso or .xiso, not a game folder)", "", IMAGE_FILTER)
+            source, _ = QFileDialog.getOpenFileName(self, "1 of 3: Choose your unmodified ESPN NFL 2K5 USA Xbox image file (an .iso or .xiso, not a game folder)", opened, IMAGE_FILTER)
             if not source:
                 return
             problem = self.game_file_problem(source)   # b780-uxfix: checked now, not after step 3
@@ -534,8 +538,11 @@ class SharePanel(QWidget):
                 break
             if not self._wrong_file("That file is not the NFL 2K5 game", *problem):
                 return
+        last_pack = self.pack_field.text().strip()
         while True:
-            pack_path, _ = QFileDialog.getOpenFileName(self, "2 of 3: Choose the downloaded .2k5patch file (do not extract it)", "", PACK_FILTER)
+            pack_path, _ = QFileDialog.getOpenFileName(
+                self, "2 of 3: Choose the downloaded .2k5patch file (do not extract it)",
+                last_pack or (str(downloads) if downloads.is_dir() else ""), PACK_FILTER)
             if not pack_path:
                 return
             self.load_pack(Path(pack_path))
