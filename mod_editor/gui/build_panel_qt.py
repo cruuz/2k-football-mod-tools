@@ -279,6 +279,7 @@ from mod_editor.core import nfl2k5_ball_carrier_ai as _ball_carrier_ai  # noqa: 
 from mod_editor.core import nfl2k5_runner_vision as _runner_vision  # noqa: E402  b780 cv2-runner
 # b778-kr1: return coverage takes pursuit angles on kick and punt returns (on in the Advanced and Experimental presets).
 from mod_editor.core import nfl2k5_return_coverage as _return_coverage  # noqa: E402
+from mod_editor.core import nfl2k5_depth_chart_rows as _special_rows  # noqa: E402
 # b780-cv4: CPU defenders cannot slide to the ball for a pick (opt-in, off in every preset).
 from mod_editor.core import nfl2k5_catch_snap_limit as _catch_snap_limit  # noqa: E402
 # b780-cv7: receivers block for a scrambling QB (off in every preset: a feel test for Noah).
@@ -1247,7 +1248,7 @@ class BuildPanel(QWidget):
         self.depth_chart_rows_check = self._option(
             r, "depth_chart_rows", "SPECIAL: 13 rows and complete player names (experimental)",
             "All 13 SPECIAL roles on one screen, with complete player names; offense and defense keep eleven rows.", badge=NOT_TESTED, needs_image=True,
-            details="Retail: special teams has four depth-chart rows. Patch: SPECIAL shows KR, PR, K, P, LS, LGUN, RGUN, NCB, DCB, SLWR, GAD, 3DRB and PWRB together, with names beside all available player numbers. Offense and defense keep eleven rows and show X / Z receiver labels. Row spacing is three pixels tighter on all depth-chart tabs; the font stays the same. Role labels have more room. These roles share player lists, so changing one can change another. Requires one-pool positions and the playbook roles. EXPERIMENTAL/UNWITNESSED.")
+            details=_special_rows.HELP_TEXT)  # b780 hunt5: what each SPECIAL row does, row by row
         self.roster_edits_check = self._option(r, "roster_edits", "Include exported ★ Rosters edits",
                                                "Export roster edits on ★ Rosters, then choose that JSON file here.", needs_image=True,
                                                details="Applies a roster-edits snapshot written by ★ Rosters. It runs last of the roster passes and writes only "

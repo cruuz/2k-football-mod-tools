@@ -161,9 +161,11 @@ return personnel for offense.
 
 * **3DB:** one HB, plus shotgun flag bit 19 corroborated by QB depth; or at
   least three WRs; or three WR/TE receiving positions with the HB split at
-  least five yards wide and no deeper than three yards. Assign HB ordinal 1.
+  least five yards wide and no deeper than three yards. Since beta-76.4 these
+  sets keep HB ordinal 0, the lead back (shotgun and spread runs need him).
 * **PWR:** goal-line/jumbo categories or names, or at least two TEs plus FB
-  (the precise I-heavy definition). Assign HB ordinal 2. Ordinary I Pro with
+  (the precise I-heavy definition). Assign HB ordinal 1, the first man in the
+  independent power order (PWRB). Ordinary I Pro with
   one TE remains base. Clock inherits its heavy personnel group's PWR choice.
 * **Base:** retain/use HB ordinal 0. Empty sets without an HB get no HB edit.
 * Refuse multiple HBs, contradictory shotgun geometry/flag, simultaneous
@@ -209,18 +211,27 @@ with recognised signatures can be upgraded; partial/unknown role edits refuse.
 Offense, 4-3 and 3-4 have **11 rows**, with X/Z labels on the original WR rows.
 SPECIAL has **13 rows**, scrolling only on SPECIAL:
 
-| Row | Abbreviation / long name | Position, chain | List start | Book kind, ordinal |
-|---:|---|---|---|---|
-| 0–3 | KR, PR, K, P | Retail | Retail | Retail |
-| 4 | SLOT / SLOT RECEIVER | 3, 2 | WR rank 1 | 9, 2 |
-| 5 | NCB / NICKEL CORNER | 4, 2 | CB rank 1 | 18, 2 |
-| 6 | DCB / DIME CORNER | 4, 3 | CB side 1 | 18, 3 |
-| 7 | GDGT / GADGET | 3, 4 | WR rank 2 | 9, 4 |
-| 8 | GUN / LEFT GUNNER | 3, 3 | WR side 1 | 9, 3 |
-| 9 | GUNR / RIGHT GUNNER | 4, 3 | CB side 1 | 18, 3 |
-| 10 | LS / LONG SNAPPER | 12, 2 | C rank 1 | 6, 1 |
-| 11 | 3DB / 3RD DOWN BACK | 7, 2 | HB rank 1 | 10, 1 |
-| 12 | PWR / POWER BACK | 7, 4 | HB rank 2 | 10, 2 |
+| Row | Abbreviation / long name | Position, chain | List start | Book kind, ordinal | Where he plays (37 club books, v0.9) |
+|---:|---|---|---|---|---|
+| 0–3 | KR, PR, K, P | Retail | Retail | Retail | returners (team bytes +0x195/+0x196/+0x199), kicker, punter |
+| 4 | LS / LONG SNAPPER | 12, 2 | C rank 1 | 6, 1 | snapper in all 36 punt and 36 FG/PAT formations; C2 |
+| 5 | LGUN / LEFT GUNNER | 3, 3 | WR side 1 | 9, 3 | punt left gunner (36); WR4 in 58 four-WR and 40 five-WR sets; kickoff and kick-return units |
+| 6 | RGUN / RIGHT GUNNER | 4, 3 | CB side 1 | 18, 3 | punt right gunner (36); the same list as DCB |
+| 7 | NCB / NICKEL CORNER | 4, 2 | CB rank 1 | 18, 2 | CB3 in 114 nickel and dime formations; kickoff units |
+| 8 | DCB / DIME CORNER | 4, 3 | CB side 1 | 18, 3 | CB4 in 38 dime formations; kickoff units |
+| 9 | SLWR / SLOT RECEIVER | 3, 2 | WR rank 1 | 9, 2 | inside WR in 541 three-WR sets (and in 4/5-WR sets) |
+| 10 | GAD / GADGET | 3, 4 | WR rank 2 | 9, 4 | WR5 in 40 five-WR sets; a WR in 29 base two-WR sets of gadget groups |
+| 11 | 3DRB / THIRD DOWN BACK | 7, 2 | HB rank 1 | 10, 2 | RB2 behind the starter; no offensive set asks for it; kickoff and kick-return units |
+| 12 | PWRB / POWER BACK | 7, 1 | HB side 0 | 10, 1 | the back in 217 goal-line, jumbo and heavy-I sets; 2nd back in two-back sets |
+
+**3DRB revision 2 (b780 hunt5, Noah 11/03: "If I make someone a third down back, they shouldn't be in every single
+play. The starting halfback should have priority.").** Beta-76.4 to the beta-80 RC drew 3DRB as chain 0, the RB rank
+list itself: the back put at its top became RB1, the back in all 953 base and passing formations. 3DRB now starts at
+RB rank row 1, so the starter is not in its list and its top back is RB2, who comes in when the lineup picker passes
+the starter over. A real third-down back needs a down and distance rule in the lineup builder (beta-81). A revision-1
+executable reads applied and `apply` rewrites the one chain dword (VA 0xEE3CA4, 0 to 2) and the section digest.
+The 32 preserved retail books (entries 4410..4441, historic sides) keep retail personnel; SPECIAL roles other than
+KR/PR/K/P do not apply to them.
 
 All indices remain `unit * 11 + slot`: units 0–2 occupy records 0–32 and
 SPECIAL records 33–45. No multiplication uses 13. The count callback at

@@ -32,7 +32,7 @@ BEFORE_ROLES = ((3, 4, "SLOT", "SLOT RECEIVER", 3, 2),
 EXPECTED_ORDER = "KR PR K P LS LGUN RGUN NCB DCB SLWR GAD 3DRB PWRB".split()
 EXPECTED_CHAINS = {"LS": (12, 2), "LGUN": (3, 3), "RGUN": (4, 3),
                    "NCB": (4, 2), "DCB": (4, 3), "SLWR": (3, 2),
-                   "GAD": (3, 4), "3DRB": (7, 0), "PWRB": (7, 1)}
+                   "GAD": (3, 4), "3DRB": (7, 2), "PWRB": (7, 1)}   # b780 hunt5: 3DRB is RB rank row 1 (RB2)
 
 
 def before_special(patched):
