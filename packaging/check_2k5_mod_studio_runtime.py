@@ -2071,6 +2071,7 @@ def main() -> int:
         "mod_editor.core.nfl2k5_franchise_footer",                # b780 j23
         "mod_editor.core.nfl2k5_history",                         # b780 j23
         "mod_editor.core.nfl2k5_contract_college_guard",          # b778-cr1
+        "mod_editor.core.nfl2k5_load_user_team_guard",            # b780 mc1
         "mod_editor.core.nfl2k5_coach_career_fix",                # b780 c1 (wired at b780-int)
         "mod_editor.core.nfl2k5_sim_cb_tackles",                  # b778-cb1
         "mod_editor.core.nfl2k5_sim_rb_injuries",                 # b779-sim2

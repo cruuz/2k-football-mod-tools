@@ -588,6 +588,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
                                     # now reserves; the preset build above observed them, so the probe image stays
                                     # allocator-free ("allocation requests differ" otherwise).
                                     history_screen=False, standings_records=False, audible_legend=False,
+                                    load_user_team_guard=False,  # b780 mc1
                                     franchise_history=False, scramble_blocking=False),
                             progress=lambda message, *_: progress(message))
             owner_base = build._xbe_bytes(target)
