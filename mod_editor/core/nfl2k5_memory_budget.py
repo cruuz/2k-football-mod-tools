@@ -703,7 +703,8 @@ PROFILE_64_TRIM = ("scorebug", "scorebug_runtime", "hair_styles", "kick_meter_20
 # b780 hist1: in-place 2004 bug fixes the profile turns ON when a plan has them off (no allocation, no section: they
 # cost nothing at 64 MB). The career history pool fix keeps a long franchise's totals whole and its pool collecting in
 # 6,000-word chunks (nfl2k5_history_pool: six sites inside the history engine's own bytes).
-PROFILE_64_ON = ("history_pool",)
+# b780 mc1: the Franchise load user-team guard (three in-place sites, a retail crash path on a save with no human club).
+PROFILE_64_ON = ("history_pool", "load_user_team_guard")
 PSEUDO_FIELDS = frozenset(("roster_capacity", "roster_draft_pick_ownership", "roster_hback_roles",
                            "cpu_money_downs_modern2"))
 PROFILE_64_ROSTER = ("roster edits at retail capacity without the draft_pick_ownership and hback_roles sections: "

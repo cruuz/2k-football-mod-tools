@@ -183,6 +183,7 @@ from . import nfl2k5_audible_legend as audible_legend_patch  # noqa: F401  b780-
 from . import nfl2k5_lineup_roles as lineup_roles_patch  # noqa: F401  b780 sub1: SPECIAL third-down back + FB fallback (late owner)
 from . import nfl2k5_intro_autoskip as intro_autoskip_patch  # noqa: F401  b780-mem1: the intro skips itself when its director could not load (late tail owner)
 from . import nfl2k5_injured_reserve as injured_reserve_patch  # noqa: F401  b780 IR1: modern injured reserve (late owner)
+from . import nfl2k5_load_user_team_guard as load_user_team_guard_patch  # noqa: F401  b780 mc1: Franchise load guard (in-place sites); imported so the cave manifest recorder observes it
 from . import nfl2k5_preseason_warning as preseason_warning_patch  # noqa: F401  b779-int1: rc1's warned flag joins the union (LATE_OWNERS before the sim owners)
 from . import nfl2k5_cpu_passer_iq as cpu_passer_iq_patch  # noqa: F401  b780 a-passer: late owner (CPU quarterbacks throw on time); imported so the cave manifest recorder observes it
 from . import nfl2k5_cpu_clock2 as cpu_clock2_patch  # noqa: F401  b780 b-clock: late owner (modern CPU clock management)

@@ -115,13 +115,13 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
 B69_GAME_RUNTIME_PINS = {
     "mod_editor/core/nfl2k5_weather.py": "ec3d253e348ff0cf7fb1951b5dad2983d8aebc0802d5c6fca32c74dc80a6985b",
     "mod_editor/core/nfl2k5_weather_haze.py": "b8c58c592794312358eb1554b1d3be43a1ca41f7fdd8fd3cd498d4f345c641cc",
-    "mod_editor/gui/build_panel_qt.py": "3ff7a668b3e141ae499afd1f7b49ae50be6709cd967b81e94946c3c72c139ac5",
+    "mod_editor/gui/build_panel_qt.py": "be9c5bcf752e28c10def850621673a0f884ca1573e5856e1a2a434d2cc955a4f",
     "mod_editor/gui/gameplay_patches_panel_qt.py": "dc6ec647fa71ff61dc5af369c3e1ea616c543b050101012a3bf830f112b27508",
     "mod_editor/gui/my_career_panel_qt.py": "cd39ce1685ed119288122e46b0f8c1c8ba586cea611f5d5feee096a71d7ea9ac",
     "mod_editor/gui/gameplay_project_ui.py": "e20425fe40e45ddef63e582892b302ddd0518c1320609060375abea1b3c19c4b",
     "mod_editor/gui/beta62_options.py": "22c11421d9bfe39fba527c5871e36478c72f5bf957174ff7a03d411105301ad7",
     "tools/nfl2k5_weather_editor.py": "39a2847b873bbdc567712ca87657d700fa95e226c3408983acce4d714b1031de",
-    "mod_editor/gui/build_panel_qt.py": "3ff7a668b3e141ae499afd1f7b49ae50be6709cd967b81e94946c3c72c139ac5",
+    "mod_editor/gui/build_panel_qt.py": "be9c5bcf752e28c10def850621673a0f884ca1573e5856e1a2a434d2cc955a4f",
     "mod_editor/gui/gameplay_patches_panel_qt.py": "dc6ec647fa71ff61dc5af369c3e1ea616c543b050101012a3bf830f112b27508",
     "mod_editor/gui/my_career_panel_qt.py": "cd39ce1685ed119288122e46b0f8c1c8ba586cea611f5d5feee096a71d7ea9ac",
     "mod_editor/gui/gameplay_project_ui.py": "e20425fe40e45ddef63e582892b302ddd0518c1320609060375abea1b3c19c4b",
@@ -2072,6 +2072,7 @@ def main() -> int:
         "mod_editor.core.nfl2k5_franchise_footer",                # b780 j23
         "mod_editor.core.nfl2k5_history",                         # b780 j23
         "mod_editor.core.nfl2k5_contract_college_guard",          # b778-cr1
+        "mod_editor.core.nfl2k5_load_user_team_guard",            # b780 mc1
         "mod_editor.core.nfl2k5_coach_career_fix",                # b780 c1 (wired at b780-int)
         "mod_editor.core.nfl2k5_sim_cb_tackles",                  # b778-cb1
         "mod_editor.core.nfl2k5_sim_rb_injuries",                 # b779-sim2

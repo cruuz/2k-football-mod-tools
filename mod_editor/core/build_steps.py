@@ -224,6 +224,7 @@ STEP_LABELS: dict[str, str] = {
     "lineup_roles": "Situational lineup roles",  # b780 sub1
     "audible_legend": "the audible panel lift and button legend",
     "injured_reserve": "Modern injured reserve",
+    "load_user_team_guard": "the Franchise load user-team guard",
     "quick_long_release": "Quicker deep and rollout throws",
     "coach_carousel_pool": "the coaching carousel's hiring pool",
     "indicator_names": "the player name label",
