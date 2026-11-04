@@ -6,7 +6,7 @@ CODE = bytes.fromhex(
     "8826b70083358891c30001f7df83c70383ff017507e8fcffffffeb05e8fcffffff890424585a599d"
     "89c3a18c91c300e9fcffffff9c833d00000000007408c7442410000000009de9fcffffff50833dc4"
     "02e600037515a1000000003d20fce50074073d60fce50075028b0858e9fcffffff8b0d8c91c3008b"
-    "158891c300833d0000000000740383f20131c039d10f94c0c3"
+    "158891c300833d0000000000740383f20131c039d10f94c0c3c7050000000000000000e9fcffffff"
 )
 RELOCATIONS = (
     (6, 1, 'state', 0),
@@ -19,14 +19,17 @@ RELOCATIONS = (
     (146, 1, 'notice', 0),
     (167, 1, 'state', 0),
     (207, 1, 'state', 0),
+    (227, 1, 'state', 0),
     (128, 2, 'choose_tail', 0),
     (152, 2, 'native_menu', 0),
     (189, 2, 'native_possession', 0),
+    (236, 2, 'native_game_init', 0),
 )
 LABELS = {
     'away': 108,
     'choose': 0,
     'draw': 41,
+    'game_init': 225,
     'half_deferred': 185,
     'half_original': 187,
     'halftime': 156,

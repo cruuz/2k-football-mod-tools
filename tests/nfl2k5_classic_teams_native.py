@@ -39,10 +39,38 @@ class ClassicCPU(TeamSelectCPU):
         return self.read(team + 0x192, 1)[0]
 
 
-def build(retail_dir, *, season_route=False, payload=None):
+def previous_payload(payload):
+    """b780 modes2: the same composition as a beta-78 .. v0.9 RC executable: the revision-1 Quick Game body for the
+    installed variant (base, season route, classic), with the classic helpers' season-route format at that body's
+    end (revision 1 is 16 bytes longer). Recognition and upgrade evidence."""
+    from mod_editor.core import nfl2k5_classic_teams as ct, nfl2k5_historic_teams_quick_game as h1
+    from mod_editor.core import nfl2k5_xbe_space as space
+    from mod_editor.core.nfl2k5_cave_oracle import XbeImage
+    found = h1._installed(payload)
+    code, state = h1.allocations(payload)
+    classic = h1._classic_va(payload) if found["classic"] else None
+    buffer = bytearray(payload)
+    buffer[code["raw"]:code["raw"] + h1.CODE_SIZE] = h1.code_for(code["va"], state["va"], seasons=found["seasons"],
+                                                                 classic_va=classic, revision=1)
+    if classic is not None:
+        # the b778 page: no own-name abbreviation, and the season route's format at revision 1's body end
+        a = ct.allocation(payload)
+        body = bytearray(XbeImage(payload).read(a["va"], ct.RO_SIZE))
+        body[ct.ABBR_OFFSET:] = bytes(ct.RO_SIZE - ct.ABBR_OFFSET)
+        if found["seasons"]:
+            import struct
+            struct.pack_into("<I", body, ct.OFF_FMT + 1, code["va"] + len(h1.assembly_b778.CODE))
+        buffer[a["raw"]:a["raw"] + ct.RO_SIZE] = body
+    _, _, requests = space._validate(payload)
+    space._seal_scaleout(buffer, requests)
+    return bytes(buffer)
+
+
+def build(retail_dir, *, season_route=False, payload=None, previous=False):
     """(cpu, data, moment files, classic files, receipts) on the private retail extraction. payload: a built
     executable to use instead (for example a test disc's), already carrying Quick Game, the moments and maybe the
-    season route; else one is composed from retail."""
+    season route; else one is composed from retail. previous (b780 modes2): the beta-78 .. v0.9 RC configuration,
+    the revision-1 Quick Game classic variant (previous_payload) and the b778 label holder roster."""
     from pathlib import Path
     from mod_editor.core import nfl2k5_classic_teams as ct, nfl2k5_espn25_more_moments as mm
     from mod_editor.core import nfl2k5_espn25_rosters as e, nfl2k5_historic_teams_quick_game as h1
@@ -65,7 +93,7 @@ def build(retail_dir, *, season_route=False, payload=None):
         by_id = {x.name_id: x for x in archive.entries}
         read = lambda name: archive.read(by_id[mm.name_id(name)].virtual_offset, by_id[mm.name_id(name)].size)  # noqa: E731
         main = archive.read(archive.entries[5].virtual_offset, archive.entries[5].size)
-        holder = ct.label_holder(main)
+        holder = ct.label_holder(main) if previous else main
         moment_templates = {k: read(t["template"]) for k, t in moments.teams.items()}
         templates = {k: read(data.teams[k]["template"]) for k in data.order()}
         kits = {e2.name_id for e2 in archive.entries}
@@ -74,6 +102,8 @@ def build(retail_dir, *, season_route=False, payload=None):
     prefix = "HTS-" if season_route else ""
     files, receipts = ct.compile_files(holder, templates, data, spares={}, has_kit=has_kit, prefix=prefix)
     payload, receipt = ct.apply_xbe(payload, ct.rows_for(holder, data))
+    if previous:
+        payload = previous_payload(payload)
     resources, context, ids = disc_evidence(retail_dir)
     resources[5] = holder
     extra = dict(moment_files)
@@ -81,5 +111,7 @@ def build(retail_dir, *, season_route=False, payload=None):
     if season_route:     # the retail 75 under their season-route names (the ht bank serves its own rosters there)
         for d in context["descriptors"]:
             extra["HTS-" + d["filename"]] = resources[d["outer"]]
-    make = lambda: ClassicCPU(payload, resources, context, ids, extra_files=extra)  # noqa: E731
+    def make(executable=None):
+        return ClassicCPU(payload if executable is None else executable, resources, context, ids, extra_files=extra)
+    make.payload = payload      # b780 modes2: the composed executable, for upgrade evidence on the same roster
     return make, data, moment_files, files, receipt, receipts

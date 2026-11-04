@@ -184,7 +184,6 @@ class ClassicTeamsRosterOuterTests(unittest.TestCase):
                 mock.patch.object(ct, "install_authored_kits", return_value={}), \
                 mock.patch("mod_editor.core.nfl2k5_classic_field.edits", return_value=({7: b"field"}, {})), \
                 mock.patch.object(ct, "_inputs", return_value=(b"main", {}, {}, None, set())), \
-                mock.patch.object(ct, "label_holder", return_value=b"holder"), \
                 mock.patch.object(ct, "compile_files", return_value=([("h-x.iff", b"abc")], {})), \
                 mock.patch("mod_editor.core.nfl2k5_position_pools.status", return_value="retail"), \
                 mock.patch.object(ct, "rows_for", return_value=[]), \
@@ -195,7 +194,9 @@ class ClassicTeamsRosterOuterTests(unittest.TestCase):
                 mock.patch.object(ct.classic_face, "patch_image", return_value={}):
             result = ct.apply_to_image("unused.xiso.iso", "retail.xiso.iso", data)
         self.assertEqual(result["status"], "applied")
-        self.assertEqual(captured["edits"], {5: b"holder", 7: b"field"})
+        # b780 modes2: the classic teams no longer edit the main roster (no label holder); the field bundles stay keyed
+        # by outer index
+        self.assertEqual(captured["edits"], {7: b"field"})
         self.assertTrue(all(0 <= index < len(entries) for index in captured["edits"]))
 
 
