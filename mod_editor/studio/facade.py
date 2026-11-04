@@ -943,10 +943,7 @@ class Nfl2k5StudioFacade:
         # only to keep changes out; it changes nothing itself. The GUI's read-only properties read beside it
         # (_read_lock) instead of waiting seconds, and a Build choice made meanwhile waits in _pending_build_settings.
         self._archive_reads = threading.Condition()
-        self._archive_writing = False
-        self._archive_readers = 0
         self._beside = threading.local()
-        self._pending_build_settings = None
 
     @property
     def uniform_catalog(self):
@@ -960,6 +957,19 @@ class Nfl2k5StudioFacade:
             self._visual_catalog = load_nfl2k5_product_visual_catalog()
         return self._visual_catalog
 
+    # b780 Q52 defaults; a facade made without __init__ (some tests) creates the condition and the thread state lazily
+    _archive_writing = False
+    _archive_readers = 0
+    _pending_build_settings = None
+
+    def _reads(self) -> threading.Condition:
+        reads = self.__dict__.get("_archive_reads")
+        return reads if reads is not None else self.__dict__.setdefault("_archive_reads", threading.Condition())
+
+    def _beside_state(self) -> threading.local:
+        beside = self.__dict__.get("_beside")
+        return beside if beside is not None else self.__dict__.setdefault("_beside", threading.local())
+
     @contextmanager
     def _read_lock(self):
         """The facade lock for a read-only property, without waiting behind a project archive write (b780 Q52).
@@ -969,7 +979,8 @@ class Nfl2k5StudioFacade:
         change. The archive writer reads the session and changes nothing, and it holds _lock until every
         reader that came in beside it has finished, so no change can start while such a read runs.
         """
-        if getattr(self._beside, "depth", 0):
+        beside_state = self._beside_state()
+        if getattr(beside_state, "depth", 0):
             yield          # nested in a read already running beside the writer, which waits for it
             return
         if self._lock.acquire(blocking=False):
@@ -978,7 +989,8 @@ class Nfl2k5StudioFacade:
             finally:
                 self._lock.release()
             return
-        with self._archive_reads:
+        reads = self._reads()
+        with reads:
             beside = self._archive_writing
             if beside:
                 self._archive_readers += 1
@@ -986,32 +998,33 @@ class Nfl2k5StudioFacade:
             with self._lock:
                 yield
             return
-        self._beside.depth = 1
+        beside_state.depth = 1
         try:
             yield
         finally:
-            self._beside.depth = 0
-            with self._archive_reads:
+            beside_state.depth = 0
+            with reads:
                 self._archive_readers -= 1
-                self._archive_reads.notify_all()
+                reads.notify_all()
 
     @contextmanager
     def _archive_write(self):
         """Mark the archive write (call with _lock held); readers may read beside it until it ends."""
-        with self._archive_reads:
+        reads = self._reads()
+        with reads:
             self._archive_writing = True
         try:
             yield
         finally:
-            with self._archive_reads:
+            with reads:
                 self._archive_writing = False
                 while self._archive_readers:
-                    self._archive_reads.wait()
+                    reads.wait()
             self._apply_pending_build_settings()
 
     def _apply_pending_build_settings(self) -> None:
         """Store a Build choice made during an archive write (call with _lock held)."""
-        with self._archive_reads:
+        with self._reads():
             pending, self._pending_build_settings = self._pending_build_settings, None
         if pending is not None and self._session is not None:
             self._session.set_build_settings(pending)
@@ -3673,12 +3686,13 @@ class Nfl2k5StudioFacade:
         Build-tab change never waits for a recovery snapshot of a big project.
         """
         if not self._lock.acquire(blocking=False):
-            with self._archive_reads:
+            reads = self._reads()
+            with reads:
                 writing = self._archive_writing
             if writing:
                 from mod_editor.core.nfl2k5_build_settings import build_settings
                 checked = build_settings(value)          # a bad value is still refused at once
-                with self._archive_reads:
+                with reads:
                     if self._archive_writing:
                         self._pending_build_settings = checked
                         return
