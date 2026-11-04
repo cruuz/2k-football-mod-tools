@@ -221,6 +221,68 @@ class CoinTests(unittest.TestCase):
         self.assertIn(0x1BE219, m.hits)
 
 
+def _revision_1(module, payload, **options):
+    """The beta-69 .. v0.9 RC image of a rules owner: its revision-1 code in the same allocation, its own hooks only."""
+    from mod_editor.core import nfl2k5_rdata_sites as rdata
+    places = common.allocations(payload, module)
+    code, sites = module.previous(places)[0]
+    old = space.install_code(payload, module.OWNER, code, previous=module.code_for(places))[0]
+    listed = {va for _n, va, _b, _a in sites}
+    extra = [(n, va, after, before) for n, va, before, after in module.sites(places) if va not in listed]
+    return rdata.apply(old, extra, "revision 1")[0] if extra else old
+
+
+@unittest.skipUnless(uc is not None, 'Unicorn required for bounded native rule execution')
+class B780Modes2CoinTests(unittest.TestCase):
+    """Q25: the match reset FUN_00055dd0 (once per game, before any toss) clears the CPU deferral, so a game without
+    an opening toss (a Situation game, a moment) takes its second-half kickoff as retail does."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.retail = retail_xbe()
+        cls.current = coin.apply(cls.retail)[0]
+        cls.previous = _revision_1(coin, cls.current)
+        cls.state = common.allocations(cls.current, coin)['data']['va']
+
+    def game_b(self, payload):
+        a = Machine(payload)
+        a.toss(outcome=0, human_side=1)                  # game A: the away CPU wins and defers
+        deferred = a.get(self.state) if payload is not self.retail else None
+        a.run(0x55DD0, count=5_000_000)                  # game B starts: the game's own match reset
+        carried = a.get(self.state) if payload is not self.retail else 0
+        b = Machine(payload)                             # game B's first half: home kicks (human toss records) ...
+        b.toss(outcome=1, human_side=1)
+        b.choose_row(0)
+        if b.get(b.MENU+8) == 1:
+            b.run(b.get(0xC3917C), count=200000)
+        b.choose_row(0)
+        if b.get(0xE602B4) == 0:
+            b.run(b.get(0xC3917C), count=200000)
+        self.assertEqual(b.get(0xE60280), b.HOME)
+        b.put(self.state, carried)                       # ... and the coin state it carries, as with no toss
+        b.next_half()
+        return deferred, carried, (b.get(0xE60280), b.get(0xE60284))
+
+    def test_statuses_and_in_place_upgrade(self):
+        self.assertEqual((coin.status(self.current), coin.status(self.previous), coin.status(self.retail)),
+                         ("applied", "previous", "retail"))
+        up, receipt = coin.apply(self.previous)
+        self.assertEqual((up, receipt["upgraded"]), (self.current, True))
+        self.assertEqual([e["label"] for e in receipt["edits"]], ["game_init"])
+        self.assertEqual(coin.apply(up)[1]["changed_bytes"], 0)
+        self.assertNotIn(coin.INIT_HOOK, coin.HOOKS)     # the era rules wrap HOOKS only
+
+    def test_the_previous_games_deferral_no_longer_decides_the_second_half(self):
+        retail = self.game_b(self.retail)
+        old = self.game_b(self.previous)
+        new = self.game_b(self.current)
+        self.assertEqual(retail[2], (Machine.AWAY, Machine.HOME))         # retail: home kicked H1, away kicks H2
+        self.assertEqual(old[:2], (Machine.AWAY, Machine.AWAY))           # revision 1 keeps game A's deferral ...
+        self.assertEqual(old[2], (Machine.HOME, Machine.AWAY))            # ... and home kicks both halves (Q25)
+        self.assertEqual(new[:2], (Machine.AWAY, 0))                      # revision 2: the reset clears it
+        self.assertEqual(new[2], retail[2])
+
+
 @unittest.skipUnless(uc is not None, 'Unicorn required for bounded native clock execution')
 class ClockTests(unittest.TestCase):
     @classmethod

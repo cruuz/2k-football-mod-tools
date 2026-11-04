@@ -5,9 +5,9 @@
 .intel_syntax noprefix
 .code32
 .text
-.global choose, menu, halftime, winner_result
+.global choose, menu, halftime, winner_result, game_init
 .extern state, notice, choose_tail, native_menu, native_possession
-.extern human_query, random_word, home_name, away_name
+.extern human_query, random_word, home_name, away_name, native_game_init
 choose:
     pushfd
     push ecx
@@ -86,3 +86,13 @@ result_original:
     cmp ecx, edx
     sete al
     ret
+
+/* b780 modes2 (revision 2, Q25): every game starts with no deferral. The state used to be cleared only by a toss
+ * (choose, above; the era rules' moment toss wrapper), so a game without an opening toss (a Situation game, a
+ * moment) that crossed halftime gave the second-half kickoff by the PREVIOUS game's CPU deferral. The match reset
+ * FUN_00055dd0 runs once per game, before any toss (it zeroes the period, phase and possession at 0x56032..), and its
+ * call 0x55F61 (call 0xAF400, the clock record reset; ECX = the record) now comes here first. The next opening toss
+ * sets the state again. Placed after every other entry so their offsets (and revision 1's hook bytes) stay. */
+game_init:
+    mov dword ptr [state], 0
+    jmp native_game_init

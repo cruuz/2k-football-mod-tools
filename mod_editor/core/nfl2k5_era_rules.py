@@ -426,7 +426,8 @@ def _prerequisites(payload, neighbors=True):
         settings = ot.read_settings(payload)
         require(settings["both_possessions"] and settings["postseason_no_ties"], "era OT requires complete modern OT base")
         for module in (coin, clock):
-            require(module.status(payload) in ("applied", "retail"), "foreign optional era neighbor")
+            # b780 modes2: "previous" = their beta-69 .. v0.9 RC revision, whose hooks (the ones wrapped here) are the same
+            require(module.status(payload) in ("applied", "retail", "previous"), "foreign optional era neighbor")
         tolerated = _money_downs_two_point(payload)
         for guard in manifest["retail_guards"]:
             raw = bytearray(image.read(guard["va"], guard["size"]))
