@@ -300,7 +300,9 @@ static float average_value(u8 *club) {
     return n ? sum / (float)n : 0;
 }
 
-static void cpu_week(u32 c, u8 *club) {
+/* human: the user's club when "CPU manages my depth chart" is on. Its injured players go on IR as retail's pass did,
+   but nobody of his is released to make room: a return then waits for an open roster spot. */
+static void cpu_week(u32 c, u8 *club, u32 human) {
     u8 *snap[SLOTS];
     u32 n = count_of(club);
     if (n > SLOTS) n = SLOTS;
@@ -314,7 +316,7 @@ static void cpu_week(u32 c, u8 *club) {
         if (why == NO_RETURNS) { k->e[i].flags |= F_SEASON; S->season_ending++; i++; continue; }
         if (why != OK) { i++; continue; }
         if (k->returns >= RETURNS - SPARE_RETURNS && VALUE(k->e[i].p, 1) < average_value(club)) { i++; continue; }
-        if (count_of(club) >= ACTIVE) CUT_DOWN(club, ACTIVE - 1);
+        if (count_of(club) >= ACTIVE && !human) CUT_DOWN(club, ACTIVE - 1);
         if (activate(c, i, club, HOW_CPU) != OK) i++;
     }
 }
@@ -328,8 +330,9 @@ void ir_weekly(void) {
     for (u32 c = 0; c < n; c++) {
         u8 *club = CLUB_AT(c);
         if (!club) continue;
-        if (HUMAN(club) && !G(CPU_DEPTH)) continue;
-        cpu_week(c, club);
+        u32 human = HUMAN(club);
+        if (human && !G(CPU_DEPTH)) continue;
+        cpu_week(c, club, human);
     }
 }
 

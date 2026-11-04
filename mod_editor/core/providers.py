@@ -596,7 +596,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/image_use.py": "29e1d3d721c36fd199ed29fd900fbe8582bc7530e2060afcacb1054159b174bb",
         "mod_editor/core/json_stream.py": "5933752561dd8b519a301c18ec1d14f13a457f58e6ae337984f543ab2b0838b0",
         "mod_editor/core/metadata_cache.py": "49874cc7f12cc0d36d15b9355dbca64ffe95590ba7582b460738b05aabcd9024",
-        "mod_editor/core/mod_build.py": "0a70d9e2b5e8b3645fe083ed26ecaf8b0b6a26e5eabc8a6d2fc5161374feae04",
+        "mod_editor/core/mod_build.py": "120139f25a2fb00c8fe296e1d138a09cc08ad87b5e9502a3a3656a0ed2b28534",
         "mod_editor/core/nfl2k5_console_memory.py": "34899562dd5b751b39e87b6746176bbcc92e2d4fca9eeaa4994aa676d401eda2",  # b780-m64b: the 128 MB / 64 MB target (validate_plan)
         "mod_editor/core/build_steps.py": "e3f90427d5df257f7100442ffd8b00d9256175423ce8d48ece05cd67419f7247",  # b791-h3: step context and optional steps
         "mod_editor/core/studio_inspection.py": "bbe1e2e9b3de63b13e8908d2b37f114ee79b6fb2fc88d26670a6eb1e6e341e1e",  # b780 studio1: mod_build.inspect runs inside its validation memo
@@ -975,7 +975,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_scramble_blocking_code.py": "658ec167085e6fc083ec3acde723db330280091624a413401c09fc3e73643611",  # b780-cv7
         "mod_editor/core/nfl2k5_audible_legend.py": "a441d13947fd09d7dcd82f79f80f66642e29148484b40fdab8525aee14161b20",  # b780-p3: imported by throw_tuning for the build union
         "mod_editor/core/nfl2k5_injured_reserve.py": "105d6ca6b73b6e3ab750999e5e038cbbc0171be2f5e4795c5ffd02b5e6451f09",  # b780 IR1: modern injured reserve (late owner, imported by throw_tuning)
-        "mod_editor/core/nfl2k5_injured_reserve_code.py": "2a6e4fa788f8322d38c5244e42c2bc61d7766c3b0f362090983a6515469bea50",  # b780 IR1: its generated runtime template
+        "mod_editor/core/nfl2k5_injured_reserve_code.py": "0435e068e930f74a937e075f0f235fc61d951ba7b12873ac2b6fdcfc17f3b78a",  # b780 IR1: its generated runtime template
         "mod_editor/core/nfl2k5_injured_reserve_save.py": "295134337920652431cc257b4394b1889f9bffcee548f8a656d6df929664bcb4",  # b780 IR1: the save extension codec (imported by nfl2k5_franchise_save)
         "mod_editor/core/nfl2k5_preseason_warning.py": "44647523c32291820e98b2dad0a9c44af27fe6bca13626104551dc3647bcc6f2",  # b779-int1: imported by throw_tuning for the build union (693fe63a0)
         "mod_editor/core/nfl2k5_coach_carousel.py": "72d46a5f76b3bebf79a13cde78b11061b21d1ef3f1d57bcf297b12032cf18a28",  # b780-c6: the coaching carousel (late owner, imported by throw_tuning)

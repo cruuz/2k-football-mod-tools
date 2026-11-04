@@ -287,6 +287,28 @@ class GameTests(unittest.TestCase):
         self.assertIn(short, self.roster(m, 6))
         self.assertIn(mine, self.roster(m, 0))
 
+    def test_cpu_managing_the_users_depth_places_but_never_releases_his_players(self):
+        m = self.boot(human=0)
+        m.put(0xE60140, 1)                                                 # "CPU manages my depth chart"
+        c = 0
+        club = self.club(m, c)
+        p = self.roster(m, c)[0]
+        self.hurt(m, p, 6)
+        self.week(m)
+        self.assertEqual(self.store(m, c)[0], 1)                           # placed, as retail's pass would
+        agents = m.get(m.root + 0x3C)
+        m.call(0xC3EE0, ecx=club, edx=m.get(agents))                       # a free agent fills the spot: 53 again
+        self.assertEqual(len(self.roster(m, c)), 53)
+        before = self.roster(m, c)
+        self.heal(m, p)
+        self.play(m, c, 4)
+        self.week(m)
+        self.assertEqual((self.store(m, c)[0], self.roster(m, c)), (1, before))   # no room: nobody released, he waits
+        m.call(0x2BD900, ecx=club, edx=before[-1], args=(0, 0))           # the user releases someone himself
+        self.week(m)
+        self.assertEqual(self.store(m, c)[:2], (0, 1))
+        self.assertIn(p, self.roster(m, c))
+
     def test_the_ninth_return_is_refused_and_he_stays_for_the_season(self):
         m = self.boot(human=0)
         c = 9

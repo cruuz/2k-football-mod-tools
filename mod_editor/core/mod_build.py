@@ -3267,6 +3267,9 @@ def _inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[st
     out["audible_legend"] = audible_legend.status(_xbe_bytes(source)) if audible_legend is not None else "unavailable"
     injured_reserve = _core_module("nfl2k5_injured_reserve")  # b780 IR1: retail, guard, applied (modern) or foreign
     out["injured_reserve"] = injured_reserve.status(_xbe_bytes(source)) if injured_reserve is not None else "unavailable"
+    # b780 IR1: the two options' own states (the panel reads inspect()[option]): the guard is in both installs
+    out["injured_reserve_guard"] = {"guard": "applied", "applied": "applied"}.get(out["injured_reserve"], out["injured_reserve"])
+    out["modern_injured_reserve"] = {"guard": "retail"}.get(out["injured_reserve"], out["injured_reserve"])
     sim_stats = _core_module("nfl2k5_sim_stats")  # b778-sim1
     out["sim_stats"] = sim_stats.status(_xbe_bytes(source)) if sim_stats is not None else "unavailable"
     quick_release = _core_module("nfl2k5_quick_long_release")  # b780-c-release
