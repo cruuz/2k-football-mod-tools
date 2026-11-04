@@ -295,8 +295,9 @@ class CaptureTests(unittest.TestCase):
         return games
 
     def model(self, games):
-        L = [dict(w=0, l=0, t=0, pf=0, pa=0, dw=0, dl=0, dt=0, result=0, bye=0, wc=0) for _ in range(32)]
+        L = [dict(w=0, l=0, t=0, pf=0, pa=0, dw=0, dl=0, dt=0, result=0, bye=0, wc=0, seeded=0) for _ in range(32)]
         div = [t // 4 for t in range(32)]
+        wild_cards = sum(1 for row, *_ in games if row == WEEKS)
         for row, slot, h, a, hp, ap in games:
             if row < WEEKS:
                 k = "w" if hp > ap else "l" if hp < ap else "t"
@@ -310,10 +311,13 @@ class CaptureTests(unittest.TestCase):
             win, lose = (h, a) if hp > ap else (a, h)
             if rnd == 1:
                 L[h]["wc"] = L[a]["wc"] = 1
+                L[h]["seeded"] = 1                       # b780-season1: a wild card host is a seeded division winner
             if rnd == 2:
                 for t in (h, a):
                     if not L[t]["wc"]:
                         L[t]["bye"] = 1
+                if wild_cards <= 4 or slot % 2 == 0:     # the #1 seeds (every divisional host in a 12-team bracket)
+                    L[h]["seeded"] = 1
             L[lose]["result"] = max(L[lose]["result"], rnd)
             L[win]["result"] = max(L[win]["result"], 5 if rnd == 4 else rnd)
 
@@ -327,7 +331,7 @@ class CaptureTests(unittest.TestCase):
 
         def key(i):
             x = L[i]
-            return (pct(x), dpct(x), x["pf"] - x["pa"], -i)
+            return (x["seeded"], pct(x), dpct(x), x["pf"] - x["pa"], -i)
         place = [min(4, 1 + sum(1 for o in range(32) if o != i and div[o] == div[i] and key(o) > key(i)))
                  for i in range(32)]
         return L, place
@@ -365,6 +369,40 @@ class CaptureTests(unittest.TestCase):
         self.assertEqual(self.writes, [])
         self.assertEqual(view["info"]["closes"], 1)
         self.assertEqual(view["info"]["captures"], len(games))
+
+    def test_a_tied_division_names_the_club_the_game_seeded(self):
+        # b780-season1 (Q71): clubs 0 and 1 (division 0) both finish 1-1; 0 has the better division record and net
+        # points, so the History's own order would rank it first, but the game seeded 1 (it hosts a wild card game).
+        # Club 21 hosts a divisional game as a wild card (slot 1 of a fourteen-team bracket): not a division winner.
+        rows = [[(0, 2, 30, 0), (1, 4, 10, 7), (3, 5, 14, 13)] + [(k, k + 1, 21, 14) for k in range(6, 32, 2)],
+                [(5, 0, 3, 0), (3, 1, 10, 7), (2, 4, 17, 10)] + [(k + 1, k, 20, 13) for k in range(6, 32, 2)]]
+        games = []
+        for row, pairs in enumerate(rows):
+            self.assertEqual(sorted(c for p in pairs for c in p[:2]), list(range(32)))
+            for slot, (home, away, hp, ap) in enumerate(pairs):
+                self.play(row, slot, home, away, hp, ap)
+                games.append((row, slot, home, away, hp, ap))
+        bracket = [(WEEKS, 0, 1, 8, 20, 10), (WEEKS, 1, 12, 13, 20, 10), (WEEKS, 2, 20, 21, 10, 20),
+                   (WEEKS, 3, 16, 17, 20, 10), (WEEKS, 4, 24, 25, 20, 10), (WEEKS, 5, 28, 29, 20, 10),
+                   (WEEKS + 1, 0, 4, 1, 20, 10), (WEEKS + 1, 1, 21, 12, 20, 10),
+                   (WEEKS + 1, 2, 30, 16, 20, 10), (WEEKS + 1, 3, 24, 28, 20, 10),
+                   (WEEKS + 2, 0, 4, 21, 20, 10), (WEEKS + 2, 1, 30, 24, 20, 10), (SB, 0, 4, 30, 20, 10)]
+        for row, slot, home, away, hp, ap in bracket:
+            self.play(row, slot, home, away, hp, ap)
+            games.append((row, slot, home, away, hp, ap))
+        self.put(0xE5A2F0 + 0x5888, self.roster[0][0]); self.put(0xE5A2F0 + 0x588C, TEAMS)
+        self.put(0xE576A4, 9)
+        self.call("history_season_close")
+        clubs = ext.decode_seasons(ext.read_body(self.body())["blocks"][1])[0]["clubs"]
+        L, place = self.model(games)
+        self.assertEqual((L[0]["w"], L[0]["l"], L[1]["w"], L[1]["l"]), (1, 1, 1, 1))
+        self.assertEqual([clubs[c]["place"] for c in range(32)], place)
+        self.assertEqual((clubs[1]["place"], clubs[1]["division_champion"]), (1, True))
+        self.assertFalse(clubs[0]["division_champion"])
+        # the History's own order would have put club 0 (division 1-0) ahead of club 1 (division 0-1)
+        self.assertLess(L[1]["dw"], L[0]["dw"])
+        self.assertEqual((clubs[20]["division_champion"], clubs[21]["division_champion"]), (True, False))
+        self.assertEqual(sum(clubs[c]["division_champion"] for c in range(32)), 8)
 
     def test_records_leaders_and_hall_of_fame(self):
         games = self.run_season()
