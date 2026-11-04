@@ -3060,7 +3060,7 @@ def inspect_screen_timing(source: Path | str, level: str = "D") -> dict[str, Any
         return {"status": "foreign", "level": level, "books": [], "reason": str(exc)}
 
 
-def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str, Any]:
+def _inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str, Any]:
     """Current state of every patch in ``source`` (a default.xbe or a disc image)."""
 
     source = Path(source)
@@ -3793,6 +3793,17 @@ def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str
     out["custom_intro"] = (custom_intro.image_status(source)
                            if custom_intro is not None and report.get("container") == "xiso" else "requires image")
     return out
+
+
+def inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[str, Any]:
+    """Current state of every patch in ``source`` (a default.xbe or a disc image).
+
+    The read asks ~150 status functions about one executable, and each re-ran its scale-out structure checks; they run
+    once per executable inside the memo (``studio_inspection.memoised_validation``), which is dropped when this returns."""
+
+    from .studio_inspection import memoised_validation
+    with memoised_validation():
+        return _inspect(source, screen_timing=screen_timing)
 
 
 def _check_playbook_menus(target: Path, progress: Callable[..., Any]) -> dict[str, Any] | None:
