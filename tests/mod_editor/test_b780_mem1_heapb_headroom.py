@@ -15,8 +15,9 @@ intro director loads.
 Everything below runs the release candidate's own executable under Unicorn with its own main roster (the disc's ROST
 resource): the stage of the two match teams, 0x84EB0 with K128's cap and the game's heap code, the size adapter and
 the exporter, and 0x125700. It reproduces the lab's heap B exactly at the lab's room, finds the room DIR_INTRO needs,
-and shows the K128 early form (its arena holds the room the XBE's pages took, 46.7 -> 61.6 MiB in the lab) puts the
-in-game block at its cap, so heap B is the retail 214 KB at every stadium, while 64 MB stays byte for byte retail.
+and shows the K128 early form (its arena holds the room the XBE's pages took: 46.7 -> 61.6 MiB in R1's lab, and on
+this RC a main heap 15,978,496 B larger in EMU1's T1) puts the in-game block at its cap, so heap B is the retail
+214 KB at every stadium, while 64 MB keeps the retail block size.
 
 Private fixtures (read only; the tests skip without them):
   NFL2K5_B780_RC_XBE   the RC disc's default.xbe (sha256 1a476d94...)
@@ -60,7 +61,10 @@ LAB_HEAP_B_CAP, LAB_HEAP_B_LARGEST = 6400, 6272
 LAB_ROOM_V08 = 1555456           # H1V8B: the v0.8 control's largest free block at setup (block 1,424,384 B)
 RESIDENT_RC, RESIDENT_V08 = 15896576, 15835136   # boot-loaded section pages (REV2; recomputed below)
 HISTORY_SCREEN_BYTES = 55360     # nfl2k5_history_screen's allocations in the RC (code 18,432, read_only 36,864, data 64)
-EARLY_ARENA_GAIN = int((61.6 - 46.7) * 1024 * 1024) & ~0xFFF   # the early form's arena growth in the lab (46.7 -> 61.6 MiB), whole pages
+# the early form's main heap gain on this RC, measured: EMU1 T1 (the witness disc) main heap 0x802E9100..0x8314C480,
+# free 33,583,232 B before START GAME, against H1R2 (RC1, late form) 0x81226100..0x8314C480, free 17,604,736 B
+EARLY_ARENA_GAIN = (0x8314C480 - 0x802E9100) - (0x8314C480 - 0x81226100)
+assert EARLY_ARENA_GAIN == 33583232 - 17604736 == 15978496
 REGION = (0x01620030, 0x05520030)  # H1R2's K128 words 0xB018B8/BC (the >64 MB region)
 TEAM_BAL, TEAM_HOU = 24, 29      # retail team indices (nfl2k5_team_history.RETAIL_TEAM_INDEX)
 
@@ -121,8 +125,10 @@ class Machine:
             self.put(address, value)
         self.call(0xC0500, ecx=self.root)
         self.teams = self.word(self.root + 0x1C)
+        self.ret_65d30 = 0          # 0x65D30's answer (the intro update's loop gate wants 8)
         hooks = {0x84C80: self._game_object, 0x84C50: self._release_object, 0x43F50: lambda: self._return(0, 0x10),
-                 0xF9310: lambda: self._return(0), 0x4A400: lambda: self._return(0, 4), 0x65D30: lambda: self._return(0)}
+                 0xF9310: lambda: self._return(0), 0x4A400: lambda: self._return(0, 4),
+                 0x65D30: lambda: self._return(self.ret_65d30)}
         for address, fn in hooks.items():
             self.uc.hook_add(uni.UC_HOOK_CODE, lambda _uc, _a, _s, f: f(), begin=address, end=address, user_data=fn)
 

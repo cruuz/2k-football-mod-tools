@@ -160,7 +160,8 @@ class FranchiseEdit:
         elif self.kind == "coach_replace":
             save.replace_head_coach(int(a["team"]), str(a["first"]), str(a["last"]), [str(x) for x in a.get("bio", ())])
         elif self.kind == "ir_place":
-            save.place_on_injured_reserve(int(a["team"]), int(a["player"]))
+            # b780 hunt5: the game's removal rule keeps the holder and returners on their players (never Finn's bytes)
+            save.place_on_injured_reserve(int(a["team"]), int(a["player"]), finn_roles=False)
         elif self.kind == "promote_reserve":
             save.promote_reserve(int(a["team"]), int(a["player"]))
         elif self.kind == "demote_active":
@@ -179,10 +180,12 @@ class IrPickerDialog(QDialog):
         super().__init__(parent)
         self.setWindowTitle(f"Place on injured reserve — {team_label}")
         layout = QVBoxLayout(self)
-        hint = QLabel("Choose the player. He leaves the team's list the way Finn's editor does it; "
+        hint = QLabel("Choose the player. He leaves the team's list the way Finn's editor does it, and the holder, "
+                      "kicker and returner choices stay with the same players, as the game's own roster moves keep them; "
                       "the game recomputes the team salary. Not yet tested in-game.")
         hint.setWordWrap(True)
-        hint.setToolTip("His team's pointer list is compacted and its count drops by one, exactly Finn's move.")
+        hint.setToolTip("His team's pointer list is compacted and its count drops by one, Finn's move. A role he held "
+                        "is cleared, the way the game clears it when a player leaves a team.")
         layout.addWidget(hint)
         self.list = QListWidget()
         for index, text in rows:

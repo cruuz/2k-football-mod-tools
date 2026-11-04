@@ -144,9 +144,12 @@ the same:
 You do not have to work this out yourself. The Build tab's source line and the
 Apply panel both name your image as soon as you choose it: *retail dump (xiso)*,
 *retail dump (raw/redump with video partition)*, *repacked disc*, *modified disc*,
+*disc built with 2K5 Mod Studio* (a SOFTDRINK or Customize disc; a released
+SOFTDRINK disc is named, for example *SOFTDRINK 2K28 v0.8 (a released disc)*),
 or *unknown image*, with a sentence saying what to do. Every refusal quotes the
 same line, so a failure says which disc you handed it and not just how many bytes
-disagreed.
+disagreed. A disc the Studio built is not a starting point: to change it, build
+again from a dump of your own retail disc.
 
 
 **Hi-res pack (experimental, unwitnessed).** This optional Build choice is
@@ -1470,6 +1473,21 @@ dynamic-kickoff line-up and the ESPN scorebar. Untick anything you do not want, 
 patched **copy** goes, and Build. The original is never touched; a receipt is
 written beside the copy. The **Install & Share** tab turns that copy into a `.2k5patch`
 file anyone can check and apply to their own image.
+
+**Console memory** (top of **Make my disc**, beta 80): **128 MB, xemu (full SOFTDRINK)** is the default and the main
+build, with every option, for xemu with System Memory at 128 MiB and the Complex 4627 BIOS. **64 MB, original Xbox and
+Android hakuX (experimental, estimated, not yet tested on a real Xbox or hakuX)** makes a disc for 64 MB machines. It
+turns off and greys out every option that needs 128 MB or the real Xbox kernel (each says why), leaves out the 128 MB
+and 4627 BIOS start-up checks, shows what each remaining option costs in memory, and says whether the selection is
+predicted to fit at the hardest stadium or what to turn off. **Use the recommended 64 MB set** applies the memory
+model's suggestion, and **Make my disc** refuses a selection that is predicted not to fit. A selection that fits only
+with the default uniforms is made with a warning: a player-picked alternate kit at the heaviest stadium may not fit, so
+if a game loops on the stadium shots, use the default uniforms. Roster edits that make the roster file bigger (the
+SOFTDRINK 2K28 2026 rosters do) are fitted to the original game's roster size at 64 MB: the free agents beyond the
+original game's count are left out, and franchise draft-pick ownership and the backfield labels fall back to the 2004
+game's. The memory numbers are an estimate from a model; for the full experience use xemu at 128 MiB. Going back to 128
+MB gives back everything 64 MB turned off. On **Share**, **Build for** next to **Customize SOFTDRINK 2K28…** loads the
+pack's sources straight into the 64 MB target, with the recommended 64 MB set applied.
 
 Modern overtime (in Advanced and Experimental) is the current NFL rule: a 10-minute
 period (scaled from your quarter length), both teams get a possession unless the first

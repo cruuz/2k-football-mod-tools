@@ -9,6 +9,19 @@ scroll vertically, which narrows the frame and hides the entire third name
 column. Reduce its spacing from 4 to 1 (25-pixel pitch). Widen the label
 column from 50 to 57 for SLWR/PWRB with normal padding. The font, player
 column widths, callbacks and encoded chains remain retail-compatible.
+
+Revision 2 (b780 hunt5; Noah 11/03: "If I make someone a third down back, they
+shouldn't be in every single play. The starting halfback should have
+priority."). Revision 1 (beta-76.4 to the beta-80 RC) drew 3DRB as chain 0,
+the RB rank list itself: moving a back to the top of 3DRB made him RB1, the
+back in every formation. 3DRB is now chain 2, RB rank row 1: the top of the
+row is RB2 and the starter is not in its list. No offensive formation of the
+37 club books asks for RB rank row 1 (their passing sets use the lead back,
+heavy sets the power order; kickoff and kick-return units do use RB2), so on
+offense the 3DRB back plays when the picker passes over the starter (tired,
+hurt or already on the field). A revision-1 table reads "applied" (same layout)
+and ``apply`` rewrites only that record's chain dword (0 -> 2) and the section
+digest.
 """
 
 from __future__ import annotations
@@ -54,14 +67,53 @@ RETAIL_BENCH = bytes.fromhex(
 DUPLICATE_COUNT_CALLS = (0x243B6C, 0x243B90, 0x243BCD, 0x243BD7)
 # unit, slot, <=4-char abbreviation, <=26-char long name, position, encoded chain
 ROLE_ROWS = ((3, 4, "LS", "LONG SNAPPER", 12, 2),
-             (3, 5, "LGUN", "LEFT GUNNER", 3, 3),
-             (3, 6, "RGUN", "RIGHT GUNNER", 4, 3),
+             (3, 5, "LGUN", "LEFT GUNNER", 3, 6),
+             (3, 6, "RGUN", "RIGHT GUNNER", 4, 6),
              (3, 7, "NCB", "NICKEL CORNER", 4, 2),
              (3, 8, "DCB", "DIME CORNER", 4, 3),
              (3, 9, "SLWR", "SLOT RECEIVER", 3, 2),
-             (3, 10, "GAD", "GADGET", 3, 4),
-             (3, 11, "3DRB", "THIRD DOWN BACK", 7, 0),
+             (3, 10, "GAD", "GADGET", 3, 7),
+             (3, 11, "3DRB", "THIRD DOWN BACK", 7, 3),
              (3, 12, "PWRB", "POWER BACK", 7, 1))
+# Revision 3 (b780 sub1; Noah 11/03: a special-row pick never starts somewhere else). LGUN and RGUN read rank row 3
+# of the WR and CB orders (ordinal 6, which no club formation asks for except the punt gunners), 3DRB the RB side
+# order from row 1 (ordinal 3: only the third-down rule asks for it), GAD the WR side order from row 3 (ordinal 7:
+# only the gadget rule asks for it). Revision 1 (beta-76.4 .. the beta-80 RC: 3DRB = the RB rank list itself, LGUN =
+# WR side row 1, the 4th WR in four- and five-WR sets, RGUN = the dime corner, GAD = WR rank row 2) and revision 2
+# (the b780 hunt5 3DRB = RB rank row 1) read "previous" and apply() rewrites their role records in place.
+REVISION = 3
+PREVIOUS_ROLE_ROWS = {
+    1: {"LGUN": 3, "RGUN": 3, "GAD": 4, "3DRB": 0},
+    2: {"LGUN": 3, "RGUN": 3, "GAD": 4, "3DRB": 2},
+}
+# What each SPECIAL row does on the field (b780 hunt5, measured on the 37 club playbooks of SOFTDRINK v0.9 and the
+# game's own row getter, swap path and lineup picker; tests/mod_editor/test_b780_hunt5_special_rows.py). Both Studio
+# pages show this text. Plain words, no dashes between clauses.
+ROW_HELP = (
+    ("KR / PR", "who returns kickoffs and punts (a new KR1 moves the old one to KR2). No position order moves."),
+    ("LS", "your second center. He snaps on every punt, field goal and extra point and is the first center off the "
+           "bench."),
+    ("LGUN", "the second man in the receiver side order: left gunner on punts, and the fourth receiver in four and five "
+             "receiver sets."),
+    ("RGUN and DCB", "one list, the second man in the corner side order: right gunner on punts and the fourth corner "
+                     "in dime."),
+    ("NCB", "the second man in the corner rank order: the third corner in nickel and dime."),
+    ("SLWR", "the second man in the receiver rank order: the inside receiver in three receiver sets."),
+    ("GAD", "the third man in the receiver rank order: the fifth receiver, and a receiver in the base sets that share "
+            "a gadget play's personnel."),
+    ("3DRB", "the running backs behind your starter, RB2 first. The starter keeps priority: the 3DRB back comes in "
+             "when the starter cannot take the snap. There is no third down switch yet."),
+    ("PWRB", "the power back order: the back in goal line, jumbo and heavy I sets, and the second back in two back "
+             "sets."),
+)
+HELP_TEXT = ("Retail: special teams has four depth-chart rows. Patch: SPECIAL shows KR, PR, K, P, LS, LGUN, RGUN, NCB, "
+             "DCB, SLWR, GAD, 3DRB and PWRB together, with names beside all available player numbers. Offense and "
+             "defense keep eleven rows and show X / Z receiver labels. Row spacing is three pixels tighter on all "
+             "depth-chart tabs; the font stays the same. Role labels have more room. Each role row is a view of a "
+             "position order, so moving a player there moves him in that order too. "
+             + " ".join(f"{label}: {text}" for label, text in ROW_HELP)
+             + " The backups in these orders also cover kickoffs and block on kick returns. Requires one-pool "
+               "positions and the playbook roles. EXPERIMENTAL/UNWITNESSED.")
 WR_LABELS = ((3, ("LWR", "LEFT WIDE RECEIVER"), ("X", "X RECEIVER")),
              (4, ("RWR", "RIGHT WIDE RECEIVER"), ("Z", "Z RECEIVER")))
 
@@ -208,9 +260,8 @@ def _records(payload: bytes, applied: bool) -> list[bytes]:
     raw = _read(payload, TABLE_VA if applied else RETAIL_TABLE_VA, TABLE_SIZE if applied else RETAIL_TABLE_SIZE)
     records = [raw[i:i + RECORD_SIZE] for i in range(0, TABLE_SIZE, RECORD_SIZE)]
     if applied:
-        for unit, slot, abbrev, long_name, position, chain in ROLE_ROWS:
-            expected = modern.slot_text(abbrev, long_name) + struct.pack("<II", position, chain)
-            _require(records[unit * STRIDE + slot] == expected, f"unknown {abbrev} record in unit {unit}")
+        found = _role_revision(records)
+        _require(found is not None, "unknown SPECIAL role records")
         for slot, _before, after in WR_LABELS:
             _require(records[slot][:64] == modern.slot_text(*after), "unknown X/Z labels")
         records = records[:37] + [bytes(RECORD_SIZE)] * 7
@@ -259,10 +310,70 @@ def _special_table(payload: bytes) -> bytes:
             result[after:after + RECORD_SIZE] = raw[before:before + RECORD_SIZE]
     for slot, _before, after in WR_LABELS:
         result[slot * RECORD_SIZE:slot * RECORD_SIZE + 64] = modern.slot_text(*after)
-    for unit, slot, abbrev, long_name, position, chain in ROLE_ROWS:
-        off = (unit * STRIDE + slot) * RECORD_SIZE
-        result[off:off + RECORD_SIZE] = modern.slot_text(abbrev, long_name) + struct.pack("<II", position, chain)
+    for row in ROLE_ROWS:
+        off = (row[0] * STRIDE + row[1]) * RECORD_SIZE
+        result[off:off + RECORD_SIZE] = _role_record(row)
     return bytes(result)
+
+
+def _role_record(row) -> bytes:
+    unit, slot, abbrev, long_name, position, chain = row
+    return modern.slot_text(abbrev, long_name) + struct.pack("<II", position, chain)
+
+
+def _rows_for(revision: int) -> tuple:
+    """ROLE_ROWS as revision ``revision`` wrote them."""
+
+    chains = PREVIOUS_ROLE_ROWS.get(revision, {})
+    return tuple(row[:5] + (chains.get(row[2], row[5]),) for row in ROLE_ROWS)
+
+
+def _role_revision(records: list[bytes]) -> int | None:
+    """Which revision wrote these nine SPECIAL role records (3 = current), or None when they are none of them."""
+
+    for revision in (REVISION, *sorted(PREVIOUS_ROLE_ROWS, reverse=True)):
+        if all(records[row[0] * STRIDE + row[1]] == _role_record(row) for row in _rows_for(revision)):
+            return revision
+    return None
+
+
+def revision(payload: bytes) -> int | None:
+    """The SPECIAL role table's revision (1, 2 or 3) on an installed table, None otherwise."""
+
+    if status(payload) not in ("applied", "previous"):
+        return None
+    raw = _read(payload, TABLE_VA, TABLE_SIZE)
+    return _role_revision([raw[i:i + RECORD_SIZE] for i in range(0, TABLE_SIZE, RECORD_SIZE)])
+
+
+def _upgrade(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
+    """Revision 1 or 2 -> 3 in place: only the changed role records' chain dwords and their section digest."""
+
+    old_revision = revision(payload)
+    _require(old_revision in PREVIOUS_ROLE_ROWS, "not a previous SPECIAL role table")
+    buf = bytearray(payload)
+    sections = _sections(buf)
+    edits, touched = [], set()
+    for old, new in zip(_rows_for(old_revision), ROLE_ROWS):
+        if old == new:
+            continue
+        va = modern.record_va(new[0], new[1], table_va=TABLE_VA)
+        off = _span(buf, va, RECORD_SIZE)
+        _require(bytes(buf[off:off + RECORD_SIZE]) == _role_record(old), f"unknown {old[2]} record")
+        buf[off:off + RECORD_SIZE] = _role_record(new)
+        touched.add(_section_for_offset(sections, off).index)
+        edits.append({"label": f"special_{new[2]}_chain", "va": f"0x{va + 0x44:x}", "file_offset": f"0x{off + 0x44:x}",
+                      "size": 4, "before": old[5], "after": new[5]})
+    for section in sections:
+        if section.index in touched:
+            at = section.header_offset + 36
+            buf[at:at + 20] = section_digest(bytes(buf), section)
+    patched = bytes(buf)
+    _require(status(patched) == "applied" and revision(patched) == REVISION, "SPECIAL rows upgrade verification failed")
+    return patched, {"status": "applied", "already_applied": False, "upgraded_from": f"revision {old_revision}",
+                     "changed_bytes": sum(a != b for a, b in zip(payload, patched)), "edits": edits,
+                     "sections_repinned": sorted(touched), "stride": STRIDE, "row_counts": list(ROW_COUNTS),
+                     "revision": REVISION, "runtime_witnessed": False}
 
 
 def status(payload: bytes) -> str:
@@ -285,7 +396,10 @@ def status(payload: bytes) -> str:
         if applied:
             _table_is_known(payload, False)  # retired allocation and its padding are retained intact
             _require(pools.status(payload) in ("applied", "needs_fix"), "position_pools dependency is not applied")
-        return "applied" if applied else "retail"
+            raw = _read(payload, TABLE_VA, TABLE_SIZE)
+            current = _role_revision([raw[i:i + RECORD_SIZE] for i in range(0, TABLE_SIZE, RECORD_SIZE)]) == REVISION
+            return "applied" if current else "previous"
+        return "retail"
     except (ValueError, struct.error, IndexError):
         return "foreign"
 
@@ -297,9 +411,12 @@ def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
     _require(state != "foreign", "depth-chart rows are foreign; refusing")
     _require(pools.status(payload) == "applied",
              "apply nfl2k5_position_pools with depth_chart_third_starter before depth-chart rows")
+    if state == "previous":
+        return _upgrade(payload)
     if state == "applied":
         return payload, {"status": "applied", "already_applied": True, "changed_bytes": 0,
-                         "edits": [], "sections_repinned": [], "stride": STRIDE, "row_counts": list(ROW_COUNTS)}
+                         "edits": [], "sections_repinned": [], "stride": STRIDE, "row_counts": list(ROW_COUNTS),
+                         "revision": REVISION}
     buf, edits = storage.extend(payload)
     sections = _sections(buf)
     touched = {storage._section(buf).index}
@@ -327,4 +444,4 @@ def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
                      "summary_row_pitch": 25, "summary_spacing": 1, "summary_font_unchanged": True,
                      "summary_label_width": SUMMARY_LABEL_WIDTH,
                      "layout_scope": "shared depth-chart summary style 17",
-                     "runtime_witnessed": False}
+                     "revision": REVISION, "runtime_witnessed": False}

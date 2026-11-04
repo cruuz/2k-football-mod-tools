@@ -212,11 +212,12 @@ class ProductCatalogTests(unittest.TestCase):
             'nfl2k5.rosters.coach_staff',  # b780 wave (b780-int)
             'nfl2k5.saves.franchise_coach_moves',  # b780 wave (b780-int)
             'nfl2k5.scorebug_presentation.audible_legend',  # b780 wave (b780-int)
+            'nfl2k5.gameplay.intro_autoskip',  # b780-mem1
         }
         first_ids = [binding.capability_id for binding in first.capabilities]
         second_ids = [binding.capability_id for binding in second.capabilities]
 
-        self.assertEqual(len(first_ids), 150)  # b780-cv5: + speed separation; beta 77 f5: + honors page; beta 77 v1: + modern goalposts; beta 76: + custom intro video, ESPN presentation marks (2026), wipes and boards, historic teams in Quick Game, MetLife, 25 more moments (m1), 128 MB memory (k1), kickoff return blocking (vb3), 2026 venue art (u4), the MetLife model (u5), SoFi Stadium (u6), Highmark Stadium (st), Modern playing surfaces (tf), beta 76 km: + kick meter, modern helmets (hm), the practice facility (pf), Hard Rock, Gillette, Lambeau and EverBank (st4), the modern stadium boards (st5), letter grades in Franchise (b77-f4)
+        self.assertEqual(len(first_ids), 151)  # b780-mem1: + intro auto-skip; b780-cv5: + speed separation; beta 77 f5: + honors page; beta 77 v1: + modern goalposts; beta 76: + custom intro video, ESPN presentation marks (2026), wipes and boards, historic teams in Quick Game, MetLife, 25 more moments (m1), 128 MB memory (k1), kickoff return blocking (vb3), 2026 venue art (u4), the MetLife model (u5), SoFi Stadium (u6), Highmark Stadium (st), Modern playing surfaces (tf), beta 76 km: + kick meter, modern helmets (hm), the practice facility (pf), Hard Rock, Gillette, Lambeau and EverBank (st4), the modern stadium boards (st5), letter grades in Franchise (b77-f4)
         self.assertEqual(len(first_ids), len(set(first_ids)))
         self.assertEqual(set(first_ids), expected)
         self.assertEqual(first_ids, second_ids)
@@ -259,7 +260,7 @@ class ProductCatalogTests(unittest.TestCase):
             ProductCategory.MENUS_UI: (10, 5, 2, 0, 0, 3, 0),  # beta 76: + custom intro video, historic teams in Quick Game
             ProductCategory.CRIB: (2, 2, 0, 0, 0, 0, 0),
             ProductCategory.AUDIO: (8, 7, 0, 1, 0, 0, 0),
-            ProductCategory.SLIDERS_GAMEPLAY: (53, 45, 5, 0, 0, 0, 3),  # b780-cv5: + speed separation; b77-vp2: + automatic CPU coach profiles
+            ProductCategory.SLIDERS_GAMEPLAY: (54, 46, 5, 0, 0, 0, 3),  # b780-mem1: + intro auto-skip; b780-cv5: + speed separation; b77-vp2: + automatic CPU coach profiles
             ProductCategory.PLAYBOOKS_PLAYS: (5, 5, 0, 0, 0, 0, 0),
             ProductCategory.TEXTURES: (1, 1, 0, 0, 0, 0, 0),
         }
@@ -288,7 +289,7 @@ class ProductCatalogTests(unittest.TestCase):
                 catalog.counts.evidence,
                 catalog.counts.research,
             ),
-            (150, 127, 9, 1, 0, 10, 3),  # b780-cv5: + speed separation; beta 77 f5: + honors page; beta 77 v1: + modern goalposts; beta 76: + custom intro video, ESPN presentation marks (2026), wipes and boards, historic teams in Quick Game, MetLife, 25 more moments (m1), 128 MB memory (k1), kickoff return blocking (vb3), 2026 venue art, the MetLife model (u5), SoFi Stadium (u6), Highmark Stadium (st), Modern playing surfaces (tf), beta 76 km: + kick meter, modern helmets (hm), beta 76: pf: + the practice facility, Hard Rock, Gillette, Lambeau and EverBank (st4), st5: + the modern stadium boards, b77-f4: + letter grades in Franchise
+            (151, 128, 9, 1, 0, 10, 3),  # b780-mem1: + intro auto-skip; b780-cv5: + speed separation; beta 77 f5: + honors page; beta 77 v1: + modern goalposts; beta 76: + custom intro video, ESPN presentation marks (2026), wipes and boards, historic teams in Quick Game, MetLife, 25 more moments (m1), 128 MB memory (k1), kickoff return blocking (vb3), 2026 venue art, the MetLife model (u5), SoFi Stadium (u6), Highmark Stadium (st), Modern playing surfaces (tf), beta 76 km: + kick meter, modern helmets (hm), beta 76: pf: + the practice facility, Hard Rock, Gillette, Lambeau and EverBank (st4), st5: + the modern stadium boards, b77-f4: + letter grades in Franchise
         )
 
     def test_ambiguous_stadium_surface_and_team_identity_are_explicit(self) -> None:
@@ -341,7 +342,7 @@ class ProductCatalogTests(unittest.TestCase):
         )
         binding = catalog.binding("nfl2k5.audio.audo_wav")
 
-        self.assertEqual(len(seen), 150)  # b780-cv5: + speed separation; beta 77 (f5: + honors page; v1: + modern goalposts); beta 76 (km: + kick meter), pf: + the practice facility), st4: + Hard Rock, Gillette, Lambeau and EverBank, st5: + the modern stadium boards; b77-f4: + letter grades
+        self.assertEqual(len(seen), 151)  # b780-mem1: + intro auto-skip; b780-cv5: + speed separation; beta 77 (f5: + honors page; v1: + modern goalposts); beta 76 (km: + kick meter), pf: + the practice facility), st4: + Hard Rock, Gillette, Lambeau and EverBank, st5: + the modern stadium boards; b77-f4: + letter grades
         self.assertEqual(
             binding.findings_notes,
             ("850 AUDO records mapped", "Export stays local"),

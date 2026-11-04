@@ -315,16 +315,19 @@ NOINLINE static void field(u8 *b,struct State *s,struct Field *f) {
  }
 }
 
-/* sb B1: play calling keeps the 2026 bar up and draws no retail play-call bar. The retail play-call bar's draws
- * (0x8C450, 0x8CA00) run only while [0xB641B4] and [0xB641B0] are set; the build turns both draws off and points
- * the per-frame hide at 0x8BEA0 here, so the bar stays while that mode is on and replays and menus still hide it. */
+/* sb B1: play calling keeps the 2026 bar up and draws no retail play-call bar. The retail play-call bar's draw
+ * (0x8CA00) runs only while [0xB641B4] and [0xB641B0] are set; the build turns that draw off and points the
+ * per-frame hide at 0x8BEA0 here, so the bar stays while that mode is on and replays and menus still hide it.
+ * b780 gc1: 0x8C450 is not a play-call draw and stays retail. Its one caller is the franchise Gamecast's draw
+ * event (0xEC550 in the visualsimulatormenu event table); it draws the Gamecast's score panel (teams, scores,
+ * quarter, clock, down) from the simulator's state, and turning it off left the Gamecast with no score or time. */
 NOINLINE void sprite_playcall_hide(void) {
  if(V(0xb641b4) && V(0xb641b0))return;
  ((void (*)(void))0xfc6b0)();
 }
 static u32 playcall_keep(void) {
- /* The mode is on and the build's draw guard is in place (0x8C465 reads jmp): without the guard, retail. */
- return V(0xb641b4) && V(0xb641b0) && *(volatile u8 *)0x8c465==0xe9;
+ /* The mode is on and the build's draw guard is in place (0x8CA18 reads jmp): without the guard, retail. */
+ return V(0xb641b4) && V(0xb641b0) && *(volatile u8 *)0x8ca18==0xe9;
 }
 
 /* dt is the frame time FC9C0 receives (IEEE single bits, sb). */

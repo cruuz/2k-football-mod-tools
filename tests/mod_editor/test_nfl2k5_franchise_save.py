@@ -241,7 +241,14 @@ class RealFinnFixtureTests(unittest.TestCase):
         self.assertEqual(f0.header.display_year, 2004)
         self.assertEqual(f0.salary_cap, 80_500)
         self.assertEqual(f0.injured_reserve(), [])
-        entry = f0.place_on_injured_reserve(0, 1369)
+        # b780 hunt5: the default keeps the specialist slot bytes on their players (the game's 0xC3A90); Finn's
+        # editor left them alone, so his file names the next man down as punt returner. Parity needs finn_roles.
+        game = fs.FranchiseSave(F0.read_bytes())
+        game.place_on_injured_reserve(0, 1369)
+        team = game.team_offset(0)
+        self.assertEqual([i for i, (a, b) in enumerate(zip(game.to_bytes(), f1)) if a != b], [team + 0x199])
+        self.assertEqual((f1[team + 0x199], game.to_bytes()[team + 0x199]), (50, 49))     # PR slot 50 -> 49
+        entry = f0.place_on_injured_reserve(0, 1369, finn_roles=True)
         self.assertEqual((entry.name, entry.offset), ("Harris Barton", 0x9E6CC))
         self.assertEqual(f0.to_bytes(), f1)
         # and back

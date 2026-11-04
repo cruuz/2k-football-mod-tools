@@ -19,6 +19,7 @@ import threading
 
 from PyQt5.QtCore import QObject, QRunnable, Qt, QThreadPool, pyqtSignal
 from PyQt5.QtWidgets import (
+    QComboBox,
     QFileDialog,
     QFormLayout,
     QGroupBox,
@@ -35,6 +36,7 @@ from PyQt5.QtWidgets import (
 )
 
 from mod_editor.core import mod_build, modpack, platform_compat
+from mod_editor.core import nfl2k5_console_memory as console_memory  # b780-m64b
 from mod_editor.gui.ux_text import XEMU_LINE, Details, FlowLayout, WrappedLabel, disc_next_steps
 from mod_editor.gui.ux_text import XEMU_SETUP_STEPS  # b780-uxfix
 from mod_editor.gui.task_delivery import bound
@@ -242,7 +244,26 @@ class SharePanel(QWidget):
         apply_layout.addWidget(self.install_softdrink_button)
         self.customize_softdrink_button = QPushButton("Customize SOFTDRINK 2K28…")
         self.customize_softdrink_button.clicked.connect(self.customize_softdrink)
-        apply_layout.addWidget(self.customize_softdrink_button)
+        # b780-m64b: the pack is the full 128 MB build; Customize can load its sources for the experimental 64 MB target
+        customize_row = QHBoxLayout()
+        customize_row.addWidget(self.customize_softdrink_button)
+        self.customize_memory_caption = QLabel(console_memory.SHARE_CHOICE_CAPTION)
+        customize_row.addWidget(self.customize_memory_caption)
+        self.customize_memory_combo = QComboBox()
+        for value in console_memory.CHOICES:
+            self.customize_memory_combo.addItem(console_memory.LABELS[value], value)
+        self.customize_memory_combo.setCurrentIndex(self.customize_memory_combo.findData(console_memory.DEFAULT))
+        self.customize_memory_combo.setAccessibleName("Customize SOFTDRINK 2K28: build for console memory")
+        self.customize_memory_combo.setToolTip(console_memory.SHARE_CHOICE_HELP)
+        self.customize_memory_combo.setMinimumWidth(220)
+        self.customize_memory_caption.setBuddy(self.customize_memory_combo)
+        customize_row.addWidget(self.customize_memory_combo, 1)
+        apply_layout.addLayout(customize_row)
+        self.memory_note = WrappedLabel(console_memory.SHARE_NOTE)
+        self.memory_note.setObjectName("throwMuted")
+        self.memory_note.setWordWrap(True)
+        self.memory_note.setAccessibleName("SOFTDRINK 2K28 pack memory")
+        apply_layout.addWidget(self.memory_note)
         self.pack_field, self.pack_button = self._path_row(apply_layout, "Mod file (.2k5patch)", self._choose_pack)
         self.pack_summary = WrappedLabel("Choose a .2k5patch file to see what it does.")
         self.pack_summary.setWordWrap(True)
@@ -319,6 +340,7 @@ class SharePanel(QWidget):
     def _refresh(self) -> None:
         self.install_softdrink_button.setEnabled(not self.busy)
         self.customize_softdrink_button.setEnabled(not self.busy)
+        self.customize_memory_combo.setEnabled(not self.busy)  # b780-m64b
         if self.busy:
             for button in (self.export_button, self.check_button, self.apply_button):
                 button.setEnabled(False)
@@ -621,10 +643,23 @@ class SharePanel(QWidget):
             if error:
                 progress(error, 0, 0)
             return modpack_sources.materialize(recipe, folder)
+        memory = self.customize_memory()
         def done(recipe):
+            if memory == 64:   # b780-m64b: the Build tab switches to the experimental 64 MB target
+                recipe = {**recipe, console_memory.FIELD: 64}
             self.customization_ready.emit(recipe)
-            self.apply_status.setText("Sources ready. Build now has the frozen recipe and league artwork. Change its options, then Make my disc. Custom builds use the full builder and take longer than installation.")
+            text = "Sources ready. Build now has the frozen recipe and league artwork. Change its options, then Make my disc. Custom builds use the full builder and take longer than installation."
+            if memory == 64:
+                text += (f" Console memory is set to 64 MB ({console_memory.STATUS_64}) with the recommended 64 MB set: the "
+                         "options that need 128 MB are off and the Build tab lists what else it turned off. "
+                         + console_memory.ROSTER_FIT_NOTE)
+            self.apply_status.setText(text)
         self._start(operation, done, self._apply_failed)
+
+    def customize_memory(self) -> int:
+        """b780-m64b: the console memory Customize SOFTDRINK 2K28 builds for (128 unless 64 is chosen)."""
+        value = self.customize_memory_combo.currentData()
+        return value if value in console_memory.CHOICES else console_memory.DEFAULT
 
     def describe_source(self) -> str:
         """Name the disc image in the source field (also used by tests)."""
@@ -638,8 +673,10 @@ class SharePanel(QWidget):
             except Exception:  # noqa: BLE001 -- naming the disc must never break the panel
                 found = None
             if found is not None:
+                # a Studio-built disc's own line already says what to do (build from a retail dump); "make this mod yourself"
+                # would send its owner to the Build tab to build on top of it
                 text = ("Your image: " + found.line()
-                        + ("" if found.can_take_a_byte_run_patch
+                        + ("" if found.can_take_a_byte_run_patch or found.kind == "studio-built"
                            else " Use the Build tab to make this mod yourself instead."))
         self.source_identity.setText(text)
         return text

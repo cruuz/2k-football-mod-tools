@@ -491,7 +491,30 @@ panel_done:
 human_compact:
  mov ecx,edi
  call compact
+human_next:
  jmp 0x2bdfd4
+
+# b780 (hunt6): the postseason schedule (0x2A8261..0x2A827E) puts the AFC
+# and NFC Pro Bowl teams in league slots 32 and 33 until the rollover, so the
+# weekly pass sorted them after the clubs, and rank/side live in the player
+# record a Pro Bowler shares with his club: each one took his Pro Bowl row on
+# his own club for the playoff games. The loop head's user-club test now
+# comes here first (ECX = the team): an all-star team (+0x128 kind 1: AFC,
+# NFC, NFL, the all-time squads) goes straight to the loop tail (the return
+# address is dropped), every other team takes the user-club test as before.
+all_star_skip:
+ cmp dword ptr [ecx+0x128],1
+ jne all_star_club
+ pop eax
+ jmp human_next
+all_star_club:
+ jmp 0x13ec30
+
+# The weekly loop head's user-club test (retail call 0x13EC30).
+.section .depth_all_star,"ax"
+.global all_star_call
+all_star_call:
+ call all_star_skip
 
 # The weekly auto-depth's user-club skip (retail 0F84 to 0x2BDFD4).
 .section .depth_human,"ax"
@@ -507,28 +530,35 @@ panel_branch:
 
 # Only the confirmed KR selection arm; EDI=team, ESI=selected player.
 # Clear previous KR claims, transfer previous KR1 to KR2 and mark new KR1.
+# Revision 6 (b780 sub1, Q64): choosing the current KR1 again changes nothing; before it, KR2 became KR1 too and the
+# second returner was lost. EBP addresses the returner bytes so the check fits the arm's own 65 bytes.
 .section .depth_kr,"ax"
 .global set_kr
 set_kr:
  pushad
- movzx edx,byte ptr [edi+0x195]
- mov [edi+0x196],dl
+ lea ebp,[edi+0x195]
  xor eax,eax
+ mov al,[ebp]
+ test al,al
+ js kr_new
+ cmp esi,[edi+eax*4]
+ je kr_done
+kr_new:
+ mov [ebp+1],al
+ movzx ecx,byte ptr [ebp-0x79]
 kr_loop:
- cmp al,[edi+0x11c]
- jae kr_done
- mov ebx,[edi+eax*4]
+ dec ecx
+ js kr_done
+ mov ebx,[edi+ecx*4]
  and byte ptr [ebx+0x52],0xf3
- cmp eax,edx
+ cmp ecx,eax
  jne kr_selected
  or byte ptr [ebx+0x52],8
 kr_selected:
  cmp ebx,esi
- jne kr_next
- mov [edi+0x195],al
+ jne kr_loop
+ mov [ebp],cl
  or byte ptr [ebx+0x52],4
-kr_next:
- inc eax
  jmp kr_loop
 kr_done:
  popad

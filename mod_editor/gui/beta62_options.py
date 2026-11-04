@@ -133,6 +133,10 @@ KEYS = tuple(row[0] for row in OPTIONS)
 # String-valued option rows: the checkbox means "not retail"; the adjacent combo picks the level.
 # Parent option -> child options: unchecking the parent clears the children; checking a child checks the parent.
 CHILDREN = {"coverage_trail": ("coverage_hitch_brake",), "weekly_prep": ("weekly_prep_cpu", "weekly_prep_remember"), "k128_memory": ("k128_roster_heap", "k128_early")}
+# b780-mem1: children that come on when the user ticks their parent (a click, not a project load); untick to opt out.
+# The early form makes the room the pregame intro needs at 128 MB on this content (the late form loops at retail-model
+# stadiums such as Baltimore).
+DEFAULT_ON_CHILDREN = {"k128_memory": ("k128_early",)}
 LEVELS = {"cpu_money_downs": (("Retail", "retail"), ("Modern", "modern"), ("Aggressive", "aggressive"), ("Modern 2", "modern2"))}
 UNAVAILABLE = {"franchise_2026_rules": FRANCHISE_HELP, "senior_bowl": tt.senior_bowl_patch.NATIVE_BLOCKER}
 HIRES_FAMILIES = (

@@ -22,7 +22,9 @@ What this owner adds
 * White and Black turn the columns of ESPN.com's Team Standings through three views, with the cursor sound:
   W L T (the retail screen, unchanged) -> DIV CONF -> HOME ROAD STRK -> W L T. Black goes forward, White back.
 * DIV and CONF: the club's record against its own division and against its conference, regular season only ("4-2",
-  "5-1-1"); a division game is also a conference game. Counted from the grid every frame, nothing is stored.
+  "5-1-1"); a division game is also a conference game. Counted from the grid every frame, nothing is stored. In the
+  preseason (league stage 7, 0xE576A4) the first grid rows hold the preseason games, so both read 0-0 until the regular
+  season's schedule replaces them (b780-season1: they had counted the preseason's conference games).
 * HOME, ROAD and STRK are the game's own values (its inbox standings tables use them): home and road records over the
   same rows the retail W L T use, and the streak as "W3" or "L2" ("--" after a tie or with none).
 * Header labels, the legend lines below the tables and the cell positions follow the view (the three HOME ROAD STRK
@@ -145,6 +147,7 @@ GUARDS = (
     ("cell home points", 0x000C5110, 0x36),
     ("cell away points", 0x000C5150, 0x36),
     ("club division", 0x000C6480, 0x17),
+    ("league stage", 0x000C4BB0, 6),
     ("home record", 0x000C6B70, 0xB5),
     ("road record", 0x000C6C30, 0xB5),
     ("win streak", 0x000C78D0, 0x8D),
@@ -173,6 +176,7 @@ GUARD_SHA256_PINNED = {
     "cell home points": "7602534cb462964558267d05bb6b12bb885f271c9a5a5510525f958f9383773d",
     "cell away points": "062a264af2bf7428751275cdebc248618869ad7153369f80ea69f2f19d0249c7",
     "club division": "d5a2b03ec60fb6f7e72095f4e4a6193e22cd48a3f99c74c0dafe5f1e70904561",
+    "league stage": "712452f8e0b8c23621623a511c8e9688c1a61e199a1a75329dd87f51b658661d",
     "home record": "dfd038a35eb10e6d5a71803bc919a191eab4f4484598fbd76e8df6c088199d36",
     "road record": "1eac0aaafcd2082f520f18cbb8c0c2c6259f12cf27fe0630d7ecca5996a62834",
     "win streak": "2f218df9316b65e5bfe39918f1b74816fbfca299fb17ed5c63c8da5ff933d6fc",
@@ -195,6 +199,8 @@ CONFERENCE_TABLE_VA = 0x004F0FE0
 # division -> conference (the table at 0x4F0FE0): NFC divisions 0-3 are conference 1, AFC divisions 4-7 conference 0
 CONFERENCE_OF_DIVISION = (1, 1, 1, 1, 0, 0, 0, 0)
 PLAYED = 3          # the status byte of a played cell (byte 0); byte 1 is the home club, byte 2 the away club
+STAGE_VA = 0x00E576A4
+PRESEASON_STAGE, SEASON_STAGE = 7, 8   # the league stage: preseason games occupy the first grid rows in stage 7
 
 
 def _cell_games(grid: bytes, scores: bytes, rows: int):
@@ -216,14 +222,18 @@ def _tally(record: list, mine: int, theirs: int) -> None:
     record[0 if mine > theirs else 1 if mine < theirs else 2] += 1
 
 
-def division_conference_records(grid: bytes, scores: bytes, divisions: Sequence[int], *, weeks: int = 17) -> list[dict]:
+def division_conference_records(grid: bytes, scores: bytes, divisions: Sequence[int], *, weeks: int = 17,
+                                 stage: int = SEASON_STAGE) -> list[dict]:
     """The DIV and CONF records of the 32 clubs over the first ``weeks`` (regular-season) rows.
 
     ``grid`` and ``scores`` are the game's schedule grid (0xE57C40) and quarter scores (0xE587F0); ``divisions`` the
     division of each league club index (0xE576D4). Returns, per club, ``{"div": [w, l, t], "conf": [w, l, t]}``.
-    A division game is also a conference game."""
+    A division game is also a conference game. In the preseason (``stage`` 7, the league stage at 0xE576A4) the first
+    rows hold preseason games, so every record is 0-0 (b780-season1)."""
 
     out = [{"div": [0, 0, 0], "conf": [0, 0, 0]} for _ in range(CLUBS)]
+    if stage == PRESEASON_STAGE:
+        return out
     for _row, _slot, home, away, home_points, away_points in _cell_games(grid, scores, weeks):
         if home >= CLUBS or away >= CLUBS or home == away:
             continue

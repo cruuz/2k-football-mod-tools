@@ -67,6 +67,7 @@ FEATURE_KEYS += ("pass_rush_stats",)  # b779-st1: pressures / QB hits / allowed 
 FEATURE_KEYS += ("history_screen",)  # b780-j4: franchise History screen, box scores and game log, a late executable owner
 FEATURE_KEYS += ("cpu_passer_iq",)  # b780 a-passer: CPU quarterbacks throw on time and check down, a late executable owner
 FEATURE_KEYS += ("cpu_clock2", "cpu_clock2_overtime")  # b780 b-clock: modern CPU clock management, a late executable owner
+FEATURE_KEYS += ("intro_autoskip",)  # b780-mem1: the pregame intro skips itself when its director could not load
 FEATURE_KEYS += ("protection_calls",)  # b780 p1-slide: the user's slide call at the line (L / R in the audible menu), late executable owner
 FEATURE_KEYS += ("team_number_scale",)  # b776-ns1: per-kit jersey number size {kit: scale}, late executable owner
 FEATURE_KEYS += ("qb_accuracy",)  # b777-qb3: accurate short and on-the-run throws by Pass Accuracy, late executable owner
@@ -118,6 +119,7 @@ FEATURE_KEYS += ("honors_page", "honors_history")  # b77-f5: Player Card honors 
 FEATURE_KEYS += ("contract_college_guard",)  # b778-cr1: Player Contracts null-college screen guard (late owner)
 FEATURE_KEYS += ("my_career_home",)  # ui1: MyCareer Career Home (default on with MyCareer)
 FEATURE_KEYS += ("super_bowl_user_art",)  # b773-sb2: Super Bowl logos folder; "" = the bundled real logos (sb3)
+FEATURE_KEYS += ("console_memory",)  # b780-m64b: 128 (default, absent in older projects) or 64 (experimental)
 MUSIC_KEYS = ("music_shuffle", "music_shuffle_selection")
 
 
@@ -160,6 +162,7 @@ def build_settings(value):
         tt._require(choices[key] is None or type(choices[key]) is str, f"{key} must be a path or None")
     tt._require(choices["screen_timing"] in (None, "A", "B", "C", "D"), "Screen timing must be A, B, C, D or None")
     tt._require(0 <= choices["speed_threshold"] <= 100, "Speed separation must be a whole number from 0 to 100")  # b780-cv5
+    tt._require(choices["console_memory"] in (128, 64), "Console memory must be 128 or 64 (MB)")  # b780-m64b
     week = choices["abilities_off_week"]
     tt._require(week is None or type(week) is int and 0 <= week <= 17, "Abilities off week must be 0..17 or None")
     for key in ("player_tags", "playbook_packs"):

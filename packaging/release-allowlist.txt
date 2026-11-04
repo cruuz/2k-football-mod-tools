@@ -701,6 +701,7 @@ mod_editor/core/nfl2k5_menu_helmet_w2026.py
 data/nfl2k5_menu_helmet_w2026.json
 mod_editor/core/nfl2k5_anniversary_kickoff.py
 mod_editor/core/nfl2k5_k128.py
+mod_editor/core/nfl2k5_memory_budget.py
 mod_editor/core/nfl2k5_letter_grades.py
 mod_editor/core/nfl2k5_letter_grades_attributes.py
 mod_editor/core/nfl2k5_letter_grades_code.py
@@ -893,6 +894,8 @@ tools/nfl2k5_kickoff_returns.py
 tools/nfl2k5_modpack.py
 tools/nfl2k5_playbook_position_recode.py
 tools/nfl2k5_roster_reclassify.py
+tools/nfl2k5_roster_retail_fit.py
+tools/b77/b778_fa3_free_agent_depth.py
 tools/nfl2k5_scorebug_espn_art.py
 tools/nfl2k5_scorebug_layout.py
 tools/nfl2k5_scorebug_position_patch.py
@@ -1059,6 +1062,7 @@ mod_editor/core/nfl2k5_animation_bones.py
 mod_editor/core/nfl2k5_animation_import.py
 mod_editor/core/nfl2k5_animation_xbe.py
 mod_editor/core/nfl2k5_build_settings.py
+mod_editor/core/nfl2k5_console_memory.py
 mod_editor/core/nfl2k5_crib_reclaim.py
 mod_editor/core/nfl2k5_franchise_2026.py
 mod_editor/core/nfl2k5_franchise_2026_code.py
@@ -2072,6 +2076,7 @@ mod_editor/core/nfl2k5_rookie_faces.py
 data/nfl2k5_rookie_faces/name_odds.json
 data/nfl2k5_rookie_faces/templates.json
 data/nfl2k5_rookie_faces/bank.json
+data/nfl2k5_rookie_faces/hair.json
 # b778-ee1: the alien prospect (code, art pins, portrait and face art)
 mod_editor/core/nfl2k5_alien_prospect.py
 data/nfl2k5_alien_prospect/code.json
@@ -3850,6 +3855,10 @@ mod_editor/core/nfl2k5_protection_calls.py
 mod_editor/core/nfl2k5_protection_calls_code.py
 tests/mod_editor/test_nfl2k5_protection_calls.py
 tests/mod_editor/test_nfl2k5_protection_calls_unicorn.py
+mod_editor/core/nfl2k5_intro_autoskip.py
+tests/mod_editor/test_b780_mem1_intro_autoskip.py
+tests/mod_editor/test_b780_mem1_heapb_headroom.py
+tests/mod_editor/test_b780_mem1_k128_early_default.py
 tests/mod_editor/test_nfl2k5_pass_protection_sim.py
 tests/mod_editor/test_nfl2k5_run_blocking.py
 tests/mod_editor/test_nfl2k5_team_sleeves.py
@@ -3952,6 +3961,7 @@ tests/mod_editor/test_b779_ce1_kit_fallback.py
 tests/mod_editor/test_b779_ce1_project_check.py
 tests/mod_editor/test_b791_h4_project_doctor.py
 tests/mod_editor/test_b778_tr1_trade_deadline.py
+tests/mod_editor/test_b780_season1_trade_deadline_followups.py
 tests/mod_editor/test_b778_tr2_trade_guard.py
 tests/mod_editor/test_trophy_room_logo.py
 tests/mod_editor/test_nfl2k5_progression_careers.py
@@ -3991,3 +4001,14 @@ tests/mod_editor/test_nfl2k5_history.py
 tests/mod_editor/test_nfl2k5_franchise_footer_transaction.py
 # b780 hunt3: Weekly Prep Player Results keeps the retail getter under the Player Progress owner
 tests/mod_editor/test_b780_hunt3_prep_results.py
+# b780 roster1: the dated refresh leaves no depth-chart row empty after a release for room; wrong-face portraits; pack roster lint
+tests/mod_editor/test_b780_roster1_depth_lint.py
+# b780 gc1: the franchise Gamecast's score panel (0x8C450) stays retail under the 2026 scorebug
+tests/mod_editor/test_b780_gc1_gamecast_scorepanel.py
+mod_editor/core/nfl2k5_lineup_roles.py
+tests/mod_editor/test_b780_sub1_depth.py
+tests/mod_editor/test_b780_sub1_lineup_roles.py
+tests/mod_editor/test_b780_hunt5_specialist_slots.py
+tests/mod_editor/test_b780_hunt5_special_rows.py
+mod_editor/core/nfl2k5_third_down_back.py
+tests/mod_editor/test_b780_sub1_third_down_back.py
