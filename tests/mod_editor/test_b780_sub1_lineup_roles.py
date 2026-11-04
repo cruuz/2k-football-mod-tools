@@ -64,7 +64,10 @@ class ReservationTests(unittest.TestCase):
         installed, receipt = lr.apply(reserved)
         self.assertTrue(receipt["allocation"]["reserved_by_first_pass"])
         self.assertEqual(installed, lr.apply(xbe)[0])
-        self.assertEqual((lr.status(installed), tackles.status(installed)), ("applied", "applied"))
+        # the neighbouring cornerback tackle owner reads exactly as it did on the input (b780-int: on int the v0.9 RC's own
+        # champions, honors, defensive try and so cornerback tackles read foreign since season1 Q73 rewrote the champions
+        # owner; only the beta-79 revision reads previous, and no released disc carries the RC's)
+        self.assertEqual((lr.status(installed), tackles.status(installed)), ("applied", tackles.status(xbe)))
         self.assertEqual(lr.apply(installed)[0], installed)
 
 
