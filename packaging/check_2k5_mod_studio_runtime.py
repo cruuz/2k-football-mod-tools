@@ -99,7 +99,7 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
     "mod_editor/gui/audio_panel_qt.py":
         "dd3529836c4ebdc5ddf344de19edca38191f918ca341248953cb289b56c5e42e",
     "mod_editor/gui/studio_qt.py":
-        "043243a88151f2e0841b7ea5abedf8319eb9f08ee104f1074d999a5880a5e085",
+        "c31a902ba17abf94b9810712766525473c1b7c6d806c7b7f4855df79357353ed",
     "mod_editor/studio/audio_annotations.py":
         "c45c94b011d703a24d063138f82477814495705c3b0055a9a867dbab453ba923",
     "mod_editor/studio/audio_replacement_pack.py":
@@ -115,14 +115,14 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
 B69_GAME_RUNTIME_PINS = {
     "mod_editor/core/nfl2k5_weather.py": "ec3d253e348ff0cf7fb1951b5dad2983d8aebc0802d5c6fca32c74dc80a6985b",
     "mod_editor/core/nfl2k5_weather_haze.py": "b8c58c592794312358eb1554b1d3be43a1ca41f7fdd8fd3cd498d4f345c641cc",
-    "mod_editor/gui/build_panel_qt.py": "39af69dae3157073ec619664a89db3a6786ef8b8f4f88f17bbdcade48e277cb7",
-    "mod_editor/gui/gameplay_patches_panel_qt.py": "70f2dc5210a0ef10fab2fbab8e9470e8ae2207736c2432affe3d3bda04cff1c5",
+    "mod_editor/gui/build_panel_qt.py": "185691027a786edb72f02dc60d5d571179691011cab8ce5e81fe10c5ea958cec",
+    "mod_editor/gui/gameplay_patches_panel_qt.py": "84a6648b0e5f7a9b3baead06b0d30bf1bff0b59a43cf8cf4a0955c749a811d0b",
     "mod_editor/gui/my_career_panel_qt.py": "cd39ce1685ed119288122e46b0f8c1c8ba586cea611f5d5feee096a71d7ea9ac",
     "mod_editor/gui/gameplay_project_ui.py": "c72343d75769211e84ea463c6cc999797520167a0f9c0bc5eb8c0306e24f2959",
     "mod_editor/gui/beta62_options.py": "5ce7517cd798e2c9ece0b464a077770e26670bba235e793e235b383fba6eca63",
     "tools/nfl2k5_weather_editor.py": "39a2847b873bbdc567712ca87657d700fa95e226c3408983acce4d714b1031de",
-    "mod_editor/gui/build_panel_qt.py": "39af69dae3157073ec619664a89db3a6786ef8b8f4f88f17bbdcade48e277cb7",
-    "mod_editor/gui/gameplay_patches_panel_qt.py": "70f2dc5210a0ef10fab2fbab8e9470e8ae2207736c2432affe3d3bda04cff1c5",
+    "mod_editor/gui/build_panel_qt.py": "185691027a786edb72f02dc60d5d571179691011cab8ce5e81fe10c5ea958cec",
+    "mod_editor/gui/gameplay_patches_panel_qt.py": "84a6648b0e5f7a9b3baead06b0d30bf1bff0b59a43cf8cf4a0955c749a811d0b",
     "mod_editor/gui/my_career_panel_qt.py": "cd39ce1685ed119288122e46b0f8c1c8ba586cea611f5d5feee096a71d7ea9ac",
     "mod_editor/gui/gameplay_project_ui.py": "c72343d75769211e84ea463c6cc999797520167a0f9c0bc5eb8c0306e24f2959",
     "mod_editor/gui/beta62_options.py": "5ce7517cd798e2c9ece0b464a077770e26670bba235e793e235b383fba6eca63",
