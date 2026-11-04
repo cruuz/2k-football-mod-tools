@@ -564,7 +564,7 @@ class StudioWindowTests(unittest.TestCase):
                 event.accept.assert_not_called()
             self.assertEqual(asked, ["Opening another disc", "Closing Mod Studio"])
             # once exported, the same edits are saved work
-            panel._edits_snapshot = (frozenset(panel._dirty), len(panel.undo_stack._done))
+            panel._edits_snapshot = panel.edits_key()
             self.assertFalse(window._roster_work_unsaved())
         window._refresh_project_document_state()
         self.assertNotIn("*", window.windowTitle())

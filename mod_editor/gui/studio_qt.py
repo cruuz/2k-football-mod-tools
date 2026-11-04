@@ -2596,8 +2596,8 @@ class StudioMainWindow(QMainWindow):
                 return False
             if panel.espn25_dirty():
                 return True
-            snapshot = getattr(panel, "_edits_snapshot", None)   # set when the roster edits were last exported
-            return snapshot is None or snapshot != (frozenset(panel._dirty), len(panel.undo_stack._done))
+            snapshot = getattr(panel, "_edits_snapshot", None)   # set when the edits were last exported or written
+            return snapshot is None or snapshot != panel.edits_key()
         except Exception:  # noqa: BLE001 - a guard question must never break closing
             return False
 
