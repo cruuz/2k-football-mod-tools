@@ -3320,12 +3320,16 @@ class BuildPanel(QWidget):
         layout = row.layout() if row is not None else None
         if layout is None:
             return None
-        label = WrappedLabel("")
-        label.setObjectName("optionBadge")
+        label = QLabel("")
+        label.setObjectName("optionBadge")   # the same small pill as the qualifier badge above it
         label.setWordWrap(True)
-        label.setIndent(30)
+        label.setContentsMargins(30, 0, 0, 0)
         label.setAccessibleName("Memory this option costs at 64 MB")
-        layout.insertWidget(layout.indexOf(helper) + 1, label)
+        line = QHBoxLayout()
+        line.setContentsMargins(0, 0, 0, 0)
+        line.addWidget(label)
+        line.addStretch(1)
+        layout.insertLayout(layout.indexOf(helper) + 1, line)
         self._memory_cost_labels[key] = label
         return label
 

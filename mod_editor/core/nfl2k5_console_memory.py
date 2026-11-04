@@ -303,9 +303,9 @@ def kb_down(size: int) -> int:
 
 
 def cost_text(size: int) -> str:
-    """'Memory at 64 MB: 12 KB (estimate)'; under 1 KB reads 'under 1 KB'."""
+    """'Memory at 64 MB: 12 KB (estimate)'; under 1 KB reads 'under 1 KB', nothing reads 'none'."""
 
-    amount = "under 1 KB" if 0 < size < 1024 else f"{kb_up(size):,} KB"
+    amount = "none" if size <= 0 else "under 1 KB" if size < 1024 else f"{kb_up(size):,} KB"
     return f"Memory at 64 MB: {amount} ({EVIDENCE_WORD})"
 
 
