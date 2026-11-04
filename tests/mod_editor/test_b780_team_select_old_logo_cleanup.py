@@ -66,9 +66,15 @@ class Document(unittest.TestCase):
         self.assertEqual({e["name"] for e in entries}, set(doc["texture_pins"]))
         self.assertEqual({e["name"] for e in entries},
                          {"lac_helmet00_24", "det_splayer_h", "det_splayer_a", "ten_splayer_h", "ten_splayer_a",
-                          "car_splayer_a", "buf_splayer_h", "buf_splayer_a"})
+                          "car_splayer_a", "buf_splayer_h", "buf_splayer_a",
+                          # Q17: kit pants and alternate helmets
+                          "car_pants_04H0", "car_pants_04A0", "bal_pants_02H0", "bal_pants_02A0", "bal_pants_02H2",
+                          "bal_pants_02A2", "bal_pants_02x3", "det_helmet00_alt", "det_helmet02_alt",
+                          "was_helmet00_29_9", "was_helmet02_29_9", "den_helmet00_alt"})
         for entry in entries:
-            self.assertIn(entry["kind"], ("live_helmet", "p8_texture"))
+            self.assertIn(entry["kind"], ("live_helmet", "p8_texture", "pants"))
+            if entry["kind"] == "pants":
+                self.assertTrue(all(r["mode"] == "column" for r in entry["regions"]), entry["name"])
             self.assertTrue(entry["note"])
             pin = doc["texture_pins"][entry["name"]]
             self.assertNotEqual(pin["source_rgba_sha256"], pin["clean_rgba_sha256"])
@@ -94,6 +100,24 @@ class Document(unittest.TestCase):
         self.assertTrue((rim.max(axis=-1) - rim.min(axis=-1) <= 1).all())
         self.assertTrue((np.abs(rim[..., 0] - 72) <= 2).all())        # 0.299*30 + 0.587*80 + 0.114*140
         self.assertTrue((out[:8] == rgba[:8]).all())
+
+    def test_column_mode_carries_the_stripe_through_a_speck(self):
+        """A speck beside a vertical stripe whose anti-aliased edge drifts down the leg: every column of the region
+        takes the straight line between the pixels above and below it, so the stripe edge carries on and the fabric
+        is flat; nothing outside the region moves."""
+        rgba = np.zeros((40, 24, 4), np.uint8)
+        rgba[..., 3] = 255
+        rgba[..., :3] = 20                                       # black fabric
+        rgba[:, 12:16, :3] = (0, 120, 200)                        # blue stripe
+        for y in range(40):
+            rgba[y, 11, :3] = 60 + 2 * y                          # its anti-aliased edge, drifting
+        speck = rgba.copy()
+        speck[14:19, 8:12, :3] = (200, 200, 210)                  # the old logo's leftover, touching the edge
+        out, rows = cl.clean_regions(speck, [dict(mode="column", poly=[[8, 14], [12, 14], [12, 19], [8, 19]], note="t")])
+        self.assertTrue((out == rgba).all())
+        self.assertEqual(rows[0]["painted_pixels"], 20)
+        with self.assertRaises(cl.CleanupError):
+            cl.clean_regions(speck, [dict(mode="column", poly=[[8, 0], [12, 0], [12, 3], [8, 3]], note="t")])
 
     def test_unknown_document_is_refused(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -262,6 +286,64 @@ class LeagueProject(unittest.TestCase):
                 self.assertEqual(hashlib.sha256(span).hexdigest(), row["also"][0]["before_sha256"], name)
                 new, _ = hem._compile_row(span, row, hem.spec())
                 self.assertEqual(hashlib.sha256(new).hexdigest(), row["also"][0]["after_sha256"], name)
+
+    def test_kit_copies_of_one_design_are_cleaned_alike(self):
+        """Detroit's four alternate kits and Washington's two carry their own copies of one helmet PNG: each copy is
+        the pinned art, and each matched edit is listed in the receipt."""
+        _, receipts = cl.clean_project_textures(self.project)
+        for name, count in (("det_helmet00_alt", 4), ("det_helmet02_alt", 4), ("was_helmet00_29_9", 2),
+                            ("was_helmet02_29_9", 2), ("bal_pants_02x3", 2), ("den_helmet00_alt", 2)):
+            self.assertEqual(len(receipts[name]["sources"]), count, name)
+        self.assertEqual(receipts["bal_pants_02x3"]["field"], "clean_png")
+
+    @unittest.skipUnless(os.environ.get("NFL2K5_RETAIL_INDEX"), "set NFL2K5_RETAIL_INDEX (retail pack 0) for the importer")
+    def test_the_kit_passes_know_the_cleaned_pants_and_helmets(self):
+        """The cleaned kit pants and the Washington Revolution shell still take their pinned kit passes: the
+        importer's span is the first pass's ``also`` input, and kit_fixes alternates then the pants hem give the
+        ``also`` outputs (the original art gives the original pins)."""
+        import hashlib
+        import nfl2k5_visual_mod_project as writer
+        import nfl_pants_tset_png_import as pants_import
+        import nfl_pants_tset_targets as pants_targets
+        from mod_editor.core import nfl2k5_kit_fixes_2026 as kit
+        from mod_editor.core import nfl2k5_pants_hem_2026 as hem
+        index = Path(os.environ["NFL2K5_RETAIL_INDEX"])
+        inventory = ROOT / "reports/assets/nfl2k5_resource_chunks_v2.json"
+        alts = {(r["selector"], r["chunk"]): r for r in kit.alternates()["textures"]}
+        hems = {(r["selector"], r["chunk"]): r for r in hem.spec()["textures"]}
+        images, _ = cl.clean_project_textures(self.project)
+        sha = lambda data: hashlib.sha256(data).hexdigest()
+        checked = 0
+        with tempfile.TemporaryDirectory() as tmp:
+            for entry in cl.texture_entries(cl.spec()):
+                if not entry["name"].startswith(("car_pants", "bal_pants", "was_helmet02")):
+                    continue
+                png = Path(tmp) / f"{entry['name']}.png"
+                cl.save_rgba(images[entry["name"]], png)
+                for edit in cl.matching_edits(self.project, entry):
+                    sel = f"{edit['asset_code']}{edit['side']}{int(edit['variant'])}"
+                    if entry["kind"] == "pants":
+                        chunk = 2
+                        target = pants_targets.select_target(edit["asset_code"], edit["side"], int(edit["variant"]),
+                                                             pants_targets.DEFAULT_REPORT)[3]
+                        span = pants_import.import_png(index, inventory, pants_targets.DEFAULT_REPORT, target, png, None,
+                                                       edit["mud_mode"])[0]
+                    else:
+                        chunk = 12
+                        span = writer.helmet_import.build_import(index, writer.REPORTS["live_helmet"], edit["asset_code"],
+                                                                 edit["side"], int(edit["variant"]), edit["family"], png)[0]
+                    for name, rows, compile_ in (("alts", alts, lambda s, r: kit.compile_texture(s, r)[0]),
+                                                 ("hem", hems, lambda s, r: hem._compile_row(s, r, hem.spec())[0])):
+                        row = rows.get((sel, chunk))
+                        if row is None:
+                            continue
+                        new = compile_(span, row)
+                        self.assertIn({"before_sha256": sha(span), "after_sha256": sha(new)}, row["also"], (sel, name))
+                        pairs = kit.known_pairs(row) if name == "alts" else hem.known_pairs(row)
+                        self.assertEqual(pairs[sha(span)], sha(new))
+                        span = new
+                        checked += 1
+        self.assertEqual(checked, 14)        # 6 alternates rows (4 BAL pants, 2 WAS helmets), 8 pants hem rows
 
     @unittest.skipUnless(os.environ.get("NFL2K5_RETAIL_INDEX"), "set NFL2K5_RETAIL_INDEX (retail pack 0) for the importer")
     def test_the_washington_w_pass_knows_the_cleaned_cards(self):

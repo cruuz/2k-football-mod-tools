@@ -3290,7 +3290,7 @@
    "changed_pixels": 1437
   }
  },
- "textures_note": "b780 art1 Q11 to Q16 (ART2's in-game findings on the v0.9 RC): the same cleanup on in-game textures by edit identity; marks are the repository's 2026 team logos (data/nfl2k5_scorebug_assets/logos), drawn where the old logo was and lit by the shell under them",
+ "textures_note": "b780 art1 Q11 to Q16 (ART2's in-game findings on the v0.9 RC): the same cleanup on in-game textures by edit identity; marks are the repository's 2026 team logos (data/nfl2k5_scorebug_assets/logos), drawn where the old logo was and lit by the shell under them Q17 (the art ART2 had not viewed): the same leftovers on kit pants (Baltimore's old B logo specks, Carolina's old panther tips; ``column`` regions) and on alternate helmets (Detroit's old lion pieces, Washington's old feathers and roundel ring); a fix may cover several kits' copies of one design.",
  "textures": [
   {
    "name": "lac_helmet00_24",
@@ -4067,6 +4067,2931 @@
     }
    ],
    "marks": []
+  },
+  {
+   "name": "car_pants_04H0",
+   "kind": "pants",
+   "match": {
+    "asset_code": "04",
+    "side": "H",
+    "variant": 0
+   },
+   "edits": 1,
+   "note": "CAR 04H0 pants: the old 2004 panther's outline left at both stripe tops",
+   "regions": [
+    {
+     "note": "old 2004 panther's outline left of the left stripe",
+     "mode": "column",
+     "poly": [
+      [
+       120.0,
+       28.0
+      ],
+      [
+       125.0,
+       28.0
+      ],
+      [
+       125.0,
+       34.0
+      ],
+      [
+       120.0,
+       34.0
+      ]
+     ]
+    },
+    {
+     "note": "old 2004 panther's paw right of the left stripe",
+     "mode": "column",
+     "poly": [
+      [
+       159.0,
+       35.0
+      ],
+      [
+       167.0,
+       35.0
+      ],
+      [
+       167.0,
+       44.0
+      ],
+      [
+       159.0,
+       44.0
+      ]
+     ]
+    },
+    {
+     "note": "old 2004 panther's paw left of the right stripe",
+     "mode": "column",
+     "poly": [
+      [
+       346.0,
+       37.0
+      ],
+      [
+       352.0,
+       37.0
+      ],
+      [
+       352.0,
+       44.0
+      ],
+      [
+       346.0,
+       44.0
+      ]
+     ]
+    },
+    {
+     "note": "old 2004 panther's outline right of the right stripe",
+     "mode": "column",
+     "poly": [
+      [
+       386.0,
+       24.0
+      ],
+      [
+       393.0,
+       24.0
+      ],
+      [
+       393.0,
+       34.0
+      ],
+      [
+       386.0,
+       34.0
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "car_pants_04A0",
+   "kind": "pants",
+   "match": {
+    "asset_code": "04",
+    "side": "A",
+    "variant": 0
+   },
+   "edits": 1,
+   "note": "CAR 04A0 pants: the old 2004 panther's outline left at both stripe tops",
+   "regions": [
+    {
+     "note": "old 2004 panther's outline left of the left stripe",
+     "mode": "column",
+     "poly": [
+      [
+       120.0,
+       28.0
+      ],
+      [
+       125.0,
+       28.0
+      ],
+      [
+       125.0,
+       33.0
+      ],
+      [
+       120.0,
+       33.0
+      ]
+     ]
+    },
+    {
+     "note": "old 2004 panther's paw right of the left stripe",
+     "mode": "column",
+     "poly": [
+      [
+       159.0,
+       36.0
+      ],
+      [
+       166.0,
+       36.0
+      ],
+      [
+       166.0,
+       44.0
+      ],
+      [
+       159.0,
+       44.0
+      ]
+     ]
+    },
+    {
+     "note": "old 2004 panther's paw left of the right stripe",
+     "mode": "column",
+     "poly": [
+      [
+       347.0,
+       38.0
+      ],
+      [
+       352.0,
+       38.0
+      ],
+      [
+       352.0,
+       44.0
+      ],
+      [
+       347.0,
+       44.0
+      ]
+     ]
+    },
+    {
+     "note": "old 2004 panther's outline right of the right stripe",
+     "mode": "column",
+     "poly": [
+      [
+       386.0,
+       25.0
+      ],
+      [
+       394.0,
+       25.0
+      ],
+      [
+       394.0,
+       34.0
+      ],
+      [
+       386.0,
+       34.0
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "bal_pants_02H0",
+   "kind": "pants",
+   "match": {
+    "asset_code": "02",
+    "side": "H",
+    "variant": 0
+   },
+   "edits": 1,
+   "note": "BAL 02H0 pants: specks of the old 2004 B logo's edge beside both stripe tops",
+   "regions": [
+    {
+     "note": "old 2004 B logo's edge left of the left stripe",
+     "mode": "column",
+     "poly": [
+      [
+       125.0,
+       32.0
+      ],
+      [
+       128.0,
+       32.0
+      ],
+      [
+       128.0,
+       44.0
+      ],
+      [
+       125.0,
+       44.0
+      ]
+     ]
+    },
+    {
+     "note": "old 2004 B logo's edge left of the left stripe (lower)",
+     "mode": "column",
+     "poly": [
+      [
+       126.0,
+       47.0
+      ],
+      [
+       128.0,
+       47.0
+      ],
+      [
+       128.0,
+       58.0
+      ],
+      [
+       126.0,
+       58.0
+      ]
+     ]
+    },
+    {
+     "note": "old 2004 B logo's edge right of the left stripe",
+     "mode": "column",
+     "poly": [
+      [
+       157.0,
+       30.0
+      ],
+      [
+       159.0,
+       30.0
+      ],
+      [
+       159.0,
+       43.0
+      ],
+      [
+       157.0,
+       43.0
+      ]
+     ]
+    },
+    {
+     "note": "old 2004 B logo's edge left of the right stripe",
+     "mode": "column",
+     "poly": [
+      [
+       351.0,
+       32.0
+      ],
+      [
+       355.0,
+       32.0
+      ],
+      [
+       355.0,
+       44.0
+      ],
+      [
+       351.0,
+       44.0
+      ]
+     ]
+    },
+    {
+     "note": "old 2004 B logo's edge left of the right stripe (lower)",
+     "mode": "column",
+     "poly": [
+      [
+       352.0,
+       45.0
+      ],
+      [
+       355.0,
+       45.0
+      ],
+      [
+       355.0,
+       58.0
+      ],
+      [
+       352.0,
+       58.0
+      ]
+     ]
+    },
+    {
+     "note": "old 2004 B logo's edge right of the right stripe",
+     "mode": "column",
+     "poly": [
+      [
+       384.0,
+       28.0
+      ],
+      [
+       385.0,
+       28.0
+      ],
+      [
+       385.0,
+       42.0
+      ],
+      [
+       384.0,
+       42.0
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "bal_pants_02A0",
+   "kind": "pants",
+   "match": {
+    "asset_code": "02",
+    "side": "A",
+    "variant": 0
+   },
+   "edits": 1,
+   "note": "BAL 02A0 pants: specks of the old 2004 B logo's edge beside both stripe tops",
+   "regions": [
+    {
+     "note": "old 2004 B logo's edge left of the left stripe",
+     "mode": "column",
+     "poly": [
+      [
+       125.0,
+       32.0
+      ],
+      [
+       128.0,
+       32.0
+      ],
+      [
+       128.0,
+       44.0
+      ],
+      [
+       125.0,
+       44.0
+      ]
+     ]
+    },
+    {
+     "note": "old 2004 B logo's edge left of the left stripe (lower)",
+     "mode": "column",
+     "poly": [
+      [
+       126.0,
+       47.0
+      ],
+      [
+       128.0,
+       47.0
+      ],
+      [
+       128.0,
+       58.0
+      ],
+      [
+       126.0,
+       58.0
+      ]
+     ]
+    },
+    {
+     "note": "old 2004 B logo's edge right of the left stripe",
+     "mode": "column",
+     "poly": [
+      [
+       157.0,
+       30.0
+      ],
+      [
+       159.0,
+       30.0
+      ],
+      [
+       159.0,
+       43.0
+      ],
+      [
+       157.0,
+       43.0
+      ]
+     ]
+    },
+    {
+     "note": "old 2004 B logo's edge left of the right stripe",
+     "mode": "column",
+     "poly": [
+      [
+       351.0,
+       32.0
+      ],
+      [
+       355.0,
+       32.0
+      ],
+      [
+       355.0,
+       44.0
+      ],
+      [
+       351.0,
+       44.0
+      ]
+     ]
+    },
+    {
+     "note": "old 2004 B logo's edge left of the right stripe (lower)",
+     "mode": "column",
+     "poly": [
+      [
+       352.0,
+       45.0
+      ],
+      [
+       355.0,
+       45.0
+      ],
+      [
+       355.0,
+       58.0
+      ],
+      [
+       352.0,
+       58.0
+      ]
+     ]
+    },
+    {
+     "note": "old 2004 B logo's edge right of the right stripe",
+     "mode": "column",
+     "poly": [
+      [
+       384.0,
+       28.0
+      ],
+      [
+       385.0,
+       28.0
+      ],
+      [
+       385.0,
+       42.0
+      ],
+      [
+       384.0,
+       42.0
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "bal_pants_02H2",
+   "kind": "pants",
+   "match": {
+    "asset_code": "02",
+    "side": "H",
+    "variant": 2
+   },
+   "edits": 1,
+   "note": "BAL 02H2 pants: specks of the old 2004 B logo's edge beside both stripe tops",
+   "regions": [
+    {
+     "note": "old 2004 B logo's edge left of the left stripe",
+     "mode": "column",
+     "poly": [
+      [
+       125.0,
+       32.0
+      ],
+      [
+       128.0,
+       32.0
+      ],
+      [
+       128.0,
+       44.0
+      ],
+      [
+       125.0,
+       44.0
+      ]
+     ]
+    },
+    {
+     "note": "old 2004 B logo's edge left of the left stripe (lower)",
+     "mode": "column",
+     "poly": [
+      [
+       126.0,
+       47.0
+      ],
+      [
+       128.0,
+       47.0
+      ],
+      [
+       128.0,
+       58.0
+      ],
+      [
+       126.0,
+       58.0
+      ]
+     ]
+    },
+    {
+     "note": "old 2004 B logo's edge right of the left stripe",
+     "mode": "column",
+     "poly": [
+      [
+       157.0,
+       30.0
+      ],
+      [
+       159.0,
+       30.0
+      ],
+      [
+       159.0,
+       43.0
+      ],
+      [
+       157.0,
+       43.0
+      ]
+     ]
+    },
+    {
+     "note": "old 2004 B logo's edge left of the right stripe",
+     "mode": "column",
+     "poly": [
+      [
+       351.0,
+       32.0
+      ],
+      [
+       355.0,
+       32.0
+      ],
+      [
+       355.0,
+       44.0
+      ],
+      [
+       351.0,
+       44.0
+      ]
+     ]
+    },
+    {
+     "note": "old 2004 B logo's edge left of the right stripe (lower)",
+     "mode": "column",
+     "poly": [
+      [
+       352.0,
+       45.0
+      ],
+      [
+       355.0,
+       45.0
+      ],
+      [
+       355.0,
+       58.0
+      ],
+      [
+       352.0,
+       58.0
+      ]
+     ]
+    },
+    {
+     "note": "old 2004 B logo's edge right of the right stripe",
+     "mode": "column",
+     "poly": [
+      [
+       384.0,
+       28.0
+      ],
+      [
+       385.0,
+       28.0
+      ],
+      [
+       385.0,
+       42.0
+      ],
+      [
+       384.0,
+       42.0
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "bal_pants_02A2",
+   "kind": "pants",
+   "match": {
+    "asset_code": "02",
+    "side": "A",
+    "variant": 2
+   },
+   "edits": 1,
+   "note": "BAL 02A2 pants: specks of the old 2004 B logo's edge beside both stripe tops",
+   "regions": [
+    {
+     "note": "old 2004 B logo's edge left of the left stripe",
+     "mode": "column",
+     "poly": [
+      [
+       125.0,
+       32.0
+      ],
+      [
+       128.0,
+       32.0
+      ],
+      [
+       128.0,
+       44.0
+      ],
+      [
+       125.0,
+       44.0
+      ]
+     ]
+    },
+    {
+     "note": "old 2004 B logo's edge left of the left stripe (lower)",
+     "mode": "column",
+     "poly": [
+      [
+       126.0,
+       47.0
+      ],
+      [
+       128.0,
+       47.0
+      ],
+      [
+       128.0,
+       58.0
+      ],
+      [
+       126.0,
+       58.0
+      ]
+     ]
+    },
+    {
+     "note": "old 2004 B logo's edge right of the left stripe",
+     "mode": "column",
+     "poly": [
+      [
+       157.0,
+       30.0
+      ],
+      [
+       159.0,
+       30.0
+      ],
+      [
+       159.0,
+       43.0
+      ],
+      [
+       157.0,
+       43.0
+      ]
+     ]
+    },
+    {
+     "note": "old 2004 B logo's edge left of the right stripe",
+     "mode": "column",
+     "poly": [
+      [
+       351.0,
+       32.0
+      ],
+      [
+       355.0,
+       32.0
+      ],
+      [
+       355.0,
+       44.0
+      ],
+      [
+       351.0,
+       44.0
+      ]
+     ]
+    },
+    {
+     "note": "old 2004 B logo's edge left of the right stripe (lower)",
+     "mode": "column",
+     "poly": [
+      [
+       352.0,
+       45.0
+      ],
+      [
+       355.0,
+       45.0
+      ],
+      [
+       355.0,
+       58.0
+      ],
+      [
+       352.0,
+       58.0
+      ]
+     ]
+    },
+    {
+     "note": "old 2004 B logo's edge right of the right stripe",
+     "mode": "column",
+     "poly": [
+      [
+       384.0,
+       28.0
+      ],
+      [
+       385.0,
+       28.0
+      ],
+      [
+       385.0,
+       42.0
+      ],
+      [
+       384.0,
+       42.0
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "bal_pants_02x3",
+   "kind": "pants",
+   "match": {
+    "asset_code": "02",
+    "variant": 3
+   },
+   "edits": 2,
+   "note": "BAL 02H3/02A3 pants (one design, two copies): specks of the old 2004 B logo's edge",
+   "regions": [
+    {
+     "note": "old 2004 B logo's edge left of the left stripe",
+     "mode": "column",
+     "poly": [
+      [
+       125.0,
+       32.0
+      ],
+      [
+       128.0,
+       32.0
+      ],
+      [
+       128.0,
+       44.0
+      ],
+      [
+       125.0,
+       44.0
+      ]
+     ]
+    },
+    {
+     "note": "old 2004 B logo's edge left of the left stripe (lower)",
+     "mode": "column",
+     "poly": [
+      [
+       126.0,
+       47.0
+      ],
+      [
+       128.0,
+       47.0
+      ],
+      [
+       128.0,
+       58.0
+      ],
+      [
+       126.0,
+       58.0
+      ]
+     ]
+    },
+    {
+     "note": "old 2004 B logo's edge right of the left stripe",
+     "mode": "column",
+     "poly": [
+      [
+       157.0,
+       30.0
+      ],
+      [
+       159.0,
+       30.0
+      ],
+      [
+       159.0,
+       43.0
+      ],
+      [
+       157.0,
+       43.0
+      ]
+     ]
+    },
+    {
+     "note": "old 2004 B logo's edge left of the right stripe",
+     "mode": "column",
+     "poly": [
+      [
+       351.0,
+       32.0
+      ],
+      [
+       355.0,
+       32.0
+      ],
+      [
+       355.0,
+       44.0
+      ],
+      [
+       351.0,
+       44.0
+      ]
+     ]
+    },
+    {
+     "note": "old 2004 B logo's edge left of the right stripe (lower)",
+     "mode": "column",
+     "poly": [
+      [
+       352.0,
+       45.0
+      ],
+      [
+       355.0,
+       45.0
+      ],
+      [
+       355.0,
+       58.0
+      ],
+      [
+       352.0,
+       58.0
+      ]
+     ]
+    },
+    {
+     "note": "old 2004 B logo's edge right of the right stripe",
+     "mode": "column",
+     "poly": [
+      [
+       384.0,
+       28.0
+      ],
+      [
+       385.0,
+       28.0
+      ],
+      [
+       385.0,
+       42.0
+      ],
+      [
+       384.0,
+       42.0
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "det_helmet00_alt",
+   "kind": "live_helmet",
+   "match": {
+    "asset_code": "09",
+    "family": "helmet00",
+    "variant": [
+     2,
+     9
+    ]
+   },
+   "edits": 4,
+   "alpha": "any",
+   "note": "DET 09H2/09A2/09H9/09A9 Standard shell (one design): the old 2004 lion's tail tip, front paw and belly",
+   "regions": [
+    {
+     "note": "old 2004 lion's tail tip, right of the new lion's tail (upper decal)",
+     "mode": "all",
+     "poly": [
+      [
+       103.0,
+       66.0
+      ],
+      [
+       107.0,
+       79.0
+      ],
+      [
+       109.0,
+       81.0
+      ],
+      [
+       113.0,
+       83.0
+      ],
+      [
+       113.0,
+       87.0
+      ],
+      [
+       132.0,
+       87.0
+      ],
+      [
+       132.0,
+       66.0
+      ]
+     ]
+    },
+    {
+     "note": "old 2004 lion's front paw, between the new lion's front paws (upper decal)",
+     "mode": "all",
+     "poly": [
+      [
+       37.0,
+       73.0
+      ],
+      [
+       37.0,
+       74.0
+      ],
+      [
+       37.0,
+       74.0
+      ],
+      [
+       37.0,
+       78.0
+      ],
+      [
+       37.0,
+       78.0
+      ],
+      [
+       37.0,
+       79.0
+      ],
+      [
+       37.0,
+       79.0
+      ],
+      [
+       37.0,
+       80.0
+      ],
+      [
+       37.0,
+       80.0
+      ],
+      [
+       37.0,
+       81.0
+      ],
+      [
+       40.0,
+       81.0
+      ],
+      [
+       40.0,
+       80.0
+      ],
+      [
+       41.0,
+       80.0
+      ],
+      [
+       41.0,
+       79.0
+      ],
+      [
+       43.0,
+       79.0
+      ],
+      [
+       43.0,
+       78.0
+      ],
+      [
+       46.0,
+       78.0
+      ],
+      [
+       46.0,
+       74.0
+      ],
+      [
+       45.0,
+       74.0
+      ],
+      [
+       45.0,
+       73.0
+      ]
+     ]
+    },
+    {
+     "note": "old 2004 lion's belly and outline under the new lion (upper decal)",
+     "mode": "all",
+     "poly": [
+      [
+       75.0,
+       95.0
+      ],
+      [
+       75.0,
+       96.0
+      ],
+      [
+       74.0,
+       96.0
+      ],
+      [
+       74.0,
+       97.0
+      ],
+      [
+       72.0,
+       97.0
+      ],
+      [
+       72.0,
+       99.0
+      ],
+      [
+       68.0,
+       99.0
+      ],
+      [
+       68.0,
+       101.0
+      ],
+      [
+       60.0,
+       101.0
+      ],
+      [
+       60.0,
+       104.0
+      ],
+      [
+       59.0,
+       104.0
+      ],
+      [
+       59.0,
+       113.0
+      ],
+      [
+       81.0,
+       113.0
+      ],
+      [
+       81.0,
+       104.0
+      ],
+      [
+       81.0,
+       104.0
+      ],
+      [
+       81.0,
+       101.0
+      ],
+      [
+       81.0,
+       101.0
+      ],
+      [
+       81.0,
+       99.0
+      ],
+      [
+       81.0,
+       99.0
+      ],
+      [
+       81.0,
+       97.0
+      ],
+      [
+       81.0,
+       97.0
+      ],
+      [
+       81.0,
+       96.0
+      ],
+      [
+       81.0,
+       96.0
+      ],
+      [
+       81.0,
+       95.0
+      ]
+     ]
+    },
+    {
+     "note": "old 2004 lion's tail curl right of the new lion's tail (lower decal)",
+     "mode": "all",
+     "poly": [
+      [
+       111.0,
+       169.0
+      ],
+      [
+       111.0,
+       186.0
+      ],
+      [
+       110.0,
+       186.0
+      ],
+      [
+       110.0,
+       187.0
+      ],
+      [
+       106.0,
+       187.0
+      ],
+      [
+       106.0,
+       191.0
+      ],
+      [
+       132.0,
+       191.0
+      ],
+      [
+       132.0,
+       187.0
+      ],
+      [
+       132.0,
+       187.0
+      ],
+      [
+       132.0,
+       186.0
+      ],
+      [
+       132.0,
+       186.0
+      ],
+      [
+       132.0,
+       169.0
+      ]
+     ]
+    },
+    {
+     "note": "old 2004 lion's front paw left of the new lion's chest (lower decal)",
+     "mode": "all",
+     "poly": [
+      [
+       37.0,
+       174.0
+      ],
+      [
+       46.0,
+       174.0
+      ],
+      [
+       46.0,
+       184.0
+      ],
+      [
+       37.0,
+       184.0
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "det_helmet02_alt",
+   "kind": "live_helmet",
+   "match": {
+    "asset_code": "09",
+    "family": "helmet02",
+    "variant": [
+     2,
+     9
+    ]
+   },
+   "edits": 4,
+   "alpha": "any",
+   "note": "DET 09H2/09A2/09H9/09A9 Revolution shell (one design): the old 2004 lion's tail tip, front paw, belly and the old flag's outline",
+   "regions": [
+    {
+     "note": "old 2004 lion's tail tip, right of the new lion's tail, clear of the shell's crease line (upper decal)",
+     "mode": "all",
+     "poly": [
+      [
+       105.0,
+       66.0
+      ],
+      [
+       107.0,
+       79.0
+      ],
+      [
+       109.0,
+       81.0
+      ],
+      [
+       113.0,
+       82.0
+      ],
+      [
+       113.0,
+       86.0
+      ],
+      [
+       129.0,
+       86.0
+      ],
+      [
+       129.0,
+       82.0
+      ],
+      [
+       128.0,
+       82.0
+      ],
+      [
+       128.0,
+       75.0
+      ],
+      [
+       122.0,
+       75.0
+      ],
+      [
+       122.0,
+       66.0
+      ]
+     ]
+    },
+    {
+     "note": "old 2004 lion's front paw, between the new lion's front paws (upper decal)",
+     "mode": "all",
+     "poly": [
+      [
+       37.0,
+       73.0
+      ],
+      [
+       37.0,
+       74.0
+      ],
+      [
+       37.0,
+       74.0
+      ],
+      [
+       37.0,
+       78.0
+      ],
+      [
+       37.0,
+       78.0
+      ],
+      [
+       37.0,
+       79.0
+      ],
+      [
+       37.0,
+       79.0
+      ],
+      [
+       37.0,
+       80.0
+      ],
+      [
+       37.0,
+       80.0
+      ],
+      [
+       37.0,
+       81.0
+      ],
+      [
+       41.0,
+       81.0
+      ],
+      [
+       41.0,
+       80.0
+      ],
+      [
+       42.0,
+       80.0
+      ],
+      [
+       42.0,
+       79.0
+      ],
+      [
+       43.0,
+       79.0
+      ],
+      [
+       43.0,
+       78.0
+      ],
+      [
+       46.0,
+       78.0
+      ],
+      [
+       46.0,
+       74.0
+      ],
+      [
+       45.0,
+       74.0
+      ],
+      [
+       45.0,
+       73.0
+      ]
+     ]
+    },
+    {
+     "note": "old 2004 lion's belly and outline under the new lion (upper decal)",
+     "mode": "all",
+     "poly": [
+      [
+       75.0,
+       95.0
+      ],
+      [
+       75.0,
+       96.0
+      ],
+      [
+       74.0,
+       96.0
+      ],
+      [
+       74.0,
+       97.0
+      ],
+      [
+       72.0,
+       97.0
+      ],
+      [
+       72.0,
+       98.0
+      ],
+      [
+       71.0,
+       98.0
+      ],
+      [
+       71.0,
+       99.0
+      ],
+      [
+       68.0,
+       99.0
+      ],
+      [
+       68.0,
+       101.0
+      ],
+      [
+       60.0,
+       101.0
+      ],
+      [
+       60.0,
+       113.0
+      ],
+      [
+       80.0,
+       113.0
+      ],
+      [
+       80.0,
+       101.0
+      ],
+      [
+       80.0,
+       101.0
+      ],
+      [
+       80.0,
+       99.0
+      ],
+      [
+       80.0,
+       99.0
+      ],
+      [
+       80.0,
+       98.0
+      ],
+      [
+       80.0,
+       98.0
+      ],
+      [
+       80.0,
+       97.0
+      ],
+      [
+       80.0,
+       97.0
+      ],
+      [
+       80.0,
+       96.0
+      ],
+      [
+       80.0,
+       96.0
+      ],
+      [
+       80.0,
+       95.0
+      ]
+     ]
+    },
+    {
+     "note": "old 2004 lion's belly and outline above the new lion (lower decal)",
+     "mode": "all",
+     "poly": [
+      [
+       60.0,
+       143.0
+      ],
+      [
+       60.0,
+       154.0
+      ],
+      [
+       66.0,
+       154.0
+      ],
+      [
+       66.0,
+       155.0
+      ],
+      [
+       67.0,
+       155.0
+      ],
+      [
+       67.0,
+       157.0
+      ],
+      [
+       72.0,
+       157.0
+      ],
+      [
+       72.0,
+       158.0
+      ],
+      [
+       73.0,
+       158.0
+      ],
+      [
+       73.0,
+       159.0
+      ],
+      [
+       74.0,
+       159.0
+      ],
+      [
+       74.0,
+       160.0
+      ],
+      [
+       75.0,
+       160.0
+      ],
+      [
+       75.0,
+       161.0
+      ],
+      [
+       80.0,
+       161.0
+      ],
+      [
+       80.0,
+       160.0
+      ],
+      [
+       80.0,
+       160.0
+      ],
+      [
+       80.0,
+       159.0
+      ],
+      [
+       80.0,
+       159.0
+      ],
+      [
+       80.0,
+       158.0
+      ],
+      [
+       80.0,
+       158.0
+      ],
+      [
+       80.0,
+       157.0
+      ],
+      [
+       80.0,
+       157.0
+      ],
+      [
+       80.0,
+       155.0
+      ],
+      [
+       80.0,
+       155.0
+      ],
+      [
+       80.0,
+       154.0
+      ],
+      [
+       80.0,
+       154.0
+      ],
+      [
+       80.0,
+       143.0
+      ]
+     ]
+    },
+    {
+     "note": "old 2004 lion's tail curl right of the new lion's tail, clear of the crease line (lower decal)",
+     "mode": "all",
+     "poly": [
+      [
+       111.0,
+       169.0
+      ],
+      [
+       129.0,
+       169.0
+      ],
+      [
+       129.0,
+       173.0
+      ],
+      [
+       128.0,
+       173.0
+      ],
+      [
+       128.0,
+       174.0
+      ],
+      [
+       129.0,
+       174.0
+      ],
+      [
+       129.0,
+       177.0
+      ],
+      [
+       128.0,
+       177.0
+      ],
+      [
+       128.0,
+       180.0
+      ],
+      [
+       127.0,
+       180.0
+      ],
+      [
+       127.0,
+       182.0
+      ],
+      [
+       121.0,
+       182.0
+      ],
+      [
+       121.0,
+       190.0
+      ],
+      [
+       107.0,
+       190.0
+      ],
+      [
+       107.0,
+       186.0
+      ],
+      [
+       108.0,
+       186.0
+      ],
+      [
+       108.0,
+       185.0
+      ],
+      [
+       109.0,
+       185.0
+      ],
+      [
+       109.0,
+       184.0
+      ],
+      [
+       110.0,
+       184.0
+      ],
+      [
+       110.0,
+       183.0
+      ],
+      [
+       111.0,
+       183.0
+      ]
+     ]
+    },
+    {
+     "note": "old 2004 lion's front paw, between the new lion's front paws (lower decal)",
+     "mode": "all",
+     "poly": [
+      [
+       37.0,
+       174.0
+      ],
+      [
+       37.0,
+       176.0
+      ],
+      [
+       37.0,
+       176.0
+      ],
+      [
+       37.0,
+       177.0
+      ],
+      [
+       37.0,
+       177.0
+      ],
+      [
+       37.0,
+       178.0
+      ],
+      [
+       37.0,
+       178.0
+      ],
+      [
+       37.0,
+       180.0
+      ],
+      [
+       37.0,
+       180.0
+      ],
+      [
+       37.0,
+       181.0
+      ],
+      [
+       37.0,
+       181.0
+      ],
+      [
+       37.0,
+       182.0
+      ],
+      [
+       37.0,
+       182.0
+      ],
+      [
+       37.0,
+       183.0
+      ],
+      [
+       41.0,
+       183.0
+      ],
+      [
+       41.0,
+       182.0
+      ],
+      [
+       44.0,
+       182.0
+      ],
+      [
+       44.0,
+       181.0
+      ],
+      [
+       45.0,
+       181.0
+      ],
+      [
+       45.0,
+       180.0
+      ],
+      [
+       46.0,
+       180.0
+      ],
+      [
+       46.0,
+       178.0
+      ],
+      [
+       43.0,
+       178.0
+      ],
+      [
+       43.0,
+       177.0
+      ],
+      [
+       42.0,
+       177.0
+      ],
+      [
+       42.0,
+       176.0
+      ],
+      [
+       41.0,
+       176.0
+      ],
+      [
+       41.0,
+       174.0
+      ]
+     ]
+    },
+    {
+     "note": "dotted outline of the old flag where Standard shell's flag sits (this shell's flag is lower)",
+     "mode": "deviation",
+     "sign": "any",
+     "threshold": 20,
+     "grow": 1,
+     "poly": [
+      [
+       121.5,
+       102.0
+      ],
+      [
+       145.0,
+       125.5
+      ],
+      [
+       121.5,
+       152.5
+      ],
+      [
+       98.0,
+       134.0
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "was_helmet00_29_9",
+   "kind": "live_helmet",
+   "match": {
+    "asset_code": "29",
+    "family": "helmet00",
+    "variant": 9
+   },
+   "edits": 2,
+   "alpha": "any",
+   "note": "WAS 29H9/29A9 Standard shell: the old 2004 feathers and roundel ring left beside the W",
+   "regions": [
+    {
+     "note": "old 2004 feather top beside the flag (upper decal)",
+     "mode": "all",
+     "poly": [
+      [
+       94.0,
+       33.0
+      ],
+      [
+       106.0,
+       33.0
+      ],
+      [
+       106.0,
+       48.0
+      ],
+      [
+       94.0,
+       48.0
+      ]
+     ]
+    },
+    {
+     "note": "old 2004 feather stem from the flag down to the spear tip (upper decal)",
+     "mode": "all",
+     "poly": [
+      [
+       110.0,
+       43.0
+      ],
+      [
+       110.0,
+       44.0
+      ],
+      [
+       106.0,
+       44.0
+      ],
+      [
+       106.0,
+       68.0
+      ],
+      [
+       106.0,
+       68.0
+      ],
+      [
+       106.0,
+       69.0
+      ],
+      [
+       111.0,
+       69.0
+      ],
+      [
+       111.0,
+       70.0
+      ],
+      [
+       113.0,
+       70.0
+      ],
+      [
+       113.0,
+       69.0
+      ],
+      [
+       115.0,
+       69.0
+      ],
+      [
+       115.0,
+       68.0
+      ],
+      [
+       116.0,
+       68.0
+      ],
+      [
+       116.0,
+       44.0
+      ],
+      [
+       113.0,
+       44.0
+      ],
+      [
+       113.0,
+       43.0
+      ]
+     ]
+    },
+    {
+     "note": "bottom edge of the old 2004 roundel ring under the W (upper decal)",
+     "mode": "all",
+     "poly": [
+      [
+       69.0,
+       108.0
+      ],
+      [
+       84.0,
+       108.0
+      ],
+      [
+       84.0,
+       110.0
+      ],
+      [
+       69.0,
+       110.0
+      ]
+     ]
+    },
+    {
+     "note": "old 2004 feather stem beside the W's right stroke and its tip (lower decal)",
+     "mode": "all",
+     "poly": [
+      [
+       113.0,
+       189.0
+      ],
+      [
+       113.0,
+       190.0
+      ],
+      [
+       112.0,
+       190.0
+      ],
+      [
+       112.0,
+       204.0
+      ],
+      [
+       106.0,
+       204.0
+      ],
+      [
+       106.0,
+       212.0
+      ],
+      [
+       106.0,
+       212.0
+      ],
+      [
+       106.0,
+       221.0
+      ],
+      [
+       115.0,
+       221.0
+      ],
+      [
+       115.0,
+       212.0
+      ],
+      [
+       117.0,
+       212.0
+      ],
+      [
+       117.0,
+       204.0
+      ],
+      [
+       117.0,
+       204.0
+      ],
+      [
+       117.0,
+       190.0
+      ],
+      [
+       117.0,
+       190.0
+      ],
+      [
+       117.0,
+       189.0
+      ]
+     ]
+    },
+    {
+     "note": "old 2004 feather bottom (lower decal)",
+     "mode": "all",
+     "poly": [
+      [
+       93.0,
+       207.0
+      ],
+      [
+       106.0,
+       207.0
+      ],
+      [
+       106.0,
+       223.0
+      ],
+      [
+       93.0,
+       223.0
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "was_helmet02_29_9",
+   "kind": "live_helmet",
+   "match": {
+    "asset_code": "29",
+    "family": "helmet02",
+    "variant": 9
+   },
+   "edits": 2,
+   "alpha": "any",
+   "note": "WAS 29H9/29A9 Revolution shell: the old 2004 feathers and roundel ring left beside the W (the spear is the kit fix's)",
+   "regions": [
+    {
+     "note": "old 2004 feather top beside the flag (upper decal)",
+     "mode": "all",
+     "poly": [
+      [
+       94.0,
+       33.0
+      ],
+      [
+       106.0,
+       33.0
+      ],
+      [
+       106.0,
+       48.0
+      ],
+      [
+       94.0,
+       48.0
+      ]
+     ]
+    },
+    {
+     "note": "old 2004 feather stem from the flag down to the spear tip, clear of the shell's crease line (upper decal)",
+     "mode": "all",
+     "poly": [
+      [
+       110.0,
+       43.0
+      ],
+      [
+       110.0,
+       44.0
+      ],
+      [
+       106.0,
+       44.0
+      ],
+      [
+       106.0,
+       53.0
+      ],
+      [
+       106.0,
+       53.0
+      ],
+      [
+       106.0,
+       59.0
+      ],
+      [
+       106.0,
+       59.0
+      ],
+      [
+       106.0,
+       68.0
+      ],
+      [
+       106.0,
+       68.0
+      ],
+      [
+       106.0,
+       69.0
+      ],
+      [
+       111.0,
+       69.0
+      ],
+      [
+       111.0,
+       70.0
+      ],
+      [
+       113.0,
+       70.0
+      ],
+      [
+       113.0,
+       69.0
+      ],
+      [
+       115.0,
+       69.0
+      ],
+      [
+       115.0,
+       68.0
+      ],
+      [
+       116.0,
+       68.0
+      ],
+      [
+       116.0,
+       59.0
+      ],
+      [
+       115.0,
+       59.0
+      ],
+      [
+       115.0,
+       53.0
+      ],
+      [
+       116.0,
+       53.0
+      ],
+      [
+       116.0,
+       44.0
+      ],
+      [
+       113.0,
+       44.0
+      ],
+      [
+       113.0,
+       43.0
+      ]
+     ]
+    },
+    {
+     "note": "bottom edge of the old 2004 roundel ring under the W (upper decal)",
+     "mode": "all",
+     "poly": [
+      [
+       69.0,
+       108.0
+      ],
+      [
+       84.0,
+       108.0
+      ],
+      [
+       84.0,
+       110.0
+      ],
+      [
+       69.0,
+       110.0
+      ]
+     ]
+    },
+    {
+     "note": "old 2004 feather stem beside the W's right stroke and its tip, clear of the crease line (lower decal)",
+     "mode": "all",
+     "poly": [
+      [
+       113.0,
+       189.0
+      ],
+      [
+       113.0,
+       190.0
+      ],
+      [
+       112.0,
+       190.0
+      ],
+      [
+       112.0,
+       196.0
+      ],
+      [
+       112.0,
+       196.0
+      ],
+      [
+       112.0,
+       203.0
+      ],
+      [
+       112.0,
+       203.0
+      ],
+      [
+       112.0,
+       204.0
+      ],
+      [
+       106.0,
+       204.0
+      ],
+      [
+       106.0,
+       212.0
+      ],
+      [
+       106.0,
+       212.0
+      ],
+      [
+       106.0,
+       220.0
+      ],
+      [
+       115.0,
+       220.0
+      ],
+      [
+       115.0,
+       212.0
+      ],
+      [
+       117.0,
+       212.0
+      ],
+      [
+       117.0,
+       204.0
+      ],
+      [
+       117.0,
+       204.0
+      ],
+      [
+       117.0,
+       203.0
+      ],
+      [
+       115.0,
+       203.0
+      ],
+      [
+       115.0,
+       196.0
+      ],
+      [
+       117.0,
+       196.0
+      ],
+      [
+       117.0,
+       190.0
+      ],
+      [
+       117.0,
+       190.0
+      ],
+      [
+       117.0,
+       189.0
+      ]
+     ]
+    },
+    {
+     "note": "old 2004 feather bottom (lower decal)",
+     "mode": "all",
+     "poly": [
+      [
+       93.0,
+       207.0
+      ],
+      [
+       106.0,
+       207.0
+      ],
+      [
+       106.0,
+       223.0
+      ],
+      [
+       93.0,
+       223.0
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "den_helmet00_alt",
+   "kind": "live_helmet",
+   "match": {
+    "asset_code": "08",
+    "family": "helmet00",
+    "variant": 5
+   },
+   "edits": 2,
+   "alpha": "any",
+   "note": "DEN 08H5/08A5 Summit White Standard shell: the old navy shell left along the jaw flaps, in the screws, the ear holes and a few specks",
+   "regions": [
+    {
+     "note": "old navy shell's edge along the upper jaw flap (navy pixels only)",
+     "mode": "deviation",
+     "sign": "bluer",
+     "threshold": 18,
+     "grow": 1,
+     "poly": [
+      [
+       35.0,
+       31.0
+      ],
+      [
+       35.0,
+       13.0
+      ],
+      [
+       46.0,
+       1.0
+      ],
+      [
+       72.0,
+       1.0
+      ],
+      [
+       79.0,
+       4.0
+      ],
+      [
+       86.0,
+       8.0
+      ],
+      [
+       92.0,
+       12.0
+      ],
+      [
+       96.0,
+       15.0
+      ],
+      [
+       96.0,
+       19.0
+      ],
+      [
+       91.0,
+       19.0
+      ],
+      [
+       91.0,
+       17.0
+      ],
+      [
+       88.0,
+       17.0
+      ],
+      [
+       88.0,
+       16.0
+      ],
+      [
+       85.0,
+       16.0
+      ],
+      [
+       85.0,
+       15.0
+      ],
+      [
+       84.0,
+       15.0
+      ],
+      [
+       84.0,
+       14.0
+      ],
+      [
+       82.0,
+       14.0
+      ],
+      [
+       82.0,
+       13.0
+      ],
+      [
+       80.0,
+       13.0
+      ],
+      [
+       80.0,
+       12.0
+      ],
+      [
+       78.0,
+       12.0
+      ],
+      [
+       78.0,
+       11.0
+      ],
+      [
+       76.0,
+       11.0
+      ],
+      [
+       76.0,
+       10.0
+      ],
+      [
+       75.0,
+       10.0
+      ],
+      [
+       75.0,
+       9.0
+      ],
+      [
+       73.0,
+       9.0
+      ],
+      [
+       73.0,
+       8.0
+      ],
+      [
+       50.0,
+       8.0
+      ],
+      [
+       50.0,
+       9.0
+      ],
+      [
+       48.0,
+       9.0
+      ],
+      [
+       48.0,
+       10.0
+      ],
+      [
+       47.0,
+       10.0
+      ],
+      [
+       47.0,
+       11.0
+      ],
+      [
+       44.0,
+       11.0
+      ],
+      [
+       44.0,
+       12.0
+      ],
+      [
+       43.0,
+       12.0
+      ],
+      [
+       43.0,
+       14.0
+      ],
+      [
+       42.0,
+       14.0
+      ],
+      [
+       42.0,
+       15.0
+      ],
+      [
+       41.0,
+       15.0
+      ],
+      [
+       41.0,
+       17.0
+      ],
+      [
+       40.0,
+       17.0
+      ],
+      [
+       40.0,
+       18.0
+      ],
+      [
+       39.0,
+       18.0
+      ],
+      [
+       39.0,
+       23.0
+      ],
+      [
+       38.0,
+       23.0
+      ],
+      [
+       38.0,
+       24.0
+      ],
+      [
+       37.0,
+       24.0
+      ],
+      [
+       37.0,
+       26.0
+      ],
+      [
+       38.0,
+       26.0
+      ],
+      [
+       38.0,
+       31.0
+      ]
+     ]
+    },
+    {
+     "note": "old navy specks and the dark end of the shell highlight, left of the ear hole (navy pixels only)",
+     "mode": "deviation",
+     "sign": "bluer",
+     "threshold": 18,
+     "grow": 1,
+     "poly": [
+      [
+       18.0,
+       44.0
+      ],
+      [
+       51.0,
+       44.0
+      ],
+      [
+       51.0,
+       72.0
+      ],
+      [
+       18.0,
+       72.0
+      ]
+     ]
+    },
+    {
+     "note": "old navy left in the screws' rims and the ear hole's bevel (kept, made neutral)",
+     "mode": "neutral",
+     "sign": "bluer",
+     "threshold": 18,
+     "poly": [
+      [
+       38.0,
+       4.0
+      ],
+      [
+       101.0,
+       4.0
+      ],
+      [
+       101.0,
+       56.0
+      ],
+      [
+       38.0,
+       56.0
+      ]
+     ]
+    },
+    {
+     "note": "old navy shell's edge along the lower jaw flap (navy pixels only)",
+     "mode": "deviation",
+     "sign": "bluer",
+     "threshold": 18,
+     "grow": 1,
+     "poly": [
+      [
+       35.0,
+       225.0
+      ],
+      [
+       35.0,
+       243.0
+      ],
+      [
+       46.0,
+       255.0
+      ],
+      [
+       72.0,
+       255.0
+      ],
+      [
+       79.0,
+       252.0
+      ],
+      [
+       86.0,
+       248.0
+      ],
+      [
+       92.0,
+       244.0
+      ],
+      [
+       96.0,
+       241.0
+      ],
+      [
+       96.0,
+       237.0
+      ],
+      [
+       91.0,
+       237.0
+      ],
+      [
+       91.0,
+       239.0
+      ],
+      [
+       88.0,
+       239.0
+      ],
+      [
+       88.0,
+       240.0
+      ],
+      [
+       85.0,
+       240.0
+      ],
+      [
+       85.0,
+       241.0
+      ],
+      [
+       84.0,
+       241.0
+      ],
+      [
+       84.0,
+       242.0
+      ],
+      [
+       82.0,
+       242.0
+      ],
+      [
+       82.0,
+       243.0
+      ],
+      [
+       80.0,
+       243.0
+      ],
+      [
+       80.0,
+       244.0
+      ],
+      [
+       78.0,
+       244.0
+      ],
+      [
+       78.0,
+       245.0
+      ],
+      [
+       76.0,
+       245.0
+      ],
+      [
+       76.0,
+       246.0
+      ],
+      [
+       75.0,
+       246.0
+      ],
+      [
+       75.0,
+       247.0
+      ],
+      [
+       73.0,
+       247.0
+      ],
+      [
+       73.0,
+       248.0
+      ],
+      [
+       50.0,
+       248.0
+      ],
+      [
+       50.0,
+       247.0
+      ],
+      [
+       48.0,
+       247.0
+      ],
+      [
+       48.0,
+       246.0
+      ],
+      [
+       47.0,
+       246.0
+      ],
+      [
+       47.0,
+       245.0
+      ],
+      [
+       44.0,
+       245.0
+      ],
+      [
+       44.0,
+       244.0
+      ],
+      [
+       43.0,
+       244.0
+      ],
+      [
+       43.0,
+       242.0
+      ],
+      [
+       42.0,
+       242.0
+      ],
+      [
+       42.0,
+       241.0
+      ],
+      [
+       41.0,
+       241.0
+      ],
+      [
+       41.0,
+       239.0
+      ],
+      [
+       40.0,
+       239.0
+      ],
+      [
+       40.0,
+       238.0
+      ],
+      [
+       39.0,
+       238.0
+      ],
+      [
+       39.0,
+       233.0
+      ],
+      [
+       38.0,
+       233.0
+      ],
+      [
+       38.0,
+       232.0
+      ],
+      [
+       37.0,
+       232.0
+      ],
+      [
+       37.0,
+       230.0
+      ],
+      [
+       38.0,
+       230.0
+      ],
+      [
+       38.0,
+       225.0
+      ]
+     ]
+    },
+    {
+     "note": "old navy specks and the dark end of the shell highlight, left of the lower ear hole (navy pixels only)",
+     "mode": "deviation",
+     "sign": "bluer",
+     "threshold": 18,
+     "grow": 1,
+     "poly": [
+      [
+       18.0,
+       184.0
+      ],
+      [
+       18.0,
+       188.0
+      ],
+      [
+       18.0,
+       188.0
+      ],
+      [
+       18.0,
+       212.0
+      ],
+      [
+       51.0,
+       212.0
+      ],
+      [
+       51.0,
+       188.0
+      ],
+      [
+       41.0,
+       188.0
+      ],
+      [
+       41.0,
+       184.0
+      ]
+     ]
+    },
+    {
+     "note": "old navy left in the lower screws' rims and the ear hole's bevel (kept, made neutral)",
+     "mode": "neutral",
+     "sign": "bluer",
+     "threshold": 18,
+     "poly": [
+      [
+       38.0,
+       200.0
+      ],
+      [
+       101.0,
+       200.0
+      ],
+      [
+       101.0,
+       252.0
+      ],
+      [
+       38.0,
+       252.0
+      ]
+     ]
+    }
+   ]
   }
  ],
  "texture_pins": {
@@ -4117,6 +7042,54 @@
    "clean_rgba_sha256": "6c6840c7038074f23f8efd8dece5f349a6b8ffb09394e496de6e0767b91df6e8",
    "changed_pixels": 1076,
    "edits": 1
+  },
+  "car_pants_04H0": {
+   "source_rgba_sha256": "3eb159c097a1fb19aaae5b02f5df98370c8570cbbe80e423594439531c8fe4e6",
+   "clean_rgba_sha256": "c046013b261b181c42bb949e3de8ac3e0a147b34cdc0313f6ba826316630e3e6"
+  },
+  "car_pants_04A0": {
+   "source_rgba_sha256": "e1bef6a16ddd8a20ef1363c6f138242ea052b12817bd9aee95e44a821a00bced",
+   "clean_rgba_sha256": "d7dc20df9856da4bbc14912a6bfd8585521382c1fc9a089cd3fce69b13ec9793"
+  },
+  "bal_pants_02H0": {
+   "source_rgba_sha256": "0f1d177892aba403a3756583ac9960a2f77bd2bb3ea5be157efe73dee13e5cf9",
+   "clean_rgba_sha256": "2a5dcebc9e496a5674b0faca92d11123e08c0df54ac931a0dea0d6d694074111"
+  },
+  "bal_pants_02A0": {
+   "source_rgba_sha256": "d67b4144eaa0fc0d6ca7d73cedd8402fa4cc1ca51958877ef26caddec5bf41eb",
+   "clean_rgba_sha256": "1427a46d5e02c4eaa6d8f1259a5af0904b7ae3bc3bca1566656aeab97ac8c8f1"
+  },
+  "bal_pants_02H2": {
+   "source_rgba_sha256": "c7d76ea3178a418aa1e55019816654169f97ed3fe4d1b9c463935879bdf24fcf",
+   "clean_rgba_sha256": "c96ccd8035828603e646d4f829422119cdf6fc266120d1e56525d9fc9f67f7f1"
+  },
+  "bal_pants_02A2": {
+   "source_rgba_sha256": "f428122e57b1dbd95bd9af2a9daa6df4e672b4e19fda699d54618be4dbfffc0e",
+   "clean_rgba_sha256": "1953c392e0634b497578c7a6e99ba9152693ba40f3110f14302bf87a3312dffa"
+  },
+  "bal_pants_02x3": {
+   "source_rgba_sha256": "f533513d9b768920f18025cf50d08f732bbb2bb7aa892a554defc2fde10ef42a",
+   "clean_rgba_sha256": "d1da6e07e1b53837c1ffbeeb85f73c50dd3d227bc19f4cd1fdac7d1e5752ae2e"
+  },
+  "det_helmet00_alt": {
+   "source_rgba_sha256": "ff2b055cb749cf11e747f4cde5cd16b8da8481fab0c99064a4d5909178f0f1dc",
+   "clean_rgba_sha256": "12b795171442963cac9cb142d82b6b4f28c2c40eab41a1d7816539addf662bf2"
+  },
+  "det_helmet02_alt": {
+   "source_rgba_sha256": "d84b7048cd23e8084b035eb91183d90066c8405da32f04746209fdcb95ec9e1c",
+   "clean_rgba_sha256": "61fcd9a9af76482454a0aac785699737fba503fcd70765122f1ec834d15b1f88"
+  },
+  "was_helmet00_29_9": {
+   "source_rgba_sha256": "0a2b95f3273425af04dc7f3ffae0372b5d06b0d85a52bbf3b3bad25ed77a728f",
+   "clean_rgba_sha256": "40b01274b1635af14eeca5be3f2a66a316957904cf6f911fccb8c10fdd0ae25e"
+  },
+  "was_helmet02_29_9": {
+   "source_rgba_sha256": "614d7601b0d61abd12d1ef02d47d0bd4a64c6bf691b070553c396414ba4cac77",
+   "clean_rgba_sha256": "ca2ff4d4d628ad1952c5e3c8e353f368f1872e70457e351741787931397393d6"
+  },
+  "den_helmet00_alt": {
+   "source_rgba_sha256": "9571a4e4b15dd11290694ceeb298c30939349d3703c219a122c65bee1e0c1009",
+   "clean_rgba_sha256": "99c516ef4ddbaff42387aad1464f437c8d3901727ca53a81e20082e95924b6e2"
   }
  }
 }
