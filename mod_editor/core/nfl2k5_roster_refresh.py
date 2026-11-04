@@ -108,6 +108,76 @@ def _rejoin_injured(by, rows, teams, assigned):
     return actives, rejoined, released, to_free
 
 
+# The dated refresh's native depth pairs (every club position on the v0.8 disc): the n-th player of a position's
+# chart (0-based) holds rank row n and side row NATIVE_SIDE_ROWS[n] (n past the table: side row n). Rank row 0 is the
+# left starter (LG, LT, LDT, LCB, MIKE ...), side row 0 the right one (RG, RT, RDT, RCB, WILL ...), side row 1 the
+# third (SAM, the 3-4 right tackle); the depth-chart getter 0x242AE0 finds no one for a row nobody holds.
+NATIVE_SIDE_ROWS = (2, 0, 1)
+
+
+def native_depth_pair(order):
+    """(rank row, side row) of the ``order``-th player (0-based) of a position's chart, as the refresh writes it."""
+    if order >= OVERFLOW_DEPTH_ROW:
+        return OVERFLOW_DEPTH_ROW, OVERFLOW_DEPTH_ROW
+    return order, NATIVE_SIDE_ROWS[order] if order < len(NATIVE_SIDE_ROWS) else order
+
+
+def depth_slots(rows):
+    """{index: (slot, rank)} from the refresh rows' dated depth chart (``depth_source`` pos_abb and pos_rank)."""
+    slots = {}
+    for row in rows:
+        source = row.get("depth_source") or {}
+        if source.get("pos_abb") and str(source.get("pos_rank", "")).isdigit():
+            slots[row["index"]] = (source["pos_abb"], int(source["pos_rank"]))
+    return slots
+
+
+def _reseat_chains(by, planned, active, rejoined, slots):
+    """b780 roster1: close the depth charts a release for room left open. Returns the indices whose rows moved.
+
+    The injured-reserve pass (b4-economy D6) releases the lowest-rated player at a position above its minimum, and
+    that player can hold a locked row (v0.9 RC: 38 position charts on 24 clubs, among them the left guards of CAR and
+    MIN, HOU's MIKE, GB's right guard and right defensive tackle, LAC's right defensive tackle and LV's right corner;
+    the v0.8 disc had none). The disc then holds a row no player holds (the getter 0x242AE0 finds no one there): a
+    lineup read from it falls back to the native list order, and the depth locks compactor closes it only at the first
+    depth-chart visit or weekly pass, by moving everyone below up one (CAR's right guard Hunt to left guard).
+
+    Each chart keeps the dated order (the rank rows the refresh wrote). The released player's place goes to the next
+    player the dated chart lists at his own slot (Bullock, CAR LG1, makes room for Simpkins, LG2; Hunt stays the
+    right guard); with none listed, the players below him move up one. Everyone then takes the native pairs for the
+    new order, locked as before, so no row is empty and no player holds two starting rows. A chart that lost no one
+    does not move, and the injured players who rejoined stay unlocked at the overflow row."""
+    present = set(active)
+    gone = {i for i in planned if i not in present and by[i].record.get("depth_rank") < OVERFLOW_DEPTH_ROW}
+    moved = []
+    for position in sorted({by[i].record.get("position") for i in gone}):
+        chart = sorted((i for i in set(active) - rejoined | gone
+                        if by[i].record.get("position") == position
+                        and by[i].record.get("depth_rank") < OVERFLOW_DEPTH_ROW),
+                       key=lambda i: (by[i].record.get("depth_rank"), by[i].record.get("depth_side"), i))
+        at = 0
+        while at < len(chart):
+            index = chart[at]
+            if index not in gone:
+                at += 1
+                continue
+            chart.pop(at)
+            slot = slots.get(index)
+            same = [i for i in chart[at:] if slot and slots.get(i, ("", 0))[0] == slot[0] and slots[i][1] > slot[1]]
+            if same:
+                pick = min(same, key=lambda i: (slots[i][1], chart.index(i)))
+                chart.remove(pick)
+                chart.insert(at, pick)
+        for order, index in enumerate(chart):
+            record = by[index].record
+            want = native_depth_pair(order)
+            if (record.get("depth_rank"), record.get("depth_side")) != want:
+                record.set("depth_rank", want[0])
+                record.set("depth_side", want[1])
+                moved.append(index)
+    return moved
+
+
 def _repair_create_buffers(doc):
     """Keep each unused CAP name pair exclusive and adjacent for native creation.
 
@@ -295,6 +365,7 @@ def apply_body(body, plan):
     owned = (owned - set(released)) | rejoined
     rr._require(all(by[i].record.get("contract_length") >= 1 for i in owned),
                 "Owned unsigned player needs a native contract initializer")
+    reseated, slots = [], depth_slots(rows)
     for team, row in zip(doc.teams, teams):
         active = actives[row["index"]]
         team.slots = [by[i].offset for i in active]
@@ -316,6 +387,8 @@ def apply_body(body, plan):
                 rec.set_depth_lock(role, True)
             for role in ("kr1", "kr2", "pr"):
                 rec.set_depth_lock(role, row["specialists"][role] == index)
+        # b780 roster1: a player released for room above held a locked row; close his chart (see _reseat_chains)
+        reseated.extend(_reseat_chains(by, row["active"], active, rejoined, slots))
         for key, identity in row["specialists"].items():
             doc.body[team.offset + rr.SPECIAL_TEAM_OFFSETS[key]] = (
                 255 if identity is None else active.index(identity))
@@ -352,4 +425,6 @@ def apply_body(body, plan):
                                         "to_free_agents": len(injured_free),
                                         "rejoined_players": sorted(by[i].display for i in rejoined),
                                         "released_players": [by[i].display for i in released],
-                                        "free_agent_players": [by[i].display for i in injured_free]}}
+                                        "free_agent_players": [by[i].display for i in injured_free],
+                                        # b780 roster1: rows moved up to close the chains the releases opened
+                                        "reseated_rows": len(reseated)}}
