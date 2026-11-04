@@ -56,7 +56,7 @@ from pb.v2 import sanity_b778 as sanity  # noqa: E402
 PAGE = 3
 MENU_MAX = 36                       # links per formation (the native 9-bit link ids)
 SLOT_RULE_CAP = 9                   # generator.SLOT_RULE_MENU_CAP: slot-rule sets keep short menus
-CARRIER_YD = (2.0, 3.5, 3.5, 5.0)   # carrier displacement allowed at fit tier 0..3 (the generator's own rule is 2 yd)
+CARRIER_YD = (2.0, 3.5, 3.5, 5.5)   # carrier displacement allowed at fit tier 0..3 (the generator's own rule is 2 yd)
 QB_ALIGN_YD = 3.5                   # quarterback displacement allowed when the alignment class differs (tiers 2, 3)
 RUN_USES_MAX = 13                   # SHARE_CAP_B777 run (12) plus the repair loops' one extra
 PASS_USES_MAX = 10
@@ -67,8 +67,9 @@ NEVER_SHARED = ("direct_snap", "sneak", "reverse", "flea", "special")
 TAKE_HANDOFF = 0x16
 PRIORITY_HEAVY = {"pa": 0, "quick": 1, "boot": 2, "rollout": 3, "screen": 4, "dropback": 5, "deep": 6}
 PRIORITY_OPEN = {"quick": 0, "dropback": 1, "pa": 2, "screen": 3, "boot": 4, "rollout": 5, "deep": 6}
-LEVELS = (0, 1, 2)                  # 0 = the generator's rules, 1 = near-duplicates and adjacent alignments allowed,
-                                    # 2 = QB runs into back sets, code-bit-only passes, carrier up to 5 yd
+LEVELS = (0, 1, 2, 3)               # 0 = the generator's rules, 1 = near-duplicates and adjacent alignments allowed,
+                                    # 2 = QB runs into back sets, code-bit-only passes, carrier up to 5.5 yd,
+                                    # 3 = a pass whose route runners change class freely (heavy sets), native checks still apply
 
 
 def kind_of(flags: int) -> str:
@@ -223,6 +224,8 @@ def candidates(doc: dict, cat: dict, fid: str, need: str, uses: Counter, *, leve
             ref = next((g for g in refs if sanity.share_fits(p, row, g, form, near)), None)
             if ref is None and level >= 2:
                 ref = next((g for g in refs if _pass_fits_relaxed(p, row, g, form)), None)
+            if ref is None and level >= 3:
+                ref = next((g for g in refs if _pass_fits_loose(p, g, form)), None)
             if ref is None:
                 continue
             if sanity.reverses_in(form, p) or not sanity.lint_clean(form, p):
@@ -233,6 +236,9 @@ def candidates(doc: dict, cat: dict, fid: str, need: str, uses: Counter, *, leve
         else:
             if uses[pid] >= RUN_USES_MAX and level < 2:
                 continue
+            named = sanity.alignment_named(name)
+            if named is not None and sanity.qb_alignment(form) != named:
+                continue                                  # "Pistol Wide Zone" stays in pistol sets (pb5)
             fits = [(fit_tier(f), f["back_yd"] + f["qb_yd"], f) for f in (run_fit(p, row, g, form) for g in refs) if f is not None]
             fits = [t for t in fits if t[0] <= (1 if level == 0 else 2 if level == 1 else 3)]
             if not fits:
@@ -277,21 +283,43 @@ def _pass_fits_relaxed(play: dict, row: dict, home: dict, form: dict) -> bool:
     return changed <= 2
 
 
-def pick(cands: list, count: int) -> list:
-    """The best ``count`` records, distinct in concept first (a page of three different runs), then by rank."""
-    chosen, seen = [], set()
+def _pass_fits_loose(play: dict, home: dict, form: dict) -> bool:
+    """Level 3 for a pass (heavy sets whose sisters start their tight end on the line): the slots line up by kind and
+    nothing else about the route runners' classes is asked; plays named for an alignment and play-action boots keep
+    theirs.  The lint, the reversal check and the native route check still apply to the link."""
+    if kinds(home) != kinds(form) or play.get("play_type") not in ("pass", "pa_pass"):
+        return False
+    named = sanity.alignment_named(play["custom_name"])
+    if named is not None and sanity.qb_alignment(form) != named:
+        return False
+    return not sanity.is_pa_boot(play) or sanity.backfield_compatible(home, form)
+
+
+def pick(cands: list, count: int, names=(), screens: int = 0) -> list:
+    """The best ``count`` records, distinct in concept first (a page of three different runs), then by rank; never two
+    plays of one name in a menu (``names`` are the menu's own) and never past the menu's screen limit."""
+    chosen, seen, used, scr = [], set(), set(names), screens
+
+    def take(c) -> bool:
+        nonlocal scr
+        is_screen = "screen" in c["name"].casefold()
+        if c["name"] in used or (is_screen and scr >= sanity.MAX_SCREENS):
+            return False
+        chosen.append(c)
+        used.add(c["name"])
+        scr += is_screen
+        return True
+
     for c in cands:
         if len(chosen) >= count:
             break
-        if c["concept"] in seen:
-            continue
-        chosen.append(c)
-        seen.add(c["concept"])
+        if c["concept"] not in seen and take(c):
+            seen.add(c["concept"])
     for c in cands:
         if len(chosen) >= count:
             break
         if c not in chosen:
-            chosen.append(c)
+            take(c)
     return chosen
 
 
@@ -384,11 +412,14 @@ def accept(doc: dict, fid: str, cands: list, checks, limit: int) -> list:
 def gather(doc: dict, cat: dict, fid: str, need: str, uses: Counter, route_check, want: int, exclude=(), no_own: bool = False) -> list:
     """Up to ``2 * want`` accepted candidates, taking stricter levels first and widening only while a page is missing."""
     pool = []
+    plays_ = {p["id"]: p["custom_name"] for p in doc["plays"]}
+    names = [plays_[p] for p in doc["menus"][fid]]
+    scr = sum(1 for n in names if "screen" in n.casefold())
     for level in LEVELS:
         found = [c for c in candidates(doc, cat, fid, need, uses, level=level, no_own=no_own)
                  if all(c["pid"] != d["pid"] for d in pool) and c["pid"] not in exclude]
         pool += accept(doc, fid, found, route_check, 2 * want - len(pool))
-        if len(pick(pool, want)) >= want and len(pool) >= want:
+        if len(pick(pool, want, names, scr)) >= want and len(pool) >= want:
             break
     pool.sort(key=lambda c: (c["level"],) + sort_key(c))
     return pool
@@ -423,6 +454,11 @@ class Converter:
 MUST_KEEP = ("tush", "sneak", "keep", "team")
 
 
+def gen_sneak_name() -> str:
+    from pb.v2 import generator as gen
+    return gen.SNEAK_FORMATION
+
+
 def convert_records(doc: dict, cat: dict, fid: str, need: str, conv: Converter, count: int, quick: set = frozenset()) -> list:
     """Convert up to ``count`` records listed only in ``fid`` (of the other kind, never a must-have or a No Huddle play,
     never the last of that kind) into designs of kind ``need`` built for the formation.  Returns the change rows."""
@@ -441,12 +477,14 @@ def convert_records(doc: dict, cat: dict, fid: str, need: str, conv: Converter, 
     other = "pass" if need == "run" else "run"
     protected = {pid for f_, pid in doc.get("no_huddle", []) if f_ == fid}
     # nfl2k5_screen_timing pins each book's whole declared-screen signature (every play whose name holds "screen"): a
-    # screen record changes only when it is the formation's only record to give, and then the book's screen pin is
-    # regenerated (pb/v2/pins.py); no design takes a name with "screen" in it
+    # screen record changes only when it is the formation's only record to give (HOU Gun Ace Flex), and then the
+    # book's screen pin is regenerated (pb/v2/pins.py); no design takes a name with "screen" in it
     victims = [p for p in reversed(menu) if uses[p] == 1 and kind_of(int(plays[p]["play_flags"])) == other
                and p not in protected and p not in quick and (rows.get(p) or {}).get("must") not in MUST_KEEP]
     plain = [p for p in victims if "screen" not in plays[p]["custom_name"].casefold()]
     victims = plain or victims
+    if need == "pass" and form["custom_name"] == gen_sneak_name():
+        victims = []        # ai7: the sneak set keeps its third run, or the lottery picks a sneak on 3rd and 3
     have_other = sum(1 for p in menu if kind_of(int(plays[p]["play_flags"])) == other)
     victims = victims[:max(0, min(count, have_other - 1))]
     has_back = bool(sanity.backs(form))
@@ -533,7 +571,8 @@ def fix_doc(doc: dict, cat: dict, route_check=None, converter: Converter | None 
         cap = menu_cap(doc, fid)
         other = "pass" if need == "run" else "run"
         pool = gather(doc, cat, fid, need, uses, route_check, PAGE)
-        added = pick(pool, PAGE)
+        menu_names = [plays[p]["custom_name"] for p in menu]
+        added = pick(pool, PAGE, menu_names, sum(1 for n in menu_names if "screen" in n.casefold()))
         status, detail = "ok", ""
         new, dropped = list(menu), []
 
@@ -565,11 +604,14 @@ def fix_doc(doc: dict, cat: dict, route_check=None, converter: Converter | None 
             else:
                 fill = gather(doc, cat, fid, other, uses, route_check, PAGE, exclude=set(menu), no_own=True)
                 new = menu + [c["pid"] for c in added]
-                filler = []
+                filler, have = [], {plays[p]["custom_name"] for p in new}
                 for c in fill:
                     if len(new) % PAGE == 0:
                         break
+                    if c["name"] in have:
+                        continue
                     filler.append(c)
+                    have.add(c["name"])
                     new.append(c["pid"])
                 added = added + filler
         if added and not (len(new) % PAGE == 0 and PAGE <= len(new) <= cap):
@@ -597,6 +639,13 @@ def fix_doc(doc: dict, cat: dict, route_check=None, converter: Converter | None 
                             dropped=[dict(pid=p, name=plays[p]["custom_name"]) for p in dropped],
                             links_before=len(menu), links_after=len(new)))
     doc.pop("_pool_credit", None)
+    # pb7: the No Huddle table is the deterministic pick over the menus (test_pick_is_stable), and new links or a new
+    # menu order can move it
+    picked = hurry.fix_no_huddle(doc, cat)
+    if picked:
+        cat.setdefault("hurry_b778", {})["no_huddle"] = picked
+        changes.append(dict(formation="(No Huddle table)", fid="", need="no_huddle", status="repicked", added=[], dropped=[],
+                            entries=picked))
     return changes
 
 

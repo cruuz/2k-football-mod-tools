@@ -354,9 +354,12 @@
    "align": "uc",
    "tag": "short",
    "menu": [
+    "RB Stretch",
     "Inside Zone Wk",
+    "U Whip Return",
     "Pin Pull Sweep",
-    "RB Texas"
+    "RB Texas",
+    "U Flood"
    ],
    "cpu_situation": [
     4,
@@ -375,10 +378,10 @@
    "menu": [
     "Tush Push",
     "QB Sneak",
-    "RB Texas",
+    "U Whip Return",
     "Inside Trap",
-    "Inside Zone Wk",
-    "Pin Pull Sweep"
+    "RB Texas",
+    "U Flood"
    ],
    "cpu_situation": [
     3,
@@ -4091,7 +4094,8 @@
    "deep": false,
    "lane": 4,
    "formations": [
-    "I-Form Tight"
+    "I-Form Tight",
+    "Full House"
    ]
   },
   {
@@ -4253,8 +4257,7 @@
    "lane": 2,
    "formations": [
     "I-Form Tight",
-    "Full House",
-    "Full House Sneak"
+    "Full House"
    ]
   },
   {
@@ -4384,7 +4387,9 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "I-Form Tight"
+    "I-Form Tight",
+    "Full House",
+    "Full House Sneak"
    ]
   },
   {
@@ -4453,7 +4458,9 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "I-Form Tight"
+    "I-Form Tight",
+    "Full House",
+    "Full House Sneak"
    ]
   },
   {
@@ -4650,8 +4657,7 @@
    "lane": 4,
    "formations": [
     "I-Form Tight",
-    "Full House",
-    "Full House Sneak"
+    "Full House"
    ]
   },
   {

@@ -9,10 +9,10 @@
   "notes": "DESIGN: Dennard Wilson (Ravens / Eagles multiple); 2025 baseline TEN. Clean technique fronts (pb/v2/defense/design.py), retail 2K5 coverage scripts with native pre-snap alignment, situational formation ratings and CPU score bands fitted to the sourced 2025 coverage and blitz rates. Exact offense source required. Gameplay unwitnessed."
  },
  "base": {
-  "book_fingerprint": "86ccebbff3bfe1ed7ca0e9fc384848811a0f997146b09aa31455fba8cf54ec35",
+  "book_fingerprint": "08ee973c745d9f51ba6fed05dfc8fbd188e77f48cc0a94d1100a6e5146f4608c",
   "donor_formation_count": 50,
   "donor_play_count": 269,
-  "donor_node_count": 2353
+  "donor_node_count": 2349
  },
  "budget": {
   "formations": 50,

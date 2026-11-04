@@ -378,7 +378,10 @@
    "menu": [
     "Tush Push",
     "QB Sneak",
-    "Y Pivot"
+    "Y Pivot",
+    "Inside Zone Split",
+    "PA U Sail",
+    "PA U Slot Fade"
    ],
    "cpu_situation": [
     4,
@@ -4395,28 +4398,22 @@
   {
    "play": "p126",
    "play_index": 183,
-   "name": "Y Pivot",
-   "concept": "Y Pivot",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
+   "name": "Inside Zone Split",
+   "concept": "Inside Zone Split",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
    "personnel": "22",
    "home": "Full House Sneak",
-   "primary": "Y",
+   "primary": null,
    "screen": null,
    "must": "",
-   "routes": [
-    "Arrow",
-    "Comeback",
-    "Go",
-    "Slant"
-   ],
+   "routes": [],
    "deep": false,
-   "lane": null,
+   "lane": 2,
    "formations": [
     "Full House Sneak"
-   ],
-   "added_by": "b780 plays2"
+   ]
   },
   {
    "play": "p127",
@@ -4763,7 +4760,8 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Full House"
+    "Full House",
+    "Full House Sneak"
    ]
   },
   {
@@ -4849,7 +4847,8 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "I-Form Tight"
+    "I-Form Tight",
+    "Full House Sneak"
    ]
   },
   {
@@ -4871,7 +4870,8 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "I-Form Tight"
+    "I-Form Tight",
+    "Full House Sneak"
    ]
   },
   {

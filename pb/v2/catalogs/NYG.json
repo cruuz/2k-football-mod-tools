@@ -384,7 +384,10 @@
    "menu": [
     "Tush Push",
     "QB Sneak",
-    "Y Pivot"
+    "PA U Post Wheel",
+    "Zone Toss",
+    "PA U Slot Fade",
+    "U Comebacks"
    ],
    "cpu_situation": [
     4,
@@ -3426,6 +3429,7 @@
    "lane": null,
    "formations": [
     "I-Form Tight",
+    "Full House Sneak",
     "Weak Wing"
    ]
   },
@@ -4503,28 +4507,22 @@
   {
    "play": "p132",
    "play_index": 209,
-   "name": "Y Pivot",
-   "concept": "Y Pivot",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
+   "name": "Zone Toss",
+   "concept": "Zone Toss",
+   "family": "run",
+   "header": "run_toss",
+   "play_type": "run",
    "personnel": "22",
    "home": "Full House Sneak",
-   "primary": "Y",
+   "primary": null,
    "screen": null,
    "must": "",
-   "routes": [
-    "Arrow",
-    "Comeback",
-    "Go",
-    "Slant"
-   ],
+   "routes": [],
    "deep": false,
-   "lane": null,
+   "lane": 4,
    "formations": [
     "Full House Sneak"
-   ],
-   "added_by": "b780 plays2"
+   ]
   },
   {
    "play": "p133",
@@ -4818,7 +4816,8 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "I-Form Tight"
+    "I-Form Tight",
+    "Full House Sneak"
    ]
   },
   {
@@ -4841,7 +4840,8 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "I-Form Tight"
+    "I-Form Tight",
+    "Full House Sneak"
    ]
   }
  ],

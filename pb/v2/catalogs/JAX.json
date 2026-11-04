@@ -381,7 +381,7 @@
     "RB Slip Screen Wk",
     "Power G",
     "PA Shot",
-    "RB Draw Wk"
+    "U Stick"
    ],
    "cpu_situation": [
     4,
@@ -669,7 +669,7 @@
     "PA U Seam Shot",
     "PA Comeback Seam",
     "PA X Out Seam",
-    "RB Iso"
+    "RB Draw Wk"
    ],
    "cpu_situation": [
     3,
@@ -4181,7 +4181,7 @@
    "formations": [
     "I-Form Tight",
     "Full House",
-    "Full House Sneak"
+    "Pistol Jumbo"
    ]
   },
   {
@@ -4382,7 +4382,8 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "I-Form Tight"
+    "I-Form Tight",
+    "Full House Sneak"
    ]
   },
   {
@@ -4423,8 +4424,7 @@
    "lane": 3,
    "formations": [
     "I-Form Tight",
-    "Full House",
-    "Pistol Jumbo"
+    "Full House"
    ]
   },
   {

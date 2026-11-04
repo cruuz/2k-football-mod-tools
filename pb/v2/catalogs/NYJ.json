@@ -335,7 +335,7 @@
     "Double Slants",
     "Zone Toss",
     "RB Texas",
-    "RB Counter Wk"
+    "U China Out"
    ],
    "cpu_situation": [
     4,
@@ -354,10 +354,10 @@
    "menu": [
     "Tush Push",
     "QB Sneak",
-    "RB Texas",
+    "U China Out",
     "01 Trap Wk",
-    "RB Iso Wk",
-    "RB Counter Wk"
+    "RB Texas",
+    "Double Slants"
    ],
    "cpu_situation": [
     4,
@@ -2641,8 +2641,6 @@
    "lane": 1,
    "formations": [
     "I-Form Tight",
-    "Full House",
-    "Full House Sneak",
     "Heavy Wing"
    ]
   },
@@ -2714,7 +2712,6 @@
    "lane": 3,
    "formations": [
     "I-Form Tight",
-    "Full House Sneak",
     "Heavy Wing"
    ]
   },
@@ -3573,6 +3570,7 @@
    "lane": null,
    "formations": [
     "Full House",
+    "Full House Sneak",
     "Heavy Wing"
    ]
   },
@@ -3746,7 +3744,9 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "I-Form Tight"
+    "I-Form Tight",
+    "Full House",
+    "Full House Sneak"
    ]
   },
   {

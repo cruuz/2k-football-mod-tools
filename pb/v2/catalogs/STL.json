@@ -381,7 +381,10 @@
    "menu": [
     "Tush Push",
     "QB Sneak",
-    "Y Quick Outs"
+    "RB Texas",
+    "RB Slam",
+    "PA U Seam Shot",
+    "PA X Out Seam"
    ],
    "cpu_situation": [
     4,
@@ -1543,7 +1546,8 @@
    "deep": true,
    "lane": null,
    "formations": [
-    "I-Form Tight"
+    "I-Form Tight",
+    "Full House Sneak"
    ]
   },
   {
@@ -4156,7 +4160,8 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "I-Form Tight"
+    "I-Form Tight",
+    "Full House Sneak"
    ]
   },
   {
@@ -4296,26 +4301,22 @@
   {
    "play": "p122",
    "play_index": 178,
-   "name": "Y Quick Outs",
-   "concept": "Quick Outs",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
+   "name": "RB Slam",
+   "concept": "HB Slam",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
    "personnel": "22",
    "home": "Full House Sneak",
-   "primary": "Y",
+   "primary": null,
    "screen": null,
    "must": "",
-   "routes": [
-    "Comeback",
-    "Out"
-   ],
+   "routes": [],
    "deep": false,
-   "lane": null,
+   "lane": 3,
    "formations": [
     "Full House Sneak"
-   ],
-   "added_by": "b780 plays2"
+   ]
   },
   {
    "play": "p123",
@@ -4599,7 +4600,8 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Full House"
+    "Full House",
+    "Full House Sneak"
    ]
   },
   {

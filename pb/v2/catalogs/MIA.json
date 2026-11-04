@@ -705,8 +705,8 @@
    "align": "uc",
    "tag": "base",
    "menu": [
-    "Pistol Wide Zone",
     "Crack Toss",
+    "Pin Pull Sweep",
     "X Slot Fade",
     "PA Go Shot",
     "Bang Hitch",
@@ -731,7 +731,7 @@
     "Slot Sail",
     "Y Drive",
     "MIA RB Screen",
-    "Pin Pull Sweep"
+    "Lead Stretch"
    ],
    "cpu_situation": [
     0,
@@ -1111,7 +1111,6 @@
     "Pistol Doubles",
     "Pistol Trey",
     "Pistol Wing",
-    "Singleback Tight Y Off",
     "Pistol Bunch"
    ]
   },
@@ -2422,6 +2421,7 @@
     "Gun Wildcat",
     "Gun Normal Y Off Close",
     "Gun Bunch TE",
+    "Singleback Tight Y Off",
     "Gun Y Off Trio Close",
     "Gun Tight Open"
    ]

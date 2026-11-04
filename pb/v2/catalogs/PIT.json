@@ -347,7 +347,10 @@
    "menu": [
     "RB Dive Wk",
     "RB Dive",
-    "Y Quick Outs"
+    "FB Slant Flat",
+    "Inside Zone",
+    "U China Out",
+    "Max FB Go Shot"
    ],
    "cpu_situation": [
     3,
@@ -366,7 +369,10 @@
    "menu": [
     "Tush Push",
     "QB Sneak",
-    "Y Fade Out"
+    "FB Slant Flat",
+    "RB Lead Draw",
+    "U China Out",
+    "Max FB Go Shot"
    ],
    "cpu_situation": [
     4,
@@ -884,11 +890,11 @@
    "tag": "short",
    "menu": [
     "RB Dive Wk",
-    "RB Iso Wk",
+    "Inside Zone",
     "FB Slant Flat",
     "Jumbo Boot",
     "Max FB Go Shot",
-    "RB Dive"
+    "RB Iso Wk"
    ],
    "cpu_situation": [
     1,
@@ -1545,6 +1551,8 @@
    "deep": true,
    "lane": null,
    "formations": [
+    "Full House",
+    "Full House Sneak",
     "Ace Jumbo"
    ]
   },
@@ -3935,6 +3943,8 @@
    "deep": false,
    "lane": null,
    "formations": [
+    "Full House",
+    "Full House Sneak",
     "Ace Jumbo"
    ]
   },
@@ -4026,7 +4036,9 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "I-Form Tight"
+    "I-Form Tight",
+    "Full House",
+    "Full House Sneak"
    ]
   },
   {
@@ -4068,8 +4080,7 @@
    "deep": false,
    "lane": 2,
    "formations": [
-    "Full House",
-    "Ace Jumbo"
+    "Full House"
    ]
   },
   {
@@ -4145,26 +4156,22 @@
   {
    "play": "p117",
    "play_index": 174,
-   "name": "Y Fade Out",
-   "concept": "Fade Out",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
+   "name": "RB Lead Draw",
+   "concept": "HB Lead Draw",
+   "family": "run",
+   "header": "draw",
+   "play_type": "run",
    "personnel": "22",
    "home": "Full House Sneak",
-   "primary": "Y",
+   "primary": null,
    "screen": null,
    "must": "",
-   "routes": [
-    "Arrow",
-    "Comeback"
-   ],
+   "routes": [],
    "deep": false,
-   "lane": null,
+   "lane": 2,
    "formations": [
     "Full House Sneak"
-   ],
-   "added_by": "b780 plays2"
+   ]
   },
   {
    "play": "p118",
@@ -4239,26 +4246,23 @@
   {
    "play": "p121",
    "play_index": 178,
-   "name": "Y Quick Outs",
-   "concept": "Quick Outs",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
+   "name": "Inside Zone",
+   "concept": "Inside Zone",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
    "personnel": "22",
    "home": "Full House",
-   "primary": "Y",
+   "primary": null,
    "screen": null,
    "must": "",
-   "routes": [
-    "Comeback",
-    "Out"
-   ],
+   "routes": [],
    "deep": false,
-   "lane": null,
+   "lane": 2,
    "formations": [
-    "Full House"
-   ],
-   "added_by": "b780 plays2"
+    "Full House",
+    "Ace Jumbo"
+   ]
   },
   {
    "play": "p122",

@@ -382,7 +382,7 @@
     "FB Screen",
     "Lead Stretch",
     "PA X Sail Return",
-    "FB Screen"
+    "PA Z Go Shot"
    ],
    "cpu_situation": [
     4,
@@ -1285,7 +1285,8 @@
    "lane": null,
    "formations": [
     "Weak Close",
-    "I-Form Pro"
+    "I-Form Pro",
+    "Wing T"
    ]
   },
   {
@@ -4434,8 +4435,7 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Weak Close",
-    "Wing T"
+    "Weak Close"
    ]
   },
   {

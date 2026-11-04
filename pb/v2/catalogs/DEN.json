@@ -362,7 +362,7 @@
     "X Stick",
     "01 Trap Wk",
     "PA X Double Slants",
-    "RB Counter Wk"
+    "PA U Seam Shot"
    ],
    "cpu_situation": [
     0,
@@ -381,7 +381,10 @@
    "menu": [
     "Tush Push",
     "QB Sneak",
-    "Fade Out"
+    "U Double Slants",
+    "Guard Iso",
+    "PA U Seam Shot",
+    "PA X Double Slants"
    ],
    "cpu_situation": [
     2,
@@ -1476,6 +1479,8 @@
    "lane": null,
    "formations": [
     "I-Form Tight",
+    "Full House",
+    "Full House Sneak",
     "Weak Wing"
    ]
   },
@@ -3402,7 +3407,6 @@
    "lane": 1,
    "formations": [
     "I-Form Tight",
-    "Full House",
     "Weak Wing"
    ]
   },
@@ -3452,6 +3456,7 @@
    "lane": null,
    "formations": [
     "I-Form Tight",
+    "Full House Sneak",
     "Weak Wing"
    ]
   },
@@ -4493,6 +4498,7 @@
    "lane": null,
    "formations": [
     "Full House",
+    "Full House Sneak",
     "Weak Wing"
    ]
   },
@@ -4633,26 +4639,22 @@
   {
    "play": "p137",
    "play_index": 212,
-   "name": "Fade Out",
-   "concept": "Fade Out",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
+   "name": "Guard Iso",
+   "concept": "Guard Iso",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
    "personnel": "22",
    "home": "Full House Sneak",
-   "primary": "Y",
+   "primary": null,
    "screen": null,
    "must": "",
-   "routes": [
-    "Arrow",
-    "Comeback"
-   ],
+   "routes": [],
    "deep": false,
-   "lane": null,
+   "lane": 3,
    "formations": [
     "Full House Sneak"
-   ],
-   "added_by": "b780 plays2"
+   ]
   },
   {
    "play": "p138",
@@ -5281,8 +5283,8 @@
    {
     "entry": 0,
     "role": "inside_run",
-    "formation": "Gun Spread Y-Slot",
-    "play": "01 Trap"
+    "formation": "Gun Trips TE",
+    "play": "Inside Trap"
    },
    {
     "entry": 1,

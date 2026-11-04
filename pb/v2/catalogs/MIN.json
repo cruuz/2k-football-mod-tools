@@ -354,7 +354,10 @@
    "menu": [
     "Tush Push",
     "QB Sneak",
-    "Y Quick Outs"
+    "X Dagger",
+    "Inside Zone Split",
+    "Inside Zone Wk",
+    "RB Toss"
    ],
    "cpu_situation": [
     4,
@@ -2531,6 +2534,7 @@
    "lane": null,
    "formations": [
     "I-Form Tight",
+    "Full House Sneak",
     "Strong H Tight Close"
    ]
   },
@@ -2552,6 +2556,7 @@
    "lane": 2,
    "formations": [
     "I-Form Tight",
+    "Full House Sneak",
     "Strong H Tight Close"
    ]
   },
@@ -2676,6 +2681,7 @@
    "lane": 0,
    "formations": [
     "I-Form Tight",
+    "Full House Sneak",
     "Strong H Tight Close"
    ]
   },
@@ -3939,26 +3945,22 @@
   {
    "play": "p123",
    "play_index": 176,
-   "name": "Y Quick Outs",
-   "concept": "Quick Outs",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
+   "name": "Inside Zone Split",
+   "concept": "Inside Zone Split",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
    "personnel": "22",
    "home": "Full House Sneak",
-   "primary": "Y",
+   "primary": null,
    "screen": null,
    "must": "",
-   "routes": [
-    "Comeback",
-    "Out"
-   ],
+   "routes": [],
    "deep": false,
-   "lane": null,
+   "lane": 2,
    "formations": [
     "Full House Sneak"
-   ],
-   "added_by": "b780 plays2"
+   ]
   },
   {
    "play": "p124",
@@ -4690,8 +4692,8 @@
    {
     "entry": 0,
     "role": "inside_run",
-    "formation": "Pistol Strong Slot",
-    "play": "RB Lead Draw"
+    "formation": "Gun Deuce Close",
+    "play": "RB Draw Wk"
    },
    {
     "entry": 1,

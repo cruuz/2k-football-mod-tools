@@ -695,11 +695,14 @@
     "PA Y Seam Shot",
     "RB Toss",
     "Z Quick Outs",
+    "X Corner Post",
     "Z Dagger",
+    "X Dagger",
     "X China",
     "X Scissors",
     "RB Texas",
-    "RB Slam"
+    "RB Slam",
+    "RB Off Tackle"
    ],
    "cpu_situation": [
     0,
@@ -1312,7 +1315,8 @@
    "formations": [
     "I-Form Close",
     "Wing T",
-    "Pistol Strong"
+    "Pistol Strong",
+    "Gun Split Pro"
    ]
   },
   {
@@ -2553,7 +2557,8 @@
    "formations": [
     "I-Form Close",
     "Wing T",
-    "Pistol Strong"
+    "Pistol Strong",
+    "Gun Split Pro"
    ]
   },
   {
@@ -4068,7 +4073,8 @@
    "deep": false,
    "lane": 3,
    "formations": [
-    "Wing T"
+    "Wing T",
+    "Gun Split Pro"
    ]
   },
   {

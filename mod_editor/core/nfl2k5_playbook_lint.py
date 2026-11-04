@@ -508,6 +508,8 @@ def resource_coverage(resource: bytes) -> list[Finding]:
         if lib.formation_record(body, formation.index).type_code >= 4:
             continue
         flags = [book.plays[l.play_index].flags_or_id for l in formation.play_links if book.plays[l.play_index].family_id == 0]
+        if not flags:
+            continue                      # an empty menu is CATEGORY_EMPTY / PLAYCALL_UI territory, not a missing play type
         rows.append((formation.index, formation.name, sum(1 for f in flags if f & RUN_FLAG),
                      sum(1 for f in flags if not f & RUN_FLAG and f & PASS_FLAG)))
     return coverage_findings(rows)

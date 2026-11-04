@@ -411,7 +411,10 @@
    "menu": [
     "Tush Push",
     "QB Sneak",
-    "Y Pivot"
+    "PA U Stick",
+    "Pin Pull Sweep",
+    "PA U Sail",
+    "RB Draw"
    ],
    "cpu_situation": [
     4,
@@ -539,7 +542,7 @@
     "Crack Toss",
     "X Levels Outs",
     "RB Sweep",
-    "Crack Toss"
+    "X Slip Screen"
    ],
    "cpu_situation": [
     3,
@@ -3440,7 +3443,6 @@
    "formations": [
     "Pistol Y Trips",
     "Ace Wing",
-    "Gun Wing Slot Offset",
     "Pistol Ace",
     "Singleback Ace Close"
    ]
@@ -3464,6 +3466,7 @@
    "formations": [
     "Pistol Deuce Close",
     "Pistol Y Trips",
+    "Gun Wing Slot Offset",
     "Pistol Ace",
     "Singleback Ace Close"
    ]
@@ -4037,7 +4040,8 @@
    "lane": 2,
    "formations": [
     "I-Form Tight",
-    "Full House"
+    "Full House",
+    "Full House Sneak"
    ]
   },
   {
@@ -4514,28 +4518,22 @@
   {
    "play": "p127",
    "play_index": 202,
-   "name": "Y Pivot",
-   "concept": "Y Pivot",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
+   "name": "Pin Pull Sweep",
+   "concept": "Pin Pull Sweep",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
    "personnel": "22",
    "home": "Full House Sneak",
-   "primary": "Y",
+   "primary": null,
    "screen": null,
    "must": "",
-   "routes": [
-    "Arrow",
-    "Comeback",
-    "Go",
-    "Slant"
-   ],
+   "routes": [],
    "deep": false,
-   "lane": null,
+   "lane": 4,
    "formations": [
     "Full House Sneak"
-   ],
-   "added_by": "b780 plays2"
+   ]
   },
   {
    "play": "p128",
@@ -4984,7 +4982,8 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "I-Form Tight"
+    "I-Form Tight",
+    "Full House Sneak"
    ]
   },
   {
@@ -5009,7 +5008,8 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "I-Form Tight"
+    "I-Form Tight",
+    "Full House Sneak"
    ]
   },
   {

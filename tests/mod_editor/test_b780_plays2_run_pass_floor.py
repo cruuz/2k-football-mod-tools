@@ -181,7 +181,7 @@ class CatalogConsistencyTests(unittest.TestCase):
                     p = plays[row["play"]]
                     self.assertEqual(row["name"], p["custom_name"])
                     self.assertEqual(row["play_type"], p["play_type"])
-                    self.assertEqual(row["formations"], [row["home"]])
+                    self.assertIn(row["home"], row["formations"])
                     self.assertEqual((p["play_flags"] & 0x1FF), (p["donor"]["flags"] & 0x1FF))
             self.assertEqual({r["play"] for r in cat["plays"]}, set(plays) - {"fgfake"}, path.name)
         self.assertTrue(converted)

@@ -901,12 +901,15 @@
    "align": "gun",
    "tag": "pass",
    "menu": [
-    "Y China",
+    "Z Hitch Seam",
     "Y Mills",
     "RB Off Tackle Wk",
+    "Y China",
     "Z Out Seam Spot Out",
     "Z Hook Corner",
-    "PA Y Sail Return"
+    "PA Y Sail Return",
+    "01 Trap",
+    "Inside Trap Wk"
    ],
    "cpu_situation": [
     3,
@@ -3990,7 +3993,8 @@
    "deep": false,
    "lane": 2,
    "formations": [
-    "Wing T"
+    "Wing T",
+    "Gun Split Pro"
    ]
   },
   {
@@ -4055,7 +4059,8 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "I-Form Pro"
+    "I-Form Pro",
+    "Gun Split Pro"
    ]
   },
   {
@@ -4619,7 +4624,8 @@
    "deep": false,
    "lane": 2,
    "formations": [
-    "Wing T"
+    "Wing T",
+    "Gun Split Pro"
    ]
   },
   {

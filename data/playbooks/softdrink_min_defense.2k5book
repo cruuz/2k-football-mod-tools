@@ -9,10 +9,10 @@
   "notes": "DESIGN: Brian Flores (Belichick pressure disguise); 2025 baseline MIN. Clean technique fronts (pb/v2/defense/design.py), retail 2K5 coverage scripts with native pre-snap alignment, situational formation ratings and CPU score bands fitted to the sourced 2025 coverage and blitz rates. Exact offense source required. Gameplay unwitnessed."
  },
  "base": {
-  "book_fingerprint": "f68150e4fb9ab697c401886997f15c9525c2b31104d248b397b8fda3ccffef65",
+  "book_fingerprint": "7e735006ae32f3e73c27aef106b55f3b4778559f68be5066d35505b7df64876b",
   "donor_formation_count": 49,
   "donor_play_count": 266,
-  "donor_node_count": 2272
+  "donor_node_count": 2274
  },
  "budget": {
   "formations": 50,

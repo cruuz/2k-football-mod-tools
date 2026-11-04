@@ -353,7 +353,7 @@
     "PA Y China",
     "Inside Zone Split",
     "Max X Post Go",
-    "RB Slam"
+    "PA U Whip Curl"
    ],
    "cpu_situation": [
     3,
@@ -372,10 +372,10 @@
    "menu": [
     "Tush Push",
     "QB Sneak",
-    "PA Y China",
+    "U Whip",
     "Lead Stretch Wk",
-    "RB Dive",
-    "Zone Toss"
+    "PA Y China",
+    "Max X Post Go"
    ],
    "cpu_situation": [
     4,
@@ -3189,7 +3189,6 @@
    "lane": 3,
    "formations": [
     "I-Form Tight",
-    "Full House",
     "Strong H Tight Close"
    ]
   },
@@ -3316,6 +3315,7 @@
    "lane": null,
    "formations": [
     "I-Form Tight",
+    "Full House",
     "Strong H Tight Close"
    ]
   },
@@ -3420,6 +3420,7 @@
    "lane": null,
    "formations": [
     "I-Form Tight",
+    "Full House Sneak",
     "Strong H Tight Close"
    ]
   },
@@ -3541,7 +3542,6 @@
    "lane": 2,
    "formations": [
     "I-Form Tight",
-    "Full House Sneak",
     "Strong H Tight Close"
    ]
   },
@@ -3638,7 +3638,6 @@
    "lane": 4,
    "formations": [
     "I-Form Tight",
-    "Full House Sneak",
     "Strong H Tight Close"
    ]
   },
@@ -3665,6 +3664,7 @@
    "formations": [
     "I-Form Tight",
     "Full House",
+    "Full House Sneak",
     "Strong H Tight Close"
    ]
   },

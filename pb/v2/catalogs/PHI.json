@@ -377,8 +377,8 @@
     "QB Sneak",
     "Y Slot Fade",
     "Inside Zone Split",
-    "RB Stretch Wk",
-    "RB Counter Wk"
+    "PA X Hook Corner",
+    "U China Out"
    ],
    "cpu_situation": [
     4,
@@ -3021,6 +3021,7 @@
    "formations": [
     "I-Form Tight",
     "Full House",
+    "Full House Sneak",
     "Strong H Tight Close"
    ]
   },
@@ -3208,6 +3209,7 @@
    "lane": null,
    "formations": [
     "I-Form Tight",
+    "Full House Sneak",
     "Strong H Tight Close"
    ]
   },
@@ -3421,7 +3423,6 @@
    "lane": 4,
    "formations": [
     "I-Form Tight",
-    "Full House Sneak",
     "Strong H Tight Close"
    ]
   },
@@ -3471,7 +3472,6 @@
    "lane": 1,
    "formations": [
     "I-Form Tight",
-    "Full House Sneak",
     "Strong H Tight Close"
    ]
   },

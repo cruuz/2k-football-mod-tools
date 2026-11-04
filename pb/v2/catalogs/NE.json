@@ -345,7 +345,10 @@
    "menu": [
     "Tush Push",
     "QB Sneak",
-    "Y Quick Outs"
+    "Y Pivot",
+    "01 Trap Wk",
+    "X Hitch Seam",
+    "X Comebacks"
    ],
    "cpu_situation": [
     4,
@@ -3650,7 +3653,8 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "I-Form Tight"
+    "I-Form Tight",
+    "Full House Sneak"
    ]
   },
   {
@@ -3720,7 +3724,8 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "I-Form Tight"
+    "I-Form Tight",
+    "Full House Sneak"
    ]
   },
   {
@@ -3864,26 +3869,22 @@
   {
    "play": "p111",
    "play_index": 150,
-   "name": "Y Quick Outs",
-   "concept": "Quick Outs",
-   "family": "quick",
-   "header": "quick",
-   "play_type": "pass",
+   "name": "01 Trap Wk",
+   "concept": "01 Trap",
+   "family": "run",
+   "header": "run",
+   "play_type": "run",
    "personnel": "22",
    "home": "Full House Sneak",
-   "primary": "Y",
+   "primary": null,
    "screen": null,
    "must": "",
-   "routes": [
-    "Comeback",
-    "Out"
-   ],
+   "routes": [],
    "deep": false,
-   "lane": null,
+   "lane": 2,
    "formations": [
     "Full House Sneak"
-   ],
-   "added_by": "b780 plays2"
+   ]
   },
   {
    "play": "p112",
@@ -4013,7 +4014,8 @@
    "deep": false,
    "lane": null,
    "formations": [
-    "Full House"
+    "Full House",
+    "Full House Sneak"
    ],
    "added_by": "b780 plays2"
   },
