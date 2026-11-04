@@ -684,12 +684,13 @@ def predict(plan=None, target_mb: int = 64) -> dict:
 # The allocator's legacy layout holds small code/data owners in two pages (+8,192 B), or three (+12,288 B) once the
 # code spills into the third page, which also compresses its directory; anything more, any read-only request, a
 # beta-62 owner mixed with newer ones or any SCALEOUT_FIELDS option takes the scale-out (+212,992 B). MEASURED:
-# these 20 fields are 23 requests and +12,288 B (nfl2k5_xbe_space.apply on the retail XBE, 2026-11-03).
+# these 21 fields are 25 requests and +12,288 B (nfl2k5_xbe_space.apply on the retail XBE, 2026-11-03); one more
+# owner (all_stadiums would fit instead of protection_calls, not with it) takes the scale-out.
 PROFILE_64_PATCHES = ("contract_college_guard", "widescreen", "franchise_economy", "qb_accuracy", "pass_protection",
                       "run_blocking", "cpu_ball_carriers", "abilities", "cpu_qb_zone_windows", "cpu_qb_recheck",
                       "cpu_qb_tiers", "return_coverage", "practice_injuries", "star_retention", "modern_force_out",
                       "db_ball_play", "sim_cb_tackles", "cpu_passer_iq", "scramble_tuning", "weekly_progression",
-                      "franchise_draft_clock", "coverage_slider")
+                      "franchise_draft_clock", "coverage_slider", "protection_calls")
 # trimmed beyond the space owners: the heavy disc resources and the SPECIAL rows' 80 KB .XTLID storage
 PROFILE_64_TRIM = ("scorebug", "scorebug_runtime", "hair_styles", "kick_meter_2026", "depth_chart_rows",
                    "my_career_home", "module_loader")
