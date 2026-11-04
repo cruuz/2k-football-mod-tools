@@ -85,6 +85,7 @@ FB_SITE = 0x000E87E9                        # the picker's list-length call at t
 FB_RETAIL = bytes.fromhex("e8b2edffff")     # call 0xE75A0
 BOUND = 0x000E7640                          # the picker's protection bound for a fallback tier (called at 0xE88A2)
 NEXT_TIER, PICKER_TAKE = 0x000E890A, 0x000E89AB   # next tier, success exit
+PLAY_SETUP_RETURN = 0x0018AD4B              # 0x18A5D0's return into 0x18AD10 (the snap's play-call path)
 GATE_CALL = 0x000E8864                      # the forward loop's gate call (a later owner may point it at its own guard)
 LIST_LENGTH, LIST_READ, ALREADY_PLACED, ORDINAL = 0x000E75A0, 0x000E7810, 0x000E7580, 0x000E7530
 SITUATION, OFFENSE = 0x00E602EC, 0x00E60280
@@ -126,6 +127,8 @@ GUARDS = (
     (0x000E7580, 0x19, "already placed"),
     (0x000E7810, 0x60, "list reader"),
     (0x00207950, 0x5B, "yards to go"),
+    (0x0018A5D0, 0x7B, "play set-up"),         # its frame puts its return address 0x14C above rule 3's entry
+    (0x0018AD10, 0x3B, "play call"),           # the snap's path: 0x18A5D0 called from 0x18AD46 with the play
 )
 GATE_MASKS = ((0x000E8865, 4), (0x000E88ED, 4))   # the two gate calls' rel32 inside the picker span
 
@@ -221,10 +224,15 @@ def assemble(code_va: int, gate: int, *, third_down: bool = True) -> tuple[bytes
     label("gad_entry")
     b("837c241400"); j32("0f85", "to_picker")        # a user substitution keeps his man
     b("83bc24a000000000"); j32("0f84", "to_picker")  # no play: the native pick
+    # Only the snap's called play (0x18AD10's struct +4, handed on by 0x18A5D0 called from 0x18AD46): another caller
+    # of 0x18A5D0 (0x18B184, the type-12 play set-up) hands a struct whose slot chains are not node lists, and its NULL
+    # node pointer with a non-zero count crashed the scan below (EMU1, FC1 fb753f32, 0x151CCB1).
+    b("81bc244c010000" + struct.pack("<I", PLAY_SETUP_RETURN).hex()); j32("0f85", "to_picker")
     b("60" "8b6c2418" "8bb424c0000000")              # pushad; ebp = ctx; esi = the play
     b("8b4604" "c1e806" "a807"); j32("0f85", "gad_restore")   # an offensive play (family 0) only
     b("8b7c2428" "83ff0b"); j32("0f83", "gad_restore")        # edi = this slot
     b("8b4cfe08" "83e10f" "8b54fe0c")                # its node count and nodes
+    b("85d2"); j32("0f84", "gad_restore")            # no node list
     label("gad_16")
     b("85c9"); j32("0f84", "gad_restore")
     b("803a16"); j8("74", "gad_carrier")             # it takes the ball
@@ -234,6 +242,7 @@ def assemble(code_va: int, gate: int, *, third_down: bool = True) -> tuple[bytes
     label("gad_slot")
     b("83fb0b"); j32("0f83", "gad_restore")
     b("8b4cde08" "83e10f" "8b54de0c")
+    b("85d2"); j8("74", "gad_next")                  # no node list
     label("gad_13")
     b("85c9"); j8("74", "gad_next")
     b("803a13"); j8("75", "gad_skip")
@@ -473,6 +482,8 @@ PINS: dict[str, str] = {
     "ordinal decoder": "444625bef40176511f5c80956c39f2e1996476e3153c16a893aeb0216e6816ce",
     "list length": "2ac8eea080bb77cfb975f3df15d76c69888167b0256fa7c8cc98b90898a07af1",
     "already placed": "50b623f41418bc9cc5bf49b127e6420b91554e1d4e75701ca4906a7fdd55c2fc",
+    "play set-up": "ed7fc500fc352479c0df1dc6b06e52323cf934b13aec96e15bc33bf71c9cb2a7",
+    "play call": "d4421a4e274aa2d5474666237ab035ff05010d63fb46552830f5fd2cd5ca05f1",
     "list reader": "da3f9906555709c4b213f23351a4188c3fe7488c2ac6d74aaa44584aec082ccf",
     "yards to go": "d3e699ec5309d41ba7e0cac523a986a92882dff07bb9efa02ecfbb6b12253335",
 }

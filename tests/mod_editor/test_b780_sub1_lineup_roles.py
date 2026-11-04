@@ -113,7 +113,7 @@ class LineupRolesTests(unittest.TestCase):
         value = struct.unpack("<H", m.uc.mem_read(p + 0x28, 2))[0] & 0x3FF
         m.uc.mem_write(p + 0x28, struct.pack("<H", value | rank << 10 | side << 13))
 
-    def lineup(self, m, cat, down=1, togo=10, human=True, play=0):
+    def lineup(self, m, cat, down=1, togo=10, human=True, play=0, caller=lr.PLAY_SETUP_RETURN):
         m.put(0xE5FF80, 6)
         m.put(0xE602B4, 0)
         m.put(SIT + 4, down)
@@ -127,6 +127,9 @@ class LineupRolesTests(unittest.TestCase):
         m.call(0xE80D0, ecx=self.team, edx=CTX, args=(0, 0), budget=50_000_000)
         m.uc.mem_write(CAT, cat)
         m.uc.mem_write(OUT, bytes(44))
+        # the snap's path: 0x18A5D0 (called from 0x18AD46) calls the builder; its return address sits 0xB4 above the
+        # builder's own (0x18A5D0's frame: 0x94 + 3 registers, then the builder's 4 arguments)
+        m.put(Machine.STACK + 0xB4, caller)
         m.call(0xE89F0, ecx=CTX, edx=0, args=(CAT, play, OUT, 0), budget=20_000_000)
         return [m.get(OUT + 4 * i) for i in range(11)]
 
@@ -251,6 +254,20 @@ class LineupRolesTests(unittest.TestCase):
                 self.assertEqual(self.lineup(self.owner, I_FORM, play=play, human=human)[8], self.Z)
                 self.owner.uc.mem_write(self.gad + 0x36, bytes([90]))
                 self.assertEqual(self.lineup(self.owner, I_FORM, play=play, human=human)[8], self.gad)
+
+    def test_other_play_set_ups_and_empty_node_lists_are_skipped(self):
+        # EMU1 (FC1 fb753f32): 0x18B184's type-12 set-up hands 0x18A5D0 a struct whose slot entry has a count and a
+        # NULL node pointer; rule 3 read it and faulted at 0x151CCB1. Rule 3 now runs only for the snap's play path
+        # (0x18A5D0 called from 0x18AD46) and skips an empty node list.
+        play = self.play(self.owner)
+        self.assertEqual(self.lineup(self.owner, I_FORM, play=play, caller=0x18B189)[8], self.Z)
+        struct.pack_into("<I", buf := bytearray(self.owner.uc.mem_read(PLAY, 0x60)), 0x0C + 8 * 8, 0)   # slot 8: NULL
+        self.owner.uc.mem_write(PLAY, bytes(buf))
+        self.assertEqual(self.lineup(self.owner, I_FORM, play=play)[8], self.Z)
+        play = self.play(self.owner)
+        struct.pack_into("<I", buf := bytearray(self.owner.uc.mem_read(PLAY, 0x60)), 0x0C + 8 * 0, 0)   # the QB: NULL
+        self.owner.uc.mem_write(PLAY, bytes(buf))
+        self.assertEqual(self.lineup(self.owner, I_FORM, play=play)[8], self.Z)
 
     def test_other_plays_keep_their_receivers(self):
         for kw in (dict(handoff_to=7), dict(family=1)):              # the carrier is not this WR; a defensive play
