@@ -173,6 +173,19 @@ class ForcedOff(_Page):
             panel.set_console_memory(128)
             self.assertEqual(panel.blocker(), "")
 
+    def test_a_disc_read_at_64_mb_keeps_each_disc_own_state(self):
+        with without_model():
+            panel = self.page()
+            panel.set_console_memory(64)                       # retail disc: K128 locked, its box was enabled
+            self.assertFalse(panel.k128_memory_check.isEnabled())
+            state = {key: "retail" for key in panel._boxes()}
+            state.update(path=str(self.source), container="xiso", throw=None, speed_threshold="retail",
+                         k128_memory="applied")
+            panel.apply_state(state)                           # now a disc with K128 installed, still at 64 MB
+            panel.set_console_memory(128)
+            self.assertFalse(panel.k128_memory_check.isEnabled())   # installed: stays as the disc read set it
+            self.assertTrue(panel.k128_memory_check.isChecked())
+
 
 class RosterCapacity(_Page):
     def test_roster_edits_that_grow_the_roster_file_are_refused_by_name_at_64(self):

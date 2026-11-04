@@ -3274,8 +3274,13 @@ class BuildPanel(QWidget):
                 locked = []
                 for key, reason in rules.items():
                     box = boxes.get(key)
-                    if box is None or str(state.get(key)) in self._INSTALLED:
-                        continue   # installed on the source: the page shows it installed and the blocker says why
+                    if box is None:
+                        continue
+                    if str(state.get(key)) in self._INSTALLED:
+                        # installed on the source: the disc read set the box (installed, kept on) and the blocker says
+                        # why; a lock from an earlier disc would hand back that disc's state at 128 MB
+                        self._memory_locks.pop(key, None)
+                        continue
                     badge = self._badges.get(key)
                     lock_badge = console_memory.lock_badge(reason, key)
                     tip = self._memory_lock_tip(key, reason)
