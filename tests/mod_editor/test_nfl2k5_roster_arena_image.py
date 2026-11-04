@@ -43,14 +43,13 @@ class PublicTests(unittest.TestCase):
         after = space._scale_allocations(REQUESTS)
         # Growth adds 8 KiB before the promoted MyCareer code and its code owners that follow. Static tails, the honors
         # gap, every data/RO row and every other code allocation keep their complete records.
-        #   - my_career and the sprite scorebug sit directly behind the growth owner: +8,192.
-        #   - b779 km1/hn1: K128 (1,536 B) and champions (5,632 B in the plan) fit the v3 code run before the growth
-        #     but not after it (the 8 KiB fills the run), so both go whole to the pool, in LATE_OWNERS order.
-        #   - letter_grades and its progression row sit behind K128 in the run; K128 leaving it frees 1,536 B, so they
-        #     move +8,192 - 1,536 = +6,656.
-        #   - b780: cpu_third_down (192 B) used to sit behind champions; with the 8 KiB growth only 144 B of the run are
-        #     left behind the progression row (0x14F1F70 to 0x14F2000), so it also goes whole to the pool, after
-        #     champions (LATE_OWNERS order).
+        #   - my_career sits directly behind the growth owner: +8,192.
+        #   - b780 pres2: the 6,336-byte sprite scorebug (owner revision 17) no longer fits the v3 code run behind the 8 KiB
+        #     growth, so it goes whole to the pool (the planner's spill), the first pool owner after the directory page. That
+        #     frees its 6,336 B in the run: K128 (1,536 B; before pres2 it spilled with the earlier sprite), letter_grades and
+        #     its progression row now sit where the sprite and its late owners were, +8,192 - 6,336 = +1,856, and
+        #     cpu_third_down (192 B) fits behind them again, -3,776 (0x14F1D10 to 0x14F0E50). Champions (5,632 B) still goes
+        #     whole to the pool, right behind the sprite.
         movers = {(name, 'code', 0) for name in (
             'nfl2k5_my_career', 'nfl2k5_scorebug_runtime', 'nfl2k5_k128', 'nfl2k5_champions',
             'nfl2k5_letter_grades', 'nfl2k5_letter_grades_progress', 'nfl2k5_cpu_third_down')}
@@ -58,13 +57,16 @@ class PublicTests(unittest.TestCase):
         self.assertTrue(movers.issubset({key(row) for row in before}))
         added = [row for row in after if row['owner'] == growth.OWNER]
         self.assertEqual([(row['kind'], row['size']) for row in added], [('code', 8192)])
-        spills = [('nfl2k5_k128', 'code', 0), ('nfl2k5_champions', 'code', 0), ('nfl2k5_cpu_third_down', 'code', 0)]
-        shifts = {('nfl2k5_my_career', 'code', 0): 8192, ('nfl2k5_scorebug_runtime', 'code', 0): 8192,
-                  ('nfl2k5_letter_grades', 'code', 0): 8192 - 1536,
-                  ('nfl2k5_letter_grades_progress', 'code', 0): 8192 - 1536}
+        spills = [('nfl2k5_scorebug_runtime', 'code', 0), ('nfl2k5_champions', 'code', 0)]
+        shifts = {('nfl2k5_my_career', 'code', 0): 8192,
+                  ('nfl2k5_k128', 'code', 0): 8192 - 6336,
+                  ('nfl2k5_letter_grades', 'code', 0): 8192 - 6336,
+                  ('nfl2k5_letter_grades_progress', 'code', 0): 8192 - 6336,
+                  ('nfl2k5_cpu_third_down', 'code', 0): -3776}
         by_before = {key(row): row for row in before}
-        k128_size = by_before[spills[0]]['size']
-        self.assertEqual(k128_size, 1536)
+        sprite_size = by_before[spills[0]]['size']
+        self.assertEqual(sprite_size, 6336)
+        self.assertEqual(by_before[('nfl2k5_k128', 'code', 0)]['size'], 1536)
         expected = []
         for row in before:
             if key(row) in spills:
@@ -76,19 +78,18 @@ class PublicTests(unittest.TestCase):
             expected.append(result)
         self.assertEqual(expected, [row for row in after
                                     if row['owner'] != growth.OWNER and row['va'] < space.POOL_VA])
-        # The spilled owners keep their identity; the pool holds its directory page, then K128, then champions
-        # (aligned 16: K128's 1,536 B end on 0x600), then cpu_third_down right behind champions.
+        # The spilled owners keep their identity; the pool holds its directory page, then the sprite scorebug, then
+        # champions (aligned 16: the sprite's 6,336 B end on 0x8C0 of the pool).
         for spill in spills:
             old_spill, new_spill = by_before[spill], next(row for row in after if key(row) == spill)
             self.assertEqual({k: v for k, v in old_spill.items() if k not in ('va', 'raw')},
                              {k: v for k, v in new_spill.items() if k not in ('va', 'raw')})
-        pool_k128 = space.POOL_VA + space.PAGE
+        pool_first = space.POOL_VA + space.PAGE
         self.assertEqual(sorted((row['owner'], row['kind'], row['size'], row['va'])
                                 for row in after if row['va'] >= space.POOL_VA),
-                         sorted([('nfl2k5_k128', 'code', 1536, pool_k128),
-                                 ('nfl2k5_champions', 'code', by_before[spills[1]]['size'], pool_k128 + 1536),
-                                 ('nfl2k5_cpu_third_down', 'code', by_before[spills[2]]['size'],
-                                  pool_k128 + 1536 + (by_before[spills[1]]['size'] + 15) // 16 * 16),
+                         sorted([('nfl2k5_scorebug_runtime', 'code', sprite_size, pool_first),
+                                 ('nfl2k5_champions', 'code', by_before[spills[1]]['size'],
+                                  pool_first + (sprite_size + 15) // 16 * 16),
                                  (space.DIRECTORY_OWNER, 'read_only', 4096, space.POOL_VA)]))
         for kwargs in (dict(created_teams_extra=1), dict(created_teams_extra=True), dict(reserves_16=1),
                        dict(reserves_16=False, created_teams_extra=0)):

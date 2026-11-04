@@ -1108,10 +1108,15 @@ def _scale_allocations(requests):
         r = next(r for r in regions if r["kind"] == "code")
         owner, kind, size, align = sprite
         at = (cursors[r["va"]] + align - 1) & -align
-        _require(at + size <= r["size"], "Sprite scorebug exceeds remaining RX capacity")
-        out.append(dict(owner=owner, kind=kind, size=size, align=align,
-                        va=r["va"] + at, raw=r["raw"] + at, owner_offset=0))
-        cursors[r["va"]] = at + size
+        if at + size <= r["size"]:
+            out.append(dict(owner=owner, kind=kind, size=size, align=align,
+                            va=r["va"] + at, raw=r["raw"] + at, owner_offset=0))
+            cursors[r["va"]] = at + size
+        else:
+            # b780 pres2: grown past the room the v3 run has left (revision 17: 5,920 -> 6,336 bytes), the sprite scorebug
+            # goes whole to the pool, after every owner placed so far, like any owner the v3 run cannot hold whole. A plan
+            # it fit in packs exactly as before; only a plan that used to be refused here changes.
+            to_pool(owner, kind, size, align)
     for owner, kind, size, align in late:
         for r in regions:
             if r["kind"] != kind:
