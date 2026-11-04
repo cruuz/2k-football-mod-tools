@@ -100,6 +100,40 @@ class FreeAgentContractTests(unittest.TestCase):
         self.assertEqual(refresh.apply_body(out, plan)[0], out)
 
 
+class BirthCorrectionTests(unittest.TestCase):
+    """Q48: a sourced birth-date correction (Logan Jones CHI C, 2001-10-29 in the plan's guard, 2001-10-19 in nflverse)."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.body, cls.plan = _sample()
+
+    def plan_with_correction(self, **change):
+        plan = copy.deepcopy(self.plan)
+        row = plan["players"][5]
+        plan["birth_corrections"] = [dict(index=row["index"], first=row["first"], last=row["last"], was=row["birth_date"],
+                                          birth_date="1999-12-31", source="https://example.org/roster.csv", **change)]
+        row["birth_date"] = "1999-12-31"
+        return plan, row["index"]
+
+    def test_the_record_takes_the_sourced_date_and_the_replay_accepts_either(self):
+        plan, index = self.plan_with_correction()
+        out, receipt = refresh.apply_body(self.body, plan)
+        record = rr.RosterDocument(out, scheme="one_pool", reference_year=2026).by_pool("primary")[index].record
+        self.assertEqual(str(record.birth_date), "1999-12-31")
+        self.assertEqual(len(receipt["birth_dates_corrected"]), 1)
+        self.assertEqual(refresh.apply_body(out, plan)[0], out)        # the guard still names the old date
+
+    def test_a_correction_needs_its_source_and_only_the_two_named_dates_pass_the_guard(self):
+        plan, _index = self.plan_with_correction()
+        del plan["birth_corrections"][0]["source"]
+        with self.assertRaises(rr.RosterRecordError):
+            refresh.apply_body(self.body, plan)
+        plan, index = self.plan_with_correction()
+        plan["birth_corrections"][0]["was"] = "1990-01-01"             # the record holds neither date
+        with self.assertRaises(rr.RosterRecordError):
+            refresh.apply_body(self.body, plan)
+
+
 class CreationRuleTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

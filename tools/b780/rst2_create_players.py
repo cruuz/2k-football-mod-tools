@@ -21,6 +21,7 @@ dates, colleges and contracts. This tool adds them to the plan; the plan's own u
   python3 tools/b780/rst2_create_players.py targets BASE.json roster_2026.csv depth_charts_2026.csv --body V08_ROST --out T.json
   python3 tools/b780/rst2_create_players.py create  BASE.json roster_2026.csv depth_charts_2026.csv OUT.json --body V08_ROST
           --as-of 2026-11-03 [--work HEADSHOTS_WORK] [--tones tones.json] [--report R.json]
+  python3 tools/b780/rst2_create_players.py finalize DOC.json roster_2026.csv [--out DOC2.json]
   python3 tools/b780/rst2_create_players.py capacity DOC.json --base BASELINE.body [--out DOC2.json]
 """
 from __future__ import annotations
@@ -288,6 +289,48 @@ def create(args):
         print("\n".join(problems))
 
 
+# ------------------------------------------------------------------------------------------------ finalize
+BIRTH_CORRECTIONS = ("00-0041539",)         # Logan Jones (CHI C): the guard had 2001-10-29, nflverse lists 2001-10-19 (Q48)
+
+
+def finalize(args):
+    """The document-level fixes of the wave: Q47 (no stale top-level special_teams roles), Q48 (a sourced birth date), the
+    Ole Miss -> Mississippi college fold (GEN1 folded the table's double name: row 93 -> row 176)."""
+    doc = json.loads(Path(args.doc).read_text(encoding="utf-8"))
+    plan = doc["roster_refresh"]
+    fresh = upd.latest_roster(args.roster)
+    report = {}
+    stale = doc.pop("special_teams", None)
+    report["special_teams_roles_dropped"] = sum(len(t.get("roles", {})) for t in stale or [])
+    moved = []
+    for change in doc.get("college_updates", ()):
+        if change["college"] == "Ole Miss":
+            change["college"] = "Mississippi"
+            moved.append(f"{change['first']} {change['last']} (record {change['index']})")
+    report["ole_miss_to_mississippi"] = moved
+    rows = {r["gsis_id"]: r for r in plan["players"]}
+    corrections = {c["index"]: c for c in plan.get("birth_corrections", ())}
+    mismatches = []
+    for g, row in rows.items():
+        node = fresh.get(g)
+        if node and node["birth_date"] and node["birth_date"] != row["birth_date"] and not row.get("new"):
+            mismatches.append(f"{row['first']} {row['last']} {row['index']}: plan {row['birth_date']}, nflverse {node['birth_date']}")
+    for g in BIRTH_CORRECTIONS:
+        row, node = rows[g], fresh[g]
+        if row["birth_date"] != node["birth_date"]:
+            corrections[row["index"]] = dict(
+                index=row["index"], first=row["first"], last=row["last"], was=row["birth_date"], birth_date=node["birth_date"],
+                source=upd.ROSTER_URL, evidence="nflverse roster_2026 (week 8, fetched 2026-11-03) lists the later date; the "
+                "players.csv of 2026-09-24 the plan's identity guard came from listed the earlier one")
+            row["birth_date"] = node["birth_date"]
+    plan["birth_corrections"] = sorted(corrections.values(), key=lambda c: c["index"])
+    report["birth_corrected"] = [f"{c['first']} {c['last']} {c['was']} -> {c['birth_date']}" for c in plan["birth_corrections"]]
+    report["other_birth_date_differences_not_changed"] = [m for m in mismatches if not any(
+        m.startswith(f"{c['first']} {c['last']} ") for c in plan["birth_corrections"])]
+    Path(args.out or args.doc).write_text(json.dumps(doc, indent=1, ensure_ascii=True) + "\n", encoding="utf-8")
+    print(json.dumps(report, indent=1)[:2500])
+
+
 # ------------------------------------------------------------------------------------------------ capacity
 def capacity_block(args):
     """Refresh the capacity receipts of a document whose plan changed: grow the pinned base by ``records`` and replay."""
@@ -307,7 +350,8 @@ def capacity_block(args):
     vacancies = capacity.import_vacancies(result)
     doc = rr.RosterDocument(result, scheme="one_pool", reference_year=2026)
     assert vacancies >= capacity.IMPORT_FLOOR + 10, f"only {vacancies} import vacancies"
-    block.update(records=records, final_primary=receipt["primary_after"], free_agents=len(doc.free_agents),
+    # final_primary stays base + create vacancies, as fa4 recorded it (the grown arena also holds free draft-class records)
+    block.update(records=records, final_primary=block["base_primary"] + records, free_agents=len(doc.free_agents),
                  import_vacancies=vacancies, margin=vacancies - capacity.IMPORT_FLOOR,
                  grown_body_sha256=hashlib.sha256(grown).hexdigest(), final_body_sha256=hashlib.sha256(result).hexdigest(),
                  college_null_repair=heal["changed"])
@@ -337,13 +381,17 @@ def main(argv=None):
         else:
             p.add_argument("--out", required=True)
         p.add_argument("--body", required=True, help="the released v0.8 main roster body (827,456 bytes)")
+    p = sub.add_parser("finalize")
+    p.add_argument("doc")
+    p.add_argument("roster")
+    p.add_argument("--out")
     p = sub.add_parser("capacity")
     p.add_argument("doc")
     p.add_argument("--base", required=True)
     p.add_argument("--records", type=int, default=0)
     p.add_argument("--out")
     args = ap.parse_args(argv)
-    {"targets": targets, "create": create, "capacity": capacity_block}[args.step](args)
+    {"targets": targets, "create": create, "finalize": finalize, "capacity": capacity_block}[args.step](args)
 
 
 if __name__ == "__main__":

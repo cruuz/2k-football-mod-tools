@@ -288,8 +288,10 @@ def _without_suffix(last):
     return re.sub(r"\s+(?:jr|sr|ii|iii|iv|v)\.?$", "", last.strip(), flags=re.IGNORECASE)
 
 
-def _same_person(player, first, last, birth):
-    return (player.first, _without_suffix(player.last), str(player.record.birth_date)) == (first, _without_suffix(last), birth)
+def _same_person(player, first, last, birth, alternates=()):
+    """``alternates``: other birth dates the plan accepts for this record (a sourced birth-date correction, below)."""
+    return ((player.first, _without_suffix(player.last)) == (first, _without_suffix(last))
+            and str(player.record.birth_date) in (birth, *alternates))
 
 
 def apply_body(body, plan):
@@ -318,18 +320,33 @@ def apply_body(body, plan):
         rr._require(spare.PRIMARY_AFTER <= primary_count <= spare.PRIMARY_AFTER + spare.MAX_FLOOR_RECORDS,
                     "Refresh needs the pack's 2619-player capacity")
     by = {p.index: p for p in doc.by_pool("primary")}
+    # b780 rst2 (Q48, Logan Jones CHI C: the plan's guard had 2001-10-29, nflverse roster_2026 and players.csv of 10/28 and
+    # 11/03 list 2001-10-19): a record may carry either date of a sourced correction; the correction writes the new one.
+    corrections = {c["index"]: c for c in plan.get("birth_corrections", ())}
+    rr._require(len(corrections) == len(plan.get("birth_corrections", ())), "Duplicate birth correction")
+    for c in corrections.values():
+        rr._require({"first", "last", "was", "birth_date"} <= set(c) and str(c.get("source", "")).startswith("https://"),
+                    "A birth correction needs the name, both dates and its source")
+        datetime.date.fromisoformat(c["was"])
+        datetime.date.fromisoformat(c["birth_date"])
+
+    def alternates(index):
+        c = corrections.get(index)
+        return (c["was"], c["birth_date"]) if c else ()
+
     guards = plan["identity_guards"]
     rr._require(len({g[0] for g in guards}) == len(guards), "Duplicate identity guard")
     for index, first, last, birth in guards:
         p = by.get(index)
-        rr._require(p is not None and _same_person(p, first, last, birth), f"Pack identity guard failed at {index}")
+        rr._require(p is not None and _same_person(p, first, last, birth, alternates(index)),
+                    f"Pack identity guard failed at {index}")
     rows = plan["players"]
     rr._require(len({r["index"] for r in rows}) == len(rows), "Duplicate refresh identity")
     rr._require(len({r["gsis_id"] for r in rows}) == len(rows), "Duplicate source identity")
     for row in rows:
         p = by.get(row["index"])
         rr._require(p is not None and p.group != "draft_class", "Refresh touches absent/draft record")
-        same = _same_person(p, row["first"], row["last"], row["birth_date"])
+        same = _same_person(p, row["first"], row["last"], row["birth_date"], alternates(row["index"]))
         vacant = (p.index >= 2464 and p.group == "pool" and
                   p.first == p.last == "****************" and p.record.get("player_type") == 1)
         rr._require(same or (row.get("new") is True and vacant),
@@ -378,6 +395,10 @@ def apply_body(body, plan):
     # All identity/capacity gates precede mutation of this private document (the injured-reserve placement below
     # reads the records as this refresh writes them, so its own gates run after the rows; a refusal there still
     # leaves the caller's body untouched).
+    for index, c in corrections.items():
+        year, month, day = (int(x) for x in c["birth_date"].split("-"))
+        for key, value in (("birth_year", year), ("birth_month", month), ("birth_day", day)):
+            by[index].record.set(key, value)
     added = 0
     for row in rows:
         p = by[row["index"]]
@@ -495,6 +516,8 @@ def apply_body(body, plan):
                     "changed_bytes": sum(a != b for a, b in zip(body, result)),
                     "unrepresented": len(plan.get("unrepresented", [])),
                     # b780 rst2 (Q44): free agents whose stale contract block was zeroed
+                    "birth_dates_corrected": sorted(f"{by[i].display} {c['was']} -> {c['birth_date']}"
+                                                     for i, c in corrections.items()),
                     "free_agent_contracts_cleared": len(cleared),
                     "free_agent_contracts_cleared_players": sorted(by[i].display for i in cleared),
                     # b780 b4-economy (D6)
