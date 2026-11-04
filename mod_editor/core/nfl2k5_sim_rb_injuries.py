@@ -50,12 +50,17 @@ the lottery gave them 9.3-9.9% of simulated carries (44-47 a team-season, up to 
 fullback's carry (position byte 8) 1 time in 16 (``FULLBACK_KEEP_THRESHOLD``); otherwise it runs the game's own lottery
 again for the same team (up to ``FULLBACK_REDRAWS`` times), so the other candidates share the carry by their own
 weights, and a halfback drawn this way takes the halfback path above (an injured back passes it to the next healthy
-one). A halfback the depth chart puts in the FB slot keeps the retail carries; only the position-8 fullback is thinned.
-Two v0.8-executable seasons with beta-80's sim owners: fullbacks 4.1-4.2 carries a team-season (0.9%), top fullback
-19-22 carries, lead backs 219-226 carries (NFL 218). (A first version gave every such carry to HB1: lead backs 1,075
-yards and 20 backs over 1,000 against the NFL's 958 and 13.4.) The guard grew from 350 to 416 bytes, so it moved from
-offset 256 to 208 (hunt1's weekly roll is 197 bytes); the carrier call at ``0x106CFA`` points there. A beta-79 install
-reads "previous" from both its cave and its carrier call, and the in-place upgrade rewrites both.
+one). If the lottery returns the fullback every time (a club whose first two backs are hurt, so weak backs fill the
+HB slots), the HB1 lineup slot takes the carry. A halfback the depth chart puts in the FB slot keeps the retail carries;
+only the position-8 fullback is thinned. (A first version gave every such carry to HB1: lead backs 1,075 yards and 20
+backs over 1,000 against the NFL's 958 and 13.4. A second kept the fullback after three fullback draws: 4.1-4.2
+carries a team-season, but on hunt1's guard one club with its first two backs out gave its fullback 12-14 carries in
+three games, 64 for the season.) The guard grew from 350 to 427 bytes, so it moved from offset 256 to 208 (hunt1's
+weekly roll is 197 bytes); the carrier call at ``0x106CFA`` points there. A beta-79 install reads "previous" from both
+its cave and its carrier call, and the in-place upgrade rewrites both. The Simulated season realism QB hook at
+``0x106CFF`` takes the guard's EAX: on every path it is a carrier of the same team (the lottery's pick, a re-drawn pick,
+the HB1 slot or a healthy backup's match copy), and EBX, EBP and ESI come back unchanged (``CarrierSiteChainTests`` runs
+``0x106CFA`` to the store at ``0x106D0A`` with both owners installed).
 
 The scheduled-sim carry guard (``SUB_OFFSET``, ``CARRIER_SITE``) is the part that makes an injured back miss
 the simulated game. Retail's weekly tick clears the out status while the weeks run down, and the scheduled
@@ -134,7 +139,8 @@ ROTATION_THRESHOLD = 1311
 # +0xC HB1, +0x10 FB1, +0x14 HB2, from 0x4F6A6C over the lineup table 0xA96828).
 FULLBACK_POSITION = 8
 FULLBACK_KEEP_THRESHOLD = 4096
-FULLBACK_REDRAWS = 3              # fresh lottery draws for a fullback's carry before he keeps it (0.11^3 of the time)
+FULLBACK_REDRAWS = 3              # fresh lottery draws for a fullback's carry; then the HB1 slot takes it
+LEAD_BACK_SLOT = 0x0C             # sim team offense summary: the HB1 slot
 
 
 class SimRbInjuriesError(ValueError):
@@ -324,8 +330,7 @@ def _carrier(a):
     a.b("807e35" + bytes([FULLBACK_POSITION]).hex())  # cmp byte [esi+0x35], 8
     a.j8("75", "done")                                 # neither a halfback nor a fullback: retail
     a.call(FN_RAND)
-    a.b("0fb7c0")                                      # movzx eax, ax
-    a.b("3d" + struct.pack("<I", FULLBACK_KEEP_THRESHOLD).hex())  # cmp eax, 4096
+    a.b("663d" + struct.pack("<H", FULLBACK_KEEP_THRESHOLD).hex())  # cmp ax, 4096   the 16-bit league draw
     a.j8("72", "done")                                 # below: the fullback keeps this carry
     a.b("bb" + struct.pack("<I", FULLBACK_REDRAWS).hex())  # mov ebx, 3   (0x103360 preserves ebx)
     a.label("redraw")
@@ -337,7 +342,13 @@ def _carrier(a):
     a.j8("75", "redrawn")
     a.b("4b")                                          # dec ebx
     a.j8("75", "redraw")
-    a.j8("eb", "done")                                 # a fullback every time: keep him
+    # the lottery drew the fullback every time (a room of hurt or weak backs): the HB1 lineup slot takes the carry
+    a.b("8b442404")                                    # mov eax, [esp+4]      the team
+    a.b("8b40" + bytes([LEAD_BACK_SLOT]).hex())        # mov eax, [eax+0xc]    its HB1 slot (HB rank 0 at the lineup)
+    a.b("85c0")                                        # test eax, eax
+    a.j8("74", "done")
+    a.b("807835" + bytes([7]).hex())                   # cmp byte [eax+0x35], 7
+    a.j8("75", "done")                                 # no halfback there: the fullback keeps it
     a.label("redrawn")
     a.b("8bf0")                                        # mov esi, eax
     a.b("8944241c")                                    # mov [esp+0x1c], eax   the new pick

@@ -54,7 +54,7 @@ class ConstantTests(unittest.TestCase):
         self.assertEqual(previous[256:262], bytes.fromhex("60e85a92c2fe"))
         self.assertNotIn(bytes.fromhex("807e3508"), previous)
         self.assertEqual(code.count(bytes.fromhex("807e3508")), 1)     # cmp byte [esi+0x35], 8
-        self.assertEqual(code.count(bytes.fromhex("3d00100000")), 1)   # cmp eax, 4096
+        self.assertEqual(code.count(bytes.fromhex("663d0010")), 1)     # cmp ax, 4096
         self.assertEqual(code[inj.SUB_OFFSET - 1], 0xCC)
         # the roll embeds 4/5 weeks for the long bucket and 2/3 for the short one
         self.assertIn(bytes.fromhex("83c004"), code[:inj.SUB_OFFSET])
@@ -475,6 +475,8 @@ class FullbackRuleTests(unittest.TestCase):
         if lead == "injured":
             for at in (roster, self.copies["hb1"]):
                 m.put(at + 0x20, 0x80000000 | (2 << 22))
+        elif lead == "tight end":
+            m.uc.mem_write(self.copies["hb1"] + 0x35, b"\x09")
         # the sim team offense summary: +8 QB1, +0xC HB1, +0x10 FB1, +0x14 HB2 (lineup table 0xA96828)
         for slot, role in enumerate(("qb", "hb1", "fb", "hb2")):
             m.put(team + 8 + 4 * slot, self.copies[role])
@@ -512,9 +514,14 @@ class FullbackRuleTests(unittest.TestCase):
             with self.subTest(pick=pick):
                 m = self.machine(["fb", pick], 65535)
                 self.assertEqual(self.call(m), self.copies[pick])
-        # fullback on the first draw and on all three re-draws, or no answer: the fullback keeps the carry
+        # fullback on the first draw and on all three re-draws: the HB1 slot takes the carry (the halfback path:
+        # healthy, it stays with him; hurt, it goes on to the next healthy back); no halfback there keeps the fullback
         m = self.machine(["fb"] * 4, 65535)
-        self.assertEqual((self.call(m), self.asked), (self.copies["fb"], 1 + inj.FULLBACK_REDRAWS))
+        self.assertEqual((self.call(m), self.asked), (self.copies["hb1"], 1 + inj.FULLBACK_REDRAWS))
+        m = self.machine(["fb"] * 4, 65535, lead="injured")
+        self.assertEqual(self.call(m), self.copies["hb2"])
+        m = self.machine(["fb"] * 4, 65535, lead="tight end")
+        self.assertEqual(self.call(m), self.copies["fb"])
         m = self.machine(["fb", "fb", "hb2"], 65535)
         self.assertEqual((self.call(m), self.asked), (self.copies["hb2"], 3))
         m = self.machine(["fb", "none"], 65535)
@@ -553,11 +560,108 @@ class FullbackRuleTests(unittest.TestCase):
         for _ in range(4000):
             out[back[self.call(m)]] += 1
         self.assertEqual(sum(out.values()), 4000)
-        self.assertLessEqual(out["fb"], 4000 * 0.10 / 16 * 1.8)   # about 26 expected (1/16 + 15/16 * 0.1^3 of 400)
+        self.assertLessEqual(out["fb"], 4000 * 0.10 / 16 * 1.8)   # 1/16 of 400 = 25 expected
         self.assertGreaterEqual(out["fb"], 4000 * 0.10 / 16 * 0.4)
         for role, share in mix:                                   # the others keep their relative shares
             if role != "fb":
                 self.assertAlmostEqual(out[role] / (4000 - out["fb"]), share / 0.90, delta=0.03, msg=role)
+
+
+@unittest.skipUnless(HAVE_UC, "unicorn is needed")
+class CarrierSiteChainTests(unittest.TestCase):
+    """b780 db2 (REV2): the scheduled sim's carrier call 0x106CFA through the store of the ball carrier at 0x106D0A,
+    run on retail with this owner and then Simulated season realism installed (the build's LATE_OWNERS order). The
+    realism QB hook at 0x106CFF takes the guard's EAX and either keeps it or puts the QB in (a mobile QB's draw); the
+    retail code stores EAX into 0xA971A4. The retail lottery 0x103360 is replayed; the league draw is fixed."""
+
+    @classmethod
+    def setUpClass(cls):
+        from mod_editor.core import nfl2k5_sim_realism as realism
+        data = retail_bytes()
+        if data is None:
+            raise unittest.SkipTest("private USA retail XBE is absent")
+        cls.realism = realism
+        cls.payload, _ = realism.apply(inj.apply(data)[0])
+        cls.previous = None
+        from mod_editor.core import nfl2k5_sim_rb_injuries_b779 as b779
+        cls.previous, _ = realism.apply(b779.apply(data)[0])
+
+    def run_site(self, payload, picks, draw, lead="healthy", mobile_qb=False, qb_roll=None):
+        m = Machine(payload, trace_writes=False)
+        root, clubs, roster, match, team = (m.ARENA + 0x1000, m.ARENA + 0x2000, m.ARENA + 0x3000,
+                                            m.ARENA + 0x180000, m.ARENA + 0x4000)
+        copies = {}
+        for i, (role, pos) in enumerate((("hb1", 7), ("hb2", 7), ("fb", 8), ("qb", 0), ("wr", 3))):
+            rec, copy = roster + i * 0x54, match + i * 0x200
+            for at in (rec, copy):
+                m.uc.mem_write(at, bytes(0x54))
+                m.put(at, 0xA000 + i)
+                m.put(at + 0x10, 0x9000 + i)
+                m.uc.mem_write(at + 0x35, bytes([pos]))
+            m.put(clubs + 4 * i, rec)
+            copies[role] = copy
+        m.uc.mem_write(clubs + 0x11C, b"\x05")
+        m.put(0xB72918, root)
+        m.put(root + 0x1C, clubs)
+        if lead == "injured":
+            for at in (roster, copies["hb1"]):
+                m.put(at + 0x20, 0x80000000 | (2 << 22))
+        if mobile_qb:                                         # scramble 90 + agility 90: the realism QB family
+            m.uc.mem_write(copies["qb"] + 0x4F, b"\x5a")
+            m.uc.mem_write(copies["qb"] + 0x37, b"\x5a")
+        for slot, role in enumerate(("qb", "hb1", "fb", "hb2")):
+            m.put(team + 8 + 4 * slot, copies[role])
+        m.put(self.realism.TEAM_OFFENSE, team)              # the realism QB hook reads the offense summary
+        seq = iter(picks)
+
+        def lottery():
+            self.assertEqual(m.reg("ESI"), team)
+            m.ret(copies[next(seq)])
+        m.leaf(0x00103360, lottery, reason="the retail carrier lottery's answers, replayed")
+        patch_code(m, 0x00048BC0, b"\xb8" + struct.pack("<I", draw) + b"\xc3")
+        if qb_roll is not None:                               # the match RNG's float for the realism QB draw
+            patch_code(m, self.realism.FN_RAND, b"\x68" + struct.pack("<f", qb_roll) + b"\xd9\x04\x24\x58\xc3")
+        m.call(0x00106CFA, esi=team, ebx=0x11111111, stop=0x00106D0F, budget=2000000)
+        stored = m.get(0x00A971A4)
+        self.assertEqual(stored, m.reg("EAX"))
+        # the caller's EBX, EBP and ESI come back as the retail call leaves them (0x103360 saves them too); EDI is the
+        # realism hook's replayed `mov edi, [0xA971A0]`
+        self.assertEqual((m.reg("EBX"), m.reg("EBP"), m.reg("ESI")), (0x11111111, 0x44444444, team))
+        self.assertEqual(m.reg("EDI"), m.get(0x00A971A0))
+        return {v: k for k, v in copies.items()}.get(stored, hex(stored))
+
+    def test_every_guard_path_hands_the_realism_hook_a_carrier_of_this_team(self):
+        cases = (  # (lottery answers, league draw, lead back, expected carrier)
+            (["hb1"], 65535, "healthy", "hb1"),               # HB chosen, kept
+            (["hb1"], 65535, "injured", "hb2"),               # injured HB: the next healthy back
+            (["hb1"], 0, "healthy", "hb2"),                   # HB chosen, the 2% rotation
+            (["fb"], 0, "healthy", "fb"),                     # fullback keeps this one (draw below 4096)
+            (["fb", "hb1"], 65535, "healthy", "hb1"),         # fullback rule: drawn again, a halfback
+            (["fb", "hb1"], 65535, "injured", "hb2"),         # drawn again, an injured halfback: the next healthy one
+            (["fb", "qb"], 65535, "healthy", "qb"),           # drawn again, the quarterback
+            (["fb"] * 4, 65535, "healthy", "hb1"),            # the fullback every time: the HB1 slot
+            (["fb"] * 4, 65535, "injured", "hb2"),            # ... hurt: the next healthy back
+            (["qb"], 65535, "healthy", "qb"),
+            (["wr"], 0, "healthy", "wr"),
+        )
+        for picks, draw, lead, expected in cases:
+            with self.subTest(picks=picks, draw=draw, lead=lead):
+                self.assertEqual(self.run_site(self.payload, picks, draw, lead), expected)
+
+    def test_the_realism_qb_hook_still_runs_after_the_guard(self):
+        # a mobile QB and a match draw of 0.0: the realism hook replaces whatever the guard returned
+        for picks, draw, lead in ((["hb1"], 65535, "healthy"), (["fb", "hb1"], 65535, "injured"), (["fb"] * 4, 65535, "healthy")):
+            with self.subTest(picks=picks):
+                self.assertEqual(self.run_site(self.payload, picks, draw, lead, mobile_qb=True, qb_roll=0.0), "qb")
+                self.assertNotEqual(self.run_site(self.payload, picks, draw, lead, mobile_qb=True, qb_roll=0.99), "qb")
+
+    def test_halfback_paths_match_the_beta79_guard(self):
+        # every path the fullback rule does not touch gives the same carrier as the shipped beta-79 guard
+        for picks, draw, lead in ((["hb1"], 65535, "healthy"), (["hb1"], 65535, "injured"), (["hb1"], 0, "healthy"),
+                                  (["qb"], 65535, "healthy"), (["wr"], 0, "healthy"), (["fb"], 0, "healthy")):
+            with self.subTest(picks=picks, draw=draw, lead=lead):
+                self.assertEqual(self.run_site(self.payload, picks, draw, lead),
+                                 self.run_site(self.previous, picks, draw, lead))
 
 
 if __name__ == "__main__":
