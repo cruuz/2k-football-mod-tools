@@ -3339,7 +3339,7 @@
     "mod_editor/core/nfl2k5_kick_rules.py": "885525ea94351521fc5e22c1c40c17ef3f374d665862e5920c4d9a644cd53be2",
     "mod_editor/core/nfl2k5_kickoff_blocking.py": "310ef53a004045f4daaedf8502100f60b050f0ae76a005eac0807b20e0090707",
     "mod_editor/core/nfl2k5_kickoff_returns.py": "d1f30bac8fd709f64be20e060027649a43fc04b82c7bd09b48082e8e66e5220f",
-    "mod_editor/core/nfl2k5_kit_fixes_2026.py": "62fb653a36bcb53a0190e12f1bf84c34a75e5049dc2ed59d2f89357e7f91ea2b",
+    "mod_editor/core/nfl2k5_kit_fixes_2026.py": "41dcaedff104bc93ed26a51081a77946539fe7c5be3fdd62f2668dd28dc6d937",
     "mod_editor/core/nfl2k5_lambeau_model.py": "3aad96173fbf2b9f5caf10eb80b7e7cc0b2a1b3552be33f1024cff8cb324e217",
     "mod_editor/core/nfl2k5_lambeau_venue.py": "6e66f5f4872438c13d3d77df0980e5b3b76c7851601b449a093d546482b39af8",
     "mod_editor/core/nfl2k5_late_steps.py": "b4e0d9544c87946fd71124545feda4824b5f7ce706a8c3c6cfd7b97f5eb57a64",

@@ -2595,7 +2595,13 @@
    "legging_wet": "#999999",
    "socks_chunk": 4,
    "socks_sha256": "c93da3e9044e27b7f6171fe02162d691e6592a6b64b46ad791e8ccb913b80179",
-   "after_sha256": "32f0ba06ad9f75715607227a8c21b1c0dadcb99054b7bdf38a3e9182863d19ab"
+   "after_sha256": "32f0ba06ad9f75715607227a8c21b1c0dadcb99054b7bdf38a3e9182863d19ab",
+   "also": [
+    {
+     "after_sha256": "c45e201c2fca161559fe44a45bce58aadcf1c021b12c3e31863eac538f59f436",
+     "before_sha256": "7941e19a8fa9ceae932d7bd30c51c325a9fee702d95e5e8e038d0e8d1da8faf5"
+    }
+   ]
   },
   {
    "selector": "02A0",
@@ -2648,7 +2654,13 @@
    "legging_wet": "#999999",
    "socks_chunk": 4,
    "socks_sha256": "c93da3e9044e27b7f6171fe02162d691e6592a6b64b46ad791e8ccb913b80179",
-   "after_sha256": "cae5ea4218ff58ee4cdad8eec09e77f98ceaa3c30d84e0da0139155773b36b2a"
+   "after_sha256": "cae5ea4218ff58ee4cdad8eec09e77f98ceaa3c30d84e0da0139155773b36b2a",
+   "also": [
+    {
+     "after_sha256": "357599178203ba05e6262185284b9a3b41c9d9804b2faaa358980373600b0de9",
+     "before_sha256": "70d4364006a3fe41298ec667b8e65bbc28e4e3e5fc361b5f6b1b8c0490eb4059"
+    }
+   ]
   },
   {
    "selector": "02A2",
@@ -2701,7 +2713,13 @@
    "legging_wet": "#0C0C0D",
    "socks_chunk": 4,
    "socks_sha256": "28821a317e459fc924485019a9ce15aedd3523c0352c94365196a47b6a94802d",
-   "after_sha256": "92bfedcc1b0d5cd3870d10c54979531a59bd36395d401fdf752eef2a8b4ba6c2"
+   "after_sha256": "92bfedcc1b0d5cd3870d10c54979531a59bd36395d401fdf752eef2a8b4ba6c2",
+   "also": [
+    {
+     "after_sha256": "c24b2196b17759f2e028c04c8a6deaf4607596ab51bf1c9cfc930f2b89d1a470",
+     "before_sha256": "b6db7fe59c1b6ec64100a2165af146d23d3a5b1a104dfdfd092a55b56d91f82d"
+    }
+   ]
   },
   {
    "selector": "02A3",
@@ -2754,7 +2772,13 @@
    "legging_wet": "#1C0D3E",
    "socks_chunk": 4,
    "socks_sha256": "90d9406ec195999e0d3de891c67800f64adecdb7471bc7ee883183e3c175f98b",
-   "after_sha256": "e97047bd34a1a83d589a18187b7db096b99dd4a67759c8bb743968fdcb08afb5"
+   "after_sha256": "e97047bd34a1a83d589a18187b7db096b99dd4a67759c8bb743968fdcb08afb5",
+   "also": [
+    {
+     "after_sha256": "36b0be27ad0ed86d4503c2dc424ff81b0155a3ded16bd3b5e22993193069e3c7",
+     "before_sha256": "d27c4a46fff0714a45e1685dc5d33706a1527bf96e1513ed3054bc8fda7bfc70"
+    }
+   ]
   },
   {
    "selector": "02H0",
@@ -2807,7 +2831,13 @@
    "legging_wet": "#23154D",
    "socks_chunk": 4,
    "socks_sha256": "fb879e46143a06a51f63365f34f572a2a730d75e43d0bfdbea6604162c08d57d",
-   "after_sha256": "89e45e1b91eb69217706bc2330af58b4612188f8b9e0a828cb5915fb6082d472"
+   "after_sha256": "89e45e1b91eb69217706bc2330af58b4612188f8b9e0a828cb5915fb6082d472",
+   "also": [
+    {
+     "after_sha256": "ed7d5c72d4bf69a25065d609e92205613e4a564151593cb3f702a91851323f01",
+     "before_sha256": "0cb8ccf1b83ad79319375a5d1631ddd2bf682c55941ec28bdf50c1a28ea7e59a"
+    }
+   ]
   },
   {
    "selector": "02H2",
@@ -2860,7 +2890,13 @@
    "legging_wet": "#0C0C0D",
    "socks_chunk": 4,
    "socks_sha256": "28821a317e459fc924485019a9ce15aedd3523c0352c94365196a47b6a94802d",
-   "after_sha256": "92bfedcc1b0d5cd3870d10c54979531a59bd36395d401fdf752eef2a8b4ba6c2"
+   "after_sha256": "92bfedcc1b0d5cd3870d10c54979531a59bd36395d401fdf752eef2a8b4ba6c2",
+   "also": [
+    {
+     "after_sha256": "c24b2196b17759f2e028c04c8a6deaf4607596ab51bf1c9cfc930f2b89d1a470",
+     "before_sha256": "b6db7fe59c1b6ec64100a2165af146d23d3a5b1a104dfdfd092a55b56d91f82d"
+    }
+   ]
   },
   {
    "selector": "02H3",
@@ -3349,7 +3385,13 @@
    "legging_wet": "#0A0A0E",
    "socks_chunk": 4,
    "socks_sha256": "c86009848dc3bcc4280c1a84ee3d1cdfdb906671e996d0497ba0ce46e3b3dc42",
-   "after_sha256": "df35835e7acdc22d322c59bf8eddedafa146fc0ec31a842cbb04d28b7069f458"
+   "after_sha256": "df35835e7acdc22d322c59bf8eddedafa146fc0ec31a842cbb04d28b7069f458",
+   "also": [
+    {
+     "after_sha256": "51629545be9ee1f3f2af9ea66d62aef9224175d993037557bda048eab97155b8",
+     "before_sha256": "de445a95cd59c652cb02bff2e5b0f16bd38eb9458765b05eb2d60e7903a44415"
+    }
+   ]
   },
   {
    "selector": "04A0",
@@ -3461,7 +3503,13 @@
    "legging_wet": "#0A0A0E",
    "socks_chunk": 4,
    "socks_sha256": "a83a4c03eedf010ca8dd58ba025a2e26c59d56ff425a709c4e253ede54675f5e",
-   "after_sha256": "e8d92d535926e132c7fcf164d558c7f050bcb71e26f47fa1caad5d4e5ebc02bc"
+   "after_sha256": "e8d92d535926e132c7fcf164d558c7f050bcb71e26f47fa1caad5d4e5ebc02bc",
+   "also": [
+    {
+     "after_sha256": "aca04160963ce5c7052cdd76adc03ba208c7ca74cbdf733b7d26b2033d5ba27d",
+     "before_sha256": "cf90019ab363cc27350418a3cd8097b25bc79163950bac006b93a06415b29d55"
+    }
+   ]
   },
   {
    "selector": "04H0",

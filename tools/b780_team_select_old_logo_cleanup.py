@@ -24,8 +24,10 @@ Washington's old feather, feather tips and dark red roundel ring), the renders s
    ``"greyer"`` the old shell's grey seams on a coloured shell; ``"estimate": "local"`` rebuilds the shell from
    a blur of its own pixels instead, which keeps the helmet's highlights under a thin piece), plus ``grow`` pixels
    of anti-aliased fringe; ``"mode": "neutral"`` keeps the tinted pixels' brightness and drops their tint (the old
-   shell colour in a screw's rim); ``inset`` keeps a region that many pixels inside the helmet's outline (its piping);
-   alpha never changes and only opaque pixels are painted;
+   shell colour in a screw's rim); ``"mode": "column"`` gives each column's run of region pixels the straight line
+   between the pixels just above and below it (kit pants: the stripes run straight down the leg, so the fabric and
+   the stripe's anti-aliased edge carry on through a speck); ``inset`` keeps a region that many pixels inside the
+   helmet's outline (its piping); alpha never changes and only opaque pixels are painted;
 4. the 128 helm card is the premultiplied 2 x 2 box reduction of the 256 card (measured: within 1.6 levels on every
    card), so its blocks that cover a repainted 256 pixel take the box of the cleaned 256 card plus the original 128
    residual; every other 128 pixel stays as it was.
@@ -38,8 +40,9 @@ card is the source art byte for byte, and the importer's re-quantized card stays
   python3 tools/b780_team_select_old_logo_cleanup.py apply --project PROJECT.json --out-dir DIR --project-out NEW.json
   python3 tools/b780_team_select_old_logo_cleanup.py check --project PROJECT.json
 
-``apply`` writes the cleaned PNGs (same file names, in DIR) and a copy of the project whose ``team_select`` edits
-point at them; nothing else in the project changes. The Studio's own Team Select importer then quantizes the cleaned
+``apply`` writes the cleaned PNGs (same file names, in DIR) and a copy of the project whose edits (``png``, or a kit
+texture's ``clean_png``) point at them; nothing else in the project changes. Kits that share one design may each
+carry their own copy of a PNG: every copy must be the pinned art, and each gets its cleaned copy. The Studio's own Team Select importer then quantizes the cleaned
 PNGs exactly as before (256-entry median cut, the retail P8 slot, wrapper and size unchanged). Washington's 29_0
 cards are then repainted by the Studio's hu1 W pass (nfl2k5_menu_helmet_w2026), which knows the cleaned cards as a
 second pinned pair (``also``) next to the art it was first pinned to.
@@ -304,6 +307,11 @@ def clean_regions(rgba: np.ndarray, regions, *, alpha_any: bool = False) -> tupl
             # keep clear of the helmet's outline (its piping) by ``inset`` pixels from the card's transparent edge
             area &= ~dilate(~opaque, int(region["inset"]))
         require(area.any(), f"region {number} covers no opaque pixel")
+        if region.get("mode") == "column":
+            out[..., :3] = column_fill(out[..., :3], area)
+            rows.append(dict(region=number, note=region.get("note", ""), area_pixels=int(area.sum()),
+                             painted_pixels=int(area.sum()), shell_band_pixels=0))
+            continue
         band = dilate(area, BAND) & ~area & opaque
         if region.get("mode") == "neutral":
             shell = band
@@ -356,6 +364,25 @@ def clean_regions(rgba: np.ndarray, regions, *, alpha_any: bool = False) -> tupl
         rows.append(dict(region=number, note=region.get("note", ""), area_pixels=int(area.sum()),
                          painted_pixels=int(paint.sum()), shell_band_pixels=int(shell.sum())))
     return out, rows
+
+
+def column_fill(rgb: np.ndarray, area: np.ndarray) -> np.ndarray:
+    """Each column's run of region pixels takes the straight line between the pixel just above the run and the
+    pixel just below it (the kit's stripes run straight down the leg, so the fabric and the stripe's own
+    anti-aliased edge carry on through the run). Both ends must lie outside the region and inside the texture."""
+    out = rgb.copy()
+    values = rgb.astype(np.float64)
+    h = rgb.shape[0]
+    for x in np.flatnonzero(area.any(axis=0)):
+        ys = np.flatnonzero(area[:, x])
+        starts = np.concatenate(([ys[0]], ys[1:][np.diff(ys) > 1]))
+        ends = np.concatenate((ys[:-1][np.diff(ys) > 1], [ys[-1]]))
+        for y0, y1 in zip(starts, ends):
+            require(y0 > 0 and y1 < h - 1, f"column {x}: the run {y0}..{y1} has no pixel above or below it")
+            top, bottom = values[y0 - 1, x], values[y1 + 1, x]
+            t = (np.arange(y0, y1 + 1) - (y0 - 1)) / float(y1 + 1 - (y0 - 1))
+            out[y0:y1 + 1, x] = round_half_up(top[None, :] + (bottom - top)[None, :] * t[:, None])
+    return out
 
 
 def box_reduce(rgba: np.ndarray) -> np.ndarray:
@@ -431,9 +458,19 @@ def texture_entries(doc: dict) -> list:
     return entries
 
 
+KIT_KINDS = ("torso", "sleeve", "pants")    # kit textures: the clean PNG (their mud twin is derived from it)
+
+
+def source_field(kind: str) -> str:
+    return "clean_png" if kind in KIT_KINDS else "png"
+
+
 def matching_edits(project: dict, entry: dict) -> list:
+    """The project's edits of the entry's kind whose fields equal every ``match`` value (a list value: any of)."""
+    def fits(value, wanted):
+        return value in wanted if isinstance(wanted, list) else value == wanted
     return [e for e in project["edits"] if e.get("kind") == entry["kind"]
-            and all(e.get(k) == v for k, v in entry["match"].items())]
+            and all(fits(e.get(k), v) for k, v in entry["match"].items())]
 
 
 def clean_project_textures(project: dict, doc: dict | None = None) -> tuple[dict, dict]:
@@ -445,16 +482,20 @@ def clean_project_textures(project: dict, doc: dict | None = None) -> tuple[dict
     for entry in texture_entries(doc):
         edits = matching_edits(project, entry)
         require(edits, f"{entry['name']}: no {entry['kind']} edit matches {entry['match']}")
-        sources = {e["png"] for e in edits}
-        require(len(sources) == 1, f"{entry['name']}: the matched edits use different PNGs")
-        source = sources.pop()
+        field = source_field(entry["kind"])
+        sources = sorted({e[field] for e in edits})
+        if "edits" in entry:
+            require(len(edits) == int(entry["edits"]), f"{entry['name']}: {len(edits)} edits match, not {entry['edits']}")
+        # kits that share one design may each carry their own copy of the PNG: every copy must be the known art
+        for path in sources:
+            require(rgba_sha(load_rgba(path)) == pins[entry["name"]]["source_rgba_sha256"],
+                    f"{entry['name']}: {Path(path).name} is not the known art")
+        source = sources[0]
         before = load_rgba(source)
-        require(rgba_sha(before) == pins[entry["name"]]["source_rgba_sha256"],
-                f"{entry['name']}: the source is not the known art")
         after, rows = clean_regions(before, entry.get("regions", []), alpha_any=entry.get("alpha") == "any")
         after = apply_marks(after, entry.get("marks", []))
         images[entry["name"]] = after
-        receipts[entry["name"]] = dict(source=source, kind=entry["kind"], match=entry["match"],
+        receipts[entry["name"]] = dict(source=source, sources=sources, field=field, kind=entry["kind"], match=entry["match"],
                                        source_rgba_sha256=rgba_sha(before), clean_rgba_sha256=rgba_sha(after),
                                        changed_pixels=int((before != after).any(axis=2).sum()), regions=rows)
     for name, receipt in receipts.items():
@@ -529,24 +570,32 @@ def cmd_apply(args) -> int:
     texture_images, texture_receipts = clean_project_textures(project, doc)
     images.update(texture_images)
     receipts.update(texture_receipts)
-    by_source = {}
+    by_source, written = {}, set()
     for name, image in images.items():
-        source = Path(receipts[name]["source"])
-        target = out_dir / source.name
-        require(target.resolve() != source.resolve(), "the cleaned PNG would overwrite its source")
-        if source in by_source:
-            require(rgba_sha(image) == rgba_sha(images[by_source[source]]), f"{source} is cleaned two ways")
-            continue
-        save_rgba(image, target)
-        require(rgba_sha(load_rgba(target)) == receipts[name]["clean_rgba_sha256"], f"{target} read-back differs")
-        by_source[source] = name
-        receipts[name]["output"] = str(target)
-        receipts[name]["output_file_sha256"] = sha(target.read_bytes())
+        outputs = []
+        for path in receipts[name].get("sources", [receipts[name]["source"]]):
+            source = Path(path)
+            target = out_dir / source.name
+            require(target.resolve() != source.resolve(), "the cleaned PNG would overwrite its source")
+            if source in by_source:
+                require(rgba_sha(image) == rgba_sha(images[by_source[source]]), f"{source} is cleaned two ways")
+                outputs.append(str(target))
+                continue
+            require(target not in written, f"two sources would write {target.name}")
+            save_rgba(image, target)
+            require(rgba_sha(load_rgba(target)) == receipts[name]["clean_rgba_sha256"], f"{target} read-back differs")
+            by_source[source] = name
+            written.add(target)
+            outputs.append(str(target))
+        receipts[name]["output"] = outputs[0]
+        receipts[name]["outputs"] = outputs
+        receipts[name]["output_file_sha256"] = sha(Path(outputs[0]).read_bytes())
     replaced = 0
     for edit in project["edits"]:
-        if isinstance(edit.get("png"), str) and Path(edit["png"]) in by_source:
-            edit["png"] = str(out_dir / Path(edit["png"]).name)
-            replaced += 1
+        for key in ("png", "clean_png"):
+            if isinstance(edit.get(key), str) and Path(edit[key]) in by_source:
+                edit[key] = str(out_dir / Path(edit[key]).name)
+                replaced += 1
     # the league project's own layout (indent 2, sorted keys), so the copy differs from it only in the repointed lines
     Path(args.project_out).write_text(json.dumps(project, indent=2, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
     receipt = dict(schema=SCHEMA + "/receipt", project=str(project_path), project_sha256=sha(project_path.read_bytes()),
