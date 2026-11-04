@@ -94,6 +94,103 @@ def finish_pittsburgh(raw, donor):
     return bytes(out)
 
 
+def _polygon_mask(size, polygons):
+    """An "L" mask with every polygon filled at 255, exactly as Pillow 10.2.0's ImageDraw.polygon(fill=255) fills it.
+
+    b780: the pins of both pants textures were recorded with Pillow 10.2.0 (the system Python's). Pillow 11 fills the
+    tip of a sharp corner differently, so the Studio's own runtime (Pillow 11.3.0: Windows Setup, the Linux .venv and
+    Python 3.13) drew 7 fewer pixels in the CIN pants mask, the compile missed its pins and the repair was left out.
+    This is libImaging/Draw.c polygon_generic of Pillow 10.2.0 (8-bit, no alpha) with the same float32 arithmetic, so
+    the mask, and so the kit, is the same on every Pillow.
+    """
+    import math
+    import numpy as np
+    from PIL import Image
+    f32 = np.float32
+    width, height = size
+    plane = np.zeros((height, width), dtype=np.uint8)
+
+    def hline(x0, y, x1):
+        if 0 <= y < height and x0 < width and x1 >= 0:
+            x0, x1 = max(x0, 0), min(x1, width - 1)
+            if x0 <= x1:
+                plane[y, x0:x1 + 1] = 255
+
+    def edge(x0, y0, x1, y1):
+        return dict(xmin=min(x0, x1), xmax=max(x0, x1), ymin=min(y0, y1), ymax=max(y0, y1), x0=x0, y0=y0,
+                    dx=f32(0.0) if y0 == y1 else f32(f32(x1 - x0) / f32(y1 - y0)))
+
+    def x_at(e, y):
+        return f32(f32(f32(y - e["y0"]) * e["dx"]) + f32(e["x0"]))
+
+    def roundf(value):                      # C roundf: halfway cases away from zero
+        value = float(value)
+        return f32(math.floor(value + 0.5) if value >= 0 else -math.floor(-value + 0.5))
+
+    def round_up(value):                    # Draw.c ROUND_UP
+        value = f32(value)
+        return int(math.floor(f32(value + f32(0.5)))) if value >= 0 else -int(math.floor(f32(abs(value) + f32(0.5))))
+
+    def round_down(value):                  # Draw.c ROUND_DOWN
+        value = f32(value)
+        return int(math.ceil(f32(value - f32(0.5)))) if value >= 0 else -int(math.ceil(f32(abs(value) - f32(0.5))))
+
+    for points in polygons:
+        xy = [int(c) for point in points for c in point]
+        count = len(xy) // 2
+        edges = []
+        for i in range(count - 1):
+            x0, y0, x1, y1 = xy[i * 2:i * 2 + 4]
+            if y0 == y1 and i != 0 and y0 == xy[i * 2 - 1]:     # a horizontal edge after a horizontal edge
+                if x1 > x0 > xy[i * 2 - 2]:
+                    edges[-1]["xmax"] = x1
+                    continue
+                if x1 < x0 < xy[i * 2 - 2]:
+                    edges[-1]["xmin"] = x1
+                    continue
+            edges.append(edge(x0, y0, x1, y1))
+        last = count - 1
+        if xy[last * 2] != xy[0] or xy[last * 2 + 1] != xy[1]:
+            edges.append(edge(xy[last * 2], xy[last * 2 + 1], xy[0], xy[1]))
+        ymin, ymax, table = height - 1, 0, []
+        for e in edges:
+            ymin, ymax = min(ymin, e["ymin"]), max(ymax, e["ymax"])
+            if e["ymin"] == e["ymax"]:
+                hline(e["xmin"], e["ymin"], e["xmax"])
+            else:
+                table.append(e)
+        ymin, ymax = max(ymin, 0), min(ymax, height)
+        xx = [f32(0.0)] * (2 * len(table))
+        for y in range(ymin, ymax + 1):
+            j = 0
+            for i, current in enumerate(table):
+                if not current["ymin"] <= y <= current["ymax"]:
+                    continue
+                xx[j] = x_at(current, y)
+                j += 1
+                if y == current["ymax"] and y < ymax:
+                    xx[j] = xx[j - 1]
+                    j += 1
+                elif current["dx"] != 0 and roundf(xx[j - 1]) == xx[j - 1]:
+                    for k in range(i):              # Pillow 10.2's "connect discontiguous corners"
+                        other = table[k]
+                        if (current["dx"] > 0 and other["dx"] <= 0) or (current["dx"] < 0 and other["dx"] >= 0):
+                            continue
+                        if (((y == current["ymin"] and y == other["ymin"]) or (y == current["ymax"] and y == other["ymax"]))
+                                and xx[j - 1] == x_at(other, y)):
+                            step = -1 if y == ymax else 1
+                            a, b = float(x_at(current, y + step)), float(x_at(other, y + step))
+                            if y == current["ymax"]:
+                                xx[k] = f32(max(a, b) + 1) if current["dx"] > 0 else f32(min(a, b) - 1)
+                            else:
+                                xx[k] = f32(min(a, b)) if current["dx"] > 0 else f32(max(a, b) + 1)
+                            break
+            row = sorted(xx[:j])
+            for i in range(1, j, 2):
+                hline(round_up(row[i - 1]), y, round_down(row[i]))
+    return Image.fromarray(plane)
+
+
 def _pants(decoded, chunk):
     """Widen the existing tiger bands, retaining the native palettes and cloth.
 
@@ -102,7 +199,7 @@ def _pants(decoded, chunk):
     The paired mud texture shares these indices, keeping its own wet palette.
     """
     import numpy as np
-    from PIL import Image, ImageDraw
+    from PIL import Image
     desc = 0x20 + struct.unpack_from("<i", decoded, 0x20)[0] - 1
     _self, pixel, pal, fmt, size, _flags = struct.unpack_from("<6I", decoded, desc)
     t = SimpleNamespace(width=size & 0xFFFF if size else 1 << ((fmt >> 20) & 15),
@@ -117,13 +214,13 @@ def _pants(decoded, chunk):
     require(neutral.any(), "CIN pants have no opaque neutral palette entries")
     choices = np.flatnonzero(neutral)
     lookup = choices[np.abs(grey[choices, None] - np.arange(256)[None, :]).argmin(axis=0)]
-    mask = Image.new("L", (2048, 1024), 0)
-    draw = ImageDraw.Draw(mask)
+    polygons = []
     for row in range(7):
         y = row * 32
         points = [(111, y + 44), (111, y + 23), (174, y + 10), (157, y + 28)]
-        draw.polygon([(x * 4, yy * 4) for x, yy in points], fill=255)
-        draw.polygon([((512 - x) * 4, yy * 4) for x, yy in points], fill=255)
+        polygons.append([(x * 4, yy * 4) for x, yy in points])
+        polygons.append([((512 - x) * 4, yy * 4) for x, yy in points])
+    mask = _polygon_mask((2048, 1024), polygons)
     out = bytearray(decoded)
     base = np.frombuffer(unswizzle_2d(decoded[chunk.system_bytes + t.pixel_offset:
         chunk.system_bytes + t.pixel_offset + 512 * 256], 512, 256, 1), dtype=np.uint8).reshape(256, 512)
@@ -195,7 +292,7 @@ def finish_cincinnati(raw):
 def _far_pants(decoded, chunk):
     """Carry the black tiger band into the distant player's pants atlas island."""
     import numpy as np
-    from PIL import Image, ImageDraw
+    from PIL import Image
     t = parse_texture(decoded, chunk)
     require((t.width, t.height, t.format_code) == (256, 128, 11), "unexpected CIN far atlas")
     palette = np.frombuffer(decoded, dtype=np.uint8, count=1024,
@@ -205,12 +302,9 @@ def _far_pants(decoded, chunk):
         palette[:, :3].min(axis=1) < 35) & (palette[:, 3] == 255))
     require(len(choices) > 0, "far atlas has no neutral palette")
     lookup = choices[np.abs(grey[choices, None] - np.arange(256)[None, :]).argmin(axis=0)]
-    mask = Image.new("L", (1024, 512), 0)
-    draw = ImageDraw.Draw(mask)
-    for row in range(7):
-        y = row * 12
-        draw.polygon([(42 * 4, (y + 18) * 4), (42 * 4, (y + 9) * 4),
-                      (68 * 4, (y + 3) * 4), (61 * 4, (y + 11) * 4)], fill=255)
+    mask = _polygon_mask((1024, 512), [[(42 * 4, (row * 12 + 18) * 4), (42 * 4, (row * 12 + 9) * 4),
+                                        (68 * 4, (row * 12 + 3) * 4), (61 * 4, (row * 12 + 11) * 4)]
+                                       for row in range(7)])
     base = np.frombuffer(unswizzle_2d(decoded[chunk.system_bytes + t.pixel_offset:
         chunk.system_bytes + t.pixel_offset + 256 * 128], 256, 128, 1), dtype=np.uint8).reshape(128, 256)
     fabric = Image.fromarray(np.maximum(grey[base[:, 40]], grey[base[:, 72]]).astype(np.float32).reshape(128, 1))
