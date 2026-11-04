@@ -6,7 +6,7 @@ Where a fix needs the next Studio release, it says so. Nothing here is a gamepla
 - **How do I run 2K5 Mod Studio on Linux, SteamOS or a Steam Deck?** Use Desktop Mode
   and open a terminal (Konsole) in the extracted folder. Run `./2K5-Mod-Studio.sh --setup`
   once. It makes a private Python runtime in that folder from
-  `packaging/requirements-studio.txt` (Python 3.11 or 3.12, an internet connection, no
+  `packaging/requirements-studio.txt` (Python 3.11, 3.12 or 3.13, an internet connection, no
   `sudo`, nothing written to the system partition). After that, `./2K5-Mod-Studio.sh`
   starts the Studio, and you can make a shortcut to it. On Debian, Ubuntu and Mint the
   setup needs `sudo apt install python3-venv` first. Earlier archives named

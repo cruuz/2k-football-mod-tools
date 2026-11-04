@@ -27,8 +27,8 @@ the NFLPA, ESPN, 2K or any team. The tools and the pack contain no game data: yo
      macOS has no bundled disc extractor, so point the Studio at an already-extracted game folder if it asks. That works for
      Build & Share; Install SOFTDRINK 2K28 still needs an image file (see item 1).
    - Linux and Steam Deck (Desktop Mode): extract the archive, run `./2K5-Mod-Studio.sh --setup` once, then `./2K5-Mod-Studio.sh`.
-     If setup says the packages need Python 3.11 or 3.12 (for example, your system has only 3.13), the
-     [FAQ](mod_editor/2k5_mod_studio_faq.md#linux-setup-says-the-packages-need-python-311-or-312-and-i-have-313) has a no-root fix.
+     Python 3.11, 3.12 and 3.13 work. If setup says your Python is not supported (3.14 or newer), the
+     [FAQ](mod_editor/2k5_mod_studio_faq.md#linux-setup-says-my-python-version-is-not-supported) has a no-root fix.
 
    If you already downloaded the source ZIP, see [If you downloaded the source ZIP](#if-you-downloaded-the-source-zip) below.
 

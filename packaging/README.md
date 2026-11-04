@@ -16,7 +16,7 @@ Installers should place these files as follows:
 | `packaging/2k5-mod-studio.desktop` | `/usr/share/applications/2k5-mod-studio.desktop` |
 | `packaging/2k5-mod-studio.svg` | `/usr/share/icons/hicolor/scalable/apps/2k5-mod-studio.svg` |
 
-Install the pinned application packages with `python3 -m pip install -r packaging/requirements-studio.txt` in the selected runtime. These include NumPy 1.26.4, PyQt5, Pillow, Unicorn and Capstone; see `docs/mod_editor/sprite_scorebug.md`. On Debian/Linux
+Install the pinned application packages with `python3 -m pip install -r packaging/requirements-studio.txt` in the selected runtime. These include NumPy (1.26.4 on Python 3.11 and 3.12, 2.3.5 on Python 3.13), PyQt5, Pillow, Unicorn and Capstone; see `docs/mod_editor/sprite_scorebug.md`. On Debian/Linux
 Mint those package names are normally `python3`, `python3-pyqt5`, and
 `python3-pil`. A portable development build can instead symlink the launcher
 into a directory on `PATH`; the launcher resolves that symlink back to the

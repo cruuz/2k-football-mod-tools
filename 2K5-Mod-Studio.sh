@@ -30,12 +30,12 @@ if [[ "${1:-}" == "--setup" ]]; then
     fi
     # fx1: every check uses the interpreter setup will build from (MOD_STUDIO_PYTHON when set), and an existing
     # .venv is rebuilt when it does not start, or when MOD_STUDIO_PYTHON names a different Python version, or when
-    # it is outside 3.11/3.12 and the chosen interpreter is not. Before this, a 3.13 .venv was kept forever and the
-    # advice below ("rerun with MOD_STUDIO_PYTHON=...") could not work.
+    # it is outside the supported versions and the chosen interpreter is not. b780 Q8: Python 3.13 is supported (its
+    # packages pin NumPy 2; the same project builds byte-identical discs on 3.12 and 3.13); 3.14 and newer are not yet.
     base_python=${MOD_STUDIO_PYTHON:-python3}
     if ! command -v "$base_python" >/dev/null 2>&1; then
         if [[ -n "${MOD_STUDIO_PYTHON:-}" ]]; then
-            printf '%s\n' "MOD_STUDIO_PYTHON is set to '$base_python', which is not a program this shell can run. Give the full path to python3.11 or python3.12." >&2
+            printf '%s\n' "MOD_STUDIO_PYTHON is set to '$base_python', which is not a program this shell can run. Give the full path to python3.11, python3.12 or python3.13." >&2
         else
             printf '%s\n' \
                 "Python 3 is not installed, so 2K5 Mod Studio cannot be set up." \
@@ -47,14 +47,14 @@ if [[ "${1:-}" == "--setup" ]]; then
         "$1" -c 'import sys; print("%d.%d" % sys.version_info[:2])' 2>/dev/null
     }
     supported_version() {
-        [[ "$1" == "3.11" || "$1" == "3.12" ]]
+        [[ "$1" == "3.11" || "$1" == "3.12" || "$1" == "3.13" ]]
     }
     base_version=$(python_version "$base_python" || true)
     if ! supported_version "$base_version"; then
         printf '%s\n' \
-            "Note: the Studio packages are pinned for Python 3.11 or 3.12 and this is $("$base_python" -V 2>&1)." \
-            "If the install below fails, install Python 3.11 or 3.12 and run: MOD_STUDIO_PYTHON=/path/to/python3 ./2K5-Mod-Studio.sh --setup" \
-            "Without root (Steam Deck, or a system that only has Python 3.13 or newer): install uv from https://docs.astral.sh/uv/ and run" \
+            "Note: the Studio packages are pinned for Python 3.11, 3.12 or 3.13 and this is $("$base_python" -V 2>&1)." \
+            "If the install below fails, install Python 3.12 or 3.13 and run: MOD_STUDIO_PYTHON=/path/to/python3 ./2K5-Mod-Studio.sh --setup" \
+            "Without root (Steam Deck, or a system that only has Python 3.14 or newer): install uv from https://docs.astral.sh/uv/ and run" \
             "  uv python install 3.12" \
             "  MOD_STUDIO_PYTHON=\"\$(uv python find 3.12)\" ./2K5-Mod-Studio.sh --setup" >&2
     fi
@@ -70,7 +70,7 @@ if [[ "${1:-}" == "--setup" ]]; then
         elif [[ -n "${MOD_STUDIO_PYTHON:-}" && "$venv_version" != "$base_version" ]]; then
             rebuild_reason="it is Python $venv_version and MOD_STUDIO_PYTHON is Python ${base_version:-unknown}"
         elif ! supported_version "$venv_version" && supported_version "$base_version"; then
-            rebuild_reason="it is Python $venv_version and the packages need 3.11 or 3.12"
+            rebuild_reason="it is Python $venv_version and the packages need 3.11, 3.12 or 3.13"
         fi
         if [[ -n "$rebuild_reason" ]]; then
             printf '%s\n' "Rebuilding the private Python runtime in $venv_dir ($rebuild_reason) ..."
@@ -96,7 +96,7 @@ if [[ "${1:-}" == "--setup" ]]; then
             "again. It is safe to repeat." >&2
         if ! supported_version "$(python_version "$venv_dir/bin/python3" || true)"; then
             printf '%s\n' \
-                "The runtime is not Python 3.11 or 3.12, which the packages need. Install one and run:" \
+                "The runtime is not Python 3.11, 3.12 or 3.13, which the packages need. Install one and run:" \
                 "    MOD_STUDIO_PYTHON=/path/to/python3.12 ./2K5-Mod-Studio.sh --setup" >&2
         fi
         exit 1

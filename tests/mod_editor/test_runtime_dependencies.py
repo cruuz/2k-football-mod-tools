@@ -66,7 +66,10 @@ class ClosureTests(unittest.TestCase):
         self.assertIn('numpy==1.26.4', builder.WHEELS)
         self.assertEqual(builder.WHEEL_SHA256['numpy-1.26.4-cp312-cp312-win_amd64.whl'],
                          '08beddf13648eb95f8d867350f6a018a4be2e5ad54c8d8caed89ebca558b2818')
-        self.assertIn('numpy==1.26.4', (ROOT/'packaging/requirements-studio.txt').read_text().splitlines())
+        lines = (ROOT/'packaging/requirements-studio.txt').read_text().splitlines()
+        # b780 Q8: Python 3.11 and 3.12 keep CI's and the Windows runtime's NumPy 1.26.4; 3.13 has NumPy 2
+        self.assertIn('numpy==1.26.4; python_version < "3.13"', lines)
+        self.assertIn('numpy==2.3.5; python_version >= "3.13"', lines)
         self.assertIn('numpy==1.26.4', (ROOT/'.github/workflows/ci.yml').read_text())
 
 
