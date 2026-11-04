@@ -29,7 +29,8 @@ from mod_editor.core import nfl2k5_console_memory as cm  # noqa: E402
 MODEL = "mod_editor.core.nfl2k5_memory_budget"
 
 
-def fake_model(*, fits=True, spare=412 * 1024, over=0, suggestions=(), costs=None, requires=None, profile=None):
+def fake_model(*, fits=True, spare=412 * 1024, over=0, suggestions=(), costs=None, requires=None, profile=None,
+               primary_margin=None):
     """A stand-in for the b780-m64a memory model with the agreed API (REQUIRES_128, option_costs, predict,
     recommended_64_profile), so the target's behaviour is tested without its numbers."""
     module = types.ModuleType(MODEL)
@@ -44,8 +45,11 @@ def fake_model(*, fits=True, spare=412 * 1024, over=0, suggestions=(), costs=Non
 
     def predict(plan, target_mb=64):
         module.calls.append(plan)
-        return {"fits": fits, "spare_bytes": spare, "over_bytes": over, "hardest": "Lambeau Field (s10)",
-                "suggestions": list(suggestions), "target_mb": target_mb, "evidence": "MODELLED", "notes": []}
+        answer = {"fits": fits, "spare_bytes": spare, "over_bytes": over, "hardest": "Lambeau Field (s10)",
+                  "suggestions": list(suggestions), "target_mb": target_mb, "evidence": "MODELLED", "notes": []}
+        if primary_margin is not None:   # the model's default-uniforms (style 0) case and its safety margin
+            answer.update(safety_bytes=65_536, primary_uniforms={"margin": primary_margin, "hardest": "NRG Stadium (s37)"})
+        return answer
 
     module.option_costs = option_costs
     module.predict = predict
@@ -247,6 +251,75 @@ class Validation(unittest.TestCase):
             with self.assertRaises(ValueError) as caught:
                 mod_build.build(mod_build.BuildPlan(plan.source, plan.target, hair_styles=True))
             self.assertNotIn("64 MB", str(caught.exception))
+
+
+class AlternateKits(unittest.TestCase):
+    """The model's hardest game includes a uniform a player picks; the default uniforms are a separate case."""
+
+    def model(self):
+        return fake_model(fits=False, spare=0, over=56 * 1024, primary_margin=65_536 + 124 * 1024)
+
+    def test_fits_with_the_default_uniforms_builds_with_a_warning(self):
+        with with_model(self.model()):
+            plan = mod_build.BuildPlan("s", "t", console_memory=64)
+            prediction = cm.predict(plan)
+            self.assertTrue(cm.alternate_kit_shortfall(prediction))
+            self.assertTrue(cm.ALLOW_ALTERNATE_KIT_SHORTFALL)
+            self.assertFalse(cm.refuses(prediction))
+            self.assertEqual(mod_build.validate_plan(plan), [])
+            line = cm.budget_line(prediction)
+        self.assertTrue(line.startswith("Predicted to fit with the default uniforms: 124 KB to spare at the hardest "
+                                        "stadium, NRG Stadium (s37). A uniform you pick yourself"), line)
+        self.assertIn("(56 KB short at Lambeau Field (s10))", line)
+        self.assertIn("estimate", line)
+
+    def test_the_strict_rule_refuses_it(self):
+        with with_model(self.model()), mock.patch.object(cm, "ALLOW_ALTERNATE_KIT_SHORTFALL", False):
+            plan = mod_build.BuildPlan("s", "t", console_memory=64)
+            prediction = cm.predict(plan)
+            self.assertTrue(cm.refuses(prediction))
+            problems = mod_build.validate_plan(plan)
+            self.assertEqual(len(problems), 1)
+            self.assertTrue(problems[0].startswith("The 64 MB build will not fit: Will not fit with every uniform."),
+                            problems[0])
+
+    def test_a_shortfall_with_the_default_uniforms_too_refuses(self):
+        with with_model(fake_model(fits=False, spare=0, over=56 * 1024, primary_margin=1024)):
+            prediction = cm.predict(mod_build.BuildPlan("s", "t", console_memory=64))
+            self.assertFalse(cm.alternate_kit_shortfall(prediction))
+            self.assertTrue(cm.refuses(prediction))
+
+
+class RealModel(unittest.TestCase):
+    """The memory model this build carries (b780-m64a), through the adapter: shapes and the rule, not its numbers."""
+
+    def setUp(self):
+        if cm.model() is None:
+            self.skipTest("no memory model in this build")
+
+    def test_the_adapter_reads_the_model(self):
+        rules = cm.requires_128()
+        self.assertLessEqual(set(cm.OWN_REQUIRES_128), set(rules))
+        self.assertTrue(cm.capacity_reason())
+        for name in sorted(mod_build.PRESETS):
+            plan = cm.without_forced(mod_build.apply_preset(mod_build.BuildPlan("s", "t", console_memory=64), name))
+            prediction = cm.predict(plan)
+            self.assertIsNotNone(prediction, name)
+            self.assertEqual(set(prediction) >= {"fits", "spare_bytes", "over_bytes", "hardest", "suggestions"}, True)
+            self.assertIn("estimate", cm.budget_line(prediction))
+            refused = any(text.startswith("The 64 MB build will not fit") for text in cm.problems(plan))
+            self.assertEqual(refused, cm.refuses(prediction), name)
+            for key, size in cm.option_costs(plan).items():
+                self.assertIs(type(size), int, key)
+
+    def test_the_recommended_set_is_the_target_with_the_forced_options_off(self):
+        plan = mod_build.apply_preset(mod_build.BuildPlan("s", "t"), "softdrink_experimental")
+        profile = cm.recommended_profile(plan)
+        self.assertEqual(profile["console_memory"], 64)
+        for key in cm.requires_128():
+            self.assertFalse(cm.is_on(type("P", (), {key: profile[key]})(), key), key)
+        names = {item.name for item in fields(mod_build.BuildPlan)}
+        self.assertLessEqual(set(profile), names)
 
 
 class Model(unittest.TestCase):

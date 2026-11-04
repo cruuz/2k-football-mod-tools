@@ -296,6 +296,35 @@ class Budget(_Page):
             self.assertIn("no recommendation in this build", panel.memory_action_label.text())
 
 
+class WithTheModel(_Page):
+    """The memory model this build carries (b780-m64a), unpatched: the page's line, refusal and recommended set."""
+
+    def setUp(self):
+        super().setUp()
+        if cm.model() is None:
+            self.skipTest("no memory model in this build")
+
+    def test_experimental_is_refused_and_the_recommended_set_is_not(self):
+        panel = self.page()
+        panel.apply_preset("softdrink_experimental")
+        panel.set_console_memory(64)
+        self.assertTrue(panel.wait_for_memory_budget())
+        self.assertTrue(panel.memory_budget_label.text().startswith("Will not fit: remove "),
+                        panel.memory_budget_label.text())
+        self.assertTrue(panel.blocker().startswith("The 64 MB build will not fit: remove "), panel.blocker())
+        self.assertFalse(panel.build_button.isEnabled())
+        self.assertTrue(any(label.isVisibleTo(panel) and label.text().startswith("Memory at 64 MB: ")
+                            for label in panel._memory_cost_labels.values()))
+        panel.apply_recommended_64()
+        self.assertTrue(panel.wait_for_memory_budget())
+        self.assertTrue(panel.memory_budget_label.text().startswith("Predicted to fit with "),
+                        panel.memory_budget_label.text())
+        self.assertEqual(panel.blocker(), "")
+        self.assertTrue(panel.build_button.isEnabled())
+        self.assertEqual(mod_build.validate_plan(panel.plan()), [])
+        self.assertIn("Console memory: 64 MB", panel.confirmation_text(panel.plan()))
+
+
 class SavedAndShared(_Page):
     def test_project_settings_round_trip_and_old_projects_read_128(self):
         with without_model():

@@ -36,6 +36,10 @@ LABELS = {128: "128 MB, xemu (full SOFTDRINK)",
           64: "64 MB, original Xbox and Android hakuX (experimental)"}
 SHORT = {128: "128 MB (xemu)", 64: "64 MB (experimental)"}
 EVIDENCE_WORD = "estimate"
+#: The fit rule (coordinator's call, b780-m64b). The model's hardest game includes uniforms a player picks (an alternate
+#: kit at the heaviest stadium). True: a selection that fits with the default uniforms (the CPU's own, style 0) builds,
+#: with a warning that a player-picked alternate kit at that stadium may not fit; False: any shortfall refuses.
+ALLOW_ALTERNATE_KIT_SHORTFALL = True
 HELP_TEXT = (
     "Which machine the disc is made for. 128 MB, xemu (full SOFTDRINK) is the default and the main build: every option, "
     "for xemu with System Memory set to 128 MiB and the Complex 4627 BIOS. 64 MB is for an original Xbox console and the "
@@ -50,6 +54,8 @@ NOTE_64 = ("EXPERIMENTAL: the 64 MB build is untested on a real Xbox and in haku
            "below says it fits. For the full experience use xemu at 128 MB.")
 RECOMMENDED_BUTTON = "Use the recommended 64 MB set"
 CHECKING = "Checking the 64 MB memory budget for this selection (the estimate takes a few seconds)."
+ALTERNATE_KIT_WARNING = ("A uniform you pick yourself (an alternate kit) at the heaviest stadium may not fit; keep the "
+                         "default uniforms there")
 RECOMMENDED_HELP = ("Applies the recommended 64 MB selection from the memory model: it turns off the options that cost the "
                     "most memory and keeps the rest of your choices. Review the list before Make my disc.")
 #: The badge of an option the 64 MB target turns off ("Off at 64 MB: <reason>").
@@ -357,9 +363,31 @@ def _predict(found, plan) -> dict[str, Any] | None:
             suggestions.append((str(key), int(size)))
         except (KeyError, TypeError, ValueError):
             continue
+    primary = get("primary_uniforms", None)
+    safety = get("safety_bytes", None)
+    primary_fits, primary_spare, primary_where = None, 0, ""
+    if isinstance(primary, Mapping) and type(primary.get("margin")) is int and type(safety) is int:
+        primary_fits = primary["margin"] >= safety
+        primary_spare = max(primary["margin"] - safety, 0)
+        primary_where = str(primary.get("hardest", "") or "")
     return {"fits": fits, "spare_bytes": max(spare, 0), "over_bytes": max(over, 0),
             "hardest": str(get("hardest", "") or ""), "suggestions": suggestions,
-            "evidence": str(get("evidence", "MODELLED") or "MODELLED")}
+            "evidence": str(get("evidence", "MODELLED") or "MODELLED"),
+            "primary_fits": primary_fits, "primary_spare_bytes": primary_spare, "primary_hardest": primary_where}
+
+
+def alternate_kit_shortfall(prediction: Mapping[str, Any] | None) -> bool:
+    """True when the selection fits with the default uniforms and only a player-picked alternate kit falls short."""
+
+    return bool(prediction) and not prediction.get("fits") and prediction.get("primary_fits") is True
+
+
+def refuses(prediction: Mapping[str, Any] | None) -> bool:
+    """Whether Make my disc refuses this prediction (see ALLOW_ALTERNATE_KIT_SHORTFALL)."""
+
+    if not prediction or prediction.get("fits"):
+        return False
+    return not (ALLOW_ALTERNATE_KIT_SHORTFALL and alternate_kit_shortfall(prediction))
 
 
 def kb_up(size: int) -> int:
@@ -399,8 +427,14 @@ def _examples(prediction: Mapping[str, Any], labels=None, *, limit: int = 5) -> 
     named = [f"{name} ({kb_up(size):,} KB" + (", with " + ", ".join(extra) if extra else "") + ")"
              for name, size, extra in rows]
     if more:
-        named.append(f"and {more} more (Use the recommended 64 MB set)")
+        named.append(f"and {more} more")
     return named
+
+
+def _covered(prediction: Mapping[str, Any]) -> bool:
+    """Whether the model's suggestions, taken together, free the whole shortfall."""
+
+    return sum(max(size, 0) for _key, size in prediction.get("suggestions", ())) >= int(prediction.get("over_bytes", 0))
 
 
 def budget_line(prediction: Mapping[str, Any] | None, labels=None) -> str:
@@ -416,9 +450,21 @@ def budget_line(prediction: Mapping[str, Any] | None, labels=None) -> str:
     if prediction.get("fits"):
         return (f"Predicted to fit with {kb_down(int(prediction.get('spare_bytes', 0))):,} KB to spare at the hardest "
                 f"stadium{where}.{tail}")
+    if alternate_kit_shortfall(prediction):
+        primary_where = prediction.get("primary_hardest") or ""
+        primary_where = f", {primary_where}" if primary_where else ""
+        line = (f"Predicted to fit with the default uniforms: {kb_down(int(prediction.get('primary_spare_bytes', 0))):,} KB "
+                f"to spare at the hardest stadium{primary_where}. {ALTERNATE_KIT_WARNING} "
+                f"({kb_up(int(prediction.get('over_bytes', 0))):,} KB short at{where[1:]}).")
+        if not ALLOW_ALTERNATE_KIT_SHORTFALL:
+            line = "Will not fit with every uniform. " + line
+        return line + tail
     examples = _examples(prediction, labels)
     line = f"Will not fit: remove {kb_up(int(prediction.get('over_bytes', 0))):,} KB (hardest stadium{where})"
     line += ("; for example turn off " + ", ".join(examples) + ".") if examples else "."
+    if not _covered(prediction):
+        line += (" No single option frees the rest: several have to go together, which Use the recommended 64 MB set "
+                 "does.")
     return line + tail
 
 
@@ -476,7 +522,7 @@ def problems(plan: object, labels=None, *, records: int | None = None, fit: bool
                    "SOFTDRINK 2K28 2026 rosters need 128 MB for now).")
     if fit:
         prediction = predict(without_forced(plan))
-        if prediction is not None and not prediction["fits"]:
+        if prediction is not None and refuses(prediction):
             out.append(refusal(prediction, labels))
     return out
 
@@ -488,14 +534,18 @@ def refusal(prediction: Mapping[str, Any], labels=None) -> str:
 
 
 # ------------------------------------------------------------------------------------------------ the recommended set
-def recommended_profile() -> dict[str, Any]:
-    """The model's recommended 64 MB selection (option -> value) with the forced-off options off; {} without a model."""
+def recommended_profile(plan: object = None) -> dict[str, Any]:
+    """The model's recommended 64 MB selection for this plan (option -> value), with the forced-off options off and the
+    64 MB target; only those two without a model."""
 
     found = getattr(model(), "recommended_64_profile", None)
     profile: dict[str, Any] = {}
     if callable(found):
         try:
-            raw = found()
+            try:
+                raw = found(plan) if plan is not None else found()
+            except TypeError:
+                raw = found()
         except Exception:  # noqa: BLE001
             raw = None
         if isinstance(raw, Mapping):

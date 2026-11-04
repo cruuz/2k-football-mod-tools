@@ -3450,41 +3450,54 @@ class BuildPanel(QWidget):
         if self._memory_budget_result is None or self._memory_budget_identity != self._memory_identity():
             return console_memory.CHECKING
         prediction = self._memory_budget_result[0]
-        if prediction is not None and not prediction["fits"]:
+        if prediction is not None and console_memory.refuses(prediction):
             return console_memory.refusal(prediction, labels=self._memory_label)
         return ""
 
     def apply_recommended_64(self) -> dict[str, list[str]]:
         """Apply the memory model's recommended 64 MB set to the page (64 MB target; the boxes it turns off or on)."""
-        profile = console_memory.recommended_profile()
+        profile = console_memory.recommended_profile(self.plan())
         self.set_console_memory(64)   # the target's own rules first: they remember what they turn off for 128 MB
         boxes = self._boxes()
         changed_off, changed_on, skipped = [], [], []
+        # plan fields this page sets from a box of another name
+        aliases = {"calendar_engine": "season_cap"}
 
         def wanted(key, value):
             return (value == "matte" if key == "helmet_finish" else
                     value != "retail" if key in ("music_policy", *r62_ui.LEVELS) else bool(value))
-        for key, value in profile.items():
-            if key == console_memory.FIELD:
-                continue
-            if key == "speed_threshold" and hasattr(self, "speed_threshold_spin"):
-                if self.speed_threshold_spin.isEnabled() and self.speed_threshold_spin.value() != int(value or 0):
-                    self.speed_threshold_spin.setValue(int(value or 0))
-                    (changed_on if value else changed_off).append(key)
-                continue
-            box = boxes.get(key)
-            if box is None or key in ("realistic_flight", "arc_by_distance"):
-                continue
-            want = wanted(key, value)
-            if want == box.isChecked():
-                continue
-            if want and not box.isEnabled():
-                skipped.append(key)
-                continue
-            box.setChecked(want)
-            (changed_on if want else changed_off).append(key)
-            if key == "cpu_money_downs" and want and self.cpu_money_downs_level.findData(value) >= 0:
-                self.cpu_money_downs_level.setCurrentIndex(self.cpu_money_downs_level.findData(value))
+        # a few passes: a box another rule ticks again (Scorebug while Scorebug effects is still on) is unticked next pass
+        for _round in range(3):
+            moved = False
+            for key, value in profile.items():
+                if key == console_memory.FIELD:
+                    continue
+                if key == "speed_threshold" and hasattr(self, "speed_threshold_spin"):
+                    if self.speed_threshold_spin.isEnabled() and self.speed_threshold_spin.value() != int(value or 0):
+                        self.speed_threshold_spin.setValue(int(value or 0))
+                        (changed_on if value else changed_off).append(key)
+                        moved = True
+                    continue
+                box = boxes.get(aliases.get(key, key))
+                if box is None or key in ("realistic_flight", "arc_by_distance"):
+                    continue
+                want = wanted(key, value)
+                if want == box.isChecked():
+                    continue
+                if want and not box.isEnabled():
+                    if key not in skipped:
+                        skipped.append(key)
+                    continue
+                box.setChecked(want)
+                moved = True
+                record = changed_on if want else changed_off
+                name = aliases.get(key, key)
+                if name not in record:
+                    record.append(name)
+                if key == "cpu_money_downs" and want and self.cpu_money_downs_level.findData(value) >= 0:
+                    self.cpu_money_downs_level.setCurrentIndex(self.cpu_money_downs_level.findData(value))
+            if not moved:
+                break
         # the set's own choices stay at 128 MB; what the 64 MB target itself took away still comes back there
         self._memory_ticks.difference_update(set(profile) - set(console_memory.requires_128()))
         self._refresh()
@@ -4942,6 +4955,9 @@ class BuildPanel(QWidget):
         if getattr(plan, "console_memory", 128) == 64:  # b780-m64b
             lines += ["", "Console memory: " + console_memory.LABELS[64] + ". Untested on a real Xbox and in hakuX; "
                       "for the full experience use xemu at 128 MB."]
+            prediction = self._memory_budget_result[0] if self._memory_budget_result else None
+            if console_memory.alternate_kit_shortfall(prediction):
+                lines.append(console_memory.ALTERNATE_KIT_WARNING + ".")
         lines += ["", "Takes a few minutes. " + XEMU_LINE]
         return "\n".join(lines)
 
