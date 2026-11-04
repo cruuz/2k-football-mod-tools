@@ -573,8 +573,8 @@ class SharePanel(QWidget):
             text = "Sources ready. Build now has the frozen recipe and league artwork. Change its options, then Make my disc. Custom builds use the full builder and take longer than installation."
             if memory == 64:
                 text += (f" Console memory is set to 64 MB ({console_memory.STATUS_64}) with the recommended 64 MB set: the "
-                         "options that need 128 MB are off and the Build tab lists what else it turned off. The pack's "
-                         "2026 rosters need 128 MB for now, so untick Include exported \u2605 Rosters edits there.")
+                         "options that need 128 MB are off and the Build tab lists what else it turned off. "
+                         + console_memory.ROSTER_FIT_NOTE)
             self.apply_status.setText(text)
         self._start(operation, done, self._apply_failed)
 

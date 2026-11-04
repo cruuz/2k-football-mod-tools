@@ -894,6 +894,8 @@ tools/nfl2k5_kickoff_returns.py
 tools/nfl2k5_modpack.py
 tools/nfl2k5_playbook_position_recode.py
 tools/nfl2k5_roster_reclassify.py
+tools/nfl2k5_roster_retail_fit.py
+tools/b77/b778_fa3_free_agent_depth.py
 tools/nfl2k5_scorebug_espn_art.py
 tools/nfl2k5_scorebug_layout.py
 tools/nfl2k5_scorebug_position_patch.py
