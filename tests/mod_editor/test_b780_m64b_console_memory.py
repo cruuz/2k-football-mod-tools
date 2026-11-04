@@ -439,14 +439,16 @@ class RealModel(unittest.TestCase):
         self.assertLessEqual(set(profile), names)
 
 
-HEALTHY = Path(os.environ.get("NFL2K5_B780_ROSTER_EDITS_HEALTHY",
-                              "/home/noah/2k-worktrees/.b77-scratch/b780/m64a/r1h/coach-step.json"))
-FITTED_64 = Path(os.environ.get("NFL2K5_B780_ROSTER_64MB", "/home/noah/2k-worktrees/.b77-scratch/b780/m64a/r1h/"
-                                "roster-edits-b780-refresh-20261103-healthy-retail-capacity-64mb.json"))
+# b780 rst2: the proof runs on the release inputs: the 128 MB release roster edits and the 64 MB file fitted from it
+# (tools/nfl2k5_roster_retail_fit.py fit --drop-xbe-sections), both in rst2/release/ (sha256 a8be08ed... and below).
+RELEASE = Path("/home/noah/2k-worktrees/.b77-scratch/b780/rst2/release")
+HEALTHY = Path(os.environ.get("NFL2K5_B780_ROSTER_EDITS_HEALTHY", str(RELEASE / "roster-edits-b780-rst2-20261103.json")))
+FITTED_64 = Path(os.environ.get("NFL2K5_B780_ROSTER_64MB",
+                                str(RELEASE / "roster-edits-b780-rst2-20261103-retail-capacity-64mb.json")))
 REFRESH_BASE = Path(os.environ.get("NFL2K5_B780_REFRESH_BASE",
                                    "/home/noah/2k-worktrees/.b77-scratch/i4/inputs/ro1/baseline.body"))
 RETAIL = Path(os.environ.get("NFL2K5_RETAIL_XISO", "/media/noah/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso"))
-FITTED_64_SHA256 = "6ab78553716094f78cf50c768d5524b4cb17a0523b801cf8196bae07c3ee7285"
+FITTED_64_SHA256 = "3e6ccbe27fd1eb3f87e6592d1a0d0c9a2c7698a17d32771c51b384c92201e388"
 
 
 def _proof_inputs():
@@ -472,8 +474,8 @@ def users_dump_base(source: dict) -> bytes:
     return payload[32:]
 
 
-@unittest.skipUnless(_proof_inputs(), "the 64 MB roster proof needs M64A's healthy pack roster, its validated 64 MB file "
-                                      "(6ab78553) and the refresh's pinned base")
+@unittest.skipUnless(_proof_inputs(), "the 64 MB roster proof needs the release pack roster, its validated 64 MB file "
+                                      "(3e6ccbe2) and the refresh's pinned base")
 class SoftdrinkRosterFitProof(unittest.TestCase):
     """Coordinator 11/03: the 64 MB build keeps the pack's 2026 rosters. The Studio's fit (nfl2k5_console_memory.
     fit_roster_edits, M64A's retail fit as a library) on the healthy pack roster equals M64A's validated 64 MB file."""
@@ -489,7 +491,8 @@ class SoftdrinkRosterFitProof(unittest.TestCase):
         variant, receipt = cm.fit_roster_edits(self.source, REFRESH_BASE.read_bytes(), source_sha256=self.sha)
         text = json.dumps(variant, indent=1, ensure_ascii=False) + "\n"
         self.assertEqual(hashlib.sha256(text.encode("utf-8")).hexdigest(), FITTED_64_SHA256)
-        self.assertEqual((receipt["depth_candidates"], receipt["depth_kept"], len(receipt["signed_depth_kept"])), (533, 19, 7))
+        self.assertEqual((receipt["depth_candidates"], receipt["depth_kept"], receipt["club_players_kept"],
+                          receipt["club_players_dropped"]), (533, 0, 19, 100))
         self.assertEqual(receipt["dropped_xbe_sections"], ["draft_pick_ownership", "hback_roles"])
 
     @unittest.skipUnless(RETAIL.is_file(), "needs the retail disc image (NFL2K5_RETAIL_XISO)")
@@ -506,7 +509,7 @@ class SoftdrinkRosterFitProof(unittest.TestCase):
         self.assertEqual(sorted(k for k in set(mine["retail_capacity"]) | set(theirs["retail_capacity"])
                                 if mine["retail_capacity"].get(k) != theirs["retail_capacity"].get(k)),
                          ["base_sha256", "final_body_sha256"])
-        self.assertEqual((receipt["depth_kept"], receipt["import_vacancies_after_floor"]), (19, 116))
+        self.assertEqual((receipt["club_players_kept"], receipt["import_vacancies_after_floor"]), (19, 116))
 
     def test_the_fitted_64_mb_plan_validates_and_fits_with_the_default_uniforms(self):
         if cm.model() is None:
