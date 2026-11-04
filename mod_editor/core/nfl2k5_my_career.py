@@ -136,9 +136,35 @@ def hash32(data, seed=0x811C9DC5):
     return seed
 
 
+def season_block(payload):
+    """Where the franchise season block starts: the retail offset, or later in a grown save.
+
+    b780 Q19: SOFTDRINK 2K28 franchise saves grow the roster arena (and carry footers after the native save), which
+    moves the season block. Reading it at the retail offset refused every SOFTDRINK save, even the v0.9 game's own
+    draft-stage save; the franchise save reader knows the real layout.
+    """
+    from . import nfl2k5_franchise_save as fs
+    if len(payload) == SAVE_SIZE:
+        return fs.SEASON_BLOCK
+    try:
+        return fs.FranchiseSave(bytes(payload)).season_block
+    except (ValueError, struct.error, IndexError) as exc:
+        raise MyCareerError("MyCareer needs a complete Franchise save") from exc
+
+
+def arena_limit(payload=None):
+    """The roster arena's size: retail 0x91000, more in a grown save (b780 Q19); without a save, the largest arena."""
+    from . import nfl2k5_franchise_save as fs, nfl2k5_roster_arena as arena
+    if payload is None:
+        return max(arena.ARENA_SIZES + (arena.RETAIL_SIZE,))
+    return arena.RETAIL_SIZE + season_block(payload) - fs.SEASON_BLOCK
+
+
 def save_key(payload):
-    require(len(payload) == SAVE_SIZE and payload[0x2E0:0x2E4] == b"ROST",
+    # b780 Q19: a native save is exactly 720,044 bytes; a grown SOFTDRINK save is checked by the franchise reader
+    require(len(payload) >= SAVE_SIZE and payload[0x2E0:0x2E4] == b"ROST",
             "MyCareer needs a complete Franchise save")
+    season_block(payload)
     return hash32(payload), hash32(payload, 0x9E3779B9)
 
 
@@ -163,7 +189,7 @@ def validate_state(state, payload=None):
     require(struct.unpack_from("<I", state, 76)[0] <= 64, "MyCareer ledger count exceeds 64")
     require(struct.unpack_from("<I", state, 72)[0] < 64, "MyCareer ledger cursor exceeds 63")
     require(struct.unpack_from("<I", state, 64)[0] <= 1000000, "MyCareer XP exceeds its bound")
-    require(all(struct.unpack_from("<I", state, off)[0] < 0x91000 for off in (84, 88, 92)),
+    require(all(struct.unpack_from("<I", state, off)[0] < arena_limit(payload) for off in (84, 88, 92)),
             "MyPlayer name/college offsets escape the roster arena")
     require(all(struct.unpack_from("<I", state, recipe)[0] == struct.unpack_from("<I", state, identity)[0]
                 for recipe, identity in ((96, 84), (112, 88), (116, 92))),
@@ -292,9 +318,10 @@ def prepare(payload, *, first, last, position=0, template=0, port=0, camera=0, s
     from . import nfl2k5_my_career_prospects as prospects
     tier = prospects.tier_id(prospect_tier)
     save_key(payload)
-    require(payload[fs.SEASON_BLOCK + fs.S_MODE] == 2, "the save is not Franchise")
+    season = season_block(payload)   # b780 Q19: the real season block, also in a grown SOFTDRINK save
+    require(payload[season + fs.S_MODE] == 2, "the save is not Franchise")
     # Retail stage table 0x515140: Combine is 4, Draft is 5, Signing is 6.
-    require(payload[fs.SEASON_BLOCK + fs.S_STAGE] == 5, "MyCareer setup requires an existing NFL Draft stage save")
+    require(payload[season + fs.S_STAGE] == 5, "MyCareer setup requires an existing NFL Draft stage save")
     code = rr.position_code(position)
     require(0 <= code < POSITION_COUNT, "choose one of the 17 retail positions")
     rr.check_position_code(code, scheme)
@@ -343,7 +370,7 @@ def prepare(payload, *, first, last, position=0, template=0, port=0, camera=0, s
     player.record.set("player_type", player.record.get("player_type") | 0x10)
     result = bytearray(doc.to_body())
     # Draft AI owns every club until the native destination is discovered.
-    result[fs.SEASON_BLOCK + fs.S_USER_CONTROL:fs.SEASON_BLOCK + fs.S_USER_CONTROL + 34 * 4] = bytes(34 * 4)
+    result[season + fs.S_USER_CONTROL:season + fs.S_USER_CONTROL + 34 * 4] = bytes(34 * 4)
     result = bytes(result)
     require(len(result) == len(payload), "MyCareer preparation changed the save span")
     reopened = rr.RosterDocument(result, base=rr.find_block_base(result))
