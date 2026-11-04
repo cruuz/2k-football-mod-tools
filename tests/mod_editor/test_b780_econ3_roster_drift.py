@@ -112,6 +112,12 @@ class SiteTests(unittest.TestCase):
         partial = revision_six(self.after, keep=frozenset(economy.REVISION_7_SITES - {0x3E21D0}))
         self.assertEqual(economy.status(partial), "foreign")
 
+    def test_the_cut_maximum_mirror_matches_the_runtime(self):
+        source = (_REPO_ROOT / "tools/franchise_economy/runtime.c").read_text(encoding="utf-8")
+        start = source.index("{", source.index("cut_rows[4][17] = {") + len("cut_rows[4][17] = {")) + 1
+        row = [int(v) for v in source[start:source.index("}", start)].split(",")]
+        self.assertEqual({pos: v for pos, v in enumerate(row) if v < 30}, economy.CUT_MAXIMUM)
+
     def test_the_native_depth_tables_are_not_written(self):
         from mod_editor.core import nfl2k5_position_pools as pools
         for va in (pools.ROSTER_TARGETS_VA, pools.ROSTER_MAXIMA_VA):
@@ -237,6 +243,8 @@ class NativeTests(unittest.TestCase):
         for p, per_year in ((starter, 2250), (backup, 750)):        # game thousands a year: $9M and $3M at 1:4
             years_pro(p, 12)
             raw = bytearray(m.uc.mem_read(p, 84))
+            rank = 0 if p == starter else 2                          # the depth chart's starter, a backup
+            struct.pack_into("<H", raw, 0x28, (struct.unpack_from("<H", raw, 0x28)[0] & ~(7 << 10)) | rank << 10)
             raw[0x24] = (raw[0x24] & 0xF0) | 4
             raw[0x26] = 2                                            # balanced, no bonus
             raw[0x27] = (raw[0x27] & 0xF0) | 4
@@ -265,15 +273,32 @@ class NativeTests(unittest.TestCase):
         starter, backup, cut = self.stage_six(m, short_by=-50)
         self.assertEqual(cut, [])
 
-    def test_a_club_2m_short_loses_the_backup_not_the_starter(self):
+    def test_a_club_2m_short_loses_one_backup_not_the_starter(self):
         m = self.machine()
         starter, backup, cut = self.stage_six(m, short_by=500)          # $2M
-        self.assertEqual(cut, [backup])
+        self.assertEqual(len(cut), 1)
+        self.assertNotIn(starter, cut)
+        self.assertNotEqual(struct.unpack("<H", bytes(m.uc.mem_read(cut[0] + 0x28, 2)))[0] >> 10 & 7, 0)
+        # (the stage's fill may then spend the room again; the club stays under the cap)
+        m.call(0xC3F00, ecx=m.team_base)
+        self.assertLessEqual(m.get(m.team_base + 0x124), m.get(0xE3C278))
 
-    def test_a_club_far_short_loses_the_most_overpaid_first(self):
+    def test_the_release_comes_from_any_position_above_its_minimum(self):
+        # the cut's candidate is an overpaid veteran; the release is the least value lost that clears the line, from
+        # the whole club: the $3M backup clears $2M, but a cheaper-valued backup elsewhere may be the one released
+        m = self.machine()
+        starter, backup, cut = self.stage_six(m, short_by=500)
+        team = m.team_base
+        for p in cut:
+            pos = self.pos(m, p)
+            left = sum(self.pos(m, q) == pos for q in self.members(m, team))
+            self.assertGreaterEqual(left, (2, 1, 1, 5, 5, 2, 2, 3, 0, 3, 3, 2, 2, 3, 3, 3, 4)[pos] if pos not in (10, 11) else 0)
+
+    def test_a_club_far_short_loses_backups_first(self):
         m = self.machine()
         starter, backup, cut = self.stage_six(m, short_by=4000)         # $16M: neither release clears it alone
-        self.assertEqual(cut[:1], [starter])
+        self.assertTrue(cut)
+        self.assertNotEqual(cut[0], starter)                              # backups first, the charted starter last
 
 
 def economy_minimum_dollars() -> int:

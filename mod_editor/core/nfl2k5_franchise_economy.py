@@ -269,8 +269,8 @@ PREVIOUS_REVISION_5 = {             # the windows as revision 5 (and, for money,
 # Q45 (coordinator 11/03: "Cut only when a club is over the cap, or can't fit two league-minimum signings"): the stage-6
 # restructures (economy_clubs) and the retail veteran cap cut's releases (economy_vet_release -> economy_vet_pick) act
 # only while payroll + two rookie minimums exceeds the cap (was payroll + 6000, $24M, >= cap), and the cut releases the
-# veteran whose charge clears the shortfall with the least value lost, else the most overpaid, never the last healthy
-# K or P. Code: two more unreferenced retail library functions (roster_n 0x3C0920, roster_o 0x264AC0; dead_code.py),
+# player above his position's minimum whose charge clears the shortfall with the least value lost, charted starters
+# last (coordinator 11/04), never the last healthy K or P. Code: two more unreferenced retail library functions (roster_n 0x3C0920, roster_o 0x264AC0; dead_code.py),
 # and the contracts, week, roster_a, roster_c, roster_d, roster_l and roster_m windows. A revision-6 image (and every
 # older one) reads "legacy" and upgrades in place.
 DRAFT_NEED_MINIMUM = 0x31E02D       # call 0x2BD410 (native minimum) in the draft need 0x31DEA0
@@ -290,6 +290,9 @@ PREVIOUS_REVISION_6 = {             # the windows revision 7 rewrites, as revisi
     ROSTER_M_WINDOW: "47b7240b14bb22604529c6e495f16926db5c972b2472ff67c61813a33b777abb",   # roster_m (K/P guard only)
 }
 REVISION_7_SITES = REVISION_7_NEW | frozenset(PREVIOUS_REVISION_6)
+# The smart cut's modern maxima (runtime.c cut_rows row 0) by position code, for readers that predict the cut (MyCareer's
+# draft advisory reads the native maximum table, whose QB 4 the cut no longer keeps when the economy is installed).
+CUT_MAXIMUM = {0: 3, 8: 2}
 REVISION = 7
 
 

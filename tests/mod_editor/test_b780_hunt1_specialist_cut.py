@@ -216,9 +216,11 @@ class NativeStageSixTests(unittest.TestCase):
         self.assertNotIn(p, cut)
         self.assertIn(p, members)
 
-    def test_a_kicker_with_a_healthy_second_kicker_is_still_cut(self):
+    def test_a_kicker_with_a_healthy_second_kicker_does_not_stop_the_cut(self):
+        # b780 econ3 (revision 7): the release is the least value lost from any position above its minimum, so it need
+        # not be the overpaid kicker; with a healthy second kicker the guard no longer blocks it
         p, cut, members = self.run_stage_six(self.after, K, extra="healthy")
-        self.assertIn(p, cut)
+        self.assertTrue(cut)
 
     def test_a_kicker_whose_only_other_kicker_is_hurt_stays(self):
         p, cut, members = self.run_stage_six(self.after, K, extra="injured")

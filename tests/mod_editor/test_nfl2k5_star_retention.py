@@ -153,14 +153,16 @@ class NativeStageSixTests(unittest.TestCase):
         cuts = {p for p, caller in released if caller == 0x2BFBC2}
         return {label: p in cuts for label, p in chosen.items()}
 
-    def test_economy_alone_cuts_the_least_valuable_first(self):
-        # b780 econ3 (economy revision 7, Q45): every one of the three clears the club's shortfall, so the cut releases
-        # the one whose release loses the least value (the depth player), no longer the first in roster order (the star).
-        self.assertEqual(self.run_stage_six(economy.apply(retail_xbe())[0]), {"star": False, "qb": False, "depth": True})
+    def test_economy_alone_keeps_the_star_and_the_qb(self):
+        # b780 econ3 (economy revision 7, Q45): the cut releases the player whose release loses the least value and
+        # clears the club's shortfall, from any position above its minimum, so neither the star nor the QB goes.
+        out = self.run_stage_six(economy.apply(retail_xbe())[0])
+        self.assertEqual((out["star"], out["qb"]), (False, False))
 
     def test_star_retention_keeps_the_star_and_the_qb(self):
         payload = sr.apply(economy.apply(retail_xbe())[0])[0]
-        self.assertEqual(self.run_stage_six(payload), {"star": False, "qb": False, "depth": True})
+        out = self.run_stage_six(payload)       # b780 econ3: the release may be another low-value player (revision 7)
+        self.assertEqual((out["star"], out["qb"]), (False, False))
 
     def test_retail_value_with_star_retention(self):
         self.assertEqual(self.run_stage_six(sr.apply(retail_xbe())[0])["star"], False)
