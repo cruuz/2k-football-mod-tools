@@ -163,6 +163,22 @@ class ShapeTests(unittest.TestCase):
         self.assertIn("128 MB", k128.HELP_TEXT)
         self.assertIn("console has 64 MB", k128.HELP_TEXT)
 
+    def test_the_early_form_keeps_r1s_stubs_but_for_the_end_page_and_the_late_form_keeps_them_all(self) -> None:
+        """b780-mem1: xemu's DSP scatter-gather asserts on a DMA that ends at the last byte of RAM, and the early form's
+        pages exist before the game's first allocations, so it leaves the top 16 pages (0x07FF0000..) out."""
+        for flags in (k128.OPT_K128, k128.OPT_K128 | k128.OPT_ROSTER_HEAP,
+                      k128.OPT_K128 | k128.OPT_ROSTER_HEAP | k128.OPT_REQUIRE):
+            self.assertEqual(k128.code_for(CODE_VA, flags)[:226], k128.K128_STUBS)
+        diff = [i for i in range(226) if k128.EARLY_STUBS[i] != k128.K128_STUBS[i]]
+        self.assertEqual(diff, [k128.EARLY_END_IMM_OFFSET, k128.EARLY_END_IMM_OFFSET + 1])
+        for flags in (k128.OPT_K128 | k128.OPT_EARLY, k128.OPT_K128 | k128.OPT_EARLY | k128.OPT_ROSTER_HEAP,
+                      k128.OPT_K128 | k128.OPT_EARLY | k128.OPT_ROSTER_HEAP | k128.OPT_REQUIRE):
+            self.assertEqual(k128.code_for(CODE_VA, flags)[:226], k128.EARLY_STUBS)
+        arena = _disasm(k128.EARLY_STUBS[k128.ARENA_OFFSET:k128.GUARDS_OFFSET], CODE_VA + k128.ARENA_OFFSET)
+        at = arena.index("mov eax, 0x8001f91a")
+        self.assertEqual(arena[at - 2:at], ["push 0x7ff0", "push 0x4010"])
+        self.assertLess(k128.EARLY_LAST_PFN * 0x1000 + 0xFFF, 0x08000000 - 0x1000)
+
     def test_the_early_entry_calls_the_guards_and_the_arena_phase_and_fits_before_the_options(self) -> None:
         early = k128.early_code(CODE_VA)
         code = k128.code_for(CODE_VA, k128.OPT_K128 | k128.OPT_EARLY | k128.OPT_ROSTER_HEAP)
@@ -295,7 +311,8 @@ class ModelKernelTests(unittest.TestCase):
         self.assertEqual([self._d(uc, 0xC0300840 + 4 * j) for j in (0, 15)], [0x04000067, 0x0400F067])
         self.assertEqual([self._d(uc, 0xC0210000 + 4 * j) for j in (0, 15)], [0x04000463, 0x0400F463])
         self.assertEqual(self._d(uc, 0xC0210000 + 64), 0, "the rest of the new tables is zeroed")
-        self.assertEqual((self._d(uc, 0x80030000), self._d(uc, 0x80030004)), (0x4010, 0x8000))
+        # b780-mem1: the early form adds [0x4010, 0x7FF0): the top 64 KB stays out of the free lists (xemu's DSP DMA)
+        self.assertEqual((self._d(uc, 0x80030000), self._d(uc, 0x80030004)), (0x4010, k128.EARLY_LAST_PFN))
         self.assertEqual(self._d(uc, 0x8003B2D4), 0x8000)
         self.assertEqual(self._d(uc, 0x8003AB64), 0x2F05 + 16)
         self.assertTrue(uc.reg_read(x86_const.UC_X86_REG_EFLAGS) & 0x200, "interrupts come back on")
@@ -313,6 +330,7 @@ class ModelKernelTests(unittest.TestCase):
     def test_the_early_entry_accepts_a_quick_reboot_count(self) -> None:
         uc = self._early(pages=0x8000)
         self.assertEqual((self._d(uc, 0x80030000), self._d(uc, 0x8003B2D4)), (0x4010, 0x8000))
+        self.assertEqual(self._d(uc, 0x80030004), k128.EARLY_LAST_PFN)
 
     FB_VA = 0x83000000                                      # the model's MmAllocateContiguousMemory result
 
@@ -461,6 +479,7 @@ class ModelKernelTests(unittest.TestCase):
                 self.assertEqual(self._d(uc, 0x8003B2D4), 0x8000)
                 self.assertEqual(self._d(uc, 0xC0300840), 0x04000067 if early else 0)
                 self.assertEqual(self._d(uc, 0x80030000), 0x4010 if early else 0)
+                self.assertEqual(self._d(uc, 0x80030004), k128.EARLY_LAST_PFN if early else 0)
                 self.assertEqual((self.state["alloc"], self._d(uc, 0xFD600800)), ([], 0x0123F000))
 
     def test_the_128_mb_entry_starts_the_game_when_128_mb_is_already_managed(self) -> None:

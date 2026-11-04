@@ -22,6 +22,14 @@ K128 (R1's "late form", 226 bytes, two hooks) teaches the running kernel to mana
 Because the pages arrive after the arena exists, every retail address stays where it was (the XBE
 image, the arena, the frame surfaces); the game's own >64 MB branch then takes a 63.0 MiB region (measured in the lab).
 
+The early form (option ``early``) runs phase 2 at the XBE entry instead, so the arena init finds the room the
+XBE's pages took (the kernel moves them above 64 MB) and the GPU-visible arena, the main heap, grows from 46.7 to
+61.6 MiB. b780-mem1 (2026-11-03): it adds ``MiAddPhysicalPages(0x4010, 0x7FF0)``, leaving the top 64 KB of the
+128 MB (0x07FF0000..0x07FFFFFF) out of the free lists. With the pages there before the game's first allocations, a
+buffer could take the last physical page, and xemu's audio DSP scatter-gather (``hw/xbox/mcpx/apu/dsp/gp_ep.c:69``,
+``assert(paddr + bytes < RAM size)``) aborts on a DMA that ends exactly at 128 MiB: the EMU1 witness of the RC with the
+early form aborted at the intro movie (DSP on) and at the legal screens (DSP off). The late form keeps R1's bytes.
+
 Guards (all must hold, or the stub does nothing and the game runs as a 64 MB title): the kernel build
 is 4627 (through the title's own thunk slot of ordinal 324, ``0x4E3BA4``), ``NV_PFB_CSTATUS`` reads
 ``0x08000000`` (xemu is set to 128 MB), ``PDE[0x210]`` is empty, the ``MiAddPhysicalPages`` prologue
@@ -138,6 +146,15 @@ ENTRY_PUSH_OFFSET = 0x28             # 68 d1 6b 01 00: push 0x16bd1 (the origina
 assert len(K128_STUBS) == 226 and hashlib.sha256(K128_STUBS).hexdigest() == K128_STUBS_SHA256
 assert K128_STUBS[ENTRY_PUSH_OFFSET:ENTRY_PUSH_OFFSET + 5] == b"\x68" + struct.pack("<I", RETAIL_ENTRY)
 assert K128_STUBS[ARENA_OFFSET - 1] == 0xC3 and K128_STUBS[GUARDS_OFFSET - 1] == 0xC3
+# b780-mem1: the early form's copy of the stubs, identical but for the end page k128_arena gives MiAddPhysicalPages
+# (exclusive): 0x7FF0 instead of 0x8000, so the top 16 pages never reach the free lists (see the module notes). Only the
+# early form runs k128_arena at the entry; the late form's call at 0x327D1 keeps R1's verbatim bytes.
+EARLY_END_IMM_OFFSET = 0x87           # imm32 of "push 0x8000" in "push 0x8000; push 0x4010; mov eax, MiAddPhysicalPages"
+EARLY_LAST_PFN = 0x7FF0
+assert K128_STUBS[EARLY_END_IMM_OFFSET - 1:EARLY_END_IMM_OFFSET + 9] == bytes.fromhex("68008000006810400000")
+EARLY_STUBS = (K128_STUBS[:EARLY_END_IMM_OFFSET] + struct.pack("<I", EARLY_LAST_PFN)
+               + K128_STUBS[EARLY_END_IMM_OFFSET + 4:])
+assert len(EARLY_STUBS) == len(K128_STUBS)
 
 HEAP_OFFSET = 0x100                  # xheap_pick, when the roster heap is on
 CAP_OFFSET = 0x180                   # the in-game block cap, when the roster heap is on
@@ -237,7 +254,8 @@ EARLY_HELP = (
     "memory; the Xbox kernel then moves the game's program pages above 64 MB to make room, and the graphics "
     "memory grows to 61.6 MB, room for larger textures. With the roster heap on, the in-game block's cap keeps "
     "that room free during the game. The game's addresses stay the same; only where its program pages sit "
-    "changes. At 64 MB it stays asleep. xemu only.")
+    "changes. The top 64 KB of the 128 MB is left unused, because xemu's audio chip stops the emulator on a "
+    "transfer that ends at the last byte of memory. At 64 MB it stays asleep. xemu only.")
 BUILD_CAPTION = UI_LABEL
 
 
@@ -395,7 +413,8 @@ def code_for(code_va: int, flags: int, *, previous: bool = False) -> bytes:
     _require(flags & ~(OPT_K128 | OPT_ROSTER_HEAP | OPT_EARLY | OPT_REQUIRE) == 0 and flags & OPT_K128,
              "unknown K128 options")
     out = bytearray(b"\xcc" * CODE_SIZE)
-    out[0:len(K128_STUBS)] = K128_STUBS
+    stubs = EARLY_STUBS if flags & OPT_EARLY else K128_STUBS   # b780-mem1: the early form keeps the top 64 KB out
+    out[0:len(stubs)] = stubs
     if flags & OPT_ROSTER_HEAP:
         pick = heap_pick_code(code_va)
         _require(HEAP_OFFSET + len(pick) <= OPTIONS_OFFSET, "roster heap code exceeds its allocation")
