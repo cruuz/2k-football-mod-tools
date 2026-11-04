@@ -45,7 +45,7 @@ class Manifest(unittest.TestCase):
             self.assertTrue(r["first"] and r["last"] and 1 <= r["birth_month"] <= 12 and 1 <= r["birth_day"] <= 31)
             self.assertTrue(r["source_url"].startswith(("https://static.www.nfl.com/", "https://a.espncdn.com/")))
             self.assertEqual(len(r["source_sha256"]), 64)
-            self.assertIn(r["group"], ("free_agent", "refresh_created", "created_player"))
+            self.assertIn(r["group"], ("free_agent", "refresh_created", "created_player", "roster_player"))
             self.assertIn(r["review"], ("ok", "ok_flagged"))
         self.assertEqual(len(gsis), len(self.doc["portraits"]))
 
@@ -76,7 +76,7 @@ class SignedAndUnattachedPlayers(unittest.TestCase):
         self.assertEqual(len(self.rows), 49)
         self.assertEqual([r["id"] for r in self.rows], list(range(30946, 30946 + 49)))
         self.assertLess(self.rows[-1]["id"], rp.ID_LIMIT)
-        self.assertEqual(len(self.doc["portraits"]), 995)
+        self.assertEqual(len([r for r in self.doc["portraits"] if r["id"] < 30995]), 995)     # pt1 + b9; rst2 follows
         names = {(r["first"], r["last"]) for r in self.rows}
         for who in (("Andre", "James"), ("Eric", "Kendricks"), ("Jake", "Haener"), ("Marte", "Mapu"), ("Deuce", "Vaughn")):
             self.assertIn(who, names)
@@ -233,6 +233,66 @@ class Assignment(unittest.TestCase):
         for photo, expect in ((7100, True), (21696, True), (23086, True), (7099, False), (8000, False),
                               (10000, False), (21695, False), (0, False)):
             self.assertEqual(rp._selector(photo), expect, photo)
+
+
+class RosterPlayersRst2(unittest.TestCase):
+    """b780 rst2 (Q41, Q46): the real players the 11/03 refresh creates for the clubs' 53-man rosters, and the two players
+    (Thorson, Masses) whose records showed another man's stock portrait."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.doc = rp.load_manifest()
+        cls.rows = [r for r in cls.doc["portraits"] if r["group"] == "roster_player"]
+
+    def test_ids_follow_b9_in_a_wider_window_and_fill_a_fifth_atlas(self):
+        self.assertEqual([r["id"] for r in self.rows], list(range(30995, 30995 + len(self.rows))))
+        self.assertEqual(len(self.rows), 121)
+        self.assertLess(self.rows[-1]["id"], rp.ID_LIMIT)
+        self.assertEqual(rp.ID_LIMIT, 31200)
+        self.assertEqual({r["atlas"] for r in self.rows}, {"faces_03.png", "faces_04.png"})
+        self.assertIn("faces_04.png", {a["file"] for a in self.doc["atlases"]})
+        self.assertEqual(self.doc["additions"][-1]["job"], "b780-rst2")
+        every = [(r["first"], r["last"], r["birth_month"], r["birth_day"]) for r in self.doc["portraits"]]
+        self.assertEqual(len(every), len(set(every)))
+
+    def test_thorson_and_masses_have_their_own_pictures_and_are_no_longer_wrong_faces(self):
+        names = {(r["first"], r["last"]) for r in self.rows}
+        self.assertIn(("Brett", "Thorson"), names)
+        self.assertIn(("Hezekiah", "Masses"), names)
+        wrong = {(w["first"], w["last"]) for w in self.doc["wrong_faces"]}
+        self.assertNotIn(("Brett", "Thorson"), wrong)
+        self.assertNotIn(("Hezekiah", "Masses"), wrong)
+        self.assertIn(("Kage", "Casey"), wrong)               # no headshot exists for him: he keeps the no-photo card
+
+    def test_every_source_is_an_official_headshot(self):
+        for r in self.rows:
+            self.assertIn(r["source_list"], ("roster_2026", "espn"))
+            self.assertTrue(r["source_url"].startswith(("https://static.www.nfl.com/", "https://a.espncdn.com/")), r["source_url"])
+            self.assertIn(r["review"], ("ok", "ok_flagged"))
+
+    def test_a_wrong_face_record_takes_the_new_picture(self):
+        thorson = next(r for r in self.rows if r["last"] == "Thorson")
+
+        class Rec:
+            def __init__(self, photo):
+                self.values = {"photo_id": photo}
+
+            def get(self, key):
+                return {"birth_month": thorson["birth_month"], "birth_day": thorson["birth_day"]}[key]
+
+        class Player:
+            pool, offset, first, last = "primary", 0x2000, "Brett", "Thorson"
+
+            def __init__(self):
+                self.record = Rec(1488)                           # Darren Bennett's retail portrait
+
+        class Doc:
+            players = [Player()]
+
+        plan = rp.plan_assignments(Doc(), {"portraits": [thorson], "wrong_faces": [
+            {"first": "Brett", "last": "Thorson", "birth_month": thorson["birth_month"], "birth_day": thorson["birth_day"],
+             "photo_id": 1488}]})
+        self.assertEqual(plan["writes"], [(0x2000 + rp.PHOTO_FIELD, thorson["id"], "Brett Thorson")])
 
 
 if __name__ == "__main__":

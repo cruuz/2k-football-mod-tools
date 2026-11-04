@@ -2100,6 +2100,8 @@ data/nfl2k5_real_portraits/faces_02.png
 data/nfl2k5_real_portraits/faces_02_pal.png
 data/nfl2k5_real_portraits/faces_03.png
 data/nfl2k5_real_portraits/faces_03_pal.png
+data/nfl2k5_real_portraits/faces_04.png
+data/nfl2k5_real_portraits/faces_04_pal.png
 data/nfl2k5_rookie_faces/faces_00.png
 data/nfl2k5_rookie_faces/faces_00_pal.png
 data/nfl2k5_rookie_faces/faces_01.png
