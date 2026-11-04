@@ -1357,7 +1357,8 @@ $1000-unit value the game keeps, and every team's salary against the cap. **Sche
 date or time and press **Apply to this game**, or **Swap home/away**. A game that has been played is
 refused with the reason unless you tick **Allow editing played games**; its score stays read-only
 because which side the quarter bytes belong to is still a hypothesis. **Coaches** lists every coach
-record with his team: seasons, wins / losses / ties, winning seasons, Super Bowls, playoff and Super
+record with his team: seasons, wins / losses / ties, winning seasons, Super Bowls (roster: the appearances
+the roster gives him; Super Bowls played in the franchise count in his Super Bowl wins and losses), playoff and Super
 Bowl records, the photo and body ids, the run % playcalling split, then the 23 ratings and the ten
 formation shares on the same bars as the player cards (two sets of five: how often his run calls and his
 pass calls come from shotgun / pistol / empty, split backs, I form, one back or no back; each set adds up to
