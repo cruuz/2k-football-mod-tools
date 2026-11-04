@@ -786,12 +786,14 @@ LATE_OWNERS += ("nfl2k5_speed_threshold",)
 LATE_OWNERS += ("nfl2k5_scramble_blocking",)  # b780-cv7: receivers block for a scrambling QB (after every other late owner)
 LATE_OWNERS += ("nfl2k5_protection_calls",)  # b780 p1-slide: the user's slide call at the line (code + 16-byte RW state)
 LATE_OWNERS += ("nfl2k5_audible_legend",)  # b780-p3: audible panel lift + on-screen button legend (code only)
+LATE_OWNERS += ("nfl2k5_intro_autoskip",)  # b780-mem1: the pregame intro skips itself when its director could not load (64 B code)
 # b77-i1 (coordinator-approved fix of the all-owner union overflow): late owners whose code is placed top-down in the
 # reserved legacy RX page tails (0x14D9000 first, then 0x14BA000) instead of the full scale-out run. Static, so the
 # placement does not depend on which other owners are present.
 # Entries are (owner, kind); a data entry uses the legacy RW page 0x14BB000.
 TAIL_OWNERS = (("nfl2k5_period_goalposts", "code"), ("nfl2k5_honors", "data"), ("nfl2k5_coach_ai", "data"), ("nfl2k5_moment_coaches", "data"),
-               ("nfl2k5_moment_context", "data"))  # b775 mo2: 16 bytes under the coach records
+               ("nfl2k5_moment_context", "data"),  # b775 mo2: 16 bytes under the coach records
+               ("nfl2k5_intro_autoskip", "code"))  # b780-mem1: 64 B in the legacy RX tails, so no layout grows for it
 # b77-i1 (coordinator-approved, f5): late code owners placed from the start of the promoted MyCareer footprint (the 8,192
 # bytes the old my_career request still reserves in the run once M3 promotes it; 0xCC padding, unreferenced: static scan
 # + cave-reference + memory-write gates). Without a promoted MyCareer there is no such gap: they take the run as usual.
