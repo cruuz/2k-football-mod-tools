@@ -87,6 +87,29 @@ they should be ... the occasional large edge"; SWeaR 10/27: "Some rookie headsho
      (legacy_id), so prospects drafted on that disc keep their headshot, skin and hair.  Faces whose crop cut the top of
      the head were re-framed by the eyes (both ids show the fixed crop); the few with no source image left the rows.
 
+b780 GEN1 (the bug hunt after "Wei Chen": picks that follow something they should not, measured with the v0.9 release
+candidate's own class loop and CPU draft under Unicorn, 12 classes of 380 and one 224-pick draft):
+   * colleges: the retail pick (0xE6F56..0xE7019, between region C and region B) draws a band with frand * 100 against
+     the shared .rdata 35 / 65 / 86 / 96 and then a college uniformly inside the band's index range.  The retail ranges
+     (0-12, 13-43, 44-83, 84-133, 134-last) follow the college table's 2004 conference order, so the first 13 rows
+     (the nine 2004 ACC schools and Illinois, Indiana, Iowa, Michigan) took 35 % of all prospects, about 10 each in a
+     class, while the 12 SEC schools shared 2.4 % (Alabama and Georgia 0.2 % each, under one prospect a class).  On the
+     2026 roster those nine ACC schools account for 8.3 % of the players and the SEC for 17.0 %.  The five ranges are
+     now COLLEGE_BANDS (8 immediates in place, same code, same thresholds), fitted to the colleges of the players on the
+     shipped 2026 roster (clubs, free agents and reserves, "None" left out) by a search over the five ranges that
+     minimises KL(roster || generator): 0.64 -> 0.25 nats; the nine ACC schools 24.2 % -> 8.3 % (roster 8.3 %), the
+     SEC 2.4 % -> 14.2 % (roster 17.0 %), Alabama and Georgia 0.2 % -> 1.26 % each, the most likely single college
+     2.69 % -> 1.26 %.  The ranges reach row 256, so they assume the 266-row college table every shipped roster and
+     save carries; a draw past a smaller table gives no college (the retail bounds check).
+   * draft numbers: FUN_00325B50 (a drafted player joins his club) called the jersey routine 0x2BD260 with keep = 0, so
+     every drafted rookie took the lowest free number of his position's range: in the measured draft 27 of 32 rookie
+     WRs wore 80 or 81, 24 of 35 tackles 60 or 61 and every DT and DE a number in the 60s.  It now passes keep = 1 (the
+     value the game's signing paths pass), so a rookie keeps the number the generator rolled when his new club has it
+     free, and otherwise walks up from it as before (a DT or DE rolled in the 90s wraps to the lowest free number
+     from 60, as retail did for every rookie).  Measured again after the fix: 10 numbers among 32 rookie WRs (the
+     two most common 9 of 32), 16 among 35 tackles, 12 of 19 rookie DTs in the 90s.
+   Both are code, so old franchise saves get them for every later class and draft.
+
 Saves: the code reads the pool, the roster and the position from the live roster, so an old franchise save gets the
 new faces for every class it generates after the update (its own name pool may lack the nicknames; nothing else
 differs).  Players already in a save keep their portrait ids.  The bodies, the blue-chip draw and the zone are
@@ -115,7 +138,8 @@ HELP_TEXT = ("EXPERIMENTAL. Generated draft prospects get new fictional draft he
              "skin tone as likely as in the real NFL, and a face an active player already wears is avoided. A few "
              "prospects get a nickname first name, and now and then an East Asian or South Asian prospect appears "
              "with a fitting name. Their height and weight follow real NFL combine measurements for the position, and "
-             "now and then a blue-chip prospect rates in the 80s. "
+             "now and then a blue-chip prospect rates in the 80s. Their colleges follow where today's NFL players come "
+             "from, and a drafted rookie keeps his own jersey number when his new club has it free. "
              "Disc images only. Not yet tested in a long franchise.")
 EVIDENCE = "EXPERIMENTAL"
 DATA_DIR = ROOT / "data" / "nfl2k5_rookie_faces"
@@ -179,6 +203,49 @@ CODE_D_B779 = bytes.fromhex(
     "6603059d4f4f008b4d548b0cc1894e108d3c5b01d78d3cbda84f4f006a185b0fb74f0280e501e81217bfff80fb18750c"
     "8d0489c1e80429c139ca7310895424140fb70701d0e81817bfff75034b75d0668946068b4e1881e17efcffff8b442410"
     "c1e00709c10fb64703d1e839442414730141894e185f5e5d5b83c408c20400")
+
+# b780 GEN1 college bands (module docstring).  The retail pick between region C and region B: frand * 100 against the
+# shared .rdata floats 35 / 65 / 86 / 96 picks a band, then college = lo + rand % (hi - lo + 1).  The span is the run of
+# that code from band 1's top (mov edi, 0xC: band 1's bottom is xor ebx, ebx = 0) to band 5's bottom (mov ebx, 0x86:
+# its top is the roster's college count - 1); only the 8 imm32 values change.
+COLLEGE_VA = 0xE6F7D
+COLLEGE_RETAIL = bytes.fromhex(
+    "0c000000eb66d944241cd81d1c0f4f00dfe0f6c4057a0cbb0d000000bf2b000000eb49d944241cd81d28594f00dfe0f6c4057a0cbb2c00"
+    "0000bf53000000eb2cd944241cd81d58694e00dfe0f6c4057a0cbb54000000bf85000000eb0f8b151829b7008b7a20bb86000000")
+# imm32 offsets in the span: band 1 top, band 2 bottom / top, band 3 bottom / top, band 4 bottom / top, band 5 bottom
+COLLEGE_IMMEDIATES = (0x00, 0x18, 0x1D, 0x35, 0x3A, 0x52, 0x57, 0x67)
+COLLEGE_WEIGHTS = (0.35, 0.30, 0.21, 0.10, 0.04)    # the retail thresholds, unchanged
+COLLEGE_ROWS = 266                                  # the college table of every shipped roster and save
+RETAIL_COLLEGE_BANDS = ((0, 12), (13, 43), (44, 83), (84, 133), (134, COLLEGE_ROWS - 1))
+COLLEGE_BANDS = ((0, 37), (11, 114), (74, 96), (85, 256), (112, COLLEGE_ROWS - 1))
+
+
+def college_span(bands: Sequence[tuple[int, int]] = COLLEGE_BANDS) -> bytes:
+    """The college-pick span with these five (bottom, top) index ranges (band 1 starts at 0, band 5 ends at the
+    roster's last college: those two ends are not immediates)."""
+    require(len(bands) == 5 and bands[0][0] == 0, "five bands, the first from row 0")
+    require(all(0 <= lo <= hi < COLLEGE_ROWS for lo, hi in bands), "band rows must stay in the college table")
+    values = (bands[0][1], bands[1][0], bands[1][1], bands[2][0], bands[2][1], bands[3][0], bands[3][1], bands[4][0])
+    out = bytearray(COLLEGE_RETAIL)
+    for at, value in zip(COLLEGE_IMMEDIATES, values):
+        struct.pack_into("<I", out, at, value)
+    return bytes(out)
+
+
+def college_odds(bands: Sequence[tuple[int, int]] = COLLEGE_BANDS, rows: int = COLLEGE_ROWS) -> list[float]:
+    """P(college row) of the class generator's pick with these bands (band 5's top is rows - 1)."""
+    odds = [0.0] * rows
+    for k, ((lo, hi), weight) in enumerate(zip(bands, COLLEGE_WEIGHTS)):
+        hi = rows - 1 if k == 4 else hi
+        for i in range(lo, hi + 1):
+            odds[i] += weight / (hi - lo + 1)
+    return odds
+
+
+# b780 GEN1 draft numbers: FUN_00325B50 (a drafted player joins his club) pushes keep = 0 for the jersey routine
+# 0x2BD260 (lowest free number of the position's range); keep = 1 starts the same walk at his own number.
+NUMBER_VA = 0x325B61
+NUMBER_RETAIL, NUMBER_PATCHED = bytes.fromhex("6a00"), bytes.fromhex("6a01")
 
 # table layout (offsets from TABLE_VA)
 T_POS, T_TONES, T_FIRST, T_LASTCODE, T_SIG = 0x00, 0x11, 0x14, 0x34, 0x38
@@ -471,7 +538,9 @@ def _spans(table: bytes) -> list[tuple[int, bytes]]:
             (REGION_B, pad(CODE_B, REGION_B_END - REGION_B)),
             (REGION_C, pad(CODE_C, REGION_C_END - REGION_C)),
             (TABLE_VA, table + pad(CODE_D, TABLE_END - TABLE_VA - TABLE_DATA)),
-            (STRING_VA, RECORD_NAME.encode("utf-16-le"))]
+            (STRING_VA, RECORD_NAME.encode("utf-16-le")),
+            (COLLEGE_VA, college_span()),                 # b780 GEN1
+            (NUMBER_VA, NUMBER_PATCHED)]                  # b780 GEN1
 
 
 RETAIL_SPAN_SHA256 = {       # retail and every released SOFTDRINK image (v0.6.1 checked) carry these bytes
@@ -480,6 +549,8 @@ RETAIL_SPAN_SHA256 = {       # retail and every released SOFTDRINK image (v0.6.1
     REGION_C: "bd0c79972cb0b066c11f0f3b69c72e95978e3d10809173d91ac33453556f9fab",
     TABLE_VA: "e6ec955562c16009edf4ca8790a0b310d685f3c04443ff1106323fc5514567fd",
     STRING_VA: "8d322c825fff63a505e786350f7fe8da17d68dd292769f9f5146c2605ea14ae2",
+    COLLEGE_VA: "5ac25422917dd126cc63ff89a17aa8bd7051e0cfdc7c96942ad4e1fcff0e4bb0",   # = sha(COLLEGE_RETAIL)
+    NUMBER_VA: "91046df2aa008410555df240b14243aa348b37cd16582c9d8a80ca305afccab2",    # = sha(NUMBER_RETAIL)
 }
 
 
@@ -490,7 +561,8 @@ def _retail_spans(payload: bytes) -> dict[int, bytes]:
 
 def xbe_status(payload: bytes) -> str:
     """retail | applied | previous | foreign (an applied image may carry any table bytes; code and string must match;
-    previous = the beta-79 / v0.8 region D, CODE_D_B779)."""
+    previous = the beta-79 / v0.8 region D (CODE_D_B779) or the first v0.9 release candidate's (CODE_D), both with the
+    retail college bands and draft numbers)."""
     try:
         current = _retail_spans(payload)
     except (RookieFacesError, struct.error):
@@ -499,12 +571,15 @@ def xbe_status(payload: bytes) -> str:
         return "retail"
     spans = dict(_spans(bytes(TABLE_DATA)))
     a, b, c, d, s = (current[REGION_A], current[REGION_B], current[REGION_C], current[TABLE_VA], current[STRING_VA])
-    if (a == spans[REGION_A] and b == spans[REGION_B] and c == spans[REGION_C] and s == spans[STRING_VA]
-            and d[TABLE_DATA:] == spans[TABLE_VA][TABLE_DATA:]):
+    core = a == spans[REGION_A] and b == spans[REGION_B] and c == spans[REGION_C] and s == spans[STRING_VA]
+    if (core and d[TABLE_DATA:] == spans[TABLE_VA][TABLE_DATA:] and current[COLLEGE_VA] == spans[COLLEGE_VA]
+            and current[NUMBER_VA] == NUMBER_PATCHED):
         return "applied"
-    if (a == spans[REGION_A] and b == spans[REGION_B] and c == spans[REGION_C] and s == spans[STRING_VA]
-            and d[TABLE_DATA:] == CODE_D_B779 + b"\xcc" * (TABLE_END - TABLE_VA - TABLE_DATA - len(CODE_D_B779))):
-        return "previous"   # beta-79 / v0.8: the rare first name drawn from the college's low bits
+    tail = TABLE_END - TABLE_VA - TABLE_DATA
+    region_d = (CODE_D_B779 + b"\xcc" * (tail - len(CODE_D_B779)), CODE_D + b"\xcc" * (tail - len(CODE_D)))
+    if (core and d[TABLE_DATA:] in region_d and current[COLLEGE_VA] == COLLEGE_RETAIL
+            and current[NUMBER_VA] == NUMBER_RETAIL):
+        return "previous"   # beta-79 / v0.8 (rare first name from the college's low bits) or the v0.9 RC (GEN1)
     return "foreign"
 
 
@@ -539,7 +614,8 @@ def xbe_apply(payload: bytes, table: bytes) -> tuple[bytes, dict[str, Any]]:
 
 SPAN_LABELS = ("class generator skin/face draw and weight/height roll -> body table + helpers", "class generator portrait pick",
                "class generator rating loop -> blue-chip draw + compact capped rolls",
-               "rookie-face tables + code (retail generic range table)", "PORTRAIT record file name")
+               "rookie-face tables + code (retail generic range table)", "PORTRAIT record file name",
+               "class generator college bands (8 immediates)", "draft pick keeps the rookie's own jersey number")
 
 
 def reservations(payload: bytes) -> list[dict[str, Any]]:
