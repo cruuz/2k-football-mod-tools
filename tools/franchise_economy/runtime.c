@@ -679,6 +679,22 @@ SECTION(".roster_m") __attribute__((noinline)) unsigned FAST economy_camp_limit(
     return maximum(n_roster_limit(), 54);
 }
 
+/* b780 hunt1 (revision 6): the retail stage-6 veteran cap cut (0x2BFAF0, run for every club at 0x247FF5) releases an
+ * overpaid veteran whatever his position. With the native camp limit (revision 5) camp payrolls stay over the cap, so
+ * the stage-6 fill that follows could not sign a replacement: a club whose only kicker or punter was that veteran
+ * started the season without one (SOFTDRINK 2K28 v0.9 RC, seed 2602: CHI and KC with no K at kickoff while 30 kickers
+ * were free agents; v0.8, trimmed to 54, signed one in the same stage). The cut's own release call (0x2BFBBD) comes
+ * here: it never releases the club's last healthy K or P (the trim and the smart cut already keep one of every
+ * position) and otherwise jumps to the native release with the same registers and arguments, so the release keeps the
+ * cut's return address. In roster_m's spare bytes, after its own code: no other symbol moves. */
+SECTION(".roster_m") __attribute__((naked)) void economy_vet_release(void) {
+    __asm__("movzbl 0x35(%edx), %eax\ndec %eax\ncmp $1, %eax\nja 9f\ninc %eax\npush %esi\npush %edi\n"
+            "movzbl 0x11c(%ecx), %esi\n1: dec %esi\njs 3f\nmov (%ecx,%esi,4), %edi\ncmp %edx, %edi\nje 1b\n"
+            "cmpb %al, 0x35(%edi)\njne 1b\ntestb $0x80, 0x23(%edi)\njnz 1b\npop %edi\npop %esi\n"
+            "9: jmp 0x2bd900\n3: pop %edi\npop %esi\nret $8\n");
+}
+
+
 /* (a) past the position's age, oldest first; (b) within two years of it, lowest-rated first; (c) only when the
  * class would still have fewer than MIN_CLASS records, the oldest remaining free agents. The roster file has a
  * fixed number of records, so a class can only be as deep as the league frees each year: the sims report how

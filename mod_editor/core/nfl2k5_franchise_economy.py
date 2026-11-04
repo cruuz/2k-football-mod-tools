@@ -216,7 +216,23 @@ PREVIOUS_REVISION_4 = {
 # it. An image that carries only these four reads "retail" here, and the economy installs over them unchanged.
 CLASS_WINDOW = 0x382200
 CLASS_SITES = frozenset({CLASS_WINDOW, CLASS_ALLOCATOR_TEST, CLASS_FREE_COUNT, CLASS_POSITION})
-REVISION = 5
+# b780 hunt1 (revision 6). PROVED OFFLINE (the game's own franchise flow on the SOFTDRINK 2K28 v0.9 RC executable and
+# roster, seed 2602, every K/P release and signing traced): the retail stage-6 veteran cap cut (0x2BFAF0, every club
+# from 0x247FF5) released Chicago's and Kansas City's only kickers (Santos, Butker); the stage-6 fill that follows
+# replaced neither (v0.8, whose trim held camps at 54, signed Jacoby Howell for Chicago in the same stage), so both
+# clubs started the season, and played it, with no kicker while 30 kickers were free agents. The cut's own release call
+# now goes through economy_vet_release (roster_m's spare bytes), which never releases a club's last healthy K or P and
+# otherwise jumps to the native release 0x2BD900 with the same registers, arguments and return address. Every other
+# release of the cut, and every other position, is unchanged. A revision-5 image (beta-80 RC) and a revision-4 image
+# (beta-79 / v0.8: roster_m and these sites as revision 4 had them) read "legacy" and upgrade in place.
+VETERAN_CUT_RELEASE = 0x2BFBBD      # call 0x2BD900 (the native release) inside the retail veteran cap cut 0x2BFAF0
+PINS[VETERAN_CUT_RELEASE] = "3d18b8832025dceab76a172af5a2e1082b4c45ca0d57b922dae19d762e4e2414"
+ROSTER_M_WINDOW = 0x3DBC10
+REVISION_6_SITES = frozenset({VETERAN_CUT_RELEASE, ROSTER_M_WINDOW})
+PREVIOUS_REVISION_5 = {
+    ROSTER_M_WINDOW: "8598a66655239f218e2976ca5265172b449bdeb5d7598e38288e03d4c216c934",   # roster_m before the release guard
+}
+REVISION = 6
 
 
 class EconomyError(ValueError):
@@ -231,7 +247,7 @@ class Site:
 
 
 def sites(revision: int = REVISION) -> tuple[Site, ...]:
-    if revision not in (1, 2, 3, 4, 5):
+    if revision not in (1, 2, 3, 4, 5, 6):
         raise EconomyError("unknown economy revision")
     windows = {va: code for va, code in WINDOWS.items()
                if (revision >= 3 or va not in REVISION_3_SITES) and (revision >= 4 or va not in REVISION_4_SITES)}
@@ -271,6 +287,8 @@ def sites(revision: int = REVISION) -> tuple[Site, ...]:
         replacements[TXN_YEARS] = (b"\xe8" + struct.pack("<i", SYMBOLS["economy_txn_years"] - TXN_YEARS - 5)
                                    + b"\x90" * (len(TXN_YEARS_RETAIL) - 5))  # b779 vs1
         replacements[SMART_CUT] = b"\xe9" + struct.pack("<i", SYMBOLS["economy_smart_cut"] - SMART_CUT - 5)
+    if revision >= 6:
+        replacements[VETERAN_CUT_RELEASE] = b"\xe8" + struct.pack("<i", SYMBOLS["economy_vet_release"] - VETERAN_CUT_RELEASE - 5)
     return tuple(Site(a, b, PINS[a]) for a, b in sorted(replacements.items()))
 
 
@@ -297,8 +315,24 @@ def _standalone_status(payload: bytes) -> str:
                     hashlib.sha256(image.read(site.va, len(site.patched))).hexdigest() == PREVIOUS_REVISION_4[site.va]:
                 state = "revision4"
             states[site.va] = state
+        # b780 hunt1 (revision 6): an image from before the release guard has the cut's native release call and roster_m
+        # as revision 5 (or revision 4) left it. Read them as the revision they came with; the image is then "legacy".
+        before_6 = states[VETERAN_CUT_RELEASE] == "retail" and states[ROSTER_M_WINDOW] != "retail"
+        if before_6:
+            roster_m = hashlib.sha256(image.read(ROSTER_M_WINDOW, len(WINDOWS[ROSTER_M_WINDOW]))).hexdigest()
+            if roster_m == PREVIOUS_REVISION_5[ROSTER_M_WINDOW]:
+                states[ROSTER_M_WINDOW] = "applied"
+            elif roster_m != PREVIOUS_REVISION_4[ROSTER_M_WINDOW]:
+                return "foreign"
+            del states[VETERAN_CUT_RELEASE]
+        elif states[VETERAN_CUT_RELEASE] == "retail":
+            del states[VETERAN_CUT_RELEASE]          # every revision-3 site retail, so roster_m is too: an older image
         unique = set(states.values())
         if len(unique) == 1 and unique <= {"applied", "retail"}:
+            if before_6:
+                return "legacy" if unique == {"applied"} else "foreign"
+            if unique == {"retail"} and VETERAN_CUT_RELEASE not in states:
+                return "retail"
             return next(iter(unique))
         if "revision4" in unique:
             # b780 b4-economy: a revision-4 image (beta-79 / v0.8) upgrades in place to revision 5. A revision-3
