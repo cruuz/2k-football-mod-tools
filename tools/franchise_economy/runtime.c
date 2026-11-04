@@ -318,6 +318,7 @@ SECTION(".roster_b") static unsigned restructure_best(u8 *team) {
 }
 
 unsigned FAST economy_camp_limit(void);   /* b780 b4-economy (D10): defined at the end of roster_m */
+void FAST economy_cover(u8 *team, void *menu);   /* b780 hunt1: defined after roster_h's rodata (naked, fastcall ECX/EDX) */
 
 /* DESIGN: replace the native CPU cap-cut routine with a bounded reconciliation
  * that also runs after the rollover returns IR players. Keep the native 54
@@ -391,6 +392,7 @@ SECTION(".roster_a") static void fill(u8 *team, void *menu, float chance, unsign
  * club still short without room for a minimum salary restructures, else releases
  * one well-paid player, then refills with minimum salaries. */
 SECTION(".roster_a") static void upkeep(u8 *team, void *menu) {
+    if (*(u32 *)0xe576a4 >= 8) economy_cover(team, menu);   /* b780 hunt1: in season a hurt K or P is covered */
     for (unsigned attempt = 0; attempt < 12; ++attempt) {
         trim(team, 0);
         fill(team, menu, 1.0f, 0, 1);
@@ -727,6 +729,29 @@ SECTION(".roster_h") int STD economy_class_topup(int need, unsigned retiring) {
     if (*(volatile const unsigned char *)&economy_floor_protected)   /* the draft must never run dry: 256 */
         return oldest(list, n, lowest(list, n, need, CLASS_SIZE - MIN_CLASS, 1), -40, CLASS_SIZE - DRAFT_FLOOR);
     return oldest(list, n, need, -40, CLASS_SIZE - MIN_CLASS);
+}
+
+/* b780 hunt1 (coordinator, 11/03: "if a K or P can get hurt in a played or simulated game, a 53-man club then has no
+ * way to replace him in season. Make that signing work, for example by releasing the lowest-value player the way a
+ * real club would"). A played game can hurt a kicker or a punter: the collision injury chain (0x137520 and 0x137680
+ * -> 0x1373C0, the harder-hit of the two players -> 0x136B10) tests no position. The CPU fill never asked for a
+ * replacement, because the native need (0x2BD880 over 0xC3CB0) counts injured players too, so the kick went to the
+ * depth chart's next player. Each in-season weekly pass a CPU club with no healthy K (or P) now signs one; a club
+ * at 53 first makes room with the smart cut (0x2BF9A0: the lowest-rated player at a position above its minimum; K
+ * and P stay at their minimum of 1, so the hurt kicker stays). The signing goes through 0x322BB0 and the gate (cap
+ * room) like every CPU fill. */
+/* ECX = team, EDX = menu (fastcall); K (1), then P (2): no healthy one on the club (the injured bit, +0x23 bit 7, as
+ * the trim, the gate and economy_vet_release read it) -> at 53 the smart cut 0x2BF9A0 to 52, then the CPU signing
+ * 0x322BB0 (team, pos, 0xFFFF, menu), whose gate keeps the cap-room rule. The free-agent pool always held kickers and
+ * punters in the offline seasons (29 to 78); with none the signing fails and the club waits at 52 until one is free. */
+SECTION(".roster_h_tail") __attribute__((naked)) void FAST economy_cover(u8 *team __attribute__((unused)),
+                                                             void *menu __attribute__((unused))) {
+    __asm__("push %ebx\npush %esi\npush %ebp\nmov %ecx, %esi\nmov %edx, %ebp\nxor %ebx, %ebx\ninc %ebx\n"
+            "1: movzbl 0x11c(%esi), %ecx\n"
+            "2: dec %ecx\njs 3f\nmov (%esi,%ecx,4), %eax\ncmpb %bl, 0x35(%eax)\njne 2b\ntestb $0x80, 0x23(%eax)\njnz 2b\njmp 5f\n"
+            "3: cmpb $53, 0x11c(%esi)\njb 4f\npush $52\npop %edx\nmov %esi, %ecx\ncall 0x2bf9a0\n"
+            "4: push %ebp\npush $0xffff\npush %ebx\npush %esi\ncall 0x322bb0\n"
+            "5: inc %ebx\ncmp $3, %ebx\njb 1b\npop %ebp\npop %esi\npop %ebx\nret\n");
 }
 
 /* b779 rc1 (Noah 10/28: "make it smart, so teams aren't cutting guys that they need at certain positions. They'll
