@@ -262,6 +262,17 @@ class CrashReportTests(unittest.TestCase):
         source = (ROOT / "mod_editor" / "gui" / "studio_qt.py").read_text(encoding="utf-8")
         self.assertIn("self._build_panel.doctor_project = self._doctor_project_for_build", source)
 
+    def test_the_report_describes_the_project_that_was_built(self):
+        # b780-uxfix: the main window's saved project came first even for an options-only or SOFTDRINK source build
+        panel = SimpleNamespace(doctor_project=lambda: Path("Coach.2k5mod"),
+                                _facade=SimpleNamespace(_session="session", modified_count=3))
+        pick = lambda include, softdrink: build_panel_qt.BuildPanel._doctor_project(panel, include, softdrink)  # noqa: E731
+        self.assertIsNone(pick(False, None))                                         # options only
+        self.assertEqual(pick(False, "/sd/project.2k5mod"), Path("/sd/project.2k5mod"))
+        self.assertEqual(pick(True, None), Path("Coach.2k5mod"))                     # the session's saved file
+        panel.doctor_project = lambda: None
+        self.assertEqual(pick(True, None), "session")                               # its unsaved edits
+
     def test_the_main_window_records_a_task_traceback(self):
         from mod_editor.gui import studio_qt
         with mock.patch.object(crash_report, "record_operation") as recorded:

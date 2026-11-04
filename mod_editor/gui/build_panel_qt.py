@@ -5262,8 +5262,18 @@ class BuildPanel(QWidget):
         return receipt
 
     def _doctor_project(self, include_session, softdrink_project):
-        """What the project doctor should read after a failed build: the main window's saved project when it has one
-        (``doctor_project``), else the SOFTDRINK source project, else the open session, else None (options only)."""
+        """What the project doctor should read after a failed build: the project that went into that build.
+
+        b780-uxfix: the main window's saved project or open session came first even when the build was options
+        only or built the SOFTDRINK source project, so the report could describe a project that was never built.
+        Now: the SOFTDRINK source project when it was built; nothing for an options-only build; for a build of the
+        open session's edits, the main window's choice (``doctor_project``: the saved .2k5mod when unchanged), else
+        the session itself.
+        """
+        if softdrink_project:
+            return Path(softdrink_project)
+        if not include_session:
+            return None
         chooser = getattr(self, "doctor_project", None)
         if callable(chooser):
             try:
@@ -5272,11 +5282,7 @@ class BuildPanel(QWidget):
                     return chosen
             except Exception:  # noqa: BLE001
                 pass
-        if softdrink_project:
-            return Path(softdrink_project)
-        if include_session:
-            return getattr(self._facade, "_session", None)
-        return None
+        return getattr(self._facade, "_session", None)
 
     def _record_failed_build(self, tracker, exc, plan, labels, progress, include_session, softdrink_project):
         """Write the build log, the errors.log entry and the diagnostic .zip of a build that stopped (never raises)."""
