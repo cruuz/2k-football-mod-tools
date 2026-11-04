@@ -177,7 +177,8 @@ class NativeTests(unittest.TestCase):
                            (META, 0xC00000), (TARGETS, 0x1000), (0xB72000, 0x1000), (0xB37000, 0x2000),
                            (0xE57000, 0x1000), (0xC4000, 0x4000), (0xF3000, 0x2000),
                            (0x170000, 0x2000), (0xE6000, 0x2000), (0x247000, 0x2000), (0x133000, 0x2000),
-                           (0x14F000, 0x2000), (0x365000, 0x2000), (STACK, 0x10000)):
+                           (0x14F000, 0x2000), (0x365000, 0x2000), (STACK, 0x10000),
+                           (0xCC2000, 0x1000)):    # b780 hunt3: the screen word 0xCC2388 (0 = Player Progress)
             m.mem_map(base, size)
         m.mem_write(CODE, self.blob)
         m.mem_write(DATA, bytes(0x10000))
