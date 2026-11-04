@@ -183,8 +183,9 @@ disc...** (marked experimental).
   accelerated clock on with a 20 second minimum. Its runoff stops at 2:00 in the second quarter, fourth quarter and overtime.
 - **Memory.** Always 128 MiB in xemu for SOFTDRINK. An original Xbox console and the Android emulator hakuX have 64 MB:
   for them the Studio can make a **64 MB build** (Build tab, **Console memory**, or Share, **Build for**, then **Customize
-  SOFTDRINK 2K28**). It is experimental, estimated, not yet tested on a real Xbox or hakuX, it leaves out the options that
-  need 128 MB, and the pack's 2026 rosters need 128 MB for now. For the full experience use xemu at 128 MiB. See
+  SOFTDRINK 2K28**). It is experimental, estimated, not yet tested on a real Xbox or hakuX, and it leaves out the options
+  that need 128 MB. The 2026 rosters stay, fitted to the original game's roster size (the free agents beyond the original
+  count are left out). For the full experience use xemu at 128 MiB. See
   [the FAQ](mod_editor/2k5_mod_studio_faq.md#can-i-play-softdrink-2k28-on-android-in-hakux).
 
 ## 8. If something goes wrong

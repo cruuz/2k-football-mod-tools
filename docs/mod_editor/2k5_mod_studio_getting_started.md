@@ -144,9 +144,12 @@ the same:
 You do not have to work this out yourself. The Build tab's source line and the
 Apply panel both name your image as soon as you choose it: *retail dump (xiso)*,
 *retail dump (raw/redump with video partition)*, *repacked disc*, *modified disc*,
+*disc built with 2K5 Mod Studio* (a SOFTDRINK or Customize disc; a released
+SOFTDRINK disc is named, for example *SOFTDRINK 2K28 v0.8 (a released disc)*),
 or *unknown image*, with a sentence saying what to do. Every refusal quotes the
 same line, so a failure says which disc you handed it and not just how many bytes
-disagreed.
+disagreed. A disc the Studio built is not a starting point: to change it, build
+again from a dump of your own retail disc.
 
 
 **Hi-res pack (experimental, unwitnessed).** This optional Build choice is
@@ -1357,7 +1360,8 @@ $1000-unit value the game keeps, and every team's salary against the cap. **Sche
 date or time and press **Apply to this game**, or **Swap home/away**. A game that has been played is
 refused with the reason unless you tick **Allow editing played games**; its score stays read-only
 because which side the quarter bytes belong to is still a hypothesis. **Coaches** lists every coach
-record with his team: seasons, wins / losses / ties, winning seasons, Super Bowls, playoff and Super
+record with his team: seasons, wins / losses / ties, winning seasons, Super Bowls (roster: the appearances
+the roster gives him; Super Bowls played in the franchise count in his Super Bowl wins and losses), playoff and Super
 Bowl records, the photo and body ids, the run % playcalling split, then the 23 ratings and the ten
 formation shares on the same bars as the player cards (two sets of five: how often his run calls and his
 pass calls come from shotgun / pistol / empty, split backs, I form, one back or no back; each set adds up to
@@ -1479,10 +1483,11 @@ predicted to fit at the hardest stadium or what to turn off. **Use the recommend
 model's suggestion, and **Make my disc** refuses a selection that is predicted not to fit. A selection that fits only
 with the default uniforms is made with a warning: a player-picked alternate kit at the heaviest stadium may not fit, so
 if a game loops on the stadium shots, use the default uniforms. Roster edits that make the roster file bigger (the
-SOFTDRINK 2K28 2026 rosters do) need 128 MB. The memory numbers are an estimate from a model; for the full experience
-use xemu at 128 MiB. Going back to 128 MB gives back everything 64 MB turned off. On **Share**, **Build for** next to
-**Customize SOFTDRINK 2K28…** loads the pack's sources straight into the 64 MB target, with the recommended 64 MB set
-applied.
+SOFTDRINK 2K28 2026 rosters do) are fitted to the original game's roster size at 64 MB: the free agents beyond the
+original game's count are left out, and franchise draft-pick ownership and the backfield labels fall back to the 2004
+game's. The memory numbers are an estimate from a model; for the full experience use xemu at 128 MiB. Going back to 128
+MB gives back everything 64 MB turned off. On **Share**, **Build for** next to **Customize SOFTDRINK 2K28…** loads the
+pack's sources straight into the 64 MB target, with the recommended 64 MB set applied.
 
 Modern overtime (in Advanced and Experimental) is the current NFL rule: a 10-minute
 period (scaled from your quarter length), both teams get a possession unless the first

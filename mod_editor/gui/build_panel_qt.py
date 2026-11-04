@@ -11,7 +11,7 @@ from __future__ import annotations
 from mod_editor.gui.ux_text import plain_error
 from mod_editor.core.update_check import BUILD_RELEASE_TAG
 
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from pathlib import Path
 
 from PyQt5.QtCore import QTimer, QObject, QRunnable, Qt, QThreadPool, pyqtSignal, pyqtSlot
@@ -255,6 +255,7 @@ from mod_editor.core import nfl2k5_pass_rush_stats as _pass_rush_stats  # noqa: 
 from mod_editor.core import nfl2k5_history_screen as _history_screen  # noqa: E402  b780-j4
 from mod_editor.core import nfl2k5_cpu_passer_iq as _cpu_passer_iq  # noqa: E402  b780 a-passer
 from mod_editor.core import nfl2k5_protection_calls as _protection_calls  # noqa: E402  b780 p1-slide
+from mod_editor.core import nfl2k5_intro_autoskip as _intro_autoskip  # noqa: E402  b780-mem1
 CPU_AI_OPTIONS = (
     ("cpu_qb_zone_windows", _cpu_qb_reads.BUILD_CAPTION_ZONE, _cpu_qb_reads.HELP_ZONE),
     ("cpu_qb_recheck", _cpu_qb_reads.BUILD_CAPTION_RECHECK, _cpu_qb_reads.HELP_RECHECK),
@@ -303,12 +304,14 @@ from mod_editor.core import nfl2k5_franchise_footer as _franchise_footer  # noqa
 from mod_editor.core import nfl2k5_contract_college_guard as _contract_guard  # noqa: E402
 from mod_editor.core import nfl2k5_load_user_team_guard as _load_guard  # noqa: E402  b780 mc1
 from mod_editor.core import nfl2k5_coach_career_fix as _coach_career_fix  # noqa: E402  b780 c1 (wired at b780-int)
+from mod_editor.core import nfl2k5_history_pool as _history_pool  # noqa: E402  b780 hist1
 from mod_editor.core import nfl2k5_sim_cb_tackles as _sim_cb_tackles  # noqa: E402
 from mod_editor.core import nfl2k5_sim_rb_injuries as _sim_rb_injuries  # noqa: E402  b779-sim2
 from mod_editor.core import nfl2k5_sim_realism as _sim_realism  # noqa: E402  b779-sim2 r4
 from mod_editor.core import nfl2k5_coach_carousel as _coach_carousel  # noqa: E402  b780-c6
 from mod_editor.core import nfl2k5_standings_records as _standings_records  # noqa: E402  b780-j1
 from mod_editor.core import nfl2k5_audible_legend as _audible_legend  # noqa: E402  b780-p3
+from mod_editor.core import nfl2k5_injured_reserve as _injured_reserve  # noqa: E402  b780 IR1
 from mod_editor.core import nfl2k5_sim_stats as _sim_stats  # noqa: E402
 from mod_editor.core import nfl2k5_quick_long_release as _quick_long_release  # noqa: E402  b780-c-release
 from mod_editor.core import nfl2k5_option_defaults as _option_defaults  # noqa: E402  b779-df1
@@ -332,6 +335,7 @@ BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                  ("pass_rush_stats", _pass_rush_stats.BUILD_CAPTION, _pass_rush_stats.HELP_TEXT),
                  ("history_screen", _history_screen.BUILD_CAPTION, _history_screen.HELP_TEXT),  # b780-j4
                  ("protection_calls", _protection_calls.BUILD_CAPTION, _protection_calls.HELP_TEXT),  # b780 p1-slide
+                 ("intro_autoskip", _intro_autoskip.BUILD_CAPTION, _intro_autoskip.HELP_TEXT),  # b780-mem1
                  ("modern_force_out", _force_out.BUILD_CAPTION, _force_out.HELP_TEXT),  # b778-fo1
                  ("module_loader", _module_loader.BUILD_CAPTION, _module_loader.HELP_TEXT),  # b778-xs1
                  ("crib_trophy_room", _crib_trophy_room.BUILD_CAPTION, _crib_trophy_room.HELP_TEXT),  # b778-xs1
@@ -361,12 +365,15 @@ BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                  ("contract_college_guard", _contract_guard.BUILD_CAPTION, _contract_guard.HELP_TEXT),  # b778-cr1
                  ("load_user_team_guard", _load_guard.BUILD_CAPTION, _load_guard.HELP_TEXT),  # b780 mc1
                  ("coach_career_fix", _coach_career_fix.BUILD_CAPTION, _coach_career_fix.HELP_TEXT),  # b780 c1
+                 ("history_pool", _history_pool.BUILD_CAPTION, _history_pool.HELP_TEXT),  # b780 hist1
                  ("sim_cb_tackles", _sim_cb_tackles.BUILD_CAPTION, _sim_cb_tackles.HELP_TEXT),  # b778-cb1
                  ("sim_rb_injuries", _sim_rb_injuries.BUILD_CAPTION, _sim_rb_injuries.HELP_TEXT),  # b779-sim2
                  ("sim_realism", _sim_realism.BUILD_CAPTION, _sim_realism.HELP_TEXT),  # b779-sim2 r4
                  ("coach_carousel", _coach_carousel.BUILD_CAPTION, _coach_carousel.HELP_TEXT),  # b780-c6
                  ("standings_records", _standings_records.BUILD_CAPTION, _standings_records.HELP_TEXT),  # b780-j1
                  ("audible_legend", _audible_legend.BUILD_CAPTION, _audible_legend.HELP_TEXT),  # b780-p3
+                 ("modern_injured_reserve", _injured_reserve.BUILD_CAPTION, _injured_reserve.HELP_TEXT),  # b780 IR1
+                 ("injured_reserve_guard", _injured_reserve.GUARD_CAPTION, _injured_reserve.GUARD_HELP),  # b780 IR1 (Q66)
                  ("sim_stats", _sim_stats.BUILD_CAPTION, _sim_stats.HELP_TEXT),  # b778-sim1
                  ("quick_long_release", _quick_long_release.BUILD_CAPTION, _quick_long_release.HELP_TEXT),  # b780-c-release
                  ("option_defaults", _option_defaults.BUILD_CAPTION, _option_defaults.HELP_TEXT),  # b779-df1
@@ -378,7 +385,9 @@ PREVIOUS_UPGRADE_KEYS = {"honors_page": "honors page", "camera": "camera", "k128
                          # place (catch_slider_patch.apply, nfl2k5_sim_cb_tackles.apply); their boxes were greyed out
                          "catch_slider": "catching slider", "sim_cb_tackles": "cornerback tackle credit",
                          # b780 db2: the beta-79 RB injury guard (no fullback rule) is upgraded in place as well
-                         "sim_rb_injuries": "simulated RB injuries"}
+                         "sim_rb_injuries": "simulated RB injuries",
+                         # b780 hunt6: revision 1 of the franchise record fixes (the v0.9 release candidates)
+                         "coach_career_fix": "coach record fix"}
 # b780 studio1: older revisions that read "legacy" and that the build upgrades in place (progression.apply and
 # franchise_economy.apply both accept "retail" or "legacy"). A v0.8 disc reads legacy for both; the boxes were greyed out
 # with no badge and no line in the disc summary, so retirement by age and the economy revision could not be added.
@@ -386,6 +395,25 @@ PREVIOUS_UPGRADE_KEYS = {"honors_page": "honors page", "camera": "camera", "k128
 # read "legacy" for it, and nfl2k5_returner_fix.apply accepts "retail" or "legacy" the same way.
 LEGACY_UPGRADE_KEYS = {"progression": "player growth, decline and retirement", "franchise_economy": "2026 franchise economy",
                        "returner_fix": "CPU kick and punt returner fix"}
+
+
+def rebuild_only_reason(state: Mapping[str, object]) -> str:
+    """Why this release cannot build on top of the disc the state describes, in plain words, or "" when it can try.
+
+    b780 studio1 (Q69). A disc built by an older release (the released SOFTDRINK 2K28 discs) carries the Modern practice field's
+    team logo at midfield, a runtime table in the executable, while its practice facility reads foreign here, so the logo cannot
+    be kept (the engine keeps an installed option only with its parent in the plan) and it cannot be turned off in place. The
+    engine then stops every build at its first check ("Practice field: team logo at midfield (experimental) is installed;
+    rebuild from a verified base to turn it off"), and behind that check another waits (the v0.8 plan's next refusal is
+    "128 MB memory options differ", the installed heap, early and 128 MB settings not being the page's plan). The page used to
+    offer Needs update boxes on such a disc and then let the engine refuse. Both Build and Game Fixes ask this one function."""
+
+    if state.get("modern_practice_field_team_logo") == "applied" and state.get("modern_practice_field") != "applied":
+        what = "disc" if state.get("container") == "xiso" else "executable"
+        return (f"This {what} already has the practice field's team logo at midfield, put there by an older build. This release "
+                f"can neither keep it nor update it in place, so it cannot build on top of this {what}. To change it, build "
+                f"again from a dump of your own retail disc.")
+    return ""
 # b780 n6: beta-79 installs this release reads ("previous") but cannot update in place (they grew, or MyCareer and its
 # companions are linked together); the option stays off and says to rebuild from the retail game
 PREVIOUS_REBUILD_KEYS = {"my_career": "MyCareer", "my_career_home": "Career Home", "player_progress": "Player Progress",
@@ -713,6 +741,13 @@ class BuildPanel(QWidget):
         self.memory_action_label.setWordWrap(True)
         self.memory_action_label.hide()
         mk.addWidget(self.memory_action_label)
+        # b780-m64b: roster edits that grow the roster file are fitted to the original size at 64 MB; say what goes
+        self.memory_roster_label = WrappedLabel("")
+        self.memory_roster_label.setObjectName("throwMuted")
+        self.memory_roster_label.setWordWrap(True)
+        self.memory_roster_label.setAccessibleName("64 MB roster fit")
+        self.memory_roster_label.hide()
+        mk.addWidget(self.memory_roster_label)
         out = QHBoxLayout()
         self.target_caption = QLabel("Save disc copy as")
         out.addWidget(self.target_caption)
@@ -1025,6 +1060,8 @@ class BuildPanel(QWidget):
         self.cpu_scrambles_level.currentIndexChanged.connect(lambda _index: self._refresh())
         for parent, children in r62_ui.CHILDREN.items():
             getattr(self, parent + "_check").toggled.connect(lambda on, p=parent: self._parent_toggled(p, on))
+            if parent in r62_ui.DEFAULT_ON_CHILDREN:   # b780-mem1: a user's tick brings the default children along
+                getattr(self, parent + "_check").clicked.connect(lambda on, p=parent: self._parent_clicked(p, on))
             for child in children:
                 getattr(self, child + "_check").toggled.connect(lambda on, p=parent: self._child_toggled(p, on))
         self.momentum_collision_level = QComboBox()
@@ -2270,16 +2307,18 @@ class BuildPanel(QWidget):
             ("position_pools", "one-pool positions"), ("depth_roles", "depth roles"), ("depth_chart_rows", "depth-chart rows"),
             ("camera", "camera"), ("widescreen", "widescreen"), ("scorebug", "ESPN scorebug"))
             if state.get(key) == "applied"]
+        rebuild_only = rebuild_only_reason(state)   # b780 studio1 (Q69): on such a disc "needs update" would be an invitation
+        needs = "rebuild from retail to update" if rebuild_only else "needs update"
         if state.get("depth_locks") == "legacy":   # fx1 (review pr68 #4): an older revision, upgraded in place
-            applied.append("depth locks: older revision (needs update)")
+            applied.append(f"depth locks: older revision ({needs})")
         if state.get("draft_ai") == "legacy":      # b780 b1-draft: the beta-78/79 draft AI, upgraded in place
-            applied.append("draft AI: older revision (needs update)")
+            applied.append(f"draft AI: older revision ({needs})")
         for key, name in LEGACY_UPGRADE_KEYS.items():  # b780 studio1: upgraded in place too
             if state.get(key) == "legacy":
-                applied.append(f"{name}: older revision (needs update)")
+                applied.append(f"{name}: older revision ({needs})")
         for key, name in PREVIOUS_UPGRADE_KEYS.items():  # b780 n6: beta-79 installs, upgraded in place
             if state.get(key) == "previous":
-                applied.append(f"{name}: older revision (needs update)")
+                applied.append(f"{name}: older revision ({needs})")
         for key, name in PREVIOUS_REBUILD_KEYS.items():  # b780 n6: beta-79 installs a rebuild from retail updates
             if state.get(key) == "previous":
                 applied.append(f"{name}: beta 79 revision (rebuild from retail to update)")
@@ -2309,13 +2348,18 @@ class BuildPanel(QWidget):
             # b780 n6: a beta-79 install (honors page, camera v7, K128) reads "previous"; the build upgrades it in place.
             previous_upgrade = key in PREVIOUS_UPGRADE_KEYS and value == "previous"
             legacy_upgrade = key in LEGACY_UPGRADE_KEYS and value == "legacy"  # b780 studio1
-            box.setEnabled(available and (value == "retail" or upgrade or locks_upgrade or draft_upgrade or previous_upgrade
-                                          or legacy_upgrade)
+            # b780 studio1 (Q69): on a disc this release cannot build on, an in-place update is not an offer
+            update_only = upgrade or locks_upgrade or draft_upgrade or previous_upgrade or legacy_upgrade
+            declined = bool(rebuild_only) and update_only
+            box.setEnabled(available and (value == "retail" or (update_only and not declined))
                            and (is_image or not needs_image))
             box.setChecked(False)
             if not available:
                 box.setToolTip("Not available in this release.")
                 self._set_badge(key, "Not available in this release")
+            elif declined:
+                box.setToolTip("An older revision of this is installed. " + rebuild_only)
+                self._set_badge(key, "Older revision: rebuild from retail")
             elif locks_upgrade:
                 box.setToolTip("Depth chart locks from an older build are installed. Select to update them to this "
                                "release's revision (in place).")
@@ -2326,7 +2370,8 @@ class BuildPanel(QWidget):
                                "position mixes.")
                 self._set_badge(key, "Needs update")
             elif previous_upgrade:
-                box.setToolTip(f"The {PREVIOUS_UPGRADE_KEYS[key]} from an older build (beta 79) is installed. Select to "
+                older = "a v0.9 test build" if key == "coach_career_fix" else "an older build (beta 79)"  # b780 hunt6
+                box.setToolTip(f"The {PREVIOUS_UPGRADE_KEYS[key]} from {older} is installed. Select to "
                                "update it to this release's revision (in place).")
                 self._set_badge(key, "Needs update")
             elif legacy_upgrade:
@@ -3458,9 +3503,14 @@ class BuildPanel(QWidget):
         if not sixty_four:
             self._memory_budget_timer.stop()
             self.memory_action_label.hide()
+            self.memory_roster_label.hide()
             for label in self._memory_cost_labels.values():
                 label.hide()
             return
+        plan = self.plan()
+        fitted = console_memory.roster_fit_applies(plan) and not console_memory.roster_fit_problem(plan)
+        self.memory_roster_label.setText(console_memory.ROSTER_FIT_NOTE if fitted else "")
+        self.memory_roster_label.setVisible(fitted)
         if console_memory.model() is None:
             self.memory_budget_label.setText(console_memory.budget_line(None))
             return
@@ -3487,8 +3537,9 @@ class BuildPanel(QWidget):
                                          console_memory.budget_line(prediction, labels=self._memory_label))
 
     def _memory_plan(self):
-        """The plan the memory model is asked about: the page's plan as a 64 MB build can have it."""
-        return console_memory.without_forced(self.plan())
+        """The plan the memory model is asked about: the page's plan as a 64 MB build makes it (forced-off options off,
+        roster edits that grow the roster file fitted to the original size)."""
+        return console_memory.model_plan(self.plan())
 
     def _memory_identity(self) -> str:
         return console_memory.identity(self._memory_plan())
@@ -3796,6 +3847,9 @@ class BuildPanel(QWidget):
             return denial
         if self._reading:
             return "Reading disc…"
+        reason = rebuild_only_reason(self._state or {})
+        if reason:      # b780 studio1 (Q69): said before Make my disc, not by the engine's first check after it
+            return reason
         if self.softdrink_project_check.isChecked():
             if not self.softdrink_project_field.text().strip() or not platform_compat.io_path(self.softdrink_project_field.text()).is_file():
                 return "Choose an existing SOFTDRINK league project, or turn off Include SOFTDRINK league artwork."
@@ -4019,8 +4073,9 @@ class BuildPanel(QWidget):
                 box.setEnabled(False)
                 if (self._state or {}).get(key) == "previous":
                     # gate() worded this as a box to select; a locked, ticked box needs no selecting (b780 studio1)
-                    box.setToolTip(f"The {PREVIOUS_UPGRADE_KEYS[key]} from an older build (beta 79) is installed. This build "
-                                   "brings it up to this release's revision in place, so it stays ticked.")
+                    reason = rebuild_only_reason(self._state or {})      # b780 studio1 (Q69): no in-place update on such a disc
+                    box.setToolTip(f"The {PREVIOUS_UPGRADE_KEYS[key]} from an older build (beta 79) is installed. "
+                                   + (reason or "This build brings it up to this release's revision in place, so it stays ticked."))
         state = self._state or {}
         installed = state.get("decided_clock_settings") or {}
         cutoff = installed.get("settings") or {}
@@ -4248,6 +4303,13 @@ class BuildPanel(QWidget):
             for child in r62_ui.CHILDREN[parent]:
                 getattr(self, child + "_check").setChecked(False)
         self._refresh()
+
+    def _parent_clicked(self, parent, on):
+        if on:
+            for child in r62_ui.DEFAULT_ON_CHILDREN.get(parent, ()):
+                box = getattr(self, child + "_check")
+                if box.isEnabled():
+                    box.setChecked(True)
 
     def _child_toggled(self, parent, on):
         box = getattr(self, parent + "_check")
@@ -5103,6 +5165,8 @@ class BuildPanel(QWidget):
             prediction = self._memory_budget_result[0] if self._memory_budget_result else None
             if console_memory.alternate_kit_shortfall(prediction):
                 lines.append(console_memory.alternate_kit_warning(prediction))
+            if console_memory.roster_fit_applies(plan) and not console_memory.roster_fit_problem(plan):
+                lines.append(console_memory.ROSTER_FIT_NOTE)
         lines += ["", "Takes a few minutes. " + XEMU_LINE]
         return "\n".join(lines)
 
@@ -5461,7 +5525,8 @@ class BuildPanel(QWidget):
         contents = "Build selection: " + (", ".join(labels) if labels else "no recorded changes") + "."
         from mod_editor.gui.ux_text import disc_next_steps
         built_plan = receipt.get("plan") if isinstance(receipt.get("plan"), dict) else {}
-        next_step = disc_next_steps(target, console_memory=console_memory.of(built_plan))  # b780-m64b
+        next_step = disc_next_steps(target, console_memory=console_memory.of(built_plan),  # b780-m64b
+                                    next_steps_64=console_memory.NEXT_STEPS_64)
         if not tt.is_disc_image(target):
             next_step = "This is an executable copy. Build from a game disc to make a playable disc image."
         from mod_editor.core.build_feedback import timing_summary
@@ -5531,8 +5596,34 @@ class BuildPanel(QWidget):
         show_operation_error(self, "check your project", message)
         self._refresh()
 
+    def _build_was_cancelled(self, message: str) -> bool:
+        """b780 Q56: the build stopped because Cancel was pressed (the worker raises BuildCancelled)."""
+        failure = getattr(self._task, "failure", None)
+        try:
+            from mod_editor.core.nfl2k5_project_fit import BuildCancelled
+            if isinstance(failure, BuildCancelled):
+                return True
+        except ImportError:
+            pass
+        return message.startswith("Build cancelled")
+
     def _failed(self, message: str) -> None:
         message = plain_error(message)
+        if self._build_was_cancelled(message):
+            # b780 Q56: a Cancel the user pressed is not a failure: no red "Couldn't make the disc" box and no
+            # Discord hint, just what happened.
+            self._last_build_summary = ((self._requested_build_summary or f"2K5 Mod Studio {BUILD_RELEASE_TAG}")
+                                        + "\n\nBuild cancelled (Cancel was pressed). Nothing was written.")
+            self.copy_summary_button.setEnabled(True)
+            self._heartbeat_timer.stop()
+            self._task = None
+            self.operation_state_changed.emit(False)
+            self.progress_bar.hide()
+            self.progress_label.setText("")
+            self.status_label.setText("Build cancelled. Nothing was written; your project and your original disc "
+                                      "are unchanged.")
+            self._refresh()
+            return
         # b791-h3: the worker wrote errors.log, the build log and the diagnostic .zip; its exception says where.
         failure = getattr(self._task, "failure", None)
         record = getattr(failure, "studio_build_record", None) if failure is not None else None

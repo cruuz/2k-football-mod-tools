@@ -6,8 +6,9 @@ they shouldn't be in every single play. The starting halfback should have priori
 
 Revision 1 of the SPECIAL rows (beta-76.4 to the beta-80 RC) drew 3DRB as chain 0: the RB rank list itself. Putting a
 back at the top of 3DRB made him RB1, and RB1 is the back every shipped formation asks for first (ordinal 0 in all
-1,048 passing and 516 base RB slots of the v0.9 books). Revision 2 draws 3DRB as chain 2, RB rank row 1: the starter is
-not in the row, the back put at its top becomes RB2, and the RB slot still takes the starter first.
+1,048 passing and 516 base RB slots of the v0.9 books). Revision 3 (b780 sub1) draws 3DRB as chain 3, the RB side order
+from its second place, which no formation asks for: the Offense RB order never moves, and the third-down back comes in
+only through nfl2k5_lineup_roles on obvious passing downs.
 
 The native tests run the real SPECIAL swap path (0x2442E8), the chart getter (0x242AE0) and the on-field picker
 (0xE8790 with its 0xE7530 ordinal decoder, 0xE7810 list reader, 0xE7580 used-player check and 0xE8340 starter gate)
@@ -36,13 +37,18 @@ RB, RB_KIND = 7, 10
 THIRD_DOWN = (3, 11)                       # SPECIAL unit 3, row 11
 
 
-def revision_1(payload: bytes) -> bytes:
-    """The same applied executable with the beta-76.4..beta-80 RC 3DRB record (chain 0), digests repinned."""
+def previous(payload: bytes, revision: int) -> bytes:
+    """The same applied executable with revision ``revision``'s role records, digests repinned."""
     buf = bytearray(payload)
-    for row in rows.LEGACY_ROLE_ROWS:
+    for row in rows._rows_for(revision):
         legacy.put(buf, modern.record_va(row[0], row[1], table_va=rows.TABLE_VA), rows._role_record(row))
     _repin(buf)
     return bytes(buf)
+
+
+def revision_1(payload: bytes) -> bytes:
+    """The beta-76.4 .. beta-80 RC table (3DRB = the RB rank list itself)."""
+    return previous(payload, 1)
 
 
 class SpecialRowRevisionTests(unittest.TestCase):
@@ -55,25 +61,25 @@ class SpecialRowRevisionTests(unittest.TestCase):
         cls.addClassCleanup(cls.storage_pin.stop)
         cls.patched = rows.apply(legacy.prepare(legacy.fixture()))[0]
 
-    def test_3drb_is_rb_rank_row_one(self):
+    def test_every_role_row_reads_its_own_order(self):
         special = {r["abbreviation"]: (r["position"], r["chain"]) for r in modern.read_depth_chart_units(self.patched)["SPECIAL"]}
-        self.assertEqual(special["3DRB"], (RB, 2))
-        self.assertEqual(special["PWRB"], (RB, 1))
-        self.assertEqual(rows.revision(self.patched), rows.REVISION)
+        self.assertEqual({k: special[k] for k in ("LGUN", "RGUN", "GAD", "3DRB", "PWRB")},
+                         {"LGUN": (3, 6), "RGUN": (4, 6), "GAD": (3, 7), "3DRB": (RB, 3), "PWRB": (RB, 1)})
+        self.assertEqual((rows.status(self.patched), rows.revision(self.patched)), ("applied", rows.REVISION))
 
-    def test_a_revision_1_table_reads_applied_and_upgrades_one_dword_in_place(self):
-        old = revision_1(self.patched)
-        self.assertEqual((rows.status(old), rows.revision(old)), ("applied", 1))
-        upgraded, receipt = rows.apply(old)
-        self.assertEqual(upgraded, self.patched)
-        self.assertEqual(receipt["upgraded_from"], "revision 1")
-        va = modern.record_va(*THIRD_DOWN, table_va=rows.TABLE_VA) + 0x44
-        self.assertEqual([e["va"] for e in receipt["edits"]], [f"0x{va:x}"])
-        changed = [i for i, (a, b) in enumerate(zip(old, upgraded)) if a != b]
-        data = modern._offset(old, va)
-        self.assertEqual([i for i in changed if i >= 0x1000], [data])          # the chain byte 0 -> 2
-        self.assertTrue(all(i < 0x1000 for i in changed if i != data))         # the rest: the section digest only
-        self.assertEqual(rows.apply(upgraded)[0], upgraded)                     # replay is a no-op
+    def test_previous_tables_read_previous_and_upgrade_only_their_role_records(self):
+        changed = {1: {"LGUN", "RGUN", "GAD", "3DRB"}, 2: {"LGUN", "RGUN", "GAD", "3DRB"}}
+        for revision, labels in changed.items():
+            old = previous(self.patched, revision)
+            self.assertEqual((rows.status(old), rows.revision(old)), ("previous", revision))
+            upgraded, receipt = rows.apply(old)
+            self.assertEqual(upgraded, self.patched)
+            self.assertEqual(receipt["upgraded_from"], f"revision {revision}")
+            self.assertEqual({e["label"][len("special_"):-len("_chain")] for e in receipt["edits"]}, labels)
+            data = {modern._offset(old, int(e["va"], 16)) for e in receipt["edits"]}
+            diff = [i for i, (a, b) in enumerate(zip(old, upgraded)) if a != b]
+            self.assertEqual({i for i in diff if i >= 0x1000}, data)     # one chain byte each, plus the digest
+            self.assertEqual(rows.apply(upgraded)[0], upgraded)
 
 
 @unittest.skipUnless(legacy.XBE.is_file() and legacy.HAVE_UNICORN,
@@ -122,27 +128,21 @@ class ThirdDownBackNativeTests(unittest.TestCase):
         return self.call(uc, 0xE8790, ecx=context, edx=0, stack=(0, 0, assigned, len(used), 0, RB_KIND, ordinal),
                          limit=50000)
 
-    def test_the_starter_is_not_in_3drb_and_its_top_is_rb2(self):
+    def test_moving_a_back_into_3drb_never_moves_the_offense_rb_order(self):
         uc = self.boot(self.BACKS, payload=self.patched)
         self.call(uc, 0x243790, ecx=self.TEAM, limit=1000000)                    # the screen-entry compactor
-        self.assertEqual(self.lookup(uc, 0, RB, 0), self.player(0))              # Offense RB row: the starter
-        self.assertEqual([self.lookup(uc, r, RB, 2) for r in range(3)],
-                         [self.player(1), self.player(2), self.player(3)])       # 3DRB: RB2, RB3, RB4
-        self.assertNotIn(self.player(0), [self.lookup(uc, r, RB, 2) for r in range(4)])
-
-    def test_moving_a_back_into_3drb_makes_him_rb2_and_the_starter_keeps_every_rb_slot(self):
-        uc = self.boot(self.BACKS, payload=self.patched)
-        self.swap_in_row(uc, THIRD_DOWN, 1, 2)            # put RB3 at the top of 3DRB
-        self.assertEqual(self.ranks(uc), [0, 2, 1, 3])     # the starter keeps rank 0; RB3 is now rank 1 (RB2)
-        self.assertEqual(self.lookup(uc, 0, RB, 2), self.player(2))
-        # every shipped passing and base set asks for RB ordinal 0: the starter, then the 3DRB back behind him
-        self.assertEqual(self.pick(uc, 0), self.player(0))
-        self.assertEqual(self.pick(uc, 0, used=(0,)), self.player(2))
-        self.assertEqual(self.pick(uc, 2), self.player(2))  # what 3DRB itself names
-        self.assertEqual(self.pick(uc, 1), self.lookup(uc, 0, RB, 1))  # PWRB (the power order) is untouched
+        ranks = self.ranks(uc)
+        top = self.lookup(uc, 0, RB, 3)                                           # 3DRB row 0 = RB side row 1
+        other = next(self.player(i) for i in range(4) if self.player(i) not in (top, self.lookup(uc, 0, RB, 1)))
+        self.unit(uc, *THIRD_DOWN)
+        self.call(uc, 0x2442E8, until=0x244308, ecx=top, esi=other, edi=self.TEAM)
+        self.assertEqual(self.ranks(uc), ranks)                                   # the Offense RB order is untouched
+        self.assertEqual(self.lookup(uc, 0, RB, 3), other)                        # the new 3DRB
+        self.assertEqual(self.pick(uc, 0), self.player(0))                        # every RB slot still takes the starter
+        self.assertEqual(self.pick(uc, 3), other)                                 # what 3DRB itself names
 
     def test_revision_1_put_the_3drb_back_in_every_play(self):
-        # negative control: the beta-80 RC table, the same move to the top of 3DRB
+        # negative control: the beta-80 RC table, a move to the top of 3DRB
         uc = self.boot(self.BACKS, payload=self.old)
         self.assertEqual(self.lookup(uc, 0, RB, 0), self.player(0))
         self.swap_in_row(uc, THIRD_DOWN, 0, 2)            # 3DRB row 0 was the starter himself

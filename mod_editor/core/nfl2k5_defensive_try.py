@@ -756,7 +756,12 @@ def _compatible_edits(payload: bytes) -> list[tuple[int, bytes]]:
     tolerated only while the honors owner validates as exactly applied; any other change in the span is still foreign.
     """
     from . import nfl2k5_honors as honors  # lazy: the honors owner never imports this module
-    return honors.fold_site_edit(payload)
+    from . import nfl2k5_history_pool as history_pool
+    # b780 hist1: the history-pool owner rewrites the engine's collection in place (insert, compaction, fold, the
+    # writer's full-pool path); the writer, the getters and setters this patch calls keep their interface, and field 59
+    # folds by its retail rule (tests/mod_editor/test_b780_hist1_history_pool.py). Tolerated only while that owner reads
+    # exactly applied.
+    return honors.fold_site_edit(payload) + history_pool.compatible_edits(payload)
 
 
 def status(payload: bytes) -> str:

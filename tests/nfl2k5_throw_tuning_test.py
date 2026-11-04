@@ -124,6 +124,9 @@ def _build_synthetic_xbe(curves: dict[str, tuple[tuple[float, float], ...]] | No
     buf[TEXT_RAW + (returner.SITE_VA - TEXT_VA): TEXT_RAW + (returner.SITE_VA - TEXT_VA) + returner.SITE_SIZE] = returner.RETAIL_SITE
     # b780 st1: the returner fix's second site, the KR/PR getter FUN_00242a60
     buf[TEXT_RAW + (returner.GETTER_VA - TEXT_VA): TEXT_RAW + (returner.GETTER_VA - TEXT_VA) + returner.GETTER_SIZE] = returner.RETAIL_GETTER
+    for va, retail in ((returner.LINEUP_HOOK_VA, returner.RETAIL_LINEUP_HOOK), (returner.EXCHANGE_VA, returner.RETAIL_EXCHANGE),
+                       (returner.ALL_STAR_CALL_VA, returner.RETAIL_ALL_STAR_CALL)):
+        buf[TEXT_RAW + (va - TEXT_VA): TEXT_RAW + (va - TEXT_VA) + len(retail)] = retail
     buf[TEXT_RAW + (accel.HOOK_VA - TEXT_VA): TEXT_RAW + (accel.HOOK_VA - TEXT_VA) + len(accel.RETAIL_HOOK)] = accel.RETAIL_HOOK
     for va, retail in ((catch.HOOK_VA, catch.RETAIL_HOOK), (catch.CEIL_SITES[0], catch.RETAIL_CEIL), (catch.CEIL_SITES[1], catch.RETAIL_CEIL)):
         off = TEXT_RAW + (va - TEXT_VA)
@@ -514,7 +517,8 @@ class ReturnerFixTests(unittest.TestCase):
         self.assertEqual(patched[site: site + returner.SITE_SIZE], returner.site_bytes())
         getter = TEXT_RAW + (returner.GETTER_VA - TEXT_VA)                     # b780 st1
         self.assertEqual(patched[getter: getter + returner.GETTER_SIZE], returner.getter_bytes())
-        self.assertEqual([e["label"] for e in receipt["edits"]], ["returner_loop", "returner_getter"])
+        self.assertEqual([e["label"] for e in receipt["edits"]],
+                         ["returner_loop", "returner_getter", "lineup_slot_check", "exchange_store", "all_star_skip"])
         self.assertEqual(len(returner.site_bytes()), returner.SITE_SIZE)
         # the loop still hands off to the retail re-rank call and continues the team loop
         body = returner.site_bytes()

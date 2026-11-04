@@ -7,7 +7,9 @@ before the option existed. These are the core checks (no Qt); the Build tab's ar
 """
 from __future__ import annotations
 
+import hashlib
 import json
+import os
 import sys
 import tempfile
 import types
@@ -25,6 +27,7 @@ from mod_editor.core import mod_build  # noqa: E402
 from mod_editor.core import modpack_sources  # noqa: E402
 from mod_editor.core import nfl2k5_build_settings as saved  # noqa: E402
 from mod_editor.core import nfl2k5_console_memory as cm  # noqa: E402
+from mod_editor.core import nfl2k5_roster_records as rr  # noqa: E402
 
 MODEL = "mod_editor.core.nfl2k5_memory_budget"
 
@@ -55,6 +58,23 @@ def fake_model(*, fits=True, spare=412 * 1024, over=0, suggestions=(), costs=Non
     module.predict = predict
     module.recommended_64_profile = lambda: dict(profile or {})
     return module
+
+
+def grown_roster_edits(records=612):
+    """A small roster-edits document whose dated refresh puts its free agents in appended (capacity) records, the way
+    the SOFTDRINK pack's does: fittable to the retail size (only the depth free agents need the appended records)."""
+    def depth(priority, index):
+        return {"index": index, "new": True, "first": f"F{priority}", "last": f"L{priority}", "fa3_priority": priority,
+                "fields": {"photo_id": 20000 + index, "jersey": priority}}
+    rows = [{"index": 2464, "new": True, "first": "Signed", "last": "Player", "fields": {}}]
+    rows += [depth(p, i) for p, i in enumerate((2554, 2619, 2700), 1)]
+    return {"schema": rr.EDITS_SCHEMA, "edits": [],
+            "roster_refresh": {"schema": "nfl2k5.roster_refresh.v1", "players": rows,
+                               "free_agents": [7, 2464, 2554, 2619, 2700], "identity_guards": [[0, "A", "B", "2000-01-01"]],
+                               "teams": [{"index": 0, "team": "SF", "active": [1, 2, 3], "reserves": [4],
+                                          "specialists": {"k": 3}}]},
+            "free_agent_capacity": {"schema": "nfl2k5.free_agent_capacity.v1", "records": records},
+            "draft_pick_ownership": {"schema": "x"}, "hback_roles": {"schema": "y"}}
 
 
 def _text(recipe) -> str:
@@ -185,24 +205,120 @@ class Validation(unittest.TestCase):
             plan = mod_build.BuildPlan("s", "t", console_memory=64, throw=True, catch_slider=True)
             self.assertEqual(mod_build.validate_plan(plan), [])
 
-    def test_64_refuses_roster_edits_that_grow_the_roster_file(self):
+    def test_64_fits_roster_edits_that_grow_the_roster_file_instead_of_refusing_them(self):
         with tempfile.TemporaryDirectory() as folder:
             grown = Path(folder) / "softdrink-rosters.json"
-            grown.write_text(json.dumps({"schema": "x", "edits": [], "free_agent_capacity": {
-                "schema": "nfl2k5.free_agent_capacity.v1", "records": 612}}))
+            grown.write_text(json.dumps(grown_roster_edits(records=612)))
             plain = Path(folder) / "my-rosters.json"
-            plain.write_text(json.dumps({"schema": "x", "edits": []}))
+            plain.write_text(json.dumps({"schema": rr.EDITS_SCHEMA, "edits": []}))
+            plan64 = mod_build.BuildPlan("s", "t", console_memory=64, roster_edits=str(grown))
+            plan128 = mod_build.BuildPlan("s", "t", roster_edits=str(grown))
             with without_model():
-                self.assertEqual(cm.capacity_records(mod_build.BuildPlan("s", "t", roster_edits=str(grown))), 612)
-                problems = cm.problems(mod_build.BuildPlan("s", "t", console_memory=64, roster_edits=str(grown)))
-                self.assertEqual(len(problems), 1)
-                self.assertIn("softdrink-rosters.json", problems[0])
-                self.assertIn("612 more records", problems[0])
-                self.assertIn("Untick Include exported \u2605 Rosters edits", problems[0])
-                self.assertEqual(cm.problems(mod_build.BuildPlan("s", "t", console_memory=64, roster_edits=str(plain))),
-                                 [])
-                # 128 keeps its own rule (capacity growth needs K128), untouched by this option
-                self.assertEqual(cm.problems(mod_build.BuildPlan("s", "t", roster_edits=str(grown))), [])
+                self.assertEqual(cm.capacity_records(plan64), 612)
+                self.assertTrue(cm.roster_fit_applies(plan64))
+                self.assertFalse(cm.roster_fit_applies(plan128))
+                self.assertEqual(cm.roster_fit_problem(plan64), "")
+                self.assertEqual(mod_build.validate_plan(plan64), [])          # kept: the build fits them
+                self.assertEqual(cm.problems(mod_build.BuildPlan("s", "t", console_memory=64, roster_edits=str(plain))), [])
+            # no arena growth and no K128 demand at 64 MB; 128 MB keeps its capacity growth exactly as before
+            self.assertEqual(mod_build._roster_capacity_records(plan64), 0)
+            self.assertEqual(mod_build._requested_capacity_records(plan64), 612)
+            self.assertEqual(mod_build._roster_capacity_records(plan128), 612)
+            self.assertTrue(mod_build._roster_fit_applies(plan64))
+            self.assertFalse(mod_build._roster_fit_applies(plan128))
+            # the model is asked about the fitted roster: no capacity growth, no draft-pick or backfield sections
+            flat = cm.model_plan(plan64)
+            self.assertEqual((flat["roster_capacity"], flat["roster_draft_pick_ownership"], flat["roster_hback_roles"]),
+                             (False, False, False))
+            self.assertEqual(flat["roster_edits"], str(grown))
+            self.assertIs(cm.model_plan(plan128), plan128)
+            self.assertIn("free agents beyond the original game's count", cm.ROSTER_FIT_NOTE)
+            self.assertIn("draft-pick ownership and the backfield labels fall back to the 2004 game's", cm.ROSTER_FIT_NOTE)
+
+    def test_64_refuses_roster_edits_only_when_the_fit_does(self):
+        with tempfile.TemporaryDirectory() as folder:
+            document = grown_roster_edits(records=612)
+            document["edits"].append({"index": 2620, "pool": "primary"})       # a non-free-agent row in an appended record
+            grown = Path(folder) / "grown.json"
+            grown.write_text(json.dumps(document))
+            with without_model():
+                problems = mod_build.validate_plan(mod_build.BuildPlan("s", "t", console_memory=64, roster_edits=str(grown)))
+            self.assertEqual(len(problems), 1)
+            self.assertTrue(problems[0].startswith("The 64 MB build cannot fit the roster edits grown.json to the original "
+                                                   "game's roster size (612 more records asked for): "), problems[0])
+            self.assertIn("appended capacity records", problems[0])
+            self.assertIn("Untick Include exported \u2605 Rosters edits, or choose Console memory 128 MB", problems[0])
+
+    def test_the_build_fits_the_refresh_on_its_own_roster_and_drops_the_two_xbe_sections(self):
+        """The dated refresh pass of a 64 MB build: the fit runs on the main roster the build made (load_image of the
+        target), the fitted refresh is what gets written, the receipt and the user notes say what was dropped; 128 MB
+        writes the document's own refresh and runs the draft-pick and backfield steps as before."""
+        with tempfile.TemporaryDirectory() as folder:
+            grown = Path(folder) / "softdrink-rosters.json"
+            grown.write_text(json.dumps(grown_roster_edits(records=612)))
+            fitted = {"roster_refresh": {"fitted": True}}
+            fit_receipt = {"depth_kept": 1, "depth_candidates": 3, "signed_depth_kept": []}
+            calls = {}
+
+            class Image:
+                def to_body(self):
+                    return b"BODY"
+
+            def fake_fit(document, base, *, source_sha256=""):
+                calls["fit"] = (base, source_sha256, sorted(document))
+                return fitted, fit_receipt
+
+            def fake_apply(target, directive, **_kwargs):
+                calls["directive"] = directive
+                return {"written": True}
+
+            def no_xbe(_target):
+                raise AssertionError("the 64 MB build must not run the draft-pick or backfield XBE steps")
+            for memory in (64, 128):
+                calls.clear()
+                plan = mod_build.BuildPlan("s", "t", console_memory=memory, roster_edits=str(grown), position_pools=True)
+                receipt = {"steps": []}
+                with mock.patch.object(rr, "load_image", lambda _path: Image()), \
+                        mock.patch.object(rr, "apply", fake_apply), mock.patch.object(cm, "fit_roster_edits", fake_fit):
+                    mod_build._apply_roster_refresh(plan, Path(folder) / "out.iso", receipt, lambda *_a: None)
+                    if memory == 64:
+                        with mock.patch.object(mod_build, "_xbe_bytes", no_xbe):
+                            mod_build._apply_draft_pick_ownership(plan, Path(folder) / "out.iso", receipt, lambda *_a: None)
+                            mod_build._apply_hback_roles(plan, Path(folder) / "out.iso", receipt, lambda *_a: None)
+                if memory == 64:
+                    self.assertEqual(calls["fit"][0], b"BODY")
+                    self.assertEqual(calls["fit"][1], hashlib.sha256(grown.read_bytes()).hexdigest())
+                    self.assertEqual(calls["directive"]["roster_refresh"], {"fitted": True})
+                    self.assertEqual(receipt["steps"][0], {"step": "roster_retail_fit", **fit_receipt})
+                    self.assertEqual(receipt["user_notes"], [cm.roster_fit_note(fit_receipt)])
+                else:
+                    self.assertNotIn("fit", calls)
+                    self.assertEqual(calls["directive"]["roster_refresh"], grown_roster_edits()["roster_refresh"])
+                    self.assertNotIn("user_notes", receipt)
+
+    def test_a_fit_that_fails_in_the_build_refuses_with_the_reason(self):
+        with tempfile.TemporaryDirectory() as folder:
+            grown = Path(folder) / "softdrink-rosters.json"
+            grown.write_text(json.dumps(grown_roster_edits(records=612)))
+
+            class Image:
+                def to_body(self):
+                    return b"BODY"
+
+            def failing_fit(document, base, *, source_sha256=""):
+                raise ValueError("the refresh alone keeps fewer than 116 import vacancies at retail capacity")
+            plan = mod_build.BuildPlan("s", "t", console_memory=64, roster_edits=str(grown), position_pools=True)
+            with mock.patch.object(rr, "load_image", lambda _path: Image()), \
+                    mock.patch.object(cm, "fit_roster_edits", failing_fit):
+                with self.assertRaises(ValueError) as caught:
+                    mod_build._apply_roster_refresh(plan, Path(folder) / "out.iso", {"steps": []}, lambda *_a: None)
+            self.assertIn("The 64 MB build could not fit the roster edits to the original game's roster size: the "
+                          "refresh alone keeps fewer than 116", str(caught.exception))
+
+    def test_the_fit_note_counts_what_was_kept(self):
+        note = cm.roster_fit_note({"depth_kept": 19, "depth_candidates": 533, "signed_depth_kept": [1] * 7})
+        self.assertTrue(note.startswith(cm.ROSTER_FIT_NOTE))
+        self.assertIn("This build keeps 19 of the 533 dated free agents (7 of them signed to clubs).", note)
 
     def test_64_refuses_a_selection_the_model_says_will_not_fit_naming_what_to_turn_off(self):
         model = fake_model(fits=False, spare=0, over=300 * 1024 + 1,
@@ -323,6 +439,90 @@ class RealModel(unittest.TestCase):
         self.assertLessEqual(set(profile), names)
 
 
+HEALTHY = Path(os.environ.get("NFL2K5_B780_ROSTER_EDITS_HEALTHY",
+                              "/home/noah/2k-worktrees/.b77-scratch/b780/m64a/r1h/coach-step.json"))
+FITTED_64 = Path(os.environ.get("NFL2K5_B780_ROSTER_64MB", "/home/noah/2k-worktrees/.b77-scratch/b780/m64a/r1h/"
+                                "roster-edits-b780-refresh-20261103-healthy-retail-capacity-64mb.json"))
+REFRESH_BASE = Path(os.environ.get("NFL2K5_B780_REFRESH_BASE",
+                                   "/home/noah/2k-worktrees/.b77-scratch/i4/inputs/ro1/baseline.body"))
+RETAIL = Path(os.environ.get("NFL2K5_RETAIL_XISO", "/media/noah/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso"))
+FITTED_64_SHA256 = "6ab78553716094f78cf50c768d5524b4cb17a0523b801cf8196bae07c3ee7285"
+
+
+def _proof_inputs():
+    return (HEALTHY.is_file() and FITTED_64.is_file() and REFRESH_BASE.is_file()
+            and hashlib.sha256(FITTED_64.read_bytes()).hexdigest() == FITTED_64_SHA256)
+
+
+def users_dump_base(source: dict) -> bytes:
+    """The main roster the build makes from the user's own retail dump before the dated refresh: the build's roster
+    edits pass (refresh deferred, the 2026 free agents and spare capacity it adds) and the 2026 team names pass."""
+    from mod_editor.core import nfl2k5_free_agents, nfl2k5_team_names_2026 as names
+    retail = rr.load_image(RETAIL).to_body()
+    edits = {k: v for k, v in source.items() if k not in ("roster_refresh", "created_history")}
+    if nfl2k5_free_agents.is_pack_input(edits):
+        edits = dict(edits, modern_free_agents="2026-10-05")
+    if edits.get("modern_free_agents"):
+        edits = dict(edits, restore_historic_spare_capacity=True)
+    body, _receipt = rr.apply_body(retail, edits, scheme="one_pool", refresh_follows=True)
+    with rr._outer_image()(RETAIL) as archive:
+        entry = rr._entry(archive)
+        header = archive.read(entry.virtual_offset, 32)
+    payload, _ = names.apply(header + body)
+    return payload[32:]
+
+
+@unittest.skipUnless(_proof_inputs(), "the 64 MB roster proof needs M64A's healthy pack roster, its validated 64 MB file "
+                                      "(6ab78553) and the refresh's pinned base")
+class SoftdrinkRosterFitProof(unittest.TestCase):
+    """Coordinator 11/03: the 64 MB build keeps the pack's 2026 rosters. The Studio's fit (nfl2k5_console_memory.
+    fit_roster_edits, M64A's retail fit as a library) on the healthy pack roster equals M64A's validated 64 MB file."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.raw = HEALTHY.read_bytes()
+        cls.source = json.loads(cls.raw.decode("utf-8"))
+        cls.want = json.loads(FITTED_64.read_text(encoding="utf-8"))
+        cls.sha = hashlib.sha256(cls.raw).hexdigest()
+
+    def test_on_the_refresh_pinned_base_it_is_the_validated_file_byte_for_byte(self):
+        variant, receipt = cm.fit_roster_edits(self.source, REFRESH_BASE.read_bytes(), source_sha256=self.sha)
+        text = json.dumps(variant, indent=1, ensure_ascii=False) + "\n"
+        self.assertEqual(hashlib.sha256(text.encode("utf-8")).hexdigest(), FITTED_64_SHA256)
+        self.assertEqual((receipt["depth_candidates"], receipt["depth_kept"], len(receipt["signed_depth_kept"])), (533, 19, 7))
+        self.assertEqual(receipt["dropped_xbe_sections"], ["draft_pick_ownership", "hback_roles"])
+
+    @unittest.skipUnless(RETAIL.is_file(), "needs the retail disc image (NFL2K5_RETAIL_XISO)")
+    def test_on_the_users_own_dump_the_fitted_rosters_are_the_same(self):
+        base = users_dump_base(self.source)
+        variant, receipt = cm.fit_roster_edits(self.source, base, source_sha256=self.sha)
+        self.assertEqual(variant["roster_refresh"], self.want["roster_refresh"])
+        self.assertEqual(sorted(k for k in set(variant) | set(self.want) if variant.get(k) != self.want.get(k)),
+                         ["fa3_free_agent_depth"])
+        mine, theirs = variant["fa3_free_agent_depth"], self.want["fa3_free_agent_depth"]
+        # the only difference: the receipt records the base the fit ran on (this build's roster, not the authoring disc)
+        self.assertEqual(sorted(k for k in set(mine) | set(theirs) if mine.get(k) != theirs.get(k)),
+                         ["base_sha256", "final_body_sha256", "retail_capacity"])
+        self.assertEqual(sorted(k for k in set(mine["retail_capacity"]) | set(theirs["retail_capacity"])
+                                if mine["retail_capacity"].get(k) != theirs["retail_capacity"].get(k)),
+                         ["base_sha256", "final_body_sha256"])
+        self.assertEqual((receipt["depth_kept"], receipt["import_vacancies_after_floor"]), (19, 116))
+
+    def test_the_fitted_64_mb_plan_validates_and_fits_with_the_default_uniforms(self):
+        if cm.model() is None:
+            self.skipTest("no memory model in this build")
+        plan = mod_build.apply_preset(mod_build.BuildPlan("s", "t", console_memory=64), "softdrink_experimental")
+        plan = mod_build.BuildPlan(**{**{f.name: getattr(plan, f.name) for f in fields(plan)}, "roster_edits": str(HEALTHY)})
+        plan = mod_build.BuildPlan(**{**{f.name: getattr(plan, f.name) for f in fields(plan)},
+                                      **cm.recommended_profile(plan)})
+        self.assertTrue(cm.roster_fit_applies(plan))
+        self.assertEqual(mod_build.validate_plan(plan), [])
+        prediction = cm.predict(cm.model_plan(plan))
+        self.assertIsNotNone(prediction)
+        self.assertFalse(cm.refuses(prediction), cm.budget_line(prediction))
+        self.assertTrue(prediction["fits"] or prediction["primary_fits"], cm.budget_line(prediction))
+
+
 class Model(unittest.TestCase):
     def test_the_model_adds_rules_and_its_wording_wins(self):
         model = fake_model(requires={"guardian_overlay": "Needs the >64 MB region.", "module_loader": "needs the 4627 kernel",
@@ -394,7 +594,9 @@ class Model(unittest.TestCase):
         self.assertEqual(cm.LABELS[128], "128 MB, xemu (full SOFTDRINK)")
         self.assertEqual(cm.LABELS[64], "64 MB, original Xbox and Android hakuX (experimental, estimated, not yet "
                                         "tested on a real Xbox or hakuX)")
-        self.assertIn("2026 rosters need 128 MB for now", cm.SHARE_NOTE)
+        self.assertIn("the 2026 rosters, fitted to the original game's roster size", cm.SHARE_NOTE)
+        for text in (cm.ROSTER_FIT_NOTE, cm.SHARE_NOTE):
+            self.assertNotIn("\u2014", text)
 
 
 if __name__ == "__main__":

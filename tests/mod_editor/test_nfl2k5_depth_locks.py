@@ -129,6 +129,8 @@ def V1_PATCHED_XBE():
     data = bytearray(locks.apply(returners.apply(XBE.read_bytes())[0])[0])
     image = XbeImage(bytes(data))
     for site in locks.sites("retail", 1):
+        if site.label == "weekly_all_star_skip":
+            continue   # b780 st1: older revisions never owned the loop head's call; the returner fix's stays
         off = image.offset(site.va, len(site.after))
         data[off:off + len(site.after)] = site.after
     for s in strength._sections(bytes(data)):
@@ -142,6 +144,8 @@ def V2_PATCHED_XBE():
     data = bytearray(locks.apply(returners.apply(XBE.read_bytes())[0])[0])
     image = XbeImage(bytes(data))
     for site in locks.sites("retail", 2):
+        if site.label == "weekly_all_star_skip":
+            continue   # b780 st1: older revisions never owned the loop head's call; the returner fix's stays
         off = image.offset(site.va, len(site.before))
         data[off:off + len(site.after)] = site.after
     for s in strength._sections(bytes(data)):
@@ -457,6 +461,8 @@ def V4_PATCHED_XBE():
     data = bytearray(locks.apply(returners.apply(XBE.read_bytes())[0])[0])
     image = XbeImage(bytes(data))
     for site in locks.sites("retail", 4):
+        if site.label == "weekly_all_star_skip":
+            continue   # b780 st1: older revisions never owned the loop head's call; the returner fix's stays
         off = image.offset(site.va, len(site.before))
         data[off:off + len(site.after)] = site.after
     for s in strength._sections(bytes(data)):
@@ -470,6 +476,8 @@ def V3_PATCHED_XBE():
     data = bytearray(locks.apply(returners.apply(XBE.read_bytes())[0])[0])
     image = XbeImage(bytes(data))
     for site in locks.sites("retail", 3):
+        if site.label == "weekly_all_star_skip":
+            continue   # b780 st1: older revisions never owned the loop head's call; the returner fix's stays
         off = image.offset(site.va, len(site.before))
         data[off:off + len(site.after)] = site.after
     for s in strength._sections(bytes(data)):
@@ -899,7 +907,8 @@ class ExecutionTests(unittest.TestCase):
         self.assertEqual(receipt["upgraded_from"], 1)
         self.assertEqual({e["label"] for e in receipt["edits"]},
                          {"compactor", "weekly_rank_stage", "screen_swap", "ratings_panel_guard",
-                          "user_club_compact", "weekly_sort_release", "weekly_all_star_skip"})
+                          "user_club_compact", "weekly_sort_release", "screen_kr"})
+        # b780 st1: no weekly_all_star_skip edit, the loop head's call is already the returner fix's (same skip)
         self.assertTrue(locks.apply(upgraded)[1]["already_applied"])
 
     def test_revision2_install_upgrades_in_place(self):
@@ -911,7 +920,7 @@ class ExecutionTests(unittest.TestCase):
         self.assertEqual(receipt["upgraded_from"], 2)
         # b780 hunt6 (revision 5): every older install also gains the all-star skip (swap block + loop head call)
         self.assertEqual({e["label"] for e in receipt["edits"]},
-                         {"compactor", "weekly_rank_stage", "weekly_sort_release", "screen_swap", "weekly_all_star_skip"})
+                         {"compactor", "weekly_rank_stage", "weekly_sort_release", "screen_swap", "screen_kr"})   # b780 st1: see revision 1
 
     def test_revision3_install_upgrades_in_place(self):
         v3 = V3_PATCHED_XBE()
@@ -920,7 +929,7 @@ class ExecutionTests(unittest.TestCase):
         self.assertEqual(upgraded, self.patched)
         self.assertEqual(receipt["upgraded_from"], 3)
         self.assertEqual({e["label"] for e in receipt["edits"]},
-                         {"compactor", "weekly_rank_stage", "screen_swap", "weekly_all_star_skip"})
+                         {"compactor", "weekly_rank_stage", "screen_swap", "screen_kr"})   # b780 st1: see revision 1
         self.assertTrue(locks.apply(upgraded)[1]["already_applied"])
 
     def test_revision4_install_upgrades_in_place(self):
@@ -930,7 +939,25 @@ class ExecutionTests(unittest.TestCase):
         upgraded, receipt = locks.apply(v4)
         self.assertEqual(upgraded, self.patched)
         self.assertEqual(receipt["upgraded_from"], 4)
-        self.assertEqual({e["label"] for e in receipt["edits"]}, {"screen_swap", "weekly_all_star_skip"})
+        # b780 sub1 (revision 6): every older install also gains the KR arm that keeps KR2 on a re-select
+        self.assertEqual({e["label"] for e in receipt["edits"]}, {"screen_swap", "screen_kr"})   # b780 st1: see revision 1
+        self.assertTrue(locks.apply(upgraded)[1]["already_applied"])
+
+    def test_revision5_install_upgrades_in_place(self):
+        # b780 sub1: the b780 hunt6 install (revision 5) gains only the revision-6 KR arm
+        data = bytearray(self.patched)
+        image = XbeImage(bytes(data))
+        site = next(s for s in locks.sites("retail", 5) if s.label == "screen_kr")
+        off = image.offset(site.va, len(site.before))
+        data[off:off + len(site.after)] = site.after
+        for s in strength._sections(bytes(data)):
+            data[s.header_offset + 36:s.header_offset + 56] = strength.section_digest(bytes(data), s)
+        v5 = bytes(data)
+        self.assertEqual((locks.read_any(v5)["status"], locks.read_any(v5)["revision"]), ("legacy", 5))
+        upgraded, receipt = locks.apply(v5)
+        self.assertEqual(upgraded, self.patched)
+        self.assertEqual(receipt["upgraded_from"], 5)
+        self.assertEqual({e["label"] for e in receipt["edits"]}, {"screen_kr"})
         self.assertTrue(locks.apply(upgraded)[1]["already_applied"])
 
     # b777 dl3 (Noah 10/20: a better free-agent signing must start on a CPU club).
@@ -1169,7 +1196,9 @@ class ExecutionTests(unittest.TestCase):
             raw[2] = locks.set_lock(record(position=13, score=.95), "rank")
             raw[3] = locks.set_lock(raw[3], "side")
             cpu.seed(raw)
-            self.assertEqual(cpu.run(0x2BDCF0, budget=1000000), STACK + 4)
+            # b780 st1: the returner fix's exchange store scans the slot list on each store that moves a
+            # specialist's slot (worst case here: 964 stores, 0.65 -> 1.16 million instructions)
+            self.assertEqual(cpu.run(0x2BDCF0, budget=2000000), STACK + 4)
             self.assertEqual(cpu.returner_identities(), (0, 64, 1))
             self.assertEqual(fields(cpu.player(2))[0], 0)
             self.assertEqual(fields(cpu.player(3))[1], 0)
@@ -1177,7 +1206,7 @@ class ExecutionTests(unittest.TestCase):
             departing = next(i for i in range(65) if struct.unpack_from("<I", team, 4 * i)[0] == PLAYERS)
             cpu.run(0xC3A90, eax=TEAM, ecx=departing)
             self.assertEqual(fields(cpu.player(0))[2], 0)
-            cpu.run(0x2BDCF0, budget=1000000)
+            cpu.run(0x2BDCF0, budget=2000000)
             self.assertNotEqual(cpu.returner_identities()[0], 0)
             self.assertEqual(cpu.returner_identities()[1:], (64, 1))
 

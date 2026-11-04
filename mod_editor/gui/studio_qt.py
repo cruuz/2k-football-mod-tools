@@ -324,6 +324,10 @@ def _build_blocker_message(*, ready: bool, edit_count: int, busy: bool) -> str:
     return BUILD_READY_MESSAGE
 
 
+#: b780 Q52: from this many edits a recovery snapshot waits for AUTOSAVE_QUIET_MS without changes (it takes seconds).
+AUTOSAVE_QUIET_EDITS = 1000
+AUTOSAVE_QUIET_MS = 15000
+
 #: b780-uxfix: the Share tab installs SOFTDRINK 2K28 first; "Share" alone read as sending something to a friend.
 SHARE_TAB_TITLE = "Install & Share"
 
@@ -2642,10 +2646,10 @@ class StudioMainWindow(QMainWindow):
         box.setText("You have changes that are not saved in a project file yet.")
         box.setInformativeText(
             f"{context} can lose them. Save them as a .2k5mod project (it holds only your own changes, "
-            "never game data), continue without saving, or cancel."
+            "never game data), discard them, or cancel."
         )
         save = box.addButton("Save project", QMessageBox.AcceptRole)
-        discard = box.addButton("Don't save", QMessageBox.DestructiveRole)
+        discard = box.addButton("Discard changes", QMessageBox.DestructiveRole)
         cancel = box.addButton(QMessageBox.Cancel)
         box.setDefaultButton(save)
         box.setEscapeButton(cancel)
@@ -8675,7 +8679,7 @@ class StudioMainWindow(QMainWindow):
         identity = state.get("disc_identity")
         kind = str(identity.get("kind", "")) if isinstance(identity, Mapping) else ""
         badge = {"retail-xiso": "original", "retail-raw": "original",
-                 "repack": "repacked", "modified": "modified"}.get(kind, "")
+                 "repack": "repacked", "modified": "modified", "studio-built": "built with the Studio"}.get(kind, "")
         self.source_pill.setText(f"●  Disc: {display}" + (f" · {badge}" if badge else ""))
         line = str(state.get("disc_identity_line") or "")
         self.source_pill.setToolTip(
@@ -8748,6 +8752,35 @@ class StudioMainWindow(QMainWindow):
         if self._build_panel is not None:
             self._build_panel._refresh()
 
+    def _recovery_waits_for_quiet(self) -> bool:
+        """Coalesce recovery snapshots of a big project into one after 15 quiet seconds (b780 Q52).
+
+        A snapshot of a project with thousands of edits takes seconds to write, and every Build-tab change asked
+        for a new one. Below AUTOSAVE_QUIET_EDITS nothing changes; above it each change restarts a 15 s timer and
+        the snapshot is written once the edits stop.
+        """
+        if getattr(self, "_recovery_quiet_over", False):
+            self._recovery_quiet_over = False
+            return False
+        try:
+            big = int(getattr(self.facade, "modified_count", 0)) >= AUTOSAVE_QUIET_EDITS
+        except Exception:  # noqa: BLE001 - a count must never stop autosave
+            big = False
+        if not big:
+            return False
+        timer = getattr(self, "_recovery_quiet_timer", None)
+        if timer is None:
+            timer = self._recovery_quiet_timer = QTimer(self)
+            timer.setSingleShot(True)
+            timer.setInterval(AUTOSAVE_QUIET_MS)
+            timer.timeout.connect(bound(self, self._recovery_quiet_elapsed))
+        timer.start()   # every change starts the quiet period again
+        return True
+
+    def _recovery_quiet_elapsed(self) -> None:
+        self._recovery_quiet_over = True
+        self._save_recovery_snapshot()
+
     def _mark_workspace_changed(self, *, rebuild_components: bool = False) -> None:
         """Mark an authored change and immediately queue a safe autosave."""
 
@@ -8762,6 +8795,8 @@ class StudioMainWindow(QMainWindow):
     def _save_recovery_snapshot(self) -> None:
         store = self.workspace_store
         if store is None or not self._workspace_dirty:
+            return
+        if self._recovery_waits_for_quiet():
             return
         embedded_owners = self._embedded_operation_owners()
         if embedded_owners:

@@ -786,7 +786,14 @@ LATE_OWNERS += ("nfl2k5_speed_threshold",)
 LATE_OWNERS += ("nfl2k5_scramble_blocking",)  # b780-cv7: receivers block for a scrambling QB (after every other late owner)
 LATE_OWNERS += ("nfl2k5_protection_calls",)  # b780 p1-slide: the user's slide call at the line (code + 16-byte RW state)
 LATE_OWNERS += ("nfl2k5_audible_legend",)  # b780-p3: audible panel lift + on-screen button legend (code only)
+LATE_OWNERS += ("nfl2k5_lineup_roles",)  # b780 sub1: third-down back on passing downs + the FB fallback (code only)  (reserved by the first space pass)
+LATE_OWNERS += ("nfl2k5_intro_autoskip",)  # b780-mem1: the pregame intro skips itself when its director could not load (64 B code)  (reserved by the first space pass)
+LATE_OWNERS += ("nfl2k5_injured_reserve",)  # b780 IR1: modern franchise injured reserve (code + its 5,312-byte store)  (reserved by the first space pass)
 LATE_OWNERS += ("nfl2k5_load_user_team_guard",)  # b780 mc1: Franchise load never leaves the user team 0 (code only)
+LATE_OWNERS += ("nfl2k5_rookie_faces_hair",)  # b780 GEN1 Q81: rookie hair styles from the faces, appended at the
+# rookie faces image step only when Hair styles is on (so 64 MB builds never take it); last, so it moves nothing
+# b780-int: the hair owner stays after lineup_roles, intro_autoskip, injured_reserve and the load user-team guard (b780 mc1): all are reserved by the first space pass, the hair owner
+# is appended at the rookie faces image step, so an earlier place would move them and extend_scaleout refuses.
 # b77-i1 (coordinator-approved fix of the all-owner union overflow): late owners whose code is placed top-down in the
 # reserved legacy RX page tails (0x14D9000 first, then 0x14BA000) instead of the full scale-out run. Static, so the
 # placement does not depend on which other owners are present.

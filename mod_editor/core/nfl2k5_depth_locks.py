@@ -99,11 +99,25 @@ kind-1 team leaves through revision 2's ``jmp 0x2BDFD4`` to the loop tail
 Play Now AFC and NFC teams play the same way). Revision-4, -3, -2 and -1
 images report ``legacy`` and upgrade in place.
 
+b780 st1: the returner fix (on in every preset, applied before depth locks)
+owns the loop head's call and sends it to the same skip in its own site, so
+Basic and Advanced (no depth locks) skip the Pro Bowl teams too. A loop head
+already pointing at the returner fix's skip counts as this revision's site in
+every state and is left alone; the 0x242CFE skip stays for builds without the
+returner fix.
+
 Conflicting imported locks are preserved (and reported by the roster API),
 not silently reassigned. Valid records have unique locked rows 0..6 per
 position/chain and at most one owner of each returner role per team. Row 7
 is the shared overflow row. Locks are preferences, not an injury or personnel
 eligibility override. Full game/UI/save lifecycles remain unwitnessed.
+
+Revision 6 (b780, job sub1; queue Q64). The confirmed KR selection arm
+copied the current KR1 into KR2 before marking the chosen player, so
+choosing the current KR1 again made him KR2 as well and the second kick
+returner was lost. The arm (still its own 65 bytes) now leaves both
+returners and every lock alone when the chosen player is already KR1.
+Revision-5 and older images report ``legacy`` and upgrade in place.
 """
 
 from __future__ import annotations
@@ -333,7 +347,14 @@ RETAIL_KR_SET = bytes.fromhex(
     "efe903010000888795010000e9f8000000"
 )
 
+# Revision 6 (b780 sub1, Q64): choosing the current KR1 again leaves both returners and their locks alone. Before
+# it (revisions 1..5, V5_PATCHED_KR_SET) the arm first copied KR1 into KR2, so the re-selected KR1 also became KR2
+# and the second returner was lost. EBP addresses the returner bytes, which pays for the check in the 65 bytes.
 PATCHED_KR_SET = bytes.fromhex(
+    "608daf9501000031c08a450084c078053b348774268845010fb64d8749781c8b1c8f806352f339c17504804b520839f3"
+    "75ea884d00804b5204ebe161e9f8000000"
+)
+V5_PATCHED_KR_SET = bytes.fromhex(
     "600fb6979501000088979601000031c03a871c01000073208b1c87806352f339d07504804b520839f3750a8887950100"
     "00804b520440ebd861e9fb000000"
 )
@@ -407,7 +428,7 @@ class Site:
     after: bytes
 
 
-REVISION = 5
+REVISION = 6
 
 
 def sites(layout: str = "retail", revision: int = REVISION) -> tuple[Site, ...]:
@@ -420,10 +441,12 @@ def sites(layout: str = "retail", revision: int = REVISION) -> tuple[Site, ...]:
     Revision 4 (b777 dl4) rewrites the compactor and rank stage again.
     Revision 5 (b780 hunt6) adds the all-star skip to the swap block's spare
     bytes and points the weekly loop head's user-club test at it; before it
-    the call is retail and those bytes are the swap block's 0x90 padding."""
+    the call is retail and those bytes are the swap block's 0x90 padding.
+    Revision 6 (b780 sub1) rewrites only the KR arm: re-selecting the current
+    KR1 no longer copies him into KR2."""
     if layout not in ("retail", "special"):
         raise DepthLockError("unknown depth-chart layout")
-    if revision not in (1, 2, 3, 4, 5):
+    if revision not in (1, 2, 3, 4, 5, 6):
         raise DepthLockError("unknown depth-lock revision")
     v1 = revision == 1
     swap_before = bytearray(RETAIL_SWAP)
@@ -437,7 +460,7 @@ def sites(layout: str = "retail", revision: int = REVISION) -> tuple[Site, ...]:
          V1_PATCHED_RANK_STAGE if v1 else V3_PATCHED_RANK_STAGE if revision < 4
          else PATCHED_RANK_STAGE),
         ("screen_swap", SWAP_VA, bytes(swap_before), bytes(swap_after)),
-        ("screen_kr", KR_SET_VA, RETAIL_KR_SET, PATCHED_KR_SET),
+        ("screen_kr", KR_SET_VA, RETAIL_KR_SET, PATCHED_KR_SET if revision >= 6 else V5_PATCHED_KR_SET),
         ("screen_pr", PR_SET_VA, RETAIL_PR_SET, PATCHED_PR_SET),
         ("membership_remove", REMOVE_VA, RETAIL_REMOVE, PATCHED_REMOVE),
         ("ratings_panel_guard", PANEL_VA, RETAIL_PANEL, RETAIL_PANEL if v1 else PATCHED_PANEL),
@@ -459,7 +482,7 @@ def _context(payload: bytes) -> tuple[XbeImage, str]:
     rows_state = rows.status(payload)
     if rows_state == "foreign":
         raise DepthLockError("unknown or mixed retail/SPECIAL depth-chart layout")
-    layout = "special" if rows_state == "applied" else "retail"
+    layout = "special" if rows_state in ("applied", "previous") else "retail"  # previous: an older SPECIAL role table
     frame = bytearray(image.read(0x2BDCF0, 0xF0))
     at = HUMAN_VA - 0x2BDCF0
     if frame[at:at + len(PATCHED_HUMAN)] == PATCHED_HUMAN:
@@ -468,8 +491,10 @@ def _context(payload: bytes) -> tuple[XbeImage, str]:
     if frame[at:at + len(PATCHED_SORT)] == PATCHED_SORT:
         frame[at:at + len(RETAIL_SORT)] = RETAIL_SORT  # revision 3 owns the sort body
     at = ALL_STAR_VA - 0x2BDCF0
-    if frame[at:at + len(PATCHED_ALL_STAR)] == PATCHED_ALL_STAR:
-        frame[at:at + len(RETAIL_ALL_STAR)] = RETAIL_ALL_STAR  # revision 5 owns the loop head's user-club call
+    if frame[at:at + len(PATCHED_ALL_STAR)] in (PATCHED_ALL_STAR, returners.all_star_call_bytes()):
+        # revision 5 points the loop head's user-club call at its skip, or the returner fix (b780 st1, applied
+        # first in every build) already points it at the same skip in its own site
+        frame[at:at + len(RETAIL_ALL_STAR)] = RETAIL_ALL_STAR
     if image.read(MARGIN_VA, 4) != struct.pack("<f", MARGIN):
         raise DepthLockError("unknown release margin constant")
     msec = image.section(MARGIN_VA, 4)
@@ -497,13 +522,16 @@ def read_any(payload: bytes) -> dict[str, object]:
         for site in sites(layout):
             got = image.read(site.va, len(site.before))
             states[site.label] = ("retail" if got == site.before else
-                                  "applied" if got == site.after else "foreign")
-        unique = set(states.values())
+                                  "applied" if got == site.after else
+                                  "returner_fix" if _returner_all_star(site, got) else "foreign")
+        # b780 st1: a loop head already sent to the returner fix's all-star skip counts as this site in every state
+        unique = {v for v in states.values() if v != "returner_fix"}
         state = next(iter(unique)) if len(unique) == 1 else "foreign"
         legacy = None
         if state == "foreign":
-            for old in (4, 3, 2, 1):
+            for old in (5, 4, 3, 2, 1):
                 if all(image.read(site.va, len(site.after)) == site.after
+                       or _returner_all_star(site, image.read(site.va, len(site.after)))
                        for site in sites(layout, old)):
                     # A complete revision-4 (beta-77 .. beta-79 / SOFTDRINK v0.6 .. v0.8 discs),
                     # revision-3/-2 (b777 release candidates) or revision-1
@@ -514,6 +542,13 @@ def read_any(payload: bytes) -> dict[str, object]:
                 "layout": layout, "revision": REVISION if state == "applied" else legacy}
     except (ValueError, struct.error, IndexError) as exc:
         return {"status": "foreign", "reason": str(exc)}
+
+
+def _returner_all_star(site: Site, got: bytes) -> bool:
+    """b780 st1: the returner fix owns the weekly loop head's call (0x2BDD1B) and sends it to the same all-star
+    skip from its own site; depth locks then leaves the call alone (its 0x242CFE skip stays for builds without
+    the returner fix)."""
+    return site.label == "weekly_all_star_skip" and got == returners.all_star_call_bytes()
 
 
 def status(payload: bytes) -> str:
@@ -536,6 +571,8 @@ def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
         off = image.offset(site.va, len(site.before))
         if buf[off:off + len(site.after)] == site.after:
             continue  # a revision-1 upgrade keeps its unchanged sites
+        if _returner_all_star(site, bytes(buf[off:off + len(site.after)])):
+            continue  # b780 st1: the returner fix's call already reaches the all-star skip
         buf[off:off + len(site.after)] = site.after
         touched.add(_section_for_offset(sections, off).index)
         edits.append({"label": site.label, "va": hex(site.va),

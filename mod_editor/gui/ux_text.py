@@ -570,18 +570,20 @@ def write_caption(is_image: bool, disc_caption: str = "Make disc with these chan
     return disc_caption if is_image else "Save patched executable…"
 
 
-def disc_next_steps(target: str | Path, console_memory: int = 128) -> str:
-    """Name the completed image and the roster/save steps shared by both builders (b780-m64b: and a 64 MB disc's)."""
+def disc_next_steps(target: str | Path, console_memory: int = 128, next_steps_64: str = "") -> str:
+    """Name the completed image and the roster/save steps shared by both builders (b780-m64b: and a 64 MB disc's).
+
+    ``next_steps_64`` is the 64 MB disc's own paragraph (nfl2k5_console_memory.NEXT_STEPS_64), passed in by the 2K5 build
+    page: this module also ships in the APF Studio, whose staged import closure has no console memory model."""
     text = (f"Next: in xemu, choose Machine > Load Disc and open {target}, "
             "or click Play latest disc in xemu in Studio.\n"
             "In the game, load the disc roster, then start a fresh franchise. "
             "An existing franchise keeps its saved roster. For SOFTDRINK, set xemu System Memory to 128 MiB.")
     if console_memory == 64:
-        from mod_editor.core.nfl2k5_console_memory import NEXT_STEPS_64
         text = (f"Next: load {target} on your original Xbox or in hakuX the way you load other disc images there, or in "
                 "xemu choose Machine > Load Disc.\n"
                 "In the game, load the disc roster, then start a fresh franchise. "
-                "An existing franchise keeps its saved roster.\n" + NEXT_STEPS_64)
+                "An existing franchise keeps its saved roster.\n" + next_steps_64)
     return text
 
 

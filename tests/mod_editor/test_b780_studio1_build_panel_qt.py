@@ -240,6 +240,94 @@ class V08DiscStatesTests(_PanelCase):
         self.assertNotIn("full disc required", note)
 
 
+class RebuildOnlyDiscTests(_PanelCase):
+    """Q69. A disc an older release built (the released SOFTDRINK 2K28 discs) carries the practice field's team logo while its
+    practice facility reads foreign here: the engine stops every build at its first check, and behind it waits "128 MB memory
+    options differ". The page used to enable Needs update boxes there and let the engine refuse; it now says so first."""
+
+    LOGO = dict(modern_practice_field_team_logo="applied", modern_practice_field="foreign")
+    OLDER = dict(camera="previous", catch_slider="previous", draft_ai="legacy", progression="legacy", franchise_economy="legacy",
+                 honors_page="previous", k128_memory="previous")
+
+    def test_the_rule_is_the_logo_without_its_facility(self) -> None:
+        from mod_editor.gui.build_panel_qt import rebuild_only_reason
+        self.assertEqual(rebuild_only_reason({}), "")
+        self.assertEqual(rebuild_only_reason(dict(modern_practice_field="foreign")), "")                 # no logo, nothing to keep
+        self.assertEqual(rebuild_only_reason(dict(modern_practice_field_team_logo="retail")), "")
+        # a disc this release built has both, and the build keeps them together
+        self.assertEqual(rebuild_only_reason(dict(modern_practice_field_team_logo="applied", modern_practice_field="applied")), "")
+        disc = rebuild_only_reason(dict(self.LOGO, container="xiso"))
+        self.assertIn("practice field's team logo at midfield", disc)
+        self.assertIn("build again from a dump of your own retail disc", disc)
+        self.assertIn("this disc", disc)
+        self.assertIn("this executable", rebuild_only_reason(dict(self.LOGO, container="xbe")))
+        self.assertNotIn("\u2014", disc)
+
+    def test_make_my_disc_and_check_my_project_say_it_before_anything_is_chosen_and_whatever_is(self) -> None:
+        from mod_editor.gui.build_panel_qt import rebuild_only_reason
+        panel = self.panel(**self.LOGO, **self.OLDER)
+        reason = rebuild_only_reason(panel._state)
+        self.assertEqual(panel.blocker(), reason)                                   # nothing chosen: not "Nothing is selected"
+        self.assertEqual(panel.blocker_label.text(), reason)
+        panel.cpu_scrambles_level.setCurrentIndex(panel.cpu_scrambles_level.findData("modern"))
+        panel.momentum_check.setChecked(True)
+        self.assertTrue(panel.has_work())
+        self.assertEqual(panel.blocker(), reason)                                   # and not after choosing something else
+        self.assertFalse(panel.build_button.isEnabled() or panel.check_button.isEnabled())
+        self.assertEqual(panel.build_button.toolTip(), reason)
+
+    def test_updates_are_not_invited_on_such_a_disc(self) -> None:
+        panel = self.panel(**self.LOGO, **self.OLDER)
+        for key in self.OLDER:
+            box = panel._boxes()[key]
+            self.assertFalse(box.isEnabled(), key)
+            self.assertEqual(box.isChecked(), key in ("honors_page", "k128_memory"), key)    # installed ones stay ticked, locked
+            self.assertEqual(panel._badges[key].text(), "Older revision: rebuild from retail", key)
+            self.assertNotIn("Select to update", box.toolTip(), key)
+            self.assertNotIn("stays ticked", box.toolTip(), key)                              # the build cannot bring it up to date
+            self.assertIn("build again from a dump of your own retail disc", box.toolTip(), key)
+        summary = panel.source_status.text()
+        self.assertIn("older revision (rebuild from retail to update)", summary)
+        self.assertNotIn("needs update", summary)
+
+    def test_the_same_states_stay_an_invitation_on_a_disc_the_build_can_try(self) -> None:
+        panel = self.panel(modern_practice_field_team_logo="applied", modern_practice_field="applied", **self.OLDER)
+        for key in ("camera", "catch_slider", "draft_ai", "progression", "franchise_economy"):
+            self.assertTrue(panel._boxes()[key].isEnabled(), key)
+            self.assertEqual(panel._badges[key].text(), "Needs update", key)
+        self.assertIn("older revision (needs update)", panel.source_status.text())
+        panel.catch_check.setChecked(True)
+        self.assertEqual(panel.blocker(), "")
+        plain = self.panel(**self.OLDER)                                              # no logo at all
+        self.assertEqual(plain._badges["camera"].text(), "Needs update")
+
+    def test_game_fixes_agrees_with_build(self) -> None:
+        from mod_editor.gui.gameplay_patches_panel_qt import GameplayPatchesPanel
+        for logo, badge, enabled in ((self.LOGO, "Older revision: rebuild from retail", False),
+                                     (dict(modern_practice_field_team_logo="applied", modern_practice_field="applied"),
+                                      "Needs update", True)):
+            fixes = GameplayPatchesPanel()
+            self.addCleanup(fixes.deleteLater)
+            state = {key: "retail" for key in fixes.checks}
+            state.update(path="v08.xiso.iso", container="xiso", throw=None, **logo, **self.OLDER)
+            fixes.apply_state(state)
+            for key in ("camera", "catch_slider", "draft_ai", "progression"):
+                if key not in fixes.checks:
+                    continue
+                self.assertEqual(fixes.checks[key].isEnabled(), enabled, key)
+                self.assertEqual(fixes.badges[key].text(), badge, key)
+            if not enabled:
+                self.assertIn("build again from a dump of your own retail disc", fixes.checks["camera"].toolTip())
+                self.assertNotIn("stays ticked", fixes.checks["honors_page"].toolTip())
+            # Game Fixes has its own Make disc button; it says the same thing instead of leaving it to the engine
+            fixes.target_field.setText("out.xiso.iso")
+            fixes.checks["momentum"].setChecked(True)
+            fixes._refresh()
+            self.assertEqual(fixes.write_button.isEnabled(), enabled, logo)
+            if not enabled:
+                self.assertIn("cannot build on top of this disc", fixes.write_button.toolTip())
+
+
 class GameFixesNeedsUpdateTests(unittest.TestCase):
     """Game Fixes read the same disc as Build; on a v0.8 disc it said 'Unknown state.' with no badge for what Build calls Needs
     update, and its legacy tooltip talked about the beta 58-60 star for the draft AI and progression."""
@@ -415,6 +503,33 @@ class GameFixesFollowsBuildTests(unittest.TestCase):
         self.app.processEvents()
         build_view, fixes_view = self.view(keys)
         self.assertEqual(fixes_view, build_view)
+
+    def test_ticking_a_dependent_option_on_game_fixes_keeps_the_option_and_ticks_its_parent(self) -> None:
+        """The settle used to refresh every Game Fixes box from Build in the middle of the user's own click: Game Fixes' rule
+        ticked the parent first, the link copied it, the settle then reset the child the user had just ticked (its own copy
+        was still to come), and the child ended unticked on both pages."""
+        pairs = (("coverage_hitch_brake", "coverage_trail"), ("weekly_prep_cpu", "weekly_prep"),
+                 ("weekly_prep_remember", "weekly_prep"), ("k128_roster_heap", "k128_memory"), ("k128_early", "k128_memory"))
+        for child, parent in pairs:
+            with self.subTest(child=child):
+                for box in self.build._boxes().values():
+                    box.setChecked(False)
+                self.app.processEvents()
+                self.fixes.checks[child].setChecked(True)
+                self.app.processEvents()
+                for key in (child, parent):
+                    self.assertEqual(self.view((key,)), ([True], [True]), key)
+                self.assertTrue(getattr(self.build.plan(), child))
+
+    def test_a_rule_that_puts_the_box_back_shows_on_both_pages(self) -> None:
+        """Unticking the extra patch space on Game Fixes while the scorebug effects need it: Build ticks it again, and Game
+        Fixes has to show that too (the copy of the unticking and Build's answer are different values of one box)."""
+        self.build._boxes()["scorebug_runtime"].setChecked(True)
+        self.app.processEvents()
+        self.assertEqual(self.view(("xbe_space",)), ([True], [True]))
+        self.fixes.checks["xbe_space"].setChecked(False)
+        self.app.processEvents()
+        self.assertEqual(self.view(("xbe_space",)), ([True], [True]))
 
     def test_random_ticks_on_either_page_never_leave_the_pages_apart(self) -> None:
         import random

@@ -651,8 +651,8 @@ class SharePanel(QWidget):
             text = "Sources ready. Build now has the frozen recipe and league artwork. Change its options, then Make my disc. Custom builds use the full builder and take longer than installation."
             if memory == 64:
                 text += (f" Console memory is set to 64 MB ({console_memory.STATUS_64}) with the recommended 64 MB set: the "
-                         "options that need 128 MB are off and the Build tab lists what else it turned off. The pack's "
-                         "2026 rosters need 128 MB for now, so untick Include exported \u2605 Rosters edits there.")
+                         "options that need 128 MB are off and the Build tab lists what else it turned off. "
+                         + console_memory.ROSTER_FIT_NOTE)
             self.apply_status.setText(text)
         self._start(operation, done, self._apply_failed)
 
@@ -673,8 +673,10 @@ class SharePanel(QWidget):
             except Exception:  # noqa: BLE001 -- naming the disc must never break the panel
                 found = None
             if found is not None:
+                # a Studio-built disc's own line already says what to do (build from a retail dump); "make this mod yourself"
+                # would send its owner to the Build tab to build on top of it
                 text = ("Your image: " + found.line()
-                        + ("" if found.can_take_a_byte_run_patch
+                        + ("" if found.can_take_a_byte_run_patch or found.kind == "studio-built"
                            else " Use the Build tab to make this mod yourself instead."))
         self.source_identity.setText(text)
         return text

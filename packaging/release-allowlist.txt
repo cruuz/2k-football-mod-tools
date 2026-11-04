@@ -599,6 +599,8 @@ mod_editor/core/nfl2k5_history_code.py
 mod_editor/core/nfl2k5_contract_college_guard.py
 mod_editor/core/nfl2k5_load_user_team_guard.py
 mod_editor/core/nfl2k5_coach_career_fix.py
+mod_editor/core/nfl2k5_history_pool.py
+mod_editor/core/nfl2k5_history_pool_code.py
 mod_editor/core/nfl2k5_sim_cb_tackles.py
 mod_editor/core/nfl2k5_sim_cb_tackles_b779.py
 mod_editor/core/nfl2k5_option_defaults.py
@@ -895,6 +897,8 @@ tools/nfl2k5_kickoff_returns.py
 tools/nfl2k5_modpack.py
 tools/nfl2k5_playbook_position_recode.py
 tools/nfl2k5_roster_reclassify.py
+tools/nfl2k5_roster_retail_fit.py
+tools/b77/b778_fa3_free_agent_depth.py
 tools/nfl2k5_scorebug_espn_art.py
 tools/nfl2k5_scorebug_layout.py
 tools/nfl2k5_scorebug_position_patch.py
@@ -2075,6 +2079,7 @@ mod_editor/core/nfl2k5_rookie_faces.py
 data/nfl2k5_rookie_faces/name_odds.json
 data/nfl2k5_rookie_faces/templates.json
 data/nfl2k5_rookie_faces/bank.json
+data/nfl2k5_rookie_faces/hair.json
 # b778-ee1: the alien prospect (code, art pins, portrait and face art)
 mod_editor/core/nfl2k5_alien_prospect.py
 data/nfl2k5_alien_prospect/code.json
@@ -3853,6 +3858,10 @@ mod_editor/core/nfl2k5_protection_calls.py
 mod_editor/core/nfl2k5_protection_calls_code.py
 tests/mod_editor/test_nfl2k5_protection_calls.py
 tests/mod_editor/test_nfl2k5_protection_calls_unicorn.py
+mod_editor/core/nfl2k5_intro_autoskip.py
+tests/mod_editor/test_b780_mem1_intro_autoskip.py
+tests/mod_editor/test_b780_mem1_heapb_headroom.py
+tests/mod_editor/test_b780_mem1_k128_early_default.py
 tests/mod_editor/test_nfl2k5_pass_protection_sim.py
 tests/mod_editor/test_nfl2k5_run_blocking.py
 tests/mod_editor/test_nfl2k5_team_sleeves.py
@@ -4000,3 +4009,10 @@ tests/mod_editor/test_b780_hunt3_prep_results.py
 tests/mod_editor/test_b780_roster1_depth_lint.py
 # b780 gc1: the franchise Gamecast's score panel (0x8C450) stays retail under the 2026 scorebug
 tests/mod_editor/test_b780_gc1_gamecast_scorepanel.py
+mod_editor/core/nfl2k5_lineup_roles.py
+tests/mod_editor/test_b780_sub1_depth.py
+tests/mod_editor/test_b780_sub1_lineup_roles.py
+tests/mod_editor/test_b780_hunt5_specialist_slots.py
+tests/mod_editor/test_b780_hunt5_special_rows.py
+mod_editor/core/nfl2k5_third_down_back.py
+tests/mod_editor/test_b780_sub1_third_down_back.py

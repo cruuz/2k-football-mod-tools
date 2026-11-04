@@ -126,9 +126,26 @@ class BuildPanelTests(unittest.TestCase):
     def test_failed_without_a_record_keeps_the_old_dialog(self):
         self.panel._task = SimpleNamespace(failure=None)
         with mock.patch.object(build_panel_qt, "show_operation_error") as plain:
-            self.panel._failed("Build cancelled; no output was published.")
+            self.panel._failed("Shoe art could not fit.")
         plain.assert_called_once()
-        self.assertIn("First error: Build cancelled", self.panel._last_build_summary)
+        self.assertIn("First error: Shoe art could not fit.", self.panel._last_build_summary)
+
+    def test_a_cancel_is_a_cancel_message_not_the_failure_dialog(self):
+        # b780 Q56: pressing Cancel showed the red "Couldn't make the disc" box with the Discord hint
+        from mod_editor.core.nfl2k5_project_fit import BuildCancelled
+        for failure, text in ((None, "Build cancelled; no output was published."),
+                              (BuildCancelled("Build cancelled; no output was published. Your project is unchanged."),
+                               "Build cancelled; no output was published. Your project is unchanged.")):
+            self.panel._task = SimpleNamespace(failure=failure)
+            with mock.patch.object(build_panel_qt, "show_operation_error") as plain, \
+                 mock.patch.object(build_panel_qt, "show_build_failure") as rich:
+                self.panel._failed(text)
+            plain.assert_not_called()
+            rich.assert_not_called()
+            self.assertIn("Build cancelled", self.panel.status_label.text())
+            self.assertIn("Nothing was written", self.panel.status_label.text())
+            self.assertNotIn("First error", self.panel._last_build_summary)
+            self.assertIsNone(self.panel._task)
 
     def test_the_worker_writes_errors_log_build_log_and_zip_and_runs_the_doctor(self):
         doctor_calls = []

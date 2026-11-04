@@ -71,13 +71,20 @@ from mod_editor.core import nfl2k5_roster_records as rr
 COACH_STATS: tuple[tuple[str, str], ...] = (
     ("wins", "Wins"), ("losses", "Losses"), ("ties", "Ties"),
     ("seasons_with_team", "Seasons with team"), ("total_seasons", "Total seasons"),
-    ("winning_seasons", "Winning seasons"), ("super_bowls", "Super Bowls"),
+    ("winning_seasons", "Winning seasons"), ("super_bowls", "Super Bowls (roster)"),
     ("super_bowl_wins", "Super Bowl wins"), ("super_bowl_losses", "Super Bowl losses"),
     ("playoff_wins", "Playoff wins"), ("playoff_losses", "Playoff losses"),
     ("season_wins", "This season: wins"), ("season_losses", "This season: losses"),
     ("season_ties", "This season: ties"),
     ("photo", "Photo id"), ("body", "Body"), ("playcalling_run", "Playcalling: run %"),
 )
+# b780 Q35: +0x32 holds the Super Bowl appearances the roster gives a coach. With the coach Super Bowl fix (on in every
+# preset) a franchise never changes it; Super Bowls played in the franchise count in Super Bowl wins and losses.
+COACH_STAT_TIPS = {
+    "super_bowls": ("The Super Bowl appearances the roster gives this coach. With the coach Super Bowl fix (on in every "
+                    "preset) it does not change during a franchise: Super Bowls played in the franchise count in Super "
+                    "Bowl wins and Super Bowl losses. Without the fix, retail adds one for every winning season."),
+}
 # The ten formation bytes are two five-class distributions (see nfl2k5_franchise_save.COACH_FORMATION_CLASSES): the formation
 # a coach's CPU RUN calls come from, then the same five classes for his PASS calls.
 FORMATION_WORDS = {"gun": "shotgun / pistol / empty", "split_backs": "split backs", "i_form": "I form",
@@ -684,7 +691,11 @@ class FranchisePanel(QWidget):
             spin.valueChanged.connect(lambda value, n=name: self._coach_value_changed(n, value))
             self._coach_spins[name] = spin
             row, column = divmod(position, 3)
-            stats_grid.addWidget(QLabel(caption), row, column * 2)
+            label = QLabel(caption)
+            if name in COACH_STAT_TIPS:   # b780 Q35: say what the number is and is not
+                label.setToolTip(COACH_STAT_TIPS[name])
+                spin.setToolTip(COACH_STAT_TIPS[name])
+            stats_grid.addWidget(label, row, column * 2)
             stats_grid.addWidget(spin, row, column * 2 + 1)
         box.addWidget(stats)
 

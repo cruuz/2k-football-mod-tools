@@ -81,7 +81,7 @@ def _ranges(a, b):
 
 class BytesTests(unittest.TestCase):
     def test_revision5_sites(self):
-        self.assertEqual(locks.REVISION, 5)
+        self.assertGreaterEqual(locks.REVISION, 5)      # b780 sub1: revision 6 keeps every revision-5 site
         self.assertEqual(locks.SWAP_VA + len(locks.V4_PATCHED_SWAP), locks.ALL_STAR_SKIP_VA)
         self.assertEqual(locks.PATCHED_SWAP[:len(locks.V4_PATCHED_SWAP)], locks.V4_PATCHED_SWAP)
         self.assertLessEqual(len(locks.PATCHED_SWAP), len(locks.RETAIL_SWAP))
@@ -116,15 +116,23 @@ class UpgradeTests(unittest.TestCase):
         self.assertEqual((state["status"], state["revision"]), ("legacy", 4))
         patched, receipt = locks.apply(data)
         self.assertEqual(locks.read_any(patched)["status"], "applied")
-        self.assertEqual((receipt["revision"], receipt["upgraded_from"]), (5, 4))
-        self.assertEqual(sorted(e["label"] for e in receipt["edits"]), ["screen_swap", "weekly_all_star_skip"])
+        self.assertEqual((receipt["revision"], receipt["upgraded_from"]), (locks.REVISION, 4))
+        # b780 sub1 (revision 6) also rewrites the KR arm; its bytes are checked as that site's own run below
+        self.assertEqual(sorted(e["label"] for e in receipt["edits"]), ["screen_kr", "screen_swap", "weekly_all_star_skip"])
         image = XbeImage(patched)
         text = strength._section_for_offset(strength._sections(patched), image.offset(locks.ALL_STAR_VA, 5))
         ranges = _ranges(data, patched)
-        owned = {image.offset(locks.ALL_STAR_SKIP_VA, 17): 17, image.offset(locks.ALL_STAR_VA + 1, 3): 3,
-                 text.header_offset + 36: 20}
-        # exactly the 17-byte check, the call's three changed displacement bytes and the .text section digest
-        self.assertEqual(dict(ranges), owned)
+        owned = {image.offset(locks.ALL_STAR_SKIP_VA, 17): 17, image.offset(locks.ALL_STAR_VA + 1, 3): 3}
+        digest = range(text.header_offset + 36, text.header_offset + 56)
+        kr = range(image.offset(locks.KR_SET_VA, 1), image.offset(locks.KR_SET_VA, 1) + len(locks.RETAIL_KR_SET))
+        # exactly the 17-byte check, the call's three changed displacement bytes, the KR arm and the .text section
+        # digest (b780 st1: a digest byte that happens to stay equal splits the digest's run, so the digest and the
+        # KR arm are checked as fields)
+        self.assertEqual({lo: n for lo, n in ranges if lo not in digest and lo not in kr}, owned)
+        self.assertTrue(all(lo + n <= kr.stop for lo, n in ranges if lo in kr))
+        self.assertEqual(image.read(locks.KR_SET_VA, len(locks.PATCHED_KR_SET)), locks.PATCHED_KR_SET)
+        self.assertTrue(all(lo + n <= digest.stop for lo, n in ranges if lo in digest))
+        self.assertNotEqual(patched[digest.start:digest.stop], data[digest.start:digest.stop])
         self.assertEqual(image.read(locks.ALL_STAR_SKIP_VA, 17), locks.ALL_STAR_SKIP)
         self.assertEqual(image.read(locks.ALL_STAR_VA, 5), locks.PATCHED_ALL_STAR)
         self.assertEqual(locks.apply(patched)[0], patched)
@@ -147,7 +155,11 @@ class UpgradeTests(unittest.TestCase):
         self.assertEqual(locks.read_any(patched)["status"], "applied")
         image = XbeImage(patched)
         self.assertEqual(image.read(locks.ALL_STAR_SKIP_VA, 17), locks.ALL_STAR_SKIP)
-        self.assertEqual(image.read(locks.ALL_STAR_VA, 5), locks.PATCHED_ALL_STAR)
+        # b780 st1: the returner fix (applied first in every build) owns the loop head's call and sends it to the
+        # same skip in its own site; depth locks leaves it. Without the returner fix, revision 5 points it at its own.
+        self.assertEqual(image.read(locks.ALL_STAR_VA, 5), returners.all_star_call_bytes())
+        alone = XbeImage(locks.apply(XBE.read_bytes())[0])
+        self.assertEqual(alone.read(locks.ALL_STAR_VA, 5), locks.PATCHED_ALL_STAR)
 
     def test_a_foreign_call_target_refuses(self):
         data = bytearray(locks.apply(returners.apply(XBE.read_bytes())[0])[0])

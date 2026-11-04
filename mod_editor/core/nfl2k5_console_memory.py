@@ -73,7 +73,8 @@ NEXT_STEPS_64 = (f"This is the 64 MB build for an original Xbox or the Android e
 SHARE_NOTE = ("The ready-made SOFTDRINK 2K28 pack is the full 128 MB build for xemu (System Memory 128 MiB). For the "
               f"64 MB build (original Xbox, Android hakuX; {STATUS_64}): choose Customize SOFTDRINK 2K28 "
               "with Build for: 64 MB, then make the disc on the Build tab, which starts from the recommended 64 MB set. That "
-              "route keeps the pack's art and the options that fit; the pack's 2026 rosters need 128 MB for now.")
+              "route keeps the pack's art, the options that fit and the 2026 rosters, fitted to the original game's roster "
+              "size (free agents beyond the original game's count are left out).")
 SHARE_CHOICE_CAPTION = "Build for"
 SHARE_CHOICE_HELP = ("Customize SOFTDRINK 2K28 loads the pack's sources into the Build tab. 64 MB sets the Build tab's "
                      "Console memory to the experimental 64 MB target and turns off what needs 128 MB.")
@@ -107,6 +108,11 @@ BADGE_REASONS = {
 CAPACITY_KEYS = ("roster_capacity", "free_agent_capacity")
 CAPACITY_REASON = ("they grow the roster file (the bigger free-agent pool), which needs the 128 MB build: at 64 MB a disc "
                    "with the bigger roster fails at the pregame intro")
+#: Coordinator, 11/03 ("ship a version that at least has the updated rosters"): a 64 MB build fits roster edits that grow
+#: the roster file to the original game's roster size instead of refusing them.
+ROSTER_FIT_NOTE = ("At 64 MB the roster edits are fitted to the original game's roster size, so the 2026 rosters stay. "
+                   "Dropped: the free agents beyond the original game's count; franchise draft-pick ownership and the "
+                   "backfield labels fall back to the 2004 game's, and the Player Card champions page starts empty.")
 _CAPTIONS = {
     "k128_memory": "128 MB memory (K128, xemu set to 128 MB)",
     "k128_roster_heap": "Roster block in the extra memory",
@@ -261,14 +267,12 @@ def forced_off(plan: object) -> list[tuple[str, str]]:
 
 
 def without_forced(plan):
-    """The plan as a 64 MB build can have it: every forced-off option off, and no roster edits that grow the roster
-    file (both are refused by name on their own); a 128 plan comes back unchanged."""
+    """The plan with every 64 MB forced-off option off (a 128 plan comes back unchanged). Roster edits stay: a 64 MB
+    build fits ones that grow the roster file to the original size (``model_plan``, ``fit_roster_edits``)."""
 
     if of(plan) != 64:
         return plan
     changes = {key: off_value(key) for key, _ in forced_off(plan)}
-    if capacity_records(plan):
-        changes["roster_edits"] = ""
     return replace(plan, **changes) if changes else plan
 
 
@@ -485,31 +489,116 @@ def budget_line(prediction: Mapping[str, Any] | None, labels=None) -> str:
 def capacity_records(plan: object) -> int:
     """Records the plan's roster edits add to the roster file (free-agent capacity growth), or 0."""
 
-    path = str(getattr(plan, "roster_edits", "") or "")
+    return _roster_facts(str(getattr(plan, "roster_edits", "") or ""))["records"]
+
+
+def roster_fit_applies(plan: object) -> bool:
+    """A 64 MB plan whose roster edits grow the roster file: the build fits them to the original roster size."""
+
+    return of(plan) == 64 and capacity_records(plan) > 0
+
+
+def roster_fit_problem(plan: object) -> str:
+    """Why these roster edits cannot be fitted to the original roster size (the document's own checks), or ""."""
+
+    return _roster_facts(str(getattr(plan, "roster_edits", "") or ""))["fit_problem"]
+
+
+_ROSTER_FACTS: dict[tuple[str, int, int], dict[str, Any]] = {}
+
+
+def _roster_facts(path: str) -> dict[str, Any]:
+    """{"records": capacity growth, "fit_problem": "" or why the retail fit refuses the document}, cached per file."""
+
+    empty = {"records": 0, "fit_problem": ""}
     if not path:
-        return 0
-    return _capacity_of(path)
-
-
-_CAPACITY_CACHE: dict[tuple[str, int, int], int] = {}
-
-
-def _capacity_of(path: str) -> int:
+        return empty
     try:
         stat = Path(path).stat()
     except OSError:
-        return 0
+        return empty
     key = (path, stat.st_mtime_ns, stat.st_size)
-    if key not in _CAPACITY_CACHE:
+    if key not in _ROSTER_FACTS:
         try:
             document = json.loads(Path(path).read_text(encoding="utf-8"))
         except (OSError, ValueError):
             document = None
         request = document.get("free_agent_capacity") if isinstance(document, dict) else None
         value = request.get("records", 0) if isinstance(request, dict) else 0
-        _CAPACITY_CACHE.clear()
-        _CAPACITY_CACHE[key] = value if type(value) is int and value > 0 else 0
-    return _CAPACITY_CACHE[key]
+        records = value if type(value) is int and value > 0 else 0
+        _ROSTER_FACTS.clear()
+        _ROSTER_FACTS[key] = {"records": records, "fit_problem": _fit_problem(document) if records else ""}
+    return _ROSTER_FACTS[key]
+
+
+def retail_fit():
+    """M64A's roster fit (tools/nfl2k5_roster_retail_fit.py), imported as a library, or None if this build lacks it."""
+
+    try:
+        return importlib.import_module("tools.nfl2k5_roster_retail_fit")
+    except Exception:  # noqa: BLE001 - a tree run with tools/ on the path instead of the repository root
+        try:
+            return importlib.import_module("nfl2k5_roster_retail_fit")
+        except Exception:  # noqa: BLE001
+            return None
+
+
+def _fit_problem(document) -> str:
+    """The retail fit's document checks (no roster needed): a dated refresh whose only rows in appended records are the
+    dated free agents (signed ones included). "" when the build can fit it."""
+
+    module = retail_fit()
+    if module is None:
+        return "this Studio has no roster fit (tools/nfl2k5_roster_retail_fit.py)"
+    try:
+        module.require(isinstance(document, dict) and isinstance(document.get("roster_refresh"), dict),
+                       "the document has no dated roster refresh to fit")
+        module.pinned_depth(document)
+        module.depth_rows(document["roster_refresh"])
+    except Exception as exc:  # noqa: BLE001 - every refusal is shown to the user as the reason
+        return str(exc) or exc.__class__.__name__
+    return ""
+
+
+def fit_roster_edits(document: Mapping[str, Any], base: bytes, *, source_sha256: str = "") -> tuple[dict, dict]:
+    """The roster edits at the original (retail) roster size for a 64 MB build: M64A's retail_variant, the way the
+    release 64 MB file was made (signed depth free agents kept, the capacity block, the free agents beyond the original
+    game's count and the draft_pick_ownership and hback_roles sections dropped). ``base`` is the main roster this build
+    has made from the user's own disc, right before the dated refresh; it replaces the authoring base the document
+    pins, so the fit is decided on the roster the refresh will really be written into. Raises when the fit refuses."""
+
+    module = retail_fit()
+    if module is None:
+        raise ValueError("this Studio has no roster fit (tools/nfl2k5_roster_retail_fit.py)")
+    unpinned = dict(document)
+    for key in ("fa3_free_agent_depth", "free_agent_capacity"):
+        block = unpinned.get(key)
+        if isinstance(block, dict) and "base_sha256" in block:
+            unpinned[key] = {k: v for k, v in block.items() if k != "base_sha256"}
+    return module.retail_variant(unpinned, bytes(base), source_sha256=source_sha256, drop_xbe_sections=True)
+
+
+def roster_fit_note(receipt: Mapping[str, Any] | None = None) -> str:
+    """What the 64 MB build drops from roster edits that grow the roster file (with the counts once fitted)."""
+
+    if not receipt:
+        return ROSTER_FIT_NOTE
+    kept, candidates = int(receipt.get("depth_kept", 0)), int(receipt.get("depth_candidates", 0))
+    signed = len(receipt.get("signed_depth_kept") or [])
+    return (ROSTER_FIT_NOTE + f" This build keeps {kept} of the {candidates} dated free agents"
+            + (f" ({signed} of them signed to clubs)" if signed else "") + ".")
+
+
+def model_plan(plan):
+    """The plan as the memory model should see a 64 MB build of it: the forced-off options off and, when the build fits
+    the roster edits to the original roster size, no capacity growth and no draft-pick or backfield sections."""
+
+    plan = without_forced(plan)
+    if of(plan) != 64 or not roster_fit_applies(plan):
+        return plan
+    flat = {item.name: getattr(plan, item.name) for item in fields(plan)}
+    flat.update(roster_capacity=False, roster_draft_pick_ownership=False, roster_hback_roles=False)
+    return flat
 
 
 def problems(plan: object, labels=None, *, records: int | None = None, fit: bool = True) -> list[str]:
@@ -528,13 +617,14 @@ def problems(plan: object, labels=None, *, records: int | None = None, fit: bool
                    + ". Turn " + ("it" if len(blocked) == 1 else "them") + " off, or choose Console memory 128 MB "
                    "(xemu, full SOFTDRINK).")
     grown = capacity_records(plan) if records is None else records
-    if grown:
+    problem = roster_fit_problem(plan) if grown else ""
+    if problem:
         name = Path(str(getattr(plan, "roster_edits", "") or "")).name or "the roster edits"
-        out.append(f"The 64 MB build cannot use the roster edits {name} ({grown:,} more records): {capacity_reason()}. "
-                   "Untick Include exported ★ Rosters edits, or choose roster edits that do not grow the roster file (the "
-                   "SOFTDRINK 2K28 2026 rosters need 128 MB for now).")
+        out.append(f"The 64 MB build cannot fit the roster edits {name} to the original game's roster size "
+                   f"({grown:,} more records asked for): {_reason_text(problem)}. Untick Include exported \u2605 Rosters "
+                   "edits, or choose Console memory 128 MB.")
     if fit:
-        prediction = predict(without_forced(plan))
+        prediction = predict(model_plan(plan))
         if prediction is not None and refuses(prediction):
             out.append(refusal(prediction, labels))
     return out
