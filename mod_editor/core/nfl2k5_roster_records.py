@@ -169,6 +169,8 @@ def _kept_specialist_slot(loaded: int, loaded_list: Sequence[int], now_list: Seq
         return None
     player = loaded_list[loaded]
     return list(now_list).index(player) if player in now_list else 0xFF
+
+
 COLLEGE_SIZE = 8
 POOLS = ("primary", "secondary")
 POOL_FIELDS = {"primary": (OBJ_OFF + 0x00, OBJ_OFF + 0x04), "secondary": (OBJ_OFF + 0x08, OBJ_OFF + 0x0C)}

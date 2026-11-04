@@ -33,7 +33,7 @@ os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 from mod_editor.core import nfl2k5_franchise_save as fs  # noqa: E402
 from mod_editor.core import nfl2k5_roster_records as rr  # noqa: E402
 from mod_editor.core.nfl2k5_cave_oracle import RETAIL_SHA256, XbeImage  # noqa: E402
-from test_nfl2k5_roster_records import league_body, synthetic_body  # noqa: E402
+from test_nfl2k5_roster_records import league_body  # noqa: E402
 
 try:
     import unicorn
