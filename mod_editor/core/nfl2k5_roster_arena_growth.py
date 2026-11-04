@@ -3,6 +3,11 @@
 Reserve REQUESTS in the complete union first. Existing practice-squad entry
 addresses remain stable ABI bridges into sealed allocator code. Their original
 owner validates the exact delegated installation before accepting those bytes.
+
+b780 modes2 (Q27): the runtime's practice staging (arena_stage, tools/roster_arena/lifecycle.h) tested league type
+1, the Tournament, so Franchise Free Practice never included practice-squad reserves; it tests 2 (Franchise) now. A
+runtime with the earlier test (beta-78 .. the v0.9 RC, both the reserve and the capacity form) reads "previous" and
+apply() upgrades it in place: one byte of the owned code, the same hooks.
 """
 from __future__ import annotations
 
@@ -27,6 +32,11 @@ CAPACITY_FLAG = 0x200
 # nfl2k5_roster_arena_code_b78). It is recognized (status, settings, the retail projection other owners validate
 # against) but never installed; the flag below only marks it in _owned_state's answer, it is not an option word.
 LEGACY_FLAG = 0x10000
+# b780 modes2: marks the beta-78 .. v0.9 RC runtime (arena_stage compared league type 1) in _owned_state's answer only
+PREVIOUS_FLAG = 0x20000
+UPGRADES_PREVIOUS = True
+_LEAGUE_TEST = bytes.fromhex('833da076e500')     # cmp dword ptr [0xE576A0], imm8 (arena_stage's league test is
+                                                 # the only one against 2; the others test 0)
 RESOURCE_BODY_LIMIT = arena.ARENA_SIZE + 0x40
 CAPACITY_RESOURCE_BODY_LIMIT = arena.CAPACITY_ARENA_SIZE + 0x40
 # The disc ROST handler C1EA0 reads the declared body size (resource header +4) into EDI and
@@ -93,7 +103,14 @@ def _legacy():
     return legacy
 
 
-def code_for(va, flags, legacy=False):
+def _league_at(blob):
+    """Offset of arena_stage's league imm8 (the runtime holds exactly one test of [0xE576A0] against an imm8)."""
+    test = _LEAGUE_TEST + b'\x02'
+    require(blob.count(test) == 1, 'arena runtime league test moved')
+    return blob.index(test) + len(_LEAGUE_TEST)
+
+
+def code_for(va, flags, legacy=False, previous=False):
     capacity = bool(flags & CAPACITY_FLAG)
     options(bool(flags & 0x100), flags & 255, capacity)
     require(flags & ~0x302 == 0, 'unknown arena executable options')
@@ -107,6 +124,11 @@ def code_for(va, flags, legacy=False):
         relocations = assembly.CAPACITY_RELOCATIONS if capacity else assembly.RELOCATIONS
         option_offset = CAPACITY_OPTION_OFFSET if capacity else OPTION_OFFSET
     out = bytearray(blob)
+    if previous:
+        require(not legacy, 'the beta-78 capacity runtime has no previous form')
+        at = _league_at(out)
+        require(out[at] == 2, 'arena runtime league test')
+        out[at] = 1             # beta-78 .. v0.9 RC: compared the Tournament's type
     out.extend(b'\xcc' * (option_offset - len(out)))
     out.extend(struct.pack('<I', flags))
     symbols = {'code': va, 'arena_options': va + option_offset, '': 0}
@@ -247,16 +269,18 @@ def _owned_state(payload):
         flags = struct.unpack_from('<I', blob, offset)[0]
         if flags & ~0x302 or bool(flags & CAPACITY_FLAG) != capacity:
             continue
-        try:
-            candidate = code_for(site['va'], flags, legacy)
-        except ValueError:
-            continue
-        if blob == candidate:
-            all_edits = sites(site['va'], capacity, False, legacy)
-            status_edits = sites(site['va'], capacity, my_career, legacy)
-            _check_guards(image, all_edits, payload, my_career)
-            require(rdata.status(payload, status_edits) == 'applied', 'mixed arena runtime bridges/hooks')
-            return 'applied', site, flags | (LEGACY_FLAG if legacy else 0)
+        for previous in ((False,) if legacy else (False, True)):
+            try:
+                candidate = code_for(site['va'], flags, legacy, previous)
+            except ValueError:
+                continue
+            if blob == candidate:
+                all_edits = sites(site['va'], capacity, False, legacy)
+                status_edits = sites(site['va'], capacity, my_career, legacy)
+                _check_guards(image, all_edits, payload, my_career)
+                require(rdata.status(payload, status_edits) == 'applied', 'mixed arena runtime bridges/hooks')
+                return ('previous' if previous else 'applied'), site, \
+                    flags | (LEGACY_FLAG if legacy else 0) | (PREVIOUS_FLAG if previous else 0)
     require(False, 'foreign arena runtime code/options')
 
 
@@ -282,7 +306,7 @@ def project(payload):
 def status(payload):
     try:
         state = _owned_state(payload)[0]
-        if state == 'applied':
+        if state in ('applied', 'previous'):
             require(ps._base_status(project(payload)) == 'applied', 'missing practice-squad runtime')
         return state
     except (ValueError, IndexError, KeyError, TypeError, struct.error, OverflowError, StopIteration):
@@ -291,7 +315,7 @@ def status(payload):
 
 def read_settings(payload):
     state = status(payload)
-    if state != 'applied':
+    if state not in ('applied', 'previous'):
         return {'status': state, 'reserves_16': False, 'created_teams_extra': 0, 'capacity': False}
     flags = _owned_state(payload)[2]
     legacy = bool(flags & LEGACY_FLAG)
@@ -322,6 +346,16 @@ def apply(payload, *, reserves_16=True, created_teams_extra=0, capacity=False):
         require(not owned & LEGACY_FLAG, 'a beta-78 capacity runtime (0xB0000) is installed; rebuild from the original')
         require(owned == flags, 'arena options differ; rebuild from original')
         return payload, {**common, 'already_applied': True, 'changed_bytes': 0}
+    if state == 'previous':
+        # b780 modes2: the earlier runtime (league 1 in arena_stage) becomes this one in place: the owned code only
+        owned = _owned_state(payload)[2]
+        require(owned & ~PREVIOUS_FLAG == flags, 'arena options differ; rebuild from original')
+        site = allocation(payload)
+        old = XbeImage(payload).read(site['va'], CODE_SIZE)
+        result, _ = space.install_code(payload, OWNER, code_for(site['va'], flags), previous=old)
+        require(status(result) == 'applied', 'arena growth upgrade read-back failed')
+        return result, {**common, 'already_applied': False, 'upgraded': True, 'previous_revision': 'league 1',
+                        'changed_bytes': sum(a != b for a, b in zip(payload, result))}
     # Validate the full input before constructing any candidate. Each dependency
     # also pins complete foreign/mixed states, and all operations are copy-only.
     from . import nfl2k5_franchise_practice as fp
@@ -332,8 +366,9 @@ def apply(payload, *, reserves_16=True, created_teams_extra=0, capacity=False):
     site = allocation(payload)
     for prerequisite in (ps, fp, pr):
         # an already-installed prerequisite (or one delegated to the Practice Squad screen's
-        # replaced Coach's Desk table) is kept as is; only a retail one is installed here
-        if prerequisite.status(payload) == 'retail':
+        # replaced Coach's Desk table) is kept as is; only a retail one is installed here (b780 modes2: and a
+        # previous practice staging is upgraded first, since the projection's before-bytes are this revision's)
+        if prerequisite.status(payload) in ('retail', 'previous'):
             payload, _ = prerequisite.apply(payload)
     require(rdata.status(payload, sites(site['va'], capacity, my_career)) == 'retail', 'foreign arena prerequisites')
     result, code_receipt = space.install_code(payload, OWNER, code_for(site['va'], flags))

@@ -257,7 +257,8 @@ class NativeTests(unittest.TestCase):
         self.call(0xC0500, ecx=self.root)
         self.teams = self.word(self.root + 0x1C); self.team = self.teams
         self.pool = self.word(self.root + 4)
-        for at, value in ((0xE576A0, 1), (0xE576A4, 7), (0xE576AC, 32)):
+        # b780 modes2: league type 2 is Franchise (1 is the Tournament, which the staging tested by mistake before)
+        for at, value in ((0xE576A0, 2), (0xE576A4, 7), (0xE576AC, 32)):
             self.put(at, value)
         for i in range(32):
             self.put(0xE5786C + 4*i, self.teams + 500*i)

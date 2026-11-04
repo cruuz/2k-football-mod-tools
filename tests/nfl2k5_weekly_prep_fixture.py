@@ -20,7 +20,7 @@ class Machine(NativeMachine):
             self.uc.mem_protect(region["va"], region["size"], self.u.UC_PROT_READ |
                                 (self.u.UC_PROT_EXEC if region["kind"] == "code" else self.u.UC_PROT_WRITE))
         self.labels = {}
-        if patch.status(payload) == "applied":
+        if patch.status(payload) in ("applied", "previous"):   # b780 modes2: revision 1 has the same labels
             base = patch.allocation(payload)["va"]
             self.labels = {k: base + v for k, v in patch.assembly.LABELS.items()}
         self.uc.reg_write(self.x.UC_X86_REG_FPCW, 0x37F)

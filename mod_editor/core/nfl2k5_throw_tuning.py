@@ -1737,6 +1737,8 @@ def k128_requires_128(guardian_overlay=False, reserves_16=False, created_teams_e
 
 
 class _roster_arena_adapter:
+    UPGRADES_PREVIOUS = True   # b780 modes2: a beta-78 .. v0.9 RC runtime (practice staging league 1) upgrades in place
+
     def __init__(self, reserves_16, created_teams_extra, capacity=False):
         self.kwargs = dict(reserves_16=reserves_16, created_teams_extra=created_teams_extra,
                            capacity=capacity)
@@ -2363,7 +2365,7 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
     if practice_squad and franchise_practice:
         # practice-only reserve staging (beta 61): reserves join the disposable practice roster; needs both patches above
         state = practice_reserves_patch.status(patched)
-        if state == "retail":
+        if state in ("retail", "previous"):   # b780 modes2: a previous staging (league 1) is upgraded in place
             patched, sub_receipt = practice_reserves_patch.apply(patched)
             receipt = {**receipt, "practice_reserves_patch": sub_receipt,
                        "changed_byte_count": int(receipt.get("changed_byte_count", 0)) + int(sub_receipt["changed_bytes"])}
