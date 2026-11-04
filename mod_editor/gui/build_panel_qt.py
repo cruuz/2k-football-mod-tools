@@ -35,6 +35,7 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
+import os
 import threading
 import time
 import tempfile
@@ -86,17 +87,19 @@ IMAGE_FILTER = "Xbox disc images (*.xiso *.iso *.img);;All files (*)"
 XBE_FILTER = "Xbox executables (default.xbe *.xbe);;All files (*)"
 
 
-PRESET_LABELS = {"softdrink_basic": "Basic", "softdrink_advanced": "Modern", "softdrink_experimental": "Experimental"}
-PRESET_BUTTONS = {"softdrink_basic": "Basic — 2004 fixes",
-                  "softdrink_advanced": "Modern — updated gameplay & season",
-                  "softdrink_experimental": "Experimental — extra changes"}
+# b780-uxfix: one name per preset. The button said "Modern" while the help texts, the FAQ, the release notes, the
+# project check and the published "SOFTDRINK patch advanced" all say Advanced.
+PRESET_LABELS = {"softdrink_basic": "Basic", "softdrink_advanced": "Advanced", "softdrink_experimental": "Experimental"}
+PRESET_BUTTONS = {"softdrink_basic": "Basic: 2004 fixes",
+                  "softdrink_advanced": "Advanced: updated gameplay and season",
+                  "softdrink_experimental": "Experimental: extra changes"}
 PRESET_CAPTIONS = {
     "softdrink_basic": ("2004 season and rules. Throw/catching fixes, Franchise draft and free agency, CPU returners, "
                         "kicking power, Player Card team column with real past teams, Edit Player position and Pro Bowl tab order."),
     "softdrink_advanced": ("Basic plus acceleration, progression, position changes, modern rules, 2026 season, "
                            "letter-grade ratings in Franchise, presentation, screen timing and other selected changes. "
                            "Includes changes not yet tested in-game."),
-    "softdrink_experimental": ("Modern plus widescreen, dynamic kickoff alignment and kick laces. "
+    "softdrink_experimental": ("Advanced plus widescreen, dynamic kickoff alignment and kick laces. "
                                "Includes changes not yet tested in-game."),
 }
 BRIEF_CHANGES = 6   # changes named on the first screen of the Make my disc confirmation
@@ -374,11 +377,31 @@ PREVIOUS_UPGRADE_KEYS = {"honors_page": "honors page", "camera": "camera", "k128
                          "catch_slider": "catching slider", "sim_cb_tackles": "cornerback tackle credit",
                          # b780 db2: the beta-79 RB injury guard (no fullback rule) is upgraded in place as well
                          "sim_rb_injuries": "simulated RB injuries"}
+# b780 studio1: older revisions that read "legacy" and that the build upgrades in place (progression.apply and
+# franchise_economy.apply both accept "retail" or "legacy"). A v0.8 disc reads legacy for both; the boxes were greyed out
+# with no badge and no line in the disc summary, so retirement by age and the economy revision could not be added.
+# "returner_fix" is dormant until b780 st1 (the KR/PR getter's slot check) is merged: only then does a beta-79 or older disc
+# read "legacy" for it, and nfl2k5_returner_fix.apply accepts "retail" or "legacy" the same way.
+LEGACY_UPGRADE_KEYS = {"progression": "player growth, decline and retirement", "franchise_economy": "2026 franchise economy",
+                       "returner_fix": "CPU kick and punt returner fix"}
 # b780 n6: beta-79 installs this release reads ("previous") but cannot update in place (they grew, or MyCareer and its
 # companions are linked together); the option stays off and says to rebuild from the retail game
 PREVIOUS_REBUILD_KEYS = {"my_career": "MyCareer", "my_career_home": "Career Home", "player_progress": "Player Progress",
                          "pass_rush_stats": "pass rush stats", "scorebug_runtime": "scorebug effects",
-                         "sim_realism": "simulated season realism"}
+                         "sim_realism": "simulated season realism",
+                         # b780 studio1: the released v0.8 disc reads "previous" for these two as well. Rookie faces cannot
+                         # be written over the beta-79 generator bytes (xbe_apply wants retail or this release's), and the
+                         # Player Progress row belongs to the screen above; both were greyed out with a generic badge.
+                         "rookie_faces": "rookie faces and first names", "player_progress_visible": "Player Progress row"}
+# b780 studio1: the plan fields behind the installed runtime options the build will not drop (the modules listed in
+# nfl2k5_throw_tuning._check_installed_runtime_settings, and the plan fields their derived switches read:
+# widescreen -> 4:3 menus, dynamic kickoff -> the 25th Anniversary kickoff gate, modern goalposts -> period goalposts,
+# the practice facility and its team logo -> the logo swap).
+KEPT_WHEN_INSTALLED = ("coin_defer", "decided_clock", "historic_teams_quick_game", "espn25_more_moments", "espn25_named_previews",
+                       "historic_stock_books", "espn25_era_rules", "dynamic_kickoff", "widescreen", "modern_goalposts",
+                       "modern_practice_field", "modern_practice_field_team_logo", "k128_memory", "letter_grades", "honors_page",
+                       "coach_ai")
+KEPT_NEEDS = {"modern_practice_field_team_logo": "modern_practice_field"}
 VENUE_BUILD_KEYS = (
     "modern_sofi", "modern_highmark", "modern_att", "modern_levis", "modern_allegiant",
     "modern_mercedes_benz", "modern_usbank", "modern_lucas_oil", "modern_state_farm",
@@ -2249,6 +2272,9 @@ class BuildPanel(QWidget):
             applied.append("depth locks: older revision (needs update)")
         if state.get("draft_ai") == "legacy":      # b780 b1-draft: the beta-78/79 draft AI, upgraded in place
             applied.append("draft AI: older revision (needs update)")
+        for key, name in LEGACY_UPGRADE_KEYS.items():  # b780 studio1: upgraded in place too
+            if state.get(key) == "legacy":
+                applied.append(f"{name}: older revision (needs update)")
         for key, name in PREVIOUS_UPGRADE_KEYS.items():  # b780 n6: beta-79 installs, upgraded in place
             if state.get(key) == "previous":
                 applied.append(f"{name}: older revision (needs update)")
@@ -2280,7 +2306,9 @@ class BuildPanel(QWidget):
             draft_upgrade = key == "draft_ai" and value == "legacy"
             # b780 n6: a beta-79 install (honors page, camera v7, K128) reads "previous"; the build upgrades it in place.
             previous_upgrade = key in PREVIOUS_UPGRADE_KEYS and value == "previous"
-            box.setEnabled(available and (value == "retail" or upgrade or locks_upgrade or draft_upgrade or previous_upgrade)
+            legacy_upgrade = key in LEGACY_UPGRADE_KEYS and value == "legacy"  # b780 studio1
+            box.setEnabled(available and (value == "retail" or upgrade or locks_upgrade or draft_upgrade or previous_upgrade
+                                          or legacy_upgrade)
                            and (is_image or not needs_image))
             box.setChecked(False)
             if not available:
@@ -2298,6 +2326,10 @@ class BuildPanel(QWidget):
             elif previous_upgrade:
                 box.setToolTip(f"The {PREVIOUS_UPGRADE_KEYS[key]} from an older build (beta 79) is installed. Select to "
                                "update it to this release's revision (in place).")
+                self._set_badge(key, "Needs update")
+            elif legacy_upgrade:
+                box.setToolTip(f"An older revision of {LEGACY_UPGRADE_KEYS[key]} is installed. Select to update it to this "
+                               "release's revision (in place).")
                 self._set_badge(key, "Needs update")
             elif upgrade:
                 box.setToolTip("Position pools are installed, but the CPU lineup exhaustion repair is missing. Select to upgrade.")
@@ -2328,6 +2360,16 @@ class BuildPanel(QWidget):
                     "music_shuffle", "practice_squad_screen", "abilities", "qb_spy", *BUILD_KEYS):
             gate(getattr(self, key + "_check"), key, needs_image=True)
         gate(self.trim_intro_videos_check, "trim_intro_videos", needs_image=True)
+        # b780 studio1: CPU ball carrier vision is the wider sideline taper of the carrier owner, which can only be chosen
+        # when the owner is first written (nfl2k5_ball_carrier_ai.apply refuses the other taper on an installed one). The box
+        # stayed tickable on a disc that already carries the owner and then met a dependency it could never satisfy.
+        if state.get("cpu_ball_carriers") == "applied" and state.get("cpu_runner_vision") == "retail":
+            box = self.cpu_runner_vision_check
+            box.setEnabled(False)
+            box.setChecked(False)
+            box.setToolTip("CPU ball carriers are already installed on this disc with the normal sideline taper, and carrier "
+                           "vision is the wider taper of the same patch, so it needs a disc built from your retail game.")
+            self._set_badge("cpu_runner_vision", "Build from retail to add")
         # b76-i1: a source with a custom intro may take another movie, so retail or custom enables it
         custom_state = str(state.get("custom_intro"))
         custom_available = self._available.get("custom_intro", False)
@@ -2962,6 +3004,8 @@ class BuildPanel(QWidget):
             return "already installed"
         if state == "foreign":
             return "unrecognized source data"
+        if state == "previous":                 # b780 studio1: it said "full disc required" about a full disc
+            return "the beta 79 version is installed; rebuild from retail to update it"
         return "full disc required"
 
     def _boxes(self) -> dict[str, QCheckBox]:
@@ -3079,7 +3123,7 @@ class BuildPanel(QWidget):
     def plan(self) -> mod_build.BuildPlan:
         plan = mod_build.BuildPlan(
             source=self.source_field.text(), target=self.target_field.text(),
-            overwrite=platform_compat.io_path(self.target_field.text()).exists() if self.target_field.text() else False,
+            overwrite=self._target_exists(),
             throw=self.throw_check.isChecked(), max_deep_yards=float(self.ceiling_spin.value()),
             arc=float(self.arc_spin.value()) / 100.0,
             realistic_flight=self.realistic_check.isChecked(),
@@ -3215,6 +3259,59 @@ class BuildPanel(QWidget):
         if getattr(self, "_momentum_legacy_disabled", False):
             plan.notes = (plan.notes + "\nlegacy_accel_ramp_disabled_by_momentum_profile=true").strip()
         plan.console_memory = self.console_memory()  # b780-m64b
+        # b780 studio1: a child whose parent the disc already carries is met by the disc. The parent's box is greyed out
+        # ("Already installed", unticked), so the plan said hitch brake without close pursuit recovery and the settings
+        # validator refused it: Save Project failed with "turn both on, or both off" about a box nobody could tick. The
+        # build replays an installed parent as already applied and adds the child to it in place.
+        for parent, children in r62_ui.CHILDREN.items():
+            if not getattr(plan, parent, False) and self._installed(parent) and any(getattr(plan, child, False) for child in children):
+                setattr(plan, parent, True)
+        return plan
+
+    def _target_exists(self) -> bool:
+        """Whether the output file is already there. A name the drive cannot hold is simply not there: ``Path.exists``
+        raises OSError (File name too long) for it, and plan() runs on every keystroke in the field, so typing or
+        suggesting a long name raised out of the slot and made Save Project fail until the name was shortened."""
+        text = self.target_field.text()
+        if not text:
+            return False
+        try:
+            return bool(platform_compat.io_path(text).exists())
+        except (OSError, ValueError):
+            return False
+
+    @staticmethod
+    def _name_too_long(text: str) -> bool:
+        """The file name part is longer than the drive allows (255 bytes on Linux and macOS, 255 characters on Windows)."""
+        name = Path(text.strip()).name
+        return len(name) > 255 if platform_compat.IS_WINDOWS else len(os.fsencode(name)) > 255
+
+    def _installed(self, key: str) -> bool:
+        """The disc this page read already carries ``key`` exactly as this release writes it."""
+        return (self._state or {}).get(key) == "applied"
+
+    def _plan_for_build(self) -> mod_build.BuildPlan:
+        """``plan()`` for a build over a disc that already carries options: the plan keeps what is installed.
+
+        The build refuses to drop an installed runtime option ("X is installed; rebuild from a verified base to turn it
+        off", ``nfl2k5_throw_tuning._check_installed_runtime_settings``) and checks option dependencies against the plan,
+        not the disc, while this page shows an installed option as greyed out and unticked. So on a disc built by the
+        Studio, including the released v0.8 disc, every build was refused at its first check (era rules without their
+        bases, widescreen menus, the kickoff gate ...). An installed option is replayed as already applied."""
+        plan = self.plan()
+        for name in KEPT_WHEN_INSTALLED:
+            if getattr(plan, name, True) is False and self._installed(name):
+                # a sub-option is kept only with its parent in the plan (the build refuses the logo without the facility)
+                parent = KEPT_NEEDS.get(name)
+                if parent is None or getattr(plan, parent, False) or self._installed(parent):
+                    setattr(plan, name, True)
+                    if parent is not None:
+                        setattr(plan, parent, True)
+        for child, parents in ANNIVERSARY_DEPENDENCIES.items():
+            if getattr(plan, child, False):
+                for parent in parents:
+                    if not getattr(plan, parent, False) and self._installed(parent):
+                        setattr(plan, parent, True)
         return plan
 
     # ------------------------------------------------------------- b780-m64b: console memory
@@ -3275,8 +3372,13 @@ class BuildPanel(QWidget):
                 locked = []
                 for key, reason in rules.items():
                     box = boxes.get(key)
-                    if box is None or str(state.get(key)) in self._INSTALLED:
-                        continue   # installed on the source: the page shows it installed and the blocker says why
+                    if box is None:
+                        continue
+                    if str(state.get(key)) in self._INSTALLED:
+                        # installed on the source: the disc read set the box (installed, kept on) and the blocker says
+                        # why; a lock from an earlier disc would hand back that disc's state at 128 MB
+                        self._memory_locks.pop(key, None)
+                        continue
                     badge = self._badges.get(key)
                     lock_badge = console_memory.lock_badge(reason, key)
                     tip = self._memory_lock_tip(key, reason)
@@ -3379,7 +3481,8 @@ class BuildPanel(QWidget):
         for key, label in self._memory_cost_labels.items():
             if key not in costs:
                 label.hide()
-        self.memory_budget_label.setText(console_memory.budget_line(prediction, labels=self._memory_label))
+        self.memory_budget_label.setText(console_memory.NO_ESTIMATE if prediction is None else
+                                         console_memory.budget_line(prediction, labels=self._memory_label))
 
     def _memory_plan(self):
         """The plan the memory model is asked about: the page's plan as a 64 MB build can have it."""
@@ -3550,7 +3653,20 @@ class BuildPanel(QWidget):
                     or any(getattr(p, key) for key in BUILD_KEYS if key not in r62_ui.LEVELS) or p.cpu_money_downs != "retail" or p.scorebug_runtime or p.momentum > 0 or p.defensive_try or p.zone_drop_cap or p.all_stadiums or p.coverage_slider or p.scramble_tuning or p.flatter_deep_ball or p.chop_block_toggle or p.team_names_2026 or p.music_shuffle or p.practice_squad_screen or p.abilities or p.qb_spy or p.music_policy != "retail" or p.music_unlock or p.music_userlist or p.music_project or p.music_library or p.edge_rename or p.screen_timing is not None or p.hires_pack or p.guardian_cap or p.scorebug or p.scheme_labels or p.camera or p.kick_rules or p.kick_power or p.position_pools or p.depth_roles or p.depth_chart_rows
                     or p.kickoff_alignment or p.dynamic_kickoff or p.xbe_space or p.kickoff_relocated or p.season_cap or p.season_2026 or p.widescreen or p.overtime or p.team_column or p.seven_on_seven or p.team_history or p.career_stats or p.position_row or p.probowl_order or p.elbow_options or p.the1wam_lineman_rating or p.xemu_display_list_fix or p.resource_load_guard or p.loader_wakeup_fix or p.rb_rename or p.name_keyboard or p.penalties or p.uniform_choice or p.team_sleeves or p.kick_laces or p.punter_holder or p.franchise_practice or p.practice_squad or p.depth_locks or p.prospect_names or p.player_star or p.player_tags or p.roster_edits or p.espn25_plan
                     or p.commentary or p.playbook_packs or self._helmet_finish_changed()
-                    or p.weather_plan or self._weather_haze_changed() or self._number_kerning_changed() or self._modern_color_changed() or self._modern_arrowhead_changed() or self._modern_metlife_changed() or self._modern_metlife_model_changed() or self._modern_helmets_changed() or p.trim_intro_videos or p.cpu_scrambles == "modern")
+                    or p.weather_plan or self._weather_haze_changed() or self._number_kerning_changed() or self._modern_color_changed() or self._modern_arrowhead_changed() or self._modern_metlife_changed() or self._modern_metlife_model_changed() or self._modern_helmets_changed() or p.trim_intro_videos or p.cpu_scrambles == "modern"
+                    or bool(self._speed_separation_chosen())
+                    # standalone steps of mod_build the list above never named: ticked alone, each was refused as "nothing is selected"
+                    or p.espn25_rosters or bool(p.honors_history) or p.trophy_room)
+
+    def _speed_separation_chosen(self) -> int:
+        """The Speed separation strength the player set (0 = off).
+
+        It is a number row, not a check box, so it has to be counted here by hand: without it a build with only this
+        row set was refused as "nothing is selected", and no summary (the Make my disc? dialog, the Build selection
+        line, Copy Build summary) named it. A locked row (the disc already carries it, or it cannot be changed on this
+        source) is not a change to make, so only an enabled row counts."""
+        spin = getattr(self, "speed_threshold_spin", None)
+        return int(spin.value()) if spin is not None and spin.isEnabled() else 0
 
     def _helmet_finish_changed(self) -> bool:
         """True when the chosen finish differs from what the source carries (a Glossy restoration counts)."""
@@ -3598,6 +3714,8 @@ class BuildPanel(QWidget):
                     text += f" ({self.hires_scale_combo.currentText()}, {self.hires_target_combo.currentText()}, {self.hires_folder_field.text().strip()})"
                 if key == "throw":
                     text += f" ({self.ceiling_spin.value()} yd)"
+                if key == "modern_everbank_construction" and not self.modern_everbank_check.isChecked():
+                    continue  # b780-uxfix: a sub-option is a change only with its stadium ("Selected: 1 change" with none ticked)
                 if key == "weather_haze" and not self._weather_haze_changed():
                     continue
                 if key == "number_kerning" and not self._number_kerning_changed():
@@ -3639,6 +3757,9 @@ class BuildPanel(QWidget):
             labels.append("Restore retail dry-weather haze response")
         if self._modern_color_changed() and not self.modern_color_check.isChecked():
             labels.append("Retail colour & lighting (choose the original retail source)")
+        strength = self._speed_separation_chosen()
+        if strength:
+            labels.append(f"{speed_threshold_ui.CAPTION} ({strength})")
         if self.cpu_scrambles_level.currentData() == "modern":
             labels.append(tt.cpu_scrambles_patch.BUILD_CAPTION + ": Modern")
         if self.star_players:
@@ -3679,11 +3800,15 @@ class BuildPanel(QWidget):
             if self._include_session_project():
                 return "Save the open project's edits, then use a clean session for the SOFTDRINK source project, or turn off Include SOFTDRINK league artwork."
         for child, parents in ANNIVERSARY_DEPENDENCIES.items():
-            if getattr(self, child + "_check").isChecked():
+            child_box = getattr(self, child + "_check")
+            # b780 studio1: a ticked box that is greyed out is installed on the disc, not asked for, and a base the disc
+            # already carries is met. Both were treated as missing, so on the released v0.8 disc (era rules installed, the
+            # kickoff, defensive try and overtime boxes unticked as installed) Make my disc was blocked for every choice.
+            if child_box.isChecked() and child_box.isEnabled():
                 missing = [getattr(self, key + "_check").text() for key in parents
-                           if not getattr(self, key + "_check").isChecked()]
+                           if not getattr(self, key + "_check").isChecked() and not self._installed(key)]
                 if missing:
-                    return getattr(self, child + "_check").text() + " requires: " + ", ".join(missing) + "."
+                    return child_box.text() + " requires: " + ", ".join(missing) + "."
         if self.historic_stock_books_check.isChecked() and self.playbook_pair_check.isChecked():
             return "Choose stock historic books or separate offensive and defensive playbooks."
         if self._include_session_project():
@@ -3742,6 +3867,9 @@ class BuildPanel(QWidget):
         target = self.target_field.text().strip()
         if not target:
             return "Choose where to save the disc."
+        if self._name_too_long(target):
+            return ("That disc copy name is too long for the drive (a file name can be 255 characters at most). Shorten it, "
+                    "or choose another name with Choose….")
         if platform_compat.paths_alias(target, source):
             return "Source and output are the same file. Fix: choose a different output file."
         # b778-bd2: an empty selection used to finish "successfully" with a copy of the
@@ -3887,6 +4015,10 @@ class BuildPanel(QWidget):
                 box.setChecked(True)
                 box.blockSignals(False)
                 box.setEnabled(False)
+                if (self._state or {}).get(key) == "previous":
+                    # gate() worded this as a box to select; a locked, ticked box needs no selecting (b780 studio1)
+                    box.setToolTip(f"The {PREVIOUS_UPGRADE_KEYS[key]} from an older build (beta 79) is installed. This build "
+                                   "brings it up to this release's revision in place, so it stays ticked.")
         state = self._state or {}
         installed = state.get("decided_clock_settings") or {}
         cutoff = installed.get("settings") or {}
@@ -4343,7 +4475,11 @@ class BuildPanel(QWidget):
         if not name:
             return "Choose the folder of 2026 team venue art (one <team>/venue folder per team)."
         folder = Path(name)
-        if not folder.is_dir():
+        try:
+            is_folder = folder.is_dir()
+        except (OSError, ValueError):       # a name the drive cannot hold raises File name too long, not False
+            is_folder = False
+        if not is_folder:
             return f"The 2026 venue art folder was not found: {name}"
         try:
             stamp = tuple(sorted((str(m), m.stat().st_mtime_ns) for m in folder.glob("*/venue/manifest.json")))
@@ -4624,9 +4760,13 @@ class BuildPanel(QWidget):
         self.softdrink_project_check.show()
         self.softdrink_project_field.show()
         self.softdrink_art_button.show()
-        # b780-m64b: Share > Customize SOFTDRINK 2K28 says which console memory to build for (128 when it says nothing)
-        self.set_console_memory(console_memory.of(recipe), refresh=False)
+        # b780-m64b: Share > Customize SOFTDRINK 2K28 says which console memory to build for (128 when it says nothing).
+        # Building the pack for 64 MB starts from the recommended 64 MB set; the page lists what it turned off.
+        memory = console_memory.of(recipe)
+        self.set_console_memory(memory, refresh=False)
         self._refresh()
+        if memory == 64:
+            self.apply_recommended_64()
 
     def _softdrink_build_settings(self):
         choices = self.project_build_settings()
@@ -5175,7 +5315,7 @@ class BuildPanel(QWidget):
         # page is on afterwards, not the one it was on before.
         if self.blocker():
             return
-        plan = self.plan()
+        plan = self._plan_for_build()
         if not self._confirm_make_disc(plan):
             return
         self._requested_build_summary = f"2K5 Mod Studio {BUILD_RELEASE_TAG}\n" + self.confirmation_text(plan)
@@ -5210,7 +5350,7 @@ class BuildPanel(QWidget):
         nothing written to the project or the disc."""
         if self.blocker():
             return
-        plan = self.plan()
+        plan = self._plan_for_build()
         include_session = self._include_session_project()
         facade = self._facade
         labels = {key: box.text().replace("&&", "&") for key, box in self._boxes().items()}

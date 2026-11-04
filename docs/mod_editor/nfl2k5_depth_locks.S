@@ -530,28 +530,35 @@ panel_branch:
 
 # Only the confirmed KR selection arm; EDI=team, ESI=selected player.
 # Clear previous KR claims, transfer previous KR1 to KR2 and mark new KR1.
+# Revision 6 (b780 sub1, Q64): choosing the current KR1 again changes nothing; before it, KR2 became KR1 too and the
+# second returner was lost. EBP addresses the returner bytes so the check fits the arm's own 65 bytes.
 .section .depth_kr,"ax"
 .global set_kr
 set_kr:
  pushad
- movzx edx,byte ptr [edi+0x195]
- mov [edi+0x196],dl
+ lea ebp,[edi+0x195]
  xor eax,eax
+ mov al,[ebp]
+ test al,al
+ js kr_new
+ cmp esi,[edi+eax*4]
+ je kr_done
+kr_new:
+ mov [ebp+1],al
+ movzx ecx,byte ptr [ebp-0x79]
 kr_loop:
- cmp al,[edi+0x11c]
- jae kr_done
- mov ebx,[edi+eax*4]
+ dec ecx
+ js kr_done
+ mov ebx,[edi+ecx*4]
  and byte ptr [ebx+0x52],0xf3
- cmp eax,edx
+ cmp ecx,eax
  jne kr_selected
  or byte ptr [ebx+0x52],8
 kr_selected:
  cmp ebx,esi
- jne kr_next
- mov [edi+0x195],al
+ jne kr_loop
+ mov [ebp],cl
  or byte ptr [ebx+0x52],4
-kr_next:
- inc eax
  jmp kr_loop
 kr_done:
  popad

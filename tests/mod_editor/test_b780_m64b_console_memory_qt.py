@@ -173,6 +173,19 @@ class ForcedOff(_Page):
             panel.set_console_memory(128)
             self.assertEqual(panel.blocker(), "")
 
+    def test_a_disc_read_at_64_mb_keeps_each_disc_own_state(self):
+        with without_model():
+            panel = self.page()
+            panel.set_console_memory(64)                       # retail disc: K128 locked, its box was enabled
+            self.assertFalse(panel.k128_memory_check.isEnabled())
+            state = {key: "retail" for key in panel._boxes()}
+            state.update(path=str(self.source), container="xiso", throw=None, speed_threshold="retail",
+                         k128_memory="applied")
+            panel.apply_state(state)                           # now a disc with K128 installed, still at 64 MB
+            panel.set_console_memory(128)
+            self.assertFalse(panel.k128_memory_check.isEnabled())   # installed: stays as the disc read set it
+            self.assertTrue(panel.k128_memory_check.isChecked())
+
 
 class RosterCapacity(_Page):
     def test_roster_edits_that_grow_the_roster_file_are_refused_by_name_at_64(self):
@@ -260,6 +273,17 @@ class Budget(_Page):
             self.assertEqual(panel.blocker(), "")      # the 128 MB build never asks the 64 MB model
             self.assertFalse(panel.memory_budget_label.isVisibleTo(panel))
 
+    def test_a_model_that_cannot_estimate_says_so_and_does_not_refuse(self):
+        model = fake_model()
+        model.predict = lambda plan, target_mb=64: 1 / 0
+        with with_model(model):
+            panel = self.page()
+            panel.throw_check.setChecked(True)
+            panel.set_console_memory(64)
+            self.assertTrue(panel.wait_for_memory_budget())
+            self.assertEqual(panel.memory_budget_label.text(), cm.NO_ESTIMATE)
+            self.assertEqual(panel.blocker(), "")
+
     def test_no_model_says_so(self):
         with without_model():
             panel = self.page()
@@ -329,6 +353,22 @@ class WithTheModel(_Page):
         if cm.alternate_kit_shortfall(prediction):
             self.assertIn("if a game loops on the stadium shots, use the default uniforms", confirmation)
             self.assertIn("A player-picked alternate kit at ", panel.memory_budget_label.text())
+
+
+    def test_customize_softdrink_for_64_mb_starts_from_the_recommended_set(self):
+        panel = self.page()
+        project = Path(self.tmp.name) / "league.json"
+        project.write_text("{}")
+        panel.load_softdrink_sources({"preset": "softdrink_experimental", "project": str(project), "console_memory": 64,
+                                      "overrides": {"k128_memory": True, "k128_roster_heap": True}})
+        self.assertEqual(panel.console_memory(), 64)
+        self.assertTrue(panel.memory_action_label.text().startswith("Recommended 64 MB set applied: turned off "),
+                        panel.memory_action_label.text())
+        self.assertTrue(panel.wait_for_memory_budget())
+        self.assertFalse(cm.refuses(panel._memory_budget_result[0]), panel.memory_budget_label.text())
+        self.assertFalse(panel.blocker().startswith("The 64 MB build"), panel.blocker())
+        panel.set_console_memory(128)                       # the full pack build gives K128 back
+        self.assertTrue(panel.plan().k128_memory)
 
 
 class SavedAndShared(_Page):

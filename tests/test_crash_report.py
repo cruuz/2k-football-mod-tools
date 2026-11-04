@@ -10,8 +10,10 @@ from __future__ import annotations
 
 from pathlib import Path
 import sys
+import io
 import tempfile
 import unittest
+from unittest import mock
 
 _REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(_REPO_ROOT) not in sys.path:
@@ -206,6 +208,61 @@ class DialogSuppressionTests(unittest.TestCase):
 
         self.assertTrue(crash_report.dialog_is_possible("wayland-egl", environment={}))
         self.assertTrue(crash_report.dialog_is_possible(None, environment={}))
+
+
+class LogSizeTests(unittest.TestCase):
+    """b780-uxfix: errors.log stays small.
+
+    One fault in a resize handler wrote 215 RecursionError reports, about 51 MB, on every visit to the
+    Gameplay page, and nothing ever trimmed the file (a beginner's log reached 102 MB in one evening).
+    """
+
+    def setUp(self) -> None:
+        self.directory = Path(tempfile.mkdtemp(prefix="crash-size-"))
+        saved = dict(crash_report._LOGGED)
+        crash_report._LOGGED.clear()
+        self.addCleanup(lambda: (crash_report._LOGGED.clear(), crash_report._LOGGED.update(saved)))
+
+    def test_a_full_log_moves_to_one_older_copy(self) -> None:
+        with mock.patch.object(crash_report, "LOG_LIMIT_BYTES", 4096):
+            for index in range(40):
+                crash_report.write_report(f"report {index}\n" + "x" * 500, "2K5 Mod Studio",
+                                          directory=self.directory)
+        log, older = self.directory / "errors.log", self.directory / "errors.log.1"
+        self.assertEqual(sorted(path.name for path in self.directory.iterdir()), ["errors.log", "errors.log.1"])
+        self.assertLessEqual(log.stat().st_size, 4096)
+        self.assertLessEqual(older.stat().st_size, 4096)
+        self.assertIn("report 39", log.read_text(encoding="utf-8"))       # the newest report is never the one dropped
+
+    def test_one_huge_report_keeps_its_start_and_its_end(self) -> None:
+        report = "START\n" + "frame line\n" * 100_000 + "RecursionError: maximum recursion depth exceeded\n"
+        crash_report.write_report(report, "2K5 Mod Studio", directory=self.directory)
+        text = (self.directory / "errors.log").read_text(encoding="utf-8")
+        self.assertLess(len(text), crash_report.REPORT_LIMIT_CHARS + 200)
+        self.assertTrue(text.startswith("START"))
+        self.assertIn("RecursionError: maximum recursion depth exceeded", text)
+        self.assertIn("characters cut here to keep errors.log small", text)
+
+    def test_a_fault_that_repeats_215_times_is_counted_but_written_in_full_three_times(self) -> None:
+        def ping(depth=0):
+            return pong(depth + 1)
+
+        def pong(depth):
+            return ping(depth + 1)
+
+        with mock.patch.object(sys, "stderr", io.StringIO()):
+            for _ in range(215):
+                try:
+                    ping()
+                except RecursionError:
+                    info = sys.exc_info()
+                crash_report.handle(*info, app_name="2K5 Mod Studio", directory=self.directory, show_dialog=False)
+        log = self.directory / "errors.log"
+        text = log.read_text(encoding="utf-8")
+        self.assertEqual(text.count("RecursionError: maximum recursion depth exceeded"), 215)
+        self.assertEqual(text.count("Traceback (most recent call last)"), crash_report.FULL_REPEATS)
+        self.assertEqual(text.count("repeat 215 of an error already saved in full above"), 1)
+        self.assertLess(log.stat().st_size, 512 * 1024)                   # was about 51 MB
 
 
 class LogLocationTests(unittest.TestCase):

@@ -8111,7 +8111,7 @@
       "id": "nfl2k5.gameplay.k128_memory",
       "input_constraints": [
         "Pinned USA XBE or verified composed input with the retail entry point; reserve the complete selected owner union before installation. Foreign or mixed bytes refuse.",
-        "Owned 512 RX bytes (R1's 226-byte K128-late stubs, the optional roster heap pick and in-game block cap, the optional early entry); the XBE entry, the 10-byte compare at 0x327D1 (left retail by the early form) and, with the roster heap, the call at 0xC1F37 and the 9-byte in-game block site at 0x84EC2.",
+        "Owned 512 RX bytes (R1's 226-byte K128-late stubs, the optional roster heap pick and in-game block cap, the optional early entry); the XBE entry, the 10-byte compare at 0x327D1 (left retail by the early form) and, with the roster heap, the call at 0xC1F37 and the 9-byte in-game block site at 0x84EC2. The early form's copy of the stubs adds pages 0x4010..0x7FEF and keeps the top 64 KB of the 128 MB out (xemu's audio DSP asserts on a transfer that ends at the last byte of RAM).",
         "The roster heap and the early form need the 128 MB option; the roster heap composes with the arena growth (16 reserves, extra created teams).",
         "Rebuild from a verified base to remove it."
       ],

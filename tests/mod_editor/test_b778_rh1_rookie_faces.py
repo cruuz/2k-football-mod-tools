@@ -479,8 +479,12 @@ class RetailXbe(unittest.TestCase):
         headers = [h + 36 for _va, _raw, _rs, h in rf._section_map(payload)]
         for i in diff:
             self.assertTrue(any(o <= i < o + n for o, n in spans) or any(h <= i < h + 20 for h in headers), hex(i))
-        # b779-rf3: + the rating loop (region C); b780 GEN1: + the college bands and the draft number flag
-        self.assertEqual(len(receipt["edits"]), 7)
+        # b779-rf3: + the rating loop (region C); b780 GEN1: + the college bands and the draft number flag; b780 Q10:
+        # + the Franchise Show's record name
+        self.assertEqual(len(receipt["edits"]), 8)
+        at = rf._offset(out, rf.WRAPUP_STRING_VA, len(rf.WRAPUP_PATCHED))
+        self.assertEqual((payload[at:at + 24], out[at:at + 24]), (rf.WRAPUP_RETAIL, rf.WRAPUP_PATCHED))
+        self.assertEqual(payload[at + 24:at + 26], b"\0\0", "the name stays terminated, same length")
         at = rf._offset(out, rf.COLLEGE_VA, len(rf.COLLEGE_RETAIL))
         self.assertEqual(payload[at:at + len(rf.COLLEGE_RETAIL)], rf.COLLEGE_RETAIL)
         self.assertEqual(out[at:at + len(rf.COLLEGE_RETAIL)], rf.college_span())
@@ -502,6 +506,7 @@ class RetailXbe(unittest.TestCase):
         tail = rf.TABLE_END - rf.TABLE_VA - rf.TABLE_DATA
         old_c = rf.CODE_C_RF3 + b"\xcc" * (rf.REGION_C_END - rf.REGION_C - len(rf.CODE_C_RF3))
         rc = put(put(out, rf.COLLEGE_VA, rf.COLLEGE_RETAIL), rf.NUMBER_VA, rf.NUMBER_RETAIL)
+        rc = put(rc, rf.WRAPUP_STRING_VA, rf.WRAPUP_RETAIL)
         rc = put(put(rc, rf.REGION_C, old_c), rf.TABLE_VA + rf.TABLE_DATA,
                  rf.CODE_D_B780RC + b"\xcc" * (tail - len(rf.CODE_D_B780RC)))
         self.assertEqual(rf.xbe_status(rc), "previous")
@@ -511,6 +516,22 @@ class RetailXbe(unittest.TestCase):
         self.assertEqual(rf.xbe_status(put(out, rf.NUMBER_VA, rf.NUMBER_RETAIL)), "foreign")
         self.assertEqual(rf.xbe_status(put(out, rf.COLLEGE_VA, rf.COLLEGE_RETAIL)), "foreign")
         self.assertEqual(rf.xbe_status(put(out, rf.REGION_C, old_c)), "foreign")
+        self.assertEqual(rf.xbe_status(put(out, rf.WRAPUP_STRING_VA, rf.WRAPUP_RETAIL)), "foreign")
+
+    def test_the_franchise_show_reads_the_new_portrait_record(self):
+        """b780 Q10 (HUNT3): the show's WRAPUP_PORTRAIT context (registered at 0x28FBFB, edx = the record name) read
+        the retail record, so bank faces and created real players were "nophoto" on its boards."""
+        payload = Path(RETAIL_XBE).read_bytes()
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage
+        image = XbeImage(payload)
+        self.assertEqual(image.read(0x28FC0A, 5), b"\xba" + struct.pack("<I", rf.WRAPUP_STRING_VA))   # mov edx, name
+        self.assertEqual(image.read(0xE714E, 5), b"\xba" + struct.pack("<I", rf.STRING_VA))          # PORTRAIT's
+        firsts, lasts = shipped_pool()
+        out = XbeImage(rf.xbe_apply(payload, rf.tables(firsts, lasts, toy_bank()))[0])
+        show, card = (out.read(va, 24).decode("utf-16-le") for va in (rf.WRAPUP_STRING_VA, rf.STRING_VA))
+        self.assertEqual((show, card), ("portrai2.iff", rf.RECORD_NAME))
+        self.assertEqual(rf.name_id(show), rf.name_id(rf.RECORD_NAME), "names are looked up upper case")
+        self.assertNotEqual(rf.name_id(show), rf.name_id(rf.RETAIL_RECORD_NAME))
 
 
 # ------------------------------------------------------------------------------------------- b780 GEN1
@@ -662,6 +683,37 @@ class NativeDraftNumbers(unittest.TestCase):
                     self.assertEqual(a, r, (position, r))                    # his own number when it is free
             self.assertLessEqual(max(collections.Counter(after).values()) / len(after), 0.35, position)
 
+
+
+@unittest.skipUnless(RETAIL_XBE and Path(RETAIL_XBE).is_file(), "set NFL2K5_RETAIL_XBE to the retail default.xbe")
+class MyCareerContext(unittest.TestCase):
+    """b780 (REV1): the draft number flag at 0x325B61 sits inside MyCareer's native draft-signing context pin
+    (0x325B50, 0x1AE). With Rookie faces and MyCareer both installed, MyCareer must still read applied; the flag
+    without a complete Rookie faces install, or any other byte there, is foreign."""
+
+    @staticmethod
+    def write(payload, writes):
+        import hashlib
+        buf = bytearray(payload)
+        for va, data in writes:
+            at = rf._offset(payload, va, len(data))
+            buf[at:at + len(data)] = data
+        for _va, raw, rsize, header in rf._section_map(payload):
+            buf[header + 36:header + 56] = hashlib.sha1(struct.pack("<I", rsize) + bytes(buf[raw:raw + rsize])).digest()  # nosec B324
+        return bytes(buf)
+
+    def test_mycareer_accepts_the_rookie_faces_draft_number(self):
+        from mod_editor.core import nfl2k5_my_career_mode as mcm
+        from mod_editor.core import nfl2k5_throw_tuning as tt
+        career, _ = tt._apply_all(Path(RETAIL_XBE).read_bytes(), None, catch_slider=False, xbe_space=True,
+                                  my_career=True)
+        self.assertEqual(mcm.status(career), "applied")
+        firsts, lasts = shipped_pool()
+        both, _ = rf.xbe_apply(career, rf.tables(firsts, lasts, toy_bank()))
+        self.assertEqual(rf.xbe_status(both), "applied")
+        self.assertEqual(mcm.status(both), "applied")
+        self.assertEqual(mcm.status(self.write(career, [(rf.NUMBER_VA, rf.NUMBER_PATCHED)])), "foreign")  # flag alone
+        self.assertEqual(mcm.status(self.write(both, [(rf.NUMBER_VA, b"\x6a\x02")])), "foreign")       # another byte
 
 class Portraits(unittest.TestCase):
     def test_face_pixels_roundtrip(self):

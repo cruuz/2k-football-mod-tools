@@ -2767,7 +2767,31 @@ class RosterEditorPanel(QWidget):
             if name == "scramble":
                 self.cards[name].set_value(before)
             return
+        if name == "position":
+            self.set_position(player, int(value))
+            return
         self.set_field(player, name, value)
+
+    def set_position(self, player: rr.Player, value: int) -> None:
+        """A position change with undo: the player is unlocked and moves to the bottom of his new position's depth
+        chain on his club (b780 sub1, Q63), so a locked starter never collides with the new position's locks."""
+
+        assert self.document is not None
+        before = self.document.change_position(player, value)
+        after = {key: player.record.values[key] for key in before}
+
+        def do(values=after) -> None:
+            assert self.document is not None
+            self.document.restore_position(player, values)
+            self._after_edit(player, "position")
+
+        def undo(values=before) -> None:
+            assert self.document is not None
+            self.document.restore_position(player, values)
+            self._after_edit(player, "position")
+
+        self._after_edit(player, "position")
+        self.undo_stack.push(UndoEntry(f"{player.display}: position", undo, do))
 
     def set_field(self, player: rr.Player, name: str, value: int) -> None:
         """Set one field with undo, dirty marking and a refreshed header."""
@@ -4065,8 +4089,14 @@ class RosterEditorPanel(QWidget):
         if self.document is None:
             return
         chosen, _f = QFileDialog.getSaveFileName(self, "Export roster edits (for ★ Build & Share)", "roster_edits.json", EDITS_FILTER)
-        if chosen:
+        if not chosen:
+            return
+        try:
             self.save_edits_to(chosen)
+        except (OSError, ValueError) as exc:
+            # RosterRecordError is a ValueError: staff changes on a roster loaded with its faces, staff problems, a path
+            # that cannot be written. Every other button on this page says so in a dialog; this one raised out of the click.
+            show_operation_error(self, "export the roster edits", plain_error(exc))
 
     def write_copy_to(self, target: Path | str, *, overwrite: bool = False) -> dict[str, Any]:
         """Disc: copy the image and apply.  Save: write a re-signed container.  Never the source."""
