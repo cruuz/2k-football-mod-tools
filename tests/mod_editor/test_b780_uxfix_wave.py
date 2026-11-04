@@ -75,6 +75,17 @@ class Q35CoachSuperBowlsTests(unittest.TestCase):
         self.assertNotIn("—", tip)
 
 
+class ProgressTextTests(unittest.TestCase):
+    def test_a_disc_read_counts_in_gb_and_a_count_stays_a_count(self):
+        # power-user review U2: "Checking your XISO • 591396864 of 6300499968"
+        import time
+        from mod_editor.core.nfl2k5_project_fit import progress_text
+        text = progress_text("Checking your game file", 591396864, 6300499968, time.monotonic() - 3)
+        self.assertIn("0.6 of 5.9 GB", text)
+        self.assertNotIn("6300499968", text)
+        self.assertIn("9999 of 10000", progress_text("Copying", 9999, 10000, time.monotonic() - 3))
+
+
 class Q19GrownSaveTests(unittest.TestCase):
     """The Studio MyCareer page refused every SOFTDRINK franchise save (retail size and season block offset)."""
 
