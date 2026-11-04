@@ -4,7 +4,7 @@ rem 2K5 Mod Studio - Windows launcher.
 rem
 rem Runs from this script's own folder. When the archive includes a private
 rem runtime beside the application (the installed layout), that runtime is used
-rem directly. Otherwise this finds Python 3.11 or 3.12 and lets
+rem directly. Otherwise this finds Python 3.12, 3.11 or 3.13 and lets
 rem packaging\windows\studio_bootstrap.py build a private .venv on first run.
 rem Nothing here writes outside the Studio folder and nothing needs
 rem administrator rights. Pass --setup to install or repair the private
@@ -55,6 +55,12 @@ py -3.11 -c "import sys" >nul 2>nul
 if not errorlevel 1 (
     set "PY_EXE=py"
     set "PY_ARG=-3.11"
+    goto have_python
+)
+py -3.13 -c "import sys" >nul 2>nul
+if not errorlevel 1 (
+    set "PY_EXE=py"
+    set "PY_ARG=-3.13"
     goto have_python
 )
 py -3 -c "import sys" >nul 2>nul

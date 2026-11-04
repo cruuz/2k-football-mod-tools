@@ -293,7 +293,8 @@ class ModStudioPackagingTests(unittest.TestCase):
         self.assertIn("packaging/requirements-studio.txt", launcher)
         requirements = (ROOT / "packaging/requirements-studio.txt").read_text(encoding="utf-8")
         for distribution in ("PyQt5", "Pillow", "numpy", "capstone", "unicorn"):
-            self.assertRegex(requirements, rf"(?m)^{distribution}==[^\s]+$")
+            # b780 Q8: an exact pin, optionally for a Python version range (numpy 1.26.4 before 3.13, numpy 2 on 3.13)
+            self.assertRegex(requirements, rf'(?m)^{distribution}==[^\s;]+(; python_version [<>=]+ "3\.\d+")?$')
         self.assertIn("python3 -m mod_editor --studio", combined)
         self.assertIn("python3-pyqt5", readme)
         self.assertNotIn("tkinter", combined.casefold())

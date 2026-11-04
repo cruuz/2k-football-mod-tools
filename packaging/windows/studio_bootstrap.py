@@ -25,7 +25,7 @@ import sys
 from typing import Callable, Sequence
 
 PYTHON_URL = "https://www.python.org/downloads/windows/"
-SUPPORTED_VERSIONS = ((3, 11), (3, 12))
+SUPPORTED_VERSIONS = ((3, 11), (3, 12), (3, 13))   # b780 Q8: 3.13 installs NumPy 2 (requirements-studio.txt markers)
 IMPORT_CHECK = (
     "from PyQt5 import QtWidgets; import PIL; import numpy; import capstone; "
     "import unicorn; import mod_editor"

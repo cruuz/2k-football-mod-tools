@@ -190,6 +190,22 @@ class WrapperBehaviour(unittest.TestCase):
         self.assertNotIn("Rebuilding", done.stdout)
         self.assertEqual(log.read_text(encoding="utf-8").count("py312 -m pip install"), 2)
 
+    def test_setup_accepts_python_313(self):
+        """b780 Q8: Python 3.13 is a supported runtime (its packages pin NumPy 2), so setup builds with it, with no note."""
+        log = Path(self._tmp.name) / "calls.log"
+        py313 = self._versioned_stub("py313", "3.13", log)
+        done = self.run_wrapper("--setup", env=dict(self.env, MOD_STUDIO_PYTHON=str(py313)))
+        self.assertEqual(done.returncode, 0, done.stdout + done.stderr)
+        self.assertNotIn("pinned for Python", done.stderr)
+        self.assertIn("py313 -m pip install -r", log.read_text(encoding="utf-8"))
+
+    def test_setup_notes_an_unsupported_newer_python_and_keeps_the_uv_fallback(self):
+        log = Path(self._tmp.name) / "calls.log"
+        py314 = self._versioned_stub("py314", "3.14", log)
+        done = self.run_wrapper("--setup", env=dict(self.env, MOD_STUDIO_PYTHON=str(py314)))
+        self.assertIn("pinned for Python 3.11, 3.12 or 3.13 and this is Python 3.14", done.stderr)
+        self.assertIn("uv python install 3.12", done.stderr)
+
 
 @unittest.skipUnless(BASH and os.name != "nt", "POSIX bash required")
 class ErrorDialogMarkup(unittest.TestCase):

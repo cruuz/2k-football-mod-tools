@@ -124,7 +124,7 @@ If you used the green **Code > Download ZIP** button instead of the release asse
 the source code, not the Studio. Double-click `2K5-Mod-Studio.bat` in the extracted folder.
 The first run creates a private `.venv` beside it and installs the Studio packages
 automatically (about 110 MB, internet needed). It also downloads the reviewed data
-files from the same release (about 65 MB). It needs 64-bit Python 3.11 or 3.12 from
+files from the same release (about 65 MB). It needs 64-bit Python 3.11, 3.12 or 3.13 from
 [python.org](https://www.python.org/downloads/windows/); the launcher prints that address
 when Python is missing. No administrator rights are needed. Run
 `2K5-Mod-Studio.bat --setup` to repair the private runtime, or download the latest
@@ -453,12 +453,14 @@ not been able to reproduce one. If your Deck freezes, please post: xemu version,
 which list and position filter you were on and for how long you scrolled, and a photo of the
 frozen screen.
 
-## Linux setup says the packages need Python 3.11 or 3.12, and I have 3.13
+## Linux setup says my Python version is not supported
 
-The Studio's packages are pinned to versions that are proven to build the same disc on every system, and one of them
-(numpy 1.26) has no Python 3.13 build. You do not need to replace your system Python, and you do not need root, so this
-also works on a Steam Deck in Desktop Mode. Install uv (the one-line installer is on
-[docs.astral.sh/uv](https://docs.astral.sh/uv/)), then, in the extracted Studio folder, run:
+The Studio's packages are pinned to versions that are proven to build the same disc on every system. Python 3.11, 3.12
+and 3.13 are supported: on 3.13 setup installs NumPy 2 (NumPy 1.26 has no 3.13 build), and the same project builds a
+byte-identical disc on Python 3.12 and 3.13, so `./2K5-Mod-Studio.sh --setup` works with a system Python 3.13 as it is.
+If your system has only Python 3.14 or newer, or the package install fails, you do not need to replace your system
+Python, and you do not need root, so this also works on a Steam Deck in Desktop Mode. Install uv (the one-line installer
+is on [docs.astral.sh/uv](https://docs.astral.sh/uv/)), then, in the extracted Studio folder, run:
 
 ```
 uv python install 3.12
