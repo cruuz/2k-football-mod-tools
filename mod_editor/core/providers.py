@@ -543,7 +543,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_mercedes_benz_model.py": "823f3c7ef417f090b0f8b10d4f799bf5b92a06d5381ae84f5af9edc41ce64cf6",
         "mod_editor/core/nfl2k5_mercedes_benz_venue.py": "a35ced58f2c17e3eb0a088a79ddbcfbbd47a8d40b59d79af84a83051f39b2d21",
         "mod_editor/core/nfl2k5_metlife_crowd.py": "ff42efdd0aace6a5622119e9a265329a4865f7365d74c54d1d70a7989e3d1be9",
-        "mod_editor/core/nfl2k5_metlife_model.py": "101672eae68a4b1f612abf9e756b5a49a8718e7f9aa597b53b538d671d91f824",
+        "mod_editor/core/nfl2k5_metlife_model.py": "19db233bd7035e3da5382c2f73fc6870a457d85d531a8542965f560287e4c8ec",
         "mod_editor/core/nfl2k5_model_fan_art.py": "5d1ae475fc1be8d5d987a04d8906a3cb2c84cc1ba21fb3b5e7cf0f3b0abc805f",
         "mod_editor/core/nfl2k5_modern_metlife.py": "66ab7312df3d0e62881935a744cb9661c948b326302790063694dc44c5102fc2",
         "mod_editor/core/nfl2k5_modern_surfaces.py": "09885beed3b0341854fd9d9ab6be10d0ae1ef444bcf88cd43501a61700c89535",
@@ -596,9 +596,10 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/image_use.py": "29e1d3d721c36fd199ed29fd900fbe8582bc7530e2060afcacb1054159b174bb",
         "mod_editor/core/json_stream.py": "5933752561dd8b519a301c18ec1d14f13a457f58e6ae337984f543ab2b0838b0",
         "mod_editor/core/metadata_cache.py": "49874cc7f12cc0d36d15b9355dbca64ffe95590ba7582b460738b05aabcd9024",
-        "mod_editor/core/mod_build.py": "cb17690076722b21f29aae23503b85b793a34ecaae75bd7e482dca63e1deb32f",
+        "mod_editor/core/mod_build.py": "c5cae0bd2ce87b2b183d652538bbec952d5dec2500fdbdce4554a93b31f2a4ca",
         "mod_editor/core/nfl2k5_console_memory.py": "34899562dd5b751b39e87b6746176bbcc92e2d4fca9eeaa4994aa676d401eda2",  # b780-m64b: the 128 MB / 64 MB target (validate_plan)
         "mod_editor/core/build_steps.py": "eb5c4a66df85fc05ea0cbac14488f27fff8b07ae22cfa8df1af7899ca9715b4d",  # b791-h3: step context and optional steps
+        "mod_editor/core/studio_inspection.py": "bbe1e2e9b3de63b13e8908d2b37f114ee79b6fb2fc88d26670a6eb1e6e341e1e",  # b780 studio1: mod_build.inspect runs inside its validation memo
         "mod_editor/core/model.py": "292f0c5444e32f5cea000fd3cabd6963d7d805a5434dcbc364a36ca2c0f0d228",
         "mod_editor/core/modpack.py": "461107a7f9096a5c1d867a6a1f4fa69af769302c0569ad98a5b8171541cde287",
         "mod_editor/core/modpack_files.py": "2245452a10635012bb46ca5a5f5e36b748e1b2bf270eb822edcd54954abb45d8",
@@ -657,7 +658,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_mercedes_benz_model.py": "823f3c7ef417f090b0f8b10d4f799bf5b92a06d5381ae84f5af9edc41ce64cf6",
         "mod_editor/core/nfl2k5_mercedes_benz_venue.py": "a35ced58f2c17e3eb0a088a79ddbcfbbd47a8d40b59d79af84a83051f39b2d21",
         "mod_editor/core/nfl2k5_metlife_crowd.py": "ff42efdd0aace6a5622119e9a265329a4865f7365d74c54d1d70a7989e3d1be9",
-        "mod_editor/core/nfl2k5_metlife_model.py": "101672eae68a4b1f612abf9e756b5a49a8718e7f9aa597b53b538d671d91f824",
+        "mod_editor/core/nfl2k5_metlife_model.py": "19db233bd7035e3da5382c2f73fc6870a457d85d531a8542965f560287e4c8ec",
         "mod_editor/core/nfl2k5_model_fan_art.py": "5d1ae475fc1be8d5d987a04d8906a3cb2c84cc1ba21fb3b5e7cf0f3b0abc805f",
         "mod_editor/core/nfl2k5_modern_metlife.py": "66ab7312df3d0e62881935a744cb9661c948b326302790063694dc44c5102fc2",
         "mod_editor/core/nfl2k5_modern_surfaces.py": "09885beed3b0341854fd9d9ab6be10d0ae1ef444bcf88cd43501a61700c89535",
@@ -859,7 +860,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_playbook_pack.py": "55aae169736610d2e878f15771036dedf7c0e7d6468f595308d6b8674f690fdf",
         "mod_editor/core/nfl2k5_coach_ai.py": "9baeb0cf0535e3a31087cb4c40bbfa0bb018a3f4a49b2194147d70bd29b44c6b",
         "mod_editor/core/nfl2k5_coach_ai_code.py": "5f42221d20454018f74430fa2fff8c1987143536549ce7dd52b55f00b0975afa",
-        "mod_editor/core/nfl2k5_coach_staff.py": "65e066afe532a271f619e337943c212e30f0d7e13c0c4aebe4d684196dfbc42e",
+        "mod_editor/core/nfl2k5_coach_staff.py": "4ddd9bf4541b5a68276168d8eae634ad493c189e7eb9069224696172a5d2f15a",
         "mod_editor/core/nfl2k5_vip.py": "7760c4c3c07a00b081db7f742c314fb23ba02d97568ec39e1106f0d8e9af3b51",
         "mod_editor/core/nfl2k5_coach_diversity.py": "a56f23767967090df58f4da16ebc9d5d66d713f12628da5da241a1f36104aa53",
         "mod_editor/core/nfl2k5_defense_calls.py": "24101801896efc6667c7be3b787fa1fe9044a0679dda85a5f1d72ae6b56e9302",
