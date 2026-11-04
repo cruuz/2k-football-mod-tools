@@ -2096,9 +2096,9 @@
  "receipt": {
   "team": "MIA",
   "offense_pack": "data/playbooks/softdrink_mia_modern.2k5book",
-  "offense_pack_sha256": "eaef8813d9619a37fd3ccfad69321de052aeac7446dd4ac5d503956c39a6d447",
-  "source_fingerprint": "bc5344316a6a9496df6532be4d3d5f194a1890dde2b033a9e4260648b064fcf0",
-  "replacement_sha256": "094f8143c5fa8901518c4894054ade7ddbe7c53d6845a4cba5f4cce21888da32",
+  "offense_pack_sha256": "7f0d6979385e092b989b2778a8948c4bce1951ad627162fb1e8f2dd344fa1252",
+  "source_fingerprint": "5693ad7a8cd0eb84598924fcaf448e3a18ebf19180a4374ede9b65dfe2a3fa2a",
+  "replacement_sha256": "1810ba3d7d93b7369a3cb9bee0295fc6a4fc301b6c8ae421bd48ce6179385b7a",
   "semantic_sha256": "d45dfabeec06f42672dec5b43b08b9623bdd0006cc6c74fb9ba3bf72bd504e54",
   "plays": 72,
   "formations": 4,
@@ -2114,6 +2114,6 @@
   "name_pool_capacity": 5088,
   "name_mode": 0,
   "pack": "data/playbooks/softdrink_mia_defense.2k5book",
-  "pack_sha256": "fa01b4475b389c8e1f6f3409fb7adb12feecde1a72055877f989e6f8225c38f1"
+  "pack_sha256": "2bb608787d8e608064f5fd72c682806718fbf7876604605e1cf5a6a304b8c3eb"
  }
 }

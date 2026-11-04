@@ -75,9 +75,9 @@ def census(raw: bytes) -> dict:
         if lib.formation_record(body, f.index).type_code >= 4:
             continue
         flags = [book.plays[l.play_index].flags_or_id for l in f.play_links if book.plays[l.play_index].family_id == 0]
-        if not any(x & RUN for x in flags):
+        if not any(lint.is_run_flags(x) for x in flags):
             bare["run"][f.name.strip()] += 1
-        if not any(not x & RUN and x & PASS for x in flags):
+        if not any(lint.is_pass_flags(x) for x in flags):
             bare["pass"][f.name.strip()] += 1
     findings = lint.resource_coverage(raw)
     return dict(book=book.book_name.strip(), no_run=sum(f.code == "FORMATION_NO_RUN" for f in findings),
@@ -95,7 +95,7 @@ def fixture(xbe: bytes, raw: bytes):
 
 def kind_of(fx, pv: int) -> str:
     fl = fx.get(pv + 4)
-    return "run" if fl & RUN else "pass" if fl & PASS else "other"
+    return "run" if lint.is_run_flags(fl) else "pass" if lint.is_pass_flags(fl) else "other"
 
 
 def lottery(xbe: bytes, raw: bytes, seeds: int = 40) -> dict:
@@ -122,11 +122,11 @@ def lottery(xbe: bytes, raw: bytes, seeds: int = 40) -> dict:
                 got[(kind_of(fx, pv), book.plays[pi].name.strip())] += 1
             row[r] = got
         name = f.name.strip()
-        run1 = sum(c for (k, _n), c in row[1.0].items() if k == "run")
-        pass0 = sum(c for (k, _n), c in row[0.0].items() if k == "pass")
+        run1 = sum(c for key, c in row[1.0].items() if key != "NULL" and key[0] == "run")
+        pass0 = sum(c for key, c in row[0.0].items() if key != "NULL" and key[0] == "pass")
         rows.append(dict(formation=name, runs_at_1=run1, of=seeds, passes_at_0=pass0,
-                         distinct_runs_at_1=len({n for (k, n) in row[1.0] if k == "run"}),
-                         distinct_passes_at_0=len({n for (k, n) in row[0.0] if k == "pass"})))
+                         distinct_runs_at_1=len({key[1] for key in row[1.0] if key != "NULL" and key[0] == "run"}),
+                         distinct_passes_at_0=len({key[1] for key in row[0.0] if key != "NULL" and key[0] == "pass"})))
         if run1 != seeds or pass0 != seeds:
             bad.append(rows[-1])
     return dict(book=book.book_name.strip(), formations=len(rows), wrong_type=bad,

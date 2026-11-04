@@ -65,6 +65,19 @@ class CoverageRuleTests(unittest.TestCase):
             for team in ("BUF", "IND", "BAL"):          # BUF and IND carry retail's two run-less "Gun: Straight" sets
                 self.assertEqual(lint.resource_coverage(image.read_entry(BOOK_ENTRIES[team])), [], team)
 
+    def test_a_reverse_is_not_a_run_the_cpu_can_draw(self):
+        # MIA / NYJ Singleback Doubles listed only End Around / WB Sweep (0x98xx, run bit plus the reverse class): the lottery
+        # never hands a reverse back for a run, so at run share 1.0 it returned a pass 20 draws in 20
+        self.assertTrue(lint.is_run_flags(0x840E) and lint.is_run_flags(0x8200 | 0xE))
+        self.assertFalse(lint.is_run_flags(0x980E) or lint.is_run_flags(0x940E))
+        self.assertTrue(lint.is_pass_flags(0x620E) and not lint.is_pass_flags(0x840E))
+        self.assertEqual(floor.kind_of(0x980E), "other")
+        pack = packs.load_pack(next(p for p in PACKS if p.name == "softdrink_mia_modern.2k5book"))
+        plays = {p.id: p for p in pack.plays}
+        for fid, menu in pack.menus:
+            if pack.formations_by_id[fid].custom_name == "Singleback Doubles":
+                self.assertTrue(any(lint.is_run_flags(int(plays[p].play_flags)) for p in menu))
+
     def test_utility_books_are_skipped(self):
         self.assertIn("reference", lint.UTILITY_BOOKS)
 

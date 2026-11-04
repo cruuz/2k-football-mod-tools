@@ -106,7 +106,17 @@ NO_RUN_EXEMPT = frozenset({"hail mary", "gun: straight", "gun: straight trips"})
 #: Retail's utility books are neither club playbooks nor generated here (the "reference" book lists a "Trips" set whose
 #: only plays are a draw and a bootleg, both runs): the coverage rule is for the 32 club books and packs built for them.
 UTILITY_BOOKS = frozenset({"Editor", "GEN", "PRACTICE", "reference", "WCO"})
-RUN_FLAG, PASS_FLAG = 0x8000, 0x2000      # PLAY header word: the native lottery's own run / pass split (0x2096A0)
+RUN_FLAG, PASS_FLAG, REVERSE_FLAG = 0x8000, 0x2000, 0x1000   # PLAY header word: the native lottery's own run / pass split (0x2096A0)
+
+
+def is_run_flags(flags: int) -> bool:
+    """A run the CPU can draw: the run bit without the reverse class (End Around, WB Sweep: 0x98xx / 0x94xx).  The
+    lottery never returns a reverse for a run, so a formation whose only run is a reverse hands back a pass at run share 1.0."""
+    return bool(flags & RUN_FLAG) and not flags & REVERSE_FLAG
+
+
+def is_pass_flags(flags: int) -> bool:
+    return not flags & RUN_FLAG and bool(flags & PASS_FLAG)
 # Play-level execution defects the Studio repair rules remove (BACK_PRIMARY_SHARE is a book-level design warning).
 EXECUTION_CODES = ("HANDOFF_FAR", "HANDOFF_PLAN_FAR", "PITCH_FAR", "TOSS_SIDE_CROSS", "CHECKDOWN_BACKWARD", "BACKWARD_TARGET",
                    "SCREEN_DEPTH_MARGIN", "SCREEN_SIDE_CROSS", "SCREEN_NO_RELEASE")
@@ -510,8 +520,8 @@ def resource_coverage(resource: bytes) -> list[Finding]:
         flags = [book.plays[l.play_index].flags_or_id for l in formation.play_links if book.plays[l.play_index].family_id == 0]
         if not flags:
             continue                      # an empty menu is CATEGORY_EMPTY / PLAYCALL_UI territory, not a missing play type
-        rows.append((formation.index, formation.name, sum(1 for f in flags if f & RUN_FLAG),
-                     sum(1 for f in flags if not f & RUN_FLAG and f & PASS_FLAG)))
+        rows.append((formation.index, formation.name, sum(1 for f in flags if is_run_flags(f)),
+                     sum(1 for f in flags if is_pass_flags(f))))
     return coverage_findings(rows)
 
 
@@ -526,7 +536,7 @@ def pack_coverage(pack) -> list[Finding]:
         f = forms[fid]
         flags = [int(plays[pid].play_flags or 0) for pid in menu if getattr(plays[pid], "play_type", "") != "defense"]
         rows.append((f.replace_index if f.replace_index is not None else -1, f.custom_name,
-                     sum(1 for x in flags if x & RUN_FLAG), sum(1 for x in flags if not x & RUN_FLAG and x & PASS_FLAG)))
+                     sum(1 for x in flags if is_run_flags(x)), sum(1 for x in flags if is_pass_flags(x))))
     return coverage_findings(rows)
 
 
@@ -1052,7 +1062,7 @@ __all__ = [
     "Finding", "LintReport", "PlayView", "as_built", "as_built_views", "EXECUTION_CODES", "SCHEMA", "FIX_SCHEMA", "SEVERITY", "GOAL_IDS",
     "defense_findings", "end_around_template", "screen_drop_yd", "fix_back_routes", "fix_end_around", "fix_rb_screen", "fix_toss_side",
     "lint_pack", "lint_resource", "lint_views", "pack_defense_findings", "pack_coverage", "resource_coverage", "coverage_findings",
-    "NO_RUN_EXEMPT", "UTILITY_BOOKS", "normalize_offense_play", "normalize_shared_offense_play",
+    "NO_RUN_EXEMPT", "UTILITY_BOOKS", "is_run_flags", "is_pass_flags", "normalize_offense_play", "normalize_shared_offense_play",
     "SharedPlayConflict", "toss_crosses", "pack_views", "rb_screen_template",
     "resource_views", "changed_slots",
 ]

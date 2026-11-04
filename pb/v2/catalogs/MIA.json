@@ -128,6 +128,8 @@
    "align": "uc",
    "tag": "base",
    "menu": [
+    "Crack Toss",
+    "Pin Pull Sweep",
     "X Slot Fade",
     "MIA Post Wheel",
     "End Around",
@@ -139,7 +141,8 @@
     "X Y Trail",
     "Sail",
     "MIA Double Post",
-    "RB Post Wheel"
+    "RB Post Wheel",
+    "Lead Stretch"
    ],
    "cpu_situation": [
     1,
@@ -2418,6 +2421,7 @@
    "deep": false,
    "lane": 0,
    "formations": [
+    "Singleback Doubles",
     "Gun Wildcat",
     "Gun Normal Y Off Close",
     "Gun Bunch TE",
@@ -2632,6 +2636,7 @@
    "deep": false,
    "lane": 4,
    "formations": [
+    "Singleback Doubles",
     "Gun Wildcat",
     "Gun Normal Y Off Close",
     "Singleback Tight Y Off",
@@ -2656,6 +2661,7 @@
    "deep": false,
    "lane": 4,
    "formations": [
+    "Singleback Doubles",
     "Gun Wildcat",
     "Gun Normal Y Off Close",
     "Singleback Tight Y Off",

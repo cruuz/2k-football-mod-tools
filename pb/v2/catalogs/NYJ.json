@@ -131,6 +131,8 @@
    "align": "uc",
    "tag": "base",
    "menu": [
+    "Crack Toss",
+    "01 Trap",
     "Slot Spot Out",
     "NYJ Smash",
     "NYJ Curl Flat",
@@ -139,7 +141,8 @@
     "PA Comeback Seam",
     "WB Sweep",
     "Z Dagger",
-    "Y Return Flood"
+    "Y Return Flood",
+    "Inside Zone Wk"
    ],
    "cpu_situation": [
     1,
@@ -664,6 +667,8 @@
    "align": "uc",
    "tag": "base",
    "menu": [
+    "Crack Toss",
+    "01 Trap",
     "Double Slants",
     "Max Corner Post",
     "PA Comeback Seam",
@@ -687,7 +692,8 @@
     "Y Return Flood",
     "PA X Post Wheel",
     "Bubble Screen",
-    "Slot Post Wheel"
+    "Slot Post Wheel",
+    "Inside Zone Wk"
    ],
    "cpu_situation": [
     0,
@@ -2062,10 +2068,12 @@
    "deep": false,
    "lane": 2,
    "formations": [
+    "Singleback Doubles",
     "Gun Doubles",
     "Gun Trips TE",
     "Gun Bunch X Nasty",
     "Pistol Doubles",
+    "Singleback Doubles Tight",
     "Gun Trips"
    ]
   },
@@ -2308,8 +2316,10 @@
    "deep": false,
    "lane": 4,
    "formations": [
+    "Singleback Doubles",
     "Pistol Doubles",
     "Gun Tight Open",
+    "Singleback Doubles Tight",
     "Gun Wildcat",
     "Gun Normal Y Off Close"
    ]
@@ -2563,9 +2573,11 @@
    "deep": false,
    "lane": 2,
    "formations": [
+    "Singleback Doubles",
     "Gun Doubles",
     "Gun Bunch X Nasty",
     "Pistol Doubles",
+    "Singleback Doubles Tight",
     "Gun Trips"
    ]
   },

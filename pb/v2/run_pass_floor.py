@@ -73,8 +73,9 @@ LEVELS = (0, 1, 2, 3)               # 0 = the generator's rules, 1 = near-duplic
 
 
 def kind_of(flags: int) -> str:
-    """The native lottery's own split: 0x8000 is a run, 0x2000 a pass (PLAY header flags, word at +4)."""
-    return "run" if flags & 0x8000 else ("pass" if flags & 0x2000 else "other")
+    """The native lottery's own split: 0x8000 is a run unless the reverse class bit 0x1000 is set (the lottery never hands a
+    reverse back for a run), 0x2000 a pass (PLAY header flags, word at +4)."""
+    return "run" if lint.is_run_flags(flags) else ("pass" if lint.is_pass_flags(flags) else "other")
 
 
 def kinds(form: dict) -> tuple:

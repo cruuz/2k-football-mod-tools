@@ -184,8 +184,8 @@
     "book": "MIA",
     "input_sha256": "537fc74ca9fe43090f1d9e11b9243388c3aa3202a54eb3a4821d3c18695c4928",
     "output_sha256": "05d4f6822fed9affdbf525a202d516f7c852ff26af48ba8d4a90de9a99e2644e",
-    "offense_pack_sha256": "eaef8813d9619a37fd3ccfad69321de052aeac7446dd4ac5d503956c39a6d447",
-    "defense_pack_sha256": "fa01b4475b389c8e1f6f3409fb7adb12feecde1a72055877f989e6f8225c38f1"
+    "offense_pack_sha256": "7f0d6979385e092b989b2778a8948c4bce1951ad627162fb1e8f2dd344fa1252",
+    "defense_pack_sha256": "2bb608787d8e608064f5fd72c682806718fbf7876604605e1cf5a6a304b8c3eb"
    }
   ],
   "326": [
@@ -239,8 +239,8 @@
     "book": "NYJ",
     "input_sha256": "3855027ba8a290b35e776d268e62564da884d1854ce82be6ffaf30ff48b2d5f2",
     "output_sha256": "f3343d2f7d2a75654cd7b21ebc4333a14fd021ed38536ae67392c36eba68679b",
-    "offense_pack_sha256": "6a5ccfff362ada6ab8b7c9221619b9e08704e2af4b1fb19828b4914eaae1bbfe",
-    "defense_pack_sha256": "4decf5e5db6043d5cbfb8e66c636e954ddf9e0bad97e6c0fd94d9a52b6b36004"
+    "offense_pack_sha256": "0a132df48ccea3d083776358cfbf8f2f0db89c8174cdf98c7fc7adc65e582a83",
+    "defense_pack_sha256": "10f3bb30f8072f9aa2ab15c1e139fd942288e44d2a04ba113342b74e076fca45"
    }
   ],
   "331": [

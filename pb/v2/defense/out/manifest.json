@@ -374,9 +374,9 @@
   {
    "team": "MIA",
    "offense_pack": "data/playbooks/softdrink_mia_modern.2k5book",
-   "offense_pack_sha256": "eaef8813d9619a37fd3ccfad69321de052aeac7446dd4ac5d503956c39a6d447",
-   "source_fingerprint": "bc5344316a6a9496df6532be4d3d5f194a1890dde2b033a9e4260648b064fcf0",
-   "replacement_sha256": "094f8143c5fa8901518c4894054ade7ddbe7c53d6845a4cba5f4cce21888da32",
+   "offense_pack_sha256": "7f0d6979385e092b989b2778a8948c4bce1951ad627162fb1e8f2dd344fa1252",
+   "source_fingerprint": "5693ad7a8cd0eb84598924fcaf448e3a18ebf19180a4374ede9b65dfe2a3fa2a",
+   "replacement_sha256": "1810ba3d7d93b7369a3cb9bee0295fc6a4fc301b6c8ae421bd48ce6179385b7a",
    "semantic_sha256": "d45dfabeec06f42672dec5b43b08b9623bdd0006cc6c74fb9ba3bf72bd504e54",
    "plays": 72,
    "formations": 4,
@@ -392,7 +392,7 @@
    "name_pool_capacity": 5088,
    "name_mode": 0,
    "pack": "data/playbooks/softdrink_mia_defense.2k5book",
-   "pack_sha256": "fa01b4475b389c8e1f6f3409fb7adb12feecde1a72055877f989e6f8225c38f1"
+   "pack_sha256": "2bb608787d8e608064f5fd72c682806718fbf7876604605e1cf5a6a304b8c3eb"
   },
   {
    "team": "MIN",
@@ -489,9 +489,9 @@
   {
    "team": "NYJ",
    "offense_pack": "data/playbooks/softdrink_nyj_modern.2k5book",
-   "offense_pack_sha256": "6a5ccfff362ada6ab8b7c9221619b9e08704e2af4b1fb19828b4914eaae1bbfe",
-   "source_fingerprint": "f5668a1925bf2aff217f5141b5eb81d30a43cdede827afbe231e7e84e498620f",
-   "replacement_sha256": "520d9c157b6b2de8650747634a7b35ace56c031649cf420682303113a714a495",
+   "offense_pack_sha256": "0a132df48ccea3d083776358cfbf8f2f0db89c8174cdf98c7fc7adc65e582a83",
+   "source_fingerprint": "f282df991bfe6a07929aa48566c2f4eb902233d61c05c635f9a73877c82cf2eb",
+   "replacement_sha256": "f007a93cd9dd3041cd6e55cdcc4f4661065e777c7e97d4e7fcbca566f29b90b5",
    "semantic_sha256": "ae23210878a9405460ddb462bc812ac0c4a1d028acc4d8b8b25534ebeed5e5a8",
    "plays": 74,
    "formations": 5,
@@ -507,7 +507,7 @@
    "name_pool_capacity": 5088,
    "name_mode": 0,
    "pack": "data/playbooks/softdrink_nyj_defense.2k5book",
-   "pack_sha256": "4decf5e5db6043d5cbfb8e66c636e954ddf9e0bad97e6c0fd94d9a52b6b36004"
+   "pack_sha256": "10f3bb30f8072f9aa2ab15c1e139fd942288e44d2a04ba113342b74e076fca45"
   },
   {
    "team": "OAK",

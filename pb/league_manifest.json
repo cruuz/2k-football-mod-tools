@@ -120,7 +120,7 @@
       "pack": "data/playbooks/softdrink_mia_modern.2k5book",
       "plays": 144,
       "formations": 33,
-      "semantic_sha256": "d52d7e784f274e6c1cb6b4d38693557953f0ac1aa228f0f0892cb59bd6c35543"
+      "semantic_sha256": "9f7e038ee2e26de85a9f13bff09c1dd44ef5c07f682f100c3fd61e6dec6605bd"
     },
     {
       "team": "MIN",
@@ -155,7 +155,7 @@
       "pack": "data/playbooks/softdrink_nyj_modern.2k5book",
       "plays": 141,
       "formations": 32,
-      "semantic_sha256": "343724cddc6bc65533e0cd78095ae2e6703838f5ef96fc0cc5a73aeb869b77c7"
+      "semantic_sha256": "e0f868f21d44000a6efe1f773d7726bbc02e1759ee31fb2b530bdebdbe9473e1"
     },
     {
       "team": "OAK",

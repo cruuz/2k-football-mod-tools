@@ -29,7 +29,8 @@ AI7_LINKS_FLOOR = {"MIN": 336, "NYJ": 360, "WAS": 372}
 AI7_TOTAL_LINKS = 15159
 # The same redistribution puts MIN at 27 slot-rule links of 336 (8.04%, 0.12 links over 8%); the
 # hard cap of 4 formations is unchanged and every other team keeps the 8% ceiling.
-AI7_SLOT_LINKS = {"MIN": 27}
+# b780 plays2 (Q18): 30. MIN's slot-rule sets Full House Sneak and Wing T each gained one page (a pass, a run) so no menu lacks one.
+AI7_SLOT_LINKS = {"MIN": 30}
 
 
 class SlotRuleTests(unittest.TestCase):

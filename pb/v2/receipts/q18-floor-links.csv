@@ -172,6 +172,9 @@ MIA,Pistol Strong,run,p067,Outside Zone,,Outside Zone,run,I-Form Pro,2,0.0,1.98,
 MIA,Singleback Tight Y Off,run,p054,Crack Toss,,Crack Toss,run,Gun Tight Open,2,2.62,3.25,1,1,added,27
 MIA,Singleback Tight Y Off,run,p055,Pin Pull Sweep,,Pin Pull Sweep,run,Gun Y Off Trio Close,2,2.62,3.25,1,1,added,27
 MIA,Singleback Tight Y Off,run,p046,Lead Stretch,,Lead Stretch,run,Gun Bunch TE,2,2.62,3.25,1,1,added,27
+MIA,Singleback Doubles,run,p054,Crack Toss,,Crack Toss,run,Gun Tight Open,0,0.0,0.0,1,0,added,15
+MIA,Singleback Doubles,run,p055,Pin Pull Sweep,,Pin Pull Sweep,run,Gun Y Off Trio Close,0,0.0,0.0,1,0,added,15
+MIA,Singleback Doubles,run,p046,Lead Stretch,,Lead Stretch,run,Gun Bunch TE,0,0.0,0.0,1,0,added,15
 MIN,Full House Sneak,pass,p061,X Dagger,,Dagger,pass,I-Form Tight,3,0.0,0.0,1,3,added,6
 MIN,Full House Sneak,pass,p062,Inside Zone Wk,,Inside Zone,run,Strong H Tight Close,1,2.64,0.0,1,0,"added (page filler, run)",6
 MIN,Full House Sneak,pass,p067,RB Toss,,HB Toss,run,I-Form Tight,1,2.64,0.0,1,0,"added (page filler, run)",6
@@ -229,6 +232,12 @@ NYJ,Gun Empty Trey,run,p129,QB Draw,Z Curl Combo,QB Draw,keeper,Gun Empty Trey,d
 NYJ,Gun Wing Slot Offset,run,p058,Inside Zone Split,,Inside Zone Split,run,Pistol Deuce Close,2,3.04,1.27,1,1,added,6
 NYJ,Gun Wing Slot Offset,run,p136,QB Power,,QB Power,keeper,Gun Deuce Close,0,0.0,0.0,1,2,added,6
 NYJ,Gun Wing Slot Offset,run,p036,Y Stick,,Y Stick Skinny Post Hitches,pass,Pistol Deuce Close,2,0.0,0.0,1,2,"added (page filler, pass)",6
+NYJ,Singleback Doubles,run,p049,Crack Toss,,Crack Toss,run,Gun Normal Y Off Close,2,0.0,1.98,1,1,added,12
+NYJ,Singleback Doubles,run,p059,01 Trap,,01 Trap,run,Gun Bunch X Nasty,2,0.0,1.98,1,1,added,12
+NYJ,Singleback Doubles,run,p040,Inside Zone Wk,,Inside Zone,run,Gun Bunch X Nasty,2,0.0,1.98,1,1,added,12
+NYJ,Singleback Doubles Tight,run,p049,Crack Toss,,Crack Toss,run,Gun Normal Y Off Close,0,0.0,0.0,1,0,added,27
+NYJ,Singleback Doubles Tight,run,p059,01 Trap,,01 Trap,run,Gun Bunch X Nasty,0,0.0,0.0,1,0,added,27
+NYJ,Singleback Doubles Tight,run,p040,Inside Zone Wk,,Inside Zone,run,Gun Bunch X Nasty,0,0.0,0.0,1,0,added,27
 OAK,Full House,pass,p041,PA X Fade Curl,,PA X Fade Curl Deep Fade,pa_pass,I-Form Tight,2,0.0,0.0,1,2,added,6
 OAK,Full House,pass,p073,X Hitch Seam,,X Hitch Seam Seam Out Bang,pass,Strong H Tight Close,2,0.0,0.0,1,2,added,6
 OAK,Full House,pass,p051,X Bench,,Bench,pass,Strong H Tight Close,2,0.0,0.0,1,2,added,6
