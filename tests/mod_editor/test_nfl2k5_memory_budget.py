@@ -133,13 +133,29 @@ class AllocatorLayoutTests(unittest.TestCase):
         self.assertEqual(self.resident(abilities + ["return_coverage"]), 0)
         self.assertEqual(self.resident(["my_career"]), 0)                      # a big owner needs the scale-out
 
-    def test_the_profiles_seven_requests(self):
+    def test_the_third_page_compresses_the_directory_and_holds_more(self):
+        # all measured with the allocator: a read-only request, a beta-62 owner mixed with newer ones, or a page
+        # overflow from straddling takes the scale-out
+        seven = ["contract_college_guard", "widescreen_menus", "preseason_warning", "qb_accuracy", "pass_protection",
+                 "run_blocking", "ball_carrier_ai"]
+        self.assertEqual(self.resident(seven), 8_192)
+        self.assertEqual(self.resident(seven + ["calendar"]), 0)                # read-only
+        self.assertEqual(self.resident(seven + ["zone_drop"]), 0)               # a beta-62 owner
+        more = seven + ["abilities_runtime", "human_tap_burst_spill", "cpu_qb_reads"]
+        self.assertEqual(self.resident(more), 12_288)
+        self.assertEqual(self.resident(more + ["cpu_money_downs", "cpu_money_downs_late", "cpu_money_downs_late_state",
+                                               "cpu_third_down"]), 0)        # the code no longer packs into two pages
+
+    def test_the_profiles_owners(self):
         plan = mb.profile_64_plan()
         self.assertEqual(sorted(o for o in mb.owners(plan) if o not in mb.INFRASTRUCTURE),
-                         ["ball_carrier_ai", "contract_college_guard", "pass_protection", "preseason_warning",
-                          "qb_accuracy", "run_blocking", "widescreen_menus"])
-        self.assertEqual(mb.xbe_resident(plan, 64) - mb.RETAIL_RESIDENT, 8_192)
-        self.assertEqual(mb.xbe_resident(dict(plan, return_coverage=True), 64) - mb.RETAIL_RESIDENT, 212_992)
+                         ["abilities_runtime", "ball_carrier_ai", "contract_college_guard", "coverage_slider",
+                          "cpu_passer_iq", "cpu_qb_reads", "db_ball_play", "draft_clock", "force_out",
+                          "human_tap_burst_spill", "pass_protection", "practice_injuries", "preseason_warning",
+                          "qb_accuracy", "return_coverage", "run_blocking", "scramble_tuning", "sim_cb_tackles",
+                          "star_retention", "weekly_progression", "widescreen_menus"])
+        self.assertEqual(mb.xbe_resident(plan, 64) - mb.RETAIL_RESIDENT, 12_288)   # 23 requests, MEASURED
+        self.assertEqual(mb.xbe_resident(dict(plan, screen_hooks=True), 64) - mb.RETAIL_RESIDENT, 212_992)
 
     def test_scale_out_fields_and_the_roster_edits_xbe_sections_take_the_scale_out(self):
         plan = mb.profile_64_plan()
@@ -183,12 +199,12 @@ class TargetTests(unittest.TestCase):
         self.assertFalse(set(profile) & set(mb.PROFILE_64_PATCHES))
         got = mb.predict(mb.profile_64_plan(), 64)
         self.assertEqual(got["forced_off"], [])
-        self.assertEqual((got["room"], got["heap_b"], got["margin"]), (1_576_192, 86_144, 12_288))
+        self.assertEqual((got["room"], got["heap_b"], got["margin"]), (1_572_096, 82_048, 8_192))
         self.assertFalse(got["fits"])                       # a player-picked BAL alternate at NRG: under the margin
         self.assertEqual(got["over_bytes"], got["needed_room"] - got["room"])
-        self.assertLess(abs(got["over_bytes"] - (mb.SAFETY_MARGIN - 12_288)), mb.UNIT)
+        self.assertLess(abs(got["over_bytes"] - (mb.SAFETY_MARGIN - 8_192)), mb.UNIT)
         primary = got["primary_uniforms"]
-        self.assertEqual((primary["heap_b"], primary["margin"]), (205_056, 131_200))
+        self.assertEqual((primary["heap_b"], primary["margin"]), (200_960, 127_104))
         self.assertGreaterEqual(primary["margin"], mb.SAFETY_MARGIN)        # every game in style 0 kits fits
 
     def test_the_profile_with_the_pack_roster_edits_takes_the_scale_out(self):

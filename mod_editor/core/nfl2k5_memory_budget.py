@@ -39,6 +39,7 @@ scatters about +-54 KB around the stadium term; the 64 KiB safety margin covers 
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import math
 import os
@@ -467,21 +468,38 @@ def xbe_resident(plan=None, target_mb: int = 64) -> int:
     return RETAIL_RESIDENT + LEGACY_SPACE + SCALEOUT_V3 + pool + extra
 
 
+LEGACY_OWNERS = frozenset(("nfl2k5_boot_logo", "nfl2k5_dynamic_kickoff_relocated", "nfl2k5_scorebug_runtime",
+                           "nfl2k5_defensive_try", "nfl2k5_momentum", "nfl2k5_zone_drop"))   # the beta-62 owners
+
+
 def _legacy_pages(features) -> int:
-    """Resident bytes of the legacy layout for these owners, or 0 when they need the scale-out."""
+    """Resident bytes of the legacy layout for these owners, or 0 when they need the scale-out: the allocator's own
+    rules (nfl2k5_xbe_space _needs_scaleout, _legacy_allocations, _directory), replayed."""
     if any(o not in LEGACY_REQUESTS for o in features):
         return 0
-    requests = [list(LOGO_REQUEST)] + [[f"nfl2k5_{o}", k, n, a] for o in features for k, n, a in LEGACY_REQUESTS[o]]
-    code = sum((n + 15) & ~15 for _o, k, n, _a in requests if k != "data")
-    data = sum((n + 15) & ~15 for _o, k, n, _a in requests if k == "data")
-    if code > 2 * PAGE or data > PAGE:
-        return 0
-    raw = json.dumps({"requests": requests, "code_sha256": "0" * 64}, sort_keys=True, separators=(",", ":")).encode()
-    if code > PAGE:
+    requests = sorted([LOGO_REQUEST] + [(f"nfl2k5_{o}", k, n, a) for o in features for k, n, a in LEGACY_REQUESTS[o]])
+    names = {r[0] for r in requests}
+    if names - LEGACY_OWNERS and names & (LEGACY_OWNERS - {LOGO_REQUEST[0]}):
+        return 0                          # a beta-62 owner with a newer one: the scale-out
+    if any(k == "read_only" for _o, k, _n, _a in requests):
+        return 0                          # the legacy pages are code and data only
+    cursors, extended = {"code": 0, "data": 0}, False
+    new_owners = {"nfl2k5_defensive_try", "nfl2k5_momentum", "nfl2k5_zone_drop"}
+    for _owner, kind, size, align in sorted(requests, key=lambda r: (r[0] in new_owners, r)):
+        offset = (cursors[kind] + align - 1) & -align
+        if offset // PAGE != (offset + size - 1) // PAGE:
+            offset = (offset + PAGE - 1) & -PAGE       # a request never straddles a page
+        if offset + size > PAGE * (2 if kind == "code" else 1):
+            return 0
+        extended |= kind == "code" and offset >= PAGE
+        cursors[kind] = offset + size
+    digest = hashlib.sha256(repr(requests).encode()).hexdigest()   # stands in for the code's SHA-256
+    raw = json.dumps({"requests": requests, "code_sha256": digest}, sort_keys=True, separators=(",", ":")).encode()
+    if extended:
         raw = zlib.compress(raw, 9)       # the code2 page: the directory is stored compressed
     if 12 + len(raw) > LEGACY_DIRECTORY_BYTES:
         return 0
-    return 3 * PAGE if code > PAGE else 2 * PAGE
+    return 3 * PAGE if extended else 2 * PAGE
 
 
 def roster_block(opts: dict, target_mb: int) -> int:
@@ -663,11 +681,15 @@ def predict(plan=None, target_mb: int = 64) -> dict:
 
 
 # --- the recommended 64 MB profile ------------------------------------------------------------------------------------
-# Seven small requests fit the allocator's legacy layout (MEASURED: +8,192 B); the eighth costs the scale-out
-# (+204,800 B more). These are the seven kept: the contract/college crash guard, 4:3 menus with widescreen, the
-# franchise economy's preseason flag, and four game-play patches.
+# The allocator's legacy layout holds small code/data owners in two pages (+8,192 B), or three (+12,288 B) once the
+# code spills into the third page, which also compresses its directory; anything more, any read-only request, a
+# beta-62 owner mixed with newer ones or any SCALEOUT_FIELDS option takes the scale-out (+212,992 B). MEASURED:
+# these 20 fields are 23 requests and +12,288 B (nfl2k5_xbe_space.apply on the retail XBE, 2026-11-03).
 PROFILE_64_PATCHES = ("contract_college_guard", "widescreen", "franchise_economy", "qb_accuracy", "pass_protection",
-                      "run_blocking", "cpu_ball_carriers")
+                      "run_blocking", "cpu_ball_carriers", "abilities", "cpu_qb_zone_windows", "cpu_qb_recheck",
+                      "cpu_qb_tiers", "return_coverage", "practice_injuries", "star_retention", "modern_force_out",
+                      "db_ball_play", "sim_cb_tackles", "cpu_passer_iq", "scramble_tuning", "weekly_progression",
+                      "franchise_draft_clock", "coverage_slider")
 # trimmed beyond the space owners: the heavy disc resources and the SPECIAL rows' 80 KB .XTLID storage
 PROFILE_64_TRIM = ("scorebug", "scorebug_runtime", "hair_styles", "kick_meter_2026", "depth_chart_rows",
                    "my_career_home", "module_loader")
