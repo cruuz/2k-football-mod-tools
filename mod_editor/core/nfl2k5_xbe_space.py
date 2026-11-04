@@ -786,6 +786,7 @@ LATE_OWNERS += ("nfl2k5_speed_threshold",)
 LATE_OWNERS += ("nfl2k5_scramble_blocking",)  # b780-cv7: receivers block for a scrambling QB (after every other late owner)
 LATE_OWNERS += ("nfl2k5_protection_calls",)  # b780 p1-slide: the user's slide call at the line (code + 16-byte RW state)
 LATE_OWNERS += ("nfl2k5_audible_legend",)  # b780-p3: audible panel lift + on-screen button legend (code only)
+LATE_OWNERS += ("nfl2k5_lineup_roles",)  # b780 sub1: third-down back on passing downs + the FB fallback (code only)
 # b77-i1 (coordinator-approved fix of the all-owner union overflow): late owners whose code is placed top-down in the
 # reserved legacy RX page tails (0x14D9000 first, then 0x14BA000) instead of the full scale-out run. Static, so the
 # placement does not depend on which other owners are present.
