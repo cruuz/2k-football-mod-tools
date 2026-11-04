@@ -35,7 +35,18 @@ field, passes the picker's gate and is at least as fast as the slot's own pick (
 arguments), on every club, for the same reasons as the 3DRB. Every
 other play keeps its receivers: the planner no longer writes a gadget ordinal into shared personnel groups (Q61).
 
-Two sites, both 5-byte calls: the builder's call to the picker (0xE8B20) and the picker's list-length call at the top
+Rule 4, injured players on CPU depth charts (MC1's finding; coordinator 11/04). The weekly CPU auto-depth 0x2BDCF0
+ranks by rating and never tests the injury bit (player +0x20 bit 31), so after one pass CPU charts listed injured
+starters (RST2's release roster: 1 before, 46 at rank row 0 or paired side row 0 after). Its three calls (0x247D5C,
+0x248075, 0x24853D) now run it and then, on every league club it sorts (team kind 0, so never an all-star, Pro Bowl or
+historic side that shares players with the clubs; a user club only when "CPU manages my depth chart" is on, the
+pass's own test), list each position's healthy players ahead of its injured ones in the
+rank chain and, for paired positions, the side chain, each group in its order. An injured player moved down loses his
+rank and side locks, so when he is healthy the pass seats him by rating again (and depth locks' release rule frees a
+clearly worse locked backup). A changed paired position with three or more healthy players keeps its rank starter out
+of side rows 0 and 1 (depth locks revision 4's rule). Code: docs/mod_editor/nfl2k5_lineup_roles_injured.S.
+
+Two sites of rules 1-3, both 5-byte calls (rule 4 adds the three auto-depth calls): the builder's call to the picker (0xE8B20) and the picker's list-length call at the top
 of each tier (0xE87E9), outside the picker span the scheduled-sim tackle owner pins (0xE87F0..0xE8900, whose gate
 calls it hooks). One late allocator owner holds the code. Settings: ``third_down``
 (rule 1, on when the SPECIAL rows are on) is a byte in the code; rule 2 is always present.
@@ -49,15 +60,19 @@ from typing import Mapping
 from .nfl2k5_draft_ai import _Asm
 
 OWNER = "nfl2k5_lineup_roles"
-CODE_SIZE = 1024
+RULES_SIZE = 1024                           # rules 1-3 (assemble), then rule 4 (INJURED_CODE) at INJ_OFFSET
+INJ_OFFSET = RULES_SIZE
+CODE_SIZE = 2048
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16),)
-BUILD_CAPTION = "Third-down back on passing downs, gadget player on gadget plays; RB2 fills a missing fullback (experimental)"
+BUILD_CAPTION = "Third-down back on passing downs, gadget player on gadget plays, RB2 fills a missing fullback, injured CPU starters move down (experimental)"
 HELP_TEXT = ("EXPERIMENTAL. Your SPECIAL 3DRB comes in for the starting running back on obvious passing downs (3rd or 4th "
              "down with 5 yards or more to go, 2nd down with 10 or more) when he's at least as good a receiver as your "
              "starter; the starter keeps every other snap. Your SPECIAL GAD comes in only on a play that hands the "
              "ball to a receiver (a reverse or an end around), at that receiver's spot, when he's at least as fast as "
-             "the receiver he replaces. A club with no fullback now puts its second "
-             "running back at fullback instead of its deepest one.")
+             "the receiver he replaces. A club with no fullback now puts its second running back at fullback instead "
+             "of its deepest one. CPU clubs (and yours when the CPU manages your depth chart) list injured players "
+             "below the healthy ones at their position, so a healthy backup is listed as the starter while the "
+             "starter is out.")
 
 PICKER = 0x000E8790
 PICK_CALL = 0x000E8B20                      # in the lineup builder: call 0xE8790
@@ -75,6 +90,24 @@ YARD = 91.44
 FIVE_YARDS, TEN_YARDS = 5 * YARD, 10 * YARD
 CATCH, ROUTE, SPEED = 0x44, 0x3F, 0x36       # player record rating bytes
 TEAM_SIZE = 0x1F4
+
+# Rule 4 (docs/mod_editor/nfl2k5_lineup_roles_injured.S, as --32 + objcopy; position independent, no relocations):
+# the weekly CPU auto-depth 0x2BDCF0, then injured players below the healthy ones at their position on every club the
+# pass sorts. Its three callers below now call this block.
+INJURED_CODE = bytes.fromhex(
+    "b8f0dc2b00ffd060b8e04b0c00ffd089c531f639ee7d3689f1b8504c0c00ffd089c785ff742483bf2801000000751b89f9b830ec1300ffd0"
+    "85c07409833d4001e600007405e80500000046ebc661c355565381ec1801000089e5c7850401000000000000c7850c01000000000000c785"
+    "080100000a000000e893000000b898ec01008b8d040100000fa3c8731dc785080100000d000000e87400000083bd0c010000007405e81401"
+    "0000ff850401000083bd040100001172ab81c4180100005b5e5dc331db31c931f60fb6871c01000039c673358b14b785d2742b0fb642353b"
+    "8504010000751f0fb74228518b8d08010000d3e85983e00739c8750a83fb41730589549d004346ebc04183f90872b8c3e8aeffffff31f631"
+    "c939de73158b54b500f64223807404b101eb0484c9750446ebe7c3c7850c01000001000000c7851401000000000000c78510010000000000"
+    "0031f639de732f8b54b5000fb64223c1e8073b8510010000751985c07404806252fc8b8514010000e819000000ff851401000046ebcdff85"
+    "1001000083bd100100000272bcc383f8077605b80700000051538b8d08010000bb07000000d3e3f7d366215a28d3e0660942285b59c3c785"
+    "080100000a000000e8f6feffff85db746a8b5500f6422380756131c931f639de730e8b44b500f640238075014146ebee83f903724652c785"
+    "080100000d000000e8befeffff5a31f683fe02732e3954b500740346ebf28b44b5048944b5004683fe0272f289550831f639de730e8b54b5"
+    "0089f0e85effffff46ebeec3")
+AUTO_DEPTH = 0x002BDCF0
+AUTO_DEPTH_CALLS = (0x00247D5C, 0x00248075, 0x0024853D)
 
 # Pinned code the owner relies on (sha256 over the span; the gate call's rel32 is masked: another owner may own it).
 GUARDS = (
@@ -304,12 +337,12 @@ def _link(items: list, base: int) -> tuple[bytes, dict[str, int]]:
             out += (b"\xe8" if kind == "call" else b"\xe9") + struct.pack("<i", item[1] - (base + here + 5))
         elif kind == "rel32abs":
             out += struct.pack("<i", item[1] - (base + here + 4))
-    _require(len(out) <= CODE_SIZE, f"lineup roles code ({len(out)} B) exceeds its allocation")
-    return bytes(out).ljust(CODE_SIZE, b"\xcc"), labels
+    _require(len(out) <= RULES_SIZE, f"lineup roles code ({len(out)} B) exceeds its allocation")
+    return bytes(out).ljust(RULES_SIZE, b"\xcc"), labels
 
 
 def code_for(code_va: int, gate: int, *, third_down: bool = True) -> bytes:
-    return assemble(code_va, gate, third_down=third_down)[0]
+    return assemble(code_va, gate, third_down=third_down)[0] + INJURED_CODE.ljust(CODE_SIZE - RULES_SIZE, b"\xcc")
 
 
 def sites(code_va: int, gate: int = 0x000E8340) -> tuple[tuple[str, int, bytes, bytes], ...]:
@@ -318,7 +351,9 @@ def sites(code_va: int, gate: int = 0x000E8340) -> tuple[tuple[str, int, bytes, 
     pick = b"\xe8" + struct.pack("<i", PICKER - PICK_CALL - 5)
     hook = b"\xe8" + struct.pack("<i", code_va + entry["roles_pick"] - PICK_CALL - 5)
     tier = b"\xe8" + struct.pack("<i", code_va + entry["fb_len"] - FB_SITE - 5)
-    return (("roles_pick", PICK_CALL, pick, hook), ("fb_len", FB_SITE, FB_RETAIL, tier))
+    depth = tuple((f"injured_depth_{i}", va, b"\xe8" + struct.pack("<i", AUTO_DEPTH - va - 5),
+                   b"\xe8" + struct.pack("<i", code_va + INJ_OFFSET - va - 5)) for i, va in enumerate(AUTO_DEPTH_CALLS))
+    return (("roles_pick", PICK_CALL, pick, hook), ("fb_len", FB_SITE, FB_RETAIL, tier)) + depth
 
 
 _ERRORS = (ValueError, TypeError, KeyError, IndexError, struct.error, OverflowError)
