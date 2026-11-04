@@ -355,7 +355,7 @@ class EngineTests(unittest.TestCase):
                          [after[v] for v in range(count) if not first <= v < last])
     def test_the_engine_leaves_the_strip_flag_word_of_its_data_page_alone(self):
         # The page strip fit keeps FUN_000AAFD0's second argument in the owner's data page at +124 (nfl2k5_playcall_layout.
-        # STRIP_FLAG_OFFSET); the engine's State is 120 bytes, so setup, update and every spot case must not touch it.
+        # STRIP_FLAG_OFFSET); the engine's State is 124 bytes (b780 pres2 added the pause shift word at +120), so setup, update and every spot case must not touch it.
         from mod_editor.core import nfl2k5_playcall_layout as pc
         patched = owner.apply(self.preview.payload)[0]
         _code, data = owner.sites(patched)

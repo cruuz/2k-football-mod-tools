@@ -119,10 +119,11 @@ class PatchTests(unittest.TestCase):
     def test_code_budget_and_full_manifest_site_reservations(self):
         from mod_editor.core.nfl2k5_cave_manifest import Recorder
         code,_ = owner.code_for(0x5100000,0x5200000)
-        self.assertEqual((owner.CODE_SIZE,owner.DATA_SIZE,owner.REVISION),(5920,128,16))  # b780 p2: RX 5376 -> 5920 (+544), revision 15; b780 gc1: 16
+        self.assertEqual((owner.CODE_SIZE,owner.DATA_SIZE,owner.REVISION),(6336,128,17))  # b780 p2: RX 5376 -> 5920 (+544), revision 15; b780 gc1: 16; b780 pres2: RX 6336 (+416, the pause-screen bar), revision 17
         # b773-hd1: +10 bytes; b778 sb2: engine 3583 -> 3613 B; b780 p2: engine 3613 -> 4065 B (+452: the ball spot and slot-free
-        # spaces) and the page strip fit (+125: box cave 107, prologue cave 18), 5327 -> 5904 of the 5920 allocated.
-        self.assertEqual(len(code.rstrip(b'\xcc')),5904)
+        # spaces) and the page strip fit (+125: box cave 107, prologue cave 18), 5327 -> 5904 of the 5920 allocated; b780 pres2:
+        # engine 4065 -> 4428 B (+363: the pause-screen bar) and its 47-byte hook stub, 5904 -> 6314 of the 6336 allocated.
+        self.assertEqual(len(code.rstrip(b'\xcc')),6314)
         self.assertEqual(len(pc.code_for(0x5100000)),129)
         self.assertEqual(len(pc.strip_code_for(0x5100000,0x5200000)),107)
         self.assertEqual(len(pc.strip_entry_code_for(0x5100000,0x5200000)),18)
