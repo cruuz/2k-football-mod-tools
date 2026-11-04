@@ -906,7 +906,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_read_option_runtime.py": "f4b3c0126f270dc6ed4aae33d75ab0d6ab25dbe389d803002045cede1f7363dd",
         "mod_editor/core/nfl2k5_read_option_runtime_code.py": "2f58745ddc7ad4cf28adf3223d3a85661ca79d0252a7bb7d27a7a19e90bcc69a",
         "mod_editor/core/nfl2k5_resource_growth.py": "d33b9b3a6571852e13297050efd5364ab411f10efbaee32b6b087f01e41725fa",
-        "mod_editor/core/nfl2k5_returner_fix.py": "735fac164edb3ea10b2a0d48121b8eace2ae0e24ea522b62802672fbf8907fe8",
+        "mod_editor/core/nfl2k5_returner_fix.py": "c89bc19c98ed79d79b2d7f1c1c26958b54d6ebc82d19e8c1a74b2366ad256f0c",
         "mod_editor/core/nfl2k5_roster_ages.py": "f38aff19e3bb9ab503d5a7b85d191ff8c15703e101a5580ea02d0d85c6290daa",
         "mod_editor/core/nfl2k5_roster_arena.py": "b0e4e1aa7b55eb1070b59bb145c6c92df4d3ab512f43fe6919482aa0df29b589",
         "mod_editor/core/nfl2k5_roster_arena_code.py": "b4da3a566ae817b1ec91c0d1a6202bd182d1ea3b55b96eb7d924ee8156ccfbac",
