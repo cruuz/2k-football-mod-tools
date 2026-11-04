@@ -18,6 +18,7 @@ sys.path.insert(0, str(ROOT))
 from mod_editor.core import nfl2k5_screen_hooks as patch
 from mod_editor.core import nfl2k5_cave_manifest as builder
 from mod_editor.core import nfl2k5_xbe_space as space
+from mod_editor.core.nfl2k5_cave_manifest import stack_extent  # noqa: E402
 from mod_editor.core.nfl2k5_cave_oracle import DEFAULT_MANIFEST, OracleError, ReservationManifest, XbeImage
 from tests.mod_editor.test_nfl2k5_screen_hooks import retail_xbe
 from tests.nfl2k5_allocator_stack import REQUESTS
@@ -99,6 +100,7 @@ def bounded_projection(retail, document=None):
     result.update(model="BOUNDED XBE PROJECTION: unchanged parent reservations plus observed screen hooks and allocator union; no new disc build",
                   stack_image_size=XbeImage(final).image_size,
                   spans=sorted(unique.values(), key=lambda r: (int(r["start"], 0), int(r["end"], 0), r["owner"])))
+    result["stack_image_size"] = stack_extent(XbeImage(final), result["spans"])  # b780: inherited allocator spans may lie past this image
     result["source_sha256"].update({path: fingerprints[path] for path in OBSERVED_SOURCES})
     result["bounded_projection"] = dict(parent_document_sha256=hashlib.sha256(json.dumps(parent, sort_keys=True).encode()).hexdigest(),
                                         observed_steps=recorder.steps, observed_sources=OBSERVED_SOURCES,
