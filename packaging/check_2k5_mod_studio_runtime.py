@@ -115,16 +115,16 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
 B69_GAME_RUNTIME_PINS = {
     "mod_editor/core/nfl2k5_weather.py": "ec3d253e348ff0cf7fb1951b5dad2983d8aebc0802d5c6fca32c74dc80a6985b",
     "mod_editor/core/nfl2k5_weather_haze.py": "b8c58c592794312358eb1554b1d3be43a1ca41f7fdd8fd3cd498d4f345c641cc",
-    "mod_editor/gui/build_panel_qt.py": "1a2b4f25469b5c476f56272323b8a09b494e9f51e90b8f9b481996dff8469ff4",
+    "mod_editor/gui/build_panel_qt.py": "70be039346d3fc39dd9ebdc53d033fe89cb4f4c3d8be1ffef328f12d5d63c4a2",
     "mod_editor/gui/gameplay_patches_panel_qt.py": "c4b12ad6a1c0e4172505249ce056354c375eb90277a6c91573d52568ba3846d6",
     "mod_editor/gui/my_career_panel_qt.py": "cd39ce1685ed119288122e46b0f8c1c8ba586cea611f5d5feee096a71d7ea9ac",
-    "mod_editor/gui/gameplay_project_ui.py": "b3460072c8e411aa5833324b4f686afa2a5b094ebd8d0db057cf6deeaf85447e",
+    "mod_editor/gui/gameplay_project_ui.py": "64ffd51ed4ec115f12ae4509e6dfc1004d2a8864437630dca002ea51daa299d1",
     "mod_editor/gui/beta62_options.py": "5ce7517cd798e2c9ece0b464a077770e26670bba235e793e235b383fba6eca63",
     "tools/nfl2k5_weather_editor.py": "39a2847b873bbdc567712ca87657d700fa95e226c3408983acce4d714b1031de",
-    "mod_editor/gui/build_panel_qt.py": "1a2b4f25469b5c476f56272323b8a09b494e9f51e90b8f9b481996dff8469ff4",
+    "mod_editor/gui/build_panel_qt.py": "70be039346d3fc39dd9ebdc53d033fe89cb4f4c3d8be1ffef328f12d5d63c4a2",
     "mod_editor/gui/gameplay_patches_panel_qt.py": "c4b12ad6a1c0e4172505249ce056354c375eb90277a6c91573d52568ba3846d6",
     "mod_editor/gui/my_career_panel_qt.py": "cd39ce1685ed119288122e46b0f8c1c8ba586cea611f5d5feee096a71d7ea9ac",
-    "mod_editor/gui/gameplay_project_ui.py": "b3460072c8e411aa5833324b4f686afa2a5b094ebd8d0db057cf6deeaf85447e",
+    "mod_editor/gui/gameplay_project_ui.py": "64ffd51ed4ec115f12ae4509e6dfc1004d2a8864437630dca002ea51daa299d1",
     "mod_editor/gui/beta62_options.py": "5ce7517cd798e2c9ece0b464a077770e26670bba235e793e235b383fba6eca63",
     "tools/nfl2k5_weather_editor.py": "39a2847b873bbdc567712ca87657d700fa95e226c3408983acce4d714b1031de",
     "tools/nfl2k5_weather_time_of_day.py": "37b2bd10f686db9fa99ba9034f9a7f68daa00bff516250ac0f67678880b98b47",
@@ -2022,6 +2022,7 @@ def main() -> int:
         "mod_editor.core.nfl2k5_menu_helmet_w2026",              # b773-hu1: Washington menu helmets, 2026 W
         "mod_editor.core.nfl2k5_anniversary_kickoff",             # b76-vb3
         "mod_editor.core.nfl2k5_k128",                            # b76-k1
+        "mod_editor.core.nfl2k5_console_memory",                  # b780-m64b: the 128 MB / 64 MB build target
         "mod_editor.core.nfl2k5_letter_grades_attributes",          # b773-lg2
         "mod_editor.core.nfl2k5_letter_grades",                   # b77-f4
         "mod_editor.core.nfl2k5_letter_grades_code",              # b77-f4

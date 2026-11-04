@@ -72,7 +72,8 @@ For every new SOFTDRINK version, start again from your original untouched image,
 
 1. In xemu, open the settings, set **System Memory** to **128 MiB** and choose the **Complex 4627** BIOS image as the Flash ROM
    (BIOS), then restart xemu. This is required for SOFTDRINK 2K28 v0.9: the disc uses the bigger roster built for the 128 MiB
-   layout, and its startup patch needs the 4627 BIOS. Do not run this disc at 64 MiB.
+   layout, and its startup patch needs the 4627 BIOS. Do not run this disc at 64 MiB. (For an original Xbox or Android
+   hakuX, see **Memory** under Common settings below.)
 2. In xemu choose **Machine, Load Disc** and select the new image. (Or click **Play latest disc in xemu** in the Studio.)
 3. If the picture looks grainy, try **View, Int. Resolution Scale, 2x**.
 4. Start the game. If it sits on the Xbox logo, restart xemu.
@@ -180,7 +181,11 @@ disc...** (marked experimental).
   then **Make my disc**. The presets do not add the SOFTDRINK 2K28 pack itself; use Install SOFTDRINK 2K28 for that.
 - **Play clock.** **Accelerated clock** and **Minimum Play Clock Time** are in Gameplay, Game Fixes. SOFTDRINK 2K28 has the
   accelerated clock on with a 20 second minimum. Its runoff stops at 2:00 in the second quarter, fourth quarter and overtime.
-- **Memory.** Always 128 MiB in xemu for SOFTDRINK.
+- **Memory.** Always 128 MiB in xemu for SOFTDRINK. An original Xbox console and the Android emulator hakuX have 64 MB:
+  for them the Studio can make a **64 MB build** (Build tab, **Console memory**, or Share, **Build for**, then **Customize
+  SOFTDRINK 2K28**). It is experimental, estimated, not yet tested on a real Xbox or hakuX, it leaves out the options that
+  need 128 MB, and the pack's 2026 rosters need 128 MB for now. For the full experience use xemu at 128 MiB. See
+  [the FAQ](mod_editor/2k5_mod_studio_faq.md#can-i-play-softdrink-2k28-on-android-in-hakux).
 
 ## 8. If something goes wrong
 

@@ -475,12 +475,19 @@ def write_caption(is_image: bool, disc_caption: str = "Make disc with these chan
     return disc_caption if is_image else "Save patched executable…"
 
 
-def disc_next_steps(target: str | Path) -> str:
-    """Name the completed image and the roster/save steps shared by both builders."""
-    return (f"Next: in xemu, choose Machine > Load Disc and open {target}, "
+def disc_next_steps(target: str | Path, console_memory: int = 128) -> str:
+    """Name the completed image and the roster/save steps shared by both builders (b780-m64b: and a 64 MB disc's)."""
+    text = (f"Next: in xemu, choose Machine > Load Disc and open {target}, "
             "or click Play latest disc in xemu in Studio.\n"
             "In the game, load the disc roster, then start a fresh franchise. "
             "An existing franchise keeps its saved roster. For SOFTDRINK, set xemu System Memory to 128 MiB.")
+    if console_memory == 64:
+        from mod_editor.core.nfl2k5_console_memory import NEXT_STEPS_64
+        text = (f"Next: load {target} on your original Xbox or in hakuX the way you load other disc images there, or in "
+                "xemu choose Machine > Load Disc.\n"
+                "In the game, load the disc roster, then start a fresh franchise. "
+                "An existing franchise keeps its saved roster.\n" + NEXT_STEPS_64)
+    return text
 
 
 class Details(QWidget):
