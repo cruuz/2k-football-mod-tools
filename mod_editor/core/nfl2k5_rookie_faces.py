@@ -108,7 +108,12 @@ candidate's own class loop and CPU draft under Unicorn, 12 classes of 380 and on
      free, and otherwise walks up from it as before (a DT or DE rolled in the 90s wraps to the lowest free number
      from 60, as retail did for every rookie).  Measured again after the fix: 10 numbers among 32 rookie WRs (the
      two most common 9 of 32), 16 among 35 tackles, 12 of 19 rookie DTs in the 90s.
-   Both are code, so old franchise saves get them for every later class and draft.
+   * rare first names: the body's bits give a rare surname's four first names evenly, but nothing kept two prospects
+     with one rare surname apart: the RC's 12 classes had "Wei Chen" twice in one class and "Raj Patel" and "Jun Chen"
+     twice in another (by the odds, a repeated rare full name in about one class in six).  Region D now calls
+     rarefirst (in region C's spare bytes): the (weight ^ height) & 3 name first, then the next of the four while a
+     player on the roster already carries that full name; with all four taken the fourth try stands.
+   All three are code, so old franchise saves get them for every later class and draft.
 
 Saves: the code reads the pool, the roster and the position from the live roster, so an old franchise save gets the
 new faces for every class it generates after the update (its own name pool may lack the nicknames; nothing else
@@ -182,7 +187,8 @@ CODE_C = bytes.fromhex(
     "442410d864241c51dec9d8442420d91c24e879d1ffff88c289f1ff57fc83c71481fff84e4f007cad6a025f0fb6971e6e"
     "0e00520fbe041383f8647c036a64580fbe4c150083f9647c036a645929c85150e825faffff0fb7c05a0fafc2c1f81059"
     "01c85a8804164f79c2b9a0fce500e962010000e802faffff3c0a19c089442418bfb44c4f00c3e8841df6fff644241801"
-    "740ad9e8dec1d80d84414e00c34e5150")
+    "740ad9e8dec1d80d84414e00c34e515052538b4e2a30e983e1038d1c85000000006a045f8d040b6603059d4f4f008b55"
+    "548b04c24f741c518b4d008b5504394210750a508b42143b461458740c83c254e2ec598946105b5ac3594183e103ebc4")
 CODE_B = bytes.fromhex(
     "89068b2d1829b7008b5d548b4d5083c3048b4614e8d3f7ffff897c241431d239cf732289f8c1e8020fb68008504f0089"
     "f983e10301c9d3e883e0030fbe90744f4f008b4d508954241083eb048b4610e898f7ffffe8bcf7ffff8b03668b00663b"
@@ -191,10 +197,10 @@ CODE_B = bytes.fromhex(
     "e81df7ffff0fb6c039f819ffe811f7ffffba9c4f4f0031c94131db85ff7408ba984f4f00b104433a02720543424975f7"
     "0fb6462a31d23c4a7606423c7d720142e964df4000")
 CODE_D = bytes.fromhex(
-    "895c24108b442414662b05a34f4f0083f803732f31c93c020f93c18a99514f4f00895c24108d59068b4e2a30e983e103"
-    "8d04816603059d4f4f008b4d548b0cc1894e108d3c5b01d78d3cbda84f4f006a185b0fb74f0280e501e80f17bfff80fb"
-    "18750c8d0489c1e80429c139ca7310895424140fb70701d0e81517bfff75034b75d0668946068b4e1881e17efcffff8b"
-    "442410c1e00709c10fb64703d1e839442414730141894e185f5e5d5b83c408c20400")
+    "895c24108b442414662b05a34f4f0083f803731931c93c020f93c18a99514f4f00895c24108d5906e8721dbfff8d3c5b"
+    "01d78d3cbda84f4f006a185b0fb74f0280e501e82517bfff80fb18750c8d0489c1e80429c139ca7310895424140fb707"
+    "01d0e82b17bfff75034b75d0668946068b4e1881e17efcffff8b442410c1e00709c10fb64703d1e83944241473014189"
+    "4e185f5e5d5b83c408c20400")
 # b780 (a player: "Wei Chen" in almost every class): the rare first name was pool[RFIRST0 + 4 * rare + (college & 3)],
 # and the college's low bits barely vary, so Chen was nearly always Wei; it now uses (weight ^ height) & 3 of the body
 # region A just rolled. Beta-79 / SOFTDRINK v0.8 executables carry the old region D: they read "previous".
@@ -203,6 +209,20 @@ CODE_D_B779 = bytes.fromhex(
     "6603059d4f4f008b4d548b0cc1894e108d3c5b01d78d3cbda84f4f006a185b0fb74f0280e501e81217bfff80fb18750c"
     "8d0489c1e80429c139ca7310895424140fb70701d0e81817bfff75034b75d0668946068b4e1881e17efcffff8b442410"
     "c1e00709c10fb64703d1e839442414730141894e185f5e5d5b83c408c20400")
+
+# The first v0.9 release candidate (b780 before GEN1): region C without rarefirst, region D with the first name
+# inline ((weight ^ height) & 3 only, so two prospects with one rare surname could share a first name).
+CODE_C_RF3 = bytes.fromhex(
+    "e89e00000089d9ff178944241cdb44241cd95c241089e9ff178944241cdb44241cd95c241cb9a0fce500e887000000d9"
+    "442410d864241c51dec9d8442420d91c24e879d1ffff88c289f1ff57fc83c71481fff84e4f007cad6a025f0fb6971e6e"
+    "0e00520fbe041383f8647c036a64580fbe4c150083f9647c036a645929c85150e825faffff0fb7c05a0fafc2c1f81059"
+    "01c85a8804164f79c2b9a0fce500e962010000e802faffff3c0a19c089442418bfb44c4f00c3e8841df6fff644241801"
+    "740ad9e8dec1d80d84414e00c34e5150")
+CODE_D_B780RC = bytes.fromhex(
+    "895c24108b442414662b05a34f4f0083f803732f31c93c020f93c18a99514f4f00895c24108d59068b4e2a30e983e103"
+    "8d04816603059d4f4f008b4d548b0cc1894e108d3c5b01d78d3cbda84f4f006a185b0fb74f0280e501e80f17bfff80fb"
+    "18750c8d0489c1e80429c139ca7310895424140fb70701d0e81517bfff75034b75d0668946068b4e1881e17efcffff8b"
+    "442410c1e00709c10fb64703d1e839442414730141894e185f5e5d5b83c408c20400")
 
 # b780 GEN1 college bands (module docstring).  The retail pick between region C and region B: frand * 100 against the
 # shared .rdata floats 35 / 65 / 86 / 96 picks a band, then college = lo + rand % (hi - lo + 1).  The span is the run of
@@ -561,8 +581,8 @@ def _retail_spans(payload: bytes) -> dict[int, bytes]:
 
 def xbe_status(payload: bytes) -> str:
     """retail | applied | previous | foreign (an applied image may carry any table bytes; code and string must match;
-    previous = the beta-79 / v0.8 region D (CODE_D_B779) or the first v0.9 release candidate's (CODE_D), both with the
-    retail college bands and draft numbers)."""
+    previous = the beta-79 / v0.8 region D (CODE_D_B779) or the first v0.9 release candidate's (CODE_D_B780RC), both
+    with the b779-rf3 region C (CODE_C_RF3), the retail college bands and draft numbers)."""
     try:
         current = _retail_spans(payload)
     except (RookieFacesError, struct.error):
@@ -571,14 +591,14 @@ def xbe_status(payload: bytes) -> str:
         return "retail"
     spans = dict(_spans(bytes(TABLE_DATA)))
     a, b, c, d, s = (current[REGION_A], current[REGION_B], current[REGION_C], current[TABLE_VA], current[STRING_VA])
-    core = a == spans[REGION_A] and b == spans[REGION_B] and c == spans[REGION_C] and s == spans[STRING_VA]
-    if (core and d[TABLE_DATA:] == spans[TABLE_VA][TABLE_DATA:] and current[COLLEGE_VA] == spans[COLLEGE_VA]
-            and current[NUMBER_VA] == NUMBER_PATCHED):
+    core = a == spans[REGION_A] and b == spans[REGION_B] and s == spans[STRING_VA]
+    if (core and c == spans[REGION_C] and d[TABLE_DATA:] == spans[TABLE_VA][TABLE_DATA:]
+            and current[COLLEGE_VA] == spans[COLLEGE_VA] and current[NUMBER_VA] == NUMBER_PATCHED):
         return "applied"
     tail = TABLE_END - TABLE_VA - TABLE_DATA
-    region_d = (CODE_D_B779 + b"\xcc" * (tail - len(CODE_D_B779)), CODE_D + b"\xcc" * (tail - len(CODE_D)))
-    if (core and d[TABLE_DATA:] in region_d and current[COLLEGE_VA] == COLLEGE_RETAIL
-            and current[NUMBER_VA] == NUMBER_RETAIL):
+    region_d = (CODE_D_B779 + b"\xcc" * (tail - len(CODE_D_B779)), CODE_D_B780RC + b"\xcc" * (tail - len(CODE_D_B780RC)))
+    if (core and c == CODE_C_RF3 + b"\xcc" * (REGION_C_END - REGION_C - len(CODE_C_RF3)) and d[TABLE_DATA:] in region_d
+            and current[COLLEGE_VA] == COLLEGE_RETAIL and current[NUMBER_VA] == NUMBER_RETAIL):
         return "previous"   # beta-79 / v0.8 (rare first name from the college's low bits) or the v0.9 RC (GEN1)
     return "foreign"
 

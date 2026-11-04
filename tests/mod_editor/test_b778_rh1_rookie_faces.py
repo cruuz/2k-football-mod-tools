@@ -181,11 +181,13 @@ def _emulator(table, rand_seed=1):
 OBJ, TABLE, ENTRIES, STACK, SENT = 0x2000000, 0x2100000, 0x2300000, 0x2400000, 0x2500000
 
 
-def run_class(table, prospects, roster_photos=(), seed=1, keep_body=False):
+def run_class(table, prospects, roster_photos=(), seed=1, keep_body=False, roster_names=()):
     """Region A (b779-rf3: body draw + generic head shape), then region B..D, per prospect.  Unless keep_body, the
-    prospect's given weight is written back after region A so the face tests choose the build."""
+    prospect's given weight is written back after region A so the face tests choose the build.  roster_names: (first,
+    last) pool rows of players already on the roster (b780 GEN1), after the roster_photos records."""
     from unicorn.x86_const import UC_X86_REG_EAX, UC_X86_REG_ESI, UC_X86_REG_ESP
     mu = _emulator(table, seed)
+    roster_photos = list(roster_photos) + [0xFFFF] * len(roster_names)
     n = len(roster_photos) + len(prospects)
     mu.mem_write(OBJ, struct.pack("<II", n, TABLE))
     mu.mem_write(OBJ + 0x50, struct.pack("<II", rf.POOL_COUNT, ENTRIES))
@@ -197,6 +199,8 @@ def run_class(table, prospects, roster_photos=(), seed=1, keep_body=False):
         mu.mem_write(0x2280000 + 64 * i, lasts[i].encode("utf-16-le") + b"\0\0")
     for k, photo in enumerate(roster_photos):
         mu.mem_write(TABLE + k * 0x54 + 6, struct.pack("<H", photo))
+    for k, (fi, li) in enumerate(roster_names, len(roster_photos) - len(roster_names)):
+        mu.mem_write(TABLE + k * 0x54 + 0x10, struct.pack("<II", 0x2200000 + 64 * fi, 0x2280000 + 64 * li))
     rng = random.Random(seed)
     out = []
     for j, (fi, li, pos, wt) in enumerate(prospects):
@@ -265,6 +269,7 @@ class Native(unittest.TestCase):
                                                 0x2A, 0x2B})  # b779-rf3: region A draws weight and height
 
     def test_face_matches_bucket(self):
+        taken = collections.defaultdict(set)
         for (fi, li, pos, wt), r in zip(self.prospects, self.res):
             build = 0 if wt <= rf.LEAN_MAX_LB else 1 if wt < rf.HEAVY_MIN_LB else 2
             if RARE_ROW <= li < RARE_ROW + 3:
@@ -272,8 +277,13 @@ class Native(unittest.TestCase):
                 rare_b, k = divmod(r["photo"] - 2920, 10)
                 self.assertEqual(rare_b, 3 * g + build, "a rare surname takes his group's row for his build")
                 self.assertEqual(r["tone"], rf.RARE_TONES[g])
-                # b780: the rare first name follows the body region A rolled ((weight - 150) ^ height), not the college
-                self.assertEqual(r["first"], 473 + 4 * (li - RARE_ROW) + (((wt - 150) ^ r["height"]) & 3))
+                # b780: the rare first name follows the body region A rolled ((weight - 150) ^ height), not the college;
+                # b780 GEN1: then the next of the four while that full name is taken (the fourth try stands)
+                first = 473 + 4 * (li - RARE_ROW)
+                k = ((wt - 150) ^ r["height"]) & 3
+                tries = [first + (k + t) % 4 for t in range(4)]
+                self.assertEqual(r["first"], next((f for f in tries[:3] if f not in taken[li]), tries[3]))
+                taken[li].add(r["first"])
                 self.assertEqual(r["dreads"], 0)
                 continue
             b, k = divmod(r["photo"] - 2200, 40)
@@ -402,6 +412,32 @@ class NativeRh2(unittest.TestCase):
             self.assertEqual(sum(counts.values()), 160, "only the surname's own four first names")
             self.assertTrue(all(20 <= c <= 70 for c in counts.values()), (rf.RARE_SURNAMES[g], counts))
 
+    def test_a_rare_full_name_is_not_repeated_while_one_is_free(self):
+        """b780 GEN1: two prospects with one rare surname drew the same first name one time in four (the RC's classes:
+        "Raj Patel" twice in one class). A full name a player on the roster already carries is skipped while one of the
+        four is free."""
+        table = rf.tables(self.firsts, self.lasts, toy_bank())
+        rng = random.Random(781)
+        for g in range(3):
+            li, names = RARE_ROW + g, list(range(473 + 4 * g, 477 + 4 * g))
+            for trial in range(25):           # four prospects with one rare surname in a class: four different names
+                pros = [(rng.randrange(400), li, rng.randrange(17), rng.randint(185, 320)) for _ in range(4)]
+                res = run_class(table, pros, seed=7800 + trial, keep_body=True)
+                self.assertEqual(sorted(r["first"] for r in res), names, (rf.RARE_SURNAMES[g], trial))
+            for free in names:                # three of the four on the roster already: the next one gets the fourth
+                pros = [(rng.randrange(400), li, rng.randrange(17), rng.randint(185, 320)) for _ in range(6)]
+                res = run_class(table, pros, roster_names=[(f, li) for f in names if f != free], seed=free,
+                                keep_body=True)
+                self.assertEqual(res[0]["first"], free, (rf.RARE_SURNAMES[g], free))
+                self.assertTrue(all(r["first"] in names for r in res))
+        # the same first name with another surname is another full name: three players named Wei (pool surname row 0)
+        # change nothing for the Chens
+        chen, wei = RARE_ROW + 1, 477
+        pros = [(rng.randrange(400), chen, 0, 220) for _ in range(40)]
+        plain = run_class(table, pros, seed=99, keep_body=True)
+        other = run_class(table, pros, roster_names=[(wei, 0)] * 3, seed=99, keep_body=True)
+        self.assertEqual([r["first"] for r in plain], [r["first"] for r in other])
+
     def test_rare_rate_in_a_class(self):
         """Uniform surname draws: about 3 rare prospects in 485, two East to one South."""
         table = rf.tables(self.firsts, self.lasts, toy_bank())
@@ -452,8 +488,8 @@ class RetailXbe(unittest.TestCase):
         self.assertEqual((payload[at:at + 2], out[at:at + 2]), (rf.NUMBER_RETAIL, rf.NUMBER_PATCHED))
 
     def test_previous_states(self):
-        """Beta-79 / v0.8 (the old region D) and the first v0.9 release candidate (new region D, retail college bands
-        and draft numbers) read "previous"; one of the two new spans alone is foreign."""
+        """Beta-79 / v0.8 (the old region D) and the first v0.9 release candidate (its region C and D, retail college
+        bands and draft numbers) read "previous"; a mix of old and new spans is foreign."""
         payload = Path(RETAIL_XBE).read_bytes()
         firsts, lasts = shipped_pool()
         out, _ = rf.xbe_apply(payload, rf.tables(firsts, lasts, toy_bank()))
@@ -463,12 +499,18 @@ class RetailXbe(unittest.TestCase):
             at = rf._offset(data, va, len(value))
             buf[at:at + len(value)] = value
             return bytes(buf)
+        tail = rf.TABLE_END - rf.TABLE_VA - rf.TABLE_DATA
+        old_c = rf.CODE_C_RF3 + b"\xcc" * (rf.REGION_C_END - rf.REGION_C - len(rf.CODE_C_RF3))
         rc = put(put(out, rf.COLLEGE_VA, rf.COLLEGE_RETAIL), rf.NUMBER_VA, rf.NUMBER_RETAIL)
+        rc = put(put(rc, rf.REGION_C, old_c), rf.TABLE_VA + rf.TABLE_DATA,
+                 rf.CODE_D_B780RC + b"\xcc" * (tail - len(rf.CODE_D_B780RC)))
         self.assertEqual(rf.xbe_status(rc), "previous")
-        old_d = rf.CODE_D_B779 + b"\xcc" * (rf.TABLE_END - rf.TABLE_VA - rf.TABLE_DATA - len(rf.CODE_D_B779))
-        self.assertEqual(rf.xbe_status(put(rc, rf.TABLE_VA + rf.TABLE_DATA, old_d)), "previous")
+        b779 = put(rc, rf.TABLE_VA + rf.TABLE_DATA, rf.CODE_D_B779 + b"\xcc" * (tail - len(rf.CODE_D_B779)))
+        self.assertEqual(rf.xbe_status(b779), "previous")
+        self.assertEqual(rf.xbe_status(put(rc, rf.NUMBER_VA, rf.NUMBER_PATCHED)), "foreign")    # one new span alone
         self.assertEqual(rf.xbe_status(put(out, rf.NUMBER_VA, rf.NUMBER_RETAIL)), "foreign")
         self.assertEqual(rf.xbe_status(put(out, rf.COLLEGE_VA, rf.COLLEGE_RETAIL)), "foreign")
+        self.assertEqual(rf.xbe_status(put(out, rf.REGION_C, old_c)), "foreign")
 
 
 # ------------------------------------------------------------------------------------------- b780 GEN1
