@@ -318,6 +318,22 @@ def source_fingerprints() -> dict[str, str]:
             for p in sorted(paths) if not p.name.startswith("nfl2k5_cave_")}
 
 
+def stack_extent(final: XbeImage, spans) -> int:
+    """The stack image size the manifest declares: the final stack's own size, or more when a recorded span lies past it.
+
+    b780: the larger probe compositions (the grown kickoff, the complete owner union) grow the v4 pool past the final
+    stack's end (spans to 0x1525000 against a final image ending at 0x1510000), and the loader refuses any span past the
+    declared size ("invalid reserved span"). The extent is page aligned and never smaller than the final image."""
+    highest = max((int(row["end"], 0) for row in spans), default=final.base)
+    return max(final.image_size, -(-(highest - final.base) // 0x1000) * 0x1000)
+
+
+def check_loadable(document: dict, retail: bytes) -> None:
+    """Refuse to hand out a manifest the oracle's own loader rejects (b780: three regenerations wrote one)."""
+    from .nfl2k5_cave_oracle import ReservationManifest  # noqa: PLC0415
+    ReservationManifest(document, XbeImage(retail))
+
+
 def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, synthetic_owner_bytes=0) -> dict:
     """Actual experimental image build plus the dormant seven-on-seven owner.
 
@@ -856,8 +872,8 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
                              if str((ROOT / name).resolve()) in loaded_paths}
         if preset.get("indicator_names_folder"):
             preset["indicator_names_folder"] = Path(preset["indicator_names_folder"]).relative_to(ROOT).as_posix()
-        return {"schema": MANIFEST_SCHEMA, "retail_sha256": RETAIL_SHA256, "complete": True,
-                "stack_image_size": XbeImage(final).image_size,
+        document = {"schema": MANIFEST_SCHEMA, "retail_sha256": RETAIL_SHA256, "complete": True,
+                "stack_image_size": stack_extent(XbeImage(final), spans),
                 "model": "observed experimental disc build plus dormant seven-on-seven, grown kickoff, scorebug runtime music metadata, Momentum, defensive try and zone drop; exact diffs union owned pages and named allocations",
                 "preset": "softdrink_experimental", "preset_values": preset,
                 "extra_owners": ["nfl2k5_my_career_home", "nfl2k5_cpu_passer_iq", "nfl2k5_pass_protection", "nfl2k5_pass_rush_stats", "nfl2k5_protection_calls", "nfl2k5_preseason_warning", "nfl2k5_sim_rb_injuries", "nfl2k5_sim_realism", "nfl2k5_coach_carousel", "nfl2k5_standings_records", "nfl2k5_cpu_clock2", "nfl2k5_runner_vision", "nfl2k5_dive_window", "nfl2k5_catch_snap_limit", "nfl2k5_speed_threshold", "nfl2k5_scramble_blocking", "nfl2k5_audible_legend", "nfl2k5_history_screen", "nfl2k5_module_loader", "nfl2k5_crib_trophy_room", "nfl2k5_play_art_routes", "nfl2k5_team_number_scale", "nfl2k5_run_blocking", "nfl2k5_qb_accuracy", "nfl2k5_formation_art_spacing", "nfl2k5_force_out", "nfl2k5_practice_injuries", "nfl2k5_ball_carrier_ai", "nfl2k5_star_retention", star_career.OWNER, sportscenter_lineup.OWNER, "nfl2k5_draft_clock", "nfl2k5_weekly_progression", "nfl2k5_player_progress_screen", "nfl2k5_franchise_footer", "nfl2k5_history", "nfl2k5_contract_college_guard", "nfl2k5_sim_cb_tackles", "nfl2k5_clock_led", "nfl2k5_cpu_qb_reads", "nfl2k5_db_ball_play", draft_picks.OWNER, hback.OWNER, team_ratings.OWNER, attributes.OWNER, "nfl2k5_indicator_names", "nfl2k5_seven_on_seven", "nfl2k5_seven_on_seven_book", space.OWNER, relocated.OWNER, runtime.OWNER, music.OWNER, momentum.OWNER, defensive_try.OWNER, zone_drop.OWNER, roster_storage.OWNER, coverage.OWNER, scramble.OWNER, flight.OWNER, playlist.OWNER, practice_screen.OWNER, abilities.OWNER, qb_spy.OWNER, calendar.OWNER, read_option.OWNER, franchise_2026.OWNER, senior_bowl.OWNER, animation_xbe.OWNER, guardian.OWNER, my_career.OWNER, my_career.EXTRA_OWNER, crib_reclaim.OWNER, screen_hooks.OWNER, arena_growth.OWNER, autosave.OWNER, espn25.OWNER, coverage_trail.OWNER, deep_zone.OWNER, coverage_trail.OWNER, playbook_pair.OWNER, weekly_prep.OWNER, money_downs.OWNER, money_downs.LATE_OWNER, money_downs.LATE_STATE_OWNER, coach_ai.OWNER, third_down.OWNER, edit_player.OWNER, accelerated_clock.OWNER, helmet_finish.OWNER, weather_haze.OWNER, number_kerning.OWNER, team_names.OWNER, modern_color.OWNER, coin_defer.OWNER, decided_clock.OWNER, cpu_scrambles.OWNER, historic_quick_game.OWNER, more_moments.OWNER, anniversary_kickoff.OWNER, widescreen_menus.OWNER, team_logo_swap.OWNER, k128.OWNER, letter_grades.OWNER, letter_grades.PROGRESS_OWNER, kick_meter.OWNER, goalposts.OWNER, period.OWNER, "nfl2k5_franchise_economy", "nfl2k5_roster_fill_composition", lineman.__name__.rsplit(".", 1)[-1], elbow.__name__.rsplit(".", 1)[-1],
@@ -874,3 +890,5 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
                                   "reason": "Manifest proves XBE ownership only; panel transport has its own resource tests"},
                 "image_steps": [row["step"] for row in receipt["steps"]] + ["seven_on_seven_book", "xbe_space", "kickoff_relocated", "scorebug_runtime", "music_metadata", "momentum", "defensive_try", "zone_drop_cap", "all_stadiums"],
                 "source_sha256": used_fingerprints, "steps": recorder.steps, "spans": spans}
+        check_loadable(document, retail)
+        return document

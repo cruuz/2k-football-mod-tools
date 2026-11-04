@@ -3835,6 +3835,7 @@ tests/mod_editor/test_b780_j4_history_screen.py
 tests/mod_editor/test_b780_n8_coach_table_order.py
 tests/mod_editor/test_b780_n8_history_compose.py
 tests/mod_editor/test_b780_n6_champions_previous.py
+tests/mod_editor/test_b780_cave_manifest_extent.py
 mod_editor/core/nfl2k5_cpu_passer_iq.py
 mod_editor/core/nfl2k5_cpu_passer_iq_code.py
 tests/mod_editor/test_nfl2k5_cpu_passer_iq.py
