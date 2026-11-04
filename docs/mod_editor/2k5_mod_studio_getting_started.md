@@ -1479,10 +1479,11 @@ predicted to fit at the hardest stadium or what to turn off. **Use the recommend
 model's suggestion, and **Make my disc** refuses a selection that is predicted not to fit. A selection that fits only
 with the default uniforms is made with a warning: a player-picked alternate kit at the heaviest stadium may not fit, so
 if a game loops on the stadium shots, use the default uniforms. Roster edits that make the roster file bigger (the
-SOFTDRINK 2K28 2026 rosters do) need 128 MB. The memory numbers are an estimate from a model; for the full experience
-use xemu at 128 MiB. Going back to 128 MB gives back everything 64 MB turned off. On **Share**, **Build for** next to
-**Customize SOFTDRINK 2K28…** loads the pack's sources straight into the 64 MB target, with the recommended 64 MB set
-applied.
+SOFTDRINK 2K28 2026 rosters do) are fitted to the original game's roster size at 64 MB: the free agents beyond the
+original game's count are left out, and franchise draft-pick ownership and the backfield labels fall back to the 2004
+game's. The memory numbers are an estimate from a model; for the full experience use xemu at 128 MiB. Going back to 128
+MB gives back everything 64 MB turned off. On **Share**, **Build for** next to **Customize SOFTDRINK 2K28…** loads the
+pack's sources straight into the 64 MB target, with the recommended 64 MB set applied.
 
 Modern overtime (in Advanced and Experimental) is the current NFL rule: a 10-minute
 period (scaled from your quarter length), both teams get a possession unless the first

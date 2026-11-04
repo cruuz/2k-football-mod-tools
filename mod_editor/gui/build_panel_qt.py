@@ -711,6 +711,13 @@ class BuildPanel(QWidget):
         self.memory_action_label.setWordWrap(True)
         self.memory_action_label.hide()
         mk.addWidget(self.memory_action_label)
+        # b780-m64b: roster edits that grow the roster file are fitted to the original size at 64 MB; say what goes
+        self.memory_roster_label = WrappedLabel("")
+        self.memory_roster_label.setObjectName("throwMuted")
+        self.memory_roster_label.setWordWrap(True)
+        self.memory_roster_label.setAccessibleName("64 MB roster fit")
+        self.memory_roster_label.hide()
+        mk.addWidget(self.memory_roster_label)
         out = QHBoxLayout()
         self.target_caption = QLabel("Save disc copy as")
         out.addWidget(self.target_caption)
@@ -3456,9 +3463,14 @@ class BuildPanel(QWidget):
         if not sixty_four:
             self._memory_budget_timer.stop()
             self.memory_action_label.hide()
+            self.memory_roster_label.hide()
             for label in self._memory_cost_labels.values():
                 label.hide()
             return
+        plan = self.plan()
+        fitted = console_memory.roster_fit_applies(plan) and not console_memory.roster_fit_problem(plan)
+        self.memory_roster_label.setText(console_memory.ROSTER_FIT_NOTE if fitted else "")
+        self.memory_roster_label.setVisible(fitted)
         if console_memory.model() is None:
             self.memory_budget_label.setText(console_memory.budget_line(None))
             return
@@ -3485,8 +3497,9 @@ class BuildPanel(QWidget):
                                          console_memory.budget_line(prediction, labels=self._memory_label))
 
     def _memory_plan(self):
-        """The plan the memory model is asked about: the page's plan as a 64 MB build can have it."""
-        return console_memory.without_forced(self.plan())
+        """The plan the memory model is asked about: the page's plan as a 64 MB build makes it (forced-off options off,
+        roster edits that grow the roster file fitted to the original size)."""
+        return console_memory.model_plan(self.plan())
 
     def _memory_identity(self) -> str:
         return console_memory.identity(self._memory_plan())
@@ -5101,6 +5114,8 @@ class BuildPanel(QWidget):
             prediction = self._memory_budget_result[0] if self._memory_budget_result else None
             if console_memory.alternate_kit_shortfall(prediction):
                 lines.append(console_memory.alternate_kit_warning(prediction))
+            if console_memory.roster_fit_applies(plan) and not console_memory.roster_fit_problem(plan):
+                lines.append(console_memory.ROSTER_FIT_NOTE)
         lines += ["", "Takes a few minutes. " + XEMU_LINE]
         return "\n".join(lines)
 
