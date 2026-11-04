@@ -1,7 +1,7 @@
 """b780 mc1: Franchise load user-team guard (EMU1 crash_load: bugcheck 0x1E at 0x142BBD after a load).
 
-Static: the 17-byte cave and its one five-byte site, idempotent apply on retail, status, the presets, the last late
-owner. Native (Unicorn, pinned USA retail executable and the signed f0 Franchise, the game's own season and
+Static: the 17-byte cave and its one five-byte site, idempotent apply on retail, status, the presets, its place
+among the late owners. Native (Unicorn, pinned USA retail executable and the signed f0 Franchise, the game's own season and
 front-office deserializers 0xC5800 / 0x2D0CE0): with no human-controlled club ([0xE5775C + i*4] all 0) the retail
 deserializer leaves the user team [0xE3C0A0] at 0 and the Desk's front-office scene 0x142BB0 faults reading
 user_team+0x10C (negative control); with the guard the user team is club 0 and the read goes through. A load with a
@@ -39,7 +39,9 @@ class StaticTests(unittest.TestCase):
 
     def test_last_late_owner_and_presets(self):
         from mod_editor.core import mod_build
-        self.assertEqual(space.LATE_OWNERS[-1], guard.OWNER)
+        # last of the owners the first space pass reserves; only the rookie faces hair owner (appended at its image
+        # step) comes later
+        self.assertEqual(space.LATE_OWNERS[space.LATE_OWNERS.index(guard.OWNER) + 1:], ('nfl2k5_rookie_faces_hair',))
         for name in ('softdrink_basic', 'softdrink_advanced', 'softdrink_experimental'):
             self.assertIs(mod_build.PRESETS[name]['load_user_team_guard'], True, name)
 
