@@ -77,7 +77,7 @@ def _digest(sites) -> str:
     return h.hexdigest()
 
 
-PATCHED_SHA256 = "af2e761f12729b101c019df26b5298a8d8067af80dce325ba2b6dc7133acb1d2"   # the six sites (label, VA, retail, patched); tests check it
+PATCHED_SHA256 = "12f8f431af15622399a453dc937f869a5fc5c8956f9769d6190c9634c2ce3373"   # the six sites (label, VA, retail, patched); tests check it
 
 
 def status(payload: bytes) -> str:

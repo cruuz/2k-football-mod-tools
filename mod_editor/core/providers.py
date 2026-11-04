@@ -962,8 +962,8 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_history_code.py": "9cb79f239460485d38b484aa7e2880d270605dd8375bd5348ef95e688750a8f9",  # b780 j23
         "mod_editor/core/nfl2k5_contract_college_guard.py": "4bf8deeb95c3718380e8dc248ec2a2f0c81116f304d1a93723e277cc4bd32fe6",  # b778-cr1
         "mod_editor/core/nfl2k5_coach_career_fix.py": "4cb29e56898620b7f08385852a926002597fbc4ed309740379b7bf46ea7b5fc9",  # b780 c1 (wired at b780-int)
-        "mod_editor/core/nfl2k5_history_pool.py": "4881dee15cfaee5512704375a70f3a70d8eefee8f59c28a60e526cec60712861",  # b780 hist1
-        "mod_editor/core/nfl2k5_history_pool_code.py": "33ec357d3e22e68d62172c3a5d47b1ba15eacfa1745430ec4ff92a5e750ff634",  # b780 hist1: its generated runtime
+        "mod_editor/core/nfl2k5_history_pool.py": "2ab343c67a32c1bb69162defbb63c47bdc8d53adc5372bd17b5c3ef5eb072d8f",  # b780 hist1
+        "mod_editor/core/nfl2k5_history_pool_code.py": "a4b2a9e08453619b58e3fec5ec9fb0f9bc0446bb224ef5cc057aefaa06d02eab",  # b780 hist1: its generated runtime
         "mod_editor/core/nfl2k5_sim_cb_tackles_b779.py": "09d6272b93b5e356cbc8b1147b6bac8c5184fcfbc37f4aee8729df723473eedd",  # b780-int: frozen beta-79 tail for the previous state
         "mod_editor/core/nfl2k5_sim_cb_tackles.py": "00003fa0c6e523376ad57748504b1abb4a70cba0158ff1188c6436d2a6e1f306",  # b778-cb1
         "mod_editor/core/nfl2k5_sim_rb_injuries.py": "f14e98ec2e3ddc45663bb2ef32fc49662dd89910df3512f708c9c56d7259cbb9",  # b779-sim2

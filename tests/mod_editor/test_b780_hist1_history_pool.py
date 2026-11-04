@@ -70,7 +70,7 @@ class TemplateTests(unittest.TestCase):
             self.assertEqual(len(before), len(after), label)
             self.assertNotEqual(before, after, label)
         self.assertEqual(hp._digest(hp.SITES), hp.PATCHED_SHA256)
-        self.assertEqual(sum(len(a) for _l, _v, _b, a in hp.SITES), 945)
+        self.assertEqual(sum(len(a) for _l, _v, _b, a in hp.SITES), 973)
 
     def test_sites_lie_in_the_engine_and_clear_of_the_honors_rule_site(self):
         spans = [(va, va + len(after)) for _l, va, _b, after in hp.SITES]
@@ -110,7 +110,7 @@ class RetailExecutableTests(unittest.TestCase):
         self.assertEqual(hp.status(self.retail), "retail")
         patched, receipt = hp.apply(self.retail)
         self.assertEqual(hp.status(patched), "applied")
-        self.assertEqual(receipt["changed_bytes"], 927)
+        self.assertEqual(receipt["changed_bytes"], 957)
         again, receipt2 = hp.apply(patched)
         self.assertEqual(again, patched)
         self.assertTrue(receipt2["already_applied"])

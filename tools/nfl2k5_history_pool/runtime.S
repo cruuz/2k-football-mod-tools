@@ -170,14 +170,26 @@ compact:
 .Lc_nx: add     ebx, 0x54
         dec     ecx
         jmp     .Lc_p2
-.Lc_p3: mov     ecx, [esp+512]
+.Lc_p3: mov     ecx, [esp+512]           /* slide the live words down */
         xor     edx, edx
         mov     edi, esi
+        xor     ebx, ebx                /* 1 while the last word kept is a live word without the end bit */
 8:      mov     eax, [esi+edx*4]
         test    eax, DELETED
-        jnz     9f
+        jnz     10f
         mov     [edi], eax
         add     edi, 4
+        xor     ebx, ebx
+        test    eax, eax
+        js      9f
+        inc     ebx
+        jmp     9f
+10:     test    eax, eax                /* a deleted end word after live words of its stream: the last of them */
+        jns     9f                      /* ends the stream now (the game's delete keeps this so; a stream that */
+        test    ebx, ebx                /* missed it would otherwise run on into the next one) */
+        jz      9f
+        or      dword ptr [edi-4], 0x80000000
+        xor     ebx, ebx
 9:      inc     edx
         cmp     edx, ecx
         jb      8b
