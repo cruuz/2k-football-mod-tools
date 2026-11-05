@@ -1,8 +1,8 @@
 # nfl2k5_lineup_roles rule 4 (b780 sub1; MC1's finding, coordinator 11/04): the weekly CPU auto-depth 0x2BDCF0 ranks
 # by rating and never tests the injury bit (player +0x20 bit 31), so CPU depth charts listed injured starters. This
 # block replaces the game's three calls of 0x2BDCF0 (0x247D5C, 0x248075, 0x24853D). It runs the pass, then for every
-# league club the pass sorts (team +0x128 kind 0: never an all-star, Pro Bowl or historic side, which share players
-# with the clubs; not a user club unless "CPU manages my depth chart",
+# league club or created team the pass sorts (team +0x128 kind 0 or 2: never an all-star or historic side, which
+# share players with the clubs; not a user club unless "CPU manages my depth chart",
 # [0xE60140], is on: the pass's own test 0x13EC30) it lists each position's healthy players ahead of its injured ones
 # in the rank chain (+0x28 bits 10..12) and, for paired positions, the side chain (bits 13..15), keeping each group's
 # order. An injured player moved down loses his rank and side locks (+0x52 bits 0..1; returner locks stay), so when he
@@ -32,8 +32,12 @@ team_loop:
  mov edi, eax
  test edi, edi
  jz team_next
- cmp dword ptr [edi+0x128], 0       # league clubs only (all-star kind 1, Pro Bowl slots, historic sides)
+ mov eax, [edi+0x128]               # league clubs (kind 0) and created teams (kind 2, REV1): their players are their
+ test eax, eax                      # own (nfl2k5_roster_records CLUB_TEAM_COUNT); never an all-star (1) or a
+ je team_kind_ok                    # historic or Anniversary side (4, 5), which share players with the clubs
+ cmp eax, 2
  jne team_next
+team_kind_ok:
  mov ecx, edi
  mov eax, 0x13ec30               # the pass's user-club test
  call eax
