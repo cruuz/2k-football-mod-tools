@@ -447,6 +447,23 @@ class HelpTests(unittest.TestCase):
         web.assert_called_once()
 
 
+class RosterPromptWordingTests(unittest.TestCase):
+    def test_the_verb_and_pronoun_follow_the_count(self):
+        # b780-uxfix2: "★ Rosters has 1 edited player that are not saved yet"
+        from mod_editor.gui.studio_qt import roster_work_sentences
+        text, more, summary = roster_work_sentences(1, 0, "Closing Mod Studio")
+        self.assertEqual(text, "★ Rosters has 1 edited player that is not saved yet.")
+        self.assertTrue(more.startswith("Closing Mod Studio loses it. To keep it, choose Cancel"))
+        self.assertEqual(summary, "1 edited player")
+        self.assertEqual(roster_work_sentences(0, 1, "x")[0], "★ Rosters has 1 staff change that is not saved yet.")
+        text, more, _ = roster_work_sentences(3, 0, "Opening another disc")
+        self.assertEqual(text, "★ Rosters has 3 edited players that are not saved yet.")
+        self.assertTrue(more.startswith("Opening another disc loses them. To keep them,"))
+        self.assertEqual(roster_work_sentences(1, 1, "x")[0],
+                         "★ Rosters has 1 edited player and 1 staff change that are not saved yet.")
+        self.assertEqual(roster_work_sentences(0, 0, "x")[0], "★ Rosters has edits that are not saved yet.")
+
+
 class CueLabelCountTests(unittest.TestCase):
     def test_only_real_cue_labels_are_counted(self):
         from mod_editor.gui.studio_qt import StudioMainWindow
@@ -597,6 +614,36 @@ class StudioWindowTests(unittest.TestCase):
                 self.app.processEvents()
                 time.sleep(0.01)
         self.assertEqual(order, ["project", ("prefill", disc.resolve())])   # the disc reaches the pages after recovery
+
+    def test_8_no_getting_started_button_is_cut_off_at_1280x720_with_continue_showing(self):
+        # b780-uxfix2: Continue with <file> shared the row and every label clipped ("stall SOFTDRINK 2K28")
+        window = self.window
+        folder = Path(tempfile.mkdtemp(prefix="uxfix-wide-"))
+        last = folder / ("ESPN NFL 2K5 (USA) " + "very long dump name " * 6 + ".xiso.iso")
+        last.write_bytes(b"x")
+        state = SimpleNamespace(recent_sources=(str(last),), recent_projects=())
+        window.navigation.setCurrentRow(0)
+        for width in (1280, 1366, 1920):
+            self._size(width, 720 if width == 1280 else 900)
+            with mock.patch.object(window, "_workspace_state", return_value=state):
+                window._refresh_welcome_state()
+            _pump(self.app, 10)
+            continue_button = window.welcome_continue_button
+            self.assertFalse(continue_button.isHidden())
+            buttons = [window.welcome_install_button, window.welcome_open_button, *window.welcome_task_buttons,
+                       continue_button]
+            for button in buttons:
+                with self.subTest(width=width, button=button.text()):
+                    self.assertTrue(button.isVisible())
+                    self.assertGreaterEqual(button.width(), button.sizeHint().width())   # nothing elided or clipped
+                    right = button.mapTo(window, button.rect().topRight()).x()
+                    self.assertLessEqual(right, window.width())
+            self.assertIn("…", continue_button.text())              # the long name is shortened, not the page widened
+            self.assertGreater(continue_button.mapTo(window, continue_button.rect().topLeft()).y(),
+                               window.welcome_install_button.mapTo(window, window.welcome_install_button.rect().bottomLeft()).y())
+            if width == 1280:
+                _shot(window, "after_welcome_continue_row_1280x720")
+        self._size(1280, 720)
 
     def test_7_getting_started_offers_the_last_game_file(self):
         window = self.window

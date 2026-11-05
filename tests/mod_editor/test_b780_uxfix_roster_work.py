@@ -36,6 +36,7 @@ def _host(panel):
     """The Studio's own guard methods over a real ★ Rosters panel."""
     host = SimpleNamespace(_roster_editor_panel=panel, _prompt_roster_work_lost=mock.Mock(return_value=False))
     host._roster_work_unsaved = lambda: StudioMainWindow._roster_work_unsaved(host)
+    host._roster_work_counts = lambda: StudioMainWindow._roster_work_counts(host)
     host._roster_work_summary = lambda: StudioMainWindow._roster_work_summary(host)
     return host
 

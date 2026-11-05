@@ -328,11 +328,33 @@ def _build_blocker_message(*, ready: bool, edit_count: int, busy: bool) -> str:
 AUTOSAVE_QUIET_EDITS = 1000
 AUTOSAVE_QUIET_MS = 15000
 
+#: b780-uxfix2: the widest a file name may be on Getting Started's Continue with <file> button.
+CONTINUE_NAME_WIDTH = 420
+
 #: b780-uxfix: the Share tab installs SOFTDRINK 2K28 first; "Share" alone read as sending something to a friend.
 SHARE_TAB_TITLE = "Install & Share"
 
 #: b780-uxfix: the footer never grows past this (two message lines, the Build & Share caption, the buttons).
 FOOTER_MAX_HEIGHT = 132
+
+
+def roster_work_sentences(players: int, staff: int, context: str) -> tuple[str, str, str]:
+    """The unsaved ★ Rosters prompt: (text, informative text, summary), the verb and pronoun agreeing with the count.
+
+    b780-uxfix2: it read "★ Rosters has 1 edited player that are not saved yet".
+    """
+    parts = []
+    if players:
+        parts.append(f"{players} edited player{'s' if players != 1 else ''}")
+    if staff:
+        parts.append(f"{staff} staff change{'s' if staff != 1 else ''}")
+    summary = " and ".join(parts) or "edits"
+    one = players + staff == 1
+    verb, them = ("is", "it") if one else ("are", "them")
+    return (f"★ Rosters has {summary} that {verb} not saved yet.",
+            f"{context} loses {them}. To keep {them}, choose Cancel, then on ★ Rosters use "
+            "Export roster edits (.json)… or Save disc copy…. A project file does not hold roster edits.",
+            summary)
 
 
 def _getting_started_document() -> Path | None:
@@ -2601,19 +2623,15 @@ class StudioMainWindow(QMainWindow):
         except Exception:  # noqa: BLE001 - a guard question must never break closing
             return False
 
-    def _roster_work_summary(self) -> str:
+    def _roster_work_counts(self) -> tuple[int, int]:
         panel = self._roster_editor_panel
-        parts = []
         try:
-            players = len(panel._dirty)
-            staff = panel.coaches_panel.change_count() if hasattr(panel, "coaches_panel") else 0
+            return len(panel._dirty), (panel.coaches_panel.change_count() if hasattr(panel, "coaches_panel") else 0)
         except Exception:  # noqa: BLE001
-            players = staff = 0
-        if players:
-            parts.append(f"{players} edited player{'s' if players != 1 else ''}")
-        if staff:
-            parts.append(f"{staff} staff change{'s' if staff != 1 else ''}")
-        return " and ".join(parts) or "edits"
+            return 0, 0
+
+    def _roster_work_summary(self) -> str:
+        return roster_work_sentences(*self._roster_work_counts(), "")[2]
 
     def _confirm_roster_work_lost(self, context: str) -> bool:
         """Ask before an action that drops unsaved ★ Rosters work; True means go ahead."""
@@ -2628,11 +2646,9 @@ class StudioMainWindow(QMainWindow):
         box = QMessageBox(self)
         box.setIcon(QMessageBox.Warning)
         box.setWindowTitle("Roster edits are not saved")
-        box.setText(f"★ Rosters has {self._roster_work_summary()} that are not saved yet.")
-        box.setInformativeText(
-            f"{context} loses them. To keep them, choose Cancel, then on ★ Rosters use "
-            "Export roster edits (.json)… or Save disc copy…. A project file does not hold roster edits."
-        )
+        text, informative, _summary = roster_work_sentences(*self._roster_work_counts(), context)
+        box.setText(text)
+        box.setInformativeText(informative)
         lose = box.addButton("Lose roster edits", QMessageBox.DestructiveRole)
         cancel = box.addButton(QMessageBox.Cancel)
         box.setDefaultButton(cancel)
@@ -3581,12 +3597,17 @@ class StudioMainWindow(QMainWindow):
         self.welcome_open_button = open_button
         self.welcome_task_buttons = (softdrink_button, rosters_button)
         start_buttons.addWidget(install_button)
-        start_buttons.addWidget(continue_button)
         start_buttons.addWidget(open_button)
         start_buttons.addWidget(softdrink_button)
         start_buttons.addWidget(rosters_button)
         start_buttons.addStretch(1)
         start_layout.addLayout(start_buttons)
+        # b780-uxfix2: Continue gets its own row; beside the four it clipped every label at 1280x720
+        continue_row = QHBoxLayout()
+        continue_row.setSpacing(10)
+        continue_row.addWidget(continue_button)
+        continue_row.addStretch(1)
+        start_layout.addLayout(continue_row)
         outer.addWidget(start)
         discord = QLabel(
             "Stuck? The FAQ (Help ▸ Questions and answers) covers the common first-run questions: .iso or .xiso, no disc "
@@ -8720,7 +8741,9 @@ class StudioMainWindow(QMainWindow):
             recent = None if bool(getattr(self.facade, "source_ready", False)) else self._recent_source()
             continue_button.setVisible(recent is not None)
             if recent is not None:
-                continue_button.setText(f"Continue with {recent.name}")
+                # b780-uxfix2: a long file name is shortened in the middle (the whole path is in the tooltip)
+                name = continue_button.fontMetrics().elidedText(recent.name, Qt.ElideMiddle, CONTINUE_NAME_WIDTH)
+                continue_button.setText(f"Continue with {name}")
                 continue_button.setToolTip(f"Open the game file you used last time: {recent}")
                 continue_button.setProperty("recent_source", str(recent))
 
