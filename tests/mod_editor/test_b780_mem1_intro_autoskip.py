@@ -31,7 +31,7 @@ UPDATE, SKIP = 0x125BC0, 0xA2120
 CONTROLLERS, STRIDE = 0xB37A70, 0x244          # +0 active (0x709B0), +8 buttons (0x70A10)
 
 
-@unittest.skipUnless(hb.RETAIL_XBE.is_file(), 'the owner shape checks need the pinned retail XBE')
+@unittest.skipUnless(hb.RETAIL_XBE is not None and hb.RETAIL_XBE.is_file(), 'the owner shape checks need the pinned retail XBE')
 class ShapeTests(unittest.TestCase):
     def test_the_helper_and_the_site(self):
         code = autoskip.code_for(0x14D9FC0)
