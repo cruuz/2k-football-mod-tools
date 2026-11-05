@@ -23,7 +23,12 @@ The patch rewrites those 352 bytes in place (same frame, same registers, same he
 * eligibility by position mask (tunable bytes at the end of the patched region): KR = WR, CB, FS,
   SS, RB, FB; PR = WR, CB, FS, SS, RB; K/P/QB/OL/DL/LB never;
 * best and second-best kick returner **and** the best punt returner are tracked by index; the
-  whole roster is scanned; the game's own category-10 score is the ranking key.
+  whole roster is scanned; the game's own category-10 score is the ranking key;
+* b780 st1 (MC1 U9b): an injured player (+0x20 bit 31, the flag the weekly injury tick 0x133BD0 counts
+  down) is skipped in both passes, so the next healthy eligible player returns; only when no healthy
+  player can return kicks at all, passes 2 and 3 repeat passes 0 and 1 with the injured allowed, so such
+  a club keeps the pick it had before (no slot is ever left empty).  The beta-79 .. beta-80 loop is
+  recognised as ``previous`` and upgrades in place.
 
 Pattern-checked against the retail bytes, ``.text`` digest recomputed.  Unverified at runtime.
 
@@ -143,7 +148,7 @@ def mask_bytes() -> bytes:
     return kr + pr
 
 
-def _code(masks_va: int) -> bytes:
+def _code(masks_va: int, v2: bool = False) -> bytes:
     """The replacement loop.  edi = team; [esp+0x10..0x28] are the routine's own scratch dwords:
     0x10 best KR score, 0x14 its index, 0x18 second KR score, 0x1c its index, 0x20 best PR score,
     0x24 its index, 0x28 pass number.  [esp+0x2c] (the team counter) is left alone.  A score of
@@ -154,7 +159,7 @@ def _code(masks_va: int) -> bytes:
     kr_mask = masks_va
     pr_mask = masks_va + len(POSITIONS)
     a.b("31c0")                                # xor eax,eax
-    a.b("b907000000")                          # mov ecx,7
+    a.b("b907000000" if v2 else "6a0759")     # mov ecx,7 (push 7 ; pop ecx)
     a.label("init")
     a.b("89448c0c")                            # mov [esp+ecx*4+0x0c],eax   ; 0x10..0x28 := 0
     a.b("49")                                  # dec ecx
@@ -177,8 +182,20 @@ def _code(masks_va: int) -> bytes:
     a.b("8d2c69")                              # lea ebp,[ecx+ebp*2]  ; bit0 = KR eligible, bit1 = PR eligible
     a.b("85ed")                                # test ebp,ebp
     a.j8("74", "next")                         # jz next
-    a.b("837c242800")                          # cmp dword [esp+0x28],0
-    a.j8("75", "scored")                       # jne scored          ; pass 1: starters allowed
+    if v2:
+        a.b("837c242800")                      # cmp dword [esp+0x28],0
+        a.j8("75", "scored")                   # jne scored          ; pass 1: starters allowed
+    else:
+        # b780 st1 (MC1 U9b): an injured player (+0x20 bit 31, the weekly injury tick's flag) is not a returner in
+        # passes 0 and 1; passes 2 and 3 repeat today's passes 0 and 1 with him allowed, and run only when no
+        # healthy player can return kicks at all, so such a club keeps today's pick
+        a.b("f6462380")                        # test byte [esi+0x23],0x80
+        a.j8("74", "healthy")
+        a.b("f644242802")                      # test byte [esp+0x28],2
+        a.j8("74", "next")
+        a.label("healthy")
+        a.b("f644242801")                      # test byte [esp+0x28],1   ; passes 1 and 3: starters allowed
+        a.j8("75", "scored")
     a.b("f646291c")                            # test byte [esi+0x29],0x1c     ; depth rank 0 = starter
     a.j8("74", "next")                         # jz next
     a.b("83fa03")                              # cmp edx,3           ; WR
@@ -190,11 +207,15 @@ def _code(masks_va: int) -> bytes:
     a.j8("74", "next")                         # jz next
     a.label("scored")
     a.b("6a0a")                                # push 10             ; returner category
-    a.b("ba01000000")                          # mov edx,1
+    a.b("ba01000000" if v2 else "33d242")     # mov edx,1 (xor edx,edx ; inc edx)
     a.b("8bce")                                # mov ecx,esi
     a.call(FN_CATEGORY)                        # st0 = score (ebx/esi/edi/ebp preserved)
-    a.b("f7c501000000")                        # test ebp,1
-    a.j8("74", "pr_part")                      # jz pr_part
+    if v2:
+        a.b("f7c501000000")                    # test ebp,1
+        a.j8("74", "pr_part")                  # jz pr_part
+    else:
+        a.b("0fbae500")                        # bt ebp,0
+        a.j8("73", "pr_part")                  # jnc pr_part
     a.b("d8542410")                            # fcom dword [esp+0x10]
     a.b("dfe0")                                # fnstsw ax
     a.b("f6c441")                              # test ah,0x41        ; score <= best
@@ -214,8 +235,12 @@ def _code(masks_va: int) -> bytes:
     a.b("d9542418")                            # fst dword [esp+0x18]
     a.b("895c241c")                            # mov [esp+0x1c],ebx
     a.label("pr_part")
-    a.b("f7c502000000")                        # test ebp,2
-    a.j8("74", "drop")                         # jz drop
+    if v2:
+        a.b("f7c502000000")                    # test ebp,2
+        a.j8("74", "drop")                     # jz drop
+    else:
+        a.b("0fbae501")                        # bt ebp,1
+        a.j8("73", "drop")                     # jnc drop
     a.b("d8542420")                            # fcom dword [esp+0x20]
     a.b("dfe0")                                # fnstsw ax
     a.b("f6c441")                              # test ah,0x41
@@ -226,13 +251,31 @@ def _code(masks_va: int) -> bytes:
     a.b("ddd8")                                # fstp st0
     a.j32("e9", "next")                        # jmp next
     a.label("cand_done")
-    a.b("837c242800")                          # cmp dword [esp+0x28],0
-    a.j8("75", "finalize")                     # jne finalize
-    a.b("ff442428")                            # inc dword [esp+0x28]
-    a.b("837c241000")                          # cmp dword [esp+0x10],0
-    a.j32("0f84", "pass_loop")                 # je pass_loop        ; no kick returner: allow starters
-    a.b("837c242000")                          # cmp dword [esp+0x20],0
-    a.j32("0f84", "pass_loop")                 # je pass_loop        ; no punt returner
+    if v2:
+        a.b("837c242800")                      # cmp dword [esp+0x28],0
+        a.j8("75", "finalize")                 # jne finalize
+        a.b("ff442428")                        # inc dword [esp+0x28]
+        a.b("837c241000")                      # cmp dword [esp+0x10],0
+        a.j32("0f84", "pass_loop")             # je pass_loop        ; no kick returner: allow starters
+        a.b("837c242000")                      # cmp dword [esp+0x20],0
+        a.j32("0f84", "pass_loop")             # je pass_loop        ; no punt returner
+    else:
+        a.b("8a442428")                        # mov al,[esp+0x28]   ; the pass just done
+        a.b("ff442428")                        # inc dword [esp+0x28]
+        a.b("a801")                            # test al,1
+        a.j8("75", "odd_done")
+        a.b("837c241000")                      # cmp dword [esp+0x10],0   ; pass 0 or 2 left a slot empty:
+        a.j8("74", "again")                    # je again                 ; the same players with starters
+        a.b("837c242000")                      # cmp dword [esp+0x20],0
+        a.j8("75", "finalize")
+        a.label("again")
+        a.j32("e9", "pass_loop")               # jmp pass_loop
+        a.label("odd_done")
+        a.b("3c01")                            # cmp al,1            ; after pass 3: done
+        a.j8("75", "finalize")
+        a.b("837c241000")                      # cmp dword [esp+0x10],0   ; no healthy kick returner at all (the
+        a.j8("74", "again")                    # je again                 ; punt returners are a subset): today's
+                                               #                          ; passes with the injured allowed
     a.label("finalize")
     a.b("8b442414")                            # mov eax,[esp+0x14]  ; KR1 (0 = retail default when nobody)
     a.b("8b4c241c")                            # mov ecx,[esp+0x1c]  ; KR2
@@ -254,12 +297,13 @@ def _code(masks_va: int) -> bytes:
     return a.assemble()
 
 
-def site_bytes() -> bytes:
-    """Code, then the two 17-byte eligibility masks, int3-padded to the retail loop's size."""
+def site_bytes(v2: bool = False) -> bytes:
+    """Code, then the two 17-byte eligibility masks, int3-padded to the retail loop's size.  ``v2`` is the loop of
+    beta-79 .. beta-80 before the injury test (recognised so those images upgrade in place)."""
 
-    probe = _code(SITE_VA)                     # size pass: the mask address depends on the code size
+    probe = _code(SITE_VA, v2)                 # size pass: the mask address depends on the code size
     masks_va = SITE_VA + len(probe)
-    code = _code(masks_va)
+    code = _code(masks_va, v2)
     _require(len(code) == len(probe), "assembler size drift")
     body = code + mask_bytes()
     _require(len(body) <= SITE_SIZE, f"returner patch is {len(body)} bytes, over {SITE_SIZE}")
@@ -513,7 +557,8 @@ def _sites(payload: bytes) -> list[tuple[str, int, bytes, bytes]]:
 # Earlier installs that upgrade in place: the first b780 st1 getter; depth locks revision 5's own all-star call
 # (an image where depth locks came first): the returner fix owns the loop head's call and points it at its own
 # skip, so either order of the two owners ends in the same bytes.
-PREVIOUS = {"returner_getter": (getter_bytes_v1(),), "all_star_skip": (DEPTH_LOCKS_ALL_STAR_CALL,)}
+PREVIOUS = {"returner_getter": (getter_bytes_v1(),), "all_star_skip": (DEPTH_LOCKS_ALL_STAR_CALL,),
+            "returner_loop": (site_bytes(v2=True),)}
 
 
 def _site_states(payload: bytes) -> dict[str, str]:
@@ -539,7 +584,7 @@ def status(payload: bytes) -> str:
         return "retail"
     if set(others.values()) == {"applied"} and call == "applied":
         return "applied"
-    if others["returner_loop"] == "applied" and "foreign" not in others.values() and call != "foreign":
+    if others["returner_loop"] in ("applied", "previous") and "foreign" not in others.values() and call != "foreign":
         return "legacy"                      # beta-79 and older (loop only), the first st1 getter, depth locks' call
     return "foreign"
 

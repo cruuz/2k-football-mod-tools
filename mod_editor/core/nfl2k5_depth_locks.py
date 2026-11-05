@@ -505,7 +505,7 @@ def _context(payload: bytes) -> tuple[XbeImage, str]:
     if hashlib.sha256(image.read(0x242BB0, 0x4A)).hexdigest() != FALLBACK_SHA256:
         raise DepthLockError("unknown returner fallback ABI")
     if image.read(returners.SITE_VA, returners.SITE_SIZE) not in (
-            returners.RETAIL_SITE, returners.site_bytes()):
+            returners.RETAIL_SITE, returners.site_bytes(), returners.site_bytes(v2=True)):  # b780 st1: v2 = no injury test
         raise DepthLockError("unknown returner selection loop")
     for site in sites(layout):
         section = image.section(site.va, len(site.before))

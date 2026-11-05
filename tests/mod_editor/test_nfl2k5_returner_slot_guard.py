@@ -270,7 +270,8 @@ class ReturnerGetterStatusTests(unittest.TestCase):
                 text = next(s for s in _sections(data) if s.virtual_address <= returner.GETTER_VA < s.virtual_address + s.raw_size)
                 allowed = [(text.header_offset + 36, text.header_offset + 56)]
                 for va, size in ((returner.GETTER_VA, returner.GETTER_SIZE), (returner.LINEUP_HOOK_VA, 7),
-                                 (returner.EXCHANGE_VA, returner.EXCHANGE_SIZE), (returner.ALL_STAR_CALL_VA, 5)):
+                                 (returner.EXCHANGE_VA, returner.EXCHANGE_SIZE), (returner.ALL_STAR_CALL_VA, 5),
+                                 (returner.SITE_VA, returner.SITE_SIZE)):    # the loop gains the injury test
                     off = returner._offset(data, va)
                     allowed.append((off, off + size))
                 for start, end in _diff_runs(data, upgraded):

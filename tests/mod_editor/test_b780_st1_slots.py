@@ -269,3 +269,89 @@ class UpgradeTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def _with_v2_loop(image):
+    """The same executable with the returner loop of beta-79 .. beta-80 (no injury test)."""
+    from mod_editor.core.nfl2k5_cave_oracle import XbeImage
+    data = bytearray(image)
+    off = XbeImage(image).offset(returner.SITE_VA, returner.SITE_SIZE)
+    data[off:off + returner.SITE_SIZE] = returner.site_bytes(v2=True)
+    return bytes(data)
+
+
+@unittest.skipUnless(guard.HAVE_UC, "Unicorn is absent; native x86 proofs require it")
+@unittest.skipUnless(RETAIL.is_file(), "the retail default.xbe is not configured (NFL2K5_RETAIL_XBE)")
+class InjuredReturnerTests(unittest.TestCase):
+    """MC1's U9b seasons: CPU clubs kept an injured halfback at KR1/KR2/PR for weeks. The weekly auto-depth (0x2BDCF0
+    with the returner loop) now skips a player with the injury flag (+0x20 bit 31) and falls back to the next healthy
+    eligible player; with no healthy eligible player at all it repeats today's passes, so the club keeps today's pick."""
+
+    WR, CB, RB, QB = 3, 4, 7, 0
+
+    @classmethod
+    def setUpClass(cls):
+        CPU, record, fields, cls.TEAM, cls.PLAYERS = _cpu_harness()
+        cls.CPU, cls.record = CPU, staticmethod(record)
+        retail = RETAIL.read_bytes()
+        basic = returner.apply(retail)[0]
+        cls.images = {"returner fix": basic, "returner fix + depth locks": locks.apply(basic)[0]}
+
+    def roster(self, rows):
+        """rows: (position, rank, score, injured)."""
+        out = []
+        for position, rank, score, injured in rows:
+            raw = bytearray(self.record(position=position, rank=rank, side=rank, score=score))
+            if injured:
+                raw[0x23] |= 0x80
+            out.append(bytes(raw))
+        return out
+
+    def weekly(self, image, rows):
+        cpu = self.CPU(image)
+        cpu.seed(self.roster(rows))
+        cpu.run(0x2BDCF0, budget=3000000)
+        team = bytes(cpu.uc.mem_read(self.TEAM, 500))
+        slots = [struct.unpack_from("<I", team, 4 * s)[0] for s in range(team[0x11C])]
+        who = {b: (slots[team[b]] - self.PLAYERS) // 84 if team[b] < len(slots) else None for b in (0x195, 0x196, 0x199)}
+        players = bytes(cpu.uc.mem_read(self.PLAYERS, 84 * len(rows)))
+        return team, players, who
+
+    def test_healthy_picks_are_byte_identical(self):
+        import random
+        rng = random.Random(780)
+        for case in range(24):
+            rows = [(self.QB, 0, .5, False), (self.QB, 1, .4, False)]
+            for i in range(rng.randint(4, 14)):
+                rows.append((rng.choice((self.WR, self.CB, self.RB, 5, 6, 8, 9, 13)), rng.randrange(4), rng.uniform(.3, .95), False))
+            for name, image in self.images.items():
+                with self.subTest(case=case, image=name):
+                    self.assertEqual(self.weekly(image, rows)[:2], self.weekly(_with_v2_loop(image), rows)[:2])
+
+    def test_an_injured_kick_or_punt_returner_is_replaced_by_a_healthy_one(self):
+        # starters RB .98, WR .99/.97, CB .99/.97; backups: an injured RB (.95, the best returner, row 3), a healthy
+        # WR3 (.80, row 6) and a healthy CB3 (.70, row 9)
+        rows = [(self.QB, 0, .5, False), (self.QB, 1, .4, False), (self.RB, 0, .98, False), (self.RB, 1, .95, True),
+                (self.WR, 0, .99, False), (self.WR, 0, .97, False), (self.WR, 1, .80, False),
+                (self.CB, 0, .99, False), (self.CB, 0, .97, False), (self.CB, 1, .70, False)]
+        for name, image in self.images.items():
+            with self.subTest(image=name):
+                _, _, before = self.weekly(_with_v2_loop(image), rows)
+                self.assertEqual((before[0x195], before[0x199]), (3, 3))       # today: the injured back returns both
+                _, _, after = self.weekly(image, rows)
+                self.assertEqual((after[0x195], after[0x196], after[0x199]), (6, 9, 6))
+
+    def test_a_club_with_no_healthy_returner_keeps_todays_pick(self):
+        cases = {
+            "every eligible player injured": [(self.QB, 0, .5, False), (self.RB, 1, .9, True), (self.WR, 2, .8, True),
+                                              (self.CB, 0, .7, True), (self.QB, 1, .4, False)],
+            "one injured eligible player": [(self.QB, 0, .5, False), (self.WR, 1, .8, True), (self.QB, 1, .4, False)],
+            "no eligible player": [(self.QB, 0, .5, False), (self.QB, 1, .4, False), (13, 0, .6, False)],
+        }
+        for label, rows in cases.items():
+            for name, image in self.images.items():
+                with self.subTest(case=label, image=name):
+                    new, players, who = self.weekly(image, rows)
+                    old, old_players, _ = self.weekly(_with_v2_loop(image), rows)
+                    self.assertEqual((new, players), (old, old_players))          # today's bytes, all of them
+                    self.assertTrue(all(new[b] < new[0x11C] for b in (0x195, 0x196, 0x199)))   # no empty slot
