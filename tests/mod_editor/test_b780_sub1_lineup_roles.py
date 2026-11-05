@@ -278,8 +278,6 @@ class LineupRolesTests(unittest.TestCase):
         self.assertEqual(self.lineup(self.owner, I_FORM)[8], self.Z)  # no play
 
 
-if __name__ == "__main__":
-    unittest.main()
 
 
 # ------------------------------------------------------------------------------------------------ rule 4
@@ -384,3 +382,7 @@ class InjuredDepthTests(unittest.TestCase):
                 self.assertNotIn("R_386", relocs)
                 symbols = subprocess.run(["nm", f"{tmp}/x.o"], capture_output=True, text=True).stdout.split()
                 self.assertEqual(int(symbols[symbols.index("season_tail") - 2], 16), lr.SEASON_ENTRY)
+
+
+if __name__ == "__main__":
+    unittest.main()
