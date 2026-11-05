@@ -32,7 +32,10 @@ from mod_editor.core import nfl2k5_preseason as pre  # noqa: E402
 from mod_editor.core import nfl2k5_season_length as season  # noqa: E402
 from mod_editor.core.nfl2k5_cave_oracle import RETAIL_SHA256, XbeImage  # noqa: E402
 
-XBE = Path(os.environ.get("NFL2K5_RETAIL_EXTRACTION", "/media/noah/Storage/for codex 1.0/extracted")) / "ESPN NFL 2K5 (USA)/default.xbe"
+# the private retail default.xbe: NFL2K5_RETAIL_XBE, else NFL2K5_RETAIL_EXTRACTION/ESPN NFL 2K5 (USA); skipped without either
+XBE = (Path(os.environ["NFL2K5_RETAIL_XBE"]) if os.environ.get("NFL2K5_RETAIL_XBE") else
+       Path(os.environ["NFL2K5_RETAIL_EXTRACTION"]) / "ESPN NFL 2K5 (USA)/default.xbe"
+       if os.environ.get("NFL2K5_RETAIL_EXTRACTION") else None)
 HAVE_UC = importlib.util.find_spec("unicorn") is not None
 NICKNAMES = ("49ers", "Bears", "Bengals", "Bills", "Broncos", "Browns", "Buccaneers", "Cardinals", "Chargers", "Chiefs",
              "Colts", "Cowboys", "Dolphins", "Eagles", "Falcons", "Giants", "Jaguars", "Jets", "Lions", "Packers",
@@ -95,7 +98,7 @@ class StaticTests(unittest.TestCase):
         self.assertIn("tests/mod_editor/test_b780_season1_later_schedule.py", allow)
 
 
-@unittest.skipUnless(HAVE_UC and XBE.is_file(), "Unicorn and the private retail executable are needed")
+@unittest.skipUnless(HAVE_UC and XBE is not None and XBE.is_file(), "Unicorn and the private retail executable are needed")
 class NativeTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:

@@ -212,11 +212,13 @@ def _fixtures_ready():
                 and importlib.util.find_spec('unicorn'))
 
 
-RETAIL_XBE = Path(os.environ.get('NFL2K5_RETAIL_EXTRACTION', '/media/noah/Storage/for codex 1.0/extracted')) \
-    / 'ESPN NFL 2K5 (USA)/default.xbe'
+# the private retail default.xbe: NFL2K5_RETAIL_XBE, else NFL2K5_RETAIL_EXTRACTION/ESPN NFL 2K5 (USA); skipped without either
+RETAIL_XBE = (Path(os.environ['NFL2K5_RETAIL_XBE']) if os.environ.get('NFL2K5_RETAIL_XBE') else
+              Path(os.environ['NFL2K5_RETAIL_EXTRACTION']) / 'ESPN NFL 2K5 (USA)/default.xbe'
+              if os.environ.get('NFL2K5_RETAIL_EXTRACTION') else None)
 
 
-@unittest.skipUnless(RETAIL_XBE.is_file(), 'the conversion check needs the pinned retail XBE')
+@unittest.skipUnless(RETAIL_XBE is not None and RETAIL_XBE.is_file(), 'the conversion check needs the pinned retail XBE')
 class EarlyConversionTests(unittest.TestCase):
     def test_turning_a_late_install_into_the_early_form_gives_the_fresh_early_install_byte_for_byte(self):
         """The witness disc's executable was made from the RC by early_from_late; on the K128 owner alone (retail

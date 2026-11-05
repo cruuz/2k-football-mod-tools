@@ -21,7 +21,8 @@ from mod_editor.core import nfl2k5_cave_manifest as cm  # noqa: E402
 from mod_editor.core.nfl2k5_cave_oracle import OracleError, ReservationManifest, XbeImage  # noqa: E402
 
 MANIFEST = ROOT / "data" / "nfl2k5_cave_reservations.json"
-RETAIL_XBE = Path(os.environ.get("NFL2K5_RETAIL_XBE", "/media/noah/Storage/for codex 1.0/extracted/ESPN NFL 2K5 (USA)/default.xbe"))
+_RETAIL_ENV = os.environ.get("NFL2K5_RETAIL_XBE")  # private retail default.xbe; the loader test skips without it
+RETAIL_XBE = Path(_RETAIL_ENV) if _RETAIL_ENV else None
 
 
 def _span(start: int, end: int) -> dict:
@@ -42,7 +43,7 @@ class StackExtentTests(unittest.TestCase):
         self.assertEqual(cm.stack_extent(self.final, []), 0x1500000)
 
 
-@unittest.skipUnless(RETAIL_XBE.is_file(), "the private retail default.xbe is needed (NFL2K5_RETAIL_XBE)")
+@unittest.skipUnless(RETAIL_XBE is not None and RETAIL_XBE.is_file(), "the private retail default.xbe is needed (NFL2K5_RETAIL_XBE)")
 class CommittedManifestTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
