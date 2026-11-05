@@ -302,7 +302,7 @@ def place(save, team: int, player_index: int) -> bytes:
     clubs[team].append((player_index, 0, False))
     candidate = _remove_from_team(save, team, player_index)
     write_block(candidate, save.front_office_block, clubs, list(state.returns_used), extension=state.extension)
-    return bytes(candidate)
+    return _recount(candidate, team)
 
 
 def can_activate(save, team: int, player_index: int) -> str | None:
@@ -334,12 +334,11 @@ def activate(save, team: int, player_index: int) -> bytes:
     returns[team] += 1
     candidate = _add_to_team(save, team, player_index)
     write_block(candidate, save.front_office_block, clubs, returns, extension=True)
-    return bytes(candidate)
+    return _recount(candidate, team)
 
 
 def _remove_from_team(save: fs.FranchiseSave, team: int, player_index: int) -> bytearray:
     """The game's own removal (0x2BD900 with 0, 0): off the list, specialist roles follow (0xC3A90), salary kept."""
-    from . import nfl2k5_practice_squad as ps
     count, slots = save._team_slots(team)
     target = save.player_offset(player_index)
     squads = save._validate_ownership()
@@ -350,21 +349,25 @@ def _remove_from_team(save: fs.FranchiseSave, team: int, player_index: int) -> b
     candidate[target + 0x52] &= ~0x1F
     roles = slice(save.team_offset(team) + 0x194, save.team_offset(team) + 0x19A)
     candidate[roles] = bytes(rr.specialists_after_removal(candidate[roles], removed))
-    try:
-        return bytearray(ps.recompute_salary(bytes(candidate), team))
-    except ValueError as exc:
-        raise InjuredReserveError(str(exc)) from exc
+    return candidate
 
 
 def _add_to_team(save: fs.FranchiseSave, team: int, player_index: int) -> bytearray:
-    from . import nfl2k5_practice_squad as ps
     count, slots = save._team_slots(team)
     squads = save._validate_ownership()
     candidate = bytearray(save.buffer)
     active = [save.player_index(o) for o in slots[:count]] + [player_index]
     save._repack_candidate(candidate, team, active, squads[team])
+    return candidate
+
+
+def _recount(candidate: bytearray, team: int) -> bytes:
+    """The club's payroll (+0x124) as the game's 0xC3F00 sums it: the 53 plus 0x246F20, the club's IR players. Run
+    after the IR block is written, so the player just placed still counts and the one just activated counts once
+    (FC3: the recount ran first, so a Studio placement saved the payroll without him until the game's next recount)."""
+    from . import nfl2k5_practice_squad as ps
     try:
-        return bytearray(ps.recompute_salary(bytes(candidate), team))
+        return ps.recompute_salary(bytes(candidate), team)
     except ValueError as exc:
         raise InjuredReserveError(str(exc)) from exc
 

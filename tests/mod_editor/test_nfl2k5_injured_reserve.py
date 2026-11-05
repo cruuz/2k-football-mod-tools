@@ -590,3 +590,53 @@ class MyCareerTests(GameTests):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+@unittest.skipUnless(HAVE_UC, "unicorn is needed")
+class StudioPayrollTests(unittest.TestCase):
+    """FC3 (EMU1): a Studio placement saved the club payroll (+0x124) without the player it placed, because the API
+    recounted before it wrote the IR block; the game fixed it only at its next roster move. Now a Studio place and then
+    an activate each leave +0x124 equal to what the game's own 0xC3F00 sums (the 53 plus 0x246F20, the IR store) on the
+    loaded save: the real signed franchise, retail + modern IR, the native season and front office loaders."""
+
+    @classmethod
+    def setUpClass(cls):
+        from tests.nfl2k5_supersim_draft_fixture import signed_save
+        data = retail_bytes()
+        if data is None:
+            raise unittest.SkipTest("private USA retail XBE is absent")
+        cls.payload, _ = ir.apply(data, "modern")
+        cls.save = signed_save()
+
+    def native(self, save_bytes, team):
+        m = Machine(self.payload, trace_writes=False)
+        m.load_franchise(save_bytes)
+        club = m.call(0xC4C50, ecx=team)
+        stored = m.get(club + 0x124)
+        m.call(0xC3F00, ecx=club, budget=50_000_000)
+        return stored, m.get(club + 0x124)
+
+    def test_a_studio_place_and_activate_leave_the_games_own_payroll(self):
+        from mod_editor.core import nfl2k5_franchise_save as fs
+        team = 6
+        state = irsave.read_state(self.save)
+        clubs = [[(e.player_index, e.games_missed, e.season_ending) for e in state.club(c)] for c in range(32)]
+        modern = irsave.write_state(self.save, clubs, list(state.returns_used), extension=True)
+        save = fs.FranchiseSave(modern)
+        p = save.team_player_indices(team)[3]
+        irsave.mark_long_injury(save.buffer, save.player_offset(p), 6)
+        placed = irsave.place(save, team, p)
+        stored, game = self.native(placed, team)
+        self.assertEqual((fs.FranchiseSave(placed).team_salary(team), stored), (game, game))
+        # 4 games missed and healthy: activate
+        after = irsave.read_state(placed)
+        clubs = [[(e.player_index, 4 if e.player_index == p else e.games_missed, e.season_ending) for e in after.club(c)]
+                 for c in range(32)]
+        ready = fs.FranchiseSave(irsave.write_state(placed, clubs, list(after.returns_used), extension=True))
+        w20, w24 = struct.unpack_from("<II", ready.buffer, ready.player_offset(p) + 0x20)
+        struct.pack_into("<II", ready.buffer, ready.player_offset(p) + 0x20, w20 & ~(0xFF << 22) & 0x7FFFFFFF,
+                         w24 & 0x8FFFFFFF)
+        back = irsave.activate(ready, team, p)
+        stored, game = self.native(back, team)
+        self.assertEqual((fs.FranchiseSave(back).team_salary(team), stored), (game, game))
+        self.assertEqual(irsave.read_state(back).returns_used[team], 1)
