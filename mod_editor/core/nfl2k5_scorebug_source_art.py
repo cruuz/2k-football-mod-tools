@@ -41,10 +41,12 @@ same place the model index lives, so a second build does no work.  When the deve
 folder is present it still wins, unchanged, so this workstation's builds are bit-for-bit
 what they were.
 
-The ``digital_font`` repaint is the one piece that needs a system font (DejaVu Sans Bold) to
-draw its digits.  Where that font is missing the atlas is simply not produced and the step
-skips it, exactly as it already did when the PNG was absent; the bar itself never depends on
-it.  ``NAVTEXTURE`` (the ticker-band atlas) has no generator -- it was hand-painted -- so it
+The ``digital_font`` repaint takes its glyphs from the shipped layer
+``data/nfl2k5_scorebug_digit_glyphs.png`` (DejaVu Sans Bold, drawn once with the renderer of the
+published patch; b780) plus the retail bolt cell, so it is the same on every machine: drawing the
+digits at build time made Pillow 11 and machines without DejaVu differ.  Without that layer the
+generator falls back to an installed DejaVu face, and where neither exists the atlas is not
+produced and the step skips it; the bar itself never depends on it.  ``NAVTEXTURE`` (the ticker-band atlas) has no generator -- it was hand-painted -- so it
 stays a developer-only extra and the receipt says so rather than pretending otherwise.
 """
 
