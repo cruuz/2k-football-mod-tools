@@ -18,6 +18,7 @@ import time
 import threading
 
 from PyQt5.QtCore import QObject, QRunnable, Qt, QThreadPool, pyqtSignal
+from mod_editor.gui.task_delivery import roomy_pool  # b780 CI: 8 MiB worker stacks (macOS)
 from PyQt5.QtWidgets import (
     QComboBox,
     QFileDialog,
@@ -93,7 +94,7 @@ class SharePanel(QWidget):
     def __init__(self, facade: object | None = None, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self._facade = facade
-        self._pool = QThreadPool(self)
+        self._pool = roomy_pool(QThreadPool(self))
         self._task: _Task | None = None
         self.busy = False
         self._pack: modpack.Pack | None = None

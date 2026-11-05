@@ -60,9 +60,10 @@ class SourceTests(unittest.TestCase):
         self.assertIn('_Static_assert(sizeof(struct State)==124', source)
 
     def test_generated_engine_matches_its_source(self):
-        import shutil
-        if not shutil.which('gcc'):
-            self.skipTest('gcc absent')
+        from tests.i386_toolchain import gnu_ld_elf_i386
+        reason = gnu_ld_elf_i386('-Oz')   # needs gcc -m32 freestanding + ld elf_i386 (absent on macOS clang, Windows MinGW)
+        if reason:
+            self.skipTest(reason)
         spec = importlib.util.spec_from_file_location('b780_pres2_build_runtime', ROOT / 'tools/scorebug_sprite/build_runtime.py')
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)

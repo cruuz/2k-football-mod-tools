@@ -464,7 +464,14 @@ class LongOutputNameTests(_PanelCase):
     def test_a_name_the_drive_cannot_hold_is_a_sentence_not_an_exception(self) -> None:
         panel = self.panel()
         panel.catch_check.setChecked(True)
-        for name in ("a" * 260 + ".xiso.iso", "\u65e5" * 100 + ".xiso.iso"):                 # 260 bytes, and 300 bytes of kanji
+        from mod_editor.core import platform_compat
+        # The limit is the drive's: 255 bytes on Linux and macOS, 255 UTF-16 units on Windows (b780 CI: 100 kanji are
+        # 300 bytes but only 109 characters, a valid Windows name). Each name is over the limit of the OS running.
+        if platform_compat.IS_WINDOWS:
+            names = ("a" * 260 + ".xiso.iso", "\u65e5" * 250 + ".xiso.iso", "\U0001F3C8" * 125 + ".xiso.iso")  # 259, 259 units
+        else:
+            names = ("a" * 260 + ".xiso.iso", "\u65e5" * 100 + ".xiso.iso")                   # 260 bytes, 300 bytes of kanji
+        for name in names:
             panel.target_field.setText(str(Path(self.tmp.name) / name))
             self.app.processEvents()
             self.assertFalse(panel.plan().overwrite, name[:4])
@@ -473,6 +480,19 @@ class LongOutputNameTests(_PanelCase):
             self.assertTrue(panel.project_build_settings()["catch_slider"])                 # Save Project still works
         panel.target_field.setText(str(Path(self.tmp.name) / ("a" * 200 + ".xiso.iso")))     # 209 bytes: fine
         self.assertEqual(panel.blocker(), "")
+
+    def test_the_name_limit_follows_the_drive_of_each_os(self) -> None:
+        from unittest import mock
+        from mod_editor.core import platform_compat
+        from mod_editor.gui import build_panel_qt
+        too_long = build_panel_qt.BuildPanel._name_too_long if hasattr(build_panel_qt, "BuildPanel") else None
+        too_long = too_long or next(getattr(c, "_name_too_long") for c in vars(build_panel_qt).values()
+                                    if isinstance(c, type) and hasattr(c, "_name_too_long"))
+        kanji, emoji, plain = "\u65e5" * 100 + ".xiso.iso", "\U0001F3C8" * 125 + ".xiso.iso", "a" * 250 + ".iso"
+        with mock.patch.object(platform_compat, "IS_WINDOWS", False):                        # bytes
+            self.assertEqual([too_long(n) for n in (kanji, emoji, plain)], [True, True, False])
+        with mock.patch.object(platform_compat, "IS_WINDOWS", True):                         # UTF-16 units (NTFS)
+            self.assertEqual([too_long(n) for n in (kanji, emoji, plain)], [False, True, False])
 
     def test_a_venue_art_folder_name_the_drive_cannot_hold_is_not_found_not_an_exception(self) -> None:
         panel = self.panel()

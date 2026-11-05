@@ -391,7 +391,11 @@ class TeamKitOffscreenGuiTests(unittest.TestCase):
             mock.patch.object(self.window, "_review_digit_sheet_preview", return_value=True, create=True),
             mock.patch(
                 "mod_editor.gui.studio_qt.QInputDialog.getItem",
-                side_effect=[("Arm / shoulder numbers", True), ("One row: 0 1 2 3 4 5 6 7 8 9", True), ("Match retail size", True)],
+                side_effect=[("Arm / shoulder numbers", True)],
+            ),
+            mock.patch(          # b780 CI: the layout and size questions wrap at a pixel width (ux_text.get_item)
+                "mod_editor.gui.studio_qt.get_item",
+                side_effect=[("One row: 0 1 2 3 4 5 6 7 8 9", True), ("Match retail size", True)],
             ),
             mock.patch(
                 "mod_editor.gui.studio_qt.QFileDialog.getOpenFileName",

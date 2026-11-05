@@ -351,6 +351,7 @@ class CallbackCribPanelHost:
 
 
 from PyQt5.QtCore import QObject, QRunnable, Qt, QThreadPool, QTimer, pyqtSignal
+from mod_editor.gui.task_delivery import roomy_pool  # b780 CI: 8 MiB worker stacks (macOS)
 from PyQt5.QtGui import QImageReader, QPixmap
 from PyQt5.QtWidgets import (
     QAbstractItemView,
@@ -552,7 +553,7 @@ class CribPanel(QWidget):
         self._refresh_after_task = False
         self._preview_generation = 0
         self._tasks: set[_Task] = set()
-        self._pool = QThreadPool(self)
+        self._pool = roomy_pool(QThreadPool(self))
         # Private exact-size copies prepared from ordinary images.  They serve
         # one edit and are removed with the panel, never entered into projects.
         self._fit_dir: Path | None = None

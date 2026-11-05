@@ -250,6 +250,20 @@ class PreadTests(unittest.TestCase):
 
 
 class FchmodReadonlyTests(unittest.TestCase):
+    def test_windows_uses_the_path_even_where_os_fchmod_exists(self) -> None:
+        # b780 CI (windows-latest, Python 3.13): 3.13 added os.fchmod on Windows, and it raises "[WinError 5] Access
+        # is denied" there. Windows keeps the os.chmod(path) route it has always used (3.12 and older have no fchmod).
+        from unittest import mock
+        import mod_editor.core.platform_compat as compat
+        refused = mock.Mock(side_effect=PermissionError(13, "Access is denied"))
+        with mock.patch.object(compat.os, "name", "nt"), mock.patch.object(compat.os, "fchmod", refused, create=True), \
+                mock.patch.object(compat.os, "chmod") as chmod, \
+                mock.patch.object(compat, "_verify_read_only_descriptor") as verify:
+            compat.fchmod_readonly(7, "C:/cache/file.bin")
+        refused.assert_not_called()
+        chmod.assert_called_once_with("C:/cache/file.bin", compat._READONLY_MODE)
+        verify.assert_called_once_with(7, "C:/cache/file.bin")
+
     def test_makes_the_backing_file_read_only(self) -> None:
         # 0o400 on POSIX, 0o444 on Windows -- the platform's own sealed mode,
         # not a number relaxed until both platforms fit through it.  The shared,

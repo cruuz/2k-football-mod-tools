@@ -87,6 +87,12 @@ from mod_editor.core.texture_master import (
 from mod_editor.gui import branding
 from mod_editor.gui.ux_text import XEMU_LINE, Details, tab_title  # noqa: F401
 from mod_editor.gui.ux_text import ElidedStatusLabel  # b780-uxfix: the footer messages
+from mod_editor.gui.ux_text import FlowLayout, get_item  # b780 CI: wrapping start buttons; a wrapping choose-one dialog
+from mod_editor.gui.task_delivery import roomy_pool  # b780 CI: 8 MiB worker stacks (macOS)
+try:   # b780 CI (macOS): numpy's import-time self-check runs on the main thread, not first inside a pool task
+    import numpy  # noqa: F401
+except ImportError:   # pragma: no cover - numpy is a Studio requirement; the pages that need it say so themselves
+    pass
 from mod_editor.core import mod_build, platform_compat
 from mod_editor.gui import crash_report
 from mod_editor.gui import update_ui
@@ -1884,7 +1890,7 @@ class StudioMainWindow(QMainWindow):
         self._source_state = None
         self._senior_bowl_panel = None
         self._scorebar_panel = None
-        self.thread_pool = QThreadPool.globalInstance()
+        self.thread_pool = roomy_pool(QThreadPool.globalInstance())   # b780 CI: macOS pool threads had 512 KiB
         self._workers: set[_BackgroundTask] = set()
         self._blocking = False
         self._embedded_audio_busy = False
@@ -3526,6 +3532,7 @@ class StudioMainWindow(QMainWindow):
             number_label.setObjectName("stepNumber")
             title_label = QLabel(title)
             title_label.setObjectName("cardTitle")
+            title_label.setWordWrap(True)     # b780 CI: with Windows font metrics "Set up xemu once" clipped in its card
             body_label = QLabel(body)
             body_label.setObjectName("cardBody")
             body_label.setWordWrap(True)
@@ -3560,8 +3567,9 @@ class StudioMainWindow(QMainWindow):
         start_text.addWidget(ready)
         start_text.addWidget(ready_sub)
         start_layout.addLayout(start_text)
-        start_buttons = QHBoxLayout()
-        start_buttons.setSpacing(10)
+        # b780 CI (windows-latest): with Windows font metrics the four buttons in one row ran to 1809 px in a
+        # 1280-px window. A flow layout wraps them to a second line instead of widening the page, whatever the font.
+        start_buttons = FlowLayout(spacing=10)
         # b780-uxfix: most people came for SOFTDRINK 2K28, so its installer is the first, primary
         # button (the same three steps as Install & Share). The roster route stays enabled without
         # a disc: a Finn user opens an Xbox save there. Uniforms stay one click away in the sidebar.
@@ -3600,7 +3608,6 @@ class StudioMainWindow(QMainWindow):
         start_buttons.addWidget(open_button)
         start_buttons.addWidget(softdrink_button)
         start_buttons.addWidget(rosters_button)
-        start_buttons.addStretch(1)
         start_layout.addLayout(start_buttons)
         # b780-uxfix2: Continue gets its own row; beside the four it clipped every label at 1280x720
         continue_row = QHBoxLayout()
@@ -7730,20 +7737,19 @@ class StudioMainWindow(QMainWindow):
         if family is None:
             return
         # b780-uxfix: the input dialog never wraps its label, so the one-line help made it 4,027 px wide with
-        # OK and Cancel off screen. Fold the text into lines first.
-        import textwrap
-        layout_label, accepted = QInputDialog.getItem(
-            self, "Number sheet layout", textwrap.fill(SHEET_HELP, 88),
-            [row[0] for row in SHEET_LAYOUT_CHOICES], 0, False,
+        # OK and Cancel off screen. b780 CI: a fixed 88-character fold was still 1,518 px with Windows fonts, so
+        # the label now wraps at a pixel width (ux_text.get_item).
+        layout_label, accepted = get_item(
+            self, "Number sheet layout", SHEET_HELP, [row[0] for row in SHEET_LAYOUT_CHOICES], 0,
         )
         if not accepted:
             return
         orientation = dict(SHEET_LAYOUT_CHOICES).get(str(layout_label), "auto")
         from mod_editor.core.nfl2k5_digit_art import REGISTRATION_CHOICES
-        registration_label, accepted = QInputDialog.getItem(
-            self, "Number size", textwrap.fill("Match retail size keeps the glyph inside the original number box. "
-            "As authored keeps your placement and can extend beyond the number mesh.", 88),
-            [row[0] for row in REGISTRATION_CHOICES], 0, False,
+        registration_label, accepted = get_item(          # b780 CI: wraps at a pixel width, like the layout question
+            self, "Number size", "Match retail size keeps the glyph inside the original number box. "
+            "As authored keeps your placement and can extend beyond the number mesh.",
+            [row[0] for row in REGISTRATION_CHOICES], 0,
         )
         if not accepted:
             return

@@ -15,6 +15,7 @@ from collections.abc import Callable, Mapping
 from pathlib import Path
 
 from PyQt5.QtCore import QTimer, QObject, QRunnable, Qt, QThreadPool, pyqtSignal, pyqtSlot
+from mod_editor.gui.task_delivery import roomy_pool  # b780 CI: 8 MiB worker stacks (macOS)
 from PyQt5.QtWidgets import (
     QApplication,
     QCheckBox,
@@ -523,7 +524,7 @@ class BuildPanel(QWidget):
         self.operation_guard = None
         # b791-h3: the main window says which project the doctor reads after a failed build (saved .2k5mod or session)
         self.doctor_project = None
-        self._pool = QThreadPool(self)
+        self._pool = roomy_pool(QThreadPool(self))
         self._task: _Task | None = None
         self._heartbeat_timer = QTimer(self)
         self._heartbeat_timer.setInterval(1000)
@@ -581,11 +582,36 @@ class BuildPanel(QWidget):
         self._memory_budget_timer.setInterval(250)
         self._memory_budget_timer.timeout.connect(self._start_memory_budget)
         self._build_ui()
+        self._fit_narrow_windows()
         self._marks_task = None
         self._marks_modules = dict(self._available)
         self._official_marks_pack_changed()
         self.refresh_book_set()
         self._refresh()
+
+    #: the widest a Build-page choice box sizes itself, in characters (b780 CI: see _compact_combos)
+    COMBO_CHARS = 22
+
+    def _fit_narrow_windows(self) -> None:
+        """Nothing on this page sets its width from a long text: choice boxes size to a short label (the current
+        choice elides; the drop-down list still shows every choice in full), and row captions ("...:") wrap.
+
+        b780 CI (windows-latest): each box sized itself to its longest choice (the 64 MB memory label is about 100
+        characters: 671 px with Linux fonts, about twice that with the Windows runner's), and the one-line caption
+        "Speed separation on deep routes (experimental):" set its row's width too, which put a horizontal scroll on
+        the Build tab at the 1040-px minimum window."""
+        for label in self.findChildren(QLabel):
+            if not label.wordWrap() and label.text().rstrip().endswith(":") and "<" not in label.text():
+                label.setWordWrap(True)
+        for combo in self.findChildren(QComboBox):
+            combo.setSizeAdjustPolicy(QComboBox.AdjustToMinimumContentsLengthWithIcon)
+            combo.setMinimumContentsLength(min(self.COMBO_CHARS, max((len(combo.itemText(i)) for i in range(combo.count())),
+                                                                     default=self.COMBO_CHARS)))
+            view = combo.view()
+            view.setTextElideMode(Qt.ElideNone)
+            view.setMinimumWidth(view.sizeHintForColumn(0) + 2 * combo.style().pixelMetric(combo.style().PM_ScrollBarExtent))
+            if combo.count() and not combo.toolTip():
+                combo.setToolTip(combo.currentText())
 
     # ---------------------------------------------------------------- UI
     def _build_ui(self) -> None:
@@ -3318,9 +3344,10 @@ class BuildPanel(QWidget):
 
     @staticmethod
     def _name_too_long(text: str) -> bool:
-        """The file name part is longer than the drive allows (255 bytes on Linux and macOS, 255 characters on Windows)."""
+        """The file name part is longer than the drive allows (255 bytes on Linux and macOS; 255 UTF-16 units on Windows,
+        where a character outside the Basic Multilingual Plane, such as an emoji, takes two)."""
         name = Path(text.strip()).name
-        return len(name) > 255 if platform_compat.IS_WINDOWS else len(os.fsencode(name)) > 255
+        return len(name.encode("utf-16-le", "surrogatepass")) // 2 > 255 if platform_compat.IS_WINDOWS else len(os.fsencode(name)) > 255
 
     def _installed(self, key: str) -> bool:
         """The disc this page read already carries ``key`` exactly as this release writes it."""

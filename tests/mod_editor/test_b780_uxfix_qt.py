@@ -42,7 +42,8 @@ for entry in (ROOT, ROOT / "tools", ROOT / "tests", ROOT / "tests" / "mod_editor
         sys.path.insert(0, str(entry))
 
 from PyQt5.QtCore import QUrl  # noqa: E402
-from PyQt5.QtWidgets import QApplication, QFileDialog, QInputDialog, QMessageBox, QPushButton, QWidget  # noqa: E402
+from PyQt5.QtWidgets import QApplication, QFileDialog, QInputDialog, QLabel, QMessageBox, QPushButton, QWidget  # noqa: E402
+from PyQt5.QtGui import QFont  # noqa: E402  b780 CI: Windows-like wide font
 
 ASSETS = ROOT / "reports/assets/nfl2k5_team_select_card_inventory.json"
 SHOTS = os.environ.get("UXFIX_SHOTS", "")
@@ -184,22 +185,35 @@ class WordingTests(unittest.TestCase):
             self.assertNotIn("Modern", text)
 
     def test_the_number_sheet_layout_box_fits_on_a_screen(self):
-        _app()
+        app = _app()
         from mod_editor.core.nfl2k5_digit_sheet import SHEET_HELP, SHEET_LAYOUT_CHOICES
-        widths = {}
-        for name, label in (("before", SHEET_HELP), ("after", textwrap.fill(SHEET_HELP, 88))):
-            dialog = QInputDialog()
-            dialog.setLabelText(label)
-            dialog.setComboBoxItems([row[0] for row in SHEET_LAYOUT_CHOICES])
-            dialog.adjustSize()
-            widths[name] = dialog.sizeHint().width()
-            if name == "after":
-                _shot(dialog, "after_number_sheet_layout_dialog")
-            dialog.deleteLater()
-        self.assertGreater(widths["before"], 2000)                      # about 4,027 px in the review
-        self.assertLess(widths["after"], 900)
+        from mod_editor.gui.ux_text import item_dialog
+        items = [row[0] for row in SHEET_LAYOUT_CHOICES]
+        before = QInputDialog()
+        before.setLabelText(SHEET_HELP)
+        before.setComboBoxItems(items)
+        before.adjustSize()
+        self.assertGreater(before.sizeHint().width(), 2000)              # about 4,027 px in the review
+        before.deleteLater()
+        # b780 CI: a fixed 88-character fold was still 1,518 px with Windows font metrics; the label now wraps at a
+        # pixel width, so the box fits with this platform's font and with a much wider one.
+        original = app.font()
+        try:
+            for scale in (1.0, 2.0):          # 2.0: the Windows runner drew this text about 1.95x as wide as Linux
+                wide = QFont(original)
+                wide.setPointSizeF(original.pointSizeF() * scale)
+                app.setFont(wide)
+                dialog = item_dialog(None, "Number sheet layout", SHEET_HELP, items)
+                dialog.adjustSize()
+                with self.subTest(font_scale=scale):
+                    self.assertLess(dialog.sizeHint().width(), 900)
+                if scale == 1.0:
+                    _shot(dialog, "after_number_sheet_layout_dialog")
+                dialog.deleteLater()
+        finally:
+            app.setFont(original)
         source = (ROOT / "mod_editor/gui/studio_qt.py").read_text(encoding="utf-8")
-        self.assertIn('"Number sheet layout", textwrap.fill(SHEET_HELP, 88)', source)
+        self.assertIn('get_item(\n            self, "Number sheet layout", SHEET_HELP,', source)
 
 
 class ErrorsLogTests(unittest.TestCase):
@@ -615,16 +629,16 @@ class StudioWindowTests(unittest.TestCase):
                 time.sleep(0.01)
         self.assertEqual(order, ["project", ("prefill", disc.resolve())])   # the disc reaches the pages after recovery
 
-    def test_8_no_getting_started_button_is_cut_off_at_1280x720_with_continue_showing(self):
-        # b780-uxfix2: Continue with <file> shared the row and every label clipped ("stall SOFTDRINK 2K28")
-        window = self.window
+    def _start_buttons_fit(self, window, tag=""):
+        """Every Getting Started button fits at 1280/1366/1920 with Continue showing, and Continue opens its file."""
         folder = Path(tempfile.mkdtemp(prefix="uxfix-wide-"))
         last = folder / ("ESPN NFL 2K5 (USA) " + "very long dump name " * 6 + ".xiso.iso")
         last.write_bytes(b"x")
         state = SimpleNamespace(recent_sources=(str(last),), recent_projects=())
         window.navigation.setCurrentRow(0)
         for width in (1280, 1366, 1920):
-            self._size(width, 720 if width == 1280 else 900)
+            window.resize(width, 720 if width == 1280 else 900)
+            _pump(self.app, 15)
             with mock.patch.object(window, "_workspace_state", return_value=state):
                 window._refresh_welcome_state()
             _pump(self.app, 10)
@@ -633,17 +647,56 @@ class StudioWindowTests(unittest.TestCase):
             buttons = [window.welcome_install_button, window.welcome_open_button, *window.welcome_task_buttons,
                        continue_button]
             for button in buttons:
-                with self.subTest(width=width, button=button.text()):
+                with self.subTest(font=tag or "platform", width=width, button=button.text()):
                     self.assertTrue(button.isVisible())
                     self.assertGreaterEqual(button.width(), button.sizeHint().width())   # nothing elided or clipped
                     right = button.mapTo(window, button.rect().topRight()).x()
                     self.assertLessEqual(right, window.width())
             self.assertIn("…", continue_button.text())              # the long name is shortened, not the page widened
-            self.assertGreater(continue_button.mapTo(window, continue_button.rect().topLeft()).y(),
-                               window.welcome_install_button.mapTo(window, window.welcome_install_button.rect().bottomLeft()).y())
+            lowest = max(b.mapTo(window, b.rect().bottomLeft()).y()
+                         for b in (window.welcome_install_button, window.welcome_open_button, *window.welcome_task_buttons))
+            self.assertGreater(continue_button.mapTo(window, continue_button.rect().topLeft()).y(), lowest)
             if width == 1280:
-                _shot(window, "after_welcome_continue_row_1280x720")
+                _shot(window, "after_welcome_continue_row_1280x720" + tag)
+        with mock.patch.object(window, "_request_source_switch") as switch:     # the Continue row still opens its file
+            window.welcome_continue_button.click()
+        switch.assert_called_once()
+        self.assertEqual(Path(switch.call_args.args[0]), last)
+        return window.welcome_install_button.sizeHint().width()
+
+    def test_8_no_getting_started_button_is_cut_off_at_1280x720_with_continue_showing(self):
+        # b780-uxfix2: Continue with <file> shared the row and every label clipped ("stall SOFTDRINK 2K28")
+        self._start_buttons_fit(self.window)
         self._size(1280, 720)
+
+    def test_9_the_start_buttons_wrap_with_a_much_wider_font(self):
+        # b780 CI (windows-latest): Windows has neither stylesheet font (Noto Sans, DejaVu Sans) and its substitute
+        # made the four buttons in one row 1,809 px wide in a 1280-px window. They now wrap (ux_text.FlowLayout).
+        # Every font-size in the window's stylesheet is scaled 2x (the Windows runner drew this text about 1.95x as wide
+        # as Linux): every button must still show whole inside 1280 px, with Continue below them and working, and no
+        # label or button anywhere on the page may be narrower than its text (the step titles wrap).
+        import re
+        window = self.window
+        normal = window.welcome_install_button.sizeHint().width()
+        sheet = window.styleSheet()
+        window.setStyleSheet(re.sub(r"font-size:\s*(\d+)px", lambda m: f"font-size: {round(int(m.group(1)) * 2)}px", sheet))
+        _pump(self.app, 15)
+        try:
+            widened = self._start_buttons_fit(window, "_wide_font")
+            window.resize(1280, 720)
+            _pump(self.app, 15)
+            page = window.welcome_install_button
+            while page.parentWidget() is not None and type(page.parentWidget()).__name__ != "QStackedWidget":
+                page = page.parentWidget()
+            for widget in page.findChildren(QLabel) + page.findChildren(QPushButton):
+                if widget.isVisible() and not (isinstance(widget, QLabel) and widget.wordWrap()):
+                    with self.subTest(clipped=widget.text()[:40]):
+                        self.assertGreaterEqual(widget.width(), widget.sizeHint().width())
+        finally:
+            window.setStyleSheet(sheet)
+            _pump(self.app, 15)
+            self._size(1280, 720)
+        self.assertGreater(widened, normal * 1.3)        # the wider text really reached the page
 
     def test_7_getting_started_offers_the_last_game_file(self):
         window = self.window

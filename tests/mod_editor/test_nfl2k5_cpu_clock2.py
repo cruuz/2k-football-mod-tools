@@ -69,8 +69,10 @@ class TemplateTests(unittest.TestCase):
         self.assertEqual(len(clock2.sites(va)), len(clock2.SITES))
 
     def test_template_matches_the_assembler_when_available(self):
-        if shutil.which("as") is None:
-            self.skipTest("GNU as is a development tool only")
+        from tests.i386_toolchain import gnu_as_elf32
+        reason = gnu_as_elf32()   # GNU as writing ELF32 (macOS `as` is clang's; Windows MinGW `as --32` writes PE/COFF)
+        if reason:
+            self.skipTest(reason)
         result = subprocess.run([sys.executable, str(ROOT / "tools/nfl2k5_cpu_clock2_assemble.py"), "--check"],
                                 capture_output=True, text=True)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)

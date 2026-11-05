@@ -15,6 +15,7 @@ from pathlib import Path
 from typing import Any
 
 from PyQt5.QtCore import QObject, QPointF, QRunnable, Qt, QThreadPool, pyqtSignal
+from mod_editor.gui.task_delivery import roomy_pool  # b780 CI: 8 MiB worker stacks (macOS)
 from PyQt5.QtGui import QColor, QPainter, QPen, QPolygonF
 from PyQt5.QtWidgets import (
     QAbstractItemView,
@@ -118,7 +119,7 @@ class ThrowTuningPanel(QWidget):
         self.facade = facade
         self._busy = False
         self._tasks: set[_Task] = set()
-        self._pool = QThreadPool(self)
+        self._pool = roomy_pool(QThreadPool(self))
         self._report: dict[str, object] | None = None
         self._syncing = False
         self.setObjectName("throwTuningPanel")

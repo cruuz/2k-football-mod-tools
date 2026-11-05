@@ -181,7 +181,9 @@ class GuiWiringTests(unittest.TestCase):
         ns['split_digit_sheet']=split
         from mod_editor.core.nfl2k5_digit_art import REGISTRATION_CHOICES
         # Beta 66 (Coach Edwards): a third chooser picks the registration (retail box / as authored).
-        ns['QInputDialog']=SimpleNamespace(getItem=Mock(side_effect=[('Jersey numbers',True),(SHEET_LAYOUTS[2][0],True),(REGISTRATION_CHOICES[0][0],True)]))
+        ns['QInputDialog']=SimpleNamespace(getItem=Mock(side_effect=[('Jersey numbers',True)]))
+        # b780 CI: the layout and size questions are ux_text.get_item (their explanations wrap at a pixel width)
+        ns['get_item']=Mock(side_effect=[(SHEET_LAYOUTS[2][0],True),(REGISTRATION_CHOICES[0][0],True)])
         ns['QFileDialog']=SimpleNamespace(getOpenFileName=lambda *args:('grid.png',''))
         host=SimpleNamespace(_selected_set=SimpleNamespace(selector='28H0'),_selected_asset=None,
             facade=SimpleNamespace(source_ready=True),uniform_catalog=SimpleNamespace(assets_for_set=lambda _:()),

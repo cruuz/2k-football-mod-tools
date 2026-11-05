@@ -2448,8 +2448,8 @@ def fchmod_readonly(fd: int, path: str | None) -> None:
     POSIX: ``fchmod(fd, 0o400)`` -- byte for byte the historical call -- leaves
     the file readable only by its owner and writable by nobody.
 
-    Windows: there is no ``os.fchmod``, so ``os.chmod(path, 0o400)`` is used on
-    the same file.  Only one bit of that mode exists there: clearing owner-write
+    Windows: ``os.chmod(path, 0o400)`` is used on the same file (3.12 and older
+    have no ``os.fchmod`` there; 3.13's refuses a handle opened for writing).  Only one bit of that mode exists there: clearing owner-write
     sets the read-only attribute.  The file therefore reads back as ``0o444``,
     not ``0o400`` -- it stays readable by anyone who can reach the path, because
     Windows has no group/other mode bits to remove.  Confidentiality on that
@@ -2468,7 +2468,9 @@ def fchmod_readonly(fd: int, path: str | None) -> None:
     a seal.
     """
 
-    fchmod = getattr(os, "fchmod", None)
+    # b780 CI: Python 3.13 added os.fchmod on Windows, where it refuses a handle opened for writing ("[WinError 5]
+    # Access is denied"). Windows therefore keeps the path route it always used (3.12 and older have no fchmod there).
+    fchmod = getattr(os, "fchmod", None) if os.name != "nt" else None
     if fchmod is not None:
         fchmod(fd, _READONLY_MODE)
         _verify_read_only_descriptor(fd, path)

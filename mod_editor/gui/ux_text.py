@@ -980,8 +980,46 @@ def suggest_copy_name(source: str | Path, *, suffix: str = "modded") -> str:
     return str(candidate)
 
 
+#: the widest the label of a choose-one dialog may be, in pixels (b780 CI: a character count is no bound, Windows
+#: font metrics made 88 characters 1,518 px wide)
+ITEM_DIALOG_TEXT_WIDTH = 560
+
+
+def item_dialog(parent, title: str, text: str, items, current: int = 0):
+    """A choose-one dialog like ``QInputDialog`` whose explanation wraps at a fixed pixel width.
+
+    ``QInputDialog.getItem`` never wraps its label, so a long explanation set the dialog's width (4,027 px for the number
+    sheet help in the b780 review, OK and Cancel off screen). Here the label wraps at ITEM_DIALOG_TEXT_WIDTH, or less on a
+    small screen, whatever the font. Returns the dialog (the caller ``exec_()``s it)."""
+    from PyQt5.QtWidgets import QApplication, QInputDialog
+    dialog = QInputDialog(parent)
+    dialog.setWindowTitle(title)
+    dialog.setLabelText(text)
+    dialog.setComboBoxItems([str(item) for item in items])
+    dialog.setComboBoxEditable(False)
+    if items:
+        dialog.setTextValue(str(list(items)[max(0, min(current, len(items) - 1))]))
+    width = ITEM_DIALOG_TEXT_WIDTH
+    screen = (parent.screen() if parent is not None and hasattr(parent, "screen") else None) or QApplication.primaryScreen()
+    if screen is not None:
+        width = min(width, int(screen.availableGeometry().width() * 0.6))
+    for label in dialog.findChildren(QLabel):
+        label.setWordWrap(True)
+        label.setMaximumWidth(width)
+        label.setMinimumWidth(min(width, label.fontMetrics().averageCharWidth() * 40))
+    return dialog
+
+
+def get_item(parent, title: str, text: str, items, current: int = 0) -> tuple[str, bool]:
+    """``QInputDialog.getItem`` with a wrapping explanation (see item_dialog): (chosen item, accepted)."""
+    dialog = item_dialog(parent, title, text, items, current)
+    accepted = bool(dialog.exec_())
+    return dialog.textValue(), accepted
+
+
 __all__ = [
     "DISCORD_HINT", "Details", "NOT_TESTED", "XEMU_LINE", "fix_hint", "plain_failure",
     "plain_error", "failure_body", "show_operation_error", "source_captions", "suggest_copy_name", "tab_title", "write_caption", "disc_next_steps",
     "build_failure_texts", "build_summary_lines", "show_build_failure", "DIAGNOSTIC_DESTINATION",
+    "ITEM_DIALOG_TEXT_WIDTH", "item_dialog", "get_item",
 ]

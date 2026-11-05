@@ -534,9 +534,11 @@ class CReferenceTests(unittest.TestCase):
             self.assertEqual(int(got), rules.score(c), c)
 
     def test_builds_under_the_repos_freestanding_32_bit_flags(self):
+        from tests.i386_toolchain import gcc_freestanding_i386
+        reason = gcc_freestanding_i386("-Os")     # macOS arm64 clang rejects these i386 flags (CI): skip, naming why
+        if reason:
+            self.skipTest(reason)
         gcc = shutil.which("gcc")
-        if not gcc:
-            self.skipTest("no gcc")
         flags = ["-m32", "-Os", "-ffreestanding", "-fno-builtin", "-fno-strict-aliasing", "-fno-pic", "-fno-pie", "-fno-stack-protector",
                  "-fno-asynchronous-unwind-tables", "-fno-unwind-tables", "-fomit-frame-pointer", "-fno-jump-tables",
                  "-mpreferred-stack-boundary=2", "-mno-sse", "-mno-mmx", "-Wall", "-Wextra", "-Werror"]       # tools/nfl2k5_honors_build.py

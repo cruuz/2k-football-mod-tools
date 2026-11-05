@@ -26,6 +26,7 @@ from typing import Any
 import weakref
 
 from PyQt5.QtCore import QObject, QRunnable, Qt, QThreadPool, pyqtSignal
+from mod_editor.gui.task_delivery import roomy_pool  # b780 CI: 8 MiB worker stacks (macOS)
 from PyQt5.QtWidgets import (
     QAbstractItemView,
     QCheckBox,
@@ -124,7 +125,7 @@ class SavePanel(QWidget):
         self.facade = facade
         self._busy = False
         self._tasks: set[_Task] = set()
-        self._pool = QThreadPool(self)
+        self._pool = roomy_pool(QThreadPool(self))
         self._save_info: dict[str, object] | None = None
         self._slider_spins: dict[str, QDoubleSpinBox] = {}
         self._targets: dict[str, object] | None = None       # the chosen default.xbe's defaults (b780 b10-profile)

@@ -13,6 +13,7 @@ from collections.abc import Callable
 from pathlib import Path
 
 from PyQt5.QtCore import QObject, QRunnable, Qt, QThreadPool, pyqtSignal
+from mod_editor.gui.task_delivery import roomy_pool  # b780 CI: 8 MiB worker stacks (macOS)
 from PyQt5.QtWidgets import (
     QCheckBox,
     QComboBox,
@@ -401,7 +402,7 @@ class GameplayPatchesPanel(QWidget):
                  target_suffix: str = "gameplay patched") -> None:
         super().__init__(parent)
         self._facade = facade
-        self._pool = QThreadPool(self)
+        self._pool = roomy_pool(QThreadPool(self))
         self._task: _Task | None = None
         self._state: dict[str, object] | None = None
         # b780 studio1: the 64 MB target locks options on Build; the link hands this page the same lock (key -> tooltip, badge)
