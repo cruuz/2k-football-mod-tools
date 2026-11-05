@@ -135,12 +135,26 @@ def make_entry(name: str, image: Path | str, progress: Progress | None = None) -
 
 
 def _closest(releases: list[dict[str, Any]], names: set[str]) -> dict[str, Any] | None:
+    """The release sharing the most file names (kept for callers that have only names)."""
     best, score = None, -1
     for r in releases:
         common = len(names & set(f.lower() for f in r["files"]))
         if common > score:
             best, score = r, common
     return best if score > 0 else None
+
+
+def _candidates(releases: list[dict[str, Any]], by_lower: dict[str, Any]) -> list[dict[str, Any]]:
+    """The releases sharing at least one file name with the disc, in record order."""
+    return [r for r in releases if set(f.lower() for f in r["files"]) & set(by_lower)]
+
+
+def _rank(result: dict[str, Any], target: dict[str, Any], image_size: int, order: int) -> tuple:
+    """b780: v0.8 and v0.9 have the same 20 file names, so name overlap alone tied and the first record always won
+    (every v0.9 disc read as damaged against v0.8). Rank a compared release by an exact image size, then by how many
+    files have its size, then by how many files are identical, then by name overlap, then record order."""
+    return (target.get("image_size") == image_size, result["sizes_matching"], result["files_matching"],
+            result["names_matching"], -order)
 
 
 def check(image: Path | str, *, releases: Iterable[dict[str, Any]] | None = None, progress: Progress | None = None) -> dict[str, Any]:
@@ -159,40 +173,57 @@ def check(image: Path | str, *, releases: Iterable[dict[str, Any]] | None = None
         except DiscCheckError as exc:
             return dict(state="unreadable", image=str(path), image_size=size, detail=str(exc))
         by_lower = {k.lower(): e for k, e in entries.items()}
-        target = _closest(rel, set(by_lower))
-        if target is None:
+        candidates = _candidates(rel, by_lower)
+        if not candidates:
             return dict(state="different", image=str(path), image_size=size, release=None,
                         detail="none of this disc's files are on a released SOFTDRINK disc")
-        files = {k.lower(): (k, v) for k, v in target["files"].items()}
-        total = sum(v["size"] for _k, v in files.values())
-        done = 0
-        differing, missing, extra, cut = [], [], [], []
-        for low in sorted(files):
-            name, want = files[low]
-            entry = by_lower.get(low)
-            if entry is None:
-                missing.append(name)
-                done += want["size"]
-                continue
-            if entry.size != want["size"]:
-                differing.append(dict(file=name, reason="size", expected=want["size"], found=entry.size, mib=[]))
-                done += want["size"]
-                continue
-            digest, chunks, readable = _file_hashes(fd, size, base, entry, progress, done, total)
-            done += want["size"]
-            if readable < entry.size:
-                cut.append(dict(file=name, readable_mib=round(readable / MIB, 1), size_mib=round(entry.size / MIB, 1)))
-            if digest != want["sha256"]:
-                bad = [i for i, (a, b) in enumerate(zip(chunks, want["chunks"])) if a != b]
-                if len(chunks) < len(want["chunks"]):
-                    bad += list(range(len(chunks), len(want["chunks"])))
-                differing.append(dict(file=name, reason="content", chunks=len(bad),
-                                      mib=_ranges(bad, target.get("chunk", CHUNK), entry.size)))
-        for low, e in by_lower.items():
-            if low not in files:
-                extra.append(e.path)
+        # every candidate is compared, but each file is hashed at most once; a release that matches fully wins,
+        # otherwise the best-ranked comparison (_rank) is the one reported
+        hashed: dict[str, tuple] = {}
+        compared = [(_compare(target, fd, size, base, by_lower, hashed, progress), target, order)
+                    for order, target in enumerate(candidates)]
     finally:
         os.close(fd)
+    full = [item for item in compared if item[0]["state"] == "matches"]
+    best = max(full or compared, key=lambda item: _rank(item[0], item[1], size, item[2]))[0]
+    return dict(best, image=str(path), image_size=size, partition_base=base)
+
+
+def _compare(target, fd, size, base, by_lower, hashed, progress) -> dict[str, Any]:
+    files = {k.lower(): (k, v) for k, v in target["files"].items()}
+    total = sum(v["size"] for _k, v in files.values())
+    done = 0
+    differing, missing, extra, cut = [], [], [], []
+    for low in sorted(files):
+        name, want = files[low]
+        entry = by_lower.get(low)
+        if entry is None:
+            missing.append(name)
+            done += want["size"]
+            continue
+        if entry.size != want["size"]:
+            differing.append(dict(file=name, reason="size", expected=want["size"], found=entry.size, mib=[]))
+            done += want["size"]
+            continue
+        if low not in hashed:
+            hashed[low] = _file_hashes(fd, size, base, entry, progress, done, total)
+        digest, chunks, readable = hashed[low]
+        done += want["size"]
+        if readable < entry.size:
+            cut.append(dict(file=name, readable_mib=round(readable / MIB, 1), size_mib=round(entry.size / MIB, 1)))
+        if digest != want["sha256"]:
+            bad = [i for i, (a, b) in enumerate(zip(chunks, want["chunks"])) if a != b]
+            if len(chunks) < len(want["chunks"]):
+                bad += list(range(len(chunks), len(want["chunks"])))
+            differing.append(dict(file=name, reason="content", chunks=len(bad),
+                                  mib=_ranges(bad, target.get("chunk", CHUNK), entry.size)))
+    for low, e in by_lower.items():
+        if low not in files:
+            extra.append(e.path)
+    names = [low for low in files if low in by_lower]
+    sizes_matching = sum(1 for low in names if by_lower[low].size == files[low][1]["size"])
+    differing_names = {d["file"].lower() for d in differing} | {c["file"].lower() for c in cut}
+    files_matching = sum(1 for low in names if low not in differing_names and by_lower[low].size == files[low][1]["size"])
     changed_bytes = sum(len(d.get("mib", [])) for d in differing)
     share = (sum(d.get("chunks", 0) for d in differing) * target.get("chunk", CHUNK)) / max(1, total)
     if not differing and not missing and not cut and not extra:
@@ -201,10 +232,10 @@ def check(image: Path | str, *, releases: Iterable[dict[str, Any]] | None = None
         state = "damaged"
     else:
         state = "different"
-    return dict(state=state, image=str(path), image_size=size, partition_base=base, release=target["name"],
-                release_sha256=target.get("image_sha256"), release_size=target.get("image_size"),
-                differing=differing, missing=missing, extra=extra, cut_short=cut, differing_share=round(share, 4),
-                ranges=changed_bytes)
+    return dict(state=state, release=target["name"], release_sha256=target.get("image_sha256"),
+                release_size=target.get("image_size"), differing=differing, missing=missing, extra=extra,
+                cut_short=cut, differing_share=round(share, 4), ranges=changed_bytes,
+                names_matching=len(names), sizes_matching=sizes_matching, files_matching=files_matching)
 
 
 def _ranges(chunks: list[int], chunk: int, size: int) -> list[list[float]]:

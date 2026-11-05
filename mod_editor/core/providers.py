@@ -602,7 +602,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_console_memory.py": "5f36799fb3767e021d3fb0c7a5d983c533dd70f978b088bb6c94eb9ca1c41a29",  # b780-m64b: the 128 MB / 64 MB target (validate_plan)
         "mod_editor/core/build_steps.py": "da30b20136ba49877cf8cac6b77f0836467b73d87996359f6b1e1fdb1669186a",  # b791-h3: step context and optional steps
         "mod_editor/core/studio_inspection.py": "bbe1e2e9b3de63b13e8908d2b37f114ee79b6fb2fc88d26670a6eb1e6e341e1e",  # b780 studio1: mod_build.inspect runs inside its validation memo
-        "mod_editor/core/nfl2k5_disc_check.py": "5480c8516e109d5e7f963e1e4e0ee598ac0b4472953e116a34ed3f990406e008",  # b780 studio1: the disc identity names a released SOFTDRINK disc from its list
+        "mod_editor/core/nfl2k5_disc_check.py": "05a9628649c6bfcdbdb711b9ebe2ce3b9fc2523e1dc9bf51e55aba54cd8bf711",  # b780 studio1: the disc identity names a released SOFTDRINK disc from its list
         "mod_editor/core/model.py": "292f0c5444e32f5cea000fd3cabd6963d7d805a5434dcbc364a36ca2c0f0d228",
         "mod_editor/core/modpack.py": "461107a7f9096a5c1d867a6a1f4fa69af769302c0569ad98a5b8171541cde287",
         "mod_editor/core/modpack_files.py": "2245452a10635012bb46ca5a5f5e36b748e1b2bf270eb822edcd54954abb45d8",

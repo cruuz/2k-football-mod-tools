@@ -117,5 +117,68 @@ class DiscCheckTests(unittest.TestCase):
             self.assertEqual(dc.main([str(other)]), 1)
 
 
+class SameNamesReleaseTests(unittest.TestCase):
+    """b780: v0.8 and v0.9 have the same 20 file names. The check used to pick the release by name overlap alone, so
+    the tie went to the first record (v0.8) and every v0.9 disc read as "damaged" (default.xbe size, vc_53450030)."""
+
+    V09_ENTRY = REPO / "tests/fixtures/nfl2k5_softdrink_v09_disc_entry.json"   # ship10's record of the v0.9 disc
+
+    def setUp(self):
+        self.dir = tempfile.TemporaryDirectory()
+        self.root = Path(self.dir.name)
+        self.chunk = mock.patch.object(dc, "CHUNK", 512 << 10)
+        self.chunk.start()
+        self.old_image = self.root / "old.xiso.iso"
+        self.new_image = self.root / "new.xiso.iso"
+        self.old_image.write_bytes(build_xdvdfs(files()))
+        self.new_image.write_bytes(build_xdvdfs(files(seed=5)))          # every name and size the same
+        self.old = dc.make_entry("Old release", self.old_image)
+        self.new = dc.make_entry("New release", self.new_image)
+
+    def tearDown(self):
+        self.chunk.stop()
+        self.dir.cleanup()
+
+    def test_each_disc_matches_its_own_release_whatever_the_record_order(self):
+        self.assertEqual(set(self.old["files"]), set(self.new["files"]))
+        self.assertEqual(self.old["image_size"], self.new["image_size"])
+        for releases in ([self.old, self.new], [self.new, self.old]):
+            for image, name in ((self.old_image, "Old release"), (self.new_image, "New release")):
+                result = dc.check(image, releases=releases)
+                self.assertEqual((result["state"], result["release"]), ("matches", name), result)
+
+    def test_a_damaged_new_disc_is_damaged_against_the_new_release(self):
+        blob = bytearray(self.new_image.read_bytes())
+        at = bytes(blob).index(files(seed=5)["big.bin"][:4096]) + 700_000
+        blob[at:at + 64] = bytes(64)
+        bad = self.root / "bad.iso"
+        bad.write_bytes(bytes(blob))
+        for releases in ([self.old, self.new], [self.new, self.old]):
+            result = dc.check(bad, releases=releases)
+            self.assertEqual((result["state"], result["release"]), ("damaged", "New release"), result)
+            self.assertEqual([d["file"] for d in result["differing"]], ["big.bin"])
+
+    def test_the_real_v0_9_record_outranks_v0_8_for_a_v0_9_disc(self):
+        """The shipped v0.8 record and ship10's v0.9 record share all 20 names; without reading a disc, a v0.9 image's
+        files (sizes and hashes from its record) rank v0.9 first, whole or with one damaged file."""
+        v08 = next(d for d in dc.load_releases() if d["name"] == "SOFTDRINK 2K28 v0.8")
+        v09 = json.loads(self.V09_ENTRY.read_text(encoding="utf-8"))
+        self.assertEqual(set(v08["files"]), set(v09["files"]))
+        entries = {k.lower(): mock.Mock(size=v["size"], path=k) for k, v in v09["files"].items()}
+        for damaged in (None, "big_file"):
+            hashed = {k.lower(): (v["sha256"], list(v["chunks"]), v["size"]) for k, v in v09["files"].items()}
+            if damaged:
+                name = max(v09["files"], key=lambda k: v09["files"][k]["size"])
+                digest, chunks, size = hashed[name.lower()]
+                hashed[name.lower()] = ("0" * 64, ["0" * len(chunks[0])] + chunks[1:], size)
+            ranked = []
+            for order, record in enumerate([v08, v09]):
+                result = dc._compare(record, None, v09["image_size"], 0, entries, dict(hashed), None)
+                ranked.append((dc._rank(result, record, v09["image_size"], order), result))
+            best = max(ranked, key=lambda item: item[0])[1]
+            self.assertEqual(best["release"], "SOFTDRINK 2K28 v0.9")
+            self.assertEqual(best["state"], "damaged" if damaged else "matches")
+
+
 if __name__ == "__main__":
     unittest.main()
