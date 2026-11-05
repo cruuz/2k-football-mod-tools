@@ -135,7 +135,9 @@ class FinalPairsTests(unittest.TestCase):
         receipt = roles.apply_to_archive(archive, allow_custom=True)
         after = archive.read_entry(packs._outer_image().BOOK_ENTRIES["MIN"])
         self.assertEqual(after, self.final)
-        self.assertEqual(receipt["changed_bytes"], 10)   # v2 ATL book (v0.5 book: 12)
+        # b780 sub1 b71f07031 (gunners read WR/CB ordinal 6; groups keep X/Z, no gadget ordinal): one fewer byte than the
+        # 10 before it (v0.5 book: 12); the same file with the pre-sub1 special roles still gives 10
+        self.assertEqual(receipt["changed_bytes"], 9)
         for pi in (155, 157):
             self.assertEqual(library.play_chains(before[32:], pi), library.play_chains(after[32:], pi))
 
