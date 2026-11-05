@@ -254,7 +254,7 @@ One late allocator owner, applied with the SPECIAL rows. It hooks two 5-byte cal
   When the formation also asks for the power back (an RB ordinal-1 slot), he keeps his own slot and the next back
   plays fullback. When no back is free, the next tier (a tight end) does. The scheduled simulator's own lineup is
   unchanged, so its calibrated carry shares hold.
-* **Rule 3, GAD.** The builder is handed the called play (its second argument: `0x18AD10` → `0x18A5D0` →
+* **Rule 3, GAD (OFF in beta-80**, coordinator 11/05: a live-game freeze on FC2's attract demo, a node pointer of 0xFED2 read on the snap path; notes in the b780 scratch notes/sub1_rule3_redo.md; no code of the owner reads the builder's play argument now). As designed: The builder is handed the called play (its second argument: `0x18AD10` → `0x18A5D0` →
   `0xE89F0`). Its slot chains are absolute after loading (the reader at `0x1915B0`). When a WR slot of an offensive
   play takes a handoff in that play (the planner's own `0x13`/`0x16` test), the GAD row (WR ordinal 7) is asked
   first for that slot. He takes it only when he is at least as fast as the slot's own pick, on every club (the

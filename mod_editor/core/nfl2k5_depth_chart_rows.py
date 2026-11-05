@@ -98,9 +98,8 @@ ROW_HELP = (
     ("NCB", "the corner rank order from its second man: the third corner in nickel and dime."),
     ("DCB", "the corner side order from its second man: the fourth corner in dime."),
     ("SLWR", "the receiver rank order from its second man: the inside receiver in three receiver sets."),
-    ("GAD", "the receiver side order from its fourth man. He comes in only on a play that hands the ball to a "
-            "receiver (a reverse or an end around), at that receiver's spot, when he's at least as fast as the "
-            "receiver he replaces."),
+    ("GAD", "the receiver side order from its fourth man. The rule that brought him in on gadget plays is off in "
+            "this release, so no formation uses this row yet."),
     ("3DRB", "the running back side order from its second man (PWRB is its first). He comes in on obvious passing "
              "downs (3rd or 4th down with 5 yards or more to go, 2nd down with 10 or more) when he's at least as good "
              "a receiver as your starter. The starter keeps every other snap."),

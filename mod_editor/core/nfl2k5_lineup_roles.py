@@ -27,13 +27,9 @@ back goes to fullback; when no back is free, a TE (the next tier) plays fullback
 (0x102472..) keeps retail's, so its calibrated carry lottery is unchanged (HUNT1, DB2). Every other fallback keeps the
 retail order.
 
-Rule 3, the gadget player (needs the SPECIAL rows, whose GAD row is the WR side order from its fourth place: WR
-ordinal 7). The lineup builder is handed the called play (its second argument, from 0x18AD10 via 0x18A5D0). When a WR
-slot of an offensive play takes a handoff in that play (the planner's own test: a 0x13 handoff node names the slot
-and the slot's chain has a 0x16 node), the GAD row is asked first for that slot. He plays if he is not already on the
-field, passes the picker's gate and is at least as fast as the slot's own pick (the native picker with the same
-arguments), on every club, for the same reasons as the 3DRB. Every
-other play keeps its receivers: the planner no longer writes a gadget ordinal into shared personnel groups (Q61).
+Rule 3 (the GAD row on gadget plays) is OFF in beta-80 (coordinator 11/05): its model of the builder's second argument
+did not hold even on the snap path (EMU1, FC2 attract demo: a node pointer of 0xFED2 at 0x151CCCA), so no code of this
+owner reads that argument. The GAD row works through the planner's personnel groups again (nfl2k5_special_roles).
 
 Rule 4, injured players on CPU depth charts (MC1's finding; coordinator 11/04). The weekly CPU auto-depth 0x2BDCF0
 ranks by rating and never tests the injury bit (player +0x20 bit 31), so after one pass CPU charts listed injured
@@ -69,12 +65,10 @@ RULES_SIZE = 1024                           # rules 1-3 (assemble), then rule 4 
 INJ_OFFSET = RULES_SIZE
 CODE_SIZE = 2048
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16),)
-BUILD_CAPTION = "Third-down back on passing downs, gadget player on gadget plays, RB2 fills a missing fullback, injured CPU starters move down (experimental)"
+BUILD_CAPTION = "Third-down back on passing downs, RB2 fills a missing fullback, injured CPU starters move down (experimental)"
 HELP_TEXT = ("EXPERIMENTAL. Your SPECIAL 3DRB comes in for the starting running back on obvious passing downs (3rd or 4th "
              "down with 5 yards or more to go, 2nd down with 10 or more) when he's at least as good a receiver as your "
-             "starter; the starter keeps every other snap. Your SPECIAL GAD comes in only on a play that hands the "
-             "ball to a receiver (a reverse or an end around), at that receiver's spot, when he's at least as fast as "
-             "the receiver he replaces. A club with no fullback now puts its second running back at fullback instead "
+             "starter; the starter keeps every other snap. A club with no fullback now puts its second running back at fullback instead "
              "of its deepest one. CPU clubs (and yours when the CPU manages your depth chart) list injured players "
              "below the healthy ones at their position, so a healthy backup is listed as the starter while the "
              "starter is out.")
@@ -85,7 +79,6 @@ FB_SITE = 0x000E87E9                        # the picker's list-length call at t
 FB_RETAIL = bytes.fromhex("e8b2edffff")     # call 0xE75A0
 BOUND = 0x000E7640                          # the picker's protection bound for a fallback tier (called at 0xE88A2)
 NEXT_TIER, PICKER_TAKE = 0x000E890A, 0x000E89AB   # next tier, success exit
-PLAY_SETUP_RETURN = 0x0018AD4B              # 0x18A5D0's return into 0x18AD10 (the snap's play-call path)
 GATE_CALL = 0x000E8864                      # the forward loop's gate call (a later owner may point it at its own guard)
 LIST_LENGTH, LIST_READ, ALREADY_PLACED, ORDINAL = 0x000E75A0, 0x000E7810, 0x000E7580, 0x000E7530
 SITUATION, OFFENSE = 0x00E602EC, 0x00E60280
@@ -127,8 +120,6 @@ GUARDS = (
     (0x000E7580, 0x19, "already placed"),
     (0x000E7810, 0x60, "list reader"),
     (0x00207950, 0x5B, "yards to go"),
-    (0x0018A5D0, 0x7B, "play set-up"),         # its frame puts its return address 0x14C above rule 3's entry
-    (0x0018AD10, 0x3B, "play call"),           # the snap's path: 0x18A5D0 called from 0x18AD46 with the play
 )
 GATE_MASKS = ((0x000E8865, 4), (0x000E88ED, 4))   # the two gate calls' rel32 inside the picker span
 
@@ -168,7 +159,6 @@ def assemble(code_va: int, gate: int, *, third_down: bool = True) -> tuple[bytes
 
     # ---------------------------------------------------------------- roles_pick: same arguments as the picker
     label("roles_pick")
-    b("837c241809"); j32("0f84", "gad_entry")        # cmp dword [esp+0x18], 9    kind WR: rule 3
     b("837c24180a"); j32("0f85", "to_picker")        # cmp dword [esp+0x18], 10   kind RB
     b("837c241c00"); j32("0f85", "to_picker")        # cmp dword [esp+0x1c], 0    the lead back
     b("837c241400"); j32("0f85", "to_picker")        # cmp dword [esp+0x14], 0    not a user substitution
@@ -217,58 +207,6 @@ def assemble(code_va: int, gate: int, *, third_down: bool = True) -> tuple[bytes
     b("b801000000c3")
     label("no")
     b("33c0c3")
-    # ---------------------------------------------------------------- gad_entry: rule 3, the gadget player
-    # The builder's second argument is the called play ([esp+0xa0] here: 0x18AD10 -> 0x18A5D0 -> 0xE89F0). Its slot
-    # chains are absolute after loading (0x1915B0 reads [play+0xc+slot*8] + node*8). The planner's own test: this WR
-    # slot's chain has a 0x16 node and some slot's 0x13 handoff names this slot (nfl2k5_special_roles._signals).
-    label("gad_entry")
-    b("837c241400"); j32("0f85", "to_picker")        # a user substitution keeps his man
-    b("83bc24a000000000"); j32("0f84", "to_picker")  # no play: the native pick
-    # Only the snap's called play (0x18AD10's struct +4, handed on by 0x18A5D0 called from 0x18AD46): another caller
-    # of 0x18A5D0 (0x18B184, the type-12 play set-up) hands a struct whose slot chains are not node lists, and its NULL
-    # node pointer with a non-zero count crashed the scan below (EMU1, FC1 fb753f32, 0x151CCB1).
-    b("81bc244c010000" + struct.pack("<I", PLAY_SETUP_RETURN).hex()); j32("0f85", "to_picker")
-    b("60" "8b6c2418" "8bb424c0000000")              # pushad; ebp = ctx; esi = the play
-    b("8b4604" "c1e806" "a807"); j32("0f85", "gad_restore")   # an offensive play (family 0) only
-    b("8b7c2428" "83ff0b"); j32("0f83", "gad_restore")        # edi = this slot
-    b("8b4cfe08" "83e10f" "8b54fe0c")                # its node count and nodes
-    b("85d2"); j32("0f84", "gad_restore")            # no node list
-    label("gad_16")
-    b("85c9"); j32("0f84", "gad_restore")
-    b("803a16"); j8("74", "gad_carrier")             # it takes the ball
-    b("83c208" "49"); j8("eb", "gad_16")
-    label("gad_carrier")
-    b("33db")
-    label("gad_slot")
-    b("83fb0b"); j32("0f83", "gad_restore")
-    b("8b4cde08" "83e10f" "8b54de0c")
-    b("85d2"); j8("74", "gad_next")                  # no node list
-    label("gad_13")
-    b("85c9"); j8("74", "gad_next")
-    b("803a13"); j8("75", "gad_skip")
-    b("0fb64204" "83e00f" "3bc7"); j8("74", "gad_gadget")    # a handoff to this slot
-    label("gad_skip")
-    b("83c208" "49"); j8("eb", "gad_13")
-    label("gad_next")
-    b("43"); j8("eb", "gad_slot")
-    label("gad_gadget")                              # the GAD row: WR ordinal 7 (side row 3)
-    b("83ec04" "b809000000" "ba07000000" "8bf4"); a.append(("call", ORDINAL))   # eax = list, [esp] = row
-    b("5a" "8b4c2414" "52" "55"); a.append(("call", LIST_READ))
-    b("85c0"); j32("0f84", "gad_restore")
-    b("8bd8" "8b4c2430" "8b74242c" "8bd3"); a.append(("call", ALREADY_PLACED))
-    b("85c0"); j32("0f85", "gad_restore")
-    b("6a03" "ff74242c" "ff74242c" "8bcd" "8bd3"); a.append(("call", gate))
-    b("85c0"); j32("0f84", "gad_restore")
-    # every club (coordinator 11/04, as for the 3DRB: MyCareer marks its club human, old saves keep their rosters):
-    # the slot's own pick (the native picker, same arguments) unless the GAD is at least as fast
-    b("8b542414" "8bcd" + "ff74243c" * 7); a.append(("call", PICKER))
-    b("85c0"); j8("74", "gad_take")
-    b("0fb64836" "0fb65336" "3bd1"); j8("7d", "gad_take")    # speed: GAD >= the slot's own pick
-    b("8bd8")
-    label("gad_take")
-    b("895c241c" "61" "c21c00")
-    label("gad_restore")
-    b("61"); a.append(("jmpabs", PICKER))
     # ---------------------------------------------------------------- fb_len: the picker's list-length call (each tier)
     # Called from 0xE87E9 (retail: call 0xE75A0) with ecx = the tier's list, edx = ctx, ebx = the tier; picker frame
     # offsets are +4 while our return address (0xE87EE) is on the stack.
@@ -482,8 +420,6 @@ PINS: dict[str, str] = {
     "ordinal decoder": "444625bef40176511f5c80956c39f2e1996476e3153c16a893aeb0216e6816ce",
     "list length": "2ac8eea080bb77cfb975f3df15d76c69888167b0256fa7c8cc98b90898a07af1",
     "already placed": "50b623f41418bc9cc5bf49b127e6420b91554e1d4e75701ca4906a7fdd55c2fc",
-    "play set-up": "ed7fc500fc352479c0df1dc6b06e52323cf934b13aec96e15bc33bf71c9cb2a7",
-    "play call": "d4421a4e274aa2d5474666237ab035ff05010d63fb46552830f5fd2cd5ca05f1",
     "list reader": "da3f9906555709c4b213f23351a4188c3fe7488c2ac6d74aaa44584aec082ccf",
     "yards to go": "d3e699ec5309d41ba7e0cac523a986a92882dff07bb9efa02ecfbb6b12253335",
 }

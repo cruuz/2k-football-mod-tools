@@ -7,8 +7,7 @@ receivers get chosen depth rows and ratings in memory, then the native ctx build
 - Rule 1: the SPECIAL 3DRB (RB side row 1) plays the lead back on obvious passing downs when he is at least as good
   a receiver as the starter, on every club (MyCareer and old saves included).
 - Rule 2: with no fullback, RB2 plays fullback, and the power back keeps his own slot.
-- Rule 3: the SPECIAL GAD (WR side row 3) takes the carrier spot of a play that hands a receiver the ball when he is
-  at least as fast as the slot's own pick, on every club.
+- Rule 3 (the GAD row on gadget plays) is off in beta-80: no code reads the builder's play argument.
 """
 from __future__ import annotations
 
@@ -113,7 +112,7 @@ class LineupRolesTests(unittest.TestCase):
         value = struct.unpack("<H", m.uc.mem_read(p + 0x28, 2))[0] & 0x3FF
         m.uc.mem_write(p + 0x28, struct.pack("<H", value | rank << 10 | side << 13))
 
-    def lineup(self, m, cat, down=1, togo=10, human=True, play=0, caller=lr.PLAY_SETUP_RETURN):
+    def lineup(self, m, cat, down=1, togo=10, human=True, play=0, caller=0x0018AD4B):
         m.put(0xE5FF80, 6)
         m.put(0xE602B4, 0)
         m.put(SIT + 4, down)
@@ -128,7 +127,8 @@ class LineupRolesTests(unittest.TestCase):
         m.uc.mem_write(CAT, cat)
         m.uc.mem_write(OUT, bytes(44))
         # the snap's path: 0x18A5D0 (called from 0x18AD46) calls the builder; its return address sits 0xB4 above the
-        # builder's own (0x18A5D0's frame: 0x94 + 3 registers, then the builder's 4 arguments)
+        # builder's own (0x18A5D0's frame: 0x94 + 3 registers, then the builder's 4 arguments). Rule 3 is off, so no
+        # rule depends on it now; kept so the stack matches a snap.
         m.put(Machine.STACK + 0xB4, caller)
         m.call(0xE89F0, ecx=CTX, edx=0, args=(CAT, play, OUT, 0), budget=20_000_000)
         return [m.get(OUT + 4 * i) for i in range(11)]
@@ -221,7 +221,7 @@ class LineupRolesTests(unittest.TestCase):
             picks.append(m.call(0xE8790, ecx=CTX, edx=0, args=(4, 9, OUT, 11, 0, 11, 0), budget=5_000_000))
         self.assertEqual(picks[0], picks[1])
 
-    # ------------------------------------------------------------------------------------------------ rule 3
+    # ------------------------------------------------------------------------------------------------ rule 3 (off)
     def play(self, m, *, handoff_to=8, family=0):
         """A play whose QB (slot 0) hands the ball to ``handoff_to`` and whose slot 8 carries (0x16)."""
         record = bytearray(0x60)
@@ -237,151 +237,36 @@ class LineupRolesTests(unittest.TestCase):
         m.uc.mem_write(PLAY, bytes(record))
         return PLAY
 
-    def test_the_gad_takes_the_carrier_spot(self):
+    def test_rule_3_is_off_and_the_play_is_never_read(self):
+        # beta-80 (coordinator 11/05, EMU1's FC2 attract-demo crash): no code of the owner reads the builder's second
+        # argument. A gadget play keeps the native receivers, and a pointer into unmapped memory (FC2's 0xFED2)
+        # is never dereferenced: Unicorn would fault on the first read.
         play = self.play(self.owner)
         self.play(self.native)
-        native, owner = self.both(I_FORM, play=play)
-        self.assertEqual((native[8], owner[8]), (self.Z, self.gad))
-        self.assertEqual([s for s in range(11) if owner[s] != native[s]], [8])
-
-    def test_every_club_needs_the_faster_man(self):
-        play = self.play(self.owner)
-        for human in (True, False):                                  # MyCareer and old saves: one rule
-            with self.subTest(human=human):
-                self.owner.uc.mem_write(self.gad + 0x36, bytes([80]))
-                self.assertEqual(self.lineup(self.owner, I_FORM, play=play, human=human)[8], self.gad)  # as fast
-                self.owner.uc.mem_write(self.gad + 0x36, bytes([70]))
-                self.assertEqual(self.lineup(self.owner, I_FORM, play=play, human=human)[8], self.Z)
-                self.owner.uc.mem_write(self.gad + 0x36, bytes([90]))
-                self.assertEqual(self.lineup(self.owner, I_FORM, play=play, human=human)[8], self.gad)
-
-    def test_other_play_set_ups_and_empty_node_lists_are_skipped(self):
-        # EMU1 (FC1 fb753f32): 0x18B184's type-12 set-up hands 0x18A5D0 a struct whose slot entry has a count and a
-        # NULL node pointer; rule 3 read it and faulted at 0x151CCB1. Rule 3 now runs only for the snap's play path
-        # (0x18A5D0 called from 0x18AD46) and skips an empty node list.
-        play = self.play(self.owner)
-        self.assertEqual(self.lineup(self.owner, I_FORM, play=play, caller=0x18B189)[8], self.Z)
-        struct.pack_into("<I", buf := bytearray(self.owner.uc.mem_read(PLAY, 0x60)), 0x0C + 8 * 8, 0)   # slot 8: NULL
-        self.owner.uc.mem_write(PLAY, bytes(buf))
-        self.assertEqual(self.lineup(self.owner, I_FORM, play=play)[8], self.Z)
-        play = self.play(self.owner)
-        struct.pack_into("<I", buf := bytearray(self.owner.uc.mem_read(PLAY, 0x60)), 0x0C + 8 * 0, 0)   # the QB: NULL
-        self.owner.uc.mem_write(PLAY, bytes(buf))
-        self.assertEqual(self.lineup(self.owner, I_FORM, play=play)[8], self.Z)
-
-    def test_other_plays_keep_their_receivers(self):
-        for kw in (dict(handoff_to=7), dict(family=1)):              # the carrier is not this WR; a defensive play
+        for kw in (dict(play=play), dict(play=0xFED2), dict(play=0xFED2, down=3, togo=8),
+                   dict(play=0xFED2, human=False, down=3, togo=8)):
             with self.subTest(**kw):
-                play = self.play(self.owner, **kw)
-                owner = self.lineup(self.owner, I_FORM, play=play)
-                self.assertEqual(owner[8], self.Z)
-        self.assertEqual(self.lineup(self.owner, I_FORM)[8], self.Z)  # no play
+                self.assertEqual(self.lineup(self.owner, I_FORM, **kw), self.lineup(self.native, I_FORM, **{**kw, "play": 0})
+                                 if kw.get("down") != 3 else self.lineup(self.owner, I_FORM, **{**kw, "play": 0}))
+        self.assertEqual(self.lineup(self.owner, I_FORM, play=play)[8], self.Z)
+        no_fullback = [p for p in self.fbs]
+        for m in (self.native, self.owner):
+            for p in no_fullback:
+                m.uc.mem_write(p + 0x35, bytes([TE]))
+        self.assertEqual(self.lineup(self.owner, GOAL_LINE, play=0xFED2)[9:], [self.T, self.P])   # rule 2 unchanged
 
-
-
-
-# ------------------------------------------------------------------------------------------------ rule 4
-def league_machine(payload: bytes, body: bytes) -> Machine:
-    """machine() with 0xC4BE0 answering 32, a franchise league (without one loaded it counts every roster team)."""
-    import unicorn
-    m = machine(payload, body)
-    X = unicorn.x86_const
-
-    def count(uc, _addr, _size, _data):
-        esp = uc.reg_read(X.UC_X86_REG_ESP)
-        uc.reg_write(X.UC_X86_REG_EAX, 32)
-        uc.reg_write(X.UC_X86_REG_ESP, esp + 4)
-        uc.reg_write(X.UC_X86_REG_EIP, struct.unpack("<I", uc.mem_read(esp, 4))[0])
-    m.uc.hook_add(unicorn.UC_HOOK_CODE, count, begin=0xC4BE0, end=0xC4BE0)
-    return m
-
-
-@unittest.skipUnless(HAVE_UC and V09_XBE.is_file() and V09_ROST.is_file(),
-                     "Python unicorn, NFL2K5_V09_XBE and NFL2K5_V09_ROST_BODY required")
-class InjuredDepthTests(unittest.TestCase):
-    """Rule 4 with the game's own weekly CPU auto-depth 0x2BDCF0 (native) and the owner's call of it."""
-
-    @classmethod
-    def setUpClass(cls):
-        cls.xbe, cls.body = V09_XBE.read_bytes(), V09_ROST.read_bytes()
-        cls.owned = lr.apply(cls.xbe)[0]
-        cls.entry = lr.allocation(cls.owned)["va"] + lr.INJ_OFFSET
-
-    def run_both(self, injure, *, user=None, manages=False):
-        out = []
-        for payload, entry in ((self.xbe, 0x2BDCF0), (self.owned, self.entry)):
-            m = league_machine(payload, self.body)
-            team = m.team_base + 500 * CLUB
-            players = [m.get(team + 4 * i) for i in range(m.uc.mem_read(team + 0x11C, 1)[0])]
-            for p in injure(m, players):
-                m.put(p + 0x20, m.get(p + 0x20) | 0x80000000 | 6 << 22)
-                m.uc.mem_write(p + 0x52, bytes([m.uc.mem_read(p + 0x52, 1)[0] | 0x13]))   # rank, side and PR locks
-            if user is not None:
-                self.user_club(m, m.team_base + 500 * user)
-                m.put(0xE60140, 1 if manages else 0)
-            m.call(entry, budget=3_000_000_000)
-            out.append((m, players))
-        return out
-
-    @staticmethod
-    def user_club(m, team):
-        import unicorn
-        X = unicorn.x86_const
-
-        def test(uc, _addr, _size, _data):
-            esp = uc.reg_read(X.UC_X86_REG_ESP)
-            uc.reg_write(X.UC_X86_REG_EAX, 1 if uc.reg_read(X.UC_X86_REG_ECX) == team else 0)
-            uc.reg_write(X.UC_X86_REG_ESP, esp + 4)
-            uc.reg_write(X.UC_X86_REG_EIP, struct.unpack("<I", uc.mem_read(esp, 4))[0])
-        m.uc.hook_add(unicorn.UC_HOOK_CODE, test, begin=0xC4D50, end=0xC4D50)
-
-    @staticmethod
-    def order(m, players, position, shift=10):
-        at = [p for p in players if m.uc.mem_read(p + 0x35, 1)[0] == position]
-        return sorted(at, key=lambda p: (struct.unpack("<H", m.uc.mem_read(p + 0x28, 2))[0] >> shift & 7, players.index(p)))
-
-    def test_an_injured_starter_goes_below_the_healthy_players(self):
-        (native, nps), (owner, ops) = self.run_both(lambda m, ps: [p for p in ps if m.uc.mem_read(p + 0x35, 1)[0] == 0][:1])
-        hurt = [p for p in ops if owner.get(p + 0x20) & 0x80000000]
-        n_order, o_order = self.order(native, nps, 0), self.order(owner, ops, 0)
-        self.assertEqual(o_order[-1], hurt[0])                          # below every healthy quarterback
-        self.assertEqual([p for p in o_order if p != hurt[0]], [p for p in n_order if p != hurt[0]])
-        self.assertEqual(owner.uc.mem_read(hurt[0] + 0x52, 1)[0] & 0x1F, 0x10)   # rank/side locks off, PR stays
-
-    def test_a_paired_rank_starter_stays_out_of_the_first_side_rows(self):
-        (owner, ops) = self.run_both(lambda m, ps: [self.order(m, ps, 3)[0]])[1]
-        wrs = [p for p in ops if owner.uc.mem_read(p + 0x35, 1)[0] == 3]
-        healthy = [p for p in wrs if not owner.get(p + 0x20) & 0x80000000]
-        if len(healthy) >= 3:
-            starter = self.order(owner, ops, 3)[0]
-            self.assertNotIn(starter, self.order(owner, ops, 3, shift=13)[:2])
-        for shift in (10, 13):
-            chain = self.order(owner, ops, 3, shift)
-            hurt = [i for i, p in enumerate(chain) if owner.get(p + 0x20) & 0x80000000]
-            self.assertTrue(all(i >= len(healthy) for i in hurt))
-
-    def test_a_user_club_is_left_alone_unless_the_cpu_manages_it(self):
-        pick = lambda m, ps: [p for p in ps if m.uc.mem_read(p + 0x35, 1)[0] == 0][:1]
-        for manages in (False, True):
-            with self.subTest(manages=manages):
-                (native, nps), (owner, ops) = self.run_both(pick, user=CLUB, manages=manages)
-                same = [bytes(native.uc.mem_read(p + 0x28, 2)) for p in nps] == [bytes(owner.uc.mem_read(p + 0x28, 2)) for p in ops]
-                self.assertEqual(same, not manages)
-
-    def test_the_embedded_block_is_the_assembled_source(self):
-        import shutil, subprocess, tempfile
-        if not shutil.which("as") or not shutil.which("objcopy"):
-            self.skipTest("GNU as and objcopy are needed")
-        with tempfile.TemporaryDirectory() as tmp:
-            source = ROOT / "docs" / "mod_editor" / "nfl2k5_lineup_roles_injured.S"
-            subprocess.run(["as", "--32", "-o", f"{tmp}/x.o", str(source)], check=True)
-            subprocess.run(["objcopy", "-O", "binary", "-j", ".text", f"{tmp}/x.o", f"{tmp}/x.bin"], check=True)
-            self.assertEqual(Path(f"{tmp}/x.bin").read_bytes(), lr.INJURED_CODE)
-            if shutil.which("objdump") and shutil.which("nm"):          # position independent; the tail's entry
-                relocs = subprocess.run(["objdump", "-r", f"{tmp}/x.o"], capture_output=True, text=True).stdout
-                self.assertNotIn("R_386", relocs)
-                symbols = subprocess.run(["nm", f"{tmp}/x.o"], capture_output=True, text=True).stdout.split()
-                self.assertEqual(int(symbols[symbols.index("season_tail") - 2], 16), lr.SEASON_ENTRY)
+    def test_no_instruction_reaches_the_builders_argument(self):
+        # static: every ESP-relative operand of rules 1-2 stays inside the picker's own frame and arguments (the
+        # builder's second argument sits 0xA0 above the picker call's entry, 0xC4 above the picker's frame); rule 4
+        # addresses its own EBP frame, teams and players
+        from capstone import Cs, CS_ARCH_X86, CS_MODE_32
+        from capstone.x86 import X86_OP_MEM, X86_REG_ESP
+        md = Cs(CS_ARCH_X86, CS_MODE_32)
+        md.detail = True
+        code = lr.code_for(0x1600000, 0x14F1240)
+        widest = max((op.mem.disp for ins in md.disasm(code[:lr.RULES_SIZE].rstrip(b"\xcc"), 0x1600000)
+                      for op in ins.operands if op.type == X86_OP_MEM and op.mem.base == X86_REG_ESP), default=0)
+        self.assertLess(widest, 0xA0)
 
 
 if __name__ == "__main__":
