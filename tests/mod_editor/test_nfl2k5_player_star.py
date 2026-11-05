@@ -270,8 +270,6 @@ class StarColumnTests(unittest.TestCase):
             self.app.processEvents()
 
 
-if __name__ == "__main__":
-    unittest.main()
 
 
 @unittest.skipUnless(PACKS.is_dir(), "retail extraction not present")
@@ -316,3 +314,7 @@ class ProposedStarListTests(unittest.TestCase):
         self.assertEqual(receipt["log"], [])
         tagged = {p.display for p in pt.parse_body(out).tagged}
         self.assertEqual(len(tagged), self.saved["count"])
+
+
+if __name__ == "__main__":
+    unittest.main()

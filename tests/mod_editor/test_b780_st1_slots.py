@@ -238,8 +238,6 @@ class WeeklyPassTests(unittest.TestCase):
                                  (self.PLAYERS + 84 * 2, self.PLAYERS + 84 * 4, self.PLAYERS + 84 * 0))
 
 
-if __name__ == "__main__":
-    unittest.main()
 
 
 @unittest.skipUnless(RETAIL.is_file(), "the retail default.xbe is not configured (NFL2K5_RETAIL_XBE)")
@@ -267,3 +265,7 @@ class UpgradeTests(unittest.TestCase):
                         self.assertEqual(image.read(va, size), fresh.read(va, size), hex(va))
         if not seen:
             self.skipTest("no released executable configured (NFL2K5_V08_XBE, NFL2K5_B780_RC_XBE)")
+
+
+if __name__ == "__main__":
+    unittest.main()

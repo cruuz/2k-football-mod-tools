@@ -440,8 +440,6 @@ class NativePreviewTests(unittest.TestCase):
             self.assertLess(centres['away'], centres['home'])
 
 
-if __name__ == '__main__':
-    unittest.main()
 
 
 # Beta 76 sb B1 (play calling). Retail spans the B1 edits rely on (SHA-256 only). b780 gc1: 0x8C450 is the franchise
@@ -552,3 +550,7 @@ class PlayCallBuildTests(unittest.TestCase):
             self.assertEqual(owner.status(builds['sprite']), 'foreign')
         with mock.patch.dict(os.environ, {'NFL2K5_SCOREBUG_PLAYCALL': 'sprite'}):
             self.assertEqual(owner.status(builds['retail']), 'foreign')
+
+
+if __name__ == '__main__':
+    unittest.main()

@@ -443,8 +443,6 @@ class ProfilesOnFinalBooks(unittest.TestCase):
         self.assertEqual(rows[0]["name"], "CIN Taylor")
 
 
-if __name__ == "__main__":
-    unittest.main()
 
 
 _XBE = os.environ.get("NFL2K5_COACH_AI_XBE")
@@ -640,3 +638,7 @@ class ModernCoachesFollowTheCoach(unittest.TestCase):
         self.assertEqual(moved["SF"], unmoved["SF"])
         old = self.sites(retail, teams)                                           # a 2004 roster: per club, as before
         self.assertEqual(old["KC"][0], (1000 + offset["KC"] + 0x18, 13))
+
+
+if __name__ == "__main__":
+    unittest.main()

@@ -78,8 +78,6 @@ class ReleasedRosterPositionChangeTests(unittest.TestCase):
         self.assertEqual(lb.record.values["depth_rank"], min(len(edges) - 1, rr.DEPTH_ROW_CAP))
 
 
-if __name__ == "__main__":
-    unittest.main()
 
 
 # ------------------------------------------------------------------------------------------------ Q64: the KR arm
@@ -148,3 +146,7 @@ class KickReturnerArmTests(unittest.TestCase):
         old = next(s for s in locks.sites("retail", 5) if s.label == "screen_kr")
         self.assertNotEqual(site.after, old.after)
         self.assertEqual(locks.REVISION, 6)
+
+
+if __name__ == "__main__":
+    unittest.main()
