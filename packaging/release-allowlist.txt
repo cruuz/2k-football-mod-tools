@@ -55,6 +55,9 @@ mod_editor/core/nfl2k5_depth_locks.py
 mod_editor/core/nfl2k5_depth_roles.py
 mod_editor/core/nfl2k5_dynamic_kickoff.py
 mod_editor/core/nfl2k5_franchise_save.py
+mod_editor/core/nfl2k5_injured_reserve.py
+mod_editor/core/nfl2k5_injured_reserve_code.py
+mod_editor/core/nfl2k5_injured_reserve_save.py
 mod_editor/core/nfl2k5_staff_ui.py
 mod_editor/core/nfl2k5_playoff_picture.py
 mod_editor/core/nfl2k5_runner_vision.py
@@ -647,6 +650,7 @@ data/trophy_room_logo/logo.png
 data/trophy_room_logo/project.json
 mod_editor/core/nfl2k5_name_keyboard.py
 mod_editor/core/nfl2k5_historic_teams_quick_game.py
+mod_editor/core/nfl2k5_historic_teams_quick_game_code_b778.py
 mod_editor/core/nfl2k5_classic_teams.py
 mod_editor/core/nfl2k5_classic_field.py
 mod_editor/core/nfl2k5_classic_face.py
@@ -901,6 +905,7 @@ tools/nfl2k5_playbook_position_recode.py
 tools/nfl2k5_roster_reclassify.py
 tools/nfl2k5_roster_retail_fit.py
 tools/b77/b778_fa3_free_agent_depth.py
+tools/b77/b778_fa4_capacity.py
 tools/nfl2k5_scorebug_espn_art.py
 tools/nfl2k5_scorebug_layout.py
 tools/nfl2k5_scorebug_position_patch.py
@@ -1129,6 +1134,7 @@ mod_editor/core/nfl2k5_accelerated_clock.py
 mod_editor/core/nfl2k5_accelerated_clock_code.py
 docs/mod_editor/nfl2k5_accelerated_clock_capability.json
 mod_editor/core/nfl2k5_weekly_prep.py
+mod_editor/core/nfl2k5_weekly_prep_code_b779.py
 mod_editor/core/nfl2k5_weekly_prep_code.py
 mod_editor/core/nfl2k5_weekly_prep_save.py
 docs/mod_editor/weekly_preparation.md
@@ -2054,8 +2060,10 @@ tests/mod_editor/test_nfl2k5_modern_officials.py
 tests/mod_editor/test_nfl2k5_period_goalposts.py
 mod_editor/core/nfl2k5_rules_patch.py
 mod_editor/core/nfl2k5_coin_defer.py
+mod_editor/core/nfl2k5_coin_defer_code_b779.py
 mod_editor/core/nfl2k5_coin_defer_code.py
 mod_editor/core/nfl2k5_decided_clock.py
+mod_editor/core/nfl2k5_decided_clock_code_b779.py
 mod_editor/core/nfl2k5_decided_clock_code.py
 mod_editor/core/nfl2k5_cpu_scrambles.py
 mod_editor/core/nfl2k5_cpu_scrambles_code.py
