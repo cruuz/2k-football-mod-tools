@@ -1031,7 +1031,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_scorebug_sprite_code_r15.py": "9dc1a847fa95ed628a9b0566c63bb218324828131ccd8b507413f58584c1ae36",  # b780 pres2: frozen owner revision 15 engine (b780 p2), recognition only
         "mod_editor/core/nfl2k5_playcall_layout.py": "10a12aebd99cd40ebcabb085e940734607c28e3c265902eac76580ce4cd9a077",
         "mod_editor/core/nfl2k5_playcall_layout_b779.py": "6f417b453783a751845d45e7d0c7987e2414cb86d03fd531e966533f4f8cd863",  # b780 n6: frozen beta-79 revision
-        "mod_editor/core/nfl2k5_scorebug_source_art.py": "a3617552d90389df8e7ce4d78faa8fd64a1995c91e4e8ef93219007761ac27fd",
+        "mod_editor/core/nfl2k5_scorebug_source_art.py": "2ccce5d54172944a142786425de5b2a9ee4336c329086e7b92db170c94f98d13",
         "mod_editor/core/nfl2k5_scorebug_template.py": "409f7324352b88a6b4387b1f1a8ee1231c56f9674d7762ece24a8142fd2d2060",
         "mod_editor/core/nfl2k5_scorebug_unified_adapter.py": "3307d3b1777fcb51f112dea2c6c5290dd969c3037d5bc21112f9740b7cef9bfd",
         "mod_editor/core/nfl2k5_scramble_tuning.py": "f9e85191b7d93849a92a749385bdd746609465238e776ea0e7f072ac29bf2e92",
@@ -1087,7 +1087,7 @@ class Nfl2k5UnifiedVisualProvider:
         "tools/nfl2k5_jersey_png_workflow.py": "d5042236dc3800e52325a163ad43efd1769ac71f38c05a4d1b8d3532f364184f",
         "tools/nfl2k5_kickoff_alignment.py": "31218fc1e553adf4ab0f7fa59857459da16b828a5bb3679aba3c27d419cfe82b",
         "tools/nfl2k5_playbook_position_recode.py": "95d8555d9c548fb61edd7d027d2d95249e6e2b6a27bd5891545939404c39e22e",
-        "tools/nfl2k5_scorebug_espn_art.py": "4bd1e9fb9166ddfbe1423f3e2c41ed2424841a0ae476270c2117de2a9e006780",
+        "tools/nfl2k5_scorebug_espn_art.py": "2f6d15ca6fa67565781ac284141b68ccee1d4c8f2b9c9c87132026842f06313b",
         "tools/nfl2k5_scorebug_layout.py": "63ee159943a6494de331339e7460cb674955698c1d0d6a3aa8057e024967dcc5",
         "tools/nfl2k5_scorebug_position_patch.py": "eb2b913bd4d0620dcefc4f280db1f6d73e4a5c348b0483a246bbf587506cdbff",
         "tools/nfl2k5_scorebug_reference.py": "5186fbbbc75619518cdad41763d4fcb9d438bb2bf37ee98bc74b265c6446b435",
