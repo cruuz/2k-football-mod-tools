@@ -403,13 +403,16 @@ class FlowLayout(QLayout):
     of buttons never sets the width of the page it sits on.
     """
 
-    def __init__(self, parent: QWidget | None = None, *, spacing: int = 6, align_right: bool = False) -> None:
+    def __init__(self, parent: QWidget | None = None, *, spacing: int = 6, align_right: bool = False,
+                 pin_parent_height: bool = False) -> None:
         super().__init__(parent)
         self._items: list = []
         self._spacing = spacing
         self._align_right = align_right   # b780 CI: the footer's buttons keep to the right edge
-        self._width = 0                   # the width last laid out at (see minimumSize)
-        self._asked = -1                  # the height last asked of the parents
+        # b780 CI round 4: the widget holding this layout gets, as its minimum height, its layout's exact height for
+        # its current width (see _pin_parent_height)
+        self._pin_parent = pin_parent_height
+        self._pin_pending = False
         self.setContentsMargins(0, 0, 0, 0)
 
     def addItem(self, item) -> None:  # type: ignore[no-untyped-def]
@@ -428,49 +431,46 @@ class FlowLayout(QLayout):
         return Qt.Orientations(0)
 
     def hasHeightForWidth(self) -> bool:
-        # b780 CI: Qt's height-for-width chain through nested box layouts and a scroll page left the rows less height
-        # than they need; minimumSize reports the height for the current width instead (see setGeometry)
-        return False
+        return True
 
     def heightForWidth(self, width: int) -> int:
+        """The exact height of the rows at ``width``: every row's tallest item, the spacing between rows and the
+        top and bottom margins (computed from the same arrangement setGeometry applies, never cached)."""
         return self._arrange(QRect(0, 0, width, 0), apply=False)
 
     def setGeometry(self, rect: QRect) -> None:
         super().setGeometry(rect)
-        needed = self._arrange(rect, apply=True)
-        self._width = rect.width()
-        if needed != rect.height() and needed != self._asked:
-            # b780 CI: a parent box layout does not re-ask a nested layout for its height-for-width when the rows change
-            # (a wider font at the same width), so the rows overran the height they were given (Continue overlapped
-            # the last row of start buttons). minimumSize now reports the height for this width; lay the parents out
-            # again, from the event loop (Qt ignores it from inside a layout pass).
-            self._asked = needed
+        self._arrange(rect, apply=True)
+        if self._pin_parent and not self._pin_pending:
+            self._pin_pending = True
             from PyQt5.QtCore import QTimer
-            QTimer.singleShot(0, self._relayout)
+            QTimer.singleShot(0, self._pin_parent_height)    # not from inside the parent's own layout pass
+
+    def _pin_parent_height(self) -> None:
+        """b780 CI round 4: Qt caches each widget's height-for-width in its parent's layout, so when the rows changed
+        (a wider font, a narrower window) the scroll page went on sizing the box that holds this layout from a stale
+        height and squeezed it: Continue, placed below the rows, overlapped the last row by 2 px on the Windows
+        runner. The box's minimum height is now its layout's exact height for its current width; Qt never gives a
+        widget less than its minimum height, so the rows and whatever follows them always get their real height."""
+        self._pin_pending = False
+        holder = self.parentWidget()
+        if holder is None or holder.layout() is None:
+            return
+        layout = holder.layout()
+        needed = (layout.totalHeightForWidth(holder.width()) if layout.hasHeightForWidth()
+                  else layout.totalMinimumSize().height())
+        if needed > 0 and holder.minimumHeight() != needed:
+            holder.setMinimumHeight(needed)
 
     def sizeHint(self) -> QSize:
         return self.minimumSize()
-
-    def _relayout(self) -> None:
-        self.invalidate()
-        widget = self.parentWidget()
-        while widget is not None:
-            widget.updateGeometry()
-            if widget.layout() is not None:
-                widget.layout().invalidate()
-            if widget.isWindow():
-                break
-            widget = widget.parentWidget()
 
     def minimumSize(self) -> QSize:
         size = QSize()
         for item in self._items:
             size = size.expandedTo(item.minimumSize())
         margins = self.contentsMargins()
-        size = size + QSize(margins.left() + margins.right(), margins.top() + margins.bottom())
-        if self._width > 0:
-            size.setHeight(max(size.height(), self._arrange(QRect(0, 0, self._width, 0), apply=False)))
-        return size
+        return size + QSize(margins.left() + margins.right(), margins.top() + margins.bottom())
 
     def _arrange(self, rect: QRect, *, apply: bool) -> int:
         margins = self.contentsMargins()

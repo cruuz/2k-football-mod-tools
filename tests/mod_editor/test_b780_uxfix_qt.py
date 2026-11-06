@@ -676,6 +676,10 @@ class StudioWindowTests(unittest.TestCase):
             lowest = max(b.mapTo(window, b.rect().bottomLeft()).y()
                          for b in (window.welcome_install_button, window.welcome_open_button, *window.welcome_task_buttons))
             self.assertGreater(continue_button.mapTo(window, continue_button.rect().topLeft()).y(), lowest)
+            # b780 CI round 4: on the Windows runner the scroll page squeezed the start box below its rows' height
+            # and Continue overlapped the last row by 2 px; the box always gets its layout's exact height now
+            box = window.welcome_install_button.parentWidget()
+            self.assertGreaterEqual(box.height(), box.layout().totalHeightForWidth(box.width()))
             if width == 1280:
                 _shot(window, "after_welcome_continue_row_1280x720" + tag)
         with mock.patch.object(window, "_request_source_switch") as switch:     # the Continue row still opens its file

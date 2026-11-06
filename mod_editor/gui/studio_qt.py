@@ -1856,18 +1856,6 @@ class _BuildContextRosterPanel(RosterEditorPanel):
             self.franchise_panel.base_year_spin.setValue(self.configured_base_year())
 
 
-class _MinimumHeightWrappedLabel(WrappedLabel):
-    """A wrapped label that reports its wrapped height as its minimum, without height-for-width.
-
-    b780 CI: Getting Started's start buttons wrap (FlowLayout), so the Start here box is taller at narrow widths
-    and wide text. Qt's height-for-width distribution in the scroll page gave the box less than its rows need
-    (Continue overlapped the last row of buttons); without height-for-width in the box, the page gives it at
-    least its minimum, which includes the button rows at the current width."""
-
-    def hasHeightForWidth(self) -> bool:  # type: ignore[override]
-        return False
-
-
 class StudioMainWindow(QMainWindow):
     """Flagship 2K5 Mod Studio product window."""
 
@@ -3571,7 +3559,7 @@ class StudioMainWindow(QMainWindow):
         start_text.setSpacing(2)
         ready = QLabel("Start here")
         ready.setObjectName("cardTitle")
-        ready_sub = _MinimumHeightWrappedLabel(
+        ready_sub = QLabel(
             "Most people start with Install SOFTDRINK 2K28: you need your NFL 2K5 game file (.iso) and the "
             "SOFTDRINK 2K28 download (.2k5patch). To make your own changes, open your game file instead."
         )
@@ -3584,7 +3572,7 @@ class StudioMainWindow(QMainWindow):
         start_layout.addLayout(start_text)
         # b780 CI (windows-latest): with Windows font metrics the four buttons in one row ran to 1809 px in a
         # 1280-px window. A flow layout wraps them to a second line instead of widening the page, whatever the font.
-        start_buttons = FlowLayout(spacing=10)
+        start_buttons = FlowLayout(spacing=10, pin_parent_height=True)   # b780 CI round 4: the box gets its exact height
         # b780-uxfix: most people came for SOFTDRINK 2K28, so its installer is the first, primary
         # button (the same three steps as Install & Share). The roster route stays enabled without
         # a disc: a Finn user opens an Xbox save there. Uniforms stay one click away in the sidebar.
